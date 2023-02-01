@@ -92,7 +92,7 @@ theorem IsCompact.compl_mem_sets_of_nhdsWithin (hs : IsCompact s) {f : Filter α
   exact h₂ (h₁ hs)
 #align is_compact.compl_mem_sets_of_nhds_within IsCompact.compl_mem_sets_of_nhdsWithin
 
-/-- If `p : set α → Prop` is stable under restriction and union, and each point `x`
+/-- If `p : Set α → Prop` is stable under restriction and union, and each point `x`
   of a compact set `s` has a neighborhood `t` within `s` such that `p t`, then `p s` holds. -/
 @[elab_as_elim]
 theorem IsCompact.induction_on {s : Set α} (hs : IsCompact s) {p : Set α → Prop} (he : p ∅)
@@ -247,7 +247,7 @@ theorem IsCompact.elim_finite_subfamily_closed {s : Set α} {ι : Type v} (hs : 
     mem_inter_iff, not_and, iff_self_iff, mem_interᵢ, mem_compl_iff] using ht⟩
 #align is_compact.elim_finite_subfamily_closed IsCompact.elim_finite_subfamily_closed
 
-/-- If `s` is a compact set in a topological space `α` and `f : ι → set α` is a locally finite
+/-- If `s` is a compact set in a topological space `α` and `f : ι → Set α` is a locally finite
 family of sets, then `f i ∩ s` is nonempty only for a finitely many `i`. -/
 theorem LocallyFinite.finite_nonempty_inter_compact {ι : Type _} {f : ι → Set α}
     (hf : LocallyFinite f) {s : Set α} (hs : IsCompact s) : { i | (f i ∩ s).Nonempty }.Finite := by
@@ -457,7 +457,7 @@ theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
 #align is_compact.insert IsCompact.insert
 
 -- porting note: todo: refurmulate using `𝓝ˢ`
-/-- If `V : ι → set α` is a decreasing family of closed compact sets then any neighborhood of
+/-- If `V : ι → Set α` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `α` is
 not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
 theorem exists_subset_nhds_of_isCompact' {ι : Type _} [Nonempty ι] {V : ι → Set α}
@@ -693,7 +693,7 @@ theorem nhdsContainBoxes_of_compact {s : Set α} (hs : IsCompact s) (t : Set β)
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`. -/
 theorem generalized_tube_lemma {s : Set α} (hs : IsCompact s) {t : Set β} (ht : IsCompact t)
     {n : Set (α × β)} (hn : IsOpen n) (hp : s ×ˢ t ⊆ n) :
-    ∃ (u : Set α)(v : Set β), IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ u ×ˢ v ⊆ n :=
+    ∃ (u : Set α) (v : Set β), IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ u ×ˢ v ⊆ n :=
   have := nhdsContainBoxes_of_compact hs t fun x _ => NhdsContainBoxes.symm <|
     nhdsContainBoxes_of_compact ht {x} fun _ _ => nhdsContainBoxes_of_singleton
   this n hn hp
@@ -1322,7 +1322,7 @@ protected theorem LocallyFinite.countable_univ {ι : Type _} {f : ι → Set α}
   exact mem_unionᵢ.2 ⟨n, x, hx, hn⟩
 #align locally_finite.countable_univ LocallyFinite.countable_univ
 
-/-- If `f : ι → set α` is a locally finite covering of a σ-compact topological space by nonempty
+/-- If `f : ι → Set α` is a locally finite covering of a σ-compact topological space by nonempty
 sets, then the index type `ι` is encodable. -/
 protected noncomputable def LocallyFinite.encodable {ι : Type _} {f : ι → Set α}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Encodable ι :=
