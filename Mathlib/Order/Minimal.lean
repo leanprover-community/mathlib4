@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Antichain
-import Mathbin.Order.UpperLower.Basic
+import Mathlib.Order.Antichain
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Minimal/maximal elements of a set
@@ -106,8 +106,7 @@ theorem minimals_antichain : IsAntichain r (minimals r s) :=
 
 end IsAntisymm
 
-theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s :=
-  by
+theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
   congr
   ext (a b)
   exact comm
@@ -139,8 +138,7 @@ theorem minimals_mono [IsAntisymm α r₂] (h : ∀ a b, r₁ a b → r₂ a b) 
     exact hab⟩
 #align minimals_mono minimals_mono
 
-theorem maximals_union : maximals r (s ∪ t) ⊆ maximals r s ∪ maximals r t :=
-  by
+theorem maximals_union : maximals r (s ∪ t) ⊆ maximals r s ∪ maximals r t := by
   intro a ha
   obtain h | h := ha.1
   · exact Or.inl ⟨h, fun b hb => ha.2 <| Or.inl hb⟩
@@ -196,8 +194,7 @@ theorem minimals_idem : minimals r (minimals r s) = minimals r s :=
 /-- If `maximals r s` is included in but *shadows* the antichain `t`, then it is actually
 equal to `t`. -/
 theorem IsAntichain.max_maximals (ht : IsAntichain r t) (h : maximals r s ⊆ t)
-    (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ maximals r s, r b a) : maximals r s = t :=
-  by
+    (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ maximals r s, r b a) : maximals r s = t := by
   refine' h.antisymm fun a ha => _
   obtain ⟨b, hb, hr⟩ := hs ha
   rwa [of_not_not fun hab => ht (h hb) ha (Ne.symm hab) hr]
@@ -206,8 +203,7 @@ theorem IsAntichain.max_maximals (ht : IsAntichain r t) (h : maximals r s ⊆ t)
 /-- If `minimals r s` is included in but *shadows* the antichain `t`, then it is actually
 equal to `t`. -/
 theorem IsAntichain.max_minimals (ht : IsAntichain r t) (h : minimals r s ⊆ t)
-    (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ minimals r s, r a b) : minimals r s = t :=
-  by
+    (hs : ∀ ⦃a⦄, a ∈ t → ∃ b ∈ minimals r s, r a b) : minimals r s = t := by
   refine' h.antisymm fun a ha => _
   obtain ⟨b, hb, hr⟩ := hs ha
   rwa [of_not_not fun hab => ht ha (h hb) hab hr]
