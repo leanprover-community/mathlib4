@@ -83,7 +83,7 @@ theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun x : α => M) (a : α
 
 @[simp]
 theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun x : α => M) :
-    l.lookupFinsupp.support = (l.1.filterₓ fun x => Sigma.snd x ≠ 0).keys.toFinset := by convert rfl
+    l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by convert rfl
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun x : α => M} {a : α} {x : M}
