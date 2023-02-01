@@ -12,20 +12,20 @@ import Mathlib.GroupTheory.Subgroup.MulOpposite
 import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
 
-/-! # Pointwise instances on `subgroup` and `add_subgroup`s
+/-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
 This file provides the actions
 
-* `subgroup.pointwise_mul_action`
-* `add_subgroup.pointwise_mul_action`
+* `Subgroup.pointwiseMulAction`
+* `AddSubgroup.pointwiseMulAction`
 
 which matches the action of `mul_action_set`.
 
-These actions are available in the `pointwise` locale.
+These actions are available in the `Pointwise` locale.
 
 ## Implementation notes
 
-The pointwise section of this file is almost identical to `group_theory/submonoid/pointwise.lean`.
+The pointwise section of this file is almost identical to `GroupTheory/Submonoid/Pointwise.lean`.
 Where possible, try to keep them in sync.
 -/
 
@@ -119,7 +119,7 @@ theorem supᵢ_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} 
 #align subgroup.supr_induction Subgroup.supᵢ_induction
 #align add_subgroup.supr_induction AddSubgroup.supᵢ_induction
 
-/-- A dependent version of `subgroup.supr_induction`. -/
+/-- A dependent version of `Subgroup.supᵢ_induction`. -/
 @[elab_as_elim, to_additive "A dependent version of `add_subgroup.supr_induction`. "]
 theorem supᵢ_induction' {ι : Sort _} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i), ∀ x (hx : x ∈ S i), C x (mem_supᵢ_of_mem i hx)) (h1 : C 1 (one_mem _))
@@ -362,7 +362,7 @@ theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a �
   simp [SetLike.ext_iff, mem_pointwise_smul_iff_inv_smul_mem]
 #align subgroup.smul_inf Subgroup.smul_inf
 
-/-- Applying a `mul_distrib_mul_action` results in an isomorphic subgroup -/
+/-- Applying a `MulDistribMulAction` results in an isomorphic subgroup -/
 @[simps]
 def equivSmul (a : α) (H : Subgroup G) : H ≃* (a • H : Subgroup G) :=
   (MulDistribMulAction.toMulEquiv G a).subgroupMap H
