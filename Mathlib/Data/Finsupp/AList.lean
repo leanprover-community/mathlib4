@@ -66,7 +66,7 @@ noncomputable def lookupFinsupp (l : AList fun x : α => M) : α →₀ M
     where
   support := by
     haveI := Classical.decEq α <;> haveI := Classical.decEq M <;>
-      exact (l.1.filterₓ fun x => Sigma.snd x ≠ 0).keys.toFinset
+      exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
   toFun a :=
     haveI := Classical.decEq α
     (l.lookup a).getD 0
