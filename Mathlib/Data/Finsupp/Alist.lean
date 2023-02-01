@@ -8,8 +8,8 @@ Authors: Violeta Hernández
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Basic
-import Mathbin.Data.List.Alist
+import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.List.Alist
 
 /-!
 # Connections between `finsupp` and `alist`
@@ -87,15 +87,13 @@ theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun x 
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun x : α => M} {a : α} {x : M}
-    (hx : x ≠ 0) : l.lookupFinsupp a = x ↔ x ∈ l.dlookup a :=
-  by
+    (hx : x ≠ 0) : l.lookupFinsupp a = x ↔ x ∈ l.dlookup a := by
   rw [lookup_finsupp_apply]
   cases' lookup a l with m <;> simp [hx.symm]
 #align alist.lookup_finsupp_eq_iff_of_ne_zero AList.lookupFinsupp_eq_iff_of_ne_zero
 
 theorem lookupFinsupp_eq_zero_iff [DecidableEq α] {l : AList fun x : α => M} {a : α} :
-    l.lookupFinsupp a = 0 ↔ a ∉ l ∨ (0 : M) ∈ l.dlookup a :=
-  by
+    l.lookupFinsupp a = 0 ↔ a ∉ l ∨ (0 : M) ∈ l.dlookup a := by
   rw [lookup_finsupp_apply, ← lookup_eq_none]
   cases' lookup a l with m <;> simp
 #align alist.lookup_finsupp_eq_zero_iff AList.lookupFinsupp_eq_zero_iff
@@ -109,8 +107,7 @@ theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun x : α => M) = 0 :=
 
 @[simp]
 theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun x : α => M) (a : α) (m : M) :
-    (l.insert a m).lookupFinsupp = l.lookupFinsupp.update a m :=
-  by
+    (l.insert a m).lookupFinsupp = l.lookupFinsupp.update a m := by
   ext b
   by_cases h : b = a <;> simp [h]
 #align alist.insert_lookup_finsupp AList.insert_lookupFinsupp
@@ -121,8 +118,7 @@ theorem singleton_lookupFinsupp (a : α) (m : M) :
 #align alist.singleton_lookup_finsupp AList.singleton_lookupFinsupp
 
 @[simp]
-theorem Finsupp.toAlist_lookupFinsupp (f : α →₀ M) : f.toAList.lookupFinsupp = f :=
-  by
+theorem Finsupp.toAlist_lookupFinsupp (f : α →₀ M) : f.toAList.lookupFinsupp = f := by
   ext
   classical
     by_cases h : f a = 0
