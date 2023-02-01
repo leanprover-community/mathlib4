@@ -514,7 +514,7 @@ theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σi, π
   refine' ⟨fun hs => _, _⟩
   · obtain ⟨⟨i, x⟩, hx⟩ := hs.nonempty
     have : s ⊆ range (Sigma.mk i) :=
-      hs.isPreconnected.subset_clopen clopen_range_sigmaMk ⟨⟨i, x⟩, hx, x, rfl⟩
+      hs.isPreconnected.subset_clopen isClopen_range_sigmaMk ⟨⟨i, x⟩, hx, x, rfl⟩
     exact ⟨i, Sigma.mk i ⁻¹' s, hs.preimage_of_openMap sigma_mk_injective isOpenMap_sigmaMk this,
       (Set.image_preimage_eq_of_subset this).symm⟩
   · rintro ⟨i, t, ht, rfl⟩
