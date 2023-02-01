@@ -24,8 +24,7 @@ constant function. These results have variants for sums instead of products.
 
 -/
 
--- Porting note: Uncomment once localised BigOperators is fixed:
--- open BigOperators
+open BigOperators
 
 open Finset
 
