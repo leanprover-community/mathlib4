@@ -29,12 +29,12 @@ to say that `(i, j)` (in matrix coordinates) is in the Young diagram `μ`.
 
 ## Main definitions
 
-- `young_diagram` : Young diagrams
-- `young_diagram.card` : the number of cells in a Young diagram (its *cardinality*)
-- `young_diagram.distrib_lattice` : a distributive lattice instance for Young diagrams
-  ordered by containment, with `(⊥ : young_diagram)` the empty diagram.
-- `young_diagram.row` and `young_diagram.row_len`: rows of a Young diagram and their lengths
-- `young_diagram.col` and `young_diagram.col_len`: columns of a Young diagram and their lengths
+- `YoungDiagram` : Young diagrams
+- `YoungDiagram.card` : the number of cells in a Young diagram (its *cardinality*)
+- `YoungDiagram.distrib_lattice` : a distributive lattice instance for Young diagrams
+  ordered by containment, with `(⊥ : YoungDiagram)` the empty diagram.
+- `YoungDiagram.row` and `YoungDiagram.row_len`: rows of a Young diagram and their lengths
+- `YoungDiagram.col` and `YoungDiagram.col_len`: columns of a Young diagram and their lengths
 
 ## Notation
 
@@ -71,7 +71,8 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ)
     where
-  coe := coe YoungDiagram.cells
+  -- porting note: TODO: figure out how to do this correcly
+  coe := fun y => y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
 @[simp]
@@ -80,7 +81,7 @@ theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c �
 #align young_diagram.mem_cells YoungDiagram.mem_cells
 
 @[simp]
-theorem mem_mk (c : ℕ × ℕ) (cells) (is_lower_set) :
+theorem mem_mk (c : ℕ × ℕ) (cells) (IsLowerSet) :
     c ∈ YoungDiagram.mk cells IsLowerSet ↔ c ∈ cells :=
   Iff.rfl
 #align young_diagram.mem_mk YoungDiagram.mem_mk
@@ -113,7 +114,7 @@ instance : HasSup YoungDiagram
     { cells := μ.cells ∪ ν.cells
       IsLowerSet := by
         rw [Finset.coe_union]
-        exact μ.is_lower_set.union ν.is_lower_set }
+        exact μ.IsLowerSet.union ν.IsLowerSet }
 
 @[simp]
 theorem cells_sup (μ ν : YoungDiagram) : (μ ⊔ ν).cells = μ.cells ∪ ν.cells :=
@@ -135,7 +136,7 @@ instance : HasInf YoungDiagram
     { cells := μ.cells ∩ ν.cells
       IsLowerSet := by
         rw [Finset.coe_inter]
-        exact μ.is_lower_set.inter ν.is_lower_set }
+        exact μ.IsLowerSet.inter ν.IsLowerSet }
 
 @[simp]
 theorem cells_inf (μ ν : YoungDiagram) : (μ ⊓ ν).cells = μ.cells ∩ ν.cells :=
@@ -476,7 +477,7 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
       j1 ≤ j2 := hj
       _ < w.nth_le i2 _ := h2
       _ ≤ w.nth_le i1 _ := _
-      
+
     obtain rfl | h := eq_or_lt_of_le hi
     · rfl
     · apply list.pairwise_iff_nth_le.mp hw _ _ _ h
@@ -534,4 +535,3 @@ def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.Sorted (· ≥ ·) �
 end EquivListRowLens
 
 end YoungDiagram
-
