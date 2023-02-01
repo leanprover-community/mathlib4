@@ -196,13 +196,13 @@ theorem Icc_self (a : α) : Icc a a = {a} := by rw [Icc, Finset.Icc_self, Finset
 
 theorem Ico_cons_right (h : a ≤ b) : b ::ₘ Ico a b = Icc a b := by
   classical
-    rw [Ico, ← Finset.insert_val_of_not_mem (right_not_mem_Ico _), Finset.Ico_insert_right h]
+    rw [Ico, ← Finset.insert_val_of_not_mem right_not_mem_Ico, Finset.Ico_insert_right h]
     rfl
 #align multiset.Ico_cons_right Multiset.Ico_cons_right
 
 theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
   classical
-    rw [Ioo, ← Finset.insert_val_of_not_mem (left_not_mem_Ioo _), Finset.Ioo_insert_left h]
+    rw [Ioo, ← Finset.insert_val_of_not_mem left_not_mem_Ioo, Finset.Ioo_insert_left h]
     rfl
 #align multiset.Ioo_cons_left Multiset.Ioo_cons_left
 
