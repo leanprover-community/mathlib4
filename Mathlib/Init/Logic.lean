@@ -427,7 +427,11 @@ theorem AsTrue.get {c : Prop} [h₁ : Decidable c] (_ : AsTrue c) : c :=
 #align of_as_true AsTrue.get
 
 #align ulift ULift
+#align ulift.up ULift.up
+#align ulift.down ULift.down
 #align plift PLift
+#align plift.up PLift.up
+#align plift.down PLift.down
 
 /- Equalities for rewriting let-expressions -/
 theorem let_value_eq {α : Sort u} {β : Sort v} {a₁ a₂ : α} (b : α → β)
