@@ -65,17 +65,11 @@ open Function
 open BigOperators Pointwise
 
 variable {R : Type _} {R₁ : Type _} {R₂ : Type _} {R₃ : Type _} {R₄ : Type _}
-
 variable {S : Type _}
-
 variable {K : Type _} {K₂ : Type _}
-
 variable {M : Type _} {M' : Type _} {M₁ : Type _} {M₂ : Type _} {M₃ : Type _} {M₄ : Type _}
-
 variable {N : Type _} {N₂ : Type _}
-
 variable {ι : Type _}
-
 variable {V : Type _} {V₂ : Type _}
 
 namespace Finsupp
@@ -168,21 +162,13 @@ namespace LinearMap
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-
 variable [AddCommMonoid M₃] [AddCommMonoid M₄]
-
 variable [Module R M] [Module R M₁] [Module R₂ M₂] [Module R₃ M₃] [Module R₄ M₄]
-
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₃₄ : R₃ →+* R₄}
-
 variable {σ₁₃ : R →+* R₃} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R →+* R₄}
-
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
-
 variable [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
-
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
 
 @[simp]
@@ -345,7 +331,7 @@ theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ 
 theorem commute_pow_left_of_commute {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction' k with k ih
-  · simpa only [pow_zero]
+  · simp only [pow_zero, Nat.zero_eq]; rfl
   · rw [pow_succ, pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
       h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 #align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
@@ -377,38 +363,38 @@ variable {f' : M →ₗ[R] M}
 theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ', mul_eq_comp]
 #align linear_map.iterate_succ LinearMap.iterate_succ
 
-theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective ⇑(f' ^ n)
+theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
   | 0 => surjective_id
   | n + 1 => by
     rw [iterate_succ]
-    exact surjective.comp (iterate_surjective n) h
+    exact (iterate_surjective h n).comp h
 #align linear_map.iterate_surjective LinearMap.iterate_surjective
 
-theorem iterate_injective (h : Injective f') : ∀ n : ℕ, Injective ⇑(f' ^ n)
+theorem iterate_injective (h : Injective f') : ∀ n : ℕ, Injective (f' ^ n)
   | 0 => injective_id
   | n + 1 => by
     rw [iterate_succ]
-    exact injective.comp (iterate_injective n) h
+    exact (iterate_injective h n).comp h
 #align linear_map.iterate_injective LinearMap.iterate_injective
 
-theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective ⇑(f' ^ n)
+theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
   | 0 => bijective_id
   | n + 1 => by
     rw [iterate_succ]
-    exact bijective.comp (iterate_bijective n) h
+    exact (iterate_bijective h n).comp h
 #align linear_map.iterate_bijective LinearMap.iterate_bijective
 
-theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective ⇑(f' ^ n)) :
+theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
     Injective f' := by
   rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), iterate_succ, coe_comp] at h
-  exact injective.of_comp h
+  exact h.of_comp
 #align linear_map.injective_of_iterate_injective LinearMap.injective_of_iterate_injective
 
-theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective ⇑(f' ^ n)) :
+theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
     Surjective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), Nat.succ_eq_add_one, add_comm, pow_add] at
-    h
-  exact surjective.of_comp h
+  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn),
+    Nat.succ_eq_add_one, add_comm, pow_add] at h
+  exact Surjective.of_comp h
 #align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
 
 theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
@@ -573,22 +559,10 @@ def addMonoidHomLequivNat {A B : Type _} (R : Type _) [Semiring R] [AddCommMonoi
     where
   toFun := AddMonoidHom.toNatLinearMap
   invFun := LinearMap.toAddMonoidHom
-  map_add' := by
-    intros
-    ext
-    rfl
-  map_smul' := by
-    intros
-    ext
-    rfl
-  left_inv := by
-    intro f
-    ext
-    rfl
-  right_inv := by
-    intro f
-    ext
-    rfl
+  map_add' := by intros; ext; rfl
+  map_smul' := by intros; ext; rfl
+  left_inv := by intro f; ext; rfl
+  right_inv := by intro f; ext; rfl
 #align add_monoid_hom_lequiv_nat addMonoidHomLequivNat
 
 /--
@@ -600,22 +574,10 @@ def addMonoidHomLequivInt {A B : Type _} (R : Type _) [Semiring R] [AddCommGroup
     where
   toFun := AddMonoidHom.toIntLinearMap
   invFun := LinearMap.toAddMonoidHom
-  map_add' := by
-    intros
-    ext
-    rfl
-  map_smul' := by
-    intros
-    ext
-    rfl
-  left_inv := by
-    intro f
-    ext
-    rfl
-  right_inv := by
-    intro f
-    ext
-    rfl
+  map_add' := by intros; ext; rfl
+  map_smul' := by intros; ext; rfl
+  left_inv := by intro f; ext; rfl
+  right_inv := by intro f; ext; rfl
 #align add_monoid_hom_lequiv_int addMonoidHomLequivInt
 
 /-! ### Properties of submodules -/
@@ -626,23 +588,14 @@ namespace Submodule
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M']
-
 variable [Module R M] [Module R M'] [Module R₂ M₂] [Module R₃ M₃]
-
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-
 variable {σ₂₁ : R₂ →+* R}
-
 variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
 variable (p p' : Submodule R M) (q q' : Submodule R₂ M₂)
-
 variable (q₁ q₁' : Submodule R M')
-
 variable {r : R} {x y : M}
 
 open Set
@@ -680,10 +633,8 @@ variable (R)
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (Submodule R M) ↔ Subsingleton M :=
-  have h : Subsingleton (Submodule R M) ↔ Subsingleton (AddSubmonoid M) :=
-    by
-    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top]
-    convert to_add_submonoid_eq.symm <;> rfl
+  have h : Subsingleton (Submodule R M) ↔ Subsingleton (AddSubmonoid M) := by
+    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top, ← toAddSubmonoid_eq]; rfl
   h.trans AddSubmonoid.subsingleton_iff
 #align submodule.subsingleton_iff Submodule.subsingleton_iff
 
@@ -755,7 +706,7 @@ theorem mem_map_of_mem {f : F} {p : Submodule R M} {r} (h : r ∈ p) : f r ∈ m
 #align submodule.mem_map_of_mem Submodule.mem_map_of_mem
 
 theorem apply_coe_mem_map (f : F) {p : Submodule R M} (r : p) : f r ∈ map f p :=
-  mem_map_of_mem r.Prop
+  mem_map_of_mem r.prop
 #align submodule.apply_coe_mem_map Submodule.apply_coe_mem_map
 
 @[simp]
@@ -765,7 +716,7 @@ theorem map_id : map (LinearMap.id : M →ₗ[R] M) p = p :=
 
 theorem map_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] (f : M →ₛₗ[σ₁₂] M₂)
     (g : M₂ →ₛₗ[σ₂₃] M₃) (p : Submodule R M) : map (g.comp f : M →ₛₗ[σ₁₃] M₃) p = map g (map f p) :=
-  SetLike.coe_injective <| by simp only [← image_comp, map_coe, LinearMap.coe_comp, comp_app]
+  SetLike.coe_injective <| by simp only [← image_comp, map_coe, LinearMap.coe_comp, comp_apply]
 #align submodule.map_comp Submodule.map_comp
 
 theorem map_mono {f : F} {p p' : Submodule R M} : p ≤ p' → map f p ≤ map f p' :=
@@ -978,7 +929,11 @@ variable [RingHomSurjective σ₁₂] {f : F} (hf : Injective f)
 
 /-- `map f` and `comap f` form a `galois_coinsertion` when `f` is injective. -/
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
-  (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
+  (gc_map_comap f).toGaloisCoinsertion fun S x => by
+    simp [mem_comap, mem_map, forall_exists_index, and_imp]
+    intro y hy hxy
+    rw [hf.eq_iff] at hxy
+    rwa [← hxy]
 #align submodule.gci_map_comap Submodule.gciMapComap
 
 theorem comap_map_eq_of_injective (p : Submodule R M) : (p.map f).comap f = p :=
@@ -1055,7 +1010,7 @@ theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/
-theorem LinearMap.infᵢ_invariant {σ : R →+* R} [RingHomSurjective σ] {ι : Sort _} (f : M →ₛₗ[σ] M)
+theorem _root_.LinearMap.infᵢ_invariant {σ : R →+* R} [RingHomSurjective σ] {ι : Sort _} (f : M →ₛₗ[σ] M)
     {p : ι → Submodule R M} (hf : ∀ i, ∀ v ∈ p i, f v ∈ p i) : ∀ v ∈ infᵢ p, f v ∈ infᵢ p := by
   have : ∀ i, (p i).map f ≤ p i := by
     rintro i - ⟨v, hv, rfl⟩
@@ -1091,9 +1046,7 @@ end Submodule
 namespace Submodule
 
 variable [Field K]
-
 variable [AddCommGroup V] [Module K V]
-
 variable [AddCommGroup V₂] [Module K V₂]
 
 theorem comap_smul (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) (h : a ≠ 0) :
@@ -1125,13 +1078,9 @@ namespace LinearMap
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 
 open Submodule
@@ -1231,7 +1180,7 @@ theorem range_coe [RingHomSurjective τ₁₂] (f : F) : (range f : Set M₂) = 
 #align linear_map.range_coe LinearMap.range_coe
 
 theorem range_toAddSubmonoid [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
-    f.range.toAddSubmonoid = f.toAddMonoidHom.mrange :=
+    f.range.toAddSubmonoid = AddMonoidHom.mrange f :=
   rfl
 #align linear_map.range_to_add_submonoid LinearMap.range_toAddSubmonoid
 
@@ -1286,12 +1235,11 @@ theorem range_neg {R : Type _} {R₂ : Type _} {M : Type _} {M₂ : Type _} [Sem
 
 /-- A linear map version of `add_monoid_hom.eq_locus` -/
 def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
-  {
-    f.toAddMonoidHom.eqLocus
-      g.toAddMonoidHom with
+  { f.toAddMonoidHom.eqLocus g.toAddMonoidHom with
     carrier := { x | f x = g x }
-    smul_mem' := fun r x (hx : _ = _) =>
-      show _ = _ by simpa only [LinearMap.map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
+    smul_mem' := fun {r} {x} (hx : _ = _) =>
+      show _ = _ by simpa only [LinearMap.map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx
+       }
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
@@ -1490,17 +1438,11 @@ end AddCommMonoid
 section Ring
 
 variable [Ring R] [Ring R₂] [Ring R₃]
-
 variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
-
 variable {F : Type _} [sc : SemilinearMapClass F τ₁₂ M M₂]
-
 variable {f : F}
 
 open Submodule
