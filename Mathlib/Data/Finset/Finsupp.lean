@@ -47,7 +47,7 @@ protected def finsupp (s : Finset ι) (t : ι → Finset α) : Finset (ι →₀
   (s.pi t).map ⟨indicator s, indicator_injective s⟩
 #align finset.finsupp Finset.finsupp
 
-theorem mem_finsupp_iff {t : ι → Finset α} : f ∈ s.Finsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i :=
+theorem mem_finsupp_iff {t : ι → Finset α} : f ∈ s.finsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i :=
   by
   refine' mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
@@ -62,7 +62,7 @@ theorem mem_finsupp_iff {t : ι → Finset α} : f ∈ s.Finsupp t ↔ f.support
 /-- When `t` is supported on `s`, `f ∈ s.finsupp t` precisely means that `f` is pointwise in `t`. -/
 @[simp]
 theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.support ⊆ s) :
-    f ∈ s.Finsupp t ↔ ∀ i, f i ∈ t i := by
+    f ∈ s.finsupp t ↔ ∀ i, f i ∈ t i := by
   refine'
     mem_finsupp_iff.trans
       (forall_and_distrib.symm.trans <|
@@ -78,7 +78,7 @@ theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.supp
 
 @[simp]
 theorem card_finsupp (s : Finset ι) (t : ι → Finset α) :
-    (s.Finsupp t).card = ∏ i in s, (t i).card :=
+    (s.finsupp t).card = ∏ i in s, (t i).card :=
   (card_map _).trans <| card_pi _ _
 #align finset.card_finsupp Finset.card_finsupp
 
@@ -91,7 +91,7 @@ namespace Finsupp
 /-- Given a finitely supported function `f : ι →₀ finset α`, one can define the finset
 `f.pi` of all finitely supported functions whose value at `i` is in `f i` for all `i`. -/
 def pi (f : ι →₀ Finset α) : Finset (ι →₀ α) :=
-  f.support.Finsupp f
+  f.support.finsupp f
 #align finsupp.pi Finsupp.pi
 
 @[simp]
@@ -100,10 +100,9 @@ theorem mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀
 #align finsupp.mem_pi Finsupp.mem_pi
 
 @[simp]
-theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.Prod fun i => (f i).card := by
+theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_finsupp]
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
 #align finsupp.card_pi Finsupp.card_pi
 
 end Finsupp
-
