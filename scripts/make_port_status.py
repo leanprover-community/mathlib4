@@ -113,9 +113,9 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
         capture_output=True)
     pr_matches = re.search(r'(#[0-9]+)\)$', log.stdout.decode().splitlines()[-1])
     if pr_matches:
-        mathlib4_pr = 'mathlib4' + pr_matches.groups()[0]
+        mathlib4_pr = int(pr_matches.groups()[0])
     else:
-        mathlib4_pr = '_'
+        mathlib4_pr = None
 
     data[module] = {
         'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
@@ -194,10 +194,12 @@ for node in sorted(graph.nodes):
     if node in data:
         new_status = dict(
             ported=True,
+            mathlib4_file==data[node]['mathlib4_file'],
             mathlib4_pr=data[node]['mathlib4_pr'],
             mathlib3_hash=data[node]['mathlib3_hash']
         )
-        status = f"Yes {data[node]['mathlib4_pr']} {data[node]['mathlib3_hash']}"
+        pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
+        status = f"Yes {pr_status} {data[node]['mathlib3_hash']}"
     else:
         new_status = dict(ported=False)
         status = f'No'
