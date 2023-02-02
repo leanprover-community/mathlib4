@@ -8,10 +8,10 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.AddTorsor
-import Mathbin.Topology.Algebra.Constructions
-import Mathbin.GroupTheory.GroupAction.Prod
-import Mathbin.Topology.Algebra.ConstMulAction
+import Mathlib.Algebra.AddTorsor
+import Mathlib.Topology.Algebra.Constructions
+import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!
 # Continuous monoid action
@@ -197,8 +197,7 @@ theorem hasContinuousSmul_infᵢ {ts' : ι → TopologicalSpace X}
 
 @[to_additive]
 theorem hasContinuousSmul_inf {t₁ t₂ : TopologicalSpace X} [@HasContinuousSmul M X _ _ t₁]
-    [@HasContinuousSmul M X _ _ t₂] : @HasContinuousSmul M X _ _ (t₁ ⊓ t₂) :=
-  by
+    [@HasContinuousSmul M X _ _ t₂] : @HasContinuousSmul M X _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_infᵢ]
   refine' hasContinuousSmul_infᵢ fun b => _
   cases b <;> assumption
