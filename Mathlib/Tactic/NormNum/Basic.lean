@@ -52,6 +52,19 @@ theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
     guard <|← isDefEq a e
     return .isNat sα n (q(isNat_ofNat $α $pa) : Expr)
 
+theorem isNat_intOfNat: {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
+  | _, _, ⟨rfl⟩ => ⟨rfl⟩
+
+/-- The `norm_num` extension which identifies the constructor application `Int.ofNat n` such that
+`norm_num` successfully recognizes `n`, returning `n`. -/
+@[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where eval {u α} e := do
+  let .app _ (n : Q(ℕ)) ← whnfR e | failure
+  guard <| α.isConstOf ``Int
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
+  let sℤ : Q(AddMonoidWithOne ℤ) := q(AddGroupWithOne.toAddMonoidWithOne)
+  let ⟨n', p⟩ ← deriveNat n sℕ
+  return (.isNat sℤ n' q(isNat_intOfNat $p): Result q(Int.ofNat $n))
+
 theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
