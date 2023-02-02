@@ -838,11 +838,15 @@ open Sum
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
-theorem continuous_sum_elim {f : α → γ} {g : β → γ} :
-    Continuous (Sum.elim f g) ↔ Continuous f ∧ Continuous g :=
+theorem continuous_sum_dom {f : α ⊕ β → γ} :
+    Continuous f ↔ Continuous (f ∘ Sum.inl) ∧ Continuous (f ∘ Sum.inr) :=
   (continuous_sup_dom (t₁ := TopologicalSpace.coinduced Sum.inl _)
     (t₂ := TopologicalSpace.coinduced Sum.inr _)).trans <|
     continuous_coinduced_dom.and continuous_coinduced_dom
+
+theorem continuous_sum_elim {f : α → γ} {g : β → γ} :
+    Continuous (Sum.elim f g) ↔ Continuous f ∧ Continuous g :=
+  continuous_sum_dom
 #align continuous_sum_elim continuous_sum_elim
 
 -- porting note: todo: restore @[continuity]
@@ -850,6 +854,14 @@ theorem Continuous.sum_elim {f : α → γ} {g : β → γ} (hf : Continuous f) 
     Continuous (Sum.elim f g) :=
   continuous_sum_elim.2 ⟨hf, hg⟩
 #align continuous.sum_elim Continuous.sum_elim
+
+-- porting note: todo: add @[continuity]
+theorem continuous_isLeft : Continuous (isLeft : α ⊕ β → Bool) :=
+  continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
+
+-- porting note: todo: add @[continuity]
+theorem continuous_isRight : Continuous (isRight : α ⊕ β → Bool) :=
+  continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
 
 -- porting note: todo: restore @[continuity]
 -- porting note: the proof was `continuous_sup_rng_left continuous_coinduced_rng`
