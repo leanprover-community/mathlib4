@@ -8,7 +8,7 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Quotients of families indexed by a finite type
@@ -76,8 +76,7 @@ def Quotient.finChoice {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → 
 #align quotient.fin_choice Quotient.finChoice
 
 theorem Quotient.finChoice_eq {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
-    [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ :=
-  by
+    [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ := by
   let q
   swap
   change Quotient.liftOn q _ _ = _
