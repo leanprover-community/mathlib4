@@ -22,8 +22,8 @@ import Mathlib.Data.Finsupp.Basic
 This file defines the basics of linear algebra. It sets up the "categorical/lattice structure" of
 modules over a ring, submodules, and linear maps.
 
-Many of the relevant definitions, including `module`, `submodule`, and `linear_map`, are found in
-`src/algebra/module`.
+Many of the relevant definitions, including `Module`, `Submodule`, and `LinearMap`, are found in
+`Algebra/Module`.
 
 ## Main definitions
 
@@ -32,12 +32,12 @@ Many of the relevant definitions, including `module`, `submodule`, and `linear_m
   respectively.
 * The general linear group is defined to be the group of invertible linear maps from `M` to itself.
 
-See `linear_algebra.span` for the span of a set (as a submodule),
-and `linear_algebra.quotient` for quotients by submodules.
+See `LinearAlgebra.Span` for the span of a set (as a submodule),
+and `LinearAlgebra.Quotient` for quotients by submodules.
 
 ## Main theorems
 
-See `linear_algebra.isomorphisms` for Noether's three isomorphism theorems for modules.
+See `LinearAlgebra.Isomorphisms` for Noether's three isomorphism theorems for modules.
 
 ## Notations
 
@@ -47,7 +47,7 @@ See `linear_algebra.isomorphisms` for Noether's three isomorphism theorems for m
 ## Implementation notes
 
 We note that, when constructing linear maps, it is convenient to use operations defined on bundled
-maps (`linear_map.prod`, `linear_map.coprod`, arithmetic operations like `+`) instead of defining a
+maps (`LinearMap.prod`, `LinearMap.coprod`, arithmetic operations like `+`) instead of defining a
 function and proving it is linear.
 
 ## TODO
