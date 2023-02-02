@@ -195,14 +195,14 @@ theorem subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil :=
   rcases cons_subset.1 h with ⟨⟨_, ⟨⟩, _⟩, _⟩
 #align lists'.subset_nil Lists'.subset_nil
 
-theorem mem_of_subset' {a} {l₁ l₂ : Lists' α true} (s : l₁ ⊆ l₂) (h : a ∈ l₁.toList) : a ∈ l₂ := by
-  -- Porting note: Previous code was:
-  -- induction' s with _ a a' l l' e m s IH; · cases h
-  -- simp at h; rcases h with (rfl | h)
-  -- exacts[⟨_, m, e⟩, IH h]
-  --
-  -- 'induction' tactic does not support mutually inductive types
-  admit
+theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList),  a ∈ l₂
+  | nil, _, Lists'.Subset.nil, h => by cases h
+  | cons' a0 l0, l₂, s, h => by
+    cases' s with _ _ _ _ _ e m s
+    simp at h
+    rcases h with (rfl | h)
+    · exact ⟨_, m, e⟩
+    · exact mem_of_subset' s h
 #align lists'.mem_of_subset' Lists'.mem_of_subset'
 
 theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
