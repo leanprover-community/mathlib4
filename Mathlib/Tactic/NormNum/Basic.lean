@@ -536,6 +536,52 @@ such that `norm_num` successfully recognises both `a` and `b`, and returns `a / 
   let p : Q(IsRat ($na / $nb : ℚ) $n $d) := p
   return (.isRat' (inst := dℚ) q n d q(isRat_mkRat $pa $pb $p) : Result q(mkRat $a $b))
 
+theorem isRat_ofScientific_of_true [DivisionRing α] [OfScientific α] [LawfulOfScientific α] :
+    {m e : ℕ} → {n : ℤ} → {d : ℕ} → IsRat (mkRat m (10 ^ e) : α) n d →
+    IsRat (OfScientific.ofScientific (α := α) m true e) n d
+  | _, _, _, _, ⟨_, eq⟩ => ⟨_, by
+    simp only [LawfulOfScientific.ofScientific_eq, if_true, Rat.ofScientific,
+      Rat.normalize_eq_mkRat]
+    exact eq⟩
+
+theorem isNat_ofScientific_of_false [dα : DivisionRing α] [OfScientific α] [LawfulOfScientific α] :
+    {m e nm ne n : ℕ} → IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
+    IsNat (OfScientific.ofScientific (α := α) m false e) n
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h =>
+    ⟨by simp [LawfulOfScientific.ofScientific_eq, Rat.ofScientific, h]; norm_cast⟩
+
+/-- The `norm_num` extension which identifies expressions in scientific notation, normalizing them
+to rat casts if the scientific notation is inherited from the one for rationals. -/
+@[norm_num OfScientific.ofScientific _ _ _] def evalOfScientific :
+    NormNumExt where eval {u α} e := do
+  let .app (.app (.app f (m : Q(ℕ))) (b : Q(Bool))) (exp : Q(ℕ)) ← whnfR e | failure
+  let σα ← inferOfScientific α
+  guard <|← withNewMCtxDepth <| isDefEq f q(OfScientific.ofScientific (α := $α))
+  let dα ← inferDivisionRing α
+  let lσα ← inferLawfulOfScientific dα σα
+  match b with
+  | ~q(true)  =>
+    let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))
+    let some ⟨q, n, d, p⟩ := rme.toRat' | failure
+    let p : Q(IsRat (mkRat $m (10 ^ $exp) : $α) $n $d) := p
+    return (.isRat' dα q n d q(isRat_ofScientific_of_true $p) :
+        Result q(@OfScientific.ofScientific $α $σα $m true $exp))
+  | ~q(false) =>
+    let ⟨nm, pm⟩ ← deriveNat m q(AddCommMonoidWithOne.toAddMonoidWithOne)
+    let ⟨ne, pe⟩ ← deriveNat exp q(AddCommMonoidWithOne.toAddMonoidWithOne)
+    have pm : Q(IsNat $m $nm) := pm
+    have pe : Q(IsNat $exp $ne) := pe
+    let m' := m.natLit!
+    let exp' := exp.natLit!
+    let n' := Nat.mul m' (Nat.pow (10 : ℕ) exp')
+    have n : Q(ℕ) := mkRawNatLit n'
+    have r : Q($n = Nat.mul $nm ((10 : ℕ) ^ $ne)) := (q(Eq.refl $n) : Expr)
+    return ((.isNat _ n
+        (q(isNat_ofScientific_of_false (α := $α) (n := $n) $pm $pe $r) :
+            Q(IsNat (OfScientific.ofScientific (α := $α) $m false $exp) $n))) :
+          Result q(@OfScientific.ofScientific $α $σα $m false $exp))
+
+
 /-
 # Logic
 -/

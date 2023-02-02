@@ -313,6 +313,27 @@ exists. -/
 def inferCharZeroOfDivisionRing? {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
   return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+
+/-- Helper function to synthesize a typed `OfScientific α` expression. -/
+def inferOfScientific (α : Q(Type u)) : MetaM Q(OfScientific $α) :=
+  return ← synthInstanceQ (q(OfScientific $α) : Q(Type u)) <|>
+    throwError "does not support scientific notation"
+
+/-- Helper function to synthesize a typed `LawfulOfScientific α` expression. -/
+def inferLawfulOfScientific {α : Q(Type u)}
+    (_dα : Q(DivisionRing $α) := by with_reducible assumption)
+    (_sα : Q(OfScientific $α) := by with_reducible assumption) : MetaM Q(LawfulOfScientific $α) :=
+  return ← synthInstanceQ (q(LawfulOfScientific $α) : Q(Prop)) <|>
+    throwError "does not support lawful scientific notation"
+
+/-- Helper function to synthesize a typed `OfScientific α` expression, if it exists. -/
+def inferOfScientific? (α : Q(Type u)) : MetaM (LOption Q(OfScientific $α)) :=
+  trySynthInstanceQ (q(OfScientific $α) : Q(Type u))
+
+/-- Helper function to synthesize a typed `RatCast α` expression. -/
+def inferRatCast (α : Q(Type u)) : MetaM Q(RatCast $α) :=
+  return ← synthInstanceQ (q(RatCast $α) : Q(Type u)) <|> throwError "does not support a rat cast"
+
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.
