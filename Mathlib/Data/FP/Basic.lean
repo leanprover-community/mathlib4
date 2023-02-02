@@ -148,15 +148,14 @@ unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   let r := mkRat n₂ d₂
   let m := r.floor
   refine' (Float.Finite Bool.false e₃ (Int.toNat m) _, r.den = 1)
-  -- Porting note: TODO understand how to hande `undefined`, also for the next def
-  · exact undefined
+  · exact lcProof
 #align fp.of_pos_rat_dn FP.of_pos_rat_dn
 
 unsafe def next_up_pos (e m) (v : ValidFinite e m) : Float :=
   let m' := m.succ
   if ss : m'.size = m.size then
     Float.Finite false e m' (by unfold ValidFinite at * <;> rw [ss] <;> exact v)
-  else if h : e = emax then Float.Inf false else Float.Finite false e.succ (Nat.div2 m') undefined
+  else if h : e = emax then Float.Inf false else Float.Finite false e.succ (Nat.div2 m') lcProof
 #align fp.next_up_pos FP.next_up_pos
 
 unsafe def next_dn_pos (e m) (v : ValidFinite e m) : Float :=
@@ -166,8 +165,8 @@ unsafe def next_dn_pos (e m) (v : ValidFinite e m) : Float :=
     if ss : m'.size = m.size then
       Float.Finite false e m' (by unfold ValidFinite at * <;> rw [ss] <;> exact v)
     else
-      if h : e = emin then Float.Finite false emin m' undefined
-      else Float.Finite false e.pred (bit1 m') undefined
+      if h : e = emin then Float.Finite false emin m' lcProof
+      else Float.Finite false e.pred (bit1 m') lcProof
 #align fp.next_dn_pos FP.next_dn_pos
 
 unsafe def next_up : Float → Float
