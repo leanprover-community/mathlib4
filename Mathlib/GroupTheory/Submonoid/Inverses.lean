@@ -36,8 +36,7 @@ namespace Submonoid
 
 @[to_additive]
 noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
-  {
-    show Monoid (IsUnit.submonoid M) by
+  { show Monoid (IsUnit.submonoid M) by
       infer_instance with
     inv := fun x ↦ ⟨_, x.prop.unit⁻¹.isUnit⟩
     mul_left_inv := fun x ↦ by
@@ -166,8 +165,7 @@ variable (hS : S ≤ IsUnit.submonoid M)
 @[to_additive (attr := simps apply) "The additive submonoid of pointwise additive inverse of `S` is
 `AddEquiv` to `S`."]
 noncomputable def leftInvEquiv : S.leftInv ≃* S :=
-  {
-    S.fromCommLeftInv with
+  { S.fromCommLeftInv with
     invFun := fun x ↦ by
       choose x' hx using hS x.prop
       exact ⟨x'.inv, x, hx ▸ x'.inv_val⟩
