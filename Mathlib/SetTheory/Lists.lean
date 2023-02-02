@@ -267,16 +267,19 @@ instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_ins
 -- So noncomputable is added.
 noncomputable instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
 
+-- Porting note: Made noncomputable because code generator does not support recursor
+-- Lists'.rec yet
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
-def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _) (C0 : ∀ a, C (atom a))
-    (C1 : ∀ l, D l → C (of' l)) (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
+noncomputable def inductionMut (C : Lists α → Sort _) (D : Lists' α true → Sort _)
+    (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))
+    (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
     PProd (∀ l, C l) (∀ l, D l) := by
   suffices
     ∀ {b} (l : Lists' α b),
       PProd (C ⟨_, l⟩)
         (match b, l with
         | true, l => D l
-        | false, l => PUnit)
+        | false, _ => PUnit)
     by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l => (this l).2⟩
   intros b l
   induction' l with a b a l IH₁ IH
@@ -363,10 +366,11 @@ instance : Setoid (Lists α) :=
 
 section Decidable
 
+-- porting note: Noncomputable because Lists.instSizeOfLists is
 @[simp]
-def Equiv.decidableMeas :
-    (PSum (Σ'l₁ : Lists α, Lists α) <|
-        PSum (Σ'l₁ : Lists' α true, Lists' α true) (Σ'a : Lists α, Lists' α true)) →
+noncomputable def Equiv.decidableMeas :
+    (PSum (Σ' _l₁ : Lists α, Lists α) <|
+        PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
       ℕ
   | PSum.inl ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
   | PSum.inr <| PSum.inl ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
