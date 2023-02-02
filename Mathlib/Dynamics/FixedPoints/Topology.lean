@@ -16,8 +16,8 @@ import Mathlib.Topology.Separation
 
 Currently this file contains two lemmas:
 
-- `is_fixed_pt_of_tendsto_iterate`: if `f^n(x) → y` and `f` is continuous at `y`, then `f y = y`;
-- `is_closed_fixed_points`: the set of fixed points of a continuous map is a closed set.
+- `isFixedPt_of_tendsto_iterate`: if `f^n(x) → y` and `f` is continuous at `y`, then `f y = y`;
+- `isClosed_fixedPoints`: the set of fixed points of a continuous map is a closed set.
 
 ## TODO
 
@@ -35,7 +35,7 @@ open Topology
 then `y` is a fixed point for `f`. -/
 theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => (f^[n]) x) atTop (𝓝 y))
     (hf : ContinuousAt f y) : IsFixedPt f y := by
-  refine' tendsto_nhds_unique ((tendsto_add_at_top_iff_nat 1).1 _) hy
+  refine' tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).1 _) hy
   simp only [iterate_succ' f]
   exact hf.tendsto.comp hy
 #align is_fixed_pt_of_tendsto_iterate isFixedPt_of_tendsto_iterate
