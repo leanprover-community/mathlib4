@@ -17,23 +17,23 @@ import Mathlib.Topology.Support
 /-!
 # Monoid actions continuous in the second variable
 
-In this file we define class `has_continuous_const_smul`. We say `has_continuous_const_smul Γ T` if
+In this file we define class `HasContinuousConstSmul`. We say `HasContinuousConstSmul Γ T` if
 `Γ` acts on `T` and for each `γ`, the map `x ↦ γ • x` is continuous. (This differs from
 `has_continuous_smul`, which requires simultaneous continuity in both variables.)
 
 ## Main definitions
 
-* `has_continuous_const_smul Γ T` : typeclass saying that the map `x ↦ γ • x` is continuous on `T`;
-* `properly_discontinuous_smul`: says that the scalar multiplication `(•) : Γ → T → T`
+* `HasContinuousConstSmul Γ T` : typeclass saying that the map `x ↦ γ • x` is continuous on `T`;
+* `ProperlyDiscontinuousSmul`: says that the scalar multiplication `(•) : Γ → T → T`
   is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
-* `homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
+* `Homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
   is a homeomorphism of `T`.
 
 ## Main results
 
-* `is_open_map_quotient_mk_mul` : The quotient map by a group action is open.
-* `t2_space_of_properly_discontinuous_smul_of_t2_space` : The quotient by a discontinuous group
+* `isOpenMap_quotient_mk'_mul` : The quotient map by a group action is open.
+* `t2Space_of_properlyDiscontinuousSmul_of_t2Space` : The quotient by a discontinuous group
   action of a locally compact t2 space is t2.
 
 ## Tags
@@ -47,21 +47,21 @@ open Topology Pointwise Filter Set TopologicalSpace
 
 attribute [local instance] MulAction.orbitRel
 
-/-- Class `has_continuous_const_smul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
+/-- Class `HasContinuousConstSmul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of multiplicative
 actions, including (semi)modules and algebras.
 
-Note that both `has_continuous_const_smul α α` and `has_continuous_const_smul αᵐᵒᵖ α` are
+Note that both `HasContinuousConstSmul α α` and `HasContinuousConstSmul αᵐᵒᵖ α` are
 weaker versions of `has_continuous_mul α`. -/
 class HasContinuousConstSmul (Γ : Type _) (T : Type _) [TopologicalSpace T] [SMul Γ T] : Prop where
   continuous_const_smul : ∀ γ : Γ, Continuous fun x : T => γ • x
 #align has_continuous_const_smul HasContinuousConstSmul
 
-/-- Class `has_continuous_const_vadd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
+/-- Class `HasContinuousConstVadd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of additive actions,
 including (semi)modules and algebras.
 
-Note that both `has_continuous_const_vadd α α` and `has_continuous_const_vadd αᵐᵒᵖ α` are
+Note that both `HasContinuousConstVadd α α` and `HasContinuousConstVadd αᵐᵒᵖ α` are
 weaker versions of `has_continuous_add α`. -/
 class HasContinuousConstVadd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VAdd Γ T] : Prop where
   continuous_const_vadd : ∀ γ : Γ, Continuous fun x : T => γ +ᵥ x
@@ -434,7 +434,7 @@ nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c �
 end IsUnit
 
 -- porting note: todo: use `Set.Nonempty`
-/-- Class `properly_discontinuous_smul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
+/-- Class `ProperlyDiscontinuousSmul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
 -/
@@ -444,7 +444,7 @@ class ProperlyDiscontinuousSmul (Γ : Type _) (T : Type _) [TopologicalSpace T] 
     ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·)  '' K ∩ L ≠ ∅ }
 #align properly_discontinuous_smul ProperlyDiscontinuousSmul
 
-/-- Class `properly_discontinuous_vadd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
+/-- Class `ProperlyDiscontinuousVadd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
 -/
