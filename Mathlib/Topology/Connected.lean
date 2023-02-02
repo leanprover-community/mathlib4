@@ -727,6 +727,7 @@ theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
 
 /-- A preconnected space is one where there is no non-trivial open partition. -/
 class PreconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
+  /-- The universal set `Set.univ` in a preconnected space is a preconnected set. -/
   isPreconnected_univ : IsPreconnected (univ : Set α)
 #align preconnected_space PreconnectedSpace
 
@@ -734,6 +735,7 @@ export PreconnectedSpace (isPreconnected_univ)
 
 /-- A connected space is a nonempty one where there is no non-trivial open partition. -/
 class ConnectedSpace (α : Type u) [TopologicalSpace α] extends PreconnectedSpace α : Prop where
+  /-- A connected space is nonempty. -/
   toNonempty : Nonempty α
 #align connected_space ConnectedSpace
 
@@ -1098,6 +1100,7 @@ of connected *open* sets. Note that it is equivalent to each point having a basi
 (non necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
 equivalence later in `locallyConnectedSpace_iff_connected_basis`. -/
 class LocallyConnectedSpace (α : Type _) [TopologicalSpace α] : Prop where
+  /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/
   open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id
 #align locally_connected_space LocallyConnectedSpace
 
@@ -1213,6 +1216,7 @@ theorem isTotallyDisconnected_singleton {x} : IsTotallyDisconnected ({x} : Set �
 
 /-- A space is totally disconnected if all of its connected components are singletons. -/
 class TotallyDisconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
+  /-- The universal set `Set.univ` in a totally disconnected space is totally disconnected. -/
   isTotallyDisconnected_univ : IsTotallyDisconnected (univ : Set α)
 #align totally_disconnected_space TotallyDisconnectedSpace
 
@@ -1366,6 +1370,7 @@ alias isTotallyDisconnected_of_isTotallySeparated ← IsTotallySeparated.isTotal
 /-- A space is totally separated if any two points can be separated by two disjoint open sets
 covering the whole space. -/
 class TotallySeparatedSpace (α : Type u) [TopologicalSpace α] : Prop where
+  /-- The universal set `Set.univ` in a totally separated space is totally separated. -/
   isTotallySeparated_univ : IsTotallySeparated (univ : Set α)
 #align totally_separated_space TotallySeparatedSpace
 
@@ -1587,4 +1592,3 @@ theorem IsPreconnected.constant_of_mapsTo [TopologicalSpace β] {S : Set α} (hS
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
   exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.restrict_mapsTo _)
 #align is_preconnected.constant_of_maps_to IsPreconnected.constant_of_mapsTo
-
