@@ -428,7 +428,7 @@ of the canonical basis. -/
 theorem pi_apply_eq_sum_univ [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M) (x : ι → R) :
     f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
   conv_lhs => rw [pi_eq_sum_univ x, f.map_sum]
-  apply Finset.sum_congr rfl fun l hl => _
+  refine Finset.sum_congr rfl (fun _ _ => ?_)
   rw [map_smul]
 #align linear_map.pi_apply_eq_sum_univ LinearMap.pi_apply_eq_sum_univ
 
@@ -475,7 +475,7 @@ def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃�
     invFun := smulRight (1 : R →ₗ[R] R)
     left_inv := fun f => by
       ext
-      simp
+      simp only [coe_smulRight, one_apply, smul_eq_mul, ← map_smul f, mul_one]
     right_inv := fun x => by simp }
 #align linear_map.ring_lmap_equiv_self LinearMap.ringLmapEquivSelf
 
@@ -752,6 +752,8 @@ theorem range_map_nonempty (N : Submodule R M) :
 
 end
 
+section SemilinearMap
+
 variable {F : Type _} [sc : SemilinearMapClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule by an injective linear map is
@@ -987,6 +989,8 @@ theorem map_strictMono_of_injective : StrictMono (map f) :=
 
 end GaloisCoinsertion
 
+end SemilinearMap
+
 section OrderIso
 
 variable [SemilinearEquivClass F σ₁₂ M M₂]
@@ -997,9 +1001,9 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂
     where
   toFun := map f
   invFun := comap f
-  left_inv := comap_map_eq_of_injective <| EquivLike.injective (↑ f)
-  right_inv := map_comap_eq_of_surjective <| EquivLike.surjective f
-  map_rel_iff' := map_le_map_iff_of_injective <| EquivLike.injective f
+  left_inv := @fun p => comap_map_eq_of_injective (EquivLike.injective f) _
+  right_inv := @fun p => map_comap_eq_of_surjective (EquivLike.surjective f) _
+  map_rel_iff' := @fun p q => map_le_map_iff_of_injective (EquivLike.injective f) _ _
 #align submodule.order_iso_map_comap Submodule.orderIsoMapComap
 
 end OrderIso
@@ -1040,7 +1044,7 @@ variable [AddCommGroup M₂] [Module R M₂]
 
 -- See `neg_coe_set`
 theorem neg_coe : -(p : Set M) = p :=
-  Set.ext fun x => p.neg_mem_iff
+  Set.ext fun _ => p.neg_mem_iff
 #align submodule.neg_coe Submodule.neg_coe
 
 @[simp]
