@@ -590,9 +590,13 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       rw [←SetLike.mem_coe] at hy
       rw [mul_normal H N] at hy
       rcases hy with ⟨h, n, hh, hn, rfl⟩
-      use h, hh; apply quotient.eq.mpr
+      use ⟨h, hh⟩
+      let _ : Setoid ↑(H ⊔ N) :=
+        (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))
+      -- porting note: Lean couldn't find this automatically
+      refine Quotient.eq.mpr ?_
       change Setoid.r _ _
-      rw [left_rel_apply]
+      rw [leftRel_apply]
       change h⁻¹ * (h * n) ∈ N
       rwa [← mul_assoc, inv_mul_self, one_mul]
   (quotientMulEquivOfEq (by simp [← comap_ker])).trans (quotientKerEquivOfSurjective φ φ_surjective)
@@ -604,8 +608,6 @@ end SndIsomorphismThm
 section ThirdIsoThm
 
 variable (M : Subgroup G) [nM : M.Normal]
-
-include nM nN
 
 @[to_additive]
 instance map_normal : (M.map (QuotientGroup.mk' N)).Normal :=
@@ -632,15 +634,16 @@ theorem quotientQuotientEquivQuotientAux_coe (x : G ⧸ N) :
     quotientQuotientEquivQuotientAux N M h x = QuotientGroup.map N M (MonoidHom.id G) h x :=
   QuotientGroup.lift_mk' _ _ x
 #align quotient_group.quotient_quotient_equiv_quotient_aux_coe QuotientGroup.quotientQuotientEquivQuotientAux_coe
-#align quotient_add_group.quotient_quotient_equiv_quotient_aux_coe QuotientAddGroup.quotient_quotient_equiv_quotient_aux_coe
+#align quotient_add_group.quotient_quotient_equiv_quotient_aux_coe QuotientAddGroup.quotientQuotientEquivQuotientAux_coe
 
 @[to_additive]
 theorem quotientQuotientEquivQuotientAux_coe_coe (x : G) :
     quotientQuotientEquivQuotientAux N M h (x : G ⧸ N) = x :=
-  QuotientGroup.lift_mk' _ _ x
+  QuotientGroup.lift_mk' (M.map (mk' N)) _ x
 #align quotient_group.quotient_quotient_equiv_quotient_aux_coe_coe QuotientGroup.quotientQuotientEquivQuotientAux_coe_coe
-#align quotient_add_group.quotient_quotient_equiv_quotient_aux_coe_coe QuotientAddGroup.quotient_quotient_equiv_quotient_aux_coe_coe
+#align quotient_add_group.quotient_quotient_equiv_quotient_aux_coe_coe QuotientAddGroup.quotientQuotientEquivQuotientAux_coe_coe
 
+#check QuotientGroup.monoidHom_ext
 /-- **Noether's third isomorphism theorem** for groups: `(G / N) / (M / N) ≃* G / M`. -/
 @[to_additive
       "**Noether's third isomorphism theorem** for additive groups:\n`(A / N) / (M / N) ≃+ A / M`."]
@@ -648,10 +651,17 @@ def quotientQuotientEquivQuotient : (G ⧸ N) ⧸ M.map (QuotientGroup.mk' N) �
   MonoidHom.toMulEquiv (quotientQuotientEquivQuotientAux N M h)
     (QuotientGroup.map _ _ (QuotientGroup.mk' N) (Subgroup.le_comap_map _ _))
     (by
-      ext
+      refine' @QuotientGroup.monoidHom_ext _ _ (M.map (mk' N)) _ _ _ _ (MonoidHom.id ((G ⧸ N) ⧸ Subgroup.map (mk' N) M)) _
+      refine' @QuotientGroup.monoidHom_ext _ _ N _ _ _ _ (MonoidHom.comp (MonoidHom.id ((G ⧸ N) ⧸ Subgroup.map (mk' N) M)) (mk' (Subgroup.map (mk' N) M))) _
+      apply MonoidHom.ext
+      -- porting note: cannot change the above two `refine'`s to `apply`
+      intro x
       simp)
     (by
-      ext
+      apply QuotientGroup.monoidHom_ext
+      apply MonoidHom.ext
+      intro x
+      -- porting note: `ext` doesn't work here, had to use output of `ext?` from Lean 3
       simp)
 #align quotient_group.quotient_quotient_equiv_quotient QuotientGroup.quotientQuotientEquivQuotient
 #align quotient_add_group.quotient_quotient_equiv_quotient QuotientAddGroup.quotientQuotientEquivQuotient
@@ -662,9 +672,9 @@ section trivial
 
 @[to_additive]
 theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
-  dsimp [HasQuotient.Quotient, subgroup.has_quotient, Quotient]
-  rw [left_rel_eq]
-  exact @Trunc.subsingleton G
+  dsimp [HasQuotient.Quotient, QuotientGroup.instHasQuotientSubgroup, Quotient]
+  rw [leftRel_eq]
+  exact Trunc.instSubsingletonTrunc
 #align quotient_group.subsingleton_quotient_top QuotientGroup.subsingleton_quotient_top
 #align quotient_add_group.subsingleton_quotient_top QuotientAddGroup.subsingleton_quotient_top
 
@@ -677,7 +687,7 @@ theorem subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G �
     have this : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
     rwa [inv_one, one_mul] at this
 #align quotient_group.subgroup_eq_top_of_subsingleton QuotientGroup.subgroup_eq_top_of_subsingleton
-#align quotient_add_group.add_subgroup_eq_top_of_subsingleton QuotientAddGroup.add_subgroup_eq_top_of_subsingleton
+#align quotient_add_group.add_subgroup_eq_top_of_subsingleton QuotientAddGroup.addSubgroup_eq_top_of_subsingleton
 
 end trivial
 
@@ -686,7 +696,7 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
     ((Subgroup.center ((G ⧸ H₁) ⧸ H₂)).comap (mk' H₂)).comap (mk' H₁) =
       (Subgroup.center (G ⧸ H₂.comap (mk' H₁))).comap (mk' (H₂.comap (mk' H₁))) := by
   ext x
-  simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_coe, ← coe_mul,
+  simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_mk, ← coe_mul,
     eq_iff_div_mem, coe_div]
 #align quotient_group.comap_comap_center QuotientGroup.comap_comap_center
 #align quotient_add_group.comap_comap_center QuotientAddGroup.comap_comap_center
@@ -707,7 +717,7 @@ variable (f : F →* G) (g : G →* H)
 @[to_additive "If `F` and `H` are finite such that `ker(G →+ H) ≤ im(F →+ G)`, then `G` is finite."]
 noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
   @Fintype.ofEquiv _ _
-    (@Prod.fintype _ _ (Fintype.ofInjective _ <| kerLift_injective g) <|
+    (@instFintypeProd _ _ (Fintype.ofInjective _ <| kerLift_injective g) <|
       Fintype.ofInjective _ <| inclusion_injective h)
     groupEquivQuotientProdSubgroup.symm
 #align group.fintype_of_ker_le_range Group.fintypeOfKerLeRange
