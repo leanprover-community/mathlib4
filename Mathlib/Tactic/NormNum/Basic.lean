@@ -98,6 +98,41 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
       return (.isNegNat rα na q(isInt_cast $a (.negOfNat $na) $pa) : Result q(Int.cast $a : $α))
     | _ => failure
 
+theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
+    IsNat q n → IsNat (q : R) n
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+theorem isInt_ratCast [DivisionRing R] : {q : ℚ} → {n : ℤ} →
+    IsInt q n → IsInt (q : R) n
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+theorem isRat_ratCast [DivisionRing R] [CharZero R]: {q : ℚ} → {n : ℤ} → {d : ℕ} →
+    IsRat q n d → IsRat (q : R) n d
+  | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only []; norm_cast⟩
+
+/-- The `norm_num` extension which identifies an expression `RatCast.ratCast q` where `norm_num`
+recognizes `q`, returning the cast of `q`. -/
+@[norm_num RatCast.ratCast _] def evalRatCast : NormNumExt where eval {u α} e := do
+  let dα ← inferDivisionRing α
+  match e with
+  | ~q(RatCast.ratCast $a) =>
+    let r ← derive (α := q(ℚ)) a
+    match r with
+    | .isNat _ na pa =>
+      let sα : Q(AddMonoidWithOne $α) := q(instAddMonoidWithOne')
+      let pa : Q(@IsNat _ instAddMonoidWithOne' $a $na) := pa
+      return (.isNat sα na q(@isNat_ratCast $α _ $a $na $pa) : Result q(RatCast.ratCast $a : $α))
+    | .isNegNat _ na pa =>
+      let rα : Q(Ring $α) := q(instRing)
+      let pa : Q(@IsInt _ instRing $a (.negOfNat $na)) := pa
+      return (.isNegNat rα na q(@isInt_ratCast $α _ $a (.negOfNat $na) $pa) :
+          Result q(RatCast.ratCast $a : $α))
+    | .isRat _ qa na da pa =>
+      let i ← inferCharZeroOfDivisionRing dα
+      let pa : Q(@IsRat _ instRingRat $a $na $da) := pa
+      return (.isRat dα qa na da q(isRat_ratCast $pa) : Result q(RatCast.ratCast $a : $α))
+    | _ => failure
+
 theorem isNat_add {α} [AddMonoidWithOne α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (a + b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_add _ _).symm⟩

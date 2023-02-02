@@ -214,6 +214,13 @@ and `q` is the value of `n / d`. -/
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
 
+/-- A shortcut (non)instance for `AddMonoidWithOne α` from `DivisionRing α` to shrink generated
+proofs. -/
+def instAddMonoidWithOne' [DivisionRing α] : AddMonoidWithOne α := inferInstance
+
+/-- A shortcut (non)instance for `Ring α` from `DivisionRing α` to shrink generated proofs. -/
+def instRing [DivisionRing α] : Ring α := inferInstance
+
 /-- The result is `z : ℤ` and `proof : isNat x z`. -/
 -- Note the independent arguments `z : Q(ℤ)` and `n : ℤ`.
 -- We ensure these are "the same" when calling.
