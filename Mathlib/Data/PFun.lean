@@ -246,7 +246,7 @@ exists. By abusing notation to illustrate, either `f a` is in the `β` part of `
 case `f.fix a` returns `f a`), or it is undefined (in which case `f.fix a` is undefined as well), or
 it is in the `α` part of `β ⊕ α` (in which case we repeat the procedure, so `f.fix a` will return
 `f.fix (f a)`). -/
--- porting notes: had to mark `noncomputable`
+-- Porting notes: had to mark `noncomputable`
 noncomputable def fix (f : α →. Sum β α) : α →. β := fun a =>
   Part.assert (Acc (fun x y => Sum.inr x ∈ f y) a) $ fun h =>
     @WellFounded.fixF _ (fun x y => Sum.inr x ∈ f y) _
@@ -279,7 +279,7 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
     · refine' ⟨⟨_, fun y h' => _⟩, _⟩
       · injection Part.mem_unique ⟨h₁, h₂⟩ h'
       · rw [WellFounded.fixFEq]
-        -- porting note: used to be simp [h₁, h₂]
+        -- Porting note: used to be simp [h₁, h₂]
         apply Part.mem_assert h₁
         split
         next e =>
@@ -293,7 +293,7 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
         exact e ▸ h₃
       · cases' h with h₁ h₂
         rw [WellFounded.fixFEq]
-        -- porting note: used to be simp [h₁, h₂, h₄]
+        -- Porting note: used to be simp [h₁, h₂, h₄]
         apply Part.mem_assert h₁
         split
         next e =>
@@ -324,12 +324,12 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 #align pfun.fix_fwd PFun.fix_fwd
 
 /-- A recursion principle for `PFun.fix`. -/
--- porting notes: had to add `noncomputable`
+-- Porting notes: had to add `noncomputable`
 @[elab_as_elim]
 noncomputable def fixInduction {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
   have h₂ := (Part.mem_assert_iff.1 h).snd;
-  -- porting notes: revert/intro trick required to address `generalize_proofs` bug
+  -- Porting notes: revert/intro trick required to address `generalize_proofs` bug
   revert h₂
   generalize_proofs h₁;
   intro h₂; clear h
@@ -342,7 +342,7 @@ theorem fix_induction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} 
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
-  -- porting notes: `generalize` required to address `generalize_proofs` bug
+  -- Porting notes: `generalize` required to address `generalize_proofs` bug
   generalize (Part.mem_assert_iff.1 h).fst = ha
   induction ha
   rfl
@@ -369,7 +369,7 @@ theorem fixInduction'_stop {C : α → Sort _} {f : α →. Sum β α} {b : β} 
     @fixInduction' _ _ C _ _ _ h hbase hind = hbase a fa := by
   unfold fixInduction'
   rw [fix_induction_spec]
-  -- porting notes: the explicit motive required because `simp` behaves differently
+  -- Porting notes: the explicit motive required because `simp` behaves differently
   refine' Eq.rec (motive := fun x e =>
       Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
       (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) _
@@ -384,7 +384,7 @@ theorem fixInduction'_fwd {C : α → Sort _} {f : α →. Sum β α} {b : β} {
     @fixInduction' _ _ C _ _ _ h hbase hind = hind a a' h' fa (fixInduction' h' hbase hind) := by
   unfold fixInduction'
   rw [fix_induction_spec]
-  -- porting notes: the explicit motive required because `simp` behaves differently
+  -- Porting notes: the explicit motive required because `simp` behaves differently
   refine' Eq.rec (motive := fun x e =>
       Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
       (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = _) _
@@ -655,7 +655,7 @@ theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
   · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  -- porting notes: was just `[exists_and_left, exists_and_right]`
+  -- Porting notes: was just `[exists_and_left, exists_and_right]`
   · simp only [exists_and_left, exists_and_right, (· ∈ ·), Part.Mem]
 #align pfun.mem_prod_lift PFun.mem_prodLift
 
@@ -704,7 +704,7 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- porting notes: was `by tidy`, below is a golf'd verson of the `tidy?` proof
+  -- Porting notes: was `by tidy`, below is a golf'd verson of the `tidy?` proof
   ext $ λ ⟨_, _⟩ ⟨_, _⟩ =>
   ⟨λ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
    λ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
