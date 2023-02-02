@@ -57,6 +57,12 @@ example (h : x = 1) : x = (5 * 5⁻¹ : ℚ) := by norm_num1; exact h
 example (h : x = 1) : x = (6/5 - 1/5 : ℚ) := by norm_num1; exact h
 example (h : x = 1) : x = ((6/5) ^ 0 : ℚ) := by norm_num1; exact h
 
+section ConstructorsEtc
+
+example : Int.ofNat 3 = 3 := by norm_num1
+
+end ConstructorsEtc
+
 /-
 # `=` and `≠`
 -/
