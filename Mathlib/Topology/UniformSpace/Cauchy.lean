@@ -162,8 +162,8 @@ theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cau
 #align cauchy.comap Cauchy.comap
 
 theorem Cauchy.comap' [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
-    (hm : comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α) (hb : NeBot (comap m f)) :
-    Cauchy (comap m f) :=
+    (hm : Filter.comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α) (_ : NeBot (Filter.comap m f)) :
+    Cauchy (Filter.comap m f) :=
   hf.comap hm
 #align cauchy.comap' Cauchy.comap'
 
@@ -246,7 +246,7 @@ theorem CauchySeq.prod_map {γ δ} [UniformSpace β] [SemilatticeSup γ] [Semila
 theorem CauchySeq.prod {γ} [UniformSpace β] [SemilatticeSup γ] {u : γ → α} {v : γ → β}
     (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq fun x => (u x, v x) :=
   haveI := hu.nonempty
-  (hu.prod hv).mono (tendsto.prod_mk le_rfl le_rfl)
+  (hu.prod hv).mono (Tendsto.prod_mk le_rfl le_rfl)
 #align cauchy_seq.prod CauchySeq.prod
 
 theorem CauchySeq.eventually_eventually [SemilatticeSup β] {u : β → α} (hu : CauchySeq u)
@@ -348,8 +348,8 @@ protected theorem IsComplete.union {s t : Set α} (hs : IsComplete s) (ht : IsCo
     IsComplete (s ∪ t) := by
   simp only [isComplete_iff_ultrafilter', Ultrafilter.union_mem_iff, or_imp] at *
   exact fun l hl =>
-    ⟨fun hsl => (hs l hl hsl).imp fun x hx => ⟨Or.inl hx.fst, hx.snd⟩, fun htl =>
-      (ht l hl htl).imp fun x hx => ⟨Or.inr hx.fst, hx.snd⟩⟩
+    ⟨fun hsl => (hs l hl hsl).imp fun x hx => ⟨Or.inl hx.1, hx.2⟩, fun htl =>
+      (ht l hl htl).imp fun x hx => ⟨Or.inr hx.1, hx.2⟩⟩
 #align is_complete.union IsComplete.union
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (t «expr ⊆ » S) -/
@@ -370,13 +370,13 @@ theorem isComplete_unionᵢ_separated {ι : Sort _} {s : ι → Set α} (hs : �
   obtain ⟨i, hi⟩ : ∃ i, t ⊆ s i :=
     by
     rcases Filter.nonempty_of_mem htl with ⟨x, hx⟩
-    rcases mem_Union.1 (htS hx) with ⟨i, hi⟩
+    rcases mem_unionₛ.1 (htS hx) with ⟨i, hi⟩
     refine' ⟨i, fun y hy => _⟩
-    rcases mem_Union.1 (htS hy) with ⟨j, hj⟩
+    rcases mem_unionₛ.1 (htS hy) with ⟨j, hj⟩
     convert hj
     exact hd i j x hi y hj (htU <| mk_mem_prod hx hy)
   rcases hs i l hl (le_principal_iff.2 <| mem_of_superset htl hi) with ⟨x, hxs, hlx⟩
-  exact ⟨x, mem_Union.2 ⟨i, hxs⟩, hlx⟩
+  exact ⟨x, mem_unionₛ.2 ⟨i, hxs⟩, hlx⟩
 #align is_complete_Union_separated isComplete_unionᵢ_separated
 
 /-- A complete space is defined here using uniformities. A uniform space
@@ -478,7 +478,7 @@ theorem TotallyBounded.exists_subset {s : Set α} (hs : TotallyBounded s) {U : S
   choose hk f hfs hfr using fun x : u => x.coe_prop
   refine' ⟨range f, _, _, _⟩
   · exact range_subset_iff.2 hfs
-  · haveI : Fintype u := (fk.inter_of_left _).Fintype
+  · haveI : Fintype u := (fk.inter_of_left _).fintype
     exact finite_range f
   · intro x xs
     obtain ⟨y, hy, xy⟩ : ∃ y ∈ k, (x, y) ∈ r
@@ -492,7 +492,7 @@ theorem TotallyBounded.exists_subset {s : Set α} (hs : TotallyBounded s) {U : S
 theorem totallyBounded_iff_subset {s : Set α} :
     TotallyBounded s ↔
       ∀ d ∈ 𝓤 α, ∃ (t : _)(_ : t ⊆ s), Set.Finite t ∧ s ⊆ ⋃ y ∈ t, { x | (x, y) ∈ d } :=
-  ⟨fun H d hd => H.exists_subset hd, fun H d hd =>
+  ⟨fun H _ hd => H.exists_subset hd, fun H d hd =>
     let ⟨t, _, ht⟩ := H d hd
     ⟨t, ht⟩⟩
 #align totally_bounded_iff_subset totallyBounded_iff_subset
@@ -580,7 +580,7 @@ theorem totallyBounded_iff_filter {s : Set α} :
     set ys := ⋃ y' ∈ ({y} : Finset α), { x | (x, y') ∈ d }
     have : m ⊆ ys := by simpa [ys] using fun x hx => hmd (mk_mem_prod hx hym)
     have : c ≤ 𝓟 (s \ ys) := hcf.trans (infᵢ_le_of_le {y} le_rfl)
-    refine' hc.1.Ne (empty_mem_iff_bot.mp _)
+    refine' hc.1.ne (empty_mem_iff_bot.mp _)
     filter_upwards [le_principal_iff.1 this, hm]
     refine' fun x hx hxm => hx.2 _
     simpa [ys] using hmd (mk_mem_prod hxm hym)
@@ -660,7 +660,7 @@ variable {f : Filter α} (hf : Cauchy f) {U : ℕ → Set (α × α)} (U_mem : �
 
 open Set Finset
 
-noncomputable
+noncomputable section
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- An auxiliary sequence of sets approximating a Cauchy filter. -/
@@ -731,6 +731,8 @@ theorem le_nhds_of_seq_tendsto_nhds ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) at
         exact Set.Subset.trans (set_seq_prod_subset hf U_mem this this) hm
       · exact hm (hn _ <| le_max_right m n))
 #align sequentially_complete.le_nhds_of_seq_tendsto_nhds SequentiallyComplete.le_nhds_of_seq_tendsto_nhds
+
+end
 
 end SequentiallyComplete
 
