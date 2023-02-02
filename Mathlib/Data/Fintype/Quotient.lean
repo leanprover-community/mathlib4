@@ -30,14 +30,17 @@ corresponding quotient type, then there is a corresponding term in the
 quotient of the product of the setoids indexed by `l`. -/
 def Quotient.finChoiceAux {ι : Type _} [DecidableEq ι] {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
     ∀ l : List ι, (∀ i ∈ l, Quotient (S i)) → @Quotient (∀ i ∈ l, α i) (by infer_instance)
-  | [], f => ⟦fun i => False.elim⟧
+  | [], _ => ⟦fun i hi => False.elim <| (List.mem_nil_iff i).mp hi⟧
   | i :: l, f =>
     by
     refine'
       Quotient.liftOn₂ (f i (List.mem_cons_self _ _))
         (Quotient.finChoiceAux l fun j h => f j (List.mem_cons_of_mem _ h)) _ _
     exact fun a l =>
-      ⟦fun j h => if e : j = i then by rw [e] <;> exact a else l _ (h.resolve_left e)⟧
+      ⟦fun j h =>
+        if e : j = i
+        then by rw [e]; exact a
+        else l _ ((List.mem_cons.mp h).resolve_left e)⟧
     refine' fun a₁ l₁ a₂ l₂ h₁ h₂ => Quotient.sound fun j h => _
     by_cases e : j = i <;> simp [e]
     · subst j
@@ -48,12 +51,15 @@ def Quotient.finChoiceAux {ι : Type _} [DecidableEq ι] {α : ι → Type _} [S
 theorem Quotient.finChoiceAux_eq {ι : Type _} [DecidableEq ι] {α : ι → Type _}
     [S : ∀ i, Setoid (α i)] :
     ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧
-  | [], f => Quotient.sound fun i h => h.elim
+  | [], f => Quotient.sound fun i h => ((List.mem_nil_iff i).mp h).elim
   | i :: l, f => by
     simp [Quotient.finChoiceAux, Quotient.finChoiceAux_eq l]
-    refine' Quotient.sound fun j h => _
+    refine' fun j h => _
     by_cases e : j = i <;> simp [e]
-    subst j; rfl
+    subst j
+    simp only [cast_eq]
+    convert Setoid.refl (f i h)
+    exact Setoid.refl _
 #align quotient.fin_choice_aux_eq Quotient.finChoiceAux_eq
 
 /-- Given a collection of setoids indexed by a fintype `ι` and a
@@ -69,10 +75,14 @@ def Quotient.finChoice {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → 
       have := fun a => Quotient.finChoiceAux_eq a fun i h => Quotient.out (f i)
       simp [Quotient.out_eq] at this
       simp [this]
-      let g := fun a : Multiset ι => ⟦fun (i : ι) (h : i ∈ a) => Quotient.out (f i)⟧
-      refine' eq_of_hEq ((eq_rec_hEq _ _).trans (_ : HEq (g a) (g b)))
+      let g := fun a : Multiset ι =>
+        Quotient.mk inferInstance (fun (i : ι) (h : i ∈ a) => Quotient.out (f i))
+      simp only
+      refine' eq_of_heq _
+      refine' HEq.trans (_ : HEq _ (g a)) (_ : HEq (g a) (g b))
       congr 1; exact Quotient.sound h)
-    (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) fun a b h => Quotient.sound fun i => h _ _
+    (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) fun a b h => Quotient.sound fun i => by
+      apply h
 #align quotient.fin_choice Quotient.finChoice
 
 theorem Quotient.finChoice_eq {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
@@ -86,4 +96,3 @@ theorem Quotient.finChoice_eq {ι : Type _} [DecidableEq ι] [Fintype ι] {α : 
   simp [this]
   exact Setoid.refl _
 #align quotient.fin_choice_eq Quotient.finChoice_eq
-
