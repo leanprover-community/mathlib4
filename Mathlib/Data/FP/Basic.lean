@@ -130,7 +130,7 @@ lean 3 declaration is
 but is expected to have type
   Nat -> Nat -> Int -> Bool
 Case conversion may be inaccurate. Consider using '#align fp.div_nat_lt_two_pow FP.divNatLtTwoPowₓ'. -/
-def divNatLtTwoPowₓ (n d : ℕ) : ℤ → Bool
+def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
   | Int.ofNat e => n < d.shiftl e
   | Int.negSucc e => n.shiftl e.succ < d
 #align fp.div_nat_lt_two_pow FP.divNatLtTwoPowₓ
@@ -149,19 +149,25 @@ unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   · exact lcProof
 #align fp.of_pos_rat_dn FP.of_pos_rat_dn
 
+-- Porting note: remove this line when you dropped 'lcProof'
+set_option linter.unusedVariables false in
 unsafe def next_up_pos (e m) (v : ValidFinite e m) : Float :=
   let m' := m.succ
   if ss : m'.size = m.size then
-    Float.Finite false e m' (by unfold ValidFinite at * <;> rw [ss] <;> exact v)
+    Float.Finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
   else if h : e = emax then Float.Inf false else Float.Finite false e.succ (Nat.div2 m') lcProof
 #align fp.next_up_pos FP.next_up_pos
 
+set_option linter.deprecated false in
+-- Porting note: remove this line when you dropped 'lcProof'
+set_option linter.unusedVariables false in
 unsafe def next_dn_pos (e m) (v : ValidFinite e m) : Float :=
   match m with
   | 0 => next_up_pos _ _ Float.Zero.valid
   | Nat.succ m' =>
-    if ss : m'.size = m.size then
-      Float.Finite false e m' (by unfold ValidFinite at * <;> rw [ss] <;> exact v)
+    -- Porting note: was `m'.size = m.size`
+    if ss : m'.size = m'.succ.size then
+      Float.Finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
     else
       if h : e = emin then Float.Finite false emin m' lcProof
       else Float.Finite false e.pred (bit1 m') lcProof
