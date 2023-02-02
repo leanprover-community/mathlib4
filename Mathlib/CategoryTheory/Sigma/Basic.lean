@@ -39,7 +39,8 @@ namespace SigmaHom
 /-- The identity morphism on an object. -/
 def id : ∀ X : Σi, C i, SigmaHom X X
   | ⟨_, _⟩ => mk (𝟙 _)
-#align category_theory.sigma.sigma_hom.id CategoryTheory.Sigma.SigmaHom.idₓ -- Porting note: reordered universes
+-- Porting note: reordered universes
+#align category_theory.sigma.sigma_hom.id CategoryTheory.Sigma.SigmaHom.idₓ
 
 instance (X : Σi, C i) : Inhabited (SigmaHom X X) :=
   ⟨id X⟩
@@ -47,7 +48,8 @@ instance (X : Σi, C i) : Inhabited (SigmaHom X X) :=
 /-- Composition of sigma homomorphisms. -/
 def comp : ∀ {X Y Z : Σi, C i}, SigmaHom X Y → SigmaHom Y Z → SigmaHom X Z
   | _, _, _, mk f, mk g => mk (f ≫ g)
-#align category_theory.sigma.sigma_hom.comp CategoryTheory.Sigma.SigmaHom.compₓ -- Porting note: reordered universes
+-- Porting note: reordered universes
+#align category_theory.sigma.sigma_hom.comp CategoryTheory.Sigma.SigmaHom.compₓ
 
 instance : CategoryStruct (Σi, C i) where
   Hom := SigmaHom
@@ -124,7 +126,8 @@ lemma natTrans_app {F G : (Σi, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ inc
 /-- (Implementation). An auxiliary definition to build the functor `desc`. -/
 def descMap : ∀ X Y : Σi, C i, (X ⟶ Y) → ((F X.1).obj X.2 ⟶ (F Y.1).obj Y.2)
   | _, _, SigmaHom.mk g => (F _).map g
-#align category_theory.sigma.desc_map CategoryTheory.Sigma.descMapₓ -- Porting note: reordered universes
+-- Porting note: reordered universes
+#align category_theory.sigma.desc_map CategoryTheory.Sigma.descMapₓ
 
 /-- Given a collection of functors `F i : C i ⥤ D`, we can produce a functor `(Σ i, C i) ⥤ D`.
 
