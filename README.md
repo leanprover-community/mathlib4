@@ -64,7 +64,7 @@ elan default leanprover/lean4:nightly-2023-01-29
 
 Or, if you already have a project and you want to be able to use `mathlib4`, add these lines to your `lakefile.lean`:
 ```
-require std from git
+require mathlib4 from git
   "https://github.com/leanprover-community/mathlib4" @ "<REVISION>"
 ```
 Where `<REVISION>` can be a commit hash, a branch or a tag. You can check [this section](https://github.com/leanprover/lake/#adding-dependencies) from Lake's README for more info.
