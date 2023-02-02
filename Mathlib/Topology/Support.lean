@@ -8,7 +8,7 @@ Authors: Floris van Doorn, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Separation
+import Mathlib.Topology.Separation
 
 /-!
 # The topological support of a function
@@ -187,8 +187,7 @@ theorem hasCompactMulSupport_iff_eventuallyEq :
 
 @[to_additive]
 theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
-    (hf : Continuous f) : IsCompact (range f) :=
-  by
+    (hf : Continuous f) : IsCompact (range f) := by
   cases' range_eq_image_mulTsupport_or f with h2 h2 <;> rw [h2]
   exacts[h.image hf, (h.image hf).insert 1]
 #align has_compact_mul_support.is_compact_range HasCompactMulSupport.isCompact_range
@@ -224,8 +223,7 @@ theorem hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) :
 
 @[to_additive]
 theorem HasCompactMulSupport.comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
-    (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) :=
-  by
+    (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
   rw [hasCompactMulSupport_def, Function.mulSupport_comp_eq_preimage]
   refine' isCompact_of_isClosed_subset (hg.is_compact_preimage hf) isClosed_closure _
   rw [hg.to_embedding.closure_eq_preimage_closure_image]
@@ -236,8 +234,7 @@ theorem HasCompactMulSupport.comp_closedEmbedding (hf : HasCompactMulSupport f) 
 @[to_additive]
 theorem HasCompactMulSupport.comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
-    HasCompactMulSupport fun x => m (f x) (f₂ x) :=
-  by
+    HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂⊢
   filter_upwards [hf, hf₂]using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
@@ -266,8 +263,7 @@ variable [TopologicalSpace α] [MonoidWithZero R] [AddMonoid M] [DistribMulActio
 
 variable {f : α → R} {f' : α → M} {x : α}
 
-theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') :=
-  by
+theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
   rw [has_compact_support_iff_eventuallyEq] at hf⊢
   refine' hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
 #align has_compact_support.smul_left HasCompactSupport.smul_left
@@ -280,14 +276,12 @@ variable [TopologicalSpace α] [Zero R] [Zero M] [SMulWithZero R M]
 
 variable {f : α → R} {f' : α → M} {x : α}
 
-theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupport (f • f') :=
-  by
+theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupport (f • f') := by
   rw [has_compact_support_iff_eventuallyEq] at hf⊢
   refine' hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, zero_smul]
 #align has_compact_support.smul_right HasCompactSupport.smul_right
 
-theorem HasCompactSupport.smul_left' (hf : HasCompactSupport f') : HasCompactSupport (f • f') :=
-  by
+theorem HasCompactSupport.smul_left' (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
   rw [has_compact_support_iff_eventuallyEq] at hf⊢
   refine' hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
 #align has_compact_support.smul_left' HasCompactSupport.smul_left'
@@ -300,14 +294,12 @@ variable [TopologicalSpace α] [MulZeroClass β]
 
 variable {f f' : α → β} {x : α}
 
-theorem HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') :=
-  by
+theorem HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') := by
   rw [has_compact_support_iff_eventuallyEq] at hf⊢
   refine' hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, zero_mul]
 #align has_compact_support.mul_right HasCompactSupport.mul_right
 
-theorem HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSupport (f * f') :=
-  by
+theorem HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSupport (f * f') := by
   rw [has_compact_support_iff_eventuallyEq] at hf⊢
   refine' hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, mul_zero]
 #align has_compact_support.mul_left HasCompactSupport.mul_left
@@ -327,8 +319,7 @@ theorem exists_finset_nhd_mulSupport_subset {f : ι → X → R}
     (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTsupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ (is : Finset ι)(n : Set X)(hn₁ : n ∈ 𝓝 x)(hn₂ : n ⊆ ⋂ i ∈ is, U i),
-      ∀ z ∈ n, (mulSupport fun i => f i z) ⊆ is :=
-  by
+      ∀ z ∈ n, (mulSupport fun i => f i z) ⊆ is := by
   obtain ⟨n, hn, hnf⟩ := hlf x
   classical
     let is := hnf.to_finset.filter fun i => x ∈ U i
