@@ -1,6 +1,6 @@
 import Lake
 
-open Lake DSL System
+open Lake DSL
 
 package mathlib
 
