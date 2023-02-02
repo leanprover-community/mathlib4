@@ -213,7 +213,7 @@ such that `norm_num` successfully recognises `a`. -/
   core
 
 theorem isNat_sub : {a b : ℕ} → {a' b' c : ℕ} →
-    IsNat a a' → IsNat b b' → Nat.sub a' b' = c → IsNat (Nat.sub a b) c
+    IsNat a a' → IsNat b b' → Nat.sub a' b' = c → IsNat (a - b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
 theorem isInt_sub {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
