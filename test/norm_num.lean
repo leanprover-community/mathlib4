@@ -450,6 +450,17 @@ section
   example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 end
 
+section Transparency
+
+example : Add.add 10 2 = 12 := by norm_num1
+example : Nat.sub 10 1 = 9 := by norm_num1
+example : Sub.sub 10 1 = 9 := by norm_num1
+example : Sub.sub 10 (-2) = 12 := by norm_num1
+example : Mul.mul 10 1 = 10 := by norm_num1
+example : (Div.div 10 1 : ℚ) = 10 := by norm_num1
+
+end Transparency
+
 -- user command
 
 #norm_num 1 = 1
