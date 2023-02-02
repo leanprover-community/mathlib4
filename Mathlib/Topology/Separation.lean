@@ -436,6 +436,7 @@ protected theorem Finset.isClosed [T1Space α] (s : Finset α) : IsClosed (s : S
   s.finite_toSet.isClosed
 #align finset.is_closed Finset.isClosed
 
+-- Porting note: used `tfae` tactic
 open List in
 theorem t1Space_TFAE (α : Type u) [ TopologicalSpace α ] :
     TFAE [T1Space α,
