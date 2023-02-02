@@ -20,13 +20,13 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 # Main definitions
 
-* `homeomorph α β`: The type of homeomorphisms from `α` to `β`.
+* `Homeomorph α β`: The type of homeomorphisms from `α` to `β`.
   This type can be denoted using the following notation: `α ≃ₜ β`.
 
 # Main results
 
 * Pretty much every topological property is preserved under homeomorphisms.
-* `homeomorph.homeomorph_of_continuous_open`: A continuous bijection that is
+* `Homeomorph.homeomorphOfContinuousOpen`: A continuous bijection that is
   an open map is a homeomorphism.
 
 -/
@@ -550,7 +550,7 @@ theorem piCongrRight_symm {ι : Type _} {β₁ β₂ : ι → Type _} [∀ i, To
 #align homeomorph.Pi_congr_right_symm Homeomorph.piCongrRight_symm
 
 -- porting note: TODO: align the order of universes with `Equiv.ulift`
-/-- `ulift α` is homeomorphic to `α`. -/
+/-- `ULift α` is homeomorphic to `α`. -/
 def ulift.{u, v} {α : Type u} [TopologicalSpace α] : ULift.{v, u} α ≃ₜ α where
   continuous_toFun := continuous_uLift_down
   continuous_invFun := continuous_uLift_up
@@ -594,7 +594,7 @@ def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) �
   continuous_invFun := continuous_pi fun _ => continuous_id
 #align homeomorph.fun_unique Homeomorph.funUnique
 
-/-- Homeomorphism between dependent functions `Π i : fin 2, α i` and `α 0 × α 1`. -/
+/-- Homeomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
 @[simps (config := { fullyApplied := false })]
 def piFinTwo.{u} (α : Fin 2 → Type u) [∀ i, TopologicalSpace (α i)] : (∀ i, α i) ≃ₜ α 0 × α 1
     where
@@ -603,7 +603,7 @@ def piFinTwo.{u} (α : Fin 2 → Type u) [∀ i, TopologicalSpace (α i)] : (∀
   continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
 #align homeomorph.pi_fin_two Homeomorph.piFinTwo
 
-/-- Homeomorphism between `α² = fin 2 → α` and `α × α`. -/
+/-- Homeomorphism between `α² = Fin 2 → α` and `α × α`. -/
 @[simps (config := { fullyApplied := false })]
 def finTwoArrow : (Fin 2 → α) ≃ₜ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
@@ -619,7 +619,7 @@ def image (e : α ≃ₜ β) (s : Set α) : s ≃ₜ e '' s where
   toEquiv := e.toEquiv.image s
 #align homeomorph.image Homeomorph.image
 
-/-- `set.univ α` is homeomorphic to `α`. -/
+/-- `Set.univ α` is homeomorphic to `α`. -/
 @[simps (config := { fullyApplied := false })]
 def Set.univ (α : Type _) [TopologicalSpace α] : (univ : Set α) ≃ₜ α where
   toEquiv := Equiv.Set.univ α
