@@ -87,9 +87,9 @@ def toList : ∀ {b}, Lists' α b → List (Lists α)
 #align lists'.to_list Lists'.toList
 
 @[simp]
-theorem to_list_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by
+theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by
   cases a; simp [cons]
-#align lists'.to_list_cons Lists'.to_list_cons
+#align lists'.to_list_cons Lists'.toList_cons
 
 /-- Converts a `List` of ZFA lists to a proper ZFA prelist. -/
 @[simp]
