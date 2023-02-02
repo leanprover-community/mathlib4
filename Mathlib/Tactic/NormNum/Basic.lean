@@ -212,10 +212,6 @@ such that `norm_num` successfully recognises `a`. -/
     | .isRat dα .. => ratArm dα
   core
 
-theorem isNat_sub : {a b : ℕ} → {a' b' c : ℕ} →
-    IsNat a a' → IsNat b b' → Nat.sub a' b' = c → IsNat (a - b) c
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
-
 theorem isInt_sub {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.sub a' b' = c → IsInt (a - b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_sub ..).symm⟩
@@ -265,23 +261,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     | .isNegNat rα .., _ | _, .isNegNat rα ..
     | .isNat _ .., .isNat _ .. => intArm rα
   core
-
-/-- The `norm_num` extension which identifies expressions of the form `Nat.sub a b`,
-such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : Nat) - _, Sub.sub (_ : Nat) _, Nat.sub _ _] def evalNatSub :
-    NormNumExt where eval {u α} e := do
-  guard <| α.isConstOf ``Nat --!! useful as a cheap initial check or not needed?
-  let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
-  -- We trust that the default instance for `HSub` is `Nat.sub` when the first parameter is `ℕ`.
-  guard <|← withNewMCtxDepth <| isDefEq f q(HSub.hSub (α := ℕ))
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
-  let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
-  have pa : Q(IsNat $a $na) := pa
-  have pb : Q(IsNat $b $nb) := pb
-  let nc' := Nat.sub na.natLit! nb.natLit!
-  have nc : Q(ℕ) := mkRawNatLit nc'
-  let r : Q(Nat.sub $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
-  return (.isNat sℕ nc q(isNat_sub $pa $pb $r) : Result (q(Nat.sub $a $b) : Q(ℕ)))
 
 theorem isNat_mul {α} [Semiring α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.mul a' b' = c → IsNat (a * b) c
@@ -489,9 +468,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let pa : Q(IsRat ($a * $b⁻¹) $na $da) := pa
   return (.isRat' dα qa na da q(isRat_div $pa) : Result q($a / $b))
 
-/-
-# Logic
--/
+/-! # Logic -/
 
 /-- The `norm_num` extension which identifies `True`. -/
 @[norm_num True] def evalTrue : NormNumExt where eval {u α} e :=
@@ -514,9 +491,7 @@ such that `norm_num` successfully recognises `a`. -/
   else
     return (.isTrue p : Result q(¬$a))
 
-/-
-# (In)equalities
--/
+/-! # (In)equalities -/
 
 theorem isNat_eq_true [AddMonoidWithOne α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.beq a' b' = true → a = b
@@ -787,3 +762,24 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     else
       let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)
       return (.isFalse q(isNat_lt_false $pa $pb $r) : Result q($a < $b))
+
+/-! # Nat operations -/
+
+theorem isNat_natSub : {a b : ℕ} → {a' b' c : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.sub a' b' = c → IsNat (a - b) c
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
+
+/-- The `norm_num` extension which identifies expressions of the form `Nat.sub a b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num (_ : ℕ) - _, Sub.sub (_ : ℕ) _, Nat.sub _ _] def evalNatSub :
+    NormNumExt where eval {u α} e := do
+  let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
+  -- We trust that the default instance for `HSub` is `Nat.sub` when the first parameter is `ℕ`.
+  guard <|← withNewMCtxDepth <| isDefEq f q(HSub.hSub (α := ℕ))
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
+  have pa : Q(IsNat $a $na) := pa
+  have pb : Q(IsNat $b $nb) := pb
+  have nc : Q(ℕ) := mkRawNatLit (na.natLit! - nb.natLit!)
+  let r : Q(Nat.sub $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
+  return (.isNat sℕ nc q(isNat_natSub $pa $pb $r) : Result q($a - $b))
