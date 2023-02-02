@@ -142,7 +142,9 @@ theorem LinearEquiv.finsuppUnique_apply (α : Type _) [Unique α] (f : α →₀
 @[simp]
 theorem LinearEquiv.finsuppUnique_symm_apply {α : Type _} [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
-  ext <;> simp [LinearEquiv.finsuppUnique]
+  ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
+    equivFunOnFinite, Function.update]
+
 #align finsupp.linear_equiv.finsupp_unique_symm_apply Finsupp.LinearEquiv.finsuppUnique_symm_apply
 
 end Finsupp
@@ -279,7 +281,7 @@ def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂
 
 theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (∑ d in t, f d) b = ∑ d in t, f d b :=
-  AddMonoidHom.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
+  _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 #align linear_map.sum_apply LinearMap.sum_apply
 
 section SmulRight
@@ -311,8 +313,13 @@ instance [Nontrivial M] : Nontrivial (Module.End R M) := by
 
 @[simp, norm_cast]
 theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
-  AddMonoidHom.map_sum ⟨@toFun R R₂ _ _ σ₁₂ M M₂ _ _ _ _, rfl, fun x y => rfl⟩ _ _
+    ⇑(∑ i in t, f i ) = ∑ i in t, (f i : M → M₂) :=
+  _root_.map_sum
+    (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
+      from { toFun := FunLike.coe,
+             map_zero' := rfl
+             map_add' := fun _ _ => rfl }) _ _
+
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
 @[simp]
@@ -336,9 +343,11 @@ theorem commute_pow_left_of_commute {f : M →ₛₗ[σ₁₂] M₂} {g : Module
       h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 #align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
 
+def X {N : Submodule R M} : Monoid (Module.End R N) := inferInstance
+#print X
 theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End R N}
     {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ} (hG : G ^ k = 0) :
-    g ^ k = 0 := by
+    (g ^ k : Module.End R N) = (0 : Module.End R N) := by
   ext m
   have hg : N.subtype.comp (g ^ k) m = 0 := by
     rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
