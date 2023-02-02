@@ -60,7 +60,6 @@ namespace Finset
 
 
 section LocalLYM
- -- porting note: added `Decidable` for ⊆
 variable [DecidableEq α] [Fintype α]
   {𝒜 : Finset (Finset α)} {r : ℕ}
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
@@ -233,8 +232,8 @@ end LYM
 /-! ### Sperner's theorem -/
 
 
-/-- **Sperner's theorem**. The size of an antichain in `finset α` is bounded by the size of the
-maximal layer in `finset α`. This precisely means that `finset α` is a Sperner order. -/
+/-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
+maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
 theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     𝒜.card ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
