@@ -8,8 +8,8 @@ Authors: Yury Kudryashov, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Dynamics.FixedPoints.Basic
-import Mathbin.Topology.Separation
+import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Topology.Separation
 
 /-!
 # Topological properties of fixed points
@@ -34,8 +34,7 @@ open Topology
 /-- If the iterates `f^[n] x` converge to `y` and `f` is continuous at `y`,
 then `y` is a fixed point for `f`. -/
 theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => (f^[n]) x) atTop (𝓝 y))
-    (hf : ContinuousAt f y) : IsFixedPt f y :=
-  by
+    (hf : ContinuousAt f y) : IsFixedPt f y := by
   refine' tendsto_nhds_unique ((tendsto_add_at_top_iff_nat 1).1 _) hy
   simp only [iterate_succ' f]
   exact hf.tendsto.comp hy
