@@ -61,6 +61,11 @@ section ConstructorsEtc
 
 example : Int.ofNat 3 = 3 := by norm_num1
 
+example : mkRat 3 4 = 3/4 := by norm_num1
+example : mkRat 6 8 = 3/4 := by norm_num1
+example : mkRat 5 0 = 0 := by norm_num1
+example : mkRat (10 + 6) (5 * 4) = 4/5 := by norm_num1
+
 end ConstructorsEtc
 
 /-
