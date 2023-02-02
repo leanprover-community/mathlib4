@@ -54,6 +54,7 @@ actions, including (semi)modules and algebras.
 Note that both `HasContinuousConstSmul α α` and `HasContinuousConstSmul αᵐᵒᵖ α` are
 weaker versions of `has_continuous_mul α`. -/
 class HasContinuousConstSmul (Γ : Type _) (T : Type _) [TopologicalSpace T] [SMul Γ T] : Prop where
+  /-- The scalar multiplication `(•) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_smul : ∀ γ : Γ, Continuous fun x : T => γ • x
 #align has_continuous_const_smul HasContinuousConstSmul
 
@@ -64,6 +65,7 @@ including (semi)modules and algebras.
 Note that both `HasContinuousConstVadd α α` and `HasContinuousConstVadd αᵐᵒᵖ α` are
 weaker versions of `has_continuous_add α`. -/
 class HasContinuousConstVadd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VAdd Γ T] : Prop where
+  /-- The additive action `(+ᵥ) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_vadd : ∀ γ : Γ, Continuous fun x : T => γ +ᵥ x
 #align has_continuous_const_vadd HasContinuousConstVadd
 
@@ -440,6 +442,7 @@ is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, 
 -/
 class ProperlyDiscontinuousSmul (Γ : Type _) (T : Type _) [TopologicalSpace T] [SMul Γ T] :
     Prop where
+  /-- Given two compact sets `K` and `L`, `γ • K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
     ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·)  '' K ∩ L ≠ ∅ }
 #align properly_discontinuous_smul ProperlyDiscontinuousSmul
@@ -450,6 +453,7 @@ is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, 
 -/
 class ProperlyDiscontinuousVadd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VAdd Γ T] :
   Prop where
+  /-- Given two compact sets `K` and `L`, `γ +ᵥ K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
     ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ +ᵥ ·) '' K ∩ L ≠ ∅ }
 #align properly_discontinuous_vadd ProperlyDiscontinuousVadd
@@ -564,4 +568,3 @@ theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
 end DistribMulAction
 
 end nhds
-
