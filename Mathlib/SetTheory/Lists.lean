@@ -88,8 +88,7 @@ def toList : ∀ {b}, Lists' α b → List (Lists α)
 
 -- porting notes: removed @[simp]
 -- simp can prove this: by simp only [@Lists'.toList, @Sigma.eta]
-theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by
-  cases a; simp [cons]
+theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by simp
 #align lists'.to_list_cons Lists'.toList_cons
 
 /-- Converts a `List` of ZFA lists to a proper ZFA prelist. -/
