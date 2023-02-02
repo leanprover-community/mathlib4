@@ -18,11 +18,11 @@ This file defines intersecting families and proves their basic properties.
 
 ## Main declarations
 
-* `set.intersecting`: Predicate for a set of elements in a generalized boolean algebra to be an
+* `Set.Intersecting`: Predicate for a set of elements in a generalized boolean algebra to be an
   intersecting family.
-* `set.intersecting.card_le`: An intersecting family can only take up to half the elements, because
+* `Set.Intersecting.card_le`: An intersecting family can only take up to half the elements, because
   `a` and `aᶜ` cannot simultaneously be in it.
-* `set.intersecting.is_max_iff_card_eq`: Any maximal intersecting family takes up half the elements.
+* `Set.Intersecting.is_max_iff_card_eq`: Any maximal intersecting family takes up half the elements.
 
 ## References
 
@@ -152,7 +152,7 @@ theorem Intersecting.exists_mem_set {𝒜 : Set (Set α)} (h𝒜 : 𝒜.Intersec
 
 theorem Intersecting.exists_mem_finset [DecidableEq α] {𝒜 : Set (Finset α)} (h𝒜 : 𝒜.Intersecting)
     {s t : Finset α} (hs : s ∈ 𝒜) (ht : t ∈ 𝒜) : ∃ a, a ∈ s ∧ a ∈ t :=
-  not_disjoint_iff.1 <| disjoint_coe.Not.2 <| h𝒜 hs ht
+  not_disjoint_iff.1 <| disjoint_coe.not.2 <| h𝒜 hs ht
 #align set.intersecting.exists_mem_finset Set.Intersecting.exists_mem_finset
 
 variable [BooleanAlgebra α]
