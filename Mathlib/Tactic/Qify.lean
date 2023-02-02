@@ -9,6 +9,23 @@ import Mathlib.Tactic.Qify.Attr
 import Mathlib.Tactic.Zify
 import Mathlib.Data.Rat.Cast
 
+/-!
+# `qify` tactic
+
+The `qify` tactic is used to shift propositions from `ℕ` or `ℤ` to `ℚ`.
+This is often useful since `ℚ` has well-behaved division.
+```
+example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
+  qify
+  qify at h
+  /-
+  h : ¬↑x * ↑y * ↑z < 0
+  ⊢ ↑c < ↑a + 3 * ↑b
+  -/
+  sorry
+```
+-/
+
 namespace Mathlib.Tactic.Qify
 
 open Lean
