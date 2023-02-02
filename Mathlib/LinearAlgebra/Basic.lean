@@ -1008,6 +1008,8 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂
 
 end OrderIso
 
+variable [sc : SemilinearMapClass F σ₁₂ M M₂]
+
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submodule R M}
     {p' : Submodule R₂ M₂} : map f p ⊓ p' = map f (p ⊓ comap f p') :=
