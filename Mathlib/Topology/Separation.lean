@@ -1436,6 +1436,7 @@ class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   regular : ∀ {s : Set X} {a}, IsClosed s → a ∉ s → Disjoint (𝓝ˢ s) (𝓝 a)
 #align regular_space RegularSpace
 
+-- Porting note: used `tfae` tactic
 open List in
 theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
     TFAE [RegularSpace X,
