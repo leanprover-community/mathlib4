@@ -16,68 +16,68 @@ import Mathlib.Topology.Inseparable
 /-!
 # Separation properties of topological spaces.
 
-This file defines the predicate `separated_nhds`, and common separation axioms
+This file defines the predicate `SeparatedNhds`, and common separation axioms
 (under the Kolmogorov classification).
 
 ## Main definitions
 
-* `separated_nhds`: Two `set`s are separated by neighbourhoods if they are contained in disjoint
+* `SeparatedNhds`: Two `Set`s are separated by neighbourhoods if they are contained in disjoint
   open sets.
-* `t0_space`: A T₀/Kolmogorov space is a space where, for every two points `x ≠ y`,
+* `T0Space`: A T₀/Kolmogorov space is a space where, for every two points `x ≠ y`,
   there is an open set that contains one, but not the other.
-* `t1_space`: A T₁/Fréchet space is a space where every singleton set is closed.
+* `T1Space`: A T₁/Fréchet space is a space where every singleton set is closed.
   This is equivalent to, for every pair `x ≠ y`, there existing an open set containing `x`
-  but not `y` (`t1_space_iff_exists_open` shows that these conditions are equivalent.)
-* `t2_space`: A T₂/Hausdorff space is a space where, for every two points `x ≠ y`,
+  but not `y` (`t1Space_iff_exists_open` shows that these conditions are equivalent.)
+* `T2Space`: A T₂/Hausdorff space is a space where, for every two points `x ≠ y`,
   there is two disjoint open sets, one containing `x`, and the other `y`.
-* `t2_5_space`: A T₂.₅/Urysohn space is a space where, for every two points `x ≠ y`,
+* `T25Space`: A T₂.₅/Urysohn space is a space where, for every two points `x ≠ y`,
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
-* `t3_space`: A T₃ space, is one where given any closed `C` and `x ∉ C`,
+* `T3Space`: A T₃ space, is one where given any closed `C` and `x ∉ C`,
   there is disjoint open sets containing `x` and `C` respectively. In `mathlib`, T₃ implies T₂.₅.
-* `normal_space`: A T₄ space (sometimes referred to as normal, but authors vary on
+* `NormalSpace`: A T₄ space (sometimes referred to as normal, but authors vary on
   whether this includes T₂; `mathlib` does), is one where given two disjoint closed sets,
   we can find two open sets that separate them. In `mathlib`, T₄ implies T₃.
-* `t5_space`: A T₅ space, also known as a *completely normal Hausdorff space*
+* `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*
 
 ## Main results
 
 ### T₀ spaces
 
-* `is_closed.exists_closed_singleton` Given a closed set `S` in a compact T₀ space,
+* `IsClosed.exists_closed_singleton` Given a closed set `S` in a compact T₀ space,
   there is some `x ∈ S` such that `{x}` is closed.
-* `exists_open_singleton_of_open_finset` Given an open `finset` `S` in a T₀ space,
+* `exists_open_singleton_of_open_finset` Given an open `Finset` `S` in a T₀ space,
   there is some `x ∈ S` such that `{x}` is open.
 
 ### T₁ spaces
 
-* `is_closed_map_const`: The constant map is a closed map.
+* `isClosedMap_const`: The constant map is a closed map.
 * `discrete_of_t1_of_finite`: A finite T₁ space must have the discrete topology.
 
 ### T₂ spaces
 
 * `t2_iff_nhds`: A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter.
-* `t2_iff_is_closed_diagonal`: A space is T₂ iff the `diagonal` of `α` (that is, the set of all
+* `t2_iff_isClosed_diagonal`: A space is T₂ iff the `diagonal` of `α` (that is, the set of all
   points of the form `(a, a) : α × α`) is closed under the product topology.
-* `finset_disjoint_finset_opens_of_t2`: Any two disjoint finsets are `separated_nhds`.
+* `finset_disjoint_finset_opens_of_t2`: Any two disjoint finsets are `SeparatedNhds`.
 * Most topological constructions preserve Hausdorffness;
-  these results are part of the typeclass inference system (e.g. `embedding.t2_space`)
-* `set.eq_on.closure`: If two functions are equal on some set `s`, they are equal on its closure.
-* `is_compact.is_closed`: All compact sets are closed.
+  these results are part of the typeclass inference system (e.g. `Embedding.t2Space`)
+* `Set.EqOn.closure`: If two functions are equal on some set `s`, they are equal on its closure.
+* `IsCompact.isClosed`: All compact sets are closed.
 * `locally_compact_of_compact_nhds`: If every point has a compact neighbourhood,
   then the space is locally compact.
-* `totally_separated_space_of_t1_of_basis_clopen`: If `α` has a clopen basis, then
-  it is a `totally_separated_space`.
+* `totallySeparatedSpace_of_t1_of_basis_clopen`: If `α` has a clopen basis, then
+  it is a `TotallySeparatedSpace`.
 * `loc_compact_t2_tot_disc_iff_tot_sep`: A locally compact T₂ space is totally disconnected iff
   it is totally separated.
 
 If the space is also compact:
 
-* `normal_of_compact_t2`: A compact T₂ space is a `normal_space`.
+* `normalOfCompactT2`: A compact T₂ space is a `NormalSpace`.
 * `connected_components_eq_Inter_clopen`: The connected component of a point
   is the intersection of all its clopen neighbourhoods.
-* `compact_t2_tot_disc_iff_tot_sep`: Being a `totally_disconnected_space`
-  is equivalent to being a `totally_separated_space`.
-* `connected_components.t2`: `connected_components α` is T₂ for `α` T₂ and compact.
+* `compact_t2_tot_disc_iff_tot_sep`: Being a `TotallyDisconnectedSpace`
+  is equivalent to being a `TotallySeparatedSpace`.
+* `ConnectedComponents.t2`: `ConnectedComponents α` is T₂ for `α` T₂ and compact.
 
 ### T₃ spaces
 
@@ -100,8 +100,8 @@ variable {α : Type u} {β : Type v} [TopologicalSpace α]
 section Separation
 
 /--
-`separated_nhds` is a predicate on pairs of sub`set`s of a topological space.  It holds if the two
-sub`set`s are contained in disjoint open sets.
+`SeparatedNhds` is a predicate on pairs of sub`Set`s of a topological space.  It holds if the two
+sub`Set`s are contained in disjoint open sets.
 -/
 def SeparatedNhds : Set α → Set α → Prop := fun s t : Set α =>
   ∃ U V : Set α, IsOpen U ∧ IsOpen V ∧ s ⊆ U ∧ t ⊆ V ∧ Disjoint U V
@@ -172,7 +172,7 @@ end SeparatedNhds
 
 /-- A T₀ space, also known as a Kolmogorov space, is a topological space such that for every pair
 `x ≠ y`, there is an open set containing one but not the other. We formulate the definition in terms
-of the `inseparable` relation.  -/
+of the `Inseparable` relation.  -/
 class T0Space (α : Type u) [TopologicalSpace α] : Prop where
   /-- Two inseparable points in a T₀ space are equal. -/
   t0 : ∀ ⦃x y : α⦄, Inseparable x y → x = y
@@ -411,8 +411,8 @@ theorem Filter.coclosedCompact_le_cofinite [T1Space α] :
 
 variable (α)
 
-/-- In a `t1_space`, relatively compact sets form a bornology. Its cobounded filter is
-`filter.coclosed_compact`. See also `bornology.in_compact` the bornology of sets contained
+/-- In a `T1Space`, relatively compact sets form a bornology. Its cobounded filter is
+`Filter.coclosedCompact`. See also `Bornology.inCompact` the bornology of sets contained
 in a compact set. -/
 def Bornology.relativelyCompact [T1Space α] : Bornology α where
   cobounded' := Filter.coclosedCompact α
@@ -704,7 +704,7 @@ theorem Dense.diff_finite [T1Space α] [∀ x : α, NeBot (𝓝[≠] x)] {s : Se
   exact (Finite.coe_toFinset _).symm
 #align dense.diff_finite Dense.diff_finite
 
-/-- If a function to a `t1_space` tends to some limit `b` at some point `a`, then necessarily
+/-- If a function to a `T1Space` tends to some limit `b` at some point `a`, then necessarily
 `b = f a`. -/
 theorem eq_of_tendsto_nhds [TopologicalSpace β] [T1Space β] {f : α → β} {a : α} {b : β}
     (h : Tendsto f (𝓝 a) (𝓝 b)) : f a = b :=
@@ -724,7 +724,7 @@ theorem ContinuousAt.eventually_ne [TopologicalSpace β] [T1Space β] {g : α �
   hg1.tendsto.eventually_ne hg2
 #align continuous_at.eventually_ne ContinuousAt.eventually_ne
 
-/-- To prove a function to a `t1_space` is continuous at some point `a`, it suffices to prove that
+/-- To prove a function to a `T1Space` is continuous at some point `a`, it suffices to prove that
 `f` admits *some* limit at `a`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace β] [T1Space β] {f : α → β} {a : α} {b : β}
     (h : Tendsto f (𝓝 a) (𝓝 b)) : ContinuousAt f a :=
@@ -993,10 +993,10 @@ section limUnder
 variable [T2Space α] {f : Filter α}
 
 /-!
-### Properties of `Lim` and `lim`
+### Properties of `lim` and `limUnder`
 
-In this section we use explicit `nonempty α` instances for `Lim` and `lim`. This way the lemmas
-are useful without a `nonempty α` instance.
+In this section we use explicit `Nonempty α` instances for `lim` and `limUnder`. This way the lemmas
+are useful without a `Nonempty α` instance.
 -/
 
 
@@ -1067,7 +1067,7 @@ theorem limUnder_nhdsWithin_id {a : α} {s : Set α} (h : a ∈ closure s) :
 end limUnder
 
 /-!
-### `t2_space` constructions
+### `T2Space` constructions
 
 We use two lemmas to prove that various standard constructions generate Hausdorff spaces from
 Hausdorff spaces:
@@ -1077,7 +1077,7 @@ Hausdorff spaces:
   `f x ≠ f y`. We use this lemma to prove that topological spaces defined using `induced` are
   Hausdorff spaces.
 
-* `separated_by_open_embedding` says that for an open embedding `f : α → β` of a Hausdorff space
+* `separated_by_openEmbedding` says that for an open embedding `f : α → β` of a Hausdorff space
   `α`, the images of two distinct points `x y : α`, `x ≠ y` can be separated by open neighborhoods.
   We use this lemma to prove that topological spaces defined using `coinduced` are Hausdorff spaces.
 -/
@@ -1158,7 +1158,7 @@ theorem isOpen_ne_fun [T2Space α] {f g : β → α} (hf : Continuous f) (hg : C
 #align is_open_ne_fun isOpen_ne_fun
 
 /-- If two continuous maps are equal on `s`, then they are equal on the closure of `s`. See also
-`set.eq_on.of_subset_closure` for a more general version. -/
+`Set.EqOn.of_subset_closure` for a more general version. -/
 protected theorem Set.EqOn.closure [T2Space α] {s : Set β} {f g : β → α} (h : EqOn f g s)
     (hf : Continuous f) (hg : Continuous g) : EqOn f g (closure s) :=
   closure_minimal h (isClosed_eq hf hg)
@@ -1187,7 +1187,7 @@ theorem eqOn_closure₂ [T2Space α] {s : Set β} {t : Set γ} {f g : β → γ 
 #align eq_on_closure₂ eqOn_closure₂
 
 /-- If `f x = g x` for all `x ∈ s` and `f`, `g` are continuous on `t`, `s ⊆ t ⊆ closure s`, then
-`f x = g x` for all `x ∈ t`. See also `set.eq_on.closure`. -/
+`f x = g x` for all `x ∈ t`. See also `Set.EqOn.closure`. -/
 theorem Set.EqOn.of_subset_closure [T2Space α] {s t : Set β} {f g : β → α} (h : EqOn f g s)
     (hf : ContinuousOn f t) (hg : ContinuousOn g t) (hst : s ⊆ t) (hts : t ⊆ closure s) :
     EqOn f g t := by
@@ -1232,7 +1232,7 @@ theorem point_disjoint_finset_opens_of_t2 [T2Space α] {x : α} {s : Finset α} 
 
 end SeparatedFinset
 
-/-- In a `t2_space`, every compact set is closed. -/
+/-- In a `T2Space`, every compact set is closed. -/
 theorem IsCompact.isClosed [T2Space α] {s : Set α} (hs : IsCompact s) : IsClosed s :=
   isOpen_compl_iff.1 <| isOpen_iff_forall_mem_open.mpr fun x hx =>
     let ⟨u, v, _, vo, su, xv, uv⟩ :=
@@ -1252,7 +1252,7 @@ theorem Bornology.relativelyCompact_eq_inCompact [T2Space α] :
   Bornology.ext _ _ Filter.coclosedCompact_eq_cocompact
 #align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
-/-- If `V : ι → set α` is a decreasing family of compact sets then any neighborhood of
+/-- If `V : ι → Set α` is a decreasing family of compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhd_of_compact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `α` is
 assumed to be Hausdorff. -/
@@ -1427,7 +1427,7 @@ end Separation
 section RegularSpace
 
 /-- A topological space is called a *regular space* if for any closed set `s` and `a ∉ s`, there
-exist disjoint open sets `U ⊇ s` and `V ∋ a`. We formulate this condition in terms of `disjoint`ness
+exist disjoint open sets `U ⊇ s` and `V ∋ a`. We formulate this condition in terms of `Disjoint`ness
 of filters `𝓝ˢ s` and `𝓝 a`. -/
 @[mk_iff regularSpace_iff]
 class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
@@ -1649,7 +1649,7 @@ theorem disjoint_nested_nhds [T3Space α] {x y : α} (h : x ≠ y) :
 
 open SeparationQuotient
 
-/-- The `separation_quotient` of a regular space is a T₃ space. -/
+/-- The `SeparationQuotient` of a regular space is a T₃ space. -/
 instance [RegularSpace α] : T3Space (SeparationQuotient α) where
   regular {s a} hs ha := by
     rcases surjective_mk a with ⟨a, rfl⟩
@@ -1708,11 +1708,11 @@ protected theorem ClosedEmbedding.normalSpace [TopologicalSpace β] [NormalSpace
 
 namespace SeparationQuotient
 
-/-- The `separation_quotient` of a normal space is a T₄ space. We don't have separate typeclasses
+/-- The `SeparationQuotient` of a normal space is a T₄ space. We don't have separate typeclasses
 for normal spaces (without T₁ assumption) and T₄ spaces, so we use the same class for assumption
 and for conclusion.
 
-One can prove this using a homeomorphism between `α` and `separation_quotient α`. We give an
+One can prove this using a homeomorphism between `α` and `SeparationQuotient α`. We give an
 alternative proof that works without assuming that `α` is a T₁ space. -/
 instance [NormalSpace α] : NormalSpace (SeparationQuotient α) where
   normal s t hs ht hd := separatedNhds_iff_disjoint.2 <| by
@@ -1773,7 +1773,7 @@ end Normality
 
 section CompletelyNormal
 
-/-- A topological space `α` is a *completely normal Hausdorff space* if each subspace `s : set α` is
+/-- A topological space `α` is a *completely normal Hausdorff space* if each subspace `s : Set α` is
 a normal Hausdorff space. Equivalently, `α` is a `T₁` space and for any two sets `s`, `t` such that
 `closure s` is disjoint with `t` and `s` is disjoint with `closure t`, there exist disjoint
 neighbourhoods of `s` and `t`. -/
@@ -1811,11 +1811,11 @@ instance (priority := 100) T5Space.toNormalSpace [T5Space α] : NormalSpace α :
 
 open SeparationQuotient
 
-/-- The `separation_quotient` of a completely normal space is a T₅ space. We don't have separate
+/-- The `SeparationQuotient` of a completely normal space is a T₅ space. We don't have separate
 typeclasses for completely normal spaces (without T₁ assumption) and T₅ spaces, so we use the same
 class for assumption and for conclusion.
 
-One can prove this using a homeomorphism between `α` and `separation_quotient α`. We give an
+One can prove this using a homeomorphism between `α` and `SeparationQuotient α`. We give an
 alternative proof that works without assuming that `α` is a T₁ space. -/
 instance [T5Space α] : T5Space (SeparationQuotient α) where
   completely_normal s t hd₁ hd₂ := by
@@ -2004,7 +2004,7 @@ theorem loc_compact_t2_tot_disc_iff_tot_sep :
 
 end LocallyCompact
 
-/-- `connected_components α` is Hausdorff when `α` is Hausdorff and compact -/
+/-- `ConnectedComponents α` is Hausdorff when `α` is Hausdorff and compact -/
 instance ConnectedComponents.t2 [T2Space α] [CompactSpace α] : T2Space (ConnectedComponents α) := by
   -- Proof follows that of: https://stacks.math.columbia.edu/tag/0900
   -- Fix 2 distinct connected components, with points a and b
