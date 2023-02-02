@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Separation
-import Mathbin.Topology.Bases
+import Mathlib.Topology.Separation
+import Mathlib.Topology.Bases
 
 /-!
 # Dense embeddings
@@ -68,8 +68,7 @@ protected theorem preconnectedSpace [PreconnectedSpace α] (di : DenseInducing i
 #align dense_inducing.preconnected_space DenseInducing.preconnectedSpace
 
 theorem closure_image_mem_nhds {s : Set α} {a : α} (di : DenseInducing i) (hs : s ∈ 𝓝 a) :
-    closure (i '' s) ∈ 𝓝 (i a) :=
-  by
+    closure (i '' s) ∈ 𝓝 (i a) := by
   rw [di.nhds_eq_comap a, ((nhds_basis_opens _).comap _).mem_iff] at hs
   rcases hs with ⟨U, ⟨haU, hUo⟩, sub : i ⁻¹' U ⊆ s⟩
   refine' mem_of_superset (hUo.mem_nhds haU) _
@@ -79,8 +78,7 @@ theorem closure_image_mem_nhds {s : Set α} {a : α} (di : DenseInducing i) (hs 
     
 #align dense_inducing.closure_image_mem_nhds DenseInducing.closure_image_mem_nhds
 
-theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s :=
-  by
+theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
   refine' ⟨fun H x => _, di.dense.dense_image di.continuous⟩
   rw [di.to_inducing.closure_eq_preimage_closure_image, H.closure_eq, preimage_univ]
   trivial
@@ -89,8 +87,7 @@ theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Den
 /-- If `i : α → β` is a dense embedding with dense complement of the range, then any compact set in
 `α` has empty interior. -/
 theorem interior_compact_eq_empty [T2Space β] (di : DenseInducing i) (hd : Dense (range iᶜ))
-    {s : Set α} (hs : IsCompact s) : interior s = ∅ :=
-  by
+    {s : Set α} (hs : IsCompact s) : interior s = ∅ := by
   refine' eq_empty_iff_forall_not_mem.2 fun x hx => _
   rw [mem_interior_iff_mem_nhds] at hx
   have := di.closure_image_mem_nhds hx
@@ -123,8 +120,7 @@ g↓     ↓e
 ```
 -/
 theorem tendsto_comap_nhds_nhds {d : δ} {a : α} (di : DenseInducing i)
-    (H : Tendsto h (𝓝 d) (𝓝 (i a))) (comm : h ∘ g = i ∘ f) : Tendsto f (comap g (𝓝 d)) (𝓝 a) :=
-  by
+    (H : Tendsto h (𝓝 d) (𝓝 (i a))) (comm : h ∘ g = i ∘ f) : Tendsto f (comap g (𝓝 d)) (𝓝 a) := by
   have lim1 : map g (comap g (𝓝 d)) ≤ 𝓝 d := map_comap_le
   replace lim1 : map h (map g (comap g (𝓝 d))) ≤ map h (𝓝 d) := map_mono lim1
   rw [Filter.map_map, comm, ← Filter.map_map, map_le_iff_le_comap] at lim1
@@ -177,16 +173,14 @@ theorem extend_eq [T2Space γ] {f : α → γ} (hf : Continuous f) (a : α) : di
 `b : β`. This is a strictly stronger assumption than continuity of `f`, but in a lot of cases
 you'd have to prove it anyway to use `continuous_extend`, so this avoids doing the work twice. -/
 theorem extend_eq' [T2Space γ] {f : α → γ} (di : DenseInducing i)
-    (hf : ∀ b, ∃ c, Tendsto f (comap i (𝓝 b)) (𝓝 c)) (a : α) : di.extend f (i a) = f a :=
-  by
+    (hf : ∀ b, ∃ c, Tendsto f (comap i (𝓝 b)) (𝓝 c)) (a : α) : di.extend f (i a) = f a := by
   rcases hf (i a) with ⟨b, hb⟩
   refine' di.extend_eq_at' b _
   rwa [← di.to_inducing.nhds_eq_comap] at hb
 #align dense_inducing.extend_eq' DenseInducing.extend_eq'
 
 theorem extend_unique_at [T2Space γ] {b : β} {f : α → γ} {g : β → γ} (di : DenseInducing i)
-    (hf : ∀ᶠ x in comap i (𝓝 b), g (i x) = f x) (hg : ContinuousAt g b) : di.extend f b = g b :=
-  by
+    (hf : ∀ᶠ x in comap i (𝓝 b), g (i x) = f x) (hg : ContinuousAt g b) : di.extend f b = g b := by
   refine' di.extend_eq_of_tendsto fun s hs => mem_map.2 _
   suffices : ∀ᶠ x : α in comap i (𝓝 b), g (i x) ∈ s
   exact hf.mp (this.mono fun x hgx hfx => hfx ▸ hgx)
@@ -202,8 +196,7 @@ theorem extend_unique [T2Space γ] {f : α → γ} {g : β → γ} (di : DenseIn
 #align dense_inducing.extend_unique DenseInducing.extend_unique
 
 theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : DenseInducing i)
-    (hf : ∀ᶠ x in 𝓝 b, ∃ c, Tendsto f (comap i <| 𝓝 x) (𝓝 c)) : ContinuousAt (di.extend f) b :=
-  by
+    (hf : ∀ᶠ x in 𝓝 b, ∃ c, Tendsto f (comap i <| 𝓝 x) (𝓝 c)) : ContinuousAt (di.extend f) b := by
   set φ := di.extend f
   haveI := di.comap_nhds_ne_bot
   suffices ∀ V' ∈ 𝓝 (φ b), IsClosed V' → φ ⁻¹' V' ∈ 𝓝 b by
@@ -379,8 +372,7 @@ end
 -- Bourbaki GT III §3 no.4 Proposition 7 (generalised to any dense-inducing map to a T₃ space)
 theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [TopologicalSpace β]
     [T3Space β] {ι : Type _} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
-    {f : α → β} (hf : DenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i :=
-  by
+    {f : α → β} (hf : DenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
   rw [Filter.hasBasis_iff] at h⊢
   intro T
   refine' ⟨fun hT => _, fun hT => _⟩
