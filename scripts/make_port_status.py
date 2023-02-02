@@ -216,7 +216,7 @@ for node in sorted(graph.nodes):
             # old comment format
             comment_data = dict(message=comment_data)
         # new comment format
-        status += comment_data['message']
+        status += ' ' + comment_data['message']
         new_status.update(comment=comment_data)
     yaml_dict[node] = status
     new_yaml_dict[node] = new_status
