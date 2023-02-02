@@ -64,7 +64,7 @@ def PFun (α β : Type _) :=
 #align pfun PFun
 
 -- mathport name: «expr →. »
-/-- Terminology expressing `PFun α β` as `α  →. β` -/
+/-- `α  →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
 infixr:25 " →. " => PFun
 
 namespace PFun
