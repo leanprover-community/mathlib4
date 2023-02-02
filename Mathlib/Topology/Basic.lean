@@ -206,18 +206,6 @@ scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
 #align is_open_compl_iff isOpen_compl_iff
 
--- porting note: todo: redefine as `IsClosed s ∧ IsOpen s`
-/-- A set is clopen if it is both open and closed. -/
-def IsClopen (s : Set α) : Prop :=
-  IsOpen s ∧ IsClosed s
-#align is_clopen IsClopen
-
-protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.1
-#align is_clopen.is_open IsClopen.isOpen
-
-protected theorem IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.2
-#align is_clopen.is_closed IsClopen.isClosed
-
 -- porting note: new lemma
 theorem isClosed_const {p : Prop} : IsClosed { _a : α | p } := ⟨isOpen_const (p := ¬p)⟩
 
