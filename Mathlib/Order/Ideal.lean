@@ -145,12 +145,12 @@ theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (
 instance : PartialOrder (Ideal P) :=
   PartialOrder.lift SetLike.coe SetLike.coe_injective
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
   Iff.rfl
 #align order.ideal.coe_subset_coe Order.Ideal.coe_subset_coe
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem coe_sSubset_coe : (s : Set P) ⊂ t ↔ s < t :=
   Iff.rfl
 #align order.ideal.coe_ssubset_coe Order.Ideal.coe_sSubset_coe
@@ -164,6 +164,7 @@ theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈
     Note that the whole set might not be an ideal. -/
 @[mk_iff]
 class IsProper (I : Ideal P) : Prop where
+  /-- This ideal is not the whole set. -/
   ne_univ : (I : Set P) ≠ univ
 #align order.ideal.is_proper Order.Ideal.IsProper
 
@@ -180,6 +181,7 @@ Note that `IsCoatom` is less general because ideals only have a top element when
 and nonempty. -/
 @[mk_iff]
 class IsMaximal (I : Ideal P) extends IsProper I : Prop where
+  /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 #align order.ideal.is_maximal Order.Ideal.IsMaximal
 
