@@ -142,11 +142,6 @@ instance : Coe (α → β) (α →. β) :=
   ⟨PFun.lift⟩
 
 @[simp]
-theorem lift_eq_coe (f : α → β) : PFun.lift f = f :=
-  rfl
-#align pfun.lift_eq_coe PFun.lift_eq_coe
-
-@[simp]
 theorem coe_val (f : α → β) (a : α) : (f : α →. β) a = Part.some (f a) :=
   rfl
 #align pfun.coe_val PFun.coe_val
