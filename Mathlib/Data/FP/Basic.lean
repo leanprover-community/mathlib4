@@ -15,7 +15,6 @@ import Mathlib.Data.Rat.Floor
 # Implementation of floating-point numbers (experimental).
 -/
 
-
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
   | Int.ofNat e => (a.shiftl e, b)
   | Int.negSucc e => (a, b.shiftl e.succ)
@@ -24,11 +23,10 @@ def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
 namespace FP
 
 inductive Rmode
-  | NE
+  | NE -- round to nearest even
   deriving Inhabited
 #align fp.rmode FP.Rmode
 
--- round to nearest even
 class FloatCfg where
   (prec emax : ℕ)
   prec_pos : 0 < prec
@@ -38,7 +36,7 @@ class FloatCfg where
 variable [C : FloatCfg]
 
 -- Porting note: no longer needed
---include C
+-- include C
 
 def prec :=
   C.prec
@@ -138,7 +136,7 @@ def divNatLtTwoPowₓ (n d : ℕ) : ℤ → Bool
 #align fp.div_nat_lt_two_pow FP.divNatLtTwoPowₓ
 
 
--- TODO(Mario): Prove these and drop 'meta'
+-- TODO(Mario): Prove these and drop 'unsafe'
 unsafe def of_pos_rat_dn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   let e₁ : ℤ := n.1.size - d.1.size - prec
   cases' h₁ : Int.shift2 d.1 n.1 (e₁ + prec) with d₁ n₁
