@@ -41,11 +41,7 @@ noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
       infer_instance with
     inv := fun x ↦ ⟨_, x.prop.unit⁻¹.isUnit⟩
     mul_left_inv := fun x ↦ by
--- TODO. FIX THIS PROOF
-      rw [Subtype.mk_eq_mk]
-      have t1 := x.prop.unit.inv_val
-      rw [Units.inv_eq_val_inv] at t1
-      rwa [← Units.val_mul] at t1  }
+      exact Subtype.mk_eq_mk.2 ((Units.val_mul _ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
