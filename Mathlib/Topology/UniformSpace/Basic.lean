@@ -1156,8 +1156,8 @@ instance : InfSet (UniformSpace α) :=
         comp := le_infᵢ₂ fun u hu =>
           le_trans (lift'_mono (infᵢ_le_of_le _ <| infᵢ_le _ hu) <| le_rfl) u.comp }⟩
 
-protected theorem UniformSpace.infₛ_le {tt : Set (UniformSpace α)} {t : UniformSpace α} (h : t ∈ tt) :
-    infₛ tt ≤ t :=
+protected theorem UniformSpace.infₛ_le {tt : Set (UniformSpace α)} {t : UniformSpace α}
+    (h : t ∈ tt) : infₛ tt ≤ t :=
   show (⨅ u ∈ tt, 𝓤[u]) ≤ 𝓤[t] from infᵢ₂_le t h
 
 protected theorem UniformSpace.le_infₛ {tt : Set (UniformSpace α)} {t : UniformSpace α}
