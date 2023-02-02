@@ -19,10 +19,10 @@ Uniform spaces are a generalization of metric spaces and topological groups. Man
 generalize to uniform spaces, e.g.
 
 * uniform continuity (in this file)
-* completeness (in `cauchy.lean`)
-* extension of uniform continuous functions to complete spaces (in `uniform_embedding.lean`)
-* totally bounded sets (in `cauchy.lean`)
-* totally bounded complete sets are compact (in `cauchy.lean`)
+* completeness (in `Cauchy.lean`)
+* extension of uniform continuous functions to complete spaces (in `UniformEmbedding.lean`)
+* totally bounded sets (in `Cauchy.lean`)
+* totally bounded complete sets are compact (in `Cauchy.lean`)
 
 A uniform structure on a type `X` is a filter `𝓤 X` on `X × X` satisfying some conditions
 which makes it reasonable to say that `∀ᶠ (p : X × X) in 𝓤 X, ...` means
@@ -89,15 +89,15 @@ Like distance functions, uniform structures cannot be pushed forward in general.
 
 ## Notations
 
-Localized in `uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
+Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
 and `○` for composition of relations, seen as terms with type `Set (X × X)`.
 
 ## Implementation notes
 
-There is already a theory of relations in `data/rel.lean` where the main definition is
+There is already a theory of relations in `Data/Rel.lean` where the main definition is
 `def Rel (α β : Type*) := α → β → Prop`.
 The relations used in the current file involve only one type, but this is not the reason why
-we don't reuse `data/rel.lean`. We use `Set (α × α)`
+we don't reuse `Data/Rel.lean`. We use `Set (α × α)`
 instead of `Rel α α` because we really need sets to use the filter library, and elements
 of filters on `α × α` have type `Set (α × α)`.
 
@@ -454,7 +454,7 @@ theorem eventually_uniformity_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 
   eventually_uniformity_iterate_comp_subset hs 1
 #align eventually_uniformity_comp_subset eventually_uniformity_comp_subset
 
-/-- Relation `λ f g, tendsto (λ x, (f x, g x)) l (𝓤 α)` is transitive. -/
+/-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is transitive. -/
 theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β → α}
     (h₁₂ : Tendsto (fun x => (f₁ x, f₂ x)) l (𝓤 α))
     (h₂₃ : Tendsto (fun x => (f₂ x, f₃ x)) l (𝓤 α)) : Tendsto (fun x => (f₁ x, f₃ x)) l (𝓤 α) := by
@@ -650,7 +650,6 @@ theorem UniformSpace.isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) :
   hV.preimage <| continuous_const.prod_mk continuous_id
 #align uniform_space.is_open_ball UniformSpace.isOpen_ball
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
   cases' p with x y
@@ -856,7 +855,6 @@ theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
   rfl
 #align lift_nhds_right lift_nhds_right
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
     𝓝 a ×ᶠ 𝓝 b = (𝓤 α).lift fun s : Set (α × α) =>
       (𝓤 α).lift' fun t => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ t } := by
@@ -864,7 +862,6 @@ theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
   exacts[rfl, monotone_preimage, monotone_preimage]
 #align nhds_nhds_eq_uniformity_uniformity_prod nhds_nhds_eq_uniformity_uniformity_prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem nhds_eq_uniformity_prod {a b : α} :
     𝓝 (a, b) =
       (𝓤 α).lift' fun s : Set (α × α) => { y : α | (y, a) ∈ s } ×ˢ { y : α | (b, y) ∈ s } := by
@@ -1679,8 +1676,6 @@ open UniformSpace Function
 
 variable {δ' : Type _} [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
   [UniformSpace δ']
-
--- mathport name: «expr ∘₂ »
 local notation f " ∘₂ " g => Function.bicompr f g
 
 /-- Uniform continuity for functions of two variables. -/
