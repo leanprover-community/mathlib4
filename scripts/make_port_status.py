@@ -194,7 +194,7 @@ for node in sorted(graph.nodes):
     if node in data:
         new_status = dict(
             ported=True,
-            mathlib4_file==data[node]['mathlib4_file'],
+            mathlib4_file=data[node]['mathlib4_file'],
             mathlib4_pr=data[node]['mathlib4_pr'],
             mathlib3_hash=data[node]['mathlib3_hash']
         )
