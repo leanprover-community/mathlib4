@@ -86,7 +86,8 @@ def toList : ∀ {b}, Lists' α b → List (Lists α)
   | _, cons' a l => ⟨_, a⟩ :: l.toList
 #align lists'.to_list Lists'.toList
 
-@[simp]
+-- porting notes: removed @[simp]
+-- simp can prove this: by simp only [@Lists'.toList, @Sigma.eta]
 theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by
   cases a; simp [cons]
 #align lists'.to_list_cons Lists'.toList_cons
@@ -367,6 +368,7 @@ instance : Setoid (Lists α) :=
 section Decidable
 
 -- porting note: Noncomputable because Lists.instSizeOfLists is
+/-- Auxillary function to prove termination of decidability checking -/
 @[simp]
 noncomputable def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
@@ -464,6 +466,7 @@ theorem Subset.trans {l₁ l₂ l₃ : Lists' α true} (h₁ : l₁ ⊆ l₂) (h
 
 end Lists'
 
+/-- `Finsets` are defined via equivalence classes of `Lists` -/
 def Finsets (α : Type _) :=
   Quotient (@Lists.instSetoidLists α)
 #align finsets Finsets
