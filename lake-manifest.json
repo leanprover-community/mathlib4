@@ -2,6 +2,12 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
+   {"url": "https://github.com/EdAyers/WidgetKit",
+    "subDir?": null,
+    "rev": "aa4bec8417532a2e763fe098cba37a2077b618a3",
+    "name": "widgetkit",
+    "inputRev?": "v0.0.2"}},
+  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
     "rev": "c71f94e34c1cda52eef5c93dc9da409ab2727420",
