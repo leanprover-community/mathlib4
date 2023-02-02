@@ -21,6 +21,10 @@ open Meta
 namespace Meta.NormNum
 open Qq
 
+/-
+# Constructors and constants
+-/
+
 theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
   ⟨Nat.cast_zero.symm⟩
 
@@ -64,6 +68,11 @@ theorem isNat_intOfNat: {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   let sℤ : Q(AddMonoidWithOne ℤ) := q(AddGroupWithOne.toAddMonoidWithOne)
   let ⟨n', p⟩ ← deriveNat n sℕ
   return (.isNat sℤ n' q(isNat_intOfNat $p): Result q(Int.ofNat $n))
+
+
+/-
+# Casts
+-/
 
 theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
@@ -132,6 +141,11 @@ recognizes `q`, returning the cast of `q`. -/
       let pa : Q(@IsRat _ instRingRat $a $na $da) := pa
       return (.isRat dα qa na da q(isRat_ratCast $pa) : Result q(RatCast.ratCast $a : $α))
     | _ => failure
+
+
+/-
+# Arithmetic
+-/
 
 theorem isNat_add {α} [AddMonoidWithOne α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (a + b) c
@@ -516,6 +530,11 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let pa : Q(IsRat ($a * $b⁻¹) $na $da) := pa
   return (.isRat' dα qa na da q(isRat_div $pa) : Result q($a / $b))
 
+
+/-
+# Constructor-like operations
+-/
+
 theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
@@ -606,6 +625,7 @@ such that `norm_num` successfully recognises `a`. -/
     return (.isFalse q(not_not_intro $p) : Result q(¬$a))
   else
     return (.isTrue p : Result q(¬$a))
+
 
 /-
 # (In)equalities
