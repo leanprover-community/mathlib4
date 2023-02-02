@@ -37,6 +37,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GradedMonoid
+import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
@@ -237,6 +238,8 @@ import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Combinatorics.SetFamily.Compression.Down
+import Mathlib.Combinatorics.SetFamily.Intersecting
+import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
@@ -292,7 +295,9 @@ import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Fin
+import Mathlib.Data.Finset.Finsupp
 import Mathlib.Data.Finset.Fold
+import Mathlib.Data.Finset.Functor
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.LocallyFinite
@@ -312,7 +317,9 @@ import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
+import Mathlib.Data.Finsupp.AList
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Fintype
@@ -320,6 +327,7 @@ import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.Pointwise
+import Mathlib.Data.Finsupp.Pwo
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
@@ -480,6 +488,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.PEquiv
+import Mathlib.Data.PFun
 import Mathlib.Data.PFunctor.Univariate.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
@@ -619,6 +628,7 @@ import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Perm.ViaEmbedding
+import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.Subgroup.Basic
@@ -785,6 +795,7 @@ import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
+import Mathlib.Order.Ideal
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
@@ -939,15 +950,20 @@ import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
+import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.LocalExtr
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Order
+import Mathlib.Topology.Separation
 import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Support
+import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
