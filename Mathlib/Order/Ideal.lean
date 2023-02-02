@@ -383,26 +383,27 @@ instance : HasSup (Ideal P) :=
 instance : Lattice (Ideal P) :=
   { Ideal.instPartialOrderIdeal with
     sup := (· ⊔ ·)
-    le_sup_left := fun I J i hi =>
+    le_sup_left := fun _ J i hi =>
       let ⟨w, hw⟩ := J.nonempty
       ⟨i, hi, w, hw, le_sup_left⟩
-    le_sup_right := fun I J j hj =>
+    le_sup_right := fun I _ j hj =>
       let ⟨w, hw⟩ := I.nonempty
       ⟨w, hw, j, hj, le_sup_right⟩
-    sup_le := fun I J K hIK hJK a ⟨i, hi, j, hj, ha⟩ =>
+    sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ =>
       K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
     inf := (· ⊓ ·)
-    inf_le_left := fun I J => inter_subset_left I J
-    inf_le_right := fun I J => inter_subset_right I J
-    le_inf := fun I J K => subset_inter }
+    inf_le_left := fun I J => inter_subset_left I.carrier J.carrier
+    inf_le_right := fun I J => inter_subset_right I.carrier J.carrier
+    le_inf := fun _ _ _ => subset_inter }
 
 @[simp]
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
   rfl
 #align order.ideal.coe_sup Order.Ideal.coe_sup
 
+-- Porting note: Modified `s ∩ t` to `↑s ∩ ↑t`.
 @[simp]
-theorem coe_inf : (↑(s ⊓ t) : Set P) = s ∩ t :=
+theorem coe_inf : (↑(s ⊓ t) : Set P) = ↑s ∩ ↑t :=
   rfl
 #align order.ideal.coe_inf Order.Ideal.coe_inf
 
@@ -452,7 +453,7 @@ theorem mem_infₛ : x ∈ infₛ S ↔ ∀ s ∈ S, x ∈ s := by
 #align order.ideal.mem_Inf Order.Ideal.mem_infₛ
 
 instance : CompleteLattice (Ideal P) :=
-  { Ideal.lattice,
+  { (inferInstance : Lattice (Ideal P)),
     completeLatticeOfInf (Ideal P) fun S => by
       refine' ⟨fun s hs => _, fun s hs => by rwa [← coe_subset_coe, coe_infₛ, subset_interᵢ₂_iff]⟩
       rw [← coe_subset_coe, coe_infₛ]
