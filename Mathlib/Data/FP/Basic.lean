@@ -15,6 +15,10 @@ import Mathlib.Data.Rat.Floor
 # Implementation of floating-point numbers (experimental).
 -/
 
+-- Porting note: TODO add docs and remove this section
+section MissingDocs
+set_option linter.missingDocs false
+
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
   | Int.ofNat e => (a.shiftl e, b)
   | Int.negSucc e => (a, b.shiftl e.succ)
@@ -269,3 +273,5 @@ unsafe def div (mode : RMode) : Float → Float → Float
 end Float
 
 end FP
+
+end MissingDocs
