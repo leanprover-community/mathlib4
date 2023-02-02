@@ -81,31 +81,49 @@ prefix:max
   Invertible.invOf
 
 @[simp]
+theorem invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟ a * a = 1 :=
+  Invertible.invOf_mul_self
+
 theorem invOf_mul_self [Mul α] [One α] (a : α) [Invertible a] : ⅟ a * a = 1 :=
   Invertible.invOf_mul_self
 #align inv_of_mul_self invOf_mul_self
 
 @[simp]
+theorem mul_invOf_self' [Mul α] [One α] (a : α) {_ : Invertible a} : a * ⅟ a = 1 :=
+  Invertible.mul_invOf_self
+
 theorem mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟ a = 1 :=
   Invertible.mul_invOf_self
 #align mul_inv_of_self mul_invOf_self
 
 @[simp]
+theorem invOf_mul_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : ⅟ a * (a * b) = b := by
+  rw [← mul_assoc, invOf_mul_self, one_mul]
+
 theorem invOf_mul_self_assoc [Monoid α] (a b : α) [Invertible a] : ⅟ a * (a * b) = b := by
   rw [← mul_assoc, invOf_mul_self, one_mul]
 #align inv_of_mul_self_assoc invOf_mul_self_assoc
 
 @[simp]
+theorem mul_invOf_self_assoc' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟ a * b) = b := by
+  rw [← mul_assoc, mul_invOf_self, one_mul]
+
 theorem mul_invOf_self_assoc [Monoid α] (a b : α) [Invertible a] : a * (⅟ a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
 #align mul_inv_of_self_assoc mul_invOf_self_assoc
 
 @[simp]
+theorem mul_invOf_mul_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟ b * b = a := by
+  simp [mul_assoc]
+
 theorem mul_invOf_mul_self_cancel [Monoid α] (a b : α) [Invertible b] : a * ⅟ b * b = a := by
   simp [mul_assoc]
 #align mul_inv_of_mul_self_cancel mul_invOf_mul_self_cancel
 
 @[simp]
+theorem mul_mul_invOf_self_cancel' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟ b = a := by
+  simp [mul_assoc]
+
 theorem mul_mul_invOf_self_cancel [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a := by
   simp [mul_assoc]
 #align mul_mul_inv_of_self_cancel mul_mul_invOf_self_cancel
