@@ -398,7 +398,11 @@ mutual
   @[instance]
   def Equiv.decidable [DecidableEq α] : ∀ l₁ l₂ : Lists α, Decidable (l₁ ~ l₂)
     | ⟨false, l₁⟩, ⟨false, l₂⟩ =>
-      decidable_of_iff' (l₁ = l₂) <| by cases l₁ <;> refine' equiv_atom.trans (by simp [atom])
+      decidable_of_iff' (l₁ = l₂) <| by
+        cases l₁
+        apply equiv_atom.trans
+        simp [atom]
+        constructor <;> (rintro ⟨rfl⟩; rfl)
     | ⟨false, l₁⟩, ⟨true, l₂⟩ => isFalse <| by rintro ⟨⟩
     | ⟨true, l₁⟩, ⟨false, l₂⟩ => isFalse <| by rintro ⟨⟩
     | ⟨true, l₁⟩, ⟨true, l₂⟩ => by
