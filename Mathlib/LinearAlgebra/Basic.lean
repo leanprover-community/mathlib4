@@ -343,16 +343,14 @@ theorem commute_pow_left_of_commute {f : M →ₛₗ[σ₁₂] M₂} {g : Module
       h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 #align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
 
-def X {N : Submodule R M} : Monoid (Module.End R N) := inferInstance
-#print X
 theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End R N}
     {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ} (hG : G ^ k = 0) :
-    (g ^ k : Module.End R N) = (0 : Module.End R N) := by
+    --Porting note: ugly `HPow.hPow` instead of `^` notation
+    HPow.hPow g k = 0 := by
   ext m
   have hg : N.subtype.comp (g ^ k) m = 0 := by
     rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
-  simp only [Submodule.subtype_apply, comp_app, Submodule.coe_eq_zero, coe_comp] at hg
-  rw [hg, LinearMap.zero_apply]
+  simpa using hg
 #align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
 
 theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
