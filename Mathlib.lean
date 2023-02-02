@@ -241,6 +241,7 @@ import Mathlib.Data.Countable.Small
 import Mathlib.Data.DList.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Erased
+import Mathlib.Data.FP.Basic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.SuccPred
@@ -282,7 +283,6 @@ import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Fintype.Vector
-import Mathlib.Data.FP.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
