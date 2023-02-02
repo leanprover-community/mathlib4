@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.ApplyFun
-import Mathbin.Topology.UniformSpace.Basic
-import Mathbin.Topology.Separation
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.Separation
 
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.
@@ -167,8 +167,7 @@ theorem eq_of_clusterPt_uniformity [SeparatedSpace α] {x y : α} (h : ClusterPt
     isClosed_iff_clusterPt.1 hVc _ <| h.mono <| le_principal_iff.2 hV
 #align eq_of_cluster_pt_uniformity eq_of_clusterPt_uniformity
 
-theorem idRel_sub_separation_relation (α : Type _) [UniformSpace α] : idRel ⊆ 𝓢 α :=
-  by
+theorem idRel_sub_separation_relation (α : Type _) [UniformSpace α] : idRel ⊆ 𝓢 α := by
   unfold separationRel
   rw [idRel_subset]
   intro x
@@ -187,8 +186,7 @@ theorem separationRel_comap {f : α → β}
 #align separation_rel_comap separationRel_comap
 
 protected theorem Filter.HasBasis.separationRel {ι : Sort _} {p : ι → Prop} {s : ι → Set (α × α)}
-    (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (hi : p i), s i :=
-  by
+    (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (hi : p i), s i := by
   unfold separationRel
   rw [h.sInter_sets]
 #align filter.has_basis.separation_rel Filter.HasBasis.separationRel
@@ -197,8 +195,7 @@ theorem separationRel_eq_inter_closure : 𝓢 α = ⋂₀ (closure '' (𝓤 α).
   simp [uniformity_has_basis_closure.separation_rel]
 #align separation_rel_eq_inter_closure separationRel_eq_inter_closure
 
-theorem isClosed_separationRel : IsClosed (𝓢 α) :=
-  by
+theorem isClosed_separationRel : IsClosed (𝓢 α) := by
   rw [separationRel_eq_inter_closure]
   apply isClosed_interₛ
   rintro _ ⟨t, t_in, rfl⟩
@@ -228,8 +225,7 @@ instance Subtype.separatedSpace [SeparatedSpace α] (s : Set α) : SeparatedSpac
 #align subtype.separated_space Subtype.separatedSpace
 
 theorem isClosed_of_spaced_out [SeparatedSpace α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α) {s : Set α}
-    (hs : s.Pairwise fun x y => (x, y) ∉ V₀) : IsClosed s :=
-  by
+    (hs : s.Pairwise fun x y => (x, y) ∉ V₀) : IsClosed s := by
   rcases comp_symm_mem_uniformity_sets V₀_in with ⟨V₁, V₁_in, V₁_symm, h_comp⟩
   apply isClosed_of_closure_subset
   intro x hx
@@ -339,8 +335,7 @@ theorem uniformContinuous_quotient_lift {f : α → β} {h : ∀ a b, (a, b) ∈
 theorem uniformContinuous_quotient_lift₂ {f : α → β → γ}
     {h : ∀ a c b d, (a, b) ∈ 𝓢 α → (c, d) ∈ 𝓢 β → f a c = f b d}
     (hf : UniformContinuous fun p : α × β => f p.1 p.2) :
-    UniformContinuous fun p : _ × _ => Quotient.lift₂ f h p.1 p.2 :=
-  by
+    UniformContinuous fun p : _ × _ => Quotient.lift₂ f h p.1 p.2 := by
   rw [UniformContinuous, uniformity_prod_eq_prod, uniformity_quotient, uniformity_quotient,
     Filter.prod_map_map_eq, Filter.tendsto_map'_iff, Filter.tendsto_map'_iff]
   rwa [UniformContinuous, uniformity_prod_eq_prod, Filter.tendsto_map'_iff] at hf
@@ -415,8 +410,7 @@ theorem lift_mk' [SeparatedSpace β] {f : α → β} (h : UniformContinuous f) (
     lift f ⟦a⟧ = f a := by rw [lift, dif_pos h] <;> rfl
 #align uniform_space.separation_quotient.lift_mk UniformSpace.SeparationQuotient.lift_mk'
 
-theorem uniformContinuous_lift [SeparatedSpace β] (f : α → β) : UniformContinuous (lift f) :=
-  by
+theorem uniformContinuous_lift [SeparatedSpace β] (f : α → β) : UniformContinuous (lift f) := by
   by_cases hf : UniformContinuous f
   · rw [lift, dif_pos hf]
     exact uniform_continuous_quotient_lift hf
@@ -458,8 +452,7 @@ theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg 
 
 end SeparationQuotient
 
-theorem separation_prod {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) ≈ (a₂, b₂) ↔ a₁ ≈ a₂ ∧ b₁ ≈ b₂ :=
-  by
+theorem separation_prod {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) ≈ (a₂, b₂) ↔ a₁ ≈ a₂ ∧ b₁ ≈ b₂ := by
   constructor
   · intro h
     exact
