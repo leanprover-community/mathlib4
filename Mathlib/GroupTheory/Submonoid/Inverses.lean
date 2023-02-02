@@ -177,13 +177,14 @@ noncomputable def leftInvEquiv : S.leftInv ≃* S :=
       exact ⟨x'.inv, x, hx ▸ x'.inv_val⟩
     left_inv := fun x ↦
       Subtype.eq <| by
-        dsimp; generalize_proofs h; rw [← h.choose.mul_left_inj]
-        exact h.choose.inv_val.trans ((S.mul_fromLeftInv x).symm.trans (by rw [h.choose_spec]))
+        dsimp only; generalize_proofs h; rw [← h.choose.mul_left_inj]
+        conv => rhs ; rw [h.choose_spec]
+        exact h.choose.inv_val.trans (S.mul_fromLeftInv x).symm
     right_inv := fun x ↦ by
-      dsimp
+      dsimp only [fromCommLeftInv]
       ext
       rw [fromLeftInv_eq_iff]
-      convert (hS x.prop).some.inv_val
+      convert (hS x.prop).choose.inv_val
       exact (hS x.prop).choose_spec.symm }
 #align submonoid.left_inv_equiv Submonoid.leftInvEquiv
 #align add_submonoid.left_neg_equiv AddSubmonoid.leftNegEquiv
@@ -202,12 +203,15 @@ theorem leftInvEquiv_symm_fromLeftInv (x : S.leftInv) :
 #align add_submonoid.left_neg_equiv_symm_from_left_neg AddSubmonoid.leftNegEquiv_symm_fromLeftNeg
 
 @[to_additive]
-theorem leftInvEquiv_mul (x : S.leftInv) : (S.leftInvEquiv hS x : M) * x = 1 := by simp
+theorem leftInvEquiv_mul (x : S.leftInv) : (S.leftInvEquiv hS x : M) * x = 1 := by
+  simpa only [leftInvEquiv_apply, fromCommLeftInv] using fromLeftInv_mul S x
+
 #align submonoid.left_inv_equiv_mul Submonoid.leftInvEquiv_mul
 #align add_submonoid.left_neg_equiv_add AddSubmonoid.leftNegEquiv_add
 
 @[to_additive]
-theorem mul_leftInvEquiv (x : S.leftInv) : (x : M) * S.leftInvEquiv hS x = 1 := by simp
+theorem mul_leftInvEquiv (x : S.leftInv) : (x : M) * S.leftInvEquiv hS x = 1 := by
+  simp only [leftInvEquiv_apply, fromCommLeftInv, mul_fromLeftInv]
 #align submonoid.mul_left_inv_equiv Submonoid.mul_leftInvEquiv
 #align add_submonoid.add_left_neg_equiv AddSubmonoid.add_leftNegEquiv
 
@@ -235,7 +239,7 @@ open Pointwise
 
 @[to_additive]
 theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=
-  Submonoid.ext fun x ↦
+  Submonoid.ext fun _ ↦
     ⟨fun h ↦ Submonoid.mem_inv.mpr ((inv_eq_of_mul_eq_one_right h.choose_spec).symm ▸
       h.choose.prop),
       fun h ↦ ⟨⟨_, h⟩, mul_right_inv _⟩⟩
@@ -243,8 +247,8 @@ theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=
 #align add_submonoid.left_neg_eq_neg AddSubmonoid.leftNeg_eq_neg
 
 @[to_additive (attr := simp)]
-theorem fromLeftInv_eq_inv (x : S.leftInv) : (S.fromLeftInv x : M) = x⁻¹ := by
-  rw [← mul_right_inj (x : M), mul_right_inv, mul_from_left_inv]
+theorem fromLeftInv_eq_inv (x : S.leftInv) : (S.fromLeftInv x : M) = (x : M)⁻¹ := by
+  rw [← mul_right_inj (x : M), mul_right_inv, mul_fromLeftInv]
 #align submonoid.from_left_inv_eq_inv Submonoid.fromLeftInv_eq_inv
 #align add_submonoid.from_left_neg_eq_neg AddSubmonoid.fromLeftNeg_eq_neg
 
@@ -255,8 +259,8 @@ section CommGroup
 variable [CommGroup M] (S : Submonoid M) (hS : S ≤ IsUnit.submonoid M)
 
 @[to_additive (attr := simp)]
-theorem leftInvEquiv_symm_eq_inv (x : S) : ((S.leftInvEquiv hS).symm x : M) = x⁻¹ := by
-  rw [← mul_right_inj (x : M), mul_right_inv, mul_left_inv_equiv_symm]
+theorem leftInvEquiv_symm_eq_inv (x : S) : ((S.leftInvEquiv hS).symm x : M) = (x : M)⁻¹ := by
+  rw [← mul_right_inj (x : M), mul_right_inv, mul_leftInvEquiv_symm]
 #align submonoid.left_inv_equiv_symm_eq_inv Submonoid.leftInvEquiv_symm_eq_inv
 #align add_submonoid.left_neg_equiv_symm_eq_neg AddSubmonoid.leftNegEquiv_symm_eq_neg
 
