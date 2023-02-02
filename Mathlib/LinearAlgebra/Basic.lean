@@ -149,7 +149,7 @@ end Finsupp
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
 theorem pi_eq_sum_univ {ι : Type _} [Fintype ι] [DecidableEq ι] {R : Type _} [Semiring R]
-    (x : ι → R) : x = ∑ i, x i • fun j => if i = j then 1 else 0 := by
+    (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
   ext
   simp
 #align pi_eq_sum_univ pi_eq_sum_univ
