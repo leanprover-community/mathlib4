@@ -1587,11 +1587,12 @@ theorem isClopen_discrete [DiscreteTopology α] (x : Set α) : IsClopen x :=
   ⟨isOpen_discrete _, isClosed_discrete _⟩
 #align is_clopen_discrete isClopen_discrete
 
--- porting note: 2 new lemmas
-theorem isClopen_range_inl : IsClopen (range (inl : α → α ⊕ β)) :=
+-- porting note: new lemma
+theorem isClopen_range_inl : IsClopen (range (Sum.inl : α → α ⊕ β)) :=
   ⟨isOpen_range_inl, isClosed_range_inl⟩
 
-theorem isClopen_range_inr : IsClopen (range (inr : β → α ⊕ β)) :=
+-- porting note: new lemma
+theorem isClopen_range_inr : IsClopen (range (Sum.inr : β → α ⊕ β)) :=
   ⟨isOpen_range_inr, isClosed_range_inr⟩
 
 theorem isClopen_range_sigmaMk {ι : Type _} {σ : ι → Type _} [∀ i, TopologicalSpace (σ i)] {i : ι} :
