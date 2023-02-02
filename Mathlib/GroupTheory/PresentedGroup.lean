@@ -33,7 +33,7 @@ generators, relations, group presentations
 
 variable {α : Type _}
 
-/-- Given a set of relations, rels, over a type `α`, `PresentedGroup` constructs the group with
+/-- Given a set of relations, `rels`, over a type `α`, `PresentedGroup` constructs the group with
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
 def PresentedGroup (rels : Set (FreeGroup α)) :=
   FreeGroup α ⧸ Subgroup.normalClosure rels
