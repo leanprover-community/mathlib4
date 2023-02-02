@@ -8,8 +8,8 @@ Authors: Michael Howes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.FreeGroup
-import Mathbin.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.QuotientGroup
 
 /-!
 # Defining a group given by generators and relations

@@ -625,6 +625,7 @@ import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Perm.ViaEmbedding
+import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Subgroup.Actions
