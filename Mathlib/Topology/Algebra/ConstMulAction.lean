@@ -357,7 +357,7 @@ theorem IsClosed.smul_of_ne_zero {c : G₀} {s : Set α} (hs : IsClosed s) (hc :
 /-- `smul` is a closed map in the second argument.
 
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
-normed field) is `is_closed_map_smul_left` in `analysis.normed_space.finite_dimension`. -/
+normed field) is `isClosedMap_smul_left` in `Analysis.NormedSpace.FiniteDimension`. -/
 theorem isClosedMap_smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
     [T1Space M] [Module 𝕜 M] [HasContinuousConstSmul 𝕜 M] (c : 𝕜) :
     IsClosedMap fun x : M => c • x := by
