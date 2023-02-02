@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Group.Defs
-import Mathbin.Data.Set.Pointwise.Smul
-import Mathbin.Order.UpperLower.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Algebraic operations on upper/lower sets
