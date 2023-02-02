@@ -186,6 +186,9 @@ class LawfulOfScientific (α) [OfScientific α] [RatCast α] : Prop where
   ofScientific_eq (m : ℕ) (b : Bool) (d : ℕ) :
       OfScientific.ofScientific m b d = (Rat.ofScientific m b d : α)
 
+instance [DivisionRing α] : LawfulOfScientific α  where
+  ofScientific_eq _ _ _ := rfl
+
 end OfScientific
 
 section Field
