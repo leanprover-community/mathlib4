@@ -378,19 +378,17 @@ instance : HasSup (Ideal P) :=
                 _ ≤ xi ⊔ yi ⊔ (xj ⊔ yj) := sup_le_sup le_sup_right le_sup_right
                 )⟩,
           le_sup_left, le_sup_right⟩
-      lower' := fun x y h ⟨yi, _, yj, _, _⟩ => ⟨yi, ‹_›, yj, ‹_›, h.trans ‹_›⟩ }⟩
+      lower' := fun x y h ⟨yi, hi, yj, hj, hxy⟩ => ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (i «expr ∈ » I) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (j «expr ∈ » J) -/
 instance : Lattice (Ideal P) :=
   { Ideal.instPartialOrderIdeal with
     sup := (· ⊔ ·)
-    le_sup_left := fun I J i (_ : i ∈ I) => by
-      cases J.nonempty
-      exact ⟨i, ‹_›, w, ‹_›, le_sup_left⟩
-    le_sup_right := fun I J j (_ : j ∈ J) => by
-      cases I.nonempty
-      exact ⟨w, ‹_›, j, ‹_›, le_sup_right⟩
+    le_sup_left := fun I J i hi =>
+      let ⟨w, hw⟩ := J.nonempty
+      ⟨i, hi, w, hw, le_sup_left⟩
+    le_sup_right := fun I J j hj =>
+      let ⟨w, hw⟩ := I.nonempty
+      ⟨w, hw, j, hj, le_sup_right⟩
     sup_le := fun I J K hIK hJK a ⟨i, hi, j, hj, ha⟩ =>
       K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
     inf := (· ⊓ ·)
