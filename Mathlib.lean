@@ -909,6 +909,8 @@ import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Qify
+import Mathlib.Tactic.Qify.Attr
 import Mathlib.Tactic.Reassoc
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
