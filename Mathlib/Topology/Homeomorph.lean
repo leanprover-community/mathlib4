@@ -248,7 +248,7 @@ protected theorem embedding (h : α ≃ₜ β) : Embedding h :=
 /-- Homeomorphism given an embedding. -/
 noncomputable def ofEmbedding (f : α → β) (hf : Embedding f) : α ≃ₜ Set.range f where
   continuous_toFun := hf.continuous.subtype_mk _
-  continuous_invFun := by simp [hf.continuous_iff, continuous_subtype_val]
+  continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
   toEquiv := Equiv.ofInjective f hf.inj
 #align homeomorph.of_embedding Homeomorph.ofEmbedding
 
@@ -525,7 +525,7 @@ def punitProd : PUnit × α ≃ₜ α :=
 
 /-- If both `α` and `β` have a unique element, then `α ≃ₜ β`. -/
 @[simps]
-def Homeomorph.homeomorphOfUnique [Unique α] [Unique β] : α ≃ₜ β :=
+def homeomorphOfUnique [Unique α] [Unique β] : α ≃ₜ β :=
   { Equiv.equivOfUnique α β with
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
@@ -615,7 +615,7 @@ def finTwoArrow : (Fin 2 → α) ≃ₜ α × α :=
 def image (e : α ≃ₜ β) (s : Set α) : s ≃ₜ e '' s where
   -- porting note: todo: by continuity!
   continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
-  continuous_invFun := e.symm.continuous.continuousOn.restrict_mapsTo _
+  continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
 #align homeomorph.image Homeomorph.image
 
@@ -649,11 +649,11 @@ def piEquivPiSubtypeProd (p : ι → Prop) (β : ι → Type _) [∀ i, Topologi
     where
   toEquiv := Equiv.piEquivPiSubtypeProd p β
   continuous_toFun := by
-    apply Continuous.prod_mk <;> exact continuous_pi fun j => continuous_apply j
+    apply Continuous.prod_mk <;> exact continuous_pi fun j => continuous_apply j.1
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piEquivPiSubtypeProd]; split_ifs
-      exacts[(continuous_apply _).comp continuous_fst, (continuous_apply _).comp continuous_snd]
+      exacts [(continuous_apply _).comp continuous_fst, (continuous_apply _).comp continuous_snd]
 #align homeomorph.pi_equiv_pi_subtype_prod Homeomorph.piEquivPiSubtypeProd
 
 variable [DecidableEq ι] (i : ι)
@@ -665,13 +665,13 @@ def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
     (∀ j, β j) ≃ₜ β i × ∀ j : { j // j ≠ i }, β j
     where
   toEquiv := Equiv.piSplitAt i β
-  continuous_toFun := (continuous_apply i).prod_mk (continuous_pi fun j => continuous_apply j)
+  continuous_toFun := (continuous_apply i).prod_mk (continuous_pi fun j => continuous_apply j.1)
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piSplitAt]
-      split_ifs
+      split_ifs with h
       subst h
-      exacts[continuous_fst, (continuous_apply _).comp continuous_snd]
+      exacts [continuous_fst, (continuous_apply _).comp continuous_snd]
 #align homeomorph.pi_split_at Homeomorph.piSplitAt
 
 /-- A product of copies of a topological space can be split as the binary product of one copy and
