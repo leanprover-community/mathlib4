@@ -278,6 +278,13 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
 #align linear_equiv.symm LinearEquiv.symm
 
 /-- See Note [custom simps projection] -/
+def Simps.apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
+  e
+
+/-- See Note [custom simps projection] -/
 def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
@@ -285,7 +292,8 @@ def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
   e.symm
 #align linear_equiv.simps.symm_apply LinearEquiv.Simps.symmApply
 
-initialize_simps_projections LinearEquiv (toLinearMap → apply, invFun → symmApply)
+initialize_simps_projections LinearEquiv (toLinearMap_toAddHom_toFun → apply, -toLinearMap,
+  invFun → symmApply)
 
 @[simp]
 theorem invFun_eq_symm : e.invFun = e.symm :=

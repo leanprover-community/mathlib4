@@ -437,9 +437,10 @@ def Simps.coe (S : Subgroup G) : Set G :=
 #align subgroup.simps.coe Subgroup.Simps.coe
 #align add_subgroup.simps.coe AddSubgroup.Simps.coe
 
-initialize_simps_projections Subgroup (toSubmonoid_toSubsemigroup_carrier → coe)
+initialize_simps_projections Subgroup (toSubmonoid_toSubsemigroup_carrier → coe, -toSubmonoid)
 
-initialize_simps_projections AddSubgroup (toAddSubmonoid_toAddSubsemigroup_carrier → coe)
+initialize_simps_projections AddSubgroup (toAddSubmonoid_toAddSubsemigroup_carrier → coe,
+  -toAddSubmonoid)
 
 @[to_additive (attr := simp)]
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=
