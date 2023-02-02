@@ -16,14 +16,14 @@ import Mathlib.Topology.Bases
 
 This file defines three properties of functions:
 
-* `dense_range f`      means `f` has dense image;
-* `dense_inducing i`   means `i` is also `inducing`;
-* `dense_embedding e`  means `e` is also an `embedding`.
+* `DenseRange f`      means `f` has dense image;
+* `DenseInducing i`   means `i` is also `Inducing`;
+* `DenseEmbedding e`  means `e` is also an `Embedding`.
 
 The main theorem `continuous_extend` gives a criterion for a function
 `f : X → Z` to a T₃ space Z to extend along a dense embedding
 `i : X → Y` to a continuous function `g : Y → Z`. Actually `i` only
-has to be `dense_inducing` (not necessarily injective).
+has to be `DenseInducing` (not necessarily injective).
 
 -/
 
@@ -105,7 +105,7 @@ protected theorem prod [TopologicalSpace γ] [TopologicalSpace δ] {e₁ : α �
 
 open TopologicalSpace
 
-/-- If the domain of a `dense_inducing` map is a separable space, then so is the codomain. -/
+/-- If the domain of a `DenseInducing` map is a separable space, then so is the codomain. -/
 protected theorem separableSpace [SeparableSpace α] : SeparableSpace β :=
   di.dense.separableSpace di.continuous
 #align dense_inducing.separable_space DenseInducing.separableSpace
@@ -259,7 +259,7 @@ theorem to_embedding : Embedding e :=
     inj := de.inj }
 #align dense_embedding.to_embedding DenseEmbedding.to_embedding
 
-/-- If the domain of a `dense_embedding` is a separable space, then so is its codomain. -/
+/-- If the domain of a `DenseEmbedding` is a separable space, then so is its codomain. -/
 protected theorem separableSpace [SeparableSpace α] : SeparableSpace β :=
   de.toDenseInducing.separableSpace
 #align dense_embedding.separable_space DenseEmbedding.separableSpace
