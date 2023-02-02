@@ -1107,6 +1107,10 @@ theorem clusterPt_iff {x : α} {F : Filter α} :
   inf_neBot_iff
 #align cluster_pt_iff clusterPt_iff
 
+theorem clusterPt_iff_not_disjoint {x : α} {F : Filter α} :
+    ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
+  rw [disjoint_iff, ClusterPt, neBot_iff]
+
 /-- `x` is a cluster point of a set `s` if every neighbourhood of `x` meets `s` on a nonempty
 set. See also `mem_closure_iff_clusterPt`. -/
 theorem clusterPt_principal_iff {x : α} {s : Set α} :
@@ -1566,17 +1570,22 @@ open TopologicalSpace
 structure Continuous (f : α → β) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
   instead. -/
-  is_open_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
+  isOpen_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
 #align continuous Continuous
+
+set_option quotPrecheck false in
+/-- Notation for `Continuous` with respect to a non-standard topologies. -/
+scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
+  @Continuous _ _ t₁ t₂
 
 theorem continuous_def {_ : TopologicalSpace α} {_ : TopologicalSpace β} {f : α → β} :
     Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
-  ⟨fun hf s hs => hf.is_open_preimage s hs, fun h => ⟨h⟩⟩
+  ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
 
 theorem IsOpen.preimage {f : α → β} (hf : Continuous f) {s : Set β} (h : IsOpen s) :
     IsOpen (f ⁻¹' s) :=
-  hf.is_open_preimage s h
+  hf.isOpen_preimage s h
 #align is_open.preimage IsOpen.preimage
 
 theorem Continuous.congr {f g : α → β} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g := by

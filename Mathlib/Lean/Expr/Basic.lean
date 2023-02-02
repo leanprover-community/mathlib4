@@ -164,6 +164,19 @@ def fvarId? : Expr → Option FVarId
   | .fvar n => n
   | _ => none
 
+/-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
+  `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
+  it does a syntactic check that the expression does not depend on `yₙ`. -/
+def isConstantApplication (e : Expr) :=
+e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
+where
+  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+    `depth - 1`. -/
+  aux (depth : Nat) : Expr → Nat → Bool
+  | .lam _ _ b _, n + 1  => aux depth b n
+  | e, 0  => !e.hasLooseBVar (depth - 1)
+  | _, _ => false
+
 open Meta
 
 /-- Check that an expression contains no metavariables (after instantiation). -/

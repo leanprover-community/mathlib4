@@ -244,11 +244,15 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
 private def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
+  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool :=
+  visit where
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
-  | _, .app e a           => Id.run do
-      if visit true e then
+  | _, x@(.app e a)       => Id.run do
+      if !visit true e then
+        return false
+      -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
+      if x.isConstantApplication then
         return true
       if let some n := e.getAppFn.constName? then
         if let some l := ignore n then
@@ -305,16 +309,21 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
   let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
   return aux
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
-      (fixedNumeralAttr.find? env) isRelevant e
+      (fixedNumeralAttr.find? env) isRelevant (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
-    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
+    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
+    if trace then
+      dbg_trace s!"replacing at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
+      if trace && n₀ != n₁ then
+        dbg_trace s!"changing {n₀} to {n₁}"
       let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
@@ -332,22 +341,33 @@ where /-- Implementation of `applyReplacementFun`. -/
             let gf := r g.appFn!
             let ga := r g.appArg!
             let e₂ := mkApp2 gf x ga
+            if trace then
+              dbg_trace s!"reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter: {e₂}"
             return some e₂
         /- Test if the head should not be replaced. -/
         let c1 := isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 := additiveTest findTranslation? ignore x
+        if trace && c1 && c2 && c3 then
+          dbg_trace s!"{x} doesn't contain a fixed type, so we will change {nm}"
         if c1 && c2 && not c3 then
+          if trace then
+            dbg_trace s!"{x} contains a fixed type, so {nm} is not changed"
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
         let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
         if !shouldTranslateNumeral findTranslation? ignore fixedNumeral nm firstArg then
+          if trace then
+            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
+      if trace then
+        dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+          }replace type with {n₁}"
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
