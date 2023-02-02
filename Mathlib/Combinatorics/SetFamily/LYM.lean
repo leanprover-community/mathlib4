@@ -59,7 +59,7 @@ namespace Finset
 /-! ### Local LYM inequality -/
 
 
-section LocalLym
+section LocalLYM
  -- porting note: added `Decidable` for ⊆
 variable [DecidableEq α] [∀ s t : (Finset α), Decidable (s ⊆ t)] [Fintype α]
   {𝒜 : Finset (Finset α)} {r : ℕ}
@@ -114,12 +114,12 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
 #align finset.card_div_choose_le_card_shadow_div_choose
     Finset.card_div_choose_le_card_shadow_div_choose
 
-end LocalLym
+end LocalLYM
 
 /-! ### LYM inequality -/
 
 
-section Lym
+section LYM
 
 section Falling
 
@@ -228,7 +228,7 @@ theorem sum_card_slice_div_choose_le_one [Fintype α]
       exact zero_lt_one
 #align finset.sum_card_slice_div_choose_le_one Finset.sum_card_slice_div_choose_le_one
 
-end Lym
+end LYM
 
 /-! ### Sperner's theorem -/
 
