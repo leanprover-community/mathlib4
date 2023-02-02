@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.Order.UpperLower.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Intersecting families
@@ -82,8 +82,7 @@ theorem intersecting_insert :
 #align set.intersecting_insert Set.intersecting_insert
 
 theorem intersecting_iff_pairwise_not_disjoint :
-    s.Intersecting ↔ (s.Pairwise fun a b => ¬Disjoint a b) ∧ s ≠ {⊥} :=
-  by
+    s.Intersecting ↔ (s.Pairwise fun a b => ¬Disjoint a b) ∧ s ≠ {⊥} := by
   refine' ⟨fun h => ⟨fun a ha b hb _ => h ha hb, _⟩, fun h a ha b hb hab => _⟩
   · rintro rfl
     exact intersecting_singleton.1 h rfl
@@ -101,8 +100,7 @@ protected theorem Subsingleton.intersecting (hs : s.Subsingleton) : s.Intersecti
 #align set.subsingleton.intersecting Set.Subsingleton.intersecting
 
 theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α) :
-    s.Intersecting ↔ s = ∅ :=
-  by
+    s.Intersecting ↔ s = ∅ := by
   refine'
     subsingleton_of_subsingleton.intersecting.trans
       ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem _, _⟩
@@ -158,8 +156,7 @@ theorem Intersecting.not_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a
 #align set.intersecting.not_mem Set.Intersecting.not_mem
 
 theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
-    Disjoint s (s.map ⟨compl, compl_injective⟩) :=
-  by
+    Disjoint s (s.map ⟨compl, compl_injective⟩) := by
   rw [Finset.disjoint_left]
   rintro x hx hxc
   obtain ⟨x, hx', rfl⟩ := mem_map.mp hxc
@@ -205,8 +202,7 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
 #align set.intersecting.is_max_iff_card_eq Set.Intersecting.is_max_iff_card_eq
 
 theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
-    ∃ t, s ⊆ t ∧ 2 * t.card = Fintype.card α ∧ (t : Set α).Intersecting :=
-  by
+    ∃ t, s ⊆ t ∧ 2 * t.card = Fintype.card α ∧ (t : Set α).Intersecting := by
   have := hs.card_le
   rw [mul_comm, ← Nat.le_div_iff_mul_le' two_pos] at this
   revert hs
