@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Equiv.Fin
-import Mathbin.Topology.DenseEmbedding
-import Mathbin.Topology.Support
+import Mathlib.Logic.Equiv.Fin
+import Mathlib.Topology.DenseEmbedding
+import Mathlib.Topology.Support
 
 /-!
 # Homeomorphisms
@@ -158,15 +158,13 @@ theorem symm_apply_apply (h : α ≃ₜ β) (x : α) : h.symm (h x) = x :=
 #align homeomorph.symm_apply_apply Homeomorph.symm_apply_apply
 
 @[simp]
-theorem self_trans_symm (h : α ≃ₜ β) : h.trans h.symm = Homeomorph.refl α :=
-  by
+theorem self_trans_symm (h : α ≃ₜ β) : h.trans h.symm = Homeomorph.refl α := by
   ext
   apply symm_apply_apply
 #align homeomorph.self_trans_symm Homeomorph.self_trans_symm
 
 @[simp]
-theorem symm_trans_self (h : α ≃ₜ β) : h.symm.trans h = Homeomorph.refl β :=
-  by
+theorem symm_trans_self (h : α ≃ₜ β) : h.symm.trans h = Homeomorph.refl β := by
   ext
   apply apply_symm_apply
 #align homeomorph.symm_trans_self Homeomorph.symm_trans_self
@@ -446,8 +444,7 @@ theorem comp_continuousWithinAt_iff (h : α ≃ₜ β) (f : γ → α) (s : Set 
 #align homeomorph.comp_continuous_within_at_iff Homeomorph.comp_continuousWithinAt_iff
 
 @[simp]
-theorem comp_isOpenMap_iff (h : α ≃ₜ β) {f : γ → α} : IsOpenMap (h ∘ f) ↔ IsOpenMap f :=
-  by
+theorem comp_isOpenMap_iff (h : α ≃ₜ β) {f : γ → α} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => h.is_open_map.comp hf⟩
   intro hf
   rw [← Function.comp.left_id f, ← h.symm_comp_self, Function.comp.assoc]
@@ -455,8 +452,7 @@ theorem comp_isOpenMap_iff (h : α ≃ₜ β) {f : γ → α} : IsOpenMap (h ∘
 #align homeomorph.comp_is_open_map_iff Homeomorph.comp_isOpenMap_iff
 
 @[simp]
-theorem comp_isOpenMap_iff' (h : α ≃ₜ β) {f : β → γ} : IsOpenMap (f ∘ h) ↔ IsOpenMap f :=
-  by
+theorem comp_isOpenMap_iff' (h : α ≃ₜ β) {f : β → γ} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => hf.comp h.is_open_map⟩
   intro hf
   rw [← Function.comp.right_id f, ← h.self_comp_symm, ← Function.comp.assoc]
@@ -734,8 +730,7 @@ namespace Continuous
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace α] [T2Space β] {f : α ≃ β}
-    (hf : Continuous f) : Continuous f.symm :=
-  by
+    (hf : Continuous f) : Continuous f.symm := by
   rw [continuous_iff_isClosed]
   intro C hC
   have hC' : IsClosed (f '' C) := (hC.is_compact.image hf).IsClosed
