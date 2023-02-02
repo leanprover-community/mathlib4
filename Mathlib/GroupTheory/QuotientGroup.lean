@@ -165,7 +165,7 @@ theorem mk_mul (a b : G) : ((a * b : G) : Q ) = a * b :=
 #align quotient_add_group.coe_add QuotientAddGroup.mk_add
 
 @[to_additive (attr := simp)]
-theorem mk_inv (a : G) : ((a⁻¹ : G) : Q ) = a⁻¹ :=
+theorem mk_inv (a : G) : ((a⁻¹ : G) : Q ) = (a : Q)⁻¹ :=
   rfl
 #align quotient_group.coe_inv QuotientGroup.mk_inv
 #align quotient_add_group.coe_neg QuotientAddGroup.mk_neg
@@ -177,13 +177,13 @@ theorem mk_div (a b : G) : ((a / b : G) : Q ) = a / b :=
 #align quotient_add_group.coe_sub QuotientAddGroup.mk_sub
 
 @[to_additive (attr := simp)]
-theorem mk_pow (a : G) (n : ℕ) : ((a ^ n : G) : Q ) = a ^ n :=
+theorem mk_pow (a : G) (n : ℕ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
   rfl
 #align quotient_group.coe_pow QuotientGroup.mk_pow
 #align quotient_add_group.coe_nsmul QuotientAddGroup.mk_nsmul
 
 @[to_additive (attr := simp)]
-theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q ) = a ^ n :=
+theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
   rfl
 #align quotient_group.coe_zpow QuotientGroup.mk_zpow
 #align quotient_add_group.coe_zsmul QuotientAddGroup.mk_zsmul
