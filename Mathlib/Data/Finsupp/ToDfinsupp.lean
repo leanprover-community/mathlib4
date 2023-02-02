@@ -263,19 +263,21 @@ def finsuppLequivDfinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
 @[simp]
 theorem finsuppLequivDfinsupp_apply_toAddHom_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M]:
-    ↑(finsuppLequivDfinsupp R).toLinearMap.toAddHom = Finsupp.toDfinsupp := rfl
+    (↑(finsuppLequivDfinsupp (M := M) R).toLinearMap.toAddHom : (ι →₀ M) → _) = Finsupp.toDfinsupp :=
+  rfl
 
 -- porting note: `simps` generated as ` ↑(finsuppLequivDfinsupp R).toLinearMap = Finsupp.toDfinsupp`
 @[simp]
 theorem finsuppLequivDfinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
-      ↑(finsuppLequivDfinsupp R) = Finsupp.toDfinsupp := by
+      (↑(finsuppLequivDfinsupp (M := M) R) : (ι →₀ M) → _) = Finsupp.toDfinsupp := by
        simp only [@LinearEquiv.coe_coe]; rfl
 
 @[simp]
 theorem finsuppLequivDfinsupp_symmApply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
-    ↑(LinearEquiv.symm (finsuppLequivDfinsupp R)) = Dfinsupp.toFinsupp := rfl
+    (↑(LinearEquiv.symm (finsuppLequivDfinsupp (M := M) R)) : (ι →₀ M) → _) = Dfinsupp.toFinsupp :=
+  rfl
 
 -- porting note: moved noncomputable declaration into section begin
 noncomputable section Sigma
