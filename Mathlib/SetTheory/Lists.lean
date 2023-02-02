@@ -377,8 +377,6 @@ noncomputable def Equiv.decidableMeas :
   | PSum.inr <| PSum.inr ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
 #align lists.equiv.decidable_meas Lists.Equiv.decidableMeas
 
-open WellFoundedTactics
-
 theorem sizeof_pos {b} (l : Lists' α b) : 0 < SizeOf.sizeOf l := by
   cases l <;> simp only [Lists'.atom.sizeOf_spec, Lists'.nil.sizeOf_spec, Lists'.cons'.sizeOf_spec,
     true_or, add_pos_iff]
@@ -406,21 +404,15 @@ mutual
     | ⟨false, l₁⟩, ⟨true, l₂⟩ => isFalse <| by rintro ⟨⟩
     | ⟨true, l₁⟩, ⟨false, l₂⟩ => isFalse <| by rintro ⟨⟩
     | ⟨true, l₁⟩, ⟨true, l₂⟩ => by
-      haveI :=
-        have :
-          SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
+      haveI : Decidable (l₁ ⊆ l₂) :=
+        have : SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
             SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) :=
-          by
-          run_tac
-            default_dec_tac
+          by decreasing_tactic
         Subset.decidable l₁ l₂
-      haveI :=
-        have :
-          SizeOf.sizeOf l₂ + SizeOf.sizeOf l₁ <
+      haveI : Decidable (l₂ ⊆ l₁) :=
+        have : SizeOf.sizeOf l₂ + SizeOf.sizeOf l₁ <
             SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) :=
-          by
-          run_tac
-            default_dec_tac
+          by decreasing_tactic
         Subset.decidable l₂ l₁
       exact decidable_of_iff' _ Equiv.antisymm_iff
   @[instance]
@@ -428,18 +420,14 @@ mutual
     | Lists'.nil, l₂ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
       haveI :=
-        have :
-          SizeOf.sizeOf (⟨b, a⟩ : Lists α) + SizeOf.sizeOf l₂ <
+        have : SizeOf.sizeOf (⟨b, a⟩ : Lists α) + SizeOf.sizeOf l₂ <
             SizeOf.sizeOf (Lists'.cons' a l₁) + SizeOf.sizeOf l₂ :=
           add_lt_add_right (lt_sizeof_cons' _ _) _
         mem.decidable ⟨b, a⟩ l₂
       haveI :=
-        have :
-          SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
+        have : SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
             SizeOf.sizeOf (Lists'.cons' a l₁) + SizeOf.sizeOf l₂ :=
-          by
-          run_tac
-            default_dec_tac
+          by decreasing_tactic
         Subset.decidable l₁ l₂
       exact decidable_of_iff' _ (@Lists'.cons_subset _ ⟨_, _⟩ _ _)
   @[instance]
@@ -456,9 +444,7 @@ mutual
         have :
           SizeOf.sizeOf a + SizeOf.sizeOf l₂ <
             SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) :=
-          by
-          run_tac
-            default_dec_tac
+          by decreasing_tactic
         mem.decidable a l₂
       refine' decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) _
       rw [← Lists'.mem_cons]; rfl
