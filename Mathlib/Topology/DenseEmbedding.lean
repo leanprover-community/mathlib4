@@ -40,6 +40,7 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
   is the one induced by `i` from the topology on `β`. -/
 structure DenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → β)
     extends Inducing i : Prop where
+  /-- The range of a dense inducing map is a dense set. -/
   protected dense : DenseRange i
 #align dense_inducing DenseInducing
 
@@ -233,6 +234,7 @@ end DenseInducing
 /-- A dense embedding is an embedding with dense image. -/
 structure DenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) extends
   DenseInducing e : Prop where
+  /-- A dense embedding is injective. -/
   inj : Function.Injective e
 #align dense_embedding DenseEmbedding
 
