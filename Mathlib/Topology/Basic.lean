@@ -1107,6 +1107,10 @@ theorem clusterPt_iff {x : α} {F : Filter α} :
   inf_neBot_iff
 #align cluster_pt_iff clusterPt_iff
 
+theorem clusterPt_iff_not_disjoint {x : α} {F : Filter α} :
+    ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
+  rw [disjoint_iff, ClusterPt, neBot_iff]
+
 /-- `x` is a cluster point of a set `s` if every neighbourhood of `x` meets `s` on a nonempty
 set. See also `mem_closure_iff_clusterPt`. -/
 theorem clusterPt_principal_iff {x : α} {s : Set α} :

@@ -80,7 +80,6 @@ instance ULift.topologicalSpace [t : TopologicalSpace α] : TopologicalSpace (UL
 The topology on those type synonyms is inherited without change.
 -/
 
-
 section
 
 variable [TopologicalSpace α]
