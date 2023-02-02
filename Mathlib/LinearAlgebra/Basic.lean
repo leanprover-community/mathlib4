@@ -13,6 +13,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.Data.Finsupp.Basic
 
@@ -1043,6 +1044,9 @@ section AddCommGroup
 variable [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M)
 
 variable [AddCommGroup M₂] [Module R M₂]
+
+--Porting note: Why doesn't infer_instance work here?
+example : AddCommGroup (M →ₗ[R] M₂) := LinearMap.addCommGroup
 
 -- See `neg_coe_set`
 theorem neg_coe : -(p : Set M) = p :=
