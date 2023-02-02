@@ -347,7 +347,8 @@ theorem fix_induction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} 
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
-  generalize_proofs ha
+  -- porting notes: `generalize` required to address `generalize_proofs` bug
+  generalize (Part.mem_assert_iff.1 h).fst = ha
   induction ha
   rfl
 #align pfun.fix_induction_spec PFun.fix_induction_spec
@@ -356,11 +357,11 @@ theorem fix_induction_spec {C : α → Sort _} {f : α →. Sum β α} {b : β} 
 `a` given that `f a` inherits `P` from `a` and `P` holds for preimages of `b`.
 -/
 @[elab_as_elim]
-noncomputable def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
-    (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
+noncomputable def fixInduction' {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α}
+    (h : b ∈ f.fix a) (hbase : ∀ a_final : α, Sum.inl b ∈ f a_final → C a_final)
     (hind : ∀ a₀ a₁ : α, b ∈ f.fix a₁ → Sum.inr a₁ ∈ f a₀ → C a₁ → C a₀) : C a := by
   refine' fixInduction h fun a' h ih => _
-  cases' e : (f a').get (dom_of_mem_fix h) with b' a'' <;> replace e : _ ∈ f a' := ⟨_, e⟩
+  rcases e : (f a').get (dom_of_mem_fix h) with b' | a'' <;> replace e : _ ∈ f a' := ⟨_, e⟩
   · apply hbase
     convert e
     exact Part.mem_unique h (fix_stop e)
@@ -373,7 +374,12 @@ theorem fixInduction'_stop {C : α → Sort _} {f : α →. Sum β α} {b : β} 
     @fixInduction' _ _ C _ _ _ h hbase hind = hbase a fa := by
   unfold fixInduction'
   rw [fix_induction_spec]
-  simp [Part.get_eq_of_mem fa]
+  -- porting notes: the explicit motive required because `simp` behaves differently
+  refine' Eq.rec (motive := fun x e =>
+      Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
+      (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) _
+    (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
+  simp
 #align pfun.fix_induction'_stop PFun.fixInduction'_stop
 
 theorem fixInduction'_fwd {C : α → Sort _} {f : α →. Sum β α} {b : β} {a a' : α} (h : b ∈ f.fix a)
@@ -383,7 +389,12 @@ theorem fixInduction'_fwd {C : α → Sort _} {f : α →. Sum β α} {b : β} {
     @fixInduction' _ _ C _ _ _ h hbase hind = hind a a' h' fa (fixInduction' h' hbase hind) := by
   unfold fixInduction'
   rw [fix_induction_spec]
-  simp [Part.get_eq_of_mem fa]
+  -- porting notes: the explicit motive required because `simp` behaves differently
+  refine' Eq.rec (motive := fun x e =>
+      Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x _ _
+      (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = _) _
+    (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
+  simp
 #align pfun.fix_induction'_fwd PFun.fixInduction'_fwd
 
 variable (f : α →. β)
