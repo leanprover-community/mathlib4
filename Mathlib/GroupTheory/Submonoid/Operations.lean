@@ -1473,7 +1473,7 @@ section MulOneClass
 variable [MulOneClass M']
 
 @[to_additive]
-instance [SMul M' α] (S : Submonoid M') : SMul S α :=
+instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
   SMul.comp _ S.subtype
 
 @[to_additive]
@@ -1491,7 +1491,8 @@ instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
 #align add_submonoid.vadd_comm_class_right AddSubmonoid.vaddCommClass_right
 
 /-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
-instance [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β] (S : Submonoid M') :
+instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
+      (S : Submonoid M') :
     IsScalarTower S α β :=
   ⟨fun a => (smul_assoc (a : M') : _)⟩
 
@@ -1501,7 +1502,7 @@ theorem smul_def [SMul M' α] {S : Submonoid M'} (g : S) (m : α) : g • m = (g
 #align submonoid.smul_def Submonoid.smul_def
 #align add_submonoid.vadd_def AddSubmonoid.vadd_def
 
-instance [SMul M' α] [FaithfulSMul M' α] (S : Submonoid M') : FaithfulSMul S α :=
+instance faithfulSMul [SMul M' α] [FaithfulSMul M' α] (S : Submonoid M') : FaithfulSMul S α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
 
 end MulOneClass
@@ -1511,15 +1512,17 @@ variable [Monoid M']
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
       "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance [MulAction M' α] (S : Submonoid M') : MulAction S α :=
+instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
   MulAction.compHom _ S.subtype
 
 /-- The action by a submonoid is the action by the underlying monoid. -/
-instance [AddMonoid α] [DistribMulAction M' α] (S : Submonoid M') : DistribMulAction S α :=
+instance distribMulAction [AddMonoid α] [DistribMulAction M' α] (S : Submonoid M') :
+    DistribMulAction S α :=
   DistribMulAction.compHom _ S.subtype
 
 /-- The action by a submonoid is the action by the underlying monoid. -/
-instance [Monoid α] [MulDistribMulAction M' α] (S : Submonoid M') : MulDistribMulAction S α :=
+instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] (S : Submonoid M') :
+    MulDistribMulAction S α :=
   MulDistribMulAction.compHom _ S.subtype
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance

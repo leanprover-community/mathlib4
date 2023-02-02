@@ -88,7 +88,7 @@ noncomputable section
 
 open Finset Function
 
--- open BigOperators -- Porting note: notation is global for now
+open BigOperators
 
 variable {α β γ ι M M' N P G H R S : Type _}
 

@@ -132,7 +132,7 @@ theorem pi_inf_principal_univ_pi_eq_bot : pi f ⊓ 𝓟 (Set.pi univ s) = ⊥ �
 @[simp]
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
     pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
-  rw [← univ_pi_piecewise I, pi_inf_principal_univ_pi_eq_bot]
+  rw [← univ_pi_piecewise_univ I, pi_inf_principal_univ_pi_eq_bot]
   refine' exists_congr fun i => _
   by_cases hi : i ∈ I <;> simp [hi, NeBot.ne']
 #align filter.pi_inf_principal_pi_eq_bot Filter.pi_inf_principal_pi_eq_bot
