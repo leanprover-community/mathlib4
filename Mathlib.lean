@@ -846,6 +846,7 @@ import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
+import Mathlib.SetTheory.Lists
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
