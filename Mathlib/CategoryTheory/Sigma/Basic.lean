@@ -236,16 +236,16 @@ def mapId : map C (id : I → I) ≅ 𝟭 (Σi, C i) :=
   natIso fun i => NatIso.ofComponents (fun X => Iso.refl _) (by aesop)
 #align category_theory.sigma.map_id CategoryTheory.Sigma.mapId
 
--- Porting note: TODO: don't know how to fix the type errors here
--- variable {I} {K : Type w₃}
+variable {I} {K : Type w₃}
 
--- /-- The functor `sigma.map` applied to a composition is a composition of functors. -/
--- @[simps]
--- def mapComp (f : K → J) (g : J → I) : map (C ∘ g) f ⋙ (map C g : _) ≅ map C (g ∘ f) :=
---   (descUniq _ _) fun k =>
---     (isoWhiskerRight (inclCompMap (C ∘ g) f k) (map C g : _) : _) ≪≫ inclCompMap _ _ _
-
--- #align category_theory.sigma.map_comp CategoryTheory.Sigma.mapComp
+-- Porting note: Had to expand (G ∘ g) to (fun i => C (g i)) in lemma statement
+-- so that the suitable cateogry instances could be found
+/-- The functor `sigma.map` applied to a composition is a composition of functors. -/
+@[simps]
+def mapComp (f : K → J) (g : J → I) : map (fun x => C (g x)) f ⋙ (map C g : _) ≅ map C (g ∘ f) :=
+  (descUniq _ _) fun k =>
+    (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g : _) : _) ≪≫ inclCompMap _ _ _
+#align category_theory.sigma.map_comp CategoryTheory.Sigma.mapComp
 
 end
 
