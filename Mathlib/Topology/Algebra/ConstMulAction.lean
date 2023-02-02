@@ -8,11 +8,11 @@ Authors: Alex Kontorovich, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Constructions
-import Mathbin.Topology.Homeomorph
-import Mathbin.GroupTheory.GroupAction.Basic
-import Mathbin.Topology.Bases
-import Mathbin.Topology.Support
+import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Homeomorph
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Topology.Bases
+import Mathlib.Topology.Support
 
 /-!
 # Monoid actions continuous in the second variable
@@ -335,8 +335,7 @@ theorem interior_smul₀ {c : G₀} (hc : c ≠ 0) (s : Set α) : interior (c �
 #align interior_smul₀ interior_smul₀
 
 theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E] [T1Space E]
-    [HasContinuousConstSmul G₀ E] (c : G₀) (s : Set E) : closure (c • s) = c • closure s :=
-  by
+    [HasContinuousConstSmul G₀ E] (c : G₀) (s : Set E) : closure (c • s) = c • closure s := by
   rcases eq_or_ne c 0 with (rfl | hc)
   · rcases eq_empty_or_nonempty s with (rfl | hs)
     · simp
@@ -364,8 +363,7 @@ The lemma that `smul` is a closed map in the first argument (for a normed space 
 normed field) is `is_closed_map_smul_left` in `analysis.normed_space.finite_dimension`. -/
 theorem isClosedMap_smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
     [T1Space M] [Module 𝕜 M] [HasContinuousConstSmul 𝕜 M] (c : 𝕜) :
-    IsClosedMap fun x : M => c • x :=
-  by
+    IsClosedMap fun x : M => c • x := by
   rcases eq_or_ne c 0 with (rfl | hne)
   · simp only [zero_smul]
     exact isClosedMap_const
@@ -479,8 +477,7 @@ export ProperlyDiscontinuousVadd (finite_disjoint_inter_image)
 @[to_additive
       "The quotient map by a group action is open, i.e. the quotient by a group\naction is an open quotient. "]
 theorem isOpenMap_quotient_mk'_mul [HasContinuousConstSmul Γ T] :
-    IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) :=
-  by
+    IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := by
   intro U hU
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
   exact isOpen_unionᵢ fun γ => (Homeomorph.smul γ).IsOpenMap U hU
@@ -491,8 +488,7 @@ theorem isOpenMap_quotient_mk'_mul [HasContinuousConstSmul Γ T] :
 @[to_additive "The quotient by a discontinuous group action of a locally compact t2\nspace is t2."]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSmul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [HasContinuousConstSmul Γ T] [ProperlyDiscontinuousSmul Γ T] :
-    T2Space (Quotient (MulAction.orbitRel Γ T)) :=
-  by
+    T2Space (Quotient (MulAction.orbitRel Γ T)) := by
   set Q := Quotient (MulAction.orbitRel Γ T)
   rw [t2Space_iff_nhds]
   let f : T → Q := Quotient.mk'
@@ -550,8 +546,7 @@ theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝
 #align set_smul_mem_nhds_smul set_smul_mem_nhds_smul
 
 theorem set_smul_mem_nhds_smul_iff {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
-    c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x :=
-  by
+    c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x := by
   refine' ⟨fun h => _, fun h => set_smul_mem_nhds_smul h hc⟩
   rw [← inv_smul_smul₀ hc x, ← inv_smul_smul₀ hc s]
   exact set_smul_mem_nhds_smul h (inv_ne_zero hc)
@@ -565,8 +560,7 @@ variable {G₀ : Type _} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G
   [HasContinuousConstSmul G₀ α]
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
-    c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) :=
-  by
+    c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by
   refine' Iff.trans _ (set_smul_mem_nhds_smul_iff hc)
   rw [smul_zero]
 #align set_smul_mem_nhds_zero_iff set_smul_mem_nhds_zero_iff
