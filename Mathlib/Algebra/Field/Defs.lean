@@ -179,6 +179,13 @@ section OfScientific
 instance DivisionRing.toOfScientific [DivisionRing K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
 
+/-- A class which states that an `OfScientific α` instance is propositionally equal to the cast of
+the canonical `OfScientific Rat` instance, assuming we have `RatCast α`. -/
+class LawfulOfScientific (α) [OfScientific α] [RatCast α] : Prop where
+  /-- However `ofScientific` is defined, it's pointwise equal to the cast of `Rat.ofScientific`. -/
+  ofScientific_eq (m : ℕ) (b : Bool) (d : ℕ) :
+      OfScientific.ofScientific m b d = (Rat.ofScientific m b d : α)
+
 end OfScientific
 
 section Field
