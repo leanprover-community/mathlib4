@@ -250,7 +250,7 @@ theorem map_mk' (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f)
 @[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
     map N N (MonoidHom.id _) h x = x :=
-  induction_on' x fun x => rfl
+  induction_on' x fun _x => rfl
 #align quotient_group.map_id_apply QuotientGroup.map_id_apply
 #align quotient_add_group.map_id_apply QuotientAddGroup.map_id_apply
 
@@ -296,11 +296,11 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
     invFun := map H' G' e.symm (he ▸ (G'.map_equiv_eq_comap_symm e).le)
     left_inv := fun x => by
       have := map_map G' H' G' e e.symm (he ▸ G'.le_comap_map (e : G →* H)) (he ▸ (G'.map_equiv_eq_comap_symm e).le)
-      rw [map_map G' H' G' e e.symm (he ▸ G'.le_comap_map (e : G →* H)) (he ▸ (G'.map_equiv_eq_comap_symm e).le)] <;>
+      rw [map_map G' H' G' e e.symm (he ▸ G'.le_comap_map (e : G →* H)) (he ▸ (G'.map_equiv_eq_comap_symm e).le)];
         simp only [map_map, ← MulEquiv.coe_monoidHom_trans, MulEquiv.self_trans_symm,
           MulEquiv.coe_monoidHom_refl, map_id_apply]
     right_inv := fun x => by
-      rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le) (he ▸ G'.le_comap_map (e : G →* H)) ] <;>
+      rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le) (he ▸ G'.le_comap_map (e : G →* H)) ];
         simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
           MulEquiv.coe_monoidHom_refl, map_id_apply] }
 #align quotient_group.congr QuotientGroup.congr
@@ -344,7 +344,7 @@ open MonoidHom
 /-- The induced map from the quotient by the kernel to the codomain. -/
 @[to_additive "The induced map from the quotient by the kernel to the codomain."]
 def kerLift : G ⧸ ker φ →* H :=
-  lift _ φ fun g => φ.mem_ker.mp
+  lift _ φ fun _g => φ.mem_ker.mp
 #align quotient_group.ker_lift QuotientGroup.kerLift
 #align quotient_add_group.ker_lift QuotientAddGroup.kerLift
 
@@ -419,7 +419,7 @@ def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G
 /-- The canonical isomorphism `G/⊥ ≃* G`. -/
 @[to_additive "The canonical isomorphism `G/⊥ ≃+ G`.", simps]
 def quotientBot : G ⧸ (⊥ : Subgroup G) ≃* G :=
-  quotientKerEquivOfRightInverse (MonoidHom.id G) id fun x => rfl
+  quotientKerEquivOfRightInverse (MonoidHom.id G) id fun _x => rfl
 #align quotient_group.quotient_bot QuotientGroup.quotientBot
 #align quotient_add_group.quotient_bot QuotientAddGroup.quotientBot
 
@@ -440,7 +440,7 @@ isomorphic. -/
       "If two normal subgroups `M` and `N` of `G` are the same, their quotient groups are\nisomorphic."]
 def quotientMulEquivOfEq {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) : G ⧸ M ≃* G ⧸ N :=
   { Subgroup.quotientEquivOfEq h with
-    map_mul' := fun q r => Quotient.inductionOn₂' q r fun g h => rfl }
+    map_mul' := fun q r => Quotient.inductionOn₂' q r fun _g _h => rfl }
 #align quotient_group.quotient_mul_equiv_of_eq QuotientGroup.quotientMulEquivOfEq
 #align quotient_add_group.quotient_add_equiv_of_eq QuotientAddGroup.quotientAddEquivOfEq
 
@@ -455,16 +455,16 @@ theorem quotientMulEquivOfEq_mk {M N : Subgroup G} [M.Normal] [N.Normal] (h : M 
 then there is a map `A / (A' ⊓ A) →* B / (B' ⊓ B)` induced by the inclusions. -/
 @[to_additive
       "Let `A', A, B', B` be subgroups of `G`. If `A' ≤ B'` and `A ≤ B`,\nthen there is a map `A / (A' ⊓ A) →+ B / (B' ⊓ B)` induced by the inclusions."]
-def quotientMapSubgroupOfOfLe {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A).Normal]
-    [hBN : (B'.subgroupOf B).Normal] (h' : A' ≤ B') (h : A ≤ B) :
+def quotientMapSubgroupOfOfLe {A' A B' B : Subgroup G} [_hAN : (A'.subgroupOf A).Normal]
+    [_hBN : (B'.subgroupOf B).Normal] (h' : A' ≤ B') (h : A ≤ B) :
     A ⧸ A'.subgroupOf A →* B ⧸ B'.subgroupOf B :=
   map _ _ (Subgroup.inclusion h) <| Subgroup.comap_mono h'
 #align quotient_group.quotient_map_subgroup_of_of_le QuotientGroup.quotientMapSubgroupOfOfLe
 #align quotient_add_group.quotient_map_add_subgroup_of_of_le QuotientAddGroup.quotientMapAddSubgroupOfOfLe
 
 @[simp, to_additive]
-theorem quotientMapSubgroupOfOfLe_coe {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A).Normal]
-    [hBN : (B'.subgroupOf B).Normal] (h' : A' ≤ B') (h : A ≤ B) (x : A) :
+theorem quotientMapSubgroupOfOfLe_coe {A' A B' B : Subgroup G} [_hAN : (A'.subgroupOf A).Normal]
+    [_hBN : (B'.subgroupOf B).Normal] (h' : A' ≤ B') (h : A ≤ B) (x : A) :
     quotientMapSubgroupOfOfLe h' h x = ↑(Subgroup.inclusion h x : B) :=
   rfl
 #align quotient_group.quotient_map_subgroup_of_of_le_coe QuotientGroup.quotientMapSubgroupOfOfLe_coe
