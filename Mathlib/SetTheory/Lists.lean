@@ -388,13 +388,11 @@ theorem lt_sizeof_cons' {b} (a : Lists' α b) (l) :
   apply sizeof_pos
 #align lists.lt_sizeof_cons' Lists.lt_sizeof_cons'
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic well_founded_tactics.default_dec_tac -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic well_founded_tactics.default_dec_tac -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic well_founded_tactics.default_dec_tac -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic well_founded_tactics.default_dec_tac -/
+variable [DecidableEq α]
+
 mutual
   @[instance]
-  def Equiv.decidable [DecidableEq α] : ∀ l₁ l₂ : Lists α, Decidable (l₁ ~ l₂)
+  def Equiv.decidable : ∀ l₁ l₂ : Lists α, Decidable (l₁ ~ l₂)
     | ⟨false, l₁⟩, ⟨false, l₂⟩ =>
       decidable_of_iff' (l₁ = l₂) <| by
         cases l₁
@@ -416,13 +414,11 @@ mutual
         Subset.decidable l₂ l₁
       exact decidable_of_iff' _ Equiv.antisymm_iff
   @[instance]
-  def Subset.decidable [DecidableEq α] : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
+  def Subset.decidable  : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
     | Lists'.nil, l₂ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
       haveI :=
-        have : SizeOf.sizeOf (⟨b, a⟩ : Lists α) + SizeOf.sizeOf l₂ <
-            SizeOf.sizeOf (Lists'.cons' a l₁) + SizeOf.sizeOf l₂ :=
-          add_lt_add_right (lt_sizeof_cons' _ _) _
+        have : sizeOf (⟨b, a⟩ : Lists α) < 1 + 1 + sizeOf a + sizeOf l₁ := by simp [sizeof_pos]
         mem.decidable ⟨b, a⟩ l₂
       haveI :=
         have : SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
@@ -431,14 +427,11 @@ mutual
         Subset.decidable l₁ l₂
       exact decidable_of_iff' _ (@Lists'.cons_subset _ ⟨_, _⟩ _ _)
   @[instance]
-  def mem.decidable [DecidableEq α] : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
+  def mem.decidable  : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
     | a, Lists'.nil => isFalse <| by rintro ⟨_, ⟨⟩, _⟩
     | a, Lists'.cons' b l₂ => by
       haveI :=
-        have :
-          SizeOf.sizeOf a + SizeOf.sizeOf (⟨_, b⟩ : Lists α) <
-            SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) :=
-          add_lt_add_left (lt_sizeof_cons' _ _) _
+        have : sizeOf (⟨_, b⟩ : Lists α) < 1 + 1 + sizeOf b + sizeOf l₂ := by simp [sizeof_pos]
         Equiv.decidable a ⟨_, b⟩
       haveI :=
         have :
@@ -448,7 +441,7 @@ mutual
         mem.decidable a l₂
       refine' decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) _
       rw [← Lists'.mem_cons]; rfl
-end termination_by' ⟨_, measure_wf Equiv.decidable_meas⟩
+end termination_by' ⟨_, InvImage.wf Equiv.decidableMeas Nat.lt_wfRel.wf⟩
 #align lists.equiv.decidable Lists.Equiv.decidable
 #align lists.subset.decidable Lists.Subset.decidable
 #align lists.mem.decidable Lists.mem.decidable
