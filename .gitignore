@@ -1,8 +1,4 @@
-# Lean build artifacts
 /build
 /lake-packages
 /.cache
 .DS_Store
-# JavaScript build arifacts
-/widget/dist
-/widget/node_modules
