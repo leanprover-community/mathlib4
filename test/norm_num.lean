@@ -68,6 +68,22 @@ example : mkRat (10 + 6) (5 * 4) = 4/5 := by norm_num1
 
 end ConstructorsEtc
 
+section ScientificNotation
+
+variable [DivisionRing α] [CharZero α]
+
+example : (0.1 : ℚ) = 1/10 := by norm_num1
+example : (3.14 : ℚ) = 157/50 := by norm_num1
+example : (3.14159 : ℚ) = 314159/100000 := by norm_num1
+example : (0.1 : α) = 1/10 := by norm_num1
+example : (3.14 : α) = 157/50 := by norm_num1
+example : (3.14159 : α) = 314159/100000 := by norm_num1
+
+example : (42e7 : ℚ) = 420000000 := by norm_num1
+example : (42e7 : α) = 420000000 := by norm_num1
+
+end ScientificNotation
+
 /-
 # `=` and `≠`
 -/
