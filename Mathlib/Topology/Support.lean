@@ -13,22 +13,22 @@ import Mathlib.Topology.Separation
 /-!
 # The topological support of a function
 
-In this file we define the topological support of a function `f`, `tsupport f`,
-as the closure of the support of `f`.
+In this file we define the topological support of a function `f`, `tsupport f`, as the closure of
+the support of `f`.
 
 Furthermore, we say that `f` has compact support if the topological support of `f` is compact.
 
 ## Main definitions
 
-* `function.mul_tsupport` & `function.tsupport`
-* `function.has_compact_mul_support` & `function.has_compact_support`
+* `mulTSupport` & `tsupport`
+* `HasCompactMulSupport` & `HasCompactSupport`
 
 ## Implementation Notes
 
 * We write all lemmas for multiplicative functions, and use `@[to_additive]` to get the more common
   additive versions.
 * We do not put the definitions in the `function` namespace, following many other topological
-  definitions that are in the root namespace (compare `embedding` vs `function.embedding`).
+  definitions that are in the root namespace (compare `Embedding` vs `Function.Embedding`).
 -/
 
 
@@ -44,8 +44,7 @@ variable [One α] [TopologicalSpace X]
   set of all elements where the function is not equal to 1. -/
 @[to_additive " The topological support of a function is the closure of its support. i.e. the
 closure of the set of all elements where the function is nonzero. "]
-def mulTSupport (f : X → α) : Set X :=
-  closure (mulSupport f)
+def mulTSupport (f : X → α) : Set X := closure (mulSupport f)
 #align mul_tsupport mulTSupport
 #align tsupport tsupport
 
@@ -145,19 +144,17 @@ theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure
 #align has_compact_mul_support_def hasCompactMulSupport_def
 #align has_compact_support_def hasCompactSupport_def
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x «expr ∉ » K) -/
 @[to_additive]
 theorem exists_compact_iff_hasCompactMulSupport [T2Space α] :
-    (∃ K : Set α, IsCompact K ∧ ∀ (x) (_ : x ∉ K), f x = 1) ↔ HasCompactMulSupport f := by
+    (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
   simp_rw [← nmem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
     hasCompactMulSupport_def, exists_compact_superset_iff]
 #align exists_compact_iff_has_compact_mul_support exists_compact_iff_hasCompactMulSupport
 #align exists_compact_iff_has_compact_support exists_compact_iff_hasCompactSupport
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x «expr ∉ » K) -/
 @[to_additive]
 theorem HasCompactMulSupport.intro [T2Space α] {K : Set α} (hK : IsCompact K)
-    (hfK : ∀ (x) (_ : x ∉ K), f x = 1) : HasCompactMulSupport f :=
+    (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 #align has_compact_mul_support.intro HasCompactMulSupport.intro
 #align has_compact_support.intro HasCompactSupport.intro
@@ -175,8 +172,8 @@ theorem hasCompactMulSupport_iff_eventuallyEq :
     ⟨mulTSupport f, isClosed_mulTSupport _, h,
       fun _ => not_imp_comm.mpr fun hx => subset_mulTSupport f hx⟩,
     fun h =>
-    let ⟨_C, hC⟩ := mem_coclosed_compact'.mp h
-    isCompact_of_isClosed_subset hC.2.1 (isClosed_mulTSupport _) (closure_minimal hC.2.2 hC.1)⟩
+      let ⟨_C, hC⟩ := mem_coclosed_compact'.mp h
+      isCompact_of_isClosed_subset hC.2.1 (isClosed_mulTSupport _) (closure_minimal hC.2.2 hC.1)⟩
 #align has_compact_mul_support_iff_eventually_eq hasCompactMulSupport_iff_eventuallyEq
 #align has_compact_support_iff_eventually_eq hasCompactSupport_iff_eventuallyEq
 
@@ -245,11 +242,10 @@ variable {f f' : α → β} {x : α}
 
 @[to_additive]
 theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
-    HasCompactMulSupport (f * f') := by apply hf.comp₂_left hf' (mul_one 1)
+    HasCompactMulSupport (f * f') := hf.comp₂_left hf' (mul_one 1)
 #align has_compact_mul_support.mul HasCompactMulSupport.mul
 #align has_compact_support.add HasCompactSupport.add
 
--- `by apply` speeds up elaboration
 end Monoid
 
 section DistribMulAction
@@ -305,6 +301,7 @@ namespace LocallyFinite
 
 variable {ι : Type _} {U : ι → Set X} [TopologicalSpace X] [One R]
 
+-- porting note: todo: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
