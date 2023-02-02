@@ -56,6 +56,12 @@ If you want to start a project that uses `mathlib4` as a dependency, you can run
 ```
 lake init MyProject math
 ```
+
+Important: the command above requires a more recent toolchain set as default, which can be done with, for example:
+```
+elan default leanprover/lean4:nightly-2023-01-29
+```
+
 Or, if you already have a project and you want to be able to use `mathlib4`, add these lines to your `lakefile.lean`:
 ```
 require std from git
