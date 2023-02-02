@@ -531,11 +531,11 @@ noncomputable def above : P :=
 #align order.cofinal.above Order.Cofinal.above
 
 theorem above_mem : D.above x ∈ D :=
-  Exists.elim (Classical.choose_spec <| D.mem_gt x) fun a _ => a
+  (Classical.choose_spec <| D.mem_gt x).1
 #align order.cofinal.above_mem Order.Cofinal.above_mem
 
 theorem le_above : x ≤ D.above x :=
-  Exists.elim (Classical.choose_spec <| D.mem_gt x) fun _ b => b
+  (Classical.choose_spec <| D.mem_gt x).2
 #align order.cofinal.le_above Order.Cofinal.le_above
 
 end Cofinal
