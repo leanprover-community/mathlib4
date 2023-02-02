@@ -61,12 +61,13 @@ namespace Finset
 
 section LocalLYM
  -- porting note: added `Decidable` for ⊆
-variable [DecidableEq α] [∀ s t : (Finset α), Decidable (s ⊆ t)] [Fintype α]
+variable [DecidableEq α] [Fintype α]
   {𝒜 : Finset (Finset α)} {r : ℕ}
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r):
     𝒜.card * r ≤ ((∂ ) 𝒜).card * (Fintype.card α - r + 1) := by
+  let i : DecidableRel ((. ⊆ .) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
     refine' card_le_of_subset _
@@ -123,8 +124,7 @@ section LYM
 
 section Falling
 
- -- porting note: added `Decidable` for ⊆
-variable [DecidableEq α] [∀ s t : (Finset α), Decidable (s ⊆ t)] (k : ℕ) (𝒜 : Finset (Finset α))
+variable [DecidableEq α] (k : ℕ) (𝒜 : Finset (Finset α))
 
 /-- `falling k 𝒜` is all the finsets of cardinality `k` which are a subset of something in `𝒜`. -/
 def falling : Finset (Finset α) :=
