@@ -80,7 +80,6 @@ instance ULift.topologicalSpace [t : TopologicalSpace α] : TopologicalSpace (UL
 The topology on those type synonyms is inherited without change.
 -/
 
-
 section
 
 variable [TopologicalSpace α]
@@ -832,6 +831,15 @@ theorem embedding_graph {f : α → β} (hf : Continuous f) : Embedding fun x =>
 
 end Prod
 
+section Bool
+
+@[simp 900] lemma continuous_bool_rng [TopologicalSpace α] {f : α → Bool} :
+    Continuous f ↔ IsClopen (f ⁻¹' {true}) := by
+  rw [continuous_discrete_rng, Bool.forall_bool, IsClopen, ← isOpen_compl_iff, ← preimage_compl,
+    Bool.compl_singleton, and_comm, Bool.not_true]
+
+end Bool
+
 section Sum
 
 open Sum
@@ -927,6 +935,14 @@ theorem nhds_inl (x : α) : 𝓝 (inl x : Sum α β) = map inl (𝓝 x) :=
 theorem nhds_inr (x : β) : 𝓝 (inr x : Sum α β) = map inr (𝓝 x) :=
   (openEmbedding_inr.map_nhds_eq _).symm
 #align nhds_inr nhds_inr
+
+theorem continuous_isLeft : Continuous (isLeft : α ⊕ β → Bool) :=
+  continuous_bool_rng.2 ⟨by simpa only [range_inl] using isOpen_range_inl,
+    by simpa only [range_inl] using isClosed_range_inl⟩
+
+theorem continuous_isRight : Continuous (isRight : α ⊕ β → Bool) := by
+  simpa only [not_isLeft, comp]
+    using (continuous_of_discreteTopology (f := not)).comp continuous_isLeft
 
 @[simp]
 theorem continuous_sum_map {f : α → β} {g : γ → δ} :
