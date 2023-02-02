@@ -13,6 +13,8 @@ import WidgetKit.Component.PenroseDiagram
 infoview. -/
 
 open Lean in
+/-- If the expression is a function application of `fName` with 7 arguments, return those arguments.
+Otherwise return `none`. -/
 @[inline] def _root_.Lean.Expr.app7? (e : Expr) (fName : Name)
     : Option (Expr × Expr × Expr × Expr × Expr × Expr × Expr) :=
   if e.isAppOfArity fName 7 then
@@ -43,6 +45,7 @@ def homComp? (f : Expr) : Option (Expr × Expr) := do
   let some (_, _, _, _, _, f, g) := f.app7? ``CategoryStruct.comp | none
   return (f, g)
 
+/-- Expressions to display as labels in a diagram. -/
 abbrev ExprEmbeds := Array (String × Expr)
 
 open scoped Jsx in
@@ -107,6 +110,7 @@ def commTriangleM? (e : Expr) : MetaM (Option EncodableHtml) := do
       ("f", f), ("g", g), ("h", lhs)]
 
 open Jsx in
+/-- Present an expression as a commutative diagram. -/
 @[expr_presenter]
 def commutativeDiagramPresenter : ExprPresenter where
   userName := "Commutative diagram"
@@ -125,6 +129,7 @@ def commutativeDiagramPresenter : ExprPresenter where
 
 /-! Example diagrams -/
 
+/-- Local instance to make examples work. -/
 local instance : Category (Type u) where
   Hom α β := α → β
   id _ := id
