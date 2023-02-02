@@ -31,7 +31,6 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 -/
 
-
 open Set Filter
 
 open Topology
@@ -48,15 +47,23 @@ structure Homeomorph (α : Type _) (β : Type _) [TopologicalSpace α] [Topologi
   continuous_invFun : Continuous invFun -- porting note: todo: := by continuity
 #align homeomorph Homeomorph
 
+@[inherit_doc]
 infixl:25 " ≃ₜ " => Homeomorph
 
 namespace Homeomorph
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
--- TODO: add `EquivLike`
-instance : CoeFun (α ≃ₜ β) fun _ => α → β :=
-  ⟨fun e => e.toEquiv⟩
+theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ₜ β → α ≃ β)
+  | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
+#align homeomorph.to_equiv_injective Homeomorph.toEquiv_injective
+
+instance : EquivLike (α ≃ₜ β) α β where
+  coe := fun h => h.toEquiv
+  inv := fun h => h.toEquiv.symm
+  left_inv := fun h => h.left_inv
+  right_inv := fun h => h.right_inv
+  coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
 
 @[simp]
 theorem homeomorph_mk_coe (a : Equiv α β) (b c) : (Homeomorph.mk a b c : α → β) = a :=
@@ -77,9 +84,9 @@ def Simps.apply (h : α ≃ₜ β) : α → β :=
 #align homeomorph.simps.apply Homeomorph.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (h : α ≃ₜ β) : β → α :=
+def Simps.symm_apply (h : α ≃ₜ β) : β → α :=
   h.symm
-#align homeomorph.simps.symm_apply Homeomorph.Simps.symmApply
+#align homeomorph.simps.symm_apply Homeomorph.Simps.symm_apply
 
 initialize_simps_projections Homeomorph (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
   -toEquiv)
@@ -93,10 +100,6 @@ theorem coe_toEquiv (h : α ≃ₜ β) : ⇑h.toEquiv = h :=
 theorem coe_symm_toEquiv (h : α ≃ₜ β) : ⇑h.toEquiv.symm = h.symm :=
   rfl
 #align homeomorph.coe_symm_to_equiv Homeomorph.coe_symm_toEquiv
-
-theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ₜ β → α ≃ β)
-  | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
-#align homeomorph.to_equiv_injective Homeomorph.toEquiv_injective
 
 @[ext]
 theorem ext {h h' : α ≃ₜ β} (H : ∀ x, h x = h' x) : h = h' :=
@@ -718,4 +721,3 @@ def homeoOfEquivCompactToT2 [CompactSpace α] [T2Space β] {f : α ≃ β} (hf :
 #align continuous.homeo_of_equiv_compact_to_t2 Continuous.homeoOfEquivCompactToT2
 
 end Continuous
-
