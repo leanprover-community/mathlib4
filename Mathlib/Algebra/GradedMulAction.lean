@@ -127,7 +127,18 @@ instance SetLike.toGSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R 
     where smul a b := ⟨a.1 • b.1, SetLike.GradedSmul.smul_mem a.2 b.2⟩
 #align set_like.ghas_smul SetLike.toGSmul
 
-@[simp]
+/-
+Porting note: simpNF linter returns
+
+"Left-hand side does not simplify, when using the simp lemma on itself."
+
+However, simp does indeed solve the following. Possibly related std#71,std#78
+
+example {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
+    (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] {i j : ι} (x : A i) (y : B j) :
+    (@GradedMonoid.GSmul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 := by simp
+-/
+@[simp,nolint simpNF]
 theorem SetLike.coe_GSmul {S R N M : Type _} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
     (A : ι → S) (B : ι → N) [SetLike.GradedSmul A B] {i j : ι} (x : A i) (y : B j) :
     (@GradedMonoid.GSmul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 :=
