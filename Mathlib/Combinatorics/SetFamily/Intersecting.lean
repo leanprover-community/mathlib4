@@ -81,28 +81,18 @@ theorem intersecting_insert :
     fun h => h.1.insert h.2.1 h.2.2⟩
 #align set.intersecting_insert Set.intersecting_insert
 
--- Porting note: I can't make the old proof work.
 theorem intersecting_iff_pairwise_not_disjoint :
     s.Intersecting ↔ (s.Pairwise fun a b => ¬Disjoint a b) ∧ s ≠ {⊥} := by
   refine' ⟨fun h => ⟨fun a ha b hb _ => h ha hb, _⟩, fun h a ha b hb hab => _⟩
   · rintro rfl
     exact intersecting_singleton.1 h rfl
---  old proof:
---  · have := h.1.Eq ha hb (Classical.not_not.2 hab)
---    rw [this, disjoint_self] at hab
---    rw [hab] at hb
---    exact
---      h.2
---        (eq_singleton_iff_unique_mem.2
---          ⟨hb, fun c hc => not_ne_iff.1 fun H => h.1 hb hc H.symm disjoint_bot_left⟩)
-  · suffices : ⊥ ∈ s
-    · refine' h.2 (eq_singleton_iff_unique_mem.2 ⟨this, _⟩)
-      exact fun c hc => not_not.1 fun not => h.1 hc this not disjoint_bot_right
-    · apply (Or.elim (eq_bot_or_bot_lt a))
-      · exact fun h => h ▸ ha
-      · intro a_lt_bot
-        have a_ne_b := hab.ne (bot_lt_iff_ne_bot.1 a_lt_bot)
-        exact (False.elim (h.1 ha hb a_ne_b hab))
+  have := h.1.eq ha hb (Classical.not_not.2 hab)
+  rw [this, disjoint_self] at hab
+  rw [hab] at hb
+  exact
+    h.2
+      (eq_singleton_iff_unique_mem.2
+        ⟨hb, fun c hc => not_ne_iff.1 fun H => h.1 hb hc H.symm disjoint_bot_left⟩)
 #align set.intersecting_iff_pairwise_not_disjoint Set.intersecting_iff_pairwise_not_disjoint
 
 protected theorem Subsingleton.intersecting (hs : s.Subsingleton) : s.Intersecting ↔ s ≠ {⊥} :=
@@ -132,7 +122,7 @@ protected theorem Intersecting.isUpperSet (hs : s.Intersecting)
 #align set.intersecting.is_upper_set Set.Intersecting.isUpperSet
 
 /-- Maximal intersecting families are upper sets. Finset version. -/
-theorem Intersecting.is_upper_set' {s : Finset α} (hs : (s : Set α).Intersecting)
+theorem Intersecting.isUpperSet' {s : Finset α} (hs : (s : Set α).Intersecting)
     (h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t) : IsUpperSet (s : Set α) := by
   classical
     rintro a b hab ha
@@ -141,7 +131,7 @@ theorem Intersecting.is_upper_set' {s : Finset α} (hs : (s : Set α).Intersecti
     rw [coe_insert]
     exact
       hs.insert (mt (eq_bot_mono hab) <| hs.ne_bot ha) fun c hc hbc => hs ha hc <| hbc.mono_left hab
-#align set.intersecting.is_upper_set' Set.Intersecting.is_upper_set'
+#align set.intersecting.is_upper_set' Set.Intersecting.isUpperSet'
 
 end SemilatticeInf
 
@@ -199,15 +189,11 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
     by_contra' ha
     refine' s.ne_insert_of_not_mem _ ha.1 (h _ _ <| s.subset_insert _)
     rw [coe_insert]
-    refine' hs.insert _ fun b hb hab => ha.2 <| (hs.is_upper_set' h) hab.le_compl_left hb
+    refine' hs.insert _ fun b hb hab => ha.2 <| (hs.isUpperSet' h) hab.le_compl_left hb
     rintro rfl
-    have :=
-      h {⊤}
-        (by
-          rw [coe_singleton]
-          exact intersecting_singleton.2 top_ne_bot)
+    have := h {⊤} (by rw [coe_singleton]; exact intersecting_singleton.2 top_ne_bot)
     rw [compl_bot] at ha
-    rw [coe_eq_empty.1 ((hs.is_upper_set' h).not_top_mem.1 ha.2)] at this
+    rw [coe_eq_empty.1 ((hs.isUpperSet' h).not_top_mem.1 ha.2)] at this
     exact Finset.singleton_ne_empty _ (this <| Finset.empty_subset _).symm
 #align set.intersecting.is_max_iff_card_eq Set.Intersecting.is_max_iff_card_eq
 
@@ -228,4 +214,3 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
 #align set.intersecting.exists_card_eq Set.Intersecting.exists_card_eq
 
 end Set
-
