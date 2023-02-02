@@ -701,7 +701,7 @@ theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} 
 #align order_embedding.coe_of_strict_mono OrderEmbedding.coe_ofStrictMono
 
 /-- Embedding of a subtype into the ambient type as an `OrderEmbedding`. -/
-@[simps! (config := { fullyApplied := false })] -- todo: check why this needs `simps!`
+@[simps! (config := { fullyApplied := false })]
 def subtype (p : α → Prop) : Subtype p ↪o α :=
   ⟨Function.Embedding.subtype p, Iff.rfl⟩
 #align order_embedding.subtype OrderEmbedding.subtype
@@ -1065,7 +1065,7 @@ def ofHomInv {F G : Type _} [OrderHomClass F α β] [OrderHomClass G β α] (f :
 #align order_iso.of_hom_inv OrderIso.ofHomInv
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
-@[simps! toEquiv apply] -- todo: check why this needs `simps!`
+@[simps! toEquiv apply]
 def funUnique (α β : Type _) [Unique α] [Preorder β] : (α → β) ≃o β where
   toEquiv := Equiv.funUnique α β
   map_rel_iff' := by simp [Pi.le_def, Unique.forall_iff]
@@ -1278,7 +1278,7 @@ namespace OrderIso
 variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
-@[simps! apply] -- todo: check why this needs `simps!`
+@[simps! apply]
 def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β :=
   { e.toOrderEmbedding.withTopMap with
     toEquiv := e.toEquiv.optionCongr }
@@ -1301,7 +1301,7 @@ theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
 #align order_iso.with_top_congr_trans OrderIso.withTopCongr_trans
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
-@[simps! apply] -- todo: check why this needs `simps!`
+@[simps! apply]
 def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β :=
   { e.toOrderEmbedding.withBotMap with toEquiv := e.toEquiv.optionCongr }
 #align order_iso.with_bot_congr OrderIso.withBotCongr

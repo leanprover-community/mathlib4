@@ -964,6 +964,7 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
   if !rhsWhnf.getAppFn.isConstOf ctor then
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
+      trace[simps.debug] "Using relaxed reducibility."
       Linter.logLint linter.simpsNoConstructor ref
         m!"The definition is not a constructor application. Please use `@[simps!]` instead.\n\n{
         ""}Explanation: `@[simps]` uses the definition to find what the simp lemmas should {
@@ -972,13 +973,17 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
         ""}constructor, then `@[simps]` will unfold the right-hand side until it has found a {
         ""}constructor application, and uses those values.\n\n{
         ""}This might not always result in the simp-lemmas you want, so you are advised to use {
-        ""}`@[simps?]` to double-check whether `@[simps]` generated satisfactory lemmas.\n\n{
+        ""}`@[simps?]` to double-check whether `@[simps]` generated satisfactory lemmas.\n{
         ""}Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain {
-        ""}cases.\n\n{
+        ""}cases.\n{
         ""}Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := semireducible, {
-        ""}simpRhs := tt}]`\n\n{
-        ""}Note 3: Sometimes you need `simps!` even if the declaration looks like a constructor {
-        ""}application."
+        ""}simpRhs := tt}]`. You can also try `@[simps (config := \{rhsMd := semireducible}]` {
+        ""}to still unfold the definitions, but avoid calling `simp` on the resulting statement.\n{
+        ""}Note 3: You need `simps!` if not all fields are given explicitly in this definition, {
+        ""}even if the definition is a constructor application. For example, if you give a {
+        ""}`MulEquiv` by giving the corresponding `Equiv` and the proof that it respects {
+        ""}multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to {
+        ""}unfold the corresponding `Equiv` to get to the `toFun` field."
       let nms ← simpsAddProjections nm type lhs rhs args mustBeStr
         { cfg with rhsMd := .default, simpRhs := true } todo toApply
       return if addThisProjection then nms.push nm else nms
