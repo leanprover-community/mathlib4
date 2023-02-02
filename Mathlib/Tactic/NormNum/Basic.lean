@@ -15,7 +15,7 @@ This file adds `norm_num` plugins for `+`, `*` and `^` along with other basic op
 -/
 
 namespace Mathlib
-open Lean hiding Rat
+open Lean hiding Rat mkRat
 open Meta
 
 namespace Meta.NormNum
@@ -515,6 +515,26 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨qa, na, da, pa⟩ ← rab.toRat'
   let pa : Q(IsRat ($a * $b⁻¹) $na $da) := pa
   return (.isRat' dα qa na da q(isRat_div $pa) : Result q($a / $b))
+
+theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
+    IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
+  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
+
+/-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
+such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
+@[norm_num mkRat _ _] def evalMkRat : NormNumExt where eval {u α} e := do
+  let .app (.app _ (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
+  guard <| α.isConstOf ``Rat
+  let ra ← derive a
+  let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let some ⟨_, na, pa⟩ := ra.toInt | failure
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
+  let ⟨nb, pb⟩ ← deriveNat b sℕ
+  let rab ← derive (q($na / $nb) : Q(Rat))
+  let dℚ : Q(DivisionRing ℚ) := q(Rat.divisionRing)
+  let ⟨q, n, d, p⟩ ← rab.toRat' dℚ
+  let p : Q(IsRat ($na / $nb : ℚ) $n $d) := p
+  return (.isRat' (inst := dℚ) q n d q(isRat_mkRat $pa $pb $p) : Result q(mkRat $a $b))
 
 /-
 # Logic
