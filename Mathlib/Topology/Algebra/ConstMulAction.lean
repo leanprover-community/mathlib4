@@ -43,9 +43,7 @@ Hausdorff, discrete group, properly discontinuous, quotient space
 -/
 
 
-open Topology Pointwise
-
-open Filter Set TopologicalSpace
+open Topology Pointwise Filter Set TopologicalSpace
 
 attribute [local instance] MulAction.orbitRel
 
@@ -72,7 +70,6 @@ class HasContinuousConstVadd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VA
 attribute [to_additive] HasContinuousConstSmul
 
 export HasContinuousConstSmul (continuous_const_smul)
-
 export HasContinuousConstVadd (continuous_const_vadd)
 
 variable {M α β : Type _}
@@ -84,21 +81,21 @@ variable [TopologicalSpace α] [SMul M α] [HasContinuousConstSmul M α]
 @[to_additive]
 theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf : Tendsto f l (𝓝 a))
     (c : M) : Tendsto (fun x => c • f x) l (𝓝 (c • a)) :=
-  ((continuous_const_smul _).Tendsto _).comp hf
+  ((continuous_const_smul _).tendsto _).comp hf
 #align filter.tendsto.const_smul Filter.Tendsto.const_smul
 #align filter.tendsto.const_vadd Filter.Tendsto.const_vadd
 
 variable [TopologicalSpace β] {f : β → M} {g : β → α} {b : β} {s : Set β}
 
 @[to_additive]
-theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
+nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
     ContinuousWithinAt (fun x => c • g x) s b :=
   hg.const_smul c
 #align continuous_within_at.const_smul ContinuousWithinAt.const_smul
 #align continuous_within_at.const_vadd ContinuousWithinAt.const_vadd
 
 @[to_additive]
-theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
+nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
     ContinuousAt (fun x => c • g x) b :=
   hg.const_smul c
 #align continuous_at.const_smul ContinuousAt.const_smul
@@ -110,15 +107,15 @@ theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
 #align continuous_on.const_smul ContinuousOn.const_smul
 #align continuous_on.const_vadd ContinuousOn.const_vadd
 
-@[continuity, to_additive]
+@[to_additive] -- porting note: todo: restore `continuity`
 theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
   (continuous_const_smul _).comp hg
 #align continuous.const_smul Continuous.const_smul
 #align continuous.const_vadd Continuous.const_vadd
 
 /-- If a scalar is central, then its right action is continuous when its left action is. -/
-@[to_additive
-      "If an additive action is central, then its right action is continuous when its left\naction is."]
+@[to_additive "If an additive action is central, then its right action is continuous when its left
+action is."]
 instance HasContinuousConstSmul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
     HasContinuousConstSmul Mᵐᵒᵖ α :=
   ⟨MulOpposite.rec' fun c => by simpa only [op_smul_eq_smul] using continuous_const_smul c⟩
@@ -129,11 +126,10 @@ instance HasContinuousConstSmul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
 instance MulOpposite.hasContinuousConstSmul : HasContinuousConstSmul M αᵐᵒᵖ :=
   ⟨fun c => MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.const_smul c⟩
 #align mul_opposite.has_continuous_const_smul MulOpposite.hasContinuousConstSmul
-#align add_opposite.has_continuous_const_vadd AddOpposite.has_continuous_const_vadd
+#align add_opposite.has_continuous_const_vadd AddOpposite.hasContinuousConstVadd
 
 @[to_additive]
-instance : HasContinuousConstSmul M αᵒᵈ :=
-  ‹HasContinuousConstSmul M α›
+instance : HasContinuousConstSmul M αᵒᵈ := ‹HasContinuousConstSmul M α›
 
 @[to_additive]
 instance OrderDual.has_continuous_const_smul' : HasContinuousConstSmul Mᵒᵈ α :=
@@ -153,7 +149,7 @@ instance {ι : Type _} {γ : ι → Type _} [∀ i, TopologicalSpace (γ i)] [�
 @[to_additive]
 theorem IsCompact.smul {α β} [SMul α β] [TopologicalSpace β] [HasContinuousConstSmul α β] (a : α)
     {s : Set β} (hs : IsCompact s) : IsCompact (a • s) :=
-  hs.image (continuous_id'.const_smul a)
+  hs.image (continuous_id.const_smul a)
 #align is_compact.smul IsCompact.smul
 #align is_compact.vadd IsCompact.vadd
 
@@ -169,7 +165,7 @@ variable [Monoid M] [MulAction M α] [HasContinuousConstSmul M α]
 instance Units.hasContinuousConstSmul : HasContinuousConstSmul Mˣ α
     where continuous_const_smul m := (continuous_const_smul (m : M) : _)
 #align units.has_continuous_const_smul Units.hasContinuousConstSmul
-#align add_units.has_continuous_const_vadd AddUnits.has_continuous_const_vadd
+#align add_units.has_continuous_const_vadd AddUnits.hasContinuousConstVadd
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
@@ -209,7 +205,7 @@ theorem continuousWithinAt_const_smul_iff (c : G) :
 @[to_additive]
 theorem continuousOn_const_smul_iff (c : G) :
     ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
-  forall₂_congr fun b hb => continuousWithinAt_const_smul_iff c
+  forall₂_congr fun _ _ => continuousWithinAt_const_smul_iff c
 #align continuous_on_const_smul_iff continuousOn_const_smul_iff
 #align continuous_on_const_vadd_iff continuousOn_const_vadd_iff
 
@@ -229,8 +225,7 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
 /-- The homeomorphism given by scalar multiplication by a given element of a group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
 @[to_additive]
-def Homeomorph.smul (γ : G) : α ≃ₜ α
-    where
+def Homeomorph.smul (γ : G) : α ≃ₜ α where
   toEquiv := MulAction.toPerm γ
   continuous_toFun := continuous_const_smul γ
   continuous_invFun := continuous_const_smul γ⁻¹
@@ -243,7 +238,7 @@ add_decl_doc Homeomorph.vadd
 
 @[to_additive]
 theorem isOpenMap_smul (c : G) : IsOpenMap fun x : α => c • x :=
-  (Homeomorph.smul c).IsOpenMap
+  (Homeomorph.smul c).isOpenMap
 #align is_open_map_smul isOpenMap_smul
 #align is_open_map_vadd isOpenMap_vadd
 
@@ -255,7 +250,7 @@ theorem IsOpen.smul {s : Set α} (hs : IsOpen s) (c : G) : IsOpen (c • s) :=
 
 @[to_additive]
 theorem isClosedMap_smul (c : G) : IsClosedMap fun x : α => c • x :=
-  (Homeomorph.smul c).IsClosedMap
+  (Homeomorph.smul c).isClosedMap
 #align is_closed_map_smul isClosedMap_smul
 #align is_closed_map_vadd isClosedMap_vadd
 
@@ -273,7 +268,7 @@ theorem closure_smul (c : G) (s : Set α) : closure (c • s) = c • closure s 
 
 @[to_additive]
 theorem Dense.smul (c : G) {s : Set α} (hs : Dense s) : Dense (c • s) := by
-  rw [dense_iff_closure_eq] at hs⊢ <;> rw [closure_smul, hs, smul_set_univ]
+  rw [dense_iff_closure_eq] at hs ⊢; rw [closure_smul, hs, smul_set_univ]
 #align dense.smul Dense.smul
 #align dense.vadd Dense.vadd
 
@@ -323,7 +318,7 @@ protected def Homeomorph.smulOfNeZero (c : G₀) (hc : c ≠ 0) : α ≃ₜ α :
 #align homeomorph.smul_of_ne_zero Homeomorph.smulOfNeZero
 
 theorem isOpenMap_smul₀ {c : G₀} (hc : c ≠ 0) : IsOpenMap fun x : α => c • x :=
-  (Homeomorph.smulOfNeZero c hc).IsOpenMap
+  (Homeomorph.smulOfNeZero c hc).isOpenMap
 #align is_open_map_smul₀ isOpenMap_smul₀
 
 theorem IsOpen.smul₀ {c : G₀} {s : Set α} (hs : IsOpen s) (hc : c ≠ 0) : IsOpen (c • s) :=
@@ -349,7 +344,7 @@ theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpac
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
 normed field) is `is_closed_map_smul_left` in `analysis.normed_space.finite_dimension`. -/
 theorem isClosedMap_smul_of_ne_zero {c : G₀} (hc : c ≠ 0) : IsClosedMap fun x : α => c • x :=
-  (Homeomorph.smulOfNeZero c hc).IsClosedMap
+  (Homeomorph.smulOfNeZero c hc).isClosedMap
 #align is_closed_map_smul_of_ne_zero isClosedMap_smul_of_ne_zero
 
 theorem IsClosed.smul_of_ne_zero {c : G₀} {s : Set α} (hs : IsClosed s) (hc : c ≠ 0) :
@@ -367,7 +362,7 @@ theorem isClosedMap_smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid
   rcases eq_or_ne c 0 with (rfl | hne)
   · simp only [zero_smul]
     exact isClosedMap_const
-  · exact (Homeomorph.smulOfNeZero c hne).IsClosedMap
+  · exact (Homeomorph.smulOfNeZero c hne).isClosedMap
 #align is_closed_map_smul₀ isClosedMap_smul₀
 
 theorem IsClosed.smul₀ {𝕜 M : Type _} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
@@ -394,7 +389,7 @@ namespace IsUnit
 
 variable [Monoid M] [TopologicalSpace α] [MulAction M α] [HasContinuousConstSmul M α]
 
-theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} (hc : IsUnit c) :
+nonrec theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} (hc : IsUnit c) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
   let ⟨u, hu⟩ := hc
   hu ▸ tendsto_const_smul_iff u
@@ -402,49 +397,51 @@ theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} {c : M} 
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {c : M} {s : Set β}
 
-theorem continuousWithinAt_const_smul_iff (hc : IsUnit c) :
+nonrec theorem continuousWithinAt_const_smul_iff (hc : IsUnit c) :
     ContinuousWithinAt (fun x => c • f x) s b ↔ ContinuousWithinAt f s b :=
   let ⟨u, hu⟩ := hc
   hu ▸ continuousWithinAt_const_smul_iff u
 #align is_unit.continuous_within_at_const_smul_iff IsUnit.continuousWithinAt_const_smul_iff
 
-theorem continuousOn_const_smul_iff (hc : IsUnit c) :
+nonrec theorem continuousOn_const_smul_iff (hc : IsUnit c) :
     ContinuousOn (fun x => c • f x) s ↔ ContinuousOn f s :=
   let ⟨u, hu⟩ := hc
   hu ▸ continuousOn_const_smul_iff u
 #align is_unit.continuous_on_const_smul_iff IsUnit.continuousOn_const_smul_iff
 
-theorem continuousAt_const_smul_iff (hc : IsUnit c) :
+nonrec theorem continuousAt_const_smul_iff (hc : IsUnit c) :
     ContinuousAt (fun x => c • f x) b ↔ ContinuousAt f b :=
   let ⟨u, hu⟩ := hc
   hu ▸ continuousAt_const_smul_iff u
 #align is_unit.continuous_at_const_smul_iff IsUnit.continuousAt_const_smul_iff
 
-theorem continuous_const_smul_iff (hc : IsUnit c) : (Continuous fun x => c • f x) ↔ Continuous f :=
+nonrec theorem continuous_const_smul_iff (hc : IsUnit c) :
+    (Continuous fun x => c • f x) ↔ Continuous f :=
   let ⟨u, hu⟩ := hc
   hu ▸ continuous_const_smul_iff u
 #align is_unit.continuous_const_smul_iff IsUnit.continuous_const_smul_iff
 
-theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
+nonrec theorem isOpenMap_smul (hc : IsUnit c) : IsOpenMap fun x : α => c • x :=
   let ⟨u, hu⟩ := hc
   hu ▸ isOpenMap_smul u
 #align is_unit.is_open_map_smul IsUnit.isOpenMap_smul
 
-theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c • x :=
+nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c • x :=
   let ⟨u, hu⟩ := hc
   hu ▸ isClosedMap_smul u
 #align is_unit.is_closed_map_smul IsUnit.isClosedMap_smul
 
 end IsUnit
 
+-- porting note: todo: use `Set.Nonempty`
 /-- Class `properly_discontinuous_smul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
 -/
 class ProperlyDiscontinuousSmul (Γ : Type _) (T : Type _) [TopologicalSpace T] [SMul Γ T] :
-  Prop where
+    Prop where
   finite_disjoint_inter_image :
-    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (· • ·) γ '' K ∩ L ≠ ∅ }
+    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·)  '' K ∩ L ≠ ∅ }
 #align properly_discontinuous_smul ProperlyDiscontinuousSmul
 
 /-- Class `properly_discontinuous_vadd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
@@ -454,7 +451,7 @@ is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, 
 class ProperlyDiscontinuousVadd (Γ : Type _) (T : Type _) [TopologicalSpace T] [VAdd Γ T] :
   Prop where
   finite_disjoint_inter_image :
-    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (· +ᵥ ·) γ '' K ∩ L ≠ ∅ }
+    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ +ᵥ ·) '' K ∩ L ≠ ∅ }
 #align properly_discontinuous_vadd ProperlyDiscontinuousVadd
 
 attribute [to_additive] ProperlyDiscontinuousSmul
@@ -464,28 +461,27 @@ variable {Γ : Type _} [Group Γ] {T : Type _} [TopologicalSpace T] [MulAction �
 /-- A finite group action is always properly discontinuous. -/
 @[to_additive "A finite group action is always properly discontinuous."]
 instance (priority := 100) Finite.to_properlyDiscontinuousSmul [Finite Γ] :
-    ProperlyDiscontinuousSmul Γ T where finite_disjoint_inter_image _ _ _ _ := Set.toFinite _
+    ProperlyDiscontinuousSmul Γ T where finite_disjoint_inter_image _ _ := Set.toFinite _
 #align finite.to_properly_discontinuous_smul Finite.to_properlyDiscontinuousSmul
-#align finite.to_properly_discontinuous_vadd Finite.to_properly_discontinuous_vadd
+#align finite.to_properly_discontinuous_vadd Finite.to_properlyDiscontinuousVadd
 
 export ProperlyDiscontinuousSmul (finite_disjoint_inter_image)
-
 export ProperlyDiscontinuousVadd (finite_disjoint_inter_image)
 
 /-- The quotient map by a group action is open, i.e. the quotient by a group action is an open
   quotient. -/
-@[to_additive
-      "The quotient map by a group action is open, i.e. the quotient by a group\naction is an open quotient. "]
+@[to_additive "The quotient map by a group action is open, i.e. the quotient by a group
+action is an open quotient. "]
 theorem isOpenMap_quotient_mk'_mul [HasContinuousConstSmul Γ T] :
-    IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := by
-  intro U hU
+    IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
-  exact isOpen_unionᵢ fun γ => (Homeomorph.smul γ).IsOpenMap U hU
+  exact isOpen_unionᵢ fun γ => isOpenMap_smul γ U hU
 #align is_open_map_quotient_mk_mul isOpenMap_quotient_mk'_mul
 #align is_open_map_quotient_mk_add isOpenMap_quotient_mk'_add
 
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
-@[to_additive "The quotient by a discontinuous group action of a locally compact t2\nspace is t2."]
+@[to_additive "The quotient by a discontinuous group action of a locally compact t2
+space is t2."]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSmul_of_t2Space [T2Space T]
     [LocallyCompactSpace T] [HasContinuousConstSmul Γ T] [ProperlyDiscontinuousSmul Γ T] :
     T2Space (Quotient (MulAction.orbitRel Γ T)) := by
@@ -495,35 +491,34 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSmul_of_t2Space [T2Sp
   have f_op : IsOpenMap f := isOpenMap_quotient_mk'_mul
   rintro ⟨x₀⟩ ⟨y₀⟩ (hxy : f x₀ ≠ f y₀)
   show ∃ U ∈ 𝓝 (f x₀), ∃ V ∈ 𝓝 (f y₀), _
-  have hx₀y₀ : x₀ ≠ y₀ := ne_of_apply_ne _ hxy
   have hγx₀y₀ : ∀ γ : Γ, γ • x₀ ≠ y₀ := not_exists.mp (mt Quotient.sound hxy.symm : _)
-  obtain ⟨K₀, L₀, K₀_in, L₀_in, hK₀, hL₀, hK₀L₀⟩ := t2_separation_compact_nhds hx₀y₀
-  let bad_Γ_set := { γ : Γ | (· • ·) γ '' K₀ ∩ L₀ ≠ ∅ }
-  have bad_Γ_finite : bad_Γ_set.finite := finite_disjoint_inter_image hK₀ hL₀
+  obtain ⟨K₀, hK₀, K₀_in⟩ := exists_compact_mem_nhds x₀
+  obtain ⟨L₀, hL₀, L₀_in⟩ := exists_compact_mem_nhds y₀
+  let bad_Γ_set := { γ : Γ | (γ • ·) '' K₀ ∩ L₀ ≠ ∅ }
+  have bad_Γ_finite : bad_Γ_set.Finite := finite_disjoint_inter_image (Γ := Γ) hK₀ hL₀
   choose u v hu hv u_v_disjoint using fun γ => t2_separation_nhds (hγx₀y₀ γ)
-  let U₀₀ := ⋂ γ ∈ bad_Γ_set, (· • ·) γ ⁻¹' u γ
+  let U₀₀ := ⋂ γ ∈ bad_Γ_set, (γ • ·) ⁻¹' u γ
   let U₀ := U₀₀ ∩ K₀
   let V₀₀ := ⋂ γ ∈ bad_Γ_set, v γ
   let V₀ := V₀₀ ∩ L₀
-  have U_nhds : f '' U₀ ∈ 𝓝 (f x₀) :=
-    by
-    apply f_op.image_mem_nhds (inter_mem ((bInter_mem bad_Γ_finite).mpr fun γ hγ => _) K₀_in)
-    exact (continuous_const_smul _).ContinuousAt (hu γ)
+  have U_nhds : f '' U₀ ∈ 𝓝 (f x₀) := by
+    refine f_op.image_mem_nhds (inter_mem ((binterᵢ_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
+    exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
-    f_op.image_mem_nhds (inter_mem ((bInter_mem bad_Γ_finite).mpr fun γ hγ => hv γ) L₀_in)
+    f_op.image_mem_nhds (inter_mem ((binterᵢ_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
   refine' ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 _⟩
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
   by_cases H : γ ∈ bad_Γ_set
-  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_Inter₂.mp x_in_U₀₀ γ H, mem_Inter₂.mp h.1 γ H⟩
+  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_interᵢ₂.mp x_in_U₀₀ γ H, mem_interᵢ₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [image_smul, Classical.not_not, mem_set_of_eq, Ne.def] at H
+    simp only [image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 #align t2_space_of_properly_discontinuous_smul_of_t2_space t2Space_of_properlyDiscontinuousSmul_of_t2Space
-#align t2_space_of_properly_discontinuous_vadd_of_t2_space t2Space_of_properly_discontinuous_vadd_of_t2Space
+#align t2_space_of_properly_discontinuous_vadd_of_t2_space t2Space_of_properlyDiscontinuousVadd_of_t2Space
 
 /-- The quotient of a second countable space by a group action is second countable. -/
-@[to_additive
-      "The quotient of a second countable space by an additive group action is second\ncountable."]
+@[to_additive "The quotient of a second countable space by an additive group action is second
+countable."]
 theorem HasContinuousConstSmul.secondCountableTopology [SecondCountableTopology T]
     [HasContinuousConstSmul Γ T] : SecondCountableTopology (Quotient (MulAction.orbitRel Γ T)) :=
   TopologicalSpace.Quotient.secondCountableTopology isOpenMap_quotient_mk'_mul
@@ -537,10 +532,11 @@ section MulAction
 variable {G₀ : Type _} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
   [HasContinuousConstSmul G₀ α]
 
+-- porting note: generalize to a group action + `IsUnit`
 /-- Scalar multiplication preserves neighborhoods. -/
 theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) := by
-  rw [mem_nhds_iff] at hs⊢
+  rw [mem_nhds_iff] at hs ⊢
   obtain ⟨U, hs', hU, hU'⟩ := hs
   exact ⟨c • U, Set.smul_set_mono hs', hU.smul₀ hc, Set.smul_mem_smul_set hU'⟩
 #align set_smul_mem_nhds_smul set_smul_mem_nhds_smul
