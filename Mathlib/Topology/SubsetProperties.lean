@@ -1476,7 +1476,17 @@ end CompactExhaustion
 
 section Clopen
 
--- porting note: definition moved to `Mathlib.Topology.Basic`
+-- porting note: todo: redefine as `IsClosed s ∧ IsOpen s`
+/-- A set is clopen if it is both open and closed. -/
+def IsClopen (s : Set α) : Prop :=
+  IsOpen s ∧ IsClosed s
+#align is_clopen IsClopen
+
+protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.1
+#align is_clopen.is_open IsClopen.isOpen
+
+protected theorem IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.2
+#align is_clopen.is_closed IsClopen.isClosed
 
 theorem isClopen_iff_frontier_eq_empty {s : Set α} : IsClopen s ↔ frontier s = ∅ := by
   rw [IsClopen, ← closure_eq_iff_isClosed, ← interior_eq_iff_isOpen, frontier, diff_eq_empty]
@@ -1576,6 +1586,13 @@ theorem isClopen_inter_of_disjoint_cover_clopen {Z a b : Set α} (h : IsClopen Z
 theorem isClopen_discrete [DiscreteTopology α] (x : Set α) : IsClopen x :=
   ⟨isOpen_discrete _, isClosed_discrete _⟩
 #align is_clopen_discrete isClopen_discrete
+
+-- porting note: 2 new lemmas
+theorem isClopen_range_inl : IsClopen (range (inl : α → α ⊕ β)) :=
+  ⟨isOpen_range_inl, isClosed_range_inl⟩
+
+theorem isClopen_range_inr : IsClopen (range (inr : β → α ⊕ β)) :=
+  ⟨isOpen_range_inr, isClosed_range_inr⟩
 
 theorem isClopen_range_sigmaMk {ι : Type _} {σ : ι → Type _} [∀ i, TopologicalSpace (σ i)] {i : ι} :
     IsClopen (Set.range (@Sigma.mk ι σ i)) :=
