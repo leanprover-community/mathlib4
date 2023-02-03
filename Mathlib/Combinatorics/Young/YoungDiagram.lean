@@ -66,7 +66,7 @@ structure YoungDiagram where
   /-- A finite set which represents a finite collection of cells on the `ℕ × ℕ` grid. -/
   cells : Finset (ℕ × ℕ)
   /-- Cells are up-left justified, witnessed by the fact that `cells` is a lower set in `ℕ × ℕ`. -/
-  IsLowerSet : IsLowerSet (cells : Set (ℕ × ℕ))
+  isLowerSet : IsLowerSet (cells : Set (ℕ × ℕ))
 #align young_diagram YoungDiagram
 
 namespace YoungDiagram
@@ -83,8 +83,8 @@ theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c �
 #align young_diagram.mem_cells YoungDiagram.mem_cells
 
 @[simp]
-theorem mem_mk (c : ℕ × ℕ) (cells) (IsLowerSet) :
-    c ∈ YoungDiagram.mk cells IsLowerSet ↔ c ∈ cells :=
+theorem mem_mk (c : ℕ × ℕ) (cells) (isLowerSet) :
+    c ∈ YoungDiagram.mk cells isLowerSet ↔ c ∈ cells :=
   Iff.rfl
 #align young_diagram.mem_mk YoungDiagram.mem_mk
 
@@ -96,7 +96,7 @@ instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
     means (i1, j1) is weakly up-and-left of (i2, j2). -/
 theorem up_left_mem (μ : YoungDiagram) {i1 i2 j1 j2 : ℕ} (hi : i1 ≤ i2) (hj : j1 ≤ j2)
     (hcell : (i2, j2) ∈ μ) : (i1, j1) ∈ μ :=
-  μ.IsLowerSet (Prod.mk_le_mk.mpr ⟨hi, hj⟩) hcell
+  μ.isLowerSet (Prod.mk_le_mk.mpr ⟨hi, hj⟩) hcell
 #align young_diagram.up_left_mem YoungDiagram.up_left_mem
 
 section DistribLattice
@@ -114,9 +114,9 @@ theorem cells_sSubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ 
 instance : HasSup YoungDiagram
     where sup μ ν :=
     { cells := μ.cells ∪ ν.cells
-      IsLowerSet := by
+      isLowerSet := by
         rw [Finset.coe_union]
-        exact μ.IsLowerSet.union ν.IsLowerSet }
+        exact μ.isLowerSet.union ν.isLowerSet }
 
 @[simp]
 theorem cells_sup (μ ν : YoungDiagram) : (μ ⊔ ν).cells = μ.cells ∪ ν.cells :=
@@ -136,9 +136,9 @@ theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x 
 instance : HasInf YoungDiagram
     where inf μ ν :=
     { cells := μ.cells ∩ ν.cells
-      IsLowerSet := by
+      isLowerSet := by
         rw [Finset.coe_inter]
-        exact μ.IsLowerSet.inter ν.IsLowerSet }
+        exact μ.isLowerSet.inter ν.isLowerSet }
 
 @[simp]
 theorem cells_inf (μ ν : YoungDiagram) : (μ ⊓ ν).cells = μ.cells ∩ ν.cells :=
@@ -159,7 +159,7 @@ theorem mem_inf {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊓ ν ↔ x 
 instance : OrderBot YoungDiagram where
   bot :=
     { cells := ∅
-      IsLowerSet := by
+      isLowerSet := by
         intros a b _ h
         simp only [Finset.coe_empty, Set.mem_empty_iff_false]
         simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h }
@@ -207,10 +207,10 @@ section Transpose
 /-- The `transpose` of a Young diagram is obtained by swapping i's with j's. -/
 def transpose (μ : YoungDiagram) : YoungDiagram where
   cells := (Equiv.prodComm _ _).finsetCongr μ.cells
-  IsLowerSet _ _ h := by
+  isLowerSet _ _ h := by
     simp only [Finset.mem_coe, Equiv.finsetCongr_apply, Finset.mem_map_equiv]
     intro hcell
-    apply μ.IsLowerSet _ hcell
+    apply μ.isLowerSet _ hcell
     simp [h]
 #align young_diagram.transpose YoungDiagram.transpose
 
@@ -477,7 +477,7 @@ protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
 def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
     where
   cells := YoungDiagram.cellsOfRowLens w
-  IsLowerSet := by
+  isLowerSet := by
     rintro ⟨i2, j2⟩ ⟨i1, j1⟩ ⟨hi : i1 ≤ i2, hj : j1 ≤ j2⟩ hcell
     rw [Finset.mem_coe, YoungDiagram.mem_cellsOfRowLens] at hcell⊢
     obtain ⟨h1, h2⟩ := hcell
