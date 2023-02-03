@@ -263,7 +263,8 @@ We choose `{}` since it fails faster. -/
 @[nolint dangerousInstance]
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass {_ : Lattice α} {_ : Lattice β}
-    {_ : BoundedOrder α} {_ : BoundedOrder β} [OrderIsoClass F α β] : BoundedLatticeHomClass F α β :=
+    {_ : BoundedOrder α} {_ : BoundedOrder β} [OrderIsoClass F α β] :
+    BoundedLatticeHomClass F α β :=
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
