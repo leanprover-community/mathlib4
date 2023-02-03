@@ -168,14 +168,14 @@ variable [Preorder β] [CovariantClass M M (· * ·) (· < ·)]
 @[to_additive StrictMono.nsmul_left]
 theorem StrictMono.pow_right' (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a => f a ^ n
   | 0, hn => (hn rfl).elim
-  | 1, hn => by simpa
-  | Nat.succ <| Nat.succ n, hn => by
+  | 1, _ => by simpa
+  | Nat.succ <| Nat.succ n, _ => by
     simp_rw [pow_succ _ (n + 1)]
-    exact hf.mul' (StrictMono.pow_right' n.succ_ne_zero)
+    exact hf.mul' (StrictMono.pow_right' hf n.succ_ne_zero)
 #align strict_mono.pow_right' StrictMono.pow_right'
 #align strict_mono.nsmul_left StrictMono.nsmul_left
 
-/-- See also `pow_strict_mono_right` -/
+/-- See also `pow_strictMono_right` -/
 @[nolint to_additive_doc, to_additive nsmul_strictMono_left]
 theorem pow_strictMono_right' {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : M => a ^ n :=
   strictMono_id.pow_right' hn
@@ -194,7 +194,7 @@ theorem Monotone.pow_right {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monot
   | 0 => by simpa using monotone_const
   | n + 1 => by
     simp_rw [pow_succ]
-    exact hf.mul' (Monotone.pow_right _)
+    exact hf.mul' (Monotone.pow_right hf _)
 #align monotone.pow_right Monotone.pow_right
 #align monotone.nsmul_left Monotone.nsmul_left
 
