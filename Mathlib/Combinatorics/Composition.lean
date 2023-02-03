@@ -923,13 +923,13 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     j ∈ c.boundaries ↔ ∃ i < c.boundaries.card, (c.blocks.take i).sum = j := by
   constructor
   · intro hj
-    rcases(c.boundaries.order_iso_of_fin rfl).Surjective ⟨j, hj⟩ with ⟨i, hi⟩
+    rcases(c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
     rw [Subtype.ext_iff, Subtype.coe_mk] at hi
     refine' ⟨i.1, i.2, _⟩
     rw [← hi, c.blocks_partial_sum i.2]
     rfl
   · rintro ⟨i, hi, H⟩
-    convert (c.boundaries.order_iso_of_fin rfl ⟨i, hi⟩).2
+    convert (c.boundaries.orderIsoOfFin rfl ⟨i, hi⟩).2
     have : c.boundary ⟨i, hi⟩ = j := by rwa [Fin.ext_iff, ← c.blocks_partial_sum hi]
     exact this.symm
 #align composition_as_set.mem_boundaries_iff_exists_blocks_sum_take_eq CompositionAsSet.mem_boundaries_iff_exists_blocks_sum_take_eq
