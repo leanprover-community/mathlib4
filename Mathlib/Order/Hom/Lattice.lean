@@ -22,25 +22,25 @@ be satisfied by itself and all stricter types.
 
 ## Types of morphisms
 
-* `sup_hom`: Maps which preserve `⊔`.
-* `inf_hom`: Maps which preserve `⊓`.
-* `sup_bot_hom`: Finitary supremum homomorphisms. Maps which preserve `⊔` and `⊥`.
-* `inf_top_hom`: Finitary infimum homomorphisms. Maps which preserve `⊓` and `⊤`.
-* `lattice_hom`: Lattice homomorphisms. Maps which preserve `⊔` and `⊓`.
-* `bounded_lattice_hom`: Bounded lattice homomorphisms. Maps which preserve `⊤`, `⊥`, `⊔` and `⊓`.
+* `SupHom`: Maps which preserve `⊔`.
+* `InfHom`: Maps which preserve `⊓`.
+* `SupBotHom`: Finitary supremum homomorphisms. Maps which preserve `⊔` and `⊥`.
+* `InfTopHom`: Finitary infimum homomorphisms. Maps which preserve `⊓` and `⊤`.
+* `LatticeHom`: Lattice homomorphisms. Maps which preserve `⊔` and `⊓`.
+* `BoundedLatticeHom`: Bounded lattice homomorphisms. Maps which preserve `⊤`, `⊥`, `⊔` and `⊓`.
 
 ## Typeclasses
 
-* `sup_hom_class`
-* `inf_hom_class`
-* `sup_bot_hom_class`
-* `inf_top_hom_class`
-* `lattice_hom_class`
-* `bounded_lattice_hom_class`
+* `SupHomClass`
+* `InfHomClass`
+* `SupBotHomClass`
+* `InfTopHomClass`
+* `LatticeHomClass`
+* `BoundedLatticeHomClass`
 
 ## TODO
 
-Do we need more intersections between `bot_hom`, `top_hom` and lattice homomorphisms?
+Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphisms?
 -/
 
 
@@ -93,54 +93,54 @@ structure BoundedLatticeHom (α β : Type _) [Lattice α] [Lattice β] [BoundedO
 
 section
 
-/-- `sup_hom_class F α β` states that `F` is a type of `⊔`-preserving morphisms.
+/-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
-You should extend this class when you extend `sup_hom`. -/
+You should extend this class when you extend `SupHom`. -/
 class SupHomClass (F : Type _) (α β : outParam <| Type _) [HasSup α] [HasSup β] extends
   FunLike F α fun _ => β where
   /-- A `SupHomClass` morphism preserves suprema. -/
   map_sup (f : F) (a b : α) : f (a ⊔ b) = f a ⊔ f b
 #align sup_hom_class SupHomClass
 
-/-- `inf_hom_class F α β` states that `F` is a type of `⊓`-preserving morphisms.
+/-- `InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
 
-You should extend this class when you extend `inf_hom`. -/
+You should extend this class when you extend `InfHom`. -/
 class InfHomClass (F : Type _) (α β : outParam <| Type _) [HasInf α] [HasInf β] extends
   FunLike F α fun _ => β where
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align inf_hom_class InfHomClass
 
-/-- `sup_bot_hom_class F α β` states that `F` is a type of finitary supremum-preserving morphisms.
+/-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
 
-You should extend this class when you extend `sup_bot_hom`. -/
+You should extend this class when you extend `SupBotHom`. -/
 class SupBotHomClass (F : Type _) (α β : outParam <| Type _) [HasSup α] [HasSup β] [Bot α]
   [Bot β] extends SupHomClass F α β where
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align sup_bot_hom_class SupBotHomClass
 
-/-- `inf_top_hom_class F α β` states that `F` is a type of finitary infimum-preserving morphisms.
+/-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
-You should extend this class when you extend `sup_bot_hom`. -/
+You should extend this class when you extend `SupBotHom`. -/
 class InfTopHomClass (F : Type _) (α β : outParam <| Type _) [HasInf α] [HasInf β] [Top α]
   [Top β] extends InfHomClass F α β where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align inf_top_hom_class InfTopHomClass
 
-/-- `lattice_hom_class F α β` states that `F` is a type of lattice morphisms.
+/-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
-You should extend this class when you extend `lattice_hom`. -/
+You should extend this class when you extend `LatticeHom`. -/
 class LatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [Lattice β] extends
   SupHomClass F α β where
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align lattice_hom_class LatticeHomClass
 
-/-- `bounded_lattice_hom_class F α β` states that `F` is a type of bounded lattice morphisms.
+/-- `BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
 
-You should extend this class when you extend `bounded_lattice_hom`. -/
+You should extend this class when you extend `BoundedLatticeHom`. -/
 class BoundedLatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [Lattice β]
   [BoundedOrder α] [BoundedOrder β] extends LatticeHomClass F α β where
   /-- A `BoundedLatticeHomClass` morphism preserves the top element. -/
@@ -379,7 +379,7 @@ theorem ext {f g : SupHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align sup_hom.ext SupHom.ext
 
-/-- Copy of a `sup_hom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of a `SupHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : SupHom α β) (f' : α → β) (h : f' = f) : SupHom α β where
   toFun := f'
@@ -397,7 +397,7 @@ theorem copy_eq (f : SupHom α β) (f' : α → β) (h : f' = f) : f.copy f' h =
 
 variable (α)
 
-/-- `id` as a `sup_hom`. -/
+/-- `id` as a `SupHom`. -/
 protected def id : SupHom α α :=
   ⟨id, fun _ _ => rfl⟩
 #align sup_hom.id SupHom.id
@@ -417,7 +417,7 @@ theorem id_apply (a : α) : SupHom.id α a = a :=
   rfl
 #align sup_hom.id_apply SupHom.id_apply
 
-/-- Composition of `sup_hom`s as a `sup_hom`. -/
+/-- Composition of `SupHom`s as a `SupHom`. -/
 def comp (f : SupHom β γ) (g : SupHom α β) : SupHom α γ where
   toFun := f ∘ g
   map_sup' a b := by rw [comp_apply, map_sup, map_sup]; rfl
@@ -460,7 +460,7 @@ end HasSup
 
 variable (α) [SemilatticeSup β]
 
-/-- The constant function as a `sup_hom`. -/
+/-- The constant function as a `SupHom`. -/
 def const (b : β) : SupHom α β :=
   ⟨fun _ => b, fun _ _ => sup_idem.symm⟩
 #align sup_hom.const SupHom.const
@@ -564,7 +564,7 @@ theorem ext {f g : InfHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align inf_hom.ext InfHom.ext
 
-/-- Copy of an `inf_hom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of an `InfHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : InfHom α β) (f' : α → β) (h : f' = f) : InfHom α β
     where
@@ -583,7 +583,7 @@ theorem copy_eq (f : InfHom α β) (f' : α → β) (h : f' = f) : f.copy f' h =
 
 variable (α)
 
-/-- `id` as an `inf_hom`. -/
+/-- `id` as an `InfHom`. -/
 protected def id : InfHom α α :=
   ⟨id, fun _ _ => rfl⟩
 #align inf_hom.id InfHom.id
@@ -603,7 +603,7 @@ theorem id_apply (a : α) : InfHom.id α a = a :=
   rfl
 #align inf_hom.id_apply InfHom.id_apply
 
-/-- Composition of `inf_hom`s as an `inf_hom`. -/
+/-- Composition of `InfHom`s as an `InfHom`. -/
 def comp (f : InfHom β γ) (g : InfHom α β) : InfHom α γ where
   toFun := f ∘ g
   map_inf' a b := by rw [comp_apply, map_inf, map_inf]; rfl
@@ -646,7 +646,7 @@ end HasInf
 
 variable (α) [SemilatticeInf β]
 
-/-- The constant function as an `inf_hom`. -/
+/-- The constant function as an `InfHom`. -/
 def const (b : β) : InfHom α β :=
   ⟨fun _ => b, fun _ _ => inf_idem.symm⟩
 #align inf_hom.const InfHom.const
@@ -729,7 +729,7 @@ section HasSup
 
 variable [HasSup β] [Bot β] [HasSup γ] [Bot γ] [HasSup δ] [Bot δ]
 
-/-- Reinterpret a `sup_bot_hom` as a `bot_hom`. -/
+/-- Reinterpret a `SupBotHom` as a `BotHom`. -/
 def toBotHom (f : SupBotHom α β) : BotHom α β :=
   { f with }
 #align sup_bot_hom.to_bot_hom SupBotHom.toBotHom
@@ -767,7 +767,7 @@ theorem ext {f g : SupBotHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align sup_bot_hom.ext SupBotHom.ext
 
-/-- Copy of a `sup_bot_hom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of a `SupBotHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : SupBotHom α β) (f' : α → β) (h : f' = f) : SupBotHom α β :=
   { f.toBotHom.copy f' h with toSupHom := f.toSupHom.copy f' h }
@@ -784,7 +784,7 @@ theorem copy_eq (f : SupBotHom α β) (f' : α → β) (h : f' = f) : f.copy f' 
 
 variable (α)
 
-/-- `id` as a `sup_bot_hom`. -/
+/-- `id` as a `SupBotHom`. -/
 @[simps]
 protected def id : SupBotHom α α :=
   ⟨SupHom.id α, rfl⟩
@@ -805,7 +805,7 @@ theorem id_apply (a : α) : SupBotHom.id α a = a :=
   rfl
 #align sup_bot_hom.id_apply SupBotHom.id_apply
 
-/-- Composition of `sup_bot_hom`s as a `sup_bot_hom`. -/
+/-- Composition of `SupBotHom`s as a `SupBotHom`. -/
 def comp (f : SupBotHom β γ) (g : SupBotHom α β) : SupBotHom α γ :=
   { f.toSupHom.comp g.toSupHom, f.toBotHom.comp g.toBotHom with }
 #align sup_bot_hom.comp SupBotHom.comp
@@ -889,7 +889,7 @@ section HasInf
 
 variable [HasInf β] [Top β] [HasInf γ] [Top γ] [HasInf δ] [Top δ]
 
-/-- Reinterpret an `inf_top_hom` as a `top_hom`. -/
+/-- Reinterpret an `InfTopHom` as a `TopHom`. -/
 def toTopHom (f : InfTopHom α β) : TopHom α β :=
   { f with }
 #align inf_top_hom.to_top_hom InfTopHom.toTopHom
@@ -927,7 +927,7 @@ theorem ext {f g : InfTopHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align inf_top_hom.ext InfTopHom.ext
 
-/-- Copy of an `inf_top_hom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of an `InfTopHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : InfTopHom α β) (f' : α → β) (h : f' = f) : InfTopHom α β :=
   { f.toTopHom.copy f' h with toInfHom := f.toInfHom.copy f' h }
@@ -944,7 +944,7 @@ theorem copy_eq (f : InfTopHom α β) (f' : α → β) (h : f' = f) : f.copy f' 
 
 variable (α)
 
-/-- `id` as an `inf_top_hom`. -/
+/-- `id` as an `InfTopHom`. -/
 @[simps]
 protected def id : InfTopHom α α :=
   ⟨InfHom.id α, rfl⟩
@@ -965,7 +965,7 @@ theorem id_apply (a : α) : InfTopHom.id α a = a :=
   rfl
 #align inf_top_hom.id_apply InfTopHom.id_apply
 
-/-- Composition of `inf_top_hom`s as an `inf_top_hom`. -/
+/-- Composition of `InfTopHom`s as an `InfTopHom`. -/
 def comp (f : InfTopHom β γ) (g : InfTopHom α β) : InfTopHom α γ :=
   { f.toInfHom.comp g.toInfHom, f.toTopHom.comp g.toTopHom with }
 #align inf_top_hom.comp InfTopHom.comp
@@ -1045,7 +1045,7 @@ namespace LatticeHom
 
 variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ]
 
-/-- Reinterpret a `lattice_hom` as an `inf_hom`. -/
+/-- Reinterpret a `LatticeHom` as an `InfHom`. -/
 def toInfHom (f : LatticeHom α β) : InfHom α β :=
   { f with }
 #align lattice_hom.to_inf_hom LatticeHom.toInfHom
@@ -1080,7 +1080,7 @@ theorem ext {f g : LatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align lattice_hom.ext LatticeHom.ext
 
-/-- Copy of a `lattice_hom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of a `LatticeHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : LatticeHom α β) (f' : α → β) (h : f' = f) : LatticeHom α β :=
   { f.toSupHom.copy f' h, f.toInfHom.copy f' h with }
@@ -1097,7 +1097,7 @@ theorem copy_eq (f : LatticeHom α β) (f' : α → β) (h : f' = f) : f.copy f'
 
 variable (α)
 
-/-- `id` as a `lattice_hom`. -/
+/-- `id` as a `LatticeHom`. -/
 protected def id : LatticeHom α α where
   toFun := id
   map_sup' _ _ := rfl
@@ -1119,7 +1119,7 @@ theorem id_apply (a : α) : LatticeHom.id α a = a :=
   rfl
 #align lattice_hom.id_apply LatticeHom.id_apply
 
-/-- Composition of `lattice_hom`s as a `lattice_hom`. -/
+/-- Composition of `LatticeHom`s as a `LatticeHom`. -/
 def comp (f : LatticeHom β γ) (g : LatticeHom α β) : LatticeHom α γ :=
   { f.toSupHom.comp g.toSupHom, f.toInfHom.comp g.toInfHom with }
 #align lattice_hom.comp LatticeHom.comp
@@ -1208,7 +1208,7 @@ instance (priority := 100) toLatticeHomClass {_ : LinearOrder α} {_ : Lattice �
       · rw [inf_eq_right.2 h, inf_eq_right.2 (OrderHomClass.mono f h : f b ≤ f a)] }
 #align order_hom_class.to_lattice_hom_class OrderHomClass.toLatticeHomClass
 
-/-- Reinterpret an order homomorphism to a linear order as a `lattice_hom`. -/
+/-- Reinterpret an order homomorphism to a linear order as a `LatticeHom`. -/
 def toLatticeHom (f : F) : LatticeHom α β := f
 #align order_hom_class.to_lattice_hom OrderHomClass.toLatticeHom
 
@@ -1232,17 +1232,17 @@ namespace BoundedLatticeHom
 variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ] [BoundedOrder α] [BoundedOrder β]
   [BoundedOrder γ] [BoundedOrder δ]
 
-/-- Reinterpret a `bounded_lattice_hom` as a `sup_bot_hom`. -/
+/-- Reinterpret a `BoundedLatticeHom` as a `SupBotHom`. -/
 def toSupBotHom (f : BoundedLatticeHom α β) : SupBotHom α β :=
   { f with }
 #align bounded_lattice_hom.to_sup_bot_hom BoundedLatticeHom.toSupBotHom
 
-/-- Reinterpret a `bounded_lattice_hom` as an `inf_top_hom`. -/
+/-- Reinterpret a `BoundedLatticeHom` as an `InfTopHom`. -/
 def toInfTopHom (f : BoundedLatticeHom α β) : InfTopHom α β :=
   { f with }
 #align bounded_lattice_hom.to_inf_top_hom BoundedLatticeHom.toInfTopHom
 
-/-- Reinterpret a `bounded_lattice_hom` as a `bounded_order_hom`. -/
+/-- Reinterpret a `BoundedLatticeHom` as a `BoundedOrderHom`. -/
 def toBoundedOrderHom (f : BoundedLatticeHom α β) : BoundedOrderHom α β :=
   { f, (f.toLatticeHom : α →o β) with }
 #align bounded_lattice_hom.to_bounded_order_hom BoundedLatticeHom.toBoundedOrderHom
@@ -1271,7 +1271,7 @@ theorem ext {f g : BoundedLatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align bounded_lattice_hom.ext BoundedLatticeHom.ext
 
-/-- Copy of a `bounded_lattice_hom` with a new `toFun` equal to the old one. Useful to fix
+/-- Copy of a `BoundedLatticeHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : BoundedLatticeHom α β) (f' : α → β) (h : f' = f) : BoundedLatticeHom α β :=
   { f.toLatticeHom.copy f' h, f.toBoundedOrderHom.copy f' h with }
@@ -1288,7 +1288,7 @@ theorem copy_eq (f : BoundedLatticeHom α β) (f' : α → β) (h : f' = f) : f.
 
 variable (α)
 
-/-- `id` as a `bounded_lattice_hom`. -/
+/-- `id` as a `BoundedLatticeHom`. -/
 protected def id : BoundedLatticeHom α α :=
   { LatticeHom.id α, BoundedOrderHom.id α with }
 #align bounded_lattice_hom.id BoundedLatticeHom.id
@@ -1308,7 +1308,7 @@ theorem id_apply (a : α) : BoundedLatticeHom.id α a = a :=
   rfl
 #align bounded_lattice_hom.id_apply BoundedLatticeHom.id_apply
 
-/-- Composition of `bounded_lattice_hom`s as a `bounded_lattice_hom`. -/
+/-- Composition of `BoundedLatticeHom`s as a `BoundedLatticeHom`. -/
 def comp (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) : BoundedLatticeHom α γ :=
   { f.toLatticeHom.comp g.toLatticeHom, f.toBoundedOrderHom.comp g.toBoundedOrderHom with }
 #align bounded_lattice_hom.comp BoundedLatticeHom.comp
