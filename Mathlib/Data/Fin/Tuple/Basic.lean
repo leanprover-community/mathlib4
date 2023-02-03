@@ -154,11 +154,11 @@ def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fi
 #align fin.cons_cases Fin.consCases
 
 @[simp]
-theorem cons_cases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
+theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
     (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x := by
   rw [consCases, cast_eq]
   congr
-#align fin.cons_cases_cons Fin.cons_cases_cons
+#align fin.cons_cases_cons Fin.consCases_cons
 
 /-- Recurse on an tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
 @[elab_as_elim]
@@ -289,7 +289,7 @@ theorem range_cons {α : Type _} {n : ℕ} (x : α) (b : Fin n → α) :
 section Append
 
 /-- Append a tuple of length `m` to a tuple of length `n` to get a tuple of length `m + n`.
-This is a non-dependent version of `fin.add_cases`. -/
+This is a non-dependent version of `Fin.add_cases`. -/
 def append {α : Type _} (a : Fin m → α) (b : Fin n → α) : Fin (m + n) → α :=
   @Fin.addCases _ _ (fun _ => α) a b
 #align fin.append Fin.append
@@ -611,7 +611,7 @@ variable {α : Fin (n + 1) → Type u} {β : Type v}
 /- Porting note: Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
 automatic insertion and specifying that motive seems to work. -/
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
-`Fin.succAbove i j`, `j : fin n`. This version is elaborated as eliminator and works for
+`Fin.succAbove i j`, `j : Fin n`. This version is elaborated as eliminator and works for
 propositions, see also `Fin.insertNth` for a version without an `@[elab_as_elim]`
 attribute. -/
 @[elab_as_elim]
@@ -935,7 +935,7 @@ theorem sigma_eq_of_eq_comp_cast {α : Type _} :
     simpa using h
 #align fin.sigma_eq_of_eq_comp_cast Fin.sigma_eq_of_eq_comp_cast
 
-/-- `fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
+/-- `Fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
 theorem sigma_eq_iff_eq_comp_cast {α : Type _} {a b : Σii, Fin ii → α} :
     a = b ↔ ∃ h : a.fst = b.fst, a.snd = b.snd ∘ Fin.cast h :=
   ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun _ _ ↦ rfl⟩, fun ⟨_, h'⟩ ↦

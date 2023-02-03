@@ -163,6 +163,8 @@ def equivSubtype : Fin n ≃ { i // i < n } where
   left_inv := fun ⟨_, _⟩ => rfl
   right_inv := fun ⟨_, _⟩ => rfl
 #align fin.equiv_subtype Fin.equivSubtype
+#align fin.equiv_subtype_symm_apply Fin.equivSubtype_symm_apply
+#align fin.equiv_subtype_apply Fin.equivSubtype_apply
 
 section coe
 
@@ -330,6 +332,8 @@ theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 def orderIsoSubtype : Fin n ≃o { i // i < n } :=
   equivSubtype.toOrderIso (by simp [Monotone]) (by simp [Monotone])
 #align fin.order_iso_subtype Fin.orderIsoSubtype
+#align fin.order_iso_subtype_symm_apply Fin.orderIsoSubtype_symmApply
+#align fin.order_iso_subtype_apply Fin.orderIsoSubtype_apply
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/
 @[simps apply]
@@ -493,6 +497,8 @@ theorem rev_lt_rev {i j : Fin n} : rev i < rev j ↔ j < i :=
 def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
   ⟨OrderDual.ofDual.trans rev, rev_le_rev⟩
 #align fin.rev_order_iso Fin.revOrderIso
+#align fin.rev_order_iso_apply Fin.revOrderIso_apply
+#align fin.rev_order_iso_to_equiv Fin.revOrderIso_toEquiv
 
 @[simp]
 theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) :=
@@ -531,6 +537,9 @@ theorem last_pos : (0 : Fin (n + 2)) < last (n + 1) := by simp [lt_iff_val_lt_va
 theorem eq_last_of_not_lt {i : Fin (n + 1)} (h : ¬(i : ℕ) < n) : i = last n :=
   le_antisymm (le_last i) (not_lt.1 h)
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
+
+theorem val_lt_last {i : Fin (n + 1)} (h : i ≠ last n) : (i : ℕ) < n :=
+  by_contra <| mt eq_last_of_not_lt h
 
 theorem top_eq_last (n : ℕ) : ⊤ = Fin.last n :=
   rfl
@@ -1302,6 +1311,9 @@ theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
   range_castLe le_self_add
 #align fin.range_cast_succ Fin.range_castSucc
 
+theorem exists_castSucc_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSucc j = i) ↔ i ≠ last n :=
+  ⟨fun ⟨j, hj⟩ => hj ▸ j.castSucc_lt_last.ne, fun hi => ⟨i.castLt $ Fin.val_lt_last hi, rfl⟩⟩
+
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
     ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
@@ -1851,7 +1863,7 @@ theorem lift_fun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] 
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
-      exacts[H j, trans (ihj hlt) (H j)]
+      exacts[H j, _root_.trans (ihj hlt) (H j)]
 #align fin.lift_fun_iff_succ Fin.lift_fun_iff_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
@@ -2476,7 +2488,8 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
 theorem coe_ofNat_eq_mod' (m n : ℕ) [NeZero m] :
     (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
   rfl
-#align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
+-- Porting note: new in mathlib 4?
+-- #align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
 
 @[simp]
 theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (m+1)) : ℕ) = n % Nat.succ m :=

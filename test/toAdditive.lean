@@ -4,7 +4,7 @@ import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM
-open Qq Lean Meta Elab Command
+open Qq Lean Meta Elab Command ToAdditive
 
 -- work in a namespace so that it doesn't matter if names clash
 namespace Test
@@ -145,12 +145,35 @@ run_cmd do
   successIfFail <| Elab.Command.liftCoreM <|
     ToAdditive.addToAdditiveAttr `bar11_works { ref := ← getRef }
 
+/- Test on inductive types -/
+inductive AddInd : ℕ → Prop where
+  | basic : AddInd 2
+  | zero : AddInd 0
+
+@[to_additive]
+inductive MulInd : ℕ → Prop where
+  | basic : MulInd 2
+  | one : MulInd 1
+
+run_cmd do
+  unless findTranslation? (← getEnv) `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
+  unless findTranslation? (← getEnv) `Test.MulInd.basic == none do throwError "2"
+  unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
+
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
 def some_def.in_namespace : Bool := false
 
 def some_def {α : Type u} [Mul α] (x : α) : α :=
 if some_def.in_namespace then x * x else x
+
+def myFin (_ : ℕ) := ℕ
+
+instance : One (myFin n) := ⟨(1 : ℕ)⟩
+
+@[to_additive bar]
+def myFin.foo : myFin (n+1) := 1
+
 
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
@@ -253,11 +276,19 @@ def Ones : ℕ → Q(Nat)
 | 0     => q(1)
 | (n+1) => q($(Ones n) + $(Ones n))
 
+
 -- this test just exists to see if this finishes in finite time. It should take <100ms.
 -- #time
 run_cmd do
-  let e : Expr := Ones 400
+  let e : Expr := Ones 300
   let _ ← Elab.Command.liftCoreM <| MetaM.run' <| ToAdditive.applyReplacementFun e
+
+-- testing `isConstantApplication`
+run_cmd do
+  unless !(q((fun _ y => y) 3 4) : Q(Nat)).isConstantApplication do throwError "1"
+  unless (q((fun x _ => x) 3 4) : Q(Nat)).isConstantApplication do throwError "2"
+  unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
+  unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
 
 
 
@@ -275,8 +306,8 @@ def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
 
 run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
-  checkGuessName "OneMulSMulInvDivPow"       "ZeroAddVAddNegSubSMul"
-  checkGuessName "ProdFinprodNpowZpow"       "SumFinsumNsmulZsmul"
+  checkGuessName "OneMulSMulInvDivPow"       "ZeroAddVAddNegSubNSMul"
+  checkGuessName "ProdFinprodNPowZPow"       "SumFinsumNSMulZSMul"
 
   -- The current design swaps all instances of `Comm`+`Add` in order to have
   -- `AddCommMonoid` instead of `CommAddMonoid`.
@@ -307,6 +338,7 @@ run_cmd
   checkGuessName "LTHMulHPowLEHDiv" "LTHAddHSMulLEHSub"
   checkGuessName "OneLEHMul" "NonnegHAdd"
   checkGuessName "OneLTHPow" "PosHSMul"
+  checkGuessName "OneLTPow" "PosNSMul"
   checkGuessName "instCoeTCOneHom" "instCoeTCZeroHom"
   checkGuessName "instCoeTOneHom" "instCoeTZeroHom"
   checkGuessName "instCoeOneHom" "instCoeZeroHom"

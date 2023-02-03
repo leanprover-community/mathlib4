@@ -74,7 +74,7 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
     (inferInstance : LinearOrderedSemiring ℕ), (inferInstance : CommSemiring ℕ) with
     exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
     le_self_add := Nat.le_add_right,
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun _ _ => Nat.eq_zero_of_mul_eq_zero }
+    eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
 
 instance canonicallyLinearOrderedAddMonoid : CanonicallyLinearOrderedAddMonoid ℕ :=
   { (inferInstance : CanonicallyOrderedAddMonoid ℕ), Nat.linearOrder with }
@@ -177,6 +177,7 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 
 theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
+  show _ > _ from -- lean4#2073
   calc
     m + n > 0 + n := Nat.add_lt_add_right h n
     _ = n := Nat.zero_add n

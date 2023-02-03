@@ -126,7 +126,7 @@ theorem sum_map_count_dedup_filter_eq_countp (p : α → Bool) (l : List α) :
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only
     · by_cases hp : p a
-      · refine' _root_.trans (sum_map_eq_smul_single a _ fun _ h _ => by simp [h]) _
+      · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
         simp [hp, count_dedup]
       · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map'.1 hn
