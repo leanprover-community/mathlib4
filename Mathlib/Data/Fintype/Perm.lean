@@ -12,7 +12,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Tactic.Ring
 
-set_option autoImplicit false -- TODO: remove before merge
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
 
@@ -20,7 +19,6 @@ Main declarations:
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
 
 -/
-
 
 open Function
 
