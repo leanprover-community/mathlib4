@@ -63,7 +63,10 @@ Young diagrams are modeled as finite sets in `ℕ × ℕ` that are lower sets wi
 standard order on products. -/
 @[ext]
 structure YoungDiagram where
+  /-- A finite set which represents a finite collection of cells on the `ℕ × ℕ` grid. -/
   cells : Finset (ℕ × ℕ)
+  /-- Cells are up-left justified. We represent it whether the `cells` is a lower set in `ℕ × ℕ` in
+  the product partial order. -/
   IsLowerSet : IsLowerSet (cells : Set (ℕ × ℕ))
 #align young_diagram YoungDiagram
 
