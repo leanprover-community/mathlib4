@@ -394,9 +394,9 @@ structure ParsedProjectionData where
   /-- name and syntax for this projection used in the generated `simp` lemmas -/
   newName : Name × Syntax
   /-- will simp lemmas be generated for with (without specifically naming this?) -/
-  isDefault : Bool
+  isDefault : Bool := true
   /-- is the projection name a prefix? -/
-  isPrefix : Bool
+  isPrefix : Bool := false
   /-- projection expression -/
   expr? : Option Expr := none
   /-- the list of projection numbers this expression corresponds to -/
@@ -535,8 +535,11 @@ def mkParsedProjectionData (str : Name) : CoreM (Array ParsedProjectionData) := 
   let projs := getStructureFieldsFlattened env str false
   if projs.size == 0 then
     throwError "Declaration {str} is not a structure."
-  return projs.map
-    fun nm ↦ ⟨(nm, .missing), (nm, .missing), true, false, none, #[], false⟩
+  let projs := projs.map fun nm ↦ {origName := (nm, .missing), newName := (nm, .missing)}
+  let parents := getParentStructures env str
+  let parents := parents.map fun nm ↦
+    {origName := (nm, .missing), newName := (nm, .missing), isDefault := false}
+  return projs ++ parents
 
 /-- Execute the projection renamings (and turning off projections) as specified by `rules`. -/
 def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array ProjectionRule) :
