@@ -368,9 +368,11 @@ def bind (P : Finpartition a) (Q : ∀ i ∈ P.Parts, Finpartition i) : Finparti
     · exact (Q A hA).disjoint ha hb h
     · exact (P.disjoint hA hB hAB).mono ((Q A hA).le ha) ((Q B hB).le hb)
   SupParts := by
-    simp_rw [sup_bunionᵢ, ← P.SupParts]
-    rw [eq_comm, ← Finset.sup_attach]
-    exact sup_congr rfl fun b hb ↦ (Q b hb).SupParts.symm
+    simp_rw [sup_bunionᵢ]
+    trans (sup P.Parts id)
+    · rw [eq_comm, ← Finset.sup_attach]
+      exact sup_congr rfl fun b _hb ↦ (Q b.1 b.2).SupParts.symm
+    · exact P.SupParts
   NotBotMem h := by
     rw [Finset.mem_bunionᵢ] at h
     obtain ⟨⟨A, hA⟩, -, h⟩ := h
