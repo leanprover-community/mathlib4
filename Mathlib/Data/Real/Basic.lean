@@ -243,6 +243,10 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
     map_mul' := cauchy_mul }
 set_option linter.uppercaseLean3 false in
 #align real.ring_equiv_Cauchy Real.ringEquivCauchy
+set_option linter.uppercaseLean3 false in
+#align real.ring_equiv_Cauchy_apply Real.ringEquivCauchy_apply
+set_option linter.uppercaseLean3 false in
+#align real.ring_equiv_Cauchy_symm_apply_cauchy Real.ringEquivCauchy_symmApply_cauchy
 
 /-! Extra instances to short-circuit type class resolution.
 

@@ -57,6 +57,7 @@ def MonoidHom.inverse {A B : Type _} [Monoid A] [Monoid B] (f : A →* B) (g : B
   { (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g, map_one' := by rw [← f.map_one, h₁] }
 #align monoid_hom.inverse MonoidHom.inverse
 #align add_monoid_hom.inverse AddMonoidHom.inverse
+#align monoid_hom.inverse_apply MonoidHom.inverse_apply
 
 /-- `AddEquiv α β` is the type of an equiv `α ≃ β` which preserves addition. -/
 structure AddEquiv (A B : Type _) [Add A] [Add B] extends A ≃ B, AddHom A B
@@ -72,9 +73,11 @@ class AddEquivClass (F : Type _) (A B : outParam (Type _)) [Add A] [Add B]
 
 /-- The `Equiv` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toEquiv
+#align add_equiv.to_equiv AddEquiv.toEquiv
 
 /-- The `AddHom` underlying a `AddEquiv`. -/
 add_decl_doc AddEquiv.toAddHom
+#align add_equiv.to_add_hom AddEquiv.toAddHom
 
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
 @[to_additive]
@@ -86,9 +89,11 @@ attribute [to_additive] MulEquiv.toMulHom
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
 add_decl_doc MulEquiv.toEquiv
+#align mul_equiv.to_equiv MulEquiv.toEquiv
 
 /-- The `MulHom` underlying a `MulEquiv`. -/
 add_decl_doc MulEquiv.toMulHom
+#align mul_equiv.to_mul_hom MulEquiv.toMulHom
 
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
@@ -599,6 +604,7 @@ def arrowCongr {M N P Q : Type _} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
   map_mul' h k := by ext; simp
 #align mul_equiv.arrow_congr MulEquiv.arrowCongr
 #align add_equiv.arrow_congr AddEquiv.arrowCongr
+#align mul_equiv.arrow_congr_apply MulEquiv.arrowCongr_apply
 
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 for multiplicative maps from a monoid to a commutative monoid.
@@ -648,6 +654,7 @@ def piCongrRight {η : Type _} {Ms Ns : η → Type _} [∀ j, Mul (Ms j)] [∀ 
     map_mul' := fun x y => funext fun j => (es j).map_mul (x j) (y j) }
 #align mul_equiv.Pi_congr_right MulEquiv.piCongrRight
 #align add_equiv.Pi_congr_right AddEquiv.piCongrRight
+#align mul_equiv.Pi_congr_right_apply MulEquiv.piCongrRight_apply
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_refl {η : Type _} {Ms : η → Type _} [∀ j, Mul (Ms j)] :

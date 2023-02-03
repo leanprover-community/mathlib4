@@ -209,9 +209,13 @@ def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
-def insertTranslation (src tgt : Name) : CoreM Unit := do
+def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) src then
-    throwError "The translation {src} ↦ {tgt'} already exists"
+    if failIfExists then
+      throwError "The translation {src} ↦ {tgt'} already exists"
+    else
+      trace[to_additive] "The translation {src} ↦ {tgt'} already exists"
+      return
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
 
@@ -244,11 +248,15 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
 private def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
+  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool :=
+  visit where
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
-  | _, .app e a           => Id.run do
-      if visit true e then
+  | _, x@(.app e a)       => Id.run do
+      if !visit true e then
+        return false
+      -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
+      if x.isConstantApplication then
         return true
       if let some n := e.getAppFn.constName? then
         if let some l := ignore n then
@@ -305,16 +313,21 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
   let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
   return aux
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
-      (fixedNumeralAttr.find? env) isRelevant e
+      (fixedNumeralAttr.find? env) isRelevant (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
-    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
+    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
+    if trace then
+      dbg_trace s!"replacing at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
+      if trace && n₀ != n₁ then
+        dbg_trace s!"changing {n₀} to {n₁}"
       let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
@@ -332,22 +345,33 @@ where /-- Implementation of `applyReplacementFun`. -/
             let gf := r g.appFn!
             let ga := r g.appArg!
             let e₂ := mkApp2 gf x ga
+            if trace then
+              dbg_trace s!"reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter: {e₂}"
             return some e₂
         /- Test if the head should not be replaced. -/
         let c1 := isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 := additiveTest findTranslation? ignore x
+        if trace && c1 && c2 && c3 then
+          dbg_trace s!"{x} doesn't contain a fixed type, so we will change {nm}"
         if c1 && c2 && not c3 then
+          if trace then
+            dbg_trace s!"{x} contains a fixed type, so {nm} is not changed"
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
         let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
         if !shouldTranslateNumeral findTranslation? ignore fixedNumeral nm firstArg then
+          if trace then
+            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
+      if trace then
+        dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+          }replace type with {n₁}"
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
@@ -605,7 +629,7 @@ def copyMetaData (attrs : Array Syntax) (src tgt : Name) : CoreM Unit := do
   /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
   definitions. If we don't do that, the equation lemma for `src` might be generated later
   when doing a `rw`, but it won't be generated for `tgt`. -/
-  additivizeLemmas (desc := "equation lemmas") src tgt fun nm ↦
+  additivizeLemmas src tgt "equation lemmas" fun nm ↦
     (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
   MetaM.run' <| Elab.Term.TermElabM.run' <| applyAttributes attrs `to_additive src tgt
 
@@ -853,7 +877,7 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  insertTranslation src tgt
+  insertTranslation src tgt alreadyExists
   if alreadyExists then
     -- since `tgt` already exists, we just need to copy metadata and
     -- add translations `src.x ↦ tgt.x'` for any subfields.
@@ -909,7 +933,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type _} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive

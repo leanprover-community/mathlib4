@@ -81,6 +81,8 @@ def hasInvolutiveReverse (rev : α → α) (h : Function.Involutive rev) :
 def toHom : α ≃ (star α ⟶ star α) :=
   Equiv.refl _
 #align quiver.single_obj.to_hom Quiver.SingleObj.toHom
+#align quiver.single_obj.to_hom_apply Quiver.SingleObj.toHom_apply
+#align quiver.single_obj.to_hom_symm_apply Quiver.SingleObj.toHom_symm_apply
 
 /-- Prefunctors between two `SingleObj` quivers correspond to functions between the corresponding
 arrows types.
@@ -92,6 +94,9 @@ def toPrefunctor : (α → β) ≃ SingleObj α ⥤q SingleObj β
   invFun f a := f.map (toHom a)
   left_inv _ := rfl
   right_inv _ := rfl
+#align quiver.single_obj.to_prefunctor_symm_apply Quiver.SingleObj.toPrefunctor_symm_apply
+#align quiver.single_obj.to_prefunctor_apply_map Quiver.SingleObj.toPrefunctor_apply_map
+#align quiver.single_obj.to_prefunctor_apply_obj Quiver.SingleObj.toPrefunctor_apply_obj
 
 #align quiver.single_obj.to_prefunctor Quiver.SingleObj.toPrefunctor
 

@@ -196,6 +196,7 @@ theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
 #align add_commute.nsmul_self AddCommute.nsmul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
+#align commute.pow_self Commute.pow_self
 
 -- porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]

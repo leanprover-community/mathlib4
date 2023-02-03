@@ -73,6 +73,7 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
     (Commute.self_pow _ _)
 #align units.of_pow Units.ofPow
 #align units.of_nsmul AddUnits.ofNSMul
+#align add_units.of_nsmul AddUnits.ofNSMul
 
 @[to_additive (attr := simp)]
 theorem isUnit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
@@ -737,6 +738,7 @@ lemma natAbs_sq (x : ℤ) : ↑(x.natAbs ^ 2) = x ^ 2 := by rw [sq, Int.natAbs_m
 #align int.nat_abs_sq Int.natAbs_sq
 
 alias natAbs_sq ← natAbs_pow_two
+#align int.nat_abs_pow_two Int.natAbs_pow_two
 
 theorem natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
   rw [← Int.natAbs_sq a, sq]
@@ -751,6 +753,7 @@ theorem le_self_sq (b : ℤ) : b ≤ b ^ 2 :=
 #align int.le_self_sq Int.le_self_sq
 
 alias le_self_sq ← le_self_pow_two
+#align int.le_self_pow_two Int.le_self_pow_two
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
     Function.Injective ((· ^ ·) x : ℕ → ℤ) := by

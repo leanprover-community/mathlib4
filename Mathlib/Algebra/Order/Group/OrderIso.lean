@@ -43,6 +43,8 @@ def OrderIso.inv : α ≃o αᵒᵈ where
   map_rel_iff' {_ _} := @inv_le_inv_iff α _ _ _ _ _ _
 #align order_iso.inv OrderIso.inv
 #align order_iso.neg OrderIso.neg
+#align order_iso.inv_apply OrderIso.inv_apply
+#align order_iso.inv_symm_apply OrderIso.inv_symmApply
 
 end
 
@@ -53,8 +55,10 @@ theorem inv_le' : a⁻¹ ≤ b ↔ b⁻¹ ≤ a :=
 #align neg_le neg_le
 
 alias inv_le' ↔ inv_le_of_inv_le' _
+#align inv_le_of_inv_le' inv_le_of_inv_le'
 
 attribute [to_additive neg_le_of_neg_le] inv_le_of_inv_le'
+#align neg_le_of_neg_le neg_le_of_neg_le
 
 @[to_additive le_neg]
 theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
@@ -67,8 +71,10 @@ end TypeclassesLeftRightLE
 end Group
 
 alias le_inv' ↔ le_inv_of_le_inv _
+#align le_inv_of_le_inv le_inv_of_le_inv
 
 attribute [to_additive] le_inv_of_le_inv
+#align le_neg_of_le_neg le_neg_of_le_neg
 
 section Group
 
@@ -86,6 +92,8 @@ def OrderIso.mulRight (a : α) : α ≃o α where
   toEquiv := Equiv.mulRight a
 #align order_iso.mul_right OrderIso.mulRight
 #align order_iso.add_right OrderIso.addRight
+#align order_iso.mul_right_apply OrderIso.mulRight_apply
+#align order_iso.mul_right_to_equiv OrderIso.mulRight_toEquiv
 
 @[to_additive (attr := simp)]
 theorem OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
@@ -108,6 +116,8 @@ def OrderIso.mulLeft (a : α) : α ≃o α where
   toEquiv := Equiv.mulLeft a
 #align order_iso.mul_left OrderIso.mulLeft
 #align order_iso.add_left OrderIso.addLeft
+#align order_iso.mul_left_apply OrderIso.mulLeft_apply
+#align order_iso.mul_left_to_equiv OrderIso.mulLeft_toEquiv
 
 @[to_additive (attr := simp)]
 theorem OrderIso.mulLeft_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by

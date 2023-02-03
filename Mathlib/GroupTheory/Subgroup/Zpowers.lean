@@ -98,28 +98,38 @@ theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :
 attribute [to_additive AddSubgroup.zmultiples] Subgroup.zpowers
 
 attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_zpowers
+#align add_subgroup.mem_zmultiples AddSubgroup.mem_zmultiples
 
 attribute [to_additive AddSubgroup.zmultiples_eq_closure] Subgroup.zpowers_eq_closure
+#align add_subgroup.zmultiples_eq_closure AddSubgroup.zmultiples_eq_closure
 
 attribute [to_additive (attr := simp) AddSubgroup.range_zmultiplesHom] Subgroup.range_zpowersHom
 
 attribute [to_additive AddSubgroup.zmultiples_subset] Subgroup.zpowers_subset
+#align add_subgroup.zmultiples_subset AddSubgroup.zmultiples_subset
 
 attribute [to_additive AddSubgroup.mem_zmultiples_iff] Subgroup.mem_zpowers_iff
+#align add_subgroup.mem_zmultiples_iff AddSubgroup.mem_zmultiples_iff
 
 attribute [to_additive (attr := simp) AddSubgroup.zsmul_mem_zmultiples] Subgroup.zpow_mem_zpowers
+#align add_subgroup.zsmul_mem_zmultiples AddSubgroup.zsmul_mem_zmultiples
 
 attribute [to_additive (attr := simp) AddSubgroup.nsmul_mem_zmultiples] Subgroup.npow_mem_zpowers
+#align add_subgroup.nsmul_mem_zmultiples AddSubgroup.nsmul_mem_zmultiples
 
 --Porting note: increasing simp priority. Better lemma than `Subtype.forall`
 attribute [to_additive (attr := simp 1100) AddSubgroup.forall_zmultiples] Subgroup.forall_zpowers
+#align add_subgroup.forall_zmultiples AddSubgroup.forall_zmultiples
 
 attribute [to_additive AddSubgroup.forall_mem_zmultiples] Subgroup.forall_mem_zpowers
+#align add_subgroup.forall_mem_zmultiples AddSubgroup.forall_mem_zmultiples
 
 --Porting note: increasing simp priority. Better lemma than `Subtype.exists`
 attribute [to_additive (attr := simp 1100) AddSubgroup.exists_zmultiples] Subgroup.exists_zpowers
+#align add_subgroup.exists_zmultiples AddSubgroup.exists_zmultiples
 
 attribute [to_additive AddSubgroup.exists_mem_zmultiples] Subgroup.exists_mem_zpowers
+#align add_subgroup.exists_mem_zmultiples AddSubgroup.exists_mem_zmultiples
 
 instance (a : A) : Countable (zmultiples a) :=
   (zmultiplesHom A a).rangeRestrict_surjective.countable

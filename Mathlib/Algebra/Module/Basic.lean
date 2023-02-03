@@ -63,6 +63,8 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 #align module Module
+#align module.ext Module.ext
+#align module.ext_iff Module.ext_iff
 
 section AddCommMonoid
 
@@ -185,6 +187,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     map_add' := fun x y =>
       AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
 #align module.to_add_monoid_End Module.toAddMonoidEnd
+#align module.to_add_monoid_End_apply_apply Module.toAddMonoidEnd_apply_apply
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
 use of `AddMonoidHom.flip`. -/

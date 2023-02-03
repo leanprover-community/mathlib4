@@ -55,6 +55,8 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
   right_inv _ := Units.ext rfl
   map_mul' _ _ := rfl
 #align equiv.perm.equiv_units_End Equiv.Perm.equivUnitsEnd
+#align equiv.perm.equiv_units_End_symm_apply_apply Equiv.Perm.equivUnitsEnd_symmApply_apply
+#align equiv.perm.equiv_units_End_symm_apply_symm_apply Equiv.Perm.equivUnitsEnd_symmApply_symm_apply
 
 /-- Lift a monoid homomorphism `f : G →* function.End α` to a monoid homomorphism
 `f : G →* equiv.perm α`. -/
@@ -62,6 +64,8 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
 def _root_.MonoidHom.toHomPerm {G : Type _} [Group G] (f : G →* Function.End α) : G →* Perm α :=
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 #align monoid_hom.to_hom_perm MonoidHom.toHomPerm
+#align monoid_hom.to_hom_perm_apply_symm_apply MonoidHom.toHomPerm_apply_symm_apply
+#align monoid_hom.to_hom_perm_apply_apply MonoidHom.toHomPerm_apply_apply
 
 theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
   Equiv.trans_apply _ _ _
@@ -208,6 +212,7 @@ def sumCongrHom (α β : Type _) : Perm α × Perm β →* Perm (Sum α β) wher
   map_one' := sumCongr_one
   map_mul' _ _ := (sumCongr_mul _ _ _ _).symm
 #align equiv.perm.sum_congr_hom Equiv.Perm.sumCongrHom
+#align equiv.perm.sum_congr_hom_apply Equiv.Perm.sumCongrHom_apply
 
 theorem sumCongrHom_injective {α β : Type _} : Function.Injective (sumCongrHom α β) := by
   rintro ⟨⟩ ⟨⟩ h
@@ -260,6 +265,7 @@ def sigmaCongrRightHom {α : Type _} (β : α → Type _) : (∀ a, Perm (β a))
   map_one' := sigmaCongrRight_one
   map_mul' _ _ := (sigmaCongrRight_mul _ _).symm
 #align equiv.perm.sigma_congr_right_hom Equiv.Perm.sigmaCongrRightHom
+#align equiv.perm.sigma_congr_right_hom_apply Equiv.Perm.sigmaCongrRightHom_apply
 
 theorem sigmaCongrRightHom_injective {α : Type _} {β : α → Type _} :
     Function.Injective (sigmaCongrRightHom β) := by
@@ -276,6 +282,7 @@ def subtypeCongrHom (p : α → Prop) [DecidablePred p] :
   map_one' := Perm.subtypeCongr.refl
   map_mul' _ _ := (Perm.subtypeCongr.trans _ _ _ _).symm
 #align equiv.perm.subtype_congr_hom Equiv.Perm.subtypeCongrHom
+#align equiv.perm.subtype_congr_hom_apply Equiv.Perm.subtypeCongrHom_apply
 
 theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
     Function.Injective (subtypeCongrHom p) := by
@@ -321,6 +328,7 @@ def extendDomainHom : Perm α →* Perm β where
   map_one' := extendDomain_one f
   map_mul' e e' := (extendDomain_mul f e e').symm
 #align equiv.perm.extend_domain_hom Equiv.Perm.extendDomainHom
+#align equiv.perm.extend_domain_hom_apply Equiv.Perm.extendDomainHom_apply
 
 theorem extendDomainHom_injective : Function.Injective (extendDomainHom f) :=
   (injective_iff_map_eq_one (extendDomainHom f)).mpr fun e he =>
@@ -470,6 +478,8 @@ protected def subtypeEquivSubtypePerm (p : α → Prop) [DecidablePred p] :
   right_inv f :=
     Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.prop a)
 #align equiv.perm.subtype_equiv_subtype_perm Equiv.Perm.subtypeEquivSubtypePerm
+#align equiv.perm.subtype_equiv_subtype_perm_symm_apply Equiv.Perm.subtypeEquivSubtypePerm_symm_apply
+#align equiv.perm.subtype_equiv_subtype_perm_apply_coe Equiv.Perm.subtypeEquivSubtypePerm_apply_coe
 
 theorem subtypeEquivSubtypePerm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
     -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`
@@ -584,28 +594,38 @@ variable [AddGroup α] (a b : α)
 
 @[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
 @[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
+#align equiv.add_right_zero Equiv.addRight_zero
+#align equiv.add_left_zero Equiv.addLeft_zero
 
 @[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
 ext $ add_assoc _ _
+#align equiv.add_left_add Equiv.addLeft_add
 
 @[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
 ext $ fun _ ↦ (add_assoc _ _ _).symm
+#align equiv.add_right_add Equiv.addRight_add
 
 @[simp] lemma inv_addLeft : (Equiv.addLeft a)⁻¹ = Equiv.addLeft (-a) := Equiv.coe_inj.1 rfl
 @[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
+#align equiv.inv_add_right Equiv.inv_addRight
+#align equiv.inv_add_left Equiv.inv_addLeft
 
 @[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
 by ext; simp [Perm.coe_pow]
+#align equiv.pow_add_left Equiv.pow_addLeft
 
 @[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) :=
 by ext; simp [Perm.coe_pow]
+#align equiv.pow_add_right Equiv.pow_addRight
 
 @[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
 (map_zsmul (⟨⟨Equiv.addLeft, addLeft_zero⟩, addLeft_add⟩ : α →+ Additive (Perm α)) _ _).symm
+#align equiv.zpow_add_left Equiv.zpow_addLeft
 
 @[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
 | (Int.ofNat n) => by simp
 | (Int.negSucc n) => by simp
+#align equiv.zpow_add_right Equiv.zpow_addRight
 
 end AddGroup
 
@@ -614,36 +634,46 @@ variable [Group α] (a b : α)
 
 @[simp, to_additive] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
 @[simp, to_additive] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
+#align equiv.mul_right_one Equiv.mulRight_one
+#align equiv.mul_left_one Equiv.mulLeft_one
 
 @[simp, to_additive] lemma mulLeft_mul :
   Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
 ext $ mul_assoc _ _
+#align equiv.mul_left_mul Equiv.mulLeft_mul
 
 @[simp, to_additive] lemma mulRight_mul :
   Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
 ext $ fun _ ↦ (mul_assoc _ _ _).symm
+#align equiv.mul_right_mul Equiv.mulRight_mul
 
 @[simp, to_additive inv_addLeft]
 lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
 @[simp, to_additive inv_addRight]
 lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
+#align equiv.inv_mul_right Equiv.inv_mulRight
+#align equiv.inv_mul_left Equiv.inv_mulLeft
 
 @[simp, to_additive pow_addLeft]
 lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
 by ext; simp [Perm.coe_pow]
+#align equiv.pow_mul_left Equiv.pow_mulLeft
 
 @[simp, to_additive pow_addRight]
 lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) :=
 by ext; simp [Perm.coe_pow]
+#align equiv.pow_mul_right Equiv.pow_mulRight
 
 @[simp, to_additive zpow_addLeft]
 lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
 (map_zpow (⟨⟨Equiv.mulLeft, mulLeft_one⟩, mulLeft_mul⟩ : α →* Perm α) _ _).symm
+#align equiv.zpow_mul_left Equiv.zpow_mulLeft
 
 @[simp, to_additive zpow_addRight]
 lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
 | (Int.ofNat n) => by simp
 | (Int.negSucc n) => by simp
+#align equiv.zpow_mul_right Equiv.zpow_mulRight
 
 end Group
 end Equiv

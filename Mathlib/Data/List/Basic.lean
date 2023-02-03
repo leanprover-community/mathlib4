@@ -18,8 +18,6 @@ import Std.Data.List.Lemmas
 # Basic properties of lists
 -/
 
-#align list.mem_cons_iff List.mem_cons
-
 open Function
 
 open Nat hiding one_pos
@@ -696,9 +694,6 @@ theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
 
 /-! ### empty -/
 
--- Porting note: Definition from Lean3 core, so should be moved
-#align list.empty List.isEmpty
-
 -- Porting note: this does not work as desired
 -- attribute [simp] List.isEmpty
 
@@ -1063,8 +1058,6 @@ def bidirectionalRecOn {C : List α → Sort _} (l : List α) (H0 : C []) (H1 : 
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl
-
-#align list.sublist.cons2 List.Sublist.cons₂
 
 #align list.nil_sublist List.nil_sublist
 #align list.sublist.refl List.Sublist.refl
