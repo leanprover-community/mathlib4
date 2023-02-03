@@ -239,6 +239,7 @@ to exactly a constant. -/
 def additiveTestAux (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool :=
   visit where
+  /-- same as `additiveTestAux` -/
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
   | _, x@(.app e a)       => Id.run do
