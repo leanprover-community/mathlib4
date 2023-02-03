@@ -64,8 +64,8 @@ class like `paracompact_space.{u v}`. Due to lemma `precise_refinement` below, e
 finite refinement `t : α → set X` indexed on the same type such that each `∀ i, t i ⊆ s i`. -/
 class ParacompactSpace (X : Type v) [TopologicalSpace X] : Prop where
   locallyFinite_refinement :
-    ∀ (α : Type v) (s : α → Set X) (ho : ∀ a, IsOpen (s a)) (hc : (⋃ a, s a) = univ),
-      ∃ (β : Type v)(t : β → Set X)(ho : ∀ b, IsOpen (t b))(hc : (⋃ b, t b) = univ),
+    ∀ (α : Type v) (s : α → Set X) (_ : ∀ a, IsOpen (s a)) (_ : (⋃ a, s a) = univ),
+      ∃ (β : Type v) (t : β → Set X) (_ : ∀ b, IsOpen (t b)) (_ : (⋃ b, t b) = univ),
         LocallyFinite t ∧ ∀ b, ∃ a, t b ⊆ s a
 #align paracompact_space ParacompactSpace
 
@@ -168,11 +168,11 @@ theorem refinement_of_locally_compact_sigma_compact_of_nhds_basis_set [LocallyCo
       ((K.isCompact _).diff isOpen_interior).inter_right hs
     -- Next we choose a finite covering `B (c n i) (r n i)` of each
     -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
-    have : ∀ (n) (x : Kdiff (n + 1) ∩ s), K nᶜ ∈ 𝓝 (x : X) := fun n x =>
+    have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), K nᶜ ∈ 𝓝 (x : X) := fun n x =>
       IsOpen.mem_nhds (K.isClosed n).isOpen_compl fun hx' =>
         x.2.1.2 <| K.subset_interior_succ _ hx'
-    haveI : ∀ (n) (x : Kdiff n ∩ s), Nonempty (ι x) := fun n x => (hB x x.2.2).Nonempty
-    choose! r hrp hr using fun n (x : Kdiff (n + 1) ∩ s) => (hB x x.2.2).mem_iff.1 (this n x)
+    --haveI : ∀ (n) (x : ↑(Kdiff n ∩ s)), Nonempty (ι x) := fun n x => (hB x x.2.2).nonempty
+    choose! r hrp hr using fun n (x : ↑(Kdiff (n + 1) ∩ s)) => (hB x x.2.2).mem_iff.1 (this n x)
     have hxr : ∀ (n x) (hx : x ∈ Kdiff (n + 1) ∩ s), B x (r n ⟨x, hx⟩) ∈ 𝓝 x := fun n x hx =>
       (hB x hx.2).mem_of_mem (hrp _ ⟨x, hx⟩)
     choose T hT using fun n => (Kdiffc (n + 1)).elim_nhds_subcover' _ (hxr n)
@@ -247,31 +247,28 @@ instance (priority := 100) paracompact_of_locally_compact_sigma_compact [Locally
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
 theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace X := by
   -- First we show how to go from points to a set on one side.
-  have :
-    ∀ s t : Set X,
-      IsClosed s →
-        IsClosed t →
-          (∀ x ∈ s, ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ t ⊆ v ∧ Disjoint u v) →
-            ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v :=
-    by
+  have : ∀ s t : Set X, IsClosed s → IsClosed t →
+      (∀ x ∈ s, ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ t ⊆ v ∧ Disjoint u v) →
+      ∃ u v, IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
     /- For each `x ∈ s` we choose open disjoint `u x ∋ x` and `v x ⊇ t`. The sets `u x` form an
         open covering of `s`. We choose a locally finite refinement `u' : s → set X`, then `⋃ i, u' i`
         and `(closure (⋃ i, u' i))ᶜ` are disjoint open neighborhoods of `s` and `t`. -/
-    intro s t hs ht H
+    intro s t hs _ H
     choose u v hu hv hxu htv huv using SetCoe.forall'.1 H
-    rcases precise_refinement_set hs u hu fun x hx => mem_Union.2 ⟨⟨x, hx⟩, hxu _⟩ with
+    rcases precise_refinement_set hs u hu fun x hx => mem_unionᵢ.2 ⟨⟨x, hx⟩, hxu _⟩ with
       ⟨u', hu'o, hcov', hu'fin, hsub⟩
     refine'
-      ⟨⋃ i, u' i, closure (⋃ i, u' i)ᶜ, isOpen_unionᵢ hu'o, is_closed_closure.is_open_compl, hcov',
+      ⟨⋃ i, u' i, closure (⋃ i, u' i)ᶜ, isOpen_unionᵢ hu'o, isClosed_closure.isOpen_compl, hcov',
         _, disjoint_compl_right.mono le_rfl (compl_le_compl subset_closure)⟩
-    rw [hu'fin.closure_Union, compl_Union, subset_Inter_iff]
+    rw [hu'fin.closure_unionᵢ, compl_unionᵢ, subset_interᵢ_iff]
     refine' fun i x hxt hxu =>
       absurd (htv i hxt) (closure_minimal _ (isClosed_compl_iff.2 <| hv _) hxu)
     exact fun y hyu hyv => (huv i).le_bot ⟨hsub _ hyu, hyv⟩
   -- Now we apply the lemma twice: first to `s` and `t`, then to `t` and each point of `s`.
   refine' ⟨fun s t hs ht hst => this s t hs ht fun x hx => _⟩
-  rcases this t {x} ht isClosed_singleton fun y hy => _ with ⟨v, u, hv, hu, htv, hxu, huv⟩
-  · exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
-  · simp_rw [singleton_subset_iff]
-    exact t2_separation (hst.symm.ne_of_mem hy hx)
+  rcases this t {x} ht isClosed_singleton fun y hy => (by
+    simp_rw [singleton_subset_iff]
+    exact t2_separation (hst.symm.ne_of_mem hy hx))
+    with ⟨v, u, hv, hu, htv, hxu, huv⟩
+  exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
 #align normal_of_paracompact_t2 normal_of_paracompact_t2
