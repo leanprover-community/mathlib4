@@ -926,6 +926,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     rcases(c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
     rw [Subtype.ext_iff, Subtype.coe_mk] at hi
     refine' ⟨i.1, i.2, _⟩
+    dsimp at hi
     rw [← hi, c.blocks_partial_sum i.2]
     rfl
   · rintro ⟨i, hi, H⟩
