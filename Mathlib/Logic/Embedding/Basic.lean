@@ -38,9 +38,6 @@ instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
   injective' := Embedding.inj'
   coe_injective' f g h := by { cases f; cases g; congr }
 
-/-- See Note [custom simps projection] -/
-def Embedding.Simps.apply {α β} (e : α ↪ β) : α → β := e
-
 initialize_simps_projections Embedding (toFun → apply)
 
 -- porting note: this needs `tactic.lift`.

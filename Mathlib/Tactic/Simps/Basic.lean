@@ -623,63 +623,58 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
     _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newStx rawExpr
     pure {proj with expr? := some rawExpr, projNrs := nrs}
 
-/-- Auxilliary function for `getRawProjections`.
-Resolve a single notation class in `findAutomaticProjections`. -/
--- currently unused
-def resolveNotationClass (projs : Array ParsedProjectionData)
-    (className : Name) (args : Array Expr) (eStr : Expr) (rawUnivs : List Level) :
-    MetaM (Array ParsedProjectionData) := do
-  let env ← getEnv
-  let classInfo := (getStructureInfo? env className).get!
-  let projName := classInfo.fieldNames[0]!
-  /- For this class, find the projection. `rawExpr` is the projection found applied to `args`,
-      and `rawExprLambda` has the arguments `args` abstracted. -/
-  let (relevantProj, rawExprLambda) ← do
-    let eInstType := mkAppN (.const className rawUnivs) args
-    withLocalDeclD `x eStr fun hyp ↦ do
-      -- todo: instead of instance search, traverse through parent structures for a notation class
-      -- (that way we also deal with composite projections)
-      let eInst ← synthInstance eInstType (some 10)
-      let rawExpr ← mkAppM projName (args.push eInst)
-      let rawExprLambda ← mkLambdaFVars (args.push hyp) rawExpr
-      let rawExprWhnf ← whnf rawExpr
-      let relevantProj ← lambdaTelescope rawExprWhnf fun _ body ↦
-        pure <| body.getAppFn.constName?
-      trace[simps.debug] "info: ({relevantProj}, {rawExprLambda})"
-      pure (relevantProj, rawExprLambda)
-  let some pos := projs.findIdx? fun x ↦ some x.strName == relevantProj | do
-    trace[simps.verbose] "Warning: The structure has an instance for {className}, {""
-        }but it is not definitionally equal to any projection."
-    failure -- will be caught by `findAutomaticProjections`
-  trace[simps.debug] "The raw projection is:{indentExpr rawExprLambda}"
-  projs.mapIdxM fun nr x ↦ do
-    unless nr.1 = pos do return x
-    if x.isCustom then
-      trace[simps.verbose] "Warning: Projection {relevantProj} is definitionally equal to{
-          indentExpr rawExprLambda}\nHowever, this is not used since a custom simps projection is {
-            ""}specified by the user."
-      return x
-    trace[simps.verbose] "Using notation from {className} for projection {relevantProj}."
-    return { x with expr? := some rawExprLambda }
+/-- Data about default coercions. An entry consists of
+  `(projName, (className, functionName, arity))`, where
+  * `projName` is the name of a projection in a structure that must be used to triggers the search
+    for a coercion as projection.
+  * `className` is the name of the class we are looking for
+  * `functionName` is the function that we are using for a coercion as projection
+    (this is typically the first field of `className`).
+  * `arity` is the number of arguments of `className`. -/
+def defaultCoercions : NameMap (Name × Name × Nat) :=
+.ofList [(`toFun, (`FunLike, `FunLike.coe, 3)), (`carrier, (`SetLike, `SetLike.coe, 2))]
 
 /-- Auxilliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
-These come from algebraic notation classes, like `+`. -/
--- todo: just navigate all projections and check if there is one called "add"/"mul" etc.
--- currently unused
-def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData)
-  (strType : Expr) (rawUnivs : List Level) : CoreM (Array ParsedProjectionData) := do
-  let env ← getEnv
-  MetaM.run' <| forallTelescope strType fun args _ ↦ do
-    let eStr := mkAppN (.const str rawUnivs) args
-    let automaticProjs := notationClassAttr.getState env
-    let mut projs := projs
-    if args.size == 1 then -- can be wrong if additional type-class arguments??
-      for (className, _) in automaticProjs do
-        try projs ← resolveNotationClass projs className args eStr rawUnivs
-        catch _ => pure ()
-    return projs
-
+These come from `FunLike` and `SetLike` instances.
+Todo: also support algebraic operations and notation classes, like `+`. -/
+def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
+  CoreM (Array ParsedProjectionData) := do
+  let strDecl ← getConstInfo str
+  trace[simps.debug] "debug: {projs}"
+  MetaM.run' <| TermElabM.run' (s := {levelNames := strDecl.levelParams}) <|
+  forallTelescope strDecl.type fun args _ ↦ do
+  let eStr := mkAppN (← mkConstWithLevelParams str) args
+  let projs ← projs.mapM fun proj => do
+    if let some (className, projName, arity) := Simps.defaultCoercions.find? proj.origName.1 then
+      let classArgs := mkArray (arity - 1) Unit.unit
+      let classArgs ← classArgs.mapM fun _ => mkFreshExprMVar none
+      let classArgs := #[eStr] ++ classArgs
+      let classArgs := classArgs.map Arg.expr
+      let eInstType ← elabAppArgs (← Term.mkConst className) #[] classArgs none true false
+      trace[simps.debug] "found projection {proj.origName.1}. Trying to synthesize {eInstType}."
+      let eInst ← try synthInstance eInstType <| some 10
+      catch ex =>
+        trace[simps.debug] "Didn't find instance:\n{ex.toMessageData}"
+        return proj
+      let projExpr ← elabAppArgs (← Term.mkConst projName) #[] (classArgs.push <| .expr eInst)
+        none true false
+      let projExpr ← mkLambdaFVars args projExpr
+      let projExpr ← instantiateMVars projExpr
+      unless ← isDefEq projExpr proj.expr?.get! do
+        throwError "The projection {proj.newName.1} is not definitionally equal to an application {
+          ""}of {projName}:
+          {indentExpr proj.expr?.get!}\n
+          vs
+          {indentExpr projExpr}"
+      if proj.isCustom then
+        trace[simps.verbose] "Warning: Projection {proj.newName.1} is given manually by the user,
+          but it can be generated automatically."
+        return proj
+      trace[simps.verbose] "Using {indentExpr projExpr}\n for projection {proj.newName.1}."
+      return { proj with expr? := some projExpr }
+    return proj
+  return projs
 
 /--
 Get the projections used by `simps` associated to a given structure `str`.
@@ -734,15 +729,13 @@ def getRawProjections (str : Name) (traceIfExists : Bool := false)
     return data
   trace[simps.verbose] "generating projection information for structure {str}."
   trace[simps.debug] "Applying the rules {rules}."
-  let some strDecl := env.find? str
-    | throwError "No such declaration {str}." -- maybe unreachable
+  let strDecl ← getConstInfo str
   let rawLevels := strDecl.levelParams
   let rawUnivs := rawLevels.map Level.param
   let projs ← mkParsedProjectionData str
   let projs ← applyProjectionRules projs rules
   let projs ← projs.mapM fun proj ↦ findProjection str proj rawUnivs
-  -- todo: find and use coercions to functions here
-  -- let projs ← findAutomaticProjections str projs strDecl.type rawUnivs
+  let projs ← findAutomaticProjections str projs
   let projs := projs.map (·.toProjectionData)
   -- make all proofs non-default.
   let projs ← projs.mapM fun proj ↦ do

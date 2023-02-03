@@ -111,9 +111,6 @@ instance : RelHomClass (r →r s) r s where
     congr
   map_rel := map_rel'
 
-/-- See Note [custom simps projection] -/
-def Simps.apply (f : r →r s) : α → β := f
-
 initialize_simps_projections RelHom (toFun → apply)
 
 protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
@@ -248,12 +245,6 @@ instance : RelHomClass (r ↪r s) r s where
     rcases g with ⟨⟨⟩⟩
     congr
   map_rel f a b := Iff.mpr (map_rel_iff' f)
-
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
-def Simps.apply (h : r ↪r s) : α → β :=
-  h
-#align rel_embedding.simps.apply RelEmbedding.Simps.apply
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
@@ -621,12 +612,6 @@ theorem ext_iff {f g : r ≃r s} : f = g ↔ ∀ x, f x = g x :=
 protected def symm (f : r ≃r s) : s ≃r r :=
   ⟨f.toEquiv.symm, @fun a b => by erw [← f.map_rel_iff, f.1.apply_symm_apply, f.1.apply_symm_apply]⟩
 #align rel_iso.symm RelIso.symm
-
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
-def Simps.apply (h : r ≃r s) : α → β :=
-  h
-#align rel_iso.simps.apply RelIso.Simps.apply
 
 /-- See Note [custom simps projection]. -/
 def Simps.symmApply (h : r ≃r s) : β → α :=
