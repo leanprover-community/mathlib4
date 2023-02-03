@@ -80,8 +80,7 @@ theorem generalLinearEquiv_to_linearMap (f : GeneralLinearGroup R M) :
 @[simp]
 theorem coeFn_generalLinearEquiv (f : GeneralLinearGroup R M) :
     (generalLinearEquiv R M f) = (f : M → M) := rfl
-#align linear_map.general_linear_group.coe_fn_general_linear_equiv
-  LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv
+#align linear_map.general_linear_group.coe_fn_general_linear_equiv LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv
 
 end GeneralLinearGroup
 
