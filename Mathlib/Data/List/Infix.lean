@@ -343,6 +343,21 @@ theorem mem_of_mem_take (h : a ∈ l.take n) : a ∈ l :=
 
 #align list.mem_of_mem_drop List.mem_of_mem_drop
 
+theorem dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l := by
+  rw [List.dropSlice_eq]
+  conv_rhs => rw [← List.take_append_drop n l]
+  rw [List.append_sublist_append_left, add_comm, List.drop_add]
+  exact List.drop_sublist _ _
+#align list.slice_sublist List.dropSlice_sublist
+
+theorem dropSlice_subset (n m : ℕ) (l : List α) : l.dropSlice n m ⊆ l :=
+  (dropSlice_sublist n m l).subset
+#align list.slice_subset List.dropSlice_subset
+
+theorem mem_of_mem_slice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropSlice n m) : a ∈ l :=
+  dropSlice_subset n m l h
+#align list.mem_of_mem_slice List.mem_of_mem_slice
+
 theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+: l :=
   ⟨l.dropWhile p, takeWhile_append_drop p l⟩
 #align list.take_while_prefix List.takeWhile_prefix
