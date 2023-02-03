@@ -170,18 +170,18 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : (∑ _i : Fin n, x) = 
 #align fin.sum_const Fin.sum_const
 
 @[to_additive]
-theorem prod_ioi_zero {M : Type _} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
+theorem prod_Ioi_zero {M : Type _} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
     (∏ i in Ioi 0, v i) = ∏ j : Fin n, v j.succ := by
   rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmbedding]
-#align fin.prod_Ioi_zero Fin.prod_ioi_zero
-#align fin.sum_Ioi_zero Fin.sum_ioi_zero
+#align fin.prod_Ioi_zero Fin.prod_Ioi_zero
+#align fin.sum_Ioi_zero Fin.sum_Ioi_zero
 
 @[to_additive]
-theorem prod_ioi_succ {M : Type _} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
+theorem prod_Ioi_succ {M : Type _} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
     (∏ j in Ioi i.succ, v j) = ∏ j in Ioi i, v j.succ := by
   rw [Ioi_succ, Finset.prod_map, val_succEmbedding]
-#align fin.prod_Ioi_succ Fin.prod_ioi_succ
-#align fin.sum_Ioi_succ Fin.sum_ioi_succ
+#align fin.prod_Ioi_succ Fin.prod_Ioi_succ
+#align fin.sum_Ioi_succ Fin.sum_Ioi_succ
 
 @[to_additive]
 theorem prod_congr' {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h : a = b) :

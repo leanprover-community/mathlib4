@@ -97,3 +97,10 @@ example (x : Bar n) : x = x := by
   case A => guard_target = Bar.A a b = Bar.A a b; rfl
   case B => guard_hyp h : Bar (c + 1); guard_hyp ih : h = h
             guard_target = Bar.B c d h = Bar.B c d h; rfl
+
+example (p q : Prop) : (p → ¬ q) → ¬ (p ∧ q) := by
+  intro hpnq hpq
+  apply hpnq
+  cases' hpq with hp hq
+  assumption
+  exact hpq.2
