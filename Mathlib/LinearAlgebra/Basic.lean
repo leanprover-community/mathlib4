@@ -247,13 +247,17 @@ theorem restrict_eq_codRestrict_domRestrict {f : M →ₗ[R] M₁} {p : Submodul
     {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
     f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
   rfl
-#align linear_map.restrict_eq_cod_restrict_dom_restrict LinearMap.restrict_eq_codRestrict_domRestrict
+#align
+  linear_map.restrict_eq_cod_restrict_dom_restrict
+  LinearMap.restrict_eq_codRestrict_domRestrict
 
 theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodule R M}
     {q : Submodule R M₁} (hf : ∀ x, f x ∈ q) :
     (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
-#align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
+#align
+  linear_map.restrict_eq_dom_restrict_cod_restrict
+  LinearMap.restrict_eq_domRestrict_codRestrict
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
@@ -352,7 +356,9 @@ theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End
   have hg : N.subtype.comp (g ^ k) m = 0 := by
     rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
   simpa using hg
-#align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
+#align
+  linear_map.submodule_pow_eq_zero_of_pow_eq_zero
+  LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
 
 theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
   ext m
@@ -617,7 +623,7 @@ variable {p p'}
 /-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `of_le p p'` is the linear map version of
 this inclusion. -/
 def ofLe (h : p ≤ p') : p →ₗ[R] p' :=
-  p.subtype.codRestrict p' fun ⟨x, hx⟩ => h hx
+  p.subtype.codRestrict p' fun ⟨_, hx⟩ => h hx
 #align submodule.of_le Submodule.ofLe
 
 @[simp]
@@ -629,7 +635,7 @@ theorem ofLe_apply (h : p ≤ p') (x : p) : ofLe h x = ⟨x, h x.2⟩ :=
   rfl
 #align submodule.of_le_apply Submodule.ofLe_apply
 
-theorem ofLe_injective (h : p ≤ p') : Function.Injective (ofLe h) := fun x y h =>
+theorem ofLe_injective (h : p ≤ p') : Function.Injective (ofLe h) := fun _ _ h =>
   Subtype.val_injective (Subtype.mk.inj h)
 #align submodule.of_le_injective Submodule.ofLe_injective
 
@@ -663,7 +669,7 @@ instance [Subsingleton M] : Unique (Submodule R M) :=
   ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
 
 instance unique' [Subsingleton R] : Unique (Submodule R M) := by
-  haveI := Module.subsingleton R M <;> infer_instance
+  haveI := Module.subsingleton R M; infer_instance
 #align submodule.unique' Submodule.unique'
 
 instance [Nontrivial M] : Nontrivial (Submodule R M) :=
@@ -829,7 +835,7 @@ theorem map_le_iff_le_comap {f : F} {p : Submodule R M} {q : Submodule R₂ M₂
 #align submodule.map_le_iff_le_comap Submodule.map_le_iff_le_comap
 
 theorem gc_map_comap (f : F) : GaloisConnection (map f) (comap f)
-  | p, q => map_le_iff_le_comap
+  | _, _ => map_le_iff_le_comap
 #align submodule.gc_map_comap Submodule.gc_map_comap
 
 @[simp]
@@ -1002,9 +1008,9 @@ def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂
     where
   toFun := map f
   invFun := comap f
-  left_inv := @fun p => comap_map_eq_of_injective (EquivLike.injective f) _
-  right_inv := @fun p => map_comap_eq_of_surjective (EquivLike.surjective f) _
-  map_rel_iff' := @fun p q => map_le_map_iff_of_injective (EquivLike.injective f) _ _
+  left_inv := comap_map_eq_of_injective (EquivLike.injective f)
+  right_inv := map_comap_eq_of_surjective (EquivLike.surjective f)
+  map_rel_iff' := map_le_map_iff_of_injective (EquivLike.injective f) _ _
 #align submodule.order_iso_map_comap Submodule.orderIsoMapComap
 
 end OrderIso
@@ -1014,12 +1020,12 @@ variable [sc : SemilinearMapClass F σ₁₂ M M₂]
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : F} {p : Submodule R M}
     {p' : Submodule R₂ M₂} : map f p ⊓ p' = map f (p ⊓ comap f p') :=
-  le_antisymm (by rintro _ ⟨⟨x, h₁, rfl⟩, h₂⟩ <;> exact ⟨_, ⟨h₁, h₂⟩, rfl⟩)
+  le_antisymm (by rintro _ ⟨⟨x, h₁, rfl⟩, h₂⟩; exact ⟨_, ⟨h₁, h₂⟩, rfl⟩)
     (le_inf (map_mono inf_le_left) (map_le_iff_le_comap.2 inf_le_right))
 #align submodule.map_inf_eq_map_inf_comap Submodule.map_inf_eq_map_inf_comap
 
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
-  ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩ <;> exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
+  ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
 #align submodule.map_comap_subtype Submodule.map_comap_subtype
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
@@ -1028,8 +1034,9 @@ theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/
-theorem _root_.LinearMap.infᵢ_invariant {σ : R →+* R} [RingHomSurjective σ] {ι : Sort _} (f : M →ₛₗ[σ] M)
-    {p : ι → Submodule R M} (hf : ∀ i, ∀ v ∈ p i, f v ∈ p i) : ∀ v ∈ infᵢ p, f v ∈ infᵢ p := by
+theorem _root_.LinearMap.infᵢ_invariant {σ : R →+* R} [RingHomSurjective σ] {ι : Sort _}
+    (f : M →ₛₗ[σ] M) {p : ι → Submodule R M} (hf : ∀ i, ∀ v ∈ p i, f v ∈ p i) :
+    ∀ v ∈ infᵢ p, f v ∈ infᵢ p := by
   have : ∀ i, (p i).map f ≤ p i := by
     rintro i - ⟨v, hv, rfl⟩
     exact hf i v hv
@@ -1038,14 +1045,13 @@ theorem _root_.LinearMap.infᵢ_invariant {σ : R →+* R} [RingHomSurjective σ
 #align linear_map.infi_invariant LinearMap.infᵢ_invariant
 
 end AddCommMonoid
-
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M)
 
 variable [AddCommGroup M₂] [Module R M₂]
 
---Porting note: Why doesn't infer_instance work here?
+-- Porting note: inferInstance works here only if one replaces [Ring R] with [Semiring R]. Why?
 example : AddCommGroup (M →ₗ[R] M₂) := LinearMap.addCommGroup
 
 -- See `neg_coe_set`
@@ -1182,7 +1188,7 @@ theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M�
 
 theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (hf p') :
     Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=
-  Submodule.ext fun x => ⟨fun h => ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩ <;> exact h⟩
+  Submodule.ext fun x => ⟨fun h => ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩; exact h⟩
 #align linear_map.comap_cod_restrict LinearMap.comap_codRestrict
 
 section
@@ -1350,7 +1356,7 @@ theorem ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] 
 #align linear_map.ker_comp LinearMap.ker_comp
 
 theorem ker_le_ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] M₃) :
-    ker f ≤ ker (g.comp f : M →ₛₗ[τ₁₃] M₃) := by rw [ker_comp] <;> exact comap_mono bot_le
+    ker f ≤ ker (g.comp f : M →ₛₗ[τ₁₃] M₃) := by rw [ker_comp]; exact comap_mono bot_le
 #align linear_map.ker_le_ker_comp LinearMap.ker_le_ker_comp
 
 theorem disjoint_ker {f : F} {p : Submodule R M} : Disjoint p (ker f) ↔ ∀ x ∈ p, f x = 0 → x = 0 :=
@@ -1371,7 +1377,7 @@ theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} 
 #align linear_map.le_ker_iff_map LinearMap.le_ker_iff_map
 
 theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
-    ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, map_bot] <;> rfl
+    ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, map_bot]; rfl
 #align linear_map.ker_cod_restrict LinearMap.ker_codRestrict
 
 theorem range_codRestrict {τ₂₁ : R₂ →+* R} [RingHomSurjective τ₂₁] (p : Submodule R M)
@@ -1388,7 +1394,7 @@ theorem ker_restrict [AddCommMonoid M₁] [Module R M₁] {p : Submodule R M} {q
 theorem _root_.Submodule.map_comap_eq [RingHomSurjective τ₁₂] (f : F) (q : Submodule R₂ M₂) :
     map f (comap f q) = range f ⊓ q :=
   le_antisymm (le_inf map_le_range (map_comap_le _ _)) <| by
-    rintro _ ⟨⟨x, _, rfl⟩, hx⟩ <;> exact ⟨x, hx, rfl⟩
+    rintro _ ⟨⟨x, _, rfl⟩, hx⟩; exact ⟨x, hx, rfl⟩
 #align submodule.map_comap_eq Submodule.map_comap_eq
 
 theorem _root_.Submodule.map_comap_eq_self [RingHomSurjective τ₁₂] {f : F} {q : Submodule R₂ M₂}
@@ -1406,7 +1412,7 @@ theorem range_zero [RingHomSurjective τ₁₂] : range (0 : M →ₛₗ[τ₁�
 #align linear_map.range_zero LinearMap.range_zero
 
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
-  ⟨fun h => ext fun x => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
+  ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
 #align linear_map.ker_eq_top LinearMap.ker_eq_top
 
 section
@@ -1414,7 +1420,7 @@ section
 variable [RingHomSurjective τ₁₂]
 
 theorem range_le_bot_iff (f : M →ₛₗ[τ₁₂] M₂) : range f ≤ ⊥ ↔ f = 0 := by
-  rw [range_le_iff_comap] <;> exact ker_eq_top
+  rw [range_le_iff_comap]; exact ker_eq_top
 #align linear_map.range_le_bot_iff LinearMap.range_le_bot_iff
 
 theorem range_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : range f = ⊥ ↔ f = 0 := by
@@ -1428,10 +1434,10 @@ theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ
 #align linear_map.range_le_ker_iff LinearMap.range_le_ker_iff
 
 theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ comap f p' ↔ p ≤ p' :=
-  ⟨fun H x hx => by rcases range_eq_top.1 hf x with ⟨y, hy, rfl⟩ <;> exact H hx, comap_mono⟩
+  ⟨fun H x hx => by rcases range_eq_top.1 hf x with ⟨y, hy, rfl⟩; exact H hx, comap_mono⟩
 #align linear_map.comap_le_comap_iff LinearMap.comap_le_comap_iff
 
-theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun p p' h =>
+theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
 #align linear_map.comap_injective LinearMap.comap_injective
 
@@ -1612,7 +1618,7 @@ theorem comap_bot (f : F) : comap f ⊥ = ker f :=
 
 @[simp]
 theorem ker_subtype : ker p.subtype = ⊥ :=
-  ker_eq_bot_of_injective fun x y => Subtype.ext_val
+  ker_eq_bot_of_injective fun _ _ => Subtype.ext_val
 #align submodule.ker_subtype Submodule.ker_subtype
 
 @[simp]
@@ -1707,7 +1713,8 @@ variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 theorem ker_eq_bot_of_cancel {f : M →ₛₗ[τ₁₂] M₂}
     (h : ∀ u v : ker f →ₗ[R] M, f.comp u = f.comp v → u = v) : ker f = ⊥ := by
   have h₁ : f.comp (0 : ker f →ₗ[R] M) = 0 := comp_zero _
-  rw [← Submodule.range_subtype (ker f), ← h 0 f.ker.subtype (Eq.trans h₁ (comp_ker_subtype f).symm)]
+  rw [← Submodule.range_subtype (ker f),
+    ← h 0 f.ker.subtype (Eq.trans h₁ (comp_ker_subtype f).symm)]
   exact range_zero
 #align linear_map.ker_eq_bot_of_cancel LinearMap.ker_eq_bot_of_cancel
 
@@ -1732,7 +1739,7 @@ def submoduleImage {M' : Type _} [AddCommMonoid M'] [Module R M'] {O : Submodule
 @[simp]
 theorem mem_submoduleImage {M' : Type _} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} {x : M'} :
-    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _)(yO : y ∈ O)(yN : y ∈ N), ϕ ⟨y, yO⟩ = x := by
+    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O) (_ : y ∈ N), ϕ ⟨y, yO⟩ = x := by
   refine' Submodule.mem_map.trans ⟨_, _⟩ <;> simp_rw [Submodule.mem_comap]
   · rintro ⟨⟨y, yO⟩, yN : y ∈ N, h⟩
     exact ⟨y, yO, yN, h⟩
@@ -1801,8 +1808,8 @@ instance : Zero (M ≃ₛₗ[σ₁₂] M₂) :=
   ⟨{ (0 : M →ₛₗ[σ₁₂] M₂) with
       toFun := 0
       invFun := 0
-      right_inv := fun x => Subsingleton.elim _ _
-      left_inv := fun x => Subsingleton.elim _ _ }⟩
+      right_inv := Subsingleton.elim _
+      left_inv := Subsingleton.elim _ }⟩
 
 -- Even though these are implied by `subsingleton.elim` via the `unique` instance below, they're
 -- nice to have as `rfl`-lemmas for `dsimp`.
@@ -1823,7 +1830,7 @@ theorem zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
 /-- Between two zero modules, the zero map is the only equivalence. -/
 instance : Unique (M ≃ₛₗ[σ₁₂] M₂)
     where
-  uniq f := toLinearMap_injective (Subsingleton.elim _ _)
+  uniq _ := toLinearMap_injective (Subsingleton.elim _ _)
   default := 0
 
 
@@ -2036,7 +2043,7 @@ theorem ofEq_symm (h : p = q) : (ofEq p q h).symm = ofEq q p h.symm :=
 #align linear_equiv.of_eq_symm LinearEquiv.ofEq_symm
 
 @[simp]
-theorem ofEq_rfl : ofEq p p rfl = LinearEquiv.refl R p := by ext <;> rfl
+theorem ofEq_rfl : ofEq p p rfl = LinearEquiv.refl R p := by ext; rfl
 #align linear_equiv.of_eq_rfl LinearEquiv.ofEq_rfl
 
 /-- A linear equivalence which maps a submodule of one module onto another, restricts to a linear
@@ -2092,8 +2099,8 @@ variable (p)
 def ofTop (h : p = ⊤) : p ≃ₗ[R] M :=
   { p.subtype with
     invFun := fun x => ⟨x, h.symm ▸ trivial⟩
-    left_inv := fun ⟨x, h⟩ => rfl
-    right_inv := fun x => rfl }
+    left_inv := fun _ => rfl
+    right_inv := fun _ => rfl }
 #align linear_equiv.of_top LinearEquiv.ofTop
 
 @[simp]
@@ -2200,7 +2207,7 @@ variable (f)
 between `M` and `f.range`. See also `linear_map.of_left_inverse`. -/
 noncomputable def ofInjective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] (h : Injective f) :
     M ≃ₛₗ[σ₁₂] LinearMap.range f :=
-  ofLeftInverse <| Classical.choose_spec h.HasLeftInverse
+  ofLeftInverse <| Classical.choose_spec h.hasLeftInverse
 #align linear_equiv.of_injective LinearEquiv.ofInjective
 
 @[simp]
@@ -2212,7 +2219,7 @@ theorem ofInjective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ�
 /-- A bijective linear map is a linear equivalence. -/
 noncomputable def ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] (hf : Bijective f) :
     M ≃ₛₗ[σ₁₂] M₂ :=
-  (ofInjective f hf.Injective).trans (ofTop _ <| LinearMap.range_eq_top.2 hf.Surjective)
+  (ofInjective f hf.injective).trans (ofTop _ <| LinearMap.range_eq_top.2 hf.surjective)
 #align linear_equiv.of_bijective LinearEquiv.ofBijective
 
 @[simp]
