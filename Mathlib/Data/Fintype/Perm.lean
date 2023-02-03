@@ -80,7 +80,7 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
   refine' or_iff_not_imp_left.2 fun _hfl => ⟨f a, _, Equiv.swap a (f a) * f, IH this, _⟩
   · exact mem_of_ne_of_mem hfa (h _ hfa')
   · rw [← mul_assoc, mul_def (swap a (f a)) (swap a (f a)), swap_swap, ← Perm.one_def, one_mul]
-#align mem_permsOfList_of_mem mem_permsOfList_of_mem
+#align mem_perms_of_list_of_mem mem_permsOfList_of_mem
 
 theorem mem_of_mem_permsOfList :
     -- porting notes: was `∀ {x}` but need to capture the `x`
