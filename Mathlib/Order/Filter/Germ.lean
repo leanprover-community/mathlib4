@@ -217,7 +217,7 @@ theorem map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
 /-- A germ at `l` of maps from `α` to `β` tends to `lb : filter β` if it is represented by a map
 which tends to `lb` along `l`. -/
 protected def Tendsto (f : Germ l β) (lb : Filter β) : Prop :=
-  liftOn f (fun f => Tendsto f l lb) fun f g H => propext (tendsto_congr' H)
+  liftOn f (fun f => Tendsto f l lb) fun _f _g H => propext (tendsto_congr' H)
 #align filter.germ.tendsto Filter.Germ.Tendsto
 
 @[simp, norm_cast]
@@ -231,8 +231,8 @@ alias coe_tendsto ↔ _ _root_.Filter.Tendsto.germ_tendsto
 /-- Given two germs `f : germ l β`, and `g : germ lc α`, where `l : filter α`, if `g` tends to `l`,
 then the composition `f ∘ g` is well-defined as a germ at `lc`. -/
 def compTendsto' (f : Germ l β) {lc : Filter γ} (g : Germ lc α) (hg : g.Tendsto l) : Germ lc β :=
-  liftOn f (fun f => g.map f) fun f₁ f₂ hF =>
-    inductionOn g (fun g hg => coe_eq.2 <| hg.eventually hF) hg
+  liftOn f (fun f => g.map f) fun _f₁ _f₂ hF =>
+    inductionOn g (fun _g hg => coe_eq.2 <| hg.eventually hF) hg
 #align filter.germ.comp_tendsto' Filter.Germ.compTendsto'
 
 @[simp]
@@ -290,8 +290,8 @@ theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ l
 
 /-- Lift a predicate on `β` to `germ l β`. -/
 def LiftPred (p : β → Prop) (f : Germ l β) : Prop :=
-  liftOn f (fun f => ∀ᶠ x in l, p (f x)) fun f g H =>
-    propext <| eventually_congr <| H.mono fun x hx => hx ▸ Iff.rfl
+  liftOn f (fun f => ∀ᶠ x in l, p (f x)) fun _f _g H =>
+    propext <| eventually_congr <| H.mono fun _x hx => hx ▸ Iff.rfl
 #align filter.germ.lift_pred Filter.Germ.LiftPred
 
 @[simp]
@@ -300,7 +300,7 @@ theorem liftPred_coe {p : β → Prop} {f : α → β} : LiftPred p (f : Germ l 
 #align filter.germ.lift_pred_coe Filter.Germ.liftPred_coe
 
 theorem liftPred_const {p : β → Prop} {x : β} (hx : p x) : LiftPred p (const l x) :=
-  eventually_of_forall fun y => hx
+  eventually_of_forall fun _y => hx
 #align filter.germ.lift_pred_const Filter.Germ.liftPred_const
 
 @[simp]
@@ -310,8 +310,8 @@ theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (co
 
 /-- Lift a relation `r : β → γ → Prop` to `germ l β → germ l γ → Prop`. -/
 def LiftRel (r : β → γ → Prop) (f : Germ l β) (g : Germ l γ) : Prop :=
-  Quotient.liftOn₂' f g (fun f g => ∀ᶠ x in l, r (f x) (g x)) fun f g f' g' Hf Hg =>
-    propext <| eventually_congr <| Hg.mp <| Hf.mono fun x hf hg => hf ▸ hg ▸ Iff.rfl
+  Quotient.liftOn₂' f g (fun f g => ∀ᶠ x in l, r (f x) (g x)) fun _f _g _f' _g' Hf Hg =>
+    propext <| eventually_congr <| Hg.mp <| Hf.mono fun _x hf hg => hf ▸ hg ▸ Iff.rfl
 #align filter.germ.lift_rel Filter.Germ.LiftRel
 
 @[simp]
@@ -371,16 +371,16 @@ instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ
   { Germ.semigroup with
     mul := (· * ·)
     mul_left_cancel := fun f₁ f₂ f₃ =>
-      inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ H =>
-        coe_eq.2 ((coe_eq.1 H).mono fun x => mul_left_cancel) }
+      inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
+        coe_eq.2 ((coe_eq.1 H).mono fun _x => mul_left_cancel) }
 
 @[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
     mul := (· * ·)
     mul_right_cancel := fun f₁ f₂ f₃ =>
-      inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ H =>
-        coe_eq.2 <| (coe_eq.1 H).mono fun x => mul_right_cancel }
+      inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
+        coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
 
 instance [VAdd M G] : VAdd M (Germ l G) :=
   ⟨fun n => map ((· +ᵥ ·) n)⟩
@@ -389,33 +389,38 @@ instance [VAdd M G] : VAdd M (Germ l G) :=
 instance [SMul M G] : SMul M (Germ l G) :=
   ⟨fun n => map (n • ·)⟩
 
-@[to_additive SMul]
+@[to_additive instSMulGerm]
 instance [Pow G M] : Pow (Germ l G) M :=
   ⟨fun f n => map (· ^ n) f⟩
 
-@[simp, norm_cast, to_additive]
+-- porting notes: changed norm_cast to coe
+@[to_additive (attr:=simp, coe)]
 theorem coe_smul [SMul M G] (n : M) (f : α → G) : ↑(n • f) = (n • f : Germ l G) :=
   rfl
 #align filter.germ.coe_smul Filter.Germ.coe_smul
 #align filter.germ.coe_vadd Filter.Germ.coe_vadd
 
-@[simp, norm_cast, to_additive]
+-- porting notes: changed norm_cast to coe
+@[to_additive (attr:=simp, coe)]
 theorem const_smul [SMul M G] (n : M) (a : G) : const l (n • a) = n • const l a :=
   rfl
 #align filter.germ.const_smul Filter.Germ.const_smul
 #align filter.germ.const_vadd Filter.Germ.const_vadd
 
-@[simp, norm_cast, to_additive coe_smul]
+-- porting notes: changed norm_cast to coe
+@[to_additive (attr:=simp, coe)]
 theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f ^ n : Germ l G) :=
   rfl
 #align filter.germ.coe_pow Filter.Germ.coe_pow
 
-@[simp, norm_cast, to_additive const_smul]
+-- porting notes: changed norm_cast to coe
+@[to_additive (attr:=simp, coe)]
 theorem const_pow [Pow G M] (a : G) (n : M) : const l (a ^ n) = (const l a) ^ n :=
   rfl
 #align filter.germ.const_pow Filter.Germ.const_pow
 
-@[to_additive]
+-- porting TODO: to_additive leaves a instPowGerm untranslated despite the attribute above
+@[to_additive?]
 instance monoid [Monoid M] : Monoid (Germ l M) :=
   Function.Surjective.monoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
 
