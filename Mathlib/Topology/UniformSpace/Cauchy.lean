@@ -315,7 +315,8 @@ theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u
 
 theorem cauchySeq_of_controlled [SemilatticeSup β] [Nonempty β] (U : β → Set (α × α))
     (hU : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s) {f : β → α}
-    (hf : ∀ {N m n : β}, N ≤ m → N ≤ n → (f m, f n) ∈ U N) : CauchySeq f :=
+    (hf : ∀ ⦃N m n : β⦄, N ≤ m → N ≤ n → (f m, f n) ∈ U N) : CauchySeq f :=
+    -- Porting note: changed to semi-implicit arguments
   cauchySeq_iff_tendsto.2
     (by
       intro s hs
@@ -449,7 +450,8 @@ theorem cauchySeq_tendsto_of_isComplete [SemilatticeSup β] {K : Set α} (h₁ :
 
 theorem Cauchy.le_nhds_lim [CompleteSpace α] [Nonempty α] {f : Filter α} (hf : Cauchy f) :
     f ≤ 𝓝 (lim f) :=
-  le_nhds_lim (CompleteSpace.complete hf)
+  _root_.le_nhds_lim (CompleteSpace.complete hf)
+set_option linter.uppercaseLean3 false in
 #align cauchy.le_nhds_Lim Cauchy.le_nhds_lim
 
 theorem CauchySeq.tendsto_limUnder [SemilatticeSup β] [CompleteSpace α] [Nonempty α] {u : β → α}
@@ -552,7 +554,7 @@ theorem Ultrafilter.cauchy_of_totallyBounded {s : Set α} (f : Ultrafilter α) (
     have : ∃ y ∈ i, { x | (x, y) ∈ t' } ∈ f := (Ultrafilter.finite_bunionᵢ_mem_iff hi).1 this
     let ⟨y, _, hif⟩ := this
     have : { x | (x, y) ∈ t' } ×ˢ { x | (x, y) ∈ t' } ⊆ compRel t' t' :=
-      fun ⟨x₁, x₂⟩ ⟨(h₁ : (x₁, y) ∈ t'), (h₂ : (x₂, y) ∈ t')⟩ => ⟨y, h₁, ht'_symm h₂⟩
+      fun ⟨_, _⟩ ⟨(h₁ : (_, y) ∈ t'), (h₂ : (_, y) ∈ t')⟩ => ⟨y, h₁, ht'_symm h₂⟩
     mem_of_superset (prod_mem_prod hif hif) (Subset.trans this ht'_t)⟩
 #align ultrafilter.cauchy_of_totally_bounded Ultrafilter.cauchy_of_totallyBounded
 
@@ -761,9 +763,9 @@ theorem complete_of_convergent_controlled_sequences (U : ℕ → Set (α × α))
 complete. -/
 theorem complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)) :
     CompleteSpace α :=
-  let ⟨U', U'_mono, hU'⟩ := (𝓤 α).exists_antitone_seq
+  let ⟨U', _, hU'⟩ := (𝓤 α).exists_antitone_seq
   complete_of_convergent_controlled_sequences U' (fun n => hU'.2 ⟨n, Subset.refl _⟩) fun u hu =>
-    H' u <| cauchySeq_of_controlled U' (fun s hs => hU'.1 hs) hu
+    H' u <| cauchySeq_of_controlled U' (fun _ hs => hU'.1 hs) hu
 #align uniform_space.complete_of_cauchy_seq_tendsto UniformSpace.complete_of_cauchySeq_tendsto
 
 variable (α)
@@ -786,20 +788,20 @@ theorem second_countable_of_separable [SeparableSpace α] : SecondCountableTopol
       h_basis : (𝓤 α).HasAntitoneBasis t⟩ :=
     (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
   choose ht_mem hto hts using hto
-  refine' ⟨⟨⋃ x ∈ s, range fun k => ball x (t k), hsc.bUnion fun x hx => countable_range _, _⟩⟩
-  refine' (is_topological_basis_of_open_of_nhds _ _).eq_generateFrom
+  refine' ⟨⟨⋃ x ∈ s, range fun k => ball x (t k), hsc.bunionᵢ fun x _ => countable_range _, _⟩⟩
+  refine' (isTopologicalBasis_of_open_of_nhds _ _).eq_generateFrom
   · simp only [mem_unionᵢ₂, mem_range]
-    rintro _ ⟨x, hxs, k, rfl⟩
-    exact is_open_ball x (hto k)
+    rintro _ ⟨x, _, k, rfl⟩
+    exact isOpen_ball x (hto k)
   · intro x V hxV hVo
     simp only [mem_unionᵢ₂, mem_range, exists_prop]
     rcases UniformSpace.mem_nhds_iff.1 (IsOpen.mem_nhds hVo hxV) with ⟨U, hU, hUV⟩
-    rcases comp_symm_of_uniformity hU with ⟨U', hU', hsymm, hUU'⟩
-    rcases h_basis.to_has_basis.mem_iff.1 hU' with ⟨k, -, hk⟩
-    rcases hsd.inter_open_nonempty (ball x <| t k) (is_open_ball x (hto k))
+    rcases comp_symm_of_uniformity hU with ⟨U', hU', _, hUU'⟩
+    rcases h_basis.toHasBasis.mem_iff.1 hU' with ⟨k, -, hk⟩
+    rcases hsd.inter_open_nonempty (ball x <| t k) (isOpen_ball x (hto k))
         ⟨x, UniformSpace.mem_ball_self _ (ht_mem k)⟩ with
       ⟨y, hxy, hys⟩
-    refine' ⟨_, ⟨y, hys, k, rfl⟩, (hts k).Subset hxy, fun z hz => _⟩
+    refine' ⟨_, ⟨y, hys, k, rfl⟩, (hts k).subset hxy, fun z hz => _⟩
     exact hUV (ball_subset_of_comp_subset (hk hxy) hUU' (hk hz))
 #align uniform_space.second_countable_of_separable UniformSpace.second_countable_of_separable
 
