@@ -123,7 +123,7 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
   · apply ωSup_le
 #align is_ωSup_ωSup isωSup_ωSup
 
-theorem scott_continuous_of_continuous {α β} [OmegaCompletePartialOrder α]
+theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
     OmegaCompletePartialOrder.Continuous' f := by
   simp only [continuous_def, (· ⁻¹' ·)] at hf
@@ -147,9 +147,9 @@ theorem scott_continuous_of_continuous {α β} [OmegaCompletePartialOrder α]
   simp only [ωSup_le_iff, hf_h, ωSup, supᵢ, supₛ, mem_range, Chain.map_coe, Function.comp_apply,
     eq_iff_iff, not_forall]
   tauto
-#align Scott_continuous_of_continuous scott_continuous_of_continuous
+#align Scott_continuous_of_continuous scottContinuous_of_continuous
 
-theorem continuous_of_scott_continuous {α β} [OmegaCompletePartialOrder α]
+theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
     (hf : OmegaCompletePartialOrder.Continuous' f) : Continuous f := by
   rw [continuous_def]
@@ -159,4 +159,4 @@ theorem continuous_of_scott_continuous {α β} [OmegaCompletePartialOrder α]
   cases' hf with hf hf'
   apply Continuous.of_bundled
   apply continuous_comp _ _ hf' hs'
-#align continuous_of_Scott_continuous continuous_of_scott_continuous
+#align continuous_of_Scott_continuous continuous_of_scottContinuous
