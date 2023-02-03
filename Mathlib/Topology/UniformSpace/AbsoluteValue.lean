@@ -19,12 +19,6 @@ a linear ordered field `𝕜`. Of course in the case `R` is `ℚ`, `ℝ` or `ℂ
 `𝕜 = ℝ`, we get the same thing as the metric space construction, and the general construction
 follows exactly the same path.
 
-## Implementation details
-
-Note that we import `data.real.cau_seq` because this is where absolute values are defined, but
-the current file does not depend on real numbers. TODO: extract absolute values from that
-`data.real` folder.
-
 ## References
 
 * [N. Bourbaki, *Topologie générale*][bourbaki1966]
@@ -84,7 +78,8 @@ def uniformSpace : UniformSpace R :=
   UniformSpace.ofCore (uniformSpaceCore abv)
 #align is_absolute_value.uniform_space IsAbsoluteValue.uniformSpace
 
--- Port note: new instance to help with failure of failed to synthesize Nonempty { ε // ε > 0 }
+-- Porting note: new instance to help `failed to synthesize Nonempty { ε // ε > 0 }`
+/-- local instance helper -/
 local instance nonempty_gt_helper [LT α] [NoMaxOrder α] (a : α) : Nonempty { x // x > a } :=
   nonempty_subtype.2 (exists_gt a)
 
