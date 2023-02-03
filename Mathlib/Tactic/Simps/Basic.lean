@@ -447,32 +447,48 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
   let toPrint := MessageData.joinSep toPrint ("\n" : MessageData)
   m! "{pref} {str}:\n{toPrint}"
 
+open private mkBaseProjections from Lean.Elab.App
 open Qq
+
+/-- Elaborate the projection notation `$e.$projName` where `e` is an expression of a structure
+application `strName`. `e` might rely on universe variables `univs`. -/
+def elabProjectionNotation (univs : List Name) (e : Expr) (strName projName : Name) :
+  MetaM (Expr)  :=
+TermElabM.run' (s := {levelNames := univs}) <| do
+  let env ← getEnv
+  let .some baseStr := findField? env strName projName |
+    throwError "{strName} has no field {projName} in parent structure"
+  let .some fullProjName := getProjFnForField? env baseStr projName |
+    throwError "no such field {projName}"
+  let e ← mkBaseProjections baseStr strName e
+  let projExpr ← mkConst fullProjName
+  elabAppArgs projExpr #[{ name := `self, val := Arg.expr e }] (args := #[])
+    (expectedType? := none) (explicit := false) (ellipsis := false)
+
+/-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`. -/
+def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
+  let env ← getEnv
+  let .some baseStr := findField? env strName projName |
+    throwError "{strName} has no field {projName} in parent structure"
+  let .some fullProjName := getProjFnForField? env baseStr projName |
+    throwError "no such field {projName}"
+  let .some pathToField := getPathToBaseStructure? env baseStr strName
+    | throwError "no such field {projName}"
+  let allProjs := pathToField ++ [fullProjName]
+  return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
+
 /-- Auxiliary function of `getCompositeOfProjections`. -/
-partial def getCompositeOfProjectionsAux (stx : Syntax) (str : Name) (proj : String) (e : Expr)
-    (pos : Array ℕ) (args : Array Expr) : MetaM (Expr × Array ℕ) := do
+partial def getCompositeOfProjectionsAux (stx : Syntax) (univs : List Name) (str : Name)
+    (proj : String) (e : Expr) (pos : Array ℕ) (args : Array Expr) : MetaM (Expr × Array ℕ) := do
   let env ← getEnv
   let projs := getStructureFieldsFlattened env str
   let projInfo := projs.toList.map fun p ↦ do
     (← ("_" ++ p.getString!).isPrefixOf? proj, p)
-  let some ((projRest : String), (projName : Name)) := (projInfo.filterMap id).getLast? -- remove annotations
+  let some ((projRest : String), (projName : Name)) := projInfo.reduceOption.getLast?
     | throwError "Failed to find constructor {proj.drop 1} in structure {str}."
-  let newE := default -- todo -- q($e.$projName)
-  -- let strDecl := (env.find? str).get!
-  -- let projExpr := Expr.const (str ++ projName) <| strDecl.levelParams.map mkLevelParam
-  -- let projDecl := (env.find? (str ++ projName)).get!
-  -- let type ← inferType e
-  -- let params := type.getAppArgs
-  -- let newE := mkAppN (projExpr.instantiateLevelParams
-    -- projDecl.levelParams type.getAppFn.constLevels!) <| params ++ [e]
-  let projNm := Name.mkSimple proj
-  let .some baseStr := findField? env str projNm | throwError "no such field {proj}"
-  let .some lastProj := getProjFnForField? env baseStr projNm | throwError "no such field {proj}"
-  let .some pathToField := getPathToBaseStructure? env baseStr str
-    | throwError "no such field {proj}"
-  let allProjs := pathToField ++ [lastProj]
-  let idx := allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
-  let newPos := pos ++ idx
+  let newE ← elabProjectionNotation univs e str projName
+  let newPos := pos ++ (← findProjectionIndices str projName)
+  -- we do this here instead of in a recursive call in order to not get an unnecessary eta-redex
   if projRest.isEmpty then
     let newE ← mkLambdaFVars args newE
     if !stx.isMissing then
@@ -481,95 +497,31 @@ partial def getCompositeOfProjectionsAux (stx : Syntax) (str : Name) (proj : Str
   let type ← inferType newE
   forallTelescopeReducing type fun typeArgs tgt ↦ do
     logInfo m!"{typeArgs}"
-    getCompositeOfProjectionsAux stx tgt.getAppFn.constName! projRest (mkAppN newE typeArgs)
+    getCompositeOfProjectionsAux stx univs tgt.getAppFn.constName! projRest (mkAppN newE typeArgs)
       newPos (args ++ typeArgs)
-
--- partial def getCompositeOfProjectionsAux (stx : Syntax) (projs : List Name) (e : Expr)
---     (args : Array Expr) : MetaM Expr := do
---   match projs with
---   | [] => unreachable!
---   | proj::projs =>
---   let env ← getEnv
---   let str := proj.getPrefix
---   let strDecl := (env.find? str).get!
---   let projExpr := Expr.const proj <| strDecl.levelParams.map mkLevelParam
---   let projDecl := (env.find? proj).get!
---   let type ← inferType e
---   let params := type.getAppArgs
---   let newE := mkAppN
---     (projExpr.instantiateLevelParams projDecl.levelParams type.getAppFn.constLevels!)
---     <| params ++ [e]
---   /- I don't want to create an unnecessary eta-redex, so I perform this check here -/
---   if projs.isEmpty then
---     let newE ← mkLambdaFVars args e
---     if !stx.isMissing then
---       _ ← TermElabM.run' <| addTermInfo stx newE
---     return newE
---   let type ← inferType newE
---   forallTelescopeReducing type fun typeArgs _ ↦
---     getCompositeOfProjectionsAux stx projs (mkAppN newE typeArgs) (args ++ typeArgs)
 
 /-- Suppose we are given a structure `str` and a projection `proj`, that could be multiple nested
   projections (separated by `_`), where each projection could be a projection of a parent structure.
   This function returns an expression that is the composition of these projections and a
   list of natural numbers, that are the projection numbers of the applied projections.
-  Note that this function roughly re-implements  -/
+  Note that this function is similar to elaborating dot notation, but it can do a little more, e.g.
+  with
+  ```
+  structure gradedFun (A : ℕ → Type _) where
+    toFun := ∀ i j, A i →+ A j →+ A (i + j)
+  ```
+  we want to be able to get the "projection"
+    `λ (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
+  which projection notation cannot do. -/
 def getCompositeOfProjections (str : Name) (proj : String) (stx : Syntax) :
   MetaM (Expr × Array ℕ) := do
   let env ← getEnv
   let strDecl := (env.find? str).get!
-  let strExpr : Expr := mkConst str <| strDecl.levelParams.map mkLevelParam
+  let strExpr : Expr := mkConst str <| strDecl.levelParams.map .param
   let type ← inferType strExpr
   forallTelescopeReducing type fun typeArgs _ ↦
   withLocalDeclD `x (mkAppN strExpr typeArgs) fun e ↦
-  getCompositeOfProjectionsAux stx str ("_" ++ proj) e #[] <| typeArgs.push e
-
-  -- let projNm := Name.mkSimple proj
-  -- let .some baseStr := findField? env str projNm |
-  --   throwError "Failed to find constructor {proj} in structure {str}."
-  -- let .some lastProj := getProjFnForField? env baseStr projNm | throwError "no such field {proj}"
-  -- let .some pathToField := getPathToBaseStructure? env baseStr str
-  --   | throwError "no such field {proj}"
-  -- let allProjs := pathToField ++ [lastProj]
-  -- let idx := allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
-  -- let e ← forallTelescopeReducing type fun typeArgs _ ↦
-  --   withLocalDeclD `x (mkAppN strExpr typeArgs) fun e ↦ do
-  --   getCompositeOfProjectionsAux stx allProjs e <| typeArgs.push e
-  -- return (e, idx.toArray)
-
-  -- let mut args := typeArgs.push e
-  -- let mut e := e
-  -- for projFunName in allProjs do
-  --   let strName := projFunName.getPrefix
-  --   let strDecl := (env.find? str).get!
-  --   let projExpr := Expr.const projFunName <| strDecl.levelParams.map mkLevelParam
-  --   let projDecl := (env.find? projFunName).get!
-  --   let type ← inferType e
-  --   let params := type.getAppArgs
-  --   e := mkAppN (projExpr.instantiateLevelParams projDecl.levelParams type.getAppFn.constLevels!)
-  --     <| params ++ [e]
-  --   args := args ++ typeArgs
-
-
-  -- let type ← inferType x
-  -- let params := type.getAppArgs
-  -- let newX := mkAppN (projExpr.instantiateLevelParams
-  --   projDecl.levelParams type.getAppFn.constLevels!) <| params ++ [x]
-  -- let newPos := pos.push index
-  -- if projRest.isEmpty then
-  --   let newE ← mkLambdaFVars args newX
-  --   if !stx.isMissing then
-  --     discard <| TermElabM.run' <| addTermInfo stx newE
-  --   return (newE, newPos)
-  -- let type ← inferType newX
-  -- forallTelescopeReducing type fun typeArgs tgt ↦
-  --   getCompositeOfProjectionsAux stx tgt.getAppFn.constName! projRest (mkAppN newX typeArgs)
-  --     newPos (args ++ typeArgs)
-
-
-
-    -- e ← elabAppArgs projFn #[{ name := `self, val := Arg.expr e }] (args := #[]) (expectedType? := none) (explicit := false) (ellipsis := false)
-
+  getCompositeOfProjectionsAux stx strDecl.levelParams str ("_" ++ proj) e #[] <| typeArgs.push e
 
 /-- Get the default `ParsedProjectionData` for structure `str`. -/
 def mkParsedProjectionData (str : Name) : CoreM (Array ParsedProjectionData) := do
@@ -586,9 +538,6 @@ def applyDefaultRules (str : Name) (projs : Array ParsedProjectionData) :
   logInfo m!"{l}"
   -- todo
   return projs
-
-
-
 
 /-- Execute the projection renamings (and turning off projections) as specified by `rules`. -/
 def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array ProjectionRule) :
@@ -775,9 +724,14 @@ def getRawProjections (str : Name) (traceIfExists : Bool := false)
   -- todo: find and use coercions to functions here
   -- let projs ← findAutomaticProjections str projs strDecl.type rawUnivs
   let projs := projs.map (·.toProjectionData)
+  -- make all proofs non-default.
+  let projs ← projs.mapM fun proj ↦ do
+    match (← MetaM.run' <| isProof proj.expr) with
+    | true => pure { proj with isDefault := false }
+    | false => pure proj
   trace[simps.verbose] projectionsInfo projs.toList "generated projections for" str
   structureExt.add str (rawLevels, projs)
-  trace[simps.debug] "Generated raw projection data:{indentD m!"(rawLevels, projs)"}}"
+  trace[simps.debug] "Generated raw projection data:{indentD <| toMessageData (rawLevels, projs)}"
   pure (rawLevels, projs)
 
 library_note "custom simps projection"/--

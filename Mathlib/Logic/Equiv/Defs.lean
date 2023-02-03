@@ -163,7 +163,9 @@ def Simps.apply (e : α ≃ β) : α → β := e
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 #align equiv.simps.symm_apply Equiv.Simps.symm_apply
 
-initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
+set_option pp.universes true
+set_option trace.simps.debug true
+initialize_simps_projections? Equiv (toFun → apply, invFun → symm_apply)
 
 -- Porting note:
 -- Added these lemmas as restatements of `left_inv` and `right_inv`,
