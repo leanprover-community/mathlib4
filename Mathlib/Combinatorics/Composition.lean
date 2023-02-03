@@ -407,6 +407,7 @@ theorem mem_range_embedding (j : Fin n) : j ∈ Set.range (c.embedding (c.index 
     Set.mem_range_self _
   -- porting note: previously `rwa` closed
   rw [c.embedding_comp_inv j] at this
+  assumption
 #align composition.mem_range_embedding Composition.mem_range_embedding
 
 theorem mem_range_embedding_iff' {j : Fin n} {i : Fin c.length} :
