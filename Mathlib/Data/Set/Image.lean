@@ -857,6 +857,9 @@ theorem range_eval {ι : Type _} {α : ι → Sort _} [∀ i, Nonempty (α i)] (
   -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works
 #align set.range_eval Set.range_eval
 
+theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_|_) <;> simp
+theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_|_) <;> simp
+
 theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
   IsCompl.of_le
     (by
@@ -925,8 +928,7 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  Function.Surjective.range_eq (surjective_quot_mk r)
-  -- Porting note: should be `(surjective_quot_mk r).range_eq` if dot notation works
+  (surjective_quot_mk r).range_eq
 #align set.range_quot_mk Set.range_quot_mk
 
 @[simp]

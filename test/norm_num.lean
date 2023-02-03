@@ -339,16 +339,19 @@ example (h : False) : False := by norm_num1 at h
 example : True := by norm_num1
 -- example : True ∧ True := by norm_num1
 
-example : 10 + 2 = 1 + 11 := by norm_num1
--- example : 10 - 1 = 9 := by norm_num1
--- example : 12 - 5 = 3 + 4 := by norm_num1
--- example : 5 - 20 = 0 := by norm_num1
--- example : 0 - 2 = 0 := by norm_num1
--- example : 4 - (5 - 10) = 2 + (3 - 1) := by norm_num1
--- example : 0 - 0 = 0 := by norm_num1
--- example : 100 - 100 = 0 := by norm_num1
--- example : 5 * (2 - 3) = 0 := by norm_num1
--- example : 10 - 5 * 5 + (7 - 3) * 6 = 27 - 3 := by norm_num1
+section Nat.sub
+
+example : 10 - 1 = 9 := by norm_num1
+example : 12 - 5 = 3 + 4 := by norm_num1
+example : 5 - 20 = 0 := by norm_num1
+example : 0 - 2 = 0 := by norm_num1
+example : 4 - (5 - 10) = 2 + (3 - 1) := by norm_num1
+example : 0 - 0 = 0 := by norm_num1
+example : 100 - 100 = 0 := by norm_num1
+example : 5 * (2 - 3) = 0 := by norm_num1
+example : 10 - 5 * 5 + (7 - 3) * 6 = 27 - 3 := by norm_num1
+
+end Nat.sub
 
 -- noncomputable def foo : ℝ := 1
 
@@ -446,6 +449,17 @@ section
   example : (-2 : α) * 4 / 3 = -8 / 3 := by norm_num1
   example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 end
+
+section Transparency
+
+example : Add.add 10 2 = 12 := by norm_num1
+example : Nat.sub 10 1 = 9 := by norm_num1
+example : Sub.sub 10 1 = 9 := by norm_num1
+example : Sub.sub 10 (-2) = 12 := by norm_num1
+example : Mul.mul 10 1 = 10 := by norm_num1
+example : (Div.div 10 1 : ℚ) = 10 := by norm_num1
+
+end Transparency
 
 -- user command
 
