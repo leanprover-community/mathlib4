@@ -1263,7 +1263,7 @@ def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
-theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ f.eqLocus g ↔ f x = g x :=
+theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ f.eqLocus g ↔ f x = g x := by
   Iff.rfl
 #align linear_map.mem_eq_locus LinearMap.mem_eqLocus
 
@@ -1274,7 +1274,9 @@ theorem eqLocus_toAddSubmonoid (f g : M →ₛₗ[τ₁₂] M₂) :
 
 @[simp]
 theorem eqLocus_same (f : M →ₛₗ[τ₁₂] M₂) : f.eqLocus f = ⊤ :=
-  SetLike.ext fun _ => eq_self_iff_true _
+  SetLike.ext fun _ => by
+    simp only [mem_eqLocus, mem_top]
+
 #align linear_map.eq_locus_same LinearMap.eqLocus_same
 
 end
@@ -1283,7 +1285,7 @@ end
 -/
 @[simps]
 def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ :=
-  ⟨fun n => (f ^ n).range, fun n m w x h =>
+  ⟨fun n => LinearMap.range (f ^ n), fun n m w x h =>
     by
     obtain ⟨c, rfl⟩ := le_iff_exists_add.mp w
     rw [LinearMap.mem_range] at h
@@ -1297,8 +1299,8 @@ def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ :=
 
 This is the bundled version of `set.range_factorization`. -/
 @[reducible]
-def rangeRestrict [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : M →ₛₗ[τ₁₂] f.range :=
-  f.codRestrict f.range f.mem_range_self
+def rangeRestrict [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : M →ₛₗ[τ₁₂] LinearMap.range f :=
+  f.codRestrict (LinearMap.range f) (LinearMap.mem_range_self f)
 #align linear_map.range_restrict LinearMap.rangeRestrict
 
 /-- The range of a linear map is finite if the domain is finite.
@@ -1332,7 +1334,7 @@ theorem map_coe_ker (f : F) (x : ker f) : f x = 0 :=
   mem_ker.1 x.2
 #align linear_map.map_coe_ker LinearMap.map_coe_ker
 
-theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : f.ker.toAddSubmonoid = f.toAddMonoidHom.mker :=
+theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : f.ker.toAddSubmonoid = (AddMonoidHom.mker f) :=
   rfl
 #align linear_map.ker_to_add_submonoid LinearMap.ker_toAddSubmonoid
 
@@ -1373,7 +1375,7 @@ theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ 
 #align linear_map.ker_cod_restrict LinearMap.ker_codRestrict
 
 theorem range_codRestrict {τ₂₁ : R₂ →+* R} [RingHomSurjective τ₂₁] (p : Submodule R M)
-    (f : M₂ →ₛₗ[τ₂₁] M) (hf) : range (codRestrict p f hf) = comap p.subtype f.range := by
+    (f : M₂ →ₛₗ[τ₂₁] M) (hf) : range (codRestrict p f hf) = comap p.subtype (LinearMap.range f) := by
   simpa only [range_eq_map] using map_codRestrict _ _ _ _
 #align linear_map.range_cod_restrict LinearMap.range_codRestrict
 
@@ -1762,7 +1764,7 @@ end LinearMap
 
 @[simp]
 theorem LinearMap.range_rangeRestrict [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
-    [Module R M₂] (f : M →ₗ[R] M₂) : f.rangeRestrict.range = ⊤ := by simp [f.range_codRestrict _]
+    [Module R M₂] (f : M →ₗ[R] M₂) : LinearMap.range f = ⊤ := by simp [f.range_codRestrict _]
 #align linear_map.range_range_restrict LinearMap.range_rangeRestrict
 
 @[simp]
@@ -2170,13 +2172,13 @@ This is a computable alternative to `linear_equiv.of_injective`, and a bidirecti
 `linear_map.range_restrict`. -/
 def ofLeftInverse [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {g : M₂ → M}
     (h : Function.LeftInverse g f) : M ≃ₛₗ[σ₁₂] (LinearMap.range f) :=
-  { --  LinearMap.rangeRestrict f with
+  { LinearMap.rangeRestrict f with
     toFun := LinearMap.rangeRestrict f
     invFun := g ∘ (LinearMap.range f).subtype
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := LinearMap.mem_range.mp x.Prop
+        let ⟨x', hx'⟩ := LinearMap.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 #align linear_equiv.of_left_inverse LinearEquiv.ofLeftInverse
 
@@ -2197,7 +2199,7 @@ variable (f)
 /-- An `injective` linear map `f : M →ₗ[R] M₂` defines a linear equivalence
 between `M` and `f.range`. See also `linear_map.of_left_inverse`. -/
 noncomputable def ofInjective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] (h : Injective f) :
-    M ≃ₛₗ[σ₁₂] f.range :=
+    M ≃ₛₗ[σ₁₂] LinearMap.range f :=
   ofLeftInverse <| Classical.choose_spec h.HasLeftInverse
 #align linear_equiv.of_injective LinearEquiv.ofInjective
 
@@ -2534,7 +2536,7 @@ theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ 
   rw [SetLike.le_def]
   intro m h
   change c • fₗ m ∈ qₗ
-  change fₗ m ∈ qₗ at h
+  replace h : fₗ m ∈ qₗ := h -- Porting note: was `change … at`
   apply qₗ.smul_mem _ h
 #align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
 
@@ -2543,7 +2545,7 @@ theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
   rw [SetLike.le_def]
   intro m h
   change f₁ m + f₂ m ∈ q
-  change f₁ m ∈ q ∧ f₂ m ∈ q at h
+  replace h : f₁ m ∈ q ∧ f₂ m ∈ q := h -- Porting note: was `change … at`
   apply q.add_mem h.1 h.2
 #align submodule.inf_comap_le_comap_add Submodule.inf_comap_le_comap_add
 
@@ -2634,7 +2636,7 @@ end LinearMap
 
 namespace LinearEquiv
 
-open _root_.LinearMap
+open LinearMap
 
 /-- Given an `R`-module `M` and an equivalence `m ≃ n` between arbitrary types,
 construct a linear equivalence `(n → M) ≃ₗ[R] (m → M)` -/
