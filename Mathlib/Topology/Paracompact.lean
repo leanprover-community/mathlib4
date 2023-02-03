@@ -80,9 +80,9 @@ theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, 
   -- Apply definition to `range u`, then turn existence quantifiers into functions using `choose`
   have :=
     ParacompactSpace.locallyFinite_refinement (range u) coe
-      (SetCoe.forall.2 <| forall_range_iff.2 uo) (by rwa [← sUnion_range, Subtype.range_coe])
-  simp only [SetCoe.exists, Subtype.coe_mk, exists_range_iff', Union_eq_univ_iff, exists_prop] at
-    this
+      (SetCoe.forall.2 <| forall_range_iff.2 uo) (by rwa [← unionₛ_range, Subtype.range_coe])
+  simp only [SetCoe.exists, Subtype.coe_mk, exists_range_iff', unionᵢ_eq_univ_iff, exists_prop]
+    at this
   choose α t hto hXt htf ind hind; choose t_inv ht_inv using hXt; choose U hxU hU using htf
   -- Send each `i` to the union of `t a` over `a ∈ ind ⁻¹' {i}`
   refine' ⟨fun i => ⋃ (a : α) (ha : ind a = i), t a, _, _, _, _⟩
@@ -108,9 +108,8 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
       _ with
     ⟨v, vo, vc, vf, vu⟩
   refine' ⟨v ∘ some, fun i => vo _, _, vf.comp_injective (Option.some_injective _), fun i => vu _⟩
-  · simp only [Union_option, ← compl_subset_iff_union] at vc
-    exact subset.trans (subset_compl_comm.1 <| vu Option.none) vc
-  · simpa only [Union_option, Option.elim', ← compl_subset_iff_union, compl_compl]
+  · simp only [unionᵢ_option, ← compl_subset_iff_union] at vc
+    exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 #align precise_refinement_set precise_refinement_set
 
 -- See note [lower instance priority]
@@ -118,13 +117,13 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
 instance (priority := 100) paracompact_of_compact [CompactSpace X] : ParacompactSpace X := by
   -- the proof is trivial: we choose a finite subcover using compactness, and use it
   refine' ⟨fun ι s ho hu => _⟩
-  rcases is_compact_univ.elim_finite_subcover _ ho hu.ge with ⟨T, hT⟩
-  have := hT; simp only [subset_def, mem_Union] at this
-  choose i hiT hi using fun x => this x (mem_univ x)
+  rcases isCompact_univ.elim_finite_subcover _ ho hu.ge with ⟨T, hT⟩
+  have := hT; simp only [subset_def, mem_unionᵢ] at this
+  choose i _ _ using fun x => this x (mem_univ x)
   refine'
     ⟨(T : Set ι), fun t => s t, fun t => ho _, _, locallyFinite_of_finite _, fun t =>
-      ⟨t, subset.rfl⟩⟩
-  simpa only [Union_coe_set, ← univ_subset_iff]
+      ⟨t, Subset.rfl⟩⟩
+  simpa only [unionᵢ_coe_set, ← univ_subset_iff]
 #align paracompact_of_compact paracompact_of_compact
 
 /-- Let `X` be a locally compact sigma compact Hausdorff topological space, let `s` be a closed set
@@ -165,24 +164,24 @@ theorem refinement_of_locally_compact_sigma_compact_of_nhds_basis_set [LocallyCo
       simpa only [K'.find_shiftr] using
         diff_subset_diff_right interior_subset (K'.shiftr.mem_diff_shiftr_find x)
     have Kdiffc : ∀ n, IsCompact (Kdiff n ∩ s) := fun n =>
-      ((K.is_compact _).diffₓ isOpen_interior).inter_right hs
+      ((K.isCompact _).diff isOpen_interior).inter_right hs
     -- Next we choose a finite covering `B (c n i) (r n i)` of each
     -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
     have : ∀ (n) (x : Kdiff (n + 1) ∩ s), K nᶜ ∈ 𝓝 (x : X) := fun n x =>
-      IsOpen.mem_nhds (K.is_closed n).isOpen_compl fun hx' =>
+      IsOpen.mem_nhds (K.isClosed n).isOpen_compl fun hx' =>
         x.2.1.2 <| K.subset_interior_succ _ hx'
     haveI : ∀ (n) (x : Kdiff n ∩ s), Nonempty (ι x) := fun n x => (hB x x.2.2).Nonempty
     choose! r hrp hr using fun n (x : Kdiff (n + 1) ∩ s) => (hB x x.2.2).mem_iff.1 (this n x)
     have hxr : ∀ (n x) (hx : x ∈ Kdiff (n + 1) ∩ s), B x (r n ⟨x, hx⟩) ∈ 𝓝 x := fun n x hx =>
       (hB x hx.2).mem_of_mem (hrp _ ⟨x, hx⟩)
     choose T hT using fun n => (Kdiffc (n + 1)).elim_nhds_subcover' _ (hxr n)
-    set T' : ∀ n, Set ↥(Kdiff (n + 1) ∩ s) := fun n => T n
+    set T' : ∀ n, Set ↑(Kdiff (n + 1) ∩ s) := fun n => T n
     -- Finally, we take the union of all these coverings
     refine' ⟨Σn, T' n, fun a => a.2, fun a => r a.1 a.2, _, _, _⟩
     · rintro ⟨n, x, hx⟩
       exact ⟨x.2.2, hrp _ _⟩
-    · refine' fun x hx => mem_Union.2 _
-      rcases mem_Union₂.1 (hT _ ⟨hKcov x, hx⟩) with ⟨⟨c, hc⟩, hcT, hcx⟩
+    · refine' fun x hx => mem_unionᵢ.2 _
+      rcases mem_unionᵢ₂.1 (hT _ ⟨hKcov x, hx⟩) with ⟨⟨c, hc⟩, hcT, hcx⟩
       exact ⟨⟨_, ⟨c, hc⟩, hcT⟩, hcx⟩
     · intro x
       refine'
@@ -192,7 +191,7 @@ theorem refinement_of_locally_compact_sigma_compact_of_nhds_basis_set [LocallyCo
         (finite_le_nat _).bunionᵢ fun k hk => finite_range _
       apply this.subset
       rintro ⟨k, c, hc⟩
-      simp only [mem_Union, mem_set_of_eq, mem_image, Subtype.coe_mk]
+      simp only [mem_unionᵢ, mem_setOf_eq, mem_image, Subtype.coe_mk]
       rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
       refine' ⟨k, _, ⟨c, hc⟩, rfl⟩
       have := (mem_compl_iff _ _).1 (hr k c hxB)
@@ -235,7 +234,7 @@ theorem refinement_of_locally_compact_sigma_compact_of_nhds_basis [LocallyCompac
 instance (priority := 100) paracompact_of_locally_compact_sigma_compact [LocallyCompactSpace X]
     [SigmaCompactSpace X] [T2Space X] : ParacompactSpace X := by
   refine' ⟨fun α s ho hc => _⟩
-  choose i hi using Union_eq_univ_iff.1 hc
+  choose i hi using unionᵢ_eq_univ_iff.1 hc
   have : ∀ x : X, (𝓝 x).HasBasis (fun t : Set X => (x ∈ t ∧ IsOpen t) ∧ t ⊆ s (i x)) id :=
     fun x : X => (nhds_basis_opens x).restrict_subset (IsOpen.mem_nhds (ho (i x)) (hi x))
   rcases refinement_of_locally_compact_sigma_compact_of_nhds_basis this with
@@ -275,4 +274,3 @@ theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace 
   · simp_rw [singleton_subset_iff]
     exact t2_separation (hst.symm.ne_of_mem hy hx)
 #align normal_of_paracompact_t2 normal_of_paracompact_t2
-
