@@ -95,6 +95,16 @@ end Lean
 
 namespace Lean.Elab.Tactic
 
+/-- 
+Variant on `rewriteTarget` that behaves more like the Lean 3 version 
+-/
+def rewriteTarget' (stx : Syntax) (symm : Bool) : TacticM Unit := do
+  Term.withSynthesize <| withMainContext do
+    let e ← elabTerm stx none true
+    let r ← (← getMainGoal).rewrite (← getMainTarget) e symm (config := {})
+    let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
+    replaceMainGoal ([mvarId'])
+
 /--
 Run a tactic on all goals, and always succeeds.
 
@@ -132,6 +142,24 @@ tactic fails. Always succeeds. -/
 def iterateAtMost : Nat → m Unit → m Unit
 | 0, _ => pure ()
 | n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
+
+/-- `iterateExactly' n t` executes `t` `n` times. If any iteration fails, the whole tactic fails.
+-/
+def iterateExactly' : Nat → m Unit → m Unit 
+| 0, _ => pure () 
+| n+1, tac => tac *> iterateExactly' n tac
+
+/--
+`iterateRange m n t`: Repeat the given tactic at least `m` times and
+at most `n` times or until `t` fails. Fails if `t` does not run at least `m` times.
+-/
+def iterateRange : Nat → Nat → m Unit → m Unit 
+| 0, 0, _   => pure ()
+| 0, b, tac => iterateAtMost b tac
+| (a+1), n, tac => do 
+  let _ ← tac 
+  let _ ← iterateRange a (n-1) tac 
+  pure ()
 
 /-- Repeats a tactic until it fails. Always succeeds. -/
 partial def iterateUntilFailure (tac : m Unit) : m Unit :=
