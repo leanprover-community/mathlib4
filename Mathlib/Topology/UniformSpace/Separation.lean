@@ -38,7 +38,7 @@ is equivalent to asking that the uniform structure induced on `s` is separated.
 
 ## Main definitions
 
-* `separation_relation X : Set (X × X)`: the separation relation
+* `separationRel X : Set (X × X)`: the separation relation
 * `SeparatedSpace X`: a predicate class asserting that `X` is separated
 * `SeparationQuotient X`: the maximal separated quotient of `X`.
 * `SeparationQuotient.lift f`: factors a map `f : X → Y` through the separation quotient of `X`.
@@ -166,13 +166,13 @@ theorem eq_of_clusterPt_uniformity [SeparatedSpace α] {x y : α} (h : ClusterPt
     isClosed_iff_clusterPt.1 hVc _ <| h.mono <| le_principal_iff.2 hV
 #align eq_of_cluster_pt_uniformity eq_of_clusterPt_uniformity
 
-theorem idRel_sub_separation_relation (α : Type _) [UniformSpace α] : idRel ⊆ 𝓢 α := by
+theorem idRel_sub_separationRel (α : Type _) [UniformSpace α] : idRel ⊆ 𝓢 α := by
   unfold separationRel
   rw [idRel_subset]
   intro x
   suffices ∀ t ∈ 𝓤 α, (x, x) ∈ t by simpa only [refl_mem_uniformity]
   exact fun t => refl_mem_uniformity
-#align id_rel_sub_separation_relation idRel_sub_separation_relation
+#align id_rel_sub_separation_relation idRel_sub_separationRel
 
 theorem separationRel_comap {f : α → β}
     (h : ‹UniformSpace α› = UniformSpace.comap f ‹UniformSpace β›) :
