@@ -139,16 +139,11 @@ protected def Float.neg : Float → Float
   | Float.Finite s e m f => Float.Finite (not s) e m f
 #align fp.float.neg FP.Float.neg
 
-/- warning: fp.div_nat_lt_two_pow -> FP.divNatLtTwoPow is a dubious translation:
-lean 3 declaration is
-  forall [C : FP.FloatCfg], Nat -> Nat -> Int -> Bool
-but is expected to have type
-  Nat -> Nat -> Int -> Bool. -/
 @[nolint docBlame]
 def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
   | Int.ofNat e => n < d.shiftl e
   | Int.negSucc e => n.shiftl e.succ < d
-#align fp.div_nat_lt_two_pow FP.divNatLtTwoPow
+#align fp.div_nat_lt_two_pow FP.divNatLtTwoPowₓ -- Porting note: TC argument `[C : FP.FloatCfg]` no longer present
 
 
 -- TODO(Mario): Prove these and drop 'unsafe'
