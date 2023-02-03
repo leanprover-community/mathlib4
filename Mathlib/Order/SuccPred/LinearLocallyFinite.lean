@@ -75,13 +75,13 @@ theorem succFn_spec (i : ι) : IsGLB (Set.Ioi i) (succFn i) :=
 
 theorem le_succFn (i : ι) : i ≤ succFn i := by
   rw [le_isGLB_iff (succFn_spec i), mem_lowerBounds]
-  exact fun x hx => le_of_lt hx
+  exact fun x hx ↦ le_of_lt hx
 #align linear_locally_finite_order.le_succ_fn LinearLocallyFiniteOrder.le_succFn
 
 theorem isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi i) k) :
     IsGLB (Set.Ioc i j) k := by
   simp_rw [IsGLB, IsGreatest, mem_upperBounds, mem_lowerBounds] at h⊢
-  refine' ⟨fun x hx => h.1 x hx.1, fun x hx => h.2 x _⟩
+  refine' ⟨fun x hx ↦ h.1 x hx.1, fun x hx ↦ h.2 x _⟩
   intro y hy
   cases' le_or_lt y j with h_le h_lt
   · exact hx y ⟨hy, h_le⟩
@@ -89,16 +89,14 @@ theorem isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi
 #align linear_locally_finite_order.is_glb_Ioc_of_is_glb_Ioi LinearLocallyFiniteOrder.isGLB_Ioc_of_isGLB_Ioi
 
 theorem isMax_of_succFn_le [LocallyFiniteOrder ι] (i : ι) (hi : succFn i ≤ i) : IsMax i := by
-  refine' fun j hij => not_lt.mp fun hij_lt => _
+  refine' fun j _ ↦ not_lt.mp fun hij_lt ↦ _
   have h_succFn_eq : succFn i = i := le_antisymm hi (le_succFn i)
-  have h_glb : IsGLB (Finset.Ioc i j : Set ι) i :=
-    by
+  have h_glb : IsGLB (Finset.Ioc i j : Set ι) i := by
     rw [Finset.coe_Ioc]
     have h := succFn_spec i
     rw [h_succFn_eq] at h
     exact isGLB_Ioc_of_isGLB_Ioi hij_lt h
-  have hi_mem : i ∈ Finset.Ioc i j :=
-    by
+  have hi_mem : i ∈ Finset.Ioc i j := by
     refine' Finset.is_glb_mem _ h_glb _
     exact ⟨_, Finset.mem_Ioc.mpr ⟨hij_lt, le_rfl⟩⟩
   rw [Finset.mem_Ioc] at hi_mem
@@ -115,11 +113,10 @@ theorem le_of_lt_succFn (j i : ι) (hij : j < succFn i) : j ≤ i := by
   rw [lt_isGLB_iff (succFn_spec i)] at hij
   obtain ⟨k, hk_lb, hk⟩ := hij
   rw [mem_lowerBounds] at hk_lb
-  exact not_lt.mp fun hi_lt_j => not_le.mpr hk (hk_lb j hi_lt_j)
+  exact not_lt.mp fun hi_lt_j ↦ not_le.mpr hk (hk_lb j hi_lt_j)
 #align linear_locally_finite_order.le_of_lt_succ_fn LinearLocallyFiniteOrder.le_of_lt_succFn
 
-noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι
-    where
+noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
   max_of_succ_le h := isMax_of_succFn_le _ h
@@ -141,7 +138,7 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     · refine' ⟨0, _⟩
       simpa only [Function.iterate_zero, id.def] using hij
     by_contra h
-    push_neg  at h
+    push_neg at h
     have h_lt : ∀ n, (succ^[n]) i < j := by
       intro n
       induction' n with n hn
@@ -149,11 +146,10 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
       · refine' lt_of_le_of_ne _ (h _)
         rw [Function.iterate_succ', Function.comp_apply]
         exact succ_le_of_lt hn
-    have h_mem : ∀ n, (succ^[n]) i ∈ Finset.Icc i j := fun n =>
-      Finset.mem_Icc.mpr ⟨le_succ_iterate n i, (h_lt n).le⟩
-    obtain ⟨n, m, hnm, h_eq⟩ : ∃ n m, n < m ∧ (succ^[n]) i = (succ^[m]) i :=
-      by
-      let f : ℕ → Finset.Icc i j := fun n => ⟨(succ^[n]) i, h_mem n⟩
+    have h_mem : ∀ n, (succ^[n]) i ∈ Finset.Icc i j :=
+      fun n ↦ Finset.mem_Icc.mpr ⟨le_succ_iterate n i, (h_lt n).le⟩
+    obtain ⟨n, m, hnm, h_eq⟩ : ∃ n m, n < m ∧ (succ^[n]) i = (succ^[m]) i := by
+      let f : ℕ → Finset.Icc i j := fun n ↦ ⟨(succ^[n]) i, h_mem n⟩
       obtain ⟨n, m, hnm_ne, hfnm⟩ : ∃ n m, n ≠ m ∧ f n = f m
       exact Finite.exists_ne_map_eq_of_infinite f
       have hnm_eq : (succ^[n]) i = (succ^[m]) i := by simpa only [Subtype.mk_eq_mk] using hfnm
@@ -170,10 +166,10 @@ instance (priority := 100) LinearOrder.pred_archimedean_of_succ_archimedean [Suc
     intro i j hij
     have h_exists := exists_succ_iterate_of_le hij
     obtain ⟨n, hn_eq, hn_lt_ne⟩ : ∃ n, (succ^[n]) i = j ∧ ∀ m < n, (succ^[m]) i ≠ j
-    exact ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn => Nat.find_min h_exists hmn⟩
+    exact ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
     refine' ⟨n, _⟩
     rw [← hn_eq]
-    induction' n with n hn
+    induction' n with n
     · simp only [Nat.zero_eq, Function.iterate_zero, id.def]
     · rw [pred_succ_iterate_of_not_isMax]
       rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
@@ -190,11 +186,14 @@ section toZ
 
 variable [SuccOrder ι] [IsSuccArchimedean ι] [PredOrder ι] {i0 i : ι}
 
+-- For "to_Z"
+set_option linter.uppercaseLean3 false
+
 /-- `to_Z` numbers elements of `ι` according to their order, starting from `i0`. We prove in
 `order_iso_range_to_Z_of_linear_succ_pred_arch` that this defines an `order_iso` between `ι` and
 the range of `to_Z`. -/
 def toZ (i0 i : ι) : ℤ :=
-  dite (i0 ≤ i) (fun hi => Nat.find (exists_succ_iterate_of_le hi)) fun hi =>
+  dite (i0 ≤ i) (fun hi ↦ Nat.find (exists_succ_iterate_of_le hi)) fun hi ↦
     -Nat.find (exists_pred_iterate_of_le (not_le.mp hi).le)
 #align to_Z toZ
 
@@ -236,7 +235,7 @@ theorem toZ_neg (hi : i < i0) : toZ i0 i < 0 := by
   · by_contra h
     have h_eq := iterate_pred_toZ i hi
     rw [← h_eq, h] at hi
-    simpa only [neg_zero, Int.toNat_zero, Function.iterate_zero, id.def, lt_self_iff_false] using hi
+    simp only [neg_zero, Int.toNat_zero, Function.iterate_zero, id.def, lt_self_iff_false] at hi
 #align to_Z_neg toZ_neg
 
 theorem toZ_iterate_succ_le (n : ℕ) : toZ i0 ((succ^[n]) i0) ≤ n := by
@@ -272,9 +271,8 @@ theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin ((pred^[n]) i0)) :
   cases n
   · simp only [Nat.zero_eq, Function.iterate_zero, id.def, toZ_of_eq, Nat.cast_zero, neg_zero]
   rename_i n
-  have : (pred^[n.succ]) i0 < i0 :=
-    by
-    refine' lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq => hn _
+  have : (pred^[n.succ]) i0 < i0 := by
+    refine' lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn _
     have h_pred_eq_pred : (pred^[n.succ]) i0 = (pred^[0]) i0 := by
       rwa [Function.iterate_zero, id.def]
     exact isMin_iterate_pred_of_eq_of_ne h_pred_eq_pred (Nat.succ_ne_zero n)
@@ -309,21 +307,18 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
   cases' le_or_lt i0 i with hi hi <;> cases' le_or_lt i0 j with hj hj
   · let m := Nat.find (exists_succ_iterate_of_le h_le)
     have hm : (succ^[m]) i = j := Nat.find_spec (exists_succ_iterate_of_le h_le)
-    have hj_eq : j = (succ^[(toZ i0 i).toNat + m]) i0 :=
-      by
+    have hj_eq : j = (succ^[(toZ i0 i).toNat + m]) i0 := by
       rw [← hm, add_comm]
       nth_rw 1 [← iterate_succ_toZ i hi]
       rw [Function.iterate_add]
       rfl
     by_contra h
-    push_neg  at h
     by_cases hm0 : m = 0
     · rw [hm0, Function.iterate_zero, id.def] at hm
       rw [hm] at h
       exact h (le_of_eq rfl)
     refine' hi_max (max_of_succ_le (le_trans _ (@le_of_toZ_le _ _ _ _ _ i0 j i _)))
-    · have h_succ_le : (succ^[(toZ i0 i).toNat + 1]) i0 ≤ j :=
-        by
+    · have h_succ_le : (succ^[(toZ i0 i).toNat + 1]) i0 ≤ j := by
         rw [hj_eq]
         refine' Monotone.monotone_iterate_of_le_map succ_mono (le_succ i0) (add_le_add_left _ _)
         exact Nat.one_le_iff_ne_zero.mpr hm0
@@ -333,14 +328,12 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
   · exact (toZ_neg hi).le.trans (toZ_nonneg hj)
   · let m := Nat.find (exists_pred_iterate_of_le h_le)
     have hm : (pred^[m]) j = i := Nat.find_spec (exists_pred_iterate_of_le h_le)
-    have hj_eq : i = (pred^[(-toZ i0 j).toNat + m]) i0 :=
-      by
+    have hj_eq : i = (pred^[(-toZ i0 j).toNat + m]) i0 := by
       rw [← hm, add_comm]
       nth_rw 1 [← iterate_pred_toZ j hj]
       rw [Function.iterate_add]
       rfl
     by_contra h
-    push_neg  at h
     by_cases hm0 : m = 0
     · rw [hm0, Function.iterate_zero, id.def] at hm
       rw [hm] at h
@@ -348,8 +341,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
     refine' hj_min (min_of_le_pred _)
     refine' (@le_of_toZ_le _ _ _ _ _ i0 j i _).trans _
     · exact le_of_not_le h
-    · have h_le_pred : i ≤ (pred^[(-toZ i0 j).toNat + 1]) i0 :=
-        by
+    · have h_le_pred : i ≤ (pred^[(-toZ i0 j).toNat + 1]) i0 := by
         rw [hj_eq]
         refine' Monotone.antitone_iterate_of_map_le pred_mono (pred_le i0) (add_le_add_left _ _)
         exact Nat.one_le_iff_ne_zero.mpr hm0
@@ -368,8 +360,8 @@ theorem toZ_iterate_pred [NoMinOrder ι] (n : ℕ) : toZ i0 ((pred^[n]) i0) = -n
   toZ_iterate_pred_of_not_isMin n (not_isMin _)
 #align to_Z_iterate_pred toZ_iterate_pred
 
-theorem injective_toZ : Function.Injective (toZ i0) := fun i j hij =>
-  le_antisymm (le_of_toZ_le hij.le) (le_of_toZ_le hij.symm.le)
+theorem injective_toZ : Function.Injective (toZ i0) :=
+  fun _ _ h ↦ le_antisymm (le_of_toZ_le h.le) (le_of_toZ_le h.symm.le)
 #align injective_to_Z injective_toZ
 
 end toZ
@@ -380,10 +372,10 @@ variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 
 /-- `to_Z` defines an `order_iso` between `ι` and its range. -/
 noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
-    ι ≃o Set.range (toZ hι.some)
-    where
+    ι ≃o Set.range (toZ hι.some) where
   toEquiv := Equiv.ofInjective _ injective_toZ
   map_rel_iff' := toZ_le_iff
+set_option linter.uppercaseLean3 false in
 #align order_iso_range_to_Z_of_linear_succ_pred_arch orderIsoRangeToZOfLinearSuccPredArch
 
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
@@ -417,8 +409,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
 #align order_iso_int_of_linear_succ_pred_arch orderIsoIntOfLinearSuccPredArch
 
 /-- If the order has a bot but no top, `to_Z` defines an `order_iso` between `ι` and `ℕ`. -/
-def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ
-    where
+def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ where
   toFun i := (toZ ⊥ i).toNat
   invFun n := (succ^[n]) ⊥
   left_inv i := by
@@ -437,8 +428,7 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ
 /-- If the order has both a bot and a top, `to_Z` gives an `order_iso` between `ι` and
 `finset.range n` for some `n`. -/
 def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
-    ι ≃o Finset.range ((toZ ⊥ (⊤ : ι)).toNat + 1)
-    where
+    ι ≃o Finset.range ((toZ ⊥ (⊤ : ι)).toNat + 1) where
   toFun i :=
     ⟨(toZ ⊥ i).toNat,
       Finset.mem_range_succ_iff.mpr (Int.toNat_le_toNat ((toZ_le_iff _ _).mpr le_top))⟩
