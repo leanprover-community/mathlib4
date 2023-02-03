@@ -79,21 +79,22 @@ theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, 
   by
   -- Apply definition to `range u`, then turn existence quantifiers into functions using `choose`
   have :=
-    ParacompactSpace.locallyFinite_refinement (range u) coe
+    ParacompactSpace.locallyFinite_refinement (range u) (fun r => (r : Set X))
       (SetCoe.forall.2 <| forall_range_iff.2 uo) (by rwa [← unionₛ_range, Subtype.range_coe])
-  simp only [SetCoe.exists, Subtype.coe_mk, exists_range_iff', unionᵢ_eq_univ_iff, exists_prop]
-    at this
-  choose α t hto hXt htf ind hind; choose t_inv ht_inv using hXt; choose U hxU hU using htf
+  simp only [SetCoe.exists, exists_range_iff', unionᵢ_eq_univ_iff, exists_prop] at this
+  choose α t hto hXt htf ind hind using this
+  choose t_inv ht_inv using hXt
+  choose U hxU hU using htf
   -- Send each `i` to the union of `t a` over `a ∈ ind ⁻¹' {i}`
-  refine' ⟨fun i => ⋃ (a : α) (ha : ind a = i), t a, _, _, _, _⟩
-  · exact fun a => isOpen_unionᵢ fun a => isOpen_unionᵢ fun ha => hto a
-  · simp only [eq_univ_iff_forall, mem_Union]
+  refine' ⟨fun i => ⋃ (a : α) (_ha : ind a = i), t a, _, _, _, _⟩
+  · exact fun a => isOpen_unionᵢ fun a => isOpen_unionᵢ fun _ => hto a
+  · simp only [eq_univ_iff_forall, mem_unionᵢ]
     exact fun x => ⟨ind (t_inv x), _, rfl, ht_inv _⟩
-  · refine' fun x => ⟨U x, hxU x, ((hU x).image ind).Subset _⟩
-    simp only [subset_def, mem_Union, mem_set_of_eq, Set.Nonempty, mem_inter_iff]
+  · refine' fun x => ⟨U x, hxU x, ((hU x).image ind).subset _⟩
+    simp only [subset_def, mem_unionᵢ, mem_setOf_eq, Set.Nonempty, mem_inter_iff]
     rintro i ⟨y, ⟨a, rfl, hya⟩, hyU⟩
     exact mem_image_of_mem _ ⟨y, hya, hyU⟩
-  · simp only [subset_def, mem_Union]
+  · simp only [subset_def, mem_unionᵢ]
     rintro i x ⟨a, rfl, hxa⟩
     exact hind _ hxa
 #align precise_refinement precise_refinement
