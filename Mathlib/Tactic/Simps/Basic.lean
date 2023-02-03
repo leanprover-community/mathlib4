@@ -568,10 +568,9 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
   pure projs
 
 /-- Auxilliary function for `getRawProjections`.
-TODO: we can use something similar to `getStructureFieldsFlattened` to simplify the notation for
-this
-Find custom projections declared by the user. -/
-def findCustomProjection (str : Name) (proj : ParsedProjectionData)
+  Generates the default projection, and looks for a custom projection declared by the user,
+  and replaces the default projection with the custom one, if it can find it. -/
+def findProjection (str : Name) (proj : ParsedProjectionData)
   (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' <|
@@ -721,7 +720,7 @@ def getRawProjections (str : Name) (traceIfExists : Bool := false)
   let rawUnivs := rawLevels.map Level.param
   let projs ← mkParsedProjectionData str
   let projs ← applyProjectionRules projs rules
-  let projs ← projs.mapM fun proj ↦ findCustomProjection str proj rawUnivs
+  let projs ← projs.mapM fun proj ↦ findProjection str proj rawUnivs
   -- todo: find and use coercions to functions here
   -- let projs ← findAutomaticProjections str projs strDecl.type rawUnivs
   let projs := projs.map (·.toProjectionData)
