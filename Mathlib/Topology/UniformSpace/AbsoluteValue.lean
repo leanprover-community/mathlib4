@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.AbsoluteValue
-import Mathbin.Topology.UniformSpace.Basic
+import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Uniform structure induced by an absolute value
@@ -85,8 +85,7 @@ def uniformSpace : UniformSpace R :=
 #align is_absolute_value.uniform_space IsAbsoluteValue.uniformSpace
 
 theorem mem_uniformity {s : Set (R × R)} :
-    s ∈ (uniformSpaceCore abv).uniformity ↔ ∃ ε > 0, ∀ {a b : R}, abv (b - a) < ε → (a, b) ∈ s :=
-  by
+    s ∈ (uniformSpaceCore abv).uniformity ↔ ∃ ε > 0, ∀ {a b : R}, abv (b - a) < ε → (a, b) ∈ s := by
   suffices (s ∈ ⨅ ε : { ε : 𝕜 // ε > 0 }, 𝓟 { p : R × R | abv (p.2 - p.1) < ε.val }) ↔ _
     by
     rw [infᵢ_subtype] at this
