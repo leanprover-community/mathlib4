@@ -587,11 +587,26 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
   · refine' (card_le_of_subset h).trans (card_image_le.trans _)
     rw [card_powerset, card_erase_of_mem ht]
   rw [subset_iff]
+  simp only [mem_filter, mem_insert, mem_image, mem_powerset]
   simp only [mem_erase, mem_sdiff, mem_powerset, mem_image, exists_prop, mem_filter, and_assoc,
-    Finset.Nonempty, exists_imp, and_imp, mem_atomise, forall_apply_eq_imp_iff₂]
+     Finset.Nonempty, exists_imp, and_imp, mem_atomise, forall_apply_eq_imp_iff₂]
   rintro P' i hi P PQ rfl hy₂ j hj
   refine' ⟨P.erase t, erase_subset_erase _ PQ, _⟩
-  simp only [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi), filter_congr_decidable]
+  simp only [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi)]
+  refine'  filter_congr _
+  intros a ha
+  simp only [mem_erase, ne_eq]
+  simp only [or_and_left, ht, true_and, eq_iff_iff]
+  refine' forall_congr' _
+  intros a1
+  have : ((a1 = t ∨ ¬a1 = t) ∧ (a1 = t ∨ a1 ∈ P) ↔ a ∈ a1) = (a1 ∈ P ↔ a ∈ a1) := by
+    by_cases (a1 = t)
+    · simp [h]
+      have hP : t ∈ P := by
+        sorry
+      simp only [hP, true_iff]
+    · simp [h]
+  rw [this]
 #align finpartition.card_filter_atomise_le_two_pow Finpartition.card_filter_atomise_le_two_pow
 
 end Atomise
