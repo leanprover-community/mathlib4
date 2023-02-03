@@ -13,7 +13,6 @@ import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
 import Std.Util.LibraryNote
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
-import Qq.MetaM
 
 /-!
 # Simps attribute
@@ -448,10 +447,10 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
   m! "{pref} {str}:\n{toPrint}"
 
 open private mkBaseProjections from Lean.Elab.App
-open Qq
 
 /-- Elaborate the projection notation `$e.$projName` where `e` is an expression of a structure
-application `strName`. `e` might rely on universe variables `univs`. -/
+application `strName`. `e` might rely on universe variables `univs`.
+Note: `$e.$projName` is not applied to further (implicit) arguments. -/
 def elabProjectionNotation (univs : List Name) (e : Expr) (strName projName : Name) :
   MetaM Expr :=
 TermElabM.run' (s := {levelNames := univs}) <| do
@@ -470,8 +469,9 @@ TermElabM.run' (s := {levelNames := univs}) <| do
      {indentExpr e}"
   return e
 
-
-/-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`. -/
+/-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
+Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1]`, because the first
+projection of `MulEquiv` is `toEquiv` and the second projection of `Equiv` is `invFun`. -/
 def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
   let env ← getEnv
   let .some baseStr := findField? env strName projName |
@@ -537,14 +537,6 @@ def mkParsedProjectionData (str : Name) : CoreM (Array ParsedProjectionData) := 
     throwError "Declaration {str} is not a structure."
   return projs.map
     fun nm ↦ ⟨(nm, .missing), (nm, .missing), true, false, none, #[], false⟩
-
-def applyDefaultRules (str : Name) (projs : Array ParsedProjectionData) :
-  CoreM (Array ParsedProjectionData) := do
-  let env ← getEnv
-  let l := getStructureFieldsFlattened env str false
-  logInfo m!"{l}"
-  -- todo
-  return projs
 
 /-- Execute the projection renamings (and turning off projections) as specified by `rules`. -/
 def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array ProjectionRule) :
