@@ -18,7 +18,7 @@ import Mathlib.Topology.UniformSpace.Separation
 
 noncomputable section
 
-open uniformity Topology
+open Uniformity Topology
 
 section
 
@@ -28,7 +28,8 @@ universe u
 
 variable {ι : Type _} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)]
 
-include U
+-- porting note: no include
+--include U
 
 instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
   UniformSpace.ofCoreEq (⨅ i, UniformSpace.comap (fun a : ∀ i, α i => a i) (U i)).toCore
@@ -44,7 +45,7 @@ variable {α}
 
 theorem uniformContinuous_pi {β : Type _} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
-  simp only [UniformContinuous, Pi.uniformity, tendsto_infi, tendsto_comap_iff]
+  simp only [UniformContinuous, Pi.uniformity, tendsto_infᵢ, tendsto_comap_iff, Function.comp]
 #align uniform_continuous_pi uniformContinuous_pi
 
 variable (α)
@@ -71,7 +72,8 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
 instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α i) :=
   separated_def.2 fun x y H => by
     ext i
-    apply eq_of_separated_of_uniform_continuous (Pi.uniformContinuous_proj α i)
+    -- porting note: should be `eq_ofSeparated_ofUniformContinuous`?
+    apply eq_of_separated_of_uniformContinuous (Pi.uniformContinuous_proj α i)
     apply H
 #align Pi.separated Pi.separated
 
