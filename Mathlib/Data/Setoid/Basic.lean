@@ -346,6 +346,8 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 #align setoid.quotient_ker_equiv_of_right_inverse Setoid.quotientKerEquivOfRightInverse
+#align setoid.quotient_ker_equiv_of_right_inverse_symm_apply Setoid.quotientKerEquivOfRightInverse_symm_apply
+#align setoid.quotient_ker_equiv_of_right_inverse_apply Setoid.quotientKerEquivOfRightInverse_apply
 
 /-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
 
@@ -462,7 +464,7 @@ theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) �
     forall_const]
   refine' (surjective_quotient_mk _).forall.trans (forall_congr' fun a => _)
   refine' (surjective_quotient_mk _).forall.trans (forall_congr' fun b => _)
-  simp_rw [←Quotient.mk''_eq_mk, Prop.top_eq_true, true_implies, Quotient.eq']
+  simp_rw [←Quotient.mk''_eq_mk, Prop.top_eq_true, true_implies, Quotient.eq'']
   rfl
 #align quotient.subsingleton_iff Quotient.subsingleton_iff
 

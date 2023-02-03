@@ -22,6 +22,13 @@ this provides an example of an adjunction is proved in `Algebra.Category.MonCat.
 Another result says that adjoining to a group an element `zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
 `Algebra.GroupWithZero.Basic`)
+
+## Porting notes
+
+In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
+`with_one` and `with_zero` are marked as `irreducible` at the end of `algebra.group.with_one.defs`,
+so proofs that use `option α` instead of `with_one α` no longer typecheck. In Lean 4, both types are
+plain `def`s, so we don't need these `id`s.
 -/
 
 
@@ -59,16 +66,19 @@ instance monad : Monad WithOne :=
 instance one : One (WithOne α) :=
   ⟨none⟩
 #align with_one.has_one WithOne.one
+#align with_zero.has_zero WithZero.zero
 
 @[to_additive]
 instance mul [Mul α] : Mul (WithOne α) :=
   ⟨Option.liftOrGet (· * ·)⟩
 #align with_one.has_mul WithOne.mul
+#align with_zero.has_add WithZero.add
 
 @[to_additive]
 instance inv [Inv α] : Inv (WithOne α) :=
   ⟨fun a => Option.map Inv.inv a⟩
 #align with_one.has_inv WithOne.inv
+#align with_zero.has_neg WithZero.neg
 
 @[to_additive]
 instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
@@ -189,8 +199,8 @@ attribute [elab_as_elim] WithZero.cases_on
 instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
-  one_mul := show ∀ x : WithOne α, 1 * x = x from (Option.liftOrGet_isLeftId _).1
-  mul_one := show ∀ x : WithOne α, x * 1 = x from (Option.liftOrGet_isRightId _).1
+  one_mul := (Option.liftOrGet_isLeftId _).1
+  mul_one := (Option.liftOrGet_isRightId _).1
 
 @[to_additive]
 instance monoid [Semigroup α] : Monoid (WithOne α) :=
@@ -226,57 +236,30 @@ theorem coe_one [One α] : ((1 : α) : WithZero α) = 1 :=
 
 instance mulZeroClass [Mul α] : MulZeroClass (WithZero α) :=
   { WithZero.zero with
-    mul := fun o₁ o₂ => o₁.bind fun a => Option.map (fun b => a * b) o₂,
-    zero_mul := fun a => rfl,
-    mul_zero := fun a => by cases a <;> rfl }
+    mul := Option.map₂ (· * ·),
+    zero_mul := Option.map₂_none_left (· * ·),
+    mul_zero := Option.map₂_none_right (· * ·) }
 
 @[simp, norm_cast]
 theorem coe_mul {α : Type u} [Mul α] {a b : α} : ((a * b : α) : WithZero α) = a * b :=
   rfl
 #align with_zero.coe_mul WithZero.coe_mul
 
--- porting note: this used to be `@[simp]` in Lean 3 but in Lean 4 `simp` can already
--- prove it because we've just proved we're in MulZeroClass.
-theorem zero_mul {α : Type u} [Mul α] (a : WithZero α) : 0 * a = 0 :=
-  rfl
-#align with_zero.zero_mul WithZero.zero_mul
-
--- porting note: in Lean 3 this was `@[simp]` but in Lean 4 `simp` can already prove it.
-theorem mul_zero {α : Type u} [Mul α] (a : WithZero α) : a * 0 = 0 := by cases a <;> rfl
-#align with_zero.mul_zero WithZero.mul_zero
-
 instance noZeroDivisors [Mul α] : NoZeroDivisors (WithZero α) :=
-  ⟨by
-    rintro (a | a) (b | b) h
-    exacts[Or.inl rfl, Or.inl rfl, Or.inr rfl, Option.noConfusion h]⟩
+  ⟨Option.map₂_eq_none_iff.1⟩
 
 instance semigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) :=
   { WithZero.mulZeroClass with
-    mul_assoc := fun a b c =>
-      match a, b, c with
-      | none, _, _ => rfl
-      | some _, none, _ => rfl
-      | some _, some _, none => rfl
-      | some a, some b, some c => congr_arg some (mul_assoc a b c) }
+    mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc }
 
 instance commSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) :=
   { WithZero.semigroupWithZero with
-    mul_comm := fun a b =>
-      match a, b with
-      | none, _ => (mul_zero _).symm
-      | some _, none => rfl
-      | some a, some b => congr_arg some (mul_comm a b) }
+    mul_comm := fun _ _ => Option.map₂_comm mul_comm }
 
 instance mulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) :=
   { WithZero.mulZeroClass, WithZero.one with
-    one_mul := fun a =>
-      match a with
-      | none => rfl
-      | some a => congr_arg some <| one_mul a,
-    mul_one := fun a =>
-      match a with
-      | none => rfl
-      | some a => congr_arg some <| mul_one a }
+    one_mul := Option.map₂_left_identity one_mul,
+    mul_one := Option.map₂_right_identity mul_one }
 
 instance pow [One α] [Pow α ℕ] : Pow (WithZero α) ℕ :=
   ⟨fun x n =>
@@ -330,7 +313,7 @@ instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) :=
   { WithZero.one, WithZero.inv with inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp }
 
 instance div [Div α] : Div (WithZero α) :=
-  ⟨fun o₁ o₂ => o₁.bind fun a => Option.map (fun b => a / b) o₂⟩
+  ⟨Option.map₂ (· / ·)⟩
 
 @[norm_cast]
 theorem coe_div [Div α] (a b : α) : ↑(a / b : α) = (a / b : WithZero α) :=
