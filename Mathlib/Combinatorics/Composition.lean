@@ -270,14 +270,12 @@ point of each block, and adding a virtual point at the right of the last block. 
 def toCompositionAsSet : CompositionAsSet n
     where
   boundaries := c.boundaries
-  zero_mem :=
-    by
+  zero_mem := by
     simp only [boundaries, Finset.mem_univ, exists_prop_of_true, Finset.mem_map]
-    exact ⟨0, rfl⟩
-  getLast_mem :=
-    by
+    exact ⟨0, And.intro True.intro rfl⟩
+  getLast_mem := by
     simp only [boundaries, Finset.mem_univ, exists_prop_of_true, Finset.mem_map]
-    exact ⟨Fin.last c.length, c.boundary_last⟩
+    exact ⟨Fin.last c.length, And.intro True.intro c.boundary_last⟩
 #align composition.to_composition_as_set Composition.toCompositionAsSet
 
 /-- The canonical increasing bijection between `fin (c.length + 1)` and `c.boundaries` is
