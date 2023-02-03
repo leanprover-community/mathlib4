@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.Cauchy
-import Mathbin.Topology.UniformSpace.Separation
+import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.UniformSpace.Separation
 
 /-!
 # Indexed product of uniform spaces
