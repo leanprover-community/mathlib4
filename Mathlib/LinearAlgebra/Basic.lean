@@ -2601,7 +2601,7 @@ theorem funLeft_apply (f : m → n) (g : n → M) (i : m) : funLeft R M f g i = 
 #align linear_map.fun_left_apply LinearMap.funLeft_apply
 
 @[simp]
-theorem funLeft_id (g : n → M) : funLeft R M id g = g :=
+theorem funLeft_id (g : n → M) : funLeft R M _root_.id g = g :=
   rfl
 #align linear_map.fun_left_id LinearMap.funLeft_id
 
@@ -2614,37 +2614,37 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     Surjective (funLeft R M f) := by
   classical
     intro g
-    refine' ⟨fun x => if h : ∃ y, f y = x then g h.some else 0, _⟩
+    refine' ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, _⟩
     · ext
-      dsimp only [fun_left_apply]
+      dsimp only [funLeft_apply]
       split_ifs with w
       · congr
-        exact hf w.some_spec
-      · simpa only [not_true, exists_apply_eq_apply] using w
+        exact hf w.choose_spec
+      · simp only [not_true, exists_apply_eq_apply] at w
 #align linear_map.fun_left_surjective_of_injective LinearMap.funLeft_surjective_of_injective
 
 theorem funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :
     Injective (funLeft R M f) := by
-  obtain ⟨g, hg⟩ := hf.has_right_inverse
-  suffices left_inverse (fun_left R M g) (fun_left R M f) by exact this.injective
+  obtain ⟨g, hg⟩ := hf.hasRightInverse
+  suffices LeftInverse (funLeft R M g) (funLeft R M f) by exact this.injective
   intro x
-  rw [← LinearMap.comp_apply, ← fun_left_comp, hg.id, fun_left_id]
+  rw [← LinearMap.comp_apply, ← funLeft_comp, hg.id, funLeft_id]
 #align linear_map.fun_left_injective_of_surjective LinearMap.funLeft_injective_of_surjective
 
 end LinearMap
 
 namespace LinearEquiv
 
-open _Root_.LinearMap
+open _root_.LinearMap
 
 /-- Given an `R`-module `M` and an equivalence `m ≃ n` between arbitrary types,
 construct a linear equivalence `(n → M) ≃ₗ[R] (m → M)` -/
 def funCongrLeft (e : m ≃ n) : (n → M) ≃ₗ[R] m → M :=
   LinearEquiv.ofLinear (funLeft R M e) (funLeft R M e.symm)
     (LinearMap.ext fun x =>
-      funext fun i => by rw [id_apply, ← fun_left_comp, Equiv.symm_comp_self, fun_left_id])
+      funext fun i => by rw [id_apply, ← funLeft_comp, Equiv.symm_comp_self, LinearMap.funLeft_id])
     (LinearMap.ext fun x =>
-      funext fun i => by rw [id_apply, ← fun_left_comp, Equiv.self_comp_symm, fun_left_id])
+      funext fun i => by rw [id_apply, ← funLeft_comp, Equiv.self_comp_symm, LinearMap.funLeft_id])
 #align linear_equiv.fun_congr_left LinearEquiv.funCongrLeft
 
 @[simp]
