@@ -34,8 +34,8 @@ inductive RMode
 @[nolint docBlame]
 class FloatCfg where
   (prec emax : ℕ)
-  PrecPos : 0 < prec
-  PrecMax : prec ≤ emax
+  precPos : 0 < prec
+  precMax : prec ≤ emax
 attribute [nolint docBlame] FloatCfg.prec FloatCfg.emax FloatCfg.PrecPos FloatCfg.PrecMax
 #align fp.float_cfg FP.FloatCfg
 
