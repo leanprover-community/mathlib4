@@ -15,11 +15,11 @@ import Mathlib.Algebra.Module.Equiv
 
 The general linear group is defined to be the group of invertible linear maps from `M` to itself.
 
-See also `matrix.general_linear_group`
+See also `Matrix.GeneralLinearGroup`
 
 ## Main definitions
 
-* `linear_map.general_linear_group`
+* `LinearMap.GeneralLinearGroup`
 
 -/
 
@@ -29,8 +29,6 @@ variable (R M : Type _)
 namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-
-variable (R M)
 
 /-- The group of invertible linear maps from `M` to itself -/
 @[reducible]
@@ -42,58 +40,50 @@ namespace GeneralLinearGroup
 
 variable {R M}
 
-instance : CoeFun (GeneralLinearGroup R M) fun _ => M → M := by infer_instance
+-- Porting note: This is not necessary anymore
+-- instance : CoeFun (GeneralLinearGroup R M) fun _ ↦ M → M := by infer_instance
 
 /-- An invertible linear map `f` determines an equivalence from `M` to itself. -/
 def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
   { f.val with
     invFun := f.inv.toFun
-    left_inv := fun m => show (f.inv * f.val) m = m by erw [f.inv_val] <;> simp
-    right_inv := fun m => show (f.val * f.inv) m = m by erw [f.val_inv] <;> simp }
+    left_inv := fun m ↦ show (f.inv * f.val) m = m by erw [f.inv_val] ; simp
+    right_inv := fun m ↦ show (f.val * f.inv) m = m by erw [f.val_inv] ; simp }
 #align linear_map.general_linear_group.to_linear_equiv LinearMap.GeneralLinearGroup.toLinearEquiv
 
 /-- An equivalence from `M` to itself determines an invertible linear map. -/
-def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M
-    where
+def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M where
   val := f
   inv := (f.symm : M →ₗ[R] M)
-  val_inv := LinearMap.ext fun _ => f.apply_symm_apply _
-  inv_val := LinearMap.ext fun _ => f.symm_apply_apply _
+  val_inv := LinearMap.ext fun _ ↦ f.apply_symm_apply _
+  inv_val := LinearMap.ext fun _ ↦ f.symm_apply_apply _
 #align linear_map.general_linear_group.of_linear_equiv LinearMap.GeneralLinearGroup.ofLinearEquiv
 
 variable (R M)
 
 /-- The general linear group on `R` and `M` is multiplicatively equivalent to the type of linear
 equivalences between `M` and itself. -/
-def generalLinearEquiv : GeneralLinearGroup R M ≃* M ≃ₗ[R] M
-    where
+def generalLinearEquiv : GeneralLinearGroup R M ≃* M ≃ₗ[R] M where
   toFun := toLinearEquiv
   invFun := ofLinearEquiv
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
-  map_mul' x y := by
-    ext
-    rfl
-#align linear_map.general_linear_group.general_linear_equiv LinearMap.GeneralLinearGroup.generalLinearEquiv
+  left_inv f := by ext ; rfl
+  right_inv f := by ext ; rfl
+  map_mul' x y := by ext ; rfl
+#align linear_map.general_linear_group.general_linear_equiv
+  LinearMap.GeneralLinearGroup.generalLinearEquiv
 
 @[simp]
 theorem generalLinearEquiv_to_linearMap (f : GeneralLinearGroup R M) :
-    (generalLinearEquiv R M f : M →ₗ[R] M) = f := by
-  ext
-  rfl
-#align linear_map.general_linear_group.general_linear_equiv_to_linear_map LinearMap.GeneralLinearGroup.generalLinearEquiv_to_linearMap
+    (generalLinearEquiv R M f : M →ₗ[R] M) = f := by ext ; rfl
+#align linear_map.general_linear_group.general_linear_equiv_to_linear_map
+  LinearMap.GeneralLinearGroup.generalLinearEquiv_to_linearMap
 
 @[simp]
 theorem coeFn_generalLinearEquiv (f : GeneralLinearGroup R M) :
-    ⇑(generalLinearEquiv R M f) = (f : M → M) :=
-  rfl
-#align linear_map.general_linear_group.coe_fn_general_linear_equiv LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv
+    (generalLinearEquiv R M f) = (f : M → M) := rfl
+#align linear_map.general_linear_group.coe_fn_general_linear_equiv
+  LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv
 
 end GeneralLinearGroup
 
 end LinearMap
-
