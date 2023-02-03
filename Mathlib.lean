@@ -971,6 +971,7 @@ import Mathlib.Topology.LocalExtr
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
 import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Separation
 import Mathlib.Topology.SubsetProperties
