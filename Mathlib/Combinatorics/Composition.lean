@@ -663,7 +663,10 @@ theorem splitWrtCompositionAux_cons (l : List α) (n ns) :
 #align list.split_wrt_composition_aux_cons List.splitWrtCompositionAux_cons
 
 theorem length_splitWrtCompositionAux (l : List α) (ns) :
-    length (l.splitWrtCompositionAux ns) = ns.length := by induction ns generalizing l <;> simp [*]
+    length (l.splitWrtCompositionAux ns) = ns.length := by
+    induction ns generalizing l
+    . simp [splitWrtCompositionAux, *]
+    . simp [*]
 #align list.length_split_wrt_composition_aux List.length_splitWrtCompositionAux
 
 /-- When one splits a list along a composition `c`, the number of sublists thus created is
