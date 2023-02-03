@@ -54,8 +54,10 @@ end Multiset
 /-- `Finmap β` is the type of finite maps over a multiset. It is effectively
   a quotient of `AList β` by permutation of the underlying list. -/
 structure Finmap (β : α → Type v) : Type max u v where
+  /-- The underlying `Multiset` of an `Finmap` -/
   entries : Multiset (Sigma β)
-  NodupKeys : entries.NodupKeys
+  /-- There are no duplicate keys in `entries` -/
+  nodupKeys : entries.NodupKeys
 #align finmap Finmap
 
 /-- The quotient map from `AList` to `Finmap`. -/
@@ -66,7 +68,8 @@ def AList.toFinmap (s : AList β) : Finmap β :=
 -- mathport name: to_finmap
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
-theorem AList.toFinmap_eq {s₁ s₂ : AList β} : toFinmap s₁ = toFinmap s₂ ↔ s₁.entries ~ s₂.entries := by
+theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
+    toFinmap s₁ = toFinmap s₂ ↔ s₁.entries ~ s₂.entries := by
   cases s₁
   cases s₂
   simp [AList.toFinmap]
@@ -99,7 +102,7 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
       (fun (l : List (Sigma β)) => (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ))
       (fun l₁ l₂ p => Part.ext' (perm_nodupKeys p) _) : Part γ).get _
   · exact fun h1 h2 => H _ _ p
-  · have := s.NodupKeys
+  · have := s.nodupKeys
     -- Porting note: `revert` required because `rcases` behaves differently
     revert this
     rcases s.entries with ⟨l⟩
@@ -373,7 +376,8 @@ def erase (a : α) (s : Finmap β) : Finmap β :=
 #align finmap.erase Finmap.erase
 
 @[simp]
-theorem erase_toFinmap (a : α) (s : AList β) : erase a ⟦s⟧ = AList.toFinmap (s.erase a) := by simp [erase]
+theorem erase_toFinmap (a : α) (s : AList β) : erase a ⟦s⟧ = AList.toFinmap (s.erase a) := by
+  simp [erase]
 #align finmap.erase_to_finmap Finmap.erase_toFinmap
 
 @[simp]
@@ -427,7 +431,8 @@ instance : SDiff (Finmap β) :=
 /-- Insert a key-value pair into a finite map, replacing any existing pair with
   the same key. -/
 def insert (a : α) (b : β a) (s : Finmap β) : Finmap β :=
-  (liftOn s fun t => AList.toFinmap (AList.insert a b t)) fun _ _ p => toFinmap_eq.2 <| perm_insert p
+  (liftOn s fun t => AList.toFinmap (AList.insert a b t)) fun _ _ p =>
+    toFinmap_eq.2 <| perm_insert p
 #align finmap.insert Finmap.insert
 
 @[simp]
@@ -555,7 +560,7 @@ theorem lookup_union_left_of_not_in {a} {s₁ s₂ : Finmap β} (h : a ∉ s₂)
   · rw [lookup_union_right h', lookup_eq_none.mpr h, lookup_eq_none.mpr h']
 #align finmap.lookup_union_left_of_not_in Finmap.lookup_union_left_of_not_in
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : Finmap β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   induction_on₂ s₁ s₂ fun _ _ => AList.mem_lookup_union
