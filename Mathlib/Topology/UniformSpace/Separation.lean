@@ -398,13 +398,12 @@ theorem uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
 #align uniform_space.separation_quotient.uniform_continuous_map UniformSpace.SeparationQuotient.uniformContinuous_map
 
 theorem map_unique {f : α → β} (hf : UniformContinuous f)
-    {g : SeparationQuotient α → SeparationQuotient β} (comm : Quotient.mk _ ∘ f = g ∘ Quotient.mk _) :
-    map f = g := by
+    {g : SeparationQuotient α → SeparationQuotient β}
+    (comm : Quotient.mk _ ∘ f = g ∘ Quotient.mk _) : map f = g := by
   ext ⟨a⟩
   calc
     map f ⟦a⟧ = ⟦f a⟧ := map_mk hf a
     _ = g ⟦a⟧ := congr_fun comm a
-      
 #align uniform_space.separation_quotient.map_unique UniformSpace.SeparationQuotient.map_unique
 
 theorem map_id : map (@id α) = id :=
