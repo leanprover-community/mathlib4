@@ -41,9 +41,6 @@ attribute [nolint docBlame] FloatCfg.prec FloatCfg.emax FloatCfg.prec_pos FloatC
 
 variable [C : FloatCfg]
 
--- Porting note: no longer needed
--- include C
-
 @[nolint docBlame]
 def prec :=
   C.prec
