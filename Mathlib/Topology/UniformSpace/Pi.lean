@@ -28,8 +28,6 @@ universe u
 
 variable {ι : Type _} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)]
 
--- porting note: no include
---include U
 
 instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
   UniformSpace.ofCoreEq (⨅ i, UniformSpace.comap (fun a : ∀ i, α i => a i) (U i)).toCore
