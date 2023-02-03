@@ -615,8 +615,8 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) : Tot
 
 In this section we prove that a uniform space is complete provided that it is sequentially complete
 (i.e., any Cauchy sequence converges) and its uniformity filter admits a countable generating set.
-In particular, this applies to (e)metric spaces, see the files `topology/metric_space/emetric_space`
-and `topology/metric_space/basic`.
+In particular, this applies to (e)metric spaces, see the files `Topology/MetricSpace/EmetricSpace`
+and `Topology/MetricSpace/Basic`.
 
 More precisely, we assume that there is a sequence of entourages `U_n` such that any other
 entourage includes one of `U_n`. Then any Cauchy filter `f` generates a decreasing sequence of
@@ -664,8 +664,8 @@ theorem setSeq_prod_subset {N m n} (hm : N ≤ m) (hn : N ≤ n) :
   exact setSeq_mono hf U_mem hn hp.2
 #align sequentially_complete.set_seq_prod_subset SequentiallyComplete.setSeq_prod_subset
 
-/-- A sequence of points such that `seq n ∈ set_seq n`. Here `set_seq` is an antitone
-sequence of sets `set_seq n ∈ f` with diameters controlled by a given sequence
+/-- A sequence of points such that `seq n ∈ setSeq n`. Here `setSeq` is an antitone
+sequence of sets `setSeq n ∈ f` with diameters controlled by a given sequence
 of entourages. -/
 def seq (n : ℕ) : α :=
   choose <| hf.1.nonempty_of_mem (setSeq_mem hf U_mem n)
@@ -679,8 +679,6 @@ theorem seq_pair_mem ⦃N m n : ℕ⦄ (hm : N ≤ m) (hn : N ≤ n) :
     (seq hf U_mem m, seq hf U_mem n) ∈ U N :=
   setSeq_prod_subset hf U_mem hm hn ⟨seq_mem hf U_mem m, seq_mem hf U_mem n⟩
 #align sequentially_complete.seq_pair_mem SequentiallyComplete.seq_pair_mem
-
--- include U_le -- Porting note: includes no longer needed
 
 theorem seq_is_cauchySeq : CauchySeq <| seq hf U_mem :=
   cauchySeq_of_controlled U U_le <| seq_pair_mem hf U_mem
