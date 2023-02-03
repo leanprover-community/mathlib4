@@ -74,7 +74,7 @@ def generalLinearEquiv : GeneralLinearGroup R M ≃* M ≃ₗ[R] M where
 
 @[simp]
 theorem generalLinearEquiv_to_linearMap (f : GeneralLinearGroup R M) :
-    (generalLinearEquiv R M f : M →ₗ[R] M) = f := by ext ; rfl
+    (generalLinearEquiv R M f : M →ₗ[R] M) = f := by ext; rfl
 #align linear_map.general_linear_group.general_linear_equiv_to_linear_map
   LinearMap.GeneralLinearGroup.generalLinearEquiv_to_linearMap
 
