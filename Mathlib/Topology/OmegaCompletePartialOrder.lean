@@ -8,8 +8,8 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Basic
-import Mathbin.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Scott Topological Spaces
@@ -96,8 +96,7 @@ def notBelow :=
   { x | ¬x ≤ y }
 #align not_below notBelow
 
-theorem notBelow_isOpen : IsOpen (notBelow y) :=
-  by
+theorem notBelow_isOpen : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := by
     intro x y' h
     simp only [notBelow, setOf, le_Prop_eq]
@@ -118,8 +117,7 @@ open Scott hiding IsOpen
 
 open OmegaCompletePartialOrder
 
-theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) :=
-  by
+theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
   constructor
   · apply le_ωSup
   · apply ωSup_le
@@ -128,8 +126,7 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:565:11: unsupported: specialize non-hyp -/
 theorem scott_continuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
-    OmegaCompletePartialOrder.Continuous' f :=
-  by
+    OmegaCompletePartialOrder.Continuous' f := by
   simp only [continuous_def, (· ⁻¹' ·)] at hf
   have h : Monotone f := by
     intro x y h
@@ -157,8 +154,7 @@ theorem scott_continuous_of_continuous {α β} [OmegaCompletePartialOrder α]
 
 theorem continuous_of_scott_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
-    (hf : OmegaCompletePartialOrder.Continuous' f) : Continuous f :=
-  by
+    (hf : OmegaCompletePartialOrder.Continuous' f) : Continuous f := by
   rw [continuous_def]
   intro s hs
   change continuous' (s ∘ f)
