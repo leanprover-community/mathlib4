@@ -569,12 +569,12 @@ theorem card_atomise_le : (atomise s F).Parts.card ≤ 2 ^ F.card :=
 #align finpartition.card_atomise_le Finpartition.card_atomise_le
 
 theorem bunionᵢ_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
-    ((atomise s F).Parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty).bUnion id = t := by
+    ((atomise s F).Parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty).bunionᵢ id = t := by
   ext a
-  refine' mem_bunion₁.trans ⟨fun ⟨u, hu, ha⟩ ↦ (mem_filter.1 hu).2.1 ha, fun ha ↦ _⟩
+  refine' mem_bunionᵢ.trans ⟨fun ⟨u, hu, ha⟩ ↦ (mem_filter.1 hu).2.1 ha, fun ha ↦ _⟩
   obtain ⟨u, hu, hau⟩ := (atomise s F).exists_mem (hts ha)
   refine' ⟨u, mem_filter.2 ⟨hu, fun b hb ↦ _, _, hau⟩, hau⟩
-  obtain ⟨Q, hQ, rfl⟩ := (mem_atomise.1 hu).2
+  obtain ⟨Q, _hQ, rfl⟩ := (mem_atomise.1 hu).2
   rw [mem_filter] at hau hb
   rwa [← hb.2 _ ht, hau.2 _ ht]
 #align finpartition.bUnion_filter_atomise Finpartition.bunionᵢ_filter_atomise
