@@ -880,7 +880,7 @@ theorem boundary_zero : (c.boundary ⟨0, c.card_boundaries_pos⟩ : Fin (n + 1)
 @[simp]
 theorem boundary_length : c.boundary ⟨c.length, c.length_lt_card_boundaries⟩ = Fin.last n := by
   convert Finset.orderEmbOfFin_last rfl c.card_boundaries_pos
-  exact le_antisymm (Finset.le_max' _ _ c.last_mem) (Fin.le_last _)
+  exact le_antisymm (Finset.le_max' _ _ c.getLast_mem) (Fin.le_last _)
 #align composition_as_set.boundary_length CompositionAsSet.boundary_length
 
 /-- Size of the `i`-th block in a `composition_as_set`, seen as a function on `fin c.length`. -/
