@@ -23,14 +23,11 @@ namespace SetLike
 
 /-- TODO: It should be possible to obtain a computable version of this for most
 set_like objects. If we add those instances, we should remove this one. -/
---@[nolint dangerous_instance, instance]
-@[instance, nolint dangerousInstance]
-noncomputable instance (priority := 100) {A B : Type _} [Fintype B] [SetLike A B] : Fintype A :=
+noncomputable instance (priority := 100) {A B : Type _} [SetLike A B] [Fintype B] : Fintype A :=
   Fintype.ofInjective SetLike.coe SetLike.coe_injective
 
 -- See note [lower instance priority]
-@[nolint dangerousInstance]
-instance (priority := 100) {A B : Type _} [Finite B] [SetLike A B] : Finite A :=
+instance (priority := 100) {A B : Type _} [SetLike A B] [Finite B] : Finite A :=
   Finite.of_injective SetLike.coe SetLike.coe_injective
 
 end SetLike
