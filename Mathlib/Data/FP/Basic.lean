@@ -36,7 +36,7 @@ class FloatCfg where
   (prec emax : ℕ)
   precPos : 0 < prec
   precMax : prec ≤ emax
-attribute [nolint docBlame] FloatCfg.prec FloatCfg.emax FloatCfg.precPos FloatCfg.precMac
+attribute [nolint docBlame] FloatCfg.prec FloatCfg.emax FloatCfg.precPos FloatCfg.precMax
 #align fp.float_cfg FP.FloatCfg
 
 variable [C : FloatCfg]
@@ -100,7 +100,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       ring_nf
       rw [mul_comm]
       assumption
-    le_trans C.precMac (Nat.le_mul_of_pos_left (by decide)),
+    le_trans C.precMax (Nat.le_mul_of_pos_left (by decide)),
     by (rw [max_eq_right]; simp [sub_eq_add_neg])⟩
 #align fp.float.zero.valid FP.Float.Zero.valid
 
