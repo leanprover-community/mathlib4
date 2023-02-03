@@ -78,14 +78,12 @@ def uniformSpace : UniformSpace R :=
   UniformSpace.ofCore (uniformSpaceCore abv)
 #align is_absolute_value.uniform_space IsAbsoluteValue.uniformSpace
 
--- Porting note: new instance to help `failed to synthesize Nonempty { ε // ε > 0 }`
-/-- local instance helper -/
-local instance nonempty_gt_helper [LT α] [NoMaxOrder α] (a : α) : Nonempty { x // x > a } :=
-  nonempty_subtype.2 (exists_gt a)
+-- Porting note: changed `ε > 0` to `0 < ε`
+-- Porting note: because lean faied to synthesize `Nonempty { ε // ε > 0 }`, but ok with 0 < ε
 
 theorem mem_uniformity {s : Set (R × R)} :
     s ∈ (uniformSpaceCore abv).uniformity ↔ ∃ ε > 0, ∀ {a b : R}, abv (b - a) < ε → (a, b) ∈ s := by
-  suffices (s ∈ ⨅ ε : { ε : 𝕜 // ε > 0 }, 𝓟 { p : R × R | abv (p.2 - p.1) < ε.val }) ↔ _
+  suffices (s ∈ ⨅ ε : { ε : 𝕜 // 0 < ε }, 𝓟 { p : R × R | abv (p.2 - p.1) < ε.val }) ↔ _
     by
     rw [infᵢ_subtype] at this
     exact this
