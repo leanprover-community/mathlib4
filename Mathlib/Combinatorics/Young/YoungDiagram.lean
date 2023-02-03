@@ -296,8 +296,7 @@ theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔
 protected theorem exists_not_mem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
     Infinite.exists_not_mem_finset
-      (μ.cells.preimage (Prod.mk i) fun _ _ _ _ h =>
-        by
+      (μ.cells.preimage (Prod.mk i) fun _ _ _ _ h => by
         cases h
         rfl)
   rw [Finset.mem_preimage] at hj
