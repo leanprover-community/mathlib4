@@ -17,42 +17,42 @@ import Mathlib.Logic.Encodable.Basic
 /-!
 # Linear locally finite orders
 
-We prove that a `linear_order` which is a `locally_finite_order` also verifies
-* `succ_order`
-* `pred_order`
-* `is_succ_archimedean`
-* `is_pred_archimedean`
-* `countable`
+We prove that a `LinearOrder` which is a `LocallyFiniteOrder` also verifies
+* `SuccOrder`
+* `PredOrder`
+* `IsSuccArchimedean`
+* `IsPredArchimedean`
+* `Countable`
 
-Furthermore, we show that there is an `order_iso` between such an order and a subset of `ℤ`.
+Furthermore, we show that there is an `OrderIso` between such an order and a subset of `ℤ`.
 
 ## Main definitions
 
-* `to_Z i0 i`: in a linear order on which we can define predecessors and successors and which is
-  succ-archimedean, we can assign a unique integer `to_Z i0 i` to each element `i : ι` while
-  respecting the order, starting from `to_Z i0 i0 = 0`.
+* `toZ i0 i`: in a linear order on which we can define predecessors and successors and which is
+  succ-archimedean, we can assign a unique integer `toZ i0 i` to each element `i : ι` while
+  respecting the order, starting from `toZ i0 i0 = 0`.
 
 ## Main results
 
 Instances about linear locally finite orders:
-* `linear_locally_finite_order.succ_order`: a linear locally finite order has a successor function.
-* `linear_locally_finite_order.pred_order`: a linear locally finite order has a predecessor
+* `LinearLocallyFiniteOrder.SuccOrder`: a linear locally finite order has a successor function.
+* `LinearLocallyFiniteOrder.PredOrder`: a linear locally finite order has a predecessor
   function.
-* `linear_locally_finite_order.is_succ_archimedean`: a linear locally finite order is
+* `LinearLocallyFiniteOrder.isSuccArchimedean`: a linear locally finite order is
   succ-archimedean.
-* `linear_order.pred_archimedean_of_succ_archimedean`: a succ-archimedean linear order is also
+* `LinearOrder.pred_archimedean_of_succ_archimedean`: a succ-archimedean linear order is also
   pred-archimedean.
 * `countable_of_linear_succ_pred_arch` : a succ-archimedean linear order is countable.
 
-About `to_Z`:
-* `order_iso_range_to_Z_of_linear_succ_pred_arch`: `to_Z` defines an `order_iso` between `ι` and its
+About `toZ`:
+* `orderIsoRangeToZOfLinearSuccPredArch`: `toZ` defines an `OrderIso` between `ι` and its
   range.
-* `order_iso_nat_of_linear_succ_pred_arch`: if the order has a bot but no top, `to_Z` defines an
-  `order_iso` between `ι` and `ℕ`.
-* `order_iso_int_of_linear_succ_pred_arch`: if the order has neither bot nor top, `to_Z` defines an
-  `order_iso` between `ι` and `ℤ`.
-* `order_iso_range_of_linear_succ_pred_arch`: if the order has both a bot and a top, `to_Z` gives an
-  `order_iso` between `ι` and `finset.range ((to_Z ⊥ ⊤).to_nat + 1)`.
+* `orderIsoNatOfLinearSuccPredArch`: if the order has a bot but no top, `toZ` defines an
+  `OrderIso` between `ι` and `ℕ`.
+* `orderIsoIntOfLinearSuccPredArch`: if the order has neither bot nor top, `toZ` defines an
+  `OrderIso` between `ι` and `ℤ`.
+* `orderIsoRangeOfLinearSuccPredArch`: if the order has both a bot and a top, `toZ` gives an
+  `OrderIso` between `ι` and `Finset.range ((toZ ⊥ ⊤).toNat + 1)`.
 
 -/
 
@@ -189,9 +189,9 @@ variable [SuccOrder ι] [IsSuccArchimedean ι] [PredOrder ι] {i0 i : ι}
 -- For "to_Z"
 set_option linter.uppercaseLean3 false
 
-/-- `to_Z` numbers elements of `ι` according to their order, starting from `i0`. We prove in
-`order_iso_range_to_Z_of_linear_succ_pred_arch` that this defines an `order_iso` between `ι` and
-the range of `to_Z`. -/
+/-- `toZ` numbers elements of `ι` according to their order, starting from `i0`. We prove in
+`orderIsoRangeToZOfLinearSuccPredArch` that this defines an `OrderIso` between `ι` and
+the range of `toZ`. -/
 def toZ (i0 i : ι) : ℤ :=
   dite (i0 ≤ i) (fun hi ↦ Nat.find (exists_succ_iterate_of_le hi)) fun hi ↦
     -Nat.find (exists_pred_iterate_of_le (not_le.mp hi).le)
@@ -370,7 +370,7 @@ section OrderIso
 
 variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 
-/-- `to_Z` defines an `order_iso` between `ι` and its range. -/
+/-- `toZ` defines an `OrderIso` between `ι` and its range. -/
 noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
     ι ≃o Set.range (toZ hι.some) where
   toEquiv := Equiv.ofInjective _ injective_toZ
@@ -384,7 +384,7 @@ instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := 
   · exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
 #align countable_of_linear_succ_pred_arch countable_of_linear_succ_pred_arch
 
-/-- If the order has neither bot nor top, `to_Z` defines an `order_iso` between `ι` and `ℤ`. -/
+/-- If the order has neither bot nor top, `toZ` defines an `OrderIso` between `ι` and `ℤ`. -/
 noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι] [hι : Nonempty ι] :
     ι ≃o ℤ where
   toFun := toZ hι.some
@@ -408,7 +408,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
   map_rel_iff' := by intro i j ; exact toZ_le_iff i j
 #align order_iso_int_of_linear_succ_pred_arch orderIsoIntOfLinearSuccPredArch
 
-/-- If the order has a bot but no top, `to_Z` defines an `order_iso` between `ι` and `ℕ`. -/
+/-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/
 def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ where
   toFun i := (toZ ⊥ i).toNat
   invFun n := (succ^[n]) ⊥
@@ -425,8 +425,8 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
     rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 #align order_iso_nat_of_linear_succ_pred_arch orderIsoNatOfLinearSuccPredArch
 
-/-- If the order has both a bot and a top, `to_Z` gives an `order_iso` between `ι` and
-`finset.range n` for some `n`. -/
+/-- If the order has both a bot and a top, `toZ` gives an `OrderIso` between `ι` and
+`Finset.range n` for some `n`. -/
 def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
     ι ≃o Finset.range ((toZ ⊥ (⊤ : ι)).toNat + 1) where
   toFun i :=
