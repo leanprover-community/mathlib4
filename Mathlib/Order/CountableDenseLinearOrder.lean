@@ -8,8 +8,8 @@ Authors: David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Ideal
-import Mathbin.Data.Finset.Lattice
+import Mathlib.Order.Ideal
+import Mathlib.Data.Finset.Lattice
 
 /-!
 # The back and forth method and countable dense linear orders
