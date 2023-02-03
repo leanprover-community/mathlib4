@@ -420,9 +420,10 @@ def rowLens (μ : YoungDiagram) : List ℕ :=
   (List.range <| μ.colLen 0).map μ.rowLen
 #align young_diagram.row_lens YoungDiagram.rowLens
 
+-- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 @[simp]
-theorem get_rowLens {μ : YoungDiagram} {i : ℕ} {hi : i < μ.rowLens.length} :
-    μ.rowLens.nthLe i hi = μ.rowLen i := by simp only [rowLens, List.nthLe_range, List.nthLe_map']
+theorem get_rowLens {μ : YoungDiagram} {i} :
+    μ.rowLens.get i = μ.rowLen i := by simp only [rowLens, List.get_range, List.get_map]
 #align young_diagram.nth_le_row_lens YoungDiagram.get_rowLens
 
 @[simp]
@@ -465,16 +466,18 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
         (Embedding.prodMap ⟨_, Nat.succ_injective⟩ (Embedding.refl ℕ))
 #align young_diagram.cells_of_row_lens YoungDiagram.cellsOfRowLens
 
+-- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
-    c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w.nthLe c.fst h := by
+    c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w.get ⟨c.fst, h⟩  := by
   induction' w with w_hd w_tl w_ih generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
   · simp [YoungDiagram.cellsOfRowLens]
   · rcases c with ⟨⟨_, _⟩, _⟩
-    -- Porting note: `List.nthLe` required
-    · simp [List.nthLe]
-    · simpa [w_ih, -Finset.singleton_product, Nat.succ_lt_succ_iff, List.nthLe]
+    · simp
+    -- Porting note: was `simpa`
+    · simp [w_ih, -Finset.singleton_product, Nat.succ_lt_succ_iff]
 #align young_diagram.mem_cells_of_row_lens YoungDiagram.mem_cellsOfRowLens
 
+-- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 /-- Young diagram from a sorted list -/
 def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
     where
@@ -486,16 +489,17 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
     refine' ⟨hi.trans_lt h1, _⟩
     calc
       j1 ≤ j2 := hj
-      _ < w.nthLe i2 _ := h2
-      _ ≤ w.nthLe i1 _ :=
+      _ < w.get ⟨i2, _⟩  := h2
+      _ ≤ w.get ⟨i1, _⟩ :=
       by
         obtain rfl | h := eq_or_lt_of_le hi
         · rfl
-        · apply List.pairwise_iff_nthLe.mp hw _ _ _ h
+        · apply List.pairwise_iff_get.mp hw _ _ h
 #align young_diagram.of_row_lens YoungDiagram.ofRowLens
 
+-- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 theorem mem_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} {c : ℕ × ℕ} :
-    c ∈ ofRowLens w hw ↔ ∃ h : c.fst < w.length, c.snd < w.nthLe c.fst h :=
+    c ∈ ofRowLens w hw ↔ ∃ h : c.fst < w.length, c.snd < w.get ⟨c.fst, h⟩ :=
   YoungDiagram.mem_cellsOfRowLens
 #align young_diagram.mem_of_row_lens YoungDiagram.mem_ofRowLens
 
@@ -507,10 +511,11 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
   refine' ⟨True.intro, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
 #align young_diagram.row_lens_length_of_row_lens YoungDiagram.rowLens_length_ofRowLens
 
+-- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 /-- The length of the `i`th row in `ofRowLens w hw` is the `i`th entry of `w` -/
-theorem rowLen_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (i : ℕ) (hi : i < w.length) :
-    (ofRowLens w hw).rowLen i = w.nthLe i hi := by
-  simp [rowLen, Nat.find_eq_iff, mem_ofRowLens, hi]
+theorem rowLen_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (i : Fin w.length) :
+    (ofRowLens w hw).rowLen i = w.get i := by
+  simp [rowLen, Nat.find_eq_iff, mem_ofRowLens]
 #align young_diagram.row_len_of_row_lens YoungDiagram.rowLen_ofRowLens
 
 /-- The left_inv direction of the equivalence -/
@@ -523,13 +528,9 @@ theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_
 /-- The right_inv direction of the equivalence -/
 theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpos : ∀ x ∈ w, 0 < x) :
     (ofRowLens w hw).rowLens = w := by
-  ext (i r)
-  cases' lt_or_ge i w.length with h h
-  · simp only [Option.mem_def, ← List.nthLe_eq_iff, h, rowLens_length_ofRowLens hpos]
-    revert r
-    simpa only [eq_iff_eq_cancel_right, get_rowLens] using rowLen_ofRowLens _ h
-  · rw [List.get?_eq_none.mpr h, List.get?_eq_none.mpr]
-    rwa [rowLens_length_ofRowLens hpos]
+  -- Porting note: golf by `List.get`
+  refine' List.ext_get (rowLens_length_ofRowLens hpos) fun i h₁ h₂ => _
+  simpa only [get_rowLens] using rowLen_ofRowLens ⟨i, h₂⟩
 #align young_diagram.row_lens_of_row_lens_eq_self YoungDiagram.rowLens_ofRowLens_eq_self
 
 /-- Equivalence between Young diagrams and weakly decreasing lists of positive natural numbers.
