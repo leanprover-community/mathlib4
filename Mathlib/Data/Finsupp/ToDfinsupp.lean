@@ -291,13 +291,8 @@ variable {η : ι → Type _} {N : Type _} [Semiring R]
 open Finsupp
 
 /-- `Finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
-def sigmaFinsuppEquivDfinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η i →₀ N
-    where
-  toFun f :=
-    ⟨split f,
-      Trunc.mk
-        ⟨(splitSupport f : Finset ι).val, fun i =>
-          by
+def sigmaFinsuppEquivDfinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
+  toFun f := ⟨split f, Trunc.mk ⟨(splitSupport f : Finset ι).val, fun i => by
           rw [← Finset.mem_def, mem_splitSupport_iff_nonzero]
           exact (em _).symm⟩⟩
   invFun f := by
@@ -311,12 +306,8 @@ def sigmaFinsuppEquivDfinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η 
     dsimp at hg
     rw [h] at hg
     simp only [coe_zero, Pi.zero_apply, not_true] at hg
-  left_inv f := by
-    ext
-    simp [split]
-  right_inv f := by
-    ext
-    simp [split]
+  left_inv f := by ext; simp [split]
+  right_inv f := by ext; simp [split]
 #align sigma_finsupp_equiv_dfinsupp sigmaFinsuppEquivDfinsupp
 
 @[simp]
