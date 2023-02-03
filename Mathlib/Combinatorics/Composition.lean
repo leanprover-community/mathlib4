@@ -12,6 +12,7 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
 
+set_option autoImplicit false -- porting note: TODO remove
 /-!
 # Compositions
 
@@ -476,7 +477,7 @@ theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n
 
 /-- The composition made of blocks all of size `1`. -/
 def ones (n : ℕ) : Composition n :=
-  ⟨replicate n (1 : ℕ), fun i hi => by simp [List.eq_of_mem_replicate hi], by simp⟩
+  ⟨replicate n (1 : ℕ), fun {i} hi => by simp [List.eq_of_mem_replicate hi], by simp⟩
 #align composition.ones Composition.ones
 
 instance {n : ℕ} : Inhabited (Composition n) :=
