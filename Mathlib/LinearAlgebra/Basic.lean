@@ -997,7 +997,7 @@ section OrderIso
 variable [SemilinearEquivClass F σ₁₂ M M₂]
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
-@[simps symm_apply apply]
+@[simps symmApply apply]
 def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂
     where
   toFun := map f
