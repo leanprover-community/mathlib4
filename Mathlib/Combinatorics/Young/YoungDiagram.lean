@@ -173,7 +173,8 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 #align young_diagram.cells_bot YoungDiagram.cells_bot
 
 -- porting note: removed `↑`, added `.cells` and changed proof
-@[simp, norm_cast]
+-- @[simp] -- Porting note: simp can prove this
+@[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine' Set.eq_of_subset_of_subset _ _
   intros x h
@@ -527,10 +528,10 @@ theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_
 
 /-- The right_inv direction of the equivalence -/
 theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpos : ∀ x ∈ w, 0 < x) :
-    (ofRowLens w hw).rowLens = w := by
+    (ofRowLens w hw).rowLens = w :=
   -- Porting note: golf by `List.get`
-  refine' List.ext_get (rowLens_length_ofRowLens hpos) fun i h₁ h₂ => _
-  simpa only [get_rowLens] using rowLen_ofRowLens ⟨i, h₂⟩
+  List.ext_get (rowLens_length_ofRowLens hpos) fun i _ h₂ =>
+    get_rowLens.trans <| rowLen_ofRowLens ⟨i, h₂⟩
 #align young_diagram.row_lens_of_row_lens_eq_self YoungDiagram.rowLens_ofRowLens_eq_self
 
 /-- Equivalence between Young diagrams and weakly decreasing lists of positive natural numbers.
