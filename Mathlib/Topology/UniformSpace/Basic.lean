@@ -1792,8 +1792,7 @@ theorem open_of_uniformity_sum_aux {s : Set (Sum α β)}
 #align open_of_uniformity_sum_aux open_of_uniformity_sum_aux
 
 -- We can now define the uniform structure on the disjoint union
-instance Sum.uniformSpace : UniformSpace (Sum α β)
-    where
+instance Sum.uniformSpace : UniformSpace (Sum α β) where
   toCore := UniformSpace.Core.sum
   isOpen_uniformity _ := ⟨uniformity_sum_of_open_aux, open_of_uniformity_sum_aux⟩
 #align sum.uniform_space Sum.uniformSpace
