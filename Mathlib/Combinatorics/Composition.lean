@@ -991,12 +991,12 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
   have i_lt' : i < c.boundaries.card := i_lt
   have i_lt'' : i < c.length + 1 := by rwa [c.card_boundaries_eq_succ_length] at i_lt'
   have A :
-    d.boundaries.order_emb_of_fin rfl ⟨i, i_lt⟩ =
-      c.boundaries.order_emb_of_fin c.card_boundaries_eq_succ_length ⟨i, i_lt''⟩ :=
+    d.boundaries.orderEmbOfFin rfl ⟨i, i_lt⟩ =
+      c.boundaries.orderEmbOfFin c.card_boundaries_eq_succ_length ⟨i, i_lt''⟩ :=
     rfl
-  have B : c.size_up_to i = c.boundary ⟨i, i_lt''⟩ := rfl
+  have B : c.sizeUpTo i = c.boundary ⟨i, i_lt''⟩ := rfl
   rw [d.blocks_partial_sum i_lt, CompositionAsSet.boundary, ← Composition.sizeUpTo, B, A,
-    c.order_emb_of_fin_boundaries]
+    c.orderEmbOfFin_boundaries]
 #align composition.to_composition_as_set_blocks Composition.toCompositionAsSet_blocks
 
 @[simp]
