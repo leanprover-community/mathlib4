@@ -246,7 +246,7 @@ theorem CauchySeq.prod_map {γ δ} [UniformSpace β] [SemilatticeSup γ] [Semila
 theorem CauchySeq.prod {γ} [UniformSpace β] [SemilatticeSup γ] {u : γ → α} {v : γ → β}
     (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq fun x => (u x, v x) :=
   haveI := hu.nonempty
-  (hu.prod hv).mono (Tendsto.prod_mk le_rfl le_rfl)
+  (Cauchy.prod hu hv).mono (Tendsto.prod_mk le_rfl le_rfl)
 #align cauchy_seq.prod CauchySeq.prod
 
 theorem CauchySeq.eventually_eventually [SemilatticeSup β] {u : β → α} (hu : CauchySeq u)
@@ -277,7 +277,7 @@ theorem Filter.Tendsto.subseq_mem_entourage {V : ℕ → Set (α × α)} (hV : �
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ (u (φ 0), a) ∈ V 0 ∧ ∀ n, (u <| φ (n + 1), u <| φ n) ∈ V (n + 1) :=
   by
   rcases mem_atTop_sets.1 (hu (ball_mem_nhds a (symm_le_uniformity <| hV 0))) with ⟨n, hn⟩
-  rcases(hu.comp (tendsto_add_at_top_nat n)).CauchySeq.subseq_mem fun n => hV (n + 1) with
+  rcases(hu.comp (tendsto_add_atTop_nat n)).cauchySeq.subseq_mem fun n => hV (n + 1) with
     ⟨φ, φ_mono, hφV⟩
   exact ⟨fun k => φ k + n, φ_mono.add_const _, hn _ le_add_self, hφV⟩
 #align filter.tendsto.subseq_mem_entourage Filter.Tendsto.subseq_mem_entourage
@@ -297,8 +297,8 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
     CauchySeq u ↔ ∀ i, p i → ∃ N, ∀ (m) (_ : m ≥ N) (n) (_ : n ≥ N), (u m, u n) ∈ s i := by
   rw [cauchySeq_iff_tendsto, ← prod_atTop_atTop_eq]
   refine' (atTop_basis.prod_self.tendsto_iff h).trans _
-  simp only [exists_prop, true_and_iff, mapsTo, preimage, subset_def, Prod.forall, mem_prod_eq,
-    mem_set_of_eq, mem_Ici, and_imp, Prod.map, ge_iff_le, @forall_swap (_ ≤ _) β]
+  simp only [exists_prop, true_and_iff, MapsTo, preimage, subset_def, Prod.forall, mem_prod_eq,
+    mem_setOf_eq, mem_Ici, and_imp, Prod.map, ge_iff_le, @forall_swap (_ ≤ _) β]
 #align filter.has_basis.cauchy_seq_iff Filter.HasBasis.cauchySeq_iff
 
 theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u : β → α}
@@ -566,12 +566,12 @@ theorem totallyBounded_iff_filter {s : Set α} :
   · intro H d hd
     contrapose! H with hd_cover
     set f := ⨅ t : Finset α, 𝓟 (s \ ⋃ y ∈ t, { x | (x, y) ∈ d })
-    have : ne_bot f := by
-      refine' infi_ne_bot_of_directed' (directed_of_sup _) _
+    have : Filter.NeBot f := by
+      refine' infᵢ_neBot_of_directed' (directed_of_sup _) _
       · intro t₁ t₂ h
-        exact principal_mono.2 (diff_subset_diff_right <| bUnion_subset_bUnion_left h)
+        exact principal_mono.2 (diff_subset_diff_right <| bunionᵢ_subset_bunionᵢ_left h)
       · intro t
-        simpa [nonempty_diff] using hd_cover t t.finite_to_set
+        simpa [nonempty_diff] using hd_cover t t.finite_toSet
     have : f ≤ 𝓟 s := infᵢ_le_of_le ∅ (by simp)
     refine' ⟨f, ‹_›, ‹_›, fun c hcf hc => _⟩
     rcases mem_prod_same_iff.1 (hc.2 hd) with ⟨m, hm, hmd⟩
@@ -632,9 +632,9 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) : Tot
   refine' totallyBounded_iff_subset.2 fun a ha => _
   cases' cauchySeq_iff.1 hs a ha with n hn
   refine' ⟨s '' { k | k ≤ n }, image_subset_range _ _, (finite_le_nat _).image _, _⟩
-  rw [range_subset_iff, bUnion_image]
+  rw [range_subset_iff, bunionᵢ_image]
   intro m
-  rw [mem_Union₂]
+  rw [mem_unionᵢ₂]
   cases' le_total m n with hm hm
   exacts[⟨m, hm, refl_mem_uniformity ha⟩, ⟨n, le_refl n, hn m hm n le_rfl⟩]
 #align cauchy_seq.totally_bounded_range CauchySeq.totallyBounded_range
@@ -662,9 +662,9 @@ open Set Finset
 
 noncomputable section
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- An auxiliary sequence of sets approximating a Cauchy filter. -/
-def setSeqAux (n : ℕ) : { s : Set α // ∃ _ : s ∈ f, s ×ˢ s ⊆ U n } :=
+def setSeqAux (n : ℕ) : { s : Set α // s ∈ f ∧ s ×ˢ s ⊆ U n } :=
+  -- Porting note: changed `∃ _ : s ∈ f, ..` to `s ∈ f ∧ ..`
   indefiniteDescription _ <| (cauchy_iff.1 hf).2 (U n) (U_mem n)
 #align sequentially_complete.set_seq_aux SequentiallyComplete.setSeqAux
 
@@ -675,7 +675,7 @@ def setSeq (n : ℕ) : Set α :=
 #align sequentially_complete.set_seq SequentiallyComplete.setSeq
 
 theorem setSeq_mem (n : ℕ) : setSeq hf U_mem n ∈ f :=
-  (binterᵢ_mem (finite_le_nat n)).2 fun m _ => (setSeqAux hf U_mem m).2.fst
+  (binterᵢ_mem (finite_le_nat n)).2 fun m _ => (setSeqAux hf U_mem m).2.1
 #align sequentially_complete.set_seq_mem SequentiallyComplete.setSeq_mem
 
 theorem setSeq_mono ⦃m n : ℕ⦄ (h : m ≤ n) : setSeq hf U_mem n ⊆ setSeq hf U_mem m :=
@@ -690,9 +690,9 @@ theorem setSeq_sub_aux (n : ℕ) : setSeq hf U_mem n ⊆ setSeqAux hf U_mem n :=
 theorem setSeq_prod_subset {N m n} (hm : N ≤ m) (hn : N ≤ n) :
     setSeq hf U_mem m ×ˢ setSeq hf U_mem n ⊆ U N := by
   intro p hp
-  refine' (set_seq_aux hf U_mem N).2.snd ⟨_, _⟩ <;> apply set_seq_sub_aux
-  exact set_seq_mono hf U_mem hm hp.1
-  exact set_seq_mono hf U_mem hn hp.2
+  refine' (setSeqAux hf U_mem N).2.2 ⟨_, _⟩ <;> apply setSeq_sub_aux
+  exact setSeq_mono hf U_mem hm hp.1
+  exact setSeq_mono hf U_mem hn hp.2
 #align sequentially_complete.set_seq_prod_subset SequentiallyComplete.setSeq_prod_subset
 
 /-- A sequence of points such that `seq n ∈ set_seq n`. Here `set_seq` is an antitone
@@ -725,10 +725,10 @@ theorem le_nhds_of_seq_tendsto_nhds ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) at
       rcases U_le s hs with ⟨m, hm⟩
       rcases tendsto_atTop'.1 ha _ (mem_nhds_left a (U_mem m)) with ⟨n, hn⟩
       refine'
-        ⟨set_seq hf U_mem (max m n), set_seq_mem hf U_mem _, _, seq hf U_mem (max m n), _,
+        ⟨setSeq hf U_mem (max m n), setSeq_mem hf U_mem _, _, seq hf U_mem (max m n), _,
           seq_mem hf U_mem _⟩
       · have := le_max_left m n
-        exact Set.Subset.trans (set_seq_prod_subset hf U_mem this this) hm
+        exact Set.Subset.trans (setSeq_prod_subset hf U_mem this this) hm
       · exact hm (hn _ <| le_max_right m n))
 #align sequentially_complete.le_nhds_of_seq_tendsto_nhds SequentiallyComplete.le_nhds_of_seq_tendsto_nhds
 
@@ -788,11 +788,11 @@ theorem second_countable_of_separable [SeparableSpace α] : SecondCountableTopol
   choose ht_mem hto hts using hto
   refine' ⟨⟨⋃ x ∈ s, range fun k => ball x (t k), hsc.bUnion fun x hx => countable_range _, _⟩⟩
   refine' (is_topological_basis_of_open_of_nhds _ _).eq_generateFrom
-  · simp only [mem_Union₂, mem_range]
+  · simp only [mem_unionᵢ₂, mem_range]
     rintro _ ⟨x, hxs, k, rfl⟩
     exact is_open_ball x (hto k)
   · intro x V hxV hVo
-    simp only [mem_Union₂, mem_range, exists_prop]
+    simp only [mem_unionᵢ₂, mem_range, exists_prop]
     rcases UniformSpace.mem_nhds_iff.1 (IsOpen.mem_nhds hVo hxV) with ⟨U, hU, hUV⟩
     rcases comp_symm_of_uniformity hU with ⟨U', hU', hsymm, hUU'⟩
     rcases h_basis.to_has_basis.mem_iff.1 hU' with ⟨k, -, hk⟩
