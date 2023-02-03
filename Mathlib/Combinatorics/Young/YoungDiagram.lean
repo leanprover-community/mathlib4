@@ -451,7 +451,7 @@ section EquivListRowLens
 This section defines the equivalence between Young diagrams `μ` and weakly decreasing lists `w`
 of positive natural numbers, corresponding to row lengths of the diagram:
   `YoungDiagram.equivListRowLens :`
-  `YoungDiagram ≃ {w : list ℕ // w.sorted (≥) ∧ ∀ x ∈ w, 0 < x}`
+  `YoungDiagram ≃ {w : List ℕ // w.Sorted (· ≥ ·) ∧ ∀ x ∈ w, 0 < x}`
 
 The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.ofRowLens`.
 
