@@ -597,6 +597,13 @@ theorem continuousOn_iff_continuous_restrict {f : α → β} {s : Set α} :
   exact (continuousWithinAt_iff_continuousAt_restrict f xs).mpr (h ⟨x, xs⟩)
 #align continuous_on_iff_continuous_restrict continuousOn_iff_continuous_restrict
 
+-- porting note: 2 new lemmas
+alias continuousOn_iff_continuous_restrict ↔ ContinuousOn.restrict _
+
+theorem ContinuousOn.restrict_mapsTo {f : α → β} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
+    (ht : MapsTo f s t) : Continuous (ht.restrict f s t) :=
+  hf.restrict.codRestrict _
+
 theorem continuousOn_iff' {f : α → β} {s : Set α} :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
   have : ∀ t, IsOpen (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s :=

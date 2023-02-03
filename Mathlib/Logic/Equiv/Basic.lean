@@ -20,6 +20,7 @@ import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GeneralizeProofs
+import Mathlib.Tactic.Lift
 
 /-!
 # Equivalence between types
@@ -1427,8 +1428,7 @@ theorem ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α)
   (ofBijective f hf).symm_apply_apply x
 #align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
 
--- Porting note: `lift` tactic is not implemented yet.
--- instance : CanLift (α → β) (α ≃ β) coeFn Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
+instance : CanLift (α → β) (α ≃ β) (↑) Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
 
 section
 
