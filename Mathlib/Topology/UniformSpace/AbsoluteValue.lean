@@ -52,7 +52,7 @@ def uniformSpaceCore : UniformSpace.Core R
   refl :=
     le_infᵢ fun ε =>
       le_infᵢ fun ε_pos =>
-        principal_mono.2 fun ⟨x, y⟩ h => by simpa [show x = y from h, abv_zero abv]
+        principal_mono.2 fun ⟨x, y⟩ h => by have : x = y := (mem_idRel.1 h); simpa [abv_zero, this]
   symm :=
     tendsto_infᵢ.2 fun ε =>
       tendsto_infᵢ.2 fun h =>
@@ -60,7 +60,7 @@ def uniformSpaceCore : UniformSpace.Core R
           tendsto_infᵢ' h <|
             tendsto_principal_principal.2 fun ⟨x, y⟩ h =>
               by
-              have h : abv (y - x) < ε := by simpa [-sub_eq_add_neg] using h
+              have h : abv (y - x) < ε := by simpa using h
               rwa [abv_sub abv] at h
   comp :=
     le_infᵢ fun ε =>
@@ -84,17 +84,21 @@ def uniformSpace : UniformSpace R :=
   UniformSpace.ofCore (uniformSpaceCore abv)
 #align is_absolute_value.uniform_space IsAbsoluteValue.uniformSpace
 
+-- Port note: new instance to help with failure of failed to synthesize Nonempty { ε // ε > 0 }
+local instance nonempty_gt_helper [LT α] [NoMaxOrder α] (a : α) : Nonempty { x // x > a } :=
+  nonempty_subtype.2 (exists_gt a)
+
 theorem mem_uniformity {s : Set (R × R)} :
     s ∈ (uniformSpaceCore abv).uniformity ↔ ∃ ε > 0, ∀ {a b : R}, abv (b - a) < ε → (a, b) ∈ s := by
   suffices (s ∈ ⨅ ε : { ε : 𝕜 // ε > 0 }, 𝓟 { p : R × R | abv (p.2 - p.1) < ε.val }) ↔ _
     by
     rw [infᵢ_subtype] at this
     exact this
-  rw [mem_infi_of_directed]
+  rw [mem_infᵢ_of_directed]
   · simp [subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     exact
-      ⟨⟨min r p, lt_min hr hp⟩, by simp (config := { contextual := true }) [lt_min_iff, (· ≥ ·)]⟩
+      ⟨⟨min r p, lt_min hr hp⟩, by simp (config := { contextual := true })⟩
 #align is_absolute_value.mem_uniformity IsAbsoluteValue.mem_uniformity
 
 end IsAbsoluteValue
