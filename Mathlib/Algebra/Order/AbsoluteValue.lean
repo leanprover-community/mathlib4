@@ -47,7 +47,7 @@ namespace AbsoluteValue
 -- Porting note: Removing nolints.
 -- attribute [nolint doc_blame] AbsoluteValue.toMulHom
 
--- initialize_simps_projections AbsoluteValue (to_mul_hom_to_fun → apply)
+initialize_simps_projections AbsoluteValue (toFun → apply)
 
 section OrderedSemiring
 

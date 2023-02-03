@@ -255,7 +255,7 @@ def Simps.apply (h : r ↪r s) : α → β :=
   h
 #align rel_embedding.simps.apply RelEmbedding.Simps.apply
 
-initialize_simps_projections RelEmbedding (toEmbedding_toFun → apply, -toEmbedding)
+initialize_simps_projections RelEmbedding (toFun → apply)
 
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
@@ -633,7 +633,7 @@ def Simps.symmApply (h : r ≃r s) : β → α :=
   h.symm
 #align rel_iso.simps.symm_apply RelIso.Simps.symmApply
 
-initialize_simps_projections RelIso (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
+initialize_simps_projections RelIso (toFun → apply, invFun → symmApply)
 
 /-- Identity map is a relation isomorphism. -/
 @[refl, simps apply]

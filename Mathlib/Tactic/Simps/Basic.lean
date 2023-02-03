@@ -509,14 +509,15 @@ partial def getCompositeOfProjectionsAux (stx : Syntax) (univs : List Name) (str
   projections (separated by `_`), where each projection could be a projection of a parent structure.
   This function returns an expression that is the composition of these projections and a
   list of natural numbers, that are the projection numbers of the applied projections.
-  Note that this function is similar to elaborating dot notation, but it can do a little more, e.g.
-  with
+  Note that this function is similar to elaborating dot notation, but it can do a little more.
+  Example: if we do
   ```
   structure gradedFun (A : ℕ → Type _) where
     toFun := ∀ i j, A i →+ A j →+ A (i + j)
+  initialize_simps_projections (toFun_toFun_toFun → myMul)
   ```
-  we want to be able to get the "projection"
-    `λ (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
+  we will be able to generate the "projection"
+    `λ {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
   which projection notation cannot do. -/
 def getCompositeOfProjections (str : Name) (proj : String) (stx : Syntax) :
   MetaM (Expr × Array ℕ) := do
@@ -531,15 +532,16 @@ def getCompositeOfProjections (str : Name) (proj : String) (stx : Syntax) :
 /-- Get the default `ParsedProjectionData` for structure `str`. -/
 def mkParsedProjectionData (str : Name) : CoreM (Array ParsedProjectionData) := do
   let env ← getEnv
-  let some projs := getStructureInfo? env str
-    | throwError "Declaration {str} is not a structure."
-  return projs.fieldNames.map
+  let projs := getStructureFieldsFlattened env str false
+  if projs.size == 0 then
+    throwError "Declaration {str} is not a structure."
+  return projs.map
     fun nm ↦ ⟨(nm, .missing), (nm, .missing), true, false, none, #[], false⟩
 
 def applyDefaultRules (str : Name) (projs : Array ParsedProjectionData) :
   CoreM (Array ParsedProjectionData) := do
   let env ← getEnv
-  let l := getStructureFieldsFlattened env str
+  let l := getStructureFieldsFlattened env str false
   logInfo m!"{l}"
   -- todo
   return projs

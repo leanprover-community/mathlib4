@@ -167,9 +167,9 @@ def Simps.coe (S : Submonoid M) : Set M :=
 /-- See Note [custom simps projection] -/
 add_decl_doc AddSubmonoid.Simps.coe
 
-initialize_simps_projections Submonoid (toSubsemigroup_carrier → coe)
+initialize_simps_projections Submonoid (carrier → coe)
 
-initialize_simps_projections AddSubmonoid (toAddSubsemigroup_carrier → coe)
+initialize_simps_projections AddSubmonoid (carrier → coe)
 
 @[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=

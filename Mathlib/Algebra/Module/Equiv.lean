@@ -285,7 +285,7 @@ def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
   e.symm
 #align linear_equiv.simps.symm_apply LinearEquiv.Simps.symmApply
 
-initialize_simps_projections LinearEquiv (toLinearMap → apply, invFun → symmApply)
+initialize_simps_projections LinearEquiv (toFun → apply, invFun → symmApply)
 
 @[simp]
 theorem invFun_eq_symm : e.invFun = e.symm :=

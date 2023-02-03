@@ -54,17 +54,17 @@ initialize_simps_projections Left
 structure Right (α : Type u) (β : Type v) extends Foo2 α where
   otherData : β
 
-initialize_simps_projections Right (toFoo2_elim → newProjection)
+initialize_simps_projections Right (elim → newProjection)
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
   let state := ((Simps.structureExt.getState env).find? `Right).get!
   -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
-  guard <| state.2.map (·.1) == #[`toFoo2, `otherData, `newProjection]
-  guard <| state.2.map (·.3) == #[[0],[1],[0,0]]
-  guard <| state.2.map (·.4) == #[true, true, true]
-  guard <| state.2.map (·.5) == #[false, false, false]
+  guard <| state.2.map (·.1) == #[`newProjection, `otherData]
+  guard <| state.2.map (·.3) == #[[0,0], [1]]
+  guard <| state.2.map (·.4) == #[true, true]
+  guard <| state.2.map (·.5) == #[false, false]
 
 structure Top (α β : Type _) extends Left α, Right α β
 
@@ -74,7 +74,7 @@ structure NewTop (α β : Type _) extends Right α β, Left α
 
 def NewTop.Simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.elim
 
-initialize_simps_projections NewTop (toRight_toFoo2_elim → newElim)
+initialize_simps_projections NewTop (elim → newElim)
 
 run_cmd liftCoreM <| successIfFail <| getRawProjections `DoesntExist
 
@@ -249,14 +249,14 @@ def test_sneaky {α} : ComplicatedEquivPlusData α :=
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `rflWithData_toEquiv' |>.isSome
-  guard <| env.find? `rflWithData'_toEquiv' |>.isSome
+  guard <| env.find? `rflWithData_toFun |>.isSome
+  guard <| env.find? `rflWithData'_toFun |>.isSome
   guard <| env.find? `test_extra_fst |>.isSome
   guard <| simpsAttr.getParam? env `test ==
-    #[`test_toEquiv', `test_P, `test_extra_fst, `test_extra_snd]
+    #[`test_toFun, `test_invFun, `test_P, `test_extra_fst, `test_extra_snd]
   guard <| env.find? `test_sneaky_extra_fst |>.isSome
-  guard <| env.find? `rflWithData_to_equiv_toFun |>.isNone
-  guard <| env.find? `rflWithData'_to_equiv_toFun |>.isNone
+  guard <| env.find? `rflWithData_toEquiv_toFun |>.isNone
+  guard <| env.find? `rflWithData'_toEquiv_toFun |>.isNone
   guard <| env.find? `test_sneaky_extra |>.isNone
 
 structure PartiallyAppliedStr :=
@@ -1007,8 +1007,7 @@ def DecoratedEquiv.symm {α β : Sort _} (e : DecoratedEquiv α β) : DecoratedE
 def DecoratedEquiv.Simps.apply {α β : Sort _} (e : DecoratedEquiv α β) : α → β := e
 def DecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : DecoratedEquiv α β) : β → α := e.symm
 
-initialize_simps_projections DecoratedEquiv
-  (toEquiv'_toFun → apply, toEquiv'_invFun → symm_apply, -toEquiv')
+initialize_simps_projections DecoratedEquiv (toFun → apply, invFun → symm_apply, -toEquiv')
 
 @[simps] def foo (α : Type) : DecoratedEquiv α α :=
 { toFun    := λ x => x
@@ -1062,8 +1061,7 @@ def FurtherDecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : FurtherDecorate
   β → α := e.symm
 
 initialize_simps_projections FurtherDecoratedEquiv
-  (toDecoratedEquiv_toEquiv'_toFun → apply, toDecoratedEquiv_toEquiv'_invFun → symm_apply,
-  -toDecoratedEquiv, toDecoratedEquiv_toEquiv' → toEquiv', -toEquiv')
+  (toFun → apply, invFun → symm_apply, -toDecoratedEquiv, toEquiv' → toEquiv', -toEquiv')
 
 @[simps] def ffoo (α : Type) : FurtherDecoratedEquiv α α :=
 { toFun    := λ x => x
@@ -1099,11 +1097,8 @@ def OneMore.symm {α β : Sort _} (e : OneMore α β) :
 def OneMore.Simps.apply {α β : Sort _} (e : OneMore α β) : α → β := e
 def OneMore.Simps.symm_apply {α β : Sort _} (e : OneMore α β) : β → α := e.symm
 
-initialize_simps_projections OneMore
-  (toFurtherDecoratedEquiv_toDecoratedEquiv_toEquiv'_toFun → apply,
-   toFurtherDecoratedEquiv_toDecoratedEquiv_toEquiv'_invFun → symm_apply,
-  -toFurtherDecoratedEquiv, toFurtherDecoratedEquiv_toDecoratedEquiv → to_dequiv,
-  -to_dequiv)
+initialize_simps_projections OneMore (toFun → apply, invFun → symm_apply,
+  -toFurtherDecoratedEquiv, toDecoratedEquiv → to_dequiv, -to_dequiv)
 
 @[simps] def fffoo (α : Type) : OneMore α α :=
 { toFun    := λ x => x
@@ -1145,7 +1140,7 @@ def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] 
   A i :=
 AddHomPlus.mul x
 
-initialize_simps_projections AddHomPlus (mul_toZeroHom_toFun → apply, -mul)
+initialize_simps_projections AddHomPlus (mul_toFun → apply, -mul)
 
 class AddHomPlus2 [Add ι] :=
 (mul {i j} : A i ≃ (A j ≃ A (i + j)))

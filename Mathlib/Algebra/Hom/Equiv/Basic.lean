@@ -277,9 +277,9 @@ def Simps.symmApply (e : M ≃* N) : N → M :=
 #align mul_equiv.simps.symm_apply MulEquiv.Simps.symmApply
 #align add_equiv.simps.symm_apply AddEquiv.Simps.symmApply
 
-initialize_simps_projections AddEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
+initialize_simps_projections AddEquiv (toFun → apply, invFun → symmApply)
 
-initialize_simps_projections MulEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
+initialize_simps_projections MulEquiv (toFun → apply, invFun → symmApply)
 
 @[to_additive (attr := simp)]
 theorem toEquiv_symm (f : M ≃* N) : f.symm.toEquiv = f.toEquiv.symm := rfl

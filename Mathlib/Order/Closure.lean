@@ -77,7 +77,7 @@ def Simps.apply [Preorder α] (f : ClosureOperator α) : α → α :=
   f
 #align closure_operator.simps.apply ClosureOperator.Simps.apply
 
-initialize_simps_projections ClosureOperator (toOrderHom_toFun → apply, -toOrderHom)
+initialize_simps_projections ClosureOperator (toFun → apply)
 
 section PartialOrder
 
