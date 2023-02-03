@@ -111,7 +111,7 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
     log = subprocess.run(
         ['git', 'log', '--oneline', str(path4)],
         capture_output=True)
-    pr_matches = re.search(r'(#[0-9]+)\)$', log.stdout.decode().splitlines()[-1])
+    pr_matches = re.search(r'#([0-9]+)\)$', log.stdout.decode().splitlines()[-1])
     if pr_matches:
         mathlib4_pr = int(pr_matches.groups()[0])
     else:
