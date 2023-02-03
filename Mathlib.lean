@@ -987,6 +987,7 @@ import Mathlib.Topology.Support
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Separation
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
