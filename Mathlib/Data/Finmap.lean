@@ -111,10 +111,10 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
 #align finmap.lift_on Finmap.liftOn
 
 @[simp]
-theorem lift_on_to_finmap {γ} (s : AList β) (f : AList β → γ) (H) : liftOn ⟦s⟧ f H = f s := by
+theorem liftOn_toFinmap {γ} (s : AList β) (f : AList β → γ) (H) : liftOn ⟦s⟧ f H = f s := by
   cases s
   rfl
-#align finmap.lift_on_to_finmap Finmap.lift_on_to_finmap
+#align finmap.lift_on_to_finmap Finmap.liftOn_toFinmap
 
 /-- Lift a permutation-respecting function on 2 `AList`s to 2 `Finmap`s. -/
 -- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
