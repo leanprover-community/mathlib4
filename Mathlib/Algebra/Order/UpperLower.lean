@@ -11,7 +11,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.UpperLower.Basic
-
+set_option autoImplicit false -- **TODO** delete this later
 /-!
 # Algebraic operations on upper/lower sets
 
@@ -29,13 +29,13 @@ variable {α : Type _} [OrderedCommMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
-  smul_set_subset_iff.2 fun y => hs <| le_mul_of_one_le_left' hx
+  smul_set_subset_iff.2 fun y ↦ hs <| le_mul_of_one_le_left' hx
 #align is_upper_set.smul_subset IsUpperSet.smul_subset
 #align is_upper_set.vadd_subset IsUpperSet.vadd_subset
 
 @[to_additive]
 theorem IsLowerSet.smul_subset (hs : IsLowerSet s) (hx : x ≤ 1) : x • s ⊆ s :=
-  smul_set_subset_iff.2 fun y => hs <| mul_le_of_le_one_left' hx
+  smul_set_subset_iff.2 fun y ↦ hs <| mul_le_of_le_one_left' hx
 #align is_lower_set.smul_subset IsLowerSet.smul_subset
 #align is_lower_set.vadd_subset IsLowerSet.vadd_subset
 
@@ -71,7 +71,7 @@ theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected :=
 theorem IsUpperSet.mul_left (ht : IsUpperSet t) : IsUpperSet (s * t) :=
   by
   rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-  exact isUpperSet_unionᵢ₂ fun x hx => ht.smul
+  exact isUpperSet_unionᵢ₂ fun x hx ↦ ht.smul
 #align is_upper_set.mul_left IsUpperSet.mul_left
 #align is_upper_set.add_left IsUpperSet.add_left
 
@@ -96,12 +96,12 @@ theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) :=
 #align is_lower_set.add_right IsLowerSet.add_right
 
 @[to_additive]
-theorem IsUpperSet.inv (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun x y h => hs <| inv_le_inv' h
+theorem IsUpperSet.inv (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun x y h ↦ hs <| inv_le_inv' h
 #align is_upper_set.inv IsUpperSet.inv
 #align is_upper_set.neg IsUpperSet.neg
 
 @[to_additive]
-theorem IsLowerSet.inv (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun x y h => hs <| inv_le_inv' h
+theorem IsLowerSet.inv (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun x y h ↦ hs <| inv_le_inv' h
 #align is_lower_set.inv IsLowerSet.inv
 #align is_lower_set.neg IsLowerSet.neg
 
@@ -141,15 +141,15 @@ instance : One (UpperSet α) :=
 
 @[to_additive]
 instance : Mul (UpperSet α) :=
-  ⟨fun s t => ⟨image2 (· * ·) s t, s.2.mul_right⟩⟩
+  ⟨fun s t ↦ ⟨image2 (· * ·) s t, s.2.mul_right⟩⟩
 
 @[to_additive]
 instance : Div (UpperSet α) :=
-  ⟨fun s t => ⟨image2 (· / ·) s t, s.2.div_right⟩⟩
+  ⟨fun s t ↦ ⟨image2 (· / ·) s t, s.2.div_right⟩⟩
 
 @[to_additive]
 instance : SMul α (UpperSet α) :=
-  ⟨fun a s => ⟨(· • ·) a '' s, s.2.smul⟩⟩
+  ⟨fun a s ↦ ⟨(· • ·) a '' s, s.2.smul⟩⟩
 
 @[simp, norm_cast, to_additive]
 theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
@@ -196,14 +196,14 @@ private theorem one_mul (s : UpperSet α) : 1 * s = s :=
     (subset_mul_right _ left_mem_Ici).antisymm' <|
       by
       rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-      exact Set.unionᵢ₂_subset fun _ => s.upper.smul_subset
+      exact Set.unionᵢ₂_subset fun _ ↦ s.upper.smul_subset
 
 @[to_additive]
 instance : CommMonoid (UpperSet α) :=
   { UpperSet.commSemigroup with
     one := 1
     one_mul := one_mul
-    mul_one := fun s => by
+    mul_one := fun s ↦ by
       rw [mul_comm]
       exact one_mul _ }
 
@@ -217,15 +217,15 @@ instance : One (LowerSet α) :=
 
 @[to_additive]
 instance : Mul (LowerSet α) :=
-  ⟨fun s t => ⟨image2 (· * ·) s t, s.2.mul_right⟩⟩
+  ⟨fun s t ↦ ⟨image2 (· * ·) s t, s.2.mul_right⟩⟩
 
 @[to_additive]
 instance : Div (LowerSet α) :=
-  ⟨fun s t => ⟨image2 (· / ·) s t, s.2.div_right⟩⟩
+  ⟨fun s t ↦ ⟨image2 (· / ·) s t, s.2.div_right⟩⟩
 
 @[to_additive]
 instance : SMul α (LowerSet α) :=
-  ⟨fun a s => ⟨(· • ·) a '' s, s.2.smul⟩⟩
+  ⟨fun a s ↦ ⟨(· • ·) a '' s, s.2.smul⟩⟩
 
 @[simp, norm_cast, to_additive]
 theorem coe_smul (a : α) (s : LowerSet α) : (↑(a • s) : Set α) = a • s :=
@@ -266,14 +266,14 @@ private theorem one_mul (s : LowerSet α) : 1 * s = s :=
     (subset_mul_right _ right_mem_Iic).antisymm' <|
       by
       rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-      exact Set.unionᵢ₂_subset fun _ => s.lower.smul_subset
+      exact Set.unionᵢ₂_subset fun _ ↦ s.lower.smul_subset
 
 @[to_additive]
 instance : CommMonoid (LowerSet α) :=
   { LowerSet.commSemigroup with
     one := 1
     one_mul := one_mul
-    mul_one := fun s => by
+    mul_one := fun s ↦ by
       rw [mul_comm]
       exact one_mul _ }
 
