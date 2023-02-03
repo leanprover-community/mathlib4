@@ -536,7 +536,7 @@ def mkParsedProjectionData (str : Name) : CoreM (Array ParsedProjectionData) := 
   if projs.size == 0 then
     throwError "Declaration {str} is not a structure."
   let projs := projs.map fun nm ↦ {origName := (nm, .missing), newName := (nm, .missing)}
-  let parents := getParentStructures env str
+  let parents := getFieldsToParents env str
   let parents := parents.map fun nm ↦
     {origName := (nm, .missing), newName := (nm, .missing), isDefault := false}
   return projs ++ parents

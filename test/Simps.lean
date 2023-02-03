@@ -61,10 +61,10 @@ run_cmd liftTermElabM <| do
   let state := ((Simps.structureExt.getState env).find? `Right).get!
   -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
-  guard <| state.2.map (·.1) == #[`newProjection, `otherData]
-  guard <| state.2.map (·.3) == #[[0,0], [1]]
-  guard <| state.2.map (·.4) == #[true, true]
-  guard <| state.2.map (·.5) == #[false, false]
+  guard <| state.2.map (·.1) == #[`newProjection, `otherData, `toFoo2]
+  guard <| state.2.map (·.3) == #[[0,0], [1], [0]]
+  guard <| state.2.map (·.4) == #[true, true, false]
+  guard <| state.2.map (·.5) == #[false, false, false]
 
 structure Top (α β : Type _) extends Left α, Right α β
 
