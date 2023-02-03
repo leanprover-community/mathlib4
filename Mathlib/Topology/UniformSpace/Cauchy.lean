@@ -104,7 +104,7 @@ theorem Cauchy.prod [UniformSpace β] {f : Filter α} {g : Filter β} (hf : Cauc
 #align cauchy.prod Cauchy.prod
 
 /-- The common part of the proofs of `le_nhds_of_cauchy_adhp` and
-`sequentially_complete.le_nhds_of_seq_tendsto_nhds`: if for any entourage `s`
+`SequentiallyComplete.le_nhds_of_seq_tendsto_nhds`: if for any entourage `s`
 one can choose a set `t ∈ f` of diameter `s` such that it contains a point `y`
 with `(x, y) ∈ s`, then `f` converges to `x`. -/
 theorem le_nhds_of_cauchy_adhp_aux {f : Filter α} {x : α}
@@ -691,7 +691,7 @@ theorem seq_is_cauchySeq : CauchySeq <| seq hf U_mem :=
   cauchySeq_of_controlled U U_le <| seq_pair_mem hf U_mem
 #align sequentially_complete.seq_is_cauchy_seq SequentiallyComplete.seq_is_cauchySeq
 
-/-- If the sequence `sequentially_complete.seq` converges to `a`, then `f ≤ 𝓝 a`. -/
+/-- If the sequence `SequentiallyComplete.seq` converges to `a`, then `f ≤ 𝓝 a`. -/
 theorem le_nhds_of_seq_tendsto_nhds ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) atTop (𝓝 a)) : f ≤ 𝓝 a :=
   le_nhds_of_cauchy_adhp_aux
     (fun s hs => by
