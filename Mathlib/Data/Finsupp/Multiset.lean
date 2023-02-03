@@ -14,8 +14,8 @@ import Mathlib.Data.Finsupp.Order
 /-!
 # Equivalence between `multiset` and `ℕ`-valued finitely supported functions
 
-This defines `finsupp.toMultiset` the equivalence between `α →₀ ℕ` and `multiset α`, along
-with `multiset.to_finsupp` the reverse equivalence and `finsupp.order_iso_multiset` the equivalence
+This defines `Finsupp.toMultiset` the equivalence between `α →₀ ℕ` and `Multiset α`, along
+with `Multiset.toFinsupp` the reverse equivalence and `Finsupp.orderIsoMultiset` the equivalence
 promoted to an order isomorphism.
 -/
 
@@ -62,12 +62,11 @@ theorem toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n => n
 @[simp]
 theorem toMultiset_symm_apply [DecidableEq α] (s : Multiset α) (x : α) :
     Finsupp.toMultiset.symm s x = s.count x := by
-    rw [← AddEquiv.invFun_eq_symm]
-    rw [← AddEquiv.invFun_eq_symm, toMultiset]
-    rfl
-    change (fun a => s.count a) x = s.count x
-
-
+    -- Porting note: proof used to be `convert rfl`
+    -- Porting note: the following should probably be a simp lemma somewhere
+    have : Finsupp.toMultiset.symm s x = Finsupp.toMultiset.invFun s x := rfl
+    simp_rw [this, toMultiset, coe_mk]
+    congr
 #align finsupp.to_multiset_symm_apply Finsupp.toMultiset_symm_apply
 
 @[simp]
@@ -153,12 +152,14 @@ def toFinsupp : Multiset α ≃+ (α →₀ ℕ) :=
 
 @[simp]
 theorem toFinsupp_support [DecidableEq α] (s : Multiset α) : s.toFinsupp.support = s.toFinset := by
+  -- Porting note: used to be `convert rfl`
   ext
   simp [toFinsupp]
 #align multiset.to_finsupp_support Multiset.toFinsupp_support
 
 @[simp]
 theorem toFinsupp_apply [DecidableEq α] (s : Multiset α) (a : α) : toFinsupp s a = s.count a := by
+  -- Porting note: used to be `convert rfl`
   exact Finsupp.toMultiset_symm_apply s a
 #align multiset.to_finsupp_apply Multiset.toFinsupp_apply
 
@@ -197,26 +198,17 @@ theorem Finsupp.toMultiset_toFinsupp (f : α →₀ ℕ) :
 
 
 namespace Finsupp
-
--- Porting note: below proof is temporary & horrible
--- i believe we need to recover toFun_eq_coe & toEquiv_eq_coe in Hom.Equiv.Basic
 /-- `Finsupp.toMultiset` as an order isomorphism. -/
 def orderIsoMultiset : (ι →₀ ℕ) ≃o Multiset ι
     where
   toEquiv := toMultiset.toEquiv
   map_rel_iff' := by
+    -- Porting note: This proof used to be simp [Multiset.le_iff_count, le_def]
     intro f g;
-    have : (toMultiset (α := ι)).toEquiv f = (toMultiset (α := ι)).toFun f := by
-      rfl
-    have this2: (toMultiset (α := ι)).toEquiv g = (toMultiset (α := ι)).toFun g := by
-      rfl
-    have this3: (Equiv.toFun toMultiset.toEquiv f) = toMultiset f := rfl
-    have this4: (Equiv.toFun toMultiset.toEquiv g) = toMultiset g := rfl
-    simp [Multiset.le_iff_count, le_def]
-    simp_rw [← toMultiset_symm_apply]
-    simp_rw [this, this2, this3, this4]
-    rw [Finsupp.toMultiset.symm_apply_apply f]
-    rw [Finsupp.toMultiset.symm_apply_apply g]
+    -- Porting note: the following should probably be a simp lemma somewhere;
+    -- maybe coe_toEquiv in Hom/Equiv/Basic?
+    have : ⇑ (toMultiset (α := ι)).toEquiv = toMultiset := rfl
+    simp [Multiset.le_iff_count, le_def, ← toMultiset_symm_apply, this]
 #align finsupp.order_iso_multiset Finsupp.orderIsoMultiset
 
 @[simp]
