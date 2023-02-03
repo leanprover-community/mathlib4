@@ -28,7 +28,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpa
 
 /-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
 on `α` is the pullback of the uniformity filter on `β` under `prod.map f f`. If `α` is a separated
-space, then this implies that `f` is injective, hence it is a `uniform_embedding`. -/
+space, then this implies that `f` is injective, hence it is a `UniformEmbedding`. -/
 structure UniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
   under `Prod.map f f`. -/
@@ -140,8 +140,8 @@ theorem uniformEmbedding_inr : UniformEmbedding (Sum.inr : β → α ⊕ β) :=
       union_mem_sup range_mem_map (image_mem_map hs), fun x y h => by simpa using h⟩⟩
 #align uniform_embedding_inr uniformEmbedding_inr
 
-/-- If the domain of a `uniform_inducing` map `f` is a T₀ space, then `f` is injective,
-hence it is a `uniform_embedding`. -/
+/-- If the domain of a `UniformInducing` map `f` is a T₀ space, then `f` is injective,
+hence it is a `UniformEmbedding`. -/
 protected theorem UniformInducing.uniformEmbedding [T0Space α] {f : α → β}
     (hf : UniformInducing f) : UniformEmbedding f :=
   ⟨hf, hf.inducing.injective⟩
