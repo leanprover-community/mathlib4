@@ -146,16 +146,16 @@ theorem le_def (x y : PartENat) :
 #align part_enat.le_def PartENat.le_def
 
 @[elab_as_elim]
-protected theorem cases_on' {P : PartENat → Prop} :
+protected theorem casesOn' {P : PartENat → Prop} :
     ∀ a : PartENat, P ⊤ → (∀ n : ℕ, P (some n)) → P a :=
   Part.induction_on
-#align part_enat.cases_on' PartENat.cases_on'
+#align part_enat.cases_on' PartENat.casesOn'
 
 @[elab_as_elim]
-protected theorem cases_on {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → (∀ n : ℕ, P n) → P a := by
+protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → (∀ n : ℕ, P n) → P a := by
   simp only [← some_eq_coeNat]
-  exact PartENat.cases_on'
-#align part_enat.cases_on PartENat.cases_on
+  exact PartENat.casesOn'
+#align part_enat.cases_on PartENat.casesOn
 
 @[simp]
 theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
@@ -344,7 +344,7 @@ theorem ne_zero_iff {x : PartENat} : x ≠ 0 ↔ ⊥ < x :=
 #align part_enat.ne_zero_iff PartENat.ne_zero_iff
 
 theorem dom_of_lt {x y : PartENat} : x < y → x.Dom :=
-  PartENat.cases_on x not_top_lt fun _ _ => dom_coeNat _
+  PartENat.casesOn x not_top_lt fun _ _ => dom_coeNat _
 #align part_enat.dom_of_lt PartENat.dom_of_lt
 
 theorem top_eq_none : (⊤ : PartENat) = Part.none :=
@@ -398,7 +398,7 @@ theorem eq_top_iff_forall_le (x : PartENat) : x = ⊤ ↔ ∀ n : ℕ, (n : Part
 #align part_enat.eq_top_iff_forall_le PartENat.eq_top_iff_forall_le
 
 theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
-  PartENat.cases_on x
+  PartENat.casesOn x
     (by simp only [iff_true_iff, le_top, coeNat_lt_top, ← @Nat.cast_zero PartENat])
     fun n =>
     by
@@ -408,8 +408,8 @@ theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
 
 instance isTotal: IsTotal PartENat (· ≤ ·) where
   total x y :=
-    PartENat.cases_on (P := fun z => z ≤ y ∨ y ≤ z) x (Or.inr le_top)
-      (PartENat.cases_on y (fun _ => Or.inl le_top) fun x y =>
+    PartENat.casesOn (P := fun z => z ≤ y ∨ y ≤ z) x (Or.inr le_top)
+      (PartENat.casesOn y (fun _ => Or.inl le_top) fun x y =>
         (le_total x y).elim (Or.inr ∘ coe_le_coe.2) (Or.inl ∘ coe_le_coe.2))
 
 noncomputable instance linearOrder: LinearOrder PartENat :=
@@ -436,7 +436,7 @@ noncomputable instance lattice: Lattice PartENat :=
 noncomputable instance orderedAddCommMonoid: OrderedAddCommMonoid PartENat :=
   { PartENat.linearOrder, PartENat.addCommMonoid with
     add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
-      PartENat.cases_on c (by simp) fun c =>
+      PartENat.casesOn c (by simp) fun c =>
         ⟨fun h => And.intro (dom_coeNat _) (h₁ h.2), fun h => by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
@@ -444,19 +444,19 @@ noncomputable instance : CanonicallyOrderedAddMonoid PartENat :=
   { PartENat.semilatticeSup, PartENat.orderBot,
     PartENat.orderedAddCommMonoid with
     le_self_add := fun a b =>
-      PartENat.cases_on b (le_top.trans_eq (add_top _).symm) fun b =>
-        PartENat.cases_on a (top_add _).ge fun a =>
+      PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun b =>
+        PartENat.casesOn a (top_add _).ge fun a =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
     exists_add_of_le := fun {a b} =>
-      PartENat.cases_on b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
-        PartENat.cases_on a (fun h => ((coeNat_lt_top _).not_le h).elim) fun a h =>
+      PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
+        PartENat.casesOn a (fun h => ((coeNat_lt_top _).not_le h).elim) fun a h =>
           ⟨(b - a : ℕ), by
             rw [← Nat.cast_add, coeNat_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩ }
 
 protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ ⊤) : x + z < y + z := by
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   rcases ne_top_iff.mp hz with ⟨k, rfl⟩
-  induction' y using PartENat.cases_on with n
+  induction' y using PartENat.casesOn with n
   · rw [top_add]
     -- Porting note: was apply_mod_cast coeNat_lt_top
     norm_cast; apply coeNat_lt_top
@@ -484,7 +484,7 @@ theorem lt_add_one {x : PartENat} (hx : x ≠ ⊤) : x < x + 1 := by
 #align part_enat.lt_add_one PartENat.lt_add_one
 
 theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
-  induction' y using PartENat.cases_on with n
+  induction' y using PartENat.casesOn with n
   · apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   -- Porting note: was `apply_mod_cast Nat.le_of_lt_succ; apply_mod_cast h`
@@ -492,7 +492,7 @@ theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
 #align part_enat.le_of_lt_add_one PartENat.le_of_lt_add_one
 
 theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
-  induction' y using PartENat.cases_on with n
+  induction' y using PartENat.casesOn with n
   · apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   -- Porting note: was `apply_mod_cast Nat.succ_le_of_lt; apply_mod_cast h`
@@ -502,7 +502,7 @@ theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
 theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y := by
   refine ⟨fun h => ?_, add_one_le_of_lt⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
-  induction' y using PartENat.cases_on with n
+  induction' y using PartENat.casesOn with n
   · apply coeNat_lt_top
   -- Porting note: was `apply_mod_cast Nat.lt_of_succ_le; apply_mod_cast h`
   norm_cast; apply Nat.lt_of_succ_le; norm_cast at h
@@ -511,7 +511,7 @@ theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x 
 theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y := by
   refine ⟨le_of_lt_add_one, fun h => ?_⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
-  induction' y using PartENat.cases_on with n
+  induction' y using PartENat.casesOn with n
   · rw [top_add]
     apply coeNat_lt_top
   -- Porting note: was `apply_mod_cast Nat.lt_succ_of_le; apply_mod_cast h`
@@ -519,16 +519,16 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
 #align part_enat.lt_add_one_iff_lt PartENat.lt_add_one_iff_lt
 
 theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
-  refine PartENat.cases_on a ?_ ?_
-  <;> refine PartENat.cases_on b ?_ ?_
+  refine PartENat.casesOn a ?_ ?_
+  <;> refine PartENat.casesOn b ?_ ?_
   <;> simp
   simp only [←Nat.cast_add, PartENat.coeNat_ne_top, forall_const]
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
 protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b := by
   rcases ne_top_iff.1 hc with ⟨c, rfl⟩
-  refine PartENat.cases_on a ?_ ?_
-  <;> refine PartENat.cases_on b ?_ ?_
+  refine PartENat.casesOn a ?_ ?_
+  <;> refine PartENat.casesOn b ?_ ?_
   <;> simp [add_eq_top_iff, coeNat_ne_top, @eq_comm _ (⊤ : PartENat)]
   simp only [←Nat.cast_add, add_left_cancel_iff, PartENat.coeNat_inj, add_comm, forall_const]
 #align part_enat.add_right_cancel_iff PartENat.add_right_cancel_iff
@@ -584,7 +584,7 @@ theorem toWithTop_coeNat' (n : ℕ) {h : Decidable (n : PartENat).Dom} :
 @[simp]
 theorem toWithTop_le {x y : PartENat} :
     ∀ [Decidable x.Dom] [Decidable y.Dom], toWithTop x ≤ toWithTop y ↔ x ≤ y :=
-  PartENat.cases_on y (by simp) (PartENat.cases_on x (by simp) (by intros <;> simp))
+  PartENat.casesOn y (by simp) (PartENat.casesOn x (by simp) (by intros <;> simp))
 #align part_enat.to_with_top_le PartENat.toWithTop_le
 
 @[simp]
@@ -601,7 +601,7 @@ open Classical
 
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
-  refine PartENat.cases_on y ?_ ?_ <;> refine PartENat.cases_on x ?_ ?_
+  refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
   --Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
   · simp only [add_top, toWithTop_top', _root_.add_top]
   · simp only [add_top, toWithTop_top', toWithTop_coeNat', _root_.add_top, forall_const]
@@ -618,7 +618,7 @@ noncomputable def withTopEquiv : PartENat ≃ ℕ∞
     match x with
     | Option.some n => some n
     | Option.none => ⊤
-  left_inv x := by apply PartENat.cases_on x <;> intros <;> simp <;> rfl
+  left_inv x := by apply PartENat.casesOn x <;> intros <;> simp <;> rfl
   right_inv x := by cases x <;> simp [withTopEquiv.match_1] <;> rfl
 #align part_enat.with_top_equiv PartENat.withTopEquiv
 
