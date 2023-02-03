@@ -99,6 +99,7 @@ theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   -- Porting note: `simp [xgcdAux_succ]` crashes Lean here
   rw [xgcdAux_succ]
   rfl
+#align nat.gcd_a_zero_right Nat.gcdA_zero_right
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
@@ -141,6 +142,7 @@ theorem xgcd_aux_P {r r'} :
     rw [Int.emod_def]; generalize (b / a : ℤ) = k
     rw [p, p', mul_sub, sub_add_eq_add_sub, mul_sub, add_mul, mul_comm k t, mul_comm k s,
       ← mul_assoc, ← mul_assoc, add_comm (x * s * k), ← add_sub_assoc, sub_sub]
+set_option linter.uppercaseLean3 false in
 #align nat.xgcd_aux_P Nat.xgcd_aux_P
 
 /-- **Bézout's lemma**: given `x y : ℕ`, `gcd x y = x * a + y * b`, where `a = gcd_a x y` and

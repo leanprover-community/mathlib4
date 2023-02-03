@@ -78,8 +78,8 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
 
-E.g. `#eval  "InvHMulLEConjugate₂Smul_ne_top".splitCase` yields
-`["Inv", "HMul", "LE", "Conjugate₂", "Smul", "_", "ne", "_", "top"]`.
+E.g. `#eval  "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
+`["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
 Id.run do
@@ -248,11 +248,15 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
 private def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
+  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool :=
+  visit where
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
-  | _, .app e a           => Id.run do
-      if visit true e then
+  | _, x@(.app e a)       => Id.run do
+      if !visit true e then
+        return false
+      -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
+      if x.isConstantApplication then
         return true
       if let some n := e.getAppFn.constName? then
         if let some l := ignore n then
@@ -309,16 +313,21 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
   let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
   return aux
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
-      (fixedNumeralAttr.find? env) isRelevant e
+      (fixedNumeralAttr.find? env) isRelevant (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
-    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
+    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
+    if trace then
+      dbg_trace s!"replacing at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
+      if trace && n₀ != n₁ then
+        dbg_trace s!"changing {n₀} to {n₁}"
       let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
@@ -336,22 +345,33 @@ where /-- Implementation of `applyReplacementFun`. -/
             let gf := r g.appFn!
             let ga := r g.appArg!
             let e₂ := mkApp2 gf x ga
+            if trace then
+              dbg_trace s!"reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter: {e₂}"
             return some e₂
         /- Test if the head should not be replaced. -/
         let c1 := isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 := additiveTest findTranslation? ignore x
+        if trace && c1 && c2 && c3 then
+          dbg_trace s!"{x} doesn't contain a fixed type, so we will change {nm}"
         if c1 && c2 && not c3 then
+          if trace then
+            dbg_trace s!"{x} contains a fixed type, so {nm} is not changed"
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
         let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
         if !shouldTranslateNumeral findTranslation? ignore fixedNumeral nm firstArg then
+          if trace then
+            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
+      if trace then
+        dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+          }replace type with {n₁}"
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
@@ -689,7 +709,7 @@ private def nameDict : String → List String
 | "hdiv"        => ["hsub"]
 | "hpow"        => ["hsmul"]
 | "finprod"     => ["finsum"]
-| "pow"         => ["smul"]
+| "pow"         => ["nsmul"]
 | "npow"        => ["nsmul"]
 | "zpow"        => ["zsmul"]
 | "monoid"      => ["add", "Monoid"]
@@ -762,9 +782,10 @@ def fixAbbreviation : List String → List String
 | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
 | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
 -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
-| "Smul"  :: s                      => "SMul" :: fixAbbreviation s
-| "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
-| "hSmul" :: s                      => "hSMul" :: fixAbbreviation s
+| "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
+| "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
+| "Nsmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `Pow`
+| "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
 | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
 | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
@@ -818,11 +839,15 @@ private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
 def proceedFields (src tgt : Name) : CoreM Unit := do
-  let env : Environment ← getEnv
   let aux := proceedFieldsAux src tgt
-  aux fun n ↦ pure <| if isStructure env n then getStructureFields env n else #[]
-  -- We don't have to run toAdditive on the constructor of a structure, since the use of
-  -- `Name.mapPrefix` will do that automatically.
+  aux fun declName ↦ do
+    if isStructure (← getEnv) declName then
+      return getStructureFields (← getEnv) declName
+    else
+      return #[]
+  aux fun declName ↦ do match (← getEnv).find? declName with
+    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) => return ctors.toArray.map (·.getString)
+    | _ => pure #[]
 
 private def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $[(attr := $stx?,*)]?
@@ -908,7 +933,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type _} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive

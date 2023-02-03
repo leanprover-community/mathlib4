@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 
 ! This file was ported from Lean 3 source module lean_core.data.vector
-! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! leanprover-community/lean commit 855e5b74e3a52a40552e8f067169d747d48743fd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
