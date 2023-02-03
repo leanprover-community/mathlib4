@@ -572,6 +572,7 @@ import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
