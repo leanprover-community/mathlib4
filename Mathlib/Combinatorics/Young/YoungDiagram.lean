@@ -456,23 +456,23 @@ The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.
 -/
 
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The cells making up a `young_diagram` from a list of row lengths -/
 protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
   | [] => ∅
   | w::ws =>
     ({0} : Finset ℕ) ×ᶠ Finset.range w ∪
-      (cellsOfRowLens ws).map (Embedding.prodMap ⟨_, Nat.succ_injective⟩ (Embedding.refl ℕ))
+      (YoungDiagram.cellsOfRowLens ws).map
+        (Embedding.prodMap ⟨_, Nat.succ_injective⟩ (Embedding.refl ℕ))
 #align young_diagram.cells_of_row_lens YoungDiagram.cellsOfRowLens
 
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w.nthLe c.fst h := by
-  induction w generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
+  induction' w with w_hd w_tl w_ih generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
   · simp [YoungDiagram.cellsOfRowLens]
   · rcases c with ⟨⟨_, _⟩, _⟩
-    · simp
-    · simpa [w_ih, -Finset.singleton_product, Nat.succ_lt_succ_iff]
+    -- Porting note: `List.nthLe` required
+    · simp [List.nthLe]
+    · simpa [w_ih, -Finset.singleton_product, Nat.succ_lt_succ_iff, List.nthLe]
 #align young_diagram.mem_cells_of_row_lens YoungDiagram.mem_cellsOfRowLens
 
 /-- Young diagram from a sorted list -/
@@ -487,10 +487,11 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
     calc
       j1 ≤ j2 := hj
       _ < w.nthLe i2 _ := h2
-      _ ≤ w.nthLe i1 _ := _
-    obtain rfl | h := eq_or_lt_of_le hi
-    · rfl
-    · apply list.pairwise_iff_nth_le.mp hw _ _ _ h
+      _ ≤ w.nthLe i1 _ :=
+      by
+        obtain rfl | h := eq_or_lt_of_le hi
+        · rfl
+        · apply List.pairwise_iff_nthLe.mp hw _ _ _ h
 #align young_diagram.of_row_lens YoungDiagram.ofRowLens
 
 theorem mem_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} {c : ℕ × ℕ} :
@@ -524,11 +525,11 @@ theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hp
     (ofRowLens w hw).rowLens = w := by
   ext (i r)
   cases' lt_or_ge i w.length with h h
-  · simp only [Option.mem_def, ← List.get_eq_iff, h, rowLens_length_ofRowLens hpos]
+  · simp only [Option.mem_def, ← List.nthLe_eq_iff, h, rowLens_length_ofRowLens hpos]
     revert r
     simpa only [eq_iff_eq_cancel_right, get_rowLens] using rowLen_ofRowLens _ h
   · rw [List.get?_eq_none.mpr h, List.get?_eq_none.mpr]
-    rwa [rowLens_length_ofRowLens]
+    rwa [rowLens_length_ofRowLens hpos]
 #align young_diagram.row_lens_of_row_lens_eq_self YoungDiagram.rowLens_ofRowLens_eq_self
 
 /-- Equivalence between Young diagrams and weakly decreasing lists of positive natural numbers.
