@@ -80,16 +80,8 @@ def isPrefixOf? (pre nm : Name) : Option Name :=
     some anonymous
   else match nm with
   | anonymous => none
-  | num p' a =>
-    if let some nm := isPrefixOf? pre p' then
-      some <| nm.num a
-    else
-      none
-  | str p' s =>
-    if let some nm := isPrefixOf? pre p' then
-      some <| nm.str s
-    else
-      none
+  | num p' a => (isPrefixOf? pre p').map (·.num a)
+  | str p' s => (isPrefixOf? pre p').map (·.str s)
 
 end Name
 
