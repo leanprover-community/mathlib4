@@ -45,6 +45,7 @@ variable {α}
 
 theorem uniformContinuous_pi {β : Type _} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
+  -- porting note: required `Function.comp` to close
   simp only [UniformContinuous, Pi.uniformity, tendsto_infᵢ, tendsto_comap_iff, Function.comp]
 #align uniform_continuous_pi uniformContinuous_pi
 
@@ -78,4 +79,3 @@ instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α
 #align Pi.separated Pi.separated
 
 end
-
