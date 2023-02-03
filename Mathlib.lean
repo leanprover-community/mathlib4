@@ -333,6 +333,7 @@ import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.Pointwise
 import Mathlib.Data.Finsupp.Pwo
+import Mathlib.Data.Finsupp.ToDfinsupp
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card

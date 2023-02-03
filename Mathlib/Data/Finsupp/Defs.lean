@@ -163,7 +163,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
   rfl
 #align finsupp.coe_mk Finsupp.coe_mk
 
-instance : Zero (α →₀ M) :=
+instance hasZero: Zero (α →₀ M) :=
   ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 
 @[simp]
@@ -1002,7 +1002,7 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
     · rw [add_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, zero_add]
 #align finsupp.single_add Finsupp.single_add
 
-instance : AddZeroClass (α →₀ M) :=
+instance addZeroClass: AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
@@ -1211,7 +1211,7 @@ instance hasNatScalar : SMul ℕ (α →₀ M) :=
   ⟨fun n v => v.mapRange ((· • ·) n) (nsmul_zero _)⟩
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
-instance : AddMonoid (α →₀ M) :=
+instance addMonoid: AddMonoid (α →₀ M) :=
   FunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
 end AddMonoid
