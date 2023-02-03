@@ -1117,8 +1117,8 @@ theorem map_finsupp_sum (f : M →ₛₗ[σ₁₂] M₂) {t : ι →₀ γ} {g :
 #align linear_map.map_finsupp_sum LinearMap.map_finsupp_sum
 
 theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(t.sum g) = t.sum fun i d => g i d :=
-  coeFn_sum _ _
+    ⇑(t.sum g) = t.sum fun i d => g i d := rfl
+
 #align linear_map.coe_finsupp_sum LinearMap.coe_finsupp_sum
 
 @[simp]
@@ -1146,8 +1146,7 @@ theorem map_dfinsupp_sum (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ i} {g
 #align linear_map.map_dfinsupp_sum LinearMap.map_dfinsupp_sum
 
 theorem coe_dfinsupp_sum (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(t.sum g) = t.sum fun i d => g i d :=
-  coeFn_sum _ _
+    ⇑(t.sum g) = t.sum fun i d => g i d := rfl
 #align linear_map.coe_dfinsupp_sum LinearMap.coe_dfinsupp_sum
 
 @[simp]
