@@ -538,14 +538,15 @@ theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := 
     apply lt_irrefl n
     calc
       n = ∑ i : Fin c.length, 1 := by simp [length_n]
-      _ < ∑ i : Fin c.length, c.blocks_fun i :=
-        by
+      _ < ∑ i : Fin c.length, c.blocksFun i := by
+        {
         obtain ⟨i, hi, i_blocks⟩ : ∃ i ∈ c.blocks, 1 < i := ne_ones_iff.1 H
-        rw [← of_fn_blocks_fun, mem_of_fn c.blocks_fun, Set.mem_range] at hi
-        obtain ⟨j : Fin c.length, hj : c.blocks_fun j = i⟩ := hi
+        rw [← ofFn_blocksFun, mem_ofFn c.blocksFun, Set.mem_range] at hi
+        obtain ⟨j : Fin c.length, hj : c.blocksFun j = i⟩ := hi
         rw [← hj] at i_blocks
-        exact Finset.sum_lt_sum (fun i hi => by simp [blocks_fun]) ⟨j, Finset.mem_univ _, i_blocks⟩
-      _ = n := c.sum_blocks_fun
+        exact Finset.sum_lt_sum (fun i hi => by simp [blocksFun]) ⟨j, Finset.mem_univ _, i_blocks⟩
+        }
+      _ = n := c.sum_blocksFun
 
 #align composition.eq_ones_iff_length Composition.eq_ones_iff_length
 
