@@ -40,14 +40,14 @@ def IsComplete (s : Set α) :=
 
 theorem Filter.HasBasis.cauchy_iff {ι} {p : ι → Prop} {s : ι → Set (α × α)} (h : (𝓤 α).HasBasis p s)
     {f : Filter α} :
-    Cauchy f ↔ NeBot f ∧ ∀ i, p i → ∃ t ∈ f, ∀ (x) (_ : x ∈ t) (y) (_ : y ∈ t), (x, y) ∈ s i :=
+    Cauchy f ↔ NeBot f ∧ ∀ i, p i → ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, (x, y) ∈ s i :=
   and_congr Iff.rfl <|
     (f.basis_sets.prod_self.le_basis_iff h).trans <| by
       simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, ball_mem_comm]
 #align filter.has_basis.cauchy_iff Filter.HasBasis.cauchy_iff
 
 theorem cauchy_iff' {f : Filter α} :
-    Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α, ∃ t ∈ f, ∀ (x) (_ : x ∈ t) (y) (_ : y ∈ t), (x, y) ∈ s :=
+    Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α, ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, (x, y) ∈ s :=
   (𝓤 α).basis_sets.cauchy_iff
 #align cauchy_iff' cauchy_iff'
 
@@ -125,8 +125,7 @@ for `f`. -/
 theorem le_nhds_of_cauchy_adhp {f : Filter α} {x : α} (hf : Cauchy f) (adhs : ClusterPt x f) :
     f ≤ 𝓝 x :=
   le_nhds_of_cauchy_adhp_aux
-    (by
-      intro s hs
+    (fun s hs => by
       obtain ⟨t, t_mem, ht⟩ : ∃ t ∈ f, t ×ˢ t ⊆ s
       exact (cauchy_iff.1 hf).2 s hs
       use t, t_mem, ht
@@ -138,32 +137,28 @@ theorem le_nhds_iff_adhp_of_cauchy {f : Filter α} {x : α} (hf : Cauchy f) :
   ⟨fun h => ClusterPt.of_le_nhds' h hf.1, le_nhds_of_cauchy_adhp hf⟩
 #align le_nhds_iff_adhp_of_cauchy le_nhds_iff_adhp_of_cauchy
 
-theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
+nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
     (hm : UniformContinuous m) : Cauchy (map m f) :=
   ⟨hf.1.map _,
     calc
-      Filter.map m f ×ᶠ Filter.map m f = Filter.map (fun p : α × α => (m p.1, m p.2)) (f ×ᶠ f) :=
-          Filter.prod_map_map_eq
-      _ ≤ Filter.map (fun p : α × α => (m p.1, m p.2)) (𝓤 α) := map_mono hf.right
-      _ ≤ 𝓤 β := hm
-      ⟩
+      map m f ×ᶠ map m f = map (Prod.map m m) (f ×ᶠ f) := Filter.prod_map_map_eq
+      _ ≤ Filter.map (Prod.map m m) (𝓤 α) := map_mono hf.right
+      _ ≤ 𝓤 β := hm⟩
 #align cauchy.map Cauchy.map
 
-theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
+nonrec theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
     (hm : comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α) [NeBot (comap m f)] :
     Cauchy (comap m f) :=
   ⟨‹_›,
     calc
-      Filter.comap m f ×ᶠ Filter.comap m f = Filter.comap (fun p : α × α => (m p.1, m p.2)) (f ×ᶠ f) :=
-        Filter.prod_comap_comap_eq
-      _ ≤ Filter.comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) := comap_mono hf.right
-      _ ≤ 𝓤 α := hm
-      ⟩
+      comap m f ×ᶠ comap m f = comap (Prod.map m m) (f ×ᶠ f) := prod_comap_comap_eq
+      _ ≤ comap (Prod.map m m) (𝓤 β) := comap_mono hf.right
+      _ ≤ 𝓤 α := hm⟩
 #align cauchy.comap Cauchy.comap
 
 theorem Cauchy.comap' [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
-    (hm : Filter.comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α) (_ : NeBot (Filter.comap m f)) :
-    Cauchy (Filter.comap m f) :=
+    (hm : Filter.comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α)
+    (_ : NeBot (Filter.comap m f)) : Cauchy (Filter.comap m f) :=
   hf.comap hm
 #align cauchy.comap' Cauchy.comap'
 
@@ -228,7 +223,7 @@ theorem CauchySeq.subseq_subseq_mem {V : ℕ → Set (α × α)} (hV : ∀ n, V 
   exact ((hu.comp <| hf.prod_atTop hg).comp tendsto_atTop_diagonal).subseq_mem hV
 #align cauchy_seq.subseq_subseq_mem CauchySeq.subseq_subseq_mem
 
--- todo: generalize
+-- todo: generalize this and other lemmas to a nonempty semilattice
 theorem cauchySeq_iff' {u : ℕ → α} :
     CauchySeq u ↔ ∀ V ∈ 𝓤 α, ∀ᶠ k in atTop, k ∈ Prod.map u u ⁻¹' V :=
   cauchySeq_iff_tendsto
@@ -373,7 +368,7 @@ theorem isComplete_unionᵢ_separated {ι : Sort _} {s : ι → Set α} (hs : �
 /-- A complete space is defined here using uniformities. A uniform space
   is complete if every Cauchy filter converges. -/
 class CompleteSpace (α : Type u) [UniformSpace α] : Prop where
-  /-- Every Cauchy filter converges. -/
+  /-- In a complete uniform space, every Cauchy filter converges. -/
   complete : ∀ {f : Filter α}, Cauchy f → ∃ x, f ≤ 𝓝 x
 #align complete_space CompleteSpace
 
