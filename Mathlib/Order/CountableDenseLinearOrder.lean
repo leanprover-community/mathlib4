@@ -54,13 +54,13 @@ theorem exists_between_finsets {α : Type _} [LinearOrder α] [DenselyOrdered α
         (exists_between (lo_lt_hi _ (Finset.max'_mem _ nlo) _ (Finset.min'_mem _ nhi))) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm.1, fun y hy ↦
           lt_of_lt_of_le hm.2 (Finset.min'_le hi y hy)⟩
-    else-- upper set is empty, use `no_max_order`
+    else-- upper set is empty, use `NoMaxOrder`
         Exists.elim
         (exists_gt (Finset.max' lo nlo)) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
   else
     if nhi : hi.Nonempty then
-      -- lower set is empty, use `no_min_order`
+      -- lower set is empty, use `NoMinOrder`
         Exists.elim
         (exists_lt (Finset.min' hi nhi)) fun m hm ↦
         ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ lt_of_lt_of_le hm (Finset.min'_le hi y hy)⟩
@@ -83,7 +83,7 @@ def PartialIso : Type _ :=
 
 namespace PartialIso
 
-instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun p h q ↦ (Finset.not_mem_empty _ h).elim⟩⟩
+instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.not_mem_empty _ h).elim⟩⟩
 
 instance : Preorder (PartialIso α β) := Subtype.preorder _
 
@@ -215,7 +215,7 @@ theorem embedding_from_countable_to_dense [Encodable α] [DenselyOrdered β] [No
         (OrderEmbedding.subtype _)⟩
   rcases(F a₁).prop with ⟨f, hf, ha₁⟩
   rcases(F a₂).prop with ⟨g, hg, ha₂⟩
-  rcases our_ideal.directed _ hf _ hg with ⟨m, hm, fm, gm⟩
+  rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
 #align order.embedding_from_countable_to_dense Order.embedding_from_countable_to_dense
 
