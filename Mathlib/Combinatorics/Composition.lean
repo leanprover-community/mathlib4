@@ -367,7 +367,7 @@ theorem mem_range_embedding_iff {j : Fin n} {i : Fin c.length} :
   · intro h
     rcases Set.mem_range.2 h with ⟨k, hk⟩
     rw [Fin.ext_iff] at hk
-    change c.size_up_to i + k = (j : ℕ) at hk
+    change c.sizeUpTo i + k = (j : ℕ) at hk
     rw [← hk]
     simp [size_up_to_succ', k.is_lt]
   · intro h
