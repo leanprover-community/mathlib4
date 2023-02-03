@@ -22,26 +22,26 @@ is the diagonal only. This condition actually implies the stronger separation pr
 that the space is T₃, hence those conditions are equivalent for topologies coming from
 a uniform structure.
 
-More generally, the intersection `𝓢 X` of all entourages of `X`, which has type `set (X × X)` is an
+More generally, the intersection `𝓢 X` of all entourages of `X`, which has type `Set (X × X)` is an
 equivalence relation on `X`. Points which are equivalent under the relation are basically
 undistinguishable from the point of view of the uniform structure. For instance any uniformly
 continuous function will send equivalent points to the same value.
 
-The quotient `separation_quotient X` of `X` by `𝓢 X` has a natural uniform structure which is
+The quotient `SeparationQuotient X` of `X` by `𝓢 X` has a natural uniform structure which is
 separated, and satisfies a universal property: every uniformly continuous function
-from `X` to a separated uniform space uniquely factors through `separation_quotient X`.
-As usual, this allows to turn `separation_quotient` into a functor (but we don't use the
+from `X` to a separated uniform space uniquely factors through `SeparationQuotient X`.
+As usual, this allows to turn `SeparationQuotient` into a functor (but we don't use the
 category theory library in this file).
 
-These notions admit relative versions, one can ask that `s : set X` is separated, this
+These notions admit relative versions, one can ask that `s : Set X` is separated, this
 is equivalent to asking that the uniform structure induced on `s` is separated.
 
 ## Main definitions
 
-* `separation_relation X : set (X × X)`: the separation relation
-* `separated_space X`: a predicate class asserting that `X` is separated
-* `separation_quotient X`: the maximal separated quotient of `X`.
-* `separation_quotient.lift f`: factors a map `f : X → Y` through the separation quotient of `X`.
+* `separation_relation X : Set (X × X)`: the separation relation
+* `SeparatedSpace X`: a predicate class asserting that `X` is separated
+* `SeparationQuotient X`: the maximal separated quotient of `X`.
+* `SeparationQuotient.lift f`: factors a map `f : X → Y` through the separation quotient of `X`.
 * `separation_quotient.map f`: turns a map `f : X → Y` into a map between the separation quotients
   of `X` and `Y`.
 
@@ -62,8 +62,8 @@ on a uniform space `X`,
 ## Implementation notes
 
 The separation setoid `separation_setoid` is not declared as a global instance.
-It is made a local instance while building the theory of `separation_quotient`.
-The factored map `separation_quotient.lift f` is defined without imposing any condition on
+It is made a local instance while building the theory of `SeparationQuotient`.
+The factored map `SeparationQuotient.lift f` is defined without imposing any condition on
 `f`, but returns junk if `f` is not uniformly continuous (constant junk hence it is always
 uniformly continuous).
 
