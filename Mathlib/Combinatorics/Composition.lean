@@ -891,7 +891,7 @@ def blocksFun (i : Fin c.length) : ℕ :=
 theorem blocksFun_pos (i : Fin c.length) : 0 < c.blocksFun i :=
   haveI : (⟨i, c.lt_length' i⟩ : Fin c.boundaries.card) < ⟨i + 1, c.lt_length i⟩ :=
     Nat.lt_succ_self _
-  lt_tsub_iff_left.mpr ((c.boundaries.order_emb_of_fin rfl).StrictMono this)
+  lt_tsub_iff_left.mpr ((c.boundaries.orderEmbOfFin rfl).strictMono this)
 #align composition_as_set.blocks_fun_pos CompositionAsSet.blocksFun_pos
 
 /-- List of the sizes of the blocks in a `composition_as_set`. -/
