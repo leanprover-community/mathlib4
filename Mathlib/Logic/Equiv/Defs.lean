@@ -166,7 +166,6 @@ protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 #align equiv.simps.symm_apply Equiv.Simps.symm_apply
 
--- set_option trace.simps.debug true
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
 -- Porting note:

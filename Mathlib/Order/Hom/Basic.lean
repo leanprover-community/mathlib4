@@ -240,10 +240,6 @@ instance : OrderHomClass (α →o β) α β where
     congr
   map_rel f _ _ h := f.monotone h
 
-/-- See Note [custom simps projection]. Note: all other FunLike classes use `apply` instead of `coe`
-for the projection names. Maybe we should change this. -/
-def Simps.coe (f : α →o β) : α → β := f
-
 initialize_simps_projections OrderHom (toFun → coe)
 
 -- Porting note: dropped `to_fun_eq_coe` as it is a tautology now.
