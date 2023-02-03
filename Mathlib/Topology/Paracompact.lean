@@ -8,9 +8,9 @@ Authors: Reid Barton, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.SubsetProperties
-import Mathbin.Topology.Separation
-import Mathbin.Data.Option.Basic
+import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Separation
+import Mathlib.Data.Option.Basic
 
 /-!
 # Paracompact topological spaces
@@ -115,8 +115,7 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
 
 -- See note [lower instance priority]
 /-- A compact space is paracompact. -/
-instance (priority := 100) paracompact_of_compact [CompactSpace X] : ParacompactSpace X :=
-  by
+instance (priority := 100) paracompact_of_compact [CompactSpace X] : ParacompactSpace X := by
   -- the proof is trivial: we choose a finite subcover using compactness, and use it
   refine' ⟨fun ι s ho hu => _⟩
   rcases is_compact_univ.elim_finite_subcover _ ho hu.ge with ⟨T, hT⟩
@@ -153,8 +152,7 @@ theorem refinement_of_locally_compact_sigma_compact_of_nhds_basis_set [LocallyCo
     {s : Set X} (hs : IsClosed s) (hB : ∀ x ∈ s, (𝓝 x).HasBasis (p x) (B x)) :
     ∃ (α : Type v)(c : α → X)(r : ∀ a, ι (c a)),
       (∀ a, c a ∈ s ∧ p (c a) (r a)) ∧
-        (s ⊆ ⋃ a, B (c a) (r a)) ∧ LocallyFinite fun a => B (c a) (r a) :=
-  by
+        (s ⊆ ⋃ a, B (c a) (r a)) ∧ LocallyFinite fun a => B (c a) (r a) := by
   classical
     -- For technical reasons we prepend two empty sets to the sequence `compact_exhaustion.choice X`
     set K' : CompactExhaustion X := CompactExhaustion.choice X
@@ -235,8 +233,7 @@ theorem refinement_of_locally_compact_sigma_compact_of_nhds_basis [LocallyCompac
 /-- A locally compact sigma compact Hausdorff space is paracompact. See also
 `refinement_of_locally_compact_sigma_compact_of_nhds_basis` for a more precise statement. -/
 instance (priority := 100) paracompact_of_locally_compact_sigma_compact [LocallyCompactSpace X]
-    [SigmaCompactSpace X] [T2Space X] : ParacompactSpace X :=
-  by
+    [SigmaCompactSpace X] [T2Space X] : ParacompactSpace X := by
   refine' ⟨fun α s ho hc => _⟩
   choose i hi using Union_eq_univ_iff.1 hc
   have : ∀ x : X, (𝓝 x).HasBasis (fun t : Set X => (x ∈ t ∧ IsOpen t) ∧ t ⊆ s (i x)) id :=
@@ -248,8 +245,7 @@ instance (priority := 100) paracompact_of_locally_compact_sigma_compact [Locally
 
 /- Dieudonné‘s theorem: a paracompact Hausdorff space is normal. Formalization is based on the proof
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
-theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace X :=
-  by
+theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace X := by
   -- First we show how to go from points to a set on one side.
   have :
     ∀ s t : Set X,
