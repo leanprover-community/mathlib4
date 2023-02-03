@@ -110,117 +110,71 @@ instance [Add α] : Add (Holor α ds) :=
 instance [Neg α] : Neg (Holor α ds) :=
   ⟨fun a t => -a t⟩
 
-instance [AddSemigroup α] : AddSemigroup (Holor α ds)
-  -- Porting note: Previous code was:
-  -- by
-  -- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
-  --
-  -- `refine_struct` has not been ported yet.
-  where
-  add_assoc := fun a b c => by
-    funext; unfold HAdd.hAdd instHAdd Add.add instAddHolor; simp [add_assoc]
+instance [AddSemigroup α] : AddSemigroup (Holor α ds) := Pi.addSemigroup
+-- Porting note: Previous code was:
+-- by
+-- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
+--
+-- `refine_struct` has not been ported yet.
 
-instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds)
-  -- Porting note: Previous code was:
-  -- by
-  -- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
-  --
-  -- `refine_struct` has not been ported yet.
-  where
-  add_comm := fun a b => by
-    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd instAddSemigroupHolor instAddHolor
-    simp [add_comm]
+instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := Pi.addCommSemigroup
+-- Porting note: Previous code was:
+-- by
+-- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
+--
+-- `refine_struct` has not been ported yet.
 
-instance [AddMonoid α] : AddMonoid (Holor α ds)
-  -- Porting note: Previous code was:
-  -- by
-  -- refine_struct
-  --     { zero := (0 : Holor α ds)
-  --       add := (· + ·)
-  --       nsmul := fun n x i => n • x i } <;>
-  --   pi_instance_derive_field
-  --
-  -- `refine_struct` has not been ported yet.
-  where
-  zero_add := fun a => by
-    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd instAddSemigroupHolor instAddHolor
-      OfNat.ofNat Zero.toOfNat0 Zero.zero instZeroHolor; simp
-  add_zero := fun a => by
-    funext; unfold  HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd instAddSemigroupHolor instAddHolor
-      OfNat.ofNat Zero.toOfNat0 Zero.zero instZeroHolor; simp
+instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
+-- Porting note: Previous code was:
+-- by
+-- refine_struct
+--     { zero := (0 : Holor α ds)
+--       add := (· + ·)
+--       nsmul := fun n x i => n • x i } <;>
+--   pi_instance_derive_field
+--
+-- `refine_struct` has not been ported yet.
 
-instance [AddCommMonoid α] : AddCommMonoid (Holor α ds)
-  -- Porting note: Previous code was:
-  -- by
-  -- refine_struct
-  --     { zero := (0 : Holor α ds)
-  --       add := (· + ·)
-  --       nsmul := AddMonoid.nsmul } <;>
-  --   pi_instance_derive_field
-  --
-  -- `refine_struct` has not been ported yet.
-  where
-  add_comm := fun a b => by
-    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd AddMonoid.toAddSemigroup
-      instAddMonoidHolor instAddSemigroupHolor instAddHolor; simp [add_comm]
+instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
+-- Porting note: Previous code was:
+-- by
+-- refine_struct
+--     { zero := (0 : Holor α ds)
+--       add := (· + ·)
+--       nsmul := AddMonoid.nsmul } <;>
+--   pi_instance_derive_field
+--
+-- `refine_struct` has not been ported yet.
 
-instance [AddGroup α] : AddGroup (Holor α ds)
-  -- Porting note: Previous code was:
-  -- by
-  -- refine_struct
-  --     { zero := (0 : Holor α ds)
-  --       add := (· + ·)
-  --       nsmul := AddMonoid.nsmul
-  --       zsmul := fun n x i => n • x i } <;>
-  --   pi_instance_derive_field
-  --
-  -- `refine_struct` has not been ported yet.
-  where
-  add_left_neg := fun a => by
-    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd AddMonoid.toAddSemigroup
-      SubNegMonoid.toAddMonoid instAddMonoidHolor instAddSemigroupHolor instAddHolor Neg.neg
-      instNegHolor OfNat.ofNat Zero.toOfNat0 Zero.zero instZeroHolor; simp
+instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
+-- Porting note: Previous code was:
+-- by
+-- refine_struct
+--     { zero := (0 : Holor α ds)
+--       add := (· + ·)
+--       nsmul := AddMonoid.nsmul
+--       zsmul := fun n x i => n • x i } <;>
+--   pi_instance_derive_field
+--
+-- `refine_struct` has not been ported yet.
 
-instance [AddCommGroup α] : AddCommGroup (Holor α ds)
-  -- Porting note: Previous code was:
-  -- by
-  -- refine_struct
-  --     { zero := (0 : Holor α ds)
-  --       add := (· + ·)
-  --       nsmul := AddMonoid.nsmul
-  --       zsmul := SubNegMonoid.zsmul } <;>
-  --   pi_instance_derive_field
-  --
-  -- `refine_struct` has not been ported yet.
-  where
-  add_comm := fun a b => by
-    funext; unfold HAdd.hAdd instHAdd Add.add AddSemigroup.toAdd AddMonoid.toAddSemigroup
-      SubNegMonoid.toAddMonoid AddGroup.toSubNegMonoid instAddGroupHolor instAddMonoidHolor
-      instAddSemigroupHolor instAddHolor; simp [add_comm]
+instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
+-- Porting note: Previous code was:
+-- by
+-- refine_struct
+--     { zero := (0 : Holor α ds)
+--       add := (· + ·)
+--       nsmul := AddMonoid.nsmul
+--       zsmul := SubNegMonoid.zsmul } <;>
+--   pi_instance_derive_field
+--
+-- `refine_struct` has not been ported yet.
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
   ⟨fun a x => fun t => a * x t⟩
 
-instance [Semiring α] : Module α (Holor α ds)
-  -- Porting note: Previous code was:
-  -- Pi.module _ _ _
-  where
-  one_smul := fun b => by
-    funext; unfold HSMul.hSMul instHSMul SMul.smul instSMulHolor; simp only [one_mul]
-  smul_zero := fun a => by
-    funext; unfold HSMul.hSMul instHSMul SMul.smul MulAction.toSMul
-      instSMulHolor OfNat.ofNat Zero.toOfNat0 Zero.zero AddMonoid.toZero AddCommMonoid.toAddMonoid
-      instAddCommMonoidHolor instAddMonoidHolor instZeroHolor; simp only [mul_zero]
-  mul_smul := fun x y b => by
-    funext; unfold HSMul.hSMul instHSMul SMul.smul instSMulHolor; simp only [mul_assoc]
-  smul_add := fun a x y => by
-    funext; unfold HSMul.hSMul instHSMul SMul.smul MulAction.toSMul instSMulHolor HAdd.hAdd instHAdd
-      Add.add AddZeroClass.toAdd AddMonoid.toAddZeroClass AddSemigroup.toAdd
-      AddMonoid.toAddSemigroup AddCommMonoid.toAddMonoid instAddCommMonoidHolor instAddMonoidHolor
-      instAddSemigroupHolor instAddHolor; simp only [mul_add]
-  add_smul := sorry
-  zero_smul := sorry
+instance [Semiring α] : Module α (Holor α ds) := Pi.module _ _ _
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
