@@ -65,8 +65,7 @@ standard order on products. -/
 structure YoungDiagram where
   /-- A finite set which represents a finite collection of cells on the `ℕ × ℕ` grid. -/
   cells : Finset (ℕ × ℕ)
-  /-- Cells are up-left justified. We represent it whether the `cells` is a lower set in `ℕ × ℕ` in
-  the product partial order. -/
+  /-- Cells are up-left justified, witnessed by the fact that `cells` is a lower set in `ℕ × ℕ`. -/
   IsLowerSet : IsLowerSet (cells : Set (ℕ × ℕ))
 #align young_diagram YoungDiagram
 
