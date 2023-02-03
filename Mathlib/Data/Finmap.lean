@@ -381,9 +381,9 @@ theorem erase_toFinmap (a : α) (s : AList β) : erase a ⟦s⟧ = AList.toFinma
 #align finmap.erase_to_finmap Finmap.erase_toFinmap
 
 @[simp]
-theorem keys_erase_to_finset (a : α) (s : AList β) : keys ⟦s.erase a⟧ = (keys ⟦s⟧).erase a := by
+theorem keys_erase_toFinset (a : α) (s : AList β) : keys ⟦s.erase a⟧ = (keys ⟦s⟧).erase a := by
   simp [Finset.erase, keys, AList.erase, keys_kerase]
-#align finmap.keys_erase_to_finset Finmap.keys_erase_to_finset
+#align finmap.keys_erase_to_finset Finmap.keys_erase_toFinset
 
 @[simp]
 theorem keys_erase (a : α) (s : Finmap β) : (erase a s).keys = s.keys.erase a :=
