@@ -242,6 +242,7 @@ import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Combinatorics.SetFamily.Intersecting
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
