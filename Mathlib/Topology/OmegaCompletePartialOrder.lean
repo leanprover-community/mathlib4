@@ -41,7 +41,8 @@ def IsωSup {α : Type u} [Preorder α] (c : Chain α) (x : α) : Prop :=
 #align Scott.is_ωSup Scott.IsωSup
 
 theorem isωSup_iff_isLUB {α : Type u} [Preorder α] {c : Chain α} {x : α} :
-    IsωSup c x ↔ IsLUB (range c) x := by simp [IsωSup, IsLUB, IsLeast, upperBounds, lowerBounds]
+    IsωSup c x ↔ IsLUB (range c) x := by
+  simp [IsωSup, IsLUB, IsLeast, upperBounds, lowerBounds]
 #align Scott.is_ωSup_iff_is_lub Scott.isωSup_iff_isLUB
 
 variable (α : Type u) [OmegaCompletePartialOrder α]
@@ -49,24 +50,23 @@ variable (α : Type u) [OmegaCompletePartialOrder α]
 /-- The characteristic function of open sets is monotone and preserves
 the limits of chains. -/
 def IsOpen (s : Set α) : Prop :=
-  Continuous' fun x => x ∈ s
+  Continuous' fun x ↦ x ∈ s
 #align Scott.is_open Scott.IsOpen
 
 theorem isOpen_univ : IsOpen α univ :=
-  ⟨fun _ _ _ _ => mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
+  ⟨fun _ _ _ _ ↦ mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
 #align Scott.is_open_univ Scott.isOpen_univ
 
 theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
   CompleteLattice.inf_continuous'
 #align Scott.is_open.inter Scott.IsOpen.inter
 
-theorem isOpen_unionₛ (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) :=
-  by
+theorem isOpen_unionₛ (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs⊢
   convert CompleteLattice.supₛ_continuous' (setOf ⁻¹' s) hs
-  · ext1 x
-    simp only [supₛ_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
-      SetCoe.exists, supᵢ_Prop_eq, mem_setOf_eq, Subtype.coe_mk, mem_unionₛ]
+  ext1
+  simp only [supₛ_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
+    SetCoe.exists, supᵢ_Prop_eq, mem_setOf_eq, mem_unionₛ]
 #align Scott.is_open_sUnion Scott.isOpen_unionₛ
 
 end Scott
@@ -75,8 +75,7 @@ end Scott
 such that their open sets, seen as a function `α → Prop`,
 preserves the joins of ω-chains  -/
 @[reducible]
-def Scott (α : Type u) :=
-  α
+def Scott (α : Type u) := α
 #align Scott Scott
 
 instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
@@ -91,7 +90,7 @@ section notBelow
 
 variable {α : Type _} [OmegaCompletePartialOrder α] (y : Scott α)
 
-/-- `not_below` is an open set in `Scott α` used
+/-- `notBelow` is an open set in `Scott α` used
 to prove the monotonicity of continuous functions -/
 def notBelow :=
   { x | ¬x ≤ y }
@@ -124,7 +123,6 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
   · apply ωSup_le
 #align is_ωSup_ωSup isωSup_ωSup
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:565:11: unsupported: specialize non-hyp -/
 theorem scott_continuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
     OmegaCompletePartialOrder.Continuous' f := by
