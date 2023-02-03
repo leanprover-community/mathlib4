@@ -205,11 +205,9 @@ protected def card (μ : YoungDiagram) : ℕ :=
 section Transpose
 
 /-- The `transpose` of a Young diagram is obtained by swapping i's with j's. -/
-def transpose (μ : YoungDiagram) : YoungDiagram
-    where
+def transpose (μ : YoungDiagram) : YoungDiagram where
   cells := (Equiv.prodComm _ _).finsetCongr μ.cells
-  IsLowerSet _ _ h :=
-    by
+  IsLowerSet _ _ h := by
     simp only [Finset.mem_coe, Equiv.finsetCongr_apply, Finset.mem_map_equiv]
     intro hcell
     apply μ.IsLowerSet _ hcell
