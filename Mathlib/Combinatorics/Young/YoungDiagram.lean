@@ -31,7 +31,7 @@ to say that `(i, j)` (in matrix coordinates) is in the Young diagram `μ`.
 
 - `YoungDiagram` : Young diagrams
 - `YoungDiagram.card` : the number of cells in a Young diagram (its *cardinality*)
-- `YoungDiagram.distrib_lattice` : a distributive lattice instance for Young diagrams
+- `YoungDiagram.instDistribLatticeYoungDiagram` : a distributive lattice instance for Young diagrams
   ordered by containment, with `(⊥ : YoungDiagram)` the empty diagram.
 - `YoungDiagram.row` and `YoungDiagram.rowLen`: rows of a Young diagram and their lengths
 - `YoungDiagram.col` and `YoungDiagram.colLen`: columns of a Young diagram and their lengths
@@ -40,7 +40,7 @@ to say that `(i, j)` (in matrix coordinates) is in the Young diagram `μ`.
 
 In "English notation", a Young diagram is drawn so that (i1, j1) ≤ (i2, j2)
 means (i1, j1) is weakly up-and-left of (i2, j2). This terminology is used
-below, e.g. in `young_diagram.up_left_mem`.
+below, e.g. in `YoungDiagram.up_left_mem`.
 
 ## Tags
 
@@ -259,13 +259,12 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
     exact YoungDiagram.le_of_transpose_le h ⟩
 #align young_diagram.transpose_le_iff YoungDiagram.transpose_le_iff
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+--@[mono] Porting note: not implemented yet
 protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.transpose ≤ ν.transpose :=
   transpose_le_iff.mpr h_le
 #align young_diagram.transpose_mono YoungDiagram.transpose_mono
 
-/-- Transposing Young diagrams is an `order_iso`. -/
+/-- Transposing Young diagrams is an `OrderIso`. -/
 @[simps]
 def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=
   ⟨⟨transpose, transpose, fun _ => by simp, fun _ => by simp⟩, by simp⟩
@@ -277,13 +276,13 @@ section Rows
 
 /-! ### Rows and row lengths of Young diagrams.
 
-This section defines `μ.row` and `μ.row_len`, with the following API:
-      1.  `(i, j) ∈ μ ↔ j < μ.row_len i`
-      2.  `μ.row i = {i} ×ˢ (finset.range (μ.row_len i))`
-      3.  `μ.row_len i = (μ.row i).card`
-      4.  `∀ {i1 i2}, i1 ≤ i2 → μ.row_len i2 ≤ μ.row_len i1`
+This section defines `μ.row` and `μ.rowLen`, with the following API:
+      1.  `(i, j) ∈ μ ↔ j < μ.rowLen i`
+      2.  `μ.row i = {i} ×ᶠ (finset.range (μ.rowLen i))`
+      3.  `μ.rowLen i = (μ.row i).card`
+      4.  `∀ {i1 i2}, i1 ≤ i2 → μ.rowLen i2 ≤ μ.rowLen i1`
 
-Note: #3 is not convenient for defining `μ.row_len`; instead, `μ.row_len` is defined
+Note: #3 is not convenient for defining `μ.rowLen`; instead, `μ.rowLen` is defined
 as the smallest `j` such that `(i, j) ∉ μ`. -/
 
 
@@ -333,8 +332,7 @@ theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).
   simp [row_eq_prod]
 #align young_diagram.row_len_eq_card YoungDiagram.rowLen_eq_card
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+--@[mono] Porting note: not implemented yet
 theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
   by_contra' h_lt
   rw [← lt_self_iff_false (μ.rowLen i1)]
@@ -400,8 +398,7 @@ theorem colLen_eq_card (μ : YoungDiagram) {j : ℕ} : μ.colLen j = (μ.col j).
   simp [col_eq_prod]
 #align young_diagram.col_len_eq_card YoungDiagram.colLen_eq_card
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+--@[mono] Porting note: not implemented yet
 theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colLen j2 ≤ μ.colLen j1 := by
   convert μ.transpose.rowLen_anti j1 j2 hj <;> simp
 #align young_diagram.col_len_anti YoungDiagram.colLen_anti
@@ -413,7 +410,7 @@ section RowLens
 /-! ### The list of row lengths of a Young diagram
 
 This section defines `μ.rowLens : list ℕ`, the list of row lengths of a Young diagram `μ`.
-  1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`list.sorted (≥)`).
+  1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`List.Sorted (· ≥ ·)`).
   2. `YoungDiagram.rowLens_pos` : It is strictly positive.
 
 -/
@@ -453,7 +450,7 @@ section EquivListRowLens
 
 This section defines the equivalence between Young diagrams `μ` and weakly decreasing lists `w`
 of positive natural numbers, corresponding to row lengths of the diagram:
-  `YoungDiagram.equiv_list_rowLens :`
+  `YoungDiagram.equivListRowLens :`
   `YoungDiagram ≃ {w : list ℕ // w.sorted (≥) ∧ ∀ x ∈ w, 0 < x}`
 
 The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.ofRowLens`.
@@ -461,7 +458,7 @@ The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.
 -/
 
 
-/-- The cells making up a `young_diagram` from a list of row lengths -/
+/-- The cells making up a `YoungDiagram` from a list of row lengths -/
 protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
   | [] => ∅
   | w::ws =>
