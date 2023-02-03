@@ -63,7 +63,6 @@ theorem toMultiset_apply (f : α →₀ ℕ) : toMultiset f = f.sum fun a n => n
 theorem toMultiset_symm_apply [DecidableEq α] (s : Multiset α) (x : α) :
     Finsupp.toMultiset.symm s x = s.count x := by
     -- Porting note: proof used to be `convert rfl`
-    -- Porting note: the following should probably be a simp lemma somewhere
     have : Finsupp.toMultiset.symm s x = Finsupp.toMultiset.invFun s x := rfl
     simp_rw [this, toMultiset, coe_mk]
     congr
