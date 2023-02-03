@@ -429,8 +429,10 @@ variable [GeneralizedBooleanAlgebra α] [DecidableEq α] {a b c : α} (P : Finpa
 /-- Restricts a finpartition to avoid a given element. -/
 @[simps]
 def avoid (b : α) : Finpartition (a \ b) :=
-  ofErase (P.Parts.image (· \ b)) (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).SupIndep
-    (by rw [SupImage, comp.left_id, Finset.sup_sdiff_right, ← id_def, P.SupParts])
+  ofErase
+    (P.Parts.image (· \ b))
+    (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
+    (by rw [sup_image, comp.left_id, Finset.sup_sdiff_right, ← id_def, P.SupParts])
 #align finpartition.avoid Finpartition.avoid
 
 @[simp]
