@@ -64,9 +64,9 @@ There are some small changes in the attribute. None of them should have great ef
 
 structures, projections, simp, simplifier, generates declarations
 -/
-open Lean
+open Lean Elab Parser Command
 open Meta hiding Config
-open Parser Elab Term Command
+open Elab.Term hiding mkConst
 
 /-- `updateName nm s is_prefix` adds `s` to the last component of `nm`,
   either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
@@ -403,7 +403,7 @@ structure ParsedProjectionData where
   /-- the list of projection numbers this expression corresponds to -/
   projNrs : Array Nat := #[]
   /-- is this a projection that is changed by the user? -/
-  isChanged : Bool := false
+  isCustom : Bool := false
 
 /-- Turn `ParsedProjectionData` into `ProjectionData`. -/
 def ParsedProjectionData.toProjectionData (p : ParsedProjectionData) : ProjectionData :=
@@ -453,7 +453,7 @@ open Qq
 /-- Elaborate the projection notation `$e.$projName` where `e` is an expression of a structure
 application `strName`. `e` might rely on universe variables `univs`. -/
 def elabProjectionNotation (univs : List Name) (e : Expr) (strName projName : Name) :
-  MetaM (Expr)  :=
+  MetaM Expr :=
 TermElabM.run' (s := {levelNames := univs}) <| do
   let env ← getEnv
   let .some baseStr := findField? env strName projName |
@@ -461,9 +461,15 @@ TermElabM.run' (s := {levelNames := univs}) <| do
   let .some fullProjName := getProjFnForField? env baseStr projName |
     throwError "no such field {projName}"
   let e ← mkBaseProjections baseStr strName e
-  let projExpr ← mkConst fullProjName
-  elabAppArgs projExpr #[{ name := `self, val := Arg.expr e }] (args := #[])
-    (expectedType? := none) (explicit := false) (ellipsis := false)
+  let projExpr ← Term.mkConst fullProjName
+  let e ← elabAppArgs projExpr #[{ name := `self, val := Arg.expr e }] (args := #[])
+    (expectedType? := none) (explicit := true) (ellipsis := false)
+  let e ← instantiateMVars e
+  if e.hasMVar then
+    throwError "internal error when creating default projection. Projection has metavariables.
+     {indentExpr e}"
+  return e
+
 
 /-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`. -/
 def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
@@ -492,11 +498,10 @@ partial def getCompositeOfProjectionsAux (stx : Syntax) (univs : List Name) (str
   if projRest.isEmpty then
     let newE ← mkLambdaFVars args newE
     if !stx.isMissing then
-      discard <| TermElabM.run' <| addTermInfo stx newE
+      _ ← TermElabM.run' <| addTermInfo stx newE
     return (newE, newPos)
   let type ← inferType newE
   forallTelescopeReducing type fun typeArgs tgt ↦ do
-    logInfo m!"{typeArgs}"
     getCompositeOfProjectionsAux stx univs tgt.getAppFn.constName! projRest (mkAppN newE typeArgs)
       newPos (args ++ typeArgs)
 
@@ -577,16 +582,18 @@ def findCustomProjection (str : Name) (proj : ParsedProjectionData)
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' <|
     getCompositeOfProjections str proj.origName.1.getString! proj.origName.2
+  trace[simps.debug] "Projection {proj.newName.1} has default projection {rawExpr} and
+    uses projection indices {nrs}"
   let customName := str ++ `Simps ++ proj.newName.1
   match env.find? customName with
   | some d@(.defnInfo _) =>
     let customProj := d.instantiateValueLevelParams! rawUnivs
     trace[simps.verbose] "found custom projection for {proj.newName.1}:{indentExpr customProj}"
-    match (← MetaM.run' $ isDefEq customProj rawExpr) with
+    match (← MetaM.run' <| isDefEq customProj rawExpr) with
     | true =>
-      discard <| MetaM.run' <| TermElabM.run' <| addTermInfo proj.newName.2 <|
+      _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newName.2 <|
         ← mkConstWithLevelParams customName
-      pure { proj with expr? := some customProj, projNrs := nrs, isChanged := true }
+      pure { proj with expr? := some customProj, projNrs := nrs, isCustom := true }
     | false =>
       -- if the type of the Expression is different, we show a different error message, because
       -- (in Lean 3) just stating that the expressions are different is quite unhelpful
@@ -600,7 +607,7 @@ def findCustomProjection (str : Name) (proj : ParsedProjectionData)
           indentExpr customProjType}\nExpected type:{indentExpr rawExprType
           }\nNote: make sure order of implicit arguments is exactly the same."
   | _ =>
-    discard <| MetaM.run' <| TermElabM.run' <| addTermInfo proj.newName.2 rawExpr
+    _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newName.2 rawExpr
     pure {proj with expr? := some rawExpr, projNrs := nrs}
 
 /-- Auxilliary function for `getRawProjections`.
@@ -634,7 +641,7 @@ def resolveNotationClass (projs : Array ParsedProjectionData)
   trace[simps.debug] "The raw projection is:{indentExpr rawExprLambda}"
   projs.mapIdxM fun nr x ↦ do
     unless nr.1 = pos do return x
-    if x.isChanged then
+    if x.isCustom then
       trace[simps.verbose] "Warning: Projection {relevantProj} is definitionally equal to{
           indentExpr rawExprLambda}\nHowever, this is not used since a custom simps projection is {
             ""}specified by the user."
@@ -768,7 +775,7 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
   let stxs := stxs.getD <| .mk #[]
   let rules ← stxs.getElems.raw.mapM elabSimpsRule
   let nm ← resolveGlobalConstNoOverload id
-  discard <| liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
+  _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
   _ ← liftCoreM <| getRawProjections nm true rules trc.isSome
 | _ => throwUnsupportedSyntax
 
@@ -901,7 +908,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   addDeclarationRanges declName {
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange ref }
-  discard <| MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
+  _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default

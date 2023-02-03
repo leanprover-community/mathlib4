@@ -7,8 +7,9 @@ import Mathlib.Data.Prod.Basic
 
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
+-- set_option pp.universes true
 
-open Lean Meta Elab Term Command
+open Lean Meta Elab Term Command Simps
 
 structure Foo1 : Type where
   one : Nat
@@ -20,8 +21,8 @@ structure Foo1 : Type where
 initialize_simps_projections Foo1 (one → toNat, two → toBool, three → coe as_prefix, -toBool)
 
 run_cmd liftTermElabM <| do
-  let  env ← getEnv
-  let state := ((simpsStructure.getState env).find? `Foo1).get!
+  let env ← getEnv
+  let state := ((Simps.structureExt.getState env).find? `Foo1).get!
   guard <| state.1 == []
   guard <| state.2.map (·.1) == #[`toNat, `toBool, `coe, `four, `five]
   liftMetaM <| guard (← isDefEq (state.2[0]!.2) (← elabTerm (← `(Foo1.one)) none))
@@ -38,10 +39,11 @@ def Foo2.Simps.elim (α : Type _) : Foo2 α → α × α := fun x => (x.elim.1, 
 
 initialize_simps_projections Foo2
 
--- run_cmd liftTermElabM <| do
---   let  env ← getEnv
---   let state := ((simpsStructure.getState env).find? `Foo2).get!
---   IO.println <| format state
+@[simps]
+def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
+
+-- run_cmd do
+--   logInfo m!"{Simps.structureExt.getState (← getEnv) |>.find? `Foo2 |>.get!}"
 
 structure Left (α : Type _) extends Foo2 α where
   moreData1 : Nat
@@ -55,9 +57,9 @@ structure Right (α : Type u) (β : Type v) extends Foo2 α where
 initialize_simps_projections Right (toFoo2_elim → newProjection)
 
 run_cmd liftTermElabM <| do
-  let  env ← getEnv
-  let state := ((simpsStructure.getState env).find? `Right).get!
-  -- IO.println <| format state
+  let env ← getEnv
+  let state := ((Simps.structureExt.getState env).find? `Right).get!
+  -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
   guard <| state.2.map (·.1) == #[`toFoo2, `otherData, `newProjection]
   guard <| state.2.map (·.3) == #[[0],[1],[0,0]]
@@ -74,7 +76,7 @@ def NewTop.Simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.eli
 
 initialize_simps_projections NewTop (toRight_toFoo2_elim → newElim)
 
-run_cmd liftCoreM <| successIfFail <| simpsGetRawProjections `DoesntExist
+run_cmd liftCoreM <| successIfFail <| getRawProjections `DoesntExist
 
 class Something (α : Type _) where
   op : α → α → α → α
@@ -605,7 +607,7 @@ variable {α β γ : Sort _}
 noncomputable def Equiv.Simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
 
 run_cmd liftTermElabM <| do
-  successIfFail (simpsGetRawProjections `FaultyManualCoercion.Equiv)
+  successIfFail (getRawProjections `FaultyManualCoercion.Equiv)
 -- "Invalid custom projection:
 --   λ {α : Sort u_1} {β : Sort u_2} (e : α ≃ β), Classical.choice _
 -- Expression is not definitionally equal to
@@ -663,7 +665,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 def Equiv.Simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
 
 run_cmd liftTermElabM <| do
-  successIfFail (simpsGetRawProjections `FaultyUniverses.Equiv)
+  successIfFail (getRawProjections `FaultyUniverses.Equiv)
 -- "Invalid custom projection:
 --   fun {α} {β} e => (Equiv.symm e).toFun
 -- Expression has different type than FaultyUniverses.Equiv.invFun. Given type:
@@ -717,7 +719,7 @@ def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
-  let data ← simpsGetRawProjections `ManualProjectionNames.Equiv
+  let data ← getRawProjections `ManualProjectionNames.Equiv
   guard <| data.2.map (·.name) == #[`apply, `symm_apply]
 
 @[simps (config := {simpRhs := true})]
@@ -756,7 +758,7 @@ def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → coe as_prefix, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
-  let data ← simpsGetRawProjections `PrefixProjectionNames.Equiv
+  let data ← getRawProjections `PrefixProjectionNames.Equiv
   guard $ data.2.map (·.name) = #[`coe, `symm_apply]
   guard $ data.2.map (·.isPrefix) = #[true, false]
 
