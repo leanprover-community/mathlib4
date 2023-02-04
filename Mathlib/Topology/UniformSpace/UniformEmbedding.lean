@@ -27,7 +27,7 @@ universe u v w
 variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
 /-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
-on `α` is the pullback of the uniformity filter on `β` under `prod.map f f`. If `α` is a separated
+on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
 space, then this implies that `f` is injective, hence it is a `UniformEmbedding`. -/
 structure UniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
@@ -397,7 +397,6 @@ variable {α : Type _} {β : Type _} {γ : Type _} [UniformSpace α] [UniformSpa
   {e : β → α} (h_e : UniformInducing e) (h_dense : DenseRange e) {f : β → γ}
   (h_f : UniformContinuous f)
 
--- mathport name: exprψ
 local notation "ψ" => DenseInducing.extend (UniformInducing.denseInducing h_e h_dense) f
 
 theorem uniformly_extend_exists [CompleteSpace γ] (a : α) : ∃ c, Tendsto f (comap e (𝓝 a)) (𝓝 c) :=
