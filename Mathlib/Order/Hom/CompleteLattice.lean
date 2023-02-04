@@ -945,7 +945,7 @@ end CompleteLatticeHom
 
 theorem Set.image_supₛ {f : α → β} (s : Set (Set α)) : f '' supₛ s = supₛ (image f '' s) := by
   ext b
-  simp only [supₛ_eq_unionₛ, mem_image, mem_unionₛ, exists_prop, unionₛ_image, mem_unionₛ]
+  simp only [supₛ_eq_unionₛ, mem_image, mem_unionₛ, exists_prop, unionₛ_image, mem_unionᵢ]
   constructor
   · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
     exact ⟨t, ht₁, a, ht₂, rfl⟩
@@ -968,11 +968,11 @@ def SupHomCat.setImage (f : α → β) : SupHomCat (Set α) (Set β)
 @[simps]
 def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β
     where
-  toFun := image e
-  invFun := image e.symm
+  toFun s := e '' s
+  invFun s := e.symm '' s
   left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id.def, image_id']
   right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id.def, image_id']
-  map_rel_iff' s t :=
+  map_rel_iff' :=
     ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
 #align equiv.to_order_iso_set Equiv.toOrderIsoSet
 
