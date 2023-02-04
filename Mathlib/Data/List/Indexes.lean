@@ -13,10 +13,9 @@ import Mathlib.Data.List.Range
 import Mathlib.Tactic.LibrarySearch
 
 /-!
-# Lemmas about List.*_with_index functions.
+# Lemmas about List.*Idx functions.
 
-Some specification lemmas for `List.mapIdx`, `List.mapIdxM`, `List.foldlIdx`
-and `List.foldrIdx`.
+Some specification lemmas for `List.mapIdx`, `List.mapIdxM`, `List.foldlIdx` and `List.foldrIdx`.
 -/
 
 
@@ -28,7 +27,7 @@ namespace List
 
 variable {α : Type u} {β : Type v}
 
-section MapWithIndex
+section MapIdx
 
 -- Porting note: Add back old definition because it's easier for writing proofs.
 
@@ -37,7 +36,7 @@ def map_with_index_core (f : ℕ → α → β) : ℕ → List α → List β
   | _, []      => []
   | k, (a::as) => f k a::(map_with_index_core f (k+1) as)
 
-/-- Given a function `f : ℕ → α → β` and `as : list α`, `as = [a₀, a₁, ...]`, returns the list
+/-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
 `[f 0 a₀, f 1 a₁, ...]`. -/
 def map_with_index (f : ℕ → α → β) (as : List α) : List β :=
   map_with_index_core f 0 as
@@ -55,10 +54,10 @@ theorem map_with_index_core_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
     simp only [map_with_index_core, hl, add_left_comm, add_comm, add_zero, zero_add]
 
 -- Porting note: convert new definition to old definition.
---   A few new theorem are added to archive this
---   1. Prove that map_with_index_core f (l++[e]) = map_with_index_core l ++ [f l.length e]
---   2. Prove that mapIdx f (l ++ [e])            = mapIdx l              ++ [f l.length e]
---   3. Prove list induction using ∀ l e, p [] → (p l → p (l ++ [e])) → p l
+--   A few new theorems are added to achieve this
+--   1. Prove that `map_with_index_core f (l ++ [e]) = map_with_index_core l ++ [f l.length e]`
+--   2. Prove that `mapIdx f (l ++ [e]) = mapIdx l ++ [f l.length e]`
+--   3. Prove list induction using `∀ l e, p [] → (p l → p (l ++ [e])) → p l`
 -- Porting note: new theorem.
 theorem list_reverse_induction (p : List α → Prop) :
   (p []) → (∀ (l : List α) (e : α), p l → p (l ++ [e])) → (∀ (l : List α), p l) := by
@@ -187,10 +186,10 @@ theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
   · simp only [mapIdx_nil, map]
   · rw [new_def_eq_old_def]
     have old_hl : ∀ (f : ℕ → α → β), map_with_index f tl = map (uncurry f) (enum tl) := by
-      intro f; rw [←(hl f), new_def_eq_old_def]
+      intro f; rw [← hl f, new_def_eq_old_def]
     rw [map_with_index, map_with_index_core, map_with_index_core_eq, old_hl]
     simp only [zero_add, enum_eq_zip_range, map_uncurry_zip_eq_zipWith, map, uncurry_apply_pair,
-               map_enumFrom_eq_zipWith]
+      map_enumFrom_eq_zipWith]
 #align list.map_with_index_eq_enum_map List.mapIdx_eq_enum_map
 
 @[simp]
@@ -229,12 +228,12 @@ theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
   · simp [IH]
 #align list.map_with_index_eq_of_fn List.mapIdx_eq_ofFn
 
-end MapWithIndex
+end MapIdx
 
-section FoldrWithIndex
+section FoldrIdx
 
 -- Porting note: Changed argument order of `foldrIdxSpec` to align better with `foldrIdx`.
-/-- Specification of `foldr_with_index_aux`. -/
+/-- Specification of `foldrIdx`. -/
 def foldrIdxSpec (f : ℕ → α → β → β) (b : β) (as : List α) (start : ℕ) : β :=
   foldr (uncurry f) b <| enumFrom start as
 #align list.foldr_with_index_aux_spec List.foldrIdxSpecₓ
@@ -257,7 +256,7 @@ theorem foldrIdx_eq_foldr_enum (f : ℕ → α → β → β) (b : β) (as : Lis
   simp only [foldrIdx, foldrIdxSpec, foldrIdx_eq_foldrIdxSpec, enum]
 #align list.foldr_with_index_eq_foldr_enum List.foldrIdx_eq_foldr_enum
 
-end FoldrWithIndex
+end FoldrIdx
 
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
@@ -270,10 +269,10 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
              foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply, Bool.cond_decide]
 #align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
 
-section FoldlWithIndex
+section FoldlIdx
 
 -- Porting note: Changed argument order of `foldlIdxSpec` to align better with `foldlIdx`.
-/-- Specification of `foldl_with_index_aux`. -/
+/-- Specification of `foldlIdx`. -/
 def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start : ℕ) : α :=
   foldl (fun a (p : ℕ × β) => f p.fst a p.snd) a <| enumFrom start bs
 #align list.foldl_with_index_aux_spec List.foldlIdxSpecₓ
@@ -292,9 +291,9 @@ theorem foldlIdx_eq_foldl_enum (f : ℕ → α → β → α) (a : α) (bs : Lis
   simp only [foldlIdx, foldlIdxSpec, foldlIdx_eq_foldlIdxSpec, enum]
 #align list.foldl_with_index_eq_foldl_enum List.foldlIdx_eq_foldl_enum
 
-end FoldlWithIndex
+end FoldlIdx
 
-section MfoldWithIndex
+section FoldIdxM
 
 -- Porting note: foldrM_eq_foldr now depends on [LawfulMonad m]
 variable {m : Type u → Type v} [Monad m]
@@ -309,55 +308,55 @@ theorem foldlIdxM_eq_foldlM_enum [LawfulMonad m] {α β} (f : ℕ → β → α 
   rw [foldlIdxM, foldlM_eq_foldl, foldlIdx_eq_foldl_enum]
 #align list.mfoldl_with_index_eq_mfoldl_enum List.foldlIdxM_eq_foldlM_enum
 
-end MfoldWithIndex
+end FoldIdxM
 
-section MmapWithIndex
+section MapIdxM
 
 -- Porting note: `[Applicative m]` replaced by `[Monad m] [LawfulMonad m]`
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
-/-- Specification of `mmap_with_index_aux`. -/
-def mmapWithIndexAuxSpec {α β} (f : ℕ → α → m β) (start : ℕ) (as : List α) : m (List β) :=
+/-- Specification of `mapIdxMAux`. -/
+def mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (start : ℕ) (as : List α) : m (List β) :=
   List.traverse (uncurry f) <| enumFrom start as
-#align list.mmap_with_index_aux_spec List.mmapWithIndexAuxSpec
+#align list.mmap_with_index_aux_spec List.mapIdxMAuxSpec
 
 -- Note: `traverse` the class method would require a less universe-polymorphic
 -- `m : Type u → Type u`.
-theorem mmapWithIndexAuxSpec_cons {α β} (f : ℕ → α → m β) (start : ℕ) (a : α) (as : List α) :
-    mmapWithIndexAuxSpec f start (a :: as) =
-      List.cons <$> f start a <*> mmapWithIndexAuxSpec f (start + 1) as :=
+theorem mapIdxMAuxSpec_cons {α β} (f : ℕ → α → m β) (start : ℕ) (a : α) (as : List α) :
+    mapIdxMAuxSpec f start (a :: as) =
+      List.cons <$> f start a <*> mapIdxMAuxSpec f (start + 1) as :=
   rfl
-#align list.mmap_with_index_aux_spec_cons List.mmapWithIndexAuxSpec_cons
+#align list.mmap_with_index_aux_spec_cons List.mapIdxMAuxSpec_cons
 
-theorem mapIdxM.go_eq_mmapWithIndexAuxSpec {α β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
-  mapIdxM.go f as arr = (arr.toList ++ ·) <$> mmapWithIndexAuxSpec f arr.size as := by
+theorem mapIdxM.go_eq_mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
+  mapIdxM.go f as arr = (arr.toList ++ ·) <$> mapIdxMAuxSpec f arr.size as := by
   generalize e : as.length = len
   revert as arr
   induction' len with len ih <;> intro arr as h
   · have : as = [] := by cases as; rfl; contradiction
-    simp only [this, go, Array.toList_eq, mmapWithIndexAuxSpec, List.traverse, map_pure, append_nil]
+    simp only [this, go, Array.toList_eq, mapIdxMAuxSpec, List.traverse, map_pure, append_nil]
   · match as with
     | nil => contradiction
     | cons head tail =>
       simp only [length_cons, Nat.succ.injEq] at h
-      simp only [go, Array.toList_eq, mmapWithIndexAuxSpec_cons, map_eq_pure_bind, seq_eq_bind_map,
+      simp only [go, Array.toList_eq, mapIdxMAuxSpec_cons, map_eq_pure_bind, seq_eq_bind_map,
                  LawfulMonad.bind_assoc, pure_bind]
       congr
       conv => { lhs; intro x; rw [(ih _ _ h)]; }
       funext x
       simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append, Array.size_push,
                  map_eq_pure_bind]
-#align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mapIdxM.go_eq_mmapWithIndexAuxSpec
+#align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mapIdxM.go_eq_mapIdxMAuxSpec
 
 theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α):
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
-  simp only [mapIdxM, mapIdxM.go_eq_mmapWithIndexAuxSpec, Array.toList_eq, Array.data_toArray,
-             nil_append, mmapWithIndexAuxSpec, Array.size_toArray, length_nil, id_map', enum]
+  simp only [mapIdxM, mapIdxM.go_eq_mapIdxMAuxSpec, Array.toList_eq, Array.data_toArray,
+             nil_append, mapIdxMAuxSpec, Array.size_toArray, length_nil, id_map', enum]
 #align list.mmap_with_index_eq_mmap_enum List.mapIdxM_eq_mmap_enum
 
-end MmapWithIndex
+end MapIdxM
 
-section MmapWithIndex'
+section MapIdxM'
 
 -- Porting note: `[Applicative m] [LawfulApplicative m]` replaced by [Monad m] [LawfulMonad m]
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
@@ -387,6 +386,6 @@ theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :
   apply (mapIdxMAux'_eq_mapIdxM.go f as #[])
 #align list.mmap_with_index'_eq_mmap_with_index List.mapIdxM'_eq_mapIdxM
 
-end MmapWithIndex'
+end MapIdxM'
 
 end List
