@@ -24,7 +24,7 @@ endowed with a filter (instead of just `ℕ` with `atTop`).
 
 ## Main results
 
-Let `α` be a topological space, `β` a uniform space, `Fₙ` and `f` be functions from `α`to `β`
+Let `α` be a topological space, `β` a uniform space, `Fₙ` and `f` be functions from `α` to `β`
 (where the index `n` belongs to an indexing type `ι` endowed with a filter `p`).
 
 * `TendstoUniformlyOn F f p s`: the fact that `Fₙ` converges uniformly to `f` on `s`. This means
