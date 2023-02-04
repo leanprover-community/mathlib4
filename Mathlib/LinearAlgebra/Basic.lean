@@ -1660,7 +1660,7 @@ theorem map_subtype_range_ofLe {p p' : Submodule R M} (h : p ≤ p') :
 #align submodule.map_subtype_range_of_le Submodule.map_subtype_range_ofLe
 
 theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
-  rw [← (map_injective_of_injective (show injective p.subtype from Subtype.coe_injective)).eq_iff,
+  rw [← (map_injective_of_injective (show Injective p.subtype from Subtype.coe_injective)).eq_iff,
     map_comap_subtype, map_bot, disjoint_iff]
 #align submodule.disjoint_iff_comap_eq_bot Submodule.disjoint_iff_comap_eq_bot
 
@@ -1776,7 +1776,7 @@ theorem LinearMap.range_rangeRestrict [Semiring R] [AddCommMonoid M] [AddCommMon
 
 @[simp]
 theorem LinearMap.ker_rangeRestrict [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
-    [Module R M₂] (f : M →ₗ[R] M₂) : f.rangeRestrict.ker = ker f :=
+    [Module R M₂] (f : M →ₗ[R] M₂) : ker f.rangeRestrict = ker f :=
   LinearMap.ker_codRestrict _ _ _
 #align linear_map.ker_range_restrict LinearMap.ker_rangeRestrict
 
