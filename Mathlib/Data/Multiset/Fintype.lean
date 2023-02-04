@@ -67,14 +67,13 @@ def Multiset.mkToType (m : Multiset α) (x : α) (i : Fin (m.count x)) : m :=
 
 /-- As a convenience, there is a coercion from `m : Type*` to `α` by projecting onto the first
 component. -/
-instance Multiset.hasCoeToSort.hasCoe : Coe m α :=
+-- Porting note: was `Coe m α`
+instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
   ⟨fun x ↦ x.1⟩
-#align multiset.has_coe_to_sort.has_coe Multiset.hasCoeToSort.hasCoe
+#align multiset.has_coe_to_sort.has_coe instCoeSortMultisetType.instCoeOutToTypeₓ
 
-@[simp]
-theorem Multiset.fst_coe_eq_coe {x : m} : x.1 = x :=
-  rfl
-#align multiset.fst_coe_eq_coe Multiset.fst_coe_eq_coe
+-- Porting note: syntactic equality
+#noalign multiset.fst_coe_eq_coe
 
 @[simp]
 theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
@@ -83,7 +82,7 @@ theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
   rfl
 #align multiset.coe_eq Multiset.coe_eq
 
---@[simp]
+-- @[simp] -- Porting note: dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 #align multiset.coe_mk Multiset.coe_mk
@@ -231,7 +230,7 @@ theorem Multiset.image_toEnumFinset_fst (m : Multiset α) :
   rw [Finset.image, Multiset.map_toEnumFinset_fst]
 #align multiset.image_to_enum_finset_fst Multiset.image_toEnumFinset_fst
 
---@[simp]
+@[simp]
 theorem Multiset.map_univ_coe (m : Multiset α) : (Finset.univ : Finset m).val.map (↑) = m := by
   have := m.map_toEnumFinset_fst
   rw [← m.map_univ_coeEmbedding] at this
