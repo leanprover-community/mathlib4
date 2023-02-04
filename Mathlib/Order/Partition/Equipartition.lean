@@ -47,7 +47,7 @@ variable {P}
 theorem Set.Subsingleton.IsEquipartition (h : (P.parts : Set (Finset α)).Subsingleton) :
     P.IsEquipartition :=
   Set.Subsingleton.equitableOn h _
-#align finpartition.set.subsingleton.is_equipartition Finpartition.Set.Subsingleton.isEquipartition
+#align finpartition.set.subsingleton.is_equipartition Finpartition.Set.Subsingleton.IsEquipartition
 
 theorem IsEquipartition.card_parts_eq_average (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     t.card = s.card / P.parts.card ∨ t.card = s.card / P.parts.card + 1 :=
