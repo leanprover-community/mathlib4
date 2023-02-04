@@ -871,11 +871,10 @@ lattices. -/
 @[simps]
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ
     where
-  -- Porting note: todo unbork this
-  toFun f := ⟨SupHom.dual f.toSupHom, InfHomCat.map_infₛ' f⟩
-  invFun f := ⟨SupHom.dual f.toSupHom, InfHomCat.map_infₛ' f⟩
-  left_inv f := ext fun a => by simp
-  right_inv f := ext fun a => by simp
+  toFun f := ⟨SupHomCat.dual f.toSupHom, fun s ↦ f.map_infₛ' s⟩
+  invFun f := ⟨SupHomCat.dual f.toSupHom, fun s ↦ f.map_infₛ' s⟩
+  left_inv _ := ext fun _ => rfl
+  right_inv _ := ext fun _ => rfl
 #align complete_lattice_hom.dual CompleteLatticeHom.dual
 
 @[simp]
@@ -999,3 +998,5 @@ theorem supSupHom_apply : supSupHom x = x.1 ⊔ x.2 :=
 theorem infInfHom_apply : infInfHom x = x.1 ⊓ x.2 :=
   rfl
 #align inf_Inf_hom_apply infInfHom_apply
+
+#lint
