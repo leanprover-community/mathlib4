@@ -37,7 +37,7 @@ multiset enumeration
 -/
 
 
---open BigOperators -- Porting note: unknown namespace
+open BigOperators
 
 variable {α : Type _} [DecidableEq α] {m : Multiset α}
 
