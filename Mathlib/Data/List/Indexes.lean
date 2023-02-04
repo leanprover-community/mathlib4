@@ -73,21 +73,21 @@ theorem list_reverse_induction (p : List α → Prop) (base : p [])
 
 -- Porting note: new theorem.
 theorem map_with_index_core_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁ l₂ : List α),
-  map_with_index_core f n (l₁ ++ l₂) =
-  map_with_index_core f n l₁ ++ map_with_index_core f (n + l₁.length) l₂ := by
+    map_with_index_core f n (l₁ ++ l₂) =
+    map_with_index_core f n l₁ ++ map_with_index_core f (n + l₁.length) l₂ := by
   intros f n l₁ l₂
-  generalize e : (l₁++l₂).length = len
+  generalize e : (l₁ ++ l₂).length = len
   revert n l₁ l₂
   induction' len with len ih <;> intros n l₁ l₂ h
   · have l₁_nil : l₁ = [] := by cases l₁; rfl; contradiction
     have l₂_nil : l₂ = [] := by cases l₂; rfl; rw [List.length_append] at h; contradiction
     simp only [l₁_nil, l₂_nil]; rfl
   · cases' l₁ with head tail
-    · trivial -- · simp [map_with_index_core]; rw [ih (n+1) tail l₂ _]; simp
+    · rfl
     · simp only [map_with_index_core, List.append_eq, length_cons, cons_append,cons.injEq, true_and]
       suffices : n + Nat.succ (length tail) = n + 1 + tail.length
       { rw [this]
-        apply ih (n+1) _ _ _
+        apply ih (n + 1) _ _ _
         simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
         simp only [length_append, h] }
       { rw [Nat.add_assoc]; simp only [Nat.add_comm] }
@@ -104,7 +104,7 @@ theorem map_with_index_append : ∀ (f : ℕ → α → β) (l : List α) (e : �
 theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr : Array β),
     mapIdx.go f (l₁ ++ l₂) arr = mapIdx.go f l₂ (List.toArray (mapIdx.go f l₁ arr)) := by
   intros f l₁ l₂ arr
-  generalize e : (l₁++l₂).length = len
+  generalize e : (l₁ ++ l₂).length = len
   revert l₁ l₂ arr
   induction' len with len ih <;> intros l₁ l₂ arr h
   · have l₁_nil : l₁ = [] := by cases l₁; rfl; contradiction
@@ -136,7 +136,7 @@ theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     Array.push_data, Array.data_toArray]
 
 -- Porting note: new theorem.
-theorem new_def_eq_old_def: ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = map_with_index f l := by
+theorem new_def_eq_old_def : ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = map_with_index f l := by
   intro f
   apply list_reverse_induction
   · rfl
@@ -147,7 +147,7 @@ theorem new_def_eq_old_def: ∀ (f : ℕ → α → β) (l : List α), l.mapIdx 
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
     map (uncurry f) (enumFrom n l) = zipWith (fun i ↦ f (i + n)) (range (length l)) l := by
   intro l
-  generalize e: l.length = len
+  generalize e : l.length = len
   revert l
   induction' len with len ih <;> intros l e n f
   · have : l = [] := by cases l; rfl; contradiction
@@ -282,7 +282,7 @@ section FoldIdxM
 -- Porting note: `foldrM_eq_foldr` now depends on `[LawfulMonad m]`
 variable {m : Type u → Type v} [Monad m]
 
-theorem foldrIdxM_eq_foldrM_enum {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) [LawfulMonad m]:
+theorem foldrIdxM_eq_foldrM_enum {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) [LawfulMonad m] :
     foldrIdxM f b as = foldrM (uncurry f) b (enum as) := by
   simp only [foldrIdxM, foldrM_eq_foldr, foldrIdx_eq_foldr_enum, uncurry]
 #align list.mfoldr_with_index_eq_mfoldr_enum List.foldrIdxM_eq_foldrM_enum
@@ -307,8 +307,7 @@ def mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (start : ℕ) (as : List α
 -- Note: `traverse` the class method would require a less universe-polymorphic
 -- `m : Type u → Type u`.
 theorem mapIdxMAuxSpec_cons {α β} (f : ℕ → α → m β) (start : ℕ) (a : α) (as : List α) :
-    mapIdxMAuxSpec f start (a :: as) =
-      List.cons <$> f start a <*> mapIdxMAuxSpec f (start + 1) as :=
+    mapIdxMAuxSpec f start (a :: as) = cons <$> f start a <*> mapIdxMAuxSpec f (start + 1) as :=
   rfl
 #align list.mmap_with_index_aux_spec_cons List.mapIdxMAuxSpec_cons
 
@@ -332,7 +331,7 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (arr : Arr
         map_eq_pure_bind]
 #align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mapIdxMGo_eq_mapIdxMAuxSpec
 
-theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α):
+theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α) :
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
   simp only [mapIdxM, mapIdxMGo_eq_mapIdxMAuxSpec, Array.toList_eq, Array.data_toArray,
     nil_append, mapIdxMAuxSpec, Array.size_toArray, length_nil, id_map', enum]
@@ -348,18 +347,15 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α) (arr : Array PUnit) :
     mapIdxMAux' f arr.size as = mapIdxM.go f as arr *> pure PUnit.unit := by
   revert arr
-  induction' as with head tail ih
-  · intros; simp only [mapIdxMAux', mapIdxM.go, Array.toList_eq, seqRight_eq,
-      map_pure, const_apply, seq_pure, id_eq]
-  · intros arr
-    simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, const_apply, seq_eq_bind, bind_pure_unit,
-      LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure, id_eq]
+  induction' as with head tail ih <;> intro arr
+  · simp only [mapIdxMAux', mapIdxM.go, seqRight_eq, map_pure, seq_pure]
+  · simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
+      LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure]
     generalize (f (Array.size arr) head) = head
     let arr_1 := arr.push ⟨⟩
     have : arr_1.size = arr.size + 1 := Array.size_push arr ⟨⟩
     rw [← this, ih arr_1]
-    simp only [seqRight_eq, map_eq_pure_bind, const_apply, seq_pure,
-      LawfulMonad.bind_assoc, pure_bind, id_eq]
+    simp only [seqRight_eq, map_eq_pure_bind, seq_pure, LawfulMonad.bind_assoc, pure_bind]
 #align list.mmap_with_index'_aux_eq_mmap_with_index_aux List.mapIdxMAux'_eq_mapIdxMGo
 
 theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :
