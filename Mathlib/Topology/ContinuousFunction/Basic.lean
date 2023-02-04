@@ -29,10 +29,10 @@ When possible, instead of parametrizing results over `(f : C(α, β))`,
 you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
-@[protect_proj]
+--@[protect_proj] -- Porting note: missing attribute?
 structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
   toFun : α → β
-  continuous_toFun : Continuous to_fun := by continuity
+  continuous_toFun : Continuous toFun --:= by continuity -- Porting note: need tactic
 #align continuous_map ContinuousMap
 
 -- mathport name: «exprC( , )»
@@ -52,20 +52,18 @@ end
 
 export ContinuousMapClass (map_continuous)
 
-attribute [continuity] map_continuous
+--attribute [continuity] map_continuous -- Porting note: need tactic
 
 section ContinuousMapClass
 
 variable {F α β : Type _} [TopologicalSpace α] [TopologicalSpace β] [ContinuousMapClass F α β]
 
-include β
-
 theorem map_continuousAt (f : F) (a : α) : ContinuousAt f a :=
-  (map_continuous f).ContinuousAt
+  (map_continuous f).continuousAt
 #align map_continuous_at map_continuousAt
 
 theorem map_continuousWithinAt (f : F) (s : Set α) (a : α) : ContinuousWithinAt f s a :=
-  (map_continuous f).ContinuousWithinAt
+  (map_continuous f).continuousWithinAt
 #align map_continuous_within_at map_continuousWithinAt
 
 instance : CoeTC F C(α, β) :=
@@ -86,13 +84,15 @@ variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [Top
 instance : ContinuousMapClass C(α, β) α β
     where
   coe := ContinuousMap.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by cases f; cases g; congr
   map_continuous := ContinuousMap.continuous_toFun
 
+
+/- Porting note: Probably not needed anymore
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
 instance : CoeFun C(α, β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+  FunLike.hasCoeToFun-/
 
 @[simp]
 theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
@@ -129,21 +129,21 @@ theorem copy_eq (f : C(α, β)) (f' : α → β) (h : f' = f) : f.copy f' h = f 
   FunLike.ext' h
 #align continuous_map.copy_eq ContinuousMap.copy_eq
 
-variable {α β} {f g : C(α, β)}
+variable {f g : C(α, β)}
 
 /-- Deprecated. Use `map_continuous` instead. -/
 protected theorem continuous (f : C(α, β)) : Continuous f :=
   f.continuous_toFun
 #align continuous_map.continuous ContinuousMap.continuous
 
-@[continuity]
-theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous f :=
-  f.1.Continuous
+--@[continuity]
+theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → β) :=
+  f.1.continuous
 #align continuous_map.continuous_set_coe ContinuousMap.continuous_set_coe
 
 /-- Deprecated. Use `map_continuous_at` instead. -/
 protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
-  f.Continuous.ContinuousAt
+  f.continuous.continuousAt
 #align continuous_map.continuous_at ContinuousMap.continuousAt
 
 /-- Deprecated. Use `FunLike.congr_fun` instead. -/
@@ -192,7 +192,7 @@ variable (α)
 
 /-- The identity as a continuous map. -/
 protected def id : C(α, α) :=
-  ⟨id⟩
+  ⟨id, continuous_id⟩
 #align continuous_map.id ContinuousMap.id
 
 @[simp]
@@ -202,7 +202,7 @@ theorem coe_id : ⇑(ContinuousMap.id α) = id :=
 
 /-- The constant map as a continuous map. -/
 def const (b : β) : C(α, β) :=
-  ⟨const α b⟩
+  ⟨fun _ : α => b, continuous_const⟩
 #align continuous_map.const ContinuousMap.const
 
 @[simp]
@@ -227,7 +227,7 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 
 /-- The composition of continuous maps, as a continuous map. -/
 def comp (f : C(β, γ)) (g : C(α, β)) : C(α, γ) :=
-  ⟨f ∘ g⟩
+  ⟨f ∘ g, f.continuous.comp g.continuous⟩
 #align continuous_map.comp ContinuousMap.comp
 
 @[simp]
@@ -289,7 +289,7 @@ variable {α₁ α₂ β₁ β₂ : Type _} [TopologicalSpace α₁] [Topologica
 def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂)
     where
   toFun x := (f x, g x)
-  continuous_toFun := Continuous.prod_mk f.Continuous g.Continuous
+  continuous_toFun := f.continuous.prod_mk g.continuous
 #align continuous_map.prod_mk ContinuousMap.prodMk
 
 /-- Given two continuous maps `f` and `g`, this is the continuous map `(x, y) ↦ (f x, g y)`. -/
@@ -297,7 +297,7 @@ def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂)
 def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α₂ × β₂)
     where
   toFun := Prod.map f g
-  continuous_toFun := Continuous.prod_map f.Continuous g.Continuous
+  continuous_toFun := f.continuous.prod_map g.continuous
 #align continuous_map.prod_map ContinuousMap.prodMap
 
 @[simp]
@@ -328,18 +328,18 @@ variable (s : Set α)
 
 /-- The restriction of a continuous function `α → β` to a subset `s` of `α`. -/
 def restrict (f : C(α, β)) : C(s, β) :=
-  ⟨f ∘ coe⟩
+  ⟨f ∘ ((↑) : s → α), sorry⟩
 #align continuous_map.restrict ContinuousMap.restrict
 
 @[simp]
-theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = f ∘ coe :=
+theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = f ∘ ((↑) : s → α) :=
   rfl
 #align continuous_map.coe_restrict ContinuousMap.coe_restrict
 
 /-- The restriction of a continuous map onto the preimage of a set. -/
 @[simps]
 def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
-  ⟨s.restrictPreimage f, continuous_iff_continuousAt.mpr fun x => f.2.ContinuousAt.restrictPreimage⟩
+  ⟨s.restrictPreimage f, continuous_iff_continuousAt.mpr fun _ => f.2.continuousAt.restrictPreimage⟩
 #align continuous_map.restrict_preimage ContinuousMap.restrictPreimage
 
 end Restrict
@@ -350,7 +350,7 @@ variable {ι : Type _} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
   (hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
   (hS : ∀ x : α, ∃ i, S i ∈ nhds x)
 
-include hφ hS
+--include hφ hS
 
 /-- A family `φ i` of continuous maps `C(S i, β)`, where the domains `S i` contain a neighbourhood
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
@@ -364,7 +364,7 @@ noncomputable def liftCover : C(α, β) := by
     exact ⟨i, mem_of_mem_nhds hi⟩
   refine' ⟨Set.liftCover S (fun i => φ i) hφ H, continuous_subtype_nhds_cover hS _⟩
   intro i
-  convert (φ i).Continuous
+  convert (φ i).continuous
   ext x
   exact Set.liftCover_coe x
 #align continuous_map.lift_cover ContinuousMap.liftCover
@@ -381,7 +381,7 @@ theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = �
   ext <| liftCover_coe
 #align continuous_map.lift_cover_restrict ContinuousMap.liftCover_restrict
 
-omit hφ hS
+-- omit hφ hS
 
 variable (A : Set (Set α)) (F : ∀ (s : Set α) (hi : s ∈ A), C(s, β))
   (hF :
@@ -389,15 +389,15 @@ variable (A : Set (Set α)) (F : ∀ (s : Set α) (hi : s ∈ A), C(s, β))
       F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
   (hA : ∀ x : α, ∃ i ∈ A, i ∈ nhds x)
 
-include hF hA
+-- include hF hA
 
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover' : C(α, β) := by
-  let S : A → Set α := coe
-  let F : ∀ i : A, C(i, β) := fun i => F i i.Prop
-  refine' lift_cover S F (fun i j => hF i i.Prop j j.Prop) _
+  let S : A → Set α := (↑)
+  let F : ∀ i : A, C(i, β) := fun i => F i i.prop
+  refine' liftCover S F (fun i j => hF i i.prop j j.prop) _
   intro x
   obtain ⟨s, hs, hsx⟩ := hA x
   exact ⟨⟨s, hs⟩, hsx⟩
@@ -407,7 +407,7 @@ variable {A F hF hA}
 
 @[simp]
 theorem lift_cover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
-  let x' : (coe : A → Set α) ⟨s, hs⟩ := x
+  let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
   liftCover_coe x'
 #align continuous_map.lift_cover_coe' ContinuousMap.lift_cover_coe'
 
@@ -430,7 +430,7 @@ variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 /-- The forward direction of a homeomorphism, as a bundled continuous map. -/
 @[simps]
 def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
-  ⟨e⟩
+  ⟨e, e.continuous_toFun⟩
 #align homeomorph.to_continuous_map Homeomorph.toContinuousMap
 
 /-- `Homeomorph.toContinuousMap` as a coercion. -/
