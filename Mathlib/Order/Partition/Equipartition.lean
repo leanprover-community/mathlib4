@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Equitable
-import Mathbin.Order.Partition.Finpartition
+import Mathlib.Data.Set.Equitable
+import Mathlib.Order.Partition.Finpartition
 
 /-!
 # Finite equipartitions
@@ -60,8 +60,7 @@ theorem IsEquipartition.average_le_card_part (hP : P.IsEquipartition) (ht : t �
 #align finpartition.is_equipartition.average_le_card_part Finpartition.IsEquipartition.average_le_card_part
 
 theorem IsEquipartition.card_part_le_average_add_one (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
-    t.card ≤ s.card / P.parts.card + 1 :=
-  by
+    t.card ≤ s.card / P.parts.card + 1 := by
   rw [← P.sum_card_parts]
   exact equitable_on.le_add_one hP ht
 #align finpartition.is_equipartition.card_part_le_average_add_one Finpartition.IsEquipartition.card_part_le_average_add_one
@@ -79,8 +78,7 @@ theorem topIsEquipartition : (⊤ : Finpartition s).IsEquipartition :=
   (parts_top_subsingleton _).IsEquipartition
 #align finpartition.top_is_equipartition Finpartition.topIsEquipartition
 
-theorem indiscreteIsEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition :=
-  by
+theorem indiscreteIsEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition := by
   rw [is_equipartition, indiscrete_parts, coe_singleton]
   exact Set.equitableOn_singleton s _
 #align finpartition.indiscrete_is_equipartition Finpartition.indiscreteIsEquipartition
