@@ -806,12 +806,10 @@ protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Set`. See note [pointwise nat action]. -/
--- Porting note: removed @[to_additive]
+@[to_additive]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align set.has_npow Set.NPow
-
-attribute [to_additive Set.NSMul] Set.NPow
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
 addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
@@ -821,12 +819,10 @@ protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
--- Porting note: removed @[to_additive]
+@[to_additive]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align set.has_zpow Set.ZPow
-
-attribute [to_additive Set.ZSMul] Set.ZPow
 
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
@@ -908,7 +904,7 @@ protected noncomputable def monoid : Monoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 
-@[to_additive nsmul_mem_nsmul]
+@[to_additive]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
     rw [pow_zero]
@@ -919,7 +915,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
 #align set.pow_mem_pow Set.pow_mem_pow
 #align set.nsmul_mem_nsmul Set.nsmul_mem_nsmul
 
-@[to_additive nsmul_subset_nsmul]
+@[to_additive]
 theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
   | 0 => by
     rw [pow_zero]
@@ -930,7 +926,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 #align set.pow_subset_pow Set.pow_subset_pow
 #align set.nsmul_subset_nsmul Set.nsmul_subset_nsmul
 
-@[to_additive nsmul_subset_nsmul_of_zero_mem]
+@[to_additive]
 theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m ⊆ s ^ n := by
   -- Porting note: `Nat.le_induction` didn't work as an induction principle in mathlib3, this was
   -- `refine nat.le_induction ...`
@@ -942,7 +938,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
 #align set.pow_subset_pow_of_one_mem Set.pow_subset_pow_of_one_mem
 #align set.nsmul_subset_nsmul_of_zero_mem Set.nsmul_subset_nsmul_of_zero_mem
 
-@[to_additive (attr := simp) empty_nsmul]
+@[to_additive (attr := simp)]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
   rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
 #align set.empty_pow Set.empty_pow
