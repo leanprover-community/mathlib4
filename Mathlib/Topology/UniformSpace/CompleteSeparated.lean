@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.Cauchy
-import Mathbin.Topology.UniformSpace.Separation
-import Mathbin.Topology.DenseEmbedding
+import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.UniformSpace.Separation
+import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Theory of complete separated uniform spaces.
