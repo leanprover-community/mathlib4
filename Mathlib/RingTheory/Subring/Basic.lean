@@ -165,7 +165,7 @@ theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n :=
-  map_nat_cast (subtype s) n
+  map_natCast (subtype s) n
 #align subring_class.coe_nat_cast SubringClass.coe_natCast
 
 @[simp, norm_cast]
@@ -462,7 +462,7 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
 -- TODO: can be generalized to `AddSubmonoidClass`
 @[simp]
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
-  ⟨fun h => Subtype.ext (trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
+  ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
@@ -522,7 +522,7 @@ theorem coeSubtype : ⇑s.Subtype = (↑) :=
 
 @[simp, norm_cast]
 theorem coe_nat_cast : ∀ n : ℕ, ((n : s) : R) = n :=
-  map_nat_cast s.Subtype
+  map_natCast s.Subtype
 #align subring.coe_nat_cast Subring.coe_nat_cast
 
 @[simp, norm_cast]
