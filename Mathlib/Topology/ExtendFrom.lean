@@ -8,7 +8,7 @@ Authors: Patrick Massot, Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Separation
+import Mathlib.Topology.Separation
 
 /-!
 # Extending a function from a subset
@@ -87,8 +87,7 @@ theorem continuousOn_extendFrom [RegularSpace Y] {f : X → Y} {A B : Set X} (hB
 /-- If a function `f` to a T₃ space `Y` has a limit within a
 dense set `A` for any `x`, then `extend_from A f` is continuous. -/
 theorem continuous_extendFrom [RegularSpace Y] {f : X → Y} {A : Set X} (hA : Dense A)
-    (hf : ∀ x, ∃ y, Tendsto f (𝓝[A] x) (𝓝 y)) : Continuous (extendFrom A f) :=
-  by
+    (hf : ∀ x, ∃ y, Tendsto f (𝓝[A] x) (𝓝 y)) : Continuous (extendFrom A f) := by
   rw [continuous_iff_continuousOn_univ]
   exact continuousOn_extendFrom (fun x _ => hA x) (by simpa using hf)
 #align continuous_extend_from continuous_extendFrom
