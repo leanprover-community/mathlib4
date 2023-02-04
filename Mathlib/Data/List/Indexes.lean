@@ -51,6 +51,7 @@ theorem map_with_index_core_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
   · rfl
   · rw [map_with_index]
     simp only [map_with_index_core, hl, add_left_comm, add_comm, add_zero, zero_add]
+#noalign list.map_with_index_core_eq
 
 -- Porting note: convert new definition to old definition.
 --   A few new theorems are added to achieve this
@@ -224,7 +225,7 @@ theorem foldrIdxSpec_cons (f : ℕ → α → β → β) (b a as start) :
   rfl
 #align list.foldr_with_index_aux_spec_cons List.foldrIdxSpec_consₓ
 
-theorem foldrIdx_eq_foldrIdxSpec (f : ℕ → α → β → β) (start b as) :
+theorem foldrIdx_eq_foldrIdxSpec (f : ℕ → α → β → β) (b as start) :
     foldrIdx f b as start = foldrIdxSpec f b as start := by
   induction as generalizing start
   · rfl
@@ -254,7 +255,7 @@ section FoldlIdx
 -- Porting note: Changed argument order of `foldlIdxSpec` to align better with `foldlIdx`.
 /-- Specification of `foldlIdx`. -/
 def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start : ℕ) : α :=
-  foldl (fun a (p : ℕ × β) ↦ f p.fst a p.snd) a <| enumFrom start bs
+  foldl (fun a p ↦ f p.fst a p.snd) a <| enumFrom start bs
 #align list.foldl_with_index_aux_spec List.foldlIdxSpecₓ
 
 #noalign list.foldl_with_index_aux_spec_cons
@@ -267,7 +268,7 @@ theorem foldlIdx_eq_foldlIdxSpec (f : ℕ → α → β → α) (a bs start) :
 #align list.foldl_with_index_aux_eq_foldl_with_index_aux_spec List.foldlIdx_eq_foldlIdxSpecₓ
 
 theorem foldlIdx_eq_foldl_enum (f : ℕ → α → β → α) (a : α) (bs : List β) :
-    foldlIdx f a bs = foldl (fun a (p : ℕ × β) ↦ f p.fst a p.snd) a (enum bs) := by
+    foldlIdx f a bs = foldl (fun a p ↦ f p.fst a p.snd) a (enum bs) := by
   simp only [foldlIdx, foldlIdxSpec, foldlIdx_eq_foldlIdxSpec, enum]
 #align list.foldl_with_index_eq_foldl_enum List.foldlIdx_eq_foldl_enum
 
@@ -275,7 +276,7 @@ end FoldlIdx
 
 section FoldIdxM
 
--- Porting note: foldrM_eq_foldr now depends on [LawfulMonad m]
+-- Porting note: `foldrM_eq_foldr` now depends on `[LawfulMonad m]`
 variable {m : Type u → Type v} [Monad m]
 
 theorem foldrIdxM_eq_foldrM_enum {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) [LawfulMonad m]:
@@ -284,7 +285,7 @@ theorem foldrIdxM_eq_foldrM_enum {α β} (f : ℕ → α → β → m β) (b : �
 #align list.mfoldr_with_index_eq_mfoldr_enum List.foldrIdxM_eq_foldrM_enum
 
 theorem foldlIdxM_eq_foldlM_enum [LawfulMonad m] {α β} (f : ℕ → β → α → m β) (b : β) (as : List α) :
-    foldlIdxM f b as = List.foldlM (fun b (p : ℕ × α) ↦ f p.fst b p.snd) b (enum as) := by
+    foldlIdxM f b as = List.foldlM (fun b p ↦ f p.fst b p.snd) b (enum as) := by
   rw [foldlIdxM, foldlM_eq_foldl, foldlIdx_eq_foldl_enum]
 #align list.mfoldl_with_index_eq_mfoldl_enum List.foldlIdxM_eq_foldlM_enum
 
