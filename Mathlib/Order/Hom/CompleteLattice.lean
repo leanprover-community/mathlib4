@@ -47,6 +47,7 @@ open Function OrderDual Set
 
 variable {F α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
 
+-- Porting note: Why was Sup_hom translated to SupHomCat? Is SupₛHom not wanted?
 /-- The type of `⨆`-preserving functions from `α` to `β`. -/
 structure SupHomCat (α β : Type _) [SupSet α] [SupSet β] where
   toFun : α → β
@@ -65,6 +66,7 @@ structure FrameHom (α β : Type _) [CompleteLattice α] [CompleteLattice β] ex
   InfTopHom α β where
   map_supₛ' (s : Set α) : toFun (supₛ s) = supₛ (toFun '' s)
 #align frame_hom FrameHom
+
 
 /-- The type of complete lattice homomorphisms from `α` to `β`. -/
 structure CompleteLatticeHom (α β : Type _) [CompleteLattice α] [CompleteLattice β] extends
@@ -267,7 +269,7 @@ instance : SupHomClassCat (SupHomCat α β) α β
 
 -- Porting note: times out
 @[simp]
-theorem toFun_eq_coe {f : SupHomCat α β} : f.toFun = FunLike.coe f  :=
+theorem toFun_eq_coe {f : SupHomCat α β} : f.toFun = ⇑f  :=
   rfl
 #align Sup_hom.to_fun_eq_coe SupHomCat.toFun_eq_coe
 
@@ -319,7 +321,7 @@ theorem id_apply (a : α) : SupHomCat.id α a = a :=
 def comp (f : SupHomCat β γ) (g : SupHomCat α β) : SupHomCat α γ
     where
   toFun := f ∘ g
-  map_supₛ' s := by rw [comp_apply, map_supₛ, map_supₛ, Set.image_image]
+  map_supₛ' s := by rw [comp_apply, map_supₛ, map_supₛ, Set.image_image]; simp only [Function.comp]
 #align Sup_hom.comp SupHomCat.comp
 
 @[simp]
@@ -340,17 +342,17 @@ theorem comp_assoc (f : SupHomCat γ δ) (g : SupHomCat β γ) (h : SupHomCat α
 
 @[simp]
 theorem comp_id (f : SupHomCat α β) : f.comp (SupHomCat.id α) = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align Sup_hom.comp_id SupHomCat.comp_id
 
 @[simp]
 theorem id_comp (f : SupHomCat α β) : (SupHomCat.id β).comp f = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align Sup_hom.id_comp SupHomCat.id_comp
 
 theorem cancel_right {g₁ g₂ : SupHomCat β γ} {f : SupHomCat α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align Sup_hom.cancel_right SupHomCat.cancel_right
 
 theorem cancel_left {g : SupHomCat β γ} {f₁ f₂ : SupHomCat α β} (hg : Injective g) :
@@ -360,7 +362,7 @@ theorem cancel_left {g : SupHomCat β γ} {f₁ f₂ : SupHomCat α β} (hg : In
 
 end SupSet
 
-variable [CompleteLattice β]
+variable { _ : CompleteLattice β}
 
 instance : PartialOrder (SupHomCat α β) :=
   PartialOrder.lift _ FunLike.coe_injective
@@ -371,8 +373,9 @@ instance : Bot (SupHomCat α β) :=
       · rw [Set.image_empty, supₛ_empty]
       · rw [hs.image_const, supₛ_singleton]⟩⟩
 
-instance : OrderBot (SupHomCat α β) :=
-  ⟨⊥, fun f a => bot_le⟩
+instance : OrderBot (SupHomCat α β) where
+  bot := ⊥
+  bot_le := fun _ _ ↦ CompleteLattice.bot_le _
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : SupHomCat α β) = ⊥ :=
@@ -400,18 +403,19 @@ variable [InfSet β] [InfSet γ] [InfSet δ]
 instance : InfHomClassCat (InfHomCat α β) α β
     where
   coe := InfHomCat.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by cases f; cases g; congr
   map_infₛ := InfHomCat.map_infₛ'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
-directly. -/
-instance : CoeFun (InfHomCat α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+-- Porting note: Do not want these CoeFun instances in lean4
+-- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
+-- directly. -/
+-- instance : CoeFun (InfHomCat α β) fun _ => α → β :=
+--   FunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe {f : InfHomCat α β} : f.toFun = (f : α → β) :=
+theorem toFun_eq_coe {f : InfHomCat α β} : f.toFun = ⇑f :=
   rfl
-#align Inf_hom.toFun_eq_coe InfHomCat.toFun_eq_coe
+#align Inf_hom.to_fun_eq_coe InfHomCat.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : InfHomCat α β} (h : ∀ a, f a = g a) : f = g :=
@@ -461,7 +465,7 @@ theorem id_apply (a : α) : InfHomCat.id α a = a :=
 def comp (f : InfHomCat β γ) (g : InfHomCat α β) : InfHomCat α γ
     where
   toFun := f ∘ g
-  map_infₛ' s := by rw [comp_apply, map_infₛ, map_infₛ, Set.image_image]
+  map_infₛ' s := by rw [comp_apply, map_infₛ, map_infₛ, Set.image_image]; simp only [Function.comp]
 #align Inf_hom.comp InfHomCat.comp
 
 @[simp]
@@ -482,17 +486,17 @@ theorem comp_assoc (f : InfHomCat γ δ) (g : InfHomCat β γ) (h : InfHomCat α
 
 @[simp]
 theorem comp_id (f : InfHomCat α β) : f.comp (InfHomCat.id α) = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align Inf_hom.comp_id InfHomCat.comp_id
 
 @[simp]
 theorem id_comp (f : InfHomCat α β) : (InfHomCat.id β).comp f = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align Inf_hom.id_comp InfHomCat.id_comp
 
 theorem cancel_right {g₁ g₂ : InfHomCat β γ} {f : InfHomCat α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align Inf_hom.cancel_right InfHomCat.cancel_right
 
 theorem cancel_left {g : InfHomCat β γ} {f₁ f₂ : InfHomCat α β} (hg : Injective g) :
@@ -513,8 +517,9 @@ instance : Top (InfHomCat α β) :=
       · rw [Set.image_empty, infₛ_empty]
       · rw [hs.image_const, infₛ_singleton]⟩⟩
 
-instance : OrderTop (InfHomCat α β) :=
-  ⟨⊤, fun f a => le_top⟩
+instance : OrderTop (InfHomCat α β) where
+  top := ⊤
+  le_top := fun _ _ => CompleteLattice.le_top _
 
 @[simp]
 theorem coe_top : ⇑(⊤ : InfHomCat α β) = ⊤ :=
@@ -546,10 +551,11 @@ instance : FrameHomClass (FrameHom α β) α β
   map_inf f := f.map_inf'
   map_top f := f.map_top'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
-directly. -/
-instance : CoeFun (FrameHom α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+-- Porting note: We do not want CoeFun for this in lean 4
+-- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
+-- directly. -/
+-- instance : CoeFun (FrameHom α β) fun _ => α → β :=
+--   FunLike.hasCoeToFun
 
 /-- Reinterpret a `frame_hom` as a `lattice_hom`. -/
 def toLatticeHom (f : FrameHom α β) : LatticeHom α β :=
@@ -557,9 +563,9 @@ def toLatticeHom (f : FrameHom α β) : LatticeHom α β :=
 #align frame_hom.to_lattice_hom FrameHom.toLatticeHom
 
 @[simp]
-theorem toFun_eq_coe {f : FrameHom α β} : f.toFun = (f : α → β) :=
+theorem toFun_eq_coe {f : FrameHom α β} : f.toFun = ⇑f :=
   rfl
-#align frame_hom.toFun_eq_coe FrameHom.toFun_eq_coe
+#align frame_hom.to_fun_eq_coe FrameHom.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : FrameHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -627,17 +633,17 @@ theorem comp_assoc (f : FrameHom γ δ) (g : FrameHom β γ) (h : FrameHom α β
 
 @[simp]
 theorem comp_id (f : FrameHom α β) : f.comp (FrameHom.id α) = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align frame_hom.comp_id FrameHom.comp_id
 
 @[simp]
 theorem id_comp (f : FrameHom α β) : (FrameHom.id β).comp f = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align frame_hom.id_comp FrameHom.id_comp
 
 theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align frame_hom.cancel_right FrameHom.cancel_right
 
 theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
@@ -660,7 +666,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [Complet
 instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β
     where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f <;> obtain ⟨⟨_, _⟩, _⟩ := g <;> congr
+  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
   map_supₛ f := f.map_supₛ'
   map_infₛ f := f.map_infₛ'
 
@@ -674,15 +680,16 @@ def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β
   f
 #align complete_lattice_hom.to_bounded_lattice_hom CompleteLatticeHom.toBoundedLatticeHom
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
-directly. -/
-instance : CoeFun (CompleteLatticeHom α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+-- Porting note: We do not want CoeFun for this in lean 4
+-- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
+-- directly. -/
+-- instance : CoeFun (CompleteLatticeHom α β) fun _ => α → β :=
+--   FunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe {f : CompleteLatticeHom α β} : f.toFun = (f : α → β) :=
+theorem toFun_eq_coe {f : CompleteLatticeHom α β} : f.toFun = ⇑f :=
   rfl
-#align complete_lattice_hom.toFun_eq_coe CompleteLatticeHom.toFun_eq_coe
+#align complete_lattice_hom.to_fun_eq_coe CompleteLatticeHom.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : CompleteLatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -693,7 +700,7 @@ theorem ext {f g : CompleteLatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
 definitional equalities. -/
 protected def copy (f : CompleteLatticeHom α β) (f' : α → β) (h : f' = f) :
     CompleteLatticeHom α β :=
-  { f.toSupHom.copy f' h with toInfHom := f.toInfHom.copy f' h }
+  { f.toSupHom.copy f' h with toInfHomCat := f.toInfHomCat.copy f' h }
 #align complete_lattice_hom.copy CompleteLatticeHom.copy
 
 @[simp]
@@ -729,7 +736,8 @@ theorem id_apply (a : α) : CompleteLatticeHom.id α a = a :=
 
 /-- Composition of `complete_lattice_hom`s as a `complete_lattice_hom`. -/
 def comp (f : CompleteLatticeHom β γ) (g : CompleteLatticeHom α β) : CompleteLatticeHom α γ :=
-  { f.toSupHom.comp g.toSupHom with toInfHom := f.toInfHom.comp g.toInfHom }
+  { f.toSupHom.comp g.toSupHom with toInfHomCat := f.toInfHomCat.comp g.toInfHomCat }
+
 #align complete_lattice_hom.comp CompleteLatticeHom.comp
 
 @[simp]
@@ -751,17 +759,17 @@ theorem comp_assoc (f : CompleteLatticeHom γ δ) (g : CompleteLatticeHom β γ)
 
 @[simp]
 theorem comp_id (f : CompleteLatticeHom α β) : f.comp (CompleteLatticeHom.id α) = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align complete_lattice_hom.comp_id CompleteLatticeHom.comp_id
 
 @[simp]
 theorem id_comp (f : CompleteLatticeHom α β) : (CompleteLatticeHom.id β).comp f = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align complete_lattice_hom.id_comp CompleteLatticeHom.id_comp
 
 theorem cancel_right {g₁ g₂ : CompleteLatticeHom β γ} {f : CompleteLatticeHom α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align complete_lattice_hom.cancel_right CompleteLatticeHom.cancel_right
 
 theorem cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeHom α β}
@@ -782,19 +790,20 @@ variable [SupSet α] [SupSet β] [SupSet γ]
 @[simps]
 protected def dual : SupHomCat α β ≃ InfHomCat αᵒᵈ βᵒᵈ
     where
-  toFun f := ⟨to_dual ∘ f ∘ of_dual, f.map_supₛ'⟩
-  invFun f := ⟨of_dual ∘ f ∘ to_dual, f.map_infₛ'⟩
-  left_inv f := SupHomCat.ext fun a => rfl
-  right_inv f := InfHomCat.ext fun a => rfl
+  toFun f := ⟨toDual ∘ f ∘ ofDual, f.map_supₛ'⟩
+  invFun f := ⟨ofDual ∘ f ∘ toDual, f.map_infₛ'⟩
+  left_inv _ := SupHomCat.ext fun _ => rfl
+  right_inv _ := InfHomCat.ext fun _ => rfl
 #align Sup_hom.dual SupHomCat.dual
 
 @[simp]
-theorem dual_id : (SupHomCat.id α).dual = InfHomCat.id _ :=
+theorem dual_id : SupHomCat.dual (SupHomCat.id α) = InfHomCat.id _ :=
   rfl
 #align Sup_hom.dual_id SupHomCat.dual_id
 
 @[simp]
-theorem dual_comp (g : SupHomCat β γ) (f : SupHomCat α β) : (g.comp f).dual = g.dual.comp f.dual :=
+theorem dual_comp (g : SupHomCat β γ) (f : SupHomCat α β) :
+    SupHomCat.dual (g.comp f) = (SupHomCat.dual g).comp (SupHomCat.dual f) :=
   rfl
 #align Sup_hom.dual_comp SupHomCat.dual_comp
 
@@ -820,22 +829,23 @@ variable [InfSet α] [InfSet β] [InfSet γ]
 protected def dual : InfHomCat α β ≃ SupHomCat αᵒᵈ βᵒᵈ
     where
   toFun f :=
-    { toFun := to_dual ∘ f ∘ of_dual
+    { toFun := toDual ∘ f ∘ ofDual
       map_supₛ' := fun _ => congr_arg toDual (map_infₛ f _) }
   invFun f :=
-    { toFun := of_dual ∘ f ∘ to_dual
+    { toFun := ofDual ∘ f ∘ toDual
       map_infₛ' := fun _ => congr_arg ofDual (map_supₛ f _) }
-  left_inv f := InfHomCat.ext fun a => rfl
-  right_inv f := SupHomCat.ext fun a => rfl
+  left_inv _ := InfHomCat.ext fun _ => rfl
+  right_inv _ := SupHomCat.ext fun _ => rfl
 #align Inf_hom.dual InfHomCat.dual
 
 @[simp]
-theorem dual_id : (InfHomCat.id α).dual = SupHomCat.id _ :=
+theorem dual_id : InfHomCat.dual (InfHomCat.id α) = SupHomCat.id _ :=
   rfl
 #align Inf_hom.dual_id InfHomCat.dual_id
 
 @[simp]
-theorem dual_comp (g : InfHomCat β γ) (f : InfHomCat α β) : (g.comp f).dual = g.dual.comp f.dual :=
+theorem dual_comp (g : InfHomCat β γ) (f : InfHomCat α β) :
+    InfHomCat.dual (g.comp f) = (InfHomCat.dual g).comp (InfHomCat.dual f) :=
   rfl
 #align Inf_hom.dual_comp InfHomCat.dual_comp
 
@@ -861,20 +871,22 @@ lattices. -/
 @[simps]
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ
     where
-  toFun f := ⟨f.toSupHom.dual, f.map_infₛ'⟩
-  invFun f := ⟨f.toSupHom.dual, f.map_infₛ'⟩
-  left_inv f := ext fun a => rfl
-  right_inv f := ext fun a => rfl
+  -- Porting note: todo unbork this
+  toFun f := ⟨SupHom.dual f.toSupHom, InfHomCat.map_infₛ' f⟩
+  invFun f := ⟨SupHom.dual f.toSupHom, InfHomCat.map_infₛ' f⟩
+  left_inv f := ext fun a => by simp
+  right_inv f := ext fun a => by simp
 #align complete_lattice_hom.dual CompleteLatticeHom.dual
 
 @[simp]
-theorem dual_id : (CompleteLatticeHom.id α).dual = CompleteLatticeHom.id _ :=
+theorem dual_id : CompleteLatticeHom.dual (CompleteLatticeHom.id α) = CompleteLatticeHom.id _ :=
   rfl
 #align complete_lattice_hom.dual_id CompleteLatticeHom.dual_id
 
 @[simp]
 theorem dual_comp (g : CompleteLatticeHom β γ) (f : CompleteLatticeHom α β) :
-    (g.comp f).dual = g.dual.comp f.dual :=
+    CompleteLatticeHom.dual (g.comp f) =
+      (CompleteLatticeHom.dual g).comp (CompleteLatticeHom.dual f) :=
   rfl
 #align complete_lattice_hom.dual_comp CompleteLatticeHom.dual_comp
 
@@ -914,7 +926,7 @@ theorem coe_setPreimage (f : α → β) : ⇑(setPreimage f) = preimage f :=
 #align complete_lattice_hom.coe_set_preimage CompleteLatticeHom.coe_setPreimage
 
 @[simp]
-theorem setPreimage_apply (f : α → β) (s : Set β) : setPreimage f s = s.Preimage f :=
+theorem setPreimage_apply (f : α → β) (s : Set β) : setPreimage f s = s.preimage f :=
   rfl
 #align complete_lattice_hom.set_preimage_apply CompleteLatticeHom.setPreimage_apply
 
@@ -933,7 +945,7 @@ end CompleteLatticeHom
 
 theorem Set.image_supₛ {f : α → β} (s : Set (Set α)) : f '' supₛ s = supₛ (image f '' s) := by
   ext b
-  simp only [Sup_eq_sUnion, mem_image, mem_sUnion, exists_prop, sUnion_image, mem_Union]
+  simp only [supₛ_eq_unionₛ, mem_image, mem_unionₛ, exists_prop, unionₛ_image, mem_unionₛ]
   constructor
   · rintro ⟨a, ⟨t, ht₁, ht₂⟩, rfl⟩
     exact ⟨t, ht₁, a, ht₂, rfl⟩
