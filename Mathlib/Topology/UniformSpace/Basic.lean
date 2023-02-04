@@ -524,7 +524,6 @@ theorem uniformity_lift_le_swap {g : Set (α × α) → Filter β} {f : Filter �
     (𝓤 α).lift g ≤ (Filter.map (@Prod.swap α α) <| 𝓤 α).lift g :=
       lift_mono uniformity_le_symm le_rfl
     _ ≤ _ := by rw [map_lift_eq2 hg, image_swap_eq_preimage_swap]; exact h
-    
 #align uniformity_lift_le_swap uniformity_lift_le_swap
 
 theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone f) :
@@ -537,21 +536,16 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
-theorem comp_le_uniformity3 : ((𝓤 α).lift' fun s : Set (α × α) => s ○ (s ○ s)) ≤ 𝓤 α :=
-  calc
-    ((𝓤 α).lift' fun d => d ○ (d ○ d)) =
-        (𝓤 α).lift fun s => (𝓤 α).lift' fun t : Set (α × α) => s ○ (t ○ t) := by
-    { rw [lift_lift'_same_eq_lift']
-      exact fun x => monotone_const.compRel <| monotone_id.compRel monotone_id
-      exact fun x => monotone_id.compRel monotone_const }
-    _ ≤ (𝓤 α).lift fun s => (𝓤 α).lift' fun t : Set (α × α) => s ○ t :=
-      lift_mono' fun s _ =>
-        @uniformity_lift_le_comp α _ _ (𝓟 ∘ (· ○ ·) s) <|
-          monotone_principal.comp (monotone_const.compRel monotone_id)
-    _ = (𝓤 α).lift' fun s : Set (α × α) => s ○ s :=
-      lift_lift'_same_eq_lift' (fun s => monotone_const.compRel monotone_id) fun s =>
-        monotone_id.compRel monotone_const
-    _ ≤ 𝓤 α := comp_le_uniformity
+-- porting note: new lemma
+theorem comp3_mem_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
+  let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
+  let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
+  ⟨t, ht, (compRel_mono ((subset_comp_self (refl_le_uniformity ht)).trans htt') htt').trans ht's⟩
+
+/-- See also `comp3_mem_uniformity`. -/
+theorem comp_le_uniformity3 : ((𝓤 α).lift' fun s : Set (α × α) => s ○ (s ○ s)) ≤ 𝓤 α := fun _ h =>
+  let ⟨_t, htU, ht⟩ := comp3_mem_uniformity h
+  mem_of_superset (mem_lift' htU) ht
 #align comp_le_uniformity3 comp_le_uniformity3
 
 /-- See also `comp_open_symm_mem_uniformity_sets`. -/
@@ -580,7 +574,6 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
     _ ⊆ w ○ (t ○ t) := compRel_mono Subset.rfl this
     _ ⊆ w ○ w := compRel_mono Subset.rfl t_sub
     _ ⊆ s := w_sub
-    
 #align comp_comp_symm_mem_uniformity_sets comp_comp_symm_mem_uniformity_sets
 
 /-!
@@ -956,15 +949,12 @@ theorem closure_eq_inter_uniformity {t : Set (α × α)} : closure t = ⋂ d ∈
         UniformSpace.hasBasis_symmetric.binterᵢ_mem fun V₁ V₂ hV =>
           compRel_mono (compRel_mono hV Subset.rfl) hV
     _ = ⋂ V ∈ 𝓤 α, V ○ (t ○ V) := by simp only [compRel_assoc]
-    
 #align closure_eq_inter_uniformity closure_eq_inter_uniformity
 
 theorem uniformity_eq_uniformity_interior : 𝓤 α = (𝓤 α).lift' interior :=
   le_antisymm
     (le_infᵢ₂ fun d hd => by
-      let ⟨s, hs, hs_comp⟩ :=
-        (mem_lift'_sets <| monotone_id.compRel <| monotone_id.compRel monotone_id).mp
-          (comp_le_uniformity3 hd)
+      let ⟨s, hs, hs_comp⟩ := comp3_mem_uniformity hd
       let ⟨t, ht, hst, ht_comp⟩ := nhdset_of_mem_uniformity s hs
       have : s ⊆ interior d :=
         calc
@@ -1792,8 +1782,7 @@ theorem open_of_uniformity_sum_aux {s : Set (Sum α β)}
 #align open_of_uniformity_sum_aux open_of_uniformity_sum_aux
 
 -- We can now define the uniform structure on the disjoint union
-instance Sum.uniformSpace : UniformSpace (Sum α β)
-    where
+instance Sum.uniformSpace : UniformSpace (Sum α β) where
   toCore := UniformSpace.Core.sum
   isOpen_uniformity _ := ⟨uniformity_sum_of_open_aux, open_of_uniformity_sum_aux⟩
 #align sum.uniform_space Sum.uniformSpace
@@ -1804,6 +1793,10 @@ theorem Sum.uniformity :
         map (fun p : β × β => (inr p.1, inr p.2)) (𝓤 β) :=
   rfl
 #align sum.uniformity Sum.uniformity
+
+-- porting note: 2 new lemmas
+lemma uniformContinuous_inl : UniformContinuous (Sum.inl : α → α ⊕ β) := le_sup_left
+lemma uniformContinuous_inr : UniformContinuous (Sum.inr : β → α ⊕ β) := le_sup_right
 
 end Sum
 
