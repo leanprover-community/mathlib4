@@ -12,9 +12,6 @@ import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Part
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.LibrarySearch -- porting notes: TODO: remove
-set_option autoImplicit false -- porting notes: TODO: remove
-
 
 /-!
 # Natural numbers with infinity
