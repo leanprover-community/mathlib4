@@ -18,26 +18,26 @@ This file generalizes `filter` definitions from functions to partial functions a
 
 ## Considering functions and partial functions as relations
 
-A function `f : α → β` can be considered as the relation `rel α β` which relates `x` and `f x` for
-all `x`, and nothing else. This relation is called `function.graph f`.
+A function `f : α → β` can be considered as the relation `Rel α β` which relates `x` and `f x` for
+all `x`, and nothing else. This relation is called `Function.Graph f`.
 
-A partial function `f : α →. β` can be considered as the relation `rel α β` which relates `x` and
+A partial function `f : α →. β` can be considered as the relation `Rel α β` which relates `x` and
 `f x` for all `x` for which `f x` exists, and nothing else. This relation is called
-`pfun.graph' f`.
+`PFun.Graph' f`.
 
 In this regard, a function is a relation for which every element in `α` is related to exactly one
 element in `β` and a partial function is a relation for which every element in `α` is related to at
 most one element in `β`.
 
-This file leverages this analogy to generalize `filter` definitions from functions to partial
+This file leverages this analogy to generalize `Filter` definitions from functions to partial
 functions and relations.
 
 ## Notes
 
-`set.preimage` can be generalized to relations in two ways:
-* `rel.preimage` returns the image of the set under the inverse relation.
-* `rel.core` returns the set of elements that are only related to those in the set.
-Both generalizations are sensible in the context of filters, so `filter.comap` and `filter.tendsto`
+`Set.preimage` can be generalized to relations in two ways:
+* `Rel.preimage` returns the image of the set under the inverse relation.
+* `Rel.core` returns the set of elements that are only related to those in the set.
+Both generalizations are sensible in the context of filters, so `Filter.comap` and `Filter.Tendsto`
 get two generalizations each.
 
 We first take care of relations. Then the definitions for partial functions are taken as special
@@ -56,8 +56,8 @@ open Filter
 /-! ### Relations -/
 
 
-/-- The forward map of a filter under a relation. Generalization of `filter.map` to relations. Note
-that `rel.core` generalizes `set.preimage`. -/
+/-- The forward map of a filter under a relation. Generalization of `Filter.map` to relations. Note
+that `Rel.core` generalizes `Set.preimage`. -/
 def rmap (r : Rel α β) (l : Filter α) : Filter β
     where
   sets := { s | r.core s ∈ l }
@@ -89,9 +89,9 @@ theorem rmap_compose (r : Rel α β) (s : Rel β γ) : rmap s ∘ rmap r = rmap 
   funext <| rmap_rmap _ _
 #align filter.rmap_compose Filter.rmap_compose
 
-/-- Generic "limit of a relation" predicate. `rtendsto r l₁ l₂` asserts that for every
+/-- Generic "limit of a relation" predicate. `Rtendsto r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `r`-core of `a` is an `l₁`-neighborhood. One generalization of
-`filter.tendsto` to relations. -/
+`filter.Tendsto` to relations. -/
 def Rtendsto (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.rmap r ≤ l₂
 #align filter.rtendsto Filter.Rtendsto
@@ -102,7 +102,7 @@ theorem rtendsto_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
 #align filter.rtendsto_def Filter.rtendsto_def
 
 /-- One way of taking the inverse map of a filter under a relation. One generalization of
-`filter.comap` to relations. Note that `rel.core` generalizes `set.preimage`. -/
+`Filter.comap` to relations. Note that `Rel.core` generalizes `Set.preimage`. -/
 def rcomap (r : Rel α β) (f : Filter β) : Filter α
     where
   sets := Rel.image (fun s t => r.core s ⊆ t) f.sets
@@ -144,7 +144,7 @@ theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter
 -- Interestingly, there does not seem to be a way to express this relation using a forward map.
 -- Given a filter `f` on `α`, we want a filter `f'` on `β` such that `r.preimage s ∈ f` if
 -- and only if `s ∈ f'`. But the intersection of two sets satisfying the lhs may be empty.
-/-- One way of taking the inverse map of a filter under a relation. Generalization of `filter.comap`
+/-- One way of taking the inverse map of a filter under a relation. Generalization of `Filter.comap`
 to relations. -/
 def rcomap' (r : Rel α β) (f : Filter β) : Filter α
     where
@@ -183,9 +183,9 @@ theorem rcomap'_compose (r : Rel α β) (s : Rel β γ) : rcomap' r ∘ rcomap' 
   funext <| rcomap'_rcomap' _ _
 #align filter.rcomap'_compose Filter.rcomap'_compose
 
-/-- Generic "limit of a relation" predicate. `rtendsto' r l₁ l₂` asserts that for every
+/-- Generic "limit of a relation" predicate. `Rtendsto' r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `r`-preimage of `a` is an `l₁`-neighborhood. One generalization of
-`filter.tendsto` to relations. -/
+`Filter.Tendsto` to relations. -/
 def Rtendsto' (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' r
 #align filter.rtendsto' Filter.Rtendsto'
@@ -210,7 +210,7 @@ theorem tendsto_iff_rtendsto' (l₁ : Filter α) (l₂ : Filter β) (f : α → 
 /-! ### Partial functions -/
 
 
-/-- The forward map of a filter under a partial function. Generalization of `filter.map` to partial
+/-- The forward map of a filter under a partial function. Generalization of `Filter.map` to partial
 functions. -/
 def pmap (f : α →. β) (l : Filter α) : Filter β :=
   Filter.rmap f.graph' l
@@ -221,9 +221,9 @@ theorem mem_pmap (f : α →. β) (l : Filter α) (s : Set β) : s ∈ l.pmap f 
   Iff.rfl
 #align filter.mem_pmap Filter.mem_pmap
 
-/-- Generic "limit of a partial function" predicate. `ptendsto r l₁ l₂` asserts that for every
+/-- Generic "limit of a partial function" predicate. `Ptendsto r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `p`-core of `a` is an `l₁`-neighborhood. One generalization of
-`filter.tendsto` to partial function. -/
+`Filter.Tendsto` to partial function. -/
 def Ptendsto (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.pmap f ≤ l₂
 #align filter.ptendsto Filter.Ptendsto
@@ -256,15 +256,15 @@ theorem tendsto_iff_ptendsto_univ (l₁ : Filter α) (l₂ : Filter β) (f : α 
   simp [principal_univ]
 #align filter.tendsto_iff_ptendsto_univ Filter.tendsto_iff_ptendsto_univ
 
-/-- Inverse map of a filter under a partial function. One generalization of `filter.comap` to
+/-- Inverse map of a filter under a partial function. One generalization of `Filter.comap` to
 partial functions. -/
 def pcomap' (f : α →. β) (l : Filter β) : Filter α :=
   Filter.rcomap' f.graph' l
 #align filter.pcomap' Filter.pcomap'
 
-/-- Generic "limit of a partial function" predicate. `ptendsto' r l₁ l₂` asserts that for every
+/-- Generic "limit of a partial function" predicate. `Ptendsto' r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `p`-preimage of `a` is an `l₁`-neighborhood. One generalization of
-`filter.tendsto` to partial functions. -/
+`Filter.Tendsto` to partial functions. -/
 def Ptendsto' (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁ ≤ l₂.rcomap' f.graph'
 #align filter.ptendsto' Filter.Ptendsto'
