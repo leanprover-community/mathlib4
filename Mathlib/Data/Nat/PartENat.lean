@@ -26,35 +26,35 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 
 The following instances are defined:
 
-* `ordered_add_comm_monoid part_enat`
-* `canonically_ordered_add_monoid part_enat`
-* `complete_linear_order part_enat`
+* `OrderedAddCommMonoid PartENat`
+* `CanonicallyOrderedAddMonoid PartENat`
+* `CompleteLinearOrder PartENat`
 
-There is no additive analogue of `monoid_with_zero`; if there were then `part_enat` could
-be an `add_monoid_with_top`.
+There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
+be an `AddMonoidWithTop`.
 
-* `to_with_top` : the map from `part_enat` to `ℕ∞`, with theorems that it plays well
+* `toWithTop` : the map from `PartENat` to `ℕ∞`, with theorems that it plays well
 with `+` and `≤`.
 
-* `with_top_add_equiv : part_enat ≃+ ℕ∞`
-* `with_top_order_iso : part_enat ≃o ℕ∞`
+* `withTopAddEquiv : PartENat ≃+ ℕ∞`
+* `withTopOrderIso : PartENat ≃o ℕ∞`
 
 ## Implementation details
 
-`part_enat` is defined to be `part ℕ`.
+`PartENat` is defined to be `Part ℕ`.
 
-`+` and `≤` are defined on `part_enat`, but there is an issue with `*` because it's not
+`+` and `≤` are defined on `PartENat`, but there is an issue with `*` because it's not
 clear what `0 * ⊤` should be. `mul` is hence left undefined. Similarly `⊤ - ⊤` is ambiguous
-so there is no `-` defined on `part_enat`.
+so there is no `-` defined on `PartENat`.
 
-Before the `open_locale classical` line, various proofs are made with decidability assumptions.
-This can cause issues -- see for example the non-simp lemma `to_with_top_zero` proved by `rfl`,
-followed by `@[simp] lemma to_with_top_zero'` whose proof uses `convert`.
+Before the `open Classical` line, various proofs are made with decidability assumptions.
+This can cause issues -- see for example the non-simp lemma `toWithTopZero` proved by `rfl`,
+followed by `@[simp] lemma toWithTopZero'` whose proof uses `convert`.
 
 
 ## Tags
 
-part_enat, ℕ∞
+PartENat, ℕ∞
 -/
 
 
@@ -67,9 +67,9 @@ def PartENat : Type :=
 
 namespace PartENat
 
-/-- The computable embedding `ℕ → part_enat`.
+/-- The computable embedding `ℕ → PartENat`.
 
-This coincides with the coercion `coe : ℕ → part_enat`, see `part_enat.some_eq_coe`.
+This coincides with the coercion `coe : ℕ → PartENat`, see `PartENat.some_eq_coe`.
 However, `coe` is noncomputable so `some` is preferable when computability is a concern. -/
 @[coe]
 def some : ℕ → PartENat :=
@@ -244,11 +244,11 @@ theorem coe_coeHom : coeNatAddMonoidHom = some :=
 
 instance partialOrder : PartialOrder PartENat where
   le := (· ≤ ·)
-  le_refl x := ⟨id, fun _ => le_rfl⟩
-  le_trans := fun x y z ⟨hxy₁, hxy₂⟩ ⟨hyz₁, hyz₂⟩ =>
+  le_refl _ := ⟨id, fun _ => le_rfl⟩
+  le_trans := fun _ _ _ ⟨hxy₁, hxy₂⟩ ⟨hyz₁, hyz₂⟩ =>
     ⟨hxy₁ ∘ hyz₁, fun _ => le_trans (hxy₂ _) (hyz₂ _)⟩
   lt_iff_le_not_le _ _ := Iff.rfl
-  le_antisymm := fun x y ⟨hxy₁, hxy₂⟩ ⟨hyx₁, hyx₂⟩ =>
+  le_antisymm := fun _ _ ⟨hxy₁, hxy₂⟩ ⟨hyx₁, hyx₂⟩ =>
     Part.ext' ⟨hyx₁, hxy₁⟩ fun _ _ => le_antisymm (hxy₂ _) (hyx₂ _)
 
 theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.get hx < y.get hy := by
@@ -321,7 +321,7 @@ instance semilatticeSup : SemilatticeSup PartENat :=
     sup := (· ⊔ ·)
     le_sup_left := fun _ _ => ⟨And.left, fun _ => le_sup_left⟩
     le_sup_right := fun _ _ => ⟨And.right, fun _ => le_sup_right⟩
-    sup_le := fun x y z ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩ =>
+    sup_le := fun _ _ _ ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩ =>
       ⟨fun hz => ⟨hx₁ hz, hy₁ hz⟩, fun _ => sup_le (hx₂ _) (hy₂ _)⟩ }
 #align part_enat.semilattice_sup PartENat.semilatticeSup
 
@@ -332,7 +332,7 @@ instance orderBot : OrderBot PartENat where
 
 instance orderTop : OrderTop PartENat where
   top := ⊤
-  le_top x := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
+  le_top _ := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
 #align part_enat.order_top PartENat.orderTop
 
 nonrec theorem eq_zero_iff {x : PartENat} : x = 0 ↔ x ≤ 0 :=
@@ -539,7 +539,7 @@ protected theorem add_left_cancel_iff {a b c : PartENat} (ha : a ≠ ⊤) : a + 
 
 section WithTop
 
-/-- Computably converts an `part_enat` to a `ℕ∞`. -/
+/-- Computably converts an `PartENat` to a `ℕ∞`. -/
 def toWithTop (x : PartENat) [Decidable x.Dom] : ℕ∞ :=
   x.toOption
 #align part_enat.to_with_top PartENat.toWithTop
@@ -609,8 +609,8 @@ theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWit
   · simp_rw [toWithTop_coeNat', ← Nat.cast_add, toWithTop_coeNat', forall_const]
 #align part_enat.to_with_top_add PartENat.toWithTop_add
 
-/-- `equiv` between `part_enat` and `ℕ∞` (for the order isomorphism see
-`with_top_order_iso`). -/
+/-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
+`withTopOrderIso`). -/
 noncomputable def withTopEquiv : PartENat ≃ ℕ∞
     where
   toFun x := toWithTop x
@@ -647,7 +647,7 @@ theorem withTopEquiv_lt {x y : PartENat} : withTopEquiv x < withTopEquiv y ↔ x
   toWithTop_le
 #align part_enat.with_top_equiv_lt PartENat.withTopEquiv_lt
 
-/-- `to_with_top` induces an order isomorphism between `part_enat` and `ℕ∞`. -/
+/-- `to_WithTop` induces an order isomorphism between `PartENat` and `ℕ∞`. -/
 noncomputable def withTopOrderIso : PartENat ≃o ℕ∞ :=
   { withTopEquiv with map_rel_iff' := @fun _ _ => withTopEquiv_le }
 #align part_enat.with_top_order_iso PartENat.withTopOrderIso
@@ -677,7 +677,7 @@ theorem withTopEquiv_symm_lt {x y : ℕ∞} : withTopEquiv.symm x < withTopEquiv
   rw [← withTopEquiv_lt] <;> simp
 #align part_enat.with_top_equiv_symm_lt PartENat.withTopEquiv_symm_lt
 
-/-- `to_with_top` induces an additive monoid isomorphism between `part_enat` and `ℕ∞`. -/
+/-- `toWithTop` induces an additive monoid isomorphism between `PartENat` and `ℕ∞`. -/
 noncomputable def withTopAddEquiv : PartENat ≃+ ℕ∞ :=
   { withTopEquiv with
     map_add' := fun x y => by simp only [withTopEquiv] <;> convert toWithTop_add }
@@ -704,7 +704,7 @@ section Find
 
 variable (P : ℕ → Prop) [DecidablePred P]
 
-/-- The smallest `part_enat` satisfying a (decidable) predicate `P : ℕ → Prop` -/
+/-- The smallest `PartENat` satisfying a (decidable) predicate `P : ℕ → Prop` -/
 def find : PartENat :=
   ⟨∃ n, P n, Nat.find⟩
 #align part_enat.find PartENat.find
