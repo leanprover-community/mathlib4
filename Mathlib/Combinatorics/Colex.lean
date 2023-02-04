@@ -21,13 +21,13 @@ The colex ordering likes to avoid large values - it can be thought of on
 `Finset ℕ` as the "binary" ordering. That is, order A based on
 `∑_{i ∈ A} 2^i`.
 It's defined here in a slightly more general way, requiring only `LT α` in
-the definition of colex on `finset α`. In the context of the Kruskal-Katona
+the definition of colex on `Finset α`. In the context of the Kruskal-Katona
 theorem, we are interested in particular on how colex behaves for sets of a
 fixed size. If the size is 3, colex on ℕ starts
 123, 124, 134, 234, 125, 135, 235, 145, 245, 345, ...
 
 ## Main statements
-* `colex.hom_lt_iff`: strictly monotone functions preserve colex
+* `Colex.hom_lt_iff`: strictly monotone functions preserve colex
 * Colex order properties - linearity, decidability and so on.
 * `forall_lt_of_colex_lt_of_forall_lt`: if A < B in colex, and everything
   in B is < t, then everything in A is < t. This confirms the idea that
@@ -40,7 +40,7 @@ fixed size. If the size is 3, colex on ℕ starts
 
 Related files are:
 * `Data.List.Lex`: Lexicographic order on lists.
-* `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
+* `Data.Pi.Lex`: Lexicographic order on `(i : α) → α i`.
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
 * `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
@@ -58,7 +58,7 @@ variable {α : Type _}
 
 open Finset
 
--- porting note: commented out the next line
+-- Porting note: unnecessary locale
 -- open BigOperators
 
 /-- We define this type synonym to refer to the colexicographic ordering on finsets
@@ -66,11 +66,12 @@ rather than the natural subset ordering.
 -/
 def Finset.Colex (α) :=
   Finset α
-  -- porting note: commented out the next line
-  -- deriving Inhabited
+-- Porting note: `deriving Inhabited` doesn't work
 #align finset.colex Finset.Colex
 
-/-- A convenience constructor to turn a `finset α` into a `finset.colex α`, useful in order to
+instance : Inhabited (Finset.Colex α) := inferInstanceAs (Inhabited (Finset α))
+
+/-- A convenience constructor to turn a `Finset α` into a `Finset.Colex α`, useful in order to
 use the colex ordering rather than the subset ordering.
 -/
 def Finset.toColex {α} (s : Finset α) : Finset.Colex α :=
@@ -135,7 +136,7 @@ theorem hom_lt_iff {β : Type _} [LinearOrder α] [DecidableEq β] [Preorder β]
     exact fun x hx => ne_of_mem_of_not_mem hx ka
 #align colex.hom_lt_iff Colex.hom_lt_iff
 
-/-- A special case of `colex.hom_lt_iff` which is sometimes useful. -/
+/-- A special case of `Colex.hom_lt_iff` which is sometimes useful. -/
 @[simp]
 theorem hom_fin_lt_iff {n : ℕ} (A B : Finset (Fin n)) :
     (A.image fun i : Fin n => (i : ℕ)).toColex < (B.image fun i : Fin n => (i : ℕ)).toColex ↔
@@ -145,7 +146,7 @@ theorem hom_fin_lt_iff {n : ℕ} (A B : Finset (Fin n)) :
 #align colex.hom_fin_lt_iff Colex.hom_fin_lt_iff
 
 instance [LT α] : IsIrrefl (Finset.Colex α) (· < ·) :=
-  ⟨fun A h => Exists.elim h fun _ ⟨_, a, b⟩ => a b⟩
+  ⟨fun _ h => Exists.elim h fun _ ⟨_, a, b⟩ => a b⟩
 
 @[trans]
 theorem lt_trans [LinearOrder α] {a b c : Finset.Colex α} : a < b → b < c → a < c := by
@@ -200,29 +201,32 @@ instance [LinearOrder α] : IsTrichotomous (Finset.Colex α) (· < ·) :=
   ⟨lt_trichotomy⟩
 
 instance decidableLt [LinearOrder α] : ∀ {A B : Finset.Colex α}, Decidable (A < B) :=
-  show ∀ A B : Finset α, Decidable (A.toColex < B.toColex) from fun A B =>
+  show ∀ {A B : Finset α}, Decidable (A.toColex < B.toColex) from @fun A B =>
     decidable_of_iff' (∃ k ∈ B, (∀ x ∈ A ∪ B, k < x → (x ∈ A ↔ x ∈ B)) ∧ k ∉ A)
       (by
         rw [Colex.lt_def]
         apply exists_congr
-        simp only [mem_union, exists_prop, or_imp, and_comm' (_ ∈ B), and_assoc]
+        simp only [mem_union, exists_prop, or_imp, and_comm (a := _ ∈ B), and_assoc]
         intro k
         refine' and_congr_left' (forall_congr' _)
         tauto)
 #align colex.decidable_lt Colex.decidableLt
 
 instance [LinearOrder α] : LinearOrder (Finset.Colex α) :=
-  { Finset.Colex.LT,
-    Finset.Colex.LE with
+  { instLTColex,
+    instLEColex with
     le_refl := fun A => Or.inr rfl
     le_trans := le_trans
     le_antisymm := fun A B AB BA =>
       AB.elim (fun k => BA.elim (fun t => (asymm k t).elim) fun t => t.symm) id
     le_total := fun A B =>
       (lt_trichotomy A B).elim3 (Or.inl ∘ Or.inl) (Or.inl ∘ Or.inr) (Or.inr ∘ Or.inl)
-    decidableLe := fun A B => by infer_instance
-    decidableLt := fun A B => by infer_instance
-    DecidableEq := fun A B => by infer_instance
+    -- Porting note: we must give some hints for instances
+    decidable_le := by
+      letI : DecidableEq (Finset.Colex α) := inferInstanceAs (DecidableEq (Finset α))
+      exact fun A B => inferInstanceAs (Decidable (A < B ∨ A = B))
+    decidable_lt := inferInstance
+    decidable_eq := inferInstanceAs (DecidableEq (Finset α))
     lt_iff_le_not_le := fun A B => by
       constructor
       · intro t
@@ -234,7 +238,7 @@ instance [LinearOrder α] : LinearOrder (Finset.Colex α) :=
       · apply h₁
       apply h₂.elim (Or.inr rfl) }
 
-/-- The instances set up let us infer that `colex.lt` is a strict total order. -/
+/-- The instances set up let us infer that `(· < ·)` is a strict total order. -/
 example [LinearOrder α] : IsStrictTotalOrder (Finset.Colex α) (· < ·) :=
   inferInstance
 
@@ -244,7 +248,8 @@ theorem hom_le_iff {β : Type _} [LinearOrder α] [LinearOrder β] {f : α → �
   rw [le_iff_le_iff_lt_iff_lt, hom_lt_iff h₁]
 #align colex.hom_le_iff Colex.hom_le_iff
 
-/-- A special case of `colex_hom` which is sometimes useful. -/
+-- Porting note: fixed the doc
+/-- A special case of `hom_le_iff` which is sometimes useful. -/
 @[simp]
 theorem hom_fin_le_iff {n : ℕ} (A B : Finset (Fin n)) :
     (A.image fun i : Fin n => (i : ℕ)).toColex ≤ (B.image fun i : Fin n => (i : ℕ)).toColex ↔
@@ -267,7 +272,7 @@ theorem forall_lt_of_colex_lt_of_forall_lt [LinearOrder α] {A B : Finset α} (t
   apply lt_of_lt_of_le (h₂ k ‹_›) a
 #align colex.forall_lt_of_colex_lt_of_forall_lt Colex.forall_lt_of_colex_lt_of_forall_lt
 
-/-- `s.to_colex < {r}.to_colex` iff all elements of `s` are less than `r`. -/
+/-- `s.toColex < {r}.toColex` iff all elements of `s` are less than `r`. -/
 theorem lt_singleton_iff_mem_lt [LinearOrder α] {r : α} {s : Finset α} :
     s.toColex < ({r} : Finset α).toColex ↔ ∀ x ∈ s, x < r := by
   simp only [lt_def, mem_singleton, ← and_assoc, exists_eq_right]
@@ -283,7 +288,8 @@ theorem lt_singleton_iff_mem_lt [LinearOrder α] {r : α} {s : Finset α} :
           by simpa using h r⟩
 #align colex.lt_singleton_iff_mem_lt Colex.lt_singleton_iff_mem_lt
 
-/-- If {r} is less than or equal to s in the colexicographical sense,
+-- Porting note: fixed the doc
+/-- If `{r}` is less than or equal to s in the colexicographical sense,
   then s contains an element greater than or equal to r. -/
 theorem mem_le_of_singleton_le [LinearOrder α] {r : α} {s : Finset α} :
     ({r} : Finset α).toColex ≤ s.toColex ↔ ∃ x ∈ s, r ≤ x := by
@@ -367,7 +373,7 @@ def toColexRelHom [LinearOrder α] :
     ((· ⊆ ·) : Finset α → Finset α → Prop) →r ((· ≤ ·) : Finset.Colex α → Finset.Colex α → Prop)
     where
   toFun := Finset.toColex
-  map_rel' A B := colex_le_of_subset
+  map_rel' {_ _} := colex_le_of_subset
 #align colex.to_colex_rel_hom Colex.toColexRelHom
 
 instance [LinearOrder α] : OrderBot (Finset.Colex α)
@@ -378,7 +384,7 @@ instance [LinearOrder α] : OrderBot (Finset.Colex α)
 instance [LinearOrder α] [Fintype α] : OrderTop (Finset.Colex α)
     where
   top := Finset.univ.toColex
-  le_top x := colex_le_of_subset (subset_univ _)
+  le_top _ := colex_le_of_subset (subset_univ _)
 
 instance [LinearOrder α] : Lattice (Finset.Colex α) :=
   { (by infer_instance : SemilatticeSup (Finset.Colex α)),
@@ -403,8 +409,10 @@ theorem sum_two_pow_lt_iff_lt (A B : Finset ℕ) :
     apply lt_of_lt_of_le (@Nat.sum_two_pow_lt k (A \ B) _)
     · apply single_le_sum (fun _ _ => Nat.zero_le _) kB
     intro x hx
-    apply lt_of_le_of_ne (le_of_not_lt @fun kx => _)
+    apply lt_of_le_of_ne (le_of_not_lt _)
     · apply ne_of_mem_of_not_mem hx kA
+    -- Porting note: `intro` required because `apply` behaves differently
+    intro kx
     have := (z kx).1 hx
     rw [mem_sdiff] at this hx
     exact hx.2 this.1
