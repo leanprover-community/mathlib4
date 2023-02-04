@@ -97,12 +97,15 @@ theorem beq_comm [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
 @[simp]
 theorem default_bool : default = false :=
   rfl
+#align bool.default_bool Bool.default_bool
 
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
+#align bool.dichotomy Bool.dichotomy
 
 @[simp]
 theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
   ⟨fun h ↦ by simp [h], fun ⟨h₁, h₂⟩ b ↦ by cases b <;> assumption⟩
+#align bool.forall_bool Bool.forall_bool
 
 @[simp]
 theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
@@ -110,6 +113,7 @@ theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
   fun h ↦ match h with
   | .inl h => ⟨_, h⟩
   | .inr h => ⟨_, h⟩ ⟩
+#align bool.exists_bool Bool.exists_bool
 
 /-- If `p b` is decidable for all `b : bool`, then `∀ b, p b` is decidable -/
 instance decidableForallBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∀ b, p b) :=
@@ -123,6 +127,7 @@ instance decidableExistsBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Deci
 
 theorem cond_eq_ite {α} (b : Bool) (t e : α) : cond b t e = if b then t else e := by
   cases b <;> simp
+#align bool.cond_eq_ite Bool.cond_eq_ite
 
 @[simp]
 theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) :
@@ -138,6 +143,7 @@ theorem not_ne_id : not ≠ id := fun h ↦ ff_ne_tt <| congrFun h true
 #align bool.bnot_ne_id Bool.not_ne_id
 
 theorem coe_bool_iff : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
+#align bool.coe_bool_iff Bool.coe_bool_iff
 
 theorem eq_true_of_ne_false : ∀ {a : Bool}, a ≠ false → a = true := by decide
 #align bool.eq_tt_of_ne_ff Bool.eq_true_of_ne_false
@@ -157,7 +163,7 @@ theorem or_inl {a b : Bool} (H : a) : a || b := by simp [H]
 #align bool.bor_inl Bool.or_inl
 
 theorem or_inr {a b : Bool} (H : b) : a || b := by cases a <;> simp [H]
-#align bool.bot_inr Bool.or_inr
+#align bool.bor_inr Bool.or_inr
 
 theorem and_comm : ∀ a b, (a && b) = (b && a) := by decide
 #align bool.band_comm Bool.and_comm
@@ -220,7 +226,7 @@ theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
 theorem not_ne : ∀ {a b : Bool}, (!a) ≠ b ↔ a = b := not_not_eq
 #align bool.bnot_ne Bool.not_ne
 
-lemma not_ne_self : ∀ b : Bool, !b ≠ b := by decide
+lemma not_ne_self : ∀ b : Bool, (!b) ≠ b := by decide
 #align bool.bnot_ne_self Bool.not_ne_self
 
 lemma self_ne_not : ∀ b : Bool, b ≠ !b := by decide
@@ -339,6 +345,7 @@ theorem le_true {x : Bool} : x ≤ true :=
 #align bool.le_tt Bool.le_true
 
 theorem lt_iff : ∀ {x y : Bool}, x < y ↔ x = false ∧ y = true := by decide
+#align bool.lt_iff Bool.lt_iff
 
 @[simp]
 theorem false_lt_true : false < true :=
@@ -346,6 +353,7 @@ theorem false_lt_true : false < true :=
 #align bool.ff_lt_tt Bool.false_lt_true
 
 theorem le_iff_imp : ∀ {x y : Bool}, x ≤ y ↔ x → y := by decide
+#align bool.le_iff_imp Bool.le_iff_imp
 
 theorem and_le_left : ∀ x y : Bool, (x && y) ≤ x := by decide
 #align bool.band_le_left Bool.and_le_left
@@ -383,23 +391,28 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
     cases Nat.decEq m 0 with
     | isFalse hm => rw [decide_eq_false hm]; exact le_true
     | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
+#align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
   cases h with
   | inl h => subst h; exact Nat.zero_le _
   | inr h => subst h; cases b₀ <;> simp;
+#align bool.to_nat_le_to_nat Bool.toNat_le_toNat
 
 theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
   cases b <;> rfl
+#align bool.of_nat_to_nat Bool.ofNat_toNat
 
 @[simp]
 theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
   ⟨fun Hinj Heq ↦ ff_ne_tt (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
     exacts[rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
+#align bool.injective_iff Bool.injective_iff
 
 /-- **Kaminski's Equation** -/
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by
   cases x <;> cases h₁ : f true <;> cases h₂ : f false <;> simp only [h₁, h₂]
+#align bool.apply_apply_apply Bool.apply_apply_apply
 
 end Bool

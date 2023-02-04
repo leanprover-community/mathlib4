@@ -68,6 +68,7 @@ def mulLeft (u : Mˣ) : Equiv.Perm M where
   right_inv := u.mul_inv_cancel_left
 #align units.mul_left Units.mulLeft
 #align add_units.add_left AddUnits.addLeft
+#align units.mul_left_apply Units.mulLeft_apply
 
 @[to_additive (attr := simp)]
 theorem mulLeft_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
@@ -91,6 +92,7 @@ def mulRight (u : Mˣ) : Equiv.Perm M where
   right_inv x := inv_mul_cancel_right x u
 #align units.mul_right Units.mulRight
 #align add_units.add_right AddUnits.addRight
+#align units.mul_right_apply Units.mulRight_apply
 
 @[to_additive (attr := simp)]
 theorem mulRight_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
@@ -181,7 +183,7 @@ theorem _root_.Group.mulRight_bijective (a : G) : Function.Bijective (· * a) :=
 #align add_group.add_right_bijective AddGroup.addRight_bijective
 
 /-- A version of `Equiv.mulLeft a b⁻¹` that is defeq to `a / b`. -/
-@[to_additive " A version of `equiv.add_left a (-b)` that is defeq to `a - b`. ", simps]
+@[to_additive " A version of `Equiv.addLeft a (-b)` that is defeq to `a - b`. ", simps]
 protected def divLeft (a : G) : G ≃ G where
   toFun b := a / b
   invFun b := b⁻¹ * a
@@ -189,6 +191,8 @@ protected def divLeft (a : G) : G ≃ G where
   right_inv b := by simp [div_eq_mul_inv]
 #align equiv.div_left Equiv.divLeft
 #align equiv.sub_left Equiv.subLeft
+#align equiv.div_left_apply Equiv.divLeft_apply
+#align equiv.div_left_symm_apply Equiv.divLeft_symm_apply
 
 @[to_additive]
 theorem divLeft_eq_inv_trans_mulLeft (a : G) :
@@ -198,7 +202,7 @@ theorem divLeft_eq_inv_trans_mulLeft (a : G) :
 #align equiv.sub_left_eq_neg_trans_add_left Equiv.subLeft_eq_neg_trans_addLeft
 
 /-- A version of `Equiv.mulRight a⁻¹ b` that is defeq to `b / a`. -/
-@[to_additive " A version of `equiv.add_right (-a) b` that is defeq to `b - a`. ", simps]
+@[to_additive " A version of `Equiv.addRight (-a) b` that is defeq to `b - a`. ", simps]
 protected def divRight (a : G) : G ≃
       G where
   toFun b := b / a
@@ -207,6 +211,8 @@ protected def divRight (a : G) : G ≃
   right_inv b := by simp [div_eq_mul_inv]
 #align equiv.div_right Equiv.divRight
 #align equiv.sub_right Equiv.subRight
+#align equiv.div_right_symm_apply Equiv.divRight_symm_apply
+#align equiv.div_right_apply Equiv.divRight_apply
 
 @[to_additive]
 theorem divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a⁻¹ :=

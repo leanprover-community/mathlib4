@@ -66,8 +66,17 @@ namespace InitialSeg
 instance : Coe (r ≼i s) (r ↪r s) :=
   ⟨InitialSeg.toRelEmbedding⟩
 
-instance : CoeFun (r ≼i s) fun _ => α → β :=
-  ⟨fun f x => (f : r ↪r s) x⟩
+instance : EmbeddingLike (r ≼i s) α β :=
+  { coe := fun f => f.toFun
+    coe_injective' := by
+      rintro ⟨f, hf⟩ ⟨g, hg⟩ h
+      congr with x
+      exact congr_fun h x,
+    injective' := fun f => f.inj' }
+
+@[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
+  FunLike.ext f g h
+#align initial_seg.ext InitialSeg.ext
 
 @[simp]
 theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
@@ -78,11 +87,15 @@ theorem init' (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b 
   f.init _ _
 #align initial_seg.init' InitialSeg.init'
 
+theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
+  f.map_rel_iff'
+#align initial_seg.map_rel_iff InitialSeg.map_rel_iff
+
 theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
-  ⟨fun h =>
-    let ⟨a', e⟩ := f.init' h
-    ⟨a', e, (f : r ↪r s).map_rel_iff.1 (by dsimp only at e; rw [e]; exact h)⟩,
-    fun ⟨a', e, h⟩ => e ▸ (f : r ↪r s).map_rel_iff.2 h⟩
+  ⟨fun h => by
+    rcases f.init' h with ⟨a', rfl⟩
+    exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
+    fun ⟨a', e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
 #align initial_seg.init_iff InitialSeg.init_iff
 
 /-- An order isomorphism is an initial segment -/
@@ -104,7 +117,7 @@ instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
   ⟨f.1.trans g.1, fun a c h => by
     simp at h⊢
-    rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.1.map_rel_iff.1 h
+    rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
     rcases f.2 _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
 #align initial_seg.trans InitialSeg.trans
 
@@ -122,23 +135,11 @@ theorem unique_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s] :
     WellFounded r → Subsingleton (r ≼i s)
   | ⟨h⟩ =>
     ⟨fun f g => by
-      suffices (f : α → β) = g by
-        cases f
-        cases g
-        congr
-        exact RelEmbedding.coe_fn_injective this
-      funext a
-      have := h a
-      induction' this with a _ IH
-      refine' extensional_of_trichotomous_of_irrefl s fun x => ⟨fun h => _, fun h => _⟩
-      · rcases f.init_iff.1 h with ⟨y, rfl, h'⟩
-        dsimp only
-        rw [IH _ h']
-        exact (g : r ↪r s).map_rel_iff.2 h'
-      · rcases g.init_iff.1 h with ⟨y, rfl, h'⟩
-        dsimp only
-        rw [← IH _ h']
-        exact (f : r ↪r s).map_rel_iff.2 h'⟩
+      ext a
+      induction' h a with a _ IH
+      refine extensional_of_trichotomous_of_irrefl s fun x => ?_
+      simp only [f.init_iff, g.init_iff]
+      exact exists_congr fun y => and_congr_left fun h => IH _ h ▸ Iff.rfl⟩
 #align initial_seg.unique_of_trichotomous_of_irrefl InitialSeg.unique_of_trichotomous_of_irrefl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
@@ -264,7 +265,7 @@ theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
 #align principal_seg.lt_top PrincipalSeg.lt_top
 
 theorem init [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) : ∃ a', f a' = b :=
-  f.down.1 <| trans h <| f.lt_top _
+  f.down.1 <| _root_.trans h <| f.lt_top _
 #align principal_seg.init PrincipalSeg.init
 
 /-- A principal segment is in particular an initial segment. -/
@@ -293,7 +294,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 def ltLe (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
     simp only [g.init_iff, PrincipalSeg.down, exists_and_left.symm, exists_swap,
-        RelEmbedding.trans_apply, exists_eq_right']⟩
+        RelEmbedding.trans_apply, exists_eq_right', InitialSeg.coe_coe_fn]⟩
 #align principal_seg.lt_le PrincipalSeg.ltLe
 
 @[simp]
@@ -353,7 +354,7 @@ theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
 instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
   ⟨fun f g => by
     have ef : (f : α → β) = g := by
-      show ((f : r ≼i s) : α → β) = g
+      show ((f : r ≼i s) : α → β) = (g : r ≼i s)
       rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
     have et : f.top = g.top := by
       refine' extensional_of_trichotomous_of_irrefl s fun x => _
@@ -477,6 +478,7 @@ noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : ∀ a, { b // ¬
             (IH a' h).2 <| _root_.trans (f.map_rel_iff.2 h) h').resolve_left
         fun h' => (IH a' h).2 <| h' ▸ f.map_rel_iff.2 h
     exact ⟨IsWellFounded.wf.min S ⟨_, this⟩, IsWellFounded.wf.not_lt_min _ _ this⟩
+set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F RelEmbedding.collapseF
 
 theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
@@ -486,6 +488,7 @@ theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
   unfold collapseF; rw [WellFounded.fix_eq]
   dsimp only
   apply WellFounded.min_mem _ _
+set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.lt RelEmbedding.collapseF.lt
 
 theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
@@ -495,6 +498,7 @@ theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
   exact
     WellFounded.not_lt_min _ _ _
       (show b ∈ { b | ∀ (a') (_ : r a' a), s (collapseF f a').1 b } from h)
+set_option linter.uppercaseLean3 false in
 #align rel_embedding.collapse_F.not_lt RelEmbedding.collapseF.not_lt
 
 /-- Construct an initial segment from an order embedding into a well order, by collapsing it

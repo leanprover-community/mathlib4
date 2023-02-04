@@ -23,7 +23,7 @@ multiplicative and additive structures on the values being combined.
 
 universe u v w
 
--- open BigOperators -- Porting note: commented out locale
+open BigOperators
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
@@ -38,8 +38,7 @@ variable [CommMonoid β]
 open Classical
 
 theorem prod_pow_eq_pow_sum {x : β} {f : α → ℕ} :
-    ∀ {s : Finset α}, (∏ i in s, x ^ f i) = x ^ ∑ x in s, f x :=
-  by
+    ∀ {s : Finset α}, (∏ i in s, x ^ f i) = x ^ ∑ x in s, f x := by
   apply Finset.induction
   · simp
   · intro a s has H
@@ -61,8 +60,8 @@ theorem mul_sum : (b * ∑ x in s, f x) = ∑ x in s, b * f x :=
 #align finset.mul_sum Finset.mul_sum
 
 theorem sum_mul_sum {ι₁ : Type _} {ι₂ : Type _} (s₁ : Finset ι₁) (s₂ : Finset ι₂) (f₁ : ι₁ → β)
-    (f₂ : ι₂ → β) : ((∑ x₁ in s₁, f₁ x₁) * ∑ x₂ in s₂, f₂ x₂) = ∑ p in s₁ ×ᶠ s₂, f₁ p.1 * f₂ p.2 :=
-  by
+    (f₂ : ι₂ → β) :
+    ((∑ x₁ in s₁, f₁ x₁) * ∑ x₂ in s₂, f₂ x₂) = ∑ p in s₁ ×ᶠ s₂, f₁ p.1 * f₂ p.2 := by
   rw [sum_product, sum_mul, sum_congr rfl]
   intros
   rw [mul_sum]
@@ -96,13 +95,12 @@ variable [CommSemiring β]
   `Finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
 theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a)] {s : Finset α}
     {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a → β} :
-    (∏ a in s, ∑ b in t a, f a b) = ∑ p in s.pi t, ∏ x in s.attach, f x.1 (p x.1 x.2) :=
-  by
+    (∏ a in s, ∑ b in t a, f a b) = ∑ p in s.pi t, ∏ x in s.attach, f x.1 (p x.1 x.2) := by
   induction' s using Finset.induction with a s ha ih
   · rw [pi_empty, sum_singleton]
     rfl
-  · have h₁ : ∀ x ∈ t a,∀ y ∈ t a,
-      x ≠ y → Disjoint (image (pi.cons s a x) (pi s t)) (image (pi.cons s a y) (pi s t)) := by
+  · have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
+      Disjoint (image (pi.cons s a x) (pi s t)) (image (pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
@@ -131,9 +129,9 @@ open Classical
   over the powerset of `s` of the product of `f` over a subset `t` times
   the product of `g` over the complement of `t`  -/
 theorem prod_add (f g : α → β) (s : Finset α) :
-    (∏ a in s, f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
+    ∏ a in s, (f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
   calc
-    (∏ a in s, f a + g a) =
+    ∏ a in s, (f a + g a) =
         ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
       by simp
     _ = ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
@@ -163,11 +161,10 @@ theorem prod_add (f g : α → β) (s : Finset α) :
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
 theorem prod_add_ordered {ι R : Type _} [CommSemiring R] [LinearOrder ι] (s : Finset ι)
     (f g : ι → R) :
-    (∏ i in s, f i + g i) =
+    ∏ i in s, (f i + g i) =
       (∏ i in s, f i) +
         ∑ i in s,
-          (g i * ∏ j in s.filter (· < i), f j + g j) * ∏ j in s.filter fun j => i < j, f j :=
-  by
+          g i * (∏ j in s.filter (· < i), (f j + g j)) * ∏ j in s.filter fun j => i < j, f j := by
   refine' Finset.induction_on_max s (by simp) _
   clear s
   intro a s ha ihs
@@ -188,11 +185,10 @@ theorem prod_add_ordered {ι R : Type _} [CommSemiring R] [LinearOrder ι] (s : 
 
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
 theorem prod_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
-    (∏ i in s, f i - g i) =
+    ∏ i in s, (f i - g i) =
       (∏ i in s, f i) -
         ∑ i in s,
-          (g i * ∏ j in s.filter (· < i), f j - g j) * ∏ j in s.filter fun j => i < j, f j :=
-  by
+          g i * (∏ j in s.filter (· < i), (f j - g j)) * ∏ j in s.filter fun j => i < j, f j := by
   simp only [sub_eq_add_neg]
   convert prod_add_ordered s f fun i => -g i
   simp
@@ -201,8 +197,7 @@ theorem prod_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : Fins
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
 a partition of unity from a collection of “bump” functions.  -/
 theorem prod_one_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : Finset ι)
-    (f : ι → R) : (∏ i in s, 1 - f i) = 1 - ∑ i in s, f i * ∏ j in s.filter (· < i), 1 - f j :=
-  by
+    (f : ι → R) : ∏ i in s, (1 - f i) = 1 - ∑ i in s, f i * ∏ j in s.filter (· < i), (1 - f j) := by
   rw [prod_sub_ordered]
   simp
 #align finset.prod_one_sub_ordered Finset.prod_one_sub_ordered
@@ -210,8 +205,7 @@ theorem prod_one_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : 
 /-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `Finset`
 gives `(a + b)^s.card`.-/
 theorem sum_pow_mul_eq_add_pow {α R : Type _} [CommSemiring R] (a b : R) (s : Finset α) :
-    (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card :=
-  by
+    (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
   rw [← prod_const, prod_add]
   refine' Finset.sum_congr rfl fun t ht => _
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
@@ -222,9 +216,9 @@ theorem dvd_sum {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣
 #align finset.dvd_sum Finset.dvd_sum
 
 @[norm_cast]
-theorem prod_nat_cast (s : Finset α) (f : α → ℕ) : ↑(∏ x in s, f x : ℕ) = ∏ x in s, (f x : β) :=
+theorem prod_natCast (s : Finset α) (f : α → ℕ) : ↑(∏ x in s, f x : ℕ) = ∏ x in s, (f x : β) :=
   (Nat.castRingHom β).map_prod f s
-#align finset.prod_nat_cast Finset.prod_nat_cast
+#align finset.prod_nat_cast Finset.prod_natCast
 
 end CommSemiring
 
@@ -233,9 +227,9 @@ section CommRing
 variable {R : Type _} [CommRing R]
 
 theorem prod_range_cast_nat_sub (n k : ℕ) :
-    (∏ i in range k, (n - i : R)) = (∏ i in range k, n - i : ℕ) :=
+    ∏ i in range k, (n - i : R) = (∏ i in range k, (n - i) : ℕ) :=
   by
-  rw [prod_nat_cast]
+  rw [prod_natCast]
   cases' le_or_lt k n with hkn hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
@@ -252,8 +246,7 @@ of `s`, and over all subsets of `s` to which one adds `x`. -/
 theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x : α} (h : x ∉ s)
     (f : Finset α → β) :
     (∏ a in (insert x s).powerset, f a) =
-      (∏ a in s.powerset, f a) * ∏ t in s.powerset, f (insert x t) :=
-  by
+      (∏ a in s.powerset, f a) * ∏ t in s.powerset, f (insert x t) := by
   rw [powerset_insert, Finset.prod_union, Finset.prod_image]
   · intro t₁ h₁ t₂ h₂ heq
     rw [← Finset.erase_insert (not_mem_of_mem_powerset_of_not_mem h₁ h), ←
@@ -264,6 +257,7 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
     rw [← H₃₂]
     exact ne_insert_of_not_mem _ _ (not_mem_of_mem_powerset_of_not_mem h₁ h)
 #align finset.prod_powerset_insert Finset.prod_powerset_insert
+#align finset.sum_powerset_insert Finset.sum_powerset_insert
 
 /-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
 `card s = k`, for `k = 1, ..., card s`. -/
@@ -274,13 +268,14 @@ theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
     (∏ t in powerset s, f t) = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
   rw [powerset_card_disjUnionᵢ, prod_disjUnionᵢ]
 #align finset.prod_powerset Finset.prod_powerset
+#align finset.sum_powerset Finset.sum_powerset
 
 theorem sum_range_succ_mul_sum_range_succ [NonUnitalNonAssocSemiring β] (n k : ℕ) (f g : ℕ → β) :
     ((∑ i in range (n + 1), f i) * ∑ i in range (k + 1), g i) =
       (((∑ i in range n, f i) * ∑ i in range k, g i) + f n * ∑ i in range k, g i) +
           (∑ i in range n, f i) * g k +
-        f n * g k :=
-  by simp only [add_mul, mul_add, add_assoc, sum_range_succ]
+        f n * g k := by
+  simp only [add_mul, mul_add, add_assoc, sum_range_succ]
 #align finset.sum_range_succ_mul_sum_range_succ Finset.sum_range_succ_mul_sum_range_succ
 
 end Finset
