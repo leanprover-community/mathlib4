@@ -27,20 +27,20 @@ endowed with a filter (instead of just `ℕ` with `at_top`).
 Let `α` be a topological space, `β` a uniform space, `Fₙ` and `f` be functions from `α`to `β`
 (where the index `n` belongs to an indexing type `ι` endowed with a filter `p`).
 
-* `tendsto_uniformly_on F f p s`: the fact that `Fₙ` converges uniformly to `f` on `s`. This means
+* `TendstoUniformlyOn F f p s`: the fact that `Fₙ` converges uniformly to `f` on `s`. This means
   that, for any entourage `u` of the diagonal, for large enough `n` (with respect to `p`), one has
   `(f y, Fₙ y) ∈ u` for all `y ∈ s`.
-* `tendsto_uniformly F f p`: same notion with `s = univ`.
-* `tendsto_uniformly_on.continuous_on`: a uniform limit on a set of functions which are continuous
+* `TendstoUniformly F f p`: same notion with `s = univ`.
+* `TendstoUniformlyOn.continuousOn`: a uniform limit on a set of functions which are continuous
   on this set is itself continuous on this set.
-* `tendsto_uniformly.continuous`: a uniform limit of continuous functions is continuous.
-* `tendsto_uniformly_on.tendsto_comp`: If `Fₙ` tends uniformly to `f` on a set `s`, and `gₙ` tends
+* `TendstoUniformly.continuous`: a uniform limit of continuous functions is continuous.
+* `TendstoUniformlyOn.tendsto_comp`: If `Fₙ` tends uniformly to `f` on a set `s`, and `gₙ` tends
   to `x` within `s`, then `Fₙ gₙ` tends to `f x` if `f` is continuous at `x` within `s`.
-* `tendsto_uniformly.tendsto_comp`: If `Fₙ` tends uniformly to `f`, and `gₙ` tends to `x`, then
+* `TendstoUniformly.tendsto_comp`: If `Fₙ` tends uniformly to `f`, and `gₙ` tends to `x`, then
   `Fₙ gₙ` tends to `f x`.
 
 We also define notions where the convergence is locally uniform, called
-`tendsto_locally_uniformly_on F f p s` and `tendsto_locally_uniformly F f p`. The previous theorems
+`TendstoLocallyUniformlyOn F f p s` and `TendstoLocallyUniformly F f p`. The previous theorems
 all have corresponding versions under locally uniform convergence.
 
 Finally, we introduce the notion of a uniform Cauchy sequence, which is to uniform
@@ -48,12 +48,12 @@ convergence what a Cauchy sequence is to the usual notion of convergence.
 
 ## Implementation notes
 
-We derive most of our initial results from an auxiliary definition `tendsto_uniformly_on_filter`.
+We derive most of our initial results from an auxiliary definition `TendstoUniformlyOnFilter`.
 This definition in and of itself can sometimes be useful, e.g., when studying the local behavior
-of the `Fₙ` near a point, which would typically look like `tendsto_uniformly_on_filter F f p (𝓝 x)`.
+of the `Fₙ` near a point, which would typically look like `TendstoUniformlyOnFilter F f p (𝓝 x)`.
 Still, while this may be the "correct" definition (see
-`tendsto_uniformly_on_iff_tendsto_uniformly_on_filter`), it is somewhat unwieldy to work with in
-practice. Thus, we provide the more traditional definition in `tendsto_uniformly_on`.
+`tendstoUniformlyOn_iff_tendstoUniformlyOnFilter`), it is somewhat unwieldy to work with in
+practice. Thus, we provide the more traditional definition in `TendstoUniformlyOn`.
 
 Most results hold under weaker assumptions of locally uniform approximation. In a first section,
 we prove the results under these weaker assumptions. Then, we derive the results on uniform
@@ -801,7 +801,7 @@ In this section, we give lemmas ensuring that a function is continuous if it can
 uniformly by continuous functions. We give various versions, within a set or the whole space, at
 a single point or at all points, with locally uniform approximation or uniform approximation. All
 the statements are derived from a statement about locally uniform approximation within a set at
-a point, called `continuous_within_at_of_locally_uniform_approx_of_continuous_within_at`. -/
+a point, called `continuousWithinAt_of_locally_uniform_approx_of_continuousWithinAt`. -/
 
 
 /-- A function which can be locally uniformly approximated by functions which are continuous
