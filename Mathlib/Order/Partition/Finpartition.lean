@@ -57,10 +57,7 @@ the literature and turn the order around?
 -/
 
 
-open Finset Function
-
--- porting note:  commenting out locale
--- open BigOperators
+open BigOperators Finset Function
 
 variable {α : Type _}
 
