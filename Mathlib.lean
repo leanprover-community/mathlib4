@@ -985,6 +985,7 @@ import Mathlib.Topology.Order
 import Mathlib.Topology.Separation
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Support
+import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Pi
