@@ -8,8 +8,8 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.UnionLift
-import Mathbin.Topology.Homeomorph
+import Mathlib.Data.Set.UnionLift
+import Mathlib.Topology.Homeomorph
 
 /-!
 # Continuous bundled maps
@@ -355,8 +355,7 @@ include hφ hS
 /-- A family `φ i` of continuous maps `C(S i, β)`, where the domains `S i` contain a neighbourhood
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
 construct a continuous map in `C(α, β)`. -/
-noncomputable def liftCover : C(α, β) :=
-  by
+noncomputable def liftCover : C(α, β) := by
   have H : (⋃ i, S i) = Set.univ := by
     rw [Set.eq_univ_iff_forall]
     intro x
@@ -395,8 +394,7 @@ include hF hA
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
-noncomputable def liftCover' : C(α, β) :=
-  by
+noncomputable def liftCover' : C(α, β) := by
   let S : A → Set α := coe
   let F : ∀ i : A, C(i, β) := fun i => F i i.Prop
   refine' lift_cover S F (fun i j => hF i i.Prop j j.Prop) _
