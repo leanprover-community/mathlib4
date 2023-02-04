@@ -104,8 +104,13 @@ indexed by the same type. -/
 theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s) (u : ι → Set X)
     (uo : ∀ i, IsOpen (u i)) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
+  -- Porting note: Added proof of uc
+  have uc : (unionᵢ fun i => Option.elim' (sᶜ) u i) = univ := by
+    apply Subset.antisymm (subset_univ _)
+    · simp_rw [← compl_union_self s, Option.elim', unionᵢ_option]
+      apply union_subset_union_right (sᶜ) us
   rcases precise_refinement (Option.elim' (sᶜ) u) (Option.forall.2 ⟨isOpen_compl_iff.2 hs, uo⟩)
-      _ with
+      uc with
     ⟨v, vo, vc, vf, vu⟩
   refine' ⟨v ∘ some, fun i ↦ vo _, _, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
   · simp only [unionᵢ_option, ← compl_subset_iff_union] at vc
@@ -271,3 +276,5 @@ theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace 
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
 #align normal_of_paracompact_t2 normal_of_paracompact_t2
+
+#lint
