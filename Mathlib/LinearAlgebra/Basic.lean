@@ -2466,8 +2466,8 @@ def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtyp
     where
   toFun x := ⟨x, x.2⟩
   invFun x := ⟨⟨x, hpq x.2⟩, x.2⟩
-  left_inv x := by simp only [coe_mk, SetLike.eta, coe_coe]
-  right_inv x := by simp only [Subtype.coe_mk, SetLike.eta, coe_coe]
+  left_inv x := by simp only [coe_mk, SetLike.eta, LinearEquiv.coe_coe]
+  right_inv x := by simp only [Subtype.coe_mk, SetLike.eta, LinearEquiv.coe_coe]
   map_add' x y := rfl
   map_smul' c x := rfl
 #align submodule.comap_subtype_equiv_of_le Submodule.comapSubtypeEquivOfLe
@@ -2565,12 +2565,13 @@ def compatibleMaps : Submodule R (N →ₗ[R] N₂)
     change pₗ ≤ comap (0 : N →ₗ[R] N₂) qₗ
     rw [comap_zero]
     refine' le_top
-  add_mem' f₁ f₂ h₁ h₂ :=
-    by
+  add_mem' {f₁ f₂} h₁ h₂ := by
     apply le_trans _ (inf_comap_le_comap_add qₗ f₁ f₂)
     rw [le_inf_iff]
     exact ⟨h₁, h₂⟩
-  smul_mem' c fₗ h := le_trans h (comap_le_comap_smul qₗ fₗ c)
+  smul_mem' c fₗ h := by
+    dsimp at h
+    exact le_trans h (comap_le_comap_smul qₗ fₗ c)
 #align submodule.compatible_maps Submodule.compatibleMaps
 
 end Submodule
