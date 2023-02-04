@@ -31,7 +31,7 @@ section MapIdx
 
 -- Porting note: Add back old definition because it's easier for writing proofs.
 
-/-- Lean3 map_with_index helper function -/
+/-- Lean3 `map_with_index` helper function -/
 def map_with_index_core (f : ℕ → α → β) : ℕ → List α → List β
   | _, []      => []
   | k, (a::as) => f k a::(map_with_index_core f (k+1) as)
@@ -47,7 +47,7 @@ theorem mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
 #align list.map_with_index_nil List.mapIdx_nil
 
 theorem map_with_index_core_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
-    l.map_with_index_core f n = l.map_with_index fun i a => f (i + n) a := by
+    l.map_with_index_core f n = l.map_with_index fun i a ↦ f (i + n) a := by
   induction' l with hd tl hl generalizing f n
   · rfl
   · rw [map_with_index]
@@ -59,12 +59,12 @@ theorem map_with_index_core_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
 --   2. Prove that `mapIdx f (l ++ [e]) = mapIdx l ++ [f l.length e]`
 --   3. Prove list induction using `∀ l e, p [] → (p l → p (l ++ [e])) → p l`
 -- Porting note: new theorem.
-theorem list_reverse_induction (p : List α → Prop) :
-  (p []) → (∀ (l : List α) (e : α), p l → p (l ++ [e])) → (∀ (l : List α), p l) := by
-  let q := λ l ↦ p (reverse l)
+theorem list_reverse_induction (p : List α → Prop) (base : p [])
+    (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
+  let q := fun l ↦ p (reverse l)
   have pq : ∀ l, p (reverse l) → q l := by simp only [reverse_reverse]; intro; exact id
   have qp : ∀ l, q (reverse l) → p l := by simp only [reverse_reverse]; intro; exact id
-  intros base ind l
+  intro l
   apply qp
   generalize (reverse l) = l
   induction' l with head tail ih
@@ -94,7 +94,7 @@ theorem map_with_index_core_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁
     have l₂_nil : l₂ = [] := by cases l₂; rfl; rw [List.length_append] at h; contradiction
     simp only [l₁_nil, l₂_nil]; rfl
   · cases' l₁ with head tail
-    · trivial -- · simp [map_with_index_core]; rw [(ih (n+1) tail l₂ _)]; simp
+    · trivial -- · simp [map_with_index_core]; rw [ih (n+1) tail l₂ _]; simp
     · simp only [map_with_index_core, List.append_eq, length_cons, cons_append,cons.injEq, true_and]
       suffices : n + Nat.succ (length tail) = n + 1 + tail.length
       { rw [this]
@@ -105,15 +105,15 @@ theorem map_with_index_core_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁
 
 -- Porting note: new theorem.
 theorem map_with_index_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
-  map_with_index f (l ++ [e]) = map_with_index f l ++ [f l.length e] := by
+    map_with_index f (l ++ [e]) = map_with_index f l ++ [f l.length e] := by
   intros f l e
   unfold map_with_index
-  rw [(map_with_index_core_append f 0 l [e])]
+  rw [map_with_index_core_append f 0 l [e]]
   simp; rfl
 
 -- Porting note: new theorem.
 theorem mapIdx_go_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr : Array β),
-  mapIdx.go f (l₁ ++ l₂) arr = mapIdx.go f l₂ (List.toArray (mapIdx.go f l₁ arr)) := by
+    mapIdx.go f (l₁ ++ l₂) arr = mapIdx.go f l₂ (List.toArray (mapIdx.go f l₁ arr)) := by
   intros f l₁ l₂ arr
   generalize e : (l₁++l₂).length = len
   revert l₁ l₂ arr
@@ -130,7 +130,7 @@ theorem mapIdx_go_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (ar
 
 -- Porting note: new theorem.
 theorem mapIdx.go_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array β),
-  length (mapIdx.go f l arr) = length l + arr.size := by
+    length (mapIdx.go f l arr) = length l + arr.size := by
   intro f l
   induction' l with head tail ih
   · intros; simp only [go, Array.toList_eq, length_nil, zero_add]
@@ -143,12 +143,12 @@ theorem mapIdx_length : ∀ (f : ℕ → α → β) (l : List α), length (mapId
 
 -- Porting note: new theorem.
 theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
-  mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
+    mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
   intros f l e
   unfold mapIdx
-  rw [(mapIdx_go_append f l [e])]
+  rw [mapIdx_go_append f l [e]]
   simp only [mapIdx.go, Array.size_toArray, mapIdx.go_length, length_nil, add_zero, Array.toList_eq,
-             Array.push_data, Array.data_toArray]
+    Array.push_data, Array.data_toArray]
 
 -- Porting note: new theorem.
 theorem new_def_eq_old_def: ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = map_with_index f l := by
@@ -163,7 +163,7 @@ example : ∀ (f : α → β) (a b : α), (a = b → f a = f b) := by simp?
 
 @[local simp]
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
-  map (uncurry f) (enumFrom n l) = zipWith (fun i => f (i + n)) (range (length l)) l := by
+    map (uncurry f) (enumFrom n l) = zipWith (fun i ↦ f (i + n)) (range (length l)) l := by
   intro l
   generalize e: l.length = len
   revert l
@@ -174,7 +174,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
     · contradiction
     · simp [zipWith, range_succ_eq_map, zipWith_map_left] -- Porting note: simp? is weird.
       rw [ih]
-      suffices : (fun i => f (i + (n + 1))) = ((fun i => f (i + n)) ∘ Nat.succ)
+      suffices : (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ)
       rw [this]
       funext n' a
       simp only [comp, Nat.add_assoc, Nat.add_comm, Nat.add_succ]
@@ -194,16 +194,16 @@ theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
 
 @[simp]
 theorem mapIdx_cons {α β} (l : List α) (f : ℕ → α → β) (a : α) :
-    mapIdx f (a :: l) = f 0 a :: mapIdx (fun i => f (i + 1)) l := by
+    mapIdx f (a :: l) = f 0 a :: mapIdx (fun i ↦ f (i + 1)) l := by
   simp [mapIdx_eq_enum_map, enum_eq_zip_range, map_uncurry_zip_eq_zipWith,
     range_succ_eq_map, zipWith_map_left]
 #align list.map_with_index_cons List.mapIdx_cons
 
 theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :
-    (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a => f (i + K.length) a := by
+    (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a ↦ f (i + K.length) a := by
   induction' K with a J IH generalizing f
   · rfl
-  · simp [IH fun i => f (i + 1), add_assoc]
+  · simp [IH fun i ↦ f (i + 1), add_assoc]
 #align list.map_with_index_append List.mapIdx_append
 
 @[simp]
@@ -222,7 +222,7 @@ theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h 
 
 -- Porting note: Changed the type to use `List.get` instead of deprecated `List.nthLe`.
 theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
-    l.mapIdx f = ofFn fun i : Fin l.length => f (i : ℕ) (l.get i) := by
+    l.mapIdx f = ofFn fun i : Fin l.length ↦ f (i : ℕ) (l.get i) := by
   induction' l with hd tl IH generalizing f
   · rfl
   · simp [IH]
@@ -239,8 +239,7 @@ def foldrIdxSpec (f : ℕ → α → β → β) (b : β) (as : List α) (start :
 #align list.foldr_with_index_aux_spec List.foldrIdxSpecₓ
 
 theorem foldrIdxSpec_cons (f : ℕ → α → β → β) (b a as start) :
-    foldrIdxSpec f b (a :: as) start =
-      f start a (foldrIdxSpec f b as (start + 1)) :=
+    foldrIdxSpec f b (a :: as) start = f start a (foldrIdxSpec f b as (start + 1)) :=
   rfl
 #align list.foldr_with_index_aux_spec_cons List.foldrIdxSpec_consₓ
 
@@ -266,7 +265,7 @@ theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : L
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
     findIdxs p as = map Prod.fst (indexesValues p as) := by
   simp only [indexesValues_eq_filter_enum, map_filter_eq_foldr, findIdxs, uncurry,
-             foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply, Bool.cond_decide]
+    foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply, Bool.cond_decide]
 #align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
 
 section FoldlIdx
@@ -274,7 +273,7 @@ section FoldlIdx
 -- Porting note: Changed argument order of `foldlIdxSpec` to align better with `foldlIdx`.
 /-- Specification of `foldlIdx`. -/
 def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start : ℕ) : α :=
-  foldl (fun a (p : ℕ × β) => f p.fst a p.snd) a <| enumFrom start bs
+  foldl (fun a (p : ℕ × β) ↦ f p.fst a p.snd) a <| enumFrom start bs
 #align list.foldl_with_index_aux_spec List.foldlIdxSpecₓ
 
 #noalign list.foldl_with_index_aux_spec_cons
@@ -287,7 +286,7 @@ theorem foldlIdx_eq_foldlIdxSpec (f : ℕ → α → β → α) (a bs start) :
 #align list.foldl_with_index_aux_eq_foldl_with_index_aux_spec List.foldlIdx_eq_foldlIdxSpecₓ
 
 theorem foldlIdx_eq_foldl_enum (f : ℕ → α → β → α) (a : α) (bs : List β) :
-    foldlIdx f a bs = foldl (fun a (p : ℕ × β) => f p.fst a p.snd) a (enum bs) := by
+    foldlIdx f a bs = foldl (fun a (p : ℕ × β) ↦ f p.fst a p.snd) a (enum bs) := by
   simp only [foldlIdx, foldlIdxSpec, foldlIdx_eq_foldlIdxSpec, enum]
 #align list.foldl_with_index_eq_foldl_enum List.foldlIdx_eq_foldl_enum
 
@@ -304,7 +303,7 @@ theorem foldrIdxM_eq_foldrM_enum {α β} (f : ℕ → α → β → m β) (b : �
 #align list.mfoldr_with_index_eq_mfoldr_enum List.foldrIdxM_eq_foldrM_enum
 
 theorem foldlIdxM_eq_foldlM_enum [LawfulMonad m] {α β} (f : ℕ → β → α → m β) (b : β) (as : List α) :
-    foldlIdxM f b as = List.foldlM (fun b (p : ℕ × α) => f p.fst b p.snd) b (enum as) := by
+    foldlIdxM f b as = List.foldlM (fun b (p : ℕ × α) ↦ f p.fst b p.snd) b (enum as) := by
   rw [foldlIdxM, foldlM_eq_foldl, foldlIdx_eq_foldl_enum]
 #align list.mfoldl_with_index_eq_mfoldl_enum List.foldlIdxM_eq_foldlM_enum
 
@@ -329,7 +328,7 @@ theorem mapIdxMAuxSpec_cons {α β} (f : ℕ → α → m β) (start : ℕ) (a :
 #align list.mmap_with_index_aux_spec_cons List.mapIdxMAuxSpec_cons
 
 theorem mapIdxM.go_eq_mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
-  mapIdxM.go f as arr = (arr.toList ++ ·) <$> mapIdxMAuxSpec f arr.size as := by
+    mapIdxM.go f as arr = (arr.toList ++ ·) <$> mapIdxMAuxSpec f arr.size as := by
   generalize e : as.length = len
   revert as arr
   induction' len with len ih <;> intro arr as h
@@ -340,18 +339,18 @@ theorem mapIdxM.go_eq_mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (arr : Ar
     | cons head tail =>
       simp only [length_cons, Nat.succ.injEq] at h
       simp only [go, Array.toList_eq, mapIdxMAuxSpec_cons, map_eq_pure_bind, seq_eq_bind_map,
-                 LawfulMonad.bind_assoc, pure_bind]
+        LawfulMonad.bind_assoc, pure_bind]
       congr
-      conv => { lhs; intro x; rw [(ih _ _ h)]; }
+      conv => { lhs; intro x; rw [ih _ _ h]; }
       funext x
       simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append, Array.size_push,
-                 map_eq_pure_bind]
+        map_eq_pure_bind]
 #align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mapIdxM.go_eq_mapIdxMAuxSpec
 
 theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α):
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
   simp only [mapIdxM, mapIdxM.go_eq_mapIdxMAuxSpec, Array.toList_eq, Array.data_toArray,
-             nil_append, mapIdxMAuxSpec, Array.size_toArray, length_nil, id_map', enum]
+    nil_append, mapIdxMAuxSpec, Array.size_toArray, length_nil, id_map', enum]
 #align list.mmap_with_index_eq_mmap_enum List.mapIdxM_eq_mmap_enum
 
 end MapIdxM
@@ -366,17 +365,16 @@ theorem mapIdxMAux'_eq_mapIdxM.go {α} (f : ℕ → α → m PUnit) (as : List �
   revert arr
   induction' as with head tail ih
   · intros; simp only [mapIdxMAux', mapIdxM.go, Array.toList_eq, seqRight_eq,
-                       map_pure, const_apply, seq_pure, id_eq]
+      map_pure, const_apply, seq_pure, id_eq]
   · intros arr
     simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, const_apply, seq_eq_bind, bind_pure_unit,
-               LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure, id_eq]
+      LawfulMonad.bind_assoc, pure_bind, mapIdxM.go, seq_pure, id_eq]
     generalize (f (Array.size arr) head) = head
     let arr_1 := arr.push ⟨⟩
     have : arr_1.size = arr.size + 1 := by exact (Array.size_push arr ⟨⟩)
-    rw [←this]
-    rw [(ih arr_1)]
+    rw [←this, ih arr_1]
     simp only [seqRight_eq, map_eq_pure_bind, const_apply, seq_pure,
-               LawfulMonad.bind_assoc, pure_bind, id_eq]
+      LawfulMonad.bind_assoc, pure_bind, id_eq]
 #align list.mmap_with_index'_aux_eq_mmap_with_index_aux List.mapIdxMAux'_eq_mapIdxM.go
 
 theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :
