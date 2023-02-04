@@ -50,7 +50,7 @@ not because the parts of `P` and the parts of `Q` have the same elements that `P
 
 ## TODO
 
-Link `Finpartition` and `Setoid.is_partition`.
+Link `Finpartition` and `Setoid.isPartition`.
 
 The order is the wrong way around to make `Finpartition a` a graded order. Is it bad to depart from
 the literature and turn the order around?
@@ -69,7 +69,7 @@ variable {α : Type _}
 @[ext]
 structure Finpartition [Lattice α] [OrderBot α] (a : α) where
   -- porting note: Docstrings added
-  /-- The elements of the finite partitoin of `a` -/
+  /-- The elements of the finite partition of `a` -/
   parts : Finset α
   /-- The partition is supremum-independent -/
   supIndep : parts.SupIndep id
@@ -598,16 +598,8 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
   · refine' (card_le_of_subset h).trans (card_image_le.trans _)
     rw [card_powerset, card_erase_of_mem ht]
   rw [subset_iff]
-  simp_rw [mem_image]
-  simp_rw [mem_powerset]
-  simp_rw [mem_filter]
-  simp_rw [and_imp]
-  simp_rw [Finset.Nonempty]
-  simp_rw [exists_imp]
-  simp_rw [mem_atomise]
-  simp_rw [and_imp]
-  simp_rw [Finset.Nonempty]
-  simp_rw [exists_imp]
+  simp_rw [mem_image, mem_powerset, mem_filter, and_imp, Finset.Nonempty, exists_imp, mem_atomise,
+    and_imp, Finset.Nonempty, exists_imp]
   rintro P' i hi P PQ rfl hy₂ j _hj
   refine' ⟨P.erase t, erase_subset_erase _ PQ, _⟩
   simp only [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi)]
