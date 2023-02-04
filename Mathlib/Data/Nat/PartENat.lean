@@ -154,12 +154,18 @@ protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → 
   exact PartENat.casesOn'
 #align part_enat.cases_on PartENat.casesOn
 
-@[simp]
+-- Porting note : The last instance in this file (`LinearOrderedAddCommMonoidWithTop`)
+-- causes the linter to complain here because with that instance `simp` could
+-- proof `top_add`. Therefore the linter has been silenced here.
+@[nolint simpNF, simp]
 theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
   Part.ext' (false_and_iff _) fun h => h.left.elim
 #align part_enat.top_add PartENat.top_add
 
-@[simp]
+-- Porting note : The last instance in this file (`LinearOrderedAddCommMonoidWithTop`)
+-- causes the linter to complain here because with that instance `simp` could
+-- proof `add_top`. Therefore the linter has been silenced here.@[nolint simpNF, simp]
+@[nolint simpNF, simp]
 theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
 #align part_enat.add_top PartENat.add_top
 
@@ -632,6 +638,7 @@ end WithTop
 -- in another way?
 
 -- Porting note : new, extracted from `withTopEquiv`.
+/-- Coersion from `ℕ∞` to `PartENat`. -/
 @[coe]
 def ofENat : ℕ∞ → PartENat :=
   fun x => match x with
