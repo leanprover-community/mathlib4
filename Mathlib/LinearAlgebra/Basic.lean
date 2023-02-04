@@ -1269,7 +1269,7 @@ def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
-theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ f.eqLocus g ↔ f x = g x := by
+theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ f.eqLocus g ↔ f x = g x :=
   Iff.rfl
 #align linear_map.mem_eq_locus LinearMap.mem_eqLocus
 
@@ -1445,9 +1445,14 @@ end
 
 theorem ker_eq_bot_of_injective {f : F} (hf : Injective f) : ker f = ⊥ := by
   have : Disjoint ⊤ (ker f) := by
-    rw [disjoint_ker, ← map_zero f]
-    exact fun x hx H => hf H
-  simpa [disjoint_iff_inf_le]
+    -- Porting note: `← map_zero f` should work here, but it needs to be directly applied to H.
+    rw [disjoint_ker]
+    intros _ _ H
+    rw [← map_zero f] at H
+    exact hf H
+  -- Porting note: was simpa? [disjoint_iff_inf_le]
+  rw [disjoint_iff_inf_le, top_inf_eq, le_bot_iff] at this
+  assumption
 #align linear_map.ker_eq_bot_of_injective LinearMap.ker_eq_bot_of_injective
 
 /-- The increasing sequence of submodules consisting of the kernels of the iterates of a linear map.
@@ -1476,7 +1481,7 @@ variable {f : F}
 open Submodule
 
 theorem range_toAddSubgroup [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
-    (LinearMap.range f).toAddSubgroup = f.toAddMonoidHom.range :=
+    (range f).toAddSubgroup = f.toAddMonoidHom.range :=
   rfl
 #align linear_map.range_to_add_subgroup LinearMap.range_toAddSubgroup
 
@@ -1583,7 +1588,9 @@ theorem isLinearMap_sub {R M : Type _} [Semiring R] [AddCommGroup M] [Module R M
     IsLinearMap R fun x : M × M => x.1 - x.2 := by
   apply IsLinearMap.mk
   · intro x y
-    simp [add_comm, add_left_comm, sub_eq_add_neg]
+    -- Porting note: was `simp [add_comm, add_left_comm, sub_eq_add_neg]`
+    rw [Prod.fst_add, Prod.snd_add]
+    abel
   · intro x y
     simp [smul_sub]
 #align is_linear_map.is_linear_map_sub IsLinearMap.isLinearMap_sub
@@ -1771,7 +1778,7 @@ end LinearMap
 
 @[simp]
 theorem LinearMap.range_rangeRestrict [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
-    [Module R M₂] (f : M →ₗ[R] M₂) : LinearMap.range f = ⊤ := by simp [f.range_codRestrict _]
+    [Module R M₂] (f : M →ₗ[R] M₂) : range f.rangeRestrict = ⊤ := by simp [f.range_codRestrict _]
 #align linear_map.range_range_restrict LinearMap.range_rangeRestrict
 
 @[simp]
