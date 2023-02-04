@@ -20,7 +20,7 @@ function `f` if, for all `ε > 0`, for all large enough `n`, one has for all `y 
 `dist (f y, Fₙ y) < ε`. Under uniform convergence, many properties of the `Fₙ` pass to the limit,
 most notably continuity. We prove this in the file, defining the notion of uniform convergence
 in the more general setting of uniform spaces, and with respect to an arbitrary indexing set
-endowed with a filter (instead of just `ℕ` with `at_top`).
+endowed with a filter (instead of just `ℕ` with `atTop`).
 
 ## Main results
 
