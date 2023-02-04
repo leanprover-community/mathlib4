@@ -67,13 +67,10 @@ Uniform limit, uniform convergence, tends uniformly to
 
 noncomputable section
 
-open Topology Classical uniformity Filter
+open Topology Uniformity Filter Set
 
-open Set Filter
-
-universe u v w
-
-variable {α β γ ι : Type _} [UniformSpace β]
+universe u v w x
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x} [UniformSpace β]
 
 variable {F : ι → α → β} {f : α → β} {s s' : Set α} {x : α} {p : Filter ι} {p' : Filter α}
   {g : ι → α}
@@ -100,7 +97,7 @@ In other words: one knows nothing about the behavior of `x` in this limit beside
 theorem tendstoUniformlyOnFilter_iff_tendsto :
     TendstoUniformlyOnFilter F f p p' ↔
       Tendsto (fun q : ι × α => (f q.2, F q.1 q.2)) (p ×ᶠ p') (𝓤 β) :=
-  forall₂_congr fun u u_in => by simp [mem_map, Filter.Eventually, mem_prod_iff, preimage]
+  Iff.rfl
 #align tendsto_uniformly_on_filter_iff_tendsto tendstoUniformlyOnFilter_iff_tendsto
 
 /-- A sequence of functions `Fₙ` converges uniformly on a set `s` to a limiting function `f` with
@@ -139,12 +136,14 @@ def TendstoUniformly (F : ι → α → β) (f : α → β) (p : Filter ι) :=
   ∀ u ∈ 𝓤 β, ∀ᶠ n in p, ∀ x : α, (f x, F n x) ∈ u
 #align tendsto_uniformly TendstoUniformly
 
+-- porting note: moved from below
+theorem tendstoUniformlyOn_univ : TendstoUniformlyOn F f p univ ↔ TendstoUniformly F f p := by
+  simp [TendstoUniformlyOn, TendstoUniformly]
+#align tendsto_uniformly_on_univ tendstoUniformlyOn_univ
+
 theorem tendstoUniformly_iff_tendstoUniformlyOnFilter :
     TendstoUniformly F f p ↔ TendstoUniformlyOnFilter F f p ⊤ := by
-  simp only [TendstoUniformly, TendstoUniformlyOnFilter]
-  apply forall₂_congr
-  simp_rw [← principal_univ, eventually_prod_principal_iff]
-  simp
+  rw [← tendstoUniformlyOn_univ, tendstoUniformlyOn_iff_tendstoUniformlyOnFilter, principal_univ]
 #align tendsto_uniformly_iff_tendsto_uniformly_on_filter tendstoUniformly_iff_tendstoUniformlyOnFilter
 
 theorem TendstoUniformly.tendstoUniformlyOnFilter (h : TendstoUniformly F f p) :
@@ -152,10 +151,8 @@ theorem TendstoUniformly.tendstoUniformlyOnFilter (h : TendstoUniformly F f p) :
 #align tendsto_uniformly.tendsto_uniformly_on_filter TendstoUniformly.tendstoUniformlyOnFilter
 
 theorem tendstoUniformlyOn_iff_tendstoUniformly_comp_coe :
-    TendstoUniformlyOn F f p s ↔ TendstoUniformly (fun i (x : s) => F i x) (f ∘ coe) p := by
-  apply forall₂_congr
-  intro u hu
-  simp
+    TendstoUniformlyOn F f p s ↔ TendstoUniformly (fun i (x : s) => F i x) (f ∘ (↑)) p :=
+  forall₂_congr <| fun u _ => by simp
 #align tendsto_uniformly_on_iff_tendsto_uniformly_comp_coe tendstoUniformlyOn_iff_tendstoUniformly_comp_coe
 
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` w.r.t.
@@ -170,7 +167,7 @@ theorem tendstoUniformly_iff_tendsto {F : ι → α → β} {f : α → β} {p :
 /-- Uniform converence implies pointwise convergence. -/
 theorem TendstoUniformlyOnFilter.tendsto_at (h : TendstoUniformlyOnFilter F f p p')
     (hx : 𝓟 {x} ≤ p') : Tendsto (fun n => F n x) p <| 𝓝 (f x) := by
-  refine' uniform.tendsto_nhds_right.mpr fun u hu => mem_map.mpr _
+  refine' Uniform.tendsto_nhds_right.mpr fun u hu => mem_map.mpr _
   filter_upwards [(h u hu).curry]
   intro i h
   simpa using h.filter_mono hx
@@ -179,19 +176,17 @@ theorem TendstoUniformlyOnFilter.tendsto_at (h : TendstoUniformlyOnFilter F f p 
 /-- Uniform converence implies pointwise convergence. -/
 theorem TendstoUniformlyOn.tendsto_at (h : TendstoUniformlyOn F f p s) {x : α} (hx : x ∈ s) :
     Tendsto (fun n => F n x) p <| 𝓝 (f x) :=
-  h.TendstoUniformlyOnFilter.tendsto_at
+  h.tendstoUniformlyOnFilter.tendsto_at
     (le_principal_iff.mpr <| mem_principal.mpr <| singleton_subset_iff.mpr <| hx)
 #align tendsto_uniformly_on.tendsto_at TendstoUniformlyOn.tendsto_at
 
 /-- Uniform converence implies pointwise convergence. -/
 theorem TendstoUniformly.tendsto_at (h : TendstoUniformly F f p) (x : α) :
     Tendsto (fun n => F n x) p <| 𝓝 (f x) :=
-  h.TendstoUniformlyOnFilter.tendsto_at le_top
+  h.tendstoUniformlyOnFilter.tendsto_at le_top
 #align tendsto_uniformly.tendsto_at TendstoUniformly.tendsto_at
 
-theorem tendstoUniformlyOn_univ : TendstoUniformlyOn F f p univ ↔ TendstoUniformly F f p := by
-  simp [TendstoUniformlyOn, TendstoUniformly]
-#align tendsto_uniformly_on_univ tendstoUniformlyOn_univ
+-- porting note: tendstoUniformlyOn_univ moved up
 
 theorem TendstoUniformlyOnFilter.mono_left {p'' : Filter ι} (h : TendstoUniformlyOnFilter F f p p')
     (hp : p'' ≤ p) : TendstoUniformlyOnFilter F f p'' p' := fun u hu =>
@@ -206,13 +201,13 @@ theorem TendstoUniformlyOnFilter.mono_right {p'' : Filter α} (h : TendstoUnifor
 theorem TendstoUniformlyOn.mono {s' : Set α} (h : TendstoUniformlyOn F f p s) (h' : s' ⊆ s) :
     TendstoUniformlyOn F f p s' :=
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr
-    (h.TendstoUniformlyOnFilter.mono_right (le_principal_iff.mpr <| mem_principal.mpr h'))
+    (h.tendstoUniformlyOnFilter.mono_right (le_principal_iff.mpr <| mem_principal.mpr h'))
 #align tendsto_uniformly_on.mono TendstoUniformlyOn.mono
 
 theorem TendstoUniformlyOnFilter.congr {F' : ι → α → β} (hf : TendstoUniformlyOnFilter F f p p')
     (hff' : ∀ᶠ n : ι × α in p ×ᶠ p', F n.fst n.snd = F' n.fst n.snd) :
     TendstoUniformlyOnFilter F' f p p' := by
-  refine' fun u hu => ((hf u hu).And hff').mono fun n h => _
+  refine' fun u hu => ((hf u hu).and hff').mono fun n h => _
   rw [← h.right]
   exact h.left
 #align tendsto_uniformly_on_filter.congr TendstoUniformlyOnFilter.congr
@@ -223,7 +218,7 @@ theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyO
   refine' hf.congr _
   rw [eventually_iff] at hff'⊢
   simp only [Set.EqOn] at hff'
-  simp only [mem_prod_principal, hff', mem_set_of_eq]
+  simp only [mem_prod_principal, hff', mem_setOf_eq]
 #align tendsto_uniformly_on.congr TendstoUniformlyOn.congr
 
 theorem TendstoUniformlyOn.congr_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
@@ -239,14 +234,8 @@ protected theorem TendstoUniformly.tendstoUniformlyOn (h : TendstoUniformly F f 
 /-- Composing on the right by a function preserves uniform convergence on a filter -/
 theorem TendstoUniformlyOnFilter.comp (h : TendstoUniformlyOnFilter F f p p') (g : γ → α) :
     TendstoUniformlyOnFilter (fun n => F n ∘ g) (f ∘ g) p (p'.comap g) := by
-  intro u hu
-  obtain ⟨pa, hpa, pb, hpb, hpapb⟩ := eventually_prod_iff.mp (h u hu)
-  rw [eventually_prod_iff]
-  simp_rw [eventually_comap]
-  exact
-    ⟨pa, hpa, pb ∘ g,
-      ⟨hpb.mono fun x hx y hy => by simp only [hx, hy, Function.comp_apply], fun x hx y hy =>
-        hpapb hx hy⟩⟩
+  rw [tendstoUniformlyOnFilter_iff_tendsto] at h ⊢
+  exact h.comp (tendsto_id.prod_map tendsto_comap)
 #align tendsto_uniformly_on_filter.comp TendstoUniformlyOnFilter.comp
 
 /-- Composing on the right by a function preserves uniform convergence on a set -/
@@ -267,45 +256,36 @@ theorem TendstoUniformly.comp (h : TendstoUniformly F f p) (g : γ → α) :
   uniform convergence on a filter -/
 theorem UniformContinuous.comp_tendstoUniformlyOnFilter [UniformSpace γ] {g : β → γ}
     (hg : UniformContinuous g) (h : TendstoUniformlyOnFilter F f p p') :
-    TendstoUniformlyOnFilter (fun i => g ∘ F i) (g ∘ f) p p' := fun u hu => h _ (hg hu)
+    TendstoUniformlyOnFilter (fun i => g ∘ F i) (g ∘ f) p p' := fun _u hu => h _ (hg hu)
 #align uniform_continuous.comp_tendsto_uniformly_on_filter UniformContinuous.comp_tendstoUniformlyOnFilter
 
 /-- Composing on the left by a uniformly continuous function preserves
   uniform convergence on a set -/
 theorem UniformContinuous.comp_tendstoUniformlyOn [UniformSpace γ] {g : β → γ}
     (hg : UniformContinuous g) (h : TendstoUniformlyOn F f p s) :
-    TendstoUniformlyOn (fun i => g ∘ F i) (g ∘ f) p s := fun u hu => h _ (hg hu)
+    TendstoUniformlyOn (fun i => g ∘ F i) (g ∘ f) p s := fun _u hu => h _ (hg hu)
 #align uniform_continuous.comp_tendsto_uniformly_on UniformContinuous.comp_tendstoUniformlyOn
 
 /-- Composing on the left by a uniformly continuous function preserves uniform convergence -/
 theorem UniformContinuous.comp_tendstoUniformly [UniformSpace γ] {g : β → γ}
     (hg : UniformContinuous g) (h : TendstoUniformly F f p) :
-    TendstoUniformly (fun i => g ∘ F i) (g ∘ f) p := fun u hu => h _ (hg hu)
+    TendstoUniformly (fun i => g ∘ F i) (g ∘ f) p := fun _u hu => h _ (hg hu)
 #align uniform_continuous.comp_tendsto_uniformly UniformContinuous.comp_tendstoUniformly
 
 theorem TendstoUniformlyOnFilter.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {q : Filter ι'} {q' : Filter α'} (h : TendstoUniformlyOnFilter F f p p')
     (h' : TendstoUniformlyOnFilter F' f' q q') :
     TendstoUniformlyOnFilter (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f')
-      (p.Prod q) (p'.Prod q') := by
-  intro u hu
-  rw [uniformity_prod_eq_prod, mem_map, mem_prod_iff] at hu
-  obtain ⟨v, hv, w, hw, hvw⟩ := hu
-  apply (tendsto_swap4_prod.eventually ((h v hv).prod_mk (h' w hw))).mono
-  simp only [Prod_map, and_imp, Prod.forall]
-  intro n n' x hxv hxw
-  have hout :
-    ((f x.fst, F n x.fst), (f' x.snd, F' n' x.snd)) ∈
-      { x : (β × β) × β' × β' | ((x.fst.fst, x.snd.fst), x.fst.snd, x.snd.snd) ∈ u } :=
-    mem_of_mem_of_subset (set.mem_prod.mpr ⟨hxv, hxw⟩) hvw
-  exact hout
+      (p ×ᶠ q) (p' ×ᶠ q') := by
+  rw [tendstoUniformlyOnFilter_iff_tendsto] at h h' ⊢
+  rw [uniformity_prod_eq_comap_prod, tendsto_comap_iff, ← map_swap4_prod, tendsto_map'_iff]
+  convert h.prod_map h' -- seems to be faster than `exact` here
 #align tendsto_uniformly_on_filter.prod_map TendstoUniformlyOnFilter.prod_map
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem TendstoUniformlyOn.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {p' : Filter ι'} {s' : Set α'} (h : TendstoUniformlyOn F f p s)
     (h' : TendstoUniformlyOn F' f' p' s') :
-    TendstoUniformlyOn (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p.Prod p')
+    TendstoUniformlyOn (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p ×ᶠ p')
       (s ×ˢ s') := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at h h'⊢
   simpa only [prod_principal_principal] using h.prod_map h'
@@ -313,7 +293,7 @@ theorem TendstoUniformlyOn.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F
 
 theorem TendstoUniformly.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F' : ι' → α' → β'}
     {f' : α' → β'} {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
-    TendstoUniformly (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p.Prod p') := by
+    TendstoUniformly (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (Prod.map f f') (p ×ᶠ p') := by
   rw [← tendstoUniformlyOn_univ, ← univ_prod_univ] at *
   exact h.prod_map h'
 #align tendsto_uniformly.prod_map TendstoUniformly.prod_map
@@ -322,30 +302,30 @@ theorem TendstoUniformlyOnFilter.prod {ι' β' : Type _} [UniformSpace β'] {F' 
     {f' : α → β'} {q : Filter ι'} (h : TendstoUniformlyOnFilter F f p p')
     (h' : TendstoUniformlyOnFilter F' f' q p') :
     TendstoUniformlyOnFilter (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a))
-      (p.Prod q) p' :=
-  fun u hu => ((h.Prod_map h') u hu).diag_of_prod_right
+      (p ×ᶠ q) p' :=
+  fun u hu => ((h.prod_map h') u hu).diag_of_prod_right
 #align tendsto_uniformly_on_filter.prod TendstoUniformlyOnFilter.prod
 
 theorem TendstoUniformlyOn.prod {ι' β' : Type _} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
     {p' : Filter ι'} (h : TendstoUniformlyOn F f p s) (h' : TendstoUniformlyOn F' f' p' s) :
     TendstoUniformlyOn (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a))
-      (p.Prod p') s :=
-  (congr_arg _ s.inter_self).mp ((h.Prod_map h').comp fun a => (a, a))
+      (p.prod p') s :=
+  (congr_arg _ s.inter_self).mp ((h.prod_map h').comp fun a => (a, a))
 #align tendsto_uniformly_on.prod TendstoUniformlyOn.prod
 
 theorem TendstoUniformly.prod {ι' β' : Type _} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
     {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
     TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a))
-      (p.Prod p') :=
-  (h.Prod_map h').comp fun a => (a, a)
+      (p ×ᶠ p') :=
+  (h.prod_map h').comp fun a => (a, a)
 #align tendsto_uniformly.prod TendstoUniformly.prod
 
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
 `p ×ᶠ p'`. -/
 theorem tendsto_prod_filter_iff {c : β} :
     Tendsto (↿F) (p ×ᶠ p') (𝓝 c) ↔ TendstoUniformlyOnFilter F (fun _ => c) p p' := by
-  simp_rw [tendsto, nhds_eq_comap_uniformity, map_le_iff_le_comap.symm, map_map, le_def, mem_map]
-  exact forall₂_congr fun u hu => by simpa [eventually_iff]
+  simp_rw [nhds_eq_comap_uniformity, tendsto_comap_iff, map_map, le_def, mem_map]
+  rfl
 #align tendsto_prod_filter_iff tendsto_prod_filter_iff
 
 /-- Uniform convergence on a set `s` to a constant function is equivalent to convergence in
@@ -364,58 +344,49 @@ theorem tendsto_prod_top_iff {c : β} :
 #align tendsto_prod_top_iff tendsto_prod_top_iff
 
 /-- Uniform convergence on the empty set is vacuously true -/
-theorem tendstoUniformlyOn_empty : TendstoUniformlyOn F f p ∅ := fun u hu => by simp
+theorem tendstoUniformlyOn_empty : TendstoUniformlyOn F f p ∅ := fun u _ => by simp
 #align tendsto_uniformly_on_empty tendstoUniformlyOn_empty
 
 /-- Uniform convergence on a singleton is equivalent to regular convergence -/
 theorem tendstoUniformlyOn_singleton_iff_tendsto :
     TendstoUniformlyOn F f p {x} ↔ Tendsto (fun n : ι => F n x) p (𝓝 (f x)) := by
   simp_rw [tendstoUniformlyOn_iff_tendsto, Uniform.tendsto_nhds_right, tendsto_def]
-  exact forall₂_congr fun u hu => by simp [mem_prod_principal, preimage]
+  exact forall₂_congr fun u _ => by simp [mem_prod_principal, preimage]
 #align tendsto_uniformly_on_singleton_iff_tendsto tendstoUniformlyOn_singleton_iff_tendsto
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
 `λ n, λ a, g n` converges to the constant function `λ a, b` on any set `s` -/
 theorem Filter.Tendsto.tendstoUniformlyOnFilter_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
     (p' : Filter α) :
-    TendstoUniformlyOnFilter (fun n : ι => fun a : α => g n) (fun a : α => b) p p' := by
-  rw [tendstoUniformlyOnFilter_iff_tendsto]
-  rw [Uniform.tendsto_nhds_right] at hg
-  exact
-    (hg.comp (tendsto_fst.comp ((@tendsto_id ι p).Prod_map (@tendsto_id α p')))).congr fun x => by
-      simp
+    TendstoUniformlyOnFilter (fun n : ι => fun _ : α => g n) (fun _ : α => b) p p' := by
+  simpa only [nhds_eq_comap_uniformity, tendsto_comap_iff] using hg.comp (tendsto_fst (g := p'))
 #align filter.tendsto.tendsto_uniformly_on_filter_const Filter.Tendsto.tendstoUniformlyOnFilter_const
 
 /-- If a sequence `g` converges to some `b`, then the sequence of constant functions
 `λ n, λ a, g n` converges to the constant function `λ a, b` on any set `s` -/
 theorem Filter.Tendsto.tendstoUniformlyOn_const {g : ι → β} {b : β} (hg : Tendsto g p (𝓝 b))
-    (s : Set α) : TendstoUniformlyOn (fun n : ι => fun a : α => g n) (fun a : α => b) p s :=
+    (s : Set α) : TendstoUniformlyOn (fun n : ι => fun _ : α => g n) (fun _ : α => b) p s :=
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr (hg.tendstoUniformlyOnFilter_const (𝓟 s))
 #align filter.tendsto.tendsto_uniformly_on_const Filter.Tendsto.tendstoUniformlyOn_const
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+-- porting note: new lemma
+theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace γ] {x : α} {U : Set α}
+    {V : Set β} {F : α → β → γ} (hF : UniformContinuousOn (↿F) (U ×ˢ V)) (hU : x ∈ U) :
+    TendstoUniformlyOn F (F x) (𝓝[U] x) V := by
+  set φ := fun q : α × β => ((x, q.2), q)
+  rw [tendstoUniformlyOn_iff_tendsto]
+  change Tendsto (Prod.map (↿F) ↿F ∘ φ) (𝓝[U] x ×ᶠ 𝓟 V) (𝓤 γ)
+  simp only [nhdsWithin, Filter.prod, comap_inf, inf_assoc, comap_principal, inf_principal]
+  refine hF.comp (Tendsto.inf ?_ <| tendsto_principal_principal.2 <| fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
+  simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff, (· ∘ ·),
+    nhds_eq_comap_uniformity, comap_comap]
+  exact tendsto_comap.prod_mk (tendsto_diag_uniformity _ _)
+
 theorem UniformContinuousOn.tendstoUniformly [UniformSpace α] [UniformSpace γ] {x : α} {U : Set α}
     (hU : U ∈ 𝓝 x) {F : α → β → γ} (hF : UniformContinuousOn (↿F) (U ×ˢ (univ : Set β))) :
     TendstoUniformly F (F x) (𝓝 x) := by
-  let φ := fun q : α × β => ((x, q.2), q)
-  rw [tendstoUniformly_iff_tendsto,
-    show (fun q : α × β => (F x q.2, F q.1 q.2)) = Prod.map (↿F) ↿F ∘ φ by ext <;> simpa]
-  apply hF.comp (tendsto_inf.mpr ⟨_, _⟩)
-  · rw [uniformity_prod, tendsto_inf, tendsto_comap_iff, tendsto_comap_iff,
-      show (fun p : (α × β) × α × β => (p.1.1, p.2.1)) ∘ φ = (fun a => (x, a)) ∘ Prod.fst
-        by
-        ext
-        simp,
-      show (fun p : (α × β) × α × β => (p.1.2, p.2.2)) ∘ φ = (fun b => (b, b)) ∘ Prod.snd
-        by
-        ext
-        simp]
-    exact
-      ⟨tendsto_left_nhds_uniformity.comp tendsto_fst,
-        (tendsto_diag_uniformity id ⊤).comp tendsto_top⟩
-  · rw [tendsto_principal]
-    apply mem_of_superset (prod_mem_prod hU (mem_top.mpr rfl)) fun q h => _
-    simp [h.1, mem_of_mem_nhds hU]
+  simpa only [tendstoUniformlyOn_univ, nhdsWithin_eq_nhds.2 hU]
+    using hF.tendstoUniformlyOn (mem_of_mem_nhds hU)
 #align uniform_continuous_on.tendsto_uniformly UniformContinuousOn.tendstoUniformly
 
 theorem UniformContinuous₂.tendstoUniformly [UniformSpace α] [UniformSpace γ] {f : α → β → γ}
@@ -426,14 +397,13 @@ theorem UniformContinuous₂.tendstoUniformly [UniformSpace α] [UniformSpace γ
 /-- A sequence is uniformly Cauchy if eventually all of its pairwise differences are
 uniformly bounded -/
 def UniformCauchySeqOnFilter (F : ι → α → β) (p : Filter ι) (p' : Filter α) : Prop :=
-  ∀ u : Set (β × β),
-    u ∈ 𝓤 β → ∀ᶠ m : (ι × ι) × α in p ×ᶠ p ×ᶠ p', (F m.fst.fst m.snd, F m.fst.snd m.snd) ∈ u
+  ∀ u ∈ 𝓤 β, ∀ᶠ m : (ι × ι) × α in (p ×ᶠ p) ×ᶠ p', (F m.fst.fst m.snd, F m.fst.snd m.snd) ∈ u
 #align uniform_cauchy_seq_on_filter UniformCauchySeqOnFilter
 
 /-- A sequence is uniformly Cauchy if eventually all of its pairwise differences are
 uniformly bounded -/
 def UniformCauchySeqOn (F : ι → α → β) (p : Filter ι) (s : Set α) : Prop :=
-  ∀ u : Set (β × β), u ∈ 𝓤 β → ∀ᶠ m : ι × ι in p ×ᶠ p, ∀ x : α, x ∈ s → (F m.fst x, F m.snd x) ∈ u
+  ∀ u ∈ 𝓤 β, ∀ᶠ m : ι × ι in p ×ᶠ p, ∀ x : α, x ∈ s → (F m.fst x, F m.snd x) ∈ u
 #align uniform_cauchy_seq_on UniformCauchySeqOn
 
 theorem uniformCauchySeqOn_iff_uniformCauchySeqOnFilter :
@@ -463,7 +433,7 @@ theorem TendstoUniformlyOnFilter.uniformCauchySeqOnFilter (hF : TendstoUniformly
 theorem TendstoUniformlyOn.uniformCauchySeqOn (hF : TendstoUniformlyOn F f p s) :
     UniformCauchySeqOn F p s :=
   uniformCauchySeqOn_iff_uniformCauchySeqOnFilter.mpr
-    hF.TendstoUniformlyOnFilter.UniformCauchySeqOnFilter
+    hF.tendstoUniformlyOnFilter.uniformCauchySeqOnFilter
 #align tendsto_uniformly_on.uniform_cauchy_seq_on TendstoUniformlyOn.uniformCauchySeqOn
 
 /-- A uniformly Cauchy sequence converges uniformly to its limit -/
@@ -478,19 +448,18 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto [NeBot p]
   rcases comp_symm_of_uniformity hu with ⟨t, ht, htsymm, htmem⟩
   -- We will choose n, x, and m simultaneously. n and x come from hF. m comes from hF'
   -- But we need to promote hF' to the full product filter to use it
-  have hmc : ∀ᶠ x : (ι × ι) × α in p ×ᶠ p ×ᶠ p', tendsto (fun n : ι => F n x.snd) p (𝓝 (f x.snd)) :=
-    by
+  have hmc : ∀ᶠ x in (p ×ᶠ p) ×ᶠ p', Tendsto (fun n : ι => F n x.snd) p (𝓝 (f x.snd)) := by
     rw [eventually_prod_iff]
-    refine' ⟨fun x => True, by simp, _, hF', by simp⟩
+    refine' ⟨fun _ => True, by simp, _, hF', by simp⟩
   -- To apply filter operations we'll need to do some order manipulation
   rw [Filter.eventually_swap_iff]
-  have := tendsto_prod_assoc.eventually (tendsto_prod_swap.eventually ((hF t ht).And hmc))
+  have := tendsto_prodAssoc.eventually (tendsto_prod_swap.eventually ((hF t ht).and hmc))
   apply this.curry.mono
   simp only [Equiv.prodAssoc_apply, eventually_and, eventually_const, Prod.snd_swap, Prod.fst_swap,
     and_imp, Prod.forall]
   -- Complete the proof
   intro x n hx hm'
-  refine' Set.mem_of_mem_of_subset (mem_comp_rel.mpr _) htmem
+  refine' Set.mem_of_mem_of_subset (mem_compRel.mpr _) htmem
   rw [Uniform.tendsto_nhds_right] at hm'
   have := hx.and (hm' ht)
   obtain ⟨m, hm⟩ := this.exists
@@ -501,7 +470,7 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto [NeBot p]
 theorem UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto [NeBot p] (hF : UniformCauchySeqOn F p s)
     (hF' : ∀ x : α, x ∈ s → Tendsto (fun n => F n x) p (𝓝 (f x))) : TendstoUniformlyOn F f p s :=
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr
-    (hF.UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto hF')
+    (hF.uniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto hF')
 #align uniform_cauchy_seq_on.tendsto_uniformly_on_of_tendsto UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto
 
 theorem UniformCauchySeqOnFilter.mono_left {p'' : Filter ι} (hf : UniformCauchySeqOnFilter F p p')
@@ -512,10 +481,9 @@ theorem UniformCauchySeqOnFilter.mono_left {p'' : Filter ι} (hf : UniformCauchy
 #align uniform_cauchy_seq_on_filter.mono_left UniformCauchySeqOnFilter.mono_left
 
 theorem UniformCauchySeqOnFilter.mono_right {p'' : Filter α} (hf : UniformCauchySeqOnFilter F p p')
-    (hp : p'' ≤ p') : UniformCauchySeqOnFilter F p p'' := by
-  intro u hu
+    (hp : p'' ≤ p') : UniformCauchySeqOnFilter F p p'' := fun u hu =>
   have := (hf u hu).filter_mono ((p ×ᶠ p).prod_mono_right hp)
-  exact this.mono (by simp)
+  this.mono (by simp)
 #align uniform_cauchy_seq_on_filter.mono_right UniformCauchySeqOnFilter.mono_right
 
 theorem UniformCauchySeqOn.mono {s' : Set α} (hf : UniformCauchySeqOn F p s) (hss' : s' ⊆ s) :
@@ -526,11 +494,10 @@ theorem UniformCauchySeqOn.mono {s' : Set α} (hf : UniformCauchySeqOn F p s) (h
 
 /-- Composing on the right by a function preserves uniform Cauchy sequences -/
 theorem UniformCauchySeqOnFilter.comp {γ : Type _} (hf : UniformCauchySeqOnFilter F p p')
-    (g : γ → α) : UniformCauchySeqOnFilter (fun n => F n ∘ g) p (p'.comap g) := by
-  intro u hu
+    (g : γ → α) : UniformCauchySeqOnFilter (fun n => F n ∘ g) p (p'.comap g) := fun u hu => by
   obtain ⟨pa, hpa, pb, hpb, hpapb⟩ := eventually_prod_iff.mp (hf u hu)
   rw [eventually_prod_iff]
-  refine' ⟨pa, hpa, pb ∘ g, _, fun x hx y hy => hpapb hx hy⟩
+  refine ⟨pa, hpa, pb ∘ g, ?_, fun hx _ hy => hpapb hx hy⟩
   exact eventually_comap.mpr (hpb.mono fun x hx y hy => by simp only [hx, hy, Function.comp_apply])
 #align uniform_cauchy_seq_on_filter.comp UniformCauchySeqOnFilter.comp
 
@@ -545,14 +512,13 @@ theorem UniformCauchySeqOn.comp {γ : Type _} (hf : UniformCauchySeqOn F p s) (g
 uniform Cauchy sequences -/
 theorem UniformContinuous.comp_uniformCauchySeqOn [UniformSpace γ] {g : β → γ}
     (hg : UniformContinuous g) (hf : UniformCauchySeqOn F p s) :
-    UniformCauchySeqOn (fun n => g ∘ F n) p s := fun u hu => hf _ (hg hu)
+    UniformCauchySeqOn (fun n => g ∘ F n) p s := fun _u hu => hf _ (hg hu)
 #align uniform_continuous.comp_uniform_cauchy_seq_on UniformContinuous.comp_uniformCauchySeqOn
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem UniformCauchySeqOn.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F' : ι' → α' → β'}
     {p' : Filter ι'} {s' : Set α'} (h : UniformCauchySeqOn F p s)
     (h' : UniformCauchySeqOn F' p' s') :
-    UniformCauchySeqOn (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (p.Prod p') (s ×ˢ s') := by
+    UniformCauchySeqOn (fun i : ι × ι' => Prod.map (F i.1) (F' i.2)) (p ×ᶠ p') (s ×ˢ s') := by
   intro u hu
   rw [uniformity_prod_eq_prod, mem_map, mem_prod_iff] at hu
   obtain ⟨v, hv, w, hw, hvw⟩ := hu
@@ -566,15 +532,14 @@ theorem UniformCauchySeqOn.prod_map {ι' α' β' : Type _} [UniformSpace β'] {F
 theorem UniformCauchySeqOn.prod {ι' β' : Type _} [UniformSpace β'] {F' : ι' → α → β'}
     {p' : Filter ι'} (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p' s) :
     UniformCauchySeqOn (fun (i : ι × ι') a => (F i.fst a, F' i.snd a)) (p ×ᶠ p') s :=
-  (congr_arg _ s.inter_self).mp ((h.Prod_map h').comp fun a => (a, a))
+  (congr_arg _ s.inter_self).mp ((h.prod_map h').comp fun a => (a, a))
 #align uniform_cauchy_seq_on.prod UniformCauchySeqOn.prod
 
 theorem UniformCauchySeqOn.prod' {β' : Type _} [UniformSpace β'] {F' : ι → α → β'}
     (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p s) :
-    UniformCauchySeqOn (fun (i : ι) a => (F i a, F' i a)) p s := by
-  intro u hu
-  have hh : tendsto (fun x : ι => (x, x)) p (p ×ᶠ p) := tendsto_diag
-  exact (hh.prod_map hh).Eventually ((h.prod h') u hu)
+    UniformCauchySeqOn (fun (i : ι) a => (F i a, F' i a)) p s := fun u hu =>
+  have hh : Tendsto (fun x : ι => (x, x)) p (p ×ᶠ p) := tendsto_diag
+  (hh.prod_map hh).eventually ((h.prod h') u hu)
 #align uniform_cauchy_seq_on.prod' UniformCauchySeqOn.prod'
 
 /-- If a sequence of functions is uniformly Cauchy on a set, then the values at each point form
@@ -597,32 +562,13 @@ theorem tendstoUniformlyOn_of_seq_tendstoUniformlyOn {l : Filter ι} [l.IsCounta
   rw [tendsto_prod_iff'] at hu
   specialize h (fun n => (u n).fst) hu.1
   rw [tendstoUniformlyOn_iff_tendsto] at h
-  have :
-    (fun q : ι × α => (f q.snd, F q.fst q.snd)) ∘ u =
-      (fun q : ℕ × α => (f q.snd, F ((fun n : ℕ => (u n).fst) q.fst) q.snd)) ∘ fun n =>
-        (n, (u n).snd) :=
-    by
-    ext1 n
-    simp
-  rw [this]
-  refine' tendsto.comp h _
-  rw [tendsto_prod_iff']
-  exact ⟨tendsto_id, hu.2⟩
+  exact h.comp (tendsto_id.prod_mk hu.2)
 #align tendsto_uniformly_on_of_seq_tendsto_uniformly_on tendstoUniformlyOn_of_seq_tendstoUniformlyOn
 
 theorem TendstoUniformlyOn.seq_tendstoUniformlyOn {l : Filter ι} (h : TendstoUniformlyOn F f l s)
     (u : ℕ → ι) (hu : Tendsto u atTop l) : TendstoUniformlyOn (fun n => F (u n)) f atTop s := by
   rw [tendstoUniformlyOn_iff_tendsto] at h⊢
-  have :
-    (fun q : ℕ × α => (f q.snd, F (u q.fst) q.snd)) =
-      (fun q : ι × α => (f q.snd, F q.fst q.snd)) ∘ fun p : ℕ × α => (u p.fst, p.snd) :=
-    by
-    ext1 x
-    simp
-  rw [this]
-  refine' h.comp _
-  rw [tendsto_prod_iff']
-  exact ⟨hu.comp tendsto_fst, tendsto_snd⟩
+  exact h.comp ((hu.comp tendsto_fst).prod_mk tendsto_snd)
 #align tendsto_uniformly_on.seq_tendsto_uniformly_on TendstoUniformlyOn.seq_tendstoUniformlyOn
 
 theorem tendstoUniformlyOn_iff_seq_tendstoUniformlyOn {l : Filter ι} [l.IsCountablyGenerated] :
@@ -656,38 +602,39 @@ def TendstoLocallyUniformly (F : ι → α → β) (f : α → β) (p : Filter �
   ∀ u ∈ 𝓤 β, ∀ x : α, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, (f y, F n y) ∈ u
 #align tendsto_locally_uniformly TendstoLocallyUniformly
 
-theorem tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe :
+theorem tendstoLocallyUniformlyOn_univ :
+    TendstoLocallyUniformlyOn F f p univ ↔ TendstoLocallyUniformly F f p := by
+  simp [TendstoLocallyUniformlyOn, TendstoLocallyUniformly, nhdsWithin_univ]
+#align tendsto_locally_uniformly_on_univ tendstoLocallyUniformlyOn_univ
+
+-- porting note: new lemma
+theorem tendstoLocallyUniformlyOn_iff_forall_tendsto :
     TendstoLocallyUniformlyOn F f p s ↔
-      TendstoLocallyUniformly (fun i (x : s) => F i x) (f ∘ coe) p := by
-  refine' forall₂_congr fun V hV => _
-  simp only [exists_prop, Function.comp_apply, SetCoe.forall, Subtype.coe_mk]
-  refine' forall₂_congr fun x hx => ⟨_, _⟩
-  · rintro ⟨t, ht₁, ht₂⟩
-    obtain ⟨u, hu₁, hu₂⟩ := mem_nhds_within_iff_exists_mem_nhds_inter.mp ht₁
-    exact
-      ⟨coe ⁻¹' u, (mem_nhds_subtype _ _ _).mpr ⟨u, hu₁, rfl.subset⟩,
-        ht₂.mono fun i hi y hy₁ hy₂ => hi y (hu₂ ⟨hy₂, hy₁⟩)⟩
-  · rintro ⟨t, ht₁, ht₂⟩
-    obtain ⟨u, hu₁, hu₂⟩ := (mem_nhds_subtype _ _ _).mp ht₁
-    exact
-      ⟨u ∩ s, mem_nhds_within_iff_exists_mem_nhds_inter.mpr ⟨u, hu₁, rfl.subset⟩,
-        ht₂.mono fun i hi y hy => hi y hy.2 (hu₂ (by simp [hy.1]))⟩
-#align tendsto_locally_uniformly_on_iff_tendsto_locally_uniformly_comp_coe tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe
+      ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ᶠ 𝓝[s] x) (𝓤 β) :=
+  forall₂_swap.trans <| forall₄_congr fun _ _ _ _ => by
+    rw [mem_map, mem_prod_iff_right]; rfl
+
+nonrec theorem IsOpen.tendstoLocallyUniformlyOn_iff_forall_tendsto (hs : IsOpen s) :
+    TendstoLocallyUniformlyOn F f p s ↔
+      ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ᶠ 𝓝 x) (𝓤 β) :=
+  tendstoLocallyUniformlyOn_iff_forall_tendsto.trans <| forall₂_congr fun x hx => by
+    rw [hs.nhdsWithin_eq hx]
 
 theorem tendstoLocallyUniformly_iff_forall_tendsto :
     TendstoLocallyUniformly F f p ↔
       ∀ x, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ᶠ 𝓝 x) (𝓤 β) := by
-  simp only [TendstoLocallyUniformly, Filter.forall_in_swap, tendsto_def, mem_prod_iff,
-    Set.prod_subset_iff]
-  refine' forall₃_congr fun x u hu => ⟨_, _⟩
-  · rintro ⟨n, hn, hp⟩
-    exact ⟨_, hp, n, hn, fun i hi a ha => hi a ha⟩
-  · rintro ⟨I, hI, n, hn, hu⟩
-    exact ⟨n, hn, by filter_upwards [hI]using hu⟩
+  simp [← tendstoLocallyUniformlyOn_univ, isOpen_univ.tendstoLocallyUniformlyOn_iff_forall_tendsto]
 #align tendsto_locally_uniformly_iff_forall_tendsto tendstoLocallyUniformly_iff_forall_tendsto
 
+theorem tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe :
+    TendstoLocallyUniformlyOn F f p s ↔
+      TendstoLocallyUniformly (fun i (x : s) => F i x) (f ∘ (↑)) p := by
+  simp only [tendstoLocallyUniformly_iff_forall_tendsto, Subtype.forall', tendsto_map'_iff,
+    tendstoLocallyUniformlyOn_iff_forall_tendsto, ← map_nhds_subtype_val, prod_map_right]; rfl
+#align tendsto_locally_uniformly_on_iff_tendsto_locally_uniformly_comp_coe tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe
+
 protected theorem TendstoUniformlyOn.tendstoLocallyUniformlyOn (h : TendstoUniformlyOn F f p s) :
-    TendstoLocallyUniformlyOn F f p s := fun u hu x hx =>
+    TendstoLocallyUniformlyOn F f p s := fun u hu x _ =>
   ⟨s, self_mem_nhdsWithin, by simpa using h u hu⟩
 #align tendsto_uniformly_on.tendsto_locally_uniformly_on TendstoUniformlyOn.tendstoLocallyUniformlyOn
 
@@ -702,40 +649,36 @@ theorem TendstoLocallyUniformlyOn.mono (h : TendstoLocallyUniformlyOn F f p s) (
   exact ⟨t, nhdsWithin_mono x h' ht, H.mono fun n => id⟩
 #align tendsto_locally_uniformly_on.mono TendstoLocallyUniformlyOn.mono
 
-theorem tendstoLocallyUniformlyOn_unionᵢ {S : γ → Set α} (hS : ∀ i, IsOpen (S i))
-    (h : ∀ i, TendstoLocallyUniformlyOn F f p (S i)) : TendstoLocallyUniformlyOn F f p (⋃ i, S i) :=
-  by
-  rintro v hv x ⟨_, ⟨i, rfl⟩, hi : x ∈ S i⟩
-  obtain ⟨t, ht, ht'⟩ := h i v hv x hi
-  refine' ⟨t, _, ht'⟩
-  rw [(hS _).nhdsWithin_eq hi] at ht
-  exact mem_nhdsWithin_of_mem_nhds ht
+-- porting note: generalized from `Type` to `Sort`
+theorem tendstoLocallyUniformlyOn_unionᵢ {ι' : Sort _} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
+    (h : ∀ i, TendstoLocallyUniformlyOn F f p (S i)) :
+    TendstoLocallyUniformlyOn F f p (⋃ i, S i) :=
+  (isOpen_unionᵢ hS).tendstoLocallyUniformlyOn_iff_forall_tendsto.2 $ fun _x hx =>
+    let ⟨i, hi⟩ := mem_unionᵢ.1 hx
+    (hS i).tendstoLocallyUniformlyOn_iff_forall_tendsto.1 (h i) _ hi
 #align tendsto_locally_uniformly_on_Union tendstoLocallyUniformlyOn_unionᵢ
 
-theorem tendstoLocallyUniformlyOn_bUnion {s : Set γ} {S : γ → Set α} (hS : ∀ i ∈ s, IsOpen (S i))
+theorem tendstoLocallyUniformlyOn_bunionᵢ {s : Set γ} {S : γ → Set α} (hS : ∀ i ∈ s, IsOpen (S i))
     (h : ∀ i ∈ s, TendstoLocallyUniformlyOn F f p (S i)) :
-    TendstoLocallyUniformlyOn F f p (⋃ i ∈ s, S i) := by
-  rw [bUnion_eq_Union]
-  exact tendstoLocallyUniformlyOn_unionᵢ (fun i => hS _ i.2) fun i => h _ i.2
-#align tendsto_locally_uniformly_on_bUnion tendstoLocallyUniformlyOn_bUnion
+    TendstoLocallyUniformlyOn F f p (⋃ i ∈ s, S i) :=
+  tendstoLocallyUniformlyOn_unionᵢ (fun i => isOpen_unionᵢ (hS i)) fun i =>
+   tendstoLocallyUniformlyOn_unionᵢ (hS i) (h i)
+#align tendsto_locally_uniformly_on_bUnion tendstoLocallyUniformlyOn_bunionᵢ
 
 theorem tendstoLocallyUniformlyOn_unionₛ (S : Set (Set α)) (hS : ∀ s ∈ S, IsOpen s)
     (h : ∀ s ∈ S, TendstoLocallyUniformlyOn F f p s) : TendstoLocallyUniformlyOn F f p (⋃₀ S) := by
-  rw [sUnion_eq_bUnion]
-  exact tendstoLocallyUniformlyOn_bUnion hS h
+  rw [unionₛ_eq_bunionᵢ]
+  exact tendstoLocallyUniformlyOn_bunionᵢ hS h
 #align tendsto_locally_uniformly_on_sUnion tendstoLocallyUniformlyOn_unionₛ
 
 theorem TendstoLocallyUniformlyOn.union {s₁ s₂ : Set α} (hs₁ : IsOpen s₁) (hs₂ : IsOpen s₂)
     (h₁ : TendstoLocallyUniformlyOn F f p s₁) (h₂ : TendstoLocallyUniformlyOn F f p s₂) :
     TendstoLocallyUniformlyOn F f p (s₁ ∪ s₂) := by
-  rw [← sUnion_pair]
+  rw [← unionₛ_pair]
   refine' tendstoLocallyUniformlyOn_unionₛ _ _ _ <;> simp [*]
 #align tendsto_locally_uniformly_on.union TendstoLocallyUniformlyOn.union
 
-theorem tendstoLocallyUniformlyOn_univ :
-    TendstoLocallyUniformlyOn F f p univ ↔ TendstoLocallyUniformly F f p := by
-  simp [TendstoLocallyUniformlyOn, TendstoLocallyUniformly, nhdsWithin_univ]
-#align tendsto_locally_uniformly_on_univ tendstoLocallyUniformlyOn_univ
+-- porting note: tendstoLocallyUniformlyOn_univ moved up
 
 protected theorem TendstoLocallyUniformly.tendstoLocallyUniformlyOn
     (h : TendstoLocallyUniformly F f p) : TendstoLocallyUniformlyOn F f p s :=
@@ -747,12 +690,12 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
     TendstoLocallyUniformly F f p ↔ TendstoUniformly F f p := by
   refine' ⟨fun h V hV => _, TendstoUniformly.tendstoLocallyUniformly⟩
   choose U hU using h V hV
-  obtain ⟨t, ht⟩ := is_compact_univ.elim_nhds_subcover' (fun k hk => U k) fun k hk => (hU k).1
+  obtain ⟨t, ht⟩ := isCompact_univ.elim_nhds_subcover' (fun k _ => U k) fun k _ => (hU k).1
   replace hU := fun x : t => (hU x).2
   rw [← eventually_all] at hU
   refine' hU.mono fun i hi x => _
   specialize ht (mem_univ x)
-  simp only [exists_prop, mem_Union, SetCoe.exists, exists_and_right, Subtype.coe_mk] at ht
+  simp only [exists_prop, mem_unionᵢ, SetCoe.exists, exists_and_right, Subtype.coe_mk] at ht
   obtain ⟨y, ⟨hy₁, hy₂⟩, hy₃⟩ := ht
   exact hi ⟨⟨y, hy₁⟩, hy₂⟩ x hy₃
 #align tendsto_locally_uniformly_iff_tendsto_uniformly_of_compact_space tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace
@@ -760,7 +703,7 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
 /-- For a compact set `s`, locally uniform convergence on `s` is just uniform convergence on `s`. -/
 theorem tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (hs : IsCompact s) :
     TendstoLocallyUniformlyOn F f p s ↔ TendstoUniformlyOn F f p s := by
-  haveI : CompactSpace s := is_compact_iff_compact_space.mp hs
+  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
   refine' ⟨fun h => _, TendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
   rwa [tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe,
     tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace, ←
@@ -781,460 +724,29 @@ theorem TendstoLocallyUniformly.comp [TopologicalSpace γ] (h : TendstoLocallyUn
     (g : γ → α) (cg : Continuous g) : TendstoLocallyUniformly (fun n => F n ∘ g) (f ∘ g) p := by
   rw [← tendstoLocallyUniformlyOn_univ] at h⊢
   rw [continuous_iff_continuousOn_univ] at cg
-  exact h.comp _ (maps_to_univ _ _) cg
+  exact h.comp _ (mapsTo_univ _ _) cg
 #align tendsto_locally_uniformly.comp TendstoLocallyUniformly.comp
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (K «expr ⊆ » s) -/
-/- failed to parenthesize: parenthesize: uncaught backtrack exception
-[PrettyPrinter.parenthesize.input] (Command.declaration
-     (Command.declModifiers [] [] [] [] [] [])
-     (Command.theorem
-      "theorem"
-      (Command.declId `tendstoLocallyUniformlyOn_tFAE [])
-      (Command.declSig
-       [(Term.instBinder "[" [] (Term.app `LocallyCompactSpace [`α]) "]")
-        (Term.explicitBinder "(" [`G] [":" (Term.arrow `ι "→" (Term.arrow `α "→" `β))] [] ")")
-        (Term.explicitBinder "(" [`g] [":" (Term.arrow `α "→" `β)] [] ")")
-        (Term.explicitBinder "(" [`p] [":" (Term.app `Filter [`ι])] [] ")")
-        (Term.explicitBinder "(" [`hs] [":" (Term.app `IsOpen [`s])] [] ")")]
-       (Term.typeSpec
-        ":"
-        (Term.app
-         `TFAE
-         [(«term[_]»
-           "["
-           [(Term.app `TendstoLocallyUniformlyOn [`G `g `p `s])
-            ","
-            (Term.forall
-             "∀"
-             [(Term.explicitBinder "(" [`K] [] [] ")")
-              (Term.explicitBinder "(" [(Term.hole "_")] [":" («term_⊆_» `K "⊆" `s)] [] ")")]
-             []
-             ","
-             (Term.arrow
-              (Term.app `IsCompact [`K])
-              "→"
-              (Term.app `TendstoUniformlyOn [`G `g `p `K])))
-            ","
-            (Std.ExtendedBinder.«term∀__,_»
-             "∀"
-             (Lean.binderIdent `x)
-             («binderTerm∈_» "∈" `s)
-             ","
-             (Std.ExtendedBinder.«term∃__,_»
-              "∃"
-              (Lean.binderIdent `v)
-              («binderTerm∈_» "∈" (Topology.Topology.Basic.nhds_within "𝓝[" `s "] " `x))
-              ","
-              (Term.app `TendstoUniformlyOn [`G `g `p `v])))]
-           "]")])))
-      (Command.declValSimple
-       ":="
-       (Term.byTactic
-        "by"
-        (Tactic.tacticSeq
-         (Tactic.tacticSeq1Indented
-          [(Tactic.tfaeHave "tfae_have" [] (num "1") "→" (num "2"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Std.Tactic.rintro
-              "rintro"
-              [(Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `h))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `K))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hK1))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hK2))]
-              [])
-             []
-             (Tactic.exact
-              "exact"
-              (Term.app
-               (Term.proj
-                (Term.app `tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact [`hK2])
-                "."
-                `mp)
-               [(Term.app `h.mono [`hK1])]))])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "2") "→" (num "3"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Std.Tactic.rintro
-              "rintro"
-              [(Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `h))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `x))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hx))]
-              [])
-             []
-             (Std.Tactic.obtain
-              "obtain"
-              [(Std.Tactic.RCases.rcasesPatMed
-                [(Std.Tactic.RCases.rcasesPat.tuple
-                  "⟨"
-                  [(Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `K)])
-                    [])
-                   ","
-                   (Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed
-                     [(Std.Tactic.RCases.rcasesPat.tuple
-                       "⟨"
-                       [(Std.Tactic.RCases.rcasesPatLo
-                         (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hK1)])
-                         [])
-                        ","
-                        (Std.Tactic.RCases.rcasesPatLo
-                         (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hK2)])
-                         [])]
-                       "⟩")])
-                    [])
-                   ","
-                   (Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hK3)])
-                    [])]
-                  "⟩")])]
-              []
-              [":="
-               [(Term.app
-                 (Term.proj (Term.proj (Term.app `compact_basis_nhds [`x]) "." `mem_iff) "." `mp)
-                 [(Term.app `hs.mem_nhds [`hx])])]])
-             []
-             (Tactic.refine'
-              "refine'"
-              (Term.anonymousCtor
-               "⟨"
-               [`K "," (Term.app `nhdsWithin_le_nhds [`hK1]) "," (Term.app `h [`K `hK3 `hK2])]
-               "⟩"))])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "3") "→" (num "1"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Std.Tactic.rintro
-              "rintro"
-              [(Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `h))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `u))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hu))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `x))
-               (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hx))]
-              [])
-             []
-             (Std.Tactic.obtain
-              "obtain"
-              [(Std.Tactic.RCases.rcasesPatMed
-                [(Std.Tactic.RCases.rcasesPat.tuple
-                  "⟨"
-                  [(Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `v)])
-                    [])
-                   ","
-                   (Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv1)])
-                    [])
-                   ","
-                   (Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv2)])
-                    [])]
-                  "⟩")])]
-              []
-              [":=" [(Term.app `h [`x `hx])]])
-             []
-             (Tactic.exact
-              "exact"
-              (Term.anonymousCtor "⟨" [`v "," `hv1 "," (Term.app `hv2 [`u `hu])] "⟩"))])
-           []
-           (Tactic.tfaeFinish "tfae_finish")])))
-       [])
-      []
-      []))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.abbrev'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.def'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.byTactic
-       "by"
-       (Tactic.tacticSeq
-        (Tactic.tacticSeq1Indented
-         [(Tactic.tfaeHave "tfae_have" [] (num "1") "→" (num "2"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Std.Tactic.rintro
-             "rintro"
-             [(Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `h))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `K))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hK1))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hK2))]
-             [])
-            []
-            (Tactic.exact
-             "exact"
-             (Term.app
-              (Term.proj
-               (Term.app `tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact [`hK2])
-               "."
-               `mp)
-              [(Term.app `h.mono [`hK1])]))])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "2") "→" (num "3"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Std.Tactic.rintro
-             "rintro"
-             [(Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `h))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `x))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hx))]
-             [])
-            []
-            (Std.Tactic.obtain
-             "obtain"
-             [(Std.Tactic.RCases.rcasesPatMed
-               [(Std.Tactic.RCases.rcasesPat.tuple
-                 "⟨"
-                 [(Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `K)])
-                   [])
-                  ","
-                  (Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed
-                    [(Std.Tactic.RCases.rcasesPat.tuple
-                      "⟨"
-                      [(Std.Tactic.RCases.rcasesPatLo
-                        (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hK1)])
-                        [])
-                       ","
-                       (Std.Tactic.RCases.rcasesPatLo
-                        (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hK2)])
-                        [])]
-                      "⟩")])
-                   [])
-                  ","
-                  (Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hK3)])
-                   [])]
-                 "⟩")])]
-             []
-             [":="
-              [(Term.app
-                (Term.proj (Term.proj (Term.app `compact_basis_nhds [`x]) "." `mem_iff) "." `mp)
-                [(Term.app `hs.mem_nhds [`hx])])]])
-            []
-            (Tactic.refine'
-             "refine'"
-             (Term.anonymousCtor
-              "⟨"
-              [`K "," (Term.app `nhdsWithin_le_nhds [`hK1]) "," (Term.app `h [`K `hK3 `hK2])]
-              "⟩"))])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "3") "→" (num "1"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Std.Tactic.rintro
-             "rintro"
-             [(Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `h))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `u))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hu))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `x))
-              (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hx))]
-             [])
-            []
-            (Std.Tactic.obtain
-             "obtain"
-             [(Std.Tactic.RCases.rcasesPatMed
-               [(Std.Tactic.RCases.rcasesPat.tuple
-                 "⟨"
-                 [(Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `v)])
-                   [])
-                  ","
-                  (Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv1)])
-                   [])
-                  ","
-                  (Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv2)])
-                   [])]
-                 "⟩")])]
-             []
-             [":=" [(Term.app `h [`x `hx])]])
-            []
-            (Tactic.exact
-             "exact"
-             (Term.anonymousCtor "⟨" [`v "," `hv1 "," (Term.app `hv2 [`u `hu])] "⟩"))])
-          []
-          (Tactic.tfaeFinish "tfae_finish")])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.tacticSeq1Indented', expected 'Lean.Parser.Tactic.tacticSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.tfaeFinish "tfae_finish")
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (tactic__
-       (cdotTk (patternIgnore (token.«· » "·")))
-       [(Std.Tactic.rintro
-         "rintro"
-         [(Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `h))
-          (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `u))
-          (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hu))
-          (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `x))
-          (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hx))]
-         [])
-        []
-        (Std.Tactic.obtain
-         "obtain"
-         [(Std.Tactic.RCases.rcasesPatMed
-           [(Std.Tactic.RCases.rcasesPat.tuple
-             "⟨"
-             [(Std.Tactic.RCases.rcasesPatLo
-               (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `v)])
-               [])
-              ","
-              (Std.Tactic.RCases.rcasesPatLo
-               (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv1)])
-               [])
-              ","
-              (Std.Tactic.RCases.rcasesPatLo
-               (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv2)])
-               [])]
-             "⟩")])]
-         []
-         [":=" [(Term.app `h [`x `hx])]])
-        []
-        (Tactic.exact
-         "exact"
-         (Term.anonymousCtor "⟨" [`v "," `hv1 "," (Term.app `hv2 [`u `hu])] "⟩"))])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.exact "exact" (Term.anonymousCtor "⟨" [`v "," `hv1 "," (Term.app `hv2 [`u `hu])] "⟩"))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor "⟨" [`v "," `hv1 "," (Term.app `hv2 [`u `hu])] "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `hv2 [`u `hu])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hu
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `u
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `hv2
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hv1
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `v
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Std.Tactic.obtain
-       "obtain"
-       [(Std.Tactic.RCases.rcasesPatMed
-         [(Std.Tactic.RCases.rcasesPat.tuple
-           "⟨"
-           [(Std.Tactic.RCases.rcasesPatLo
-             (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `v)])
-             [])
-            ","
-            (Std.Tactic.RCases.rcasesPatLo
-             (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv1)])
-             [])
-            ","
-            (Std.Tactic.RCases.rcasesPatLo
-             (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv2)])
-             [])]
-           "⟩")])]
-       []
-       [":=" [(Term.app `h [`x `hx])]])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `h [`x `hx])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hx
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `x
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `h
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Std.Tactic.rintro
-       "rintro"
-       [(Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `h))
-        (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `u))
-        (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hu))
-        (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `x))
-        (Std.Tactic.RCases.rintroPat.one (Std.Tactic.RCases.rcasesPat.one `hx))]
-       [])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.tfaeHave "tfae_have" [] (num "3") "→" (num "1"))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« → »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« ↔ »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« ← »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.declValEqns'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.whereStructInst'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.opaque'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.instance'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.axiom'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.example'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.inductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.classInductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-theorem
-  tendstoLocallyUniformlyOn_tFAE
-  [ LocallyCompactSpace α ] ( G : ι → α → β ) ( g : α → β ) ( p : Filter ι ) ( hs : IsOpen s )
-    :
-      TFAE
-        [
-          TendstoLocallyUniformlyOn G g p s
-            ,
-            ∀ ( K ) ( _ : K ⊆ s ) , IsCompact K → TendstoUniformlyOn G g p K
-            ,
-            ∀ x ∈ s , ∃ v ∈ 𝓝[ s ] x , TendstoUniformlyOn G g p v
-          ]
-  :=
-    by
-      tfae_have 1 → 2
-        ·
-          rintro h K hK1 hK2
-            exact tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK2 . mp h.mono hK1
-        tfae_have 2 → 3
-        ·
-          rintro h x hx
-            obtain ⟨ K , ⟨ hK1 , hK2 ⟩ , hK3 ⟩ := compact_basis_nhds x . mem_iff . mp hs.mem_nhds hx
-            refine' ⟨ K , nhdsWithin_le_nhds hK1 , h K hK3 hK2 ⟩
-        tfae_have 3 → 1
-        · rintro h u hu x hx obtain ⟨ v , hv1 , hv2 ⟩ := h x hx exact ⟨ v , hv1 , hv2 u hu ⟩
-        tfae_finish
-#align tendsto_locally_uniformly_on_tfae tendstoLocallyUniformlyOn_tFAE
+open List in
+theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
+    (p : Filter ι) (hs : IsOpen s) :
+    TFAE [TendstoLocallyUniformlyOn G g p s,
+          ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn G g p K,
+          ∀ x ∈ s, ∃ v ∈ 𝓝[s] x, TendstoUniformlyOn G g p v] := by
+  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] -- porting note: todo: use `tfae_have` or not?
+  · exact fun h K hKs hKc =>
+      (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hKc).mp (h.mono hKs)
+  · rintro h x hx
+    obtain ⟨K, ⟨hK1, hK2⟩ ,hK3⟩ := (compact_basis_nhds x).mem_iff.mp (hs.mem_nhds hx)
+    refine' ⟨K, nhdsWithin_le_nhds hK1 , h K hK3 hK2 ⟩
+  · rintro h u hu x hx
+    obtain ⟨v, hv1, hv2⟩ := h x hx
+    exact ⟨v, hv1, hv2 u hu⟩
+#align tendsto_locally_uniformly_on_tfae tendstoLocallyUniformlyOn_TFAE
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (K «expr ⊆ » s) -/
 theorem tendstoLocallyUniformlyOn_iff_forall_isCompact [LocallyCompactSpace α] (hs : IsOpen s) :
-    TendstoLocallyUniformlyOn F f p s ↔
-      ∀ (K) (_ : K ⊆ s), IsCompact K → TendstoUniformlyOn F f p K :=
-  (tendstoLocallyUniformlyOn_tFAE F f p hs).out 0 1
+    TendstoLocallyUniformlyOn F f p s ↔ ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn F f p K :=
+  (tendstoLocallyUniformlyOn_TFAE F f p hs).out 0 1
 #align tendsto_locally_uniformly_on_iff_forall_is_compact tendstoLocallyUniformlyOn_iff_forall_isCompact
 
 theorem tendstoLocallyUniformlyOn_iff_filter :
@@ -1243,7 +755,7 @@ theorem tendstoLocallyUniformlyOn_iff_filter :
   constructor
   · rintro h x hx u hu
     obtain ⟨s, hs1, hs2⟩ := h u hu x hx
-    exact ⟨_, hs2, _, eventually_of_mem hs1 fun x => id, fun i hi y hy => hi y hy⟩
+    exact ⟨_, hs2, _, eventually_of_mem hs1 fun x => id, fun hi y hy => hi y hy⟩
   · rintro h u hu x hx
     obtain ⟨pa, hpa, pb, hpb, h⟩ := h x hx u hu
     refine' ⟨pb, hpb, eventually_of_mem hpa fun i hi y hy => h hi hy⟩
@@ -1257,13 +769,13 @@ theorem tendstoLocallyUniformly_iff_filter :
 
 theorem TendstoLocallyUniformlyOn.tendsto_at (hf : TendstoLocallyUniformlyOn F f p s) {a : α}
     (ha : a ∈ s) : Tendsto (fun i => F i a) p (𝓝 (f a)) := by
-  refine' ((tendsto_locally_uniformly_on_iff_filter.mp hf) a ha).tendsto_at _
+  refine' ((tendstoLocallyUniformlyOn_iff_filter.mp hf) a ha).tendsto_at _
   simpa only [Filter.principal_singleton] using pure_le_nhdsWithin ha
 #align tendsto_locally_uniformly_on.tendsto_at TendstoLocallyUniformlyOn.tendsto_at
 
-theorem TendstoLocallyUniformlyOn.unique [p.ne_bot] [T2Space β] {g : α → β}
+theorem TendstoLocallyUniformlyOn.unique [p.NeBot] [T2Space β] {g : α → β}
     (hf : TendstoLocallyUniformlyOn F f p s) (hg : TendstoLocallyUniformlyOn F g p s) :
-    s.EqOn f g := fun a ha => tendsto_nhds_unique (hf.tendsto_at ha) (hg.tendsto_at ha)
+    s.EqOn f g := fun _a ha => tendsto_nhds_unique (hf.tendsto_at ha) (hg.tendsto_at ha)
 #align tendsto_locally_uniformly_on.unique TendstoLocallyUniformlyOn.unique
 
 theorem TendstoLocallyUniformlyOn.congr {G : ι → α → β} (hf : TendstoLocallyUniformlyOn F f p s)
@@ -1297,19 +809,17 @@ within a set at a point is continuous within this set at this point. -/
 theorem continuousWithinAt_of_locally_uniform_approx_of_continuousWithinAt (hx : x ∈ s)
     (L : ∀ u ∈ 𝓤 β, ∃ t ∈ 𝓝[s] x, ∃ F : α → β, ContinuousWithinAt F s x ∧ ∀ y ∈ t, (f y, F y) ∈ u) :
     ContinuousWithinAt f s x := by
-  apply Uniform.continuousWithinAt_iff'_left.2 fun u₀ hu₀ => _
-  obtain ⟨u₁, h₁, u₁₀⟩ : ∃ (u : Set (β × β))(H : u ∈ 𝓤 β), compRel u u ⊆ u₀ :=
-    comp_mem_uniformity_sets hu₀
-  obtain ⟨u₂, h₂, hsymm, u₂₁⟩ :
-    ∃ (u : Set (β × β))(H : u ∈ 𝓤 β), (∀ {a b}, (a, b) ∈ u → (b, a) ∈ u) ∧ compRel u u ⊆ u₁ :=
+  refine Uniform.continuousWithinAt_iff'_left.2 fun u₀ hu₀ => ?_
+  obtain ⟨u₁, h₁, u₁₀⟩ : ∃ u ∈ 𝓤 β, u ○ u ⊆ u₀ := comp_mem_uniformity_sets hu₀
+  obtain ⟨u₂, h₂, hsymm, u₂₁⟩ : ∃ u ∈ 𝓤 β, (∀ {a b}, (a, b) ∈ u → (b, a) ∈ u) ∧ u ○ u ⊆ u₁ :=
     comp_symm_of_uniformity h₁
   rcases L u₂ h₂ with ⟨t, tx, F, hFc, hF⟩
-  have A : ∀ᶠ y in 𝓝[s] x, (f y, F y) ∈ u₂ := eventually.mono tx hF
+  have A : ∀ᶠ y in 𝓝[s] x, (f y, F y) ∈ u₂ := Eventually.mono tx hF
   have B : ∀ᶠ y in 𝓝[s] x, (F y, F x) ∈ u₂ := Uniform.continuousWithinAt_iff'_left.1 hFc h₂
   have C : ∀ᶠ y in 𝓝[s] x, (f y, F x) ∈ u₁ :=
     (A.and B).mono fun y hy => u₂₁ (prod_mk_mem_compRel hy.1 hy.2)
   have : (F x, f x) ∈ u₁ :=
-    u₂₁ (prod_mk_mem_compRel (refl_mem_uniformity h₂) (hsymm (A.self_of_nhds_within hx)))
+    u₂₁ (prod_mk_mem_compRel (refl_mem_uniformity h₂) (hsymm (A.self_of_nhdsWithin hx)))
   exact C.mono fun y hy => u₁₀ (prod_mk_mem_compRel hy this)
 #align continuous_within_at_of_locally_uniform_approx_of_continuous_within_at continuousWithinAt_of_locally_uniform_approx_of_continuousWithinAt
 
@@ -1326,8 +836,8 @@ theorem continuousAt_of_locally_uniform_approx_of_continuousAt
 /-- A function which can be locally uniformly approximated by functions which are continuous
 on a set is continuous on this set. -/
 theorem continuousOn_of_locally_uniform_approx_of_continuousWithinAt
-    (L :
-      ∀ x ∈ s, ∀ u ∈ 𝓤 β, ∃ t ∈ 𝓝[s] x, ∃ F, ContinuousWithinAt F s x ∧ ∀ y ∈ t, (f y, F y) ∈ u) :
+    (L : ∀ x ∈ s, ∀ u ∈ 𝓤 β, ∃ t ∈ 𝓝[s] x, ∃ F,
+      ContinuousWithinAt F s x ∧ ∀ y ∈ t, (f y, F y) ∈ u) :
     ContinuousOn f s := fun x hx =>
   continuousWithinAt_of_locally_uniform_approx_of_continuousWithinAt hx (L x hx)
 #align continuous_on_of_locally_uniform_approx_of_continuous_within_at continuousOn_of_locally_uniform_approx_of_continuousWithinAt
@@ -1336,8 +846,8 @@ theorem continuousOn_of_locally_uniform_approx_of_continuousWithinAt
 is continuous on this set. -/
 theorem continuousOn_of_uniform_approx_of_continuousOn
     (L : ∀ u ∈ 𝓤 β, ∃ F, ContinuousOn F s ∧ ∀ y ∈ s, (f y, F y) ∈ u) : ContinuousOn f s :=
-  continuousOn_of_locally_uniform_approx_of_continuousWithinAt fun x hx u hu =>
-    ⟨s, self_mem_nhdsWithin, (L u hu).imp fun F hF => ⟨hF.1.ContinuousWithinAt hx, hF.2⟩⟩
+  continuousOn_of_locally_uniform_approx_of_continuousWithinAt fun _x hx u hu =>
+    ⟨s, self_mem_nhdsWithin, (L u hu).imp fun _F hF => ⟨hF.1.continuousWithinAt hx, hF.2⟩⟩
 #align continuous_on_of_uniform_approx_of_continuous_on continuousOn_of_uniform_approx_of_continuousOn
 
 /-- A function which can be locally uniformly approximated by continuous functions is continuous. -/
@@ -1368,30 +878,30 @@ limits.
 continuous on this set. -/
 protected theorem TendstoLocallyUniformlyOn.continuousOn (h : TendstoLocallyUniformlyOn F f p s)
     (hc : ∀ᶠ n in p, ContinuousOn (F n) s) [NeBot p] : ContinuousOn f s := by
-  apply continuousOn_of_locally_uniform_approx_of_continuousWithinAt fun x hx u hu => _
+  refine continuousOn_of_locally_uniform_approx_of_continuousWithinAt fun x hx u hu => ?_
   rcases h u hu x hx with ⟨t, ht, H⟩
-  rcases(hc.and H).exists with ⟨n, hFc, hF⟩
-  exact ⟨t, ht, ⟨F n, hFc.continuous_within_at hx, hF⟩⟩
+  rcases (hc.and H).exists with ⟨n, hFc, hF⟩
+  exact ⟨t, ht, ⟨F n, hFc.continuousWithinAt hx, hF⟩⟩
 #align tendsto_locally_uniformly_on.continuous_on TendstoLocallyUniformlyOn.continuousOn
 
 /-- A uniform limit on a set of functions which are continuous on this set is itself continuous
 on this set. -/
 protected theorem TendstoUniformlyOn.continuousOn (h : TendstoUniformlyOn F f p s)
     (hc : ∀ᶠ n in p, ContinuousOn (F n) s) [NeBot p] : ContinuousOn f s :=
-  h.TendstoLocallyUniformlyOn.ContinuousOn hc
+  h.tendstoLocallyUniformlyOn.continuousOn hc
 #align tendsto_uniformly_on.continuous_on TendstoUniformlyOn.continuousOn
 
 /-- A locally uniform limit of continuous functions is continuous. -/
 protected theorem TendstoLocallyUniformly.continuous (h : TendstoLocallyUniformly F f p)
     (hc : ∀ᶠ n in p, Continuous (F n)) [NeBot p] : Continuous f :=
   continuous_iff_continuousOn_univ.mpr <|
-    h.TendstoLocallyUniformlyOn.ContinuousOn <| hc.mono fun n hn => hn.ContinuousOn
+    h.tendstoLocallyUniformlyOn.continuousOn <| hc.mono fun _n hn => hn.continuousOn
 #align tendsto_locally_uniformly.continuous TendstoLocallyUniformly.continuous
 
 /-- A uniform limit of continuous functions is continuous. -/
 protected theorem TendstoUniformly.continuous (h : TendstoUniformly F f p)
     (hc : ∀ᶠ n in p, Continuous (F n)) [NeBot p] : Continuous f :=
-  h.TendstoLocallyUniformly.Continuous hc
+  h.tendstoLocallyUniformly.continuous hc
 #align tendsto_uniformly.continuous TendstoUniformly.continuous
 
 /-!
@@ -1410,15 +920,12 @@ theorem tendsto_comp_of_locally_uniform_limit_within (h : ContinuousWithinAt f s
     (hg : Tendsto g p (𝓝[s] x))
     (hunif : ∀ u ∈ 𝓤 β, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, (f y, F n y) ∈ u) :
     Tendsto (fun n => F n (g n)) p (𝓝 (f x)) := by
-  apply Uniform.tendsto_nhds_right.2 fun u₀ hu₀ => _
-  obtain ⟨u₁, h₁, u₁₀⟩ : ∃ (u : Set (β × β))(H : u ∈ 𝓤 β), compRel u u ⊆ u₀ :=
-    comp_mem_uniformity_sets hu₀
+  refine Uniform.tendsto_nhds_right.2 fun u₀ hu₀ => ?_
+  obtain ⟨u₁, h₁, u₁₀⟩ : ∃ u ∈ 𝓤 β, u ○ u ⊆ u₀ := comp_mem_uniformity_sets hu₀
   rcases hunif u₁ h₁ with ⟨s, sx, hs⟩
   have A : ∀ᶠ n in p, g n ∈ s := hg sx
   have B : ∀ᶠ n in p, (f x, f (g n)) ∈ u₁ := hg (Uniform.continuousWithinAt_iff'_right.1 h h₁)
-  refine' ((hs.and A).And B).mono fun y hy => _
-  rcases hy with ⟨⟨H1, H2⟩, H3⟩
-  exact u₁₀ (prod_mk_mem_compRel H3 (H1 _ H2))
+  exact B.mp <| A.mp <| hs.mono fun y H1 H2 H3 => u₁₀ (prod_mk_mem_compRel H3 (H1 _ H2))
 #align tendsto_comp_of_locally_uniform_limit_within tendsto_comp_of_locally_uniform_limit_within
 
 /-- If `Fₙ` converges locally uniformly on a neighborhood of `x` to a function `f` which is
@@ -1456,6 +963,5 @@ theorem TendstoLocallyUniformly.tendsto_comp (h : TendstoLocallyUniformly F f p)
 /-- If `Fₙ` tends uniformly to `f`, and `gₙ` tends to `x`, then `Fₙ gₙ` tends to `f x`. -/
 theorem TendstoUniformly.tendsto_comp (h : TendstoUniformly F f p) (hf : ContinuousAt f x)
     (hg : Tendsto g p (𝓝 x)) : Tendsto (fun n => F n (g n)) p (𝓝 (f x)) :=
-  h.TendstoLocallyUniformly.tendsto_comp hf hg
+  h.tendstoLocallyUniformly.tendsto_comp hf hg
 #align tendsto_uniformly.tendsto_comp TendstoUniformly.tendsto_comp
-
