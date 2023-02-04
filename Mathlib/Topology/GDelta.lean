@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.Basic
-import Mathbin.Topology.Separation
+import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.Separation
 
 /-!
 # `Gδ` sets
@@ -81,8 +81,7 @@ theorem isGδ_interᵢ_of_open [Encodable ι] {f : ι → Set α} (hf : ∀ i, I
 #align is_Gδ_Inter_of_open isGδ_interᵢ_of_open
 
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
-theorem isGδ_interᵢ [Encodable ι] {s : ι → Set α} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) :=
-  by
+theorem isGδ_interᵢ [Encodable ι] {s : ι → Set α} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine' ⟨⋃ i, T i, _, countable_Union hTc, (sInter_Union _).symm⟩
@@ -90,8 +89,7 @@ theorem isGδ_interᵢ [Encodable ι] {s : ι → Set α} (hs : ∀ i, IsGδ (s 
 #align is_Gδ_Inter isGδ_interᵢ
 
 theorem isGδ_bInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set α}
-    (ht : ∀ i ∈ s, IsGδ (t i ‹_›)) : IsGδ (⋂ i ∈ s, t i ‹_›) :=
-  by
+    (ht : ∀ i ∈ s, IsGδ (t i ‹_›)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [bInter_eq_Inter]
   haveI := hs.to_encodable
   exact isGδ_interᵢ fun x => ht x x.2
@@ -102,15 +100,13 @@ theorem isGδ_interₛ {S : Set (Set α)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Cou
   simpa only [sInter_eq_bInter] using isGδ_bInter hS h
 #align is_Gδ_sInter isGδ_interₛ
 
-theorem IsGδ.inter {s t : Set α} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) :=
-  by
+theorem IsGδ.inter {s t : Set α} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
   rw [inter_eq_Inter]
   exact isGδ_interᵢ (Bool.forall_bool.2 ⟨ht, hs⟩)
 #align is_Gδ.inter IsGδ.inter
 
 /-- The union of two Gδ sets is a Gδ set. -/
-theorem IsGδ.union {s t : Set α} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t) :=
-  by
+theorem IsGδ.union {s t : Set α} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t) := by
   rcases hs with ⟨S, Sopen, Scount, rfl⟩
   rcases ht with ⟨T, Topen, Tcount, rfl⟩
   rw [sInter_union_sInter]
@@ -128,8 +124,7 @@ theorem isGδ_bUnion {s : Set ι} (hs : s.Finite) {f : ι → Set α} (h : ∀ i
 #align is_Gδ_bUnion isGδ_bUnion
 
 theorem IsClosed.isGδ {α} [UniformSpace α] [IsCountablyGenerated (𝓤 α)] {s : Set α}
-    (hs : IsClosed s) : IsGδ s :=
-  by
+    (hs : IsClosed s) : IsGδ s := by
   rcases(@uniformity_hasBasis_open α _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.bInter_bUnion_ball]
   refine' isGδ_bInter (to_countable _) fun n hn => IsOpen.isGδ _
@@ -144,8 +139,7 @@ theorem isGδ_compl_singleton (a : α) : IsGδ ({a}ᶜ : Set α) :=
   isOpen_compl_singleton.IsGδ
 #align is_Gδ_compl_singleton isGδ_compl_singleton
 
-theorem Set.Countable.isGδ_compl {s : Set α} (hs : s.Countable) : IsGδ (sᶜ) :=
-  by
+theorem Set.Countable.isGδ_compl {s : Set α} (hs : s.Countable) : IsGδ (sᶜ) := by
   rw [← bUnion_of_singleton s, compl_Union₂]
   exact isGδ_bInter hs fun x _ => isGδ_compl_singleton x
 #align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
@@ -166,8 +160,7 @@ open TopologicalSpace
 
 variable [FirstCountableTopology α]
 
-theorem isGδ_singleton (a : α) : IsGδ ({a} : Set α) :=
-  by
+theorem isGδ_singleton (a : α) : IsGδ ({a} : Set α) := by
   rcases(nhds_basis_opens a).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← binterᵢ_basis_nhds h_basis.to_has_basis]
   exact isGδ_bInter (to_countable _) fun n hn => (hU n).2.IsGδ
@@ -191,8 +184,7 @@ variable [TopologicalSpace α]
 
 /-- The set of points where a function is continuous is a Gδ set. -/
 theorem isGδ_setOf_continuousAt [UniformSpace β] [IsCountablyGenerated (𝓤 β)] (f : α → β) :
-    IsGδ { x | ContinuousAt f x } :=
-  by
+    IsGδ { x | ContinuousAt f x } := by
   obtain ⟨U, hUo, hU⟩ := (@uniformity_hasBasis_open_symmetric β _).exists_antitone_subbasis
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
   simp only [(nhds_basis_opens _).prod_self.tendsto_iffₓ hU.to_has_basis, forall_prop_of_true,

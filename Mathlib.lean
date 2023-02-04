@@ -978,6 +978,7 @@ import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.ExtendFrom
+import Mathlib.Topology.GDelta
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.LocalExtr
