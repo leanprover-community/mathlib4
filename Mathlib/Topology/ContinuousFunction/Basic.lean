@@ -102,8 +102,8 @@ theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContinuousMap (toFun → apply)
 
-@[protected, simp, norm_cast]
-theorem coe_coe {F : Type _} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
+@[simp, norm_cast]
+protected theorem coe_coe {F : Type _} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
   rfl
 #align continuous_map.coe_coe ContinuousMap.coe_coe
 
@@ -156,8 +156,8 @@ protected theorem congr_arg (f : C(α, β)) {x y : α} (h : x = y) : f x = f y :
   h ▸ rfl
 #align continuous_map.congr_arg ContinuousMap.congr_arg
 
-theorem coe_injective : @Function.Injective C(α, β) (α → β) coeFn := fun f g h => by
-  cases f <;> cases g <;> congr
+theorem coe_injective : @Function.Injective C(α, β) (α → β) (↑) := fun f g h => by
+  cases f; cases g; congr
 #align continuous_map.coe_injective ContinuousMap.coe_injective
 
 @[simp]
@@ -268,7 +268,7 @@ theorem comp_const (f : C(β, γ)) (b : β) : f.comp (const α b) = const α (f 
 
 theorem cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
 #align continuous_map.cancel_right ContinuousMap.cancel_right
 
 theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
@@ -278,7 +278,7 @@ theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
 
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
-    ⟨const _ b₁, const _ b₂, fun h => hb <| FunLike.congr_fun h <| Classical.arbitrary α⟩⟩
+  ⟨const _ b₁, const _ b₂, fun h => hb <| FunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
 section Prod
 
@@ -312,7 +312,9 @@ section Pi
 variable {I A : Type _} {X : I → Type _} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
 
 /-- Abbreviation for product of continuous maps, which is continuous -/
-def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where toFun (a : A) (i : I) := f i a
+def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where
+  toFun (a : A) (i : I) := f i a
+  continuous_toFun := sorry
 #align continuous_map.pi ContinuousMap.pi
 
 @[simp]
@@ -454,13 +456,13 @@ theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
 theorem symm_comp_to_continuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
-  by rw [← coeTrans, self_trans_symm, coe_refl]
+  by rw [← coe_trans, self_trans_symm, coe_refl]
 #align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_to_continuousMap
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
 theorem to_continuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
-  by rw [← coeTrans, symm_trans_self, coe_refl]
+  by rw [← coe_trans, symm_trans_self, coe_refl]
 #align homeomorph.to_continuous_map_comp_symm Homeomorph.to_continuousMap_comp_symm
 
 end Homeomorph
