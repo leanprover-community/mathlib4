@@ -115,21 +115,21 @@ theorem map_swap_product (s : Finset α) (t : Finset β) :
 #align finset.map_swap_product Finset.map_swap_product
 
 @[simp]
-theorem image_swap_product [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
+theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     (t ×ᶠ s).image Prod.swap = s ×ᶠ t :=
   coe_injective <| by
     push_cast
     exact Set.image_swap_prod _ _
 #align finset.image_swap_product Finset.image_swap_product
 
-theorem product_eq_bunionᵢ [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
+theorem product_eq_bunionᵢ [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ᶠ t = s.bunionᵢ fun a => t.image fun b => (a, b) :=
   ext fun ⟨x, y⟩ => by
     simp only [mem_product, mem_bunionᵢ, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 #align finset.product_eq_bUnion Finset.product_eq_bunionᵢ
 
-theorem product_eq_bunionᵢ_right [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
+theorem product_eq_bunionᵢ_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ᶠ t = t.bunionᵢ fun b => s.image fun a => (a, b) :=
   ext fun ⟨x, y⟩ => by
     simp only [mem_product, mem_bunionᵢ, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,

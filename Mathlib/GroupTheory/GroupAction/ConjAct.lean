@@ -50,17 +50,13 @@ open MulAction Subgroup
 
 variable {M G G₀ R K}
 
-instance [Group G] : Group (ConjAct G) :=
-  by delta ConjAct; infer_instance
+instance [Group G] : Group (ConjAct G) := ‹Group G›
 
-instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) :=
-  by delta ConjAct; infer_instance
+instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
 
-instance [GroupWithZero G] : GroupWithZero (ConjAct G) :=
-  by delta ConjAct; infer_instance
+instance [GroupWithZero G] : GroupWithZero (ConjAct G) := ‹GroupWithZero G›
 
-instance [Fintype G] : Fintype (ConjAct G) :=
-  by delta ConjAct; infer_instance
+instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=

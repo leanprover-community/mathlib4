@@ -28,7 +28,7 @@ In this file we define products and sums indexed by finite sets (specifically, `
 ## Notation
 
 We introduce the following notation, localized in `BigOperators`.
-To enable the notation, use `open_locale BigOperators`.
+To enable the notation, use `open BigOperators`.
 
 Let `s` be a `Finset α`, and `f : α → β` a function.
 
@@ -100,39 +100,40 @@ In practice, this means that parentheses should be placed as follows:
 (Example taken from page 490 of Knuth's *Concrete Mathematics*.)
 -/
 
-section
+-- TODO: Use scoped[NS], when implemented?
+namespace BigOperators
 open Std.ExtendedBinder
 
 /-- `∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,
 where `x` ranges over the finite domain of `f`. -/
-syntax (name := bigsum) "∑ " extBinder ", " term:67 : term
-macro_rules (kind := bigsum)
+scoped syntax (name := bigsum) "∑ " extBinder ", " term:67 : term
+scoped macro_rules (kind := bigsum)
   | `(∑ $x:ident, $p) => `(Finset.sum Finset.univ (fun $x:ident ↦ $p))
   | `(∑ $x:ident : $t, $p) => `(Finset.sum Finset.univ (fun $x:ident : $t ↦ $p))
 
 /-- `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
 where `x` ranges over the finite domain of `f`. -/
-syntax (name := bigprod) "∏ " extBinder ", " term:67 : term
-macro_rules (kind := bigprod)
+scoped syntax (name := bigprod) "∏ " extBinder ", " term:67 : term
+scoped macro_rules (kind := bigprod)
   | `(∏ $x:ident, $p) => `(Finset.prod Finset.univ (fun $x:ident ↦ $p))
   | `(∏ $x:ident : $t, $p) => `(Finset.prod Finset.univ (fun $x:ident : $t ↦ $p))
 
 /-- `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-syntax (name := bigsumin) "∑ " extBinder "in " term "," term:67 : term
-macro_rules (kind := bigsumin)
+scoped syntax (name := bigsumin) "∑ " extBinder "in " term "," term:67 : term
+scoped macro_rules (kind := bigsumin)
   | `(∑ $x:ident in $s, $r) => `(Finset.sum $s (fun $x ↦ $r))
   | `(∑ $x:ident : $t in $s, $p) => `(Finset.sum $s (fun $x:ident : $t ↦ $p))
 
 /-- `∏ x, f x` is notation for `Finset.prod s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-syntax (name := bigprodin) "∏ " extBinder "in " term "," term:67 : term
-macro_rules (kind := bigprodin)
+scoped syntax (name := bigprodin) "∏ " extBinder "in " term "," term:67 : term
+scoped macro_rules (kind := bigprodin)
   | `(∏ $x:ident in $s, $r) => `(Finset.prod $s (fun $x ↦ $r))
   | `(∏ $x:ident : $t in $s, $p) => `(Finset.prod $s (fun $x:ident : $t ↦ $p))
-end
+end BigOperators
 
--- open BigOperators -- Porting note: commented out locale
+open BigOperators
 
 namespace Finset
 

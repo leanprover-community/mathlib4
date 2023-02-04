@@ -88,7 +88,7 @@ noncomputable section
 
 open Finset Function
 
--- open BigOperators -- Porting note: notation is global for now
+open BigOperators
 
 variable {α β γ ι M M' N P G H R S : Type _}
 
@@ -163,7 +163,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
   rfl
 #align finsupp.coe_mk Finsupp.coe_mk
 
-instance : Zero (α →₀ M) :=
+instance hasZero: Zero (α →₀ M) :=
   ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 
 @[simp]
@@ -264,6 +264,9 @@ If `α` has a unique term, the type of finitely supported functions `α →₀ �
 noncomputable def _root_.Equiv.finsuppUnique {ι : Type _} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 #align equiv.finsupp_unique Equiv.finsuppUnique
+#align equiv.finsupp_unique_symm_apply_support_val Equiv.finsuppUnique_symm_apply_support_val
+#align equiv.finsupp_unique_symm_apply_to_fun Equiv.finsuppUnique_symm_apply_toFun
+#align equiv.finsupp_unique_apply Equiv.finsuppUnique_apply
 
 @[ext]
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
@@ -999,7 +1002,7 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
     · rw [add_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, zero_add]
 #align finsupp.single_add Finsupp.single_add
 
-instance : AddZeroClass (α →₀ M) :=
+instance addZeroClass: AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
@@ -1021,6 +1024,7 @@ def applyAddHom (a : α) : (α →₀ M) →+ M where
   map_zero' := zero_apply
   map_add' _ _ := add_apply _ _ _
 #align finsupp.apply_add_hom Finsupp.applyAddHom
+#align finsupp.apply_add_hom_apply Finsupp.applyAddHom_apply
 
 /-- Coercion from a `Finsupp` to a function type is an `AddMonoidHom`. -/
 @[simps]
@@ -1030,6 +1034,7 @@ noncomputable def coeFnAddHom : (α →₀ M) →+ α → M
   map_zero' := coe_zero
   map_add' := coe_add
 #align finsupp.coe_fn_add_hom Finsupp.coeFnAddHom
+#align finsupp.coe_fn_add_hom_apply Finsupp.coeFnAddHom_apply
 
 theorem update_eq_single_add_erase (f : α →₀ M) (a : α) (b : M) :
     f.update a b = single a b + f.erase a := by
@@ -1206,12 +1211,12 @@ instance hasNatScalar : SMul ℕ (α →₀ M) :=
   ⟨fun n v => v.mapRange ((· • ·) n) (nsmul_zero _)⟩
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
-instance : AddMonoid (α →₀ M) :=
+instance addMonoid: AddMonoid (α →₀ M) :=
   FunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
 end AddMonoid
 
-instance [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
+instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 instance [NegZeroClass G] : Neg (α →₀ G) :=

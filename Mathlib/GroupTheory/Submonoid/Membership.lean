@@ -37,8 +37,7 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
--- Porting note: big operators are currently global
---open BigOperators
+open BigOperators
 
 variable {M A B : Type _}
 
@@ -153,14 +152,14 @@ theorem multiset_prod_mem {M} [CommMonoid M] (S : Submonoid M) (m : Multiset M)
 #align add_submonoid.multiset_sum_mem AddSubmonoid.multiset_sum_mem
 
 @[to_additive]
-theorem multiset_noncomm_prod_mem (S : Submonoid M) (m : Multiset M) (comm) (h : ∀ x ∈ m, x ∈ S) :
+theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : ∀ x ∈ m, x ∈ S) :
     m.noncommProd comm ∈ S :=
   by
   induction' m using Quotient.inductionOn with l
   simp only [Multiset.quot_mk_to_coe, Multiset.noncommProd_coe]
   exact Submonoid.list_prod_mem _ h
-#align submonoid.multiset_noncomm_prod_mem Submonoid.multiset_noncomm_prod_mem
-#align add_submonoid.multiset_noncomm_sum_mem AddSubmonoid.multiset_noncomm_sum_mem
+#align submonoid.multiset_noncomm_prod_mem Submonoid.multiset_noncommProd_mem
+#align add_submonoid.multiset_noncomm_sum_mem AddSubmonoid.multiset_noncommSum_mem
 
 /-- Product of elements of a submonoid of a `CommMonoid` indexed by a `Finset` is in the
     submonoid. -/
@@ -176,15 +175,15 @@ theorem prod_mem {M : Type _} [CommMonoid M] (S : Submonoid M) {ι : Type _} {t 
 #align add_submonoid.sum_mem AddSubmonoid.sum_mem
 
 @[to_additive]
-theorem noncomm_prod_mem (S : Submonoid M) {ι : Type _} (t : Finset ι) (f : ι → M) (comm)
+theorem noncommProd_mem (S : Submonoid M) {ι : Type _} (t : Finset ι) (f : ι → M) (comm)
     (h : ∀ c ∈ t, f c ∈ S) : t.noncommProd f comm ∈ S := by
-  apply multiset_noncomm_prod_mem
+  apply multiset_noncommProd_mem
   intro y
   rw [Multiset.mem_map]
   rintro ⟨x, ⟨hx, rfl⟩⟩
   exact h x hx
-#align submonoid.noncomm_prod_mem Submonoid.noncomm_prod_mem
-#align add_submonoid.noncomm_sum_mem AddSubmonoid.noncomm_sum_mem
+#align submonoid.noncomm_prod_mem Submonoid.noncommProd_mem
+#align add_submonoid.noncomm_sum_mem AddSubmonoid.noncommSum_mem
 
 end Submonoid
 
@@ -464,6 +463,7 @@ theorem powers_one : powers (1 : M) = ⊥ :=
 def pow (n : M) (m : ℕ) : powers n :=
   (powersHom M n).mrangeRestrict (Multiplicative.ofAdd m)
 #align submonoid.pow Submonoid.pow
+#align submonoid.pow_coe Submonoid.pow_coe
 
 theorem pow_apply (n : M) (m : ℕ) : Submonoid.pow n m = ⟨n ^ m, m, rfl⟩ :=
   rfl
@@ -502,6 +502,8 @@ def powLogEquiv [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n
   right_inv := pow_log_eq_self
   map_mul' _ _ := by simp only [pow, map_mul, ofAdd_add, toAdd_mul]
 #align submonoid.pow_log_equiv Submonoid.powLogEquiv
+#align submonoid.pow_log_equiv_symm_apply Submonoid.powLogEquiv_symmApply
+#align submonoid.pow_log_equiv_apply Submonoid.powLogEquiv_apply
 
 theorem log_mul [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n ^ m)
     (x y : powers (n : M)) : log (x * y) = log x + log y :=
