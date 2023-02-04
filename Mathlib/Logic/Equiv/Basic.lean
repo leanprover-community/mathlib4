@@ -20,6 +20,7 @@ import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GeneralizeProofs
+import Mathlib.Tactic.Lift
 
 /-!
 # Equivalence between types
@@ -1209,6 +1210,7 @@ def sigmaSubtypeEquivOfSubset (p : α → Type v) (q : α → Prop) (h : ∀ x, 
 `Σ y : {y // p y}, {x // f x = y}` is equivalent to `α`. -/
 def sigmaSubtypeFiberEquiv {α β : Type _} (f : α → β) (p : β → Prop) (h : ∀ x, p (f x)) :
     (Σ y : Subtype p, { x : α // f x = y }) ≃ α :=
+  show _ ≃ _ from -- lean4#2073
   calc
     _ ≃ Σy : β, { x : α // f x = y } := sigmaSubtypeEquivOfSubset _ p fun _ ⟨x, h'⟩ => h' ▸ h x
     _ ≃ α := sigmaFiberEquiv f
@@ -1426,8 +1428,7 @@ theorem ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α)
   (ofBijective f hf).symm_apply_apply x
 #align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
 
--- Porting note: `lift` tactic is not implemented yet.
--- instance : CanLift (α → β) (α ≃ β) coeFn Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
+instance : CanLift (α → β) (α ≃ β) (↑) Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
 
 section
 

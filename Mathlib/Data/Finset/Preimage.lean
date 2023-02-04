@@ -18,7 +18,7 @@ import Mathlib.Algebra.BigOperators.Basic
 
 open Set Function
 
--- open BigOperators -- Porting note: notation is global for now
+open BigOperators
 
 universe u v w x
 

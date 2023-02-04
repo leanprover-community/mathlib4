@@ -102,6 +102,8 @@ def map (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) (x :
   ⟨f₁ x.1, f₂ x.1 x.2⟩
 #align sigma.map Sigma.map
 
+lemma map_mk (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) (x : α₁) (y : β₁ x) :
+    map f₁ f₂ ⟨x, y⟩ = ⟨f₁ x, f₂ x y⟩ := rfl
 end Sigma
 
 theorem sigma_mk_injective {i : α} : Function.Injective (@Sigma.mk α β i)
