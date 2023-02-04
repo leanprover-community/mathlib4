@@ -276,5 +276,3 @@ theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace 
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
 #align normal_of_paracompact_t2 normal_of_paracompact_t2
-
-#lint
