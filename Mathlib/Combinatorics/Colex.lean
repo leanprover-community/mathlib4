@@ -57,9 +57,7 @@ colex, colexicographic, binary
 variable {α : Type _}
 
 open Finset
-
--- Porting note: unnecessary locale
--- open BigOperators
+open BigOperators
 
 /-- We define this type synonym to refer to the colexicographic ordering on finsets
 rather than the natural subset ordering.
