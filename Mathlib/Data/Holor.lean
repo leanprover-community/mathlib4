@@ -51,14 +51,10 @@ namespace HolorIndex
 
 variable {ds₁ ds₂ ds₃ : List ℕ}
 
--- Porting note: added this doc
-/-- Remove elements which correspond to `ds₁`. -/
 def take : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₁
   | ds, is => ⟨List.take (length ds) is.1, forall₂_take_append is.1 ds ds₂ is.2⟩
 #align holor_index.take HolorIndex.take
 
--- Porting note: added this doc
-/-- Remove elements which correspond to `ds₂`. -/
 def drop : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₂
   | ds, is => ⟨List.drop (length ds) is.1, forall₂_drop_append is.1 ds ds₂ is.2⟩
 #align holor_index.drop HolorIndex.drop
@@ -67,14 +63,10 @@ theorem cast_type (is : List ℕ) (eq : ds₁ = ds₂) (h : Forall₂ (· < ·) 
     (cast (congr_arg HolorIndex eq) ⟨is, h⟩).val = is := by subst eq; rfl
 #align holor_index.cast_type HolorIndex.cast_type
 
--- Porting note: added this doc
-/-- Cast a index of a holor by associativity of the list. -/
 def assocRight : HolorIndex (ds₁ ++ ds₂ ++ ds₃) → HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) :=
   cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃))
 #align holor_index.assoc_right HolorIndex.assocRight
 
--- Porting note: added this doc
-/-- Cast a index of a holor by associativity of the list. -/
 def assocLeft : HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) → HolorIndex (ds₁ ++ ds₂ ++ ds₃) :=
   cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃).symm)
 #align holor_index.assoc_left HolorIndex.assocLeft
@@ -195,14 +187,10 @@ theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
   subst eq; rfl
 #align holor.cast_type Holor.cast_type
 
--- Porting note: added this doc
-/-- Cast a holor by associativity of the list. -/
 def assocRight : Holor α (ds₁ ++ ds₂ ++ ds₃) → Holor α (ds₁ ++ (ds₂ ++ ds₃)) :=
   cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃))
 #align holor.assoc_right Holor.assocRight
 
--- Porting note: added this doc
-/-- Cast a holor by associativity of the list. -/
 def assocLeft : Holor α (ds₁ ++ (ds₂ ++ ds₃)) → Holor α (ds₁ ++ ds₂ ++ ds₃) :=
   cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃).symm)
 #align holor.assoc_left Holor.assocLeft
