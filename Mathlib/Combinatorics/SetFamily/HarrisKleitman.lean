@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SetFamily.Compression.Down
-import Mathbin.Order.UpperLower.Basic
-import Mathbin.Data.Fintype.BigOperators
+import Mathlib.Combinatorics.SetFamily.Compression.Down
+import Mathlib.Order.UpperLower.Basic
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Harris-Kleitman inequality
@@ -37,23 +37,20 @@ open BigOperators
 variable {α : Type _} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
 
 theorem IsLowerSet.nonMemberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
-    IsLowerSet (𝒜.nonMemberSubfamily a : Set (Finset α)) := fun s t hts =>
-  by
+    IsLowerSet (𝒜.nonMemberSubfamily a : Set (Finset α)) := fun s t hts => by
   simp_rw [mem_coe, mem_non_member_subfamily]
   exact And.imp (h hts) (mt <| @hts _)
 #align is_lower_set.non_member_subfamily IsLowerSet.nonMemberSubfamily
 
 theorem IsLowerSet.memberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
-    IsLowerSet (𝒜.memberSubfamily a : Set (Finset α)) :=
-  by
+    IsLowerSet (𝒜.memberSubfamily a : Set (Finset α)) := by
   rintro s t hts
   simp_rw [mem_coe, mem_member_subfamily]
   exact And.imp (h <| insert_subset_insert _ hts) (mt <| @hts _)
 #align is_lower_set.member_subfamily IsLowerSet.memberSubfamily
 
 theorem IsLowerSet.memberSubfamily_subset_nonMemberSubfamily (h : IsLowerSet (𝒜 : Set (Finset α))) :
-    𝒜.memberSubfamily a ⊆ 𝒜.nonMemberSubfamily a := fun s =>
-  by
+    𝒜.memberSubfamily a ⊆ 𝒜.nonMemberSubfamily a := fun s => by
   rw [mem_member_subfamily, mem_non_member_subfamily]
   exact And.imp_left (h <| subset_insert _ _)
 #align is_lower_set.member_subfamily_subset_non_member_subfamily IsLowerSet.memberSubfamily_subset_nonMemberSubfamily
@@ -61,8 +58,7 @@ theorem IsLowerSet.memberSubfamily_subset_nonMemberSubfamily (h : IsLowerSet (�
 /-- **Harris-Kleitman inequality**: Any two lower sets of finsets correlate. -/
 theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset α)))
     (hℬ : IsLowerSet (ℬ : Set (Finset α))) (h𝒜s : ∀ t ∈ 𝒜, t ⊆ s) (hℬs : ∀ t ∈ ℬ, t ⊆ s) :
-    𝒜.card * ℬ.card ≤ 2 ^ s.card * (𝒜 ∩ ℬ).card :=
-  by
+    𝒜.card * ℬ.card ≤ 2 ^ s.card * (𝒜 ∩ ℬ).card := by
   induction' s using Finset.induction with a s hs ih generalizing 𝒜 ℬ
   · simp_rw [subset_empty, ← subset_singleton_iff', subset_singleton_iff] at h𝒜s hℬs
     obtain rfl | rfl := h𝒜s
