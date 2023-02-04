@@ -45,7 +45,9 @@ syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
 /-- An `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" ":=" num+
 /-- Options to `to_additive`. -/
-syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
+syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
+/-- Options to `to_additive`. -/
+syntax toAdditiveOption := toAdditiveParenthesizedOption <|> &"existing"
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest := toAdditiveOption* (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
@@ -121,6 +123,14 @@ register_option linter.toAdditiveGenerateName : Bool := {
   defValue := true
   descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically " ++
     "generates the user-given name" }
+
+/-- Linter to check whether the user correctly specified that the additive declaration already
+exists -/
+register_option linter.toAdditiveExisting : Bool := {
+  defValue := true
+  descr := "Linter used by `@[to_additive]` that checks whether the user correctly specified that
+    the additive declaration already exists" }
+
 
 /--
 An attribute that tells `@[to_additive]` that certain arguments of this definition are not
@@ -254,6 +264,11 @@ structure Config : Type where
   (or the `to_additive` attribute if it is added later),
   which we need for adding definition ranges. -/
   ref : Syntax
+  /-- An optional flag stating whether the additive declaration already exists.
+    If this flag is set but wrong about whether the additive declaration exists, `to_additive` will
+    raise a linter error.
+    Note: the linter will never raise an error for inductive types and structures. -/
+  existing : Option Bool := none
   deriving Repr
 
 variable [Monad M] [MonadOptions M] [MonadEnv M]
@@ -261,9 +276,8 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
 def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool :=
-  visit where
-  /-- same as `additiveTestAux` -/
+  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
+  /-- see `additiveTestAux` -/
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
   | _, x@(.app e a)       => Id.run do
@@ -840,12 +854,15 @@ def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs : Array Syntax := #[]
     let mut reorder := []
+    let mut existing := some false
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
         reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
+      | `(toAdditiveOption| existing) =>
+        existing := some true
       | _ => throwUnsupportedSyntax
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return { trace := trace.isSome
@@ -854,6 +871,7 @@ def elabToAdditive : Syntax → CoreM Config
              allowAutoName := false
              attrs
              reorder
+             existing
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
@@ -953,6 +971,13 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
   let tgt ← targetName cfg src
   let alreadyExists := (← getEnv).contains tgt
+  if cfg.existing == some !alreadyExists && !(← isInductive src) then
+    Linter.logLint linter.toAdditiveExisting cfg.ref <|
+      if alreadyExists then
+        m!"The additive declaration already exists. Please specify this explicitly using {
+          ""}`@[to_additive existing]`."
+      else
+        "The additive declaration doesn't exist. Please remove the option `existing`."
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
