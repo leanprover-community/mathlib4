@@ -14,9 +14,9 @@ import Mathlib.Topology.Homeomorph
 /-!
 # Continuous bundled maps
 
-In this file we define the type `continuous_map` of continuous bundled maps.
+In this file we define the type `ContinuousMap` of continuous bundled maps.
 
-We use the `fun_like` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 -/
 
@@ -26,9 +26,9 @@ open Function
 /-- The type of continuous maps from `α` to `β`.
 
 When possible, instead of parametrizing results over `(f : C(α, β))`,
-you should parametrize over `{F : Type*} [continuous_map_class F α β] (f : F)`.
+you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 
-When you extend this structure, make sure to extend `continuous_map_class`. -/
+When you extend this structure, make sure to extend `ContinuousMapClass`. -/
 @[protect_proj]
 structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
   toFun : α → β
@@ -40,9 +40,9 @@ notation "C(" α ", " β ")" => ContinuousMap α β
 
 section
 
-/-- `continuous_map_class F α β` states that `F` is a type of continuous maps.
+/-- `ContinuousMapClass F α β` states that `F` is a type of continuous maps.
 
-You should extend this class when you extend `continuous_map`. -/
+You should extend this class when you extend `ContinuousMap`. -/
 class ContinuousMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
   [TopologicalSpace β] extends FunLike F α fun _ => β where
   map_continuous (f : F) : Continuous f
@@ -112,7 +112,7 @@ theorem ext {f g : C(α, β)} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext _ _ h
 #align continuous_map.ext ContinuousMap.ext
 
-/-- Copy of a `continuous_map` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of a `ContinuousMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : C(α, β)) (f' : α → β) (h : f' = f) : C(α, β)
     where
@@ -146,12 +146,12 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   f.Continuous.ContinuousAt
 #align continuous_map.continuous_at ContinuousMap.continuousAt
 
-/-- Deprecated. Use `fun_like.congr_fun` instead. -/
+/-- Deprecated. Use `FunLike.congr_fun` instead. -/
 protected theorem congr_fun {f g : C(α, β)} (H : f = g) (x : α) : f x = g x :=
   H ▸ rfl
 #align continuous_map.congr_fun ContinuousMap.congr_fun
 
-/-- Deprecated. Use `fun_like.congr_arg` instead. -/
+/-- Deprecated. Use `FunLike.congr_arg` instead. -/
 protected theorem congr_arg (f : C(α, β)) {x y : α} (h : x = y) : f x = f y :=
   h ▸ rfl
 #align continuous_map.congr_arg ContinuousMap.congr_arg
@@ -433,7 +433,7 @@ def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
   ⟨e⟩
 #align homeomorph.to_continuous_map Homeomorph.toContinuousMap
 
-/-- `homeomorph.to_continuous_map` as a coercion. -/
+/-- `Homeomorph.toContinuousMap` as a coercion. -/
 instance : Coe (α ≃ₜ β) C(α, β) :=
   ⟨Homeomorph.toContinuousMap⟩
 
@@ -451,17 +451,16 @@ theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
   rfl
 #align homeomorph.coe_trans Homeomorph.coe_trans
 
-/-- Left inverse to a continuous map from a homeomorphism, mirroring `equiv.symm_comp_self`. -/
+/-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
 theorem symm_comp_to_continuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
   by rw [← coeTrans, self_trans_symm, coe_refl]
 #align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_to_continuousMap
 
-/-- Right inverse to a continuous map from a homeomorphism, mirroring `equiv.self_comp_symm`. -/
+/-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
 theorem to_continuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
   by rw [← coeTrans, symm_trans_self, coe_refl]
 #align homeomorph.to_continuous_map_comp_symm Homeomorph.to_continuousMap_comp_symm
 
 end Homeomorph
-
