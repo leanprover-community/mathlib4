@@ -50,13 +50,17 @@ variable {F α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
 -- Porting note: Why was Sup_hom translated to SupHomCat? Is SupₛHom not wanted?
 /-- The type of `⨆`-preserving functions from `α` to `β`. -/
 structure SupHomCat (α β : Type _) [SupSet α] [SupSet β] where
+  /-- The underlying function of a SupHomCat. -/
   toFun : α → β
+  /-- The proposition that a `SupHomCat` commutes with arbitrary suprema/joins. -/
   map_supₛ' (s : Set α) : toFun (supₛ s) = supₛ (toFun '' s)
 #align Sup_hom SupHomCat
 
 /-- The type of `⨅`-preserving functions from `α` to `β`. -/
 structure InfHomCat (α β : Type _) [InfSet α] [InfSet β] where
+  /-- The underlying function of an `InfHomCat`. -/
   toFun : α → β
+  /-- The proposition that a `InfHomCat` commutes with arbitrary infima/meets -/
   map_infₛ' (s : Set α) : toFun (infₛ s) = infₛ (toFun '' s)
 #align Inf_hom InfHomCat
 
@@ -64,6 +68,7 @@ structure InfHomCat (α β : Type _) [InfSet α] [InfSet β] where
 -/
 structure FrameHom (α β : Type _) [CompleteLattice α] [CompleteLattice β] extends
   InfTopHom α β where
+  /-- The proposition that frame homomorphisms commute with arbitrary suprema/joins. -/
   map_supₛ' (s : Set α) : toFun (supₛ s) = supₛ (toFun '' s)
 #align frame_hom FrameHom
 
@@ -71,6 +76,7 @@ structure FrameHom (α β : Type _) [CompleteLattice α] [CompleteLattice β] ex
 /-- The type of complete lattice homomorphisms from `α` to `β`. -/
 structure CompleteLatticeHom (α β : Type _) [CompleteLattice α] [CompleteLattice β] extends
   InfHomCat α β where
+  /-- The proposition that complete lattice homomorphism commutes with arbitrary suprema/joins. -/
   map_supₛ' (s : Set α) : toFun (supₛ s) = supₛ (toFun '' s)
 #align complete_lattice_hom CompleteLatticeHom
 
@@ -81,6 +87,7 @@ section
 You should extend this class when you extend `Sup_hom`. -/
 class SupHomClassCat (F : Type _) (α β : outParam <| Type _) [SupSet α] [SupSet β] extends
   FunLike F α fun _ => β where
+  /-- The proposition that members of `SupHomClassCat`s commute with arbitrary suprema/joins. -/
   map_supₛ (f : F) (s : Set α) : f (supₛ s) = supₛ (f '' s)
 #align Sup_hom_class SupHomClassCat
 
@@ -89,6 +96,7 @@ class SupHomClassCat (F : Type _) (α β : outParam <| Type _) [SupSet α] [SupS
 You should extend this class when you extend `Inf_hom`. -/
 class InfHomClassCat (F : Type _) (α β : outParam <| Type _) [InfSet α] [InfSet β] extends
   FunLike F α fun _ => β where
+  /-- The proposition that members of `InfHomClassCat`s commute with arbitrary infima/meets. -/
   map_infₛ (f : F) (s : Set α) : f (infₛ s) = infₛ (f '' s)
 #align Inf_hom_class InfHomClassCat
 
@@ -97,6 +105,7 @@ class InfHomClassCat (F : Type _) (α β : outParam <| Type _) [InfSet α] [InfS
 You should extend this class when you extend `frame_hom`. -/
 class FrameHomClass (F : Type _) (α β : outParam <| Type _) [CompleteLattice α]
   [CompleteLattice β] extends InfTopHomClass F α β where
+  /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_supₛ (f : F) (s : Set α) : f (supₛ s) = supₛ (f '' s)
 #align frame_hom_class FrameHomClass
 
@@ -105,6 +114,8 @@ class FrameHomClass (F : Type _) (α β : outParam <| Type _) [CompleteLattice �
 You should extend this class when you extend `complete_lattice_hom`. -/
 class CompleteLatticeHomClass (F : Type _) (α β : outParam <| Type _) [CompleteLattice α]
   [CompleteLattice β] extends InfHomClassCat F α β where
+  /-- The proposition that members of `CompleteLatticeHomClass` commute with arbitrary
+  suprema/joins. -/
   map_supₛ (f : F) (s : Set α) : f (supₛ s) = supₛ (f '' s)
 #align complete_lattice_hom_class CompleteLatticeHomClass
 
@@ -728,7 +739,6 @@ theorem coe_id : ⇑(CompleteLatticeHom.id α) = id :=
 #align complete_lattice_hom.coe_id CompleteLatticeHom.coe_id
 
 variable {α}
-
 @[simp]
 theorem id_apply (a : α) : CompleteLatticeHom.id α a = a :=
   rfl
