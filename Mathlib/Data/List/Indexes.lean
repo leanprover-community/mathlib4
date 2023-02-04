@@ -33,7 +33,7 @@ section MapIdx
 /-- Lean3 `map_with_index` helper function -/
 def map_with_index_core (f : ℕ → α → β) : ℕ → List α → List β
   | _, []      => []
-  | k, (a::as) => f k a::(map_with_index_core f (k+1) as)
+  | k, a :: as => f k a :: map_with_index_core f (k + 1) as
 
 /-- Given a function `f : ℕ → α → β` and `as : List α`, `as = [a₀, a₁, ...]`, returns the list
 `[f 0 a₀, f 1 a₁, ...]`. -/
@@ -258,7 +258,10 @@ def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start :
   foldl (fun a p ↦ f p.fst a p.snd) a <| enumFrom start bs
 #align list.foldl_with_index_aux_spec List.foldlIdxSpecₓ
 
-#noalign list.foldl_with_index_aux_spec_cons
+theorem foldlIdxSpec_cons (f : ℕ → α → β → α) (a b bs start) :
+    foldlIdxSpec f a (b :: bs) start = foldlIdxSpec f (f start a b) bs (start + 1) :=
+  rfl
+#align list.foldl_with_index_aux_spec_cons List.foldlIdxSpec_consₓ
 
 theorem foldlIdx_eq_foldlIdxSpec (f : ℕ → α → β → α) (a bs start) :
     foldlIdx f a bs start = foldlIdxSpec f a bs start := by
