@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module linear_algebra.basic
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
+! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -30,7 +30,6 @@ Many of the relevant definitions, including `module`, `submodule`, and `linear_m
 * Many constructors for (semi)linear maps
 * The kernel `ker` and range `range` of a linear map are submodules of the domain and codomain
   respectively.
-* The general linear group is defined to be the group of invertible linear maps from `M` to itself.
 
 See `linear_algebra.span` for the span of a set (as a submodule),
 and `linear_algebra.quotient` for quotients by submodules.
@@ -2732,12 +2731,12 @@ theorem map_symm_eq_iff (e : M ≃ₛₗ[τ₁₂] M₂) {K : Submodule R₂ M�
     calc
       map e (map e.symm K) = comap e.symm (map e.symm K) := map_equiv_eq_comap_symm _ _
       _ = K := comap_map_eq_of_injective e.symm.injective _
-      
+
   ·
     calc
       map e.symm (map e p) = comap e (map e p) := (comap_equiv_eq_map_symm _ _).symm
       _ = p := comap_map_eq_of_injective e.injective _
-      
+
 #align submodule.map_symm_eq_iff Submodule.map_symm_eq_iff
 
 theorem orderIsoMapComap_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submodule R M) :
@@ -2896,76 +2895,3 @@ theorem funCongrLeft_symm (e : m ≃ n) : (funCongrLeft R M e).symm = funCongrLe
 end LinearEquiv
 
 end FunLeft
-
-namespace LinearMap
-
-variable [Semiring R] [AddCommMonoid M] [Module R M]
-
-variable (R M)
-
-/-- The group of invertible linear maps from `M` to itself -/
-@[reducible]
-def GeneralLinearGroup :=
-  (M →ₗ[R] M)ˣ
-#align linear_map.general_linear_group LinearMap.GeneralLinearGroup
-
-namespace GeneralLinearGroup
-
-variable {R M}
-
-instance : CoeFun (GeneralLinearGroup R M) fun _ => M → M := by infer_instance
-
-/-- An invertible linear map `f` determines an equivalence from `M` to itself. -/
-def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
-  { f.val with
-    invFun := f.inv.toFun
-    left_inv := fun m => show (f.inv * f.val) m = m by erw [f.inv_val] <;> simp
-    right_inv := fun m => show (f.val * f.inv) m = m by erw [f.val_inv] <;> simp }
-#align linear_map.general_linear_group.to_linear_equiv LinearMap.GeneralLinearGroup.toLinearEquiv
-
-/-- An equivalence from `M` to itself determines an invertible linear map. -/
-def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M
-    where
-  val := f
-  inv := (f.symm : M →ₗ[R] M)
-  val_inv := LinearMap.ext fun _ => f.apply_symm_apply _
-  inv_val := LinearMap.ext fun _ => f.symm_apply_apply _
-#align linear_map.general_linear_group.of_linear_equiv LinearMap.GeneralLinearGroup.ofLinearEquiv
-
-variable (R M)
-
-/-- The general linear group on `R` and `M` is multiplicatively equivalent to the type of linear
-equivalences between `M` and itself. -/
-def generalLinearEquiv : GeneralLinearGroup R M ≃* M ≃ₗ[R] M
-    where
-  toFun := toLinearEquiv
-  invFun := ofLinearEquiv
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
-  map_mul' x y := by
-    ext
-    rfl
-#align linear_map.general_linear_group.general_linear_equiv LinearMap.GeneralLinearGroup.generalLinearEquiv
-
-@[simp]
-theorem generalLinearEquiv_to_linearMap (f : GeneralLinearGroup R M) :
-    (generalLinearEquiv R M f : M →ₗ[R] M) = f :=
-  by
-  ext
-  rfl
-#align linear_map.general_linear_group.general_linear_equiv_to_linear_map LinearMap.GeneralLinearGroup.generalLinearEquiv_to_linearMap
-
-@[simp]
-theorem coeFn_generalLinearEquiv (f : GeneralLinearGroup R M) :
-    ⇑(generalLinearEquiv R M f) = (f : M → M) :=
-  rfl
-#align linear_map.general_linear_group.coe_fn_general_linear_equiv LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv
-
-end GeneralLinearGroup
-
-end LinearMap
-
