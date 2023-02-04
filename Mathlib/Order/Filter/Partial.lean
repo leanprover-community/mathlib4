@@ -8,8 +8,8 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Basic
-import Mathbin.Data.Pfun
+import Mathlib.Order.Filter.Basic
+import Mathlib.Data.PFun
 
 /-!
 # `tendsto` for relations and partial functions
@@ -130,8 +130,7 @@ theorem rcomap_compose (r : Rel α β) (s : Rel β γ) : rcomap r ∘ rcomap s =
 #align filter.rcomap_compose Filter.rcomap_compose
 
 theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
-    Rtendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r :=
-  by
+    Rtendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
   rw [rtendsto_def]
   change (∀ s : Set β, s ∈ l₂.sets → r.core s ∈ l₁) ↔ l₁ ≤ rcomap r l₂
   simp [Filter.le_def, rcomap, Rel.mem_image]; constructor
@@ -189,8 +188,7 @@ def Rtendsto' (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
 #align filter.rtendsto' Filter.Rtendsto'
 
 theorem rtendsto'_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
-    Rtendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.Preimage s ∈ l₁ :=
-  by
+    Rtendsto' r l₁ l₂ ↔ ∀ s ∈ l₂, r.Preimage s ∈ l₁ := by
   unfold rtendsto' rcomap'; simp [le_def, Rel.mem_image]; constructor
   · exact fun h s hs => h _ _ hs Set.Subset.rfl
   · exact fun h s t ht => mem_of_superset (h t ht)
@@ -250,8 +248,7 @@ theorem tendsto_iff_ptendsto (l₁ : Filter α) (l₂ : Filter β) (s : Set α) 
 #align filter.tendsto_iff_ptendsto Filter.tendsto_iff_ptendsto
 
 theorem tendsto_iff_ptendsto_univ (l₁ : Filter α) (l₂ : Filter β) (f : α → β) :
-    Tendsto f l₁ l₂ ↔ Ptendsto (PFun.res f Set.univ) l₁ l₂ :=
-  by
+    Tendsto f l₁ l₂ ↔ Ptendsto (PFun.res f Set.univ) l₁ l₂ := by
   rw [← tendsto_iff_ptendsto]
   simp [principal_univ]
 #align filter.tendsto_iff_ptendsto_univ Filter.tendsto_iff_ptendsto_univ
@@ -275,15 +272,13 @@ theorem ptendsto'_def (f : α →. β) (l₁ : Filter α) (l₂ : Filter β) :
 #align filter.ptendsto'_def Filter.ptendsto'_def
 
 theorem ptendsto_of_ptendsto' {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} :
-    Ptendsto' f l₁ l₂ → Ptendsto f l₁ l₂ :=
-  by
+    Ptendsto' f l₁ l₂ → Ptendsto f l₁ l₂ := by
   rw [ptendsto_def, ptendsto'_def]
   exact fun h s sl₂ => mem_of_superset (h s sl₂) (PFun.preimage_subset_core _ _)
 #align filter.ptendsto_of_ptendsto' Filter.ptendsto_of_ptendsto'
 
 theorem ptendsto'_of_ptendsto {f : α →. β} {l₁ : Filter α} {l₂ : Filter β} (h : f.Dom ∈ l₁) :
-    Ptendsto f l₁ l₂ → Ptendsto' f l₁ l₂ :=
-  by
+    Ptendsto f l₁ l₂ → Ptendsto' f l₁ l₂ := by
   rw [ptendsto_def, ptendsto'_def]
   intro h' s sl₂
   rw [PFun.preimage_eq]
