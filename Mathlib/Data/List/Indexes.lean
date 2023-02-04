@@ -164,14 +164,11 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
 
 theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = l.enum.map (Function.uncurry f) := by
+  rw [new_def_eq_old_def]
   induction' l with hd tl hl generalizing f
-  · simp only [mapIdx_nil, map]
-  · rw [new_def_eq_old_def]
-    have old_hl : ∀ (f : ℕ → α → β), map_with_index f tl = map (uncurry f) (enum tl) := by
-      intro f; rw [← hl f, new_def_eq_old_def]
-    rw [map_with_index, map_with_index_core, map_with_index_core_eq, old_hl]
-    simp only [zero_add, enum_eq_zip_range, map_uncurry_zip_eq_zipWith, map, uncurry_apply_pair,
-      map_enumFrom_eq_zipWith]
+  · rfl
+  · rw [map_with_index, map_with_index_core, map_with_index_core_eq, hl]
+    simp [enum_eq_zip_range, map_uncurry_zip_eq_zipWith]
 #align list.map_with_index_eq_enum_map List.mapIdx_eq_enum_map
 
 @[simp]
