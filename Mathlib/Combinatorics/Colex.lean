@@ -123,7 +123,8 @@ theorem hom_lt_iff {β : Type _} [LinearOrder α] [DecidableEq β] [Preorder β]
   constructor
   · rintro ⟨k, z, q, k', _, rfl⟩
     exact
-      ⟨k', @fun x hx => by simpa [h₁.injective.eq_iff] using z (h₁ hx), fun t => q _ t rfl, ‹k' ∈ B›⟩
+      ⟨k', @fun x hx => by
+        simpa [h₁.injective.eq_iff] using z (h₁ hx), fun t => q _ t rfl, ‹k' ∈ B›⟩
   rintro ⟨k, z, ka, _⟩
   refine' ⟨f k, @fun x hx => _, _, k, ‹k ∈ B›, rfl⟩
   · constructor
