@@ -51,6 +51,7 @@ def IsSelfAdjoint [Star R] (x : R) : Prop :=
 
 /-- An element of a star monoid is normal if it commutes with its adjoint. -/
 class IsStarNormal [Mul R] [Star R] (x : R) : Prop where
+  /-- A normal element of a star monoid commutes with its adjoint. -/
   star_comm_self : Commute (star x) x
 #align is_star_normal IsStarNormal
 
@@ -365,11 +366,14 @@ theorem val_rat_smul (x : selfAdjoint R) (a : ℚ) : ↑(a • x) = a • (x : R
   rfl
 #align self_adjoint.coe_rat_smul selfAdjoint.val_rat_smul
 
+-- Porting note: This takes too long. lean#2003?
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 800000 in
 instance : Field (selfAdjoint R) :=
-  Function.Injective.field _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
+  Function.Injective.field (↑) Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub val_inv val_div
     (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul val_rat_smul val_pow val_zpow (fun _ => rfl)
-    (fun _ => rfl) val_rat_cast
+    (fun _ => rfl) val_ratCast
 
 end Field
 
