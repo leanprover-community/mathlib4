@@ -156,6 +156,10 @@ theorem specializes_iff_closure_subset : x ⤳ y ↔ closure ({y} : Set X) ⊆ c
 alias specializes_iff_closure_subset ↔ Specializes.closure_subset _
 #align specializes.closure_subset Specializes.closure_subset
 
+-- porting note: new lemma
+theorem specializes_iff_clusterPt : x ⤳ y ↔ ClusterPt y (pure x) :=
+  (specializes_TFAE x y).out 0 6
+
 theorem Filter.HasBasis.specializes_iff {ι} {p : ι → Prop} {s : ι → Set X}
     (h : (𝓝 y).HasBasis p s) : x ⤳ y ↔ ∀ i, p i → x ∈ s i :=
   specializes_iff_pure.trans h.ge_iff

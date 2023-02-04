@@ -231,8 +231,12 @@ theorem nhdsWithin_eq_nhdsWithin {a : α} {s t u : Set α} (h₀ : a ∈ s) (h�
   rw [nhdsWithin_restrict t h₀ h₁, nhdsWithin_restrict u h₀ h₁, h₂]
 #align nhds_within_eq_nhds_within nhdsWithin_eq_nhdsWithin
 
+-- porting note: new lemma; todo: make it `@[simp]`
+theorem nhdsWithin_eq_nhds {a : α} {s : Set α} : 𝓝[s] a = 𝓝 a ↔ s ∈ 𝓝 a :=
+  inf_eq_left.trans le_principal_iff
+
 theorem IsOpen.nhdsWithin_eq {a : α} {s : Set α} (h : IsOpen s) (ha : a ∈ s) : 𝓝[s] a = 𝓝 a :=
-  inf_eq_left.2 <| le_principal_iff.2 <| IsOpen.mem_nhds h ha
+  nhdsWithin_eq_nhds.2 <| h.mem_nhds ha
 #align is_open.nhds_within_eq IsOpen.nhdsWithin_eq
 
 theorem preimage_nhds_within_coinduced {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
@@ -596,6 +600,13 @@ theorem continuousOn_iff_continuous_restrict {f : α → β} {s : Set α} :
   intro h x xs
   exact (continuousWithinAt_iff_continuousAt_restrict f xs).mpr (h ⟨x, xs⟩)
 #align continuous_on_iff_continuous_restrict continuousOn_iff_continuous_restrict
+
+-- porting note: 2 new lemmas
+alias continuousOn_iff_continuous_restrict ↔ ContinuousOn.restrict _
+
+theorem ContinuousOn.restrict_mapsTo {f : α → β} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
+    (ht : MapsTo f s t) : Continuous (ht.restrict f s t) :=
+  hf.restrict.codRestrict _
 
 theorem continuousOn_iff' {f : α → β} {s : Set α} :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
