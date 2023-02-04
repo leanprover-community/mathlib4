@@ -31,9 +31,7 @@ for some ideas.
 
 open Function OrderDual
 
--- Porting note: Fix once big operators are localised again.
--- open BigOperators FinsetInterval
-open FinsetInterval
+open BigOperators FinsetInterval
 
 variable {ι α : Type _}
 

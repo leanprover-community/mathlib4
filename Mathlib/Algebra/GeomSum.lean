@@ -40,8 +40,7 @@ variable {α : Type u}
 
 open Finset MulOpposite
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 section Semiring
 
