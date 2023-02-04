@@ -63,6 +63,7 @@ class like `ParacompactSpace.{u v}`. Due to lemma `precise_refinement` below, ev
 `s : α → Set X` indexed on `α : Type v` has a *precise* locally finite refinement, i.e., a locally
 finite refinement `t : α → Set X` indexed on the same type such that each `∀ i, t i ⊆ s i`. -/
 class ParacompactSpace (X : Type v) [TopologicalSpace X] : Prop where
+  /-- Every open cover of a paracompact space assumes a locally finite refinement. -/
   locallyFinite_refinement :
     ∀ (α : Type v) (s : α → Set X) (_ : ∀ a, IsOpen (s a)) (_ : (⋃ a, s a) = univ),
       ∃ (β : Type v) (t : β → Set X) (_ : ∀ b, IsOpen (t b)) (_ : (⋃ b, t b) = univ),
@@ -186,15 +187,17 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
         ⟨interior (K (K'.find x + 3)),
           IsOpen.mem_nhds isOpen_interior (K.subset_interior_succ _ (hKcov x).1), _⟩
       have : (⋃ k ≤ K'.find x + 2, range <| Sigma.mk k : Set (Σn, T' n)).Finite :=
-        (finite_le_nat _).bunionᵢ fun k hk ↦ finite_range _
+        (finite_le_nat _).bunionᵢ fun k _ ↦ finite_range _
       apply this.subset
       rintro ⟨k, c, hc⟩
       simp only [mem_unionᵢ, mem_setOf_eq, mem_image, Subtype.coe_mk]
       rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
       refine' ⟨k, _, ⟨c, hc⟩, rfl⟩
       have := (mem_compl_iff _ _).1 (hr k c hxB)
-      contrapose! this with hnk
-      exact K.subset hnk (interior_subset hxK)
+      revert this
+      contrapose!
+      simp only [ge_iff_le, not_le]
+      exact fun hnk ↦ K.subset hnk (interior_subset hxK)
 #align refinement_of_locally_compact_sigma_compact_of_nhds_basis_set refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set
 
 /-- Let `X` be a locally compact sigma compact Hausdorff topological space. Suppose that for each
