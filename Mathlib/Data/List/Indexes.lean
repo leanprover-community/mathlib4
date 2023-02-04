@@ -10,7 +10,6 @@ Authors: Jannis Limperg
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Range
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Lemmas about List.*Idx functions.
@@ -72,17 +71,6 @@ theorem list_reverse_induction (p : List α → Prop) (base : p [])
   · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
 
 -- Porting note: new theorem.
-theorem length_eq_0_iff_nil : ∀ {α : Type} (l : List α), length l = 0 ↔ l = [] := by
-  intros α l
-  cases l
-  simp only [length_nil]
-  simp only [length_cons]
-
--- Porting note: new theorem.
-theorem nil_append_nil : ∀ {α : Type} (l₁ l₂ : List α), l₁ ++ l₂ = [] ↔ l₁ = [] ∧ l₂ = [] := by
-  simp only [append_eq_nil, forall_const]
-
--- Porting note: new theorem.
 theorem map_with_index_core_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁ l₂ : List α),
   map_with_index_core f n (l₁ ++ l₂) =
   map_with_index_core f n l₁ ++ map_with_index_core f (n + l₁.length) l₂ := by
@@ -138,10 +126,6 @@ theorem mapIdx.go_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Arra
     simp only [Nat.add_succ, add_zero, Nat.add_comm]
 
 -- Porting note: new theorem.
-theorem mapIdx_length : ∀ (f : ℕ → α → β) (l : List α), length (mapIdx f l) = length l := by
-  intros; simp only [mapIdx]; rw [mapIdx.go_length]; rfl
-
--- Porting note: new theorem.
 theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
   intros f l e
@@ -157,9 +141,6 @@ theorem new_def_eq_old_def: ∀ (f : ℕ → α → β) (l : List α), l.mapIdx 
   · rfl
   · intro l e h
     rw [map_with_index_append, mapIdx_append_one, h]
-
--- Porting note: new theorem.
-example : ∀ (f : α → β) (a b : α), (a = b → f a = f b) := by simp?
 
 @[local simp]
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
@@ -372,7 +353,7 @@ theorem mapIdxMAux'_eq_mapIdxM.go {α} (f : ℕ → α → m PUnit) (as : List �
     generalize (f (Array.size arr) head) = head
     let arr_1 := arr.push ⟨⟩
     have : arr_1.size = arr.size + 1 := by exact (Array.size_push arr ⟨⟩)
-    rw [←this, ih arr_1]
+    rw [← this, ih arr_1]
     simp only [seqRight_eq, map_eq_pure_bind, const_apply, seq_pure,
       LawfulMonad.bind_assoc, pure_bind, id_eq]
 #align list.mmap_with_index'_aux_eq_mmap_with_index_aux List.mapIdxMAux'_eq_mapIdxM.go
