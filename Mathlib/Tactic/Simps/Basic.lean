@@ -442,8 +442,8 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
     toPrint ++
       if nondefaults.isEmpty then [] else
       [("No lemmas are generated for the projections: " : MessageData) ++ print2 ++ "."]
-  let toPrint := MessageData.joinSep toPrint ("\n        > " : MessageData)
-  m! "[simps] > {pref} {str}:\n        > {toPrint}"
+  let toPrint := MessageData.joinSep toPrint ("\n" : MessageData)
+  m! "{pref} {str}:\n{toPrint}"
 
 /-- Auxiliary function of `getCompositeOfProjections`. -/
 partial def getCompositeOfProjectionsAux (stx : Syntax) (str : Name) (proj : String) (x : Expr)
@@ -539,8 +539,7 @@ def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
   match env.find? customName with
   | some d@(.defnInfo _) =>
     let customProj := d.instantiateValueLevelParams! rawUnivs
-    trace[simps.verbose] "[simps] > found custom projection for {proj.newName.1}:\n        > {
-      customProj}"
+    trace[simps.verbose] "found custom projection for {proj.newName.1}:{indentExpr customProj}"
     match (← MetaM.run' $ isDefEq customProj rawExpr) with
     | true =>
       discard <| MetaM.run' <| TermElabM.run' <| addTermInfo proj.newName.2 <|
@@ -551,13 +550,13 @@ def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
       -- (in Lean 3) just stating that the expressions are different is quite unhelpful
       let customProjType ← MetaM.run' (inferType customProj)
       let rawExprType ← MetaM.run' (inferType rawExpr)
-      if (← MetaM.run' (isDefEq customProjType rawExprType)) then throwError
-        "Invalid custom projection:\n  {customProj}\n{""
-        }Expression is not definitionally equal to {rawExpr}" else throwError
-        "Invalid custom projection:\n  {customProj}\n{""
-        }Expression has different type than {str ++ proj.origName.1}. Given type:\n{""
-        }  {customProjType}\nExpected type:\n  {rawExprType}\n{""
-        }Note: make sure order of implicit arguments is exactly the same."
+      if (← MetaM.run' (isDefEq customProjType rawExprType)) then
+        throwError "Invalid custom projection:{indentExpr customProj}\n{""
+          }Expression is not definitionally equal to {indentExpr rawExpr}" else
+        throwError "Invalid custom projection:\n  {customProj}\n{""
+          }Expression has different type than {str ++ proj.origName.1}. Given type:{
+          indentExpr customProjType}\nExpected type:{indentExpr rawExprType
+          }\nNote: make sure order of implicit arguments is exactly the same."
   | _ =>
     discard <| MetaM.run' <| TermElabM.run' <| addTermInfo proj.newName.2 rawExpr
     pure {proj with expr? := some rawExpr, projNrs := nrs}
@@ -587,18 +586,18 @@ def simpsResolveNotationClass (projs : Array ParsedProjectionData)
       trace[simps.debug] "info: ({relevantProj}, {rawExprLambda})"
       pure (relevantProj, rawExprLambda)
   let some pos := projs.findIdx? fun x ↦ some x.origName.1 == relevantProj | do
-    trace[simps.verbose] "[simps] > Warning: The structure has an instance for {className}, {""
+    trace[simps.verbose] "Warning: The structure has an instance for {className}, {""
         }but it is not definitionally equal to any projection."
     failure -- will be caught by `simpsFindAutomaticProjections`
-  trace[simps.debug] "The raw projection is:\n {rawExprLambda}"
+  trace[simps.debug] "The raw projection is:{indentExpr rawExprLambda}"
   projs.mapIdxM fun nr x ↦ do
     unless nr.1 = pos do return x
     if x.isChanged then
-      trace[simps.verbose] "[simps] > Warning: Projection {relevantProj} is definitionally equal to{
+      trace[simps.verbose] "Warning: Projection {relevantProj} is definitionally equal to{
           indentExpr rawExprLambda}\nHowever, this is not used since a custom simps projection is {
             ""}specified by the user."
       return x
-    trace[simps.verbose] "[simps] > Using notation from {className} for projection {relevantProj}."
+    trace[simps.verbose] "Using notation from {className} for projection {relevantProj}."
     return { x with expr? := some rawExprLambda }
 
 /-- Auxilliary function for `simpsGetRawProjections`.
@@ -671,7 +670,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
       trace[simps.verbose]
         projectionsInfo data.2.toList "Already found projection information for structure" str
     return data
-  trace[simps.verbose] "[simps] > generating projection information for structure {str}."
+  trace[simps.verbose] "generating projection information for structure {str}."
   trace[simps.debug] "Applying the rules {rules}."
   let some strDecl := env.find? str
     | throwError "No such declaration {str}." -- maybe unreachable
@@ -689,7 +688,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
     | false => pure proj
   trace[simps.verbose] projectionsInfo projs.toList "generated projections for" str
   simpsStructure.add str (rawLevels, projs)
-  trace[simps.debug] "Generated raw projection data:\n{(rawLevels, projs)}}"
+  trace[simps.debug] "Generated raw projection data:{indentD m!"(rawLevels, projs)"}}"
   pure (rawLevels, projs)
 
 library_note "custom simps projection"/--
@@ -823,7 +822,7 @@ variable (ref : Syntax) (univs : List Name)
   `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
 def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     (cfg : Simps.Config) : MetaM Unit := do
-  trace[simps.debug] "Planning to add the equality\n        > {lhs} = ({rhs} : {type})"
+  trace[simps.debug] "Planning to add the equality{indentD m!"{lhs} = ({rhs} : {type})"}"
   let env ← getEnv
   if (env.find? declName).isSome then -- diverging behavior from Lean 3
     throwError "simps tried to add lemma {declName} to the environment, but it already exists."
@@ -834,12 +833,12 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
     let ctx ← mkSimpContext
     let (rhs2, _) ← dsimp rhs ctx
     if rhs != rhs2 then
-      trace[simps.debug] "`dsimp` simplified rhs to\n        > {rhs2}"
+      trace[simps.debug] "`dsimp` simplified rhs to{indentExpr rhs2}"
     else
       trace[simps.debug] "`dsimp` failed to simplify rhs"
     let (result, _) ← simp rhs2 ctx
     if rhs2 != result.expr then
-      trace[simps.debug] "`simp` simplified rhs to\n        > {result.expr}"
+      trace[simps.debug] "`simp` simplified rhs to{indentExpr result.expr}"
     else
       trace[simps.debug] "`simp` failed to simplify rhs"
     rhs := result.expr
@@ -847,7 +846,7 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
-  trace[simps.verbose] "[simps] > adding projection {declName}:\n        > {declType}"
+  trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
   try
     addDecl <| .thmDecl {
       name := declName
@@ -981,14 +980,14 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
   let projInfo ← simpsGetProjectionExprs tgt rhsWhnf cfg
-  trace[simps.debug] "Raw projection information:\n  {projInfo}"
+  trace[simps.debug] "Raw projection information:{indentD m!"{projInfo}"}"
   -- If we are in the middle of a composite projection.
   if let idx :: rest := toApply then
     let some ⟨newRhs, _⟩ := projInfo[idx]?
       | throwError "unreachable: index of composite projection is out of bounds."
     let newType ← inferType newRhs
-    trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current {""
-      }lhs:\n        >   {lhsAp}"
+    trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:{
+      indentExpr lhsAp}"
     return ← simpsAddProjections nm newType lhsAp newRhs newArgs false cfg todo rest
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
@@ -1005,7 +1004,8 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
     throwError "Invalid simp lemma {simpLemma}. Structure {str} does not have projection {""
       }{neededProj}.\nThe known projections are:\n  {projs}\nYou can also see this information {""
       }by running\n  `initialize_simps_projections? {str}`.\nNote: these projection names might {""
-      }be customly defined for `simps`, and differ from the projection names of the structure."
+      }be customly defined for `simps`, and could differ from the projection names of the {""
+      }structure."
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
@@ -1014,7 +1014,7 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
     let newName := updateName nm proj.getString isPrefix
-    trace[simps.debug] "Recursively add projections for:\n        >  {newLhs}"
+    trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
     simpsAddProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
   return if addThisProjection then nms.push nm else nms
 

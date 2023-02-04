@@ -29,11 +29,7 @@ and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 -/
 
-open Lean
-open Lean.Meta
-open Lean.Elab
-open Lean.Elab.Command
-open Std Tactic.NormCast
+open Lean Meta Elab Command Std Tactic.NormCast
 
 /-- The  `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
@@ -43,20 +39,19 @@ syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
 syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
+/-- An `attr := ...` option for `to_additive`. -/
+syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
+/-- An `reorder := ...` option for `to_additive`. -/
+syntax toAdditiveReorderOption := &"reorder" ":=" num+
+/-- Options to `to_additive`. -/
+syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
 /-- Remaining arguments of `to_additive`. -/
-syntax to_additiveRest := ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")?
-  ("(" &"reorder" ":=" num+ ")")? (ppSpace ident)? (ppSpace str)?
+syntax toAdditiveRest := toAdditiveOption* (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
-syntax (name := to_additive) "to_additive" "?"? to_additiveRest : attr
+syntax (name := to_additive) "to_additive" "?"? toAdditiveRest : attr
 
 /-- The `to_additive` attribute. -/
-macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $rest)
-/-- The `to_additive` attribute. -/
-macro "to_additive" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpace str)? : attr =>
-  `(attr| to_additive (attr :=) (reorder := $[$ns]*) $[$x]? $[$y]?)
-/-- The `to_additive` attribute. -/
-macro "to_additive?" "(" &"reorder" ":=" ns:num+ ")" x:(ppSpace ident)? y:(ppSpace str)? : attr =>
-  `(attr| to_additive ? (attr :=) (reorder := $[$ns]*) $[$x]? $[$y]?)
+macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
@@ -71,8 +66,6 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 -- todo: we want something like
 -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
 .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
-
-
 
 /--
 This function takes a String and splits it into separate parts based on the following
@@ -209,9 +202,13 @@ def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
-def insertTranslation (src tgt : Name) : CoreM Unit := do
+def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) src then
-    throwError "The translation {src} ↦ {tgt'} already exists"
+    if failIfExists then
+      throwError "The translation {src} ↦ {tgt'} already exists"
+    else
+      trace[to_additive] "The translation {src} ↦ {tgt'} already exists"
+      return
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
 
@@ -243,12 +240,17 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
-private def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
+def additiveTestAux (findTranslation? : Name → Option Name)
+  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool :=
+  visit where
+  /-- same as `additiveTestAux` -/
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
-  | _, .app e a           => Id.run do
-      if visit true e then
+  | _, x@(.app e a)       => Id.run do
+      if !visit true e then
+        return false
+      -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
+      if x.isConstantApplication then
         return true
       if let some n := e.getAppFn.constName? then
         if let some l := ignore n then
@@ -266,7 +268,7 @@ private def additiveTestAux (findTranslation? : Name → Option Name)
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
 constants if `additiveTest` applied to their first argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
-e.g. `Nat` or `ℝ × α`.
+e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`.
 -/
 def additiveTest (findTranslation? : Name → Option Name)
@@ -305,16 +307,21 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
   let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
   return aux
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
-      (fixedNumeralAttr.find? env) isRelevant e
+      (fixedNumeralAttr.find? env) isRelevant (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
-    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
+    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
+    if trace then
+      dbg_trace s!"replacing at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
+      if trace && n₀ != n₁ then
+        dbg_trace s!"changing {n₀} to {n₁}"
       let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
@@ -332,22 +339,33 @@ where /-- Implementation of `applyReplacementFun`. -/
             let gf := r g.appFn!
             let ga := r g.appArg!
             let e₂ := mkApp2 gf x ga
+            if trace then
+              dbg_trace s!"reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter: {e₂}"
             return some e₂
         /- Test if the head should not be replaced. -/
         let c1 := isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 := additiveTest findTranslation? ignore x
+        if trace && c1 && c2 && c3 then
+          dbg_trace s!"{x} doesn't contain a fixed type, so we will change {nm}"
         if c1 && c2 && not c3 then
+          if trace then
+            dbg_trace s!"{x} contains a fixed type, so {nm} is not changed"
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
         let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
         if !shouldTranslateNumeral findTranslation? ignore fixedNumeral nm firstArg then
+          if trace then
+            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
+      if trace then
+        dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+          }replace type with {n₁}"
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
@@ -435,6 +453,42 @@ def isInternal' (declName : Name) : Bool :=
   | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
   | _        => true
 
+/-- Find the target name of `pre` and all created auxiliary declarations. -/
+def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
+  /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
+  if let some post := pre.isPrefixOf? src then
+    return tgt_pre ++ post
+  /- This covers equation lemmas (for other declarations). -/
+  else if let some post := privateToUserName? src then
+    match findTranslation? env post.getPrefix with
+    -- this is an equation lemma for a declaration without `to_additive`. We will skip this.
+    | none => return src
+    -- this is an equation lemma for a declaration with `to_additive`. We will additivize this.
+    -- Note: if this errors we could do this instead by calling `getEqnsFor?`
+    | some addName => return src.updatePrefix <| mkPrivateName env addName
+  -- Note: this additivizes lemmas generated by `simp`.
+  -- Todo: we do not currently check whether such lemmas actually should be additivized.
+  else if let some post := env.mainModule ++ `_auxLemma |>.isPrefixOf? src then
+    return env.mainModule ++ `_auxAddLemma ++ post
+  else
+    throwError "internal @[to_additive] error."
+
+/-- Returns a `NameSet` of all auxiliary constants in `e` that might have been generated
+when adding `pre` to the environment.
+Examples include `pre.match_5`, `Mathlib.MyFile._auxLemma.3` and
+`_private.Mathlib.MyFile.someOtherNamespace.someOtherDeclaration._eq_2`.
+The last two examples may or may not have been generated by this declaration.
+The last example may or may not be the equation lemma of a declaration with the `@[to_additive]`
+attribute. We will only translate it has the `@[to_additive]` attribute.
+-/
+def findAuxDecls (e : Expr) (pre mainModule : Name) : NameSet :=
+let auxLemma := mainModule ++ `_auxLemma
+e.foldConsts ∅ fun n l ↦
+  if n.getPrefix == pre || n.getPrefix == auxLemma || isPrivateName n then
+    l.insert n
+  else
+    l
+
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
@@ -454,24 +508,21 @@ partial def transformDeclAux
       pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
       }Workaround: move {src} to a different namespace."
   -- we find the additive name of `src`
-  let tgt := src.mapPrefix (fun n ↦ if n == pre then some tgt_pre else
-    if n == mkPrivateName env pre then some <| mkPrivateName env tgt_pre else
-    -- note: this is only a partial solution to dealing with lemmas generated by the
-    -- `simp` attribute, and should be removed/revised when we have a full solution
-    if n == env.mainModule ++ `_auxLemma then env.mainModule ++ `_auxAddLemma else none)
-  if tgt == src then
-    throwError "@[to_additive] doesn't know how to translate {src}, since the additive version has {
-      ""}the same name. This is a bug in @[to_additive]."
-  -- we skip if we already transformed this declaration before
+  let tgt ← findTargetName env src pre tgt_pre
+  -- we skip if we already transformed this declaration before.
   if env.contains tgt then
+    if tgt == src then
+      -- Note: this can happen for equation lemmas of declarations without `@[to_additive]`.
+      trace[to_additive_detail] "Auxiliary declaration {src} will be translated to itself."
+    else
+      trace[to_additive_detail] "Already visited {tgt} as translation of {src}."
     return
   let srcDecl ← getConstInfo src
-  let prefixes : NameSet := .ofList [pre, env.mainModule ++ `_auxLemma]
   -- we first transform all auxiliary declarations generated when elaborating `pre`
-  for n in srcDecl.type.listNamesWithPrefixes prefixes do
+  for n in findAuxDecls srcDecl.type pre env.mainModule do
     transformDeclAux cfg pre tgt_pre n
   if let some value := srcDecl.value? then
-    for n in value.listNamesWithPrefixes prefixes do
+    for n in findAuxDecls value pre env.mainModule do
       transformDeclAux cfg pre tgt_pre n
   -- if the auxilliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot find the additive name.
@@ -605,7 +656,7 @@ def copyMetaData (attrs : Array Syntax) (src tgt : Name) : CoreM Unit := do
   /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
   definitions. If we don't do that, the equation lemma for `src` might be generated later
   when doing a `rw`, but it won't be generated for `tgt`. -/
-  additivizeLemmas (desc := "equation lemmas") src tgt fun nm ↦
+  additivizeLemmas src tgt "equation lemmas" fun nm ↦
     (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
   MetaM.run' <| Elab.Term.TermElabM.run' <| applyAttributes attrs `to_additive src tgt
 
@@ -673,7 +724,7 @@ Note: `guessName` capitalizes first element of the output according to
 capitalization of the input. Input and first element should therefore be lower-case,
 2nd element should be capitalized properly.
 -/
-private def nameDict : String → List String
+def nameDict : String → List String
 | "one"         => ["zero"]
 | "mul"         => ["add"]
 | "smul"        => ["vadd"]
@@ -801,7 +852,9 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
 
-private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
+/-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
+  will insert translations from `src.a_i` to `tgt.b_i`. -/
+def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
   if srcFields.size != tgtFields.size then
@@ -825,15 +878,25 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
     | some (ConstantInfo.inductInfo {ctors := ctors, ..}) => return ctors.toArray.map (·.getString)
     | _ => pure #[]
 
-private def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[?%$trace]? $[(attr := $stx?,*)]?
-    $[(reorder := $[$reorder:num]*)]? $[$tgt]? $[$doc]?) =>
+/-- Elaboration of the configuration options for `to_additive`. -/
+def elabToAdditive : Syntax → CoreM Config
+  | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+    let mut attrs : Array Syntax := #[]
+    let mut reorder := []
+    for stx in opts do
+      match stx with
+      | `(toAdditiveOption| (attr := $[$stxs],*)) =>
+        attrs := attrs ++ stxs
+      | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
+        reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
+      | _ => throwUnsupportedSyntax
+    trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return { trace := trace.isSome
              tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
              doc := doc.bind (·.raw.isStrLit?)
              allowAutoName := false
-             attrs := match stx? with | some stx => stx | none => #[]
-             reorder := reorder |>.map (·.toList.map (·.raw.isNatLit?.get!)) |>.getD []
+             attrs
+             reorder
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
@@ -853,7 +916,7 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  insertTranslation src tgt
+  insertTranslation src tgt alreadyExists
   if alreadyExists then
     -- since `tgt` already exists, we just need to copy metadata and
     -- add translations `src.x ↦ tgt.x'` for any subfields.
@@ -939,7 +1002,7 @@ mapped to its additive version. The basic heuristic is
 
 Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
-  first argument is `Nat`, an identifier not applied to any arguments.
+  first argument is `ℕ`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
   `prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
@@ -958,7 +1021,7 @@ There are some exceptions to this heuristic:
 * If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
   For example, `cont_mdiff_map` has attribute `@[to_additive_ignore_args 21]`, which means
-  that its 21st argument `(n : WithTop Nat)` can contain `Nat`
+  that its 21st argument `(n : WithTop Nat)` can contain `ℕ`
   (usually in the form `Top.top Nat ...`) and still be additivized.
   So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
 
@@ -974,7 +1037,7 @@ mismatch error.
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
     multiplicative structure (and not some indexing type)?
     The reason is that `@[to_additive]` doesn't additivize declarations if their first argument
-    contains fixed types like `Nat` or `ℝ`. See section Heuristics.
+    contains fixed types like `ℕ` or `ℝ`. See section Heuristics.
     If the first argument is not the argument with a multiplicative type-class, `@[to_additive]`
     should have automatically added the attribute `@[to_additive_relevant_arg]` to the declaration.
     You can test this by running the following (where `d` is the full name of the declaration):
@@ -987,7 +1050,7 @@ mismatch error.
     multiplicative structure.
 * Option 2: It didn't additivize a declaration that should be additivized.
   This happened because the heuristic applied, and the first argument contains a fixed type,
-  like `Nat` or `ℝ`. Solutions:
+  like `ℕ` or `ℝ`. Solutions:
   * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
     attribute.
   * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
