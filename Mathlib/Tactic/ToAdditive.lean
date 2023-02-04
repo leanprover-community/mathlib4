@@ -596,79 +596,6 @@ def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
   for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
     insertTranslation srcLemma tgtLemma
 
-/-- Apply attributes to the multiplicative and additive declarations. -/
-def applyAttributes (attrs : Array Syntax) (thisAttr src tgt : Name) : TermElabM Unit := do
-  -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
-  copyInstanceAttribute src tgt
-  -- Warn users if the multiplicative version has an attribute
-  warnAttr simpExtension (·.lemmaNames.contains <| .decl ·) thisAttr `simp src
-  warnAttr normCastExt.up (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
-  warnAttr normCastExt.down (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
-  warnAttr normCastExt.squash (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
-  warnAttr pushCastExt (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
-  warnAttr Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
-    thisAttr `ext src
-  warnAttr Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src
-  warnAttr Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src
-  warnAttr Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src
-  warnAttr Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src
-  warnParametricAttr Lean.Linter.deprecatedAttr thisAttr `deprecated src
-  warnParametricAttr Std.Tactic.Lint.nolintAttr thisAttr `nolint src
-  -- add attributes
-  let attrs ← elabAttrs attrs
-  -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
-  -- `simp` and `simps`.
-  for attr in attrs do
-  withRef attr.stx do withLogging do
-  -- todo: also support other simp-attributes,
-  -- and attributes that generate simp-attributes, like `norm_cast`
-  if attr.name == `simp then
-    additivizeLemmas src tgt "simp lemmas"
-      (Meta.Simp.addSimpAttrFromSyntax · simpExtension attr.kind attr.stx)
-    return
-  if attr.name == `simps then
-    additivizeLemmas src tgt "simps lemmas" (simpsTacFromSyntax · attr.stx)
-    return
-  let env ← getEnv
-  match getAttributeImpl env attr.name with
-  | Except.error errMsg => throwError errMsg
-  | Except.ok attrImpl  =>
-    let runAttr := do
-      attrImpl.add src attr.stx attr.kind
-      attrImpl.add tgt attr.stx attr.kind
-    -- not truly an elaborator, but a sensible target for go-to-definition
-    let elaborator := attrImpl.ref
-    if (← getInfoState).enabled && (← getEnv).contains elaborator then
-      withInfoContext (mkInfo := return .ofCommandInfo { elaborator, stx := attr.stx }) do
-        try runAttr
-        finally if attr.stx[0].isIdent || attr.stx[0].isAtom then
-          -- Add an additional node over the leading identifier if there is one
-          -- to make it look more function-like.
-          -- Do this last because we want user-created infos to take precedence
-          pushInfoLeaf <| .ofCommandInfo { elaborator, stx := attr.stx[0] }
-    else
-      runAttr
-
-/--
-Copies equation lemmas and attributes from `src` to `tgt`
--/
-def copyMetaData (attrs : Array Syntax) (src tgt : Name) : CoreM Unit := do
-  /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
-  definitions. If we don't do that, the equation lemma for `src` might be generated later
-  when doing a `rw`, but it won't be generated for `tgt`. -/
-  additivizeLemmas src tgt "equation lemmas" fun nm ↦
-    (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
-  MetaM.run' <| Elab.Term.TermElabM.run' <| applyAttributes attrs `to_additive src tgt
-
-/--
-Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
-the body using the `translations` dictionary.
-This is used to implement `@[to_additive]`.
--/
-def transformDecl (cfg : Config) (src tgt : Name) : CoreM Unit := do
-  transformDeclAux cfg src tgt src
-  copyMetaData cfg.attrs src tgt
-
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
@@ -899,6 +826,79 @@ def elabToAdditive : Syntax → CoreM Config
              reorder
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
+
+/-- Apply attributes to the multiplicative and additive declarations. -/
+def applyAttributes (attrs : Array Syntax) (thisAttr src tgt : Name) : TermElabM Unit := do
+  -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
+  copyInstanceAttribute src tgt
+  -- Warn users if the multiplicative version has an attribute
+  warnAttr simpExtension (·.lemmaNames.contains <| .decl ·) thisAttr `simp src
+  warnAttr normCastExt.up (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
+  warnAttr normCastExt.down (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
+  warnAttr normCastExt.squash (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
+  warnAttr pushCastExt (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src
+  warnAttr Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
+    thisAttr `ext src
+  warnAttr Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src
+  warnAttr Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src
+  warnAttr Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src
+  warnAttr Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src
+  warnParametricAttr Lean.Linter.deprecatedAttr thisAttr `deprecated src
+  warnParametricAttr Std.Tactic.Lint.nolintAttr thisAttr `nolint src
+  -- add attributes
+  let attrs ← elabAttrs attrs
+  -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
+  -- `simp` and `simps`.
+  for attr in attrs do
+    withRef attr.stx do withLogging do
+    -- todo: also support other simp-attributes,
+    -- and attributes that generate simp-attributes, like `norm_cast`
+    if attr.name == `simp then
+      additivizeLemmas src tgt "simp lemmas"
+        (Meta.Simp.addSimpAttrFromSyntax · simpExtension attr.kind attr.stx)
+      return
+    if attr.name == `simps then
+      additivizeLemmas src tgt "simps lemmas" (simpsTacFromSyntax · attr.stx)
+      return
+    let env ← getEnv
+    match getAttributeImpl env attr.name with
+    | Except.error errMsg => throwError errMsg
+    | Except.ok attrImpl  =>
+      let runAttr := do
+        attrImpl.add src attr.stx attr.kind
+        attrImpl.add tgt attr.stx attr.kind
+      -- not truly an elaborator, but a sensible target for go-to-definition
+      let elaborator := attrImpl.ref
+      if (← getInfoState).enabled && (← getEnv).contains elaborator then
+        withInfoContext (mkInfo := return .ofCommandInfo { elaborator, stx := attr.stx }) do
+          try runAttr
+          finally if attr.stx[0].isIdent || attr.stx[0].isAtom then
+            -- Add an additional node over the leading identifier if there is one
+            -- to make it look more function-like.
+            -- Do this last because we want user-created infos to take precedence
+            pushInfoLeaf <| .ofCommandInfo { elaborator, stx := attr.stx[0] }
+      else
+        runAttr
+
+/--
+Copies equation lemmas and attributes from `src` to `tgt`
+-/
+def copyMetaData (attrs : Array Syntax) (src tgt : Name) : CoreM Unit := do
+  /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
+  definitions. If we don't do that, the equation lemma for `src` might be generated later
+  when doing a `rw`, but it won't be generated for `tgt`. -/
+  additivizeLemmas src tgt "equation lemmas" fun nm ↦
+    (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
+  MetaM.run' <| Elab.Term.TermElabM.run' <| applyAttributes attrs `to_additive src tgt
+
+/--
+Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
+the body using the `translations` dictionary.
+This is used to implement `@[to_additive]`.
+-/
+def transformDecl (cfg : Config) (src tgt : Name) : CoreM Unit := do
+  transformDeclAux cfg src tgt src
+  copyMetaData cfg.attrs src tgt
 
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details. -/
