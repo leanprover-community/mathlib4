@@ -135,7 +135,7 @@ def allExist (paths : Array FilePath) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def mkCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
+def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default

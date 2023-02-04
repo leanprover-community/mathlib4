@@ -112,6 +112,7 @@ def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I wh
     rw [Functor.comp_map, Functor.comp_map, ← assoc, naturality, assoc, ← map_comp I, naturality,
       map_comp, assoc]
 #align category_theory.nat_trans.hcomp CategoryTheory.NatTrans.hcomp
+#align category_theory.nat_trans.hcomp_app CategoryTheory.NatTrans.hcomp_app
 
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
@@ -146,6 +147,9 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
 #align category_theory.functor.flip CategoryTheory.Functor.flip
+#align category_theory.functor.flip_obj_map CategoryTheory.Functor.flip_obj_map
+#align category_theory.functor.flip_obj_obj CategoryTheory.Functor.flip_obj_obj
+#align category_theory.functor.flip_map_app CategoryTheory.Functor.flip_map_app
 
 end Functor
 
@@ -154,11 +158,13 @@ theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 #align category_theory.map_hom_inv_app CategoryTheory.map_hom_inv_app
+#align category_theory.map_hom_inv_app_assoc CategoryTheory.map_hom_inv_app_assoc
 
 @[reassoc (attr := simp)]
 theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 #align category_theory.map_inv_hom_app CategoryTheory.map_inv_hom_app
+#align category_theory.map_inv_hom_app_assoc CategoryTheory.map_inv_hom_app_assoc
 
 end CategoryTheory

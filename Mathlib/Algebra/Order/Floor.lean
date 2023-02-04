@@ -876,6 +876,10 @@ theorem fract_nonneg (a : α) : 0 ≤ fract a :=
   sub_nonneg.2 <| floor_le _
 #align int.fract_nonneg Int.fract_nonneg
 
+lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
+(fract_nonneg a).lt_iff_ne.trans $ ne_comm.trans sub_ne_zero
+#align int.fract_pos Int.fract_pos
+
 theorem fract_lt_one (a : α) : fract a < 1 :=
   sub_lt_comm.1 <| sub_one_lt_floor _
 #align int.fract_lt_one Int.fract_lt_one

@@ -343,6 +343,7 @@ theorem inv_le_inv_iff : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
 #align neg_le_neg_iff neg_le_neg_iff
 
 alias neg_le_neg_iff ↔ le_of_neg_le_neg _
+#align le_of_neg_le_neg le_of_neg_le_neg
 
 @[to_additive]
 theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b := by
@@ -366,6 +367,7 @@ theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
 #align le_sub_self_iff le_sub_self_iff
 
 alias sub_le_self_iff ↔ _ sub_le_self
+#align sub_le_self sub_le_self
 
 end TypeclassesLeftRightLE
 
@@ -392,12 +394,16 @@ theorem lt_inv' : a < b⁻¹ ↔ b < a⁻¹ := by rw [← inv_lt_inv_iff, inv_in
 #align lt_neg lt_neg
 
 alias lt_inv' ↔ lt_inv_of_lt_inv _
+#align lt_inv_of_lt_inv lt_inv_of_lt_inv
 
 attribute [to_additive] lt_inv_of_lt_inv
+#align lt_neg_of_lt_neg lt_neg_of_lt_neg
 
 alias inv_lt' ↔ inv_lt_of_inv_lt' _
+#align inv_lt_of_inv_lt' inv_lt_of_inv_lt'
 
 attribute [to_additive neg_lt_of_neg_lt] inv_lt_of_inv_lt'
+#align neg_lt_of_neg_lt neg_lt_of_neg_lt
 
 @[to_additive]
 theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
@@ -414,6 +420,7 @@ theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
 #align sub_lt_self_iff sub_lt_self_iff
 
 alias sub_lt_self_iff ↔ _ sub_lt_self
+#align sub_lt_self sub_lt_self
 
 end TypeclassesLeftRightLT
 
@@ -432,6 +439,7 @@ theorem Left.inv_le_self (h : 1 ≤ a) : a⁻¹ ≤ a :=
 #align left.neg_le_self Left.neg_le_self
 
 alias Left.neg_le_self ← neg_le_self
+#align neg_le_self neg_le_self
 
 @[to_additive]
 theorem Left.self_le_inv (h : a ≤ 1) : a ≤ a⁻¹ :=
@@ -452,6 +460,7 @@ theorem Left.inv_lt_self (h : 1 < a) : a⁻¹ < a :=
 #align left.neg_lt_self Left.neg_lt_self
 
 alias Left.neg_lt_self ← neg_lt_self
+#align neg_lt_self neg_lt_self
 
 @[to_additive]
 theorem Left.self_lt_inv (h : a < 1) : a < a⁻¹ :=
@@ -556,91 +565,134 @@ end LT
 end CommGroup
 
 alias Left.inv_le_one_iff ↔ one_le_of_inv_le_one _
+#align one_le_of_inv_le_one one_le_of_inv_le_one
 
 attribute [to_additive] one_le_of_inv_le_one
+#align nonneg_of_neg_nonpos nonneg_of_neg_nonpos
 
 alias Left.one_le_inv_iff ↔ le_one_of_one_le_inv _
+#align le_one_of_one_le_inv le_one_of_one_le_inv
 
 attribute [to_additive nonpos_of_neg_nonneg] le_one_of_one_le_inv
+#align nonpos_of_neg_nonneg nonpos_of_neg_nonneg
 
 alias inv_lt_inv_iff ↔ lt_of_inv_lt_inv _
+#align lt_of_inv_lt_inv lt_of_inv_lt_inv
 
 attribute [to_additive] lt_of_inv_lt_inv
+#align lt_of_neg_lt_neg lt_of_neg_lt_neg
 
 alias Left.inv_lt_one_iff ↔ one_lt_of_inv_lt_one _
+#align one_lt_of_inv_lt_one one_lt_of_inv_lt_one
 
 attribute [to_additive] one_lt_of_inv_lt_one
+#align pos_of_neg_neg pos_of_neg_neg
 
 alias Left.inv_lt_one_iff ← inv_lt_one_iff_one_lt
+#align inv_lt_one_iff_one_lt inv_lt_one_iff_one_lt
 
 attribute [to_additive] inv_lt_one_iff_one_lt
+#align neg_neg_iff_pos neg_neg_iff_pos
 
 alias Left.inv_lt_one_iff ← inv_lt_one'
+#align inv_lt_one' inv_lt_one'
 
 attribute [to_additive neg_lt_zero] inv_lt_one'
+#align neg_lt_zero neg_lt_zero
 
 alias Left.one_lt_inv_iff ↔ inv_of_one_lt_inv _
+#align inv_of_one_lt_inv inv_of_one_lt_inv
 
 attribute [to_additive neg_of_neg_pos] inv_of_one_lt_inv
+#align neg_of_neg_pos neg_of_neg_pos
 
 alias Left.one_lt_inv_iff ↔ _ one_lt_inv_of_inv
+#align one_lt_inv_of_inv one_lt_inv_of_inv
 
 attribute [to_additive neg_pos_of_neg] one_lt_inv_of_inv
+#align neg_pos_of_neg neg_pos_of_neg
 
 alias le_inv_mul_iff_mul_le ↔ mul_le_of_le_inv_mul _
+#align mul_le_of_le_inv_mul mul_le_of_le_inv_mul
 
 attribute [to_additive] mul_le_of_le_inv_mul
+#align add_le_of_le_neg_add add_le_of_le_neg_add
 
 alias le_inv_mul_iff_mul_le ↔ _ le_inv_mul_of_mul_le
+#align le_inv_mul_of_mul_le le_inv_mul_of_mul_le
 
 attribute [to_additive] le_inv_mul_of_mul_le
+#align le_neg_add_of_add_le le_neg_add_of_add_le
 
 alias inv_mul_le_iff_le_mul ↔ _ inv_mul_le_of_le_mul
+#align inv_mul_le_of_le_mul inv_mul_le_of_le_mul
 
 -- Porting note: was `inv_mul_le_iff_le_mul`
 attribute [to_additive] inv_mul_le_of_le_mul
 
 alias lt_inv_mul_iff_mul_lt ↔ mul_lt_of_lt_inv_mul _
+#align mul_lt_of_lt_inv_mul mul_lt_of_lt_inv_mul
 
 attribute [to_additive] mul_lt_of_lt_inv_mul
+#align add_lt_of_lt_neg_add add_lt_of_lt_neg_add
 
 alias lt_inv_mul_iff_mul_lt ↔ _ lt_inv_mul_of_mul_lt
+#align lt_inv_mul_of_mul_lt lt_inv_mul_of_mul_lt
 
 attribute [to_additive] lt_inv_mul_of_mul_lt
+#align lt_neg_add_of_add_lt lt_neg_add_of_add_lt
 
 alias inv_mul_lt_iff_lt_mul ↔ lt_mul_of_inv_mul_lt inv_mul_lt_of_lt_mul
+#align lt_mul_of_inv_mul_lt lt_mul_of_inv_mul_lt
+#align inv_mul_lt_of_lt_mul inv_mul_lt_of_lt_mul
 
 attribute [to_additive] lt_mul_of_inv_mul_lt
+#align lt_add_of_neg_add_lt lt_add_of_neg_add_lt
 
 attribute [to_additive] inv_mul_lt_of_lt_mul
+#align neg_add_lt_of_lt_add neg_add_lt_of_lt_add
 
 alias lt_mul_of_inv_mul_lt ← lt_mul_of_inv_mul_lt_left
+#align lt_mul_of_inv_mul_lt_left lt_mul_of_inv_mul_lt_left
 
 attribute [to_additive] lt_mul_of_inv_mul_lt_left
+#align lt_add_of_neg_add_lt_left lt_add_of_neg_add_lt_left
 
 alias Left.inv_le_one_iff ← inv_le_one'
+#align inv_le_one' inv_le_one'
 
 attribute [to_additive neg_nonpos] inv_le_one'
+#align neg_nonpos neg_nonpos
 
 alias Left.one_le_inv_iff ← one_le_inv'
+#align one_le_inv' one_le_inv'
 
 attribute [to_additive neg_nonneg] one_le_inv'
+#align neg_nonneg neg_nonneg
 
 alias Left.one_lt_inv_iff ← one_lt_inv'
+#align one_lt_inv' one_lt_inv'
 
 attribute [to_additive neg_pos] one_lt_inv'
+#align neg_pos neg_pos
 
 alias mul_lt_mul_left' ← OrderedCommGroup.mul_lt_mul_left'
+#align ordered_comm_group.mul_lt_mul_left' OrderedCommGroup.mul_lt_mul_left'
 
 attribute [to_additive OrderedAddCommGroup.add_lt_add_left] OrderedCommGroup.mul_lt_mul_left'
+#align ordered_add_comm_group.add_lt_add_left OrderedAddCommGroup.add_lt_add_left
 
 alias le_of_mul_le_mul_left' ← OrderedCommGroup.le_of_mul_le_mul_left
+#align ordered_comm_group.le_of_mul_le_mul_left OrderedCommGroup.le_of_mul_le_mul_left
 
 attribute [to_additive] OrderedCommGroup.le_of_mul_le_mul_left
+#align ordered_add_comm_group.le_of_add_le_add_left OrderedAddCommGroup.le_of_add_le_add_left
 
 alias lt_of_mul_lt_mul_left' ← OrderedCommGroup.lt_of_mul_lt_mul_left
+#align ordered_comm_group.lt_of_mul_lt_mul_left OrderedCommGroup.lt_of_mul_lt_mul_left
 
 attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
+#align ordered_add_comm_group.lt_of_add_lt_add_left OrderedAddCommGroup.lt_of_add_lt_add_left
 
 --  Most of the lemmas that are primed in this section appear in ordered_field.
 --  I (DT) did not try to minimise the assumptions.
@@ -671,6 +723,8 @@ theorem one_le_div' : 1 ≤ a / b ↔ b ≤ a := by
 #align sub_nonneg sub_nonneg
 
 alias sub_nonneg ↔ le_of_sub_nonneg sub_nonneg_of_le
+#align sub_nonneg_of_le sub_nonneg_of_le
+#align le_of_sub_nonneg le_of_sub_nonneg
 
 @[to_additive (attr := simp) sub_nonpos]
 theorem div_le_one' : a / b ≤ 1 ↔ a ≤ b := by
@@ -679,6 +733,8 @@ theorem div_le_one' : a / b ≤ 1 ↔ a ≤ b := by
 #align sub_nonpos sub_nonpos
 
 alias sub_nonpos ↔ le_of_sub_nonpos sub_nonpos_of_le
+#align sub_nonpos_of_le sub_nonpos_of_le
+#align le_of_sub_nonpos le_of_sub_nonpos
 
 @[to_additive]
 theorem le_div_iff_mul_le : a ≤ c / b ↔ a * b ≤ c := by
@@ -687,6 +743,8 @@ theorem le_div_iff_mul_le : a ≤ c / b ↔ a * b ≤ c := by
 #align le_sub_iff_add_le le_sub_iff_add_le
 
 alias le_sub_iff_add_le ↔ add_le_of_le_sub_right le_sub_right_of_add_le
+#align add_le_of_le_sub_right add_le_of_le_sub_right
+#align le_sub_right_of_add_le le_sub_right_of_add_le
 
 @[to_additive]
 theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
@@ -747,6 +805,8 @@ theorem le_div_iff_mul_le' : b ≤ c / a ↔ a * b ≤ c := by rw [le_div_iff_mu
 #align le_sub_iff_add_le' le_sub_iff_add_le'
 
 alias le_sub_iff_add_le' ↔ add_le_of_le_sub_left le_sub_left_of_add_le
+#align le_sub_left_of_add_le le_sub_left_of_add_le
+#align add_le_of_le_sub_left add_le_of_le_sub_left
 
 @[to_additive]
 theorem div_le_iff_le_mul' : a / b ≤ c ↔ a ≤ b * c := by rw [div_le_iff_le_mul, mul_comm]
@@ -754,6 +814,8 @@ theorem div_le_iff_le_mul' : a / b ≤ c ↔ a ≤ b * c := by rw [div_le_iff_le
 #align sub_le_iff_le_add' sub_le_iff_le_add'
 
 alias sub_le_iff_le_add' ↔ le_add_of_sub_left_le sub_left_le_of_le_add
+#align sub_left_le_of_le_add sub_left_le_of_le_add
+#align le_add_of_sub_left_le le_add_of_sub_left_le
 
 @[to_additive (attr := simp)]
 theorem inv_le_div_iff_le_mul : b⁻¹ ≤ a / c ↔ c ≤ a * b :=
@@ -824,6 +886,8 @@ theorem one_lt_div' : 1 < a / b ↔ b < a := by
 #align sub_pos sub_pos
 
 alias sub_pos ↔ lt_of_sub_pos sub_pos_of_lt
+#align lt_of_sub_pos lt_of_sub_pos
+#align sub_pos_of_lt sub_pos_of_lt
 
 @[to_additive (attr := simp) sub_neg]
 theorem div_lt_one' : a / b < 1 ↔ a < b := by
@@ -832,8 +896,11 @@ theorem div_lt_one' : a / b < 1 ↔ a < b := by
 #align sub_neg sub_neg
 
 alias sub_neg ↔ lt_of_sub_neg sub_neg_of_lt
+#align lt_of_sub_neg lt_of_sub_neg
+#align sub_neg_of_lt sub_neg_of_lt
 
 alias sub_neg ← sub_lt_zero
+#align sub_lt_zero sub_lt_zero
 
 @[to_additive]
 theorem lt_div_iff_mul_lt : a < c / b ↔ a * b < c := by
@@ -842,6 +909,8 @@ theorem lt_div_iff_mul_lt : a < c / b ↔ a * b < c := by
 #align lt_sub_iff_add_lt lt_sub_iff_add_lt
 
 alias lt_sub_iff_add_lt ↔ add_lt_of_lt_sub_right lt_sub_right_of_add_lt
+#align add_lt_of_lt_sub_right add_lt_of_lt_sub_right
+#align lt_sub_right_of_add_lt lt_sub_right_of_add_lt
 
 @[to_additive]
 theorem div_lt_iff_lt_mul : a / c < b ↔ a < b * c := by
@@ -850,6 +919,8 @@ theorem div_lt_iff_lt_mul : a / c < b ↔ a < b * c := by
 #align sub_lt_iff_lt_add sub_lt_iff_lt_add
 
 alias sub_lt_iff_lt_add ↔ lt_add_of_sub_right_lt sub_right_lt_of_lt_add
+#align lt_add_of_sub_right_lt lt_add_of_sub_right_lt
+#align sub_right_lt_of_lt_add sub_right_lt_of_lt_add
 
 end Right
 
@@ -901,6 +972,8 @@ theorem lt_div_iff_mul_lt' : b < c / a ↔ a * b < c := by rw [lt_div_iff_mul_lt
 #align lt_sub_iff_add_lt' lt_sub_iff_add_lt'
 
 alias lt_sub_iff_add_lt' ↔ add_lt_of_lt_sub_left lt_sub_left_of_add_lt
+#align lt_sub_left_of_add_lt lt_sub_left_of_add_lt
+#align add_lt_of_lt_sub_left add_lt_of_lt_sub_left
 
 @[to_additive]
 theorem div_lt_iff_lt_mul' : a / b < c ↔ a < b * c := by rw [div_lt_iff_lt_mul, mul_comm]
@@ -908,6 +981,8 @@ theorem div_lt_iff_lt_mul' : a / b < c ↔ a < b * c := by rw [div_lt_iff_lt_mul
 #align sub_lt_iff_lt_add' sub_lt_iff_lt_add'
 
 alias sub_lt_iff_lt_add' ↔ lt_add_of_sub_left_lt sub_left_lt_of_lt_add
+#align lt_add_of_sub_left_lt lt_add_of_sub_left_lt
+#align sub_left_lt_of_lt_add sub_left_lt_of_lt_add
 
 @[to_additive]
 theorem inv_lt_div_iff_lt_mul' : b⁻¹ < a / c ↔ c < a * b :=
@@ -1112,6 +1187,7 @@ structure TotalPositiveCone (α : Type _) [AddCommGroup α] extends PositiveCone
 
 /-- Forget that a `TotalPositiveCone` is total. -/
 add_decl_doc TotalPositiveCone.toPositiveCone
+#align add_comm_group.total_positive_cone.to_positive_cone AddCommGroup.TotalPositiveCone.toPositiveCone
 
 end AddCommGroup
 

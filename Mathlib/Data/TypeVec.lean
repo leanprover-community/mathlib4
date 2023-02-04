@@ -278,7 +278,7 @@ theorem appendFun_comp' {α₀ α₁ α₂ : TypeVec n} {β₀ β₁ β₂ : Typ
 
 theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun ⊚ f₀ = f₀ :=
   funext fun x => by apply Fin2.elim0 x -- porting note: `by apply` is necessary?
-#align typevec.nilFun_comp TypeVec.nilFun_comp
+#align typevec.nil_fun_comp TypeVec.nilFun_comp
 
 theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type _} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
     (@id _ α ::: g₁ ∘ g₀) = (id ::: g₁) ⊚ (id ::: g₀) :=
@@ -485,7 +485,7 @@ def RelLast' (α : TypeVec n) {β : Type _} (p : β → β → Prop) :
   splitFun (repeatEq α) (uncurry p)
 #align typevec.rel_last' TypeVec.RelLast'
 
-/-- given `F : typevec.{u} (n+1) → Type u`, `curry F : Type u → typevec.{u} → Type u`,
+/-- given `F : TypeVec.{u} (n+1) → Type u`, `curry F : Type u → TypeVec.{u} → Type u`,
 i.e. its first argument can be fed in separately from the rest of the vector of arguments -/
 def Curry (F : TypeVec.{u} (n + 1) → Type _) (α : Type u) (β : TypeVec.{u} n) : Type _ :=
   F (β ::: α)

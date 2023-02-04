@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.module.basic
-! leanprover-community/mathlib commit 9116dd6709f303dcf781632e15fdef382b0fc579
+! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -63,6 +63,8 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 #align module Module
+#align module.ext Module.ext
+#align module.ext_iff Module.ext_iff
 
 section AddCommMonoid
 
@@ -185,6 +187,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     map_add' := fun x y =>
       AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
 #align module.to_add_monoid_End Module.toAddMonoidEnd
+#align module.to_add_monoid_End_apply_apply Module.toAddMonoidEnd_apply_apply
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
 use of `AddMonoidHom.flip`. -/
@@ -195,9 +198,9 @@ def smulAddHom : R →+ M →+ M :=
 variable {R M}
 
 @[simp]
-theorem smul_add_hom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
+theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
   rfl
-#align smul_add_hom_apply smul_add_hom_apply
+#align smul_add_hom_apply smulAddHom_apply
 
 theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
   rw [← one_smul R x, ← zero_eq_one, zero_smul]
@@ -328,15 +331,13 @@ end Module
 as an instance because Lean has no way to guess `R`. -/
 protected theorem Module.subsingleton (R M : Type _) [Semiring R] [Subsingleton R] [AddCommMonoid M]
     [Module R M] : Subsingleton M :=
-  ⟨fun x y => by
-    rw [← one_smul R x, ← one_smul R y, Subsingleton.elim (1 : R) 0, zero_smul, zero_smul]⟩
+  MulActionWithZero.subsingleton R M
 #align module.subsingleton Module.subsingleton
 
 /-- A semiring is `Nontrivial` provided that there exists a nontrivial module over this semiring. -/
 protected theorem Module.nontrivial (R M : Type _) [Semiring R] [Nontrivial M] [AddCommMonoid M]
     [Module R M] : Nontrivial R :=
-  (subsingleton_or_nontrivial R).resolve_left fun _ =>
-    not_subsingleton M <| Module.subsingleton R M
+  MulActionWithZero.nontrivial R M
 #align module.nontrivial Module.nontrivial
 
 -- see Note [lower instance priority]
