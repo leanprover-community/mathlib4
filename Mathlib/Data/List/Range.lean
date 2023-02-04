@@ -262,7 +262,7 @@ theorem reverse_range' : ∀ s n : ℕ, reverse (range' s n) = map (fun i => s +
       cons_append, nil_append, eq_self_iff_true, true_and_iff, map_map, reverse_range' s n]
 #align list.reverse_range' List.reverse_range'
 
-/-- All elements of `fin n`, from `0` to `n-1`. The corresponding finset is `finset.univ`. -/
+/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
 def finRange (n : ℕ) : List (Fin n) :=
   (range n).pmap Fin.mk fun _ => List.mem_range.1
 #align list.fin_range List.finRange

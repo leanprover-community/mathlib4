@@ -412,6 +412,7 @@ theorem nthLe_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : �
     (zipWith f l l').nthLe i h =
       f (l.nthLe i (lt_length_left_of_zipWith h)) (l'.nthLe i (lt_length_right_of_zipWith h)) :=
   get_zipWith (i := ⟨i, h⟩)
+#align list.nth_le_zip_with List.nthLe_zipWith
 
 @[simp]
 theorem get_zip {l : List α} {l' : List β} {i : Fin (zip l l').length} :

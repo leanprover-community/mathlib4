@@ -18,6 +18,8 @@ polynomial functor.  (For the M-type construction, see
 pfunctor/M.lean.)
 -/
 
+-- "W", "Idx"
+set_option linter.uppercaseLean3 false
 
 universe u
 

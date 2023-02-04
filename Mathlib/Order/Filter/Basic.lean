@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module order.filter.basic
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
+! leanprover-community/mathlib commit 996b0ff959da753a555053a480f36e5f264d4207
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -986,6 +986,9 @@ theorem principal_neBot_iff {s : Set α} : NeBot (𝓟 s) ↔ s.Nonempty :=
   neBot_iff.trans <| (not_congr principal_eq_bot_iff).trans nonempty_iff_ne_empty.symm
 #align filter.principal_ne_bot_iff Filter.principal_neBot_iff
 
+alias principal_neBot_iff ↔ _ _root_.Set.Nonempty.principal_neBot
+#align set.nonempty.principal_ne_bot Set.Nonempty.principal_neBot
+
 theorem isCompl_principal (s : Set α) : IsCompl (𝓟 s) (𝓟 (sᶜ)) :=
   IsCompl.of_eq (by rw [inf_principal, inter_compl_self, principal_empty]) <| by
     rw [sup_principal, union_compl_self, principal_univ]
@@ -1885,6 +1888,12 @@ theorem mem_comap' : s ∈ comap f l ↔ { y | ∀ ⦃x⦄, f x = y → x ∈ s 
     fun h => ⟨_, h, fun x hx => hx rfl⟩⟩
 #align filter.mem_comap' Filter.mem_comap'
 
+/-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
+lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
+  s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
+by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+#align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
+
 @[simp]
 theorem eventually_comap : (∀ᶠ a in comap f l, p a) ↔ ∀ᶠ b in l, ∀ a, f a = b → p a :=
   mem_comap'
@@ -2040,6 +2049,9 @@ theorem Eventually.comap {p : β → Prop} (hf : ∀ᶠ b in g, p b) (f : α →
 theorem comap_id : comap id f = f :=
   le_antisymm (fun _ => preimage_mem_comap) fun _ ⟨_, ht, hst⟩ => mem_of_superset ht hst
 #align filter.comap_id Filter.comap_id
+
+theorem comap_id' : comap (fun x => x) f = f := comap_id
+#align filter.comap_id' Filter.comap_id'
 
 theorem comap_const_of_not_mem {x : β} (ht : t ∈ g) (hx : x ∉ t) : comap (fun _ : α => x) g = ⊥ :=
   empty_mem_iff_bot.1 <| mem_comap'.2 <| mem_of_superset ht fun _ hx' _ h => hx <| h.symm ▸ hx'
@@ -3044,7 +3056,7 @@ theorem Tendsto.not_tendsto {f : α → β} {a : Filter α} {b₁ b₂ : Filter 
   (tendsto_inf.2 ⟨hf, hf'⟩).neBot.ne hb.eq_bot
 #align filter.tendsto.not_tendsto Filter.Tendsto.not_tendsto
 
-theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
+protected theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
     [∀ x, Decidable (p x)] (h₀ : Tendsto f (l₁ ⊓ 𝓟 { x | p x }) l₂)
     (h₁ : Tendsto g (l₁ ⊓ 𝓟 { x | ¬p x }) l₂) :
     Tendsto (fun x => if p x then f x else g x) l₁ l₂ := by
@@ -3056,13 +3068,13 @@ theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : 
   exacts [hp₀ h, hp₁ h]
 #align filter.tendsto.if Filter.Tendsto.if
 
-theorem Tendsto.if' {α β : Type _} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
-    [DecidablePred p] (hf : Tendsto f l₁ l₂) (hg : Tendsto g l₁ l₂) :
+protected theorem Tendsto.if' {α β : Type _} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β}
+    {p : α → Prop} [DecidablePred p] (hf : Tendsto f l₁ l₂) (hg : Tendsto g l₁ l₂) :
     Tendsto (fun a => if p a then f a else g a) l₁ l₂ :=
   (tendsto_inf_left hf).if (tendsto_inf_left hg)
 #align filter.tendsto.if' Filter.Tendsto.if'
 
-theorem Tendsto.piecewise {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {s : Set α}
+protected theorem Tendsto.piecewise {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {s : Set α}
     [∀ x, Decidable (x ∈ s)] (h₀ : Tendsto f (l₁ ⊓ 𝓟 s) l₂) (h₁ : Tendsto g (l₁ ⊓ 𝓟 (sᶜ)) l₂) :
     Tendsto (piecewise s f g) l₁ l₂ :=
   Tendsto.if h₀ h₁

@@ -93,11 +93,14 @@ theorem isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by 
 #align even_iff_exists_two_nsmul even_iff_exists_two_nsmul
 
 alias isSquare_iff_exists_sq ↔ IsSquare.exists_sq isSquare_of_exists_sq
+#align is_square.exists_sq IsSquare.exists_sq
+#align is_square_of_exists_sq isSquare_of_exists_sq
 
 attribute
   [to_additive Even.exists_two_nsmul
-      "Alias of the forwards direction of\n`even_iff_exists_two_nsmul`."]
+      "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
   IsSquare.exists_sq
+#align even.exists_two_nsmul Even.exists_two_nsmul
 
 @[to_additive Even.nsmul]
 theorem IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
@@ -169,8 +172,10 @@ theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
 #align even_neg even_neg
 
 alias isSquare_inv ↔ _ IsSquare.inv
+#align is_square.inv IsSquare.inv
 
 attribute [to_additive] IsSquare.inv
+#align even.neg Even.neg
 
 @[to_additive]
 theorem IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
@@ -232,6 +237,7 @@ theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
 #align even_iff_exists_bit0 even_iff_exists_bit0
 
 alias even_iff_exists_bit0 ↔ Even.exists_bit0 _
+#align even.exists_bit0 Even.exists_bit0
 
 section Semiring
 
@@ -307,6 +313,7 @@ theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
 #align odd_iff_exists_bit1 odd_iff_exists_bit1
 
 alias odd_iff_exists_bit1 ↔ Odd.exists_bit1 _
+#align odd.exists_bit1 Odd.exists_bit1
 
 set_option linter.deprecated false in
 @[simp] theorem odd_bit1 (a : α) : Odd (bit1 a) :=
