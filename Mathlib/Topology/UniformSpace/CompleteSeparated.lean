@@ -25,7 +25,7 @@ open Topology Filter
 
 variable {α : Type _}
 
---In a separated space, a complete set is closed
+/-- In a separated space, a complete set is closed. -/
 theorem IsComplete.isClosed [UniformSpace α] [SeparatedSpace α] {s : Set α} (h : IsComplete s) :
     IsClosed s :=
   isClosed_iff_clusterPt.2 fun a ha => by
@@ -49,4 +49,3 @@ theorem continuous_extend_of_cauchy {e : α → β} {f : α → γ} (de : DenseI
 #align dense_inducing.continuous_extend_of_cauchy DenseInducing.continuous_extend_of_cauchy
 
 end DenseInducing
-
