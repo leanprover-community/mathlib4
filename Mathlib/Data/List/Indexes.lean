@@ -98,7 +98,7 @@ theorem map_with_index_append : ∀ (f : ℕ → α → β) (l : List α) (e : �
   intros f l e
   unfold map_with_index
   rw [map_with_index_core_append f 0 l [e]]
-  simp; rfl
+  simp only [zero_add, append_cancel_left_eq]; rfl
 
 -- Porting note: new theorem.
 theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr : Array β),
@@ -154,7 +154,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
     rw [this] ; rfl
   · cases' l with head tail
     · contradiction
-    · simp [zipWith, range_succ_eq_map, zipWith_map_left] -- Porting note: simp? is weird.
+    · simp only [map, uncurry_apply_pair, range_succ_eq_map, zipWith, zero_add, zipWith_map_left]
       rw [ih]
       suffices : (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ)
       rw [this]
