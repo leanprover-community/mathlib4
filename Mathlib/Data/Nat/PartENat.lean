@@ -581,11 +581,47 @@ theorem toWithTop_coeNat' (n : ℕ) {h : Decidable (n : PartENat).Dom} :
   rw [toWithTop_coeNat n]
 #align part_enat.to_with_top_coe' PartENat.toWithTop_coeNat'
 
+-- Porting note: statement changed. Mathlib 3 statement was
+-- ```
+-- @[simp] lemma to_with_top_le {x y : part_enat} :
+--   Π [decidable x.dom] [decidable y.dom], by exactI to_with_top x ≤ to_with_top y ↔ x ≤ y :=
+-- ```
+--
+-- In addition, this proof takes really long to type-check.
+-- This boils down to the manually defined instances in `Data.ENat.Basic`
+-- (see porting note l.46 'Porting note: instances that derive failed to find')
+-- it seems that the last `simp` in the following proof needs to check
+-- `CharZero ℕ∞ ≟ CharZero ℕ∞` where one side uses
+-- `#check instENatAddCommMonoidWithOne`
+-- and the other `NonAssocSemiring.toAddCommMonoidWithOne` and then eventually
+-- `#check instENatCanonicallyOrderedCommSemiring`
+--
+-- See
+-- ```
+-- set_option trace.Meta.synthInstance true
+-- set_option trace.Meta.isDefEq true
+-- set_option profiler true
+-- ```
 @[simp]
-theorem toWithTop_le {x y : PartENat} :
-    ∀ [Decidable x.Dom] [Decidable y.Dom], toWithTop x ≤ toWithTop y ↔ x ≤ y :=
-  PartENat.casesOn y (by simp) (PartENat.casesOn x (by simp) (by intros <;> simp))
+theorem toWithTop_le {x y : PartENat} [hx : Decidable x.Dom] [hy : Decidable y.Dom] :
+    toWithTop x ≤ toWithTop y ↔ x ≤ y := by
+  induction y using PartENat.casesOn generalizing hy
+  · simp
+  induction x using PartENat.casesOn generalizing hx
+  · simp
+  · simp -- Porting note: this takes too long.
 #align part_enat.to_with_top_le PartENat.toWithTop_le
+
+-- Porting note: As part of the troubles above, I noticed that Lean4 does not
+-- find the following two instances which it could find in Lean3 automatically:
+-- ```
+-- section Test
+-- #synth Decidable (⊤ : PartENat).Dom
+
+-- variable {n : ℕ}
+-- #synth Decidable (n : PartENat).Dom
+-- end Test
+-- ```
 
 @[simp]
 theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
