@@ -66,8 +66,8 @@ namespace PartENat
 
 /-- The computable embedding `ℕ → PartENat`.
 
-This coincides with the coercion `coe : ℕ → PartENat`, see `PartENat.some_eq_coe`.
-However, `coe` is noncomputable so `some` is preferable when computability is a concern. -/
+This coincides with the coercion `coe : ℕ → PartENat`, see `PartENat.some_eq_natCast`.
+However, `natCast` is noncomputable so `some` is preferable when computability is a concern. -/
 @[coe]
 def some : ℕ → PartENat :=
   Part.some
@@ -147,7 +147,6 @@ protected theorem casesOn' {P : PartENat → Prop} :
 
 @[elab_as_elim]
 protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → (∀ n : ℕ, P n) → P a := by
-  simp only [← some_eq_natCast]
   exact PartENat.casesOn'
 #align part_enat.cases_on PartENat.casesOn
 
@@ -168,7 +167,6 @@ theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
 
 @[simp]
 theorem natCast_get {x : PartENat} (h : x.Dom) : (x.get h : PartENat) = x := by
-  rw [← some_eq_natCast]
   exact Part.ext' (iff_of_true trivial h) fun _ _ => rfl
 #align part_enat.coe_get PartENat.natCast_get
 
@@ -183,7 +181,6 @@ theorem get_natCast {x : ℕ} : get (x : PartENat) (dom_natCast x) = x :=
 
 theorem coe_add_get {x : ℕ} {y : PartENat} (h : ((x : PartENat) + y).Dom) :
     get ((x : PartENat) + y) h = x + get y h.2 := by
-  simp only [← some_eq_natCast] at h ⊢
   rfl
 #align part_enat.coe_add_get PartENat.coe_add_get
 
@@ -207,7 +204,8 @@ nonrec theorem get_eq_iff_eq_some {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get 
 #align part_enat.get_eq_iff_eq_some PartENat.get_eq_iff_eq_some
 
 theorem get_eq_iff_eq_coe {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b ↔ a = b := by
-  rw [get_eq_iff_eq_some, some_eq_natCast]
+  rw [get_eq_iff_eq_some]
+  rfl
 #align part_enat.get_eq_iff_eq_coe PartENat.get_eq_iff_eq_coe
 
 theorem dom_of_le_of_dom {x y : PartENat} : x ≤ y → y.Dom → x.Dom := fun ⟨h, _⟩ => h
@@ -218,7 +216,6 @@ theorem dom_of_le_some {x : PartENat} {y : ℕ} (h : x ≤ some y) : x.Dom :=
 #align part_enat.dom_of_le_some PartENat.dom_of_le_some
 
 theorem dom_of_le_natCast {x : PartENat} {y : ℕ} (h : x ≤ y) : x.Dom := by
-  rw [← some_eq_natCast] at h
   exact dom_of_le_some h
 #align part_enat.dom_of_le_coe PartENat.dom_of_le_natCast
 
@@ -274,7 +271,6 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
 
 @[simp, norm_cast]
 theorem coe_le_coe {x y : ℕ} : (x : PartENat) ≤ y ↔ x ≤ y := by
-  rw [← some_eq_natCast, ← some_eq_natCast]
   exact ⟨fun ⟨_, h⟩ => h trivial, fun h => ⟨fun _ => trivial, fun _ => h⟩⟩
 #align part_enat.coe_le_coe PartENat.coe_le_coe
 
@@ -291,9 +287,8 @@ theorem get_le_get {x y : PartENat} {hx : x.Dom} {hy : y.Dom} : x.get hx ≤ y.g
 #align part_enat.get_le_get PartENat.get_le_get
 
 theorem le_coe_iff (x : PartENat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n := by
-  rw [← some_eq_natCast]
   show (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
-  simp only [forall_prop_of_true, some_eq_natCast, dom_natCast, get_natCast']
+  simp only [forall_prop_of_true, dom_natCast, get_natCast']
 #align part_enat.le_coe_iff PartENat.le_coe_iff
 
 theorem lt_coe_iff (x : PartENat) (n : ℕ) : x < n ↔ ∃ h : x.Dom, x.get h < n := by
@@ -571,7 +566,7 @@ theorem toWithTop_some (n : ℕ) : toWithTop (some n) = n :=
 #align part_enat.to_with_top_some PartENat.toWithTop_some
 
 theorem toWithTop_natCast (n : ℕ) {_ : Decidable (n : PartENat).Dom} : toWithTop n = n := by
-  simp only [← some_eq_natCast, ← toWithTop_some]
+  simp only [← toWithTop_some]
   congr
 #align part_enat.to_with_top_coe PartENat.toWithTop_natCast
 
@@ -631,9 +626,6 @@ theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
 
 end WithTop
 
--- Porting note : TODO should this be either backported or fix `withTopEquiv`
--- in another way?
-
 -- Porting note : new, extracted from `withTopEquiv`.
 /-- Coersion from `ℕ∞` to `PartENat`. -/
 @[coe]
@@ -644,6 +636,9 @@ def ofENat : ℕ∞ → PartENat :=
 
 -- Porting note : new
 instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
+
+-- Porting note: new. This could probably be moved to tests or removed.
+example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
 -- Porting note : new
 @[simp]
@@ -691,7 +686,8 @@ noncomputable def withTopEquiv : PartENat ≃ ℕ∞
     intros <;>
     simp <;>
     rfl
-  right_inv x := by simp [toWithTop_ofENat]
+  right_inv x := by
+    simp [toWithTop_ofENat]
 #align part_enat.with_top_equiv PartENat.withTopEquiv
 
 @[simp]

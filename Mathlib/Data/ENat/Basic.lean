@@ -39,9 +39,6 @@ notation "ℕ∞" => ENat
 
 namespace ENat
 
-/-- The canonical map from `ℕ` to `ℕ∞` -/
-@[coe] def ofNat (n : ℕ) : ℕ∞ := WithTop.some n
-
 --Porting note: instances that derive failed to find
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
