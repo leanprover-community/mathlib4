@@ -15,13 +15,13 @@ import Mathlib.GroupTheory.Subgroup.Finite
 /-!
 # Lemmas about subgroups within the permutations (self-equivalences) of a type `α`
 
-This file provides extra lemmas about some `subgroup`s that exist within `equiv.perm α`.
-`group_theory.subgroup` depends on `group_theory.perm.basic`, so these need to be in a separate
+This file provides extra lemmas about some `Subgroup`s that exist within `Equiv.Perm α`.
+`GroupTheory.Subgroup` depends on `GroupTheory.Perm.Basic`, so these need to be in a separate
 file.
 
 It also provides decidable instances on membership in these subgroups, since
-`monoid_hom.decidable_mem_range` cannot be inferred without the help of a lambda.
-The presence of these instances induces a `fintype` instance on the `quotient_group.quotient` of
+`MonoidHom.decidableMemRange` cannot be inferred without the help of a lambda.
+The presence of these instances induces a `Fintype` instance on the `QuotientGroup.Quotient` of
 these subgroups.
 -/
 
@@ -73,10 +73,9 @@ theorem subtypeCongrHom.card_range {α : Type _} (p : α → Prop) [DecidablePre
 recovers the usual statement of Cayley's theorem via `right_cancel_monoid.to_has_faithful_smul` -/
 noncomputable def subgroupOfMulAction (G H : Type _) [Group G] [MulAction G H] [FaithfulSMul G H] :
     G ≃* (MulAction.toPermHom G H).range :=
-  MulEquiv.ofLeftInverse' _ (Classical.choose_spec MulAction.toPerm_injective.HasLeftInverse)
+  MulEquiv.ofLeftInverse' _ (Classical.choose_spec MulAction.toPerm_injective.hasLeftInverse)
 #align equiv.perm.subgroup_of_mul_action Equiv.Perm.subgroupOfMulAction
 
 end Perm
 
 end Equiv
-
