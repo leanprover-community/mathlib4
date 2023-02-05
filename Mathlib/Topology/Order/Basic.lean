@@ -80,13 +80,9 @@ for specific types.
 -/
 
 
-open Set Filter TopologicalSpace
-
-open Function
+open Set Filter TopologicalSpace Topology Function
 
 open OrderDual (toDual ofDual)
-
-open Topology Classical Filter
 
 universe u v w
 
@@ -97,14 +93,12 @@ set of points `(x, y)` with `x ≤ y` is closed in the product space. We introdu
 This property is satisfied for the order topology on a linear order, but it can be satisfied more
 generally, and suffices to derive many interesting properties relating order and topology. -/
 class OrderClosedTopology (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+  /-- The set `{ (x, y) | x ≤ y }` is a closed set. -/
   isClosed_le' : IsClosed { p : α × α | p.1 ≤ p.2 }
 #align order_closed_topology OrderClosedTopology
 
-instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ :=
-  h
-
-instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ :=
-  h
+instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ := h
+instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ := h
 
 theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=
@@ -117,15 +111,13 @@ section Preorder
 
 variable [TopologicalSpace α] [Preorder α] [t : OrderClosedTopology α]
 
-include t
-
 namespace Subtype
 
+-- todo: add `OrderEmbedding.orderClosedtopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
-    (continuous_subtype_val.comp continuous_fst).prod_mk
-      (continuous_subtype_val.comp continuous_snd)
-  OrderClosedTopology.mk (t.isClosed_le'.Preimage this)
+    continuous_subtype_val.prod_map continuous_subtype_val
+  OrderClosedTopology.mk (t.isClosed_le'.preimage this)
 
 end Subtype
 
@@ -155,7 +147,7 @@ theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
 #align is_closed_Ici isClosed_Ici
 
 instance : OrderClosedTopology αᵒᵈ :=
-  ⟨(@OrderClosedTopology.isClosed_le' α _ _ _).Preimage continuous_swap⟩
+  ⟨(@OrderClosedTopology.isClosed_le' α _ _ _).preimage continuous_swap⟩
 
 theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
   IsClosed.inter isClosed_Ici isClosed_Iic
@@ -178,8 +170,7 @@ theorem closure_Ici (a : α) : closure (Ici a) = Ici a :=
 
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
-  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := by
-    rw [nhds_prod_eq] <;> exact hf.prod_mk hg
+  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prod_mk_nhds hg
   show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
 #align le_of_tendsto_of_tendsto le_of_tendsto_of_tendsto
 
@@ -193,22 +184,22 @@ theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ :
 
 theorem le_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, f c ≤ b) : a ≤ b :=
-  le_of_tendsto_of_tendsto limUnder tendsto_const_nhds h
+  le_of_tendsto_of_tendsto lim tendsto_const_nhds h
 #align le_of_tendsto le_of_tendsto
 
 theorem le_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, f c ≤ b) : a ≤ b :=
-  le_of_tendsto limUnder (eventually_of_forall h)
+  le_of_tendsto lim (eventually_of_forall h)
 #align le_of_tendsto' le_of_tendsto'
 
 theorem ge_of_tendsto {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ᶠ c in x, b ≤ f c) : b ≤ a :=
-  le_of_tendsto_of_tendsto tendsto_const_nhds limUnder h
+  le_of_tendsto_of_tendsto tendsto_const_nhds lim h
 #align ge_of_tendsto ge_of_tendsto
 
 theorem ge_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, b ≤ f c) : b ≤ a :=
-  ge_of_tendsto limUnder (eventually_of_forall h)
+  ge_of_tendsto lim (eventually_of_forall h)
 #align ge_of_tendsto' ge_of_tendsto'
 
 @[simp]
@@ -219,21 +210,21 @@ theorem closure_le_eq [TopologicalSpace β] {f g : β → α} (hf : Continuous f
 
 theorem closure_lt_subset_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : closure { b | f b < g b } ⊆ { b | f b ≤ g b } :=
-  (closure_minimal fun x => le_of_lt) <| isClosed_le hf hg
+  (closure_minimal fun _ => le_of_lt) <| isClosed_le hf hg
 #align closure_lt_subset_le closure_lt_subset_le
 
 theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s : Set β} {x : β}
     (hx : x ∈ closure s) (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x)
     (h : ∀ y ∈ s, f y ≤ g y) : f x ≤ g x :=
   show (f x, g x) ∈ { p : α × α | p.1 ≤ p.2 } from
-    OrderClosedTopology.isClosed_le'.closure_subset ((hf.Prod hg).mem_closure hx h)
+    OrderClosedTopology.isClosed_le'.closure_subset ((hf.prod hg).mem_closure hx h)
 #align continuous_within_at.closure_le ContinuousWithinAt.closure_le
 
 /-- If `s` is a closed set and two functions `f` and `g` are continuous on `s`,
 then the set `{x ∈ s | f x ≤ g x}` is a closed set. -/
 theorem IsClosed.isClosed_le [TopologicalSpace β] {f g : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed ({ x ∈ s | f x ≤ g x }) :=
-  (hf.Prod hg).preimage_closed_of_closed hs OrderClosedTopology.isClosed_le'
+  (hf.prod hg).preimage_closed_of_closed hs OrderClosedTopology.isClosed_le'
 #align is_closed.is_closed_le IsClosed.isClosed_le
 
 theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : ∀ x ∈ s, f x ≤ g x)
@@ -245,16 +236,15 @@ theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : 
 
 theorem IsClosed.epigraph [TopologicalSpace β] {f : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ f p.1 ≤ p.2 } :=
-  (hs.Preimage continuous_fst).isClosed_le (hf.comp continuousOn_fst Subset.rfl) continuousOn_snd
+  (hs.preimage continuous_fst).isClosed_le (hf.comp continuousOn_fst Subset.rfl) continuousOn_snd
 #align is_closed.epigraph IsClosed.epigraph
 
 theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ p.2 ≤ f p.1 } :=
-  (hs.Preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
+  (hs.preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
 #align is_closed.hypograph IsClosed.hypograph
 
-omit t
-
+-- todo: move these lemmas to `Topology.Algebra.Order.LeftRight`
 theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b) :=
   nhdsWithin_neBot_of_mem H₂
 #align nhds_within_Ici_ne_bot nhdsWithin_Ici_neBot
@@ -279,13 +269,11 @@ section PartialOrder
 
 variable [TopologicalSpace α] [PartialOrder α] [t : OrderClosedTopology α]
 
-include t
-
 -- see Note [lower instance priority]
 instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
   t2_iff_isClosed_diagonal.2 <| by
     simpa only [diagonal, le_antisymm_iff] using
-      t.is_closed_le'.inter (isClosed_le continuous_snd continuous_fst)
+      t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
 #align order_closed_topology.to_t2_space OrderClosedTopology.to_t2Space
 
 end PartialOrder
@@ -294,15 +282,14 @@ section LinearOrder
 
 variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
 
-theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } := by
-  simp_rw [← isClosed_compl_iff, compl_set_of, not_lt]
-  exact isClosed_le continuous_snd continuous_fst
-#align is_open_lt_prod isOpen_lt_prod
-
 theorem isOpen_lt [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { b | f b < g b } := by
-  simp [lt_iff_not_ge, -not_le] <;> exact (isClosed_le hg hf).isOpen_compl
+  simpa only [lt_iff_not_le] using (isClosed_le hg hf).isOpen_compl
 #align is_open_lt isOpen_lt
+
+theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } :=
+  isOpen_lt continuous_fst continuous_snd
+#align is_open_lt_prod isOpen_lt_prod
 
 variable {a b : α}
 
@@ -381,12 +368,12 @@ theorem eventually_gt_of_tendsto_gt {l : Filter γ} {f : γ → α} {u v : α} (
 
 theorem eventually_le_of_tendsto_lt {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
     (h : Tendsto f l (𝓝 v)) : ∀ᶠ a in l, f a ≤ u :=
-  (eventually_lt_of_tendsto_lt hv h).mono fun v => le_of_lt
+  (eventually_lt_of_tendsto_lt hv h).mono fun _ => le_of_lt
 #align eventually_le_of_tendsto_lt eventually_le_of_tendsto_lt
 
 theorem eventually_ge_of_tendsto_gt {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
     (h : Tendsto f l (𝓝 v)) : ∀ᶠ a in l, u ≤ f a :=
-  (eventually_gt_of_tendsto_gt hv h).mono fun v => le_of_lt
+  (eventually_gt_of_tendsto_gt hv h).mono fun _ => le_of_lt
 #align eventually_ge_of_tendsto_gt eventually_ge_of_tendsto_gt
 
 variable [TopologicalSpace γ]
@@ -405,34 +392,47 @@ require the stronger hypothesis `order_topology α` -/
 #### Right neighborhoods, point excluded
 -/
 
-
 theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ 𝓝[>] b :=
   mem_nhdsWithin.2
-    ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio] <;> exact Ioo_subset_Ioo_left H.1⟩
+    ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio]; exact Ioo_subset_Ioo_left H.1⟩
 #align Ioo_mem_nhds_within_Ioi Ioo_mem_nhdsWithin_Ioi
+
+-- porting note: new lemma; todo: swap `'`?
+theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
+  Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
 #align Ioc_mem_nhds_within_Ioi Ioc_mem_nhdsWithin_Ioi
 
+-- porting note: new lemma; todo: swap `'`?
+theorem Ioc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioc a b ∈ 𝓝[>] a :=
+  Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
+
 theorem Ico_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ico a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ico_self
 #align Ico_mem_nhds_within_Ioi Ico_mem_nhdsWithin_Ioi
+
+-- porting note: new lemma; todo: swap `'`?
+theorem Ico_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ico a b ∈ 𝓝[>] a :=
+  Ico_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
 theorem Icc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Icc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Icc_self
 #align Icc_mem_nhds_within_Ioi Icc_mem_nhdsWithin_Ioi
 
+-- porting note: new lemma; todo: swap `'`?
+theorem Icc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[>] a :=
+  Icc_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
+
 @[simp]
 theorem nhdsWithin_Ioc_eq_nhdsWithin_Ioi {a b : α} (h : a < b) : 𝓝[Ioc a b] a = 𝓝[>] a :=
-  le_antisymm (nhdsWithin_mono _ Ioc_subset_Ioi_self) <|
-    nhdsWithin_le_of_mem <| Ioc_mem_nhdsWithin_Ioi <| left_mem_Ico.2 h
+  nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iic_mem_nhds h
 #align nhds_within_Ioc_eq_nhds_within_Ioi nhdsWithin_Ioc_eq_nhdsWithin_Ioi
 
 @[simp]
 theorem nhdsWithin_Ioo_eq_nhdsWithin_Ioi {a b : α} (h : a < b) : 𝓝[Ioo a b] a = 𝓝[>] a :=
-  le_antisymm (nhdsWithin_mono _ Ioo_subset_Ioi_self) <|
-    nhdsWithin_le_of_mem <| Ioo_mem_nhdsWithin_Ioi <| left_mem_Ico.2 h
+  nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iio_mem_nhds h
 #align nhds_within_Ioo_eq_nhds_within_Ioi nhdsWithin_Ioo_eq_nhdsWithin_Ioi
 
 @[simp]
@@ -451,23 +451,37 @@ theorem continuousWithinAt_Ioo_iff_Ioi [TopologicalSpace β] {a b : α} {f : α 
 #### Left neighborhoods, point excluded
 -/
 
-
 theorem Ioo_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ioo a c ∈ 𝓝[<] b := by
   simpa only [dual_Ioo] using
-    Ioo_mem_nhdsWithin_Ioi (show to_dual b ∈ Ico (to_dual c) (to_dual a) from H.symm)
+    Ioo_mem_nhdsWithin_Ioi (show toDual b ∈ Ico (toDual c) (toDual a) from H.symm)
 #align Ioo_mem_nhds_within_Iio Ioo_mem_nhdsWithin_Iio
+
+-- porting note: new lemma; todo: swap `'`?
+theorem Ioo_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[<] b :=
+  Ioo_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
 theorem Ico_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
 #align Ico_mem_nhds_within_Iio Ico_mem_nhdsWithin_Iio
 
+-- porting note: new lemma; todo: swap `'`?
+theorem Ico_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Ico a b ∈ 𝓝[<] b :=
+  Ico_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
+
 theorem Ioc_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ioc a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ioc_self
 #align Ioc_mem_nhds_within_Iio Ioc_mem_nhdsWithin_Iio
 
+-- porting note: new lemma; todo: swap `'`?
+theorem Ioc_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Ioc a b ∈ 𝓝[<] b :=
+  Ioc_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
+
 theorem Icc_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Icc a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Icc_self
 #align Icc_mem_nhds_within_Iio Icc_mem_nhdsWithin_Iio
+
+theorem Icc_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[<] b :=
+  Icc_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
 @[simp]
 theorem nhdsWithin_Ico_eq_nhdsWithin_Iio {a b : α} (h : a < b) : 𝓝[Ico a b] b = 𝓝[<] b := by
@@ -495,7 +509,6 @@ theorem continuousWithinAt_Ioo_iff_Iio {a b : α} {f : α → γ} (h : a < b) :
 #### Right neighborhoods, point included
 -/
 
-
 theorem Ioo_mem_nhdsWithin_Ici {a b c : α} (H : b ∈ Ioo a c) : Ioo a c ∈ 𝓝[≥] b :=
   mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds isOpen_Ioo H
 #align Ioo_mem_nhds_within_Ici Ioo_mem_nhdsWithin_Ici
@@ -509,20 +522,24 @@ theorem Ico_mem_nhdsWithin_Ici {a b c : α} (H : b ∈ Ico a c) : Ico a c ∈ �
     ⟨Iio c, isOpen_Iio, H.2, by simp only [inter_comm, Ici_inter_Iio, Ico_subset_Ico_left H.1]⟩
 #align Ico_mem_nhds_within_Ici Ico_mem_nhdsWithin_Ici
 
+theorem Ico_mem_nhdsWithin_Ici' {a b : α} (H : a < b) : Ico a b ∈ 𝓝[≥] a :=
+  Ico_mem_nhdsWithin_Ici ⟨le_rfl, H⟩
+
 theorem Icc_mem_nhdsWithin_Ici {a b c : α} (H : b ∈ Ico a c) : Icc a c ∈ 𝓝[≥] b :=
   mem_of_superset (Ico_mem_nhdsWithin_Ici H) Ico_subset_Icc_self
 #align Icc_mem_nhds_within_Ici Icc_mem_nhdsWithin_Ici
 
+theorem Icc_mem_nhdsWithin_Ici' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[≥] a :=
+  Icc_mem_nhdsWithin_Ici ⟨le_rfl, H⟩
+
 @[simp]
 theorem nhdsWithin_Icc_eq_nhdsWithin_Ici {a b : α} (h : a < b) : 𝓝[Icc a b] a = 𝓝[≥] a :=
-  le_antisymm (nhdsWithin_mono _ Icc_subset_Ici_self) <|
-    nhdsWithin_le_of_mem <| Icc_mem_nhdsWithin_Ici <| left_mem_Ico.2 h
+  nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iic_mem_nhds h
 #align nhds_within_Icc_eq_nhds_within_Ici nhdsWithin_Icc_eq_nhdsWithin_Ici
 
 @[simp]
 theorem nhdsWithin_Ico_eq_nhdsWithin_Ici {a b : α} (h : a < b) : 𝓝[Ico a b] a = 𝓝[≥] a :=
-  le_antisymm (nhdsWithin_mono _ fun x => And.left) <|
-    nhdsWithin_le_of_mem <| Ico_mem_nhdsWithin_Ici <| left_mem_Ico.2 h
+  nhdsWithin_inter_of_mem' <| nhdsWithin_le_nhds <| Iio_mem_nhds h
 #align nhds_within_Ico_eq_nhds_within_Ici nhdsWithin_Ico_eq_nhdsWithin_Ici
 
 @[simp]
@@ -552,12 +569,18 @@ theorem Ico_mem_nhdsWithin_Iic {a b c : α} (H : b ∈ Ioo a c) : Ico a c ∈ �
 
 theorem Ioc_mem_nhdsWithin_Iic {a b c : α} (H : b ∈ Ioc a c) : Ioc a c ∈ 𝓝[≤] b := by
   simpa only [dual_Ico] using
-    Ico_mem_nhdsWithin_Ici (show to_dual b ∈ Ico (to_dual c) (to_dual a) from H.symm)
+    Ico_mem_nhdsWithin_Ici (show toDual b ∈ Ico (toDual c) (toDual a) from H.symm)
 #align Ioc_mem_nhds_within_Iic Ioc_mem_nhdsWithin_Iic
+
+theorem Ioc_mem_nhdsWithin_Iic' {a b : α} (H : a < b) : Ioc a b ∈ 𝓝[≤] b :=
+  Ioc_mem_nhdsWithin_Iic ⟨H, le_rfl⟩
 
 theorem Icc_mem_nhdsWithin_Iic {a b c : α} (H : b ∈ Ioc a c) : Icc a c ∈ 𝓝[≤] b :=
   mem_of_superset (Ioc_mem_nhdsWithin_Iic H) Ioc_subset_Icc_self
 #align Icc_mem_nhds_within_Iic Icc_mem_nhdsWithin_Iic
+
+theorem Icc_mem_nhdsWithin_Iic' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[≤] b :=
+  Icc_mem_nhdsWithin_Iic ⟨H, le_rfl⟩
 
 @[simp]
 theorem nhdsWithin_Icc_eq_nhdsWithin_Iic {a b : α} (h : a < b) : 𝓝[Icc a b] b = 𝓝[≤] b := by
@@ -593,7 +616,7 @@ variable [TopologicalSpace β]
 
 theorem lt_subset_interior_le (hf : Continuous f) (hg : Continuous g) :
     { b | f b < g b } ⊆ interior { b | f b ≤ g b } :=
-  (interior_maximal fun p => le_of_lt) <| isOpen_lt hf hg
+  (interior_maximal fun _ => le_of_lt) <| isOpen_lt hf hg
 #align lt_subset_interior_le lt_subset_interior_le
 
 theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
@@ -614,7 +637,7 @@ theorem frontier_Ici_subset (a : α) : frontier (Ici a) ⊆ {a} :=
 
 theorem frontier_lt_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b < g b } ⊆ { b | f b = g b } := by
-  rw [← frontier_compl] <;> convert frontier_le_subset_eq hg hf <;> simp [ext_iff, eq_comm]
+  simpa only [← not_lt, ← compl_setOf, frontier_compl, eq_comm] using frontier_le_subset_eq hg hf
 #align frontier_lt_subset_eq frontier_lt_subset_eq
 
 theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
@@ -630,34 +653,30 @@ theorem continuous_if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] 
 theorem Continuous.if_le [TopologicalSpace γ] [∀ x, Decidable (f x ≤ g x)] {f' g' : β → γ}
     (hf' : Continuous f') (hg' : Continuous g') (hf : Continuous f) (hg : Continuous g)
     (hfg : ∀ x, f x = g x → f' x = g' x) : Continuous fun x => if f x ≤ g x then f' x else g' x :=
-  continuous_if_le hf hg hf'.ContinuousOn hg'.ContinuousOn hfg
+  continuous_if_le hf hg hf'.continuousOn hg'.continuousOn hfg
 #align continuous.if_le Continuous.if_le
 
-theorem Tendsto.eventually_lt {l : Filter γ} {f g : γ → α} {y z : α} (hf : Tendsto f l (𝓝 y))
-    (hg : Tendsto g l (𝓝 z)) (hyz : y < z) : ∀ᶠ x in l, f x < g x := by
-  by_cases h : y ⋖ z
-  · filter_upwards [hf (Iio_mem_nhds hyz), hg (Ioi_mem_nhds hyz)]
-    rw [h.Iio_eq]
-    exact fun x hfx hgx => lt_of_le_of_lt hfx hgx
-  · obtain ⟨w, hyw, hwz⟩ := (not_covby_iff hyz).mp h
-    filter_upwards [hf (Iio_mem_nhds hyw), hg (Ioi_mem_nhds hwz)]
-    exact fun x => lt_trans
-#align tendsto.eventually_lt Tendsto.eventually_lt
+theorem Filter.Tendsto.eventually_lt {l : Filter γ} {f g : γ → α} {y z : α} (hf : Tendsto f l (𝓝 y))
+    (hg : Tendsto g l (𝓝 z)) (hyz : y < z) : ∀ᶠ x in l, f x < g x :=
+  let ⟨_a, ha, _b, hb, h⟩ := hyz.exists_disjoint_Iio_Ioi
+  (hg.eventually (Ioi_mem_nhds hb)).mp <| (hf.eventually (Iio_mem_nhds ha)).mono fun _ h₁ h₂ =>
+    h _ h₁ _ h₂
+#align tendsto.eventually_lt Filter.Tendsto.eventually_lt
 
-theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀) (hg : ContinuousAt g x₀)
+nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀) (hg : ContinuousAt g x₀)
     (hfg : f x₀ < g x₀) : ∀ᶠ x in 𝓝 x₀, f x < g x :=
-  Tendsto.eventually_lt hf hg hfg
+  hf.eventually_lt hg hfg
 #align continuous_at.eventually_lt ContinuousAt.eventually_lt
 
-@[continuity]
-theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
+-- porting note: todo: restore @[continuity]
+protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => min (f b) (g b) := by
   simp only [min_def]
   exact hf.if_le hg hf hg fun x => id
 #align continuous.min Continuous.min
 
-@[continuity]
-theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
+-- porting note: todo: restore @[continuity]
+protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => max (f b) (g b) :=
   @Continuous.min αᵒᵈ _ _ _ _ _ _ _ hf hg
 #align continuous.max Continuous.max
@@ -672,23 +691,23 @@ theorem continuous_max : Continuous fun p : α × α => max p.1 p.2 :=
   continuous_fst.max continuous_snd
 #align continuous_max continuous_max
 
-theorem Filter.Tendsto.max {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
+protected theorem Filter.Tendsto.max {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
     (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => max (f b) (g b)) b (𝓝 (max a₁ a₂)) :=
-  (continuous_max.Tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
+  (continuous_max.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
 #align filter.tendsto.max Filter.Tendsto.max
 
-theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
+protected theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
     (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => min (f b) (g b)) b (𝓝 (min a₁ a₂)) :=
-  (continuous_min.Tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
+  (continuous_min.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
 #align filter.tendsto.min Filter.Tendsto.min
 
-theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
+protected theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max a (f i)) l (𝓝 a) := by
-  convert ((continuous_max.comp (@Continuous.Prod.mk α α _ _ a)).Tendsto a).comp h
+  convert ((continuous_max.comp (@Continuous.Prod.mk α α _ _ a)).tendsto a).comp h
   simp
 #align filter.tendsto.max_right Filter.Tendsto.max_right
 
-theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
+protected theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max (f i) a) l (𝓝 a) := by
   simp_rw [max_comm _ a]
   exact h.max_right
@@ -696,8 +715,8 @@ theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 
 
 theorem Filter.tendsto_nhds_max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
     Tendsto (fun i => max a (f i)) l (𝓝[>] a) := by
-  obtain ⟨h₁ : tendsto f l (𝓝 a), h₂ : ∀ᶠ i in l, f i ∈ Ioi a⟩ := tendsto_nhds_within_iff.mp h
-  exact tendsto_nhds_within_iff.mpr ⟨h₁.max_right, h₂.mono fun i hi => lt_max_of_lt_right hi⟩
+  obtain ⟨h₁ : Tendsto f l (𝓝 a), h₂ : ∀ᶠ i in l, f i ∈ Ioi a⟩ := tendsto_nhdsWithin_iff.mp h
+  exact tendsto_nhdsWithin_iff.mpr ⟨h₁.max_right, h₂.mono fun i hi => lt_max_of_lt_right hi⟩
 #align filter.tendsto_nhds_max_right Filter.tendsto_nhds_max_right
 
 theorem Filter.tendsto_nhds_max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
@@ -726,20 +745,24 @@ theorem Filter.tendsto_nhds_min_left {l : Filter β} {a : α} (h : Tendsto f l (
   @Filter.tendsto_nhds_max_left αᵒᵈ β _ _ _ f l a h
 #align filter.tendsto_nhds_min_left Filter.tendsto_nhds_min_left
 
-theorem Dense.exists_lt [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) : ∃ y ∈ s, y < x :=
+protected theorem Dense.exists_lt [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) :
+    ∃ y ∈ s, y < x :=
   hs.exists_mem_open isOpen_Iio (exists_lt x)
 #align dense.exists_lt Dense.exists_lt
 
-theorem Dense.exists_gt [NoMaxOrder α] {s : Set α} (hs : Dense s) (x : α) : ∃ y ∈ s, x < y :=
-  hs.OrderDual.exists_lt x
+protected theorem Dense.exists_gt [NoMaxOrder α] {s : Set α} (hs : Dense s) (x : α) :
+    ∃ y ∈ s, x < y :=
+  hs.orderDual.exists_lt x
 #align dense.exists_gt Dense.exists_gt
 
-theorem Dense.exists_le [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) : ∃ y ∈ s, y ≤ x :=
-  (hs.exists_lt x).imp fun y hy => ⟨hy.fst, hy.snd.le⟩
+protected theorem Dense.exists_le [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) :
+    ∃ y ∈ s, y ≤ x :=
+  (hs.exists_lt x).imp fun _ h => ⟨h.1, h.2.le⟩
 #align dense.exists_le Dense.exists_le
 
-theorem Dense.exists_ge [NoMaxOrder α] {s : Set α} (hs : Dense s) (x : α) : ∃ y ∈ s, x ≤ y :=
-  hs.OrderDual.exists_le x
+protected theorem Dense.exists_ge [NoMaxOrder α] {s : Set α} (hs : Dense s) (x : α) :
+    ∃ y ∈ s, x ≤ y :=
+  hs.orderDual.exists_le x
 #align dense.exists_ge Dense.exists_ge
 
 theorem Dense.exists_le' {s : Set α} (hs : Dense s) (hbot : ∀ x, IsBot x → x ∈ s) (x : α) :
@@ -753,7 +776,7 @@ theorem Dense.exists_le' {s : Set α} (hs : Dense s) (hbot : ∀ x, IsBot x → 
 
 theorem Dense.exists_ge' {s : Set α} (hs : Dense s) (htop : ∀ x, IsTop x → x ∈ s) (x : α) :
     ∃ y ∈ s, x ≤ y :=
-  hs.OrderDual.exists_le' htop x
+  hs.orderDual.exists_le' htop x
 #align dense.exists_ge' Dense.exists_ge'
 
 theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x y : α} (h : x < y) :
@@ -765,14 +788,12 @@ variable [Nonempty α] [TopologicalSpace β]
 
 /-- A compact set is bounded below -/
 theorem IsCompact.bddBelow {s : Set α} (hs : IsCompact s) : BddBelow s := by
-  by_contra H
-  rcases hs.elim_finite_subcover_image (fun x (_ : x ∈ s) => @isOpen_Ioi _ _ _ _ x) _ with
-    ⟨t, st, ft, ht⟩
-  · refine' H (ft.bdd_below.imp fun C hC y hy => _)
-    rcases mem_Union₂.1 (ht hy) with ⟨x, hx, xy⟩
-    exact le_trans (hC hx) (le_of_lt xy)
-  · refine' fun x hx => mem_Union₂.2 (not_imp_comm.1 _ H)
-    exact fun h => ⟨x, fun y hy => le_of_not_lt (h.imp fun ys => ⟨_, hy, ys⟩)⟩
+  cases' botOrderOrNoBotOrder α with h h; exact OrderBot.bddBelow s
+  have : s ⊆ ⋃ a : α, Ioi a := (@unionᵢ_Ioi α _ (NoBotOrder.to_noMinOrder α)).symm ▸ subset_univ s
+  rcases hs.elim_finite_subcover _ (fun _ => isOpen_Ioi) this with ⟨t, ht⟩
+  refine t.bddBelow.imp fun C hC y hy => ?_
+  rcases mem_unionᵢ₂.1 (ht hy) with ⟨a, ha, hay⟩
+  exact (hC ha).trans (le_of_lt hay)
 #align is_compact.bdd_below IsCompact.bddBelow
 
 /-- A compact set is bounded above -/
@@ -783,7 +804,7 @@ theorem IsCompact.bddAbove {s : Set α} (hs : IsCompact s) : BddAbove s :=
 /-- A continuous function is bounded below on a compact set. -/
 theorem IsCompact.bddBelow_image {f : β → α} {K : Set β} (hK : IsCompact K)
     (hf : ContinuousOn f K) : BddBelow (f '' K) :=
-  (hK.image_of_continuousOn hf).BddBelow
+  (hK.image_of_continuousOn hf).bddBelow
 #align is_compact.bdd_below_image IsCompact.bddBelow_image
 
 /-- A continuous function is bounded above on a compact set. -/
@@ -796,9 +817,9 @@ theorem IsCompact.bddAbove_image {f : β → α} {K : Set β} (hK : IsCompact K)
 @[to_additive " A continuous function with compact support is bounded below. "]
 theorem Continuous.bddBelow_range_of_hasCompactMulSupport [One α] {f : β → α} (hf : Continuous f)
     (h : HasCompactMulSupport f) : BddBelow (range f) :=
-  (h.isCompact_range hf).BddBelow
+  (h.isCompact_range hf).bddBelow
 #align continuous.bdd_below_range_of_has_compact_mul_support Continuous.bddBelow_range_of_hasCompactMulSupport
-#align continuous.bdd_below_range_of_has_compact_support Continuous.bddBelow_range_of_has_compact_support
+#align continuous.bdd_below_range_of_has_compact_support Continuous.bddBelow_range_of_hasCompactSupport
 
 /-- A continuous function with compact support is bounded above. -/
 @[to_additive " A continuous function with compact support is bounded above. "]
@@ -806,7 +827,7 @@ theorem Continuous.bddAbove_range_of_hasCompactMulSupport [One α] {f : β → �
     (h : HasCompactMulSupport f) : BddAbove (range f) :=
   @Continuous.bddBelow_range_of_hasCompactMulSupport αᵒᵈ _ _ _ _ _ _ _ _ hf h
 #align continuous.bdd_above_range_of_has_compact_mul_support Continuous.bddAbove_range_of_hasCompactMulSupport
-#align continuous.bdd_above_range_of_has_compact_support Continuous.bddAbove_range_of_has_compact_support
+#align continuous.bdd_above_range_of_has_compact_support Continuous.bddAbove_range_of_hasCompactSupport
 
 end LinearOrder
 
@@ -814,28 +835,27 @@ end OrderClosedTopology
 
 instance [Preorder α] [TopologicalSpace α] [OrderClosedTopology α] [Preorder β] [TopologicalSpace β]
     [OrderClosedTopology β] : OrderClosedTopology (α × β) :=
-  ⟨(isClosed_le (continuous_fst.comp continuous_fst) (continuous_fst.comp continuous_snd)).inter
-      (isClosed_le (continuous_snd.comp continuous_fst) (continuous_snd.comp continuous_snd))⟩
+  ⟨(isClosed_le continuous_fst.fst continuous_snd.fst).inter
+    (isClosed_le continuous_fst.snd continuous_snd.snd)⟩
 
 instance {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, OrderClosedTopology (α i)] : OrderClosedTopology (∀ i, α i) := by
   constructor
-  simp only [Pi.le_def, set_of_forall]
-  exact
-    isClosed_interᵢ fun i =>
-      isClosed_le ((continuous_apply i).comp continuous_fst)
-        ((continuous_apply i).comp continuous_snd)
+  simp only [Pi.le_def, setOf_forall]
+  exact isClosed_interᵢ fun i => isClosed_le (continuous_apply i).fst' (continuous_apply i).snd'
 
-instance Pi.order_closed_topology' [Preorder β] [TopologicalSpace β] [OrderClosedTopology β] :
+instance Pi.orderClosedTopology' [Preorder β] [TopologicalSpace β] [OrderClosedTopology β] :
     OrderClosedTopology (α → β) :=
-  Pi.orderClosedTopology
-#align pi.order_closed_topology' Pi.order_closed_topology'
+  inferInstance
+#align pi.order_closed_topology' Pi.orderClosedTopology'
 
+-- porting note: todo: define `Preorder.topology` before `OrderTopology` and reuse the def
 /-- The order topology on an ordered type is the topology generated by open intervals. We register
 it on a preorder, but it is mostly interesting in linear orders, where it is also order-closed.
 We define it as a mixin. If you want to introduce the order topology on a preorder, use
 `preorder.topology`. -/
 class OrderTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
+  /-- The topology is generated by open intervals `Set.Ioi _` and `Set.Iio _`. -/
   topology_eq_generate_intervals : t = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a }
 #align order_topology OrderTopology
 
@@ -853,69 +873,58 @@ section Preorder
 
 variable [TopologicalSpace α] [Preorder α] [t : OrderTopology α]
 
-include t
-
 instance : OrderTopology αᵒᵈ :=
   ⟨by
-    convert @OrderTopology.topology_eq_generate_intervals α _ _ _ <;>
-        conv in _ ∨ _ => rw [or_comm] <;>
-      rfl⟩
+    convert @OrderTopology.topology_eq_generate_intervals α _ _ _
+    conv in _ ∨ _ => rw [or_comm]⟩
 
 theorem isOpen_iff_generate_intervals {s : Set α} :
     IsOpen s ↔ GenerateOpen { s | ∃ a, s = Ioi a ∨ s = Iio a } s := by
-  rw [t.topology_eq_generate_intervals] <;> rfl
+  rw [t.topology_eq_generate_intervals]; rfl
 #align is_open_iff_generate_intervals isOpen_iff_generate_intervals
 
-theorem isOpen_lt' (a : α) : IsOpen { b : α | a < b } := by
-  rw [@isOpen_iff_generate_intervals α _ _ t] <;> exact generate_open.basic _ ⟨a, Or.inl rfl⟩
+theorem isOpen_lt' (a : α) : IsOpen { b : α | a < b } :=
+  isOpen_iff_generate_intervals.2 <| .basic _ ⟨a, .inl rfl⟩
 #align is_open_lt' isOpen_lt'
 
-theorem isOpen_gt' (a : α) : IsOpen { b : α | b < a } := by
-  rw [@isOpen_iff_generate_intervals α _ _ t] <;> exact generate_open.basic _ ⟨a, Or.inr rfl⟩
+theorem isOpen_gt' (a : α) : IsOpen { b : α | b < a } :=
+  isOpen_iff_generate_intervals.2 <| .basic _ ⟨a, .inr rfl⟩
 #align is_open_gt' isOpen_gt'
 
 theorem lt_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a < x :=
-  IsOpen.mem_nhds (isOpen_lt' _) h
+  (isOpen_lt' _).mem_nhds h
 #align lt_mem_nhds lt_mem_nhds
 
 theorem le_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a ≤ x :=
-  (𝓝 b).sets_of_superset (lt_mem_nhds h) fun b hb => le_of_lt hb
+  (lt_mem_nhds h).mono fun _ => le_of_lt
 #align le_mem_nhds le_mem_nhds
 
 theorem gt_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 a, x < b :=
-  IsOpen.mem_nhds (isOpen_gt' _) h
+  (isOpen_gt' _).mem_nhds h
 #align gt_mem_nhds gt_mem_nhds
 
 theorem ge_mem_nhds {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b :=
-  (𝓝 a).sets_of_superset (gt_mem_nhds h) fun b hb => le_of_lt hb
+  (gt_mem_nhds h).mono fun _ => le_of_lt
 #align ge_mem_nhds ge_mem_nhds
 
 theorem nhds_eq_order (a : α) : 𝓝 a = (⨅ b ∈ Iio a, 𝓟 (Ioi b)) ⊓ ⨅ b ∈ Ioi a, 𝓟 (Iio b) := by
-  rw [t.topology_eq_generate_intervals, nhds_generate_from] <;>
-    exact
-      le_antisymm
-        (le_inf
-          (le_infᵢ₂ fun b hb => infᵢ_le_of_le { c : α | b < c } <| infᵢ_le _ ⟨hb, b, Or.inl rfl⟩)
-          (le_infᵢ₂ fun b hb => infᵢ_le_of_le { c : α | c < b } <| infᵢ_le _ ⟨hb, b, Or.inr rfl⟩))
-        (le_infᵢ fun s =>
-          le_infᵢ fun ⟨ha, b, hs⟩ =>
-            match s, ha, hs with
-            | _, h, Or.inl rfl => inf_le_of_left_le <| infᵢ_le_of_le b <| infᵢ_le _ h
-            | _, h, Or.inr rfl => inf_le_of_right_le <| infᵢ_le_of_le b <| infᵢ_le _ h)
+  rw [t.topology_eq_generate_intervals, nhds_generateFrom]
+  simp_rw [mem_setOf_eq, @and_comm (a ∈ _), exists_or, or_and_right, infᵢ_or, infᵢ_and, infᵢ_exists,
+    infᵢ_inf_eq, infᵢ_comm (ι := Set α), infᵢ_infᵢ_eq_left, mem_Ioi, mem_Iio]
 #align nhds_eq_order nhds_eq_order
 
 theorem tendsto_order {f : β → α} {a : α} {x : Filter β} :
     Tendsto f x (𝓝 a) ↔ (∀ a' < a, ∀ᶠ b in x, a' < f b) ∧ ∀ a' > a, ∀ᶠ b in x, f b < a' := by
-  simp [nhds_eq_order a, tendsto_inf, tendsto_infi, tendsto_principal]
+  simp only [nhds_eq_order a, tendsto_inf, tendsto_infᵢ, tendsto_principal]; rfl
 #align tendsto_order tendsto_order
 
 instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) := by
   simp only [nhds_eq_order, infᵢ_subtype']
-  refine'
-    ((has_basis_infi_principal_finite _).inf (has_basis_infi_principal_finite _)).TendstoIxxClass
-      fun s hs => _
-  refine' ((ord_connected_bInter _).inter (ord_connected_bInter _)).out <;> intro _ _
-  exacts[ord_connected_Ioi, ord_connected_Iio]
+  refine
+    ((hasBasis_infᵢ_principal_finite _).inf (hasBasis_infᵢ_principal_finite _)).tendstoIxxClass
+      fun s _ => ?_
+  refine' ((ordConnected_binterᵢ _).inter (ordConnected_binterᵢ _)).out <;> intro _ _
+  exacts [ordConnected_Ioi, ordConnected_Iio]
 #align tendsto_Icc_class_nhds tendstoIccClassNhds
 
 instance tendstoIcoClassNhds (a : α) : TendstoIxxClass Ico (𝓝 a) (𝓝 a) :=
@@ -935,7 +944,7 @@ hold eventually for the filter. -/
 theorem tendsto_of_tendsto_of_tendsto_of_le_of_le' {f g h : β → α} {b : Filter β} {a : α}
     (hg : Tendsto g b (𝓝 a)) (hh : Tendsto h b (𝓝 a)) (hgf : ∀ᶠ b in b, g b ≤ f b)
     (hfh : ∀ᶠ b in b, f b ≤ h b) : Tendsto f b (𝓝 a) :=
-  (hg.Icc hh).of_smallSets <| hgf.And hfh
+  (hg.Icc hh).of_smallSets <| hgf.and hfh
 #align tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_of_tendsto_of_tendsto_of_le_of_le'
 
 /-- **Squeeze theorem** (also known as **sandwich theorem**). This version assumes that inequalities
@@ -948,21 +957,15 @@ theorem tendsto_of_tendsto_of_tendsto_of_le_of_le {f g h : β → α} {b : Filte
 #align tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_of_tendsto_of_tendsto_of_le_of_le
 
 theorem nhds_order_unbounded {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
-    𝓝 a = ⨅ (l) (h₂ : l < a) (u) (h₂ : a < u), 𝓟 (Ioo l u) := by
-  have : ∃ u, u ∈ Ioi a := hu
-  have : ∃ l, l ∈ Iio a := hl
-  simp only [nhds_eq_order, inf_binfᵢ, binfᵢ_inf, *, inf_principal, Ioi_inter_Iio]
-  rfl
+    𝓝 a = ⨅ (l) (_h₂ : l < a) (u) (_h₂ : a < u), 𝓟 (Ioo l u) := by
+  simp only [nhds_eq_order, ← inf_binfᵢ, ← binfᵢ_inf, *, ← inf_principal, ← Ioi_inter_Iio]; rfl
 #align nhds_order_unbounded nhds_order_unbounded
 
 theorem tendsto_order_unbounded {f : β → α} {a : α} {x : Filter β} (hu : ∃ u, a < u)
     (hl : ∃ l, l < a) (h : ∀ l u, l < a → a < u → ∀ᶠ b in x, l < f b ∧ f b < u) :
     Tendsto f x (𝓝 a) := by
-  rw [nhds_order_unbounded hu hl] <;>
-    exact
-      tendsto_infi.2 fun l =>
-        tendsto_infi.2 fun hl =>
-          tendsto_infi.2 fun u => tendsto_infi.2 fun hu => tendsto_principal.2 <| h l u hl hu
+  simp only [nhds_order_unbounded hu hl, tendsto_infᵢ, tendsto_principal]
+  exact fun l hl u => h l u hl
 #align tendsto_order_unbounded tendsto_order_unbounded
 
 end Preorder
@@ -978,108 +981,75 @@ instance tendstoIccClassNhdsPi {ι : Type _} {α : ι → Type _} [∀ i, Preord
     TendstoIxxClass Icc (𝓝 f) (𝓝 f) := by
   constructor
   conv in (𝓝 f).smallSets => rw [nhds_pi, Filter.pi]
-  simp only [small_sets_infi, small_sets_comap, tendsto_infi, tendsto_lift', (· ∘ ·),
+  simp only [smallSets_infᵢ, smallSets_comap, tendsto_infᵢ, tendsto_lift', (· ∘ ·),
     mem_powerset_iff]
   intro i s hs
-  have : tendsto (fun g : ∀ i, α i => g i) (𝓝 f) (𝓝 (f i)) := (continuous_apply i).Tendsto f
+  have : Tendsto (fun g : ∀ i, α i => g i) (𝓝 f) (𝓝 (f i)) := (continuous_apply i).tendsto f
   refine' (tendsto_lift'.1 ((this.comp tendsto_fst).Icc (this.comp tendsto_snd)) s hs).mono _
   exact fun p hp g hg => hp ⟨hg.1 _, hg.2 _⟩
 #align tendsto_Icc_class_nhds_pi tendstoIccClassNhdsPi
 
-theorem induced_order_topology' {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
+-- porting note: new lemma
+theorem induced_topology_le_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
+    [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y) :
+    induced f ‹TopologicalSpace β› ≤ Preorder.topology α := by
+  let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
+  refine le_of_nhds_le_nhds fun x => ?_
+  simp only [nhds_eq_order, nhds_induced, comap_inf, comap_infᵢ, comap_principal, Ioi, Iio, ← hf]
+  refine inf_le_inf (le_infᵢ₂ fun a ha => ?_) (le_infᵢ₂ fun a ha => ?_)
+  exacts [infᵢ₂_le (f a) ha, infᵢ₂_le (f a) ha]
+
+-- porting note: new lemma
+theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpace β]
+    [OrderTopology β] {f : α → β} (hf : ∀ {x y}, f x < f y ↔ x < y)
+    (H₁ : ∀ {a b x}, b < f a → ¬(b < f x) → ∃ y, y < a ∧ b ≤ f y)
+    (H₂ : ∀ {a b x}, f a < b → ¬(f x < b) → ∃ y, a < y ∧ f y ≤ b) :
+    induced f ‹TopologicalSpace β› = Preorder.topology α := by
+  let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
+  refine le_antisymm (induced_topology_le_preorder hf) ?_
+  refine le_of_nhds_le_nhds fun a => ?_
+  simp only [nhds_eq_order, nhds_induced, comap_inf, comap_infᵢ, comap_principal]
+  refine inf_le_inf (le_infᵢ₂ fun b hb => ?_) (le_infᵢ₂ fun b hb => ?_)
+  · rcases em (∃ x, ¬(b < f x)) with (⟨x, hx⟩ | hb)
+    · rcases H₁ hb hx with ⟨y, hya, hyb⟩
+      exact infᵢ₂_le_of_le y hya (principal_mono.2 fun z hz => hyb.trans_lt (hf.2 hz))
+    · push_neg at hb
+      exact le_principal_iff.2 (univ_mem' hb)
+  · rcases em (∃ x, ¬(f x < b)) with (⟨x, hx⟩ | hb)
+    · rcases H₂ hb hx with ⟨y, hya, hyb⟩
+      exact infᵢ₂_le_of_le y hya (principal_mono.2 fun z hz => (hf.2 hz).trans_le hyb)
+    · push_neg at hb
+      exact le_principal_iff.2 (univ_mem' hb)
+
+theorem induced_orderTopology' {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
     [Preorder β] [OrderTopology β] (f : α → β) (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H₁ : ∀ {a x}, x < f a → ∃ b < a, x ≤ f b) (H₂ : ∀ {a x}, f a < x → ∃ b > a, f b ≤ x) :
-    @OrderTopology _ (induced f ta) _ := by
-  letI := induced f ta
-  refine' ⟨eq_of_nhds_eq_nhds fun a => _⟩
-  rw [nhds_induced, nhds_generate_from, nhds_eq_order (f a)]
-  apply le_antisymm
-  · refine' le_infᵢ fun s => le_infᵢ fun hs => le_principal_iff.2 _
-    rcases hs with ⟨ab, b, rfl | rfl⟩
-    ·
-      exact
-        mem_comap.2
-          ⟨{ x | f b < x },
-            mem_inf_of_left <|
-              mem_infi_of_mem _ <| mem_infi_of_mem (hf.2 ab) <| mem_principal_self _,
-            fun x => hf.1⟩
-    ·
-      exact
-        mem_comap.2
-          ⟨{ x | x < f b },
-            mem_inf_of_right <|
-              mem_infi_of_mem _ <| mem_infi_of_mem (hf.2 ab) <| mem_principal_self _,
-            fun x => hf.1⟩
-  · rw [← map_le_iff_le_comap]
-    refine' le_inf _ _ <;> refine' le_infᵢ fun x => le_infᵢ fun h => le_principal_iff.2 _ <;> simp
-    · rcases H₁ h with ⟨b, ab, xb⟩
-      refine' mem_infi_of_mem _ (mem_infi_of_mem ⟨ab, b, Or.inl rfl⟩ (mem_principal.2 _))
-      exact fun c hc => lt_of_le_of_lt xb (hf.2 hc)
-    · rcases H₂ h with ⟨b, ab, xb⟩
-      refine' mem_infi_of_mem _ (mem_infi_of_mem ⟨ab, b, Or.inr rfl⟩ (mem_principal.2 _))
-      exact fun c hc => lt_of_lt_of_le (hf.2 hc) xb
-#align induced_order_topology' induced_order_topology'
+    @OrderTopology _ (induced f ta) _ :=
+  let _ := induced f ta
+  ⟨induced_topology_eq_preorder hf (fun h _ => H₁ h) (fun h _ => H₂ h)⟩
+#align induced_order_topology' induced_orderTopology'
 
 theorem induced_orderTopology {α : Type u} {β : Type v} [Preorder α] [ta : TopologicalSpace β]
     [Preorder β] [OrderTopology β] (f : α → β) (hf : ∀ {x y}, f x < f y ↔ x < y)
     (H : ∀ {x y}, x < y → ∃ a, x < f a ∧ f a < y) : @OrderTopology _ (induced f ta) _ :=
-  induced_order_topology' f (@hf)
-    (fun a x xa =>
-      let ⟨b, xb, ba⟩ := H xa
-      ⟨b, hf.1 ba, le_of_lt xb⟩)
-    fun a x ax =>
-    let ⟨b, ab, bx⟩ := H ax
-    ⟨b, hf.1 ab, le_of_lt bx⟩
+  induced_orderTopology' f (hf)
+    (fun xa => let ⟨b, xb, ba⟩ := H xa; ⟨b, hf.1 ba, le_of_lt xb⟩)
+    fun ax => let ⟨b, ab, bx⟩ := H ax; ⟨b, hf.1 ab, le_of_lt bx⟩
 #align induced_order_topology induced_orderTopology
 
-/-- On an `ord_connected` subset of a linear order, the order topology for the restriction of the
+/-- On an `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
-instance orderTopology_of_ordConnected {α : Type u} [ta : TopologicalSpace α] [LinearOrder α]
+instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t := by
-  letI := induced (coe : t → α) ta
-  refine' ⟨eq_of_nhds_eq_nhds fun a => _⟩
-  rw [nhds_induced, nhds_generate_from, nhds_eq_order (a : α)]
-  apply le_antisymm
-  · refine' le_infᵢ fun s => le_infᵢ fun hs => le_principal_iff.2 _
-    rcases hs with ⟨ab, b, rfl | rfl⟩
-    · refine' ⟨Ioi b, _, fun _ => id⟩
-      refine' mem_inf_of_left (mem_infi_of_mem b _)
-      exact mem_infi_of_mem ab (mem_principal_self (Ioi ↑b))
-    · refine' ⟨Iio b, _, fun _ => id⟩
-      refine' mem_inf_of_right (mem_infi_of_mem b _)
-      exact mem_infi_of_mem ab (mem_principal_self (Iio b))
-  · rw [← map_le_iff_le_comap]
-    refine' le_inf _ _
-    · refine' le_infᵢ fun x => le_infᵢ fun h => le_principal_iff.2 _
-      by_cases hx : x ∈ t
-      · refine' mem_infi_of_mem (Ioi ⟨x, hx⟩) (mem_infi_of_mem ⟨h, ⟨⟨x, hx⟩, Or.inl rfl⟩⟩ _)
-        exact fun _ => id
-      simp only [SetCoe.exists, mem_set_of_eq, mem_map']
-      convert univ_sets _
-      suffices hx' : ∀ y : t, ↑y ∈ Ioi x
-      · simp [hx']
-      intro y
-      revert hx
-      contrapose!
-      -- here we use the `ord_connected` hypothesis
-      exact fun hx => ht.out y.2 a.2 ⟨le_of_not_gt hx, le_of_lt h⟩
-    · refine' le_infᵢ fun x => le_infᵢ fun h => le_principal_iff.2 _
-      by_cases hx : x ∈ t
-      · refine' mem_infi_of_mem (Iio ⟨x, hx⟩) (mem_infi_of_mem ⟨h, ⟨⟨x, hx⟩, Or.inr rfl⟩⟩ _)
-        exact fun _ => id
-      simp only [SetCoe.exists, mem_set_of_eq, mem_map']
-      convert univ_sets _
-      suffices hx' : ∀ y : t, ↑y ∈ Iio x
-      · simp [hx']
-      intro y
-      revert hx
-      contrapose!
-      -- here we use the `ord_connected` hypothesis
-      exact fun hx => ht.out a.2 y.2 ⟨le_of_lt h, le_of_not_gt hx⟩
+  refine ⟨induced_topology_eq_preorder Iff.rfl (fun h₁ h₂ => ?_) (fun h₁ h₂ => ?_)⟩
+  · have := ht.out (Subtype.property _) (Subtype.property _) ⟨not_lt.1 h₂, h₁.le⟩
+    exact ⟨⟨_, this⟩, h₁, le_rfl⟩
+  · have := ht.out (Subtype.property _) (Subtype.property _) ⟨h₁.le, not_lt.1 h₂⟩
+    exact ⟨⟨_, this⟩, h₁, le_rfl⟩
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
 theorem nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
-    𝓝[≥] a = (⨅ (u) (hu : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
+    𝓝[≥] a = (⨅ (u) (_hu : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
   rw [nhdsWithin, nhds_eq_order]
   refine' le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf _ inf_le_left) inf_le_right)
   exact inf_le_right.trans (le_infᵢ₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
@@ -1091,7 +1061,7 @@ theorem nhdsWithin_Iic_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology �
 #align nhds_within_Iic_eq'' nhdsWithin_Iic_eq''
 
 theorem nhdsWithin_Ici_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
-    (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (hu : a < u), 𝓟 (Ico a u) := by
+    (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_hu : a < u), 𝓟 (Ico a u) := by
   simp only [nhdsWithin_Ici_eq'', binfᵢ_inf ha, inf_principal, Iio_inter_Ici]
 #align nhds_within_Ici_eq' nhdsWithin_Ici_eq'
 
@@ -1104,15 +1074,14 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
   (nhdsWithin_Ici_eq' ha).symm ▸
     hasBasis_binfᵢ_principal
-      (fun b hb c hc =>
-        ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
-          Ico_subset_Ico_right (min_le_right _ _)⟩)
+      (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
+        Ico_subset_Ico_right (min_le_right _ _)⟩)
       ha
 #align nhds_within_Ici_basis' nhdsWithin_Ici_basis'
 
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
-  convert @nhdsWithin_Ici_basis' αᵒᵈ _ _ _ (to_dual a) ha
+  convert @nhdsWithin_Ici_basis' αᵒᵈ _ _ _ (toDual a) ha
   exact funext fun x => (@dual_Ico _ _ _ _).symm
 #align nhds_within_Iic_basis' nhdsWithin_Iic_basis'
 
@@ -1148,9 +1117,7 @@ theorem nhds_bot_basis [TopologicalSpace α] [LinearOrder α] [OrderBot α] [Ord
 theorem nhds_top_basis_Ici [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] [DenselyOrdered α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) Ici :=
   nhds_top_basis.to_hasBasis
-    (fun a ha =>
-      let ⟨b, hab, hb⟩ := exists_between ha
-      ⟨b, hb, Ici_subset_Ioi.mpr hab⟩)
+    (fun _a ha => let ⟨b, hab, hb⟩ := exists_between ha; ⟨b, hb, Ici_subset_Ioi.mpr hab⟩)
     fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩
 #align nhds_top_basis_Ici nhds_top_basis_Ici
 
@@ -1161,9 +1128,9 @@ theorem nhds_bot_basis_Iic [TopologicalSpace α] [LinearOrder α] [OrderBot α] 
 
 theorem tendsto_nhds_top_mono [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊤)) (hg : f ≤ᶠ[l] g) : Tendsto g l (𝓝 ⊤) := by
-  simp only [nhds_top_order, tendsto_infi, tendsto_principal] at hf⊢
+  simp only [nhds_top_order, tendsto_infᵢ, tendsto_principal] at hf ⊢
   intro x hx
-  filter_upwards [hf x hx, hg]with _ using lt_of_lt_of_le
+  filter_upwards [hf x hx, hg] with _ using lt_of_lt_of_le
 #align tendsto_nhds_top_mono tendsto_nhds_top_mono
 
 theorem tendsto_nhds_bot_mono [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
@@ -1189,20 +1156,16 @@ section OrderClosedTopology
 
 variable [OrderClosedTopology α] {a b : α}
 
-theorem eventually_le_nhds (hab : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b :=
-  eventually_iff.mpr (mem_nhds_iff.mpr ⟨Iio b, Iio_subset_Iic_self, isOpen_Iio, hab⟩)
+theorem eventually_le_nhds (hab : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b := Iic_mem_nhds hab
 #align eventually_le_nhds eventually_le_nhds
 
-theorem eventually_lt_nhds (hab : a < b) : ∀ᶠ x in 𝓝 a, x < b :=
-  eventually_iff.mpr (mem_nhds_iff.mpr ⟨Iio b, rfl.Subset, isOpen_Iio, hab⟩)
+theorem eventually_lt_nhds (hab : a < b) : ∀ᶠ x in 𝓝 a, x < b := Iio_mem_nhds hab
 #align eventually_lt_nhds eventually_lt_nhds
 
-theorem eventually_ge_nhds (hab : b < a) : ∀ᶠ x in 𝓝 a, b ≤ x :=
-  eventually_iff.mpr (mem_nhds_iff.mpr ⟨Ioi b, Ioi_subset_Ici_self, isOpen_Ioi, hab⟩)
+theorem eventually_ge_nhds (hab : b < a) : ∀ᶠ x in 𝓝 a, b ≤ x := Ici_mem_nhds hab
 #align eventually_ge_nhds eventually_ge_nhds
 
-theorem eventually_gt_nhds (hab : b < a) : ∀ᶠ x in 𝓝 a, b < x :=
-  eventually_iff.mpr (mem_nhds_iff.mpr ⟨Ioi b, rfl.Subset, isOpen_Ioi, hab⟩)
+theorem eventually_gt_nhds (hab : b < a) : ∀ᶠ x in 𝓝 a, b < x := Ioi_mem_nhds hab
 #align eventually_gt_nhds eventually_gt_nhds
 
 end OrderClosedTopology
@@ -1213,27 +1176,16 @@ variable [OrderTopology α]
 
 theorem order_separated {a₁ a₂ : α} (h : a₁ < a₂) :
     ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ a₁ ∈ u ∧ a₂ ∈ v ∧ ∀ b₁ ∈ u, ∀ b₂ ∈ v, b₁ < b₂ :=
-  match dense_or_discrete a₁ a₂ with
-  | Or.inl ⟨a, ha₁, ha₂⟩ =>
-    ⟨{ a' | a' < a }, { a' | a < a' }, isOpen_gt' a, isOpen_lt' a, ha₁, ha₂, fun b₁ h₁ b₂ h₂ =>
-      lt_trans h₁ h₂⟩
-  | Or.inr ⟨h₁, h₂⟩ =>
-    ⟨{ a | a < a₂ }, { a | a₁ < a }, isOpen_gt' a₂, isOpen_lt' a₁, h, h, fun b₁ hb₁ b₂ hb₂ =>
-      calc
-        b₁ ≤ a₁ := h₂ _ hb₁
-        _ < a₂ := h
-        _ ≤ b₂ := h₁ _ hb₂
-        ⟩
+  let ⟨x, hx, y, hy, h⟩ := h.exists_disjoint_Iio_Ioi
+  ⟨Iio x, Ioi y, isOpen_gt' _, isOpen_lt' _, hx, hy, h⟩
 #align order_separated order_separated
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderTopology.to_orderClosedTopology : OrderClosedTopology α
-    where isClosed_le' :=
-    isOpen_compl_iff.1 <|
-      isOpen_prod_iff.mpr fun a₁ a₂ (h : ¬a₁ ≤ a₂) =>
-        have h : a₂ < a₁ := lt_of_not_ge h
-        let ⟨u, v, hu, hv, ha₁, ha₂, h⟩ := order_separated h
-        ⟨v, u, hv, hu, ha₂, ha₁, fun ⟨b₁, b₂⟩ ⟨h₁, h₂⟩ => not_le_of_gt <| h b₂ h₂ b₁ h₁⟩
+instance (priority := 100) OrderTopology.to_orderClosedTopology : OrderClosedTopology α where
+  isClosed_le' := isOpen_compl_iff.1 <| isOpen_prod_iff.mpr fun a₁ a₂ (h : ¬a₁ ≤ a₂) =>
+    have h : a₂ < a₁ := lt_of_not_ge h
+    let ⟨u, v, hu, hv, ha₁, ha₂, h⟩ := order_separated h
+    ⟨v, u, hv, hu, ha₂, ha₁, fun ⟨b₁, b₂⟩ ⟨h₁, h₂⟩ => not_le_of_gt <| h b₂ h₂ b₁ h₁⟩
 #align order_topology.to_order_closed_topology OrderTopology.to_orderClosedTopology
 
 theorem exists_Ioc_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ l, l < a) :
@@ -1251,33 +1203,33 @@ theorem exists_Ioc_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
 theorem exists_Ico_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {u : α} (hu : a < u) :
     ∃ u' ∈ Ioc a u, Ico a u' ⊆ s := by
   simpa only [OrderDual.exists, exists_prop, dual_Ico, dual_Ioc] using
-    exists_Ioc_subset_of_mem_nhds' (show of_dual ⁻¹' s ∈ 𝓝 (to_dual a) from hs) hu.dual
+    exists_Ioc_subset_of_mem_nhds' (show ofDual ⁻¹' s ∈ 𝓝 (toDual a) from hs) hu.dual
 #align exists_Ico_subset_of_mem_nhds' exists_Ico_subset_of_mem_nhds'
 
 theorem exists_Ico_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ u, a < u) :
-    ∃ (u : _)(_ : a < u), Ico a u ⊆ s :=
-  let ⟨l', hl'⟩ := h
+    ∃ u, a < u ∧ Ico a u ⊆ s :=
+  let ⟨_l', hl'⟩ := h;
   let ⟨l, hl⟩ := exists_Ico_subset_of_mem_nhds' hs hl'
-  ⟨l, hl.fst.1, hl.snd⟩
+  ⟨l, hl.1.1, hl.2⟩
 #align exists_Ico_subset_of_mem_nhds exists_Ico_subset_of_mem_nhds
 
 theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici {a : α} {s : Set α} (hs : s ∈ 𝓝[≥] a) :
-    ∃ (b : _)(_ : a ≤ b), Icc a b ∈ 𝓝[≥] a ∧ Icc a b ⊆ s := by
-  rcases(em (IsMax a)).imp_right not_is_max_iff.mp with (ha | ha)
+    ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[≥] a ∧ Icc a b ⊆ s := by
+  rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
   · use a
     simpa [ha.Ici_eq] using hs
   · rcases(nhdsWithin_Ici_basis' ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
-      exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsWithin_Ici <| left_mem_Ico.2 hab, hbs⟩⟩
-    · refine' ⟨c, hac.le, Icc_mem_nhdsWithin_Ici <| left_mem_Ico.mpr hac, _⟩
+      exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsWithin_Ici' hab, hbs⟩⟩
+    · refine' ⟨c, hac.le, Icc_mem_nhdsWithin_Ici' hac, _⟩
       exact (Icc_subset_Ico_right hcb).trans hbs
 #align exists_Icc_mem_subset_of_mem_nhds_within_Ici exists_Icc_mem_subset_of_mem_nhdsWithin_Ici
 
 theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Iic {a : α} {s : Set α} (hs : s ∈ 𝓝[≤] a) :
     ∃ b ≤ a, Icc b a ∈ 𝓝[≤] a ∧ Icc b a ⊆ s := by
-  simpa only [dual_Icc, to_dual.surjective.exists] using
-    @exists_Icc_mem_subset_of_mem_nhdsWithin_Ici αᵒᵈ _ _ _ (to_dual a) _ hs
+  simpa only [dual_Icc, toDual.surjective.exists] using
+    @exists_Icc_mem_subset_of_mem_nhdsWithin_Ici αᵒᵈ _ _ _ (toDual a) _ hs
 #align exists_Icc_mem_subset_of_mem_nhds_within_Iic exists_Icc_mem_subset_of_mem_nhdsWithin_Iic
 
 theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
@@ -1296,20 +1248,20 @@ theorem IsOpen.exists_Ioo_subset [Nontrivial α] {s : Set α} (hs : IsOpen s) (h
   obtain ⟨x, hx⟩ : ∃ x, x ∈ s := h
   obtain ⟨y, hy⟩ : ∃ y, y ≠ x := exists_ne x
   rcases lt_trichotomy x y with (H | rfl | H)
-  · obtain ⟨u, xu, hu⟩ : ∃ (u : α)(hu : x < u), Ico x u ⊆ s :=
+  · obtain ⟨u, xu, hu⟩ : ∃ u, x < u ∧ Ico x u ⊆ s :=
       exists_Ico_subset_of_mem_nhds (hs.mem_nhds hx) ⟨y, H⟩
     exact ⟨x, u, xu, Ioo_subset_Ico_self.trans hu⟩
   · exact (hy rfl).elim
-  · obtain ⟨l, lx, hl⟩ : ∃ (l : α)(hl : l < x), Ioc l x ⊆ s :=
+  · obtain ⟨l, lx, hl⟩ : ∃ l, l < x ∧ Ioc l x ⊆ s :=
       exists_Ioc_subset_of_mem_nhds (hs.mem_nhds hx) ⟨y, H⟩
     exact ⟨l, x, lx, Ioo_subset_Ioc_self.trans hl⟩
 #align is_open.exists_Ioo_subset IsOpen.exists_Ioo_subset
 
 theorem dense_of_exists_between [Nontrivial α] {s : Set α}
     (h : ∀ ⦃a b⦄, a < b → ∃ c ∈ s, a < c ∧ c < b) : Dense s := by
-  apply dense_iff_inter_open.2 fun U U_open U_nonempty => _
+  refine dense_iff_inter_open.2 fun U U_open U_nonempty => ?_
   obtain ⟨a, b, hab, H⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ U := U_open.exists_Ioo_subset U_nonempty
-  obtain ⟨x, xs, hx⟩ : ∃ (x : α)(H : x ∈ s), a < x ∧ x < b := h hab
+  obtain ⟨x, xs, hx⟩ : ∃ x ∈ s, a < x ∧ x < b := h hab
   exact ⟨x, ⟨H hx, xs⟩⟩
 #align dense_of_exists_between dense_of_exists_between
 
@@ -1318,7 +1270,7 @@ if for any `a < b` there exists `c ∈ s`, `a < c < b`. Each implication require
 assumptions. -/
 theorem dense_iff_exists_between [DenselyOrdered α] [Nontrivial α] {s : Set α} :
     Dense s ↔ ∀ a b, a < b → ∃ c ∈ s, a < c ∧ c < b :=
-  ⟨fun h a b hab => h.exists_between hab, dense_of_exists_between⟩
+  ⟨fun h _ _ hab => h.exists_between hab, dense_of_exists_between⟩
 #align dense_iff_exists_between dense_iff_exists_between
 
 /-- A set is a neighborhood of `a` if and only if it contains an interval `(l, u)` containing `a`,
@@ -1356,53 +1308,35 @@ theorem Filter.Eventually.exists_Ioo_subset [NoMaxOrder α] [NoMinOrder α] {a :
   mem_nhds_iff_exists_Ioo_subset.1 hp
 #align filter.eventually.exists_Ioo_subset Filter.Eventually.exists_Ioo_subset
 
+-- porting note: new lemma
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
-theorem countable_of_isolated_right [SecondCountableTopology α] :
-    Set.Countable { x : α | ∃ y, x < y ∧ Ioo x y = ∅ } := by
+theorem countable_setOf_covby_right [SecondCountableTopology α] :
+    Set.Countable { x : α | ∃ y, x ⋖ y } := by
   nontriviality α
-  let s := { x : α | ∃ y, x < y ∧ Ioo x y = ∅ }
-  have : ∀ x ∈ s, ∃ y, x < y ∧ Ioo x y = ∅ := fun x => id
-  choose! y hy h'y using this
-  have Hy : ∀ x z, x ∈ s → z < y x → z ≤ x :=
-    by
-    intro x z xs hz
-    have A : Ioo x (y x) = ∅ := h'y _ xs
-    contrapose! A
-    exact nonempty.ne_empty ⟨z, A, hz⟩
+  let s := { x : α | ∃ y, x ⋖ y }
+  have : ∀ x ∈ s, ∃ y, x ⋖ y := fun x => id
+  choose! y hy using this
+  have Hy : ∀ x z, x ∈ s → z < y x → z ≤ x := fun x z hx => (hy x hx).le_of_lt
   suffices H : ∀ a : Set α, IsOpen a → Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a }
-  · have : s ⊆ ⋃ a ∈ countable_basis α, { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } :=
-      by
-      intro x hx
-      rcases(is_basis_countable_basis α).exists_mem_of_ne (hy x hx).Ne with ⟨a, ab, xa, ya⟩
-      simp only [mem_set_of_eq, mem_Union]
-      exact ⟨a, ab, hx, xa, ya⟩
-    apply countable.mono this
-    refine' countable.bUnion (countable_countable_basis α) fun a ha => H _ _
-    exact is_open_of_mem_countable_basis ha
+  · have : s ⊆ ⋃ a ∈ countableBasis α, { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } := fun x hx => by
+      rcases (isBasis_countableBasis α).exists_mem_of_ne (hy x hx).ne with ⟨a, ab, xa, ya⟩
+      exact mem_unionᵢ₂.2 ⟨a, ab, hx, xa, ya⟩
+    refine Set.Countable.mono this ?_
+    refine' Countable.bunionᵢ (countable_countableBasis α) fun a ha => H _ _
+    exact isOpen_of_mem_countableBasis ha
   intro a ha
-  suffices H : Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
-  · have :
-      { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } ⊆
-        { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x } ∪ { x | IsBot x } :=
-      by
-      intro x hx
-      by_cases h'x : IsBot x
-      · simp only [h'x, mem_set_of_eq, mem_union, not_true, and_false_iff, false_or_iff]
-      ·
-        simpa only [h'x, hx.2.1, hx.2.2, mem_set_of_eq, mem_union, not_false_iff, and_true_iff,
-          or_false_iff] using hx.left
-    exact countable.mono this (H.union (subsingleton_is_bot α).Countable)
+  suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x }
+  · exact H.of_diff (subsingleton_isBot α).countable
+  simp only [and_assoc]
   let t := { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
   have : ∀ x ∈ t, ∃ z < x, Ioc z x ⊆ a := by
     intro x hx
     apply exists_Ioc_subset_of_mem_nhds (ha.mem_nhds hx.2.1)
     simpa only [IsBot, not_forall, not_le] using hx.right.right.right
   choose! z hz h'z using this
-  have : pairwise_disjoint t fun x => Ioc (z x) x :=
-    by
-    intro x xt x' x't hxx'
-    rcases lt_or_gt_of_ne hxx' with (h' | h')
+  have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
+    rcases hxx'.lt_or_lt with (h' | h')
     · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
       refine' h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), _⟩
       by_contra' H
@@ -1411,43 +1345,44 @@ theorem countable_of_isolated_right [SecondCountableTopology α] :
       refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
       by_contra' H
       exact False.elim (lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h'))
-  refine' this.countable_of_is_open (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
+  refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x)
   · rw [H]
     exact isOpen_Ioo
-  exact subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1)) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
-#align countable_of_isolated_right countable_of_isolated_right
+  exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
+
+/-- The set of points which are isolated on the right is countable when the space is
+second-countable. -/
+@[deprecated countable_setOf_covby_right]
+theorem countable_of_isolated_right' [SecondCountableTopology α] :
+    Set.Countable { x : α | ∃ y, x < y ∧ Ioo x y = ∅ } := by
+  simpa only [← covby_iff_Ioo_eq] using countable_setOf_covby_right
+#align countable_of_isolated_right countable_of_isolated_right'
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
-theorem countable_of_isolated_left [SecondCountableTopology α] :
+theorem countable_setOf_covby_left [SecondCountableTopology α] :
+    Set.Countable { x : α | ∃ y, y ⋖ x } := by
+  convert @countable_setOf_covby_right αᵒᵈ _ _ _ _
+  exact Set.ext fun x => exists_congr fun y => toDual_covby_toDual_iff.symm
+
+/-- The set of points which are isolated on the left is countable when the space is
+second-countable. -/
+theorem countable_of_isolated_left' [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y < x ∧ Ioo y x = ∅ } := by
-  convert @countable_of_isolated_right αᵒᵈ _ _ _ _
-  have : ∀ x y : α, Ioo x y = { z | z < y ∧ x < z } :=
-    by
-    simp_rw [and_comm', Ioo]
-    simp only [eq_self_iff_true, forall₂_true_iff]
-  simp_rw [this]
-  rfl
-#align countable_of_isolated_left countable_of_isolated_left
+  simpa only [← covby_iff_Ioo_eq] using countable_setOf_covby_left
+#align countable_of_isolated_left countable_of_isolated_left'
 
 /-- Consider a disjoint family of intervals `(x, y)` with `x < y` in a second-countable space.
 Then the family is countable.
 This is not a straightforward consequence of second-countability as some of these intervals might be
 empty (but in fact this can happen only for countably many of them). -/
 theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : α → α} {s : Set α}
-    (h : PairwiseDisjoint s fun x => Ioo x (y x)) (h' : ∀ x ∈ s, x < y x) : s.Countable := by
-  let t := { x | x ∈ s ∧ (Ioo x (y x)).Nonempty }
-  have t_count : t.countable :=
-    haveI : t ⊆ s := fun x hx => hx.1
-    (h.subset this).countable_of_isOpen (fun x hx => isOpen_Ioo) fun x hx => hx.2
-  have : s ⊆ t ∪ { x : α | ∃ x', x < x' ∧ Ioo x x' = ∅ } :=
-    by
-    intro x hx
-    by_cases h'x : (Ioo x (y x)).Nonempty
-    · exact Or.inl ⟨hx, h'x⟩
-    · exact Or.inr ⟨y x, h' x hx, not_nonempty_iff_eq_empty.1 h'x⟩
-  exact countable.mono this (t_count.union countable_of_isolated_right)
+    (h : PairwiseDisjoint s fun x => Ioo x (y x)) (h' : ∀ x ∈ s, x < y x) : s.Countable :=
+  have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
+    (h.subset (diff_subset _ _)).countable_of_isOpen (fun _ _ => isOpen_Ioo)
+      fun x hx => (h' _ hx.1).exists_lt_lt (mt (Exists.intro (y x)) hx.2)
+  this.of_diff countable_setOf_covby_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo
 
 section Pi
@@ -1460,12 +1395,11 @@ sometimes Lean fails to unify different instances while trying to apply the depe
 e.g., `ι → ℝ`.
 -/
 
-
 variable {ι : Type _} {π : ι → Type _} [Finite ι] [∀ i, LinearOrder (π i)]
   [∀ i, TopologicalSpace (π i)] [∀ i, OrderTopology (π i)] {a b x : ∀ i, π i} {a' b' x' : ι → α}
 
 theorem pi_Iic_mem_nhds (ha : ∀ i, x i < a i) : Iic a ∈ 𝓝 x :=
-  pi_univ_Iic a ▸ set_pi_mem_nhds (Set.toFinite _) fun i _ => Iic_mem_nhds (ha _)
+  pi_univ_Iic a ▸ set_pi_mem_nhds (Set.toFinite _) fun _ _ => Iic_mem_nhds (ha _)
 #align pi_Iic_mem_nhds pi_Iic_mem_nhds
 
 theorem pi_Iic_mem_nhds' (ha : ∀ i, x' i < a' i) : Iic a' ∈ 𝓝 x' :=
@@ -1473,7 +1407,7 @@ theorem pi_Iic_mem_nhds' (ha : ∀ i, x' i < a' i) : Iic a' ∈ 𝓝 x' :=
 #align pi_Iic_mem_nhds' pi_Iic_mem_nhds'
 
 theorem pi_Ici_mem_nhds (ha : ∀ i, a i < x i) : Ici a ∈ 𝓝 x :=
-  pi_univ_Ici a ▸ set_pi_mem_nhds (Set.toFinite _) fun i _ => Ici_mem_nhds (ha _)
+  pi_univ_Ici a ▸ set_pi_mem_nhds (Set.toFinite _) fun _ _ => Ici_mem_nhds (ha _)
 #align pi_Ici_mem_nhds pi_Ici_mem_nhds
 
 theorem pi_Ici_mem_nhds' (ha : ∀ i, a' i < x' i) : Ici a' ∈ 𝓝 x' :=
@@ -1481,7 +1415,7 @@ theorem pi_Ici_mem_nhds' (ha : ∀ i, a' i < x' i) : Ici a' ∈ 𝓝 x' :=
 #align pi_Ici_mem_nhds' pi_Ici_mem_nhds'
 
 theorem pi_Icc_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Icc a b ∈ 𝓝 x :=
-  pi_univ_Icc a b ▸ set_pi_mem_nhds finite_univ fun i _ => Icc_mem_nhds (ha _) (hb _)
+  pi_univ_Icc a b ▸ set_pi_mem_nhds finite_univ fun _ _ => Icc_mem_nhds (ha _) (hb _)
 #align pi_Icc_mem_nhds pi_Icc_mem_nhds
 
 theorem pi_Icc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : Icc a' b' ∈ 𝓝 x' :=
@@ -1491,7 +1425,7 @@ theorem pi_Icc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 variable [Nonempty ι]
 
 theorem pi_Iio_mem_nhds (ha : ∀ i, x i < a i) : Iio a ∈ 𝓝 x := by
-  refine' mem_of_superset (set_pi_mem_nhds (Set.toFinite _) fun i _ => _) (pi_univ_Iio_subset a)
+  refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Iio_subset a)
   exact Iio_mem_nhds (ha i)
 #align pi_Iio_mem_nhds pi_Iio_mem_nhds
 
@@ -1508,7 +1442,7 @@ theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
 #align pi_Ioi_mem_nhds' pi_Ioi_mem_nhds'
 
 theorem pi_Ioc_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioc a b ∈ 𝓝 x := by
-  refine' mem_of_superset (set_pi_mem_nhds (Set.toFinite _) fun i _ => _) (pi_univ_Ioc_subset a b)
+  refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ioc_subset a b)
   exact Ioc_mem_nhds (ha i) (hb i)
 #align pi_Ioc_mem_nhds pi_Ioc_mem_nhds
 
@@ -1517,7 +1451,7 @@ theorem pi_Ioc_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 #align pi_Ioc_mem_nhds' pi_Ioc_mem_nhds'
 
 theorem pi_Ico_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ico a b ∈ 𝓝 x := by
-  refine' mem_of_superset (set_pi_mem_nhds (Set.toFinite _) fun i _ => _) (pi_univ_Ico_subset a b)
+  refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ico_subset a b)
   exact Ico_mem_nhds (ha i) (hb i)
 #align pi_Ico_mem_nhds pi_Ico_mem_nhds
 
@@ -1526,7 +1460,7 @@ theorem pi_Ico_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 #align pi_Ico_mem_nhds' pi_Ico_mem_nhds'
 
 theorem pi_Ioo_mem_nhds (ha : ∀ i, a i < x i) (hb : ∀ i, x i < b i) : Ioo a b ∈ 𝓝 x := by
-  refine' mem_of_superset (set_pi_mem_nhds (Set.toFinite _) fun i _ => _) (pi_univ_Ioo_subset a b)
+  refine' mem_of_superset (set_pi_mem_nhds Set.finite_univ fun i _ => _) (pi_univ_Ioo_subset a b)
   exact Ioo_mem_nhds (ha i) (hb i)
 #align pi_Ioo_mem_nhds pi_Ioo_mem_nhds
 
@@ -1538,7 +1472,7 @@ end Pi
 
 theorem disjoint_nhds_atTop [NoMaxOrder α] (x : α) : Disjoint (𝓝 x) atTop := by
   rcases exists_gt x with ⟨y, hy : x < y⟩
-  refine' disjoint_of_disjoint_of_mem _ (Iio_mem_nhds hy) (mem_at_top y)
+  refine' disjoint_of_disjoint_of_mem _ (Iio_mem_nhds hy) (mem_atTop y)
   exact disjoint_left.mpr fun z => not_le.2
 #align disjoint_nhds_at_top disjoint_nhds_atTop
 
@@ -1583,796 +1517,50 @@ We've seen some properties of left and right neighborhood of a point in an `orde
 In an `order_topology`, such neighborhoods can be characterized as the sets containing suitable
 intervals to the right or to the left of `a`. We give now these characterizations. -/
 
+open List in
+/-- The following statements are equivalent:
 
-/- failed to parenthesize: parenthesize: uncaught backtrack exception
-[PrettyPrinter.parenthesize.input] (Command.declaration
-     (Command.declModifiers
-      [(Command.docComment
-        "/--"
-        "The following statements are equivalent:\n\n0. `s` is a neighborhood of `a` within `(a, +∞)`\n1. `s` is a neighborhood of `a` within `(a, b]`\n2. `s` is a neighborhood of `a` within `(a, b)`\n3. `s` includes `(a, u)` for some `u ∈ (a, b]`\n4. `s` includes `(a, u)` for some `u > a` -/")]
-      []
-      []
-      []
-      []
-      [])
-     (Command.theorem
-      "theorem"
-      (Command.declId `tFAE_mem_nhdsWithin_Ioi [])
-      (Command.declSig
-       [(Term.implicitBinder "{" [`a `b] [":" `α] "}")
-        (Term.explicitBinder "(" [`hab] [":" («term_<_» `a "<" `b)] [] ")")
-        (Term.explicitBinder "(" [`s] [":" (Term.app `Set [`α])] [] ")")]
-       (Term.typeSpec
-        ":"
-        (Term.app
-         `TFAE
-         [(«term[_]»
-           "["
-           [(«term_∈_» `s "∈" (Topology.Topology.Basic.nhds_within.gt "𝓝[>] " `a))
-            ","
-            («term_∈_»
-             `s
-             "∈"
-             (Topology.Topology.Basic.nhds_within "𝓝[" (Term.app `Ioc [`a `b]) "] " `a))
-            ","
-            («term_∈_»
-             `s
-             "∈"
-             (Topology.Topology.Basic.nhds_within "𝓝[" (Term.app `Ioo [`a `b]) "] " `a))
-            ","
-            (Std.ExtendedBinder.«term∃__,_»
-             "∃"
-             (Lean.binderIdent `u)
-             («binderTerm∈_» "∈" (Term.app `Ioc [`a `b]))
-             ","
-             («term_⊆_» (Term.app `Ioo [`a `u]) "⊆" `s))
-            ","
-            (Std.ExtendedBinder.«term∃__,_»
-             "∃"
-             (Lean.binderIdent `u)
-             («binderTerm∈_» "∈" (Term.app `Ioi [`a]))
-             ","
-             («term_⊆_» (Term.app `Ioo [`a `u]) "⊆" `s))]
-           "]")])))
-      (Command.declValSimple
-       ":="
-       (Term.byTactic
-        "by"
-        (Tactic.tacticSeq
-         (Tactic.tacticSeq1Indented
-          [(Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "2"))
-           ";"
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Tactic.rwSeq
-              "rw"
-              []
-              (Tactic.rwRuleSeq
-               "["
-               [(Tactic.rwRule [] (Term.app `nhdsWithin_Ioc_eq_nhdsWithin_Ioi [`hab]))]
-               "]")
-              [])])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "3"))
-           ";"
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Tactic.rwSeq
-              "rw"
-              []
-              (Tactic.rwRuleSeq
-               "["
-               [(Tactic.rwRule [] (Term.app `nhdsWithin_Ioo_eq_nhdsWithin_Ioi [`hab]))]
-               "]")
-              [])])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "4") "→" (num "5"))
-           ";"
-           (Tactic.exact
-            "exact"
-            (Term.fun
-             "fun"
-             (Term.basicFun
-              [(Term.anonymousCtor "⟨" [`u "," `umem "," `hu] "⟩")]
-              []
-              "=>"
-              (Term.anonymousCtor "⟨" [`u "," (Term.proj `umem "." (fieldIdx "1")) "," `hu] "⟩"))))
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "5") "→" (num "1"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Std.Tactic.rintro
-              "rintro"
-              [(Std.Tactic.RCases.rintroPat.one
-                (Std.Tactic.RCases.rcasesPat.tuple
-                 "⟨"
-                 [(Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-                   [])
-                  ","
-                  (Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hau)])
-                   [])
-                  ","
-                  (Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hu)])
-                   [])]
-                 "⟩"))]
-              [])
-             []
-             (Tactic.exact
-              "exact"
-              (Term.app
-               `mem_of_superset
-               [(Term.app
-                 `Ioo_mem_nhdsWithin_Ioi
-                 [(Term.anonymousCtor "⟨" [(Term.app `le_refl [`a]) "," `hau] "⟩")])
-                `hu]))])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "1") "→" (num "4"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Tactic.intro "intro" [`h])
-             []
-             (Std.Tactic.rcases
-              "rcases"
-              [(Tactic.casesTarget
-                []
-                (Term.app
-                 (Term.proj `mem_nhdsWithin_iff_exists_mem_nhds_inter "." (fieldIdx "1"))
-                 [`h]))]
-              ["with"
-               (Std.Tactic.RCases.rcasesPatLo
-                (Std.Tactic.RCases.rcasesPatMed
-                 [(Std.Tactic.RCases.rcasesPat.tuple
-                   "⟨"
-                   [(Std.Tactic.RCases.rcasesPatLo
-                     (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `v)])
-                     [])
-                    ","
-                    (Std.Tactic.RCases.rcasesPatLo
-                     (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `va)])
-                     [])
-                    ","
-                    (Std.Tactic.RCases.rcasesPatLo
-                     (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv)])
-                     [])]
-                   "⟩")])
-                [])])
-             []
-             (Std.Tactic.rcases
-              "rcases"
-              [(Tactic.casesTarget [] (Term.app `exists_Ico_subset_of_mem_nhds' [`va `hab]))]
-              ["with"
-               (Std.Tactic.RCases.rcasesPatLo
-                (Std.Tactic.RCases.rcasesPatMed
-                 [(Std.Tactic.RCases.rcasesPat.tuple
-                   "⟨"
-                   [(Std.Tactic.RCases.rcasesPatLo
-                     (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-                     [])
-                    ","
-                    (Std.Tactic.RCases.rcasesPatLo
-                     (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `au)])
-                     [])
-                    ","
-                    (Std.Tactic.RCases.rcasesPatLo
-                     (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hu)])
-                     [])]
-                   "⟩")])
-                [])])
-             []
-             (Tactic.refine'
-              "refine'"
-              (Term.anonymousCtor
-               "⟨"
-               [`u "," `au "," (Term.fun "fun" (Term.basicFun [`x `hx] [] "=>" (Term.hole "_")))]
-               "⟩"))
-             []
-             (Tactic.refine'
-              "refine'"
-              (Term.app
-               `hv
-               [(Term.anonymousCtor
-                 "⟨"
-                 [(Term.app
-                   `hu
-                   [(Term.anonymousCtor
-                     "⟨"
-                     [(Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-                      ","
-                      (Term.proj `hx "." (fieldIdx "2"))]
-                     "⟩")])
-                  ","
-                  (Term.hole "_")]
-                 "⟩")]))
-             []
-             (Tactic.exact "exact" (Term.proj `hx "." (fieldIdx "1")))])
-           []
-           (Tactic.tfaeFinish "tfae_finish")])))
-       [])
-      []
-      []))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.abbrev'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.def'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.byTactic
-       "by"
-       (Tactic.tacticSeq
-        (Tactic.tacticSeq1Indented
-         [(Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "2"))
-          ";"
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Tactic.rwSeq
-             "rw"
-             []
-             (Tactic.rwRuleSeq
-              "["
-              [(Tactic.rwRule [] (Term.app `nhdsWithin_Ioc_eq_nhdsWithin_Ioi [`hab]))]
-              "]")
-             [])])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "3"))
-          ";"
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Tactic.rwSeq
-             "rw"
-             []
-             (Tactic.rwRuleSeq
-              "["
-              [(Tactic.rwRule [] (Term.app `nhdsWithin_Ioo_eq_nhdsWithin_Ioi [`hab]))]
-              "]")
-             [])])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "4") "→" (num "5"))
-          ";"
-          (Tactic.exact
-           "exact"
-           (Term.fun
-            "fun"
-            (Term.basicFun
-             [(Term.anonymousCtor "⟨" [`u "," `umem "," `hu] "⟩")]
-             []
-             "=>"
-             (Term.anonymousCtor "⟨" [`u "," (Term.proj `umem "." (fieldIdx "1")) "," `hu] "⟩"))))
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "5") "→" (num "1"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Std.Tactic.rintro
-             "rintro"
-             [(Std.Tactic.RCases.rintroPat.one
-               (Std.Tactic.RCases.rcasesPat.tuple
-                "⟨"
-                [(Std.Tactic.RCases.rcasesPatLo
-                  (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-                  [])
-                 ","
-                 (Std.Tactic.RCases.rcasesPatLo
-                  (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hau)])
-                  [])
-                 ","
-                 (Std.Tactic.RCases.rcasesPatLo
-                  (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hu)])
-                  [])]
-                "⟩"))]
-             [])
-            []
-            (Tactic.exact
-             "exact"
-             (Term.app
-              `mem_of_superset
-              [(Term.app
-                `Ioo_mem_nhdsWithin_Ioi
-                [(Term.anonymousCtor "⟨" [(Term.app `le_refl [`a]) "," `hau] "⟩")])
-               `hu]))])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "1") "→" (num "4"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Tactic.intro "intro" [`h])
-            []
-            (Std.Tactic.rcases
-             "rcases"
-             [(Tactic.casesTarget
-               []
-               (Term.app
-                (Term.proj `mem_nhdsWithin_iff_exists_mem_nhds_inter "." (fieldIdx "1"))
-                [`h]))]
-             ["with"
-              (Std.Tactic.RCases.rcasesPatLo
-               (Std.Tactic.RCases.rcasesPatMed
-                [(Std.Tactic.RCases.rcasesPat.tuple
-                  "⟨"
-                  [(Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `v)])
-                    [])
-                   ","
-                   (Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `va)])
-                    [])
-                   ","
-                   (Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv)])
-                    [])]
-                  "⟩")])
-               [])])
-            []
-            (Std.Tactic.rcases
-             "rcases"
-             [(Tactic.casesTarget [] (Term.app `exists_Ico_subset_of_mem_nhds' [`va `hab]))]
-             ["with"
-              (Std.Tactic.RCases.rcasesPatLo
-               (Std.Tactic.RCases.rcasesPatMed
-                [(Std.Tactic.RCases.rcasesPat.tuple
-                  "⟨"
-                  [(Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-                    [])
-                   ","
-                   (Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `au)])
-                    [])
-                   ","
-                   (Std.Tactic.RCases.rcasesPatLo
-                    (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hu)])
-                    [])]
-                  "⟩")])
-               [])])
-            []
-            (Tactic.refine'
-             "refine'"
-             (Term.anonymousCtor
-              "⟨"
-              [`u "," `au "," (Term.fun "fun" (Term.basicFun [`x `hx] [] "=>" (Term.hole "_")))]
-              "⟩"))
-            []
-            (Tactic.refine'
-             "refine'"
-             (Term.app
-              `hv
-              [(Term.anonymousCtor
-                "⟨"
-                [(Term.app
-                  `hu
-                  [(Term.anonymousCtor
-                    "⟨"
-                    [(Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-                     ","
-                     (Term.proj `hx "." (fieldIdx "2"))]
-                    "⟩")])
-                 ","
-                 (Term.hole "_")]
-                "⟩")]))
-            []
-            (Tactic.exact "exact" (Term.proj `hx "." (fieldIdx "1")))])
-          []
-          (Tactic.tfaeFinish "tfae_finish")])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.tacticSeq1Indented', expected 'Lean.Parser.Tactic.tacticSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.tfaeFinish "tfae_finish")
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (tactic__
-       (cdotTk (patternIgnore (token.«· » "·")))
-       [(Tactic.intro "intro" [`h])
-        []
-        (Std.Tactic.rcases
-         "rcases"
-         [(Tactic.casesTarget
-           []
-           (Term.app
-            (Term.proj `mem_nhdsWithin_iff_exists_mem_nhds_inter "." (fieldIdx "1"))
-            [`h]))]
-         ["with"
-          (Std.Tactic.RCases.rcasesPatLo
-           (Std.Tactic.RCases.rcasesPatMed
-            [(Std.Tactic.RCases.rcasesPat.tuple
-              "⟨"
-              [(Std.Tactic.RCases.rcasesPatLo
-                (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `v)])
-                [])
-               ","
-               (Std.Tactic.RCases.rcasesPatLo
-                (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `va)])
-                [])
-               ","
-               (Std.Tactic.RCases.rcasesPatLo
-                (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv)])
-                [])]
-              "⟩")])
-           [])])
-        []
-        (Std.Tactic.rcases
-         "rcases"
-         [(Tactic.casesTarget [] (Term.app `exists_Ico_subset_of_mem_nhds' [`va `hab]))]
-         ["with"
-          (Std.Tactic.RCases.rcasesPatLo
-           (Std.Tactic.RCases.rcasesPatMed
-            [(Std.Tactic.RCases.rcasesPat.tuple
-              "⟨"
-              [(Std.Tactic.RCases.rcasesPatLo
-                (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-                [])
-               ","
-               (Std.Tactic.RCases.rcasesPatLo
-                (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `au)])
-                [])
-               ","
-               (Std.Tactic.RCases.rcasesPatLo
-                (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hu)])
-                [])]
-              "⟩")])
-           [])])
-        []
-        (Tactic.refine'
-         "refine'"
-         (Term.anonymousCtor
-          "⟨"
-          [`u "," `au "," (Term.fun "fun" (Term.basicFun [`x `hx] [] "=>" (Term.hole "_")))]
-          "⟩"))
-        []
-        (Tactic.refine'
-         "refine'"
-         (Term.app
-          `hv
-          [(Term.anonymousCtor
-            "⟨"
-            [(Term.app
-              `hu
-              [(Term.anonymousCtor
-                "⟨"
-                [(Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-                 ","
-                 (Term.proj `hx "." (fieldIdx "2"))]
-                "⟩")])
-             ","
-             (Term.hole "_")]
-            "⟩")]))
-        []
-        (Tactic.exact "exact" (Term.proj `hx "." (fieldIdx "1")))])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.exact "exact" (Term.proj `hx "." (fieldIdx "1")))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.proj `hx "." (fieldIdx "1"))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `hx
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.refine'
-       "refine'"
-       (Term.app
-        `hv
-        [(Term.anonymousCtor
-          "⟨"
-          [(Term.app
-            `hu
-            [(Term.anonymousCtor
-              "⟨"
-              [(Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-               ","
-               (Term.proj `hx "." (fieldIdx "2"))]
-              "⟩")])
-           ","
-           (Term.hole "_")]
-          "⟩")]))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app
-       `hv
-       [(Term.anonymousCtor
-         "⟨"
-         [(Term.app
-           `hu
-           [(Term.anonymousCtor
-             "⟨"
-             [(Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-              ","
-              (Term.proj `hx "." (fieldIdx "2"))]
-             "⟩")])
-          ","
-          (Term.hole "_")]
-         "⟩")])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor
-       "⟨"
-       [(Term.app
-         `hu
-         [(Term.anonymousCtor
-           "⟨"
-           [(Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-            ","
-            (Term.proj `hx "." (fieldIdx "2"))]
-           "⟩")])
-        ","
-        (Term.hole "_")]
-       "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.hole "_")
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app
-       `hu
-       [(Term.anonymousCtor
-         "⟨"
-         [(Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-          ","
-          (Term.proj `hx "." (fieldIdx "2"))]
-         "⟩")])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.anonymousCtor', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor
-       "⟨"
-       [(Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-        ","
-        (Term.proj `hx "." (fieldIdx "2"))]
-       "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.proj `hx "." (fieldIdx "2"))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `hx
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `le_of_lt [(Term.proj `hx "." (fieldIdx "1"))])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.proj', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.proj', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.proj `hx "." (fieldIdx "1"))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `hx
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `le_of_lt
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `hu
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `hv
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.refine'
-       "refine'"
-       (Term.anonymousCtor
-        "⟨"
-        [`u "," `au "," (Term.fun "fun" (Term.basicFun [`x `hx] [] "=>" (Term.hole "_")))]
-        "⟩"))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor
-       "⟨"
-       [`u "," `au "," (Term.fun "fun" (Term.basicFun [`x `hx] [] "=>" (Term.hole "_")))]
-       "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.fun "fun" (Term.basicFun [`x `hx] [] "=>" (Term.hole "_")))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.hole "_")
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.strictImplicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.implicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.instBinder'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hx
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.strictImplicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.implicitBinder'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.instBinder'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `x
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (some 0, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `au
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `u
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Std.Tactic.rcases
-       "rcases"
-       [(Tactic.casesTarget [] (Term.app `exists_Ico_subset_of_mem_nhds' [`va `hab]))]
-       ["with"
-        (Std.Tactic.RCases.rcasesPatLo
-         (Std.Tactic.RCases.rcasesPatMed
-          [(Std.Tactic.RCases.rcasesPat.tuple
-            "⟨"
-            [(Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-              [])
-             ","
-             (Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `au)])
-              [])
-             ","
-             (Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hu)])
-              [])]
-            "⟩")])
-         [])])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `exists_Ico_subset_of_mem_nhds' [`va `hab])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hab
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `va
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `exists_Ico_subset_of_mem_nhds'
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Std.Tactic.rcases
-       "rcases"
-       [(Tactic.casesTarget
-         []
-         (Term.app (Term.proj `mem_nhdsWithin_iff_exists_mem_nhds_inter "." (fieldIdx "1")) [`h]))]
-       ["with"
-        (Std.Tactic.RCases.rcasesPatLo
-         (Std.Tactic.RCases.rcasesPatMed
-          [(Std.Tactic.RCases.rcasesPat.tuple
-            "⟨"
-            [(Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `v)])
-              [])
-             ","
-             (Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `va)])
-              [])
-             ","
-             (Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hv)])
-              [])]
-            "⟩")])
-         [])])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app (Term.proj `mem_nhdsWithin_iff_exists_mem_nhds_inter "." (fieldIdx "1")) [`h])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      (Term.proj `mem_nhdsWithin_iff_exists_mem_nhds_inter "." (fieldIdx "1"))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `mem_nhdsWithin_iff_exists_mem_nhds_inter
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.intro "intro" [`h])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.tfaeHave "tfae_have" [] (num "1") "→" (num "4"))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« → »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« ↔ »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« ← »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.declValEqns'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.whereStructInst'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.opaque'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.instance'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.axiom'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.example'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.inductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.classInductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-/--
-    The following statements are equivalent:
-    
-    0. `s` is a neighborhood of `a` within `(a, +∞)`
-    1. `s` is a neighborhood of `a` within `(a, b]`
-    2. `s` is a neighborhood of `a` within `(a, b)`
-    3. `s` includes `(a, u)` for some `u ∈ (a, b]`
-    4. `s` includes `(a, u)` for some `u > a` -/
-  theorem
-    tFAE_mem_nhdsWithin_Ioi
-    { a b : α } ( hab : a < b ) ( s : Set α )
-      :
-        TFAE
-          [
-            s ∈ 𝓝[>] a
-              ,
-              s ∈ 𝓝[ Ioc a b ] a
-              ,
-              s ∈ 𝓝[ Ioo a b ] a
-              ,
-              ∃ u ∈ Ioc a b , Ioo a u ⊆ s
-              ,
-              ∃ u ∈ Ioi a , Ioo a u ⊆ s
-            ]
-    :=
-      by
-        tfae_have 1 ↔ 2
-          ;
-          · rw [ nhdsWithin_Ioc_eq_nhdsWithin_Ioi hab ]
-          tfae_have 1 ↔ 3
-          ;
-          · rw [ nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab ]
-          tfae_have 4 → 5
-          ;
-          exact fun ⟨ u , umem , hu ⟩ => ⟨ u , umem . 1 , hu ⟩
-          tfae_have 5 → 1
-          ·
-            rintro ⟨ u , hau , hu ⟩
-              exact mem_of_superset Ioo_mem_nhdsWithin_Ioi ⟨ le_refl a , hau ⟩ hu
-          tfae_have 1 → 4
-          ·
-            intro h
-              rcases mem_nhdsWithin_iff_exists_mem_nhds_inter . 1 h with ⟨ v , va , hv ⟩
-              rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨ u , au , hu ⟩
-              refine' ⟨ u , au , fun x hx => _ ⟩
-              refine' hv ⟨ hu ⟨ le_of_lt hx . 1 , hx . 2 ⟩ , _ ⟩
-              exact hx . 1
-          tfae_finish
-#align tfae_mem_nhds_within_Ioi tFAE_mem_nhdsWithin_Ioi
+0. `s` is a neighborhood of `a` within `(a, +∞)`;
+1. `s` is a neighborhood of `a` within `(a, b]`;
+2. `s` is a neighborhood of `a` within `(a, b)`;
+3. `s` includes `(a, u)` for some `u ∈ (a, b]`;
+4. `s` includes `(a, u)` for some `u > a`.
+-/
+theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
+    TFAE [s ∈ 𝓝[>] a,
+      s ∈ 𝓝[Ioc a b] a,
+      s ∈ 𝓝[Ioo a b] a,
+      ∃ u ∈ Ioc a b, Ioo a u ⊆ s,
+      ∃ u ∈ Ioi a, Ioo a u ⊆ s] := by
+  rw [nhdsWithin_Ioc_eq_nhdsWithin_Ioi hab, nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
+  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] <;> try { exact id }
+  · rw [nhdsWithin, mem_inf_principal]
+    intro h
+    rcases exists_Ico_subset_of_mem_nhds' h hab with ⟨u, au, hu⟩
+    exact ⟨u, au, fun x hx => hu (Ioo_subset_Ico_self hx) hx.1⟩
+  · rintro ⟨u, hu, hs⟩
+    exact ⟨u, hu.1, hs⟩
+  · rintro ⟨u, hu, hs⟩
+    exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi' hu) hs
+#align tfae_mem_nhds_within_Ioi TFAE_mem_nhdsWithin_Ioi
 
 theorem mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioc a u', Ioo a u ⊆ s :=
-  (tFAE_mem_nhdsWithin_Ioi hu' s).out 0 3
+  (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 3
 #align mem_nhds_within_Ioi_iff_exists_mem_Ioc_Ioo_subset mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioo a u ⊆ s :=
-  (tFAE_mem_nhdsWithin_Ioi hu' s).out 0 4
+  (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 4
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset' mem_nhdsWithin_Ioi_iff_exists_Ioo_subset'
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u`. -/
 theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : Set α} :
     s ∈ 𝓝[>] a ↔ ∃ u ∈ Ioi a, Ioo a u ⊆ s :=
-  let ⟨u', hu'⟩ := exists_gt a
+  let ⟨_u', hu'⟩ := exists_gt a
   mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' hu'
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset mem_nhdsWithin_Ioi_iff_exists_Ioo_subset
 
@@ -2386,9 +1574,10 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered
     rcases exists_between au with ⟨v, hv⟩
     exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
   · rintro ⟨u, au, as⟩
-    exact ⟨u, au, subset.trans Ioo_subset_Ioc_self as⟩
+    exact ⟨u, au, Subset.trans Ioo_subset_Ioc_self as⟩
 #align mem_nhds_within_Ioi_iff_exists_Ioc_subset mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
 
+open List in
 /-- The following statements are equivalent:
 
 0. `s` is a neighborhood of `b` within `(-∞, b)`
@@ -2396,641 +1585,92 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered
 2. `s` is a neighborhood of `b` within `(a, b)`
 3. `s` includes `(l, b)` for some `l ∈ [a, b)`
 4. `s` includes `(l, b)` for some `l < b` -/
-theorem tFAE_mem_nhdsWithin_Iio {a b : α} (h : a < b) (s : Set α) :
-    TFAE
-      [s ∈ 𝓝[<] b,-- 0 : `s` is a neighborhood of `b` within `(-∞, b)`
-          s ∈
-          𝓝[Ico a b] b,-- 1 : `s` is a neighborhood of `b` within `[a, b)`
-          s ∈
-          𝓝[Ioo a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b)`
+theorem TFAE_mem_nhdsWithin_Iio {a b : α} (h : a < b) (s : Set α) :
+    TFAE [s ∈ 𝓝[<] b,-- 0 : `s` is a neighborhood of `b` within `(-∞, b)`
+        s ∈ 𝓝[Ico a b] b,-- 1 : `s` is a neighborhood of `b` within `[a, b)`
+        s ∈ 𝓝[Ioo a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b)`
         ∃ l ∈ Ico a b, Ioo l b ⊆ s,-- 3 : `s` includes `(l, b)` for some `l ∈ [a, b)`
-        ∃ l ∈ Iio b, Ioo l b ⊆ s] :=
-  by-- 4 : `s` includes `(l, b)` for some `l < b`
+        ∃ l ∈ Iio b, Ioo l b ⊆ s] := by-- 4 : `s` includes `(l, b)` for some `l < b`
   simpa only [exists_prop, OrderDual.exists, dual_Ioi, dual_Ioc, dual_Ioo] using
-    tFAE_mem_nhdsWithin_Ioi h.dual (of_dual ⁻¹' s)
-#align tfae_mem_nhds_within_Iio tFAE_mem_nhdsWithin_Iio
+    TFAE_mem_nhdsWithin_Ioi h.dual (ofDual ⁻¹' s)
+#align tfae_mem_nhds_within_Iio TFAE_mem_nhdsWithin_Iio
 
 theorem mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Ico l' a, Ioo l a ⊆ s :=
-  (tFAE_mem_nhdsWithin_Iio hl' s).out 0 3
+  (TFAE_mem_nhdsWithin_Iio hl' s).out 0 3
 #align mem_nhds_within_Iio_iff_exists_mem_Ico_Ioo_subset mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `(l, a)`
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsWithin_Iio_iff_exists_Ioo_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ioo l a ⊆ s :=
-  (tFAE_mem_nhdsWithin_Iio hl' s).out 0 4
+  (TFAE_mem_nhdsWithin_Iio hl' s).out 0 4
 #align mem_nhds_within_Iio_iff_exists_Ioo_subset' mem_nhdsWithin_Iio_iff_exists_Ioo_subset'
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `(l, a)`
 with `l < a`. -/
 theorem mem_nhdsWithin_Iio_iff_exists_Ioo_subset [NoMinOrder α] {a : α} {s : Set α} :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ioo l a ⊆ s :=
-  let ⟨l', hl'⟩ := exists_lt a
-  mem_nhdsWithin_Iio_iff_exists_Ioo_subset' hl'
+  let ⟨_, h⟩ := exists_lt a
+  mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h
 #align mem_nhds_within_Iio_iff_exists_Ioo_subset mem_nhdsWithin_Iio_iff_exists_Ioo_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval `[l, a)`
 with `l < a`. -/
 theorem mem_nhdsWithin_Iio_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered α] {a : α}
     {s : Set α} : s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ico l a ⊆ s := by
-  have : of_dual ⁻¹' s ∈ 𝓝[>] to_dual a ↔ _ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
+  have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
   simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
 #align mem_nhds_within_Iio_iff_exists_Ico_subset mem_nhdsWithin_Iio_iff_exists_Ico_subset
 
-/- failed to parenthesize: parenthesize: uncaught backtrack exception
-[PrettyPrinter.parenthesize.input] (Command.declaration
-     (Command.declModifiers
-      [(Command.docComment
-        "/--"
-        "The following statements are equivalent:\n\n0. `s` is a neighborhood of `a` within `[a, +∞)`\n1. `s` is a neighborhood of `a` within `[a, b]`\n2. `s` is a neighborhood of `a` within `[a, b)`\n3. `s` includes `[a, u)` for some `u ∈ (a, b]`\n4. `s` includes `[a, u)` for some `u > a` -/")]
-      []
-      []
-      []
-      []
-      [])
-     (Command.theorem
-      "theorem"
-      (Command.declId `tFAE_mem_nhdsWithin_Ici [])
-      (Command.declSig
-       [(Term.implicitBinder "{" [`a `b] [":" `α] "}")
-        (Term.explicitBinder "(" [`hab] [":" («term_<_» `a "<" `b)] [] ")")
-        (Term.explicitBinder "(" [`s] [":" (Term.app `Set [`α])] [] ")")]
-       (Term.typeSpec
-        ":"
-        (Term.app
-         `TFAE
-         [(«term[_]»
-           "["
-           [(«term_∈_» `s "∈" (Topology.Topology.Basic.nhds_within.ge "𝓝[≥] " `a))
-            ","
-            («term_∈_»
-             `s
-             "∈"
-             (Topology.Topology.Basic.nhds_within "𝓝[" (Term.app `Icc [`a `b]) "] " `a))
-            ","
-            («term_∈_»
-             `s
-             "∈"
-             (Topology.Topology.Basic.nhds_within "𝓝[" (Term.app `Ico [`a `b]) "] " `a))
-            ","
-            (Std.ExtendedBinder.«term∃__,_»
-             "∃"
-             (Lean.binderIdent `u)
-             («binderTerm∈_» "∈" (Term.app `Ioc [`a `b]))
-             ","
-             («term_⊆_» (Term.app `Ico [`a `u]) "⊆" `s))
-            ","
-            (Std.ExtendedBinder.«term∃__,_»
-             "∃"
-             (Lean.binderIdent `u)
-             («binderTerm∈_» "∈" (Term.app `Ioi [`a]))
-             ","
-             («term_⊆_» (Term.app `Ico [`a `u]) "⊆" `s))]
-           "]")])))
-      (Command.declValSimple
-       ":="
-       (Term.byTactic
-        "by"
-        (Tactic.tacticSeq
-         (Tactic.tacticSeq1Indented
-          [(Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "2"))
-           ";"
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Tactic.rwSeq
-              "rw"
-              []
-              (Tactic.rwRuleSeq
-               "["
-               [(Tactic.rwRule [] (Term.app `nhdsWithin_Icc_eq_nhdsWithin_Ici [`hab]))]
-               "]")
-              [])])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "3"))
-           ";"
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Tactic.rwSeq
-              "rw"
-              []
-              (Tactic.rwRuleSeq
-               "["
-               [(Tactic.rwRule [] (Term.app `nhdsWithin_Ico_eq_nhdsWithin_Ici [`hab]))]
-               "]")
-              [])])
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "5"))
-           ";"
-           (Tactic.exact
-            "exact"
-            (Term.proj
-             (Term.app `nhdsWithin_Ici_basis' [(Term.anonymousCtor "⟨" [`b "," `hab] "⟩")])
-             "."
-             `mem_iff))
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "4") "→" (num "5"))
-           ";"
-           (Tactic.exact
-            "exact"
-            (Term.fun
-             "fun"
-             (Term.basicFun
-              [(Term.anonymousCtor "⟨" [`u "," `umem "," `hu] "⟩")]
-              []
-              "=>"
-              (Term.anonymousCtor "⟨" [`u "," (Term.proj `umem "." (fieldIdx "1")) "," `hu] "⟩"))))
-           []
-           (Tactic.tfaeHave "tfae_have" [] (num "5") "→" (num "4"))
-           []
-           (tactic__
-            (cdotTk (patternIgnore (token.«· » "·")))
-            [(Std.Tactic.rintro
-              "rintro"
-              [(Std.Tactic.RCases.rintroPat.one
-                (Std.Tactic.RCases.rcasesPat.tuple
-                 "⟨"
-                 [(Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-                   [])
-                  ","
-                  (Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hua)])
-                   [])
-                  ","
-                  (Std.Tactic.RCases.rcasesPatLo
-                   (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hus)])
-                   [])]
-                 "⟩"))]
-              [])
-             []
-             (Tactic.exact
-              "exact"
-              (Term.anonymousCtor
-               "⟨"
-               [(Term.app `min [`u `b])
-                ","
-                (Term.anonymousCtor
-                 "⟨"
-                 [(Term.app `lt_min [`hua `hab])
-                  ","
-                  (Term.app `min_le_right [(Term.hole "_") (Term.hole "_")])]
-                 "⟩")
-                ","
-                (Term.app
-                 (Term.proj
-                  («term_<|_»
-                   `Ico_subset_Ico_right
-                   "<|"
-                   (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-                  "."
-                  `trans)
-                 [`hus])]
-               "⟩"))])
-           []
-           (Tactic.tfaeFinish "tfae_finish")])))
-       [])
-      []
-      []))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.abbrev'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.def'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.byTactic
-       "by"
-       (Tactic.tacticSeq
-        (Tactic.tacticSeq1Indented
-         [(Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "2"))
-          ";"
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Tactic.rwSeq
-             "rw"
-             []
-             (Tactic.rwRuleSeq
-              "["
-              [(Tactic.rwRule [] (Term.app `nhdsWithin_Icc_eq_nhdsWithin_Ici [`hab]))]
-              "]")
-             [])])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "3"))
-          ";"
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Tactic.rwSeq
-             "rw"
-             []
-             (Tactic.rwRuleSeq
-              "["
-              [(Tactic.rwRule [] (Term.app `nhdsWithin_Ico_eq_nhdsWithin_Ici [`hab]))]
-              "]")
-             [])])
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "1") "↔" (num "5"))
-          ";"
-          (Tactic.exact
-           "exact"
-           (Term.proj
-            (Term.app `nhdsWithin_Ici_basis' [(Term.anonymousCtor "⟨" [`b "," `hab] "⟩")])
-            "."
-            `mem_iff))
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "4") "→" (num "5"))
-          ";"
-          (Tactic.exact
-           "exact"
-           (Term.fun
-            "fun"
-            (Term.basicFun
-             [(Term.anonymousCtor "⟨" [`u "," `umem "," `hu] "⟩")]
-             []
-             "=>"
-             (Term.anonymousCtor "⟨" [`u "," (Term.proj `umem "." (fieldIdx "1")) "," `hu] "⟩"))))
-          []
-          (Tactic.tfaeHave "tfae_have" [] (num "5") "→" (num "4"))
-          []
-          (tactic__
-           (cdotTk (patternIgnore (token.«· » "·")))
-           [(Std.Tactic.rintro
-             "rintro"
-             [(Std.Tactic.RCases.rintroPat.one
-               (Std.Tactic.RCases.rcasesPat.tuple
-                "⟨"
-                [(Std.Tactic.RCases.rcasesPatLo
-                  (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-                  [])
-                 ","
-                 (Std.Tactic.RCases.rcasesPatLo
-                  (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hua)])
-                  [])
-                 ","
-                 (Std.Tactic.RCases.rcasesPatLo
-                  (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hus)])
-                  [])]
-                "⟩"))]
-             [])
-            []
-            (Tactic.exact
-             "exact"
-             (Term.anonymousCtor
-              "⟨"
-              [(Term.app `min [`u `b])
-               ","
-               (Term.anonymousCtor
-                "⟨"
-                [(Term.app `lt_min [`hua `hab])
-                 ","
-                 (Term.app `min_le_right [(Term.hole "_") (Term.hole "_")])]
-                "⟩")
-               ","
-               (Term.app
-                (Term.proj
-                 («term_<|_»
-                  `Ico_subset_Ico_right
-                  "<|"
-                  (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-                 "."
-                 `trans)
-                [`hus])]
-              "⟩"))])
-          []
-          (Tactic.tfaeFinish "tfae_finish")])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.tacticSeq1Indented', expected 'Lean.Parser.Tactic.tacticSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.tfaeFinish "tfae_finish")
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (tactic__
-       (cdotTk (patternIgnore (token.«· » "·")))
-       [(Std.Tactic.rintro
-         "rintro"
-         [(Std.Tactic.RCases.rintroPat.one
-           (Std.Tactic.RCases.rcasesPat.tuple
-            "⟨"
-            [(Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-              [])
-             ","
-             (Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hua)])
-              [])
-             ","
-             (Std.Tactic.RCases.rcasesPatLo
-              (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hus)])
-              [])]
-            "⟩"))]
-         [])
-        []
-        (Tactic.exact
-         "exact"
-         (Term.anonymousCtor
-          "⟨"
-          [(Term.app `min [`u `b])
-           ","
-           (Term.anonymousCtor
-            "⟨"
-            [(Term.app `lt_min [`hua `hab])
-             ","
-             (Term.app `min_le_right [(Term.hole "_") (Term.hole "_")])]
-            "⟩")
-           ","
-           (Term.app
-            (Term.proj
-             («term_<|_»
-              `Ico_subset_Ico_right
-              "<|"
-              (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-             "."
-             `trans)
-            [`hus])]
-          "⟩"))])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.exact
-       "exact"
-       (Term.anonymousCtor
-        "⟨"
-        [(Term.app `min [`u `b])
-         ","
-         (Term.anonymousCtor
-          "⟨"
-          [(Term.app `lt_min [`hua `hab])
-           ","
-           (Term.app `min_le_right [(Term.hole "_") (Term.hole "_")])]
-          "⟩")
-         ","
-         (Term.app
-          (Term.proj
-           («term_<|_»
-            `Ico_subset_Ico_right
-            "<|"
-            (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-           "."
-           `trans)
-          [`hus])]
-        "⟩"))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor
-       "⟨"
-       [(Term.app `min [`u `b])
-        ","
-        (Term.anonymousCtor
-         "⟨"
-         [(Term.app `lt_min [`hua `hab])
-          ","
-          (Term.app `min_le_right [(Term.hole "_") (Term.hole "_")])]
-         "⟩")
-        ","
-        (Term.app
-         (Term.proj
-          («term_<|_»
-           `Ico_subset_Ico_right
-           "<|"
-           (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-          "."
-          `trans)
-         [`hus])]
-       "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app
-       (Term.proj
-        («term_<|_»
-         `Ico_subset_Ico_right
-         "<|"
-         (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-        "."
-        `trans)
-       [`hus])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hus
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      (Term.proj
-       («term_<|_»
-        `Ico_subset_Ico_right
-        "<|"
-        (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-       "."
-       `trans)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      («term_<|_»
-       `Ico_subset_Ico_right
-       "<|"
-       (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.hole "_")
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1023, term))
-      (Term.hole "_")
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1023, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `min_le_left
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 10 >? 1022, (some 1023,
-     term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 10, term))
-      `Ico_subset_Ico_right
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (some 10, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 10, (some 10, term) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesized: (Term.paren
-     "("
-     («term_<|_»
-      `Ico_subset_Ico_right
-      "<|"
-      (Term.app `min_le_left [(Term.hole "_") (Term.hole "_")]))
-     ")")
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.anonymousCtor
-       "⟨"
-       [(Term.app `lt_min [`hua `hab])
-        ","
-        (Term.app `min_le_right [(Term.hole "_") (Term.hole "_")])]
-       "⟩")
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `min_le_right [(Term.hole "_") (Term.hole "_")])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.hole "_")
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.hole', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1023, term))
-      (Term.hole "_")
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1023, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `min_le_right
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `lt_min [`hua `hab])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `hab
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `hua
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `lt_min
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `min [`u `b])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `b
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `u
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none,
-     [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `min
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none,
-     [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Std.Tactic.rintro
-       "rintro"
-       [(Std.Tactic.RCases.rintroPat.one
-         (Std.Tactic.RCases.rcasesPat.tuple
-          "⟨"
-          [(Std.Tactic.RCases.rcasesPatLo
-            (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `u)])
-            [])
-           ","
-           (Std.Tactic.RCases.rcasesPatLo
-            (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hua)])
-            [])
-           ","
-           (Std.Tactic.RCases.rcasesPatLo
-            (Std.Tactic.RCases.rcasesPatMed [(Std.Tactic.RCases.rcasesPat.one `hus)])
-            [])]
-          "⟩"))]
-       [])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.tfaeHave "tfae_have" [] (num "5") "→" (num "4"))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« → »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« ↔ »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«→»', expected 'token.« ← »'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.declValEqns'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.whereStructInst'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.opaque'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.instance'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.axiom'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.example'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.inductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.classInductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-/--
-    The following statements are equivalent:
-    
-    0. `s` is a neighborhood of `a` within `[a, +∞)`
-    1. `s` is a neighborhood of `a` within `[a, b]`
-    2. `s` is a neighborhood of `a` within `[a, b)`
-    3. `s` includes `[a, u)` for some `u ∈ (a, b]`
-    4. `s` includes `[a, u)` for some `u > a` -/
-  theorem
-    tFAE_mem_nhdsWithin_Ici
-    { a b : α } ( hab : a < b ) ( s : Set α )
-      :
-        TFAE
-          [
-            s ∈ 𝓝[≥] a
-              ,
-              s ∈ 𝓝[ Icc a b ] a
-              ,
-              s ∈ 𝓝[ Ico a b ] a
-              ,
-              ∃ u ∈ Ioc a b , Ico a u ⊆ s
-              ,
-              ∃ u ∈ Ioi a , Ico a u ⊆ s
-            ]
-    :=
-      by
-        tfae_have 1 ↔ 2
-          ;
-          · rw [ nhdsWithin_Icc_eq_nhdsWithin_Ici hab ]
-          tfae_have 1 ↔ 3
-          ;
-          · rw [ nhdsWithin_Ico_eq_nhdsWithin_Ici hab ]
-          tfae_have 1 ↔ 5
-          ;
-          exact nhdsWithin_Ici_basis' ⟨ b , hab ⟩ . mem_iff
-          tfae_have 4 → 5
-          ;
-          exact fun ⟨ u , umem , hu ⟩ => ⟨ u , umem . 1 , hu ⟩
-          tfae_have 5 → 4
-          ·
-            rintro ⟨ u , hua , hus ⟩
-              exact
-                ⟨
-                  min u b
-                    ,
-                    ⟨ lt_min hua hab , min_le_right _ _ ⟩
-                    ,
-                    Ico_subset_Ico_right <| min_le_left _ _ . trans hus
-                  ⟩
-          tfae_finish
-#align tfae_mem_nhds_within_Ici tFAE_mem_nhdsWithin_Ici
+open List in
+/-- The following statements are equivalent:
+
+0. `s` is a neighborhood of `a` within `[a, +∞)`;
+1. `s` is a neighborhood of `a` within `[a, b]`;
+2. `s` is a neighborhood of `a` within `[a, b)`;
+3. `s` includes `[a, u)` for some `u ∈ (a, b]`;
+4. `s` includes `[a, u)` for some `u > a`.
+-/
+theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
+    TFAE [s ∈ 𝓝[≥] a,
+      s ∈ 𝓝[Icc a b] a,
+      s ∈ 𝓝[Ico a b] a,
+      ∃ u ∈ Ioc a b, Ico a u ⊆ s,
+      ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
+  rw [nhdsWithin_Icc_eq_nhdsWithin_Ici hab, nhdsWithin_Ico_eq_nhdsWithin_Ici hab]
+  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil] <;> try { exact id }
+  · rw [nhdsWithin, mem_inf_principal]
+    intro h
+    rcases exists_Ico_subset_of_mem_nhds' h hab with ⟨u, au, hu⟩
+    exact ⟨u, au, fun x hx => hu hx hx.1⟩
+  · rintro ⟨u, hu, hs⟩; exact ⟨u, hu.1, hs⟩
+  · rintro ⟨u, hu, hs⟩; exact mem_of_superset (Ico_mem_nhdsWithin_Ici' hu) hs
+#align tfae_mem_nhds_within_Ici TFAE_mem_nhdsWithin_Ici
 
 theorem mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioc a u', Ico a u ⊆ s :=
-  (tFAE_mem_nhdsWithin_Ici hu' s).out 0 3 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsWithin_Ici hu' s).out 0 3 (by norm_num) (by norm_num)
 #align mem_nhds_within_Ici_iff_exists_mem_Ioc_Ico_subset mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u < u'`, provided `a` is not a top element. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset' {a u' : α} {s : Set α} (hu' : a < u') :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
-  (tFAE_mem_nhdsWithin_Ici hu' s).out 0 4 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsWithin_Ici hu' s).out 0 4 (by norm_num) (by norm_num)
 #align mem_nhds_within_Ici_iff_exists_Ico_subset' mem_nhdsWithin_Ici_iff_exists_Ico_subset'
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u)`
 with `a < u`. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset [NoMaxOrder α] {a : α} {s : Set α} :
     s ∈ 𝓝[≥] a ↔ ∃ u ∈ Ioi a, Ico a u ⊆ s :=
-  let ⟨u', hu'⟩ := exists_gt a
+  let ⟨_, hu'⟩ := exists_gt a
   mem_nhdsWithin_Ici_iff_exists_Ico_subset' hu'
 #align mem_nhds_within_Ici_iff_exists_Ico_subset mem_nhdsWithin_Ici_iff_exists_Ico_subset
 
 theorem nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
     (𝓝[≥] a).HasBasis (fun u => a < u) (Ico a) :=
-  ⟨fun s => mem_nhdsWithin_Ici_iff_exists_Ico_subset⟩
+  ⟨fun _ => mem_nhdsWithin_Ici_iff_exists_Ico_subset⟩
 #align nhds_within_Ici_basis_Ico nhdsWithin_Ici_basis_Ico
 
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u]`
@@ -3043,9 +1683,10 @@ theorem mem_nhdsWithin_Ici_iff_exists_Icc_subset [NoMaxOrder α] [DenselyOrdered
     rcases exists_between au with ⟨v, hv⟩
     exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
   · rintro ⟨u, au, as⟩
-    exact ⟨u, au, subset.trans Ico_subset_Icc_self as⟩
+    exact ⟨u, au, Subset.trans Ico_subset_Icc_self as⟩
 #align mem_nhds_within_Ici_iff_exists_Icc_subset mem_nhdsWithin_Ici_iff_exists_Icc_subset
 
+open List in
 /-- The following statements are equivalent:
 
 0. `s` is a neighborhood of `b` within `(-∞, b]`
@@ -3053,47 +1694,44 @@ theorem mem_nhdsWithin_Ici_iff_exists_Icc_subset [NoMaxOrder α] [DenselyOrdered
 2. `s` is a neighborhood of `b` within `(a, b]`
 3. `s` includes `(l, b]` for some `l ∈ [a, b)`
 4. `s` includes `(l, b]` for some `l < b` -/
-theorem tFAE_mem_nhdsWithin_Iic {a b : α} (h : a < b) (s : Set α) :
-    TFAE
-      [s ∈ 𝓝[≤] b,-- 0 : `s` is a neighborhood of `b` within `(-∞, b]`
-          s ∈
-          𝓝[Icc a b] b,-- 1 : `s` is a neighborhood of `b` within `[a, b]`
-          s ∈
-          𝓝[Ioc a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b]`
-        ∃ l ∈ Ico a b, Ioc l b ⊆ s,-- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
-        ∃ l ∈ Iio b, Ioc l b ⊆ s] :=
-  by-- 4 : `s` includes `(l, b]` for some `l < b`
+theorem TFAE_mem_nhdsWithin_Iic {a b : α} (h : a < b) (s : Set α) :
+    TFAE [s ∈ 𝓝[≤] b,-- 0 : `s` is a neighborhood of `b` within `(-∞, b]`
+      s ∈ 𝓝[Icc a b] b,-- 1 : `s` is a neighborhood of `b` within `[a, b]`
+      s ∈ 𝓝[Ioc a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b]`
+      ∃ l ∈ Ico a b, Ioc l b ⊆ s,-- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
+      ∃ l ∈ Iio b, Ioc l b ⊆ s] := by-- 4 : `s` includes `(l, b]` for some `l < b`
   simpa only [exists_prop, OrderDual.exists, dual_Ici, dual_Ioc, dual_Icc, dual_Ico] using
-    tFAE_mem_nhdsWithin_Ici h.dual (of_dual ⁻¹' s)
-#align tfae_mem_nhds_within_Iic tFAE_mem_nhdsWithin_Iic
+    TFAE_mem_nhdsWithin_Ici h.dual (ofDual ⁻¹' s)
+#align tfae_mem_nhds_within_Iic TFAE_mem_nhdsWithin_Iic
 
 theorem mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Ico l' a, Ioc l a ⊆ s :=
-  (tFAE_mem_nhdsWithin_Iic hl' s).out 0 3 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsWithin_Iic hl' s).out 0 3 (by norm_num) (by norm_num)
 #align mem_nhds_within_Iic_iff_exists_mem_Ico_Ioc_subset mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
 with `l < a`, provided `a` is not a bottom element. -/
 theorem mem_nhdsWithin_Iic_iff_exists_Ioc_subset' {a l' : α} {s : Set α} (hl' : l' < a) :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
-  (tFAE_mem_nhdsWithin_Iic hl' s).out 0 4 (by norm_num) (by norm_num)
+  (TFAE_mem_nhdsWithin_Iic hl' s).out 0 4 (by norm_num) (by norm_num)
 #align mem_nhds_within_Iic_iff_exists_Ioc_subset' mem_nhdsWithin_Iic_iff_exists_Ioc_subset'
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `(l, a]`
 with `l < a`. -/
 theorem mem_nhdsWithin_Iic_iff_exists_Ioc_subset [NoMinOrder α] {a : α} {s : Set α} :
     s ∈ 𝓝[≤] a ↔ ∃ l ∈ Iio a, Ioc l a ⊆ s :=
-  let ⟨l', hl'⟩ := exists_lt a
+  let ⟨_, hl'⟩ := exists_lt a
   mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hl'
 #align mem_nhds_within_Iic_iff_exists_Ioc_subset mem_nhdsWithin_Iic_iff_exists_Ioc_subset
 
 /-- A set is a neighborhood of `a` within `(-∞, a]` if and only if it contains an interval `[l, a]`
 with `l < a`. -/
 theorem mem_nhdsWithin_Iic_iff_exists_Icc_subset [NoMinOrder α] [DenselyOrdered α] {a : α}
-    {s : Set α} : s ∈ 𝓝[≤] a ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by
-  convert @mem_nhdsWithin_Ici_iff_exists_Icc_subset αᵒᵈ _ _ _ _ _ _ _
-  simp_rw [show ∀ u : αᵒᵈ, @Icc αᵒᵈ _ a u = @Icc α _ u a from fun u => dual_Icc]
-  rfl
+    {s : Set α} : s ∈ 𝓝[≤] a ↔ ∃ l, l < a ∧ Icc l a ⊆ s :=
+  calc s ∈ 𝓝[≤] a ↔ ofDual ⁻¹' s ∈ 𝓝[≥] (toDual a) := Iff.rfl
+  _ ↔ ∃ u : α, toDual a < toDual u ∧ Icc (toDual a) (toDual u) ⊆ ofDual ⁻¹' s :=
+    mem_nhdsWithin_Ici_iff_exists_Icc_subset
+  _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp only [dual_Icc]; rfl
 #align mem_nhds_within_Iic_iff_exists_Icc_subset mem_nhdsWithin_Iic_iff_exists_Icc_subset
 
 end OrderTopology
@@ -3107,18 +1745,10 @@ variable [TopologicalSpace α] [LinearOrderedAddCommGroup α] [OrderTopology α]
 variable {l : Filter β} {f g : β → α}
 
 theorem nhds_eq_infᵢ_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
-  simp only [le_antisymm_iff, nhds_eq_order, le_inf_iff, le_infᵢ_iff, le_principal_iff, mem_Ioi,
-    mem_Iio, abs_sub_lt_iff, @sub_lt_iff_lt_add _ _ _ _ _ _ a, @sub_lt_comm _ _ _ _ a, set_of_and]
-  refine' ⟨_, _, _⟩
-  · intro ε ε0
-    exact
-      inter_mem_inf
-        (mem_infi_of_mem (a - ε) <| mem_infi_of_mem (sub_lt_self a ε0) (mem_principal_self _))
-        (mem_infi_of_mem (ε + a) <| mem_infi_of_mem (by simpa) (mem_principal_self _))
-  · intro b hb
-    exact mem_infi_of_mem (a - b) (mem_infi_of_mem (sub_pos.2 hb) (by simp [Ioi]))
-  · intro b hb
-    exact mem_infi_of_mem (b - a) (mem_infi_of_mem (sub_pos.2 hb) (by simp [Iio]))
+  simp only [nhds_eq_order, abs_lt, setOf_and, ← inf_principal, infᵢ_inf_eq]
+  refine (congr_arg₂ _ ?_ ?_).trans inf_comm
+  · refine (Equiv.subLeft a).infᵢ_congr fun x => ?_; simp [Ioi]
+  · refine (Equiv.subRight a).infᵢ_congr fun x => ?_; simp [Iio]
 #align nhds_eq_infi_abs_sub nhds_eq_infᵢ_abs_sub
 
 theorem orderTopology_of_nhds_abs {α : Type _} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
@@ -3140,96 +1770,79 @@ theorem eventually_abs_sub_lt (a : α) {ε : α} (hε : 0 < ε) : ∀ᶠ x in �
 #align eventually_abs_sub_lt eventually_abs_sub_lt
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
-and `g` tends to `at_top` then `f + g` tends to `at_top`. -/
+and `g` tends to `atTop` then `f + g` tends to `atTop`. -/
 theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop := by
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
-  refine' tendsto_at_top_add_left_of_le' _ C' _ hg
+  refine' tendsto_atTop_add_left_of_le' _ C' _ hg
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
 #align filter.tendsto.add_at_top Filter.Tendsto.add_atTop
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
-and `g` tends to `at_bot` then `f + g` tends to `at_bot`. -/
+and `g` tends to `atBot` then `f + g` tends to `atBot`. -/
 theorem Filter.Tendsto.add_atBot {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
   @Filter.Tendsto.add_atTop αᵒᵈ _ _ _ _ _ _ _ _ hf hg
 #align filter.tendsto.add_at_bot Filter.Tendsto.add_atBot
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
-`at_top` and `g` tends to `C` then `f + g` tends to `at_top`. -/
+`atTop` and `g` tends to `C` then `f + g` tends to `atTop`. -/
 theorem Filter.Tendsto.atTop_add {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
     Tendsto (fun x => f x + g x) l atTop := by
   conv in _ + _ => rw [add_comm]
-  exact hg.add_at_top hf
+  exact hg.add_atTop hf
 #align filter.tendsto.at_top_add Filter.Tendsto.atTop_add
 
 /-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
-`at_bot` and `g` tends to `C` then `f + g` tends to `at_bot`. -/
+`atBot` and `g` tends to `C` then `f + g` tends to `atBot`. -/
 theorem Filter.Tendsto.atBot_add {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
     Tendsto (fun x => f x + g x) l atBot := by
   conv in _ + _ => rw [add_comm]
-  exact hg.add_at_bot hf
+  exact hg.add_atBot hf
 #align filter.tendsto.at_bot_add Filter.Tendsto.atBot_add
 
-theorem nhds_basis_Ioo_pos [NoMinOrder α] [NoMaxOrder α] (a : α) :
-    (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => Ioo (a - ε) (a + ε) :=
-  ⟨by
-    refine' fun t => (nhds_basis_Ioo a).mem_iff.trans ⟨_, _⟩
-    · rintro ⟨⟨l, u⟩, ⟨hl : l < a, hu : a < u⟩, h' : Ioo l u ⊆ t⟩
-      refine' ⟨min (a - l) (u - a), by apply lt_min <;> rwa [sub_pos], _⟩
-      rintro x ⟨hx, hx'⟩
-      apply h'
-      rw [sub_lt_comm, lt_min_iff, sub_lt_sub_iff_left] at hx
-      rw [← sub_lt_iff_lt_add', lt_min_iff, sub_lt_sub_iff_right] at hx'
-      exact ⟨hx.1, hx'.2⟩
-    · rintro ⟨ε, ε_pos, h⟩
-      exact ⟨(a - ε, a + ε), by simp [ε_pos], h⟩⟩
-#align nhds_basis_Ioo_pos nhds_basis_Ioo_pos
-
-theorem nhds_basis_abs_sub_lt [NoMinOrder α] [NoMaxOrder α] (a : α) :
+theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b - a| < ε } := by
-  convert nhds_basis_Ioo_pos a
-  · ext ε
-    change |x - a| < ε ↔ a - ε < x ∧ x < a + ε
-    simp [abs_lt, sub_lt_iff_lt_add, add_comm ε a, add_comm x ε]
+  simp only [nhds_eq_infᵢ_abs_sub, abs_sub_comm (a := a)]
+  refine hasBasis_binfᵢ_principal' (fun x hx y hy => ?_) (exists_gt _)
+  exact ⟨min x y, lt_min hx hy, fun _ hz => hz.trans_le (min_le_left _ _),
+    fun _ hz => hz.trans_le (min_le_right _ _)⟩
 #align nhds_basis_abs_sub_lt nhds_basis_abs_sub_lt
+
+theorem nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
+    (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => Ioo (a - ε) (a + ε) := by
+  convert nhds_basis_abs_sub_lt a
+  simp only [Ioo, abs_lt, ← sub_lt_iff_lt_add, neg_lt_sub_iff_lt_add, sub_lt_comm]
+#align nhds_basis_Ioo_pos nhds_basis_Ioo_pos
 
 variable (α)
 
-theorem nhds_basis_zero_abs_sub_lt [NoMinOrder α] [NoMaxOrder α] :
+theorem nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
     (𝓝 (0 : α)).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b| < ε } := by
   simpa using nhds_basis_abs_sub_lt (0 : α)
 #align nhds_basis_zero_abs_sub_lt nhds_basis_zero_abs_sub_lt
 
 variable {α}
 
-/-- If `a` is positive we can form a basis from only nonnegative `Ioo` intervals -/
-theorem nhds_basis_Ioo_pos_of_pos [NoMinOrder α] [NoMaxOrder α] {a : α} (ha : 0 < a) :
+/-- If `a` is positive we can form a basis from only nonnegative `Set.Ioo` intervals -/
+theorem nhds_basis_Ioo_pos_of_pos [NoMaxOrder α] {a : α} (ha : 0 < a) :
     (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε ∧ ε ≤ a) fun ε => Ioo (a - ε) (a + ε) :=
-  ⟨fun t =>
-    (nhds_basis_Ioo_pos a).mem_iff.trans
-      ⟨fun h =>
-        let ⟨i, hi, hit⟩ := h
-        ⟨min i a, ⟨lt_min hi ha, min_le_right i a⟩,
-          trans
-            (Ioo_subset_Ioo (sub_le_sub_left (min_le_left i a) a)
-              (add_le_add_left (min_le_left i a) a))
-            hit⟩,
-        fun h =>
-        let ⟨i, hi, hit⟩ := h
-        ⟨i, hi.1, hit⟩⟩⟩
+  (nhds_basis_Ioo_pos a).restrict fun ε hε => ⟨min a ε, lt_min ha hε, min_le_left _ _,
+    Ioo_subset_Ioo (sub_le_sub_left (min_le_right _ _) _) (add_le_add_left (min_le_right _ _) _)⟩
 #align nhds_basis_Ioo_pos_of_pos nhds_basis_Ioo_pos_of_pos
 
 end LinearOrderedAddCommGroup
 
+@[deprecated image_neg]
 theorem preimage_neg [AddGroup α] : preimage (Neg.neg : α → α) = image (Neg.neg : α → α) :=
-  (image_eq_preimage_of_inverse neg_neg neg_neg).symm
+  funext fun _ => image_neg.symm
 #align preimage_neg preimage_neg
 
+@[deprecated] -- use `Filter.map_neg` from `Mathlib.Order.Filter.Pointwise`
 theorem Filter.map_neg_eq_comap_neg [AddGroup α] :
     map (Neg.neg : α → α) = comap (Neg.neg : α → α) :=
-  funext fun f => map_eq_comap_of_inverse (funext neg_neg) (funext neg_neg)
+  funext fun _ => map_eq_comap_of_inverse (funext neg_neg) (funext neg_neg)
 #align filter.map_neg_eq_comap_neg Filter.map_neg_eq_comap_neg
 
 section OrderTopology
@@ -3242,8 +1855,8 @@ theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.None
   rcases hs with ⟨a', ha'⟩
   intro h
   rcases(ha.1 ha').eq_or_lt with (rfl | ha'a)
-  · exact h.self_of_nhds_within le_rfl ha'
-  · rcases(mem_nhdsWithin_Iic_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
+  · exact h.self_of_nhdsWithin le_rfl ha'
+  · rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
     rcases ha.exists_between hba with ⟨b', hb's, hb'⟩
     exact hb hb' hb's
 #align is_lub.frequently_mem IsLUB.frequently_mem
@@ -3285,7 +1898,7 @@ theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upp
   ⟨hsa, fun b hb =>
     not_lt.1 fun hba =>
       have : s ∩ { a | b < a } ∈ f ⊓ 𝓝 a := inter_mem_inf hsf (IsOpen.mem_nhds (isOpen_lt' _) hba)
-      let ⟨x, ⟨hxs, hxb⟩⟩ := Filter.nonempty_of_mem this
+      let ⟨_x, ⟨hxs, hxb⟩⟩ := Filter.nonempty_of_mem this
       have : b < b := lt_of_lt_of_le hxb <| hb hxs
       lt_irrefl b this⟩
 #align is_lub_of_mem_nhds isLUB_of_mem_nhds
@@ -3293,7 +1906,6 @@ theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upp
 theorem isLUB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ upperBounds s) (hsf : a ∈ closure s) :
     IsLUB s a := by
   rw [mem_closure_iff_clusterPt, ClusterPt, inf_comm] at hsf
-  haveI : (𝓟 s ⊓ 𝓝 a).ne_bot := hsf
   exact isLUB_of_mem_nhds hsa (mem_principal_self s)
 #align is_lub_of_mem_closure isLUB_of_mem_closure
 
@@ -3312,19 +1924,19 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ upperBounds (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩
   replace ha := ha.inter_Ici_of_mem hx
-  haveI := ha.nhds_within_ne_bot ⟨x, hx, le_rfl⟩
+  haveI := ha.nhdsWithin_neBot ⟨x, hx, le_rfl⟩
   refine' ge_of_tendsto (hb.mono_left (nhdsWithin_mono _ (inter_subset_left s (Ici x)))) _
   exact mem_of_superset self_mem_nhdsWithin fun y hy => hf hx hy.1 hy.2
 #align is_lub.mem_upper_bounds_of_tendsto IsLUB.mem_upperBounds_of_tendsto
 
 -- For a version of this theorem in which the convergence considered on the domain `α` is as `x : α`
--- tends to infinity, rather than tending to a point `x` in `α`, see `is_lub_of_tendsto_at_top`
+-- tends to infinity, rather than tending to a point `x` in `α`, see `is_lub_of_tendsto_atTop`
 theorem IsLUB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
     {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) (ha : IsLUB s a) (hs : s.Nonempty)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : IsLUB (f '' s) b :=
-  haveI := ha.nhds_within_ne_bot hs
-  ⟨ha.mem_upper_bounds_of_tendsto hf hb, fun b' hb' =>
-    le_of_tendsto hb (mem_of_superset self_mem_nhdsWithin fun x hx => hb' <| mem_image_of_mem _ hx)⟩
+  haveI := ha.nhdsWithin_neBot hs
+  ⟨ha.mem_upperBounds_of_tendsto hf hb, fun _b' hb' =>
+    le_of_tendsto hb (mem_of_superset self_mem_nhdsWithin fun _ hx => hb' <| mem_image_of_mem _ hx)⟩
 #align is_lub.is_lub_of_tendsto IsLUB.isLUB_of_tendsto
 
 theorem IsGLB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
@@ -3335,7 +1947,7 @@ theorem IsGLB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
 
 -- For a version of this theorem in which the convergence considered on the domain `α` is as
 -- `x : α` tends to negative infinity, rather than tending to a point `x` in `α`, see
--- `is_glb_of_tendsto_at_bot`
+-- `is_glb_of_tendsto_atBot`
 theorem IsGLB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
     {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) :
     IsGLB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsGLB (f '' s) b :=
@@ -3386,54 +1998,27 @@ alias IsGLB.mem_of_isClosed ← IsClosed.isGLB_mem
 ### Existence of sequences tending to Inf or Sup of a given set
 -/
 
-
 theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsLUB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
-  rcases ht with ⟨l, hl⟩
-  have hl : l < x := (htx.1 hl).eq_or_lt.resolve_left fun h => (not_mem <| h ▸ hl).elim
-  obtain ⟨s, hs⟩ : ∃ s : ℕ → Set α, (𝓝 x).HasBasis (fun _x : ℕ => True) s :=
-    let ⟨s, hs⟩ := (𝓝 x).exists_antitone_basis
-    ⟨s, hs.to_hasBasis⟩
-  have : ∀ n k, k < x → ∃ y, Icc y x ⊆ s n ∧ k < y ∧ y < x ∧ y ∈ t :=
-    by
-    intro n k hk
-    obtain ⟨L, hL, h⟩ : ∃ (L : α)(hL : L ∈ Ico k x), Ioc L x ⊆ s n :=
-      exists_Ioc_subset_of_mem_nhds' (hs.mem_of_mem trivial) hk
-    obtain ⟨y, hy⟩ : ∃ y : α, L < y ∧ y < x ∧ y ∈ t :=
-      by
-      rcases htx.exists_between' not_mem hL.2 with ⟨y, yt, hy⟩
-      refine' ⟨y, hy.1, hy.2, yt⟩
-    exact ⟨y, fun z hz => h ⟨hy.1.trans_le hz.1, hz.2⟩, hL.1.trans_lt hy.1, hy.2⟩
-  choose! f hf using this
-  let u : ℕ → α := fun n => Nat.recOn n (f 0 l) fun n h => f n.succ h
-  have I : ∀ n, u n < x := by
-    intro n
-    induction' n with n IH
-    · exact (hf 0 l hl).2.2.1
-    · exact (hf n.succ _ IH).2.2.1
-  have S : StrictMono u := strictMono_nat_of_lt_succ fun n => (hf n.succ _ (I n)).2.1
-  refine' ⟨u, S, I, hs.tendsto_right_iff.2 fun n _ => _, fun n => _⟩
-  · simp only [ge_iff_le, eventually_at_top]
-    refine' ⟨n, fun p hp => _⟩
-    have up : u p ∈ Icc (u n) x := ⟨S.monotone hp, (I p).le⟩
-    have : Icc (u n) x ⊆ s n := by
-      cases n
-      · exact (hf 0 l hl).1
-      · exact (hf n.succ (u n) (I n)).1
-    exact this up
-  · cases n
-    · exact (hf 0 l hl).2.2.2
-    · exact (hf n.succ _ (I n)).2.2.2
+  obtain ⟨v, hvx, hvt⟩ := exists_seq_forall_of_frequently (htx.frequently_mem ht)
+  replace hvx := hvx.mono_right nhdsWithin_le_nhds
+  have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) not_mem)
+  have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
+  choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
+  refine ⟨fun k => v ((N^[k]) 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
+    hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
+  · rw [iterate_succ_apply']; exact hvN _
+  · rw [iterate_succ_apply']; exact hN _
 #align is_lub.exists_seq_strict_mono_tendsto_of_not_mem IsLUB.exists_seq_strictMono_tendsto_of_not_mem
 
 theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsLUB t x) (ht : t.Nonempty) :
     ∃ u : ℕ → α, Monotone u ∧ (∀ n, u n ≤ x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
   by_cases h : x ∈ t
-  · exact ⟨fun n => x, monotone_const, fun n => le_rfl, tendsto_const_nhds, fun n => h⟩
-  · rcases htx.exists_seq_strict_mono_tendsto_of_not_mem h ht with ⟨u, hu⟩
-    exact ⟨u, hu.1.Monotone, fun n => (hu.2.1 n).le, hu.2.2⟩
+  · exact ⟨fun _ => x, monotone_const, fun n => le_rfl, tendsto_const_nhds, fun _ => h⟩
+  · rcases htx.exists_seq_strictMono_tendsto_of_not_mem h ht with ⟨u, hu⟩
+    exact ⟨u, hu.1.monotone, fun n => (hu.2.1 n).le, hu.2.2⟩
 #align is_lub.exists_seq_monotone_tendsto IsLUB.exists_seq_monotone_tendsto
 
 theorem exists_seq_strictMono_tendsto' {α : Type _} [LinearOrder α] [TopologicalSpace α]
@@ -3480,7 +2065,8 @@ theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGene
 
 theorem exists_seq_strictAnti_tendsto' [DenselyOrdered α] [FirstCountableTopology α] {x y : α}
     (hy : x < y) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ Ioo x y) ∧ Tendsto u atTop (𝓝 x) := by
-  simpa only [dual_Ioo] using exists_seq_strictMono_tendsto' (OrderDual.toDual_lt_toDual.2 hy)
+  simpa only [dual_Ioo]
+    using exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
 #align exists_seq_strict_anti_tendsto' exists_seq_strictAnti_tendsto'
 
 theorem exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α] [FirstCountableTopology α]
@@ -3496,12 +2082,8 @@ theorem exists_seq_strictAnti_tendsto_nhdsWithin [DenselyOrdered α] [NoMaxOrder
 
 theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCountableTopology α]
     {x y : α} (h : x < y) :
-    ∃ u v : ℕ → α,
-      StrictAnti u ∧
-        StrictMono v ∧
-          (∀ k, u k ∈ Ioo x y) ∧
-            (∀ l, v l ∈ Ioo x y) ∧
-              (∀ k l, u k < v l) ∧ Tendsto u atTop (𝓝 x) ∧ Tendsto v atTop (𝓝 y) := by
+    ∃ u v : ℕ → α, StrictAnti u ∧ StrictMono v ∧ (∀ k, u k ∈ Ioo x y) ∧ (∀ l, v l ∈ Ioo x y) ∧
+      (∀ k l, u k < v l) ∧ Tendsto u atTop (𝓝 x) ∧ Tendsto v atTop (𝓝 y) := by
   rcases exists_seq_strictAnti_tendsto' h with ⟨u, hu_anti, hu_mem, hux⟩
   rcases exists_seq_strictMono_tendsto' (hu_mem 0).2 with ⟨v, hv_mono, hv_mem, hvy⟩
   exact
@@ -3525,10 +2107,10 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrder
 /-- The closure of the interval `(a, +∞)` is the closed interval `[a, +∞)`, unless `a` is a top
 element. -/
 theorem closure_Ioi' {a : α} (h : (Ioi a).Nonempty) : closure (Ioi a) = Ici a := by
-  apply subset.antisymm
+  apply Subset.antisymm
   · exact closure_minimal Ioi_subset_Ici_self isClosed_Ici
   · rw [← diff_subset_closure_iff, Ici_diff_Ioi_same, singleton_subset_iff]
-    exact is_glb_Ioi.mem_closure h
+    exact isGLB_Ioi.mem_closure h
 #align closure_Ioi' closure_Ioi'
 
 /-- The closure of the interval `(a, +∞)` is the closed interval `[a, +∞)`. -/
@@ -3552,7 +2134,7 @@ theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
 /-- The closure of the open interval `(a, b)` is the closed interval `[a, b]`. -/
 @[simp]
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
-  apply subset.antisymm
+  apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
   · cases' hab.lt_or_lt with hab hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
@@ -3566,18 +2148,18 @@ theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := 
 /-- The closure of the interval `(a, b]` is the closed interval `[a, b]`. -/
 @[simp]
 theorem closure_Ioc {a b : α} (hab : a ≠ b) : closure (Ioc a b) = Icc a b := by
-  apply subset.antisymm
+  apply Subset.antisymm
   · exact closure_minimal Ioc_subset_Icc_self isClosed_Icc
-  · apply subset.trans _ (closure_mono Ioo_subset_Ioc_self)
+  · apply Subset.trans _ (closure_mono Ioo_subset_Ioc_self)
     rw [closure_Ioo hab]
 #align closure_Ioc closure_Ioc
 
 /-- The closure of the interval `[a, b)` is the closed interval `[a, b]`. -/
 @[simp]
 theorem closure_Ico {a b : α} (hab : a ≠ b) : closure (Ico a b) = Icc a b := by
-  apply subset.antisymm
+  apply Subset.antisymm
   · exact closure_minimal Ico_subset_Icc_self isClosed_Icc
-  · apply subset.trans _ (closure_mono Ioo_subset_Ico_self)
+  · apply Subset.trans _ (closure_mono Ioo_subset_Ico_self)
     rw [closure_Ioo hab]
 #align closure_Ico closure_Ico
 
@@ -3620,19 +2202,16 @@ theorem closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a
       Icc a b = closure (Ioo a b) := (closure_Ioo h).symm
       _ ⊆ closure (interior (Icc a b)) :=
         closure_mono (interior_maximal Ioo_subset_Icc_self isOpen_Ioo)
-      
 #align closure_interior_Icc closure_interior_Icc
 
 theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (Ioc a b)) := by
   rcases eq_or_ne a b with (rfl | h)
   · simp
-  ·
-    calc
+  · calc
       Ioc a b ⊆ Icc a b := Ioc_subset_Icc_self
       _ = closure (Ioo a b) := (closure_Ioo h).symm
       _ ⊆ closure (interior (Ioc a b)) :=
         closure_mono (interior_maximal Ioo_subset_Ioc_self isOpen_Ioo)
-      
 #align Ioc_subset_closure_interior Ioc_subset_closure_interior
 
 theorem Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
@@ -3695,17 +2274,17 @@ theorem frontier_Ioc [NoMaxOrder α] {a b : α} (h : a < b) : frontier (Ioc a b)
   rw [frontier, closure_Ioc h.ne, interior_Ioc, Icc_diff_Ioo_same h.le]
 #align frontier_Ioc frontier_Ioc
 
-theorem nhdsWithin_Ioi_ne_bot' {a b : α} (H₁ : (Ioi a).Nonempty) (H₂ : a ≤ b) :
+theorem nhdsWithin_Ioi_neBot' {a b : α} (H₁ : (Ioi a).Nonempty) (H₂ : a ≤ b) :
     NeBot (𝓝[Ioi a] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Ioi' H₁]
-#align nhds_within_Ioi_ne_bot' nhdsWithin_Ioi_ne_bot'
+#align nhds_within_Ioi_ne_bot' nhdsWithin_Ioi_neBot'
 
 theorem nhdsWithin_Ioi_neBot [NoMaxOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Ioi a] b) :=
-  nhdsWithin_Ioi_ne_bot' nonempty_Ioi H
+  nhdsWithin_Ioi_neBot' nonempty_Ioi H
 #align nhds_within_Ioi_ne_bot nhdsWithin_Ioi_neBot
 
 theorem nhdsWithin_Ioi_self_ne_bot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝[>] a) :=
-  nhdsWithin_Ioi_ne_bot' H (le_refl a)
+  nhdsWithin_Ioi_neBot' H (le_refl a)
 #align nhds_within_Ioi_self_ne_bot' nhdsWithin_Ioi_self_ne_bot'
 
 @[instance]
@@ -3715,8 +2294,8 @@ theorem nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) :
 
 theorem Filter.Eventually.exists_gt [NoMaxOrder α] {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) :
     ∃ b > a, p b := by
-  simpa only [exists_prop, gt_iff_lt, and_comm'] using
-    ((h.filter_mono (@nhdsWithin_le_nhds _ _ a (Ioi a))).And self_mem_nhdsWithin).exists
+  simpa only [exists_prop, gt_iff_lt, and_comm] using
+    ((h.filter_mono (@nhdsWithin_le_nhds _ _ a (Ioi a))).and self_mem_nhdsWithin).exists
 #align filter.eventually.exists_gt Filter.Eventually.exists_gt
 
 theorem nhdsWithin_Iio_ne_bot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
@@ -3759,7 +2338,7 @@ theorem right_nhdsWithin_Ioo_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioo a b]
 #align right_nhds_within_Ioo_ne_bot right_nhdsWithin_Ioo_neBot
 
 theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
-    (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s) : comap (coe : s → α) (𝓝[<] b) = atTop := by
+    (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[<] b) = atTop := by
   nontriviality
   haveI : Nonempty s := nontrivial_iff_nonempty.1 ‹_›
   rcases hs (nonempty_subtype.1 ‹_›) with ⟨a, h, hs⟩
@@ -3768,77 +2347,77 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
     obtain ⟨x, ⟨hxa : a ≤ x, hxb : x < b⟩, hxt : Ioo x b ⊆ t⟩ :=
       (mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset h).mp ht
     obtain ⟨y, hxy, hyb⟩ := exists_between hxb
-    refine' mem_of_superset (mem_at_top ⟨y, hs ⟨hxa.trans_lt hxy, hyb⟩⟩) _
+    refine' mem_of_superset (mem_atTop ⟨y, hs ⟨hxa.trans_lt hxy, hyb⟩⟩) _
     rintro ⟨z, hzs⟩ (hyz : y ≤ z)
-    refine' hts (hxt ⟨hxy.trans_le _, hb _⟩) <;> assumption
+    exact hts (hxt ⟨hxy.trans_le hyz, hb hzs⟩)
   · intro hu
-    obtain ⟨x : s, hx : ∀ z, x ≤ z → z ∈ u⟩ := mem_at_top_sets.1 hu
-    exact ⟨Ioo x b, Ioo_mem_nhdsWithin_Iio (right_mem_Ioc.2 <| hb x.2), fun z hz => hx _ hz.1.le⟩
+    obtain ⟨x : s, hx : ∀ z, x ≤ z → z ∈ u⟩ := mem_atTop_sets.1 hu
+    exact ⟨Ioo x b, Ioo_mem_nhdsWithin_Iio' (hb x.2), fun z hz => hx _ hz.1.le⟩
 #align comap_coe_nhds_within_Iio_of_Ioo_subset comap_coe_nhdsWithin_Iio_of_Ioo_subset
 
 theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
-    (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) : comap (coe : s → α) (𝓝[>] a) = atBot :=
+    (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsWithin_Iio_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h => by
     simpa only [OrderDual.exists, dual_Ioo] using hs h
 #align comap_coe_nhds_within_Ioi_of_Ioo_subset comap_coe_nhdsWithin_Ioi_of_Ioo_subset
 
 theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s) :
-    map (coe : s → α) atTop = 𝓝[<] b := by
+    map ((↑) : s → α) atTop = 𝓝[<] b := by
   rcases eq_empty_or_nonempty (Iio b) with (hb' | ⟨a, ha⟩)
-  · rw [filter_eq_bot_of_is_empty at_top, Filter.map_bot, hb', nhdsWithin_empty]
-    exact ⟨fun x => hb'.subset (hb x.2)⟩
+  · have : IsEmpty s := ⟨fun x => hb'.subset (hb x.2)⟩
+    rw [filter_eq_bot_of_isEmpty atTop, Filter.map_bot, hb', nhdsWithin_empty]
   · rw [← comap_coe_nhdsWithin_Iio_of_Ioo_subset hb fun _ => hs a ha, map_comap_of_mem]
-    rw [Subtype.range_coe]
+    rw [Subtype.range_val]
     exact (mem_nhdsWithin_Iio_iff_exists_Ioo_subset' ha).2 (hs a ha)
 #align map_coe_at_top_of_Ioo_subset map_coe_atTop_of_Ioo_subset
 
 theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
-    map (coe : s → α) atBot = 𝓝[>] a := by
+    map ((↑) : s → α) atBot = 𝓝[>] a := by
   -- the elaborator gets stuck without `(... : _)`
-  refine'
-    (map_coe_atTop_of_Ioo_subset (show of_dual ⁻¹' s ⊆ Iio (to_dual a) from ha) fun b' hb' => _ : _)
+  refine' (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
+    fun b' hb' => _ : _)
   simpa only [OrderDual.exists, dual_Ioo] using hs b' hb'
 #align map_coe_at_bot_of_Ioo_subset map_coe_atBot_of_Ioo_subset
 
-/-- The `at_top` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
+/-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
 the right endpoint in the ambient order. -/
-theorem comap_coe_Ioo_nhdsWithin_Iio (a b : α) : comap (coe : Ioo a b → α) (𝓝[<] b) = atTop :=
+theorem comap_coe_Ioo_nhdsWithin_Iio (a b : α) : comap ((↑) : Ioo a b → α) (𝓝[<] b) = atTop :=
   comap_coe_nhdsWithin_Iio_of_Ioo_subset Ioo_subset_Iio_self fun h =>
     ⟨a, nonempty_Ioo.1 h, Subset.refl _⟩
 #align comap_coe_Ioo_nhds_within_Iio comap_coe_Ioo_nhdsWithin_Iio
 
-/-- The `at_bot` filter for an open interval `Ioo a b` comes from the right-neighbourhoods filter at
+/-- The `atBot` filter for an open interval `Ioo a b` comes from the right-neighbourhoods filter at
 the left endpoint in the ambient order. -/
-theorem comap_coe_Ioo_nhdsWithin_Ioi (a b : α) : comap (coe : Ioo a b → α) (𝓝[>] a) = atBot :=
+theorem comap_coe_Ioo_nhdsWithin_Ioi (a b : α) : comap ((↑) : Ioo a b → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsWithin_Ioi_of_Ioo_subset Ioo_subset_Ioi_self fun h =>
     ⟨b, nonempty_Ioo.1 h, Subset.refl _⟩
 #align comap_coe_Ioo_nhds_within_Ioi comap_coe_Ioo_nhdsWithin_Ioi
 
-theorem comap_coe_Ioi_nhdsWithin_Ioi (a : α) : comap (coe : Ioi a → α) (𝓝[>] a) = atBot :=
+theorem comap_coe_Ioi_nhdsWithin_Ioi (a : α) : comap ((↑) : Ioi a → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsWithin_Ioi_of_Ioo_subset (Subset.refl _) fun ⟨x, hx⟩ => ⟨x, hx, Ioo_subset_Ioi_self⟩
 #align comap_coe_Ioi_nhds_within_Ioi comap_coe_Ioi_nhdsWithin_Ioi
 
-theorem comap_coe_Iio_nhdsWithin_Iio (a : α) : comap (coe : Iio a → α) (𝓝[<] a) = atTop :=
+theorem comap_coe_Iio_nhdsWithin_Iio (a : α) : comap ((↑) : Iio a → α) (𝓝[<] a) = atTop :=
   @comap_coe_Ioi_nhdsWithin_Ioi αᵒᵈ _ _ _ _ a
 #align comap_coe_Iio_nhds_within_Iio comap_coe_Iio_nhdsWithin_Iio
 
 @[simp]
-theorem map_coe_Ioo_atTop {a b : α} (h : a < b) : map (coe : Ioo a b → α) atTop = 𝓝[<] b :=
+theorem map_coe_Ioo_atTop {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atTop = 𝓝[<] b :=
   map_coe_atTop_of_Ioo_subset Ioo_subset_Iio_self fun _ _ => ⟨_, h, Subset.refl _⟩
 #align map_coe_Ioo_at_top map_coe_Ioo_atTop
 
 @[simp]
-theorem map_coe_Ioo_atBot {a b : α} (h : a < b) : map (coe : Ioo a b → α) atBot = 𝓝[>] a :=
+theorem map_coe_Ioo_atBot {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atBot = 𝓝[>] a :=
   map_coe_atBot_of_Ioo_subset Ioo_subset_Ioi_self fun _ _ => ⟨_, h, Subset.refl _⟩
 #align map_coe_Ioo_at_bot map_coe_Ioo_atBot
 
 @[simp]
-theorem map_coe_Ioi_atBot (a : α) : map (coe : Ioi a → α) atBot = 𝓝[>] a :=
+theorem map_coe_Ioi_atBot (a : α) : map ((↑) : Ioi a → α) atBot = 𝓝[>] a :=
   map_coe_atBot_of_Ioo_subset (Subset.refl _) fun b hb => ⟨b, hb, Ioo_subset_Ioi_self⟩
 #align map_coe_Ioi_at_bot map_coe_Ioi_atBot
 
 @[simp]
-theorem map_coe_Iio_atTop (a : α) : map (coe : Iio a → α) atTop = 𝓝[<] a :=
+theorem map_coe_Iio_atTop (a : α) : map ((↑) : Iio a → α) atTop = 𝓝[<] a :=
   @map_coe_Ioi_atBot αᵒᵈ _ _ _ _ _
 #align map_coe_Iio_at_top map_coe_Iio_atTop
 
@@ -3847,78 +2426,76 @@ variable {l : Filter β} {f : α → β}
 @[simp]
 theorem tendsto_comp_coe_Ioo_atTop (h : a < b) :
     Tendsto (fun x : Ioo a b => f x) atTop l ↔ Tendsto f (𝓝[<] b) l := by
-  rw [← map_coe_Ioo_atTop h, tendsto_map'_iff]
+  rw [← map_coe_Ioo_atTop h, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Ioo_at_top tendsto_comp_coe_Ioo_atTop
 
 @[simp]
 theorem tendsto_comp_coe_Ioo_atBot (h : a < b) :
     Tendsto (fun x : Ioo a b => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
-  rw [← map_coe_Ioo_atBot h, tendsto_map'_iff]
+  rw [← map_coe_Ioo_atBot h, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Ioo_at_bot tendsto_comp_coe_Ioo_atBot
 
-@[simp]
+-- porting note: todo: `simpNF` claims that `simp` can't use this lemma to simplify LHS but it can
+@[simp, nolint simpNF]
 theorem tendsto_comp_coe_Ioi_atBot :
     Tendsto (fun x : Ioi a => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
-  rw [← map_coe_Ioi_atBot, tendsto_map'_iff]
+  rw [← map_coe_Ioi_atBot, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Ioi_at_bot tendsto_comp_coe_Ioi_atBot
 
-@[simp]
+-- porting note: todo: `simpNF` claims that `simp` can't use this lemma to simplify LHS but it can
+@[simp, nolint simpNF]
 theorem tendsto_comp_coe_Iio_atTop :
     Tendsto (fun x : Iio a => f x) atTop l ↔ Tendsto f (𝓝[<] a) l := by
-  rw [← map_coe_Iio_atTop, tendsto_map'_iff]
+  rw [← map_coe_Iio_atTop, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Iio_at_top tendsto_comp_coe_Iio_atTop
 
 @[simp]
 theorem tendsto_Ioo_atTop {f : β → Ioo a b} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] b) := by
-  rw [← comap_coe_Ioo_nhdsWithin_Iio, tendsto_comap_iff]
+  rw [← comap_coe_Ioo_nhdsWithin_Iio, tendsto_comap_iff]; rfl
 #align tendsto_Ioo_at_top tendsto_Ioo_atTop
 
 @[simp]
 theorem tendsto_Ioo_atBot {f : β → Ioo a b} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
-  rw [← comap_coe_Ioo_nhdsWithin_Ioi, tendsto_comap_iff]
+  rw [← comap_coe_Ioo_nhdsWithin_Ioi, tendsto_comap_iff]; rfl
 #align tendsto_Ioo_at_bot tendsto_Ioo_atBot
 
 @[simp]
 theorem tendsto_Ioi_atBot {f : β → Ioi a} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l (𝓝[>] a) := by
-  rw [← comap_coe_Ioi_nhdsWithin_Ioi, tendsto_comap_iff]
+  rw [← comap_coe_Ioi_nhdsWithin_Ioi, tendsto_comap_iff]; rfl
 #align tendsto_Ioi_at_bot tendsto_Ioi_atBot
 
 @[simp]
 theorem tendsto_Iio_atTop {f : β → Iio a} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l (𝓝[<] a) := by
-  rw [← comap_coe_Iio_nhdsWithin_Iio, tendsto_comap_iff]
+  rw [← comap_coe_Iio_nhdsWithin_Iio, tendsto_comap_iff]; rfl
 #align tendsto_Iio_at_top tendsto_Iio_atTop
 
 instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
-  apply forall_mem_nonempty_iff_ne_bot.1 fun s hs => _
+  refine forall_mem_nonempty_iff_neBot.1 fun s hs => ?_
   obtain ⟨u, u_open, xu, us⟩ : ∃ u : Set α, IsOpen u ∧ x ∈ u ∧ u ∩ {x}ᶜ ⊆ s := mem_nhdsWithin.1 hs
   obtain ⟨a, b, a_lt_b, hab⟩ : ∃ a b : α, a < b ∧ Ioo a b ⊆ u := u_open.exists_Ioo_subset ⟨x, xu⟩
   obtain ⟨y, hy⟩ : ∃ y, a < y ∧ y < b := exists_between a_lt_b
   rcases ne_or_eq x y with (xy | rfl)
   · exact ⟨y, us ⟨hab hy, xy.symm⟩⟩
   obtain ⟨z, hz⟩ : ∃ z, a < z ∧ z < x := exists_between hy.1
-  exact ⟨z, us ⟨hab ⟨hz.1, hz.2.trans hy.2⟩, hz.2.Ne⟩⟩
+  exact ⟨z, us ⟨hab ⟨hz.1, hz.2.trans hy.2⟩, hz.2.ne⟩⟩
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 /-- Let `s` be a dense set in a nontrivial dense linear order `α`. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
 dense subset `t ⊆ s` such that `t` does not contain bottom/top elements of `α`. -/
 theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set α} [SeparableSpace s]
     (hs : Dense s) :
-    ∃ (t : _)(_ : t ⊆ s), t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∉ t) ∧ ∀ x, IsTop x → x ∉ t :=
-  by
+    ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t ∧ (∀ x, IsBot x → x ∉ t) ∧ ∀ x, IsTop x → x ∉ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
-  refine' ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), _, _, _, _, _⟩
+  refine' ⟨t \ ({ x | IsBot x } ∪ { x | IsTop x }), _, _, _, fun x hx => _, fun x hx => _⟩
   · exact (diff_subset _ _).trans hts
   · exact htc.mono (diff_subset _ _)
-  · exact htd.diff_finite ((subsingleton_is_bot α).Finite.union (subsingleton_is_top α).Finite)
-  · intro x hx
-    simp [hx]
-  · intro x hx
-    simp [hx]
+  · exact htd.diff_finite ((subsingleton_isBot α).finite.union (subsingleton_isTop α).finite)
+  · simp [hx]
+  · simp [hx]
 #align dense.exists_countable_dense_subset_no_bot_top Dense.exists_countable_dense_subset_no_bot_top
 
 variable (α)
@@ -3961,14 +2538,14 @@ theorem IsClosed.infₛ_mem {α : Type u} [TopologicalSpace α] [CompleteLinearO
 
 /-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
 the supremum of the image of this set. -/
-theorem Monotone.map_supₛ_of_continuous_at' {f : α → β} {s : Set α} (Cf : ContinuousAt f (supₛ s))
+theorem Monotone.map_supₛ_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (supₛ s))
     (Mf : Monotone f) (hs : s.Nonempty) : f (supₛ s) = supₛ (f '' s) :=
   ((--This is a particular case of the more general is_lub.is_lub_of_tendsto
               isLUB_supₛ
               _).isLUB_of_tendsto
-          (fun x hx y hy xy => Mf xy) hs <|
+          (fun _ _ _ _ xy => Mf xy) hs <|
         Cf.mono_left inf_le_left).supₛ_eq.symm
-#align monotone.map_Sup_of_continuous_at' Monotone.map_supₛ_of_continuous_at'
+#align monotone.map_Sup_of_continuous_at' Monotone.map_supₛ_of_continuousAt'
 
 /-- A monotone function `f` sending `bot` to `bot` and continuous at the supremum of a set sends
 this supremum to the supremum of the image of this set. -/
@@ -3976,30 +2553,30 @@ theorem Monotone.map_supₛ_of_continuousAt {f : α → β} {s : Set α} (Cf : C
     (Mf : Monotone f) (fbot : f ⊥ = ⊥) : f (supₛ s) = supₛ (f '' s) := by
   cases' s.eq_empty_or_nonempty with h h
   · simp [h, fbot]
-  · exact Mf.map_Sup_of_continuous_at' Cf h
+  · exact Mf.map_supₛ_of_continuousAt' Cf h
 #align monotone.map_Sup_of_continuous_at Monotone.map_supₛ_of_continuousAt
 
 /-- A monotone function continuous at the indexed supremum over a nonempty `Sort` sends this indexed
 supremum to the indexed supremum of the composition. -/
-theorem Monotone.map_supᵢ_of_continuous_at' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
+theorem Monotone.map_supᵢ_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (supᵢ g)) (Mf : Monotone f) : f (⨆ i, g i) = ⨆ i, f (g i) := by
-  rw [supᵢ, Mf.map_Sup_of_continuous_at' Cf (range_nonempty g), ← range_comp, supᵢ]
-#align monotone.map_supr_of_continuous_at' Monotone.map_supᵢ_of_continuous_at'
+  rw [supᵢ, Mf.map_supₛ_of_continuousAt' Cf (range_nonempty g), ← range_comp, supᵢ]; rfl
+#align monotone.map_supr_of_continuous_at' Monotone.map_supᵢ_of_continuousAt'
 
 /-- If a monotone function sending `bot` to `bot` is continuous at the indexed supremum over
 a `Sort`, then it sends this indexed supremum to the indexed supremum of the composition. -/
 theorem Monotone.map_supᵢ_of_continuousAt {ι : Sort _} {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (supᵢ g)) (Mf : Monotone f) (fbot : f ⊥ = ⊥) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
-  rw [supᵢ, Mf.map_Sup_of_continuous_at Cf fbot, ← range_comp, supᵢ]
+  rw [supᵢ, Mf.map_supₛ_of_continuousAt Cf fbot, ← range_comp, supᵢ]; rfl
 #align monotone.map_supr_of_continuous_at Monotone.map_supᵢ_of_continuousAt
 
 /-- A monotone function continuous at the infimum of a nonempty set sends this infimum to
 the infimum of the image of this set. -/
-theorem Monotone.map_infₛ_of_continuous_at' {f : α → β} {s : Set α} (Cf : ContinuousAt f (infₛ s))
+theorem Monotone.map_infₛ_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (infₛ s))
     (Mf : Monotone f) (hs : s.Nonempty) : f (infₛ s) = infₛ (f '' s) :=
-  @Monotone.map_supₛ_of_continuous_at' αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s Cf Mf.dual hs
-#align monotone.map_Inf_of_continuous_at' Monotone.map_infₛ_of_continuous_at'
+  @Monotone.map_supₛ_of_continuousAt' αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s Cf Mf.dual hs
+#align monotone.map_Inf_of_continuous_at' Monotone.map_infₛ_of_continuousAt'
 
 /-- A monotone function `f` sending `top` to `top` and continuous at the infimum of a set sends
 this infimum to the infimum of the image of this set. -/
@@ -4010,10 +2587,10 @@ theorem Monotone.map_infₛ_of_continuousAt {f : α → β} {s : Set α} (Cf : C
 
 /-- A monotone function continuous at the indexed infimum over a nonempty `Sort` sends this indexed
 infimum to the indexed infimum of the composition. -/
-theorem Monotone.map_infᵢ_of_continuous_at' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
+theorem Monotone.map_infᵢ_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (infᵢ g)) (Mf : Monotone f) : f (⨅ i, g i) = ⨅ i, f (g i) :=
-  @Monotone.map_supᵢ_of_continuous_at' αᵒᵈ βᵒᵈ _ _ _ _ _ _ ι _ f g Cf Mf.dual
-#align monotone.map_infi_of_continuous_at' Monotone.map_infᵢ_of_continuous_at'
+  @Monotone.map_supᵢ_of_continuousAt' αᵒᵈ βᵒᵈ _ _ _ _ _ _ ι _ f g Cf Mf.dual
+#align monotone.map_infi_of_continuous_at' Monotone.map_infᵢ_of_continuousAt'
 
 /-- If a monotone function sending `top` to `top` is continuous at the indexed infimum over
 a `Sort`, then it sends this indexed infimum to the indexed infimum of the composition. -/
@@ -4024,11 +2601,11 @@ theorem Monotone.map_infᵢ_of_continuousAt {ι : Sort _} {f : α → β} {g : �
 
 /-- An antitone function continuous at the supremum of a nonempty set sends this supremum to
 the infimum of the image of this set. -/
-theorem Antitone.map_supₛ_of_continuous_at' {f : α → β} {s : Set α} (Cf : ContinuousAt f (supₛ s))
+theorem Antitone.map_supₛ_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (supₛ s))
     (Af : Antitone f) (hs : s.Nonempty) : f (supₛ s) = infₛ (f '' s) :=
-  Monotone.map_supₛ_of_continuous_at' (show ContinuousAt (OrderDual.toDual ∘ f) (supₛ s) from Cf) Af
+  Monotone.map_supₛ_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (supₛ s) from Cf) Af
     hs
-#align antitone.map_Sup_of_continuous_at' Antitone.map_supₛ_of_continuous_at'
+#align antitone.map_Sup_of_continuous_at' Antitone.map_supₛ_of_continuousAt'
 
 /-- An antitone function `f` sending `bot` to `top` and continuous at the supremum of a set sends
 this supremum to the infimum of the image of this set. -/
@@ -4040,10 +2617,10 @@ theorem Antitone.map_supₛ_of_continuousAt {f : α → β} {s : Set α} (Cf : C
 
 /-- An antitone function continuous at the indexed supremum over a nonempty `Sort` sends this
 indexed supremum to the indexed infimum of the composition. -/
-theorem Antitone.map_supᵢ_of_continuous_at' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
+theorem Antitone.map_supᵢ_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (supᵢ g)) (Af : Antitone f) : f (⨆ i, g i) = ⨅ i, f (g i) :=
-  Monotone.map_supᵢ_of_continuous_at' (show ContinuousAt (OrderDual.toDual ∘ f) (supᵢ g) from Cf) Af
-#align antitone.map_supr_of_continuous_at' Antitone.map_supᵢ_of_continuous_at'
+  Monotone.map_supᵢ_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (supᵢ g) from Cf) Af
+#align antitone.map_supr_of_continuous_at' Antitone.map_supᵢ_of_continuousAt'
 
 /-- An antitone function sending `bot` to `top` is continuous at the indexed supremum over
 a `Sort`, then it sends this indexed supremum to the indexed supremum of the composition. -/
@@ -4056,11 +2633,11 @@ theorem Antitone.map_supᵢ_of_continuousAt {ι : Sort _} {f : α → β} {g : �
 
 /-- An antitone function continuous at the infimum of a nonempty set sends this infimum to
 the supremum of the image of this set. -/
-theorem Antitone.map_infₛ_of_continuous_at' {f : α → β} {s : Set α} (Cf : ContinuousAt f (infₛ s))
+theorem Antitone.map_infₛ_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (infₛ s))
     (Af : Antitone f) (hs : s.Nonempty) : f (infₛ s) = supₛ (f '' s) :=
-  Monotone.map_infₛ_of_continuous_at' (show ContinuousAt (OrderDual.toDual ∘ f) (infₛ s) from Cf) Af
+  Monotone.map_infₛ_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (infₛ s) from Cf) Af
     hs
-#align antitone.map_Inf_of_continuous_at' Antitone.map_infₛ_of_continuous_at'
+#align antitone.map_Inf_of_continuous_at' Antitone.map_infₛ_of_continuousAt'
 
 /-- An antitone function `f` sending `top` to `bot` and continuous at the infimum of a set sends
 this infimum to the supremum of the image of this set. -/
@@ -4072,10 +2649,10 @@ theorem Antitone.map_infₛ_of_continuousAt {f : α → β} {s : Set α} (Cf : C
 
 /-- An antitone function continuous at the indexed infimum over a nonempty `Sort` sends this indexed
 infimum to the indexed supremum of the composition. -/
-theorem Antitone.map_infᵢ_of_continuous_at' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
+theorem Antitone.map_infᵢ_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (infᵢ g)) (Af : Antitone f) : f (⨅ i, g i) = ⨆ i, f (g i) :=
-  Monotone.map_infᵢ_of_continuous_at' (show ContinuousAt (OrderDual.toDual ∘ f) (infᵢ g) from Cf) Af
-#align antitone.map_infi_of_continuous_at' Antitone.map_infᵢ_of_continuous_at'
+  Monotone.map_infᵢ_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (infᵢ g) from Cf) Af
+#align antitone.map_infi_of_continuous_at' Antitone.map_infᵢ_of_continuousAt'
 
 /-- If an antitone function sending `top` to `bot` is continuous at the indexed infimum over
 a `Sort`, then it sends this indexed infimum to the indexed supremum of the composition. -/
@@ -4092,61 +2669,61 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
   [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] [Nonempty γ]
 
-theorem cSup_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddAbove s) : supₛ s ∈ closure s :=
+theorem csupₛ_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddAbove s) : supₛ s ∈ closure s :=
   (isLUB_csupₛ hs B).mem_closure hs
-#align cSup_mem_closure cSup_mem_closure
+#align cSup_mem_closure csupₛ_mem_closure
 
-theorem cInf_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddBelow s) : infₛ s ∈ closure s :=
+theorem cinfₛ_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddBelow s) : infₛ s ∈ closure s :=
   (isGLB_cinfₛ hs B).mem_closure hs
-#align cInf_mem_closure cInf_mem_closure
+#align cInf_mem_closure cinfₛ_mem_closure
 
-theorem IsClosed.cSup_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
+theorem IsClosed.csupₛ_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
     supₛ s ∈ s :=
   (isLUB_csupₛ hs B).mem_of_isClosed hs hc
-#align is_closed.cSup_mem IsClosed.cSup_mem
+#align is_closed.cSup_mem IsClosed.csupₛ_mem
 
-theorem IsClosed.cInf_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
+theorem IsClosed.cinfₛ_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
     infₛ s ∈ s :=
   (isGLB_cinfₛ hs B).mem_of_isClosed hs hc
-#align is_closed.cInf_mem IsClosed.cInf_mem
+#align is_closed.cInf_mem IsClosed.cinfₛ_mem
 
 /-- If a monotone function is continuous at the supremum of a nonempty bounded above set `s`,
 then it sends this supremum to the supremum of the image of `s`. -/
-theorem Monotone.map_cSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (supₛ s))
+theorem Monotone.map_csupₛ_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (supₛ s))
     (Mf : Monotone f) (ne : s.Nonempty) (H : BddAbove s) : f (supₛ s) = supₛ (f '' s) := by
-  refine' ((isLUB_csupₛ (ne.image f) (Mf.map_bdd_above H)).unique _).symm
-  refine' (isLUB_csupₛ Ne H).isLUB_of_tendsto (fun x hx y hy xy => Mf xy) Ne _
+  refine' ((isLUB_csupₛ (ne.image f) (Mf.map_bddAbove H)).unique _).symm
+  refine' (isLUB_csupₛ ne H).isLUB_of_tendsto (fun x _ y _ xy => Mf xy) ne _
   exact Cf.mono_left inf_le_left
-#align monotone.map_cSup_of_continuous_at Monotone.map_cSup_of_continuousAt
+#align monotone.map_cSup_of_continuous_at Monotone.map_csupₛ_of_continuousAt
 
 /-- If a monotone function is continuous at the indexed supremum of a bounded function on
 a nonempty `Sort`, then it sends this supremum to the supremum of the composition. -/
 theorem Monotone.map_csupr_of_continuousAt {f : α → β} {g : γ → α} (Cf : ContinuousAt f (⨆ i, g i))
     (Mf : Monotone f) (H : BddAbove (range g)) : f (⨆ i, g i) = ⨆ i, f (g i) := by
-  rw [supᵢ, Mf.map_cSup_of_continuous_at Cf (range_nonempty _) H, ← range_comp, supᵢ]
+  rw [supᵢ, Mf.map_csupₛ_of_continuousAt Cf (range_nonempty _) H, ← range_comp, supᵢ]; rfl
 #align monotone.map_csupr_of_continuous_at Monotone.map_csupr_of_continuousAt
 
 /-- If a monotone function is continuous at the infimum of a nonempty bounded below set `s`,
 then it sends this infimum to the infimum of the image of `s`. -/
-theorem Monotone.map_cInf_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (infₛ s))
+theorem Monotone.map_cinfₛ_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (infₛ s))
     (Mf : Monotone f) (ne : s.Nonempty) (H : BddBelow s) : f (infₛ s) = infₛ (f '' s) :=
-  @Monotone.map_cSup_of_continuousAt αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s Cf Mf.dual Ne H
-#align monotone.map_cInf_of_continuous_at Monotone.map_cInf_of_continuousAt
+  @Monotone.map_csupₛ_of_continuousAt αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s Cf Mf.dual ne H
+#align monotone.map_cInf_of_continuous_at Monotone.map_cinfₛ_of_continuousAt
 
 /-- A continuous monotone function sends indexed infimum to indexed infimum in conditionally
 complete linear order, under a boundedness assumption. -/
-theorem Monotone.map_cinfi_of_continuousAt {f : α → β} {g : γ → α} (Cf : ContinuousAt f (⨅ i, g i))
+theorem Monotone.map_cinfᵢ_of_continuousAt {f : α → β} {g : γ → α} (Cf : ContinuousAt f (⨅ i, g i))
     (Mf : Monotone f) (H : BddBelow (range g)) : f (⨅ i, g i) = ⨅ i, f (g i) :=
   @Monotone.map_csupr_of_continuousAt αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ _ Cf Mf.dual H
-#align monotone.map_cinfi_of_continuous_at Monotone.map_cinfi_of_continuousAt
+#align monotone.map_cinfi_of_continuous_at Monotone.map_cinfᵢ_of_continuousAt
 
 /-- If an antitone function is continuous at the supremum of a nonempty bounded above set `s`,
 then it sends this supremum to the infimum of the image of `s`. -/
-theorem Antitone.map_cSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (supₛ s))
+theorem Antitone.map_csupₛ_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (supₛ s))
     (Af : Antitone f) (ne : s.Nonempty) (H : BddAbove s) : f (supₛ s) = infₛ (f '' s) :=
-  Monotone.map_cSup_of_continuousAt (show ContinuousAt (OrderDual.toDual ∘ f) (supₛ s) from Cf) Af
-    Ne H
-#align antitone.map_cSup_of_continuous_at Antitone.map_cSup_of_continuousAt
+  Monotone.map_csupₛ_of_continuousAt (show ContinuousAt (OrderDual.toDual ∘ f) (supₛ s) from Cf) Af
+    ne H
+#align antitone.map_cSup_of_continuous_at Antitone.map_csupₛ_of_continuousAt
 
 /-- If an antitone function is continuous at the indexed supremum of a bounded function on
 a nonempty `Sort`, then it sends this supremum to the infimum of the composition. -/
@@ -4158,19 +2735,19 @@ theorem Antitone.map_csupr_of_continuousAt {f : α → β} {g : γ → α} (Cf :
 
 /-- If an antitone function is continuous at the infimum of a nonempty bounded below set `s`,
 then it sends this infimum to the supremum of the image of `s`. -/
-theorem Antitone.map_cInf_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (infₛ s))
+theorem Antitone.map_cinfₛ_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (infₛ s))
     (Af : Antitone f) (ne : s.Nonempty) (H : BddBelow s) : f (infₛ s) = supₛ (f '' s) :=
-  Monotone.map_cInf_of_continuousAt (show ContinuousAt (OrderDual.toDual ∘ f) (infₛ s) from Cf) Af
-    Ne H
-#align antitone.map_cInf_of_continuous_at Antitone.map_cInf_of_continuousAt
+  Monotone.map_cinfₛ_of_continuousAt (show ContinuousAt (OrderDual.toDual ∘ f) (infₛ s) from Cf) Af
+    ne H
+#align antitone.map_cInf_of_continuous_at Antitone.map_cinfₛ_of_continuousAt
 
 /-- A continuous antitone function sends indexed infimum to indexed supremum in conditionally
 complete linear order, under a boundedness assumption. -/
-theorem Antitone.map_cinfi_of_continuousAt {f : α → β} {g : γ → α} (Cf : ContinuousAt f (⨅ i, g i))
+theorem Antitone.map_cinfᵢ_of_continuousAt {f : α → β} {g : γ → α} (Cf : ContinuousAt f (⨅ i, g i))
     (Af : Antitone f) (H : BddBelow (range g)) : f (⨅ i, g i) = ⨆ i, f (g i) :=
-  Monotone.map_cinfi_of_continuousAt (show ContinuousAt (OrderDual.toDual ∘ f) (⨅ i, g i) from Cf)
+  Monotone.map_cinfᵢ_of_continuousAt (show ContinuousAt (OrderDual.toDual ∘ f) (⨅ i, g i) from Cf)
     Af H
-#align antitone.map_cinfi_of_continuous_at Antitone.map_cinfi_of_continuousAt
+#align antitone.map_cinfi_of_continuous_at Antitone.map_cinfᵢ_of_continuousAt
 
 /-- A monotone map has a limit to the left of any point `x`, equal to `Sup (f '' (Iio x))`. -/
 theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type _} [LinearOrder α] [TopologicalSpace α]
@@ -4181,11 +2758,9 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type _} [LinearOrder α] [Topol
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
         exists_lt_of_lt_csupₛ (nonempty_image_iff.2 h) hl
-    exact
-      (mem_nhdsWithin_Iio_iff_exists_Ioo_subset' zx).2 ⟨z, zx, fun y hy => lz.trans_le (Mf hy.1.le)⟩
-  · filter_upwards [self_mem_nhdsWithin]with _ hy
-    apply lt_of_le_of_lt _ hm
-    exact le_csupₛ (Mf.map_bdd_above bddAbove_Iio) (mem_image_of_mem _ hy)
+    exact mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun y hy => lz.trans_le (Mf hy.1.le)
+  · refine mem_of_superset self_mem_nhdsWithin fun _ hy => lt_of_le_of_lt ?_ hm
+    exact le_csupₛ (Mf.map_bddAbove bddAbove_Iio) (mem_image_of_mem _ hy)
 #align monotone.tendsto_nhds_within_Iio Monotone.tendsto_nhdsWithin_Iio
 
 /-- A monotone map has a limit to the right of any point `x`, equal to `Inf (f '' (Ioi x))`. -/
@@ -4203,12 +2778,14 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrder α] [Zero α] [TopologicalSpace α] [OrderTopology α]
 
+@[deprecated Ioo_mem_nhdsWithin_Ioi']
 theorem eventually_nhdsWithin_pos_mem_Ioo {ε : α} (h : 0 < ε) : ∀ᶠ x in 𝓝[>] 0, x ∈ Ioo 0 ε :=
-  Ioo_mem_nhdsWithin_Ioi (left_mem_Ico.2 h)
+  Ioo_mem_nhdsWithin_Ioi' h
 #align eventually_nhds_within_pos_mem_Ioo eventually_nhdsWithin_pos_mem_Ioo
 
+@[deprecated Ioc_mem_nhdsWithin_Ioi']
 theorem eventually_nhdsWithin_pos_mem_Ioc {ε : α} (h : 0 < ε) : ∀ᶠ x in 𝓝[>] 0, x ∈ Ioc 0 ε :=
-  Ioc_mem_nhdsWithin_Ioi (left_mem_Ico.2 h)
+  Ioc_mem_nhdsWithin_Ioi' h
 #align eventually_nhds_within_pos_mem_Ioc eventually_nhdsWithin_pos_mem_Ioc
 
 end LinearOrderedAddCommGroup
@@ -4216,4 +2793,3 @@ end LinearOrderedAddCommGroup
 end NhdsWithPos
 
 end OrderTopology
-
