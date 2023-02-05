@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.UpperLower.Basic
-import Mathbin.Topology.Separation
+import Mathlib.Order.UpperLower.Basic
+import Mathlib.Topology.Separation
 
 /-!
 # Priestley spaces
@@ -68,8 +68,7 @@ section PartialOrder
 variable [PartialOrder α] [PriestleySpace α] {x y : α}
 
 theorem exists_clopen_upper_or_lower_of_ne (h : x ≠ y) :
-    ∃ U : Set α, IsClopen U ∧ (IsUpperSet U ∨ IsLowerSet U) ∧ x ∈ U ∧ y ∉ U :=
-  by
+    ∃ U : Set α, IsClopen U ∧ (IsUpperSet U ∨ IsLowerSet U) ∧ x ∈ U ∧ y ∉ U := by
   obtain h | h := h.not_le_or_not_le
   · exact (exists_clopen_upper_of_not_le h).imp fun U => And.imp_right <| And.imp_left Or.inl
   · obtain ⟨U, hU, hU', hy, hx⟩ := exists_clopen_lower_of_not_le h
