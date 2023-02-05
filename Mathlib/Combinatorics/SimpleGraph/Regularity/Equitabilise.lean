@@ -38,25 +38,27 @@ find a new partition `Q` of `s` where each part has size `m` or `m + 1`, every p
 union of parts of `Q` plus at most `m` extra elements, there are `b` parts of size `m + 1` and
 (provided `m > 0`, because a partition does not have parts of size `0`) there are `a` parts of size
 `m` and hence `a + b` parts in total. -/
-theorem equitabilise_aux (P : Finpartition s) (hs : a * m + b * (m + 1) = s.card) :
+theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     ∃ Q : Finpartition s,
       (∀ x : Finset α, x ∈ Q.parts → x.card = m ∨ x.card = m + 1) ∧
-        (∀ x, x ∈ P.parts → (x \ (Q.parts.filterₓ fun y => y ⊆ x).bunionᵢ id).card ≤ m) ∧
-          (Q.parts.filterₓ fun i => card i = m + 1).card = b := by
+        (∀ x, x ∈ P.parts → (x \ (Q.parts.filter fun y => y ⊆ x).bunionᵢ id).card ≤ m) ∧
+          (Q.parts.filter fun i => card i = m + 1).card = b := by
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine' ⟨⊥, by simp, _, by simpa using hs.symm⟩
-    simp only [le_zero_iff, card_eq_zero, mem_bUnion, exists_prop, mem_filter, id.def, and_assoc',
+    simp only [le_zero_iff, card_eq_zero, mem_bunionᵢ, exists_prop, mem_filter, id.def, and_assoc,
       sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
   -- Prove the case `m > 0` by strong induction on `s`
-  induction' s using Finset.strongInduction with s ih generalizing P a b
+  induction' s using Finset.strongInduction with s ih
   -- If `a = b = 0`, then `s = ∅` and we can partition into zero parts
   by_cases hab : a = 0 ∧ b = 0
   · simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero] at hs
     subst hs
-    exact ⟨Finpartition.empty _, by simp, by simp [Unique.eq_default P], by simp [hab.2]⟩
+    have : P = ⊥ := by
+      sorry
+    exact ⟨Finpartition.empty _, by simp, by simp [this], by simp [hab.2]⟩
   simp_rw [not_and_or, ← Ne.def, ← pos_iff_ne_zero] at hab
   -- `n` will be the size of the smallest part
   set n := if 0 < a then m else m + 1 with hn
@@ -81,11 +83,11 @@ theorem equitabilise_aux (P : Finpartition s) (hs : a * m + b * (m + 1) = s.card
     hypothesis. -/
   by_cases ∀ u ∈ P.parts, card u < m + 1
   · obtain ⟨t, hts, htn⟩ := exists_smaller_set s n (hn₂.trans_eq hs)
-    have ht : t.nonempty := by rwa [← card_pos, htn]
+    have ht : t.Nonempty := by rwa [← card_pos, htn]
     have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = (s \ t).card := by
       rw [card_sdiff ‹t ⊆ s›, htn, hn₃]
     obtain ⟨R, hR₁, hR₂, hR₃⟩ :=
-      @ih (s \ t) (sdiff_ssubset hts ‹t.nonempty›) (P.avoid t) (if 0 < a then a - 1 else a)
+      @ih (s \ t) (sdiff_ssubset hts ‹t.Nonempty›) (P.avoid t) (if 0 < a then a - 1 else a)
         (if 0 < a then b else b - 1) hcard
     refine' ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel hts), _, _, _⟩
     · simp only [extend_parts, mem_insert, forall_eq_or_imp, and_iff_left hR₁, htn, hn]
@@ -100,7 +102,7 @@ theorem equitabilise_aux (P : Finpartition s) (hs : a * m + b * (m + 1) = s.card
   push_neg  at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_smaller_set _ _ (hn₁.trans hu₂)
-  have ht : t.nonempty := by rwa [← card_pos, htn]
+  have ht : t.Nonempty := by rwa [← card_pos, htn]
   have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = (s \ t).card := by
     rw [card_sdiff (htu.trans <| P.le hu₁), htn, hn₃]
   obtain ⟨R, hR₁, hR₂, hR₃⟩ :=
@@ -136,7 +138,7 @@ theorem equitabilise_aux (P : Finpartition s) (hs : a * m + b * (m + 1) = s.card
     exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
 #align finpartition.equitabilise_aux Finpartition.equitabilise_aux
 
-variable (P) (h : a * m + b * (m + 1) = s.card)
+variable (h : a * m + b * (m + 1) = s.card)
 
 /-- Given a partition `P` of `s`, as well as a proof that `a * m + b * (m + 1) = s.card`, build a
 new partition `Q` of `s` where each part has size `m` or `m + 1`, every part of `P` is the union of
@@ -144,10 +146,10 @@ parts of `Q` plus at most `m` extra elements, there are `b` parts of size `m + 1
 `m > 0`, because a partition does not have parts of size `0`) there are `a` parts of size `m` and
 hence `a + b` parts in total. -/
 noncomputable def equitabilise : Finpartition s :=
-  (P.equitabilise_aux h).some
+  (P.equitabilise_aux h).choose
 #align finpartition.equitabilise Finpartition.equitabilise
 
-variable {P h}
+variable {h}
 
 theorem card_eq_of_mem_parts_equitabilise :
     t ∈ (P.equitabilise h).parts → t.card = m ∨ t.card = m + 1 :=
@@ -161,19 +163,18 @@ theorem equitabilise_isEquipartition : (P.equitabilise h).IsEquipartition :=
 variable (P h)
 
 theorem card_filter_equitabilise_big :
-    ((P.equitabilise h).parts.filterₓ fun u : Finset α => u.card = m + 1).card = b :=
+    ((P.equitabilise h).parts.filter fun u : Finset α => u.card = m + 1).card = b :=
   (P.equitabilise_aux h).choose_spec.2.2
 #align finpartition.card_filter_equitabilise_big Finpartition.card_filter_equitabilise_big
 
 theorem card_filter_equitabilise_small (hm : m ≠ 0) :
-    ((P.equitabilise h).parts.filterₓ fun u : Finset α => u.card = m).card = a := by
+    ((P.equitabilise h).parts.filter fun u : Finset α => u.card = m).card = a := by
   refine' (mul_eq_mul_right_iff.1 <| (add_left_inj (b * (m + 1))).1 _).resolve_right hm
   rw [h, ← (P.equitabilise h).sum_card_parts]
   have hunion :
     (P.equitabilise h).parts =
-      ((P.equitabilise h).parts.filterₓ fun u => u.card = m) ∪
-        (P.equitabilise h).parts.filterₓ fun u => u.card = m + 1 :=
-    by
+      ((P.equitabilise h).parts.filter fun u => u.card = m) ∪
+        (P.equitabilise h).parts.filter fun u => u.card = m + 1 := by
     rw [← filter_or, filter_true_of_mem]
     exact fun x => card_eq_of_mem_parts_equitabilise
   nth_rw 2 [hunion]
@@ -189,11 +190,11 @@ theorem card_parts_equitabilise (hm : m ≠ 0) : (P.equitabilise h).parts.card =
   rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or, card_union_eq,
     P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
-  infer_instance
+  --infer_instance
 #align finpartition.card_parts_equitabilise Finpartition.card_parts_equitabilise
 
 theorem card_parts_equitabilise_subset_le :
-    t ∈ P.parts → (t \ ((P.equitabilise h).parts.filterₓ fun u => u ⊆ t).bunionᵢ id).card ≤ m :=
+    t ∈ P.parts → (t \ ((P.equitabilise h).parts.filter fun u => u ⊆ t).bunionᵢ id).card ≤ m :=
   (Classical.choose_spec <| P.equitabilise_aux h).2.1 t
 #align finpartition.card_parts_equitabilise_subset_le Finpartition.card_parts_equitabilise_subset_le
 
@@ -209,9 +210,8 @@ theorem exists_equipartition_card_eq (hn : n ≠ 0) (hs : n ≤ s.card) :
       mod_add_div]
   refine'
     ⟨(indiscrete (card_pos.1 <| hn.trans_le hs).ne_empty).equitabilise this,
-      equitabilise_is_equipartition, _⟩
+      equitabilise_isEquipartition, _⟩
   rw [card_parts_equitabilise _ _ (Nat.div_pos hs hn).ne', tsub_add_cancel_of_le (mod_lt _ hn).le]
 #align finpartition.exists_equipartition_card_eq Finpartition.exists_equipartition_card_eq
 
 end Finpartition
-
