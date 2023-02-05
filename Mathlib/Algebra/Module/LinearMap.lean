@@ -933,7 +933,7 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
   ext fun _ ↦ g.map_neg _
 #align linear_map.comp_neg LinearMap.comp_neg
 
-/-- The negation of a linear map is linear. -/
+/-- The subtraction of two linear maps is linear. -/
 instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
