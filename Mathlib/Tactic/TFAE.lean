@@ -4,6 +4,12 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Data.List.TFAE
 import QQ.match
 
+/-!
+# The Following Are Equivalent (TFAE)
+
+This file provides the tactics `tfae_have` and `tfae_finish` for proving goals of the form
+`TFAE [P₀, P₁, ...]`.
+-/
 
 open List Lean Meta Expr Elab.Term Elab.Tactic Mathlib.Tactic Qq
 
