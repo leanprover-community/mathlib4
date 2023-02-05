@@ -581,22 +581,11 @@ theorem toWithTop_natCast' (n : ℕ) {h : Decidable (n : PartENat).Dom} :
 -- @[simp] lemma to_with_top_le {x y : part_enat} :
 --   Π [decidable x.dom] [decidable y.dom], by exactI to_with_top x ≤ to_with_top y ↔ x ≤ y :=
 -- ```
---
--- In addition, this proof takes really long to type-check.
--- This boils down to the manually defined instances in `Data.ENat.Basic`
--- (see porting note l.46 'Porting note: instances that derive failed to find')
--- it seems that the last `simp` in the following proof needs to check
--- `CharZero ℕ∞ ≟ CharZero ℕ∞` where one side uses
--- `#check instENatAddCommMonoidWithOne`
--- and the other `NonAssocSemiring.toAddCommMonoidWithOne` and then eventually
--- `#check instENatCanonicallyOrderedCommSemiring`
---
--- See
--- ```
--- set_option trace.Meta.synthInstance true
--- set_option trace.Meta.isDefEq true
--- set_option profiler true
--- ```
+-- This used to be really slow to typecheck when the definition of `ENat`
+-- was still `deriving AddCommMonoidWithOne`. Now that I removed that it is fine.
+-- (The problem was that the last `simp` got stuck at `CharZero ℕ∞ ≟ CharZero ℕ∞` where
+-- one side used `instENatAddCommMonoidWithOne` and the other used
+-- `NonAssocSemiring.toAddCommMonoidWithOne`. Now the former doesn't exist anymore.)
 @[simp]
 theorem toWithTop_le {x y : PartENat} [hx : Decidable x.Dom] [hy : Decidable y.Dom] :
     toWithTop x ≤ toWithTop y ↔ x ≤ y := by
@@ -607,16 +596,15 @@ theorem toWithTop_le {x y : PartENat} [hx : Decidable x.Dom] [hy : Decidable y.D
   · simp -- Porting note: this takes too long.
 #align part_enat.to_with_top_le PartENat.toWithTop_le
 
--- Porting note: As part of the troubles above, I noticed that Lean4 does not
--- find the following two instances which it could find in Lean3 automatically:
--- ```
--- section Test
--- #synth Decidable (⊤ : PartENat).Dom
-
--- variable {n : ℕ}
--- #synth Decidable (n : PartENat).Dom
--- end Test
--- ```
+/-
+Porting note: As part of the investigation above, I noticed that Lean4 does not
+find the following two instances which it could find in Lean3 automatically:
+```
+#synth Decidable (⊤ : PartENat).Dom
+variable {n : ℕ}
+#synth Decidable (n : PartENat).Dom
+```
+-/
 
 @[simp]
 theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
