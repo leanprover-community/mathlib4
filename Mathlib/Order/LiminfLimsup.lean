@@ -77,21 +77,22 @@ theorem isBoundedUnder_of {f : Filter β} {u : β → α} : (∃ b, ∀ x, r (u 
   | ⟨b, hb⟩ => ⟨b, show ∀ᶠ x in f, r (u x) b from eventually_of_forall hb⟩
 #align filter.is_bounded_under_of Filter.isBoundedUnder_of
 
-theorem isBounded_bot : IsBounded r ⊥ ↔ Nonempty α := by simp [is_bounded, exists_true_iff_nonempty]
+theorem isBounded_bot : IsBounded r ⊥ ↔ Nonempty α := by simp [IsBounded, exists_true_iff_nonempty]
 #align filter.is_bounded_bot Filter.isBounded_bot
 
-theorem isBounded_top : IsBounded r ⊤ ↔ ∃ t, ∀ x, r x t := by simp [is_bounded, eq_univ_iff_forall]
+theorem isBounded_top : IsBounded r ⊤ ↔ ∃ t, ∀ x, r x t := by simp [IsBounded, eq_univ_iff_forall]
 #align filter.is_bounded_top Filter.isBounded_top
 
 theorem isBounded_principal (s : Set α) : IsBounded r (𝓟 s) ↔ ∃ t, ∀ x ∈ s, r x t := by
-  simp [is_bounded, subset_def]
+  simp [IsBounded, subset_def]
 #align filter.is_bounded_principal Filter.isBounded_principal
 
 theorem isBounded_sup [IsTrans α r] (hr : ∀ b₁ b₂, ∃ b, r b₁ b ∧ r b₂ b) :
     IsBounded r f → IsBounded r g → IsBounded r (f ⊔ g)
   | ⟨b₁, h₁⟩, ⟨b₂, h₂⟩ =>
     let ⟨b, rb₁b, rb₂b⟩ := hr b₁ b₂
-    ⟨b, eventually_sup.mpr ⟨h₁.mono fun x h => trans h rb₁b, h₂.mono fun x h => trans h rb₂b⟩⟩
+    ⟨b, eventually_sup.mpr
+      ⟨h₁.mono fun _ h => _root_.trans h rb₁b, h₂.mono fun _ h => _root_.trans h rb₂b⟩⟩
 #align filter.is_bounded_sup Filter.isBounded_sup
 
 theorem IsBounded.mono (h : f ≤ g) : IsBounded r g → IsBounded r f
@@ -99,12 +100,13 @@ theorem IsBounded.mono (h : f ≤ g) : IsBounded r g → IsBounded r f
 #align filter.is_bounded.mono Filter.IsBounded.mono
 
 theorem IsBoundedUnder.mono {f g : Filter β} {u : β → α} (h : f ≤ g) :
-    g.IsBoundedUnder r u → f.IsBoundedUnder r u := fun hg => hg.mono (map_mono h)
+    g.IsBoundedUnder r u → f.IsBoundedUnder r u := fun hg => IsBounded.mono (map_mono h) hg
 #align filter.is_bounded_under.mono Filter.IsBoundedUnder.mono
 
 theorem IsBoundedUnder.mono_le [Preorder β] {l : Filter α} {u v : α → β}
-    (hu : IsBoundedUnder (· ≤ ·) l u) (hv : v ≤ᶠ[l] u) : IsBoundedUnder (· ≤ ·) l v :=
-  hu.imp fun b hb => (eventually_map.1 hb).mp <| hv.mono fun x => le_trans
+    (hu : IsBoundedUnder (· ≤ ·) l u) (hv : v ≤ᶠ[l] u) : IsBoundedUnder (· ≤ ·) l v := by
+  apply hu.imp
+  exact fun b hb => (eventually_map.1 hb).mp <| hv.mono fun x => le_trans
 #align filter.is_bounded_under.mono_le Filter.IsBoundedUnder.mono_le
 
 theorem IsBoundedUnder.mono_ge [Preorder β] {l : Filter α} {u v : α → β}
@@ -122,18 +124,18 @@ theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
 #align filter.is_bounded.is_bounded_under Filter.IsBounded.isBoundedUnder
 
 theorem not_isBoundedUnder_of_tendsto_atTop [Preorder β] [NoMaxOrder β] {f : α → β} {l : Filter α}
-    [l.ne_bot] (hf : Tendsto f l atTop) : ¬IsBoundedUnder (· ≤ ·) l f := by
+    [l.NeBot] (hf : Tendsto f l atTop) : ¬IsBoundedUnder (· ≤ ·) l f := by
   rintro ⟨b, hb⟩
   rw [eventually_map] at hb
   obtain ⟨b', h⟩ := exists_gt b
-  have hb' := (tendsto_at_top.mp hf) b'
+  have hb' := (tendsto_atTop.mp hf) b'
   have : { x : α | f x ≤ b } ∩ { x : α | b' ≤ f x } = ∅ :=
     eq_empty_of_subset_empty fun x hx => (not_le_of_lt h) (le_trans hx.2 hx.1)
   exact (nonempty_of_mem (hb.and hb')).ne_empty this
 #align filter.not_is_bounded_under_of_tendsto_at_top Filter.not_isBoundedUnder_of_tendsto_atTop
 
 theorem not_isBoundedUnder_of_tendsto_atBot [Preorder β] [NoMinOrder β] {f : α → β} {l : Filter α}
-    [l.ne_bot] (hf : Tendsto f l atBot) : ¬IsBoundedUnder (· ≥ ·) l f :=
+    [l.NeBot] (hf : Tendsto f l atBot) : ¬IsBoundedUnder (· ≥ ·) l f :=
   @not_isBoundedUnder_of_tendsto_atTop α βᵒᵈ _ _ _ _ _ hf
 #align filter.not_is_bounded_under_of_tendsto_at_bot Filter.not_isBoundedUnder_of_tendsto_atBot
 
@@ -142,7 +144,7 @@ theorem IsBoundedUnder.bddAbove_range_of_cofinite [SemilatticeSup β] {f : α �
   rcases hf with ⟨b, hb⟩
   haveI : Nonempty β := ⟨b⟩
   rw [← image_univ, ← union_compl_self { x | f x ≤ b }, image_union, bddAbove_union]
-  exact ⟨⟨b, ball_image_iff.2 fun x => id⟩, (hb.image f).BddAbove⟩
+  exact ⟨⟨b, ball_image_iff.2 fun x => id⟩, (hb.image f).bddAbove⟩
 #align filter.is_bounded_under.bdd_above_range_of_cofinite Filter.IsBoundedUnder.bddAbove_range_of_cofinite
 
 theorem IsBoundedUnder.bddBelow_range_of_cofinite [SemilatticeInf β] {f : α → β}
@@ -153,7 +155,7 @@ theorem IsBoundedUnder.bddBelow_range_of_cofinite [SemilatticeInf β] {f : α �
 theorem IsBoundedUnder.bddAbove_range [SemilatticeSup β] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≤ ·) atTop f) : BddAbove (range f) := by
   rw [← Nat.cofinite_eq_atTop] at hf
-  exact hf.bdd_above_range_of_cofinite
+  exact hf.bddAbove_range_of_cofinite
 #align filter.is_bounded_under.bdd_above_range Filter.IsBoundedUnder.bddAbove_range
 
 theorem IsBoundedUnder.bddBelow_range [SemilatticeInf β] {f : ℕ → β}
@@ -187,9 +189,9 @@ which bounds `f` at some point for every admissible set.
 
 This is only an implication, as the other direction is wrong for the trivial filter.-/
 theorem IsCobounded.mk [IsTrans α r] (a : α) (h : ∀ s ∈ f, ∃ x ∈ s, r a x) : f.IsCobounded r :=
-  ⟨a, fun y s =>
-    let ⟨x, h₁, h₂⟩ := h _ s
-    trans h₂ h₁⟩
+  ⟨a, fun _ s =>
+    let ⟨_, h₁, h₂⟩ := h _ s
+    _root_.trans h₂ h₁⟩
 #align filter.is_cobounded.mk Filter.IsCobounded.mk
 
 /-- A filter which is eventually bounded is in particular frequently bounded (in the opposite
@@ -197,8 +199,8 @@ direction). At least if the filter is not trivial. -/
 theorem IsBounded.isCobounded_flip [IsTrans α r] [NeBot f] : f.IsBounded r → f.IsCobounded (flip r)
   | ⟨a, ha⟩ =>
     ⟨a, fun b hb =>
-      let ⟨x, rxa, rbx⟩ := (ha.And hb).exists
-      show r b a from trans rbx rxa⟩
+      let ⟨_, rxa, rbx⟩ := (ha.and hb).exists
+      show r b a from _root_.trans rbx rxa⟩
 #align filter.is_bounded.is_cobounded_flip Filter.IsBounded.isCobounded_flip
 
 theorem IsBounded.isCobounded_ge [Preorder α] [NeBot f] (h : f.IsBounded (· ≤ ·)) :
@@ -211,16 +213,16 @@ theorem IsBounded.isCobounded_le [Preorder α] [NeBot f] (h : f.IsBounded (· �
   h.isCobounded_flip
 #align filter.is_bounded.is_cobounded_le Filter.IsBounded.isCobounded_le
 
-theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [is_cobounded]
+theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 #align filter.is_cobounded_bot Filter.isCobounded_bot
 
 theorem isCobounded_top : IsCobounded r ⊤ ↔ Nonempty α := by
-  simp (config := { contextual := true }) [is_cobounded, eq_univ_iff_forall,
+  simp (config := { contextual := true }) [IsCobounded, eq_univ_iff_forall,
     exists_true_iff_nonempty]
 #align filter.is_cobounded_top Filter.isCobounded_top
 
 theorem isCobounded_principal (s : Set α) :
-    (𝓟 s).IsCobounded r ↔ ∃ b, ∀ a, (∀ x ∈ s, r x a) → r b a := by simp [is_cobounded, subset_def]
+    (𝓟 s).IsCobounded r ↔ ∃ b, ∀ a, (∀ x ∈ s, r x a) → r b a := by simp [IsCobounded, subset_def]
 #align filter.is_cobounded_principal Filter.isCobounded_principal
 
 theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
@@ -230,11 +232,11 @@ theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
 end Relation
 
 theorem isCobounded_le_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsCobounded (· ≤ ·) :=
-  ⟨⊥, fun a h => bot_le⟩
+  ⟨⊥, fun _ _ => bot_le⟩
 #align filter.is_cobounded_le_of_bot Filter.isCobounded_le_of_bot
 
 theorem isCobounded_ge_of_top [Preorder α] [OrderTop α] {f : Filter α} : f.IsCobounded (· ≥ ·) :=
-  ⟨⊤, fun a h => le_top⟩
+  ⟨⊤, fun _ _ => le_top⟩
 #align filter.is_cobounded_ge_of_top Filter.isCobounded_ge_of_top
 
 theorem isBounded_le_of_top [Preorder α] [OrderTop α] {f : Filter α} : f.IsBounded (· ≤ ·) :=
@@ -246,25 +248,25 @@ theorem isBounded_ge_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsBo
 #align filter.is_bounded_ge_of_bot Filter.isBounded_ge_of_bot
 
 @[simp]
-theorem OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
+theorem _root_.OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
-  e.Surjective.exists.trans <| exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
+  e.Equiv.Surjective.exists.trans <| exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
 #align order_iso.is_bounded_under_le_comp OrderIso.isBoundedUnder_le_comp
 
 @[simp]
-theorem OrderIso.isBoundedUnder_ge_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
+theorem _root_.OrderIso.isBoundedUnder_ge_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≥ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≥ ·) l u :=
-  e.dual.isBoundedUnder_le_comp
+  isBoundedUnder_le_comp e.dual
 #align order_iso.is_bounded_under_ge_comp OrderIso.isBoundedUnder_ge_comp
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem isBoundedUnder_le_inv [OrderedCommGroup α] {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≤ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≥ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_ge_comp
 #align filter.is_bounded_under_le_inv Filter.isBoundedUnder_le_inv
 #align filter.is_bounded_under_le_neg Filter.isBoundedUnder_le_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem isBoundedUnder_ge_inv [OrderedCommGroup α] {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≥ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_le_comp
@@ -310,7 +312,7 @@ theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u 
 /-- Filters are automatically bounded or cobounded in complete lattices. To use the same statements
 in complete and conditionally complete lattices but let automation fill automatically the
 boundedness proofs in complete lattices, we use the tactic `is_bounded_default` in the statements,
-in the form `(hf : f.is_bounded (≥) . is_bounded_default)`. -/
+in the form `(hf : f.IsBounded (≥) . is_bounded_default)`. -/
 unsafe def is_bounded_default : tactic Unit :=
   tactic.applyc `` is_cobounded_le_of_bot <|>
     tactic.applyc `` is_cobounded_ge_of_top <|>
@@ -321,17 +323,21 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α]
 
+-- Porting note: Renamed from Limsup and Liminf to limsupₛ and liminfₛ
 /-- The `Limsup` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
 holds `x ≤ a`. -/
-def limsup (f : Filter α) : α :=
+def limsupₛ (f : Filter α) : α :=
   infₛ { a | ∀ᶠ n in f, n ≤ a }
-#align filter.Limsup Filter.limsup
+set_option linter.uppercaseLean3 false in
+#align filter.Limsup Filter.limsupₛ
 
+set_option linter.uppercaseLean3 false in
 /-- The `Liminf` of a filter `f` is the supremum of the `a` such that, eventually for `f`,
 holds `x ≥ a`. -/
-def liminf (f : Filter α) : α :=
+def liminfₛ (f : Filter α) : α :=
   supₛ { a | ∀ᶠ n in f, a ≤ n }
-#align filter.Liminf Filter.liminf
+set_option linter.uppercaseLean3 false in
+#align filter.Liminf Filter.liminfₛ
 
 /- warning: filter.limsup clashes with filter.Limsup -> Filter.limsup
 warning: filter.limsup -> Filter.limsup is a dubious translation:
@@ -1398,4 +1404,3 @@ theorem OrderIso.liminf_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
 #align order_iso.liminf_apply OrderIso.liminf_apply
 
 end Order
-
