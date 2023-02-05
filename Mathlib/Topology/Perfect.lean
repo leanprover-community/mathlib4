@@ -8,8 +8,8 @@ Authors: Felix Weilacher
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Separation
-import Mathbin.Topology.Bases
+import Mathlib.Topology.Separation
+import Mathlib.Topology.Bases
 
 /-!
 # Perfect Sets
@@ -59,8 +59,7 @@ variable {α : Type _} [TopologicalSpace α] {C : Set α}
 /-- If `x` is an accumulation point of a set `C` and `U` is a neighborhood of `x`,
 then `x` is an accumulation point of `U ∩ C`. -/
 theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : U ∈ 𝓝 x) :
-    AccPt x (𝓟 (U ∩ C)) :=
-  by
+    AccPt x (𝓟 (U ∩ C)) := by
   have : 𝓝[≠] x ≤ 𝓟 U := by
     rw [le_principal_iff]
     exact mem_nhdsWithin_of_mem_nhds hU
@@ -97,8 +96,7 @@ theorem Preperfect.open_inter {U : Set α} (hC : Preperfect C) (hU : IsOpen U) :
 
 /-- The closure of a preperfect set is perfect.
 For a converse, see `preperfect_iff_perfect_closure`-/
-theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) :=
-  by
+theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := by
   constructor; · exact isClosed_closure
   intro x hx
   by_cases h : x ∈ C <;> apply AccPt.mono _ (principal_mono.mpr subset_closure)
@@ -110,8 +108,7 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) :=
 #align preperfect.perfect_closure Preperfect.perfect_closure
 
 /-- In a T1 space, being preperfect is equivalent to having perfect closure.-/
-theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) :=
-  by
+theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
   constructor <;> intro h
   · exact h.perfect_closure
   intro x xC
@@ -128,8 +125,7 @@ theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (
 #align preperfect_iff_perfect_closure preperfect_iff_perfect_closure
 
 theorem Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : x ∈ C) (xU : x ∈ U)
-    (Uop : IsOpen U) : Perfect (closure (U ∩ C)) ∧ (closure (U ∩ C)).Nonempty :=
-  by
+    (Uop : IsOpen U) : Perfect (closure (U ∩ C)) ∧ (closure (U ∩ C)).Nonempty := by
   constructor
   · apply Preperfect.perfect_closure
     exact hC.acc.open_inter Uop
@@ -168,8 +164,7 @@ section Kernel
 /-- The **Cantor-Bendixson Theorem**: Any closed subset of a second countable space
 can be written as the union of a countable set and a perfect set.-/
 theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
-    (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D :=
-  by
+    (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D := by
   obtain ⟨b, bct, bnontrivial, bbasis⟩ := TopologicalSpace.exists_countable_basis α
   let v := { U ∈ b | (U ∩ C).Countable }
   let V := ⋃ U ∈ v, U
