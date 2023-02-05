@@ -226,10 +226,12 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
   exact Multiset.prod_add _ _
 #align prime_multiset.prod_add PrimeMultiset.prod_add
 
-theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
-  induction' d with _ ih
-  rfl
-  rw [succ_nsmul, prod_add, PNat.mul_coe, ih, pow_succ]
+-- Porting note: Need to replace ^ with Pow.pow to get the original mathlib statement
+theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = Pow.pow u.prod d := by
+  induction' d with n ih
+  · rfl
+  · have : ∀ n' : ℕ, Pow.pow (prod u) n' = Monoid.npow n' (prod u) := fun _ ↦ rfl
+    rw [succ_nsmul, prod_add, ih, this, this, Monoid.npow_succ, mul_comm]
 #align prime_multiset.prod_smul PrimeMultiset.prod_smul
 
 end PrimeMultiset
@@ -304,7 +306,8 @@ theorem factorMultiset_mul (n m : ℕ+) :
   repeat' rw [PrimeMultiset.factorMultiset_prod]
 #align pnat.factor_multiset_mul PNat.factorMultiset_mul
 
-theorem factorMultiset_pow (n : ℕ+) (m : ℕ) : factorMultiset (n ^ m) = m • factorMultiset n := by
+theorem factorMultiset_pow (n : ℕ+) (m : ℕ) :
+    factorMultiset (Pow.pow n m ) = m • factorMultiset n := by
   let u := factorMultiset n
   have : n = u.prod := (prod_factorMultiset n).symm
   rw [this, ← PrimeMultiset.prod_smul]
@@ -390,12 +393,13 @@ theorem factorMultiset_lcm (m n : ℕ+) :
 /-- The number of occurrences of p in the factor multiset of m
  is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :
-    (p : ℕ+) ^ k ∣ m ↔ k ≤ m.factorMultiset.count p := by
+    Pow.pow (p : ℕ+) k ∣ m ↔ k ≤ m.factorMultiset.count p := by
   intros
-  rw [Multiset.le_count_iff_replicate_le]
-  rw [← factorMultiset_le_iff, factorMultiset_pow, factorMultiset_of_prime]
-  congr 2
-  apply multiset.eq_replicate.mpr
+  rw [Multiset.le_count_iff_replicate_le, ← factorMultiset_le_iff, factorMultiset_pow,
+    factorMultiset_ofPrime]
+  -- Porting note: replaced `congr 2` with next line
+  suffices k • PrimeMultiset.ofPrime p = Multiset.replicate k p by rw [this]
+  apply Multiset.eq_replicate.mpr
   constructor
   · rw [Multiset.card_nsmul, PrimeMultiset.card_ofPrime, mul_one]
   · intro q h
