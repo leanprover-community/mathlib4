@@ -26,24 +26,24 @@ open Topology
 variable {α β : Type _} [TopologicalSpace α]
 
 theorem rtendsto_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    Rtendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.Core s ∈ l :=
-  all_mem_nhds_filter _ _ (fun s t => id) _
+    Rtendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.core s ∈ l :=
+  all_mem_nhds_filter _ _ (fun _s _t => id) _
 #align rtendsto_nhds rtendsto_nhds
 
 theorem rtendsto'_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    Rtendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.Preimage s ∈ l := by
+    Rtendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.preimage s ∈ l := by
   rw [rtendsto'_def]
   apply all_mem_nhds_filter
   apply Rel.preimage_mono
 #align rtendsto'_nhds rtendsto'_nhds
 
 theorem ptendsto_nhds {f : β →. α} {l : Filter β} {a : α} :
-    Ptendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.Core s ∈ l :=
+    Ptendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.core s ∈ l :=
   rtendsto_nhds
 #align ptendsto_nhds ptendsto_nhds
 
 theorem ptendsto'_nhds {f : β →. α} {l : Filter β} {a : α} :
-    Ptendsto' f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.Preimage s ∈ l :=
+    Ptendsto' f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.preimage s ∈ l :=
   rtendsto'_nhds
 #align ptendsto'_nhds ptendsto'_nhds
 
@@ -54,11 +54,11 @@ variable [TopologicalSpace β]
 
 /-- Continuity of a partial function -/
 def Pcontinuous (f : α →. β) :=
-  ∀ s, IsOpen s → IsOpen (f.Preimage s)
+  ∀ s, IsOpen s → IsOpen (f.preimage s)
 #align pcontinuous Pcontinuous
 
 theorem open_dom_of_pcontinuous {f : α →. β} (h : Pcontinuous f) : IsOpen f.Dom := by
-  rw [← PFun.preimage_univ] <;> exact h _ isOpen_univ
+  rw [← PFun.preimage_univ]; exact h _ isOpen_univ
 #align open_dom_of_pcontinuous open_dom_of_pcontinuous
 
 theorem pcontinuous_iff' {f : α →. β} :
@@ -77,7 +77,7 @@ theorem pcontinuous_iff' {f : α →. β} :
   apply mem_of_superset _ h
   have h' : ∀ s ∈ 𝓝 y, f.preimage s ∈ 𝓝 x := by
     intro s hs
-    have : ptendsto' f (𝓝 x) (𝓝 y) := hf fxy
+    have : Ptendsto' f (𝓝 x) (𝓝 y) := hf fxy
     rw [ptendsto'_def] at this
     exact this s hs
   show f.preimage s ∈ 𝓝 x
@@ -90,4 +90,3 @@ theorem continuousWithinAt_iff_ptendsto_res (f : α → β) {x : α} {s : Set α
     ContinuousWithinAt f s x ↔ Ptendsto (PFun.res f s) (𝓝 x) (𝓝 (f x)) :=
   tendsto_iff_ptendsto _ _ _ _
 #align continuous_within_at_iff_ptendsto_res continuousWithinAt_iff_ptendsto_res
-
