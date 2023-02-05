@@ -792,7 +792,7 @@ theorem coe_subtype : ⇑S.subtype = Subtype.val :=
 #align add_submonoid.coe_subtype AddSubmonoid.coe_subtype
 
 /-- The top submonoid is isomorphic to the monoid. -/
-@[to_additive "The top additive submonoid is isomorphic to the additive monoid.", simps]
+@[to_additive (attr := simps) "The top additive submonoid is isomorphic to the additive monoid."]
 def topEquiv : (⊤ : Submonoid M) ≃* M where
   toFun x := x
   invFun x := ⟨x, mem_top x⟩
@@ -1119,8 +1119,8 @@ theorem restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
 #align add_monoid_hom.restrict_mrange AddMonoidHom.restrict_mrange
 
 /-- Restriction of a monoid hom to a submonoid of the codomain. -/
-@[to_additive "Restriction of an `AddMonoid` hom to an `AddSubmonoid` of the codomain.",
-  simps apply]
+@[to_additive (attr := simps apply)
+  "Restriction of an `AddMonoid` hom to an `AddSubmonoid` of the codomain."]
 def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h : ∀ x, f x ∈ s) :
     M →* s where
   toFun n := ⟨f n, h n⟩
@@ -1131,8 +1131,7 @@ def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h
 #align monoid_hom.cod_restrict_apply MonoidHom.codRestrict_apply
 
 /-- Restriction of a monoid hom to its range interpreted as a submonoid. -/
-@[to_additive
-      "Restriction of an `AddMonoid` hom to its range interpreted as a submonoid."]
+@[to_additive "Restriction of an `AddMonoid` hom to its range interpreted as a submonoid."]
 def mrangeRestrict {N} [MulOneClass N] (f : M →* N) : M →* (mrange f) :=
   (f.codRestrict (mrange f)) fun x => ⟨x, rfl⟩
 #align monoid_hom.mrange_restrict MonoidHom.mrangeRestrict
@@ -1244,8 +1243,8 @@ theorem mker_inr : mker (inr M N) = ⊥ := by
 #align add_monoid_hom.mker_inr AddMonoidHom.mker_inr
 
 /-- The `MonoidHom` from the preimage of a submonoid to itself. -/
-@[to_additive
-      "the `AddMonoidHom` from the preimage of an additive submonoid to itself.", simps]
+@[to_additive (attr := simps)
+      "the `AddMonoidHom` from the preimage of an additive submonoid to itself."]
 def submonoidComap (f : M →* N) (N' : Submonoid N) :
     N'.comap f →* N' where
   toFun x := ⟨f x, x.2⟩
@@ -1254,21 +1253,21 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
 #align monoid_hom.submonoid_comap MonoidHom.submonoidComap
 #align add_monoid_hom.add_submonoid_comap AddMonoidHom.addSubmonoidComap
 #align monoid_hom.submonoid_comap_apply_coe MonoidHom.submonoidComap_apply_coe
+#align add_monoid_hom.submonoid_comap_apply_coe AddMonoidHom.submonoidComap_apply_coe
 
 /-- The `MonoidHom` from a submonoid to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
-@[to_additive
+@[to_additive (attr := simps)
       "the `AddMonoidHom` from an additive submonoid to its image. See
-      `AddEquiv.AddSubmonoidMap` for a variant for `AddEquiv`s.",
-  simps]
-def submonoidMap (f : M →* N) (M' : Submonoid M) :
-    M' →* M'.map f where
+      `AddEquiv.AddSubmonoidMap` for a variant for `AddEquiv`s."]
+def submonoidMap (f : M →* N) (M' : Submonoid M) : M' →* M'.map f where
   toFun x := ⟨f x, ⟨x, x.2, rfl⟩⟩
   map_one' := Subtype.eq <| f.map_one
   map_mul' x y := Subtype.eq <| f.map_mul x y
 #align monoid_hom.submonoid_map MonoidHom.submonoidMap
 #align add_monoid_hom.add_submonoid_map AddMonoidHom.addSubmonoidMap
 #align monoid_hom.submonoid_map_apply_coe MonoidHom.submonoidMap_apply_coe
+#align add_monoid_hom.submonoid_map_apply_coe AddMonoidHom.submonoidMap_apply_coe
 
 @[to_additive]
 theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
@@ -1412,11 +1411,10 @@ def submonoidCongr (h : S = T) : S ≃* T :=
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.mrange`.
 This is a bidirectional version of `MonoidHom.mrange_restrict`. -/
-@[to_additive
+@[to_additive (attr := simps (config := { simpRhs := true }))
       "An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M`
       defines an additive equivalence between `M` and `f.mrange`.
-      This is a bidirectional version of `AddMonoidHom.mrange_restrict`. ",
-  simps (config := { simpRhs := true })]
+      This is a bidirectional version of `AddMonoidHom.mrange_restrict`. "]
 def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     M ≃* MonoidHom.mrange f :=
   { f.mrangeRestrict with
@@ -1430,16 +1428,17 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
 #align mul_equiv.of_left_inverse' MulEquiv.ofLeftInverse'
 #align add_equiv.of_left_inverse' AddEquiv.ofLeftInverse'
 #align mul_equiv.of_left_inverse'_apply MulEquiv.ofLeftInverse'_apply
+#align add_equiv.of_left_inverse'_apply AddEquiv.ofLeftInverse'_apply
 #align mul_equiv.of_left_inverse'_symm_apply MulEquiv.ofLeftInverse'_symmApply
+#align add_equiv.of_left_inverse'_symm_apply AddEquiv.ofLeftInverse'_symmApply
 
 /-- A `MulEquiv` `φ` between two monoids `M` and `N` induces a `MulEquiv` between
 a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`.
 See `MonoidHom.submonoidMap` for a variant for `MonoidHom`s. -/
-@[to_additive
+@[to_additive (attr := simps)
       "An `AddEquiv` `φ` between two additive monoids `M` and `N` induces an `AddEquiv`
       between a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`. See
-      `AddMonoidHom.addSubmonoidMap` for a variant for `AddMonoidHom`s.",
-  simps]
+      `AddMonoidHom.addSubmonoidMap` for a variant for `AddMonoidHom`s."]
 def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map e.toMonoidHom :=
   {
     -- we restate this for `simps` to avoid `⇑e.symm.to_equiv x`
