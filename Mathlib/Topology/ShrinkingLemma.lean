@@ -43,7 +43,7 @@ variable {ι X : Type _} [TopologicalSpace X] [NormalSpace X]
 namespace ShrinkingLemma
 
 -- the trivial refinement needs `u` to be a covering
-/-- Auxiliary definition for the proof of `shrinking_lemma`. A partial refinement of a covering
+/-- Auxiliary definition for the proof of the shrinking lemma. A partial refinement of a covering
 `⋃ i, u i` of a set `s` is a map `v : ι → Set X` and a set `carrier : Set ι` such that
 
 * `s ⊆ ⋃ i, v i`;
