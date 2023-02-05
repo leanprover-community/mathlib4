@@ -8,9 +8,9 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Ring
-import Mathbin.Tactic.DocCommands
-import Mathbin.Algebra.Group.Commutator
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.DocCommands
+import Mathlib.Algebra.Group.Commutator
 
 /-!
 # `group`
