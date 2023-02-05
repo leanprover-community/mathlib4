@@ -12,9 +12,9 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.Data.PFun
 
 /-!
-# `tendsto` for relations and partial functions
+# `Tendsto` for relations and partial functions
 
-This file generalizes `filter` definitions from functions to partial functions and relations.
+This file generalizes `Filter` definitions from functions to partial functions and relations.
 
 ## Considering functions and partial functions as relations
 
