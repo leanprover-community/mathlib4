@@ -162,7 +162,7 @@ section Kernel
 can be written as the union of a countable set and a perfect set.-/
 theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D := by
-  obtain ⟨b, bct, bnontrivial, bbasis⟩ := TopologicalSpace.exists_countable_basis α
+  obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis α
   let v := { U ∈ b | (U ∩ C).Countable }
   let V := ⋃ U ∈ v, U
   let D := C \ V
@@ -191,7 +191,9 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       apply xD.2
       exact mem_bunionᵢ this xU
     by_contra h
-    push_neg  at h
+    -- Porting note: `push_neg` somehow didn't work. Add a `rw` to make `push_neg` work.
+    rw [not_exists] at h
+    push_neg at h
     exact absurd (Countable.mono h (Set.countable_singleton _)) this
   · rw [inter_comm, inter_union_diff]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
