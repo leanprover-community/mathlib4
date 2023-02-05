@@ -8,12 +8,12 @@ Authors: Chris Birkbeck
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Setoid.Basic
-import Mathbin.GroupTheory.Subgroup.Basic
-import Mathbin.GroupTheory.Coset
-import Mathbin.GroupTheory.Subgroup.Pointwise
-import Mathbin.Data.Set.Basic
-import Mathbin.Tactic.Group
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Group
 
 /-!
 # Double cosets
@@ -51,8 +51,7 @@ theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
 #align doset.mem_doset_self doset.mem_doset_self
 
 theorem doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
-    doset b H K = doset a H K :=
-  by
+    doset b H K = doset a H K := by
   obtain ⟨_, k, ⟨h, a, hh, rfl : _ = _, rfl⟩, hk, rfl⟩ := hb
   rw [doset, doset, ← Set.singleton_mul_singleton, ← Set.singleton_mul_singleton, mul_assoc,
     mul_assoc, Subgroup.singleton_mul_subgroup hk, ← mul_assoc, ← mul_assoc,
@@ -60,8 +59,7 @@ theorem doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
 #align doset.doset_eq_of_mem doset.doset_eq_of_mem
 
 theorem mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
-    (h : ¬Disjoint (doset a H K) (doset b H K)) : b ∈ doset a H K :=
-  by
+    (h : ¬Disjoint (doset a H K) (doset b H K)) : b ∈ doset a H K := by
   rw [Set.not_disjoint_iff] at h
   simp only [mem_doset] at *
   obtain ⟨x, ⟨l, hl, r, hr, hrx⟩, y, hy, ⟨r', hr', rfl⟩⟩ := h
@@ -70,8 +68,7 @@ theorem mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
 #align doset.mem_doset_of_not_disjoint doset.mem_doset_of_not_disjoint
 
 theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
-    (h : ¬Disjoint (doset a H K) (doset b H K)) : doset a H K = doset b H K :=
-  by
+    (h : ¬Disjoint (doset a H K) (doset b H K)) : doset a H K = doset b H K := by
   rw [disjoint_comm] at h
   have ha : a ∈ doset b H K := mem_doset_of_not_disjoint h
   apply doset_eq_of_mem ha
@@ -95,8 +92,7 @@ theorem rel_iff {H K : Subgroup G} {x y : G} :
 #align doset.rel_iff doset.rel_iff
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
-    (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel :=
-  by
+    (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
   ext (a b)
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
   constructor
@@ -108,8 +104,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
 #align doset.bot_rel_eq_left_rel doset.bot_rel_eq_leftRel
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
-    (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel :=
-  by
+    (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
   ext (a b)
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
   constructor
@@ -144,8 +139,7 @@ theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q 
 #align doset.out_eq' doset.out_eq'
 
 theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
-    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out' = h * g * k :=
-  by
+    ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out' = h * g * k := by
   have := Eq H K (mk H K g : Quotient ↑H ↑K).out' g
   rw [out_eq'] at this
   obtain ⟨h, h_h, k, hk, T⟩ := this.1 rfl
@@ -160,15 +154,13 @@ theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset 
 #align doset.mk_eq_of_doset_eq doset.mk_eq_of_doset_eq
 
 theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
-    a ≠ b → Disjoint (doset a.out' H K) (doset b.out' H K) :=
-  by
+    a ≠ b → Disjoint (doset a.out' H K) (doset b.out' H K) := by
   contrapose!
   intro h
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
 #align doset.disjoint_out' doset.disjoint_out'
 
-theorem union_quotToDoset (H K : Subgroup G) : (⋃ q, quotToDoset H K q) = Set.univ :=
-  by
+theorem union_quotToDoset (H K : Subgroup G) : (⋃ q, quotToDoset H K q) = Set.univ := by
   ext x
   simp only [Set.mem_unionᵢ, quot_to_doset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
     iff_true_iff]
@@ -179,8 +171,7 @@ theorem union_quotToDoset (H K : Subgroup G) : (⋃ q, quotToDoset H K q) = Set.
 #align doset.union_quot_to_doset doset.union_quotToDoset
 
 theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
-    (⋃ k : K, rightCoset (↑H) (a * k)) = doset a H K :=
-  by
+    (⋃ k : K, rightCoset (↑H) (a * k)) = doset a H K := by
   ext x
   simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_unionᵢ, mem_doset,
     Subgroup.mem_carrier, SetLike.mem_coe]
@@ -194,8 +185,7 @@ theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
 #align doset.doset_union_right_coset doset.doset_union_rightCoset
 
 theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
-    (⋃ h : H, leftCoset (h * a : G) K) = doset a H K :=
-  by
+    (⋃ h : H, leftCoset (h * a : G) K) = doset a H K := by
   ext x
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_unionᵢ, mem_doset]
   constructor
@@ -207,8 +197,7 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]
 #align doset.doset_union_left_coset doset.doset_union_leftCoset
 
-theorem left_bot_eq_left_quot (H : Subgroup G) : Quotient (⊥ : Subgroup G).1 H = (G ⧸ H) :=
-  by
+theorem left_bot_eq_left_quot (H : Subgroup G) : Quotient (⊥ : Subgroup G).1 H = (G ⧸ H) := by
   unfold Quotient
   congr
   ext
@@ -217,8 +206,7 @@ theorem left_bot_eq_left_quot (H : Subgroup G) : Quotient (⊥ : Subgroup G).1 H
 #align doset.left_bot_eq_left_quot doset.left_bot_eq_left_quot
 
 theorem right_bot_eq_right_quot (H : Subgroup G) :
-    Quotient H.1 (⊥ : Subgroup G) = Quotient (QuotientGroup.rightRel H) :=
-  by
+    Quotient H.1 (⊥ : Subgroup G) = Quotient (QuotientGroup.rightRel H) := by
   unfold Quotient
   congr
   ext
