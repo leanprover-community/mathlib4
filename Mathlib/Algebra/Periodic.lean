@@ -24,10 +24,10 @@ In this file we define and then prove facts about periodic and antiperiodic func
 
 ## Main definitions
 
-* `function.periodic`: A function `f` is *periodic* if `∀ x, f (x + c) = f x`.
+* `Function.Periodic`: A function `f` is *periodic* if `∀ x, f (x + c) = f x`.
   `f` is referred to as periodic with period `c` or `c`-periodic.
 
-* `function.antiperiodic`: A function `f` is *antiperiodic* if `∀ x, f (x + c) = -f x`.
+* `Function.Antiperiodic`: A function `f` is *antiperiodic* if `∀ x, f (x + c) = -f x`.
   `f` is referred to as antiperiodic with antiperiod `c` or `c`-antiperiodic.
 
 Note that any `c`-antiperiodic function will necessarily also be `2*c`-periodic.
