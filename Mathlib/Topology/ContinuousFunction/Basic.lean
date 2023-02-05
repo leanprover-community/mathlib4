@@ -374,18 +374,19 @@ noncomputable def liftCover : C(α, β) := by
 variable {S φ hφ hS}
 
 @[simp]
-theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x :=
-  Set.liftCover_coe _
+theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := by
+  rw [liftCover, coe_mk, Set.liftCover_coe _]
 #align continuous_map.lift_cover_coe ContinuousMap.liftCover_coe
 
 @[simp]
-theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i :=
-  ext <| liftCover_coe
+theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
+  ext
+  simp only [coe_restrict, Function.comp_apply, liftCover_coe]
 #align continuous_map.lift_cover_restrict ContinuousMap.liftCover_restrict
 
 -- omit hφ hS
 
-variable (A : Set (Set α)) (F : ∀ (s : Set α) (hi : s ∈ A), C(s, β))
+variable (A : Set (Set α)) (F : ∀ (s : Set α) (_ : s ∈ A), C(s, β))
   (hF :
     ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
       F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
@@ -408,15 +409,19 @@ noncomputable def liftCover' : C(α, β) := by
 variable {A F hF hA}
 
 @[simp]
-theorem lift_cover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
+theorem lift_cover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x := by
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
-  liftCover_coe x'
+  --liftCover_coe x'
+  sorry
 #align continuous_map.lift_cover_coe' ContinuousMap.lift_cover_coe'
 
 @[simp]
 theorem lift_cover_restrict' {s : Set α} {hs : s ∈ A} :
-    (liftCover' A F hF hA).restrict s = F s hs :=
-  ext <| lift_cover_coe'
+    (liftCover' A F hF hA).restrict s = F s hs := by
+  ext
+  simp [lift_cover_coe']
+  sorry
+  --simp only [coe_restrict, Function.comp_apply]
 #align continuous_map.lift_cover_restrict' ContinuousMap.lift_cover_restrict'
 
 end Gluing
