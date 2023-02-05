@@ -9,8 +9,6 @@ open List Lean Meta Expr Elab.Term Elab.Tactic Mathlib.Tactic Qq
 
 namespace Mathlib.TFAE
 
-initialize registerTraceClass `Tactic.tfae
-
 declare_syntax_cat impArrow
 syntax (" → " <|> " ↔ " <|> " ← ") : impArrow
 syntax (name := tfaeHave) "tfae_have " (ident " : ")? num impArrow num : tactic
@@ -27,7 +25,6 @@ partial def getTFAEList (t : Expr) : MetaM (List Q(Prop)) := do
     | ~q([]) => return ([] : List Expr)
     | ~q($a :: $l') => return (q($a) :: (← getExplicitList l'))
     | ~q($e) => throwError "{e} must be an explicit list of propositions"
-  trace[Tactic.tfae] "Prop list: {l}"
   getExplicitList l
 
 partial def getTFAEListQ (t : Expr) : MetaM Q(List Prop) := do
@@ -41,7 +38,6 @@ partial def getTFAEListQ (t : Expr) : MetaM Q(List Prop) := do
     | ~q(_ :: $l') => guardExplicitList l'
     | ~q($e) => throwError "{e} must be an explicit list of propositions"
   guardExplicitList l
-  trace[Tactic.tfae] "Prop list: {l}"
   return l
 
 /-- Prove an implication via solve_by_elim. -/
@@ -79,17 +75,15 @@ def proveTFAE (l : Q(List Prop)) : TacticM Q(TFAE $l) := do
   | ~q([$P]) => return q(tfae_singleton $P)
   | ~q($P :: $P' :: $l) =>
     let c ← proveChain P q($P' :: $l)
-    trace[Tactic.tfae] "chain proof: {← instantiateMVars c}"
     let il ← proveILast'Imp P P' l
-    trace[Tactic.tfae] "ilast' proof: {← instantiateMVars il}"
     return q(tfae_of_cycle $c $il)
 
-def mkHypName (i j : TSyntax `num) (arrow : TSyntax `impArrow) : TermElabM Name := do
-  let arr ← match arrow with
+def mkHypName (i j : TSyntax `num) (arr : TSyntax `impArrow) : TermElabM Name := do
+  let arr ← match arr with
   | `(impArrow| ← ) => pure "from"
   | `(impArrow| → ) => pure "to"
   | `(impArrow| ↔ ) => pure "iff"
-  | _ => throwError "expected '←', '→', or '↔'"
+  | _ => throwErrorAt arr "expected '←', '→', or '↔'"
   return String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
 
 open Elab Term in
