@@ -55,11 +55,11 @@ theorem eq_of_mem_eqv_class {c : Set (Set α)} (H : ∀ a, ∃! (b : _)(_ : b �
 /-- Makes an equivalence relation from a set of sets partitioning α. -/
 def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! (b : _)(_ : b ∈ c), a ∈ b) : Setoid α :=
   ⟨fun x y => ∀ s ∈ c, x ∈ s → y ∈ s,
-    ⟨fun _ _ _ hx => hx, fun x y h s hs hy =>
+    ⟨fun _ _ _ hx => hx, fun {x y} h s hs hy =>
       (H x).elim₂ fun t ht hx _ =>
         have : s = t := eq_of_mem_eqv_class H hs hy ht (h t ht hx)
         this.symm ▸ hx,
-      fun x y z h1 h2 s hs hx =>
+      fun {x y z} h1 h2 s hs hx =>
       (H y).elim₂ fun t ht hy _ =>
         (H z).elim₂ fun t' ht' hz _ =>
           have hst : s = t := eq_of_mem_eqv_class H hs (h1 _ hs hx) ht hy
@@ -278,10 +278,9 @@ protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartit
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
   right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
-  map_rel_iff' r s :=
+  map_rel_iff' {r s} :=
     by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
-    rfl
 #align setoid.partition.order_iso Setoid.Partition.orderIso
 
 variable {α}
