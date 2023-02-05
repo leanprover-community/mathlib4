@@ -23,17 +23,17 @@ on intervals.
 ## Main results
 
 * `is_preconnected_I??` : all intervals `I??` are preconnected,
-* `is_preconnected.intermediate_value`, `intermediate_value_univ` : Intermediate Value Theorem for
+* `IsPreconnected.intermediate_value`, `intermediate_value_univ` : Intermediate Value Theorem for
   connected sets and connected spaces, respectively;
 * `intermediate_value_Icc`, `intermediate_value_Icc'`: Intermediate Value Theorem for functions
   on closed intervals.
 
 ### Miscellaneous facts
 
-* `is_closed.Icc_subset_of_forall_mem_nhds_within` : “Continuous induction” principle;
+* `IsClosed.Icc_subset_of_forall_mem_nhdsWithin` : “Continuous induction” principle;
   if `s ∩ [a, b]` is closed, `a ∈ s`, and for each `x ∈ [a, b) ∩ s` some of its right neighborhoods
   is included `s`, then `[a, b] ⊆ s`.
-* `is_closed.Icc_subset_of_forall_exists_gt`, `is_closed.mem_of_ge_of_forall_exists_gt` : two
+* `IsClosed.Icc_subset_of_forall_exists_gt`, `IsClosed.mem_of_ge_of_forall_exists_gt` : two
   other versions of the “continuous induction” principle.
 
 ## Tags
@@ -51,7 +51,7 @@ universe u v w
 /-!
 ### Intermediate value theorem on a (pre)connected space
 
-In this section we prove the following theorem (see `is_preconnected.intermediate_value₂`): if `f`
+In this section we prove the following theorem (see `IsPreconnected.intermediate_value₂`): if `f`
 and `g` are two functions continuous on a preconnected set `s`, `f a ≤ g a` at some `a ∈ s` and
 `g b ≤ f b` at some `b ∈ s`, then `f c = g c` at some `c ∈ s`. We prove several versions of this
 statement, including the classical IVT that corresponds to a constant function `g`.
@@ -202,13 +202,13 @@ theorem mem_range_of_exists_le_of_exists_ge [PreconnectedSpace X] {c : α} {f : 
 
 In this section we prove the following results:
 
-* `is_preconnected.ord_connected`: any preconnected set `s` in a linear order is `ord_connected`,
+* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `ord_connected`,
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
-* `is_preconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
-  is one of the intervals `set.Icc`, `set.`Ico`, `set.Ioc`, `set.Ioo`, ``set.Ici`, `set.Iic`,
-  `set.Ioi`, `set.Iio`; note that this is false for non-complete orders: e.g., in `ℝ \ {0}`, the set
-  of positive numbers cannot be represented as `set.Ioi _`.
+* `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
+  is one of the intervals `Set.Icc`, `set.`Ico`, `set.Ioc`, `set.Ioo`, ``Set.Ici`, `Set.Iic`,
+  `Set.Ioi`, `Set.Iio`; note that this is false for non-complete orders: e.g., in `ℝ \ {0}`, the set
+  of positive numbers cannot be represented as `Set.Ioi _`.
 
 -/
 
@@ -629,8 +629,8 @@ theorem Continuous.surjective' {f : α → δ} (hf : Continuous f) (h_top : Tend
 #align continuous.surjective' Continuous.surjective'
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`
-tends to `at_bot : filter β` along `at_bot : filter ↥s` and tends to `at_top : filter β` along
-`at_top : filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
+tends to `at_bot : Filter β` along `at_bot : Filter ↥s` and tends to `at_top : Filter β` along
+`at_top : Filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
 conclusion as `surj_on f s univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atBot)
@@ -640,8 +640,8 @@ theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnecte
 #align continuous_on.surj_on_of_tendsto ContinuousOn.surjOn_of_tendsto
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`
-tends to `at_top : filter β` along `at_bot : filter ↥s` and tends to `at_bot : filter β` along
-`at_top : filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
+tends to `at_top : Filter β` along `at_bot : Filter ↥s` and tends to `at_bot : Filter β` along
+`at_top : Filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
 conclusion as `surj_on f s univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atTop)
