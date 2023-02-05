@@ -8,7 +8,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Partition.Equipartition
+import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Equitabilising a partition
@@ -42,8 +42,7 @@ theorem equitabilise_aux (P : Finpartition s) (hs : a * m + b * (m + 1) = s.card
     ∃ Q : Finpartition s,
       (∀ x : Finset α, x ∈ Q.parts → x.card = m ∨ x.card = m + 1) ∧
         (∀ x, x ∈ P.parts → (x \ (Q.parts.filterₓ fun y => y ⊆ x).bunionᵢ id).card ≤ m) ∧
-          (Q.parts.filterₓ fun i => card i = m + 1).card = b :=
-  by
+          (Q.parts.filterₓ fun i => card i = m + 1).card = b := by
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine' ⟨⊥, by simp, _, by simpa using hs.symm⟩
@@ -167,8 +166,7 @@ theorem card_filter_equitabilise_big :
 #align finpartition.card_filter_equitabilise_big Finpartition.card_filter_equitabilise_big
 
 theorem card_filter_equitabilise_small (hm : m ≠ 0) :
-    ((P.equitabilise h).parts.filterₓ fun u : Finset α => u.card = m).card = a :=
-  by
+    ((P.equitabilise h).parts.filterₓ fun u : Finset α => u.card = m).card = a := by
   refine' (mul_eq_mul_right_iff.1 <| (add_left_inj (b * (m + 1))).1 _).resolve_right hm
   rw [h, ← (P.equitabilise h).sum_card_parts]
   have hunion :
@@ -187,8 +185,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
   exact (hb i h).symm.trans (ha i h)
 #align finpartition.card_filter_equitabilise_small Finpartition.card_filter_equitabilise_small
 
-theorem card_parts_equitabilise (hm : m ≠ 0) : (P.equitabilise h).parts.card = a + b :=
-  by
+theorem card_parts_equitabilise (hm : m ≠ 0) : (P.equitabilise h).parts.card = a + b := by
   rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or, card_union_eq,
     P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
@@ -204,8 +201,7 @@ variable (s)
 
 /-- We can find equipartitions of arbitrary size. -/
 theorem exists_equipartition_card_eq (hn : n ≠ 0) (hs : n ≤ s.card) :
-    ∃ P : Finpartition s, P.IsEquipartition ∧ P.parts.card = n :=
-  by
+    ∃ P : Finpartition s, P.IsEquipartition ∧ P.parts.card = n := by
   rw [← pos_iff_ne_zero] at hn
   have : (n - s.card % n) * (s.card / n) + s.card % n * (s.card / n + 1) = s.card := by
     rw [tsub_mul, mul_add, ← add_assoc,
