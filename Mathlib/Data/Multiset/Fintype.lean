@@ -231,7 +231,8 @@ theorem Multiset.image_toEnumFinset_fst (m : Multiset α) :
 #align multiset.image_to_enum_finset_fst Multiset.image_toEnumFinset_fst
 
 @[simp]
-theorem Multiset.map_univ_coe (m : Multiset α) : (Finset.univ : Finset m).val.map (↑) = m := by
+theorem Multiset.map_univ_coe (m : Multiset α) :
+    (Finset.univ : Finset m).val.map (fun x : m ↦ (x : α)) = m := by
   have := m.map_toEnumFinset_fst
   rw [← m.map_univ_coeEmbedding] at this
   simpa only [Finset.map_val, Multiset.coeEmbedding_apply, Multiset.map_map,
@@ -241,9 +242,8 @@ theorem Multiset.map_univ_coe (m : Multiset α) : (Finset.univ : Finset m).val.m
 @[simp]
 theorem Multiset.map_univ {β : Type _} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
-  have : (fun (x : m) => f x.fst) = f ∘ Sigma.fst :=
-    funext <| fun x => Function.comp_apply
-  rw [this, ← Multiset.map_map (g := f) (f := Sigma.fst), Multiset.map_univ_coe]
+  erw [← Multiset.map_map]
+  rw [Multiset.map_univ_coe]
 #align multiset.map_univ Multiset.map_univ
 
 @[simp]
