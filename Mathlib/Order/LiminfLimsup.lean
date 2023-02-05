@@ -68,7 +68,7 @@ variable {r : α → α → Prop} {f g : Filter α}
 /-- `f` is eventually bounded if and only if, there exists an admissible set on which it is
 bounded. -/
 theorem isBounded_iff : f.IsBounded r ↔ ∃ s ∈ f.sets, ∃ b, s ⊆ { x | r x b } :=
-  Iff.intro (fun ⟨b, hb⟩ => ⟨{ a | r a b }, hb, b, Subset.refl _⟩) fun ⟨s, hs, b, hb⟩ =>
+  Iff.intro (fun ⟨b, hb⟩ => ⟨{ a | r a b }, hb, b, Subset.refl _⟩) fun ⟨_, hs, b, hb⟩ =>
     ⟨b, mem_of_superset hs hb⟩
 #align filter.is_bounded_iff Filter.isBounded_iff
 
@@ -311,20 +311,28 @@ theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u 
 
 /-- Filters are automatically bounded or cobounded in complete lattices. To use the same statements
 in complete and conditionally complete lattices but let automation fill automatically the
-boundedness proofs in complete lattices, we use the tactic `is_bounded_default` in the statements,
-in the form `(hf : f.IsBounded (≥) . is_bounded_default)`. -/
-unsafe def is_bounded_default : tactic Unit :=
-  tactic.applyc `` is_cobounded_le_of_bot <|>
-    tactic.applyc `` is_cobounded_ge_of_top <|>
-      tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
-#align filter.is_bounded_default filter.is_bounded_default
+boundedness proofs in complete lattices, we use the tactic `isBounded_default` in the statements,
+in the form `(hf : f.IsBounded (≥) . isBoundedDefault)`. -/
+syntax (name := isBoundedDefault) "isBoundedDefault" : tactic
+macro_rules
+  | `(tactic| isBoundedDefault) =>
+      `(tactic| ( first | apply is_cobounded_le_of_bot | apply is_cobounded_ge_of_top |
+        apply is_bounded_le_of_top | apply is_bounded_ge_of_bot))
+
+-- Porting note: The above is a clumsy lean 4 reconstruction of:
+-- unsafe def is_bounded_default : tactic Unit :=
+--   tactic.applyc `` is_cobounded_le_of_bot <|>
+--     tactic.applyc `` is_cobounded_ge_of_top <|>
+--       tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
+-- #align filter.is_bounded_default filter.IsBounded_default
+
 
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α]
 
 -- Porting note: Renamed from Limsup and Liminf to limsupₛ and liminfₛ
-/-- The `Limsup` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
+/-- The `limsupₛ` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
 holds `x ≤ a`. -/
 def limsupₛ (f : Filter α) : α :=
   infₛ { a | ∀ᶠ n in f, n ≤ a }
@@ -332,7 +340,7 @@ set_option linter.uppercaseLean3 false in
 #align filter.Limsup Filter.limsupₛ
 
 set_option linter.uppercaseLean3 false in
-/-- The `Liminf` of a filter `f` is the supremum of the `a` such that, eventually for `f`,
+/-- The `liminfₛ` of a filter `f` is the supremum of the `a` such that, eventually for `f`,
 holds `x ≥ a`. -/
 def liminfₛ (f : Filter α) : α :=
   supₛ { a | ∀ᶠ n in f, a ≤ n }
@@ -349,7 +357,7 @@ Case conversion may be inaccurate. Consider using '#align filter.limsup Filter.l
 /-- The `limsup` of a function `u` along a filter `f` is the infimum of the `a` such that,
 eventually for `f`, holds `u x ≤ a`. -/
 def limsup (u : β → α) (f : Filter β) : α :=
-  limsup (map u f)
+  limsupₛ (map u f)
 #align filter.limsup Filter.limsup
 
 /- warning: filter.liminf clashes with filter.Liminf -> Filter.liminf
@@ -362,7 +370,7 @@ Case conversion may be inaccurate. Consider using '#align filter.liminf Filter.l
 /-- The `liminf` of a function `u` along a filter `f` is the supremum of the `a` such that,
 eventually for `f`, holds `u x ≥ a`. -/
 def liminf (u : β → α) (f : Filter β) : α :=
-  liminf (map u f)
+  liminfₛ (map u f)
 #align filter.liminf Filter.liminf
 
 /-- The `blimsup` of a function `u` along a filter `f`, bounded by a predicate `p`, is the infimum
@@ -400,49 +408,47 @@ theorem bliminf_eq : bliminf u f p = supₛ { a | ∀ᶠ x in f, p x → a ≤ u
 end
 
 @[simp]
-theorem blimsup_true (f : Filter β) (u : β → α) : (blimsup u f fun x => True) = limsup u f := by
+theorem blimsup_true (f : Filter β) (u : β → α) : (blimsup u f fun _ => True) = limsup u f := by
   simp [blimsup_eq, limsup_eq]
 #align filter.blimsup_true Filter.blimsup_true
 
 @[simp]
-theorem bliminf_true (f : Filter β) (u : β → α) : (bliminf u f fun x => True) = liminf u f := by
+theorem bliminf_true (f : Filter β) (u : β → α) : (bliminf u f fun _ => True) = liminf u f := by
   simp [bliminf_eq, liminf_eq]
 #align filter.bliminf_true Filter.bliminf_true
 
 theorem blimsup_eq_limsup_subtype {f : Filter β} {u : β → α} {p : β → Prop} :
-    blimsup u f p = limsup (u ∘ (coe : { x | p x } → β)) (comap coe f) := by
+    blimsup u f p = limsup (u ∘ ((↑) : { x | p x } → β)) (comap (↑) f) := by
   simp only [blimsup_eq, limsup_eq, Function.comp_apply, eventually_comap, SetCoe.forall,
-    Subtype.coe_mk, mem_set_of_eq]
+    Subtype.coe_mk, mem_setOf_eq]
   congr
   ext a
-  exact
-    eventually_congr
-      (eventually_of_forall fun x =>
-        ⟨fun hx y hy hxy => hxy.symm ▸ hx (hxy ▸ hy), fun hx hx' => hx x hx' rfl⟩)
+  simp_rw [Subtype.forall]
+  exact eventually_congr (
+       eventually_of_forall
+        fun x => ⟨fun hx y hy hxy => hxy.symm ▸ hx (hxy ▸ hy), fun hx hx' => hx x hx' rfl⟩)
 #align filter.blimsup_eq_limsup_subtype Filter.blimsup_eq_limsup_subtype
 
 theorem bliminf_eq_liminf_subtype {f : Filter β} {u : β → α} {p : β → Prop} :
-    bliminf u f p = liminf (u ∘ (coe : { x | p x } → β)) (comap coe f) :=
+    bliminf u f p = liminf (u ∘ ((↑) : { x | p x } → β)) (comap (↑) f) :=
   @blimsup_eq_limsup_subtype αᵒᵈ β _ f u p
 #align filter.bliminf_eq_liminf_subtype Filter.bliminf_eq_liminf_subtype
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem limsup_le_of_le {f : Filter α} {a}
-    (hf : f.IsCobounded (· ≤ ·) := by
-      run_tac
-        is_bounded_default)
-    (h : ∀ᶠ n in f, n ≤ a) : limsup f ≤ a :=
+theorem limsupₛ_le_of_le {f : Filter α} {a}
+    (hf : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (h : ∀ᶠ n in f, n ≤ a) : limsupₛ f ≤ a :=
   cinfₛ_le hf h
-#align filter.Limsup_le_of_le Filter.limsup_le_of_le
+set_option linter.uppercaseLean3 false in
+#align filter.Limsup_le_of_le Filter.limsupₛ_le_of_le
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem le_liminf_of_le {f : Filter α} {a}
-    (hf : f.IsCobounded (· ≥ ·) := by
-      run_tac
-        is_bounded_default)
-    (h : ∀ᶠ n in f, a ≤ n) : a ≤ liminf f :=
+theorem le_liminfₛ_of_le {f : Filter α} {a}
+    (hf : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (h : ∀ᶠ n in f, a ≤ n) : a ≤ liminfₛ f :=
   le_csupₛ hf h
-#align filter.le_Liminf_of_le Filter.le_liminf_of_le
+set_option linter.uppercaseLean3 false in
+#align filter.le_Liminf_of_le Filter.le_liminfₛ_of_le
 
 /- warning: filter.limsup_le_of_le clashes with filter.Limsup_le_of_le -> Filter.limsup_le_of_le
 warning: filter.limsup_le_of_le -> Filter.limsup_le_of_le is a dubious translation:
@@ -453,12 +459,10 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align filter.limsup_le_of_le Filter.limsup_le_of_leₓ'. -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem limsup_le_of_le {f : Filter β} {u : β → α} {a}
-    (hf : f.IsCoboundedUnder (· ≤ ·) u := by
-      run_tac
-        is_bounded_default)
+    (hf : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h : ∀ᶠ n in f, u n ≤ a) : limsup u f ≤ a :=
   cinfₛ_le hf h
-#align filter.limsup_le_of_le Filter.limsup_le_of_le
+#align filter.limsup_le_of_le Filter.limsupₛ_le_of_le
 
 /- warning: filter.le_liminf_of_le clashes with filter.le_Liminf_of_le -> Filter.le_liminf_of_le
 warning: filter.le_liminf_of_le -> Filter.le_liminf_of_le is a dubious translation:
@@ -469,30 +473,26 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align filter.le_liminf_of_le Filter.le_liminf_of_leₓ'. -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem le_liminf_of_le {f : Filter β} {u : β → α} {a}
-    (hf : f.IsCoboundedUnder (· ≥ ·) u := by
-      run_tac
-        is_bounded_default)
+    (hf : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h : ∀ᶠ n in f, a ≤ u n) : a ≤ liminf u f :=
   le_csupₛ hf h
 #align filter.le_liminf_of_le Filter.le_liminf_of_le
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem le_limsup_of_le {f : Filter α} {a}
-    (hf : f.IsBounded (· ≤ ·) := by
-      run_tac
-        is_bounded_default)
-    (h : ∀ b, (∀ᶠ n in f, n ≤ b) → a ≤ b) : a ≤ limsup f :=
+theorem le_limsupₛ_of_le {f : Filter α} {a}
+    (hf : f.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (h : ∀ b, (∀ᶠ n in f, n ≤ b) → a ≤ b) : a ≤ limsupₛ f :=
   le_cinfₛ hf h
-#align filter.le_Limsup_of_le Filter.le_limsup_of_le
+set_option linter.uppercaseLean3 false in
+#align filter.le_Limsup_of_le Filter.le_limsupₛ_of_le
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem liminf_le_of_le {f : Filter α} {a}
-    (hf : f.IsBounded (· ≥ ·) := by
-      run_tac
-        is_bounded_default)
-    (h : ∀ b, (∀ᶠ n in f, b ≤ n) → b ≤ a) : liminf f ≤ a :=
+theorem liminfₛ_le_of_le {f : Filter α} {a}
+    (hf : f.IsBounded (· ≥ ·) := by isBoundedDefault)
+    (h : ∀ b, (∀ᶠ n in f, b ≤ n) → b ≤ a) : liminfₛ f ≤ a :=
   csupₛ_le hf h
-#align filter.Liminf_le_of_le Filter.liminf_le_of_le
+set_option linter.uppercaseLean3 false in
+#align filter.Liminf_le_of_le Filter.liminfₛ_le_of_le
 
 /- warning: filter.le_limsup_of_le clashes with filter.le_Limsup_of_le -> Filter.le_limsup_of_le
 warning: filter.le_limsup_of_le -> Filter.le_limsup_of_le is a dubious translation:
@@ -503,9 +503,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align filter.le_limsup_of_le Filter.le_limsup_of_leₓ'. -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem le_limsup_of_le {f : Filter β} {u : β → α} {a}
-    (hf : f.IsBoundedUnder (· ≤ ·) u := by
-      run_tac
-        is_bounded_default)
+    (hf : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h : ∀ b, (∀ᶠ n in f, u n ≤ b) → a ≤ b) : a ≤ limsup u f :=
   le_cinfₛ hf h
 #align filter.le_limsup_of_le Filter.le_limsup_of_le
@@ -519,29 +517,24 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align filter.liminf_le_of_le Filter.liminf_le_of_leₓ'. -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem liminf_le_of_le {f : Filter β} {u : β → α} {a}
-    (hf : f.IsBoundedUnder (· ≥ ·) u := by
-      run_tac
-        is_bounded_default)
+    (hf : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h : ∀ b, (∀ᶠ n in f, b ≤ u n) → b ≤ a) : liminf u f ≤ a :=
   csupₛ_le hf h
 #align filter.liminf_le_of_le Filter.liminf_le_of_le
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem liminf_le_limsup {f : Filter α} [NeBot f]
-    (h₁ : f.IsBounded (· ≤ ·) := by
-      run_tac
-        is_bounded_default)
-    (h₂ : f.IsBounded (· ≥ ·) := by
-      run_tac
-        is_bounded_default) :
-    liminf f ≤ limsup f :=
+theorem liminfₛ_le_limsupₛ {f : Filter α} [NeBot f]
+    (h₁ : f.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (h₂ : f.IsBounded (· ≥ ·) := by isBoundedDefault):
+    liminfₛ f ≤ limsupₛ f :=
   liminf_le_of_le h₂ fun a₀ ha₀ =>
     le_limsup_of_le h₁ fun a₁ ha₁ =>
       show a₀ ≤ a₁ from
-        let ⟨b, hb₀, hb₁⟩ := (ha₀.And ha₁).exists
+        let ⟨_, hb₀, hb₁⟩ := (ha₀.and ha₁).exists
         le_trans hb₀ hb₁
-#align filter.Liminf_le_Limsup Filter.liminf_le_limsup
+set_option linter.uppercaseLean3 false in
+#align filter.Liminf_le_Limsup Filter.liminfₛ_le_limsupₛ
 
 /- warning: filter.liminf_le_limsup clashes with filter.Liminf_le_Limsup -> Filter.liminf_le_limsup
 warning: filter.liminf_le_limsup -> Filter.liminf_le_limsup is a dubious translation:
@@ -553,41 +546,31 @@ Case conversion may be inaccurate. Consider using '#align filter.liminf_le_limsu
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem liminf_le_limsup {f : Filter β} [NeBot f] {u : β → α}
-    (h : f.IsBoundedUnder (· ≤ ·) u := by
-      run_tac
-        is_bounded_default)
-    (h' : f.IsBoundedUnder (· ≥ ·) u := by
-      run_tac
-        is_bounded_default) :
+    (h : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault):
     liminf u f ≤ limsup u f :=
-  liminf_le_limsup h h'
+  liminfₛ_le_limsupₛ h h'
 #align filter.liminf_le_limsup Filter.liminf_le_limsup
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem limsup_le_limsup {f g : Filter α}
-    (hf : f.IsCobounded (· ≤ ·) := by
-      run_tac
-        is_bounded_default)
-    (hg : g.IsBounded (· ≤ ·) := by
-      run_tac
-        is_bounded_default)
-    (h : ∀ a, (∀ᶠ n in g, n ≤ a) → ∀ᶠ n in f, n ≤ a) : limsup f ≤ limsup g :=
+theorem limsupₛ_le_limsupₛ {f g : Filter α}
+    (hf : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hg : g.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (h : ∀ a, (∀ᶠ n in g, n ≤ a) → ∀ᶠ n in f, n ≤ a) : limsupₛ f ≤ limsupₛ g :=
   cinfₛ_le_cinfₛ hf hg h
-#align filter.Limsup_le_Limsup Filter.limsup_le_limsup
+set_option linter.uppercaseLean3 false in
+#align filter.Limsup_le_Limsup Filter.limsupₛ_le_limsupₛ
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem liminf_le_liminf {f g : Filter α}
-    (hf : f.IsBounded (· ≥ ·) := by
-      run_tac
-        is_bounded_default)
-    (hg : g.IsCobounded (· ≥ ·) := by
-      run_tac
-        is_bounded_default)
-    (h : ∀ a, (∀ᶠ n in f, a ≤ n) → ∀ᶠ n in g, a ≤ n) : liminf f ≤ liminf g :=
+theorem liminfₛ_le_liminfₛ {f g : Filter α}
+    (hf : f.IsBounded (· ≥ ·) := by isBoundedDefault)
+    (hg : g.IsCobounded (· ≥ ·) := by isBoundedDefault)
+    (h : ∀ a, (∀ᶠ n in f, a ≤ n) → ∀ᶠ n in g, a ≤ n) : liminfₛ f ≤ liminfₛ g :=
   csupₛ_le_csupₛ hg hf h
-#align filter.Liminf_le_Liminf Filter.liminf_le_liminf
+set_option linter.uppercaseLean3 false in
+#align filter.Liminf_le_Liminf Filter.liminfₛ_le_liminfₛ
 
 /- warning: filter.limsup_le_limsup clashes with filter.Limsup_le_Limsup -> Filter.limsup_le_limsup
 warning: filter.limsup_le_limsup -> Filter.limsup_le_limsup is a dubious translation:
@@ -600,14 +583,10 @@ Case conversion may be inaccurate. Consider using '#align filter.limsup_le_limsu
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem limsup_le_limsup {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : u ≤ᶠ[f] v)
-    (hu : f.IsCoboundedUnder (· ≤ ·) u := by
-      run_tac
-        is_bounded_default)
-    (hv : f.IsBoundedUnder (· ≤ ·) v := by
-      run_tac
-        is_bounded_default) :
+    (hu : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (hv : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
     limsup u f ≤ limsup v f :=
-  limsup_le_limsup hu hv fun b => h.trans
+  limsupₛ_le_limsupₛ hu hv fun _ => h.trans
 #align filter.limsup_le_limsup Filter.limsup_le_limsup
 
 /- warning: filter.liminf_le_liminf clashes with filter.Liminf_le_Liminf -> Filter.liminf_le_liminf
@@ -621,41 +600,31 @@ Case conversion may be inaccurate. Consider using '#align filter.liminf_le_limin
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem liminf_le_liminf {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : ∀ᶠ a in f, u a ≤ v a)
-    (hu : f.IsBoundedUnder (· ≥ ·) u := by
-      run_tac
-        is_bounded_default)
-    (hv : f.IsCoboundedUnder (· ≥ ·) v := by
-      run_tac
-        is_bounded_default) :
+    (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
+    (hv : f.IsCoboundedUnder (· ≥ ·) v := by isBoundedDefault) :
     liminf u f ≤ liminf v f :=
-  @limsup_le_limsup βᵒᵈ α _ _ _ _ h hv hu
+  limsup_le_limsup (β := βᵒᵈ) h hv hu
 #align filter.liminf_le_liminf Filter.liminf_le_liminf
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem limsup_le_limsup_of_le {f g : Filter α} (h : f ≤ g)
-    (hf : f.IsCobounded (· ≤ ·) := by
-      run_tac
-        is_bounded_default)
-    (hg : g.IsBounded (· ≤ ·) := by
-      run_tac
-        is_bounded_default) :
-    limsup f ≤ limsup g :=
-  limsup_le_limsup hf hg fun a ha => h ha
-#align filter.Limsup_le_Limsup_of_le Filter.limsup_le_limsup_of_le
+theorem limsupₛ_le_limsupₛ_of_le {f g : Filter α} (h : f ≤ g)
+    (hf : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
+    (hg : g.IsBounded (· ≤ ·) := by isBoundedDefault) :
+    limsupₛ f ≤ limsupₛ g :=
+  limsupₛ_le_limsupₛ hf hg fun _ ha => h ha
+set_option linter.uppercaseLean3 false in
+#align filter.Limsup_le_Limsup_of_le Filter.limsupₛ_le_limsupₛ_of_le
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
-theorem liminf_le_liminf_of_le {f g : Filter α} (h : g ≤ f)
-    (hf : f.IsBounded (· ≥ ·) := by
-      run_tac
-        is_bounded_default)
-    (hg : g.IsCobounded (· ≥ ·) := by
-      run_tac
-        is_bounded_default) :
-    liminf f ≤ liminf g :=
-  liminf_le_liminf hf hg fun a ha => h ha
-#align filter.Liminf_le_Liminf_of_le Filter.liminf_le_liminf_of_le
+theorem liminfₛ_le_liminfₛ_of_le {f g : Filter α} (h : g ≤ f)
+    (hf : f.IsBounded (· ≥ ·) := by isBoundedDefault)
+    (hg : g.IsCobounded (· ≥ ·) := by isBoundedDefault) :
+    liminfₛ f ≤ liminfₛ g :=
+  liminfₛ_le_liminfₛ hf hg fun _ ha => h ha
+set_option linter.uppercaseLean3 false in
+#align filter.Liminf_le_Liminf_of_le Filter.liminfₛ_le_liminfₛ_of_le
 
 /- warning: filter.limsup_le_limsup_of_le clashes with filter.Limsup_le_Limsup_of_le -> Filter.limsup_le_limsup_of_le
 warning: filter.limsup_le_limsup_of_le -> Filter.limsup_le_limsup_of_le is a dubious translation:
@@ -668,14 +637,10 @@ Case conversion may be inaccurate. Consider using '#align filter.limsup_le_limsu
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem limsup_le_limsup_of_le {α β} [ConditionallyCompleteLattice β] {f g : Filter α} (h : f ≤ g)
     {u : α → β}
-    (hf : f.IsCoboundedUnder (· ≤ ·) u := by
-      run_tac
-        is_bounded_default)
-    (hg : g.IsBoundedUnder (· ≤ ·) u := by
-      run_tac
-        is_bounded_default) :
+    (hf : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (hg : g.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     limsup u f ≤ limsup u g :=
-  limsup_le_limsup_of_le (map_mono h) hf hg
+  limsupₛ_le_limsupₛ_of_le (map_mono h) hf hg
 #align filter.limsup_le_limsup_of_le Filter.limsup_le_limsup_of_le
 
 /- warning: filter.liminf_le_liminf_of_le clashes with filter.Liminf_le_Liminf_of_le -> Filter.liminf_le_liminf_of_le
@@ -689,22 +654,20 @@ Case conversion may be inaccurate. Consider using '#align filter.liminf_le_limin
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
 theorem liminf_le_liminf_of_le {α β} [ConditionallyCompleteLattice β] {f g : Filter α} (h : g ≤ f)
     {u : α → β}
-    (hf : f.IsBoundedUnder (· ≥ ·) u := by
-      run_tac
-        is_bounded_default)
-    (hg : g.IsCoboundedUnder (· ≥ ·) u := by
-      run_tac
-        is_bounded_default) :
+    (hf : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
+    (hg : g.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault) :
     liminf u f ≤ liminf u g :=
-  liminf_le_liminf_of_le (map_mono h) hf hg
+  liminfₛ_le_liminfₛ_of_le (map_mono h) hf hg
 #align filter.liminf_le_liminf_of_le Filter.liminf_le_liminf_of_le
 
 theorem limsup_principal {s : Set α} (h : BddAbove s) (hs : s.Nonempty) : limsup (𝓟 s) = supₛ s :=
   by simp [Limsup] <;> exact cinfₛ_upper_bounds_eq_csupₛ h hs
+set_option linter.uppercaseLean3 false in
 #align filter.Limsup_principal Filter.limsup_principal
 
 theorem liminf_principal {s : Set α} (h : BddBelow s) (hs : s.Nonempty) : liminf (𝓟 s) = infₛ s :=
   @limsup_principal αᵒᵈ _ s h hs
+set_option linter.uppercaseLean3 false in
 #align filter.Liminf_principal Filter.liminf_principal
 
 theorem limsup_congr {α : Type _} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
@@ -754,21 +717,25 @@ variable [CompleteLattice α]
 @[simp]
 theorem limsup_bot : limsup (⊥ : Filter α) = ⊥ :=
   bot_unique <| infₛ_le <| by simp
+set_option linter.uppercaseLean3 false in
 #align filter.Limsup_bot Filter.limsup_bot
 
 @[simp]
 theorem liminf_bot : liminf (⊥ : Filter α) = ⊤ :=
   top_unique <| le_supₛ <| by simp
+set_option linter.uppercaseLean3 false in
 #align filter.Liminf_bot Filter.liminf_bot
 
 @[simp]
 theorem limsup_top : limsup (⊤ : Filter α) = ⊤ :=
   top_unique <| le_infₛ <| by simp [eq_univ_iff_forall] <;> exact fun b hb => top_unique <| hb _
+set_option linter.uppercaseLean3 false in
 #align filter.Limsup_top Filter.limsup_top
 
 @[simp]
 theorem liminf_top : liminf (⊤ : Filter α) = ⊥ :=
   bot_unique <| supₛ_le <| by simp [eq_univ_iff_forall] <;> exact fun b hb => bot_unique <| hb _
+set_option linter.uppercaseLean3 false in
 #align filter.Liminf_top Filter.liminf_top
 
 @[simp]
@@ -798,19 +765,23 @@ theorem HasBasis.limsup_eq_infᵢ_supₛ {ι} {p : ι → Prop} {s} {f : Filter 
     (le_infₛ fun a ha =>
       let ⟨i, hi, ha⟩ := h.eventually_iff.1 ha
       infᵢ₂_le_of_le _ hi <| supₛ_le ha)
+set_option linter.uppercaseLean3 false in
 #align filter.has_basis.Limsup_eq_infi_Sup Filter.HasBasis.limsup_eq_infᵢ_supₛ
 
 theorem HasBasis.liminf_eq_supᵢ_infₛ {p : ι → Prop} {s : ι → Set α} {f : Filter α}
     (h : f.HasBasis p s) : liminf f = ⨆ (i) (hi : p i), infₛ (s i) :=
   @HasBasis.limsup_eq_infᵢ_supₛ αᵒᵈ _ _ _ _ _ h
+set_option linter.uppercaseLean3 false in
 #align filter.has_basis.Liminf_eq_supr_Inf Filter.HasBasis.liminf_eq_supᵢ_infₛ
 
 theorem limsup_eq_infᵢ_supₛ {f : Filter α} : limsup f = ⨅ s ∈ f, supₛ s :=
   f.basis_sets.limsup_eq_infᵢ_supₛ
+set_option linter.uppercaseLean3 false in
 #align filter.Limsup_eq_infi_Sup Filter.limsup_eq_infᵢ_supₛ
 
 theorem liminf_eq_supᵢ_infₛ {f : Filter α} : liminf f = ⨆ s ∈ f, infₛ s :=
   @limsup_eq_infᵢ_supₛ αᵒᵈ _ _
+set_option linter.uppercaseLean3 false in
 #align filter.Liminf_eq_supr_Inf Filter.liminf_eq_supᵢ_infₛ
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic filter.is_bounded_default -/
@@ -931,11 +902,13 @@ theorem limsup_eq_infₛ_supₛ {ι R : Type _} (F : Filter ι) [CompleteLattice
         infₛ_le_of_le (mem_image_of_mem _ <| filter.mem_sets.mpr hb) <| supₛ_le _
     rintro _ ⟨_, h, rfl⟩
     exact h
+set_option linter.uppercaseLean3 false in
 #align filter.limsup_eq_Inf_Sup Filter.limsup_eq_infₛ_supₛ
 
 theorem liminf_eq_supₛ_infₛ {ι R : Type _} (F : Filter ι) [CompleteLattice R] (a : ι → R) :
     liminf a F = supₛ ((fun I => infₛ (a '' I)) '' F.sets) :=
   @Filter.limsup_eq_infₛ_supₛ ι (OrderDual R) _ _ a
+set_option linter.uppercaseLean3 false in
 #align filter.liminf_eq_Sup_Inf Filter.liminf_eq_supₛ_infₛ
 
 @[simp]
@@ -1207,6 +1180,7 @@ theorem frequently_lt_of_lt_limsup {f : Filter α} [ConditionallyCompleteLinearO
   contrapose! h
   simp only [not_frequently, not_lt] at h
   exact Limsup_le_of_le hf h
+set_option linter.uppercaseLean3 false in
 #align filter.frequently_lt_of_lt_Limsup Filter.frequently_lt_of_lt_limsup
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
@@ -1216,6 +1190,7 @@ theorem frequently_lt_of_liminf_lt {f : Filter α} [ConditionallyCompleteLinearO
         is_bounded_default)
     (h : liminf f < a) : ∃ᶠ n in f, n < a :=
   @frequently_lt_of_lt_limsup (OrderDual α) f _ a hf h
+set_option linter.uppercaseLean3 false in
 #align filter.frequently_lt_of_Liminf_lt Filter.frequently_lt_of_liminf_lt
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic is_bounded_default -/
