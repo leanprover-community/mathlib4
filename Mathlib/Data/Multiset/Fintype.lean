@@ -193,6 +193,9 @@ theorem Multiset.toEmbedding_coeEquiv_trans (m : Multiset α) :
     m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 #align multiset.to_embedding_coe_equiv_trans Multiset.toEmbedding_coeEquiv_trans
 
+-- Porting note: without `irreducible`, some `simp` theorems get the `simpNF` lint because checking
+--               that this is defeq to another instance fails because of timeout
+@[irreducible]
 instance Multiset.fintypeCoe : Fintype m :=
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
 #align multiset.fintype_coe Multiset.fintypeCoe
