@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise
 
 /-!
 # Ruzsa's covering lemma
@@ -31,8 +31,7 @@ variable {α : Type _} [DecidableEq α] [CommGroup α] (s : Finset α) {t : Fins
 /-- **Ruzsa's covering lemma**. -/
 @[to_additive "**Ruzsa's covering lemma**"]
 theorem exists_subset_mul_div (ht : t.Nonempty) :
-    ∃ u : Finset α, u.card * t.card ≤ (s * t).card ∧ s ⊆ u * t / t :=
-  by
+    ∃ u : Finset α, u.card * t.card ≤ (s * t).card ∧ s ⊆ u * t / t := by
   haveI : ∀ u, Decidable ((u : Set α).PairwiseDisjoint (· • t)) := fun u => Classical.dec _
   set C := s.powerset.filter fun u => (u : Set α).PairwiseDisjoint (· • t)
   obtain ⟨u, hu, hCmax⟩ :=
