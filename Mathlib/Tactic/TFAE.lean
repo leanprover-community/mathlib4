@@ -18,7 +18,7 @@ This file provides the tactics `tfae_have` and `tfae_finish` for proving goals o
 
 open List Lean Meta Expr Elab.Term Elab.Tactic Mathlib.Tactic Qq
 
-namespace Mathlib.TFAE
+namespace Mathlib.Tactic.TFAE
 
 /-- An arrow of the form `←`, `→`, or `↔`. -/
 declare_syntax_cat impArrow
