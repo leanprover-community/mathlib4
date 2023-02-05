@@ -36,7 +36,7 @@ We prove many basic properties of such topologies.
 ## Main statements
 
 This file contains the proofs of the following facts. For exact requirements
-(`OrderClosedTopology` vs `OrderTopology`, `preorder` vs `partial_order` vs `linear_order` etc)
+(`OrderClosedTopology` vs `OrderTopology`, `Preorder` vs `PartialOrder` vs `LinearOrder` etc)
 see their statements.
 
 ### Open / closed sets
@@ -61,9 +61,9 @@ see their statements.
 
 ### Min, max, `Sup` and `Inf`
 
-* `continuous.min`, `continuous.max`: pointwise `min`/`max` of two Continuous functions is
+* `Continuous.min`, `Continuous.max`: pointwise `min`/`max` of two continuous functions is
   continuous.
-* `tendsto.min`, `tendsto.max` : if `f` tends to `a` and `g` tends to `b`, then their pointwise
+* `Tendsto.min`, `Tendsto.max` : if `f` tends to `a` and `g` tends to `b`, then their pointwise
   `min`/`max` tend to `min a b` and `max a b`, respectively.
 * `tendsto_of_tendsto_of_tendsto_of_le_of_le` : theorem known as squeeze theorem,
   sandwich theorem, theorem of Carabinieri, and two policemen (and a drunk) theorem; if `g` and `h`
@@ -1930,7 +1930,7 @@ theorem IsLUB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
 #align is_lub.mem_upper_bounds_of_tendsto IsLUB.mem_upperBounds_of_tendsto
 
 -- For a version of this theorem in which the convergence considered on the domain `α` is as `x : α`
--- tends to infinity, rather than tending to a point `x` in `α`, see `is_lub_of_tendsto_atTop`
+-- tends to infinity, rather than tending to a point `x` in `α`, see `isLUB_of_tendsto_atTop`
 theorem IsLUB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
     {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) (ha : IsLUB s a) (hs : s.Nonempty)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : IsLUB (f '' s) b :=
@@ -1947,7 +1947,7 @@ theorem IsGLB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
 
 -- For a version of this theorem in which the convergence considered on the domain `α` is as
 -- `x : α` tends to negative infinity, rather than tending to a point `x` in `α`, see
--- `is_glb_of_tendsto_atBot`
+-- `isGLB_of_tendsto_atBot`
 theorem IsGLB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
     {s : Set α} {a : α} {b : γ} (hf : MonotoneOn f s) :
     IsGLB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsGLB (f '' s) b :=
@@ -2749,7 +2749,7 @@ theorem Antitone.map_cinfᵢ_of_continuousAt {f : α → β} {g : γ → α} (Cf
     Af H
 #align antitone.map_cinfi_of_continuous_at Antitone.map_cinfᵢ_of_continuousAt
 
-/-- A monotone map has a limit to the left of any point `x`, equal to `Sup (f '' (Iio x))`. -/
+/-- A monotone map has a limit to the left of any point `x`, equal to `supₛ (f '' (Iio x))`. -/
 theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type _} [LinearOrder α] [TopologicalSpace α]
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} (Mf : Monotone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (supₛ (f '' Iio x))) := by
@@ -2763,7 +2763,7 @@ theorem Monotone.tendsto_nhdsWithin_Iio {α β : Type _} [LinearOrder α] [Topol
     exact le_csupₛ (Mf.map_bddAbove bddAbove_Iio) (mem_image_of_mem _ hy)
 #align monotone.tendsto_nhds_within_Iio Monotone.tendsto_nhdsWithin_Iio
 
-/-- A monotone map has a limit to the right of any point `x`, equal to `Inf (f '' (Ioi x))`. -/
+/-- A monotone map has a limit to the right of any point `x`, equal to `infₛ (f '' (Ioi x))`. -/
 theorem Monotone.tendsto_nhdsWithin_Ioi {α β : Type _} [LinearOrder α] [TopologicalSpace α]
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} (Mf : Monotone f) (x : α) : Tendsto f (𝓝[>] x) (𝓝 (infₛ (f '' Ioi x))) :=
