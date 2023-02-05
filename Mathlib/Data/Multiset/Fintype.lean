@@ -22,7 +22,7 @@ a multiset. These coercions and definitions make it easier to sum over multisets
 
 ## Main definitions
 
-* A coercion from `m : Multiset α` to a `Type*`. For `x : m`, then there is a coercion `↑x : α`,
+* A coercion from `m : Multiset α` to a `Type _`. For `x : m`, then there is a coercion `↑x : α`,
   and `x.2` is a term of `Fin (m.count x)`. The second component is what ensures each term appears
   with the correct multiplicity. Note that this coercion requires `decidableEq α` due to
   `Multiset.count`.
@@ -65,7 +65,7 @@ def Multiset.mkToType (m : Multiset α) (x : α) (i : Fin (m.count x)) : m :=
   ⟨x, i⟩
 #align multiset.mk_to_type Multiset.mkToType
 
-/-- As a convenience, there is a coercion from `m : Type*` to `α` by projecting onto the first
+/-- As a convenience, there is a coercion from `m : Type _` to `α` by projecting onto the first
 component. -/
 -- Porting note: was `Coe m α`
 instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
@@ -156,7 +156,7 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
 #align multiset.to_enum_finset_subset_iff Multiset.toEnumFinset_subset_iff
 
 /-- The embedding from a multiset into `α × ℕ` where the second coordinate enumerates repeats.
-If you are looking for the function `m → α`, that would be plain `coe`. -/
+If you are looking for the function `m → α`, that would be plain `(↑)`. -/
 @[simps]
 def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
     where
