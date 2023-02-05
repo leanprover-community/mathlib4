@@ -986,6 +986,7 @@ import Mathlib.Topology.Maps
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
+import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Separation
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Support
