@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Group
+-- import Mathlib.Tactic.Group
 
 /-!
 # Double cosets
@@ -39,7 +39,7 @@ open Pointwise
 /-- The double_coset as an element of `set α` corresponding to `s a t` -/
 def doset (a : α) (s t : Set α) : Set α :=
   s * {a} * t
-#align doset doset
+#align doset doset.doset
 
 theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y :=
   ⟨fun ⟨_, y, ⟨x, _, hx, rfl, rfl⟩, hy, h⟩ => ⟨x, hx, y, hy, h.symm⟩, fun ⟨x, hx, y, hy, h⟩ =>
@@ -75,24 +75,24 @@ theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
 #align doset.eq_of_not_disjoint doset.eq_of_not_disjoint
 
 /-- The setoid defined by the double_coset relation -/
-def setoid (H K : Set G) : Setoid G :=
+def Setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doset x H K
-#align doset.setoid doset.setoid
+#align doset.setoid doset.Setoid
 
 /-- Quotient of `G` by the double coset relation, i.e. `H \ G / K` -/
 def Quotient (H K : Set G) : Type _ :=
-  Quotient (setoid H K)
+  _root_.Quotient (doset.Setoid H K)
 #align doset.quotient doset.Quotient
 
 theorem rel_iff {H K : Subgroup G} {x y : G} :
-    (setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
+    (Setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
     ⟨fun hxy => (congr_arg _ hxy).mpr (mem_doset_self H K y), fun hxy => (doset_eq_of_mem hxy).symm⟩
     mem_doset
 #align doset.rel_iff doset.rel_iff
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
-    (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
+    (Setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
   ext (a b)
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
   constructor
@@ -104,7 +104,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
 #align doset.bot_rel_eq_left_rel doset.bot_rel_eq_leftRel
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
-    (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
+    (Setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
   ext (a b)
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
   constructor
@@ -116,16 +116,16 @@ theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
 #align doset.rel_bot_eq_right_group_rel doset.rel_bot_eq_right_group_rel
 
 /-- Create a doset out of an element of `H \ G / K`-/
-def quotToDoset (H K : Subgroup G) (q : Quotient ↑H ↑K) : Set G :=
+def quotToDoset (H K : Subgroup G) (q : Quotient (H : Set G) K) : Set G :=
   doset q.out' H K
 #align doset.quot_to_doset doset.quotToDoset
 
 /-- Map from `G` to `H \ G / K`-/
-abbrev mk (H K : Subgroup G) (a : G) : Quotient ↑H ↑K :=
+abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
   Quotient.mk'' a
 #align doset.mk doset.mk
 
-instance (H K : Subgroup G) : Inhabited (Quotient ↑H ↑K) :=
+instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
 theorem eq (H K : Subgroup G) (a b : G) : mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k :=
@@ -215,4 +215,3 @@ theorem right_bot_eq_right_quot (H : Subgroup G) :
 #align doset.right_bot_eq_right_quot doset.right_bot_eq_right_quot
 
 end doset
-
