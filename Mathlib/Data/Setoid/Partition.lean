@@ -8,10 +8,10 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.Data.Set.Finite
-import Mathbin.Data.Setoid.Basic
-import Mathbin.Order.Partition.Finpartition
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Set.Finite
+import Mathlib.Data.Setoid.Basic
+import Mathlib.Order.Partition.Finpartition
 
 /-!
 # Equivalence relations: partitions
@@ -77,8 +77,7 @@ theorem mem_classes (r : Setoid α) (y) : { x | r.Rel x y } ∈ r.classes :=
 #align setoid.mem_classes Setoid.mem_classes
 
 theorem classes_ker_subset_fiber_set {β : Type _} (f : α → β) :
-    (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } :=
-  by
+    (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } := by
   rintro s ⟨x, rfl⟩
   rw [Set.mem_range]
   exact ⟨f x, rfl⟩
@@ -155,8 +154,7 @@ theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! (b : _)(_ : b ∈ c), 
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr ∈ » c) -/
 theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! (b : _)(_ : b ∈ c), a ∈ b) {x} :
-    { y : α | (mkClasses c H).Rel x y } ∈ c :=
-  by
+    { y : α | (mkClasses c H).Rel x y } ∈ c := by
   convert Setoid.eqv_class_mem H
   ext
   rw [Setoid.comm']
