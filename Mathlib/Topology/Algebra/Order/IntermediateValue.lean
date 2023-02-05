@@ -254,8 +254,8 @@ theorem IsConnected.Ioo_cinfₛ_csupₛ_subset {s : Set α} (hs : IsConnected s)
   hs.Icc_subset ys zs ⟨hy.le, hz.le⟩
 #align is_connected.Ioo_cInf_cSup_subset IsConnected.Ioo_cinfₛ_csupₛ_subset
 
-theorem eq_Icc_cinfₛ_csupₛ_of_connected_bdd_closed {s : Set α} (hc : IsConnected s) (hb : BddBelow s)
-    (ha : BddAbove s) (hcl : IsClosed s) : s = Icc (infₛ s) (supₛ s) :=
+theorem eq_Icc_cinfₛ_csupₛ_of_connected_bdd_closed {s : Set α} (hc : IsConnected s)
+    (hb : BddBelow s) (ha : BddAbove s) (hcl : IsClosed s) : s = Icc (infₛ s) (supₛ s) :=
   (subset_Icc_cinfₛ_csupₛ hb ha).antisymm <|
     hc.Icc_subset (hcl.cinfₛ_mem hc.nonempty hb) (hcl.csupₛ_mem hc.nonempty ha)
 #align eq_Icc_cInf_cSup_of_connected_bdd_closed eq_Icc_cinfₛ_csupₛ_of_connected_bdd_closed
