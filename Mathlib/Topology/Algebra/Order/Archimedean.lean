@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Order.Basic
-import Mathbin.Algebra.Order.Archimedean
+import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Order.Archimedean
 
 /-!
 # Rational numbers are dense in a linear ordered archimedean field
