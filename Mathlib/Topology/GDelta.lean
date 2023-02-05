@@ -40,17 +40,15 @@ Gδ set, residual set
 
 noncomputable section
 
-open Classical Topology Filter uniformity
+open Topology TopologicalSpace Filter Encodable Set
 
-open Filter Encodable Set
+variable {α β γ ι : Type _}
 
-variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
+set_option linter.uppercaseLean3 false
 
 section IsGδ
 
 variable [TopologicalSpace α]
-
-set_option linter.uppercaseLean3 false
 
 /-- A Gδ set is a countable intersection of open sets. -/
 def IsGδ (s : Set α) : Prop :=
@@ -77,11 +75,13 @@ theorem isGδ_binterᵢ_of_open {I : Set ι} (hI : I.Countable) {f : ι → Set 
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [interₛ_image]⟩
 #align is_Gδ_bInter_of_open isGδ_binterᵢ_of_open
 
+-- porting note: TODO: generalize to `Sort _` + `Countable _`
 theorem isGδ_interᵢ_of_open [Encodable ι] {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [interₛ_range]⟩
 #align is_Gδ_Inter_of_open isGδ_interᵢ_of_open
 
+-- porting note: TODO: generalize to `Sort _` + `Countable _`
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
 theorem isGδ_interᵢ [Encodable ι] {s : ι → Set α} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
@@ -91,7 +91,7 @@ theorem isGδ_interᵢ [Encodable ι] {s : ι → Set α} (hs : ∀ i, IsGδ (s 
 #align is_Gδ_Inter isGδ_interᵢ
 
 theorem isGδ_binterᵢ {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set α}
-    (ht : ∀ i ∈ s, IsGδ (t i ⟨_⟩)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
+    (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [binterᵢ_eq_interᵢ]
   haveI := hs.toEncodable
   exact isGδ_interᵢ fun x => ht x x.2
@@ -117,6 +117,7 @@ theorem IsGδ.union {s t : Set α} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ 
   exact (Sopen a ha).union (Topen b hb)
 #align is_Gδ.union IsGδ.union
 
+-- porting note: TODO: add `unionᵢ` and `unionₛ` versions
 /-- The union of finitely many Gδ sets is a Gδ set. -/
 theorem isGδ_bunionᵢ {s : Set ι} (hs : s.Finite) {f : ι → Set α} (h : ∀ i ∈ s, IsGδ (f i)) :
     IsGδ (⋃ i ∈ s, f i) := by
@@ -159,12 +160,10 @@ theorem Finset.isGδ_compl (s : Finset α) : IsGδ (sᶜ : Set α) :=
   s.finite_toSet.isGδ_compl
 #align finset.is_Gδ_compl Finset.isGδ_compl
 
-open TopologicalSpace
-
 variable [FirstCountableTopology α]
 
 theorem isGδ_singleton (a : α) : IsGδ ({a} : Set α) := by
-  rcases(nhds_basis_opens a).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
+  rcases (nhds_basis_opens a).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← binterᵢ_basis_nhds h_basis.toHasBasis]
   exact isGδ_binterᵢ (to_countable _) fun n _ => (hU n).2.isGδ
 #align is_Gδ_singleton isGδ_singleton
@@ -179,13 +178,8 @@ end IsGδ
 
 section ContinuousAt
 
-open TopologicalSpace
-
-open uniformity
-
 variable [TopologicalSpace α]
 
-set_option linter.uppercaseLean3 false
 /-- The set of points where a function is continuous is a Gδ set. -/
 theorem isGδ_setOf_continuousAt [UniformSpace β] [IsCountablyGenerated (uniformity β)] (f : α → β) :
     IsGδ { x | ContinuousAt f x } := by
