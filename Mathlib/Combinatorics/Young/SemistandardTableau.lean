@@ -8,7 +8,7 @@ Authors: Jake Levinson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.Young.YoungDiagram
+import Mathlib.Combinatorics.Young.YoungDiagram
 
 /-!
 # Semistandard Young tableaux
@@ -124,8 +124,7 @@ theorem zeros {μ : YoungDiagram} (T : Ssyt μ) {i j : ℕ} (not_cell : (i, j) �
 #align ssyt.zeros Ssyt.zeros
 
 theorem row_weak_of_le {μ : YoungDiagram} (T : Ssyt μ) {i j1 j2 : ℕ} (hj : j1 ≤ j2)
-    (cell : (i, j2) ∈ μ) : T i j1 ≤ T i j2 :=
-  by
+    (cell : (i, j2) ∈ μ) : T i j1 ≤ T i j2 := by
   cases eq_or_lt_of_le hj
   subst h
   exact T.row_weak h cell
