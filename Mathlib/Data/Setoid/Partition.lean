@@ -289,7 +289,7 @@ variable {α}
     equivalent complete lattice on equivalence relations. -/
 instance Partition.completeLattice : CompleteLattice (Subtype (@IsPartition α)) :=
   GaloisInsertion.liftCompleteLattice <|
-    @OrderIso.toGaloisInsertion _ (Subtype (@IsPartition α)) _ (PartialOrder.toPreorder _) <|
+    @OrderIso.toGaloisInsertion _ (Subtype (@IsPartition α)) _ (PartialOrder.toPreorder) <|
       Partition.orderIso α
 #align setoid.partition.complete_lattice Setoid.Partition.completeLattice
 
