@@ -14,8 +14,8 @@ import Mathlib.Order.Filter.Partial
 /-!
 # Partial functions and topological spaces
 
-In this file we prove properties of `filter.ptendsto` etc in topological spaces. We also introduce
-`pcontinuous`, a version of `continuous` for partially defined functions.
+In this file we prove properties of `Filter.Ptendsto` etc in topological spaces. We also introduce
+`Pcontinuous`, a version of `Continuous` for partially defined functions.
 -/
 
 
