@@ -2,6 +2,13 @@ import Mathlib.Tactic.TFAE
 
 open List
 
+section zeroOne
+
+example : TFAE []  := by tfae_finish
+example : TFAE [P] := by tfae_finish
+
+end zeroOne
+
 namespace two
 
 axiom P : Prop
@@ -55,4 +62,20 @@ example : TFAE [P, Q, R] := by
   { exact Iff.intro (pq ∘ rp) qr }
   tfae_finish
 
+example : TFAE [P, Q, R] := by
+  tfae_have 1 → 2
+  { exact pq }
+  tfae_have 2 → 1
+  { exact rp ∘ qr }
+  tfae_have 2 ↔ 3
+  { exact Iff.intro qr (pq ∘ rp) }
+  tfae_finish
+
 end three
+
+section context
+
+example (h₁ : P → Q) (h₂ : Q → P) : TFAE [P, Q] := by
+  tfae_finish
+
+end context
