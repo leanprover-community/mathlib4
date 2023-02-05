@@ -33,7 +33,7 @@ namespace Perm
 universe u
 
 instance sumCongrHom.decidableMemRange {α β : Type _} [DecidableEq α] [DecidableEq β] [Fintype α]
-    [Fintype β] : DecidablePred (· ∈ (sumCongrHom α β).range) := fun x => inferInstance
+    [Fintype β] : DecidablePred (· ∈ (sumCongrHom α β).range) := fun _ => inferInstance
 #align equiv.perm.sum_congr_hom.decidable_mem_range Equiv.Perm.sumCongrHom.decidableMemRange
 
 @[simp]
@@ -45,8 +45,9 @@ theorem sumCongrHom.card_range {α β : Type _} [Fintype (sumCongrHom α β).ran
 
 instance sigmaCongrRightHom.decidableMemRange {α : Type _} {β : α → Type _} [DecidableEq α]
     [∀ a, DecidableEq (β a)] [Fintype α] [∀ a, Fintype (β a)] :
-    DecidablePred (· ∈ (sigmaCongrRightHom β).range) := fun x => inferInstance
-#align equiv.perm.sigma_congr_right_hom.decidable_mem_range Equiv.Perm.sigmaCongrRightHom.decidableMemRange
+    DecidablePred (· ∈ (sigmaCongrRightHom β).range) := fun _ => inferInstance
+#align equiv.perm.sigma_congr_right_hom.decidable_mem_range
+    Equiv.Perm.sigmaCongrRightHom.decidableMemRange
 
 @[simp]
 theorem sigmaCongrRightHom.card_range {α : Type _} {β : α → Type _}
@@ -57,7 +58,7 @@ theorem sigmaCongrRightHom.card_range {α : Type _} {β : α → Type _}
 
 instance subtypeCongrHom.decidableMemRange {α : Type _} (p : α → Prop) [DecidablePred p]
     [Fintype (Perm { a // p a } × Perm { a // ¬p a })] [DecidableEq (Perm α)] :
-    DecidablePred (· ∈ (subtypeCongrHom p).range) := fun x => inferInstance
+    DecidablePred (· ∈ (subtypeCongrHom p).range) := fun _ => inferInstance
 #align equiv.perm.subtype_congr_hom.decidable_mem_range Equiv.Perm.subtypeCongrHom.decidableMemRange
 
 @[simp]
@@ -70,7 +71,7 @@ theorem subtypeCongrHom.card_range {α : Type _} (p : α → Prop) [DecidablePre
 
 /-- **Cayley's theorem**: Every group G is isomorphic to a subgroup of the symmetric group acting on
 `G`. Note that we generalize this to an arbitrary "faithful" group action by `G`. Setting `H = G`
-recovers the usual statement of Cayley's theorem via `right_cancel_monoid.to_has_faithful_smul` -/
+recovers the usual statement of Cayley's theorem via `RightCancelMonoid.faithfulSMul` -/
 noncomputable def subgroupOfMulAction (G H : Type _) [Group G] [MulAction G H] [FaithfulSMul G H] :
     G ≃* (MulAction.toPermHom G H).range :=
   MulEquiv.ofLeftInverse' _ (Classical.choose_spec MulAction.toPerm_injective.hasLeftInverse)
