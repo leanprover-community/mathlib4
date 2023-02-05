@@ -51,11 +51,11 @@ theorem Finset.card_bunionᵢ_le_of_intersecting (s : Finset ι) (f : ι → Fin
   induction' s using Finset.cons_induction with i s hi ih generalizing f
   · simp
   set f' : ι → Finset (Finset α) :=
-    fun j ↦ if hj : j ∈ cons i s hi then (hf j hj).exists_card_eq.choose else ∅ with hf'
+    fun j ↦ if hj : j ∈ cons i s hi then (hf j hj).exists_card_eq.choose else ∅
   have hf₁ : ∀ j, j ∈ cons i s hi → f j ⊆ f' j ∧ 2 * (f' j).card =
       2 ^ Fintype.card α ∧ (f' j : Set (Finset α)).Intersecting := by
     rintro j hj
-    simp_rw [hf', dif_pos hj, ← Fintype.card_finset]
+    simp_rw [dif_pos hj, ← Fintype.card_finset]
     exact Classical.choose_spec (hf j hj).exists_card_eq
   have hf₂ : ∀ j, j ∈ cons i s hi → IsUpperSet (f' j : Set (Finset α)) := by
     refine' fun j hj ↦ (hf₁ _ hj).2.2.isUpperSet' ((hf₁ _ hj).2.2.is_max_iff_card_eq.2 _)
