@@ -8,8 +8,8 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.ContinuousOn
-import Mathbin.Order.Filter.Partial
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Order.Filter.Partial
 
 /-!
 # Partial functions and topological spaces
@@ -31,8 +31,7 @@ theorem rtendsto_nhds {r : Rel β α} {l : Filter β} {a : α} :
 #align rtendsto_nhds rtendsto_nhds
 
 theorem rtendsto'_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    Rtendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.Preimage s ∈ l :=
-  by
+    Rtendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.Preimage s ∈ l := by
   rw [rtendsto'_def]
   apply all_mem_nhds_filter
   apply Rel.preimage_mono
@@ -63,8 +62,7 @@ theorem open_dom_of_pcontinuous {f : α →. β} (h : Pcontinuous f) : IsOpen f.
 #align open_dom_of_pcontinuous open_dom_of_pcontinuous
 
 theorem pcontinuous_iff' {f : α →. β} :
-    Pcontinuous f ↔ ∀ {x y} (h : y ∈ f x), Ptendsto' f (𝓝 x) (𝓝 y) :=
-  by
+    Pcontinuous f ↔ ∀ {x y} (h : y ∈ f x), Ptendsto' f (𝓝 x) (𝓝 y) := by
   constructor
   · intro h x y h'
     simp only [ptendsto'_def, mem_nhds_iff]
