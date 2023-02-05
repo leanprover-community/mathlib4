@@ -32,7 +32,7 @@ We represent an SSYT as a function `ℕ → ℕ → ℕ`, which is required to b
 ## Main definitions
 
 - `Ssyt (μ : YoungDiagram)`: semistandard Young tableaux of shape `μ`. There is
-  a `has_coe_to_fun` instance such that `T i j` is value of the `(i, j)` entry of the SSYT `T`.
+  a `coe` instance such that `T i j` is value of the `(i, j)` entry of the SSYT `T`.
 - `Ssyt.highestWeight (μ : YoungDiagram)`: the semistandard Young tableau whose `i`th row
   consists entirely of `i`s, for each `i`.
 
@@ -54,9 +54,13 @@ in each column are strictly increasing (top to bottom).
 Here, an SSYT is represented as an unrestricted function `ℕ → ℕ → ℕ` that, for reasons
 of extensionality, is required to vanish outside `μ`. -/
 structure Ssyt (μ : YoungDiagram) where
+  /-- `entry i j` is value of the `(i, j)` entry of the SSYT `μ`. -/
   entry : ℕ → ℕ → ℕ
+  /-- The entries in each row are weakly increasing (left to right). -/
   row_weak' : ∀ {i j1 j2 : ℕ}, j1 < j2 → (i, j2) ∈ μ → entry i j1 ≤ entry i j2
+  /-- The entries in each column are strictly increasing (top to bottom). -/
   col_strict' : ∀ {i1 i2 j : ℕ}, i1 < i2 → (i2, j) ∈ μ → entry i1 j < entry i2 j
+  /-- `entry` is required to be zero for all pairs `(i, j) ∉ μ`. -/
   zeros' : ∀ {i j}, (i, j) ∉ μ → entry i j = 0
 #align ssyt Ssyt
 
@@ -70,8 +74,7 @@ instance funLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ fun _ ↦ ℕ → �
     congr
 #align ssyt.fun_like Ssyt.funLike
 
-/-- Helper instance for when there's too many metavariables to apply
-`fun_like.has_coe_to_fun` directly. -/
+/-- Helper instance for when there's too many metavariables to apply `CoeFun.coe` directly. -/
 instance {μ : YoungDiagram} : CoeFun (Ssyt μ) fun _ ↦ ℕ → ℕ → ℕ :=
   inferInstance
 
