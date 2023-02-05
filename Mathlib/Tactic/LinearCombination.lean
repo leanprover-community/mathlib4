@@ -126,7 +126,7 @@ theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) :
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (input : Option Syntax.Term)
-    (twoGoals := false) : Tactic.TacticM Unit := do
+    (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
   let p ← match input with
   | none => `(Eq.refl 0)
   | some e => withSynthesize do
