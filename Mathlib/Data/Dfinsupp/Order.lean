@@ -22,12 +22,6 @@ This file lifts order structures on the `α i` to `Π₀ i, α i`.
 
 -/
 
--- porting note: The unusedVariables linter has false positives in code like
---    variable (α) [∀ i, Zero (α i)]
--- marking the  `i` as unused. So disable that lint for now.
--- Likely issue https://github.com/leanprover/lean4/issues/2088, so remove when that is fixed
-set_option linter.unusedVariables false
-
 open BigOperators
 
 open Finset
@@ -41,7 +35,12 @@ namespace Dfinsupp
 
 section Zero
 
-variable (α) [∀ i, Zero (α i)]
+-- porting note: The unusedVariables linter has false positives in code like
+--    variable (α) [∀ i, Zero (α i)]
+-- marking the `i` as unused. The linter is fine when the code is split into 2 lines.
+-- Likely issue https://github.com/leanprover/lean4/issues/2088, so combine lines when that is fixed
+variable (α)
+variable [∀ i, Zero (α i)]
 
 section LE
 
@@ -139,7 +138,9 @@ instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) 
 
 section CanonicallyOrderedAddMonoid
 
-variable (α) [∀ i, CanonicallyOrderedAddMonoid (α i)]
+-- porting note: Split into 2 lines to satisfy the unusedVariables linter.
+variable (α)
+variable [∀ i, CanonicallyOrderedAddMonoid (α i)]
 
 instance : OrderBot (Π₀ i, α i) where
   bot := 0
@@ -184,7 +185,9 @@ theorem single_le_iff {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i :=
 
 end Le
 
-variable (α) [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
+-- porting note: Split into 2 lines to satisfy the unusedVariables linter.
+variable (α)
+variable [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
 additive group. -/
