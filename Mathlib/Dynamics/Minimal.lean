@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.GroupAction.Basic
-import Mathbin.Topology.Algebra.ConstMulAction
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!
 # Minimal action of a group
