@@ -156,6 +156,7 @@ def proveTFAE (l : Q(List Prop)) : TacticM Q(TFAE $l) := do
     return q(tfae_of_cycle $c $il)
 
 /-- Construct a name for a hypothesis introduced by `tfae_have`. -/
+def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax `impArrow) : TermElabM Name := do
   let arr ← match arr with
   | `(impArrow| ← ) => pure "from"
   | `(impArrow| → ) => pure "to"
@@ -168,7 +169,7 @@ open Elab in
 def tfaeHaveCore (goal : MVarId) (name : Option (TSyntax `ident)) (i j : TSyntax `num)
     (arrow : TSyntax `impArrow) (t : Expr) : TermElabM (MVarId × MVarId) :=
   goal.withContext do
-    let n := (Syntax.getId <$> name).getD <|← mkHypName i j arrow
+    let n := (Syntax.getId <$> name).getD <|← mkTFAEHypName i j arrow
     let (goal1, t, p) ← do
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, t, p)
@@ -189,6 +190,7 @@ def elabIndex (i : TSyntax `num) (maxIndex : ℕ) : TacticM ℕ := do
 /-- Construct an expression for the type `Pj → Pi`, `Pi → Pj`, or `Pi ↔ Pj` given expressions
 `Pi Pj : Q(Prop)` and `impArrow` syntax `arr`, depending on whether `arr` is `←`, `→`, or `↔`
 respectively. -/
+def mkImplType (Pi : Q(Prop)) (arr : TSyntax `impArrow) (Pj : Q(Prop)) : TacticM Q(Prop) := do
   match arr with
   | `(impArrow| ← ) => pure q($Pj → $Pi)
   | `(impArrow| → ) => pure q($Pi → $Pj)
@@ -204,7 +206,7 @@ elab_rules : tactic
   let j' ← elabIndex j l₀
   let Pi := tfaeList.get! (i'-1)
   let Pj := tfaeList.get! (j'-1)
-  let type ← mkType Pi arr Pj
+  let type ← mkImplType Pi arr Pj
   let (goal1, goal2) ← tfaeHaveCore (← getMainGoal) h i j arr type
   replaceMainGoal [goal1, goal2]
 
