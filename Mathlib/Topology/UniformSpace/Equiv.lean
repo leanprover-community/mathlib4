@@ -9,9 +9,9 @@ Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Homeomorph
-import Mathbin.Topology.UniformSpace.UniformEmbedding
-import Mathbin.Topology.UniformSpace.Pi
+import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.UniformSpace.Pi
 
 /-!
 # Uniform isomorphisms
