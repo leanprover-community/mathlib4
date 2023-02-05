@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Finite
 import Mathlib.Algebra.BigOperators.Basic
 
 /-!
-# Preimage of a `finset` under an injective map.
+# Preimage of a `Finset` under an injective map.
 -/
 
 
