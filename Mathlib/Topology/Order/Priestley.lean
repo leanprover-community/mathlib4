@@ -19,13 +19,13 @@ that any two distinct points can be separated by a clopen upper set.
 
 ## Main declarations
 
-* `priestley_space`: Prop-valued mixin stating the Priestley separation axiom: Any two distinct
+* `PriestleySpace`: Prop-valued mixin stating the Priestley separation axiom: Any two distinct
   points can be separated by a clopen upper set.
 
 ## Implementation notes
 
 We do not include compactness in the definition, so a Priestley space is to be declared as follows:
-`[preorder α] [topological_space α] [compact_space α] [priestley_space α]`
+`[Preorder α] [TopologicalSpace α] [CompactSpace α] [PriestleySpace α]`
 
 ## References
 
@@ -70,17 +70,16 @@ variable [PartialOrder α] [PriestleySpace α] {x y : α}
 theorem exists_clopen_upper_or_lower_of_ne (h : x ≠ y) :
     ∃ U : Set α, IsClopen U ∧ (IsUpperSet U ∨ IsLowerSet U) ∧ x ∈ U ∧ y ∉ U := by
   obtain h | h := h.not_le_or_not_le
-  · exact (exists_clopen_upper_of_not_le h).imp fun U => And.imp_right <| And.imp_left Or.inl
+  · exact (exists_clopen_upper_of_not_le h).imp fun _ ↦ And.imp_right <| And.imp_left Or.inl
   · obtain ⟨U, hU, hU', hy, hx⟩ := exists_clopen_lower_of_not_le h
     exact ⟨U, hU, Or.inr hU', hx, hy⟩
 #align exists_clopen_upper_or_lower_of_ne exists_clopen_upper_or_lower_of_ne
 
 -- See note [lower instance priority]
-instance (priority := 100) PriestleySpace.to_t2Space : T2Space α :=
-  ⟨fun x y h =>
+instance (priority := 100) PriestleySpace.toT2Space : T2Space α :=
+  ⟨fun _ _ h ↦
     let ⟨U, hU, _, hx, hy⟩ := exists_clopen_upper_or_lower_of_ne h
-    ⟨U, Uᶜ, hU.IsOpen, hU.compl.IsOpen, hx, hy, disjoint_compl_right⟩⟩
-#align priestley_space.to_t2_space PriestleySpace.to_t2Space
+    ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy, disjoint_compl_right⟩⟩
+#align priestley_space.to_t2_space PriestleySpace.toT2Space
 
 end PartialOrder
-
