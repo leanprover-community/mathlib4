@@ -8,14 +8,14 @@ Authors: Benjamin Davidson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.Field.Opposite
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Algebra.Order.Archimedean
-import Mathbin.Data.Int.Parity
-import Mathbin.GroupTheory.Coset
-import Mathbin.GroupTheory.Subgroup.Zpowers
-import Mathbin.GroupTheory.Submonoid.Membership
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Data.Int.Parity
+import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Subgroup.Zpowers
+import Mathlib.GroupTheory.Submonoid.Membership
 
 /-!
 # Periodicity
@@ -114,8 +114,7 @@ protected theorem Periodic.const_smul [AddMonoid α] [Group γ] [DistribMulActio
 #align function.periodic.const_smul Function.Periodic.const_smul
 
 theorem Periodic.const_smul₀ [AddCommMonoid α] [DivisionRing γ] [Module γ α] (h : Periodic f c)
-    (a : γ) : Periodic (fun x => f (a • x)) (a⁻¹ • c) :=
-  by
+    (a : γ) : Periodic (fun x => f (a • x)) (a⁻¹ • c) := by
   intro x
   by_cases ha : a = 0; · simp only [ha, zero_smul]
   simpa only [smul_add, smul_inv_smul₀ ha] using h (a • x)
@@ -228,8 +227,7 @@ theorem Periodic.nat_mul_sub_eq [Ring α] (h : Periodic f c) (n : ℕ) : f (n * 
   simpa only [sub_eq_neg_add] using h.nat_mul n (-x)
 #align function.periodic.nat_mul_sub_eq Function.Periodic.nat_mul_sub_eq
 
-protected theorem Periodic.zsmul [AddGroup α] (h : Periodic f c) (n : ℤ) : Periodic f (n • c) :=
-  by
+protected theorem Periodic.zsmul [AddGroup α] (h : Periodic f c) (n : ℤ) : Periodic f (n • c) := by
   cases n
   · simpa only [Int.ofNat_eq_coe, coe_nat_zsmul] using h.nsmul n
   · simpa only [negSucc_zsmul] using (h.nsmul n.succ).neg
@@ -317,15 +315,13 @@ theorem periodic_with_period_zero [AddZeroClass α] (f : α → β) : Periodic f
 #align function.periodic_with_period_zero Function.periodic_with_period_zero
 
 theorem Periodic.map_vadd_zmultiples [AddCommGroup α] (hf : Periodic f c)
-    (a : AddSubgroup.zmultiples c) (x : α) : f (a +ᵥ x) = f x :=
-  by
+    (a : AddSubgroup.zmultiples c) (x : α) : f (a +ᵥ x) = f x := by
   rcases a with ⟨_, m, rfl⟩
   simp [AddSubgroup.vadd_def, add_comm _ x, hf.zsmul m x]
 #align function.periodic.map_vadd_zmultiples Function.Periodic.map_vadd_zmultiples
 
 theorem Periodic.map_vadd_multiples [AddCommMonoid α] (hf : Periodic f c)
-    (a : AddSubmonoid.multiples c) (x : α) : f (a +ᵥ x) = f x :=
-  by
+    (a : AddSubmonoid.multiples c) (x : α) : f (a +ᵥ x) = f x := by
   rcases a with ⟨_, m, rfl⟩
   simp [AddSubmonoid.vadd_def, add_comm _ x, hf.nsmul m x]
 #align function.periodic.map_vadd_multiples Function.Periodic.map_vadd_multiples
