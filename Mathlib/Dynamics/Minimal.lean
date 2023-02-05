@@ -44,7 +44,6 @@ class MulAction.IsMinimal (M α : Type _) [Monoid M] [TopologicalSpace α] [MulA
     Prop where
   dense_orbit : ∀ x : α, Dense (MulAction.orbit M x)
 #align mul_action.is_minimal MulAction.IsMinimal
---#align add_action.is_minimal AddAction.IsMinimal  -- Porting note: already been aligned
 
 open MulAction Set
 
