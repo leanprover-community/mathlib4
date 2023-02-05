@@ -19,13 +19,13 @@ import Mathlib.Order.Partition.Finpartition
 This file comprises properties of equivalence relations viewed as partitions.
 There are two implementations of partitions here:
 * A collection `c : Set (Set α)` of sets is a partition of `α` if `∅ ∉ c` and each element `a : α`
-  belongs to a unique set `b ∈ c`. This is expressed as `is_partition c`
+  belongs to a unique set `b ∈ c`. This is expressed as `IsPartition c`
 * An indexed partition is a map `s : ι → α` whose image is a partition. This is
   expressed as `IndexedPartition s`.
 
-Of course both implementations are related to `quotient` and `setoid`.
+Of course both implementations are related to `Quotient` and `Setoid`.
 
-`setoid.is_partition.partition` and `Finpartition.isPartition_parts` furnish
+`Setoid.isPartition.partition` and `Finpartition.isPartition_parts` furnish
 a link between `Setoid.IsPartition` and `Finpartition`.
 
 ## TODO
@@ -318,7 +318,7 @@ theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α
 /-- Constructive information associated with a partition of a type `α` indexed by another type `ι`,
 `s : ι → Set α`.
 
-`indexed_partition.index` sends an element to its index, while `indexed_partition.some` sends
+`IndexedPartition.index` sends an element to its index, while `IndexedPartition.some` sends
 an index to an element of the corresponding set.
 
 This type is primarily useful for definitional control of `s` - if this is not needed, then
@@ -439,7 +439,7 @@ theorem equivQuotient_index : hs.equivQuotient ∘ hs.index = hs.proj :=
 #align indexed_partition.equiv_quotient_index IndexedPartition.equivQuotient_index
 
 /-- A map choosing a representative for each element of the quotient associated to an indexed
-partition. This is a computable version of `Quotient.out'` using `indexed_partition.some`. -/
+partition. This is a computable version of `Quotient.out'` using `IndexedPartition.some`. -/
 def out : hs.Quotient ↪ α :=
   hs.equivQuotient.symm.toEmbedding.trans ⟨hs.some, Function.LeftInverse.injective hs.index_some⟩
 #align indexed_partition.out IndexedPartition.out
