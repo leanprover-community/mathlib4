@@ -410,19 +410,15 @@ noncomputable def liftCover' : C(α, β) := by
 variable {A F hF hA}
 
 @[simp]
-theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x := by
+theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
-  --liftCover_coe x'
-  sorry
+  liftCover_coe x'
 #align continuous_map.lift_cover_coe' ContinuousMap.liftCover_coe'
 
 @[simp]
 theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
-    (liftCover' A F hF hA).restrict s = F s hs := by
-  ext
-  simp [liftCover_coe']
-  sorry
-  --simp only [coe_restrict, Function.comp_apply]
+    (liftCover' A F hF hA).restrict s = F s hs :=
+  ext <| liftCover_coe'
 #align continuous_map.lift_cover_restrict' ContinuousMap.liftCover_restrict'
 
 end Gluing
