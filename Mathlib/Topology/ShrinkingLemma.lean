@@ -15,7 +15,7 @@ import Mathlib.Topology.Separation
 
 In this file we prove a few versions of the shrinking lemma. The lemma says that in a normal
 topological space a point finite open covering can be “shrunk”: for a point finite open covering
-`u : ι → set X` there exists a refinement `v : ι → set X` such that `closure (v i) ⊆ u i`.
+`u : ι → Set X` there exists a refinement `v : ι → Set X` such that `closure (v i) ⊆ u i`.
 
 For finite or countable coverings this lemma can be proved without the axiom of choice, see
 [ncatlab](https://ncatlab.org/nlab/show/shrinking+lemma) for details. We only formalize the most
@@ -44,7 +44,7 @@ namespace ShrinkingLemma
 
 -- the trivial refinement needs `u` to be a covering
 /-- Auxiliary definition for the proof of `shrinking_lemma`. A partial refinement of a covering
-`⋃ i, u i` of a set `s` is a map `v : ι → set X` and a set `carrier : set ι` such that
+`⋃ i, u i` of a set `s` is a map `v : ι → Set X` and a set `carrier : Set ι` such that
 
 * `s ⊆ ⋃ i, v i`;
 * all `v i` are open;
