@@ -193,6 +193,7 @@ variable (α)
 /-- The identity as a continuous map. -/
 protected def id : C(α, α) :=
   ⟨id, continuous_id⟩
+  -- Porting note: proof was `continuity`
 #align continuous_map.id ContinuousMap.id
 
 @[simp]
@@ -203,6 +204,7 @@ theorem coe_id : ⇑(ContinuousMap.id α) = id :=
 /-- The constant map as a continuous map. -/
 def const (b : β) : C(α, β) :=
   ⟨fun _ : α => b, continuous_const⟩
+  -- Porting note: proof was `continuity`
 #align continuous_map.const ContinuousMap.const
 
 @[simp]
@@ -228,6 +230,7 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 /-- The composition of continuous maps, as a continuous map. -/
 def comp (f : C(β, γ)) (g : C(α, β)) : C(α, γ) :=
   ⟨f ∘ g, f.continuous.comp g.continuous⟩
+  -- Porting note: proof was `continuity`
 #align continuous_map.comp ContinuousMap.comp
 
 @[simp]
@@ -290,6 +293,7 @@ def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂)
     where
   toFun x := (f x, g x)
   continuous_toFun := f.continuous.prod_mk g.continuous
+  -- Porting note: proof was `continuity`
 #align continuous_map.prod_mk ContinuousMap.prodMk
 
 /-- Given two continuous maps `f` and `g`, this is the continuous map `(x, y) ↦ (f x, g y)`. -/
@@ -298,6 +302,7 @@ def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α�
     where
   toFun := Prod.map f g
   continuous_toFun := f.continuous.prod_map g.continuous
+  -- Porting note: proof was `continuity`
 #align continuous_map.prod_map ContinuousMap.prodMap
 
 @[simp]
@@ -405,20 +410,20 @@ noncomputable def liftCover' : C(α, β) := by
 variable {A F hF hA}
 
 @[simp]
-theorem lift_cover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x := by
+theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x := by
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
   --liftCover_coe x'
   sorry
-#align continuous_map.lift_cover_coe' ContinuousMap.lift_cover_coe'
+#align continuous_map.lift_cover_coe' ContinuousMap.liftCover_coe'
 
 @[simp]
-theorem lift_cover_restrict' {s : Set α} {hs : s ∈ A} :
+theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := by
   ext
-  simp [lift_cover_coe']
+  simp [liftCover_coe']
   sorry
   --simp only [coe_restrict, Function.comp_apply]
-#align continuous_map.lift_cover_restrict' ContinuousMap.lift_cover_restrict'
+#align continuous_map.lift_cover_restrict' ContinuousMap.liftCover_restrict'
 
 end Gluing
 
