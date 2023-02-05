@@ -21,20 +21,20 @@ syntax (" → " <|> " ↔ " <|> " ← ") : impArrow
 
 /--
 `tfae_have` introduces hypotheses for proving goals of the form `TFAE [P₁, P₂, ...]`. Specifically,
-`tfae_have : i arrow j` introduces a hypothesis of the form `Pᵢ arrow Pⱼ` to the tactic state,
+`tfae_have : i arrow j` introduces a hypothesis of the form `Pᵢ arrow Pⱼ` to the local context,
 where `arrow` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices (beginning
 at 1) used to specify the propositions `P₁, P₂, ...` that appear in the `TFAE` goal list. A proof
 is required afterward, typically via a tactic block.
 
-Example:
 ```lean
 example (h : P → R) : TFAE [P, Q, R] := by
   tfae_have : 1 → 3
   { exact h }
   ...
 ```
+The resulting context now includes `tfae_1_to_3 : P → R`.
 
-The introduced hypothesis can be given a name, in analogy to `have` syntax:
+The introduced hypothesis can be given a custom name, in analogy to `have` syntax:
 ```lean
 tfae_have h : 2 ↔ 3
 ```
@@ -42,16 +42,14 @@ tfae_have h : 2 ↔ 3
 Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
 the goal.
 
-Example:
 ```lean
-variable (P Q R : Prop) (h₁ : P → Q) (h₂ : Q → P) (h₃ Q ↔ R)
 example : TFAE [P, Q, R] := by
   tfae_have : 1 → 2
-  { exact h₁ }
+  { /- proof of P → Q -/ }
   tfae_have : 2 → 1
-  { exact h₁ }
+  { /- proof of Q → P -/ }
   tfae_have : 2 ↔ 3
-  { exact h₃ }
+  { /- proof of Q ↔ R -/ }
   tfae_finish
 ```
 -/
@@ -65,16 +63,13 @@ of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduce
 
 Example:
 ```lean
-variable (P Q R : Prop)
-variable (h₁ : P → Q) (h₂ : Q → P) (h₃ Q ↔ R)
-
 example : TFAE [P, Q, R] := by
   tfae_have : 1 → 2
-  { exact h₁ }
+  { /- proof of P → Q -/ }
   tfae_have : 2 → 1
-  { exact h₁ }
+  { /- proof of Q → P -/ }
   tfae_have : 2 ↔ 3
-  { exact h₃ }
+  { /- proof of Q ↔ R -/ }
   tfae_finish
 ```
 -/
