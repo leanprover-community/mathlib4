@@ -56,6 +56,28 @@ example : TFAE [P, Q, R] := by
 ```
 -/
 syntax (name := tfaeHave) "tfae_have " (ident " : ")? num impArrow num : tactic
+
+/--
+`tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
+of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduced to the local context.
+
+`tfae_have` can be used to conveniently introduce these hypotheses; see `tfae_have`.
+
+Example:
+```lean
+variable (P Q R : Prop)
+variable (h₁ : P → Q) (h₂ : Q → P) (h₃ Q ↔ R)
+
+example : TFAE [P, Q, R] := by
+  tfae_have : 1 → 2
+  { exact h₁ }
+  tfae_have : 2 → 1
+  { exact h₁ }
+  tfae_have : 2 ↔ 3
+  { exact h₃ }
+  tfae_finish
+```
+-/
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
 partial def getTFAEList (t : Expr) : MetaM (List Q(Prop)) := do
