@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SetFamily.HarrisKleitman
-import Mathbin.Combinatorics.SetFamily.Intersecting
+import Mathlib.Combinatorics.SetFamily.HarrisKleitman
+import Mathlib.Combinatorics.SetFamily.Intersecting
 
 /-!
 # Kleitman's bound on the size of intersecting families
@@ -39,8 +39,7 @@ variable {ι α : Type _} [Fintype α] [DecidableEq α] [Nonempty α]
 each further intersecting family takes at most half of the sets that are in no previous family. -/
 theorem Finset.card_bunionᵢ_le_of_intersecting (s : Finset ι) (f : ι → Finset (Finset α))
     (hf : ∀ i ∈ s, (f i : Set (Finset α)).Intersecting) :
-    (s.bunionᵢ f).card ≤ 2 ^ card α - 2 ^ (card α - s.card) :=
-  by
+    (s.bunionᵢ f).card ≤ 2 ^ card α - 2 ^ (card α - s.card) := by
   obtain hs | hs := le_total (card α) s.card
   · rw [tsub_eq_zero_of_le hs, pow_zero]
     refine'
