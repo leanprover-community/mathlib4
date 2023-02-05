@@ -28,8 +28,7 @@ This file lifts order structures on the `α i` to `Π₀ i, α i`.
 -- Likely issue https://github.com/leanprover/lean4/issues/2088, so remove when that is fixed
 set_option linter.unusedVariables false
 
--- Porting note: Unkonwn namespace BigOperators
--- open BigOperators
+open BigOperators
 
 open Finset
 
