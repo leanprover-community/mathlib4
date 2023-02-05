@@ -179,41 +179,40 @@ theorem map_div₂ {_ : Group M} {_ : MulOneClass N} {_ : CommGroup P} (f : M �
 
 /-- Evaluation of a `MonoidHom` at a point as a monoid homomorphism. See also `MonoidHom.apply`
 for the evaluation of any function at a point. -/
-@[to_additive
+@[to_additive (attr := simps!)
       "Evaluation of an `AddMonoidHom` at a point as an additive monoid homomorphism.
-      See also `AddMonoidHom.apply` for the evaluation of any function at a point.",
-  simps!]
+      See also `AddMonoidHom.apply` for the evaluation of any function at a point."]
 def eval [MulOneClass M] [CommMonoid N] : M →* (M →* N) →* N :=
   (MonoidHom.id (M →* N)).flip
 #align monoid_hom.eval MonoidHom.eval
 #align add_monoid_hom.eval AddMonoidHom.eval
 #align monoid_hom.eval_apply_apply MonoidHom.eval_apply_apply
+#align add_monoid_hom.eval_apply_apply AddMonoidHom.eval_apply_apply
 
 /-- The expression `λ g m, g (f m)` as a `MonoidHom`.
 Equivalently, `(λ g, MonoidHom.comp g f)` as a `MonoidHom`. -/
-@[to_additive
+@[to_additive (attr := simps!)
       "The expression `λ g m, g (f m)` as a `AddMonoidHom`.
       Equivalently, `(λ g, AddMonoidHom.comp g f)` as a `AddMonoidHom`.
 
-      This also exists in a `LinearMap` version, `LinearMap.lcomp`.",
-  simps!]
+      This also exists in a `LinearMap` version, `LinearMap.lcomp`."]
 def compHom' [MulOneClass M] [MulOneClass N] [CommMonoid P] (f : M →* N) : (N →* P) →* M →* P :=
   flip <| eval.comp f
 #align monoid_hom.comp_hom' MonoidHom.compHom'
 #align add_monoid_hom.comp_hom' AddMonoidHom.compHom'
 #align monoid_hom.comp_hom'_apply_apply MonoidHom.compHom'_apply_apply
+#align add_monoid_hom.comp_hom'_apply_apply AddMonoidHom.compHom'_apply_apply
 
 /-- Composition of monoid morphisms (`MonoidHom.comp`) as a monoid morphism.
 
 Note that unlike `MonoidHom.comp_hom'` this requires commutativity of `N`. -/
-@[to_additive
+@[to_additive (attr := simps)
       "Composition of additive monoid morphisms (`AddMonoidHom.comp`) as an additive
       monoid morphism.
 
       Note that unlike `AddMonoidHom.comp_hom'` this requires commutativity of `N`.
 
-      This also exists in a `LinearMap` version, `LinearMap.llcomp`.",
-  simps]
+      This also exists in a `LinearMap` version, `LinearMap.llcomp`."]
 def compHom [MulOneClass M] [CommMonoid N] [CommMonoid P] :
     (N →* P) →* (M →* N) →* M →* P where
   toFun g := { toFun := g.comp, map_one' := comp_one g, map_mul' := comp_mul g }
@@ -226,12 +225,12 @@ def compHom [MulOneClass M] [CommMonoid N] [CommMonoid P] :
 #align monoid_hom.comp_hom MonoidHom.compHom
 #align add_monoid_hom.comp_hom AddMonoidHom.compHom
 #align monoid_hom.comp_hom_apply_apply MonoidHom.compHom_apply_apply
+#align add_monoid_hom.comp_hom_apply_apply AddMonoidHom.compHom_apply_apply
 
 /-- Flipping arguments of monoid morphisms (`MonoidHom.flip`) as a monoid morphism. -/
-@[to_additive
+@[to_additive (attr := simps)
       "Flipping arguments of additive monoid morphisms (`AddMonoidHom.flip`)
-      as an additive monoid morphism.",
-  simps]
+      as an additive monoid morphism."]
 def flipHom {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} :
     (M →* N →* P) →* N →* M →* P where
   toFun := MonoidHom.flip
@@ -240,6 +239,7 @@ def flipHom {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} :
 #align monoid_hom.flip_hom MonoidHom.flipHom
 #align add_monoid_hom.flip_hom AddMonoidHom.flipHom
 #align monoid_hom.flip_hom_apply MonoidHom.flipHom_apply
+#align add_monoid_hom.flip_hom_apply AddMonoidHom.flipHom_apply
 
 /-- The expression `λ m q, f m (g q)` as a `MonoidHom`.
 

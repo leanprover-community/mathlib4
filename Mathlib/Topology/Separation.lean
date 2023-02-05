@@ -192,6 +192,17 @@ theorem Inseparable.eq [T0Space α] {x y : α} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
 #align inseparable.eq Inseparable.eq
 
+-- porting note: 2 new lemmas
+/-- A topology `Inducing` map from a T₀ space is injective. -/
+protected theorem Inducing.injective [T0Space α] [TopologicalSpace β] {f : α → β}
+    (hf : Inducing f) : Injective f := fun _ _ h =>
+  (hf.inseparable_iff.1 <| .of_eq h).eq
+
+/-- A topology `Inducing` map from a T₀ space is an embedding. -/
+protected theorem Inducing.embedding [T0Space α] [TopologicalSpace β] {f : α → β}
+    (hf : Inducing f) : Embedding f :=
+  ⟨hf, hf.injective⟩
+
 theorem t0Space_iff_nhds_injective (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ Injective (𝓝 : α → Filter α) :=
   t0Space_iff_inseparable α
