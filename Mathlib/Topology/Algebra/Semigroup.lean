@@ -8,7 +8,7 @@ Authors: David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Separation
+import Mathlib.Topology.Separation
 
 /-!
 # Idempotents in topological semigroups
@@ -28,8 +28,7 @@ an idempotent, i.e. an `m` such that `m * m = m`. -/
       "Any nonempty compact Hausdorff additive semigroup where right-addition is continuous\ncontains an idempotent, i.e. an `m` such that `m + m = m`"]
 theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] [Semigroup M]
     [TopologicalSpace M] [CompactSpace M] [T2Space M]
-    (continuous_mul_left : ∀ r : M, Continuous (· * r)) : ∃ m : M, m * m = m :=
-  by
+    (continuous_mul_left : ∀ r : M, Continuous (· * r)) : ∃ m : M, m * m = m := by
   /- We apply Zorn's lemma to the poset of nonempty closed subsemigroups of `M`. It will turn out that
   any minimal element is `{m}` for an idempotent `m : M`. -/
   let S : Set (Set M) :=
