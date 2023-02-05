@@ -18,20 +18,20 @@ import Mathlib.Order.Partition.Finpartition
 
 This file comprises properties of equivalence relations viewed as partitions.
 There are two implementations of partitions here:
-* A collection `c : set (set α)` of sets is a partition of `α` if `∅ ∉ c` and each element `a : α`
+* A collection `c : Set (Set α)` of sets is a partition of `α` if `∅ ∉ c` and each element `a : α`
   belongs to a unique set `b ∈ c`. This is expressed as `is_partition c`
 * An indexed partition is a map `s : ι → α` whose image is a partition. This is
-  expressed as `indexed_partition s`.
+  expressed as `IndexedPartition s`.
 
 Of course both implementations are related to `quotient` and `setoid`.
 
-`setoid.is_partition.partition` and `finpartition.is_partition_parts` furnish
-a link between `setoid.is_partition` and `finpartition`.
+`setoid.is_partition.partition` and `Finpartition.isPartition_parts` furnish
+a link between `Setoid.IsPartition` and `Finpartition`.
 
 ## TODO
 
-Could the design of `finpartition` inform the one of `setoid.is_partition`? Maybe bundling it and
-changing it from `set (set α)` to `set α` where `[lattice α] [order_bot α]` would make it more
+Could the design of `Finpartition` inform the one of `Setoid.IsPartition`? Maybe bundling it and
+changing it from `Set (Set α)` to `Set α` where `[Lattice α] [OrderBot α]` would make it more
 usable.
 
 ## Tags
@@ -198,7 +198,7 @@ theorem unionₛ_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
 section Partition
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr ∈ » c) -/
-/-- A collection `c : set (set α)` of sets is a partition of `α` into pairwise
+/-- A collection `c : Set (Set α)` of sets is a partition of `α` into pairwise
 disjoint sets if `∅ ∉ c` and each element `a : α` belongs to a unique set `b ∈ c`. -/
 def IsPartition (c : Set (Set α)) :=
   ∅ ∉ c ∧ ∀ a, ∃! (b : _)(_ : b ∈ c), a ∈ b
@@ -316,13 +316,13 @@ theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α
 #align finpartition.is_partition_parts Finpartition.isPartition_parts
 
 /-- Constructive information associated with a partition of a type `α` indexed by another type `ι`,
-`s : ι → set α`.
+`s : ι → Set α`.
 
 `indexed_partition.index` sends an element to its index, while `indexed_partition.some` sends
 an index to an element of the corresponding set.
 
 This type is primarily useful for definitional control of `s` - if this is not needed, then
-`setoid.ker index` by itself may be sufficient. -/
+`Setoid.ker index` by itself may be sufficient. -/
 structure IndexedPartition {ι α : Type _} (s : ι → Set α) where
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j
   some : ι → α
@@ -331,7 +331,7 @@ structure IndexedPartition {ι α : Type _} (s : ι → Set α) where
   mem_index : ∀ x, x ∈ s (index x)
 #align indexed_partition IndexedPartition
 
-/-- The non-constructive constructor for `indexed_partition`. -/
+/-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type _} (s : ι → Set α)
     (dis : ∀ i j, i ≠ j → Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s
@@ -439,23 +439,23 @@ theorem equivQuotient_index : hs.equivQuotient ∘ hs.index = hs.proj :=
 #align indexed_partition.equiv_quotient_index IndexedPartition.equivQuotient_index
 
 /-- A map choosing a representative for each element of the quotient associated to an indexed
-partition. This is a computable version of `quotient.out'` using `indexed_partition.some`. -/
+partition. This is a computable version of `Quotient.out'` using `indexed_partition.some`. -/
 def out : hs.Quotient ↪ α :=
   hs.equivQuotient.symm.toEmbedding.trans ⟨hs.some, Function.LeftInverse.injective hs.index_some⟩
 #align indexed_partition.out IndexedPartition.out
 
-/-- This lemma is analogous to `quotient.mk_out'`. -/
+/-- This lemma is analogous to `Quotient.mk_out'`. -/
 @[simp]
 theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
   rfl
 #align indexed_partition.out_proj IndexedPartition.out_proj
 
-/-- The indices of `quotient.out'` and `indexed_partition.out` are equal. -/
+/-- The indices of `Quotient.out'` and `IndexedPartition.out` are equal. -/
 theorem index_out' (x : hs.Quotient) : hs.index x.out' = hs.index (hs.out x) :=
   Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out' x).trans (hs.index_some _).symm
 #align indexed_partition.index_out' IndexedPartition.index_out'
 
-/-- This lemma is analogous to `quotient.out_eq'`. -/
+/-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]
 theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
   Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
