@@ -89,7 +89,7 @@ theorem mem_mk (c : ℕ × ℕ) (cells) (isLowerSet) :
 #align young_diagram.mem_mk YoungDiagram.mem_mk
 
 instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
-  show DecidablePred (· ∈ μ.cells) by infer_instance
+  inferInstanceAs (DecidablePred (· ∈ μ.cells))
 #align young_diagram.decidable_mem YoungDiagram.decidableMem
 
 /-- In "English notation", a Young diagram is drawn so that (i1, j1) ≤ (i2, j2)

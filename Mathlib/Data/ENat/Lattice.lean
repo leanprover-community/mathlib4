@@ -19,4 +19,5 @@ This instance is not in `Data.ENat.Basic` to avoid dependency on `Finset`s.
 
 -- porting notes: was `deriving instance` but "default handlers have not been implemented yet"
 -- porting notes: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
-noncomputable instance : CompleteLinearOrder ENat := by delta ENat; infer_instance
+noncomputable instance : CompleteLinearOrder ENat :=
+  inferInstanceAs (CompleteLinearOrder (WithTop ℕ))

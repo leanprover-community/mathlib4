@@ -89,8 +89,8 @@ def ZMod : ℕ → Type
 #align zmod ZMod
 
 instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
-  | 0 => by dsimp [ZMod]; infer_instance
-  | n + 1 => by dsimp [ZMod]; infer_instance
+  | 0 => inferInstanceAs (DecidableEq ℤ)
+  | n + 1 => inferInstanceAs (DecidableEq (Fin (n + 1)))
 #align zmod.decidable_eq ZMod.decidableEq
 
 instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
