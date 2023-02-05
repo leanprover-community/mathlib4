@@ -84,7 +84,7 @@ theorem classes_ker_subset_fiber_set {β : Type _} (f : α → β) :
 #align setoid.classes_ker_subset_fiber_set Setoid.classes_ker_subset_fiber_set
 
 theorem finite_classes_ker {α β : Type _} [Finite β] (f : α → β) : (Setoid.ker f).classes.Finite :=
-  (Set.finite_range _).Subset <| classes_ker_subset_fiber_set f
+  (Set.finite_range _).subset <| classes_ker_subset_fiber_set f
 #align setoid.finite_classes_ker Setoid.finite_classes_ker
 
 theorem card_classes_ker_le {α β : Type _} [Fintype β] (f : α → β)
@@ -155,8 +155,8 @@ theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! (b : _)(_ : b ∈ c), 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr ∈ » c) -/
 theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! (b : _)(_ : b ∈ c), a ∈ b) {x} :
     { y : α | (mkClasses c H).Rel x y } ∈ c := by
-  convert Setoid.eqv_class_mem H
-  ext
+  convert @Setoid.eqv_class_mem _ _  H x
+  ext; dsimp
   rw [Setoid.comm']
 #align setoid.eqv_class_mem' Setoid.eqv_class_mem'
 
@@ -244,7 +244,7 @@ theorem classes_mkClasses (c : Set (Set α)) (hc : IsPartition c) : (mkClasses c
         rwa [show s = b from
             hs.symm ▸
               Set.ext fun x =>
-                ⟨fun hx => symm' (mk_classes c hc.2) hx b hm hb, fun hx b' hc' hx' =>
+                ⟨fun hx => symm' (mkClasses c hc.2) hx b hm hb, fun hx b' hc' hx' =>
                   eq_of_mem_eqv_class hc.2 hm hx hc' hx' ▸ hb⟩],
       exists_of_mem_partition hc⟩
 #align setoid.classes_mk_classes Setoid.classes_mkClasses
@@ -265,7 +265,7 @@ instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α))
   lt_iff_le_not_le _ _ := Iff.rfl
   le_antisymm x y hx hy := by
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
-    rw [Subtype.ext_iff_val, ← classes_mk_classes x.1 x.2, ← classes_mk_classes y.1 y.2, h]
+    rw [Subtype.ext_iff_val, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
 #align setoid.partition.partial_order Setoid.Partition.partialOrder
 
 variable (α)
@@ -277,10 +277,10 @@ protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartit
   toFun r := ⟨r.classes, empty_not_mem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
-  right_inv C := by rw [Subtype.ext_iff_val, ← classes_mk_classes C.1 C.2]
+  right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
   map_rel_iff' r s :=
     by
-    conv_rhs => rw [← mk_classes_classes r, ← mk_classes_classes s]
+    conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
 #align setoid.partition.order_iso Setoid.Partition.orderIso
 
@@ -301,7 +301,7 @@ end Partition
 def IsPartition.finpartition {c : Finset (Set α)} (hc : Setoid.IsPartition (c : Set (Set α))) :
     Finpartition (Set.univ : Set α) where
   parts := c
-  SupIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr <| eqv_classes_disjoint hc.2
+  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr <| eqv_classes_disjoint hc.2
   supParts := c.sup_id_set_eq_unionₛ.trans hc.unionₛ_eq_univ
   not_bot_mem := hc.left
 #align setoid.is_partition.finpartition Setoid.IsPartition.finpartition
@@ -313,7 +313,7 @@ theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α
     Setoid.IsPartition (f.parts : Set (Set α)) :=
   ⟨f.not_bot_mem,
     Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_unionₛ.symm.trans f.supParts)
-      f.SupIndep.PairwiseDisjoint⟩
+      f.supIndep.pairwiseDisjoint⟩
 #align finpartition.is_partition_parts Finpartition.isPartition_parts
 
 /-- Constructive information associated with a partition of a type `α` indexed by another type `ι`,
@@ -337,9 +337,9 @@ noncomputable def IndexedPartition.mk' {ι α : Type _} (s : ι → Set α)
     (dis : ∀ i j, i ≠ j → Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s
     where
-  eq_of_mem x i j hxi hxj := by_contradiction fun h => (dis _ _ h).le_bot ⟨hxi, hxj⟩
-  some i := (Nonempty i).some
-  some_mem i := (Nonempty i).choose_spec
+  eq_of_mem {x i j} hxi hxj := by_contradiction fun h => (dis _ _ h).le_bot ⟨hxi, hxj⟩
+  some i := (nonempty i).some
+  some_mem i := (nonempty i).choose_spec
   index x := (ex x).some
   mem_index x := (ex x).choose_spec
 #align indexed_partition.mk' IndexedPartition.mk'
@@ -352,7 +352,7 @@ variable {ι α : Type _} {s : ι → Set α} (hs : IndexedPartition s)
 
 /-- On a unique index set there is the obvious trivial partition -/
 instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun i : ι => (Set.univ : Set α)) :=
-  ⟨{  eq_of_mem := fun x i j hi hj => Subsingleton.elim _ _
+  ⟨{  eq_of_mem := fun {x i j} hi hj => Subsingleton.elim _ _
       some := default
       some_mem := Set.mem_univ
       index := default
@@ -360,7 +360,7 @@ instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun i : ι => 
 
 attribute [simp] some_mem mem_index
 
-include hs
+--include hs
 
 theorem exists_mem (x : α) : ∃ i, x ∈ s i :=
   ⟨hs.index x, hs.mem_index x⟩
@@ -394,13 +394,13 @@ theorem index_some (i : ι) : hs.index (hs.some i) = i :=
   (mem_iff_index_eq _).1 <| hs.some_mem i
 #align indexed_partition.index_some IndexedPartition.index_some
 
-theorem some_index (x : α) : hs.Setoid.Rel (hs.some (hs.index x)) x :=
+theorem some_index (x : α) : hs.setoid.Rel (hs.some (hs.index x)) x :=
   hs.index_some (hs.index x)
 #align indexed_partition.some_index IndexedPartition.some_index
 
 /-- The quotient associated to an indexed partition. -/
 protected def Quotient :=
-  Quotient hs.Setoid
+  Quotient hs.setoid
 #align indexed_partition.quotient IndexedPartition.Quotient
 
 /-- The projection onto the quotient associated to an indexed partition. -/
@@ -463,7 +463,7 @@ theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
   Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
 #align indexed_partition.proj_out IndexedPartition.proj_out
 
-theorem class_of {x : α} : setOf (hs.Setoid.Rel x) = s (hs.index x) :=
+theorem class_of {x : α} : setOf (hs.setoid.Rel x) = s (hs.index x) :=
   Set.ext fun y => eq_comm.trans hs.mem_iff_index_eq.symm
 #align indexed_partition.class_of IndexedPartition.class_of
 
@@ -475,4 +475,3 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
 #align indexed_partition.proj_fiber IndexedPartition.proj_fiber
 
 end IndexedPartition
-
