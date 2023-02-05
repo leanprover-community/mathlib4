@@ -7,7 +7,7 @@ import Lean
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Data.List.TFAE
-import QQ.match
+import Qq.Match
 
 /-!
 # The Following Are Equivalent (TFAE)
