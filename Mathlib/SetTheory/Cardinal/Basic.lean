@@ -8,15 +8,15 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Data.Finsupp.Defs
-import Mathbin.Data.Nat.PartEnat
-import Mathbin.Data.Set.Countable
-import Mathbin.Logic.Small.Basic
-import Mathbin.Order.ConditionallyCompleteLattice.Basic
-import Mathbin.Order.SuccPred.Basic
-import Mathbin.SetTheory.Cardinal.SchroederBernstein
-import Mathbin.Tactic.Positivity
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Nat.PartEnat
+import Mathlib.Data.Set.Countable
+import Mathlib.Logic.Small.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.SuccPred.Basic
+import Mathlib.SetTheory.Cardinal.SchroederBernstein
+import Mathlib.Tactic.Positivity
 
 /-!
 # Cardinal Numbers
