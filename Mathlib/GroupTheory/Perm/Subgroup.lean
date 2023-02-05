@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Perm.Basic
-import Mathbin.Data.Fintype.Perm
-import Mathbin.GroupTheory.Subgroup.Finite
+import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Data.Fintype.Perm
+import Mathlib.GroupTheory.Subgroup.Finite
 
 /-!
 # Lemmas about subgroups within the permutations (self-equivalences) of a type `α`
