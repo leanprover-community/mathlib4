@@ -102,7 +102,7 @@ theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContinuousMap (toFun → apply)
 
-@[simp, norm_cast]
+@[simp] -- Porting note: removed `norm_cast` attribute
 protected theorem coe_coe {F : Type _} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
   rfl
 #align continuous_map.coe_coe ContinuousMap.coe_coe
@@ -136,7 +136,7 @@ protected theorem continuous (f : C(α, β)) : Continuous f :=
   f.continuous_toFun
 #align continuous_map.continuous ContinuousMap.continuous
 
---@[continuity]
+--porting note: todo: restore @[continuity]
 theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → β) :=
   f.1.continuous
 #align continuous_map.continuous_set_coe ContinuousMap.continuous_set_coe
@@ -314,7 +314,8 @@ variable {I A : Type _} {X : I → Type _} [TopologicalSpace A] [∀ i, Topologi
 /-- Abbreviation for product of continuous maps, which is continuous -/
 def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where
   toFun (a : A) (i : I) := f i a
-  continuous_toFun := sorry
+  continuous_toFun := continuous_pi (fun i => (f i).continuous)
+  -- Porting note: proof was `continuity`
 #align continuous_map.pi ContinuousMap.pi
 
 @[simp]
@@ -330,7 +331,8 @@ variable (s : Set α)
 
 /-- The restriction of a continuous function `α → β` to a subset `s` of `α`. -/
 def restrict (f : C(α, β)) : C(s, β) :=
-  ⟨f ∘ ((↑) : s → α), sorry⟩
+  ⟨f ∘ ((↑) : s → α), f.continuous.comp continuous_subtype_val⟩
+  -- Porting note: proof was `continuity`
 #align continuous_map.restrict ContinuousMap.restrict
 
 @[simp]
@@ -351,8 +353,6 @@ section Gluing
 variable {ι : Type _} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
   (hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
   (hS : ∀ x : α, ∃ i, S i ∈ nhds x)
-
---include hφ hS
 
 /-- A family `φ i` of continuous maps `C(S i, β)`, where the domains `S i` contain a neighbourhood
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
@@ -384,15 +384,11 @@ theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = �
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
 #align continuous_map.lift_cover_restrict ContinuousMap.liftCover_restrict
 
--- omit hφ hS
-
 variable (A : Set (Set α)) (F : ∀ (s : Set α) (_ : s ∈ A), C(s, β))
   (hF :
     ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
       F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
   (hA : ∀ x : α, ∃ i ∈ A, i ∈ nhds x)
-
--- include hF hA
 
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
