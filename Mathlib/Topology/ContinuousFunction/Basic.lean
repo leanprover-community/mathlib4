@@ -31,11 +31,14 @@ you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
 --@[protect_proj] -- Porting note: missing attribute?
 structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
+  /-- The function `α → β` -/
   toFun : α → β
+  /-- Proposition that `toFun` is continuous -/
   continuous_toFun : Continuous toFun --:= by continuity -- Porting note: need tactic
 #align continuous_map ContinuousMap
 
 -- mathport name: «exprC( , )»
+/-- The type of continuous maps from `α` to `β`. -/
 notation "C(" α ", " β ")" => ContinuousMap α β
 
 section
@@ -45,6 +48,7 @@ section
 You should extend this class when you extend `ContinuousMap`. -/
 class ContinuousMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
   [TopologicalSpace β] extends FunLike F α fun _ => β where
+  /-- Continuity -/
   map_continuous (f : F) : Continuous f
 #align continuous_map_class ContinuousMapClass
 
@@ -178,12 +182,10 @@ The continuous functions from `α` to `β` are the same as the plain functions w
 -/
 @[simps]
 def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
-  ⟨fun f => f, fun f => ⟨f, continuous_of_discreteTopology⟩, fun f =>
-    by
-    ext
-    rfl, fun f => by
-    ext
-    rfl⟩
+  ⟨fun f => f,
+    fun f => ⟨f, continuous_of_discreteTopology⟩,
+    fun _ => by ext; rfl,
+    fun _ => by ext; rfl⟩
 #align continuous_map.equiv_fn_of_discrete ContinuousMap.equivFnOfDiscrete
 
 end
@@ -383,7 +385,7 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := b
   rw [liftCover, coe_mk, Set.liftCover_coe _]
 #align continuous_map.lift_cover_coe ContinuousMap.liftCover_coe
 
-@[simp]
+-- @[simp] -- Porting note: the simpNF linter complained
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
@@ -444,9 +446,11 @@ def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
 instance : Coe (α ≃ₜ β) C(α, β) :=
   ⟨Homeomorph.toContinuousMap⟩
 
-theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
+-- Porting note: Syntactic tautology
+/-theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
   rfl
-#align homeomorph.to_continuous_map_as_coe Homeomorph.toContinuousMap_as_coe
+#align homeomorph.to_continuous_map_as_coe Homeomorph.toContinuousMap_as_coe-/
+#noalign homeomorph.to_continuous_map_as_coe
 
 @[simp]
 theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
