@@ -15,15 +15,15 @@ import Mathlib.Algebra.Order.Archimedean
 # Rational numbers are dense in a linear ordered archimedean field
 
 In this file we prove that coercion from `ℚ` to a linear ordered archimedean field has dense range.
-This lemma is in a separate file because `topology.order.basic` does not import
-`algebra.order.archimedean`.
+This lemma is in a separate file because `Mathlib.Topology.Order.Basic` does not import
+`Mathlib.Algebra.Order.Archimedean`.
 -/
 
 
 variable {𝕜 : Type _} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [Archimedean 𝕜]
 
 /-- Rational numbers are dense in a linear ordered archimedean field. -/
-theorem Rat.denseRange_cast : DenseRange (coe : ℚ → 𝕜) :=
-  dense_of_exists_between fun a b h => Set.exists_range_iff.2 <| exists_rat_btwn h
+theorem Rat.denseRange_cast : DenseRange ((↑) : ℚ → 𝕜) :=
+  dense_of_exists_between fun _ _ h => Set.exists_range_iff.2 <| exists_rat_btwn h
 #align rat.dense_range_cast Rat.denseRange_cast
 
