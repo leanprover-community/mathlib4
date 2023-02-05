@@ -31,9 +31,9 @@ We represent an SSYT as a function `ℕ → ℕ → ℕ`, which is required to b
 
 ## Main definitions
 
-- `ssyt (μ : young_diagram)` : semistandard Young tableaux of shape `μ`. There is
+- `Ssyt (μ : YoungDiagram)`: semistandard Young tableaux of shape `μ`. There is
   a `has_coe_to_fun` instance such that `T i j` is value of the `(i, j)` entry of the SSYT `T`.
-- `ssyt.highest_weight (μ : young_diagram)`: the semistandard Young tableau whose `i`th row
+- `Ssyt.highestWeight (μ : YoungDiagram)`: the semistandard Young tableau whose `i`th row
   consists entirely of `i`s, for each `i`.
 
 ## Tags
@@ -62,8 +62,7 @@ structure Ssyt (μ : YoungDiagram) where
 
 namespace Ssyt
 
-instance funLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ fun _ => ℕ → ℕ
-    where
+instance funLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ fun _ ↦ ℕ → ℕ where
   coe := Ssyt.entry
   coe_injective' T T' h := by
     cases T
@@ -73,7 +72,7 @@ instance funLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ fun _ => ℕ → �
 
 /-- Helper instance for when there's too many metavariables to apply
 `fun_like.has_coe_to_fun` directly. -/
-instance {μ : YoungDiagram} : CoeFun (Ssyt μ) fun _ => ℕ → ℕ → ℕ :=
+instance {μ : YoungDiagram} : CoeFun (Ssyt μ) fun _ ↦ ℕ → ℕ → ℕ :=
   inferInstance
 
 @[simp]
@@ -83,19 +82,19 @@ theorem to_fun_eq_coe {μ : YoungDiagram} {T : Ssyt μ} : T.entry = (T : ℕ →
 
 @[ext]
 theorem ext {μ : YoungDiagram} {T T' : Ssyt μ} (h : ∀ i j, T i j = T' i j) : T = T' :=
-  FunLike.ext T T' fun x => by
+  FunLike.ext T T' fun _ ↦ by
     funext
     apply h
 #align ssyt.ext Ssyt.ext
 
-/-- Copy of an `ssyt μ` with a new `entry` equal to the old one. Useful to fix definitional
+/-- Copy of an `Ssyt μ` with a new `entry` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy {μ : YoungDiagram} (T : Ssyt μ) (entry' : ℕ → ℕ → ℕ) (h : entry' = T) : Ssyt μ
     where
   entry := entry'
-  row_weak' := by intro _ _ _; exact h.symm ▸ T.row_weak'
-  col_strict' := by intro _ _ _; exact h.symm ▸ T.col_strict'
-  zeros' := by intro _ _; exact h.symm ▸ T.zeros'
+  row_weak' := h.symm ▸ T.row_weak'
+  col_strict' := h.symm ▸ T.col_strict'
+  zeros' := h.symm ▸ T.zeros'
 #align ssyt.copy Ssyt.copy
 
 @[simp]
@@ -137,21 +136,16 @@ theorem col_weak {μ : YoungDiagram} (T : Ssyt μ) {i1 i2 j : ℕ} (hi : i1 ≤ 
   exact le_of_lt (T.col_strict h cell)
 #align ssyt.col_weak Ssyt.col_weak
 
-/-- The "highest weight" SSYT of a given shape is has all i's in row i, for each i. -/
-def highestWeight (μ : YoungDiagram) : Ssyt μ
-    where
+/-- The "highest weight" SSYT of a given shape has all i's in row i, for each i. -/
+def highestWeight (μ : YoungDiagram) : Ssyt μ where
   entry i j := if (i, j) ∈ μ then i else 0
-  row_weak' := by
-    intro _ _ _ hj hcell
+  row_weak' hj hcell := by
     simp only
     rw [if_pos hcell, if_pos (μ.up_left_mem (by rfl) (le_of_lt hj) hcell)]
-  col_strict' := by
-    intro _ _ _ hi hcell
+  col_strict' hi hcell := by
     simp only
     rwa [if_pos hcell, if_pos (μ.up_left_mem (le_of_lt hi) (by rfl) hcell)]
-  zeros' := by
-    intro _ _ not_cell
-    exact if_neg not_cell
+  zeros' not_cell := if_neg not_cell
 #align ssyt.highest_weight Ssyt.highestWeight
 
 @[simp]
