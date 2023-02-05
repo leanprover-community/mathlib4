@@ -14,7 +14,7 @@ import Mathlib.Data.Finset.Pointwise
 # Ruzsa's covering lemma
 
 This file proves the Ruzsa covering lemma. This says that, for `s`, `t` finsets, we can cover `s`
-with at most `(s + t).card /  t.card` copies of `t - t`.
+with at most `(s + t).card / t.card` copies of `t - t`.
 
 ## TODO
 
@@ -32,24 +32,23 @@ variable {α : Type _} [DecidableEq α] [CommGroup α] (s : Finset α) {t : Fins
 @[to_additive "**Ruzsa's covering lemma**"]
 theorem exists_subset_mul_div (ht : t.Nonempty) :
     ∃ u : Finset α, u.card * t.card ≤ (s * t).card ∧ s ⊆ u * t / t := by
-  haveI : ∀ u, Decidable ((u : Set α).PairwiseDisjoint (· • t)) := fun u => Classical.dec _
-  set C := s.powerset.filter fun u => u.toSet.PairwiseDisjoint (· • t)
+  haveI : ∀ u, Decidable ((u : Set α).PairwiseDisjoint (· • t)) := fun u ↦ Classical.dec _
+  set C := s.powerset.filter fun u ↦ u.toSet.PairwiseDisjoint (· • t)
   obtain ⟨u, hu, hCmax⟩ := C.exists_maximal (filter_nonempty_iff.2
     ⟨∅, empty_mem_powerset _, by rw [coe_empty]; exact Set.pairwiseDisjoint_empty⟩)
   rw [mem_filter, mem_powerset] at hu
-  refine'
-    ⟨u,
-      (card_mul_iff.2 <| pairwiseDisjoint_smul_iff.1 hu.2).ge.trans
-        (card_le_of_subset <| mul_subset_mul_right hu.1),
-      fun a ha => _⟩
+  refine' ⟨u,
+    (card_mul_iff.2 <| pairwiseDisjoint_smul_iff.1 hu.2).ge.trans
+      (card_le_of_subset <| mul_subset_mul_right hu.1),
+    fun a ha ↦ _⟩
   rw [mul_div_assoc]
   by_cases hau : a ∈ u
   · exact subset_mul_left _ ht.one_mem_div hau
   by_cases H : ∀ b ∈ u, Disjoint (a • t) (b • t)
   · refine' (hCmax _ _ <| ssubset_insert hau).elim
     rw [mem_filter, mem_powerset, insert_subset, coe_insert]
-    exact ⟨⟨ha, hu.1⟩, hu.2.insert fun b hb _ => H _ hb⟩
-  push_neg  at H
+    exact ⟨⟨ha, hu.1⟩, hu.2.insert fun _ hb _ ↦ H _ hb⟩
+  push_neg at H
   simp_rw [not_disjoint_iff, ← inv_smul_mem_iff] at H
   obtain ⟨b, hb, c, hc₁, hc₂⟩ := H
   refine' mem_mul.2 ⟨b, a / b, hb, _, by simp⟩
