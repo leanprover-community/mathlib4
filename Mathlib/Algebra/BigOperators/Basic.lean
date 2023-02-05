@@ -332,13 +332,11 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 #align finset.prod_map Finset.prod_map
 #align finset.sum_map Finset.sum_map
 
-@[congr, to_additive]
+@[to_additive (attr := congr)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
   rw [h]; exact fold_congr
 #align finset.prod_congr Finset.prod_congr
 #align finset.sum_congr Finset.sum_congr
-
-attribute [congr] Finset.sum_congr
 
 @[to_additive]
 theorem prod_disjUnion (h) :

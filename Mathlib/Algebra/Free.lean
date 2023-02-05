@@ -485,7 +485,7 @@ theorem mk_mul_mk (x y : α) (L1 L2 : List α) : mk x L1 * mk y L2 = mk x (L1 ++
 #align free_semigroup.mk_mul_mk FreeSemigroup.mk_mul_mk
 
 /-- The embedding `α → FreeSemigroup α`. -/
-@[to_additive "The embedding `α → free_add_semigroup α`.", simps]
+@[to_additive (attr := simps) "The embedding `α → free_add_semigroup α`."]
 def of (x : α) : FreeSemigroup α := ⟨x, []⟩
 #align free_semigroup.of FreeSemigroup.of
 
