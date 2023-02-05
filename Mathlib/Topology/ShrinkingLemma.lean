@@ -8,7 +8,7 @@ Authors: Yury Kudryashov, Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Separation
+import Mathlib.Topology.Separation
 
 /-!
 # The shrinking lemma
@@ -131,16 +131,14 @@ def find (c : Set (PartialRefinement u s)) (ne : c.Nonempty) (i : ι) : PartialR
   if hi : ∃ v ∈ c, i ∈ carrier v then hi.some else Ne.some
 #align shrinking_lemma.partial_refinement.find ShrinkingLemma.PartialRefinement.find
 
-theorem find_mem {c : Set (PartialRefinement u s)} (i : ι) (ne : c.Nonempty) : find c Ne i ∈ c :=
-  by
+theorem find_mem {c : Set (PartialRefinement u s)} (i : ι) (ne : c.Nonempty) : find c Ne i ∈ c := by
   rw [find]
   split_ifs
   exacts[h.some_spec.fst, ne.some_spec]
 #align shrinking_lemma.partial_refinement.find_mem ShrinkingLemma.PartialRefinement.find_mem
 
 theorem mem_find_carrier_iff {c : Set (PartialRefinement u s)} {i : ι} (ne : c.Nonempty) :
-    i ∈ (find c Ne i).carrier ↔ i ∈ chainSupCarrier c :=
-  by
+    i ∈ (find c Ne i).carrier ↔ i ∈ chainSupCarrier c := by
   rw [find]
   split_ifs
   · have : i ∈ h.some.carrier ∧ i ∈ chain_Sup_carrier c := ⟨h.some_spec.snd, mem_Union₂.2 h⟩
@@ -159,8 +157,7 @@ theorem find_apply_of_mem {c : Set (PartialRefinement u s)} (hc : IsChain (· �
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (i «expr ∉ » chain_Sup_carrier c) -/
 /-- Least upper bound of a nonempty chain of partial refinements. -/
 def chainSup (c : Set (PartialRefinement u s)) (hc : IsChain (· ≤ ·) c) (ne : c.Nonempty)
-    (hfin : ∀ x ∈ s, { i | x ∈ u i }.Finite) (hU : s ⊆ ⋃ i, u i) : PartialRefinement u s :=
-  by
+    (hfin : ∀ x ∈ s, { i | x ∈ u i }.Finite) (hU : s ⊆ ⋃ i, u i) : PartialRefinement u s := by
   refine'
     ⟨fun i => find c Ne i i, chain_Sup_carrier c, fun i => (find _ _ _).IsOpen i, fun x hxs =>
       mem_Union.2 _, fun i hi => (find c Ne i).closure_subset ((mem_find_carrier_iff _).2 hi),
@@ -193,8 +190,7 @@ theorem le_chainSup {c : Set (PartialRefinement u s)} (hc : IsChain (· ≤ ·) 
 /-- If `s` is a closed set, `v` is a partial refinement, and `i` is an index such that
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
 theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i ∉ v.carrier) :
-    ∃ v' : PartialRefinement u s, v < v' :=
-  by
+    ∃ v' : PartialRefinement u s, v < v' := by
   have I : (s ∩ ⋂ (j) (_ : j ≠ i), v jᶜ) ⊆ v i :=
     by
     simp only [subset_def, mem_inter_iff, mem_Inter, and_imp]
