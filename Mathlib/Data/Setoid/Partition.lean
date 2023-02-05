@@ -349,8 +349,7 @@ noncomputable def IndexedPartition.mk' {ι α : Type _} (s : ι → Set α)
   eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis _ _ h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec
-  -- porting note: works without this, errors with it ?
-  --index x := (ex x).some
+  index x := (ex x).some
   mem_index x := (ex x).choose_spec
 #align indexed_partition.mk' IndexedPartition.mk'
 
