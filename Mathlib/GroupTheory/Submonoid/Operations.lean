@@ -1253,7 +1253,7 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
 #align monoid_hom.submonoid_comap MonoidHom.submonoidComap
 #align add_monoid_hom.add_submonoid_comap AddMonoidHom.addSubmonoidComap
 #align monoid_hom.submonoid_comap_apply_coe MonoidHom.submonoidComap_apply_coe
-#align add_monoid_hom.submonoid_comap_apply_coe AddMonoidHom.submonoidComap_apply_coe
+#align add_monoid_hom.submonoid_comap_apply_coe AddMonoidHom.addSubmonoidComap_apply_coe
 
 /-- The `MonoidHom` from a submonoid to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
@@ -1267,7 +1267,7 @@ def submonoidMap (f : M →* N) (M' : Submonoid M) : M' →* M'.map f where
 #align monoid_hom.submonoid_map MonoidHom.submonoidMap
 #align add_monoid_hom.add_submonoid_map AddMonoidHom.addSubmonoidMap
 #align monoid_hom.submonoid_map_apply_coe MonoidHom.submonoidMap_apply_coe
-#align add_monoid_hom.submonoid_map_apply_coe AddMonoidHom.submonoidMap_apply_coe
+#align add_monoid_hom.submonoid_map_apply_coe AddMonoidHom.addSubmonoidMap_apply_coe
 
 @[to_additive]
 theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
