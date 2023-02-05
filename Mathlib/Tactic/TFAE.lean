@@ -8,13 +8,14 @@ import QQ.match
 # The Following Are Equivalent (TFAE)
 
 This file provides the tactics `tfae_have` and `tfae_finish` for proving goals of the form
-`TFAE [P₀, P₁, ...]`.
+`TFAE [P₁, P₂, ...]`.
 -/
 
 open List Lean Meta Expr Elab.Term Elab.Tactic Mathlib.Tactic Qq
 
 namespace Mathlib.TFAE
 
+/-- An arrow of the form `←`, `→`, or `↔`. -/
 declare_syntax_cat impArrow
 syntax (" → " <|> " ↔ " <|> " ← ") : impArrow
 
@@ -59,9 +60,9 @@ syntax (name := tfaeFinish) "tfae_finish" : tactic
 
 partial def getTFAEList (t : Expr) : MetaM (List Q(Prop)) := do
   let .app tfae (l : Q(List Prop)) ← whnfR t |
-    throwError "goal must be of the form TFAE [P₀, P₁, ...]"
+    throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   unless (← withNewMCtxDepth <| isDefEq tfae q(TFAE)) do
-    throwError "goal must be of the form TFAE [P₀, P₁, ...]"
+    throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   let rec getExplicitList (l : Expr) : MetaM (List Expr) := do
     have l : Q(List Prop) := l
     match l with
@@ -72,9 +73,9 @@ partial def getTFAEList (t : Expr) : MetaM (List Q(Prop)) := do
 
 partial def getTFAEListQ (t : Expr) : MetaM Q(List Prop) := do
   let .app tfae (l : Q(List Prop)) ← whnfR t |
-    throwError "goal must be of the form TFAE [P₀, P₁, ...]"
+    throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   unless (← withNewMCtxDepth <| isDefEq tfae q(TFAE)) do
-    throwError "goal must be of the form TFAE [P₀, P₁, ...]"
+    throwError "goal must be of the form TFAE [P₁, P₂, ...]"
   let rec guardExplicitList (l : Q(List Prop)) : MetaM Unit := do
     match l with
     | ~q([]) => return ()
