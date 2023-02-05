@@ -2283,9 +2283,9 @@ theorem nhdsWithin_Ioi_neBot [NoMaxOrder α] {a b : α} (H : a ≤ b) : NeBot (�
   nhdsWithin_Ioi_neBot' nonempty_Ioi H
 #align nhds_within_Ioi_ne_bot nhdsWithin_Ioi_neBot
 
-theorem nhdsWithin_Ioi_self_ne_bot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝[>] a) :=
+theorem nhdsWithin_Ioi_self_neBot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝[>] a) :=
   nhdsWithin_Ioi_neBot' H (le_refl a)
-#align nhds_within_Ioi_self_ne_bot' nhdsWithin_Ioi_self_ne_bot'
+#align nhds_within_Ioi_self_ne_bot' nhdsWithin_Ioi_self_neBot'
 
 @[instance]
 theorem nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) :=
@@ -2298,18 +2298,18 @@ theorem Filter.Eventually.exists_gt [NoMaxOrder α] {a : α} {p : α → Prop} (
     ((h.filter_mono (@nhdsWithin_le_nhds _ _ a (Ioi a))).and self_mem_nhdsWithin).exists
 #align filter.eventually.exists_gt Filter.Eventually.exists_gt
 
-theorem nhdsWithin_Iio_ne_bot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
+theorem nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
     NeBot (𝓝[Iio c] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Iio' H₁]
-#align nhds_within_Iio_ne_bot' nhdsWithin_Iio_ne_bot'
+#align nhds_within_Iio_ne_bot' nhdsWithin_Iio_neBot'
 
 theorem nhdsWithin_Iio_neBot [NoMinOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Iio b] a) :=
-  nhdsWithin_Iio_ne_bot' nonempty_Iio H
+  nhdsWithin_Iio_neBot' nonempty_Iio H
 #align nhds_within_Iio_ne_bot nhdsWithin_Iio_neBot
 
-theorem nhdsWithin_Iio_self_ne_bot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝[<] b) :=
-  nhdsWithin_Iio_ne_bot' H (le_refl b)
-#align nhds_within_Iio_self_ne_bot' nhdsWithin_Iio_self_ne_bot'
+theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝[<] b) :=
+  nhdsWithin_Iio_neBot' H (le_refl b)
+#align nhds_within_Iio_self_ne_bot' nhdsWithin_Iio_self_neBot'
 
 @[instance]
 theorem nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) :=
