@@ -199,21 +199,20 @@ def mkImplType (Pi : Q(Prop)) (arr : TSyntax `impArrow) (Pj : Q(Prop)) : TacticM
 
 elab_rules : tactic
 | `(tactic| tfae_have $[$h:ident : ]? $i:num $arr:impArrow $j:num) => do
-  let target ← getMainTarget
-  let tfaeList ← getTFAEList target
+  let goal ← getMainGoal
+  let tfaeList ← getTFAEList (← goal.getType)
   let l₀ := tfaeList.length
   let i' ← elabIndex i l₀
   let j' ← elabIndex j l₀
   let Pi := tfaeList.get! (i'-1)
   let Pj := tfaeList.get! (j'-1)
   let type ← mkImplType Pi arr Pj
-  let (goal1, goal2) ← tfaeHaveCore (← getMainGoal) h i j arr type
+  let (goal1, goal2) ← tfaeHaveCore goal h i j arr type
   replaceMainGoal [goal1, goal2]
 
 elab_rules : tactic
 | `(tactic| tfae_finish) => do
   let goal ← getMainGoal
-  let target ← goal.getType
-  let tfaeListQ ← getTFAEListQ target
+  let tfaeListQ ← getTFAEListQ (← goal.getType)
   goal.withContext do
     closeMainGoal (← proveTFAE tfaeListQ)
