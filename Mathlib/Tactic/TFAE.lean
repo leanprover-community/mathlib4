@@ -22,6 +22,7 @@ namespace Mathlib.Tactic.TFAE
 
 /-- An arrow of the form `←`, `→`, or `↔`. -/
 declare_syntax_cat impArrow
+/-- An arrow of the form `←`, `→`, or `↔`. -/
 syntax (" → " <|> " ↔ " <|> " ← ") : impArrow
 
 /--
@@ -80,6 +81,8 @@ example : TFAE [P, Q, R] := by
 -/
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
+/-- Extract a list of `Prop` expressions from an expression of the form `TFAE [P₁, P₂, ...]` as
+long as `[P₁, P₂, ...]` is an explicit list. -/
 partial def getTFAEList (t : Expr) : MetaM (List Q(Prop)) := do
   let .app tfae (l : Q(List Prop)) ← whnfR t |
     throwError "goal must be of the form TFAE [P₁, P₂, ...]"
@@ -93,6 +96,11 @@ partial def getTFAEList (t : Expr) : MetaM (List Q(Prop)) := do
     | ~q($e) => throwError "{e} must be an explicit list of propositions"
   getExplicitList l
 
+/-- Convert an expression representing an explicit list into a list of expressions. -/
+add_decl_doc getTFAEList.getExplicitList
+
+/-- Extract the expression `[P₁, P₂, ...]` from an expression of the form `TFAE [P₁, P₂, ...]` as
+long as `[P₁, P₂, ...]` is an explicit list. -/
 partial def getTFAEListQ (t : Expr) : MetaM Q(List Prop) := do
   let .app tfae (l : Q(List Prop)) ← whnfR t |
     throwError "goal must be of the form TFAE [P₁, P₂, ...]"
@@ -105,6 +113,9 @@ partial def getTFAEListQ (t : Expr) : MetaM Q(List Prop) := do
     | ~q($e) => throwError "{e} must be an explicit list of propositions"
   guardExplicitList l
   return l
+
+/-- Check that an expression representing a list is explicit. -/
+add_decl_doc getTFAEListQ.guardExplicitList
 
 /-- Prove an implication via solve_by_elim. -/
 def proveImpl (P P' : Q(Prop)) : TacticM Q($P → $P') := do
@@ -144,7 +155,7 @@ def proveTFAE (l : Q(List Prop)) : TacticM Q(TFAE $l) := do
     let il ← proveILast'Imp P P' l
     return q(tfae_of_cycle $c $il)
 
-def mkHypName (i j : TSyntax `num) (arr : TSyntax `impArrow) : TermElabM Name := do
+/-- Construct a name for a hypothesis introduced by `tfae_have`. -/
   let arr ← match arr with
   | `(impArrow| ← ) => pure "from"
   | `(impArrow| → ) => pure "to"
@@ -152,7 +163,8 @@ def mkHypName (i j : TSyntax `num) (arr : TSyntax `impArrow) : TermElabM Name :=
   | _ => throwErrorAt arr "expected '←', '→', or '↔'"
   return String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
 
-open Elab Term in
+open Elab in
+/-- The core of `tfae_have`, which behaves like `haveLetCore` in `Mathlib.Tactic.Have`. -/
 def tfaeHaveCore (goal : MVarId) (name : Option (TSyntax `ident)) (i j : TSyntax `num)
     (arrow : TSyntax `impArrow) (t : Expr) : TermElabM (MVarId × MVarId) :=
   goal.withContext do
@@ -166,13 +178,17 @@ def tfaeHaveCore (goal : MVarId) (name : Option (TSyntax `ident)) (i j : TSyntax
         Term.addTermInfo' (isBinder := true) stx (mkFVar fv)
     pure (goal1, goal2)
 
+/-- Turn syntax for a given index into a natural number, as long as it lies between `1` and
+`maxIndex`. -/
 def elabIndex (i : TSyntax `num) (maxIndex : ℕ) : TacticM ℕ := do
   let i' := i.getNat
   unless Nat.ble 1 i' && Nat.ble i' maxIndex do
     throwError "{i} must be between 1 and {maxIndex}"
   return i'
 
-def mkType (Pi : Q(Prop)) (arr : TSyntax `impArrow) (Pj : Q(Prop)) : TacticM Q(Prop) := do
+/-- Construct an expression for the type `Pj → Pi`, `Pi → Pj`, or `Pi ↔ Pj` given expressions
+`Pi Pj : Q(Prop)` and `impArrow` syntax `arr`, depending on whether `arr` is `←`, `→`, or `↔`
+respectively. -/
   match arr with
   | `(impArrow| ← ) => pure q($Pj → $Pi)
   | `(impArrow| → ) => pure q($Pi → $Pj)
