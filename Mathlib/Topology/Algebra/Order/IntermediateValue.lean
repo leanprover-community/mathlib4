@@ -22,7 +22,7 @@ on intervals.
 
 ## Main results
 
-* `is_preconnected_I??` : all intervals `I??` are preconnected,
+* `IsPreconnected_I??` : all intervals `I??` are preconnected,
 * `IsPreconnected.intermediate_value`, `intermediate_value_univ` : Intermediate Value Theorem for
   connected sets and connected spaces, respectively;
 * `intermediate_value_Icc`, `intermediate_value_Icc'`: Intermediate Value Theorem for functions
@@ -615,23 +615,25 @@ theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → 
   by cases' le_total (f a) (f b) with hab hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
-/-- A continuous function which tendsto `at_top` `at_top` and to `at_bot` `at_bot` is surjective. -/
+/-- A continuous function which tendsto `Fitler.atTop` along `Filter.atTop` and to `atBot` along
+`at_bot` is surjective. -/
 theorem Continuous.surjective {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atTop atTop)
     (h_bot : Tendsto f atBot atBot) : Function.Surjective f := fun p =>
   mem_range_of_exists_le_of_exists_ge hf (h_bot.eventually (eventually_le_atBot p)).exists
     (h_top.eventually (eventually_ge_atTop p)).exists
 #align continuous.surjective Continuous.surjective
 
-/-- A continuous function which tendsto `at_bot` `at_top` and to `at_top` `at_bot` is surjective. -/
+/-- A continuous function which tendsto `Filter.atBot` along `Filter.atTop` and to `Filter.atTop`
+along `atBot` is surjective. -/
 theorem Continuous.surjective' {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atBot atTop)
     (h_bot : Tendsto f atTop atBot) : Function.Surjective f :=
   @Continuous.surjective αᵒᵈ _ _ _ _ _ _ _ _ _ hf h_top h_bot
 #align continuous.surjective' Continuous.surjective'
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`
-tends to `at_bot : Filter β` along `at_bot : Filter ↥s` and tends to `at_top : Filter β` along
-`at_top : Filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
-conclusion as `surj_on f s univ`. -/
+tends to `at_bot : Filter β` along `at_bot : Filter ↥s` and tends to `Filter.atTop : Filter β` along
+`Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
+conclusion as `Function.surjOn f s Set.univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atBot)
     (htop : Tendsto (fun x : s => f x) atTop atTop) : SurjOn f s univ :=
@@ -640,9 +642,9 @@ theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnecte
 #align continuous_on.surj_on_of_tendsto ContinuousOn.surjOn_of_tendsto
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`
-tends to `at_top : Filter β` along `at_bot : Filter ↥s` and tends to `at_bot : Filter β` along
-`at_top : Filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
-conclusion as `surj_on f s univ`. -/
+tends to `Filter.atTop : Filter β` along `Filter.atBot : Filter ↥s` and tends to
+`Filter.atBot : Filter β` along `Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is
+surjective. We formulate the conclusion as `Function.surjOn f s Set.univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atTop)
     (htop : Tendsto (fun x : s => f x) atTop atBot) : SurjOn f s univ :=
