@@ -33,7 +33,7 @@ open Pointwise
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
 of every point `x : α` is dense. -/
 class AddAction.IsMinimal (M α : Type _) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
-  Prop where
+    Prop where
   dense_orbit : ∀ x : α, Dense (AddAction.orbit M x)
 #align add_action.is_minimal AddAction.IsMinimal
 
@@ -41,10 +41,10 @@ class AddAction.IsMinimal (M α : Type _) [AddMonoid M] [TopologicalSpace α] [A
 point `x : α` is dense. -/
 @[to_additive]
 class MulAction.IsMinimal (M α : Type _) [Monoid M] [TopologicalSpace α] [MulAction M α] :
-  Prop where
+    Prop where
   dense_orbit : ∀ x : α, Dense (MulAction.orbit M x)
 #align mul_action.is_minimal MulAction.IsMinimal
-#align add_action.is_minimal AddAction.IsMinimal
+--#align add_action.is_minimal AddAction.IsMinimal  -- Porting note: already been aligned
 
 open MulAction Set
 
@@ -58,7 +58,7 @@ theorem MulAction.dense_orbit [IsMinimal M α] (x : α) : Dense (orbit M x) :=
 #align add_action.dense_orbit AddAction.dense_orbit
 
 @[to_additive]
-theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M => c • x :=
+theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c • x :=
   MulAction.dense_orbit M x
 #align dense_range_smul denseRange_smul
 #align dense_range_vadd denseRange_vadd
@@ -66,7 +66,7 @@ theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M => c �
 @[to_additive]
 instance (priority := 100) MulAction.isMinimal_of_pretransitive [IsPretransitive M α] :
     IsMinimal M α :=
-  ⟨fun x => (surjective_smul M x).DenseRange⟩
+  ⟨fun x ↦ (surjective_smul M x).denseRange⟩
 #align mul_action.is_minimal_of_pretransitive MulAction.isMinimal_of_pretransitive
 #align add_action.is_minimal_of_pretransitive AddAction.isMinimal_of_pretransitive
 
@@ -80,14 +80,14 @@ theorem IsOpen.exists_smul_mem [IsMinimal M α] (x : α) {U : Set α} (hUo : IsO
 @[to_additive]
 theorem IsOpen.unionᵢ_preimage_smul [IsMinimal M α] {U : Set α} (hUo : IsOpen U)
     (hne : U.Nonempty) : (⋃ c : M, (· • ·) c ⁻¹' U) = univ :=
-  unionᵢ_eq_univ_iff.2 fun x => hUo.exists_smul_mem M x hne
+  unionᵢ_eq_univ_iff.2 fun x ↦ hUo.exists_smul_mem M x hne
 #align is_open.Union_preimage_smul IsOpen.unionᵢ_preimage_smul
 #align is_open.Union_preimage_vadd IsOpen.unionᵢ_preimage_vadd
 
 @[to_additive]
 theorem IsOpen.unionᵢ_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne : U.Nonempty) :
     (⋃ g : G, g • U) = univ :=
-  unionᵢ_eq_univ_iff.2 fun x =>
+  unionᵢ_eq_univ_iff.2 fun x ↦
     let ⟨g, hg⟩ := hUo.exists_smul_mem G x hne
     ⟨g⁻¹, _, hg, inv_smul_smul _ _⟩
 #align is_open.Union_smul IsOpen.unionᵢ_smul
@@ -97,11 +97,9 @@ theorem IsOpen.unionᵢ_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne
 theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [HasContinuousConstSMul G α]
     {K U : Set α} (hK : IsCompact K) (hUo : IsOpen U) (hne : U.Nonempty) :
     ∃ I : Finset G, K ⊆ ⋃ g ∈ I, g • U :=
-  (hK.elim_finite_subcover (fun g : G => g • U) fun g => hUo.smul _) <|
-    calc
-      K ⊆ univ := subset_univ K
-      _ = ⋃ g : G, g • U := (hUo.unionᵢ_smul G hne).symm
-      
+  (hK.elim_finite_subcover (fun g ↦ g • U) fun _ ↦ hUo.smul _) <| calc
+    K ⊆ univ := subset_univ K
+    _ = ⋃ g : G, g • U := (hUo.unionᵢ_smul G hne).symm
 #align is_compact.exists_finite_cover_smul IsCompact.exists_finite_cover_smul
 #align is_compact.exists_finite_cover_vadd IsCompact.exists_finite_cover_vadd
 
@@ -109,28 +107,26 @@ theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [HasContinuousConstS
 theorem dense_of_nonempty_smul_invariant [IsMinimal M α] {s : Set α} (hne : s.Nonempty)
     (hsmul : ∀ c : M, c • s ⊆ s) : Dense s :=
   let ⟨x, hx⟩ := hne
-  (MulAction.dense_orbit M x).mono (range_subset_iff.2 fun c => hsmul c <| ⟨x, hx, rfl⟩)
+  (MulAction.dense_orbit M x).mono (range_subset_iff.2 fun c ↦ hsmul c ⟨x, hx, rfl⟩)
 #align dense_of_nonempty_smul_invariant dense_of_nonempty_smul_invariant
 #align dense_of_nonempty_vadd_invariant dense_of_nonempty_vadd_invariant
 
 @[to_additive]
 theorem eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} (hs : IsClosed s)
     (hsmul : ∀ c : M, c • s ⊆ s) : s = ∅ ∨ s = univ :=
-  s.eq_empty_or_nonempty.imp_right fun hne =>
+  s.eq_empty_or_nonempty.imp_right fun hne ↦
     hs.closure_eq ▸ (dense_of_nonempty_smul_invariant M hne hsmul).closure_eq
 #align eq_empty_or_univ_of_smul_invariant_closed eq_empty_or_univ_of_smul_invariant_closed
 #align eq_empty_or_univ_of_vadd_invariant_closed eq_empty_or_univ_of_vadd_invariant_closed
 
 @[to_additive]
 theorem isMinimal_iff_closed_smul_invariant [HasContinuousConstSMul M α] :
-    IsMinimal M α ↔ ∀ s : Set α, IsClosed s → (∀ c : M, c • s ⊆ s) → s = ∅ ∨ s = univ :=
-  by
-  constructor;
-  · intro h s
+    IsMinimal M α ↔ ∀ s : Set α, IsClosed s → (∀ c : M, c • s ⊆ s) → s = ∅ ∨ s = univ := by
+  constructor
+  · intro _ _
     exact eq_empty_or_univ_of_smul_invariant_closed M
-  refine' fun H => ⟨fun x => dense_iff_closure_eq.2 <| (H _ _ _).resolve_left _⟩
-  exacts[isClosed_closure, fun c => smul_closure_orbit_subset _ _,
+  refine' fun H ↦ ⟨fun _ ↦ dense_iff_closure_eq.2 <| (H _ _ _).resolve_left _⟩
+  exacts[isClosed_closure, fun _ ↦ smul_closure_orbit_subset _ _,
     (orbit_nonempty _).closure.ne_empty]
 #align is_minimal_iff_closed_smul_invariant isMinimal_iff_closed_smul_invariant
 #align is_minimal_iff_closed_vadd_invariant isMinimal_iff_closed_vadd_invariant
-
