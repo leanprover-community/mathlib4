@@ -17,6 +17,43 @@ namespace Mathlib.TFAE
 
 declare_syntax_cat impArrow
 syntax (" → " <|> " ↔ " <|> " ← ") : impArrow
+
+/--
+`tfae_have` introduces hypotheses for proving goals of the form `TFAE [P₁, P₂, ...]`. Specifically,
+`tfae_have : i arrow j` introduces a hypothesis of the form `Pᵢ arrow Pⱼ` to the tactic state,
+where `arrow` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices (beginning
+at 1) used to specify the propositions `P₁, P₂, ...` that appear in the `TFAE` goal list. A proof
+is required afterward, typically via a tactic block.
+
+Example:
+```lean
+example (h : P → R) : TFAE [P, Q, R] := by
+  tfae_have : 1 → 3
+  { exact h }
+  ...
+```
+
+The introduced hypothesis can be given a name, in analogy to `have` syntax:
+```lean
+tfae_have h : 2 ↔ 3
+```
+
+Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
+the goal.
+
+Example:
+```lean
+variable (P Q R : Prop) (h₁ : P → Q) (h₂ : Q → P) (h₃ Q ↔ R)
+example : TFAE [P, Q, R] := by
+  tfae_have : 1 → 2
+  { exact h₁ }
+  tfae_have : 2 → 1
+  { exact h₁ }
+  tfae_have : 2 ↔ 3
+  { exact h₃ }
+  tfae_finish
+```
+-/
 syntax (name := tfaeHave) "tfae_have " (ident " : ")? num impArrow num : tactic
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
