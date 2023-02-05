@@ -76,6 +76,7 @@ instance : EmbeddingLike (r ≼i s) α β :=
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
+#align initial_seg.ext InitialSeg.ext
 
 @[simp]
 theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
@@ -88,6 +89,7 @@ theorem init' (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b 
 
 theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
+#align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 
 theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by

@@ -955,6 +955,8 @@ def OneHom.id (M : Type _) [One M] : OneHom M M where
   map_one' := rfl
 #align one_hom.id OneHom.id
 #align zero_hom.id ZeroHom.id
+#align zero_hom.id_apply ZeroHom.id_apply
+#align one_hom.id_apply OneHom.id_apply
 
 /-- The identity map from a type with multiplication to itself. -/
 @[to_additive (attr := simps)]
@@ -963,6 +965,8 @@ def MulHom.id (M : Type _) [Mul M] : M →ₙ* M where
   map_mul' _ _ := rfl
 #align mul_hom.id MulHom.id
 #align add_hom.id AddHom.id
+#align add_hom.id_apply AddHom.id_apply
+#align mul_hom.id_apply MulHom.id_apply
 
 /-- The identity map from a monoid to itself. -/
 @[to_additive (attr := simps)]
@@ -972,6 +976,8 @@ def MonoidHom.id (M : Type _) [MulOneClass M] : M →* M where
   map_mul' _ _ := rfl
 #align monoid_hom.id MonoidHom.id
 #align add_monoid_hom.id AddMonoidHom.id
+#align monoid_hom.id_apply MonoidHom.id_apply
+#align add_monoid_hom.id_apply AddMonoidHom.id_apply
 
 /-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]
@@ -981,6 +987,7 @@ def MonoidWithZeroHom.id (M : Type _) [MulZeroOneClass M] : M →*₀ M where
   map_one' := rfl
   map_mul' _ _ := rfl
 #align monoid_with_zero_hom.id MonoidWithZeroHom.id
+#align monoid_with_zero_hom.id_apply MonoidWithZeroHom.id_apply
 
 /-- The identity map from an type with zero to itself. -/
 add_decl_doc ZeroHom.id
@@ -1548,6 +1555,8 @@ def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G 
   map_one' := mul_left_eq_self.1 <| by rw [← map_mul, mul_one]
 #align monoid_hom.mk' MonoidHom.mk'
 #align add_monoid_hom.mk' AddMonoidHom.mk'
+#align add_monoid_hom.mk'_apply AddMonoidHom.mk'_apply
+#align monoid_hom.mk'_apply MonoidHom.mk'_apply
 
 /-- Makes a group homomorphism from a proof that the map preserves right division
 `fun x y => x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y => x / y`.

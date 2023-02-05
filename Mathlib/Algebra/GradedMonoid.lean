@@ -132,7 +132,7 @@ instance GOne.toOne [Zero ι] [GOne A] : One (GradedMonoid A) :=
 /-- A graded version of `Mul`. Multiplication combines grades additively, like
 `AddMonoidAlgebra`. -/
 class GMul [Add ι] where
-  /-- The homogeneous multiplaction map `mul` -/
+  /-- The homogeneous multiplication map `mul` -/
   mul {i j} : A i → A j → A (i + j)
 #align graded_monoid.ghas_mul GradedMonoid.GMul
 
@@ -458,6 +458,7 @@ instance Monoid.gMonoid [AddMonoid ι] [Monoid R] : GradedMonoid.GMonoid fun _ :
     gnpow_zero' := fun _ => Sigma.ext (zero_nsmul _) (heq_of_eq (Monoid.npow_zero _))
     gnpow_succ' := fun _ ⟨_, _⟩ => Sigma.ext (succ_nsmul _ _) (heq_of_eq (Monoid.npow_succ _ _)) }
 #align monoid.gmonoid Monoid.gMonoid
+#align monoid.gmonoid_gnpow Monoid.gMonoid_gnpow
 
 /-- If all grades are the same type and themselves form a commutative monoid, then there is a
 trivial grading structure. -/
@@ -514,7 +515,7 @@ theorem SetLike.coe_gOne {S : Type _} [SetLike S R] [One R] [Zero ι] (A : ι �
 
 /-- A version of `GradedMonoid.ghas_one` for internally graded objects. -/
 class SetLike.GradedMul {S : Type _} [SetLike S R] [Mul R] [Add ι] (A : ι → S) : Prop where
-  /-- Multiplication is homoegenous -/
+  /-- Multiplication is homogeneous -/
   mul_mem : ∀ ⦃i j⦄ {gi gj}, gi ∈ A i → gj ∈ A j → gi * gj ∈ A (i + j)
 #align set_like.has_graded_mul SetLike.GradedMul
 

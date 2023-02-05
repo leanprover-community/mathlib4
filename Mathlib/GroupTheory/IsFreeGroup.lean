@@ -69,6 +69,8 @@ def MulEquiv : FreeGroup (Generators G) ≃* G := IsFreeGroup.MulEquiv'
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
   (MulEquiv G).symm
 #align is_free_group.to_free_group IsFreeGroup.toFreeGroup
+#align is_free_group.to_free_group_apply IsFreeGroup.toFreeGroup_apply
+#align is_free_group.to_free_group_symm_apply IsFreeGroup.toFreeGroup_symmApply
 
 variable {G}
 

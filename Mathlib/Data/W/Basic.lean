@@ -82,6 +82,8 @@ def equivSigma : WType β ≃ Σa : α, β a → WType β
   left_inv := ofSigma_toSigma
   right_inv := toSigma_ofSigma
 #align W_type.equiv_sigma WType.equivSigma
+#align W_type.equiv_sigma_symm_apply WType.equivSigma_symm_apply
+#align W_type.equiv_sigma_apply WType.equivSigma_apply
 
 variable {β}
 

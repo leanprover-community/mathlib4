@@ -476,6 +476,7 @@ theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
   · apply one_dvd
   obtain ⟨p, hp⟩ := exists_prime_and_dvd ha
   exact _root_.trans (dvd_mul_left a p) (hdvd p hp.1 hp.2)
+#align nat.dvd_of_forall_prime_mul_dvd Nat.dvd_of_forall_prime_mul_dvd
 
 /-- Euclid's theorem on the **infinitude of primes**.
 Here given in the form: for every `n`, there exists a prime number `p ≥ n`. -/
@@ -582,6 +583,8 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
 #align nat.prime_iff Nat.prime_iff
 
 alias prime_iff ↔ Prime.prime _root_.Prime.nat_prime
+#align nat.prime.prime Nat.Prime.prime
+#align prime.nat_prime Prime.nat_prime
 
 -- Porting note: attributes `protected`, `nolint dup_namespace` removed
 
