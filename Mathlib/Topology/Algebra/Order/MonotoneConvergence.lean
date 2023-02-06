@@ -181,7 +181,7 @@ end infᵢ
 
 end
 
-instance supConvergenceClass [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+instance supConvergenceClassProd [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
   [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
   rintro ⟨a, b⟩ s h
@@ -199,19 +199,19 @@ instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
     [InfConvergenceClass β] : InfConvergenceClass (α × β) :=
   show InfConvergenceClass (αᵒᵈ × βᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
-instance {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
+instance Pi.supConvergenceClass {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine' ⟨fun f s h => _⟩
   simp only [isLUB_pi, ← range_restrict] at h
   exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
 
-instance {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
+instance Pi.infConvergenceClass {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, InfConvergenceClass (α i)] : InfConvergenceClass (∀ i, α i) :=
   show InfConvergenceClass (∀ i, (α i)ᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
 instance Pi.Sup_convergence_class' {ι : Type _} [Preorder α] [TopologicalSpace α]
     [SupConvergenceClass α] : SupConvergenceClass (ι → α) :=
-  Pi.supConvergenceClass
+  supConvergenceClass
 #align pi.Sup_convergence_class' Pi.Sup_convergence_class'
 
 instance Pi.Inf_convergence_class' {ι : Type _} [Preorder α] [TopologicalSpace α]
@@ -245,12 +245,12 @@ for the range of `f`.
 Related theorems above (`is_lub.is_lub_of_tendsto`, `is_glb.is_glb_of_tendsto` etc) cover the case
 when `f x` tends to `a` as `x` tends to some point `b` in the domain. -/
 
-
+set_option autoImplicit false
 theorem Monotone.ge_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [SemilatticeSup β] {f : β → α} {a : α} (hf : Monotone f) (ha : Tendsto f atTop (𝓝 a)) (b : β) :
     f b ≤ a :=
   haveI : Nonempty β := Nonempty.intro b
-  ge_of_tendsto ha ((eventually_ge_at_top b).mono fun _ hxy => hf hxy)
+  ge_of_tendsto _ ha ((eventually_ge_atTop b).mono fun _ hxy => hf hxy)
 #align monotone.ge_of_tendsto Monotone.ge_of_tendsto
 
 theorem Monotone.le_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
