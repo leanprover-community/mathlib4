@@ -193,6 +193,7 @@ theorem Multiset.toEmbedding_coeEquiv_trans (m : Multiset α) :
     m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 #align multiset.to_embedding_coe_equiv_trans Multiset.toEmbedding_coeEquiv_trans
 
+@[irreducible]
 instance Multiset.fintypeCoe : Fintype m :=
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
 #align multiset.fintype_coe Multiset.fintypeCoe
@@ -230,15 +231,7 @@ theorem Multiset.image_toEnumFinset_fst (m : Multiset α) :
   rw [Finset.image, Multiset.map_toEnumFinset_fst]
 #align multiset.image_to_enum_finset_fst Multiset.image_toEnumFinset_fst
 
--- @[simp] -- Porting note: this `simp` fails because matching another instance to
--- `Multiset.fintypeCoe` timeouts
---
--- example (a : m) [Subsingleton m] :
---     (Multiset.fintypeCoe : Fintype m) = Fintype.ofSubsingleton a ∨ True := by
---   fail_if_success
---     left
---     rfl
---   exact Or.inr trivial
+@[simp]
 theorem Multiset.map_univ_coe (m : Multiset α) :
     (Finset.univ : Finset m).val.map (fun x : m ↦ (x : α)) = m := by
   have := m.map_toEnumFinset_fst
@@ -247,8 +240,7 @@ theorem Multiset.map_univ_coe (m : Multiset α) :
     Function.comp_apply] using this
 #align multiset.map_univ_coe Multiset.map_univ_coe
 
--- @[simp] -- Porting note: this `simp` fails because matching another instance to
--- `Multiset.fintypeCoe` timeouts
+@[simp]
 theorem Multiset.map_univ {β : Type _} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
   erw [← Multiset.map_map]
