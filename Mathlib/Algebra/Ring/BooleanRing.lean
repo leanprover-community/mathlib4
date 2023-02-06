@@ -256,7 +256,8 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       inf_sup_self with
     le_sup_inf := le_sup_inf
     top := 1
-    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, (add_comm a 1), add_assoc, add_self, add_zero]
+    le_top := fun a => show a + 1 + a * 1 = 1 by rw [mul_one, (add_comm a 1),
+                                                     add_assoc, add_self, add_zero]
     bot := 0
     bot_le := fun a => show 0 + a + 0 * a = a by rw [MulZeroClass.zero_mul, zero_add, add_zero]
     compl := fun a => 1 + a
@@ -582,7 +583,8 @@ end AlgebraToRing
 `α`. -/
 @[simps]
 def OrderIso.asBoolalgAsBoolring (α : Type _) [BooleanAlgebra α] : AsBoolalg (AsBoolring α) ≃o α :=
-  ⟨ofBoolalg.trans ofBoolring, ofBoolring_le_ofBoolring_iff.trans ofBoolalg_mul_ofBoolalg_eq_left_iff⟩
+  ⟨ofBoolalg.trans ofBoolring,
+   ofBoolring_le_ofBoolring_iff.trans ofBoolalg_mul_ofBoolalg_eq_left_iff⟩
 #align order_iso.as_boolalg_as_boolring OrderIso.asBoolalgAsBoolring
 
 /-- Ring isomorphism between `α` considered as a Boolean algebra considered as a Boolean ring and
