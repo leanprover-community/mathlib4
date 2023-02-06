@@ -8,9 +8,9 @@ Authors: Michael Stoll
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Tuple.Sort
-import Mathbin.Data.Fintype.Perm
-import Mathbin.Order.WellFounded
+import Mathlib.Data.Fin.Tuple.Sort
+import Mathlib.Data.Fintype.Perm
+import Mathlib.Order.WellFounded
 
 /-!
 # "Bubble sort" induction
@@ -40,8 +40,7 @@ theorem bubble_sort_induction' {n : ℕ} {α : Type _} [LinearOrder α] {f : Fin
     (h :
       ∀ (σ : Equiv.Perm (Fin n)) (i j : Fin n),
         i < j → (f ∘ σ) j < (f ∘ σ) i → P (f ∘ σ) → P (f ∘ σ ∘ Equiv.swap i j)) :
-    P (f ∘ sort f) :=
-  by
+    P (f ∘ sort f) := by
   letI := @Preorder.lift _ (Lex (Fin n → α)) _ fun σ : Equiv.Perm (Fin n) => toLex (f ∘ σ)
   refine'
     @WellFounded.induction_bot' _ _ _ (@Finite.Preorder.wellFounded_lt (Equiv.Perm (Fin n)) _ _)
