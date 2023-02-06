@@ -179,7 +179,8 @@ structure Concept extends Set α × Set β where
   closure_snd : extentClosure r snd = fst
 #align concept Concept
 
--- todo: remove this configuration and use the default configuration. We keep this to be consistent with Lean 3.
+-- Porting note: todo: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
 initialize_simps_projections Concept (+toProd, -fst, -snd)
 
 namespace Concept
