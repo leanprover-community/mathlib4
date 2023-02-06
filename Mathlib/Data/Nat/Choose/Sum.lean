@@ -8,12 +8,12 @@ Authors: Chris Hughes, Patrick Stevens
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Choose.Basic
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Algebra.BigOperators.Ring
-import Mathbin.Algebra.BigOperators.Intervals
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
 
 /-!
 # Sums of binomial coefficients
@@ -40,8 +40,7 @@ variable [Semiring R] {x y : R} (h : Commute x y) (n : ℕ)
 include h
 
 /-- A version of the **binomial theorem** for commuting elements in noncommutative semirings. -/
-theorem add_pow : (x + y) ^ n = ∑ m in range (n + 1), x ^ m * y ^ (n - m) * choose n m :=
-  by
+theorem add_pow : (x + y) ^ n = ∑ m in range (n + 1), x ^ m * y ^ (n - m) * choose n m := by
   let t : ℕ → ℕ → R := fun n m => x ^ m * y ^ (n - m) * choose n m
   change (x + y) ^ n = ∑ m in range (n + 1), t n m
   have h_first : ∀ n, t n 0 = y ^ n := fun n =>
@@ -131,8 +130,7 @@ theorem sum_range_choose_halfway (m : Nat) : (∑ i in range (m + 1), choose (2 
       
 #align nat.sum_range_choose_halfway Nat.sum_range_choose_halfway
 
-theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n :=
-  by
+theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by
   have t : choose (2 * n + 1) n ≤ ∑ i in range (n + 1), choose (2 * n + 1) i :=
     single_le_sum (fun x _ => by linarith) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
@@ -152,8 +150,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
 end Nat
 
 theorem Int.alternating_sum_range_choose {n : ℕ} :
-    (∑ m in range (n + 1), ((-1) ^ m * ↑(choose n m) : ℤ)) = if n = 0 then 1 else 0 :=
-  by
+    (∑ m in range (n + 1), ((-1) ^ m * ↑(choose n m) : ℤ)) = if n = 0 then 1 else 0 := by
   cases n; · simp
   have h := add_pow (-1 : ℤ) 1 n.succ
   simp only [one_pow, mul_one, add_left_neg] at h
@@ -168,8 +165,7 @@ theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
 namespace Finset
 
 theorem sum_powerset_apply_card {α β : Type _} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
-    (∑ m in x.powerset, f m.card) = ∑ m in range (x.card + 1), x.card.choose m • f m :=
-  by
+    (∑ m in x.powerset, f m.card) = ∑ m in range (x.card + 1), x.card.choose m • f m := by
   trans ∑ m in range (x.card + 1), ∑ j in x.powerset.filter fun z => z.card = m, f j.card
   · refine' (sum_fiberwise_of_maps_to _ _).symm
     intro y hy
@@ -183,8 +179,7 @@ theorem sum_powerset_apply_card {α β : Type _} [AddCommMonoid α] (f : ℕ →
 #align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 
 theorem sum_powerset_neg_one_pow_card {α : Type _} [DecidableEq α] {x : Finset α} :
-    (∑ m in x.powerset, (-1 : ℤ) ^ m.card) = if x = ∅ then 1 else 0 :=
-  by
+    (∑ m in x.powerset, (-1 : ℤ) ^ m.card) = if x = ∅ then 1 else 0 := by
   rw [sum_powerset_apply_card]
   simp only [nsmul_eq_mul', ← card_eq_zero, Int.alternating_sum_range_choose]
 #align finset.sum_powerset_neg_one_pow_card Finset.sum_powerset_neg_one_pow_card
