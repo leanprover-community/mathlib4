@@ -473,7 +473,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 @[simp] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 #align measurable_space.measurable_set_top MeasurableSpace.measurableSet_top
 
-@[simp]
+@[simp, nolint simpNF] -- porting note: todo: `simpNF` claims that this lemma doesn't simplify LHS
 theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
@@ -485,7 +485,6 @@ theorem measurableSet_infₛ {ms : Set (MeasurableSpace α)} {s : Set α} :
   show s ∈ ⋂₀ _ ↔ _ by simp
 #align measurable_space.measurable_set_Inf MeasurableSpace.measurableSet_infₛ
 
-@[simp]
 theorem measurableSet_infᵢ {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[infᵢ m] s ↔ ∀ i, MeasurableSet[m i] s := by
   rw [infᵢ, measurableSet_infₛ, forall_range_iff]
