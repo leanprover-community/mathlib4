@@ -8,8 +8,8 @@ Authors: Yury Kudryashov, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Intervals.ProjIcc
-import Mathbin.Topology.Order.Basic
+import Mathlib.Data.Set.Intervals.ProjIcc
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Projection onto a closed interval
