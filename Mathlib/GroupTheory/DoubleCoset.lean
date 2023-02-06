@@ -36,7 +36,7 @@ namespace Doset
 
 open Pointwise
 
-/-- The double_coset as an element of `set α` corresponding to `s a t` -/
+/-- The double coset as an element of `set α` corresponding to `s a t` -/
 def doset (a : α) (s t : Set α) : Set α :=
   s * {a} * t
 #align doset Doset.doset
@@ -75,7 +75,7 @@ theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
 #align doset.eq_of_not_disjoint Doset.eq_of_not_disjoint
 
 /-- The setoid defined by the double_coset relation -/
-def Setoid (H K : Set G) : Setoid G :=
+def setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doset x H K
 #align doset.setoid Doset.Setoid
 
