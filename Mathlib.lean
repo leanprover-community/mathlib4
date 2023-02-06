@@ -1003,6 +1003,7 @@ import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Perfect
 import Mathlib.Topology.Separation
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.SubsetProperties
