@@ -66,8 +66,7 @@ namespace PartENat
 
 /-- The computable embedding `ℕ → PartENat`.
 
-This coincides with the coercion `coe : ℕ → PartENat`, see `PartENat.some_eq_natCast`.
-However, `natCast` is noncomputable so `some` is preferable when computability is a concern. -/
+This coincides with the coercion `coe : ℕ → PartENat`, see `PartENat.some_eq_natCast`. -/
 @[coe]
 def some : ℕ → PartENat :=
   Part.some
@@ -665,8 +664,7 @@ theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWit
 -- in particular `toWithTop_ofENat`.
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
 `withTopOrderIso`). -/
-noncomputable def withTopEquiv : PartENat ≃ ℕ∞
-    where
+noncomputable def withTopEquiv : PartENat ≃ ℕ∞ where
   toFun x := toWithTop x
   invFun x := ↑x
   left_inv x := by
