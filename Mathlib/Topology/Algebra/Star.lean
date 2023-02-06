@@ -16,29 +16,22 @@ import Mathlib.Topology.ContinuousFunction.Basic
 /-!
 # Continuity of `star`
 
-This file defines the `HasContinuousStar` typeclass, along with instances on `pi`, `prod`,
-`MulOpposite`, and `units`.
+This file defines the `HasContinuousStar` typeclass, along with instances on `Pi`, `Prod`,
+`MulOpposite`, and `Units`.
 -/
-
 
 open Filter Topology
 
-open Filter
-
-universe u
-
-variable {ι α R S : Type _}
-
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/
-class HasContinuousStar (R : Type u) [TopologicalSpace R] [Star R] : Prop where
+class ContinuousStar (R : Type _) [TopologicalSpace R] [Star R] : Prop where
   continuous_star : Continuous (star : R → R)
-#align has_continuous_star HasContinuousStar
+#align has_continuous_star ContinuousStar
 
-export HasContinuousStar (continuous_star)
+export ContinuousStar (continuous_star)
 
 section Continuity
 
-variable [TopologicalSpace R] [Star R] [HasContinuousStar R]
+variable [TopologicalSpace R] [Star R] [ContinuousStar R]
 
 theorem continuousOn_star {s : Set R} : ContinuousOn star s :=
   continuous_star.continuousOn
@@ -78,7 +71,7 @@ theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x => star 
 
 theorem ContinuousWithinAt.star (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x => star (f x)) s x :=
-  hf.star
+  Filter.Tendsto.star hf
 #align continuous_within_at.star ContinuousWithinAt.star
 
 /-- The star operation bundled as a continuous map. -/
@@ -91,19 +84,19 @@ end Continuity
 
 section Instances
 
-instance [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [HasContinuousStar R]
-    [HasContinuousStar S] : HasContinuousStar (R × S) :=
+instance [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [ContinuousStar R]
+    [ContinuousStar S] : ContinuousStar (R × S) :=
   ⟨(continuous_star.comp continuous_fst).prod_mk (continuous_star.comp continuous_snd)⟩
 
 instance {C : ι → Type _} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
-    [∀ i, HasContinuousStar (C i)] : HasContinuousStar (∀ i, C i)
+    [∀ i, ContinuousStar (C i)] : ContinuousStar (∀ i, C i)
     where continuous_star := continuous_pi fun i => Continuous.star (continuous_apply i)
 
-instance [Star R] [TopologicalSpace R] [HasContinuousStar R] : HasContinuousStar Rᵐᵒᵖ :=
+instance [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ :=
   ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.star⟩
 
-instance [Monoid R] [StarSemigroup R] [TopologicalSpace R] [HasContinuousStar R] :
-    HasContinuousStar Rˣ :=
+instance [Monoid R] [StarSemigroup R] [TopologicalSpace R] [ContinuousStar R] :
+    ContinuousStar Rˣ :=
   ⟨continuous_induced_rng.2 Units.continuous_embedProduct.star⟩
 
 end Instances
