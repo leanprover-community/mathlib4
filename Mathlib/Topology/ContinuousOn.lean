@@ -119,12 +119,8 @@ theorem nhds_of_nhdsWithin_of_nhds {s t : Set α} {a : α} (h1 : s ∈ 𝓝 a) (
 #align nhds_of_nhds_within_of_nhds nhds_of_nhdsWithin_of_nhds
 
 theorem mem_nhdsWithin_iff_eventually {s t : Set α} {x : α} :
-    t ∈ 𝓝[s] x ↔ ∀ᶠ y in 𝓝 x, y ∈ s → y ∈ t := by
-  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
-  constructor
-  · rintro ⟨u, hu, hut⟩
-    exact eventually_of_mem hu fun x hxu hxs => hut ⟨hxu, hxs⟩
-  · refine' fun h => ⟨_, h, fun y hy => hy.1 hy.2⟩
+    t ∈ 𝓝[s] x ↔ ∀ᶠ y in 𝓝 x, y ∈ s → y ∈ t :=
+  eventually_inf_principal
 #align mem_nhds_within_iff_eventually mem_nhdsWithin_iff_eventually
 
 theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
@@ -270,6 +266,10 @@ theorem nhdsWithin_inter_of_mem {a : α} {s t : Set α} (h : s ∈ 𝓝[t] a) : 
   rw [nhdsWithin_inter, inf_eq_right]
   exact nhdsWithin_le_of_mem h
 #align nhds_within_inter_of_mem nhdsWithin_inter_of_mem
+
+-- porting note: new lemma
+theorem nhdsWithin_inter_of_mem' {a : α} {s t : Set α} (h : t ∈ 𝓝[s] a) : 𝓝[s ∩ t] a = 𝓝[s] a := by
+  rw [inter_comm, nhdsWithin_inter_of_mem h]
 
 @[simp]
 theorem nhdsWithin_singleton (a : α) : 𝓝[{a}] a = pure a := by

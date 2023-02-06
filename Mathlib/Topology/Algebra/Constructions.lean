@@ -50,7 +50,7 @@ theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
 #align add_opposite.continuous_op AddOpposite.continuous_op
 
 /-- `MulOpposite.op` as a homeomorphism. -/
-@[to_additive "`AddOpposite.op` as a homeomorphism.", simps]
+@[to_additive (attr := simps) "`AddOpposite.op` as a homeomorphism."]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
   continuous_toFun := continuous_op

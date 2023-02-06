@@ -247,16 +247,16 @@ section MulHom
 
 /-- A family of MulHom's `f a : γ →ₙ* β a` defines a MulHom `Pi.mulHom f : γ →ₙ* Π a, β a`
 given by `Pi.mulHom f x b = f b x`. -/
-@[to_additive
-      "A family of AddHom's `f a : γ → β a` defines an AddHom `Pi.addHom f : γ → Π a, β a` given by
-      `Pi.addHom f x b = f b x`.",
-  simps]
+@[to_additive (attr := simps)
+  "A family of AddHom's `f a : γ → β a` defines an AddHom `Pi.addHom f : γ → Π a, β a` given by
+  `Pi.addHom f x b = f b x`."]
 def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
   toFun x i := g i x
   map_mul' x y := funext fun i => (g i).map_mul x y
 #align pi.mul_hom Pi.mulHom
 #align pi.add_hom Pi.addHom
 #align pi.mul_hom_apply Pi.mulHom_apply
+#align pi.add_hom_apply Pi.addHom_apply
 
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
@@ -268,10 +268,9 @@ theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul �
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
 `Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
-@[to_additive
-      "A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
-      `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`.",
-  simps]
+@[to_additive (attr := simps)
+  "A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
+  `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`."]
 def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : ∀ i, γ →* f i) :
     γ →* ∀ i, f i :=
   { Pi.mulHom fun i => (g i).toMulHom with
@@ -280,6 +279,7 @@ def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : 
 #align pi.monoid_hom Pi.monoidHom
 #align pi.add_monoid_hom Pi.addMonoidHom
 #align pi.monoid_hom_apply Pi.monoidHom_apply
+#align pi.add_monoid_hom_apply Pi.addMonoidHom_apply
 
 @[to_additive]
 theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
@@ -294,19 +294,19 @@ variable (f) [(i : I) → Mul (f i)]
 /-- Evaluation of functions into an indexed collection of semigroups at a point is a semigroup
 homomorphism.
 This is `Function.eval i` as a `MulHom`. -/
-@[to_additive
-      "Evaluation of functions into an indexed collection of additive semigroups at a point is an
-      additive semigroup homomorphism. This is `Function.eval i` as an `AddHom`.",
-  simps]
+@[to_additive (attr := simps)
+  "Evaluation of functions into an indexed collection of additive semigroups at a point is an
+  additive semigroup homomorphism. This is `Function.eval i` as an `AddHom`."]
 def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ* f i where
   toFun g := g i
   map_mul' _ _ := Pi.mul_apply _ _ i
 #align pi.eval_mul_hom Pi.evalMulHom
 #align pi.eval_add_hom Pi.evalAddHom
 #align pi.eval_mul_hom_apply Pi.evalMulHom_apply
+#align pi.eval_add_hom_apply Pi.evalAddHom_apply
 
 /-- `Function.const` as a `MulHom`. -/
-@[to_additive "`Function.const` as an `AddHom`.", simps]
+@[to_additive (attr := simps) "`Function.const` as an `AddHom`."]
 def Pi.constMulHom (α β : Type _) [Mul β] :
     β →ₙ* α → β where
   toFun := Function.const α
@@ -314,15 +314,14 @@ def Pi.constMulHom (α β : Type _) [Mul β] :
 #align pi.const_mul_hom Pi.constMulHom
 #align pi.const_add_hom Pi.constAddHom
 #align pi.const_mul_hom_apply Pi.constMulHom_apply
+#align pi.const_add_hom_apply Pi.constAddHom_apply
 
 /-- Coercion of a `MulHom` into a function is itself a `MulHom`.
 
 See also `MulHom.eval`. -/
-@[to_additive
-      "Coercion of an `AddHom` into a function is itself an `AddHom`.
+@[to_additive (attr := simps) "Coercion of an `AddHom` into a function is itself an `AddHom`.
 
-      See also `AddHom.eval`. ",
-  simps]
+See also `AddHom.eval`."]
 def MulHom.coeFn (α β : Type _) [Mul α] [CommSemigroup β] :
     (α →ₙ* β) →ₙ* α → β where
   toFun g := g
@@ -330,13 +329,12 @@ def MulHom.coeFn (α β : Type _) [Mul α] [CommSemigroup β] :
 #align mul_hom.coe_fn MulHom.coeFn
 #align add_hom.coe_fn AddHom.coeFn
 #align mul_hom.coe_fn_apply MulHom.coeFn_apply
+#align add_hom.coe_fn_apply AddHom.coeFn_apply
 
 /-- Semigroup homomorphism between the function spaces `I → α` and `I → β`, induced by a semigroup
 homomorphism `f` between `α` and `β`. -/
-@[to_additive
-      "Additive semigroup homomorphism between the function spaces `I → α` and `I → β`, induced by
-      an additive semigroup homomorphism `f` between `α` and `β`",
-  simps]
+@[to_additive (attr := simps) "Additive semigroup homomorphism between the function spaces `I → α`
+and `I → β`, induced by an additive semigroup homomorphism `f` between `α` and `β`"]
 protected def MulHom.compLeft {α β : Type _} [Mul α] [Mul β] (f : α →ₙ* β) (I : Type _) :
     (I → α) →ₙ* I → β where
   toFun h := f ∘ h
@@ -344,6 +342,7 @@ protected def MulHom.compLeft {α β : Type _} [Mul α] [Mul β] (f : α →ₙ*
 #align mul_hom.comp_left MulHom.compLeft
 #align add_hom.comp_left AddHom.compLeft
 #align mul_hom.comp_left_apply MulHom.compLeft_apply
+#align add_hom.comp_left_apply AddHom.compLeft_apply
 
 end MulHom
 
@@ -354,53 +353,50 @@ variable (f) [(i : I) → MulOneClass (f i)]
 /-- Evaluation of functions into an indexed collection of monoids at a point is a monoid
 homomorphism.
 This is `Function.eval i` as a `MonoidHom`. -/
-@[to_additive
-      "Evaluation of functions into an indexed collection of additive monoids at a point is an
-      additive monoid homomorphism. This is `Function.eval i` as an `AddMonoidHom`.",
-  simps]
-def Pi.evalMonoidHom (i : I) :
-    (∀ i, f i) →* f i where
+@[to_additive (attr := simps) "Evaluation of functions into an indexed collection of additive
+monoids at a point is an additive monoid homomorphism. This is `Function.eval i` as an
+`AddMonoidHom`."]
+def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
   toFun g := g i
   map_one' := Pi.one_apply i
   map_mul' _ _ := Pi.mul_apply _ _ i
 #align pi.eval_monoid_hom Pi.evalMonoidHom
 #align pi.eval_add_monoid_hom Pi.evalAddMonoidHom
 #align pi.eval_monoid_hom_apply Pi.evalMonoidHom_apply
+#align pi.eval_add_monoid_hom_apply Pi.evalAddMonoidHom_apply
 
 /-- `Function.const` as a `MonoidHom`. -/
-@[to_additive "`Function.const` as an `AddMonoidHom`.", simps]
-def Pi.constMonoidHom (α β : Type _) [MulOneClass β] :
-    β →* α → β where
+@[to_additive (attr := simps) "`Function.const` as an `AddMonoidHom`."]
+def Pi.constMonoidHom (α β : Type _) [MulOneClass β] : β →* α → β where
   toFun := Function.const α
   map_one' := rfl
   map_mul' _ _ := rfl
 #align pi.const_monoid_hom Pi.constMonoidHom
 #align pi.const_add_monoid_hom Pi.constAddMonoidHom
 #align pi.const_monoid_hom_apply Pi.constMonoidHom_apply
+#align pi.const_add_monoid_hom_apply Pi.constAddMonoidHom_apply
 
 /-- Coercion of a `MonoidHom` into a function is itself a `MonoidHom`.
 
 See also `MonoidHom.eval`. -/
-@[to_additive
-      "Coercion of an `AddMonoidHom` into a function is itself a `AddMonoidHom`.
+@[to_additive (attr := simps) "Coercion of an `AddMonoidHom` into a function is itself
+a `AddMonoidHom`.
 
-      See also `AddMonoidHom.eval`. ",
-  simps]
-def MonoidHom.coeFn (α β : Type _) [MulOneClass α] [CommMonoid β] :
-    (α →* β) →* α → β where
+See also `AddMonoidHom.eval`."]
+def MonoidHom.coeFn (α β : Type _) [MulOneClass α] [CommMonoid β] : (α →* β) →* α → β where
   toFun g := g
   map_one' := rfl
   map_mul' _ _ := rfl
 #align monoid_hom.coe_fn MonoidHom.coeFn
 #align add_monoid_hom.coe_fn AddMonoidHom.coeFn
 #align monoid_hom.coe_fn_apply MonoidHom.coeFn_apply
+#align add_monoid_hom.coe_fn_apply AddMonoidHom.coeFn_apply
 
 /-- Monoid homomorphism between the function spaces `I → α` and `I → β`, induced by a monoid
 homomorphism `f` between `α` and `β`. -/
-@[to_additive
-      "Additive monoid homomorphism between the function spaces `I → α` and `I → β`, induced by an
-      additive monoid homomorphism `f` between `α` and `β`",
-  simps]
+@[to_additive (attr := simps)
+  "Additive monoid homomorphism between the function spaces `I → α` and `I → β`, induced by an
+  additive monoid homomorphism `f` between `α` and `β`"]
 protected def MonoidHom.compLeft {α β : Type _} [MulOneClass α] [MulOneClass β] (f : α →* β)
     (I : Type _) : (I → α) →* I → β where
   toFun h := f ∘ h
@@ -409,6 +405,7 @@ protected def MonoidHom.compLeft {α β : Type _} [MulOneClass α] [MulOneClass 
 #align monoid_hom.comp_left MonoidHom.compLeft
 #align add_monoid_hom.comp_left AddMonoidHom.compLeft
 #align monoid_hom.comp_left_apply MonoidHom.compLeft_apply
+#align add_monoid_hom.comp_left_apply AddMonoidHom.compLeft_apply
 
 end MonoidHom
 
@@ -429,8 +426,7 @@ This is the `OneHom` version of `Pi.mulSingle`. -/
       as functions supported at a point.
 
       This is the `ZeroHom` version of `Pi.single`."]
-def OneHom.single [∀ i, One <| f i] (i : I) :
-    OneHom (f i) (∀ i, f i) where
+def OneHom.single [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f i) where
   toFun := mulSingle i
   map_one' := mulSingle_one i
 #align one_hom.single OneHom.single
@@ -469,8 +465,7 @@ into a dependent family of `MulZeroClass`es, as functions supported at a point.
 
 This is the `MulHom` version of `Pi.single`. -/
 @[simps]
-def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) :
-    f i →ₙ* ∀ i, f i where
+def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) : f i →ₙ* ∀ i, f i where
   toFun := Pi.single i
   map_mul' := Pi.single_op₂ (fun _ => (· * ·)) (fun _ => zero_mul _) _
 #align mul_hom.single MulHom.single
@@ -658,7 +653,7 @@ section Extend
 variable {η : Type v} (R : Type w) (s : ι → η)
 
 /-- `Function.extend s f 1` as a bundled hom. -/
-@[to_additive Function.ExtendByZero.hom "`Function.extend s f 0` as a bundled hom.", simps]
+@[to_additive (attr := simps) Function.ExtendByZero.hom "`Function.extend s f 0` as a bundled hom."]
 noncomputable def Function.ExtendByOne.hom [MulOneClass R] :
     (ι → R) →* η → R where
   toFun f := Function.extend s f 1
@@ -667,5 +662,6 @@ noncomputable def Function.ExtendByOne.hom [MulOneClass R] :
 #align function.extend_by_one.hom Function.ExtendByOne.hom
 #align function.extend_by_zero.hom Function.ExtendByZero.hom
 #align function.extend_by_one.hom_apply Function.ExtendByOne.hom_apply
+#align function.extend_by_zero.hom_apply Function.ExtendByZero.hom_apply
 
 end Extend
