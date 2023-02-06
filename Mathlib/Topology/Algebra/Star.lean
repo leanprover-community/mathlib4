@@ -16,7 +16,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 /-!
 # Continuity of `star`
 
-This file defines the `HasContinuousStar` typeclass, along with instances on `Pi`, `Prod`,
+This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, `Prod`,
 `MulOpposite`, and `Units`.
 -/
 
