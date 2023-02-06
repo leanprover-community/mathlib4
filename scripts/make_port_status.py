@@ -120,36 +120,9 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
 
     data[module] = {
         'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
-        'mathlib3_hash': None,
-        'mathlib4_pr': mathlib4_pr
+        'mathlib4_pr': mathlib4_pr,
+        'source': dict(repo=repo, commit=commit)
     }
-    if repo == 'leanprover-community/mathlib':
-        data[module]['mathlib3_hash'] = commit
-    elif repo == 'leanprover-community/lean':
-        data[module]['lean3_hash'] = commit
-
-allDone = dict()
-parentsDone = dict()
-verified = dict()
-touched = dict()
-for node in graph.nodes:
-    if node in data:
-        if data[node]['mathlib3_hash'] is None:
-            continue
-        git_command = ['git', 'diff', '--quiet',
-            # f'--ignore-matching-lines={comment_git_re}',
-            data[node]['mathlib3_hash'] + "..HEAD", "--", "src" + os.sep + node.replace('.', os.sep) + ".lean"]
-        result = subprocess.run(git_command, cwd='port-repos/mathlib')
-        if result.returncode == 1:
-            git_command.remove('--quiet')
-            # git_command.remove(f'--ignore-matching-lines={comment_git_re}')
-            touched[node] = git_command
-    ancestors = nx.ancestors(graph, node)
-    if all(imported in data for imported in ancestors) and not node in data:
-        allDone[node] = (len(nx.descendants(graph, node)), "")
-    else:
-        if all(imported in data for imported in graph.predecessors(node)) and not node in data:
-            parentsDone[node] = (len(nx.descendants(graph, node)), "")
 
 prs = {}
 fetch_args = ['git', 'fetch', 'origin']
@@ -185,13 +158,6 @@ def pr_to_str(pr):
     labels = ' '.join(f'[{l.name}]' for l in pr.labels)
     return f'[#{pr.number}]({pr.html_url}) (by {pr.user.login}, {labels}, last activity {pr.updated_at})'
 
-# print('# The following files have all dependencies ported already, and should be ready to port:')
-# print('# Earlier items in the list are required in more places in mathlib.')
-# allDone = dict(sorted(allDone.items(), key=lambda item: -item[1][0]))
-# for k, v in allDone.items():
-#     print(f' * `{k}` ',
-#           ' '.join(pr_to_str(prs[num]) for num in prs_of_condensed.get(condense(k), [])))
-
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"
 comments_dict = yaml.safe_load(requests.get(COMMENTS_URL).content.replace(b"```", b""))
 
@@ -203,10 +169,12 @@ for node in sorted(graph.nodes):
             ported=True,
             mathlib4_file=data[node]['mathlib4_file'],
             mathlib4_pr=data[node]['mathlib4_pr'],
-            mathlib3_hash=data[node]['mathlib3_hash']
+            source=data[node]['source']
         )
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
-        status = f"Yes {pr_status} {data[node]['mathlib3_hash'] or '_'}"
+        sha = data[node]['source']['commit'] if data[node]['source']['repo'] == 'leanprover-community/mathlib' else "_"
+        
+        status = f"Yes {pr_status} {sha}"
     else:
         new_status = dict(ported=False)
         status = f'No'
@@ -215,13 +183,9 @@ for node in sorted(graph.nodes):
             if pr_info['commit'] is None:
                 print('PR seems to be missing a source header', node, pr_info)
                 assert(False)
-            new_status.update(mathlib4_pr=pr_info['pr'])
-            if pr_info['repo'] == 'leanprover-community/mathlib':
-                new_status.update(mathlib3_hash=pr_info['commit'])
-            elif pr_info['repo'] == 'leanprover-community/lean':
-                new_status.update(lean3_hash=pr_info['commit'])
-            status += ' mathlib4#' + str(pr_info['pr']) + ' ' + (
-                pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else '_')
+            new_status.update(mathlib4_pr=pr_info['pr'], source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
+            sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
+            status += f' mathlib4#{pr_info['pr']} {sha}'
     try:
         comment_data = comments_dict[node]
     except KeyError:
