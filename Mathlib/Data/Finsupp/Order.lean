@@ -253,11 +253,13 @@ end CanonicallyLinearOrderedAddMonoid
 
 section Nat
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem sub_single_one_add {a : ι} {u u' : ι →₀ ℕ} (h : u a ≠ 0) :
     u - single a 1 + u' = u + u' - single a 1 :=
   tsub_add_eq_add_tsub <| single_le_iff.mpr <| Nat.one_le_iff_ne_zero.mpr h
 #align finsupp.sub_single_one_add Finsupp.sub_single_one_add
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
     u + (u' - single a 1) = u + u' - single a 1 :=
   (add_tsub_assoc_of_le (single_le_iff.mpr <| Nat.one_le_iff_ne_zero.mpr h) _).symm

@@ -340,8 +340,9 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     mul_zero := mul_zero
     zero_mul := zero_mul }
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance isDomain : IsDomain ℚ :=
-  NoZeroDivisors.to_isDomain _
+  NoZeroDivisors.to_isDomain ℚ
 
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic

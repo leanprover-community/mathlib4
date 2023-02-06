@@ -167,6 +167,7 @@ theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * �
 
 -- porting note: very slow without `simp only` and need to separate `units_smul_def`
 -- so that things trigger appropriately
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
   one_smul := by simp only [units_smul_def, ofConjAct_one, Units.val_one, one_mul, inv_one,
     mul_one, forall_const]
@@ -333,23 +334,26 @@ def _root_.MulAut.conjNormal {H : Subgroup G} [H.Normal] : G →* MulAut H :=
   (MulDistribMulAction.toMulAut (ConjAct G) H).comp toConjAct.toMonoidHom
 #align mul_aut.conj_normal MulAut.conjNormal
 
+-- Porting note: needed to make type ascription `: MulAut H` explicit
 @[simp]
 theorem _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
-    ↑(MulAut.conjNormal g h) = g * h * g⁻¹ :=
+    ↑((MulAut.conjNormal g : MulAut H) h) = g * h * g⁻¹ :=
   rfl
 #align mul_aut.conj_normal_apply MulAut.conjNormal_apply
 
+-- Porting note: needed to make type ascription `: MulAut H` explicit
 @[simp]
 theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
-    ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by
+    ↑((MulAut.conjNormal g : MulAut H).symm h) = g⁻¹ * h * g := by
   change _ * _⁻¹⁻¹ = _
   rw [inv_inv]
   rfl
 #align mul_aut.conj_normal_symm_apply MulAut.conjNormal_symm_apply
 
+-- Porting note: needed to make type ascription `: MulAut H` explicit
 @[simp]
 theorem _root_.MulAut.conjNormal_inv_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
-    ↑((MulAut.conjNormal g)⁻¹ h) = g⁻¹ * h * g :=
+    ↑((MulAut.conjNormal g : MulAut H)⁻¹ h) = g⁻¹ * h * g :=
   MulAut.conjNormal_symm_apply g h
 #align mul_aut.conj_normal_inv_apply MulAut.conjNormal_inv_apply
 

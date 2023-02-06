@@ -25,6 +25,7 @@ namespace Int
 
 variable {m n : ℤ}
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 @[simp]
 theorem emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
@@ -32,6 +33,7 @@ theorem emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
 
 -- Porting note: This comment from mathlib3 refers to a future file, revisit it once ported:
 -- euclidean_domain.mod_eq_zero uses (2 ∣ n) as normal form
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 @[local simp]
 theorem emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
@@ -107,6 +109,7 @@ theorem not_even_one : ¬Even (1 : ℤ) := by
   norm_num
 #align int.not_even_one Int.not_even_one
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 @[parity_simps]
 theorem even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
@@ -142,6 +145,7 @@ theorem even_add_one : Even (n + 1) ↔ ¬Even n := by
   simp [even_add]
 #align int.even_add_one Int.even_add_one
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 @[parity_simps]
 theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>

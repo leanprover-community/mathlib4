@@ -86,6 +86,7 @@ def Sum.one : Sum := RBMap.empty.insert Monom.one 1
 def Sum.scaleByMonom (s : Sum) (m : Monom) : Sum :=
 s.foldr (fun m' coeff sm => sm.insert (m + m') coeff) RBMap.empty
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- `sum.mul s1 s2` distributes the multiplication of two sums.` -/
 def Sum.mul (s1 s2 : Sum) : Sum :=
 s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff))) RBMap.empty
@@ -136,6 +137,8 @@ def linearFormOfAtom (red : TransparencyMode) (m : ExprMap) (e : Expr) : MetaM (
     let n := m.length + 1
     return ((e, n)::m, var n)
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /--
 `linearFormOfExpr red map e` computes the linear form of `e`.
 

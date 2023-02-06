@@ -114,6 +114,8 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     exact (testBit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
 #align nat.exists_most_significant_bit Nat.exists_most_significant_bit
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = true)
     (hnm : ∀ j, i < j → testBit n j = testBit m j) : n < m := by
   induction' n using Nat.binaryRec with b n hn' generalizing i m

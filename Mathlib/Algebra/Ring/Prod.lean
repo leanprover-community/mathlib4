@@ -333,6 +333,7 @@ def zeroRingProd : R ≃+* S × R where
 
 end RingEquiv
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- The product of two nontrivial rings is not a domain -/
 theorem false_of_nontrivial_of_product_domain (R S : Type _) [Ring R] [Ring S] [IsDomain (R × S)]
     [Nontrivial R] [Nontrivial S] : False := by

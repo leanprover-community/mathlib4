@@ -308,6 +308,8 @@ section CommRing
 variable [CommRing R] [StarRing R]
 
 -- porting note: this takes waaaaay too long
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance : CommRing (selfAdjoint R) :=
   Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub

@@ -179,6 +179,7 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
 #align zmod.comm_ring ZMod.commRing
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
 #align zmod.inhabited ZMod.inhabited

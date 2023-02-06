@@ -72,6 +72,7 @@ instance commRing: CommRing PUnit where
   mul_zero := by intros; rfl
   natCast _ := unit
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance cancelCommMonoidWithZero: CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
 

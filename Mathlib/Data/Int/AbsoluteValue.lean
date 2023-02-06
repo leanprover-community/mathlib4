@@ -43,6 +43,7 @@ theorem AbsoluteValue.map_units_int_smul (abv : AbsoluteValue R S) (x : ℤˣ) (
     abv (x • y) = abv y := by rcases Int.units_eq_one_or x with (rfl | rfl) <;> simp
 #align absolute_value.map_units_int_smul AbsoluteValue.map_units_int_smul
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- `Int.natAbs` as a bundled monoid with zero hom. -/
 @[simps]
 def Int.natAbsHom : ℤ →*₀ ℕ where

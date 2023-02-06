@@ -208,6 +208,7 @@ def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
 theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
   simp [smulg, zsmul_zero]
 

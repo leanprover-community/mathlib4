@@ -384,6 +384,7 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient :=
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient :=
   { c.toCon.mulAction with
@@ -391,6 +392,8 @@ instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower
     smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
     smul_add := fun _ => Quotient.ind₂' fun _ _  => congr_arg toQuotient <| smul_add _ _ _ }
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient :=
   { smul_one := fun _ => congr_arg toQuotient <| smul_one _

@@ -745,6 +745,7 @@ instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDiviso
 
 end GroupWithZero
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 -- see note [lower instance priority]
 instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
     NoZeroSMulDivisors ℤ M :=

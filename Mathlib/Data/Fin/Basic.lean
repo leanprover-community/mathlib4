@@ -966,6 +966,7 @@ theorem last_le_iff {n : ℕ} {k : Fin (n + 1)} : last n ≤ k ↔ k = last n :=
   top_le_iff
 #align fin.last_le_iff Fin.last_le_iff
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 @[simp]
 theorem lt_add_one_iff {n : ℕ} {k : Fin (n + 1)} : k < k + 1 ↔ k < last n := by
   rw [← not_iff_not]
@@ -1969,6 +1970,8 @@ theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b 
     exact h
 #align fin.coe_sub_iff_lt Fin.coe_sub_iff_lt
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 @[simp]
 theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   rcases k with ⟨_ | k, hk⟩
@@ -1979,6 +1982,7 @@ theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
     mod_eq_of_lt ((lt_succ_self _).trans hk)]
 #align fin.lt_sub_one_iff Fin.lt_sub_one_iff
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 @[simp]
 theorem le_sub_one_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n

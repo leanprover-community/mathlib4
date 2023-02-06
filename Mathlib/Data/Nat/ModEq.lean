@@ -185,6 +185,7 @@ protected theorem mul_left_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
   ⟨ModEq.mul_left_cancel' hc, ModEq.mul_left' _⟩
 #align nat.modeq.mul_left_cancel_iff' Nat.ModEq.mul_left_cancel_iff'
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- Cancel right multiplication on both sides of the `≡` and in the modulus.
 
 For cancelling right multiplication in the modulus, see `Nat.ModEq.of_mul_right`. -/

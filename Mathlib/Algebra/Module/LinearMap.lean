@@ -612,6 +612,7 @@ protected theorem map_sub (x y : M) : f (x - y) = f x - f y :=
   map_sub f x y
 #align linear_map.map_sub LinearMap.map_sub
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance CompatibleSMul.intModule {S : Type _} [Semiring S] [Module S M] [Module S M₂] :
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
@@ -1108,16 +1109,22 @@ section
 
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance _root_.Module.End.isScalarTower :
     IsScalarTower S (Module.End R M) (Module.End R M) :=
   ⟨smul_comp⟩
 #align module.End.is_scalar_tower Module.End.isScalarTower
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance _root_.Module.End.smulCommClass [SMul S R] [IsScalarTower S R M] :
     SMulCommClass S (Module.End R M) (Module.End R M) :=
   ⟨fun s _ _ ↦ (comp_smul _ s _).symm⟩
 #align module.End.smul_comm_class Module.End.smulCommClass
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
     SMulCommClass (Module.End R M) S (Module.End R M) :=
   SMulCommClass.symm _ _ _

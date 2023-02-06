@@ -220,6 +220,7 @@ theorem natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natA
     _ = natAbs a / natAbs b := by rw [Int.ediv_mul_cancel H]
 #align int.nat_abs_div Int.natAbs_ediv
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem dvd_of_mul_dvd_mul_left {i j k : ℤ} (k_non_zero : k ≠ 0) (H : k * i ∣ k * j) : i ∣ j :=
   Dvd.elim H fun l H1 => by rw [mul_assoc] at H1; exact ⟨_, mul_left_cancel₀ k_non_zero H1⟩
 #align int.dvd_of_mul_dvd_mul_left Int.dvd_of_mul_dvd_mul_left

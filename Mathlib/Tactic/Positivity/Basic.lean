@@ -195,6 +195,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   | _, _ => pure .none
 
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a :=
 by { rw [Int.ediv_self ha.ne']; exact zero_lt_one }
 

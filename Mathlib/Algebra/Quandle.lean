@@ -390,6 +390,8 @@ the corresponding inner automorphism.
 def Conj (G : Type _) := G
 #align quandle.conj Quandle.Conj
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance Conj.quandle (G : Type _) [Group G] : Quandle (Conj G)
     where
   act x := @MulAut.conj G _ x

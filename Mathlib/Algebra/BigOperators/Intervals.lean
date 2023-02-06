@@ -129,6 +129,8 @@ theorem prod_range_sub_prod_range {α : Type _} [CommGroup α] {f : ℕ → α} 
 #align finset.prod_range_sub_prod_range Finset.prod_range_sub_prod_range
 #align finset.sum_range_sub_sum_range Finset.sum_range_sub_sum_range
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- The two ways of summing over `(i,j)` in the range `a<=i<=j<b` are equal. -/
 theorem sum_Ico_Ico_comm {M : Type _} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
     (∑ i in Finset.Ico a b, ∑ j in Finset.Ico i b, f i j) =

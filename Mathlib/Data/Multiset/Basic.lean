@@ -641,6 +641,7 @@ instance : OrderedCancelAddCommMonoid (Multiset α) where
 theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_add_left (zero_le t) s
 #align multiset.le_add_right Multiset.le_add_right
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem le_add_left (s t : Multiset α) : s ≤ t + s := by simpa using add_le_add_right (zero_le t) s
 #align multiset.le_add_left Multiset.le_add_left
 

@@ -183,6 +183,8 @@ section LinearOrderedField
 
 variable [LinearOrderedField α] [Archimedean α] {x y ε : α}
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- Every positive `x` is between two successive integer powers of
 another `y` greater than one. This is the same as `exists_mem_Ioc_zpow`,
 but with ≤ and < the other way around. -/
@@ -362,11 +364,13 @@ theorem archimedean_iff_rat_le : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x �
 
 end LinearOrderedField
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance : Archimedean ℕ :=
   ⟨fun n m m0 => ⟨n, by
     rw [← mul_one n, smul_eq_mul, mul_assoc, one_mul m]
     exact Nat.mul_le_mul_left n (by linarith)⟩⟩
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance : Archimedean ℤ :=
   ⟨fun n m m0 =>
     ⟨n.toNat,

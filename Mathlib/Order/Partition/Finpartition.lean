@@ -520,6 +520,8 @@ theorem card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
 
 section Atomise
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- Cuts `s` along the finsets in `F`: Two elements of `s` will be in the same part if they are
 in the same finsets of `F`. -/
 def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
