@@ -16,9 +16,9 @@ import Mathlib.Topology.Homeomorph
 
 In this file we prove the following fact: if `f` is a monotone function on a neighborhood of `a`
 and the image of this neighborhood is a neighborhood of `f a`, then `f` is continuous at `a`, see
-`continuousWithinAt_of_monotone_on_of_image_mem_nhds`, as well as several similar facts.
+`continuousWithinAt_of_monotoneOn_of_image_mem_nhds`, as well as several similar facts.
 
-We also prove that an `order_iso` is continuous.
+We also prove that an `OrderIso` is continuous.
 
 ## Tags
 
@@ -99,9 +99,9 @@ theorem continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin [
 /-- If a function `f` with a densely ordered codomain is monotone on a right neighborhood of `a` and
 the image of this neighborhood under `f` is a right neighborhood of `f a`, then `f` is continuous at
 `a` from the right. -/
-theorem continuousWithinAt_right_of_monotoneOn_of_image_mem_nhdsWithin [DenselyOrdered β] {f : α → β}
-    {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : f '' s ∈ 𝓝[≥] f a) :
-    ContinuousWithinAt f (Ici a) a :=
+theorem continuousWithinAt_right_of_monotoneOn_of_image_mem_nhdsWithin [DenselyOrdered β]
+    {f : α → β} {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a)
+    (hfs : f '' s ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a :=
   continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin h_mono hs <|
     mem_of_superset hfs subset_closure
 #align continuous_at_right_of_monotone_on_of_image_mem_nhds_within
@@ -124,7 +124,8 @@ continuous at `a` from the right. -/
 theorem StrictMonoOn.continuousWithinAt_right_of_image_mem_nhdsWithin [DenselyOrdered β] {f : α → β}
     {s : Set α} {a : α} (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : f '' s ∈ 𝓝[≥] f a) :
     ContinuousWithinAt f (Ici a) a :=
-  h_mono.continuousWithinAt_right_of_closure_image_mem_nhdsWithin hs (mem_of_superset hfs subset_closure)
+  h_mono.continuousWithinAt_right_of_closure_image_mem_nhdsWithin hs
+    (mem_of_superset hfs subset_closure)
 #align strict_mono_on.continuous_at_right_of_image_mem_nhds_within
   StrictMonoOn.continuousWithinAt_right_of_image_mem_nhdsWithin
 
