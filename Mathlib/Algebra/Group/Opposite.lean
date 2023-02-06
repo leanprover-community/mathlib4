@@ -234,7 +234,7 @@ theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) �
 attribute [nolint simpComm] AddOpposite.commute_unop
 
 /-- The function `MulOpposite.op` is an additive equivalence. -/
-@[simps (config := { fullyApplied := false, simpRhs := true })]
+@[simps! (config := { fullyApplied := false, simpRhs := true })]
 def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
   { opEquiv with map_add' := fun _ _ => rfl }
 #align mul_opposite.op_add_equiv MulOpposite.opAddEquiv
@@ -302,7 +302,7 @@ instance [CommGroup α] : CommGroup αᵃᵒᵖ :=
 variable {α}
 
 /-- The function `AddOpposite.op` is a multiplicative equivalence. -/
-@[simps (config := { fullyApplied := false, simpRhs := true })]
+@[simps! (config := { fullyApplied := false, simpRhs := true })]
 def opMulEquiv [Mul α] : α ≃* αᵃᵒᵖ :=
   { opEquiv with map_mul' := fun _ _ => rfl }
 #align add_opposite.op_mul_equiv AddOpposite.opMulEquiv
@@ -319,7 +319,7 @@ open MulOpposite
 
 /-- Inversion on a group is a `MulEquiv` to the opposite group. When `G` is commutative, there is
 `MulEquiv.inv`. -/
-@[to_additive (attr := simps (config := { fullyApplied := false, simpRhs := true }))
+@[to_additive (attr := simps! (config := { fullyApplied := false, simpRhs := true }))
       "Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
       is commutative, there is `AddEquiv.inv`."]
 def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
@@ -493,7 +493,7 @@ def MonoidHom.op {M N} [MulOneClass M] [MulOneClass N] : (M →* N) ≃ (Mᵐᵒ
 #align add_monoid_hom.op_symm_apply_apply AddMonoidHom.op_symm_apply_apply
 
 /-- The 'unopposite' of a monoid homomorphism `Mᵐᵒᵖ →* Nᵐᵒᵖ`. Inverse to `MonoidHom.op`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simp)
       "The 'unopposite' of an additive monoid homomorphism `Mᵃᵒᵖ →+ Nᵃᵒᵖ`. Inverse to
       `AddMonoidHom.op`."]
 def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐᵒᵖ) ≃ (M →* N) :=
