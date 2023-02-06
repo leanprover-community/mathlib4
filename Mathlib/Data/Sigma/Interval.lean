@@ -36,49 +36,48 @@ section Disjoint
 
 variable [DecidableEq ι] [∀ i, Preorder (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
-instance : LocallyFiniteOrder (Σi, α i)
-    where
+instance : LocallyFiniteOrder (Σi, α i) where
   finsetIcc := sigmaLift fun _ => Icc
   finsetIco := sigmaLift fun _ => Ico
   finsetIoc := sigmaLift fun _ => Ioc
   finsetIoo := sigmaLift fun _ => Ioo
   finset_mem_Icc := fun ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ =>
     by
-    simp_rw [mem_sigma_lift, le_def, mem_Icc, exists_and_left, ← exists_and_right, ← exists_prop]
+    simp_rw [mem_sigmaLift, le_def, mem_Icc, exists_and_left, ← exists_and_right, ← exists_prop]
     exact bex_congr fun _ _ => by constructor <;> rintro ⟨⟨⟩, ht⟩ <;> exact ⟨rfl, ht⟩
   finset_mem_Ico := fun ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ =>
     by
-    simp_rw [mem_sigma_lift, le_def, lt_def, mem_Ico, exists_and_left, ← exists_and_right, ←
+    simp_rw [mem_sigmaLift, le_def, lt_def, mem_Ico, exists_and_left, ← exists_and_right, ←
       exists_prop]
     exact bex_congr fun _ _ => by constructor <;> rintro ⟨⟨⟩, ht⟩ <;> exact ⟨rfl, ht⟩
   finset_mem_Ioc := fun ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ =>
     by
-    simp_rw [mem_sigma_lift, le_def, lt_def, mem_Ioc, exists_and_left, ← exists_and_right, ←
+    simp_rw [mem_sigmaLift, le_def, lt_def, mem_Ioc, exists_and_left, ← exists_and_right, ←
       exists_prop]
     exact bex_congr fun _ _ => by constructor <;> rintro ⟨⟨⟩, ht⟩ <;> exact ⟨rfl, ht⟩
   finset_mem_Ioo := fun ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ =>
     by
-    simp_rw [mem_sigma_lift, lt_def, mem_Ioo, exists_and_left, ← exists_and_right, ← exists_prop]
+    simp_rw [mem_sigmaLift, lt_def, mem_Ioo, exists_and_left, ← exists_and_right, ← exists_prop]
     exact bex_congr fun _ _ => by constructor <;> rintro ⟨⟨⟩, ht⟩ <;> exact ⟨rfl, ht⟩
 
 section
 
-variable (a b : Σi, α i)
+variable (a b : Σ i, α i)
 
 theorem card_Icc : (Icc a b).card = if h : a.1 = b.1 then (Icc (h.rec a.2) b.2).card else 0 :=
-  card_sigmaLift _ _ _
+  card_sigmaLift (fun _ => Icc) _ _
 #align sigma.card_Icc Sigma.card_Icc
 
 theorem card_Ico : (Ico a b).card = if h : a.1 = b.1 then (Ico (h.rec a.2) b.2).card else 0 :=
-  card_sigmaLift _ _ _
+  card_sigmaLift (fun _ => Ico) _ _
 #align sigma.card_Ico Sigma.card_Ico
 
 theorem card_Ioc : (Ioc a b).card = if h : a.1 = b.1 then (Ioc (h.rec a.2) b.2).card else 0 :=
-  card_sigmaLift _ _ _
+  card_sigmaLift (fun _ => Ioc) _ _
 #align sigma.card_Ioc Sigma.card_Ioc
 
 theorem card_Ioo : (Ioo a b).card = if h : a.1 = b.1 then (Ioo (h.rec a.2) b.2).card else 0 :=
-  card_sigmaLift _ _ _
+  card_sigmaLift (fun _ => Ioo) _ _
 #align sigma.card_Ioo Sigma.card_Ioo
 
 end
@@ -108,4 +107,3 @@ theorem Ioo_mk_mk : Ioo (⟨i, a⟩ : Sigma α) ⟨i, b⟩ = (Ioo a b).map (Embe
 end Disjoint
 
 end Sigma
-
