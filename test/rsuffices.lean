@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Rsuffices
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Existsi
 import Mathlib.Data.Nat.Basic
 
