@@ -23,3 +23,17 @@ syntax (name := rsuffices) "rsuffices"
 macro_rules
 | `(tactic| rsuffices $[$pred]? $[: $foo]? $[:= $bar]?) =>
 `(tactic | (obtain $[$pred]? $[: $foo]? $[:= $bar]?; rotate_left))
+
+/--
+The `rsufficesI` tactic is an instance-cache aware version of `rsuffices`; it resets the instance
+cache on the resulting goals.
+-/
+syntax (name := rsufficesI) "rsufficesI"
+  (ppSpace Std.Tactic.RCases.rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
+
+macro_rules
+| `(tactic| rsufficesI $[$pred]? $[: $foo]? $[:= $bar]?) =>
+`(tactic | (rsuffices $[$pred]? $[: $foo]? $[:= $bar]?; resetI))
+
+/-meta def rsufficesI (h : parse obtain_parse) : tactic unit :=
+rsuffices h ; resetI-/

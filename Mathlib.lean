@@ -935,6 +935,7 @@ import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Qify.Attr
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Reassoc
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
@@ -948,7 +949,6 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
-import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
