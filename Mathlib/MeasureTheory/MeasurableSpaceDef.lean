@@ -60,7 +60,7 @@ variable {α β γ δ δ' : Type _} {ι : Sort _} {s t u : Set α}
 
 instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 
-/-- `measurable_set s` means that `s` is measurable (in the ambient measure space on `α`) -/
+/-- `MeasurableSet s` means that `s` is measurable (in the ambient measure space on `α`) -/
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 #align measurable_set MeasurableSet
@@ -260,7 +260,7 @@ theorem MeasurableSpace.ext_iff {m₁ m₂ : MeasurableSpace α} :
   ⟨fun h _ => h ▸ Iff.rfl, MeasurableSpace.ext⟩
 #align measurable_space.ext_iff MeasurableSpace.ext_iff
 
-/-- A typeclass mixin for `measurable_space`s such that each singleton is measurable. -/
+/-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
 class MeasurableSingletonClass (α : Type _) [MeasurableSpace α] : Prop where
   measurableSet_singleton : ∀ x, MeasurableSet ({x} : Set α)
 #align measurable_singleton_class MeasurableSingletonClass
@@ -402,7 +402,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
   copy_eq _
 #align measurable_space.mk_of_closure_sets MeasurableSpace.mkOfClosure_sets
 
-/-- We get a Galois insertion between `σ`-algebras on `α` and `set (set α)` by using `generate_from`
+/-- We get a Galois insertion between `σ`-algebras on `α` and `Set (Set α)` by using `generate_from`
   on one side and the collection of measurable sets on the other side. -/
 def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | @MeasurableSet α m t } where
   gc _ := generateFrom_le_iff
