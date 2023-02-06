@@ -206,7 +206,7 @@ for node in sorted(graph.nodes):
             mathlib3_hash=data[node]['mathlib3_hash']
         )
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
-        status = f"Yes {pr_status} {data[node]['mathlib3_hash'] or "_"}"
+        status = f"Yes {pr_status} {data[node]['mathlib3_hash'] or '_'}"
     else:
         new_status = dict(ported=False)
         status = f'No'
