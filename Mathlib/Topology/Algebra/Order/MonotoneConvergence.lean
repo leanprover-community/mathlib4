@@ -9,6 +9,7 @@ Authors: Heather Macbeth, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Bounded monotone sequences converge
@@ -44,7 +45,8 @@ in the definition, then prove it for any `f` in `tendsto_at_top_is_lub`.
 
 This property holds for linear orders with order topology as well as their products. -/
 class SupConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
-  tendsto_coe_atTop_isLUB : ∀ (a : α) (s : Set α), IsLUB s a → Tendsto (coe : s → α) atTop (𝓝 a)
+  tendsto_coe_atTop_isLUB :
+    ∀ (a : α) (s : Set α), IsLUB s a → Tendsto (CoeTC.coe : s → α) atTop (𝓝 a)
 #align Sup_convergence_class SupConvergenceClass
 
 /-- We say that `α` is an `Inf_convergence_class` if the following holds. Let `f : ι → α` be a
@@ -54,7 +56,8 @@ as `x → -∞` (formally, at the filter `filter.at_bot`). We require this for `
 
 This property holds for linear orders with order topology as well as their products. -/
 class InfConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
-  tendsto_coe_atBot_isGLB : ∀ (a : α) (s : Set α), IsGLB s a → Tendsto (coe : s → α) atBot (𝓝 a)
+  tendsto_coe_atBot_isGLB :
+    ∀ (a : α) (s : Set α), IsGLB s a → Tendsto (CoeTC.coe : s → α) atBot (𝓝 a)
 #align Inf_convergence_class InfConvergenceClass
 
 instance OrderDual.supConvergenceClass [Preorder α] [TopologicalSpace α] [InfConvergenceClass α] :
@@ -73,7 +76,7 @@ instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α]
   refine' ⟨fun a s ha => tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩⟩
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
-    refine' (eventually_ge_at_top c).mono fun x hx => bc.trans_le hx
+    refine' (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
   · exact eventually_of_forall fun x => (ha.1 x.2).trans_lt hb
 #align linear_order.Sup_convergence_class LinearOrder.supConvergenceClass
 
@@ -93,9 +96,9 @@ variable [Preorder α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atTop (𝓝 a) := by
-  suffices : tendsto (range_factorization f) at_top at_top
+  suffices : Tendsto (rangeFactorization f) atTop atTop
   exact (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
-  exact h_mono.range_factorization.tendsto_at_top_at_top fun b => b.2.imp fun a ha => ha.ge
+  exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b => b.2.imp fun a ha => ha.ge
 #align tendsto_at_top_is_lub tendsto_atTop_isLUB
 
 theorem tendsto_atBot_isLUB (h_anti : Antitone f) (ha : IsLUB (Set.range f) a) :
@@ -125,7 +128,7 @@ variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → 
 theorem tendsto_atTop_csupr (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
   cases isEmpty_or_nonempty ι
-  exacts[tendsto_of_is_empty, tendsto_atTop_isLUB h_mono (isLUB_csupᵢ hbdd)]
+  exacts[tendsto_of_isEmpty, tendsto_atTop_isLUB h_mono (isLUB_csupᵢ hbdd)]
 #align tendsto_at_top_csupr tendsto_atTop_csupr
 
 theorem tendsto_atBot_csupr (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
@@ -178,18 +181,19 @@ end infᵢ
 
 end
 
-instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [SupConvergenceClass α]
-    [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
+instance supConvergenceClass [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
+  [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
   rintro ⟨a, b⟩ s h
   rw [isLUB_prod, ← range_restrict, ← range_restrict] at h
-  have A : tendsto (fun x : s => (x : α × β).1) at_top (𝓝 a) :=
+  have A : Tendsto (fun x : s => (x : α × β).1) atTop (𝓝 a) :=
     tendsto_atTop_isLUB (monotone_fst.restrict s) h.1
-  have B : tendsto (fun x : s => (x : α × β).2) at_top (𝓝 b) :=
+  have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
     tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
   convert A.prod_mk_nhds B
-  ext1 ⟨⟨x, y⟩, h⟩
-  rfl
+  -- porting note: previous required below to close
+  -- ext1 ⟨⟨x, y⟩, h⟩
+  -- rfl
 
 instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [InfConvergenceClass α]
     [InfConvergenceClass β] : InfConvergenceClass (α × β) :=
@@ -307,17 +311,16 @@ theorem infᵢ_eq_of_tendsto {α} [TopologicalSpace α] [CompleteLinearOrder α]
 #align infi_eq_of_tendsto infᵢ_eq_of_tendsto
 
 theorem supᵢ_eq_supᵢ_subseq_of_monotone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
-    {l : Filter ι₁} [l.ne_bot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)
+    {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)
     (hφ : Tendsto φ l atTop) : (⨆ i, f i) = ⨆ i, f (φ i) :=
   le_antisymm
     (supᵢ_mono' fun i =>
-      Exists.imp (fun j (hj : i ≤ φ j) => hf hj) (hφ.Eventually <| eventually_ge_atTop i).exists)
+      Exists.imp (fun j (hj : i ≤ φ j) => hf hj) (hφ.eventually <| eventually_ge_atTop i).exists)
     (supᵢ_mono' fun i => ⟨φ i, le_rfl⟩)
 #align supr_eq_supr_subseq_of_monotone supᵢ_eq_supᵢ_subseq_of_monotone
 
 theorem infᵢ_eq_infᵢ_subseq_of_monotone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
-    {l : Filter ι₁} [l.ne_bot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)
+    {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)
     (hφ : Tendsto φ l atBot) : (⨅ i, f i) = ⨅ i, f (φ i) :=
   supᵢ_eq_supᵢ_subseq_of_monotone hf.dual hφ
 #align infi_eq_infi_subseq_of_monotone infᵢ_eq_infᵢ_subseq_of_monotone
-
