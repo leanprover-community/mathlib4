@@ -24,6 +24,7 @@ open Filter Topology
 
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/
 class ContinuousStar (R : Type _) [TopologicalSpace R] [Star R] : Prop where
+  /-- The `star` operator is continuous. -/
   continuous_star : Continuous (star : R → R)
 #align has_continuous_star ContinuousStar
 
