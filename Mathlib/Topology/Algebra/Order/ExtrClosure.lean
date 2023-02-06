@@ -16,7 +16,7 @@ import Mathlib.Topology.Order.Basic
 
 In this file we prove several versions of the following statement: if `f : X → Y` has a (local or
 not) maximum (or minimum) on a set `s` at a point `a` and is continuous on the closure of `s`, then
-`f` has an extremum of the same type on `closure s` at `a`.
+`f` has an extremum of the same type on `Closure s` at `a`.
 -/
 
 
@@ -63,4 +63,3 @@ protected theorem IsLocalExtrOn.closure (h : IsLocalExtrOn f s a)
     (hc : ContinuousOn f (closure s)) : IsLocalExtrOn f (closure s) a :=
   h.elim (fun h => Or.inl <| h.closure hc) fun h => Or.inr <| h.closure hc
 #align is_local_extr_on.closure IsLocalExtrOn.closure
-
