@@ -416,8 +416,9 @@ theorem add_def (α β : Type u) : (#α) + (#β) = (#Sum α β) :=
   rfl
 #align cardinal.add_def Cardinal.add_def
 
+--Porting note: changed definition of cast
 instance : NatCast Cardinal.{u} :=
-  ⟨Nat.unaryCast⟩
+  ⟨fun n => lift (#(Fin n))⟩
 
 @[simp]
 theorem mk_sum (α : Type u) (β : Type v) : (#Sum α β) = lift.{v, u} (#α) + lift.{u, v} (#β) :=
@@ -435,15 +436,9 @@ theorem mk_pSum (α : Type u) (β : Type v) : (#PSum α β) = lift.{v} (#α) + l
 #align cardinal.mk_psum Cardinal.mk_pSum
 
 @[simp]
-theorem mk_fintype (α : Type u) [Fintype α] : (mk α) = Fintype.card α := by
-  refine' Fintype.induction_empty_option _ _ _ α
-  · intro α β h e hα
-    letI := Fintype.ofEquiv β e.symm
-    rwa [mk_congr e, Fintype.card_congr e] at hα
-  · rfl
-  · intro α h hα
-    simp [hα]
-    rfl
+theorem mk_fintype (α : Type u) [Fintype α] : (mk α) = Fintype.card α :=
+  show (#α) = (#(ULift (Fin (Fintype.card α))))
+  by rw [Cardinal.eq, ← Fintype.card_eq]; simp
 #align cardinal.mk_fintype Cardinal.mk_fintype
 
 instance : Mul Cardinal.{u} :=
