@@ -240,7 +240,7 @@ instance : LE Cardinal.{u} :=
     Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>
       propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
 
-instance : PartialOrder Cardinal.{u} where
+instance partialOrder : PartialOrder Cardinal.{u} where
   le := (· ≤ ·)
   le_refl := by
     rintro ⟨α⟩
@@ -416,9 +416,10 @@ theorem add_def (α β : Type u) : (#α) + (#β) = (#Sum α β) :=
   rfl
 #align cardinal.add_def Cardinal.add_def
 
---Porting note: changed definition of cast
+-- Porting note: Should this be changed to
+-- `⟨fun n => lift (#(Fin n))⟩` in the future?
 instance : NatCast Cardinal.{u} :=
-  ⟨fun n => lift (#(Fin n))⟩
+⟨Nat.unaryCast⟩
 
 @[simp]
 theorem mk_sum (α : Type u) (β : Type v) : (#Sum α β) = lift.{v, u} (#α) + lift.{u, v} (#β) :=
@@ -436,9 +437,15 @@ theorem mk_pSum (α : Type u) (β : Type v) : (#PSum α β) = lift.{v} (#α) + l
 #align cardinal.mk_psum Cardinal.mk_pSum
 
 @[simp]
-theorem mk_fintype (α : Type u) [Fintype α] : (mk α) = Fintype.card α :=
-  show (#α) = (#(ULift (Fin (Fintype.card α))))
-  by rw [Cardinal.eq, ← Fintype.card_eq]; simp
+theorem mk_fintype (α : Type u) [h : Fintype α] : (#α) = Fintype.card α := by
+  refine Fintype.induction_empty_option ?_ ?_ ?_ α h
+  · intro α β h e hα
+    letI := Fintype.ofEquiv β e.symm
+    rwa [mk_congr e, Fintype.card_congr e] at hα
+  · rfl
+  · intro α h hα
+    simp [hα]
+    rfl
 #align cardinal.mk_fintype Cardinal.mk_fintype
 
 instance : Mul Cardinal.{u} :=
@@ -461,13 +468,19 @@ private theorem mul_comm' (a b : Cardinal.{u}) : a * b = b * a :=
 instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
   ⟨map₂ (fun α β => β → α) fun _ _ _ _ e₁ e₂ => e₂.arrowCongr e₁⟩
 
--- mathport name: cardinal.pow
-local infixr:0 "^" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
+-- -- Porting note: TODO remove this and deal with the error message concerning `infixr` and `@`.
+-- set_option quotPrecheck false
 
--- mathport name: cardinal.pow.nat
+-- -- Porting note: I think this is not needed anymore.
+-- -- mathport name: cardinal.pow
+-- local infixr:0 "^" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
+
+-- Porting note: TODO this doesnt work as a notation!
+-- -- mathport name: cardinal.pow.nat
+set_option quotPrecheck false in
 local infixr:80 " ^ℕ " => @Pow.pow Cardinal ℕ Monoid.Pow
 
-theorem power_def (α β) : ((#α)^#β) = (#β → α) :=
+theorem power_def (α β) : ((#α) ^ (#β)) = (#β → α) :=
   rfl
 #align cardinal.power_def Cardinal.power_def
 
@@ -476,26 +489,26 @@ theorem mk_arrow (α : Type u) (β : Type v) : (#α → β) = (lift.{u} (#β)^li
 #align cardinal.mk_arrow Cardinal.mk_arrow
 
 @[simp]
-theorem lift_power (a b) : lift (a^b) = (lift a^lift b) :=
-  inductionOn₂ a b fun α β =>
+theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = ((lift.{v} a) ^ (lift.{v} b)) :=
+  inductionOn₂ a b fun _ _ =>
     mk_congr <| Equiv.ulift.trans (Equiv.ulift.arrowCongr Equiv.ulift).symm
 #align cardinal.lift_power Cardinal.lift_power
 
 @[simp]
-theorem power_zero {a : Cardinal} : (a^0) = 1 :=
+theorem power_zero {a : Cardinal} : (a ^ 0) = 1 :=
   inductionOn a fun α => mk_congr <| Equiv.pemptyArrowEquivPUnit α
 #align cardinal.power_zero Cardinal.power_zero
 
 @[simp]
-theorem power_one {a : Cardinal} : (a^1) = a :=
+theorem power_one {a : Cardinal} : (a ^ 1) = a :=
   inductionOn a fun α => mk_congr <| Equiv.punitArrowEquiv α
 #align cardinal.power_one Cardinal.power_one
 
-theorem power_add {a b c : Cardinal} : (a^b + c) = (a^b) * (a^c) :=
+theorem power_add {a b c : Cardinal} : (a ^ (b + c)) = (a ^ b) * (a ^ c) :=
   inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumArrowEquivProdArrow β γ α
 #align cardinal.power_add Cardinal.power_add
 
-instance : CommSemiring Cardinal.{u} where
+instance commSemiring : CommSemiring Cardinal.{u} where
   zero := 0
   one := 1
   add := (· + ·)
@@ -514,20 +527,26 @@ instance : CommSemiring Cardinal.{u} where
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
   npow n c := c^n
   npow_zero := @power_zero
-  npow_succ n c := show (c^n + 1) = c * (c^n) by rw [power_add, power_one, mul_comm']
+  npow_succ n c := show (c ^ (n + 1)) = c * (c ^ n) by rw [power_add, power_one, mul_comm']
+
+/-! Porting note: Deprecated section. Remove. -/
+section deprecated
+set_option linter.deprecated false
 
 @[deprecated]
-theorem power_bit0 (a b : Cardinal) : (a^bit0 b) = (a^b) * (a^b) :=
+theorem power_bit0 (a b : Cardinal) : (a ^ bit0 b) = (a ^ b) * (a ^ b) :=
   power_add
 #align cardinal.power_bit0 Cardinal.power_bit0
 
 @[deprecated]
-theorem power_bit1 (a b : Cardinal) : (a^bit1 b) = (a^b) * (a^b) * a := by
+theorem power_bit1 (a b : Cardinal) : (a ^ bit1 b) = (a ^ b) * (a ^ b) * a := by
   rw [bit1, ← power_bit0, power_add, power_one]
 #align cardinal.power_bit1 Cardinal.power_bit1
 
+end deprecated
+
 @[simp]
-theorem one_power {a : Cardinal} : (1^a) = 1 :=
+theorem one_power {a : Cardinal} : (1 ^ a) = 1 :=
   inductionOn a fun α => (Equiv.arrowPUnitEquivPUnit α).cardinal_eq
 #align cardinal.one_power Cardinal.one_power
 
@@ -540,26 +559,25 @@ theorem mk_Prop : (#Prop) = 2 := by simp
 #align cardinal.mk_Prop Cardinal.mk_Prop
 
 @[simp]
-theorem zero_power {a : Cardinal} : a ≠ 0 → (0^a) = 0 :=
-  inductionOn a fun α heq =>
+theorem zero_power {a : Cardinal} : a ≠ 0 → (0 ^ a) = 0 :=
+  inductionOn a fun _ heq =>
     mk_eq_zero_iff.2 <|
       isEmpty_pi.2 <|
-        let ⟨a⟩ := mk_ne_zero_iff.1 HEq
-        ⟨a, PEmpty.isEmpty⟩
+        let ⟨a⟩ := mk_ne_zero_iff.1 heq
+        ⟨a, inferInstance⟩
 #align cardinal.zero_power Cardinal.zero_power
 
-theorem power_ne_zero {a : Cardinal} (b) : a ≠ 0 → (a^b) ≠ 0 :=
-  inductionOn₂ a b fun α β h =>
+theorem power_ne_zero {a : Cardinal} (b) : a ≠ 0 → (a ^ b) ≠ 0 :=
+  inductionOn₂ a b fun _ _ h =>
     let ⟨a⟩ := mk_ne_zero_iff.1 h
     mk_ne_zero_iff.2 ⟨fun _ => a⟩
 #align cardinal.power_ne_zero Cardinal.power_ne_zero
 
-theorem mul_power {a b c : Cardinal} : (a * b^c) = (a^c) * (b^c) :=
+theorem mul_power {a b c : Cardinal} : ((a * b) ^ c) = (a ^ c) * (b ^ c) :=
   inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.arrowProdEquivProdArrow α β γ
 #align cardinal.mul_power Cardinal.mul_power
 
-theorem power_mul {a b c : Cardinal} : (a^b * c) = ((a^b)^c) :=
-  by
+theorem power_mul {a b c : Cardinal} : (a ^ (b * c)) = ((a ^ b) ^ c) := by
   rw [mul_comm b c]
   exact inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.curry γ β α
 #align cardinal.power_mul Cardinal.power_mul
@@ -575,59 +593,67 @@ theorem lift_one : lift 1 = 1 :=
 #align cardinal.lift_one Cardinal.lift_one
 
 @[simp]
-theorem lift_add (a b) : lift (a + b) = lift a + lift b :=
-  inductionOn₂ a b fun α β =>
+theorem lift_add (a b : Cardinal.{u}) : lift.{v} (a + b) = lift.{v} a + lift.{v} b :=
+  inductionOn₂ a b fun _ _ =>
     mk_congr <| Equiv.ulift.trans (Equiv.sumCongr Equiv.ulift Equiv.ulift).symm
 #align cardinal.lift_add Cardinal.lift_add
 
 @[simp]
-theorem lift_mul (a b) : lift (a * b) = lift a * lift b :=
-  inductionOn₂ a b fun α β =>
+theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v} b :=
+  inductionOn₂ a b fun _ _ =>
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 #align cardinal.lift_mul Cardinal.lift_mul
 
+/-! Porting note: Deprecated section. Remove. -/
+section deprecated
+set_option linter.deprecated false
+
 @[simp]
-theorem lift_bit0 (a : Cardinal) : lift (bit0 a) = bit0 (lift a) :=
+theorem lift_bit0 (a : Cardinal) : lift.{v} (bit0 a) = bit0 (lift.{v} a) :=
   lift_add a a
 #align cardinal.lift_bit0 Cardinal.lift_bit0
 
 @[simp]
-theorem lift_bit1 (a : Cardinal) : lift (bit1 a) = bit1 (lift a) := by simp [bit1]
+theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by simp [bit1]
 #align cardinal.lift_bit1 Cardinal.lift_bit1
+
+end deprecated
 
 theorem lift_two : lift.{u, v} 2 = 2 := by simp
 #align cardinal.lift_two Cardinal.lift_two
 
 @[simp]
-theorem mk_set {α : Type u} : (#Set α) = (2^#α) := by simp [Set, mk_arrow]
+theorem mk_set {α : Type u} : (#Set α) = (2 ^ (#α)) := by simp [Set, mk_arrow]
 #align cardinal.mk_set Cardinal.mk_set
 
 /-- A variant of `cardinal.mk_set` expressed in terms of a `set` instead of a `Type`. -/
 @[simp]
-theorem mk_powerset {α : Type u} (s : Set α) : (#↥(𝒫 s)) = (2^#↥s) :=
+theorem mk_powerset {α : Type u} (s : Set α) : (#↥(𝒫 s)) = (2 ^ (#↥s)) :=
   (mk_congr (Equiv.Set.powerset s)).trans mk_set
 #align cardinal.mk_powerset Cardinal.mk_powerset
 
-theorem lift_two_power (a) : lift (2^a) = (2^lift a) := by simp
+theorem lift_two_power (a) : lift.{v} (2 ^ a) = (2 ^ lift.{v} a) := by simp
 #align cardinal.lift_two_power Cardinal.lift_two_power
 
 section OrderProperties
 
 open Sum
 
-protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by rintro ⟨α⟩ <;> exact ⟨embedding.of_is_empty⟩
+protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
+  rintro ⟨α⟩
+  exact ⟨Embedding.ofIsEmpty⟩
 #align cardinal.zero_le Cardinal.zero_le
 
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩ <;> exact ⟨e₁.sum_map e₂⟩
-#align cardinal.add_le_add' cardinal.add_le_add'
+-- #align cardinal.add_le_add' Cardinal.add_le_add'
 
 instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
-  ⟨fun a b c => add_le_add' le_rfl⟩
+  ⟨fun _ _ _ => add_le_add' le_rfl⟩
 #align cardinal.add_covariant_class Cardinal.add_covariantClass
 
 instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + ·)) (· ≤ ·) :=
-  ⟨fun a b c h => add_le_add' h le_rfl⟩
+  ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 #align cardinal.add_swap_covariant_class Cardinal.add_swap_covariantClass
 
 instance : CanonicallyOrderedCommSemiring Cardinal.{u} :=
@@ -658,7 +684,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → (a
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ hα ⟨e⟩ <;>
     exact
       let ⟨a⟩ := mk_ne_zero_iff.1 hα
-      ⟨@embedding.arrow_congr_left _ _ _ ⟨a⟩ e⟩
+      ⟨@Embedding.arrow_congr_left _ _ _ ⟨a⟩ e⟩
 #align cardinal.power_le_power_left Cardinal.power_le_power_left
 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ (a^b) :=
