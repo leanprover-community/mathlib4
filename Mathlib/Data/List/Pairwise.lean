@@ -38,6 +38,7 @@ namespace List
 variable {α β : Type _} {R S T : α → α → Prop} {a : α} {l : List α}
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
+#align list.pairwise_iff List.pairwise_iff
 
 /-! ### Pairwise -/
 
@@ -422,6 +423,7 @@ theorem pwFilter_eq_self {l : List α} : pwFilter R l = l ↔ Pairwise R l :=
 #align list.pw_filter_eq_self List.pwFilter_eq_self
 
 alias pwFilter_eq_self ↔ _ Pairwise.pwFilter
+#align list.pairwise.pw_filter List.Pairwise.pwFilter
 
 -- Porting note: commented out
 -- attribute [protected] List.Pairwise.pwFilter

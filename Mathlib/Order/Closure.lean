@@ -90,6 +90,7 @@ def id : ClosureOperator α where
   le_closure' _ := le_rfl
   idempotent' _ := rfl
 #align closure_operator.id ClosureOperator.id
+#align closure_operator.id_apply ClosureOperator.id_apply
 
 instance : Inhabited (ClosureOperator α) :=
   ⟨id α⟩
@@ -111,6 +112,7 @@ def mk' (f : α → α) (hf₁ : Monotone f) (hf₂ : ∀ x, x ≤ f x) (hf₃ :
   le_closure' := hf₂
   idempotent' x := (hf₃ x).antisymm (hf₁ (hf₂ x))
 #align closure_operator.mk' ClosureOperator.mk'
+#align closure_operator.mk'_apply ClosureOperator.mk'_apply
 
 /-- Convenience constructor for a closure operator using the weaker minimality axiom:
 `x ≤ f y → f x ≤ f y`, which is sometimes easier to prove in practice. -/
@@ -122,6 +124,7 @@ def mk₂ (f : α → α) (hf : ∀ x, x ≤ f x) (hmin : ∀ ⦃x y⦄, x ≤ f
   le_closure' := hf
   idempotent' _ := (hmin le_rfl).antisymm (hf _)
 #align closure_operator.mk₂ ClosureOperator.mk₂
+#align closure_operator.mk₂_apply ClosureOperator.mk₂_apply
 
 /-- Expanded out version of `mk₂`. `p` implies being closed. This constructor should be used when
 you already know a sufficient condition for being closed and using `mem_mk₃_closed` will avoid you
@@ -131,6 +134,7 @@ def mk₃ (f : α → α) (p : α → Prop) (hf : ∀ x, x ≤ f x) (hfp : ∀ x
     (hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y) : ClosureOperator α :=
   mk₂ f hf fun _ y hxy => hmin hxy (hfp y)
 #align closure_operator.mk₃ ClosureOperator.mk₃
+#align closure_operator.mk₃_apply ClosureOperator.mk₃_apply
 
 /-- This lemma shows that the image of `x` of a closure operator built from the `mk₃` constructor
 respects `p`, the property that was fed into it. -/
@@ -317,6 +321,7 @@ protected def id [Preorder α] : LowerAdjoint (id : α → α)
   toFun x := x
   gc' := GaloisConnection.id
 #align lower_adjoint.id LowerAdjoint.id
+#align lower_adjoint.id_to_fun LowerAdjoint.id_toFun
 
 variable {α}
 
@@ -370,6 +375,7 @@ def closureOperator : ClosureOperator α where
   le_closure' := l.le_closure
   idempotent' x := l.gc.u_l_u_eq_u (l x)
 #align lower_adjoint.closure_operator LowerAdjoint.closureOperator
+#align lower_adjoint.closure_operator_apply LowerAdjoint.closureOperator_apply
 
 theorem idempotent (x : α) : u (l (u (l x))) = u (l x) :=
   l.closureOperator.idempotent _
@@ -547,6 +553,7 @@ def GaloisConnection.lowerAdjoint [Preorder α] [Preorder β] {l : α → β} {u
   toFun := l
   gc' := gc
 #align galois_connection.lower_adjoint GaloisConnection.lowerAdjoint
+#align galois_connection.lower_adjoint_to_fun GaloisConnection.lowerAdjoint_toFun
 
 /-- Every Galois connection induces a closure operator given by the composition. This is the partial
 order version of the statement that every adjunction induces a monad. -/
@@ -555,6 +562,7 @@ def GaloisConnection.closureOperator [PartialOrder α] [Preorder β] {l : α →
     (gc : GaloisConnection l u) : ClosureOperator α :=
   gc.lowerAdjoint.closureOperator
 #align galois_connection.closure_operator GaloisConnection.closureOperator
+#align galois_connection.closure_operator_apply GaloisConnection.closureOperator_apply
 
 /-- The set of closed elements has a Galois insertion to the underlying type. -/
 def _root_.ClosureOperator.gi [PartialOrder α] (c : ClosureOperator α) :

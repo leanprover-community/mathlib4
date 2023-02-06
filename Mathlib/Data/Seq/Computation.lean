@@ -436,7 +436,7 @@ def Promises (s : Computation α) (a : α) : Prop :=
 -- mathport name: «expr ~> »
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
   may not terminate, if it does, then the result is `a`. -/
-infixl:50 " ~> " => Promises
+scoped infixl:50 " ~> " => Promises
 
 theorem mem_promises {s : Computation α} {a : α} : a ∈ s → s ~> a := fun h _ => mem_unique h
 #align computation.mem_promises Computation.mem_promises
@@ -983,7 +983,7 @@ def Equiv (c₁ c₂ : Computation α) : Prop :=
 
 -- mathport name: «expr ~ »
 /-- equivalence relation for computations-/
-infixl:50 " ~ " => Equiv
+scoped infixl:50 " ~ " => Equiv
 
 @[refl]
 theorem Equiv.refl (s : Computation α) : s ~ s := fun _ => Iff.rfl

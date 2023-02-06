@@ -46,9 +46,12 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
   /-- A functor preserves composition. -/
   map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop_cat
 #align category_theory.functor CategoryTheory.Functor
+#align category_theory.functor.map_comp CategoryTheory.Functor.map_comp
+#align category_theory.functor.map_id CategoryTheory.Functor.map_id
 
 /-- The prefunctor between the underlying quivers. -/
 add_decl_doc Functor.toPrefunctor
+#align category_theory.functor.to_prefunctor CategoryTheory.Functor.toPrefunctor
 
 end
 
@@ -61,6 +64,7 @@ attribute [simp] Functor.map_id
 -- We intentionally don't add `simp` to the `reassoc` lemma,
 -- which is only useful for rewriting backwards.
 attribute [reassoc, simp] Functor.map_comp
+#align category_theory.functor.map_comp_assoc CategoryTheory.Functor.map_comp_assoc
 
 namespace Functor
 
@@ -108,6 +112,7 @@ def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
 #align category_theory.functor.comp CategoryTheory.Functor.comp
+#align category_theory.functor.comp_obj CategoryTheory.Functor.comp_obj
 
 /-- Notation for composition of functors. -/
 infixr:80 " ⋙ " => comp

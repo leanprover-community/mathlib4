@@ -236,6 +236,7 @@ def RingHom.toOpposite {R S : Type _} [Semiring R] [Semiring S] (f : R →+* S)
   { ((opAddEquiv : S ≃+ Sᵐᵒᵖ).toAddMonoidHom.comp ↑f : R →+ Sᵐᵒᵖ), f.toMonoidHom.toOpposite hf with
     toFun := MulOpposite.op ∘ f }
 #align ring_hom.to_opposite RingHom.toOpposite
+#align ring_hom.to_opposite_apply RingHom.toOpposite_apply
 
 /-- A ring homomorphism `f : R →+* S` such that `f x` commutes with `f y` for all `x, y` defines
 a ring homomorphism from `Rᵐᵒᵖ`. -/
@@ -245,6 +246,7 @@ def RingHom.fromOpposite {R S : Type _} [Semiring R] [Semiring S] (f : R →+* S
   { (f.toAddMonoidHom.comp (opAddEquiv : R ≃+ Rᵐᵒᵖ).symm.toAddMonoidHom : Rᵐᵒᵖ →+ S),
     f.toMonoidHom.fromOpposite hf with toFun := f ∘ MulOpposite.unop }
 #align ring_hom.from_opposite RingHom.fromOpposite
+#align ring_hom.from_opposite_apply RingHom.fromOpposite_apply
 
 /-- A ring hom `α →+* β` can equivalently be viewed as a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. This is the
 action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
@@ -256,6 +258,7 @@ def RingHom.op {α β} [NonAssocSemiring α] [NonAssocSemiring β] :
   left_inv _ := rfl
   right_inv _ := rfl
 #align ring_hom.op RingHom.op
+#align ring_hom.op_symm_apply_apply RingHom.op_symm_apply_apply
 
 /-- The 'unopposite' of a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. Inverse to `RingHom.op`. -/
 @[simp]

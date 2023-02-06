@@ -79,6 +79,7 @@ def bind {β γ} (f : α →o Part β) (g : α →o β → Part γ) : α →o Pa
     intro b hb ha
     refine' ⟨b, f.monotone h _ hb, g.monotone h _ _ ha⟩
 #align order_hom.bind OrderHom.bind
+#align order_hom.bind_coe OrderHom.bind_coe
 
 end OrderHom
 
@@ -115,6 +116,7 @@ instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 def map : Chain β :=
   f.comp c
 #align omega_complete_partial_order.chain.map OmegaCompletePartialOrder.Chain.map
+#align omega_complete_partial_order.chain.map_coe OmegaCompletePartialOrder.Chain.map_coe
 
 variable {f}
 
@@ -155,6 +157,7 @@ theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
 def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
   OrderHom.prod c₀ c₁
 #align omega_complete_partial_order.chain.zip OmegaCompletePartialOrder.Chain.zip
+#align omega_complete_partial_order.chain.zip_coe OmegaCompletePartialOrder.Chain.zip_coe
 
 end Chain
 
@@ -453,6 +456,8 @@ variable [OmegaCompletePartialOrder γ]
 protected def ωSup (c : Chain (α × β)) : α × β :=
   (ωSup (c.map OrderHom.fst), ωSup (c.map OrderHom.snd))
 #align prod.ωSup Prod.ωSup
+#align prod.ωSup_snd Prod.ωSup_snd
+#align prod.ωSup_fst Prod.ωSup_fst
 
 @[simps ωSup_fst ωSup_snd]
 instance : OmegaCompletePartialOrder (α × β) where
@@ -562,6 +567,7 @@ protected def ωSup (c : Chain (α →o β)) : α →o β where
   toFun a := ωSup (c.map (OrderHom.apply a))
   monotone' _ _ h := ωSup_le_ωSup_of_le ((Chain.map_le_map _) fun a => a.monotone h)
 #align omega_complete_partial_order.order_hom.ωSup OmegaCompletePartialOrder.OrderHom.ωSup
+#align omega_complete_partial_order.order_hom.ωSup_coe OmegaCompletePartialOrder.OrderHom.ωSup_coe
 
 @[simps ωSup_coe]
 instance omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=
@@ -569,6 +575,7 @@ instance omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=
 #align
   omega_complete_partial_order.order_hom.omega_complete_partial_order
   OmegaCompletePartialOrder.OrderHom.omegaCompletePartialOrder
+#align omega_complete_partial_order.order_hom.omega_complete_partial_order_ωSup_coe OmegaCompletePartialOrder.OrderHom.omegaCompletePartialOrder_ωSup_coe
 
 end OrderHom
 
@@ -736,12 +743,14 @@ def ofMono (f : α →o β) (h : ∀ c : Chain α, f (ωSup c) = ωSup (c.map f)
 def id : α →𝒄 α :=
   ofMono OrderHom.id continuous_id
 #align omega_complete_partial_order.continuous_hom.id OmegaCompletePartialOrder.ContinuousHom.id
+#align omega_complete_partial_order.continuous_hom.id_apply OmegaCompletePartialOrder.ContinuousHom.id_apply
 
 /-- The composition of continuous functions. -/
 @[simps]
 def comp (f : β →𝒄 γ) (g : α →𝒄 β) : α →𝒄 γ :=
   ofMono (OrderHom.comp ↑f ↑g) (continuous_comp _ _ g.cont f.cont)
 #align omega_complete_partial_order.continuous_hom.comp OmegaCompletePartialOrder.ContinuousHom.comp
+#align omega_complete_partial_order.continuous_hom.comp_apply OmegaCompletePartialOrder.ContinuousHom.comp_apply
 
 @[ext]
 protected theorem ext (f g : α →𝒄 β) (h : ∀ x, f x = g x) : f = g := by
@@ -806,6 +815,7 @@ def toMono : (α →𝒄 β) →o α →o β where
 #align
   omega_complete_partial_order.continuous_hom.to_mono
   OmegaCompletePartialOrder.ContinuousHom.toMono
+#align omega_complete_partial_order.continuous_hom.to_mono_coe OmegaCompletePartialOrder.ContinuousHom.toMono_coe
 
 /-- When proving that a chain of applications is below a bound `z`, it suffices to consider the
 functions and values being selected from the same index in the chains.
@@ -848,6 +858,7 @@ protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
         OrderHom.omegaCompletePartialOrder_ωSup_coe, forall_forall_merge,
         forall_forall_merge', (· ∘ ·), Function.eval])
 #align omega_complete_partial_order.continuous_hom.ωSup OmegaCompletePartialOrder.ContinuousHom.ωSup
+#align omega_complete_partial_order.continuous_hom.ωSup_apply OmegaCompletePartialOrder.ContinuousHom.ωSup_apply
 
 @[simps ωSup]
 instance : OmegaCompletePartialOrder (α →𝒄 β) :=
@@ -886,6 +897,7 @@ def apply : (α →𝒄 β) × α →𝒄 β where
 #align
   omega_complete_partial_order.continuous_hom.prod.apply
   OmegaCompletePartialOrder.ContinuousHom.Prod.apply
+#align omega_complete_partial_order.continuous_hom.prod.apply_apply OmegaCompletePartialOrder.ContinuousHom.Prod.apply_apply
 
 end Prod
 
@@ -909,6 +921,7 @@ def flip {α : Type _} (f : α → β →𝒄 γ) :
   monotone' x y h a := (f a).monotone h
   cont := by intro _ _; ext x; change f _ _ = _; rw [(f _).continuous]; rfl
 #align omega_complete_partial_order.continuous_hom.flip OmegaCompletePartialOrder.ContinuousHom.flip
+#align omega_complete_partial_order.continuous_hom.flip_apply OmegaCompletePartialOrder.ContinuousHom.flip_apply
 
 /-- `Part.bind` as a continuous function. -/
 @[simps] --Porting note: removed `(config := { rhsMd := reducible })`
@@ -926,6 +939,7 @@ noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) 
     simp only [map_eq_bind_pure_comp, bind, OrderHom.bind_coe, const_apply,
       OrderHom.const_coe_coe]
 #align omega_complete_partial_order.continuous_hom.map OmegaCompletePartialOrder.ContinuousHom.map
+#align omega_complete_partial_order.continuous_hom.map_apply OmegaCompletePartialOrder.ContinuousHom.map_apply
 
 /-- `Part.seq` as a continuous function. -/
 @[simps] --Porting note: removed `(config := { rhsMd := reducible })`
@@ -936,6 +950,7 @@ noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α
         bind, OrderHom.bind_coe, flip_apply]
       rfl
 #align omega_complete_partial_order.continuous_hom.seq OmegaCompletePartialOrder.ContinuousHom.seq
+#align omega_complete_partial_order.continuous_hom.seq_apply OmegaCompletePartialOrder.ContinuousHom.seq_apply
 
 end ContinuousHom
 

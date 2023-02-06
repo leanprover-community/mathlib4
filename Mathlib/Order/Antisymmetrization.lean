@@ -75,6 +75,7 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] {a b : α} : Antisymm
 #align antisymm_rel_iff_eq antisymmRel_iff_eq
 
 alias antisymmRel_iff_eq ↔ AntisymmRel.eq _
+#align antisymm_rel.eq AntisymmRel.eq
 
 end Relation
 
@@ -87,6 +88,7 @@ variable (α) (r : α → α → Prop) [IsPreorder α r]
 def AntisymmRel.setoid : Setoid α :=
   ⟨AntisymmRel r, antisymmRel_refl _, AntisymmRel.symm, AntisymmRel.trans⟩
 #align antisymm_rel.setoid AntisymmRel.setoid
+#align antisymm_rel.setoid_r AntisymmRel.setoid_r
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
 the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
@@ -254,6 +256,7 @@ noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (�
   inj' _ _ := Quotient.out_inj.1
   map_rel_iff' := ofAntisymmetrization_le_ofAntisymmetrization_iff
 #align order_embedding.of_antisymmetrization OrderEmbedding.ofAntisymmetrization
+#align order_embedding.of_antisymmetrization_apply OrderEmbedding.ofAntisymmetrization_apply
 
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :

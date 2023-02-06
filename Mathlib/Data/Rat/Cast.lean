@@ -323,6 +323,7 @@ theorem cast_mono : Monotone ((↑) : ℚ → K) :=
 def castOrderEmbedding : ℚ ↪o K :=
   OrderEmbedding.ofStrictMono (↑) cast_strictMono
 #align rat.cast_order_embedding Rat.castOrderEmbedding
+#align rat.cast_order_embedding_apply Rat.castOrderEmbedding_apply
 
 @[simp, norm_cast]
 theorem cast_le {m n : ℚ} : (m : K) ≤ n ↔ m ≤ n :=

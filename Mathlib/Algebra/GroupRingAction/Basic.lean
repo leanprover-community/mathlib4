@@ -62,6 +62,7 @@ instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemir
 def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
   { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
 #align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
+#align mul_semiring_action.to_ring_hom_apply MulSemiringAction.toRingHom_apply
 
 theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
@@ -73,6 +74,8 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
 def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
   { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
 #align mul_semiring_action.to_ring_equiv MulSemiringAction.toRingEquiv
+#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symmApply
+#align mul_semiring_action.to_ring_equiv_apply MulSemiringAction.toRingEquiv_apply
 
 section
 

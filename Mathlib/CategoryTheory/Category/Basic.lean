@@ -144,6 +144,9 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h :=
     by aesop_cat
 #align category_theory.category CategoryTheory.Category
+#align category_theory.category.assoc CategoryTheory.Category.assoc
+#align category_theory.category.comp_id CategoryTheory.Category.comp_id
+#align category_theory.category.id_comp CategoryTheory.Category.id_comp
 
 -- Porting note: `restate_axiom` should not be necessary in lean4
 -- Hopefully we can just remove the backticks from field names,

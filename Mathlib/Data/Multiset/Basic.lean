@@ -876,6 +876,7 @@ instance is_wellFounded_lt : WellFoundedLT (Multiset α) :=
 /-- `replicate n a` is the multiset containing only `a` with multiplicity `n`. -/
 def replicate (n : ℕ) (a : α) : Multiset α :=
   List.replicate n a
+#align multiset.replicate Multiset.replicate
 
 theorem coe_replicate (n : ℕ) (a : α) : (List.replicate n a : Multiset α) = replicate n a := rfl
 #align multiset.coe_replicate Multiset.coe_replicate
@@ -897,6 +898,7 @@ def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
   map_zero' := replicate_zero a
   map_add' := fun _ _ => replicate_add _ _ a
 #align multiset.replicate_add_monoid_hom Multiset.replicateAddMonoidHom
+#align multiset.replicate_add_monoid_hom_apply Multiset.replicateAddMonoidHom_apply
 
 -- @[simp] -- Porting note: simp can prove this
 theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
@@ -2621,6 +2623,7 @@ image under `f`. -/
 def mapEmbedding (f : α ↪ β) : Multiset α ↪o Multiset β :=
   OrderEmbedding.ofMapLeIff (map f) fun _ _ => map_le_map_iff f.inj'
 #align multiset.map_embedding Multiset.mapEmbedding
+#align multiset.map_embedding_apply Multiset.mapEmbedding_apply
 
 end Embedding
 
@@ -2657,6 +2660,7 @@ inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
   | zero : Rel r 0 0
   | cons {a b as bs} : r a b → Rel r as bs → Rel r (a ::ₘ as) (b ::ₘ bs)
 #align multiset.rel Multiset.Rel
+#align multiset.rel_iff Multiset.Rel_iff
 
 variable {δ : Type _} {r : α → β → Prop} {p : γ → δ → Prop}
 

@@ -108,6 +108,8 @@ structure ShelfHom (S₁ : Type _) (S₂ : Type _) [Shelf S₁] [Shelf S₂] whe
   /-- The homomorphism property of a Shelf Homomorphism-/
   map_act' : ∀ {x y : S₁}, toFun (Shelf.act x y) = Shelf.act (toFun x) (toFun y)
 #align shelf_hom ShelfHom
+#align shelf_hom.ext_iff ShelfHom.ext_iff
+#align shelf_hom.ext ShelfHom.ext
 
 /-- A *rack* is an automorphic set (a set with an action on itself by
 bijections) that is self-distributive.  It is a shelf such that each

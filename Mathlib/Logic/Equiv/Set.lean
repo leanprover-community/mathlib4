@@ -177,6 +177,7 @@ def setProdEquivSigma {α β : Type _} (s : Set (α × β)) :
 def setCongr {α : Type _} {s t : Set α} (h : s = t) : s ≃ t :=
   subtypeEquivProp h
 #align equiv.set_congr Equiv.setCongr
+#align equiv.set_congr_apply Equiv.setCongr_apply
 
 -- We could construct this using `Equiv.Set.image e s e.injective`,
 -- but this definition provides an explicit inverse.
@@ -193,6 +194,8 @@ def image {α β : Type _} (e : α ≃ β) (s : Set α) :
   left_inv x := by simp
   right_inv y := by simp
 #align equiv.image Equiv.image
+#align equiv.image_symm_apply_coe Equiv.image_symm_apply_coe
+#align equiv.image_apply_coe Equiv.image_apply_coe
 
 namespace Set
 
@@ -471,6 +474,8 @@ protected def univPi {α : Type _} {β : α → Type _} (s : ∀ a, Set (β a)) 
     ext a
     rfl
 #align equiv.set.univ_pi Equiv.Set.univPi
+#align equiv.set.univ_pi_symm_apply_coe Equiv.Set.univPi_symm_apply_coe
+#align equiv.set.univ_pi_apply_coe Equiv.Set.univPi_apply_coe
 
 /-- If a function `f` is injective on a set `s`, then `s` is equivalent to `f '' s`. -/
 protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H : InjOn f s) :
@@ -488,6 +493,7 @@ protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H
 protected noncomputable def image {α β} (f : α → β) (s : Set α) (H : Injective f) : s ≃ f '' s :=
   Equiv.Set.imageOfInjOn f s (H.injOn s)
 #align equiv.set.image Equiv.Set.image
+#align equiv.set.image_apply Equiv.Set.image_apply
 
 @[simp]
 protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Injective f) (x : α)
@@ -508,6 +514,8 @@ theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Se
 protected def congr {α β : Type _} (e : α ≃ β) : Set α ≃ Set β :=
   ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
 #align equiv.set.congr Equiv.Set.congr
+#align equiv.set.congr_apply Equiv.Set.congr_apply
+#align equiv.set.congr_symm_apply Equiv.Set.congr_symm_apply
 
 /-- The set `{x ∈ s | t x}` is equivalent to the set of `x : s` such that `t x`. -/
 protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
@@ -540,6 +548,8 @@ noncomputable def rangeSplittingImageEquiv {α β : Type _} (f : α → β) (s :
     simp [apply_rangeSplitting f]
   right_inv x := by simp [apply_rangeSplitting f]
 #align equiv.set.range_splitting_image_equiv Equiv.Set.rangeSplittingImageEquiv
+#align equiv.set.range_splitting_image_equiv_symm_apply_coe Equiv.Set.rangeSplittingImageEquiv_symm_apply_coe
+#align equiv.set.range_splitting_image_equiv_apply_coe_coe Equiv.Set.rangeSplittingImageEquiv_apply_coe_coe
 
 end Set
 
@@ -560,6 +570,8 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
   right_inv := fun ⟨b, a, ha⟩ =>
     Subtype.eq <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha
 #align equiv.of_left_inverse Equiv.ofLeftInverse
+#align equiv.of_left_inverse_apply_coe Equiv.ofLeftInverse_apply_coe
+#align equiv.of_left_inverse_symm_apply Equiv.ofLeftInverse_symm_apply
 
 /-- If `f : α → β` has a left-inverse, then `α` is computably equivalent to the range of `f`.
 
@@ -575,6 +587,7 @@ abbrev ofLeftInverse' {α β : Sort _} (f : α → β) (f_inv : β → α) (hf :
 noncomputable def ofInjective {α β} (f : α → β) (hf : Injective f) : α ≃ range f :=
   Equiv.ofLeftInverse f (fun _ => Function.invFun f) fun _ => Function.leftInverse_invFun hf
 #align equiv.of_injective Equiv.ofInjective
+#align equiv.of_injective_apply Equiv.ofInjective_apply
 
 theorem apply_ofInjective_symm {α β} {f : α → β} (hf : Injective f) (b : range f) :
     f ((ofInjective f hf).symm b) = b :=
@@ -644,6 +657,9 @@ the type of all preimages of points under `f` and the total space `α`. -/
 def sigmaPreimageEquiv {α β} (f : α → β) : (Σb, f ⁻¹' {b}) ≃ α :=
   sigmaFiberEquiv f
 #align equiv.sigma_preimage_equiv Equiv.sigmaPreimageEquiv
+#align equiv.sigma_preimage_equiv_symm_apply_snd_coe Equiv.sigmaPreimageEquiv_symm_apply_snd_coe
+#align equiv.sigma_preimage_equiv_apply Equiv.sigmaPreimageEquiv_apply
+#align equiv.sigma_preimage_equiv_symm_apply_fst Equiv.sigmaPreimageEquiv_symm_apply_fst
 
 -- See also `Equiv.ofFiberEquiv`.
 /-- A family of equivalences between preimages of points gives an equivalence between domains. -/
@@ -651,6 +667,8 @@ def sigmaPreimageEquiv {α β} (f : α → β) : (Σb, f ⁻¹' {b}) ≃ α :=
 def ofPreimageEquiv {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c}) : α ≃ β :=
   Equiv.ofFiberEquiv e
 #align equiv.of_preimage_equiv Equiv.ofPreimageEquiv
+#align equiv.of_preimage_equiv_apply Equiv.ofPreimageEquiv_apply
+#align equiv.of_preimage_equiv_symm_apply Equiv.ofPreimageEquiv_symm_apply
 
 theorem ofPreimageEquiv_map {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c})
     (a : α) : g (ofPreimageEquiv e a) = f a :=

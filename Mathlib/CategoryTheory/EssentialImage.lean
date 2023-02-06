@@ -94,6 +94,8 @@ instance : Category (EssImageSubcategory F) :=
 def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
   fullSubcategoryInclusion _
 #align category_theory.functor.ess_image_inclusion CategoryTheory.Functor.essImageInclusion
+#align category_theory.functor.ess_image_inclusion_obj CategoryTheory.Functor.essImageInclusion_obj
+#align category_theory.functor.ess_image_inclusion_map CategoryTheory.Functor.essImageInclusion_map
 
 -- Porting note: `deriving Full` is not able to derive this instance
 instance : Full (essImageInclusion F) :=
@@ -111,6 +113,8 @@ image of `F`.
 def toEssImage (F : C ⥤ D) : C ⥤ F.EssImageSubcategory :=
   FullSubcategory.lift _ F (obj_mem_essImage _)
 #align category_theory.functor.to_ess_image CategoryTheory.Functor.toEssImage
+#align category_theory.functor.to_ess_image_map CategoryTheory.Functor.toEssImage_map
+#align category_theory.functor.to_ess_image_obj_obj CategoryTheory.Functor.toEssImage_obj_obj
 
 /-- The functor `F` factorises through its essential image, where the first functor is essentially
 surjective and the second is fully faithful.
@@ -119,6 +123,8 @@ surjective and the second is fully faithful.
 def toEssImageCompEssentialImageInclusion (F : C ⥤ D) : F.toEssImage ⋙ F.essImageInclusion ≅ F :=
   FullSubcategory.lift_comp_inclusion _ _ _
 #align category_theory.functor.to_ess_image_comp_essential_image_inclusion CategoryTheory.Functor.toEssImageCompEssentialImageInclusion
+#align category_theory.functor.to_ess_image_comp_essential_image_inclusion_hom_app CategoryTheory.Functor.toEssImageCompEssentialImageInclusion_hom_app
+#align category_theory.functor.to_ess_image_comp_essential_image_inclusion_inv_app CategoryTheory.Functor.toEssImageCompEssentialImageInclusion_inv_app
 
 end Functor
 

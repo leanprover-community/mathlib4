@@ -41,6 +41,7 @@ structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
 
 /-- The equivalence of rings underlying a ring involution. -/
 add_decl_doc RingInvo.toRingEquiv
+#align ring_invo.to_ring_equiv RingInvo.toRingEquiv
 
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/

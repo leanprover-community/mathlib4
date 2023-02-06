@@ -34,7 +34,7 @@ universe u v
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
--- open BigOperators -- Porting note: notation is currently global
+open BigOperators
 
 namespace Fintype
 

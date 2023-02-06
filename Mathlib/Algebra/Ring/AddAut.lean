@@ -31,6 +31,8 @@ variable {R : Type _} [Semiring R]
 def mulLeft : Rˣ →* AddAut R :=
   DistribMulAction.toAddAut _ _
 #align add_aut.mul_left AddAut.mulLeft
+#align add_aut.mul_left_apply_apply AddAut.mulLeft_apply_apply
+#align add_aut.mul_left_apply_symm_apply AddAut.mulLeft_apply_symmApply
 
 /-- Right multiplication by a unit of a semiring as an additive automorphism. -/
 def mulRight (u : Rˣ) : AddAut R :=
