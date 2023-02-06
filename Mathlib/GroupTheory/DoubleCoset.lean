@@ -77,22 +77,22 @@ theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
 /-- The setoid defined by the double_coset relation -/
 def setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doset x H K
-#align doset.setoid Doset.Setoid
+#align doset.setoid Doset.setoid
 
 /-- Quotient of `G` by the double coset relation, i.e. `H \ G / K` -/
 def Quotient (H K : Set G) : Type _ :=
-  _root_.Quotient (Setoid H K)
+  _root_.Quotient (setoid H K)
 #align doset.quotient Doset.Quotient
 
 theorem rel_iff {H K : Subgroup G} {x y : G} :
-    (Setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
+    (setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
     ⟨fun hxy => (congr_arg _ hxy).mpr (mem_doset_self H K y), fun hxy => (doset_eq_of_mem hxy).symm⟩
     mem_doset
 #align doset.rel_iff Doset.rel_iff
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
-    (Setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
+    (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
   ext (a b)
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
   constructor
@@ -104,7 +104,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
 #align doset.bot_rel_eq_left_rel Doset.bot_rel_eq_leftRel
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
-    (Setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
+    (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
   ext (a b)
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
   constructor
