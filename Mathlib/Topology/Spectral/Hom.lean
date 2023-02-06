@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Spectral maps
