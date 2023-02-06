@@ -266,7 +266,7 @@ theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = �
   -- Porting note: `simp` fails with "maximum recursion depth has been reached"
   erw [map_univ_coe]
 #align multiset.prod_eq_prod_coe Multiset.prod_eq_prod_coe
-#noalign multiset.sum_eq_sum_coe
+#align multiset.sum_eq_sum_coe Multiset.sum_eq_sum_coe
 
 @[to_additive]
 theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
@@ -274,7 +274,7 @@ theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
   congr
   simp
 #align multiset.prod_eq_prod_to_enum_finset Multiset.prod_eq_prod_toEnumFinset
-#noalign multiset.sum_eq_sum_to_enum_finset
+#align multiset.sum_eq_sum_to_enum_finset Multiset.sum_eq_sum_toEnumFinset
 
 @[to_additive]
 theorem Multiset.prod_toEnumFinset {β : Type _} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
@@ -284,4 +284,4 @@ theorem Multiset.prod_toEnumFinset {β : Type _} [CommMonoid β] (m : Multiset �
   · intro x
     rfl
 #align multiset.prod_to_enum_finset Multiset.prod_toEnumFinset
-#noalign multiset.sum_to_enum_finset
+#align multiset.sum_to_enum_finset Multiset.sum_toEnumFinset
