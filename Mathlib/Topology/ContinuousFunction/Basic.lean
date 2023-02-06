@@ -37,7 +37,6 @@ structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace
   continuous_toFun : Continuous toFun --:= by continuity -- Porting note: need tactic
 #align continuous_map ContinuousMap
 
--- mathport name: «exprC( , )»
 /-- The type of continuous maps from `α` to `β`. -/
 notation "C(" α ", " β ")" => ContinuousMap α β
 
@@ -145,7 +144,7 @@ theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → 
   f.1.continuous
 #align continuous_map.continuous_set_coe ContinuousMap.continuous_set_coe
 
-/-- Deprecated. Use `map_continuous_at` instead. -/
+/-- Deprecated. Use `map_continuousAt` instead. -/
 protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   f.continuous.continuousAt
 #align continuous_map.continuous_at ContinuousMap.continuousAt
