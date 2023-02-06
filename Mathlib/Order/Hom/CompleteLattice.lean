@@ -997,7 +997,7 @@ def infInfₛHom : InfₛHom (α × α) α where
 @[simp, norm_cast]
 theorem supSupₛHom_apply : supSupₛHom x = x.1 ⊔ x.2 :=
   rfl
-#align sup_Sup_hom_apply sSupₛHom_apply
+#align sup_Sup_hom_apply supSupₛHom_apply
 
 @[simp, norm_cast]
 theorem infInfₛHom_apply : infInfₛHom x = x.1 ⊓ x.2 :=
