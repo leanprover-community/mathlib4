@@ -216,7 +216,7 @@ theorem mk_coe (f : A →*[n] β) (h) : mk f h = f :=
 #align add_freiman_hom.mk_coe AddFreimanHom.mk_coe
 
 /-- The identity map from a commutative monoid to itself. -/
-@[to_additive "The identity map from an additive commutative monoid to itself.", simps]
+@[to_additive (attr := simps) "The identity map from an additive commutative monoid to itself."]
 protected def id (A : Set α) (n : ℕ) : A →*[n] α where
   toFun x := x
   map_prod_eq_map_prod' _ _ _ _ h := by rw [map_id', map_id', h]

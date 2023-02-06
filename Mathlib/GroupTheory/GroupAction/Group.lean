@@ -332,9 +332,8 @@ end MulDistribMulAction
 section Arrow
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
-@[to_additive arrowAddAction
-      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`",
-  simps]
+@[to_additive (attr := simps) arrowAddAction
+      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
 def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul := by

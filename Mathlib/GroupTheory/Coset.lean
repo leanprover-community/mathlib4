@@ -644,9 +644,9 @@ theorem quotientEquivOfEq_mk (h : s = t) (a : α) :
 
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
 of the quotient map `G → G/K`. The classical version is `quotientEquivProdOfLe`. -/
-@[to_additive "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
-  of the quotient map `G → G/K`. The classical version is `addQuotientEquivProdOfLe`.",
-  simps]
+@[to_additive (attr := simps)
+  "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
+  of the quotient map `G → G/K`. The classical version is `addQuotientEquivProdOfLe`."]
 def quotientEquivProdOfLe' (h_le : s ≤ t) (f : α ⧸ t → α)
     (hf : Function.RightInverse f QuotientGroup.mk) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t
     where
@@ -782,7 +782,7 @@ theorem quotientInfᵢSubgroupOfEmbedding_apply_mk {ι : Type _} (f : ι → Sub
   AddSubgroup.quotientInfᵢAddSubgroupOfEmbedding_apply_mk
 
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
-@[to_additive "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`.", simps]
+@[to_additive (attr := simps) "The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`."]
 def quotientInfᵢEmbedding {ι : Type _} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i
     where
   toFun q i := quotientMapOfLe (infᵢ_le f i) q
