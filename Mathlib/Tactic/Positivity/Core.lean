@@ -124,6 +124,18 @@ lemma nz_of_isNegNat [StrictOrderedRing A]
   apply ne_of_gt
   simpa using w
 
+lemma pos_of_isRat [StrictOrderedRing A] :
+    (NormNum.IsRat e n d) → (decide (0 < n)) → (0 < (e : A))
+  | ⟨inv, eq⟩, w => sorry
+
+lemma nonneg_of_isRat [StrictOrderedRing A] :
+    (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
+  | ⟨inv, eq⟩, w => sorry
+
+lemma nz_of_isRat [StrictOrderedRing A] :
+    (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
+  | ⟨inv, eq⟩, w => sorry
+
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can fail
 into one that never fails and returns `.none` instead. -/
@@ -160,7 +172,18 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     have p : Q(by clear! «$i»; exact NormNum.IsInt $e (Int.negOfNat $lit)) := p
     let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
     pure (.nonzero (q(nz_of_isNegNat $p $p') : Expr))
-  | .isRat _ .. => throwError "isRat" -- TODO
+  | .isRat i q n d p =>
+    let _a ← synthInstanceQ (q(StrictOrderedRing $α) : Q(Type u))
+    have p : Q(by clear! «$i»; exact NormNum.IsRat $e $n $d) := p
+    if 0 < q then
+      let w : Q(decide (0 < $n) = true) := (q(Eq.refl true) : Expr)
+      pure (.positive (q(pos_of_isRat $p $w) : Expr))
+    else if q = 0 then
+      let w : Q(decide ($n = 0) = true) := (q(Eq.refl true) : Expr)
+      pure (.nonnegative (q(nonneg_of_isRat $p $w) : Expr))
+    else
+      let w : Q(decide ($n < 0) = true) := (q(Eq.refl true) : Expr)
+      pure (.nonzero (q(nz_of_isRat $p $w) : Expr))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddMonoid`. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
