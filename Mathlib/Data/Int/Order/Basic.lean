@@ -272,6 +272,7 @@ theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
 
 #align int.sub_mod Int.sub_emod
 
+/-- See also `Int.divModEquiv` for a similar statement as an `equiv`. -/
 #align int.div_mod_unique Int.ediv_emod_unique
 
 attribute [local simp] Int.zero_emod

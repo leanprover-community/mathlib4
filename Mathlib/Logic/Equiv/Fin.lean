@@ -491,6 +491,8 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
 #align fin_prod_fin_equiv_apply_val finProdFinEquiv_apply_val
 #align fin_prod_fin_equiv_symm_apply finProdFinEquiv_symm_apply
 
+-- TODO: add `Nat.divModEquiv` and `Int.divModEquiv`
+
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLe`. -/
 @[simps apply symmApply]

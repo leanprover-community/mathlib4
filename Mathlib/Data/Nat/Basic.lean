@@ -716,6 +716,7 @@ theorem div_add_mod' (m k : ℕ) : m / k * k + m % k = m := by
   exact div_add_mod _ _
 #align nat.div_add_mod' Nat.div_add_mod'
 
+/-- See also `Nat.divModEquiv` for a similar statement as an `equiv`. -/
 protected theorem div_mod_unique {n k m d : ℕ} (h : 0 < k) :
     n / k = d ∧ n % k = m ↔ m + k * d = n ∧ m < k :=
   ⟨fun ⟨e₁, e₂⟩ => e₁ ▸ e₂ ▸ ⟨mod_add_div _ _, mod_lt _ h⟩, fun ⟨h₁, h₂⟩ =>
