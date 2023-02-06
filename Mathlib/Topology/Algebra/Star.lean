@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.Pi
-import Mathbin.Algebra.Star.Prod
-import Mathbin.Topology.Algebra.Constructions
-import Mathbin.Topology.ContinuousFunction.Basic
+import Mathlib.Algebra.Star.Pi
+import Mathlib.Algebra.Star.Prod
+import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Continuity of `star`
