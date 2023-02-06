@@ -593,6 +593,7 @@ import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Data.Sigma.Basic
+import Mathlib.Data.Sigma.Interval
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Sign

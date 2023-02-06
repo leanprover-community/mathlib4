@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Sigma.Order
-import Mathbin.Order.LocallyFinite
+import Mathlib.Data.Sigma.Order
+import Mathlib.Order.LocallyFinite
 
 /-!
 # Finite intervals in a sigma type
