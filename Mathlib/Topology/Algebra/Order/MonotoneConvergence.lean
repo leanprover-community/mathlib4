@@ -250,7 +250,7 @@ theorem Monotone.ge_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedT
     [SemilatticeSup β] {f : β → α} {a : α} (hf : Monotone f) (ha : Tendsto f atTop (𝓝 a)) (b : β) :
     f b ≤ a :=
   haveI : Nonempty β := Nonempty.intro b
-  ge_of_tendsto _ ha ((eventually_ge_atTop b).mono fun _ hxy => hf hxy)
+  _root_.ge_of_tendsto ha ((eventually_ge_atTop b).mono fun _ hxy => hf hxy)
 #align monotone.ge_of_tendsto Monotone.ge_of_tendsto
 
 theorem Monotone.le_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
