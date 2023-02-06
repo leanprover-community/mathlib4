@@ -295,10 +295,7 @@ end Expr
   except that this returns the (last component of the) projection names instead of the parent names.
 -/
 def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
-  let fieldNames := getStructureFields env structName
-  fieldNames.filterMap fun fieldName =>
-    match isSubobjectField? env structName fieldName with
-    | some _ => some fieldName
-    | none   => none
+  getStructureFields env structName |>.filter fun fieldName =>
+    isSubobjectField? env structName fieldName |>.isSome
 
 end Lean

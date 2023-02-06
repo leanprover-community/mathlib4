@@ -448,26 +448,27 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
 
 open private mkBaseProjections from Lean.Elab.App
 
-/-- Elaborate the projection notation `$e.$projName` where `e` is an expression of a structure
-application `strName`. `e` might rely on universe variables `univs`.
-Note: `$e.$projName` is not applied to further (implicit) arguments. -/
-def elabProjectionNotation (univs : List Name) (e : Expr) (strName projName : Name) :
-  MetaM Expr :=
-TermElabM.run' (s := {levelNames := univs}) <| do
-  let env ← getEnv
-  let .some baseStr := findField? env strName projName |
-    throwError "{strName} has no field {projName} in parent structure"
-  let .some fullProjName := getProjFnForField? env baseStr projName |
-    throwError "no such field {projName}"
-  let e ← mkBaseProjections baseStr strName e
-  let projExpr ← Term.mkConst fullProjName
-  let e ← elabAppArgs projExpr #[{ name := `self, val := Arg.expr e }] (args := #[])
-    (expectedType? := none) (explicit := true) (ellipsis := false)
-  let e ← instantiateMVars e
-  if e.hasMVar then
-    throwError "internal error when creating default projection. Projection has metavariables.
-     {indentExpr e}"
-  return e
+/-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
+the projection expression `e.fieldName` -/
+def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
+  let type ← whnf (← inferType e)
+  let .const structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
+  let some projName := getProjFnForField? (← getEnv) structName fieldName |
+    throwError "{structName} doesn't have field {fieldName}"
+  -- also check out Meta.mkProjFn
+  return mkAppN (.const projName us) (type.getAppArgs.push e)
+
+/-- If `e` has a structure as type with field `fieldName` (either directly or in a parent
+structure), `mkProjection e fieldName` creates the projection expression `e.fieldName` -/
+def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
+  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+    throwError "{e} doesn't have a structure as type"
+  let some baseStruct := findField? (← getEnv) structName fieldName |
+    throwError "No parent of {structName} has field {fieldName}"
+  let mut e := e
+  for subobj in (getPathToBaseStructure? (← getEnv) baseStruct structName).get! do
+    e ← mkDirectProjection e subobj
+  mkDirectProjection e fieldName
 
 /-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
 Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1]`, because the first
@@ -478,22 +479,24 @@ def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
     throwError "{strName} has no field {projName} in parent structure"
   let .some fullProjName := getProjFnForField? env baseStr projName |
     throwError "no such field {projName}"
-  let .some pathToField := getPathToBaseStructure? env baseStr strName
-    | throwError "no such field {projName}"
+  let .some pathToField := getPathToBaseStructure? env baseStr strName |
+    throwError "no such field {projName}"
   let allProjs := pathToField ++ [fullProjName]
   return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
 
 /-- Auxiliary function of `getCompositeOfProjections`. -/
-partial def getCompositeOfProjectionsAux (stx : Syntax) (univs : List Name) (str : Name)
+partial def getCompositeOfProjectionsAux (stx : Syntax) (structName : Name)
     (proj : String) (e : Expr) (pos : Array ℕ) (args : Array Expr) : MetaM (Expr × Array ℕ) := do
   let env ← getEnv
-  let projs := getStructureFieldsFlattened env str
+  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+    throwError "{e} doesn't have a structure as type"
+  let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do
     (← ("_" ++ p.getString!).isPrefixOf? proj, p)
-  let some ((projRest : String), (projName : Name)) := projInfo.reduceOption.getLast?
-    | throwError "Failed to find constructor {proj.drop 1} in structure {str}."
-  let newE ← elabProjectionNotation univs e str projName
-  let newPos := pos ++ (← findProjectionIndices str projName)
+  let some ((projRest : String), (projName : Name)) := projInfo.reduceOption.getLast? |
+    throwError "Failed to find constructor {proj.drop 1} in structure {structName}."
+  let newE ← mkProjection e projName
+  let newPos := pos ++ (← findProjectionIndices structName projName)
   -- we do this here instead of in a recursive call in order to not get an unnecessary eta-redex
   if projRest.isEmpty then
     let newE ← mkLambdaFVars args newE
@@ -502,7 +505,7 @@ partial def getCompositeOfProjectionsAux (stx : Syntax) (univs : List Name) (str
     return (newE, newPos)
   let type ← inferType newE
   forallTelescopeReducing type fun typeArgs tgt ↦ do
-    getCompositeOfProjectionsAux stx univs tgt.getAppFn.constName! projRest (mkAppN newE typeArgs)
+    getCompositeOfProjectionsAux stx tgt.getAppFn.constName! projRest (mkAppN newE typeArgs)
       newPos (args ++ typeArgs)
 
 /-- Suppose we are given a structure `str` and a projection `proj`, that could be multiple nested
@@ -519,15 +522,13 @@ partial def getCompositeOfProjectionsAux (stx : Syntax) (univs : List Name) (str
   we will be able to generate the "projection"
     `λ {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
   which projection notation cannot do. -/
-def getCompositeOfProjections (str : Name) (proj : String) (stx : Syntax) :
+def getCompositeOfProjections (structName : Name) (proj : String) (stx : Syntax) :
   MetaM (Expr × Array ℕ) := do
-  let env ← getEnv
-  let strDecl := (env.find? str).get!
-  let strExpr : Expr := mkConst str <| strDecl.levelParams.map .param
+  let strExpr ← mkConstWithLevelParams structName
   let type ← inferType strExpr
   forallTelescopeReducing type fun typeArgs _ ↦
   withLocalDeclD `x (mkAppN strExpr typeArgs) fun e ↦
-  getCompositeOfProjectionsAux stx strDecl.levelParams str ("_" ++ proj) e #[] <| typeArgs.push e
+  getCompositeOfProjectionsAux stx structName ("_" ++ proj) e #[] <| typeArgs.push e
 
 /-- Get the default `ParsedProjectionData` for structure `str`. -/
 def mkParsedProjectionData (str : Name) : CoreM (Array ParsedProjectionData) := do
