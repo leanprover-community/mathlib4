@@ -17,12 +17,12 @@ import Mathlib.Topology.LocalExtr
 In this file we prove that a closed interval in a conditionally complete linear ordered type with
 order topology (or a product of such types) is compact.
 
-We prove the extreme value theorem (`is_compact.exists_isMinOn`, `is_compact.exists_isMaxOn`):
+We prove the extreme value theorem (`IsCompact.exists_isMinOn`, `IsCompact.exists_isMaxOn`):
 a continuous function on a compact set takes its minimum and maximum values. We provide many
 variations of this theorem.
 
 We also prove that the image of a closed interval under a continuous map is a closed interval, see
-`continuous_on.image_Icc`.
+`ContinuousOn.image_Icc`.
 
 ## Tags
 
@@ -37,8 +37,8 @@ open Filter Topology
 /-!
 ### Compactness of a closed interval
 
-In this section we define a typeclass `compact_Icc_space α` saying that all closed intervals in `α`
-are compact. Then we provide an instance for a `conditionally_complete_linear_order` and prove that
+In this section we define a typeclass `CompactIccSpace α` saying that all closed intervals in `α`
+are compact. Then we provide an instance for a `ConditionallyCompleteLinearOrder` and prove that
 the product (both `α × β` and an indexed product) of spaces with this property inherits the
 property.
 
@@ -130,7 +130,7 @@ theorem isCompact_uIcc {α : Type _} [LinearOrder α] [TopologicalSpace α] [Com
 -- See note [lower instance priority]
 /-- A complete linear order is a compact space.
 
-We do not register an instance for a `[compact_Icc_space α]` because this would only add instances
+We do not register an instance for a `[CompactIccSpace α]` because this would only add instances
 for products (indexed or not) of complete linear orders, and we have instances with higher priority
 that cover these cases. -/
 instance (priority := 100) compactSpace_of_completeLinearOrder {α : Type _} [CompleteLinearOrder α]
