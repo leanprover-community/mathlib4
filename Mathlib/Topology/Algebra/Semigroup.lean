@@ -33,14 +33,15 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
   any minimal element is `{m}` for an idempotent `m : M`. -/
   let S : Set (Set M) :=
     { N | IsClosed N ∧ N.Nonempty ∧ ∀ (m) (_ : m ∈ N) (m') (_ : m' ∈ N), m * m' ∈ N }
-  rsuffices ⟨N, ⟨N_closed, ⟨m, hm⟩, N_mul⟩, N_minimal⟩ : ∃ N ∈ S, ∀ N' ∈ S, N' ⊆ N → N' = N
+  obtain ⟨N, ⟨N_closed, ⟨m, hm⟩, N_mul⟩, N_minimal⟩ : ∃ N ∈ S, ∀ N' ∈ S, N' ⊆ N → N' = N
+  rotate_left -- Porting note: restore to `rsuffices`
   · use m
     /- We now have an element `m : M` of a minimal subsemigroup `N`, and want to show `m + m = m`.
     We first show that every element of `N` is of the form `m' + m`.-/
     have scaling_eq_self : (· * m) '' N = N :=
       by
       apply N_minimal
-      · refine' ⟨(continuous_mul_left m).IsClosedMap _ N_closed, ⟨_, ⟨m, hm, rfl⟩⟩, _⟩
+      · refine' ⟨(continuous_mul_left m).isClosedMap _ N_closed, ⟨_, ⟨m, hm, rfl⟩⟩, _⟩
         rintro _ ⟨m'', hm'', rfl⟩ _ ⟨m', hm', rfl⟩
         refine' ⟨m'' * m * m', N_mul _ (N_mul _ hm'' _ hm) _ hm', mul_assoc _ _ _⟩
       · rintro _ ⟨m', hm', rfl⟩
@@ -50,7 +51,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     have absorbing_eq_self : N ∩ { m' | m' * m = m } = N :=
       by
       apply N_minimal
-      · refine' ⟨N_closed.inter ((T1Space.t1 m).Preimage (continuous_mul_left m)), _, _⟩
+      · refine' ⟨N_closed.inter ((T1Space.t1 m).preimage (continuous_mul_left m)), _, _⟩
         · rwa [← scaling_eq_self] at hm
         · rintro m'' ⟨mem'', eq'' : _ = m⟩ m' ⟨mem', eq' : _ = m⟩
           refine' ⟨N_mul _ mem'' _ mem', _⟩
@@ -68,7 +69,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
       apply Set.univ_nonempty
     convert
       @IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed _ _ _ hcnemp.coe_sort
-        (coe : c → Set M) _ _ _ _
+        ((↑) : c → Set M) _ _ _ _
     · simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq]
     · refine' DirectedOn.directed_val (IsChain.directedOn hc.symm)
     exacts[fun i => (hcs i.Prop).2.1, fun i => (hcs i.Prop).1.IsCompact, fun i => (hcs i.Prop).1]
