@@ -44,8 +44,8 @@ noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
 
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
-  { show Group (IsUnit.submonoid M) by infer_instance
-      with mul_comm := fun a b ↦ by convert mul_comm a b }
+  { inferInstanceAs (Group (IsUnit.submonoid M)) with
+    mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
 theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :

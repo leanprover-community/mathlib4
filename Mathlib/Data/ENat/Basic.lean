@@ -23,30 +23,29 @@ about this type.
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 def ENat : Type :=
   WithTop ℕ
-deriving Zero, AddCommMonoidWithOne, CanonicallyOrderedCommSemiring, Nontrivial,
+deriving Zero,
+  -- AddCommMonoidWithOne,
+  CanonicallyOrderedCommSemiring, Nontrivial,
   LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub,  SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
 
+-- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having
+-- the `deriving AddCommMonoidWithOne`, and it seems to work without.
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
 notation "ℕ∞" => ENat
 
 namespace ENat
 
-/-- The canonical map from `ℕ` to `ℕ∞` -/
-@[coe] def ofNat (n : ℕ) : ℕ∞ := WithTop.some n
-
-instance : Coe ℕ ℕ∞ := ⟨ofNat⟩
-
 --Porting note: instances that derive failed to find
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
-instance : OrderedSub ℕ∞ := by delta ENat; infer_instance
-instance : SuccOrder ℕ∞ := by delta ENat; infer_instance
-instance : WellFoundedLT ℕ∞ := by delta ENat; infer_instance
-instance : CharZero ℕ∞ := by delta ENat; infer_instance
+instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
+instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
+instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
+instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 instance : IsWellOrder ℕ∞ (· < ·) where
 
 variable {m n : ℕ∞}

@@ -457,6 +457,15 @@ theorem Covby.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < 
   le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
 #align covby.eq_of_between Covby.eq_of_between
 
+/-- If `a < b` then there exist `a' > a` and `b' < b` such that `Set.Iio a'` is strictly to the left
+of `Set.Ioi b'`. -/
+lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
+    ∃ a' > a, ∃ b' < b, ∀ x < a', ∀ y > b', x < y := by
+  by_cases h' : a ⋖ b
+  · exact ⟨b, h, a, h, fun x hx y hy => hx.trans_le <| h'.ge_of_gt hy⟩
+  · rcases h.exists_lt_lt h' with ⟨c, ha, hb⟩
+    exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
+
 end LinearOrder
 
 namespace Set

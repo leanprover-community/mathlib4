@@ -30,9 +30,8 @@ variable {α : Type u} {β : Type v} {φ : Type w}
 
 variable {n : ℕ}
 
-instance [DecidableEq α] : DecidableEq (Vector α n) := by
-  unfold Vector
-  infer_instance
+instance [DecidableEq α] : DecidableEq (Vector α n) :=
+  inferInstanceAs (DecidableEq {l : List α // l.length = n})
 
 /-- The empty vector with elements of type `α` -/
 @[match_pattern]
