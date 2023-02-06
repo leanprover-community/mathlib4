@@ -1082,8 +1082,8 @@ theorem comap_smul (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) (h : a 
 
 theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0) :
     p.map (a • f) = p.map f :=
-  le_antisymm (by rw [map_le_iff_le_comap, comap_smul f _ a h, ← map_le_iff_le_comap]; exact le_rfl)
-    (by rw [map_le_iff_le_comap, ← comap_smul f _ a h, ← map_le_iff_le_comap]; exact le_rfl)
+  le_antisymm (by rw [map_le_iff_le_comap, comap_smul f _ a h, ← map_le_iff_le_comap])
+    (by rw [map_le_iff_le_comap, ← comap_smul f _ a h, ← map_le_iff_le_comap])
 #align submodule.map_smul Submodule.map_smul
 
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
@@ -1254,17 +1254,16 @@ theorem map_le_range [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} : 
 theorem range_neg {R : Type _} {R₂ : Type _} {M : Type _} {M₂ : Type _} [Semiring R] [Ring R₂]
     [AddCommMonoid M] [AddCommGroup M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
     [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) : LinearMap.range (-f) = LinearMap.range f := by
-  change ((-LinearMap.id : M₂ →ₗ[R₂] M₂).comp f).range = _
+  change range ((-LinearMap.id : M₂ →ₗ[R₂] M₂).comp f) = _
   rw [range_comp, Submodule.map_neg, Submodule.map_id]
 #align linear_map.range_neg LinearMap.range_neg
 
 /-- A linear map version of `add_monoid_hom.eq_locus` -/
 def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
-  { f.toAddMonoidHom.eqLocus g.toAddMonoidHom with
+  { f.toAddMonoidHom.eqLocusM g.toAddMonoidHom with
     carrier := { x | f x = g x }
-    smul_mem' := fun {r} {x} (hx : _ = _) =>
-      show _ = _ by simpa only [LinearMap.map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx
-       }
+    smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
+      simpa only [LinearMap.map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
@@ -1273,7 +1272,7 @@ theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ f.eqLocus
 #align linear_map.mem_eq_locus LinearMap.mem_eqLocus
 
 theorem eqLocus_toAddSubmonoid (f g : M →ₛₗ[τ₁₂] M₂) :
-    (f.eqLocus g).toAddSubmonoid = (f : M →+ M₂).eqLocus g :=
+    (f.eqLocus g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
   rfl
 #align linear_map.eq_locus_to_add_submonoid LinearMap.eqLocus_toAddSubmonoid
 
@@ -1368,7 +1367,7 @@ theorem ker_eq_bot' {f : F} : ker f = ⊥ ↔ ∀ m, f m = 0 → m = 0 := by
 
 theorem ker_eq_bot_of_inverse {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂ τ₂₁] {f : M →ₛₗ[τ₁₂] M₂}
     {g : M₂ →ₛₗ[τ₂₁] M} (h : (g.comp f : M →ₗ[R] M) = id) : ker f = ⊥ :=
-  ker_eq_bot'.2 fun m hm => by rw [← id_apply m, ← h, comp_apply, hm, g.map_zero]
+  ker_eq_bot'.2 fun m hm => by rw [← id_apply (R := R) m, ← h, comp_apply, hm, g.map_zero]
 #align linear_map.ker_eq_bot_of_inverse LinearMap.ker_eq_bot_of_inverse
 
 theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} :
@@ -1488,7 +1487,7 @@ theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgro
   rfl
 #align linear_map.ker_to_add_subgroup LinearMap.ker_toAddSubgroup
 
-theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : f.eqLocus g = (f - g).ker :=
+theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : f.eqLocus g = ker (f - g) :=
   SetLike.ext fun v => sub_eq_zero.symm
 #align linear_map.eq_locus_eq_ker_sub LinearMap.eqLocus_eq_ker_sub
 
@@ -1510,7 +1509,7 @@ theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
 
 variable (F)
 
-theorem LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
+theorem _root_.LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
   simpa [disjoint_iff_inf_le] using @disjoint_ker' _ _ _ _ _ _ _ _ _ _ _ _ _ f ⊤
 #align linear_map_class.ker_eq_bot LinearMapClass.ker_eq_bot
 
@@ -1671,24 +1670,22 @@ theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap
 #align submodule.disjoint_iff_comap_eq_bot Submodule.disjoint_iff_comap_eq_bot
 
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N` -/
-def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p }
-    where
+def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } where
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q
-  left_inv p' := comap_map_eq_of_injective Subtype.coe_injective p'
+  left_inv p' := comap_map_eq_of_injective (by exact Subtype.val_injective) p'
   right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simp [map_comap_subtype p, inf_of_le_right hq]
-  map_rel_iff' p₁ p₂ :=
-    Subtype.coe_le_coe.symm.trans
-      (by
-        dsimp
-        rw [map_le_iff_le_comap,
-          comap_map_eq_of_injective (show injective p.subtype from Subtype.coe_injective) p₂])
+  map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans $ by
+    dsimp
+    rw [map_le_iff_le_comap,
+      comap_map_eq_of_injective (show Injective p.subtype from Subtype.coe_injective) p₂]
 #align submodule.map_subtype.rel_iso Submodule.MapSubtype.relIso
 
 /-- If `p ⊆ M` is a submodule, the ordering of submodules of `p` is embedded in the ordering of
 submodules of `M`. -/
 def MapSubtype.orderEmbedding : Submodule R p ↪o Submodule R M :=
-  (RelIso.toRelEmbedding <| MapSubtype.relIso p).trans (Subtype.relEmbedding _ _)
+  (RelIso.toRelEmbedding <| MapSubtype.relIso p).trans $
+    Subtype.relEmbedding (X := Submodule R M) (fun p p' ↦ p ≤ p') _
 #align submodule.map_subtype.order_embedding Submodule.MapSubtype.orderEmbedding
 
 @[simp]
@@ -2438,18 +2435,12 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 /-- Given `p` a submodule of the module `M` and `q` a submodule of `p`, `p.equiv_subtype_map q`
 is the natural `linear_equiv` between `q` and `q.map p.subtype`. -/
 def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map p.subtype :=
-  {
-    (p.subtype.domRestrict q).codRestrict _
-      (by
-        rintro ⟨x, hx⟩
-        refine'
-          ⟨x, hx,
-            rfl⟩) with
+  { (p.subtype.domRestrict q).codRestrict _ (by rintro ⟨x, hx⟩; exact ⟨x, hx, rfl⟩) with
     invFun := by
       rintro ⟨x, hx⟩
       refine' ⟨⟨x, _⟩, _⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
     left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
-    right_inv := fun ⟨x, ⟨_, h⟩, _, rfl⟩ => rfl }
+    right_inv := fun ⟨x, ⟨_, h⟩, _, rfl⟩ => by ext; rfl }
 #align submodule.equiv_subtype_map Submodule.equivSubtypeMap
 
 @[simp]
