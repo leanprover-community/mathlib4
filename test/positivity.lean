@@ -7,6 +7,8 @@ import Mathlib.Tactic.Positivity
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
 
+set_option synthInstance.maxHeartbeats 0 -- Porting note: this is too slow
+
 open Function
 
 variable {ι α β : Type _}

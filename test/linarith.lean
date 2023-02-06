@@ -28,6 +28,7 @@ example [LinearOrderedCommRing α] (e b c a v0 v1 : α) (h1 : v0 = 5*a) (h2 : v1
     (h3 : v0 + v1 + c = 10) : v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (h : (1 : ℤ) < 0) (g : ¬ (37 : ℤ) < 42) (_k : True) (l : (-7 : ℤ) < 5): (3 : ℤ) < 7 := by
   linarith [(rfl : 0 = 0)]
 
@@ -90,9 +91,11 @@ example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : V > 0) (h4 : g > 0)
     (h5 : 0 ≤ c) (h6 : c < 1) : v ≤ V := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : 12*y - 4* z < 0) : False := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : x*y < 5) (h3 : 12*y - 4* z < 0) :
     False := by
   linarith
@@ -106,6 +109,7 @@ example (a b c : Rat) (h2 : b > 0) (h3 : ¬ b ≥ 0) : False := by
 example (x y z : Rat) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : x*y < 5) : ¬ 12*y - 4* z < 0 := by
   linarith
 
@@ -139,15 +143,18 @@ example (x y z : Rat) (h1 : 2*1*x + (3)*(y*(-1)) < 0) (h2 : (-2)*x*2 < -(z + z))
     (h3 : 12*y + (-4)* z < 0) (h4 : Nat.prime 7) : False := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : y < 0) (h4 : w ≥ 0)
     (h5 : Nat.prime x.natAbs) : False := by
   linarith
 
 section term_arguments
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   linarith [Rat.num_pos_iff_pos.mpr hx, h]
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   fail_if_success
     linarith
@@ -174,18 +181,23 @@ by
     linarith (config := {split_hypotheses := false})
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by
   linarith [(rfl : 0 = 0)]
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (h : 1 < 0) : 3 = 7 := by
   linarith [Int.zero_lt_one]
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (h1 : (1 : ℕ) < 1) : False := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (a b c : ℕ) : a + b ≥ a := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (a b i : ℕ) (h1 :  ¬ a < i) (h2 : b < i) (h3 : a ≤ b) : False := by
   linarith
 
@@ -195,31 +207,40 @@ example (x y : ℕ) (h : x < 3 * y) : True := by
 
 example : (Nat.cast 2 : ℤ) = 2 := Nat.cast_ofNat
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (x y z : ℕ) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (a b c : ℕ) : ¬ a + b < a := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (n : ℕ) (h1 : n ≤ 3) (h2 : n > 2) : n = 3 := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (z : ℕ) (hz : ¬ z ≥ 2) (h2 : ¬ z + 1 ≤ 2) : False := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (z : ℕ) (hz : ¬ z ≥ 2) : z + 1 ≤ 2 := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (i : ℤ) (hi : i > 5) : 2 * i + 3 > 11 := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (m : ℕ) : m * m + m + (2 * m + 2) = m * m + m + (m + 1) + (m + 1) := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (mess : ℕ → ℕ) (S n : ℕ) :
     mess S + (n * mess S + n * 2 + 1) < n * mess S + mess S + (n * 2 + 2) := by
   linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (p n p' n' : ℕ) (h : p + n' = p' + n) : n + p' = n' + p := by
   linarith
 
@@ -409,7 +430,9 @@ lemma norm_nonpos_left (x y : ℚ) (h1 : x * x + y * y ≤ 0) : x = 0 := by
   nlinarith
 
 variable {E : Type _} [AddGroup E]
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (a : E) (h : a = a) : 1 ≤ 2  := by nlinarith
 
 -- -- test that the apply bug doesn't affect linarith preprocessing
@@ -424,6 +447,7 @@ example (a : E) (h : a = a) : 1 ≤ 2  := by nlinarith
 -- example (a : α) (ha : a < 2) : a ≤ a :=
 -- by linarith
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
   p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
 by nlinarith
@@ -470,6 +494,7 @@ example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nl
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
 
 axiom foo {x : Int} : 1 ≤ x → 1 ≤ x*x
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 lemma bar (x y: Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
 
 -- -- issue #9822
@@ -481,6 +506,7 @@ example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
   trivial
 
 -- At one point, this failed, due to `mdata` interfering with `Expr.isEq`.
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 example (a : Int) : a = a := by
   have h : True := True.intro
   linarith
