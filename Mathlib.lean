@@ -246,6 +246,7 @@ import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Combinatorics.SetFamily.Compression.UV
 import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 import Mathlib.Combinatorics.SetFamily.Intersecting
+import Mathlib.Combinatorics.SetFamily.Kleitman
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Combinatorics.Young.SemistandardTableau
