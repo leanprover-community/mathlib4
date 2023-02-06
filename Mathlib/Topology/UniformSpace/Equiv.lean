@@ -90,7 +90,7 @@ theorem coe_symm_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv.symm = h.symm :=
 #align uniform_equiv.coe_symm_to_equiv UniformEquiv.coe_symm_toEquiv
 
 theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
-  | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, rfl => rfl
+  | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 #align uniform_equiv.to_equiv_injective UniformEquiv.toEquiv_injective
 
 @[ext]
@@ -187,7 +187,6 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
       calc
         g x = f.symm (f (g x)) := (f.left_inv (g x)).symm
         _ = f.symm x := by rw [hg x]
-
   { toFun := f
     invFun := g
     left_inv := by convert f.left_inv
@@ -197,12 +196,12 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
 #align uniform_equiv.change_inv UniformEquiv.changeInv
 
 @[simp]
-theorem symm_comp_self (h : α ≃ᵤ β) : ⇑h.symm ∘ ⇑h = id :=
+theorem symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
   funext h.symm_apply_apply
 #align uniform_equiv.symm_comp_self UniformEquiv.symm_comp_self
 
 @[simp]
-theorem self_comp_symm (h : α ≃ᵤ β) : ⇑h ∘ ⇑h.symm = id :=
+theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 #align uniform_equiv.self_comp_symm UniformEquiv.self_comp_symm
 
@@ -235,7 +234,7 @@ protected theorem uniformInducing (h : α ≃ᵤ β) : UniformInducing h :=
 #align uniform_equiv.uniform_inducing UniformEquiv.uniformInducing
 
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› := by
-  ext : 1 <;> exact h.uniform_inducing.comap_uniformity
+  ext : 1; exact h.uniformInducing.comap_uniformity
 #align uniform_equiv.comap_eq UniformEquiv.comap_eq
 
 protected theorem uniformEmbedding (h : α ≃ᵤ β) : UniformEmbedding h :=
@@ -338,8 +337,7 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
 def ulift : ULift.{v, u} α ≃ᵤ α :=
   { Equiv.ulift with
     uniformContinuous_toFun := uniformContinuous_comap
-    uniformContinuous_invFun :=
-      by
+    uniformContinuous_invFun := by
       have hf : UniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
       simp_rw [hf.uniformContinuous_iff]
       exact uniformContinuous_id }
