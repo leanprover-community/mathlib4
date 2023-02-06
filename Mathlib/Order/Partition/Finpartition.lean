@@ -520,8 +520,8 @@ theorem card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
 
 section Atomise
 
-set_option maxHeartbeats 0 in -- Porting note: this is too slow
 set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
+open Classical in -- Porting note: haha
 /-- Cuts `s` along the finsets in `F`: Two elements of `s` will be in the same part if they are
 in the same finsets of `F`. -/
 def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
@@ -548,12 +548,12 @@ def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
         obtain ⟨A, _, rfl⟩ := ht
         exact s.filter_subset _
       · rw [mem_sup]
-        refine'
-          ⟨s.filter fun i ↦ ∀ t, t ∈ F → ((t ∈ F.filter fun u ↦ a ∈ u) ↔ i ∈ t),
-            mem_image_of_mem _ (mem_powerset.2 <| filter_subset _ _),
-            mem_filter.2 ⟨ha, fun t ht ↦ _⟩⟩
-        rw [mem_filter]
-        exact and_iff_right ht)
+        let v := s.filter fun i ↦ ∀ t, t ∈ F → ((t ∈ F.filter fun u ↦ a ∈ u) ↔ i ∈ t)
+        refine' ⟨v, _, _⟩
+        · exact mem_image_of_mem _ (mem_powerset.2 <| filter_subset _ _)
+        · refine' mem_filter.2 ⟨ha, fun t ht ↦ _⟩
+          rw [mem_filter]
+          exact and_iff_right ht)
 #align finpartition.atomise Finpartition.atomise
 
 variable {F : Finset (Finset α)}
@@ -561,6 +561,8 @@ variable {F : Finset (Finset α)}
 -- porting note:
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection
    (Q «expr ⊆ » F) -/
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
+open Classical in -- Porting note: haha
 theorem mem_atomise :
     t ∈ (atomise s F).parts ↔
       t.Nonempty ∧ ∃ (Q : _)(_ : Q ⊆ F), (s.filter fun i ↦ ∀ u ∈ F, u ∈ Q ↔ i ∈ u) = t := by
