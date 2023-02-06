@@ -393,10 +393,14 @@ initialize structureExt : NameMapExtension (List Name × Array ProjectionData) �
 
 /-- Projection data used internally in `getRawProjections`. -/
 structure ParsedProjectionData where
-  /-- name and syntax for this projection used in the structure definition -/
-  origName : Name × Syntax
-  /-- name and syntax for this projection used in the generated `simp` lemmas -/
-  newName : Name × Syntax
+  /-- name for this projection used in the structure definition -/
+  strName : Name
+  /-- syntax that might have provided `strName` -/
+  strStx : Syntax := .missing
+  /-- name for this projection used in the generated `simp` lemmas -/
+  newName : Name
+  /-- syntax that provided `newName` -/
+  newStx : Syntax := .missing
   /-- will simp lemmas be generated for with (without specifically naming this?) -/
   isDefault : Bool := true
   /-- is the projection name a prefix? -/
@@ -410,12 +414,12 @@ structure ParsedProjectionData where
 
 /-- Turn `ParsedProjectionData` into `ProjectionData`. -/
 def ParsedProjectionData.toProjectionData (p : ParsedProjectionData) : ProjectionData :=
-  { p with name := p.newName.1, expr := p.expr?.getD default, projNrs := p.projNrs.toList }
+  { p with name := p.newName, expr := p.expr?.getD default, projNrs := p.projNrs.toList }
 
 instance : ToMessageData ParsedProjectionData where toMessageData
-  | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇⟩ => .group <| .nest 1 <|
+  | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇, x₈, x₉⟩ => .group <| .nest 1 <|
     "⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂, toMessageData x₃, toMessageData x₄,
-      toMessageData x₅, toMessageData x₆, toMessageData x₇]
+      toMessageData x₅, toMessageData x₆, toMessageData x₇, toMessageData x₈, toMessageData x₉]
     ("," ++ Format.line) ++ "⟩"
 
 /-- The type of rules that specify how metadata for projections in changes.
@@ -482,8 +486,8 @@ partial def getCompositeOfProjectionsAux (stx : Syntax)
     throwError "{e} doesn't have a structure as type"
   let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do
-    (← ("_" ++ p.getString!).isPrefixOf? proj, p)
-  let some ((projRest : String), (projName : Name)) := projInfo.reduceOption.getLast? |
+    (← ("_" ++ p.getString).isPrefixOf? proj, p)
+  let some (projRest, projName) := projInfo.reduceOption.getLast? |
     throwError "Failed to find constructor {proj.drop 1} in structure {structName}."
   let newE ← mkProjection e projName
   let newPos := pos ++ (← findProjectionIndices structName projName)
@@ -529,12 +533,12 @@ def mkParsedProjectionData (structName : Name) : CoreM (Array ParsedProjectionDa
   if projs.size == 0 then
     throwError "Declaration {structName} is not a structure."
   let projData := projs.map fun fieldName ↦ {
-    origName := (fieldName, .missing), newName := (fieldName, .missing),
+    strName := fieldName, newName := fieldName,
     isDefault := isSubobjectField? env structName fieldName |>.isNone }
   let parentProjs := getStructureFieldsFlattened env structName false
   let parentProjs := parentProjs.filter (!projs.contains ·)
   let parentProjData := parentProjs.map fun nm ↦
-    {origName := (nm, .missing), newName := (nm, .missing)}
+    {strName := nm, newName := nm}
   return projData ++ parentProjData
 
 /-- Execute the projection renamings (and turning off projections) as specified by `rules`. -/
@@ -542,40 +546,41 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
   CoreM (Array ParsedProjectionData) := do
   let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule ↦
     match rule with
-    | .rename oldName oldStx newName newStx =>
-      if (projs.map (·.newName.1)).contains oldName then
-        projs.map fun proj ↦ if proj.newName.1 == oldName then
+    | .rename strName strStx newName newStx =>
+      if (projs.map (·.newName)).contains strName then
+        projs.map fun proj ↦ if proj.newName == strName then
           { proj with
-            newName := (newName, newStx),
-            origName.2 := if proj.origName.2.isMissing then oldStx else proj.origName.2 } else
+            newName,
+            newStx,
+            strStx := if proj.strStx.isMissing then strStx else proj.strStx } else
           proj else
-        projs.push {origName := (oldName, oldStx), newName := (newName, newStx)}
+        projs.push {strName, strStx, newName, newStx}
     | .erase nm stx =>
-      if (projs.map (·.newName.1)).contains nm then
-        projs.map fun proj ↦ if proj.newName.1 = nm then
+      if (projs.map (·.newName)).contains nm then
+        projs.map fun proj ↦ if proj.newName = nm then
           { proj with
             isDefault := false,
-            origName.2 := if proj.origName.2.isMissing then stx else proj.origName.2 } else
+            strStx := if proj.strStx.isMissing then stx else proj.strStx } else
           proj else
-        projs.push {origName := (nm, stx), newName := (nm, stx), isDefault := false}
+        projs.push {strName := nm, newName := nm, strStx := stx, newStx := stx, isDefault := false}
     | .add nm stx =>
-      if (projs.map (·.newName.1)).contains nm then
-        projs.map fun proj ↦ if proj.newName.1 = nm then
+      if (projs.map (·.newName)).contains nm then
+        projs.map fun proj ↦ if proj.newName = nm then
           { proj with
             isDefault := true,
-            origName.2 := if proj.origName.2.isMissing then stx else proj.origName.2 } else
+            strStx := if proj.strStx.isMissing then stx else proj.strStx } else
           proj else
-        projs.push {origName := (nm, stx), newName := (nm, stx)}
+        projs.push {strName := nm, newName := nm, strStx := stx, newStx := stx}
     | .prefix nm stx =>
-      if (projs.map (·.newName.1)).contains nm then
-        projs.map fun proj ↦ if proj.newName.1 = nm then
+      if (projs.map (·.newName)).contains nm then
+        projs.map fun proj ↦ if proj.newName = nm then
           { proj with
             isPrefix := true,
-            origName.2 := if proj.origName.2.isMissing then stx else proj.origName.2 } else
+            strStx := if proj.strStx.isMissing then stx else proj.strStx } else
           proj else
-        projs.push {origName := (nm, stx), newName := (nm, stx), isPrefix := true}
+        projs.push {strName := nm, newName := nm, strStx := stx, newStx := stx, isPrefix := true}
   trace[simps.debug] "Projection info after applying the rules: {projs}."
-  unless (projs.map (·.newName.1)).toList.Nodup do throwError
+  unless (projs.map (·.newName)).toList.Nodup do throwError
     "Invalid projection names. Two projections have the same name.\n{""
     }This is likely because a custom composition of projections was given the same name as an {""
     }existing projection. Solution: rename the existing projection (before naming the {""
@@ -589,17 +594,17 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
   (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' <|
-    getCompositeOfProjections str proj.origName.1.getString! proj.origName.2
-  trace[simps.debug] "Projection {proj.newName.1} has default projection {rawExpr} and
+    getCompositeOfProjections str proj.strName.getString proj.strStx
+  trace[simps.debug] "Projection {proj.newName} has default projection {rawExpr} and
     uses projection indices {nrs}"
-  let customName := str ++ `Simps ++ proj.newName.1
+  let customName := str ++ `Simps ++ proj.newName
   match env.find? customName with
   | some d@(.defnInfo _) =>
     let customProj := d.instantiateValueLevelParams! rawUnivs
-    trace[simps.verbose] "found custom projection for {proj.newName.1}:{indentExpr customProj}"
+    trace[simps.verbose] "found custom projection for {proj.newName}:{indentExpr customProj}"
     match (← MetaM.run' <| isDefEq customProj rawExpr) with
     | true =>
-      _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newName.2 <|
+      _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newStx <|
         ← mkConstWithLevelParams customName
       pure { proj with expr? := some customProj, projNrs := nrs, isCustom := true }
     | false =>
@@ -611,11 +616,11 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
         throwError "Invalid custom projection:{indentExpr customProj}\n{""
           }Expression is not definitionally equal to {indentExpr rawExpr}" else
         throwError "Invalid custom projection:\n  {customProj}\n{""
-          }Expression has different type than {str ++ proj.origName.1}. Given type:{
+          }Expression has different type than {str ++ proj.strName}. Given type:{
           indentExpr customProjType}\nExpected type:{indentExpr rawExprType
           }\nNote: make sure order of implicit arguments is exactly the same."
   | _ =>
-    _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newName.2 rawExpr
+    _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newStx rawExpr
     pure {proj with expr? := some rawExpr, projNrs := nrs}
 
 /-- Auxilliary function for `getRawProjections`.
@@ -642,7 +647,7 @@ def resolveNotationClass (projs : Array ParsedProjectionData)
         pure <| body.getAppFn.constName?
       trace[simps.debug] "info: ({relevantProj}, {rawExprLambda})"
       pure (relevantProj, rawExprLambda)
-  let some pos := projs.findIdx? fun x ↦ some x.origName.1 == relevantProj | do
+  let some pos := projs.findIdx? fun x ↦ some x.strName == relevantProj | do
     trace[simps.verbose] "Warning: The structure has an instance for {className}, {""
         }but it is not definitionally equal to any projection."
     failure -- will be caught by `findAutomaticProjections`
