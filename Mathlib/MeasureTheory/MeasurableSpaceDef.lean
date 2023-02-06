@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Countable
-import Mathbin.Logic.Encodable.Lattice
-import Mathbin.Order.Disjointed
+import Mathlib.Data.Set.Countable
+import Mathlib.Logic.Encodable.Lattice
+import Mathlib.Order.Disjointed
 
 /-!
 # Measurable spaces and measurable functions
@@ -122,8 +122,7 @@ theorem MeasurableSet.unionᵢ [Countable ι] ⦃f : ι → Set α⦄ (h : ∀ b
 #align measurable_set.Union MeasurableSet.unionᵢ
 
 theorem MeasurableSet.bUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) :=
-  by
+    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by
   rw [bUnion_eq_Union]
   haveI := hs.to_encodable
   exact MeasurableSet.unionᵢ (by simpa using h)
@@ -218,16 +217,14 @@ theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t) (h₁ : 
 #align measurable_set.ite MeasurableSet.ite
 
 theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s)
-    (ht : ¬p → MeasurableSet t) : MeasurableSet (ite p s t) :=
-  by
+    (ht : ¬p → MeasurableSet t) : MeasurableSet (ite p s t) := by
   split_ifs
   exacts[hs h, ht h]
 #align measurable_set.ite' MeasurableSet.ite'
 
 @[simp]
 theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂)
-    {i : Bool} : MeasurableSet (cond i s₁ s₂) :=
-  by
+    {i : Bool} : MeasurableSet (cond i s₁ s₂) := by
   cases i
   exacts[h₂, h₁]
 #align measurable_set.cond MeasurableSet.cond
@@ -313,8 +310,7 @@ protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : S
   s.finite_toSet.MeasurableSet
 #align finset.measurable_set Finset.measurableSet
 
-theorem Set.Countable.measurableSet {s : Set α} (hs : s.Countable) : MeasurableSet s :=
-  by
+theorem Set.Countable.measurableSet {s : Set α} (hs : s.Countable) : MeasurableSet s := by
   rw [← bUnion_of_singleton s]
   exact MeasurableSet.bUnion hs fun b hb => measurable_set_singleton b
 #align set.countable.measurable_set Set.Countable.measurableSet
@@ -362,8 +358,7 @@ theorem measurableSet_generateFrom {s : Set (Set α)} {t : Set α} (ht : t ∈ s
 theorem generateFrom_induction (p : Set α → Prop) (C : Set (Set α)) (hC : ∀ t ∈ C, p t)
     (h_empty : p ∅) (h_compl : ∀ t, p t → p (tᶜ))
     (h_Union : ∀ f : ℕ → Set α, (∀ n, p (f n)) → p (⋃ i, f i)) {s : Set α}
-    (hs : measurable_set[generateFrom C] s) : p s :=
-  by
+    (hs : measurable_set[generateFrom C] s) : p s := by
   induction hs
   exacts[hC _ hs_H, h_empty, h_compl _ hs_ih, h_Union hs_f hs_ih]
 #align measurable_space.generate_from_induction MeasurableSpace.generateFrom_induction
@@ -432,8 +427,7 @@ theorem generateFrom_sup_generateFrom {s t : Set (Set α)} :
 
 @[simp]
 theorem generateFrom_insert_univ (S : Set (Set α)) :
-    generateFrom (insert Set.univ S) = generateFrom S :=
-  by
+    generateFrom (insert Set.univ S) = generateFrom S := by
   refine' le_antisymm _ (generate_from_mono (Set.subset_insert _ _))
   rw [generate_from_le_iff]
   intro t ht
@@ -456,15 +450,13 @@ theorem generateFrom_insert_empty (S : Set (Set α)) : generateFrom (insert ∅ 
 #align measurable_space.generate_from_insert_empty MeasurableSpace.generateFrom_insert_empty
 
 @[simp]
-theorem generateFrom_singleton_empty : generateFrom {∅} = (⊥ : MeasurableSpace α) :=
-  by
+theorem generateFrom_singleton_empty : generateFrom {∅} = (⊥ : MeasurableSpace α) := by
   rw [eq_bot_iff, generate_from_le_iff]
   simp
 #align measurable_space.generate_from_singleton_empty MeasurableSpace.generateFrom_singleton_empty
 
 @[simp]
-theorem generateFrom_singleton_univ : generateFrom {Set.univ} = (⊥ : MeasurableSpace α) :=
-  by
+theorem generateFrom_singleton_univ : generateFrom {Set.univ} = (⊥ : MeasurableSpace α) := by
   rw [eq_bot_iff, generate_from_le_iff]
   simp
 #align measurable_space.generate_from_singleton_univ MeasurableSpace.generateFrom_singleton_univ
@@ -522,8 +514,7 @@ theorem measurableSet_sup {m₁ m₂ : MeasurableSpace α} {s : Set α} :
 
 theorem measurableSet_supₛ {ms : Set (MeasurableSpace α)} {s : Set α} :
     measurable_set[supₛ ms] s ↔
-      GenerateMeasurable { s : Set α | ∃ m ∈ ms, measurable_set[m] s } s :=
-  by
+      GenerateMeasurable { s : Set α | ∃ m ∈ ms, measurable_set[m] s } s := by
   change @measurable_set' _ (generate_from <| ⋃₀ _) _ ↔ _
   simp [generate_from, ← set_of_exists]
 #align measurable_space.measurable_set_Sup MeasurableSpace.measurableSet_supₛ
@@ -534,8 +525,7 @@ theorem measurableSet_supᵢ {ι} {m : ι → MeasurableSpace α} {s : Set α} :
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_supᵢ
 
 theorem measurableSpace_supᵢ_eq (m : ι → MeasurableSpace α) :
-    (⨆ n, m n) = generateFrom { s | ∃ n, measurable_set[m n] s } :=
-  by
+    (⨆ n, m n) = generateFrom { s | ∃ n, measurable_set[m n] s } := by
   ext s
   rw [measurable_set_supr]
   rfl
