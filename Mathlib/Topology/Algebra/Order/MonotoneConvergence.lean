@@ -39,9 +39,9 @@ open Filter Topology Classical
 variable {α β : Type _}
 
 /-- We say that `α` is a `SupConvergenceClass` if the following holds. Let `f : ι → α` be a
-monotone function, let `a : α` be a least upper bound of `Set.range f`. Then `f x` tends to `𝓝 a` as
-`x → ∞` (formally, at the filter `Filter.atTop`). We require this for `ι = (s : Set α)`, `f = coe`
-in the definition, then prove it for any `f` in `tendsto_atTop_isLUB`.
+monotone function, let `a : α` be a least upper bound of `Set.range f`. Then `f x` tends to `𝓝 a`
+ as `x → ∞` (formally, at the filter `Filter.atTop`). We require this for `ι = (s : Set α)`,
+`f = CoeTC.coe` in the definition, then prove it for any `f` in `tendsto_atTop_isLUB`.
 
 This property holds for linear orders with order topology as well as their products. -/
 class SupConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
@@ -53,7 +53,7 @@ class SupConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Pr
 /-- We say that `α` is an `InfConvergenceClass` if the following holds. Let `f : ι → α` be a
 monotone function, let `a : α` be a greatest lower bound of `Set.range f`. Then `f x` tends to `𝓝 a`
 as `x → -∞` (formally, at the filter `Filter.atBot`). We require this for `ι = (s : Set α)`,
-`f = coe` in the definition, then prove it for any `f` in `tendsto_atBot_isGLB`.
+`f = CoeTC.coe` in the definition, then prove it for any `f` in `tendsto_atBot_isGLB`.
 
 This property holds for linear orders with order topology as well as their products. -/
 class InfConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
@@ -201,13 +201,15 @@ instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
     [InfConvergenceClass β] : InfConvergenceClass (α × β) :=
   show InfConvergenceClass (αᵒᵈ × βᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
-instance Pi.supConvergenceClass {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
+instance Pi.supConvergenceClass
+    {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine' ⟨fun f s h => _⟩
   simp only [isLUB_pi, ← range_restrict] at h
   exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
 
-instance Pi.infConvergenceClass {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
+instance Pi.infConvergenceClass
+    {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, InfConvergenceClass (α i)] : InfConvergenceClass (∀ i, α i) :=
   show InfConvergenceClass (∀ i, (α i)ᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
