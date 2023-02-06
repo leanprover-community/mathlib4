@@ -1277,6 +1277,22 @@ theorem isOpen_set_pi {i : Set ι} {s : ∀ a, Set (π a)} (hi : i.Finite)
   rw [pi_def]; exact isOpen_binterᵢ hi fun a ha => (hs _ ha).preimage (continuous_apply _)
 #align is_open_set_pi isOpen_set_pi
 
+theorem isOpen_pi_iff [Finite ι] {s : Set (∀ a, π a)} :
+    IsOpen s ↔
+    ∀ f, f ∈ s → ∃ (u : ∀ a, Set (π a)), (∀ a, IsOpen (u a) ∧ f a ∈ u a) ∧ Set.univ.pi u ⊆ s := by
+  cases nonempty_fintype ι
+  rw [isOpen_iff_nhds]
+  simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff, exists_prop]
+  refine ball_congr (fun a _ ↦ ⟨?_, ?_⟩)
+  · refine fun ⟨I, t, ⟨h1, h2⟩⟩ ↦
+      ⟨fun i ↦ (h1 i).choose, fun i ↦ ⟨(h1 i).choose_spec.2.1, (h1 i).choose_spec.2.2⟩,
+      (Set.pi_mono (fun i _ ↦ (h1 i).choose_spec.1)).trans (Subset.trans ?_ h2)⟩
+    rw [← Set.pi_inter_compl (I : Set ι)]
+    exact inter_subset_left _ _
+  · exact fun ⟨u, ⟨h1, _⟩⟩ ↦ ⟨Finset.univ,
+      ⟨u, ⟨fun i ↦ ⟨u i, ⟨rfl.subset, h1 i⟩⟩, by rwa [Finset.coe_univ]⟩⟩⟩
+#align is_open_pi_iff isOpen_pi_iff
+
 theorem isClosed_set_pi {i : Set ι} {s : ∀ a, Set (π a)} (hs : ∀ a ∈ i, IsClosed (s a)) :
     IsClosed (pi i s) := by
   rw [pi_def]; exact isClosed_binterᵢ fun a ha => (hs _ ha).preimage (continuous_apply _)
