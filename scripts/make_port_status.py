@@ -25,7 +25,7 @@ mathlib3_root = 'port-repos/mathlib/src'
 mathlib4_root = 'Mathlib/'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
-commit_re = re.compile(r"^! leanprover-community/mathlib commit ([0-9a-f]*)")
+commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
 synchronized_re = re.compile(r".*SYNCHRONIZED WITH MATHLIB4.*")
 
@@ -81,17 +81,18 @@ for path in Path(mathlib3_root).glob('**/*.lean'):
             synchronized[label] = True
 
 def get_mathlib4_module_commit_info(contents):
-    module, commit = None, None
+    module = repo = commit = None
     for line in contents.split('\n'):
         m = source_module_re.match(line)
         if m:
             module = m.group(1)
         m = commit_re.match(line)
         if m:
-            commit = m.group(1)
+            repo = m.group(1)
+            commit = m.group(2)
         if import_re.match(line):
             break
-    return module, commit
+    return module, repo, commit
 
 # contains ported files
 # lean 3 module name -> { mathlib4_file, mathlib3_hash }
@@ -100,7 +101,7 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
     if path4.relative_to(mathlib4_root).parts[0] in \
        ['Init', 'Lean', 'Mathport', 'Tactic', 'Testing', 'Util']:
         continue
-    module, commit = get_mathlib4_module_commit_info(path4.read_text())
+    module, repo, commit = get_mathlib4_module_commit_info(path4.read_text())
     if module is None:
         continue
 
@@ -119,9 +120,13 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
 
     data[module] = {
         'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
-        'mathlib3_hash': commit,
+        'mathlib3_hash': None,
         'mathlib4_pr': mathlib4_pr
     }
+    if repo == 'mathlib':
+        data[module]['mathlib3_hash'] = commit
+    elif repo == 'lean3':
+        data[module]['lean3_hash'] = commit
 
 allDone = dict()
 parentsDone = dict()
@@ -129,6 +134,8 @@ verified = dict()
 touched = dict()
 for node in graph.nodes:
     if node in data:
+        if data[node]['mathlib3_hash'] is None:
+            continue
         git_command = ['git', 'diff', '--quiet',
             # f'--ignore-matching-lines={comment_git_re}',
             data[node]['mathlib3_hash'] + "..HEAD", "--", "src" + os.sep + node.replace('.', os.sep) + ".lean"]
@@ -199,7 +206,7 @@ for node in sorted(graph.nodes):
             mathlib3_hash=data[node]['mathlib3_hash']
         )
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
-        status = f"Yes {pr_status} {data[node]['mathlib3_hash']}"
+        status = f"Yes {pr_status} {data[node]['mathlib3_hash'] or "_"}"
     else:
         new_status = dict(ported=False)
         status = f'No'
