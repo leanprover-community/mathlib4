@@ -8,7 +8,7 @@ Authors: Heather Macbeth, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Order.Basic
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Bounded monotone sequences converge
@@ -69,8 +69,7 @@ instance OrderDual.infConvergenceClass [Preorder α] [TopologicalSpace α] [SupC
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α] [LinearOrder α]
-    [OrderTopology α] : SupConvergenceClass α :=
-  by
+    [OrderTopology α] : SupConvergenceClass α := by
   refine' ⟨fun a s ha => tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩⟩
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
@@ -93,8 +92,7 @@ section IsLUB
 variable [Preorder α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
-    Tendsto f atTop (𝓝 a) :=
-  by
+    Tendsto f atTop (𝓝 a) := by
   suffices : tendsto (range_factorization f) at_top at_top
   exact (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
   exact h_mono.range_factorization.tendsto_at_top_at_top fun b => b.2.imp fun a ha => ha.ge
@@ -125,8 +123,7 @@ section Csupr
 variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_csupr (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
-    Tendsto f atTop (𝓝 (⨆ i, f i)) :=
-  by
+    Tendsto f atTop (𝓝 (⨆ i, f i)) := by
   cases isEmpty_or_nonempty ι
   exacts[tendsto_of_is_empty, tendsto_atTop_isLUB h_mono (isLUB_csupᵢ hbdd)]
 #align tendsto_at_top_csupr tendsto_atTop_csupr
@@ -182,8 +179,7 @@ end infᵢ
 end
 
 instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [SupConvergenceClass α]
-    [SupConvergenceClass β] : SupConvergenceClass (α × β) :=
-  by
+    [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
   rintro ⟨a, b⟩ s h
   rw [isLUB_prod, ← range_restrict, ← range_restrict] at h
@@ -200,8 +196,7 @@ instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
   show InfConvergenceClass (αᵒᵈ × βᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
 instance {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
-    [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) :=
-  by
+    [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine' ⟨fun f s h => _⟩
   simp only [isLUB_pi, ← range_restrict] at h
   exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
@@ -230,8 +225,7 @@ theorem tendsto_of_monotone {ι α : Type _} [Preorder ι] [TopologicalSpace α]
 theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type _} [SemilatticeSup ι₁] [Preorder ι₂]
     [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
     [NoMaxOrder α] {f : ι₂ → α} {φ : ι₁ → ι₂} {l : α} (hf : Monotone f)
-    (hg : Tendsto φ atTop atTop) : Tendsto f atTop (𝓝 l) ↔ Tendsto (f ∘ φ) atTop (𝓝 l) :=
-  by
+    (hg : Tendsto φ atTop atTop) : Tendsto f atTop (𝓝 l) ↔ Tendsto (f ∘ φ) atTop (𝓝 l) := by
   constructor <;> intro h
   · exact h.comp hg
   · rcases tendsto_of_monotone hf with (h' | ⟨l', hl'⟩)
@@ -275,8 +269,7 @@ theorem Antitone.ge_of_tendsto [TopologicalSpace α] [Preorder α] [OrderClosedT
 
 theorem isLUB_of_tendsto_atTop [TopologicalSpace α] [Preorder α] [OrderClosedTopology α]
     [Nonempty β] [SemilatticeSup β] {f : β → α} {a : α} (hf : Monotone f)
-    (ha : Tendsto f atTop (𝓝 a)) : IsLUB (Set.range f) a :=
-  by
+    (ha : Tendsto f atTop (𝓝 a)) : IsLUB (Set.range f) a := by
   constructor
   · rintro _ ⟨b, rfl⟩
     exact hf.ge_of_tendsto ha b
