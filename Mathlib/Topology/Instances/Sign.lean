@@ -12,10 +12,10 @@ import Mathlib.Data.Sign
 import Mathlib.Topology.Order.Basic
 
 /-!
-# Topology on `sign_type`
+# Topology on `SignType`
 
-This file gives `sign_type` the discrete topology, and proves continuity results for `sign` in
-an `order_topology`.
+This file gives `SignType` the discrete topology, and proves continuity results for `SignType.sign`
+in an `OrderTopology`.
 
 -/
 
