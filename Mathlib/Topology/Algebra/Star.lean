@@ -63,7 +63,7 @@ theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto 
 
 variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
 
-@[continuity]
+-- @[continuity] Porting note: restore attribute
 theorem Continuous.star (hf : Continuous f) : Continuous fun x => star (f x) :=
   continuous_star.comp hf
 #align continuous.star Continuous.star
@@ -78,7 +78,7 @@ theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x => star 
 
 theorem ContinuousWithinAt.star (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x => star (f x)) s x :=
-  hf.unit
+  hf.star
 #align continuous_within_at.star ContinuousWithinAt.star
 
 /-- The star operation bundled as a continuous map. -/
@@ -100,10 +100,10 @@ instance {C : ι → Type _} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
     where continuous_star := continuous_pi fun i => Continuous.star (continuous_apply i)
 
 instance [Star R] [TopologicalSpace R] [HasContinuousStar R] : HasContinuousStar Rᵐᵒᵖ :=
-  ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.unit⟩
+  ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.star⟩
 
 instance [Monoid R] [StarSemigroup R] [TopologicalSpace R] [HasContinuousStar R] :
     HasContinuousStar Rˣ :=
-  ⟨continuous_induced_rng.2 Units.continuous_embedProduct.unit⟩
+  ⟨continuous_induced_rng.2 Units.continuous_embedProduct.star⟩
 
 end Instances
