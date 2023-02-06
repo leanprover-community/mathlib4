@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Lift
-import Mathbin.Topology.Separation
-import Mathbin.Data.Set.Intervals.Monotone
+import Mathlib.Order.Filter.Lift
+import Mathlib.Topology.Separation
+import Mathlib.Data.Set.Intervals.Monotone
 
 /-!
 # Topology on the set of filters on a type
@@ -89,8 +89,7 @@ protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Fil
 #align filter.tendsto_nhds Filter.tendsto_nhds
 
 theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
-    HasBasis (𝓝 l) p fun i => Iic (𝓟 (s i)) :=
-  by
+    HasBasis (𝓝 l) p fun i => Iic (𝓟 (s i)) := by
   rw [nhds_eq]
   exact h.lift' monotone_principal.Iic
 #align filter.has_basis.nhds Filter.HasBasis.nhds
@@ -132,8 +131,7 @@ theorem nhds_pure (x : α) : 𝓝 (pure x : Filter α) = 𝓟 {⊥, pure x} := b
 #align filter.nhds_pure Filter.nhds_pure
 
 @[simp]
-theorem nhds_infᵢ (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i) :=
-  by
+theorem nhds_infᵢ (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i) := by
   simp only [nhds_eq]
   apply lift'_infi_of_map_univ <;> simp
 #align filter.nhds_infi Filter.nhds_infᵢ
@@ -153,8 +151,7 @@ theorem Inter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
 #align filter.Inter_nhds Filter.Inter_nhds
 
 @[simp]
-theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ :=
-  by
+theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
   refine' ⟨fun h => _, fun h => monotone_nhds h⟩
   rw [← Iic_subset_Iic, ← Inter_nhds, ← Inter_nhds]
   exact sInter_subset_sInter h
@@ -172,8 +169,7 @@ protected theorem mem_closure {s : Set (Filter α)} {l : Filter α} :
 #align filter.mem_closure Filter.mem_closure
 
 @[simp]
-protected theorem closure_singleton (l : Filter α) : closure {l} = Ici l :=
-  by
+protected theorem closure_singleton (l : Filter α) : closure {l} = Ici l := by
   ext l'
   simp [Filter.mem_closure, Filter.le_def]
 #align filter.closure_singleton Filter.closure_singleton
