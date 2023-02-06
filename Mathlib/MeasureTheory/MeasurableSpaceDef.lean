@@ -51,17 +51,14 @@ open Classical
 variable {α β γ δ δ' : Type _} {ι : Sort _} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
-structure MeasurableSpace (α : Type _) where
+@[class] structure MeasurableSpace (α : Type _) where
   MeasurableSet' : Set α → Prop
-  measurable_set_empty : measurable_set' ∅
-  measurable_set_compl : ∀ s, measurable_set' s → measurable_set' (sᶜ)
-  measurable_set_unionᵢ : ∀ f : ℕ → Set α, (∀ i, measurable_set' (f i)) → measurable_set' (⋃ i, f i)
+  measurableSet_empty : MeasurableSet' ∅
+  measurableSet_compl : ∀ s, MeasurableSet' s → MeasurableSet' (sᶜ)
+  measurableSet_unionᵢ : ∀ f : ℕ → Set α, (∀ i, MeasurableSet' (f i)) → MeasurableSet' (⋃ i, f i)
 #align measurable_space MeasurableSpace
 
-attribute [class] MeasurableSpace
-
-instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ :=
-  h
+instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 
 section
 
@@ -71,11 +68,12 @@ def MeasurableSet [MeasurableSpace α] : Set α → Prop :=
 #align measurable_set MeasurableSet
 
 -- mathport name: measurable_set_of
-scoped[MeasureTheory] notation "measurable_set[" m "]" => @MeasurableSet hole! m
+set_option quotPrecheck false in
+scoped[MeasureTheory] notation "measurable_set[" m "]" => @MeasurableSet _ m
 
 @[simp]
 theorem MeasurableSet.empty [MeasurableSpace α] : MeasurableSet (∅ : Set α) :=
-  ‹MeasurableSpace α›.measurable_set_empty
+  ‹MeasurableSpace α›.measurableSet_empty
 #align measurable_set.empty MeasurableSet.empty
 
 variable {m : MeasurableSpace α}
