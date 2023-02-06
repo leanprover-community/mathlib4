@@ -509,6 +509,7 @@ import Mathlib.Data.PFun
 import Mathlib.Data.PFunctor.Univariate.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
+import Mathlib.Data.PNat.Factors
 import Mathlib.Data.PNat.Find
 import Mathlib.Data.PNat.Interval
 import Mathlib.Data.PNat.Prime

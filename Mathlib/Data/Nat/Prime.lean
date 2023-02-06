@@ -768,6 +768,7 @@ theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
 /-- The type of prime numbers -/
 def Primes :=
   { p : ℕ // p.Prime }
+  deriving DecidableEq
 #align nat.primes Nat.Primes
 
 namespace Primes
