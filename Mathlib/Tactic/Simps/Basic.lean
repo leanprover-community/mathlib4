@@ -965,8 +965,8 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
       trace[simps.debug] "Using relaxed reducibility."
       Linter.logLint linter.simpsNoConstructor ref
-        m!"The definition is not a constructor application. Please use `@[simps!]` instead.\n\n{
-        ""}Explanation: `@[simps]` uses the definition to find what the simp lemmas should {
+        m!"The definition {nm} is not a constructor application. Please use `@[simps!]` instead.{
+        ""}\n\nExplanation: `@[simps]` uses the definition to find what the simp lemmas should {
         ""}be. If the definition is a constructor, then this is easy, since the values of the {
         ""}projections are just the arguments to the constructor. If the definition is not a {
         ""}constructor, then `@[simps]` will unfold the right-hand side until it has found a {

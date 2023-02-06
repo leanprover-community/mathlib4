@@ -420,7 +420,7 @@ def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G
 #align quotient_add_group.quotient_ker_equiv_of_right_inverse QuotientAddGroup.quotientKerEquivOfRightInverse
 
 /-- The canonical isomorphism `G/⊥ ≃* G`. -/
-@[to_additive (attr := simps) "The canonical isomorphism `G/⊥ ≃+ G`."]
+@[to_additive (attr := simps!) "The canonical isomorphism `G/⊥ ≃+ G`."]
 def quotientBot : G ⧸ (⊥ : Subgroup G) ≃* G :=
   quotientKerEquivOfRightInverse (MonoidHom.id G) id fun _x => rfl
 #align quotient_group.quotient_bot QuotientGroup.quotientBot
