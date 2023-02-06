@@ -97,6 +97,16 @@ example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, 
   guard_target = ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
   sorry
 
+example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m ≤ k)) (h₂ : m ≤ n) : m ≤ n := by
+  push_neg at h
+  guard_hyp h : ∀ k, ¬(m ≤ k)
+  exact h₂
+
+example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ n) : m ≤ n := by
+  push_neg at h
+  guard_hyp h : ∀ k, ¬(m < k)
+  exact h₂
+
 set_option push_neg.use_distrib true
 
 example (h : ¬ p ∨ ¬ q): ¬ (p ∧ q) := by
