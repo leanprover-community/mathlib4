@@ -1014,6 +1014,7 @@ import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.Separation
