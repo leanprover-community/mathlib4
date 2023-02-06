@@ -228,6 +228,7 @@ import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Combinatorics.Additive.Energy
+import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Hall.Finite
