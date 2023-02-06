@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Order.Basic
-import Mathbin.Topology.Homeomorph
+import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Homeomorph
 
 /-!
 # Continuity of monotone functions
@@ -45,8 +45,7 @@ function `f : ℝ → ℝ` given by `f x = if x ≤ 0 then x else x + 1` would b
 `a = 0`. -/
 theorem StrictMonoOn.continuous_at_right_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : StrictMonoOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioc (f a) b) :
-    ContinuousWithinAt f (Ici a) a :=
-  by
+    ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
   refine' tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩
@@ -68,8 +67,7 @@ assumption `hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioc (f a) b` we use for stri
 because otherwise the function `ceil : ℝ → ℤ` would be a counter-example at `a = 0`. -/
 theorem continuous_at_right_of_monotoneOn_of_exists_between {f : α → β} {s : Set α} {a : α}
     (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a) (hfs : ∀ b > f a, ∃ c ∈ s, f c ∈ Ioo (f a) b) :
-    ContinuousWithinAt f (Ici a) a :=
-  by
+    ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
   refine' tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩
@@ -86,8 +84,7 @@ the closure of the image of this neighborhood under `f` is a right neighborhood 
 is continuous at `a` from the right. -/
 theorem continuous_at_right_of_monotoneOn_of_closure_image_mem_nhdsWithin [DenselyOrdered β]
     {f : α → β} {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a)
-    (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a :=
-  by
+    (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a := by
   refine' continuous_at_right_of_monotoneOn_of_exists_between h_mono hs fun b hb => _
   rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
   rcases exists_between hab' with ⟨c', hc'⟩
@@ -307,8 +304,7 @@ namespace OrderIso
 variable {α β : Type _} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
   [OrderTopology α] [OrderTopology β]
 
-protected theorem continuous (e : α ≃o β) : Continuous e :=
-  by
+protected theorem continuous (e : α ≃o β) : Continuous e := by
   rw [‹OrderTopology β›.topology_eq_generate_intervals]
   refine' continuous_generateFrom fun s hs => _
   rcases hs with ⟨a, rfl | rfl⟩
