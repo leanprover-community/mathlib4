@@ -18,7 +18,7 @@ structure Foo1 : Type where
   four : 1 = 1
   five : 2 = 1
 
-initialize_simps_projections Foo1 (one → toNat, two → toBool, three → coe as_prefix, -toBool)
+initialize_simps_projections Foo1 (one → toNat, two → toBool, three → coe, prefix coe, -toBool)
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
@@ -755,7 +755,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
 def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
-initialize_simps_projections Equiv (toFun → coe as_prefix, invFun → symm_apply)
+initialize_simps_projections Equiv (toFun → coe, prefix coe, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
   let data ← getRawProjections `PrefixProjectionNames.Equiv

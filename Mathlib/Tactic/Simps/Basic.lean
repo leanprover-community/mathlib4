@@ -67,7 +67,7 @@ open Lean Elab Parser Command
 open Meta hiding Config
 open Elab.Term hiding mkConst
 
-/-- `updateName nm s is_prefix` adds `s` to the last component of `nm`,
+/-- `updateName nm s isPrefix` adds `s` to the last component of `nm`,
   either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
   Used by `simps_add_projections`. -/
 def updateName (nm : Name) (s : String) (isPrefix : Bool) : Name :=
@@ -253,8 +253,12 @@ namespace Command
 syntax simpsRule.rename := ident " → " ident
 /-- Syntax for making a  projection non-default in `initialize_simps_projections`. -/
 syntax simpsRule.erase := "-" ident
+/-- Syntax for making a projection default in `initialize_simps_projections`. -/
+syntax simpsRule.add := "+" ident
+/-- Syntax for making a projection prefix. -/
+syntax simpsRule.prefix := &"as_prefix" ident
 /-- Syntax for a single rule in `initialize_simps_projections`. -/
-syntax simpsRule := (simpsRule.rename <|> simpsRule.erase) &" as_prefix"?
+syntax simpsRule := simpsRule.prefix <|> simpsRule.rename <|> simpsRule.erase <|> simpsRule.add
 /-- Syntax for `initialize_simps_projections`. -/
 syntax simpsProj := (ppSpace ident (" (" simpsRule,+ ")")?)
 
@@ -270,9 +274,9 @@ This command specifies custom names and custom projections for the simp attribut
   `initialize_simps_projections Equiv (-invFun)`
   This will ensure that no simp lemmas are generated for this projection,
   unless this projection is explicitly specified by the user.
-* If you want the projection name added as a prefix in the generated lemma name, you can add the
-  `as_prefix` modifier:
-  `initialize_simps_projections Equiv (toFun → coe as_prefix)`
+* If you want the projection name added as a prefix in the generated lemma name, you can use
+  `as_prefix fieldName`:
+  `initialize_simps_projections Equiv (toFun → coe, as_prefix coe)`
   Note that this does not influence the parsing of projection names: if you have a declaration
   `foo` and you want to apply the projections `snd`, `coe` (which is a prefix) and `fst`, in that
   order you can run `@[simps snd_coe_fst] def foo ...` and this will generate a lemma with the
@@ -308,14 +312,14 @@ Some common uses:
   ```
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
-  `initialize_simps_projections MulHom (toFun → coe as_prefix)`
+  `initialize_simps_projections MulHom (toFun → coe, as_prefix coe)`
   In this case you have to use `@[simps {fullyApplied := false}]` or equivalently `@[simps asFn]`
   whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
   ```
-    initialize_simps_projections MulHom (toFun → apply, toFun → coe as_prefix, -coe)
-    initialize_simps_projections MulHom (toFun → apply, toFun → coe as_prefix, -apply)
+    initialize_simps_projections MulHom (toFun → apply, toFun → coe, as_prefix coe, -coe)
+    initialize_simps_projections MulHom (toFun → apply, toFun → coe, as_prefix coe, -apply)
   ```
   In the first case, you can get both lemmas using `@[simps, simps coe asFn]` and in the second
   case you can get both lemmas using `@[simps asFn, simps apply]`.
@@ -416,19 +420,29 @@ instance : ToMessageData ParsedProjectionData where toMessageData
 
 /-- The type of rules that specify how metadata for projections in changes.
   See `initialize_simps_projections`. -/
-structure ProjectionRule where
-  /-- A projection rule is either a renaming rule `before→after` or a hiding rule `-hideMe`.
+inductive ProjectionRule where
+  /-- A renaming rule `before→after` or
     Each name comes with the syntax used to write the rule,
     which is used to declare hover information. -/
-  rule : (Name × Syntax) × (Name × Syntax) ⊕ (Name × Syntax)
-  /-- Either rule can optionally be followed by `as_prefix` to write the projection as prefix.
-  This is uncommon for hiding rules, but not completely useless, since if a user manually wants
-  to generate such a projection, it will be written using a prefix. -/
-  asPrefix : Bool
+  | rename (oldName : Name) (oldStx : Syntax) (newName : Name) (newStx : Syntax) :
+      ProjectionRule
+  /-- A adding rule `+fieldName` -/
+  | add : Name → Syntax → ProjectionRule
+  /-- A hiding rule `-fieldName` -/
+  | erase : Name → Syntax → ProjectionRule
+  /-- A prefix rule `prefix fieldName` -/
+  | prefix : Name → Syntax → ProjectionRule
 
 instance : ToMessageData ProjectionRule where toMessageData
-  | ⟨x₁, x₂⟩ => .group <| .nest 1 <|
-    "⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂] ("," ++ Format.line) ++ "⟩"
+  | .rename x₁ x₂ x₃ x₄ => .group <| .nest 1 <|
+    "rename ⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂, toMessageData x₃, toMessageData x₄]
+      ("," ++ Format.line) ++ "⟩"
+  | .add x₁ x₂ => .group <| .nest 1 <|
+    "+⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂] ("," ++ Format.line) ++ "⟩"
+  | .erase x₁ x₂ => .group <| .nest 1 <|
+    "-⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂] ("," ++ Format.line) ++ "⟩"
+  | .prefix x₁ x₂ => .group <| .nest 1 <|
+    "prefix ⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂] ("," ++ Format.line) ++ "⟩"
 
 /-- Returns the projection information of a structure. -/
 def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : MessageData :=
@@ -446,30 +460,6 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
   let toPrint := MessageData.joinSep toPrint ("\n" : MessageData)
   m! "{pref} {str}:\n{toPrint}"
 
-open private mkBaseProjections from Lean.Elab.App
-
-/-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
-the projection expression `e.fieldName` -/
-def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
-  let type ← whnf (← inferType e)
-  let .const structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
-  let some projName := getProjFnForField? (← getEnv) structName fieldName |
-    throwError "{structName} doesn't have field {fieldName}"
-  -- also check out Meta.mkProjFn
-  return mkAppN (.const projName us) (type.getAppArgs.push e)
-
-/-- If `e` has a structure as type with field `fieldName` (either directly or in a parent
-structure), `mkProjection e fieldName` creates the projection expression `e.fieldName` -/
-def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
-  let .const structName _ := (← whnf (←inferType e)).getAppFn |
-    throwError "{e} doesn't have a structure as type"
-  let some baseStruct := findField? (← getEnv) structName fieldName |
-    throwError "No parent of {structName} has field {fieldName}"
-  let mut e := e
-  for subobj in (getPathToBaseStructure? (← getEnv) baseStruct structName).get! do
-    e ← mkDirectProjection e subobj
-  mkDirectProjection e fieldName
-
 /-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
 Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1]`, because the first
 projection of `MulEquiv` is `toEquiv` and the second projection of `Equiv` is `invFun`. -/
@@ -485,7 +475,7 @@ def findProjectionIndices (strName projName : Name) : MetaM (List ℕ) := do
   return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
 
 /-- Auxiliary function of `getCompositeOfProjections`. -/
-partial def getCompositeOfProjectionsAux (stx : Syntax) (structName : Name)
+partial def getCompositeOfProjectionsAux (stx : Syntax)
     (proj : String) (e : Expr) (pos : Array ℕ) (args : Array Expr) : MetaM (Expr × Array ℕ) := do
   let env ← getEnv
   let .const structName _ := (← whnf (←inferType e)).getAppFn |
@@ -504,9 +494,8 @@ partial def getCompositeOfProjectionsAux (stx : Syntax) (structName : Name)
       _ ← TermElabM.run' <| addTermInfo stx newE
     return (newE, newPos)
   let type ← inferType newE
-  forallTelescopeReducing type fun typeArgs tgt ↦ do
-    getCompositeOfProjectionsAux stx tgt.getAppFn.constName! projRest (mkAppN newE typeArgs)
-      newPos (args ++ typeArgs)
+  forallTelescopeReducing type fun typeArgs _tgt ↦ do
+    getCompositeOfProjectionsAux stx projRest (mkAppN newE typeArgs) newPos (args ++ typeArgs)
 
 /-- Suppose we are given a structure `str` and a projection `proj`, that could be multiple nested
   projections (separated by `_`), where each projection could be a projection of a parent structure.
@@ -528,41 +517,63 @@ def getCompositeOfProjections (structName : Name) (proj : String) (stx : Syntax)
   let type ← inferType strExpr
   forallTelescopeReducing type fun typeArgs _ ↦
   withLocalDeclD `x (mkAppN strExpr typeArgs) fun e ↦
-  getCompositeOfProjectionsAux stx structName ("_" ++ proj) e #[] <| typeArgs.push e
+  getCompositeOfProjectionsAux stx ("_" ++ proj) e #[] <| typeArgs.push e
 
-/-- Get the default `ParsedProjectionData` for structure `str`. -/
-def mkParsedProjectionData (str : Name) : CoreM (Array ParsedProjectionData) := do
+/-- Get the default `ParsedProjectionData` for structure `str`.
+  It first returns the direct fields of the structure in the right order, and then
+  all (non-subobject fields) of all parent structures. The subobject fields are precisely the
+  non-default fields.-/
+def mkParsedProjectionData (structName : Name) : CoreM (Array ParsedProjectionData) := do
   let env ← getEnv
-  let projs := getStructureFieldsFlattened env str false
+  let projs := getStructureFields env structName
   if projs.size == 0 then
-    throwError "Declaration {str} is not a structure."
-  let projs := projs.map fun nm ↦ {origName := (nm, .missing), newName := (nm, .missing)}
-  let parents := getFieldsToParents env str
-  let parents := parents.map fun nm ↦
-    {origName := (nm, .missing), newName := (nm, .missing), isDefault := false}
-  return projs ++ parents
+    throwError "Declaration {structName} is not a structure."
+  let projData := projs.map fun fieldName ↦ {
+    origName := (fieldName, .missing), newName := (fieldName, .missing),
+    isDefault := isSubobjectField? env structName fieldName |>.isNone }
+  let parentProjs := getStructureFieldsFlattened env structName false
+  let parentProjs := parentProjs.filter (!projs.contains ·)
+  let parentProjData := parentProjs.map fun nm ↦
+    {origName := (nm, .missing), newName := (nm, .missing)}
+  return projData ++ parentProjData
 
 /-- Execute the projection renamings (and turning off projections) as specified by `rules`. -/
 def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array ProjectionRule) :
   CoreM (Array ParsedProjectionData) := do
   let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule ↦
     match rule with
-    | ⟨.inl (oldName, newName), isPrefix⟩ =>
-      if (projs.map (·.newName.1)).contains oldName.1 then
-        projs.map fun proj ↦ if proj.newName.1 == oldName.1 then
+    | .rename oldName oldStx newName newStx =>
+      if (projs.map (·.newName.1)).contains oldName then
+        projs.map fun proj ↦ if proj.newName.1 == oldName then
           { proj with
-            newName := newName, isPrefix := isPrefix,
-            origName.2 := if proj.origName.2.isMissing then oldName.2 else proj.origName.2 } else
+            newName := (newName, newStx),
+            origName.2 := if proj.origName.2.isMissing then oldStx else proj.origName.2 } else
           proj else
-        projs.push ⟨oldName, newName, true, isPrefix, none, #[], false⟩
-    | ⟨.inr nm, isPrefix⟩ =>
-      if (projs.map (·.newName.1)).contains nm.1 then
-        projs.map fun proj ↦ if proj.newName.1 = nm.1 then
+        projs.push {origName := (oldName, oldStx), newName := (newName, newStx)}
+    | .erase nm stx =>
+      if (projs.map (·.newName.1)).contains nm then
+        projs.map fun proj ↦ if proj.newName.1 = nm then
           { proj with
-            isDefault := false, isPrefix := isPrefix,
-            origName.2 := if proj.origName.2.isMissing then nm.2 else proj.origName.2 } else
+            isDefault := false,
+            origName.2 := if proj.origName.2.isMissing then stx else proj.origName.2 } else
           proj else
-        projs.push ⟨nm, nm, false, isPrefix, none, #[], false⟩
+        projs.push {origName := (nm, stx), newName := (nm, stx), isDefault := false}
+    | .add nm stx =>
+      if (projs.map (·.newName.1)).contains nm then
+        projs.map fun proj ↦ if proj.newName.1 = nm then
+          { proj with
+            isDefault := true,
+            origName.2 := if proj.origName.2.isMissing then stx else proj.origName.2 } else
+          proj else
+        projs.push {origName := (nm, stx), newName := (nm, stx)}
+    | .prefix nm stx =>
+      if (projs.map (·.newName.1)).contains nm then
+        projs.map fun proj ↦ if proj.newName.1 = nm then
+          { proj with
+            isPrefix := true,
+            origName.2 := if proj.origName.2.isMissing then stx else proj.origName.2 } else
+          proj else
+        projs.push {origName := (nm, stx), newName := (nm, stx), isPrefix := true}
   trace[simps.debug] "Projection info after applying the rules: {projs}."
   unless (projs.map (·.newName.1)).toList.Nodup do throwError
     "Invalid projection names. Two projections have the same name.\n{""
@@ -757,14 +768,14 @@ are definitionally equal to a projection of the structure (but not when they are
 composite of multiple projections).
 -/
 
-/-- Parse a rule for `initialize_simps_projections`. It is either `<name>→<name>` or `-<name>`,
-  possibly following by `as_prefix`.-/
+/-- Parse a rule for `initialize_simps_projections`. It is `<name>→<name>`, `-<name>`, `+<name>`
+  or `as_prefix <name>`.-/
 def elabSimpsRule : Syntax → CommandElabM ProjectionRule
-| `(simpsRule| $id1 → $id2 $[as_prefix%$tk]?) =>
-  pure ⟨.inl ((id1.getId, id1.raw), (id2.getId, id2.raw)), tk.isSome⟩
-| `(simpsRule| - $id $[as_prefix%$tk]?) =>
-  pure ⟨.inr (id.getId, id.raw), tk.isSome⟩
-| _                    => Elab.throwUnsupportedSyntax
+| `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
+| `(simpsRule| - $id)         => return .erase id.getId id.raw
+| `(simpsRule| + $id)         => return .add id.getId id.raw
+| `(simpsRule| as_prefix $id) => return .prefix id.getId id.raw
+| _                           => Elab.throwUnsupportedSyntax
 
 /-- Function elaborating `initialize_simps_projections`. -/
 @[command_elab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
@@ -962,7 +973,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   let lhsAp := lhs.instantiateLambdasOrApps typeArgs
   let rhsAp := rhs.instantiateLambdasOrApps typeArgs
   let str := tgt.getAppFn.constName
-  trace[simps.debug] "todo: {todo}"
+  trace[simps.debug] "todo: {todo}, toApply: {toApply}"
   -- We want to generate the current projection if it is in `todo`
   let todoNext := todo.filter (·.1 ≠ "")
   let env ← getEnv
@@ -974,7 +985,8 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   let strInfo? := getStructureInfo? env str
   /- Don't recursively continue if `str` is not a structure or if the structure is in
   `notRecursive`. -/
-  if strInfo?.isNone || (todo.isEmpty && str ∈ cfg.notRecursive && !mustBeStr) then
+  if strInfo?.isNone ||
+    (todo.isEmpty && str ∈ cfg.notRecursive && !mustBeStr && toApply.isEmpty) then
     if mustBeStr then
       throwError "Invalid `simps` attribute. Target {str} is not a structure"
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
