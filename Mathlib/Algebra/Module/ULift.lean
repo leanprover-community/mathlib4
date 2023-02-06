@@ -59,6 +59,8 @@ instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar 
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
 -- Porting note: TODO this takes way longer to elaborate than it should
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
   smul := (· • ·)
@@ -79,6 +81,7 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M 
   { ULift.smulLeft with smul_zero := fun _ => smul_zero _ }
 #align ulift.smul_zero_class ULift.smulZeroClass
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M) where
   smul_zero c := by { ext;  simp [smul_zero] }
 #align ulift.smul_zero_class' ULift.smulZeroClass'
@@ -124,6 +127,7 @@ instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
       simp [smul_mul'] }
 #align ulift.mul_distrib_mul_action' ULift.mulDistribMulAction'
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
 instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift R) M :=
   { ULift.smulLeft with
     smul_zero := fun _ => smul_zero _

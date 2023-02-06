@@ -304,6 +304,7 @@ theorem smul_closure (a : α) (s : Set G) : a • closure s = closure (a • s) 
   MonoidHom.map_closure _ _
 #align subgroup.smul_closure Subgroup.smul_closure
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentralScalar α G] :
     IsCentralScalar α (Subgroup G) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩

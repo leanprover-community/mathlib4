@@ -317,6 +317,8 @@ theorem mul_geom_sum₂_Ico [CommRing α] (x y : α) {m n : ℕ} (hmn : m ≤ n)
   (Commute.all x y).mul_geom_sum₂_Ico hmn
 #align mul_geom_sum₂_Ico mul_geom_sum₂_Ico
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute x y) {m n : ℕ}
     (hmn : m ≤ n) :
     (∑ i in Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ (n - m) * x ^ m := by

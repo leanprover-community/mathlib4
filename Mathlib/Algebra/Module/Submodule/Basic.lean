@@ -190,6 +190,8 @@ namespace SubmoduleClass
 variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
   [AddSubmonoidClass A M] [SubmoduleClass A R M] (S' : A)
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 -- Prefer subclasses of `Module` over `SubmoduleClass`.
 /-- A submodule of a `Module` is a `Module`.  -/
 instance (priority := 75) toModule : Module R S' :=

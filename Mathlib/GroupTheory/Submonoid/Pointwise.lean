@@ -262,6 +262,7 @@ theorem smul_closure (a : α) (s : Set M) : a • closure s = closure (a • s) 
   MonoidHom.map_mclosure _ _
 #align submonoid.smul_closure Submonoid.smul_closure
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 lemma pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ M] [IsCentralScalar α M] :
     IsCentralScalar α (Submonoid M) :=
   ⟨fun _ S => (congr_arg fun f : Monoid.End M => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
@@ -606,6 +607,7 @@ section NonUnitalNonAssocRing
 
 variable [NonUnitalNonAssocRing R]
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
 /-- `AddSubmonoid.neg` distributes over multiplication.
 
 This is available as an instance in the `Pointwise` locale. -/

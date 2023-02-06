@@ -140,6 +140,7 @@ theorem Periodic.const_inv_mul [DivisionSemiring α] (h : Periodic f c) (a : α)
   h.const_inv_smul₀ a
 #align function.periodic.const_inv_mul Function.Periodic.const_inv_mul
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem Periodic.mul_const [DivisionSemiring α] (h : Periodic f c) (a : α) :
     Periodic (fun x => f (x * a)) (c * a⁻¹) :=
   h.const_smul₀ (MulOpposite.op a)
@@ -149,6 +150,7 @@ theorem Periodic.mul_const' [DivisionSemiring α] (h : Periodic f c) (a : α) :
     Periodic (fun x => f (x * a)) (c / a) := by simpa only [div_eq_mul_inv] using h.mul_const a
 #align function.periodic.mul_const' Function.Periodic.mul_const'
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem Periodic.mul_const_inv [DivisionSemiring α] (h : Periodic f c) (a : α) :
     Periodic (fun x => f (x * a⁻¹)) (c * a) :=
   h.const_inv_smul₀ (MulOpposite.op a)
@@ -474,6 +476,7 @@ theorem Antiperiodic.const_inv_mul [DivisionSemiring α] [Neg β] (h : Antiperio
   h.const_inv_smul₀ ha
 #align function.antiperiodic.const_inv_mul Function.Antiperiodic.const_inv_mul
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem Antiperiodic.mul_const [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}
     (ha : a ≠ 0) : Antiperiodic (fun x => f (x * a)) (c * a⁻¹) :=
   h.const_smul₀ <| (MulOpposite.op_ne_zero_iff a).mpr ha
@@ -484,6 +487,7 @@ theorem Antiperiodic.mul_const' [DivisionSemiring α] [Neg β] (h : Antiperiodic
   simpa only [div_eq_mul_inv] using h.mul_const ha
 #align function.antiperiodic.mul_const' Function.Antiperiodic.mul_const'
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem Antiperiodic.mul_const_inv [DivisionSemiring α] [Neg β] (h : Antiperiodic f c) {a : α}
     (ha : a ≠ 0) : Antiperiodic (fun x => f (x * a⁻¹)) (c * a) :=
   h.const_inv_smul₀ <| (MulOpposite.op_ne_zero_iff a).mpr ha

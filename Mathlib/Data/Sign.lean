@@ -465,6 +465,8 @@ end LinearOrderedAddCommGroup
 
 namespace Int
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 theorem sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
   obtain (n | _) | _ := n <;> simp [sign, Int.sign_neg, negSucc_lt_zero]
 #align int.sign_eq_sign Int.sign_eq_sign
@@ -475,6 +477,8 @@ open Finset Nat
 
 open BigOperators
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /- Porting note: For all the following theorems, needed to add {α : Type u_1} to the assumptions
 because lean4 infers α to live in a different universe u_2 otherwise -/
 private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
@@ -490,6 +494,7 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
     simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm (|f _|),
       sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- We can decompose a sum of absolute value `n` into a sum of `n` signs. -/
 theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
@@ -501,6 +506,7 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
     (@sum_attach _ _ t _ fun b => ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 #align exists_signed_sum exists_signed_sum
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
 theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
   (n : ℕ) (h : (∑ i in s, (f i).natAbs) ≤ n) :

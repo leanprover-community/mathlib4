@@ -462,7 +462,7 @@ theorem liftAddHom_singleAddHom [AddCommMonoid M] :
 
 @[simp]
 theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
-  FunLike.congr_fun liftAddHom_singleAddHom f
+  FunLike.congr_fun (liftAddHom_singleAddHom (α := α) (M := M)) f
 #align finsupp.sum_single Finsupp.sum_single
 
 @[simp]

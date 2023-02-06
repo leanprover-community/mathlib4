@@ -355,6 +355,8 @@ noncomputable def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, Decidabl
 
 end Sigma
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 /-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `AddSubmonoid M`
 indexed by `ι`.
 

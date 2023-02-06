@@ -260,6 +260,7 @@ instance : CommSemiring ℝ := by infer_instance
 
 instance semiring : Semiring ℝ := by infer_instance
 
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 instance : CommMonoidWithZero ℝ := by infer_instance
 
 instance : MonoidWithZero ℝ := by infer_instance

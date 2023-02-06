@@ -27,6 +27,8 @@ instance USize.neZero : NeZero  USize.size := NeZero.of_pos usize_size_gt_zero
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
+set_option maxHeartbeats 0 in -- Porting note: this is too slow
+set_option synthInstance.maxHeartbeats 0 in -- Porting note: this is too slow
 set_option hygiene false in
 run_cmd
   for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
