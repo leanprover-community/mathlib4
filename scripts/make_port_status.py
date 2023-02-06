@@ -123,9 +123,9 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
         'mathlib3_hash': None,
         'mathlib4_pr': mathlib4_pr
     }
-    if repo == 'mathlib':
+    if repo == 'leanprover-community/mathlib':
         data[module]['mathlib3_hash'] = commit
-    elif repo == 'lean3':
+    elif repo == 'leanprover-community/lean3':
         data[module]['lean3_hash'] = commit
 
 allDone = dict()
@@ -178,8 +178,8 @@ for num in nums:
         f = subprocess.run(
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
-        _, commit = get_mathlib4_module_commit_info(f.stdout.decode())
-        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'commit': commit})
+        _, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
+        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'repo': repo, 'commit': commit})
 
 def pr_to_str(pr):
     labels = ' '.join(f'[{l.name}]' for l in pr.labels)
@@ -215,8 +215,13 @@ for node in sorted(graph.nodes):
             if pr_info['commit'] is None:
                 print('PR seems to be missing a source header', node, pr_info)
                 assert(False)
-            new_status.update(mathlib4_pr=pr_info['pr'], mathlib3_hash=pr_info['commit'])
-            status += ' mathlib4#' + str(pr_info['pr']) + ' ' + pr_info['commit']
+            new_status.update(mathlib4_pr=pr_info['pr'])
+            if pr_info['repo'] == leanprover-community/mathlib':
+                new_status.update(mathlib3_hash=pr_info['commit'])
+            elif pr_info['repo'] == leanprover-community/lean':
+                new_status.update(lean3_hash=pr_info['commit'])
+            status += ' mathlib4#' + str(pr_info['pr']) + ' ' + (
+                pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else '_')
     try:
         comment_data = comments_dict[node]
     except KeyError:
