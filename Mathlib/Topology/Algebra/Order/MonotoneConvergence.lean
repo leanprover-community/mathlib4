@@ -45,6 +45,7 @@ in the definition, then prove it for any `f` in `tendsto_at_top_is_lub`.
 
 This property holds for linear orders with order topology as well as their products. -/
 class SupConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
+  /-- proof that a monotone function tends to `𝓝 a` as `x → ∞` -/
   tendsto_coe_atTop_isLUB :
     ∀ (a : α) (s : Set α), IsLUB s a → Tendsto (CoeTC.coe : s → α) atTop (𝓝 a)
 #align Sup_convergence_class SupConvergenceClass
@@ -56,6 +57,7 @@ as `x → -∞` (formally, at the filter `filter.at_bot`). We require this for `
 
 This property holds for linear orders with order topology as well as their products. -/
 class InfConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
+  /-- proof that a monotone function tends to `𝓝 a` as `x → -∞`-/
   tendsto_coe_atBot_isGLB :
     ∀ (a : α) (s : Set α), IsGLB s a → Tendsto (CoeTC.coe : s → α) atBot (𝓝 a)
 #align Inf_convergence_class InfConvergenceClass
