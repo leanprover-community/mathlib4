@@ -216,9 +216,9 @@ for node in sorted(graph.nodes):
                 print('PR seems to be missing a source header', node, pr_info)
                 assert(False)
             new_status.update(mathlib4_pr=pr_info['pr'])
-            if pr_info['repo'] == leanprover-community/mathlib':
+            if pr_info['repo'] == 'leanprover-community/mathlib':
                 new_status.update(mathlib3_hash=pr_info['commit'])
-            elif pr_info['repo'] == leanprover-community/lean':
+            elif pr_info['repo'] == 'leanprover-community/lean':
                 new_status.update(lean3_hash=pr_info['commit'])
             status += ' mathlib4#' + str(pr_info['pr']) + ' ' + (
                 pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else '_')
