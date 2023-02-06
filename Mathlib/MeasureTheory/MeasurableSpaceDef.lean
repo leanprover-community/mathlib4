@@ -30,7 +30,7 @@ contains all of them.
 
 Do not add measurability lemmas (which could be tagged with
 @[measurability]) to this file, since the measurability tactic is downstream
-from here. Use `measure_theory.measurable_space` instead.
+from here. Use `Mathlib.MeasureTheory.MeasurableSpace` instead.
 
 ## References
 
@@ -52,9 +52,15 @@ variable {α β γ δ δ' : Type _} {ι : Sort _} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
 @[class] structure MeasurableSpace (α : Type _) where
+  /-- Predicate saying that a given set is measurable. Use `MeasurableSet` in the root namespace
+  instead. -/
   MeasurableSet' : Set α → Prop
+  /-- The empty set is a measurable set. Use `MeasurableSet.empty` instead. -/
   measurableSet_empty : MeasurableSet' ∅
+  /-- The complement of a measurable set is a measurable set. Use `MeasurableSet.compl` instead. -/
   measurableSet_compl : ∀ s, MeasurableSet' s → MeasurableSet' (sᶜ)
+  /-- The union of a sequence of measurable sets is a measurable set. Use a more general
+  `MeasurableSet.unionᵢ` instead. -/
   measurableSet_unionᵢ : ∀ f : ℕ → Set α, (∀ i, MeasurableSet' (f i)) → MeasurableSet' (⋃ i, f i)
 #align measurable_space MeasurableSpace
 
@@ -68,6 +74,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 -- porting note: todo: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
+/-- Notation for `MeasurableSet` with respect to a non-standanrd σ-algebra. -/
 scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
 end MeasureTheory
@@ -262,14 +269,16 @@ theorem MeasurableSpace.ext_iff {m₁ m₂ : MeasurableSpace α} :
 
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
 class MeasurableSingletonClass (α : Type _) [MeasurableSpace α] : Prop where
+  /-- A singleton is a measurable set. -/
   measurableSet_singleton : ∀ x, MeasurableSet ({x} : Set α)
 #align measurable_singleton_class MeasurableSingletonClass
 
 export MeasurableSingletonClass (measurableSet_singleton)
 
-alias measurableSet_singleton ← MeasurableSet.singleton
-
-attribute [simp] MeasurableSet.singleton
+@[simp]
+lemma MeasurableSet.singleton [MeasurableSpace α] [MeasurableSingletonClass α] (a : α) :
+    MeasurableSet {a} :=
+  measurableSet_singleton a
 
 section MeasurableSingletonClass
 
@@ -404,7 +413,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
 
 /-- We get a Galois insertion between `σ`-algebras on `α` and `Set (Set α)` by using `generate_from`
   on one side and the collection of measurable sets on the other side. -/
-def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | @MeasurableSet α m t } where
+def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | MeasurableSet[m] t } where
   gc _ := generateFrom_le_iff
   le_l_u _ _ := measurableSet_generateFrom
   choice g hg := MeasurableSpace.mkOfClosure g <| le_antisymm hg <| (generateFrom_le_iff _).1 le_rfl
@@ -448,7 +457,7 @@ theorem generateFrom_insert_empty (S : Set (Set α)) :
   rw [insert_eq, ← generateFrom_sup_generateFrom, generateFrom_singleton_empty, bot_sup_eq]
 #align measurable_space.generate_from_insert_empty MeasurableSpace.generateFrom_insert_empty
 
-theorem measurableSet_bot_iff {s : Set α} : @MeasurableSet α ⊥ s ↔ s = ∅ ∨ s = univ :=
+theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ ∨ s = univ :=
   let b : MeasurableSpace α :=
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
@@ -461,26 +470,24 @@ theorem measurableSet_bot_iff {s : Set α} : @MeasurableSet α ⊥ s ↔ s = ∅
   this ▸ Iff.rfl
 #align measurable_space.measurable_set_bot_iff MeasurableSpace.measurableSet_bot_iff
 
-@[simp]
-theorem measurableSet_top {s : Set α} : @MeasurableSet _ ⊤ s :=
-  trivial
+@[simp] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 #align measurable_space.measurable_set_top MeasurableSpace.measurableSet_top
 
 @[simp]
 theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
-    @MeasurableSet _ (m₁ ⊓ m₂) s ↔ @MeasurableSet _ m₁ s ∧ @MeasurableSet _ m₂ s :=
+    MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
 #align measurable_space.measurable_set_inf MeasurableSpace.measurableSet_inf
 
 @[simp]
 theorem measurableSet_infₛ {ms : Set (MeasurableSpace α)} {s : Set α} :
-    @MeasurableSet _ (infₛ ms) s ↔ ∀ m ∈ ms, @MeasurableSet _ m s :=
+    MeasurableSet[infₛ ms] s ↔ ∀ m ∈ ms, MeasurableSet[m] s :=
   show s ∈ ⋂₀ _ ↔ _ by simp
 #align measurable_space.measurable_set_Inf MeasurableSpace.measurableSet_infₛ
 
 @[simp]
 theorem measurableSet_infᵢ {ι} {m : ι → MeasurableSpace α} {s : Set α} :
-    @MeasurableSet _ (infᵢ m) s ↔ ∀ i, @MeasurableSet _ (m i) s := by
+    MeasurableSet[infᵢ m] s ↔ ∀ i, MeasurableSet[m i] s := by
   rw [infᵢ, measurableSet_infₛ, forall_range_iff]
 #align measurable_space.measurable_set_infi MeasurableSpace.measurableSet_infᵢ
 
@@ -497,7 +504,7 @@ theorem measurableSet_supₛ {ms : Set (MeasurableSpace α)} {s : Set α} :
 #align measurable_space.measurable_set_Sup MeasurableSpace.measurableSet_supₛ
 
 theorem measurableSet_supᵢ {ι} {m : ι → MeasurableSpace α} {s : Set α} :
-    @MeasurableSet _ (supᵢ m) s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s :=
+    MeasurableSet[supᵢ m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s :=
   by simp only [supᵢ, measurableSet_supₛ, exists_range_iff]
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_supᵢ
 
@@ -526,6 +533,7 @@ def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop 
 namespace MeasureTheory
 
 set_option quotPrecheck false in
+/-- Notation for `Measurable` with respect to a non-standanrd σ-algebra in the domain. -/
 scoped notation "Measurable[" m "]" => @Measurable _ _ m _
 
 end MeasureTheory
