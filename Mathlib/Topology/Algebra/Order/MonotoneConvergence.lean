@@ -16,10 +16,10 @@ import Mathlib.Tactic.LibrarySearch
 
 In this file we prove a few theorems of the form “if the range of a monotone function `f : ι → α`
 admits a least upper bound `a`, then `f x` tends to `a` as `x → ∞`”, as well as version of this
-statement for (conditionally) complete lattices that use `⨆ x, f x` instead of `is_lub`.
+statement for (conditionally) complete lattices that use `⨆ x, f x` instead of `IsLUB`.
 
 These theorems work for linear orders with order topologies as well as their products (both in terms
-of `prod` and in terms of function types). In order to reduce code duplication, we introduce two
+of `Prod` and in terms of function types). In order to reduce code duplication, we introduce two
 typeclasses (one for the property formulated above and one for the dual property), prove theorems
 assuming one of these typeclasses, and provide instances for linear orders and their products.
 
@@ -38,10 +38,10 @@ open Filter Topology Classical
 
 variable {α β : Type _}
 
-/-- We say that `α` is a `Sup_convergence_class` if the following holds. Let `f : ι → α` be a
-monotone function, let `a : α` be a least upper bound of `set.range f`. Then `f x` tends to `𝓝 a` as
-`x → ∞` (formally, at the filter `filter.at_top`). We require this for `ι = (s : set α)`, `f = coe`
-in the definition, then prove it for any `f` in `tendsto_at_top_is_lub`.
+/-- We say that `α` is a `SupConvergenceClass` if the following holds. Let `f : ι → α` be a
+monotone function, let `a : α` be a least upper bound of `Set.range f`. Then `f x` tends to `𝓝 a` as
+`x → ∞` (formally, at the filter `Filter.atTop`). We require this for `ι = (s : Set α)`, `f = coe`
+in the definition, then prove it for any `f` in `tendsto_atTop_isLUB`.
 
 This property holds for linear orders with order topology as well as their products. -/
 class SupConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
@@ -50,10 +50,10 @@ class SupConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Pr
     ∀ (a : α) (s : Set α), IsLUB s a → Tendsto (CoeTC.coe : s → α) atTop (𝓝 a)
 #align Sup_convergence_class SupConvergenceClass
 
-/-- We say that `α` is an `Inf_convergence_class` if the following holds. Let `f : ι → α` be a
-monotone function, let `a : α` be a greatest lower bound of `set.range f`. Then `f x` tends to `𝓝 a`
-as `x → -∞` (formally, at the filter `filter.at_bot`). We require this for `ι = (s : set α)`,
-`f = coe` in the definition, then prove it for any `f` in `tendsto_at_bot_is_glb`.
+/-- We say that `α` is an `InfConvergenceClass` if the following holds. Let `f : ι → α` be a
+monotone function, let `a : α` be a greatest lower bound of `Set.range f`. Then `f x` tends to `𝓝 a`
+as `x → -∞` (formally, at the filter `Filter.atBot`). We require this for `ι = (s : Set α)`,
+`f = coe` in the definition, then prove it for any `f` in `tendsto_atBot_isGLB`.
 
 This property holds for linear orders with order topology as well as their products. -/
 class InfConvergenceClass (α : Type _) [Preorder α] [TopologicalSpace α] : Prop where
@@ -193,7 +193,7 @@ instance supConvergenceClassProd [Preorder α] [Preorder β] [TopologicalSpace �
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
     tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
   convert A.prod_mk_nhds B
-  -- porting note: previous required below to close
+  -- porting note: previously required below to close
   -- ext1 ⟨⟨x, y⟩, h⟩
   -- rfl
 
@@ -239,12 +239,12 @@ theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type _} [Semila
     · rwa [tendsto_nhds_unique h (hl'.comp hg)]
 #align tendsto_iff_tendsto_subseq_of_monotone tendsto_iff_tendsto_subseq_of_monotone
 
-/-! The next family of results, such as `is_lub_of_tendsto_at_top` and `supr_eq_of_tendsto`, are
+/-! The next family of results, such as `isLUB_of_tendsto_atTop` and `supᵢ_eq_of_tendsto`, are
 converses to the standard fact that bounded monotone functions converge. They state, that if a
-monotone function `f` tends to `a` along `filter.at_top`, then that value `a` is a least upper bound
+monotone function `f` tends to `a` along `Filter.atTop`, then that value `a` is a least upper bound
 for the range of `f`.
 
-Related theorems above (`is_lub.is_lub_of_tendsto`, `is_glb.is_glb_of_tendsto` etc) cover the case
+Related theorems above (`IsLUB.isLUB_of_tendsto`, `IsGLB.isGLB_of_tendsto` etc) cover the case
 when `f x` tends to `a` as `x` tends to some point `b` in the domain. -/
 
 set_option autoImplicit false
