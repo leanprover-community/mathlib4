@@ -18,6 +18,7 @@ import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.Algebra.Divisibility.Basic
@@ -173,6 +174,7 @@ import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.Algebra.Parity
+import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Quandle
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
@@ -347,6 +349,7 @@ import Mathlib.Data.Fintype.List
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Fintype.Parity
+import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
@@ -579,6 +582,7 @@ import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Data.Setoid.Partition
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
@@ -612,6 +616,7 @@ import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Submonoid
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
+import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Congruence
@@ -795,6 +800,7 @@ import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.ModEq
 import Mathlib.Order.Filter.NAry
+import Mathlib.Order.Filter.Partial
 import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Order.Filter.Prod
@@ -831,6 +837,7 @@ import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.PartialSups
+import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
@@ -968,8 +975,10 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.LeftRight
 import Mathlib.Topology.Algebra.Semigroup
+import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
@@ -977,6 +986,7 @@ import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions
+import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.ExtendFrom
@@ -988,8 +998,10 @@ import Mathlib.Topology.Maps
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
+import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Separation
+import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Support
 import Mathlib.Topology.UniformSpace.AbsoluteValue

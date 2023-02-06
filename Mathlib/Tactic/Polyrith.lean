@@ -340,8 +340,6 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
           | some (p, den) => (p.mul' h).div (.const den)
           | none => p.mul' h
         let stx := p.toSyntax vars
-        println! repr p
-        println! stx
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
           else `(tactic| linear_combination $stx:term)

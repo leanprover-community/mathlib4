@@ -856,17 +856,17 @@ instance : Top (Subgroup G) :=
 /-- The top subgroup is isomorphic to the group.
 
 This is the group version of `Submonoid.topEquiv`. -/
-@[to_additive
+@[to_additive (attr := simps)
       "The top additive subgroup is isomorphic to the additive group.
 
-      This is the additive group version of `AddSubmonoid.topEquiv`.",
-  simps]
+      This is the additive group version of `AddSubmonoid.topEquiv`."]
 def topEquiv : (⊤ : Subgroup G) ≃* G :=
   Submonoid.topEquiv
 #align subgroup.top_equiv Subgroup.topEquiv
 #align add_subgroup.top_equiv AddSubgroup.topEquiv
 #align subgroup.top_equiv_symm_apply_coe Subgroup.topEquiv_symmApply_coe
-#align subgroup.top_equiv_apply Subgroup.topEquiv_apply
+#align add_subgroup.top_equiv_symm_apply_coe AddSubgroup.topEquiv_symmApply_coe
+#align add_subgroup.top_equiv_apply AddSubgroup.topEquiv_apply
 
 /-- The trivial subgroup `{1}` of an group `G`. -/
 @[to_additive "The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`."]
@@ -1609,9 +1609,9 @@ def subgroupOf (H K : Subgroup G) : Subgroup K :=
 #align add_subgroup.add_subgroup_of AddSubgroup.addSubgroupOf
 
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/
-@[to_additive "If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`.", simps]
-def subgroupOfEquivOfLe {G : Type _} [Group G] {H K : Subgroup G} (h : H ≤ K) : H.subgroupOf K ≃* H
-    where
+@[to_additive (attr := simps) "If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`."]
+def subgroupOfEquivOfLe {G : Type _} [Group G] {H K : Subgroup G} (h : H ≤ K) :
+    H.subgroupOf K ≃* H where
   toFun g := ⟨g.1, g.2⟩
   invFun g := ⟨⟨g.1, h g.2⟩, g.2⟩
   left_inv _g := Subtype.ext (Subtype.ext rfl)
@@ -1620,7 +1620,9 @@ def subgroupOfEquivOfLe {G : Type _} [Group G] {H K : Subgroup G} (h : H ≤ K) 
 #align subgroup.subgroup_of_equiv_of_le Subgroup.subgroupOfEquivOfLe
 #align add_subgroup.add_subgroup_of_equiv_of_le AddSubgroup.addSubgroupOfEquivOfLe
 #align subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe Subgroup.subgroupOfEquivOfLe_symmApply_coe_coe
+#align add_subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe AddSubgroup.addSubgroupOfEquivOfLe_symmApply_coe_coe
 #align subgroup.subgroup_of_equiv_of_le_apply_coe Subgroup.subgroupOfEquivOfLe_apply_coe
+#align add_subgroup.subgroup_of_equiv_of_le_apply_coe AddSubgroup.addSubgroupOfEquivOfLe_apply_coe
 
 @[to_additive (attr := simp)]
 theorem comap_subtype (H K : Subgroup G) : H.comap K.subtype = H.subgroupOf K :=
@@ -2777,7 +2779,6 @@ variable {M : Type _} [MulOneClass M]
 def ker (f : G →* M) : Subgroup G :=
   { MonoidHom.mker f with
     inv_mem' := fun {x} (hx : f x = 1) =>
-      show _ = _ from -- lean4#2073
       calc
         f x⁻¹ = f x * f x⁻¹ := by rw [hx, one_mul]
         _ = 1 := by rw [← map_mul, mul_inv_self, map_one] }

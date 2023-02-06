@@ -158,7 +158,7 @@ theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
 #align add_submonoid.neg_le AddSubmonoid.neg_le
 
 /-- Pointwise inversion of submonoids as an order isomorphism. -/
-@[to_additive " Pointwise negation of additive submonoids as an order isomorphism ", simps]
+@[to_additive (attr := simps) " Pointwise negation of additive submonoids as an order isomorphism "]
 def invOrderIso : Submonoid G ≃o Submonoid G where
   toEquiv := Equiv.inv _
   map_rel_iff' := inv_le_inv _ _
