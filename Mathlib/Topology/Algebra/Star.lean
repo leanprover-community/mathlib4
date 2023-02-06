@@ -16,8 +16,8 @@ import Mathlib.Topology.ContinuousFunction.Basic
 /-!
 # Continuity of `star`
 
-This file defines the `has_continuous_star` typeclass, along with instances on `pi`, `prod`,
-`mul_opposite`, and `units`.
+This file defines the `HasContinuousStar` typeclass, along with instances on `pi`, `prod`,
+`MulOpposite`, and `units`.
 -/
 
 
@@ -41,15 +41,15 @@ section Continuity
 variable [TopologicalSpace R] [Star R] [HasContinuousStar R]
 
 theorem continuousOn_star {s : Set R} : ContinuousOn star s :=
-  continuous_star.ContinuousOn
+  continuous_star.continuousOn
 #align continuous_on_star continuousOn_star
 
 theorem continuousWithinAt_star {s : Set R} {x : R} : ContinuousWithinAt star s x :=
-  continuous_star.ContinuousWithinAt
+  continuous_star.continuousWithinAt
 #align continuous_within_at_star continuousWithinAt_star
 
 theorem continuousAt_star {x : R} : ContinuousAt star x :=
-  continuous_star.ContinuousAt
+  continuous_star.continuousAt
 #align continuous_at_star continuousAt_star
 
 theorem tendsto_star (a : R) : Tendsto star (𝓝 a) (𝓝 (star a)) :=
@@ -58,7 +58,7 @@ theorem tendsto_star (a : R) : Tendsto star (𝓝 a) (𝓝 (star a)) :=
 
 theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto f l (𝓝 y)) :
     Tendsto (fun x => star (f x)) l (𝓝 (star y)) :=
-  (continuous_star.Tendsto y).comp h
+  (continuous_star.tendsto y).comp h
 #align filter.tendsto.star Filter.Tendsto.star
 
 variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
@@ -107,4 +107,3 @@ instance [Monoid R] [StarSemigroup R] [TopologicalSpace R] [HasContinuousStar R]
   ⟨continuous_induced_rng.2 Units.continuous_embedProduct.unit⟩
 
 end Instances
-
