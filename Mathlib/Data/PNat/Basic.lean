@@ -278,7 +278,7 @@ end deprecated
 -- where the left `^ : ℕ+ → ℕ → ℕ+` was `monoid.has_pow`.
 -- Atm writing `m ^ n` means automatically `(↑m) ^ n`.
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : ((Monoid.Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ((Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 

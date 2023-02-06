@@ -18,6 +18,7 @@ import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.Algebra.Divisibility.Basic
@@ -173,6 +174,7 @@ import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.Algebra.Parity
+import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Quandle
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
@@ -203,6 +205,7 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Prod
+import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
@@ -226,6 +229,7 @@ import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Combinatorics.Additive.Energy
+import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Hall.Finite
@@ -243,8 +247,10 @@ import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Combinatorics.SetFamily.Compression.UV
 import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 import Mathlib.Combinatorics.SetFamily.Intersecting
+import Mathlib.Combinatorics.SetFamily.Kleitman
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
@@ -281,6 +287,7 @@ import Mathlib.Data.DList.Basic
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.Data.Dfinsupp.NeLocus
+import Mathlib.Data.Dfinsupp.Order
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Equiv.Functor
@@ -291,6 +298,7 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.Interval
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.Fin.Tuple.BubbleSortInduction
 import Mathlib.Data.Fin.Tuple.Monotone
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
@@ -441,6 +449,7 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Data.Multiset.Fintype
 import Mathlib.Data.Multiset.Fold
 import Mathlib.Data.Multiset.Functor
 import Mathlib.Data.Multiset.Lattice
@@ -483,6 +492,7 @@ import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.PrimeFin
@@ -504,6 +514,7 @@ import Mathlib.Data.PFun
 import Mathlib.Data.PFunctor.Univariate.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
+import Mathlib.Data.PNat.Factors
 import Mathlib.Data.PNat.Find
 import Mathlib.Data.PNat.Interval
 import Mathlib.Data.PNat.Prime
@@ -580,6 +591,7 @@ import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Data.Setoid.Partition
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
@@ -618,6 +630,7 @@ import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.DoubleCoset
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.FreeGroup
 import Mathlib.GroupTheory.GroupAction.Basic
@@ -641,6 +654,7 @@ import Mathlib.GroupTheory.IsFreeGroup
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.List
+import Mathlib.GroupTheory.Perm.Subgroup
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.PresentedGroup
@@ -809,9 +823,11 @@ import Mathlib.Order.GameAdd
 import Mathlib.Order.Grade
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
+import Mathlib.Order.Heyting.Hom
 import Mathlib.Order.Heyting.Regular
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Hom.Bounded
+import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
@@ -932,6 +948,7 @@ import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Qify.Attr
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Reassoc
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
@@ -972,7 +989,15 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Order.Compact
+import Mathlib.Topology.Algebra.Order.ExtrClosure
+import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.LeftRight
+import Mathlib.Topology.Algebra.Order.MonotoneContinuity
+import Mathlib.Topology.Algebra.Order.MonotoneConvergence
+import Mathlib.Topology.Algebra.Order.T5
+import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
@@ -980,11 +1005,14 @@ import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions
+import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.ExtendFrom
+import Mathlib.Topology.GDelta
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.LocalExtr
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
@@ -992,7 +1020,9 @@ import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Perfect
 import Mathlib.Topology.Separation
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.SubsetProperties
