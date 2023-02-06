@@ -56,26 +56,27 @@ theorem isOpen_Iic_principal {s : Set α} : IsOpen (Iic (𝓟 s)) :=
 #align filter.is_open_Iic_principal Filter.isOpen_Iic_principal
 
 theorem isOpen_setOf_mem {s : Set α} : IsOpen { l : Filter α | s ∈ l } := by
-  simpa only [Iic_principal] using is_open_Iic_principal
+  simpa only [Iic_principal] using isOpen_Iic_principal
 #align filter.is_open_set_of_mem Filter.isOpen_setOf_mem
 
 theorem isTopologicalBasis_Iic_principal :
     IsTopologicalBasis (range (Iic ∘ 𝓟 : Set α → Set (Filter α))) :=
   { exists_subset_inter := by
       rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩ l hl
-      exact ⟨Iic (𝓟 s) ∩ Iic (𝓟 t), ⟨s ∩ t, by simp⟩, hl, subset.rfl⟩
-    unionₛ_eq := unionₛ_eq_univ_iff.2 fun l => ⟨Iic ⊤, ⟨univ, congr_arg Iic principal_univ⟩, le_top⟩
+      exact ⟨Iic (𝓟 s) ∩ Iic (𝓟 t), ⟨s ∩ t, by simp⟩, hl, Subset.rfl⟩
+    unionₛ_eq := unionₛ_eq_univ_iff.2 fun l => ⟨Iic ⊤, ⟨univ, congr_arg Iic principal_univ⟩,
+      mem_Iic.2 le_top⟩
     eq_generateFrom := rfl }
 #align filter.is_topological_basis_Iic_principal Filter.isTopologicalBasis_Iic_principal
 
 theorem isOpen_iff {s : Set (Filter α)} : IsOpen s ↔ ∃ T : Set (Set α), s = ⋃ t ∈ T, Iic (𝓟 t) :=
   isTopologicalBasis_Iic_principal.open_iff_eq_unionₛ.trans <| by
-    simp only [exists_subset_range_iff, sUnion_image]
+    simp only [exists_subset_range_and_iff, unionₛ_image, (· ∘ ·)]
 #align filter.is_open_iff Filter.isOpen_iff
 
 theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
   nhds_generateFrom.trans <| by
-    simp only [mem_set_of_eq, and_comm' (l ∈ _), infᵢ_and, infᵢ_range, Filter.lift', Filter.lift,
+    simp only [mem_setOf_eq, @and_comm (l ∈ _), infᵢ_and, infᵢ_range, Filter.lift', Filter.lift,
       (· ∘ ·), mem_Iic, le_principal_iff]
 #align filter.nhds_eq Filter.nhds_eq
 
@@ -85,10 +86,10 @@ theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } :
 
 protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Filter β} :
     Tendsto f la (𝓝 lb) ↔ ∀ s ∈ lb, ∀ᶠ a in la, s ∈ f a := by
-  simp only [nhds_eq', tendsto_lift', mem_set_of_eq]
+  simp only [nhds_eq', tendsto_lift', mem_setOf_eq]
 #align filter.tendsto_nhds Filter.tendsto_nhds
 
-theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
+protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis (𝓝 l) p fun i => Iic (𝓟 (s i)) := by
   rw [nhds_eq]
   exact h.lift' monotone_principal.Iic
@@ -96,7 +97,7 @@ theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h :
 
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
-  let ⟨b, hb⟩ := l.exists_antitone_basis
+  let ⟨_b, hb⟩ := l.exists_antitone_basis
   HasCountableBasis.isCountablyGenerated <| ⟨hb.nhds, Set.to_countable _⟩
 
 theorem HasBasis.nhds' {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
@@ -113,7 +114,8 @@ theorem mem_nhds_iff' {l : Filter α} {S : Set (Filter α)} :
 #align filter.mem_nhds_iff' Filter.mem_nhds_iff'
 
 @[simp]
-theorem nhds_bot : 𝓝 (⊥ : Filter α) = pure ⊥ := by simp [nhds_eq, lift'_bot monotone_principal.Iic]
+theorem nhds_bot : 𝓝 (⊥ : Filter α) = pure ⊥ := by
+  simp [nhds_eq, (· ∘ ·), lift'_bot monotone_principal.Iic]
 #align filter.nhds_bot Filter.nhds_bot
 
 @[simp]
@@ -133,7 +135,7 @@ theorem nhds_pure (x : α) : 𝓝 (pure x : Filter α) = 𝓟 {⊥, pure x} := b
 @[simp]
 theorem nhds_infᵢ (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i) := by
   simp only [nhds_eq]
-  apply lift'_infi_of_map_univ <;> simp
+  apply lift'_infᵢ_of_map_univ <;> simp
 #align filter.nhds_infi Filter.nhds_infᵢ
 
 @[simp]
@@ -146,15 +148,15 @@ theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
 #align filter.monotone_nhds Filter.monotone_nhds
 
 theorem Inter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
-  simp only [nhds_eq, sInter_lift'_sets monotone_principal.Iic, Iic, le_principal_iff, ←
-    set_of_forall, ← Filter.le_def]
+  simp_rw [nhds_eq, (· ∘ ·), interₛ_lift'_sets monotone_principal.Iic, Iic, le_principal_iff,
+    ← setOf_forall, ← Filter.le_def]
 #align filter.Inter_nhds Filter.Inter_nhds
 
 @[simp]
 theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
   refine' ⟨fun h => _, fun h => monotone_nhds h⟩
   rw [← Iic_subset_Iic, ← Inter_nhds, ← Inter_nhds]
-  exact sInter_subset_sInter h
+  exact interₛ_subset_interₛ h
 #align filter.nhds_mono Filter.nhds_mono
 
 protected theorem mem_interior {s : Set (Filter α)} {l : Filter α} :
@@ -164,7 +166,7 @@ protected theorem mem_interior {s : Set (Filter α)} {l : Filter α} :
 protected theorem mem_closure {s : Set (Filter α)} {l : Filter α} :
     l ∈ closure s ↔ ∀ t ∈ l, ∃ l' ∈ s, t ∈ l' := by
   simp only [closure_eq_compl_interior_compl, Filter.mem_interior, mem_compl_iff, not_exists,
-    not_forall, Classical.not_not, exists_prop, not_and, and_comm', subset_def, mem_Iic,
+    not_forall, Classical.not_not, exists_prop, not_and, and_comm, subset_def, mem_Iic,
     le_principal_iff]
 #align filter.mem_closure Filter.mem_closure
 
@@ -180,16 +182,16 @@ theorem specializes_iff_le {l₁ l₂ : Filter α} : l₁ ⤳ l₂ ↔ l₁ ≤ 
 #align filter.specializes_iff_le Filter.specializes_iff_le
 
 instance : T0Space (Filter α) :=
-  ⟨fun x y h =>
-    (specializes_iff_le.1 h.Specializes).antisymm (specializes_iff_le.1 h.symm.Specializes)⟩
+  ⟨fun _ _ h => (specializes_iff_le.1 h.specializes).antisymm
+    (specializes_iff_le.1 h.symm.specializes)⟩
 
 theorem nhds_atTop [Preorder α] : 𝓝 atTop = ⨅ x : α, 𝓟 (Iic (𝓟 (Ici x))) := by
-  simp only [at_top, nhds_infᵢ, nhds_principal]
+  simp only [atTop, nhds_infᵢ, nhds_principal]
 #align filter.nhds_at_top Filter.nhds_atTop
 
 protected theorem tendsto_nhds_atTop_iff [Preorder β] {l : Filter α} {f : α → Filter β} :
     Tendsto f l (𝓝 atTop) ↔ ∀ y, ∀ᶠ a in l, Ici y ∈ f a := by
-  simp only [nhds_at_top, tendsto_infi, tendsto_principal, mem_Iic, le_principal_iff]
+  simp only [nhds_atTop, tendsto_infᵢ, tendsto_principal, mem_Iic, le_principal_iff]
 #align filter.tendsto_nhds_at_top_iff Filter.tendsto_nhds_atTop_iff
 
 theorem nhds_atBot [Preorder α] : 𝓝 atBot = ⨅ x : α, 𝓟 (Iic (𝓟 (Iic x))) :=
@@ -203,45 +205,45 @@ protected theorem tendsto_nhds_atBot_iff [Preorder β] {l : Filter α} {f : α �
 
 variable [TopologicalSpace X]
 
-theorem nhds_nhds (x : X) : 𝓝 (𝓝 x) = ⨅ (s : Set X) (hs : IsOpen s) (hx : x ∈ s), 𝓟 (Iic (𝓟 s)) :=
+theorem nhds_nhds (x : X) : 𝓝 (𝓝 x) = ⨅ (s : Set X) (_hs : IsOpen s) (_hx : x ∈ s), 𝓟 (Iic (𝓟 s)) :=
   by simp only [(nhds_basis_opens x).nhds.eq_binfᵢ, infᵢ_and, @infᵢ_comm _ (_ ∈ _)]
 #align filter.nhds_nhds Filter.nhds_nhds
 
 theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=
   inducing_iff_nhds.2 fun x =>
     (nhds_def' _).trans <| by
-      simp (config := { contextual := true }) only [nhds_nhds, comap_infi, comap_principal,
-        Iic_principal, preimage_set_of_eq, ← mem_interior_iff_mem_nhds, set_of_mem_eq,
+      simp (config := { contextual := true }) only [nhds_nhds, comap_infᵢ, comap_principal,
+        Iic_principal, preimage_setOf_eq, ← mem_interior_iff_mem_nhds, setOf_mem_eq,
         IsOpen.interior_eq]
 #align filter.inducing_nhds Filter.inducing_nhds
 
-@[continuity]
+-- porting note: todo: restore @[continuity]
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=
-  inducing_nhds.Continuous
+  inducing_nhds.continuous
 #align filter.continuous_nhds Filter.continuous_nhds
 
 protected theorem Tendsto.nhds {f : α → X} {l : Filter α} {x : X} (h : Tendsto f l (𝓝 x)) :
     Tendsto (𝓝 ∘ f) l (𝓝 (𝓝 x)) :=
-  (continuous_nhds.Tendsto _).comp h
+  (continuous_nhds.tendsto _).comp h
 #align filter.tendsto.nhds Filter.Tendsto.nhds
 
 end Filter
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} {x : X} {s : Set X}
 
-theorem ContinuousWithinAt.nhds (h : ContinuousWithinAt f s x) : ContinuousWithinAt (𝓝 ∘ f) s x :=
+protected nonrec theorem ContinuousWithinAt.nhds (h : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (𝓝 ∘ f) s x :=
   h.nhds
 #align continuous_within_at.nhds ContinuousWithinAt.nhds
 
-theorem ContinuousAt.nhds (h : ContinuousAt f x) : ContinuousAt (𝓝 ∘ f) x :=
+protected nonrec theorem ContinuousAt.nhds (h : ContinuousAt f x) : ContinuousAt (𝓝 ∘ f) x :=
   h.nhds
 #align continuous_at.nhds ContinuousAt.nhds
 
-theorem ContinuousOn.nhds (h : ContinuousOn f s) : ContinuousOn (𝓝 ∘ f) s := fun x hx =>
-  (h x hx).nhds
+protected nonrec theorem ContinuousOn.nhds (h : ContinuousOn f s) : ContinuousOn (𝓝 ∘ f) s :=
+  fun x hx => (h x hx).nhds
 #align continuous_on.nhds ContinuousOn.nhds
 
-theorem Continuous.nhds (h : Continuous f) : Continuous (𝓝 ∘ f) :=
+protected nonrec theorem Continuous.nhds (h : Continuous f) : Continuous (𝓝 ∘ f) :=
   Filter.continuous_nhds.comp h
 #align continuous.nhds Continuous.nhds
-
