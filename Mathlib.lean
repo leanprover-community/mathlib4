@@ -976,6 +976,7 @@ import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Order.ExtrClosure
 import Mathlib.Topology.Algebra.Order.LeftRight
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic

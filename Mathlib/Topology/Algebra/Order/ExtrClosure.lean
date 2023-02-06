@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.LocalExtr
-import Mathbin.Topology.Order.Basic
+import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Maximum/minimum on the closure of a set
@@ -43,8 +43,7 @@ protected theorem IsExtrOn.closure (h : IsExtrOn f s a) (hc : ContinuousOn f (cl
 #align is_extr_on.closure IsExtrOn.closure
 
 protected theorem IsLocalMaxOn.closure (h : IsLocalMaxOn f s a) (hc : ContinuousOn f (closure s)) :
-    IsLocalMaxOn f (closure s) a :=
-  by
+    IsLocalMaxOn f (closure s) a := by
   rcases mem_nhdsWithin.1 h with ⟨U, Uo, aU, hU⟩
   refine' mem_nhdsWithin.2 ⟨U, Uo, aU, _⟩
   rintro x ⟨hxU, hxs⟩
