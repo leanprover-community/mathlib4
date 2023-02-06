@@ -14,7 +14,7 @@ import Mathlib.Order.LocallyFinite
 /-!
 # Finite intervals in a sigma type
 
-This file provides the `locally_finite_order` instance for the disjoint sum of orders `Σ i, α i` and
+This file provides the `LocallyFiniteOrder` instance for the disjoint sum of orders `Σ i, α i` and
 calculates the cardinality of its finite intervals.
 
 ## TODO
