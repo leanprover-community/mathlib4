@@ -456,8 +456,8 @@ namespace StarOrderedRing
 -- see note [lower instance priority]
 instance (priority := 100) [NonUnitalRing R] [PartialOrder R] [StarOrderedRing R] :
     OrderedAddCommGroup R :=
-  { show NonUnitalRing R by infer_instance, show PartialOrder R by infer_instance,
-    show StarOrderedRing R by infer_instance with }
+  { inferInstanceAs (NonUnitalRing R), inferInstanceAs (PartialOrder R),
+    inferInstanceAs (StarOrderedRing R) with }
 
 end StarOrderedRing
 

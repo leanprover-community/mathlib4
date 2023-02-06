@@ -51,13 +51,14 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Funct
 #align add_hom.inverse AddHom.inverse
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
-@[to_additive "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`.", simps]
+@[to_additive (attr := simps) "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
 def MonoidHom.inverse {A B : Type _} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
   (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
   { (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g, map_one' := by rw [← f.map_one, h₁] }
 #align monoid_hom.inverse MonoidHom.inverse
 #align add_monoid_hom.inverse AddMonoidHom.inverse
 #align monoid_hom.inverse_apply MonoidHom.inverse_apply
+#align add_monoid_hom.inverse_apply AddMonoidHom.inverse_apply
 
 /-- `AddEquiv α β` is the type of an equiv `α ≃ β` which preserves addition. -/
 structure AddEquiv (A B : Type _) [Add A] [Add B] extends A ≃ B, AddHom A B
@@ -592,9 +593,8 @@ theorem toMonoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 where the equivalence between the targets is multiplicative.
 -/
-@[to_additive "An additive analogue of `Equiv.arrowCongr`,
-  where the equivalence between the targets is additive.",
-  simps apply]
+@[to_additive (attr := simps apply) "An additive analogue of `Equiv.arrowCongr`,
+  where the equivalence between the targets is additive."]
 def arrowCongr {M N P Q : Type _} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
   (M → P) ≃* (N → Q) where
   toFun h n := g (h (f.symm n))
@@ -605,6 +605,7 @@ def arrowCongr {M N P Q : Type _} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
 #align mul_equiv.arrow_congr MulEquiv.arrowCongr
 #align add_equiv.arrow_congr AddEquiv.arrowCongr
 #align mul_equiv.arrow_congr_apply MulEquiv.arrowCongr_apply
+#align add_equiv.arrow_congr_apply AddEquiv.arrowCongr_apply
 
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 for multiplicative maps from a monoid to a commutative monoid.
@@ -639,13 +640,12 @@ multiplicative equivalence between `Π j, Ms j` and `Π j, Ns j`.
 This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent version of
 `MulEquiv.arrowCongr`.
 -/
-@[to_additive
+@[to_additive (attr := simps apply)
   "A family of additive equivalences `Π j, (Ms j ≃+ Ns j)`
   generates an additive equivalence between `Π j, Ms j` and `Π j, Ns j`.
 
   This is the `AddEquiv` version of `Equiv.piCongrRight`, and the dependent version of
-  `AddEquiv.arrowCongr`.",
-  simps apply]
+  `AddEquiv.arrowCongr`."]
 def piCongrRight {η : Type _} {Ms Ns : η → Type _} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
   (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
   { Equiv.piCongrRight fun j => (es j).toEquiv with
@@ -655,6 +655,7 @@ def piCongrRight {η : Type _} {Ms Ns : η → Type _} [∀ j, Mul (Ms j)] [∀ 
 #align mul_equiv.Pi_congr_right MulEquiv.piCongrRight
 #align add_equiv.Pi_congr_right AddEquiv.piCongrRight
 #align mul_equiv.Pi_congr_right_apply MulEquiv.piCongrRight_apply
+#align add_equiv.Pi_congr_right_apply AddEquiv.piCongrRight_apply
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_refl {η : Type _} {Ms : η → Type _} [∀ j, Mul (Ms j)] :

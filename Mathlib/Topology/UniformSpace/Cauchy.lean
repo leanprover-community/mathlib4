@@ -126,8 +126,7 @@ theorem le_nhds_of_cauchy_adhp {f : Filter α} {x : α} (hf : Cauchy f) (adhs : 
     f ≤ 𝓝 x :=
   le_nhds_of_cauchy_adhp_aux
     (fun s hs => by
-      obtain ⟨t, t_mem, ht⟩ : ∃ t ∈ f, t ×ˢ t ⊆ s
-      exact (cauchy_iff.1 hf).2 s hs
+      obtain ⟨t, t_mem, ht⟩ : ∃ t ∈ f, t ×ˢ t ⊆ s := (cauchy_iff.1 hf).2 s hs
       use t, t_mem, ht
       exact forall_mem_nonempty_iff_neBot.2 adhs _ (inter_mem_inf (mem_nhds_left x hs) t_mem))
 #align le_nhds_of_cauchy_adhp le_nhds_of_cauchy_adhp
@@ -743,7 +742,7 @@ one obtains a countable basis by taking the balls centered at points in a dense 
 and with rational "radii" from a countable open symmetric antitone basis of `𝓤 α`. We do not
 register this as an instance, as there is already an instance going in the other direction
 from second countable spaces to separable spaces, and we want to avoid loops. -/
-theorem second_countable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
+theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   obtain
     ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ SymmetricRel (t i),
@@ -765,6 +764,6 @@ theorem second_countable_of_separable [SeparableSpace α] : SecondCountableTopol
       ⟨y, hxy, hys⟩
     refine' ⟨_, ⟨y, hys, k, rfl⟩, (hts k).subset hxy, fun z hz => _⟩
     exact hUV (ball_subset_of_comp_subset (hk hxy) hUU' (hk hz))
-#align uniform_space.second_countable_of_separable UniformSpace.second_countable_of_separable
+#align uniform_space.second_countable_of_separable UniformSpace.secondCountable_of_separable
 
 end UniformSpace

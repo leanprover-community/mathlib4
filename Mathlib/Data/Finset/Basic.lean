@@ -2492,6 +2492,11 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
   Multiset.decidableDforallMultiset
 #align finset.decidable_dforall_finset Finset.decidableDforallFinset
 
+-- porting notes: In lean3, the above was picked up when decidability of s ⊆ t was needed
+-- in lean4 it seems this is not the case.
+instance decidableSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊆ t) :=
+  decidableDforallFinset
+
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type _} [_h : ∀ a, DecidableEq (β a)] :
     DecidableEq (∀ a ∈ s, β a) :=

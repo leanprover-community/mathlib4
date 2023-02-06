@@ -119,12 +119,8 @@ theorem nhds_of_nhdsWithin_of_nhds {s t : Set α} {a : α} (h1 : s ∈ 𝓝 a) (
 #align nhds_of_nhds_within_of_nhds nhds_of_nhdsWithin_of_nhds
 
 theorem mem_nhdsWithin_iff_eventually {s t : Set α} {x : α} :
-    t ∈ 𝓝[s] x ↔ ∀ᶠ y in 𝓝 x, y ∈ s → y ∈ t := by
-  rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
-  constructor
-  · rintro ⟨u, hu, hut⟩
-    exact eventually_of_mem hu fun x hxu hxs => hut ⟨hxu, hxs⟩
-  · refine' fun h => ⟨_, h, fun y hy => hy.1 hy.2⟩
+    t ∈ 𝓝[s] x ↔ ∀ᶠ y in 𝓝 x, y ∈ s → y ∈ t :=
+  eventually_inf_principal
 #align mem_nhds_within_iff_eventually mem_nhdsWithin_iff_eventually
 
 theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
@@ -231,8 +227,12 @@ theorem nhdsWithin_eq_nhdsWithin {a : α} {s t u : Set α} (h₀ : a ∈ s) (h�
   rw [nhdsWithin_restrict t h₀ h₁, nhdsWithin_restrict u h₀ h₁, h₂]
 #align nhds_within_eq_nhds_within nhdsWithin_eq_nhdsWithin
 
+-- porting note: new lemma; todo: make it `@[simp]`
+theorem nhdsWithin_eq_nhds {a : α} {s : Set α} : 𝓝[s] a = 𝓝 a ↔ s ∈ 𝓝 a :=
+  inf_eq_left.trans le_principal_iff
+
 theorem IsOpen.nhdsWithin_eq {a : α} {s : Set α} (h : IsOpen s) (ha : a ∈ s) : 𝓝[s] a = 𝓝 a :=
-  inf_eq_left.2 <| le_principal_iff.2 <| IsOpen.mem_nhds h ha
+  nhdsWithin_eq_nhds.2 <| h.mem_nhds ha
 #align is_open.nhds_within_eq IsOpen.nhdsWithin_eq
 
 theorem preimage_nhds_within_coinduced {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
@@ -266,6 +266,10 @@ theorem nhdsWithin_inter_of_mem {a : α} {s t : Set α} (h : s ∈ 𝓝[t] a) : 
   rw [nhdsWithin_inter, inf_eq_right]
   exact nhdsWithin_le_of_mem h
 #align nhds_within_inter_of_mem nhdsWithin_inter_of_mem
+
+-- porting note: new lemma
+theorem nhdsWithin_inter_of_mem' {a : α} {s t : Set α} (h : t ∈ 𝓝[s] a) : 𝓝[s ∩ t] a = 𝓝[s] a := by
+  rw [inter_comm, nhdsWithin_inter_of_mem h]
 
 @[simp]
 theorem nhdsWithin_singleton (a : α) : 𝓝[{a}] a = pure a := by
