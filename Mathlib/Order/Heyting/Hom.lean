@@ -182,6 +182,7 @@ instance (priority := 100) OrderIsoClass.toBiheytingHomClass {_ : BiheytingAlgeb
         simp }
 #align order_iso_class.to_biheyting_hom_class OrderIsoClass.toBiheytingHomClass
 
+-- Porting note: Revisit this issue to see if it works in Lean 4. -/
 -- See note [reducible non instances]
 /-- This can't be an instance because of typeclass loops. -/
 @[reducible]
@@ -198,8 +199,6 @@ section HeytingAlgebra
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] (f : F)
 
--- include β
-
 @[simp]
 theorem map_compl (a : α) : f (aᶜ) = f aᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
 #align map_compl map_compl
@@ -214,8 +213,6 @@ end HeytingAlgebra
 section CoheytingAlgebra
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingHomClass F α β] (f : F)
-
--- include β
 
 @[simp]
 theorem map_hnot (a : α) : f (￢a) = ￢f a := by rw [← top_sdiff', ← top_sdiff', map_sdiff, map_top]
@@ -384,8 +381,7 @@ namespace CoheytingHom
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingAlgebra γ] [CoheytingAlgebra δ]
 
-instance : CoheytingHomClass (CoheytingHom α β) α β
-    where
+instance : CoheytingHomClass (CoheytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
   map_sup f := f.map_sup'
@@ -416,8 +412,7 @@ theorem ext {f g : CoheytingHom α β} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `CoheytingHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : CoheytingHom α β) (f' : α → β) (h : f' = f) : CoheytingHom α β
-    where
+protected def copy (f : CoheytingHom α β) (f' : α → β) (h : f' = f) : CoheytingHom α β where
   toFun := f'
   map_sup' := by simpa only [h] using map_sup f
   map_inf' := by simpa only [h] using map_inf f
