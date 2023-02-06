@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.basic
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -143,6 +143,10 @@ structure Finset (α : Type _) where
   /-- `val` contains no duplicates -/
   nodup : Nodup val
 #align finset Finset
+
+instance Multiset.canLiftFinset {α} : CanLift (Multiset α) (Finset α) Finset.val Multiset.Nodup :=
+  ⟨fun m hm => ⟨⟨m, hm⟩, rfl⟩⟩
+#align multiset.can_lift_finset Multiset.canLiftFinset
 
 namespace Finset
 
@@ -1908,6 +1912,11 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     have : x ≠ b ∧ x = a ↔ x = a := and_iff_right_of_imp fun hx => hx.symm ▸ h
     simp only [mem_erase, mem_insert, and_or_left, this]
 #align finset.erase_insert_of_ne Finset.erase_insert_of_ne
+
+theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
+    erase (cons a s ha) b = cons a (erase s b) fun h => ha <| erase_subset _ _ h := by
+  simp only [cons_eq_insert, erase_insert_of_ne hb]
+#align finset.erase_cons_of_ne Finset.erase_cons_of_ne
 
 theorem insert_erase {a : α} {s : Finset α} (h : a ∈ s) : insert a (erase s a) = s :=
   ext fun x => by
