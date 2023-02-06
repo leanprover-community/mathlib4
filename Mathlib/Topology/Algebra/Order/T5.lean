@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Order.Basic
-import Mathbin.Data.Set.Intervals.OrdConnectedComponent
+import Mathlib.Topology.Order.Basic
+import Mathlib.Data.Set.Intervals.OrdConnectedComponent
 
 /-!
 # Linear order is a completely normal Hausdorff topological space
@@ -29,16 +29,14 @@ variable {X : Type _} [LinearOrder X] [TopologicalSpace X] [OrderTopology X] {a 
 namespace Set
 
 @[simp]
-theorem ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a ↔ s ∈ 𝓝 a :=
-  by
+theorem ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a ↔ s ∈ 𝓝 a := by
   refine' ⟨fun h => mem_of_superset h ord_connected_component_subset, fun h => _⟩
   rcases exists_Icc_mem_subset_of_mem_nhds h with ⟨b, c, ha, ha', hs⟩
   exact mem_of_superset ha' (subset_ord_connected_component ha hs)
 #align set.ord_connected_component_mem_nhds Set.ordConnectedComponent_mem_nhds
 
 theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (closure t))
-    (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≥] a :=
-  by
+    (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≥] a := by
   have hmem : tᶜ ∈ 𝓝[≥] a := by
     refine' mem_nhdsWithin_of_mem_nhds _
     rw [← mem_interior_iff_mem_nhds, interior_compl]
@@ -75,8 +73,7 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (clos
 #align set.compl_section_ord_separating_set_mem_nhds_within_Ici Set.compl_section_ordSeparatingSet_mem_nhdsWithin_Ici
 
 theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Iic (hd : Disjoint s (closure t))
-    (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≤] a :=
-  by
+    (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≤] a := by
   have hd' : Disjoint (ofDual ⁻¹' s) (closure <| ofDual ⁻¹' t) := hd
   have ha' : toDual a ∈ ofDual ⁻¹' s := ha
   simpa only [dual_ord_separating_set, dual_ord_connected_section] using
@@ -84,8 +81,7 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Iic (hd : Disjoint s (clos
 #align set.compl_section_ord_separating_set_mem_nhds_within_Iic Set.compl_section_ordSeparatingSet_mem_nhdsWithin_Iic
 
 theorem compl_section_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t)) (ha : a ∈ s) :
-    (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝 a :=
-  by
+    (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝 a := by
   rw [← nhds_left_sup_nhds_right, mem_sup]
   exact
     ⟨compl_section_ord_separating_set_mem_nhds_within_Iic hd ha,
