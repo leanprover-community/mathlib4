@@ -586,6 +586,8 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
     exact mul_pos (h _ <| mem_cons_self _ _) (ih fun a ha => h a <| mem_cons_of_mem _ ha)
 #align list.prod_pos List.prod_pos
 
+-- TODO
+
 /-!
 Several lemmas about sum/head/tail for `List ℕ`.
 These are hard to generalize well, as they rely on the fact that `default ℕ = 0`.
