@@ -561,15 +561,12 @@ theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → 
     rw [← mul_assoc, Int.commute_cast] at h
     simp at h; rwa [Int.commute_cast] at h
 
-theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
-  Nat.zero_lt_of_ne_zero fun h => nonzero_of_invertible (n : α) (h ▸ Nat.cast_zero)
-
 theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     have h := Int.cast_strictMono (α := α) <| of_decide_eq_true h
-    have ha : 0 < ⅟(da : α) := invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (α := α) da
-    have hb : 0 < ⅟(db : α) := invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (α := α) db
+    have ha : 0 < ⅟(da : α) := pos_invOf_of_invertible_cast da
+    have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
     simp at h
