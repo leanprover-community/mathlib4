@@ -948,6 +948,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
+import Mathlib.Tactic.Rsuffices
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
