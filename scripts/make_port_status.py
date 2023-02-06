@@ -125,7 +125,7 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
     }
     if repo == 'leanprover-community/mathlib':
         data[module]['mathlib3_hash'] = commit
-    elif repo == 'leanprover-community/lean3':
+    elif repo == 'leanprover-community/lean':
         data[module]['lean3_hash'] = commit
 
 allDone = dict()
