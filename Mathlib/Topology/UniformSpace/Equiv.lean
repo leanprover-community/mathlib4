@@ -38,11 +38,13 @@ variable {α : Type u} {β : Type _} {γ : Type _} {δ : Type _}
 --@[nolint has_nonempty_instance] -- Porting note: missing linter?
 structure UniformEquiv (α : Type _) (β : Type _) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
+  /-- Uniform continuity of the function -/
   uniformContinuous_toFun : UniformContinuous toFun
+  /-- Uniform continuity of the inverse -/
   uniformContinuous_invFun : UniformContinuous invFun
 #align uniform_equiv UniformEquiv
 
--- mathport name: «expr ≃ᵤ »
+/-- Uniform isomorphism between `α` and `β` -/
 infixl:25 " ≃ᵤ " => UniformEquiv
 
 namespace UniformEquiv
@@ -79,10 +81,12 @@ def Simps.symmApply (h : α ≃ᵤ β) : β → α :=
 initialize_simps_projections UniformEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
   -toEquiv)
 
+/- Porting note: syntactic tautology
 @[simp]
 theorem coe_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv = h :=
   rfl
-#align uniform_equiv.coe_to_equiv UniformEquiv.coe_toEquiv
+#align uniform_equiv.coe_to_equiv UniformEquiv.coe_toEquiv -/
+#noalign uniform_equiv.coe_to_equiv
 
 @[simp]
 theorem coe_symm_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv.symm = h.symm :=
@@ -99,7 +103,7 @@ theorem ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
 #align uniform_equiv.ext UniformEquiv.ext
 
 /-- Identity map as a uniform isomorphism. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := { fullyApplied := false }) apply]
 protected def refl (α : Type _) [UniformSpace α] : α ≃ᵤ α
     where
   uniformContinuous_toFun := uniformContinuous_id
@@ -151,7 +155,7 @@ protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
 #align uniform_equiv.continuous_symm UniformEquiv.continuous_symm
 
 /-- A uniform isomorphism as a homeomorphism. -/
-@[simps]
+-- @[simps] -- Porting note: restore `simps`
 protected def toHomeomorph (e : α ≃ᵤ β) : α ≃ₜ β :=
   { e.toEquiv with
     continuous_toFun := e.continuous
@@ -183,10 +187,9 @@ protected theorem surjective (h : α ≃ᵤ β) : Function.Surjective h :=
 /-- Change the uniform equiv `f` to make the inverse function definitionally equal to `g`. -/
 def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f) : α ≃ᵤ β :=
   have : g = f.symm :=
-    funext fun x =>
-      calc
-        g x = f.symm (f (g x)) := (f.left_inv (g x)).symm
-        _ = f.symm x := by rw [hg x]
+    funext fun x => calc
+      g x = f.symm (f (g x)) := (f.left_inv (g x)).symm
+      _ = f.symm x := by rw [hg x]
   { toFun := f
     invFun := g
     left_inv := by convert f.left_inv
@@ -205,7 +208,7 @@ theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 #align uniform_equiv.self_comp_symm UniformEquiv.self_comp_symm
 
-@[simp]
+--@[simp] -- Porting note: simpNF linter complained
 theorem range_coe (h : α ≃ᵤ β) : range h = univ :=
   h.surjective.range_eq
 #align uniform_equiv.range_coe UniformEquiv.range_coe
@@ -218,12 +221,12 @@ theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage).symm
 #align uniform_equiv.preimage_symm UniformEquiv.preimage_symm
 
-@[simp]
+--@[simp] -- Porting note: simpNF linter complained
 theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
   h.toEquiv.image_preimage s
 #align uniform_equiv.image_preimage UniformEquiv.image_preimage
 
-@[simp]
+--@[simp] -- Porting note: simpNF linter complained
 theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 #align uniform_equiv.preimage_image UniformEquiv.preimage_image
@@ -246,7 +249,9 @@ noncomputable def ofUniformEmbedding (f : α → β) (hf : UniformEmbedding f) :
     where
   uniformContinuous_toFun := hf.toUniformInducing.uniformContinuous.subtype_mk _
   uniformContinuous_invFun := by
-    simp [hf.toUniformInducing.uniformContinuous_iff, uniformContinuous_subtype_val]
+    rw [hf.toUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
+      Equiv.self_comp_ofInjective_symm]
+    exact uniformContinuous_subtype_val
   toEquiv := Equiv.ofInjective f hf.inj
 #align uniform_equiv.of_uniform_embedding UniformEquiv.ofUniformEmbedding
 
@@ -309,14 +314,15 @@ def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ
   uniformContinuous_toFun :=
     (uniformContinuous_fst.comp uniformContinuous_fst).prod_mk
       ((uniformContinuous_snd.comp uniformContinuous_fst).prod_mk uniformContinuous_snd)
-  uniformContinuous_invFun :=
-    (uniformContinuous_fst.prod_mk (uniformContinuous_fst.comp uniformContinuous_snd)).prod_mk
-      (uniformContinuous_snd.comp uniformContinuous_snd)
+  uniformContinuous_invFun := by -- Porting note: the `rw` was not necessary in Lean 3
+    rw [Equiv.invFun, Equiv.prodAssoc]
+    exact (uniformContinuous_fst.prod_mk (uniformContinuous_fst.comp
+    uniformContinuous_snd)).prod_mk (uniformContinuous_snd.comp uniformContinuous_snd)
   toEquiv := Equiv.prodAssoc α β γ
 #align uniform_equiv.prod_assoc UniformEquiv.prodAssoc
 
 /-- `α × {*}` is uniformly isomorphic to `α`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := { fullyApplied := false }) apply]
 def prodPunit : α × PUnit ≃ᵤ α where
   toEquiv := Equiv.prodPUnit α
   uniformContinuous_toFun := uniformContinuous_fst
@@ -346,7 +352,7 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
 end
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
-@[simps (config := { fullyApplied := false })]
+--@[simps! (config := { fullyApplied := false })]
 def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α
     where
   toEquiv := Equiv.funUnique ι α
@@ -355,7 +361,7 @@ def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃�
 #align uniform_equiv.fun_unique UniformEquiv.funUnique
 
 /-- Uniform isomorphism between dependent functions `Π i : fin 2, α i` and `α 0 × α 1`. -/
-@[simps (config := { fullyApplied := false })]
+-- @[simps! (config := { fullyApplied := false })]
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1
     where
   toEquiv := piFinTwoEquiv α
@@ -365,7 +371,7 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
 #align uniform_equiv.pi_fin_two UniformEquiv.piFinTwo
 
 /-- Uniform isomorphism between `α² = fin 2 → α` and `α × α`. -/
-@[simps (config := { fullyApplied := false })]
+--@[simps! (config := { fullyApplied := false })]
 def finTwoArrow : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align uniform_equiv.fin_two_arrow UniformEquiv.finTwoArrow
@@ -383,7 +389,7 @@ def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s
 end UniformEquiv
 
 /-- A uniform inducing equiv between uniform spaces is a uniform isomorphism. -/
-@[simps]
+-- @[simps] -- Porting note: restore `simps`
 def Equiv.toUniformEquivOfUniformInducing [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (hf : UniformInducing f) : α ≃ᵤ β :=
   { f with
