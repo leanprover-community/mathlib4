@@ -32,9 +32,9 @@ In this file, we define a divisible add monoid and a rootable monoid with some b
 
 For additive monoids and groups:
 
-* `divisibleByOfSmulRightSurj` : the constructive definition of divisiblity is implied by
+* `divisibleByOfSMulRightSurj` : the constructive definition of divisiblity is implied by
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
-* `smul_right_surj_of_divisible_by` : the constructive definition of divisiblity implies
+* `smul_right_surj_of_divisibleBy` : the constructive definition of divisiblity implies
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
 * `Prod.divisibleBy` : `A × B` is divisible for any two divisible additive monoids.
 * `Pi.divisibleBy` : any product of divisble additive monoids is divisible.
@@ -47,7 +47,7 @@ For additive monoids and groups:
 * `AddCommGroup.smul_top_eq_top_of_divisibleBy_int`: the constructive definition of divisiblity
   implies the condition that `n • A = A` for all `n ≠ 0`.
 * `divisibleByIntOfCharZero` : any field of characteristic zero is divisible.
-* `quotient_add_group.divisible_by` : quotient group of divisible group is divisible.
+* `QuotientAddGroup.divisibleBy` : quotient group of divisible group is divisible.
 * `Function.Surjective.divisibleBy` : if `A` is divisible and `A →+ B` is surjective, then `B`
   is divisible.
 
@@ -107,22 +107,22 @@ class RootableBy where
   root_cancel : ∀ {n : α} (a : A), n ≠ 0 → root a n ^ n = a
 #align rootable_by RootableBy
 
-@[to_additive smul_right_surj_of_divisible_by]
+@[to_additive smul_right_surj_of_divisibleBy]
 theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
     Function.Surjective (fun a => a ^ n : A → A) := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
 #align pow_left_surj_of_rootable_by pow_left_surj_of_rootableBy
-#align smul_right_surj_of_divisible_by smul_right_surj_of_divisible_by
+#align smul_right_surj_of_divisible_by smul_right_surj_of_divisibleBy
 
 /--
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
 -/
-@[to_additive divisibleByOfSmulRightSurj
-      "An `add_monoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the constructive\nversion implies the textbook approach."]
+@[to_additive divisibleByOfSMulRightSurj
+      "An `AddMonoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the constructive
+      version implies the textbook approach."]
 noncomputable def rootableByOfPowLeftSurj
-    (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α
-    where
+    (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
   root_zero _ := by classical exact dif_pos rfl
   root_cancel a hn := by
@@ -130,7 +130,7 @@ noncomputable def rootableByOfPowLeftSurj
     rw [dif_neg hn]
     exact (H hn a).choose_spec
 #align rootable_by_of_pow_left_surj rootableByOfPowLeftSurj
-#align divisible_by_of_smul_right_surj divisibleByOfSmulRightSurj
+#align divisible_by_of_smul_right_surj divisibleByOfSMulRightSurj
 
 section Pi
 
@@ -139,8 +139,7 @@ variable {ι β : Type _} (B : ι → Type _) [∀ i : ι, Pow (B i) β]
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
 @[to_additive Pi.divisibleBy]
-instance Pi.rootableBy : RootableBy (∀ i, B i) β
-    where
+instance Pi.rootableBy : RootableBy (∀ i, B i) β where
   root x n i := RootableBy.root (x i) n
   root_zero _x := funext fun _i => RootableBy.root_zero _
   root_cancel _x hn := funext fun _i => RootableBy.root_cancel _ hn
@@ -156,8 +155,7 @@ variable {β B B' : Type _} [Pow B β] [Pow B' β]
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
 @[to_additive Prod.divisibleBy]
-instance Prod.rootableBy : RootableBy (B × B') β
-    where
+instance Prod.rootableBy : RootableBy (B × B') β where
   root p n := (RootableBy.root p.1 n, RootableBy.root p.2 n)
   root_zero _p := Prod.ext (RootableBy.root_zero _) (RootableBy.root_zero _)
   root_cancel _p hn := Prod.ext (RootableBy.root_cancel _ hn) (RootableBy.root_cancel _ hn)
@@ -180,8 +178,7 @@ theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n
 /-- If for all `n ≠ 0 ∈ ℤ`, `n • A = A`, then `A` is divisible.
 -/
 noncomputable def divisibleByIntOfSmulTopEqTop
-    (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ
-    where
+    (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
     if hn : n = 0 then 0 else (show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn]; trivial).choose
   div_zero a := dif_pos rfl
@@ -210,8 +207,7 @@ open Int in
 -/
 @[to_additive AddGroup.divisibleByIntOfDivisibleByNat
       "An additive group is `ℤ`-divisible if it is `ℕ`-divisible."]
-def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ
-    where
+def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root a z :=
     match z with
     | (n : ℕ) => RootableBy.root a n
@@ -235,8 +231,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ
 -/
 @[to_additive AddGroup.divisibleByNatOfDivisibleByInt
       "An additive group is `ℕ`-divisible if it `ℤ`-divisible."]
-def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ
-    where
+def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
@@ -259,7 +254,8 @@ variable (f : A → B)
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
 @[to_additive Function.Surjective.divisibleBy
-      "If `f : A → B` is a surjective homomorphism and\n`A` is `α`-divisible, then `B` is also `α`-divisible."]
+      "If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
+      `α`-divisible."]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     (hpow : ∀ (a : A) (n : α), f (a ^ n) = f a ^ n) : RootableBy B α :=
   rootableByOfPowLeftSurj _ _ fun {n} hn x =>
