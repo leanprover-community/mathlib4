@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.UpperLower.Basic
-import Mathbin.Order.Hom.CompleteLattice
+import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # `upper_set.Ici` etc as `sup`/`Sup`/`inf`/`Inf`-homomorphisms
