@@ -8,8 +8,8 @@ Authors: Patrick Stevens, Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Choose.Basic
-import Mathbin.Tactic.Linarith.Default
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Linarith.Default
 
 /-!
 # Central binomial coefficients
@@ -89,8 +89,7 @@ theorem succ_mul_centralBinom_succ (n : ℕ) :
 This bound is of interest because it appears in
 [Tochiori's refinement of Erdős's proof of Bertrand's postulate](tochiori_bertrand).
 -/
-theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * centralBinom n :=
-  by
+theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * centralBinom n := by
   induction' n using Nat.strong_induction_on with n IH
   rcases lt_trichotomy n 4 with (hn | rfl | hn)
   · clear IH
@@ -127,23 +126,20 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
       
 #align nat.four_pow_le_two_mul_self_mul_central_binom Nat.four_pow_le_two_mul_self_mul_centralBinom
 
-theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) :=
-  by
+theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n
   rw [central_binom_eq_two_mul_choose, two_mul, ← add_assoc, choose_succ_succ, choose_symm_add, ←
     two_mul]
 #align nat.two_dvd_central_binom_succ Nat.two_dvd_centralBinom_succ
 
-theorem two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBinom n :=
-  by
+theorem two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBinom n := by
   rw [← Nat.succ_pred_eq_of_pos h]
   exact two_dvd_central_binom_succ n.pred
 #align nat.two_dvd_central_binom_of_one_le Nat.two_dvd_centralBinom_of_one_le
 
 /-- A crucial lemma to ensure that Catalan numbers can be defined via their explicit formula
   `catalan n = n.central_binom / (n + 1)`. -/
-theorem succ_dvd_centralBinom (n : ℕ) : n + 1 ∣ n.centralBinom :=
-  by
+theorem succ_dvd_centralBinom (n : ℕ) : n + 1 ∣ n.centralBinom := by
   have h_s : (n + 1).coprime (2 * n + 1) :=
     by
     rw [two_mul, add_assoc, coprime_add_self_right, coprime_self_add_left]
