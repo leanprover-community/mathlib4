@@ -142,8 +142,8 @@ variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 instance Pi.rootableBy : RootableBy (∀ i, B i) β
     where
   root x n i := RootableBy.root (x i) n
-  root_zero x := funext fun i => RootableBy.root_zero _
-  root_cancel x hn := funext fun i => RootableBy.root_cancel _ hn
+  root_zero _x := funext fun _i => RootableBy.root_zero _
+  root_cancel _x hn := funext fun _i => RootableBy.root_cancel _ hn
 #align pi.rootable_by Pi.rootableBy
 #align pi.divisible_by Pi.divisibleBy
 
@@ -159,8 +159,8 @@ variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 instance Prod.rootableBy : RootableBy (B × B') β
     where
   root p n := (RootableBy.root p.1 n, RootableBy.root p.2 n)
-  root_zero p := Prod.ext (RootableBy.root_zero _) (RootableBy.root_zero _)
-  root_cancel p hn := Prod.ext (RootableBy.root_cancel _ hn) (RootableBy.root_cancel _ hn)
+  root_zero _p := Prod.ext (RootableBy.root_zero _) (RootableBy.root_zero _)
+  root_cancel _p hn := Prod.ext (RootableBy.root_cancel _ hn) (RootableBy.root_cancel _ hn)
 #align prod.rootable_by Prod.rootableBy
 #align prod.divisible_by Prod.divisibleBy
 
@@ -180,7 +180,7 @@ theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n
 /-- If for all `n ≠ 0 ∈ ℤ`, `n • A = A`, then `A` is divisible.
 -/
 noncomputable def divisibleByIntOfSmulTopEqTop
-    (H : ∀ {n : ℤ} (hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ
+    (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ
     where
   div a n :=
     if hn : n = 0 then 0 else (show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn]; trivial).choose
