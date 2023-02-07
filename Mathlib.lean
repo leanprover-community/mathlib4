@@ -1022,6 +1022,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
 import Mathlib.Topology.NhdsSet
