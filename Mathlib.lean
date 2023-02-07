@@ -919,6 +919,7 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
@@ -977,7 +978,6 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
-import Mathlib.Tactic.TagAttr
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace
