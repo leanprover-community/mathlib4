@@ -8,7 +8,7 @@ Authors: Johan Commelin, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.WellFoundedSet
+import Mathlib.Order.WellFoundedSet
 
 /-! # Multiplication antidiagonal -/
 
@@ -109,8 +109,7 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × α).1 ≤ (y : α × �
 variable {s t}
 
 @[to_additive]
-theorem finite_of_isPwo (hs : s.IsPwo) (ht : t.IsPwo) (a) : (mulAntidiagonal s t a).Finite :=
-  by
+theorem finite_of_isPwo (hs : s.IsPwo) (ht : t.IsPwo) (a) : (mulAntidiagonal s t a).Finite := by
   refine' not_infinite.1 fun h => _
   have h1 : (mul_antidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
     hs (Prod.fst ∘ f) fun n => (mem_mul_antidiagonal.1 (hf n)).1
