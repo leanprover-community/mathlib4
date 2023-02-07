@@ -9,7 +9,6 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Parity
-import Mathlib.Data.List.Count
 import Mathlib.Data.List.Chain
 
 /-!
