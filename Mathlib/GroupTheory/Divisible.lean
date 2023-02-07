@@ -100,17 +100,16 @@ Here we adopt a constructive approach where we ask an explicit `root : A → α 
 * `root a 0 = 1` for all `a ∈ A`
 * `(root a n)ⁿ = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
 -/
-@[to_additive]
+@[to_additive DivisibleBy]
 class RootableBy where
   root : A → α → A
   root_zero : ∀ a, root a 0 = 1
   root_cancel : ∀ {n : α} (a : A), n ≠ 0 → root a n ^ n = a
 #align rootable_by RootableBy
-#align divisible_by DivisibleBy
 
 @[to_additive smul_right_surj_of_divisible_by]
 theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
-    Function.Surjective (fun a => pow a n : A → A) := fun x =>
+    Function.Surjective (fun a => a ^ n : A → A) := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
 #align pow_left_surj_of_rootable_by pow_left_surj_of_rootableBy
 #align smul_right_surj_of_divisible_by smul_right_surj_of_divisible_by
@@ -124,12 +123,12 @@ implies the textbook approach.
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α
     where
-  root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).some
+  root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
   root_zero _ := by classical exact dif_pos rfl
-  root_cancel n a hn := by
-    classical
-      rw [dif_neg hn]
-      exact (H hn a).choose_spec
+  root_cancel a hn := by
+    dsimp only
+    rw [dif_neg hn]
+    exact (H hn a).choose_spec
 #align rootable_by_of_pow_left_surj rootableByOfPowLeftSurj
 #align divisible_by_of_smul_right_surj divisibleByOfSmulRightSurj
 
@@ -139,12 +138,12 @@ variable {ι β : Type _} (B : ι → Type _) [∀ i : ι, Pow (B i) β]
 
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
-@[to_additive]
+@[to_additive Pi.divisibleBy]
 instance Pi.rootableBy : RootableBy (∀ i, B i) β
     where
   root x n i := RootableBy.root (x i) n
   root_zero x := funext fun i => RootableBy.root_zero _
-  root_cancel n x hn := funext fun i => RootableBy.root_cancel _ hn
+  root_cancel x hn := funext fun i => RootableBy.root_cancel _ hn
 #align pi.rootable_by Pi.rootableBy
 #align pi.divisible_by Pi.divisibleBy
 
@@ -156,12 +155,12 @@ variable {β B B' : Type _} [Pow B β] [Pow B' β]
 
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
-@[to_additive]
+@[to_additive Prod.divisibleBy]
 instance Prod.rootableBy : RootableBy (B × B') β
     where
   root p n := (RootableBy.root p.1 n, RootableBy.root p.2 n)
   root_zero p := Prod.ext (RootableBy.root_zero _) (RootableBy.root_zero _)
-  root_cancel n p hn := Prod.ext (RootableBy.root_cancel _ hn) (RootableBy.root_cancel _ hn)
+  root_cancel p hn := Prod.ext (RootableBy.root_cancel _ hn) (RootableBy.root_cancel _ hn)
 #align prod.rootable_by Prod.rootableBy
 #align prod.divisible_by Prod.divisibleBy
 
@@ -184,12 +183,12 @@ noncomputable def divisibleByIntOfSmulTopEqTop
     (H : ∀ {n : ℤ} (hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ
     where
   div a n :=
-    if hn : n = 0 then 0 else show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn] <;> trivial.some
+    if hn : n = 0 then 0 else (show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn]; trivial).choose
   div_zero a := dif_pos rfl
-  div_cancel n a hn := by
-    rw [dif_neg hn]
+  div_cancel a hn := by
+    simp_rw [dif_neg hn]
     generalize_proofs h1
-    exact h1.some_spec.2
+    exact h1.choose_spec.2
 #align add_comm_group.divisible_by_int_of_smul_top_eq_top AddCommGroup.divisibleByIntOfSmulTopEqTop
 
 end AddCommGroup
@@ -198,14 +197,15 @@ instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [
     DivisibleBy 𝕜 ℤ where
   div q n := q / n
   div_zero q := by norm_num
-  div_cancel n q hn := by
-    rw [zsmul_eq_mul, (Int.cast_commute n _).Eq, div_mul_cancel q (int.cast_ne_zero.mpr hn)]
+  div_cancel {n} q hn := by
+    rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel q (Int.cast_ne_zero.mpr hn)]
 #align divisible_by_int_of_char_zero divisibleByIntOfCharZero
 
 namespace Group
 
 variable (A : Type _) [Group A]
 
+open Int in
 /-- A group is `ℤ`-rootable if it is `ℕ`-rootable.
 -/
 @[to_additive AddGroup.divisibleByIntOfDivisibleByNat
@@ -217,7 +217,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ
     | (n : ℕ) => RootableBy.root a n
     | -[n+1] => (RootableBy.root a (n + 1))⁻¹
   root_zero a := RootableBy.root_zero a
-  root_cancel n a hn := by
+  root_cancel {n} a hn := by
     induction n
     · change RootableBy.root a _ ^ _ = a
       norm_num
@@ -239,11 +239,9 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ
     where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
-  root_cancel n a hn :=
-    by
-    have := RootableBy.root_cancel a (show (n : ℤ) ≠ 0 by exact_mod_cast hn)
-    norm_num at this
-    exact this
+  root_cancel {n} a hn := by
+    -- Porting note: replaced `norm_num`
+    simpa only [zpow_coe_nat] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 by exact_mod_cast hn)
 #align group.rootable_by_nat_of_rootable_by_int Group.rootableByNatOfRootableByInt
 #align add_group.divisible_by_nat_of_divisible_by_int AddGroup.divisibleByNatOfDivisibleByInt
 
@@ -260,14 +258,14 @@ variable (f : A → B)
 /--
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
-@[to_additive
+@[to_additive Function.Surjective.divisibleBy
       "If `f : A → B` is a surjective homomorphism and\n`A` is `α`-divisible, then `B` is also `α`-divisible."]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     (hpow : ∀ (a : A) (n : α), f (a ^ n) = f a ^ n) : RootableBy B α :=
-  rootableByOfPowLeftSurj _ _ fun n hn x =>
+  rootableByOfPowLeftSurj _ _ fun {n} hn x =>
     let ⟨y, hy⟩ := hf x
     ⟨f <| RootableBy.root y n,
-      (by rw [← hpow (RootableBy.root y n) n, RootableBy.root_cancel _ hn, hy] : _ ^ _ = x)⟩
+      (by rw [← hpow (RootableBy.root y n) n, RootableBy.root_cancel _ hn, hy] : _ ^ n = x)⟩
 #align function.surjective.rootable_by Function.Surjective.rootableBy
 #align function.surjective.divisible_by Function.Surjective.divisibleBy
 
@@ -285,11 +283,10 @@ section Quotient
 variable (α : Type _) {A : Type _} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
-@[to_additive quotientAddGroup.divisibleBy "Any quotient group of a divisible group is divisible"]
+@[to_additive QuotientAddGroup.divisibleBy "Any quotient group of a divisible group is divisible"]
 noncomputable instance QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ :=
-  QuotientGroup.mk_surjective.RootableBy _ fun _ _ => rfl
+  QuotientGroup.mk_surjective.rootableBy _ fun _ _ => rfl
 #align quotient_group.rootable_by QuotientGroup.rootableBy
-#align quotient_add_group.divisible_by quotientAddGroup.divisibleBy
+#align quotient_add_group.divisible_by QuotientAddGroup.divisibleBy
 
 end Quotient
-
