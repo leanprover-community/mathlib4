@@ -8,13 +8,13 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Multiset.Sort
-import Mathbin.Data.Pnat.Interval
-import Mathbin.Data.Rat.Order
-import Mathbin.Data.Pnat.Basic
-import Mathbin.Tactic.NormNum
-import Mathbin.Tactic.FieldSimp
-import Mathbin.Tactic.IntervalCases
+import Mathlib.Data.Multiset.Sort
+import Mathlib.Data.PNat.Interval
+import Mathlib.Data.Rat.Order
+import Mathlib.Data.PNat.Basic
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`
@@ -158,8 +158,7 @@ theorem admissible_e8 : Admissible e8 :=
   admissible_E'5
 #align ADE_inequality.admissible_E8 ADEInequality.admissible_e8
 
-theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < sumInv pqr :=
-  by
+theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < sumInv pqr := by
   rw [admissible]
   rintro (⟨p', q', H⟩ | ⟨n, H⟩ | H | H | H)
   · rw [← H, A', sum_inv_pqr, add_assoc]
@@ -172,8 +171,7 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
   all_goals rw [← H, E', sum_inv_pqr]; norm_num
 #align ADE_inequality.admissible.one_lt_sum_inv ADEInequality.Admissible.one_lt_sumInv
 
-theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 :=
-  by
+theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by
   have h3 : (0 : ℚ) < 3 := by norm_num
   contrapose! H
   rw [sum_inv_pqr]
@@ -186,8 +184,7 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   all_goals rw [inv_le_inv _ h3] <;> [assumption_mod_cast, norm_num]
 #align ADE_inequality.lt_three ADEInequality.lt_three
 
-theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 :=
-  by
+theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 := by
   have h4 : (0 : ℚ) < 4 := by norm_num
   contrapose! H
   rw [sum_inv_pqr]
@@ -200,8 +197,7 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   all_goals rw [inv_le_inv _ h4] <;> [assumption_mod_cast, norm_num]
 #align ADE_inequality.lt_four ADEInequality.lt_four
 
-theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 :=
-  by
+theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   have h6 : (0 : ℚ) < 6 := by norm_num
   contrapose! H
   rw [sum_inv_pqr]
@@ -215,8 +211,7 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 :=
 #align ADE_inequality.lt_six ADEInequality.lt_six
 
 theorem admissible_of_one_lt_sumInv_aux' {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r)
-    (H : 1 < sumInv {p, q, r}) : Admissible {p, q, r} :=
-  by
+    (H : 1 < sumInv {p, q, r}) : Admissible {p, q, r} := by
   have hp3 : p < 3 := lt_three hpq hqr H
   interval_cases
   · exact admissible_A' q r
