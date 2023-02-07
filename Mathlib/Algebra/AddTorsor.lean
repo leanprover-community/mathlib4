@@ -290,27 +290,14 @@ variable {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} [AddGroup G] [Add
 
 -- Porting note: the `{_ : ...}` instance terms make this instance not dangerous
 instance {G : Type _} {P : Type _} {G' : Type _} {P' : Type _} {_ : AddGroup G} {_ : AddGroup G'}
-  [AddTorsor G P] [AddTorsor G' P'] : AddTorsor (G × G') (P × P') where
+    [AddTorsor G P] [AddTorsor G' P'] : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
-  zero_vadd p := by
-    have : (((0 : G) +ᵥ p.fst) = p.fst) ∧ (((0 : G') +ᵥ p.snd) = p.snd) := by simp only [zero_vadd]
-    rwa [eq_iff_fst_eq_snd_eq]
-  add_vadd g₁ g₂ p := by
-    have : (g₁.fst +ᵥ g₂.fst +ᵥ p.fst = g₁.fst +ᵥ (g₂.fst +ᵥ p.fst))
-      ∧  (g₁.snd +ᵥ g₂.snd +ᵥ p.snd = g₁.snd +ᵥ (g₂.snd +ᵥ p.snd)) := by simp [vadd_vadd]
-    rwa [eq_iff_fst_eq_snd_eq]
+  zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
+  add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
   Nonempty := Prod.Nonempty
-  vsub_vadd' p₁ p₂ := by
-    have : (p₁.fst -ᵥ p₂.fst +ᵥ p₂.fst = p₁.fst) ∧ (p₁.snd -ᵥ p₂.snd +ᵥ p₂.snd = p₁.snd) := by
-      rw [vsub_vadd]
-      simp
-    rwa [eq_iff_fst_eq_snd_eq]
-  vadd_vsub' v p := by
-    have : (v.fst +ᵥ p.fst -ᵥ p.fst = v.fst) ∧ (v.snd +ᵥ p.snd -ᵥ p.snd = v.snd) := by
-      rw [vadd_vsub]
-      simp
-    rwa [eq_iff_fst_eq_snd_eq]
+  vsub_vadd' _ _ := Prod.ext (vsub_vadd _ _) (vsub_vadd _ _)
+  vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
 
 -- Porting note: The proofs above used to be shorter:
 -- zero_vadd p := by simp ⊢ 0 +ᵥ p = p
