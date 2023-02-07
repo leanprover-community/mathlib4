@@ -905,8 +905,7 @@ theorem tr_reaches₁ {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H
 #align turing.tr_reaches₁ Turing.tr_reaches₁
 
 theorem tr_reaches {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ a₂}
-    (aa : tr a₁ a₂) {b₁} (ab : Reaches f₁ a₁ b₁) : ∃ b₂, tr b₁ b₂ ∧ Reaches f₂ a₂ b₂ :=
-  by
+    (aa : tr a₁ a₂) {b₁} (ab : Reaches f₁ a₁ b₁) : ∃ b₂, tr b₁ b₂ ∧ Reaches f₂ a₂ b₂ := by
   rcases reflTransGen_iff_eq_or_transGen.1 ab with (rfl | ab)
   · exact ⟨_, aa, ReflTransGen.refl⟩
   · have ⟨b₂, bb, h⟩ := tr_reaches₁ H aa ab
@@ -934,8 +933,7 @@ theorem tr_reaches_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (
 #align turing.tr_reaches_rev Turing.tr_reaches_rev
 
 theorem tr_eval {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ b₁ a₂}
-    (aa : tr a₁ a₂) (ab : b₁ ∈ eval f₁ a₁) : ∃ b₂, tr b₁ b₂ ∧ b₂ ∈ eval f₂ a₂ :=
-  by
+    (aa : tr a₁ a₂) (ab : b₁ ∈ eval f₁ a₁) : ∃ b₂, tr b₁ b₂ ∧ b₂ ∈ eval f₂ a₂ := by
   cases' mem_eval.1 ab with ab b0
   rcases tr_reaches H aa ab with ⟨b₂, bb, ab⟩
   refine' ⟨_, bb, mem_eval.2 ⟨ab, _⟩⟩
@@ -2115,18 +2113,21 @@ as the output stack.
 
 namespace TM2
 
+-- "TM2"
+set_option linter.uppercaseLean3 false
+
 section
 
-parameter {K : Type _}[DecidableEq K]
+variable {K : Type _} [DecidableEq K]
 
 -- Index type of stacks
-parameter (Γ : K → Type _)
+variable (Γ : K → Type _)
 
 -- Type of stack elements
-parameter (Λ : Type _)
+variable (Λ : Type _)
 
 -- Type of function labels
-parameter (σ : Type _)
+variable (σ : Type _)
 
 -- Type of variable settings
 /-- The TM2 model removes the tape entirely from the TM1 model,
@@ -2136,18 +2137,18 @@ parameter (σ : Type _)
   internal state based on the result). `peek` modifies the
   internal state but does not remove an element. -/
 inductive Stmt
-  | push : ∀ k, (σ → Γ k) → stmt → stmt
-  | peek : ∀ k, (σ → Option (Γ k) → σ) → stmt → stmt
-  | pop : ∀ k, (σ → Option (Γ k) → σ) → stmt → stmt
-  | load : (σ → σ) → stmt → stmt
-  | branch : (σ → Bool) → stmt → stmt → stmt
-  | goto : (σ → Λ) → stmt
-  | halt : stmt
+  | push : ∀ k, (σ → Γ k) → Stmt → Stmt
+  | peek : ∀ k, (σ → Option (Γ k) → σ) → Stmt → Stmt
+  | pop : ∀ k, (σ → Option (Γ k) → σ) → Stmt → Stmt
+  | load : (σ → σ) → Stmt → Stmt
+  | branch : (σ → Bool) → Stmt → Stmt → Stmt
+  | goto : (σ → Λ) → Stmt
+  | halt : Stmt
 #align turing.TM2.stmt Turing.TM2.Stmt
 
 open Stmt
 
-instance Stmt.inhabited : Inhabited stmt :=
+instance Stmt.inhabited : Inhabited (Stmt Γ Λ σ) :=
   ⟨halt⟩
 #align turing.TM2.stmt.inhabited Turing.TM2.Stmt.inhabited
 
@@ -2160,43 +2161,43 @@ structure Cfg where
   stk : ∀ k, List (Γ k)
 #align turing.TM2.cfg Turing.TM2.Cfg
 
-instance Cfg.inhabited [Inhabited σ] : Inhabited cfg :=
+instance Cfg.inhabited [Inhabited σ] : Inhabited (Cfg Γ Λ σ) :=
   ⟨⟨default, default, default⟩⟩
 #align turing.TM2.cfg.inhabited Turing.TM2.Cfg.inhabited
 
-parameter {Γ Λ σ K}
+variable {Γ Λ σ}
 
 /-- The step function for the TM2 model. -/
 @[simp]
-def stepAux : stmt → σ → (∀ k, List (Γ k)) → cfg
-  | push k f q, v, S => step_aux q v (update S k (f v :: S k))
-  | peek k f q, v, S => step_aux q (f v (S k).head?) S
-  | pop k f q, v, S => step_aux q (f v (S k).head?) (update S k (S k).tail)
-  | load a q, v, S => step_aux q (a v) S
-  | branch f q₁ q₂, v, S => cond (f v) (step_aux q₁ v S) (step_aux q₂ v S)
+def stepAux : Stmt Γ Λ σ → σ → (∀ k, List (Γ k)) → Cfg Γ Λ σ
+  | push k f q, v, S => stepAux q v (update S k (f v :: S k))
+  | peek k f q, v, S => stepAux q (f v (S k).head?) S
+  | pop k f q, v, S => stepAux q (f v (S k).head?) (update S k (S k).tail)
+  | load a q, v, S => stepAux q (a v) S
+  | branch f q₁ q₂, v, S => cond (f v) (stepAux q₁ v S) (stepAux q₂ v S)
   | goto f, v, S => ⟨some (f v), v, S⟩
   | halt, v, S => ⟨none, v, S⟩
 #align turing.TM2.step_aux Turing.TM2.stepAux
 
 /-- The step function for the TM2 model. -/
 @[simp]
-def step (M : Λ → stmt) : cfg → Option cfg
-  | ⟨none, v, S⟩ => none
-  | ⟨some l, v, S⟩ => some (step_aux (M l) v S)
+def step (M : Λ → Stmt Γ Λ σ) : Cfg Γ Λ σ → Option (Cfg Γ Λ σ)
+  | ⟨none, _, _⟩ => none
+  | ⟨some l, v, S⟩ => some (stepAux (M l) v S)
 #align turing.TM2.step Turing.TM2.step
 
 /-- The (reflexive) reachability relation for the TM2 model. -/
-def Reaches (M : Λ → stmt) : cfg → cfg → Prop :=
-  ReflTransGen fun a b => b ∈ step M a
+def Reaches (M : Λ → Stmt Γ Λ σ) : Cfg Γ Λ σ → Cfg Γ Λ σ → Prop :=
+  ReflTransGen fun a b ↦ b ∈ step M a
 #align turing.TM2.reaches Turing.TM2.Reaches
 
 /-- Given a set `S` of states, `support_stmt S q` means that `q` only jumps to states in `S`. -/
-def SupportsStmt (S : Finset Λ) : stmt → Prop
-  | push k f q => supports_stmt q
-  | peek k f q => supports_stmt q
-  | pop k f q => supports_stmt q
-  | load a q => supports_stmt q
-  | branch f q₁ q₂ => supports_stmt q₁ ∧ supports_stmt q₂
+def SupportsStmt (S : Finset Λ) : Stmt Γ Λ σ → Prop
+  | push _ _ q => SupportsStmt S q
+  | peek _ _ q => SupportsStmt S q
+  | pop _ _ q => SupportsStmt S q
+  | load _ q => SupportsStmt S q
+  | branch _ q₁ q₂ => SupportsStmt S q₁ ∧ SupportsStmt S q₂
   | goto l => ∀ v, l v ∈ S
   | halt => True
 #align turing.TM2.supports_stmt Turing.TM2.SupportsStmt
@@ -2204,25 +2205,21 @@ def SupportsStmt (S : Finset Λ) : stmt → Prop
 open Classical
 
 /-- The set of subtree statements in a statement. -/
-noncomputable def stmts₁ : stmt → Finset stmt
-  | Q@(push k f q) => insert Q (stmts₁ q)
-  | Q@(peek k f q) => insert Q (stmts₁ q)
-  | Q@(pop k f q) => insert Q (stmts₁ q)
-  | Q@(load a q) => insert Q (stmts₁ q)
-  | Q@(branch f q₁ q₂) => insert Q (stmts₁ q₁ ∪ stmts₁ q₂)
-  | Q@(goto l) => {Q}
+noncomputable def stmts₁ : Stmt Γ Λ σ → Finset (Stmt Γ Λ σ)
+  | Q@(push _ _ q) => insert Q (stmts₁ q)
+  | Q@(peek _ _ q) => insert Q (stmts₁ q)
+  | Q@(pop _ _ q) => insert Q (stmts₁ q)
+  | Q@(load _ q) => insert Q (stmts₁ q)
+  | Q@(branch _ q₁ q₂) => insert Q (stmts₁ q₁ ∪ stmts₁ q₂)
+  | Q@(goto _) => {Q}
   | Q@halt => {Q}
 #align turing.TM2.stmts₁ Turing.TM2.stmts₁
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:75:38: in apply_rules #[["[", expr finset.mem_insert_self, ",", expr finset.mem_singleton_self, "]"], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: parse error -/
-theorem stmts₁_self {q} : q ∈ stmts₁ q := by
-  cases q <;>
-    trace
-      "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:75:38: in apply_rules #[[\"[\", expr finset.mem_insert_self, \",\", expr finset.mem_singleton_self, \"]\"], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: parse error"
+theorem stmts₁_self {q : Stmt Γ Λ σ} : q ∈ stmts₁ q := by
+  cases q <;> simp only [Finset.mem_insert_self, Finset.mem_singleton_self, stmts₁]
 #align turing.TM2.stmts₁_self Turing.TM2.stmts₁_self
 
-theorem stmts₁_trans {q₁ q₂} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ :=
-  by
+theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ := by
   intro h₁₂ q₀ h₀₁
   induction' q₂ with _ _ q IH _ _ q IH _ _ q IH _ q IH <;> simp only [stmts₁] at h₁₂⊢ <;>
     simp only [Finset.mem_insert, Finset.mem_singleton, Finset.mem_union] at h₁₂
@@ -2241,11 +2238,11 @@ theorem stmts₁_trans {q₁ q₂} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ �
   case halt => subst h₁₂; exact h₀₁
 #align turing.TM2.stmts₁_trans Turing.TM2.stmts₁_trans
 
-theorem stmts₁_supportsStmt_mono {S q₁ q₂} (h : q₁ ∈ stmts₁ q₂) (hs : supports_stmt S q₂) :
-    supports_stmt S q₁ := by
+theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt Γ Λ σ} (h : q₁ ∈ stmts₁ q₂)
+    (hs : SupportsStmt S q₂) : SupportsStmt S q₁ := by
   induction' q₂ with _ _ q IH _ _ q IH _ _ q IH _ q IH <;>
-    simp only [stmts₁, supports_stmt, Finset.mem_insert, Finset.mem_union, Finset.mem_singleton] at
-      h hs
+    simp only [stmts₁, SupportsStmt, Finset.mem_insert, Finset.mem_union, Finset.mem_singleton]
+      at h hs
   iterate 4 rcases h with (rfl | h) <;> [exact hs, exact IH h hs]
   case branch f q₁ q₂ IH₁ IH₂ => rcases h with (rfl | h | h); exacts[hs, IH₁ h hs.1, IH₂ h hs.2]
   case goto l => subst h; exact hs
@@ -2253,42 +2250,41 @@ theorem stmts₁_supportsStmt_mono {S q₁ q₂} (h : q₁ ∈ stmts₁ q₂) (h
 #align turing.TM2.stmts₁_supports_stmt_mono Turing.TM2.stmts₁_supportsStmt_mono
 
 /-- The set of statements accessible from initial set `S` of labels. -/
-noncomputable def stmts (M : Λ → stmt) (S : Finset Λ) : Finset (Option stmt) :=
-  (S.bunionᵢ fun q => stmts₁ (M q)).insertNone
+noncomputable def stmts (M : Λ → Stmt Γ Λ σ) (S : Finset Λ) : Finset (Option (Stmt Γ Λ σ)) :=
+  Finset.insertNone (S.bunionᵢ fun q ↦ stmts₁ (M q))
 #align turing.TM2.stmts Turing.TM2.stmts
 
-theorem stmts_trans {M : Λ → stmt} {S q₁ q₂} (h₁ : q₁ ∈ stmts₁ q₂) :
+theorem stmts_trans {M : Λ → Stmt Γ Λ σ} {S q₁ q₂} (h₁ : q₁ ∈ stmts₁ q₂) :
     some q₂ ∈ stmts M S → some q₁ ∈ stmts M S := by
-  simp only [stmts, Finset.mem_insertNone, Finset.mem_bunionᵢ, Option.mem_def, forall_eq',
-      exists_imp] <;>
-    exact fun l ls h₂ => ⟨_, ls, stmts₁_trans h₂ h₁⟩
+  simp only [stmts, Finset.mem_insertNone, Finset.mem_bunionᵢ, Option.mem_def, Option.some.injEq,
+    forall_eq', exists_imp, and_imp]
+  exact fun l ls h₂ ↦ ⟨_, ls, stmts₁_trans h₂ h₁⟩
 #align turing.TM2.stmts_trans Turing.TM2.stmts_trans
 
 variable [Inhabited Λ]
 
 /-- Given a TM2 machine `M` and a set `S` of states, `supports M S` means that all states in
 `S` jump only to other states in `S`. -/
-def Supports (M : Λ → stmt) (S : Finset Λ) :=
-  default ∈ S ∧ ∀ q ∈ S, supports_stmt S (M q)
+def Supports (M : Λ → Stmt Γ Λ σ) (S : Finset Λ) :=
+  default ∈ S ∧ ∀ q ∈ S, SupportsStmt S (M q)
 #align turing.TM2.supports Turing.TM2.Supports
 
-theorem stmts_supportsStmt {M : Λ → stmt} {S q} (ss : supports M S) :
-    some q ∈ stmts M S → supports_stmt S q := by
-  simp only [stmts, Finset.mem_insertNone, Finset.mem_bunionᵢ, Option.mem_def, forall_eq',
-      exists_imp] <;>
-    exact fun l ls h => stmts₁_supports_stmt_mono h (ss.2 _ ls)
+theorem stmts_supportsStmt {M : Λ → Stmt Γ Λ σ} {S q} (ss : Supports M S) :
+    some q ∈ stmts M S → SupportsStmt S q := by
+  simp only [stmts, Finset.mem_insertNone, Finset.mem_bunionᵢ, Option.mem_def, Option.some.injEq,
+    forall_eq', exists_imp, and_imp]
+  exact fun l ls h ↦ stmts₁_supportsStmt_mono h (ss.2 _ ls)
 #align turing.TM2.stmts_supports_stmt Turing.TM2.stmts_supportsStmt
 
-theorem step_supports (M : Λ → stmt) {S} (ss : supports M S) :
-    ∀ {c c' : cfg}, c' ∈ step M c → c.l ∈ S.insertNone → c'.l ∈ S.insertNone
-  | ⟨some l₁, v, T⟩, c', h₁, h₂ =>
-    by
+theorem step_supports (M : Λ → Stmt Γ Λ σ) {S} (ss : Supports M S) :
+    ∀ {c c' : Cfg Γ Λ σ}, c' ∈ step M c → c.l ∈ Finset.insertNone S → c'.l ∈ Finset.insertNone S
+  | ⟨some l₁, v, T⟩, c', h₁, h₂ => by
     replace h₂ := ss.2 _ (Finset.some_mem_insertNone.1 h₂)
-    simp only [step, Option.mem_def] at h₁; subst c'
+    simp only [step, Option.mem_def, Option.some.injEq] at h₁; subst c'
     revert h₂; induction' M l₁ with _ _ q IH _ _ q IH _ _ q IH _ q IH generalizing v T <;> intro hs
     iterate 4 exact IH _ _ hs
     case branch p q₁' q₂' IH₁ IH₂ =>
-      unfold step_aux; cases p v
+      unfold stepAux; cases p v
       · exact IH₂ _ _ hs.2
       · exact IH₁ _ _ hs.1
     case goto => exact Finset.some_mem_insertNone.2 (hs _)
@@ -2298,13 +2294,14 @@ theorem step_supports (M : Λ → stmt) {S} (ss : supports M S) :
 variable [Inhabited σ]
 
 /-- The initial state of the TM2 model. The input is provided on a designated stack. -/
-def init (k) (L : List (Γ k)) : cfg :=
-  ⟨some default, default, update (fun _ => []) k L⟩
+def init (k) (L : List (Γ k)) : Cfg Γ Λ σ :=
+  ⟨some default, default, update (fun _ ↦ []) k L⟩
 #align turing.TM2.init Turing.TM2.init
 
 /-- Evaluates a TM2 program to completion, with the output on the same stack as the input. -/
-def eval (M : Λ → stmt) (k) (L : List (Γ k)) : Part (List (Γ k)) :=
-  (eval (step M) (init k L)).map fun c => c.stk k
+-- Porting note: Added noncomputable
+noncomputable def eval (M : Λ → Stmt Γ Λ σ) (k) (L : List (Γ k)) : Part (List (Γ k)) :=
+  (Turing.eval (step M) (init k L)).map fun c ↦ c.stk k
 #align turing.TM2.eval Turing.TM2.eval
 
 end
@@ -2352,24 +2349,27 @@ steps to run when emulated in TM1, where `m` is the length of the input.
 
 namespace TM2to1
 
+-- "TM2to1"
+set_option linter.uppercaseLean3 false
+
 -- A displaced lemma proved in unnecessary generality
 theorem stk_nth_val {K : Type _} {Γ : K → Type _} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
     (hL : ListBlank.map (proj k) L = ListBlank.mk (List.map some S).reverse) :
-    L.get? n k = S.reverse.get? n := by
-  rw [← proj_map_nth, hL, ← List.map_reverse, list_blank.nth_mk, List.getI_eq_iget_get?,
+    L.nth n k = S.reverse.get? n := by
+  rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk, List.getI_eq_iget_get?,
     List.get?_map]
-  cases S.reverse.nth n <;> rfl
+  cases S.reverse.get? n <;> rfl
 #align turing.TM2to1.stk_nth_val Turing.TM2to1.stk_nth_val
 
 section
 
-parameter {K : Type _}[DecidableEq K]
+variable {K : Type _} [DecidableEq K]
 
-parameter {Γ : K → Type _}
+variable {Γ : K → Type _}
 
-parameter {Λ : Type _}[Inhabited Λ]
+variable {Λ : Type _} [Inhabited Λ]
 
-parameter {σ : Type _}[Inhabited σ]
+variable {σ : Type _} [Inhabited σ]
 
 -- mathport name: exprstmt₂
 local notation "stmt₂" => TM2.Stmt Γ Λ σ
