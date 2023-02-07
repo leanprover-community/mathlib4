@@ -12,7 +12,7 @@ import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.ExtendFrom
 
 /-!
-# Lemmas about `extend_from` in an order topology.
+# Lemmas about `extendFrom` in an order topology.
 -/
 
 
