@@ -9,11 +9,6 @@ Authors: Yuma Mizuno
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Iso
-import Aesop
--- import Mathbin.Tactic.Slice
-/-
-Porting note: tactic.slice is an extraneous import in category_theory.bicategory.basic 
--/
 
 /-!
 # Bicategories
