@@ -740,7 +740,8 @@ theorem Tape.map_mk₁ {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
 /-- Run a state transition function `σ → option σ` "to completion". The return value is the last
 state returned before a `none` result. If the state transition function always returns `some`,
 then the computation diverges, returning `part.none`. -/
-def eval {σ} (f : σ → Option σ) : σ → Part σ :=
+-- Porting note: Added noncomputable, because `PFun.fix` is noncomputable.
+noncomputable def eval {σ} (f : σ → Option σ) : σ → Part σ :=
   PFun.fix fun s => Part.some <| (f s).elim (Sum.inl s) Sum.inr
 #align turing.eval Turing.eval
 
@@ -826,11 +827,12 @@ theorem Reaches₀.tail' {σ} {f : σ → Option σ} {a b c : σ} (h : Reaches�
 which is either terminal (meaning `a = b`) or where the next point also satisfies `C`, then it
 holds of any point where `eval f a` evaluates to `b`. This formalizes the notion that if
 `eval f a` evaluates to `b` then it reaches terminal state `b` in finitely many steps. -/
+-- Porting note: Added noncomputable
 @[elab_as_elim]
-def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort _} {a : σ} (h : b ∈ eval f a)
-    (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
+noncomputable def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort _} {a : σ}
+    (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
   PFun.fixInduction h fun a' ha' h' =>
-    H _ ha' fun b' e => h' _ <| Part.mem_some_iff.2 <| by rw [e] <;> rfl
+    H _ ha' fun b' e => h' _ <| Part.mem_some_iff.2 <| by rw [e]; rfl
 #align turing.eval_induction Turing.evalInduction
 
 theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none := by
@@ -1098,7 +1100,8 @@ def init (l : List Γ) : Cfg Γ Λ :=
 
 /-- Evaluate a Turing machine on initial input to a final state,
   if it terminates. -/
-def eval (M : Machine Γ Λ) (l : List Γ) : Part (ListBlank Γ) :=
+-- Porting note: Added noncomputable
+noncomputable def eval (M : Machine Γ Λ) (l : List Γ) : Part (ListBlank Γ) :=
   (Turing.eval (step M) (init l)).map fun c => c.Tape.right₀
 #align turing.TM0.eval Turing.TM0.eval
 
@@ -1405,7 +1408,8 @@ def init (l : List Γ) : Cfg Γ Λ σ :=
 
 /-- Evaluate a TM to completion, resulting in an output list on the tape (with an indeterminate
 number of blanks on the end). -/
-def eval (M : Λ → Stmt Γ Λ σ) (l : List Γ) : Part (ListBlank Γ) :=
+-- Porting note: Added noncomputable
+noncomputable def eval (M : Λ → Stmt Γ Λ σ) (l : List Γ) : Part (ListBlank Γ) :=
   (Turing.eval (step M) (init l)).map fun c => c.Tape.right₀
 #align turing.TM1.eval Turing.TM1.eval
 
