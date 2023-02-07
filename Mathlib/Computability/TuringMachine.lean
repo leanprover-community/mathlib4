@@ -1022,23 +1022,26 @@ to remove the infinite tail of blanks.)
 
 namespace TM0
 
+-- "TM0"
+set_option linter.uppercaseLean3 false
+
 section
 
-parameter (Γ : Type _)[Inhabited Γ]
+variable (Γ : Type _) [Inhabited Γ]
 
 -- type of tape symbols
-parameter (Λ : Type _)[Inhabited Λ]
+variable (Λ : Type _) [Inhabited Λ]
 
 -- type of "labels" or TM states
 /-- A Turing machine "statement" is just a command to either move
   left or right, or write a symbol on the tape. -/
 inductive Stmt
-  | move : Dir → stmt
-  | write : Γ → stmt
+  | move : Dir → Stmt
+  | write : Γ → Stmt
 #align turing.TM0.stmt Turing.TM0.Stmt
 
-instance Stmt.inhabited : Inhabited stmt :=
-  ⟨stmt.write default⟩
+instance Stmt.inhabited : Inhabited (Stmt Γ) :=
+  ⟨Stmt.write default⟩
 #align turing.TM0.stmt.inhabited Turing.TM0.Stmt.inhabited
 
 -- [inhabited Λ]: this is a deliberate addition, see comment
@@ -1051,12 +1054,12 @@ instance Stmt.inhabited : Inhabited stmt :=
   Both `Λ` and `Γ` are required to be inhabited; the default value
   for `Γ` is the "blank" tape value, and the default value of `Λ` is
   the initial state. -/
-@[nolint unused_arguments]
 def Machine :=
-  Λ → Γ → Option (Λ × stmt)
+  Λ → Γ → Option (Λ × Stmt Γ)
 #align turing.TM0.machine Turing.TM0.Machine
 
-instance Machine.inhabited : Inhabited machine := by unfold machine <;> infer_instance
+instance Machine.inhabited : Inhabited (Machine Γ Λ) := by
+  unfold Machine; infer_instance
 #align turing.TM0.machine.inhabited Turing.TM0.Machine.inhabited
 
 /-- The configuration state of a Turing machine during operation
@@ -1069,37 +1072,34 @@ structure Cfg where
   Tape : Tape Γ
 #align turing.TM0.cfg Turing.TM0.Cfg
 
-instance Cfg.inhabited : Inhabited cfg :=
+instance Cfg.inhabited : Inhabited (Cfg Γ Λ) :=
   ⟨⟨default, default⟩⟩
 #align turing.TM0.cfg.inhabited Turing.TM0.Cfg.inhabited
 
-parameter {Γ Λ}
+variable {Γ Λ}
 
 /-- Execution semantics of the Turing machine. -/
-def step (M : machine) : cfg → Option cfg
-  | ⟨q, T⟩ =>
-    (M q T.1).map fun ⟨q', a⟩ =>
-      ⟨q',
-        match a with
-        | stmt.move d => T.move d
-        | stmt.write a => T.write a⟩
+def step (M : Machine Γ Λ) : Cfg Γ Λ → Option (Cfg Γ Λ) :=
+  fun ⟨q, T⟩ => (M q T.1).map fun ⟨q', a⟩ => ⟨q', match a with
+    | Stmt.move d => T.move d
+    | Stmt.write a => T.write a⟩
 #align turing.TM0.step Turing.TM0.step
 
 /-- The statement `reaches M s₁ s₂` means that `s₂` is obtained
   starting from `s₁` after a finite number of steps from `s₂`. -/
-def Reaches (M : machine) : cfg → cfg → Prop :=
+def Reaches (M : Machine Γ Λ) : Cfg Γ Λ → Cfg Γ Λ → Prop :=
   ReflTransGen fun a b => b ∈ step M a
 #align turing.TM0.reaches Turing.TM0.Reaches
 
 /-- The initial configuration. -/
-def init (l : List Γ) : cfg :=
+def init (l : List Γ) : Cfg Γ Λ :=
   ⟨default, Tape.mk₁ l⟩
 #align turing.TM0.init Turing.TM0.init
 
 /-- Evaluate a Turing machine on initial input to a final state,
   if it terminates. -/
-def eval (M : machine) (l : List Γ) : Part (ListBlank Γ) :=
-  (eval (step M) (init l)).map fun c => c.Tape.right₀
+def eval (M : Machine Γ Λ) (l : List Γ) : Part (ListBlank Γ) :=
+  (Turing.eval (step M) (init l)).map fun c => c.Tape.right₀
 #align turing.TM0.eval Turing.TM0.eval
 
 /-- The raw definition of a Turing machine does not require that
@@ -1109,20 +1109,19 @@ def eval (M : machine) (l : List Γ) : Part (ListBlank Γ) :=
   finite subset of their states. We say that a set `S ⊆ Λ`
   supports a Turing machine `M` if `S` is closed under the
   transition function and contains the initial state. -/
-def Supports (M : machine) (S : Set Λ) :=
+def Supports (M : Machine Γ Λ) (S : Set Λ) :=
   default ∈ S ∧ ∀ {q a q' s}, (q', s) ∈ M q a → q ∈ S → q' ∈ S
 #align turing.TM0.supports Turing.TM0.Supports
 
-theorem step_supports (M : machine) {S} (ss : supports M S) :
-    ∀ {c c' : cfg}, c' ∈ step M c → c.q ∈ S → c'.q ∈ S
-  | ⟨q, T⟩, c', h₁, h₂ =>
-    by
-    rcases Option.map_eq_some'.1 h₁ with ⟨⟨q', a⟩, h, rfl⟩
-    exact ss.2 h h₂
+theorem step_supports (M : Machine Γ Λ) {S} (ss : Supports M S) :
+    ∀ {c c' : Cfg Γ Λ}, c' ∈ step M c → c.q ∈ S → c'.q ∈ S := by
+  intro ⟨q, T⟩ c' h₁ h₂
+  rcases Option.map_eq_some'.1 h₁ with ⟨⟨q', a⟩, h, rfl⟩
+  exact ss.2 h h₂
 #align turing.TM0.step_supports Turing.TM0.step_supports
 
-theorem univ_supports (M : machine) : supports M Set.univ :=
-  ⟨trivial, fun q a q' s h₁ h₂ => trivial⟩
+theorem univ_supports (M : Machine Γ Λ) : Supports M Set.univ := by
+  constructor <;> intros <;> apply Set.mem_univ
 #align turing.TM0.univ_supports Turing.TM0.univ_supports
 
 end
@@ -1140,8 +1139,8 @@ variable {Λ' : Type _} [Inhabited Λ']
 /-- Map a TM statement across a function. This does nothing to move statements and maps the write
 values. -/
 def Stmt.map (f : PointedMap Γ Γ') : Stmt Γ → Stmt Γ'
-  | stmt.move d => Stmt.move d
-  | stmt.write a => Stmt.write (f a)
+  | Stmt.move d => Stmt.move d
+  | Stmt.write a => Stmt.write (f a)
 #align turing.TM0.stmt.map Turing.TM0.Stmt.map
 
 /-- Map a configuration across a function, given `f : Γ → Γ'` a map of the alphabets and
@@ -1164,12 +1163,12 @@ theorem Machine.map_step {S : Set Λ} (f₂₁ : Function.RightInverse f₁ f₂
     ∀ c : Cfg Γ Λ,
       c.q ∈ S → (step M c).map (Cfg.map f₁ g₁) = step (M.map f₁ f₂ g₁ g₂) (Cfg.map f₁ g₁ c)
   | ⟨q, T⟩, h => by
-    unfold step machine.map cfg.map
+    unfold step Machine.map Cfg.map
     simp only [Turing.Tape.map_fst, g₂₁ q h, f₂₁ _]
     rcases M q T.1 with (_ | ⟨q', d | a⟩); · rfl
-    · simp only [step, cfg.map, Option.map_some', tape.map_move f₁]
+    · simp only [step, Cfg.map, Option.map_some', Tape.map_move f₁]
       rfl
-    · simp only [step, cfg.map, Option.map_some', tape.map_write]
+    · simp only [step, Cfg.map, Option.map_some', Tape.map_write]
       rfl
 #align turing.TM0.machine.map_step Turing.TM0.Machine.map_step
 
@@ -1181,10 +1180,10 @@ theorem Machine.map_respects (g₁ : PointedMap Λ Λ') (g₂ : Λ' → Λ) {S} 
     (f₂₁ : Function.RightInverse f₁ f₂) (g₂₁ : ∀ q ∈ S, g₂ (g₁ q) = q) :
     Respects (step M) (step (M.map f₁ f₂ g₁ g₂)) fun a b => a.q ∈ S ∧ Cfg.map f₁ g₁ a = b
   | c, _, ⟨cs, rfl⟩ => by
-    cases' e : step M c with c' <;> unfold respects
+    cases' e : step M c with c'
     · rw [← M.map_step f₁ f₂ g₁ g₂ f₂₁ g₂₁ _ cs, e]
       rfl
-    · refine' ⟨_, ⟨step_supports M ss e cs, rfl⟩, trans_gen.single _⟩
+    · refine' ⟨_, ⟨step_supports M ss e cs, rfl⟩, TransGen.single _⟩
       rw [← M.map_step f₁ f₂ g₁ g₂ f₂₁ g₂₁ _ cs, e]
       exact rfl
 #align turing.TM0.machine.map_respects Turing.TM0.Machine.map_respects
@@ -1225,15 +1224,18 @@ before the halt as the output, and `move` and `write` etc. take 0 steps in this 
 
 namespace TM1
 
+-- "TM1"
+set_option linter.uppercaseLean3 false
+
 section
 
-parameter (Γ : Type _)[Inhabited Γ]
+variable (Γ : Type _) [Inhabited Γ]
 
 -- Type of tape symbols
-parameter (Λ : Type _)
+variable (Λ : Type _)
 
 -- Type of function labels
-parameter (σ : Type _)
+variable (σ : Type _)
 
 -- Type of variable settings
 /-- The TM1 model is a simplification and extension of TM0
@@ -1249,17 +1251,17 @@ parameter (σ : Type _)
   go to a new function. All commands have access to the variable value
   and current tape value. -/
 inductive Stmt
-  | move : Dir → stmt → stmt
-  | write : (Γ → σ → Γ) → stmt → stmt
-  | load : (Γ → σ → σ) → stmt → stmt
-  | branch : (Γ → σ → Bool) → stmt → stmt → stmt
-  | goto : (Γ → σ → Λ) → stmt
-  | halt : stmt
+  | move : Dir → Stmt → Stmt
+  | write : (Γ → σ → Γ) → Stmt → Stmt
+  | load : (Γ → σ → σ) → Stmt → Stmt
+  | branch : (Γ → σ → Bool) → Stmt → Stmt → Stmt
+  | goto : (Γ → σ → Λ) → Stmt
+  | halt : Stmt
 #align turing.TM1.stmt Turing.TM1.Stmt
 
 open Stmt
 
-instance Stmt.inhabited : Inhabited stmt :=
+instance Stmt.inhabited : Inhabited (Stmt Γ Λ σ) :=
   ⟨halt⟩
 #align turing.TM1.stmt.inhabited Turing.TM1.Stmt.inhabited
 
@@ -1271,35 +1273,35 @@ structure Cfg where
   Tape : Tape Γ
 #align turing.TM1.cfg Turing.TM1.Cfg
 
-instance Cfg.inhabited [Inhabited σ] : Inhabited cfg :=
+instance Cfg.inhabited [Inhabited σ] : Inhabited (Cfg Γ Λ σ) :=
   ⟨⟨default, default, default⟩⟩
 #align turing.TM1.cfg.inhabited Turing.TM1.Cfg.inhabited
 
-parameter {Γ Λ σ}
+variable {Γ Λ σ}
 
 /-- The semantics of TM1 evaluation. -/
-def stepAux : stmt → σ → Tape Γ → cfg
-  | move d q, v, T => step_aux q v (T.move d)
-  | write a q, v, T => step_aux q v (T.write (a T.1 v))
-  | load s q, v, T => step_aux q (s T.1 v) T
-  | branch p q₁ q₂, v, T => cond (p T.1 v) (step_aux q₁ v T) (step_aux q₂ v T)
+def stepAux : Stmt Γ Λ σ → σ → Tape Γ → (Cfg Γ Λ σ)
+  | move d q, v, T => stepAux q v (T.move d)
+  | write a q, v, T => stepAux q v (T.write (a T.1 v))
+  | load s q, v, T => stepAux q (s T.1 v) T
+  | branch p q₁ q₂, v, T => cond (p T.1 v) (stepAux q₁ v T) (stepAux q₂ v T)
   | goto l, v, T => ⟨some (l T.1 v), v, T⟩
   | halt, v, T => ⟨none, v, T⟩
 #align turing.TM1.step_aux Turing.TM1.stepAux
 
 /-- The state transition function. -/
-def step (M : Λ → stmt) : cfg → Option cfg
-  | ⟨none, v, T⟩ => none
-  | ⟨some l, v, T⟩ => some (step_aux (M l) v T)
+def step (M : Λ → Stmt Γ Λ σ) : Cfg Γ Λ σ → Option (Cfg Γ Λ σ)
+  | ⟨none, _, _⟩ => none
+  | ⟨some l, v, T⟩ => some (stepAux (M l) v T)
 #align turing.TM1.step Turing.TM1.step
 
 /-- A set `S` of labels supports the statement `q` if all the `goto`
   statements in `q` refer only to other functions in `S`. -/
-def SupportsStmt (S : Finset Λ) : stmt → Prop
-  | move d q => supports_stmt q
-  | write a q => supports_stmt q
-  | load s q => supports_stmt q
-  | branch p q₁ q₂ => supports_stmt q₁ ∧ supports_stmt q₂
+def SupportsStmt (S : Finset Λ) : Stmt Γ Λ σ → Prop
+  | move _ q => SupportsStmt S q
+  | write _ q => SupportsStmt S q
+  | load _ q => SupportsStmt S q
+  | branch _ q₁ q₂ => SupportsStmt S q₁ ∧ SupportsStmt S q₂
   | goto l => ∀ a v, l a v ∈ S
   | halt => True
 #align turing.TM1.supports_stmt Turing.TM1.SupportsStmt
@@ -1307,11 +1309,11 @@ def SupportsStmt (S : Finset Λ) : stmt → Prop
 open Classical
 
 /-- The subterm closure of a statement. -/
-noncomputable def stmts₁ : stmt → Finset stmt
-  | Q@(move d q) => insert Q (stmts₁ q)
-  | Q@(write a q) => insert Q (stmts₁ q)
-  | Q@(load s q) => insert Q (stmts₁ q)
-  | Q@(branch p q₁ q₂) => insert Q (stmts₁ q₁ ∪ stmts₁ q₂)
+noncomputable def stmts₁ : Stmt Γ Λ σ → Finset (Stmt Γ Λ σ)
+  | Q@(move _ q) => insert Q (stmts₁ q)
+  | Q@(write _ q) => insert Q (stmts₁ q)
+  | Q@(load _ q) => insert Q (stmts₁ q)
+  | Q@(branch _ q₁ q₂) => insert Q (stmts₁ q₁ ∪ stmts₁ q₂)
   | Q => {Q}
 #align turing.TM1.stmts₁ Turing.TM1.stmts₁
 
