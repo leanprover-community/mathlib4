@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module order.filter.bases
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
+! leanprover-community/mathlib commit 996b0ff959da753a555053a480f36e5f264d4207
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -419,13 +419,13 @@ theorem hasBasis_self {l : Filter α} {P : Set α → Prop} :
     ⟨fun h => h.1, fun h => ⟨h, fun ⟨t, hl, _, hts⟩ => mem_of_superset hl hts⟩⟩
 #align filter.has_basis_self Filter.hasBasis_self
 
-theorem HasBasis.comp_of_surjective (h : l.HasBasis p s) {g : ι' → ι} (hg : Function.Surjective g) :
+theorem HasBasis.comp_surjective (h : l.HasBasis p s) {g : ι' → ι} (hg : Function.Surjective g) :
     l.HasBasis (p ∘ g) (s ∘ g) :=
   ⟨fun _ => h.mem_iff.trans hg.exists⟩
-#align filter.has_basis.comp_of_surjective Filter.HasBasis.comp_of_surjective
+#align filter.has_basis.comp_surjective Filter.HasBasis.comp_surjective
 
 theorem HasBasis.comp_equiv (h : l.HasBasis p s) (e : ι' ≃ ι) : l.HasBasis (p ∘ e) (s ∘ e) :=
-  h.comp_of_surjective e.surjective
+  h.comp_surjective e.surjective
 #align filter.has_basis.comp_equiv Filter.HasBasis.comp_equiv
 
 /-- If `{s i | p i}` is a basis of a filter `l` and each `s i` includes `s j` such that
@@ -820,14 +820,14 @@ protected theorem HasBasis.binfᵢ_mem [CompleteLattice β] {f : Set α → β} 
       infᵢ₂_le_of_le i hpi (hf hi)
 #align filter.has_basis.binfi_mem Filter.HasBasis.binfᵢ_mem
 
-protected theorem HasBasis.bInter_mem {f : Set α → Set β} (h : HasBasis l p s) (hf : Monotone f) :
+protected theorem HasBasis.binterᵢ_mem {f : Set α → Set β} (h : HasBasis l p s) (hf : Monotone f) :
     (⋂ t ∈ l, f t) = ⋂ (i) (_hi : p i), f (s i) :=
   h.binfᵢ_mem hf
-#align filter.has_basis.bInter_mem Filter.HasBasis.bInter_mem
+#align filter.has_basis.bInter_mem Filter.HasBasis.binterᵢ_mem
 
 theorem HasBasis.interₛ_sets (h : HasBasis l p s) : ⋂₀ l.sets = ⋂ (i) (_hi : p i), s i := by
   rw [interₛ_eq_binterᵢ]
-  exact h.bInter_mem monotone_id
+  exact h.binterᵢ_mem monotone_id
 #align filter.has_basis.sInter_sets Filter.HasBasis.interₛ_sets
 
 variable {ι'' : Type _} [Preorder ι''] (l) (s'' : ι'' → Set α)

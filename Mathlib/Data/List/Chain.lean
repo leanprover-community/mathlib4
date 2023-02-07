@@ -31,6 +31,7 @@ namespace List
 variable {α : Type u} {β : Type v} {R r : α → α → Prop} {l l₁ l₂ : List α} {a b : α}
 
 mk_iff_of_inductive_prop List.Chain List.chain_iff
+#align list.chain_iff List.chain_iff
 
 --Porting note: attribute in Lean3, but not in Lean4 Std so added here instead
 attribute [simp] Chain.nil
@@ -148,7 +149,7 @@ protected theorem Chain.pairwise [IsTrans α R] :
     hb.pairwise.cons
       (by
         simp only [mem_cons, forall_eq_or_imp, h, true_and_iff]
-        exact fun c hc => trans h (rel_of_pairwise_cons hb.pairwise hc))
+        exact fun c hc => _root_.trans h (rel_of_pairwise_cons hb.pairwise hc))
 #align list.chain.pairwise List.Chain.pairwise
 
 theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l ↔ Pairwise R (a :: l) :=

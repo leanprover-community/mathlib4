@@ -48,6 +48,7 @@ import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
@@ -57,6 +58,7 @@ import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
@@ -158,8 +160,6 @@ namespace Tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
-/- E -/ syntax (name := rsuffices) "rsuffices"
-    (ppSpace Std.Tactic.RCases.rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
 
 /- M -/ syntax (name := decide!) "decide!" : tactic
 
@@ -276,8 +276,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := deriveElementwiseProof) "derive_elementwise_proof" : tactic
 
 /- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
-
-/- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
 

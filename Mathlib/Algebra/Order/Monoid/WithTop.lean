@@ -47,6 +47,18 @@ theorem coe_eq_one {a : α} : (a : WithTop α) = 1 ↔ a = 1 :=
 #align with_top.coe_eq_one WithTop.coe_eq_one
 #align with_top.coe_eq_zero WithTop.coe_eq_zero
 
+@[to_additive (attr := simp, norm_cast) coe_nonneg]
+theorem one_le_coe [LE α] {a : α} : 1 ≤ (a : WithTop α) ↔ 1 ≤ a :=
+  coe_le_coe
+#align with_top.one_le_coe WithTop.one_le_coe
+#align with_top.coe_nonneg WithTop.coe_nonneg
+
+@[to_additive (attr := simp, norm_cast) coe_le_zero]
+theorem coe_le_one [LE α] {a : α} : (a : WithTop α) ≤ 1 ↔ a ≤ 1 :=
+  coe_le_coe
+#align with_top.coe_le_one WithTop.coe_le_one
+#align with_top.coe_le_zero WithTop.coe_le_zero
+
 @[to_additive (attr := simp, norm_cast) coe_pos]
 theorem one_lt_coe [LT α] {a : α} : 1 < (a : WithTop α) ↔ 1 < a :=
   coe_lt_coe
@@ -93,7 +105,7 @@ section Add
 variable [Add α] {a b c d : WithTop α} {x y : α}
 
 instance add : Add (WithTop α) :=
-  ⟨fun o₁ o₂ => o₁.bind fun a => o₂.map <| (· + ·) a⟩
+  ⟨Option.map₂ (· + ·)⟩
 #align with_top.has_add WithTop.add
 
 @[norm_cast]
@@ -281,46 +293,16 @@ end Add
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
   { WithTop.add with
-    add_assoc := by
-      refine' WithTop.recTopCoe _ _ <;> try intro
-      · simp only [top_add, forall_const]
-      · refine' WithTop.recTopCoe _ _
-        · simp only [add_top, top_add, forall_const]
-        · intro
-          refine' WithTop.recTopCoe _ _
-          · simp only [coe_add, add_top]
-          · intro
-            simp only [← WithTop.coe_add, add_assoc] }
--- Porting notes: mathlib3 proof was:
---   repeat { refine with_top.rec_top_coe _ _; try { intro }};
---   simp [←with_top.coe_add, add_assoc]
+    add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
   { WithTop.addSemigroup with
-    add_comm := by
-      refine' WithTop.recTopCoe _ _ <;> try intro
-      · rw [top_add, add_top]
-      · refine' WithTop.recTopCoe _ _
-        · rw [add_top, top_add]
-        · intro
-          simp only [← WithTop.coe_add, add_comm] }
--- Porting notes: mathlib3 proof was:
---   repeat { refine with_top.rec_top_coe _ _; try { intro }};
---   simp [←with_top.coe_add, add_comm]
-
+    add_comm := fun _ _ => Option.map₂_comm add_comm }
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
   { WithTop.zero, WithTop.add with
-    zero_add := by
-      refine' WithTop.recTopCoe _ _
-      · simp
-      · intro
-        rw [← WithTop.coe_zero, ← WithTop.coe_add, zero_add],
-    add_zero := by
-      refine' WithTop.recTopCoe _ _
-      · simp
-      · intro
-        rw [← WithTop.coe_zero, ← WithTop.coe_add, add_zero] }
+    zero_add := Option.map₂_left_identity zero_add
+    add_zero := Option.map₂_right_identity add_zero }
 
 instance addMonoid [AddMonoid α] : AddMonoid (WithTop α) :=
   { WithTop.addSemigroup, WithTop.addZeroClass with }
@@ -422,14 +404,15 @@ theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a �
 #align with_top.zero_lt_coe WithTop.zero_lt_coe
 
 /-- A version of `WithTop.map` for `OneHom`s. -/
-@[to_additive "A version of `WithTop.map` for `ZeroHom`s",
-  simps (config := { fullyApplied := false })]
+@[to_additive (attr := simps (config := { fullyApplied := false }))
+  "A version of `WithTop.map` for `ZeroHom`s"]
 protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
 #align one_hom.with_top_map OneHom.withTopMap
 #align zero_hom.with_top_map ZeroHom.withTopMap
+#align one_hom.with_top_map_apply OneHom.withTopMap_apply
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -438,6 +421,7 @@ protected def _root_.AddHom.withTopMap {M N : Type _} [Add M] [Add N] (f : AddHo
   toFun := WithTop.map f
   map_add' := WithTop.map_add f
 #align add_hom.with_top_map AddHom.withTopMap
+#align add_hom.with_top_map_apply AddHom.withTopMap_apply
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -445,6 +429,7 @@ protected def _root_.AddMonoidHom.withTopMap {M N : Type _} [AddZeroClass M] [Ad
     (f : M →+ N) : WithTop M →+ WithTop N :=
   { ZeroHom.withTopMap f.toZeroHom, AddHom.withTopMap f.toAddHom with toFun := WithTop.map f }
 #align add_monoid_hom.with_top_map AddMonoidHom.withTopMap
+#align add_monoid_hom.with_top_map_apply AddMonoidHom.withTopMap_apply
 
 end WithTop
 
@@ -495,19 +480,31 @@ theorem coe_eq_one [One α] {a : α} : (a : WithBot α) = 1 ↔ a = 1 :=
 #align with_bot.coe_eq_one WithBot.coe_eq_one
 #align with_bot.coe_eq_zero WithBot.coe_eq_zero
 
-@[to_additive (attr := norm_cast) coe_pos]
+@[to_additive (attr := simp, norm_cast) coe_nonneg]
+theorem one_le_coe [One α] [LE α] {a : α} : 1 ≤ (a : WithBot α) ↔ 1 ≤ a :=
+  coe_le_coe
+#align with_bot.one_le_coe WithBot.one_le_coe
+#align with_bot.coe_nonneg WithBot.coe_nonneg
+
+@[to_additive (attr := simp, norm_cast) coe_le_zero]
+theorem coe_le_one [One α] [LE α] {a : α} : (a : WithBot α) ≤ 1 ↔ a ≤ 1 :=
+  coe_le_coe
+#align with_bot.coe_le_one WithBot.coe_le_one
+#align with_bot.coe_le_zero WithBot.coe_le_zero
+
+@[to_additive (attr := simp, norm_cast) coe_pos]
 theorem one_lt_coe [One α] [LT α] {a : α} : 1 < (a : WithBot α) ↔ 1 < a :=
   coe_lt_coe
 #align with_bot.one_lt_coe WithBot.one_lt_coe
 #align with_bot.coe_pos WithBot.coe_pos
 
-@[to_additive (attr := norm_cast) coe_lt_zero]
+@[to_additive (attr := simp, norm_cast) coe_lt_zero]
 theorem coe_lt_one [One α] [LT α] {a : α} : (a : WithBot α) < 1 ↔ a < 1 :=
   coe_lt_coe
 #align with_bot.coe_lt_one WithBot.coe_lt_one
 #align with_bot.coe_lt_zero WithBot.coe_lt_zero
 
-@[to_additive]
+@[to_additive (attr := simp)]
 protected theorem map_one {β} [One α] (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 #align with_bot.map_one WithBot.map_one
@@ -600,14 +597,16 @@ protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : With
 #align with_bot.map_add WithBot.map_add
 
 /-- A version of `WithBot.map` for `OneHom`s. -/
-@[to_additive "A version of `WithBot.map` for `ZeroHom`s",
-  simps (config := { fullyApplied := false })]
+@[to_additive (attr := simps (config := { fullyApplied := false }))
+  "A version of `WithBot.map` for `ZeroHom`s"]
 protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 #align one_hom.with_bot_map OneHom.withBotMap
 #align zero_hom.with_bot_map ZeroHom.withBotMap
+#align one_hom.with_bot_map_apply OneHom.withBotMap_apply
+#align zero_hom.with_bot_map_apply ZeroHom.withBotMap_apply
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -616,6 +615,7 @@ protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHo
   toFun := WithBot.map f
   map_add' := WithBot.map_add f
 #align add_hom.with_bot_map AddHom.withBotMap
+#align add_hom.with_bot_map_apply AddHom.withBotMap_apply
 
 /-- A version of `WithBot.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -623,6 +623,7 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type _} [AddZeroClass M] [Ad
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
 #align add_monoid_hom.with_bot_map AddMonoidHom.withBotMap
+#align add_monoid_hom.with_bot_map_apply AddMonoidHom.withBotMap_apply
 
 variable [Preorder α]
 

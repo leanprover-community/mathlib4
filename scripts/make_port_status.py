@@ -25,7 +25,7 @@ mathlib3_root = 'port-repos/mathlib/src'
 mathlib4_root = 'Mathlib/'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
-commit_re = re.compile(r"^! leanprover-community/mathlib commit ([0-9a-f]*)$")
+commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
 synchronized_re = re.compile(r".*SYNCHRONIZED WITH MATHLIB4.*")
 
@@ -81,17 +81,18 @@ for path in Path(mathlib3_root).glob('**/*.lean'):
             synchronized[label] = True
 
 def get_mathlib4_module_commit_info(contents):
-    module, commit = None, None
+    module = repo = commit = None
     for line in contents.split('\n'):
         m = source_module_re.match(line)
         if m:
             module = m.group(1)
         m = commit_re.match(line)
         if m:
-            commit = m.group(1)
+            repo = m.group(1)
+            commit = m.group(2)
         if import_re.match(line):
             break
-    return module, commit
+    return module, repo, commit
 
 # contains ported files
 # lean 3 module name -> { mathlib4_file, mathlib3_hash }
@@ -100,26 +101,32 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
     if path4.relative_to(mathlib4_root).parts[0] in \
        ['Init', 'Lean', 'Mathport', 'Tactic', 'Testing', 'Util']:
         continue
-    module, commit = get_mathlib4_module_commit_info(path4.read_text())
+    module, repo, commit = get_mathlib4_module_commit_info(path4.read_text())
     if module is None:
         continue
 
-    assert commit is not None
+    if commit is None:
+        print(f"Commit is None for module: {module}")
+        continue
 
     log = subprocess.run(
         ['git', 'log', '--oneline', str(path4)],
         capture_output=True)
-    pr_matches = re.search(r'(#[0-9]+)\)$', log.stdout.decode().splitlines()[-1])
+    pr_matches = re.search(r'#([0-9]+)\)$', log.stdout.decode().splitlines()[-1])
     if pr_matches:
-        mathlib4_pr = 'mathlib4' + pr_matches.groups()[0]
+        mathlib4_pr = int(pr_matches.groups()[0])
     else:
-        mathlib4_pr = '_'
+        mathlib4_pr = None
 
     data[module] = {
         'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
-        'mathlib3_hash': commit,
+        'mathlib3_hash': None,
         'mathlib4_pr': mathlib4_pr
     }
+    if repo == 'leanprover-community/mathlib':
+        data[module]['mathlib3_hash'] = commit
+    elif repo == 'leanprover-community/lean':
+        data[module]['lean3_hash'] = commit
 
 allDone = dict()
 parentsDone = dict()
@@ -127,6 +134,8 @@ verified = dict()
 touched = dict()
 for node in graph.nodes:
     if node in data:
+        if data[node]['mathlib3_hash'] is None:
+            continue
         git_command = ['git', 'diff', '--quiet',
             # f'--ignore-matching-lines={comment_git_re}',
             data[node]['mathlib3_hash'] + "..HEAD", "--", "src" + os.sep + node.replace('.', os.sep) + ".lean"]
@@ -169,8 +178,8 @@ for num in nums:
         f = subprocess.run(
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
-        _, commit = get_mathlib4_module_commit_info(f.stdout.decode())
-        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'commit': commit})
+        _, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
+        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'repo': repo, 'commit': commit})
 
 def pr_to_str(pr):
     labels = ' '.join(f'[{l.name}]' for l in pr.labels)
@@ -187,20 +196,45 @@ COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/math
 comments_dict = yaml.safe_load(requests.get(COMMENTS_URL).content.replace(b"```", b""))
 
 yaml_dict = {}
+new_yaml_dict = {}
 for node in sorted(graph.nodes):
     if node in data:
-        status = f"Yes {data[node]['mathlib4_pr']} {data[node]['mathlib3_hash']}"
+        new_status = dict(
+            ported=True,
+            mathlib4_file=data[node]['mathlib4_file'],
+            mathlib4_pr=data[node]['mathlib4_pr'],
+            mathlib3_hash=data[node]['mathlib3_hash']
+        )
+        pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
+        status = f"Yes {pr_status} {data[node]['mathlib3_hash'] or '_'}"
     else:
+        new_status = dict(ported=False)
         status = f'No'
         if condense(node) in prs_of_condensed:
             pr_info = prs_of_condensed[condense(node)][0]
             if pr_info['commit'] is None:
                 print('PR seems to be missing a source header', node, pr_info)
                 assert(False)
-            status += ' mathlib4#' + str(pr_info['pr']) + ' ' + pr_info['commit']
-    if node in comments_dict:
-        status += ' ' + comments_dict[node]
+            new_status.update(mathlib4_pr=pr_info['pr'])
+            if pr_info['repo'] == 'leanprover-community/mathlib':
+                new_status.update(mathlib3_hash=pr_info['commit'])
+            elif pr_info['repo'] == 'leanprover-community/lean':
+                new_status.update(lean3_hash=pr_info['commit'])
+            status += ' mathlib4#' + str(pr_info['pr']) + ' ' + (
+                pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else '_')
+    try:
+        comment_data = comments_dict[node]
+    except KeyError:
+        pass
+    else:
+        if isinstance(comment_data, str):
+            # old comment format
+            comment_data = dict(message=comment_data)
+        # new comment format
+        status += ' ' + comment_data['message']
+        new_status.update(comment=comment_data)
     yaml_dict[node] = status
+    new_yaml_dict[node] = new_status
 
 DO_NOT_EDIT_MESSAGE = """
 # Do not edit this file.
@@ -208,4 +242,7 @@ DO_NOT_EDIT_MESSAGE = """
 # edit https://github.com/leanprover-community/mathlib4/wiki/port-comments/_edit instead.
 """ + ("\n" * 37)
 
-open('port_status.yaml', 'w').write(DO_NOT_EDIT_MESSAGE + "```\n" + yaml.dump(yaml_dict) + "```\n")
+with open('port_status.yaml', 'w') as f:
+    f.write(DO_NOT_EDIT_MESSAGE + "```\n" + yaml.dump(yaml_dict) + "```\n")
+with open('port_status_new.yaml', 'w') as f:
+    f.write(DO_NOT_EDIT_MESSAGE + "```\n" + yaml.dump(new_yaml_dict) + "```\n")

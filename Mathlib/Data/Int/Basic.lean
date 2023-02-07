@@ -86,6 +86,7 @@ theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n
 @[simp]
 theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
 attribute [to_additive coe_nat_zsmul] zpow_coe_nat
+#align coe_nat_zsmul coe_nat_zsmul
 
 /-! ### Extra instances to short-circuit type class resolution
 
@@ -124,6 +125,7 @@ theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.of
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
 
 theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
+#align int.coe_nat_nonneg Int.coe_nat_nonneg
 
 #align int.neg_of_nat_ne_zero Int.negSucc_ne_zero
 #align int.zero_ne_neg_of_nat Int.zero_ne_negSucc
@@ -132,33 +134,46 @@ theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 
 /-- Immediate successor of an integer: `succ n = n + 1` -/
 def succ (a : ℤ) := a + 1
+#align int.succ Int.succ
 
 /-- Immediate predecessor of an integer: `pred n = n - 1` -/
 def pred (a : ℤ) := a - 1
+#align int.pred Int.pred
 
 theorem nat_succ_eq_int_succ (n : ℕ) : (Nat.succ n : ℤ) = Int.succ n := rfl
+#align int.nat_succ_eq_int_succ Int.nat_succ_eq_int_succ
 
 theorem pred_succ (a : ℤ) : pred (succ a) = a := add_sub_cancel _ _
+#align int.pred_succ Int.pred_succ
 
 theorem succ_pred (a : ℤ) : succ (pred a) = a := sub_add_cancel _ _
+#align int.succ_pred Int.succ_pred
 
 theorem neg_succ (a : ℤ) : -succ a = pred (-a) := neg_add _ _
+#align int.neg_succ Int.neg_succ
 
 theorem succ_neg_succ (a : ℤ) : succ (-succ a) = -a := by rw [neg_succ, succ_pred]
+#align int.succ_neg_succ Int.succ_neg_succ
 
 theorem neg_pred (a : ℤ) : -pred a = succ (-a) := by
   rw [eq_neg_of_eq_neg (neg_succ (-a)).symm, neg_neg]
+#align int.neg_pred Int.neg_pred
 
 theorem pred_neg_pred (a : ℤ) : pred (-pred a) = -a := by rw [neg_pred, pred_succ]
+#align int.pred_neg_pred Int.pred_neg_pred
 
 theorem pred_nat_succ (n : ℕ) : pred (Nat.succ n) = n := pred_succ n
+#align int.pred_nat_succ Int.pred_nat_succ
 
 theorem neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
+#align int.neg_nat_succ Int.neg_nat_succ
 
 theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
+#align int.succ_neg_nat_succ Int.succ_neg_nat_succ
 
 @[norm_cast] theorem coe_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
   cases n; cases h; simp
+#align int.coe_pred_of_pos Int.coe_pred_of_pos
 
 @[elab_as_elim] protected theorem induction_on {p : ℤ → Prop} (i : ℤ)
     (hz : p 0) (hp : ∀ i : ℕ, p i → p (i + 1)) (hn : ∀ i : ℕ, p (-i) → p (-i - 1)) : p i := by
@@ -172,6 +187,7 @@ theorem succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
     intro n; induction n with
     | zero => simp [hz, Nat.cast_zero]
     | succ n ih => convert hn _ ih using 1; simp [sub_eq_neg_add]
+#align int.induction_on Int.induction_on
 
 /-! ### nat abs -/
 
@@ -236,7 +252,7 @@ theorem ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -(
 #align int.mod_zero Int.mod_zeroₓ -- int div alignment
 #align int.mod_one Int.mod_oneₓ -- int div alignment
 #align int.mod_eq_of_lt Int.emod_eq_of_lt -- int div alignment
-#align int.mod_add_div Int.mod_add_divₓ -- int div alignment
+#align int.mod_add_div Int.emod_add_ediv -- int div alignment
 #align int.div_add_mod Int.div_add_modₓ -- int div alignment
 #align int.mod_add_div' Int.mod_add_div'ₓ -- int div alignment
 #align int.div_add_mod' Int.div_add_mod'ₓ -- int div alignment

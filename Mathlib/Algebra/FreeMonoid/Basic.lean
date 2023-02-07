@@ -213,11 +213,15 @@ The purpose is to make `FreeAddMonoid.lift_eval_of` true by `rfl`."]
 def prodAux {M} [Monoid M] : List M → M
   | []  => 1
   | (x :: xs) => List.foldl (· * ·) x xs
+#align free_monoid.prod_aux FreeMonoid.prodAux
+#align free_add_monoid.sum_aux FreeAddMonoid.sumAux
 
 @[to_additive]
 lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
   | []  => rfl
   | (_ :: xs) => congr_arg (fun x => List.foldl (· * ·) x xs) (one_mul _).symm
+#align free_monoid.prod_aux_eq FreeMonoid.prodAux_eq
+#align free_add_monoid.sum_aux_eq FreeAddMonoid.sumAux_eq
 
 /-- Equivalence between maps `α → M` and monoid homomorphisms `FreeMonoid α →* M`. -/
 @[to_additive "Equivalence between maps `α → A` and additive monoid homomorphisms

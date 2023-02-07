@@ -20,7 +20,7 @@ so we only add API needed for this lemma.
 -/
 
 
-open Function OrderDual
+open Interval Function OrderDual
 
 namespace Set
 

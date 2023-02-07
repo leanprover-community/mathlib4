@@ -48,7 +48,7 @@ theorem isFixedPt_id (x : α) : IsFixedPt id x :=
 
 namespace IsFixedPt
 
-instance instDecidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
+instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
   h (f x) x
 
 /-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`.-/
@@ -136,10 +136,10 @@ def fixedPoints (f : α → α) : Set α :=
   { x : α | IsFixedPt f x }
 #align function.fixed_points Function.fixedPoints
 
-instance fixedPoints.instDecidable [DecidableEq α] (f : α → α) (x : α) :
+instance fixedPoints.decidable [DecidableEq α] (f : α → α) (x : α) :
     Decidable (x ∈ fixedPoints f) :=
-  IsFixedPt.instDecidable
-#align function.fixed_points.decidable Function.fixedPoints.instDecidable
+  IsFixedPt.decidable
+#align function.fixed_points.decidable Function.fixedPoints.decidable
 
 @[simp]
 theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
