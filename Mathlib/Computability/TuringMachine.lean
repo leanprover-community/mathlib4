@@ -115,8 +115,8 @@ theorem BlankExtends.above_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
   rwa [← add_le_add_iff_left, e, add_le_add_iff_right]
 #align turing.blank_extends.above_of_le Turing.BlankExtends.above_of_le
 
-/-- `blank_rel` is the symmetric closure of `blank_extends`, turning it into an equivalence
-relation. Two lists are related by `blank_rel` if one extends the other by blanks. -/
+/-- `BlankRel` is the symmetric closure of `BlankExtends`, turning it into an equivalence
+relation. Two lists are related by `BlankRel` if one extends the other by blanks. -/
 def BlankRel {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) : Prop :=
   BlankExtends l₁ l₂ ∨ BlankExtends l₂ l₁
 #align turing.blank_rel Turing.BlankRel
@@ -145,7 +145,7 @@ theorem BlankRel.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
   · exact Or.inr (h₂.trans h₁)
 #align turing.blank_rel.trans Turing.BlankRel.trans
 
-/-- Given two `blank_rel` lists, there exists (constructively) a common join. -/
+/-- Given two `BlankRel` lists, there exists (constructively) a common join. -/
 def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
     { l // BlankExtends l₁ l ∧ BlankExtends l₂ l } := by
   refine'
@@ -155,7 +155,7 @@ def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ 
   exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
 #align turing.blank_rel.above Turing.BlankRel.above
 
-/-- Given two `blank_rel` lists, there exists (constructively) a common meet. -/
+/-- Given two `BlankRel` lists, there exists (constructively) a common meet. -/
 def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
     { l // BlankExtends l l₁ ∧ BlankExtends l l₂ } := by
   refine'
@@ -169,12 +169,12 @@ theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) 
   ⟨BlankRel.refl, @BlankRel.symm _ _, @BlankRel.trans _ _⟩
 #align turing.blank_rel.equivalence Turing.BlankRel.equivalence
 
-/-- Construct a setoid instance for `blank_rel`. -/
+/-- Construct a setoid instance for `BlankRel`. -/
 def BlankRel.setoid (Γ) [Inhabited Γ] : Setoid (List Γ) :=
   ⟨_, BlankRel.equivalence _⟩
 #align turing.blank_rel.setoid Turing.BlankRel.setoid
 
-/-- A `ListBlank Γ` is a quotient of `list Γ` by extension by blanks at the end. This is used to
+/-- A `ListBlank Γ` is a quotient of `List Γ` by extension by blanks at the end. This is used to
 represent half-tapes of a Turing machine, so that we can pretend that the list continues
 infinitely with blanks. -/
 def ListBlank (Γ) [Inhabited Γ] :=
@@ -189,15 +189,15 @@ instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ
   ⟨Quotient.mk'' []⟩
 #align turing.list_blank.has_emptyc Turing.ListBlank.hasEmptyc
 
-/-- A modified version of `quotient.lift_on'` specialized for `ListBlank`, with the stronger
-precondition `blank_extends` instead of `blank_rel`. -/
+/-- A modified version of `Quotient.liftOn'` specialized for `ListBlank`, with the stronger
+precondition `BlankExtends` instead of `BlankRel`. -/
 @[elab_as_elim, reducible]
 protected def ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
     (H : ∀ a b, BlankExtends a b → f a = f b) : α :=
   l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h, exact (H _ _ h).symm]
 #align turing.list_blank.lift_on Turing.ListBlank.liftOn
 
-/-- The quotient map turning a `list` into a `ListBlank`. -/
+/-- The quotient map turning a `List` into a `ListBlank`. -/
 def ListBlank.mk {Γ} [Inhabited Γ] : List Γ → ListBlank Γ :=
   Quotient.mk''
 #align turing.list_blank.mk Turing.ListBlank.mk
@@ -262,7 +262,7 @@ theorem ListBlank.tail_cons {Γ} [Inhabited Γ] (a : Γ) : ∀ l : ListBlank Γ,
   Quotient.ind' fun _ ↦ rfl
 #align turing.list_blank.tail_cons Turing.ListBlank.tail_cons
 
-/-- The `cons` and `head`/`tail` functions are mutually inverse, unlike in the case of `list` where
+/-- The `cons` and `head`/`tail` functions are mutually inverse, unlike in the case of `List` where
 this only holds for nonempty lists. -/
 @[simp]
 theorem ListBlank.cons_head_tail {Γ} [Inhabited Γ] : ∀ l : ListBlank Γ, l.tail.cons l.head = l := by
@@ -273,14 +273,14 @@ theorem ListBlank.cons_head_tail {Γ} [Inhabited Γ] : ∀ l : ListBlank Γ, l.t
   · rfl
 #align turing.list_blank.cons_head_tail Turing.ListBlank.cons_head_tail
 
-/-- The `cons` and `head`/`tail` functions are mutually inverse, unlike in the case of `list` where
+/-- The `cons` and `head`/`tail` functions are mutually inverse, unlike in the case of `List` where
 this only holds for nonempty lists. -/
 theorem ListBlank.exists_cons {Γ} [Inhabited Γ] (l : ListBlank Γ) :
     ∃ a l', l = ListBlank.cons a l' :=
   ⟨_, _, (ListBlank.cons_head_tail _).symm⟩
 #align turing.list_blank.exists_cons Turing.ListBlank.exists_cons
 
-/-- The n-th element of a `ListBlank` is well defined for all `n : ℕ`, unlike in a `list`. -/
+/-- The n-th element of a `ListBlank` is well defined for all `n : ℕ`, unlike in a `List`. -/
 def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   apply l.liftOn (fun l ↦ List.getI l n)
   rintro l _ ⟨i, rfl⟩
@@ -353,7 +353,7 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
     · simp only [IH, ListBlank.modifyNth, ListBlank.nth_succ, ListBlank.tail_cons, Nat.succ.injEq]
 #align turing.list_blank.nth_modify_nth Turing.ListBlank.nth_modifyNth
 
-/-- A pointed map of `inhabited` types is a map that sends one default value to the other. -/
+/-- A pointed map of `Inhabited` types is a map that sends one default value to the other. -/
 structure PointedMap.{u, v} (Γ : Type u) (Γ' : Type v) [Inhabited Γ] [Inhabited Γ'] :
     Type max u v where
   f : Γ → Γ'
@@ -530,7 +530,7 @@ def Tape.right₀ {Γ} [Inhabited Γ] (T : Tape Γ) : ListBlank Γ :=
   T.right.cons T.head
 #align turing.tape.right₀ Turing.Tape.right₀
 
-/-- Move the tape in response to a motion of the Turing machine. Note that `T.move dir.left` makes
+/-- Move the tape in response to a motion of the Turing machine. Note that `T.move Dir.left` makes
 `T.left` smaller; the Turing machine is moving left and the tape is moving right. -/
 def Tape.move {Γ} [Inhabited Γ] : Dir → Tape Γ → Tape Γ
   | Dir.left, ⟨a, L, R⟩ => ⟨L.head, L.tail, R.cons a⟩
@@ -737,22 +737,22 @@ theorem Tape.map_mk₁ {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
   Tape.map_mk₂ _ _ _
 #align turing.tape.map_mk₁ Turing.Tape.map_mk₁
 
-/-- Run a state transition function `σ → option σ` "to completion". The return value is the last
+/-- Run a state transition function `σ → Option σ` "to completion". The return value is the last
 state returned before a `none` result. If the state transition function always returns `some`,
-then the computation diverges, returning `part.none`. -/
+then the computation diverges, returning `Part.none`. -/
 -- Porting note: Added noncomputable, because `PFun.fix` is noncomputable.
 noncomputable def eval {σ} (f : σ → Option σ) : σ → Part σ :=
   PFun.fix fun s ↦ Part.some <| (f s).elim (Sum.inl s) Sum.inr
 #align turing.eval Turing.eval
 
-/-- The reflexive transitive closure of a state transition function. `reaches f a b` means
+/-- The reflexive transitive closure of a state transition function. `Reaches f a b` means
 there is a finite sequence of steps `f a = some a₁`, `f a₁ = some a₂`, ... such that `aₙ = b`.
 This relation permits zero steps of the state transition function. -/
 def Reaches {σ} (f : σ → Option σ) : σ → σ → Prop :=
   ReflTransGen fun a b ↦ b ∈ f a
 #align turing.reaches Turing.Reaches
 
-/-- The transitive closure of a state transition function. `reaches₁ f a b` means there is a
+/-- The transitive closure of a state transition function. `Reaches₁ f a b` means there is a
 nonempty finite sequence of steps `f a = some a₁`, `f a₁ = some a₂`, ... such that `aₙ = b`.
 This relation does not permit zero steps of the state transition function. -/
 def Reaches₁ {σ} (f : σ → Option σ) : σ → σ → Prop :=
@@ -775,8 +775,8 @@ theorem reaches₁_fwd {σ} {f : σ → Option σ} {a b c} (h₁ : Reaches₁ f 
   cases Option.mem_unique hab h₂; exact hbc
 #align turing.reaches₁_fwd Turing.reaches₁_fwd
 
-/-- A variation on `reaches`. `reaches₀ f a b` holds if whenever `reaches₁ f b c` then
-`reaches₁ f a c`. This is a weaker property than `reaches` and is useful for replacing states with
+/-- A variation on `Reaches`. `Reaches₀ f a b` holds if whenever `Reaches₁ f b c` then
+`Reaches₁ f a c`. This is a weaker property than `Reaches` and is useful for replacing states with
 equivalent states without taking a step. -/
 def Reaches₀ {σ} (f : σ → Option σ) (a b : σ) : Prop :=
   ∀ c, Reaches₁ f b c → Reaches₁ f a c
@@ -882,7 +882,7 @@ theorem reaches_eval {σ} {f : σ → Option σ} {a b} (ab : Reaches f a b) : ev
 #align turing.reaches_eval Turing.reaches_eval
 
 /-- Given a relation `tr : σ₁ → σ₂ → Prop` between state spaces, and state transition functions
-`f₁ : σ₁ → option σ₁` and `f₂ : σ₂ → option σ₂`, `respects f₁ f₂ tr` means that if `tr a₁ a₂` holds
+`f₁ : σ₁ → Option σ₁` and `f₂ : σ₂ → Option σ₂`, `Respects f₁ f₂ tr` means that if `tr a₁ a₂` holds
 initially and `f₁` takes a step to `a₂` then `f₂` will take one or more steps before reaching a
 state `b₂` satisfying `tr a₂ b₂`, and if `f₁ a₁` terminates then `f₂ a₂` also terminates.
 Such a relation `tr` is also known as a refinement. -/
@@ -965,7 +965,7 @@ theorem tr_eval_dom {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H :
     h⟩
 #align turing.tr_eval_dom Turing.tr_eval_dom
 
-/-- A simpler version of `respects` when the state transition relation `tr` is a function. -/
+/-- A simpler version of `Respects` when the state transition relation `tr` is a function. -/
 def FRespects {σ₁ σ₂} (f₂ : σ₂ → Option σ₂) (tr : σ₁ → σ₂) (a₂ : σ₂) : Option σ₁ → Prop
   | some b₁ => Reaches₁ f₂ a₂ (tr b₁)
   | none => f₂ a₂ = none
@@ -1048,7 +1048,7 @@ instance Stmt.inhabited : Inhabited (Stmt Γ) :=
 /-- A Post-Turing machine with symbol type `Γ` and label type `Λ`
   is a function which, given the current state `q : Λ` and
   the tape head `a : Γ`, either halts (returns `none`) or returns
-  a new state `q' : Λ` and a `stmt` describing what to do,
+  a new state `q' : Λ` and a `Stmt` describing what to do,
   either a move left or right, or a write command.
 
   Both `Λ` and `Γ` are required to be inhabited; the default value
@@ -1085,7 +1085,7 @@ def step (M : Machine Γ Λ) : Cfg Γ Λ → Option (Cfg Γ Λ) :=
     | Stmt.write a => T.write a⟩
 #align turing.TM0.step Turing.TM0.step
 
-/-- The statement `reaches M s₁ s₂` means that `s₂` is obtained
+/-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
   starting from `s₁` after a finite number of steps from `s₂`. -/
 def Reaches (M : Machine Γ Λ) : Cfg Γ Λ → Cfg Γ Λ → Prop :=
   ReflTransGen fun a b ↦ b ∈ step M a
@@ -1154,7 +1154,7 @@ variable (M : Machine Γ Λ) (f₁ : PointedMap Γ Γ') (f₂ : PointedMap Γ' �
 
 /-- Because the state transition function uses the alphabet and machine states in both the input
 and output, to map a machine from one alphabet and machine state space to another we need functions
-in both directions, essentially an `equiv` without the laws. -/
+in both directions, essentially an `Equiv` without the laws. -/
 def Machine.map : Machine Γ' Λ'
   | q, l => (M (g₂ q) (f₂ l)).map (Prod.map g₁ (Stmt.map f₁))
 #align turing.TM0.machine.map Turing.TM0.Machine.map
@@ -1201,14 +1201,14 @@ Wang B-machines. The machine's internal state is extended with a (finite) store 
 that may be accessed and updated at any time.
 
 A machine is given by a `Λ` indexed set of procedures or functions. Each function has a body which
-is a `stmt`. Most of the regular commands are allowed to use the current value `a` of the local
+is a `Stmt`. Most of the regular commands are allowed to use the current value `a` of the local
 variables and the value `T.head` on the tape to calculate what to write or how to change local
-state, but the statements themselves have a fixed structure. The `stmt`s can be as follows:
+state, but the statements themselves have a fixed structure. The `Stmt`s can be as follows:
 
 * `move d q`: move left or right, and then do `q`
 * `write (f : Γ → σ → Γ) q`: write `f a T.head` to the tape, then do `q`
 * `load (f : Γ → σ → σ) q`: change the internal state to `f a T.head`
-* `branch (f : Γ → σ → bool) qtrue qfalse`: If `f a T.head` is true, do `qtrue`, else `qfalse`
+* `branch (f : Γ → σ → Bool) qtrue qfalse`: If `f a T.head` is true, do `qtrue`, else `qfalse`
 * `goto (f : Γ → σ → Λ)`: Go to label `f a T.head`
 * `halt`: Transition to the halting state, which halts on the following step
 
@@ -1422,7 +1422,7 @@ To prove that TM1 computable functions are TM0 computable, we need to reduce eac
 TM0 program. So suppose a TM1 program is given. We take the following:
 
 * The alphabet `Γ` is the same for both TM1 and TM0
-* The set of states `Λ'` is defined to be `option stmt₁ × σ`, that is, a TM1 statement or `none`
+* The set of states `Λ'` is defined to be `Option stmt₁ × σ`, that is, a TM1 statement or `none`
   representing halt, and the possible settings of the internal variables.
   Note that this is an infinite set, because `stmt₁` is infinite. This is okay because we assume
   that from the initial TM1 state, only finitely many other labels are reachable, and there are
@@ -1463,7 +1463,7 @@ include M
 -- [inhabited Λ] [inhabited σ] (M : Λ → stmt₁): We need the M assumption
 -- because of the inhabited instance, but we could avoid the inhabited instances on Λ and σ here.
 -- But they are parameters so we cannot easily skip them for just this definition.
-/-- The base machine state space is a pair of an `option stmt₁` representing the current program
+/-- The base machine state space is a pair of an `Option stmt₁` representing the current program
 to be executed, or `none` for the halt state, and a `σ` which is the local state (stored in the TM,
 not the tape). Because there are an infinite number of programs, this state space is infinite, but
 for a finitely supported TM1 machine and a finite type `σ`, only finitely many of these states are
@@ -1597,7 +1597,7 @@ The most parsimonious Turing machine model that is still Turing complete is `TM0
 Because our construction in the previous section reducing `TM1` to `TM0` doesn't change the
 alphabet, we can do the alphabet reduction on `TM1` instead of `TM0` directly.
 
-The basic idea is to use a bijection between `Γ` and a subset of `vector bool n`, where `n` is a
+The basic idea is to use a bijection between `Γ` and a subset of `Vector Bool n`, where `n` is a
 fixed constant. Each tape element is represented as a block of `n` bools. Whenever the machine
 wants to read a symbol from the tape, it traverses over the block, performing `n` `branch`
 instructions to each any of the `2^n` results.
@@ -1680,7 +1680,7 @@ def move (d : Dir) (q : stmt') : stmt' :=
   (Stmt.move d^[n]) q
 #align turing.TM1to1.move Turing.TM1to1.move
 
-/-- To read a symbol from the tape, we use `read_aux` to traverse the symbol,
+/-- To read a symbol from the tape, we use `readAux` to traverse the symbol,
 then return to the original position with `n` moves to the left. -/
 def read (f : Γ → stmt') : stmt' :=
   readAux n fun v => move Dir.left <| f (dec v)
@@ -1723,8 +1723,8 @@ theorem supportsStmt_write {S l q} : SupportsStmt S (write l q) = SupportsStmt S
 theorem supportsStmt_read {S} :
     ∀ {f : Γ → stmt'}, (∀ a, SupportsStmt S (f a)) → SupportsStmt S (read f) :=
   suffices
-    ∀ (i) (f : Vector Bool i → stmt'), (∀ v, SupportsStmt S (f v)) → SupportsStmt S (read_aux i f)
-    from fun f hf => this n _ (by intro <;> simp only [supports_stmt_move, hf])
+    ∀ (i) (f : Vector Bool i → stmt'), (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
+    from fun f hf => this n _ (by intro <;> simp only [supportsStmt_move, hf])
   fun i f hf => by
   induction' i with i IH; · exact hf _
   constructor <;> apply IH <;> intro <;> apply hf
@@ -1751,8 +1751,8 @@ def trTape (T : Tape Γ) : Tape Bool :=
   trTape' T.left T.right₀
 #align turing.TM1to1.tr_tape Turing.TM1to1.trTape
 
-theorem trTape_mk' (L R : ListBlank Γ) : tr_tape (Tape.mk' L R) = trTape' L R := by
-  simp only [tr_tape, Tape.mk'_left, Tape.mk'_right₀]
+theorem trTape_mk' (L R : ListBlank Γ) : trTape (Tape.mk' L R) = trTape' L R := by
+  simp only [trTape, Tape.mk'_left, Tape.mk'_right₀]
 #align turing.TM1to1.tr_tape_mk' Turing.TM1to1.trTape_mk'
 
 end
@@ -1767,7 +1767,7 @@ def tr : Λ' → stmt'
 
 /-- The machine configuration translation. -/
 def trCfg : cfg₁ → cfg'
-  | ⟨l, v, T⟩ => ⟨l.map Λ'.normal, v, tr_tape T⟩
+  | ⟨l, v, T⟩ => ⟨l.map Λ'.normal, v, trTape T⟩
 #align turing.TM1to1.tr_cfg Turing.TM1to1.trCfg
 
 variable {enc}
@@ -1780,7 +1780,7 @@ theorem trTape'_move_left (L R) :
   simp only [trTape', ListBlank.cons_bind, ListBlank.head_cons, ListBlank.tail_cons]
   suffices
     ∀ {L' R' l₁ l₂} (e : Vector.toList (enc a) = List.reverseAux l₁ l₂),
-      (Tape.move dir.left^[l₁.length])
+      (Tape.move Dir.left^[l₁.length])
           (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
         Tape.mk' L' (ListBlank.append (Vector.toList (enc a)) R')
     by
@@ -1796,7 +1796,7 @@ theorem trTape'_move_left (L R) :
 
 theorem trTape'_move_right (L R) :
     (Tape.move Dir.right^[n]) (trTape' L R) = trTape' (L.cons R.headI) R.tail := by
-  suffices ∀ i L, (Tape.move dir.right^[i]) ((Tape.move dir.left^[i]) L) = L
+  suffices ∀ i L, (Tape.move Dir.right^[i]) ((Tape.move Dir.left^[i]) L) = L
     by
     refine' (Eq.symm _).trans (this n _)
     simp only [trTape'_move_left, ListBlank.cons_head_tail, ListBlank.head_cons,
@@ -1836,7 +1836,7 @@ theorem stepAux_read (f v L R) :
     stepAux (read f) v (trTape' L R) = stepAux (f R.headI) v (trTape' L R) := by
   suffices
     ∀ f,
-      stepAux (read_aux n f) v (trTape' enc0 L R) =
+      stepAux (readAux n f) v (trTape' enc0 L R) =
         stepAux (f (enc R.head)) v (trTape' enc0 (L.cons R.head) R.tail)
     by
     rw [read, this, stepAux_move, encdec, trTape'_move_left enc0]
@@ -1846,7 +1846,7 @@ theorem stepAux_read (f v L R) :
     ListBlank.append_assoc]
   suffices
     ∀ i f L' R' l₁ l₂ h,
-      stepAux (read_aux i f) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
+      stepAux (readAux i f) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
         stepAux (f ⟨l₂, h⟩) v (Tape.mk' (ListBlank.append (l₂.reverseAux l₁) L') R')
     by
     intro f
@@ -1857,9 +1857,9 @@ theorem stepAux_read (f v L R) :
   induction' l₂ with a l₂ IH generalizing l₁
   · rfl
   trans
-    stepAux (read_aux l₂.length fun v => f (a ::ᵥ v)) v
+    stepAux (readAux l₂.length fun v => f (a ::ᵥ v)) v
       (Tape.mk' ((L'.append l₁).cons a) (R'.append l₂))
-  · dsimp [read_aux, stepAux]
+  · dsimp [readAux, stepAux]
     simp
     cases a <;> rfl
   rw [← ListBlank.append, IH]
@@ -1878,7 +1878,7 @@ theorem tr_respects : Respects (step M) (step tr) fun c₁ c₂ => trCfg c₁ = 
           (trCfg enc0 (stepAux q v (Tape.mk' L R)))
       by
       refine' trans_gen.head' rfl _
-      rw [tr_tape_mk']
+      rw [trTape_mk']
       exact this _ R
     clear R l₁
     intros
@@ -1906,12 +1906,12 @@ theorem tr_respects : Respects (step M) (step tr) fun c₁ c₂ => trCfg c₁ = 
       cases p R.head v <;> [apply IH₂, apply IH₁]
     case
       goto l =>
-      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, tr_tape_mk']
+      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
       apply refl_trans_gen.refl
     case
       halt =>
       simp only [trNormal, stepAux, trCfg, stepAux_move, trTape'_move_left enc0,
-        trTape'_move_right enc0, tr_tape_mk']
+        trTape'_move_right enc0, trTape_mk']
       apply refl_trans_gen.refl
 #align turing.TM1to1.tr_respects Turing.TM1to1.tr_respects
 
@@ -1957,7 +1957,7 @@ theorem tr_supports {S} (ss : Supports M S) : Supports tr (tr_supp S) :=
     case move d q IH =>
       unfold writes at hw⊢
       replace IH := IH hs hw; refine' ⟨_, IH.2⟩
-      cases d <;> simp only [trNormal, iterate, supports_stmt_move, IH]
+      cases d <;> simp only [trNormal, iterate, supportsStmt_move, IH]
     case write f q IH =>
       unfold writes at hw⊢
       simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, exists_prop, true_and_iff] at
@@ -1965,7 +1965,7 @@ theorem tr_supports {S} (ss : Supports M S) : Supports tr (tr_supp S) :=
       replace IH := IH hs fun q hq => hw q (Or.inr hq)
       refine' ⟨supports_stmt_read _ fun a _ s => hw _ (Or.inl ⟨_, rfl⟩), fun q' hq => _⟩
       rcases hq with (⟨a, q₂, rfl⟩ | hq)
-      · simp only [tr, supports_stmt_write, supports_stmt_move, IH.1]
+      · simp only [tr, supports_stmt_write, supportsStmt_move, IH.1]
       · exact IH.2 _ hq
     case load a q IH =>
       unfold writes at hw⊢
@@ -1983,7 +1983,7 @@ theorem tr_supports {S} (ss : Supports M S) : Supports tr (tr_supp S) :=
       exact Finset.mem_bunionᵢ.2 ⟨_, hs _ _, Finset.mem_insert_self _ _⟩
     case halt =>
       refine' ⟨_, fun _ => False.elim⟩
-      simp only [supports_stmt, supports_stmt_move, trNormal]⟩
+      simp only [supports_stmt, supportsStmt_move, trNormal]⟩
 #align turing.TM1to1.tr_supports Turing.TM1to1.tr_supports
 
 end
@@ -2006,6 +2006,9 @@ unreachable branch).
 
 
 namespace TM0to1
+
+-- "TM0to1"
+set_option linter.uppercaseLean3 false
 
 section
 
@@ -2037,7 +2040,7 @@ variable (M : TM0.Machine Γ Λ)
 
 open TM1.Stmt
 
-/-- The program.  -/
+/-- The program. -/
 def tr : Λ' → stmt₁
   | Λ'.normal q =>
     branch (fun a _ => (M q a).isNone) halt <|
@@ -2091,12 +2094,12 @@ collection of stacks, each with elements of different types (the alphabet of sta
 `Γ k`). The statements are:
 
 * `push k (f : σ → Γ k) q` puts `f a` on the `k`-th stack, then does `q`.
-* `pop k (f : σ → option (Γ k) → σ) q` changes the state to `f a (S k).head`, where `S k` is the
+* `pop k (f : σ → Option (Γ k) → σ) q` changes the state to `f a (S k).head`, where `S k` is the
   value of the `k`-th stack, and removes this element from the stack, then does `q`.
-* `peek k (f : σ → option (Γ k) → σ) q` changes the state to `f a (S k).head`, where `S k` is the
+* `peek k (f : σ → Option (Γ k) → σ) q` changes the state to `f a (S k).head`, where `S k` is the
   value of the `k`-th stack, then does `q`.
 * `load (f : σ → σ) q` reads nothing but applies `f` to the internal state, then does `q`.
-* `branch (f : σ → bool) qtrue qfalse` does `qtrue` or `qfalse` according to `f a`.
+* `branch (f : σ → Bool) qtrue qfalse` does `qtrue` or `qfalse` according to `f a`.
 * `goto (f : σ → Λ)` jumps to label `f a`.
 * `halt` halts on the next step.
 
@@ -2191,7 +2194,7 @@ def Reaches (M : Λ → Stmt Γ Λ σ) : Cfg Γ Λ σ → Cfg Γ Λ σ → Prop 
   ReflTransGen fun a b ↦ b ∈ step M a
 #align turing.TM2.reaches Turing.TM2.Reaches
 
-/-- Given a set `S` of states, `support_stmt S q` means that `q` only jumps to states in `S`. -/
+/-- Given a set `S` of states, `SupportsStmt S q` means that `q` only jumps to states in `S`. -/
 def SupportsStmt (S : Finset Λ) : Stmt Γ Λ σ → Prop
   | push _ _ q => SupportsStmt S q
   | peek _ _ q => SupportsStmt S q
@@ -2263,7 +2266,7 @@ theorem stmts_trans {M : Λ → Stmt Γ Λ σ} {S q₁ q₂} (h₁ : q₁ ∈ st
 
 variable [Inhabited Λ]
 
-/-- Given a TM2 machine `M` and a set `S` of states, `supports M S` means that all states in
+/-- Given a TM2 machine `M` and a set `S` of states, `Supports M S` means that all states in
 `S` jump only to other states in `S`. -/
 def Supports (M : Λ → Stmt Γ Λ σ) (S : Finset Λ) :=
   default ∈ S ∧ ∀ q ∈ S, SupportsStmt S (M q)
@@ -2799,16 +2802,16 @@ theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval tr (
 
 /-- The support of a set of TM2 states in the TM2 emulator. -/
 noncomputable def trSupp (S : Finset Λ) : Finset Λ' :=
-  S.bunionᵢ fun l => insert (normal l) (tr_stmts₁ (M l))
+  S.bunionᵢ fun l => insert (normal l) (trStmts₁ (M l))
 #align turing.TM2to1.tr_supp Turing.TM2to1.trSupp
 
 theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports tr (tr_supp S) :=
   ⟨Finset.mem_bunionᵢ.2 ⟨_, ss.1, Finset.mem_insert.2 <| Or.inl rfl⟩, fun l' h =>
     by
     suffices
-      ∀ (q) (ss' : TM2.supports_stmt S q) (sub : ∀ x ∈ tr_stmts₁ q, x ∈ tr_supp M S),
+      ∀ (q) (ss' : TM2.supports_stmt S q) (sub : ∀ x ∈ trStmts₁ q, x ∈ tr_supp M S),
         TM1.supports_stmt (tr_supp M S) (trNormal q) ∧
-          ∀ l' ∈ tr_stmts₁ q, TM1.supports_stmt (tr_supp M S) (tr M l')
+          ∀ l' ∈ trStmts₁ q, TM1.supports_stmt (tr_supp M S) (tr M l')
       by
       rcases Finset.mem_bunionᵢ.1 h with ⟨l, lS, h⟩
       have :=
@@ -2818,15 +2821,15 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports tr (tr_supp S) :=
     refine' stmt_st_rec _ _ _ _ _ <;> intros
     · -- stack op
       rw [TM2to1.supports_run] at ss'
-      simp only [TM2to1.tr_stmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton] at
+      simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton] at
         sub
       have hgo := sub _ (Or.inl <| Or.inl rfl)
       have hret := sub _ (Or.inl <| Or.inr rfl)
       cases' IH ss' fun x hx => sub x <| Or.inr hx with IH₁ IH₂
       refine'
         ⟨by simp only [trNormal_run, TM1.supports_stmt] <;> intros <;> exact hgo, fun l h => _⟩
-      rw [tr_stmts₁_run] at h
-      simp only [TM2to1.tr_stmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton] at
+      rw [trStmts₁_run] at h
+      simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton] at
         h
       rcases h with (⟨rfl | rfl⟩ | h)
       · unfold TM1.supports_stmt TM2to1.tr
@@ -2838,17 +2841,17 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports tr (tr_supp S) :=
         exact ⟨IH₁, fun _ _ => hret⟩
       · exact IH₂ _ h
     · -- load
-      unfold TM2to1.tr_stmts₁ at ss' sub⊢
+      unfold TM2to1.trStmts₁ at ss' sub⊢
       exact IH ss' sub
     · -- branch
-      unfold TM2to1.tr_stmts₁ at sub
+      unfold TM2to1.trStmts₁ at sub
       cases' IH₁ ss'.1 fun x hx => sub x <| Finset.mem_union_left _ hx with IH₁₁ IH₁₂
       cases' IH₂ ss'.2 fun x hx => sub x <| Finset.mem_union_right _ hx with IH₂₁ IH₂₂
       refine' ⟨⟨IH₁₁, IH₂₁⟩, fun l h => _⟩
-      rw [tr_stmts₁] at h
+      rw [trStmts₁] at h
       rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h, exact IH₂₂ _ h]
     · -- goto
-      rw [tr_stmts₁]
+      rw [trStmts₁]
       unfold TM2to1.trNormal TM1.supports_stmt
       unfold TM2.supports_stmt at ss'
       exact
