@@ -90,15 +90,15 @@ theorem antidiagonal_filter_snd_eq (f g : α →₀ ℕ)
 
 @[simp]
 theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := by
-  rw [antidiagonal, antidiagonal', Multiset.toFinsupp_support] <;> rfl
+  rw [antidiagonal, antidiagonal', Multiset.toFinsupp_support]; rfl
 #align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 
 @[to_additive]
 theorem prod_antidiagonal_swap {M : Type _} [CommMonoid M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
     (∏ p in antidiagonal n, f p.1 p.2) = ∏ p in antidiagonal n, f p.2 p.1 :=
-  Finset.prod_bij (fun p hp ↦ p.swap) (fun p ↦ swap_mem_antidiagonal.2) (fun p hp ↦ rfl)
-    (fun p₁ p₂ _ _ h ↦ Prod.swap_injective h) fun p hp ↦
+  Finset.prod_bij (fun p _hp ↦ p.swap) (fun _p ↦ swap_mem_antidiagonal.2) (fun _p _hp ↦ rfl)
+    (fun _p₁ _p₂ _ _ h ↦ Prod.swap_injective h) fun p hp ↦
     ⟨p.swap, swap_mem_antidiagonal.2 hp, p.swap_swap.symm⟩
 #align finsupp.prod_antidiagonal_swap Finsupp.prod_antidiagonal_swap
 #align finsupp.sum_antidiagonal_swap Finsupp.sum_antidiagonal_swap
