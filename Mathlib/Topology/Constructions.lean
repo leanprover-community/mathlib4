@@ -430,6 +430,7 @@ theorem Continuous.comp₄ {g : α × β × γ × ζ → ε} (hg : Continuous g)
   hg.comp₃ he hf <| hk.prod_mk hl
 #align continuous.comp₄ Continuous.comp₄
 
+@[continuity]
 theorem Continuous.prod_map {f : γ → α} {g : δ → β} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x : γ × δ => (f x.1, g x.2) :=
   hf.fst'.prod_mk hg.snd'

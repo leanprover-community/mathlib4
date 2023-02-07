@@ -109,7 +109,7 @@ theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
 #align continuous_on.const_smul ContinuousOn.const_smul
 #align continuous_on.const_vadd ContinuousOn.const_vadd
 
-@[to_additive] -- porting note: todo: restore `continuity`
+@[to_additive, continuity]
 theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
   (continuous_const_smul _).comp hg
 #align continuous.const_smul Continuous.const_smul
