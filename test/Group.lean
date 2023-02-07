@@ -38,8 +38,10 @@ example (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*d) : a*c*d⁻¹ = a :
   rw [h]
   group
 
--- The next example can be expand to require an arbitrarily high number of alternation
+-- The next example can be expanded to require an arbitrarily high number of alternations
 -- between simp and ring
+
+example (n m : ℤ) (a b : G) : a^(m-n)*b^(m-n)*b^(n-m)*a^(n-m) = 1 := by group
 
 example (n : ℤ) (a b : G) : a^n*b^n*a^n*a^n*a^(-n)*a^(-n)*b^(-n)*a^(-n) = 1 := by group
 
