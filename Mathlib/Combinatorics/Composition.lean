@@ -147,11 +147,15 @@ theorem blocks_length : c.blocks.length = c.length :=
   rfl
 #align composition.blocks_length Composition.blocks_length
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 /-- The blocks of a composition, seen as a function on `fin c.length`. When composing analytic
 functions using compositions, this is the main player. -/
 def blocksFun : Fin c.length → ℕ := fun i => nthLe c.blocks i i.2
 #align composition.blocks_fun Composition.blocksFun
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 theorem ofFn_blocksFun : ofFn c.blocksFun = c.blocks :=
   ofFn_nthLe _
 #align composition.of_fn_blocks_fun Composition.ofFn_blocksFun
@@ -160,6 +164,8 @@ theorem sum_blocksFun : (∑ i, c.blocksFun i) = n := by
   conv_rhs => rw [← c.blocks_sum, ← ofFn_blocksFun, sum_ofFn]
 #align composition.sum_blocks_fun Composition.sum_blocksFun
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 theorem blocksFun_mem_blocks (i : Fin c.length) : c.blocksFun i ∈ c.blocks :=
   nthLe_mem _ _ _
 #align composition.blocks_fun_mem_blocks Composition.blocksFun_mem_blocks
@@ -169,11 +175,15 @@ theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
   c.blocks_pos h
 #align composition.one_le_blocks Composition.one_le_blocks
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 @[simp]
 theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ nthLe c.blocks i h :=
   c.one_le_blocks (nthLe_mem (blocks c) i h)
 #align composition.one_le_blocks' Composition.one_le_blocks'
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 @[simp]
 theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < nthLe c.blocks i h :=
   c.one_le_blocks' h
@@ -707,6 +717,8 @@ theorem sum_take_map_length_splitWrtComposition (l : List α) (c : Composition l
   exact map_length_splitWrtComposition l c
 #align list.sum_take_map_length_split_wrt_composition List.sum_take_map_length_splitWrtComposition
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 theorem nthLe_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) :
     nthLe (l.splitWrtCompositionAux ns) i hi =
       (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
@@ -715,6 +727,8 @@ theorem nthLe_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi
   rw [add_comm n, drop_add, drop_take]
 #align list.nth_le_split_wrt_composition_aux List.nthLe_splitWrtCompositionAux
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
 between the indices `c.size_up_to i` and `c.size_up_to (i+1)`, i.e., the indices in the `i`-th
 block of the composition. -/
@@ -905,6 +919,8 @@ theorem blocks_length : c.blocks.length = c.length :=
   length_ofFn _
 #align composition_as_set.blocks_length CompositionAsSet.blocks_length
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     (c.blocks.take i).sum = c.boundary ⟨i, h⟩ := by
   induction' i with i IH
