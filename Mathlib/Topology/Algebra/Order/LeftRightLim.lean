@@ -72,7 +72,7 @@ theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology 
   rw [h'α.topology_eq_generate_intervals] at h h' h''
   simp only [leftLim, h, h'', not_true, or_self_iff, if_false]
   haveI := neBot_iff.2 h
-  exact h'.lim_eq
+  exact lim_eq h'
 #align left_lim_eq_of_tendsto leftLim_eq_of_tendsto
 
 theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
