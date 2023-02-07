@@ -12,7 +12,6 @@ import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Connected
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Algebra.IndicatorFunction
--- import Mathlib.Tactic.Tfae
 import Mathlib.Tactic.FinCases
 
 /-!
