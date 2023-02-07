@@ -46,10 +46,9 @@ def lctxIsDefEq : (l₁ l₂ : List (Option LocalDecl)) → MetaM Bool
   | [], [] => return true
   | _, _ => return false
 
-elab_rules : tactic
-| `(tactic| fail_if_no_progress $tacs) => do
-  let goal ← getMainGoal
-  let l ← run goal (evalTactic tacs)
+/-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. -/
+def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
+  let l ← run goal tacs
   try
     let [newGoal] := l | failure
     guard <|← withNewMCtxDepth <| withReducible <| isDefEq (← newGoal.getType) (← goal.getType)
@@ -57,6 +56,11 @@ elab_rules : tactic
     let newCtxDecls := (← newGoal.getDecl).lctx.decls.toList
     guard <|← withNewMCtxDepth <| withReducible <| lctxIsDefEq ctxDecls newCtxDecls
   catch _ =>
-    replaceMainGoal l
-    return ()
+    return l
   throwError "no progress made on {goal}"
+
+elab_rules : tactic
+| `(tactic| fail_if_no_progress $tacs) => do
+  let goal ← getMainGoal
+  let l ← runAndFailIfNoProgress goal (evalTactic tacs)
+  replaceMainGoal l
