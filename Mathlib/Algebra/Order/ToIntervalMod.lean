@@ -750,17 +750,20 @@ section LinearOrderedField
 
 variable {α : Type _} [LinearOrderedField α] [FloorRing α]
 
-theorem toIcoDiv_eq_floor (a : α) {b : α} (hb : 0 < b) (x : α) : toIcoDiv a hb x = ⌊(x - a) / b⌋ :=
-  by
-  refine' (eq_toIcoDiv_of_sub_zsmul_mem_Ico hb _).symm
+-- Porting note: Needed to explicitly add (hα := FloorRing.archimedean α) in a lot of theorems here
+
+theorem toIcoDiv_eq_floor (a : α) {b : α} (hb : 0 < b) (x : α) :
+  toIcoDiv (hα := FloorRing.archimedean α) a hb x = ⌊(x - a) / b⌋ := by
+  haveI : Archimedean α := inferInstance
+  refine' (eq_toIcoDiv_of_sub_zsmul_mem_Ico (hα := this) hb _).symm
   rw [Set.mem_Ico, zsmul_eq_mul, ← sub_nonneg, add_comm, sub_right_comm, ← sub_lt_iff_lt_add,
     sub_right_comm _ _ a]
   exact ⟨Int.sub_floor_div_mul_nonneg _ hb, Int.sub_floor_div_mul_lt _ hb⟩
 #align to_Ico_div_eq_floor toIcoDiv_eq_floor
 
 theorem toIocDiv_eq_neg_floor (a : α) {b : α} (hb : 0 < b) (x : α) :
-    toIocDiv a hb x = -⌊(a + b - x) / b⌋ := by
-  refine' (eq_toIocDiv_of_sub_zsmul_mem_Ioc hb _).symm
+    toIocDiv (hα := FloorRing.archimedean α) a hb x = -⌊(a + b - x) / b⌋ := by
+  refine' (eq_toIocDiv_of_sub_zsmul_mem_Ioc (hα := FloorRing.archimedean α) hb _).symm
   rw [Set.mem_Ioc, zsmul_eq_mul, Int.cast_neg, neg_mul, sub_neg_eq_add, ← sub_nonneg,
     sub_add_eq_sub_sub]
   refine' ⟨_, Int.sub_floor_div_mul_nonneg _ hb⟩
@@ -769,29 +772,42 @@ theorem toIocDiv_eq_neg_floor (a : α) {b : α} (hb : 0 < b) (x : α) :
   exact Int.sub_floor_div_mul_lt _ hb
 #align to_Ioc_div_eq_neg_floor toIocDiv_eq_neg_floor
 
-theorem toIcoDiv_zero_one (x : α) : toIcoDiv (0 : α) zero_lt_one x = ⌊x⌋ := by
+theorem toIcoDiv_zero_one (x : α) :
+    toIcoDiv (hα := FloorRing.archimedean α) (0 : α) zero_lt_one x = ⌊x⌋ := by
   simp [toIcoDiv_eq_floor]
 #align to_Ico_div_zero_one toIcoDiv_zero_one
 
+-- Porting note: Ugly proof due to lack of field_simp. Takes too long due to instance synth
+set_option maxHeartbeats 350000
 theorem toIcoMod_eq_add_fract_mul (a : α) {b : α} (hb : 0 < b) (x : α) :
-    toIcoMod a hb x = a + Int.fract ((x - a) / b) * b := by
-  rw [toIcoMod, toIcoDiv_eq_floor, Int.fract]
-  field_simp [hb.ne.symm]
-  ring
+    toIcoMod (hα := FloorRing.archimedean α) a hb x = a + Int.fract ((x - a) / b) * b := by
+  unfold toIcoMod
+  rw [toIcoDiv_eq_floor, zsmul_eq_mul, Int.fract]
+  ring_nf
+  rw [mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
+  rw [mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
+  ring_nf
 #align to_Ico_mod_eq_add_fract_mul toIcoMod_eq_add_fract_mul
 
 theorem toIcoMod_eq_fract_mul {b : α} (hb : 0 < b) (x : α) :
-    toIcoMod 0 hb x = Int.fract (x / b) * b := by simp [toIcoMod_eq_add_fract_mul]
+    toIcoMod (hα := FloorRing.archimedean α) 0 hb x = Int.fract (x / b) * b := by
+  simp [toIcoMod_eq_add_fract_mul, Int.coe_castRingHom ]
 #align to_Ico_mod_eq_fract_mul toIcoMod_eq_fract_mul
 
+-- Porting note: Ugly proof due to lack of field_simp. Takes too long due to instance synth
 theorem toIocMod_eq_sub_fract_mul (a : α) {b : α} (hb : 0 < b) (x : α) :
-    toIocMod a hb x = a + b - Int.fract ((a + b - x) / b) * b := by
-  rw [toIocMod, toIocDiv_eq_neg_floor, Int.fract]
-  field_simp [hb.ne.symm]
-  ring
+    toIocMod (hα := FloorRing.archimedean α) a hb x = a + b - Int.fract ((a + b - x) / b) * b := by
+  unfold toIocMod
+  rw [toIocDiv_eq_neg_floor, zsmul_eq_mul, Int.fract]
+  ring_nf
+  rw [mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
+  rw [mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
+  rw [pow_two, mul_assoc, mul_inv_cancel hb.ne.symm, mul_one]
+  simp
 #align to_Ioc_mod_eq_sub_fract_mul toIocMod_eq_sub_fract_mul
 
-theorem toIcoMod_zero_one (x : α) : toIcoMod (0 : α) zero_lt_one x = Int.fract x := by
+theorem toIcoMod_zero_one (x : α) :
+    toIcoMod (hα := FloorRing.archimedean α) (0 : α) zero_lt_one x = Int.fract x := by
   simp [toIcoMod_eq_add_fract_mul]
 #align to_Ico_mod_zero_one toIcoMod_zero_one
 
