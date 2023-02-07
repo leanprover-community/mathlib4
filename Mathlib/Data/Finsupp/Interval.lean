@@ -107,25 +107,24 @@ instance : LocallyFiniteOrder (ι →₀ α) :=
 theorem icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
 #align finsupp.Icc_eq Finsupp.icc_eq
 
-theorem card_Icc [DecidableEq ι] :
-    (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
+-- porting note: removed [DecidableEq ι]
+theorem card_Icc : (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
   simp_rw [icc_eq, card_finsupp, coe_rangeIcc]
-
 
 #align finsupp.card_Icc Finsupp.card_Icc
 
-theorem card_Ico [DecidableEq ι] :
-    (Ico f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
+-- porting note: removed [DecidableEq ι]
+theorem card_Ico : (Ico f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
 #align finsupp.card_Ico Finsupp.card_Ico
 
-theorem card_Ioc [DecidableEq ι] :
-    (Ioc f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
+-- porting note: removed [DecidableEq ι]
+theorem card_Ioc : (Ioc f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
 #align finsupp.card_Ioc Finsupp.card_Ioc
 
-theorem card_Ioo [DecidableEq ι] :
-    (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
+-- porting note: removed [DecidableEq ι]
+theorem card_Ioo : (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 #align finsupp.card_Ioo Finsupp.card_Ioo
 
