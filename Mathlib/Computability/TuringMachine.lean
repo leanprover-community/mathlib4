@@ -91,8 +91,7 @@ theorem BlankExtends.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
 #align turing.blank_extends.trans Turing.BlankExtends.trans
 
 theorem BlankExtends.below_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
-    BlankExtends l l₁ → BlankExtends l l₂ → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ :=
-  by
+    BlankExtends l l₁ → BlankExtends l l₂ → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
   rintro ⟨i, rfl⟩ ⟨j, rfl⟩ h; use j - i
   simp only [List.length_append, add_le_add_iff_left, List.length_replicate] at h
   simp only [← List.replicate_add, add_tsub_cancel_of_le h, List.append_assoc]
@@ -107,8 +106,7 @@ def BlankExtends.above {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} (h₁ : Blank
 #align turing.blank_extends.above Turing.BlankExtends.above
 
 theorem BlankExtends.above_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
-    BlankExtends l₁ l → BlankExtends l₂ l → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ :=
-  by
+    BlankExtends l₁ l → BlankExtends l₂ l → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
   rintro ⟨i, rfl⟩ ⟨j, e⟩ h; use i - j
   refine' List.append_right_cancel (e.symm.trans _)
   rw [List.append_assoc, ← List.replicate_add, tsub_add_cancel_of_le]
@@ -151,20 +149,20 @@ theorem BlankRel.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
 def BlankRel.above {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
     { l // BlankExtends l₁ l ∧ BlankExtends l₂ l } := by
   refine'
-    if hl : l₁.length ≤ l₂.length then ⟨l₂, Or.elim h id fun h' => _, blank_extends.refl _⟩
-    else ⟨l₁, blank_extends.refl _, Or.elim h (fun h' => _) id⟩
-  exact (blank_extends.refl _).above_of_le h' hl
-  exact (blank_extends.refl _).above_of_le h' (le_of_not_ge hl)
+    if hl : l₁.length ≤ l₂.length then ⟨l₂, Or.elim h id fun h' => _, BlankExtends.refl _⟩
+    else ⟨l₁, BlankExtends.refl _, Or.elim h (fun h' => _) id⟩
+  exact (BlankExtends.refl _).above_of_le h' hl
+  exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
 #align turing.blank_rel.above Turing.BlankRel.above
 
 /-- Given two `blank_rel` lists, there exists (constructively) a common meet. -/
 def BlankRel.below {Γ} [Inhabited Γ] {l₁ l₂ : List Γ} (h : BlankRel l₁ l₂) :
     { l // BlankExtends l l₁ ∧ BlankExtends l l₂ } := by
   refine'
-    if hl : l₁.length ≤ l₂.length then ⟨l₁, blank_extends.refl _, Or.elim h id fun h' => _⟩
-    else ⟨l₂, Or.elim h (fun h' => _) id, blank_extends.refl _⟩
-  exact (blank_extends.refl _).above_of_le h' hl
-  exact (blank_extends.refl _).above_of_le h' (le_of_not_ge hl)
+    if hl : l₁.length ≤ l₂.length then ⟨l₁, BlankExtends.refl _, Or.elim h id fun h' => _⟩
+    else ⟨l₂, Or.elim h (fun h' => _) id, BlankExtends.refl _⟩
+  exact (BlankExtends.refl _).above_of_le h' hl
+  exact (BlankExtends.refl _).above_of_le h' (le_of_not_ge hl)
 #align turing.blank_rel.below Turing.BlankRel.below
 
 theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) :=
@@ -211,11 +209,12 @@ protected theorem ListBlank.induction_on {Γ} [Inhabited Γ] {p : ListBlank Γ �
 #align turing.list_blank.induction_on Turing.ListBlank.induction_on
 
 /-- The head of a `list_blank` is well defined. -/
-def ListBlank.head {Γ} [Inhabited Γ] (l : ListBlank Γ) : Γ :=
-  l.liftOn List.headI
-    (by
-      rintro _ _ ⟨i, rfl⟩
-      cases a; · cases i <;> rfl; rfl)
+def ListBlank.head {Γ} [Inhabited Γ] (l : ListBlank Γ) : Γ := by
+  apply l.liftOn List.headI
+  rintro a _ ⟨i, rfl⟩
+  cases a
+  · cases i <;> rfl
+  rfl
 #align turing.list_blank.head Turing.ListBlank.head
 
 @[simp]
@@ -225,12 +224,13 @@ theorem ListBlank.head_mk {Γ} [Inhabited Γ] (l : List Γ) :
 #align turing.list_blank.head_mk Turing.ListBlank.head_mk
 
 /-- The tail of a `list_blank` is well defined (up to the tail of blanks). -/
-def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ :=
-  l.liftOn (fun l => ListBlank.mk l.tail)
-    (by
-      rintro _ _ ⟨i, rfl⟩
-      refine' Quotient.sound' (Or.inl _)
-      cases a <;> [· cases i <;> [exact ⟨0, rfl⟩, exact ⟨i, rfl⟩], exact ⟨i, rfl⟩])
+def ListBlank.tail {Γ} [Inhabited Γ] (l : ListBlank Γ) : ListBlank Γ := by
+  apply l.liftOn (fun l => ListBlank.mk l.tail)
+  rintro a _ ⟨i, rfl⟩
+  refine' Quotient.sound' (Or.inl _)
+  cases a
+  · cases' i with i <;> [exact ⟨0, rfl⟩, exact ⟨i, rfl⟩]
+  exact ⟨i, rfl⟩
 #align turing.list_blank.tail Turing.ListBlank.tail
 
 @[simp]
@@ -240,11 +240,10 @@ theorem ListBlank.tail_mk {Γ} [Inhabited Γ] (l : List Γ) :
 #align turing.list_blank.tail_mk Turing.ListBlank.tail_mk
 
 /-- We can cons an element onto a `list_blank`. -/
-def ListBlank.cons {Γ} [Inhabited Γ] (a : Γ) (l : ListBlank Γ) : ListBlank Γ :=
-  l.liftOn (fun l => ListBlank.mk (List.cons a l))
-    (by
-      rintro _ _ ⟨i, rfl⟩
-      exact Quotient.sound' (Or.inl ⟨i, rfl⟩))
+def ListBlank.cons {Γ} [Inhabited Γ] (a : Γ) (l : ListBlank Γ) : ListBlank Γ := by
+  apply l.liftOn (fun l => ListBlank.mk (List.cons a l))
+  rintro _ _ ⟨i, rfl⟩
+  exact Quotient.sound' (Or.inl ⟨i, rfl⟩)
 #align turing.list_blank.cons Turing.ListBlank.cons
 
 @[simp]
@@ -254,23 +253,24 @@ theorem ListBlank.cons_mk {Γ} [Inhabited Γ] (a : Γ) (l : List Γ) :
 #align turing.list_blank.cons_mk Turing.ListBlank.cons_mk
 
 @[simp]
-theorem ListBlank.head_cons {Γ} [Inhabited Γ] (a : Γ) : ∀ l : ListBlank Γ, (l.cons a).headI = a :=
-  Quotient.ind' fun l => rfl
+theorem ListBlank.head_cons {Γ} [Inhabited Γ] (a : Γ) : ∀ l : ListBlank Γ, (l.cons a).head = a :=
+  Quotient.ind' fun _ => rfl
 #align turing.list_blank.head_cons Turing.ListBlank.head_cons
 
 @[simp]
 theorem ListBlank.tail_cons {Γ} [Inhabited Γ] (a : Γ) : ∀ l : ListBlank Γ, (l.cons a).tail = l :=
-  Quotient.ind' fun l => rfl
+  Quotient.ind' fun _ => rfl
 #align turing.list_blank.tail_cons Turing.ListBlank.tail_cons
 
 /-- The `cons` and `head`/`tail` functions are mutually inverse, unlike in the case of `list` where
 this only holds for nonempty lists. -/
 @[simp]
-theorem ListBlank.cons_head_tail {Γ} [Inhabited Γ] : ∀ l : ListBlank Γ, l.tail.cons l.headI = l :=
-  Quotient.ind'
-    (by
-      refine' fun l => Quotient.sound' (Or.inr _)
-      cases l; · exact ⟨1, rfl⟩; · rfl)
+theorem ListBlank.cons_head_tail {Γ} [Inhabited Γ] : ∀ l : ListBlank Γ, l.tail.cons l.head = l := by
+  apply Quotient.ind'
+  refine' fun l => Quotient.sound' (Or.inr _)
+  cases l
+  · exact ⟨1, rfl⟩
+  · rfl
 #align turing.list_blank.cons_head_tail Turing.ListBlank.cons_head_tail
 
 /-- The `cons` and `head`/`tail` functions are mutually inverse, unlike in the case of `list` where
@@ -281,37 +281,37 @@ theorem ListBlank.exists_cons {Γ} [Inhabited Γ] (l : ListBlank Γ) :
 #align turing.list_blank.exists_cons Turing.ListBlank.exists_cons
 
 /-- The n-th element of a `list_blank` is well defined for all `n : ℕ`, unlike in a `list`. -/
-def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ :=
-  l.liftOn (fun l => List.getI l n)
-    (by
-      rintro l _ ⟨i, rfl⟩
-      simp only
-      cases' lt_or_le _ _ with h h; · rw [List.getI_append _ _ _ h]
-      rw [List.getI_eq_default _ h]
-      cases' le_or_lt _ _ with h₂ h₂; · rw [List.getI_eq_default _ h₂]
-      rw [List.getI_eq_nthLe _ h₂, List.nthLe_append_right h, List.nthLe_replicate])
+def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
+  apply l.liftOn (fun l => List.getI l n)
+  rintro l _ ⟨i, rfl⟩
+  cases' lt_or_le n _ with h h
+  · rw [List.getI_append _ _ _ h]
+  rw [List.getI_eq_default _ h]
+  cases' le_or_lt _ n with h₂ h₂
+  · rw [List.getI_eq_default _ h₂]
+  rw [List.getI_eq_get _ h₂, List.get_append_right' h, List.get_replicate]
 #align turing.list_blank.nth Turing.ListBlank.nth
 
 @[simp]
 theorem ListBlank.nth_mk {Γ} [Inhabited Γ] (l : List Γ) (n : ℕ) :
-    (ListBlank.mk l).get? n = l.getI n :=
+    (ListBlank.mk l).nth n = l.getI n :=
   rfl
 #align turing.list_blank.nth_mk Turing.ListBlank.nth_mk
 
 @[simp]
-theorem ListBlank.nth_zero {Γ} [Inhabited Γ] (l : ListBlank Γ) : l.get? 0 = l.headI := by
+theorem ListBlank.nth_zero {Γ} [Inhabited Γ] (l : ListBlank Γ) : l.nth 0 = l.head := by
   conv =>
     lhs
-    rw [← list_blank.cons_head_tail l]
+    rw [← ListBlank.cons_head_tail l]
   exact Quotient.inductionOn' l.tail fun l => rfl
 #align turing.list_blank.nth_zero Turing.ListBlank.nth_zero
 
 @[simp]
 theorem ListBlank.nth_succ {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) :
-    l.get? (n + 1) = l.tail.get? n := by
+    l.nth (n + 1) = l.tail.nth n := by
   conv =>
     lhs
-    rw [← list_blank.cons_head_tail l]
+    rw [← ListBlank.cons_head_tail l]
   exact Quotient.inductionOn' l.tail fun l => rfl
 #align turing.list_blank.nth_succ Turing.ListBlank.nth_succ
 
@@ -1333,7 +1333,7 @@ theorem stmts₁_trans {q₁ q₂} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ �
   intro h₁₂ q₀ h₀₁
   induction' q₂ with _ q IH _ q IH _ q IH <;> simp only [stmts₁] at h₁₂⊢ <;>
     simp only [Finset.mem_insert, Finset.mem_union, Finset.mem_singleton] at h₁₂
-  iterate 3 
+  iterate 3
     rcases h₁₂ with (rfl | h₁₂)
     · unfold stmts₁ at h₀₁
       exact h₀₁
@@ -2219,7 +2219,7 @@ theorem stmts₁_trans {q₁ q₂} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ �
   intro h₁₂ q₀ h₀₁
   induction' q₂ with _ _ q IH _ _ q IH _ _ q IH _ q IH <;> simp only [stmts₁] at h₁₂⊢ <;>
     simp only [Finset.mem_insert, Finset.mem_singleton, Finset.mem_union] at h₁₂
-  iterate 4 
+  iterate 4
     rcases h₁₂ with (rfl | h₁₂)
     · unfold stmts₁ at h₀₁
       exact h₀₁
@@ -2856,4 +2856,3 @@ end
 end TM2to1
 
 end Turing
-
