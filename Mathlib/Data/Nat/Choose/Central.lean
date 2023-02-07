@@ -92,12 +92,12 @@ This bound is of interest because it appears in
 theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * centralBinom n := by
   induction' n using Nat.strong_induction_on with n IH
   rcases lt_trichotomy n 4 with (hn | rfl | hn)
-  · clear IH
-    decide!
+  · clear IH; exact False.elim ((not_lt.2 n_big) hn)
   · norm_num [centralBinom, choose]
-  obtain ⟨n, rfl⟩ : ∃ m, n = m + 1 := Nat.exists_eq_succ_of_ne_zero (zero_lt_four.trans hn).ne'
+  obtain ⟨n, rfl⟩ : ∃ m, n = m + 1 := Nat.exists_eq_succ_of_ne_zero (Nat.not_eq_zero_of_lt hn)
   calc
-    4 ^ (n + 1) < 4 * (n * centralBinom n) := (mul_lt_mul_left <| zero_lt_four' ℕ).mpr (IH n n.lt_succ_self (Nat.le_of_lt_succ hn))
+    4 ^ (n + 1) < 4 * (n * centralBinom n) := lt_of_eq_of_lt (pow_succ'' n 4) $
+      (mul_lt_mul_left <| zero_lt_four' ℕ).mpr (IH n n.lt_succ_self (Nat.le_of_lt_succ hn))
     _ ≤ 2 * (2 * n + 1) * centralBinom n := by rw [← mul_assoc]; linarith
     _ = (n + 1) * centralBinom (n + 1) := (succ_mul_centralBinom_succ n).symm
 
@@ -113,10 +113,11 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
   | 1, pr => by norm_num [centralBinom, choose]
   | 2, pr => by norm_num [centralBinom, choose]
   | 3, pr => by norm_num [centralBinom, choose]
-  | n@(m + 4), _ =>
+  | n + 4, _ =>
     calc
-      4 ^ n ≤ n * centralBinom n := (four_pow_lt_mul_centralBinom _ le_add_self).le
-      _ ≤ 2 * n * centralBinom n := by rw [mul_assoc]; refine' le_mul_of_pos_left zero_lt_two
+      4 ^ (n+4) ≤ (n+4) * centralBinom (n+4) := (four_pow_lt_mul_centralBinom _ le_add_self).le
+      _ ≤ 2 * (n+4) * centralBinom (n+4) := by rw [mul_assoc];
+                                               refine' le_mul_of_pos_left zero_lt_two
 #align nat.four_pow_le_two_mul_self_mul_central_binom Nat.four_pow_le_two_mul_self_mul_centralBinom
 
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
