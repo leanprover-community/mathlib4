@@ -243,7 +243,7 @@ theorem vsub_right_cancel_iff {p1 p2 p : P} : p -ᵥ p1 = p -ᵥ p2 ↔ p1 = p2 
 
 /-- Subtracting a point from the point `p` is an injective
 function. -/
-theorem vsub_right_injective (p : P) : Function.Injective ((· -ᵥ ·) p : P → G) := fun _ _ =>
+theorem vsub_right_injective (p : P) : Function.Injective ((p -ᵥ ·) : P → G) := fun _ _ =>
   vsub_right_cancel
 #align vsub_right_injective vsub_right_injective
 
