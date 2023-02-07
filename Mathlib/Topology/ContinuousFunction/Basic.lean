@@ -34,7 +34,7 @@ structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace
   /-- The function `α → β` -/
   toFun : α → β
   /-- Proposition that `toFun` is continuous -/
-  continuous_toFun : Continuous toFun --:= by continuity -- Porting note: need tactic
+  continuous_toFun : Continuous toFun := by continuity
 #align continuous_map ContinuousMap
 
 /-- The type of continuous maps from `α` to `β`. -/
@@ -55,7 +55,7 @@ end
 
 export ContinuousMapClass (map_continuous)
 
---attribute [continuity] map_continuous -- Porting note: need tactic
+attribute [continuity] map_continuous
 
 section ContinuousMapClass
 
@@ -139,7 +139,7 @@ protected theorem continuous (f : C(α, β)) : Continuous f :=
   f.continuous_toFun
 #align continuous_map.continuous ContinuousMap.continuous
 
---porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → β) :=
   f.1.continuous
 #align continuous_map.continuous_set_coe ContinuousMap.continuous_set_coe
@@ -193,7 +193,7 @@ variable (α)
 
 /-- The identity as a continuous map. -/
 protected def id : C(α, α) :=
-  ⟨id, continuous_id⟩
+  ⟨id, by continuity⟩
   -- Porting note: proof was `continuity`
 #align continuous_map.id ContinuousMap.id
 

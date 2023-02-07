@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 import Mathlib.Topology.Maps
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Order.Filter.Pi
-import Mathlib.Tactic.Continuity
 
 /-!
 # Constructions of new topological spaces from old ones

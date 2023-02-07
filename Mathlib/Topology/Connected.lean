@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Topology.SubsetProperties
-import Mathlib.Tactic.Continuity
 
 /-!
 # Connected subsets of topological spaces

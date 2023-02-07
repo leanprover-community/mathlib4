@@ -9,7 +9,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Basic
-import Mathlib.Tactic.Continuity
 
 /-!
 # Ordering on topologies and (co)induced topologies
