@@ -27,7 +27,9 @@ namespace Finsupp
 
 open Finset
 
-variable {α : Type _}
+universe u
+
+variable {α : Type u}
 
 /-- The `Finsupp` counterpart of `Multiset.antidiagonal`: the antidiagonal of
 `s : α →₀ ℕ` consists of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
