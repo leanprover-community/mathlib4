@@ -15,14 +15,14 @@ import Mathlib.Data.Finsupp.Order
 /-!
 # Finite intervals of finitely supported functions
 
-This file provides the `locally_finite_order` instance for `ι →₀ α` when `α` itself is locally
+This file provides the `LocallyFiniteOrder` instance for `ι →₀ α` when `α` itself is locally
 finite and calculates the cardinality of its finite intervals.
 
 ## Main declarations
 
-* `finsupp.range_singleton`: Postcomposition with `has_singleton.singleton` on `finset` as a
-  `finsupp`.
-* `finsupp.range_Icc`: Postcomposition with `finset.Icc` as a `finsupp`.
+* `Finsupp.rangeSingleton`: Postcomposition with `has_singleton.singleton` on `Finset` as a
+  `Finsupp`.
+* `Finsupp.rangeIcc`: Postcomposition with `Finset.Icc` as a `Finsupp`.
 
 Both these definitions use the fact that `0 = {0}` to ensure that the resulting function is finitely
 supported.
@@ -43,7 +43,7 @@ section RangeSingleton
 
 variable [Zero α] {f : ι →₀ α} {i : ι} {a : α}
 
-/-- Pointwise `finset.singleton` bundled as a `finsupp`. -/
+/-- Pointwise `finset.singleton` bundled as a `Finsupp`. -/
 @[simps]
 def rangeSingleton (f : ι →₀ α) : ι →₀ Finset α where
   toFun i := {f i}
@@ -63,7 +63,7 @@ section RangeIcc
 
 variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] {f g : ι →₀ α} {i : ι} {a : α}
 
-/-- Pointwise `finset.Icc` bundled as a `finsupp`. -/
+/-- Pointwise `Finset.Icc` bundled as a `Finsupp`. -/
 @[simps toFun]
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
