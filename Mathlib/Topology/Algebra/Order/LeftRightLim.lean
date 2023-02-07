@@ -16,16 +16,16 @@ import Mathlib.Topology.Algebra.Order.LeftRight
 
 We define the (strict) left and right limits of a function.
 
-* `left_lim f x` is the strict left limit of `f` at `x` (using `f x` as a garbage value if `x`
+* `leftLim f x` is the strict left limit of `f` at `x` (using `f x` as a garbage value if `x`
   is isolated to its left).
-* `right_lim f x` is the strict right limit of `f` at `x` (using `f x` as a garbage value if `x`
+* `rightLim f x` is the strict right limit of `f` at `x` (using `f x` as a garbage value if `x`
   is isolated to its right).
 
 We develop a comprehensive API for monotone functions. Notably,
 
-* `monotone.continuous_at_iff_left_lim_eq_right_lim` states that a monotone function is continuous
+* `Monotone.continuousAt_iff_leftLim_eq_rightLim` states that a monotone function is continuous
   at a point if and only if its left and right limits coincide.
-* `monotone.countable_not_continuous_at` asserts that a monotone function taking values in a
+* `Monotone.countable_not_continuousAt` asserts that a monotone function taking values in a
   second-countable space has at most countably many discontinuity points.
 
 We also port the API to antitone functions.
@@ -174,7 +174,7 @@ theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
 
 theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≤] leftLim f x) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within f (hf.tendsto_leftLim x)
-  filter_upwards [self_mem_nhdsWithin] with y hy using hf.le_left_lim hy
+  filter_upwards [@self_mem_nhdsWithin _ _ x (Iio x)] with y hy using hf.le_leftLim hy
 #align monotone.tendsto_left_lim_within Monotone.tendsto_leftLim_within
 
 theorem tendsto_rightLim (x : α) : Tendsto f (𝓝[>] x) (𝓝 (rightLim f x)) :=
@@ -226,7 +226,7 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:75:38: in wlog #[[ident hle], [":", expr «expr ≤ »(u, v)], ["generalizing", ident u, ident v], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: too many args -/
 /-- In a second countable space, the set of points where a monotone function is not right-continuous
-is at most countable. Superseded by `countable_not_continuous_at` which gives the two-sided
+is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
 version. -/
 theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTopology β] :
     Set.Countable { x | ¬ContinuousWithinAt f (Ioi x) x } := by
@@ -240,7 +240,8 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
     rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
     contrapose! hx
     refine' tendsto_order.2 ⟨fun m hm => _, fun u hu => _⟩
-    · filter_upwards [self_mem_nhdsWithin] with y hy using hm.trans_le (hf (le_of_lt hy))
+    · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
+        (hf (le_of_lt hy))
     rcases hx u hu with ⟨v, xv, fvu⟩
     have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsWithin_Ioi ⟨le_refl _, xv⟩
     filter_upwards [this]with y hy
@@ -261,8 +262,9 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
     have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) :=
       by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
-      trace
-        "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:75:38: in wlog #[[ident hle], [\":\", expr «expr ≤ »(u, v)], [\"generalizing\", ident u, ident v], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: too many args"
+      --wlog hle : u ≤ v generalizing u v
+      --trace
+        --"./././Mathport/Syntax/Translate/Tactic/Builtin.lean:75:38: in wlog #[[ident hle], [\":\", expr «expr ≤ »(u, v)], [\"generalizing\", ident u, ident v], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: too many args"
       · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
       have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
       apply disjoint_iff_forall_ne.2
@@ -276,7 +278,7 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
 #align monotone.countable_not_continuous_within_at_Ioi Monotone.countable_not_continuousWithinAt_Ioi
 
 /-- In a second countable space, the set of points where a monotone function is not left-continuous
-is at most countable. Superseded by `countable_not_continuous_at` which gives the two-sided
+is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
 version. -/
 theorem countable_not_continuousWithinAt_Iio [TopologicalSpace.SecondCountableTopology β] :
     Set.Countable { x | ¬ContinuousWithinAt f (Iio x) x } :=
