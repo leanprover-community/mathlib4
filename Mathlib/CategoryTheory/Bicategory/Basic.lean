@@ -73,57 +73,57 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
   -- right unitor:
   rightUnitor {a b : B} (f : a ⟶ b) : f ≫ 𝟙 b ≅ f
   -- axioms for left whiskering:
-  whiskerLeft_id' : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerLeft f (𝟙 g) = 𝟙 (f ≫ g) := 
+  whiskerLeft_id : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerLeft f (𝟙 g) = 𝟙 (f ≫ g) := 
     by aesop_cat
-  whiskerLeft_comp' :
+  whiskerLeft_comp :
     ∀ {a b c} (f : a ⟶ b) {g h i : b ⟶ c} (η : g ⟶ h) (θ : h ⟶ i),
       whiskerLeft f (η ≫ θ) = whiskerLeft f η ≫ whiskerLeft f θ := by
     aesop_cat
-  id_whiskerLeft' :
+  id_whiskerLeft :
     ∀ {a b} {f g : a ⟶ b} (η : f ⟶ g),
       whiskerLeft (𝟙 a) η = (leftUnitor f).hom ≫ η ≫ (leftUnitor g).inv := by
     aesop_cat
-  comp_whiskerLeft' :
+  comp_whiskerLeft :
     ∀ {a b c d} (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η : h ⟶ h'),
       whiskerLeft (f ≫ g) η =
         (associator f g h).hom ≫ whiskerLeft f (whiskerLeft g η) ≫ (associator f g h').inv := by
     aesop_cat
   -- axioms for right whiskering:
-  id_whiskerRight' : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c),  whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
+  id_whiskerRight : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c),  whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
     aesop_cat
-  comp_whiskerRight' :
+  comp_whiskerRight :
     ∀ {a b c} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) (i : b ⟶ c),
       whiskerRight (η ≫ θ) i = whiskerRight η i ≫ whiskerRight θ i := by
     aesop_cat
-  whiskerRight_id' :
+  whiskerRight_id :
     ∀ {a b} {f g : a ⟶ b} (η : f ⟶ g),
       whiskerRight η (𝟙 b) = (rightUnitor f).hom ≫ η ≫ (rightUnitor g).inv := by
     aesop_cat
-  whiskerRight_comp' :
+  whiskerRight_comp :
     ∀ {a b c d} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c) (h : c ⟶ d),
       whiskerRight η (g ≫ h) =
         (associator f g h).inv ≫ whiskerRight (whiskerRight η g) h ≫ (associator f' g h).hom := by
     aesop_cat
   -- associativity of whiskerings:
-  whisker_assoc' :
+  whisker_assoc :
     ∀ {a b c d} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g') (h : c ⟶ d),
       whiskerRight (whiskerLeft f η) h =
         (associator f g h).hom ≫ whiskerLeft f (whiskerRight η h) ≫ (associator f g' h).inv := by
     aesop_cat
   -- exchange law of left and right whiskerings:
-  whisker_exchange' :
+  whisker_exchange :
     ∀ {a b c} {f g : a ⟶ b} {h i : b ⟶ c} (η : f ⟶ g) (θ : h ⟶ i),
       whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerLeft g θ := by
     aesop_cat
   -- pentagon identity:
-  pentagon' :
+  pentagon :
     ∀ {a b c d e} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e),
       whiskerRight (associator f g h).hom i ≫
           (associator f (g ≫ h) i).hom ≫ whiskerLeft f (associator g h i).hom =
         (associator (f ≫ g) h i).hom ≫ (associator f g (h ≫ i)).hom := by
     aesop_cat
   -- triangle identity:
-  triangle' :
+  triangle :
     ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c),
       (associator f (𝟙 b) g).hom ≫ whiskerLeft f (leftUnitor g).hom 
       = whiskerRight (rightUnitor f).hom g := by
@@ -162,19 +162,6 @@ parentheses. More precisely,
 
 Note that `f₁ ◁ f₂ ◁ f₃ ◁ η ▷ f₄ ▷ f₅` is actually `f₁ ◁ (f₂ ◁ (f₃ ◁ ((η ▷ f₄) ▷ f₅)))`.
 -/
-
-restate_axiom whiskerLeft_id'
-restate_axiom whiskerLeft_comp'
-restate_axiom id_whiskerLeft'
-restate_axiom comp_whiskerLeft'
-restate_axiom id_whiskerRight'
-restate_axiom comp_whiskerRight'
-restate_axiom whiskerRight_id'
-restate_axiom whiskerRight_comp'
-restate_axiom whisker_assoc'
-restate_axiom whisker_exchange'
-restate_axiom pentagon'
-restate_axiom triangle'
 
 attribute [instance] homCategory
 
@@ -451,7 +438,7 @@ theorem whiskerRight_iff {f g : a ⟶ b} (η θ : f ⟶ g) : η ▷ 𝟙 b = θ 
 /-- We state it as a simp lemma, which is regarded as an involved version of
 `id_whiskerRight f g : 𝟙 f ▷ g = 𝟙 (f ≫ g)`.
 -/
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 theorem leftUnitor_whiskerRight (f : a ⟶ b) (g : b ⟶ c) :
     (λ_ f).hom ▷ g = (α_ (𝟙 a) f g).hom ≫ (λ_ (f ≫ g)).hom := by
   rw [← whiskerLeft_iff, whiskerLeft_comp, ← cancel_epi (α_ _ _ _).hom, ←
@@ -459,13 +446,13 @@ theorem leftUnitor_whiskerRight (f : a ⟶ b) (g : b ⟶ c) :
       comp_whiskerRight_assoc, triangle, associator_naturality_left]
 #align category_theory.bicategory.left_unitor_whisker_right CategoryTheory.Bicategory.leftUnitor_whiskerRight
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 theorem leftUnitor_inv_whiskerRight (f : a ⟶ b) (g : b ⟶ c) :
     (λ_ f).inv ▷ g = (λ_ (f ≫ g)).inv ≫ (α_ (𝟙 a) f g).inv :=
   eq_of_inv_eq_inv (by simp)
 #align category_theory.bicategory.left_unitor_inv_whisker_right CategoryTheory.Bicategory.leftUnitor_inv_whiskerRight
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 theorem whiskerLeft_rightUnitor (f : a ⟶ b) (g : b ⟶ c) :
     f ◁ (ρ_ g).hom = (α_ f g (𝟙 c)).inv ≫ (ρ_ (f ≫ g)).hom := by
   rw [← whiskerRight_iff, comp_whiskerRight, ← cancel_epi (α_ _ _ _).inv, ←
@@ -474,7 +461,7 @@ theorem whiskerLeft_rightUnitor (f : a ⟶ b) (g : b ⟶ c) :
       associator_inv_naturality_right] 
 #align category_theory.bicategory.whisker_left_right_unitor CategoryTheory.Bicategory.whiskerLeft_rightUnitor
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 theorem whiskerLeft_rightUnitor_inv (f : a ⟶ b) (g : b ⟶ c) :
     f ◁ (ρ_ g).inv = (ρ_ (f ≫ g)).inv ≫ (α_ f g (𝟙 c)).hom :=
   eq_of_inv_eq_inv (by simp)
