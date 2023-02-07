@@ -19,10 +19,10 @@ This file proves properties of the central binomial coefficients (that is, `nat.
 
 ## Main definition and results
 
-* `nat.centralBinom`: the central binomial coefficient, `(2 * n).choose n`.
-* `nat.succ_mul_centralBinom_succ`: the inductive relationship between successive central binomial
+* `Nat.centralBinom`: the central binomial coefficient, `(2 * n).choose n`.
+* `Nat.succ_mul_centralBinom_succ`: the inductive relationship between successive central binomial
   coefficients.
-* `nat.four_pow_lt_mul_centralBinom`: an exponential lower bound on the central binomial
+* `Nat.four_pow_lt_mul_centralBinom`: an exponential lower bound on the central binomial
   coefficient.
 * `succ_dvd_centralBinom`: The result that `n+1 ∣ n.centralBinom`, ensuring that the explicit
   definition of the Catalan numbers is integer-valued.
@@ -31,24 +31,28 @@ This file proves properties of the central binomial coefficients (that is, `nat.
 
 namespace Nat
 
-/-- The central binomial coefficient, `nat.choose (2 * n) n`.
+/-- The central binomial coefficient, `Nat.choose (2 * n) n`.
 -/
 def centralBinom (n : ℕ) :=
   (2 * n).choose n
 #align nat.central_binom Nat.centralBinom
 
+/-- expand centralBinom to its definition. -/
 theorem centralBinom_eq_two_mul_choose (n : ℕ) : centralBinom n = (2 * n).choose n :=
   rfl
 #align nat.central_binom_eq_two_mul_choose Nat.centralBinom_eq_two_mul_choose
 
+/-- centralBinom n > 0. -/
 theorem centralBinom_pos (n : ℕ) : 0 < centralBinom n :=
   choose_pos (Nat.le_mul_of_pos_left zero_lt_two)
 #align nat.central_binom_pos Nat.centralBinom_pos
 
+/-- centralBinom n ≠ 0. -/
 theorem centralBinom_ne_zero (n : ℕ) : centralBinom n ≠ 0 :=
   (centralBinom_pos n).ne'
 #align nat.central_binom_ne_zero Nat.centralBinom_ne_zero
 
+/-- The central binomial coefficient of 0 is 1. -/
 @[simp]
 theorem centralBinom_zero : centralBinom 0 = 1 :=
   choose_zero_right _
@@ -79,7 +83,8 @@ theorem succ_mul_centralBinom_succ (n : ℕ) :
     (n + 1) * (2 * (n + 1)).choose (n + 1) = (2 * n + 2).choose (n + 1) * (n + 1) := mul_comm _ _
     _ = (2 * n + 1).choose n * (2 * n + 2) := by rw [choose_succ_right_eq, choose_mul_succ_eq]
     _ = 2 * ((2 * n + 1).choose n * (n + 1)) := by ring
-    _ = 2 * ((2 * n + 1).choose n * (2 * n + 1 - n)) := by rw [two_mul n, add_assoc, Nat.add_sub_cancel_left]
+    _ = 2 * ((2 * n + 1).choose n * (2 * n + 1 - n)) := by rw [two_mul n, add_assoc,
+                                                               Nat.add_sub_cancel_left]
     _ = 2 * ((2 * n).choose n * (2 * n + 1)) := by rw [choose_mul_succ_eq]
     _ = 2 * (2 * n + 1) * (2 * n).choose n := by rw [mul_assoc, mul_comm (2 * n + 1)]
 
@@ -104,15 +109,15 @@ theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * c
 #align nat.four_pow_lt_mul_central_binom Nat.four_pow_lt_mul_centralBinom
 
 /-- An exponential lower bound on the central binomial coefficient.
-This bound is weaker than `nat.four_pow_lt_mul_centralBinom`, but it is of historical interest
+This bound is weaker than `Nat.four_pow_lt_mul_centralBinom`, but it is of historical interest
 because it appears in Erdős's proof of Bertrand's postulate.
 -/
 theorem four_pow_le_two_mul_self_mul_centralBinom :
-    ∀ (n : ℕ) (n_pos : 0 < n), 4 ^ n ≤ 2 * n * centralBinom n
+    ∀ (n : ℕ) (_ : 0 < n), 4 ^ n ≤ 2 * n * centralBinom n
   | 0, pr => (Nat.not_lt_zero _ pr).elim
-  | 1, pr => by norm_num [centralBinom, choose]
-  | 2, pr => by norm_num [centralBinom, choose]
-  | 3, pr => by norm_num [centralBinom, choose]
+  | 1, _ => by norm_num [centralBinom, choose]
+  | 2, _ => by norm_num [centralBinom, choose]
+  | 3, _ => by norm_num [centralBinom, choose]
   | n + 4, _ =>
     calc
       4 ^ (n+4) ≤ (n+4) * centralBinom (n+4) := (four_pow_lt_mul_centralBinom _ le_add_self).le
@@ -120,12 +125,14 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
                                                refine' le_mul_of_pos_left zero_lt_two
 #align nat.four_pow_le_two_mul_self_mul_central_binom Nat.four_pow_le_two_mul_self_mul_centralBinom
 
+/-- centralBinom (n+1) is dividable by two. -/
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n
-  rw [centralBinom_eq_two_mul_choose, two_mul, ← add_assoc, choose_succ_succ' (n + 1 + n) n, choose_symm_add, ←
-    two_mul]
+  rw [centralBinom_eq_two_mul_choose, two_mul, ← add_assoc,
+      choose_succ_succ' (n + 1 + n) n, choose_symm_add, ← two_mul]
 #align nat.two_dvd_central_binom_succ Nat.two_dvd_centralBinom_succ
 
+/-- centralBinom n, where 0 < n, is dividable by two. -/
 theorem two_dvd_centralBinom_of_one_le {n : ℕ} (h : 0 < n) : 2 ∣ centralBinom n := by
   rw [← Nat.succ_pred_eq_of_pos h]
   exact two_dvd_centralBinom_succ n.pred
