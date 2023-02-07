@@ -44,7 +44,7 @@ include hα
 /--
 The unique integer such that this multiple of `b`, subtracted from `x`, is in `Ico a (a + b)`. -/
 def toIcoDiv (a : α) {b : α} (hb : 0 < b) (x : α) : ℤ :=
-  (existsUnique_sub_zsmul_mem_Ico hb x a).some
+  (existsUnique_sub_zsmul_mem_Ico hb x a).choose
 #align to_Ico_div toIcoDiv
 
 theorem sub_toIcoDiv_zsmul_mem_Ico (a : α) {b : α} (hb : 0 < b) (x : α) :
@@ -799,4 +799,3 @@ theorem toIcoMod_zero_one (x : α) : toIcoMod (0 : α) zero_lt_one x = Int.fract
 #align to_Ico_mod_zero_one toIcoMod_zero_one
 
 end LinearOrderedField
-
