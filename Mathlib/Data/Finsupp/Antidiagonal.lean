@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Multiset
-import Mathbin.Data.Multiset.Antidiagonal
+import Mathlib.Data.Finsupp.Multiset
+import Mathlib.Data.Multiset.Antidiagonal
 
 /-!
 # The `finsupp` counterpart of `multiset.antidiagonal`.
@@ -44,8 +44,7 @@ def antidiagonal (f : α →₀ ℕ) : Finset ((α →₀ ℕ) × (α →₀ ℕ
 
 @[simp]
 theorem mem_antidiagonal {f : α →₀ ℕ} {p : (α →₀ ℕ) × (α →₀ ℕ)} :
-    p ∈ antidiagonal f ↔ p.1 + p.2 = f :=
-  by
+    p ∈ antidiagonal f ↔ p.1 + p.2 = f := by
   rcases p with ⟨p₁, p₂⟩
   simp [antidiagonal, antidiagonal', ← and_assoc, ← finsupp.to_multiset.apply_eq_iff_eq]
 #align finsupp.mem_antidiagonal Finsupp.mem_antidiagonal
@@ -57,8 +56,7 @@ theorem swap_mem_antidiagonal {n : α →₀ ℕ} {f : (α →₀ ℕ) × (α �
 
 theorem antidiagonal_filter_fst_eq (f g : α →₀ ℕ)
     [D : ∀ p : (α →₀ ℕ) × (α →₀ ℕ), Decidable (p.1 = g)] :
-    ((antidiagonal f).filterₓ fun p => p.1 = g) = if g ≤ f then {(g, f - g)} else ∅ :=
-  by
+    ((antidiagonal f).filterₓ fun p => p.1 = g) = if g ≤ f then {(g, f - g)} else ∅ := by
   ext ⟨a, b⟩
   suffices a = g → (a + b = f ↔ g ≤ f ∧ b = f - g) by
     simpa [apply_ite ((· ∈ ·) (a, b)), ← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
@@ -72,8 +70,7 @@ theorem antidiagonal_filter_fst_eq (f g : α →₀ ℕ)
 
 theorem antidiagonal_filter_snd_eq (f g : α →₀ ℕ)
     [D : ∀ p : (α →₀ ℕ) × (α →₀ ℕ), Decidable (p.2 = g)] :
-    ((antidiagonal f).filterₓ fun p => p.2 = g) = if g ≤ f then {(f - g, g)} else ∅ :=
-  by
+    ((antidiagonal f).filterₓ fun p => p.2 = g) = if g ≤ f then {(f - g, g)} else ∅ := by
   ext ⟨a, b⟩
   suffices b = g → (a + b = f ↔ g ≤ f ∧ a = f - g) by
     simpa [apply_ite ((· ∈ ·) (a, b)), ← and_assoc, and_congr_left_iff]
