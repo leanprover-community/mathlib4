@@ -193,7 +193,7 @@ theorem continuous_eval_const' [LocallyCompactSpace α] (a : α) :
 #align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const'
 
 /-- See also `continuous_map.continuous_coe` -/
-theorem continuous_coe' [LocallyCompactSpace α] : @Continuous C(α, β) (α → β) _ _ coeFn :=
+theorem continuous_coe' [LocallyCompactSpace α] : @Continuous C(α, β) (α → β) _ _ (↑) :=
   continuous_pi continuous_eval_const'
 #align continuous_map.continuous_coe' ContinuousMap.continuous_coe'
 
@@ -272,7 +272,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type _} {l : Filter ι} (F : ι →
       ∀ (s) (hs : IsCompact s), Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) :=
   by
     rw [compactOpen_eq_Inf_induced]
-    simp [nhds_infᵢ, nhds_induced, Filter.tendsto_comap_iff]
+    simp [nhds_infᵢ, nhds_induced, Filter.tendsto_comap_iff, Function.comp]
 #align continuous_map.tendsto_compact_open_iff_forall ContinuousMap.tendsto_compactOpen_iff_forall
 
 /-- A family `F` of functions in `C(α, β)` converges in the compact-open topology, if and only if
@@ -328,7 +328,18 @@ def coev (b : β) : C(α, β × α) :=
 variable {α β}
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem image_coev {y : β} (s : Set α) : coev α β y '' s = ({y} : Set β) ×ˢ s := by tidy
+theorem image_coev {y : β} (s : Set α) : coev α β y '' s = ({y} : Set β) ×ˢ s := by
+  -- Porting note: proof was `by tidy`
+  ext ⟨a, b⟩
+  simp only [mem_image, singleton_prod, Prod.mk.injEq, exists_eq_right_right]
+  apply Iff.intro
+  · rintro ⟨x, hx, h⟩
+    simp [coev] at h
+    rw [h.1, ← h.2]
+    exact ⟨hx, rfl⟩
+  · intro h
+    use b, h.1
+    simp [coev, h.2]
 #align continuous_map.image_coev ContinuousMap.image_coev
 
 -- The coevaluation map β → C(α, β × α) is continuous (always).
@@ -353,15 +364,13 @@ section Curry
 
 /-- Auxiliary definition, see `ContinuousMap.curry` and `Homeomorph.curry`. -/
 def curry' (f : C(α × β, γ)) (a : α) : C(β, γ) :=
-  ⟨Function.curry f a, sorry⟩
+  ⟨Function.curry f a, Continuous.comp f.2 (continuous_const.prod_mk continuous_id)⟩
+  -- Porting note: proof was `by continuity`
 #align continuous_map.curry' ContinuousMap.curry'
 
 /-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
 theorem continuous_curry' (f : C(α × β, γ)) : Continuous (curry' f) :=
-  have hf : curry' f = ContinuousMap.comp f ∘ coev _ _ :=
-    by
-    ext
-    rfl
+  have hf : curry' f = ContinuousMap.comp f ∘ coev _ _ := by ext; rfl
   hf ▸ Continuous.comp (continuous_comp f) continuous_coev
 #align continuous_map.continuous_curry' ContinuousMap.continuous_curry'
 
@@ -381,19 +390,25 @@ def curry (f : C(α × β, γ)) : C(α, C(β, γ)) :=
   ⟨_, continuous_curry' f⟩
 #align continuous_map.curry ContinuousMap.curry
 
+@[simp]
+theorem curry_apply (f : C(α × β, γ)) (a : α) (b : β) : f.curry a b = f (a, b) :=
+  rfl
+#align continuous_map.curry_apply ContinuousMap.curry_apply
+
 /-- The currying process is a continuous map between function spaces. -/
 theorem continuous_curry [LocallyCompactSpace (α × β)] :
     Continuous (curry : C(α × β, γ) → C(α, C(β, γ))) := by
   apply continuous_of_continuous_uncurry
   apply continuous_of_continuous_uncurry
   rw [← Homeomorph.comp_continuous_iff' (Homeomorph.prodAssoc _ _ _).symm]
-  convert continuous_eval' <;> tidy
+  -- Porting note: rest of the proof was: `convert continuous_eval' <;> tidy`
+  have : (Function.uncurry fun x y => (Function.uncurry (fun x y => (curry x) y) x) y) ∘
+    ↑(Homeomorph.symm (Homeomorph.prodAssoc C(α × β, γ) α β)) = fun p => p.fst p.snd := by
+    ext ⟨f, x, y⟩
+    simp [Homeomorph.prodAssoc]
+  rw [this]
+  exact continuous_eval'
 #align continuous_map.continuous_curry ContinuousMap.continuous_curry
-
-@[simp]
-theorem curry_apply (f : C(α × β, γ)) (a : α) (b : β) : f.curry a b = f (a, b) :=
-  rfl
-#align continuous_map.curry_apply ContinuousMap.curry_apply
 
 /-- The uncurried form of a continuous map `α → C(β, γ)` is a continuous map `α × β → γ`. -/
 theorem continuous_uncurry_of_continuous [LocallyCompactSpace β] (f : C(α, C(β, γ))) :
