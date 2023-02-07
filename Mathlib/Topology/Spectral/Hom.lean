@@ -115,10 +115,7 @@ def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
 instance : SpectralMapClass (SpectralMap α β) α β
     where
   coe := SpectralMap.toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr
+  coe_injective' f g h := by cases f; cases g; congr
   map_spectral f := f.spectral'
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
