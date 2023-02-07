@@ -20,14 +20,13 @@ finite and calculates the cardinality of its finite intervals.
 
 ## Main declarations
 
-* `Finsupp.rangeSingleton`: Postcomposition with `has_singleton.singleton` on `Finset` as a
+* `Finsupp.rangeSingleton`: Postcomposition with `Singleton.singleton` on `Finset` as a
   `Finsupp`.
 * `Finsupp.rangeIcc`: Postcomposition with `Finset.Icc` as a `Finsupp`.
 
 Both these definitions use the fact that `0 = {0}` to ensure that the resulting function is finitely
 supported.
 -/
-
 
 noncomputable section
 
@@ -43,7 +42,7 @@ section RangeSingleton
 
 variable [Zero α] {f : ι →₀ α} {i : ι} {a : α}
 
-/-- Pointwise `finset.singleton` bundled as a `Finsupp`. -/
+/-- Pointwise `Singleton.singleton` bundled as a `Finsupp`. -/
 @[simps]
 def rangeSingleton (f : ι →₀ α) : ι →₀ Finset α where
   toFun i := {f i}
