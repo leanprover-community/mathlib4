@@ -39,7 +39,8 @@ syntax (name := failIfNoProgress ) "fail_if_no_progress " tacticSeq : tactic
 the same type in the same order (up to defeq), and `false` otherwise. -/
 def lctxIsDefEq : (l₁ l₂ : List (Option LocalDecl)) → MetaM Bool
   | some d₁ :: l₁, some d₂ :: l₂ => do
-    guard <|← withNewMCtxDepth <| isDefEq d₁.type d₂.type
+    unless (← withNewMCtxDepth <| isDefEq d₁.type d₂.type) do
+      return false
     lctxIsDefEq l₁ l₂
   | none :: l₁, none :: l₂ => lctxIsDefEq l₁ l₂
   | [], [] => return true
