@@ -21,14 +21,14 @@ We define `limsupₛ f` (`liminfₛ f`) where `f` is a filter taking values in a
 lattice. `limsupₛ f` is the smallest element `a` such that, eventually, `u ≤ a` (and vice versa for
 `liminfₛ f`). To work with the Limsup along a function `u` use `limsupₛ (map u f)`.
 
-Usually, one defines the Limsup as `Inf (Sup s)` where the Inf is taken over all sets in the filter.
-For instance, in ℕ along a function `u`, this is `Inf_n (Sup_{k ≥ n} u k)` (and the latter quantity
+Usually, one defines the Limsup as `inf (sup s)` where the Inf is taken over all sets in the filter.
+For instance, in ℕ along a function `u`, this is `inf_n (sup_{k ≥ n} u k)` (and the latter quantity
 decreases with `n`, so this is in fact a limit.). There is however a difficulty: it is well possible
-that `u` is not bounded on the whole space, only eventually (think of `Limsup (λx, 1/x)` on ℝ. Then
-there is no guarantee that the quantity above really decreases (the value of the `Sup` beforehand is
-not really well defined, as one can not use ∞), so that the Inf could be anything. So one can not
-use this `Inf Sup ...` definition in conditionally complete lattices, and one has to use a less
-tractable definition.
+that `u` is not bounded on the whole space, only eventually (think of `limsup (fun x ↦ 1/x)` on ℝ.
+Then there is no guarantee that the quantity above really decreases (the value of the `sup`
+beforehand isnot really well defined, as one can not use ∞), so that the Inf could be anything.
+So one can not use this `inf sup ...` definition in conditionally complete lattices, and one has
+to use a less tractable definition.
 
 In conditionally complete lattices, the definition is only useful for filters which are eventually
 bounded above (otherwise, the Limsup would morally be +∞, which does not belong to the space) and
@@ -1081,8 +1081,9 @@ theorem eventually_lt_of_lt_liminf {f : Filter α} [ConditionallyCompleteLinearO
     {b : β} (h : b < liminf u f)
     (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     ∀ᶠ a in f, b < u a := by
-  obtain ⟨c, hc, hbc⟩ : ∃ (c : β) (hc : c ∈ { c : β | ∀ᶠ n : α in f, c ≤ u n }), b < c :=
-    exists_lt_of_lt_csupₛ hu h
+  obtain ⟨c, hc, hbc⟩ : ∃ (c : β) (_ : c ∈ { c : β | ∀ᶠ n : α in f, c ≤ u n }), b < c := by
+    simp_rw [exists_prop]
+    exact exists_lt_of_lt_csupₛ hu h
   exact hc.mono fun x hx => lt_of_lt_of_le hbc hx
 #align filter.eventually_lt_of_lt_liminf Filter.eventually_lt_of_lt_liminf
 
