@@ -352,7 +352,7 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
 end
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
---@[simps! (config := { fullyApplied := false })]
+--@[simps! (config := { fullyApplied := false })] -- Porting note: restore `simps`
 def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α
     where
   toEquiv := Equiv.funUnique ι α
@@ -361,7 +361,7 @@ def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃�
 #align uniform_equiv.fun_unique UniformEquiv.funUnique
 
 /-- Uniform isomorphism between dependent functions `Π i : fin 2, α i` and `α 0 × α 1`. -/
--- @[simps! (config := { fullyApplied := false })]
+-- @[simps! (config := { fullyApplied := false })] -- Porting note: restore `simps`
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1
     where
   toEquiv := piFinTwoEquiv α
@@ -371,7 +371,7 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
 #align uniform_equiv.pi_fin_two UniformEquiv.piFinTwo
 
 /-- Uniform isomorphism between `α² = fin 2 → α` and `α × α`. -/
---@[simps! (config := { fullyApplied := false })]
+--@[simps! (config := { fullyApplied := false })] -- Porting note: restore `simps`
 def finTwoArrow : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align uniform_equiv.fin_two_arrow UniformEquiv.finTwoArrow
