@@ -46,29 +46,31 @@ infixr:25 " →Co " => ContinuousOrderHom
 
 section
 
+-- porting note: extending `ContinuousMapClass` instead of `OrderHomClass`
 /-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
 class ContinuousOrderHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] extends
-    RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
-  map_continuous (f : F) : Continuous f
+    ContinuousMapClass F α β where
+  map_monotone (f : F) : Monotone f
 #align continuous_order_hom_class ContinuousOrderHomClass
 
 end
 
 -- See note [lower instance priority]
-instance (priority := 100) ContinuousOrderHomClass.toContinuousMapClass [Preorder α] [Preorder β]
+instance (priority := 100) ContinuousOrderHomClass.toOrderHomClass [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] [ContinuousOrderHomClass F α β] :
-    ContinuousMapClass F α β :=
-  { ‹ContinuousOrderHomClass F α β› with }
+    OrderHomClass F α β :=
+  { ‹ContinuousOrderHomClass F α β› with
+    map_rel := ContinuousOrderHomClass.map_monotone }
 #align continuous_order_hom_class.to_continuous_map_class ContinuousOrderHomClass.toContinuousMapClass
 
 instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
     [ContinuousOrderHomClass F α β] : CoeTC F (α →Co β) :=
   ⟨fun f =>
     { toFun := f
-      monotone' := OrderHomClass.mono f
+      monotone' := ContinuousOrderHomClass.map_monotone f
       continuous_toFun := map_continuous f }⟩
 
 /-! ### Top homomorphisms -/
@@ -93,7 +95,7 @@ instance : ContinuousOrderHomClass (α →Co β) α β where
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
-  map_rel f _ _ h := f.monotone' h
+  map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 
 -- porting note: new lemma
@@ -177,7 +179,7 @@ theorem id_comp (f : α →Co β) : (ContinuousOrderHom.id β).comp f = f :=
 
 theorem cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_order_hom.cancel_right ContinuousOrderHom.cancel_right
 
 theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective g) :
