@@ -135,7 +135,7 @@ theorem iff_continuous {_ : TopologicalSpace Y} [DiscreteTopology Y] (f : X → 
 #align is_locally_constant.iff_continuous IsLocallyConstant.iff_continuous
 
 theorem of_constant (f : X → Y) (h : ∀ x y, f x = f y) : IsLocallyConstant f :=
-  (iff_eventually_eq f).2 fun _ => eventually_of_forall fun x' => h _ _
+  (iff_eventually_eq f).2 fun _ => eventually_of_forall fun _ => h _ _
 #align is_locally_constant.of_constant IsLocallyConstant.of_constant
 
 protected theorem const (y : Y) : IsLocallyConstant (Function.const X y) :=
@@ -266,6 +266,9 @@ instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
 instance : FunLike (LocallyConstant X Y) X (fun _ => Y) where
   coe := LocallyConstant.toFun
   coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
+
+/-- See Note [custom simps projections]. -/
+def Simps.apply (f : LocallyConstant X Y) : X → Y := f
 
 initialize_simps_projections LocallyConstant (toFun → apply)
 
@@ -439,31 +442,24 @@ def flip {X α β : Type _} [TopologicalSpace X] (f : LocallyConstant X (α → 
 
 /-- If α is finite, this constructs a locally constant function to `α → β` given a
 family of locally constant functions with values in β indexed by α. -/
-def unflip {X α β : Type _} [Fintype α] [TopologicalSpace X] (f : α → LocallyConstant X β) :
+def unflip {X α β : Type _} [Finite α] [TopologicalSpace X] (f : α → LocallyConstant X β) :
     LocallyConstant X (α → β) where
   toFun x a := f a x
-  IsLocallyConstant := by
-    rw [(IsLocallyConstant.tfae fun x a => f a x).out 0 3]
-    intro g
-    have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by tidy
+  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 <| fun g => by
+    have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
+      ext; simp [Function.funext_iff]
     rw [this]
-    apply isOpen_interᵢ
-    intro a
-    apply (f a).IsLocallyConstant
+    exact isOpen_interᵢ fun a => (f a).isLocallyConstant _
 #align locally_constant.unflip LocallyConstant.unflip
 
 @[simp]
-theorem unflip_flip {X α β : Type _} [Fintype α] [TopologicalSpace X]
-    (f : LocallyConstant X (α → β)) : unflip f.flip = f := by
-  ext
-  rfl
+theorem unflip_flip {X α β : Type _} [Finite α] [TopologicalSpace X]
+    (f : LocallyConstant X (α → β)) : unflip f.flip = f := rfl
 #align locally_constant.unflip_flip LocallyConstant.unflip_flip
 
 @[simp]
-theorem flip_unflip {X α β : Type _} [Fintype α] [TopologicalSpace X]
-    (f : α → LocallyConstant X β) : (unflip f).flip = f := by
-  ext
-  rfl
+theorem flip_unflip {X α β : Type _} [Finite α] [TopologicalSpace X]
+    (f : α → LocallyConstant X β) : (unflip f).flip = f := rfl
 #align locally_constant.flip_unflip LocallyConstant.flip_unflip
 
 section Comap
@@ -476,7 +472,9 @@ variable [TopologicalSpace Y]
 
 This definition only makes sense if `f` is continuous,
 in which case it sends locally constant functions to their precomposition with `f`.
-See also `locally_constant.coe_comap`. -/
+See also `locally_constant.coe_comap`.
+
+TODO: take `f : C(X, Y)` as an argument? Or we actually use it for discontinuous `f`? -/
 noncomputable def comap (f : X → Y) : LocallyConstant Y Z → LocallyConstant X Z :=
   if hf : Continuous f then fun g => ⟨g ∘ f, g.isLocallyConstant.comp_continuous hf⟩
   else by
@@ -505,15 +503,16 @@ theorem comap_id : @comap X X Z _ _ id = id := by
 theorem comap_comp [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Continuous f)
     (hg : Continuous g) : @comap _ _ α _ _ f ∘ comap g = comap (g ∘ f) := by
   ext
-  simp only [hf, hg, hg.comp hf, coe_comap]
+  rw [Function.comp_apply]
+  simp only [hf, hg, hg.comp hf, coe_comap]; rfl
 #align locally_constant.comap_comp LocallyConstant.comap_comp
 
 theorem comap_const (f : X → Y) (y : Y) (h : ∀ x, f x = y) :
     (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g =>
-      ⟨fun x => g y, IsLocallyConstant.const _⟩ := by
+      ⟨fun _ => g y, IsLocallyConstant.const _⟩ := by
   ext; rw [coe_comap]
   · simp only [h, coe_mk, Function.comp_apply]
-  · rw [show f = fun x => y by ext <;> apply h]
+  · rw [show f = fun _ => y by ext; apply h]
     exact continuous_const
 #align locally_constant.comap_const LocallyConstant.comap_const
 
@@ -526,12 +525,7 @@ constant function. -/
 def desc {X α β : Type _} [TopologicalSpace X] {g : α → β} (f : X → α) (h : LocallyConstant X β)
     (cond : g ∘ f = h) (inj : Function.Injective g) : LocallyConstant X α where
   toFun := f
-  isLocallyConstant :=
-    IsLocallyConstant.desc _ g
-      (by
-        rw [cond]
-        exact h.2)
-      inj
+  isLocallyConstant := IsLocallyConstant.desc _ g (cond.symm ▸ h.isLocallyConstant) inj
 #align locally_constant.desc LocallyConstant.desc
 
 @[simp]
@@ -551,27 +545,14 @@ open Classical
 
 /-- Given a clopen set `U` and a locally constant function `f`, `locally_constant.mul_indicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
-@[to_additive
-      " Given a clopen set `U` and a locally constant function `f`,\n  `locally_constant.indicator` returns the locally constant function that is `f` on `U` and `0`\n  otherwise. ",
-  simps]
-noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R
-    where
+@[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
+  `locally_constant.indicator` returns the locally constant function that is `f` on `U` and `0`
+  otherwise. "]
+noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
-  IsLocallyConstant := by
-    rw [IsLocallyConstant.iff_exists_open]; rintro x
-    obtain ⟨V, hV, hx, h'⟩ := (IsLocallyConstant.iff_exists_open _).1 f.is_locally_constant x
-    by_cases x ∈ U
-    · refine' ⟨U ∩ V, IsOpen.inter hU.1 hV, Set.mem_inter h hx, _⟩
-      rintro y hy
-      rw [Set.mem_inter_iff] at hy
-      rw [Set.mulIndicator_of_mem hy.1, Set.mulIndicator_of_mem h]
-      apply h' y hy.2
-    · rw [← Set.mem_compl_iff] at h
-      refine' ⟨Uᶜ, (IsClopen.compl hU).1, h, _⟩
-      rintro y hy
-      rw [Set.mem_compl_iff] at h
-      rw [Set.mem_compl_iff] at hy
-      simp [h, hy]
+  isLocallyConstant := fun s => by
+    rw [mulIndicator_preimage, Set.ite, Set.diff_eq]
+    exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 #align locally_constant.mul_indicator LocallyConstant.mulIndicator
 #align locally_constant.indicator LocallyConstant.indicator
 
@@ -587,16 +568,14 @@ theorem mulIndicator_apply_eq_if (hU : IsClopen U) :
 variable {a}
 
 @[to_additive]
-theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU a = f a := by
-  rw [mul_indicator_apply]
-  apply Set.mulIndicator_of_mem h
+theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU a = f a := 
+  Set.mulIndicator_of_mem h _
 #align locally_constant.mul_indicator_of_mem LocallyConstant.mulIndicator_of_mem
 #align locally_constant.indicator_of_mem LocallyConstant.indicator_of_mem
 
 @[to_additive]
-theorem mulIndicator_of_not_mem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator hU a = 1 := by
-  rw [mul_indicator_apply]
-  apply Set.mulIndicator_of_not_mem h
+theorem mulIndicator_of_not_mem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator hU a = 1 :=
+  Set.mulIndicator_of_not_mem h _
 #align locally_constant.mul_indicator_of_not_mem LocallyConstant.mulIndicator_of_not_mem
 #align locally_constant.indicator_of_not_mem LocallyConstant.indicator_of_not_mem
 
