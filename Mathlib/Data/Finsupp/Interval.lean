@@ -96,22 +96,22 @@ variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α
 instance : LocallyFiniteOrder (ι →₀ α) := by
   haveI := Classical.decEq ι <;> haveI := Classical.decEq α <;>
     exact
-      LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).Finsupp <| f.rangeIcc g)
+      LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)
         fun f g x =>
         by
         refine'
-          (mem_finsupp_iff_of_support_subset <| Finset.subset_of_eq <| range_Icc_support _ _).trans
+          (mem_finsupp_iff_of_support_subset <| Finset.subset_of_eq <| rangeIcc_support _ _).trans
             _
-        simp_rw [mem_range_Icc_apply_iff]
+        simp_rw [mem_rangeIcc_apply_iff]
         exact forall_and
 
-theorem Icc_eq [DecidableEq ι] : Icc f g = (f.support ∪ g.support).Finsupp (f.rangeIcc g) := by
+theorem icc_eq [DecidableEq ι] : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := by
   convert rfl
-#align finsupp.Icc_eq Finsupp.Icc_eq
+#align finsupp.Icc_eq Finsupp.icc_eq
 
 theorem card_Icc [DecidableEq ι] :
     (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
-  simp_rw [Icc_eq, card_finsupp, range_Icc_to_fun]
+  simp_rw [icc_eq, card_finsupp, rangeIcc_toFun]
 #align finsupp.card_Icc Finsupp.card_Icc
 
 theorem card_Ico [DecidableEq ι] :
@@ -149,4 +149,3 @@ theorem card_Iio : (Iio f).card = (∏ i in f.support, (Iic (f i)).card) - 1 := 
 end CanonicallyOrdered
 
 end Finsupp
-
