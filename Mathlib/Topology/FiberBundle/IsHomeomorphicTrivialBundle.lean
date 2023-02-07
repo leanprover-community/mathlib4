@@ -3,7 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
-! This file was ported from Lean 3 source module topology.fiber_bundle.is_homeomorphic_trivial_bundle
+! This file was ported from Lean 3 source module
+! topology.fiber_bundle.is_homeomorphic_trivial_bundle
 ! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
@@ -13,7 +14,7 @@ import Mathlib.Topology.Homeomorph
 /-!
 # Maps equivariantly-homeomorphic to projection in a product
 
-This file contains the definition `is_homeomorphic_trivial_fiber_bundle F p`, a Prop saying that a
+This file contains the definition `IsHomeomorphicTrivialFiberBundle F p`, a Prop saying that a
 map `p : Z → B` between topological spaces is a "trivial fiber bundle" in the sense that there
 exists a homeomorphism `h : Z ≃ₜ B × F` such that `proj x = (h x).1`.  This is an abstraction which
 is occasionally convenient in showing that a map is open, a quotient map, etc.
@@ -39,28 +40,24 @@ variable {F} {proj : Z → B}
 
 protected theorem proj_eq (h : IsHomeomorphicTrivialFiberBundle F proj) :
     ∃ e : Z ≃ₜ B × F, proj = Prod.fst ∘ e :=
-  ⟨h.some, (funext h.choose_spec).symm⟩
+  ⟨h.choose, (funext h.choose_spec).symm⟩
 #align is_homeomorphic_trivial_fiber_bundle.proj_eq IsHomeomorphicTrivialFiberBundle.proj_eq
 
 /-- The projection from a trivial fiber bundle to its base is surjective. -/
 protected theorem surjective_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBundle F proj) :
     Function.Surjective proj := by
   obtain ⟨e, rfl⟩ := h.proj_eq
-  exact prod.fst_surjective.comp e.surjective
+  exact Prod.fst_surjective.comp e.surjective
 #align is_homeomorphic_trivial_fiber_bundle.surjective_proj IsHomeomorphicTrivialFiberBundle.surjective_proj
 
 /-- The projection from a trivial fiber bundle to its base is continuous. -/
 protected theorem continuous_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : Continuous proj :=
-  by
-  obtain ⟨e, rfl⟩ := h.proj_eq
-  exact continuous_fst.comp e.continuous
+  by obtain ⟨e, rfl⟩ := h.proj_eq; exact continuous_fst.comp e.continuous
 #align is_homeomorphic_trivial_fiber_bundle.continuous_proj IsHomeomorphicTrivialFiberBundle.continuous_proj
 
 /-- The projection from a trivial fiber bundle to its base is open. -/
 protected theorem isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : IsOpenMap proj :=
-  by
-  obtain ⟨e, rfl⟩ := h.proj_eq
-  exact is_open_map_fst.comp e.is_open_map
+  by obtain ⟨e, rfl⟩ := h.proj_eq; exact isOpenMap_fst.comp e.isOpenMap
 #align is_homeomorphic_trivial_fiber_bundle.is_open_map_proj IsHomeomorphicTrivialFiberBundle.isOpenMap_proj
 
 /-- The projection from a trivial fiber bundle to its base is open. -/
@@ -74,12 +71,12 @@ end IsHomeomorphicTrivialFiberBundle
 /-- The first projection in a product is a trivial fiber bundle. -/
 theorem isHomeomorphicTrivialFiberBundle_fst :
     IsHomeomorphicTrivialFiberBundle F (Prod.fst : B × F → B) :=
-  ⟨Homeomorph.refl _, fun x => rfl⟩
+  ⟨Homeomorph.refl _, fun _x => rfl⟩
 #align is_homeomorphic_trivial_fiber_bundle_fst isHomeomorphicTrivialFiberBundle_fst
 
 /-- The second projection in a product is a trivial fiber bundle. -/
 theorem isHomeomorphicTrivialFiberBundle_snd :
     IsHomeomorphicTrivialFiberBundle F (Prod.snd : F × B → B) :=
-  ⟨Homeomorph.prodComm _ _, fun x => rfl⟩
+  ⟨Homeomorph.prodComm _ _, fun _x => rfl⟩
 #align is_homeomorphic_trivial_fiber_bundle_snd isHomeomorphicTrivialFiberBundle_snd
 
