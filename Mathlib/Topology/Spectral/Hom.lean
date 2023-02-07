@@ -91,6 +91,7 @@ export SpectralMapClass (map_spectral)
 attribute [simp] map_spectral
 
 -- See note [lower instance priority]
+-- porting note: `TopologicalSpace` params marked as implicit to address dangerous instances lint
 instance (priority := 100) SpectralMapClass.toContinuousMapClass {_ : TopologicalSpace α}
     {_ : TopologicalSpace β} [SpectralMapClass F α β] : ContinuousMapClass F α β :=
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
@@ -190,6 +191,7 @@ theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f ∘ g)= (f : ContinuousMap β γ) ∘  (g: ContinuousMap α β) := by
    rfl
 
+-- porting note: removed `simp` from this and added lemma above to address `simpNF` lint
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g := by
     simp only [@coe_comp]; rfl
