@@ -317,10 +317,13 @@ boundedness proofs in complete lattices, we use the tactic `isBounded_default` i
 in the form `(hf : f.IsBounded (≥) . isBoundedDefault)`. -/
 
 macro "isBoundedDefault ": tactic =>
-  `(tactic| ( first | apply isCobounded_le_of_bot | apply isCobounded_ge_of_top |
-    apply isBounded_le_of_top | apply isBounded_ge_of_bot))
+  `(tactic| ( first
+  | apply isCobounded_le_of_bot
+  | apply isCobounded_ge_of_top
+  | apply isBounded_le_of_top
+  | apply isBounded_ge_of_bot))
 
--- Porting note: The above is a clumsy lean 4 reconstruction of:
+-- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
 -- unsafe def is_bounded_default : tactic Unit :=
 --   tactic.applyc `` is_cobounded_le_of_bot <|>
 --     tactic.applyc `` is_cobounded_ge_of_top <|>
