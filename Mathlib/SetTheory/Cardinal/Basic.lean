@@ -17,6 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.LibrarySearch -- Porting note: TODO remove
 set_option autoImplicit false -- Porting note: TODO remove
 
 /-!
@@ -477,7 +478,8 @@ instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
 
 -- Porting note: TODO this doesnt work as a notation!
 -- -- mathport name: cardinal.pow.nat
-set_option quotPrecheck false in
+
+--set_option quotPrecheck false in
 local infixr:80 " ^ℕ " => @Pow.pow Cardinal ℕ Monoid.Pow
 
 theorem power_def (α β) : ((#α) ^ (#β)) = (#β → α) :=
