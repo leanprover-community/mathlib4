@@ -3056,7 +3056,7 @@ theorem Tendsto.not_tendsto {f : α → β} {a : Filter α} {b₁ b₂ : Filter 
   (tendsto_inf.2 ⟨hf, hf'⟩).neBot.ne hb.eq_bot
 #align filter.tendsto.not_tendsto Filter.Tendsto.not_tendsto
 
-theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
+protected theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
     [∀ x, Decidable (p x)] (h₀ : Tendsto f (l₁ ⊓ 𝓟 { x | p x }) l₂)
     (h₁ : Tendsto g (l₁ ⊓ 𝓟 { x | ¬p x }) l₂) :
     Tendsto (fun x => if p x then f x else g x) l₁ l₂ := by
@@ -3068,13 +3068,13 @@ theorem Tendsto.if {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : 
   exacts [hp₀ h, hp₁ h]
 #align filter.tendsto.if Filter.Tendsto.if
 
-theorem Tendsto.if' {α β : Type _} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {p : α → Prop}
-    [DecidablePred p] (hf : Tendsto f l₁ l₂) (hg : Tendsto g l₁ l₂) :
+protected theorem Tendsto.if' {α β : Type _} {l₁ : Filter α} {l₂ : Filter β} {f g : α → β}
+    {p : α → Prop} [DecidablePred p] (hf : Tendsto f l₁ l₂) (hg : Tendsto g l₁ l₂) :
     Tendsto (fun a => if p a then f a else g a) l₁ l₂ :=
   (tendsto_inf_left hf).if (tendsto_inf_left hg)
 #align filter.tendsto.if' Filter.Tendsto.if'
 
-theorem Tendsto.piecewise {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {s : Set α}
+protected theorem Tendsto.piecewise {l₁ : Filter α} {l₂ : Filter β} {f g : α → β} {s : Set α}
     [∀ x, Decidable (x ∈ s)] (h₀ : Tendsto f (l₁ ⊓ 𝓟 s) l₂) (h₁ : Tendsto g (l₁ ⊓ 𝓟 (sᶜ)) l₂) :
     Tendsto (piecewise s f g) l₁ l₂ :=
   Tendsto.if h₀ h₁

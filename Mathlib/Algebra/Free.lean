@@ -81,7 +81,7 @@ noncomputable def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of
   FreeMagma.recOn x ih1 ih2
 #align free_magma.rec_on_mul FreeMagma.recOnMul
 
-@[to_additive (attr := ext)]
+@[to_additive (attr := ext 1001)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (FunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros ; simp only [map_mul, *]
 #align free_magma.hom_ext FreeMagma.hom_ext
@@ -394,7 +394,7 @@ section lift
 
 variable {β : Type v} [Semigroup β] (f : α →ₙ* β)
 
-@[to_additive (attr := ext)]
+@[to_additive (attr := ext 1001)]
 theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) : f = g :=
   (FunLike.ext _ _) fun x => AssocQuotient.induction_on x <| FunLike.congr_fun h
 #align magma.assoc_quotient.hom_ext Magma.AssocQuotient.hom_ext
@@ -485,7 +485,7 @@ theorem mk_mul_mk (x y : α) (L1 L2 : List α) : mk x L1 * mk y L2 = mk x (L1 ++
 #align free_semigroup.mk_mul_mk FreeSemigroup.mk_mul_mk
 
 /-- The embedding `α → FreeSemigroup α`. -/
-@[to_additive "The embedding `α → free_add_semigroup α`.", simps]
+@[to_additive (attr := simps) "The embedding `α → free_add_semigroup α`."]
 def of (x : α) : FreeSemigroup α := ⟨x, []⟩
 #align free_semigroup.of FreeSemigroup.of
 
@@ -515,7 +515,7 @@ protected noncomputable def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 
       List.recOn s ih1 (fun hd tl ih f ↦ ih2 f ⟨hd, tl⟩ (ih1 f) (ih hd)) f
 #align free_semigroup.rec_on_mul FreeSemigroup.recOnMul
 
-@[to_additive (attr := ext)]
+@[to_additive (attr := ext 1001)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (FunLike.ext _ _) fun x ↦
     FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
@@ -735,8 +735,7 @@ theorem toFreeSemigroup_comp_of : @toFreeSemigroup α ∘ of = FreeSemigroup.of 
 @[to_additive]
 theorem toFreeSemigroup_comp_map (f : α → β) :
     toFreeSemigroup.comp (map f) = (FreeSemigroup.map f).comp toFreeSemigroup :=
--- Porting note: replaced ext1 by FreeMagma.hom_ext
-    FreeMagma.hom_ext rfl
+  by ext1; rfl
 #align free_magma.to_free_semigroup_comp_map FreeMagma.toFreeSemigroup_comp_map
 
 @[to_additive]
@@ -760,8 +759,6 @@ def FreeMagmaAssocQuotientEquiv (α : Type u) :
     Magma.AssocQuotient (FreeMagma α) ≃* FreeSemigroup α :=
       (Magma.AssocQuotient.lift FreeMagma.toFreeSemigroup).toMulEquiv
       (FreeSemigroup.lift (Magma.AssocQuotient.of ∘ FreeMagma.of))
--- Porting note: replaced ext by Magma.AssocQuotient.hom_ext FreeMagma.hom_ext
-      (Magma.AssocQuotient.hom_ext (FreeMagma.hom_ext rfl))
--- Porting note: replaced ext by FreeSemigroup.hom_ext
-      (FreeSemigroup.hom_ext rfl)
+      (by ext; rfl)
+      (by ext1; rfl)
 #align free_magma_assoc_quotient_equiv FreeMagmaAssocQuotientEquiv

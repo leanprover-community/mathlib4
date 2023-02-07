@@ -459,7 +459,7 @@ theorem powers_one : powers (1 : M) = ⊥ :=
 #align submonoid.powers_one Submonoid.powers_one
 
 /-- Exponentiation map from natural numbers to powers. -/
-@[simps]
+@[simps!]
 def pow (n : M) (m : ℕ) : powers n :=
   (powersHom M n).mrangeRestrict (Multiplicative.ofAdd m)
 #align submonoid.pow Submonoid.pow

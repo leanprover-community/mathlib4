@@ -95,11 +95,11 @@ theorem mem_eraseNone {s : Finset (Option α)} {x : α} : x ∈ eraseNone s ↔ 
   simp [eraseNone]
 #align finset.mem_erase_none Finset.mem_eraseNone
 
-theorem eraseNone_eq_bUnion [DecidableEq α] (s : Finset (Option α)) :
+theorem eraseNone_eq_bunionᵢ [DecidableEq α] (s : Finset (Option α)) :
     eraseNone s = s.bunionᵢ Option.toFinset := by
   ext
   simp
-#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_bUnion
+#align finset.erase_none_eq_bUnion Finset.eraseNone_eq_bunionᵢ
 
 @[simp]
 theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = s := by
@@ -155,14 +155,14 @@ theorem map_some_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
 #align finset.map_some_erase_none Finset.map_some_eraseNone
 
 @[simp]
-theorem insert_none_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
+theorem insertNone_eraseNone [DecidableEq (Option α)] (s : Finset (Option α)) :
     insertNone (eraseNone s) = insert none s := by ext (_ | x) <;> simp
-#align finset.insert_none_erase_none Finset.insert_none_eraseNone
+#align finset.insert_none_erase_none Finset.insertNone_eraseNone
 
 @[simp]
-theorem eraseNone_insert_none (s : Finset α) : eraseNone (insertNone s) = s := by
+theorem eraseNone_insertNone (s : Finset α) : eraseNone (insertNone s) = s := by
   ext
   simp
-#align finset.erase_none_insert_none Finset.eraseNone_insert_none
+#align finset.erase_none_insert_none Finset.eraseNone_insertNone
 
 end Finset

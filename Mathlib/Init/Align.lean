@@ -229,6 +229,20 @@ attribute [trans] Setoid.trans
 
 /-! ## `init.meta.widget.tactic_component` -/
 
+/-! ## `init.prelude` -/
+
+#align function.comp Function.comp
+#align function.const Function.const
+
+#align infer_instance inferInstance
+
+#align inhabited Inhabited
+#align nonempty Nonempty
+#align classical.choice Classical.choice
+#align nonempty.elim Nonempty.elim
+
+#align fin Fin
+
 /-! ## `init.propext` -/
 
 /-! ## `init.util` -/

@@ -1295,7 +1295,7 @@ theorem ofLeftInverseS_symm_apply {g : S → R} {f : R →+* S} (h : Function.Le
 
 /-- Given an equivalence `e : R ≃+* S` of semirings and a subsemiring `s` of `R`,
 `subsemiring_map e s` is the induced equivalence between `s` and `s.map e` -/
-@[simps]
+@[simps!]
 def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map e.toRingHom :=
   { e.toAddEquiv.addSubmonoidMap s.toAddSubmonoid, e.toMulEquiv.submonoidMap s.toSubmonoid with }
 #align ring_equiv.subsemiring_map RingEquiv.subsemiringMap
