@@ -661,9 +661,6 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
   ⟨fun ⟨x, y, h⟩ ↦ ⟨y, x, h⟩, fun ⟨y, x, h⟩ ↦ ⟨x, y, h⟩⟩
 #align exists_swap exists_swap
 
-@[simp] theorem forall_exists_index {q : (∃ x, p x) → Prop} :
-    (∀ h, q h) ↔ ∀ x (h : p x), q ⟨x, h⟩ :=
-  ⟨fun h x hpx ↦ h ⟨x, hpx⟩, fun h ⟨x, hpx⟩ ↦ h x hpx⟩
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
