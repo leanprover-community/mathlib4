@@ -100,7 +100,7 @@ Here we adopt a constructive approach where we ask an explicit `root : A → α 
 * `root a 0 = 1` for all `a ∈ A`
 * `(root a n)ⁿ = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
 -/
-@[to_additive DivisibleBy]
+@[to_additive]
 class RootableBy where
   root : A → α → A
   root_zero : ∀ a, root a 0 = 1
@@ -138,7 +138,7 @@ variable {ι β : Type _} (B : ι → Type _) [∀ i : ι, Pow (B i) β]
 
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
-@[to_additive Pi.divisibleBy]
+@[to_additive]
 instance Pi.rootableBy : RootableBy (∀ i, B i) β where
   root x n i := RootableBy.root (x i) n
   root_zero _x := funext fun _i => RootableBy.root_zero _
@@ -154,7 +154,7 @@ variable {β B B' : Type _} [Pow B β] [Pow B' β]
 
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
-@[to_additive Prod.divisibleBy]
+@[to_additive]
 instance Prod.rootableBy : RootableBy (B × B') β where
   root p n := (RootableBy.root p.1 n, RootableBy.root p.2 n)
   root_zero _p := Prod.ext (RootableBy.root_zero _) (RootableBy.root_zero _)
@@ -205,8 +205,7 @@ variable (A : Type _) [Group A]
 open Int in
 /-- A group is `ℤ`-rootable if it is `ℕ`-rootable.
 -/
-@[to_additive AddGroup.divisibleByIntOfDivisibleByNat
-      "An additive group is `ℤ`-divisible if it is `ℕ`-divisible."]
+@[to_additive "An additive group is `ℤ`-divisible if it is `ℕ`-divisible."]
 def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root a z :=
     match z with
@@ -229,8 +228,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
 
 /-- A group is `ℕ`-rootable if it is `ℤ`-rootable
 -/
-@[to_additive AddGroup.divisibleByNatOfDivisibleByInt
-      "An additive group is `ℕ`-divisible if it `ℤ`-divisible."]
+@[to_additive "An additive group is `ℕ`-divisible if it `ℤ`-divisible."]
 def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
@@ -253,7 +251,7 @@ variable (f : A → B)
 /--
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
-@[to_additive Function.Surjective.divisibleBy
+@[to_additive
       "If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
       `α`-divisible."]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
