@@ -291,8 +291,7 @@ theorem mem_product {s t} : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1
 #align multiset.mem_product Multiset.mem_product
 
 @[simp]
-theorem card_product : card (s ×ˢ t) = card s * card t := by
-  simp [product, replicate, (· ∘ ·), mul_comm]
+theorem card_product : card (s ×ˢ t) = card s * card t := by simp [product]
 #align multiset.card_product Multiset.card_product
 
 end Product

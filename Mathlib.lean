@@ -211,6 +211,7 @@ import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
@@ -298,6 +299,7 @@ import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.Interval
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.Fin.Tuple.BubbleSortInduction
 import Mathlib.Data.Fin.Tuple.Monotone
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
@@ -472,6 +474,7 @@ import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Choose.Dvd
+import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
@@ -592,6 +595,7 @@ import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Data.Sigma.Basic
+import Mathlib.Data.Sigma.Interval
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Sign
@@ -765,6 +769,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
+import Mathlib.MeasureTheory.MeasurableSpaceDef
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.FrobeniusNumber
@@ -989,11 +994,15 @@ import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.Order.Compact
+import Mathlib.Topology.Algebra.Order.ExtendFrom
 import Mathlib.Topology.Algebra.Order.ExtrClosure
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.LeftRight
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
+import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Algebra.Order.T5
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
@@ -1003,9 +1012,11 @@ import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.ExtendFrom
+import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
@@ -1017,11 +1028,13 @@ import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.Separation
 import Mathlib.Topology.ShrinkingLemma
+import Mathlib.Topology.Sober
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Support
 import Mathlib.Topology.UniformSpace.AbsoluteValue
