@@ -33,7 +33,7 @@ open Lean.Meta
 open Lean.Parser.Tactic
 open Lean.Elab.Tactic
 
--- The next four lemmas are not general purpose lemmas, they are intended for use only by
+-- The next three lemmas are not general purpose lemmas, they are intended for use only by
 -- the `group` tactic.
 @[to_additive]
 theorem zpow_trick {G : Type _} [Group G] (a b : G) (n m : ℤ) :
