@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Finsupp
-import Mathbin.Data.Finset.LocallyFinite
-import Mathbin.Data.Finsupp.Order
+import Mathlib.Data.Finset.Finsupp
+import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finsupp.Order
 
 /-!
 # Finite intervals of finitely supported functions
