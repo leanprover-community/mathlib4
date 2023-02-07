@@ -22,14 +22,14 @@ topological spaces.
 
 ## Main definitions
 
-* `compact_open` is the compact-open topology on `C(α, β)`. It is declared as an instance.
-* `continuous_map.coev` is the coevaluation map `β → C(α, β × α)`. It is always continuous.
-* `continuous_map.curry` is the currying map `C(α × β, γ) → C(α, C(β, γ))`. This map always exists
+* `CompactOpen` is the compact-open topology on `C(α, β)`. It is declared as an instance.
+* `ContinuousMap.coev` is the coevaluation map `β → C(α, β × α)`. It is always continuous.
+* `ContinuousMap.curry` is the currying map `C(α × β, γ) → C(α, C(β, γ))`. This map always exists
   and it is continuous as long as `α × β` is locally compact.
-* `continuous_map.uncurry` is the uncurrying map `C(α, C(β, γ)) → C(α × β, γ)`. For this map to
+* `ContinuousMap.uncurry` is the uncurrying map `C(α, C(β, γ)) → C(α × β, γ)`. For this map to
   exist, we need `β` to be locally compact. If `α` is also locally compact, then this map is
   continuous.
-* `homeomorph.curry` combines the currying and uncurrying operations into a homeomorphism
+* `Homeomorph.curry` combines the currying and uncurrying operations into a homeomorphism
   `C(α × β, γ) ≃ₜ C(α, C(β, γ))`. This homeomorphism exists if `α` and `β` are locally compact.
 
 
@@ -351,7 +351,7 @@ end Coev
 
 section Curry
 
-/-- Auxiliary definition, see `continuous_map.curry` and `homeomorph.curry`. -/
+/-- Auxiliary definition, see `ContinuousMap.curry` and `Homeomorph.curry`. -/
 def curry' (f : C(α × β, γ)) (a : α) : C(β, γ) :=
   ⟨Function.curry f a, sorry⟩
 #align continuous_map.curry' ContinuousMap.curry'
@@ -448,7 +448,8 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-- Currying as a homeomorphism between the function spaces `C(α × β, γ)` and `C(α, C(β, γ))`. -/
 def curry [LocallyCompactSpace α] [LocallyCompactSpace β] : C(α × β, γ) ≃ₜ C(α, C(β, γ)) :=
-  ⟨⟨curry, uncurry, by tidy, by tidy⟩, continuous_curry, continuous_uncurry⟩
+  ⟨⟨ContinuousMap.curry, uncurry, by intro; ext; rfl, by intro; ext; rfl⟩,
+    continuous_curry, continuous_uncurry⟩
 #align homeomorph.curry Homeomorph.curry
 
 /-- If `α` has a single element, then `β` is homeomorphic to `C(α, β)`. -/
