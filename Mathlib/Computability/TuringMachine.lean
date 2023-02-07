@@ -191,7 +191,7 @@ instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ
 
 /-- A modified version of `Quotient.liftOn'` specialized for `ListBlank`, with the stronger
 precondition `BlankExtends` instead of `BlankRel`. -/
-@[elab_as_elim, reducible]
+@[reducible]  -- Porting note: Removed `@[elab_as_elim]`
 protected def ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)
     (H : ∀ a b, BlankExtends a b → f a = f b) : α :=
   l.liftOn' f <| by rintro a b (h | h) <;> [exact H _ _ h, exact (H _ _ h).symm]
@@ -1458,7 +1458,7 @@ local notation "Stmt₀" => TM0.Stmt Γ
 
 variable (M : Λ → TM1.Stmt Γ Λ σ)  -- Porting note: Unfolded `Stmt₁`.
 
-include M
+--include M  -- Porting note: `include` doesn't exist
 
 -- [inhabited Λ] [inhabited σ] (M : Λ → Stmt₁): We need the M assumption
 -- because of the inhabited instance, but we could avoid the inhabited instances on Λ and σ here.
@@ -1736,7 +1736,7 @@ section
 
 variable {enc}
 
-include enc0
+--include enc0  -- Porting note: `include` doesn't exist
 
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape' (L R : ListBlank Γ) : Tape Bool := by
@@ -1748,10 +1748,10 @@ def trTape' (L R : ListBlank Γ) : Tape Bool := by
 
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape (T : Tape Γ) : Tape Bool :=
-  trTape' T.left T.right₀
+  trTape' enc0 T.left T.right₀
 #align turing.TM1to1.tr_tape Turing.TM1to1.trTape
 
-theorem trTape_mk' (L R : ListBlank Γ) : trTape (Tape.mk' L R) = trTape' L R := by
+theorem trTape_mk' (L R : ListBlank Γ) : trTape enc0 (Tape.mk' L R) = trTape' enc0 L R := by
   simp only [trTape, Tape.mk'_left, Tape.mk'_right₀]
 #align turing.TM1to1.tr_tape_mk' Turing.TM1to1.trTape_mk'
 
@@ -1767,15 +1767,15 @@ def tr : Λ' → Stmt'
 
 /-- The machine configuration translation. -/
 def trCfg : Cfg₁ → Cfg'
-  | ⟨l, v, T⟩ => ⟨l.map Λ'.normal, v, trTape T⟩
+  | ⟨l, v, T⟩ => ⟨l.map Λ'.normal, v, trTape enc0 T⟩
 #align turing.TM1to1.tr_cfg Turing.TM1to1.trCfg
 
 variable {enc}
 
-include enc0
+--include enc0  -- Porting note: `include` doesn't exist
 
 theorem trTape'_move_left (L R) :
-    (Tape.move Dir.left^[n]) (trTape' L R) = trTape' L.tail (R.cons L.headI) := by
+    (Tape.move Dir.left^[n]) (trTape' enc0 L R) = trTape' enc0 L.tail (R.cons L.head) := by
   obtain ⟨a, L, rfl⟩ := L.exists_cons
   simp only [trTape', ListBlank.cons_bind, ListBlank.head_cons, ListBlank.tail_cons]
   suffices
@@ -1785,7 +1785,7 @@ theorem trTape'_move_left (L R) :
         Tape.mk' L' (ListBlank.append (Vector.toList (enc a)) R')
     by
     simpa only [List.length_reverse, Vector.toList_length] using this (List.reverse_reverse _).symm
-  intros
+  intro _ _ l₁ l₂ e
   induction' l₁ with b l₁ IH generalizing l₂
   · cases e
     rfl
@@ -1795,21 +1795,21 @@ theorem trTape'_move_left (L R) :
 #align turing.TM1to1.tr_tape'_move_left Turing.TM1to1.trTape'_move_left
 
 theorem trTape'_move_right (L R) :
-    (Tape.move Dir.right^[n]) (trTape' L R) = trTape' (L.cons R.headI) R.tail := by
+    (Tape.move Dir.right^[n]) (trTape' enc0 L R) = trTape' enc0 (L.cons R.head) R.tail := by
   suffices ∀ i L, (Tape.move Dir.right^[i]) ((Tape.move Dir.left^[i]) L) = L
     by
     refine' (Eq.symm _).trans (this n _)
     simp only [trTape'_move_left, ListBlank.cons_head_tail, ListBlank.head_cons,
       ListBlank.tail_cons]
-  intros
+  intro i _
   induction' i with i IH
   · rfl
   rw [iterate_succ_apply, iterate_succ_apply', Tape.move_left_right, IH]
 #align turing.TM1to1.tr_tape'_move_right Turing.TM1to1.trTape'_move_right
 
 theorem stepAux_write (q v a b L R) :
-    stepAux (write (enc a).toList q) v (trTape' L (ListBlank.cons b R)) =
-      stepAux q v (trTape' (ListBlank.cons a L) R) := by
+    stepAux (write (enc a).toList q) v (trTape' enc0 L (ListBlank.cons b R)) =
+      stepAux q v (trTape' enc0 (ListBlank.cons a L) R) := by
   simp only [trTape', List.cons_bind, List.append_assoc]
   suffices
     ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (e : l₂'.length = l₂.length),
@@ -1830,10 +1830,10 @@ theorem stepAux_write (q v a b L R) :
 
 variable (encdec : ∀ a, dec (enc a) = a)
 
-include encdec
+--include encdec  -- Porting note: `include` doesn't exist
 
 theorem stepAux_read (f v L R) :
-    stepAux (read f) v (trTape' L R) = stepAux (f R.headI) v (trTape' L R) := by
+    stepAux (read f) v (trTape' enc0 L R) = stepAux (f R.head) v (trTape' enc0 L R) := by
   suffices
     ∀ f,
       stepAux (readAux n f) v (trTape' enc0 L R) =
@@ -1937,15 +1937,15 @@ noncomputable def trSupp (S : Finset Λ) : Finset Λ' :=
   S.bunionᵢ fun l => insert (Λ'.normal l) (writes (M l))
 #align turing.TM1to1.tr_supp Turing.TM1to1.trSupp
 
-theorem tr_supports {S} (ss : Supports M S) : Supports tr (tr_supp S) :=
+theorem tr_supports {S} (ss : Supports M S) : Supports tr (trSupp S) :=
   ⟨Finset.mem_bunionᵢ.2 ⟨_, ss.1, Finset.mem_insert_self _ _⟩, fun q h =>
     by
     suffices
       ∀ q,
         SupportsStmt S q →
-          (∀ q' ∈ writes q, q' ∈ tr_supp M S) →
-            SupportsStmt (tr_supp M S) (trNormal dec q) ∧
-              ∀ q' ∈ writes q, SupportsStmt (tr_supp M S) (tr enc dec M q')
+          (∀ q' ∈ writes q, q' ∈ trSupp M S) →
+            SupportsStmt (trSupp M S) (trNormal dec q) ∧
+              ∀ q' ∈ writes q, SupportsStmt (trSupp M S) (tr enc dec M q')
       by
       rcases Finset.mem_bunionᵢ.1 h with ⟨l, hl, h⟩
       have :=
@@ -2044,13 +2044,9 @@ open TM1.Stmt
 def tr : Λ' → Stmt₁
   | Λ'.normal q =>
     branch (fun a _ => (M q a).isNone) halt <|
-      goto fun a _ =>
-        match M q a with
-        | none => default
-        |-- unreachable
-            some
-            (q', s) =>
-          Λ'.act s q'
+      goto fun a _ => match M q a with
+      | none => default -- unreachable
+      | some (q', s) => Λ'.act s q'
   | Λ'.act (TM0.Stmt.move d) q => move d <| goto fun _ _ => Λ'.normal q
   | Λ'.act (TM0.Stmt.write a) q => (write fun _ _ => a) <| goto fun _ _ => Λ'.normal q
 #align turing.TM0to1.tr Turing.TM0to1.tr
@@ -2060,12 +2056,12 @@ def trCfg : Cfg₀ → Cfg₁
   | ⟨q, T⟩ => ⟨cond (M q T.1).isSome (some (Λ'.normal q)) none, (), T⟩
 #align turing.TM0to1.tr_cfg Turing.TM0to1.trCfg
 
-theorem tr_respects : Respects (TM0.step M) (TM1.step tr) fun a b => trCfg a = b :=
+theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b => trCfg a = b :=
   fun_respects.2 fun ⟨q, T⟩ => by
     cases e : M q T.1
     · simp only [TM0.step, trCfg, e] <;> exact Eq.refl none
     cases' val with q' s
-    simp only [frespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some']
+    simp only [FRespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some']
     have :
       TM1.step (tr M) ⟨some (Λ'.act s q'), (), T⟩ =
         some ⟨some (Λ'.normal q'), (), TM0.step._match_1 T s⟩ :=
@@ -2384,7 +2380,6 @@ local notation "Cfg₂" => TM2.Cfg Γ Λ σ
 -- the decidable_eq assumption, and this is a local definition anyway so it's not important.
 /-- The alphabet of the TM2 simulator on TM1 is a marker for the stack bottom,
 plus a vector of stack elements for each stack, or none if the stack does not extend this far. -/
-@[nolint unused_arguments]
 def Γ' :=
   Bool × ∀ k, Option (Γ k)
 #align turing.TM2to1.Γ' Turing.TM2to1.Γ'
@@ -2400,7 +2395,7 @@ instance Γ'.fintype [Fintype K] [∀ k, Fintype (Γ k)] : Fintype Γ' :=
 /-- The bottom marker is fixed throughout the calculation, so we use the `addBottom` function
 to express the program state in terms of a tape with only the stacks themselves. -/
 def addBottom (L : ListBlank (∀ k, Option (Γ k))) : ListBlank Γ' :=
-  ListBlank.cons (true, L.headI) (L.tail.map ⟨Prod.mk false, rfl⟩)
+  ListBlank.cons (true, L.head) (L.tail.map ⟨Prod.mk false, rfl⟩)
 #align turing.TM2to1.add_bottom Turing.TM2to1.addBottom
 
 theorem addBottom_map (L) : (addBottom L).map ⟨Prod.snd, rfl⟩ = L := by
@@ -2412,15 +2407,13 @@ theorem addBottom_map (L) : (addBottom L).map ⟨Prod.snd, rfl⟩ = L := by
 theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k)) (L n) :
     (addBottom L).modifyNth (fun a => (a.1, f a.2)) n = addBottom (L.modifyNth f n) := by
   cases n <;>
-    simp only [addBottom, ListBlank.head_cons, ListBlank.modify_nth, ListBlank.tail_cons]
-  congr ; symm; apply ListBlank.map_modify_nth; intro ; rfl
+    simp only [addBottom, ListBlank.head_cons, ListBlank.modifyNth, ListBlank.tail_cons]
+  congr ; symm; apply ListBlank.map_modifyNth; intro ; rfl
 #align turing.TM2to1.add_bottom_modify_nth Turing.TM2to1.addBottom_modifyNth
 
-theorem addBottom_nth_snd (L n) : ((addBottom L).get? n).2 = L.get? n := by
-  conv =>
-      rhs
-      rw [← addBottom_map L, ListBlank.nth_map] <;>
-    rfl
+theorem addBottom_nth_snd (L n) : ((addBottom L).get? n).2 = L.nth n := by
+  conv => rhs; rw [← addBottom_map L, ListBlank.nth_map] <;>
+  rfl
 #align turing.TM2to1.add_bottom_nth_snd Turing.TM2to1.addBottom_nth_snd
 
 theorem addBottom_nth_succ_fst (L n) : ((addBottom L).get? (n + 1)).1 = false := by
@@ -2457,7 +2450,6 @@ Case conversion may be inaccurate. Consider using '#align turing.TM2to1.st_run T
 -- [inhabited Λ]: as this is a local definition it is more trouble than
 -- it is worth to omit the typeclass assumption without breaking the parameters
 /-- The TM2 statement corresponding to a stack action. -/
-@[nolint unused_arguments]
 def stRun {k : K} : StAct k → Stmt₂ → Stmt₂
   | push f => TM2.Stmt.push k f
   | peek f => TM2.Stmt.peek k f
@@ -2675,7 +2667,7 @@ theorem tr_respects_aux₂ {k q v} {S : ∀ k, List (Γ k)} {L : ListBlank (∀ 
 
 variable (M : Λ → Stmt₂)
 
-include M
+--include M  -- Porting note: `include` doesn't exist
 
 /-- The TM2 emulator machine states written as a TM1 program.
 This handles the `go` and `ret` states, which shuttle to and from a stack top. -/
@@ -2746,7 +2738,7 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
   exact rc
 #align turing.TM2to1.tr_respects_aux Turing.TM2to1.tr_respects_aux
 
-attribute [local simp] respects TM2.step TM2.step_aux tr_normal
+attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step tr) trCfg := fun c₁ c₂ h => by
   cases' h with l v S L hT; clear h
@@ -2805,13 +2797,13 @@ noncomputable def trSupp (S : Finset Λ) : Finset Λ' :=
   S.bunionᵢ fun l => insert (normal l) (trStmts₁ (M l))
 #align turing.TM2to1.tr_supp Turing.TM2to1.trSupp
 
-theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports tr (tr_supp S) :=
+theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports tr (trSupp S) :=
   ⟨Finset.mem_bunionᵢ.2 ⟨_, ss.1, Finset.mem_insert.2 <| Or.inl rfl⟩, fun l' h =>
     by
     suffices
-      ∀ (q) (ss' : TM2.SupportsStmt S q) (sub : ∀ x ∈ trStmts₁ q, x ∈ tr_supp M S),
-        TM1.SupportsStmt (tr_supp M S) (trNormal q) ∧
-          ∀ l' ∈ trStmts₁ q, TM1.SupportsStmt (tr_supp M S) (tr M l')
+      ∀ (q) (ss' : TM2.SupportsStmt S q) (sub : ∀ x ∈ trStmts₁ q, x ∈ trSupp M S),
+        TM1.SupportsStmt (trSupp M S) (trNormal q) ∧
+          ∀ l' ∈ trStmts₁ q, TM1.SupportsStmt (trSupp M S) (tr M l')
       by
       rcases Finset.mem_bunionᵢ.1 h with ⟨l, lS, h⟩
       have :=
@@ -2821,8 +2813,8 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports tr (tr_supp S) :=
     refine' stmtStRec _ _ _ _ _ <;> intros
     · -- stack op
       rw [TM2to1.supports_run] at ss'
-      simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton] at
-        sub
+      simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
+        at sub
       have hgo := sub _ (Or.inl <| Or.inl rfl)
       have hret := sub _ (Or.inl <| Or.inr rfl)
       cases' IH ss' fun x hx => sub x <| Or.inr hx with IH₁ IH₂
