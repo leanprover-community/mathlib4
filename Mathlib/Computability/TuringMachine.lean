@@ -422,12 +422,14 @@ theorem ListBlank.map_cons {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedM
 
 @[simp]
 theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
-    (l : ListBlank Γ) (n : ℕ) : (l.map f).nth n = f (l.nth n) :=
-  l.inductionOn
-    (by
-      intro l;
-      simp only [List.get?_map, ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?]
-      cases l.nth n; · exact f.2.symm; · rfl)
+    (l : ListBlank Γ) (n : ℕ) : (l.map f).nth n = f (l.nth n) := by
+  refine' l.inductionOn fun l => _
+  -- Porting note: Added `suffices` to get `simp` to work.
+  suffices ((mk l).map f).nth n = f ((mk l).nth n) by exact this
+  simp only [List.get?_map, ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?]
+  cases l.get? n
+  · exact f.2.symm
+  · rfl
 #align turing.list_blank.nth_map Turing.ListBlank.nth_map
 
 /-- The `i`-th projection as a pointed map. -/
@@ -463,8 +465,11 @@ theorem ListBlank.append_mk {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) :
 #align turing.list_blank.append_mk Turing.ListBlank.append_mk
 
 theorem ListBlank.append_assoc {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) (l₃ : ListBlank Γ) :
-    ListBlank.append (l₁ ++ l₂) l₃ = ListBlank.append l₁ (ListBlank.append l₂ l₃) :=
-  l₃.inductionOn <| by intro <;> simp only [ListBlank.append_mk, List.append_assoc]
+    ListBlank.append (l₁ ++ l₂) l₃ = ListBlank.append l₁ (ListBlank.append l₂ l₃) := by
+  refine' l₃.inductionOn fun l => _
+  -- Porting note: Added `suffices` to get `simp` to work.
+  suffices append (l₁ ++ l₂) (mk l) = append l₁ (append l₂ (mk l)) by exact this
+  simp only [ListBlank.append_mk, List.append_assoc]
 #align turing.list_blank.append_assoc Turing.ListBlank.append_assoc
 
 /-- The `bind` function on lists is well defined on `list_blank`s provided that the default element
@@ -486,10 +491,11 @@ theorem ListBlank.bind_mk {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : List Γ) 
 
 @[simp]
 theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l : ListBlank Γ)
-    (f : Γ → List Γ') (hf) : (l.cons a).bind f hf = (l.bind f hf).append (f a) :=
-  l.inductionOn <| by
-    intro <;>
-      simp only [ListBlank.append_mk, ListBlank.bind_mk, ListBlank.cons_mk, List.cons_bind]
+    (f : Γ → List Γ') (hf) : (l.cons a).bind f hf = (l.bind f hf).append (f a) := by
+  refine' l.inductionOn fun l => _
+  -- Porting note: Added `suffices` to get `simp` to work.
+  suffices ((mk l).cons a).bind f hf = ((mk l).bind f hf).append (f a) by exact this
+  simp only [ListBlank.append_mk, ListBlank.bind_mk, ListBlank.cons_mk, List.cons_bind]
 #align turing.list_blank.cons_bind Turing.ListBlank.cons_bind
 
 /-- The tape of a Turing machine is composed of a head element (which we imagine to be the
@@ -650,8 +656,9 @@ theorem Tape.move_right_nth {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℤ) :
 @[simp]
 theorem Tape.move_right_n_head {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℕ) :
     ((Tape.move Dir.right^[i]) T).head = T.nth i := by
-  induction i generalizing T <;> [rfl,
-    simp only [*, Tape.move_right_nth, Int.ofNat_succ, iterate_succ]]
+  induction i generalizing T
+  · rfl
+  · simp only [*, Tape.move_right_nth, Int.ofNat_succ, iterate_succ, Function.comp_apply]
 #align turing.tape.move_right_n_head Turing.Tape.move_right_n_head
 
 /-- Replace the current value of the head on the tape. -/
@@ -826,25 +833,25 @@ def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort _} {a : 
     H _ ha' fun b' e => h' _ <| Part.mem_some_iff.2 <| by rw [e] <;> rfl
 #align turing.eval_induction Turing.evalInduction
 
-theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none :=
-  ⟨fun h => by
-    refine' evalInduction h fun a h IH => _
+theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none := by
+  refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => _⟩
+  · -- Porting note: Explicitly specify `c`.
+    refine' @evalInduction _ _ _ (fun a => Reaches f a b ∧ f b = none) _ h fun a h IH => _
     cases' e : f a with a'
     · rw [Part.mem_unique h
           (PFun.mem_fix_iff.2 <| Or.inl <| Part.mem_some_iff.2 <| by rw [e] <;> rfl)]
       exact ⟨ReflTransGen.refl, e⟩
     · rcases PFun.mem_fix_iff.1 h with (h | ⟨_, h, _⟩) <;> rw [e] at h <;>
         cases Part.mem_some_iff.1 h
-      cases' IH a' (by rwa [e]) with h₁ h₂
-      exact ⟨ReflTransGen.head e h₁, h₂⟩, fun ⟨h₁, h₂⟩ =>
-    by
-    refine' ReflTransGen.head_induction_on h₁ _ fun a a' h _ IH => _
+      cases' IH a' e with h₁ h₂
+      exact ⟨ReflTransGen.head e h₁, h₂⟩
+  · refine' ReflTransGen.head_induction_on h₁ _ fun h _ IH => _
     · refine' PFun.mem_fix_iff.2 (Or.inl _)
       rw [h₂]
       apply Part.mem_some
     · refine' PFun.mem_fix_iff.2 (Or.inr ⟨_, _, IH⟩)
-      rw [show f a = _ from h]
-      apply Part.mem_some⟩
+      rw [h]
+      apply Part.mem_some
 #align turing.mem_eval Turing.mem_eval
 
 theorem eval_maximal₁ {σ} {f : σ → Option σ} {a b} (h : b ∈ eval f a) (c) : ¬Reaches₁ f b c
@@ -939,9 +946,12 @@ theorem tr_eval_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H :
   rcases tr_reaches_rev H aa ab with ⟨c₁, c₂, bc, cc, ac⟩
   cases (reflTransGen_iff_eq (Option.eq_none_iff_forall_not_mem.1 b0)).1 bc
   refine' ⟨_, cc, mem_eval.2 ⟨ac, _⟩⟩
-  have := H cc; cases' f₁ c₁ with d₁; · rfl
-  rcases this with ⟨d₂, dd, bd⟩
-  rcases trans_gen.head'_iff.1 bd with ⟨e, h, _⟩
+  have := H cc
+  cases' hfc : f₁ c₁ with d₁
+  · rfl
+  rw [hfc] at this
+  rcases this with ⟨d₂, _, bd⟩
+  rcases TransGen.head'_iff.1 bd with ⟨e, h, _⟩
   cases b0.symm.trans h
 #align turing.tr_eval_rev Turing.tr_eval_rev
 
