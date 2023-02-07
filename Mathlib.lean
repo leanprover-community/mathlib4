@@ -475,6 +475,7 @@ import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Dist
@@ -1026,6 +1027,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
 import Mathlib.Topology.NhdsSet
@@ -1040,6 +1042,7 @@ import Mathlib.Topology.Separation
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
 import Mathlib.Topology.Spectral.Hom
+import Mathlib.Topology.StoneCech
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Support
 import Mathlib.Topology.UniformSpace.AbsoluteValue
