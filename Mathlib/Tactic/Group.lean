@@ -9,6 +9,7 @@ Authors: Thomas Browning, Patrick Massot
 ! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Algebra.Group.Commutator
 
 /-!
@@ -95,7 +96,5 @@ end
 syntax (name := group) "group" (ppSpace location)? : tactic
 
 macro_rules
-| `(tactic| group $[at $location]?) =>
-  `(tactic| aux_group₁ $[at $location]? <;>
-            aux_group₂ $[at $location]? <;>
-            aux_group₁ $[at $location]?)
+| `(tactic| group $[$loc]?) =>
+  `(tactic| repeat (fail_if_no_progress (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?)))
