@@ -19,11 +19,11 @@ In this file, we define a divisible add monoid and a rootable monoid with some b
 
 ## Main definition
 
-* `divisible_by A α`: An additive monoid `A` is said to be divisible by `α` iff for all `n ≠ 0 ∈ α`
+* `DivisibleBy A α`: An additive monoid `A` is said to be divisible by `α` iff for all `n ≠ 0 ∈ α`
   and `y ∈ A`, there is an `x ∈ A` such that `n • x = y`. In this file, we adopt a constructive
   approach, i.e. we ask for an explicit `div : A → α → A` function such that `div a 0 = 0` and
   `n • div a n = a` for all `n ≠ 0 ∈ α`.
-* `rootable_by A α`: A monoid `A` is said to be rootable by `α` iff for all `n ≠ 0 ∈ α` and `y ∈ A`,
+* `RootableBy A α`: A monoid `A` is said to be rootable by `α` iff for all `n ≠ 0 ∈ α` and `y ∈ A`,
   there is an `x ∈ A` such that `x^n = y`. In this file, we adopt a constructive approach, i.e. we
   ask for an explicit `root : A → α → A` function such that `root a 0 = 1` and `(root a n)ⁿ = a` for
   all `n ≠ 0 ∈ α`.
@@ -32,39 +32,39 @@ In this file, we define a divisible add monoid and a rootable monoid with some b
 
 For additive monoids and groups:
 
-* `divisible_by_of_smul_right_surj` : the constructive definition of divisiblity is implied by
+* `divisibleByOfSmulRightSurj` : the constructive definition of divisiblity is implied by
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
 * `smul_right_surj_of_divisible_by` : the constructive definition of divisiblity implies
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
-* `prod.divisible_by` : `A × B` is divisible for any two divisible additive monoids.
-* `pi.divisible_by` : any product of divisble additive monoids is divisible.
-* `add_group.divisible_by_int_of_divisible_by_nat` : for additive groups, int divisiblity is implied
+* `Prod.divisibleBy` : `A × B` is divisible for any two divisible additive monoids.
+* `Pi.divisibleBy` : any product of divisble additive monoids is divisible.
+* `AddGroup.divisibleByIntOfDivisibleByNat` : for additive groups, int divisiblity is implied
   by nat divisiblity.
-* `add_group.divisible_by_nat_of_divisible_by_int` : for additive groups, nat divisiblity is implied
+* `AddGroup.divisibleByNatOfDivisibleByInt` : for additive groups, nat divisiblity is implied
   by int divisiblity.
-* `add_comm_group.divisible_by_int_of_smul_top_eq_top`: the constructive definition of divisiblity
+* `AddCommGroup.divisibleByIntOfSmulTopEqTop`: the constructive definition of divisiblity
   is implied by the condition that `n • A = A` for all `n ≠ 0`.
-* `add_comm_group.smul_top_eq_top_of_divisible_by_int`: the constructive definition of divisiblity
+* `AddCommGroup.smul_top_eq_top_of_divisibleBy_int`: the constructive definition of divisiblity
   implies the condition that `n • A = A` for all `n ≠ 0`.
-* `divisible_by_int_of_char_zero` : any field of characteristic zero is divisible.
+* `divisibleByIntOfCharZero` : any field of characteristic zero is divisible.
 * `quotient_add_group.divisible_by` : quotient group of divisible group is divisible.
-* `function.surjective.divisible_by` : if `A` is divisible and `A →+ B` is surjective, then `B`
+* `Function.Surjective.divisibleBy` : if `A` is divisible and `A →+ B` is surjective, then `B`
   is divisible.
 
 and their multiplicative counterparts:
 
-* `rootable_by_of_pow_left_surj` : the constructive definition of rootablity is implied by the
+* `rootableByOfPowLeftSurj` : the constructive definition of rootablity is implied by the
   condition that `xⁿ = y` has solutions for all `n ≠ 0` and `a ∈ A`.
-* `pow_left_surj_of_rootable_by` : the constructive definition of rootablity implies the
+* `pow_left_surj_of_rootableBy` : the constructive definition of rootablity implies the
   condition that `xⁿ = y` has solutions for all `n ≠ 0` and `a ∈ A`.
-* `prod.rootable_by` : any product of two rootable monoids is rootable.
-* `pi.rootable_by` : any product of rootable monoids is rootable.
-* `group.rootable_by_int_of_rootable_by_nat` : in groups, int rootablity is implied by nat
+* `Prod.rootableBy` : any product of two rootable monoids is rootable.
+* `Pi.rootableBy` : any product of rootable monoids is rootable.
+* `Group.rootableByIntOfRootableByNat` : in groups, int rootablity is implied by nat
   rootablity.
-* `group.rootable_by_nat_of_rootable_by_int` : in groups, nat rootablity is implied by int
+* `Group.rootableByNatOfRootableByInt` : in groups, nat rootablity is implied by int
   rootablity.
-* `quotient_group.rootable_by` : quotient group of rootable group is rootable.
-* `function.surjective.rootable_by` : if `A` is rootable and `A →* B` is surjective, then `B` is
+* `QuotientGroup.rootableBy` : quotient group of rootable group is rootable.
+* `Function.Surjective.rootableBy` : if `A` is rootable and `A →* B` is surjective, then `B` is
   rootable.
 
 TODO: Show that divisibility implies injectivity in the category of `AddCommGroup`.
@@ -78,7 +78,7 @@ section AddMonoid
 variable (A α : Type _) [AddMonoid A] [SMul α A] [Zero α]
 
 /--
-An `add_monoid A` is `α`-divisible iff `n • x = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
+An `AddMonoid A` is `α`-divisible iff `n • x = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
 Here we adopt a constructive approach where we ask an explicit `div : A → α → A` function such that
 * `div a 0 = 0` for all `a ∈ A`
 * `n • div a n = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
@@ -95,7 +95,7 @@ section Monoid
 
 variable (A α : Type _) [Monoid A] [Pow A α] [Zero α]
 
-/-- A `monoid A` is `α`-rootable iff `xⁿ = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
+/-- A `Monoid A` is `α`-rootable iff `xⁿ = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
 Here we adopt a constructive approach where we ask an explicit `root : A → α → A` function such that
 * `root a 0 = 1` for all `a ∈ A`
 * `(root a n)ⁿ = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
@@ -115,7 +115,7 @@ theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
 #align smul_right_surj_of_divisible_by smul_right_surj_of_divisible_by
 
 /--
-A `monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
+A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
 -/
 @[to_additive divisibleByOfSmulRightSurj
