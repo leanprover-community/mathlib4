@@ -12,7 +12,7 @@ import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Multiset.Antidiagonal
 
 /-!
-# The `finsupp` counterpart of `multiset.antidiagonal`.
+# The `Finsupp` counterpart of `Multiset.antidiagonal`.
 
 The antidiagonal of `s : α →₀ ℕ` consists of
 all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
@@ -29,7 +29,7 @@ open Finset
 
 variable {α : Type _}
 
-/-- The `finsupp` counterpart of `multiset.antidiagonal`: the antidiagonal of
+/-- The `Finsupp` counterpart of `Multiset.antidiagonal`: the antidiagonal of
 `s : α →₀ ℕ` consists of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 The finitely supported function `antidiagonal s` is equal to the multiplicities of these pairs. -/
 def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →₀ ℕ :=
