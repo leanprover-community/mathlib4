@@ -18,18 +18,18 @@ import Mathlib.Data.List.TFAE
 /-!
 # Reducing to an interval modulo its length
 
-This file defines operations that reduce a number (in an `archimedean`
-`linear_ordered_add_comm_group`) to a number in a given interval, modulo the length of that
+This file defines operations that reduce a number (in an `Archimedean`
+`LinearOrderedAddCommGroup`) to a number in a given interval, modulo the length of that
 interval.
 
 ## Main definitions
 
-* `to_Ico_div a hb x` (where `hb : 0 < b`): The unique integer such that this multiple of `b`,
+* `toIcoDiv a hb x` (where `hb : 0 < b`): The unique integer such that this multiple of `b`,
   subtracted from `x`, is in `Ico a (a + b)`.
-* `to_Ico_mod a hb x` (where `hb : 0 < b`): Reduce `x` to the interval `Ico a (a + b)`.
-* `to_Ioc_div a hb x` (where `hb : 0 < b`): The unique integer such that this multiple of `b`,
+* `toIcoMod a hb x` (where `hb : 0 < b`): Reduce `x` to the interval `Ico a (a + b)`.
+* `toIocDiv a hb x` (where `hb : 0 < b`): The unique integer such that this multiple of `b`,
   subtracted from `x`, is in `Ioc a (a + b)`.
-* `to_Ioc_mod a hb x` (where `hb : 0 < b`): Reduce `x` to the interval `Ioc a (a + b)`.
+* `toIocMod a hb x` (where `hb : 0 < b`): Reduce `x` to the interval `Ioc a (a + b)`.
 
 -/
 
@@ -506,9 +506,9 @@ section IcoIoc
 
 variable (a : α) {b : α} (hb : 0 < b) (x : α)
 
-/-- `mem_Ioo_mod a b x` means that `x` lies in the open interval `(a, a + b)` modulo `b`.
-Equivalently (as shown below), `x` is not congruent to `a` modulo `b`, or `to_Ico_mod a hb` agrees
-with `to_Ioc_mod a hb` at `x`, or `to_Ico_div a hb` agrees with `to_Ioc_div a hb` at `x`. -/
+/-- `MemIooMod a b x` means that `x` lies in the open interval `(a, a + b)` modulo `b`.
+Equivalently (as shown below), `x` is not congruent to `a` modulo `b`, or `toIcoMod a hb` agrees
+with `toIocMod a hb` at `x`, or `toIcoDiv a hb` agrees with `toIocDiv a hb` at `x`. -/
 def MemIooMod (b x : α) : Prop :=
   ∃ z : ℤ, x - z • b ∈ Set.Ioo a (a + b)
 #align mem_Ioo_mod MemIooMod
@@ -642,7 +642,11 @@ theorem toIocMod_le_toIcoMod_add (a : α) {b : α} (hb : 0 < b) (x : α) :
     toIocMod a hb x ≤ toIcoMod a hb x + b := by
   rw [toIcoMod, toIocMod, sub_add, sub_le_sub_iff_left, sub_le_iff_le_add, ← add_one_zsmul,
     (zsmul_strictMono_left hb).le_iff_le]
-  simp [toIocDiv_wcovby_toIcoDiv a hb x]
+  -- Porting note: used to be proven by
+  -- simp [toIocDiv_wcovby_toIcoDiv a hb x]
+  have := toIocDiv_wcovby_toIcoDiv a hb x
+  simp only [Wcovby, not_lt] at this
+  simp [this.2]
 #align to_Ioc_mod_le_to_Ico_mod_add toIocMod_le_toIcoMod_add
 
 end IcoIoc
@@ -697,7 +701,7 @@ theorem toIocMod_periodic (a : α) {b : α} (hb : 0 < b) : Function.Periodic (to
   toIocMod_add_right a hb
 #align to_Ioc_mod_periodic toIocMod_periodic
 
-/-- `to_Ico_mod` as an equiv from the quotient. -/
+/-- `toIcoMod` as an Equiv from the quotient. -/
 @[simps! symm_apply]
 def quotientAddGroup.equivIcoMod (a : α) {b : α} (hb : 0 < b) :
     α ⧸ AddSubgroup.zmultiples b ≃ Set.Ico a (a + b)
@@ -721,7 +725,7 @@ theorem quotientAddGroup.equivIcoMod_coe (a : α) {b : α} (hb : 0 < b) (x : α)
   rfl
 #align quotient_add_group.equiv_Ico_mod_coe quotientAddGroup.equivIcoMod_coe
 
-/-- `to_Ioc_mod` as an equiv  from the quotient. -/
+/-- `toIocMod` as an Equiv from the quotient. -/
 @[simps! symm_apply]
 def quotientAddGroup.equivIocMod (a : α) {b : α} (hb : 0 < b) :
     α ⧸ AddSubgroup.zmultiples b ≃ Set.Ioc a (a + b)
@@ -751,7 +755,6 @@ section LinearOrderedField
 variable {α : Type _} [LinearOrderedField α] [FloorRing α]
 
 -- Porting note: Needed to explicitly add (hα := FloorRing.archimedean α) in a lot of theorems here
-
 theorem toIcoDiv_eq_floor (a : α) {b : α} (hb : 0 < b) (x : α) :
   toIcoDiv (hα := FloorRing.archimedean α) a hb x = ⌊(x - a) / b⌋ := by
   haveI : Archimedean α := inferInstance
