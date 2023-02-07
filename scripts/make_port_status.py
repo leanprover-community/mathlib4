@@ -185,7 +185,7 @@ for node in sorted(graph.nodes):
                 assert(False)
             new_status.update(mathlib4_pr=pr_info['pr'], source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
-            status += f' mathlib4#{pr_info['pr']} {sha}'
+            status += f" mathlib4#{pr_info['pr']} {sha}"
     try:
         comment_data = comments_dict[node]
     except KeyError:
