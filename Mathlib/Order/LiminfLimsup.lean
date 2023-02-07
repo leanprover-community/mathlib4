@@ -315,11 +315,10 @@ theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u 
 in complete and conditionally complete lattices but let automation fill automatically the
 boundedness proofs in complete lattices, we use the tactic `isBounded_default` in the statements,
 in the form `(hf : f.IsBounded (≥) . isBoundedDefault)`. -/
-syntax (name := isBoundedDefault) "isBoundedDefault" : tactic
-macro_rules
-  | `(tactic| isBoundedDefault) =>
-      `(tactic| ( first | apply isCobounded_le_of_bot | apply isCobounded_ge_of_top |
-        apply isBounded_le_of_top | apply isBounded_ge_of_bot))
+
+macro "isBoundedDefault ": tactic =>
+  `(tactic| ( first | apply isCobounded_le_of_bot | apply isCobounded_ge_of_top |
+    apply isBounded_le_of_top | apply isBounded_ge_of_bot))
 
 -- Porting note: The above is a clumsy lean 4 reconstruction of:
 -- unsafe def is_bounded_default : tactic Unit :=
