@@ -37,17 +37,17 @@ open Tactic
 variable [Monad m] [MonadExceptOf Exception m]
 
 def evalSlice (a b : Nat) : TacticM Unit := do
-  iterateUntilFailure do
+  iterateUntilFailure do  
     ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false)
   iterateRange (a - 1) (a - 1) do
       evalTactic (← `(conv| congr))
       evalTactic (← `(tactic| rotate_left))
   let k ← iterateUntilFailureCount 
     <| ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := true) 
-  let c := k+1+a-b
+  let c := k+1+a-b  
   iterateRange c c <| evalTactic (← `(conv| congr))
   iterateUntilFailure do 
-    ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false) 
+    ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false)
 
 elab "slice" a:num b:num : conv => evalSlice a.getNat b.getNat
 
@@ -61,6 +61,19 @@ syntax (name := sliceRHS) "sliceRHS" num num " => " convSeq : tactic
 macro_rules
   | `(tactic| sliceRHS $a $b => $seq) =>
     `(tactic| conv => rhs; slice $a $b; ($seq:convSeq))
+
+variable (C : Type) [Category C] (X Y Z W U : C) 
+variable (f₁ f₂ : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W) (l : W ⟶ U)
+--
+-- example (h₁ : f₁ = f₂) : f₁ ≫ g ≫ h ≫ l = ((f₂ ≫ g) ≫ h) ≫ l := by 
+--   conv => 
+--     lhs 
+--     slice 1 4
+--   conv => 
+--     lhs 
+--     slice 1 1 
+--     rw [h₁]
+--   rfl  
 
 -- add_tactic_doc
 --   { Name := "slice"
