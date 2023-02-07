@@ -166,7 +166,7 @@ theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
 #align add_units.mk_coe Units.mk_val
 
 /-- Copy a unit, adjusting definition equalities. -/
-@[to_additive "Copy an `AddUnit`, adjusting definitional equalities.", simps]
+@[to_additive (attr := simps) "Copy an `AddUnit`, adjusting definitional equalities."]
 def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) : αˣ :=
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
 #align units.copy Units.copy
