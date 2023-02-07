@@ -799,14 +799,16 @@ theorem liminf_eq_supₛ_infₛ {ι R : Type _} (F : Filter ι) [CompleteLattice
 set_option linter.uppercaseLean3 false in
 #align filter.liminf_eq_Sup_Inf Filter.liminf_eq_supₛ_infₛ
 
-@[simp]
+-- Porting note: simp_nf linter, Left-hand side does not simplify when using simp on itself.
+-- @[simp]
 theorem liminf_nat_add (f : ℕ → α) (k : ℕ) : liminf (fun i => f (i + k)) atTop = liminf f atTop :=
   by
   simp_rw [liminf_eq_supᵢ_infᵢ_of_nat]
   exact supᵢ_infᵢ_ge_nat_add f k
 #align filter.liminf_nat_add Filter.liminf_nat_add
 
-@[simp]
+-- Porting note: simp_nf linter, Left-hand side does not simplify when using simp on itself.
+-- @[simp]
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
   @liminf_nat_add αᵒᵈ _ f k
 #align filter.limsup_nat_add Filter.limsup_nat_add
@@ -883,27 +885,56 @@ theorem blimsup_monotone_filter (h : f ≤ g) : blimsup u f p ≤ blimsup u g p 
   infₛ_le_infₛ fun _ ha => ha.filter_mono h
 #align filter.blimsup_monotone_filter Filter.blimsup_monotone_filter
 
-@[simp]
+
+-- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux version below
 theorem blimsup_and_le_inf : (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f p ⊓ blimsup u f q :=
   le_inf (blimsup_mono <| by tauto) (blimsup_mono <| by tauto)
 #align filter.blimsup_and_le_inf Filter.blimsup_and_le_inf
 
 @[simp]
+theorem bliminf_sup_le_inf_aux :
+  (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f p
+    ∧ (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f q := by
+  rw [←le_inf_iff]
+  exact blimsup_and_le_inf
+
+-- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux simp version below
 theorem bliminf_sup_le_and : bliminf u f p ⊔ bliminf u f q ≤ bliminf u f fun x => p x ∧ q x :=
   blimsup_and_le_inf (α := αᵒᵈ)
 #align filter.bliminf_sup_le_and Filter.bliminf_sup_le_and
 
-/-- See also `Filter.blimsup_or_eq_sup`. -/
 @[simp]
+theorem bliminf_sup_le_and_aux :
+  (bliminf u f p ≤ bliminf u f fun x => p x ∧ q x)
+    ∧ bliminf u f q ≤ bliminf u f fun x => p x ∧ q x := by
+  rw [←sup_le_iff]
+  exact bliminf_sup_le_and
+
+/-- See also `Filter.blimsup_or_eq_sup`. -/
+-- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux simp version below
 theorem blimsup_sup_le_or : blimsup u f p ⊔ blimsup u f q ≤ blimsup u f fun x => p x ∨ q x :=
   sup_le (blimsup_mono <| by tauto) (blimsup_mono <| by tauto)
 #align filter.blimsup_sup_le_or Filter.blimsup_sup_le_or
 
-/-- See also `Filter.bliminf_or_eq_inf`. -/
 @[simp]
+theorem blimsup_sup_le_or_aux :
+  (blimsup u f p ≤ blimsup u f fun x => p x ∨ q x)
+    ∧ blimsup u f q ≤ blimsup u f fun x => p x ∨ q x := by
+  rw [←sup_le_iff]
+  exact blimsup_sup_le_or
+
+/-- See also `Filter.bliminf_or_eq_inf`. -/
+-- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux simp version below
 theorem bliminf_or_le_inf : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f p ⊓ bliminf u f q :=
   blimsup_sup_le_or (α := αᵒᵈ)
 #align filter.bliminf_or_le_inf Filter.bliminf_or_le_inf
+
+@[simp]
+theorem bliminf_or_le_inf_aux :
+  (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f p
+    ∧ (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f q := by
+  rw [←le_inf_iff]
+  exact bliminf_or_le_inf
 
 /- Porting note: Replaced `e` with `FunLike.coe e` to override the strange
  coercion to `↑(RelIso.toRelEmbedding e).toEmbedding`.-/
