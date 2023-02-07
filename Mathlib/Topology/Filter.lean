@@ -150,12 +150,12 @@ theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
 theorem interₛ_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
   simp_rw [nhds_eq, (· ∘ ·), interₛ_lift'_sets monotone_principal.Iic, Iic, le_principal_iff,
     ← setOf_forall, ← Filter.le_def]
-#align filter.Inter_nhds Filter.Inter_nhds
+#align filter.Inter_nhds Filter.interₛ_nhds
 
 @[simp]
 theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
   refine' ⟨fun h => _, fun h => monotone_nhds h⟩
-  rw [← Iic_subset_Iic, ← Inter_nhds, ← Inter_nhds]
+  rw [← Iic_subset_Iic, ← interₛ_nhds, ← interₛ_nhds]
   exact interₛ_subset_interₛ h
 #align filter.nhds_mono Filter.nhds_mono
 
