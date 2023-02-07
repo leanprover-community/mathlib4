@@ -1034,6 +1034,7 @@ import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.Separation
 import Mathlib.Topology.ShrinkingLemma
+import Mathlib.Topology.Sober
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Support
 import Mathlib.Topology.UniformSpace.AbsoluteValue
