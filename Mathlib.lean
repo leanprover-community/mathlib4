@@ -635,6 +635,7 @@ import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.FreeGroup

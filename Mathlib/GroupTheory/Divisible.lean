@@ -8,9 +8,9 @@ Authors: Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Pointwise
-import Mathbin.GroupTheory.QuotientGroup
-import Mathbin.Algebra.Group.Pi
+import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Group.Pi
 
 /-!
 # Divisible Group and rootable group
