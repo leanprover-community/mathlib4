@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Hom.Basic
-import Mathbin.Topology.ContinuousFunction.Basic
+import Mathlib.Order.Hom.Basic
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Continuous order homomorphisms
