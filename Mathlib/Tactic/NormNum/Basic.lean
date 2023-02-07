@@ -54,7 +54,7 @@ theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
     guard <|← isDefEq a e
     return .isNat sα n (q(isNat_ofNat $α $pa) : Expr)
 
-theorem isNat_intOfNat: {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
+theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   | _, _, ⟨rfl⟩ => ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies the constructor application `Int.ofNat n` such that
@@ -65,7 +65,7 @@ theorem isNat_intOfNat: {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   let sℕ : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let sℤ : Q(AddMonoidWithOne ℤ) := q(AddGroupWithOne.toAddMonoidWithOne)
   let ⟨n', p⟩ ← deriveNat n sℕ
-  return (.isNat sℤ n' q(isNat_intOfNat $p): Result q(Int.ofNat $n))
+  return (.isNat sℤ n' q(isNat_intOfNat $p) : Result q(Int.ofNat $n))
 
 /-! # Casts -/
 
@@ -110,7 +110,7 @@ theorem isInt_ratCast [DivisionRing R] : {q : ℚ} → {n : ℤ} →
     IsInt q n → IsInt (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_ratCast [DivisionRing R] [CharZero R]: {q : ℚ} → {n : ℤ} → {d : ℕ} →
+theorem isRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
     IsRat q n d → IsRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only []; norm_cast⟩
 
