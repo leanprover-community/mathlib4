@@ -39,6 +39,8 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : 
 /-- A function between topological spaces is spectral if it is continuous and the preimage of every
 compact open set is compact open. -/
 structure IsSpectralMap (f : α → β) extends Continuous f : Prop where
+  /-- A function between topological spaces is spectral if it is continuous and the preimage of every
+compact open set is compact open. -/
   isCompact_preimage_of_isOpen ⦃s : Set β⦄ : IsOpen s → IsCompact s → IsCompact (f ⁻¹' s)
 #align is_spectral_map IsSpectralMap
 
@@ -65,7 +67,9 @@ end Unbundled
 
 /-- The type of spectral maps from `α` to `β`. -/
 structure SpectralMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
+  /-- function between topological spaces-/
   toFun : α → β
+  /-- proof that `toFun` is a spectral map-/
   spectral' : IsSpectralMap toFun
 #align spectral_map SpectralMap
 
@@ -76,6 +80,7 @@ section
 You should extend this class when you extend `SpectralMap`. -/
 class SpectralMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
   [TopologicalSpace β] extends FunLike F α fun _ => β where
+  /-- statement that `F` is a type of spectal maps-/
   map_spectral (f : F) : IsSpectralMap f
 #align spectral_map_class SpectralMapClass
 
