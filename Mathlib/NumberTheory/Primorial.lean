@@ -68,7 +68,6 @@ theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (
           rw [mem_filter, mem_Ico] at hp
           exact hp.2.dvd_choose_add hp.1.1 (h.trans_lt (m.lt_succ_self.trans_le hp.1.1))
               (Nat.lt_succ_iff.1 hp.1.2)
-
 #align primorial_add_dvd primorial_add_dvd
 
 theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m + n) m :=
