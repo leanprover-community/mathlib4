@@ -13,7 +13,7 @@ import Mathlib.Data.PNat.Interval
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.FieldSimp
+-- import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -45,6 +45,8 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 namespace ADEInequality
 
 open Multiset
+-- porting note: ADE is a special name, exceptionally in upper case in Lean3
+set_option linter.uppercaseLean3 false
 
 /-- `A' q r := {1,q,r}` is a `multiset ℕ+`
 that is a solution to the inequality
@@ -112,11 +114,11 @@ of the elements of `pqr`, as rational number.
 
 The intended argument is a multiset `{p,q,r}` of cardinality `3`. -/
 def sumInv (pqr : Multiset ℕ+) : ℚ :=
-  Multiset.sum <| pqr.map fun x => x⁻¹
+  Multiset.sum (pqr.map fun (x : ℕ+) => x⁻¹)
 #align ADE_inequality.sum_inv ADEInequality.sumInv
 
-theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = p⁻¹ + q⁻¹ + r⁻¹ := by
-  simp only [sum_inv, coe_coe, add_zero, insert_eq_cons, add_assoc, map_cons, sum_cons,
+theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ := by
+  simp only [sumInv, add_zero, insert_eq_cons, add_assoc, map_cons, sum_cons,
     map_singleton, sum_singleton]
 #align ADE_inequality.sum_inv_pqr ADEInequality.sumInv_pqr
 
@@ -180,7 +182,7 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   calc
     (p⁻¹ + q⁻¹ + r⁻¹ : ℚ) ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := add_le_add (add_le_add _ _) _
     _ = 1 := by norm_num
-    
+
   all_goals rw [inv_le_inv _ h3] <;> [assumption_mod_cast, norm_num]
 #align ADE_inequality.lt_three ADEInequality.lt_three
 
@@ -193,7 +195,7 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   calc
     (2⁻¹ + q⁻¹ + r⁻¹ : ℚ) ≤ 2⁻¹ + 4⁻¹ + 4⁻¹ := add_le_add (add_le_add le_rfl _) _
     _ = 1 := by norm_num
-    
+
   all_goals rw [inv_le_inv _ h4] <;> [assumption_mod_cast, norm_num]
 #align ADE_inequality.lt_four ADEInequality.lt_four
 
@@ -206,7 +208,7 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   calc
     (2⁻¹ + 3⁻¹ + r⁻¹ : ℚ) ≤ 2⁻¹ + 3⁻¹ + 6⁻¹ := add_le_add (add_le_add le_rfl le_rfl) _
     _ = 1 := by norm_num
-    
+
   rw [inv_le_inv _ h6] <;> [assumption_mod_cast, norm_num]
 #align ADE_inequality.lt_six ADEInequality.lt_six
 
@@ -260,4 +262,3 @@ theorem classification (p q r : ℕ+) : 1 < sumInv {p, q, r} ↔ Admissible {p, 
 #align ADE_inequality.classification ADEInequality.classification
 
 end ADEInequality
-
