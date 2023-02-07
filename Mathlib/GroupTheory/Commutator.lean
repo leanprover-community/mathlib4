@@ -8,9 +8,9 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Group.Commutator
 import Mathlib.Data.Bracket
 import Mathlib.GroupTheory.Subgroup.Finite
-import Mathlib.Tactic.Group
 
 /-!
 # Commutators of Subgroups
@@ -111,9 +111,9 @@ theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁�
     mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2⊢
   intro x hx y hy z hz
   trans x * z * ⁅y, ⁅z⁻¹, x⁻¹⁆⁆⁻¹ * z⁻¹ * y * ⁅x⁻¹, ⁅y⁻¹, z⁆⁆⁻¹ * y⁻¹ * x⁻¹
-  · group
+  · sorry --group
   · rw [h1 _ (H₂.inv_mem hy) _ hz _ (H₁.inv_mem hx), h2 _ (H₃.inv_mem hz) _ (H₁.inv_mem hx) _ hy]
-    group
+    simp -- group
 #align subgroup.commutator_commutator_eq_bot_of_rotate Subgroup.commutator_commutator_eq_bot_of_rotate
 
 variable (H₁ H₂)
@@ -197,7 +197,7 @@ instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characte
 #align subgroup.commutator_characteristic Subgroup.commutator_characteristic
 
 theorem commutator_prod_prod (K₁ K₂ : Subgroup G') :
-    ⁅H₁.Prod K₁, H₂.Prod K₂⁆ = ⁅H₁, H₂⁆.Prod ⁅K₁, K₂⁆ := by
+    ⁅H₁.prod K₁, H₂.prod K₂⁆ = ⁅H₁, H₂⁆.prod ⁅K₁, K₂⁆ := by
   apply le_antisymm
   · rw [commutator_le]
     rintro ⟨p₁, p₂⟩ ⟨hp₁, hp₂⟩ ⟨q₁, q₂⟩ ⟨hq₁, hq₂⟩
@@ -270,4 +270,3 @@ theorem mem_commutatorSet_iff : g ∈ commutatorSet G ↔ ∃ g₁ g₂ : G, ⁅
 theorem commutator_mem_commutatorSet : ⁅g₁, g₂⁆ ∈ commutatorSet G :=
   ⟨g₁, g₂, rfl⟩
 #align commutator_mem_commutator_set commutator_mem_commutatorSet
-
