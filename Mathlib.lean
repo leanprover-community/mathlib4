@@ -1011,6 +1011,7 @@ import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.Connected
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.ExtendFrom
