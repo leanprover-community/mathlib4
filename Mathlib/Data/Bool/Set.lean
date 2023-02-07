@@ -32,9 +32,6 @@ theorem range_eq {α : Type _} (f : Bool → α) : range f = {f false, f true} :
   rw [← image_univ, univ_eq, image_pair]
 #align bool.range_eq Bool.range_eq
 
-@[simp] lemma compl_singleton (b : bool) : ({b}ᶜ : Set Bool) = { !b } :=
-  Set.ext fun _ => eq_bnot_iff.symm
-
 @[simp] theorem compl_singleton (b : Bool) : ({b}ᶜ : Set Bool) = {!b} :=
   Set.ext fun _ => eq_not_iff.symm
 
