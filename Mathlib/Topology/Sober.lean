@@ -17,12 +17,12 @@ A quasi-sober space is a topological space where every
 irreducible closed subset has a generic point.
 A sober space is a quasi-sober space where every irreducible closed subset
 has a *unique* generic point. This is if and only if the space is T0, and thus sober spaces can be
-stated via `[quasi_sober α] [t0_space α]`.
+stated via `[QuasiSober α] [T0Space α]`.
 
 ## Main definition
 
-* `is_generic_point` : `x` is the generic point of `S` if `S` is the closure of `x`.
-* `quasi_sober` : A space is quasi-sober if every irreducible closed subset has a generic point.
+* `IsGenericPoint` : `x` is the generic point of `S` if `S` is the closure of `x`.
+* `QuasiSober` : A space is quasi-sober if every irreducible closed subset has a generic point.
 
 -/
 
