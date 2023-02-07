@@ -8,11 +8,11 @@ Authors: Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Tidy
-import Mathbin.Topology.ContinuousFunction.Basic
-import Mathbin.Topology.Homeomorph
-import Mathbin.Topology.SubsetProperties
-import Mathbin.Topology.Maps
+import Mathlib.Tactic.Tidy
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Maps
 
 /-!
 # The compact-open topology
@@ -98,8 +98,7 @@ section Functorial
 variable (g : C(β, γ))
 
 private theorem preimage_gen {s : Set α} (hs : IsCompact s) {u : Set γ} (hu : IsOpen u) :
-    ContinuousMap.comp g ⁻¹' CompactOpen.gen s u = CompactOpen.gen s (g ⁻¹' u) :=
-  by
+    ContinuousMap.comp g ⁻¹' CompactOpen.gen s u = CompactOpen.gen s (g ⁻¹' u) := by
   ext ⟨f, _⟩
   change g ∘ f '' s ⊆ u ↔ f '' s ⊆ g ⁻¹' u
   rw [image_comp, image_subset_iff]
@@ -114,8 +113,7 @@ theorem continuous_comp : Continuous (ContinuousMap.comp g : C(α, β) → C(α,
 variable (f : C(α, β))
 
 private theorem image_gen {s : Set α} (hs : IsCompact s) {u : Set γ} (hu : IsOpen u) :
-    (fun g : C(β, γ) => g.comp f) ⁻¹' CompactOpen.gen s u = CompactOpen.gen (f '' s) u :=
-  by
+    (fun g : C(β, γ) => g.comp f) ⁻¹' CompactOpen.gen s u = CompactOpen.gen (f '' s) u := by
   ext ⟨g, _⟩
   change g ∘ f '' s ⊆ u ↔ g '' (f '' s) ⊆ u
   rw [Set.image_comp]
@@ -220,8 +218,7 @@ section InfInduced
 
 theorem compactOpen_le_induced (s : Set α) :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) ≤
-      TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen :=
-  by
+      TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   simp only [induced_generateFrom_eq, ContinuousMap.compactOpen]
   apply TopologicalSpace.generateFrom_anti
   rintro b ⟨a, ⟨c, hc, u, hu, rfl⟩, rfl⟩
@@ -237,8 +234,7 @@ compact subsets of `α` is equal to the union of compact subsets of the compact 
 theorem compactOpen_eq_Inf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) =
       ⨅ (s : Set α) (hs : IsCompact s),
-        TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen :=
-  by
+        TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   refine' le_antisymm _ _
   · refine' le_infᵢ₂ _
     exact fun s hs => compact_open_le_induced s
@@ -255,15 +251,13 @@ theorem compactOpen_eq_Inf_induced :
 
 /-- For any subset `s` of `α`, the restriction of continuous functions to `s` is continuous as a
 function from `C(α, β)` to `C(s, β)` with their respective compact-open topologies. -/
-theorem continuous_restrict (s : Set α) : Continuous fun F : C(α, β) => F.restrict s :=
-  by
+theorem continuous_restrict (s : Set α) : Continuous fun F : C(α, β) => F.restrict s := by
   rw [continuous_iff_le_induced]
   exact compact_open_le_induced s
 #align continuous_map.continuous_restrict ContinuousMap.continuous_restrict
 
 theorem nhds_compactOpen_eq_Inf_nhds_induced (f : C(α, β)) :
-    𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) :=
-  by
+    𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compact_open_eq_Inf_induced]
   simp [nhds_infᵢ, nhds_induced]
 #align continuous_map.nhds_compact_open_eq_Inf_nhds_induced ContinuousMap.nhds_compactOpen_eq_Inf_nhds_induced
@@ -375,8 +369,7 @@ theorem continuous_curry' (f : C(α × β, γ)) : Continuous (curry' f) :=
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
     `α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : α → C(β, γ))
-    (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
-  by
+    (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f := by
   convert continuous_curry' ⟨_, h⟩
   ext
   rfl
@@ -391,8 +384,7 @@ def curry (f : C(α × β, γ)) : C(α, C(β, γ)) :=
 
 /-- The currying process is a continuous map between function spaces. -/
 theorem continuous_curry [LocallyCompactSpace (α × β)] :
-    Continuous (curry : C(α × β, γ) → C(α, C(β, γ))) :=
-  by
+    Continuous (curry : C(α × β, γ) → C(α, C(β, γ))) := by
   apply continuous_of_continuous_uncurry
   apply continuous_of_continuous_uncurry
   rw [← Homeomorph.comp_continuous_iff' (Homeomorph.prodAssoc _ _ _).symm]
@@ -420,8 +412,7 @@ def uncurry [LocallyCompactSpace β] (f : C(α, C(β, γ))) : C(α × β, γ) :=
 
 /-- The uncurrying process is a continuous map between function spaces. -/
 theorem continuous_uncurry [LocallyCompactSpace α] [LocallyCompactSpace β] :
-    Continuous (uncurry : C(α, C(β, γ)) → C(α × β, γ)) :=
-  by
+    Continuous (uncurry : C(α, C(β, γ)) → C(α × β, γ)) := by
   apply continuous_of_continuous_uncurry
   rw [← Homeomorph.comp_continuous_iff' (Homeomorph.prodAssoc _ _ _)]
   apply Continuous.comp continuous_eval' (Continuous.prod_map continuous_eval' continuous_id) <;>
@@ -494,8 +485,7 @@ variable {X₀ X Y Z : Type _} [TopologicalSpace X₀] [TopologicalSpace X] [Top
   [TopologicalSpace Z] [LocallyCompactSpace Y] {f : X₀ → X}
 
 theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}
-    (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g :=
-  by
+    (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
   have h : ∀ x : X, Continuous fun y => g (x, y) :=
     by
@@ -513,8 +503,7 @@ theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y �
 #align quotient_map.continuous_lift_prod_left QuotientMap.continuous_lift_prod_left
 
 theorem QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X → Z}
-    (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g :=
-  by
+    (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
   have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
