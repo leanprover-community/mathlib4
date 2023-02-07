@@ -8,7 +8,7 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Cocompact continuous maps
@@ -181,8 +181,7 @@ theorem tendsto_of_forall_preimage {f : α → β} (h : ∀ s, IsCompact s → I
 /-- If the codomain is Hausdorff, preimages of compact sets are compact under a cocompact
 continuous map. -/
 theorem isCompact_preimage [T2Space β] (f : CocompactMap α β) ⦃s : Set β⦄ (hs : IsCompact s) :
-    IsCompact (f ⁻¹' s) :=
-  by
+    IsCompact (f ⁻¹' s) := by
   obtain ⟨t, ht, hts⟩ :=
     mem_cocompact'.mp
       (by
