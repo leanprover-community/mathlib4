@@ -504,9 +504,11 @@ theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
   rfl
 #align composition.ones_blocks Composition.ones_blocks
 
+-- porting note: TODO, refactor to `List.get`
+set_option linter.deprecated false in
 @[simp]
 theorem ones_blocksFun (n : ℕ) (i : Fin (ones n).length) : (ones n).blocksFun i = 1 := by
-  simp [blocksFun, ones, blocks, i.2]
+  simp only [blocksFun, ones, blocks, i.2, List.nthLe_replicate]
 #align composition.ones_blocks_fun Composition.ones_blocksFun
 
 @[simp]
