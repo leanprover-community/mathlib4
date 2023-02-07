@@ -905,13 +905,17 @@ theorem bliminf_or_le_inf : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f p
   blimsup_sup_le_or (α := αᵒᵈ)
 #align filter.bliminf_or_le_inf Filter.bliminf_or_le_inf
 
+/- Porting note: Replaced `e` with `FunLike.coe e` to override the strange
+ coercion to `↑(RelIso.toRelEmbedding e).toEmbedding`.-/
 theorem OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
-    e (blimsup u f p) = blimsup (e ∘ u) f p := by
-  simp only [blimsup_eq, map_infₛ e, Function.comp_apply]
+    FunLike.coe e (blimsup u f p) = blimsup ((FunLike.coe e) ∘ u) f p := by
+  simp only [blimsup_eq, map_infₛ, Function.comp_apply]
   congr
   ext c
   obtain ⟨a, rfl⟩ := e.surjective c
-  simp
+  -- Porting note: Also needed to add this next line
+  have : ↑(RelIso.toRelEmbedding e).toEmbedding = FunLike.coe e := rfl
+  simp [this]
 #align filter.order_iso.apply_blimsup Filter.OrderIso.apply_blimsup
 
 theorem OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
