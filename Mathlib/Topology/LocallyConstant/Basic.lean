@@ -254,7 +254,9 @@ end IsLocallyConstant
 
 /-- A (bundled) locally constant function from a topological space `X` to a type `Y`. -/
 structure LocallyConstant (X Y : Type _) [TopologicalSpace X] where
+  /-- The underlying function. -/
   protected toFun : X → Y
+  /-- The map is locally constant. -/
   protected isLocallyConstant : IsLocallyConstant toFun
 #align locally_constant LocallyConstant
 
@@ -294,7 +296,7 @@ theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑
   FunLike.ext'
 #align locally_constant.coe_injective LocallyConstant.coe_injective
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_inj {f g : LocallyConstant X Y} : (f : X → Y) = g ↔ f = g :=
   coe_injective.eq_iff
 #align locally_constant.coe_inj LocallyConstant.coe_inj
@@ -323,12 +325,10 @@ def toContinuousMap : C(X, Y) :=
 /-- As a shorthand, `locally_constant.to_continuous_map` is available as a coercion -/
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
 
-theorem toContinuousMap_eq_coe : f.toContinuousMap = f := rfl
-#align locally_constant.to_continuous_map_eq_coe LocallyConstant.toContinuousMap_eq_coe
+-- porting note: became a syntatic `rfl`
+#noalign locally_constant.to_continuous_map_eq_coe
 
-@[simp]
-theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) :=
-  rfl
+@[simp] theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) := rfl
 #align locally_constant.coe_continuous_map LocallyConstant.coe_continuousMap
 
 theorem toContinuousMap_injective :
@@ -582,4 +582,3 @@ theorem mulIndicator_of_not_mem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator
 end Indicator
 
 end LocallyConstant
-
