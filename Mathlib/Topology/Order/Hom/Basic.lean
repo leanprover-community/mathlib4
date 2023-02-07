@@ -18,16 +18,16 @@ This file defines continuous order homomorphisms, that is maps which are both co
 monotone. They are also called Priestley homomorphisms because they are the morphisms of the
 category of Priestley spaces.
 
-We use the `fun_like` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
 
-* `continuous_order_hom`: Continuous monotone functions, aka Priestley homomorphisms.
+* `ContinuousOrderHom`: Continuous monotone functions, aka Priestley homomorphisms.
 
 ## Typeclasses
 
-* `continuous_order_hom_class`
+* `ContinuousOrderHomClass`
 -/
 
 
@@ -46,9 +46,9 @@ infixr:25 " →Co " => ContinuousOrderHom
 
 section
 
-/-- `continuous_order_hom_class F α β` states that `F` is a type of continuous monotone maps.
+/-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
-You should extend this class when you extend `continuous_order_hom`. -/
+You should extend this class when you extend `ContinuousOrderHom`. -/
 class ContinuousOrderHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] extends
     RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
@@ -82,7 +82,7 @@ section Preorder
 
 variable [Preorder β] [TopologicalSpace γ] [Preorder γ] [TopologicalSpace δ] [Preorder δ]
 
-/-- Reinterpret a `continuous_order_hom` as a `continuous_map`. -/
+/-- Reinterpret a `ContinuousOrderHom` as a `ContinuousMap`. -/
 def toContinuousMap (f : α →Co β) : C(α, β) :=
   { f with }
 #align continuous_order_hom.to_continuous_map ContinuousOrderHom.toContinuousMap
@@ -107,7 +107,7 @@ theorem ext {f g : α →Co β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align continuous_order_hom.ext ContinuousOrderHom.ext
 
-/-- Copy of a `continuous_order_hom` with a new `continuous_map` equal to the old one. Useful to fix
+/-- Copy of a `ContinuousOrderHom` with a new `ContinuousMap` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : α →Co β) (f' : α → β) (h : f' = f) : α →Co β :=
   ⟨f.toOrderHom.copy f' h, h.symm.subst f.continuous_toFun⟩
@@ -124,7 +124,7 @@ theorem copy_eq (f : α →Co β) (f' : α → β) (h : f' = f) : f.copy f' h = 
 
 variable (α)
 
-/-- `id` as a `continuous_order_hom`. -/
+/-- `id` as a `ContinuousOrderHom`. -/
 protected def id : α →Co α :=
   ⟨OrderHom.id, continuous_id⟩
 #align continuous_order_hom.id ContinuousOrderHom.id
@@ -144,7 +144,7 @@ theorem id_apply (a : α) : ContinuousOrderHom.id α a = a :=
   rfl
 #align continuous_order_hom.id_apply ContinuousOrderHom.id_apply
 
-/-- Composition of `continuous_order_hom`s as a `continuous_order_hom`. -/
+/-- Composition of `ContinuousOrderHom`s as a `ContinuousOrderHom`. -/
 def comp (f : β →Co γ) (g : α →Co β) : ContinuousOrderHom α γ :=
   ⟨f.toOrderHom.comp g.toOrderHom, f.continuous_toFun.comp g.continuous_toFun⟩
 #align continuous_order_hom.comp ContinuousOrderHom.comp
