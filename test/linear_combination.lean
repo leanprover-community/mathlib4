@@ -3,7 +3,7 @@ import Mathlib.Tactic.LinearCombination
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
+@[instance] axiom Real.linearOrderedField : LinearOrderedField ℝ
 
 /-! ### Simple Cases with ℤ and two or less equations -/
 
