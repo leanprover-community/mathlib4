@@ -51,12 +51,20 @@ theorem mulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
 
 end Mul
 
-@[to_additive (attr := simp)]
+-- Porting note: Removed simp attribute, simpnf linter can simplify lhs. Added aux version below
+@[to_additive]
 theorem swap_mem_mulAntidiagonal [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
     x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 #align set.swap_mem_mul_antidiagonal Set.swap_mem_mulAntidiagonal
 #align set.swap_mem_add_antidiagonal Set.swap_mem_addAntidiagonal
+
+@[to_additive (attr := simp)]
+theorem swap_mem_mulAntidiagonal_aux [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
+     x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
+      ↔ x ∈ Set.mulAntidiagonal t s a := by
+  simp [mul_comm, and_left_comm]
+
 
 namespace MulAntidiagonal
 
