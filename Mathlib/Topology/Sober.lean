@@ -8,7 +8,7 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Separation
+import Mathlib.Topology.Separation
 
 /-!
 # Sober spaces
@@ -97,8 +97,7 @@ theorem mem_closed_set_iff (h : IsGenericPoint x S) (hZ : IsClosed Z) : x ∈ Z 
 #align is_generic_point.mem_closed_set_iff IsGenericPoint.mem_closed_set_iff
 
 protected theorem image (h : IsGenericPoint x S) {f : α → β} (hf : Continuous f) :
-    IsGenericPoint (f x) (closure (f '' S)) :=
-  by
+    IsGenericPoint (f x) (closure (f '' S)) := by
   rw [isGenericPoint_def, ← h.def, ← image_singleton]
   exact
     subset.antisymm (closure_mono (image_subset _ subset_closure))
@@ -108,8 +107,7 @@ protected theorem image (h : IsGenericPoint x S) {f : α → β} (hf : Continuou
 end IsGenericPoint
 
 theorem isGenericPoint_iff_forall_closed (hS : IsClosed S) (hxS : x ∈ S) :
-    IsGenericPoint x S ↔ ∀ Z : Set α, IsClosed Z → x ∈ Z → S ⊆ Z :=
-  by
+    IsGenericPoint x S ↔ ∀ Z : Set α, IsClosed Z → x ∈ Z → S ⊆ Z := by
   have : closure {x} ⊆ S := closure_minimal (singleton_subset_iff.2 hxS) hS
   simp_rw [IsGenericPoint, subset_antisymm_iff, this, true_and_iff, closure, subset_sInter_iff,
     mem_set_of_eq, and_imp, singleton_subset_iff]
@@ -229,8 +227,7 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
 
 /-- A space is quasi sober if it can be covered by open quasi sober subsets. -/
 theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s : Set α))
-    [hS' : ∀ s : S, QuasiSober s] (hS'' : ⋃₀ S = ⊤) : QuasiSober α :=
-  by
+    [hS' : ∀ s : S, QuasiSober s] (hS'' : ⋃₀ S = ⊤) : QuasiSober α := by
   rw [quasiSober_iff]
   intro t h h'
   obtain ⟨x, hx⟩ := h.1
@@ -258,8 +255,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
   exact Set.image_subset _ subset_closure
 #align quasi_sober_of_open_cover quasiSober_of_open_cover
 
-instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α :=
-  by
+instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α := by
   constructor
   rintro S h -
   obtain ⟨x, rfl⟩ := is_irreducible_iff_singleton.mp h
