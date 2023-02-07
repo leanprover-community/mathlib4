@@ -22,11 +22,11 @@ This file sets up the theory of locally constant function from a topological spa
 
 ## Main definitions and constructions
 
-* `is_locally_constant f` : a map `f : X → Y` where `X` is a topological space is locally
+* `IsLocallyConstant f` : a map `f : X → Y` where `X` is a topological space is locally
                             constant if every set in `Y` has an open preimage.
-* `locally_constant X Y` : the type of locally constant maps from `X` to `Y`
-* `locally_constant.map` : push-forward of locally constant maps
-* `locally_constant.comap` : pull-back of locally constant maps
+* `LocallyConstant X Y` : the type of locally constant maps from `X` to `Y`
+* `LocallyConstant.map` : push-forward of locally constant maps
+* `LocallyConstant.comap` : pull-back of locally constant maps
 
 -/
 
@@ -317,12 +317,12 @@ protected theorem continuous : Continuous f :=
   f.isLocallyConstant.continuous
 #align locally_constant.continuous LocallyConstant.continuous
 
-/-- We can turn a locally-constant function into a bundled `continuous_map`. -/
-def toContinuousMap : C(X, Y) :=
+/-- We can turn a locally-constant function into a bundled `ContinuousMap`. -/
+@[coe] def toContinuousMap : C(X, Y) :=
   ⟨f, f.continuous⟩
 #align locally_constant.to_continuous_map LocallyConstant.toContinuousMap
 
-/-- As a shorthand, `locally_constant.to_continuous_map` is available as a coercion -/
+/-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
 
 -- porting note: became a syntatic `rfl`
@@ -348,7 +348,7 @@ theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
   rfl
 #align locally_constant.coe_const LocallyConstant.coe_const
 
-/-- The locally constant function to `fin 2` associated to a clopen set. -/
+/-- The locally constant function to `Fin 2` associated to a clopen set. -/
 def ofClopen {X : Type _} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
     (hU : IsClopen U) : LocallyConstant X (Fin 2) where
   toFun x := if x ∈ U then 0 else 1
@@ -472,7 +472,7 @@ variable [TopologicalSpace Y]
 
 This definition only makes sense if `f` is continuous,
 in which case it sends locally constant functions to their precomposition with `f`.
-See also `locally_constant.coe_comap`.
+See also `LocallyConstant.coe_comap`.
 
 TODO: take `f : C(X, Y)` as an argument? Or we actually use it for discontinuous `f`? -/
 noncomputable def comap (f : X → Y) : LocallyConstant Y Z → LocallyConstant X Z :=
@@ -543,7 +543,7 @@ variable {R : Type _} [One R] {U : Set X} (f : LocallyConstant X R)
 
 open Classical
 
-/-- Given a clopen set `U` and a locally constant function `f`, `locally_constant.mul_indicator`
+/-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
 @[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
   `locally_constant.indicator` returns the locally constant function that is `f` on `U` and `0`
