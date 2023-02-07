@@ -8,9 +8,9 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Bracket
-import Mathbin.GroupTheory.Subgroup.Finite
-import Mathbin.Tactic.Group
+import Mathlib.Data.Bracket
+import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.Tactic.Group
 
 /-!
 # Commutators of Subgroups
@@ -97,8 +97,7 @@ theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁,
   commutator_le.mpr fun g₁ hg₁ g₂ hg₂ => commutator_mem_commutator (h₁ hg₁) (h₂ hg₂)
 #align subgroup.commutator_mono Subgroup.commutator_mono
 
-theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ H₂.centralizer :=
-  by
+theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ H₂.centralizer := by
   rw [eq_bot_iff, commutator_le]
   refine'
     forall_congr' fun p => forall_congr' fun hp => forall_congr' fun q => forall_congr' fun hq => _
@@ -107,8 +106,7 @@ theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ �
 
 /-- **The Three Subgroups Lemma** (via the Hall-Witt identity) -/
 theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁⁆ = ⊥) (h2 : ⁅⁅H₃, H₁⁆, H₂⁆ = ⊥) :
-    ⁅⁅H₁, H₂⁆, H₃⁆ = ⊥ :=
-  by
+    ⁅⁅H₁, H₂⁆, H₃⁆ = ⊥ := by
   simp_rw [commutator_eq_bot_iff_le_centralizer, commutator_le,
     mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2⊢
   intro x hx y hy z hz
@@ -131,8 +129,7 @@ theorem commutator_comm : ⁅H₁, H₂⁆ = ⁅H₂, H₁⁆ :=
 
 section Normal
 
-instance commutator_normal [h₁ : H₁.Normal] [h₂ : H₂.Normal] : Normal ⁅H₁, H₂⁆ :=
-  by
+instance commutator_normal [h₁ : H₁.Normal] [h₂ : H₂.Normal] : Normal ⁅H₁, H₂⁆ := by
   let base : Set G := { x | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = x }
   change (closure base).Normal
   suffices h_base : base = Group.conjugatesOfSet base
@@ -173,8 +170,7 @@ theorem commutator_le_inf [Normal H₁] [Normal H₂] : ⁅H₁, H₂⁆ ≤ H�
 
 end Normal
 
-theorem map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁, map f H₂⁆ :=
-  by
+theorem map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁, map f H₂⁆ := by
   simp_rw [le_antisymm_iff, map_le_iff_le_comap, commutator_le, mem_comap, map_commutatorElement]
   constructor
   · intro p hp q hq
@@ -201,8 +197,7 @@ instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characte
 #align subgroup.commutator_characteristic Subgroup.commutator_characteristic
 
 theorem commutator_prod_prod (K₁ K₂ : Subgroup G') :
-    ⁅H₁.Prod K₁, H₂.Prod K₂⁆ = ⁅H₁, H₂⁆.Prod ⁅K₁, K₂⁆ :=
-  by
+    ⁅H₁.Prod K₁, H₂.Prod K₂⁆ = ⁅H₁, H₂⁆.Prod ⁅K₁, K₂⁆ := by
   apply le_antisymm
   · rw [commutator_le]
     rintro ⟨p₁, p₂⟩ ⟨hp₁, hp₂⟩ ⟨q₁, q₂⟩ ⟨hq₁, hq₂⟩

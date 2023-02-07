@@ -632,6 +632,7 @@ import Mathlib.Dynamics.FixedPoints.Topology
 import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Archimedean
+import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.DoubleCoset
