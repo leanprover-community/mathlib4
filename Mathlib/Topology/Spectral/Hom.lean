@@ -187,9 +187,13 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
 
 @[simp]
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
-    (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g :=
-  rfl
-#align spectral_map.coe_comp_continuous_map SpectralMap.coe_comp_continuousMap
+    (f ∘ g)= (f : ContinuousMap β γ) ∘  (g: ContinuousMap α β) := by
+   rfl
+
+theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
+    (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g := by
+    simp only [@coe_comp]; rfl
+#align spectral_map.coe_comp_continuous_map SpectralMap.coe_comp_continuousMap'
 
 @[simp]
 theorem comp_assoc (f : SpectralMap γ δ) (g : SpectralMap β γ) (h : SpectralMap α β) :
