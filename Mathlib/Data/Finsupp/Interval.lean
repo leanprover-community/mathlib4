@@ -68,7 +68,8 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] {f g : ι →₀ α
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support :=
-    haveI := Classical.decEq ι
+    -- Porting note: not needed?
+    -- haveI := Classical.decEq ι
     f.support ∪ g.support
   mem_support_toFun i := by
     rw [mem_union, ← not_iff_not, not_or, not_mem_support_iff, not_mem_support_iff, not_ne_iff]
