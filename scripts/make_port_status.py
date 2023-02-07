@@ -152,7 +152,7 @@ for num in nums:
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
         _, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
-        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'repo': repo, 'commit': commit})
+        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
 def pr_to_str(pr):
     labels = ' '.join(f'[{l.name}]' for l in pr.labels)
@@ -183,7 +183,10 @@ for node in sorted(graph.nodes):
             if pr_info['commit'] is None:
                 print('PR seems to be missing a source header', node, pr_info)
                 assert(False)
-            new_status.update(mathlib4_pr=pr_info['pr'], source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
+            new_status.update(
+                mathlib4_pr=pr_info['pr'],
+                mathlib4_file=pr_info['fname'],
+                source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
             status += f" mathlib4#{pr_info['pr']} {sha}"
     try:
