@@ -9,7 +9,7 @@ Authors: Chris Hughes, Patrick Stevens
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
