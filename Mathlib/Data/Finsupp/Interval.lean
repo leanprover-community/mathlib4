@@ -45,8 +45,7 @@ variable [Zero α] {f : ι →₀ α} {i : ι} {a : α}
 
 /-- Pointwise `finset.singleton` bundled as a `finsupp`. -/
 @[simps]
-def rangeSingleton (f : ι →₀ α) : ι →₀ Finset α
-    where
+def rangeSingleton (f : ι →₀ α) : ι →₀ Finset α where
   toFun i := {f i}
   support := f.support
   mem_support_toFun i := by
@@ -66,25 +65,24 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] {f g : ι →₀ α
 
 /-- Pointwise `finset.Icc` bundled as a `finsupp`. -/
 @[simps toFun]
-def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α
-    where
+def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support :=
     haveI := Classical.decEq ι
     f.support ∪ g.support
-  mem_support_toFun i :=
-    by
+  mem_support_toFun i := by
     rw [mem_union, ← not_iff_not, not_or, not_mem_support_iff, not_mem_support_iff, not_ne_iff]
     exact Icc_eq_singleton_iff.symm
 #align finsupp.range_Icc Finsupp.rangeIcc
 
 @[simp]
 theorem rangeIcc_support [DecidableEq ι] (f g : ι →₀ α) :
-    (rangeIcc f g).support = f.support ∪ g.support := by convert rfl
+    (rangeIcc f g).support = f.support ∪ g.support := by
+      convert rfl
+
 #align finsupp.range_Icc_support Finsupp.rangeIcc_support
 
-theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i :=
-  mem_Icc
+theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i := mem_Icc
 #align finsupp.mem_range_Icc_apply_iff Finsupp.mem_rangeIcc_apply_iff
 
 end RangeIcc
@@ -93,17 +91,15 @@ section PartialOrder
 
 variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
 
-instance : LocallyFiniteOrder (ι →₀ α) := by
-  haveI := Classical.decEq ι <;> haveI := Classical.decEq α <;>
-    exact
-      LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)
-        fun f g x =>
-        by
-        refine'
-          (mem_finsupp_iff_of_support_subset <| Finset.subset_of_eq <| rangeIcc_support _ _).trans
-            _
-        simp_rw [mem_rangeIcc_apply_iff]
-        exact forall_and
+instance : LocallyFiniteOrder (ι →₀ α) :=
+  haveI := Classical.decEq ι
+  haveI := Classical.decEq α
+  LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)
+    fun f g x => by
+      refine'
+        (mem_finsupp_iff_of_support_subset <| Finset.subset_of_eq <| rangeIcc_support _ _).trans _
+      simp_rw [mem_rangeIcc_apply_iff]
+      exact forall_and
 
 theorem icc_eq [DecidableEq ι] : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := by
   convert rfl
