@@ -336,6 +336,7 @@ import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finsupp.AList
+import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.BigOperators
 import Mathlib.Data.Finsupp.Defs
