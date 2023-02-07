@@ -1470,9 +1470,13 @@ to be executed, or `none` for the halt state, and a `σ` which is the local stat
 not the tape). Because there are an infinite number of programs, this state space is infinite, but
 for a finitely supported TM1 machine and a finite type `σ`, only finitely many of these states are
 reachable. -/
+-- Porting note: Using `notation` instead of `def` to avoid implicit argument problems.
+local notation "Λ'" => Option stmt₁ × σ
+/-
 def Λ' :=
   Option stmt₁ × σ
 #align turing.TM1to0.Λ' Turing.TM1to0.Λ'
+-/
 
 instance : Inhabited Λ' :=
   ⟨(some (M default), default)⟩
@@ -1522,6 +1526,7 @@ theorem tr_respects : Respects (TM1.step M) (TM0.step (tr M)) fun c₁ c₂ => t
       exact TransGen.single (congr_arg some (congr (congr_arg TM0.Cfg.mk rfl) (Tape.write_self T)))
 #align turing.TM1to0.tr_respects Turing.TM1to0.tr_respects
 
+-- Porting note: TODO fix this proof
 theorem tr_eval (l : List Γ) : TM0.eval (tr M) l = TM1.eval M l :=
   (congr_arg _ (tr_eval' _ _ _ tr_respects ⟨some _, _, _⟩)).trans
     (by
@@ -1531,28 +1536,31 @@ theorem tr_eval (l : List Γ) : TM0.eval (tr M) l = TM1.eval M l :=
 
 variable [Fintype σ]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given a finite set of accessible `Λ` machine states, there is a finite set of accessible
 machine states in the target (even though the type `Λ'` is infinite). -/
+-- Porting note: Unfolded `×ˢ` to `Finset.product`.
 noncomputable def trStmts (S : Finset Λ) : Finset Λ' :=
-  TM1.stmts M S ×ˢ Finset.univ
+  Finset.product (TM1.stmts M S) Finset.univ
 #align turing.TM1to0.tr_stmts Turing.TM1to0.trStmts
 
 open Classical
 
 attribute [local simp] TM1.stmts₁_self
 
-theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) : TM0.Supports tr ↑(tr_stmts S) :=
-  ⟨Finset.mem_product.2
-      ⟨Finset.some_mem_insertNone.2 (Finset.mem_bunionᵢ.2 ⟨_, ss.1, TM1.stmts₁_self⟩),
-        Finset.mem_univ _⟩,
-    fun q a q' s h₁ h₂ => by
+theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
+    TM0.Supports (tr M) ↑(trStmts M S) := by
+  constructor
+  · apply Finset.mem_product.2
+    constructor
+    · simp only [TM1.stmts, Finset.mem_insertNone, Option.mem_def, IsEmpty.forall_iff, forall_const]
+    · apply Finset.mem_univ
+  · intro q a q' s h₁ h₂
     rcases q with ⟨_ | q, v⟩; · cases h₁
-    cases' q' with q' v';
-    simp only [tr_stmts, Finset.mem_coe, Finset.mem_product, Finset.mem_univ, and_true_iff] at h₂⊢
+    cases' q' with q' v'
+    simp only [trStmts, Finset.mem_coe, Finset.mem_product, Finset.mem_univ, and_true_iff] at h₂⊢
     cases q'; · exact Multiset.mem_cons_self _ _
     simp only [tr, Option.mem_def] at h₁
-    have := TM1.stmts_supports_stmt ss h₂
+    have := TM1.stmts_supportsStmt ss h₂
     revert this; induction q generalizing v <;> intro hs
     case move d q =>
       cases h₁; refine' TM1.stmts_trans _ h₂
@@ -1563,22 +1571,21 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) : TM0.Supports tr �
       unfold TM1.stmts₁
       exact Finset.mem_insert_of_mem TM1.stmts₁_self
     case load b q IH =>
-      refine' IH (TM1.stmts_trans _ h₂) _ h₁ hs
+      refine' IH _ (TM1.stmts_trans _ h₂) h₁ hs
       unfold TM1.stmts₁
       exact Finset.mem_insert_of_mem TM1.stmts₁_self
-    case
-      branch p q₁ q₂ IH₁ IH₂ =>
-      change cond (p a v) _ _ = ((some q', v'), s) at h₁
-      cases p a v
-      · refine' IH₂ (TM1.stmts_trans _ h₂) _ h₁ hs.2
+    case branch p q₁ q₂ IH₁ IH₂ =>
+      cases h : p a v <;> rw [trAux, h] at h₁
+      · refine' IH₂ _ (TM1.stmts_trans _ h₂) h₁ hs.2
         unfold TM1.stmts₁
         exact Finset.mem_insert_of_mem (Finset.mem_union_right _ TM1.stmts₁_self)
-      · refine' IH₁ (TM1.stmts_trans _ h₂) _ h₁ hs.1
+      · refine' IH₁ _ (TM1.stmts_trans _ h₂) h₁ hs.1
         unfold TM1.stmts₁
         exact Finset.mem_insert_of_mem (Finset.mem_union_left _ TM1.stmts₁_self)
-    case goto l => cases h₁;
+    case goto l =>
+      cases h₁
       exact Finset.some_mem_insertNone.2 (Finset.mem_bunionᵢ.2 ⟨_, hs _ _, TM1.stmts₁_self⟩)
-    case halt => cases h₁⟩
+    case halt => cases h₁
 #align turing.TM1to0.tr_supports Turing.TM1to0.tr_supports
 
 end
@@ -1611,11 +1618,14 @@ finitely long.
 
 namespace TM1to1
 
+-- "TM1to1"
+set_option linter.uppercaseLean3 false
+
 open TM1
 
 section
 
-parameter {Γ : Type _}[Inhabited Γ]
+variable {Γ : Type _} [Inhabited Γ]
 
 theorem exists_enc_dec [Fintype Γ] :
     ∃ (n : _)(enc : Γ → Vector Bool n)(dec : Vector Bool n → Γ),
@@ -1626,15 +1636,15 @@ theorem exists_enc_dec [Fintype Γ] :
   let G : Fin n ↪ Fin n → Bool :=
     ⟨fun a b => a = b, fun a b h =>
       Bool.of_decide_true <| (congr_fun h b).trans <| Bool.decide_true rfl⟩
-  let H := (F.to_embedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
+  let H := (F.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
   classical
-    let enc := H.set_value default (Vector.replicate n ff)
-    exact ⟨_, enc, Function.invFun enc, H.set_value_eq _ _, Function.leftInverse_invFun enc.2⟩
+    let enc := H.setValue default (Vector.replicate n false)
+    exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
-parameter {Λ : Type _}[Inhabited Λ]
+variable {Λ : Type _} [Inhabited Λ]
 
-parameter {σ : Type _}[Inhabited σ]
+variable {σ : Type _} [Inhabited σ]
 
 -- mathport name: exprstmt₁
 local notation "stmt₁" => Stmt Γ Λ σ
@@ -1643,7 +1653,7 @@ local notation "stmt₁" => Stmt Γ Λ σ
 local notation "cfg₁" => Cfg Γ Λ σ
 
 /-- The configuration state of the TM. -/
-inductive Λ' : Type max u_1 u_2 u_3
+inductive Λ'
   | normal : Λ → Λ'
   | write : Γ → stmt₁ → Λ'
 #align turing.TM1to1.Λ' Turing.TM1to1.Λ'
@@ -1661,11 +1671,11 @@ local notation "cfg'" => Cfg Bool Λ' σ
 def readAux : ∀ n, (Vector Bool n → stmt') → stmt'
   | 0, f => f Vector.nil
   | i + 1, f =>
-    Stmt.branch (fun a s => a) (Stmt.move Dir.right <| read_aux i fun v => f (true ::ᵥ v))
-      (Stmt.move Dir.right <| read_aux i fun v => f (false ::ᵥ v))
+    Stmt.branch (fun a s => a) (Stmt.move Dir.right <| readAux i fun v => f (true ::ᵥ v))
+      (Stmt.move Dir.right <| readAux i fun v => f (false ::ᵥ v))
 #align turing.TM1to1.read_aux Turing.TM1to1.readAux
 
-parameter {n : ℕ}(enc : Γ → Vector Bool n)(dec : Vector Bool n → Γ)
+variable {n : ℕ} (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ)
 
 /-- A move left or right corresponds to `n` moves across the super-cell. -/
 def move (d : Dir) (q : stmt') : stmt' :=
@@ -1675,7 +1685,7 @@ def move (d : Dir) (q : stmt') : stmt' :=
 /-- To read a symbol from the tape, we use `read_aux` to traverse the symbol,
 then return to the original position with `n` moves to the left. -/
 def read (f : Γ → stmt') : stmt' :=
-  read_aux n fun v => move Dir.left <| f (dec v)
+  readAux n fun v => move Dir.left <| f (dec v)
 #align turing.TM1to1.read Turing.TM1to1.read
 
 /-- Write a list of bools on the tape. -/
@@ -1687,17 +1697,17 @@ def write : List Bool → stmt' → stmt'
 /-- Translate a normal instruction. For the `write` command, we use a `goto` indirection so that
 we can access the current value of the tape. -/
 def trNormal : stmt₁ → stmt'
-  | stmt.move d q => move d <| tr_normal q
-  | stmt.write f q => read fun a => Stmt.goto fun _ s => Λ'.write (f a s) q
-  | stmt.load f q => read fun a => (Stmt.load fun _ s => f a s) <| tr_normal q
-  | stmt.branch p q₁ q₂ =>
-    read fun a => Stmt.branch (fun _ s => p a s) (tr_normal q₁) (tr_normal q₂)
-  | stmt.goto l => read fun a => Stmt.goto fun _ s => Λ'.normal (l a s)
-  | stmt.halt => Stmt.halt
+  | Stmt.move d q => move d <| trNormal q
+  | Stmt.write f q => read fun a => Stmt.goto fun _ s => Λ'.write (f a s) q
+  | Stmt.load f q => read fun a => (Stmt.load fun _ s => f a s) <| trNormal q
+  | Stmt.branch p q₁ q₂ =>
+    read fun a => Stmt.branch (fun _ s => p a s) (trNormal q₁) (trNormal q₂)
+  | Stmt.goto l => read fun a => Stmt.goto fun _ s => Λ'.normal (l a s)
+  | Stmt.halt => Stmt.halt
 #align turing.TM1to1.tr_normal Turing.TM1to1.trNormal
 
 theorem stepAux_move (d q v T) : stepAux (move d q) v T = stepAux q v ((Tape.move d^[n]) T) := by
-  suffices : ∀ i, step_aux ((stmt.move d^[i]) q) v T = step_aux q v ((tape.move d^[i]) T)
+  suffices : ∀ i, stepAux ((Stmt.move d^[i]) q) v T = stepAux q v ((Tape.move d^[i]) T)
   exact this n
   intro ; induction' i with i IH generalizing T; · rfl
   rw [iterate_succ', step_aux, IH, iterate_succ]
