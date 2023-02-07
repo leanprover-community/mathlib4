@@ -68,7 +68,7 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] {f g : ι →₀ α
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support :=
-    -- Porting note: not needed?
+    -- porting note: Not needed (due to open Classical), in mathlib3 too
     -- haveI := Classical.decEq ι
     f.support ∪ g.support
   mem_support_toFun i := by
@@ -76,11 +76,12 @@ def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
     exact Icc_eq_singleton_iff.symm
 #align finsupp.range_Icc Finsupp.rangeIcc
 
+-- porting note: Added as alternative to rangeIcc_toFun to be used in proof of card_Icc
+lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
+
 @[simp]
 theorem rangeIcc_support [DecidableEq ι] (f g : ι →₀ α) :
-    (rangeIcc f g).support = f.support ∪ g.support := by
-      convert rfl
-
+    (rangeIcc f g).support = f.support ∪ g.support := by convert rfl
 #align finsupp.range_Icc_support Finsupp.rangeIcc_support
 
 theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i := mem_Icc
@@ -93,8 +94,9 @@ section PartialOrder
 variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
 
 instance : LocallyFiniteOrder (ι →₀ α) :=
-  haveI := Classical.decEq ι
-  haveI := Classical.decEq α
+  -- porting note: Not needed (due to open Classical), in mathlib3 too
+  -- haveI := Classical.decEq ι
+  -- haveI := Classical.decEq α
   LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)
     fun f g x => by
       refine'
@@ -108,7 +110,8 @@ theorem icc_eq [DecidableEq ι] : Icc f g = (f.support ∪ g.support).finsupp (f
 
 theorem card_Icc [DecidableEq ι] :
     (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
-  simp_rw [icc_eq, card_finsupp, rangeIcc_toFun]
+  simp_rw [icc_eq, card_finsupp, coe_rangeIcc]
+
 #align finsupp.card_Icc Finsupp.card_Icc
 
 theorem card_Ico [DecidableEq ι] :
