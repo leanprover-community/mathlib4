@@ -43,7 +43,7 @@ def primorial (n : ℕ) : ℕ :=
 local notation x "#" => primorial x
 
 theorem primorial_pos (n : ℕ) : 0 < n# :=
-  prod_pos fun p hp ↦ (mem_filter.1 hp).2.pos
+  prod_pos fun _p hp ↦ (mem_filter.1 hp).2.pos
 #align primorial_pos primorial_pos
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
