@@ -80,8 +80,8 @@ def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
 @[simp]
-theorem rangeIcc_support [DecidableEq ι] (f g : ι →₀ α) :
-    (rangeIcc f g).support = f.support ∪ g.support := by convert rfl
+theorem rangeIcc_support (f g : ι →₀ α) :
+    (rangeIcc f g).support = f.support ∪ g.support := rfl
 #align finsupp.range_Icc_support Finsupp.rangeIcc_support
 
 theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i := mem_Icc
@@ -104,13 +104,13 @@ instance : LocallyFiniteOrder (ι →₀ α) :=
       simp_rw [mem_rangeIcc_apply_iff]
       exact forall_and
 
-theorem icc_eq [DecidableEq ι] : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := by
-  convert rfl
+theorem icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
 #align finsupp.Icc_eq Finsupp.icc_eq
 
 theorem card_Icc [DecidableEq ι] :
     (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
   simp_rw [icc_eq, card_finsupp, coe_rangeIcc]
+
 
 #align finsupp.card_Icc Finsupp.card_Icc
 
