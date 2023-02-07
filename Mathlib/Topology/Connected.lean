@@ -11,6 +11,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Topology.SubsetProperties
+import Mathlib.Tactic.Continuity
 
 /-!
 # Connected subsets of topological spaces
@@ -1449,7 +1450,7 @@ theorem quotientMap_coe : QuotientMap (mk : α → ConnectedComponents α) :=
   quotientMap_quot_mk
 #align connected_components.quotient_map_coe ConnectedComponents.quotientMap_coe
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_coe : Continuous (mk : α → ConnectedComponents α) :=
   quotientMap_coe.continuous
 #align connected_components.continuous_coe ConnectedComponents.continuous_coe
@@ -1477,7 +1478,7 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
   Quotient.liftOn' x f h.image_eq_of_connectedComponent_eq
 #align continuous.connected_components_lift Continuous.connectedComponentsLift
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
   h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq

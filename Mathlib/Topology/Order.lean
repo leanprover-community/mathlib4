@@ -9,6 +9,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Basic
+import Mathlib.Tactic.Continuity
 
 /-!
 # Ordering on topologies and (co)induced topologies
@@ -287,7 +288,7 @@ theorem isClosed_discrete [TopologicalSpace α] [DiscreteTopology α] (s : Set �
   ⟨isOpen_discrete _⟩
 #align is_closed_discrete isClosed_discrete
 
-@[nontriviality] -- todo: add `continuity`
+@[nontriviality, continuity]
 theorem continuous_of_discreteTopology [TopologicalSpace α] [DiscreteTopology α]
     [TopologicalSpace β] {f : α → β} : Continuous f :=
   continuous_def.2 fun _ _ => isOpen_discrete _
@@ -702,7 +703,7 @@ theorem continuous_generateFrom {t : TopologicalSpace α} {b : Set (Set β)}
   continuous_iff_coinduced_le.2 <| le_generateFrom h
 #align continuous_generated_from continuous_generateFrom
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
   continuous_iff_le_induced.2 le_rfl
 #align continuous_induced_dom continuous_induced_dom
@@ -806,12 +807,12 @@ theorem continuous_infᵢ_rng {t₁ : TopologicalSpace α} {t₂ : ι → Topolo
   simp only [continuous_iff_coinduced_le, le_infᵢ_iff]
 #align continuous_infi_rng continuous_infᵢ_rng
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_bot {t : TopologicalSpace β} : Continuous[⊥, t] f :=
   continuous_iff_le_induced.2 bot_le
 #align continuous_bot continuous_bot
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_top {t : TopologicalSpace α} : Continuous[t, ⊤] f :=
   continuous_iff_coinduced_le.2 le_top
 #align continuous_top continuous_top
