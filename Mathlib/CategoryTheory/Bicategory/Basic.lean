@@ -133,15 +133,10 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
 namespace Bicategory
 
 scoped infixr:81 " ◁ " => Bicategory.whiskerLeft
-
 scoped infixl:81 " ▷ " => Bicategory.whiskerRight
-
 scoped notation "α_" => Bicategory.associator
-
 scoped notation "λ_" => Bicategory.leftUnitor
-
 scoped notation "ρ_" => Bicategory.rightUnitor
-
 
 /-!
 ### Simp-normal form for 2-morphisms
@@ -468,12 +463,12 @@ theorem whiskerLeft_rightUnitor_inv (f : a ⟶ b) (g : b ⟶ c) :
 #align category_theory.bicategory.whisker_left_right_unitor_inv CategoryTheory.Bicategory.whiskerLeft_rightUnitor_inv
 
 /-
-It is not so obvious whether `left_unitor_whiskerRight` or `left_unitor_comp` should be a simp
+It is not so obvious whether `leftUnitor_whiskerRight` or `leftUnitor_comp` should be a simp
 lemma. Our choice is the former. One reason is that the latter yields the following loop:
 [id_whiskerLeft]   : 𝟙 a ◁ (ρ_ f).hom ==> (λ_ (f ≫ 𝟙 b)).hom ≫ (ρ_ f).hom ≫ (λ_ f).inv
-[left_unitor_comp]  : (λ_ (f ≫ 𝟙 b)).hom ==> (α_ (𝟙 a) f (𝟙 b)).inv ≫ (λ_ f).hom ▷ 𝟙 b
+[leftUnitor_comp]  : (λ_ (f ≫ 𝟙 b)).hom ==> (α_ (𝟙 a) f (𝟙 b)).inv ≫ (λ_ f).hom ▷ 𝟙 b
 [whiskerRight_id]  : (λ_ f).hom ▷ 𝟙 b ==> (ρ_ (𝟙 a ≫ f)).hom ≫ (λ_ f).hom ≫ (ρ_ f).inv
-[right_unitor_comp] : (ρ_ (𝟙 a ≫ f)).hom ==> (α_ (𝟙 a) f (𝟙 b)).hom ≫ 𝟙 a ◁ (ρ_ f).hom
+[rightUnitor_comp] : (ρ_ (𝟙 a ≫ f)).hom ==> (α_ (𝟙 a) f (𝟙 b)).hom ≫ 𝟙 a ◁ (ρ_ f).hom
 -/
 @[reassoc]
 theorem leftUnitor_comp (f : a ⟶ b) (g : b ⟶ c) :
