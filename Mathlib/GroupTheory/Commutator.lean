@@ -90,17 +90,17 @@ theorem commutator_mem_commutator (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) 
 
 theorem commutator_le : ⁅H₁, H₂⁆ ≤ H₃ ↔ ∀ g₁ ∈ H₁, ∀ g₂ ∈ H₂, ⁅g₁, g₂⁆ ∈ H₃ :=
   H₃.closure_le.trans
-    ⟨fun h a b c d => h ⟨a, b, c, d, rfl⟩, fun h g ⟨a, b, c, d, h_eq⟩ => h_eq ▸ h a b c d⟩
+    ⟨fun h a b c d => h ⟨a, b, c, d, rfl⟩, fun h _g ⟨a, b, c, d, h_eq⟩ => h_eq ▸ h a b c d⟩
 #align subgroup.commutator_le Subgroup.commutator_le
 
 theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁, H₂⁆ ≤ ⁅K₁, K₂⁆ :=
-  commutator_le.mpr fun g₁ hg₁ g₂ hg₂ => commutator_mem_commutator (h₁ hg₁) (h₂ hg₂)
+  commutator_le.mpr fun _g₁ hg₁ _g₂ hg₂ => commutator_mem_commutator (h₁ hg₁) (h₂ hg₂)
 #align subgroup.commutator_mono Subgroup.commutator_mono
 
 theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ H₂.centralizer := by
   rw [eq_bot_iff, commutator_le]
   refine'
-    forall_congr' fun p => forall_congr' fun hp => forall_congr' fun q => forall_congr' fun hq => _
+    forall_congr' fun p => forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => _
   rw [mem_bot, commutatorElement_eq_one_iff_mul_comm, eq_comm]
 #align subgroup.commutator_eq_bot_iff_le_centralizer Subgroup.commutator_eq_bot_iff_le_centralizer
 
@@ -147,7 +147,7 @@ theorem commutator_def' [H₁.Normal] [H₂.Normal] :
 #align subgroup.commutator_def' Subgroup.commutator_def'
 
 theorem commutator_le_right [h : H₂.Normal] : ⁅H₁, H₂⁆ ≤ H₂ :=
-  commutator_le.mpr fun g₁ h₁ g₂ h₂ => H₂.mul_mem (h.conj_mem g₂ h₂ g₁) (H₂.inv_mem h₂)
+  commutator_le.mpr fun g₁ _h₁ g₂ h₂ => H₂.mul_mem (h.conj_mem g₂ h₂ g₁) (H₂.inv_mem h₂)
 #align subgroup.commutator_le_right Subgroup.commutator_le_right
 
 theorem commutator_le_left [H₁.Normal] : ⁅H₁, H₂⁆ ≤ H₁ :=
@@ -217,7 +217,7 @@ See `commutator_pi_pi_of_finite` for equality given `fintype η`.
 theorem commutator_pi_pi_le {η : Type _} {Gs : η → Type _} [∀ i, Group (Gs i)]
     (H K : ∀ i, Subgroup (Gs i)) :
     ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ ≤ Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ :=
-  commutator_le.mpr fun p hp q hq i hi => commutator_mem_commutator (hp i hi) (hq i hi)
+  commutator_le.mpr fun _p hp _q hq i hi => commutator_mem_commutator (hp i hi) (hq i hi)
 #align subgroup.commutator_pi_pi_le Subgroup.commutator_pi_pi_le
 
 /-- The commutator of a finite direct product is contained in the direct product of the commutators.
@@ -233,7 +233,7 @@ theorem commutator_pi_pi_of_finite {η : Type _} [Finite η] {Gs : η → Type _
       rw [map_commutator]
       apply commutator_mono <;>
         · rw [le_pi_iff]
-          intro j hj
+          intro j _hj
           rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩
           by_cases h : j = i
           · subst h
