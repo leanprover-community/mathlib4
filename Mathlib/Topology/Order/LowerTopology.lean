@@ -8,9 +8,9 @@ Authors: Christopher Hoskin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Homeomorph
-import Mathbin.Topology.Order.Lattice
-import Mathbin.Order.Hom.CompleteLattice
+import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Order.Lattice
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Lower topology
@@ -186,15 +186,13 @@ theorem isClosed_Ici (a : α) : IsClosed (Ici a) :=
 #align lower_topology.is_closed_Ici LowerTopology.isClosed_Ici
 
 /-- The upper closure of a finite set is closed in the lower topology. -/
-theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) :=
-  by
+theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.infᵢ_Ici, UpperSet.coe_infᵢ]
   exact isClosed_bunionᵢ h fun a h₁ => isClosed_Ici a
 #align lower_topology.is_closed_upper_closure LowerTopology.isClosed_upperClosure
 
 /-- Every set open in the lower topology is a lower set. -/
-theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s :=
-  by
+theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   rw [is_open_iff_generate_Ici_compl] at h
   induction h
   case basic u h => obtain ⟨a, rfl⟩ := h; exact (isUpperSet_Ici a).compl
@@ -217,8 +215,7 @@ theorem closure_singleton (a : α) : closure {a} = Ici a :=
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 #align lower_topology.closure_singleton LowerTopology.closure_singleton
 
-protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) :=
-  by
+protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
   convert is_topological_basis_of_subbasis (topology_eq_lower_topology α)
   simp_rw [lower_basis, coe_upperClosure, compl_Union]
   ext s
@@ -273,8 +270,7 @@ section CompleteLattice
 variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [LowerTopology α]
   [TopologicalSpace β] [LowerTopology β]
 
-theorem InfₛHom.continuous (f : InfₛHom α β) : Continuous f :=
-  by
+theorem InfₛHom.continuous (f : InfₛHom α β) : Continuous f := by
   convert continuous_generateFrom _
   · exact LowerTopology.topology_eq_lowerTopology β
   rintro _ ⟨b, rfl⟩
