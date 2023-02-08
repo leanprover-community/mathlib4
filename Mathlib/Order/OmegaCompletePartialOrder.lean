@@ -595,8 +595,9 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 @[inherit_doc]
 infixr:25 " →𝒄 " => ContinuousHom
-
 -- Input: \r\MIc
+
+/-! todo: should we make this a OrderHomClass instead of a CoeFun? -/
 instance : CoeFun (α →𝒄 β) fun _ => α → β :=
   ⟨fun f => f.toOrderHom.toFun⟩
 
@@ -605,11 +606,17 @@ instance : Coe (α →𝒄 β) (α →o β) where coe := ContinuousHom.toOrderHo
 instance : PartialOrder (α →𝒄 β) :=
   (PartialOrder.lift fun f => f.toOrderHom.toFun) <| by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ h; congr
 
-initialize_simps_projections ContinuousHom (toFun → apply)
-
 end
 
 namespace ContinuousHom
+
+/-- See Note [custom simps projection]. We specify this explicitly because we don't have a FunLike
+instance.
+-/
+def Simps.apply (h : α →𝒄 β) : α → β :=
+  h
+
+initialize_simps_projections ContinuousHom (toFun → apply)
 
 theorem congr_fun {f g : α →𝒄 β} (h : f = g) (x : α) : f x = g x :=
   congr_arg (fun h : α →𝒄 β => h x) h

@@ -220,7 +220,10 @@ namespace OrderHom
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
 /-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
-directly. -/
+directly.
+Remark(Floris): I think this instance is a really bad idea because now applications of
+`FunLike.coe` are not being simplified by `simp`, unlike all other hom-classes.
+Todo: fix after port.-/
 instance : CoeFun (α →o β) fun _ => α → β :=
   ⟨OrderHom.toFun⟩
 
@@ -238,8 +241,14 @@ instance : OrderHomClass (α →o β) α β where
     cases f
     cases g
     congr
-  map_rel f _ _ h := f.monotone h
+  map_rel f _ _ h := f.monotone' h
 
+/-- See Note [custom simps projection]. We give this manually so that we use `toFun` as the
+projection directly instead. -/
+def Simps.coe (f : α →o β) : α → β := f
+
+/- Todo: all other FunLike classes use `apply` instead of `coe`
+for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
 -- Porting note: dropped `to_fun_eq_coe` as it is a tautology now.

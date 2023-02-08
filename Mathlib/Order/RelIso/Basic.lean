@@ -246,6 +246,13 @@ instance : RelHomClass (r ↪r s) r s where
     congr
   map_rel f a b := Iff.mpr (map_rel_iff' f)
 
+
+/-- See Note [custom simps projection]. We specify this explicitly because we have a coercion not
+given by the `FunLike` instance. Todo: remove that instance?
+-/
+def Simps.apply (h : r ↪r s) : α → β :=
+  h
+
 initialize_simps_projections RelEmbedding (toFun → apply)
 
 theorem injective (f : r ↪r s) : Injective f :=
