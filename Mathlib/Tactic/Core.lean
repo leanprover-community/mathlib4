@@ -95,16 +95,6 @@ end Lean
 
 namespace Lean.Elab.Tactic
 
-/-- 
-Variant on `rewriteTarget` that behaves more like the Lean 3 version 
--/
-def rewriteTarget' (stx : Syntax) (symm : Bool) : TacticM Unit := do
-  Term.withSynthesize <| withMainContext do
-    let e ← elabTerm stx none true
-    let r ← (← getMainGoal).rewrite (← getMainTarget) e symm (config := {})
-    let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
-    replaceMainGoal ([mvarId'])
-
 /--
 Run a tactic on all goals, and always succeeds.
 
@@ -135,7 +125,7 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
 def andThenOnSubgoals (tac1 : TacticM Unit)  (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2
 
-variable [Monad m] [MonadExceptOf Exception m]
+variable [Monad m] [MonadExcept Exception m]
 
 /-- Repeats a tactic at most `n` times, stopping sooner if the
 tactic fails. Always succeeds. -/
