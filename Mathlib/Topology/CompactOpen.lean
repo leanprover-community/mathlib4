@@ -145,6 +145,7 @@ theorem continuous_comp' [LocallyCompactSpace β] :
       rintro ⟨φ₀, ψ₀⟩ H
       obtain ⟨L, hL, hKL, hLU⟩ := exists_compact_between (hK.image φ₀.2) (hU.preimage ψ₀.2) H
       use { φ : C(α, β) | φ '' K ⊆ interior L } ×ˢ { ψ : C(β, γ) | ψ '' L ⊆ U }
+      -- porting note: typing hint `: φ '' K ⊆ interior L` wasn't previously required
       use fun ⟨φ, ψ⟩ ⟨(hφ : φ '' K ⊆ interior L), hψ⟩ =>
         subset_trans hφ (interior_subset.trans <| image_subset_iff.mp hψ)
       use (ContinuousMap.isOpen_gen hK isOpen_interior).prod (ContinuousMap.isOpen_gen hL hU)
