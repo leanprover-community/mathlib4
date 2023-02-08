@@ -242,7 +242,8 @@ end Group
 
 section Hom
 
-variable {α A B : Type _}
+-- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
+variable {A B α : Type _}
 
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
 
@@ -260,8 +261,8 @@ noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     let ⟨y, hy⟩ := hf x
     ⟨f <| RootableBy.root y n,
       (by rw [← hpow (RootableBy.root y n) n, RootableBy.root_cancel _ hn, hy] : _ ^ n = x)⟩
-#align function.surjective.rootable_by Function.Surjective.rootableBy
-#align function.surjective.divisible_by Function.Surjective.divisibleBy
+#align function.surjective.rootable_by Function.Surjective.rootableByₓ
+#align function.surjective.divisible_by Function.Surjective.divisibleByₓ
 
 @[to_additive DivisibleBy.surjective_smul]
 theorem RootableBy.surjective_pow (A α : Type _) [Monoid A] [Pow A α] [Zero α] [RootableBy A α]
@@ -277,7 +278,7 @@ section Quotient
 variable (α : Type _) {A : Type _} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
-@[to_additive QuotientAddGroup.divisibleBy "Any quotient group of a divisible group is divisible"]
+@[to_additive "Any quotient group of a divisible group is divisible"]
 noncomputable instance QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ :=
   QuotientGroup.mk_surjective.rootableBy _ fun _ _ => rfl
 #align quotient_group.rootable_by QuotientGroup.rootableBy
