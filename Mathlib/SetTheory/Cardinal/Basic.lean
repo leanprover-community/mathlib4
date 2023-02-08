@@ -714,11 +714,12 @@ instance : NoMaxOrder Cardinal.{u} :=
 
 instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
   { (inferInstance : CanonicallyOrderedAddMonoid Cardinal),
-    Cardinal.partialOrder with
+    -- Porting note: Needed to add .{u} below
+    Cardinal.partialOrder.{u} with
     le_total := by
       rintro ⟨α⟩ ⟨β⟩
       apply Embedding.total
-    decidable_le := Classical.decRel _ }
+    decidable_le := Classical.decRel _}
 
 -- short-circuit type class inference
 instance : DistribLattice Cardinal.{u} := inferInstance
@@ -730,8 +731,8 @@ theorem one_lt_iff_nontrivial {α : Type u} : 1 < (#α) ↔ Nontrivial α := by
 theorem power_le_max_power_one {a b c : Cardinal} (h : b ≤ c) : (a^b) ≤ max (a^c) 1 :=
   by
   by_cases ha : a = 0
-  simp [ha, zero_power_le]
-  exact (power_le_power_left ha h).trans (le_max_left _ _)
+  · simp [ha, zero_power_le]
+  · exact (power_le_power_left ha h).trans (le_max_left _ _)
 #align cardinal.power_le_max_power_one Cardinal.power_le_max_power_one
 
 theorem power_le_power_right {a b c : Cardinal} : a ≤ b → (a^c) ≤ (b^c) :=
@@ -746,15 +747,17 @@ end OrderProperties
 
 protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
   ⟨fun a =>
-    by_contradiction fun h => by
+    byContradiction fun h => by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
       let f : ι → Cardinal := Subtype.val
       haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
       obtain ⟨⟨c : Cardinal, hc : ¬Acc (· < ·) c⟩, ⟨h_1 : ∀ j, (f ⟨c, hc⟩).out ↪ (f j).out⟩⟩ :=
-        embedding.min_injective fun i => (f i).out
-      apply hc (Acc.intro _ fun j h' => by_contradiction fun hj => h'.2 _)
+        Embedding.min_injective fun i => (f i).out
+      apply hc (Acc.intro _ fun j h' => byContradiction fun hj => h'.2 _)
+      -- Porting note: Needed to add this intro
+      intro j _ hj
       have : (#_) ≤ (#_) := ⟨h_1 ⟨j, hj⟩⟩
-      simpa only [f, mk_out] using this⟩
+      simpa only [mk_out] using this⟩
 #align cardinal.lt_wf Cardinal.lt_wf
 
 instance : WellFoundedRelation Cardinal.{u} :=
@@ -771,13 +774,16 @@ instance : ConditionallyCompleteLinearOrderBot Cardinal :=
 
 @[simp]
 theorem infₛ_empty : infₛ (∅ : Set Cardinal.{u}) = 0 :=
-  dif_neg not_nonempty_empty
+  dif_neg Set.not_nonempty_empty
 #align cardinal.Inf_empty Cardinal.infₛ_empty
 
-/-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
+/-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`.-/
 instance : SuccOrder Cardinal :=
-  SuccOrder.ofSuccLeIff (fun c => infₛ { c' | c < c' }) fun a b =>
-    ⟨lt_of_lt_of_le <| cinfₛ_mem <| exists_gt a, cinfₛ_le'⟩
+  SuccOrder.ofSuccLeIff (fun c => infₛ { c' | c < c' })
+    -- Porting note: Needed to insert `by apply` in the next line
+    ⟨by apply lt_of_lt_of_le <| cinfₛ_mem <| exists_gt _,
+    -- Porting note used to be just `cinfₛ_le'`
+    fun h ↦ by apply cinfₛ_le'; exact h⟩
 
 theorem succ_def (c : Cardinal) : succ c = infₛ { c' | c < c' } :=
   rfl
@@ -812,22 +818,22 @@ def sum {ι} (f : ι → Cardinal) : Cardinal :=
 #align cardinal.sum Cardinal.sum
 
 theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
-  rw [← Quotient.out_eq (f i)] <;>
-    exact ⟨⟨fun a => ⟨i, a⟩, fun a b h => eq_of_hEq <| by injection h⟩⟩
+  rw [← Quotient.out_eq (f i)]
+  exact ⟨⟨fun a => ⟨i, a⟩, fun a b h => by injection h⟩⟩
 #align cardinal.le_sum Cardinal.le_sum
 
 @[simp]
 theorem mk_sigma {ι} (f : ι → Type _) : (#Σi, f i) = sum fun i => #f i :=
-  mk_congr <| Equiv.sigmaCongrRight fun i => outMkEquiv.symm
+  mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 #align cardinal.mk_sigma Cardinal.mk_sigma
 
 @[simp]
 theorem sum_const (ι : Type u) (a : Cardinal.{v}) :
-    (sum fun i : ι => a) = lift.{v} (#ι) * lift.{u} a :=
+    (sum fun _ : ι => a) = lift.{v} (#ι) * lift.{u} a :=
   inductionOn a fun α =>
     mk_congr <|
       calc
-        (Σi : ι, Quotient.out (#α)) ≃ ι × Quotient.out (#α) := Equiv.sigmaEquivProd _ _
+        (Σ _ : ι, Quotient.out (#α)) ≃ ι × Quotient.out (#α) := Equiv.sigmaEquivProd _ _
         _ ≃ ULift ι × ULift α := Equiv.ulift.symm.prodCongr (outMkEquiv.trans Equiv.ulift.symm)
 
 #align cardinal.sum_const Cardinal.sum_const
@@ -837,8 +843,9 @@ theorem sum_const' (ι : Type u) (a : Cardinal.{u}) : (sum fun _ : ι => a) = (#
 
 @[simp]
 theorem sum_add_distrib {ι} (f g : ι → Cardinal) : sum (f + g) = sum f + sum g := by
-  simpa only [mk_sigma, mk_sum, mk_out, lift_id] using
-    mk_congr (Equiv.sigmaSumDistrib (Quotient.out ∘ f) (Quotient.out ∘ g))
+  have := mk_congr (Equiv.sigmaSumDistrib (Quotient.out ∘ f) (Quotient.out ∘ g))
+  simp only [comp_apply, mk_sigma, mk_sum, mk_out, lift_id] at this
+  exact this
 #align cardinal.sum_add_distrib Cardinal.sum_add_distrib
 
 @[simp]
@@ -857,8 +864,8 @@ theorem lift_sum {ι : Type u} (f : ι → Cardinal.{v}) :
 #align cardinal.lift_sum Cardinal.lift_sum
 
 theorem sum_le_sum {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : sum f ≤ sum g :=
-  ⟨(Embedding.refl _).sigma_map fun i =>
-      Classical.choice <| by have := H i <;> rwa [← Quot.out_eq (f i), ← Quot.out_eq (g i)] at this⟩
+  ⟨(Embedding.refl _).sigmaMap fun i =>
+      Classical.choice <| by have := H i; rwa [← Quot.out_eq (f i), ← Quot.out_eq (g i)] at this⟩
 #align cardinal.sum_le_sum Cardinal.sum_le_sum
 
 theorem mk_le_mk_mul_of_mk_preimage_le {c : Cardinal} (f : α → β) (hf : ∀ b : β, (#f ⁻¹' {b}) ≤ c) :
@@ -886,7 +893,8 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
 theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
   ⟨_, by
     rintro a ⟨i, rfl⟩
-    exact le_sum f i⟩
+    -- Porting note: Added universe reference below
+    exact le_sum.{v,u} f i⟩
 #align cardinal.bdd_above_range Cardinal.bddAbove_range
 
 instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) :=
@@ -911,9 +919,8 @@ theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :
     ext x
     refine' ⟨_, fun hx => ⟨e ⟨x, hx⟩, _⟩⟩
     · rintro ⟨a, rfl⟩
-      exact (e.symm a).Prop
-    · simp_rw [Subtype.val_eq_coe, Equiv.symm_apply_apply]
-      rfl⟩
+      exact (e.symm a).2
+    · simp_rw [Equiv.symm_apply_apply]⟩
 #align cardinal.bdd_above_iff_small Cardinal.bddAbove_iff_small
 
 theorem bddAbove_of_small (s : Set Cardinal.{u}) [h : Small.{u} s] : BddAbove s :=
@@ -921,21 +928,21 @@ theorem bddAbove_of_small (s : Set Cardinal.{u}) [h : Small.{u} s] : BddAbove s 
 #align cardinal.bdd_above_of_small Cardinal.bddAbove_of_small
 
 theorem bddAbove_image (f : Cardinal.{u} → Cardinal.{max u v}) {s : Set Cardinal.{u}}
-    (hs : BddAbove s) : BddAbove (f '' s) :=
-  by
-  rw [bdd_above_iff_small] at hs⊢
-  exact small_lift _
+    (hs : BddAbove s) : BddAbove (f '' s) := by
+  rw [bddAbove_iff_small] at hs ⊢
+  -- Porting note: added universes below
+  exact small_lift.{_,v,_} _
 #align cardinal.bdd_above_image Cardinal.bddAbove_image
 
 theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbove (range f))
     (g : Cardinal.{v} → Cardinal.{max v w}) : BddAbove (range (g ∘ f)) :=
   by
   rw [range_comp]
-  exact bdd_above_image g hf
+  exact bddAbove_image.{v,w} g hf
 #align cardinal.bdd_above_range_comp Cardinal.bddAbove_range_comp
 
 theorem supᵢ_le_sum {ι} (f : ι → Cardinal) : supᵢ f ≤ sum f :=
-  csupᵢ_le' <| le_sum _
+  csupᵢ_le' <| le_sum.{u_2,u_1} _
 #align cardinal.supr_le_sum Cardinal.supᵢ_le_sum
 
 theorem sum_le_supᵢ_lift {ι : Type u} (f : ι → Cardinal.{max u v}) : sum f ≤ (#ι).lift * supᵢ f :=
