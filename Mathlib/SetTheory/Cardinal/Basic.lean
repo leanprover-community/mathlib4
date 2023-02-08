@@ -886,7 +886,9 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
                   simp [Set.preimage])
                 Equiv.ulift.symm)).trans_le
         (hf b)
-#align cardinal.lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le Cardinal.lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le
+#align
+  cardinal.lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le
+  Cardinal.lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le
 
 /-- The range of an indexed cardinal function, whose outputs live in a higher universe than the
     inputs, is always bounded above. -/
@@ -1306,10 +1308,12 @@ theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < (b^a) :=
   exact (cantor a).trans_le (power_le_power_right hb)
 #align cardinal.cantor' Cardinal.cantor'
 
-theorem one_le_iff_pos {c : Cardinal} : 1 ≤ c ↔ 0 < c := by rw [← succ_zero, succ_le_iff]
+theorem one_le_iff_pos {c : Cardinal} : 1 ≤ c ↔ 0 < c := by
+  rw [← succ_zero, succ_le_iff]
 #align cardinal.one_le_iff_pos Cardinal.one_le_iff_pos
 
-theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by rw [one_le_iff_pos, pos_iff_ne_zero]
+theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
+  rw [one_le_iff_pos, pos_iff_ne_zero]
 #align cardinal.one_le_iff_ne_zero Cardinal.one_le_iff_ne_zero
 
 theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
@@ -1967,7 +1971,8 @@ theorem mk_set_eq_nat_iff_finset {α} {s : Set α} {n : ℕ} :
     exact mk_coe_finset
 #align cardinal.mk_set_eq_nat_iff_finset Cardinal.mk_set_eq_nat_iff_finset
 
-theorem mk_eq_nat_iff_finset {n : ℕ} : (#α) = n ↔ ∃ t : Finset α, (t : Set α) = univ ∧ t.card = n :=
+theorem mk_eq_nat_iff_finset {n : ℕ} :
+    (#α) = n ↔ ∃ t : Finset α, (t : Set α) = univ ∧ t.card = n :=
   by rw [← mk_univ, mk_set_eq_nat_iff_finset]
 #align cardinal.mk_eq_nat_iff_finset Cardinal.mk_eq_nat_iff_finset
 
@@ -2012,7 +2017,8 @@ theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : (#s) ≤ (#t) :=
   ⟨Set.embeddingOfSubset s t h⟩
 #align cardinal.mk_le_mk_of_subset Cardinal.mk_le_mk_of_subset
 
-theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) : (#{ x // p x }) ≤ (#{ x // q x }) :=
+theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
+    (#{ x // p x }) ≤ (#{ x // q x }) :=
   ⟨embeddingOfSubset _ _ h⟩
 #align cardinal.mk_subtype_mono Cardinal.mk_subtype_mono
 
@@ -2024,7 +2030,8 @@ theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : (#(S \ T : Set α)) + (#T)
   (mk_union_of_disjoint <| disjoint_sdiff_self_left).symm.trans <| by rw [diff_union_of_subset h]
 #align cardinal.mk_diff_add_mk Cardinal.mk_diff_add_mk
 
-theorem mk_union_le_aleph0 {α} {P Q : Set α} : (#(P ∪ Q : Set α)) ≤ ℵ₀ ↔ (#P) ≤ ℵ₀ ∧ (#Q) ≤ ℵ₀ := by
+theorem mk_union_le_aleph0 {α} {P Q : Set α} :
+    (#(P ∪ Q : Set α)) ≤ ℵ₀ ↔ (#P) ≤ ℵ₀ ∧ (#Q) ≤ ℵ₀ := by
   simp
 #align cardinal.mk_union_le_aleph_0 Cardinal.mk_union_le_aleph0
 
@@ -2076,20 +2083,26 @@ theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α →
 theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) (h2 : s ⊆ range f) : lift.{v} (#f ⁻¹' s) = lift.{u} (#s) :=
   le_antisymm (mk_preimage_of_injective_lift f s h) (mk_preimage_of_subset_range_lift f s h2)
-#align cardinal.mk_preimage_of_injective_of_subset_range_lift Cardinal.mk_preimage_of_injective_of_subset_range_lift
+#align
+  cardinal.mk_preimage_of_injective_of_subset_range_lift
+  Cardinal.mk_preimage_of_injective_of_subset_range_lift
 
-theorem mk_preimage_of_injective (f : α → β) (s : Set β) (h : Injective f) : (#f ⁻¹' s) ≤ (#s) := by
+theorem mk_preimage_of_injective (f : α → β) (s : Set β) (h : Injective f) :
+    (#f ⁻¹' s) ≤ (#s) := by
   convert mk_preimage_of_injective_lift.{u, u} f s h using 1 <;> rw [lift_id]
 #align cardinal.mk_preimage_of_injective Cardinal.mk_preimage_of_injective
 
-theorem mk_preimage_of_subset_range (f : α → β) (s : Set β) (h : s ⊆ range f) : (#s) ≤ (#f ⁻¹' s) :=
-  by convert mk_preimage_of_subset_range_lift.{u, u} f s h using 1 <;> rw [lift_id]
+theorem mk_preimage_of_subset_range (f : α → β) (s : Set β) (h : s ⊆ range f) :
+    (#s) ≤ (#f ⁻¹' s) := by
+  convert mk_preimage_of_subset_range_lift.{u, u} f s h using 1 <;> rw [lift_id]
 #align cardinal.mk_preimage_of_subset_range Cardinal.mk_preimage_of_subset_range
 
 theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h : Injective f)
     (h2 : s ⊆ range f) : (#f ⁻¹' s) = (#s) := by
   convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
-#align cardinal.mk_preimage_of_injective_of_subset_range Cardinal.mk_preimage_of_injective_of_subset_range
+#align
+  cardinal.mk_preimage_of_injective_of_subset_range
+  Cardinal.mk_preimage_of_injective_of_subset_range
 
 theorem mk_subset_ge_of_subset_image_lift {α : Type u} {β : Type v} (f : α → β) {s : Set α}
     {t : Set β} (h : t ⊆ f '' s) : lift.{u} (#t) ≤ lift.{v} (#({ x ∈ s | f x ∈ t } : Set α)) :=
@@ -2150,9 +2163,9 @@ theorem exists_not_mem_of_length_lt {α : Type _} (l : List α) (h : ↑l.length
   contrapose! h
   calc
     (#α) = (#(Set.univ : Set α)) := mk_univ.symm
-    _ ≤ (#l.to_finset) := mk_le_mk_of_subset fun x _ => list.mem_to_finset.mpr (h x)
-    _ = l.to_finset.card := Cardinal.mk_coe_finset
-    _ ≤ l.length := cardinal.nat_cast_le.mpr (List.toFinset_card_le l)
+    _ ≤ (#l.toFinset) := mk_le_mk_of_subset fun x _ => List.mem_toFinset.mpr (h x)
+    _ = l.toFinset.card := Cardinal.mk_coe_finset
+    _ ≤ l.length := Cardinal.natCast_le.mpr (List.toFinset_card_le l)
 
 #align cardinal.exists_not_mem_of_length_lt Cardinal.exists_not_mem_of_length_lt
 
@@ -2228,7 +2241,8 @@ end Cardinal
 -- open Cardinal Positivity
 
 -- Porting note: Meta code, do not port directly
--- /-- Extension for the `positivity` tactic: The cardinal power of a positive cardinal is positive. -/
+-- /-- Extension for the `positivity` tactic: The cardinal power of a positive cardinal is
+--  positive. -/
 -- @[positivity]
 -- unsafe def positivity_cardinal_pow : expr → tactic strictness
 --   | q(@Pow.pow _ _ $(inst) $(a) $(b)) => do
