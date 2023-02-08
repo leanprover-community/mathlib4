@@ -48,14 +48,10 @@ theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) :
 
 variable [∀ i, DecidableEq (α i)]
 
--- porting TODO:
--- (deterministic) timeout at 'isDefEq', maximum number of heartbeats (200000) has been reached
--- (use 'set_option maxHeartbeats <num>' to set the limit)
-
--- set_option maxHeartbeats 2000000 takes too long...
 theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
+    rw [Function.Embedding.coeFn_mk]
     refine' ⟨support_mk_subset, fun i hi => _⟩
     convert mem_pi.1 hf i hi
     exact mk_of_mem hi
