@@ -6,6 +6,14 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 import Std.Tactic.Simpa
 import Mathlib.Lean.Expr
 
+/-!
+# The `slice` tactic
+
+Applies a tactic to an interval of terms from a term obtained by repeated application 
+of `Category.comp`. 
+
+-/
+
 open Lean.Elab.Tactic
 
 namespace Lean
