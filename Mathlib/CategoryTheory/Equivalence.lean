@@ -193,20 +193,20 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
   rw [← id_comp (e.inverse.map _), ← map_id e.inverse, ← counitInv_functor_comp, map_comp]
   dsimp
   rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), app_hom, app_inv]
-  sliceLHS 2 3 => erw [e.unit.naturality]
-  sliceLHS 1 2 => erw [e.unit.naturality]
-  sliceLHS 4 4 =>
+  slice_lhs 2 3 => erw [e.unit.naturality]
+  slice_lhs 1 2 => erw [e.unit.naturality]
+  slice_lhs 4 4 =>
     rw [← Iso.hom_inv_id_assoc (e.inverse.mapIso (e.counitIso.app _)) (e.unitInv.app _)]
-  sliceLHS 3 4 =>
+  slice_lhs 3 4 =>
     erw [← map_comp e.inverse, e.counit.naturality]
     erw [(e.counitIso.app _).hom_inv_id, map_id]
   erw [id_comp]
-  sliceLHS 2 3 => erw [← map_comp e.inverse, e.counitIso.inv.naturality, map_comp]
-  sliceLHS 3 4 => erw [e.unitInv.naturality]
-  sliceLHS 4 5 => erw [← map_comp (e.functor ⋙ e.inverse), (e.unitIso.app _).hom_inv_id, map_id]
+  slice_lhs 2 3 => erw [← map_comp e.inverse, e.counitIso.inv.naturality, map_comp]
+  slice_lhs 3 4 => erw [e.unitInv.naturality]
+  slice_lhs 4 5 => erw [← map_comp (e.functor ⋙ e.inverse), (e.unitIso.app _).hom_inv_id, map_id]
   erw [id_comp]
-  sliceLHS 3 4 => erw [← e.unitInv.naturality]
-  sliceLHS 2 3 =>
+  slice_lhs 3 4 => erw [← e.unitInv.naturality]
+  slice_lhs 2 3 =>
     erw [← map_comp e.inverse, ← e.counitIso.inv.naturality, (e.counitIso.app _).hom_inv_id,
       map_id]
   erw [id_comp, (e.unitIso.app _).hom_inv_id]; rfl
@@ -658,11 +658,11 @@ def ofIso {F G : C ⥤ D} (e : F ≅ G) (hF : IsEquivalence F) : IsEquivalence G
     dsimp [NatIso.hcomp]
     erw [id_comp, F.map_id, comp_id]
     apply (cancel_epi (e.hom.app X)).mp
-    sliceLHS 1 2 => rw [← e.hom.naturality]
-    sliceLHS 2 3 => rw [← NatTrans.vcomp_app', e.hom_inv_id]
+    slice_lhs 1 2 => rw [← e.hom.naturality]
+    slice_lhs 2 3 => rw [← NatTrans.vcomp_app', e.hom_inv_id]
     simp only [NatTrans.id_app, id_comp, comp_id, F.map_comp, assoc]
     erw [hF.counitIso.hom.naturality]
-    sliceLHS 1 2 => rw [functor_unit_iso_comp]
+    slice_lhs 1 2 => rw [functor_unit_iso_comp]
     simp only [Functor.id_map, id_comp]
 #align category_theory.is_equivalence.of_iso CategoryTheory.IsEquivalence.ofIso
 
