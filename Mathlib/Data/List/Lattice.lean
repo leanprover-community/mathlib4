@@ -179,8 +179,7 @@ theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l
   mem_inter.2 ⟨h₁ h, h₂ h⟩
 #align list.subset_inter List.subset_inter
 
-theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ :=
-  by
+theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ := by
   simp only [eq_nil_iff_forall_not_mem, mem_inter, not_and]
   rfl
 #align list.inter_eq_nil_iff_disjoint List.inter_eq_nil_iff_disjoint

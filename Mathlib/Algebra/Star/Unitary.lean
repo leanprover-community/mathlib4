@@ -155,7 +155,7 @@ section CommMonoid
 variable [CommMonoid R] [StarSemigroup R]
 
 instance : CommGroup (unitary R) :=
-  { show Group (unitary R) by infer_instance, Submonoid.toCommMonoid _ with }
+  { inferInstanceAs (Group (unitary R)), Submonoid.toCommMonoid _ with }
 
 theorem mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
   mem_iff.trans <| and_iff_left_of_imp fun h => mul_comm (star U) U ▸ h
@@ -182,8 +182,7 @@ theorem coe_div (U₁ U₂ : unitary R) : ↑(U₁ / U₂) = (U₁ / U₂ : R) :
 #align unitary.coe_div unitary.coe_div
 
 @[norm_cast]
-theorem coe_zpow (U : unitary R) (z : ℤ) : ↑(U ^ z) = (U : R) ^ z :=
-  by
+theorem coe_zpow (U : unitary R) (z : ℤ) : ↑(U ^ z) = (U : R) ^ z := by
   induction z
   · simp [SubmonoidClass.coe_pow]
   · simp [coe_inv]

@@ -60,7 +60,7 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
-You should extend this class when you extend `centroid_hom`. -/
+You should extend this class when you extend `CentroidHom`. -/
 class CentroidHomClass (F : Type _) (α : outParam <| Type _) [NonUnitalNonAssocSemiring α] extends
   AddMonoidHomClass F α α where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
@@ -102,7 +102,7 @@ instance : CentroidHomClass (CentroidHom α) α
   map_mul_right f := f.map_mul_right'
 
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
 directly. -/
 /- Porting note: Lean gave me `unknown constant 'FunLike.CoeFun'` and says `CoeFun` is a type
 mismatch, so I used `library_search`. -/
@@ -119,20 +119,20 @@ theorem ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
 #align centroid_hom.ext CentroidHom.ext
 
 @[simp, norm_cast]
-theorem coe_to_add_monoid_hom (f : CentroidHom α) : ⇑(f : α →+ α) = f :=
+theorem coe_toAddMonoidHom (f : CentroidHom α) : ⇑(f : α →+ α) = f :=
   rfl
-#align centroid_hom.coe_to_add_monoid_hom CentroidHom.coe_to_add_monoid_hom
+#align centroid_hom.coe_to_add_monoid_hom CentroidHom.coe_toAddMonoidHom
 
 @[simp]
-theorem to_add_monoid_hom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
+theorem toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
   rfl
-#align centroid_hom.to_add_monoid_hom_eq_coe CentroidHom.to_add_monoid_hom_eq_coe
+#align centroid_hom.to_add_monoid_hom_eq_coe CentroidHom.toAddMonoidHom_eq_coe
 
-theorem coe_to_add_monoid_hom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
+theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
   fun _f _g h => ext fun a ↦
     haveI := FunLike.congr_fun h a
     this
-#align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_to_add_monoid_hom_injective
+#align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_toAddMonoidHom_injective
 
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
 def toEnd (f : CentroidHom α) : AddMonoid.End α :=
@@ -140,10 +140,10 @@ def toEnd (f : CentroidHom α) : AddMonoid.End α :=
 #align centroid_hom.to_End CentroidHom.toEnd
 
 theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddMonoid.End α) :=
-  coe_to_add_monoid_hom_injective
+  coe_toAddMonoidHom_injective
 #align centroid_hom.to_End_injective CentroidHom.toEnd_injective
 
-/-- Copy of a `centroid_hom` with a new `to_fun` equal to the old one. Useful to fix
+/-- Copy of a `CentroidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : CentroidHom α :=
   { f.toAddMonoidHom.copy f' <| h with
@@ -163,7 +163,7 @@ theorem copy_eq (f : CentroidHom α) (f' : α → α) (h : f' = f) : f.copy f' h
 
 variable (α)
 
-/-- `id` as a `centroid_hom`. -/
+/-- `id` as a `CentroidHom`. -/
 protected def id : CentroidHom α :=
   { AddMonoidHom.id α with
     map_mul_left' := fun _ _ ↦ rfl
@@ -190,7 +190,7 @@ theorem id_apply (a : α) : CentroidHom.id α a = a :=
   rfl
 #align centroid_hom.id_apply CentroidHom.id_apply
 
-/-- Composition of `centroid_hom`s as a `centroid_hom`. -/
+/-- Composition of `CentroidHom`s as a `CentroidHom`. -/
 def comp (g f : CentroidHom α) : CentroidHom α :=
   { g.toAddMonoidHom.comp f.toAddMonoidHom with
     map_mul_left' := fun _a _b ↦ (congr_arg g <| f.map_mul_left' _ _).trans <| g.map_mul_left' _ _
@@ -358,7 +358,7 @@ theorem toEnd_nsmul (x : CentroidHom α) (n : ℕ) : (n • x).toEnd = n • x.t
 -- Porting note: I guess the porter has naming issues still
 -- cf.`add_monoid_hom.add_comm_monoid`
 instance : AddCommMonoid (CentroidHom α) :=
-  coe_to_add_monoid_hom_injective.addCommMonoid _ toEnd_zero toEnd_add toEnd_nsmul
+  coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add toEnd_nsmul
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
@@ -408,7 +408,7 @@ section NonUnitalNonAssocRing
 
 variable [NonUnitalNonAssocRing α]
 
-/-- Negation of `centroid_hom`s as a `centroid_hom`. -/
+/-- Negation of `CentroidHom`s as a `CentroidHom`. -/
 instance : Neg (CentroidHom α) :=
   ⟨fun f ↦
     { (-f : α →+ α) with

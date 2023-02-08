@@ -5,7 +5,7 @@ Authors: David Wärn, Scott Morrison
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module combinatorics.quiver.basic
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
+! leanprover-community/mathlib commit 56adee5b5eef9e734d82272918300fca4f3e7cef
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -88,6 +88,8 @@ def id (V : Type _) [Quiver V] : Prefunctor V V where
   obj := fun X => X
   map f := f
 #align prefunctor.id Prefunctor.id
+#align prefunctor.id_obj Prefunctor.id_obj
+#align prefunctor.id_map Prefunctor.id_map
 
 instance (V : Type _) [Quiver V] : Inhabited (Prefunctor V V) :=
   ⟨id V⟩
@@ -99,6 +101,8 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
 #align prefunctor.comp Prefunctor.comp
+#align prefunctor.comp_obj Prefunctor.comp_obj
+#align prefunctor.comp_map Prefunctor.comp_map
 
 @[simp]
 theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
@@ -121,7 +125,7 @@ theorem comp_assoc {U V W Z : Type _} [Quiver U] [Quiver V] [Quiver W] [Quiver Z
 infixl:50 " ⥤q " => Prefunctor
 
 /-- Notation for composition of prefunctors. -/
-infixl:50 " ⋙q " => Prefunctor.comp
+infixl:60 " ⋙q " => Prefunctor.comp
 
 /-- Notation for the identity prefunctor on a quiver. -/
 notation "𝟭q" => id

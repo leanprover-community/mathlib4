@@ -123,7 +123,7 @@ theorem filter_fst_eq_antidiagonal (n m : ℕ) :
 
 theorem filter_snd_eq_antidiagonal (n m : ℕ) :
     filter (fun x : ℕ × ℕ ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
-  have : (fun x : ℕ × ℕ ↦ (x.snd = m : Bool)) ∘ Prod.swap = fun x : ℕ × ℕ ↦ x.fst = m := by
+  have : (fun x : ℕ × ℕ ↦ (x.snd = m)) ∘ Prod.swap = fun x : ℕ × ℕ ↦ x.fst = m := by
     ext ; simp
   rw [← map_swap_antidiagonal]
   simp [filter_map, this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
@@ -143,6 +143,9 @@ def sigmaAntidiagonalEquivProd : (Σn : ℕ, antidiagonal n) ≃ ℕ × ℕ wher
     exact Sigma.subtype_ext h rfl
   right_inv x := rfl
 #align finset.nat.sigma_antidiagonal_equiv_prod Finset.Nat.sigmaAntidiagonalEquivProd
+#align finset.nat.sigma_antidiagonal_equiv_prod_symm_apply_fst Finset.Nat.sigmaAntidiagonalEquivProd_symm_apply_fst
+#align finset.nat.sigma_antidiagonal_equiv_prod_symm_apply_snd_coe Finset.Nat.sigmaAntidiagonalEquivProd_symm_apply_snd_coe
+#align finset.nat.sigma_antidiagonal_equiv_prod_apply Finset.Nat.sigmaAntidiagonalEquivProd_apply
 
 end EquivProd
 

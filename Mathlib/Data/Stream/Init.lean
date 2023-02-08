@@ -120,8 +120,7 @@ theorem mem_cons_of_mem {a : α} {s : Stream' α} (b : α) : a ∈ s → a ∈ b
 #align stream.mem_cons_of_mem Stream'.mem_cons_of_mem
 
 theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : (a ∈ b::s) → a = b ∨ a ∈ s :=
-    fun ⟨n, h⟩ =>
-  by
+    fun ⟨n, h⟩ => by
   cases' n with n'
   · left
     exact h
@@ -382,8 +381,7 @@ theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g 
 #align stream.unfolds_eq Stream'.unfolds_eq
 
 theorem nth_unfolds_head_tail : ∀ (n : Nat) (s : Stream' α),
-    nth (unfolds head tail s) n = nth s n :=
-  by
+    nth (unfolds head tail s) n = nth s n := by
   intro n; induction' n with n' ih
   · intro s
     rfl
@@ -661,8 +659,7 @@ theorem inits_tail (s : Stream' α) : inits (tail s) = initsCore [head (tail s)]
 
 theorem cons_nth_inits_core :
     ∀ (a : α) (n : Nat) (l : List α) (s : Stream' α),
-      (a::nth (initsCore l s) n) = nth (initsCore (a::l) s) n :=
-  by
+      (a::nth (initsCore l s) n) = nth (initsCore (a::l) s) n := by
   intro a n
   induction' n with n' ih
   · intros
@@ -680,8 +677,8 @@ theorem nth_inits : ∀ (n : Nat) (s : Stream' α), nth (inits s) n = take (succ
     rw [nth_succ, take_succ, ← ih, tail_inits, inits_tail, cons_nth_inits_core]
 #align stream.nth_inits Stream'.nth_inits
 
-theorem inits_eq (s : Stream' α) : inits s = [head s]::map (List.cons (head s)) (inits (tail s)) :=
-  by
+theorem inits_eq (s : Stream' α) :
+    inits s = [head s]::map (List.cons (head s)) (inits (tail s)) := by
   apply Stream'.ext; intro n
   cases n
   · rfl

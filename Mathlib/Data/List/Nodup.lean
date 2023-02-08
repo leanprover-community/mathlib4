@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 
 ! This file was ported from Lean 3 source module data.list.nodup
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -202,8 +202,7 @@ theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l
 #align list.count_eq_one_of_mem List.count_eq_one_of_mem
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
-    count a l = if a ∈ l then 1 else 0 :=
-  by
+    count a l = if a ∈ l then 1 else 0 := by
   split_ifs with h
   · exact count_eq_one_of_mem d h
   · exact count_eq_zero_of_not_mem h
@@ -249,8 +248,7 @@ theorem Nodup.map_on {f : α → β} (H : ∀ x ∈ l, ∀ y ∈ l, f x = f y �
 #align list.nodup.map_on List.Nodup.map_onₓ -- Porting note: different universe order
 
 theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) :
-    ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y :=
-  by
+    ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y := by
   induction' l with hd tl ih
   · simp
   · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.def] at d
@@ -282,14 +280,16 @@ theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
 #align list.nodup_attach List.nodup_attach
 
 alias nodup_attach ↔ Nodup.of_attach Nodup.attach
+#align list.nodup.attach List.Nodup.attach
+#align list.nodup.of_attach List.Nodup.of_attach
 
 --Porting note: commented out
 --attribute [protected] nodup.attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
-  rw [pmap_eq_map_attach];
-    exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
+  rw [pmap_eq_map_attach]
+  exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
 #align list.nodup.pmap List.Nodup.pmap
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
@@ -302,16 +302,14 @@ theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
 #align list.nodup_reverse List.nodup_reverse
 
 theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
-    l.erase a = l.filter (· ≠ a) :=
-  by
+    l.erase a = l.filter (· ≠ a) := by
   induction' d with b l m _ IH; · rfl
   by_cases b = a
   · subst h
-    rw [erase_cons_head, filter_cons_of_neg]
+    rw [erase_cons_head, filter_cons_of_neg _ (by simp)]
     symm
     rw [filter_eq_self]
     simpa [@eq_comm α] using m
-    simp
   · rw [erase_cons_tail _ h, filter_cons_of_pos, IH]
     simp [h]
 #align list.nodup.erase_eq_filter List.Nodup.erase_eq_filter
@@ -350,7 +348,7 @@ protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l�
     (l₁.product l₂).Nodup :=
   nodup_bind.2
     ⟨fun a _ => d₂.map <| LeftInverse.injective fun b => (rfl : (a, b).2 = b),
-      d₁.imp @fun a₁ a₂ n x h₁ h₂ => by
+      d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩
         rcases mem_map.1 h₂ with ⟨b₂, mb₂, ⟨⟩⟩
         exact n rfl⟩
@@ -360,7 +358,7 @@ theorem Nodup.sigma {σ : α → Type _} {l₂ : ∀ a , List (σ a)} (d₁ : No
     (d₂ : ∀ a , Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
   nodup_bind.2
     ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,
-      d₁.imp @fun a₁ a₂ n x h₁ h₂ => by
+      d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩
         rcases mem_map.1 h₂ with ⟨b₂, mb₂, ⟨⟩⟩
         exact n rfl⟩
@@ -380,8 +378,7 @@ theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
   else by rw [insert_of_not_mem h', nodup_cons]; constructor <;> assumption
 #align list.nodup.insert List.Nodup.insert
 
-theorem Nodup.union [DecidableEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ ∪ l₂).Nodup :=
-  by
+theorem Nodup.union [DecidableEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ ∪ l₂).Nodup := by
   induction' l₁ with a l₁ ih generalizing l₂
   · exact h
   · exact (ih h).insert
@@ -442,8 +439,8 @@ theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (h
 #align list.nodup.pairwise_of_set_pairwise List.Nodup.pairwise_of_set_pairwise
 
 @[simp]
-theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) : { a | a ∈ l }.Pairwise r ↔ l.Pairwise r :=
-  by
+theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup)
+    : { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
   induction' l with a l ih
   · simp
   rw [List.nodup_cons] at hl
@@ -459,13 +456,12 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
   | b::l, n+1, hl => by
-    rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos]
+    rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos _ (by simp)]
     congr 1
     refine' List.filter_congr' _
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]
-    simp
 end List
 
 theorem Option.toList_nodup {α} : ∀ o : Option α, o.toList.Nodup

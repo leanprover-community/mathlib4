@@ -30,21 +30,25 @@ variable [OrderedCommGroup α] {a b c d : α}
 theorem inv_mem_Icc_iff : a⁻¹ ∈ Set.Icc c d ↔ a ∈ Set.Icc d⁻¹ c⁻¹ :=
   and_comm.trans <| and_congr inv_le' le_inv'
 #align set.inv_mem_Icc_iff Set.inv_mem_Icc_iff
+#align set.neg_mem_Icc_iff Set.neg_mem_Icc_iff
 
 @[to_additive]
 theorem inv_mem_Ico_iff : a⁻¹ ∈ Set.Ico c d ↔ a ∈ Set.Ioc d⁻¹ c⁻¹ :=
   and_comm.trans <| and_congr inv_lt' le_inv'
 #align set.inv_mem_Ico_iff Set.inv_mem_Ico_iff
+#align set.neg_mem_Ico_iff Set.neg_mem_Ico_iff
 
 @[to_additive]
 theorem inv_mem_Ioc_iff : a⁻¹ ∈ Set.Ioc c d ↔ a ∈ Set.Ico d⁻¹ c⁻¹ :=
   and_comm.trans <| and_congr inv_le' lt_inv'
 #align set.inv_mem_Ioc_iff Set.inv_mem_Ioc_iff
+#align set.neg_mem_Ioc_iff Set.neg_mem_Ioc_iff
 
 @[to_additive]
 theorem inv_mem_Ioo_iff : a⁻¹ ∈ Set.Ioo c d ↔ a ∈ Set.Ioo d⁻¹ c⁻¹ :=
   and_comm.trans <| and_congr inv_lt' lt_inv'
 #align set.inv_mem_Ioo_iff Set.inv_mem_Ioo_iff
+#align set.neg_mem_Ioo_iff Set.neg_mem_Ioo_iff
 
 end OrderedCommGroup
 

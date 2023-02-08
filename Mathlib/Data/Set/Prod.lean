@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 
 ! This file was ported from Lean 3 source module data.set.prod
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! leanprover-community/mathlib commit 27f315c5591c84687852f816d8ef31fe103d03de
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -476,6 +476,10 @@ theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 :=
   Iff.rfl
 #align set.mem_diagonal_iff Set.mem_diagonal_iff
 
+lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
+Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
+#align set.diagonal_nonempty Set.diagonal_nonempty
+
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
   h x.1 x.2
 #align set.decidable_mem_diagonal Set.decidableMemDiagonal
@@ -492,11 +496,13 @@ theorem range_diag : (range fun x => (x, x)) = diagonal α := by
   simp [diagonal, eq_comm]
 #align set.range_diag Set.range_diag
 
+theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
+  rw [← range_diag, range_subset_iff]
+#align set.diagonal_subset_iff Set.diagonal_subset_iff
+
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ diagonal αᶜ ↔ Disjoint s t :=
-  subset_compl_comm.trans <| by
-    simp_rw [← range_diag, range_subset_iff, disjoint_left, mem_compl_iff, prod_mk_mem_set_prod_eq,
-      not_and]
+  prod_subset_iff.trans disjoint_iff_forall_ne.symm
 #align set.prod_subset_compl_diagonal_iff_disjoint Set.prod_subset_compl_diagonal_iff_disjoint
 
 @[simp]
@@ -507,6 +513,16 @@ theorem diag_preimage_prod (s t : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ t = 
 theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s = s :=
   inter_self s
 #align set.diag_preimage_prod_self Set.diag_preimage_prod_self
+
+theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
+  ext x
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    exact ⟨rfl, hx, hx⟩
+  · obtain ⟨x, y⟩ := x
+    rintro ⟨rfl : x = y, h2x⟩
+    exact mem_image_of_mem _ h2x.1
+#align set.diag_image Set.diag_image
 
 end Diagonal
 
@@ -539,8 +555,10 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
 #align set.off_diag_eq_empty Set.offDiag_eq_empty
 
 alias offDiag_nonempty ↔ _ Nontrivial.offDiag_nonempty
+#align set.nontrivial.off_diag_nonempty Set.Nontrivial.offDiag_nonempty
 
 alias offDiag_nonempty ↔ _ Subsingleton.offDiag_eq_empty
+#align set.subsingleton.off_diag_eq_empty Set.Subsingleton.offDiag_eq_empty
 
 variable (s t)
 
@@ -729,8 +747,7 @@ theorem preimage_pi (s : Set ι) (t : ∀ i, Set (β i)) (f : ∀ i, α i → β
 
 theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : ∀ i, Set (α i)) :
     (pi s fun i => if p i then t₁ i else t₂ i) =
-      pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ :=
-  by
+      pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
   refine' ⟨fun h => _, _⟩
   · constructor <;>

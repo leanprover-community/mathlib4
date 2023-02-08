@@ -94,8 +94,8 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
   simp
 #align list.nat.antidiagonal_succ_succ' List.Nat.antidiagonal_succ_succ'
 
-theorem map_swap_antidiagonal {n : ℕ} : (antidiagonal n).map Prod.swap = (antidiagonal n).reverse :=
-  by
+theorem map_swap_antidiagonal {n : ℕ} :
+    (antidiagonal n).map Prod.swap = (antidiagonal n).reverse := by
   rw [antidiagonal, map_map, ← List.map_reverse, range_eq_range', reverse_range', ←
     range_eq_range', map_map]
   apply map_congr

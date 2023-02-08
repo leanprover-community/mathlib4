@@ -148,3 +148,31 @@ example {P Q : Prop} (p : P) (q : Q) (h : P → ¬ Q) : ℕ := by
   apply_assumption <;> assumption
 
 end apply_assumption
+
+section «using»
+
+@[dummy_tag_attr] axiom foo : 1 = 2
+
+example : 1 = 2 := by
+  fail_if_success solve_by_elim
+  solve_by_elim using dummy_tag_attr
+
+end «using»
+
+section issue1581
+
+axiom mySorry {α} : α
+
+@[dummy_tag_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
+
+example : 5 ≤ 7 := by
+  apply_rules using dummy_tag_attr
+  guard_target = 5 = 7
+  exact mySorry
+
+example : 5 ≤ 7 := by
+  apply_rules [le_rfl]
+  guard_target = 5 = 7
+  exact mySorry
+
+end issue1581

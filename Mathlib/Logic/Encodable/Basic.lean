@@ -129,7 +129,7 @@ theorem encode_nat (n : ℕ) : encode n = n :=
   rfl
 #align encodable.encode_nat Encodable.encode_nat
 
-@[simp]
+@[simp 1100]
 theorem decode_nat (n : ℕ) : decode n = some n :=
   rfl
 #align encodable.decode_nat Encodable.decode_nat
@@ -340,9 +340,9 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none :=
   simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
-noncomputable instance PropCat.encodable : Encodable Prop :=
+noncomputable instance Prop.encodable : Encodable Prop :=
   ofEquiv Bool Equiv.propEquivBool
-#align Prop.encodable Encodable.PropCat.encodable
+#align Prop.encodable Encodable.Prop.encodable
 
 section Sigma
 
@@ -553,8 +553,8 @@ end Ulower
 Choice function for encodable types and decidable predicates.
 We provide the following API
 
-choose      {α : Type*} {p : α → Prop} [c : encodable α] [d : decidable_pred p] : (∃ x, p x) → α :=
-choose_spec {α : Type*} {p : α → Prop} [c : encodable α] [d : decidable_pred p] (ex : ∃ x, p x) :
+choose      {α : Type _} {p : α → Prop} [c : encodable α] [d : decidable_pred p] : (∃ x, p x) → α :=
+choose_spec {α : Type _} {p : α → Prop} [c : encodable α] [d : decidable_pred p] (ex : ∃ x, p x) :
   p (choose ex) :=
 -/
 namespace Encodable

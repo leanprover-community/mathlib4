@@ -332,7 +332,10 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     inv := Inv.inv
     div := (· / ·)
     exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
-    inv_zero := rfl
+    inv_zero := by
+      change Rat.inv 0 = 0
+      rw [Rat.inv_def]
+      rfl
     mul_inv_cancel := Rat.mul_inv_cancel
     mul_zero := mul_zero
     zero_mul := zero_mul }

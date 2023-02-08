@@ -325,6 +325,7 @@ theorem one_lt_mul_of_lt_of_le (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
 #align one_lt_mul_of_lt_of_le one_lt_mul_of_lt_of_le
 
 alias one_lt_mul_of_le_of_lt ← one_lt_mul
+#align one_lt_mul one_lt_mul
 
 theorem mul_lt_one_of_nonneg_of_lt_one_left (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
   (mul_le_of_le_one_right ha₀ hb).trans_lt ha
@@ -622,17 +623,13 @@ choice in basic `Nat` lemmas. -/
 def StrictOrderedCommSemiring.toOrderedCommSemiring' [@DecidableRel α (· ≤ ·)] :
     OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring' with }
-#align
-  strict_ordered_comm_semiring.to_ordered_comm_semiring'
-  StrictOrderedCommSemiring.toOrderedCommSemiring'
+#align strict_ordered_comm_semiring.to_ordered_comm_semiring' StrictOrderedCommSemiring.toOrderedCommSemiring'
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedCommSemiring.toOrderedCommSemiring :
     OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring with }
-#align
-  strict_ordered_comm_semiring.to_ordered_comm_semiring
-  StrictOrderedCommSemiring.toOrderedCommSemiring
+#align strict_ordered_comm_semiring.to_ordered_comm_semiring StrictOrderedCommSemiring.toOrderedCommSemiring
 
 end StrictOrderedCommSemiring
 
@@ -736,9 +733,7 @@ def StrictOrderedCommRing.toOrderedCommRing' [@DecidableRel α (· ≤ ·)] : Or
 instance (priority := 100) StrictOrderedCommRing.toStrictOrderedCommSemiring :
     StrictOrderedCommSemiring α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
-#align
-  strict_ordered_comm_ring.to_strict_ordered_comm_semiring
-  StrictOrderedCommRing.toStrictOrderedCommSemiring
+#align strict_ordered_comm_ring.to_strict_ordered_comm_semiring StrictOrderedCommRing.toStrictOrderedCommSemiring
 
 -- See note [lower instance priority]
 instance (priority := 100) StrictOrderedCommRing.toOrderedCommRing : OrderedCommRing α :=
@@ -774,9 +769,7 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b
   · subst ha
     exact ((ab le_rfl).asymm (nab le_rfl)).elim
   · exact mul_neg_of_neg_of_pos ha (nab ha.le)
-#align
-  nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
-  nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
+#align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
 
 theorem nonneg_of_mul_nonneg_left (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
   le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_le h
@@ -980,9 +973,7 @@ end LinearOrderedSemiring
 instance (priority := 100) LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
     [LinearOrderedCommSemiring α] : LinearOrderedCancelAddCommMonoid α :=
   { ‹LinearOrderedCommSemiring α› with }
-#align
-  linear_ordered_comm_semiring.to_linear_ordered_cancel_add_comm_monoid
-  LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
+#align linear_ordered_comm_semiring.to_linear_ordered_cancel_add_comm_monoid LinearOrderedCommSemiring.toLinearOrderedCancelAddCommMonoid
 
 section LinearOrderedRing
 
@@ -999,8 +990,7 @@ instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrd
 instance (priority := 100) LinearOrderedRing.toLinearOrderedAddCommGroup :
     LinearOrderedAddCommGroup α :=
   { ‹LinearOrderedRing α› with }
-#align
-  linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
+#align linear_ordered_ring.to_linear_ordered_add_comm_group LinearOrderedRing.toLinearOrderedAddCommGroup
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α :=
@@ -1201,16 +1191,13 @@ end LinearOrderedRing
 instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
     [d : LinearOrderedCommRing α] : StrictOrderedCommRing α :=
   { d with }
-#align
-  linear_ordered_comm_ring.to_strict_ordered_comm_ring LinearOrderedCommRing.toStrictOrderedCommRing
+#align linear_ordered_comm_ring.to_strict_ordered_comm_ring LinearOrderedCommRing.toStrictOrderedCommRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
     [d : LinearOrderedCommRing α] : LinearOrderedCommSemiring α :=
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
-#align
-  linear_ordered_comm_ring.to_linear_ordered_comm_semiring
-  LinearOrderedCommRing.toLinearOrderedCommSemiring
+#align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
 section LinearOrderedCommRing
 

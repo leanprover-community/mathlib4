@@ -27,6 +27,7 @@ See [Wikipedia, *Methods of computing square roots*]
 
 namespace Nat
 
+#align nat.sqrt Nat.sqrt
 -- Porting note: the implementation òf `Nat.sqrt` in `Std` no longer needs `sqrt_aux`.
 #noalign nat.sqrt_aux_dec
 #noalign nat.sqrt_aux
@@ -197,8 +198,8 @@ theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
 #align nat.succ_le_succ_sqrt' Nat.succ_le_succ_sqrt'
 
 /-- There are no perfect squares strictly between m² and (m+1)² -/
-theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t * t = n :=
-  by
+theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) :
+    ¬∃ t, t * t = n := by
   rintro ⟨t, rfl⟩
   have h1 : m < t := Nat.mul_self_lt_mul_self_iff.mpr hl
   have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.mpr hr

@@ -157,6 +157,7 @@ alias ne_of_lt ← LT.lt.ne
 alias lt_asymm ← LT.lt.asymm LT.lt.not_lt
 
 alias le_of_eq ← Eq.le
+#align eq.le Eq.le
 
 -- Porting note: no `decidable_classical` linter
 -- attribute [nolint decidable_classical] LE.le.lt_or_eq_dec
@@ -216,12 +217,16 @@ alias lt_of_lt_of_eq ← LT.lt.trans_eq
 alias lt_of_lt_of_eq' ← LT.lt.trans_eq'
 
 alias le_of_eq_of_le ← Eq.trans_le
+#align eq.trans_le Eq.trans_le
 
 alias le_of_eq_of_le' ← Eq.trans_ge
+#align eq.trans_ge Eq.trans_ge
 
 alias lt_of_eq_of_lt ← Eq.trans_lt
+#align eq.trans_lt Eq.trans_lt
 
 alias lt_of_eq_of_lt' ← Eq.trans_gt
+#align eq.trans_gt Eq.trans_gt
 
 end
 
@@ -824,10 +829,13 @@ theorem strongLT_of_le_of_strongLT (hab : a ≤ b) (hbc : b ≺ c) : a ≺ c := 
 #align strong_lt_of_le_of_strong_lt strongLT_of_le_of_strongLT
 
 alias le_of_strongLT ← StrongLT.le
+#align strong_lt.le StrongLT.le
 
 alias lt_of_strongLT ← StrongLT.lt
+#align strong_lt.lt StrongLT.lt
 
 alias strongLT_of_strongLT_of_le ← StrongLT.trans_le
+#align strong_lt.trans_le StrongLT.trans_le
 
 alias strongLT_of_le_of_strongLT ← LE.le.trans_strongLT
 
@@ -1232,6 +1240,16 @@ theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     ⟨fun a ha₁ ↦ le_of_not_gt fun ha₂ ↦ h ⟨a, ha₁, ha₂⟩,
      fun a ha₂ ↦ le_of_not_gt fun ha₁ ↦ h ⟨a, ha₁, ha₂⟩⟩
 #align dense_or_discrete dense_or_discrete
+
+/-- If a linear order has no elements `x < y < z`, then it has at most two elements. -/
+lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
+    (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
+  by_contra hne
+  simp only [not_or, ← Ne.def] at hne
+  cases' hne.1.lt_or_lt with h₁ h₁ <;> cases' hne.2.1.lt_or_lt with h₂ h₂ <;>
+    cases' hne.2.2.lt_or_lt with h₃ h₃
+  exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
+#align eq_or_eq_or_eq_of_forall_not_lt_lt eq_or_eq_or_eq_of_forall_not_lt_lt
 
 namespace PUnit
 

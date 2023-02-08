@@ -155,8 +155,8 @@ theorem pairwise_union_of_symmetric (hr : Symmetric r) :
   pairwise_union.trans <| by simp only [hr.iff, and_self_iff]
 #align set.pairwise_union_of_symmetric Set.pairwise_union_of_symmetric
 
-theorem pairwise_insert : (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a :=
-  by
+theorem pairwise_insert :
+    (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
   simp only [insert_eq, pairwise_union, pairwise_singleton, true_and_iff, mem_singleton_iff,
     forall_eq]
 #align set.pairwise_insert Set.pairwise_insert
@@ -478,9 +478,7 @@ theorem Set.PairwiseDisjoint.subset_of_bunionᵢ_subset_bunionᵢ (h₀ : (s ∪
   obtain ⟨j, hj, haj⟩ := mem_unionᵢ₂.1 (h <| mem_unionᵢ₂_of_mem hi hai)
   rwa [h₀.eq (subset_union_left _ _ hi) (subset_union_right _ _ hj)
       (not_disjoint_iff.2 ⟨a, hai, haj⟩)]
-#align
-  set.pairwise_disjoint.subset_of_bUnion_subset_bUnion
-  Set.PairwiseDisjoint.subset_of_bunionᵢ_subset_bunionᵢ
+#align set.pairwise_disjoint.subset_of_bUnion_subset_bUnion Set.PairwiseDisjoint.subset_of_bunionᵢ_subset_bunionᵢ
 
 theorem Pairwise.subset_of_bunionᵢ_subset_bunionᵢ (h₀ : Pairwise (Disjoint on f))
     (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : (⋃ i ∈ s, f i) ⊆ ⋃ i ∈ t, f i) : s ⊆ t :=

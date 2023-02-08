@@ -27,16 +27,20 @@ section LinearOrderedSemifield
 variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
 /-- `Equiv.mulLeft₀` as an order_iso. -/
-@[simps (config := { simpRhs := true })]
+@[simps! (config := { simpRhs := true })]
 def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
 #align order_iso.mul_left₀ OrderIso.mulLeft₀
+#align order_iso.mul_left₀_symm_apply OrderIso.mulLeft₀_symmApply
+#align order_iso.mul_left₀_apply OrderIso.mulLeft₀_apply
 
 /-- `Equiv.mulRight₀` as an order_iso. -/
-@[simps (config := { simpRhs := true })]
+@[simps! (config := { simpRhs := true })]
 def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
 #align order_iso.mul_right₀ OrderIso.mulRight₀
+#align order_iso.mul_right₀_symm_apply OrderIso.mulRight₀_symmApply
+#align order_iso.mul_right₀_apply OrderIso.mulRight₀_apply
 
 /-!
 ### Lemmas about pos, nonneg, nonpos, neg
@@ -50,6 +54,7 @@ theorem inv_pos : 0 < a⁻¹ ↔ 0 < a :=
 #align inv_pos inv_pos
 
 alias inv_pos ↔ _ inv_pos_of_pos
+#align inv_pos_of_pos inv_pos_of_pos
 
 @[simp]
 theorem inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by
@@ -57,6 +62,7 @@ theorem inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by
 #align inv_nonneg inv_nonneg
 
 alias inv_nonneg ↔ _ inv_nonneg_of_nonneg
+#align inv_nonneg_of_nonneg inv_nonneg_of_nonneg
 
 @[simp]
 theorem inv_lt_zero : a⁻¹ < 0 ↔ a < 0 := by simp only [← not_le, inv_nonneg]
@@ -896,8 +902,7 @@ theorem add_sub_div_two_lt (h : a < b) : a + (b - a) / 2 < b := by
 #align add_sub_div_two_lt add_sub_div_two_lt
 
 /-- An inequality involving `2`. -/
-theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 :=
-  by
+theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
   -- Take inverses on both sides to obtain `2⁻¹ ≤ 1 - 1 / a`
   refine' (inv_le_inv_of_le (inv_pos.2 <| zero_lt_two' α) _).trans_eq (inv_inv (2 : α))
   -- move `1 / a` to the left and `2⁻¹` to the right.
@@ -940,9 +945,13 @@ theorem mul_sub_mul_div_mul_nonpos_iff (hc : c ≠ 0) (hd : d ≠ 0) :
 #align mul_sub_mul_div_mul_nonpos_iff mul_sub_mul_div_mul_nonpos_iff
 
 alias mul_sub_mul_div_mul_neg_iff ↔ div_lt_div_of_mul_sub_mul_div_neg mul_sub_mul_div_mul_neg
+#align mul_sub_mul_div_mul_neg mul_sub_mul_div_mul_neg
+#align div_lt_div_of_mul_sub_mul_div_neg div_lt_div_of_mul_sub_mul_div_neg
 
 alias mul_sub_mul_div_mul_nonpos_iff ↔
   div_le_div_of_mul_sub_mul_div_nonpos mul_sub_mul_div_mul_nonpos
+#align div_le_div_of_mul_sub_mul_div_nonpos div_le_div_of_mul_sub_mul_div_nonpos
+#align mul_sub_mul_div_mul_nonpos mul_sub_mul_div_mul_nonpos
 
 theorem exists_add_lt_and_pos_of_lt (h : b < a) : ∃ c, b + c < a ∧ 0 < c :=
   ⟨(a - b) / 2, add_sub_div_two_lt h, div_pos (sub_pos_of_lt h) zero_lt_two⟩

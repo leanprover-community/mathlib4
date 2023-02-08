@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.nat.dist
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! leanprover-community/mathlib commit 318fa77a2ba140a221a5b6cabae466ba855c2ffc
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Order.Basic
 /-!
 #  Distance function on ℕ
 
-This file defines a simple distance function on naturals from truncated substraction.
+This file defines a simple distance function on naturals from truncated subtraction.
 -/
 
 
@@ -110,16 +110,11 @@ theorem dist_mul_left (k n m : ℕ) : dist (k * n) (k * m) = k * dist n m := by
   rw [mul_comm k n, mul_comm k m, dist_mul_right, mul_comm]
 #align nat.dist_mul_left Nat.dist_mul_left
 
--- TODO(Jeremy): do when we have max and minx
---theorem dist_eq_max_sub_min {i j : nat} : dist i j = (max i j) - min i j :=
---sorry
-/-
-or.elim (lt_or_ge i j)
-  (assume : i < j,
-    by rw [max_eq_right_of_lt this, min_eq_left_of_lt this, dist_eq_sub_of_lt this])
-  (assume : i ≥ j,
-    by rw [max_eq_left this , min_eq_right this, dist_eq_sub_of_le_right this])
--/
+theorem dist_eq_max_sub_min {i j : ℕ} : dist i j = (max i j) - min i j :=
+  Or.elim (lt_or_ge i j)
+  (by intro h; rw [max_eq_right_of_lt h, min_eq_left_of_lt h, dist_eq_sub_of_le (Nat.le_of_lt h)])
+  (by intro h; rw [max_eq_left h, min_eq_right h, dist_eq_sub_of_le_right h])
+
 theorem dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
   simp [dist.def, succ_sub_succ]
 #align nat.dist_succ_succ Nat.dist_succ_succ

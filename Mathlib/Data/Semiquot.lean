@@ -217,8 +217,7 @@ def get (q : Semiquot α) (h : q.IsPure) : α :=
   liftOn q id h
 #align semiquot.get Semiquot.get
 
-theorem get_mem {q : Semiquot α} (p) : get q p ∈ q :=
-  by
+theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   let ⟨a, h⟩ := exists_mem q
   unfold get ; rw [liftOn_ofMem q _ _ a h] ; exact h
 #align semiquot.get_mem Semiquot.get_mem

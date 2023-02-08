@@ -98,14 +98,12 @@ theorem cinfₛ_of_not_bdd_below {s : Set ℤ} (h : ¬BddBelow s) : infₛ s = 0
   dif_neg (by simp [h])
 #align int.cInf_of_not_bdd_below Int.cinfₛ_of_not_bdd_below
 
-theorem csupₛ_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddAbove s) : supₛ s ∈ s :=
-  by
+theorem csupₛ_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddAbove s) : supₛ s ∈ s := by
   convert (greatestOfBdd _ (Classical.choose_spec h2) h1).2.1
   exact dif_pos ⟨h1, h2⟩
 #align int.cSup_mem Int.csupₛ_mem
 
-theorem cinfₛ_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : infₛ s ∈ s :=
-  by
+theorem cinfₛ_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : infₛ s ∈ s := by
   convert (leastOfBdd _ (Classical.choose_spec h2) h1).2.1
   exact dif_pos ⟨h1, h2⟩
 #align int.cInf_mem Int.cinfₛ_mem

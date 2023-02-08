@@ -68,8 +68,10 @@ structure MulActionHom where
   map_smul' : ∀ (m : M') (x : X), toFun (m • x) = m • toFun x
 #align mul_action_hom MulActionHom
 
+/- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
+ see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
-notation:25 X " →[" M:25 "] " Y:0 => MulActionHom M X Y
+notation:25 (name := «MulActionHomLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom M X Y
 
 /-- `SMulHomClass F M X Y` states that `F` is a type of morphisms preserving
 scalar multiplication by `M`.
@@ -183,6 +185,7 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
       g (m • x) = g (m • f (g x)) := by rw [h₂]
       _ = g (f (m • g x)) := by rw [f.map_smul]
       _ = m • g x := by rw [h₁]
+#align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
 
 #align mul_action_hom.inverse MulActionHom.inverse
 
@@ -194,12 +197,17 @@ structure DistribMulActionHom extends A →[M] B, A →+ B
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an additive monoid homomorphism. -/
 add_decl_doc DistribMulActionHom.toAddMonoidHom
+#align distrib_mul_action_hom.to_add_monoid_hom DistribMulActionHom.toAddMonoidHom
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an equivariant function. -/
 add_decl_doc DistribMulActionHom.toMulActionHom
+#align distrib_mul_action_hom.to_mul_action_hom DistribMulActionHom.toMulActionHom
 
+/- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
+ see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
-notation:25 A " →+[" M:25 "] " B:0 => DistribMulActionHom M A B
+notation:25 (name := «DistribMulActionHomLocal≺»)
+  A " →+[" M:25 "] " B:0 => DistribMulActionHom M A B
 
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
 the additive monoid structure and scalar multiplication by `M`.
@@ -287,15 +295,13 @@ theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g 
     f = g := by
   ext a
   exact MulActionHom.congr_fun h a
-#align
-  distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.toMulActionHom_injective
+#align distrib_mul_action_hom.to_mul_action_hom_injective DistribMulActionHom.toMulActionHom_injective
 
 theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g :=
   by
   ext a
   exact FunLike.congr_fun h a
-#align
-  distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
+#align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
 
 protected theorem map_zero (f : A →+[M] B) : f 0 = 0 :=
   map_zero f
@@ -414,12 +420,17 @@ structure MulSemiringActionHom extends R →+[M] S, R →+* S
 
 /-- Reinterpret an equivariant ring homomorphism as a ring homomorphism. -/
 add_decl_doc MulSemiringActionHom.toRingHom
+#align mul_semiring_action_hom.to_ring_hom MulSemiringActionHom.toRingHom
 
 /-- Reinterpret an equivariant ring homomorphism as an equivariant additive monoid homomorphism. -/
 add_decl_doc MulSemiringActionHom.toDistribMulActionHom
+#align mul_semiring_action_hom.to_distrib_mul_action_hom MulSemiringActionHom.toDistribMulActionHom
 
+/- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
+ see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
-notation:25 R " →+*[" M:25 "] " S:0 => MulSemiringActionHom M R S
+notation:25 (name := «MulSemiringActionHomLocal≺»)
+  R " →+*[" M:25 "] " S:0 => MulSemiringActionHom M R S
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and scalar multiplication by `M`.

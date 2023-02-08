@@ -72,10 +72,12 @@ infixr:25 " →ₙ+* " => NonUnitalRingHom
 /-- Reinterpret a non-unital ring homomorphism `f : α →ₙ+* β` as a semigroup
 homomorphism `α →ₙ* β`. The `simp`-normal form is `(f : α →ₙ* β)`. -/
 add_decl_doc NonUnitalRingHom.toMulHom
+#align non_unital_ring_hom.to_mul_hom NonUnitalRingHom.toMulHom
 
 /-- Reinterpret a non-unital ring homomorphism `f : α →ₙ+* β` as an additive
 monoid homomorphism `α →+ β`. The `simp`-normal form is `(f : α →+ β)`. -/
 add_decl_doc NonUnitalRingHom.toAddMonoidHom
+#align non_unital_ring_hom.to_add_monoid_hom NonUnitalRingHom.toAddMonoidHom
 
 section NonUnitalRingHomClass
 
@@ -202,8 +204,7 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
   fun _ _ h => ext <| FunLike.congr_fun (F := α →+ β) h
-#align
-  non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
+#align non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
 set_option linter.deprecated false in
 theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) := fun _ _ h =>
@@ -363,18 +364,22 @@ infixr:25 " →+* " => RingHom
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a monoid with zero homomorphism `α →*₀ β`.
 The `simp`-normal form is `(f : α →*₀ β)`. -/
 add_decl_doc RingHom.toMonoidWithZeroHom
+#align ring_hom.to_monoid_with_zero_hom RingHom.toMonoidWithZeroHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a monoid homomorphism `α →* β`.
 The `simp`-normal form is `(f : α →* β)`. -/
 add_decl_doc RingHom.toMonoidHom
+#align ring_hom.to_monoid_hom RingHom.toMonoidHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as an additive monoid homomorphism `α →+ β`.
 The `simp`-normal form is `(f : α →+ β)`. -/
 add_decl_doc RingHom.toAddMonoidHom
+#align ring_hom.to_add_monoid_hom RingHom.toAddMonoidHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a non-unital ring homomorphism `α →ₙ+* β`. The
 `simp`-normal form is `(f : α →ₙ+* β)`. -/
 add_decl_doc RingHom.toNonUnitalRingHom
+#align ring_hom.to_non_unital_ring_hom RingHom.toNonUnitalRingHom
 
 section RingHomClass
 
@@ -616,9 +621,7 @@ theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.rang
     ⟨fun h =>
       Set.ext fun y => ⟨fun ⟨x, hx⟩ => by simp [← hx, h x], fun hy => ⟨0, by simpa using hy.symm⟩⟩,
       fun h x => Set.mem_singleton_iff.mp (h ▸ Set.mem_range_self x)⟩
-#align
-  ring_hom.codomain_trivial_iff_range_eq_singleton_zero
-  RingHom.codomain_trivial_iff_range_eq_singleton_zero
+#align ring_hom.codomain_trivial_iff_range_eq_singleton_zero RingHom.codomain_trivial_iff_range_eq_singleton_zero
 
 /-- `f : α →+* β` doesn't map `1` to `0` if `β` is nontrivial -/
 theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
@@ -795,16 +798,13 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
       rw [sub_sub, ← two_mul, ← add_sub_assoc, ← two_mul, ← mul_sub, mul_eq_zero (M₀ := α),
         sub_eq_zero, or_iff_not_imp_left] at hxy
       exact hxy h_two }
-#align
-  add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
 
 @[simp]
 theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
-#align
-  add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero
-  AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
 
 -- Porting note: `simp` can prove this
 -- @[simp]
@@ -813,8 +813,6 @@ theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   apply AddMonoidHom.ext -- Porting note: why isn't `ext` picking up this lemma?
   intro
   rfl
-#align
-  add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero
-  AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
+#align add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
 
 end AddMonoidHom

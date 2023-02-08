@@ -62,8 +62,8 @@ theorem eq_one_or_neg_one_of_mul_eq_one' {z w : ℤ} (h : z * w = 1) :
       rcases eq_one_or_neg_one_of_mul_eq_one h' with (rfl | rfl) <;> tauto
 #align int.eq_one_or_neg_one_of_mul_eq_one' Int.eq_one_or_neg_one_of_mul_eq_one'
 
-theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} : z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 :=
-  by
+theorem mul_eq_one_iff_eq_one_or_neg_one {z w : ℤ} :
+    z * w = 1 ↔ z = 1 ∧ w = 1 ∨ z = -1 ∧ w = -1 := by
   refine' ⟨eq_one_or_neg_one_of_mul_eq_one', fun h => Or.elim h (fun H => _) fun H => _⟩ <;>
       rcases H with ⟨rfl, rfl⟩ <;>
     rfl

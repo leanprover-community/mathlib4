@@ -125,8 +125,7 @@ theorem Prime.pow_dvd_of_dvd_mul_right [CancelCommMonoidWithZero α] {p a b : α
 #align prime.pow_dvd_of_dvd_mul_right Prime.pow_dvd_of_dvd_mul_right
 
 theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWithZero α] {p a b : α}
-    {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a :=
-  by
+    {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a := by
   -- Suppose `p ∣ b`, write `b = p * x` and `hy : a ^ n.succ * b ^ n = p ^ n.succ * y`.
   cases' hp.dvd_or_dvd ((dvd_pow_self p (Nat.succ_ne_zero n)).trans hpow) with H hbdiv
   · exact hp.dvd_of_dvd_pow H
@@ -142,9 +141,7 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
   obtain ⟨z, rfl⟩ := hp.dvd_of_dvd_pow hdvdx
   rw [pow_two, ← mul_assoc]
   exact dvd_mul_right _ _
-#align
-  prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
-  Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
+#align prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
 
 theorem prime_pow_succ_dvd_mul {α : Type _} [CancelCommMonoidWithZero α] {p x y : α} (h : Prime p)
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
@@ -182,7 +179,7 @@ theorem not_dvd_one [CommMonoid α] {p : α} (hp : Irreducible p) : ¬p ∣ 1 :=
 theorem isUnit_or_isUnit [Monoid α] {p : α} (hp : Irreducible p) {a b : α} (h : p = a * b) :
     IsUnit a ∨ IsUnit b :=
   hp.isUnit_or_isUnit' a b h
-#align irreducible.is_unit_or_isUnit Irreducible.isUnit_or_isUnit
+#align irreducible.is_unit_or_is_unit Irreducible.isUnit_or_isUnit
 
 end Irreducible
 
@@ -476,7 +473,7 @@ theorem associated_unit_mul_right {β : Type _} [CommMonoid β] (a u : β) (hu :
 
 theorem associated_mul_isUnit_left_iff {β : Type _} [Monoid β] {a u b : β} (hu : IsUnit u) :
     Associated (a * u) b ↔ Associated a b :=
-  ⟨trans (associated_mul_unit_right _ _ hu), trans (associated_mul_unit_left _ _ hu)⟩
+  ⟨(associated_mul_unit_right _ _ hu).trans, (associated_mul_unit_left _ _ hu).trans⟩
 #align associated_mul_is_unit_left_iff associated_mul_isUnit_left_iff
 
 theorem associated_isUnit_mul_left_iff {β : Type _} [CommMonoid β] {u a b : β} (hu : IsUnit u) :
@@ -1163,7 +1160,7 @@ theorem DvdNotUnit.isUnit_of_irreducible_right [CommMonoidWithZero α] {p q : α
     (h : DvdNotUnit p q) (hq : Irreducible q) : IsUnit p := by
   obtain ⟨_, x, hx, hx'⟩ := h
   exact Or.resolve_right ((irreducible_iff.1 hq).right p x hx') hx
-#align dvdNotUnit.is_unit_of_irreducible_right DvdNotUnit.isUnit_of_irreducible_right
+#align dvd_not_unit.is_unit_of_irreducible_right DvdNotUnit.isUnit_of_irreducible_right
 
 theorem not_irreducible_of_not_unit_dvdNotUnit [CommMonoidWithZero α] {p q : α} (hp : ¬IsUnit p)
     (h : DvdNotUnit p q) : ¬Irreducible q :=

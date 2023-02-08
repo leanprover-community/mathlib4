@@ -317,8 +317,8 @@ theorem mem_carrier_mk {a : α} : a ∈ carrier (ConjClasses.mk a) :=
   IsConj.refl _
 #align conj_classes.mem_carrier_mk ConjClasses.mem_carrier_mk
 
-theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} : a ∈ carrier b ↔ ConjClasses.mk a = b :=
-  by
+theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
+    a ∈ carrier b ↔ ConjClasses.mk a = b := by
   revert b
   rw [forall_isConj]
   intro b

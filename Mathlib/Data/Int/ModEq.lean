@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module data.int.modeq
-! leanprover-community/mathlib commit ffc3730d545623aedf5d5bd46a3153cbf41f6c2c
+! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -66,8 +66,8 @@ protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMO
   Eq.trans
 #align int.modeq.trans Int.ModEq.trans
 
-instance : Trans (ModEq n) (ModEq n) (ModEq n) where
-  trans := Int.ModEq.trans
+instance : IsTrans ℤ (ModEq n) where
+  trans := @Int.ModEq.trans n
 
 end ModEq
 
@@ -93,18 +93,13 @@ theorem modEq_iff_dvd : a ≡ b [ZMOD n] ↔ n ∣ b - a := by
 
 #align int.modeq_iff_dvd Int.modEq_iff_dvd
 
-theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n * t :=
-  by
+theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n * t := by
   rw [modEq_iff_dvd]
   exact exists_congr fun t => sub_eq_iff_eq_add'
 #align int.modeq_iff_add_fac Int.modEq_iff_add_fac
 
-theorem ModEq.dvd : a ≡ b [ZMOD n] → n ∣ b - a :=
-  modEq_iff_dvd.1
+alias modEq_iff_dvd ↔ ModEq.dvd modEq_of_dvd
 #align int.modeq.dvd Int.ModEq.dvd
-
-theorem modEq_of_dvd : n ∣ b - a → a ≡ b [ZMOD n] :=
-  modEq_iff_dvd.2
 #align int.modeq_of_dvd Int.modEq_of_dvd
 
 theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
@@ -113,9 +108,9 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 namespace ModEq
 
-protected theorem modEq_of_dvd (d : m ∣ n) (h : a ≡ b [ZMOD n]) : a ≡ b [ZMOD m] :=
+protected theorem of_dvd (d : m ∣ n) (h : a ≡ b [ZMOD n]) : a ≡ b [ZMOD m] :=
   modEq_iff_dvd.2 <| d.trans h.dvd
-#align int.modeq.modeq_of_dvd Int.ModEq.modEq_of_dvd
+#align int.modeq.of_dvd Int.ModEq.of_dvd
 
 protected theorem mul_left' (hc : 0 ≤ c) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n] :=
   match hc.lt_or_eq with
@@ -170,8 +165,7 @@ protected theorem neg (h : a ≡ b [ZMOD n]) : -a ≡ -b [ZMOD n] :=
   h.add_left_cancel (by simp_rw [← sub_eq_add_neg, sub_self]; rfl)
 #align int.modeq.neg Int.ModEq.neg
 
-protected theorem sub (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a - c ≡ b - d [ZMOD n] :=
-  by
+protected theorem sub (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a - c ≡ b - d [ZMOD n] := by
   rw [sub_eq_add_neg, sub_eq_add_neg]
   exact h₁.add h₂.neg
 #align int.modeq.sub Int.ModEq.sub
@@ -186,14 +180,13 @@ protected theorem sub_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a - c ≡ b - c [
 
 protected theorem mul_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD n] :=
   match (le_total 0 c) with
-  | .inl hc => (h.mul_left' hc).modEq_of_dvd (dvd_mul_left _ _)
+  | .inl hc => (h.mul_left' hc).of_dvd (dvd_mul_left _ _)
   | .inr hc => by
     rw [← neg_neg c, neg_mul, neg_mul _ b]
-    exact ((h.mul_left' <| neg_nonneg.2 hc).modEq_of_dvd (dvd_mul_left _ _)).neg
+    exact ((h.mul_left' <| neg_nonneg.2 hc).of_dvd (dvd_mul_left _ _)).neg
 #align int.modeq.mul_left Int.ModEq.mul_left
 
-protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] :=
-  by
+protected theorem mul_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n] := by
   rw [mul_comm a, mul_comm b]
   exact h.mul_left c
 #align int.modeq.mul_right Int.ModEq.mul_right
@@ -202,20 +195,19 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
   (h₂.mul_left _).trans (h₁.mul_right _)
 #align int.modeq.mul Int.ModEq.mul
 
-protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] :=
-  by
+protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
   induction' m with d hd; · rfl
   rw [pow_succ, pow_succ]
   exact h.mul hd
 #align int.modeq.pow Int.ModEq.pow
 
-theorem of_modEq_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by
+lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by
   rw [modEq_iff_dvd] at *; exact (dvd_mul_left n m).trans h
-#align int.modeq.of_modeq_mul_left Int.ModEq.of_modEq_mul_left
+#align int.modeq.of_mul_left Int.ModEq.of_mul_left
 
-theorem of_modEq_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
-  mul_comm m n ▸ of_modEq_mul_left _
-#align int.modeq.of_modeq_mul_right Int.ModEq.of_modEq_mul_right
+lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
+  mul_comm m n ▸ of_mul_left _
+#align int.modeq.of_mul_right Int.ModEq.of_mul_right
 
 end ModEq
 
@@ -234,11 +226,10 @@ theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.coprime n.
     rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, coe_nat_dvd, natAbs_mul]
     refine' hmn.mul_dvd_of_dvd_of_dvd _ _ <;> rw [← coe_nat_dvd, natAbs_dvd, dvd_natAbs] <;>
       tauto,
-    fun h => ⟨h.of_modEq_mul_right _, h.of_modEq_mul_left _⟩⟩
+    fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align int.modeq_and_modeq_iff_modeq_mul Int.modEq_and_modEq_iff_modEq_mul
 
-theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD b] :=
-  by
+theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD b] := by
   rw [← add_zero ((a : ℤ) * _), Nat.gcd_eq_gcd_ab]
   exact (dvd_mul_right _ _).zero_modEq_int.add_left _
 #align int.gcd_a_modeq Int.gcd_a_modEq
@@ -248,7 +239,7 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
     a + n * c ≡ b + n * c [ZMOD n] := ha.add_right _
     _ ≡ b + 0 [ZMOD n] := (dvd_mul_right _ _).modEq_zero_int.add_left _
     _ ≡ b [ZMOD n] := by rw [add_zero]
-    
+
 #align int.modeq_add_fac Int.modEq_add_fac
 
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
@@ -280,11 +271,11 @@ theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, 
 #align int.exists_unique_equiv_nat Int.exists_unique_equiv_nat
 
 theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
-  (mod_modEq _ _).of_modEq_mul_right _
+  (mod_modEq _ _).of_mul_right _
 #align int.mod_mul_right_mod Int.mod_mul_right_mod
 
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
-  (mod_modEq _ _).of_modEq_mul_left _
+  (mod_modEq _ _).of_mul_left _
 #align int.mod_mul_left_mod Int.mod_mul_left_mod
 
 end Int

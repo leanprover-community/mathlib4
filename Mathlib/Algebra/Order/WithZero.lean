@@ -52,8 +52,7 @@ instance [LinearOrderedAddCommMonoidWithTop α] :
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
     mul_zero := @add_top _ (_)
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
-#align multiplicative.linear_ordered_comm_monoid_with_zero
-  instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
+#align multiplicative.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
@@ -89,8 +88,7 @@ def Function.Injective.linearOrderedCommMonoidWithZero {β : Type _} [Zero β] [
     hf.commMonoidWithZero f zero one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
-#align function.injective.linear_ordered_comm_monoid_with_zero
-  Function.Injective.linearOrderedCommMonoidWithZero
+#align function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
 
 @[simp]
 theorem zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' zero_le_one a
@@ -118,8 +116,7 @@ instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
     top := (0 : α)
     top_add' := fun a ↦ zero_mul (Additive.toMul a)
     le_top := fun _ ↦ zero_le' }
-#align additive.linear_ordered_add_comm_monoid_with_top
-  instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
+#align additive.linear_ordered_add_comm_monoid_with_top instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
 
 end LinearOrderedCommMonoid
 
@@ -251,10 +248,12 @@ theorem div_le_iff₀ (hc : c ≠ 0) : a / c ≤ b ↔ a ≤ b * c := by
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulLeft₀` refers to the `LinearOrderedField` version. -/
-@[simps (config := { simpRhs := true }) apply toEquiv]
+@[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
   { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left₀ ha }
 #align order_iso.mul_left₀' OrderIso.mulLeft₀'
+#align order_iso.mul_left₀'_to_equiv OrderIso.mulLeft₀'_toEquiv
+#align order_iso.mul_left₀'_apply OrderIso.mulLeft₀'_apply
 
 theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
@@ -265,10 +264,12 @@ theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
 /-- `Equiv.mulRight₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulRight₀` refers to the `LinearOrderedField` version. -/
-@[simps (config := { simpRhs := true }) apply toEquiv]
+@[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
   { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right₀ ha }
 #align order_iso.mul_right₀' OrderIso.mulRight₀'
+#align order_iso.mul_right₀'_apply OrderIso.mulRight₀'_apply
+#align order_iso.mul_right₀'_to_equiv OrderIso.mulRight₀'_toEquiv
 
 theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by

@@ -168,8 +168,7 @@ theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
     rw [zpow_negSucc, inv_eq_iff_eq, ← f.injective.eq_iff, ← mul_apply, ← pow_succ, eq_comm,
       inv_eq_iff_eq, ← mul_apply, ← pow_succ', @eq_comm _ x, or_comm]
     exact pow_apply_eq_of_apply_apply_eq_self hffx _
-#align
-  equiv.perm.zpow_apply_eq_of_apply_apply_eq_self Equiv.Perm.zpow_apply_eq_of_apply_apply_eq_self
+#align equiv.perm.zpow_apply_eq_of_apply_apply_eq_self Equiv.Perm.zpow_apply_eq_of_apply_apply_eq_self
 
 theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a : α} :
     (σ * τ) a = a ↔ σ a = a ∧ τ a = a := by
@@ -286,7 +285,7 @@ def Support (f : Perm α) : Finset α :=
 
 @[simp]
 theorem mem_support {x : α} : x ∈ f.Support ↔ f x ≠ x := by
-  rw [Support, mem_filter, and_iff_right (mem_univ x), decide_eq_true_iff]
+  rw [Support, mem_filter, and_iff_right (mem_univ x)]
 #align equiv.perm.mem_support Equiv.Perm.mem_support
 
 theorem not_mem_support {x : α} : x ∉ f.Support ↔ f x = x := by simp
@@ -339,9 +338,7 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
     refine' hx f' _
     simp only [List.find?, List.mem_cons]
     exact Or.inr hf'
-#align
-  equiv.perm.exists_mem_support_of_mem_support_prod
-  Equiv.Perm.exists_mem_support_of_mem_support_prod
+#align equiv.perm.exists_mem_support_of_mem_support_prod Equiv.Perm.exists_mem_support_of_mem_support_prod
 
 theorem support_pow_le (σ : Perm α) (n : ℕ) : (σ ^ n).Support ≤ σ.Support := fun _ h1 =>
   mem_support.mpr fun h2 => mem_support.mp h1 (pow_apply_eq_self_of_apply_eq_self h2 n)
@@ -503,9 +500,7 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ Support (
     simp_all only [not_true]
     exact ⟨h, hy⟩
     refine' ⟨hy, heq⟩
-#align
-  equiv.perm.mem_support_swap_mul_imp_mem_support_ne
-  Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
+#align equiv.perm.mem_support_swap_mul_imp_mem_support_ne Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.Support) : x ∉ g.Support :=
   disjoint_left.mp h.disjoint_support hx
@@ -654,9 +649,7 @@ theorem card_support_prod_list_of_pairwise_disjoint {l : List (Perm α)} (h : l.
   · obtain ⟨ha, ht⟩ := List.pairwise_cons.1 h
     rw [List.prod_cons, List.map_cons, List.sum_cons, ← ih ht]
     exact (disjoint_prod_right _ ha).card_support_mul
-#align
-  equiv.perm.card_support_prod_list_of_pairwise_disjoint
-  Equiv.Perm.card_support_prod_list_of_pairwise_disjoint
+#align equiv.perm.card_support_prod_list_of_pairwise_disjoint Equiv.Perm.card_support_prod_list_of_pairwise_disjoint
 
 end Card
 

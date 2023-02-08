@@ -257,6 +257,30 @@ theorem invOf_mul [Monoid α] (a b : α) [Invertible a] [Invertible b] [Invertib
   invOf_eq_right_inv (by simp [← mul_assoc])
 #align inv_of_mul invOf_mul
 
+theorem mul_right_inj_of_invertible [Monoid α] (c : α) [Invertible c] :
+    a * c = b * c ↔ a = b :=
+  ⟨fun h => by simpa using congr_arg (· * ⅟c) h, congr_arg (· * _)⟩
+
+theorem mul_left_inj_of_invertible [Monoid α] (c : α) [Invertible c] :
+    c * a = c * b ↔ a = b :=
+  ⟨fun h => by simpa using congr_arg (⅟c * ·) h, congr_arg (_ * ·)⟩
+
+theorem invOf_mul_eq_iff_eq_mul_left [Monoid α] [Invertible (c : α)] :
+    ⅟c * a = b ↔ a = c * b := by
+  rw [← mul_left_inj_of_invertible (c := c), mul_invOf_self_assoc]
+
+theorem mul_left_eq_iff_eq_invOf_mul [Monoid α] [Invertible (c : α)] :
+    c * a = b ↔ a = ⅟c * b := by
+  rw [← mul_left_inj_of_invertible (c := ⅟c), invOf_mul_self_assoc]
+
+theorem mul_invOf_eq_iff_eq_mul_right [Monoid α] [Invertible (c : α)] :
+    a * ⅟c = b ↔ a = b * c := by
+  rw [← mul_right_inj_of_invertible (c := c), mul_invOf_mul_self_cancel]
+
+theorem mul_right_eq_iff_eq_mul_invOf [Monoid α] [Invertible (c : α)] :
+    a * c = b ↔ a = b * ⅟c := by
+  rw [← mul_right_inj_of_invertible (c := ⅟c), mul_mul_invOf_self_cancel]
+
 theorem Commute.invOf_right [Monoid α] {a b : α} [Invertible b] (h : Commute a b) :
     Commute a (⅟ b) :=
   calc
@@ -388,12 +412,13 @@ theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid
   then `r : R` is invertible if `f r` is.
 
 The inverse is computed as `g (⅟(f r))` -/
-@[simps (config := { attrs := [] })]
+@[simps! (config := { attrs := [] })]
 def Invertible.ofLeftInverse {R : Type _} {S : Type _} {G : Type _} [MulOneClass R] [MulOneClass S]
     [MonoidHomClass G S R] (f : R → S) (g : G) (r : R) (h : Function.LeftInverse g f)
     [Invertible (f r)] : Invertible r :=
   (Invertible.map g (f r)).copy _ (h r).symm
 #align invertible.of_left_inverse Invertible.ofLeftInverse
+#align invertible.of_left_inverse_inv_of Invertible.ofLeftInverse_invOf
 
 /-- Invertibility on either side of a monoid hom with a left-inverse is equivalent. -/
 @[simps]
@@ -407,3 +432,5 @@ def invertibleEquivOfLeftInverse {R : Type _} {S : Type _} {F G : Type _} [Monoi
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 #align invertible_equiv_of_left_inverse invertibleEquivOfLeftInverse
+#align invertible_equiv_of_left_inverse_symm_apply invertibleEquivOfLeftInverse_symm_apply
+#align invertible_equiv_of_left_inverse_apply invertibleEquivOfLeftInverse_apply

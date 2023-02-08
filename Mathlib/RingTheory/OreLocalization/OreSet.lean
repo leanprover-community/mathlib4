@@ -111,8 +111,7 @@ def oreSetOfCancelMonoidWithZero {R : Type _} [CancelMonoidWithZero R] {S : Subm
     oreNum
     oreDenom
     ore_eq }
-#align
-  ore_localization.ore_set_of_cancel_monoid_with_zero OreLocalization.oreSetOfCancelMonoidWithZero
+#align ore_localization.ore_set_of_cancel_monoid_with_zero OreLocalization.oreSetOfCancelMonoidWithZero
 
 /-- In rings without zero divisors, the first (cancellability) condition is always fulfilled,
 it suffices to give a proof for the Ore condition itself. -/

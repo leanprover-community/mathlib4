@@ -106,8 +106,7 @@ theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α}
     (injf : Injective f) (lfg : LeftInverse f g) :
   RightInverse f g :=
 λ x => injf $ lfg $ f x
-#align function.right_inverse_of_injective_of_left_inverse
-Function.rightInverse_of_injective_of_leftInverse
+#align function.right_inverse_of_injective_of_left_inverse Function.rightInverse_of_injective_of_leftInverse
 
 theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
 λ y => ⟨g y, h y⟩
@@ -120,8 +119,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
 λ y =>
   let ⟨x, hx⟩ := surjf y
   by rw [← hx, rfg]
-#align function.left_inverse_of_surjective_of_right_inverse
-Function.leftInverse_of_surjective_of_rightInverse
+#align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 
 theorem injective_id : Injective (@id α) := fun _ _ ↦ id
 

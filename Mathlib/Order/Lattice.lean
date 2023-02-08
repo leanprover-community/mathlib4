@@ -197,8 +197,11 @@ theorem right_eq_sup : b = a ⊔ b ↔ a ≤ b :=
 #align right_eq_sup right_eq_sup
 
 alias sup_eq_left ↔ _ sup_of_le_left
+#align sup_of_le_left sup_of_le_left
 
 alias sup_eq_right ↔ le_of_sup_eq sup_of_le_right
+#align sup_of_le_right sup_of_le_right
+#align le_of_sup_eq le_of_sup_eq
 
 attribute [simp] sup_of_le_left sup_of_le_right
 
@@ -451,8 +454,11 @@ theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
 #align right_eq_inf right_eq_inf
 
 alias inf_eq_left ↔ le_of_inf_eq inf_of_le_left
+#align inf_of_le_left inf_of_le_left
+#align le_of_inf_eq le_of_inf_eq
 
 alias inf_eq_right ↔ _ inf_of_le_right
+#align inf_of_le_right inf_of_le_right
 
 attribute [simp] inf_of_le_left inf_of_le_right
 
@@ -626,9 +632,7 @@ theorem semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
   PartialOrder.ext $ fun a b =>
     show a ⊔ b = b ↔ b ⊓ a = a from
       ⟨fun h => by rw [← h, inf_comm, inf_sup_self], fun h => by rw [← h, sup_comm, sup_inf_self]⟩
-#align
-  semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order
-  semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
+#align semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
 
 /-- A type with a pair of commutative and associative binary operations which satisfy two absorption
 laws relating the two operations has the structure of a lattice.
@@ -683,6 +687,8 @@ theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, 
 @[simp] lemma sup_eq_inf : a ⊔ b = a ⊓ b ↔ a = b := eq_comm.trans inf_eq_sup
 @[simp] lemma inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by rw [inf_le_sup.lt_iff_ne, Ne.def, inf_eq_sup]
 #align inf_lt_sup inf_lt_sup
+#align sup_eq_inf sup_eq_inf
+#align inf_eq_sup inf_eq_sup
 
 lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c := by
   refine' ⟨fun h ↦ _, _⟩
@@ -690,6 +696,7 @@ lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c :=
     simpa using h }
   { rintro ⟨rfl, rfl⟩
     exact ⟨inf_idem, sup_idem⟩ }
+#align inf_eq_and_sup_eq_iff inf_eq_and_sup_eq_iff
 
 /-!
 #### Distributivity laws

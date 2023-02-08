@@ -29,12 +29,14 @@ inductive rel (r : α → β → Prop) : Option α → Option β → Prop
   some {a b} : r a b → rel r (some a) (some b)
 | /-- `none ~ none` -/
   none : rel r none none
+#align option.rel Option.rel
 
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v} {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
   Option α → F (Option β)
 | none => pure none
 | some x => some <$> f x
+#align option.traverse Option.traverse
 
 /-- If you maybe have a monadic computation in a `[Monad m]` which produces a term of type `α`,
 then there is a naturally associated way to always perform a computation in `m` which maybe
@@ -42,6 +44,7 @@ produces a result. -/
 def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α) → m (Option α)
 | none => pure none
 | some fn => some <$> fn
+#align option.maybe Option.maybe
 
 #align option.mmap Option.mapM
 #align option.melim Option.elimM
@@ -61,6 +64,7 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 #align option.elim Option.elim'
 
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
+#align option.mem_some_iff Option.mem_some_iff
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
 This is not an instance because it is not definitionally equal to `Option.decidableEq`.
@@ -69,6 +73,7 @@ Try to use `o.isNone` or `o.isSome` instead.
 @[inline]
 def decidableEqNone {o : Option α} : Decidable (o = none) :=
   decidable_of_decidable_of_iff isNone_iff_eq_none
+#align option.decidable_eq_none Option.decidableEqNone
 
 instance decidableForallMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∀ a ∈ o, p a)
@@ -87,9 +92,11 @@ instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
 def iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
+#align option.iget Option.iget
 
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
+#align option.iget_some Option.iget_some
 
 @[simp]
 theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
