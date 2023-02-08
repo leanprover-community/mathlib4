@@ -276,8 +276,10 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [LowerT
 theorem InfₛHom.continuous (f : InfₛHom α β) : Continuous f := by
   refine LowerTopology.continuous_of_Ici fun b => ?_
   convert LowerTopology.isClosed_Ici (infₛ <| f ⁻¹' Ici b)
-  refine' Subset.antisymm (fun a => infₛ_le) fun a ha => le_trans _ <| OrderHomClass.mono f ha
-  simp [map_infₛ]
+  refine' Subset.antisymm (fun a => infₛ_le) fun a ha => le_trans _ <|
+    OrderHomClass.mono (f : α →o β) ha
+  refine' LE.le.trans _ (map_infₛ f _).ge
+  simp
 #align Inf_hom.continuous InfₛHom.continuous
 
 -- see Note [lower instance priority]
