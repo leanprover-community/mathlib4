@@ -49,22 +49,22 @@ end SemilatticeSup
 variable [CompleteLattice α]
 
 /-- `UpperSet.Ici` as a `SupₛHom`. -/
-def iciSupHom : SupₛHom α (UpperSet α) :=
+def iciSupₛHom : SupₛHom α (UpperSet α) :=
   ⟨Ici, fun s => (Ici_supₛ s).trans supₛ_image.symm⟩
 -- Porting note: `ₓ` because typeclass assumption changed
-#align upper_set.Ici_Sup_hom UpperSet.iciSupHomₓ
+#align upper_set.Ici_Sup_hom UpperSet.iciSupₛHomₓ
 
 @[simp]
-theorem coe_iciSupHom : (iciSupHom : α → UpperSet α) = Ici :=
+theorem coe_iciSupₛHom : (iciSupₛHom : α → UpperSet α) = Ici :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
-#align upper_set.coe_Ici_Sup_hom UpperSet.coe_iciSupHomₓ
+#align upper_set.coe_Ici_Sup_hom UpperSet.coe_iciSupₛHomₓ
 
 @[simp]
-theorem iciSupHom_apply (a : α) : iciSupHom a = Ici a :=
+theorem iciSupₛHom_apply (a : α) : iciSupₛHom a = Ici a :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
-#align upper_set.Ici_Sup_hom_apply UpperSet.iciSupHom_applyₓ
+#align upper_set.Ici_Sup_hom_apply UpperSet.iciSupₛHom_applyₓ
 
 end UpperSet
 
@@ -94,21 +94,21 @@ end SemilatticeInf
 variable [CompleteLattice α]
 
 /-- `LowerSet.Iic` as an `InfₛHom`. -/
-def iicInfHom : InfₛHom α (LowerSet α) :=
+def iicInfₛHom : InfₛHom α (LowerSet α) :=
   ⟨Iic, fun s => (Iic_infₛ s).trans infₛ_image.symm⟩
 -- Porting note: `ₓ` because typeclass assumption changed
-#align lower_set.Iic_Inf_hom LowerSet.iicInfHomₓ
+#align lower_set.Iic_Inf_hom LowerSet.iicInfₛHomₓ
 
 @[simp]
-theorem coe_iicInfHom : (iicInfHom : α → LowerSet α) = Iic :=
+theorem coe_iicInfₛHom : (iicInfₛHom : α → LowerSet α) = Iic :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
-#align lower_set.coe_Iic_Inf_hom LowerSet.coe_iicInfHomₓ
+#align lower_set.coe_Iic_Inf_hom LowerSet.coe_iicInfₛHomₓ
 
 @[simp]
-theorem iicInfHom_apply (a : α) : iicInfHom a = Iic a :=
+theorem iicInfₛHom_apply (a : α) : iicInfₛHom a = Iic a :=
   rfl
 -- Porting note: `ₓ` because typeclass assumption changed
-#align lower_set.Iic_Inf_hom_apply LowerSet.iicInfHom_applyₓ
+#align lower_set.Iic_Inf_hom_apply LowerSet.iicInfₛHom_applyₓ
 
 end LowerSet
