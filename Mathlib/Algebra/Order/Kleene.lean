@@ -61,7 +61,7 @@ variable {α β ι : Type _} {π : ι → Type _}
 
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not yet implemented
 class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
   sup := (· + ·)
   add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
@@ -73,18 +73,19 @@ class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not yet implemented
 class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
 
 /-- Notation typeclass for the Kleene star `∗`. -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not yet implemented
 class HasKstar (α : Type _) where
   kstar : α → α
 #align has_kstar HasKstar
 
 -- mathport name: «expr ∗»
-scoped[Computability] postfix:1024 "∗" => HasKstar.kstar
+-- Porting note: Originally `scoped[Computability] postfix:1024 "∗" => HasKstar.kstar`
+postfix:1024 "∗" => HasKstar.kstar
 
 /-- A Kleene Algebra is an idempotent semiring with an additional unary operator `kstar` (for Kleene
 star) that satisfies the following properties:
@@ -93,7 +94,7 @@ star) that satisfies the following properties:
 * If `a * c + b ≤ c`, then `a∗ * b ≤ c`
 * If `c * a + b ≤ c`, then `b * a∗ ≤ c`
 -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not yet implemented
 class KleeneAlgebra (α : Type _) extends IdemSemiring α, HasKstar α where
   one_le_kstar : ∀ a : α, 1 ≤ a∗
   mul_kstar_le_kstar : ∀ a : α, a * a∗ ≤ a∗
@@ -114,20 +115,19 @@ def IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemSemi
   { ‹Semiring α› with
     le := fun a b => a + b = b
     le_refl := h
-    le_trans := fun a b c (hab : _ = _) (hbc : _ = _) =>
-      by
-      change _ = _
+    le_trans := fun a b c (hab : _ = _) (hbc : _ = _) => by
+      simp only
       rw [← hbc, ← add_assoc, hab]
     le_antisymm := fun a b (hab : _ = _) (hba : _ = _) => by rwa [← hba, add_comm]
     sup := (· + ·)
     le_sup_left := fun a b => by
-      change _ = _
+      simp only
       rw [← add_assoc, h]
     le_sup_right := fun a b => by
-      change _ = _
+      simp only
       rw [add_comm, add_assoc, h]
     sup_le := fun a b c hab (hbc : _ = _) => by
-      change _ = _
+      simp only
       rwa [add_assoc, hbc]
     bot := 0
     bot_le := zero_add }
@@ -145,10 +145,10 @@ theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
 theorem add_idem (a : α) : a + a = a := by simp
 #align add_idem add_idem
 
-theorem nsmul_eq_self : ∀ {n : ℕ} (hn : n ≠ 0) (a : α), n • a = a
+theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim
-  | 1, h => one_nsmul
-  | n + 2, h => fun a => by rw [succ_nsmul, nsmul_eq_self n.succ_ne_zero, add_idem]
+  | 1, _ => one_nsmul
+  | n + 2, _ => fun a => by rw [succ_nsmul, nsmul_eq_self n.succ_ne_zero, add_idem]
 #align nsmul_eq_self nsmul_eq_self
 
 theorem add_eq_left_iff_le : a + b = a ↔ b ≤ a := by simp
@@ -179,7 +179,7 @@ instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddMonoid :
     add_le_add_left := fun a b hbc c => by
       simp_rw [add_eq_sup]
       exact sup_le_sup_left hbc _
-    exists_add_of_le := fun a b h => ⟨b, h.add_eq_right.symm⟩
+    exists_add_of_le := fun h => ⟨_, h.add_eq_right.symm⟩
     le_self_add := fun a b => add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
 #align idem_semiring.to_canonically_ordered_add_monoid IdemSemiring.toCanonicallyOrderedAddMonoid
 
@@ -241,8 +241,8 @@ theorem le_kstar : a ≤ a∗ :=
   le_trans (le_mul_of_one_le_left' one_le_kstar) kstar_mul_le_kstar
 #align le_kstar le_kstar
 
-@[mono]
-theorem kstar_mono : Monotone (HasKstar.kstar : α → α) := fun a b h =>
+-- @[mono] -- Porting note: unknown attribute [mono]
+theorem kstar_mono : Monotone (HasKstar.kstar : α → α) := fun _ _ h =>
   kstar_le_of_mul_le_left one_le_kstar <| kstar_mul_le (h.trans le_kstar) <| mul_kstar_le_kstar
 #align kstar_mono kstar_mono
 
@@ -291,22 +291,22 @@ end KleeneAlgebra
 namespace Prod
 
 instance [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) :=
-  { Prod.semiring, Prod.semilatticeSup _ _, Prod.orderBot _ _ with
-    add_eq_sup := fun a b => ext (add_eq_sup _ _) (add_eq_sup _ _) }
+  { Prod.instSemiringProd, Prod.semilatticeSup _ _, Prod.orderBot _ _ with
+    add_eq_sup := fun _ _ => ext (add_eq_sup _ _) (add_eq_sup _ _) }
 
 instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × β) :=
-  { Prod.commSemiring, Prod.idemSemiring with }
+  { Prod.instCommSemiringProd, Prod.instIdemSemiringProd with }
 
 variable [KleeneAlgebra α] [KleeneAlgebra β]
 
 instance : KleeneAlgebra (α × β) :=
-  { Prod.idemSemiring with
+  { Prod.instIdemSemiringProd with
     kstar := fun a => (a.1∗, a.2∗)
-    one_le_kstar := fun a => ⟨one_le_kstar, one_le_kstar⟩
-    mul_kstar_le_kstar := fun a => ⟨mul_kstar_le_kstar, mul_kstar_le_kstar⟩
-    kstar_mul_le_kstar := fun a => ⟨kstar_mul_le_kstar, kstar_mul_le_kstar⟩
-    mul_kstar_le_self := fun a b => And.imp mul_kstar_le_self mul_kstar_le_self
-    kstar_mul_le_self := fun a b => And.imp kstar_mul_le_self kstar_mul_le_self }
+    one_le_kstar := fun _ => ⟨one_le_kstar, one_le_kstar⟩
+    mul_kstar_le_kstar := fun _ => ⟨mul_kstar_le_kstar, mul_kstar_le_kstar⟩
+    kstar_mul_le_kstar := fun _ => ⟨kstar_mul_le_kstar, kstar_mul_le_kstar⟩
+    mul_kstar_le_self := fun _ _ => And.imp mul_kstar_le_self mul_kstar_le_self
+    kstar_mul_le_self := fun _ _ => And.imp kstar_mul_le_self kstar_mul_le_self }
 
 theorem kstar_def (a : α × β) : a∗ = (a.1∗, a.2∗) :=
   rfl
@@ -328,21 +328,21 @@ namespace Pi
 
 instance [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) :=
   { Pi.semiring, Pi.semilatticeSup, Pi.orderBot with
-    add_eq_sup := fun a b => funext fun i => add_eq_sup _ _ }
+    add_eq_sup := fun _ _ => funext fun _ => add_eq_sup _ _ }
 
 instance [∀ i, IdemCommSemiring (π i)] : IdemCommSemiring (∀ i, π i) :=
-  { Pi.commSemiring, Pi.idemSemiring with }
+  { Pi.commSemiring, Pi.instIdemSemiringForAll with }
 
 variable [∀ i, KleeneAlgebra (π i)]
 
 instance : KleeneAlgebra (∀ i, π i) :=
-  { Pi.idemSemiring with
+  { Pi.instIdemSemiringForAll with
     kstar := fun a i => (a i)∗
-    one_le_kstar := fun a i => one_le_kstar
-    mul_kstar_le_kstar := fun a i => mul_kstar_le_kstar
-    kstar_mul_le_kstar := fun a i => kstar_mul_le_kstar
-    mul_kstar_le_self := fun a b h i => mul_kstar_le_self <| h _
-    kstar_mul_le_self := fun a b h i => kstar_mul_le_self <| h _ }
+    one_le_kstar := fun _ _ => one_le_kstar
+    mul_kstar_le_kstar := fun _ _ => mul_kstar_le_kstar
+    kstar_mul_le_kstar := fun _ _ => kstar_mul_le_kstar
+    mul_kstar_le_self := fun _ _ h _ => mul_kstar_le_self <| h _
+    kstar_mul_le_self := fun _ _ h _ => kstar_mul_le_self <| h _ }
 
 theorem kstar_def (a : ∀ i, π i) : a∗ = fun i => (a i)∗ :=
   rfl
@@ -366,7 +366,7 @@ protected def idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
     IdemSemiring β :=
-  { hf.Semiring f zero one add mul nsmul npow nat_cast, hf.SemilatticeSup _ sup,
+  { hf.semiring f zero one add mul nsmul npow nat_cast, hf.semilatticeSup _ sup,
     ‹Bot β› with
     add_eq_sup := fun a b => hf <| by erw [sup, add, add_eq_sup]
     bot := ⊥
@@ -382,8 +382,8 @@ protected def idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β]
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
     IdemCommSemiring β :=
-  { hf.CommSemiring f zero one add mul nsmul npow nat_cast,
-    hf.IdemSemiring f zero one add mul nsmul npow nat_cast sup bot with }
+  { hf.commSemiring f zero one add mul nsmul npow nat_cast,
+    hf.idemSemiring f zero one add mul nsmul npow nat_cast sup bot with }
 #align function.injective.idem_comm_semiring Function.Injective.idemCommSemiring
 
 -- See note [reducible non-instances]
@@ -395,7 +395,7 @@ protected def kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul 
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
     (kstar : ∀ a, f a∗ = (f a)∗) : KleeneAlgebra β :=
-  { hf.IdemSemiring f zero one add mul nsmul npow nat_cast sup bot,
+  { hf.idemSemiring f zero one add mul nsmul npow nat_cast sup bot,
     ‹HasKstar
         β› with
     one_le_kstar := fun a =>
@@ -425,4 +425,3 @@ protected def kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul 
 #align function.injective.kleene_algebra Function.Injective.kleeneAlgebra
 
 end Function.Injective
-
