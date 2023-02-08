@@ -16,19 +16,19 @@ import Mathlib.Data.Sym.Sym2
 /-!
 # Symmetric powers of a finset
 
-This file defines the symmetric powers of a finset as `finset (sym α n)` and `finset (sym2 α)`.
+This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `Finset (Sym2 α)`.
 
 ## Main declarations
 
-* `finset.sym`: The symmetric power of a finset. `s.sym n` is all the multisets of cardinality `n`
+* `Finset.sym`: The symmetric power of a finset. `s.sym n` is all the multisets of cardinality `n`
   whose elements are in `s`.
-* `finset.sym2`: The symmetric square of a finset. `s.sym2` is all the pairs whose elements are in
+* `Finset.sym2`: The symmetric square of a finset. `s.sym2` is all the pairs whose elements are in
   `s`.
 
 ## TODO
 
-`finset.sym` forms a Galois connection between `finset α` and `finset (sym α n)`. Similar for
-`finset.sym2`.
+`Finset.sym` forms a Galois connection between `Finset α` and `Finset (Sym α n)`. Similar for
+`Finset.sym2`.
 -/
 
 
@@ -50,7 +50,7 @@ section Sym2
 variable {m : Sym2 α}
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Lifts a finset to `sym2 α`. `s.sym2` is the finset of all pairs with elements in `s`. -/
+/-- Lifts a finset to `Sym2 α`. `s.sym2` is the finset of all pairs with elements in `s`. -/
 protected def sym2 (s : Finset α) : Finset (Sym2 α) :=
   (s ×ˢ s).image Quotient.mk'
 #align finset.sym2 Finset.sym2
@@ -120,7 +120,7 @@ section Sym
 
 variable {n : ℕ} {m : Sym α n}
 
-/-- Lifts a finset to `sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
+/-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/
 protected def sym (s : Finset α) : ∀ n, Finset (Sym α n)
   | 0 => {∅}
