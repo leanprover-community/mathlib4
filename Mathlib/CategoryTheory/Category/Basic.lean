@@ -124,7 +124,8 @@ which adds the `CategoryTheory` rule set,
 and allows `aesop` look through semireducible definitions when calling `intros`. -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [CategoryTheory]))
+    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false }) 
+    (rule_sets [CategoryTheory]))
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'

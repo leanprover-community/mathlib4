@@ -115,7 +115,7 @@ theorem StrictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
 #align nat.strict_mono_cast Nat.StrictMono_cast
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def castOrderEmbedding : ℕ ↪o α :=
   OrderEmbedding.ofStrictMono Nat.cast Nat.StrictMono_cast
 #align nat.cast_order_embedding Nat.castOrderEmbedding
