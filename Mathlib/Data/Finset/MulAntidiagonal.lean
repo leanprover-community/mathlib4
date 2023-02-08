@@ -11,9 +11,9 @@ Authors: Floris van Doorn, Yaël Dillies
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.MulAntidiagonal
 
-/-! # Multiplication antidiagonal as a `finset`.
+/-! # Multiplication antidiagonal as a `Finset`.
 
-We construct the `finset` of all pairs
+We construct the `Finset` of all pairs
 of an element in `s` and an element in `t` that multiply to `a`,
 given that `s` and `t` are well-ordered.-/
 
@@ -59,11 +59,12 @@ variable {α : Type _}
 
 variable [OrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsPwo) (ht : t.IsPwo) (a : α)
 
-/-- `finset.mul_antidiagonal_of_is_wf hs ht a` is the set of all pairs of an element in `s` and an
+/-- `Finset.mulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` that multiply to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/
-@[to_additive
-      "`finset.add_antidiagonal_of_is_wf hs ht a` is the set of all pairs of an element in\n`s` and an element in `t` that add to `a`, but its construction requires proofs that `s` and `t` are\nwell-ordered."]
+@[to_additive "`Finset.addAntidiagonal hs ht a` is the set of all pairs of an element in
+`s` and an element in `t` that add to `a`, but its construction requires proofs that `s` and `t` are
+well-ordered."]
 noncomputable def mulAntidiagonal : Finset (α × α) :=
   (Set.MulAntidiagonal.finite_of_isPwo hs ht a).toFinset
 #align finset.mul_antidiagonal Finset.mulAntidiagonal
@@ -71,7 +72,7 @@ noncomputable def mulAntidiagonal : Finset (α × α) :=
 
 variable {hs ht a} {u : Set α} {hu : u.IsPwo} {x : α × α}
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
   simp [mulAntidiagonal, and_rotate]
 #align finset.mem_mul_antidiagonal Finset.mem_mulAntidiagonal
@@ -90,7 +91,7 @@ theorem mulAntidiagonal_mono_right (h : u ⊆ t) :
 #align finset.mul_antidiagonal_mono_right Finset.mulAntidiagonal_mono_right
 #align finset.add_antidiagonal_mono_right Finset.addAntidiagonal_mono_right
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem swap_mem_mulAntidiagonal :
     x.swap ∈ Finset.mulAntidiagonal hs ht a ↔ x ∈ Finset.mulAntidiagonal ht hs a := by
   simp [mul_comm, and_left_comm]
