@@ -155,7 +155,7 @@ protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
 #align uniform_equiv.continuous_symm UniformEquiv.continuous_symm
 
 /-- A uniform isomorphism as a homeomorphism. -/
--- @[simps] -- Porting note: restore `simps`
+-- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
 protected def toHomeomorph (e : α ≃ᵤ β) : α ≃ₜ β :=
   { e.toEquiv with
     continuous_toFun := e.continuous
@@ -208,7 +208,7 @@ theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 #align uniform_equiv.self_comp_symm UniformEquiv.self_comp_symm
 
---@[simp] -- Porting note: simpNF linter complained
+-- @[simp] -- Porting note: `simp` can prove this `simp only [Equiv.range_eq_univ]`
 theorem range_coe (h : α ≃ᵤ β) : range h = univ :=
   h.surjective.range_eq
 #align uniform_equiv.range_coe UniformEquiv.range_coe
@@ -221,12 +221,12 @@ theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage).symm
 #align uniform_equiv.preimage_symm UniformEquiv.preimage_symm
 
---@[simp] -- Porting note: simpNF linter complained
+-- @[simp] -- Porting note: `simp` can prove this `simp only [Equiv.image_preimage]`
 theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
   h.toEquiv.image_preimage s
 #align uniform_equiv.image_preimage UniformEquiv.image_preimage
 
---@[simp] -- Porting note: simpNF linter complained
+--@[simp] -- Porting note: `simp` can prove this `simp only [Equiv.preimage_image]`
 theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 #align uniform_equiv.preimage_image UniformEquiv.preimage_image
@@ -352,7 +352,6 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
 end
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
---@[simps! (config := { fullyApplied := false })] -- Porting note: restore `simps`
 def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α
     where
   toEquiv := Equiv.funUnique ι α
@@ -360,8 +359,14 @@ def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃�
   uniformContinuous_invFun := uniformContinuous_pi.mpr fun _ => uniformContinuous_id
 #align uniform_equiv.fun_unique UniformEquiv.funUnique
 
+@[simp] theorem funUnique_apply (ι α : Type _) [Unique ι] [UniformSpace α] :
+  ↑(funUnique ι α).toEquiv = fun f => f default := rfl
+
+-- Porting note: manual version of `simps` lemma with LHS simplified
+@[simp] theorem funUnique_symm_apply (ι α : Type _) [Unique ι] [UniformSpace α] :
+  ↑(funUnique ι α).symm.toEquiv = fun x _ => x := rfl
+
 /-- Uniform isomorphism between dependent functions `Π i : fin 2, α i` and `α 0 × α 1`. -/
--- @[simps! (config := { fullyApplied := false })] -- Porting note: restore `simps`
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1
     where
   toEquiv := piFinTwoEquiv α
@@ -370,11 +375,28 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
     uniformContinuous_pi.mpr <| Fin.forall_fin_two.2 ⟨uniformContinuous_fst, uniformContinuous_snd⟩
 #align uniform_equiv.pi_fin_two UniformEquiv.piFinTwo
 
+-- Porting note: manual version of `simps` lemma with LHS simplified
+@[simp] theorem piFinTwo_apply (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] :
+  ↑(piFinTwo α).toEquiv = fun f => (f 0, f 1) := rfl
+
+-- Porting note: manual version of `simps` lemma with LHS simplified
+@[simp] theorem piFinTwo_symm_apply (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] :
+  ↑(piFinTwo α).symm.toEquiv = fun p => Fin.cons p.fst (Fin.cons p.snd finZeroElim) := rfl
+
 /-- Uniform isomorphism between `α² = fin 2 → α` and `α × α`. -/
---@[simps! (config := { fullyApplied := false })] -- Porting note: restore `simps`
-def finTwoArrow : (Fin 2 → α) ≃ᵤ α × α :=
+-- Porting note: made `α` explicit
+def finTwoArrow (α : Type _) [UniformSpace α]: (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align uniform_equiv.fin_two_arrow UniformEquiv.finTwoArrow
+
+-- Porting note: manual version of `simps` lemma with LHS simplified
+@[simp] theorem finTwoArrow_apply [UniformSpace α] :
+  ↑(finTwoArrow α).toEquiv = fun f => (f 0, f 1) := rfl
+
+-- Porting note: manual version of `simps` lemma with LHS simplified
+@[simp] theorem finTwoArrow_symm_apply [UniformSpace α] :
+  ↑(finTwoArrow α).symm.toEquiv =
+  fun x => Matrix.vecCons x.fst (Matrix.vecCons x.snd Matrix.vecEmpty) := rfl
 
 /-- A subset of a uniform space is uniformly isomorphic to its image under a uniform isomorphism.
 -/
@@ -389,7 +411,7 @@ def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s
 end UniformEquiv
 
 /-- A uniform inducing equiv between uniform spaces is a uniform isomorphism. -/
--- @[simps] -- Porting note: restore `simps`
+-- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
 def Equiv.toUniformEquivOfUniformInducing [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (hf : UniformInducing f) : α ≃ᵤ β :=
   { f with
