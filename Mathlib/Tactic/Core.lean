@@ -6,6 +6,14 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 import Std.Tactic.Simpa
 import Mathlib.Lean.Expr
 
+/-!
+# The `slice` tactic
+
+Applies a tactic to an interval of terms from a term obtained by repeated application 
+of `Category.comp`. 
+
+-/
+
 open Lean.Elab.Tactic
 
 namespace Lean
@@ -125,7 +133,7 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
 def andThenOnSubgoals (tac1 : TacticM Unit)  (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2
 
-variable [Monad m] [MonadExceptOf Exception m]
+variable [Monad m] [MonadExcept Exception m]
 
 /-- Repeats a tactic at most `n` times, stopping sooner if the
 tactic fails. Always succeeds. -/
@@ -133,9 +141,44 @@ def iterateAtMost : Nat → m Unit → m Unit
 | 0, _ => pure ()
 | n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
 
+/-- `iterateExactly' n t` executes `t` `n` times. If any iteration fails, the whole tactic fails.
+-/
+def iterateExactly' : Nat → m Unit → m Unit 
+| 0, _ => pure () 
+| n+1, tac => tac *> iterateExactly' n tac
+
+/--
+`iterateRange m n t`: Repeat the given tactic at least `m` times and
+at most `n` times or until `t` fails. Fails if `t` does not run at least `m` times.
+-/
+def iterateRange : Nat → Nat → m Unit → m Unit 
+| 0, 0, _   => pure ()
+| 0, b, tac => iterateAtMost b tac
+| (a+1), n, tac => do 
+  let _ ← tac 
+  let _ ← iterateRange a (n-1) tac 
+  pure ()
+
 /-- Repeats a tactic until it fails. Always succeeds. -/
 partial def iterateUntilFailure (tac : m Unit) : m Unit :=
   try tac; iterateUntilFailure tac catch _ => pure ()
+
+/-- `iterateUntilFailureWithResults` is a helper tactic which returns the results of `tac`'s 
+iterative application along the lines of `iterateUntilFailure`. Always succeeds.
+-/
+partial def iterateUntilFailureWithResults {α : Type} (tac : TacticM α) : TacticM (List α) := do
+  try
+    let a ← tac
+    let l ← iterateUntilFailureWithResults tac
+    pure (a :: l)
+  catch _ => pure []
+
+/-- `iterateUntilFailureCount` is similiar to `iterateUntilFailure` except it counts 
+the number of successful calls to `tac`. Always succeeds. 
+-/
+def iterateUntilFailureCount {α : Type} (tac : TacticM α) : TacticM Nat := do
+  let r ← iterateUntilFailureWithResults tac
+  return r.length
 
 end Lean.Elab.Tactic
 
