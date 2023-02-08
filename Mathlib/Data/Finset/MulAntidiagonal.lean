@@ -8,8 +8,8 @@ Authors: Floris van Doorn, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Pointwise.Basic
-import Mathbin.Data.Set.MulAntidiagonal
+import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Data.Set.MulAntidiagonal
 
 /-! # Multiplication antidiagonal as a `finset`.
 
@@ -25,8 +25,7 @@ open Pointwise
 variable {α : Type _} {s t : Set α}
 
 @[to_additive]
-theorem IsPwo.mul [OrderedCancelCommMonoid α] (hs : s.IsPwo) (ht : t.IsPwo) : IsPwo (s * t) :=
-  by
+theorem IsPwo.mul [OrderedCancelCommMonoid α] (hs : s.IsPwo) (ht : t.IsPwo) : IsPwo (s * t) := by
   rw [← image_mul_prod]
   exact (hs.prod ht).image_of_monotone (monotone_fst.mul' monotone_snd)
 #align set.is_pwo.mul Set.IsPwo.mul
@@ -42,8 +41,7 @@ theorem IsWf.mul (hs : s.IsWf) (ht : t.IsWf) : IsWf (s * t) :=
 
 @[to_additive]
 theorem IsWf.min_mul (hs : s.IsWf) (ht : t.IsWf) (hsn : s.Nonempty) (htn : t.Nonempty) :
-    (hs.mul ht).min (hsn.mul htn) = hs.min hsn * ht.min htn :=
-  by
+    (hs.mul ht).min (hsn.mul htn) = hs.min hsn * ht.min htn := by
   refine' le_antisymm (is_wf.min_le _ _ (mem_mul.2 ⟨_, _, hs.min_mem _, ht.min_mem _, rfl⟩)) _
   rw [is_wf.le_min_iff]
   rintro _ ⟨x, y, hx, hy, rfl⟩
@@ -116,8 +114,7 @@ theorem isPwo_support_mulAntidiagonal : { a | (mulAntidiagonal hs ht a).Nonempty
 @[to_additive]
 theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t : Set α}
     (hs : s.IsWf) (ht : t.IsWf) (hns : s.Nonempty) (hnt : t.Nonempty) :
-    mulAntidiagonal hs.IsPwo ht.IsPwo (hs.min hns * ht.min hnt) = {(hs hns, ht hnt)} :=
-  by
+    mulAntidiagonal hs.IsPwo ht.IsPwo (hs.min hns * ht.min hnt) = {(hs hns, ht hnt)} := by
   ext ⟨a, b⟩
   simp only [mem_mul_antidiagonal, mem_singleton, Prod.ext_iff]
   constructor
