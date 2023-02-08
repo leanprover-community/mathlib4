@@ -8,7 +8,6 @@ Authors: Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
---import Mathlib.Tactic.Tidy
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.SubsetProperties
