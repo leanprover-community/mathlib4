@@ -645,7 +645,8 @@ def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedP
     if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs
   if nrCustomProjections < customDeclarations.size then
     Linter.logLint linter.simpsUnusedCustomDeclarations stx
-      m!"Not all of the custom declarations {customDeclarations} are used. Double check the spelling, and use `?` to get more information."
+      m!"Not all of the custom declarations {customDeclarations} are used. Double check the {
+        ""}spelling, and use `?` to get more information."
 
 /-- Data about default coercions. An entry consists of
   `(projName, (className, functionName, arity))`, where
