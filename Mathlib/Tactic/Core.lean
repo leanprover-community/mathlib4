@@ -156,7 +156,7 @@ partial def iterateUntilFailure (tac : m Unit) : m Unit :=
   try tac; iterateUntilFailure tac catch _ => pure ()
 
 /-- `iterateUntilFailureWithResults` is a helper tactic which returns the results of `tac`'s 
-iterative application along the lines of `iterateUntilFailure`
+iterative application along the lines of `iterateUntilFailure`. Always succeeds.
 -/
 partial def iterateUntilFailureWithResults {α : Type} (tac : TacticM α) : TacticM (List α) := do
   try
@@ -166,7 +166,7 @@ partial def iterateUntilFailureWithResults {α : Type} (tac : TacticM α) : Tact
   catch _ => pure []
 
 /-- `iterateUntilFailureCount` is similiar to `iterateUntilFailure` except it counts 
-the number of successful calls to `tac`
+the number of successful calls to `tac`. Always succeeds. 
 -/
 def iterateUntilFailureCount {α : Type} (tac : TacticM α) : TacticM Nat := do
   let r ← iterateUntilFailureWithResults tac

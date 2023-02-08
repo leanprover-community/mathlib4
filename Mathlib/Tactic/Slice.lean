@@ -40,21 +40,22 @@ def evalSlice (a b : Nat) : TacticM Unit := do
   let _ ← iterateUntilFailureWithResults do
     evalTactic (← `(conv| rw [Category.assoc]))
 
+/-- `slice` is implemented by `evalSlice` -/
 elab "slice" a:num b:num : conv => evalSlice a.getNat b.getNat
 
 /-- 
 `sliceLHS a b => tac` is a conv tactic which enters the LHS of a target, 
 uses `slice` to extract the `a` through `b` terms, and then applies 
 `tac` to the result. 
-
-`sliceRHS a b => tac` works on the RHS similarly
 -/
-
 syntax (name := sliceLHS) "sliceLHS" num num " => " convSeq : tactic
 macro_rules
   | `(tactic| sliceLHS $a $b => $seq) =>
     `(tactic| conv => lhs; slice $a $b; ($seq:convSeq))
 
+/--
+`sliceRHS a b => tac` works as `sliceLHS` but on the RHS similarly
+-/
 syntax (name := sliceRHS) "sliceRHS" num num " => " convSeq : tactic
 macro_rules
   | `(tactic| sliceRHS $a $b => $seq) =>
