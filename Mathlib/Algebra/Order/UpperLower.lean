@@ -29,13 +29,13 @@ variable {α : Type _} [OrderedCommMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
-  smul_set_subset_iff.2 fun y ↦ hs <| le_mul_of_one_le_left' hx
+  smul_set_subset_iff.2 fun _ ↦ hs <| le_mul_of_one_le_left' hx
 #align is_upper_set.smul_subset IsUpperSet.smul_subset
 #align is_upper_set.vadd_subset IsUpperSet.vadd_subset
 
 @[to_additive]
 theorem IsLowerSet.smul_subset (hs : IsLowerSet s) (hx : x ≤ 1) : x • s ⊆ s :=
-  smul_set_subset_iff.2 fun y ↦ hs <| mul_le_of_le_one_left' hx
+  smul_set_subset_iff.2 fun _ ↦ hs <| mul_le_of_le_one_left' hx
 #align is_lower_set.smul_subset IsLowerSet.smul_subset
 #align is_lower_set.vadd_subset IsLowerSet.vadd_subset
 
@@ -71,7 +71,7 @@ theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected :=
 theorem IsUpperSet.mul_left (ht : IsUpperSet t) : IsUpperSet (s * t) :=
   by
   rw [← smul_eq_mul, ← Set.unionᵢ_smul_set]
-  exact isUpperSet_unionᵢ₂ fun x hx ↦ ht.smul
+  exact isUpperSet_unionᵢ₂ fun x _ ↦ ht.smul
 #align is_upper_set.mul_left IsUpperSet.mul_left
 #align is_upper_set.add_left IsUpperSet.add_left
 
@@ -96,12 +96,12 @@ theorem IsLowerSet.mul_right (hs : IsLowerSet s) : IsLowerSet (s * t) :=
 #align is_lower_set.add_right IsLowerSet.add_right
 
 @[to_additive]
-theorem IsUpperSet.inv (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun x y h ↦ hs <| inv_le_inv' h
+theorem IsUpperSet.inv (hs : IsUpperSet s) : IsLowerSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
 #align is_upper_set.inv IsUpperSet.inv
 #align is_upper_set.neg IsUpperSet.neg
 
 @[to_additive]
-theorem IsLowerSet.inv (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun x y h ↦ hs <| inv_le_inv' h
+theorem IsLowerSet.inv (hs : IsLowerSet s) : IsUpperSet s⁻¹ := fun _ _ h ↦ hs <| inv_le_inv' h
 #align is_lower_set.inv IsLowerSet.inv
 #align is_lower_set.neg IsLowerSet.neg
 
