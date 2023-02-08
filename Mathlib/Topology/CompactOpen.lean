@@ -348,14 +348,16 @@ theorem continuous_coev : Continuous (coev α β) :=
     rintro _ ⟨s, sc, u, uo, rfl⟩
     rw [isOpen_iff_forall_mem_open]
     intro y hy
-    change coev α β y '' s ⊆ u at hy
-    rw [image_coev s] at hy
-    rcases generalized_tube_lemma isCompact_singleton sc uo hy with ⟨v, w, vo, wo, yv, sw, vwu⟩
+    have hy' : (↑(coev α β y) '' s ⊆ u) := hy
+    -- porting notes: was below
+    --change coev α β y '' s ⊆ u at hy
+    rw [image_coev s] at hy'
+    rcases generalized_tube_lemma isCompact_singleton sc uo hy' with ⟨v, w, vo, wo, yv, sw, vwu⟩
     refine' ⟨v, _, vo, singleton_subset_iff.mp yv⟩
     intro y' hy'
     change coev α β y' '' s ⊆ u
     rw [image_coev s]
-    exact subset.trans (prod_mono (singleton_subset_iff.mpr hy') sw) vwu
+    exact Subset.trans (prod_mono (singleton_subset_iff.mpr hy') sw) vwu
 #align continuous_map.continuous_coev ContinuousMap.continuous_coev
 
 end Coev
