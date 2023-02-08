@@ -138,15 +138,15 @@ theorem continuous_comp' [LocallyCompactSpace β] :
       conv =>
         congr
         rw [CompactOpen.gen, preimage_setOf_eq]
-        congr
-        ext
-        rw [coe_comp, image_comp, image_subset_iff]
+        --congr
+        ext; dsimp [setOf]
+        rw [image_comp, image_subset_iff]
       rw [isOpen_iff_forall_mem_open]
       rintro ⟨φ₀, ψ₀⟩ H
       obtain ⟨L, hL, hKL, hLU⟩ := exists_compact_between (hK.image φ₀.2) (hU.preimage ψ₀.2) H
       use { φ : C(α, β) | φ '' K ⊆ interior L } ×ˢ { ψ : C(β, γ) | ψ '' L ⊆ U }
       use fun ⟨φ, ψ⟩ ⟨hφ, hψ⟩ => subset_trans hφ (interior_subset.trans <| image_subset_iff.mp hψ)
-      use (ContinuousMap.isOpen_gen hK isOpen_interior).Prod (ContinuousMap.isOpen_gen hL hU)
+      use (ContinuousMap.isOpen_gen hK isOpen_interior).prod (ContinuousMap.isOpen_gen hL hU)
       exact mem_prod.mpr ⟨hKL, image_subset_iff.mpr hLU⟩)
 #align continuous_map.continuous_comp' ContinuousMap.continuous_comp'
 
