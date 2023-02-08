@@ -15,16 +15,16 @@ import Mathlib.Topology.ContinuousFunction.Basic
 
 This file defines bundled continuous open maps.
 
-We use the `fun_like` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
 
-* `continuous_open_map`: Continuous open maps.
+* `ContinuousOpenMap`: Continuous open maps.
 
 ## Typeclasses
 
-* `continuous_open_map_class`
+* `ContinuousOpenMapClass`
 -/
 
 
@@ -43,9 +43,9 @@ infixr:25 " →CO " => ContinuousOpenMap
 
 section
 
-/-- `continuous_open_map_class F α β` states that `F` is a type of continuous open maps.
+/-- `ContinuousOpenMapClass F α β` states that `F` is a type of continuous open maps.
 
-You should extend this class when you extend `continuous_open_map`. -/
+You should extend this class when you extend `ContinuousOpenMap`. -/
 class ContinuousOpenMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
   [TopologicalSpace β] extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
@@ -85,7 +85,7 @@ theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
 #align continuous_open_map.ext ContinuousOpenMap.ext
 
-/-- Copy of a `continuous_open_map` with a new `continuous_map` equal to the old one. Useful to fix
+/-- Copy of a `ContinuousOpenMap` with a new `ContinuousMap` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : α →CO β) (f' : α → β) (h : f' = f) : α →CO β :=
   ⟨f.toContinuousMap.copy f' <| h, h.symm.subst f.map_open'⟩
@@ -102,7 +102,7 @@ theorem copy_eq (f : α →CO β) (f' : α → β) (h : f' = f) : f.copy f' h = 
 
 variable (α)
 
-/-- `id` as a `continuous_open_map`. -/
+/-- `id` as a `ContinuousOpenMap`. -/
 protected def id : α →CO α :=
   ⟨ContinuousMap.id _, IsOpenMap.id⟩
 #align continuous_open_map.id ContinuousOpenMap.id
@@ -122,7 +122,7 @@ theorem id_apply (a : α) : ContinuousOpenMap.id α a = a :=
   rfl
 #align continuous_open_map.id_apply ContinuousOpenMap.id_apply
 
-/-- Composition of `continuous_open_map`s as a `continuous_open_map`. -/
+/-- Composition of `ContinuousOpenMap`s as a `ContinuousOpenMap`. -/
 def comp (f : β →CO γ) (g : α →CO β) : ContinuousOpenMap α γ :=
   ⟨f.toContinuousMap.comp g.toContinuousMap, f.map_open'.comp g.map_open'⟩
 #align continuous_open_map.comp ContinuousOpenMap.comp
