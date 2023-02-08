@@ -65,10 +65,10 @@ and ending with `![n, ..., 0]`.
 -/
 def antidiagonalTuple : ∀ k, ℕ → List (Fin k → ℕ)
   | 0, 0 => [![]]
-  | 0, n + 1 => []
+  | 0, _ + 1 => []
   | k + 1, n =>
     (List.Nat.antidiagonal n).bind fun ni =>
-      (antidiagonal_tuple k ni.2).map fun x => Fin.cons ni.1 x
+      (antidiagonalTuple k ni.2).map fun x => Fin.cons ni.1 x
 #align list.nat.antidiagonal_tuple List.Nat.antidiagonalTuple
 
 @[simp]
@@ -102,11 +102,11 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
   · cases n
     · simp
     · simp [eq_comm]
-  simp_rw [antidiagonal_tuple, List.nodup_bind]
+  simp_rw [antidiagonalTuple, List.nodup_bind]
   constructor
   · intro i hi
     exact (ih i.snd).map (Fin.cons_right_injective (i.fst : (fun _ => ℕ) 0))
-  induction n
+  induction' n with n n_ih
   · exact List.pairwise_singleton _ _
   · rw [List.Nat.antidiagonal_succ]
     refine' List.Pairwise.cons (fun a ha x hx₁ hx₂ => _) (n_ih.map _ fun a b h x hx₁ hx₂ => _)
@@ -127,51 +127,51 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
   | 0 => (congr_arg fun x => [x]) <| Subsingleton.elim _ _
   | k + 1 =>
     by
-    rw [antidiagonal_tuple, antidiagonal_zero, List.bind_singleton, antidiagonal_tuple_zero_right k,
+    rw [antidiagonalTuple, antidiagonal_zero, List.bind_singleton, antidiagonalTuple_zero_right k,
       List.map_singleton]
     exact congr_arg (fun x => [x]) Matrix.cons_zero_zero
 #align list.nat.antidiagonal_tuple_zero_right List.Nat.antidiagonalTuple_zero_right
 
 @[simp]
 theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
-  simp_rw [antidiagonal_tuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
-    tsub_self, List.bind_append, List.bind_singleton, antidiagonal_tuple_zero_zero,
+  simp_rw [antidiagonalTuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
+    tsub_self, List.bind_append, List.bind_singleton, antidiagonalTuple_zero_zero,
     List.map_singleton, List.map_bind]
   conv_rhs => rw [← List.nil_append [![n]]]
   congr 1
   simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]
   intro x hx
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt hx
-  rw [add_assoc, add_tsub_cancel_left, antidiagonal_tuple_zero_succ]
+  rw [add_assoc, add_tsub_cancel_left, antidiagonalTuple_zero_succ]
 #align list.nat.antidiagonal_tuple_one List.Nat.antidiagonalTuple_one
 
 theorem antidiagonalTuple_two (n : ℕ) :
     antidiagonalTuple 2 n = (antidiagonal n).map fun i => ![i.1, i.2] := by
-  rw [antidiagonal_tuple]
-  simp_rw [antidiagonal_tuple_one, List.map_singleton]
+  rw [antidiagonalTuple]
+  simp_rw [antidiagonalTuple_one, List.map_singleton]
   rw [List.map_eq_bind]
   rfl
 #align list.nat.antidiagonal_tuple_two List.Nat.antidiagonalTuple_two
 
 theorem antidiagonalTuple_pairwise_pi_lex :
-    ∀ k n, (antidiagonalTuple k n).Pairwise (Pi.Lex (· < ·) fun _ => (· < ·))
+    ∀ k n, (antidiagonalTuple k n).Pairwise (Pi.Lex (· < ·) @fun _ => (· < ·))
   | 0, 0 => List.pairwise_singleton _ _
-  | 0, n + 1 => List.Pairwise.nil
+  | 0, _ + 1 => List.Pairwise.nil
   | k + 1, n =>
     by
-    simp_rw [antidiagonal_tuple, List.pairwise_bind, List.pairwise_map', List.mem_map',
+    simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map',
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
     simp only [Fin.pi_lex_lt_cons_cons, eq_self_iff_true, true_and_iff, lt_self_iff_false,
       false_or_iff]
-    refine' ⟨fun _ _ _ => antidiagonal_tuple_pairwise_pi_lex k _, _⟩
-    induction n
+    refine' ⟨fun _ _ _ => antidiagonalTuple_pairwise_pi_lex k _, _⟩
+    induction' n with n n_ih
     · rw [antidiagonal_zero]
       exact List.pairwise_singleton _ _
-    · rw [antidiagonal_succ, List.pairwise_cons, List.pairwise_map']
+    · rw [antidiagonal_succ, List.pairwise_cons, List.pairwise_map]
       refine' ⟨fun p hp x hx y hy => _, _⟩
       · rw [List.mem_map', Prod.exists] at hp
-        obtain ⟨a, b, hab, rfl : (Nat.succ a, b) = p⟩ := hp
+        obtain ⟨a, b, _, rfl : (Nat.succ a, b) = p⟩ := hp
         exact Or.inl (Nat.zero_lt_succ _)
       dsimp
       simp_rw [Nat.succ_inj', Nat.succ_lt_succ_iff]
@@ -275,11 +275,10 @@ def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σn, antidiagonalTuple k n) �
     where
   toFun x := x.2
   invFun x := ⟨∑ i, x i, x, mem_antidiagonalTuple.mpr rfl⟩
-  left_inv := fun ⟨n, t, h⟩ => Sigma.subtype_ext (mem_antidiagonalTuple.mp h) rfl
-  right_inv x := rfl
+  left_inv := fun ⟨_, _, h⟩ => Sigma.subtype_ext (mem_antidiagonalTuple.mp h) rfl
+  right_inv _ := rfl
 #align finset.nat.sigma_antidiagonal_tuple_equiv_tuple Finset.Nat.sigmaAntidiagonalTupleEquivTuple
 
 end EquivProd
 
 end Finset.Nat
-
