@@ -15,34 +15,32 @@ import Mathlib.Algebra.AddTorsor
 
 In this file we introduce the following notation:
 
-* `affine_space V P` is an alternative notation for `add_torsor V P` introduced at the end of this
+* `AffineSpace V P` is an alternative notation for `AddTorsor V P` introduced at the end of this
   file.
 
 We tried to use an `abbreviation` instead of a `notation` but this led to hard-to-debug elaboration
 errors. So, we introduce a localized notation instead. When this notation is enabled with
-`open_locale affine`, Lean will use `affine_space` instead of `add_torsor` both in input and in the
+`open Affine`, Lean will use `AffineSpace` instead of `AddTorsor` both in input and in the
 proof state.
 
 Here is an incomplete list of notions related to affine spaces, all of them are defined in other
 files:
 
-* `affine_map`: a map between affine spaces that preserves the affine structure;
-* `affine_equiv`: an equivalence between affine spaces that preserves the affine structure;
-* `affine_subspace`: a subset of an affine space closed w.r.t. affine combinations of points;
-* `affine_combination`: an affine combination of points;
-* `affine_independent`: affine independent set of points;
-* `affine_basis.coord`: the barycentric coordinate of a point.
+* `AffineMap`: a map between affine spaces that preserves the affine structure;
+* `AffineEquiv`: an equivalence between affine spaces that preserves the affine structure;
+* `AffineSubspace`: a subset of an affine space closed w.r.t. affine combinations of points;
+* `AffineCombination`: an affine combination of points;
+* `AffineIndependent`: affine independent set of points;
+* `AffineBasis.coord`: the barycentric coordinate of a point.
 
 ## TODO
 
 Some key definitions are not yet present.
 
-* Affine frames.  An affine frame might perhaps be represented as an `affine_equiv` to a `finsupp`
+* Affine frames.  An affine frame might perhaps be represented as an `AffineEquiv` to a `Finsupp`
   (in the general case) or function type (in the finite-dimensional case) that gives the
   coordinates, with appropriate proofs of existence when `k` is a field.
  -/
 
 
--- mathport name: add_torsor
-scoped[Affine] notation "affine_space" => AddTorsor
-
+scoped[Affine] notation "AffineSpace" => AddTorsor
