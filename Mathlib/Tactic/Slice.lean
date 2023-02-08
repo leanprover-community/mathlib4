@@ -11,32 +11,8 @@ open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 -- TODO someone might like to generalise this tactic to work with other associative structures.
-namespace Tactic
 
-variable [Monad m] [MonadExcept Exception m]
-
-/-- `iterateUntilFailureWithResults` is a helper tactic which returns the results of `tac`'s 
-iterative application along the lines of `iterateUntilFailure`
--/
-partial def iterateUntilFailureWithResults {α : Type} (tac : TacticM α) : TacticM (List α) := do
-  try
-    let a ← tac
-    let l ← iterateUntilFailureWithResults tac
-    pure (a :: l)
-  catch _ => pure []
-#align tactic.repeat_with_results Tactic.iterateUntilFailureWithResults
-
-/-- `iterateUntilFailureCount` is similiar to `iterateUntilFailure` except it counts 
-the number of successful calls to `tac`
--/
-def iterateUntilFailureCount {α : Type} (tac : TacticM α) : TacticM ℕ := do
-  let r ← iterateUntilFailureWithResults tac
-  return r.length
-#align tactic.repeat_count Tactic.iterateUntilFailureCount
-
-end Tactic
-
-namespace Conv
+/- Porting note: moved `repeat_with_results` to `repeat_count` to `Mathlib.Tactic.Core` -/
 
 open Tactic
 open Parser.Tactic.Conv
