@@ -11,7 +11,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.UpperLower.Basic
-set_option autoImplicit false -- **TODO** delete this later
 /-!
 # Algebraic operations on upper/lower sets
 
@@ -158,12 +157,6 @@ theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
 #align upper_set.coe_zero UpperSet.coe_zero
 
 @[to_additive (attr := simp,norm_cast)]
-theorem coe_smul (a : α) (s : UpperSet α) : (↑(a • s) : Set α) = a • s :=
-  rfl
-#align upper_set.coe_smul UpperSet.coe_smul
-#align upper_set.coe_vadd UpperSet.coe_vadd
-
-@[to_additive (attr := simp,norm_cast)]
 theorem coe_mul (s t : UpperSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 #align upper_set.coe_mul UpperSet.coe_mul
@@ -183,7 +176,7 @@ theorem Ici_one : Ici (1 : α) = 1 :=
 
 @[to_additive]
 instance : MulAction α (UpperSet α) :=
-  SetLike.coe_injective.mulAction _ coe_smul
+  SetLike.coe_injective.mulAction _ (λ _ _ => rfl)
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (UpperSet α) :=
@@ -228,12 +221,6 @@ instance : SMul α (LowerSet α) :=
   ⟨fun a s ↦ ⟨(· • ·) a '' s, s.2.smul⟩⟩
 
 @[to_additive (attr := simp,norm_cast)]
-theorem coe_smul (a : α) (s : LowerSet α) : (↑(a • s) : Set α) = a • s :=
-  rfl
-#align lower_set.coe_smul LowerSet.coe_smul
-#align lower_set.coe_vadd LowerSet.coe_vadd
-
-@[to_additive (attr := simp,norm_cast)]
 theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 #align lower_set.coe_mul LowerSet.coe_mul
@@ -253,7 +240,7 @@ theorem Iic_one : Iic (1 : α) = 1 :=
 
 @[to_additive]
 instance : MulAction α (LowerSet α) :=
-  SetLike.coe_injective.mulAction _ coe_smul
+  SetLike.coe_injective.mulAction _ (λ _ _ => rfl)
 
 @[to_additive]
 instance commSemigroup : CommSemigroup (LowerSet α) :=
@@ -308,7 +295,7 @@ theorem lowerClosure_smul : lowerClosure (a • s) = a • lowerClosure s :=
 @[to_additive]
 theorem mul_upperClosure : s * upperClosure t = upperClosure (s * t) := by
   simp_rw [← smul_eq_mul, ← Set.unionᵢ_smul_set, upperClosure_unionᵢ, upperClosure_smul,
-    UpperSet.coe_infᵢ₂, UpperSet.coe_smul]
+    UpperSet.coe_infᵢ₂]
   rfl
 #align mul_upper_closure mul_upperClosure
 #align add_upper_closure add_upperClosure
@@ -316,7 +303,7 @@ theorem mul_upperClosure : s * upperClosure t = upperClosure (s * t) := by
 @[to_additive]
 theorem mul_lowerClosure : s * lowerClosure t = lowerClosure (s * t) := by
   simp_rw [← smul_eq_mul, ← Set.unionᵢ_smul_set, lowerClosure_unionᵢ, lowerClosure_smul,
-    LowerSet.coe_supᵢ₂, LowerSet.coe_smul]
+    LowerSet.coe_supᵢ₂]
   rfl
 #align mul_lower_closure mul_lowerClosure
 #align add_lower_closure add_lowerClosure
@@ -352,5 +339,3 @@ theorem lowerClosure_mul_distrib : lowerClosure (s * t) = lowerClosure s * lower
 #align lower_closure_add_distrib lowerClosure_add_distrib
 
 end OrderedCommGroup
-
-#lint
