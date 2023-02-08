@@ -1010,6 +1010,7 @@ import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.Algebra.Order.ExtendFrom
 import Mathlib.Topology.Algebra.Order.ExtrClosure
+import Mathlib.Topology.Algebra.Order.Filter
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.LeftRight
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
