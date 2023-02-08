@@ -235,7 +235,7 @@ on `C(s, β)` for `s` a compact subset of `α`.  The key point of the proof is t
 compact subsets of `α` is equal to the union of compact subsets of the compact subsets of `α`. -/
 theorem compactOpen_eq_Inf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) =
-      ⨅ (s : Set α) (hs : IsCompact s),
+      ⨅ (s : Set α) (_hs : IsCompact s),
         TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
   refine' le_antisymm _ _
   · refine' le_infᵢ₂ _
@@ -355,7 +355,7 @@ theorem continuous_coev : Continuous (coev α β) :=
     -- porting notes: was below
     --change coev α β y '' s ⊆ u at hy
     rw [image_coev s] at hy'
-    rcases generalized_tube_lemma isCompact_singleton sc uo hy' with ⟨v, w, vo, wo, yv, sw, vwu⟩
+    rcases generalized_tube_lemma isCompact_singleton sc uo hy' with ⟨v, w, vo, _, yv, sw, vwu⟩
     refine' ⟨v, _, vo, singleton_subset_iff.mp yv⟩
     intro y' hy'
     change coev α β y' '' s ⊆ u
