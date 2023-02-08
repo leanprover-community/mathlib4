@@ -8,7 +8,7 @@ Authors: Joseph Myers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.AddTorsor
+import Mathlib.Algebra.AddTorsor
 
 /-!
 # Affine space
