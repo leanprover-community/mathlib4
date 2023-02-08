@@ -1075,7 +1075,7 @@ theorem lift_infₛ (s : Set Cardinal) : lift.{u,v} (infₛ s) = infₛ (lift.{u
   · exact  lift_monotone.map_cinfₛ hs
 #align cardinal.lift_Inf Cardinal.lift_infₛ
 
-set_option pp.universes false
+-- Porting note: Inserted .{u,v} below
 @[simp]
 theorem lift_infᵢ {ι} (f : ι → Cardinal) : lift.{u,v} (infᵢ f) = ⨅ i, lift.{u,v} (f i) :=
   by
@@ -1097,24 +1097,27 @@ theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
                   fun ⟨a, ⟨b, e⟩⟩ => ⟨b, Subtype.eq e⟩⟩⟩
 #align cardinal.lift_down Cardinal.lift_down
 
+-- Porting note: Inserted .{u,v} below
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{max u v,u} a ↔ ∃ a', lift.{max u v,u} a' = b ∧ a' ≤ a :=
+    b ≤ lift.{v,u} a ↔ ∃ a', lift.{v,u} a' = b ∧ a' ≤ a :=
   ⟨fun h =>
     let ⟨a', e⟩ := lift_down h
     ⟨a', e, lift_le.1 <| e.symm ▸ h⟩,
     fun ⟨_, e, h⟩ => e ▸ lift_le.2 h⟩
 #align cardinal.le_lift_iff Cardinal.le_lift_iff
 
+-- Porting note: Inserted .{u,v} below
 theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b < lift a ↔ ∃ a', lift a' = b ∧ a' < a :=
+    b < lift.{v,u} a ↔ ∃ a', lift.{v,u} a' = b ∧ a' < a :=
   ⟨fun h =>
     let ⟨a', e⟩ := lift_down h.le
     ⟨a', e, lift_lt.1 <| e.symm ▸ h⟩,
-    fun ⟨a', e, h⟩ => e ▸ lift_lt.2 h⟩
+    fun ⟨_, e, h⟩ => e ▸ lift_lt.2 h⟩
 #align cardinal.lt_lift_iff Cardinal.lt_lift_iff
 
+-- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_succ (a) : lift (succ a) = succ (lift a) :=
+theorem lift_succ (a) : lift.{v,u} (succ a) = succ (lift.{v,u} a) :=
   le_antisymm
     (le_of_not_gt fun h => by
       rcases lt_lift_iff.1 h with ⟨b, e, h⟩
@@ -1123,19 +1126,22 @@ theorem lift_succ (a) : lift (succ a) = succ (lift a) :=
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 #align cardinal.lift_succ Cardinal.lift_succ
 
+-- Porting note: Inserted .{u,v} below
 @[simp]
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
-  rw [← lift_lift, ← lift_lift, lift_inj]
+  rw [← lift_lift.{u,v,w}, ← lift_lift.{v,u,w}, lift_inj]
 #align cardinal.lift_umax_eq Cardinal.lift_umax_eq
 
+-- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_min {a b : Cardinal} : lift (min a b) = min (lift a) (lift b) :=
+theorem lift_min {a b : Cardinal} : lift.{u,v} (min a b) = min (lift.{u,v} a) (lift.{u,v} b) :=
   lift_monotone.map_min
 #align cardinal.lift_min Cardinal.lift_min
 
+-- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_max {a b : Cardinal} : lift (max a b) = max (lift a) (lift b) :=
+theorem lift_max {a b : Cardinal} : lift.{u,v} (max a b) = max (lift.{u,v} a) (lift.{u,v} b) :=
   lift_monotone.map_max
 #align cardinal.lift_max Cardinal.lift_max
 
@@ -1223,12 +1229,12 @@ theorem lift_aleph0 : lift ℵ₀ = ℵ₀ :=
 
 @[simp]
 theorem aleph0_le_lift {c : Cardinal.{u}} : ℵ₀ ≤ lift.{v} c ↔ ℵ₀ ≤ c := by
-  rw [← lift_aleph0, lift_le]
+  rw [← lift_aleph0.{u,v}, lift_le]
 #align cardinal.aleph_0_le_lift Cardinal.aleph0_le_lift
 
 @[simp]
 theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ₀ := by
-  rw [← lift_aleph0, lift_le]
+  rw [← lift_aleph0.{u,v}, lift_le]
 #align cardinal.lift_le_aleph_0 Cardinal.lift_le_aleph0
 
 /-! ### Properties about the cast from `ℕ` -/
@@ -1513,7 +1519,7 @@ theorem eq_one_iff_unique {α : Type _} : (#α) = 1 ↔ Subsingleton α ∧ None
   calc
     (#α) = 1 ↔ (#α) ≤ 1 ∧ 1 ≤ (#α) := le_antisymm_iff
     _ ↔ Subsingleton α ∧ Nonempty α :=
-      le_one_iff_subsingleton.And (one_le_iff_ne_zero.trans mk_ne_zero_iff)
+      le_one_iff_subsingleton.and (one_le_iff_ne_zero.trans mk_ne_zero_iff)
 
 #align cardinal.eq_one_iff_unique Cardinal.eq_one_iff_unique
 
@@ -1815,15 +1821,15 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       refine' ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 _⟩
       rw [mk_out]
       exact (H i).ne_bot
-    let G := inv_fun F
-    have sG : surjective G := inv_fun_surjective F.2
+    let G := invFun F
+    have sG : Surjective G := invFun_surjective F.2
     choose C hc using
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
-        simp only [-not_exists, not_exists.symm, not_forall.symm]
+        simp only [not_exists.symm, not_forall.symm]
         refine' fun h => (H i).not_le _
         rw [← mk_out (f i), ← mk_out (g i)]
-        exact ⟨embedding.of_surjective _ h⟩
+        exact ⟨Embedding.ofSurjective _ h⟩
     exact
       let ⟨⟨i, a⟩, h⟩ := sG C
       hc i a (congr_fun h _)
@@ -1937,7 +1943,7 @@ theorem mk_range_eq_of_injective {α : Type u} {β : Type v} {f : α → β} (hf
 
 theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{max u w} (#range f) = lift.{max v w} (#α) :=
-  lift_mk_eq.mpr ⟨(Equiv.ofInjective f hf).symm⟩
+  lift_mk_eq.{v,u,w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 #align cardinal.mk_range_eq_lift Cardinal.mk_range_eq_lift
 
 theorem mk_image_eq {α β : Type u} {f : α → β} {s : Set α} (hf : Injective f) : (#f '' s) = (#s) :=
