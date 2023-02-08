@@ -8,12 +8,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Intervals
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Algebra.IndicatorFunction
-import Mathbin.Order.LiminfLimsup
-import Mathbin.Order.Filter.Archimedean
-import Mathbin.Topology.Order.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Order.LiminfLimsup
+import Mathlib.Order.Filter.Archimedean
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Lemmas about liminf and limsup in an order topology.
@@ -284,8 +284,7 @@ variable {ι R S : Type _} {F : Filter ι} [NeBot F] [CompleteLinearOrder R] [To
 /-- An antitone function between complete linear ordered spaces sends a `filter.Limsup`
 to the `filter.liminf` of the image if it is continuous at the `Limsup`. -/
 theorem Antitone.map_limsupₛ_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
-    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsupₛ) : f F.limsupₛ = F.liminf f :=
-  by
+    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsupₛ) : f F.limsupₛ = F.liminf f := by
   apply le_antisymm
   · have A : { a : R | ∀ᶠ n : R in F, n ≤ a }.Nonempty := ⟨⊤, by simp⟩
     rw [Limsup, f_decr.map_Inf_of_continuous_at' f_cont A]
@@ -400,8 +399,7 @@ open Filter Set
 variable {ι : Type _} {R : Type _} [CompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
 theorem infᵢ_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (x_le : ∀ i, x ≤ as i) {F : Filter ι}
-    [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : (⨅ i, as i) = x :=
-  by
+    [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : (⨅ i, as i) = x := by
   refine' infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt (fun i => x_le i) _
   apply fun w x_lt_w => ‹Filter.NeBot F›.nonempty_of_mem (eventually_lt_of_tendsto_lt x_lt_w as_lim)
 #align infi_eq_of_forall_le_of_tendsto infᵢ_eq_of_forall_le_of_tendsto
@@ -413,8 +411,7 @@ theorem supᵢ_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (le_x : ∀ i,
 
 theorem unionᵢ_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type _} (x : R) {as : ι → R} (x_lt : ∀ i, x < as i)
     {F : Filter ι} [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) :
-    (⋃ i : ι, Ici (as i)) = Ioi x :=
-  by
+    (⋃ i : ι, Ici (as i)) = Ioi x := by
   have obs : x ∉ range as := by
     intro maybe_x_is
     rcases mem_range.mp maybe_x_is with ⟨i, hi⟩
@@ -439,8 +436,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     limsup s atTop =
       { ω |
         Tendsto (fun n => ∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω) atTop
-          atTop } :=
-  by
+          atTop } := by
   ext ω
   simp only [limsup_eq_infi_supr_of_nat, ge_iff_le, Set.supᵢ_eq_unionᵢ, Set.infᵢ_eq_interᵢ,
     Set.mem_interᵢ, Set.mem_unionᵢ, exists_prop]
@@ -514,8 +510,7 @@ theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type _) [StrictOrderedSemirin
     limsup s atTop =
       { ω |
         Tendsto (fun n => ∑ k in Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) atTop
-          atTop } :=
-  by
+          atTop } := by
   rw [limsup_eq_tendsto_sum_indicator_nat_atTop s]
   ext ω
   simp only [Set.mem_setOf_eq]
