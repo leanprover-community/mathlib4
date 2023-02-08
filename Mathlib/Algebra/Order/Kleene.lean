@@ -8,10 +8,10 @@ Authors: Siddhartha Prasad, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Ring.Canonical
-import Mathbin.Algebra.Ring.Pi
-import Mathbin.Algebra.Ring.Prod
-import Mathbin.Order.Hom.CompleteLattice
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Ring.Prod
+import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Kleene Algebras
