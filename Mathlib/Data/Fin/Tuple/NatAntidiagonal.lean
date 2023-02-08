@@ -16,30 +16,30 @@ import Mathlib.Logic.Equiv.Fin
 /-!
 # Collections of tuples of naturals with the same sum
 
-This file generalizes `list.nat.antidiagonal n`, `multiset.nat.antidiagonal n`, and
-`finset.nat.antidiagonal n` from the pair of elements `x : ℕ × ℕ` such that `n = x.1 + x.2`, to
-the sequence of elements `x : fin k → ℕ` such that `n = ∑ i, x i`.
+This file generalizes `List.Nat.Antidiagonal n`, `Multiset.Nat.Antidiagonal n`, and
+`Finset.Nat.Antidiagonal n` from the pair of elements `x : ℕ × ℕ` such that `n = x.1 + x.2`, to
+the sequence of elements `x : Fin k → ℕ` such that `n = ∑ i, x i`.
 
 ## Main definitions
 
-* `list.nat.antidiagonal_tuple`
-* `multiset.nat.antidiagonal_tuple`
-* `finset.nat.antidiagonal_tuple`
+* `List.Nat.antidiagonalTuple`
+* `Multiset.Nat.antidiagonalTuple`
+* `Finset.Nat.antidiagonalTuple`
 
 ## Main results
 
-* `antidiagonal_tuple 2 n` is analogous to `antidiagonal n`:
+* `antidiagonalTuple 2 n` is analogous to `antidiagonal n`:
 
-  * `list.nat.antidiagonal_tuple_two`
-  * `multiset.nat.antidiagonal_tuple_two`
-  * `finset.nat.antidiagonal_tuple_two`
+  * `List.Nat.antidiagonalTuple_two`
+  * `Multiset.Nat.antidiagonalTuple_two`
+  * `Finset.Nat.antidiagonalTuple_two`
 
 ## Implementation notes
 
-While we could implement this by filtering `(fintype.pi_finset $ λ _, range (n + 1))` or similar,
+While we could implement this by filtering `(Fintype.PiFinset $ λ _, range (n + 1))` or similar,
 this implementation would be much slower.
 
-In the future, we could consider generalizing `finset.nat.antidiagonal_tuple` further to
+In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` further to
 support finitely-supported functions, as is done with `cut` in
 `archive/100-theorems-list/45_partition.lean`.
 -/
@@ -52,10 +52,10 @@ open BigOperators
 
 namespace List.Nat
 
-/-- `list.antidiagonal_tuple k n` is a list of all `k`-tuples which sum to `n`.
+/-- `List.antidiagonalTuple k n` is a list of all `k`-tuples which sum to `n`.
 
-This list contains no duplicates (`list.nat.nodup_antidiagonal_tuple`), and is sorted
-lexicographically (`list.nat.antidiagonal_tuple_pairwise_pi_lex`), starting with `![0, ..., n]`
+This list contains no duplicates (`List.Nat.nodup_antidiagonalTuple`), and is sorted
+lexicographically (`List.Nat.antidiagonalTuple_pairwise_pi_lex`), starting with `![0, ..., n]`
 and ending with `![n, ..., 0]`.
 
 ```
@@ -105,7 +105,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
   simp_rw [antidiagonalTuple, List.nodup_bind]
   constructor
   · intro i hi
-    exact (ih i.snd).map (Fin.cons_right_injective (i.fst : (fun _ => ℕ) 0))
+    exact (ih i.snd).map (Fin.cons_right_injec  tive (i.fst : (fun _ => ℕ) 0))
   induction' n with n n_ih
   · exact List.pairwise_singleton _ _
   · rw [List.Nat.antidiagonal_succ]
@@ -185,7 +185,7 @@ end List.Nat
 
 namespace Multiset.Nat
 
-/-- `multiset.antidiagonal_tuple k n` is a multiset of `k`-tuples summing to `n` -/
+/-- `Multiset.Nat.antidiagonalTuple k n` is a multiset of `k`-tuples summing to `n` -/
 def antidiagonalTuple (k n : ℕ) : Multiset (Fin k → ℕ) :=
   List.Nat.antidiagonalTuple k n
 #align multiset.nat.antidiagonal_tuple Multiset.Nat.antidiagonalTuple
@@ -230,7 +230,7 @@ end Multiset.Nat
 
 namespace Finset.Nat
 
-/-- `finset.antidiagonal_tuple k n` is a finset of `k`-tuples summing to `n` -/
+/-- `Finset.Nat.antidiagonalTuple k n` is a finset of `k`-tuples summing to `n` -/
 def antidiagonalTuple (k n : ℕ) : Finset (Fin k → ℕ) :=
   ⟨Multiset.Nat.antidiagonalTuple k n, Multiset.Nat.nodup_antidiagonalTuple k n⟩
 #align finset.nat.antidiagonal_tuple Finset.Nat.antidiagonalTuple
@@ -266,12 +266,12 @@ theorem antidiagonalTuple_two (n : ℕ) :
 
 section EquivProd
 
-/-- The disjoint union of antidiagonal tuples `Σ n, antidiagonal_tuple k n` is equivalent to the
+/-- The disjoint union of antidiagonal tuples `Σ n, antidiagonalTuple k n` is equivalent to the
 `k`-tuple `fin k → ℕ`. This is such an equivalence, obtained by mapping `(n, x)` to `x`.
 
-This is the tuple version of `finset.nat.sigma_antidiagonal_equiv_prod`. -/
+This is the tuple version of `Finset.Nat.sigmaAntidiagonalEquivProd`. -/
 @[simps]
-def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σn, antidiagonalTuple k n) ≃ (Fin k → ℕ)
+def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) ≃ (Fin k → ℕ)
     where
   toFun x := x.2
   invFun x := ⟨∑ i, x i, x, mem_antidiagonalTuple.mpr rfl⟩
