@@ -16,7 +16,7 @@ import Mathlib.Data.Dfinsupp.Order
 /-!
 # Finite intervals of finitely supported functions
 
-This file provides the `locally_finite_order` instance for `Π₀ i, α i` when `α` itself is locally
+This file provides the `LocallyFiniteOrder` instance for `Π₀ i, α i` when `α` itself is locally
 finite and calculates the cardinality of its finite intervals.
 -/
 
@@ -86,7 +86,7 @@ section BundledSingleton
 
 variable [∀ i, Zero (α i)] {f : Π₀ i, α i} {i : ι} {a : α i}
 
-/-- Pointwise `finset.singleton` bundled as a `dfinsupp`. -/
+/-- Pointwise `finset.singleton` bundled as a `Dfinsupp`. -/
 def singleton (f : Π₀ i, α i) : Π₀ i, Finset (α i) where
   toFun i := {f i}
   support' := f.support'.map fun s => ⟨s.1, fun i => (s.prop i).imp id (congr_arg _)⟩
@@ -103,7 +103,7 @@ section BundledIcc
 variable [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, LocallyFiniteOrder (α i)]
   {f g : Π₀ i, α i} {i : ι} {a : α i}
 
-/-- Pointwise `finset.Icc` bundled as a `dfinsupp`. -/
+/-- Pointwise `Finset.Icc` bundled as a `Dfinsupp`. -/
 def rangeIcc (f g : Π₀ i, α i) : Π₀ i, Finset (α i) where
   toFun i := Icc (f i) (g i)
   support' := f.support'.bind fun fs => g.support'.map fun gs =>
@@ -141,7 +141,7 @@ section Pi
 
 variable [∀ i, Zero (α i)] [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
-/-- Given a finitely supported function `f : Π₀ i, finset (α i)`, one can define the finset
+/-- Given a finitely supported function `f : Π₀ i, Finset (α i)`, one can define the finset
 `f.pi` of all finitely supported functions whose value at `i` is in `f i` for all `i`. -/
 def pi (f : Π₀ i, Finset (α i)) : Finset (Π₀ i, α i) := f.support.dfinsupp f
 #align dfinsupp.pi Dfinsupp.pi
