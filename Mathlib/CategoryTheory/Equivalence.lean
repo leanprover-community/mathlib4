@@ -134,8 +134,8 @@ theorem equivalence_mk'_unit (functor inverse unit_iso counit_iso f) :
 theorem equivalence_mk'_counit (functor inverse unit_iso counit_iso f) :
     (⟨functor, inverse, unit_iso, counit_iso, f⟩ : C ≌ D).counit = counit_iso.hom :=
   rfl
-#align
-  category_theory.equivalence.equivalence_mk'_counit CategoryTheory.Equivalence.equivalence_mk'_counit
+#align category_theory.equivalence.equivalence_mk'_counit 
+  CategoryTheory.Equivalence.equivalence_mk'_counit
 
 @[simp]
 theorem equivalence_mk'_unitInv (functor inverse unit_iso counit_iso f) :
