@@ -284,7 +284,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
   let m ←
     if α.isConstOf ``Nat then pure natMethods else
     if α.isConstOf ``Int then pure intMethods else
-    if α.isConstOf ``PNat then pure pnatMethods else
+    -- if α.isConstOf ``PNat then pure pnatMethods else
     throwError "interval_cases failed: unsupported type {α}"
   let mut lb ← try? (m.initLB e)
   for pf in lbs do
