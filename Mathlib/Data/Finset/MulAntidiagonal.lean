@@ -74,7 +74,7 @@ variable {hs ht a} {u : Set α} {hu : u.IsPwo} {x : α × α}
 
 @[to_additive (attr := simp)]
 theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
-  simp [mulAntidiagonal, and_rotate]
+  simp only [mulAntidiagonal, Set.Finite.mem_toFinset, Set.mem_mulAntidiagonal]
 #align finset.mem_mul_antidiagonal Finset.mem_mulAntidiagonal
 #align finset.mem_add_antidiagonal Finset.mem_addAntidiagonal
 
@@ -91,10 +91,12 @@ theorem mulAntidiagonal_mono_right (h : u ⊆ t) :
 #align finset.mul_antidiagonal_mono_right Finset.mulAntidiagonal_mono_right
 #align finset.add_antidiagonal_mono_right Finset.addAntidiagonal_mono_right
 
-@[to_additive (attr := simp)]
+-- Porting note: removed `(attr := simp)`. simp can prove this.
+@[to_additive]
 theorem swap_mem_mulAntidiagonal :
     x.swap ∈ Finset.mulAntidiagonal hs ht a ↔ x ∈ Finset.mulAntidiagonal ht hs a := by
-  simp [mul_comm, and_left_comm]
+  simp only [mem_mulAntidiagonal, Prod.fst_swap, Prod.snd_swap, Set.swap_mem_mulAntidiagonal_aux,
+             Set.mem_mulAntidiagonal]
 #align finset.swap_mem_mul_antidiagonal Finset.swap_mem_mulAntidiagonal
 #align finset.swap_mem_add_antidiagonal Finset.swap_mem_addAntidiagonal
 
