@@ -63,7 +63,7 @@ theorem IsLowerSet.smul (hs : IsLowerSet s) : IsLowerSet (a • s) :=
 theorem Set.OrdConnected.smul (hs : s.OrdConnected) : (a • s).OrdConnected :=
   by
   rw [← hs.upperClosure_inter_lowerClosure, smul_set_inter]
-  exact (upperClosure _).upper.smul.OrdConnected.inter (lowerClosure _).lower.smul.OrdConnected
+  exact (upperClosure _).upper.smul.ordConnected.inter (lowerClosure _).lower.smul.ordConnected
 #align set.ord_connected.smul Set.OrdConnected.smul
 #align set.ord_connected.vadd Set.OrdConnected.vadd
 
@@ -183,11 +183,11 @@ theorem Ici_one : Ici (1 : α) = 1 :=
 
 @[to_additive]
 instance : MulAction α (UpperSet α) :=
-  SetLike.coe_injective.MulAction _ coe_smul
+  SetLike.coe_injective.mulAction _ coe_smul
 
 @[to_additive]
-instance : CommSemigroup (UpperSet α) :=
-  { (SetLike.coe_injective.CommSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with
+instance commSemigroup : CommSemigroup (UpperSet α) :=
+  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with
     mul := (· * ·) }
 
 @[to_additive]
@@ -253,11 +253,11 @@ theorem Iic_one : Iic (1 : α) = 1 :=
 
 @[to_additive]
 instance : MulAction α (LowerSet α) :=
-  SetLike.coe_injective.MulAction _ coe_smul
+  SetLike.coe_injective.mulAction _ coe_smul
 
 @[to_additive]
-instance : CommSemigroup (LowerSet α) :=
-  { (SetLike.coe_injective.CommSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with
+instance commSemigroup : CommSemigroup (LowerSet α) :=
+  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with
     mul := (· * ·) }
 
 @[to_additive]
