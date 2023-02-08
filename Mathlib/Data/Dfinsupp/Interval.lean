@@ -51,7 +51,7 @@ variable [∀ i, DecidableEq (α i)]
 theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
-    rw [Function.Embedding.coeFn_mk]
+    rw [Function.Embedding.coeFn_mk] -- porting note: added to avoid hearbeat timeout
     refine' ⟨support_mk_subset, fun i hi => _⟩
     convert mem_pi.1 hf i hi
     exact mk_of_mem hi
@@ -67,8 +67,8 @@ theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
 theorem mem_dfinsupp_iff_of_support_subset {t : Π₀ i, Finset (α i)} (ht : t.support ⊆ s) :
     f ∈ s.dfinsupp t ↔ ∀ i, f i ∈ t i := by
   refine' mem_dfinsupp_iff.trans (forall_and.symm.trans <| forall_congr' fun i =>
-          ⟨fun h => _, fun h =>
-            ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi _, fun _ => h⟩⟩)
+      ⟨ fun h => _,
+        fun h => ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi _, fun _ => h⟩⟩)
   · by_cases hi : i ∈ s
     · exact h.2 hi
     · rw [not_mem_support_iff.1 (mt h.1 hi), not_mem_support_iff.1 (not_mem_mono ht hi)]
@@ -113,18 +113,16 @@ def rangeIcc (f g : Π₀ i, α i) : Π₀ i, Finset (α i) where
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_right _ _) h)
         have hg : g i = 0 := (gs.prop i).resolve_left
             (Multiset.not_mem_mono (Multiset.Le.subset <| Multiset.le_add_left _ _) h)
-        -- porting note: was rw, but is under lambda
+        -- porting note: was rw, but was rewriting under lambda, so changed to simp_rw
         simp_rw [hf, hg]
         exact Icc_self _⟩
 #align dfinsupp.range_Icc Dfinsupp.rangeIcc
 
 @[simp]
-theorem rangeIcc_apply (f g : Π₀ i, α i) (i : ι) : f.rangeIcc g i = Icc (f i) (g i) :=
-  rfl
+theorem rangeIcc_apply (f g : Π₀ i, α i) (i : ι) : f.rangeIcc g i = Icc (f i) (g i) := rfl
 #align dfinsupp.range_Icc_apply Dfinsupp.rangeIcc_apply
 
-theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i :=
-  mem_Icc
+theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g i := mem_Icc
 #align dfinsupp.mem_range_Icc_apply_iff Dfinsupp.mem_rangeIcc_apply_iff
 
 theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
@@ -145,8 +143,7 @@ variable [∀ i, Zero (α i)] [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
 /-- Given a finitely supported function `f : Π₀ i, finset (α i)`, one can define the finset
 `f.pi` of all finitely supported functions whose value at `i` is in `f i` for all `i`. -/
-def pi (f : Π₀ i, Finset (α i)) : Finset (Π₀ i, α i) :=
-  f.support.dfinsupp f
+def pi (f : Π₀ i, Finset (α i)) : Finset (Π₀ i, α i) := f.support.dfinsupp f
 #align dfinsupp.pi Dfinsupp.pi
 
 @[simp]
