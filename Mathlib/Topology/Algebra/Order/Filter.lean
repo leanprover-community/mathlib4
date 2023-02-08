@@ -14,8 +14,8 @@ import Mathlib.Topology.Filter
 /-!
 # Topology on filters of a space with order topology
 
-In this file we prove that `𝓝 (f x)` tends to `𝓝 filter.at_top` provided that `f` tends to
-`filter.at_top`, and similarly for `filter.at_bot`.
+In this file we prove that `𝓝 (f x)` tends to `𝓝 Filter.atTop` provided that `f` tends to
+`Filter.atTop`, and similarly for `Filter.atBot`.
 -/
 
 
@@ -26,7 +26,7 @@ namespace Filter
 variable {α X : Type _} [TopologicalSpace X] [PartialOrder X] [OrderTopology X]
 
 protected theorem tendsto_nhds_atTop [NoMaxOrder X] : Tendsto 𝓝 (atTop : Filter X) (𝓝 atTop) :=
-  Filter.tendsto_nhds_atTop_iff.2 fun x => (eventually_gt_atTop x).mono fun y => le_mem_nhds
+  Filter.tendsto_nhds_atTop_iff.2 fun x => (eventually_gt_atTop x).mono fun _ => le_mem_nhds
 #align filter.tendsto_nhds_at_top Filter.tendsto_nhds_atTop
 
 protected theorem tendsto_nhds_atBot [NoMinOrder X] : Tendsto 𝓝 (atBot : Filter X) (𝓝 atBot) :=
@@ -44,4 +44,3 @@ theorem Tendsto.nhds_atBot [NoMinOrder X] {f : α → X} {l : Filter α} (h : Te
 #align filter.tendsto.nhds_at_bot Filter.Tendsto.nhds_atBot
 
 end Filter
-
