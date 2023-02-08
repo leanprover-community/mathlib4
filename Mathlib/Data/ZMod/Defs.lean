@@ -50,7 +50,6 @@ instance (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
       Fin.eq_of_veq <|
-        show _ ≡ _ [MOD _] from -- lean4#2073
         calc
           a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
           _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
@@ -60,7 +59,6 @@ instance (n : ℕ) : CommSemigroup (Fin n) :=
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
   Fin.eq_of_veq <|
-    show _ ≡ _ [MOD _] from -- lean4#2073
     calc
       a * ((b + c) % n) ≡ a * (b + c) [MOD n] := (Nat.mod_modEq _ _).mul_left _
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
@@ -89,8 +87,8 @@ def ZMod : ℕ → Type
 #align zmod ZMod
 
 instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
-  | 0 => by dsimp [ZMod]; infer_instance
-  | n + 1 => by dsimp [ZMod]; infer_instance
+  | 0 => inferInstanceAs (DecidableEq ℤ)
+  | n + 1 => inferInstanceAs (DecidableEq (Fin (n + 1)))
 #align zmod.decidable_eq ZMod.decidableEq
 
 instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)

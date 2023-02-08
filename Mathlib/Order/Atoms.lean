@@ -579,8 +579,7 @@ def orderIsoBool : α ≃o Bool :=
 /-- A simple `BoundedOrder` is also a `BooleanAlgebra`. -/
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
     BooleanAlgebra α :=
-  { show BoundedOrder α by infer_instance,
-    IsSimpleOrder.distribLattice with
+  { inferInstanceAs (BoundedOrder α), IsSimpleOrder.distribLattice with
     compl := fun x => if x = ⊥ then ⊤ else ⊥
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
