@@ -646,13 +646,13 @@ def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
   forallTelescope strDecl.type fun args _ ↦ do
   let eStr := mkAppN (← mkConstWithLevelParams str) args
   let projs ← projs.mapM fun proj => do
-    if let some (className, projName, arity) := Simps.defaultCoercions.find? proj.origName.1 then
+    if let some (className, projName, arity) := Simps.defaultCoercions.find? proj.strName then
       let classArgs := mkArray (arity - 1) Unit.unit
       let classArgs ← classArgs.mapM fun _ => mkFreshExprMVar none
       let classArgs := #[eStr] ++ classArgs
       let classArgs := classArgs.map Arg.expr
       let eInstType ← elabAppArgs (← Term.mkConst className) #[] classArgs none true false
-      trace[simps.debug] "found projection {proj.origName.1}. Trying to synthesize {eInstType}."
+      trace[simps.debug] "found projection {proj.strName}. Trying to synthesize {eInstType}."
       let eInst ← try synthInstance eInstType <| some 10
       catch ex =>
         trace[simps.debug] "Didn't find instance:\n{ex.toMessageData}"
@@ -662,16 +662,16 @@ def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
       let projExpr ← mkLambdaFVars args projExpr
       let projExpr ← instantiateMVars projExpr
       unless ← isDefEq projExpr proj.expr?.get! do
-        throwError "The projection {proj.newName.1} is not definitionally equal to an application {
+        throwError "The projection {proj.newName} is not definitionally equal to an application {
           ""}of {projName}:
           {indentExpr proj.expr?.get!}\n
           vs
           {indentExpr projExpr}"
       if proj.isCustom then
-        trace[simps.verbose] "Warning: Projection {proj.newName.1} is given manually by the user,
+        trace[simps.verbose] "Warning: Projection {proj.newName} is given manually by the user,
           but it can be generated automatically."
         return proj
-      trace[simps.verbose] "Using {indentExpr projExpr}\n for projection {proj.newName.1}."
+      trace[simps.verbose] "Using {indentExpr projExpr}\n for projection {proj.newName}."
       return { proj with expr? := some projExpr }
     return proj
   return projs
@@ -735,6 +735,7 @@ def getRawProjections (str : Name) (traceIfExists : Bool := false)
   let projs ← mkParsedProjectionData str
   let projs ← applyProjectionRules projs rules
   let projs ← projs.mapM fun proj ↦ findProjection str proj rawUnivs
+  checkForUnusedCustomProjs projs
   let projs ← findAutomaticProjections str projs
   let projs := projs.map (·.toProjectionData)
   -- make all proofs non-default.
