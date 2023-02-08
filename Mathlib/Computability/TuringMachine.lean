@@ -1687,7 +1687,7 @@ def move (d : Dir) (q : Stmt') : Stmt' :=
 /-- To read a symbol from the tape, we use `readAux` to traverse the symbol,
 then return to the original position with `n` moves to the left. -/
 def read (f : Γ → Stmt') : Stmt' :=
-  readAux n fun v => move Dir.left <| f (dec v)
+  readAux n fun v => @move _ _ _ n Dir.left <| f (dec v)
 #align turing.TM1to1.read Turing.TM1to1.read
 
 /-- Write a list of bools on the tape. -/
@@ -1699,12 +1699,12 @@ def write : List Bool → Stmt' → Stmt'
 /-- Translate a normal instruction. For the `write` command, we use a `goto` indirection so that
 we can access the current value of the tape. -/
 def trNormal : Stmt₁ → Stmt'
-  | Stmt.move d q => move d <| trNormal q
-  | Stmt.write f q => read fun a => Stmt.goto fun _ s => Λ'.write (f a s) q
-  | Stmt.load f q => read fun a => (Stmt.load fun _ s => f a s) <| trNormal q
+  | Stmt.move d q => @move _ _ _ n d <| trNormal q
+  | Stmt.write f q => read dec fun a => Stmt.goto fun _ s => Λ'.write (f a s) q
+  | Stmt.load f q => read dec fun a => (Stmt.load fun _ s => f a s) <| trNormal q
   | Stmt.branch p q₁ q₂ =>
-    read fun a => Stmt.branch (fun _ s => p a s) (trNormal q₁) (trNormal q₂)
-  | Stmt.goto l => read fun a => Stmt.goto fun _ s => Λ'.normal (l a s)
+    read dec fun a => Stmt.branch (fun _ s => p a s) (trNormal q₁) (trNormal q₂)
+  | Stmt.goto l => read dec fun a => Stmt.goto fun _ s => Λ'.normal (l a s)
   | Stmt.halt => Stmt.halt
 #align turing.TM1to1.tr_normal Turing.TM1to1.trNormal
 
