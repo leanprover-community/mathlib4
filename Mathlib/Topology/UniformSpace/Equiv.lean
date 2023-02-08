@@ -82,11 +82,11 @@ def Simps.apply (h : α ≃ᵤ β) : α → β :=
 #align uniform_equiv.simps.apply UniformEquiv.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (h : α ≃ᵤ β) : β → α :=
+def Simps.symm_apply (h : α ≃ᵤ β) : β → α :=
   h.symm
-#align uniform_equiv.simps.symm_apply UniformEquiv.Simps.symmApply
+#align uniform_equiv.simps.symm_apply UniformEquiv.Simps.symm_apply
 
-initialize_simps_projections UniformEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply,
+initialize_simps_projections UniformEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
   -toEquiv)
 
 @[simp]
@@ -157,12 +157,18 @@ protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
 #align uniform_equiv.continuous_symm UniformEquiv.continuous_symm
 
 /-- A uniform isomorphism as a homeomorphism. -/
-@[simps toEquiv] -- Porting note: removed, `simps?` produced no `simp` lemmas
+-- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
 protected def toHomeomorph (e : α ≃ᵤ β) : α ≃ₜ β :=
   { e.toEquiv with
     continuous_toFun := e.continuous
     continuous_invFun := e.continuous_symm }
 #align uniform_equiv.to_homeomorph UniformEquiv.toHomeomorph
+
+lemma toHomeomorph_apply (e : α ≃ᵤ β) : (e.toHomeomorph : α → β) = e := rfl
+#align uniform_equiv.to_homeomorph_apply UniformEquiv.toHomeomorph_apply
+
+lemma toHomeomorph_symm_apply (e : α ≃ᵤ β) : (e.toHomeomorph.symm : β → α) = e.symm := rfl
+#align uniform_equiv.to_homeomorph_symm_apply UniformEquiv.toHomeomorph_symm_apply
 
 @[simp]
 theorem apply_symm_apply (h : α ≃ᵤ β) (x : β) : h (h.symm x) = x :=
