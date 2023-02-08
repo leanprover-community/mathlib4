@@ -1039,6 +1039,7 @@ import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Hom.Basic
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
