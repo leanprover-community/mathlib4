@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Fin
-import Mathbin.Data.Finset.NatAntidiagonal
-import Mathbin.Data.Fin.VecNotation
-import Mathbin.Logic.Equiv.Fin
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Collections of tuples of naturals with the same sum
@@ -82,8 +82,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = [] 
 #align list.nat.antidiagonal_tuple_zero_succ List.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n :=
-  by
+    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n := by
   revert n
   refine' Fin.consInduction _ _ x
   · intro n
@@ -98,8 +97,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
 #align list.nat.mem_antidiagonal_tuple List.Nat.mem_antidiagonalTuple
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
-theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n) :=
-  by
+theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n) := by
   induction' k with k ih generalizing n
   · cases n
     · simp
@@ -135,8 +133,7 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
 #align list.nat.antidiagonal_tuple_zero_right List.Nat.antidiagonalTuple_zero_right
 
 @[simp]
-theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] :=
-  by
+theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   simp_rw [antidiagonal_tuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
     tsub_self, List.bind_append, List.bind_singleton, antidiagonal_tuple_zero_zero,
     List.map_singleton, List.map_bind]
@@ -149,8 +146,7 @@ theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] :=
 #align list.nat.antidiagonal_tuple_one List.Nat.antidiagonalTuple_one
 
 theorem antidiagonalTuple_two (n : ℕ) :
-    antidiagonalTuple 2 n = (antidiagonal n).map fun i => ![i.1, i.2] :=
-  by
+    antidiagonalTuple 2 n = (antidiagonal n).map fun i => ![i.1, i.2] := by
   rw [antidiagonal_tuple]
   simp_rw [antidiagonal_tuple_one, List.map_singleton]
   rw [List.map_eq_bind]
