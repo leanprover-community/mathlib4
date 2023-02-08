@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Tactic.ScopedNS  -- Porting note: `scoped[]`
 
 /-!
 # Kleene Algebras
@@ -33,7 +34,7 @@ Kleene star.
 
 ## Notation
 
-`a∗` is notation for `kstar a` in locale `computability`.
+`a∗` is notation for `kstar a` in locale `Computability`.
 
 ## References
 
@@ -84,9 +85,8 @@ class HasKstar (α : Type _) where
 #align has_kstar HasKstar
 
 -- mathport name: «expr ∗»
--- Porting note: Originally `scoped[Computability] postfix:1024 "∗" => HasKstar.kstar`
--- Porting note: TODO This contradicts a comment.
-postfix:1024 "∗" => HasKstar.kstar
+scoped[Computability] postfix:1024 "∗" => HasKstar.kstar
+open Computability
 
 /-- A Kleene Algebra is an idempotent semiring with an additional unary operator `kstar` (for Kleene
 star) that satisfies the following properties:
