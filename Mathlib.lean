@@ -1022,6 +1022,7 @@ import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
+import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
