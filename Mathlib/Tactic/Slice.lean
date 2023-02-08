@@ -7,6 +7,15 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Tactic.Conv
 
+/-!
+# The `slice` tactic
+
+Applies a tactic to an interval of terms from a term obtained by repeated application 
+of `Category.comp`. 
+
+-/
+
+
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
