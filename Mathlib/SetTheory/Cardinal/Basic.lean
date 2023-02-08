@@ -1884,7 +1884,7 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : (#s) = 0 ↔ s = ∅
     rw [mk_eq_zero_iff] at h
     exact eq_empty_iff_forall_not_mem.2 fun x hx => h.elim' ⟨x, hx⟩
   · rintro rfl
-    exact mk_emptyc _
+    exact mk_emptyCollection _
 #align cardinal.mk_emptyc_iff Cardinal.mk_emptyCollection_iff
 
 @[simp]
@@ -1949,16 +1949,16 @@ theorem mk_unionᵢ_le {α ι : Type u} (f : ι → Set α) : (#⋃ i, f i) ≤ 
 
 theorem mk_unionₛ_le {α : Type u} (A : Set (Set α)) : (#⋃₀ A) ≤ (#A) * ⨆ s : A, #s :=
   by
-  rw [sUnion_eq_Union]
-  apply mk_Union_le
+  rw [unionₛ_eq_unionᵢ]
+  apply mk_unionᵢ_le
 #align cardinal.mk_sUnion_le Cardinal.mk_unionₛ_le
 
-theorem mk_bUnion_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
+theorem mk_bunionᵢ_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
     (#⋃ x ∈ s, A x) ≤ (#s) * ⨆ x : s, #A x.1 :=
   by
-  rw [bUnion_eq_Union]
-  apply mk_Union_le
-#align cardinal.mk_bUnion_le Cardinal.mk_bUnion_le
+  rw [bunionᵢ_eq_unionᵢ]
+  apply mk_unionᵢ_le
+#align cardinal.mk_bUnion_le Cardinal.mk_bunionᵢ_le
 
 theorem finset_card_lt_aleph0 (s : Finset α) : (#(↑s : Set α)) < ℵ₀ :=
   lt_aleph0_of_finite _
@@ -2233,9 +2233,9 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 :=
 
 @[simp]
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 :=
-  by
-  convert Cardinal.supᵢ_of_empty _
-  exact Subtype.isEmpty_of_false fun x => (Cardinal.zero_le _).not_lt
+  -- Porting note: used to expect that `convert` would leave an instance argument as a goal
+  @Cardinal.supᵢ_of_empty _ _
+    (Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt)
 #align cardinal.powerlt_zero Cardinal.powerlt_zero
 
 end Cardinal
