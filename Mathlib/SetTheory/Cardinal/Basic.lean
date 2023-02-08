@@ -789,17 +789,19 @@ theorem succ_def (c : Cardinal) : succ c = infₛ { c' | c < c' } :=
   rfl
 #align cardinal.succ_def Cardinal.succ_def
 
-theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c :=
-  by
-  refine' (le_cinfₛ_iff'' (exists_gt c)).2 fun b hlt => _
+theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
+  -- Porting note: rewrote the next three lines to avoid defeq abuse.
+  have : Set.Nonempty { c' | c < c' } := exists_gt c
+  simp_rw [succ_def, le_cinfₛ_iff'' this, mem_setOf]
+  intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
   cases' le_of_lt hlt with f
-  have : ¬surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
-  simp only [surjective, not_forall] at this
+  have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
+  simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
   calc
     (#γ) + 1 = (#Option γ) := mk_option.symm
-    _ ≤ (#β) := (f.option_elim b hb).cardinal_le
+    _ ≤ (#β) := (f.optionElim b hb).cardinal_le
 
 #align cardinal.add_one_le_succ Cardinal.add_one_le_succ
 
@@ -1032,8 +1034,8 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
     lift.{w} (prod c) = prod fun i => lift.{w} (c i) :=
   by
   lift c to ι → Type v using fun _ => trivial
-  simp only [← mk_pi, ← mk_ulift]
-  exact mk_congr (equiv.ulift.trans <| Equiv.piCongrRight fun i => equiv.ulift.symm)
+  simp only [← mk_pi, ← mk_uLift]
+  exact mk_congr (Equiv.ulift.trans <| Equiv.piCongrRight fun i => Equiv.ulift.symm)
 #align cardinal.lift_prod Cardinal.lift_prod
 
 theorem prod_eq_of_fintype {α : Type u} [Fintype α] (f : α → Cardinal.{v}) :
@@ -1284,7 +1286,7 @@ theorem natCast_injective : Injective ((↑) : ℕ → Cardinal) :=
 #align cardinal.nat_cast_injective Cardinal.natCast_injective
 
 @[simp, norm_cast]
-theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ n :=
+theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n :=
   (add_one_le_succ _).antisymm (succ_le_of_lt <| natCast_lt.2 <| Nat.lt_succ_self _)
 #align cardinal.nat_succ Cardinal.nat_succ
 
@@ -1297,7 +1299,7 @@ theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n)
   refine' le_of_lt_succ (lt_of_not_ge fun hn => _)
   rw [← Cardinal.nat_succ, ← lift_mk_fin n.succ] at hn
   cases' hn with f
-  refine' (H <| finset.univ.map f).not_lt _
+  refine' (H <| Finset.univ.map f).not_lt _
   rw [Finset.card_map, ← Fintype.card, Fintype.card_ulift, Fintype.card_fin]
   exact n.lt_succ_self
 #align cardinal.card_le_of Cardinal.card_le_of
@@ -1376,7 +1378,7 @@ theorem lt_aleph0_iff_set_finite {S : Set α} : (#S) < ℵ₀ ↔ S.Finite :=
   lt_aleph0_iff_finite.trans finite_coe_iff
 #align cardinal.lt_aleph_0_iff_set_finite Cardinal.lt_aleph0_iff_set_finite
 
-alias lt_aleph0_iff_set_finite ↔ _ _root_.set.finite.lt_aleph0
+alias lt_aleph0_iff_set_finite ↔ _ _root_.Set.Finite.lt_aleph0
 #align set.finite.lt_aleph_0 Set.Finite.lt_aleph0
 
 @[simp]
@@ -1398,7 +1400,7 @@ theorem le_aleph0_iff_set_countable {s : Set α} : (#s) ≤ ℵ₀ ↔ s.Countab
   rw [mk_le_aleph0_iff, countable_coe_iff]
 #align cardinal.le_aleph_0_iff_set_countable Cardinal.le_aleph0_iff_set_countable
 
-alias le_aleph0_iff_set_countable ↔ _ _root_.set.countable.le_aleph0
+alias le_aleph0_iff_set_countable ↔ _ _root_.Set.Countable.le_aleph0
 #align set.countable.le_aleph_0 Set.Countable.le_aleph0
 
 @[simp]
@@ -1430,12 +1432,13 @@ theorem aleph0_le_add_iff {a b : Cardinal} : ℵ₀ ≤ a + b ↔ ℵ₀ ≤ a �
 /-- See also `Cardinal.nsmul_lt_aleph0_iff_of_ne_zero` if you already have `n ≠ 0`. -/
 theorem nsmul_lt_aleph0_iff {n : ℕ} {a : Cardinal} : n • a < ℵ₀ ↔ n = 0 ∨ a < ℵ₀ :=
   by
-  cases n
-  · simpa using nat_lt_aleph0 0
-  simp only [Nat.succ_ne_zero, false_or_iff]
-  induction' n with n ih
-  · simp
-  rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
+  cases n with
+  | zero => simpa using nat_lt_aleph0 0
+  | succ n =>
+      simp only [Nat.succ_ne_zero, false_or_iff]
+      induction' n with n ih
+      · simp
+      rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
 #align cardinal.nsmul_lt_aleph_0_iff Cardinal.nsmul_lt_aleph0_iff
 
 /-- See also `Cardinal.nsmul_lt_aleph0_iff` for a hypothesis-free version. -/
@@ -1469,7 +1472,7 @@ theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 
 /-- See also `Cardinal.aleph0_le_mul_iff`. -/
 theorem aleph0_le_mul_iff {a b : Cardinal} : ℵ₀ ≤ a * b ↔ a ≠ 0 ∧ b ≠ 0 ∧ (ℵ₀ ≤ a ∨ ℵ₀ ≤ b) :=
   by
-  let h := (@mul_lt_aleph0_iff a b).Not
+  let h := (@mul_lt_aleph0_iff a b).not
   rwa [not_lt, not_or, not_or, not_and_or, not_lt, not_lt] at h
 #align cardinal.aleph_0_le_mul_iff Cardinal.aleph0_le_mul_iff
 
@@ -1565,6 +1568,7 @@ def toNat : ZeroHom Cardinal ℕ :=
   ⟨fun c => if h : c < aleph0.{v} then Classical.choose (lt_aleph0.1 h) else 0,
     by
     have h : 0 < ℵ₀ := nat_lt_aleph0 0
+    dsimp only
     rw [dif_pos h, ← Cardinal.natCast_inj, ← Classical.choose_spec (lt_aleph0.1 h),
       Nat.cast_zero]⟩
 #align cardinal.to_nat Cardinal.toNat
