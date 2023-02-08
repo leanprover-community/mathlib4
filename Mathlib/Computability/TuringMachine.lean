@@ -1468,13 +1468,13 @@ to be executed, or `none` for the halt state, and a `σ` which is the local stat
 not the tape). Because there are an infinite number of programs, this state space is infinite, but
 for a finitely supported TM1 machine and a finite type `σ`, only finitely many of these states are
 reachable. -/
--- Porting note: Using `notation` instead of `def` to avoid implicit argument problems.
-local notation "Λ'" => Option Stmt₁ × σ
-/-
 def Λ' :=
   Option Stmt₁ × σ
 #align turing.TM1to0.Λ' Turing.TM1to0.Λ'
--/
+
+-- Porting note: TODO clean up this ugly hack for `Λ'`.
+set_option quotPrecheck false in
+scoped notation "Λ'" => @Λ' Γ Λ σ
 
 instance : Inhabited Λ' :=
   ⟨(some (M default), default)⟩
@@ -1656,6 +1656,10 @@ inductive Λ'
   | write : Γ → Stmt₁ → Λ'
 #align turing.TM1to1.Λ' Turing.TM1to1.Λ'
 
+-- Porting note: TODO clean up this ugly hack for `Λ'`.
+set_option quotPrecheck false in
+scoped notation "Λ'" => @Λ' Γ Λ σ
+
 instance : Inhabited Λ' :=
   ⟨Λ'.normal default⟩
 
@@ -1669,7 +1673,7 @@ local notation "Cfg'" => Cfg Bool Λ' σ
 def readAux : ∀ n, (Vector Bool n → Stmt') → Stmt'
   | 0, f => f Vector.nil
   | i + 1, f =>
-    Stmt.branch (fun a s ↦ a) (Stmt.move Dir.right <| readAux i fun v ↦ f (true ::ᵥ v))
+    Stmt.branch (fun a _ ↦ a) (Stmt.move Dir.right <| readAux i fun v ↦ f (true ::ᵥ v))
       (Stmt.move Dir.right <| readAux i fun v ↦ f (false ::ᵥ v))
 #align turing.TM1to1.read_aux Turing.TM1to1.readAux
 
@@ -2384,6 +2388,10 @@ def Γ' :=
   Bool × ∀ k, Option (Γ k)
 #align turing.TM2to1.Γ' Turing.TM2to1.Γ'
 
+-- Porting note: TODO clean up this ugly hack for `Γ'`.
+set_option quotPrecheck false in
+scoped notation "Γ'" => @Γ' K Γ
+
 instance Γ'.inhabited : Inhabited Γ' :=
   ⟨⟨false, fun _ => none⟩⟩
 #align turing.TM2to1.Γ'.inhabited Turing.TM2to1.Γ'.inhabited
@@ -2398,8 +2406,10 @@ def addBottom (L : ListBlank (∀ k, Option (Γ k))) : ListBlank Γ' :=
   ListBlank.cons (true, L.head) (L.tail.map ⟨Prod.mk false, rfl⟩)
 #align turing.TM2to1.add_bottom Turing.TM2to1.addBottom
 
-theorem addBottom_map (L) : (addBottom L).map ⟨Prod.snd, rfl⟩ = L := by
-  simp only [addBottom, ListBlank.map_cons] <;> convert ListBlank.cons_head_tail _
+theorem addBottom_map (L : ListBlank (∀ k, Option (Γ k))) :
+    (addBottom L).map ⟨Prod.snd, by rfl⟩ = L := by
+  simp only [addBottom, ListBlank.map_cons]
+  convert ListBlank.cons_head_tail L
   generalize ListBlank.tail L = L'
   refine' L'.induction_on fun l => _; simp
 #align turing.TM2to1.add_bottom_map Turing.TM2to1.addBottom_map
@@ -2411,17 +2421,18 @@ theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k)
   congr ; symm; apply ListBlank.map_modifyNth; intro ; rfl
 #align turing.TM2to1.add_bottom_modify_nth Turing.TM2to1.addBottom_modifyNth
 
-theorem addBottom_nth_snd (L n) : ((addBottom L).get? n).2 = L.nth n := by
-  conv => rhs; rw [← addBottom_map L, ListBlank.nth_map] <;>
-  rfl
+theorem addBottom_nth_snd (L : ListBlank (∀ k, Option (Γ k))) (n) :
+    ((addBottom L).nth n).2 = L.nth n := by
+  conv => rhs; rw [← addBottom_map L, ListBlank.nth_map]
 #align turing.TM2to1.add_bottom_nth_snd Turing.TM2to1.addBottom_nth_snd
 
-theorem addBottom_nth_succ_fst (L n) : ((addBottom L).get? (n + 1)).1 = false := by
-  rw [ListBlank.nth_succ, addBottom, ListBlank.tail_cons, ListBlank.nth_map] <;> rfl
+theorem addBottom_nth_succ_fst (L : ListBlank (∀ k, Option (Γ k))) (n) :
+    ((addBottom L).nth (n + 1)).1 = false := by
+  rw [ListBlank.nth_succ, addBottom, ListBlank.tail_cons, ListBlank.nth_map]
 #align turing.TM2to1.add_bottom_nth_succ_fst Turing.TM2to1.addBottom_nth_succ_fst
 
-theorem addBottom_head_fst (L) : (addBottom L).headI.1 = true := by
-  rw [addBottom, ListBlank.head_cons] <;> rfl
+theorem addBottom_head_fst (L : ListBlank (∀ k, Option (Γ k))) : (addBottom L).head.1 = true := by
+  rw [addBottom, ListBlank.head_cons]
 #align turing.TM2to1.add_bottom_head_fst Turing.TM2to1.addBottom_head_fst
 
 /-- A stack action is a command that interacts with the top of a stack. Our default position
@@ -2432,6 +2443,10 @@ inductive StAct (k : K)
   | peek : (σ → Option (Γ k) → σ) → StAct k
   | pop : (σ → Option (Γ k) → σ) → StAct k
 #align turing.TM2to1.st_act Turing.TM2to1.StAct
+
+-- Porting note: TODO clean up this ugly hack for `StAct`.
+set_option quotPrecheck false in
+scoped notation "StAct" => @StAct K Γ σ
 
 instance StAct.inhabited {k : K} : Inhabited (StAct k) :=
   ⟨StAct.peek fun s _ => s⟩
@@ -2493,7 +2508,7 @@ def stmtStRec.{l} {C : Stmt₂ → Sort l} (H₁ : ∀ (k) (s : StAct k) (q) (_ 
   | TM2.Stmt.halt => H₅
 #align turing.TM2to1.stmt_st_rec Turing.TM2to1.stmtStRec
 
-theorem supports_run (S : Finset Λ) {k} (s : StAct k) (q) :
+theorem supports_run (S : Finset Λ) {k : K} (s : StAct k) (q : Stmt₂) :
     TM2.SupportsStmt S (stRun s q) ↔ TM2.SupportsStmt S q := by rcases s with (_ | _ | _) <;> rfl
 #align turing.TM2to1.supports_run Turing.TM2to1.supports_run
 
