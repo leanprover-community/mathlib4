@@ -2188,14 +2188,14 @@ theorem powerlt_le {a b c : Cardinal.{u}} : a ^< b ≤ c ↔ ∀ x < b, (a^x) �
 #align cardinal.powerlt_le Cardinal.powerlt_le
 
 theorem powerlt_le_powerlt_left {a b c : Cardinal} (h : b ≤ c) : a ^< b ≤ a ^< c :=
-  powerlt_le.2 fun x hx => le_powerlt a <| hx.trans_le h
+  powerlt_le.2 fun _ hx => le_powerlt a <| hx.trans_le h
 #align cardinal.powerlt_le_powerlt_left Cardinal.powerlt_le_powerlt_left
 
-theorem powerlt_mono_left (a) : Monotone fun c => a ^< c := fun b c => powerlt_le_powerlt_left
+theorem powerlt_mono_left (a) : Monotone fun c => a ^< c := fun _ _ => powerlt_le_powerlt_left
 #align cardinal.powerlt_mono_left Cardinal.powerlt_mono_left
 
 theorem powerlt_succ {a b : Cardinal} (h : a ≠ 0) : a ^< succ b = (a^b) :=
-  (powerlt_le.2 fun c h' => power_le_power_left h <| le_of_lt_succ h').antisymm <|
+  (powerlt_le.2 fun _ h' => power_le_power_left h <| le_of_lt_succ h').antisymm <|
     le_powerlt a (lt_succ b)
 #align cardinal.powerlt_succ Cardinal.powerlt_succ
 
@@ -2209,7 +2209,7 @@ theorem powerlt_max {a b c : Cardinal} : a ^< max b c = max (a ^< b) (a ^< c) :=
 
 theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 :=
   by
-  apply (powerlt_le.2 fun c hc => zero_power_le _).antisymm
+  apply (powerlt_le.2 fun c _ => zero_power_le _).antisymm
   rw [← power_zero]
   exact le_powerlt 0 (pos_iff_ne_zero.2 h)
 #align cardinal.zero_powerlt Cardinal.zero_powerlt
@@ -2223,21 +2223,22 @@ theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 :=
 
 end Cardinal
 
-namespace Tactic
+-- namespace Tactic
 
-open Cardinal Positivity
+-- open Cardinal Positivity
 
-/-- Extension for the `positivity` tactic: The cardinal power of a positive cardinal is positive. -/
-@[positivity]
-unsafe def positivity_cardinal_pow : expr → tactic strictness
-  | q(@Pow.pow _ _ $(inst) $(a) $(b)) => do
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => positive <$> mk_app `` power_pos [b, p]
-      | _ => failed
-  |-- We already know that `0 ≤ x` for all `x : Cardinal`
-    _ =>
-    failed
-#align tactic.positivity_cardinal_pow tactic.positivity_cardinal_pow
+-- Porting note: Meta code, do not port directly
+-- /-- Extension for the `positivity` tactic: The cardinal power of a positive cardinal is positive. -/
+-- @[positivity]
+-- unsafe def positivity_cardinal_pow : expr → tactic strictness
+--   | q(@Pow.pow _ _ $(inst) $(a) $(b)) => do
+--     let strictness_a ← core a
+--     match strictness_a with
+--       | positive p => positive <$> mk_app `` power_pos [b, p]
+--       | _ => failed
+--   |-- We already know that `0 ≤ x` for all `x : Cardinal`
+--     _ =>
+--     failed
+-- #align tactic.positivity_cardinal_pow tactic.positivity_cardinal_pow
 
-end Tactic
+-- end Tactic
