@@ -14,6 +14,7 @@ import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.Tactic.Slice
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Trans
 -- TODO: remove
 set_option autoImplicit false
 /-!
@@ -268,12 +269,13 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) :=
   by
-  dsimp [adjointifyη]; simp
+  dsimp [adjointifyη,Trans.trans]
+  simp
   have := ε.hom.naturality (F.map (η.inv.app X)); dsimp at this; rw [this]; clear this
   rw [← assoc _ _ (F.map _)]
   have := ε.hom.naturality (ε.inv.app <| F.obj X); dsimp at this; rw [this]; clear this
   have := (ε.app <| F.obj X).hom_inv_id; dsimp at this; rw [this]; clear this
-  rw [id_comp]; have := (F.map_iso <| η.app X).hom_inv_id; dsimp at this; rw [this]
+  rw [id_comp]; have := (F.mapIso <| η.app X).hom_inv_id; dsimp at this; rw [this]
 #align category_theory.equivalence.adjointify_η_ε CategoryTheory.Equivalence.adjointify_η_ε
 
 end
@@ -373,7 +375,7 @@ theorem inv_fun_id_assoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
   category_theory.equivalence.inv_fun_id_assoc_inv_app CategoryTheory.Equivalence.inv_fun_id_assoc_inv_app
 
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
-@[simps functor inverse unitIso counitIso]
+@[simps! functor inverse unitIso counitIso]
 def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E :=
   Equivalence.mk ((whiskeringLeft _ _ _).obj e.inverse) ((whiskeringLeft _ _ _).obj e.functor)
     (NatIso.ofComponents (fun F => (e.funInvIdAssoc F).symm) (by aesop_cat))
@@ -381,7 +383,7 @@ def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E :=
 #align category_theory.equivalence.congr_left CategoryTheory.Equivalence.congrLeft
 
 /-- If `C` is equivalent to `D`, then `E ⥤ C` is equivalent to `E ⥤ D`. -/
-@[simps functor inverse unitIso counitIso]
+@[simps! functor inverse unitIso counitIso]
 def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D :=
   Equivalence.mk ((whiskeringRight _ _ _).obj e.functor) ((whiskeringRight _ _ _).obj e.inverse)
     (NatIso.ofComponents
@@ -789,7 +791,7 @@ theorem inverse_map_inj_iff (e : C ≌ D) {X Y : D} (f g : X ⟶ Y) :
 
 instance ess_surj_induced_functor {C' : Type _} (e : C' ≃ D) : EssSurj (inducedFunctor e)
     where mem_essImage Y := 
-      ⟨e.symm Y, by simp ⟩ 
+      ⟨e.symm Y, by simp only [inducedFunctor_obj,Equiv.apply_symm_apply]; exact ⟨default⟩⟩ 
 #align
   category_theory.equivalence.ess_surj_induced_functor CategoryTheory.Equivalence.ess_surj_induced_functor
 
