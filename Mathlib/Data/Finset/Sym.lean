@@ -8,10 +8,10 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Lattice
-import Mathbin.Data.Fintype.Prod
-import Mathbin.Data.Fintype.Vector
-import Mathbin.Data.Sym.Sym2
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Vector
+import Mathlib.Data.Sym.Sym2
 
 /-!
 # Symmetric powers of a finset
@@ -40,8 +40,7 @@ theorem isDiag_mk'_of_mem_diag {a : α × α} (h : a ∈ s.diag) : Sym2.IsDiag �
   (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
 #align finset.is_diag_mk_of_mem_diag Finset.isDiag_mk'_of_mem_diag
 
-theorem not_isDiag_mk'_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) : ¬Sym2.IsDiag ⟦a⟧ :=
-  by
+theorem not_isDiag_mk'_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) : ¬Sym2.IsDiag ⟦a⟧ := by
   rw [Sym2.isDiag_iff_proj_eq]
   exact (mem_off_diag.1 h).2.2
 #align finset.not_is_diag_mk_of_mem_off_diag Finset.not_isDiag_mk'_of_mem_offDiag
@@ -57,8 +56,7 @@ protected def sym2 (s : Finset α) : Finset (Sym2 α) :=
 #align finset.sym2 Finset.sym2
 
 @[simp]
-theorem mem_sym2_iff : m ∈ s.Sym2 ↔ ∀ a ∈ m, a ∈ s :=
-  by
+theorem mem_sym2_iff : m ∈ s.Sym2 ↔ ∀ a ∈ m, a ∈ s := by
   refine'
     mem_image.trans
       ⟨_, fun h => ⟨m.out, mem_product.2 ⟨h _ m.out_fst_mem, h _ m.out_snd_mem⟩, m.out_eq⟩⟩
@@ -111,8 +109,7 @@ theorem sym2_mono (h : s ⊆ t) : s.Sym2 ⊆ t.Sym2 := fun m he =>
 #align finset.sym2_mono Finset.sym2_mono
 
 theorem image_diag_union_image_offDiag :
-    s.diag.image Quotient.mk' ∪ s.offDiag.image Quotient.mk' = s.Sym2 :=
-  by
+    s.diag.image Quotient.mk' ∪ s.offDiag.image Quotient.mk' = s.Sym2 := by
   rw [← image_union, diag_union_off_diag]
   rfl
 #align finset.image_diag_union_image_off_diag Finset.image_diag_union_image_offDiag
@@ -141,8 +138,7 @@ theorem sym_succ : s.Sym (n + 1) = s.sup fun a => (s.Sym n).image <| Sym.cons a 
 #align finset.sym_succ Finset.sym_succ
 
 @[simp]
-theorem mem_sym_iff : m ∈ s.Sym n ↔ ∀ a ∈ m, a ∈ s :=
-  by
+theorem mem_sym_iff : m ∈ s.Sym n ↔ ∀ a ∈ m, a ∈ s := by
   induction' n with n ih
   · refine' mem_singleton.trans ⟨_, fun _ => Sym.eq_nil_of_card_zero _⟩
     rintro rfl
@@ -182,15 +178,13 @@ theorem sym_singleton (a : α) (n : ℕ) : ({a} : Finset α).Sym n = {Sym.replic
       Sym.eq_replicate_iff.2 fun b hb => eq_of_mem_singleton <| mem_sym_iff.1 hs _ hb⟩
 #align finset.sym_singleton Finset.sym_singleton
 
-theorem eq_empty_of_sym_eq_empty (h : s.Sym n = ∅) : s = ∅ :=
-  by
+theorem eq_empty_of_sym_eq_empty (h : s.Sym n = ∅) : s = ∅ := by
   rw [← not_nonempty_iff_eq_empty] at h⊢
   exact fun hs => h (hs.Sym _)
 #align finset.eq_empty_of_sym_eq_empty Finset.eq_empty_of_sym_eq_empty
 
 @[simp]
-theorem sym_eq_empty : s.Sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ :=
-  by
+theorem sym_eq_empty : s.Sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
   cases n
   · exact iff_of_false (singleton_ne_empty _) fun h => (h.1 rfl).elim
   · refine' ⟨fun h => ⟨n.succ_ne_zero, eq_empty_of_sym_eq_empty h⟩, _⟩
@@ -219,8 +213,7 @@ theorem sym_mono (h : s ⊆ t) (n : ℕ) : s.Sym n ⊆ t.Sym n := fun m hm =>
 #align finset.sym_mono Finset.sym_mono
 
 @[simp]
-theorem sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).Sym n = s.Sym n ∩ t.Sym n :=
-  by
+theorem sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).Sym n = s.Sym n ∩ t.Sym n := by
   ext m
   simp only [mem_inter, mem_sym_iff, imp_and, forall_and]
 #align finset.sym_inter Finset.sym_inter
