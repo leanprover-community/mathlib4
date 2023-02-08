@@ -51,8 +51,16 @@ namespace UniformEquiv
 
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
 
-instance : CoeFun (α ≃ᵤ β) fun _ => α → β :=
-  ⟨fun e => e.toEquiv⟩
+theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
+  | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
+#align uniform_equiv.to_equiv_injective UniformEquiv.toEquiv_injective
+
+instance : EquivLike (α ≃ᵤ β) α β where
+  coe := fun h => h.toEquiv
+  inv := fun h => h.toEquiv.symm
+  left_inv := fun h => h.left_inv
+  right_inv := fun h => h.right_inv
+  coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
 
 @[simp]
 theorem uniformEquiv_mk_coe (a : Equiv α β) (b c) : (UniformEquiv.mk a b c : α → β) = a :=
@@ -78,24 +86,18 @@ def Simps.symmApply (h : α ≃ᵤ β) : β → α :=
   h.symm
 #align uniform_equiv.simps.symm_apply UniformEquiv.Simps.symmApply
 
-initialize_simps_projections UniformEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
+initialize_simps_projections UniformEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply,
   -toEquiv)
 
-/- Porting note: syntactic tautology
 @[simp]
 theorem coe_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv = h :=
   rfl
-#align uniform_equiv.coe_to_equiv UniformEquiv.coe_toEquiv -/
-#noalign uniform_equiv.coe_to_equiv
+#align uniform_equiv.coe_to_equiv UniformEquiv.coe_toEquiv
 
 @[simp]
 theorem coe_symm_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv.symm = h.symm :=
   rfl
 #align uniform_equiv.coe_symm_to_equiv UniformEquiv.coe_symm_toEquiv
-
-theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
-  | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
-#align uniform_equiv.to_equiv_injective UniformEquiv.toEquiv_injective
 
 @[ext]
 theorem ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
@@ -155,7 +157,7 @@ protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
 #align uniform_equiv.continuous_symm UniformEquiv.continuous_symm
 
 /-- A uniform isomorphism as a homeomorphism. -/
--- @[simps] -- Porting note: removed, `simps?` produced no `simp` lemmas
+@[simps toEquiv] -- Porting note: removed, `simps?` produced no `simp` lemmas
 protected def toHomeomorph (e : α ≃ᵤ β) : α ≃ₜ β :=
   { e.toEquiv with
     continuous_toFun := e.continuous
@@ -352,6 +354,7 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
 end
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
+@[simps! (config := { fullyApplied := false })]
 def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α
     where
   toEquiv := Equiv.funUnique ι α
@@ -359,14 +362,8 @@ def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃�
   uniformContinuous_invFun := uniformContinuous_pi.mpr fun _ => uniformContinuous_id
 #align uniform_equiv.fun_unique UniformEquiv.funUnique
 
-@[simp] theorem funUnique_apply (ι α : Type _) [Unique ι] [UniformSpace α] :
-  ↑(funUnique ι α).toEquiv = fun f => f default := rfl
-
--- Porting note: manual version of `simps` lemma with LHS simplified
-@[simp] theorem funUnique_symm_apply (ι α : Type _) [Unique ι] [UniformSpace α] :
-  ↑(funUnique ι α).symm.toEquiv = fun x _ => x := rfl
-
 /-- Uniform isomorphism between dependent functions `Π i : fin 2, α i` and `α 0 × α 1`. -/
+@[simps! (config := { fullyApplied := false })]
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1
     where
   toEquiv := piFinTwoEquiv α
@@ -375,28 +372,12 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
     uniformContinuous_pi.mpr <| Fin.forall_fin_two.2 ⟨uniformContinuous_fst, uniformContinuous_snd⟩
 #align uniform_equiv.pi_fin_two UniformEquiv.piFinTwo
 
--- Porting note: manual version of `simps` lemma with LHS simplified
-@[simp] theorem piFinTwo_apply (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] :
-  ↑(piFinTwo α).toEquiv = fun f => (f 0, f 1) := rfl
-
--- Porting note: manual version of `simps` lemma with LHS simplified
-@[simp] theorem piFinTwo_symm_apply (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] :
-  ↑(piFinTwo α).symm.toEquiv = fun p => Fin.cons p.fst (Fin.cons p.snd finZeroElim) := rfl
-
 /-- Uniform isomorphism between `α² = fin 2 → α` and `α × α`. -/
 -- Porting note: made `α` explicit
+@[simps! (config := { fullyApplied := false })]
 def finTwoArrow (α : Type _) [UniformSpace α]: (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align uniform_equiv.fin_two_arrow UniformEquiv.finTwoArrow
-
--- Porting note: manual version of `simps` lemma with LHS simplified
-@[simp] theorem finTwoArrow_apply [UniformSpace α] :
-  ↑(finTwoArrow α).toEquiv = fun f => (f 0, f 1) := rfl
-
--- Porting note: manual version of `simps` lemma with LHS simplified
-@[simp] theorem finTwoArrow_symm_apply [UniformSpace α] :
-  ↑(finTwoArrow α).symm.toEquiv =
-  fun x => Matrix.vecCons x.fst (Matrix.vecCons x.snd Matrix.vecEmpty) := rfl
 
 /-- A subset of a uniform space is uniformly isomorphic to its image under a uniform isomorphism.
 -/
