@@ -145,7 +145,8 @@ theorem continuous_comp' [LocallyCompactSpace β] :
       rintro ⟨φ₀, ψ₀⟩ H
       obtain ⟨L, hL, hKL, hLU⟩ := exists_compact_between (hK.image φ₀.2) (hU.preimage ψ₀.2) H
       use { φ : C(α, β) | φ '' K ⊆ interior L } ×ˢ { ψ : C(β, γ) | ψ '' L ⊆ U }
-      use fun ⟨φ, ψ⟩ ⟨hφ, hψ⟩ => subset_trans hφ (interior_subset.trans <| image_subset_iff.mp hψ)
+      use fun ⟨φ, ψ⟩ ⟨(hφ : φ '' K ⊆ interior L), hψ⟩ =>
+        subset_trans hφ (interior_subset.trans <| image_subset_iff.mp hψ)
       use (ContinuousMap.isOpen_gen hK isOpen_interior).prod (ContinuousMap.isOpen_gen hL hU)
       exact mem_prod.mpr ⟨hKL, image_subset_iff.mpr hLU⟩)
 #align continuous_map.continuous_comp' ContinuousMap.continuous_comp'
@@ -176,10 +177,12 @@ theorem continuous_eval' [LocallyCompactSpace α] : Continuous fun p : C(α, β)
     show (fun p : C(α, β) × α => p.1 p.2) ⁻¹' n ∈ 𝓝 (f, x) from
       let w := CompactOpen.gen s v ×ˢ u
       have : w ⊆ (fun p : C(α, β) × α => p.1 p.2) ⁻¹' n := fun ⟨f', x'⟩ ⟨hf', hx'⟩ =>
-        calc
-          f' x' ∈ f' '' s := mem_image_of_mem f' (us hx')
-          _ ⊆ v := hf'
-          _ ⊆ n := vn
+        vn <| hf' <| mem_image_of_mem f' (us hx')
+        --Porting note: The following `calc` block fails here.
+        --calc
+        --  f' x' ∈ f' '' s := mem_image_of_mem f' (us hx')
+        --  _ ⊆ v := hf'
+        --  _ ⊆ n := vn
 
       have : IsOpen w := (ContinuousMap.isOpen_gen sc vo).prod uo
       have : (f, x) ∈ w := ⟨image_subset_iff.mpr sv, xu⟩
