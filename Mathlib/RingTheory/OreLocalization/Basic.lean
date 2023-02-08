@@ -167,7 +167,7 @@ theorem liftExpand_of {C : Sort _} {P : R → S → C}
   rfl
 #align ore_localization.lift_expand_of OreLocalization.liftExpand_of
 
-/-- A version of `lift_expand` used to simultaneously lift functions with two arguments
+/-- A version of `liftExpand` used to simultaneously lift functions with two arguments
 in ``R[S⁻¹]`.-/
 def lift₂Expand {C : Sort _} (P : R → S → R → S → C)
     (hP :
@@ -427,7 +427,7 @@ theorem universalMulHom_commutes {r : R} : universalMulHom f fS hf (numeratorHom
   simp [numeratorHom_apply, universalMulHom_apply]
 #align ore_localization.universal_mul_hom_commutes OreLocalization.universalMulHom_commutes
 
-/-- The universal morphism `universal_mul_hom` is unique. -/
+/-- The universal morphism `universalMulHom` is unique. -/
 theorem universalMulHom_unique (φ : R[S⁻¹] →* T) (huniv : ∀ r : R, φ (numeratorHom r) = f r) :
     φ = universalMulHom f fS hf := by
   ext x; induction' x using OreLocalization.ind with r s
@@ -458,7 +458,7 @@ instance : CommMonoid R[S⁻¹] :=
 
 variable (R S)
 
-/-- The morphism `numerator_hom` is a monoid localization map in the case of commutative `R`. -/
+/-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
 protected def localizationMap : S.LocalizationMap R[S⁻¹]
     where
   toFun := numeratorHom
