@@ -789,17 +789,18 @@ theorem succ_def (c : Cardinal) : succ c = infₛ { c' | c < c' } :=
   rfl
 #align cardinal.succ_def Cardinal.succ_def
 
-theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c :=
-  by
-  refine' (le_cinfₛ_iff'' (exists_gt c)).2 fun b hlt => _
+theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
+  rw [succ_def, le_cinfₛ_iff'' (by exact exists_gt c)]
+  intro b hlt
+  rw [mem_setOf_eq] at hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
   cases' le_of_lt hlt with f
-  have : ¬surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
-  simp only [surjective, not_forall] at this
+  have : ¬ Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
+  simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
   calc
     (#γ) + 1 = (#Option γ) := mk_option.symm
-    _ ≤ (#β) := (f.option_elim b hb).cardinal_le
+    _ ≤ (#β) := (Function.Embedding.optionElim f b hb).cardinal_le
 
 #align cardinal.add_one_le_succ Cardinal.add_one_le_succ
 
@@ -860,7 +861,8 @@ theorem lift_sum {ι : Type u} (f : ι → Cardinal.{v}) :
   Equiv.cardinal_eq <|
     Equiv.ulift.trans <|
       Equiv.sigmaCongrRight fun a =>
-        Nonempty.some <| by rw [← lift_mk_eq, mk_out, mk_out, lift_lift]
+    -- Porting note: Inserted universe hint .{_,_,v} below
+        Nonempty.some <| by rw [← lift_mk_eq.{_,_,v}, mk_out, mk_out, lift_lift]
 #align cardinal.lift_sum Cardinal.lift_sum
 
 theorem sum_le_sum {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : sum f ≤ sum g :=
@@ -883,7 +885,12 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
               (Equiv.trans
                 (by
                   rw [Equiv.image_eq_preimage]
-                  simp [Set.preimage])
+                  /- Porting note: Need to insert the following `have` b/c bad fun coercion
+                   behaviour for Equivs -/
+                  have : FunLike.coe (Equiv.symm (Equiv.ulift (α := α))) = ULift.up (α := α) := rfl
+                  rw [this]
+                  simp [Set.preimage]
+                  exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le
         (hf b)
 #align
@@ -947,7 +954,9 @@ theorem supᵢ_le_sum {ι} (f : ι → Cardinal) : supᵢ f ≤ sum f :=
   csupᵢ_le' <| le_sum.{u_2,u_1} _
 #align cardinal.supr_le_sum Cardinal.supᵢ_le_sum
 
-theorem sum_le_supᵢ_lift {ι : Type u} (f : ι → Cardinal.{max u v}) : sum f ≤ (#ι).lift * supᵢ f :=
+-- Porting note: Added universe hint .{v,_} below
+theorem sum_le_supᵢ_lift {ι : Type u}
+    (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift.{v,_} (#ι) * supᵢ f :=
   by
   rw [← (supᵢ f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
   exact sum_le_sum _ _ (le_csupᵢ <| bddAbove_range.{u, v} f)
@@ -972,10 +981,12 @@ protected theorem supᵢ_of_empty {ι} (f : ι → Cardinal) [IsEmpty ι] : sup�
   csupᵢ_of_empty f
 #align cardinal.supr_of_empty Cardinal.supᵢ_of_empty
 
+set_option pp.universes true
 @[simp]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} (#Shrink.{v} α) = Cardinal.lift.{max v w} (#α) :=
-  lift_mk_eq.2 ⟨(equivShrink α).symm⟩
+-- Porting note: Added .{v,u,w} universe hint below
+  lift_mk_eq.{v,u,w}.2 ⟨(equivShrink α).symm⟩
 #align cardinal.lift_mk_shrink Cardinal.lift_mk_shrink
 
 @[simp]
@@ -1032,8 +1043,8 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
     lift.{w} (prod c) = prod fun i => lift.{w} (c i) :=
   by
   lift c to ι → Type v using fun _ => trivial
-  simp only [← mk_pi, ← mk_ulift]
-  exact mk_congr (equiv.ulift.trans <| Equiv.piCongrRight fun i => equiv.ulift.symm)
+  simp only [← mk_pi, ← mk_uLift]
+  exact mk_congr (Equiv.ulift.trans <| Equiv.piCongrRight fun i => Equiv.ulift.symm)
 #align cardinal.lift_prod Cardinal.lift_prod
 
 theorem prod_eq_of_fintype {α : Type u} [Fintype α] (f : α → Cardinal.{v}) :
@@ -1052,23 +1063,27 @@ theorem prod_eq_of_fintype {α : Type u} [Fintype α] (f : α → Cardinal.{v}) 
     simp only [lift_id]
 #align cardinal.prod_eq_of_fintype Cardinal.prod_eq_of_fintype
 
+-- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_infₛ (s : Set Cardinal) : lift (infₛ s) = infₛ (lift '' s) :=
+theorem lift_infₛ (s : Set Cardinal) : lift.{u,v} (infₛ s) = infₛ (lift.{u,v} '' s) :=
   by
   rcases eq_empty_or_nonempty s with (rfl | hs)
   · simp
-  · exact lift_monotone.map_Inf hs
+  · exact  lift_monotone.map_cinfₛ hs
 #align cardinal.lift_Inf Cardinal.lift_infₛ
 
+set_option pp.universes false
 @[simp]
-theorem lift_infᵢ {ι} (f : ι → Cardinal) : lift (infᵢ f) = ⨅ i, lift (f i) :=
+theorem lift_infᵢ {ι} (f : ι → Cardinal) : lift.{u,v} (infᵢ f) = ⨅ i, lift.{u,v} (f i) :=
   by
   unfold infᵢ
-  convert lift_Inf (range f)
-  rw [range_comp]
+  convert lift_infₛ (range f)
+  simp_rw [←comp_apply (f := lift), range_comp]
 #align cardinal.lift_infi Cardinal.lift_infᵢ
 
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} : b ≤ lift a → ∃ a', lift a' = b :=
+set_option pp.universes true
+theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+    b ≤ lift.{v,u} a → ∃ a', lift.{v,u} a' = b :=
   inductionOn₂ a b fun α β => by
     rw [← lift_id (#β), ← lift_umax, ← lift_umax.{u, v}, lift_mk_le] <;>
       exact fun ⟨f⟩ =>
@@ -1080,11 +1095,11 @@ theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} : b ≤ lift a →
 #align cardinal.lift_down Cardinal.lift_down
 
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift a ↔ ∃ a', lift a' = b ∧ a' ≤ a :=
+    b ≤ lift.{max u v,u} a ↔ ∃ a', lift.{max u v,u} a' = b ∧ a' ≤ a :=
   ⟨fun h =>
     let ⟨a', e⟩ := lift_down h
     ⟨a', e, lift_le.1 <| e.symm ▸ h⟩,
-    fun ⟨a', e, h⟩ => e ▸ lift_le.2 h⟩
+    fun ⟨_, e, h⟩ => e ▸ lift_le.2 h⟩
 #align cardinal.le_lift_iff Cardinal.le_lift_iff
 
 theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
