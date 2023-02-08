@@ -8,10 +8,10 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.LocallyFinite
-import Mathbin.Data.Finset.Pointwise
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Data.Dfinsupp.Order
+import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Dfinsupp.Order
 
 /-!
 # Finite intervals of finitely supported functions
@@ -49,8 +49,7 @@ theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) :
 
 variable [∀ i, DecidableEq (α i)]
 
-theorem mem_dfinsupp_iff : f ∈ s.Dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i :=
-  by
+theorem mem_dfinsupp_iff : f ∈ s.Dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
     refine' ⟨support_mk_subset, fun i hi => _⟩
@@ -66,8 +65,7 @@ theorem mem_dfinsupp_iff : f ∈ s.Dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
 -/
 @[simp]
 theorem mem_dfinsupp_iff_of_support_subset {t : Π₀ i, Finset (α i)} (ht : t.support ⊆ s) :
-    f ∈ s.Dfinsupp t ↔ ∀ i, f i ∈ t i :=
-  by
+    f ∈ s.Dfinsupp t ↔ ∀ i, f i ∈ t i := by
   refine'
     mem_dfinsupp_iff.trans
       (forall_and_distrib.symm.trans <|
@@ -139,8 +137,7 @@ theorem mem_rangeIcc_apply_iff : a ∈ f.rangeIcc g i ↔ f i ≤ a ∧ a ≤ g 
 #align dfinsupp.mem_range_Icc_apply_iff Dfinsupp.mem_rangeIcc_apply_iff
 
 theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
-    (f.rangeIcc g).support ⊆ f.support ∪ g.support :=
-  by
+    (f.rangeIcc g).support ⊆ f.support ∪ g.support := by
   refine' fun x hx => _
   by_contra
   refine' not_mem_support_iff.2 _ hx
@@ -167,8 +164,7 @@ theorem mem_pi {f : Π₀ i, Finset (α i)} {g : Π₀ i, α i} : g ∈ f.pi ↔
 #align dfinsupp.mem_pi Dfinsupp.mem_pi
 
 @[simp]
-theorem card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.Prod fun i => (f i).card :=
-  by
+theorem card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.Prod fun i => (f i).card := by
   rw [pi, card_dfinsupp]
   exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
 #align dfinsupp.card_pi Dfinsupp.card_pi
