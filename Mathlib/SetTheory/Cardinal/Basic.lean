@@ -472,15 +472,15 @@ instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
 -- -- Porting note: TODO remove this and deal with the error message concerning `infixr` and `@`.
 -- set_option quotPrecheck false
 
--- -- Porting note: I think this is not needed anymore.
--- -- mathport name: cardinal.pow
--- local infixr:0 "^" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
+-- Porting note: I think this is not needed anymore.
+-- mathport name: cardinal.pow
+-- local infixr:0 "^" => Pow.pow (α := Cardinal) (β := Cardinal) (self := Cardinal.instPowCardinal)
 
 -- Porting note: TODO this doesnt work as a notation!
 -- -- mathport name: cardinal.pow.nat
 
---set_option quotPrecheck false in
-local infixr:80 " ^ℕ " => @Pow.pow Cardinal ℕ Monoid.Pow
+--Porting note: @Pow.pow notation does not work here
+local infixr:80 " ^ℕ " => Pow.pow (α := Cardinal) (β := ℕ) (self := Monoid.Pow)
 
 theorem power_def (α β) : ((#α) ^ (#β)) = (#β → α) :=
   rfl
@@ -610,22 +610,23 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 section deprecated
 set_option linter.deprecated false
 
-@[simp]
+@[simp, deprecated]
 theorem lift_bit0 (a : Cardinal) : lift.{v} (bit0 a) = bit0 (lift.{v} a) :=
   lift_add a a
 #align cardinal.lift_bit0 Cardinal.lift_bit0
 
-@[simp]
+@[simp, deprecated]
 theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by simp [bit1]
 #align cardinal.lift_bit1 Cardinal.lift_bit1
 
 end deprecated
 
-theorem lift_two : lift.{u, v} 2 = 2 := by simp
+-- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
+theorem lift_two : lift.{u, v} 2 = 2 := by simp [←one_add_one_eq_two]
 #align cardinal.lift_two Cardinal.lift_two
 
 @[simp]
-theorem mk_set {α : Type u} : (#Set α) = (2 ^ (#α)) := by simp [Set, mk_arrow]
+theorem mk_set {α : Type u} : (#Set α) = (2 ^ (#α)) := by simp [←one_add_one_eq_two, Set, mk_arrow]
 #align cardinal.mk_set Cardinal.mk_set
 
 /-- A variant of `cardinal.mk_set` expressed in terms of a `set` instead of a `Type`. -/
@@ -634,7 +635,7 @@ theorem mk_powerset {α : Type u} (s : Set α) : (#↥(𝒫 s)) = (2 ^ (#↥s)) 
   (mk_congr (Equiv.Set.powerset s)).trans mk_set
 #align cardinal.mk_powerset Cardinal.mk_powerset
 
-theorem lift_two_power (a) : lift.{v} (2 ^ a) = (2 ^ lift.{v} a) := by simp
+theorem lift_two_power (a) : lift.{v} (2 ^ a) = (2 ^ lift.{v} a) := by simp [←one_add_one_eq_two]
 #align cardinal.lift_two_power Cardinal.lift_two_power
 
 section OrderProperties
@@ -647,7 +648,7 @@ protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
 #align cardinal.zero_le Cardinal.zero_le
 
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
-  rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩ <;> exact ⟨e₁.sum_map e₂⟩
+  rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 -- #align cardinal.add_le_add' Cardinal.add_le_add'
 
 instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
@@ -664,29 +665,30 @@ instance : CanonicallyOrderedCommSemiring Cardinal.{u} :=
     bot := 0
     bot_le := Cardinal.zero_le
     add_le_add_left := fun a b => add_le_add_left
-    exists_add_of_le := fun a b =>
-      inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
+    exists_add_of_le := by
+      intro a b
+      exact inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
         have : Sum α (range fᶜ : Set β) ≃ β :=
           (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
         ⟨#↥(range fᶜ), mk_congr this.symm⟩
     le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun a b =>
-      inductionOn₂ a b fun α β => by simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
+    eq_zero_or_eq_zero_of_mul_eq_zero := by
+      intro a b
+      exact inductionOn₂ a b fun α β => by
+        simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
 
-theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 :=
-  by
+theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
   by_cases h : c = 0
-  rw [h, power_zero]
-  rw [zero_power h]
-  apply zero_le
+  · rw [h, power_zero]
+  · rw [zero_power h]
+    apply zero_le
 #align cardinal.zero_power_le Cardinal.zero_power_le
 
 theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → (a^b) ≤ (a^c) := by
-  rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ hα ⟨e⟩ <;>
-    exact
-      let ⟨a⟩ := mk_ne_zero_iff.1 hα
-      ⟨@Embedding.arrow_congr_left _ _ _ ⟨a⟩ e⟩
+  rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ hα ⟨e⟩
+  let ⟨a⟩ := mk_ne_zero_iff.1 hα
+  exact ⟨@Function.Embedding.arrowCongrLeft _ _ _ ⟨a⟩ e⟩
 #align cardinal.power_le_power_left Cardinal.power_le_power_left
 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ (a^b) :=
@@ -715,11 +717,11 @@ instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
     Cardinal.partialOrder with
     le_total := by
       rintro ⟨α⟩ ⟨β⟩
-      apply embedding.total
-    decidableLe := Classical.decRel _ }
+      apply Embedding.total
+    decidable_le := Classical.decRel _ }
 
 -- short-circuit type class inference
-instance : DistribLattice Cardinal.{u} := by infer_instance
+instance : DistribLattice Cardinal.{u} := inferInstance
 
 theorem one_lt_iff_nontrivial {α : Type u} : 1 < (#α) ↔ Nontrivial α := by
   rw [← not_le, le_one_iff_subsingleton, ← not_nontrivial_iff_subsingleton, Classical.not_not]
@@ -733,7 +735,7 @@ theorem power_le_max_power_one {a b c : Cardinal} (h : b ≤ c) : (a^b) ≤ max 
 #align cardinal.power_le_max_power_one Cardinal.power_le_max_power_one
 
 theorem power_le_power_right {a b c : Cardinal} : a ≤ b → (a^c) ≤ (b^c) :=
-  inductionOn₃ a b c fun α β γ ⟨e⟩ => ⟨Embedding.arrowCongrRight e⟩
+  inductionOn₃ a b c fun _ _ _ ⟨e⟩ => ⟨Embedding.arrowCongrRight e⟩
 #align cardinal.power_le_power_right Cardinal.power_le_power_right
 
 theorem power_pos {a : Cardinal} (b) (ha : 0 < a) : 0 < (a^b) :=
