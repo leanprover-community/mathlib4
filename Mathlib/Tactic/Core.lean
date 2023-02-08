@@ -105,7 +105,6 @@ def rewriteTarget' (stx : Syntax) (symm : Bool) : TacticM Unit := do
     let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
     replaceMainGoal ([mvarId'])
 
-
 /--
 Run a tactic on all goals, and always succeeds.
 

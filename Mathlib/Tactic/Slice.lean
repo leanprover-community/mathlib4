@@ -13,9 +13,7 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 -- TODO someone might like to generalise this tactic to work with other associative structures.
 namespace Tactic
 
-variable [Monad m] [MonadExceptOf Exception m]
-
-partial def iterateUntilFailureWithResults {α : Type} (tac : m α) : m (List α) := do
+partial def iterateUntilFailureWithResults {α : Type} (tac : TacticM α) : TacticM (List α) := do
   try
     let a ← tac
     let l ← iterateUntilFailureWithResults tac
@@ -23,7 +21,7 @@ partial def iterateUntilFailureWithResults {α : Type} (tac : m α) : m (List α
   catch _ => pure []
 #align tactic.repeat_with_results Tactic.iterateUntilFailureWithResults
 
-def iterateUntilFailureCount {α : Type} (tac : m α) : m ℕ := do
+def iterateUntilFailureCount {α : Type} (tac : TacticM α) : TacticM ℕ := do
   let r ← iterateUntilFailureWithResults tac
   return r.length
 #align tactic.repeat_count Tactic.iterateUntilFailureCount
@@ -37,17 +35,20 @@ open Tactic
 variable [Monad m] [MonadExceptOf Exception m]
 
 def evalSlice (a b : Nat) : TacticM Unit := do
-  iterateUntilFailure do
-    ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false)
+  let _ ← iterateUntilFailureWithResults do
+    -- ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false)
+    evalTactic (← `(conv| rw [Category.assoc]))
   iterateRange (a - 1) (a - 1) do
       evalTactic (← `(conv| congr))
       evalTactic (← `(tactic| rotate_left))
   let k ← iterateUntilFailureCount
-    <| ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := true)
+    <| evalTactic (← `(conv| rw [←Category.assoc]))
+    -- <| ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := true)
   let c := k+1+a-b
   iterateRange c c <| evalTactic (← `(conv| congr))
-  iterateUntilFailure do
-    ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false)
+  let _ ← iterateUntilFailureWithResults do
+    evalTactic (← `(conv| rw [Category.assoc]))
+    -- ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false)
 
 elab "slice" a:num b:num : conv => evalSlice a.getNat b.getNat
 
