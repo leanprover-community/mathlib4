@@ -119,10 +119,11 @@ instance : SpectralMapClass (SpectralMap α β) α β
   coe_injective' f g h := by cases f; cases g; congr
   map_spectral f := f.spectral'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun (SpectralMap α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+-- Porting note: These CoeFun instances are not desirable in Lean 4.
+--/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+--directly. -/
+--instance : CoeFun (SpectralMap α β) fun _ => α → β :=
+--  FunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=
