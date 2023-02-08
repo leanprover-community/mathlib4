@@ -8,8 +8,8 @@ Authors: Eric Rodriguez
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Logic.Equiv.Embedding
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Logic.Equiv.Embedding
 
 /-!
 # Number of embeddings
