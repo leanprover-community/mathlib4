@@ -83,6 +83,16 @@ def isPrefixOf? (pre nm : Name) : Option Name :=
   | num p' a => (isPrefixOf? pre p').map (·.num a)
   | str p' s => (isPrefixOf? pre p').map (·.str s)
 
+/--
+Declarations that are internal or automatically generated in certain ways.
+Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/lean/run/printDecls`.
+-/
+def isInternal' (declName : Name) : Bool :=
+  declName.isInternal ||
+  match declName with
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | _        => true
+
 end Name
 
 

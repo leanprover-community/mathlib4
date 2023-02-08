@@ -249,6 +249,16 @@ syntax (name := simps) "simps" "!"? "?"? simpsArgsRest : attr
 
 end Attr
 
+/-- Linter to check that `simps!` is used when needed -/
+register_option linter.simpsNoConstructor : Bool := {
+  defValue := true
+  descr := "Linter to check that `simps!` is used" }
+
+/-- Linter to check that no unused custom declarations are declared for simps. -/
+register_option linter.simpsUnusedCustomDeclarations : Bool := {
+  defValue := true
+  descr := "Linter to check that no unused custom declarations are declared for simps" }
+
 namespace Command
 
 /-- Syntax for renaming a projection in `initialize_simps_projections`. -/
@@ -464,7 +474,7 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
       if nondefaults.isEmpty then [] else
       [("No lemmas are generated for the projections: " : MessageData) ++ print2 ++ "."]
   let toPrint := MessageData.joinSep toPrint ("\n" : MessageData)
-  m! "{pref} {str}:\n{toPrint}"
+  m!"{pref} {str}:\n{toPrint}"
 
 /-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
 Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1]`, because the first
@@ -625,6 +635,18 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
     _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newStx rawExpr
     pure {proj with expr? := some rawExpr, projNrs := nrs}
 
+/-- Checks if there are declarations in the current file in the namespace `{str}.Simps` that are
+  not used. -/
+def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedProjectionData) :
+  CoreM Unit := do
+  let nrCustomProjections := projs.toList.countp (·.isCustom)
+  let env ← getEnv
+  let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
+    if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs
+  if nrCustomProjections < customDeclarations.size then
+    Linter.logLint linter.simpsUnusedCustomDeclarations stx
+      m!"Not all of the custom declarations {customDeclarations} are used. Double check the spelling, and use `?` to get more information."
+
 /-- Data about default coercions. An entry consists of
   `(projName, (className, functionName, arity))`, where
   * `projName` is the name of a projection in a structure that must be used to triggers the search
@@ -717,7 +739,7 @@ Optionally, this command accepts three optional arguments:
 * if `trc` is true, this tactic will trace information just as if
   `set_option trace.simps.verbose true` was set.
 -/
-def getRawProjections (str : Name) (traceIfExists : Bool := false)
+def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
   (rules : Array ProjectionRule := #[]) (trc := false) :
   CoreM (List Name × Array ProjectionData) := do
   withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
@@ -737,7 +759,7 @@ def getRawProjections (str : Name) (traceIfExists : Bool := false)
   let projs ← mkParsedProjectionData str
   let projs ← applyProjectionRules projs rules
   let projs ← projs.mapM fun proj ↦ findProjection str proj rawUnivs
-  checkForUnusedCustomProjs projs
+  checkForUnusedCustomProjs stx str projs
   let projs ← findAutomaticProjections str projs
   let projs := projs.map (·.toProjectionData)
   -- make all proofs non-default.
@@ -780,18 +802,13 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
 
 /-- Function elaborating `initialize_simps_projections`. -/
 @[command_elab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
-| `(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
+| stx@`(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
   let stxs := stxs.getD <| .mk #[]
   let rules ← stxs.getElems.raw.mapM elabSimpsRule
   let nm ← resolveGlobalConstNoOverload id
   _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
-  _ ← liftCoreM <| getRawProjections nm true rules trc.isSome
+  _ ← liftCoreM <| getRawProjections stx nm true rules trc.isSome
 | _ => throwUnsupportedSyntax
-
-/-- Linter to check that `simps!` is used when needed -/
-register_option linter.simpsNoConstructor : Bool := {
-  defValue := true
-  descr := "Linter to check that `simps!` is used" }
 
 /-- Configuration options for `@[simps]` -/
 structure Config where
@@ -863,7 +880,7 @@ partial def _root_.Lean.Expr.instantiateLambdasOrApps (es : Array Expr) (e : Exp
      ...]
   ```
 -/
-def getProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Config) :
+def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
     MetaM <| Array <| Expr × ProjectionData := do
   -- the parameters of the structure
   let params := tgt.getAppArgs
@@ -872,7 +889,7 @@ def getProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Config) :
   let str := tgt.getAppFn.constName?.getD default
   -- the fields of the object
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
-  let (rawUnivs, projDeclata) ← getRawProjections str
+  let (rawUnivs, projDeclata) ← getRawProjections stx str
   return projDeclata.map fun proj ↦
     (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
       { proj with
@@ -1061,7 +1078,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     return #[nm]
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
-  let projInfo ← getProjectionExprs tgt rhsWhnf cfg
+  let projInfo ← getProjectionExprs ref tgt rhsWhnf cfg
   trace[simps.debug] "Raw projection information:{indentD m!"{projInfo}"}"
   -- If we are in the middle of a composite projection.
   if let idx :: rest := toApply then
