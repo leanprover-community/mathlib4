@@ -84,7 +84,7 @@ section PartialOrder
 variable [PartialOrder α]
 
 /-- The identity function as a closure operator. -/
-@[simps]
+@[simps!]
 def id : ClosureOperator α where
   toOrderHom := OrderHom.id
   le_closure' _ := le_rfl
@@ -129,7 +129,7 @@ def mk₂ (f : α → α) (hf : ∀ x, x ≤ f x) (hmin : ∀ ⦃x y⦄, x ≤ f
 /-- Expanded out version of `mk₂`. `p` implies being closed. This constructor should be used when
 you already know a sufficient condition for being closed and using `mem_mk₃_closed` will avoid you
 the (slight) hassle of having to prove it both inside and outside the constructor. -/
-@[simps]
+@[simps!]
 def mk₃ (f : α → α) (p : α → Prop) (hf : ∀ x, x ≤ f x) (hfp : ∀ x, p (f x))
     (hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y) : ClosureOperator α :=
   mk₂ f hf fun _ y hxy => hmin hxy (hfp y)
@@ -557,7 +557,7 @@ def GaloisConnection.lowerAdjoint [Preorder α] [Preorder β] {l : α → β} {u
 
 /-- Every Galois connection induces a closure operator given by the composition. This is the partial
 order version of the statement that every adjunction induces a monad. -/
-@[simps]
+@[simps!]
 def GaloisConnection.closureOperator [PartialOrder α] [Preorder β] {l : α → β} {u : β → α}
     (gc : GaloisConnection l u) : ClosureOperator α :=
   gc.lowerAdjoint.closureOperator

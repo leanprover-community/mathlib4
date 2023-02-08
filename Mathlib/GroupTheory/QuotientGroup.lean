@@ -110,7 +110,7 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
 `QuotientGroup.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[to_additive (attr := ext) "Two `AddMonoidHoms`s from an additive quotient group are equal if
+@[to_additive (attr := ext 1001) "Two `AddMonoidHoms`s from an additive quotient group are equal if
  their compositions with `AddQuotientGroup.mk'` are equal.
 
  See note [partially-applied ext lemmas]. "]
@@ -420,7 +420,7 @@ def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G
 #align quotient_add_group.quotient_ker_equiv_of_right_inverse QuotientAddGroup.quotientKerEquivOfRightInverse
 
 /-- The canonical isomorphism `G/⊥ ≃* G`. -/
-@[to_additive (attr := simps) "The canonical isomorphism `G/⊥ ≃+ G`."]
+@[to_additive (attr := simps!) "The canonical isomorphism `G/⊥ ≃+ G`."]
 def quotientBot : G ⧸ (⊥ : Subgroup G) ≃* G :=
   quotientKerEquivOfRightInverse (MonoidHom.id G) id fun _x => rfl
 #align quotient_group.quotient_bot QuotientGroup.quotientBot
@@ -650,22 +650,8 @@ theorem quotientQuotientEquivQuotientAux_mk_mk (x : G) :
 def quotientQuotientEquivQuotient : (G ⧸ N) ⧸ M.map (QuotientGroup.mk' N) ≃* G ⧸ M :=
   MonoidHom.toMulEquiv (quotientQuotientEquivQuotientAux N M h)
     (QuotientGroup.map _ _ (QuotientGroup.mk' N) (Subgroup.le_comap_map _ _))
-    (by
-      refine' @QuotientGroup.monoidHom_ext _ _ (M.map (mk' N)) _ _ _ _
-        (MonoidHom.id ((G ⧸ N) ⧸ Subgroup.map (mk' N) M)) _
-      refine' @QuotientGroup.monoidHom_ext _ _ N _ _ _ _
-        (MonoidHom.comp (MonoidHom.id ((G ⧸ N) ⧸ Subgroup.map (mk' N) M))
-        (mk' (Subgroup.map (mk' N) M))) _
-      apply MonoidHom.ext
-      -- porting note: cannot change the above two `refine'`s to `apply`
-      intro x
-      simp)
-    (by
-      apply QuotientGroup.monoidHom_ext
-      apply MonoidHom.ext
-      intro x
-      -- porting note: `ext` doesn't work here, had to use output of `ext?` from Lean 3
-      simp)
+    (by ext; simp)
+    (by ext; simp)
 #align quotient_group.quotient_quotient_equiv_quotient QuotientGroup.quotientQuotientEquivQuotient
 #align quotient_add_group.quotient_quotient_equiv_quotient QuotientAddGroup.quotientQuotientEquivQuotient
 

@@ -59,7 +59,7 @@ def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.
 See also `OrderIso.mulLeft` when working in an ordered group. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps!)
       "The order embedding sending `b` to `a + b`, for some fixed `a`.
        See also `OrderIso.addLeft` when working in an additive ordered group."]
 def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
@@ -72,7 +72,7 @@ def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
 
 /-- The order embedding sending `b` to `b * a`, for some fixed `a`.
 See also `OrderIso.mulRight` when working in an ordered group. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps!)
       "The order embedding sending `b` to `b + a`, for some fixed `a`.
        See also `OrderIso.addRight` when working in an additive ordered group."]
 def OrderEmbedding.mulRight {α : Type _} [Mul α] [LinearOrder α]
