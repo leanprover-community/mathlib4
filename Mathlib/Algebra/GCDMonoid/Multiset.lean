@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 
 ! This file was ported from Lean 3 source module algebra.gcd_monoid.multiset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

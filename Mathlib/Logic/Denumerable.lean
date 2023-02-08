@@ -256,7 +256,6 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
       (h ⟨_, Nat.find_spec hx⟩ hxy).not_lt <|
-        show _ < _ from -- lean4#2073
         calc
           (y : ℕ) ≤ (y : ℕ) + Nat.find hx := le_add_of_nonneg_right (Nat.zero_le _)
           _ < (y : ℕ) + Nat.find hx + 1 := Nat.lt_succ_self _
@@ -264,7 +263,6 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
 #align nat.subtype.le_succ_of_forall_lt_le Nat.Subtype.le_succ_of_forall_lt_le
 
 theorem lt_succ_self (x : s) : x < succ x :=
-  show _ < _ from -- lean4#2073
   calc
     -- Porting note: replaced `x + _`, added type annotations
     (x : ℕ) ≤ (x + Nat.find (exists_succ x): ℕ) := le_self_add

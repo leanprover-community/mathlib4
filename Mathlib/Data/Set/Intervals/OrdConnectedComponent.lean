@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.set.intervals.ord_connected_component
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -90,7 +90,6 @@ theorem mem_ordConnectedComponent_comm :
 
 theorem mem_ordConnectedComponent_trans (hxy : y ∈ ordConnectedComponent s x)
     (hyz : z ∈ ordConnectedComponent s y) : z ∈ ordConnectedComponent s x :=
-  show _ ⊆ _ from -- lean4#2073
   calc
     [[x, z]] ⊆ [[x, y]] ∪ [[y, z]] := uIcc_subset_uIcc_union_uIcc
     _ ⊆ s := union_subset hxy hyz

@@ -299,6 +299,14 @@ theorem IsGreatest.upperBounds_eq (h : IsGreatest s a) : upperBounds s = Ici a :
   h.isLUB.upperBounds_eq
 #align is_greatest.upper_bounds_eq IsGreatest.upperBounds_eq
 
+-- porting note: new lemma
+theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
+  ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
+
+-- porting note: new lemma
+theorem IsLeast.lt_iff (h : IsLeast s a) : b < a ↔ ∀ x ∈ s, b < x :=
+  h.dual.lt_iff
+
 theorem isLUB_le_iff (h : IsLUB s a) : a ≤ b ↔ b ∈ upperBounds s := by
   rw [h.upperBounds_eq]
   rfl
@@ -348,7 +356,6 @@ theorem IsGreatest.nonempty (h : IsGreatest s a) : s.Nonempty :=
 /-!
 ### Union and intersection
 -/
-
 
 @[simp]
 theorem upperBounds_union : upperBounds (s ∪ t) = upperBounds s ∩ upperBounds t :=
