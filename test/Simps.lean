@@ -18,7 +18,7 @@ structure Foo1 : Type where
   four : 1 = 1
   five : 2 = 1
 
-initialize_simps_projections Foo1 (one → toNat, two → toBool, three → coe, prefix coe, -toBool)
+initialize_simps_projections Foo1 (one → toNat, two → toBool, three → coe, as_prefix coe, -toBool)
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
@@ -54,16 +54,16 @@ initialize_simps_projections Left
 structure Right (α : Type u) (β : Type v) extends Foo2 α where
   otherData : β
 
-initialize_simps_projections Right (elim → newProjection)
+initialize_simps_projections Right (elim → newProjection, -otherData, +toFoo2)
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
   let state := ((Simps.structureExt.getState env).find? `Right).get!
   -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
-  guard <| state.2.map (·.1) == #[`newProjection, `otherData, `toFoo2]
-  guard <| state.2.map (·.3) == #[[0,0], [1], [0]]
-  guard <| state.2.map (·.4) == #[true, true, false]
+  guard <| state.2.map (·.1) == #[`toFoo2, `otherData, `newProjection]
+  guard <| state.2.map (·.3) == #[[0], [1], [0,0]]
+  guard <| state.2.map (·.4) == #[true, false, true]
   guard <| state.2.map (·.5) == #[false, false, false]
 
 structure Top (α β : Type _) extends Left α, Right α β
@@ -253,7 +253,7 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `rflWithData'_toFun |>.isSome
   guard <| env.find? `test_extra_fst |>.isSome
   guard <| simpsAttr.getParam? env `test ==
-    #[`test_toFun, `test_invFun, `test_P, `test_extra_fst, `test_extra_snd]
+    #[`test_P, `test_extra_fst, `test_extra_snd, `test_toFun, `test_invFun]
   guard <| env.find? `test_sneaky_extra_fst |>.isSome
   guard <| env.find? `rflWithData_toEquiv_toFun |>.isNone
   guard <| env.find? `rflWithData'_toEquiv_toFun |>.isNone
@@ -755,7 +755,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
 def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
-initialize_simps_projections Equiv (toFun → coe, prefix coe, invFun → symm_apply)
+initialize_simps_projections Equiv (toFun → coe, as_prefix coe, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
   let data ← getRawProjections `PrefixProjectionNames.Equiv
