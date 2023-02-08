@@ -13,6 +13,11 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 -- TODO someone might like to generalise this tactic to work with other associative structures.
 namespace Tactic
 
+variable [Monad m] [MonadExcept Exception m]
+
+/-- `iterateUntilFailureWithResults` is a helper tactic which returns the results of `tac`'s 
+iterative application along the lines of `iterateUntilFailure`
+-/
 partial def iterateUntilFailureWithResults {α : Type} (tac : TacticM α) : TacticM (List α) := do
   try
     let a ← tac
@@ -21,6 +26,9 @@ partial def iterateUntilFailureWithResults {α : Type} (tac : TacticM α) : Tact
   catch _ => pure []
 #align tactic.repeat_with_results Tactic.iterateUntilFailureWithResults
 
+/-- `iterateUntilFailureCount` is similiar to `iterateUntilFailure` except it counts 
+the number of successful calls to `tac`
+-/
 def iterateUntilFailureCount {α : Type} (tac : TacticM α) : TacticM ℕ := do
   let r ← iterateUntilFailureWithResults tac
   return r.length
@@ -31,28 +39,41 @@ end Tactic
 namespace Conv
 
 open Tactic
+open Parser.Tactic.Conv
 
-variable [Monad m] [MonadExceptOf Exception m]
-
+/--
+`evalSlice` 
+- rewrites the target express using `Category.assoc`. 
+- uses `congr` to split off the first `a-1` terms and rotates to `a`-th (last) term
+- it counts the number `k` of rewrites as it uses `←Category.assoc` to bring the target to 
+  left associated form; from the first step this is the total number of remaining terms from `C`
+- it now splits off `b-a` terms from target using `congr` leaving the desired subterm 
+- finally, it rewrites it once more using `Category.assoc` to bring it right associated 
+  normal form
+-/
 def evalSlice (a b : Nat) : TacticM Unit := do
   let _ ← iterateUntilFailureWithResults do
-    -- ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false)
     evalTactic (← `(conv| rw [Category.assoc]))
   iterateRange (a - 1) (a - 1) do
       evalTactic (← `(conv| congr))
       evalTactic (← `(tactic| rotate_left))
   let k ← iterateUntilFailureCount
     <| evalTactic (← `(conv| rw [←Category.assoc]))
-    -- <| ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := true)
   let c := k+1+a-b
   iterateRange c c <| evalTactic (← `(conv| congr))
   let _ ← iterateUntilFailureWithResults do
     evalTactic (← `(conv| rw [Category.assoc]))
-    -- ``(Category.assoc) >>= fun e => rewriteTarget' e (symm := false)
 
 elab "slice" a:num b:num : conv => evalSlice a.getNat b.getNat
 
-open Lean Parser.Tactic Parser.Tactic.Conv Elab.Tactic Meta
+/-- 
+`sliceLHS a b => tac` is a conv tactic which enters the LHS of a target, 
+uses `slice` to extract the `a` through `b` terms, and then applies 
+`tac` to the result. 
+
+`sliceRHS a b => tac` works on the RHS similarly
+-/
+
 syntax (name := sliceLHS) "sliceLHS" num num " => " convSeq : tactic
 macro_rules
   | `(tactic| sliceLHS $a $b => $seq) =>
@@ -63,9 +84,10 @@ macro_rules
   | `(tactic| sliceRHS $a $b => $seq) =>
     `(tactic| conv => rhs; slice $a $b; ($seq:convSeq))
 
+/- Porting note: update when `add_tactic_doc` is supported` -/
 -- add_tactic_doc
 --   { Name := "slice"
 --     category := DocCategory.tactic
---     declNames := [`tactic.interactive.slice_lhs, `tactic.interactive.slice_rhs]
+--     declNames := [`tactic.interactive.sliceLHS, `tactic.interactive.sliceRHS]
 --     tags := ["category theory"] }
 --
