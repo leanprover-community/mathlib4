@@ -13,14 +13,14 @@ import Mathlib.Data.Finset.LocallyFinite
 /-!
 # Intervals of finsets as finsets
 
-This file provides the `locally_finite_order` instance for `finset α` and calculates the cardinality
+This file provides the `LocallyFiniteOrder` instance for `Finset α` and calculates the cardinality
 of finite intervals of finsets.
 
-If `s t : finset α`, then `finset.Icc s t` is the finset of finsets which include `s` and are
+If `s t : Finset α`, then `Finset.Icc s t` is the finset of finsets which include `s` and are
 included in `t`. For example,
-`finset.Icc {0, 1} {0, 1, 2, 3} = {{0, 1}, {0, 1, 2}, {0, 1, 3}, {0, 1, 2, 3}}`
+`Finset.Icc {0, 1} {0, 1, 2, 3} = {{0, 1}, {0, 1, 2}, {0, 1, 3}, {0, 1, 2, 3}}`
 and
-`finset.Icc {0, 1, 2} {0, 1, 3} = {}`.
+`Finset.Icc {0, 1, 2} {0, 1, 3} = {}`.
 -/
 
 
@@ -28,40 +28,41 @@ variable {α : Type _}
 
 namespace Finset
 
-variable [DecidableEq α] (s t : Finset α)
+-- porting note: added `DecidableRel`
+variable [DecidableEq α] [DecidableRel ((. ⊂ .) : Finset α → Finset α → Prop)] (s t : Finset α)
 
 instance : LocallyFiniteOrder (Finset α)
     where
-  finsetIcc s t := t.powerset.filterₓ ((· ⊆ ·) s)
-  finsetIco s t := t.ssubsets.filterₓ ((· ⊆ ·) s)
-  finsetIoc s t := t.powerset.filterₓ ((· ⊂ ·) s)
-  finsetIoo s t := t.ssubsets.filterₓ ((· ⊂ ·) s)
+  finsetIcc s t := t.powerset.filter ((· ⊆ ·) s)
+  finsetIco s t := t.ssubsets.filter ((· ⊆ ·) s)
+  finsetIoc s t := t.powerset.filter ((· ⊂ ·) s)
+  finsetIoo s t := t.ssubsets.filter ((· ⊂ ·) s)
   finset_mem_Icc s t u := by
     rw [mem_filter, mem_powerset]
-    exact and_comm' _ _
+    exact and_comm
   finset_mem_Ico s t u := by
     rw [mem_filter, mem_ssubsets]
-    exact and_comm' _ _
+    exact and_comm
   finset_mem_Ioc s t u := by
     rw [mem_filter, mem_powerset]
-    exact and_comm' _ _
+    exact and_comm
   finset_mem_Ioo s t u := by
     rw [mem_filter, mem_ssubsets]
-    exact and_comm' _ _
+    exact and_comm
 
-theorem Icc_eq_filter_powerset : Icc s t = t.powerset.filterₓ ((· ⊆ ·) s) :=
+theorem Icc_eq_filter_powerset : Icc s t = t.powerset.filter ((· ⊆ ·) s) :=
   rfl
 #align finset.Icc_eq_filter_powerset Finset.Icc_eq_filter_powerset
 
-theorem Ico_eq_filter_ssubsets : Ico s t = t.ssubsets.filterₓ ((· ⊆ ·) s) :=
+theorem Ico_eq_filter_ssubsets : Ico s t = t.ssubsets.filter ((· ⊆ ·) s) :=
   rfl
 #align finset.Ico_eq_filter_ssubsets Finset.Ico_eq_filter_ssubsets
 
-theorem Ioc_eq_filter_powerset : Ioc s t = t.powerset.filterₓ ((· ⊂ ·) s) :=
+theorem Ioc_eq_filter_powerset : Ioc s t = t.powerset.filter ((· ⊂ ·) s) :=
   rfl
 #align finset.Ioc_eq_filter_powerset Finset.Ioc_eq_filter_powerset
 
-theorem Ioo_eq_filter_ssubsets : Ioo s t = t.ssubsets.filterₓ ((· ⊂ ·) s) :=
+theorem Ioo_eq_filter_ssubsets : Ioo s t = t.ssubsets.filter ((· ⊂ ·) s) :=
   rfl
 #align finset.Ioo_eq_filter_ssubsets Finset.Ioo_eq_filter_ssubsets
 
@@ -129,4 +130,3 @@ theorem card_Iio_finset : (Iio s).card = 2 ^ s.card - 1 := by
 #align finset.card_Iio_finset Finset.card_Iio_finset
 
 end Finset
-
