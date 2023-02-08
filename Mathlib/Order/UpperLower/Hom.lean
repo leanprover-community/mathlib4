@@ -49,18 +49,21 @@ end SemilatticeSup
 variable [CompleteLattice α]
 
 /-- `UpperSet.Ici` as a `SupₛHom`. -/
-def iciSupHomₓ : SupₛHom α (UpperSet α) :=
+def iciSupHom : SupₛHom α (UpperSet α) :=
   ⟨Ici, fun s => (Ici_supₛ s).trans supₛ_image.symm⟩
+-- Porting note: `ₓ` because typeclass assumption changed
 #align upper_set.Ici_Sup_hom UpperSet.iciSupHomₓ
 
 @[simp]
-theorem coe_iciSupHomₓ : (iciSupHom : α → UpperSet α) = Ici :=
+theorem coe_iciSupHom : (iciSupHom : α → UpperSet α) = Ici :=
   rfl
+-- Porting note: `ₓ` because typeclass assumption changed
 #align upper_set.coe_Ici_Sup_hom UpperSet.coe_iciSupHomₓ
 
 @[simp]
-theorem iciSupHom_applyₓ (a : α) : iciSupHom a = Ici a :=
+theorem iciSupHom_apply (a : α) : iciSupHom a = Ici a :=
   rfl
+-- Porting note: `ₓ` because typeclass assumption changed
 #align upper_set.Ici_Sup_hom_apply UpperSet.iciSupHom_applyₓ
 
 end UpperSet
@@ -91,18 +94,21 @@ end SemilatticeInf
 variable [CompleteLattice α]
 
 /-- `LowerSet.Iic` as an `InfₛHom`. -/
-def iicInfHomₓ : InfₛHom α (LowerSet α) :=
+def iicInfHom : InfₛHom α (LowerSet α) :=
   ⟨Iic, fun s => (Iic_infₛ s).trans infₛ_image.symm⟩
+-- Porting note: `ₓ` because typeclass assumption changed
 #align lower_set.Iic_Inf_hom LowerSet.iicInfHomₓ
 
 @[simp]
-theorem coe_iicInfHomₓ : (iicInfHom : α → LowerSet α) = Iic :=
+theorem coe_iicInfHom : (iicInfHom : α → LowerSet α) = Iic :=
   rfl
+-- Porting note: `ₓ` because typeclass assumption changed
 #align lower_set.coe_Iic_Inf_hom LowerSet.coe_iicInfHomₓ
 
 @[simp]
-theorem iicInfHom_applyₓ (a : α) : iicInfHom a = Iic a :=
+theorem iicInfHom_apply (a : α) : iicInfHom a = Iic a :=
   rfl
+-- Porting note: `ₓ` because typeclass assumption changed
 #align lower_set.Iic_Inf_hom_apply LowerSet.iicInfHom_applyₓ
 
 end LowerSet
