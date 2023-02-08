@@ -13,4 +13,3 @@ example (h₁ : f₁ = f₂) : f₁ ≫ g ≫ h ≫ l = ((f₂ ≫ g) ≫ h) ≫
     lhs
     slice 1 1
     rw [h₁]
-  rfl
