@@ -86,7 +86,7 @@ section BundledSingleton
 
 variable [∀ i, Zero (α i)] {f : Π₀ i, α i} {i : ι} {a : α i}
 
-/-- Pointwise `finset.singleton` bundled as a `Dfinsupp`. -/
+/-- Pointwise `Finset.singleton` bundled as a `Dfinsupp`. -/
 def singleton (f : Π₀ i, α i) : Π₀ i, Finset (α i) where
   toFun i := {f i}
   support' := f.support'.map fun s => ⟨s.1, fun i => (s.prop i).imp id (congr_arg _)⟩
