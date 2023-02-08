@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite
 
 /-!
 # Intervals of finsets as finsets
@@ -75,8 +75,7 @@ theorem Iio_eq_ssubsets : Iio s = s.ssubsets :=
 
 variable {s t}
 
-theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image ((· ∪ ·) s) :=
-  by
+theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image ((· ∪ ·) s) := by
   ext u
   simp_rw [mem_Icc, mem_image, exists_prop, mem_powerset]
   constructor
@@ -86,8 +85,7 @@ theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (
     exact ⟨le_sup_left, union_subset h <| hv.trans <| sdiff_subset _ _⟩
 #align finset.Icc_eq_image_powerset Finset.Icc_eq_image_powerset
 
-theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image ((· ∪ ·) s) :=
-  by
+theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image ((· ∪ ·) s) := by
   ext u
   simp_rw [mem_Ico, mem_image, exists_prop, mem_ssubsets]
   constructor
@@ -98,8 +96,7 @@ theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (
 #align finset.Ico_eq_image_ssubsets Finset.Ico_eq_image_ssubsets
 
 /-- Cardinality of a non-empty `Icc` of finsets. -/
-theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) :=
-  by
+theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) := by
   rw [← card_sdiff h, ← card_powerset, Icc_eq_image_powerset h, Finset.card_image_iff]
   rintro u hu v hv (huv : s ⊔ u = s ⊔ v)
   rw [mem_coe, mem_powerset] at hu hv
