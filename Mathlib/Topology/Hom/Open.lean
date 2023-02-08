@@ -35,7 +35,7 @@ variable {F α β γ δ : Type _}
 /-- The type of continuous open maps from `α` to `β`, aka Priestley homomorphisms. -/
 structure ContinuousOpenMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] extends
   ContinuousMap α β where
-  map_open' : IsOpenMap to_fun
+  map_open' : IsOpenMap toFun
 #align continuous_open_map ContinuousOpenMap
 
 -- mathport name: «expr →CO »
@@ -66,8 +66,7 @@ namespace ContinuousOpenMap
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
-instance : ContinuousOpenMapClass (α →CO β) α β
-    where
+instance : ContinuousOpenMapClass (α →CO β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -75,11 +74,6 @@ instance : ContinuousOpenMapClass (α →CO β) α β
     congr
   map_continuous f := f.continuous_toFun
   map_open f := f.map_open'
-
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun (α →CO β) fun _ => α → β :=
-  FunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
@@ -151,17 +145,17 @@ theorem comp_assoc (f : γ →CO δ) (g : β →CO γ) (h : α →CO β) :
 
 @[simp]
 theorem comp_id (f : α →CO β) : f.comp (ContinuousOpenMap.id α) = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align continuous_open_map.comp_id ContinuousOpenMap.comp_id
 
 @[simp]
 theorem id_comp (f : α →CO β) : (ContinuousOpenMap.id β).comp f = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align continuous_open_map.id_comp ContinuousOpenMap.id_comp
 
 theorem cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_open_map.cancel_right ContinuousOpenMap.cancel_right
 
 theorem cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
