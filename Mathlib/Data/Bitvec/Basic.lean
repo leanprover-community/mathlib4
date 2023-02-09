@@ -8,10 +8,10 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Bitvec.Core
-import Mathbin.Data.Fin.Basic
-import Mathbin.Tactic.Monotonicity.Default
-import Mathbin.Tactic.NormNum
+import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Fin.Basic
+import Mathlib.Tactic.Monotonicity.Default
+import Mathlib.Tactic.NormNum
 
 namespace Bitvec
 
@@ -40,8 +40,7 @@ theorem toNat_eq_foldr_reverse {n : ℕ} (v : Bitvec n) :
     v.toNat = v.toList.reverse.foldr (flip addLsb) 0 := by rw [List.foldr_reverse, flip] <;> rfl
 #align bitvec.to_nat_eq_foldr_reverse Bitvec.toNat_eq_foldr_reverse
 
-theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n :=
-  by
+theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
   suffices v.to_nat + 1 ≤ 2 ^ n by simpa
   rw [to_nat_eq_foldr_reverse]
   cases' v with xs h
@@ -78,8 +77,7 @@ theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
     norm_num
 #align bitvec.to_bool_add_lsb_mod_two Bitvec.decide_addLsb_mod_two
 
-theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat _ v.toNat = v :=
-  by
+theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat _ v.toNat = v := by
   cases' v with xs h
   ext1
   change Vector.toList _ = xs
