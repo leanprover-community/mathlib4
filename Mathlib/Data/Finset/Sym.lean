@@ -31,7 +31,7 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 `Finset.sym2`.
 -/
 
--- Porting note: remove this
+-- Porting note: a lot of instances fail without this
 open Classical
 
 namespace Finset
@@ -52,9 +52,9 @@ section Sym2
 variable {m : Sym2 α}
 
 /-- Lifts a finset to `Sym2 α`. `s.sym2` is the finset of all pairs with elements in `s`. -/
-protected def sym2 (s : Finset α) : Finset (Sym2 α) :=
+protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ᶠ s).image Quotient.mk'
 -- Porting note: changed ×ˢ to xᶠ
-  (s ×ᶠ s).image Quotient.mk'
+
 #align finset.sym2 Finset.sym2
 
 @[simp]
@@ -90,12 +90,8 @@ alias sym2_nonempty ↔ _ nonempty.sym2
 -- Porting note: attribute does not exist
 -- attribute [protected] nonempty.sym2
 
--- Porting note: This does not work
---instance [Fintype α] : Fintype (Sym2 α) := Quotient.fintype (Sym2.Rel.setoid α)
-
 @[simp]
-theorem sym2_univ [Fintype α] : (univ : Finset α).sym2 = univ :=
-  rfl
+theorem sym2_univ [Fintype α] : (univ : Finset α).sym2 = univ := by rfl
 #align finset.sym2_univ Finset.sym2_univ
 
 @[simp]
@@ -139,8 +135,7 @@ theorem sym_zero : s.sym 0 = {∅} := rfl
 #align finset.sym_zero Finset.sym_zero
 
 @[simp]
-theorem sym_succ : s.sym (n + 1) = s.sup fun a ↦ (s.sym n).image <| Sym.cons a :=
-  rfl
+theorem sym_succ : s.sym (n + 1) = s.sup fun a ↦ (s.sym n).image <| Sym.cons a := rfl
 #align finset.sym_succ Finset.sym_succ
 
 @[simp]
@@ -200,11 +195,15 @@ theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
 
 @[simp]
 theorem sym_nonempty : (s.sym n).Nonempty ↔ n = 0 ∨ s.Nonempty := by
-  simp_rw [nonempty_iff_ne_empty, Ne.def, sym_eq_empty, not_and_or, not_ne_iff]
+  simp_rw [nonempty_iff_ne_empty, Ne.def]
+-- Porting note: using simp_rw does not work here, it does nothing...
+  rwa [sym_eq_empty, not_and_or, not_ne_iff]
 #align finset.sym_nonempty Finset.sym_nonempty
 
-alias sym2_nonempty ↔ _ nonempty.sym2
-#align finset.nonempty.sym2 Finset.Nonempty.sym2
+-- Porting note: this is defined twice in the mathlib3 file, maybe this one is supposed to be
+-- instead: alias sym_nonempty ↔ _ Nonempty.sym
+-- alias sym2_nonempty ↔ _ Nonempty.sym2
+-- #align finset.nonempty.sym2 Finset.Nonempty.sym2
 
 -- Porting note: attribute does not exist
 -- attribute [protected] nonempty.sym2
@@ -253,13 +252,12 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦
     by
-    refine' (_ : id.injective).sigma_map (fun i ↦ _) _
-    · exact fun i ↦ Sym α (n - i)
-    swap; · exact fun _ _ ↦ id
-    swap; · exact Subtype.coe_injective
-    refine' Eq.trans _ (Sym.filter_ne_fill a _ _)
-    exacts[rfl, h ∘ mem_sym_iff.1 hm a]
-#align finset.sym_insert_equiv Finset.symInsertEquiv
+      refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
+      exact fun i ↦ Sym α (n - i)
+      swap; exact Subtype.coe_injective
+      refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
+      exacts[rfl, h ∘ mem_sym_iff.1 hm a]
+ #align finset.sym_insert_equiv Finset.symInsertEquiv
 
 end Sym
 
