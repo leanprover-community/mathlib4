@@ -75,11 +75,12 @@ instance : ContinuousOpenMapClass (α →CO β) α β where
   map_continuous f := f.continuous_toFun
   map_open f := f.map_open'
 
-@[simp]
 theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_open_map.to_fun_eq_coe ContinuousOpenMap.toFun_eq_coe
 
+@[simp]
+theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
 @[ext]
 theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
