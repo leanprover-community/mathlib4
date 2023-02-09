@@ -104,8 +104,8 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
     · simp [eq_comm]
   simp_rw [antidiagonalTuple, List.nodup_bind]
   constructor
-  · intro i hi
-    exact (ih i.snd).map (Fin.cons_right_injective (i.fst : (fun _ => ℕ) 0))
+  · intro i _
+    exact (ih i.snd).map (Fin.cons_right_injective (α := fun _ => ℕ) i.fst)
   induction' n with n n_ih
   · exact List.pairwise_singleton _ _
   · rw [List.Nat.antidiagonal_succ]
