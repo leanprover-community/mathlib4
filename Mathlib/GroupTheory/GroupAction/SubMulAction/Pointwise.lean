@@ -16,7 +16,7 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction
 This file provides `SubMulAction.Monoid` and weaker typeclasses, which show that `SubMulAction`s
 inherit the same pointwise multiplications as sets.
 
-To match `Submodule.Semiring`, we do not put these in the `Pointwise` locale.
+To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale.
 
 -/
 
