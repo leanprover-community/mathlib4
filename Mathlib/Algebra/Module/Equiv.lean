@@ -731,7 +731,7 @@ variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 /-- Each element of the group defines a linear equivalence.
 
 This is a stronger version of `DistribMulAction.toAddEquiv`. -/
-@[simps]
+@[simps!]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
   { toAddEquiv M s, toLinearMap R M s with }
 #align distrib_mul_action.to_linear_equiv DistribMulAction.toLinearEquiv
