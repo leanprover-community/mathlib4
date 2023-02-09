@@ -387,73 +387,71 @@ variable {G₁ G₂ : SimpleGraph V}
 The way `edge_set` is defined is such that `mem_edge_set` is proved by `refl`.
 (That is, `⟦(v, w)⟧ ∈ G.edge_set` is definitionally equal to `G.adj v w`.)
 -/
-def edgeSetFun : SimpleGraph V ↪o Set (Sym2 V) :=
+-- porting note: The `edgeSet G` notation no longer works
+def edgeSet : SimpleGraph V ↪o Set (Sym2 V) :=
   OrderEmbedding.ofMapLeIff (fun G => Sym2.fromRel G.symm) fun G G' =>
     ⟨fun h a b => @h ⟦(a, b)⟧, fun h e => Sym2.ind (@h) e⟩
-
--- porting note: a new def for enabling the `G.edgeSet` notation
-def edgeSet (G : SimpleGraph V) := edgeSetFun G
 #align simple_graph.edge_set SimpleGraph.edgeSet
 
 @[simp]
-theorem mem_edgeSet : ⟦(v, w)⟧ ∈ G.edgeSet ↔ G.Adj v w :=
+theorem mem_edgeSet : ⟦(v, w)⟧ ∈ edgeSet G ↔ G.Adj v w :=
   Iff.rfl
 #align simple_graph.mem_edge_set SimpleGraph.mem_edgeSet
 
-theorem not_isDiag_of_mem_edgeSet : e ∈ G.edgeSet → ¬e.IsDiag :=
+theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
   Sym2.ind (fun v w => Adj.ne) e
 #align simple_graph.not_is_diag_of_mem_edge_set SimpleGraph.not_isDiag_of_mem_edgeSet
 
 @[simp]
-theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ :=
-  (edgeSet : SimpleGraph V ↪o Set (Sym2 V)).eq_iff_eq
+theorem edgeSet_inj : edgeSet G₁ = edgeSet G₂ ↔ G₁ = G₂ := edgeSet.eq_iff_eq
 #align simple_graph.edge_set_inj SimpleGraph.edgeSet_inj
 
 @[simp]
-theorem edgeSet_subset_edgeSet : G₁.edgeSet ⊆ G₂.edgeSet ↔ G₁ ≤ G₂ :=
+theorem edgeSet_subset_edgeSet : edgeSet G₁ ⊆ edgeSet G₂ ↔ G₁ ≤ G₂ :=
   (edgeSet : SimpleGraph V ↪o Set (Sym2 V)).le_iff_le
 #align simple_graph.edge_set_subset_edge_set SimpleGraph.edgeSet_subset_edgeSet
 
 @[simp]
-theorem edgeSet_sSubset_edgeSet : G₁.edgeSet ⊂ G₂.edgeSet ↔ G₁ < G₂ :=
+theorem edgeSet_sSubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ :=
   (edgeSet : SimpleGraph V ↪o Set (Sym2 V)).lt_iff_lt
 #align simple_graph.edge_set_ssubset_edge_set SimpleGraph.edgeSet_sSubset_edgeSet
 
 theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V)) :=
-  edgeSet.Injective
+  edgeSet.injective
 #align simple_graph.edge_set_injective SimpleGraph.edgeSet_injective
 
-alias edge_set_subset_edge_set ↔ _ edge_set_mono
+alias edgeSet_subset_edgeSet ↔ _ edgeSet_mono
 #align simple_graph.edge_set_mono SimpleGraph.edgeSet_mono
 
-alias edge_set_ssubset_edge_set ↔ _ edge_set_strict_mono
+alias edgeSet_sSubset_edgeSet ↔ _ edgeSet_strict_mono
 #align simple_graph.edge_set_strict_mono SimpleGraph.edgeSet_strict_mono
 
-attribute [mono] edge_set_mono edge_set_strict_mono
+-- porting note: removing `mono` attribute
+-- attribute [mono] edgeSet_mono edgeSet_strict_mono
 
 variable (G₁ G₂)
 
 @[simp]
-theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
+theorem edgeSet_bot : edgeSet (⊥ : SimpleGraph V) = ∅ :=
   Sym2.fromRel_bot
 #align simple_graph.edge_set_bot SimpleGraph.edgeSet_bot
 
 @[simp]
-theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet :=
+theorem edgeSet_sup : edgeSet (G₁ ⊔ G₂) = edgeSet G₁ ∪ edgeSet G₂ :=
   by
   ext ⟨x, y⟩
   rfl
 #align simple_graph.edge_set_sup SimpleGraph.edgeSet_sup
 
 @[simp]
-theorem edgeSet_inf : (G₁ ⊓ G₂).edgeSet = G₁.edgeSet ∩ G₂.edgeSet :=
+theorem edgeSet_inf : edgeSet (G₁ ⊓ G₂) = edgeSet G₁ ∩ edgeSet G₂ :=
   by
   ext ⟨x, y⟩
   rfl
 #align simple_graph.edge_set_inf SimpleGraph.edgeSet_inf
 
 @[simp]
-theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet :=
+theorem edgeSet_sdiff : edgeSet (G₁ \ G₂) = edgeSet G₁ \ edgeSet G₂ :=
   by
   ext ⟨x, y⟩
   rfl
@@ -464,12 +462,12 @@ allows proving `(G \ from_edge_set s).edge_set = G.edge_set \ s` by `simp`.
 -/
 @[simp]
 theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
-    G.edgeSet \ (s \ { e | e.IsDiag }) = G.edgeSet \ s :=
+    edgeSet G \ (s \ { e | e.IsDiag }) = edgeSet G \ s :=
   by
   ext e
   simp only [Set.mem_diff, Set.mem_setOf_eq, not_and, not_not, and_congr_right_iff]
   intro h
-  simp only [G.not_is_diag_of_mem_edge_set h, imp_false]
+  simp only [G.not_isDiag_of_mem_edgeSet h, imp_false]
 #align simple_graph.edge_set_sdiff_sdiff_is_diag SimpleGraph.edgeSet_sdiff_sdiff_isDiag
 
 /-- Two vertices are adjacent iff there is an edge between them. The
@@ -478,55 +476,56 @@ which is necessary since when `v = w` the existential
 `∃ (e ∈ G.edge_set), v ∈ e ∧ w ∈ e` is satisfied by every edge
 incident to `v`.
 -/
-theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.edgeSet, v ∈ e ∧ w ∈ e :=
+theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ edgeSet G, v ∈ e ∧ w ∈ e :=
   by
   refine' ⟨fun _ => ⟨G.ne_of_adj ‹_›, ⟦(v, w)⟧, _⟩, _⟩
   · simpa
   · rintro ⟨hne, e, he, hv⟩
     rw [Sym2.mem_and_mem_iff hne] at hv
     subst e
-    rwa [mem_edge_set] at he
+    rwa [mem_edgeSet] at he
 #align simple_graph.adj_iff_exists_edge SimpleGraph.adj_iff_exists_edge
 
-theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, ↑e = ⟦(a, b)⟧ := by
-  simp only [mem_edge_set, exists_prop, SetCoe.exists, exists_eq_right, Subtype.coe_mk]
+theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : edgeSet G,(↑e : Sym2 V) = ⟦(a, b)⟧ := by
+  simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right, Subtype.coe_mk]
 #align simple_graph.adj_iff_exists_edge_coe SimpleGraph.adj_iff_exists_edge_coe
 
-theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) : h.other ≠ v :=
+theorem edge_other_ne {e : Sym2 V} (he : e ∈ edgeSet G) {v : V} (h : v ∈ e) :
+    Sym2.Mem.other h ≠ v :=
   by
   erw [← Sym2.other_spec h, Sym2.eq_swap] at he
   exact G.ne_of_adj he
 #align simple_graph.edge_other_ne SimpleGraph.edge_other_ne
 
-instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edgeSet) :=
+instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ edgeSet G) :=
   Sym2.fromRel.decidablePred _
 #align simple_graph.decidable_mem_edge_set SimpleGraph.decidableMemEdgeSet
 
-instance fintypeEdgeSet [DecidableEq V] [Fintype V] [DecidableRel G.Adj] : Fintype G.edgeSet :=
+instance fintypeEdgeSet [DecidableEq V] [Fintype V] [DecidableRel G.Adj] : Fintype (edgeSet G) :=
   Subtype.fintype _
 #align simple_graph.fintype_edge_set SimpleGraph.fintypeEdgeSet
 
-instance fintypeEdgeSetBot : Fintype (⊥ : SimpleGraph V).edgeSet :=
+instance fintypeEdgeSetBot : Fintype (edgeSet (⊥ : SimpleGraph V)) :=
   by
-  rw [edge_set_bot]
+  rw [edgeSet_bot]
   infer_instance
 #align simple_graph.fintype_edge_set_bot SimpleGraph.fintypeEdgeSetBot
 
-instance fintypeEdgeSetSup [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
-    Fintype (G₁ ⊔ G₂).edgeSet := by
-  rw [edge_set_sup]
+instance fintypeEdgeSetSup [DecidableEq V] [Fintype $ edgeSet G₁] [Fintype $ edgeSet G₂] :
+    Fintype (edgeSet $ G₁ ⊔ G₂) := by
+  rw [edgeSet_sup]
   infer_instance
 #align simple_graph.fintype_edge_set_sup SimpleGraph.fintypeEdgeSetSup
 
-instance fintypeEdgeSetInf [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
-    Fintype (G₁ ⊓ G₂).edgeSet := by
-  rw [edge_set_inf]
+instance fintypeEdgeSetInf [DecidableEq V] [Fintype $ edgeSet G₁] [Fintype $ edgeSet G₂] :
+    Fintype (edgeSet $ G₁ ⊓ G₂) := by
+  rw [edgeSet_inf]
   exact Set.fintypeInter _ _
 #align simple_graph.fintype_edge_set_inf SimpleGraph.fintypeEdgeSetInf
 
-instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
-    Fintype (G₁ \ G₂).edgeSet := by
-  rw [edge_set_sdiff]
+instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype $ edgeSet G₁] [Fintype $ edgeSet G₂] :
+    Fintype (edgeSet (G₁ \ G₂)) := by
+  rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
 #align simple_graph.fintype_edge_set_sdiff SimpleGraph.fintypeEdgeSetSdiff
 
@@ -559,7 +558,7 @@ theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } :=
 #align simple_graph.edge_set_from_edge_set SimpleGraph.edgeSet_fromEdgeSet
 
 @[simp]
-theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G :=
+theorem fromEdgeSet_edgeSet : fromEdgeSet edgeSet G = G :=
   by
   ext (v w)
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
@@ -669,7 +668,7 @@ theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = ⟦
 #align simple_graph.dart.edge_mk SimpleGraph.Dart.edge_mk
 
 @[simp]
-theorem Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
+theorem Dart.edge_mem (d : G.Dart) : d.edge ∈ edgeSet G :=
   d.is_adj
 #align simple_graph.dart.edge_mem SimpleGraph.Dart.edge_mem
 
@@ -765,10 +764,10 @@ end Darts
 
 /-- Set of edges incident to a given vertex, aka incidence set. -/
 def incidenceSet (v : V) : Set (Sym2 V) :=
-  { e ∈ G.edgeSet | v ∈ e }
+  { e ∈ edgeSet G | v ∈ e }
 #align simple_graph.incidence_set SimpleGraph.incidenceSet
 
-theorem incidenceSet_subset (v : V) : G.incidenceSet v ⊆ G.edgeSet := fun _ h => h.1
+theorem incidenceSet_subset (v : V) : G.incidenceSet v ⊆ edgeSet G := fun _ h => h.1
 #align simple_graph.incidence_set_subset SimpleGraph.incidenceSet_subset
 
 theorem mk'_mem_incidenceSet_iff : ⟦(b, c)⟧ ∈ G.incidenceSet a ↔ G.Adj b c ∧ (a = b ∨ a = c) :=
@@ -783,7 +782,7 @@ theorem mk'_mem_incidenceSet_right_iff : ⟦(a, b)⟧ ∈ G.incidenceSet b ↔ G
   and_iff_left <| Sym2.mem_mk'_right _ _
 #align simple_graph.mk_mem_incidence_set_right_iff SimpleGraph.mk'_mem_incidenceSet_right_iff
 
-theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a ∈ (e : Sym2 V) :=
+theorem edge_mem_incidenceSet_iff {e : edgeSet G} : ↑e ∈ G.incidenceSet a ↔ a ∈ (e : Sym2 V) :=
   and_iff_right e.2
 #align simple_graph.edge_mem_incidence_set_iff SimpleGraph.edge_mem_incidenceSet_iff
 
@@ -820,24 +819,24 @@ instance decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 
 section EdgeFinset
 
-variable {G₁ G₂ : SimpleGraph V} [Fintype G.edgeSet] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet]
+variable {G₁ G₂ : SimpleGraph V} [Fintype edgeSet G] [Fintype edgeSet G₁] [Fintype edgeSet G₂]
 
 /-- The `edge_set` of the graph as a `finset`.
 -/
 @[reducible]
 def edgeFinset : Finset (Sym2 V) :=
-  Set.toFinset G.edgeSet
+  Set.toFinset edgeSet G
 #align simple_graph.edge_finset SimpleGraph.edgeFinset
 
 @[simp, norm_cast]
-theorem coe_edgeFinset : (G.edgeFinset : Set (Sym2 V)) = G.edgeSet :=
+theorem coe_edgeFinset : (G.edgeFinset : Set (Sym2 V)) = edgeSet G :=
   Set.coe_toFinset _
 #align simple_graph.coe_edge_finset SimpleGraph.coe_edgeFinset
 
 variable {G}
 
 @[simp]
-theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ G.edgeSet :=
+theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ edgeSet G :=
   Set.mem_toFinset
 #align simple_graph.mem_edge_finset SimpleGraph.mem_edgeFinset
 
@@ -886,12 +885,12 @@ theorem edgeFinset_sdiff [DecidableEq V] : (G₁ \ G₂).edgeFinset = G₁.edgeF
   by simp [edge_finset]
 #align simple_graph.edge_finset_sdiff SimpleGraph.edgeFinset_sdiff
 
-theorem edgeFinset_card : G.edgeFinset.card = Fintype.card G.edgeSet :=
+theorem edgeFinset_card : G.edgeFinset.card = Fintype.card edgeSet G :=
   Set.toFinset_card _
 #align simple_graph.edge_finset_card SimpleGraph.edgeFinset_card
 
 @[simp]
-theorem edgeSet_univ_card : (univ : Finset G.edgeSet).card = G.edgeFinset.card :=
+theorem edgeSet_univ_card : (univ : Finset edgeSet G).card = G.edgeFinset.card :=
   Fintype.card_of_subtype G.edgeFinset fun _ => mem_edgeFinset
 #align simple_graph.edge_set_univ_card SimpleGraph.edgeSet_univ_card
 
@@ -911,7 +910,7 @@ theorem mem_incidence_iff_neighbor {v w : V} : ⟦(v, w)⟧ ∈ G.incidenceSet v
   by simp only [mem_incidence_set, mem_neighbor_set]
 #align simple_graph.mem_incidence_iff_neighbor SimpleGraph.mem_incidence_iff_neighbor
 
-theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : v ∈ e) :
+theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ edgeSet G) (h : v ∈ e) :
     G.incidenceSet v ∩ G.incidenceSet h.other = {e} :=
   by
   ext e'
@@ -1078,7 +1077,7 @@ theorem deleteEdges_eq_sdiff_fromEdgeSet (s : Set (Sym2 V)) : G.deleteEdges s = 
   exact ⟨fun h => ⟨h.1, not_and_of_not_left _ h.2⟩, fun h => ⟨h.1, not_and'.mp h.2 h.Ne⟩⟩
 #align simple_graph.delete_edges_eq_sdiff_from_edge_set SimpleGraph.deleteEdges_eq_sdiff_fromEdgeSet
 
-theorem compl_eq_deleteEdges : Gᶜ = (⊤ : SimpleGraph V).deleteEdges G.edgeSet :=
+theorem compl_eq_deleteEdges : Gᶜ = (⊤ : SimpleGraph V).deleteEdges edgeSet G :=
   by
   ext
   simp
@@ -1120,20 +1119,20 @@ theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
 #align simple_graph.delete_edges_le_of_le SimpleGraph.deleteEdges_le_of_le
 
 theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
-    G.deleteEdges s = G.deleteEdges (s ∩ G.edgeSet) :=
+    G.deleteEdges s = G.deleteEdges (s ∩ edgeSet G) :=
   by
   ext
   simp (config := { contextual := true }) [imp_false]
 #align simple_graph.delete_edges_eq_inter_edge_set SimpleGraph.deleteEdges_eq_inter_edgeSet
 
 theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
-    G.deleteEdges (G.edgeSet \ H.edgeSet) = H :=
+    G.deleteEdges (edgeSet G \ H.edgeSet) = H :=
   by
   ext (v w)
   constructor <;> simp (config := { contextual := true }) [@h v w]
 #align simple_graph.delete_edges_sdiff_eq_of_le SimpleGraph.deleteEdges_sdiff_eq_of_le
 
-theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s :=
+theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = edgeSet G \ s :=
   by
   ext e
   refine' Sym2.ind _ e
@@ -1386,7 +1385,7 @@ theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
   Set.mem_toFinset
 #align simple_graph.mem_incidence_finset SimpleGraph.mem_incidenceFinset
 
-theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
+theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype edgeSet G] :
     G.incidenceFinset v = G.edgeFinset.filter (Membership.Mem v) :=
   by
   ext e
@@ -1673,7 +1672,7 @@ theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
   f.map_rel' h
 #align simple_graph.hom.map_adj SimpleGraph.Hom.map_adj
 
-theorem map_mem_edgeSet {e : Sym2 V} (h : e ∈ G.edgeSet) : e.map f ∈ G'.edgeSet :=
+theorem map_mem_edgeSet {e : Sym2 V} (h : e ∈ edgeSet G) : e.map f ∈ G'.edgeSet :=
   Quotient.ind (fun e h => Sym2.fromRel_prop.mpr (f.map_rel' h)) e h
 #align simple_graph.hom.map_mem_edge_set SimpleGraph.Hom.map_mem_edgeSet
 
@@ -1684,7 +1683,7 @@ theorem apply_mem_neighborSet {v w : V} (h : w ∈ G.neighborSet v) : f w ∈ G'
 /-- The map between edge sets induced by a homomorphism.
 The underlying map on edges is given by `sym2.map`. -/
 @[simps]
-def mapEdgeSet (e : G.edgeSet) : G'.edgeSet :=
+def mapEdgeSet (e : edgeSet G) : G'.edgeSet :=
   ⟨Sym2.map f e, f.map_mem_edge_set e.property⟩
 #align simple_graph.hom.map_edge_set SimpleGraph.Hom.mapEdgeSet
 
@@ -1769,7 +1768,7 @@ theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
 #align simple_graph.embedding.map_adj_iff SimpleGraph.Embedding.map_adj_iff
 
-theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
+theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ edgeSet G :=
   Quotient.ind (fun ⟨v, w⟩ => f.map_adj_iff) e
 #align simple_graph.embedding.map_mem_edge_set_iff SimpleGraph.Embedding.map_mem_edgeSet_iff
 
@@ -1779,7 +1778,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 
 /-- A graph embedding induces an embedding of edge sets. -/
 @[simps]
-def mapEdgeSet : G.edgeSet ↪ G'.edgeSet
+def mapEdgeSet : edgeSet G ↪ G'.edgeSet
     where
   toFun := Hom.mapEdgeSet f
   inj' := Hom.mapEdgeSet.injective f f.inj'
@@ -1872,7 +1871,7 @@ theorem map_adj_iff {v w : V} : G'.Adj (f v) (f w) ↔ G.Adj v w :=
   f.map_rel_iff
 #align simple_graph.iso.map_adj_iff SimpleGraph.Iso.map_adj_iff
 
-theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
+theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ edgeSet G :=
   Quotient.ind (fun ⟨v, w⟩ => f.map_adj_iff) e
 #align simple_graph.iso.map_mem_edge_set_iff SimpleGraph.Iso.map_mem_edgeSet_iff
 
@@ -1882,7 +1881,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]
-def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
+def mapEdgeSet : edgeSet G ≃ G'.edgeSet
     where
   toFun := Hom.mapEdgeSet f
   invFun := Hom.mapEdgeSet f.symm
