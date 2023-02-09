@@ -10,8 +10,7 @@ set_option trace.debug true
 example {x y : ℕ} : True := by
   wlog h : x ≤ y
   { guard_hyp h : ¬x ≤ y
-    -- guard_hyp can't handle `this` as an argument here yet.
-    -- guard_hyp this : ∀ {x y : ℕ}, x ≤ y → True -- `wlog` generalizes by default
+    guard_hyp «this» : ∀ {x y : ℕ}, x ≤ y → True -- `wlog` generalizes by default
     guard_target =ₛ True
     trivial }
   { guard_hyp h : x ≤ y
