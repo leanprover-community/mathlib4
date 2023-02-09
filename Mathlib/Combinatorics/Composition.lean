@@ -11,7 +11,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.LibrarySearch -- porting note: TODO remove
 
 set_option autoImplicit false -- porting note: TODO remove
 /-!
