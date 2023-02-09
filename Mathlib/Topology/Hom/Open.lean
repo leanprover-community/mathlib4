@@ -38,7 +38,6 @@ structure ContinuousOpenMap (α β : Type _) [TopologicalSpace α] [TopologicalS
   map_open' : IsOpenMap toFun
 #align continuous_open_map ContinuousOpenMap
 
--- mathport name: «expr →CO »
 infixr:25 " →CO " => ContinuousOpenMap
 
 section
