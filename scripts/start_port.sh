@@ -80,6 +80,7 @@ git commit \
 	-m 'move "by" to end of line' \
 	-m 'add import to Mathlib.lean'
 
-echo "After pushing, you can open a PR at:"
-echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod_tail"
+set +x
 
+echo "After pushing, you can open a PR at:"
+echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod_tail&labels=mathlib-port"

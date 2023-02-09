@@ -248,7 +248,7 @@ theorem div_le_iff₀ (hc : c ≠ 0) : a / c ≤ b ↔ a ≤ b * c := by
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulLeft₀` refers to the `LinearOrderedField` version. -/
-@[simps (config := { simpRhs := true }) apply toEquiv]
+@[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
   { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left₀ ha }
 #align order_iso.mul_left₀' OrderIso.mulLeft₀'
@@ -264,7 +264,7 @@ theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
 /-- `Equiv.mulRight₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulRight₀` refers to the `LinearOrderedField` version. -/
-@[simps (config := { simpRhs := true }) apply toEquiv]
+@[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
   { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right₀ ha }
 #align order_iso.mul_right₀' OrderIso.mulRight₀'
