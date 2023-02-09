@@ -326,7 +326,7 @@ theorem map_proj (cond : LeComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 #align discrete_quotient.map_proj DiscreteQuotient.map_proj
 
 @[simp]
-theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩ <;> rfl
+theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 #align discrete_quotient.map_id DiscreteQuotient.map_id
 
 @[simp]
@@ -369,13 +369,13 @@ theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconn
   rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_interᵢ_clopen,
     mem_interᵢ]
   rintro ⟨U, hU1, hU2⟩
-  exact (Quotient.exact' (h (of_clopen hU1))).mpr hU2
+  exact (Quotient.exact' (h (ofClopen hU1))).mpr hU2
 #align discrete_quotient.eq_of_forall_proj_eq DiscreteQuotient.eq_of_forall_proj_eq
 
 theorem fiber_subset_ofLe {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
     A.proj ⁻¹' {a} ⊆ B.proj ⁻¹' {ofLe h a} := by
   rcases A.proj_surjective a with ⟨a, rfl⟩
-  rw [fiber_eq, of_le_proj, fiber_eq]
+  rw [fiber_eq, ofLe_proj, fiber_eq]
   exact fun _ h' => h h'
 #align discrete_quotient.fiber_subset_of_le DiscreteQuotient.fiber_subset_ofLe
 
@@ -402,7 +402,7 @@ end DiscreteQuotient
 
 namespace LocallyConstant
 
-variable {X} (f : LocallyConstant X α)
+variable (f : LocallyConstant X α)
 
 /-- Any locally constant function induces a discrete quotient. -/
 def discreteQuotient : DiscreteQuotient X where
