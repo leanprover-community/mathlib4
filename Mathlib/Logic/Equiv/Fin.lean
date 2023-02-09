@@ -509,7 +509,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n
 #align nat.div_mod_equiv Nat.divModEquiv
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
-See `Int.div_mod_unique` for a similar propositional statement. -/
+See `Int.ediv_mod_unique` for a similar propositional statement. -/
 @[simps]
 def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n
     where
