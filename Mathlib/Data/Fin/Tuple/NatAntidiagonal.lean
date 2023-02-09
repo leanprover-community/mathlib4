@@ -268,7 +268,7 @@ theorem antidiagonalTuple_two (n : ℕ) :
 section EquivProd
 
 /-- The disjoint union of antidiagonal tuples `Σ n, antidiagonalTuple k n` is equivalent to the
-`k`-tuple `fin k → ℕ`. This is such an equivalence, obtained by mapping `(n, x)` to `x`.
+`k`-tuple `Fin k → ℕ`. This is such an equivalence, obtained by mapping `(n, x)` to `x`.
 
 This is the tuple version of `Finset.Nat.sigmaAntidiagonalEquivProd`. -/
 @[simps]
