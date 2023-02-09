@@ -8,9 +8,9 @@ Authors: Calle Sönne, Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Separation
-import Mathbin.Topology.SubsetProperties
-import Mathbin.Topology.LocallyConstant.Basic
+import Mathlib.Topology.Separation
+import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 
@@ -153,8 +153,7 @@ theorem isClosed_preimage (A : Set S) : IsClosed (S.proj ⁻¹' A) :=
   (S.isClopen_preimage A).2
 #align discrete_quotient.is_closed_preimage DiscreteQuotient.isClosed_preimage
 
-theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) :=
-  by
+theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
   rw [← fiber_eq]
   apply is_clopen_preimage
 #align discrete_quotient.is_clopen_set_of_rel DiscreteQuotient.isClopen_setOf_rel
@@ -192,8 +191,7 @@ def comap (S : DiscreteQuotient Y) : DiscreteQuotient X
 #align discrete_quotient.comap DiscreteQuotient.comap
 
 @[simp]
-theorem comap_id : S.comap (ContinuousMap.id X) = S :=
-  by
+theorem comap_id : S.comap (ContinuousMap.id X) = S := by
   ext
   rfl
 #align discrete_quotient.comap_id DiscreteQuotient.comap_id
@@ -342,16 +340,14 @@ theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩ <;> rfl
 
 @[simp]
 theorem map_comp (h1 : LeComap g B C) (h2 : LeComap f A B) :
-    map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 :=
-  by
+    map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩
   rfl
 #align discrete_quotient.map_comp DiscreteQuotient.map_comp
 
 @[simp]
 theorem ofLe_map (cond : LeComap f A B) (h : B ≤ B') (a : A) :
-    ofLe h (map f cond a) = map f (cond.mono le_rfl h) a :=
-  by
+    ofLe h (map f cond a) = map f (cond.mono le_rfl h) a := by
   rcases a with ⟨⟩
   rfl
 #align discrete_quotient.of_le_map DiscreteQuotient.ofLe_map
@@ -364,8 +360,7 @@ theorem ofLe_comp_map (cond : LeComap f A B) (h : B ≤ B') :
 
 @[simp]
 theorem map_ofLe (cond : LeComap f A B) (h : A' ≤ A) (c : A') :
-    map f cond (ofLe h c) = map f (cond.mono h le_rfl) c :=
-  by
+    map f cond (ofLe h c) = map f (cond.mono h le_rfl) c := by
   rcases c with ⟨⟩
   rfl
 #align discrete_quotient.map_of_le DiscreteQuotient.map_ofLe
@@ -379,8 +374,7 @@ theorem map_comp_ofLe (cond : LeComap f A B) (h : A' ≤ A) :
 end Map
 
 theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconnectedSpace X]
-    {x y : X} (h : ∀ Q : DiscreteQuotient X, Q.proj x = Q.proj y) : x = y :=
-  by
+    {x y : X} (h : ∀ Q : DiscreteQuotient X, Q.proj x = Q.proj y) : x = y := by
   rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_interᵢ_clopen,
     mem_Inter]
   rintro ⟨U, hU1, hU2⟩
@@ -388,8 +382,7 @@ theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconn
 #align discrete_quotient.eq_of_forall_proj_eq DiscreteQuotient.eq_of_forall_proj_eq
 
 theorem fiber_subset_ofLe {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
-    A.proj ⁻¹' {a} ⊆ B.proj ⁻¹' {ofLe h a} :=
-  by
+    A.proj ⁻¹' {a} ⊆ B.proj ⁻¹' {ofLe h a} := by
   rcases A.proj_surjective a with ⟨a, rfl⟩
   rw [fiber_eq, of_le_proj, fiber_eq]
   exact fun _ h' => h h'
@@ -397,8 +390,7 @@ theorem fiber_subset_ofLe {A B : DiscreteQuotient X} (h : A ≤ B) (a : A) :
 
 theorem exists_of_compat [CompactSpace X] (Qs : ∀ Q : DiscreteQuotient X, Q)
     (compat : ∀ (A B : DiscreteQuotient X) (h : A ≤ B), ofLe h (Qs _) = Qs _) :
-    ∃ x : X, ∀ Q : DiscreteQuotient X, Q.proj x = Qs _ :=
-  by
+    ∃ x : X, ∀ Q : DiscreteQuotient X, Q.proj x = Qs _ := by
   obtain ⟨x, hx⟩ : (⋂ Q, proj Q ⁻¹' {Qs Q}).Nonempty :=
     IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed
       (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_inf fun A B h => _)
@@ -410,8 +402,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : ∀ Q : DiscreteQuotient X, Q)
     exact fiber_subset_of_le _ _
 #align discrete_quotient.exists_of_compat DiscreteQuotient.exists_of_compat
 
-instance [CompactSpace X] : Finite S :=
-  by
+instance [CompactSpace X] : Finite S := by
   have : CompactSpace S := Quotient.compactSpace
   rwa [← isCompact_univ_iff, isCompact_iff_finite, finite_univ_iff] at this
 
@@ -435,8 +426,7 @@ def lift : LocallyConstant f.DiscreteQuotient α :=
 #align locally_constant.lift LocallyConstant.lift
 
 @[simp]
-theorem lift_comp_proj : f.lift ∘ f.DiscreteQuotient.proj = f :=
-  by
+theorem lift_comp_proj : f.lift ∘ f.DiscreteQuotient.proj = f := by
   ext
   rfl
 #align locally_constant.lift_comp_proj LocallyConstant.lift_comp_proj
