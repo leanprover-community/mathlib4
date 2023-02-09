@@ -387,9 +387,12 @@ variable {G₁ G₂ : SimpleGraph V}
 The way `edge_set` is defined is such that `mem_edge_set` is proved by `refl`.
 (That is, `⟦(v, w)⟧ ∈ G.edge_set` is definitionally equal to `G.adj v w`.)
 -/
-def edgeSet : SimpleGraph V ↪o Set (Sym2 V) :=
+def edgeSetFun : SimpleGraph V ↪o Set (Sym2 V) :=
   OrderEmbedding.ofMapLeIff (fun G => Sym2.fromRel G.symm) fun G G' =>
     ⟨fun h a b => @h ⟦(a, b)⟧, fun h e => Sym2.ind (@h) e⟩
+
+-- porting note: a new def for enabling the `G.edgeSet` notation
+def edgeSet (G : SimpleGraph V) := edgeSetFun G
 #align simple_graph.edge_set SimpleGraph.edgeSet
 
 @[simp]
