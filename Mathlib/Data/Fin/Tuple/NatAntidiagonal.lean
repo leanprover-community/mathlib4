@@ -59,7 +59,7 @@ lexicographically (`List.Nat.antidiagonalTuple_pairwise_pi_lex`), starting with 
 and ending with `![n, ..., 0]`.
 
 ```
-#eval antidiagonal_tuple 3 2
+#eval antidiagonalTuple 3 2
 -- [![0, 0, 2], ![0, 1, 1], ![0, 2, 0], ![1, 0, 1], ![1, 1, 0], ![2, 0, 0]]
 ```
 -/
