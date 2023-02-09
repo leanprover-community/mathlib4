@@ -329,7 +329,7 @@ theorem map_proj (cond : LeComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 #align discrete_quotient.map_id DiscreteQuotient.map_id
 
-@[simp]
+-- porting note: todo: figure out why `simpNF` says this is a bad `@[simp]` lemma
 theorem map_comp (h1 : LeComap g B C) (h2 : LeComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩
