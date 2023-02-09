@@ -81,6 +81,7 @@ theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
 
 @[simp]
 theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
+
 @[ext]
 theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext f g h
