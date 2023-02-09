@@ -105,8 +105,8 @@ theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s :=
 #align finset.diag_mem_sym2_iff Finset.diag_mem_sym2_iff
 
 @[simp]
-theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := fun m he ↦
-  mem_sym2_iff.2 fun a ha ↦ h <| mem_sym2_iff.1 he _ ha
+theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := fun _m he ↦
+  mem_sym2_iff.2 fun _a ha ↦ h <| mem_sym2_iff.1 he _ ha
 #align finset.sym2_mono Finset.sym2_mono
 
 theorem image_diag_union_image_offDiag :
@@ -168,15 +168,15 @@ theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym
 #align finset.replicate_mem_sym Finset.replicate_mem_sym
 
 protected theorem Nonempty.sym (h : s.Nonempty) (n : ℕ) : (s.sym n).Nonempty :=
-  let ⟨a, ha⟩ := h
+  let ⟨_a, ha⟩ := h
   ⟨_, replicate_mem_sym ha n⟩
 #align finset.nonempty.sym Finset.Nonempty.sym
 
 @[simp]
 theorem sym_singleton (a : α) (n : ℕ) : ({a} : Finset α).sym n = {Sym.replicate n a} :=
   eq_singleton_iff_unique_mem.2
-    ⟨replicate_mem_sym (mem_singleton.2 rfl) _, fun s hs ↦
-      Sym.eq_replicate_iff.2 fun b hb ↦ eq_of_mem_singleton <| mem_sym_iff.1 hs _ hb⟩
+    ⟨replicate_mem_sym (mem_singleton.2 rfl) _, fun _s hs ↦
+      Sym.eq_replicate_iff.2 fun _b hb ↦ eq_of_mem_singleton <| mem_sym_iff.1 hs _ hb⟩
 #align finset.sym_singleton Finset.sym_singleton
 
 theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
@@ -210,12 +210,12 @@ theorem sym_nonempty : (s.sym n).Nonempty ↔ n = 0 ∨ s.Nonempty := by
 
 @[simp]
 theorem sym_univ [Fintype α] (n : ℕ) : (univ : Finset α).sym n = univ :=
-  eq_univ_iff_forall.2 fun s ↦ mem_sym_iff.2 fun a _ ↦ mem_univ _
+  eq_univ_iff_forall.2 fun _s ↦ mem_sym_iff.2 fun _a _ ↦ mem_univ _
 #align finset.sym_univ Finset.sym_univ
 
 @[simp]
-theorem sym_mono (h : s ⊆ t) (n : ℕ) : s.sym n ⊆ t.sym n := fun m hm ↦
-  mem_sym_iff.2 fun a ha ↦ h <| mem_sym_iff.1 hm _ ha
+theorem sym_mono (h : s ⊆ t) (n : ℕ) : s.sym n ⊆ t.sym n := fun _m hm ↦
+  mem_sym_iff.2 fun _a ha ↦ h <| mem_sym_iff.1 hm _ ha
 #align finset.sym_mono Finset.sym_mono
 
 @[simp]
@@ -247,7 +247,7 @@ theorem sym_filterNe_mem (a : α) (h : m ∈ s.sym n) :
 @[simps]
 def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.sym (n - i)
     where
-  toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2 <;> rw [erase_insert h]⟩
+  toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦
