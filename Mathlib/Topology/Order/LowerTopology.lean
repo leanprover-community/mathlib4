@@ -93,12 +93,12 @@ theorem ofLower_toLower (a : α) : ofLower (toLower a) = a :=
   rfl
 #align with_lower_topology.of_lower_to_lower WithLowerTopology.ofLower_toLower
 
-@[simp]
+-- porting note: removed @[simp] to make linter happy
 theorem toLower_inj {a b : α} : toLower a = toLower b ↔ a = b :=
   Iff.rfl
 #align with_lower_topology.to_lower_inj WithLowerTopology.toLower_inj
 
-@[simp]
+-- porting note: removed @[simp] to make linter happy
 theorem ofLower_inj {a b : WithLowerTopology α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 #align with_lower_topology.of_lower_inj WithLowerTopology.ofLower_inj
