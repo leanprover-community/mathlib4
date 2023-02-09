@@ -9,6 +9,7 @@ Authors: Kenny Lau
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Logic.Equiv.Defs
 
 /-!
