@@ -2057,8 +2057,10 @@ theorem le_mk_diff_add_mk (S T : Set α) : (#S) ≤ (#(S \ T : Set α)) + (#T) :
   (mk_le_mk_of_subset <| subset_diff_union _ _).trans <| mk_union_le _ _
 #align cardinal.le_mk_diff_add_mk Cardinal.le_mk_diff_add_mk
 
-theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : (#(S \ T : Set α)) + (#T) = (#S) :=
-  (mk_union_of_disjoint <| disjoint_sdiff_self_left).symm.trans <| by rw [diff_union_of_subset h]
+theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : (#(S \ T : Set α)) + (#T) = (#S) := by
+  refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [diff_union_of_subset h]
+  -- Porting note: `apply` works here, `exact` does not
+  apply disjoint_sdiff_self_left
 #align cardinal.mk_diff_add_mk Cardinal.mk_diff_add_mk
 
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
@@ -2091,9 +2093,9 @@ theorem mk_sep (s : Set α) (t : α → Prop) : (#({ x ∈ s | t x } : Set α)) 
 #align cardinal.mk_sep Cardinal.mk_sep
 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
-    (h : Injective f) : lift.{v} (#f ⁻¹' s) ≤ lift.{u} (#s) :=
-  by
-  rw [lift_mk_le.{u, v, 0}]; use Subtype.coind (fun x => f x.1) fun x => x.2
+    (h : Injective f) : lift.{v} (#f ⁻¹' s) ≤ lift.{u} (#s) := by
+-- Porting note: Needed to insert `by exact` below
+  rw [lift_mk_le.{u, v, 0}]; use Subtype.coind (fun x => f x.1) fun x => by exact x.2
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
 #align cardinal.mk_preimage_of_injective_lift Cardinal.mk_preimage_of_injective_lift
 
@@ -2120,12 +2122,15 @@ theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → 
 
 theorem mk_preimage_of_injective (f : α → β) (s : Set β) (h : Injective f) :
     (#f ⁻¹' s) ≤ (#s) := by
-  convert mk_preimage_of_injective_lift.{u, u} f s h; simp; rw [lift_id]
+  rw [← lift_id (#↑(f ⁻¹' s)), ← lift_id (#↑(s))]
+  exact mk_preimage_of_injective_lift f s h
+
 #align cardinal.mk_preimage_of_injective Cardinal.mk_preimage_of_injective
 
 theorem mk_preimage_of_subset_range (f : α → β) (s : Set β) (h : s ⊆ range f) :
     (#s) ≤ (#f ⁻¹' s) := by
-  convert mk_preimage_of_subset_range_lift.{u, u} f s h using 1 <;> rw [lift_id]
+  rw [← lift_id (#↑(f ⁻¹' s)), ← lift_id (#↑(s))]
+  exact mk_preimage_of_subset_range_lift f s h
 #align cardinal.mk_preimage_of_subset_range Cardinal.mk_preimage_of_subset_range
 
 theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h : Injective f)
