@@ -31,9 +31,6 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 `Finset.sym2`.
 -/
 
--- Porting note: a lot of instances fail without this
-open Classical
-
 namespace Finset
 
 variable {α : Type _} [DecidableEq α] {s t : Finset α} {a b : α}
@@ -90,6 +87,12 @@ alias sym2_nonempty ↔ _ nonempty.sym2
 -- Porting note: attribute does not exist
 -- attribute [protected] nonempty.sym2
 
+-- Porting note: add missing instances
+noncomputable instance : DecidableRel (fun x y : α × α ↦ x ≈ y) :=
+  Classical.decRel (fun x y : α × α ↦ x ≈ y)
+noncomputable instance [Fintype α] : Fintype (Sym2 α) :=
+  Quotient.fintype (Sym2.Rel.setoid α)
+
 @[simp]
 theorem sym2_univ [Fintype α] : (univ : Finset α).sym2 = univ := by rfl
 #align finset.sym2_univ Finset.sym2_univ
@@ -121,6 +124,9 @@ end Sym2
 section Sym
 
 variable {n : ℕ} {m : Sym α n}
+
+-- Porting note: add missing instances
+noncomputable instance : DecidableEq (Sym α n) := Classical.decEq (Sym α n)
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/
