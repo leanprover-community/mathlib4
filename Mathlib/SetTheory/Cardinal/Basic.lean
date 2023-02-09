@@ -17,8 +17,6 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.LibrarySearch -- Porting note: TODO remove
-set_option autoImplicit false -- Porting note: TODO remove
 
 /-!
 # Cardinal Numbers
@@ -120,6 +118,7 @@ def mk : Type u → Cardinal :=
 #align cardinal.mk Cardinal.mk
 
 -- mathport name: cardinal.mk
+/-- The cardinal number of a type -/
 scoped prefix:0 "#" => Cardinal.mk
 
 instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
@@ -197,22 +196,28 @@ theorem mk_uLift (α) : (#ULift.{v, u} α) = lift.{v} (#α) :=
   rfl
 #align cardinal.mk_ulift Cardinal.mk_uLift
 
+-- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- further down in this file
 /-- `lift.{(max u v) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
     easier to understand what's happening when using this lemma. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 #align cardinal.lift_umax Cardinal.lift_umax
 
+-- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- further down in this file
 /-- `lift.{(max v u) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
     easier to understand what's happening when using this lemma. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 #align cardinal.lift_umax' Cardinal.lift_umax'
 
+-- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- further down in this file
 /-- A cardinal lifted to a lower or equal universe equals itself. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 #align cardinal.lift_id' Cardinal.lift_id'
@@ -224,7 +229,8 @@ theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
 #align cardinal.lift_id Cardinal.lift_id
 
 /-- A cardinal lifted to the zero universe equals itself. -/
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
   lift_id'.{0, u} a
 #align cardinal.lift_uzero Cardinal.lift_uzero
@@ -552,11 +558,13 @@ theorem one_power {a : Cardinal} : (1 ^ a) = 1 :=
   inductionOn a fun α => (Equiv.arrowPUnitEquivPUnit α).cardinal_eq
 #align cardinal.one_power Cardinal.one_power
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_bool : (#Bool) = 2 := by simp
 #align cardinal.mk_bool Cardinal.mk_bool
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_Prop : (#Prop) = 2 := by simp
 #align cardinal.mk_Prop Cardinal.mk_Prop
 
@@ -976,13 +984,15 @@ theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
   simp only [mk_sum, mk_out, lift_id, mk_sigma]
 #align cardinal.sum_nat_eq_add_sum_succ Cardinal.sum_nat_eq_add_sum_succ
 
+-- Porting note: LFS is not in normal form.
+-- @[simp]
 /-- A variant of `csupᵢ_of_empty` but with `0` on the RHS for convenience -/
-@[simp]
 protected theorem supᵢ_of_empty {ι} (f : ι → Cardinal) [IsEmpty ι] : supᵢ f = 0 :=
   csupᵢ_of_empty f
 #align cardinal.supr_of_empty Cardinal.supᵢ_of_empty
 
-@[simp]
+-- Portin note: simpNF is not happy with universe levels.
+@[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} (#Shrink.{v} α) = Cardinal.lift.{max v w} (#α) :=
 -- Porting note: Added .{v,u,w} universe hint below
@@ -1122,8 +1132,9 @@ theorem lift_succ (a) : lift.{v,u} (succ a) = succ (lift.{v,u} a) :=
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 #align cardinal.lift_succ Cardinal.lift_succ
 
+-- Porting note: simpNF is not happy with universe levels.
 -- Porting note: Inserted .{u,v} below
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
   rw [← lift_lift.{u,v,w}, ← lift_lift.{v,u,w}, lift_inj]
@@ -1206,6 +1217,8 @@ def aleph0 : Cardinal.{u} :=
 #align cardinal.aleph_0 Cardinal.aleph0
 
 -- mathport name: cardinal.aleph_0
+-- Porting note: should the notation copy the docstring?
+/-- `ℵ₀` is the smallest infinite cardinal. -/
 scoped notation "ℵ₀" => Cardinal.aleph0
 
 theorem mk_nat : (#ℕ) = ℵ₀ :=
@@ -1237,8 +1250,8 @@ theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ�
 
 /-! ### Properties about the cast from `ℕ` -/
 
-
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_fin (n : ℕ) : (#Fin n) = n := by simp
 #align cardinal.mk_fin Cardinal.mk_fin
 
@@ -1281,18 +1294,24 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ (#α) :
   @mk_coe_finset _ s ▸ mk_set_le _
 #align cardinal.card_le_of_finset Cardinal.card_le_of_finset
 
-@[simp, norm_cast]
+-- Porting note: was `simp`. LHS is not normal form.
+-- @[simp, norm_cast]
+@[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (m^n) := by
   induction n <;> simp [pow_succ', power_add, *, Pow.pow]
 #align cardinal.nat_cast_pow Cardinal.natCast_pow
 
-@[simp, norm_cast]
+-- Porting note : simp can prove this
+-- @[simp, norm_cast]
+@[norm_cast]
 theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := by
   rw [← lift_mk_fin, ← lift_mk_fin, lift_le, le_def, Function.Embedding.nonempty_iff_card_le,
     Fintype.card_fin, Fintype.card_fin]
 #align cardinal.nat_cast_le Cardinal.natCast_le
 
-@[simp, norm_cast]
+-- Porting note : simp can prove this
+-- @[simp, norm_cast]
+@[norm_cast]
 theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := by
   rw [lt_iff_le_not_le, ← not_le]
   simp only [natCast_le, not_le, and_iff_right_iff_imp]
@@ -1398,7 +1417,8 @@ theorem lt_aleph0_of_finite (α : Type u) [Finite α] : (#α) < ℵ₀ :=
   lt_aleph0_iff_finite.2 ‹_›
 #align cardinal.lt_aleph_0_of_finite Cardinal.lt_aleph0_of_finite
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem lt_aleph0_iff_set_finite {S : Set α} : (#S) < ℵ₀ ↔ S.Finite :=
   lt_aleph0_iff_finite.trans finite_coe_iff
 #align cardinal.lt_aleph_0_iff_set_finite Cardinal.lt_aleph0_iff_set_finite
@@ -1420,7 +1440,8 @@ theorem mk_le_aleph0 [Countable α] : (#α) ≤ ℵ₀ :=
   mk_le_aleph0_iff.mpr ‹_›
 #align cardinal.mk_le_aleph_0 Cardinal.mk_le_aleph0
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem le_aleph0_iff_set_countable {s : Set α} : (#s) ≤ ℵ₀ ↔ s.Countable := by
   rw [mk_le_aleph0_iff, countable_coe_iff]
 #align cardinal.le_aleph_0_iff_set_countable Cardinal.le_aleph0_iff_set_countable
@@ -1547,7 +1568,8 @@ theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ (#α) = �
     exact ⟨Denumerable.mk' <| f.trans Equiv.ulift⟩⟩
 #align cardinal.denumerable_iff Cardinal.denumerable_iff
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_denumerable (α : Type u) [Denumerable α] : (#α) = ℵ₀ :=
   denumerable_iff.1 ⟨‹_›⟩
 #align cardinal.mk_denumerable Cardinal.mk_denumerable
@@ -1669,7 +1691,8 @@ theorem aleph0_toNat : toNat ℵ₀ = 0 :=
 theorem mk_toNat_eq_card [Fintype α] : toNat (#α) = Fintype.card α := by simp
 #align cardinal.mk_to_nat_eq_card Cardinal.mk_toNat_eq_card
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem zero_toNat : toNat 0 = 0 := by rw [← toNat_cast 0, Nat.cast_zero]
 #align cardinal.zero_to_nat Cardinal.zero_toNat
 
@@ -1843,17 +1866,20 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       hc i a (congr_fun h _)
 #align cardinal.sum_lt_prod Cardinal.sum_lt_prod
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_empty : (#Empty) = 0 :=
   mk_eq_zero _
 #align cardinal.mk_empty Cardinal.mk_empty
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_pEmpty : (#PEmpty) = 0 :=
   mk_eq_zero _
 #align cardinal.mk_pempty Cardinal.mk_pEmpty
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_pUnit : (#PUnit) = 1 :=
   mk_eq_one PUnit
 #align cardinal.mk_punit Cardinal.mk_pUnit
@@ -1862,17 +1888,20 @@ theorem mk_unit : (#Unit) = 1 :=
   mk_pUnit
 #align cardinal.mk_unit Cardinal.mk_unit
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_singleton {α : Type u} (x : α) : (#({x} : Set α)) = 1 :=
   mk_eq_one _
 #align cardinal.mk_singleton Cardinal.mk_singleton
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_pLift_true : (#PLift True) = 1 :=
   mk_eq_one _
 #align cardinal.mk_plift_true Cardinal.mk_pLift_true
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_pLift_false : (#PLift False) = 0 :=
   mk_eq_zero _
 #align cardinal.mk_plift_false Cardinal.mk_pLift_false
@@ -1902,7 +1931,8 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
   ⟨Embedding.subtypeMap (Embedding.refl α) h⟩
 #align cardinal.mk_subtype_le_of_subset Cardinal.mk_subtype_le_of_subset
 
-@[simp]
+-- Porting note : simp can prove this
+-- @[simp]
 theorem mk_emptyCollection (α : Type u) : (#(∅ : Set α)) = 0 :=
   mk_eq_zero _
 #align cardinal.mk_emptyc Cardinal.mk_emptyCollection
@@ -2223,6 +2253,7 @@ def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
 #align cardinal.powerlt Cardinal.powerlt
 
 -- mathport name: «expr ^< »
+/-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 infixl:80 " ^< " => powerlt
 
 theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : (a^c) ≤ a ^< b :=
