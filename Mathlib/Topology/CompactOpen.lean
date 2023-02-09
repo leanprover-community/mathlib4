@@ -161,9 +161,6 @@ end Functorial
 
 section Ev
 
---variable {α β}
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The evaluation map `C(α, β) × α → β` is continuous if `α` is locally compact.
 
 See also `continuous_map.continuous_eval` -/
@@ -330,14 +327,13 @@ def coev (b : β) : C(α, β × α) :=
 
 variable {α β}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem image_coev {y : β} (s : Set α) : coev α β y '' s = ({y} : Set β) ×ˢ s := by
   -- Porting note: proof was `by tidy`
   ext ⟨a, b⟩
   simp only [mem_image, singleton_prod, Prod.mk.injEq, exists_eq_right_right]
   apply Iff.intro
   · rintro ⟨x, hx, h⟩
-    simp [coev] at h
+    simp only [coev, coe_mk, Prod.mk.injEq] at h
     rw [h.1, ← h.2]
     exact ⟨hx, rfl⟩
   · intro h
@@ -360,7 +356,7 @@ theorem continuous_coev : Continuous (coev α β) :=
     intro y' hy'
     change coev α β y' '' s ⊆ u
     rw [image_coev s]
-    exact Subset.trans (prod_mono (singleton_subset_iff.mpr hy') sw) vwu
+    exact (prod_mono (singleton_subset_iff.mpr hy') sw).trans vwu
 #align continuous_map.continuous_coev ContinuousMap.continuous_coev
 
 end Coev
@@ -382,10 +378,8 @@ theorem continuous_curry' (f : C(α × β, γ)) : Continuous (curry' f) :=
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
     `α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : α → C(β, γ))
-    (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f := by
-  convert continuous_curry' ⟨_, h⟩
-  --ext
-  --rfl
+    (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
+  continuous_curry' ⟨_, h⟩
 #align continuous_map.continuous_of_continuous_uncurry ContinuousMap.continuous_of_continuous_uncurry
 
 /-- The curried form of a continuous map `α × β → γ` as a continuous map `α → C(β, γ)`.
@@ -434,8 +428,7 @@ theorem continuous_uncurry [LocallyCompactSpace α] [LocallyCompactSpace β] :
     Continuous (uncurry : C(α, C(β, γ)) → C(α × β, γ)) := by
   apply continuous_of_continuous_uncurry
   rw [← Homeomorph.comp_continuous_iff' (Homeomorph.prodAssoc _ _ _)]
-  apply Continuous.comp continuous_eval' (Continuous.prod_map continuous_eval' continuous_id) -- <;>
-    --infer_instance
+  apply continuous_eval'.comp (continuous_eval'.prod_map continuous_id)
 #align continuous_map.continuous_uncurry ContinuousMap.continuous_uncurry
 
 /-- The family of constant maps: `β → C(α, β)` as a continuous map. -/
@@ -516,10 +509,7 @@ theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y �
   have : Continuous G := by
     rw [hf.continuous_iff]
     exact Gf.continuous
-  convert ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
-  /-ext x
-  cases x
-  rfl-/
+  exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
 #align quotient_map.continuous_lift_prod_left QuotientMap.continuous_lift_prod_left
 
 theorem QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X → Z}
@@ -527,9 +517,7 @@ theorem QuotientMap.continuous_lift_prod_right (hf : QuotientMap f) {g : Y × X 
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
   have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
-  convert (hf.continuous_lift_prod_left this).comp continuous_swap
-  --ext x
-  --simp
+  exact (hf.continuous_lift_prod_left this).comp continuous_swap
 #align quotient_map.continuous_lift_prod_right QuotientMap.continuous_lift_prod_right
 
 end QuotientMap
