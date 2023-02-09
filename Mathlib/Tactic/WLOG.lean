@@ -38,8 +38,8 @@ In this way, the wlog-claim `this` can be applied to `x` and `y` in different or
 (exploiting symmetry, which is the typical use case).
 
 By default, the entire context is reverted. -/
-syntax (name := wlog) "wlog " ident " : " term
-  (" generalizing" (ppSpace colGt ident)*)? (" with " ident)? : tactic
+syntax (name := wlog) "wlog " binderIdent " : " term
+  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 elab_rules : tactic
 | `(tactic| wlog $h:ident : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) => do
