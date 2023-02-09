@@ -1,5 +1,9 @@
-import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.LinearCombination
+
+-- We deliberately mock R here so that we don't have to import the deps
+axiom Real : Type
+notation "ℝ" => Real
+@[instance] axiom Real.linearOrderedField : LinearOrderedField ℝ
 
 /-! ### Simple Cases with ℤ and two or less equations -/
 
@@ -188,3 +192,11 @@ example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
+
+/-! ### Regression tests -/
+
+def g (a : ℤ) : ℤ := a ^ 2
+
+example (h : g a = g b) : a ^ 4 = b ^ 4 := by
+  dsimp [g] at h
+  linear_combination (a ^ 2 + b ^ 2) * h
