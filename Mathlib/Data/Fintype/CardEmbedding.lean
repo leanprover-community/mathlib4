@@ -10,9 +10,10 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Logic.Equiv.Embedding
+import Mathlib.Logic.Embedding.Set
 
 set_option autoImplicit true -- **TODO** delete this later
--- set_option pp.explicit true -- **TODO** delete this later
+set_option pp.explicit true -- **TODO** delete this later
 
 /-!
 # Number of embeddings
@@ -50,11 +51,19 @@ theorem card_embedding_eq {α β : Type _} [a : Fintype α] [b : Fintype β] [em
 
     -- induction' ‹Fintype α› using Fintype.induction_empty_option with α₁ α₂ h₂ e ih α h ih
     · intro α₁ α₂ h₂ e ih
-      letI := Fintype.ofEquiv α₂ e.symm
+      let v0 := Fintype.ofEquiv α₂ e.symm
       let v1 := (Equiv.refl β)
       let v2 := (Equiv.embeddingCongr e v1)
       let v3 := card_congr v2
-      erw [←v3, ih, card_congr e]
+      convert ←v3.symm
+      · congr
+        rfl
+      · rw [ih]
+      -- convert ih.symm
+      -- convert ih.symm
+      -- convert (card_congr e).symm
+      -- rfl
+      -- rw [card_congr e]
     · rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]
       exact ⟨embedding.of_is_empty, fun x => FunLike.ext _ _ isEmptyElim⟩
     · intro α₁ h₂ ih
