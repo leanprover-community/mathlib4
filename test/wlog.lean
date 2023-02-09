@@ -4,11 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Johan Commelin
 -/
 import Mathlib.Tactic.WLOG
+import Mathlib.Data.Nat.Basic
 
+set_option trace.debug true
 example {x y : ℕ} : True := by
   wlog h : x ≤ y
   { guard_hyp h : ¬x ≤ y
-    guard_hyp this : ∀ {x y : ℕ}, x ≤ y → True -- `wlog` generalizes by default
+    -- guard_hyp can't handle `this` as an argument here yet.
+    -- guard_hyp this : ∀ {x y : ℕ}, x ≤ y → True -- `wlog` generalizes by default
     guard_target =ₛ True
     trivial }
   { guard_hyp h : x ≤ y
@@ -16,9 +19,9 @@ example {x y : ℕ} : True := by
     trivial }
 
 example {x y : ℕ} : True := by
-  wlog h : x ≤ y generalizing x
+  wlog h : x ≤ y generalizing x with H
   { guard_hyp h : ¬x ≤ y
-    guard_hyp this : ∀ {x : ℕ}, x ≤ y → True -- only `x` was generalized
+    guard_hyp H : ∀ {x : ℕ}, x ≤ y → True -- only `x` was generalized
     guard_target =ₛ True
     trivial }
   { guard_hyp h : x ≤ y
