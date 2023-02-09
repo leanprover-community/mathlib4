@@ -492,8 +492,8 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
 #align fin_prod_fin_equiv_symm_apply finProdFinEquiv_symm_apply
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
-This is like `fin_prod_fin_equiv.symm` but with `m` infinite.
-See `nat.div_mod_unique` for a similar propositional statement. -/
+This is like `finProdFinEquiv.symm` but with `m` infinite.
+See `Nat.div_mod_unique` for a similar propositional statement. -/
 @[simps]
 def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n
     where
@@ -508,7 +508,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n
 #align nat.div_mod_equiv Nat.divModEquiv
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
-See `int.div_mod_unique` for a similar propositional statement. -/
+See `Int.div_mod_unique` for a similar propositional statement. -/
 @[simps]
 def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n
     where
