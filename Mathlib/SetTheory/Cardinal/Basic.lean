@@ -439,7 +439,7 @@ theorem mk_pSum (α : Type u) (β : Type v) : (#PSum α β) = lift.{v} (#α) + l
 
 @[simp]
 theorem mk_fintype (α : Type u) [h : Fintype α] : (#α) = Fintype.card α := by
-  refine Fintype.induction_empty_option ?_ ?_ ?_ α h
+  refine Fintype.induction_empty_option ?_ ?_ ?_ α (h_fintype := h)
   · intro α β h e hα
     letI := Fintype.ofEquiv β e.symm
     rwa [mk_congr e, Fintype.card_congr e] at hα
@@ -1050,7 +1050,7 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
 theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
     prod f = Cardinal.lift.{u} (∏ i, f i) := by
   revert f
-  refine Fintype.induction_empty_option ?_ ?_ ?_ α h
+  refine' Fintype.induction_empty_option _ _ _ α (h_fintype := h)
   · intro α β hβ e h f
     letI := Fintype.ofEquiv β e.symm
     rw [← e.prod_comp f, ← h]
