@@ -796,11 +796,12 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   left_inv := by
     intro c
     ext i
-    simp only [exists_prop, add_comm, Set.mem_toFinset, true_or_iff, or_true_iff, Set.mem_setOf_eq]
+    simp only [add_comm, Set.to_finset_set_of, Finset.mem_univ,
+     forall_true_left, Finset.mem_filter, true_and, exists_prop]
     constructor
     · rintro (rfl | rfl | ⟨j, hj1, hj2⟩)
       · exact c.zero_mem
-      · exact c.last_mem
+      · exact c.getLast_mem
       · convert hj1
         rwa [Fin.ext_iff]
     · simp only [or_iff_not_imp_left]
@@ -814,9 +815,11 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
         simp [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this
         exact Nat.pred_lt_pred i_ne_zero this
       · convert i_mem
-        rw [Fin.ext_iff]
-        simp only [Fin.val_mk, A]
-      · simp [A]
+        simp only [ge_iff_le]
+        rwa [add_comm]
+      · simp only [ge_iff_le]
+        symm
+        rwa [add_comm]
   right_inv := by
     intro s
     ext i
@@ -829,7 +832,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     simp only [Fin.ext_iff, exists_prop, Fin.val_zero, add_comm, Set.mem_toFinset, Set.mem_setOf_eq,
       Fin.val_last]
     erw [Set.mem_setOf_eq]
-    simp only [this, false_or_iff, add_right_inj, add_eq_zero_iff, one_ne_zero, false_and_iff,
+    simp [this, false_or_iff, add_right_inj, add_eq_zero_iff, one_ne_zero, false_and_iff,
       Fin.val_mk]
     constructor
     · rintro ⟨j, js, hj⟩
