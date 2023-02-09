@@ -195,7 +195,7 @@ protected theorem Adj.ne {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : a ≠ b
 #align simple_graph.adj.ne SimpleGraph.Adj.ne
 
 protected theorem Adj.ne' {G : SimpleGraph V} {a b : V} (h : G.Adj a b) : b ≠ a :=
-  h.Ne.symm
+  h.ne.symm
 #align simple_graph.adj.ne' SimpleGraph.Adj.ne'
 
 theorem ne_of_adj_of_not_adj {v w x : V} (h : G.Adj v x) (hn : ¬G.Adj w x) : v ≠ w := fun h' =>
@@ -259,7 +259,7 @@ theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ �
 instance : SDiff (SimpleGraph V) :=
   ⟨fun x y =>
     { Adj := x.Adj \ y.Adj
-      symm := fun v w h => by change x.adj w v ∧ ¬y.adj w v <;> rwa [x.adj_comm, y.adj_comm] }⟩
+      symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }⟩
 
 @[simp]
 theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w :=
@@ -267,7 +267,8 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
 #align simple_graph.sdiff_adj SimpleGraph.sdiff_adj
 
 instance : BooleanAlgebra (SimpleGraph V) :=
-  { PartialOrder.lift Adj ext with
+  { PartialOrder.lift Adj
+    (by intro _ _ h; ext; simp only [h]) with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
@@ -286,13 +287,12 @@ instance : BooleanAlgebra (SimpleGraph V) :=
     le_sup_left := fun x y v w h => Or.inl h
     le_sup_right := fun x y v w h => Or.inr h
     le_inf := fun x y z hxy hyz v w h => ⟨hxy h, hyz h⟩
-    le_sup_inf := fun a b c v w h =>
-      Or.dcases_on h.2 Or.inl <| Or.dcases_on h.1 (fun h _ => Or.inl h) fun hb hc => Or.inr ⟨hb, hc⟩
+    le_sup_inf := by aesop_graph
     inf_compl_le_bot := fun a v w h => False.elim <| h.2.2 h.1
     top_le_sup_compl := fun a v w ne => by
-      by_cases a.adj v w
+      by_cases a.Adj v w
       exact Or.inl h
-      exact Or.inr ⟨Ne, h⟩
+      exact Or.inr ⟨ne, h⟩
     inf_le_left := fun x y v w h => h.1
     inf_le_right := fun x y v w h => h.2 }
 
@@ -324,24 +324,30 @@ section Decidable
 
 variable (V) (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
-instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj := fun v w => Decidable.false
+instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
+  inferInstanceAs <| DecidableRel (fun _ _ => False)
 #align simple_graph.bot.adj_decidable SimpleGraph.Bot.adjDecidable
 
-instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj := fun v w => Or.decidable
+instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj := fun v w =>
+  inferInstanceAs <| Decidable <| (G.Adj v w) ∨ (H.Adj v w)
 #align simple_graph.sup.adj_decidable SimpleGraph.Sup.adjDecidable
 
-instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj := fun v w => And.decidable
+instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj := fun v w =>
+  inferInstanceAs <| Decidable <| (G.Adj v w) ∧ (H.Adj v w)
 #align simple_graph.inf.adj_decidable SimpleGraph.Inf.adjDecidable
 
-instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj := fun v w => And.decidable
+instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj := fun v w =>
+  inferInstanceAs <| Decidable <| (G.Adj v w) ∧ ¬(H.Adj v w)
 #align simple_graph.sdiff.adj_decidable SimpleGraph.Sdiff.adjDecidable
 
 variable [DecidableEq V]
 
-instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj := fun v w => Not.decidable
+instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj := by
+  intros _ _; simp only [top_adj]; infer_instance
 #align simple_graph.top.adj_decidable SimpleGraph.Top.adjDecidable
 
-instance Compl.adjDecidable : DecidableRel Gᶜ.Adj := fun v w => And.decidable
+instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := by
+  intros _ _; simp only [compl_adj]; infer_instance
 #align simple_graph.compl.adj_decidable SimpleGraph.Compl.adjDecidable
 
 end Decidable
@@ -368,9 +374,7 @@ def neighborSet (v : V) : Set V :=
 
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
-  by
-  unfold neighbor_set
-  infer_instance
+    inferInstanceAs <| DecidablePred (· ∈ setOf (Adj G v))
 #align simple_graph.neighbor_set.mem_decidable SimpleGraph.neighborSet.memDecidable
 
 section EdgeSet
@@ -525,6 +529,7 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
 
 end EdgeSet
 
+/-
 section FromEdgeSet
 
 variable (s : Set (Sym2 V))
