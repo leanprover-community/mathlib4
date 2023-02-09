@@ -399,10 +399,10 @@ theorem continuous_curry [LocallyCompactSpace (α × β)] :
     Continuous (curry : C(α × β, γ) → C(α, C(β, γ))) := by
   apply continuous_of_continuous_uncurry
   apply continuous_of_continuous_uncurry
-  rw [← Homeomorph.comp_continuous_iff' (Homeomorph.prodAssoc _ _ _).symm]
+  rw [← (Homeomorph.prodAssoc _ _ _).symm.comp_continuous_iff']
   -- Porting note: rest of the proof was: `convert continuous_eval' <;> tidy`
   have : (Function.uncurry fun x y => (Function.uncurry (fun x y => (curry x) y) x) y) ∘
-    ↑(Homeomorph.symm (Homeomorph.prodAssoc C(α × β, γ) α β)) = fun p => p.fst p.snd := by
+    ↑(Homeomorph.prodAssoc C(α × β, γ) α β).symm = fun p => p.fst p.snd := by
     ext ⟨f, x, y⟩
     simp [Homeomorph.prodAssoc]
   rw [this]
@@ -427,7 +427,7 @@ def uncurry [LocallyCompactSpace β] (f : C(α, C(β, γ))) : C(α × β, γ) :=
 theorem continuous_uncurry [LocallyCompactSpace α] [LocallyCompactSpace β] :
     Continuous (uncurry : C(α, C(β, γ)) → C(α × β, γ)) := by
   apply continuous_of_continuous_uncurry
-  rw [← Homeomorph.comp_continuous_iff' (Homeomorph.prodAssoc _ _ _)]
+  rw [← (Homeomorph.prodAssoc _ _ _).comp_continuous_iff']
   apply continuous_eval'.comp (continuous_eval'.prod_map continuous_id)
 #align continuous_map.continuous_uncurry ContinuousMap.continuous_uncurry
 
