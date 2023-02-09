@@ -11,6 +11,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Tactic.LibrarySearch
 
 set_option autoImplicit false -- porting note: TODO remove
 /-!
@@ -829,17 +830,23 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       rw [add_comm]
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
-    simp only [Fin.ext_iff, exists_prop, Fin.val_zero, add_comm, Set.mem_toFinset, Set.mem_setOf_eq,
-      Fin.val_last]
+    simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.to_finset_set_of,
+  Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero_iff, and_false, add_left_inj, false_or, true_and]
     erw [Set.mem_setOf_eq]
     simp [this, false_or_iff, add_right_inj, add_eq_zero_iff, one_ne_zero, false_and_iff,
       Fin.val_mk]
     constructor
-    · rintro ⟨j, js, hj⟩
-      convert js
-      exact Fin.ext_iff.2 hj
     · intro h
-      exact ⟨i, h, rfl⟩
+      cases' h with n h
+      . rw [add_comm] at this
+        contradiction
+      . cases' h with w h; cases' h with h₁ h₂
+        rw [←Fin.ext_iff] at h₂
+        rwa [h₂]
+    · intro h
+      apply Or.inr
+      use i
+      exact ⟨h, rfl⟩
 #align composition_as_set_equiv compositionAsSetEquiv
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
