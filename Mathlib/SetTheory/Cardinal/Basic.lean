@@ -1294,7 +1294,9 @@ theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := by
 
 @[simp, norm_cast]
 theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := by
-  simp [lt_iff_le_not_le, ← not_le]
+  rw [lt_iff_le_not_le, ← not_le]
+  simp only [natCast_le, not_le, and_iff_right_iff_imp]
+  exact fun h ↦ le_of_lt h
 #align cardinal.nat_cast_lt Cardinal.natCast_lt
 
 instance : CharZero Cardinal :=
@@ -1704,7 +1706,8 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c :=
 #align cardinal.to_nat_lift Cardinal.toNat_lift
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat (#α) = toNat (#β) := by
-  rw [← toNat_lift, lift_mk_eq.mpr ⟨e⟩, toNat_lift]
+-- Porting note: Inserted universe hint below
+  rw [← toNat_lift, (lift_mk_eq.{_,_,v}).mpr ⟨e⟩, toNat_lift]
 #align cardinal.to_nat_congr Cardinal.toNat_congr
 
 @[simp]
@@ -2065,7 +2068,8 @@ theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : (#(S \ T : Set α)) + (#T)
 
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     (#(P ∪ Q : Set α)) ≤ ℵ₀ ↔ (#P) ≤ ℵ₀ ∧ (#Q) ≤ ℵ₀ := by
-  simp
+  simp only [le_aleph0_iff_subtype_countable, mem_union, setOf_mem_eq, Set.union_def,
+    ← countable_union]
 #align cardinal.mk_union_le_aleph_0 Cardinal.mk_union_le_aleph0
 
 theorem mk_image_eq_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α) (h : Injective f) :
