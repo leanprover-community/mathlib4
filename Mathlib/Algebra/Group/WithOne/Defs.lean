@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 
 ! This file was ported from Lean 3 source module algebra.group.with_one.defs
-! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
