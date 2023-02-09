@@ -34,7 +34,7 @@ variable [DecidableEq ι] [Fintype ι] [∀ i, DecidableEq (α i)] [∀ i, Parti
 
 instance : LocallyFiniteOrder (∀ i, α i) :=
   LocallyFiniteOrder.ofIcc _ (fun a b => piFinset fun i => Icc (a i) (b i)) fun a b x => by
-    simp_rw [mem_pi_finset, mem_Icc, le_def, forall_and]
+    simp_rw [mem_piFinset, mem_Icc, le_def, forall_and]
 
 variable (a b : ∀ i, α i)
 
@@ -42,8 +42,11 @@ theorem Icc_eq : Icc a b = piFinset fun i => Icc (a i) (b i) :=
   rfl
 #align pi.Icc_eq Pi.Icc_eq
 
-theorem card_Icc : (Icc a b).card = ∏ i, (Icc (a i) (b i)).card :=
-  card_piFinset _
+theorem card_Icc : (Icc a b).card = ∏ i, (Icc (a i) (b i)).card := by
+  -- Porting note: term mode proof `card_piFinset _` no longer works
+  erw [card_piFinset]
+  apply Finset.prod_congr rfl
+  simp [Fintype.card]
 #align pi.card_Icc Pi.card_Icc
 
 theorem card_Ico : (Ico a b).card = (∏ i, (Icc (a i) (b i)).card) - 1 := by
@@ -70,10 +73,13 @@ variable [∀ i, LocallyFiniteOrderBot (α i)] (b : ∀ i, α i)
 
 instance : LocallyFiniteOrderBot (∀ i, α i) :=
   LocallyFiniteOrderTop.ofIic _ (fun b => piFinset fun i => Iic (b i)) fun b x => by
-    simp_rw [mem_pi_finset, mem_Iic, le_def]
+    simp_rw [mem_piFinset, mem_Iic, le_def]
 
-theorem card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card :=
-  card_piFinset _
+theorem card_Iic : (Iic b).card = ∏ i, (Iic (b i)).card := by
+  -- Porting note: term mode proof `card_piFinset _` no longer works
+  erw [card_piFinset]
+  apply Finset.prod_congr rfl
+  simp [Fintype.card]
 #align pi.card_Iic Pi.card_Iic
 
 theorem card_Iio : (Iio b).card = (∏ i, (Iic (b i)).card) - 1 := by
@@ -88,10 +94,13 @@ variable [∀ i, LocallyFiniteOrderTop (α i)] (a : ∀ i, α i)
 
 instance : LocallyFiniteOrderTop (∀ i, α i) :=
   LocallyFiniteOrderTop.ofIci _ (fun a => piFinset fun i => Ici (a i)) fun a x => by
-    simp_rw [mem_pi_finset, mem_Ici, le_def]
+    simp_rw [mem_piFinset, mem_Ici, le_def]
 
-theorem card_Ici : (Ici a).card = ∏ i, (Ici (a i)).card :=
-  card_piFinset _
+theorem card_Ici : (Ici a).card = ∏ i, (Ici (a i)).card := by
+  -- Porting note: term mode proof `card_piFinset _` no longer works
+  erw [card_piFinset]
+  apply Finset.prod_congr rfl
+  simp [Fintype.card]
 #align pi.card_Ici Pi.card_Ici
 
 theorem card_Ioi : (Ioi a).card = (∏ i, (Ici (a i)).card) - 1 := by
@@ -103,4 +112,3 @@ end Top
 end Bounded
 
 end Pi
-
