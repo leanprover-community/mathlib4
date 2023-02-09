@@ -667,7 +667,7 @@ def splitWrtComposition (l : List α) (c : Composition n) : List (List α) :=
   splitWrtCompositionAux l c.blocks
 #align list.split_wrt_composition List.splitWrtComposition
 
-attribute [local simp] splitWrtCompositionAux.equations._eqn_1
+--attribute [local simp] splitWrtCompositionAux.equations._eqn_1
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
