@@ -83,17 +83,18 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = [] 
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
     x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n := by
-  revert n
-  refine' Fin.consInduction _ _ x
-  · intro n
+  induction x using Fin.consInduction generalizing n with
+  | h0 =>
     cases n
     · simp
     · simp [eq_comm]
-  · intro k x₀ x ih n
-    simp_rw [Fin.sum_cons, antidiagonal_tuple, List.mem_bind, List.mem_map',
+  | h x₀ x ih =>
+    simp_rw [Fin.sum_cons]
+    rw [antidiagonalTuple]  -- porting note: simp_rw doesn't use the equation lemma properly
+    simp_rw [List.mem_bind, List.mem_map',
       List.Nat.mem_antidiagonal, Fin.cons_eq_cons, exists_eq_right_right, ih,
-      @eq_comm _ _ (Prod.snd _), and_comm' (Prod.snd _ = _), ← Prod.mk.inj_iff, Prod.mk.eta,
-      exists_prop, exists_eq_right]
+      @eq_comm _ _ (Prod.snd _), and_comm (a := Prod.snd _ = _),
+      ←Prod.mk.inj_iff (a₁ := Prod.fst _), Prod.mk.eta, exists_eq_right]
 #align list.nat.mem_antidiagonal_tuple List.Nat.mem_antidiagonalTuple
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
