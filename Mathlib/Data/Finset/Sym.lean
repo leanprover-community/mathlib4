@@ -99,7 +99,8 @@ theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := by
   rw [Finset.sym2, singleton_product_singleton, image_singleton, Sym2.diag, Quotient.mk']
 #align finset.sym2_singleton Finset.sym2_singleton
 
-@[simp]
+-- Porting note: remove the simp to satisfy simpNF lint
+-- @[simp]
 theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s :=
   mk'_mem_sym2_iff.trans <| and_self_iff _
 #align finset.diag_mem_sym2_iff Finset.diag_mem_sym2_iff
@@ -143,7 +144,7 @@ theorem mem_sym_iff : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
   induction' n with n ih
   · refine' mem_singleton.trans ⟨_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
     rintro rfl
-    exact fun a ha ↦ ha.elim
+    exact fun a ha ↦ (Finset.not_mem_empty _ ha).elim
   refine' mem_sup.trans ⟨_, fun h ↦ _⟩
   · rintro ⟨a, ha, he⟩ b hb
     rw [mem_image] at he
@@ -159,8 +160,7 @@ theorem mem_sym_iff : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
 #align finset.mem_sym_iff Finset.mem_sym_iff
 
 @[simp]
-theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ :=
-  rfl
+theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 #align finset.sym_empty Finset.sym_empty
 
 theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=
