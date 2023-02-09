@@ -698,11 +698,10 @@ theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁
 
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
-@[to_additive "If `β` is an additive group, then any function from `α` to `β` extends uniquely to an
-  additive group homomorphism from the free additive group over `α` to `β`",
-  simps symm_apply]
-def lift : (α → β) ≃ (FreeGroup α →* β)
-    where
+@[to_additive (attr := simps symm_apply)
+  "If `β` is an additive group, then any function from `α` to `β` extends uniquely to an
+  additive group homomorphism from the free additive group over `α` to `β`"]
+def lift : (α → β) ≃ (FreeGroup α →* β) where
   toFun f :=
     MonoidHom.mk' (Quot.lift (Lift.aux f) fun L₁ L₂ => Red.Step.lift) <| by
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
@@ -722,6 +721,7 @@ def lift : (α → β) ≃ (FreeGroup α →* β)
 #align free_group.lift FreeGroup.lift
 #align free_add_group.lift FreeAddGroup.lift
 #align free_group.lift_symm_apply FreeGroup.lift_symm_apply
+#align free_add_group.lift_symm_apply FreeAddGroup.lift_symm_apply
 
 variable {f}
 
@@ -855,10 +855,9 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 The converse can be found in `GroupTheory.FreeAbelianGroupFinsupp`,
 as `Equiv.of_freeGroupEquiv`
  -/
-@[to_additive "Equivalent types give rise to additively equivalent additive free groups.",
-  simps apply]
-def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β
-    where
+@[to_additive (attr := simps apply)
+  "Equivalent types give rise to additively equivalent additive free groups."]
+def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where
   toFun := map e
   invFun := map e.symm
   left_inv x := by simp [Function.comp, map.comp]
@@ -867,6 +866,7 @@ def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β
 #align free_group.free_group_congr FreeGroup.freeGroupCongr
 #align free_add_group.free_add_group_congr FreeAddGroup.freeAddGroupCongr
 #align free_group.free_group_congr_apply FreeGroup.freeGroupCongr_apply
+#align free_add_group.free_add_group_congr_apply FreeAddGroup.freeAddGroupCongr_apply
 
 @[to_additive (attr:=simp)]
 theorem freeGroupCongr_refl : freeGroupCongr (Equiv.refl α) = MulEquiv.refl _ :=

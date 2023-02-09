@@ -250,7 +250,7 @@ def RingHom.fromOpposite {R S : Type _} [Semiring R] [Semiring S] (f : R →+* S
 
 /-- A ring hom `α →+* β` can equivalently be viewed as a ring hom `αᵐᵒᵖ →+* βᵐᵒᵖ`. This is the
 action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
-@[simps]
+@[simps!]
 def RingHom.op {α β} [NonAssocSemiring α] [NonAssocSemiring β] :
     (α →+* β) ≃ (αᵐᵒᵖ →+* βᵐᵒᵖ) where
   toFun f := { AddMonoidHom.mulOp f.toAddMonoidHom, MonoidHom.op f.toMonoidHom with }

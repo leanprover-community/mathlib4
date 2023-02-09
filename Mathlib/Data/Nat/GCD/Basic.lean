@@ -107,7 +107,7 @@ theorem lcm_dvd_iff {m n k : ℕ} : lcm m n ∣ k ↔ m ∣ k ∧ n ∣ k :=
 See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.coprime m n`.
 -/
 
-instance (m n : ℕ) : Decidable (coprime m n) := by unfold coprime ;infer_instance
+instance (m n : ℕ) : Decidable (coprime m n) := inferInstanceAs (Decidable (gcd m n = 1))
 
 theorem coprime.lcm_eq_mul {m n : ℕ} (h : coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]

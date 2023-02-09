@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module algebra.hom.freiman
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -216,7 +216,7 @@ theorem mk_coe (f : A →*[n] β) (h) : mk f h = f :=
 #align add_freiman_hom.mk_coe AddFreimanHom.mk_coe
 
 /-- The identity map from a commutative monoid to itself. -/
-@[to_additive "The identity map from an additive commutative monoid to itself.", simps]
+@[to_additive (attr := simps) "The identity map from an additive commutative monoid to itself."]
 protected def id (A : Set α) (n : ℕ) : A →*[n] α where
   toFun x := x
   map_prod_eq_map_prod' _ _ _ _ h := by rw [map_id', map_id', h]
