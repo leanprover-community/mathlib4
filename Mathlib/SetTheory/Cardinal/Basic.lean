@@ -1047,19 +1047,19 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
   exact mk_congr (Equiv.ulift.trans <| Equiv.piCongrRight fun i => Equiv.ulift.symm)
 #align cardinal.lift_prod Cardinal.lift_prod
 
-theorem prod_eq_of_fintype {α : Type u} [Fintype α] (f : α → Cardinal.{v}) :
+theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
     prod f = Cardinal.lift.{u} (∏ i, f i) := by
   revert f
-  refine' Fintype.induction_empty_option _ _ _ α
+  refine Fintype.induction_empty_option ?_ ?_ ?_ α h
   · intro α β hβ e h f
     letI := Fintype.ofEquiv β e.symm
     rw [← e.prod_comp f, ← h]
-    exact mk_congr (e.Pi_congr_left _).symm
+    exact mk_congr (e.piCongrLeft _).symm
   · intro f
     rw [Fintype.univ_pempty, Finset.prod_empty, lift_one, Cardinal.prod, mk_eq_one]
   · intro α hα h f
-    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax', mk_out, ←
-      Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
+    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax'.{v, u}, mk_out, ←
+        Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
     simp only [lift_id]
 #align cardinal.prod_eq_of_fintype Cardinal.prod_eq_of_fintype
 
