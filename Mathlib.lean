@@ -253,6 +253,7 @@ import Mathlib.Combinatorics.SetFamily.Intersecting
 import Mathlib.Combinatorics.SetFamily.Kleitman
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Control.Applicative
@@ -289,6 +290,7 @@ import Mathlib.Data.Countable.Small
 import Mathlib.Data.DList.Basic
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.Dfinsupp.Basic
+import Mathlib.Data.Dfinsupp.Interval
 import Mathlib.Data.Dfinsupp.NeLocus
 import Mathlib.Data.Dfinsupp.Order
 import Mathlib.Data.ENat.Basic
@@ -344,6 +346,7 @@ import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Finsupp.Indicator
+import Mathlib.Data.Finsupp.Interval
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Order
@@ -638,6 +641,7 @@ import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.FreeGroup
@@ -740,6 +744,7 @@ import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Message
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
+import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
@@ -878,6 +883,7 @@ import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WithBot
@@ -1007,6 +1013,7 @@ import Mathlib.Topology.Algebra.Order.ExtendFrom
 import Mathlib.Topology.Algebra.Order.ExtrClosure
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.LeftRight
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.Algebra.Order.ProjIcc
@@ -1038,6 +1045,7 @@ import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Hom.Basic
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
