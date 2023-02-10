@@ -23,8 +23,7 @@ of the closed intervals to infinity.
 - `LowerTopology.t0Space` - the lower topology on a partial order is T₀
 - `LowerTopology.isTopologicalBasis` - the complements of the upper closures of finite
   subsets form a basis for the lower topology
-- `LowerTopology.to_continuousInf` - the inf map is continuous with respect to the lower
-  topology
+- `LowerTopology.continuousInf` - the inf map is continuous with respect to the lower topology
 
 ## Implementation notes
 
@@ -243,7 +242,7 @@ variable [PartialOrder α] [TopologicalSpace α] [LowerTopology α]
 
 -- see Note [lower instance priority]
 /-- The lower topology on a partial order is T₀. -/
-instance (priority := 90) toSpace : T0Space α :=
+instance (priority := 90) t0Space : T0Space α :=
   (t0Space_iff_inseparable α).2 fun x y h =>
     Ici_injective <| by simpa only [inseparable_iff_closure_eq, closure_singleton] using h
 
@@ -273,7 +272,7 @@ section CompleteLattice
 variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [LowerTopology α]
   [TopologicalSpace β] [LowerTopology β]
 
-theorem InfₛHom.continuous (f : InfₛHom α β) : Continuous f := by
+protected theorem InfₛHom.continuous (f : InfₛHom α β) : Continuous f := by
   refine LowerTopology.continuous_of_Ici fun b => ?_
   convert LowerTopology.isClosed_Ici (infₛ <| f ⁻¹' Ici b)
   refine' Subset.antisymm (fun a => infₛ_le) fun a ha => le_trans _ <|
@@ -283,9 +282,9 @@ theorem InfₛHom.continuous (f : InfₛHom α β) : Continuous f := by
 #align Inf_hom.continuous InfₛHom.continuous
 
 -- see Note [lower instance priority]
-instance (priority := 90) LowerTopology.to_continuousInf : ContinuousInf α :=
+instance (priority := 90) LowerTopology.continuousInf : ContinuousInf α :=
   ⟨(infInfₛHom : InfₛHom (α × α) α).continuous⟩
-#align lower_topology.to_has_continuous_inf LowerTopology.to_continuousInf
+#align lower_topology.to_has_continuous_inf LowerTopology.continuousInf
 
 end CompleteLattice
 
