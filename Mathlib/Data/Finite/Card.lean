@@ -54,7 +54,7 @@ theorem Nat.card_eq (α : Type _) :
   cases finite_or_infinite α
   · letI := Fintype.ofFinite α
     simp only [*, Nat.card_eq_fintype_card, dif_pos]
-  · simp [*, not_finite_iff_infinite.mpr h]
+  · simp [*, not_finite_iff_infinite.mpr]
 #align nat.card_eq Nat.card_eq
 
 theorem Finite.card_pos_iff [Finite α] : 0 < Nat.card α ↔ Nonempty α := by
@@ -106,7 +106,7 @@ theorem card_le_of_injective [Finite β] (f : α → β) (hf : Function.Injectiv
 #align finite.card_le_of_injective Finite.card_le_of_injective
 
 theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
-  card_le_of_injective _ f.Injective
+  card_le_of_injective _ f.injective
 #align finite.card_le_of_embedding Finite.card_le_of_embedding
 
 theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
@@ -195,14 +195,14 @@ end Finite
 
 namespace Set
 
-theorem card_union_le (s t : Set α) : Nat.card ↥(s ∪ t) ≤ Nat.card s + Nat.card t := by
-  cases' _root_.finite_or_infinite ↥(s ∪ t) with h h
+theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
+  cases' _root_.finite_or_infinite (↥(s ∪ t)) with h h
   · rw [finite_coe_iff, finite_union, ← finite_coe_iff, ← finite_coe_iff] at h
     cases h
-    rw [← Cardinal.nat_cast_le, Nat.cast_add, Finite.cast_card_eq_mk, Finite.cast_card_eq_mk,
+    rw [← Cardinal.natCast_le, Nat.cast_add, Finite.cast_card_eq_mk, Finite.cast_card_eq_mk,
       Finite.cast_card_eq_mk]
     exact Cardinal.mk_union_le s t
-  · exact nat.card_eq_zero_of_infinite.trans_le (zero_le _)
+  · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
 #align set.card_union_le Set.card_union_le
 
 end Set
