@@ -283,8 +283,8 @@ section Map
 
 variable (f : C(X, Y)) (A A' : DiscreteQuotient X) (B B' : DiscreteQuotient Y)
 
-/-- Given `f : C(X, Y)`, `DiscreteQuotient.LeComap f A B` is defined as `A ≤ B.comap f`. Mathematically this
-means that `f` descends to a morphism `A → B`. -/
+/-- Given `f : C(X, Y)`, `DiscreteQuotient.LeComap f A B` is defined as
+`A ≤ B.comap f`. Mathematically this means that `f` descends to a morphism `A → B`. -/
 def LeComap : Prop :=
   A ≤ B.comap f
 #align discrete_quotient.le_comap DiscreteQuotient.LeComap
