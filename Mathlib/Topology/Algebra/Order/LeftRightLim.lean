@@ -8,6 +8,7 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Tactic.WLOG
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Algebra.Order.LeftRight
 
@@ -262,9 +263,7 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
     have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) :=
       by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
-      --wlog hle : u ≤ v generalizing u v
-      --trace
-        --"./././Mathport/Syntax/Translate/Tactic/Builtin.lean:75:38: in wlog #[[ident hle], [\":\", expr «expr ≤ »(u, v)], [\"generalizing\", ident u, ident v], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: too many args"
+      wlog hle : u ≤ v generalizing u v
       · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
       have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
       apply disjoint_iff_forall_ne.2
