@@ -439,24 +439,25 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
 
 @[simp]
 theorem liftAddHom_apply [AddCommMonoid M] [AddCommMonoid N] (F : α → M →+ N) (f : α →₀ M) :
-    liftAddHom F f = f.sum fun x => F x :=
+    (liftAddHom (α := α) (M := M) (N := N)) F f = f.sum fun x => F x :=
   rfl
 #align finsupp.lift_add_hom_apply Finsupp.liftAddHom_apply
 
 @[simp]
 theorem liftAddHom_symm_apply [AddCommMonoid M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α) :
-    liftAddHom.symm F x = F.comp (singleAddHom x) :=
+    (liftAddHom (α := α) (M := M) (N := N)).symm F x = F.comp (singleAddHom x) :=
   rfl
 #align finsupp.lift_add_hom_symm_apply Finsupp.liftAddHom_symm_apply
 
 theorem liftAddHom_symm_apply_apply [AddCommMonoid M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α)
-    (y : M) : liftAddHom.symm F x y = F (single x y) :=
+    (y : M) : (liftAddHom (α := α) (M := M) (N := N)).symm F x y = F (single x y) :=
   rfl
 #align finsupp.lift_add_hom_symm_apply_apply Finsupp.liftAddHom_symm_apply_apply
 
 @[simp]
 theorem liftAddHom_singleAddHom [AddCommMonoid M] :
-    liftAddHom (singleAddHom : α → M →+ α →₀ M) = AddMonoidHom.id _ :=
+    (liftAddHom (α := α) (M := M) (N := α →₀ M)) (singleAddHom : α → M →+ α →₀ M) =
+      AddMonoidHom.id _ :=
   liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
 #align finsupp.lift_add_hom_single_add_hom Finsupp.liftAddHom_singleAddHom
 
@@ -485,18 +486,20 @@ theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 -- Porting note: simp can prove this
 -- @[simp]
 theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
-    (b : M) : liftAddHom f (single a b) = f a b :=
+    (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
   sum_single_index (f a).map_zero
 #align finsupp.lift_add_hom_apply_single Finsupp.liftAddHom_apply_single
 
 @[simp]
 theorem liftAddHom_comp_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α) :
-    (liftAddHom f).comp (singleAddHom a) = f a :=
+    ((liftAddHom (α := α) (M := M) (N := N)) f).comp (singleAddHom a) = f a :=
   AddMonoidHom.ext fun b => liftAddHom_apply_single f a b
 #align finsupp.lift_add_hom_comp_single Finsupp.liftAddHom_comp_single
 
 theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g : N →+ P)
-    (f : α → M →+ N) : g.comp (liftAddHom f) = liftAddHom fun a => g.comp (f a) :=
+    (f : α → M →+ N) :
+    g.comp ((liftAddHom (α := α) (M := M) (N := N)) f) =
+      (liftAddHom (α := α) (M := M) (N := P)) fun a => g.comp (f a) :=
   liftAddHom.symm_apply_eq.1 <|
     funext fun a => by
       rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
@@ -504,7 +507,8 @@ theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g
 
 theorem sum_sub_index [AddCommGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : α → β → γ}
     (h_sub : ∀ a b₁ b₂, h a (b₁ - b₂) = h a b₁ - h a b₂) : (f - g).sum h = f.sum h - g.sum h :=
-  (liftAddHom fun a => AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
+  ((liftAddHom (α := α) (M := β) (N := γ)) fun a =>
+    AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
 #align finsupp.sum_sub_index Finsupp.sum_sub_index
 
 @[to_additive]

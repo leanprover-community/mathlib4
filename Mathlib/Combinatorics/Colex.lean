@@ -386,8 +386,8 @@ instance [LinearOrder α] [Fintype α] : OrderTop (Finset.Colex α)
   le_top _ := colex_le_of_subset (subset_univ _)
 
 instance [LinearOrder α] : Lattice (Finset.Colex α) :=
-  { (by infer_instance : SemilatticeSup (Finset.Colex α)),
-    (by infer_instance : SemilatticeInf (Finset.Colex α)) with }
+  { inferInstanceAs (SemilatticeSup (Finset.Colex α)),
+    inferInstanceAs (SemilatticeInf (Finset.Colex α)) with }
 
 instance [LinearOrder α] [Fintype α] : BoundedOrder (Finset.Colex α) :=
   { (by infer_instance : OrderTop (Finset.Colex α)),
