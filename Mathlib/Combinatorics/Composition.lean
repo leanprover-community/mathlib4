@@ -749,10 +749,12 @@ theorem nthLe_splitWrtComposition (l : List α) (c : Composition n) {i : ℕ}
 
 theorem join_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).join = l := by
-  induction' ns with n ns IH <;> intro l h <;> simp at h⊢
+  induction' ns with n ns IH <;> intro l h <;> simp at h
   · exact (length_eq_zero.1 h.symm).symm
-  rw [IH]; · simp
-  rwa [length_drop, ← h, add_tsub_cancel_left]
+  simp only [splitWrtCompositionAux_cons] ; dsimp
+  rw [IH]
+  · simp
+  . rw [length_drop, ← h, add_tsub_cancel_left]
 #align list.join_split_wrt_composition_aux List.join_splitWrtCompositionAux
 
 /-- If one splits a list along a composition, and then joins the sublists, one gets back the
