@@ -595,7 +595,7 @@ theorem single_blocksFun {n : ℕ} (h : 0 < n) (i : Fin (single n h).length) :
 
 @[simp]
 theorem single_embedding {n : ℕ} (h : 0 < n) (i : Fin n) :
-    (single n h).embedding ⟨0, single_length h ▸ zero_lt_one⟩ i = i := by
+    ((single n h).embedding (0 : Fin 1)) i = i := by
   ext
   simp
 #align composition.single_embedding Composition.single_embedding
