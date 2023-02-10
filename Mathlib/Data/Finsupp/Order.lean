@@ -29,8 +29,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
 
 noncomputable section
 
--- porting notes: not needed, doesn't exist
---open BigOperators
+open BigOperators
 
 open Finset
 

@@ -73,8 +73,7 @@ variable {α : Type u} {β : Type v} {M : Type w} [DecidableEq β]
 
 open Nat
 
--- porting note: The `BigOperators` notation is now global
--- open BigOperators
+open BigOperators
 
 namespace Finset
 

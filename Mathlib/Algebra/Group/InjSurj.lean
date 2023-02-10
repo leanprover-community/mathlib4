@@ -167,6 +167,7 @@ protected def cancelMonoid [CancelMonoid M₂] (f : M₁ → M₂) (hf : Injecti
     CancelMonoid M₁ :=
   { hf.leftCancelMonoid f one mul npow, hf.rightCancelMonoid f one mul npow with }
 #align function.injective.add_cancel_monoid Function.Injective.addCancelMonoid
+#align function.injective.cancel_monoid Function.Injective.cancelMonoid
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits an injective map that
 preserves `1` and `*` to a commutative monoid.  See note [reducible non-instances]. -/

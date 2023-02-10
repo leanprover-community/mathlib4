@@ -14,12 +14,12 @@ import Mathlib.Data.List.Zip
 /-!
 # Ranges of naturals as lists
 
-This file shows basic results about `list.iota`, `list.range`, `list.range'` (all defined in
-`data.list.defs`) and defines `list.fin_range`.
-`fin_range n` is the list of elements of `fin n`.
+This file shows basic results about `List.iota`, `List.range`, `List.range'` (all defined in
+`data.list.defs`) and defines `List.finRange`.
+`finRange n` is the list of elements of `Fin n`.
 `iota n = [n, n - 1, ..., 1]` and `range n = [0, ..., n - 1]` are basic list constructions used for
 tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
-Actual maths should use `list.Ico` instead.
+Actual maths should use `List.Ico` instead.
 -/
 
 
@@ -121,9 +121,9 @@ theorem get_range' {n m} (i) (H : i < (range' n m).length) : get (range' n m) �
 
 set_option linter.deprecated false in
 @[simp]
-theorem nth_le_range' {n m} (i) (H : i < (range' n m).length) : nthLe (range' n m) i H = n + i :=
+theorem nthLe_range' {n m} (i) (H : i < (range' n m).length) : nthLe (range' n m) i H = n + i :=
   get_range' i H
-#align list.nth_le_range' List.nth_le_range'
+#align list.nth_le_range' List.nthLe_range'
 
 theorem range'_concat (s n : ℕ) : range' s (n + 1) = range' s n ++ [s + n] := by
   rw [add_comm n 1] ; exact (range'_append s n 1).symm
@@ -134,8 +134,8 @@ theorem range'_concat (s n : ℕ) : range' s (n + 1) = range' s n ++ [s + n] := 
 theorem range_loop_range' : ∀ s n : ℕ, range.loop s (range' s n) = range' 0 (n + s)
   | 0, n => rfl
   | s + 1, n => by
-    rw [show n + (s + 1) = n + 1 + s from add_right_comm n s 1] ;
-      exact range_loop_range' s (n + 1)
+    rw [show n + (s + 1) = n + 1 + s from add_right_comm n s 1]
+    exact range_loop_range' s (n + 1)
 #align list.range_core_range' List.range_loop_range'
 
 theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
@@ -143,11 +143,12 @@ theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
 #align list.range_eq_range' List.range_eq_range'
 
 theorem range_succ_eq_map (n : ℕ) : range (n + 1) = 0 :: map succ (range n) := by
-  rw [range_eq_range', range_eq_range', range', add_comm, ← map_add_range'] ; congr ;
-    exact funext one_add
+  rw [range_eq_range', range_eq_range', range', add_comm, ← map_add_range']
+  congr
+  exact funext one_add
 #align list.range_succ_eq_map List.range_succ_eq_map
 
-theorem range'_eq_map_range (s n : ℕ) : range' s n = map ((· + ·) s) (range n) := by
+theorem range'_eq_map_range (s n : ℕ) : range' s n = map (s + ·) (range n) := by
   rw [range_eq_range', map_add_range'] ; rfl
 #align list.range'_eq_map_range List.range'_eq_map_range
 
@@ -193,9 +194,9 @@ theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) := by
   simp only [succ_pos', lt_add_iff_pos_right, mem_range]
 #align list.self_mem_range_succ List.self_mem_range_succ
 
-theorem nth_range {m n : ℕ} (h : m < n) : get? (range n) m = some m := by
+theorem get?_range {m n : ℕ} (h : m < n) : get? (range n) m = some m := by
   simp only [range_eq_range', get?_range' _ h, zero_add]
-#align list.nth_range List.nth_range
+#align list.nth_range List.get?_range
 
 theorem range_succ (n : ℕ) : range (succ n) = range n ++ [n] := by
   simp only [range_eq_range', range'_concat, zero_add]
@@ -345,7 +346,7 @@ theorem unzip_enum_from_eq_prod (l : List α) {n : ℕ} :
 -- Porting note: new theorem
 @[simp]
 theorem get_range {n} (i) (H : i < (range n).length) : get (range n) ⟨i, H⟩ = i :=
-  Option.some.inj <| by rw [← get?_eq_get _, nth_range (by simpa using H)]
+  Option.some.inj <| by rw [← get?_eq_get _, get?_range (by simpa using H)]
 
 set_option linter.deprecated false in
 @[simp]

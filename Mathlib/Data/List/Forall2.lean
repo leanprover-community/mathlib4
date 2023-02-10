@@ -28,6 +28,7 @@ variable {α β γ δ : Type _} {R S : α → β → Prop} {P : γ → δ → Pr
 open Relator
 
 mk_iff_of_inductive_prop List.Forall₂ List.forall₂_iff
+#align list.forall₂_iff List.forall₂_iff
 
 #align list.forall₂.nil List.Forall₂.nil
 #align list.forall₂.cons List.Forall₂.cons

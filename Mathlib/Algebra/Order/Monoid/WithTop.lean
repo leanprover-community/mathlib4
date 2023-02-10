@@ -51,11 +51,13 @@ theorem coe_eq_one {a : α} : (a : WithTop α) = 1 ↔ a = 1 :=
 theorem one_le_coe [LE α] {a : α} : 1 ≤ (a : WithTop α) ↔ 1 ≤ a :=
   coe_le_coe
 #align with_top.one_le_coe WithTop.one_le_coe
+#align with_top.coe_nonneg WithTop.coe_nonneg
 
 @[to_additive (attr := simp, norm_cast) coe_le_zero]
 theorem coe_le_one [LE α] {a : α} : (a : WithTop α) ≤ 1 ↔ a ≤ 1 :=
   coe_le_coe
 #align with_top.coe_le_one WithTop.coe_le_one
+#align with_top.coe_le_zero WithTop.coe_le_zero
 
 @[to_additive (attr := simp, norm_cast) coe_pos]
 theorem one_lt_coe [LT α] {a : α} : 1 < (a : WithTop α) ↔ 1 < a :=
@@ -402,14 +404,15 @@ theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a �
 #align with_top.zero_lt_coe WithTop.zero_lt_coe
 
 /-- A version of `WithTop.map` for `OneHom`s. -/
-@[to_additive "A version of `WithTop.map` for `ZeroHom`s",
-  simps (config := { fullyApplied := false })]
+@[to_additive (attr := simps (config := { fullyApplied := false }))
+  "A version of `WithTop.map` for `ZeroHom`s"]
 protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
 #align one_hom.with_top_map OneHom.withTopMap
 #align zero_hom.with_top_map ZeroHom.withTopMap
+#align one_hom.with_top_map_apply OneHom.withTopMap_apply
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -418,6 +421,7 @@ protected def _root_.AddHom.withTopMap {M N : Type _} [Add M] [Add N] (f : AddHo
   toFun := WithTop.map f
   map_add' := WithTop.map_add f
 #align add_hom.with_top_map AddHom.withTopMap
+#align add_hom.with_top_map_apply AddHom.withTopMap_apply
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -425,6 +429,7 @@ protected def _root_.AddMonoidHom.withTopMap {M N : Type _} [AddZeroClass M] [Ad
     (f : M →+ N) : WithTop M →+ WithTop N :=
   { ZeroHom.withTopMap f.toZeroHom, AddHom.withTopMap f.toAddHom with toFun := WithTop.map f }
 #align add_monoid_hom.with_top_map AddMonoidHom.withTopMap
+#align add_monoid_hom.with_top_map_apply AddMonoidHom.withTopMap_apply
 
 end WithTop
 
@@ -479,11 +484,13 @@ theorem coe_eq_one [One α] {a : α} : (a : WithBot α) = 1 ↔ a = 1 :=
 theorem one_le_coe [One α] [LE α] {a : α} : 1 ≤ (a : WithBot α) ↔ 1 ≤ a :=
   coe_le_coe
 #align with_bot.one_le_coe WithBot.one_le_coe
+#align with_bot.coe_nonneg WithBot.coe_nonneg
 
 @[to_additive (attr := simp, norm_cast) coe_le_zero]
 theorem coe_le_one [One α] [LE α] {a : α} : (a : WithBot α) ≤ 1 ↔ a ≤ 1 :=
   coe_le_coe
 #align with_bot.coe_le_one WithBot.coe_le_one
+#align with_bot.coe_le_zero WithBot.coe_le_zero
 
 @[to_additive (attr := simp, norm_cast) coe_pos]
 theorem one_lt_coe [One α] [LT α] {a : α} : 1 < (a : WithBot α) ↔ 1 < a :=
@@ -590,14 +597,16 @@ protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : With
 #align with_bot.map_add WithBot.map_add
 
 /-- A version of `WithBot.map` for `OneHom`s. -/
-@[to_additive "A version of `WithBot.map` for `ZeroHom`s",
-  simps (config := { fullyApplied := false })]
+@[to_additive (attr := simps (config := { fullyApplied := false }))
+  "A version of `WithBot.map` for `ZeroHom`s"]
 protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 #align one_hom.with_bot_map OneHom.withBotMap
 #align zero_hom.with_bot_map ZeroHom.withBotMap
+#align one_hom.with_bot_map_apply OneHom.withBotMap_apply
+#align zero_hom.with_bot_map_apply ZeroHom.withBotMap_apply
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -606,6 +615,7 @@ protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHo
   toFun := WithBot.map f
   map_add' := WithBot.map_add f
 #align add_hom.with_bot_map AddHom.withBotMap
+#align add_hom.with_bot_map_apply AddHom.withBotMap_apply
 
 /-- A version of `WithBot.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -613,6 +623,7 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type _} [AddZeroClass M] [Ad
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
 #align add_monoid_hom.with_bot_map AddMonoidHom.withBotMap
+#align add_monoid_hom.with_bot_map_apply AddMonoidHom.withBotMap_apply
 
 variable [Preorder α]
 
