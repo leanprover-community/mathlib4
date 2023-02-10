@@ -13,16 +13,17 @@ We define the `continuity` tactic using `aesop`. -/
 
 declare_aesop_rule_sets [Continuous]
 
-set_option hygiene false in -- We have to turn off the hygiene to use the `Continuous` rule set
-/-- The `continuity` attribute -/
-macro "continuity" : attr => `(attr|aesop safe apply (rule_sets [Continuous]))
+/--
+The `continuity` attribute used to tag continuity statements for the `continuity` tactic. -/
+macro "continuity" : attr =>
+  `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `Continuous):ident]))
 
-set_option hygiene false in
-/-- The `continuity` tactic -/
+/--
+The tactic `continuity` solves goals of the form `Continuous f` by applying lemmas tagged with the
+`continuity` user attribute. -/
 macro "continuity" : tactic =>
-  `(tactic|aesop (rule_sets [Continuous]))
+  `(tactic|aesop (rule_sets [$(Lean.mkIdent `Continuous):ident]))
 
+-- Todo: implement `continuity?`, `continuity!` and `continuity!?` and add configuration, original
+-- syntax was (same for the missing `continuity` variants):
 -- syntax (name := continuity) "continuity" (config)? : tactic
--- syntax (name := continuity!) "continuity!" (config)? : tactic
--- syntax (name := continuity?) "continuity?" (config)? : tactic
--- syntax (name := continuity!?) "continuity!?" (config)? : tactic
