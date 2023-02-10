@@ -37,13 +37,14 @@ section
 -- workaround: we make `WithOne`/`WithZero` irreducible for this definition, otherwise `simps`
 -- will unfold it in the statement of the lemma it generates.
 /-- `WithOne.coe` as a bundled morphism -/
-@[to_additive "`WithZero.coe` as a bundled morphism", simps apply]
+@[to_additive (attr := simps apply) "`WithZero.coe` as a bundled morphism"]
 def coeMulHom [Mul α] : α →ₙ* WithOne α where
   toFun := coe
   map_mul' _ _ := rfl
 #align with_one.coe_mul_hom WithOne.coeMulHom
 #align with_zero.coe_add_hom WithZero.coeAddHom
 #align with_one.coe_mul_hom_apply WithOne.coeMulHom_apply
+#align with_zero.coe_add_hom_apply WithZero.coeAddHom_apply
 
 end
 
