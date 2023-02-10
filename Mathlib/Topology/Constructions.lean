@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit dde670c9a3f503647fd5bfdf1037bad526d3397a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1252,12 +1252,14 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 #align continuous_update continuous_update
 
-/-- `pi.mul_single i x` is continuous in `x`. -/
+/-- `Pi.mulSingle i x` is continuous in `x`. -/
 -- porting note: todo: restore @[continuity]
-@[to_additive "`pi.single i x` is continuous in `x`."]
-theorem continuous_mul_single [Π i, One (π i)] [DecidableEq ι] (i : ι) :
-    Continuous fun x => (Pi.mulSingle i x : Π i, π i) :=
+@[to_additive "`Pi.single i x` is continuous in `x`."]
+theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
+    Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
   continuous_const.update _ continuous_id
+#align continuous_mul_single continuous_mulSingle
+#align continuous_single continuous_single
 
 theorem Filter.Tendsto.fin_insertNth {n} {π : Fin (n + 1) → Type _} [∀ i, TopologicalSpace (π i)]
     (i : Fin (n + 1)) {f : β → π i} {l : Filter β} {x : π i} (hf : Tendsto f l (𝓝 x))
