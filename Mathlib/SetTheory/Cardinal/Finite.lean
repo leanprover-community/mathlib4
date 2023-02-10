@@ -8,8 +8,8 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Zmod.Defs
-import Mathbin.SetTheory.Cardinal.Basic
+import Mathlib.Data.ZMod.Defs
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Finite Cardinality Functions
@@ -67,15 +67,13 @@ theorem card_eq_of_equiv_fin {α : Type _} {n : ℕ} (f : α ≃ Fin n) : Nat.ca
 
 /-- If the cardinality is positive, that means it is a finite type, so there is
 an equivalence between `α` and `fin (nat.card α)`. See also `finite.equiv_fin`. -/
-def equivFinOfCardPos {α : Type _} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) :=
-  by
+def equivFinOfCardPos {α : Type _} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
   cases fintypeOrInfinite α
   · simpa using Fintype.equivFin α
   · simpa using h
 #align nat.equiv_fin_of_card_pos Nat.equivFinOfCardPos
 
-theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 :=
-  by
+theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   letI := Fintype.ofSubsingleton a
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
 #align nat.card_of_subsingleton Nat.card_of_subsingleton
@@ -119,15 +117,13 @@ theorem card_pi {β : α → Type _} [Fintype α] : Nat.card (∀ a, β a) = ∏
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, to_nat_lift, to_nat_finset_prod]
 #align nat.card_pi Nat.card_pi
 
-theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α :=
-  by
+theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α := by
   haveI := Fintype.ofFinite α
   rw [Nat.card_pi, Finset.prod_const, Finset.card_univ, ← Nat.card_eq_fintype_card]
 #align nat.card_fun Nat.card_fun
 
 @[simp]
-theorem card_zMod (n : ℕ) : Nat.card (ZMod n) = n :=
-  by
+theorem card_zMod (n : ℕ) : Nat.card (ZMod n) = n := by
   cases n
   · exact Nat.card_eq_zero_of_infinite
   · rw [Nat.card_eq_fintype_card, ZMod.card]
