@@ -40,7 +40,7 @@ which respects the σ-algebras, that is, for which both directions of
 the equivalence are measurable functions.
 
 We say that a filter `f` is measurably generated if every set `s ∈ f` includes a measurable
-set `t ∈ f`. This property is useful, e.g., to extract a measurable witness of `filter.eventually`.
+set `t ∈ f`. This property is useful, e.g., to extract a measurable witness of `Filter.Eventually`.
 
 ## Notation
 
@@ -76,7 +76,7 @@ section Functors
 variable {m m₁ m₂ : MeasurableSpace α} {m' : MeasurableSpace β} {f : α → β} {g : β → α}
 
 /-- The forward image of a measurable space under a function. `map f m` contains the sets
-  `s : set β` whose preimage under `f` is measurable. -/
+  `s : Set β` whose preimage under `f` is measurable. -/
 protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β where
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
@@ -95,7 +95,7 @@ theorem map_comp {f : α → β} {g : β → γ} : (m.map f).map g = m.map (g �
 #align measurable_space.map_comp MeasurableSpace.map_comp
 
 /-- The reverse image of a measurable space under a function. `comap f m` contains the sets
-  `s : set α` such that `s` is the `f`-preimage of a measurable set in `β`. -/
+  `s : Set α` such that `s` is the `f`-preimage of a measurable set in `β`. -/
 protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace α where
   MeasurableSet' s := ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
@@ -315,10 +315,10 @@ protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : Meas
   exact hs.ite (hf ht) (hg ht)
 #align measurable.piecewise Measurable.piecewise
 
-/-- This is slightly different from `measurable.piecewise`. It can be used to show
-`measurable (ite (x=0) 0 1)` by
-`exact measurable.ite (measurableSet_singleton 0) measurable_const measurable_const`,
-but replacing `measurable.ite` by `measurable.piecewise` in that example proof does not work. -/
+/-- This is slightly different from `Measurable.piecewise`. It can be used to show
+`Measurable (ite (x=0) 0 1)` by
+`exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const`,
+but replacing `Measurable.ite` by `Measurable.piecewise` in that example proof does not work. -/
 theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableSet { a : α | p a })
     (hf : Measurable f) (hg : Measurable g) : Measurable fun x => ite (p x) (f x) (g x) :=
   Measurable.piecewise hp hf hg
@@ -582,7 +582,7 @@ end Subtype
 
 section Prod
 
-/-- A `measurable_space` structure on the product of two measurable spaces. -/
+/-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
 def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableSpace β) :
     MeasurableSpace (α × β) :=
   m₁.comap Prod.fst ⊔ m₂.comap Prod.snd
@@ -1001,15 +1001,15 @@ end Constructions
 
 /-- A map `f : α → β` is called a *measurable embedding* if it is injective, measurable, and sends
 measurable sets to measurable sets. The latter assumption can be replaced with “`f` has measurable
-inverse `g : range f → α`”, see `measurable_embedding.measurable_range_splitting`,
+inverse `g : Set.range f → α`”, see `MeasurableEmbedding.measurable_rangeSplitting`,
 `measurable_embedding.of_measurable_inverse_range`, and
-`measurable_embedding.of_measurable_inverse`.
+`MeasurableEmbedding.of_measurable_inverse`.
 
 One more interpretation: `f` is a measurable embedding if it defines a measurable equivalence to its
 range and the range is a measurable set. One implication is formalized as
-`measurable_embedding.equiv_range`; the other one follows from
-`measurable_equiv.measurable_embedding`, `measurable_embedding.subtype_coe`, and
-`measurable_embedding.comp`. -/
+`MeasurableEmbedding.equivRange`; the other one follows from
+`MeasurableEquiv.measurableEmbedding`, `MeasurableEmbedding.subtype_coe`, and
+`MeasurableEmbedding.comp`. -/
 structure MeasurableEmbedding {α β : Type _} [MeasurableSpace α] [MeasurableSpace β]
     (f : α → β) : Prop where
   /-- A measurable embedding is injective. -/
@@ -1346,7 +1346,7 @@ def Set.univ (α : Type _) [MeasurableSpace α] : (univ : Set α) ≃ᵐ α wher
   measurable_invFun := measurable_id.subtype_mk
 #align measurable_equiv.set.univ MeasurableEquiv.Set.univ
 
-/-- `{a} ≃ unit` as measurable spaces. -/
+/-- `{a} ≃ Unit` as measurable spaces. -/
 def Set.singleton (a : α) : ({a} : Set α) ≃ᵐ Unit where
   toEquiv := Equiv.Set.singleton a
   measurable_toFun := measurable_const
@@ -1435,7 +1435,7 @@ def funUnique (α β : Type _) [Unique α] [MeasurableSpace β] : (α → β) �
   measurable_invFun := measurable_pi_iff.2 fun _ => measurable_id
 #align measurable_equiv.fun_unique MeasurableEquiv.funUnique
 
-/-- The space `Π i : fin 2, α i` is measurably equivalent to `α 0 × α 1`. -/
+/-- The space `Π i : Fin 2, α i` is measurably equivalent to `α 0 × α 1`. -/
 @[simps! (config := { fullyApplied := false })]
 def piFinTwo (α : Fin 2 → Type _) [∀ i, MeasurableSpace (α i)] : (∀ i, α i) ≃ᵐ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
@@ -1443,14 +1443,14 @@ def piFinTwo (α : Fin 2 → Type _) [∀ i, MeasurableSpace (α i)] : (∀ i, �
   measurable_invFun := measurable_pi_iff.2 <| Fin.forall_fin_two.2 ⟨measurable_fst, measurable_snd⟩
 #align measurable_equiv.pi_fin_two MeasurableEquiv.piFinTwo
 
-/-- The space `fin 2 → α` is measurably equivalent to `α × α`. -/
+/-- The space `Fin 2 → α` is measurably equivalent to `α × α`. -/
 @[simps! (config := { fullyApplied := false })]
 def finTwoArrow : (Fin 2 → α) ≃ᵐ α × α :=
   piFinTwo fun _ => α
 #align measurable_equiv.fin_two_arrow MeasurableEquiv.finTwoArrow
 
-/-- Measurable equivalence between `Π j : fin (n + 1), α j` and
-`α i × Π j : fin n, α (fin.succ_above i j)`. -/
+/-- Measurable equivalence between `Π j : Fin (n + 1), α j` and
+`α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
 @[simps! (config := { fullyApplied := false })]
 def piFinSuccAboveEquiv {n : ℕ} (α : Fin (n + 1) → Type _) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
@@ -1466,7 +1466,7 @@ def piFinSuccAboveEquiv {n : ℕ} (α : Fin (n + 1) → Type _) [∀ i, Measurab
 variable (π)
 
 /-- Measurable equivalence between (dependent) functions on a type and pairs of functions on
-`{i // p i}` and `{i // ¬p i}`. See also `equiv.pi_equiv_pi_subtype_prod`. -/
+`{i // p i}` and `{i // ¬p i}`. See also `Equiv.piEquivPiSubtypeProd`. -/
 @[simps! (config := { fullyApplied := false })]
 def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
     (∀ i, π i) ≃ᵐ (∀ i : Subtype p, π i) × ∀ i : { i // ¬p i }, π i where
@@ -1523,7 +1523,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
 
 open Classical
 
-/-- The **`measurable Schröder-Bernstein Theorem**: Given measurable embeddings
+/-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`.-/
 noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : MeasurableEmbedding f)
     (hg : MeasurableEmbedding g) : α ≃ᵐ β := by
@@ -1662,7 +1662,7 @@ theorem isCountablySpanning_measurableSet [MeasurableSpace α] :
 namespace MeasurableSet
 
 /-!
-### Typeclasses on `subtype measurableSet`
+### Typeclasses on `Subtype MeasurableSet`
 -/
 
 
