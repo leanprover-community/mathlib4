@@ -31,15 +31,14 @@ When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
 ## Implementation Notes
 
-Instead of `{x : α // 0 ≤ x}` we could also use `set.Ici (0 : α)`, which is definitionally equal.
+Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
 However, using the explicit subtype has a big advantage: when writing and element explicitly
 with a proof of nonnegativity as `⟨x, hx⟩`, the `hx` is expected to have type `0 ≤ x`. If we would
 use `Ici 0`, then the type is expected to be `x ∈ Ici 0`. Although these types are definitionally
 equal, this often confuses the elaborator. Similar problems arise when doing cases on an element.
 
-The disadvantage is that we have to duplicate some instances about `set.Ici` to this subtype.
+The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
-
 
 open Set
 
@@ -79,17 +78,17 @@ instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
   show DenselyOrdered (Ici a) from instDenselyOrderedElemLtToLTMemSetInstMembershipSet
 #align nonneg.densely_ordered Nonneg.densely_ordered
 
-/-- If `Sup ∅ ≤ a` then `{x : α // a ≤ x}` is a `conditionally_complete_linear_order`. -/
+/-- If `Sup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 @[reducible]
 protected noncomputable def conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
     {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
   { @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _ with }
 #align nonneg.conditionally_complete_linear_order Nonneg.conditionallyCompleteLinearOrder
 
-/-- If `Sup ∅ ≤ a` then `{x : α // a ≤ x}` is a `conditionally_complete_linear_order_bot`.
+/-- If `Sup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
-This instance uses data fields from `subtype.linear_order` to help type-class inference.
-The `set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
+This instance uses data fields from `Subtype.LinearOrder` to help type-class inference.
+The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
 @[reducible]
 protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
@@ -152,11 +151,13 @@ theorem nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (�
   rfl
 #align nonneg.nsmul_mk Nonneg.nsmul_mk
 
-@[simp] --Porting note: Removed `norm_cast` attribute
-protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] (n : ℕ)
-    (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • a :=
-  rfl
-#align nonneg.coe_nsmul Nonneg.coe_nsmul
+-- Porting note: Syntactic tautology
+-- @[simp] --Porting note: Removed `norm_cast` attribute
+-- protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+--     (n : ℕ) (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • a :=
+--   rfl
+-- #align nonneg.coe_nsmul Nonneg.coe_nsmul
+#noalign nonneg.coe_nsmul
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.orderedAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
@@ -246,11 +247,13 @@ instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ
     where pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 #align nonneg.has_pow Nonneg.pow
 
-@[simp] --Porting note: Removed `norm_cast` attribute
-protected theorem coe_pow [OrderedSemiring α] (a : { x : α // 0 ≤ x }) (n : ℕ) :
-    (↑(a ^ n) : α) = a ^ n :=
-  rfl
-#align nonneg.coe_pow Nonneg.coe_pow
+-- Porting note : syntactical tautology
+-- @[simp] --Porting note: Removed `norm_cast` attribute
+-- protected theorem coe_pow [OrderedSemiring α] (a : { x : α // 0 ≤ x }) (n : ℕ) :
+--     (↑(a ^ n) : α) = a ^ n :=
+--   rfl
+-- #align nonneg.coe_pow Nonneg.coe_pow
+#noalign nonneg.coe_pow
 
 @[simp]
 theorem mk_pow [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : ℕ) :
@@ -312,10 +315,15 @@ instance linearOrderedSemiring [LinearOrderedSemiring α] :
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_semiring Nonneg.linearOrderedSemiring
 
+-- Porting note: was
+-- `{ Nonneg.linearOrderedSemiring, Nonneg.orderedCommSemiring with`
+-- changing the order somehow prevented a timeout... also adding `(α := α)`
+-- helped. Both can be reverted once stuff is fixed.
 instance linearOrderedCommMonoidWithZero [LinearOrderedCommRing α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
-  { Nonneg.linearOrderedSemiring, Nonneg.orderedCommSemiring with
-    mul_le_mul_left := fun a b h c => mul_le_mul_of_nonneg_left h c.2 }
+  { Nonneg.orderedCommSemiring, Nonneg.linearOrderedSemiring with
+    mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop (α := α) }
+
 #align nonneg.linear_ordered_comm_monoid_with_zero Nonneg.linearOrderedCommMonoidWithZero
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as a `RingHom`. -/
@@ -329,8 +337,7 @@ def coeRingHom [OrderedSemiring α] : { x : α // 0 ≤ x } →+* α :=
 
 instance canonicallyOrderedAddMonoid [OrderedRing α] :
     CanonicallyOrderedAddMonoid { x : α // 0 ≤ x } :=
-  { Nonneg.orderedAddCommMonoid,
-    Nonneg.orderBot with
+  { Nonneg.orderedAddCommMonoid, Nonneg.orderBot with
     le_self_add := fun _ b => le_add_of_nonneg_right b.2
     exists_add_of_le := @fun a b h =>
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
@@ -338,13 +345,13 @@ instance canonicallyOrderedAddMonoid [OrderedRing α] :
 
 section
 
-set_option maxHeartbeats 0
+-- Porting note: Remove me.
+set_option maxHeartbeats 600000
 
 instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α] :
     CanonicallyOrderedCommSemiring { x : α // 0 ≤ x } :=
   { Nonneg.canonicallyOrderedAddMonoid, Nonneg.orderedCommSemiring with
-    eq_zero_or_eq_zero_of_mul_eq_zero :=
-      by
+    eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
       simp }
 #align nonneg.canonically_ordered_comm_semiring Nonneg.canonicallyOrderedCommSemiring
