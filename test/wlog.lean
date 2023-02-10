@@ -42,3 +42,20 @@ example : ∀ _ _ : ℕ, True := by
   wlog h : x ≤ y -- `wlog` finds new variables
   { trivial }
   { trivial }
+
+example {x y : ℕ} : True := by
+  wlog h : x ≤ y generalizing y x with H
+  { guard_hyp h : ¬ x ≤ y
+    guard_hyp H : ∀ {x y : ℕ}, x ≤ y → True -- order of ids in `generalizing` is ignored
+    trivial }
+  { trivial }
+
+-- metadata doesn't cause a problem
+example (α : Type := ℕ) (x : Option α := none) (y : Option α := by exact 0) : True := by
+  wlog h : x = y with H
+  { guard_hyp h : ¬ x = y
+    guard_hyp H : ∀ α, ∀ {x y : Option α}, x = y → True
+    trivial }
+  { guard_hyp h : x = y
+    guard_target =ₛ True
+    trivial }
