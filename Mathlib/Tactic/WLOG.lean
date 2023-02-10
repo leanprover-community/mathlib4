@@ -67,7 +67,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Name) (P : Expr)
   let (revertedFVars, HType) ← withoutModifyingState <| goal.withContext do
     let goal ← goal.assert h P (← mkFreshExprMVar P)
     let toRevert ← getFVarIdsAt goal xs false
-    let (revertedFVars, goal) ← goal.revert toRevert (clearAuxDeclsInsteadOfRevert := true)
+    let (revertedFVars, goal) ← goal.revert toRevert
     return (revertedFVars, ← goal.getType)
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
