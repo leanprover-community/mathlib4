@@ -17,48 +17,48 @@ import Mathlib.Topology.LocallyConstant.Basic
 # Discrete quotients of a topological space.
 
 This file defines the type of discrete quotients of a topological space,
-denoted `discrete_quotient X`. To avoid quantifying over types, we model such
+denoted `DiscreteQuotient X`. To avoid quantifying over types, we model such
 quotients as setoids whose equivalence classes are clopen.
 
 ## Definitions
-1. `discrete_quotient X` is the type of discrete quotients of `X`.
+1. `DiscreteQuotient X` is the type of discrete quotients of `X`.
   It is endowed with a coercion to `Type`, which is defined as the
   quotient associated to the setoid in question, and each such quotient
   is endowed with the discrete topology.
-2. Given `S : discrete_quotient X`, the projection `X → S` is denoted
+2. Given `S : DiscreteQuotient X`, the projection `X → S` is denoted
   `S.proj`.
-3. When `X` is compact and `S : discrete_quotient X`, the space `S` is
-  endowed with a `fintype` instance.
+3. When `X` is compact and `S : DiscreteQuotient X`, the space `S` is
+  endowed with a `Fintype` instance.
 
 ## Order structure
 
-The type `discrete_quotient X` is endowed with an instance of a `semilattice_inf` with `order_top`.
+The type `DiscreteQuotient X` is endowed with an instance of a `SemilatticeInf` with `OrderTop`.
 The partial ordering `A ≤ B` mathematically means that `B.proj` factors through `A.proj`.
 The top element `⊤` is the trivial quotient, meaning that every element of `X` is collapsed
-to a point. Given `h : A ≤ B`, the map `A → B` is `discrete_quotient.of_le h`.
+to a point. Given `h : A ≤ B`, the map `A → B` is `DiscreteQuotient.ofLe h`.
 
-Whenever `X` is a locally connected space, the type `discrete_quotient X` is also endowed with an
-instance of a `order_bot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
+Whenever `X` is a locally connected space, the type `DiscreteQuotient X` is also endowed with an
+instance of a `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
 i.e., `x ~ y` means that `x` and `y` belong to the same connected component. In particular, if `X`
 is a discrete topological space, then `x ~ y` is equivalent (propositionally, not definitionally) to
 `x = y`.
 
-Given `f : C(X, Y)`, we define a predicate `discrete_quotient.le_comap f A B` for `A :
-discrete_quotient X` and `B : discrete_quotient Y`, asserting that `f` descends to `A → B`.  If
-`cond : discrete_quotient.le_comap h A B`, the function `A → B` is obtained by
-`discrete_quotient.map f cond`.
+Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LeComap f A B` for `A :
+DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`.  If
+`cond : DiscreteQuotient.LeComap h A B`, the function `A → B` is obtained by
+`DiscreteQuotient.map f cond`.
 
 ## Theorems
 
 The two main results proved in this file are:
 
-1. `discrete_quotient.eq_of_forall_proj_eq` which states that when `X` is compact, T₂, and totally
+1. `DiscreteQuotient.eq_of_forall_proj_eq` which states that when `X` is compact, T₂, and totally
   disconnected, any two elements of `X` are equal if their projections in `Q` agree for all
-  `Q : discrete_quotient X`.
+  `Q : DiscreteQuotient X`.
 
-2. `discrete_quotient.exists_of_compat` which states that when `X` is compact, then any
-  system of elements of `Q` as `Q : discrete_quotient X` varies, which is compatible with
-  respect to `discrete_quotient.of_le`, must arise from some element of `X`.
+2. `DiscreteQuotient.exists_of_compat` which states that when `X` is compact, then any
+  system of elements of `Q` as `Q : DiscreteQuotient X` varies, which is compatible with
+  respect to `DiscreteQuotient.ofLe`, must arise from some element of `X`.
 
 ## Remarks
 The constructions in this file will be used to show that any profinite space is a limit
@@ -249,8 +249,8 @@ theorem ofLe_comp_proj (h : A ≤ B) : ofLe h ∘ A.proj = B.proj :=
 
 end OfLe
 
-/-- When `X` is a locally connected space, there is an `order_bot` instance on
-`discrete_quotient X`. The bottom element is given by `connectedComponentSetoid X`
+/-- When `X` is a locally connected space, there is an `OrderBot` instance on
+`DiscreteQuotient X`. The bottom element is given by `connectedComponentSetoid X`
 -/
 instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
