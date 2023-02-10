@@ -323,7 +323,6 @@ instance linearOrderedCommMonoidWithZero [LinearOrderedCommRing α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
   { Nonneg.orderedCommSemiring, Nonneg.linearOrderedSemiring with
     mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop (α := α) }
-
 #align nonneg.linear_ordered_comm_monoid_with_zero Nonneg.linearOrderedCommMonoidWithZero
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as a `RingHom`. -/
