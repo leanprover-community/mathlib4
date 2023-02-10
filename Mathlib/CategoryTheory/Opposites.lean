@@ -9,7 +9,6 @@ Authors: Stephen Morgan, Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Equivalence
--- import Mathlib.Tactic.Tidy
 
 /-!
 # Opposite categories
@@ -265,12 +264,14 @@ instance {F : C ⥤ D} [Faithful F] : Faithful F.op
 
 /-- If F is faithful then the right_op of F is also faithful. -/
 instance rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp
-    where map_injective := @fun _ _ _ _ h => Quiver.Hom.op_inj (map_injective F (Quiver.Hom.op_inj h))
+    where map_injective := @fun _ _ _ _ h =>
+        Quiver.Hom.op_inj (map_injective F (Quiver.Hom.op_inj h))
 #align category_theory.functor.right_op_faithful CategoryTheory.Functor.rightOp_faithful
 
 /-- If F is faithful then the left_op of F is also faithful. -/
 instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp
-    where map_injective := @fun _ _ _ _ h => Quiver.Hom.unop_inj (map_injective F (Quiver.Hom.unop_inj h))
+    where map_injective := @fun _ _ _ _ h =>
+        Quiver.Hom.unop_inj (map_injective F (Quiver.Hom.unop_inj h))
 #align category_theory.functor.left_op_faithful CategoryTheory.Functor.leftOp_faithful
 
 /-- The isomorphism between `F.left_op.right_op` and `F`. -/
