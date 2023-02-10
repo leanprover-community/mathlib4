@@ -82,17 +82,12 @@ end
 
 /-- The filter represented by a `CFilter` is the collection of supersets of
   elements of the filter base. -/
-def toFilter (F : CFilter (Set α) σ) : Filter α
-    where
+def toFilter (F : CFilter (Set α) σ) : Filter α where
   sets := { a | ∃ b, F b ⊆ a }
   univ_sets := ⟨F.pt, subset_univ _⟩
-  sets_of_superset := by
-    intro _ _ ⟨b, h⟩ s
-    exact ⟨b, Subset.trans h s⟩
-  inter_sets := by
-    intro _ _ ⟨a, h₁⟩ ⟨b, h₂⟩
-    exact ⟨F.inf a b,
-      subset_inter (Subset.trans (F.inf_le_left _ _) h₁) (Subset.trans (F.inf_le_right _ _) h₂)⟩
+  sets_of_superset := fun ⟨b, h⟩ s ↦ ⟨b, Subset.trans h s⟩
+  inter_sets := fun ⟨a, h₁⟩ ⟨b, h₂⟩ ↦ ⟨F.inf a b,
+    subset_inter (Subset.trans (F.inf_le_left _ _) h₁) (Subset.trans (F.inf_le_right _ _) h₂)⟩
 #align cfilter.to_filter CFilter.toFilter
 
 @[simp]
@@ -154,7 +149,7 @@ theorem ofEquiv_σ {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) : (F.ofEqu
 
 @[simp]
 theorem ofEquiv_F {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) (s : τ) :
-    (F.ofEquiv E).F s = F.F (E.symm s) := by delta ofEquiv ; rfl
+    (F.ofEquiv E).F s = F.F (E.symm s) := rfl
 set_option linter.uppercaseLean3 false in
 #align filter.realizer.of_equiv_F Filter.Realizer.ofEquiv_F
 
