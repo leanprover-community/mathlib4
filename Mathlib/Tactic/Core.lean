@@ -114,9 +114,9 @@ def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
     (includeAuxDecls : Bool := true) : TacticM (Array FVarId) :=
   goal.withContext do
     let lctx := (← goal.getDecl).lctx
-    let fvarIds ← do
-      let some ids := ids | return lctx.getFVarIds
-      ids.mapM <| getFVarIdAt goal
+    let fvarIds ← match ids with
+    | none => pure lctx.getFVarIds
+    | some ids => ids.mapM <| getFVarIdAt goal
     if includeAuxDecls then
       return fvarIds
     else
