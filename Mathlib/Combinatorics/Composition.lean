@@ -1097,5 +1097,3 @@ theorem composition_card (n : ℕ) : Fintype.card (Composition n) = 2 ^ (n - 1) 
   rw [← compositionAsSet_card n]
   exact Fintype.card_congr (compositionEquiv n)
 #align composition_card composition_card
-
-#lint
