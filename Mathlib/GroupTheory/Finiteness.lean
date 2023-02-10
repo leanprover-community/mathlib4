@@ -18,16 +18,16 @@ import Mathlib.Data.Finset.Preimage
 /-!
 # Finitely generated monoids and groups
 
-We define finitely generated monoids and groups. See also `submodule.fg` and `module.finite` for
+We define finitely generated monoids and groups. See also `Submodule.Fg` and `Module.Finite` for
 finitely-generated modules.
 
 ## Main definition
 
-* `submonoid.fg S`, `add_submonoid.fg S` : A submonoid `S` is finitely generated.
-* `monoid.fg M`, `add_monoid.fg M` : A typeclass indicating a type `M` is finitely generated as a
+* `Submonoid.Fg S`, `AddSubmonoid.Fg S` : A submonoid `S` is finitely generated.
+* `Monoid.Fg M`, `AddMonoid.Fg M` : A typeclass indicating a type `M` is finitely generated as a
 monoid.
-* `subgroup.fg S`, `add_subgroup.fg S` : A subgroup `S` is finitely generated.
-* `group.fg M`, `add_group.fg M` : A typeclass indicating a type `M` is finitely generated as a
+* `Subgroup.Fg S`, `AddSubgroup.fg S` : A subgroup `S` is finitely generated.
+* `Group.Fg M`, `AddGroup.Fg M` : A typeclass indicating a type `M` is finitely generated as a
 group.
 
 -/
@@ -53,7 +53,7 @@ def Submonoid.Fg (P : Submonoid M) : Prop :=
 `M`. -/
 add_decl_doc AddSubmonoid.Fg
 
-/-- An equivalent expression of `submonoid.fg` in terms of `set.finite` instead of `finset`. -/
+/-- An equivalent expression of `Submonoid.Fg` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive "An equivalent expression of `add_submonoid.fg` in terms of `set.finite` instead of
 `finset`."]
 theorem Submonoid.fg_iff (P : Submonoid M) :
@@ -107,7 +107,7 @@ theorem AddMonoid.fg_def : AddMonoid.Fg N ↔ (⊤ : AddSubmonoid N).Fg :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align add_monoid.fg_def AddMonoid.fg_def
 
-/-- An equivalent expression of `monoid.fg` in terms of `set.finite` instead of `finset`. -/
+/-- An equivalent expression of `Monoid.Fg` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
       "An equivalent expression of `add_monoid.fg` in terms of `set.finite` instead of\n`finset`."]
 theorem Monoid.fg_iff :
@@ -234,7 +234,7 @@ def Subgroup.Fg (P : Subgroup G) : Prop :=
 `H`. -/
 add_decl_doc AddSubgroup.Fg
 
-/-- An equivalent expression of `subgroup.fg` in terms of `set.finite` instead of `finset`. -/
+/-- An equivalent expression of `Subgroup.Fg` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive "An equivalent expression of `add_subgroup.fg` in terms of `set.finite` instead of
 `finset`."]
 theorem Subgroup.fg_iff (P : Subgroup G) :
@@ -301,7 +301,7 @@ theorem AddGroup.fg_def : AddGroup.Fg H ↔ (⊤ : AddSubgroup H).Fg :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align add_group.fg_def AddGroup.fg_def
 
-/-- An equivalent expression of `group.fg` in terms of `set.finite` instead of `finset`. -/
+/-- An equivalent expression of `Group.Fg` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
       "An equivalent expression of `add_group.fg` in terms of `set.finite` instead of\n`finset`."]
 theorem Group.fg_iff : Group.Fg G ↔ ∃ S : Set G, Subgroup.closure S = (⊤ : Subgroup G) ∧ S.Finite :=
