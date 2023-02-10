@@ -531,6 +531,7 @@ import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
 import Mathlib.Data.Pi.Algebra
+import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
@@ -987,6 +988,7 @@ import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
+import Mathlib.Tactic.Slice
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
@@ -1011,6 +1013,7 @@ import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.Algebra.Order.ExtendFrom
 import Mathlib.Topology.Algebra.Order.ExtrClosure
+import Mathlib.Topology.Algebra.Order.Filter
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.LeftRight
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
@@ -1034,6 +1037,7 @@ import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
+import Mathlib.Topology.Hom.Open
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.Sign
