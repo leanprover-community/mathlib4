@@ -102,6 +102,19 @@ end Lean
 
 namespace Lean.Elab.Tactic
 
+/-- Elaborate syntax for an `FVarId` in the local context of the given goal. -/
+def getFVarIdAt (goal : MVarId) (id : Syntax) : TacticM FVarId := withRef id do
+  -- use apply-like elaboration to suppress insertion of implicit arguments
+  let e ← goal.withContext do
+    elabTermForApply id (mayPostpone := false)
+  match e with
+  | Expr.fvar fvarId => return fvarId
+  | _                => throwError "unexpected term '{e}'; expected single reference to variable"
+
+/-- Elaborate syntax for an array of `FVarId`s in the local context of the given goal. -/
+def getFVarIdsAt (goal : MVarId) (ids : Array Syntax) : TacticM (Array FVarId) := do
+  goal.withContext do ids.mapM <| getFVarIdAt goal
+
 /--
 Run a tactic on all goals, and always succeeds.
 
