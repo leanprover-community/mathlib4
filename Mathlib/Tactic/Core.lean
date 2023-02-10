@@ -104,9 +104,23 @@ def getFVarIdAt (goal : MVarId) (id : Syntax) : TacticM FVarId := withRef id do
   | Expr.fvar fvarId => return fvarId
   | _                => throwError "unexpected term '{e}'; expected single reference to variable"
 
-/-- Elaborate syntax for an array of `FVarId`s in the local context of the given goal. -/
-def getFVarIdsAt (goal : MVarId) (ids : Array Syntax) : TacticM (Array FVarId) := do
-  goal.withContext do ids.mapM <| getFVarIdAt goal
+/-- Get the array of `FVarId`s in the local context of the given `goal`.
+
+If `ids` is specified, elaborate them in the local context of the given goal to obtain the array of
+`FVarId`s.
+
+If `includeAuxDecls` is `false`, we filter out `AuxDecls` from the resulting list of `FVarId`s. -/
+def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
+    (includeAuxDecls : Bool := true) : TacticM (Array FVarId) :=
+  goal.withContext do
+    let lctx := (← goal.getDecl).lctx
+    let fvarIds ← do
+      let some ids := ids | return lctx.getFVarIds
+      ids.mapM <| getFVarIdAt goal
+    if includeAuxDecls then
+      return fvarIds
+    else
+      return fvarIds.filter (fun fvar => ! (lctx.fvarIdToDecl.find! fvar).isAuxDecl)
 
 /--
 Run a tactic on all goals, and always succeeds.
