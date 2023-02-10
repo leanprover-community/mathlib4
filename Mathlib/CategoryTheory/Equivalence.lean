@@ -793,7 +793,7 @@ theorem inverse_map_inj_iff (e : C ≌ D) {X Y : D} (f g : X ⟶ Y) :
 
 instance essSurjInducedFunctor {C' : Type _} (e : C' ≃ D) : EssSurj (inducedFunctor e)
     where mem_essImage Y :=
-      ⟨e.symm Y, by simp only [inducedFunctor_obj,Equiv.apply_symm_apply]; exact ⟨default⟩⟩
+      ⟨e.symm Y, by simpa using ⟨default⟩⟩
 #align category_theory.equivalence.ess_surj_induced_functor
   CategoryTheory.Equivalence.essSurjInducedFunctor
 
