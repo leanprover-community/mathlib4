@@ -151,13 +151,11 @@ theorem nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (�
   rfl
 #align nonneg.nsmul_mk Nonneg.nsmul_mk
 
--- Porting note: Syntactic tautology
--- @[simp] --Porting note: Removed `norm_cast` attribute
--- protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
---     (n : ℕ) (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • a :=
---   rfl
--- #align nonneg.coe_nsmul Nonneg.coe_nsmul
-#noalign nonneg.coe_nsmul
+@[simp, norm_cast]
+protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+    (n : ℕ) (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • (a : α) :=
+  rfl
+#align nonneg.coe_nsmul Nonneg.coe_nsmul
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.orderedAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
@@ -247,13 +245,11 @@ instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ
     where pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 #align nonneg.has_pow Nonneg.pow
 
--- Porting note : syntactical tautology
--- @[simp] --Porting note: Removed `norm_cast` attribute
--- protected theorem coe_pow [OrderedSemiring α] (a : { x : α // 0 ≤ x }) (n : ℕ) :
---     (↑(a ^ n) : α) = a ^ n :=
---   rfl
--- #align nonneg.coe_pow Nonneg.coe_pow
-#noalign nonneg.coe_pow
+@[simp, norm_cast]
+protected theorem coe_pow [OrderedSemiring α] (a : { x : α // 0 ≤ x }) (n : ℕ) :
+    (↑(a ^ n) : α) = (a : α) ^ n :=
+  rfl
+#align nonneg.coe_pow Nonneg.coe_pow
 
 @[simp]
 theorem mk_pow [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : ℕ) :
@@ -352,7 +348,7 @@ instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α]
   { Nonneg.canonicallyOrderedAddMonoid, Nonneg.orderedCommSemiring with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
-      simp }
+      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
 #align nonneg.canonically_ordered_comm_semiring Nonneg.canonicallyOrderedCommSemiring
 
 end
