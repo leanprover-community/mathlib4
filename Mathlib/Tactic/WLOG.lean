@@ -93,8 +93,6 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Name) (P : Expr)
     easyGoal.assign HApp
   return ⟨reductionGoal, (HFVarId, negHyp), hGoal, hFVar, revertedFVars⟩
 
-namespace WLOG
-
 /-- `wlog h : P` will add an assumption `h : P` to the main goal, and add a side goal that requires
 showing that the case `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
 
