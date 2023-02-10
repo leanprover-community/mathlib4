@@ -1105,6 +1105,14 @@ theorem interₛ_eq_univ {S : Set (Set α)} : ⋂₀ S = univ ↔ ∀ s ∈ S, s
   infₛ_eq_top
 #align set.sInter_eq_univ Set.interₛ_eq_univ
 
+/-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
+theorem unionₛ_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
+    ⋃₀ S ∈ ({∅, univ} :Set (Set α)) := by
+  simp only [mem_insert_iff, mem_singleton_iff, or_iff_not_imp_left, unionₛ_eq_empty, not_forall]
+  rintro ⟨s, hs, hne⟩
+  obtain rfl : s = univ := (h hs).resolve_left hne
+  exact univ_subset_iff.1 <| subset_unionₛ_of_mem hs
+
 @[simp]
 theorem nonempty_unionₛ {S : Set (Set α)} : (⋃₀S).Nonempty ↔ ∃ s ∈ S, Set.Nonempty s := by
   simp [nonempty_iff_ne_empty]

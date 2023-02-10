@@ -433,7 +433,7 @@ section GeneralizedBooleanAlgebra
 variable [GeneralizedBooleanAlgebra α] [DecidableEq α] {a b c : α} (P : Finpartition a)
 
 /-- Restricts a finpartition to avoid a given element. -/
-@[simps]
+@[simps!]
 def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
