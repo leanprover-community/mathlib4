@@ -731,9 +731,17 @@ set_option linter.deprecated false in
 theorem nthLe_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) :
     nthLe (l.splitWrtCompositionAux ns) i hi =
       (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
-  induction' ns with n ns IH generalizing l i; · cases hi
-  cases i <;> simp [IH]
-  rw [add_comm n, drop_add, drop_take]
+  induction' ns with n ns IH generalizing l i
+  · cases hi
+  cases' i with i
+  . rw [Nat.add_zero, List.take_zero, sum_nil, nthLe_zero]; dsimp
+    simp only [splitWrtCompositionAux_cons, head!, sum, foldl, zero_add]
+  . simp only [splitWrtCompositionAux_cons, take, sum_cons,
+      Nat.add_eq, add_zero, gt_iff_lt, nthLe_cons, IH]; dsimp
+    rw [Nat.succ_sub_succ_eq_sub, ←Nat.succ_eq_add_one,tsub_zero]
+    simp only [← drop_take, drop_drop]
+    rw [add_comm]
+
 #align list.nth_le_split_wrt_composition_aux List.nthLe_splitWrtCompositionAux
 
 -- porting note: TODO, refactor to `List.get`
