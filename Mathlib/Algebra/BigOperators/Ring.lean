@@ -23,7 +23,7 @@ multiplicative and additive structures on the values being combined.
 
 universe u v w
 
--- open BigOperators -- Porting note: commented out locale
+open BigOperators
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 

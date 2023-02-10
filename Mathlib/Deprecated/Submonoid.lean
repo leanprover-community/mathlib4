@@ -34,7 +34,7 @@ Submonoid, Submonoids, IsSubmonoid
 -/
 
 
--- open BigOperators -- Porting note: commented out locale
+open BigOperators
 
 variable {M : Type _} [Monoid M] {s : Set M}
 

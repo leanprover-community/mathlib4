@@ -36,8 +36,7 @@ divisors, perfect numbers
 
 open Classical
 
--- Porting note: Unknown namespace BigOperators
--- open BigOperators
+open BigOperators
 
 open Finset
 

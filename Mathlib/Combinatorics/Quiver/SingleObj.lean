@@ -77,7 +77,7 @@ def hasInvolutiveReverse (rev : α → α) (h : Function.Involutive rev) :
 #align quiver.single_obj.has_involutive_reverse Quiver.SingleObj.hasInvolutiveReverse
 
 /-- The type of arrows from `star α` to itself is equivalent to the original type `α`. -/
-@[simps]
+@[simps!]
 def toHom : α ≃ (star α ⟶ star α) :=
   Equiv.refl _
 #align quiver.single_obj.to_hom Quiver.SingleObj.toHom

@@ -1373,7 +1373,7 @@ section
 variable (p : ι → Prop) [DecidablePred p]
 
 theorem supᵢ_dite (f : ∀ i, p i → α) (g : ∀ i, ¬p i → α) :
-    (⨆ i, if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i), 
+    (⨆ i, if h : p i then f i h else g i h) = (⨆ (i) (h : p i), f i h) ⊔ ⨆ (i) (h : ¬p i),
     g i h := by
   rw [← supᵢ_sup_eq]
   congr 1 with i
@@ -1921,14 +1921,15 @@ instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLat
 
 end Prod
 
-lemma infₛ_Prod [InfSet α] [InfSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
+lemma infₛ_prod [InfSet α] [InfSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
   infₛ (s ×ˢ t) = (infₛ s, infₛ t) :=
 congr_arg₂ Prod.mk (congr_arg infₛ $ fst_image_prod _ ht) (congr_arg infₛ $ snd_image_prod hs _)
+#align Inf_prod infₛ_prod
 
-lemma Sup_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
+lemma supₛ_prod [SupSet α] [SupSet β] {s : Set α} {t : Set β} (hs : s.Nonempty) (ht : t.Nonempty) :
   supₛ (s ×ˢ t) = (supₛ s, supₛ t) :=
 congr_arg₂ Prod.mk (congr_arg supₛ $ fst_image_prod _ ht) (congr_arg supₛ $ snd_image_prod hs _)
-#align Sup_prod Sup_prod
+#align Sup_prod supₛ_prod
 
 section CompleteLattice
 

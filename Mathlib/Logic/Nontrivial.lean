@@ -116,7 +116,7 @@ theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
 #align subsingleton_iff subsingleton_iff
 
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
-  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, _root_.not_not]
+  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, not_not]
 #align not_nontrivial_iff_subsingleton not_nontrivial_iff_subsingleton
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=

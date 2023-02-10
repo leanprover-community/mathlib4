@@ -27,6 +27,7 @@ See [Wikipedia, *Methods of computing square roots*]
 
 namespace Nat
 
+#align nat.sqrt Nat.sqrt
 -- Porting note: the implementation òf `Nat.sqrt` in `Std` no longer needs `sqrt_aux`.
 #noalign nat.sqrt_aux_dec
 #noalign nat.sqrt_aux

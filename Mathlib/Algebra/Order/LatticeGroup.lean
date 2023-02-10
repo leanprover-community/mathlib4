@@ -190,13 +190,13 @@ theorem m_neg_part_def (a : α) : a⁻ = a⁻¹ ⊔ 1 :=
 #align lattice_ordered_comm_group.m_neg_part_def LatticeOrderedCommGroup.m_neg_part_def
 #align lattice_ordered_comm_group.neg_part_def LatticeOrderedCommGroup.neg_part_def
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem pos_one : (1 : α)⁺ = 1 :=
   sup_idem
 #align lattice_ordered_comm_group.pos_one LatticeOrderedCommGroup.pos_one
 #align lattice_ordered_comm_group.pos_zero LatticeOrderedCommGroup.pos_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem neg_one : (1 : α)⁻ = 1 := by rw [m_neg_part_def, inv_one, sup_idem]
 #align lattice_ordered_comm_group.neg_one LatticeOrderedCommGroup.neg_one
 #align lattice_ordered_comm_group.neg_zero LatticeOrderedCommGroup.neg_zero
@@ -318,7 +318,7 @@ theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b
 
 -- Bourbaki A.VI.12  Prop 9 a)
 -- a = a⁺ - a⁻
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem pos_div_neg [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : a⁺ / a⁻ = a := by
   symm
   rw [div_eq_mul_inv]
@@ -576,7 +576,8 @@ theorem mabs_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) (h 
 #align lattice_ordered_comm_group.abs_of_nonneg LatticeOrderedCommGroup.abs_of_nonneg
 
 /-- The unary operation of taking the absolute value is idempotent. -/
-@[simp, to_additive abs_abs "The unary operation of taking the absolute value is idempotent."]
+@[to_additive (attr := simp) abs_abs
+  "The unary operation of taking the absolute value is idempotent."]
 theorem mabs_mabs [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |(|a|)| = |a| :=
   mabs_of_one_le _ (one_le_abs _)
 #align lattice_ordered_comm_group.mabs_mabs LatticeOrderedCommGroup.mabs_mabs

@@ -21,8 +21,7 @@ of monoids and groups
 -/
 
 
--- Port note: commented out the next line
--- open BigOperators
+open BigOperators
 
 namespace Pi
 
