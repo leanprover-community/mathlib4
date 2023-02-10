@@ -692,12 +692,17 @@ theorem length_splitWrtComposition (l : List α) (c : Composition n) :
   length_splitWrtCompositionAux _ _
 #align list.length_split_wrt_composition List.length_splitWrtComposition
 
+
 theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
-  induction' ns with n ns IH <;> intro l h <;> simp at h⊢
+  induction' ns with n ns IH <;> intro l h <;> simp at h
+  . simp
   have := le_trans (Nat.le_add_right _ _) h
-  rw [IH]; · simp [this]
-  rwa [length_drop, le_tsub_iff_left this]
+  simp only [splitWrtCompositionAux_cons, this] ; dsimp
+  rw [length_take, IH] <;> simp [length_drop]
+  . assumption
+  . exact le_tsub_of_add_le_left h
+
 #align list.map_length_split_wrt_composition_aux List.map_length_splitWrtCompositionAux
 
 /-- When one splits a list along a composition `c`, the lengths of the sublists thus created are
