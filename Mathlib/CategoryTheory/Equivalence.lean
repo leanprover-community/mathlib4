@@ -48,9 +48,9 @@ if it is full, faithful and essentially surjective.
 ## Main results
 
 * `Equivalence.mk`: upgrade an equivalence to a (half-)adjoint equivalence
-* `IsEquivalence.equiv_of_iso`: when `F` and `G` are isomorphic functors, `F` is an equivalence
+* `IsEquivalence.equivOfIso`: when `F` and `G` are isomorphic functors, `F` is an equivalence
 iff `G` is.
-* `Equivalence.of_fully_faithfully_essSurj`: a fully faithful essentially surjective functor is an
+* `Equivalence.ofFullyFaithfullyEssSurj`: a fully faithful essentially surjective functor is an
   equivalence.
 
 ## Notations
@@ -254,7 +254,7 @@ section
 variable {F : C ⥤ D} {G : D ⥤ C} (η : 𝟭 C ≅ F ⋙ G) (ε : G ⋙ F ≅ 𝟭 D)
 
 /-- If `η : 𝟭 C ≅ F ⋙ G` is part of a (not necessarily half-adjoint) equivalence, we can upgrade it
-to a refined natural isomorphism `adjointify_η η : 𝟭 C ≅ F ⋙ G` which exhibits the properties
+to a refined natural isomorphism `adjointifyη η : 𝟭 C ≅ F ⋙ G` which exhibits the properties
 required for a half-adjoint equivalence. See `Equivalence.mk`. -/
 def adjointifyη : 𝟭 C ≅ F ⋙ G := by
   calc
@@ -400,9 +400,9 @@ section CancellationLemmas
 
 variable (e : C ≌ D)
 
-/- We need special forms of `cancel_nat_iso_hom_right(_assoc)` and
-`cancel_nat_iso_inv_right(_assoc)` for units and counits, because neither `simp` or `rw` will apply
-those lemmas in this setting without providing `e.unit_iso` (or similar) as an explicit argument.
+/- We need special forms of `cancel_natIso_hom_right(_assoc)` and
+`cancel_natIso_inv_right(_assoc)` for units and counits, because neither `simp` or `rw` will apply
+those lemmas in this setting without providing `e.unitIso` (or similar) as an explicit argument.
 We also provide the lemmas for length four compositions, since they're occasionally useful.
 (e.g. in proving that equivalences take monos to monos) -/
 @[simp]
