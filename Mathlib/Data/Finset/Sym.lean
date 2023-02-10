@@ -49,8 +49,9 @@ section Sym2
 variable {m : Sym2 α}
 
 /-- Lifts a finset to `Sym2 α`. `s.sym2` is the finset of all pairs with elements in `s`. -/
-protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ᶠ s).image Quotient.mk'
 -- Porting note: changed ×ˢ to xᶠ
+protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ᶠ s).image Quotient.mk'
+
 
 #align finset.sym2 Finset.sym2
 
@@ -87,14 +88,10 @@ alias sym2_nonempty ↔ _ nonempty.sym2
 -- Porting note: attribute does not exist
 -- attribute [protected] nonempty.sym2
 
--- Porting note: add missing instances
-noncomputable instance : DecidableRel (fun x y : α × α ↦ x ≈ y) :=
-  Classical.decRel (fun x y : α × α ↦ x ≈ y)
-noncomputable instance [Fintype α] : Fintype (Sym2 α) :=
-  Quotient.fintype (Sym2.Rel.setoid α)
-
 @[simp]
-theorem sym2_univ [Fintype α] : (univ : Finset α).sym2 = univ := by rfl
+theorem sym2_univ [Fintype α] : (univ : Finset α).sym2 = univ := by
+  ext
+  simp only [mem_sym2_iff, mem_univ, implies_true]
 #align finset.sym2_univ Finset.sym2_univ
 
 @[simp]
@@ -125,8 +122,8 @@ section Sym
 
 variable {n : ℕ} {m : Sym α n}
 
--- Porting note: add missing instances
-noncomputable instance : DecidableEq (Sym α n) := Classical.decEq (Sym α n)
+-- Porting note: instance needed
+instance : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/
