@@ -505,6 +505,12 @@ protected theorem div_div_cancel (h : IsUnit a) : a / (a / b) = b := by
 #align is_unit.div_div_cancel IsUnit.div_div_cancel
 #align is_add_unit.sub_sub_cancel IsAddUnit.sub_sub_cancel
 
+@[to_additive]
+protected theorem div_div_cancel_left (h : IsUnit a) : a / b / a = b⁻¹ := by
+    rw [div_eq_mul_inv, div_eq_mul_inv, mul_right_comm, h.mul_inv_cancel, one_mul]
+#align is_unit.div_div_cancel_left IsUnit.div_div_cancel_left
+#align is_add_unit.sub_sub_cancel_left IsAddUnit.sub_sub_cancel_left
+
 end DivisionCommMonoid
 
 end IsUnit

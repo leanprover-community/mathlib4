@@ -194,6 +194,10 @@ theorem div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b :=
   IsUnit.div_div_cancel ha.isUnit
 #align div_div_cancel' div_div_cancel'
 
+theorem div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ :=
+  IsUnit.div_div_cancel_left ha.is_unit
+#align div_div_cancel_left' div_div_cancel_left'
+
 theorem div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
   rw [div_mul_eq_mul_div, one_mul, div_mul_right _ h]
 #align div_helper div_helper
