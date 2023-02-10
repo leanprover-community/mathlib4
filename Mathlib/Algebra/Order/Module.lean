@@ -190,14 +190,8 @@ def OrderIso.smulLeftDual {c : k} (hc : c < 0) : M ≃o Mᵒᵈ
   left_inv := inv_smul_smul₀ hc.ne
   right_inv := smul_inv_smul₀ hc.ne
   -- Porting note: old code was `map_rel_iff' b₁ b₂ := smul_le_smul_iff_of_neg hc`
-  -- Porting note: but it doesn't work.
-  -- Porting note: help wanted: better code here?
-  map_rel_iff' := by
-                     -- Porting note: help wanted: the result looks weird.
-                     --               when using the following.
-                     -- simp [*, OrderDual.toDual]
-                     simp only [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual];
-                     exact smul_le_smul_iff_of_neg hc
+  map_rel_iff' := by simp only [*, Equiv.coe_fn_mk, OrderDual.toDual_le_toDual,
+                                smul_le_smul_iff_of_neg, forall_const]
 #align order_iso.smul_left_dual OrderIso.smulLeftDual
 
 end Field
