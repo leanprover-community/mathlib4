@@ -15,6 +15,8 @@ example {f : X → Y} {g : Y → X} (hf : Continuous f) (hg : Continuous g) :
 
 -- Todo: more interesting examples when more algebra is ported
 
+-- Porting note: port the tests from mathlib3 once we have the necessary theory files
+
 /- Todo: restore this test
 example [TopologicalSpace X] [TopologicalSpace Y]
   (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
