@@ -36,3 +36,9 @@ example {x y z : ℕ} : True := by
   { guard_hyp h : x ≤ y + z
     guard_target =ₛ True
     trivial }
+
+example : ∀ _ _ : ℕ, True := by
+  intro x y
+  wlog h : x ≤ y -- `wlog` finds new variables
+  { trivial }
+  { trivial }
