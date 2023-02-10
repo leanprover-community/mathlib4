@@ -162,18 +162,16 @@ theorem admissible_E8 : Admissible E8 :=
 
 theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < sumInv pqr := by
   rw [Admissible]
-  have h₂: ((2 : ℕ+) : ℚ) = 2 := of_eq_true (eq_true_of_decide (Eq.refl true))
-  have h₃: ((3 : ℕ+) : ℚ) = 3 := of_eq_true (eq_true_of_decide (Eq.refl true))
-  have h₄: ((4 : ℕ+) : ℚ) = 4 := of_eq_true (eq_true_of_decide (Eq.refl true))
-  have h₅: ((5 : ℕ+) : ℚ) = 5 := of_eq_true (eq_true_of_decide (Eq.refl true))
   rintro (⟨p', q', H⟩ | ⟨n, H⟩ | H | H | H)
   · rw [← H, A', sumInv_pqr, add_assoc]
     simp only [lt_add_iff_pos_right, PNat.one_coe, inv_one, Nat.cast_one]
     apply add_pos <;> simp only [PNat.pos, Nat.cast_pos, inv_pos]
   · rw [← H, D', sumInv_pqr]
-    simp only [h₂]
+    conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
     norm_num
-  all_goals rw [← H, E', sumInv_pqr]; simp [h₂, h₃, h₄, h₅]; norm_num;
+  all_goals
+    rw [← H, E', sumInv_pqr]
+    conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
 
 #align ADE_inequality.admissible.one_lt_sum_inv ADEInequality.Admissible.one_lt_sumInv
 
