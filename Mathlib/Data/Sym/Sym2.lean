@@ -669,8 +669,12 @@ theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Re
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
+-- Porting note: Name the existing instance
+instance instRelDecidable (α : Type _) [DecidableEq α] : DecidableRel (Sym2.Rel α) := fun x y =>
   decidable_of_bool (relBool x y) (relBool_spec x y)
+-- Porting note: and add this other version needed for Data.Finset.Sym
+instance instRelDecidable' (α : Type _) [DecidableEq α] :
+  DecidableRel (· ≈ · : α × α → α × α → Prop) := instRelDecidable _
 
 -- porting note: extra definitions and lemmas for proving decidable equality in `Sym2`
 /-- An algorithm for deciding equality in `Sym2 α`. -/
