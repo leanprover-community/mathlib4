@@ -21,7 +21,8 @@ We also state a corresponding lemma guaranteeing that a subset of `M` contains a
 -/
 
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (m m' «expr ∈ » N) -/
+/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder
+  collection (m m' «expr ∈ » N) -/
 /-- Any nonempty compact Hausdorff semigroup where right-multiplication is continuous contains
 an idempotent, i.e. an `m` such that `m * m = m`. -/
 @[to_additive
@@ -29,8 +30,8 @@ an idempotent, i.e. an `m` such that `m * m = m`. -/
 theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] [Semigroup M]
     [TopologicalSpace M] [CompactSpace M] [T2Space M]
     (continuous_mul_left : ∀ r : M, Continuous (· * r)) : ∃ m : M, m * m = m := by
-  /- We apply Zorn's lemma to the poset of nonempty closed subsemigroups of `M`. It will turn out that
-  any minimal element is `{m}` for an idempotent `m : M`. -/
+  /- We apply Zorn's lemma to the poset of nonempty closed subsemigroups of `M`.
+     It will turn out that any minimal element is `{m}` for an idempotent `m : M`. -/
   let S : Set (Set M) :=
     { N | IsClosed N ∧ N.Nonempty ∧ ∀ (m) (_ : m ∈ N) (m') (_ : m' ∈ N), m * m' ∈ N }
   obtain ⟨N, ⟨N_closed, ⟨m, hm⟩, N_mul⟩, N_minimal⟩ : ∃ N ∈ S, ∀ N' ∈ S, N' ⊆ N → N' = N
@@ -78,7 +79,8 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
 #align exists_idempotent_of_compact_t2_of_continuous_mul_left exists_idempotent_of_compact_t2_of_continuous_mul_left
 #align exists_idempotent_of_compact_t2_of_continuous_add_left exists_idempotent_of_compact_t2_of_continuous_add_left
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x y «expr ∈ » s) -/
+/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning:
+   expanding binder collection (x y «expr ∈ » s) -/
 /-- A version of `exists_idempotent_of_compact_t2_of_continuous_mul_left` where the idempotent lies
 in some specified nonempty compact subsemigroup. -/
 @[to_additive exists_idempotent_in_compact_add_subsemigroup
