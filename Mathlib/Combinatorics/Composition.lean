@@ -12,9 +12,7 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.WLOG
-import Mathlib.Tactic.LibrarySearch -- porting note: TODO remove
 
-set_option autoImplicit false -- porting note: TODO remove
 /-!
 # Compositions
 
@@ -845,7 +843,8 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.to_finset_set_of,
-  Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero_iff, and_false, add_left_inj, false_or, true_and]
+      Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero_iff, and_false,
+      add_left_inj, false_or, true_and]
     erw [Set.mem_setOf_eq]
     simp [this, false_or_iff, add_right_inj, add_eq_zero_iff, one_ne_zero, false_and_iff,
       Fin.val_mk]
@@ -892,7 +891,8 @@ def length : ℕ :=
 
 theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 :=
   (tsub_eq_iff_eq_add_of_le (Nat.succ_le_of_lt c.card_boundaries_pos)).mp rfl
-#align composition_as_set.card_boundaries_eq_succ_length CompositionAsSet.card_boundaries_eq_succ_length
+#align composition_as_set.card_boundaries_eq_succ_length
+  CompositionAsSet.card_boundaries_eq_succ_length
 
 theorem length_lt_card_boundaries : c.length < c.boundaries.card := by
   rw [c.card_boundaries_eq_succ_length]
@@ -1092,3 +1092,5 @@ theorem composition_card (n : ℕ) : Fintype.card (Composition n) = 2 ^ (n - 1) 
   rw [← compositionAsSet_card n]
   exact Fintype.card_congr (compositionEquiv n)
 #align composition_card composition_card
+
+#lint
