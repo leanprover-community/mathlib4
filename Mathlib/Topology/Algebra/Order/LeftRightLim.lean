@@ -33,7 +33,7 @@ We also port the API to antitone functions.
 
 ## TODO
 
-Prove corresponding stronger results for strict_mono and strict_anti functions.
+Prove corresponding stronger results for `StrictMono` and `StrictAnti` functions.
 -/
 
 
@@ -46,7 +46,7 @@ section
 variable {α β : Type _} [LinearOrder α] [TopologicalSpace β]
 
 /-- Let `f : α → β` be a function from a linear order `α` to a topological_space `β`, and
-let `a : α`. The limit strictly to the left of `f` at `a`, denoted with `left_lim f a`, is defined
+let `a : α`. The limit strictly to the left of `f` at `a`, denoted with `leftLim f a`, is defined
 by using the order topology on `α`. If `a` is isolated to its left or the function has no left
 limit, we use `f a` instead to guarantee a good behavior in most cases. -/
 noncomputable def Function.leftLim (f : α → β) (a : α) : β := by
@@ -57,7 +57,7 @@ noncomputable def Function.leftLim (f : α → β) (a : α) : β := by
 #align function.left_lim Function.leftLim
 
 /-- Let `f : α → β` be a function from a linear order `α` to a topological_space `β`, and
-let `a : α`. The limit strictly to the right of `f` at `a`, denoted with `right_lim f a`, is defined
+let `a : α`. The limit strictly to the right of `f` at `a`, denoted with `rightLim f a`, is defined
 by using the order topology on `α`. If `a` is isolated to its right or the function has no right
 limit, , we use `f a` instead to guarantee a good behavior in most cases. -/
 noncomputable def Function.rightLim (f : α → β) (a : α) : β :=
@@ -225,7 +225,6 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
       exact hf.continuousWithinAt_Ioi_iff_rightLim_eq.2 h'
 #align monotone.continuous_at_iff_left_lim_eq_right_lim Monotone.continuousAt_iff_leftLim_eq_rightLim
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:75:38: in wlog #[[ident hle], [":", expr «expr ≤ »(u, v)], ["generalizing", ident u, ident v], []]: ./././Mathport/Syntax/Translate/Basic.lean:349:22: unsupported: too many args -/
 /-- In a second countable space, the set of points where a monotone function is not right-continuous
 is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
 version. -/
