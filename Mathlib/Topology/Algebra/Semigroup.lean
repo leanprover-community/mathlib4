@@ -74,7 +74,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     · refine' DirectedOn.directed_val (IsChain.directedOn hc.symm)
     exacts[fun i => (hcs i.Prop).2.1, fun i => (hcs i.Prop).1.IsCompact, fun i => (hcs i.Prop).1]
   · rw [Set.mem_interₛ]
-    exact fun t ht => (hcs ht).2.2 m (set.mem_sInter.mp hm t ht) m' (set.mem_sInter.mp hm' t ht)
+    exact fun t ht => (hcs ht).2.2 m (Set.mem_interₛ.mp hm t ht) m' (Set.mem_interₛ.mp hm' t ht)
 #align exists_idempotent_of_compact_t2_of_continuous_mul_left exists_idempotent_of_compact_t2_of_continuous_mul_left
 #align exists_idempotent_of_compact_t2_of_continuous_add_left exists_idempotent_of_compact_t2_of_continuous_add_left
 
