@@ -408,8 +408,8 @@ theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
     have A : (i₁ : ℕ).succ ≤ i₂ := Nat.succ_le_of_lt this
     apply lt_irrefl (x : ℕ)
     calc
-      (x : ℕ) < c.size_up_to (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
-      _ ≤ c.size_up_to (i₂ : ℕ) := monotone_sum_take _ A
+      (x : ℕ) < c.sizeUpTo (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
+      _ ≤ c.sizeUpTo (i₂ : ℕ) := monotone_sum_take _ A
       _ ≤ x := (c.mem_range_embedding_iff.1 hx₂).1
 
 #align composition.disjoint_range Composition.disjoint_range
