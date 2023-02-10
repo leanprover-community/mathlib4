@@ -136,7 +136,7 @@ end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
 instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
-  ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by tidy), Quiver.Hom.unop_inj (by tidy)⟩⟩⟩
+  ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by aesop_cat), Quiver.Hom.unop_inj (by aesop_cat)⟩⟩⟩
 #align category_theory.is_iso_op CategoryTheory.isIso_op
 
 /-- If `f.op` is an isomorphism `f` must be too.
@@ -160,7 +160,8 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 
 @[simp]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
-  simp only [← op_comp, IsIso.inv_hom_id, op_id]
+  ext
+  rw [← op_comp, IsIso.inv_hom_id, op_id]
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
@@ -175,7 +176,8 @@ section
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-variable {C D}
+-- porting note: commenting out redundant binder annotation update
+-- variable {C D}
 
 /-- The opposite of a functor, i.e. considering a functor `F : C ⥤ D` as a functor `Cᵒᵖ ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made between these.
@@ -198,15 +200,15 @@ protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D
 #align category_theory.functor.unop CategoryTheory.Functor.unop
 
 /-- The isomorphism between `F.op.unop` and `F`. -/
-@[simps]
+@[simps!]
 def opUnopIso (F : C ⥤ D) : F.op.unop ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by tidy)
+  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
 #align category_theory.functor.op_unop_iso CategoryTheory.Functor.opUnopIso
 
 /-- The isomorphism between `F.unop.op` and `F`. -/
-@[simps]
+@[simps!]
 def unopOpIso (F : Cᵒᵖ ⥤ Dᵒᵖ) : F.unop.op ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by tidy)
+  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
 #align category_theory.functor.unop_op_iso CategoryTheory.Functor.unopOpIso
 
 variable (C D)
@@ -275,15 +277,15 @@ instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp
 #align category_theory.functor.left_op_faithful CategoryTheory.Functor.leftOp_faithful
 
 /-- The isomorphism between `F.left_op.right_op` and `F`. -/
-@[simps]
+@[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by tidy)
+  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
 #align category_theory.functor.left_op_right_op_iso CategoryTheory.Functor.leftOpRightOpIso
 
 /-- The isomorphism between `F.right_op.left_op` and `F`. -/
-@[simps]
+@[simps!]
 def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by tidy)
+  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
 #align category_theory.functor.right_op_left_op_iso CategoryTheory.Functor.rightOpLeftOpIso
 
 /-- Whenever possible, it is advisable to use the isomorphism `right_op_left_op_iso`
@@ -478,11 +480,11 @@ def unop {X Y : Cᵒᵖ} (f : X ≅ Y) : Y.unop ≅ X.unop
 #align category_theory.iso.unop CategoryTheory.Iso.unop
 
 @[simp]
-theorem unop_op {X Y : Cᵒᵖ} (f : X ≅ Y) : f.unop.op = f := by ext <;> rfl
+theorem unop_op {X Y : Cᵒᵖ} (f : X ≅ Y) : f.unop.op = f := by (ext; rfl)
 #align category_theory.iso.unop_op CategoryTheory.Iso.unop_op
 
 @[simp]
-theorem op_unop {X Y : C} (f : X ≅ Y) : f.op.unop = f := by ext <;> rfl
+theorem op_unop {X Y : C} (f : X ≅ Y) : f.op.unop = f := by (ext; rfl)
 #align category_theory.iso.op_unop CategoryTheory.Iso.op_unop
 
 end Iso
@@ -624,22 +626,22 @@ variable (D : Type u₂) [Category.{v₂} D]
 @[simps]
 def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ
     where
-  Functor := opHom _ _
+  functor := opHom _ _
   inverse := opInv _ _
   unitIso :=
     NatIso.ofComponents (fun F => F.unop.opUnopIso.op)
       (by
         intro F G f
-        dsimp [op_unop_iso]
+        dsimp [opUnopIso]
         rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
-        tidy)
-  counitIso := NatIso.ofComponents (fun F => F.unopOpIso) (by tidy)
+        aesop_cat)
+  counitIso := NatIso.ofComponents (fun F => F.unopOpIso) (by aesop_cat)
 #align category_theory.functor.op_unop_equiv CategoryTheory.Functor.opUnopEquiv
 
 /-- The equivalence of functor categories induced by `left_op` and `right_op`.
 -/
-@[simps]
+@[simps!]
 def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ
     where
   Functor :=
@@ -655,8 +657,8 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ
         dsimp
         rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
         congr 1
-        tidy)
-  counitIso := NatIso.ofComponents (fun F => F.leftOpRightOpIso) (by tidy)
+        aesop_cat)
+  counitIso := NatIso.ofComponents (fun F => F.leftOpRightOpIso) (by aesop_cat)
 #align category_theory.functor.left_op_right_op_equiv CategoryTheory.Functor.leftOpRightOpEquiv
 
 end Functor
