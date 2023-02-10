@@ -8,7 +8,7 @@ Authors: Stephen Morgan, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Opposite categories
@@ -158,15 +158,13 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 #align category_theory.is_iso_unop CategoryTheory.isIso_unop
 
 @[simp]
-theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op :=
-  by
+theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
   ext
   rw [← op_comp, is_iso.inv_hom_id, op_id]
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
-theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop :=
-  by
+theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
   ext
   rw [← unop_comp, is_iso.inv_hom_id, unop_id]
 #align category_theory.unop_inv CategoryTheory.unop_inv
@@ -288,8 +286,7 @@ def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
 
 /-- Whenever possible, it is advisable to use the isomorphism `right_op_left_op_iso`
 instead of this equality of functors. -/
-theorem rightOp_leftOp_eq (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp = F :=
-  by
+theorem rightOp_leftOp_eq (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp = F := by
   cases F
   rfl
 #align category_theory.functor.right_op_left_op_eq CategoryTheory.Functor.rightOp_leftOp_eq
