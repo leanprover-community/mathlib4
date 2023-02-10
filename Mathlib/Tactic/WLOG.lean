@@ -42,7 +42,8 @@ syntax (name := wlog) "wlog " binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 elab_rules : tactic
-| `(tactic| wlog $h:ident : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) => do
+| `(tactic| wlog $h:ident : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
+  withMainContext do
   let H := H.map (·.getId) |>.getD `this
   let h := h.getId
   let P ← elabType P

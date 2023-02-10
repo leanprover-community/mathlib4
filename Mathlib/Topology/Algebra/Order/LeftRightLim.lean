@@ -251,7 +251,7 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
   choose! z hz using this
   have I : InjOn f s := by
     apply StrictMonoOn.injOn
-    intro x hx y hy hxy
+    intro x hx y _ hxy
     calc
       f x < z x := (hz x hx).1
       _ ≤ f y := (hz x hx).2 y hxy
@@ -260,15 +260,14 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
   -- (the intervals `(f x, z x)`) is at most countable.
   have fs_count : (f '' s).Countable :=
     by
-    have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) :=
-      by
+    have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
       wlog hle : u ≤ v generalizing u v
       · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
       have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
       apply disjoint_iff_forall_ne.2
       rintro a ha b hb rfl
-      simp only [I.left_inv_on_inv_fun_on us, I.left_inv_on_inv_fun_on vs] at ha hb
+      simp only [I.leftInvOn_invFunOn us, I.leftInvOn_invFunOn vs] at ha hb
       exact lt_irrefl _ ((ha.2.trans_le ((hz u us).2 v hlt)).trans hb.1)
     apply Set.PairwiseDisjoint.countable_of_Ioo A
     rintro _ ⟨y, ys, rfl⟩
