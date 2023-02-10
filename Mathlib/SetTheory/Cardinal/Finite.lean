@@ -16,10 +16,10 @@ import Mathlib.SetTheory.Cardinal.Basic
 
 ## Main Definitions
 
-* `nat.card α` is the cardinality of `α` as a natural number.
-  If `α` is infinite, `nat.card α = 0`.
-* `part_enat.card α` is the cardinality of `α` as an extended natural number
-  (`part ℕ` implementation). If `α` is infinite, `part_enat.card α = ⊤`.
+* `Nat.card α` is the cardinality of `α` as a natural number.
+  If `α` is infinite, `Nat.card α = 0`.
+* `PartENat.card α` is the cardinality of `α` as an extended natural number
+  (Part ℕ` implementation). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
 
@@ -33,8 +33,8 @@ variable {α β : Type _}
 
 namespace Nat
 
-/-- `nat.card α` is the cardinality of `α` as a natural number.
-  If `α` is infinite, `nat.card α = 0`. -/
+/-- `Nat.card α` is the cardinality of `α` as a natural number.
+  If `α` is infinite, `Nat.card α = 0`. -/
 protected def card (α : Type _) : ℕ :=
   toNat (mk α)
 #align nat.card Nat.card
@@ -62,14 +62,14 @@ theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.c
 #align nat.card_eq_of_bijective Nat.card_eq_of_bijective
 
 theorem card_eq_of_equiv_fin {α : Type _} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
-  simpa using card_congr f
+  simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
 #align nat.card_eq_of_equiv_fin Nat.card_eq_of_equiv_fin
 
 /-- If the cardinality is positive, that means it is a finite type, so there is
-an equivalence between `α` and `fin (nat.card α)`. See also `finite.equiv_fin`. -/
+an equivalence between `α` and `Fin (Nat.card α)`. See also `Finite.equivFin`. -/
 def equivFinOfCardPos {α : Type _} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
   cases fintypeOrInfinite α
-  · simpa using Fintype.equivFin α
+  · simpa only [card_eq_fintype_card] using Fintype.equivFin α
   · simp only [card_eq_zero_of_infinite, ne_eq] at h
 #align nat.equiv_fin_of_card_pos Nat.equivFinOfCardPos
 
@@ -133,8 +133,8 @@ end Nat
 
 namespace PartENat
 
-/-- `part_enat.card α` is the cardinality of `α` as an extended natural number.
-  If `α` is infinite, `part_enat.card α = ⊤`. -/
+/-- `PartENat.card α` is the cardinality of `α` as an extended natural number.
+  If `α` is infinite, `PartENat.card α = ⊤`. -/
 def card (α : Type _) : PartENat :=
   toPartENat (mk α)
 #align part_enat.card PartENat.card
