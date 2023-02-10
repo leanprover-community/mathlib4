@@ -11,7 +11,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Tactic.WLog
+import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.LibrarySearch -- porting note: TODO remove
 
 set_option autoImplicit false -- porting note: TODO remove
@@ -397,15 +397,13 @@ theorem mem_range_embedding_iff {j : Fin n} {i : Fin c.length} :
 theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
     Disjoint (Set.range (c.embedding i₁)) (Set.range (c.embedding i₂)) := by
   classical
-    wlog h' : i₁ ≤ i₂ generalizing i₁ i₂
-    swap
-    exact (this h.symm).symm
+    wlog h' : i₁ < i₂
+    exact (this c h.symm (h.lt_or_lt.resolve_left h')).symm
     by_contra d
     obtain ⟨x, hx₁, hx₂⟩ :
       ∃ x : Fin n, x ∈ Set.range (c.embedding i₁) ∧ x ∈ Set.range (c.embedding i₂) :=
       Set.not_disjoint_iff.1 d
-    have : i₁ < i₂ := lt_of_le_of_ne h' h
-    have A : (i₁ : ℕ).succ ≤ i₂ := Nat.succ_le_of_lt this
+    have A : (i₁ : ℕ).succ ≤ i₂ := Nat.succ_le_of_lt h'
     apply lt_irrefl (x : ℕ)
     calc
       (x : ℕ) < c.sizeUpTo (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
