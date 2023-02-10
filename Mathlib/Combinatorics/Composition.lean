@@ -256,7 +256,7 @@ a virtual point at the right of the last block, to make for a nice equiv with
 `composition_as_set n`. -/
 def boundary : Fin (c.length + 1) ↪o Fin (n + 1) :=
   (OrderEmbedding.ofStrictMono fun i => ⟨c.sizeUpTo i, Nat.lt_succ_of_le (c.sizeUpTo_le i)⟩) <|
-    Fin.strictMono_iff_lt_succ.2 fun ⟨i, hi⟩ => c.sizeUpTo_strict_mono hi
+    Fin.strictMono_iff_lt_succ.2 fun ⟨_, hi⟩ => c.sizeUpTo_strict_mono hi
 #align composition.boundary Composition.boundary
 
 @[simp]
@@ -340,7 +340,7 @@ theorem lt_sizeUpTo_index_succ (j : Fin n) : (j : ℕ) < c.sizeUpTo (c.index j).
 
 theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   by_contra H
-  set i := c.index j with hi
+  set i := c.index j
   push_neg  at H
   have i_pos : (0 : ℕ) < i := by
     by_contra' i_pos
@@ -559,7 +559,7 @@ theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := 
         rw [← ofFn_blocksFun, mem_ofFn c.blocksFun, Set.mem_range] at hi
         obtain ⟨j : Fin c.length, hj : c.blocksFun j = i⟩ := hi
         rw [← hj] at i_blocks
-        exact Finset.sum_lt_sum (fun i hi => by simp [blocksFun]) ⟨j, Finset.mem_univ _, i_blocks⟩
+        exact Finset.sum_lt_sum (fun i _ => by simp [blocksFun]) ⟨j, Finset.mem_univ _, i_blocks⟩
         }
       _ = n := c.sum_blocksFun
 
@@ -654,7 +654,7 @@ variable {α : Type _}
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Auxiliary for `list.split_wrt_composition`. -/
 def splitWrtCompositionAux : List α → List ℕ → List (List α)
-  | l, [] => []
+  | _, [] => []
   | l, n::ns =>
     let (l₁, l₂) := l.splitAt n
     l₁::splitWrtCompositionAux l₂ ns
@@ -799,7 +799,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   invFun s :=
     { boundaries :=
         { i : Fin n.succ |
-            i = 0 ∨ i = Fin.last n ∨ ∃ (j : Fin (n - 1))(hj : j ∈ s), (i : ℕ) = j + 1 }.toFinset
+            i = 0 ∨ i = Fin.last n ∨ ∃ (j : Fin (n - 1))(_hj : j ∈ s), (i : ℕ) = j + 1 }.toFinset
       zero_mem := by simp
       getLast_mem := by simp }
   left_inv := by
