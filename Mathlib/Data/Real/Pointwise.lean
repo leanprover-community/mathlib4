@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Module
-import Mathbin.Data.Real.Basic
+import Mathlib.Algebra.Order.Module
+import Mathlib.Data.Real.Basic
 
 /-!
 # Pointwise operations on sets of reals
@@ -36,8 +36,7 @@ section MulActionWithZero
 
 variable [MulActionWithZero α ℝ] [OrderedSMul α ℝ] {a : α}
 
-theorem Real.infₛ_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : infₛ (a • s) = a • infₛ s :=
-  by
+theorem Real.infₛ_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : infₛ (a • s) = a • infₛ s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · rw [smul_set_empty, Real.infₛ_empty, smul_zero]
   obtain rfl | ha' := ha.eq_or_lt
@@ -54,8 +53,7 @@ theorem Real.smul_infᵢ_of_nonneg (ha : 0 ≤ a) (f : ι → ℝ) : (a • ⨅ 
   (Real.infₛ_smul_of_nonneg ha _).symm.trans <| congr_arg infₛ <| (range_comp _ _).symm
 #align real.smul_infi_of_nonneg Real.smul_infᵢ_of_nonneg
 
-theorem Real.supₛ_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : supₛ (a • s) = a • supₛ s :=
-  by
+theorem Real.supₛ_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : supₛ (a • s) = a • supₛ s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · rw [smul_set_empty, Real.supₛ_empty, smul_zero]
   obtain rfl | ha' := ha.eq_or_lt
@@ -78,8 +76,7 @@ section Module
 
 variable [Module α ℝ] [OrderedSMul α ℝ] {a : α}
 
-theorem Real.infₛ_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : infₛ (a • s) = a • supₛ s :=
-  by
+theorem Real.infₛ_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : infₛ (a • s) = a • supₛ s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · rw [smul_set_empty, Real.infₛ_empty, Real.supₛ_empty, smul_zero]
   obtain rfl | ha' := ha.eq_or_lt
@@ -96,8 +93,7 @@ theorem Real.smul_supᵢ_of_nonpos (ha : a ≤ 0) (f : ι → ℝ) : (a • ⨆ 
   (Real.infₛ_smul_of_nonpos ha _).symm.trans <| congr_arg infₛ <| (range_comp _ _).symm
 #align real.smul_supr_of_nonpos Real.smul_supᵢ_of_nonpos
 
-theorem Real.supₛ_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : supₛ (a • s) = a • infₛ s :=
-  by
+theorem Real.supₛ_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : supₛ (a • s) = a • infₛ s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · rw [smul_set_empty, Real.supₛ_empty, Real.infₛ_empty, smul_zero]
   obtain rfl | ha' := ha.eq_or_lt
