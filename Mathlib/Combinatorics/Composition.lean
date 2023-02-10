@@ -102,8 +102,11 @@ variable {n : ℕ}
 /-- A composition of `n` is a list of positive integers summing to `n`. -/
 @[ext]
 structure Composition (n : ℕ) where
+  /-- List of positive integers summing to `n`-/
   blocks : List ℕ
+  /-- Proof of positivity for `blocks`-/
   blocks_pos : ∀ {i}, i ∈ blocks → 0 < i
+  /-- Proof that `blocks` sums to `n`-/
   blocks_sum : blocks.sum = n
 #align composition Composition
 
@@ -114,8 +117,11 @@ get a finset of `{0, ..., n}` containing `0` and `n`. This is the data in the st
 `composition_as_set n`. -/
 @[ext]
 structure CompositionAsSet (n : ℕ) where
+  /-- Combinatorial viewpoint on a composition of `n` as consecutive integers `{0, ..., n-1}`-/
   boundaries : Finset (Fin n.succ)
+  /-- Proof that `0` is a member of `boundaries`-/
   zero_mem : (0 : Fin n.succ) ∈ boundaries
+  /-- Last element of the composition-/
   getLast_mem : Fin.last n ∈ boundaries
 #align composition_as_set CompositionAsSet
 
@@ -566,7 +572,6 @@ theorem eq_ones_iff_le_length {c : Composition n} : c = ones n ↔ n ≤ c.lengt
 #align composition.eq_ones_iff_le_length Composition.eq_ones_iff_le_length
 
 /-! ### The composition `composition.single` -/
-
 
 /-- The composition made of a single block of size `n`. -/
 def single (n : ℕ) (h : 0 < n) : Composition n :=
