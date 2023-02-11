@@ -366,6 +366,8 @@ section LE
 variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [LE γ] [Mul δ] [Add δ] [LE δ]
 
 /-- Reinterpret an ordered ring isomorphism as an order isomorphism. -/
+-- Porting note: Added @[coe] attribute
+@[coe]
 def toOrderIso (f : α ≃+*o β) : α ≃o β :=
   ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩
 #align order_ring_iso.to_order_iso OrderRingIso.toOrderIso
@@ -424,8 +426,9 @@ theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
 #align order_ring_iso.coe_to_ring_equiv OrderRingIso.coe_toRingEquiv
 
+-- Porting note: needed to add FunLike.coe on the lhs, bad Equiv coercion otherwise
 @[simp, norm_cast]
-theorem coe_toOrderIso (f : α ≃+*o β) : ⇑(f : α ≃o β) = f :=
+theorem coe_toOrderIso (f : α ≃+*o β) : FunLike.coe (f : α ≃o β) = f :=
   rfl
 #align order_ring_iso.coe_to_order_iso OrderRingIso.coe_toOrderIso
 
@@ -580,5 +583,3 @@ instance OrderRingIso.subsingleton_left [LinearOrderedField α] [Archimedean α]
     [LinearOrderedField β] : Subsingleton (α ≃+*o β) :=
   OrderRingIso.symm_bijective.injective.subsingleton
 #align order_ring_iso.subsingleton_left OrderRingIso.subsingleton_left
-
-#lint
