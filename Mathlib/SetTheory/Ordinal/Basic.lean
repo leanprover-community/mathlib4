@@ -8,9 +8,9 @@ Authors: Mario Carneiro, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Sum.Order
-import Mathbin.Order.InitialSeg
-import Mathbin.SetTheory.Cardinal.Basic
+import Mathlib.Data.Sum.Order
+import Mathlib.Order.InitialSeg
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Ordinals
@@ -125,8 +125,7 @@ instance : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, EmptyRelation.isWellOrder⟩⟩
 
 @[simp]
-theorem eta (o : WellOrder) : mk o.α o.R o.wo = o :=
-  by
+theorem eta (o : WellOrder) : mk o.α o.R o.wo = o := by
   cases o
   rfl
 #align Well_order.eta WellOrder.eta
@@ -184,8 +183,7 @@ def typein (r : α → α → Prop) [IsWellOrder α r] (a : α) : Ordinal :=
 #align ordinal.typein Ordinal.typein
 
 @[simp]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.R :=
-  by
+theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.R := by
   cases w
   rfl
 #align ordinal.type_def' Ordinal.type_def'
@@ -411,8 +409,7 @@ instance NeZero.one : NeZero (1 : Ordinal) :=
 /-- Given two ordinals `α ≤ β`, then `initial_seg_out α β` is the initial segment embedding
 of `α` to `β`, as map from a model type for `α` to a model type for `β`. -/
 def initialSegOut {α β : Ordinal} (h : α ≤ β) :
-    InitialSeg ((· < ·) : α.out.α → α.out.α → Prop) ((· < ·) : β.out.α → β.out.α → Prop) :=
-  by
+    InitialSeg ((· < ·) : α.out.α → α.out.α → Prop) ((· < ·) : β.out.α → β.out.α → Prop) := by
   change α.out.r ≼i β.out.r
   rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
   cases Quotient.out α; cases Quotient.out β; exact Classical.choice
@@ -421,8 +418,7 @@ def initialSegOut {α β : Ordinal} (h : α ≤ β) :
 /-- Given two ordinals `α < β`, then `principal_seg_out α β` is the principal segment embedding
 of `α` to `β`, as map from a model type for `α` to a model type for `β`. -/
 def principalSegOut {α β : Ordinal} (h : α < β) :
-    PrincipalSeg ((· < ·) : α.out.α → α.out.α → Prop) ((· < ·) : β.out.α → β.out.α → Prop) :=
-  by
+    PrincipalSeg ((· < ·) : α.out.α → α.out.α → Prop) ((· < ·) : β.out.α → β.out.α → Prop) := by
   change α.out.r ≺i β.out.r
   rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
   cases Quotient.out α; cases Quotient.out β; exact Classical.choice
@@ -432,8 +428,7 @@ theorem typein_lt_type (r : α → α → Prop) [IsWellOrder α r] (a : α) : ty
   ⟨PrincipalSeg.ofElement _ _⟩
 #align ordinal.typein_lt_type Ordinal.typein_lt_type
 
-theorem typein_lt_self {o : Ordinal} (i : o.out.α) : typein (· < ·) i < o :=
-  by
+theorem typein_lt_self {o : Ordinal} (i : o.out.α) : typein (· < ·) i < o := by
   simp_rw [← type_lt o]
   apply typein_lt_type
 #align ordinal.typein_lt_self Ordinal.typein_lt_self
@@ -539,8 +534,7 @@ theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Or
 
 theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
-    ∀ (hr : o < type r) (hs : o < type s), f (enum r o hr) = enum s o hs :=
-  by
+    ∀ (hr : o < type r) (hs : o < type s), f (enum r o hr) = enum s o hs := by
   refine' induction_on o _; rintro γ t wo ⟨g⟩ ⟨h⟩
   skip; rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
 #align ordinal.rel_iso_enum' Ordinal.relIso_enum'
@@ -1128,8 +1122,7 @@ theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {x x' : α}
 
 @[simp]
 theorem typein_le_typein' (o : Ordinal) {x x' : o.out.α} :
-    typein (· < ·) x ≤ typein (· < ·) x' ↔ x ≤ x' :=
-  by
+    typein (· < ·) x ≤ typein (· < ·) x' ↔ x ≤ x' := by
   rw [typein_le_typein]
   exact not_lt
 #align ordinal.typein_le_typein' Ordinal.typein_le_typein'
@@ -1153,8 +1146,7 @@ theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type 
 #align ordinal.enum_zero_le Ordinal.enum_zero_le
 
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.out.α) :
-    @enum o.out.α (· < ·) _ 0 (by rwa [type_lt]) ≤ a :=
-  by
+    @enum o.out.α (· < ·) _ 0 (by rwa [type_lt]) ≤ a := by
   rw [← not_lt]
   apply enum_zero_le
 #align ordinal.enum_zero_le' Ordinal.enum_zero_le'
@@ -1164,8 +1156,7 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).out.α) :
       @enum (succ o).out.α (· < ·) _ o
         (by
           rw [type_lt]
-          exact lt_succ o) :=
-  by
+          exact lt_succ o) := by
   rw [← enum_typein (· < ·) a, enum_le_enum', ← lt_succ_iff]
   apply typein_lt_self
 #align ordinal.le_enum_succ Ordinal.le_enum_succ
@@ -1421,8 +1412,7 @@ theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
 #align cardinal.ord_one Cardinal.ord_one
 
 @[simp]
-theorem lift_ord (c) : (ord c).lift = ord (lift c) :=
-  by
+theorem lift_ord (c) : (ord c).lift = ord (lift c) := by
   refine' le_antisymm (le_of_forall_lt fun a ha => _) _
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, rfl, h⟩
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
@@ -1438,8 +1428,7 @@ theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h :
   apply typein_lt_type
 #align cardinal.card_typein_lt Cardinal.card_typein_lt
 
-theorem card_typein_out_lt (c : Cardinal) (x : c.ord.out.α) : card (typein (· < ·) x) < c :=
-  by
+theorem card_typein_out_lt (c : Cardinal) (x : c.ord.out.α) : card (typein (· < ·) x) < c := by
   rw [← lt_ord]
   apply typein_lt_self
 #align cardinal.card_typein_out_lt Cardinal.card_typein_out_lt
@@ -1525,8 +1514,7 @@ theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c
 #align cardinal.lt_univ' Cardinal.lt_univ'
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
-    Small.{v} α ↔ Cardinal.lift (#α) < univ.{v, max u (v + 1)} :=
-  by
+    Small.{v} α ↔ Cardinal.lift (#α) < univ.{v, max u (v + 1)} := by
   rw [lt_univ']
   constructor
   · rintro ⟨β, e⟩
@@ -1550,8 +1538,7 @@ theorem nat_le_card {o} {n : ℕ} : (n : Cardinal) ≤ card o ↔ (n : Ordinal) 
 #align ordinal.nat_le_card Ordinal.nat_le_card
 
 @[simp]
-theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o :=
-  by
+theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by
   rw [← succ_le_iff, ← succ_le_iff, ← nat_succ, nat_le_card]
   rfl
 #align ordinal.nat_lt_card Ordinal.nat_lt_card
