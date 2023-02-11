@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module data.bool.set
-! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! leanprover-community/mathlib commit ed60ee25ed00d7a62a0d1e5808092e1324cee451
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

@@ -287,7 +287,7 @@ theorem ext_iff {f g : r ↪r s} : f = g ↔ ∀ x, f x = g x :=
 #align rel_embedding.ext_iff RelEmbedding.ext_iff
 
 /-- Identity map is a relation embedding. -/
-@[refl, simps]
+@[refl, simps!]
 protected def refl (r : α → α → Prop) : r ↪r r :=
   ⟨Embedding.refl _, Iff.rfl⟩
 #align rel_embedding.refl RelEmbedding.refl
@@ -396,7 +396,7 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
 #align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
-@[simps]
+@[simps!]
 noncomputable def _root_.Quotient.outRelEmbedding [s : Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
@@ -636,14 +636,14 @@ def Simps.symmApply (h : r ≃r s) : β → α :=
 initialize_simps_projections RelIso (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
 
 /-- Identity map is a relation isomorphism. -/
-@[refl, simps apply]
+@[refl, simps! apply]
 protected def refl (r : α → α → Prop) : r ≃r r :=
   ⟨Equiv.refl _, Iff.rfl⟩
 #align rel_iso.refl RelIso.refl
 #align rel_iso.refl_apply RelIso.refl_apply
 
 /-- Composition of two relation isomorphisms is a relation isomorphism. -/
-@[simps apply]
+@[simps! apply]
 protected def trans (f₁ : r ≃r s) (f₂ : s ≃r t) : r ≃r t :=
   ⟨f₁.toEquiv.trans f₂.toEquiv, f₂.map_rel_iff.trans f₁.map_rel_iff⟩
 #align rel_iso.trans RelIso.trans
@@ -658,7 +658,7 @@ theorem default_def (r : α → α → Prop) : default = RelIso.refl r :=
 #align rel_iso.default_def RelIso.default_def
 
 /-- A relation isomorphism between equal relations on equal types. -/
-@[simps toEquiv apply]
+@[simps! toEquiv apply]
 protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
     (h₂ : HEq r s) : r ≃r s :=
   ⟨Equiv.cast h₁, @fun a b => by
@@ -751,7 +751,7 @@ instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder �
 #align rel_iso.is_well_order.ulift RelIso.IsWellOrder.ulift
 
 /-- A surjective relation embedding is a relation isomorphism. -/
-@[simps apply]
+@[simps! apply]
 noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
   ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.map_rel_iff⟩
 #align rel_iso.of_surjective RelIso.ofSurjective
