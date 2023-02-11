@@ -8,12 +8,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Hom.CompleteLattice
-import Mathbin.Topology.Bases
-import Mathbin.Topology.Homeomorph
-import Mathbin.Topology.ContinuousFunction.Basic
-import Mathbin.Order.CompactlyGenerated
-import Mathbin.Tactic.AutoCases
+import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Topology.Bases
+import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Order.CompactlyGenerated
+import Mathlib.Tactic.AutoCases
 
 /-!
 # Open sets
@@ -113,8 +113,7 @@ protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
 #align topological_space.opens.is_open TopologicalSpace.Opens.isOpen
 
 @[simp]
-theorem mk_coe (U : Opens α) : mk (↑U) U.IsOpen = U :=
-  by
+theorem mk_coe (U : Opens α) : mk (↑U) U.IsOpen = U := by
   cases U
   rfl
 #align topological_space.opens.mk_coe TopologicalSpace.Opens.mk_coe
@@ -218,8 +217,7 @@ theorem supᵢ_def {ι} (s : ι → Opens α) : (⨆ i, s i) = ⟨⋃ i, s i, is
 
 @[simp]
 theorem supᵢ_mk {ι} (s : ι → Set α) (h : ∀ i, IsOpen (s i)) :
-    (⨆ i, ⟨s i, h i⟩ : Opens α) = ⟨⋃ i, s i, isOpen_unionᵢ h⟩ :=
-  by
+    (⨆ i, ⟨s i, h i⟩ : Opens α) = ⟨⋃ i, s i, isOpen_unionᵢ h⟩ := by
   rw [supr_def]
   simp
 #align topological_space.opens.supr_mk TopologicalSpace.Opens.supᵢ_mk
@@ -230,8 +228,7 @@ theorem coe_supᵢ {ι} (s : ι → Opens α) : ((⨆ i, s i : Opens α) : Set �
 #align topological_space.opens.coe_supr TopologicalSpace.Opens.coe_supᵢ
 
 @[simp]
-theorem mem_supᵢ {ι} {x : α} {s : ι → Opens α} : x ∈ supᵢ s ↔ ∃ i, x ∈ s i :=
-  by
+theorem mem_supᵢ {ι} {x : α} {s : ι → Opens α} : x ∈ supᵢ s ↔ ∃ i, x ∈ s i := by
   rw [← SetLike.mem_coe]
   simp
 #align topological_space.opens.mem_supr TopologicalSpace.Opens.mem_supᵢ
@@ -264,8 +261,7 @@ theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set
 #align topological_space.opens.ne_bot_iff_nonempty TopologicalSpace.Opens.ne_bot_iff_nonempty
 
 /-- An open set in the indiscrete topology is either empty or the whole space. -/
-theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α) : U = ⊥ ∨ U = ⊤ :=
-  by
+theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α) : U = ⊥ ∨ U = ⊤ := by
   simp only [← coe_inj]
   subst h; letI : TopologicalSpace α := ⊤
   exact (is_open_top_iff _).1 U.2
@@ -277,8 +273,7 @@ def IsBasis (B : Set (Opens α)) : Prop :=
 #align topological_space.opens.is_basis TopologicalSpace.Opens.IsBasis
 
 theorem isBasis_iff_nbhd {B : Set (Opens α)} :
-    IsBasis B ↔ ∀ {U : Opens α} {x}, x ∈ U → ∃ U' ∈ B, x ∈ U' ∧ U' ≤ U :=
-  by
+    IsBasis B ↔ ∀ {U : Opens α} {x}, x ∈ U → ∃ U' ∈ B, x ∈ U' ∧ U' ≤ U := by
   constructor <;> intro h
   · rintro ⟨sU, hU⟩ x hx
     rcases h.mem_nhds_iff.mp (IsOpen.mem_nhds hU hx) with ⟨sV, ⟨⟨V, H₁, H₂⟩, hsV⟩⟩
@@ -297,8 +292,7 @@ theorem isBasis_iff_nbhd {B : Set (Opens α)} :
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (Us «expr ⊆ » B) -/
 theorem isBasis_iff_cover {B : Set (Opens α)} :
-    IsBasis B ↔ ∀ U : Opens α, ∃ (Us : _)(_ : Us ⊆ B), U = supₛ Us :=
-  by
+    IsBasis B ↔ ∀ U : Opens α, ∃ (Us : _)(_ : Us ⊆ B), U = supₛ Us := by
   constructor
   · intro hB U
     refine' ⟨{ V : opens α | V ∈ B ∧ V ≤ U }, fun U hU => hU.left, _⟩
@@ -318,8 +312,7 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
   it is a finite union of some elements in the basis -/
 theorem IsBasis.isCompact_open_iff_eq_finite_unionᵢ {ι : Type _} (b : ι → Opens α)
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
-    IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i :=
-  by
+    IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_unionᵢ_of_isTopologicalBasis fun i : ι => (b i).1
   · convert hb
     ext
@@ -329,8 +322,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_unionᵢ {ι : Type _} (b : ι → 
 
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
-    CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) :=
-  by
+    CompleteLattice.IsCompactElement s ↔ IsCompact (s : Set α) := by
   rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff]
   refine' ⟨_, fun H ι U hU => _⟩
   · introv H hU hU'
