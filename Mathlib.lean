@@ -1031,6 +1031,7 @@ import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.Algebra.Order.T5
+import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
