@@ -33,8 +33,8 @@ structure WLOGResult where
   reductionGoal    : MVarId
   /-- The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
 
-  * `negHypFVarId`: `h : ¬ P`, the assumption that `P` does not hold
   * `HFVarId`: `H`, the statement that in the original context `P` suffices to prove the goal.
+  * `negHypFVarId`: `h : ¬ P`, the assumption that `P` does not hold
   -/
   reductionFVarIds : FVarId × FVarId
   /-- The original goal with the additional assumption `h : P`. -/
@@ -58,7 +58,9 @@ In `reductionGoal`, there will be two additional assumptions:
 
 If `xs` is `none`, all hypotheses are reverted to produce the reduction goal's hypothesis `H`.
 Otherwise, the `xs` are elaborated to hypotheses in the context of `goal`, and only those
-hypotheses are reverted (and any that depend on them). -/
+hypotheses are reverted (and any that depend on them).
+
+If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible. -/
 def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     (xs : Option (TSyntaxArray `ident) := none) (H : Option Name := none) :
     TacticM WLOGResult := goal.withContext do
@@ -128,5 +130,5 @@ elab_rules : tactic
   | _ => none
   let P ← elabType P
   let goal ← getMainGoal
-  let {reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
+  let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
   replaceMainGoal [reductionGoal, hypothesisGoal]
