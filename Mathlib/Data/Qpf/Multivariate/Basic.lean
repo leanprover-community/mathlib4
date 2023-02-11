@@ -20,9 +20,9 @@ The idea is based on building ever larger functors. For instance, we can define
 a list using a shape functor:
 
 ```lean
-inductive list_shape (a b : Type)
-| nil : list_shape
-| cons : a -> b -> list_shape
+inductive ListShape (a b : Type)
+| nil : ListShape
+| cons : a -> b -> ListShape
 ```
 
 This shape can itself be decomposed as a sum of product which are themselves
@@ -30,21 +30,21 @@ QPFs. It follows that the shape is a QPF and we can take its fixed point
 and create the list itself:
 
 ```lean
-def list (a : Type) := fix list_shape a -- not the actual notation
+def list (a : Type) := fix ListShape a -- not the actual notation
 ```
 
 We can continue and define the quotient on permutation of lists and create
 the multiset type:
 
 ```lean
-def multiset (a : Type) := qpf.quot list.perm list a -- not the actual notion
+def multiset (a : Type) := Qpf.quot List.perm List a -- not the actual notion
 ```
 
 And `multiset` is also a QPF. We can then create a novel data type (for Lean):
 
 ```lean
-inductive tree (a : Type)
-| node : a -> multiset tree -> tree
+inductive Tree (a : Type)
+| node : a -> Multiset Tree -> Tree
 ```
 
 An unordered tree. This is currently not supported by Lean because it nests
@@ -52,13 +52,13 @@ an inductive type inside of a quotient. We can go further and define
 unordered, possibly infinite trees:
 
 ```lean
-coinductive tree' (a : Type)
-| node : a -> multiset tree' -> tree'
+coinductive Tree' (a : Type)
+| node : a -> multiset Tree' -> Tree'
 ```
 
 by using the `cofix` construct. Those options can all be mixed and
 matched because they preserve the properties of QPF. The latter example,
-`tree'`, combines fixed point, co-fixed point and quotients.
+`Tree'`, combines fixed point, co-fixed point and quotients.
 
 ## Related modules
 
@@ -86,20 +86,21 @@ open MvFunctor
 /-- Multivariate quotients of polynomial functors.
 -/
 class Mvqpf {n : ℕ} (F : TypeVec.{u} n → Type _) [MvFunctor F] where
-  p : Mvpfunctor.{u} n
-  abs : ∀ {α}, P.Obj α → F α
-  repr : ∀ {α}, F α → P.Obj α
+  p : MvPFunctor.{u} n
+  abs : ∀ {α}, p.Obj α → F α
+  repr : ∀ {α}, F α → p.Obj α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
-  abs_map : ∀ {α β} (f : α ⟹ β) (p : P.Obj α), abs (f <$$> p) = f <$$> abs p
+  abs_map : ∀ {α β} (f : α ⟹ β) (p : p.Obj α), abs (f <$$> p) = f <$$> abs p
 #align mvqpf Mvqpf
 
 namespace Mvqpf
 
 variable {n : ℕ} {F : TypeVec.{u} n → Type _} [MvFunctor F] [q : Mvqpf F]
 
-include q
+-- Porting note: include q?
+-- include q
 
-open MvFunctor (Liftp Liftr)
+open MvFunctor (LiftP LiftR)
 
 /-!
 ### Show that every mvqpf is a lawful mvfunctor.
@@ -145,7 +146,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
   rw [← abs_map, h₀]; rfl
 #align mvqpf.liftp_iff Mvqpf.liftP_iff
 
-theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) :
+theorem liftR_iff {α : TypeVec n} (r : ∀ /- ⦃i⦄ -/ {i}, α i → α i → Prop) (x y : F α) :
     LiftR r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
@@ -169,27 +170,27 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
 
 open Set
 
-open MvFunctor
+open MvFunctor (LiftP LiftR)
 
 theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
     u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ := by
   rw [supp]; dsimp; constructor
   · intro h a f haf
-    have : liftp (fun i u => u ∈ f i '' univ) x :=
+    have : LiftP (fun i u => u ∈ f i '' univ) x :=
       by
-      rw [liftp_iff]
+      rw [liftP_iff]
       refine' ⟨a, f, haf.symm, _⟩
       intro i u
       exact mem_image_of_mem _ (mem_univ _)
     exact h this
-  intro h p; rw [liftp_iff]
+  intro h p; rw [liftP_iff]
   rintro ⟨a, f, xeq, h'⟩
   rcases h a f xeq.symm with ⟨i, _, hi⟩
   rw [← hi]; apply h'
 #align mvqpf.mem_supp Mvqpf.mem_supp
 
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
-    supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext <;> apply mem_supp
+    supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext ; apply mem_supp
 #align mvqpf.supp_eq Mvqpf.supp_eq
 
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
@@ -197,18 +198,18 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by
   constructor
   · intro h
-    have : liftp (supp x) x := by
+    have : LiftP (supp x) x := by
       rw [h]
       introv
       exact id
-    rw [liftp_iff] at this
+    rw [liftP_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
     refine' ⟨a, f, xeq.symm, _⟩
     intro a' f' h''
-    rintro hu u ⟨j, h₂, hfi⟩
-    have hh : u ∈ supp x a' := by rw [← hfi] <;> apply h'
+    rintro hu u ⟨j, _h₂, hfi⟩
+    have hh : u ∈ supp x a' := by rw [← hfi] ; apply h'
     refine' (mem_supp x _ u).mp hh _ _ hu
-  rintro ⟨a, f, xeq, h⟩ p; rw [liftp_iff]; constructor
+  rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ i u usuppx
     rcases(mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
     rw [← f'ieq]
@@ -220,8 +221,6 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
   apply h _ a' f' xeq'
   apply mem_image_of_mem _ (mem_univ _)
 #align mvqpf.has_good_supp_iff Mvqpf.has_good_supp_iff
-
-variable (q)
 
 /-- A qpf is said to be uniform if every polynomial functor
 representing a single value all have the same range. -/
@@ -253,52 +252,52 @@ theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.p.A) (f :
 
 theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p : ∀ i, α i → Prop) :
     LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u := by
-  rw [liftp_iff, ← abs_repr x]
+  rw [liftP_iff, ← abs_repr x]
   cases' repr x with a f; constructor
   · rintro ⟨a', f', abseq, hf⟩ u
-    rw [supp_eq_of_is_uniform h, h _ _ _ _ abseq]
+    rw [supp_eq_of_isUniform h, h _ _ _ _ abseq]
     rintro b ⟨i, _, hi⟩
     rw [← hi]
     apply hf
   intro h'
   refine' ⟨a, f, rfl, fun _ i => h' _ _ _⟩
-  rw [supp_eq_of_is_uniform h]
+  rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 #align mvqpf.liftp_iff_of_is_uniform Mvqpf.liftP_iff_of_isUniform
 
 theorem supp_map (h : q.IsUniform) {α β : TypeVec n} (g : α ⟹ β) (x : F α) (i) :
     supp (g <$$> x) i = g i '' supp x i := by
-  rw [← abs_repr x]; cases' repr x with a f; rw [← abs_map, Mvpfunctor.map_eq]
-  rw [supp_eq_of_is_uniform h, supp_eq_of_is_uniform h, ← image_comp]
+  rw [← abs_repr x]; cases' repr x with a f; rw [← abs_map, MvPFunctor.map_eq]
+  rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, ← image_comp]
   rfl
 #align mvqpf.supp_map Mvqpf.supp_map
 
 theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
   · intro h α a a' f f' h' i
-    rw [← Mvpfunctor.supp_eq, ← Mvpfunctor.supp_eq, ← h, h', h]
+    rw [← MvPFunctor.supp_eq, ← MvPFunctor.supp_eq, ← h, h', h]
   · rintro h α ⟨a, f⟩
     ext
-    rwa [supp_eq_of_is_uniform, Mvpfunctor.supp_eq]
+    rwa [supp_eq_of_isUniform, MvPFunctor.supp_eq]
 #align mvqpf.supp_preservation_iff_uniform Mvqpf.suppPreservation_iff_uniform
 
 theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpPreservation := by
   constructor <;> intro h
   · rintro α p ⟨a, f⟩
     have h' := h
-    rw [supp_preservation_iff_uniform] at h'
-    dsimp only [supp_preservation, supp] at h
-    simp only [liftp_iff_of_is_uniform, supp_eq_of_is_uniform, Mvpfunctor.liftP_iff', h',
+    rw [suppPreservation_iff_uniform] at h'
+    dsimp only [SuppPreservation, supp] at h
+    simp only [liftP_iff_of_isUniform, supp_eq_of_isUniform, MvPFunctor.liftP_iff', h',
       image_univ, mem_range, exists_imp]
     constructor <;> intros <;> subst_vars <;> solve_by_elim
   · rintro α ⟨a, f⟩
-    simp only [liftp_preservation] at h
+    simp only [LiftpPreservation] at h
     ext
     simp [supp, h]
 #align mvqpf.supp_preservation_iff_liftp_preservation Mvqpf.suppPreservation_iff_liftpPreservation
 
 theorem liftpPreservation_iff_uniform : q.LiftpPreservation ↔ q.IsUniform := by
-  rw [← supp_preservation_iff_liftp_preservation, supp_preservation_iff_uniform]
+  rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_uniform]
 #align mvqpf.liftp_preservation_iff_uniform Mvqpf.liftpPreservation_iff_uniform
 
 end Mvqpf
