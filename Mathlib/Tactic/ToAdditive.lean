@@ -749,6 +749,7 @@ def nameDict : String → List String
 | "prehaar"     => ["add", "Prehaar"]
 | "unit"        => ["add", "Unit"]
 | "units"       => ["add", "Units"]
+| "rootable"    => ["divisible"]
 | x             => [x]
 
 /--

@@ -27,6 +27,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
@@ -249,9 +250,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 
-/- M -/ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
-  (Tactic.simpArgs)? (ppSpace location)? : tactic
-
 /- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> term) (ppSpace location)? :
   tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? term : tactic
@@ -268,8 +266,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- B -/ syntax (name := tidy) "tidy" (config)? : tactic
 /- B -/ syntax (name := tidy?) "tidy?" (config)? : tactic
 
-/- B -/ syntax (name := wlog) "wlog" (" (" &"discharger" " := " term ")")?
-  (ppSpace (colGt ident))? (" : " term)? (" := " term)? (" using " (ident*),+)? : tactic
+/- B -/ syntax (name := wlog) "wlog " binderIdent " : " term
+  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := elementwise!) "elementwise!" (ppSpace (colGt ident))* : tactic
