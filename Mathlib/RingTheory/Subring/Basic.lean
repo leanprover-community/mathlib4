@@ -1382,59 +1382,71 @@ namespace Subring
 
 variable {α β : Type _}
 
+
+-- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
 instance [SMul R α] (S : Subring R) : SMul S α :=
-  S.toSubsemiring.SMul
+  inferInstanceAs (SMul S.toSubsemiring α)
 
 theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R) • m :=
   rfl
 #align subring.smul_def Subring.smul_def
 
+-- Porting note: Lean can find this instance already
 instance sMulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
     SMulCommClass S α β :=
-  S.toSubsemiring.smul_comm_class_left
+  inferInstanceAs (SMulCommClass S.toSubsemiring α β)
 #align subring.smul_comm_class_left Subring.sMulCommClass_left
 
+-- Porting note: Lean can find this instance already
 instance sMulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
     SMulCommClass α S β :=
-  S.toSubsemiring.smul_comm_class_right
+  inferInstanceAs (SMulCommClass α S.toSubsemiring β)
 #align subring.smul_comm_class_right Subring.sMulCommClass_right
 
+-- Porting note: Lean can find this instance already
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subring R) :
     IsScalarTower S α β :=
-  S.toSubsemiring.IsScalarTower
+  inferInstanceAs (IsScalarTower S.toSubsemiring α β)
 
+-- Porting note: Lean can find this instance already
 instance [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α :=
-  S.toSubsemiring.HasFaithfulSmul
+  inferInstanceAs (FaithfulSMul S.toSubsemiring α)
 
+-- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
 instance [MulAction R α] (S : Subring R) : MulAction S α :=
-  S.toSubsemiring.MulAction
+  inferInstanceAs (MulAction S.toSubsemiring α)
 
+-- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
 instance [AddMonoid α] [DistribMulAction R α] (S : Subring R) : DistribMulAction S α :=
-  S.toSubsemiring.DistribMulAction
+  inferInstanceAs (DistribMulAction S.toSubsemiring α)
 
+-- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Monoid α] [MulDistribMulAction R α] (S : Subring R) : MulDistribMulAction S α :=
-  S.toSubsemiring.MulDistribMulAction
+  inferInstanceAs (MulDistribMulAction S.toSubsemiring α)
 
+-- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
-  S.toSubsemiring.SmulWithZero
+  inferInstanceAs (SMulWithZero S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
-  S.toSubsemiring.MulActionWithZero
+  Subsemiring.mulActionWithZero S.toSubsemiring
+  -- inferInstanceAs (MulActionWithZero S.toSubsemiring α) -- Porting note: does not work
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [AddCommMonoid α] [Module R α] (S : Subring R) : Module S α :=
-  S.toSubsemiring.Module
+  inferInstanceAs (Module S.toSubsemiring α)
 
+-- Porting note: Lean can find this instance already
 /-- The action by a subsemiring is the action by the underlying ring. -/
 instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAction S α :=
-  S.toSubmonoid.MulSemiringAction
+  inferInstanceAs (MulSemiringAction S.toSubmonoid α)
 
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.sMulCommClass_left : SMulCommClass (center R) R R :=
