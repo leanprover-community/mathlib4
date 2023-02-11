@@ -90,12 +90,16 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 alias leOfHom ← _root_.Quiver.Hom.le
 #align quiver.hom.le Quiver.Hom.le
 
-@[simp]
+-- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
+-- itself. This usually means that it will never apply." removing simp?
+-- @[simp]
 theorem le_of_hom_hom_of_le {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.le_of_hom_hom_of_le
 
-@[simp]
+-- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
+-- itself. This usually means that it will never apply." removing simp?
+-- @[simp]
 theorem hom_of_le_le_of_hom {x y : X} (h : x ⟶ y) : h.le.hom = h := by
   cases' h with h
   cases h
