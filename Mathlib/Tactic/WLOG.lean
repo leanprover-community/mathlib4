@@ -23,7 +23,7 @@ namespace Mathlib.Tactic
 open Lean Meta Elab Term Tactic
 
 /-- The result of running `wlog` on a goal. -/
-structure wlogResult where
+structure WLOGResult where
   /-- The `reductionGoal` requires showing that the case `h : ¬ P` can be reduced to the case where
   `P` holds. It has two additional assumptions in its context:
 
@@ -60,7 +60,7 @@ Otherwise, the `xs` are elaborated to hypotheses in the context of `goal`, and o
 hypotheses are reverted (and any that depend on them). -/
 def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Name) (P : Expr)
     (xs : Option (TSyntaxArray `ident) := none) (H : Option Name := none) :
-    TacticM wlogResult := goal.withContext do
+    TacticM WLOGResult := goal.withContext do
   let H := H.getD `this
   /- Compute the type for H and keep track of the FVarId's reverted in doing so. (Do not modify the
   tactic state.) -/
