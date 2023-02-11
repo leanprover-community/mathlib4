@@ -87,13 +87,16 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
           refine' of_equiv e (h_option ih)
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
 
+-- Porting note: due to instance inference issues in `SetTheory.Cardinal.Basic`
+-- I had to explicitely name `h_fintype` in order to access it manually.
+-- was `[Fintype α]`
 /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 @[elab_as_elim]
 theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (of_equiv : ∀ (α β) [Fintype β] (e : α ≃ β), @P α (@Fintype.ofEquiv α β ‹_› e.symm) → @P β ‹_›)
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
-    [Fintype α] : P α := by
+    [h_fintype : Fintype α] : P α := by
   obtain ⟨p⟩ :=
     let f_empty := (fun i => by convert h_empty; simp)
     let h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
