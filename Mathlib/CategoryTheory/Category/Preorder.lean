@@ -8,8 +8,8 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Equivalence
-import Mathbin.Order.Hom.Basic
+import Mathlib.CategoryTheory.Equivalence
+import Mathlib.Order.Hom.Basic
 
 /-!
 
@@ -95,8 +95,7 @@ theorem le_of_hom_hom_of_le {x y : X} (h : x ≤ y) : h.Hom.le = h :=
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.le_of_hom_hom_of_le
 
 @[simp]
-theorem hom_of_le_le_of_hom {x y : X} (h : x ⟶ y) : h.le.Hom = h :=
-  by
+theorem hom_of_le_le_of_hom {x y : X} (h : x ⟶ y) : h.le.Hom = h := by
   cases h
   cases h
   rfl
