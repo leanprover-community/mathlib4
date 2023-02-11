@@ -749,7 +749,7 @@ theorem nthLe_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi
 -- porting note: TODO, refactor to `List.get`
 set_option linter.deprecated false in
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
-between the indices `c.size_up_to i` and `c.size_up_to (i+1)`, i.e., the indices in the `i`-th
+between the indices `c.sizeUpTo i` and `c.sizeUpTo (i+1)`, i.e., the indices in the `i`-th
 block of the composition. -/
 theorem nthLe_splitWrtComposition (l : List α) (c : Composition n) {i : ℕ}
     (hi : i < (l.splitWrtComposition c).length) :
