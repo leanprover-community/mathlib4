@@ -9,6 +9,7 @@ Authors: David Wärn
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Idempotents in topological semigroups
@@ -72,6 +73,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
       @IsCompact.nonempty_interᵢ_of_directed_nonempty_compact_closed _ _ _ hcnemp.coe_sort
         ((↑) : c → Set M) ?_ ?_ ?_ ?_
     · simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq]
+      exact Set.interₛ_eq_interᵢ
     · refine' DirectedOn.directed_val (IsChain.directedOn hc.symm)
     exacts[fun i => (hcs i.prop).2.1, fun i => (hcs i.prop).1.isCompact, fun i => (hcs i.prop).1]
   · rw [Set.mem_interₛ]
