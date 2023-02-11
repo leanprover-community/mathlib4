@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.constructions
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1276,6 +1276,52 @@ theorem isOpen_set_pi {i : Set ι} {s : ∀ a, Set (π a)} (hi : i.Finite)
     (hs : ∀ a ∈ i, IsOpen (s a)) : IsOpen (pi i s) := by
   rw [pi_def]; exact isOpen_binterᵢ hi fun a ha => (hs _ ha).preimage (continuous_apply _)
 #align is_open_set_pi isOpen_set_pi
+
+theorem isOpen_pi_iff {s : Set (∀ a, π a)} :
+    IsOpen s ↔
+      ∀ f, f ∈ s → ∃ (I : Finset ι)(u : ∀ a, Set (π a)),
+        (∀ a, a ∈ I → IsOpen (u a) ∧ f a ∈ u a) ∧ (I : Set ι).pi u ⊆ s := by
+  rw [isOpen_iff_nhds]
+  simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff, exists_prop]
+  refine ball_congr fun a _ => ⟨?_, ?_⟩
+  · rintro ⟨I, t, ⟨h1, h2⟩⟩
+    refine ⟨I, fun a => eval a '' (I : Set ι).pi fun a => (h1 a).choose, fun i hi => ?_, ?_⟩
+    · simp_rw [Set.eval_image_pi (Finset.mem_coe.mpr hi)
+          (pi_nonempty_iff.mpr fun i => ⟨_, fun _ => (h1 i).choose_spec.2.2⟩)]
+      exact (h1 i).choose_spec.2
+    · exact Subset.trans
+        (Set.pi_mono fun i hi => (Set.eval_image_pi_subset hi).trans (h1 i).choose_spec.1) h2
+  · rintro ⟨I, t, ⟨h1, h2⟩⟩
+    refine ⟨I, fun a => ite (a ∈ I) (t a) Set.univ, fun i => ?_, ?_⟩
+    · by_cases hi : i ∈ I
+      · use t i
+        simp_rw [if_pos hi]
+        exact ⟨Subset.rfl, (h1 i) hi⟩
+      · use Set.univ
+        simp_rw [if_neg hi]
+        exact ⟨Subset.rfl, isOpen_univ, mem_univ _⟩
+    · rw [← Set.univ_pi_ite]
+      simp only [← ite_and, ← Finset.mem_coe, and_self_iff, Set.univ_pi_ite, h2]
+#align is_open_pi_iff isOpen_pi_iff
+
+theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, π a)} :
+    IsOpen s ↔
+      ∀ f, f ∈ s → ∃ u : ∀ a, Set (π a), (∀ a, IsOpen (u a) ∧ f a ∈ u a) ∧ Set.univ.pi u ⊆ s :=
+  by
+  cases nonempty_fintype ι
+  rw [isOpen_iff_nhds]
+  simp_rw [le_principal_iff, nhds_pi, Filter.mem_pi', mem_nhds_iff, exists_prop]
+  refine ball_congr fun a _ => ⟨?_, ?_⟩
+  · rintro ⟨I, t, ⟨h1, h2⟩⟩
+    refine
+      ⟨fun i => (h1 i).choose,
+        ⟨fun i => (h1 i).choose_spec.2,
+          (Set.pi_mono fun i _ => (h1 i).choose_spec.1).trans (Subset.trans ?_ h2)⟩⟩
+    rw [← Set.pi_inter_compl (I : Set ι)]
+    exact inter_subset_left _ _
+  · exact fun ⟨u, ⟨h1, _⟩⟩ =>
+      ⟨Finset.univ, u, ⟨fun i => ⟨u i, ⟨rfl.subset, h1 i⟩⟩, by rwa [Finset.coe_univ]⟩⟩
+#align is_open_pi_iff' isOpen_pi_iff'
 
 theorem isClosed_set_pi {i : Set ι} {s : ∀ a, Set (π a)} (hs : ∀ a ∈ i, IsClosed (s a)) :
     IsClosed (pi i s) := by
