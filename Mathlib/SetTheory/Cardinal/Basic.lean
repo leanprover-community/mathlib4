@@ -63,15 +63,14 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
   `SetTheory/CardinalOrdinal.lean`.
-* (Porting note: this notation has been disabled as it seems this workaround works
-  differently in lean4 if needed at all.)
-  There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
+* There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
   the base and the exponent live in the same universe. As a workaround, you can add
   ```
-    local infixr (name := Cardinal.pow) ^ := @has_pow.pow cardinal cardinal Cardinal.has_pow
+    local infixr:0 "^'" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
   ```
   to a file. This notation will work even if Lean doesn't know yet that the base and the exponent
   live in the same universe (but no exponents in other types can be used).
+  (Porting note: This last point might need to be updated.)
 
 ## References
 
@@ -479,9 +478,11 @@ instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
   ⟨map₂ (fun α β => β → α) fun _ _ _ _ e₁ e₂ => e₂.arrowCongr e₁⟩
 
 -- Porting note: This "workaround" does not work and break everything.
--- if it's ever needed, one should probably investigate in what would work.
+-- I changed it now from `^` to `^'` to prevent a clash
+-- with `HPow`, but somebody should figure out
+-- if this is still relevant in Lean4.
 -- mathport name: cardinal.pow
--- local infixr:0 "^" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
+local infixr:0 "^'" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
 
 -- -- mathport name: cardinal.pow.nat
 local infixr:80 " ^ℕ " => @Pow.pow Cardinal ℕ Monoid.Pow
