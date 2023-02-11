@@ -46,7 +46,7 @@ structure WLOGResult where
   `hypothesisGoal`). -/
   revertedFVarIds  : Array FVarId
 
-open private mkAuxMVarType from Lean.MetavarContext in
+open private withFreshCache mkAuxMVarType from Lean.MetavarContext in
 /-- `wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
 `h : P` to the context of `goal`, and the `reductionGoal`, which requires showing that the case
 `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
@@ -76,8 +76,8 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let lctx := (← goal.getDecl).lctx
   let f ← collectForwardDeps fvars false
   let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
-  let HType ← liftMkBindingM <|
-    fun ctx => mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
+  let HType ← liftMkBindingM <| fun ctx =>
+    (withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix)
       { preserveOrder := false, mainModule := ctx.mainModule }
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
