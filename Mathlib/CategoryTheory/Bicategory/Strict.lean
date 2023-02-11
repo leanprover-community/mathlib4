@@ -22,7 +22,7 @@ isomorphisms given by equalities.
 In the literature of category theory, a strict bicategory (usually called a strict 2-category) is
 often defined as a bicategory whose left unitors, right unitors, and associators are identities.
 We cannot use this definition directly here since the types of 2-morphisms depend on 1-morphisms.
-For this reason, we use `eq_to_iso`, which gives isomorphisms from equalities, instead of
+For this reason, we use `eqToIso`, which gives isomorphisms from equalities, instead of
 identities.
 -/
 
@@ -56,10 +56,14 @@ class Bicategory.Strict : Prop where
     aesop_cat
 #align category_theory.bicategory.strict CategoryTheory.Bicategory.Strict
 
+-- porting note: not adding simp to:
+-- Bicategory.Strict.id_comp
+-- Bicategory.Strict.comp_id
+-- Bicategory.Strict.assoc
 attribute [simp]
-  Bicategory.Strict.id_comp Bicategory.Strict.leftUnitor_eqToIso
-      Bicategory.Strict.comp_id Bicategory.Strict.rightUnitor_eqToIso
-      Bicategory.Strict.assoc Bicategory.Strict.associator_eqToIso
+   Bicategory.Strict.leftUnitor_eqToIso
+   Bicategory.Strict.rightUnitor_eqToIso
+   Bicategory.Strict.associator_eqToIso
 
 -- see Note [lower instance priority]
 /-- Category structure on a strict bicategory -/
@@ -93,4 +97,3 @@ theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶
 end Bicategory
 
 end CategoryTheory
-#lint
