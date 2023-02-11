@@ -8,9 +8,9 @@ Authors: Damiano Testa, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Dfinsupp.Order
-import Mathbin.Data.Dfinsupp.NeLocus
-import Mathbin.Order.WellFoundedSet
+import Mathlib.Data.Dfinsupp.Order
+import Mathlib.Data.Dfinsupp.NeLocus
+import Mathlib.Order.WellFoundedSet
 
 /-!
 # Lexicographic order on finitely supported dependent functions
@@ -49,8 +49,7 @@ instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
   ⟨fun f g => Dfinsupp.Lex (· < ·) (fun i => (· < ·)) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
-    (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
-  by
+    (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
   obtain ⟨hle, j, hlt⟩ := Pi.lt_def.1 hlt
   classical
     have : (x.ne_locus y : Set ι).WellFoundedOn r := (x.ne_locus y).finite_toSet.WellFoundedOn
@@ -64,8 +63,7 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι 
 #align dfinsupp.lex_lt_of_lt_of_preorder Dfinsupp.lex_lt_of_lt_of_preorder
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
-    (hlt : x < y) : Pi.Lex r (fun i => (· < ·)) x y :=
-  by
+    (hlt : x < y) : Pi.Lex r (fun i => (· < ·)) x y := by
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder r hlt
 #align dfinsupp.lex_lt_of_lt Dfinsupp.lex_lt_of_lt
