@@ -62,12 +62,12 @@ variable {α β}
 
 namespace WithLowerTopology
 
-/-- `to_lower` is the identity function to the `WithLowerTopology` of a type.  -/
+/-- `toLower` is the identity function to the `WithLowerTopology` of a type.  -/
 @[match_pattern]
 def toLower : α ≃ WithLowerTopology α := Equiv.refl _
 #align with_lower_topology.to_lower WithLowerTopology.toLower
 
-/-- `of_lower` is the identity function from the `WithLowerTopology` of a type.  -/
+/-- `ofLower` is the identity function from the `WithLowerTopology` of a type.  -/
 @[match_pattern]
 def ofLower : WithLowerTopology α ≃ α := Equiv.refl _
 #align with_lower_topology.of_lower WithLowerTopology.ofLower
