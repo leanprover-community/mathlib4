@@ -15,7 +15,7 @@ import Mathlib.Order.WellFoundedSet
 /-!
 # Lexicographic order on finitely supported dependent functions
 
-This file defines the lexicographic order on `dfinsupp`.
+This file defines the lexicographic order on `Dfinsupp`.
 -/
 
 
@@ -27,9 +27,9 @@ section Zero
 
 variable [∀ i, Zero (α i)]
 
-/-- `dfinsupp.lex r s` is the lexicographic relation on `Π₀ i, α i`, where `ι` is ordered by `r`,
+/-- `Dfinsupp.Lex r s` is the lexicographic relation on `Π₀ i, α i`, where `ι` is ordered by `r`,
 and `α i` is ordered by `s i`.
-The type synonym `lex (Π₀ i, α i)` has an order given by `dfinsupp.lex (<) (λ i, (<))`.
+The type synonym `Lex (Π₀ i, α i)` has an order given by `Dfinsupp.Lex (· < ·) (· < ·)`.
 -/
 -- Porting note: Changed type of `s` from `∀ i, ...` to `∀ {i}, ...`
 protected def Lex (r : ι → ι → Prop) (s : ∀ {i}, α i → α i → Prop) (x y : Π₀ i, α i) : Prop :=
@@ -49,20 +49,16 @@ theorem lex_def {r : ι → ι → Prop} {s : ∀ {i}, α i → α i → Prop} {
 #align dfinsupp.lex_def Dfinsupp.lex_def
 
 instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
-  ⟨fun f g => Dfinsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
+  ⟨fun f g ↦ Dfinsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
   obtain ⟨hle, j, hlt⟩ := Pi.lt_def.1 hlt
   classical
-    have : (x.neLocus y : Set ι).WellFoundedOn r := (x.neLocus y).finite_toSet.wellFoundedOn
-    obtain ⟨i, hi, hl⟩ := this.has_min { i | x i < y i } ⟨⟨j, mem_neLocus.2 hlt.ne⟩, hlt⟩
-    exact
-      ⟨i, fun k hk =>
-        ⟨hle k,
-          of_not_not fun h =>
-            hl ⟨k, mem_neLocus.2 (ne_of_not_le h).symm⟩ ((hle k).lt_of_not_le h) hk⟩,
-        hi⟩
+  have : (x.neLocus y : Set ι).WellFoundedOn r := (x.neLocus y).finite_toSet.wellFoundedOn
+  obtain ⟨i, hi, hl⟩ := this.has_min { i | x i < y i } ⟨⟨j, mem_neLocus.2 hlt.ne⟩, hlt⟩
+  refine' ⟨i, fun k hk ↦ ⟨hle k, _⟩, hi⟩
+  exact of_not_not fun h ↦ hl ⟨k, mem_neLocus.2 (ne_of_not_le h).symm⟩ ((hle k).lt_of_not_le h) hk
 #align dfinsupp.lex_lt_of_lt_of_preorder Dfinsupp.lex_lt_of_lt_of_preorder
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
@@ -74,16 +70,16 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ i, PartialOrder (α i)] :
     IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) :=
   let i : IsStrictOrder (Lex (∀ i, α i)) (· < ·) := Pi.Lex.isStrictOrder
-  { irrefl := toLex.surjective.forall.2 fun _ => @irrefl _ _ i.toIsIrrefl _
-    trans := toLex.surjective.forall₃.2 fun _ _ _ => @trans _ _ i.toIsTrans _ _ _ }
+  { irrefl := toLex.surjective.forall.2 fun _ ↦ @irrefl _ _ i.toIsIrrefl _
+    trans := toLex.surjective.forall₃.2 fun _ _ _ ↦ @trans _ _ i.toIsTrans _ _ _ }
 #align dfinsupp.lex.is_strict_order Dfinsupp.Lex.isStrictOrder
 
 variable [LinearOrder ι]
 
-/-- The partial order on `dfinsupp`s obtained by the lexicographic ordering.
-See `dfinsupp.lex.linear_order` for a proof that this partial order is in fact linear. -/
+/-- The partial order on `Dfinsupp`s obtained by the lexicographic ordering.
+See `Dfinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) :=
-  PartialOrder.lift (fun x => toLex (⇑(ofLex x))) Dfinsupp.coeFn_injective
+  PartialOrder.lift (fun x ↦ toLex (⇑(ofLex x))) Dfinsupp.coeFn_injective
 #align dfinsupp.lex.partial_order Dfinsupp.Lex.partialOrder
 
 section LinearOrder
@@ -91,42 +87,35 @@ section LinearOrder
 variable [∀ i, LinearOrder (α i)]
 
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
-can be written with `or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
+can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
 private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort _}
     (h_lt : ∀ {f g}, toLex f < toLex g → P (toLex f) (toLex g))
     (h_eq : ∀ {f g}, toLex f = toLex g → P (toLex f) (toLex g))
     (h_gt : ∀ {f g}, toLex g < toLex f → P (toLex f) (toLex g)) : ∀ f g, P f g :=
-  Lex.rec fun f =>
-    Lex.rec fun g =>
-      match (motive := ∀ y, (f.neLocus g).min = y → _) _, rfl with
-      | ⊤, h => h_eq (neLocus_eq_empty.mp <| Finset.min_eq_top.mp h)
-      | (wit : ι), h =>
-        (mem_neLocus.mp <| Finset.mem_of_min h).lt_or_lt.by_cases
-          (fun hwit =>
-            h_lt ⟨wit, fun j hj => not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj h), hwit⟩)
-          fun hwit =>
-          h_gt
-            ⟨wit, fun j hj =>
-              not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
+  Lex.rec fun f ↦ Lex.rec fun g ↦ match (motive := ∀ y, (f.neLocus g).min = y → _) _, rfl with
+  | ⊤, h => h_eq (neLocus_eq_empty.mp <| Finset.min_eq_top.mp h)
+  | (wit : ι), h => by
+    apply (mem_neLocus.mp <| Finset.mem_of_min h).lt_or_lt.by_cases <;> intro hwit
+    · exact h_lt ⟨wit, fun j hj ↦ not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj h), hwit⟩
+    · exact h_gt ⟨wit, fun j hj ↦
+        not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
 /- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
 irreducible_def Lex.decidableLe : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
-  lt_trichotomy_rec (fun f g h => isTrue <| Or.inr h) (fun f g h => isTrue <| Or.inl <| congr_arg _ h)
-    fun f g h => isFalse fun h' => (lt_irrefl _ (h.trans_le h')).elim
+  lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
+    (fun h ↦ isTrue <| Or.inl <| congr_arg _ <| congr_arg _ h)
+    fun h ↦ isFalse fun h' ↦ (lt_irrefl _ (h.trans_le h')).elim
 #align dfinsupp.lex.decidable_le Dfinsupp.Lex.decidableLe
 
 /- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
 irreducible_def Lex.decidableLt : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) :=
-  lt_trichotomy_rec (fun f g h => isTrue h) (fun f g h => isFalse h.not_lt) fun f g h =>
-    isFalse h.asymm
+  lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 #align dfinsupp.lex.decidable_lt Dfinsupp.Lex.decidableLt
 
-/-- The linear order on `dfinsupp`s obtained by the lexicographic ordering. -/
+/-- The linear order on `Dfinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) :=
-  {
-    Lex.partialOrder with
-    le_total := lt_trichotomy_rec (fun f g h => Or.inl h.le)
-      (fun f g h => Or.inl h.le) fun f g h => Or.inr h.le
+  { Lex.partialOrder with
+    le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
     decidable_lt := by infer_instance
     decidable_le := by infer_instance
     decidable_eq := by infer_instance }
@@ -136,17 +125,18 @@ end LinearOrder
 
 variable [∀ i, PartialOrder (α i)]
 
-theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := fun a b h =>
-  le_of_lt_or_eq <|
-    or_iff_not_imp_right.2 fun hne => by
-      classical exact
-          ⟨Finset.min' _ (nonempty_ne_locus_iff.2 hne), fun j hj =>
-            not_mem_ne_locus.1 fun h => (Finset.min'_le _ _ h).not_lt hj,
-            (h _).lt_of_ne (mem_ne_locus.1 <| Finset.min'_mem _ _)⟩
+theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
+  intro a b h
+  refine' le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ _)
+  classical
+  exact ⟨Finset.min' _ (nonempty_neLocus_iff.2 hne),
+    fun j hj ↦ not_mem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_lt hj,
+    (h _).lt_of_ne (mem_neLocus.1 <| Finset.min'_mem _ _)⟩
 #align dfinsupp.to_lex_monotone Dfinsupp.toLex_monotone
 
 theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
-    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b := fun h1 h2 => ⟨i, h1, h2⟩
+    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
+  fun h1 h2 ↦ ⟨i, h1, h2⟩
 #align dfinsupp.lt_of_forall_lt_of_lt Dfinsupp.lt_of_forall_lt_of_lt
 
 end Zero
@@ -156,8 +146,8 @@ section Covariants
 variable [LinearOrder ι] [∀ i, AddMonoid (α i)] [∀ i, LinearOrder (α i)]
 
 /-!  We are about to sneak in a hypothesis that might appear to be too strong.
-We assume `covariant_class` with *strict* inequality `<` also when proving the one with the
-*weak* inequality `≤`.  This is actually necessary: addition on `lex (Π₀ i, α i)` may fail to be
+We assume `CovariantClass` with *strict* inequality `<` also when proving the one with the
+*weak* inequality `≤`. This is actually necessary: addition on `Lex (Π₀ i, α i)` may fail to be
 monotone, when it is "just" monotone on `α i`. -/
 
 
@@ -167,8 +157,7 @@ variable [∀ i, CovariantClass (α i) (α i) (· + ·) (· < ·)]
 
 instance Lex.covariantClass_lt_left :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· < ·) :=
-  ⟨fun f g h ⟨a, lta, ha⟩ =>
-    ⟨a, fun j ja => congr_arg ((· + ·) _) (lta j ja), add_lt_add_left ha _⟩⟩
+  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 #align dfinsupp.lex.covariant_class_lt_left Dfinsupp.Lex.covariantClass_lt_left
 
 instance Lex.covariantClass_le_left :
@@ -184,8 +173,8 @@ variable [∀ i, CovariantClass (α i) (α i) (Function.swap (· + ·)) (· < ·
 
 instance Lex.covariantClass_lt_right :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· < ·) :=
-  ⟨fun f g h ⟨a, lta, ha⟩ =>
-    ⟨a, fun j ja => congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
+  ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
+    ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 #align dfinsupp.lex.covariant_class_lt_right Dfinsupp.Lex.covariantClass_lt_right
 
 instance Lex.covariantClass_le_right :
