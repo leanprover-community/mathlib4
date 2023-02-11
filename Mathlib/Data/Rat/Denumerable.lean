@@ -8,7 +8,7 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Denumerability of ℚ
@@ -33,8 +33,7 @@ private def denumerable_aux : ℚ ≃ { x : ℤ × ℕ // 0 < x.2 ∧ x.1.natAbs
 #align rat.denumerable_aux rat.denumerable_aux
 
 /-- **Denumerability of the Rational Numbers** -/
-instance : Denumerable ℚ :=
-  by
+instance : Denumerable ℚ := by
   let T := { x : ℤ × ℕ // 0 < x.2 ∧ x.1.natAbs.coprime x.2 }
   letI : Infinite T := Infinite.of_injective _ denumerable_aux.injective
   letI : Encodable T := Encodable.Subtype.encodable
