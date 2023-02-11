@@ -39,39 +39,42 @@ variable (B : Type u) [Bicategory.{w, v} B]
 isomorphisms given by equalities.
 -/
 class Bicategory.Strict : Prop where
-  id_comp' : ∀ {a b : B} (f : a ⟶ b), 𝟙 a ≫ f = f := by obviously
-  comp_id' : ∀ {a b : B} (f : a ⟶ b), f ≫ 𝟙 b = f := by obviously
+  id_comp' : ∀ {a b : B} (f : a ⟶ b), 𝟙 a ≫ f = f := by aesop_cat
+  comp_id' : ∀ {a b : B} (f : a ⟶ b), f ≫ 𝟙 b = f := by aesop_cat
   assoc' : ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), (f ≫ g) ≫ h = f ≫ g ≫ h := by
-    obviously
-  leftUnitor_eq_to_iso' : ∀ {a b : B} (f : a ⟶ b), λ_ f = eqToIso (id_comp' f) := by obviously
-  rightUnitor_eq_to_iso' : ∀ {a b : B} (f : a ⟶ b), ρ_ f = eqToIso (comp_id' f) := by obviously
-  associator_eq_to_iso' :
+    aesop_cat
+  leftUnitor_eqToIso' : ∀ {a b : B} (f : a ⟶ b), λ_ f = eqToIso (id_comp' f) := by aesop_cat
+  rightUnitor_eqToIso' : ∀ {a b : B} (f : a ⟶ b), ρ_ f = eqToIso (comp_id' f) := by aesop_cat
+  associator_eqToIso' :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), α_ f g h = eqToIso (assoc' f g h) := by
-    obviously
+    aesop_cat
 #align category_theory.bicategory.strict CategoryTheory.Bicategory.Strict
 
-restate_axiom bicategory.strict.id_comp'
+-- porting note: should those `restate_axiom` statements be removed?
+restate_axiom Bicategory.Strict.id_comp'
 
-restate_axiom bicategory.strict.comp_id'
+restate_axiom Bicategory.Strict.comp_id'
 
-restate_axiom bicategory.strict.assoc'
+restate_axiom Bicategory.Strict.assoc'
 
-restate_axiom bicategory.strict.left_unitor_eq_to_iso'
+restate_axiom Bicategory.Strict.leftUnitor_eqToIso'
 
-restate_axiom bicategory.strict.right_unitor_eq_to_iso'
+restate_axiom Bicategory.Strict.rightUnitor_eqToIso'
 
-restate_axiom bicategory.strict.associator_eq_to_iso'
+restate_axiom Bicategory.Strict.associator_eqToIso'
 
 attribute [simp]
-  bicategory.strict.id_comp bicategory.strict.left_unitor_eq_to_iso bicategory.strict.comp_id bicategory.strict.right_unitor_eq_to_iso bicategory.strict.assoc bicategory.strict.associator_eq_to_iso
+  Bicategory.Strict.id_comp Bicategory.Strict.leftUnitor_eqToIso
+      Bicategory.Strict.comp_id Bicategory.Strict.rightUnitor_eqToIso
+      Bicategory.Strict.assoc Bicategory.Strict.associator_eqToIso
 
 -- see Note [lower instance priority]
 /-- Category structure on a strict bicategory -/
 instance (priority := 100) StrictBicategory.category [Bicategory.Strict B] : Category B
     where
-  id_comp' a b := Bicategory.Strict.id_comp
-  comp_id' a b := Bicategory.Strict.comp_id
-  assoc' a b c d := Bicategory.Strict.assoc
+  id_comp := Bicategory.Strict.id_comp
+  comp_id := Bicategory.Strict.comp_id
+  assoc := Bicategory.Strict.assoc
 #align category_theory.strict_bicategory.category CategoryTheory.StrictBicategory.category
 
 namespace Bicategory
@@ -82,17 +85,18 @@ variable {B}
 theorem whiskerLeft_eqToHom {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g = h) :
     f ◁ eqToHom η = eqToHom (congr_arg₂ (· ≫ ·) rfl η) := by
   cases η
-  simp only [whisker_left_id, eq_to_hom_refl]
-#align category_theory.bicategory.whisker_left_eq_to_hom CategoryTheory.Bicategory.whiskerLeft_eqToHom
+  simp only [whiskerLeft_id, eqToHom_refl]
+#align category_theory.bicategory.whisker_left_eq_to_hom
+    CategoryTheory.Bicategory.whiskerLeft_eqToHom
 
 @[simp]
 theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶ c) :
     eqToHom η ▷ h = eqToHom (congr_arg₂ (· ≫ ·) η rfl) := by
   cases η
-  simp only [id_whisker_right, eq_to_hom_refl]
-#align category_theory.bicategory.eq_to_hom_whisker_right CategoryTheory.Bicategory.eqToHom_whiskerRight
+  simp only [id_whiskerRight, eqToHom_refl]
+#align category_theory.bicategory.eq_to_hom_whisker_right
+    CategoryTheory.Bicategory.eqToHom_whiskerRight
 
 end Bicategory
 
 end CategoryTheory
-
