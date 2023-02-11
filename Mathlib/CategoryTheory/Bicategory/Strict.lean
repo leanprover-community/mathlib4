@@ -8,8 +8,8 @@ Authors: Yuma Mizuno
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EqToHom
-import Mathbin.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Bicategory.Basic
 
 /-!
 # Strict bicategories
@@ -80,16 +80,14 @@ variable {B}
 
 @[simp]
 theorem whiskerLeft_eqToHom {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g = h) :
-    f ◁ eqToHom η = eqToHom (congr_arg₂ (· ≫ ·) rfl η) :=
-  by
+    f ◁ eqToHom η = eqToHom (congr_arg₂ (· ≫ ·) rfl η) := by
   cases η
   simp only [whisker_left_id, eq_to_hom_refl]
 #align category_theory.bicategory.whisker_left_eq_to_hom CategoryTheory.Bicategory.whiskerLeft_eqToHom
 
 @[simp]
 theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶ c) :
-    eqToHom η ▷ h = eqToHom (congr_arg₂ (· ≫ ·) η rfl) :=
-  by
+    eqToHom η ▷ h = eqToHom (congr_arg₂ (· ≫ ·) η rfl) := by
   cases η
   simp only [id_whisker_right, eq_to_hom_refl]
 #align category_theory.bicategory.eq_to_hom_whisker_right CategoryTheory.Bicategory.eqToHom_whiskerRight
