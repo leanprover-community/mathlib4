@@ -109,18 +109,19 @@ def getFVarIdAt (goal : MVarId) (id : Syntax) : TacticM FVarId := withRef id do
 If `ids` is specified, elaborate them in the local context of the given goal to obtain the array of
 `FVarId`s.
 
-If `includeAuxDecls` is `false`, we filter out `AuxDecls` from the resulting list of `FVarId`s. -/
+If `includeImplementationDetails` is `false` (the default), we filter out implementation details
+(`implDecl`s and `auxDecl`s) from the resulting list of `FVarId`s. -/
 def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
-    (includeAuxDecls : Bool := true) : TacticM (Array FVarId) :=
+    (includeImplementationDetails : Bool := false) : TacticM (Array FVarId) :=
   goal.withContext do
     let lctx := (← goal.getDecl).lctx
     let fvarIds ← match ids with
     | none => pure lctx.getFVarIds
     | some ids => ids.mapM <| getFVarIdAt goal
-    if includeAuxDecls then
+    if includeImplementationDetails then
       return fvarIds
     else
-      return fvarIds.filter (fun fvar => ! (lctx.fvarIdToDecl.find! fvar).isAuxDecl)
+      return fvarIds.filter (fun fvar => ! (lctx.fvarIdToDecl.find! fvar).isImplementationDetail)
 
 /--
 Run a tactic on all goals, and always succeeds.

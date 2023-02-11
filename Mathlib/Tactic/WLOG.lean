@@ -72,7 +72,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   tactic state.) -/
   let (revertedFVars, HType) ← withoutModifyingState <| goal.withContext do
     let goal ← goal.assert h P (← mkFreshExprMVar P)
-    let toRevert ← getFVarIdsAt goal xs false
+    let toRevert ← getFVarIdsAt goal xs
     let (revertedFVars, goal) ← goal.revert toRevert
     return (revertedFVars, ← goal.getType)
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
