@@ -22,6 +22,8 @@ isomorphisms.
 
 * `RelHom`: Relation homomorphism. A `RelHom r s` is a function `f : α → β` such that
   `r a b → s (f a) (f b)`.
+* `RelCovering`: Relation covering. A `RelCovering r s` is a surjective function `f : α → β` such
+  that `r a b ↔ s (f a) (f b)`.
 * `RelEmbedding`: Relation embedding. A `RelEmbedding r s` is an embedding `f : α ↪ β` such that
   `r a b ↔ s (f a) (f b)`.
 * `RelIso`: Relation isomorphism. A `RelIso r s` is an equivalence `f : α ≃ β` such that
@@ -167,11 +169,11 @@ end RelHom
 
 -- TODO: Do we need bundled surjective function?
 /-- A relation covering with respect to a given pair of relations `r` and `s`
-is an surjective function `f : α → β` such that `r a b ↔ s (f a) (f b)`. -/
+is a surjective function `f : α → β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelCovering {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) where
   /-- The underlying function of a `RelCovering` -/
   toFun : α → β
-  /-- An covering is an surjective function. -/
+  /-- An covering is a surjective function. -/
   surj' : Surjective toFun
   /-- Elements are related iff they are related after apply a `RelCovering` -/
   map_rel_iff' : ∀ {a b}, s (toFun a) (toFun b) ↔ r a b
