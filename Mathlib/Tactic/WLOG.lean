@@ -46,7 +46,7 @@ structure WLOGResult where
   `hypothesisGoal`). -/
   revertedFVarIds  : Array FVarId
 
-
+open private mkAuxMVarType from Lean.MetavarContext in
 /-- `wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
 `h : P` to the context of `goal`, and the `reductionGoal`, which requires showing that the case
 `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
@@ -70,11 +70,15 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let h := h.getD `h
   /- Compute the type for H and keep track of the FVarId's reverted in doing so. (Do not modify the
   tactic state.) -/
-  let (revertedFVars, HType) ← withoutModifyingState <| goal.withContext do
-    let goal ← goal.assert h P (← mkFreshExprMVar P)
-    let toRevert ← getFVarIdsAt goal xs
-    let (revertedFVars, goal) ← goal.revert toRevert
-    return (revertedFVars, ← goal.getType)
+  let HSuffix := Expr.forallE h P (← goal.getType) .default
+  let fvars ← getFVarIdsAt goal xs
+  let fvars := fvars.map Expr.fvar
+  let lctx := (← goal.getDecl).lctx
+  let f ← collectForwardDeps fvars false
+  let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
+  let HType ← liftMkBindingM <|
+    fun ctx => mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
+      { preserveOrder := false, mainModule := ctx.mainModule }
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
   let HExpr ← mkFreshExprSyntheticOpaqueMVar HType
