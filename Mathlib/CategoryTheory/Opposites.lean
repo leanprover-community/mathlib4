@@ -26,6 +26,7 @@ Unfortunately, because we do not have a definitional equality `op (op X) = X`,
 there are quite a few variations that are needed in practice.
 -/
 
+set_option autoImplicit false
 
 universe v₁ v₂ u₁ u₂
 
@@ -160,14 +161,14 @@ instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
 
 @[simp]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
-  ext
+  aesop_cat
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 #align category_theory.op_inv CategoryTheory.op_inv
 
 @[simp]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
-  ext
-  rw [← unop_comp, is_iso.inv_hom_id, unop_id]
+  aesop_cat
+  rw [← unop_comp, IsIso.inv_hom_id, unop_id]
 #align category_theory.unop_inv CategoryTheory.unop_inv
 
 namespace Functor
@@ -276,19 +277,19 @@ instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp
         Quiver.Hom.unop_inj (map_injective F (Quiver.Hom.unop_inj h))
 #align category_theory.functor.left_op_faithful CategoryTheory.Functor.leftOp_faithful
 
-/-- The isomorphism between `F.left_op.right_op` and `F`. -/
+/-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
   NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
 #align category_theory.functor.left_op_right_op_iso CategoryTheory.Functor.leftOpRightOpIso
 
-/-- The isomorphism between `F.right_op.left_op` and `F`. -/
+/-- The isomorphism between `F.rightOp.leftOp` and `F`. -/
 @[simps!]
 def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
   NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
 #align category_theory.functor.right_op_left_op_iso CategoryTheory.Functor.rightOpLeftOpIso
 
-/-- Whenever possible, it is advisable to use the isomorphism `right_op_left_op_iso`
+/-- Whenever possible, it is advisable to use the isomorphism `rightOpLeftOpIso`
 instead of this equality of functors. -/
 theorem rightOp_leftOp_eq (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp = F := by
   cases F
@@ -391,7 +392,7 @@ theorem leftOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.leftOp (α ≫ β) 
   rfl
 #align category_theory.nat_trans.left_op_comp CategoryTheory.NatTrans.leftOp_comp
 
-/-- Given a natural transformation `α : F.left_op ⟶ G.left_op`, for `F G : C ⥤ Dᵒᵖ`,
+/-- Given a natural transformation `α : F.leftOp ⟶ G.leftOp`, for `F G : C ⥤ Dᵒᵖ`,
 taking `op` of each component gives a natural transformation `G ⟶ F`.
 -/
 @[simps]
@@ -414,7 +415,7 @@ section
 variable {F G H : Cᵒᵖ ⥤ D}
 
 /-- Given a natural transformation `α : F ⟶ G`, for `F G : Cᵒᵖ ⥤ D`,
-taking `op` of each component gives a natural transformation `G.right_op ⟶ F.right_op`.
+taking `op` of each component gives a natural transformation `G.rightOp ⟶ F.rightOp`.
 -/
 @[simps]
 protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp
@@ -434,7 +435,7 @@ theorem rightOp_comp (α : F ⟶ G) (β : G ⟶ H) : NatTrans.rightOp (α ≫ β
   rfl
 #align category_theory.nat_trans.right_op_comp CategoryTheory.NatTrans.rightOp_comp
 
-/-- Given a natural transformation `α : F.right_op ⟶ G.right_op`, for `F G : Cᵒᵖ ⥤ D`,
+/-- Given a natural transformation `α : F.rightOp ⟶ G.rightOp`, for `F G : Cᵒᵖ ⥤ D`,
 taking `unop` of each component gives a natural transformation `G ⟶ F`.
 -/
 @[simps]
@@ -568,14 +569,14 @@ end Equivalence
 adjunctions.
 Note that this (definitionally) gives variants
 ```
-def op_equiv' (A : C) (B : Cᵒᵖ) : (opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
-op_equiv _ _
+def opEquiv' (A : C) (B : Cᵒᵖ) : (opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
+opEquiv _ _
 
-def op_equiv'' (A : Cᵒᵖ) (B : C) : (A ⟶ opposite.op B) ≃ (B ⟶ A.unop) :=
-op_equiv _ _
+def opEquiv'' (A : Cᵒᵖ) (B : C) : (A ⟶ opposite.op B) ≃ (B ⟶ A.unop) :=
+opEquiv _ _
 
-def op_equiv''' (A B : C) : (opposite.op A ⟶ opposite.op B) ≃ (B ⟶ A) :=
-op_equiv _ _
+def opEquiv''' (A B : C) : (opposite.op A ⟶ opposite.op B) ≃ (B ⟶ A) :=
+opEquiv _ _
 ```
 -/
 @[simps]
@@ -639,17 +640,19 @@ def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ
   counitIso := NatIso.ofComponents (fun F => F.unopOpIso) (by aesop_cat)
 #align category_theory.functor.op_unop_equiv CategoryTheory.Functor.opUnopEquiv
 
-/-- The equivalence of functor categories induced by `left_op` and `right_op`.
+/-- The equivalence of functor categories induced by `leftOp` and `rightOp`.
 -/
 @[simps!]
 def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ
     where
-  Functor :=
+  functor :=
     { obj := fun F => F.unop.rightOp
-      map := fun F G η => η.unop.rightOp }
+      map := fun η => NatTrans.rightOp η.unop 
+    }
   inverse :=
     { obj := fun F => op F.leftOp
-      map := fun F G η => η.leftOp.op }
+      map := fun η => η.leftOp.op 
+    }
   unitIso :=
     NatIso.ofComponents (fun F => F.unop.rightOpLeftOpIso.op)
       (by
