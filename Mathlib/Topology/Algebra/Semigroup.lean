@@ -9,7 +9,6 @@ Authors: David Wärn
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Idempotents in topological semigroups
