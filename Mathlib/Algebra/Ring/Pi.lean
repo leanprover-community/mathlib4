@@ -163,7 +163,7 @@ variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of rings at a point is a ring
 homomorphism. This is `Function.eval` as a `RingHom`. -/
-@[simps]
+@[simps!]
 def Pi.evalRingHom (f : I → Type v) [∀ i, NonAssocSemiring (f i)] (i : I) : (∀ i, f i) →+* f i :=
   { Pi.evalMonoidHom f i, Pi.evalAddMonoidHom f i with }
 #align pi.eval_ring_hom Pi.evalRingHom

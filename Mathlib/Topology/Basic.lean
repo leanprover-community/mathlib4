@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
+! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1755,6 +1755,13 @@ theorem image_closure_subset_closure_image {f : α → β} {s : Set α} (h : Con
     f '' closure s ⊆ closure (f '' s) :=
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
+
+-- porting note: new lemma
+theorem closure_image_closure {f : α → β} {s : Set α} (h : Continuous f) :
+    closure (f '' closure s) = closure (f '' s) :=
+  Subset.antisymm
+    (closure_minimal (image_closure_subset_closure_image h) isClosed_closure)
+    (closure_mono <| image_subset _ subset_closure)
 
 theorem closure_subset_preimage_closure_image {f : α → β} {s : Set α} (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) := by
