@@ -77,12 +77,12 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type _) (R : outParam <| Type u) [Ring R] [SetLike S R] extends
+class SubringClass (S : Type _) (R : Type u) [Ring R] [SetLike S R] extends
   SubsemiringClass S R, NegMemClass S R : Prop
 #align subring_class SubringClass
 
 -- See note [lower instance priority]
-instance (priority := 100) SubringClass.addSubgroupClass (S : Type _) (R : outParam <| Type u)
+instance (priority := 100) SubringClass.addSubgroupClass (S : Type _) (R : Type u)
     [SetLike S R] [Ring R] [h : SubringClass S R] : AddSubgroupClass S R :=
   { h with }
 #align subring_class.add_subgroup_class SubringClass.addSubgroupClass
@@ -116,6 +116,7 @@ instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClas
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
 instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
+  have := SubsemiringClass.noZeroDivisors (s := s) -- porting note: todo: fails without `have`
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
@@ -193,44 +194,40 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
-/-- The underlying submonoid of a subring. -/
-def toSubmonoid (s : Subring R) : Submonoid R :=
-  { s.toSubsemiring.toSubmonoid with carrier := s.carrier }
-#align subring.to_submonoid Subring.toSubmonoid
+-- porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
+-- projection `s.toSubmonoid`
+#noalign subring.to_submonoid
 
 instance : SetLike (Subring R) R where
-  coe := Subring.carrier
-  coe_injective' p q h := by cases p <;> cases q <;> congr
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 instance : SubringClass (Subring R) R where
-  zero_mem := zero_mem'
-  add_mem := add_mem'
-  one_mem := one_mem'
-  mul_mem := mul_mem'
-  neg_mem := neg_mem'
+  zero_mem s := s.zero_mem'
+  add_mem {s} := s.add_mem'
+  one_mem s := s.one_mem'
+  mul_mem {s} := s.mul_mem'
+  neg_mem {s} := s.neg_mem'
 
 @[simp]
+theorem mem_toSubsemiring {s : Subring R} {x : R} : x ∈ s.toSubsemiring ↔ x ∈ s := Iff.rfl
+
 theorem mem_carrier {s : Subring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subring.mem_carrier Subring.mem_carrier
 
 @[simp]
-theorem mem_mk {S : Set R} {x : R} (h₁ h₂ h₃ h₄ h₅) :
-    x ∈ (⟨S, h₁, h₂, h₃, h₄, h₅⟩ : Subring R) ↔ x ∈ S :=
-  Iff.rfl
-#align subring.mem_mk Subring.mem_mk
+theorem mem_mk {S : Subsemiring R} {x : R} (h) : x ∈ (⟨S, h⟩ : Subring R) ↔ x ∈ S := Iff.rfl
+#align subring.mem_mk Subring.mem_mkₓ
+
+@[simp] theorem coe_set_mk (S : Subsemiring R) (h) : ((⟨S, h⟩ : Subring R) : Set R) = S := rfl
+#align subring.coe_set_mk Subring.coe_set_mkₓ
 
 @[simp]
-theorem coe_set_mk (S : Set R) (h₁ h₂ h₃ h₄ h₅) :
-    ((⟨S, h₁, h₂, h₃, h₄, h₅⟩ : Subring R) : Set R) = S :=
-  rfl
-#align subring.coe_set_mk Subring.coe_set_mk
-
-@[simp]
-theorem mk_le_mk {S S' : Set R} (h₁ h₂ h₃ h₄ h₅ h₁' h₂' h₃' h₄' h₅') :
-    (⟨S, h₁, h₂, h₃, h₄, h₅⟩ : Subring R) ≤ (⟨S', h₁', h₂', h₃', h₄', h₅'⟩ : Subring R) ↔ S ⊆ S' :=
+theorem mk_le_mk {S S' : Subsemiring R} (h₁ h₂) :
+    (⟨S, h₁⟩ : Subring R) ≤ (⟨S', h₂⟩ : Subring R) ↔ S ≤ S' :=
   Iff.rfl
-#align subring.mk_le_mk Subring.mk_le_mk
+#align subring.mk_le_mk Subring.mk_le_mkₓ
 
 /-- Two subrings are equal if they have the same elements. -/
 @[ext]
@@ -243,7 +240,7 @@ equalities. -/
 protected def copy (S : Subring R) (s : Set R) (hs : s = ↑S) : Subring R :=
   { S.toSubsemiring.copy s hs with
     carrier := s
-    neg_mem' := fun _ => hs.symm ▸ S.neg_mem' }
+    neg_mem' := hs.symm ▸ S.neg_mem' }
 #align subring.copy Subring.copy
 
 @[simp]
@@ -256,7 +253,7 @@ theorem copy_eq (S : Subring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
 #align subring.copy_eq Subring.copy_eq
 
 theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R → Subsemiring R)
-  | r, s, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_subsemiring_injective Subring.toSubsemiring_injective
 
 --@[mono] -- Porting note: mono not implemented yet
@@ -266,11 +263,11 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Sub
 
 --@[mono] -- Porting note: mono not implemented yet
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
-  toSubsemiring_strictMono.Monotone
+  toSubsemiring_strictMono.monotone
 #align subring.to_subsemiring_mono Subring.toSubsemiring_mono
 
 theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R → AddSubgroup R)
-  | r, s, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_add_subgroup_injective Subring.toAddSubgroup_injective
 
 --@[mono] -- Porting note: mono not implemented yet
@@ -280,32 +277,27 @@ theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → Add
 
 --@[mono] -- Porting note: mono not implemented yet
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
-  toAddSubgroup_strictMono.Monotone
+  toAddSubgroup_strictMono.monotone
 #align subring.to_add_subgroup_mono Subring.toAddSubgroup_mono
 
-theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subring R → Submonoid R)
-  | r, s, h => ext (SetLike.ext_iff.mp h : _)
+theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSubmonoid)
+  | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_submonoid_injective Subring.toSubmonoid_injective
 
 --@[mono] -- Porting note: mono not implemented yet
-theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subring R → Submonoid R) := fun _ _ => id
+theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
 #align subring.to_submonoid_strict_mono Subring.toSubmonoid_strictMono
 
 --@[mono] -- Porting note: mono not implemented yet
-theorem toSubmonoid_mono : Monotone (toSubmonoid : Subring R → Submonoid R) :=
-  toSubmonoid_strictMono.Monotone
+theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
+  toSubmonoid_strictMono.monotone
 #align subring.to_submonoid_mono Subring.toSubmonoid_mono
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
 protected def mk' (s : Set R) (sm : Submonoid R) (sa : AddSubgroup R) (hm : ↑sm = s)
-    (ha : ↑sa = s) : Subring R where
-  carrier := s
-  zero_mem' := ha ▸ sa.zero_mem
-  one_mem' := hm ▸ sm.one_mem
-  add_mem' x y := by simpa only [← ha] using sa.add_mem
-  mul_mem' x y := by simpa only [← hm] using sm.mul_mem
-  neg_mem' x := by simpa only [← ha] using sa.neg_mem
+    (ha : ↑sa = s) : Subring R :=
+  { sm.copy s hm.symm, sa.copy s ha.symm with }
 #align subring.mk' Subring.mk'
 
 @[simp]
@@ -335,13 +327,11 @@ theorem mk'_toAddSubgroup {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : 
 end Subring
 
 /-- A `Subsemiring` containing -1 is a `Subring`. -/
-def Subsemiring.toSubring (s : Subsemiring R) (hneg : (-1 : R) ∈ s) : Subring R :=
-  { s.toSubmonoid, s.toAddSubmonoid with
-    neg_mem' := by
-      rintro x
-      rw [← neg_one_mul]
-      apply Subsemiring.mul_mem
-      exact hneg }
+def Subsemiring.toSubring (s : Subsemiring R) (hneg : (-1 : R) ∈ s) : Subring R where
+  toSubsemiring := s
+  neg_mem' h := by
+    rw [← neg_one_mul]
+    exact mul_mem hneg h
 #align subsemiring.to_subring Subsemiring.toSubring
 
 namespace Subring
@@ -416,9 +406,7 @@ protected theorem sum_mem {R : Type _} [Ring R] (s : Subring R) {ι : Type _} {t
 #align subring.sum_mem Subring.sum_mem
 
 /-- A subring of a ring inherits a ring structure -/
-instance toRing : Ring s :=
-  Subtype.coe_injective.Ring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+instance toRing : Ring s := SubringClass.toRing s
 #align subring.to_ring Subring.toRing
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
@@ -467,17 +455,16 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
-  Subtype.coe_injective.CommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  SubringClass.toCommRing s
 #align subring.to_comm_ring Subring.toCommRing
 
 /-- A subring of a non-trivial ring is non-trivial. -/
 instance {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
-  s.toSubsemiring.Nontrivial
+  s.toSubsemiring.nontrivial
 
 /-- A subring of a ring with no zero divisors has no zero divisors. -/
 instance {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
-  s.toSubsemiring.NoZeroDivisors
+  s.toSubsemiring.noZeroDivisors
 
 /-- A subring of a domain is a domain. -/
 instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
@@ -485,53 +472,46 @@ instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
-  Subtype.coe_injective.OrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  SubringClass.toOrderedRing s
 #align subring.to_ordered_ring Subring.toOrderedRing
 
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
 instance toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
-  Subtype.coe_injective.OrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  SubringClass.toOrderedCommRing s
 #align subring.to_ordered_comm_ring Subring.toOrderedCommRing
 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
 instance toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
-  Subtype.coe_injective.LinearOrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  SubringClass.toLinearOrderedRing s
 #align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
 
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
 instance toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
     LinearOrderedCommRing s :=
-  Subtype.coe_injective.LinearOrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  SubringClass.toLinearOrderedCommRing s
 #align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
 
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : Subring R) : s →+* R :=
-  { s.toSubmonoid.Subtype, s.toAddSubgroup.Subtype with toFun := (↑) }
+  { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 #align subring.subtype Subring.subtype
 
 @[simp]
-theorem coeSubtype : ⇑s.Subtype = (↑) :=
+theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 #align subring.coe_subtype Subring.coeSubtype
 
 @[simp, norm_cast]
 theorem coe_nat_cast : ∀ n : ℕ, ((n : s) : R) = n :=
-  map_natCast s.Subtype
+  map_natCast s.subtype
 #align subring.coe_nat_cast Subring.coe_nat_cast
 
 @[simp, norm_cast]
 theorem coe_int_cast : ∀ n : ℤ, ((n : s) : R) = n :=
-  map_intCast s.Subtype
+  map_intCast s.subtype
 #align subring.coe_int_cast Subring.coe_int_cast
 
 /-! ## Partial order -/
-
 
 @[simp]
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=

@@ -92,9 +92,8 @@ instance nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 #align subsemiring_class.nontrivial SubsemiringClass.nontrivial
 
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
-  eq_zero_or_eq_zero_of_mul_eq_zero {_ _} h :=
-    (eq_zero_or_eq_zero_of_mul_eq_zero <| Subtype.ext_iff.mp h).imp Subtype.eq Subtype.eq
+instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
+  Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ => rfl
 #align subsemiring_class.no_zero_divisors SubsemiringClass.noZeroDivisors
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
