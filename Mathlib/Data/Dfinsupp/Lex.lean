@@ -74,8 +74,8 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ i, PartialOrder (α i)] :
     IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) :=
   let i : IsStrictOrder (Lex (∀ i, α i)) (· < ·) := Pi.Lex.isStrictOrder
-  { irrefl := toLex.surjective.forall.2 fun a => @irrefl _ _ i.toIsIrrefl a
-    trans := toLex.surjective.forall₃.2 fun a b c => @trans _ _ i.toIsTrans a b c }
+  { irrefl := toLex.surjective.forall.2 fun _ => @irrefl _ _ i.toIsIrrefl _
+    trans := toLex.surjective.forall₃.2 fun _ _ _ => @trans _ _ i.toIsTrans _ _ _ }
 #align dfinsupp.lex.is_strict_order Dfinsupp.Lex.isStrictOrder
 
 variable [LinearOrder ι]
@@ -83,7 +83,7 @@ variable [LinearOrder ι]
 /-- The partial order on `dfinsupp`s obtained by the lexicographic ordering.
 See `dfinsupp.lex.linear_order` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) :=
-  PartialOrder.lift (fun x => toLex ⇑(ofLex x)) Dfinsupp.coeFn_injective
+  PartialOrder.lift (fun x => toLex (⇑(ofLex x))) Dfinsupp.coeFn_injective
 #align dfinsupp.lex.partial_order Dfinsupp.Lex.partialOrder
 
 section LinearOrder
@@ -101,24 +101,23 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
       match (motive := ∀ y, (f.neLocus g).min = y → _) _, rfl with
       | ⊤, h => h_eq (neLocus_eq_empty.mp <| Finset.min_eq_top.mp h)
       | (wit : ι), h =>
-        (mem_neLocus.mp <| Finset.mem_of_min h).lt_or_lt.byCases
+        (mem_neLocus.mp <| Finset.mem_of_min h).lt_or_lt.by_cases
           (fun hwit =>
             h_lt ⟨wit, fun j hj => not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj h), hwit⟩)
           fun hwit =>
           h_gt
             ⟨wit, fun j hj =>
-              not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [ne_locus_comm]), hwit⟩
-#align dfinsupp.lt_trichotomy_rec dfinsupp.lt_trichotomy_rec
+              not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
 /- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
 irreducible_def Lex.decidableLe : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
-  ltTrichotomyRec (fun f g h => isTrue <| Or.inr h) (fun f g h => isTrue <| Or.inl <| congr_arg _ h)
+  lt_trichotomy_rec (fun f g h => isTrue <| Or.inr h) (fun f g h => isTrue <| Or.inl <| congr_arg _ h)
     fun f g h => isFalse fun h' => (lt_irrefl _ (h.trans_le h')).elim
 #align dfinsupp.lex.decidable_le Dfinsupp.Lex.decidableLe
 
 /- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
 irreducible_def Lex.decidableLt : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) :=
-  ltTrichotomyRec (fun f g h => isTrue h) (fun f g h => isFalse h.not_lt) fun f g h =>
+  lt_trichotomy_rec (fun f g h => isTrue h) (fun f g h => isFalse h.not_lt) fun f g h =>
     isFalse h.asymm
 #align dfinsupp.lex.decidable_lt Dfinsupp.Lex.decidableLt
 
@@ -126,11 +125,11 @@ irreducible_def Lex.decidableLt : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) 
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) :=
   {
     Lex.partialOrder with
-    le_total :=
-      ltTrichotomyRec (fun f g h => Or.inl h.le) (fun f g h => Or.inl h.le) fun f g h => Or.inr h.le
-    decidableLt := by infer_instance
-    decidableLe := by infer_instance
-    DecidableEq := by infer_instance }
+    le_total := lt_trichotomy_rec (fun f g h => Or.inl h.le)
+      (fun f g h => Or.inl h.le) fun f g h => Or.inr h.le
+    decidable_lt := by infer_instance
+    decidable_le := by infer_instance
+    decidable_eq := by infer_instance }
 #align dfinsupp.lex.linear_order Dfinsupp.Lex.linearOrder
 
 end LinearOrder
