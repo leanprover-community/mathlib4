@@ -152,22 +152,20 @@ theorem isPiSystem_Ioi : IsPiSystem (range Ioi : Set (Set α)) :=
   @image_univ α _ Ioi ▸ isPiSystem_image_Ioi univ
 #align is_pi_system_Ioi isPiSystem_Ioi
 
--- porting note: changed `max`/`min` to `⊔`/`⊓`
 -- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)
-    (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (a₁ ⊔ a₂) (b₁ ⊓ b₂)) (s t : Set α) :
+    (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (max a₁ a₂) (min b₁ b₂)) (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), p l u ∧ Ixx l u = S } := by
   rintro _ ⟨l₁, hls₁, u₁, hut₁, _, rfl⟩ _ ⟨l₂, hls₂, u₂, hut₂, _, rfl⟩
   simp only [Hi]
   exact fun H => ⟨l₁ ⊔ l₂, sup_ind l₁ l₂ hls₁ hls₂, u₁ ⊓ u₂, inf_ind u₁ u₂ hut₁ hut₂, Hne H, rfl⟩
 #align is_pi_system_Ixx_mem isPiSystem_Ixx_mem
 
--- porting note: changed `max`/`min` to `⊔`/`⊓`
 -- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ixx {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)
-    (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (a₁ ⊔ a₂) (b₁ ⊓ b₂)) (f : ι → α)
+    (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (max a₁ a₂) (min b₁ b₂)) (f : ι → α)
     (g : ι' → α) : @IsPiSystem α { S | ∃ i j, p (f i) (g j) ∧ Ixx (f i) (g j) = S } := by
   simpa only [exists_range_iff] using isPiSystem_Ixx_mem (@Hne) (@Hi) (range f) (range g)
 #align is_pi_system_Ixx isPiSystem_Ixx
@@ -211,13 +209,13 @@ theorem isPiSystem_Ico (f : ι → α) (g : ι' → α) :
 -- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Icc_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l ≤ u ∧ Icc l u = S } :=
-  isPiSystem_Ixx_mem (Ixx := Icc) nonempty_Icc.1 Icc_inter_Icc s t
+  isPiSystem_Ixx_mem (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) s t
 #align is_pi_system_Icc_mem isPiSystem_Icc_mem
 
 -- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Icc (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ i j, f i ≤ g j ∧ Icc (f i) (g j) = S } :=
-  isPiSystem_Ixx (Ixx := Icc) nonempty_Icc.1 Icc_inter_Icc f g
+  isPiSystem_Ixx (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) f g
 #align is_pi_system_Icc isPiSystem_Icc
 
 end Order
