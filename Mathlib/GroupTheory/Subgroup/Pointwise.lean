@@ -363,7 +363,7 @@ theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a �
 #align subgroup.smul_inf Subgroup.smul_inf
 
 /-- Applying a `MulDistribMulAction` results in an isomorphic subgroup -/
-@[simps]
+@[simps!]
 def equivSmul (a : α) (H : Subgroup G) : H ≃* (a • H : Subgroup G) :=
   (MulDistribMulAction.toMulEquiv G a).subgroupMap H
 #align subgroup.equiv_smul Subgroup.equivSmul

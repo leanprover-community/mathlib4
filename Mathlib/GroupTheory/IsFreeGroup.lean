@@ -65,7 +65,7 @@ variable (G : Type _) [Group G] [IsFreeGroup G]
 def MulEquiv : FreeGroup (Generators G) ≃* G := IsFreeGroup.MulEquiv'
 
 /-- Any free group is isomorphic to "the" free group. -/
-@[simps]
+@[simps!]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
   (MulEquiv G).symm
 #align is_free_group.to_free_group IsFreeGroup.toFreeGroup

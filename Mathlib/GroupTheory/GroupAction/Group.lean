@@ -81,7 +81,7 @@ def MulAction.toPermHom : α →* Equiv.Perm β where
 
 /-- Given an action of a additive group `α` on a set `β`, each `g : α` defines a permutation of
 `β`. -/
-@[simps]
+@[simps!]
 def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
     α →+ Additive (Equiv.Perm β) :=
   MonoidHom.toAdditive'' <| MulAction.toPermHom (Multiplicative α) β
@@ -332,9 +332,8 @@ end MulDistribMulAction
 section Arrow
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
-@[to_additive arrowAddAction
-      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`",
-  simps]
+@[to_additive (attr := simps) arrowAddAction
+      "If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)`"]
 def arrowAction {G A B : Type _} [DivisionMonoid G] [MulAction G A] : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul := by
@@ -361,7 +360,7 @@ attribute [local instance] arrowMulDistribMulAction
 
 /-- Given groups `G H` with `G` acting on `A`, `G` acts by
   multiplicative automorphisms on `A → H`. -/
-@[simps]
+@[simps!]
 def mulAutArrow {G A H} [Group G] [MulAction G A] [Monoid H] : G →* MulAut (A → H) :=
   MulDistribMulAction.toMulAut _ _
 #align mul_aut_arrow mulAutArrow
