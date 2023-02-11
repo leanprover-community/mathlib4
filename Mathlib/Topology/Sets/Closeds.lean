@@ -221,7 +221,7 @@ theorem Opens.compl_bijective : Function.Bijective (@Opens.compl α _) :=
 
 variable (α)
 
-/-- `closeds.compl` as an `order_iso` to the order dual of `opens α`. -/
+/-- `closeds.compl` as an `OrderIso` to the order dual of `opens α`. -/
 @[simps]
 def Closeds.complOrderIso : Closeds α ≃o (Opens α)ᵒᵈ where
   toFun := OrderDual.toDual ∘ Closeds.compl
@@ -231,7 +231,7 @@ def Closeds.complOrderIso : Closeds α ≃o (Opens α)ᵒᵈ where
   map_rel_iff' := (@OrderDual.toDual_le_toDual (Opens α)).trans compl_subset_compl
 #align topological_space.closeds.compl_order_iso TopologicalSpace.Closeds.complOrderIso
 
-/-- `opens.compl` as an `order_iso` to the order dual of `closeds α`. -/
+/-- `opens.compl` as an `OrderIso` to the order dual of `closeds α`. -/
 @[simps]
 def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
   toFun := OrderDual.toDual ∘ Opens.compl
@@ -243,7 +243,7 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
 
 variable {α}
 
-/-- in a `t1_space`, atoms of `closeds α` are precisely the `closeds.singleton`s. -/
+/-- in a `T1Space`, atoms of `closeds α` are precisely the `closeds.singleton`s. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     IsAtom s ↔ ∃ x, s = Closeds.singleton x := by
   have : IsAtom (s : Set α) ↔ IsAtom s := by
@@ -253,7 +253,7 @@ theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
   simp only [← this, (s : Set α).isAtom_iff, SetLike.ext'_iff, Closeds.singleton_coe]
 #align topological_space.closeds.is_atom_iff TopologicalSpace.Closeds.isAtom_iff
 
-/-- in a `t1_space`, coatoms of `opens α` are precisely complements of singletons:
+/-- in a `T1Space`, coatoms of `opens α` are precisely complements of singletons:
 `(closeds.singleton x).compl`. -/
 theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
     IsCoatom s ↔ ∃ x, s = (Closeds.singleton x).compl := by
