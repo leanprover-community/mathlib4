@@ -95,6 +95,11 @@ end Lean
 
 namespace Lean.Elab.Tactic
 
+/-- Given a local context and an array of `FVarIds` assumed to be in that local context, remove all
+implementation details. -/
+def filterOutImplementationDetails (lctx : LocalContext) (fvarIds : Array FVarId) : Array FVarId :=
+  fvarIds.filter (fun fvar => ! (lctx.fvarIdToDecl.find! fvar).isImplementationDetail)
+
 /-- Elaborate syntax for an `FVarId` in the local context of the given goal. -/
 def getFVarIdAt (goal : MVarId) (id : Syntax) : TacticM FVarId := withRef id do
   -- use apply-like elaboration to suppress insertion of implicit arguments
@@ -121,7 +126,7 @@ def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
     if includeImplementationDetails then
       return fvarIds
     else
-      return fvarIds.filter (fun fvar => ! (lctx.fvarIdToDecl.find! fvar).isImplementationDetail)
+      return filterOutImplementationDetails lctx fvarIds
 
 /--
 Run a tactic on all goals, and always succeeds.
