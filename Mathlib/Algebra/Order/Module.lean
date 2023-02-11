@@ -183,15 +183,12 @@ variable (M)
 
 /-- Left scalar multiplication as an order isomorphism. -/
 @[simps]
-def OrderIso.smulLeftDual {c : k} (hc : c < 0) : M ≃o Mᵒᵈ
-    where
+def OrderIso.smulLeftDual {c : k} (hc : c < 0) : M ≃o Mᵒᵈ where
   toFun b := OrderDual.toDual (c • b)
   invFun b := c⁻¹ • OrderDual.ofDual b
   left_inv := inv_smul_smul₀ hc.ne
   right_inv := smul_inv_smul₀ hc.ne
-  -- Porting note: old code was `map_rel_iff' b₁ b₂ := smul_le_smul_iff_of_neg hc`
-  map_rel_iff' := by simp only [*, Equiv.coe_fn_mk, OrderDual.toDual_le_toDual,
-                                smul_le_smul_iff_of_neg, forall_const]
+  map_rel_iff' := (@OrderDual.toDual_le_toDual M).trans <| smul_le_smul_iff_of_neg hc
 #align order_iso.smul_left_dual OrderIso.smulLeftDual
 
 end Field
