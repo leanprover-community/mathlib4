@@ -104,18 +104,19 @@ theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
 
 @[to_additive (attr := simp)]
 theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
-    (b • a : α ⧸ H) = b • (a : α ⧸ H) :=
+    b • (a : α ⧸ H) = (b • a : α ⧸ H) :=
   rfl
 #align mul_action.quotient.smul_coe MulAction.Quotient.smul_coe
 #align add_action.quotient.vadd_coe AddAction.Quotient.vadd_coe
-#lint
+
 @[to_additive (attr := simp)]
 theorem Quotient.mk_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) :
     QuotientGroup.mk (b • q.out') = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
 #align mul_action.quotient.mk_smul_out' MulAction.Quotient.mk_smul_out'
 #align add_action.quotient.mk_vadd_out' AddAction.Quotient.mk_vadd_out'
 
-@[to_additive (attr := simp)]
+-- Porting note: removed simp attribute, simp can prove this
+@[to_additive]
 theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out') = b • q :=
   Quotient.mk_smul_out' H b q
 #align mul_action.quotient.coe_smul_out' MulAction.Quotient.coe_smul_out'
@@ -442,5 +443,3 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
 #align subgroup.quotient_center_embedding_apply Subgroup.quotientCenterEmbedding_apply
 
 end Subgroup
-
-#lint
