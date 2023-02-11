@@ -18,7 +18,7 @@ import Mathlib.Data.Set.Pointwise.Basic
 This file provides the action `Subring.pointwiseMulAction` which matches the action of
 `mulActionSet`.
 
-This actions is available in the `pointwise` locale.
+This actions is available in the `Pointwise` locale.
 
 ## Implementation notes
 
@@ -40,7 +40,7 @@ variable [Monoid M] [Ring R] [MulSemiringAction M R]
 
 /-- The action on a subring corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction M (Subring R)
     where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
