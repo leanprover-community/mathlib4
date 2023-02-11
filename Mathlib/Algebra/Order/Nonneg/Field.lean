@@ -8,10 +8,10 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Archimedean
-import Mathbin.Algebra.Order.Nonneg.Ring
-import Mathbin.Algebra.Order.Field.InjSurj
-import Mathbin.Algebra.Order.Field.Canonical.Defs
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Field.InjSurj
+import Mathlib.Algebra.Order.Field.Canonical.Defs
 
 /-!
 # Semifield structure on the type of nonnegative elements
