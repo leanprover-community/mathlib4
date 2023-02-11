@@ -1441,12 +1441,17 @@ instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
-  Subsemiring.mulActionWithZero S.toSubsemiring
   -- inferInstanceAs (MulActionWithZero S.toSubsemiring α) -- Porting note: does not work
+  Subsemiring.mulActionWithZero S.toSubsemiring
 
 /-- The action by a subring is the action by the underlying ring. -/
 instance [AddCommMonoid α] [Module R α] (S : Subring R) : Module S α :=
-  inferInstanceAs (Module S.toSubsemiring α)
+  -- inferInstanceAs (Module S.toSubsemiring α) -- Porting note: does not work
+  let aux : ∀ {R : Type _} {M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
+      (S : Subsemiring R), Module S M := by
+    intro R M _ _ _ S
+    infer_instance
+  aux S.toSubsemiring
 
 -- Porting note: Lean can find this instance already
 /-- The action by a subsemiring is the action by the underlying ring. -/
