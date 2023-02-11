@@ -245,7 +245,7 @@ theorem compactOpen_eq_infₛ_induced :
   simp only [CompactOpen.gen, mem_setOf_eq, mem_preimage, ContinuousMap.coe_restrict]
   rw [image_comp f ((↑) : s → α)]
   simp
-#align continuous_map.compact_open_eq_Inf_induced ContinuousMap.compactOpen_eq_Inf_induced
+#align continuous_map.compact_open_eq_Inf_induced ContinuousMap.compactOpen_eq_infₛ_induced
 
 /-- For any subset `s` of `α`, the restriction of continuous functions to `s` is continuous as a
 function from `C(α, β)` to `C(s, β)` with their respective compact-open topologies. -/
@@ -256,9 +256,9 @@ theorem continuous_restrict (s : Set α) : Continuous fun F : C(α, β) => F.res
 
 theorem nhds_compactOpen_eq_infₛ_nhds_induced (f : C(α, β)) :
     𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
-  rw [compactOpen_eq_Inf_induced]
+  rw [compactOpen_eq_infₛ_induced]
   simp [nhds_infᵢ, nhds_induced]
-#align continuous_map.nhds_compact_open_eq_Inf_nhds_induced ContinuousMap.nhds_compactOpen_eq_Inf_nhds_induced
+#align continuous_map.nhds_compact_open_eq_Inf_nhds_induced ContinuousMap.nhds_compactOpen_eq_infₛ_nhds_induced
 
 theorem tendsto_compactOpen_restrict {ι : Type _} {l : Filter ι} {F : ι → C(α, β)} {f : C(α, β)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set α) :
@@ -270,7 +270,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type _} {l : Filter ι} (F : ι →
     Filter.Tendsto F l (𝓝 f) ↔
       ∀ (s) (hs : IsCompact s), Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) :=
   by
-    rw [compactOpen_eq_Inf_induced]
+    rw [compactOpen_eq_infₛ_induced]
     simp [nhds_infᵢ, nhds_induced, Filter.tendsto_comap_iff, Function.comp]
 #align continuous_map.tendsto_compact_open_iff_forall ContinuousMap.tendsto_compactOpen_iff_forall
 
