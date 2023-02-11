@@ -24,34 +24,34 @@ order of the `iⱼ`s matters.
 
 We implement two different structures covering these two viewpoints on compositions. The first
 one, made of a list of positive integers summing to `n`, is the main one and is called
-`composition n`. The second one is useful for combinatorial arguments (for instance to show that
+`Composition n`. The second one is useful for combinatorial arguments (for instance to show that
 the number of compositions of `n` is `2^(n-1)`). It is given by a subset of `{0, ..., n}`
 containing `0` and `n`, where the elements of the subset (other than `n`) correspond to the leftmost
-points of each block. The main API is built on `composition n`, and we provide an equivalence
+points of each block. The main API is built on `Composition n`, and we provide an equivalence
 between the two types.
 
 ## Main functions
 
-* `c : composition n` is a structure, made of a list of integers which are all positive and
+* `c : Composition n` is a structure, made of a list of integers which are all positive and
   add up to `n`.
-* `composition_card` states that the cardinality of `composition n` is exactly
-  `2^(n-1)`, which is proved by constructing an equiv with `composition_as_set n` (see below), which
-  is itself in bijection with the subsets of `fin (n-1)` (this holds even for `n = 0`, where `-` is
+* `composition_card` states that the cardinality of `Composition n` is exactly
+  `2^(n-1)`, which is proved by constructing an equiv with `CompositionAsSet n` (see below), which
+  is itself in bijection with the subsets of `Fin (n-1)` (this holds even for `n = 0`, where `-` is
   nat subtraction).
 
-Let `c : composition n` be a composition of `n`. Then
+Let `c : Composition n` be a composition of `n`. Then
 * `c.blocks` is the list of blocks in `c`.
 * `c.length` is the number of blocks in the composition.
-* `c.blocks_fun : fin c.length → ℕ` is the realization of `c.blocks` as a function on
-  `fin c.length`. This is the main object when using compositions to understand the composition of
+* `c.blocks_fun : Fin c.length → ℕ` is the realization of `c.blocks` as a function on
+  `Fin c.length`. This is the main object when using compositions to understand the composition of
     analytic functions.
 * `c.size_up_to : ℕ → ℕ` is the sum of the size of the blocks up to `i`.;
-* `c.embedding i : fin (c.blocks_fun i) → fin n` is the increasing embedding of the `i`-th block in
-  `fin n`;
-* `c.index j`, for `j : fin n`, is the index of the block containing `j`.
+* `c.embedding i : Fin (c.blocks_fun i) → Fin n` is the increasing embedding of the `i`-th block in
+  `Fin n`;
+* `c.index j`, for `j : Fin n`, is the index of the block containing `j`.
 
-* `composition.ones n` is the composition of `n` made of ones, i.e., `[1, ..., 1]`.
-* `composition.single n (hn : 0 < n)` is the composition of `n` made of a single block of size `n`.
+* `Composition.ones n` is the composition of `n` made of ones, i.e., `[1, ..., 1]`.
+* `Composition.single n (hn : 0 < n)` is the composition of `n` made of a single block of size `n`.
 
 Compositions can also be used to split lists. Let `l` be a list of length `n` and `c` a composition
 of `n`.
@@ -62,18 +62,18 @@ of `n`.
 * `split_wrt_composition_join` states that joining a list of lists, and then splitting it back
   according to the right composition, gives back the original list of lists.
 
-We turn to the second viewpoint on compositions, that we realize as a finset of `fin (n+1)`.
-`c : composition_as_set n` is a structure made of a finset of `fin (n+1)` called `c.boundaries`
-and proofs that it contains `0` and `n`. (Taking a finset of `fin n` containing `0` would not
+We turn to the second viewpoint on compositions, that we realize as a finset of `Fin (n+1)`.
+`c : CompositionAsSet n` is a structure made of a finset of `Fin (n+1)` called `c.boundaries`
+and proofs that it contains `0` and `n`. (Taking a finset of `Fin n` containing `0` would not
 make sense in the edge case `n = 0`, while the previous description works in all cases).
 The elements of this set (other than `n`) correspond to leftmost points of blocks.
-Thus, there is an equiv between `composition n` and `composition_as_set n`. We
-only construct basic API on `composition_as_set` (notably `c.length` and `c.blocks`) to be able
-to construct this equiv, called `composition_equiv n`. Since there is a straightforward equiv
-between `composition_as_set n` and finsets of `{1, ..., n-1}` (obtained by removing `0` and `n`
-from a `composition_as_set` and called `composition_as_set_equiv n`), we deduce that
-`composition_as_set n` and `composition n` are both fintypes of cardinality `2^(n - 1)`
-(see `composition_as_set_card` and `composition_card`).
+Thus, there is an equiv between `Composition n` and `CompositionAsSet n`. We
+only construct basic API on `CompositionAsSet` (notably `c.length` and `c.blocks`) to be able
+to construct this equiv, called `compositionEquiv n`. Since there is a straightforward equiv
+between `CompositionAsSet n` and finsets of `{1, ..., n-1}` (obtained by removing `0` and `n`
+from a `CompositionAsSet` and called `compositionAsSetEquiv n`), we deduce that
+`CompositionAsSet n` and `Composition n` are both fintypes of cardinality `2^(n - 1)`
+(see `compositionAsSet_card` and `composition_card`).
 
 ## Implementation details
 
@@ -114,7 +114,7 @@ structure Composition (n : ℕ) where
 consecutive integers in `{0, ..., n-1}`. We register every block by its left end-point, yielding
 a finset containing `0`. As this does not make sense for `n = 0`, we add `n` to this finset, and
 get a finset of `{0, ..., n}` containing `0` and `n`. This is the data in the structure
-`composition_as_set n`. -/
+`CompositionAsSet n`. -/
 @[ext]
 structure CompositionAsSet (n : ℕ) where
   /-- Combinatorial viewpoint on a composition of `n` as consecutive integers `{0, ..., n-1}`-/
@@ -155,7 +155,7 @@ theorem blocks_length : c.blocks.length = c.length :=
 
 -- porting note: TODO, refactor to `List.get`
 set_option linter.deprecated false in
-/-- The blocks of a composition, seen as a function on `fin c.length`. When composing analytic
+/-- The blocks of a composition, seen as a function on `Fin c.length`. When composing analytic
 functions using compositions, this is the main player. -/
 def blocksFun : Fin c.length → ℕ := fun i => nthLe c.blocks i i.2
 #align composition.blocks_fun Composition.blocksFun
@@ -257,7 +257,7 @@ theorem monotone_sizeUpTo : Monotone c.sizeUpTo :=
 
 /-- The `i`-th boundary of a composition, i.e., the leftmost point of the `i`-th block. We include
 a virtual point at the right of the last block, to make for a nice equiv with
-`composition_as_set n`. -/
+`CompositionAsSet n`. -/
 def boundary : Fin (c.length + 1) ↪o Fin (n + 1) :=
   (OrderEmbedding.ofStrictMono fun i => ⟨c.sizeUpTo i, Nat.lt_succ_of_le (c.sizeUpTo_le i)⟩) <|
     Fin.strictMono_iff_lt_succ.2 fun ⟨_, hi⟩ => c.sizeUpTo_strict_mono hi
@@ -274,7 +274,7 @@ theorem boundary_last : c.boundary (Fin.last c.length) = Fin.last n := by
 
 /-- The boundaries of a composition, i.e., the leftmost point of all the blocks. We include
 a virtual point at the right of the last block, to make for a nice equiv with
-`composition_as_set n`. -/
+`CompositionAsSet n`. -/
 def boundaries : Finset (Fin (n + 1)) :=
   Finset.univ.map c.boundary.toEmbedding
 #align composition.boundaries Composition.boundaries
@@ -282,7 +282,7 @@ def boundaries : Finset (Fin (n + 1)) :=
 theorem card_boundaries_eq_succ_length : c.boundaries.card = c.length + 1 := by simp [boundaries]
 #align composition.card_boundaries_eq_succ_length Composition.card_boundaries_eq_succ_length
 
-/-- To `c : composition n`, one can associate a `composition_as_set n` by registering the leftmost
+/-- To `c : Composition n`, one can associate a `CompositionAsSet n` by registering the leftmost
 point of each block, and adding a virtual point at the right of the last block. -/
 def toCompositionAsSet : CompositionAsSet n
     where
@@ -295,7 +295,7 @@ def toCompositionAsSet : CompositionAsSet n
     exact ⟨Fin.last c.length, And.intro True.intro c.boundary_last⟩
 #align composition.to_composition_as_set Composition.toCompositionAsSet
 
-/-- The canonical increasing bijection between `fin (c.length + 1)` and `c.boundaries` is
+/-- The canonical increasing bijection between `Fin (c.length + 1)` and `c.boundaries` is
 exactly `c.boundary`. -/
 theorem orderEmbOfFin_boundaries :
     c.boundaries.orderEmbOfFin c.card_boundaries_eq_succ_length = c.boundary := by
@@ -303,8 +303,8 @@ theorem orderEmbOfFin_boundaries :
   exact fun i => (Finset.mem_map' _).2 (Finset.mem_univ _)
 #align composition.order_emb_of_fin_boundaries Composition.orderEmbOfFin_boundaries
 
-/-- Embedding the `i`-th block of a composition (identified with `fin (c.blocks_fun i)`) into
-`fin n` at the relevant position. -/
+/-- Embedding the `i`-th block of a composition (identified with `Fin (c.blocks_fun i)`) into
+`Fin n` at the relevant position. -/
 def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
   (Fin.natAdd <| c.sizeUpTo i).trans <|
     Fin.castLe <|
@@ -358,8 +358,8 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   exact Nat.lt_le_antisymm H this
 #align composition.size_up_to_index_le Composition.sizeUpTo_index_le
 
-/-- Mapping an element `j` of `fin n` to the element in the block containing it, identified with
-`fin (c.blocks_fun (c.index j))` through the canonical increasing bijection. -/
+/-- Mapping an element `j` of `Fin n` to the element in the block containing it, identified with
+`Fin (c.blocks_fun (c.index j))` through the canonical increasing bijection. -/
 def invEmbedding (j : Fin n) : Fin (c.blocksFun (c.index j)) :=
   ⟨j - c.sizeUpTo (c.index j),
     by
@@ -448,7 +448,7 @@ theorem invEmbedding_comp (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 #align composition.inv_embedding_comp Composition.invEmbedding_comp
 
 /-- Equivalence between the disjoint union of the blocks (each of them seen as
-`fin (c.blocks_fun i)`) with `fin n`. -/
+`Fin (c.blocks_fun i)`) with `Fin n`. -/
 def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n
     where
   toFun x := c.embedding x.1 x.2
@@ -487,7 +487,7 @@ theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n
   exact H
 #align composition.sigma_eq_iff_blocks_eq Composition.sigma_eq_iff_blocks_eq
 
-/-! ### The composition `composition.ones` -/
+/-! ### The composition `Composition.ones` -/
 
 
 /-- The composition made of blocks all of size `1`. -/
@@ -571,7 +571,7 @@ theorem eq_ones_iff_le_length {c : Composition n} : c = ones n ↔ n ≤ c.lengt
   simp [eq_ones_iff_length, le_antisymm_iff, c.length_le]
 #align composition.eq_ones_iff_le_length Composition.eq_ones_iff_le_length
 
-/-! ### The composition `composition.single` -/
+/-! ### The composition `Composition.single` -/
 
 /-- The composition made of a single block of size `n`. -/
 def single (n : ℕ) (h : 0 < n) : Composition n :=
@@ -653,7 +653,7 @@ variable {α : Type _}
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/-- Auxiliary for `list.split_wrt_composition`. -/
+/-- Auxiliary for `List.splitWrtComposition`. -/
 def splitWrtCompositionAux : List α → List ℕ → List (List α)
   | _, [] => []
   | l, n::ns =>
@@ -788,7 +788,7 @@ end List
 /-!
 ### Compositions as sets
 
-Combinatorial viewpoints on compositions, seen as finite subsets of `fin (n+1)` containing `0` and
+Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` containing `0` and
 `n`, where the points of the set (other than `n`) correspond to the leftmost points of each block.
 -/
 
@@ -889,7 +889,7 @@ theorem card_boundaries_pos : 0 < Finset.card c.boundaries :=
   Finset.card_pos.mpr c.boundaries_nonempty
 #align composition_as_set.card_boundaries_pos CompositionAsSet.card_boundaries_pos
 
-/-- Number of blocks in a `composition_as_set`. -/
+/-- Number of blocks in a `CompositionAsSet`. -/
 def length : ℕ :=
   Finset.card c.boundaries - 1
 #align composition_as_set.length CompositionAsSet.length
@@ -912,7 +912,7 @@ theorem lt_length' (i : Fin c.length) : (i : ℕ) < c.boundaries.card :=
   lt_of_le_of_lt (Nat.le_succ i) (c.lt_length i)
 #align composition_as_set.lt_length' CompositionAsSet.lt_length'
 
-/-- Canonical increasing bijection from `fin c.boundaries.card` to `c.boundaries`. -/
+/-- Canonical increasing bijection from `Fin c.boundaries.card` to `c.boundaries`. -/
 def boundary : Fin c.boundaries.card ↪o Fin (n + 1) :=
   c.boundaries.orderEmbOfFin rfl
 #align composition_as_set.boundary CompositionAsSet.boundary
@@ -929,7 +929,7 @@ theorem boundary_length : c.boundary ⟨c.length, c.length_lt_card_boundaries⟩
   exact le_antisymm (Finset.le_max' _ _ c.getLast_mem) (Fin.le_last _)
 #align composition_as_set.boundary_length CompositionAsSet.boundary_length
 
-/-- Size of the `i`-th block in a `composition_as_set`, seen as a function on `fin c.length`. -/
+/-- Size of the `i`-th block in a `CompositionAsSet`, seen as a function on `Fin c.length`. -/
 def blocksFun (i : Fin c.length) : ℕ :=
   c.boundary ⟨(i : ℕ) + 1, c.lt_length i⟩ - c.boundary ⟨i, c.lt_length' i⟩
 #align composition_as_set.blocks_fun CompositionAsSet.blocksFun
@@ -940,7 +940,7 @@ theorem blocksFun_pos (i : Fin c.length) : 0 < c.blocksFun i :=
   lt_tsub_iff_left.mpr ((c.boundaries.orderEmbOfFin rfl).strictMono this)
 #align composition_as_set.blocks_fun_pos CompositionAsSet.blocksFun_pos
 
-/-- List of the sizes of the blocks in a `composition_as_set`. -/
+/-- List of the sizes of the blocks in a `CompositionAsSet`. -/
 def blocks (c : CompositionAsSet n) : List ℕ :=
   ofFn c.blocksFun
 #align composition_as_set.blocks CompositionAsSet.blocks
@@ -989,7 +989,7 @@ theorem blocks_sum : c.blocks.sum = n := by
   rfl
 #align composition_as_set.blocks_sum CompositionAsSet.blocks_sum
 
-/-- Associating a `composition n` to a `composition_as_set n`, by registering the sizes of the
+/-- Associating a `Composition n` to a `CompositionAsSet n`, by registering the sizes of the
 blocks as a list of positive integers. -/
 def toComposition : Composition n where
   blocks := c.blocks
@@ -1002,9 +1002,9 @@ end CompositionAsSet
 /-!
 ### Equivalence between compositions and compositions as sets
 
-In this section, we explain how to go back and forth between a `composition` and a
-`composition_as_set`, by showing that their `blocks` and `length` and `boundaries` correspond to
-each other, and construct an equivalence between them called `composition_equiv`.
+In this section, we explain how to go back and forth between a `Composition` and a
+`CompositionAsSet`, by showing that their `blocks` and `length` and `boundaries` correspond to
+each other, and construct an equivalence between them called `compositionEquiv`.
 -/
 
 
@@ -1076,7 +1076,7 @@ theorem Composition.toCompositionAsSet_boundaries (c : Composition n) :
   rfl
 #align composition.to_composition_as_set_boundaries Composition.toCompositionAsSet_boundaries
 
-/-- Equivalence between `composition n` and `composition_as_set n`. -/
+/-- Equivalence between `Composition n` and `CompositionAsSet n`. -/
 def compositionEquiv (n : ℕ) : Composition n ≃ CompositionAsSet n
     where
   toFun c := c.toCompositionAsSet
