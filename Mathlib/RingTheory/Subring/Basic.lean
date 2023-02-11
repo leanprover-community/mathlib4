@@ -29,7 +29,7 @@ to the subring it generates, and prove that it is a Galois insertion.
 
 Notation used here:
 
-`(R : Type u) [ring R] (S : Type u) [ring S] (f g : R →+* S)`
+`(R : Type u) [Ring R] (S : Type u) [Ring S] (f g : R →+* S)`
 `(A : Subring R) (B : Subring S) (s : Set R)`
 
 * `Subring R` : the type of subrings of a ring `R`.
@@ -391,14 +391,14 @@ protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R)
   multiset_sum_mem _
 #align subring.multiset_sum_mem Subring.multiset_sum_mem
 
-/-- Product of elements of a subring of a `CommRing` indexed by a `finset` is in the
+/-- Product of elements of a subring of a `CommRing` indexed by a `Finset` is in the
     subring. -/
 protected theorem prod_mem {R : Type _} [CommRing R] (s : Subring R) {ι : Type _} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i in t, f i) ∈ s :=
   prod_mem h
 #align subring.prod_mem Subring.prod_mem
 
-/-- Sum of elements in a `Subring` of a `Ring` indexed by a `finset`
+/-- Sum of elements in a `Subring` of a `Ring` indexed by a `Finset`
 is in the `Subring`. -/
 protected theorem sum_mem {R : Type _} [Ring R] (s : Subring R) {ι : Type _} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
