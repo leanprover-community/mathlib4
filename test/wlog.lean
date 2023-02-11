@@ -6,7 +6,6 @@ Authors: Simon Hudon, Johan Commelin
 import Mathlib.Tactic.WLOG
 import Mathlib.Data.Nat.Basic
 
-set_option trace.debug true
 example {x y : ℕ} : True := by
   wlog h : x ≤ y
   { guard_hyp h : ¬x ≤ y
