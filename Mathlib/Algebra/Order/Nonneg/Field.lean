@@ -37,12 +37,12 @@ section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield α] {x y : α}
 
-instance hasInv : Inv { x : α // 0 ≤ x } :=
+instance inv : Inv { x : α // 0 ≤ x } :=
   ⟨fun x => ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
-#align nonneg.has_inv Nonneg.hasInv
+#align nonneg.has_inv Nonneg.inv
 
 @[simp, norm_cast]
-protected theorem coe_inv (a : { x : α // 0 ≤ x }) : ((a⁻¹ : { x : α // 0 ≤ x }) : α) = a⁻¹ :=
+protected theorem coe_inv (a : { x : α // 0 ≤ x }) : ((a⁻¹ : { x : α // 0 ≤ x }) : α) = (a : α)⁻¹ :=
   rfl
 #align nonneg.coe_inv Nonneg.coe_inv
 
@@ -67,12 +67,12 @@ theorem mk_div_mk (hx : 0 ≤ x) (hy : 0 ≤ y) :
 #align nonneg.mk_div_mk Nonneg.mk_div_mk
 
 instance hasZpow : Pow { x : α // 0 ≤ x } ℤ :=
-  ⟨fun a n => ⟨a ^ n, zpow_nonneg a.2 _⟩⟩
+  ⟨fun a n => ⟨(a : α) ^ n, zpow_nonneg a.2 _⟩⟩
 #align nonneg.has_zpow Nonneg.hasZpow
 
 @[simp, norm_cast]
 protected theorem coe_zpow (a : { x : α // 0 ≤ x }) (n : ℤ) :
-    ((a ^ n : { x : α // 0 ≤ x }) : α) = a ^ n :=
+    ((a ^ n : { x : α // 0 ≤ x }) : α) = (a : α) ^ n :=
   rfl
 #align nonneg.coe_zpow Nonneg.coe_zpow
 
@@ -83,7 +83,7 @@ theorem mk_zpow (hx : 0 ≤ x) (n : ℤ) :
 #align nonneg.mk_zpow Nonneg.mk_zpow
 
 instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.LinearOrderedSemifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
+  Subtype.coe_injective.linearOrderedSemifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) Nonneg.coe_pow Nonneg.coe_zpow
     Nonneg.coe_nat_cast (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_semifield Nonneg.linearOrderedSemifield
@@ -109,18 +109,13 @@ instance archimedean [OrderedAddCommMonoid α] [Archimedean α] : Archimedean { 
     ⟨n, show (x : α) ≤ (n • y : { x : α // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
 #align nonneg.archimedean Nonneg.archimedean
 
-instance floorSemiring [OrderedSemiring α] [FloorSemiring α] : FloorSemiring { r : α // 0 ≤ r }
-    where
+instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
+    FloorSemiring { r : α // 0 ≤ r } where
   floor a := ⌊(a : α)⌋₊
   ceil a := ⌈(a : α)⌉₊
-  floor_of_neg a ha := FloorSemiring.floor_of_neg ha
-  gc_floor a n ha :=
-    by
-    refine' (FloorSemiring.gc_floor (show 0 ≤ (a : α) from ha)).trans _
-    rw [← Subtype.coe_le_coe, Nonneg.coe_nat_cast]
-  gc_ceil a n := by
-    refine' (FloorSemiring.gc_ceil (a : α) n).trans _
-    rw [← Subtype.coe_le_coe, Nonneg.coe_nat_cast]
+  floor_of_neg ha := FloorSemiring.floor_of_neg ha
+  gc_floor ha := FloorSemiring.gc_floor (Subtype.coe_le_coe.2 ha)
+  gc_ceil a n := FloorSemiring.gc_ceil (a : α) n
 #align nonneg.floor_semiring Nonneg.floorSemiring
 
 @[norm_cast]
@@ -136,4 +131,3 @@ theorem nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 
 #align nonneg.nat_ceil_coe Nonneg.nat_ceil_coe
 
 end Nonneg
-
