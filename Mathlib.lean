@@ -654,6 +654,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
 import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Congruence
