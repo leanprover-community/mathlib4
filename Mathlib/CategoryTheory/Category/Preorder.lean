@@ -16,7 +16,7 @@ import Mathlib.Order.Hom.Basic
 # Preorders as categories
 
 We install a category instance on any preorder. This is not to be confused with the category _of_
-preorders, defined in `order/category/Preorder`.
+preorders, defined in `Order.Category.Preorder`.
 
 We show that monotone functions between preorders correspond to functors of the associated
 categories.
@@ -50,7 +50,7 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
     where
   Hom U V := ULift (PLift (U ≤ V))
   id X := ⟨⟨le_refl X⟩⟩
-  comp X Y Z f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
+  comp := @fun X Y Z f g => ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 #align preorder.small_category Preorder.smallCategory
 
 end Preorder
@@ -67,16 +67,17 @@ def homOfLe {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 #align category_theory.hom_of_le CategoryTheory.homOfLe
 
-alias hom_of_le ← _root_.has_le.le.hom
+alias homOfLe ← _root_.LE.le.hom
 #align has_le.le.hom LE.le.hom
 
 @[simp]
-theorem hom_of_le_refl {x : X} : (le_refl x).Hom = 𝟙 x :=
+theorem hom_of_le_refl {x : X} : (le_refl x).hom = 𝟙 x :=
   rfl
 #align category_theory.hom_of_le_refl CategoryTheory.hom_of_le_refl
 
 @[simp]
-theorem hom_of_le_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) : h.Hom ≫ k.Hom = (h.trans k).Hom :=
+theorem hom_of_le_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
+    homOfLe h ≫ homOfLe k = homOfLe (h.trans k) :=
   rfl
 #align category_theory.hom_of_le_comp CategoryTheory.hom_of_le_comp
 
@@ -86,34 +87,34 @@ theorem le_of_hom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.le_of_hom
 
-alias le_of_hom ← _root_.quiver.hom.le
+alias le_of_hom ← _root_.Quiver.Hom.le
 #align quiver.hom.le Quiver.Hom.le
 
 @[simp]
-theorem le_of_hom_hom_of_le {x y : X} (h : x ≤ y) : h.Hom.le = h :=
+theorem le_of_hom_hom_of_le {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.le_of_hom_hom_of_le
 
 @[simp]
-theorem hom_of_le_le_of_hom {x y : X} (h : x ⟶ y) : h.le.Hom = h := by
-  cases h
+theorem hom_of_le_le_of_hom {x y : X} (h : x ⟶ y) : h.le.hom = h := by
+  cases' h with h
   cases h
   rfl
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.hom_of_le_le_of_hom
 
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
 def opHomOfLe {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
-  h.Hom.op
+  h.hom.op
 #align category_theory.op_hom_of_le CategoryTheory.opHomOfLe
 
 theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
 #align category_theory.le_of_op_hom CategoryTheory.le_of_op_hom
 
-instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) := by tidy
+instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) := by aesop_cat
 #align category_theory.unique_to_top CategoryTheory.uniqueToTop
 
-instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) := by tidy
+instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) := by aesop_cat
 #align category_theory.unique_from_bot CategoryTheory.uniqueFromBot
 
 end CategoryTheory
@@ -127,11 +128,11 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y
     where
   obj := f
-  map x₁ x₂ g := (h g.le).Hom
+  map x₁ x₂ g := (h g.le).hom
 #align monotone.functor Monotone.functor
 
 @[simp]
-theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.Functor.obj = f :=
+theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
   rfl
 #align monotone.functor_obj Monotone.functor_obj
 
@@ -146,7 +147,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 /-- A functor between preorder categories is monotone.
 -/
 @[mono]
-theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun x y hxy => (f.map hxy.Hom).le
+theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun x y hxy => (f.map hxy.hom).le
 #align category_theory.functor.monotone CategoryTheory.Functor.monotone
 
 end Preorder
@@ -163,7 +164,7 @@ theorem Iso.to_eq {x y : X} (f : x ≅ y) : x = y :=
 -/
 def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y
     where
-  toFun := e.Functor.obj
+  toFun := e.functor.obj
   invFun := e.inverse.obj
   left_inv a := (e.unitIso.app a).to_eq.symm
   right_inv b := (e.counitIso.app b).to_eq
@@ -176,7 +177,7 @@ def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y
 -- `@[simps]` on `equivalence.to_order_iso` produces lemmas that fail the `simp_nf` linter,
 -- so we provide them by hand:
 @[simp]
-theorem Equivalence.toOrderIso_apply (e : X ≌ Y) (x : X) : e.toOrderIso x = e.Functor.obj x :=
+theorem Equivalence.toOrderIso_apply (e : X ≌ Y) (x : X) : e.toOrderIso x = e.functor.obj x :=
   rfl
 #align category_theory.equivalence.to_order_iso_apply CategoryTheory.Equivalence.toOrderIso_apply
 
@@ -189,4 +190,3 @@ theorem Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
 end PartialOrder
 
 end CategoryTheory
-
