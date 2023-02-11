@@ -1058,6 +1058,7 @@ import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.Separation
+import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
 import Mathlib.Topology.StoneCech
