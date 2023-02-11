@@ -31,39 +31,42 @@ variable [∀ i, Zero (α i)]
 and `α i` is ordered by `s i`.
 The type synonym `lex (Π₀ i, α i)` has an order given by `dfinsupp.lex (<) (λ i, (<))`.
 -/
-protected def Lex (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) (x y : Π₀ i, α i) : Prop :=
+-- Porting note: Changed type of `s` from `∀ i, ...` to `∀ {i}, ...`
+protected def Lex (r : ι → ι → Prop) (s : ∀ {i}, α i → α i → Prop) (x y : Π₀ i, α i) : Prop :=
   Pi.Lex r s x y
 #align dfinsupp.lex Dfinsupp.Lex
 
-theorem Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} (a b : Π₀ i, α i) :
-    Pi.Lex r s (a : ∀ i, α i) b = Dfinsupp.Lex r s a b :=
+-- Porting note: Added `_root_` to match more closely with Lean 3. Also updated `s`'s type.
+theorem _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ {i}, α i → α i → Prop}
+    (a b : Π₀ i, α i) : Pi.Lex r s (a : ∀ i, α i) b = Dfinsupp.Lex r s a b :=
   rfl
 #align pi.lex_eq_dfinsupp_lex Pi.lex_eq_dfinsupp_lex
 
-theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a b : Π₀ i, α i} :
-    Dfinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s j (a j) (b j) :=
+-- Porting note: Updated `s`'s type.
+theorem lex_def {r : ι → ι → Prop} {s : ∀ {i}, α i → α i → Prop} {a b : Π₀ i, α i} :
+    Dfinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s (a j) (b j) :=
   Iff.rfl
 #align dfinsupp.lex_def Dfinsupp.lex_def
 
 instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
-  ⟨fun f g => Dfinsupp.Lex (· < ·) (fun i => (· < ·)) (ofLex f) (ofLex g)⟩
+  ⟨fun f g => Dfinsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
   obtain ⟨hle, j, hlt⟩ := Pi.lt_def.1 hlt
   classical
-    have : (x.ne_locus y : Set ι).WellFoundedOn r := (x.ne_locus y).finite_toSet.WellFoundedOn
-    obtain ⟨i, hi, hl⟩ := this.has_min { i | x i < y i } ⟨⟨j, mem_ne_locus.2 hlt.ne⟩, hlt⟩
+    have : (x.neLocus y : Set ι).WellFoundedOn r := (x.neLocus y).finite_toSet.wellFoundedOn
+    obtain ⟨i, hi, hl⟩ := this.has_min { i | x i < y i } ⟨⟨j, mem_neLocus.2 hlt.ne⟩, hlt⟩
     exact
       ⟨i, fun k hk =>
         ⟨hle k,
           of_not_not fun h =>
-            hl ⟨k, mem_ne_locus.2 (ne_of_not_le h).symm⟩ ((hle k).lt_of_not_le h) hk⟩,
+            hl ⟨k, mem_neLocus.2 (ne_of_not_le h).symm⟩ ((hle k).lt_of_not_le h) hk⟩,
         hi⟩
 #align dfinsupp.lex_lt_of_lt_of_preorder Dfinsupp.lex_lt_of_lt_of_preorder
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
-    (hlt : x < y) : Pi.Lex r (fun i => (· < ·)) x y := by
+    (hlt : x < y) : Pi.Lex r (· < ·) x y := by
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder r hlt
 #align dfinsupp.lex_lt_of_lt Dfinsupp.lex_lt_of_lt
@@ -71,8 +74,8 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ i, PartialOrder (α i)] :
     IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) :=
   let i : IsStrictOrder (Lex (∀ i, α i)) (· < ·) := Pi.Lex.isStrictOrder
-  { irrefl := toLex.Surjective.forall.2 fun a => @irrefl _ _ i.to_isIrrefl a
-    trans := toLex.Surjective.forall₃.2 fun a b c => @trans _ _ i.to_isTrans a b c }
+  { irrefl := toLex.surjective.forall.2 fun a => @irrefl _ _ i.toIsIrrefl a
+    trans := toLex.surjective.forall₃.2 fun a b c => @trans _ _ i.toIsTrans a b c }
 #align dfinsupp.lex.is_strict_order Dfinsupp.Lex.isStrictOrder
 
 variable [LinearOrder ι]
@@ -196,4 +199,3 @@ end Right
 end Covariants
 
 end Dfinsupp
-
