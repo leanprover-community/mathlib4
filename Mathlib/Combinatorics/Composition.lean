@@ -45,7 +45,7 @@ Let `c : Composition n` be a composition of `n`. Then
 * `c.blocks_fun : Fin c.length → ℕ` is the realization of `c.blocks` as a function on
   `Fin c.length`. This is the main object when using compositions to understand the composition of
     analytic functions.
-* `c.size_up_to : ℕ → ℕ` is the sum of the size of the blocks up to `i`.;
+* `c.sizeUpTo : ℕ → ℕ` is the sum of the size of the blocks up to `i`.;
 * `c.embedding i : Fin (c.blocks_fun i) → Fin n` is the increasing embedding of the `i`-th block in
   `Fin n`;
 * `c.index j`, for `j : Fin n`, is the index of the block containing `j`.
@@ -55,11 +55,11 @@ Let `c : Composition n` be a composition of `n`. Then
 
 Compositions can also be used to split lists. Let `l` be a list of length `n` and `c` a composition
 of `n`.
-* `l.split_wrt_composition c` is a list of lists, made of the slices of `l` corresponding to the
+* `l.splitWrtComposition c` is a list of lists, made of the slices of `l` corresponding to the
   blocks of `c`.
-* `join_split_wrt_composition` states that splitting a list and then joining it gives back the
+* `join_splitWrtComposition` states that splitting a list and then joining it gives back the
   original list.
-* `split_wrt_composition_join` states that joining a list of lists, and then splitting it back
+* `joinSplitWrtComposition_join` states that joining a list of lists, and then splitting it back
   according to the right composition, gives back the original list of lists.
 
 We turn to the second viewpoint on compositions, that we realize as a finset of `Fin (n+1)`.
