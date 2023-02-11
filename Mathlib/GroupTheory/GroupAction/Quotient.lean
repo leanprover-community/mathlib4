@@ -217,23 +217,15 @@ theorem card_orbit_mul_card_stabilizer_eq_card_group (b : β) [Fintype α] [Fint
     [Fintype <| stabilizer α b] :
     Fintype.card (orbit α b) * Fintype.card (stabilizer α b) = Fintype.card α := by
   rw [← Fintype.card_prod, Fintype.card_congr (orbitProdStabilizerEquivGroup α b)]
-#align
-  mul_action.card_orbit_mul_card_stabilizer_eq_card_group
-  MulAction.card_orbit_mul_card_stabilizer_eq_card_group
-#align
-  add_action.card_orbit_add_card_stabilizer_eq_card_add_group
-  AddAction.card_orbit_add_card_stabilizer_eq_card_addGroup
+#align mul_action.card_orbit_mul_card_stabilizer_eq_card_group MulAction.card_orbit_mul_card_stabilizer_eq_card_group
+#align add_action.card_orbit_add_card_stabilizer_eq_card_add_group AddAction.card_orbit_add_card_stabilizer_eq_card_addGroup
 
 @[to_additive (attr := simp)]
 theorem orbitEquivQuotientStabilizer_symm_apply (b : β) (a : α) :
     ((orbitEquivQuotientStabilizer α b).symm a : β) = a • b :=
   rfl
-#align
-  mul_action.orbit_equiv_quotient_stabilizer_symm_apply
-  MulAction.orbitEquivQuotientStabilizer_symm_apply
-#align
-  add_action.orbit_equiv_quotient_stabilizer_symm_apply
-  AddAction.orbitEquivQuotientStabilizer_symm_apply
+#align mul_action.orbit_equiv_quotient_stabilizer_symm_apply MulAction.orbitEquivQuotientStabilizer_symm_apply
+#align add_action.orbit_equiv_quotient_stabilizer_symm_apply AddAction.orbitEquivQuotientStabilizer_symm_apply
 
 @[to_additive (attr := simp)]
 theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
@@ -268,13 +260,8 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
       Equiv.sigmaCongrRight fun ω =>
         (Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer α (φ ω)
-
-#align
-  mul_action.self_equiv_sigma_orbits_quotient_stabilizer'
-  MulAction.selfEquivSigmaOrbitsQuotientStabilizer'
-#align
-  add_action.self_equiv_sigma_orbits_quotient_stabilizer'
-  AddAction.selfEquivSigmaOrbitsQuotientStabilizer'
+#align mul_action.self_equiv_sigma_orbits_quotient_stabilizer' MulAction.selfEquivSigmaOrbitsQuotientStabilizer'
+#align add_action.self_equiv_sigma_orbits_quotient_stabilizer' AddAction.selfEquivSigmaOrbitsQuotientStabilizer'
 
 /-- **Class formula** for a finite group acting on a finite type. See
 `MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
@@ -298,12 +285,8 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
       exact Fintype.card_pos_iff.mpr (by infer_instance)
     simp_rw [this, ← Fintype.card_sigma,
       Fintype.card_congr (selfEquivSigmaOrbitsQuotientStabilizer' α β hφ)]
-#align
-  mul_action.card_eq_sum_card_group_div_card_stabilizer'
-  MulAction.card_eq_sum_card_group_div_card_stabilizer'
-#align
-  add_action.card_eq_sum_card_add_group_sub_card_stabilizer'
-  AddAction.card_eq_sum_card_addGroup_sub_card_stabilizer'
+#align mul_action.card_eq_sum_card_group_div_card_stabilizer' MulAction.card_eq_sum_card_group_div_card_stabilizer'
+#align add_action.card_eq_sum_card_add_group_sub_card_stabilizer' AddAction.card_eq_sum_card_addGroup_sub_card_stabilizer'
 
 /-- **Class formula**. This is a special case of
 `MulAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out'`. -/
@@ -312,12 +295,8 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
       `AddAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out'`. "]
 noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σω : Ω, α ⧸ stabilizer α ω.out' :=
   selfEquivSigmaOrbitsQuotientStabilizer' α β Quotient.out_eq'
-#align
-  mul_action.self_equiv_sigma_orbits_quotient_stabilizer
-  MulAction.selfEquivSigmaOrbitsQuotientStabilizer
-#align
-  add_action.self_equiv_sigma_orbits_quotient_stabilizer
-  AddAction.selfEquivSigmaOrbitsQuotientStabilizer
+#align mul_action.self_equiv_sigma_orbits_quotient_stabilizer MulAction.selfEquivSigmaOrbitsQuotientStabilizer
+#align add_action.self_equiv_sigma_orbits_quotient_stabilizer AddAction.selfEquivSigmaOrbitsQuotientStabilizer
 
 /-- **Class formula** for a finite group acting on a finite type. -/
 @[to_additive "**Class formula** for a finite group acting on a finite type."]
@@ -325,12 +304,8 @@ theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fi
     [∀ b : β, Fintype <| stabilizer α b] :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out') :=
   card_eq_sum_card_group_div_card_stabilizer' α β Quotient.out_eq'
-#align
-  mul_action.card_eq_sum_card_group_div_card_stabilizer
-  MulAction.card_eq_sum_card_group_div_card_stabilizer
-#align
-  add_action.card_eq_sum_card_add_group_sub_card_stabilizer
-  AddAction.card_eq_sum_card_addGroup_sub_card_stabilizer
+#align mul_action.card_eq_sum_card_group_div_card_stabilizer MulAction.card_eq_sum_card_group_div_card_stabilizer
+#align add_action.card_eq_sum_card_add_group_sub_card_stabilizer AddAction.card_eq_sum_card_addGroup_sub_card_stabilizer
 
 /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
 `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is a group acting on `X` and
@@ -357,13 +332,8 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σa : α, fixedBy α β a)
       Equiv.sigmaCongrRight fun _ => Equiv.sigmaEquivProd _ _
     _ ≃ Σ _ : Ω, α := Equiv.sigmaCongrRight fun ω => orbitProdStabilizerEquivGroup α ω.out'
     _ ≃ Ω × α := Equiv.sigmaEquivProd Ω α
-
-#align
-  mul_action.sigma_fixed_by_equiv_orbits_prod_group
-  MulAction.sigmaFixedByEquivOrbitsProdGroup
-#align
-  add_action.sigma_fixed_by_equiv_orbits_sum_add_group
-  AddAction.sigmaFixedByEquivOrbitsSumAddGroup
+#align mul_action.sigma_fixed_by_equiv_orbits_prod_group MulAction.sigmaFixedByEquivOrbitsProdGroup
+#align add_action.sigma_fixed_by_equiv_orbits_sum_add_group AddAction.sigmaFixedByEquivOrbitsSumAddGroup
 
 /-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
 elements fixed by each `g ∈ G` is the number of orbits. -/
@@ -374,12 +344,8 @@ theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a, Fint
     [Fintype Ω] : (∑ a : α, Fintype.card (fixedBy α β a)) = Fintype.card Ω * Fintype.card α := by
   rw [← Fintype.card_prod, ← Fintype.card_sigma,
     Fintype.card_congr (sigmaFixedByEquivOrbitsProdGroup α β)]
-#align
-  mul_action.sum_card_fixed_by_eq_card_orbits_mul_card_group
-  MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group
-#align
-  add_action.sum_card_fixed_by_eq_card_orbits_add_card_add_group
-  AddAction.sum_card_fixedBy_eq_card_orbits_add_card_addGroup
+#align mul_action.sum_card_fixed_by_eq_card_orbits_mul_card_group MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group
+#align add_action.sum_card_fixed_by_eq_card_orbits_add_card_add_group AddAction.sum_card_fixedBy_eq_card_orbits_add_card_addGroup
 
 @[to_additive]
 instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H)
