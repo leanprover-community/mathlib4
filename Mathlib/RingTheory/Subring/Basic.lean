@@ -551,7 +551,7 @@ theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
 #align subring.coe_top Subring.coe_top
 
 /-- The ring equiv between the top element of `Subring R` and `R`. -/
-@[simps]
+@[simps!]
 def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 #align subring.top_equiv Subring.topEquiv
@@ -1290,7 +1290,7 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 
 /-- Given an equivalence `e : R ≃+* S` of rings and a subring `s` of `R`,
 `subringMap e s` is the induced equivalence between `s` and `s.map e` -/
-@[simps]
+@[simps!]
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
 #align ring_equiv.subring_map RingEquiv.subringMap
