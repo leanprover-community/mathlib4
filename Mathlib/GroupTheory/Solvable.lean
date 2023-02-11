@@ -8,11 +8,11 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.VecNotation
-import Mathbin.GroupTheory.Abelianization
-import Mathbin.GroupTheory.Perm.ViaEmbedding
-import Mathbin.GroupTheory.Subgroup.Simple
-import Mathbin.SetTheory.Cardinal.Basic
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Perm.ViaEmbedding
+import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Solvable Groups
@@ -55,8 +55,7 @@ theorem derivedSeries_succ (n : ℕ) :
   rfl
 #align derived_series_succ derivedSeries_succ
 
-theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal :=
-  by
+theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction' n with n ih
   · exact (⊤ : Subgroup G).normal_of_characteristic
   · exact Subgroup.commutator_normal (derivedSeries G n) (derivedSeries G n)
@@ -76,8 +75,7 @@ section DerivedSeriesMap
 variable (f)
 
 theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
-    (derivedSeries G n).map f ≤ derivedSeries G' n :=
-  by
+    (derivedSeries G n).map f ≤ derivedSeries G' n := by
   induction' n with n ih
   · exact le_top
   · simp only [derivedSeries_succ, map_commutator, commutator_mono, ih]
@@ -86,8 +84,7 @@ theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
 variable {f}
 
 theorem derivedSeries_le_map_derivedSeries (hf : Function.Surjective f) (n : ℕ) :
-    derivedSeries G' n ≤ (derivedSeries G n).map f :=
-  by
+    derivedSeries G' n ≤ (derivedSeries G n).map f := by
   induction' n with n ih
   · exact (map_top_of_surjective f hf).ge
   · exact commutator_le_map_commutator ih ih
@@ -184,8 +181,7 @@ section IsSimpleGroup
 
 variable [IsSimpleGroup G]
 
-theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = commutator G :=
-  by
+theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = commutator G := by
   induction' n with n ih
   · exact derivedSeries_one G
   rw [derivedSeries_succ, ih]
@@ -218,8 +214,7 @@ theorem not_solvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
       h1 (Subgroup.mem_bot.mp ((congr_arg (Membership.Mem g) h).mp (h2 n))))
 #align not_solvable_of_mem_derived_series not_solvable_of_mem_derivedSeries
 
-theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) :=
-  by
+theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
   let x : Equiv.Perm (Fin 5) := ⟨![1, 2, 0, 3, 4], ![2, 0, 1, 3, 4], by decide, by decide⟩
   let y : Equiv.Perm (Fin 5) := ⟨![3, 4, 2, 0, 1], ![3, 4, 2, 0, 1], by decide, by decide⟩
   let z : Equiv.Perm (Fin 5) := ⟨![0, 3, 2, 1, 4], ![0, 3, 2, 1, 4], by decide, by decide⟩
