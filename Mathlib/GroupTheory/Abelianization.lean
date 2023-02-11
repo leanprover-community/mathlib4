@@ -112,7 +112,7 @@ variable {G}
 def of : G →* Abelianization G where
   toFun := QuotientGroup.mk
   map_one' := rfl
-  map_mul' x y := rfl
+  map_mul' _ _ := rfl
 #align abelianization.of Abelianization.of
 
 @[simp]
@@ -137,10 +137,10 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
   the abelianization of a `G` to `A` that factors through `f`. -/
 def lift : (G →* A) ≃ (Abelianization G →* A)
     where
-  toFun f := QuotientGroup.lift _ f fun x h => f.mem_ker.2 <| commutator_subset_ker _ h
+  toFun f := QuotientGroup.lift _ f fun _ h => f.mem_ker.2 <| commutator_subset_ker _ h
   invFun F := F.comp of
-  left_inv f := MonoidHom.ext fun x => rfl
-  right_inv F := MonoidHom.ext fun x => QuotientGroup.induction_on x fun z => rfl
+  left_inv _ := MonoidHom.ext fun _ => rfl
+  right_inv _ := MonoidHom.ext fun x => QuotientGroup.induction_on x fun _ => rfl
 #align abelianization.lift Abelianization.lift
 
 @[simp]
@@ -167,7 +167,7 @@ variable {A : Type v} [Monoid A]
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
-  MonoidHom.ext fun x => QuotientGroup.induction_on x <| MonoidHom.congr_fun h
+  MonoidHom.ext fun x => QuotientGroup.induction_on x <| FunLike.congr_fun h
 #align abelianization.hom_ext Abelianization.hom_ext
 
 section Map
