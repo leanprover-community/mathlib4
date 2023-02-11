@@ -78,8 +78,8 @@ theorem dist_zero_left (n : ℕ) : dist 0 n = n :=
 theorem dist_add_add_right (n k m : ℕ) : dist (n + k) (m + k) = dist n m :=
   calc
     dist (n + k) (m + k) = n + k - (m + k) + (m + k - (n + k)) := rfl
-    _ = n - m + (m + k - (n + k)) := by rw [add_tsub_add_eq_tsub_right]
-    _ = n - m + (m - n) := by rw [add_tsub_add_eq_tsub_right]
+    _ = n - m + (m + k - (n + k)) := by rw [@add_tsub_add_eq_tsub_right]
+    _ = n - m + (m - n) := by rw [@add_tsub_add_eq_tsub_right]
 
 #align nat.dist_add_add_right Nat.dist_add_add_right
 

@@ -3,8 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
-! This file was ported from Lean 3 source module
-! topology.fiber_bundle.is_homeomorphic_trivial_bundle
+! This file was ported from Lean 3 source module topology.fiber_bundle.is_homeomorphic_trivial_bundle
 ! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
