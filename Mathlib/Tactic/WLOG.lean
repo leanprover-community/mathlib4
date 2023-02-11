@@ -23,7 +23,7 @@ namespace Mathlib.Tactic
 open Lean Meta Elab Term Tactic
 
 /-- The result of running `wlog` on a goal. -/
-structure wlogResult where
+structure WLOGResult where
   /-- The `reductionGoal` requires showing that the case `h : ¬ P` can be reduced to the case where
   `P` holds. It has two additional assumptions in its context:
 
@@ -33,8 +33,8 @@ structure wlogResult where
   reductionGoal    : MVarId
   /-- The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
 
-  * `negHypFVarId`: `h : ¬ P`, the assumption that `P` does not hold
   * `HFVarId`: `H`, the statement that in the original context `P` suffices to prove the goal.
+  * `negHypFVarId`: `h : ¬ P`, the assumption that `P` does not hold
   -/
   reductionFVarIds : FVarId × FVarId
   /-- The original goal with the additional assumption `h : P`. -/
@@ -46,6 +46,7 @@ structure wlogResult where
   `hypothesisGoal`). -/
   revertedFVarIds  : Array FVarId
 
+open private mkAuxMVarType from Lean.MetavarContext in
 /-- `wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
 `h : P` to the context of `goal`, and the `reductionGoal`, which requires showing that the case
 `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
@@ -57,18 +58,27 @@ In `reductionGoal`, there will be two additional assumptions:
 
 If `xs` is `none`, all hypotheses are reverted to produce the reduction goal's hypothesis `H`.
 Otherwise, the `xs` are elaborated to hypotheses in the context of `goal`, and only those
-hypotheses are reverted (and any that depend on them). -/
-def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Name) (P : Expr)
+hypotheses are reverted (and any that depend on them).
+
+If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible. -/
+def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     (xs : Option (TSyntaxArray `ident) := none) (H : Option Name := none) :
-    TacticM wlogResult := goal.withContext do
+    TacticM WLOGResult := goal.withContext do
+  goal.checkNotAssigned `wlog
   let H := H.getD `this
+  let inaccessible := h.isNone
+  let h := h.getD `h
   /- Compute the type for H and keep track of the FVarId's reverted in doing so. (Do not modify the
   tactic state.) -/
-  let (revertedFVars, HType) ← withoutModifyingState <| goal.withContext do
-    let goal ← goal.assert h P (← mkFreshExprMVar P)
-    let toRevert ← getFVarIdsAt goal xs false
-    let (revertedFVars, goal) ← goal.revert toRevert (clearAuxDeclsInsteadOfRevert := true)
-    return (revertedFVars, ← goal.getType)
+  let HSuffix := Expr.forallE h P (← goal.getType) .default
+  let fvars ← getFVarIdsAt goal xs
+  let fvars := fvars.map Expr.fvar
+  let lctx := (← goal.getDecl).lctx
+  let f ← collectForwardDeps fvars false
+  let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
+  let HType ← liftMkBindingM <|
+    fun ctx => mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
+      { preserveOrder := false, mainModule := ctx.mainModule }
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
   let HExpr ← mkFreshExprSyntheticOpaqueMVar HType
@@ -81,11 +91,13 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Name) (P : Expr)
   let hGoal ← hGoal.tryClearMany revertedFVars
   /- Introduce all of the reverted fvars to the context in order to restore the original target as
   well as finally introduce the hypothesis `h`. -/
-  let (hFVars, hGoal) ← hGoal.introNP (revertedFVars.size + 1)
-  let hFVar := hFVars[revertedFVars.size]! -- keep track of the hypothesis' FVarId
+  let (_, hGoal) ← hGoal.introNP revertedFVars.size
+  -- keep track of the hypothesis' FVarId
+  let (hFVar, hGoal) ← if inaccessible then hGoal.intro1 else hGoal.intro1P
   /- Split the reduction goal by cases on `h`. Keep the one with `¬h` as the reduction goal,
   and prove the easy goal by applying `H` to all its premises, which are fvars in the context. -/
-  let (⟨easyGoal, hyp⟩, ⟨reductionGoal, negHyp⟩) ← reductionGoal.byCases P h
+  let (⟨easyGoal, hyp⟩, ⟨reductionGoal, negHyp⟩) ←
+    reductionGoal.byCases P <| if inaccessible then `_ else h
   easyGoal.withContext do
     let HApp ← instantiateMVars <|
       mkAppN (.fvar HFVarId) (revertedFVars.map .fvar) |>.app (.fvar hyp)
@@ -112,12 +124,15 @@ By default, the entire context is reverted. -/
 syntax (name := wlog) "wlog " binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
+open private Lean.Elab.Term.expandBinderIdent from Lean.Elab.Binders in
 elab_rules : tactic
-| `(tactic| wlog $h:ident : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
+| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
   withMainContext do
   let H := H.map (·.getId)
-  let h := h.getId
+  let h := match h with
+  | `(binderIdent|$h:ident) => some h.getId
+  | _ => none
   let P ← elabType P
   let goal ← getMainGoal
-  let {reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
+  let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
   replaceMainGoal [reductionGoal, hypothesisGoal]

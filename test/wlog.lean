@@ -6,7 +6,6 @@ Authors: Simon Hudon, Johan Commelin
 import Mathlib.Tactic.WLOG
 import Mathlib.Data.Nat.Basic
 
-set_option trace.debug true
 example {x y : ℕ} : True := by
   wlog h : x ≤ y
   { guard_hyp h : ¬x ≤ y
@@ -57,5 +56,18 @@ example (α : Type := ℕ) (x : Option α := none) (y : Option α := by exact 0)
     guard_hyp H : ∀ α, ∀ {x y : Option α}, x = y → True
     trivial }
   { guard_hyp h : x = y
+    guard_target =ₛ True
+    trivial }
+
+-- inaccessible names work
+example {x y : ℕ} : True := by
+  wlog _ : x ≤ y
+  case _ h => -- if these hypotheses weren't inaccessible, they wouldn't be renamed by `case`
+  { guard_hyp h : ¬x ≤ y
+    guard_hyp «this» : ∀ {x y : ℕ}, x ≤ y → True
+    guard_target =ₛ True
+    trivial }
+  case _ h =>
+  { guard_hyp h : x ≤ y
     guard_target =ₛ True
     trivial }
