@@ -15,14 +15,14 @@ import Mathlib.Data.Set.Pointwise.Basic
 
 /-! # Pointwise instances on `subring`s
 
-This file provides the action `subring.pointwise_mul_action` which matches the action of
-`mul_action_set`.
+This file provides the action `Subring.pointwiseMulAction` which matches the action of
+`mulActionSet`.
 
 This actions is available in the `pointwise` locale.
 
 ## Implementation notes
 
-This file is almost identical to `ring_theory/subsemiring/pointwise.lean`. Where possible, try to
+This file is almost identical to `RingTheory/Subsemiring/Pointwise.lean`. Where possible, try to
 keep them in sync.
 
 -/
@@ -45,7 +45,7 @@ protected def pointwiseMulAction : MulAction M (Subring R)
     where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
-  mul_smul a₁ a₂ S :=
+  mul_smul _ _ S :=
     (congr_arg (fun f => S.map f) (RingHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
 #align subring.pointwise_mul_action Subring.pointwiseMulAction
 
@@ -99,7 +99,7 @@ theorem smul_closure (a : M) (s : Set R) : a • closure s = closure (a • s) :
 
 instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
     IsCentralScalar M (Subring R) :=
-  ⟨fun a S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
 #align subring.pointwise_central_scalar Subring.pointwise_central_scalar
 
 end Monoid
@@ -181,4 +181,3 @@ theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subring R} : S �
 end GroupWithZero
 
 end Subring
-
