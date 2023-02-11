@@ -45,12 +45,16 @@ variable (β) [Monoid β] [MulAction β α] (H : Subgroup α)
 
 /-- A typeclass for when a `MulAction β α` descends to the quotient `α ⧸ H`. -/
 class QuotientAction : Prop where
+  /-- The action fulfils a normality condition on products that lie in `H`.
+    This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
   inv_mul_mem : ∀ (b : β) {a a' : α}, a⁻¹ * a' ∈ H → (b • a)⁻¹ * b • a' ∈ H
 #align mul_action.quotient_action MulAction.QuotientAction
 
 /-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
 class _root_.AddAction.QuotientAction {α : Type _} (β : Type _) [AddGroup α] [AddMonoid β]
   [AddAction β α] (H : AddSubgroup α) : Prop where
+  /-- The action fulfils a normality condition on summands that lie in `H`.
+    This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
   inv_mul_mem : ∀ (b : β) {a a' : α}, -a + a' ∈ H → -(b +ᵥ a) + (b +ᵥ a') ∈ H
 #align add_action.quotient_action AddAction.QuotientAction
 
@@ -99,11 +103,12 @@ theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
 #align add_action.quotient.vadd_mk AddAction.Quotient.vadd_mk
 
 @[to_additive (attr := simp)]
-theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) : (b • a : α ⧸ H) = ↑(b • a) :=
+theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
+    (b • a : α ⧸ H) = b • (a : α ⧸ H) :=
   rfl
 #align mul_action.quotient.smul_coe MulAction.Quotient.smul_coe
 #align add_action.quotient.vadd_coe AddAction.Quotient.vadd_coe
-
+#lint
 @[to_additive (attr := simp)]
 theorem Quotient.mk_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) :
     QuotientGroup.mk (b • q.out') = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
@@ -437,3 +442,5 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
 #align subgroup.quotient_center_embedding_apply Subgroup.quotientCenterEmbedding_apply
 
 end Subgroup
+
+#lint
