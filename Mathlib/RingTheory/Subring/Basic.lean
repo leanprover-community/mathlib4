@@ -757,15 +757,15 @@ instance : CompleteLattice (Subring R) :=
         show (s : Set R) ≤ t ↔ s ≤ t from SetLike.coe_subset_coe)
         isGLB_binfᵢ with
     bot := ⊥
-    bot_le := fun s x hx =>
+    bot_le := fun s _x hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx
       hn ▸ coe_int_mem s n
     top := ⊤
-    le_top := fun s x hx => trivial
+    le_top := fun _s _x _hx => trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun s t x => And.left
-    inf_le_right := fun s t x => And.right
-    le_inf := fun s t₁ t₂ h₁ h₂ x hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left := fun _s _t _x => And.left
+    inf_le_right := fun _s _t _x => And.right
+    le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : Subring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -961,7 +961,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
     (mem_closure_iff.1 h)
     (fun x hx =>
       let ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
-      ⟨[l], by simp [h] <;> clear_aux_decl <;> tauto⟩)
+      ⟨[l], by simp [h]; clear_aux_decl; tauto⟩)
     ⟨[], by simp⟩
     (fun x y ⟨l, hl1, hl2⟩ ⟨m, hm1, hm2⟩ =>
       ⟨l ++ m, fun t ht => (List.mem_append.1 ht).elim (hl1 t) (hm1 t), by simp [hl2, hm2]⟩)
@@ -978,9 +978,9 @@ variable (R)
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
-  gc s t := closure_le
-  le_l_u s := subset_closure
-  choice_eq s h := rfl
+  gc _s _t := closure_le
+  le_l_u _s := subset_closure
+  choice_eq _s _h := rfl
 #align subring.gi Subring.gi
 
 variable {R}
@@ -1087,8 +1087,8 @@ theorem top_prod_top : (⊤ : Subring R).prod (⊤ : Subring S) = ⊤ :=
 /-- Product of subrings is isomorphic to their product as rings. -/
 def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
-    map_mul' := fun x y => rfl
-    map_add' := fun x y => rfl }
+    map_mul' := fun _x _y => rfl
+    map_add' := fun _x _y => rfl }
 #align subring.prod_equiv Subring.prodEquiv
 
 /-- The underlying set of a non-empty directed supₛ of subrings is just a union of the subrings.
@@ -1158,7 +1158,7 @@ theorem coe_rangeRestrict (f : R →+* S) (x : R) : (f.rangeRestrict x : S) = f 
 #align ring_hom.coe_range_restrict RingHom.coe_rangeRestrict
 
 theorem rangeRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeRestrict :=
-  fun ⟨y, hy⟩ =>
+  fun ⟨_y, hy⟩ =>
   let ⟨x, hx⟩ := mem_range.mp hy
   ⟨x, Subtype.ext hx⟩
 #align ring_hom.range_restrict_surjective RingHom.rangeRestrict_surjective
@@ -1192,7 +1192,7 @@ theorem eqOn_set_closure {f g : R →+* S} {s : Set R} (h : Set.EqOn f g s) :
 #align ring_hom.eq_on_set_closure RingHom.eqOn_set_closure
 
 theorem eq_of_eqOn_set_top {f g : R →+* S} (h : Set.EqOn f g (⊤ : Subring R)) : f = g :=
-  ext fun x => h trivial
+  ext fun _x => h trivial
 #align ring_hom.eq_of_eq_on_set_top RingHom.eq_of_eqOn_set_top
 
 theorem eq_of_eqOn_set_dense {s : Set R} (hs : closure s = ⊤) {f g : R →+* S} (h : s.EqOn f g) :
