@@ -549,13 +549,13 @@ variable {α : Type _}
   A Dynkin system is also known as a "λ-system" or a "d-system".
 -/
 structure DynkinSystem (α : Type _) where
-  /-- Predicate saying that a given set is contained in the dynkin system. -/
+  /-- Predicate saying that a given set is contained in the Dynkin system. -/
   Has : Set α → Prop
-  /-- A dynkin system contains the empty set. -/
+  /-- A Dynkin system contains the empty set. -/
   has_empty : Has ∅
-  /-- A dynkin system is closed under complementation. -/
+  /-- A Dynkin system is closed under complementation. -/
   has_compl : ∀ {a}, Has a → Has (aᶜ)
-  /-- A dynkin system is closed under countable union of pairwise disjoint sets. Use a more general
+  /-- A Dynkin system is closed under countable union of pairwise disjoint sets. Use a more general
   `MeasurableSpace.DynkinSystem.has_unionᵢ` instead.-/
   has_unionᵢ_nat : ∀ {f : ℕ → Set α}, Pairwise (Disjoint on f) → (∀ i, Has (f i)) → Has (⋃ i, f i)
 #align measurable_space.dynkin_system MeasurableSpace.DynkinSystem
