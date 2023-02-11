@@ -23,10 +23,10 @@ You have two options:
 1. Use the equality `h` as one normally would in Lean (e.g. using `rw` and `subst`).
    This may immediately cause difficulties, because in category theory everything is dependently
    typed, and equations between objects quickly lead to nasty goals with `eq.rec`.
-2. Promote `h` to a morphism using `eq_to_hom h : X ⟶ Y`, or `eq_to_iso h : X ≅ Y`.
+2. Promote `h` to a morphism using `eqToHom h : X ⟶ Y`, or `eqToIso h : X ≅ Y`.
 
 This file introduces various `simp` lemmas which in favourable circumstances
-result in the various `eq_to_hom` morphisms to drop out at the appropriate moment!
+result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
 
 
@@ -73,39 +73,55 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
     mpr := fun h => h ▸ by simp [whisker_eq _ h] }
 #align category_theory.eq_to_hom_comp_iff CategoryTheory.eqToHom_comp_iff
 
-/-- If we (perhaps unintentionally) perform equational rewriting on
-the source object of a morphism,
-we can replace the resulting `_.mpr f` term by a composition with an `eq_to_hom`.
+/- Porting note: simpNF complains about thsi not reducing but it is clearly used 
+in `congrArg_mrp_hom_left`. It has been no-linted. -/
+/-- Reducible form of congrArg_mpr_hom_left -/
+@[simp, nolint simpNF]
+theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶  Z) : 
+     cast (congrArg (fun W : C => W ⟶  Z) p.symm) q = eqToHom p ≫ q := by 
+  cases p 
+  simp 
 
-It may be advisable to introduce any necessary `eq_to_hom` morphisms manually,
+ /-- If we (perhaps unintentionally) perform equational rewriting on
+the source object of a morphism,
+we can replace the resulting `_.mpr f` term by a composition with an `eqToHom`.
+
+It may be advisable to introduce any necessary `eqToHom` morphisms manually,
 rather than relying on this lemma firing.
--/
-@[simp]
-theorem congr_arg_mpr_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
-    (congr_arg (fun W : C => W ⟶ Z) p).mpr q = eqToHom p ≫ q :=
+-/  
+theorem congrArg_mpr_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
+    (congrArg (fun W : C => W ⟶ Z) p).mpr q = eqToHom p ≫ q :=
   by
   cases p
   simp
-#align category_theory.congr_arg_mpr_hom_left CategoryTheory.congr_arg_mpr_hom_left
+#align category_theory.congr_arg_mpr_hom_left CategoryTheory.congrArg_mpr_hom_left
+
+/- Porting note: simpNF complains about thsi not reducing but it is clearly used 
+in `congrArg_mrp_hom_right`. It has been no-linted. -/
+/-- Reducible form of `congrArg_mpr_hom_right` -/
+@[simp, nolint simpNF]
+theorem congrArg_cast_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
+    cast (congrArg (fun W : C => X ⟶  W) q.symm) p = p ≫ eqToHom q.symm := by 
+  cases q 
+  simp 
 
 /-- If we (perhaps unintentionally) perform equational rewriting on
 the target object of a morphism,
-we can replace the resulting `_.mpr f` term by a composition with an `eq_to_hom`.
+we can replace the resulting `_.mpr f` term by a composition with an `eqToHom`.
 
-It may be advisable to introduce any necessary `eq_to_hom` morphisms manually,
+It may be advisable to introduce any necessary `eqToHom` morphisms manually,
 rather than relying on this lemma firing.
 -/
-@[simp]
-theorem congr_arg_mpr_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
-    (congr_arg (fun W : C => X ⟶ W) q).mpr p = p ≫ eqToHom q.symm :=
+theorem congrArg_mpr_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
+    (congrArg (fun W : C => X ⟶ W) q).mpr p = p ≫ eqToHom q.symm :=
   by
   cases q
   simp
-#align category_theory.congr_arg_mpr_hom_right CategoryTheory.congr_arg_mpr_hom_right
+#align category_theory.congr_arg_mpr_hom_right CategoryTheory.congrArg_mpr_hom_right
 
 /-- An equality `X = Y` gives us an isomorphism `X ≅ Y`.
 
-It is typically better to use this, rather than rewriting by the equality then using `iso.refl _`
+It is typically better to use this, rather than rewriting by the equality then using `Iso.refl _`
 which usually leads to dependent type theory hell.
 -/
 def eqToIso {X Y : C} (p : X = Y) : X ≅ Y :=
@@ -166,7 +182,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
   by
   match F, G with 
   | mk F_pre _ _ , mk G_pre _ _ =>
-    match F_pre, G_pre with 
+    match F_pre, G_pre with  -- Porting note: did not unfold the Prefunctor unlike Lean3
     | Prefunctor.mk F_obj _ , Prefunctor.mk G_obj _ =>  
     obtain rfl : F_obj = G_obj := by
       ext X
@@ -176,7 +192,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     simpa using h_map X Y f
 #align category_theory.functor.ext CategoryTheory.Functor.ext
 
-/-- Two morphisms are conjugate via eq_to_hom if and only if they are heterogeneously equal. -/
+/-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal. -/
 theorem conj_eqToHom_iff_hEq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :
     f = eqToHom h ≫ g ≫ eqToHom h'.symm ↔ HEq f g :=
   by
@@ -258,13 +274,13 @@ end Functor
 as we lose the ability to use results that interact with `F`,
 e.g. the naturality of a natural transformation.
 
-In some files it may be appropriate to use `local attribute [simp] eq_to_hom_map`, however.
+In some files it may be appropriate to use `local attribute [simp] eqToHom_map`, however.
 -/
 theorem eqToHom_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
     F.map (eqToHom p) = eqToHom (congr_arg F.obj p) := by cases p; simp
 #align category_theory.eq_to_hom_map CategoryTheory.eqToHom_map
 
-/-- See the note on `eq_to_hom_map` regarding using this as a `simp` lemma.
+/-- See the note on `eqToHom_map` regarding using this as a `simp` lemma.
 -/
 theorem eqToIso_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
     F.mapIso (eqToIso p) = eqToIso (congr_arg F.obj p) := by ext; cases p; simp
@@ -294,4 +310,3 @@ theorem dcongr_arg {ι : Type _} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j
 #align category_theory.dcongr_arg CategoryTheory.dcongr_arg
 
 end CategoryTheory
-
