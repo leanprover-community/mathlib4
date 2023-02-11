@@ -98,9 +98,9 @@ theorem Fintype.piFinset_univ {α : Type _} {β : α → Type _} [DecidableEq α
   rfl
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
-instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β]
-    [DecidableEq α] [DecidableEq β] : Fintype (α ↪ β) :=
-  Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
+noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
+  Fintype (α ↪ β) :=
+  by classical. exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]
