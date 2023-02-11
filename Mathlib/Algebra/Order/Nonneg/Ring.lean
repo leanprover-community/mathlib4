@@ -338,11 +338,6 @@ instance canonicallyOrderedAddMonoid [OrderedRing α] :
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
 #align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddMonoid
 
-section
-
--- Porting note: Remove me.
-set_option maxHeartbeats 600000
-
 instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α] :
     CanonicallyOrderedCommSemiring { x : α // 0 ≤ x } :=
   { Nonneg.canonicallyOrderedAddMonoid, Nonneg.orderedCommSemiring with
@@ -350,8 +345,6 @@ instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α]
       rintro ⟨a, ha⟩ ⟨b, hb⟩
       simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
 #align nonneg.canonically_ordered_comm_semiring Nonneg.canonicallyOrderedCommSemiring
-
-end
 
 instance canonicallyLinearOrderedAddMonoid [LinearOrderedRing α] :
     CanonicallyLinearOrderedAddMonoid { x : α // 0 ≤ x } :=
@@ -378,14 +371,11 @@ theorem toNonneg_of_nonneg {a : α} (h : 0 ≤ a) : toNonneg a = ⟨a, h⟩ := b
 
 @[simp]
 theorem toNonneg_coe {a : { x : α // 0 ≤ x }} : toNonneg (a : α) = a :=
-  by
-  cases' a with a ha
-  exact toNonneg_of_nonneg ha
+  toNonneg_of_nonneg a.2
 #align nonneg.to_nonneg_coe Nonneg.toNonneg_coe
 
 @[simp]
-theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b :=
-  by
+theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b := by
   cases' b with b hb
   simp [toNonneg, hb]
 #align nonneg.to_nonneg_le Nonneg.toNonneg_le
