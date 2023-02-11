@@ -31,6 +31,8 @@ variable {ι ι' α β γ : Type _}
 
 open Set
 
+open BigOperators
+
 namespace Filter
 
 /-- `atTop` is the filter representing the limit `→ ∞` on an ordered set.

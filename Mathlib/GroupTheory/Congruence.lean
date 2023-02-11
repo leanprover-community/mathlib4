@@ -547,6 +547,7 @@ theorem conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact infₛ_le fun _ _ => id) ConGen.Rel.of
 #align con.con_gen_of_con Con.conGen_of_con
 #align add_con.add_con_gen_of_con AddCon.addConGen_of_addCon
+#align add_con.add_con_gen_of_add_con AddCon.addConGen_of_addCon
 
 --Porting note: removing simp, simp can prove it
 /-- The map sending a binary relation to the smallest congruence relation in which it is
@@ -1092,9 +1093,9 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
 #align add_con.quotient_ker_equiv_range AddCon.quotientKerEquivRange
 
 /-- The first isomorphism theorem for monoids in the case of a homomorphism with right inverse. -/
-@[to_additive "The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
-with right inverse.",
-  simps]
+@[to_additive (attr := simps)
+  "The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
+  with right inverse."]
 def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.RightInverse g f) :
     (ker f).Quotient ≃* P :=
   { kerLift f with
@@ -1104,6 +1105,10 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
     right_inv := fun x => by conv_rhs => rw [← hf x]; rfl }
 #align con.quotient_ker_equiv_of_right_inverse Con.quotientKerEquivOfRightInverse
 #align add_con.quotient_ker_equiv_of_right_inverse AddCon.quotientKerEquivOfRightInverse
+#align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symmApply
+#align add_con.quotient_ker_equiv_of_right_inverse_symm_apply AddCon.quotientKerEquivOfRightInverse_symmApply
+#align con.quotient_ker_equiv_of_right_inverse_apply Con.quotientKerEquivOfRightInverse_apply
+#align add_con.quotient_ker_equiv_of_right_inverse_apply AddCon.quotientKerEquivOfRightInverse_apply
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 

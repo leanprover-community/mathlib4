@@ -57,9 +57,11 @@ structure LinearEquiv {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : 
 
 /-- The linear map underlying a linear equivalence. -/
 add_decl_doc LinearEquiv.toLinearMap
+#align linear_equiv.to_linear_map LinearEquiv.toLinearMap
 
 /-- The additive equivalence of types underlying a linear equivalence. -/
 add_decl_doc LinearEquiv.toAddEquiv
+#align linear_equiv.to_add_equiv LinearEquiv.toAddEquiv
 
 /-- The backwards directed function underlying a linear equivalence. -/
 add_decl_doc LinearEquiv.invFun
@@ -565,6 +567,7 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 #align ring_equiv.to_semilinear_equiv RingEquiv.toSemilinearEquiv
+#align ring_equiv.to_semilinear_equiv_symm_apply RingEquiv.toSemilinearEquiv_symmApply
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 
@@ -601,6 +604,7 @@ def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
     left_inv := f.left_inv
     right_inv := f.right_inv }
 #align linear_equiv.restrict_scalars LinearEquiv.restrictScalars
+#align linear_equiv.restrict_scalars_symm_apply LinearEquiv.restrictScalars_symmApply
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h =>
@@ -639,6 +643,7 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M
   map_one' := rfl
   map_mul' _ _ := rfl
 #align linear_equiv.automorphism_group.to_linear_map_monoid_hom LinearEquiv.automorphismGroup.toLinearMapMonoidHom
+#align linear_equiv.automorphism_group.to_linear_map_monoid_hom_apply LinearEquiv.automorphismGroup.toLinearMapMonoidHom_apply
 
 /-- The tautological action by `M ≃ₗ[R] M` on `M`.
 
@@ -686,6 +691,7 @@ def ofSubsingleton : M ≃ₗ[R] M₂ :=
     left_inv := fun _ => Subsingleton.elim _ _
     right_inv := fun _ => Subsingleton.elim _ _ }
 #align linear_equiv.of_subsingleton LinearEquiv.ofSubsingleton
+#align linear_equiv.of_subsingleton_symm_apply LinearEquiv.ofSubsingleton_symmApply
 
 @[simp]
 theorem ofSubsingleton_self : ofSubsingleton M M = refl R M := by
@@ -712,6 +718,7 @@ def compHom.toLinearEquiv {R S : Type _} [Semiring R] [Semiring S] (g : R ≃+* 
     invFun := (g.symm : S → R)
     map_smul' := g.map_mul }
 #align module.comp_hom.to_linear_equiv Module.compHom.toLinearEquiv
+#align module.comp_hom.to_linear_equiv_symm_apply Module.compHom.toLinearEquiv_symmApply
 
 end Module
 
@@ -728,6 +735,8 @@ This is a stronger version of `DistribMulAction.toAddEquiv`. -/
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
   { toAddEquiv M s, toLinearMap R M s with }
 #align distrib_mul_action.to_linear_equiv DistribMulAction.toLinearEquiv
+#align distrib_mul_action.to_linear_equiv_apply DistribMulAction.toLinearEquiv_apply
+#align distrib_mul_action.to_linear_equiv_symm_apply DistribMulAction.toLinearEquiv_symmApply
 
 /-- Each element of the group defines a module automorphism.
 
@@ -738,6 +747,7 @@ def toModuleAut : S →* M ≃ₗ[R] M where
   map_one' := LinearEquiv.ext <| one_smul _
   map_mul' _ _ := LinearEquiv.ext <| mul_smul _ _
 #align distrib_mul_action.to_module_aut DistribMulAction.toModuleAut
+#align distrib_mul_action.to_module_aut_apply DistribMulAction.toModuleAut_apply
 
 end DistribMulAction
 

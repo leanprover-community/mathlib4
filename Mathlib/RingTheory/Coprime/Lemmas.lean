@@ -27,7 +27,7 @@ universe u v
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}
 
--- open BigOperators porting note: commented out locale
+open BigOperators
 
 section
 

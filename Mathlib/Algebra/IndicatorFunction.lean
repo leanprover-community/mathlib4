@@ -33,8 +33,7 @@ arguments. This is in contrast with the design of `Pi.Single` or `Set.Piecewise`
 indicator, characteristic
 -/
 
--- Porting note: unknown namespace BigOperators
--- open BigOperators
+open BigOperators
 
 open Function
 

@@ -1140,8 +1140,10 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 #align set.not_zero_mem_sub_iff Set.not_zero_mem_sub_iff
 
 alias not_one_mem_div_iff ↔ _ _root_.Disjoint.one_not_mem_div_set
+#align disjoint.one_not_mem_div_set Disjoint.one_not_mem_div_set
 
 attribute [to_additive] Disjoint.one_not_mem_div_set
+#align disjoint.zero_not_mem_sub_set Disjoint.zero_not_mem_sub_set
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
@@ -1313,6 +1315,7 @@ open Pointwise
 
 namespace Group
 
+@[to_additive]
 theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {B : ℕ} (h2 : ∀ n, f n ≤ B)
     (h3 : ∀ n, f n = f (n + 1) → f (n + 1) = f (n + 2)) : ∀ k, B ≤ k → f k = f B := by
   have key : ∃ n : ℕ, n ≤ B ∧ f n = f (n + 1) := by
@@ -1331,5 +1334,6 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
       (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
     exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
+#align add_group.card_nsmul_eq_card_nsmul_card_univ_aux AddGroup.card_nsmul_eq_card_nsmul_card_univ_aux
 
 end Group

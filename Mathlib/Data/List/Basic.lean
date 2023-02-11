@@ -18,8 +18,6 @@ import Std.Data.List.Lemmas
 # Basic properties of lists
 -/
 
-#align list.mem_cons_iff List.mem_cons
-
 open Function
 
 open Nat hiding one_pos
@@ -696,9 +694,6 @@ theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
 
 /-! ### empty -/
 
--- Porting note: Definition from Lean3 core, so should be moved
-#align list.empty List.isEmpty
-
 -- Porting note: this does not work as desired
 -- attribute [simp] List.isEmpty
 
@@ -1063,8 +1058,6 @@ def bidirectionalRecOn {C : List α → Sort _} (l : List α) (H0 : C []) (H1 : 
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl
-
-#align list.sublist.cons2 List.Sublist.cons₂
 
 #align list.nil_sublist List.nil_sublist
 #align list.sublist.refl List.Sublist.refl
@@ -1571,7 +1564,7 @@ theorem modifyNthTail_modifyNthTail_le {f g : List α → List α} (m n : ℕ) (
     (l.modifyNthTail f n).modifyNthTail g m =
       l.modifyNthTail (fun l => (f l).modifyNthTail g (m - n)) n := by
   rcases exists_add_of_le h with ⟨m, rfl⟩
-  rw [add_tsub_cancel_left, add_comm, modifyNthTail_modifyNthTail]
+  rw [@add_tsub_cancel_left, add_comm, modifyNthTail_modifyNthTail]
 #align list.modify_nth_tail_modify_nth_tail_le List.modifyNthTail_modifyNthTail_le
 
 theorem modifyNthTail_modifyNthTail_same {f g : List α → List α} (n : ℕ) (l : List α) :
@@ -2362,7 +2355,7 @@ theorem reverse_take {α} {xs : List α} (n : ℕ) (h : n ≤ xs.length) :
   · replace h' := le_of_succ_le_succ h'
     rw [take_append_of_le_length, xs_ih _ h']
     rw [show xs_tl.length + 1 - n = succ (xs_tl.length - n) from _, drop]
-    · rwa [succ_eq_add_one, ← tsub_add_eq_add_tsub]
+    · rwa [succ_eq_add_one, ← @tsub_add_eq_add_tsub]
     · rwa [length_reverse]
   · subst h'
     rw [length, tsub_self, drop]

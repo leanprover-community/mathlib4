@@ -26,8 +26,7 @@ We also define `Function.mulSupport f = {x | f x ≠ 1}`.
 
 open Set
 
---Porting note: namespace does not exist
---open BigOperators
+open BigOperators
 
 namespace Function
 

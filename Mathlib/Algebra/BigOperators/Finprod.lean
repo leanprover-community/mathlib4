@@ -85,8 +85,7 @@ section sort
 
 variable {G M N : Type _} {α β ι : Sort _} [CommMonoid M] [CommMonoid N]
 
--- Porting note: Unknown namespace BigOperators
---open BigOperators
+open BigOperators
 
 section
 
@@ -270,15 +269,13 @@ theorem finprod_congr {f g : α → M} (h : ∀ x, f x = g x) : finprod f = finp
 #align finprod_congr finprod_congr
 #align finsum_congr finsum_congr
 
-@[congr, to_additive]
+@[to_additive (attr := congr)]
 theorem finprod_congr_Prop {p q : Prop} {f : p → M} {g : q → M} (hpq : p = q)
     (hfg : ∀ h : q, f (hpq.mpr h) = g h) : finprod f = finprod g := by
   subst q
   exact finprod_congr hfg
 #align finprod_congr_Prop finprod_congr_Prop
 #align finsum_congr_Prop finsum_congr_Prop
-
-attribute [congr] finsum_congr_Prop
 
 /-- To prove a property of a finite product, it suffices to prove that the property is
 multiplicative and holds on the factors. -/
@@ -369,8 +366,7 @@ section type
 
 variable {α β ι G M N : Type _} [CommMonoid M] [CommMonoid N]
 
--- Porting note: Unknown namespace
---open BigOperators
+open BigOperators
 
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
