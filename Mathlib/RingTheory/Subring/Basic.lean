@@ -811,7 +811,7 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 
 /-- The center is commutative. -/
 instance : CommRing (center R) :=
-  { Subsemiring.center.commSemiring, (center R).toRing with }
+  { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
 end
 
@@ -820,11 +820,10 @@ section DivisionRing
 variable {K : Type u} [DivisionRing K]
 
 instance : Field (center K) :=
-  { (center K).Nontrivial,
-    center.commRing with
-    inv := fun a => ⟨a⁻¹, Set.inv_mem_center₀ a.Prop⟩
-    mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.Ne h
-    div := fun a b => ⟨a / b, Set.div_mem_center₀ a.Prop b.Prop⟩
+  { inferInstanceAs (CommRing (center K)) with
+    inv := fun a => ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
+    mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
+    div := fun a b => ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
     div_eq_mul_inv := fun a b => Subtype.ext <| div_eq_mul_inv _ _
     inv_zero := Subtype.ext inv_zero }
 
@@ -885,7 +884,7 @@ elements of the closure of `s`. -/
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
     (H0 : p 0) (H1 : p 1) (Hadd : ∀ x y, p x → p y → p (x + y)) (Hneg : ∀ x : R, p x → p (-x))
     (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨p, Hmul, H1, Hadd, H0, Hneg⟩).2 Hs h
+  (@closure_le _ _ _ ⟨⟨⟨⟨p, @Hmul⟩, H1⟩, @Hadd, H0⟩, @Hneg⟩).2 Hs h
 #align subring.closure_induction Subring.closure_induction
 
 /-- An induction principle for closure membership, for predicates with two arguments. -/
@@ -913,27 +912,29 @@ theorem mem_closure_iff {s : Set R} {x} :
       (AddSubgroup.zero_mem _)
       (AddSubgroup.subset_closure (Submonoid.one_mem (Submonoid.closure s)))
       (fun x y hx hy => AddSubgroup.add_mem _ hx hy) (fun x hx => AddSubgroup.neg_mem _ hx)
-      fun x y hx hy =>
-      AddSubgroup.closure_induction hy
-        (fun q hq =>
-          AddSubgroup.closure_induction hx
-            (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
-            (by rw [zero_mul q]; apply AddSubgroup.zero_mem _)
-            (fun p₁ p₂ ihp₁ ihp₂ => by rw [add_mul p₁ p₂ q]; apply AddSubgroup.add_mem _ ihp₁ ihp₂)
-            fun x hx => by
-            have f : -x * q = -(x * q) := by simp
-            rw [f]; apply AddSubgroup.neg_mem _ hx)
-        (by rw [mul_zero x]; apply AddSubgroup.zero_mem _)
-        (fun q₁ q₂ ihq₁ ihq₂ => by rw [mul_add x q₁ q₂]; apply AddSubgroup.add_mem _ ihq₁ ihq₂)
-        fun z hz => by
-        have f : x * -z = -(x * z) := by simp
-        rw [f]; apply AddSubgroup.neg_mem _ hz,
-    fun h =>
-    AddSubgroup.closure_induction h
-      (fun x hx =>
-        Submonoid.closure_induction hx (fun x hx => subset_closure hx) (one_mem _) fun x y hx hy =>
-          mul_mem hx hy)
-      (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
+      fun x y hx hy => sorry
+      -- AddSubgroup.closure_induction (G := R) hy
+      --   (fun q hq =>
+      --     AddSubgroup.closure_induction hx
+      --       (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
+      --       (by rw [zero_mul q]; apply AddSubgroup.zero_mem _)
+      --       (fun p₁ p₂ ihp₁ ihp₂ => by rw [add_mul p₁ p₂ q]; apply AddSubgroup.add_mem _ ihp₁ ihp₂)
+      --       fun x hx => by
+      --       have f : -x * q = -(x * q) := by simp
+      --       rw [f]; apply AddSubgroup.neg_mem _ hx)
+      --   (by rw [mul_zero x]; apply AddSubgroup.zero_mem _)
+      --   (fun q₁ q₂ ihq₁ ihq₂ => by rw [mul_add x q₁ q₂]; apply AddSubgroup.add_mem _ ihq₁ ihq₂)
+      --   fun z hz => by
+      --   have f : x * -z = -(x * z) := by simp
+      --   rw [f]; apply AddSubgroup.neg_mem _ hz
+        ,
+    fun h => sorry
+    -- AddSubgroup.closure_induction h
+    --   (fun x hx =>
+    --     Submonoid.closure_induction hx (fun x hx => subset_closure hx) (one_mem _) fun x y hx hy =>
+    --       mul_mem hx hy)
+    --   (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx
+      ⟩
 #align subring.mem_closure_iff Subring.mem_closure_iff
 
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
@@ -957,7 +958,7 @@ def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b =
 
 theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x :=
-  AddSubgroup.closure_induction (mem_closure_iff.1 h)
+  AddSubgroup.closure_induction (G := R) (mem_closure_iff.1 h)
     (fun x hx =>
       let ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
       ⟨[l], by simp [h] <;> clear_aux_decl <;> tauto⟩)
@@ -975,8 +976,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
 variable (R)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
-protected def gi : GaloisInsertion (@closure R _) coe
-    where
+protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
   gc s t := closure_le
   le_l_u s := subset_closure
@@ -1086,7 +1086,7 @@ theorem top_prod_top : (⊤ : Subring R).prod (⊤ : Subring S) = ⊤ :=
 
 /-- Product of subrings is isomorphic to their product as rings. -/
 def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
-  { Equiv.Set.prod ↑s ↑t with
+  { Equiv.Set.prod (s : Set R) (t : Set S) with
     map_mul' := fun x y => rfl
     map_add' := fun x y => rfl }
 #align subring.prod_equiv Subring.prodEquiv
@@ -1101,7 +1101,7 @@ theorem mem_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
       (Submonoid.coe_supᵢ_of_directed <| hS.mono_comp _ fun _ _ => id)
       (AddSubgroup.coe_supᵢ_of_directed <| hS.mono_comp _ fun _ _ => id)
-  suffices (⨆ i, S i) ≤ U by simpa using @this x
+  suffices (⨆ i, S i) ≤ U by intro h; simpa using (this h)
   exact supᵢ_le fun i x hx => Set.mem_unionᵢ.2 ⟨i, hx⟩
 #align subring.mem_supr_of_directed Subring.mem_supᵢ_of_directed
 
@@ -1113,17 +1113,18 @@ theorem coe_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (
 theorem mem_supₛ_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : R} : x ∈ supₛ S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed hS.directed_coe, SetCoe.exists, Subtype.coe_mk]
+  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
+    exists_prop]
 #align subring.mem_Sup_of_directed_on Subring.mem_supₛ_of_directedOn
 
 theorem coe_supₛ_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(supₛ S) : Set R) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_supₛ_of_directed_on Sne hS]
+  Set.ext fun x => by simp [mem_supₛ_of_directedOn Sne hS]
 #align subring.coe_Sup_of_directed_on Subring.coe_supₛ_of_directedOn
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
     x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K :=
-  @Set.mem_image_equiv _ _ (↑K) f.toEquiv x
+  @Set.mem_image_equiv _ _ (K : Set R) f.toEquiv x
 #align subring.mem_map_equiv Subring.mem_map_equiv
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subring R) :
@@ -1176,7 +1177,7 @@ theorem range_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
 /-- The subring of elements `x : R` such that `f x = g x`, i.e.,
   the equalizer of f and g as a subring of R -/
 def eqLocus (f g : R →+* S) : Subring R :=
-  { (f : R →* S).eqMlocus g, (f : R →+ S).eqLocus g with carrier := { x | f x = g x } }
+  { (f : R →* S).eqLocusM g, (f : R →+ S).eqLocus g with carrier := { x | f x = g x } }
 #align ring_hom.eq_locus RingHom.eqLocus
 
 @[simp]
@@ -1196,7 +1197,7 @@ theorem eq_of_eqOn_set_top {f g : R →+* S} (h : Set.EqOn f g (⊤ : Subring R)
 
 theorem eq_of_eqOn_set_dense {s : Set R} (hs : closure s = ⊤) {f g : R →+* S} (h : s.EqOn f g) :
     f = g :=
-  eq_of_eq_on_set_top <| hs ▸ eqOn_set_closure h
+  eq_of_eqOn_set_top <| hs ▸ eqOn_set_closure h
 #align ring_hom.eq_of_eq_on_set_dense RingHom.eq_of_eqOn_set_dense
 
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
@@ -1220,22 +1221,22 @@ open RingHom
 
 /-- The ring homomorphism associated to an inclusion of subrings. -/
 def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
-  S.Subtype.codRestrict _ fun x => h x.2
+  S.subtype.codRestrict _ fun x => h x.2
 #align subring.inclusion Subring.inclusion
 
 @[simp]
-theorem range_subtype (s : Subring R) : s.Subtype.range = s :=
-  SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
+theorem range_subtype (s : Subring R) : s.subtype.range = s :=
+  SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 #align subring.range_subtype Subring.range_subtype
 
 @[simp]
-theorem range_fst : (fst R S).srange = ⊤ :=
-  (fst R S).srange_top_of_surjective <| Prod.fst_surjective
+theorem range_fst : (fst R S).rangeS = ⊤ :=
+  (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
 #align subring.range_fst Subring.range_fst
 
 @[simp]
-theorem range_snd : (snd R S).srange = ⊤ :=
-  (snd R S).srange_top_of_surjective <| Prod.snd_surjective
+theorem range_snd : (snd R S).rangeS = ⊤ :=
+  (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 #align subring.range_snd Subring.range_snd
 
 @[simp]
@@ -1267,11 +1268,11 @@ def subringCongr (h : s = t) : s ≃+* t :=
 def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
   { f.rangeRestrict with
     toFun := fun x => f.rangeRestrict x
-    invFun := fun x => (g ∘ f.range.Subtype) x
+    invFun := fun x => (g ∘ f.range.subtype) x
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := RingHom.mem_range.mp x.Prop
+        let ⟨x', hx'⟩ := RingHom.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 #align ring_equiv.of_left_inverse RingEquiv.ofLeftInverse
 
@@ -1300,7 +1301,7 @@ namespace Subring
 
 variable {s : Set R}
 
-attribute [local reducible] closure
+-- attribute [local reducible] closure -- Porting note: not available in Lean4
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
