@@ -48,8 +48,8 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
         refine' ⟨m'' * m * m', N_mul _ (N_mul _ hm'' _ hm) _ hm', mul_assoc _ _ _⟩
       · rintro _ ⟨m', hm', rfl⟩
         exact N_mul _ hm' _ hm
-    /- In particular, this means that `m' * m = m` for some `m'`. We now use minimality again to show
-    that this holds for all `m' ∈ N`. -/
+    /- In particular, this means that `m' * m = m` for some `m'`. We now use minimality again
+       to show that this holds for all `m' ∈ N`. -/
     have absorbing_eq_self : N ∩ { m' | m' * m = m } = N :=
       by
       apply N_minimal
