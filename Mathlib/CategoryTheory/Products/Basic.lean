@@ -74,7 +74,8 @@ theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     exact ⟨⟨⟨g.1, hfg₁, hgf₁⟩⟩, ⟨⟨g.2, hfg₂, hgf₂⟩⟩⟩
   · rintro ⟨⟨g₁, hfg₁, hgf₁⟩, ⟨g₂, hfg₂, hgf₂⟩⟩
     dsimp at hfg₁ hgf₁ hfg₂ hgf₂
-    refine' ⟨⟨(g₁, g₂), _, _⟩⟩ ; · simp ; constructor ; assumption
+    refine' ⟨⟨(g₁, g₂), _, _⟩⟩
+    repeat { simp; constructor; assumption; assumption }
 #align category_theory.is_iso_prod_iff CategoryTheory.isIso_prod_iff
 
 section
@@ -85,7 +86,7 @@ variable {C D}
 @[simps]
 def prod.etaIso (X : C × D) : (X.1, X.2) ≅ X
     where
-  Hom := (𝟙 _, 𝟙 _)
+  hom := (𝟙 _, 𝟙 _)
   inv := (𝟙 _, 𝟙 _)
 #align category_theory.prod.eta_iso CategoryTheory.prod.etaIso
 
@@ -93,7 +94,7 @@ def prod.etaIso (X : C × D) : (X.1, X.2) ≅ X
 @[simps]
 def Iso.prod {P Q : C} {S T : D} (f : P ≅ Q) (g : S ≅ T) : (P, S) ≅ (Q, T)
     where
-  Hom := (f.Hom, g.Hom)
+  hom := (f.hom, g.hom)
   inv := (f.inv, g.inv)
 #align category_theory.iso.prod CategoryTheory.Iso.prod
 
@@ -119,65 +120,65 @@ end
 namespace Prod
 
 /-- `sectl C Z` is the functor `C ⥤ C × D` given by `X ↦ (X, Z)`. -/
-@[simps]
+@[simps!]
 def sectl (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (Z : D) : C ⥤ C × D
     where
   obj X := (X, Z)
-  map X Y f := (f, 𝟙 Z)
-#align category_theory.prod.sectl CategoryTheory.prod.sectl
+  map f := (f, 𝟙 Z)
+#align category_theory.prod.sectl CategoryTheory.Prod.sectl
 
 /-- `sectr Z D` is the functor `D ⥤ C × D` given by `Y ↦ (Z, Y)` . -/
-@[simps]
+@[simps!]
 def sectr {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.{v₂} D] : D ⥤ C × D
     where
   obj X := (Z, X)
-  map X Y f := (𝟙 Z, f)
-#align category_theory.prod.sectr CategoryTheory.prod.sectr
+  map f := (𝟙 Z, f)
+#align category_theory.prod.sectr CategoryTheory.Prod.sectr
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 /-- `fst` is the functor `(X, Y) ↦ X`. -/
-@[simps]
+@[simps!]
 def fst : C × D ⥤ C where
   obj X := X.1
-  map X Y f := f.1
-#align category_theory.prod.fst CategoryTheory.prod.fst
+  map f := f.1
+#align category_theory.prod.fst CategoryTheory.Prod.fst
 
 /-- `snd` is the functor `(X, Y) ↦ Y`. -/
-@[simps]
+@[simps!]
 def snd : C × D ⥤ D where
   obj X := X.2
-  map X Y f := f.2
-#align category_theory.prod.snd CategoryTheory.prod.snd
+  map f := f.2
+#align category_theory.prod.snd CategoryTheory.Prod.snd
 
 /-- The functor swapping the factors of a cartesian product of categories, `C × D ⥤ D × C`. -/
-@[simps]
+@[simps!]
 def swap : C × D ⥤ D × C where
   obj X := (X.2, X.1)
-  map _ _ f := (f.2, f.1)
-#align category_theory.prod.swap CategoryTheory.prod.swap
+  map f := (f.2, f.1)
+#align category_theory.prod.swap CategoryTheory.Prod.swap
 
 /-- Swapping the factors of a cartesion product of categories twice is naturally isomorphic
 to the identity functor.
 -/
-@[simps]
+@[simps!]
 def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D)
     where
-  Hom := { app := fun X => 𝟙 X }
+  hom := { app := fun X => 𝟙 X }
   inv := { app := fun X => 𝟙 X }
-#align category_theory.prod.symmetry CategoryTheory.prod.symmetry
+#align category_theory.prod.symmetry CategoryTheory.Prod.symmetry
 
 /-- The equivalence, given by swapping factors, between `C × D` and `D × C`.
 -/
-@[simps]
+@[simps!]
 def braiding : C × D ≌ D × C :=
-  Equivalence.mk (swap C D) (swap D C) (NatIso.ofComponents (fun X => eqToIso (by simp)) (by tidy))
-    (NatIso.ofComponents (fun X => eqToIso (by simp)) (by tidy))
-#align category_theory.prod.braiding CategoryTheory.prod.braiding
+  Equivalence.mk (swap C D) (swap D C) (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
+    (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
+#align category_theory.prod.braiding CategoryTheory.Prod.braiding
 
 instance swapIsEquivalence : IsEquivalence (swap C D) :=
-  (by infer_instance : IsEquivalence (braiding C D).Functor)
-#align category_theory.prod.swap_is_equivalence CategoryTheory.prod.swapIsEquivalence
+  (by infer_instance : IsEquivalence (braiding C D).functor)
+#align category_theory.prod.swap_is_equivalence CategoryTheory.Prod.swapIsEquivalence
 
 end Prod
 
@@ -189,38 +190,38 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 `(evaluation.obj X).obj F = F.obj X`,
 which is functorial in both `X` and `F`.
 -/
-@[simps]
+@[simps!]
 def evaluation : C ⥤ (C ⥤ D) ⥤ D
     where
   obj X :=
     { obj := fun F => F.obj X
-      map := fun F G α => α.app X }
-  map X Y f :=
+      map := fun α => α.app X }
+  map {X} {Y} f :=
     { app := fun F => F.map f
-      naturality' := fun F G α => Eq.symm (α.naturality f) }
+      naturality := fun {F} {G} α => Eq.symm (α.naturality f) }
 #align category_theory.evaluation CategoryTheory.evaluation
 
 /-- The "evaluation of `F` at `X`" functor,
 as a functor `C × (C ⥤ D) ⥤ D`.
 -/
-@[simps]
+@[simps!]
 def evaluationUncurried : C × (C ⥤ D) ⥤ D
     where
   obj p := p.2.obj p.1
-  map x y f := x.2.map f.1 ≫ f.2.app y.1
-  map_comp' X Y Z f g := by
+  map := fun {x} {y} f => x.2.map f.1 ≫ f.2.app y.1
+  map_comp := fun {X} {Y} {Z} f g => by
     cases g; cases f; cases Z; cases Y; cases X
-    simp only [prod_comp, nat_trans.comp_app, functor.map_comp, category.assoc]
-    rw [← nat_trans.comp_app, nat_trans.naturality, nat_trans.comp_app, category.assoc,
-      nat_trans.naturality]
+    simp only [prod_comp, NatTrans.comp_app, Functor.map_comp, Category.assoc]
+    rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app, Category.assoc,
+      NatTrans.naturality]
 #align category_theory.evaluation_uncurried CategoryTheory.evaluationUncurried
 
 variable {C}
 
 /-- The constant functor followed by the evalutation functor is just the identity. -/
-@[simps]
+@[simps!]
 def Functor.constCompEvaluationObj (X : C) : Functor.const C ⋙ (evaluation C D).obj X ≅ 𝟭 D :=
-  NatIso.ofComponents (fun Y => Iso.refl _) fun Y Z f => by simp
+  NatIso.ofComponents (fun Y => Iso.refl _) fun {Y} {Z} f => by simp
 #align category_theory.functor.const_comp_evaluation_obj CategoryTheory.Functor.constCompEvaluationObj
 
 end
@@ -231,33 +232,33 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 namespace Functor
 
 /-- The cartesian product of two functors. -/
-@[simps]
+@[simps!]
 def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D
     where
   obj X := (F.obj X.1, G.obj X.2)
-  map _ _ f := (F.map f.1, G.map f.2)
+  map f := (F.map f.1, G.map f.2)
 #align category_theory.functor.prod CategoryTheory.Functor.prod
 
 /- Because of limitations in Lean 3's handling of notations, we do not setup a notation `F × G`.
    You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
 /-- Similar to `prod`, but both functors start from the same category `A` -/
-@[simps]
+@[simps!]
 def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C
     where
   obj a := (F.obj a, G.obj a)
-  map x y f := (F.map f, G.map f)
+  map f := (F.map f, G.map f)
 #align category_theory.functor.prod' CategoryTheory.Functor.prod'
 
 /-- The product `F.prod' G` followed by projection on the first component is isomorphic to `F` -/
-@[simps]
-def prod'CompFst (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.prod.fst B C ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) fun X Y f => by simp
+@[simps!]
+def prod'CompFst (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod.fst B C ≅ F :=
+  NatIso.ofComponents (fun X => Iso.refl _) fun f => by simp
 #align category_theory.functor.prod'_comp_fst CategoryTheory.Functor.prod'CompFst
 
 /-- The product `F.prod' G` followed by projection on the second component is isomorphic to `G` -/
-@[simps]
-def prod'CompSnd (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.prod.snd B C ≅ G :=
-  NatIso.ofComponents (fun X => Iso.refl _) fun X Y f => by simp
+@[simps!]
+def prod'CompSnd (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod.snd B C ≅ G :=
+  NatIso.ofComponents (fun X => Iso.refl _) fun f => by simp
 #align category_theory.functor.prod'_comp_snd CategoryTheory.Functor.prod'CompSnd
 
 section
@@ -286,14 +287,16 @@ end Functor
 namespace NatTrans
 
 /-- The cartesian product of two natural transformations. -/
-@[simps]
-def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.Prod H ⟶ G.Prod I
+@[simps!]
+def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod H ⟶ G.prod I
     where
   app X := (α.app X.1, β.app X.2)
-  naturality' X Y f := by
+  naturality {X} {Y} f := by
     cases X; cases Y
-    simp only [functor.prod_map, Prod.mk.inj_iff, prod_comp]
-    constructor <;> rw [naturality]
+    simp only [Functor.prod_map, prod_comp] 
+    rw [Prod.mk.inj_iff] 
+    constructor 
+    repeat {rw [naturality]}
 #align category_theory.nat_trans.prod CategoryTheory.NatTrans.prod
 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
@@ -301,58 +304,61 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.Prod 
 end NatTrans
 
 /-- `F.flip` composed with evaluation is the same as evaluating `F`. -/
-@[simps]
+@[simps!]
 def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a ≅ F.obj a :=
-  (NatIso.ofComponents fun b => eqToIso rfl) <| by tidy
+  (NatIso.ofComponents fun b => eqToIso rfl) <| by aesop_cat
 #align category_theory.flip_comp_evaluation CategoryTheory.flipCompEvaluation
 
 variable (A B C)
 
 /-- The forward direction for `functor_prod_functor_equiv` -/
-@[simps]
+@[simps!]
 def prodFunctorToFunctorProd : (A ⥤ B) × (A ⥤ C) ⥤ A ⥤ B × C
     where
   obj F := F.1.prod' F.2
-  map F G f := { app := fun X => (f.1.app X, f.2.app X) }
+  map f := { app := fun X => (f.1.app X, f.2.app X) }
 #align category_theory.prod_functor_to_functor_prod CategoryTheory.prodFunctorToFunctorProd
 
 /-- The backward direction for `functor_prod_functor_equiv` -/
-@[simps]
+@[simps!]
 def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C)
     where
-  obj F := ⟨F ⋙ CategoryTheory.prod.fst B C, F ⋙ CategoryTheory.prod.snd B C⟩
-  map F G α :=
+  obj F := ⟨F ⋙ CategoryTheory.Prod.fst B C, F ⋙ CategoryTheory.Prod.snd B C⟩
+  map α :=
     ⟨{  app := fun X => (α.app X).1
-        naturality' := fun X Y f => by
-          simp only [functor.comp_map, prod.fst_map, ← prod_comp_fst, α.naturality] },
+        naturality := fun X Y f => by
+          simp only [Functor.comp_map, Prod.fst_map, ← prod_comp_fst, α.naturality] },
       { app := fun X => (α.app X).2
-        naturality' := fun X Y f => by
-          simp only [functor.comp_map, prod.snd_map, ← prod_comp_snd, α.naturality] }⟩
+        naturality := fun X Y f => by
+          simp only [Functor.comp_map, Prod.snd_map, ← prod_comp_snd, α.naturality] }⟩
 #align category_theory.functor_prod_to_prod_functor CategoryTheory.functorProdToProdFunctor
 
 /-- The unit isomorphism for `functor_prod_functor_equiv` -/
-@[simps]
+-- @[simps!]
 def functorProdFunctorEquivUnitIso :
-    𝟭 _ ≅ prodFunctorToFunctorProd A B C ⋙ functorProdToProdFunctor A B C :=
-  NatIso.ofComponents
-    (fun F =>
-      (((Functor.prod'CompFst _ _).Prod (Functor.prod'CompSnd _ _)).trans (prod.etaIso F)).symm)
-    fun F G α => by tidy
+    𝟭 _ ≅ prodFunctorToFunctorProd A B C ⋙ functorProdToProdFunctor A B C := by sorry 
+  -- apply NatIso.ofComponents 
+    -- (fun F => (((Functor.prod'CompFst _ _).prod (Functor.prod'CompSnd _ _)).trans (prod.etaIso F)).symm)
+    -- sorry 
+
+    -- (fun F =>
+    --   (((Functor.prod'CompFst _ _).prod (Functor.prod'CompSnd _ _)).trans (prod.etaIso F)).symm)
+    -- fun α => by aesop_cat
 #align category_theory.functor_prod_functor_equiv_unit_iso CategoryTheory.functorProdFunctorEquivUnitIso
 
 /-- The counit isomorphism for `functor_prod_functor_equiv` -/
-@[simps]
+@[simps!]
 def functorProdFunctorEquivCounitIso :
     functorProdToProdFunctor A B C ⋙ prodFunctorToFunctorProd A B C ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun F => NatIso.ofComponents (fun X => prod.etaIso (F.obj X)) (by tidy))
-    (by tidy)
+  NatIso.ofComponents (fun F => NatIso.ofComponents (fun X => prod.etaIso (F.obj X)) (by aesop_cat))
+    (by aesop_cat)
 #align category_theory.functor_prod_functor_equiv_counit_iso CategoryTheory.functorProdFunctorEquivCounitIso
 
 /-- The equivalence of categories between `(A ⥤ B) × (A ⥤ C)` and `A ⥤ (B × C)` -/
-@[simps]
+@[simps!]
 def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C
     where
-  Functor := prodFunctorToFunctorProd A B C
+  functor := prodFunctorToFunctorProd A B C
   inverse := functorProdToProdFunctor A B C
   unitIso := functorProdFunctorEquivUnitIso A B C
   counitIso := functorProdFunctorEquivCounitIso A B C
