@@ -267,5 +267,3 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
 end Sym
 
 end Finset
-
-#lint
