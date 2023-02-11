@@ -18,8 +18,8 @@ We define a few types of closed sets in a topological space.
 ## Main Definitions
 
 For a topological space `α`,
-* `closeds α`: The type of closed sets.
-* `clopens α`: The type of clopen sets.
+* `TopologicalSpace.Closeds α`: The type of closed sets.
+* `TopologicalSpace.Clopens α`: The type of clopen sets.
 -/
 
 
@@ -48,7 +48,7 @@ theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
   s.closed'
 #align topological_space.closeds.closed TopologicalSpace.Closeds.closed
 
-/-- See Note [custom simps projections]. -/
+/-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
 
 initialize_simps_projections Closeds (carrier → coe)
@@ -63,7 +63,7 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.closeds.coe_mk TopologicalSpace.Closeds.coe_mk
 
-/-- The closure of a set, as an element of `closeds`. -/
+/-- The closure of a set, as an element of `TopologicalSpace.Closeds`. -/
 protected def closure (s : Set α) : Closeds α :=
   ⟨closure s, isClosed_closure⟩
 #align topological_space.closeds.closure TopologicalSpace.Closeds.closure
@@ -183,7 +183,7 @@ instance : Coframe (Closeds α) :=
     infᵢ_sup_le_sup_infₛ := fun a s =>
       (SetLike.coe_injective <| by simp only [coe_sup, coe_infᵢ, coe_infₛ, Set.union_interᵢ₂]).le }
 
-/-- The term of `closeds α` corresponding to a singleton. -/
+/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
 @[simps]
 def singleton [T1Space α] (x : α) : Closeds α :=
   ⟨{x}, isClosed_singleton⟩
@@ -221,7 +221,8 @@ theorem Opens.compl_bijective : Function.Bijective (@Opens.compl α _) :=
 
 variable (α)
 
-/-- `closeds.compl` as an `OrderIso` to the order dual of `opens α`. -/
+/-- `TopologicalSpace.Closeds.compl` as an `OrderIso` to the order dual of
+`TopologicalSpace.Opens α`. -/
 @[simps]
 def Closeds.complOrderIso : Closeds α ≃o (Opens α)ᵒᵈ where
   toFun := OrderDual.toDual ∘ Closeds.compl
@@ -231,7 +232,8 @@ def Closeds.complOrderIso : Closeds α ≃o (Opens α)ᵒᵈ where
   map_rel_iff' := (@OrderDual.toDual_le_toDual (Opens α)).trans compl_subset_compl
 #align topological_space.closeds.compl_order_iso TopologicalSpace.Closeds.complOrderIso
 
-/-- `opens.compl` as an `OrderIso` to the order dual of `closeds α`. -/
+/-- `TopologicalSpace.Opens.compl` as an `OrderIso` to the order dual of
+`TopologicalSpace.Closeds α`. -/
 @[simps]
 def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
   toFun := OrderDual.toDual ∘ Opens.compl
@@ -243,7 +245,11 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
 
 variable {α}
 
-/-- in a `T1Space`, atoms of `closeds α` are precisely the `closeds.singleton`s. -/
+/-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the
+`TopologicalSpace.Closeds.singleton`s.
+
+TODO: use `minimal_nonempty_closed_eq_singleton` to show that an atom in `TopologicalSpace.Closeds`
+in a T₀ space is a singleton. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     IsAtom s ↔ ∃ x, s = Closeds.singleton x := by
   have : IsAtom (s : Set α) ↔ IsAtom s := by
@@ -253,8 +259,8 @@ theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
   simp only [← this, (s : Set α).isAtom_iff, SetLike.ext'_iff, Closeds.singleton_coe]
 #align topological_space.closeds.is_atom_iff TopologicalSpace.Closeds.isAtom_iff
 
-/-- in a `T1Space`, coatoms of `opens α` are precisely complements of singletons:
-`(closeds.singleton x).compl`. -/
+/-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
+`(TopologicalSpace.Closeds.singleton x).compl`. -/
 theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
     IsCoatom s ↔ ∃ x, s = (Closeds.singleton x).compl := by
   rw [← s.compl_compl, ← isAtom_dual_iff_isCoatom]
@@ -282,7 +288,12 @@ theorem clopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.clopen'
 #align topological_space.clopens.clopen TopologicalSpace.Clopens.clopen
 
-/-- Reinterpret a compact open as an open. -/
+/-- See Note [custom simps projection]. -/
+def Simps.coe (s : Clopens α) : Set α := s
+
+initialize_simps_projections Clopens (carrier → coe)
+
+/-- Reinterpret a clopen as an open. -/
 @[simps]
 def toOpens (s : Clopens α) : Opens α :=
   ⟨s, s.clopen.isOpen⟩
