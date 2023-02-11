@@ -1379,7 +1379,8 @@ theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ 
 #align linear_map.ker_cod_restrict LinearMap.ker_codRestrict
 
 theorem range_codRestrict {τ₂₁ : R₂ →+* R} [RingHomSurjective τ₂₁] (p : Submodule R M)
-    (f : M₂ →ₛₗ[τ₂₁] M) (hf) : range (codRestrict p f hf) = comap p.subtype (LinearMap.range f) := by
+    (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
+    range (codRestrict p f hf) = comap p.subtype (LinearMap.range f) := by
   simpa only [range_eq_map] using map_codRestrict _ _ _ _
 #align linear_map.range_cod_restrict LinearMap.range_codRestrict
 
