@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pfunctor.Multivariate.Basic
+import Mathlib.Data.PFunctor.Multivariate.Basic
 
 /-!
 # Multivariate quotients of polynomial functors.
@@ -106,8 +106,7 @@ open MvFunctor (Liftp Liftr)
 -/
 
 
-protected theorem id_map {α : TypeVec n} (x : F α) : TypeVec.id <$$> x = x :=
-  by
+protected theorem id_map {α : TypeVec n} (x : F α) : TypeVec.id <$$> x = x := by
   rw [← abs_repr x]
   cases' repr x with a f
   rw [← abs_map]
@@ -131,8 +130,7 @@ instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F
 
 -- Lifting predicates and relations
 theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
-    LiftP p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i j, p (f i j) :=
-  by
+    LiftP p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i j, p (f i j) := by
   constructor
   · rintro ⟨y, hy⟩
     cases' h : repr y with a f
@@ -148,8 +146,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
 #align mvqpf.liftp_iff Mvqpf.liftP_iff
 
 theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) :
-    LiftR r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) :=
-  by
+    LiftR r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
     cases' h : repr u with a f
@@ -175,8 +172,7 @@ open Set
 open MvFunctor
 
 theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
-    u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ :=
-  by
+    u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ := by
   rw [supp]; dsimp; constructor
   · intro h a f haf
     have : liftp (fun i u => u ∈ f i '' univ) x :=
@@ -198,8 +194,7 @@ theorem supp_eq {α : TypeVec n} {i} (x : F α) :
 
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     (∀ p, LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u) ↔
-      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ :=
-  by
+      ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by
   constructor
   · intro h
     have : liftp (supp x) x := by
@@ -257,8 +252,7 @@ theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.p.A) (f :
 #align mvqpf.supp_eq_of_is_uniform Mvqpf.supp_eq_of_isUniform
 
 theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p : ∀ i, α i → Prop) :
-    LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u :=
-  by
+    LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u := by
   rw [liftp_iff, ← abs_repr x]
   cases' repr x with a f; constructor
   · rintro ⟨a', f', abseq, hf⟩ u
@@ -273,15 +267,13 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
 #align mvqpf.liftp_iff_of_is_uniform Mvqpf.liftP_iff_of_isUniform
 
 theorem supp_map (h : q.IsUniform) {α β : TypeVec n} (g : α ⟹ β) (x : F α) (i) :
-    supp (g <$$> x) i = g i '' supp x i :=
-  by
+    supp (g <$$> x) i = g i '' supp x i := by
   rw [← abs_repr x]; cases' repr x with a f; rw [← abs_map, Mvpfunctor.map_eq]
   rw [supp_eq_of_is_uniform h, supp_eq_of_is_uniform h, ← image_comp]
   rfl
 #align mvqpf.supp_map Mvqpf.supp_map
 
-theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform :=
-  by
+theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
   · intro h α a a' f f' h' i
     rw [← Mvpfunctor.supp_eq, ← Mvpfunctor.supp_eq, ← h, h', h]
@@ -290,8 +282,7 @@ theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform :=
     rwa [supp_eq_of_is_uniform, Mvpfunctor.supp_eq]
 #align mvqpf.supp_preservation_iff_uniform Mvqpf.suppPreservation_iff_uniform
 
-theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpPreservation :=
-  by
+theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpPreservation := by
   constructor <;> intro h
   · rintro α p ⟨a, f⟩
     have h' := h
