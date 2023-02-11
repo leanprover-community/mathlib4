@@ -448,7 +448,7 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
 #align subring.coe_pow Subring.coe_pow
 
 -- TODO: can be generalized to `AddSubmonoidClass`
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
@@ -501,19 +501,24 @@ theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 #align subring.coe_subtype Subring.coeSubtype
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
 theorem coe_nat_cast : ∀ n : ℕ, ((n : s) : R) = n :=
   map_natCast s.subtype
 #align subring.coe_nat_cast Subring.coe_nat_cast
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
 theorem coe_int_cast : ∀ n : ℤ, ((n : s) : R) = n :=
   map_intCast s.subtype
 #align subring.coe_int_cast Subring.coe_int_cast
 
 /-! ## Partial order -/
 
+-- Porting note: new
 @[simp]
+theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
+  rfl
+
+@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 #align subring.mem_to_submonoid Subring.mem_toSubmonoid
@@ -523,7 +528,7 @@ theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 #align subring.coe_to_submonoid Subring.coe_toSubmonoid
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 #align subring.mem_to_add_subgroup Subring.mem_toAddSubgroup
@@ -718,7 +723,7 @@ theorem mem_inf {p p' : Subring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
 instance : InfSet (Subring R) :=
   ⟨fun s =>
     Subring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, t.toSubmonoid) (⨅ t ∈ s, Subring.toAddSubgroup t)
-      (by simp; rfl) (by simp; rfl)⟩
+      (by simp) (by simp)⟩
 
 @[simp, norm_cast]
 theorem coe_infₛ (S : Set (Subring R)) : ((infₛ S : Subring R) : Set R) = ⋂ s ∈ S, ↑s :=
@@ -1229,12 +1234,12 @@ theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 #align subring.range_subtype Subring.range_subtype
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem range_fst : (fst R S).rangeS = ⊤ :=
   (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
 #align subring.range_fst Subring.range_fst
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem range_snd : (snd R S).rangeS = ⊤ :=
   (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 #align subring.range_snd Subring.range_snd
