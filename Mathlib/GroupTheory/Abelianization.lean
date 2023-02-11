@@ -8,9 +8,9 @@ Authors: Kenny Lau, Michael Howes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finite.Card
-import Mathbin.GroupTheory.Commutator
-import Mathbin.GroupTheory.Finiteness
+import Mathlib.Data.Finite.Card
+import Mathlib.GroupTheory.Commutator
+import Mathlib.GroupTheory.Finiteness
 
 /-!
 # The abelianization of a group
@@ -57,21 +57,18 @@ instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
 #align commutator_characteristic commutator_characteristic
 
-instance [Finite (commutatorSet G)] : Group.Fg (commutator G) :=
-  by
+instance [Finite (commutatorSet G)] : Group.Fg (commutator G) := by
   rw [commutator_eq_closure]
   apply Group.closure_finite_fg
 
 theorem rank_commutator_le_card [Finite (commutatorSet G)] :
-    Group.rank (commutator G) ≤ Nat.card (commutatorSet G) :=
-  by
+    Group.rank (commutator G) ≤ Nat.card (commutatorSet G) := by
   rw [Subgroup.rank_congr (commutator_eq_closure G)]
   apply Subgroup.rank_closure_finite_le_nat_card
 #align rank_commutator_le_card rank_commutator_le_card
 
 theorem commutator_centralizer_commutator_le_center :
-    ⁅(commutator G).centralizer, (commutator G).centralizer⁆ ≤ Subgroup.center G :=
-  by
+    ⁅(commutator G).centralizer, (commutator G).centralizer⁆ ≤ Subgroup.center G := by
   rw [← Subgroup.centralizer_top, ← Subgroup.commutator_eq_bot_iff_le_centralizer]
   suffices ⁅⁅⊤, (commutator G).centralizer⁆, (commutator G).centralizer⁆ = ⊥
     by
@@ -129,8 +126,7 @@ section lift
 -- Let `A` be an abelian group and let `f` be a group homomorphism from `G` to `A`.
 variable {A : Type v} [CommGroup A] (f : G →* A)
 
-theorem commutator_subset_ker : commutator G ≤ f.ker :=
-  by
+theorem commutator_subset_ker : commutator G ≤ f.ker := by
   rw [commutator_eq_closure, Subgroup.closure_le]
   rintro x ⟨p, q, rfl⟩
   simp [MonoidHom.mem_ker, mul_right_comm (f p) (f q), commutatorElement_def]
@@ -285,8 +281,7 @@ instance closureCommutatorRepresentatives_fg [Finite (commutatorSet G)] :
 #align closure_commutator_representatives_fg closureCommutatorRepresentatives_fg
 
 theorem rank_closure_commutator_representations_le [Finite (commutatorSet G)] :
-    Group.rank (closureCommutatorRepresentatives G) ≤ 2 * Nat.card (commutatorSet G) :=
-  by
+    Group.rank (closureCommutatorRepresentatives G) ≤ 2 * Nat.card (commutatorSet G) := by
   rw [two_mul]
   exact
     (Subgroup.rank_closure_finite_le_nat_card _).trans
@@ -298,8 +293,7 @@ theorem rank_closure_commutator_representations_le [Finite (commutatorSet G)] :
 theorem image_commutatorSet_closureCommutatorRepresentatives :
     (closureCommutatorRepresentatives G).Subtype ''
         commutatorSet (closureCommutatorRepresentatives G) =
-      commutatorSet G :=
-  by
+      commutatorSet G := by
   apply Set.Subset.antisymm
   · rintro - ⟨-, ⟨g₁, g₂, rfl⟩, rfl⟩
     exact ⟨g₁, g₂, rfl⟩
@@ -312,15 +306,13 @@ theorem image_commutatorSet_closureCommutatorRepresentatives :
 #align image_commutator_set_closure_commutator_representatives image_commutatorSet_closureCommutatorRepresentatives
 
 theorem card_commutatorSet_closureCommutatorRepresentatives :
-    Nat.card (commutatorSet (closureCommutatorRepresentatives G)) = Nat.card (commutatorSet G) :=
-  by
+    Nat.card (commutatorSet (closureCommutatorRepresentatives G)) = Nat.card (commutatorSet G) := by
   rw [← image_commutatorSet_closureCommutatorRepresentatives G]
   exact Nat.card_congr (Equiv.Set.image _ _ (subtype_injective _))
 #align card_commutator_set_closure_commutator_representatives card_commutatorSet_closureCommutatorRepresentatives
 
 theorem card_commutator_closureCommutatorRepresentatives :
-    Nat.card (commutator (closureCommutatorRepresentatives G)) = Nat.card (commutator G) :=
-  by
+    Nat.card (commutator (closureCommutatorRepresentatives G)) = Nat.card (commutator G) := by
   rw [commutator_eq_closure G, ← image_commutatorSet_closureCommutatorRepresentatives, ←
     MonoidHom.map_closure, ← commutator_eq_closure]
   exact Nat.card_congr (Equiv.Set.image _ _ (subtype_injective _))
