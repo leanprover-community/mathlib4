@@ -8,12 +8,12 @@ Authors: Chris Hughes, Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.GroupAction
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Dynamics.PeriodicPts
-import Mathbin.GroupTheory.GroupAction.ConjAct
-import Mathbin.GroupTheory.Commutator
-import Mathbin.GroupTheory.Coset
+import Mathlib.Algebra.Hom.GroupAction
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Dynamics.PeriodicPts
+import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.Commutator
+import Mathlib.GroupTheory.Coset
 
 /-!
 # Properties of group actions involving quotient groups
@@ -221,8 +221,7 @@ theorem orbitEquivQuotientStabilizer_symm_apply (b : β) (a : α) :
 
 @[simp, to_additive]
 theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
-    MulAction.stabilizer G ((1 : G) : G ⧸ H) = H :=
-  by
+    MulAction.stabilizer G ((1 : G) : G ⧸ H) = H := by
   ext
   simp [QuotientGroup.eq]
 #align mul_action.stabilizer_quotient MulAction.stabilizer_quotient
@@ -346,8 +345,7 @@ namespace Subgroup
 
 variable {G : Type _} [Group G] (H : Subgroup G)
 
-theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker :=
-  by
+theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
   refine'
     le_antisymm
       (fun g hg =>
