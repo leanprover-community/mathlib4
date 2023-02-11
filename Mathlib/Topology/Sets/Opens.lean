@@ -88,7 +88,7 @@ theorem «forall» {p : Opens α → Prop} : (∀ U, p U) ↔ ∀ (U : Set α) (
 @[simp] theorem carrier_eq_coe (U : Opens α) : U.1 = ↑U := rfl
 #align topological_space.opens.carrier_eq_coe TopologicalSpace.Opens.carrier_eq_coe
 
-/-- the coercion `opens α → Set α` applied to a pair is the same as taking the first component -/
+/-- the coercion `Opens α → Set α` applied to a pair is the same as taking the first component -/
 @[simp]
 theorem coe_mk {U : Set α} {hU : IsOpen U} : ↑(⟨U, hU⟩ : Opens α) = U :=
   rfl
@@ -130,7 +130,7 @@ def Simps.coe (U : Opens α) : Set α := U
 
 initialize_simps_projections Opens (carrier → coe)
 
-/-- The interior of a set, as an element of `opens`. -/
+/-- The interior of a set, as an element of `Opens`. -/
 nonrec def interior (s : Set α) : Opens α :=
   ⟨interior s, isOpen_interior⟩
 #align topological_space.opens.interior TopologicalSpace.Opens.interior
@@ -417,7 +417,7 @@ instance [Finite α] : Finite (Opens α) :=
 
 end Opens
 
-/-- The open neighborhoods of a point. See also `opens` or `nhds`. -/
+/-- The open neighborhoods of a point. See also `Opens` or `nhds`. -/
 structure OpenNhdsOf (x : α) extends Opens α where
   /-- The point `x` belongs to every `U : TopologicalSpace.OpenNhdsOf x`. -/
   mem' : x ∈ carrier
