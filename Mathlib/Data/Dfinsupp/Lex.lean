@@ -104,7 +104,7 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
 irreducible_def Lex.decidableLe : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ <| congr_arg _ h)
-    fun h ↦ isFalse fun h' ↦ (lt_irrefl _ (h.trans_le h')).elim
+    fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
 #align dfinsupp.lex.decidable_le Dfinsupp.Lex.decidableLe
 
 /- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
@@ -112,13 +112,18 @@ irreducible_def Lex.decidableLt : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) 
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 #align dfinsupp.lex.decidable_lt Dfinsupp.Lex.decidableLt
 
+-- Porting note: Added `DecidableEq` for `LinearOrder`.
+instance : DecidableEq (Lex (Π₀ i, α i)) :=
+  lt_trichotomy_rec (fun h ↦ isFalse fun h' => h'.not_lt h) (fun h ↦ isTrue h)
+    fun h ↦ isFalse fun h' => h'.symm.not_lt h
+
 /-- The linear order on `Dfinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) :=
   { Lex.partialOrder with
     le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
-    decidable_lt := by infer_instance
-    decidable_le := by infer_instance
-    decidable_eq := by infer_instance }
+    decidable_lt := decidableLt
+    decidable_le := decidableLe
+    decidable_eq := inferInstance }
 #align dfinsupp.lex.linear_order Dfinsupp.Lex.linearOrder
 
 end LinearOrder
