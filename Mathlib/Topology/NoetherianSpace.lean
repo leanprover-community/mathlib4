@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.CompactlyGenerated
-import Mathbin.Topology.Sets.Closeds
+import Mathlib.Order.CompactlyGenerated
+import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Noetherian space
@@ -51,8 +51,7 @@ class NoetherianSpace : Prop where
   WellFounded : WellFounded ((· > ·) : Opens α → Opens α → Prop)
 #align topological_space.noetherian_space TopologicalSpace.NoetherianSpace
 
-theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) :=
-  by
+theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
   rw [noetherian_space_iff, CompleteLattice.wellFounded_iff_isSupFiniteCompact,
     CompleteLattice.isSupFiniteCompact_iff_all_elements_compact]
   exact forall_congr' opens.is_compact_element_iff
@@ -64,8 +63,7 @@ instance (priority := 100) NoetherianSpace.compactSpace [h : NoetherianSpace α]
 
 variable {α β}
 
-protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : IsCompact s :=
-  by
+protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : IsCompact s := by
   refine' isCompact_iff_finite_subcover.2 fun ι U hUo hs => _
   rcases((noetherian_space_iff_opens α).mp ‹_› ⟨⋃ i, U i, isOpen_unionᵢ hUo⟩).elim_finite_subcover U
       hUo Set.Subset.rfl with
@@ -89,8 +87,7 @@ example (α : Type _) : Set α ≃o (Set α)ᵒᵈ := by refine' OrderIso.compl 
 theorem noetherianSpace_tFAE :
     TFAE
       [NoetherianSpace α, WellFounded fun s t : Closeds α => s < t, ∀ s : Set α, IsCompact s,
-        ∀ s : Opens α, IsCompact (s : Set α)] :=
-  by
+        ∀ s : Opens α, IsCompact (s : Set α)] := by
   tfae_have 1 ↔ 2
   · refine' (noetherian_space_iff _).trans (Surjective.wellFounded_iff opens.compl_bijective.2 _)
     exact fun s t => (OrderIso.compl (Set α)).lt_iff_lt.symm
@@ -105,8 +102,7 @@ theorem noetherianSpace_tFAE :
 
 variable {α β}
 
-instance {α} : NoetherianSpace (CofiniteTopology α) :=
-  by
+instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherian_space_iff_opens, isCompact_iff_ultrafilter_le_nhds,
     CofiniteTopology.nhds_eq, Ultrafilter.le_sup_iff]
   intro s f hs
@@ -116,8 +112,7 @@ instance {α} : NoetherianSpace (CofiniteTopology α) :=
   · exact ⟨a, filter.le_principal_iff.mp hs, Or.inl le_rfl⟩
 
 theorem noetherianSpace_of_surjective [NoetherianSpace α] (f : α → β) (hf : Continuous f)
-    (hf' : Function.Surjective f) : NoetherianSpace β :=
-  by
+    (hf' : Function.Surjective f) : NoetherianSpace β := by
   rw [noetherian_space_iff_opens]
   intro s
   obtain ⟨t, e⟩ := set.image_surjective.mpr hf' s
@@ -154,8 +149,7 @@ theorem noetherian_univ_iff : NoetherianSpace (Set.univ : Set α) ↔ Noetherian
 #align topological_space.noetherian_univ_iff TopologicalSpace.noetherian_univ_iff
 
 theorem NoetherianSpace.unionᵢ {ι : Type _} (f : ι → Set α) [Finite ι]
-    [hf : ∀ i, NoetherianSpace (f i)] : NoetherianSpace (⋃ i, f i) :=
-  by
+    [hf : ∀ i, NoetherianSpace (f i)] : NoetherianSpace (⋃ i, f i) := by
   cases nonempty_fintype ι
   simp_rw [noetherian_space_set_iff] at hf⊢
   intro t ht
@@ -171,8 +165,7 @@ theorem NoetherianSpace.discrete [NoetherianSpace α] [T2Space α] : DiscreteTop
 attribute [local instance] noetherian_space.discrete
 
 /-- Spaces that are both Noetherian and Hausdorff is finite. -/
-theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
-  by
+theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α := by
   letI : Fintype α :=
     Set.fintypeOfFiniteUniv (noetherian_space.is_compact Set.univ).finite_of_discrete
   infer_instance
