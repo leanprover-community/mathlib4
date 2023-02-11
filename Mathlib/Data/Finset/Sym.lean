@@ -99,10 +99,14 @@ theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := by
   rw [Finset.sym2, singleton_product_singleton, image_singleton, Sym2.diag, Quotient.mk']
 #align finset.sym2_singleton Finset.sym2_singleton
 
--- Porting note: remove the simp to satisfy simpNF lint
--- @[simp]
-theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s :=
-  mk'_mem_sym2_iff.trans <| and_self_iff _
+-- Porting note: add this lemma and remove simp in the next lemma since simpNF lint
+-- warns that its LHS is not in normal form
+@[simp]
+theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
+  rw [← mem_sym2_iff]
+  exact mk'_mem_sym2_iff.trans <| and_self_iff _
+
+theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
 #align finset.diag_mem_sym2_iff Finset.diag_mem_sym2_iff
 
 @[simp]
@@ -127,9 +131,7 @@ instance : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/
--- Porting note: TODO (fix that)
--- Porting note: added noncomputable and removed protected
-noncomputable def sym (s : Finset α) : ∀ n, Finset (Sym α n)
+protected def sym (s : Finset α) : ∀ n, Finset (Sym α n)
   | 0 => {∅}
   | n + 1 => s.sup fun a ↦ Finset.image (Sym.cons a) (s.sym n)
 #align finset.sym Finset.sym
@@ -265,3 +267,5 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
 end Sym
 
 end Finset
+
+#lint
