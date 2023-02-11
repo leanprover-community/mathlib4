@@ -17,15 +17,15 @@ import Mathlib.GroupTheory.Finiteness
 
 This file defines the commutator and the abelianization of a group. It furthermore prepares for the
 result that the abelianization is left adjoint to the forgetful functor from abelian groups to
-groups, which can be found in `algebra/category/Group/adjunctions`.
+groups, which can be found in `Algebra/Category/Group/Adjunctions`.
 
 ## Main definitions
 
 * `commutator`: defines the commutator of a group `G` as a subgroup of `G`.
-* `abelianization`: defines the abelianization of a group `G` as the quotient of a group by its
+* `Abelianization`: defines the abelianization of a group `G` as the quotient of a group by its
   commutator subgroup.
-* `abelianization.map`: lifts a group homomorphism to a homomorphism between the abelianizations
-* `mul_equiv.abelianization_congr`: Equivalent groups have equivalent abelianizations
+* `Abelianization.map`: lifts a group homomorphism to a homomorphism between the abelianizations
+* `MulEquiv.abelianizationCongr`: Equivalent groups have equivalent abelianizations
 
 -/
 
@@ -133,8 +133,8 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
   simp [MonoidHom.mem_ker, mul_right_comm (f p) (f q), commutatorElement_def]
 #align abelianization.commutator_subset_ker Abelianization.commutator_subset_ker
 
-/-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map from
-  the abelianization of a `G` to `A` that factors through `f`. -/
+/-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
+  from the abelianization of a `G` to `A` that factors through `f`. -/
 def lift : (G →* A) ≃ (Abelianization G →* A)
     where
   toFun f := QuotientGroup.lift _ f fun _ h => f.mem_ker.2 <| commutator_subset_ker _ h
@@ -174,7 +174,7 @@ section Map
 
 variable {H : Type v} [Group H] (f : G →* H)
 
-/-- The map operation of the `abelianization` functor -/
+/-- The map operation of the `Abelianization` functor -/
 def map : Abelianization G →* Abelianization H :=
   lift (of.comp f)
 #align abelianization.map Abelianization.map
@@ -263,7 +263,7 @@ section commutatorRepresentatives
 
 open Subgroup
 
-/-- Representatives `(g₁, g₂) : G × G` of commutator_set `⁅g₁, g₂⁆ ∈ G`. -/
+/-- Representatives `(g₁, g₂) : G × G` of commutators `⁅g₁, g₂⁆ ∈ G`. -/
 def commutatorRepresentatives : Set (G × G) :=
   Set.range fun g : commutatorSet G => (g.2.choose, g.2.choose_spec.choose)
 #align commutator_representatives commutatorRepresentatives
