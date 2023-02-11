@@ -706,7 +706,7 @@ instance : HasInf (Subring R) :=
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubgroup ⊓ t.toAddSubgroup with carrier := s ∩ t }⟩
 
 @[simp]
-theorem coe_inf (p p' : Subring R) : ((p ⊓ p' : Subring R) : Set R) = p ∩ p' :=
+theorem coe_inf (p p' : Subring R) : ((p ⊓ p' : Subring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 #align subring.coe_inf Subring.coe_inf
 
@@ -1320,8 +1320,10 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
     exact ha this (ih HL.2)
   replace HL := HL.1
   clear ih tl
-  rsuffices ⟨L, HL', HP | HP⟩ :
+  -- Porting note: was `rsuffices` instead of `obtain` + `rotate_left`
+  obtain ⟨L, HL', HP | HP⟩ :
     ∃ L : List R, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L)
+  rotate_left
   · rw [HP]
     clear HP HL hd
     induction' L with hd tl ih
@@ -1452,11 +1454,10 @@ end Actions
 -- both ordered ring structures and submonoids available
 /-- The subgroup of positive units of a linear ordered semiring. -/
 def Units.posSubgroup (R : Type _) [LinearOrderedSemiring R] : Subgroup Rˣ :=
-  {
-    (posSubmonoid R).comap
+  { (posSubmonoid R).comap
       (Units.coeHom R) with
     carrier := { x | (0 : R) < x }
-    inv_mem' := fun x => Units.inv_pos.mpr }
+    inv_mem' := Units.inv_pos.mpr }
 #align units.pos_subgroup Units.posSubgroup
 
 @[simp]
