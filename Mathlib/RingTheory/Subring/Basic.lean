@@ -912,29 +912,27 @@ theorem mem_closure_iff {s : Set R} {x} :
       (AddSubgroup.zero_mem _)
       (AddSubgroup.subset_closure (Submonoid.one_mem (Submonoid.closure s)))
       (fun x y hx hy => AddSubgroup.add_mem _ hx hy) (fun x hx => AddSubgroup.neg_mem _ hx)
-      fun x y hx hy => sorry
-      -- AddSubgroup.closure_induction (G := R) hy
-      --   (fun q hq =>
-      --     AddSubgroup.closure_induction hx
-      --       (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
-      --       (by rw [zero_mul q]; apply AddSubgroup.zero_mem _)
-      --       (fun p₁ p₂ ihp₁ ihp₂ => by rw [add_mul p₁ p₂ q]; apply AddSubgroup.add_mem _ ihp₁ ihp₂)
-      --       fun x hx => by
-      --       have f : -x * q = -(x * q) := by simp
-      --       rw [f]; apply AddSubgroup.neg_mem _ hx)
-      --   (by rw [mul_zero x]; apply AddSubgroup.zero_mem _)
-      --   (fun q₁ q₂ ihq₁ ihq₂ => by rw [mul_add x q₁ q₂]; apply AddSubgroup.add_mem _ ihq₁ ihq₂)
-      --   fun z hz => by
-      --   have f : x * -z = -(x * z) := by simp
-      --   rw [f]; apply AddSubgroup.neg_mem _ hz
-        ,
-    fun h => sorry
-    -- AddSubgroup.closure_induction h
-    --   (fun x hx =>
-    --     Submonoid.closure_induction hx (fun x hx => subset_closure hx) (one_mem _) fun x y hx hy =>
-    --       mul_mem hx hy)
-    --   (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx
-      ⟩
+      fun x y hx hy =>
+      AddSubgroup.closure_induction (G := R) hy
+        (fun q hq =>
+          AddSubgroup.closure_induction hx
+            (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
+            (by rw [zero_mul q]; apply AddSubgroup.zero_mem _)
+            (fun p₁ p₂ ihp₁ ihp₂ => by rw [add_mul p₁ p₂ q]; apply AddSubgroup.add_mem _ ihp₁ ihp₂)
+            fun x hx => by
+            have f : -x * q = -(x * q) := by simp
+            rw [f]; apply AddSubgroup.neg_mem _ hx)
+        (by rw [mul_zero x]; apply AddSubgroup.zero_mem _)
+        (fun q₁ q₂ ihq₁ ihq₂ => by rw [mul_add x q₁ q₂]; apply AddSubgroup.add_mem _ ihq₁ ihq₂)
+        fun z hz => by
+        have f : x * -z = -(x * z) := by simp
+        rw [f]; apply AddSubgroup.neg_mem _ hz,
+    fun h =>
+    AddSubgroup.closure_induction (p := (· ∈ closure s)) h
+      (fun x hx =>
+        Submonoid.closure_induction hx (fun x hx => subset_closure hx) (one_mem _) fun x y hx hy =>
+          mul_mem hx hy)
+      (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
 #align subring.mem_closure_iff Subring.mem_closure_iff
 
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
@@ -958,7 +956,9 @@ def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b =
 
 theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x :=
-  AddSubgroup.closure_induction (G := R) (mem_closure_iff.1 h)
+  AddSubgroup.closure_induction (G := R)
+    (p := (∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = -1) ∧ (L.map List.prod).sum = ·))
+    (mem_closure_iff.1 h)
     (fun x hx =>
       let ⟨l, hl, h⟩ := Submonoid.exists_list_of_mem_closure hx
       ⟨[l], by simp [h] <;> clear_aux_decl <;> tauto⟩)
