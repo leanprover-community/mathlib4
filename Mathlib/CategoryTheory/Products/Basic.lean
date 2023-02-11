@@ -8,9 +8,9 @@ Authors: Stephen Morgan, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EqToHom
-import Mathbin.CategoryTheory.Functor.Const
-import Mathbin.Data.Prod.Basic
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Functor.Const
+import Mathlib.Data.Prod.Basic
 
 /-!
 # Cartesian products of categories
