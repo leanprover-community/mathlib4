@@ -13,7 +13,6 @@ import Mathlib.Logic.Equiv.Embedding
 import Mathlib.Logic.Embedding.Set
 
 set_option autoImplicit true -- **TODO** delete this later
-set_option pp.explicit true -- **TODO** delete this later
 
 /-!
 # Number of embeddings
@@ -39,38 +38,32 @@ theorem card_embedding_eq_of_unique {α β : Type _} [Unique α] [Fintype β] [F
   card_congr Equiv.uniqueEmbeddingEquivResult
 #align fintype.card_embedding_eq_of_unique Fintype.card_embedding_eq_of_unique
 
+-- porting note: separated to try and fix an issue. not sure if it's the actual issue.
+private theorem card_embedding_eq' {α β : Type _} [Fintype α] [Fintype β] :
+    @Fintype.card (α ↪ β) (by classical. exact Embedding.fintype) = ‖β‖.descFactorial ‖α‖ := by
+  classical
+  refine' Fintype.induction_empty_option (P := fun t ↦ ‖t ↪ β‖ = ‖β‖.descFactorial ‖t‖)
+          (fun α₁ α₂ h₂ e ih ↦ ?_) (?_) (fun α h ih ↦ ?_) α
+  · letI := Fintype.ofEquiv _ e.symm
+    dsimp only
+    rw [← card_congr (Equiv.embeddingCongr e (Equiv.refl β)), ih, card_congr e]
+  · dsimp only
+    rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]
+    exact ⟨Embedding.ofIsEmpty, fun x ↦ FunLike.ext _ _ isEmptyElim⟩
+  · sorry
+  -- porting note: I get a timeout due to `whnf`? what?
+  /- dsimp only
+    rw [card_option, Nat.descFactorial_succ, card_congr (Embedding.optionEmbeddingEquiv α β),
+      card_sigma, ← ih]
+    simp only [Fintype.card_compl_set, Fintype.card_range, Finset.sum_const, Finset.card_univ,
+      smul_eq_mul, mul_comm] -/
 
 -- Establishes the cardinality of the type of all injections between two finite types.
 @[simp]
-theorem card_embedding_eq {α β : Type _} [a : Fintype α] [b : Fintype β] [emb: Fintype (α ↪ β)] :
+theorem card_embedding_eq {α β : Type _} [Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖.descFactorial ‖α‖ := by
   classical
-    -- letI := 1
-    refine' Fintype.induction_empty_option _ _ _ α
-    -- intro α₁ α₂ h₂ e ih
-
-    -- induction' ‹Fintype α› using Fintype.induction_empty_option with α₁ α₂ h₂ e ih α h ih
-    · intro α₁ α₂ h₂ e ih
-      let v0 := Fintype.ofEquiv α₂ e.symm
-      let v1 := (Equiv.refl β)
-      let v2 := (Equiv.embeddingCongr e v1)
-      let v3 := card_congr v2
-      convert ←v3.symm
-      · congr
-        rfl
-      · rw [ih]
-      -- convert ih.symm
-      -- convert ih.symm
-      -- convert (card_congr e).symm
-      -- rfl
-      -- rw [card_congr e]
-    · rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]
-      exact ⟨embedding.of_is_empty, fun x => FunLike.ext _ _ isEmptyElim⟩
-    · intro α₁ h₂ ih
-      rw [card_option, Nat.descFactorial_succ, card_congr (embedding.option_embedding_equiv α β),
-        card_sigma, ← ih]
-      simp only [Fintype.card_compl_set, Fintype.card_range, Finset.sum_const, Finset.card_univ,
-        smul_eq_mul, mul_comm]
+  rw [Subsingleton.elim emb Embedding.fintype, card_embedding_eq']
 
 -- #align fintype.card_embedding_eq Fintype.card_embedding_eq
 
