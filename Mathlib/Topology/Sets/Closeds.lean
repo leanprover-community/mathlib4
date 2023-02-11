@@ -8,7 +8,7 @@ Authors: Floris van Doorn, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sets.Opens
+import Mathlib.Topology.Sets.Opens
 
 /-!
 # Closed sets
@@ -144,8 +144,7 @@ theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
 #align topological_space.closeds.coe_finset_inf TopologicalSpace.Closeds.coe_finset_inf
 
 theorem infᵢ_def {ι} (s : ι → Closeds α) :
-    (⨅ i, s i) = ⟨⋂ i, s i, isClosed_interᵢ fun i => (s i).2⟩ :=
-  by
+    (⨅ i, s i) = ⟨⋂ i, s i, isClosed_interᵢ fun i => (s i).2⟩ := by
   ext
   simp only [infᵢ, coe_Inf, bInter_range]
   rfl
@@ -258,8 +257,7 @@ theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} : IsAtom s ↔ ∃ x, s
 /-- in a `t1_space`, coatoms of `opens α` are precisely complements of singletons:
 `(closeds.singleton x).compl`. -/
 theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
-    IsCoatom s ↔ ∃ x, s = (Closeds.singleton x).compl :=
-  by
+    IsCoatom s ↔ ∃ x, s = (Closeds.singleton x).compl := by
   rw [← s.compl_compl, ← isAtom_dual_iff_isCoatom]
   change IsAtom (closeds.compl_order_iso α s.compl) ↔ _
   rw [(closeds.compl_order_iso α).isAtom_iff, closeds.is_atom_iff]
