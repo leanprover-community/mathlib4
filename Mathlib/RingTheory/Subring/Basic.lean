@@ -596,7 +596,7 @@ theorem coe_map (f : R →+* S) (s : Subring R) : (s.map f : Set S) = f '' s :=
 
 @[simp]
 theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
-  Set.mem_image_iff_bex
+  Set.mem_image_iff_bex.trans $ by simp
 #align subring.mem_map Subring.mem_map
 
 @[simp]
@@ -717,8 +717,8 @@ theorem mem_inf {p p' : Subring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
 
 instance : InfSet (Subring R) :=
   ⟨fun s =>
-    Subring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, Subring.toSubmonoid t) (⨅ t ∈ s, Subring.toAddSubgroup t)
-      (by simp) (by simp)⟩
+    Subring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, t.toSubmonoid) (⨅ t ∈ s, Subring.toAddSubgroup t)
+      (by simp; rfl) (by simp; rfl)⟩
 
 @[simp, norm_cast]
 theorem coe_infₛ (S : Set (Subring R)) : ((infₛ S : Subring R) : Set R) = ⋂ s ∈ S, ↑s :=
@@ -740,7 +740,7 @@ theorem mem_infᵢ {ι : Sort _} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, 
 
 @[simp]
 theorem infₛ_toSubmonoid (s : Set (Subring R)) :
-    (infₛ s).toSubmonoid = ⨅ t ∈ s, Subring.toSubmonoid t :=
+    (infₛ s).toSubmonoid = ⨅ t ∈ s, t.toSubmonoid :=
   mk'_toSubmonoid _ _
 #align subring.Inf_to_submonoid Subring.infₛ_toSubmonoid
 
@@ -752,9 +752,9 @@ theorem infₛ_toAddSubgroup (s : Set (Subring R)) :
 
 /-- Subrings of a ring form a complete lattice. -/
 instance : CompleteLattice (Subring R) :=
-  {
-    completeLatticeOfInf (Subring R) fun s =>
-      IsGLB.of_image (fun s t => show (s : Set R) ≤ t ↔ s ≤ t from SetLike.coe_subset_coe)
+  { completeLatticeOfInf (Subring R) fun _ =>
+      IsGLB.of_image (fun {s t : Subring R} =>
+        show (s : Set R) ≤ t ↔ s ≤ t from SetLike.coe_subset_coe)
         isGLB_binfᵢ with
     bot := ⊥
     bot_le := fun s x hx =>
@@ -782,7 +782,7 @@ variable (R)
 def center : Subring R :=
   { Subsemiring.center R with
     carrier := Set.center R
-    neg_mem' := fun a => Set.neg_mem_center }
+    neg_mem' := Set.neg_mem_center }
 #align subring.center Subring.center
 
 theorem coe_center : ↑(center R) = Set.center R :=
