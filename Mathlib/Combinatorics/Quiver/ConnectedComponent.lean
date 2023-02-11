@@ -34,12 +34,14 @@ variable (V : Type _) [Quiver.{u+1} V]
 def zigzagSetoid : Setoid V :=
   ⟨fun a b ↦ Nonempty (@Path (Symmetrify V) _ a b), fun _ ↦ ⟨Path.nil⟩, fun ⟨p⟩ ↦
     ⟨p.reverse⟩, fun ⟨p⟩ ⟨q⟩ ↦ ⟨p.comp q⟩⟩
+#align quiver.zigzag_setoid Quiver.zigzagSetoid
 
 /-- The type of weakly connected components of a directed graph. Two vertices are
     in the same weakly connected component if there is a zigzag of arrows from one
     to the other. -/
 def WeaklyConnectedComponent : Type _ :=
   Quotient (zigzagSetoid V)
+#align quiver.weakly_connected_component Quiver.WeaklyConnectedComponent
 
 namespace WeaklyConnectedComponent
 
@@ -48,6 +50,7 @@ variable {V}
 /-- The weakly connected component corresponding to a vertex. -/
 protected def mk : V → WeaklyConnectedComponent V :=
   @Quotient.mk' _ (zigzagSetoid V)
+#align quiver.weakly_connected_component.mk Quiver.WeaklyConnectedComponent.mk
 
 instance : CoeTC V (WeaklyConnectedComponent V) :=
   ⟨WeaklyConnectedComponent.mk⟩
@@ -57,7 +60,8 @@ instance [Inhabited V] : Inhabited (WeaklyConnectedComponent V) :=
 
 protected theorem eq (a b : V) :
     (a : WeaklyConnectedComponent V) = b ↔ Nonempty (@Path (Symmetrify V) _ a b) :=
-  Quotient.eq'
+  Quotient.eq''
+#align quiver.weakly_connected_component.eq Quiver.WeaklyConnectedComponent.eq
 
 end WeaklyConnectedComponent
 
@@ -69,6 +73,6 @@ variable {V}
     an arrow `e` if either `e` or its reversal is in `H`. -/
 def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V :=
   fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
+#align quiver.wide_subquiver_symmetrify Quiver.wideSubquiverSymmetrify
 
 end Quiver
-

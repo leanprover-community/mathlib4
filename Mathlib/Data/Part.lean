@@ -21,7 +21,7 @@ a proof of the domain.
 for some `a : α`, while the domain of `o : Part α` doesn't have to be decidable. That means you can
 translate back and forth between a partial value with a decidable domain and an option, and
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
-In current mathlib, `Part ℕ`, aka `part_enat`, is used to move decidability of the order to
+In current mathlib, `Part ℕ`, aka `PartENat`, is used to move decidability of the order to
 decidability of `PartENat.find` (which is the smallest natural satisfying a predicate, or `∞` if
 there's none).
 ## Main declarations
@@ -435,6 +435,8 @@ protected def bind (f : Part α) (g : α → Part β) : Part β :=
 def map (f : α → β) (o : Part α) : Part β :=
   ⟨o.Dom, f ∘ o.get⟩
 #align part.map Part.map
+#align part.map_dom Part.map_Dom
+#align part.map_get Part.map_get
 
 theorem mem_map (f : α → β) {o : Part α} : ∀ {a}, a ∈ o → f a ∈ map f o
   | _, ⟨_, rfl⟩ => ⟨_, rfl⟩

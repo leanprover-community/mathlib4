@@ -59,3 +59,4 @@ protected theorem bit1_ne_zero (n : ℕ) : bit1 n ≠ 0 :=
 #align nat.bit1_ne_zero Nat.bit1_ne_zero
 
 end Nat
+

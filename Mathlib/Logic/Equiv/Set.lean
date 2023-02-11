@@ -173,10 +173,11 @@ def setProdEquivSigma {α β : Type _} (s : Set (α × β)) :
 #align equiv.set_prod_equiv_sigma Equiv.setProdEquivSigma
 
 /-- The subtypes corresponding to equal sets are equivalent. -/
-@[simps apply]
+@[simps! apply]
 def setCongr {α : Type _} {s t : Set α} (h : s = t) : s ≃ t :=
   subtypeEquivProp h
 #align equiv.set_congr Equiv.setCongr
+#align equiv.set_congr_apply Equiv.setCongr_apply
 
 -- We could construct this using `Equiv.Set.image e s e.injective`,
 -- but this definition provides an explicit inverse.
@@ -193,6 +194,8 @@ def image {α β : Type _} (e : α ≃ β) (s : Set α) :
   left_inv x := by simp
   right_inv y := by simp
 #align equiv.image Equiv.image
+#align equiv.image_symm_apply_coe Equiv.image_symm_apply_coe
+#align equiv.image_apply_coe Equiv.image_apply_coe
 
 namespace Set
 
@@ -216,10 +219,7 @@ protected def pempty (α) : (∅ : Set α) ≃ PEmpty :=
 /-- If sets `s` and `t` are separated by a decidable predicate, then `s ∪ t` is equivalent to
 `s ⊕ t`. -/
 protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs : ∀ x ∈ s, p x)
-    (ht : ∀ x ∈ t, ¬p x) :
-    (s ∪ t : Set α) ≃
-      Sum s
-        t where
+    (ht : ∀ x ∈ t, ¬p x) : (s ∪ t : Set α) ≃ s ⊕ t where
   toFun x :=
     if hp : p x then Sum.inl ⟨_, x.2.resolve_right fun xt => ht _ xt hp⟩
     else Sum.inr ⟨_, x.2.resolve_left fun xs => hp (hs _ xs)⟩
@@ -234,7 +234,7 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
 
 /-- If sets `s` and `t` are disjoint, then `s ∪ t` is equivalent to `s ⊕ t`. -/
 protected def union {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅) :
-    (s ∪ t : Set α) ≃ Sum s t :=
+    (s ∪ t : Set α) ≃ s ⊕ t :=
   Set.union' (fun x => x ∈ s) (fun _ => id) fun _ xt xs => H ⟨xs, xt⟩
 #align equiv.set.union Equiv.Set.union
 
@@ -471,6 +471,8 @@ protected def univPi {α : Type _} {β : α → Type _} (s : ∀ a, Set (β a)) 
     ext a
     rfl
 #align equiv.set.univ_pi Equiv.Set.univPi
+#align equiv.set.univ_pi_symm_apply_coe Equiv.Set.univPi_symm_apply_coe
+#align equiv.set.univ_pi_apply_coe Equiv.Set.univPi_apply_coe
 
 /-- If a function `f` is injective on a set `s`, then `s` is equivalent to `f '' s`. -/
 protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H : InjOn f s) :
@@ -484,10 +486,11 @@ protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H
 #align equiv.set.image_of_inj_on Equiv.Set.imageOfInjOn
 
 /-- If `f` is an injective function, then `s` is equivalent to `f '' s`. -/
-@[simps apply]
+@[simps! apply]
 protected noncomputable def image {α β} (f : α → β) (s : Set α) (H : Injective f) : s ≃ f '' s :=
   Equiv.Set.imageOfInjOn f s (H.injOn s)
 #align equiv.set.image Equiv.Set.image
+#align equiv.set.image_apply Equiv.Set.image_apply
 
 @[simp]
 protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Injective f) (x : α)
@@ -508,6 +511,8 @@ theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Se
 protected def congr {α β : Type _} (e : α ≃ β) : Set α ≃ Set β :=
   ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
 #align equiv.set.congr Equiv.Set.congr
+#align equiv.set.congr_apply Equiv.Set.congr_apply
+#align equiv.set.congr_symm_apply Equiv.Set.congr_symm_apply
 
 /-- The set `{x ∈ s | t x}` is equivalent to the set of `x : s` such that `t x`. -/
 protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
@@ -540,6 +545,36 @@ noncomputable def rangeSplittingImageEquiv {α β : Type _} (f : α → β) (s :
     simp [apply_rangeSplitting f]
   right_inv x := by simp [apply_rangeSplitting f]
 #align equiv.set.range_splitting_image_equiv Equiv.Set.rangeSplittingImageEquiv
+#align equiv.set.range_splitting_image_equiv_symm_apply_coe Equiv.Set.rangeSplittingImageEquiv_symm_apply_coe
+#align equiv.set.range_splitting_image_equiv_apply_coe_coe Equiv.Set.rangeSplittingImageEquiv_apply_coe_coe
+
+/-- Equivalence between the range of `Sum.inl : α → α ⊕ β` and `α`. -/
+@[simps symm_apply_coe]
+def rangeInl (α β : Type _) : Set.range (Sum.inl : α → α ⊕ β) ≃ α where
+  toFun
+  | ⟨.inl x, _⟩ => x
+  | ⟨.inr _, h⟩ => False.elim <| by rcases h with ⟨x, h'⟩; cases h'
+  invFun x := ⟨.inl x, mem_range_self _⟩
+  left_inv := fun ⟨_, _, rfl⟩ => rfl
+  right_inv x := rfl
+
+@[simp] lemma rangeInl_apply_inl {α : Type _} (β : Type _) (x : α) :
+    (rangeInl α β) ⟨.inl x, mem_range_self _⟩ = x :=
+  rfl
+
+/-- Equivalence between the range of `Sum.inr : β → α ⊕ β` and `β`. -/
+@[simps symm_apply_coe]
+def rangeInr (α β : Type _) : Set.range (Sum.inr : β → α ⊕ β) ≃ β where
+  toFun
+  | ⟨.inl _, h⟩ => False.elim <| by rcases h with ⟨x, h'⟩; cases h'
+  | ⟨.inr x, _⟩ => x
+  invFun x := ⟨.inr x, mem_range_self _⟩
+  left_inv := fun ⟨_, _, rfl⟩ => rfl
+  right_inv x := rfl
+
+@[simp] lemma rangeInr_apply_inr (α : Type _) {β : Type _} (x : β) :
+    (rangeInr α β) ⟨.inr x, mem_range_self _⟩ = x :=
+  rfl
 
 end Set
 
@@ -560,6 +595,8 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
   right_inv := fun ⟨b, a, ha⟩ =>
     Subtype.eq <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha
 #align equiv.of_left_inverse Equiv.ofLeftInverse
+#align equiv.of_left_inverse_apply_coe Equiv.ofLeftInverse_apply_coe
+#align equiv.of_left_inverse_symm_apply Equiv.ofLeftInverse_symm_apply
 
 /-- If `f : α → β` has a left-inverse, then `α` is computably equivalent to the range of `f`.
 
@@ -571,10 +608,11 @@ abbrev ofLeftInverse' {α β : Sort _} (f : α → β) (f_inv : β → α) (hf :
 #align equiv.of_left_inverse' Equiv.ofLeftInverse'
 
 /-- If `f : α → β` is an injective function, then domain `α` is equivalent to the range of `f`. -/
-@[simps apply]
+@[simps! apply]
 noncomputable def ofInjective {α β} (f : α → β) (hf : Injective f) : α ≃ range f :=
   Equiv.ofLeftInverse f (fun _ => Function.invFun f) fun _ => Function.leftInverse_invFun hf
 #align equiv.of_injective Equiv.ofInjective
+#align equiv.of_injective_apply Equiv.ofInjective_apply
 
 theorem apply_ofInjective_symm {α β} {f : α → β} (hf : Injective f) (b : range f) :
     f ((ofInjective f hf).symm b) = b :=
@@ -604,10 +642,8 @@ theorem self_comp_ofInjective_symm {α β} {f : α → β} (hf : Injective f) :
 theorem ofLeftInverse_eq_ofInjective {α β : Type _} (f : α → β) (f_inv : Nonempty α → β → α)
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :
     ofLeftInverse f f_inv hf =
-      ofInjective f
-        ((em (Nonempty α)).elim (fun h => (hf h).injective) fun h _ _ _ => by
-          haveI : Subsingleton α := subsingleton_of_not_nonempty h
-          simp) := by
+      ofInjective f ((isEmpty_or_nonempty α).elim (fun h _ _ _ => Subsingleton.elim _ _)
+        (fun h => (hf h).injective)) := by
   ext
   simp
 #align equiv.of_left_inverse_eq_of_injective Equiv.ofLeftInverse_eq_ofInjective
@@ -640,17 +676,22 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type _} {β : α → Type _}
 -- See also `Equiv.sigmaFiberEquiv`.
 /-- `sigmaPreimageEquiv f` for `f : α → β` is the natural equivalence between
 the type of all preimages of points under `f` and the total space `α`. -/
-@[simps]
+@[simps!]
 def sigmaPreimageEquiv {α β} (f : α → β) : (Σb, f ⁻¹' {b}) ≃ α :=
   sigmaFiberEquiv f
 #align equiv.sigma_preimage_equiv Equiv.sigmaPreimageEquiv
+#align equiv.sigma_preimage_equiv_symm_apply_snd_coe Equiv.sigmaPreimageEquiv_symm_apply_snd_coe
+#align equiv.sigma_preimage_equiv_apply Equiv.sigmaPreimageEquiv_apply
+#align equiv.sigma_preimage_equiv_symm_apply_fst Equiv.sigmaPreimageEquiv_symm_apply_fst
 
 -- See also `Equiv.ofFiberEquiv`.
 /-- A family of equivalences between preimages of points gives an equivalence between domains. -/
-@[simps]
+@[simps!]
 def ofPreimageEquiv {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c}) : α ≃ β :=
   Equiv.ofFiberEquiv e
 #align equiv.of_preimage_equiv Equiv.ofPreimageEquiv
+#align equiv.of_preimage_equiv_apply Equiv.ofPreimageEquiv_apply
+#align equiv.of_preimage_equiv_symm_apply Equiv.ofPreimageEquiv_symm_apply
 
 theorem ofPreimageEquiv_map {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c})
     (a : α) : g (ofPreimageEquiv e a) = f a :=

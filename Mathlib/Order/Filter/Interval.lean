@@ -244,6 +244,8 @@ end PartialOrder
 
 section LinearOrder
 
+open Interval
+
 variable [LinearOrder α]
 
 instance tendsto_Icc_uIcc_uIcc {a b : α} : TendstoIxxClass Icc (𝓟 [[a, b]]) (𝓟 [[a, b]]) :=
@@ -276,4 +278,3 @@ protected theorem Tendsto.uIcc {l : Filter α} [TendstoIxxClass Icc l l] {f g : 
 end LinearOrder
 
 end Filter
-
