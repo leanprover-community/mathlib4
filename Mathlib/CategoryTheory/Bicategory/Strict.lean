@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Bicategory.Basic
 /-!
 # Strict bicategories
 
-A bicategory is called `strict` if the left unitors, the right unitors, and the associators are
+A bicategory is called `Strict` if the left unitors, the right unitors, and the associators are
 isomorphisms given by equalities.
 
 ## Implementation notes
@@ -35,33 +35,26 @@ universe w v u
 
 variable (B : Type u) [Bicategory.{w, v} B]
 
-/-- A bicategory is called `strict` if the left unitors, the right unitors, and the associators are
+/-- A bicategory is called `Strict` if the left unitors, the right unitors, and the associators are
 isomorphisms given by equalities.
 -/
 class Bicategory.Strict : Prop where
-  id_comp' : ∀ {a b : B} (f : a ⟶ b), 𝟙 a ≫ f = f := by aesop_cat
-  comp_id' : ∀ {a b : B} (f : a ⟶ b), f ≫ 𝟙 b = f := by aesop_cat
-  assoc' : ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), (f ≫ g) ≫ h = f ≫ g ≫ h := by
+  /-- Identity morphisms are left identities for composition. -/
+  id_comp : ∀ {a b : B} (f : a ⟶ b), 𝟙 a ≫ f = f := by aesop_cat
+  /-- Identity morphisms are right identities for composition. -/
+  comp_id : ∀ {a b : B} (f : a ⟶ b), f ≫ 𝟙 b = f := by aesop_cat
+  /-- Composition in a bicategory is associative. -/
+  assoc : ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), (f ≫ g) ≫ h = f ≫ g ≫ h := by
     aesop_cat
-  leftUnitor_eqToIso' : ∀ {a b : B} (f : a ⟶ b), λ_ f = eqToIso (id_comp' f) := by aesop_cat
-  rightUnitor_eqToIso' : ∀ {a b : B} (f : a ⟶ b), ρ_ f = eqToIso (comp_id' f) := by aesop_cat
-  associator_eqToIso' :
-    ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), α_ f g h = eqToIso (assoc' f g h) := by
+  /-- The left unitors are given by equalities -/
+  leftUnitor_eqToIso : ∀ {a b : B} (f : a ⟶ b), λ_ f = eqToIso (id_comp f) := by aesop_cat
+  /-- The right unitors are given by equalities -/
+  rightUnitor_eqToIso : ∀ {a b : B} (f : a ⟶ b), ρ_ f = eqToIso (comp_id f) := by aesop_cat
+  /-- The associators are given by equalities -/
+  associator_eqToIso :
+    ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d), α_ f g h = eqToIso (assoc f g h) := by
     aesop_cat
 #align category_theory.bicategory.strict CategoryTheory.Bicategory.Strict
-
--- porting note: should those `restate_axiom` statements be removed?
-restate_axiom Bicategory.Strict.id_comp'
-
-restate_axiom Bicategory.Strict.comp_id'
-
-restate_axiom Bicategory.Strict.assoc'
-
-restate_axiom Bicategory.Strict.leftUnitor_eqToIso'
-
-restate_axiom Bicategory.Strict.rightUnitor_eqToIso'
-
-restate_axiom Bicategory.Strict.associator_eqToIso'
 
 attribute [simp]
   Bicategory.Strict.id_comp Bicategory.Strict.leftUnitor_eqToIso
@@ -100,3 +93,4 @@ theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶
 end Bicategory
 
 end CategoryTheory
+#lint
