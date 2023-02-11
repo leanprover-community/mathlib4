@@ -162,7 +162,7 @@ section Ev
 
 /-- The evaluation map `C(α, β) × α → β` is continuous if `α` is locally compact.
 
-See also `continuous_map.continuous_eval` -/
+See also `ContinuousMap.continuous_eval` -/
 theorem continuous_eval' [LocallyCompactSpace α] : Continuous fun p : C(α, β) × α => p.1 p.2 :=
   continuous_iff_continuousAt.mpr fun ⟨f, x⟩ n hn =>
     let ⟨v, vn, vo, fxv⟩ := mem_nhds_iff.mp hn
@@ -185,13 +185,13 @@ theorem continuous_eval' [LocallyCompactSpace α] : Continuous fun p : C(α, β)
       mem_nhds_iff.mpr ⟨w, by assumption, by assumption, by assumption⟩
 #align continuous_map.continuous_eval' ContinuousMap.continuous_eval'
 
-/-- See also `continuous_map.continuous_eval_const` -/
+/-- See also `ContinuousMap.continuous_eval_const` -/
 theorem continuous_eval_const' [LocallyCompactSpace α] (a : α) :
     Continuous fun f : C(α, β) => f a :=
   continuous_eval'.comp (continuous_id.prod_mk continuous_const)
 #align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const'
 
-/-- See also `continuous_map.continuous_coe` -/
+/-- See also `ContinuousMap.continuous_coe` -/
 theorem continuous_coe' [LocallyCompactSpace α] : @Continuous C(α, β) (α → β) _ _ (↑) :=
   continuous_pi continuous_eval_const'
 #align continuous_map.continuous_coe' ContinuousMap.continuous_coe'
@@ -229,7 +229,7 @@ theorem compactOpen_le_induced (s : Set α) :
 /-- The compact-open topology on `C(α, β)` is equal to the infimum of the compact-open topologies
 on `C(s, β)` for `s` a compact subset of `α`.  The key point of the proof is that the union of the
 compact subsets of `α` is equal to the union of compact subsets of the compact subsets of `α`. -/
-theorem compactOpen_eq_Inf_induced :
+theorem compactOpen_eq_infₛ_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(α, β)) =
       ⨅ (s : Set α) (_hs : IsCompact s),
         TopologicalSpace.induced (ContinuousMap.restrict s) ContinuousMap.compactOpen := by
@@ -254,7 +254,7 @@ theorem continuous_restrict (s : Set α) : Continuous fun F : C(α, β) => F.res
   exact compactOpen_le_induced s
 #align continuous_map.continuous_restrict ContinuousMap.continuous_restrict
 
-theorem nhds_compactOpen_eq_Inf_nhds_induced (f : C(α, β)) :
+theorem nhds_compactOpen_eq_infₛ_nhds_induced (f : C(α, β)) :
     𝓝 f = ⨅ (s) (hs : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_Inf_induced]
   simp [nhds_infᵢ, nhds_induced]
@@ -286,7 +286,7 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
     exact ⟨f.restrict s, tendsto_compactOpen_restrict hf s⟩
   · intro h
     choose f hf using h
-    -- By uniqueness of limits in a `t2_space`, since `λ i, F i x` tends to both `f s₁ hs₁ x` and
+    -- By uniqueness of limits in a `t2_space`, since `fun i ↦ F i x` tends to both `f s₁ hs₁ x` and
     -- `f s₂ hs₂ x`, we have `f s₁ hs₁ x = f s₂ hs₂ x`
     have h :
       ∀ (s₁) (hs₁ : IsCompact s₁) (s₂) (hs₂ : IsCompact s₂) (x : α) (hxs₁ : x ∈ s₁) (hxs₂ : x ∈ s₂),
@@ -327,17 +327,7 @@ def coev (b : β) : C(α, β × α) :=
 variable {α β}
 
 theorem image_coev {y : β} (s : Set α) : coev α β y '' s = ({y} : Set β) ×ˢ s := by
-  -- Porting note: proof was `by tidy`
-  ext ⟨a, b⟩
-  simp only [mem_image, singleton_prod, Prod.mk.injEq, exists_eq_right_right]
-  apply Iff.intro
-  · rintro ⟨x, hx, h⟩
-    simp only [coev, coe_mk, Prod.mk.injEq] at h
-    rw [h.1, ← h.2]
-    exact ⟨hx, rfl⟩
-  · intro h
-    use b, h.1
-    simp [coev, h.2]
+  aesop
 #align continuous_map.image_coev ContinuousMap.image_coev
 
 -- The coevaluation map β → C(α, β × α) is continuous (always).
