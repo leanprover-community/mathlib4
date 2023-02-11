@@ -1533,12 +1533,12 @@ theorem tr_respects :
       exact TransGen.single (congr_arg some (congr (congr_arg TM0.Cfg.mk rfl) (Tape.write_self T)))
 #align turing.TM1to0.tr_respects Turing.TM1to0.tr_respects
 
--- Porting note: Added `[Inhabited Λ'₁₀]`.
-theorem tr_eval [Inhabited Λ'₁₀] (l : List Γ) : TM0.eval (tr M) l = TM1.eval M l :=
+-- Porting note: Added `instInhabitedΛ' M`.
+theorem tr_eval (l : List Γ) : @TM0.eval _ _ _ (instInhabitedΛ' M) (tr M) l = TM1.eval M l :=
   (congr_arg _ (tr_eval' _ _ _ (tr_respects M) ⟨some _, _, _⟩)).trans
     (by
       rw [Part.map_eq_map, Part.map_map, TM1.eval]
-      congr with ⟨⟩; rfl)
+      congr with ⟨⟩)
 #align turing.TM1to0.tr_eval Turing.TM1to0.tr_eval
 
 variable [Fintype σ]
@@ -1554,9 +1554,9 @@ open Classical
 
 attribute [local simp] TM1.stmts₁_self
 
--- Porting note: Added `[Inhabited Λ'₁₀]`.
-theorem tr_supports [Inhabited Λ'₁₀] {S : Finset Λ} (ss : TM1.Supports M S) :
-    TM0.Supports (tr M) ↑(trStmts M S) := by
+-- Porting note: Added `instInhabitedΛ' M`.
+theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
+    @TM0.Supports _ _ (instInhabitedΛ' M) (tr M) ↑(trStmts M S) := by
   constructor
   · apply Finset.mem_product.2
     constructor
@@ -1565,7 +1565,9 @@ theorem tr_supports [Inhabited Λ'₁₀] {S : Finset Λ} (ss : TM1.Supports M S
   · intro q a q' s h₁ h₂
     rcases q with ⟨_ | q, v⟩; · cases h₁
     cases' q' with q' v'
-    simp only [trStmts, Finset.mem_coe, Finset.mem_product, Finset.mem_univ, and_true_iff] at h₂⊢
+    simp only [trStmts, Finset.mem_coe] at h₂⊢
+    rw [Finset.mem_product] at h₂⊢
+    simp only [Finset.mem_univ, and_true_iff] at h₂⊢
     cases q'; · exact Multiset.mem_cons_self _ _
     simp only [tr, Option.mem_def] at h₁
     have := TM1.stmts_supportsStmt ss h₂
@@ -1797,7 +1799,7 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
   obtain ⟨a, L, rfl⟩ := L.exists_cons
   simp only [trTape', ListBlank.cons_bind, ListBlank.head_cons, ListBlank.tail_cons]
   suffices
-    ∀ {L' R' l₁ l₂} (e : Vector.toList (enc a) = List.reverseAux l₁ l₂),
+    ∀ {L' R' l₁ l₂} (_ : Vector.toList (enc a) = List.reverseAux l₁ l₂),
       (Tape.move Dir.left^[l₁.length])
           (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
         Tape.mk' L' (ListBlank.append (Vector.toList (enc a)) R')
@@ -1936,11 +1938,11 @@ variable [Fintype Γ]
 
 /-- The set of accessible `Λ'.write` machine states. -/
 noncomputable def writes : Stmt₁ → Finset Λ'₁
-  | Stmt.move d q => writes q
-  | Stmt.write f q => (Finset.univ.image fun a => Λ'.write a q) ∪ writes q
-  | Stmt.load f q => writes q
-  | Stmt.branch p q₁ q₂ => writes q₁ ∪ writes q₂
-  | Stmt.goto l => ∅
+  | Stmt.move _ q => writes q
+  | Stmt.write _ q => (Finset.univ.image fun a => Λ'.write a q) ∪ writes q
+  | Stmt.load _ q => writes q
+  | Stmt.branch _ q₁ q₂ => writes q₁ ∪ writes q₂
+  | Stmt.goto _ => ∅
   | Stmt.halt => ∅
 #align turing.TM1to1.writes Turing.TM1to1.writes
 
@@ -2479,7 +2481,7 @@ def stRun {k : K} : StAct₂ k → Stmt₂ → Stmt₂
 
 /-- The effect of a stack action on the local variables, given the value of the stack. -/
 def stVar {k : K} (v : σ) (l : List (Γ k)) : StAct₂ k → σ
-  | push f => v
+  | push _ => v
   | peek f => f v l.head?
   | pop f => f v l.head?
 #align turing.TM2to1.st_var Turing.TM2to1.stVar
@@ -2487,8 +2489,8 @@ def stVar {k : K} (v : σ) (l : List (Γ k)) : StAct₂ k → σ
 /-- The effect of a stack action on the stack. -/
 def stWrite {k : K} (v : σ) (l : List (Γ k)) : StAct₂ k → List (Γ k)
   | push f => f v :: l
-  | peek f => l
-  | pop f => l.tail
+  | peek _ => l
+  | pop _ => l.tail
 #align turing.TM2to1.st_write Turing.TM2to1.stWrite
 
 /-- We have partitioned the TM2 statements into "stack actions", which require going to the end
@@ -2545,9 +2547,9 @@ def trStAct {k : K} (q : Stmt₂₁) : StAct₂ k → Stmt₂₁
   | StAct.push f => (write fun a s => (a.1, update a.2 k <| some <| f s)) <| move Dir.right q
   | StAct.peek f => move Dir.left <| (load fun a s => f s (a.2 k)) <| move Dir.right q
   | StAct.pop f =>
-    branch (fun a _ => a.1) (load (fun a s => f s none) q)
+    branch (fun a _ => a.1) (load (fun _ s => f s none) q)
       (move Dir.left <|
-        (load fun a s => f s (a.2 k)) <| write (fun a s => (a.1, update a.2 k none)) q)
+        (load fun a s => f s (a.2 k)) <| write (fun a _ => (a.1, update a.2 k none)) q)
 #align turing.TM2to1.tr_st_act Turing.TM2to1.trStAct
 
 /-- The initial state for the TM2 emulator, given an initial TM2 state. All stacks start out empty
@@ -2562,7 +2564,7 @@ theorem step_run {k : K} (q : Stmt₂) (v : σ) (S : ∀ k, List (Γ k)) :
       TM2.stepAux (stRun s q) v S =
         TM2.stepAux q (stVar v (S k) s) (update S k (stWrite v (S k) s))
   | StAct.push f => rfl
-  | StAct.peek f => by unfold stWrite <;> rw [Function.update_eq_self] <;> rfl
+  | StAct.peek f => by unfold stWrite; rw [Function.update_eq_self]; rfl
   | StAct.pop f => rfl
 #align turing.TM2to1.step_run Turing.TM2to1.step_run
 
@@ -2574,8 +2576,8 @@ def trNormal : Stmt₂ → Stmt₂₁
   | TM2.Stmt.peek k f q => goto fun _ _ => go k (StAct.peek f) q
   | TM2.Stmt.pop k f q => goto fun _ _ => go k (StAct.pop f) q
   | TM2.Stmt.load a q => load (fun _ => a) (trNormal q)
-  | TM2.Stmt.branch f q₁ q₂ => branch (fun a => f) (trNormal q₁) (trNormal q₂)
-  | TM2.Stmt.goto l => goto fun a s => normal (l s)
+  | TM2.Stmt.branch f q₁ q₂ => branch (fun _ => f) (trNormal q₁) (trNormal q₂)
+  | TM2.Stmt.goto l => goto fun _ s => normal (l s)
   | TM2.Stmt.halt => halt
 #align turing.TM2to1.tr_normal Turing.TM2to1.trNormal
 
@@ -2591,8 +2593,8 @@ noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
   | TM2.Stmt.push k f q => {go k (StAct.push f) q, ret q} ∪ trStmts₁ q
   | TM2.Stmt.peek k f q => {go k (StAct.peek f) q, ret q} ∪ trStmts₁ q
   | TM2.Stmt.pop k f q => {go k (StAct.pop f) q, ret q} ∪ trStmts₁ q
-  | TM2.Stmt.load a q => trStmts₁ q
-  | TM2.Stmt.branch f q₁ q₂ => trStmts₁ q₁ ∪ trStmts₁ q₂
+  | TM2.Stmt.load _ q => trStmts₁ q
+  | TM2.Stmt.branch _ q₁ q₂ => trStmts₁ q₁ ∪ trStmts₁ q₂
   | _ => ∅
 #align turing.TM2to1.tr_stmts₁ Turing.TM2to1.trStmts₁
 
@@ -2694,9 +2696,9 @@ This handles the `go` and `ret` states, which shuttle to and from a stack top. -
 def tr : Λ'₂₁ → Stmt₂₁
   | normal q => trNormal (M q)
   | go k s q =>
-    branch (fun a s => (a.2 k).isNone) (trStAct (goto fun _ _ => ret q) s)
+    branch (fun a _ => (a.2 k).isNone) (trStAct (goto fun _ _ => ret q) s)
       (move Dir.right <| goto fun _ _ => go k s q)
-  | ret q => branch (fun a s => a.1) (trNormal q) (move Dir.left <| goto fun _ _ => ret q)
+  | ret q => branch (fun a _ => a.1) (trNormal q) (move Dir.left <| goto fun _ _ => ret q)
 #align turing.TM2to1.tr Turing.TM2to1.tr
 
 attribute [local pp_using_anonymous_constructor] Turing.TM1.Cfg
