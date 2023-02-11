@@ -40,6 +40,7 @@ variable (G : Type u) [Group G]
 def commutator : Subgroup G := ⁅(⊤ : Subgroup G), ⊤⁆
 #align commutator commutator
 
+-- Porting note: this instance should come from `deriving Subgroup.Normal`
 instance : Subgroup.Normal (commutator G) := Subgroup.commutator_normal ⊤ ⊤
 
 theorem commutator_def : commutator G = ⁅(⊤ : Subgroup G), ⊤⁆ :=
@@ -206,6 +207,7 @@ end Abelianization
 
 section AbelianizationCongr
 
+-- Porting note: `[Group G]` should not be necessary here
 variable {G} [Group G] {H : Type v} [Group H] (e : G ≃* H)
 
 /-- Equivalent groups have equivalent abelianizations -/
