@@ -26,21 +26,24 @@ We define the subtype of open sets in a topological space.
 
 ### Bundled open sets
 
-- `opens α` is the type of open subsets of a topological space `α`.
-- `opens.is_basis` is a predicate saying that a set of `opens`s form a topological basis.
-- `opens.comap`: preimage of an open set under a continuous map as a `frame_hom`.
-- `homeomorph.opens_congr`: order-preserving equivalence between open sets in the domain and the
+- `TopologicalSpace.Opens α` is the type of open subsets of a topological space `α`.
+- `TopologicalSpace.Opens.IsBasis` is a predicate saying that a set of `opens`s form a topological
+  basis.
+- `TopologicalSpace.Opens.comap`: preimage of an open set under a continuous map as a `FrameHom`.
+- `Homeomorph.opensCongr`: order-preserving equivalence between open sets in the domain and the
   codomain of a homeomorphism.
 
 ### Bundled open neighborhoods
 
-- `open_nhds_of x` is the type of open subsets of a topological space `α` containing `x : α`.
-- `open_nhds_of.comap f x U` is the preimage of open neighborhood `U` of `f x` under `f : C(α, β)`.
+- `TopologicalSpace.OpenNhdsOf x` is the type of open subsets of a topological space `α` containing
+  `x : α`.
+- `TopologicalSpace.OpenNhdsOf.comap f x U` is the preimage of open neighborhood `U` of `f x` under
+  `f : C(α, β)`.
 
 ## Main results
 
 We define order structures on both `opens α` (`complete_structure`, `frame`) and `open_nhds_of x`
-(`order_top`, `distrib_lattice`).
+(`OrderTop`, `DistribLattice`).
 
 ## TODO
 
@@ -85,7 +88,7 @@ theorem «forall» {p : Opens α → Prop} : (∀ U, p U) ↔ ∀ (U : Set α) (
 @[simp] theorem carrier_eq_coe (U : Opens α) : U.1 = ↑U := rfl
 #align topological_space.opens.carrier_eq_coe TopologicalSpace.Opens.carrier_eq_coe
 
-/-- the coercion `opens α → set α` applied to a pair is the same as taking the first component -/
+/-- the coercion `opens α → Set α` applied to a pair is the same as taking the first component -/
 @[simp]
 theorem coe_mk {U : Set α} {hU : IsOpen U} : ↑(⟨U, hU⟩ : Opens α) = U :=
   rfl
@@ -464,7 +467,7 @@ theorem basis_nhds : (𝓝 x).HasBasis (fun _ : OpenNhdsOf x => True) (↑) :=
     ⟨U, ⟨⟨U.mem, U.isOpen⟩, Subset.rfl⟩⟩
 #align topological_space.open_nhds_of.basis_nhds TopologicalSpace.OpenNhdsOf.basis_nhds
 
-/-- Preimage of an open neighborhood of `f x` under a continuous map `f` as a `lattice_hom`. -/
+/-- Preimage of an open neighborhood of `f x` under a continuous map `f` as a `LatticeHom`. -/
 def comap (f : C(α, β)) (x : α) : LatticeHom (OpenNhdsOf (f x)) (OpenNhdsOf x) where
   toFun U := ⟨Opens.comap f U.1, U.mem⟩
   map_sup' _ _ := rfl
@@ -480,7 +483,7 @@ end TopologicalSpace
 
 -- namespace AutoCases
 
--- /-- Find an `auto_cases_tac` which matches `topological_space.opens`. -/
+-- /-- Find an `auto_cases_tac` which matches `TopologicalSpace.Opens`. -/
 -- unsafe def opens_find_tac : expr → Option auto_cases_tac
 --   | q(TopologicalSpace.Opens _) => tac_cases
 --   | _ => none
@@ -488,7 +491,7 @@ end TopologicalSpace
 
 -- end AutoCases
 
--- /-- A version of `tactic.auto_cases` that works for `topological_space.opens`. -/
+-- /-- A version of `tactic.auto_cases` that works for `TopologicalSpace.Opens`. -/
 -- @[hint_tactic]
 -- unsafe def auto_cases_opens : tactic String :=
 --   auto_cases tactic.auto_cases.opens_find_tac
