@@ -54,8 +54,8 @@ def Submonoid.Fg (P : Submonoid M) : Prop :=
 add_decl_doc AddSubmonoid.Fg
 
 /-- An equivalent expression of `Submonoid.Fg` in terms of `Set.Finite` instead of `Finset`. -/
-@[to_additive "An equivalent expression of `add_submonoid.fg` in terms of `set.finite` instead of
-`finset`."]
+@[to_additive "An equivalent expression of `AddSubmonoid.fg` in terms of `Set.Finite` instead of
+`Finset`."]
 theorem Submonoid.fg_iff (P : Submonoid M) :
     Submonoid.Fg P ↔ ∃ S : Set M, Submonoid.closure S = P ∧ S.Finite :=
   ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
@@ -109,7 +109,7 @@ theorem AddMonoid.fg_def : AddMonoid.Fg N ↔ (⊤ : AddSubmonoid N).Fg :=
 
 /-- An equivalent expression of `Monoid.Fg` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
-      "An equivalent expression of `add_monoid.fg` in terms of `set.finite` instead of\n`finset`."]
+      "An equivalent expression of `AddMonoid.fg` in terms of `Set.Finite` instead of `Finset`."]
 theorem Monoid.fg_iff :
     Monoid.Fg M ↔ ∃ S : Set M, Submonoid.closure S = (⊤ : Submonoid M) ∧ S.Finite :=
   ⟨fun h => (Submonoid.fg_iff ⊤).1 h.out, fun h => ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
@@ -235,8 +235,8 @@ def Subgroup.Fg (P : Subgroup G) : Prop :=
 add_decl_doc AddSubgroup.Fg
 
 /-- An equivalent expression of `Subgroup.Fg` in terms of `Set.Finite` instead of `Finset`. -/
-@[to_additive "An equivalent expression of `add_subgroup.fg` in terms of `set.finite` instead of
-`finset`."]
+@[to_additive "An equivalent expression of `AddSubgroup.fg` in terms of `Set.Finite` instead of
+`Finset`."]
 theorem Subgroup.fg_iff (P : Subgroup G) :
     Subgroup.Fg P ↔ ∃ S : Set G, Subgroup.closure S = P ∧ S.Finite :=
   ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
@@ -303,7 +303,7 @@ theorem AddGroup.fg_def : AddGroup.Fg H ↔ (⊤ : AddSubgroup H).Fg :=
 
 /-- An equivalent expression of `Group.Fg` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive
-      "An equivalent expression of `add_group.fg` in terms of `set.finite` instead of\n`finset`."]
+      "An equivalent expression of `AddGroup.fg` in terms of `Set.Finite` instead of `Finset`."]
 theorem Group.fg_iff : Group.Fg G ↔ ∃ S : Set G, Subgroup.closure S = (⊤ : Subgroup G) ∧ S.Finite :=
   ⟨fun h => (Subgroup.fg_iff ⊤).1 h.out, fun h => ⟨(Subgroup.fg_iff ⊤).2 h⟩⟩
 #align group.fg_iff Group.fg_iff
@@ -472,4 +472,3 @@ instance QuotientGroup.fg [Group.Fg G] (N : Subgroup G) [Subgroup.Normal N] : Gr
 #align quotient_add_group.fg QuotientAddGroup.fg
 
 end QuotientGroup
-
