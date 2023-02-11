@@ -39,12 +39,12 @@ variable {C : Type u₂} [Category.{v₂} C]
 def const : C ⥤ J ⥤ C
     where
   obj X :=
-    { obj := fun j => X
-      map := fun j j' f => 𝟙 X }
-  map X Y f := { app := fun j => f }
+    { obj := fun _ => X
+      map := fun _ => 𝟙 X }
+  map f := { app := fun _ => f }
 #align category_theory.functor.const CategoryTheory.Functor.const
 
-namespace Const
+namespace const
 
 open Opposite
 
@@ -56,7 +56,7 @@ is (naturally isomorphic to) the opposite of the constant functor `J ⥤ C` send
 @[simps]
 def opObjOp (X : C) : (const Jᵒᵖ).obj (op X) ≅ ((const J).obj X).op
     where
-  Hom := { app := fun j => 𝟙 _ }
+  hom := { app := fun j => 𝟙 _ }
   inv := { app := fun j => 𝟙 _ }
 #align category_theory.functor.const.op_obj_op CategoryTheory.Functor.const.opObjOp
 
@@ -66,13 +66,13 @@ the constant functor `J ⥤ Cᵒᵖ` sending everything to `X`.
 -/
 def opObjUnop (X : Cᵒᵖ) : (const Jᵒᵖ).obj (unop X) ≅ ((const J).obj X).leftOp
     where
-  Hom := { app := fun j => 𝟙 _ }
+  hom := { app := fun j => 𝟙 _ }
   inv := { app := fun j => 𝟙 _ }
 #align category_theory.functor.const.op_obj_unop CategoryTheory.Functor.const.opObjUnop
 
 -- Lean needs some help with universes here.
 @[simp]
-theorem opObjUnop_hom_app (X : Cᵒᵖ) (j : Jᵒᵖ) : (opObjUnop.{v₁, v₂} X).Hom.app j = 𝟙 _ :=
+theorem opObjUnop_hom_app (X : Cᵒᵖ) (j : Jᵒᵖ) : (opObjUnop.{v₁, v₂} X).hom.app j = 𝟙 _ :=
   rfl
 #align category_theory.functor.const.op_obj_unop_hom_app CategoryTheory.Functor.const.opObjUnop_hom_app
 
@@ -87,7 +87,7 @@ theorem unop_functor_op_obj_map (X : Cᵒᵖ) {j₁ j₂ : J} (f : j₁ ⟶ j₂
   rfl
 #align category_theory.functor.const.unop_functor_op_obj_map CategoryTheory.Functor.const.unop_functor_op_obj_map
 
-end Const
+end const
 
 section
 
@@ -99,15 +99,14 @@ variable {D : Type u₃} [Category.{v₃} D]
 @[simps]
 def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F.obj X)
     where
-  Hom := { app := fun _ => 𝟙 _ }
+  hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
 #align category_theory.functor.const_comp CategoryTheory.Functor.constComp
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
 instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C)
-    where map_injective' X Y f g e := NatTrans.congr_app e (Classical.arbitrary J)
+    where map_injective e := NatTrans.congr_app e (Classical.arbitrary J)
 
 end
 
 end CategoryTheory.Functor
-
