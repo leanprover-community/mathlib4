@@ -1064,6 +1064,7 @@ import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
+import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Support
