@@ -63,7 +63,9 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
   `SetTheory/CardinalOrdinal.lean`.
-* There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
+* (Porting note: this notation has been disabled as it seems this workaround works
+  differently in lean4 if needed at all.)
+  There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
   the base and the exponent live in the same universe. As a workaround, you can add
   ```
     local infixr (name := Cardinal.pow) ^ := @has_pow.pow cardinal cardinal Cardinal.has_pow
@@ -118,7 +120,7 @@ def mk : Type u → Cardinal :=
 #align cardinal.mk Cardinal.mk
 
 -- mathport name: cardinal.mk
-/-- The cardinal number of a type -/
+@[inherit_doc]
 scoped prefix:0 "#" => Cardinal.mk
 
 instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
@@ -330,8 +332,9 @@ theorem lift_le {a b : Cardinal.{u}} : lift.{v, u} a ≤ lift.{v, u} b ↔ a ≤
     exact lift_mk_le.{u, u, v}
 #align cardinal.lift_le Cardinal.lift_le
 
+-- Porting note: changed `simps` to `simps!` because the linter told to do so.
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
   OrderEmbedding.ofMapLeIff lift.{u, v} fun _ _ => lift_le
 #align cardinal.lift_order_embedding Cardinal.liftOrderEmbedding
@@ -475,18 +478,13 @@ private theorem mul_comm' (a b : Cardinal.{u}) : a * b = b * a :=
 instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
   ⟨map₂ (fun α β => β → α) fun _ _ _ _ e₁ e₂ => e₂.arrowCongr e₁⟩
 
--- -- Porting note: TODO remove this and deal with the error message concerning `infixr` and `@`.
--- set_option quotPrecheck false
-
--- Porting note: I think this is not needed anymore.
+-- Porting note: This "workaround" does not work and break everything.
+-- if it's ever needed, one should probably investigate in what would work.
 -- mathport name: cardinal.pow
--- local infixr:0 "^" => Pow.pow (α := Cardinal) (β := Cardinal) (self := Cardinal.instPowCardinal)
+-- local infixr:0 "^" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
 
--- Porting note: TODO this doesnt work as a notation!
 -- -- mathport name: cardinal.pow.nat
-
---Porting note: @Pow.pow notation does not work here
-local infixr:80 " ^ℕ " => Pow.pow (α := Cardinal) (β := ℕ) (self := Monoid.Pow)
+local infixr:80 " ^ℕ " => @Pow.pow Cardinal ℕ Monoid.Pow
 
 theorem power_def (α β) : ((#α) ^ (#β)) = (#β → α) :=
   rfl
@@ -1217,8 +1215,7 @@ def aleph0 : Cardinal.{u} :=
 #align cardinal.aleph_0 Cardinal.aleph0
 
 -- mathport name: cardinal.aleph_0
--- Porting note: should the notation copy the docstring?
-/-- `ℵ₀` is the smallest infinite cardinal. -/
+@[inherit_doc]
 scoped notation "ℵ₀" => Cardinal.aleph0
 
 theorem mk_nat : (#ℕ) = ℵ₀ :=
@@ -2253,7 +2250,7 @@ def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
 #align cardinal.powerlt Cardinal.powerlt
 
 -- mathport name: «expr ^< »
-/-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
+@[inherit_doc]
 infixl:80 " ^< " => powerlt
 
 theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : (a^c) ≤ a ^< b :=
