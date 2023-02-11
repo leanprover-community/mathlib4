@@ -1058,6 +1058,7 @@ import Mathlib.Topology.Order.Hom.Basic
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Partial
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Opens
