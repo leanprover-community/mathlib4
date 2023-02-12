@@ -28,18 +28,18 @@ as the least fixpoint of a polynomial functor.
 
 Three views of M-types:
 
- * `Wp`: polynomial functor
+ * `wp`: polynomial functor
  * `W`: data type inductively defined by a triple:
      shape of the root, data in the root and children of the root
  * `W`: least fixed point of a polynomial functor
 
-Specifically, we define the polynomial functor `Wp` as:
+Specifically, we define the polynomial functor `wp` as:
 
  * A := a tree-like structure without information in the nodes
  * B := given the tree-like structure `t`, `B t` is a valid path
    (specified inductively by `W_path`) from the root of `t` to any given node.
 
-As a result `Wp.obj α` is made of a dataless tree and a function from
+As a result `wp.Obj α` is made of a dataless tree and a function from
 its valid paths to values of `α`
 
 ## Reference
@@ -148,7 +148,7 @@ First, describe operations on `W` as a polynomial functor.
 -/
 
 
-/-- Constructor for `Wp` -/
+/-- Constructor for `wp` -/
 def wpMk {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.W α :=
   ⟨⟨a, f⟩, f'⟩
@@ -169,7 +169,7 @@ theorem wpRec_eq {α : TypeVec n} {C : Type _}
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_rec_eq MvPFunctor.wpRec_eq
 
--- Note: we could replace Prop by Type* and obtain a dependent recursor
+-- Note: we could replace Prop by Type _ and obtain a dependent recursor
 theorem Wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
