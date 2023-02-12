@@ -64,6 +64,9 @@ open Function
 
 open BigOperators Pointwise
 
+-- Porting note: TODO Erase this line.
+attribute [-instance] Ring.toNonAssocRing
+
 variable {R : Type _} {R₁ : Type _} {R₂ : Type _} {R₃ : Type _} {R₄ : Type _}
 variable {S : Type _}
 variable {K : Type _} {K₂ : Type _}
@@ -1060,7 +1063,7 @@ theorem neg_coe : -(p : Set M) = p :=
 
 @[simp]
 protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
-  ext fun y =>
+  ext fun _ =>
     ⟨fun ⟨x, hx, hy⟩ => hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, map_neg f x⟩, fun ⟨x, hx, hy⟩ =>
       hy ▸ ⟨-x, show -x ∈ p from neg_mem hx, (map_neg (-f) _).trans (neg_neg (f x))⟩⟩
 #align submodule.map_neg Submodule.map_neg
@@ -1077,7 +1080,7 @@ variable [AddCommGroup V₂] [Module K V₂]
 
 theorem comap_smul (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) (h : a ≠ 0) :
     p.comap (a • f) = p.comap f := by
-  ext b <;> simp only [Submodule.mem_comap, p.smul_mem_iff h, LinearMap.smul_apply]
+  ext b; simp only [Submodule.mem_comap, p.smul_mem_iff h, LinearMap.smul_apply]
 #align submodule.comap_smul Submodule.comap_smul
 
 theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0) :
@@ -1086,12 +1089,17 @@ theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0
     (by rw [map_le_iff_le_comap, ← comap_smul f _ a h, ← map_le_iff_le_comap])
 #align submodule.map_smul Submodule.map_smul
 
+-- Porting note: `⨅ h : a ≠ 0, p.comap f` gets a `unusedVariables` lint, but
+-- `⨅ _ : a ≠ 0, p.comap f` is ill-formed. So, this is written `infᵢ (fun _ : a ≠ 0 => p.comap f)`.
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
-    p.comap (a • f) = ⨅ h : a ≠ 0, p.comap f := by classical by_cases a = 0 <;> simp [h, comap_smul]
+    p.comap (a • f) = infᵢ (fun _ : a ≠ 0 => p.comap f) := by
+  classical by_cases a = 0 <;> simp [h, comap_smul]
 #align submodule.comap_smul' Submodule.comap_smul'
 
+-- Porting note: Idem.
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
-    p.map (a • f) = ⨆ h : a ≠ 0, p.map f := by classical by_cases a = 0 <;> simp [h, map_smul]
+    p.map (a • f) = supᵢ (fun _ : a ≠ 0 => p.map f) := by
+  classical by_cases a = 0 <;> simp [h, map_smul]
 #align submodule.map_smul' Submodule.map_smul'
 
 end Submodule
@@ -1343,9 +1351,7 @@ theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : f.ker.toAddSubmono
 #align linear_map.ker_to_add_submonoid LinearMap.ker_toAddSubmonoid
 
 theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp f.ker.subtype = 0 :=
-  LinearMap.ext fun x =>
-    suffices f x = 0 by simp [this]
-    mem_ker.1 x.2
+  LinearMap.ext fun x => mem_ker.1 x.2
 #align linear_map.comp_ker_subtype LinearMap.comp_ker_subtype
 
 theorem ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] M₃) :
@@ -1489,13 +1495,12 @@ theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgro
 #align linear_map.ker_to_add_subgroup LinearMap.ker_toAddSubgroup
 
 theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : f.eqLocus g = ker (f - g) :=
-  SetLike.ext fun v => sub_eq_zero.symm
+  SetLike.ext fun _ => sub_eq_zero.symm
 #align linear_map.eq_locus_eq_ker_sub LinearMap.eqLocus_eq_ker_sub
 
 theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker, map_sub, sub_eq_zero]
 #align linear_map.sub_mem_ker_iff LinearMap.sub_mem_ker_iff
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x y «expr ∈ » p) -/
 theorem disjoint_ker' {p : Submodule R M} :
     Disjoint p (ker f) ↔ ∀ (x) (_ : x ∈ p) (y) (_ : y ∈ p), f x = f y → x = y :=
   disjoint_ker.trans
@@ -1504,7 +1509,7 @@ theorem disjoint_ker' {p : Submodule R M} :
 #align linear_map.disjoint_ker' LinearMap.disjoint_ker'
 
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
-    (hd : Disjoint p (ker f)) : Set.InjOn f s := fun x hx y hy =>
+    (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy =>
   disjoint_ker'.1 hd _ (h hx) _ (h hy)
 #align linear_map.inj_on_of_disjoint_ker LinearMap.injOn_of_disjoint_ker
 
@@ -1555,7 +1560,9 @@ theorem ker_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : ker (a • f) = 
   Submodule.comap_smul f _ a h
 #align linear_map.ker_smul LinearMap.ker_smul
 
-theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = ⨅ h : a ≠ 0, ker f :=
+-- Porting note: `⨅ h : a ≠ 0, ker f` gets a `unusedVariables` lint, but
+-- `⨅ _ : a ≠ 0, ker f` is ill-formed. So, this is written `infᵢ (fun _ : a ≠ 0 => ker f)`.
+theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = infᵢ (fun _ : a ≠ 0 => ker f) :=
   Submodule.comap_smul' f _ a
 #align linear_map.ker_smul' LinearMap.ker_smul'
 
@@ -1563,7 +1570,9 @@ theorem range_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : range (a • f
   simpa only [range_eq_map] using Submodule.map_smul f _ a h
 #align linear_map.range_smul LinearMap.range_smul
 
-theorem range_smul' (f : V →ₗ[K] V₂) (a : K) : range (a • f) = ⨆ h : a ≠ 0, range f := by
+-- Porting note: Idem.
+theorem range_smul' (f : V →ₗ[K] V₂) (a : K) :
+    range (a • f) = supᵢ (fun _ : a ≠ 0 => range f) := by
   simpa only [range_eq_map] using Submodule.map_smul' f _ a
 #align linear_map.range_smul' LinearMap.range_smul'
 
@@ -1637,7 +1646,7 @@ theorem map_subtype_le (p' : Submodule R p) : map p.subtype p' ≤ p := by
 
 /-- Under the canonical linear map from a submodule `p` to the ambient space `M`, the image of the
 maximal submodule of `p` is just `p `. -/
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 #align submodule.map_subtype_top Submodule.map_subtype_top
 
@@ -2161,8 +2170,9 @@ protected theorem ker : LinearMap.ker (e : M →ₛₗ[σ₁₂] M₂) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective e.toEquiv.injective
 #align linear_equiv.ker LinearEquiv.ker
 
+-- Porting note: `RingHomSurjective σ₁₂` is an unused argument.
 @[simp]
-theorem range_comp [RingHomSurjective σ₁₂] [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
+theorem range_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] :
     LinearMap.range (h.comp (e : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = LinearMap.range h :=
   LinearMap.range_comp_of_range_eq_top _ e.range
 #align linear_equiv.range_comp LinearEquiv.range_comp
@@ -2256,12 +2266,12 @@ variable {re₃₄ : RingHomInvPair σ₃₄ σ₄₃} {re₄₃ : RingHomInvPai
 
 variable (e e₁ : M ≃ₛₗ[σ₁₂] M₂) (e₂ : M₃ ≃ₛₗ[σ₃₄] M₄)
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_neg (a : M) : e (-a) = -e a :=
   e.toLinearMap.map_neg a
 #align linear_equiv.map_neg LinearEquiv.map_neg
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem map_sub (a b : M) : e (a - b) = e a - e b :=
   e.toLinearMap.map_sub a b
 #align linear_equiv.map_sub LinearEquiv.map_sub
@@ -2418,7 +2428,7 @@ variable (K) (M)
 open LinearMap
 
 /-- Multiplying by a nonzero element `a` of the field `K` is a linear equivalence. -/
-@[simps]
+@[simps!]
 def smulOfNeZero (a : K) (ha : a ≠ 0) : M ≃ₗ[K] M :=
   smulOfUnit <| Units.mk0 a ha
 #align linear_equiv.smul_of_ne_zero LinearEquiv.smulOfNeZero
@@ -2459,7 +2469,7 @@ theorem equivSubtypeMap_symm_apply {p : Submodule R M} {q : Submodule R p} (x : 
 
 /-- If `s ≤ t`, then we can view `s` as a submodule of `t` by taking the comap
 of `t.subtype`. -/
-@[simps]
+@[simps symmApply]
 def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtype p ≃ₗ[R] p
     where
   toFun x := ⟨x, x.2⟩
@@ -2469,6 +2479,16 @@ def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtyp
   map_add' x y := rfl
   map_smul' c x := rfl
 #align submodule.comap_subtype_equiv_of_le Submodule.comapSubtypeEquivOfLe
+#align submodule.comap_subtype_equiv_of_le_symm_apply_coe_coe Submodule.comapSubtypeEquivOfLe_symmApply
+
+-- Porting note: The original theorem generated by `simps` was using `LinearEquiv.toLinearMap`,
+-- different from the theorem on Lean 3, and not simp-normal form.
+@[simp]
+theorem comapSubtypeEquivOfLe_apply_coe {p q : Submodule R M} (hpq : p ≤ q)
+    (x : comap q.subtype p) :
+    (comapSubtypeEquivOfLe hpq x : M) = (x : M) :=
+  rfl
+#align submodule.comap_subtype_equiv_of_le_apply_coe Submodule.comapSubtypeEquivOfLe_apply_coe
 
 end Module
 
@@ -2490,7 +2510,7 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 
 variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
-@[simp]
+@[simp, nolint simpNF]
 theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} : x ∈ p.map (e : M →ₛₗ[τ₁₂] M₂) ↔ e.symm x ∈ p :=
   by
   rw [Submodule.mem_map]; constructor
@@ -2515,13 +2535,10 @@ variable {p}
 theorem map_symm_eq_iff (e : M ≃ₛₗ[τ₁₂] M₂) {K : Submodule R₂ M₂} :
     K.map e.symm = p ↔ p.map e = K := by
   constructor <;> rintro rfl
-  ·
-    calc
+  · calc
       map e (map e.symm K) = comap e.symm (map e.symm K) := map_equiv_eq_comap_symm _ _
       _ = K := comap_map_eq_of_injective e.symm.injective _
-
-  ·
-    calc
+  · calc
       map e.symm (map e p) = comap e (map e p) := (comap_equiv_eq_map_symm _ _).symm
       _ = p := comap_map_eq_of_injective e.injective _
 
