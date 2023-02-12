@@ -568,6 +568,7 @@ import Mathlib.Data.Option.NAry
 import Mathlib.Data.PEquiv
 import Mathlib.Data.PFun
 import Mathlib.Data.PFunctor.Multivariate.Basic
+import Mathlib.Data.PFunctor.Multivariate.W
 import Mathlib.Data.PFunctor.Univariate.Basic
 import Mathlib.Data.PFunctor.Univariate.M
 import Mathlib.Data.PNat.Basic
@@ -579,7 +580,6 @@ import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
-import Mathlib.Data.Pfunctor.Multivariate.W
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Pi.Lex
