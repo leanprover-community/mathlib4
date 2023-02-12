@@ -2510,6 +2510,8 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 
 variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
+-- Porting note: This theorem is not simp-normal form in Lean 3 and Lean 4, but this got no lint
+-- in Lean 3.
 @[simp, nolint simpNF]
 theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} : x ∈ p.map (e : M →ₛₗ[τ₁₂] M₂) ↔ e.symm x ∈ p :=
   by
