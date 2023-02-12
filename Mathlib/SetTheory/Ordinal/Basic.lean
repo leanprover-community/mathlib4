@@ -693,7 +693,6 @@ theorem lift_id : ∀ a, lift.{u, u} a = a :=
   lift_id'.{u, u}
 #align ordinal.lift_id Ordinal.lift_id
 
-set_option pp.universes true
 /-- An ordinal lifted to the zero universe equals itself. -/
 @[simp]
 theorem lift_uzero (a : Ordinal.{u}) : lift.{0} a = a :=
@@ -903,44 +902,47 @@ theorem card_nat (n : ℕ) : card.{u} n = n := by
   induction n <;> [rfl, simp only [card_add, card_one, Nat.cast_succ, *]]
 #align ordinal.card_nat Ordinal.card_nat
 
-instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) :=
-  ⟨fun c a b h => by
-  revert h c
-  exact
-    induction_on a fun α₁ r₁ _ =>
-      induction_on b fun α₂ r₂ _ ⟨⟨⟨f, fo⟩, fi⟩⟩ c =>
-        induction_on c fun β s _ =>
-          ⟨⟨⟨(embedding.refl _).sum_map f, fun a b =>
-                match a, b with
-                | Sum.inl a, Sum.inl b => sum.lex_inl_inl.trans sum.lex_inl_inl.symm
-                | Sum.inl a, Sum.inr b => by apply iff_of_true <;> apply Sum.Lex.sep
-                | Sum.inr a, Sum.inl b => by apply iff_of_false <;> exact Sum.lex_inr_inl
-                | Sum.inr a, Sum.inr b => sum.lex_inr_inr.trans <| fo.trans sum.lex_inr_inr.symm⟩,
-              fun a b H =>
-              match a, b, H with
-              | _, Sum.inl b, _ => ⟨Sum.inl b, rfl⟩
-              | Sum.inl a, Sum.inr b, H => (Sum.lex_inr_inl H).elim
-              | Sum.inr a, Sum.inr b, H =>
-                let ⟨w, h⟩ := fi _ _ (Sum.lex_inr_inr.1 H)
-                ⟨Sum.inr w, congr_arg Sum.inr h⟩⟩⟩⟩
-#align ordinal.add_covariant_class_le Ordinal.add_covariantClass_le
+-- Porting note: Rewritten proof of elim, previous version was difficult to debug
+instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+  elim := fun c a b h => by
+    revert h c
+    refine induction_on a (fun α₁ r₁ _ ↦ ?_)
+    refine induction_on b (fun α₂ r₂ _ ↦ ?_)
+    rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
+    refine induction_on c (fun β s _ ↦ ?_)
+    have := (Embedding.refl β).sumMap f
+    refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
+    · intros a b
+      match a, b with
+      | Sum.inl a, Sum.inl b => exact Sum.lex_inl_inl.trans Sum.lex_inl_inl.symm
+      | Sum.inl a, Sum.inr b => apply iff_of_true <;> apply Sum.Lex.sep
+      | Sum.inr a, Sum.inl b => apply iff_of_false <;> exact Sum.lex_inr_inl
+      | Sum.inr a, Sum.inr b => exact Sum.lex_inr_inr.trans <| fo.trans Sum.lex_inr_inr.symm
+    · intros a b H
+      match a, b, H with
+      | _, Sum.inl b, _ => exact ⟨Sum.inl b, rfl⟩
+      | Sum.inl a, Sum.inr b, H => exact (Sum.lex_inr_inl H).elim
+      | Sum.inr a, Sum.inr b, H =>
+        let ⟨w, h⟩ := fi _ _ (Sum.lex_inr_inr.1 H)
+        exact ⟨Sum.inr w, congr_arg Sum.inr h⟩
+  #align ordinal.add_covariant_class_le Ordinal.add_covariantClass_le
 
+-- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_swap_covariantClass_le :
-    CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) :=
-  ⟨fun c a b h => by
-  revert h c
-  exact
-    induction_on a fun α₁ r₁ hr₁ =>
-      induction_on b fun α₂ r₂ hr₂ ⟨⟨⟨f, fo⟩, fi⟩⟩ c =>
-        induction_on c fun β s hs =>
-          @RelEmbedding.ordinal_type_le _ _ (Sum.Lex r₁ s) (Sum.Lex r₂ s) _ _
-            ⟨f.sum_map (embedding.refl _), fun a b =>
-              by
-              constructor <;> intro H
-              ·
-                cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
-                  [rwa [← fo], assumption]
-              · cases H <;> constructor <;> [rwa [fo], assumption]⟩⟩
+    CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
+  elim := fun c a b h => by
+    revert h c
+    refine induction_on a (fun α₁ r₁ _ ↦ ?_)
+    refine induction_on b (fun α₂ r₂ _ ↦ ?_)
+    rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
+    refine induction_on c (fun β s _ ↦ ?_)
+    exact @RelEmbedding.ordinal_type_le _ _ (Sum.Lex r₁ s) (Sum.Lex r₂ s) _ _
+              ⟨f.sumMap (Embedding.refl _), by
+                intro a b
+                constructor <;> intro H
+                · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
+                    [rwa [← fo], assumption]
+                · cases H <;> constructor <;> [rwa [fo], assumption]⟩
 #align ordinal.add_swap_covariant_class_le Ordinal.add_swap_covariantClass_le
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
@@ -951,7 +953,6 @@ theorem le_add_left (a b : Ordinal) : a ≤ b + a := by
   simpa only [zero_add] using add_le_add_right (Ordinal.zero_le b) a
 #align ordinal.le_add_left Ordinal.le_add_left
 
-set_option pp.universes false
 instance : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b =>
