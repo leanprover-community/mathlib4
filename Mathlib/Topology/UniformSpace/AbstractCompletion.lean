@@ -24,17 +24,17 @@ completions of α and α'.
 This file does not construct any such completion, it only study consequences of their existence.
 The first advantage is that formal properties are clearly highlighted without interference from
 construction details. The second advantage is that this framework can then be used to compare
-different completion constructions. See `topology/uniform_space/compare_reals` for an example.
+different completion constructions. See `Topology/UniformSpace/CompareReals` for an example.
 Of course the comparison comes from the universal property as usual.
 
-A general explicit construction of completions is done in `uniform_space/completion`, leading
+A general explicit construction of completions is done in `UniformSpace/Completion`, leading
 to a functor from uniform spaces to complete Hausdorff uniform spaces that is left adjoint to the
-inclusion, see `uniform_space/UniformSpace` for the category packaging.
+inclusion, see `UniformSpace/UniformSpaceCat` for the category packaging.
 
 ## Implementation notes
 
 A tiny technical advantage of using a characteristic predicate such as the properties listed in
-`abstract_completion` instead of stating the universal property is that the universal property
+`AbstractCompletion` instead of stating the universal property is that the universal property
 derived from the predicate is more universe polymorphic.
 
 ## References
@@ -83,10 +83,8 @@ namespace AbstractCompletion
 
 variable {α : Type _} [UniformSpace α] (pkg : AbstractCompletion α)
 
--- mathport name: exprhatα
 local notation "hatα" => pkg.space
 
--- mathport name: exprι
 local notation "ι" => pkg.coe
 
 /-- If `α` is complete, then it is an abstract completion of itself. -/
@@ -111,16 +109,16 @@ theorem continuous_coe : Continuous ι :=
 #align abstract_completion.continuous_coe AbstractCompletion.continuous_coe
 
 @[elab_as_elim]
-theorem inductionOn {p : hatα → Prop} (a : hatα) (hp : IsClosed { a | p a }) (ih : ∀ a, p (ι a)) :
+theorem induction_on {p : hatα → Prop} (a : hatα) (hp : IsClosed { a | p a }) (ih : ∀ a, p (ι a)) :
     p a :=
   isClosed_property pkg.dense hp ih a
-#align abstract_completion.induction_on AbstractCompletion.inductionOn
+#align abstract_completion.induction_on AbstractCompletion.induction_on
 
 variable {β : Type _}
 
 protected theorem funext [TopologicalSpace β] [T2Space β] {f g : hatα → β} (hf : Continuous f)
     (hg : Continuous g) (h : ∀ a, f (ι a) = g (ι a)) : f = g :=
-  funext fun a => pkg.inductionOn a (isClosed_eq hf hg) h
+  funext fun a => pkg.induction_on a (isClosed_eq hf hg) h
 #align abstract_completion.funext AbstractCompletion.funext
 
 variable [UniformSpace β]
@@ -169,7 +167,7 @@ theorem extend_unique (hf : UniformContinuous f) {g : hatα → β} (hg : Unifor
 @[simp]
 theorem extend_comp_coe {f : hatα → β} (hf : UniformContinuous f) : pkg.extend (f ∘ ι) = f :=
   funext fun x =>
-    pkg.inductionOn x (isClosed_eq pkg.continuous_extend hf.continuous) fun y =>
+    pkg.induction_on x (isClosed_eq pkg.continuous_extend hf.continuous) fun y =>
       pkg.extend_coe (hf.comp <| pkg.uniformContinuous_coe) y
 #align abstract_completion.extend_comp_coe AbstractCompletion.extend_comp_coe
 
@@ -179,10 +177,8 @@ section MapSec
 
 variable (pkg' : AbstractCompletion β)
 
--- mathport name: exprhatβ
 local notation "hatβ" => pkg'.space
 
--- mathport name: exprι'
 local notation "ι'" => pkg'.coe
 
 /-- Lifting maps to completions -/
@@ -190,7 +186,6 @@ protected def map (f : α → β) : hatα → hatβ :=
   pkg.extend (ι' ∘ f)
 #align abstract_completion.map AbstractCompletion.map
 
--- mathport name: exprmap
 local notation "map" => pkg.map pkg'
 
 variable (f : α → β)
@@ -199,6 +194,7 @@ theorem uniformContinuous_map : UniformContinuous (map f) :=
   pkg.uniformContinuous_extend
 #align abstract_completion.uniform_continuous_map AbstractCompletion.uniformContinuous_map
 
+-- @[continuity] -- Porting note: Add tag once implemented
 theorem continuous_map : Continuous (map f) :=
   pkg.continuous_extend
 #align abstract_completion.continuous_map AbstractCompletion.continuous_map
@@ -297,10 +293,8 @@ section Prod
 
 variable (pkg' : AbstractCompletion β)
 
--- mathport name: exprhatβ
 local notation "hatβ" => pkg'.space
 
--- mathport name: exprι'
 local notation "ι'" => pkg'.coe
 
 /-- Products of completions -/
@@ -321,10 +315,8 @@ section Extension₂
 
 variable (pkg' : AbstractCompletion β)
 
--- mathport name: exprhatβ
 local notation "hatβ" => pkg'.space
 
--- mathport name: exprι'
 local notation "ι'" => pkg'.coe
 
 variable {γ : Type _} [UniformSpace γ]
@@ -363,21 +355,16 @@ section Map₂
 
 variable (pkg' : AbstractCompletion β)
 
--- mathport name: exprhatβ
 local notation "hatβ" => pkg'.space
 
--- mathport name: exprι'
 local notation "ι'" => pkg'.coe
 
 variable {γ : Type _} [UniformSpace γ] (pkg'' : AbstractCompletion γ)
 
--- mathport name: exprhatγ
 local notation "hatγ" => pkg''.space
 
--- mathport name: exprι''
 local notation "ι''" => pkg''.coe
 
--- mathport name: «expr ∘₂ »
 local notation f " ∘₂ " g => bicompr f g
 
 /-- Lift two variable maps to completions. -/
