@@ -336,14 +336,12 @@ def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C)
 /-- The unit isomorphism for `functor_prod_functor_equiv` -/
 -- @[simps!]
 def functorProdFunctorEquivUnitIso :
-    𝟭 _ ≅ prodFunctorToFunctorProd A B C ⋙ functorProdToProdFunctor A B C := by sorry 
-  -- apply NatIso.ofComponents 
-    -- (fun F => (((Functor.prod'CompFst _ _).prod (Functor.prod'CompSnd _ _)).trans (prod.etaIso F)).symm)
-    -- sorry 
-
-    -- (fun F =>
-    --   (((Functor.prod'CompFst _ _).prod (Functor.prod'CompSnd _ _)).trans (prod.etaIso F)).symm)
-    -- fun α => by aesop_cat
+    𝟭 _ ≅ prodFunctorToFunctorProd A B C ⋙ functorProdToProdFunctor A B C :=
+  NatIso.ofComponents 
+    (fun F => 
+      (((Functor.prod'CompFst F.fst F.snd).prod (Functor.prod'CompSnd F.fst F.snd)).trans 
+        (prod.etaIso F)).symm) 
+      (fun α => by aesop_cat) 
 #align category_theory.functor_prod_functor_equiv_unit_iso CategoryTheory.functorProdFunctorEquivUnitIso
 
 /-- The counit isomorphism for `functor_prod_functor_equiv` -/
@@ -354,14 +352,21 @@ def functorProdFunctorEquivCounitIso :
     (by aesop_cat)
 #align category_theory.functor_prod_functor_equiv_counit_iso CategoryTheory.functorProdFunctorEquivCounitIso
 
+/- Porting note: unlike with Lean 3, we needed to provide `functor_unit_iso_comp` because 
+Lean 4 could not see through `functorProdFunctorEquivUnitIso` (or the co-unit version) 
+to run the auto tactic `by aesop_cat` -/
+
 /-- The equivalence of categories between `(A ⥤ B) × (A ⥤ C)` and `A ⥤ (B × C)` -/
 @[simps!]
-def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C
-    where
-  functor := prodFunctorToFunctorProd A B C
-  inverse := functorProdToProdFunctor A B C
-  unitIso := functorProdFunctorEquivUnitIso A B C
-  counitIso := functorProdFunctorEquivCounitIso A B C
+def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C := 
+  { functor := prodFunctorToFunctorProd A B C,
+    inverse := functorProdToProdFunctor A B C,
+    unitIso := functorProdFunctorEquivUnitIso A B C,
+    counitIso := functorProdFunctorEquivCounitIso A B C,
+    functor_unit_iso_comp := by
+      simp only [functorProdFunctorEquivUnitIso]
+      aesop_cat
+  }
 #align category_theory.functor_prod_functor_equiv CategoryTheory.functorProdFunctorEquiv
 
 end CategoryTheory
