@@ -25,14 +25,14 @@ We define:
 * `swap`      : the functor `C × D ⥤ D × C` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
     (and the fact this is an equivalence)
 
-We further define `evaluation : C ⥤ (C ⥤ D) ⥤ D` and `evaluation_uncurried : C × (C ⥤ D) ⥤ D`,
+We further define `evaluation : C ⥤ (C ⥤ D) ⥤ D` and `evaluationUncurried : C × (C ⥤ D) ⥤ D`,
 and products of functors and natural transformations, written `F.prod G` and `α.prod β`.
 -/
 
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see `category_theory.category` for an explanation
+-- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 section
@@ -106,7 +106,7 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 
-/-- `prod.category.uniform C D` is an additional instance specialised so both factors have the same
+/-- `Category.uniformProd C D` is an additional instance specialised so both factors have the same
 universe levels. This helps typeclass resolution.
 -/
 instance uniformProd : Category (C × D) :=
@@ -300,7 +300,7 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
 #align category_theory.nat_trans.prod CategoryTheory.NatTrans.prod
 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
-   use instead `α.prod β` or `nat_trans.prod α β`. -/
+   use instead `α.prod β` or `NatTrans.prod α β`. -/
 end NatTrans
 
 /-- `F.flip` composed with evaluation is the same as evaluating `F`. -/
@@ -311,7 +311,7 @@ def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj
 
 variable (A B C)
 
-/-- The forward direction for `functor_prod_functor_equiv` -/
+/-- The forward direction for `functorProdFunctorEquiv` -/
 @[simps!]
 def prodFunctorToFunctorProd : (A ⥤ B) × (A ⥤ C) ⥤ A ⥤ B × C
     where
@@ -319,7 +319,7 @@ def prodFunctorToFunctorProd : (A ⥤ B) × (A ⥤ C) ⥤ A ⥤ B × C
   map f := { app := fun X => (f.1.app X, f.2.app X) }
 #align category_theory.prod_functor_to_functor_prod CategoryTheory.prodFunctorToFunctorProd
 
-/-- The backward direction for `functor_prod_functor_equiv` -/
+/-- The backward direction for `functorProdFunctorEquiv` -/
 @[simps!]
 def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C)
     where
@@ -333,7 +333,7 @@ def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C)
           simp only [Functor.comp_map, Prod.snd_map, ← prod_comp_snd, α.naturality] }⟩
 #align category_theory.functor_prod_to_prod_functor CategoryTheory.functorProdToProdFunctor
 
-/-- The unit isomorphism for `functor_prod_functor_equiv` -/
+/-- The unit isomorphism for `functorProdFunctorEquiv` -/
 -- @[simps!]
 def functorProdFunctorEquivUnitIso :
     𝟭 _ ≅ prodFunctorToFunctorProd A B C ⋙ functorProdToProdFunctor A B C :=
@@ -344,7 +344,7 @@ def functorProdFunctorEquivUnitIso :
       (fun α => by aesop_cat) 
 #align category_theory.functor_prod_functor_equiv_unit_iso CategoryTheory.functorProdFunctorEquivUnitIso
 
-/-- The counit isomorphism for `functor_prod_functor_equiv` -/
+/-- The counit isomorphism for `functorProdFunctorEquiv` -/
 @[simps!]
 def functorProdFunctorEquivCounitIso :
     functorProdToProdFunctor A B C ⋙ prodFunctorToFunctorProd A B C ≅ 𝟭 _ :=
