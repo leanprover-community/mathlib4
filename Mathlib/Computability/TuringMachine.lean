@@ -1554,7 +1554,9 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
   constructor
   · apply Finset.mem_product.2
     constructor
-    · simp only [TM1.stmts, Finset.mem_insertNone, Option.mem_def, IsEmpty.forall_iff, forall_const]
+    · simp only [default, TM1.stmts, Finset.mem_insertNone, Option.mem_def, Option.some_inj,
+        forall_eq', Finset.mem_bunionᵢ]
+      exact ⟨_, ss.1, TM1.stmts₁_self⟩
     · apply Finset.mem_univ
   · intro q a q' s h₁ h₂
     rcases q with ⟨_ | q, v⟩; · cases h₁
