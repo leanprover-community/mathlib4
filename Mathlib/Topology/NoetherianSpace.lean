@@ -15,28 +15,31 @@ import Mathlib.Topology.Sets.Closeds
 # Noetherian space
 
 A Noetherian space is a topological space that satisfies any of the following equivalent conditions:
-- `well_founded ((>) : opens α → opens α → Prop)`
-- `well_founded ((<) : closeds α → closeds α → Prop)`
-- `∀ s : set α, is_compact s`
-- `∀ s : opens α, is_compact s`
+- `WellFounded ((· > ·) : TopologicalSpace.Opens α → TopologicalSpace.Opens α → Prop)`
+- `WellFounded ((· < ·) : TopologicalSpace.Closeds α → TopologicalSpace.Closeds α → Prop)`
+- `∀ s : Set α, IsCompact s`
+- `∀ s : TopologicalSpace.Opens α, IsCompact s`
 
 The first is chosen as the definition, and the equivalence is shown in
-`topological_space.noetherian_space_tfae`.
+`TopologicalSpace.noetherianSpace_TFAE`.
 
 Many examples of noetherian spaces come from algebraic topology. For example, the underlying space
 of a noetherian scheme (e.g., the spectrum of a noetherian ring) is noetherian.
 
 ## Main Results
-- `noetherian_space.set`: Every subspace of a noetherian space is noetherian.
-- `noetherian_space.is_compact`: Every subspace of a noetherian space is compact.
-- `noetherian_space_tfae`: Describes the equivalent definitions of noetherian spaces.
-- `noetherian_space.range`: The image of a noetherian space under a continuous map is noetherian.
-- `noetherian_space.Union`: The finite union of noetherian spaces is noetherian.
-- `noetherian_space.discrete`: A noetherian and hausdorff space is discrete.
-- `noetherian_space.exists_finset_irreducible` : Every closed subset of a noetherian space is a
-  finite union of irreducible closed subsets.
-- `noetherian_space.finite_irreducible_components `: The number of irreducible components of a
-  noetherian space is finite.
+
+- `TopologicalSpace.NoetherianSpace.set`: Every subspace of a noetherian space is noetherian.
+- `TopologicalSpace.NoetherianSpace.isCompact`: Every set in a noetherian space is a compact set.
+- `TopologicalSpace.noetherianSpace_TFAE`: Describes the equivalent definitions of noetherian
+  spaces.
+- `TopologicalSpace.NoetherianSpace.range`: The image of a noetherian space under a continuous map
+  is noetherian.
+- `TopologicalSpace.NoetherianSpace.unionᵢ`: The finite union of noetherian spaces is noetherian.
+- `TopologicalSpace.NoetherianSpace.discrete`: A noetherian and Hausdorff space is discrete.
+- `TopologicalSpace.NoetherianSpace.exists_finset_irreducible` : Every closed subset of a noetherian
+  space is a finite union of irreducible closed subsets.
+- `TopologicalSpace.NoetherianSpace.finite_irreducibleComponents `: The number of irreducible
+  components of a noetherian space is finite.
 
 -/
 
