@@ -8,8 +8,8 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pfunctor.Multivariate.Basic
-import Mathbin.Data.Qpf.Multivariate.Basic
+import Mathlib.Data.PFunctor.Multivariate.Basic
+import Mathlib.Data.Qpf.Multivariate.Basic
 
 /-!
 # Dependent product and sum of QPFs are QPFs
