@@ -226,8 +226,7 @@ lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
 /-- Equivalence between maps `α → M` and monoid homomorphisms `FreeMonoid α →* M`. -/
 @[to_additive "Equivalence between maps `α → A` and additive monoid homomorphisms
 `FreeAddMonoid α →+ A`."]
-def lift : (α → M) ≃ (FreeMonoid α →* M)
-    where
+def lift : (α → M) ≃ (FreeMonoid α →* M) where
   toFun f :=
   { toFun := fun l ↦ prodAux ((toList l).map f)
     map_one' := rfl
@@ -237,6 +236,11 @@ def lift : (α → M) ≃ (FreeMonoid α →* M)
   right_inv f := hom_eq fun x ↦ rfl
 #align free_monoid.lift FreeMonoid.lift
 #align free_add_monoid.lift FreeAddMonoid.lift
+
+-- porting note: new
+@[to_additive (attr := simp)]
+theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
+prodAux_eq _
 
 @[to_additive (attr := simp)]
 theorem lift_symm_apply (f : FreeMonoid α →* M) : lift.symm f = f ∘ of := rfl
