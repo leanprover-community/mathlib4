@@ -20,16 +20,16 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 ## Main definitions
 
-- `H.index` : the index of `H : subgroup G` as a natural number,
+- `H.index` : the index of `H : Subgroup G` as a natural number,
   and returns 0 if the index is infinite.
-- `H.relindex K` : the relative index of `H : subgroup G` in `K : subgroup G` as a natural number,
+- `H.relindex K` : the relative index of `H : Subgroup G` in `K : Subgroup G` as a natural number,
   and returns 0 if the relative index is infinite.
 
 # Main results
 
-- `card_mul_index` : `nat.card H * H.index = nat.card G`
-- `index_mul_card` : `H.index * fintype.card H = fintype.card G`
-- `index_dvd_card` : `H.index ∣ fintype.card G`
+- `card_mul_index` : `Nat.card H * H.index = Nat.card G`
+- `index_mul_card` : `H.index * Fintype.card H = Fintype.card G`
+- `index_dvd_card` : `H.index ∣ Fintype.card G`
 - `index_eq_mul_of_le` : If `H ≤ K`, then `H.index = K.index * (H.subgroupOf K).index`
 - `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
 - `relindex_mul_relindex` : `relindex` is multiplicative in towers
