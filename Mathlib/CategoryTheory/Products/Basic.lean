@@ -172,7 +172,8 @@ def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D)
 -/
 @[simps!]
 def braiding : C × D ≌ D × C :=
-  Equivalence.mk (swap C D) (swap D C) (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
+  Equivalence.mk (swap C D) (swap D C) 
+    (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
     (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
 #align category_theory.prod.braiding CategoryTheory.Prod.braiding
 
@@ -370,4 +371,3 @@ def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C :=
 #align category_theory.functor_prod_functor_equiv CategoryTheory.functorProdFunctorEquiv
 
 end CategoryTheory
-
