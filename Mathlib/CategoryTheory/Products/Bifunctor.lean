@@ -8,7 +8,7 @@ Authors: Stephen Morgan, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Lemmas about functors out of product categories.
