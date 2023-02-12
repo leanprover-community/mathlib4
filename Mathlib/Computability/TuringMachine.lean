@@ -1078,11 +1078,14 @@ instance Cfg.inhabited : Inhabited Cfg₀ :=
 
 variable {Γ Λ}
 
+-- Porting note: Added this for `TM0to1.tr_respects`.
+def step._match_1 (T : Tape Γ): Stmt₀ → Tape Γ
+  | Stmt.move d => T.move d
+  | Stmt.write a => T.write a
+
 /-- Execution semantics of the Turing machine. -/
 def step (M : Machine₀) : Cfg₀ → Option Cfg₀ :=
-  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a⟩ ↦ ⟨q', match a with
-    | Stmt.move d => T.move d
-    | Stmt.write a => T.write a⟩
+  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a⟩ ↦ ⟨q', step._match_1 T a⟩
 #align turing.TM0.step Turing.TM0.step
 
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
@@ -1882,7 +1885,7 @@ theorem tr_respects : Respects (step M) (step (tr enc dec M)) fun c₁ c₂ => t
       exact this _ R
     clear R l₁
     intro q R
-    induction' q with _ q IH _ q IH _ q IH generalizing v L R
+    induction' q generalizing v L R
     case move d q IH =>
       cases d <;>
           simp only [trNormal, iterate, stepAux_move, stepAux, ListBlank.head_cons,
@@ -1911,7 +1914,7 @@ theorem tr_respects : Respects (step M) (step (tr enc dec M)) fun c₁ c₂ => t
       apply ReflTransGen.refl
 #align turing.TM1to1.tr_respects Turing.TM1to1.tr_respects
 
-omit enc0 encdec
+--omit enc0 encdec  -- Porting note: `omit` doesn't exist
 
 open Classical
 
@@ -1967,7 +1970,7 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
       simp only [Finset.mem_union] at hw⊢
       replace IH₁ := IH₁ hs.1 fun q hq => hw q (Or.inl hq)
       replace IH₂ := IH₂ hs.2 fun q hq => hw q (Or.inr hq)
-      exact ⟨supportsStmt_read _ fun a => ⟨IH₁.1, IH₂.1⟩, fun q => Or.ndrec (IH₁.2 _) (IH₂.2 _)⟩
+      exact ⟨supportsStmt_read _ fun a => ⟨IH₁.1, IH₂.1⟩, fun q => Or.rec (IH₁.2 _) (IH₂.2 _)⟩
     case goto l =>
       refine' ⟨_, fun _ => False.elim⟩
       refine' supportsStmt_read _ fun a _ s => _
@@ -2052,19 +2055,19 @@ def trCfg : Cfg₀ → Cfg₁
 theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b => trCfg M a = b :=
   fun_respects.2 fun ⟨q, T⟩ => by
     cases' e : M q T.1 with val
-    · simp only [TM0.step, trCfg, e] <;> exact Eq.refl none
+    · simp only [TM0.step, trCfg, e]; exact Eq.refl none
     cases' val with q' s
     simp only [FRespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some']
     have : TM1.step (tr M) ⟨some (Λ'.act s q'), (), T⟩ =
         some ⟨some (Λ'.normal q'), (), TM0.step._match_1 T s⟩ := by
       cases' s with d a <;> rfl
     refine' TransGen.head _ (TransGen.head' this _)
-    · unfold TM1.step TM1.stepAux tr Membership.mem
+    · simp only [TM1.step, TM1.stepAux]
       rw [e]
       rfl
     cases e' : M q' _
     · apply ReflTransGen.single
-      unfold TM1.step TM1.stepAux tr Membership.mem
+      simp only [TM1.step, TM1.stepAux]
       rw [e']
       rfl
     · rfl
