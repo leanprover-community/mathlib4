@@ -1821,21 +1821,20 @@ theorem trTape'_move_right (L R : ListBlank Γ) :
 theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
     stepAux (write (enc a).toList q) v (trTape' enc0 L (ListBlank.cons b R)) =
       stepAux q v (trTape' enc0 (ListBlank.cons a L) R) := by
-  simp only [trTape', List.cons_bind, List.append_assoc]
-  suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (e : l₂'.length = l₂.length),
+  simp only [trTape', ListBlank.cons_bind]
+  suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (_ : l₂'.length = l₂.length),
       stepAux (write l₂ q) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂' R')) =
       stepAux q v (Tape.mk' (L'.append (List.reverseAux l₂ l₁)) R') by
-    convert this [] _ _ ((enc b).2.trans (enc a).2.symm) <;> rw [ListBlank.cons_bind] <;> rfl
+    refine' this [] _ _ ((enc b).2.trans (enc a).2.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction' l₂ with a l₂ IH generalizing l₁ l₂'
   · cases List.length_eq_zero.1 e
     rfl
-  cases' l₂' with b l₂' <;> injection e with e
-  dsimp only [write, stepAux]
-  convert IH _ _ e using 1
-  simp only [ListBlank.head_cons, ListBlank.tail_cons, ListBlank.append, Tape.move_right_mk',
-    Tape.write_mk']
+  cases' l₂' with b l₂' <;> simp only [List.length_nil, List.length_cons, Nat.succ_inj'] at e
+  rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
+  simp only [stepAux, ListBlank.append, Tape.write_mk', Tape.move_right_mk', ListBlank.head_cons,
+    ListBlank.tail_cons]
 #align turing.TM1to1.step_aux_write Turing.TM1to1.stepAux_write
 
 variable (encdec : ∀ a, dec (enc a) = a)
