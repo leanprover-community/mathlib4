@@ -1071,9 +1071,11 @@ theorem succ_zero : succ (0 : Ordinal) = 1 :=
   zero_add 1
 #align ordinal.succ_zero Ordinal.succ_zero
 
+-- Porting note: Proof used to be rfl
 @[simp]
-theorem succ_one : succ (1 : Ordinal) = 2 :=
-  rfl
+theorem succ_one : succ (1 : Ordinal) = 2 := by
+  unfold instOfNat OfNat.ofNat
+  simpa using by rfl
 #align ordinal.succ_one Ordinal.succ_one
 
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
