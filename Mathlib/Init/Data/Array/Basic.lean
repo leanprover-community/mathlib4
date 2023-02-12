@@ -4,14 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 
 ! This file was ported from Lean 3 source module init.data.array.basic
-! leanprover-community/mathlib commit 7cb84a2a93c1e2d37b3ad5017fc5372973dbb9fb
+! leanprover-community/lean commit 7cb84a2a93c1e2d37b3ad5017fc5372973dbb9fb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Leanbin.Init.Data.Nat.Default
-import Leanbin.Init.Data.Bool.Default
-import Leanbin.Init.IteSimp
+
+import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Bool.Basic
+import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.Format.Basic
+import Mathlib.Init.IteSimp
 
 universe u v w
 
@@ -39,10 +42,10 @@ def write (a : DArray n α) (i : Fin n) (v : α i) : DArray n α
 #align d_array.write DArray.write
 
 def iterateAux (a : DArray n α) (f : ∀ i : Fin n, α i → β → β) : ∀ i : Nat, i ≤ n → β → β
-  | 0, h, b => b
+  | 0, _, b => b
   | j + 1, h, b =>
     let i : Fin n := ⟨j, h⟩
-    f i (a.read i) (iterate_aux j (le_of_lt h) b)
+    f i (a.read i) (iterateAux a f j (le_of_lt h) b)
 #align d_array.iterate_aux DArray.iterateAux
 
 /-- Fold over the elements of the given array in ascending order. Has builtin VM implementation. -/
@@ -69,10 +72,10 @@ def foldl (a : DArray n α) (b : β) (f : ∀ i : Fin n, α i → β → β) : �
 #align d_array.foldl DArray.foldl
 
 def revIterateAux (a : DArray n α) (f : ∀ i : Fin n, α i → β → β) : ∀ i : Nat, i ≤ n → β → β
-  | 0, h, b => b
+  | 0, _, b => b
   | j + 1, h, b =>
     let i : Fin n := ⟨j, h⟩
-    rev_iterate_aux j (le_of_lt h) (f i (a.read i) b)
+    revIterateAux a f j (le_of_lt h) (f i (a.read i) b)
 #align d_array.rev_iterate_aux DArray.revIterateAux
 
 def revIterate (a : DArray n α) (b : β) (f : ∀ i : Fin n, α i → β → β) : β :=
@@ -86,21 +89,28 @@ theorem read_write (a : DArray n α) (i : Fin n) (v : α i) : read (write a i v)
 
 @[simp]
 theorem read_write_of_ne (a : DArray n α) {i j : Fin n} (v : α i) :
-    i ≠ j → read (write a i v) j = read a j := by intro h <;> simp [read, write, h]
+    i ≠ j → read (write a i v) j = read a j := by
+    intro h
+    simp [read, write, h]
 #align d_array.read_write_of_ne DArray.read_write_of_ne
 
 protected theorem ext {a b : DArray n α} (h : ∀ i, read a i = read b i) : a = b := by
-  cases a <;> cases b <;> congr <;> exact funext h
+  cases a
+  cases b
+  congr
+  exact funext h
 #align d_array.ext DArray.ext
 
 protected theorem ext' {a b : DArray n α}
-    (h : ∀ (i : Nat) (h : i < n), read a ⟨i, h⟩ = read b ⟨i, h⟩) : a = b := by cases a; cases b;
-  congr ; funext i; cases i; apply h
+    (h : ∀ (i : Nat) (h : i < n), read a ⟨i, h⟩ = read b ⟨i, h⟩) : a = b := by
+    cases a
+    cases b
+    congr ; funext i; cases i; apply h
 #align d_array.ext' DArray.ext'
 
 protected def beqAux [∀ i, DecidableEq (α i)] (a b : DArray n α) : ∀ i : Nat, i ≤ n → Bool
-  | 0, h => true
-  | i + 1, h => if a.read ⟨i, h⟩ = b.read ⟨i, h⟩ then beq_aux i (le_of_lt h) else false
+  | 0, _ => true
+  | i + 1, h => if a.read ⟨i, h⟩ = b.read ⟨i, h⟩ then DArray.beqAux a b i (le_of_lt h) else false
 #align d_array.beq_aux DArray.beqAux
 
 /-- Boolean element-wise equality check. -/
@@ -112,10 +122,10 @@ theorem of_beqAux_eq_true [∀ i, DecidableEq (α i)] {a b : DArray n α} :
     ∀ (i : Nat) (h : i ≤ n),
       DArray.beqAux a b i h = true →
         ∀ (j : Nat) (h' : j < i), a.read ⟨j, lt_of_lt_of_le h' h⟩ = b.read ⟨j, lt_of_lt_of_le h' h⟩
-  | 0, h₁, h₂, j, h₃ => absurd h₃ (Nat.not_lt_zero _)
+  | 0, h₁, _, j, h₃ => absurd h₃ (Nat.not_lt_zero _)
   | i + 1, h₁, h₂, j, h₃ =>
     by
-    have h₂' : read a ⟨i, h₁⟩ = read b ⟨i, h₁⟩ ∧ DArray.beqAux a b i _ = tt :=
+    have h₂' : read a ⟨i, h₁⟩ = read b ⟨i, h₁⟩ ∧ DArray.beqAux a b i _ = true :=
       by
       simp [DArray.beqAux] at h₂
       assumption
@@ -123,7 +133,7 @@ theorem of_beqAux_eq_true [∀ i, DecidableEq (α i)] {a b : DArray n α} :
     have ih :
       ∀ (j : Nat) (h' : j < i),
         a.read ⟨j, lt_of_lt_of_le h' h₁'⟩ = b.read ⟨j, lt_of_lt_of_le h' h₁'⟩ :=
-      of_beq_aux_eq_tt i h₁' h₂'.2
+      of_beqAux_eq_true i h₁' h₂'.2
     by_cases hji : j = i
     · subst hji
       exact h₂'.1
@@ -135,7 +145,7 @@ theorem of_beq_eq_true [∀ i, DecidableEq (α i)] {a b : DArray n α} :
     DArray.beq a b = true → a = b := by
   unfold DArray.beq
   intro h
-  have : ∀ (j : Nat) (h : j < n), a.read ⟨j, h⟩ = b.read ⟨j, h⟩ := of_beq_aux_eq_tt n (le_refl _) h
+  have : ∀ (j : Nat) (h : j < n), a.read ⟨j, h⟩ = b.read ⟨j, h⟩ := of_beqAux_eq_true n (le_refl _) h
   apply DArray.ext' this
 #align d_array.of_beq_eq_tt DArray.of_beq_eq_true
 
@@ -143,27 +153,25 @@ theorem of_beqAux_eq_false [∀ i, DecidableEq (α i)] {a b : DArray n α} :
     ∀ (i : Nat) (h : i ≤ n),
       DArray.beqAux a b i h = false →
         ∃ (j : Nat)(h' : j < i), a.read ⟨j, lt_of_lt_of_le h' h⟩ ≠ b.read ⟨j, lt_of_lt_of_le h' h⟩
-  | 0, h₁, h₂ => by simp [DArray.beqAux] at h₂; contradiction
+  | 0, h₁, h₂ => by simp [DArray.beqAux] at h₂
   | i + 1, h₁, h₂ =>
     by
-    have h₂' : read a ⟨i, h₁⟩ ≠ read b ⟨i, h₁⟩ ∨ DArray.beqAux a b i _ = ff :=
+    have h₂' : read a ⟨i, h₁⟩ ≠ read b ⟨i, h₁⟩ ∨ DArray.beqAux a b i _ = false :=
       by
       simp [DArray.beqAux] at h₂
       assumption
     cases' h₂' with h h
     · exists i
       exists Nat.lt_succ_self _
-      exact h
     · have h₁' : i ≤ n := le_of_lt h₁
       have ih :
         ∃ (j : Nat)(h' : j < i),
           a.read ⟨j, lt_of_lt_of_le h' h₁'⟩ ≠ b.read ⟨j, lt_of_lt_of_le h' h₁'⟩ :=
-        of_beq_aux_eq_ff i h₁' h
+        of_beqAux_eq_false i h₁' h
       cases' ih with j ih
       cases' ih with h' ih
       exists j
       exists Nat.lt_succ_of_lt h'
-      exact ih
 #align d_array.of_beq_aux_eq_ff DArray.of_beqAux_eq_false
 
 theorem of_beq_eq_false [∀ i, DecidableEq (α i)] {a b : DArray n α} :
@@ -171,9 +179,9 @@ theorem of_beq_eq_false [∀ i, DecidableEq (α i)] {a b : DArray n α} :
   unfold DArray.beq
   intro h hne
   have : ∃ (j : Nat)(h' : j < n), a.read ⟨j, h'⟩ ≠ b.read ⟨j, h'⟩ :=
-    of_beq_aux_eq_ff n (le_refl _) h
-  cases' this with j this
-  cases' this with h' this
+    of_beqAux_eq_false n (le_refl _) h
+  cases' this with j this'
+  cases' this' with h' this''
   subst hne
   contradiction
 #align d_array.of_beq_eq_ff DArray.of_beq_eq_false
@@ -251,7 +259,7 @@ def toList (a : Array' n α) : List α :=
 #align array.to_list Array'.toList
 
 theorem push_back_idx {j n} (h₁ : j < n + 1) (h₂ : j ≠ n) : j < n :=
-  Nat.lt_of_le_and_ne (Nat.le_of_lt_succ h₁) h₂
+  Nat.lt_of_le_of_ne (Nat.le_of_lt_succ h₁) h₂
 #align array.push_back_idx Array'.push_back_idx
 
 /-- `push_back a v` pushes value `v` to the end of the array. Has builtin VM implementation. -/
@@ -274,7 +282,7 @@ def mmapCore {β : Type v} {m : Type v → Type w} [Monad m] (a : Array' n α) (
     ∀ i ≤ n, m (Array' i β)
   | 0, _ => pure DArray.nil
   | i + 1, h => do
-    let bs ← mmap_core i (le_of_lt h)
+    let bs ← mmapCore a f i (le_of_lt h)
     let b ← f (a.read ⟨i, h⟩)
     pure <| bs b
 #align array.mmap_core Array'.mmapCore
@@ -288,7 +296,7 @@ def mmap {β : Type v} {m} [Monad m] (a : Array' n α) (f : α → m β) : m (Ar
 /-- Map a function over the array. -/
 @[inline]
 def map {β : Type v} (a : Array' n α) (f : α → β) : Array' n β :=
-  a.map fun _ => f
+  a.map f
 #align array.map Array'.map
 
 protected def Mem (v : α) (a : Array' n α) : Prop :=
@@ -302,10 +310,10 @@ theorem read_mem (a : Array' n α) (i) : read a i ∈ a :=
   Exists.intro i rfl
 #align array.read_mem Array'.read_mem
 
-instance [Repr α] : Repr (Array' n α) :=
-  ⟨repr ∘ toList⟩
+instance [Repr α] : Repr (Array' n α) where
+  reprPrec (a : Array' n α) (_ : Nat) := repr (toList a)
 
-unsafe instance [has_to_format α] : has_to_format (Array' n α) :=
+unsafe instance [toFormat α] : toFormat (Array' n α) :=
   ⟨to_fmt ∘ toList⟩
 
 unsafe instance [has_to_tactic_format α] : has_to_tactic_format (Array' n α) :=
@@ -350,4 +358,3 @@ protected theorem ext' {a b : Array' n α}
 instance [DecidableEq α] : DecidableEq (Array' n α) := by unfold Array'; infer_instance
 
 end Array'
-
