@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pfunctor.Multivariate.Basic
+import Mathlib.Data.PFunctor.Multivariate.Basic
 
 /-!
 # The W construction as a multivariate polynomial functor.
@@ -76,8 +76,7 @@ instance WPath.inhabited (x : P.getLast.W) {i} [I : Inhabited (P.drop.B x.headI 
 
 /-- Specialized destructor on `W_path` -/
 def wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.getLast.B a → P.getLast.W} (g' : P.drop.B a ⟹ α)
-    (g : ∀ j : P.getLast.B a, P.WPath (f j) ⟹ α) : P.WPath ⟨a, f⟩ ⟹ α :=
-  by
+    (g : ∀ j : P.getLast.B a, P.WPath (f j) ⟹ α) : P.WPath ⟨a, f⟩ ⟹ α := by
   intro i x; cases x
   case root _ _ i c => exact g' i c
   case child _ _ i j c => exact g j i c
@@ -212,8 +211,7 @@ def wRec {α : TypeVec n} {C : Type _}
 theorem wRec_eq {α : TypeVec n} {C : Type _}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.getLast.B a → P.W α) → (P.getLast.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.getLast.B a → P.W α) :
-    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) :=
-  by
+    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by
   rw [W_mk, W_rec]; dsimp; rw [Wp_rec_eq]
   dsimp only [W_path_dest_left_W_path_cases_on, W_path_dest_right_W_path_cases_on]
   congr <;> ext1 i <;> cases f i <;> rfl
@@ -252,8 +250,7 @@ theorem wMk_eq {α : TypeVec n} (a : P.A) (f : P.getLast.B a → P.getLast.W) (g
 #align mvpfunctor.W_mk_eq Mvpfunctor.wMk_eq
 
 theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
-    (f : P.getLast.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i :=
-  by
+    (f : P.getLast.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i := by
   show _ = P.W_mk a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ :=
     by
