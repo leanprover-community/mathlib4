@@ -9,7 +9,7 @@ Authors: Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Control.Functor.Multivariate
-import Mathlib.Data.Qpf.Multivariate.Basic
+import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 Projection functors are QPFs. The `n`-ary projection functors on `i` is an `n`-ary
@@ -19,7 +19,7 @@ functor `F` such that `F (α₀..αᵢ₋₁, αᵢ, αᵢ₊₁..αₙ₋₁) =
 
 universe u v
 
-namespace Mvqpf
+namespace MvQPF
 
 open MvFunctor
 
@@ -28,43 +28,42 @@ variable {n : ℕ} (i : Fin2 n)
 /-- The projection `i` functor -/
 def Prj (v : TypeVec.{u} n) : Type u :=
   v i
-#align mvqpf.prj Mvqpf.Prj
+#align mvqpf.prj MvQPF.Prj
 
 instance Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i v) :=
   ⟨(default : v i)⟩
-#align mvqpf.prj.inhabited Mvqpf.Prj.inhabited
+#align mvqpf.prj.inhabited MvQPF.Prj.inhabited
 
-/-- `map` on functor `prj i` -/
-def Prj.map ⦃α β : TypeVec n⦄ (f : α ⟹ β) : Prj i α → Prj i β :=
-  f _
-#align mvqpf.prj.map Mvqpf.Prj.map
+/-- `map` on functor `Prj i` -/
+def Prj.map ⦃α β : TypeVec n⦄ (f : α ⟹ β) : Prj i α → Prj i β := f _
+#align mvqpf.prj.map MvQPF.Prj.map
 
-instance Prj.mvfunctor : MvFunctor (Prj i) where map := Prj.map i
-#align mvqpf.prj.mvfunctor Mvqpf.Prj.mvfunctor
+instance Prj.mvfunctor : MvFunctor (Prj i) where map := @Prj.map _ i
+#align mvqpf.prj.mvfunctor MvQPF.Prj.mvfunctor
 
 /-- Polynomial representation of the projection functor -/
-def Prj.p : Mvpfunctor.{u} n where
+def Prj.p : MvPFunctor.{u} n where
   A := PUnit
   B _ j := ULift <| PLift <| i = j
-#align mvqpf.prj.P Mvqpf.Prj.p
+set_option linter.uppercaseLean3 false in
+#align mvqpf.prj.P MvQPF.Prj.p
 
-/-- Abstraction function of the `qpf` instance -/
+/-- Abstraction function of the `QPF` instance -/
 def Prj.abs ⦃α : TypeVec n⦄ : (Prj.p i).Obj α → Prj i α
-  | ⟨x, f⟩ => f _ ⟨⟨rfl⟩⟩
-#align mvqpf.prj.abs Mvqpf.Prj.abs
+  | ⟨_x, f⟩ => f _ ⟨⟨rfl⟩⟩
+#align mvqpf.prj.abs MvQPF.Prj.abs
 
-/-- Representation function of the `qpf` instance -/
+/-- Representation function of the `QPF` instance -/
 def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → (Prj.p i).Obj α := fun x : α i =>
   ⟨⟨⟩, fun j ⟨⟨h⟩⟩ => (h.rec x : α j)⟩
-#align mvqpf.prj.repr Mvqpf.Prj.repr
+#align mvqpf.prj.repr MvQPF.Prj.repr
 
-instance Prj.mvqpf : Mvqpf (Prj i) where
+instance Prj.mvqpf : MvQPF (Prj i) where
   p := Prj.p i
-  abs := Prj.abs i
-  repr := Prj.repr i
-  abs_repr := by intros <;> rfl
-  abs_map := by intros <;> cases p <;> rfl
-#align mvqpf.prj.mvqpf Mvqpf.Prj.mvqpf
+  abs := @Prj.abs _ i
+  repr := @Prj.repr _ i
+  abs_repr := by intros; rfl
+  abs_map := by intros α β f p ; cases p ; rfl
+#align mvqpf.prj.mvqpf MvQPF.Prj.mvqpf
 
-end Mvqpf
-
+end MvQPF
