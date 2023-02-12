@@ -8,12 +8,12 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.ConditionallyCompleteLattice.Group
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Algebra.Order.Nonneg.Field
-import Mathbin.Algebra.Order.Field.Canonical.Basic
-import Mathbin.Data.Real.Pointwise
-import Mathbin.Tactic.Positivity
+import Mathlib.Order.ConditionallyCompleteLattice.Group
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Field.Canonical.Basic
+import Mathlib.Data.Real.Pointwise
+import Mathlib.Tactic.Positivity
 
 /-!
 # Nonnegative real numbers
@@ -320,8 +320,7 @@ theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a in s, f a)
 #align nnreal.coe_sum Nnreal.coe_sum
 
 theorem Real.toNnreal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    Real.toNnreal (∑ a in s, f a) = ∑ a in s, Real.toNnreal (f a) :=
-  by
+    Real.toNnreal (∑ a in s, f a) = ∑ a in s, Real.toNnreal (f a) := by
   rw [← Nnreal.coe_eq, Nnreal.coe_sum, Real.coe_toNnreal _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs => by rw [Real.coe_toNnreal _ (hf x hxs)]
 #align real.to_nnreal_sum_of_nonneg Real.toNnreal_sum_of_nonneg
@@ -332,8 +331,7 @@ theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f a
 #align nnreal.coe_prod Nnreal.coe_prod
 
 theorem Real.toNnreal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    Real.toNnreal (∏ a in s, f a) = ∏ a in s, Real.toNnreal (f a) :=
-  by
+    Real.toNnreal (∏ a in s, f a) = ∏ a in s, Real.toNnreal (f a) := by
   rw [← Nnreal.coe_eq, Nnreal.coe_prod, Real.coe_toNnreal _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNnreal _ (hf x hxs)]
 #align real.to_nnreal_prod_of_nonneg Real.toNnreal_prod_of_nonneg
@@ -489,8 +487,7 @@ theorem coe_infᵢ {ι : Sort _} (s : ι → ℝ≥0) : (↑(⨅ i, s i) : ℝ) 
 #align nnreal.coe_infi Nnreal.coe_infᵢ
 
 theorem le_infᵢ_add_infᵢ {ι ι' : Sort _} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0} {g : ι' → ℝ≥0}
-    {a : ℝ≥0} (h : ∀ i j, a ≤ f i + g j) : a ≤ (⨅ i, f i) + ⨅ j, g j :=
-  by
+    {a : ℝ≥0} (h : ∀ i j, a ≤ f i + g j) : a ≤ (⨅ i, f i) + ⨅ j, g j := by
   rw [← Nnreal.coe_le_coe, Nnreal.coe_add, coe_infi, coe_infi]
   exact le_cinfᵢ_add_cinfᵢ h
 #align nnreal.le_infi_add_infi Nnreal.le_infᵢ_add_infᵢ
@@ -662,8 +659,7 @@ theorem toNnreal_lt_iff_lt_coe {r : ℝ} {p : ℝ≥0} (ha : 0 ≤ r) : Real.toN
   rw [← Nnreal.coe_lt_coe, Real.coe_toNnreal r ha]
 #align real.to_nnreal_lt_iff_lt_coe Real.toNnreal_lt_iff_lt_coe
 
-theorem lt_toNnreal_iff_coe_lt {r : ℝ≥0} {p : ℝ} : r < Real.toNnreal p ↔ ↑r < p :=
-  by
+theorem lt_toNnreal_iff_coe_lt {r : ℝ≥0} {p : ℝ} : r < Real.toNnreal p ↔ ↑r < p := by
   cases le_total 0 p
   · rw [← Nnreal.coe_lt_coe, Real.coe_toNnreal p h]
   · rw [to_nnreal_eq_zero.2 h]
@@ -677,8 +673,7 @@ theorem lt_toNnreal_iff_coe_lt {r : ℝ≥0} {p : ℝ} : r < Real.toNnreal p ↔
 #align real.lt_to_nnreal_iff_coe_lt Real.lt_toNnreal_iff_coe_lt
 
 @[simp]
-theorem toNnreal_bit0 (r : ℝ) : Real.toNnreal (bit0 r) = bit0 (Real.toNnreal r) :=
-  by
+theorem toNnreal_bit0 (r : ℝ) : Real.toNnreal (bit0 r) = bit0 (Real.toNnreal r) := by
   cases' le_total r 0 with hr hr
   · rw [to_nnreal_of_nonpos hr, to_nnreal_of_nonpos, bit0_zero]
     exact add_nonpos hr hr
@@ -710,8 +705,7 @@ theorem mul_eq_mul_left {a b c : ℝ≥0} (h : a ≠ 0) : a * b = a * c ↔ b = 
 #align nnreal.mul_eq_mul_left Nnreal.mul_eq_mul_left
 
 theorem Real.toNnreal_mul {p q : ℝ} (hp : 0 ≤ p) :
-    Real.toNnreal (p * q) = Real.toNnreal p * Real.toNnreal q :=
-  by
+    Real.toNnreal (p * q) = Real.toNnreal p * Real.toNnreal q := by
   cases' le_total 0 q with hq hq
   · apply Nnreal.eq
     simp [Real.toNnreal, hp, hq, max_eq_left, mul_nonneg]
@@ -733,8 +727,7 @@ theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1) : ∃ 
 #align nnreal.exists_pow_lt_of_lt_one Nnreal.exists_pow_lt_of_lt_one
 
 theorem exists_mem_Ico_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
-    ∃ n : ℤ, x ∈ Set.Ico (y ^ n) (y ^ (n + 1)) :=
-  by
+    ∃ n : ℤ, x ∈ Set.Ico (y ^ n) (y ^ (n + 1)) := by
   obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, (y : ℝ) ^ n ≤ x ∧ (x : ℝ) < y ^ (n + 1) :=
     exists_mem_Ico_zpow (bot_lt_iff_ne_bot.mpr hx) hy
   rw [← Nnreal.coe_zpow] at hn h'n
@@ -742,8 +735,7 @@ theorem exists_mem_Ico_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 <
 #align nnreal.exists_mem_Ico_zpow Nnreal.exists_mem_Ico_zpow
 
 theorem exists_mem_Ioc_zpow {x : ℝ≥0} {y : ℝ≥0} (hx : x ≠ 0) (hy : 1 < y) :
-    ∃ n : ℤ, x ∈ Set.Ioc (y ^ n) (y ^ (n + 1)) :=
-  by
+    ∃ n : ℤ, x ∈ Set.Ioc (y ^ n) (y ^ (n + 1)) := by
   obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, (y : ℝ) ^ n < x ∧ (x : ℝ) ≤ y ^ (n + 1) :=
     exists_mem_Ioc_zpow (bot_lt_iff_ne_bot.mpr hx) hy
   rw [← Nnreal.coe_zpow] at hn h'n
@@ -817,8 +809,7 @@ theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p <
   rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h, mul_comm]
 #align nnreal.lt_inv_iff_mul_lt Nnreal.lt_inv_iff_mul_lt
 
-theorem mul_le_iff_le_inv {a b r : ℝ≥0} (hr : r ≠ 0) : r * a ≤ b ↔ a ≤ r⁻¹ * b :=
-  by
+theorem mul_le_iff_le_inv {a b r : ℝ≥0} (hr : r ≠ 0) : r * a ≤ b ↔ a ≤ r⁻¹ * b := by
   have : 0 < r := lt_of_le_of_ne (zero_le r) hr.symm
   rw [← mul_le_mul_left (inv_pos.mpr this), ← mul_assoc, inv_mul_cancel hr, one_mul]
 #align nnreal.mul_le_iff_le_inv Nnreal.mul_le_iff_le_inv
@@ -867,8 +858,7 @@ theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b :
   lt_iff_lt_of_le_iff_le (div_le_iff' hr)
 #align nnreal.lt_div_iff' Nnreal.lt_div_iff'
 
-theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
-  by
+theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b := by
   refine' (lt_div_iff fun hr => False.elim _).1 h
   subst r
   simpa using h
@@ -922,8 +912,7 @@ theorem two_inv_lt_one : (2⁻¹ : ℝ≥0) < 1 :=
   two_inv_lt_one
 #align nnreal.two_inv_lt_one Nnreal.two_inv_lt_one
 
-theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 :=
-  by
+theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 := by
   rwa [div_lt_iff, one_mul]
   exact ne_of_gt (lt_of_le_of_lt (zero_le _) h)
 #align nnreal.div_lt_one_of_lt Nnreal.div_lt_one_of_lt
@@ -944,8 +933,7 @@ theorem div_add' (a b c : ℝ≥0) (hc : c ≠ 0) : a / c + b = (a + b * c) / c 
   div_add' _ _ _ hc
 #align nnreal.div_add' Nnreal.div_add'
 
-theorem Real.toNnreal_inv {x : ℝ} : Real.toNnreal x⁻¹ = (Real.toNnreal x)⁻¹ :=
-  by
+theorem Real.toNnreal_inv {x : ℝ} : Real.toNnreal x⁻¹ = (Real.toNnreal x)⁻¹ := by
   by_cases hx : 0 ≤ x
   · nth_rw 1 [← Real.coe_toNnreal x hx]
     rw [← Nnreal.coe_inv, Real.toNnreal_coe]
@@ -971,8 +959,7 @@ theorem inv_lt_one {x : ℝ≥0} (hx : 1 < x) : x⁻¹ < 1 :=
   inv_lt_one hx
 #align nnreal.inv_lt_one Nnreal.inv_lt_one
 
-theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n :=
-  by
+theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n := by
   cases n
   · simp [pow_pos hx.bot_lt _]
   · simp [pow_pos hx.bot_lt _]
@@ -1003,8 +990,7 @@ theorem le_toNnreal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y
   (le_toNnreal_iff_coe_le <| x.2.trans h).2 h
 #align nnreal.le_to_nnreal_of_coe_le Nnreal.le_toNnreal_of_coe_le
 
-theorem supₛ_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.supₛ s = 0 :=
-  by
+theorem supₛ_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.supₛ s = 0 := by
   rw [← bdd_above_coe] at hs
   rw [← Nnreal.coe_eq, coe_Sup]
   exact Sup_of_not_bdd_above hs
@@ -1014,21 +1000,18 @@ theorem supᵢ_of_not_bddAbove (hf : ¬BddAbove (range f)) : (⨆ i, f i) = 0 :=
   supₛ_of_not_bddAbove hf
 #align nnreal.supr_of_not_bdd_above Nnreal.supᵢ_of_not_bddAbove
 
-theorem infᵢ_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 :=
-  by
+theorem infᵢ_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
   rw [← Nnreal.coe_eq, coe_infi]
   exact Real.cinfᵢ_empty _
 #align nnreal.infi_empty Nnreal.infᵢ_empty
 
 @[simp]
-theorem infᵢ_const_zero {α : Sort _} : (⨅ i : α, (0 : ℝ≥0)) = 0 :=
-  by
+theorem infᵢ_const_zero {α : Sort _} : (⨅ i : α, (0 : ℝ≥0)) = 0 := by
   rw [← Nnreal.coe_eq, coe_infi]
   exact Real.cinfᵢ_const_zero
 #align nnreal.infi_const_zero Nnreal.infᵢ_const_zero
 
-theorem infᵢ_mul (f : ι → ℝ≥0) (a : ℝ≥0) : infᵢ f * a = ⨅ i, f i * a :=
-  by
+theorem infᵢ_mul (f : ι → ℝ≥0) (a : ℝ≥0) : infᵢ f * a = ⨅ i, f i * a := by
   rw [← Nnreal.coe_eq, Nnreal.coe_mul, coe_infi, coe_infi]
   exact Real.infᵢ_mul_of_nonneg (Nnreal.coe_nonneg _) _
 #align nnreal.infi_mul Nnreal.infᵢ_mul
@@ -1037,14 +1020,12 @@ theorem mul_infᵢ (f : ι → ℝ≥0) (a : ℝ≥0) : a * infᵢ f = ⨅ i, a 
   simpa only [mul_comm] using infi_mul f a
 #align nnreal.mul_infi Nnreal.mul_infᵢ
 
-theorem mul_supᵢ (f : ι → ℝ≥0) (a : ℝ≥0) : (a * ⨆ i, f i) = ⨆ i, a * f i :=
-  by
+theorem mul_supᵢ (f : ι → ℝ≥0) (a : ℝ≥0) : (a * ⨆ i, f i) = ⨆ i, a * f i := by
   rw [← Nnreal.coe_eq, Nnreal.coe_mul, Nnreal.coe_supᵢ, Nnreal.coe_supᵢ]
   exact Real.mul_supᵢ_of_nonneg (Nnreal.coe_nonneg _) _
 #align nnreal.mul_supr Nnreal.mul_supᵢ
 
-theorem supᵢ_mul (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) * a = ⨆ i, f i * a :=
-  by
+theorem supᵢ_mul (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) * a = ⨆ i, f i * a := by
   rw [mul_comm, mul_supr]
   simp_rw [mul_comm]
 #align nnreal.supr_mul Nnreal.supᵢ_mul
@@ -1055,26 +1036,22 @@ theorem supᵢ_div (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) / a = ⨆ i
 
 variable [Nonempty ι]
 
-theorem le_mul_infᵢ {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, a ≤ g * h j) : a ≤ g * infᵢ h :=
-  by
+theorem le_mul_infᵢ {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, a ≤ g * h j) : a ≤ g * infᵢ h := by
   rw [mul_infi]
   exact le_cinfᵢ H
 #align nnreal.le_mul_infi Nnreal.le_mul_infᵢ
 
-theorem mul_supᵢ_le {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, g * h j ≤ a) : g * supᵢ h ≤ a :=
-  by
+theorem mul_supᵢ_le {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, g * h j ≤ a) : g * supᵢ h ≤ a := by
   rw [mul_supr]
   exact csupᵢ_le H
 #align nnreal.mul_supr_le Nnreal.mul_supᵢ_le
 
-theorem le_infᵢ_mul {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, a ≤ g i * h) : a ≤ infᵢ g * h :=
-  by
+theorem le_infᵢ_mul {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, a ≤ g i * h) : a ≤ infᵢ g * h := by
   rw [infi_mul]
   exact le_cinfᵢ H
 #align nnreal.le_infi_mul Nnreal.le_infᵢ_mul
 
-theorem supᵢ_mul_le {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, g i * h ≤ a) : supᵢ g * h ≤ a :=
-  by
+theorem supᵢ_mul_le {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, g i * h ≤ a) : supᵢ g * h ≤ a := by
   rw [supr_mul]
   exact csupᵢ_le H
 #align nnreal.supr_mul_le Nnreal.supᵢ_mul_le
@@ -1108,8 +1085,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : (coe '' t : Set ℝ).OrdCon
       ball_image_iff.2 fun y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 #align set.ord_connected.image_coe_nnreal_real Set.OrdConnected.image_coe_nnreal_real
 
-theorem image_real_toNnreal (h : s.OrdConnected) : (Real.toNnreal '' s).OrdConnected :=
-  by
+theorem image_real_toNnreal (h : s.OrdConnected) : (Real.toNnreal '' s).OrdConnected := by
   refine' ⟨ball_image_iff.2 fun x hx => ball_image_iff.2 fun y hy z hz => _⟩
   cases' le_total y 0 with hy₀ hy₀
   · rw [mem_Icc, Real.toNnreal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
@@ -1150,8 +1126,7 @@ theorem coe_nnabs (x : ℝ) : (nnabs x : ℝ) = |x| :=
 #align real.coe_nnabs Real.coe_nnabs
 
 @[simp]
-theorem nnabs_of_nonneg {x : ℝ} (h : 0 ≤ x) : nnabs x = toNnreal x :=
-  by
+theorem nnabs_of_nonneg {x : ℝ} (h : 0 ≤ x) : nnabs x = toNnreal x := by
   ext
   simp [coe_to_nnreal x h, abs_of_nonneg h]
 #align real.nnabs_of_nonneg Real.nnabs_of_nonneg
@@ -1163,8 +1138,7 @@ theorem coe_toNnreal_le (x : ℝ) : (toNnreal x : ℝ) ≤ |x| :=
   max_le (le_abs_self _) (abs_nonneg _)
 #align real.coe_to_nnreal_le Real.coe_toNnreal_le
 
-theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n :=
-  by
+theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
   rw [Nnreal.coe_nat_cast, Int.cast_natAbs, Real.coe_nnabs]
 #align real.cast_nat_abs_eq_nnabs_cast Real.cast_natAbs_eq_nnabs_cast
