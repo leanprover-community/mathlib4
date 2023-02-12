@@ -300,6 +300,7 @@ import Mathlib.Data.DList.Basic
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.Dfinsupp.Basic
 import Mathlib.Data.Dfinsupp.Interval
+import Mathlib.Data.Dfinsupp.Lex
 import Mathlib.Data.Dfinsupp.NeLocus
 import Mathlib.Data.Dfinsupp.Order
 import Mathlib.Data.ENat.Basic
