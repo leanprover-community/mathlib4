@@ -503,14 +503,9 @@ def enum (r : α → α → Prop) [IsWellOrder α r] (o) : o < type r → α :=
     by
     refine' funext fun H₂ : type t < type r => _
     have H₁ : type s < type r := by rwa [type_eq.2 ⟨h⟩]
-    have :
-      ∀ {o e} (H : o < type r),
-        @Eq.ndrec (fun (o : Ordinal) ↦ o < type r → α)
-            (fun h : type s < type r => (Classical.choice h).top) e H =
-          (Classical.choice H₁).top :=
-      by
-      intros
-      subst e
+    have : ∀ {o : Ordinal} {e : type s = o} (H : o < type r),
+      Eq.rec (fun h : type s < type r => (Classical.choice h).top) e H
+        = (Classical.choice H₁).top := by intros _ e _; subst e; rfl
     exact (this H₂).trans (PrincipalSeg.top_eq h (Classical.choice H₁) (Classical.choice H₂))
 #align ordinal.enum Ordinal.enum
 
@@ -529,7 +524,8 @@ theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
 theorem typein_enum (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < type r) :
     typein r (enum r o h) = o := by
   let ⟨a, e⟩ := typein_surj r h
-  clear _let_match <;> subst e <;> rw [enum_typein]
+  subst e
+  rw [enum_typein]
 #align ordinal.typein_enum Ordinal.typein_enum
 
 theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordinal} (h₁ : o₁ < type r)
@@ -587,7 +583,7 @@ def typein.principalSeg {α : Type u} (r : α → α → Prop) [IsWellOrder α r
     @PrincipalSeg α Ordinal.{u} r (· < ·) :=
   ⟨RelEmbedding.ofMonotone (typein r) fun _ _=> (typein_lt_typein r).2,
     type r,
-    fun _ => ⟨fun h => ⟨enum r _ h, typein_enum.{u,u,u} r h⟩, fun ⟨_, e⟩ => e ▸ typein_lt_type _ _⟩⟩
+    fun _ => ⟨fun h => ⟨enum r _ h, typein_enum r h⟩, fun ⟨_, e⟩ => e ▸ typein_lt_type _ _⟩⟩
 #align ordinal.typein.principal_seg Ordinal.typein.principalSeg
 
 @[simp]
@@ -1102,8 +1098,7 @@ instance uniqueIioOne : Unique (Iio (1 : Ordinal))
 
 instance uniqueOutOne : Unique (1 : Ordinal).out.α
     where
--- Porting note: inserted .{u,u,u,u} below
-  default := enum.{u,u,u,u} (· < ·) 0 (by simp)
+  default := enum (· < ·) 0 (by simp)
   uniq a := by
     unfold default
     rw [← @enum_typein _ (· < ·) (isWellOrder_out_lt _) a]
@@ -1122,7 +1117,7 @@ theorem one_out_eq (x : (1 : Ordinal).out.α) : x = enum (· < ·) 0 (by simp) :
 @[simp]
 theorem typein_one_out (x : (1 : Ordinal).out.α) :
     @typein _ (· < ·) (isWellOrder_out_lt _) x = 0 := by
-  rw [one_out_eq.{u,u,u} x, typein_enum]
+  rw [one_out_eq x, typein_enum]
 #align ordinal.typein_one_out Ordinal.typein_one_out
 
 @[simp]
@@ -1147,7 +1142,7 @@ theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o o' : Ordinal
 @[simp]
 theorem enum_le_enum' (a : Ordinal) {o o' : Ordinal} (ho : o < type (· < ·))
     (ho' : o' < type (· < ·)) : enum (· < ·) o ho ≤ @enum a.out.α (· < ·) _ o' ho' ↔ o ≤ o' := by
-  rw [← enum_le_enum (· < ·), ← not_lt]
+  rw [← @enum_le_enum _ (· < ·)  (isWellOrder_out_lt _), ← not_lt]
 #align ordinal.enum_le_enum' Ordinal.enum_le_enum'
 
 theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type r) (a : α) :
@@ -1168,7 +1163,7 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).out.α) :
         (by
           rw [type_lt]
           exact lt_succ o) := by
-  rw [← enum_typein (· < ·) a, enum_le_enum', ← lt_succ_iff]
+  rw [← @enum_typein _ (· < ·) (isWellOrder_out_lt _) a, enum_le_enum', ← lt_succ_iff]
   apply typein_lt_self
 #align ordinal.le_enum_succ Ordinal.le_enum_succ
 
@@ -1177,9 +1172,10 @@ theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Ordina
     (h₂ : o₂ < type r) : enum r o₁ h₁ = enum r o₂ h₂ ↔ o₁ = o₂ :=
   ⟨fun h => by
     by_contra hne
-    cases' lt_or_gt_of_ne hne with hlt hlt <;> apply (IsWellOrder.isIrrefl r).1
+    haveI : IsIrrefl _ r := inferInstance
+    cases' lt_or_gt_of_ne hne with hlt hlt <;> apply (this).1
     · rwa [← @enum_lt_enum α r _ o₁ o₂ h₁ h₂, h] at hlt
-    · change _ < _ at hlt
+    · rw [GT.gt] at hlt
       rwa [← @enum_lt_enum α r _ o₂ o₁ h₂ h₁, h] at hlt, fun h => by simp_rw [h]⟩
 #align ordinal.enum_inj Ordinal.enum_inj
 
@@ -1197,14 +1193,14 @@ def enumIso (r : α → α → Prop) [IsWellOrder α r] : Subrel (· < ·) (· <
 #align ordinal.enum_iso Ordinal.enumIso
 
 /-- The order isomorphism between ordinals less than `o` and `o.out.α`. -/
-@[simps]
+@[simps!]
 noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α
     where
   toFun x :=
     enum (· < ·) x.1 <| by
       rw [type_lt]
       exact x.2
-  invFun x := ⟨typein (· < ·) x, typein_lt_self x⟩
+  invFun x := ⟨@typein _ (· < ·) (isWellOrder_out_lt _) x, typein_lt_self x⟩
   left_inv := fun ⟨o', h⟩ => Subtype.ext_val (typein_enum _ _)
   right_inv h := enum_typein _ _
   map_rel_iff' := by
@@ -1219,7 +1215,7 @@ def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α :=
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (· < ·) 0 (by rwa [type_lt]) =
-      haveI H := out_order_bot_of_pos ho
+      haveI H := outOrderBotOfPos ho
       ⊥ :=
   rfl
 #align ordinal.enum_zero_eq_bot Ordinal.enum_zero_eq_bot
