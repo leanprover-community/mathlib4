@@ -8,9 +8,9 @@ Authors: Simon Hudon, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.NaturalIsomorphism
-import Mathbin.CategoryTheory.EqToHom
-import Mathbin.Data.Sum.Basic
+import Mathlib.CategoryTheory.NaturalIsomorphism
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Categories of indexed families of objects.
@@ -208,8 +208,7 @@ section EqToHom
 
 @[simp]
 theorem eqToHom_proj {x x' : ∀ i, C i} (h : x = x') (i : I) :
-    (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) :=
-  by
+    (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
   subst h
   rfl
 #align category_theory.functor.eq_to_hom_proj CategoryTheory.Functor.eqToHom_proj
@@ -219,15 +218,13 @@ end EqToHom
 -- One could add some natural isomorphisms showing
 -- how `functor.pi` commutes with `pi.eval` and `pi.comap`.
 @[simp]
-theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ pi.eval C i = f i :=
-  by
+theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ pi.eval C i = f i := by
   apply Functor.ext <;> intros
   · simp; · rfl
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
-theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ pi.eval C i = f' ⋙ pi.eval C i) : f = f' :=
-  by
+theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ pi.eval C i = f' ⋙ pi.eval C i) : f = f' := by
   apply Functor.ext; swap
   · intro X
     ext i
