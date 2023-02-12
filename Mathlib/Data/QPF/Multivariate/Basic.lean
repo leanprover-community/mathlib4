@@ -30,17 +30,17 @@ QPFs. It follows that the shape is a QPF and we can take its fixed point
 and create the list itself:
 
 ```lean
-def list (a : Type) := fix ListShape a -- not the actual notation
+def List (a : Type) := fix ListShape a -- not the actual notation
 ```
 
 We can continue and define the quotient on permutation of lists and create
 the multiset type:
 
 ```lean
-def multiset (a : Type) := QPF.quot List.perm List a -- not the actual notion
+def Multiset (a : Type) := QPF.quot List.perm List a -- not the actual notion
 ```
 
-And `multiset` is also a QPF. We can then create a novel data type (for Lean):
+And `Multiset` is also a QPF. We can then create a novel data type (for Lean):
 
 ```lean
 inductive Tree (a : Type)
