@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.UniformEmbedding
-import Mathbin.Topology.UniformSpace.Equiv
+import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Abstract theory of Hausdorff completions of uniform spaces
@@ -131,16 +131,14 @@ theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.DenseInducing
   if_pos hf
 #align abstract_completion.extend_def AbstractCompletion.extend_def
 
-theorem extend_coe [T2Space β] (hf : UniformContinuous f) (a : α) : (pkg.extend f) (ι a) = f a :=
-  by
+theorem extend_coe [T2Space β] (hf : UniformContinuous f) (a : α) : (pkg.extend f) (ι a) = f a := by
   rw [pkg.extend_def hf]
   exact pkg.dense_inducing.extend_eq hf.continuous a
 #align abstract_completion.extend_coe AbstractCompletion.extend_coe
 
 variable [CompleteSpace β]
 
-theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) :=
-  by
+theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
   by_cases hf : UniformContinuous f
   · rw [pkg.extend_def hf]
     exact uniformContinuous_uniformly_extend pkg.uniform_inducing pkg.dense hf
@@ -156,8 +154,7 @@ theorem continuous_extend : Continuous (pkg.extend f) :=
 variable [SeparatedSpace β]
 
 theorem extend_unique (hf : UniformContinuous f) {g : hatα → β} (hg : UniformContinuous g)
-    (h : ∀ a : α, f a = g (ι a)) : pkg.extend f = g :=
-  by
+    (h : ∀ a : α, f a = g (ι a)) : pkg.extend f = g := by
   apply pkg.funext pkg.continuous_extend hg.continuous
   simpa only [pkg.extend_coe hf] using h
 #align abstract_completion.extend_unique AbstractCompletion.extend_unique
@@ -257,8 +254,7 @@ theorem compare_coe (a : α) : pkg.compare pkg' (pkg.coe a) = pkg'.coe a :=
   pkg.extend_coe pkg'.uniformContinuous_coe a
 #align abstract_completion.compare_coe AbstractCompletion.compare_coe
 
-theorem inverse_compare : pkg.compare pkg' ∘ pkg'.compare pkg = id :=
-  by
+theorem inverse_compare : pkg.compare pkg' ∘ pkg'.compare pkg = id := by
   have uc := pkg.uniform_continuous_compare pkg'
   have uc' := pkg'.uniform_continuous_compare pkg
   apply pkg'.funext (uc.comp uc').Continuous continuous_id
@@ -347,8 +343,7 @@ variable {f : α → β → γ}
 
 variable [CompleteSpace γ] (f)
 
-theorem uniform_continuous_extension₂ : UniformContinuous₂ (pkg.extend₂ pkg' f) :=
-  by
+theorem uniform_continuous_extension₂ : UniformContinuous₂ (pkg.extend₂ pkg' f) := by
   rw [uniformContinuous₂_def, AbstractCompletion.extend₂, uncurry_curry]
   apply uniform_continuous_extend
 #align abstract_completion.uniform_continuous_extension₂ AbstractCompletion.uniform_continuous_extension₂
