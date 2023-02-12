@@ -32,13 +32,17 @@ structure ClopenUpperSet (α : Type _) [TopologicalSpace α] [LE α] extends Clo
 
 namespace ClopenUpperSet
 
-instance : SetLike (ClopenUpperSet α) α
-    where
+instance : SetLike (ClopenUpperSet α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
+
+/-- See Note [custom simps projection]. -/
+def Simps.coe (s : ClopenUpperSet α) : Set α := s
+
+initialize_simps_projections ClopenUpperSet (toClopens_carrier → coe)
 
 theorem upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'
@@ -77,18 +81,18 @@ instance : Bot (ClopenUpperSet α) :=
   ⟨⟨⊥, isUpperSet_empty⟩⟩
 
 instance : Lattice (ClopenUpperSet α) :=
-  SetLike.coe_injective.Lattice _ (fun _ _ => rfl) fun _ _ => rfl
+  SetLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
 
 instance : BoundedOrder (ClopenUpperSet α) :=
-  BoundedOrder.lift (coe : _ → Set α) (fun _ _ => id) rfl rfl
+  BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
 @[simp]
-theorem coe_sup (s t : ClopenUpperSet α) : (↑(s ⊔ t) : Set α) = s ∪ t :=
+theorem coe_sup (s t : ClopenUpperSet α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
 #align clopen_upper_set.coe_sup ClopenUpperSet.coe_sup
 
 @[simp]
-theorem coe_inf (s t : ClopenUpperSet α) : (↑(s ⊓ t) : Set α) = s ∩ t :=
+theorem coe_inf (s t : ClopenUpperSet α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 #align clopen_upper_set.coe_inf ClopenUpperSet.coe_inf
 
