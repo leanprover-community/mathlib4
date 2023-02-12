@@ -1078,14 +1078,11 @@ instance Cfg.inhabited : Inhabited Cfg₀ :=
 
 variable {Γ Λ}
 
--- Porting note: Added this for `TM0to1.tr_respects`.
-def step._match_1 (T : Tape Γ): Stmt₀ → Tape Γ
-  | Stmt.move d => T.move d
-  | Stmt.write a => T.write a
-
 /-- Execution semantics of the Turing machine. -/
 def step (M : Machine₀) : Cfg₀ → Option Cfg₀ :=
-  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a⟩ ↦ ⟨q', step._match_1 T a⟩
+  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a⟩ ↦ ⟨q', match a with
+    | Stmt.move d => T.move d
+    | Stmt.write a => T.write a⟩
 #align turing.TM0.step Turing.TM0.step
 
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
@@ -2058,9 +2055,12 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b => trCfg M
     · simp only [TM0.step, trCfg, e]; exact Eq.refl none
     cases' val with q' s
     simp only [FRespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some']
-    have : TM1.step (tr M) ⟨some (Λ'.act s q'), (), T⟩ =
-        some ⟨some (Λ'.normal q'), (), TM0.step._match_1 T s⟩ := by
+    revert e  -- Porting note: Added this so that `e` doesn't get into the `match`.
+    have : TM1.step (tr M) ⟨some (Λ'.act s q'), (), T⟩ = some ⟨some (Λ'.normal q'), (), match s with
+        | TM0.Stmt.move d => T.move d
+        | TM0.Stmt.write a => T.write a⟩ := by
       cases' s with d a <;> rfl
+    intro e
     refine' TransGen.head _ (TransGen.head' this _)
     · simp only [TM1.step, TM1.stepAux]
       rw [e]
@@ -2703,8 +2703,9 @@ theorem tr_respects_aux₃ {q v} {L : ListBlank (∀ k, Option (Γ k))} (n) : Re
     ⟨some (ret q), v, Tape.mk' ∅ (addBottom L)⟩ := by
   induction' n with n IH; · rfl
   refine' Reaches₀.head _ IH
-  rw [Option.mem_def, TM1.step, tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat,
-    addBottom_nth_succ_fst, TM1.stepAux, iterate_succ', Tape.move_right_left]
+  simp only [Option.mem_def, TM1.step]
+  rw [Option.some_inj, tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat,
+    addBottom_nth_succ_fst, TM1.stepAux, iterate_succ', Function.comp_apply, Tape.move_right_left]
   rfl
 #align turing.TM2to1.tr_respects_aux₃ Turing.TM2to1.tr_respects_aux₃
 
@@ -2770,7 +2771,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
 
 theorem tr_eval_dom (k) (L : List (Γ k)) :
     (TM1.eval (tr M) (trInit k L)).Dom ↔ (TM2.eval M k L).Dom :=
-  tr_eval_dom tr_respects (trCfg_init _ _)
+  Turing.tr_eval_dom (tr_respects M) (trCfg_init M _ _)
 #align turing.TM2to1.tr_eval_dom Turing.TM2to1.tr_eval_dom
 
 theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr M) (trInit k L))
@@ -2780,7 +2781,7 @@ theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr 
         (∀ k, L'.map (proj k) = ListBlank.mk ((S k).map some).reverse) ∧ S k = L₂ := by
   obtain ⟨c₁, h₁, rfl⟩ := (Part.mem_map_iff _).1 H₁
   obtain ⟨c₂, h₂, rfl⟩ := (Part.mem_map_iff _).1 H₂
-  obtain ⟨_, ⟨L', hT⟩, h₃⟩ := tr_eval (tr_respects M) (trCfg_init M k L) h₂
+  obtain ⟨_, ⟨L', hT⟩, h₃⟩ := Turing.tr_eval (tr_respects M) (trCfg_init M k L) h₂
   cases Part.mem_unique h₁ h₃
   exact ⟨_, L', by simp only [Tape.mk'_right₀], hT, rfl⟩
 #align turing.TM2to1.tr_eval Turing.TM2to1.tr_eval
@@ -2800,8 +2801,8 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
         this _ (ss.2 l lS) fun x hx => Finset.mem_bunionᵢ.2 ⟨_, lS, Finset.mem_insert_of_mem hx⟩
       rcases Finset.mem_insert.1 h with (rfl | h) <;> [exact this.1, exact this.2 _ h]
     clear h l'
-    refine' stmtStRec _ _ _ _ _ <;> intros
-    · -- stack op
+    refine' stmtStRec _ _ _ _ _
+    · intro _ _ _ IH ss' sub -- stack op
       rw [TM2to1.supports_run] at ss'
       simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         at sub
@@ -2822,24 +2823,24 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       · unfold TM1.SupportsStmt TM2to1.tr
         exact ⟨IH₁, fun _ _ => hret⟩
       · exact IH₂ _ h
-    · -- load
+    · intro _ _ IH ss' sub -- load
       unfold TM2to1.trStmts₁ at ss' sub⊢
       exact IH ss' sub
-    · -- branch
+    · intro _ _ _ IH₁ IH₂ ss' sub -- branch
       unfold TM2to1.trStmts₁ at sub
       cases' IH₁ ss'.1 fun x hx => sub x <| Finset.mem_union_left _ hx with IH₁₁ IH₁₂
       cases' IH₂ ss'.2 fun x hx => sub x <| Finset.mem_union_right _ hx with IH₂₁ IH₂₂
       refine' ⟨⟨IH₁₁, IH₂₁⟩, fun l h => _⟩
       rw [trStmts₁] at h
       rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h, exact IH₂₂ _ h]
-    · -- goto
+    · intro _ ss' _ -- goto
       rw [trStmts₁]
       unfold TM2to1.trNormal TM1.SupportsStmt
       unfold TM2.SupportsStmt at ss'
-      exact
-        ⟨fun _ v => Finset.mem_bunionᵢ.2 ⟨_, ss' v, Finset.mem_insert_self _ _⟩, fun _ =>
-          False.elim⟩
-    · exact ⟨trivial, fun _ => False.elim⟩⟩
+      exact ⟨fun _ v => Finset.mem_bunionᵢ.2 ⟨_, ss' v, Finset.mem_insert_self _ _⟩,
+        fun _ => False.elim⟩
+    · intro _ _ -- halt
+      exact ⟨trivial, fun _ => False.elim⟩⟩
 #align turing.TM2to1.tr_supports Turing.TM2to1.tr_supports
 
 -- halt
