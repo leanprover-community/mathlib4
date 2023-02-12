@@ -2749,19 +2749,20 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := fun c₁ 
   · exact ⟨_, ⟨_, hT⟩, refl_trans_gen.refl⟩
 #align turing.TM2to1.tr_respects Turing.TM2to1.tr_respects
 
-theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trInit k L)) := by
+theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trInit k L) : Cfg₂₁) := by
   rw [(_ : TM1.init _ = _)]
   · refine' ⟨ListBlank.mk (L.reverse.map fun a => update default k (some a)), fun k' => _⟩
     refine' ListBlank.ext fun i => _
-    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map, (· ∘ ·),
+    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map,
       List.get?_map, proj, PointedMap.mk_val]
+    simp only [Function.comp, TM2.init]
     by_cases k' = k
     · subst k'
       simp only [Function.update_same]
       rw [ListBlank.nth_mk, List.getI_eq_iget_get?, ← List.map_reverse, List.get?_map]
     · simp only [Function.update_noteq h]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_get?, List.map, List.reverse_nil, List.get?]
-      cases L.reverse.nth i <;> rfl
+      rw [ListBlank.nth_mk, List.getI_eq_iget_get?, List.map, List.reverse_nil]
+      cases L.reverse.get? i <;> rfl
   · rw [trInit, TM1.init]
     dsimp only
     congr <;> cases L.reverse <;> try rfl
@@ -2771,7 +2772,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
 
 theorem tr_eval_dom (k) (L : List (Γ k)) :
     (TM1.eval (tr M) (trInit k L)).Dom ↔ (TM2.eval M k L).Dom :=
-  Turing.tr_eval_dom (tr_respects M) (trCfg_init M _ _)
+  Turing.tr_eval_dom (tr_respects M) (trCfg_init k L)
 #align turing.TM2to1.tr_eval_dom Turing.TM2to1.tr_eval_dom
 
 theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr M) (trInit k L))
@@ -2781,7 +2782,7 @@ theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr 
         (∀ k, L'.map (proj k) = ListBlank.mk ((S k).map some).reverse) ∧ S k = L₂ := by
   obtain ⟨c₁, h₁, rfl⟩ := (Part.mem_map_iff _).1 H₁
   obtain ⟨c₂, h₂, rfl⟩ := (Part.mem_map_iff _).1 H₂
-  obtain ⟨_, ⟨L', hT⟩, h₃⟩ := Turing.tr_eval (tr_respects M) (trCfg_init M k L) h₂
+  obtain ⟨_, ⟨L', hT⟩, h₃⟩ := Turing.tr_eval (tr_respects M) (trCfg_init k L) h₂
   cases Part.mem_unique h₁ h₃
   exact ⟨_, L', by simp only [Tape.mk'_right₀], hT, rfl⟩
 #align turing.TM2to1.tr_eval Turing.TM2to1.tr_eval
