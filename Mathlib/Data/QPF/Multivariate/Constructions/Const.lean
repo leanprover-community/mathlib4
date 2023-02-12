@@ -9,87 +9,78 @@ Authors: Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Control.Functor.Multivariate
-import Mathlib.Data.Qpf.Multivariate.Basic
+import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # Constant functors are QPFs
 
 Constant functors map every type vectors to the same target type. This
 is a useful device for constructing data types from more basic types
-that are not actually functorial. For instance `const n nat` makes
-`nat` into a functor that can be used in a functor-based data type
+that are not actually functorial. For instance `Const n Nat` makes
+`Nat` into a functor that can be used in a functor-based data type
 specification.
 -/
 
 
 universe u
 
-namespace Mvqpf
+namespace MvQPF
 
 open MvFunctor
 
 variable (n : ℕ)
 
 /-- Constant multivariate functor -/
-@[nolint unused_arguments]
-def Const (A : Type _) (v : TypeVec.{u} n) : Type _ :=
-  A
-#align mvqpf.const Mvqpf.Const
+@[nolint unusedArguments]
+def Const (A : Type _) (_v : TypeVec.{u} n) : Type _ := A
+#align mvqpf.const MvQPF.Const
 
-instance Const.inhabited {A α} [Inhabited A] : Inhabited (Const n A α) :=
-  ⟨(default : A)⟩
-#align mvqpf.const.inhabited Mvqpf.Const.inhabited
+instance Const.inhabited {A α} [Inhabited A] : Inhabited (Const n A α) := ⟨(default : A)⟩
+#align mvqpf.const.inhabited MvQPF.Const.inhabited
 
 namespace Const
 
-open MvFunctor Mvpfunctor
+open MvFunctor MvPFunctor
 
 variable {n} {A : Type u} {α β : TypeVec.{u} n} (f : α ⟹ β)
 
 /-- Constructor for constant functor -/
-protected def mk (x : A) : (Const n A) α :=
-  x
-#align mvqpf.const.mk Mvqpf.Const.mk
+protected def mk (x : A) : (Const n A) α := x
+#align mvqpf.const.mk MvQPF.Const.mk
 
 /-- Destructor for constant functor -/
-protected def get (x : (Const n A) α) : A :=
-  x
-#align mvqpf.const.get Mvqpf.Const.get
+protected def get (x : (Const n A) α) : A := x
+#align mvqpf.const.get MvQPF.Const.get
 
 @[simp]
-protected theorem mk_get (x : (Const n A) α) : Const.mk (Const.get x) = x :=
-  rfl
-#align mvqpf.const.mk_get Mvqpf.Const.mk_get
+protected theorem mk_get (x : (Const n A) α) : Const.mk (Const.get x) = x := rfl
+#align mvqpf.const.mk_get MvQPF.Const.mk_get
 
 @[simp]
-protected theorem get_mk (x : A) : Const.get (Const.mk x : Const n A α) = x :=
-  rfl
-#align mvqpf.const.get_mk Mvqpf.Const.get_mk
+protected theorem get_mk (x : A) : Const.get (Const.mk x : Const n A α) = x := rfl
+#align mvqpf.const.get_mk MvQPF.Const.get_mk
 
 /-- `map` for constant functor -/
 protected def map : (Const n A) α → (Const n A) β := fun x => x
-#align mvqpf.const.map Mvqpf.Const.map
+#align mvqpf.const.map MvQPF.Const.map
 
-instance : MvFunctor (Const n A) where map α β f := Const.map
+instance MvFunctor : MvFunctor (Const n A) where map _f := Const.map
 
-theorem map_mk (x : A) : f <$$> Const.mk x = Const.mk x :=
-  rfl
-#align mvqpf.const.map_mk Mvqpf.Const.map_mk
+theorem map_mk (x : A) : f <$$> Const.mk x = Const.mk x := rfl
+#align mvqpf.const.map_mk MvQPF.Const.map_mk
 
-theorem get_map (x : (Const n A) α) : Const.get (f <$$> x) = Const.get x :=
-  rfl
-#align mvqpf.const.get_map Mvqpf.Const.get_map
+theorem get_map (x : (Const n A) α) : Const.get (f <$$> x) = Const.get x := rfl
+#align mvqpf.const.get_map MvQPF.Const.get_map
 
-instance mvqpf : @Mvqpf _ (Const n A) Mvqpf.Const.mvfunctor
-    where
-  p := Mvpfunctor.const n A
-  abs α x := Mvpfunctor.const.get x
-  repr α x := Mvpfunctor.const.mk n x
-  abs_repr := by intros <;> simp
-  abs_map := by intros <;> simp <;> rfl
-#align mvqpf.const.mvqpf Mvqpf.Const.mvqpf
+instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where
+  p := MvPFunctor.const n A
+  abs x := MvPFunctor.const.get x
+  repr x := MvPFunctor.const.mk n x
+  abs_repr := fun _ => const.get_mk _
+  abs_map := fun _ => const.get_map _
+#align mvqpf.const.mvqpf MvQPF.Const.mvqpf
 
 end Const
 
-end Mvqpf
+end MvQPF
 
