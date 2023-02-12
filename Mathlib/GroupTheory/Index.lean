@@ -54,7 +54,8 @@ noncomputable def index : ℕ :=
 /-- The relative index of a subgroup as a natural number,
   and returns 0 if the relative index is infinite. -/
 @[to_additive
-      "The relative index of a subgroup as a natural number,\n  and returns 0 if the relative index is infinite."]
+      "The relative index of a subgroup as a natural number, and returns 0 if the relative index is
+      infinite."]
 noncomputable def relindex : ℕ :=
   (H.subgroupOf K).index
 #align subgroup.relindex Subgroup.relindex
@@ -181,7 +182,8 @@ theorem relindex_dvd_of_le_left (hHK : H ≤ K) : K.relindex L ∣ H.relindex L 
 /-- A subgroup has index two if and only if there exists `a` such that for all `b`, exactly one
 of `b * a` and `b` belong to `H`. -/
 @[to_additive
-      "/-- An additive subgroup has index two if and only if there exists `a` such that for\nall `b`, exactly one of `b + a` and `b` belong to `H`. -/"]
+      "/-- An additive subgroup has index two if and only if there exists `a` such that for all `b`,
+      exactly one of `b + a` and `b` belong to `H`. -/"]
 theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈ H) := by
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
     QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne.def, QuotientGroup.eq, mul_one,
@@ -453,9 +455,9 @@ theorem index_inf_le : (H ⊓ K).index ≤ H.index * K.index := by
 theorem relindex_infᵢ_ne_zero {ι : Type _} [hι : Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).relindex L ≠ 0) : (⨅ i, f i).relindex L ≠ 0 :=
   haveI := Fintype.ofFinite ι
-  (finset.prod_ne_zero_iff.mpr fun i hi => hf i) ∘
-    nat.card_pi.symm.trans ∘
-      Finite.card_eq_zero_of_embedding (quotient_infi_subgroupOf_embedding f L)
+  (Finset.prod_ne_zero_iff.mpr fun i hi => hf i) ∘
+    Nat.card_pi.symm.trans ∘
+      Finite.card_eq_zero_of_embedding (quotientInfᵢSubgroupOfEmbedding f L)
 #align subgroup.relindex_infi_ne_zero Subgroup.relindex_infᵢ_ne_zero
 #align add_subgroup.relindex_infi_ne_zero AddSubgroup.relindex_infi_ne_zero
 
@@ -474,13 +476,13 @@ theorem relindex_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
 theorem index_infᵢ_ne_zero {ι : Type _} [Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).index ≠ 0) : (⨅ i, f i).index ≠ 0 := by
   simp_rw [← relindex_top_right] at hf⊢
-  exact relindex_infi_ne_zero hf
+  exact relindex_infᵢ_ne_zero hf
 #align subgroup.index_infi_ne_zero Subgroup.index_infᵢ_ne_zero
 #align add_subgroup.index_infi_ne_zero AddSubgroup.index_infi_ne_zero
 
 @[to_additive]
 theorem index_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
-    (⨅ i, f i).index ≤ ∏ i, (f i).index := by simp_rw [← relindex_top_right, relindex_infi_le]
+    (⨅ i, f i).index ≤ ∏ i, (f i).index := by simp_rw [← relindex_top_right, relindex_infᵢ_le]
 #align subgroup.index_infi_le Subgroup.index_infᵢ_le
 #align add_subgroup.index_infi_le AddSubgroup.index_infi_le
 
@@ -591,7 +593,7 @@ instance finiteIndex_ker {G' : Type _} [Group G'] (f : G →* G') [Finite f.rang
 #align add_subgroup.finite_index_ker AddSubgroup.finiteIndex_ker
 
 instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
-  rw [normal_core_eq_ker]
+  rw [normalCore_eq_ker]
   infer_instance
 #align subgroup.finite_index_normal_core Subgroup.finiteIndex_normalCore
 
@@ -599,14 +601,14 @@ variable (G)
 
 instance finiteIndex_center [Finite (commutatorSet G)] [Group.Fg G] : FiniteIndex (center G) := by
   obtain ⟨S, -, hS⟩ := Group.rank_spec G
-  exact ⟨mt (Finite.card_eq_zero_of_embedding (quotient_center_embedding hS)) finite.card_pos.ne'⟩
+  exact ⟨mt (Finite.card_eq_zero_of_embedding (quotientCenterEmbedding hS)) Finite.card_pos.ne'⟩
 #align subgroup.finite_index_center Subgroup.finiteIndex_center
 
 theorem index_center_le_pow [Finite (commutatorSet G)] [Group.Fg G] :
     (center G).index ≤ Nat.card (commutatorSet G) ^ Group.rank G := by
   obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
   rw [← hS1, ← Fintype.card_coe, ← Nat.card_eq_fintype_card, ← Finset.coe_sort_coe, ← Nat.card_fun]
-  exact Finite.card_le_of_embedding (quotient_center_embedding hS2)
+  exact Finite.card_le_of_embedding (quotientCenterEmbedding hS2)
 #align subgroup.index_center_le_pow Subgroup.index_center_le_pow
 
 end FiniteIndex
