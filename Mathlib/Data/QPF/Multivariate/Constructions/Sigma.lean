@@ -80,9 +80,9 @@ instance : MvQPF (Sigma F) where
   p := Sigma.p F
   abs {α} := @Sigma.abs _ _ F _ _ α
   repr {α} := @Sigma.repr _ _ F _ _ α
-  abs_repr := by rintro α ⟨x, f⟩ ; simp [Sigma.repr, Sigma.abs, abs_repr]
-  abs_map := by rintro α β f ⟨x, g⟩ ; simp [Sigma.abs, MvPFunctor.map_eq] ;
-                simp [(· <$$> ·), ← abs_map, ← MvPFunctor.map_eq]
+  abs_repr := by rintro α ⟨x, f⟩; simp only [Sigma.abs, Sigma.repr, Sigma.eta, abs_repr]
+  abs_map := by rintro α β f ⟨x, g⟩; simp only [Sigma.abs, MvPFunctor.map_eq]
+                simp only [(· <$$> ·), ← abs_map, ← MvPFunctor.map_eq]
 
 end Sigma
 
@@ -94,6 +94,7 @@ variable [∀ α, MvQPF <| F α]
 
 /-- polynomial functor representation of a dependent product -/
 protected def p : MvPFunctor n :=
+  -- Porting note: _root_.Sigma
   ⟨∀ a, (p (F a)).A, fun x i => _root_.Sigma fun a : A => (p (F a)).B (x a) i⟩
 set_option linter.uppercaseLean3 false in
 #align mvqpf.pi.P MvQPF.Pi.p
@@ -110,8 +111,8 @@ protected def repr ⦃α⦄ : Pi F α → (Pi.p F).Obj α
 
 instance : MvQPF (Pi F) where
   p := Pi.p F
-  abs {α} := @Pi.abs _ _ F _ _ α
-  repr {α} := @Pi.repr _ _ F _ _ α
+  abs := @Pi.abs _ _ F _ _
+  repr := @Pi.repr _ _ F _ _
   abs_repr := by rintro α f; simp only [Pi.abs, Pi.repr, Sigma.eta, abs_repr]
   abs_map := by rintro α β f ⟨x, g⟩; simp only [Pi.abs, (· <$$> ·), ← abs_map]; rfl
 
