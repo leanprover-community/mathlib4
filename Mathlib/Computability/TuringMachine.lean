@@ -2794,7 +2794,7 @@ noncomputable def trSupp (S : Finset Λ) : Finset Λ'₂₁ :=
 
 theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M S) :=
   ⟨Finset.mem_bunionᵢ.2 ⟨_, ss.1, Finset.mem_insert.2 <| Or.inl rfl⟩, fun l' h => by
-    suffices ∀ (q) (ss' : TM2.SupportsStmt S q) (sub : ∀ x ∈ trStmts₁ q, x ∈ trSupp M S),
+    suffices ∀ (q) (_ : TM2.SupportsStmt S q) (_ : ∀ x ∈ trStmts₁ q, x ∈ trSupp M S),
         TM1.SupportsStmt (trSupp M S) (trNormal q) ∧
         ∀ l' ∈ trStmts₁ q, TM1.SupportsStmt (trSupp M S) (tr M l') by
       rcases Finset.mem_bunionᵢ.1 h with ⟨l, lS, h⟩
@@ -2810,8 +2810,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       have hgo := sub _ (Or.inl <| Or.inl rfl)
       have hret := sub _ (Or.inl <| Or.inr rfl)
       cases' IH ss' fun x hx => sub x <| Or.inr hx with IH₁ IH₂
-      refine'
-        ⟨by simp only [trNormal_run, TM1.SupportsStmt] <;> intros <;> exact hgo, fun l h => _⟩
+      refine' ⟨by simp only [trNormal_run, TM1.SupportsStmt]; intros; exact hgo, fun l h => _⟩
       rw [trStmts₁_run] at h
       simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         at h
@@ -2834,12 +2833,10 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       rw [trStmts₁] at h
       rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h, exact IH₂₂ _ h]
     · intro _ ss' _ -- goto
-      rw [trStmts₁]
-      unfold TM2to1.trNormal TM1.SupportsStmt
-      unfold TM2.SupportsStmt at ss'
-      exact ⟨fun _ v => Finset.mem_bunionᵢ.2 ⟨_, ss' v, Finset.mem_insert_self _ _⟩,
-        fun _ => False.elim⟩
+      simp only [trStmts₁, Finset.not_mem_empty]; refine' ⟨_, fun _ => False.elim⟩
+      exact fun _ v => Finset.mem_bunionᵢ.2 ⟨_, ss' v, Finset.mem_insert_self _ _⟩
     · intro _ _ -- halt
+      simp only [trStmts₁, Finset.not_mem_empty]
       exact ⟨trivial, fun _ => False.elim⟩⟩
 #align turing.TM2to1.tr_supports Turing.TM2to1.tr_supports
 
