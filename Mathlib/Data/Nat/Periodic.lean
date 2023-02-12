@@ -8,9 +8,9 @@ Authors: Bolton Bailey
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Periodic
-import Mathbin.Data.Nat.Count
-import Mathbin.Data.Nat.Interval
+import Mathlib.Algebra.Periodic
+import Mathlib.Data.Nat.Count
+import Mathlib.Data.Nat.Interval
 
 /-!
 # Periodic Functions on ℕ
@@ -48,8 +48,7 @@ open Multiset
 /-- An interval of length `a` filtered over a periodic predicate of period `a` has cardinality
 equal to the number naturals below `a` for which `p a` is true. -/
 theorem filter_multiset_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [DecidablePred p]
-    (pp : Periodic p a) : (filter p (Ico n (n + a))).card = a.count p :=
-  by
+    (pp : Periodic p a) : (filter p (Ico n (n + a))).card = a.count p := by
   rw [count_eq_card_filter_range, Finset.card, Finset.filter_val, Finset.range_val, ←
     multiset_Ico_map_mod n, ← map_count_true_eq_filter_card, ← map_count_true_eq_filter_card,
     map_map, Function.comp]
