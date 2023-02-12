@@ -1012,13 +1012,9 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
             Sum.recOn b (fun x => ⟨fun _ => ⟨x, rfl⟩, fun _ => Sum.Lex.sep _ _⟩) fun x =>
               Sum.lex_inr_inr.trans ⟨False.elim, fun ⟨x, H⟩ => Sum.inl_ne_inr H⟩⟩⟩),
     induction_on a fun α r hr =>
-      induction_on b fun β s hs ⟨⟨f, t, hf⟩⟩ =>
-        by
+      induction_on b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
         haveI := hs
-        refine'
-          ⟨⟨@RelEmbedding.ofMonotone (Sum α PUnit) β _ _ _ _ (Sum.rec _ _) fun a b => _, fun a b =>
-              _⟩⟩
-        · exact f; · exact fun _ => t
+        refine' ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ _), fun a b ↦ _⟩⟩
         · rcases a with (a | _) <;> rcases b with (b | _)
           · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
           · intro
@@ -1210,8 +1206,9 @@ noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α
 #align ordinal.enum_iso_out Ordinal.enumIsoOut
 
 /-- `o.out.α` is an `order_bot` whenever `0 < o`. -/
-def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α :=
-  ⟨_, enum_zero_le' ho⟩
+def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α where
+  bot_le := enum_zero_le' ho
+
 #align ordinal.out_order_bot_of_pos Ordinal.outOrderBotOfPos
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
@@ -1257,7 +1254,8 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       cases' f with f a hf
       exists a
       revert hf
-      apply induction_on a
+      -- Porting note: apply induction_on does not work, refine does
+      refine induction_on a ?_
       intro α r _ hf
       refine'
         lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
@@ -1273,9 +1271,9 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
         simp [e]
     · cases' h with a e
       rw [← e]
-      apply induction_on a
+      refine induction_on a ?_
       intro α r _
-      exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein.principal_seg r⟩⟩
+      exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein.principalSeg r⟩⟩
 #align ordinal.lift.principal_seg Ordinal.lift.principalSeg
 
 @[simp]
@@ -1284,8 +1282,9 @@ theorem lift.principalSeg_coe :
   rfl
 #align ordinal.lift.principal_seg_coe Ordinal.lift.principalSeg_coe
 
+-- Porting note: Added universe hints below
 @[simp]
-theorem lift.principalSeg_top : lift.principalSeg.top = univ :=
+theorem lift.principalSeg_top : (lift.principalSeg.{u,v}).top = univ.{u,v} :=
   rfl
 #align ordinal.lift.principal_seg_top Ordinal.lift.principalSeg_top
 
@@ -1365,10 +1364,11 @@ theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
 theorem card_ord (c) : (ord c).card = c :=
   Quotient.inductionOn c fun α => by
     let ⟨r, _, e⟩ := ord_eq α
-    simp only [mk_def, e, card_type]
+    -- Porting note: cardinal.mk_def is now Cardinal.mk'_def, not sure why
+    simp only [mk'_def, e, card_type]
 #align cardinal.card_ord Cardinal.card_ord
 
-/-- Galois coinsertion between `cardinal.ord` and `ordinal.card`. -/
+/-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
 def gciOrdCard : GaloisCoinsertion ord card :=
   gc_ord_card.toGaloisCoinsertion fun c => c.card_ord.le
 #align cardinal.gci_ord_card Cardinal.gciOrdCard
@@ -1488,20 +1488,18 @@ theorem lift_lt_univ (c : Cardinal) : lift.{u + 1, u} c < univ.{u, u + 1} := by
 #align cardinal.lift_lt_univ Cardinal.lift_lt_univ
 
 theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} := by
-  simpa only [lift_lift, lift_univ, univ_umax] using lift_lt.{_, max (u + 1) v}.2 (lift_lt_univ c)
+  have := lift_lt.{_, max (u+1) v}.2 (lift_lt_univ c)
+  rw [lift_lift, lift_univ, univ_umax.{u,v}] at this
+  exact this
 #align cardinal.lift_lt_univ' Cardinal.lift_lt_univ'
 
 @[simp]
-theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} :=
-  le_antisymm (ord_card_le _) <|
-    le_of_forall_lt fun o h =>
-      lt_ord.2
-        (by
-          rcases lift.principalSeg.{u, v}.down.1
-              (by simpa only [lift.principal_seg_coe] using h) with
-            ⟨o', rfl⟩
-          simp only [lift.principal_seg_coe]; rw [← lift_card]
-          apply lift_lt_univ')
+theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
+  refine' le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
+  have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
+  rcases this with ⟨o, h'⟩
+  rw [←h', lift.principalSeg_coe, ← lift_card]
+  apply lift_lt_univ'
 #align cardinal.ord_univ Cardinal.ord_univ
 
 theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
@@ -1510,7 +1508,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
     rw [ord_univ] at this
     cases' lift.principalSeg.{u, u + 1}.down.1 (by simpa only [lift.principalSeg_top] ) with o e
     have := card_ord c
-    rw [← e, lift.principal_seg_coe, ← lift_card] at this
+    rw [← e, lift.principalSeg_coe, ← lift_card] at this
     exact ⟨_, this.symm⟩, fun ⟨c', e⟩ => e.symm ▸ lift_lt_univ _⟩
 #align cardinal.lt_univ Cardinal.lt_univ
 
@@ -1523,7 +1521,7 @@ theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c
 #align cardinal.lt_univ' Cardinal.lt_univ'
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
-    Small.{v} α ↔ Cardinal.lift (#α) < univ.{v, max u (v + 1)} := by
+    Small.{v} α ↔ Cardinal.lift.{v+1,_} (#α) < univ.{v, max u (v + 1)} := by
   rw [lt_univ']
   constructor
   · rintro ⟨β, e⟩
@@ -1537,7 +1535,7 @@ end Cardinal
 namespace Ordinal
 
 @[simp]
-theorem card_univ : card univ = Cardinal.univ :=
+theorem card_univ : card univ.{u,v} = Cardinal.univ.{u,v} :=
   rfl
 #align ordinal.card_univ Ordinal.card_univ
 
