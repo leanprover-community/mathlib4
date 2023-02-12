@@ -8,7 +8,7 @@ Authors: Jeremy Avigad, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Qpf.Multivariate.Basic
+import Mathlib.Data.Qpf.Multivariate.Basic
 
 /-!
 # The quotient of QPF is itself a QPF
