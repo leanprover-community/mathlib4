@@ -20,18 +20,18 @@ topological space `X` and prove some properties inherited from `X`.
 
 ## Main definitions
 
-* `alexandroff`: the Alexandroff compactification, we use coercion for the canonical embedding
-  `X → alexandroff X`; when `X` is already compact, the compactification adds an isolated point
+* `Alexandroff`: the Alexandroff compactification, we use coercion for the canonical embedding
+  `X → Alexandroff X`; when `X` is already compact, the compactification adds an isolated point
   to the space.
-* `alexandroff.infty`: the extra point
+* `Alexandroff.infty`: the extra point
 
 ## Main results
 
-* The topological structure of `alexandroff X`
-* The connectedness of `alexandroff X` for a noncompact, preconnected `X`
-* `alexandroff X` is `T₀` for a T₀ space `X`
-* `alexandroff X` is `T₁` for a T₁ space `X`
-* `alexandroff X` is normal if `X` is a locally compact Hausdorff space
+* The topological structure of `Alexandroff X`
+* The connectedness of `Alexandroff X` for a noncompact, preconnected `X`
+* `Alexandroff X` is `T₀` for a T₀ space `X`
+* `Alexandroff X` is `T₁` for a T₁ space `X`
+* `Alexandroff X` is normal if `X` is a locally compact Hausdorff space
 
 ## Tags
 
@@ -44,8 +44,8 @@ open Set Filter Topology
 /-!
 ### Definition and basic properties
 
-In this section we define `alexandroff X` to be the disjoint union of `X` and `∞`, implemented as
-`option X`. Then we restate some lemmas about `option X` for `alexandroff X`.
+In this section we define `Alexandroff X` to be the disjoint union of `X` and `∞`, implemented as
+`Option X`. Then we restate some lemmas about `Option X` for `Alexandroff X`.
 -/
 
 
@@ -56,7 +56,7 @@ def Alexandroff (X : Type _) :=
   Option X
 #align alexandroff Alexandroff
 
-/-- The repr uses the notation from the `alexandroff` locale. -/
+/-- The repr uses the notation from the `Alexandroff` locale. -/
 instance [Repr X] : Repr (Alexandroff X) :=
   ⟨fun o _ =>
     match o with
@@ -105,7 +105,7 @@ theorem infty_ne_coe (x : X) : ∞ ≠ (x : Alexandroff X) :=
   fun.
 #align alexandroff.infty_ne_coe Alexandroff.infty_ne_coe
 
-/-- Recursor for `alexandroff` using the preferred forms `∞` and `↑x`. -/
+/-- Recursor for `Alexandroff` using the preferred forms `∞` and `↑x`. -/
 @[elab_as_elim]
 protected def rec {C : Alexandroff X → Sort _} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
     ∀ z : Alexandroff X, C z
@@ -167,15 +167,15 @@ theorem coe_preimage_infty : ((↑) : X → Alexandroff X) ⁻¹' {∞} = ∅ :=
 #align alexandroff.coe_preimage_infty Alexandroff.coe_preimage_infty
 
 /-!
-### Topological space structure on `alexandroff X`
+### Topological space structure on `Alexandroff X`
 
-We define a topological space structure on `alexandroff X` so that `s` is open if and only if
+We define a topological space structure on `Alexandroff X` so that `s` is open if and only if
 
 * `(↑) ⁻¹' s` is open in `X`;
 * if `∞ ∈ s`, then `((↑) ⁻¹' s)ᶜ` is compact.
 
 Then we reformulate this definition in a few different ways, and prove that
-`(↑) : X → alexandroff X` is an open embedding. If `X` is not a compact space, then we also prove
+`(↑) : X → Alexandroff X` is an open embedding. If `X` is not a compact space, then we also prove
 that `(↑)` has dense range, so it is a dense embedding.
 -/
 
@@ -250,7 +250,7 @@ theorem isClosed_image_coe {s : Set X} :
   rw [← isOpen_compl_iff, isOpen_compl_image_coe]
 #align alexandroff.is_closed_image_coe Alexandroff.isClosed_image_coe
 
-/-- An open set in `alexandroff X` constructed from a closed compact set in `X` -/
+/-- An open set in `Alexandroff X` constructed from a closed compact set in `X` -/
 def opensOfCompl (s : Set X) (h₁ : IsClosed s) (h₂ : IsCompact s) :
     TopologicalSpace.Opens (Alexandroff X) :=
   ⟨((↑) '' s)ᶜ, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩
@@ -299,8 +299,8 @@ theorem comap_coe_nhds (x : X) : comap ((↑) : X → Alexandroff X) (𝓝 x) = 
   (openEmbedding_coe.toInducing.nhds_eq_comap x).symm
 #align alexandroff.comap_coe_nhds Alexandroff.comap_coe_nhds
 
-/-- If `x` is not an isolated point of `X`, then `x : alexandroff X` is not an isolated point
-of `alexandroff X`. -/
+/-- If `x` is not an isolated point of `X`, then `x : Alexandroff X` is not an isolated point
+of `Alexandroff X`. -/
 instance nhdsWithin_compl_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] :
     NeBot (𝓝[≠] (x : Alexandroff X)) := by
   simpa [nhdsWithin_coe, preimage, coe_eq_coe] using h.map some
@@ -316,7 +316,7 @@ theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : Alexandroff X) = map (↑) 
     simp [compl_image_coe, ← diff_eq, subset_preimage_image]
 #align alexandroff.nhds_within_compl_infty_eq Alexandroff.nhdsWithin_compl_infty_eq
 
-/-- If `X` is a non-compact space, then `∞` is not an isolated point of `alexandroff X`. -/
+/-- If `X` is a non-compact space, then `∞` is not an isolated point of `Alexandroff X`. -/
 instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : Alexandroff X)) := by
   rw [nhdsWithin_compl_infty_eq]
   infer_instance
@@ -384,7 +384,7 @@ theorem continuousAt_coe {Y : Type _} [TopologicalSpace Y] {f : Alexandroff X �
   rw [ContinuousAt, nhds_coe_eq, tendsto_map'_iff, ContinuousAt]; rfl
 #align alexandroff.continuous_at_coe Alexandroff.continuousAt_coe
 
-/-- If `X` is not a compact space, then the natural embedding `X → alexandroff X` has dense range.
+/-- If `X` is not a compact space, then the natural embedding `X → Alexandroff X` has dense range.
 -/
 theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → Alexandroff X) := by
   rw [DenseRange, ← compl_infty]
@@ -426,12 +426,12 @@ theorem inseparable_iff {x y : Alexandroff X} :
 /-!
 ### Compactness and separation properties
 
-In this section we prove that `alexandroff X` is a compact space; it is a T₀ (resp., T₁) space if
+In this section we prove that `Alexandroff X` is a compact space; it is a T₀ (resp., T₁) space if
 the original space satisfies the same separation axiom. If the original space is a locally compact
-Hausdorff space, then `alexandroff X` is a normal (hence, T₃ and Hausdorff) space.
+Hausdorff space, then `Alexandroff X` is a normal (hence, T₃ and Hausdorff) space.
 
 Finally, if the original space `X` is *not* compact and is a preconnected space, then
-`alexandroff X` is a connected space.
+`Alexandroff X` is a connected space.
 -/
 
 
@@ -444,13 +444,13 @@ instance : CompactSpace (Alexandroff X) where
     rw [← insert_none_range_some X]
     exact this.isCompact_insert_range_of_cocompact continuous_coe
 
-/-- The one point compactification of a `t0_space` space is a `t0_space`. -/
+/-- The one point compactification of a `T0Space` space is a `T0Space`. -/
 instance [T0Space X] : T0Space (Alexandroff X) := by
   refine' ⟨fun x y hxy => _⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
   exacts [rfl, congr_arg some h.eq]
 
-/-- The one point compactification of a `t1_space` space is a `t1_space`. -/
+/-- The one point compactification of a `T1Space` space is a `T1Space`. -/
 instance [T1Space X] : T1Space (Alexandroff X) where
   t1 z := by
     induction z using Alexandroff.rec
@@ -474,13 +474,13 @@ instance [LocallyCompactSpace X] [T2Space X] : NormalSpace (Alexandroff X) := by
   · rwa [nhds_coe_eq, nhds_coe_eq, disjoint_map coe_injective, disjoint_nhds_nhds,
       ← coe_injective.ne_iff]
 
-/-- If `X` is not a compact space, then `alexandroff X` is a connected space. -/
+/-- If `X` is not a compact space, then `Alexandroff X` is a connected space. -/
 instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (Alexandroff X) where
   toPreconnectedSpace := denseEmbedding_coe.toDenseInducing.preconnectedSpace
   toNonempty := inferInstance
 
 /-- If `X` is an infinite type with discrete topology (e.g., `ℕ`), then the identity map from
-`cofinite_topology (alexandroff X)` to `alexandroff X` is not continuous. -/
+`CofiniteTopology (Alexandroff X)` to `Alexandroff X` is not continuous. -/
 theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X] :
     ¬Continuous (@CofiniteTopology.of (Alexandroff X)).symm := by
   inhabit X
@@ -492,11 +492,11 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
 
 end Alexandroff
 
-/-- A concrete counterexample shows that  `continuous.homeo_of_equiv_compact_to_t2`
-cannot be generalized from `t2_space` to `t1_space`.
+/-- A concrete counterexample shows that  `Continuous.homeoOfEquivCompactToT2`
+cannot be generalized from `T2Space` to `T1Space`.
 
-Let `α = alexandroff ℕ` be the one-point compactification of `ℕ`, and let `β` be the same space
-`alexandroff ℕ` with the cofinite topology.  Then `α` is compact, `β` is T1, and the identity map
+Let `α = Alexandroff ℕ` be the one-point compactification of `ℕ`, and let `β` be the same space
+`Alexandroff ℕ` with the cofinite topology.  Then `α` is compact, `β` is T1, and the identity map
 `id : α → β` is a continuous equivalence that is not a homeomorphism.
 -/
 theorem Continuous.homeoOfEquivCompactToT2.t1_counterexample :
