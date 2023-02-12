@@ -115,8 +115,11 @@ end WellOrderingThm
 /-- Bundled structure registering a well order on a type. Ordinals will be defined as a quotient
 of this type. -/
 structure WellOrder : Type (u + 1) where
+  /-- The underlying type of the order. -/
   α : Type u
+  /-- The underlying relation of the order. -/
   r : α → α → Prop
+  /-- The proposition that `r` is a well-ordering for `α`. -/
   wo : IsWellOrder α r
 set_option linter.uppercaseLean3 false in
 #align Well_order WellOrder
@@ -192,8 +195,8 @@ theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := by
   rfl
 #align ordinal.type_def' Ordinal.type_def'
 
-@[simp]
-theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r :=
+@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := by
   rfl
 #align ordinal.type_def Ordinal.type_def
 
@@ -293,11 +296,16 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
 instance : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
-@[simp]
+--@[simp] -- Porting note: not in simp nf, added aux lemma below
 theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     type (f ⁻¹'o r) = type r :=
   (RelIso.preimage f r).ordinal_type_eq
 #align ordinal.type_preimage Ordinal.type_preimage
+
+@[simp]
+theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
+    @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
+    convert (RelIso.preimage f r).ordinal_type_eq
 
 @[elab_as_elim]
 theorem induction_on {C : Ordinal → Prop} (o : Ordinal)
@@ -606,7 +614,8 @@ theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = 
   rfl
 #align ordinal.card_type Ordinal.card_type
 
-@[simp]
+-- Porting note: nolint, simpNF linter falsely claims the lemma never applies
+@[simp, nolint simpNF]
 theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
     (#{ y // r y x }) = (typein r x).card :=
   rfl
@@ -646,12 +655,20 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
       ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩
 #align ordinal.lift Ordinal.lift
 
--- Porting note: Needed to add universe hint ULift.down.{v} below
-@[simp]
+-- Porting note: Needed to add universe hints ULift.down.{v,u} below
+-- @[simp] -- Porting note: Not in simpnf, added aux lemma below
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
-    type (ULift.down.{v} ⁻¹'o r) = lift.{v} (type r) :=
+    type (ULift.down.{v,u} ⁻¹'o r) = lift.{v} (type r) := by
+  simp
   rfl
 #align ordinal.type_ulift Ordinal.type_uLift
+
+-- Porting note: simpNF linter falsely claims that this never applies
+@[simp, nolint simpNF]
+theorem type_uLift_aux (r : α → α → Prop) [IsWellOrder α r] :
+    @type.{max v u} _ (fun x y => r (ULift.down.{v,u} x) (ULift.down.{v,u} y))
+      (inferInstanceAs (IsWellOrder (ULift α) (ULift.down ⁻¹'o r))) = lift.{v} (type r) :=
+  rfl
 
 theorem _root_.RelIso.ordinal_lift_type_eq {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (f : r ≃r s) : lift.{v} (type r) = lift.{u} (type s) :=
@@ -659,15 +676,21 @@ theorem _root_.RelIso.ordinal_lift_type_eq {α : Type u} {β : Type v} {r : α �
       f.trans (RelIso.preimage Equiv.ulift s).symm).ordinal_type_eq
 #align rel_iso.ordinal_lift_type_eq RelIso.ordinal_lift_type_eq
 
-@[simp]
+-- @[simp]
 theorem type_lift_preimage {α : Type u} {β : Type v} (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (type (f ⁻¹'o r)) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 #align ordinal.type_lift_preimage Ordinal.type_lift_preimage
 
+@[simp, nolint simpNF]
+theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Prop) [IsWellOrder α r]
+    (f : β ≃ α) : lift.{u} (@type _ (fun x y => r (f x) (f y))
+      (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
+  (RelIso.preimage f r).ordinal_lift_type_eq
+
 /-- `lift.{(max u v) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
     easier to understand what's happening when using this lemma. -/
-@[simp]
+-- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
     induction_on a fun _ r _ =>
@@ -676,13 +699,13 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
 
 /-- `lift.{(max v u) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
     easier to understand what's happening when using this lemma. -/
-@[simp]
+-- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 #align ordinal.lift_umax' Ordinal.lift_umax'
 
 /-- An ordinal lifted to a lower or equal universe equals itself. -/
-@[simp]
+-- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_id' (a : Ordinal) : lift a = a :=
   induction_on a fun _ r _ => Quotient.sound ⟨RelIso.preimage Equiv.ulift r⟩
 #align ordinal.lift_id' Ordinal.lift_id'
@@ -831,6 +854,7 @@ def omega : Ordinal.{u} :=
 #align ordinal.omega Ordinal.omega
 
 -- mathport name: ordinal.omega
+@[inherit_doc]
 scoped notation "ω" => Ordinal.omega
 
 /-- Note that the presence of this lemma makes `simp [omega]` form a loop. -/
@@ -1122,7 +1146,7 @@ theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {x x' : α}
     typein r x ≤ typein r x' ↔ ¬r x' x := by rw [← not_lt, typein_lt_typein]
 #align ordinal.typein_le_typein Ordinal.typein_le_typein
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem typein_le_typein' (o : Ordinal) {x x' : o.out.α} :
     @typein _ (· < ·) (isWellOrder_out_lt _) x ≤ @typein _ (· < ·) (isWellOrder_out_lt _) x'
       ↔ x ≤ x' := by
@@ -1130,7 +1154,8 @@ theorem typein_le_typein' (o : Ordinal) {x x' : o.out.α} :
   exact not_lt
 #align ordinal.typein_le_typein' Ordinal.typein_le_typein'
 
-@[simp]
+-- Porting note: added nolint, simpnf linter falsely claims it never applies
+@[simp, nolint simpNF]
 theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o o' : Ordinal} (ho : o < type r)
     (ho' : o' < type r) : ¬r (enum r o' ho') (enum r o ho) ↔ o ≤ o' := by
   rw [← @not_lt _ _ o' o, enum_lt_enum ho']
@@ -1224,7 +1249,7 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
 -- intended to be used with explicit universe parameters
 /-- `univ.{u v}` is the order type of the ordinals of `Type u` as a member
   of `ordinal.{v}` (when `u < v`). It is an inaccessible cardinal. -/
--- @[nolint check_univs] -- Porting note: linter does not exist
+ @[nolint checkUnivs]
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (@type Ordinal (· < ·) _)
 #align ordinal.univ Ordinal.univ
@@ -1464,7 +1489,7 @@ theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = o
 /-- The cardinal `univ` is the cardinality of ordinal `univ`, or
   equivalently the cardinal of `ordinal.{u}`, or `cardinal.{u}`,
   as an element of `cardinal.{v}` (when `u < v`). -/
--- @[nolint check_univs] -- Porting note: Linter does not exist
+@[nolint checkUnivs]
 def univ :=
   lift.{v, u + 1} (#Ordinal)
 #align cardinal.univ Cardinal.univ
