@@ -69,7 +69,7 @@ namespace Alexandroff
 @[match_pattern] def infty : Alexandroff X := none
 #align alexandroff.infty Alexandroff.infty
 
--- mathport name: alexandroff.infty
+@[inherit_doc]
 scoped notation "∞" => Alexandroff.infty
 
 /-- Coercion from `X` to `Alexandroff X`. -/
@@ -117,10 +117,14 @@ theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → Alexandroff X)) 
   isCompl_range_some_none X
 #align alexandroff.is_compl_range_coe_infty Alexandroff.isCompl_range_coe_infty
 
-@[simp]
+-- porting note: moved @[simp] to a new lwmma
 theorem range_coe_union_infty : range ((↑) : X → Alexandroff X) ∪ {∞} = univ :=
   range_some_union_none X
 #align alexandroff.range_coe_union_infty Alexandroff.range_coe_union_infty
+
+@[simp]
+theorem insert_infty_range_coe : insert ∞ (range (@some X)) = univ :=
+  insert_none_range_some _
 
 @[simp]
 theorem range_coe_inter_infty : range ((↑) : X → Alexandroff X) ∩ {∞} = ∅ :=
@@ -182,11 +186,9 @@ that `(↑)` has dense range, so it is a dense embedding.
 
 variable [TopologicalSpace X]
 
-instance : TopologicalSpace (Alexandroff X)
-    where
-  IsOpen s :=
-    (∞ ∈ s → IsCompact ((((↑) : X → Alexandroff X) ⁻¹' s)ᶜ)) ∧
-      IsOpen (((↑) : X → Alexandroff X) ⁻¹' s)
+instance : TopologicalSpace (Alexandroff X) where
+  IsOpen s := (∞ ∈ s → IsCompact ((((↑) : X → Alexandroff X) ⁻¹' s)ᶜ)) ∧
+    IsOpen (((↑) : X → Alexandroff X) ⁻¹' s)
   isOpen_univ := by simp
   isOpen_inter s t := by
     rintro ⟨hms, hs⟩ ⟨hmt, ht⟩
@@ -506,4 +508,3 @@ theorem Continuous.homeoOfEquivCompactToT2.t1_counterexample :
     inferInstance, CofiniteTopology.of, CofiniteTopology.continuous_of,
     Alexandroff.not_continuous_cofiniteTopology_of_symm⟩
 #align continuous.homeo_of_equiv_compact_to_t2.t1_counterexample Continuous.homeoOfEquivCompactToT2.t1_counterexample
-
