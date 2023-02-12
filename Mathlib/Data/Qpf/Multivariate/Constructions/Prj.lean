@@ -8,8 +8,8 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Functor.Multivariate
-import Mathbin.Data.Qpf.Multivariate.Basic
+import Mathlib.Control.Functor.Multivariate
+import Mathlib.Data.Qpf.Multivariate.Basic
 
 /-!
 Projection functors are QPFs. The `n`-ary projection functors on `i` is an `n`-ary
