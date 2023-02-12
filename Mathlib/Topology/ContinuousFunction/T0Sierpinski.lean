@@ -8,9 +8,9 @@ Authors: Ivan Sadofschi Costa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Order
-import Mathbin.Topology.Sets.Opens
-import Mathbin.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Order
+import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.
@@ -29,8 +29,7 @@ noncomputable section
 namespace TopologicalSpace
 
 theorem eq_induced_by_maps_to_sierpinski (X : Type _) [t : TopologicalSpace X] :
-    t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) :=
-  by
+    t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
   · rw [le_infᵢ_iff]
     exact fun u => Continuous.le_induced (is_open_iff_continuous_mem.mp u.2)
@@ -52,14 +51,12 @@ def productOfMemOpens : C(X, Opens X → Prop)
   continuous_toFun := continuous_pi_iff.2 fun u => continuous_Prop.2 u.IsOpen
 #align topological_space.product_of_mem_opens TopologicalSpace.productOfMemOpens
 
-theorem productOfMemOpens_inducing : Inducing (productOfMemOpens X) :=
-  by
+theorem productOfMemOpens_inducing : Inducing (productOfMemOpens X) := by
   convert inducing_infᵢ_to_pi fun (u : opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
 #align topological_space.product_of_mem_opens_inducing TopologicalSpace.productOfMemOpens_inducing
 
-theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) :=
-  by
+theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by
   intro x1 x2 h
   apply Inseparable.eq
   rw [← Inducing.inseparable_iff (product_of_mem_opens_inducing X), h]
