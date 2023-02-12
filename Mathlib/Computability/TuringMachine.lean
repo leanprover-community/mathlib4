@@ -1963,19 +1963,19 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
     case load a q IH =>
       unfold writes at hw⊢
       replace IH := IH hs hw
-      refine' ⟨supportsStmt_read _ fun a => IH.1, IH.2⟩
+      refine' ⟨supportsStmt_read _ fun _ => IH.1, IH.2⟩
     case branch p q₁ q₂ IH₁ IH₂ =>
       unfold writes at hw⊢
       simp only [Finset.mem_union] at hw⊢
       replace IH₁ := IH₁ hs.1 fun q hq => hw q (Or.inl hq)
       replace IH₂ := IH₂ hs.2 fun q hq => hw q (Or.inr hq)
-      exact ⟨supportsStmt_read _ fun a => ⟨IH₁.1, IH₂.1⟩, fun q => Or.rec (IH₁.2 _) (IH₂.2 _)⟩
+      exact ⟨supportsStmt_read _ fun _ => ⟨IH₁.1, IH₂.1⟩, fun q => Or.rec (IH₁.2 _) (IH₂.2 _)⟩
     case goto l =>
-      refine' ⟨_, fun _ => False.elim⟩
+      simp only [writes, Finset.not_mem_empty]; refine' ⟨_, fun _ => False.elim⟩
       refine' supportsStmt_read _ fun a _ s => _
       exact Finset.mem_bunionᵢ.2 ⟨_, hs _ _, Finset.mem_insert_self _ _⟩
     case halt =>
-      refine' ⟨_, fun _ => False.elim⟩
+      simp only [writes, Finset.not_mem_empty]; refine' ⟨_, fun _ => False.elim⟩
       simp only [SupportsStmt, supportsStmt_move, trNormal]⟩
 #align turing.TM1to1.tr_supports Turing.TM1to1.tr_supports
 
