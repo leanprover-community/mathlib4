@@ -8,9 +8,9 @@ Authors: Yourong Zang, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Option
-import Mathbin.Topology.Separation
-import Mathbin.Topology.Sets.Opens
+import Mathlib.Data.Fintype.Option
+import Mathlib.Topology.Separation
+import Mathlib.Topology.Sets.Opens
 
 /-!
 # The Alexandroff Compactification
@@ -162,8 +162,7 @@ theorem infty_not_mem_image_coe {s : Set X} : ∞ ∉ (coe : X → Alexandroff X
 #align alexandroff.infty_not_mem_image_coe Alexandroff.infty_not_mem_image_coe
 
 @[simp]
-theorem coe_preimage_infty : (coe : X → Alexandroff X) ⁻¹' {∞} = ∅ :=
-  by
+theorem coe_preimage_infty : (coe : X → Alexandroff X) ⁻¹' {∞} = ∅ := by
   ext
   simp
 #align alexandroff.coe_preimage_infty Alexandroff.coe_preimage_infty
@@ -226,8 +225,7 @@ theorem isOpen_iff_of_not_mem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen (coe ⁻¹' 
   simp [is_open_def, h]
 #align alexandroff.is_open_iff_of_not_mem Alexandroff.isOpen_iff_of_not_mem
 
-theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed (coe ⁻¹' s : Set X) :=
-  by
+theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed (coe ⁻¹' s : Set X) := by
   have : ∞ ∉ sᶜ := fun H => H h
   rw [← isOpen_compl_iff, is_open_iff_of_not_mem this, ← isOpen_compl_iff, preimage_compl]
 #align alexandroff.is_closed_iff_of_mem Alexandroff.isClosed_iff_of_mem
@@ -243,8 +241,7 @@ theorem isOpen_image_coe {s : Set X} : IsOpen (coe '' s : Set (Alexandroff X)) �
 #align alexandroff.is_open_image_coe Alexandroff.isOpen_image_coe
 
 theorem isOpen_compl_image_coe {s : Set X} :
-    IsOpen ((coe '' s : Set (Alexandroff X))ᶜ) ↔ IsClosed s ∧ IsCompact s :=
-  by
+    IsOpen ((coe '' s : Set (Alexandroff X))ᶜ) ↔ IsClosed s ∧ IsCompact s := by
   rw [is_open_iff_of_mem, ← preimage_compl, compl_compl, preimage_image_eq _ coe_injective]
   exact infty_not_mem_image_coe
 #align alexandroff.is_open_compl_image_coe Alexandroff.isOpen_compl_image_coe
@@ -282,8 +279,7 @@ theorem isOpen_range_coe : IsOpen (range (coe : X → Alexandroff X)) :=
   openEmbedding_coe.open_range
 #align alexandroff.is_open_range_coe Alexandroff.isOpen_range_coe
 
-theorem isClosed_infty : IsClosed ({∞} : Set (Alexandroff X)) :=
-  by
+theorem isClosed_infty : IsClosed ({∞} : Set (Alexandroff X)) := by
   rw [← compl_range_coe, isClosed_compl_iff]
   exact is_open_range_coe
 #align alexandroff.is_closed_infty Alexandroff.isClosed_infty
@@ -312,8 +308,7 @@ instance nhdsWithin_compl_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] :
   simpa [nhds_within_coe, preimage, coe_eq_coe] using h.map coe
 #align alexandroff.nhds_within_compl_coe_ne_bot Alexandroff.nhdsWithin_compl_coe_neBot
 
-theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : Alexandroff X) = map coe (coclosedCompact X) :=
-  by
+theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : Alexandroff X) = map coe (coclosedCompact X) := by
   refine' (nhdsWithin_basis_open ∞ _).ext (has_basis_coclosed_compact.map _) _ _
   · rintro s ⟨hs, hso⟩
     refine' ⟨_, (is_open_iff_of_mem hs).mp hso, _⟩
@@ -324,8 +319,7 @@ theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : Alexandroff X) = map coe (c
 #align alexandroff.nhds_within_compl_infty_eq Alexandroff.nhdsWithin_compl_infty_eq
 
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `alexandroff X`. -/
-instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : Alexandroff X)) :=
-  by
+instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : Alexandroff X)) := by
   rw [nhds_within_compl_infty_eq]
   infer_instance
 #align alexandroff.nhds_within_compl_infty_ne_bot Alexandroff.nhdsWithin_compl_infty_neBot
@@ -342,8 +336,7 @@ theorem nhds_infty_eq : 𝓝 (∞ : Alexandroff X) = map coe (coclosedCompact X)
 
 theorem hasBasis_nhds_infty :
     (𝓝 (∞ : Alexandroff X)).HasBasis (fun s : Set X => IsClosed s ∧ IsCompact s) fun s =>
-      coe '' sᶜ ∪ {∞} :=
-  by
+      coe '' sᶜ ∪ {∞} := by
   rw [nhds_infty_eq]
   exact (has_basis_coclosed_compact.map _).sup_pure _
 #align alexandroff.has_basis_nhds_infty Alexandroff.hasBasis_nhds_infty
@@ -396,8 +389,7 @@ theorem continuousAt_coe {Y : Type _} [TopologicalSpace Y] {f : Alexandroff X �
 
 /-- If `X` is not a compact space, then the natural embedding `X → alexandroff X` has dense range.
 -/
-theorem denseRange_coe [NoncompactSpace X] : DenseRange (coe : X → Alexandroff X) :=
-  by
+theorem denseRange_coe [NoncompactSpace X] : DenseRange (coe : X → Alexandroff X) := by
   rw [DenseRange, ← compl_infty]
   exact dense_compl_singleton _
 #align alexandroff.dense_range_coe Alexandroff.denseRange_coe
@@ -458,8 +450,7 @@ instance : CompactSpace (Alexandroff X)
     exact insert_none_range_some X
 
 /-- The one point compactification of a `t0_space` space is a `t0_space`. -/
-instance [T0Space X] : T0Space (Alexandroff X) :=
-  by
+instance [T0Space X] : T0Space (Alexandroff X) := by
   refine' ⟨fun x y hxy => _⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
   exacts[rfl, congr_arg coe h.eq]
@@ -474,8 +465,7 @@ instance [T1Space X] : T1Space (Alexandroff X)
 
 /-- The one point compactification of a locally compact Hausdorff space is a normal (hence,
 Hausdorff and regular) topological space. -/
-instance [LocallyCompactSpace X] [T2Space X] : NormalSpace (Alexandroff X) :=
-  by
+instance [LocallyCompactSpace X] [T2Space X] : NormalSpace (Alexandroff X) := by
   have key :
     ∀ z : X, ∃ u v : Set (Alexandroff X), IsOpen u ∧ IsOpen v ∧ ↑z ∈ u ∧ ∞ ∈ v ∧ Disjoint u v :=
     by
@@ -502,8 +492,7 @@ instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (Alexandroff
 /-- If `X` is an infinite type with discrete topology (e.g., `ℕ`), then the identity map from
 `cofinite_topology (alexandroff X)` to `alexandroff X` is not continuous. -/
 theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X] :
-    ¬Continuous (@CofiniteTopology.of (Alexandroff X)).symm :=
-  by
+    ¬Continuous (@CofiniteTopology.of (Alexandroff X)).symm := by
   inhabit X
   simp only [continuous_iff_continuousAt, ContinuousAt, not_forall]
   use CofiniteTopology.of ↑(default : X)
