@@ -44,6 +44,9 @@ instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
+  prf s hs := ⟨⟨s, hs⟩, rfl⟩
+
 theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
   s.closed'
 #align topological_space.closeds.closed TopologicalSpace.Closeds.closed
