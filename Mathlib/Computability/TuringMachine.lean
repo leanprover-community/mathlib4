@@ -2576,7 +2576,7 @@ noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
 
 theorem trStmts₁_run {k : K} {s : StAct₂ k} {q : Stmt₂} :
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
-  rcases s with (_ | _ | _) <;> unfold trStmts₁ stRun
+  cases s <;> simp only [trStmts₁]
 #align turing.TM2to1.tr_stmts₁_run Turing.TM2to1.trStmts₁_run
 
 theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (Γ k)}
@@ -2600,7 +2600,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
         rw [Tape.move_right_n_head, List.length, Tape.mk'_nth_nat, this,
           addBottom_modifyNth fun a => update a k (some (f v)), Nat.add_one, iterate_succ']⟩
     refine' ListBlank.ext fun i => _
-    rw [ListBlank.nth_map, ListBlank.nth_modify_nth, proj, PointedMap.mk_val]
+    rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
     by_cases h' : k' = k
     · subst k'
       split_ifs <;> simp only [List.reverse_cons, Function.update_same, ListBlank.nth_mk, List.map]
@@ -2643,7 +2643,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
               rw [List.reverse_cons, ← List.length_reverse, List.get?_concat_length] <;> rfl,
             List.head?, List.tail]⟩
       refine' ListBlank.ext fun i => _
-      rw [ListBlank.nth_map, ListBlank.nth_modify_nth, proj, PointedMap.mk_val]
+      rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
       by_cases h' : k' = k
       · subst k'
         split_ifs <;> simp only [Function.update_same, ListBlank.nth_mk, List.tail]
@@ -2802,7 +2802,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       rcases Finset.mem_insert.1 h with (rfl | h) <;> [exact this.1, exact this.2 _ h]
     clear h l'
     refine' stmtStRec _ _ _ _ _
-    · intro _ _ _ IH ss' sub -- stack op
+    · intro _ s _ IH ss' sub -- stack op
       rw [TM2to1.supports_run] at ss'
       simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         at sub
@@ -2815,8 +2815,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         at h
       rcases h with (⟨rfl | rfl⟩ | h)
-      · unfold TM1.SupportsStmt TM2to1.tr
-        rcases s with (_ | _ | _)
+      · cases s
         · exact ⟨fun _ _ => hret, fun _ _ => hgo⟩
         · exact ⟨fun _ _ => hret, fun _ _ => hgo⟩
         · exact ⟨⟨fun _ _ => hret, fun _ _ => hret⟩, fun _ _ => hgo⟩
