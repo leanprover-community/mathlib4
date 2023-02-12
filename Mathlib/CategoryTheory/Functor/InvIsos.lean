@@ -8,7 +8,7 @@ Authors: Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.EqToHom
 
 /-!
 # Natural isomorphisms with composition with inverses
