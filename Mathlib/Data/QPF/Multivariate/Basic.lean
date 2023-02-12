@@ -37,7 +37,7 @@ We can continue and define the quotient on permutation of lists and create
 the multiset type:
 
 ```lean
-def multiset (a : Type) := Qpf.quot List.perm List a -- not the actual notion
+def multiset (a : Type) := QPF.quot List.perm List a -- not the actual notion
 ```
 
 And `multiset` is also a QPF. We can then create a novel data type (for Lean):
@@ -75,7 +75,7 @@ each proves that some operations on functors preserves the QPF structure
 
 ## Reference
 
- * [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+! * [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
@@ -100,7 +100,7 @@ variable {n : ℕ} {F : TypeVec.{u} n → Type _} [MvFunctor F] [q : MvQPF F]
 open MvFunctor (LiftP LiftR)
 
 /-!
-### Show that every mvqpf is a lawful mvfunctor.
+### Show that every MvQPF is a lawful MvFunctor.
 -/
 
 
@@ -120,8 +120,7 @@ theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) (x : F �
   rfl
 #align mvqpf.comp_map MvQPF.comp_map
 
-instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F
-    where
+instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F where
   id_map := @MvQPF.id_map n F _ _
   comp_map := @comp_map n F _ _
 #align mvqpf.is_lawful_mvfunctor MvQPF.lawfulMvFunctor
@@ -134,8 +133,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
     cases' h : repr y with a f
     use a, fun i j => (f i j).val
     constructor
-    · rw [← hy, ← abs_repr y, h, ← abs_map]
-      rfl
+    · rw [← hy, ← abs_repr y, h, ← abs_map]; rfl
     intro i j
     apply (f i j).property
   rintro ⟨a, f, h₀, h₁⟩; dsimp at *
@@ -150,18 +148,15 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ /- ⦃i⦄ -/ {i}, α i → α i →
     cases' h : repr u with a f
     use a, fun i j => (f i j).val.fst, fun i j => (f i j).val.snd
     constructor
-    · rw [← xeq, ← abs_repr u, h, ← abs_map]
-      rfl
+    · rw [← xeq, ← abs_repr u, h, ← abs_map]; rfl
     constructor
-    · rw [← yeq, ← abs_repr u, h, ← abs_map]
-      rfl
+    · rw [← yeq, ← abs_repr u, h, ← abs_map]; rfl
     intro i j
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
   use abs ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
   dsimp; constructor
-  · rw [xeq, ← abs_map]
-    rfl
+  · rw [xeq, ← abs_map]; rfl
   rw [yeq, ← abs_map]; rfl
 #align mvqpf.liftr_iff MvQPF.liftR_iff
 
@@ -173,8 +168,7 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
     u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ := by
   rw [supp]; dsimp; constructor
   · intro h a f haf
-    have : LiftP (fun i u => u ∈ f i '' univ) x :=
-      by
+    have : LiftP (fun i u => u ∈ f i '' univ) x := by
       rw [liftP_iff]
       refine' ⟨a, f, haf.symm, _⟩
       intro i u
@@ -195,10 +189,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by
   constructor
   · intro h
-    have : LiftP (supp x) x := by
-      rw [h]
-      introv
-      exact id
+    have : LiftP (supp x) x := by rw [h]; introv; exact id
     rw [liftP_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
     refine' ⟨a, f, xeq.symm, _⟩
@@ -288,7 +279,7 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpP
   · rintro α ⟨a, f⟩
     simp only [LiftpPreservation] at h
     ext
-    simp [supp, h]
+    simp only [supp, h, mem_setOf_eq]
 #align mvqpf.supp_preservation_iff_liftp_preservation MvQPF.suppPreservation_iff_liftpPreservation
 
 theorem liftpPreservation_iff_uniform : q.LiftpPreservation ↔ q.IsUniform := by
