@@ -365,7 +365,7 @@ theorem index_eq_card [Fintype (G ⧸ H)] : H.index = Fintype.card (G ⧸ H) :=
 @[to_additive index_mul_card]
 theorem index_mul_card [Fintype G] [hH : Fintype H] : H.index * Fintype.card H = Fintype.card G :=
   by
-  rw [← relindex_bot_left_eq_card, ← index_bot_eq_card, mul_comm] <;>
+  rw [← relindex_bot_left_eq_card, ← index_bot_eq_card, mul_comm];
     exact relindex_mul_index bot_le
 #align subgroup.index_mul_card Subgroup.index_mul_card
 #align add_subgroup.index_mul_card AddSubgroup.index_mul_card
@@ -452,10 +452,10 @@ theorem index_inf_le : (H ⊓ K).index ≤ H.index * K.index := by
 #align add_subgroup.index_inf_le AddSubgroup.index_inf_le
 
 @[to_additive]
-theorem relindex_infᵢ_ne_zero {ι : Type _} [hι : Finite ι] {f : ι → Subgroup G}
+theorem relindex_infᵢ_ne_zero {ι : Type _} [_hι : Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).relindex L ≠ 0) : (⨅ i, f i).relindex L ≠ 0 :=
   haveI := Fintype.ofFinite ι
-  (Finset.prod_ne_zero_iff.mpr fun i hi => hf i) ∘
+  (Finset.prod_ne_zero_iff.mpr fun i _hi => hf i) ∘
     Nat.card_pi.symm.trans ∘
       Finite.card_eq_zero_of_embedding (quotientInfᵢSubgroupOfEmbedding f L)
 #align subgroup.relindex_infi_ne_zero Subgroup.relindex_infᵢ_ne_zero
@@ -466,7 +466,7 @@ theorem relindex_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
     (⨅ i, f i).relindex L ≤ ∏ i, (f i).relindex L :=
   le_of_le_of_eq
     (Finite.card_le_of_embedding' (quotientInfᵢSubgroupOfEmbedding f L) fun h =>
-      let ⟨i, hi, h⟩ := Finset.prod_eq_zero_iff.mp (Nat.card_pi.symm.trans h)
+      let ⟨i, _hi, h⟩ := Finset.prod_eq_zero_iff.mp (Nat.card_pi.symm.trans h)
       relindex_eq_zero_of_le_left (infᵢ_le f i) h)
     Nat.card_pi
 #align subgroup.relindex_infi_le Subgroup.relindex_infᵢ_le
