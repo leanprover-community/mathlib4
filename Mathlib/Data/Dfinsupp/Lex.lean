@@ -79,7 +79,8 @@ variable [LinearOrder ι]
 /-- The partial order on `Dfinsupp`s obtained by the lexicographic ordering.
 See `Dfinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) :=
-  PartialOrder.lift (fun x ↦ toLex (⇑(ofLex x))) Dfinsupp.coeFn_injective
+  PartialOrder.lift (fun x ↦ toLex (⇑(ofLex x)))
+    (FunLike.coe_injective (F := Dfinsupp fun i => α i))
 #align dfinsupp.lex.partial_order Dfinsupp.Lex.partialOrder
 
 section LinearOrder
@@ -100,14 +101,14 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
     · exact h_gt ⟨wit, fun j hj ↦
         not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
-/- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
+/-- The less-or-equal relation for the lexicographic ordering is decidable. -/
 irreducible_def Lex.decidableLe : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
 #align dfinsupp.lex.decidable_le Dfinsupp.Lex.decidableLe
 
-/- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
+/-- The less-than relation for the lexicographic ordering is decidable. -/
 irreducible_def Lex.decidableLt : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 #align dfinsupp.lex.decidable_lt Dfinsupp.Lex.decidableLt
