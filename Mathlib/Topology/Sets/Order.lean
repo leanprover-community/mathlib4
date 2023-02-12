@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.UpperLower.Basic
-import Mathbin.Topology.Sets.Closeds
+import Mathlib.Order.UpperLower.Basic
+import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Clopen upper sets
