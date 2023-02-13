@@ -470,6 +470,22 @@ theorem lift_inr_inl : lift (inr : M →* N ⋆ M) inl = swap M N := hom_ext rfl
 @[to_additive (attr := simp)]
 theorem lift_inl_inr : lift (inl : M →* M ⋆ N) inr = .id _ := hom_ext rfl rfl
 
+@[to_additive]
+theorem inl_injective : Injective (inl : M →* M ⋆ N) := LeftInverse.injective fst_apply_inl
+
+@[to_additive]
+theorem inr_injective : Injective (inr : N →* M ⋆ N) := LeftInverse.injective snd_apply_inr
+
+@[to_additive]
+theorem fst_surjective : Surjective (fst : M ⋆ N →* M) := LeftInverse.surjective fst_apply_inl
+
+@[to_additive]
+theorem snd_surjective : Surjective (snd : M ⋆ N →* N) := LeftInverse.surjective snd_apply_inr
+
+@[to_additive]
+theorem toProd_surjective : Surjective (toProd : M ⋆ N →* M × N) := fun x =>
+  ⟨inl x.1 * inr x.2, by rw [map_mul, toProd_apply_inl, toProd_apply_inr, Prod.fst_mul_snd]⟩
+
 end ToProd
 
 section Group
