@@ -579,14 +579,16 @@ This is the crucial fact for proving that the family `uniform_on_fun.gen S V` fo
 `V ∈ 𝓤 β` is indeed a basis for the uniformity `α →ᵤ[𝔖] β` endowed with `𝒱(α, β, 𝔖, uβ)`
 the uniform structure of `𝔖`-convergence, as defined in `uniform_on_fun.uniform_space`. -/
 protected theorem gen_eq_preimage_restrict {𝔖} (S : Set α) (V : Set (β × β)) :
-    UniformOnFun.gen 𝔖 S V = Prod.map S.restrict S.restrict ⁻¹' UniformFun.gen S β V := by
+    UniformOnFun.gen 𝔖 S V =
+      Prod.map (S.restrict ∘ UniformFun.toFun) (S.restrict ∘ UniformFun.toFun) ⁻¹'
+        UniformFun.gen S β V := by
   ext uv
   exact ⟨fun h ⟨x, hx⟩ => h x hx, fun h x hx => h ⟨x, hx⟩⟩
 #align uniform_on_fun.gen_eq_preimage_restrict UniformOnFun.gen_eq_preimage_restrict
 
 /-- `uniform_on_fun.gen` is antitone in the first argument and monotone in the second. -/
 protected theorem gen_mono {𝔖} {S S' : Set α} {V V' : Set (β × β)} (hS : S' ⊆ S) (hV : V ⊆ V') :
-    UniformOnFun.gen 𝔖 S V ⊆ UniformOnFun.gen 𝔖 S' V' := fun uv h x hx => hV (h x <| hS hx)
+    UniformOnFun.gen 𝔖 S V ⊆ UniformOnFun.gen 𝔖 S' V' := fun _uv h x hx => hV (h x <| hS hx)
 #align uniform_on_fun.gen_mono UniformOnFun.gen_mono
 
 /-- If `𝔖 : set (set α)` is nonempty and directed and `𝓑` is a filter basis on `β × β`, then the
@@ -628,8 +630,8 @@ of `S.restrict : (α →ᵤ[𝔖] β) → (↥S →ᵤ β)` of restriction to `S
 the topology of uniform convergence. -/
 protected theorem topologicalSpace_eq :
     UniformOnFun.topologicalSpace α β 𝔖 =
-      ⨅ (s : Set α) (hs : s ∈ 𝔖),
-        TopologicalSpace.induced s.restrict (UniformFun.topologicalSpace s β) := by
+      ⨅ (s : Set α) (_hs : s ∈ 𝔖), TopologicalSpace.induced (s.restrict ∘ UniformFun.toFun)
+        (UniformFun.topologicalSpace s β) := by
   simp only [UniformOnFun.topologicalSpace, toTopologicalSpace_infᵢ, toTopologicalSpace_infᵢ,
     toTopologicalSpace_comap]
   rfl
