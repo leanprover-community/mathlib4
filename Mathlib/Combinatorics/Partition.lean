@@ -23,7 +23,7 @@ A summand of the partition is called a part.
 
 ## Main functions
 
-* `p : partition n` is a structure, made of a multiset of integers which are all positive and
+* `p : Partition n` is a structure, made of a multiset of integers which are all positive and
   add up to `n`.
 
 ## Implementation details
@@ -110,9 +110,9 @@ def indiscretePartition (n : ℕ) : Partition n :=
 instance {n : ℕ} : Inhabited (Partition n) :=
   ⟨indiscretePartition n⟩
 
-/-- The number of times a positive integer `i` appears in the partition `of_sums n l hl` is the same
+/-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
 as the number of times it appears in the multiset `l`.
-(For `i = 0`, `partition.non_zero` combined with `Multiset.count_eq_zero_of_not_mem` gives that
+(For `i = 0`, `Partition.non_zero` combined with `Multiset.count_eq_zero_of_not_mem` gives that
 this is `0` instead.)
 -/
 theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i : ℕ} (hi : i ≠ 0) :
