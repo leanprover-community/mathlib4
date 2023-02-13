@@ -1646,6 +1646,7 @@ theorem continuous_id : Continuous (id : α → α) :=
   continuous_def.2 fun _ => id
 #align continuous_id continuous_id
 
+-- This is needed due to reducibility issues with the `continuity` tactic.
 @[continuity]
 theorem continuous_id' : Continuous (fun (x : α) => x) := continuous_id
 
