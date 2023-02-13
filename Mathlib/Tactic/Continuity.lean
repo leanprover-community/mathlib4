@@ -13,6 +13,8 @@ We define the `continuity` tactic using `aesop`. -/
 
 declare_aesop_rule_sets [Continuous]
 
+attribute [aesop (rule_sets [Continuous]) unfold norm] Function.comp
+
 /--
 The `continuity` attribute used to tag continuity statements for the `continuity` tactic. -/
 macro "continuity" : attr =>

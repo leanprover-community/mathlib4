@@ -1650,7 +1650,6 @@ theorem continuous_id : Continuous (id : α → α) :=
 @[continuity]
 theorem continuous_id' : Continuous (fun (x : α) => x) := continuous_id
 
-@[continuity]
 theorem Continuous.comp {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
     Continuous (g ∘ f) :=
   continuous_def.2 fun _ h => (h.preimage hg).preimage hf

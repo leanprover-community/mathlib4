@@ -15,13 +15,9 @@ example {f : X → Y} {g : Y → X} (hf : Continuous f) (hg : Continuous g) :
 
 example (y : Y) : Continuous (fun (_ : X) ↦ y) := by continuity
 
-example {f : Y → Y} (y : Y) : Continuous (f ∘ (fun (_ : X) => y)) := by
-  unfold Function.comp -- Porting note: `continuity` should take care of that
-  continuity
+example {f : Y → Y} (y : Y) : Continuous (f ∘ (fun (_ : X) => y)) := by continuity
 
-example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by
-  unfold Function.comp -- Porting note: `continuity` should take care of that
-  continuity
+example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by continuity
 
 example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by continuity
 
