@@ -94,7 +94,7 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n
       by
       rw [Multiset.sum_eq_zero_iff]
       simp
-    simpa [lz, hl] using lt
+    rwa [sum_add (filter (fun x => x = 0) l) (filter (fun x => ¬x = 0) l),lz,hl, zero_add] at lt
 #align nat.partition.of_sums Nat.Partition.ofSums
 
 /-- A `multiset ℕ` induces a partition on its sum. -/
