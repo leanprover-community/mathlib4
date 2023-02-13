@@ -13,8 +13,8 @@ import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
-import Mathlib.Init.Data.Format.Basic
 import Mathlib.Init.IteSimp
+import Init.Data.Format.Basic
 
 universe u v w
 
@@ -296,7 +296,7 @@ def mmap {β : Type v} {m} [Monad m] (a : Array' n α) (f : α → m β) : m (Ar
 /-- Map a function over the array. -/
 @[inline]
 def map {β : Type v} (a : Array' n α) (f : α → β) : Array' n β :=
-  a.map f
+  DArray.foreach a (λ _ a => f a)
 #align array.map Array'.map
 
 protected def Mem (v : α) (a : Array' n α) : Prop :=
@@ -313,8 +313,8 @@ theorem read_mem (a : Array' n α) (i) : read a i ∈ a :=
 instance [Repr α] : Repr (Array' n α) where
   reprPrec (a : Array' n α) (_ : Nat) := repr (toList a)
 
-unsafe instance [toFormat α] : toFormat (Array' n α) :=
-  ⟨to_fmt ∘ toList⟩
+unsafe instance [Std.ToFormat α] : Std.ToFormat (Array' n α) where
+  format (a : Array' n α) := Std.format (toList a)
 
 unsafe instance [has_to_tactic_format α] : has_to_tactic_format (Array' n α) :=
   ⟨tactic.pp ∘ toList⟩
