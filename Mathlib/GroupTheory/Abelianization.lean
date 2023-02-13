@@ -89,7 +89,7 @@ namespace Abelianization
 
 attribute [local instance] QuotientGroup.leftRel
 
-instance : CommGroup (Abelianization G) :=
+instance commGroup : CommGroup (Abelianization G) :=
   { QuotientGroup.Quotient.group _ with
     mul_comm := fun x y =>
       Quotient.inductionOn₂' x y fun a b =>
