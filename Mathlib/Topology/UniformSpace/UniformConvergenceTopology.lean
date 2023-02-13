@@ -383,10 +383,11 @@ protected theorem inf_eq {u₁ u₂ : UniformSpace γ} : 𝒰(α, γ, u₁ ⊓ u
   cases i <;> rfl
 #align uniform_fun.inf_eq UniformFun.inf_eq
 
+-- porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (λ g, f ∘ g) 𝒰(α, γ, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
-    𝒰(α, γ, ‹UniformSpace β›.comap f) = 𝒰(α, β, _).comap ((· ∘ ·) f) := by
+    𝒰(α, γ, ‹UniformSpace β›.comap f) = 𝒰(α, β, _).comap ((f ∘ ·)) := by
   letI : UniformSpace γ := ‹UniformSpace β›.comap f
   ext : 1
   change UniformFun.filter α γ ((𝓤 β).comap _) = (UniformFun.filter α β (𝓤 β)).comap _
@@ -394,12 +395,14 @@ protected theorem comap_eq {f : γ → β} :
   -- to show that the square of upper adjoints is commutative. The trick then is to use
   -- `galois_connection.u_comm_of_l_comm` to reduce it to commutativity of the lower adjoints,
   -- which is way easier to prove.
-  have h₁ := Filter.gc_map_comap (Prod.map ((· ∘ ·) f) ((· ∘ ·) f))
+  let fcomp := ((f ∘ ·) : ((α → γ) → (α → β)))
+  have h₁ := Filter.gc_map_comap (Prod.map fcomp fcomp)
   have h₂ := Filter.gc_map_comap (Prod.map f f)
   have h₃ := UniformFun.gc α β
   have h₄ := UniformFun.gc α γ
   refine' GaloisConnection.u_comm_of_l_comm h₁ h₂ h₃ h₄ fun 𝓐 => _
-  have : Prod.map f f ∘ Φ α γ = Φ α β ∘ Prod.map (Prod.map ((· ∘ ·) f) ((· ∘ ·) f)) id := by
+  have : Prod.map f f ∘ (UniformFun.phi α γ)
+      = (UniformFun.phi α β) ∘ Prod.map (Prod.map fcomp fcomp) (id : α → α) := by
     ext <;> rfl
   rw [map_comm this, ← prod_map_map_eq']
   rfl
@@ -411,13 +414,15 @@ More precisely, if `f : γ → β` is uniformly continuous, then `(λ g, f ∘ g
 is uniformly continuous. -/
 protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     (hf : UniformContinuous f) :
-    UniformContinuous (ofFun ∘ (· ∘ ·) f ∘ toFun : (α →ᵤ γ) → α →ᵤ β) :=
+    UniformContinuous (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) := by
   -- This is a direct consequence of `uniform_convergence.comap_eq`
-      uniformContinuous_iff.mpr <|
-    calc
-      𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
-        UniformFun.mono (uniformContinuous_iff.mp hf)
-      _ = 𝒰(α, β, _).comap ((· ∘ ·) f) := UniformFun.comap_eq
+    refine uniformContinuous_iff.mpr ?_
+    exact (UniformFun.mono (uniformContinuous_iff.mp hf)).trans_eq UniformFun.comap_eq
+    -- porting note: the original calc proof below gives a deterministic timeout
+    --calc
+    --  𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
+    --    UniformFun.mono (uniformContinuous_iff.mp hf)
+    --  _ = 𝒰(α, β, _).comap (f ∘ ·) := @UniformFun.comap_eq α β γ _ f
 
 #align uniform_fun.postcomp_uniform_continuous UniformFun.postcomp_uniformContinuous
 
