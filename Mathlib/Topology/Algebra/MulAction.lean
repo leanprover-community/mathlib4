@@ -16,34 +16,35 @@ import Mathlib.Topology.Algebra.ConstMulAction
 /-!
 # Continuous monoid action
 
-In this file we define class `has_continuous_smul`. We say `has_continuous_smul M X` if `M` acts on
-`X` and the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for topological
+In this file we define class `ContinuousSMul`. We say `ContinuousSMul M X` if `M` acts on `X` and
+the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for topological
 (semi)modules, vector spaces and algebras.
 
 ## Main definitions
 
-* `has_continuous_smul M X` : typeclass saying that the map `(c, x) ↦ c • x` is continuous
+* `ContinuousSMul M X` : typeclass saying that the map `(c, x) ↦ c • x` is continuous
   on `M × X`;
-* `homeomorph.smul_of_ne_zero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
-  is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
-* `homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
-  is a homeomorphism of `X`.
-* `units.has_continuous_smul`: scalar multiplication by `Mˣ` is continuous when scalar
-  multiplication by `M` is continuous. This allows `homeomorph.smul` to be used with on monoids
+* `Units.continuousSMul`: scalar multiplication by `Mˣ` is continuous when scalar
+  multiplication by `M` is continuous. This allows `Homeomorph.smul` to be used with on monoids
   with `G = Mˣ`.
+
+-- Porting note: These have all moved
+* `Homeomorph.smul_of_ne_zero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
+  is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
+* `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
+  is a homeomorphism of `X`.
 
 ## Main results
 
-Besides homeomorphisms mentioned above, in this file we provide lemmas like `continuous.smul`
-or `filter.tendsto.smul` that provide dot-syntax access to `continuous_smul`.
+Besides homeomorphisms mentioned above, in this file we provide lemmas like `Continuous.smul`
+or `Filter.Tendsto.smul` that provide dot-syntax access to `ContinuousSMul`.
 -/
-
 
 open Topology Pointwise
 
 open Filter
 
-/-- Class `has_continuous_smul M X` says that the scalar multiplication `(•) : M → X → X`
+/-- Class `ContinuousSMul M X` says that the scalar multiplication `(•) : M → X → X`
 is continuous in both arguments. We use the same class for all kinds of multiplicative actions,
 including (semi)modules and algebras. -/
 class ContinuousSMul (M X : Type _) [SMul M X] [TopologicalSpace M] [TopologicalSpace X] :
@@ -53,7 +54,7 @@ class ContinuousSMul (M X : Type _) [SMul M X] [TopologicalSpace M] [Topological
 
 export ContinuousSMul (continuous_smul)
 
-/-- Class `has_continuous_vadd M X` says that the additive action `(+ᵥ) : M → X → X`
+/-- Class `ContinuousVAdd M X` says that the additive action `(+ᵥ) : M → X → X`
 is continuous in both arguments. We use the same class for all kinds of additive actions,
 including (semi)modules and algebras. -/
 class ContinuousVAdd (M X : Type _) [VAdd M X] [TopologicalSpace M] [TopologicalSpace X] :
@@ -123,8 +124,8 @@ theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun
 #align continuous.vadd Continuous.vadd
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
-@[to_additive
-      "If an additive action is central, then its right action is continuous when its left\naction is."]
+@[to_additive "If an additive action is central, then its right action is continuous when its left\n
+action is."]
 instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
@@ -214,7 +215,7 @@ variable (G : Type _) (P : Type _) [AddGroup G] [AddTorsor G P] [TopologicalSpac
 
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
-/-- An `add_torsor` for a connected space is a connected space. This is not an instance because
+/-- An `AddTorsor` for a connected space is a connected space. This is not an instance because
 it loops for a group as a torsor over itself. -/
 protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
   { isPreconnected_univ := by
