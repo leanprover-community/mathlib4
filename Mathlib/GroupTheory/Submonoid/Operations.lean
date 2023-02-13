@@ -71,13 +71,13 @@ submonoid, range, product, map, comap
 variable {M N P : Type _} [MulOneClass M] [MulOneClass N] [MulOneClass P] (S : Submonoid M)
 
 /-!
-### Conversion to/from `additive`/`multiplicative`
+### Conversion to/from `Additive`/`Multiplicative`
 -/
 
 
 section
 
-/-- Submonoids of monoid `M` are isomorphic to additive submonoids of `additive M`. -/
+/-- Submonoids of monoid `M` are isomorphic to additive submonoids of `Additive M`. -/
 @[simps]
 def Submonoid.toAddSubmonoid : Submonoid M ≃o AddSubmonoid (Additive M) where
   toFun S :=
@@ -645,9 +645,8 @@ instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCanc
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def Subtype : S' →* M := by
-  use (⟨Subtype.val, rfl ⟩ : OneHom S' M)
-  simp
+def Subtype : S' →* M :=
+  ⟨(⟨Subtype.val, rfl⟩ : OneHom S' M), by simp⟩
 #align submonoid_class.subtype SubmonoidClass.Subtype
 #align add_submonoid_class.subtype AddSubmonoidClass.Subtype
 
@@ -779,9 +778,8 @@ instance toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M] (
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S →* M := by
-  use (⟨Subtype.val, rfl ⟩ : OneHom S M)
-  simp
+def subtype : S →* M :=
+  ⟨(⟨Subtype.val, rfl⟩ : OneHom S M), by simp⟩
 #align submonoid.subtype Submonoid.subtype
 #align add_submonoid.subtype AddSubmonoid.subtype
 
@@ -805,10 +803,10 @@ def topEquiv : (⊤ : Submonoid M) ≃* M where
 #align submonoid.top_equiv_symm_apply_coe Submonoid.topEquiv_symmApply_coe
 
 @[to_additive (attr := simp)]
-theorem top_equiv_toMonoidHom : (topEquiv : _ ≃* M).toMonoidHom = (⊤ : Submonoid M).subtype :=
+theorem topEquiv_toMonoidHom : (topEquiv : _ ≃* M).toMonoidHom = (⊤ : Submonoid M).subtype :=
   rfl
-#align submonoid.top_equiv_to_monoid_hom Submonoid.top_equiv_toMonoidHom
-#align add_submonoid.top_equiv_to_add_monoid_hom AddSubmonoid.top_equiv_toAddMonoidHom
+#align submonoid.top_equiv_to_monoid_hom Submonoid.topEquiv_toMonoidHom
+#align add_submonoid.top_equiv_to_add_monoid_hom AddSubmonoid.topEquiv_toAddMonoidHom
 
 /-- A submonoid is isomorphic to its image under an injective function -/
 @[to_additive "An additive submonoid is isomorphic to its image under an injective function"]
@@ -818,11 +816,11 @@ noncomputable def equivMapOfInjective (f : M →* N) (hf : Function.Injective f)
 #align add_submonoid.equiv_map_of_injective AddSubmonoid.equivMapOfInjective
 
 @[to_additive (attr := simp)]
-theorem coe_equiv_map_of_injective_apply (f : M →* N) (hf : Function.Injective f) (x : S) :
+theorem coe_equivMapOfInjective_apply (f : M →* N) (hf : Function.Injective f) (x : S) :
     (equivMapOfInjective S f hf x : N) = f x :=
   rfl
-#align submonoid.coe_equiv_map_of_injective_apply Submonoid.coe_equiv_map_of_injective_apply
-#align add_submonoid.coe_equiv_map_of_injective_apply AddSubmonoid.coe_equiv_map_of_injective_apply
+#align submonoid.coe_equiv_map_of_injective_apply Submonoid.coe_equivMapOfInjective_apply
+#align add_submonoid.coe_equiv_map_of_injective_apply AddSubmonoid.coe_equivMapOfInjective_apply
 
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {s : Set M} : closure (((↑) : closure s → M) ⁻¹' s) = ⊤ :=
@@ -1440,8 +1438,7 @@ See `MonoidHom.submonoidMap` for a variant for `MonoidHom`s. -/
       between a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`. See
       `AddMonoidHom.addSubmonoidMap` for a variant for `AddMonoidHom`s."]
 def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map e.toMonoidHom :=
-  {
-    -- we restate this for `simps` to avoid `⇑e.symm.to_equiv x`
+  { -- we restate this for `simps` to avoid `⇑e.symm.to_equiv x`
     e.toMonoidHom.submonoidMap S,
     e.toEquiv.image S with
     toFun := fun x => ⟨e x, _⟩
