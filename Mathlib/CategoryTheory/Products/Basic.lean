@@ -44,7 +44,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 See <https://stacks.math.columbia.edu/tag/001K>.
 -/
-@[simps! (config := { notRecursive := [] })]
+@[simps (config := { notRecursive := [] })]
 instance prod : Category.{max v₁ v₂} (C × D)
     where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
@@ -120,7 +120,7 @@ end
 namespace Prod
 
 /-- `sectl C Z` is the functor `C ⥤ C × D` given by `X ↦ (X, Z)`. -/
-@[simps!]
+@[simps]
 def sectl (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (Z : D) : C ⥤ C × D
     where
   obj X := (X, Z)
@@ -128,7 +128,7 @@ def sectl (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D
 #align category_theory.prod.sectl CategoryTheory.Prod.sectl
 
 /-- `sectr Z D` is the functor `D ⥤ C × D` given by `Y ↦ (Z, Y)` . -/
-@[simps!]
+@[simps]
 def sectr {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.{v₂} D] : D ⥤ C × D
     where
   obj X := (Z, X)
@@ -138,21 +138,21 @@ def sectr {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 /-- `fst` is the functor `(X, Y) ↦ X`. -/
-@[simps!]
+@[simps]
 def fst : C × D ⥤ C where
   obj X := X.1
   map f := f.1
 #align category_theory.prod.fst CategoryTheory.Prod.fst
 
 /-- `snd` is the functor `(X, Y) ↦ Y`. -/
-@[simps!]
+@[simps]
 def snd : C × D ⥤ D where
   obj X := X.2
   map f := f.2
 #align category_theory.prod.snd CategoryTheory.Prod.snd
 
 /-- The functor swapping the factors of a cartesian product of categories, `C × D ⥤ D × C`. -/
-@[simps!]
+@[simps]
 def swap : C × D ⥤ D × C where
   obj X := (X.2, X.1)
   map f := (f.2, f.1)
@@ -161,7 +161,7 @@ def swap : C × D ⥤ D × C where
 /-- Swapping the factors of a cartesion product of categories twice is naturally isomorphic
 to the identity functor.
 -/
-@[simps!]
+@[simps]
 def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D)
     where
   hom := { app := fun X => 𝟙 X }
@@ -191,7 +191,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 `(evaluation.obj X).obj F = F.obj X`,
 which is functorial in both `X` and `F`.
 -/
-@[simps!]
+@[simps]
 def evaluation : C ⥤ (C ⥤ D) ⥤ D
     where
   obj X :=
@@ -205,7 +205,7 @@ def evaluation : C ⥤ (C ⥤ D) ⥤ D
 /-- The "evaluation of `F` at `X`" functor,
 as a functor `C × (C ⥤ D) ⥤ D`.
 -/
-@[simps!]
+@[simps]
 def evaluationUncurried : C × (C ⥤ D) ⥤ D
     where
   obj p := p.2.obj p.1
@@ -233,7 +233,7 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 namespace Functor
 
 /-- The cartesian product of two functors. -/
-@[simps!]
+@[simps]
 def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D
     where
   obj X := (F.obj X.1, G.obj X.2)
@@ -243,7 +243,7 @@ def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D
 /- Because of limitations in Lean 3's handling of notations, we do not setup a notation `F × G`.
    You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
 /-- Similar to `prod`, but both functors start from the same category `A` -/
-@[simps!]
+@[simps]
 def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C
     where
   obj a := (F.obj a, G.obj a)
@@ -288,7 +288,7 @@ end Functor
 namespace NatTrans
 
 /-- The cartesian product of two natural transformations. -/
-@[simps!]
+@[simps]
 def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod H ⟶ G.prod I
     where
   app X := (α.app X.1, β.app X.2)
@@ -313,7 +313,7 @@ def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj
 variable (A B C)
 
 /-- The forward direction for `functorProdFunctorEquiv` -/
-@[simps!]
+@[simps]
 def prodFunctorToFunctorProd : (A ⥤ B) × (A ⥤ C) ⥤ A ⥤ B × C
     where
   obj F := F.1.prod' F.2
@@ -321,7 +321,7 @@ def prodFunctorToFunctorProd : (A ⥤ B) × (A ⥤ C) ⥤ A ⥤ B × C
 #align category_theory.prod_functor_to_functor_prod CategoryTheory.prodFunctorToFunctorProd
 
 /-- The backward direction for `functorProdFunctorEquiv` -/
-@[simps!]
+@[simps]
 def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C)
     where
   obj F := ⟨F ⋙ CategoryTheory.Prod.fst B C, F ⋙ CategoryTheory.Prod.snd B C⟩
@@ -335,7 +335,7 @@ def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C)
 #align category_theory.functor_prod_to_prod_functor CategoryTheory.functorProdToProdFunctor
 
 /-- The unit isomorphism for `functorProdFunctorEquiv` -/
--- @[simps!]
+@[simps!]
 def functorProdFunctorEquivUnitIso :
     𝟭 _ ≅ prodFunctorToFunctorProd A B C ⋙ functorProdToProdFunctor A B C :=
   NatIso.ofComponents 
@@ -358,7 +358,7 @@ Lean 4 could not see through `functorProdFunctorEquivUnitIso` (or the co-unit ve
 to run the auto tactic `by aesop_cat` -/
 
 /-- The equivalence of categories between `(A ⥤ B) × (A ⥤ C)` and `A ⥤ (B × C)` -/
-@[simps!]
+@[simps]
 def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C := 
   { functor := prodFunctorToFunctorProd A B C,
     inverse := functorProdToProdFunctor A B C,
