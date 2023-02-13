@@ -163,10 +163,10 @@ scoped[UniformConvergence] notation:25 α " →ᵤ " β:0 => UniformFun α β
 scoped[UniformConvergence] notation:25 α " →ᵤ[" 𝔖 "] " β:0 => UniformOnFun α β 𝔖
 
 -- mathport name: «exprλᵘ , »
-scoped[UniformConvergence] notation3"λᵘ "(...)", "r:(scoped p => UniformFun.ofFun p) => r
+-- scoped[UniformConvergence] notation3"λᵘ "(...)", "r:(scoped p => UniformFun.ofFun p) => r
 
 -- mathport name: «exprλᵘ[ ] , »
-scoped[UniformConvergence] notation3"λᵘ["𝔖"] "(...)", "r:(scoped p => UniformFun.ofFun p) => r
+-- scoped[UniformConvergence] notation3"λᵘ["𝔖"] "(...)", "r:(scoped p => UniformFun.ofFun p) => r
 
 open UniformConvergence
 
@@ -241,8 +241,11 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
 #align uniform_fun.filter UniformFun.filter
 
 -- mathport name: exprΦ
-local notation "Φ" => fun (α β : Type _) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
-  (uvx.1.1 uvx.2, uvx.1.2 uvx.2)
+--local notation "Φ" => fun (α β : Type _) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
+  --(uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
+
+protected def phi (α β : Type _) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) : β × β :=
+  (uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
 -- mathport name: exprlower_adjoint
 /- This is a lower adjoint to `uniform_convergence.filter` (see `uniform_convergence.gc`).
@@ -250,7 +253,7 @@ The exact definition of the lower adjoint `l` is not interesting; we will only u
 (in `uniform_convergence.mono` and `uniform_convergence.infi_eq`) and that
 `l (filter.map (prod.map f f) 𝓕) = filter.map (prod.map ((∘) f) ((∘) f)) (l 𝓕)` for each
 `𝓕 : filter (γ × γ)` and `f : γ → α` (in `uniform_convergence.comap_eq`). -/
-local notation "lower_adjoint" => fun 𝓐 => map (Φ α β) (𝓐 ×ᶠ ⊤)
+local notation "lower_adjoint" => fun 𝓐 => map (UniformFun.phi α β) (𝓐 ×ᶠ ⊤)
 
 /-- The function `uniform_convergence.filter α β : filter (β × β) → filter ((α →ᵤ β) × (α →ᵤ β))`
 has a lower adjoint `l` (in the sense of `galois_connection`). The exact definition of `l` is not
@@ -292,7 +295,7 @@ protected def uniformCore : UniformSpace.Core (α →ᵤ β) :=
     fun _ ⟨_, hV, hVU⟩ =>
     hVU ▸
       let ⟨W, hW, hWV⟩ := comp_mem_uniformity_sets hV
-      ⟨UniformFun.gen α β W, ⟨W, hW, rfl⟩, fun uv ⟨w, huw, hwv⟩ x => hWV ⟨w x, ⟨huw x, hwv x⟩⟩⟩
+      ⟨UniformFun.gen α β W, ⟨W, hW, rfl⟩, fun _ ⟨w, huw, hwv⟩ x => hWV ⟨w x, ⟨huw x, hwv x⟩⟩⟩
 #align uniform_fun.uniform_core UniformFun.uniformCore
 
 /-- Uniform structure of uniform convergence, declared as an instance on `α →ᵤ β`.
@@ -305,7 +308,7 @@ instance : TopologicalSpace (α →ᵤ β) :=
   inferInstance
 
 -- mathport name: «expr𝒰( , , )»
-local notation "𝒰(" α ", " β ", " u ")" => UniformFun.uniformSpace α β u
+local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- By definition, the uniformity of `α →ᵤ β` admits the family `{(f, g) | ∀ x, (f x, g x) ∈ V}`
 for `V ∈ 𝓤 β` as a filter basis. -/
@@ -356,13 +359,13 @@ variable {β}
 
 /-- If `u₁` and `u₂` are two uniform structures on `γ` and `u₁ ≤ u₂`, then
 `𝒰(α, γ, u₁) ≤ 𝒰(α, γ, u₂)`. -/
-protected theorem mono : Monotone (@UniformFun.uniformSpace α γ) := fun u₁ u₂ hu =>
+protected theorem mono : Monotone (@UniformFun.uniformSpace α γ) := fun _ _ hu =>
   (UniformFun.gc α γ).monotone_u hu
 #align uniform_fun.mono UniformFun.mono
 
 /-- If `u` is a family of uniform structures on `γ`, then
 `𝒰(α, γ, (⨅ i, u i)) = ⨅ i, 𝒰(α, γ, u i)`. -/
-protected theorem infᵢ_eq {u : ι → UniformSpace γ} : 𝒰(α, γ, ⨅ i, u i) = ⨅ i, 𝒰(α, γ, u i) := by
+protected theorem infᵢ_eq {u : ι → UniformSpace γ} : 𝒰(α, γ, (⨅ i, u i)) = ⨅ i, 𝒰(α, γ, u i) := by
   -- This follows directly from the fact that the upper adjoint in a Galois connection maps
   -- infimas to infimas.
   ext : 1
@@ -592,7 +595,7 @@ protected theorem isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : Di
     (𝓑 : FilterBasis <| β × β) :
     IsBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓑) fun SV =>
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
-  ⟨h.Prod 𝓑.Nonempty, fun U₁V₁ U₂V₂ h₁ h₂ =>
+  ⟨h.prod 𝓑.nonempty, fun U₁V₁ U₂V₂ h₁ h₂ =>
     let ⟨U₃, hU₃, hU₁₃, hU₂₃⟩ := h' U₁V₁.1 h₁.1 U₂V₂.1 h₂.1
     let ⟨V₃, hV₃, hV₁₂₃⟩ := 𝓑.inter_sets h₁.2 h₂.2
     ⟨⟨U₃, V₃⟩,
