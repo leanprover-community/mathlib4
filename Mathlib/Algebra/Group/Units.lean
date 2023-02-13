@@ -13,6 +13,7 @@ import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Lift
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -582,7 +583,9 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 
 attribute [nontriviality] isAddUnit_of_subsingleton
 
--- Porting note: removing the `CanLift` instance
+@[to_additive]
+instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
+{ prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
