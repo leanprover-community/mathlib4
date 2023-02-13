@@ -668,14 +668,14 @@ nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀)
   hf.eventually_lt hg hfg
 #align continuous_at.eventually_lt ContinuousAt.eventually_lt
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => min (f b) (g b) := by
   simp only [min_def]
   exact hf.if_le hg hf hg fun x => id
 #align continuous.min Continuous.min
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => max (f b) (g b) :=
   @Continuous.min αᵒᵈ _ _ _ _ _ _ _ hf hg
