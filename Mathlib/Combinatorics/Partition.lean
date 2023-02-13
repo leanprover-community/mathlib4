@@ -57,7 +57,7 @@ namespace Nat
 structure Partition (n : ℕ) where
   parts : Multiset ℕ
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
-  parts_sum : parts.Sum = n
+  parts_sum : parts.sum = n
   deriving DecidableEq
 #align nat.partition Nat.Partition
 
@@ -67,14 +67,14 @@ namespace Partition
 def ofComposition (n : ℕ) (c : Composition n) : Partition n
     where
   parts := c.blocks
-  parts_pos i hi := c.blocks_pos hi
+  parts_pos {i} hi := c.blocks_pos hi
   parts_sum := by rw [Multiset.coe_sum, c.blocks_sum]
 #align nat.partition.of_composition Nat.Partition.ofComposition
 
 theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
   rcases Quotient.exists_rep b with ⟨b, rfl⟩
-  refine' ⟨⟨b, fun i hi => hb₁ hi, _⟩, partition.ext _ _ rfl⟩
+  refine' ⟨⟨b, fun {i} hi => hb₁ hi, _⟩, Partition.ext _ _ rfl⟩
   simpa using hb₂
 #align nat.partition.of_composition_surj Nat.Partition.ofComposition_surj
 
@@ -83,14 +83,14 @@ theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := 
 /-- Given a multiset which sums to `n`, construct a partition of `n` with the same multiset, but
 without the zeros.
 -/
-def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.Sum = n) : Partition n
+def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n
     where
-  parts := l.filterₓ (· ≠ 0)
-  parts_pos i hi := Nat.pos_of_ne_zero <| by apply of_mem_filter hi
+  parts := l.filter (· ≠ 0)
+  parts_pos {i} hi := Nat.pos_of_ne_zero <| by apply of_mem_filter hi
   parts_sum := by
     have lt : l.filter (· = 0) + l.filter (· ≠ 0) = l := filter_add_not _ l
     apply_fun Multiset.sum  at lt
-    have lz : (l.filter (· = 0)).Sum = 0 :=
+    have lz : (l.filter (· = 0)).sum = 0 :=
       by
       rw [Multiset.sum_eq_zero_iff]
       simp
@@ -98,7 +98,7 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.Sum = n) : Partition n
 #align nat.partition.of_sums Nat.Partition.ofSums
 
 /-- A `multiset ℕ` induces a partition on its sum. -/
-def ofMultiset (l : Multiset ℕ) : Partition l.Sum :=
+def ofMultiset (l : Multiset ℕ) : Partition l.sum :=
   ofSums _ l rfl
 #align nat.partition.of_multiset Nat.Partition.ofMultiset
 
@@ -115,12 +115,12 @@ as the number of times it appears in the multiset `l`.
 (For `i = 0`, `partition.non_zero` combined with `multiset.count_eq_zero_of_not_mem` gives that
 this is `0` instead.)
 -/
-theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.Sum = n) {i : ℕ} (hi : i ≠ 0) :
+theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i : ℕ} (hi : i ≠ 0) :
     (ofSums n l hl).parts.count i = l.count i :=
   count_filter_of_pos hi
 #align nat.partition.count_of_sums_of_ne_zero Nat.Partition.count_ofSums_of_ne_zero
 
-theorem count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.Sum = n) :
+theorem count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
     (ofSums n l hl).parts.count 0 = 0 :=
   count_filter_of_neg fun h => h rfl
 #align nat.partition.count_of_sums_zero Nat.Partition.count_ofSums_zero
@@ -133,12 +133,12 @@ instance (n : ℕ) : Fintype (Partition n) :=
 
 /-- The finset of those partitions in which every part is odd. -/
 def odds (n : ℕ) : Finset (Partition n) :=
-  Finset.univ.filterₓ fun c => ∀ i ∈ c.parts, ¬Even i
+  Finset.univ.filter fun c => ∀ i ∈ c.parts, ¬Even i
 #align nat.partition.odds Nat.Partition.odds
 
 /-- The finset of those partitions in which each part is used at most once. -/
 def distincts (n : ℕ) : Finset (Partition n) :=
-  Finset.univ.filterₓ fun c => c.parts.Nodup
+  Finset.univ.filter fun c => c.parts.Nodup
 #align nat.partition.distincts Nat.Partition.distincts
 
 /-- The finset of those partitions in which every part is odd and used at most once. -/
@@ -149,4 +149,3 @@ def oddDistincts (n : ℕ) : Finset (Partition n) :=
 end Partition
 
 end Nat
-
