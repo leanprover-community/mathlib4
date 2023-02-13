@@ -12,6 +12,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Tactic.Ring
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -154,7 +155,8 @@ theorem span_induction {p : M → Prop} (h : x ∈ span R s) (Hs : ∀ x ∈ s, 
 #align submodule.span_induction Submodule.span_induction
 
 /-- A dependent version of `Submodule.span_induction`. -/
-theorem span_induction' {p : ∀ x, x ∈ span R s → Prop} (Hs : ∀ (x) (h : x ∈ s), p x (subset_span h))
+theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
+    (Hs : ∀ (x) (h : x ∈ s), p x (subset_span h))
     (H0 : p 0 (Submodule.zero_mem _))
     (H1 : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
     (H2 : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
@@ -169,11 +171,12 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop} (Hs : ∀ (x) (h : 
 #align submodule.span_induction' Submodule.span_induction'
 
 @[simp]
-theorem span_span_coe_preimage : span R ((coe : span R s → M) ⁻¹' s) = ⊤ :=
+theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = ⊤ :=
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ =>
       by
-      refine' span_induction' (fun x hx => _) _ (fun x y _ _ => _) (fun r x _ => _) hx
+
+      refine' span_induction' (fun x hx' => subset_span hx') _ (fun x _ y _ => _) (fun r x _ => _) hx
       · exact subset_span hx
       · exact zero_mem _
       · exact add_mem
@@ -183,7 +186,13 @@ theorem span_span_coe_preimage : span R ((coe : span R s → M) ⁻¹' s) = ⊤ 
 theorem span_nat_eq_addSubmonoid_closure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by
   refine' Eq.symm (AddSubmonoid.closure_eq_of_le subset_span _)
-  apply AddSubmonoid.toNatSubmodule.symm.toGaloisConnection.l_le _
+  apply (OrderIso.to_galoisConnection (AddSubmonoid.toNatSubmodule (M := span ℕ s)).symm).l_le
+  have this2 : GaloisConnection (RelIso.toRelEmbedding (OrderIso.symm (AddSubmonoid.toNatSubmodule (M := span ℕ s)))).toEmbedding
+    (OrderIso.symm (OrderIso.symm AddSubmonoid.toNatSubmodule))
+      = GaloisConnection (FunLike.coe (OrderIso.symm AddSubmonoid.toNatSubmodule))
+      (OrderIso.symm (OrderIso.symm AddSubmonoid.toNatSubmodule)) := rfl
+  rw [this2] at this1
+  have := this1.l_le
   rw [span_le]
   exact AddSubmonoid.subset_closure
 #align submodule.span_nat_eq_add_submonoid_closure Submodule.span_nat_eq_addSubmonoid_closure
@@ -211,12 +220,12 @@ section
 variable (R M)
 
 /-- `span` forms a Galois insertion with the coercion from submodule to set. -/
-protected def gi : GaloisInsertion (@span R M _ _ _) coe
+protected def gi : GaloisInsertion (@span R M _ _ _) (↑)
     where
   choice s _ := span R s
-  gc s t := span_le
-  le_l_u s := subset_span
-  choice_eq s h := rfl
+  gc _ _ := span_le
+  le_l_u _ := subset_span
+  choice_eq _ _ := rfl
 #align submodule.gi Submodule.gi
 
 end
@@ -260,7 +269,7 @@ theorem span_sup : span R s ⊔ p = span R (s ∪ p) := by rw [Submodule.span_un
 notation:1000
   /- Note that the character `∙` U+2219 used below is different from the scalar multiplication
 character `•` U+2022 and the matrix multiplication character `⬝` U+2B1D. -/
-R " ∙ " x => span R (@singleton _ _ Set.hasSingleton x)
+R " ∙ " x => span R (singleton x)
 
 theorem span_eq_supᵢ_of_singleton_spans (s : Set M) : span R s = ⨆ x ∈ s, R ∙ x := by
   simp only [← span_unionᵢ, Set.bunionᵢ_of_singleton s]
@@ -321,7 +330,7 @@ theorem mem_supₛ_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
 
 @[norm_cast, simp]
 theorem coe_supᵢ_of_chain (a : ℕ →o Submodule R M) : (↑(⨆ k, a k) : Set M) = ⋃ k, (a k : Set M) :=
-  coe_supᵢ_of_directed a a.Monotone.directed_le
+  coe_supᵢ_of_directed a a.monotone.directed_le
 #align submodule.coe_supr_of_chain Submodule.coe_supᵢ_of_chain
 
 /-- We can regard `coe_supᵢ_of_chain` as the statement that `coe : (submodule R M) → set M` is
@@ -333,7 +342,7 @@ theorem coe_scott_continuous :
 
 @[simp]
 theorem mem_supᵢ_of_chain (a : ℕ →o Submodule R M) (m : M) : (m ∈ ⨆ k, a k) ↔ ∃ k, m ∈ a k :=
-  mem_supᵢ_of_directed a a.Monotone.directed_le
+  mem_supᵢ_of_directed a a.monotone.directed_le
 #align submodule.mem_supr_of_chain Submodule.mem_supᵢ_of_chain
 
 section
@@ -343,21 +352,22 @@ variable {p p'}
 theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
   ⟨fun h => by
     rw [← span_eq p, ← span_eq p', ← span_union] at h
-    apply span_induction h
+    refine span_induction h ?_ ?_ ?_ ?_
     · rintro y (h | h)
       · exact ⟨y, h, 0, by simp, by simp⟩
       · exact ⟨0, by simp, y, h, by simp⟩
     · exact ⟨0, by simp, 0, by simp⟩
     · rintro _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
-      exact ⟨_, add_mem hy₁ hy₂, _, add_mem hz₁ hz₂, by simp [add_assoc] <;> cc⟩
+      exact ⟨_, add_mem hy₁ hy₂, _, add_mem hz₁ hz₂, by
+        rw [add_assoc, add_assoc, ← add_assoc y₂,  ← add_assoc z₁, add_comm y₂]⟩
     · rintro a _ ⟨y, hy, z, hz, rfl⟩
       exact ⟨_, smul_mem _ a hy, _, smul_mem _ a hz, by simp [smul_add]⟩, by
-    rintro ⟨y, hy, z, hz, rfl⟩ <;>
-      exact add_mem ((le_sup_left : p ≤ p ⊔ p') hy) ((le_sup_right : p' ≤ p ⊔ p') hz)⟩
+    rintro ⟨y, hy, z, hz, rfl⟩
+    exact add_mem ((le_sup_left : p ≤ p ⊔ p') hy) ((le_sup_right : p' ≤ p ⊔ p') hz)⟩
 #align submodule.mem_sup Submodule.mem_sup
 
 theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p)(z : p'), (y : M) + z = x :=
-  mem_sup.trans <| by simp only [SetLike.exists, coe_mk]
+  mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 #align submodule.mem_sup' Submodule.mem_sup'
 
 variable (p p')
@@ -389,7 +399,7 @@ theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
 
 theorem nontrivial_span_singleton {x : M} (h : x ≠ 0) : Nontrivial (R ∙ x) :=
   ⟨by
-    use 0, x, Submodule.mem_span_singleton_self x
+    use 0, ⟨x, Submodule.mem_span_singleton_self x⟩
     intro H
     rw [eq_comm, Submodule.mk_eq_zero] at H
     exact h H⟩
@@ -397,15 +407,15 @@ theorem nontrivial_span_singleton {x : M} (h : x ≠ 0) : Nontrivial (R ∙ x) :
 
 theorem mem_span_singleton {y : M} : (x ∈ R ∙ y) ↔ ∃ a : R, a • y = x :=
   ⟨fun h => by
-    apply span_induction h
-    · rintro y (rfl | ⟨⟨⟩⟩)
+    refine span_induction h ?_ ?_ ?_ ?_
+    · rintro y (rfl | ⟨⟨_⟩⟩)
       exact ⟨1, by simp⟩
     · exact ⟨0, by simp⟩
     · rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩
       exact ⟨a + b, by simp [add_smul]⟩
     · rintro a _ ⟨b, rfl⟩
       exact ⟨a * b, by simp [smul_smul]⟩, by
-    rintro ⟨a, y, rfl⟩ <;> exact smul_mem _ _ (subset_span <| by simp)⟩
+    rintro ⟨a, y, rfl⟩; exact smul_mem _ _ (subset_span <| by simp)⟩
 #align submodule.mem_span_singleton Submodule.mem_span_singleton
 
 theorem le_span_singleton_iff {s : Submodule R M} {v₀ : M} :
@@ -426,7 +436,7 @@ theorem span_zero_singleton : (R ∙ (0 : M)) = ⊥ := by
 #align submodule.span_zero_singleton Submodule.span_zero_singleton
 
 theorem span_singleton_eq_range (y : M) : ↑(R ∙ y) = range ((· • y) : R → M) :=
-  Set.ext fun x => mem_span_singleton
+  Set.ext fun _ => mem_span_singleton
 #align submodule.span_singleton_eq_range Submodule.span_singleton_eq_range
 
 theorem span_singleton_smul_le {S} [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
@@ -471,14 +481,16 @@ theorem mem_span_singleton_trans {x y z : M} (hxy : x ∈ R ∙ y) (hyz : y ∈ 
   exact Submodule.subset_span_trans hxy hyz
 #align submodule.mem_span_singleton_trans Submodule.mem_span_singleton_trans
 
-theorem mem_span_insert {y} : x ∈ span R (insert y s) ↔ ∃ a : R, ∃ z ∈ span R s, x = a • y + z := by
+theorem mem_span_insert {y} :
+    x ∈ span R (insert y s) ↔ ∃ a : R, ∃ z ∈ span R s, x = a • y + z := by
   simp only [← union_singleton, span_union, mem_sup, mem_span_singleton, exists_prop,
     exists_exists_eq_and]
   rw [exists_comm]
   simp only [eq_comm, add_comm, exists_and_left]
 #align submodule.mem_span_insert Submodule.mem_span_insert
 
-theorem mem_span_pair {x y z : M} : z ∈ span R ({x, y} : Set M) ↔ ∃ a b : R, a • x + b • y = z := by
+theorem mem_span_pair {x y z : M} :
+    z ∈ span R ({x, y} : Set M) ↔ ∃ a b : R, a • x + b • y = z := by
   simp_rw [mem_span_insert, mem_span_singleton, exists_prop, exists_exists_eq_and, eq_comm]
 #align submodule.mem_span_pair Submodule.mem_span_pair
 
