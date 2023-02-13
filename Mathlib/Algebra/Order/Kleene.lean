@@ -13,6 +13,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.ScopedNS  -- Porting note: `scoped[]`
+import Mathlib.Data.ENat.Basic
 
 /-!
 # Kleene Algebras
@@ -80,12 +81,12 @@ class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 
 /-- Notation typeclass for the Kleene star `∗`. -/
 -- @[protect_proj] -- Porting note: Not yet implemented
-class HasKstar (α : Type _) where
+class KStar (α : Type _) where
   kstar : α → α
-#align has_kstar HasKstar
+#align has_kstar KStar
 
 -- mathport name: «expr ∗»
-scoped[Computability] postfix:1024 "∗" => HasKstar.kstar
+scoped[Computability] postfix:1024 "∗" => KStar.kstar
 open Computability
 
 /-- A Kleene Algebra is an idempotent semiring with an additional unary operator `kstar` (for Kleene
@@ -96,7 +97,7 @@ star) that satisfies the following properties:
 * If `c * a + b ≤ c`, then `b * a∗ ≤ c`
 -/
 -- @[protect_proj] -- Porting note: Not yet implemented
-class KleeneAlgebra (α : Type _) extends IdemSemiring α, HasKstar α where
+class KleeneAlgebra (α : Type _) extends IdemSemiring α, KStar α where
   one_le_kstar : ∀ a : α, 1 ≤ a∗
   mul_kstar_le_kstar : ∀ a : α, a * a∗ ≤ a∗
   kstar_mul_le_kstar : ∀ a : α, a∗ * a ≤ a∗
@@ -138,10 +139,13 @@ section IdemSemiring
 
 variable [IdemSemiring α] {a b c : α}
 
-@[simp]
 theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
   IdemSemiring.add_eq_sup _ _
 #align add_eq_sup add_eq_sup
+
+-- Porting note: This simp theorem often leads to timeout when `α` has rich structure.
+--               So, this theorem should be scoped.
+scoped[Computability] attribute [simp] add_eq_sup
 
 theorem add_idem (a : α) : a + a = a := by simp
 #align add_idem add_idem
@@ -243,7 +247,7 @@ theorem le_kstar : a ≤ a∗ :=
 #align le_kstar le_kstar
 
 -- @[mono] -- Porting note: unknown attribute [mono]
-theorem kstar_mono : Monotone (HasKstar.kstar : α → α) :=
+theorem kstar_mono : Monotone (KStar.kstar : α → α) :=
   fun _ _ h ↦
     kstar_le_of_mul_le_left one_le_kstar <| kstar_mul_le (h.trans le_kstar) <| mul_kstar_le_kstar
 #align kstar_mono kstar_mono
@@ -392,13 +396,13 @@ protected def idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
 @[reducible]
 protected def kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
-    [NatCast β] [HasSup β] [Bot β] [HasKstar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [NatCast β] [HasSup β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
     (kstar : ∀ a, f a∗ = (f a)∗) : KleeneAlgebra β :=
   { hf.idemSemiring f zero one add mul nsmul npow nat_cast sup bot,
-    ‹HasKstar β› with
+    ‹KStar β› with
     one_le_kstar := fun a ↦ one.trans_le <| by
       erw [kstar]
       exact one_le_kstar
