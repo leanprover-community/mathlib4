@@ -461,14 +461,13 @@ to `adjunction_of_equiv_right`. -/
 def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
   mkOfHomEquiv
     { homEquiv := e
-      homEquiv_naturality_left_symm' := fun {X'} {X} {Y} f g => by 
-        erw [← (he' e he), ← Equiv.apply_eq_iff_eq]
-        rw [Equiv.apply_symm_apply]
-        
-
-        -- simp only [(he _ _ _ _ _).symm]
-        -- simp
-        -- simp only [id_comp,eq_self_iff_true,Equiv.apply_symm_apply,assoc]
+      homEquiv_naturality_left_symm' := fun {X'} {X} {Y} f g => by
+        have := @he' C _ D _ G F_obj e he
+        erw [← this, ← Equiv.apply_eq_iff_eq (e X' Y)]
+        simp [(he X' (F_obj X) Y (e X Y |>.symm g) (leftAdjointOfEquiv e he |>.map f)).symm]
+        congr
+        rw [← he]
+        simp
     }
 #align category_theory.adjunction.adjunction_of_equiv_left CategoryTheory.Adjunction.adjunctionOfEquivLeft
 
@@ -495,7 +494,7 @@ Dual to `left_adjoint_of_equiv`. -/
 def rightAdjointOfEquiv : D ⥤ C where
   obj := G_obj
   map {Y} {Y'} g := (e (G_obj Y) Y') ((e (G_obj Y) Y).symm (𝟙 _) ≫ g)
-  map_comp := fun {Y} {Y'} {Y''} g g' => 
+  map_comp := fun {Y} {Y'} {Y''} g g' =>
     by
     rw [← Equiv.eq_symm_apply, ← he'' e he, Equiv.symm_apply_apply]
     conv =>
