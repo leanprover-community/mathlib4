@@ -8,10 +8,10 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Pi
-import Mathbin.GroupTheory.FreeGroup
-import Mathbin.GroupTheory.Abelianization
-import Mathbin.Algebra.Module.Basic
+import Mathlib.Algebra.Group.Pi
+import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.Abelianization
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Free abelian groups
@@ -108,8 +108,7 @@ variable {β : Type v} [AddCommGroup β] (f : α → β)
 open FreeAbelianGroup
 
 @[simp]
-protected theorem of (x : α) : lift f (of x) = f x :=
-  by
+protected theorem of (x : α) : lift f (of x) = f x := by
   convert @Abelianization.lift.of (FreeGroup α) _ (Multiplicative β) _ _ _
   convert free_group.lift.of.symm
 #align free_abelian_group.lift.of FreeAbelianGroup.lift.of
@@ -126,8 +125,7 @@ protected theorem ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) =
 #align free_abelian_group.lift.ext FreeAbelianGroup.lift.ext
 
 theorem map_hom {α β γ} [AddCommGroup β] [AddCommGroup γ] (a : FreeAbelianGroup α) (f : α → β)
-    (g : β →+ γ) : g (lift f a) = lift (g ∘ f) a :=
-  by
+    (g : β →+ γ) : g (lift f a) = lift (g ∘ f) a := by
   suffices : (g.comp (lift f)) a = lift (g ∘ f) a
   exact this
   apply @lift.unique
@@ -165,8 +163,7 @@ protected theorem induction_on {C : FreeAbelianGroup α → Prop} (z : FreeAbeli
 #align free_abelian_group.induction_on FreeAbelianGroup.induction_on
 
 theorem lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α → β) :
-    lift (f + g) a = lift f a + lift g a :=
-  by
+    lift (f + g) a = lift f a + lift g a := by
   refine' FreeAbelianGroup.induction_on a _ _ _ _
   · simp only [(lift _).map_zero, zero_add]
   · intro x
@@ -362,8 +359,7 @@ def map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
 #align free_abelian_group.map FreeAbelianGroup.map
 
 theorem lift_comp {α} {β} {γ} [AddCommGroup γ] (f : α → β) (g : β → γ) (x : FreeAbelianGroup α) :
-    lift (g ∘ f) x = lift g (map f x) :=
-  by
+    lift (g ∘ f) x = lift g (map f x) := by
   apply FreeAbelianGroup.induction_on x
   · exact AddMonoidHom.map_zero _
   · intro y
@@ -379,8 +375,7 @@ theorem map_id : map id = AddMonoidHom.id (FreeAbelianGroup α) :=
     lift.ext _ _ fun x => lift.unique of (AddMonoidHom.id _) fun y => AddMonoidHom.id_apply _ _
 #align free_abelian_group.map_id FreeAbelianGroup.map_id
 
-theorem map_id_apply (x : FreeAbelianGroup α) : map id x = x :=
-  by
+theorem map_id_apply (x : FreeAbelianGroup α) : map id x = x := by
   rw [map_id]
   rfl
 #align free_abelian_group.map_id_apply FreeAbelianGroup.map_id_apply

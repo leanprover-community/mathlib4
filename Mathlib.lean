@@ -664,6 +664,7 @@ import Mathlib.GroupTheory.Divisible
 import Mathlib.GroupTheory.DoubleCoset
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.FreeAbelianGroup
 import Mathlib.GroupTheory.FreeGroup
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
