@@ -657,8 +657,8 @@ theorem singleton_span_isCompactElement (x : M) :
     CompleteLattice.IsCompactElement (span R {x} : Submodule R M) := by
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_supₛ_le]
   intro d hemp hdir hsup
-  have : x ∈ supᵢ d := (SetLike.le_def.mp hsup) (mem_span_singleton_self x)
-  obtain ⟨y, ⟨hyd, hxy⟩⟩ := (mem_supᵢ_of_directed hemp hdir).mp this
+  have : x ∈ (supₛ d) := (SetLike.le_def.mp hsup) (mem_span_singleton_self x)
+  obtain ⟨y, ⟨hyd, hxy⟩⟩ := (mem_supₛ_of_directed hemp hdir).mp this
   exact ⟨y, ⟨hyd, by simpa only [span_le, singleton_subset_iff] ⟩⟩
 #align submodule.singleton_span_is_compact_element Submodule.singleton_span_isCompactElement
 
@@ -839,7 +839,7 @@ theorem mem_span_insert' {x y} {s : Set M} :
 #align submodule.mem_span_insert' Submodule.mem_span_insert'
 
 instance : IsModularLattice (Submodule R M) :=
-  ⟨fun x y z xz a ha => by
+  ⟨fun y z xz a ha => by
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
     rw [mem_sup]
@@ -986,6 +986,8 @@ noncomputable section
 
 open Classical
 
+instance : Module K K := Semiring.toModule
+
 theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 0) :
     (K ∙ x) ⊔ f.ker = ⊤ :=
   eq_top_iff.2 fun y hy =>
@@ -1029,6 +1031,8 @@ namespace LinearEquiv
 section Field
 
 variable (K V) [Field K] [AddCommGroup V] [Module K V]
+
+instance  : RingHomInvPair (RingHom.id K) (RingHom.id K) := RingHomInvPair.ids
 
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural
     map from `K` to the span of `x`, with invertibility check to consider it as an
