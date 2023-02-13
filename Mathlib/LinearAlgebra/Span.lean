@@ -637,12 +637,13 @@ theorem supᵢ_induction {ι : Sort _} (p : ι → Submodule R M) {C : M → Pro
 /-- A dependent version of `submodule.supᵢ_induction`. -/
 @[elab_as_elim]
 theorem supᵢ_induction' {ι : Sort _} (p : ι → Submodule R M) {C : ∀ x, (x ∈ ⨆ i, p i) → Prop}
-    (hp : ∀ (i), ∀ x ∈ p i, C x (mem_supᵢ_of_mem i ‹_›)) (h0 : C 0 (zero_mem _))
+    (hp : ∀ (i) (x) (hx : x ∈ p i), C x (mem_supᵢ_of_mem i hx)) (h0 : C 0 (zero_mem _))
     (hadd : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, p i) : C x hx := by
   refine' Exists.elim _ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
-  refine' supᵢ_induction p hx (fun i x hx => _) _ fun x y => _
-  · exact ⟨_, hp _ x hx⟩
+  refine' supᵢ_induction p (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), C x hx) hx
+    (fun i x hx => _) _ fun x y => _
+  · exact ⟨_, hp _ _ hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
@@ -920,7 +921,7 @@ def toSpanSingleton (x : M) : R →ₗ[R] M :=
 #align linear_map.to_span_singleton LinearMap.toSpanSingleton
 
 /-- The range of `toSpanSingleton x` is the span of `x`.-/
-theorem span_singleton_eq_range (x : M) : (R ∙ x) = LinearMap.range (toSpanSingleton R M x) :=
+theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M x) :=
   Submodule.ext fun y => by
     refine' Iff.trans _ LinearMap.mem_range.symm
     exact mem_span_singleton
