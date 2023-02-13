@@ -432,11 +432,11 @@ uniform structures of uniform convergence.
 More precisely, if `f : γ → β` is a uniform inducing, then `(λ g, f ∘ g) : (α →ᵤ γ) → (α →ᵤ β)` is
 a uniform inducing. -/
 protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf : UniformInducing f) :
-    UniformInducing (ofFun ∘ (· ∘ ·) f ∘ toFun : (α →ᵤ γ) → α →ᵤ β) := by
+    UniformInducing (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) := by
   -- This is a direct consequence of `uniform_convergence.comap_eq`
   constructor
   replace hf : (𝓤 β).comap (Prod.map f f) = _ := hf.comap_uniformity
-  change comap (Prod.map (ofFun ∘ (· ∘ ·) f ∘ toFun) (ofFun ∘ (· ∘ ·) f ∘ toFun)) _ = _
+  change comap (Prod.map (ofFun ∘ (f ∘ ·) ∘ toFun) (ofFun ∘ (f ∘ ·) ∘ toFun)) _ = _
   rw [← uniformity_comap] at hf⊢
   congr
   rw [← uniformSpace_eq hf, UniformFun.comap_eq]
@@ -856,7 +856,7 @@ theorem t2Space_of_covering [T2Space β] (h : ⋃₀ 𝔖 = univ) : T2Space (α 
     t2 := by
       intro f g hfg
       obtain ⟨x, hx⟩ := not_forall.mp (mt funext hfg)
-      obtain ⟨s, hs, hxs⟩ : ∃ s ∈ 𝔖, x ∈ s := mem_sUnion.mp (h.symm ▸ True.intro)
+      obtain ⟨s, hs, hxs⟩ : ∃ s ∈ 𝔖, x ∈ s := mem_unionₛ.mp (h.symm ▸ True.intro)
       exact separated_by_continuous (uniformContinuous_eval_of_mem β 𝔖 hxs hs).continuous hx }
 #align uniform_on_fun.t2_space_of_covering UniformOnFun.t2Space_of_covering
 
@@ -869,17 +869,17 @@ protected theorem uniformContinuous_toFun (h : ⋃₀ 𝔖 = univ) :
     UniformContinuous (toFun 𝔖 : (α →ᵤ[𝔖] β) → α → β) := by
   rw [uniformContinuous_pi]
   intro x
-  obtain ⟨s : Set α, hs : s ∈ 𝔖, hxs : x ∈ s⟩ := sUnion_eq_univ_iff.mp h x
-  exact uniform_continuous_eval_of_mem β 𝔖 hxs hs
+  obtain ⟨s : Set α, hs : s ∈ 𝔖, hxs : x ∈ s⟩ := unionₛ_eq_univ_iff.mp h x
+  exact uniformContinuous_eval_of_mem β 𝔖 hxs hs
 #align uniform_on_fun.uniform_continuous_to_fun UniformOnFun.uniformContinuous_toFun
 
 /-- Convergence in the topology of `𝔖`-convergence means uniform convergence on `S` (in the sense
 of `tendsto_uniformly_on`) for all `S ∈ 𝔖`. -/
 protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β} {f : α →ᵤ[𝔖] β} :
     Tendsto F p (𝓝 f) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn F f p s := by
-  rw [UniformOnFun.topologicalSpace_eq, nhds_infᵢ, tendsto_infi]
+  rw [UniformOnFun.topologicalSpace_eq, nhds_infᵢ, tendsto_infᵢ]
   refine' forall_congr' fun s => _
-  rw [nhds_infᵢ, tendsto_infi]
+  rw [nhds_infᵢ, tendsto_infᵢ]
   refine' forall_congr' fun hs => _
   rw [nhds_induced, tendsto_comap_iff, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe,
     UniformFun.tendsto_iff_tendstoUniformly]
