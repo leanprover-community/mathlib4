@@ -302,7 +302,7 @@ instance uniformSpace : UniformSpace (α →ᵤ β) :=
   UniformSpace.ofCore (UniformFun.uniformCore α β)
 
 /-- Topology of uniform convergence, declared as an instance on `α →ᵤ β`. -/
-instance : TopologicalSpace (α →ᵤ β) :=
+instance topologicalSpace : TopologicalSpace (α →ᵤ β) :=
   inferInstance
 
 -- mathport name: «expr𝒰( , , )»
@@ -563,7 +563,7 @@ variable {α β : Type _} {γ ι : Type _}
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
 -- mathport name: «expr𝒰( , , )»
-local notation "𝒰(" α ", " β ", " u ")" => UniformFun.uniformSpace α β u
+local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- Basis sets for the uniformity of `𝔖`-convergence: for `S : set α` and `V : set (β × β)`,
 `gen 𝔖 S V` is the set of pairs `(f, g)` of functions `α →ᵤ[𝔖] β` such that
@@ -613,10 +613,10 @@ declared as an instance on `α →ᵤ[𝔖] β`. It is defined as the infimum, f
 by `S.restrict`, the map of restriction to `S`, of the uniform structure `𝒰(s, β, uβ)` on
 `↥S →ᵤ β`. We will denote it `𝒱(α, β, 𝔖, uβ)`, where `uβ` is the uniform structure on `β`. -/
 instance uniformSpace : UniformSpace (α →ᵤ[𝔖] β) :=
-  ⨅ (s : Set α) (hs : s ∈ 𝔖), UniformSpace.comap s.restrict 𝒰(s, β, _)
+  ⨅ (s : Set α) (_hs : s ∈ 𝔖), UniformSpace.comap s.restrict 𝒰(s, β, _)
 
 -- mathport name: «expr𝒱( , , , )»
-local notation "𝒱(" α ", " β ", " 𝔖 ", " u ")" => UniformOnFun.uniformSpace α β u 𝔖
+local notation "𝒱(" α ", " β ", " 𝔖 ", " u ")" => @UniformOnFun.uniformSpace α β u 𝔖
 
 /-- Topology of `𝔖`-convergence, i.e uniform convergence on the elements of `𝔖`, declared as an
 instance on `α →ᵤ[𝔖] β`. -/
@@ -713,7 +713,7 @@ protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) �
     (h𝔖 : 𝔖₂ ⊆ 𝔖₁) : 𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₂) :=
   calc
     𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₁) := infᵢ_le_infᵢ_of_subset h𝔖
-    _ ≤ 𝒱(α, γ, 𝔖₂, u₂) := infᵢ₂_mono fun i hi => UniformSpace.comap_mono <| UniformFun.mono hu
+    _ ≤ 𝒱(α, γ, 𝔖₂, u₂) := infᵢ₂_mono fun _i _hi => UniformSpace.comap_mono <| UniformFun.mono hu
 
 #align uniform_on_fun.mono UniformOnFun.mono
 
@@ -794,7 +794,7 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
 by post-composing. -/
 protected def congrRight [UniformSpace γ] (e : γ ≃ᵤ β) : (α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β) :=
   {
-    Equiv.piCongrRight fun a =>
+    Equiv.piCongrRight fun _a =>
       e.toEquiv with
     uniformContinuous_toFun := UniformOnFun.postcomp_uniformContinuous e.uniformContinuous
     uniformContinuous_invFun := UniformOnFun.postcomp_uniformContinuous e.symm.uniformContinuous }
