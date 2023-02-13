@@ -8,9 +8,9 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.SubsetProperties
-import Mathbin.Topology.Separation
-import Mathbin.Topology.NoetherianSpace
+import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Separation
+import Mathlib.Topology.NoetherianSpace
 
 /-!
 # Quasi-separated spaces
@@ -54,8 +54,7 @@ class QuasiSeparatedSpace (α : Type _) [TopologicalSpace α] : Prop where
 #align quasi_separated_space QuasiSeparatedSpace
 
 theorem isQuasiSeparated_univ_iff {α : Type _} [TopologicalSpace α] :
-    IsQuasiSeparated (Set.univ : Set α) ↔ QuasiSeparatedSpace α :=
-  by
+    IsQuasiSeparated (Set.univ : Set α) ↔ QuasiSeparatedSpace α := by
   rw [quasiSeparatedSpace_iff]
   simp [IsQuasiSeparated]
 #align is_quasi_separated_univ_iff isQuasiSeparated_univ_iff
@@ -90,8 +89,7 @@ theorem IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s
 #align is_quasi_separated.image_of_embedding IsQuasiSeparated.image_of_embedding
 
 theorem OpenEmbedding.isQuasiSeparated_iff (h : OpenEmbedding f) {s : Set α} :
-    IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) :=
-  by
+    IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
   refine' ⟨fun hs => hs.image_of_embedding h.to_embedding, _⟩
   intro H U V hU hU' hU'' hV hV' hV''
   rw [h.to_embedding.is_compact_iff_is_compact_image, Set.image_inter h.inj]
@@ -101,8 +99,7 @@ theorem OpenEmbedding.isQuasiSeparated_iff (h : OpenEmbedding f) {s : Set α} :
 #align open_embedding.is_quasi_separated_iff OpenEmbedding.isQuasiSeparated_iff
 
 theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
-    IsQuasiSeparated s ↔ QuasiSeparatedSpace s :=
-  by
+    IsQuasiSeparated s ↔ QuasiSeparatedSpace s := by
   rw [← isQuasiSeparated_univ_iff]
   convert hs.open_embedding_subtype_coe.is_quasi_separated_iff.symm <;> simp
 #align is_quasi_separated_iff_quasi_separated_space isQuasiSeparated_iff_quasiSeparatedSpace
