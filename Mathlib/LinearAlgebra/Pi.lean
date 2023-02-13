@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Basic
-import Mathbin.Logic.Equiv.Fin
+import Mathlib.LinearAlgebra.Basic
+import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Pi types of modules
@@ -183,8 +183,7 @@ theorem pi_ext_iff : f = g ↔ ∀ i x, f (Pi.single i x) = g (Pi.single i x) :=
 /-- This is used as the ext lemma instead of `linear_map.pi_ext` for reasons explained in
 note [partially-applied ext lemmas]. -/
 @[ext]
-theorem pi_ext' (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g :=
-  by
+theorem pi_ext' (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g := by
   refine' pi_ext fun i x => _
   convert LinearMap.congr_fun (h i) x
 #align linear_map.pi_ext' LinearMap.pi_ext'
@@ -203,8 +202,7 @@ variable (R φ)
 `φ` is linearly equivalent to the product over `I`. -/
 def infiKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
-    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) : Submodule R (∀ i, φ i)) ≃ₗ[R] ∀ i : I, φ i :=
-  by
+    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) : Submodule R (∀ i, φ i)) ≃ₗ[R] ∀ i : I, φ i := by
   refine'
     LinearEquiv.ofLinear (pi fun i => (proj (i : ι)).comp (Submodule.subtype _))
       (cod_restrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) _) _ _
@@ -242,8 +240,7 @@ def diag (i j : ι) : φ i →ₗ[R] φ j :=
 #align linear_map.diag LinearMap.diag
 
 theorem update_apply (f : ∀ i, M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
-    (update f i b j) c = update (fun i => f i c) i (b c) j :=
-  by
+    (update f i b j) c = update (fun i => f i c) i (b c) j := by
   by_cases j = i
   · rw [h, update_same, update_same]
   · rw [update_noteq h, update_noteq h]
@@ -296,21 +293,18 @@ theorem pi_mono {s : Set ι} (h : ∀ i ∈ s, p i ≤ q i) : pi s p ≤ pi s q 
   Set.pi_mono h
 #align submodule.pi_mono Submodule.pi_mono
 
-theorem binfi_comap_proj : (⨅ i ∈ I, comap (proj i : (∀ i, φ i) →ₗ[R] φ i) (p i)) = pi I p :=
-  by
+theorem binfi_comap_proj : (⨅ i ∈ I, comap (proj i : (∀ i, φ i) →ₗ[R] φ i) (p i)) = pi I p := by
   ext x
   simp
 #align submodule.binfi_comap_proj Submodule.binfi_comap_proj
 
-theorem infᵢ_comap_proj : (⨅ i, comap (proj i : (∀ i, φ i) →ₗ[R] φ i) (p i)) = pi Set.univ p :=
-  by
+theorem infᵢ_comap_proj : (⨅ i, comap (proj i : (∀ i, φ i) →ₗ[R] φ i) (p i)) = pi Set.univ p := by
   ext x
   simp
 #align submodule.infi_comap_proj Submodule.infᵢ_comap_proj
 
 theorem supᵢ_map_single [DecidableEq ι] [Finite ι] :
-    (⨆ i, map (LinearMap.single i : φ i →ₗ[R] ∀ i, φ i) (p i)) = pi Set.univ p :=
-  by
+    (⨆ i, map (LinearMap.single i : φ i →ₗ[R] ∀ i, φ i) (p i)) = pi Set.univ p := by
   cases nonempty_fintype ι
   refine' (supᵢ_le fun i => _).antisymm _
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
@@ -321,8 +315,7 @@ theorem supᵢ_map_single [DecidableEq ι] [Finite ι] :
 #align submodule.supr_map_single Submodule.supᵢ_map_single
 
 theorem le_comap_single_pi [DecidableEq ι] (p : ∀ i, Submodule R (φ i)) {i} :
-    p i ≤ Submodule.comap (LinearMap.single i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) :=
-  by
+    p i ≤ Submodule.comap (LinearMap.single i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
   intro x hx
   rw [Submodule.mem_comap, Submodule.mem_pi]
   rintro j -
