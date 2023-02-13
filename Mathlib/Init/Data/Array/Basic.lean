@@ -284,7 +284,7 @@ def mmapCore {β : Type v} {m : Type v → Type w} [Monad m] (a : Array' n α) (
   | i + 1, h => do
     let bs ← mmapCore a f i (le_of_lt h)
     let b ← f (a.read ⟨i, h⟩)
-    pure <| bs b
+    pure $ pushBack bs b
 #align array.mmap_core Array'.mmapCore
 
 /-- Monadically map a function over the array. -/
