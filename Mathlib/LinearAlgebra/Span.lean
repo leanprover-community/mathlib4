@@ -317,7 +317,7 @@ theorem mem_supᵢ_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H 
 theorem mem_supₛ_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
     (hdir : DirectedOn (· ≤ ·) s) : z ∈ supₛ s ↔ ∃ y ∈ s, z ∈ y := by
   haveI : Nonempty s := hs.to_subtype
-  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed _ hdir.directed_val, SetCoe.exists, Subtype.coe_mk]
+  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed _ hdir.directed_val, Subtype.exists, exists_prop]
 #align submodule.mem_Sup_of_directed Submodule.mem_supₛ_of_directed
 
 @[norm_cast, simp]
@@ -641,7 +641,7 @@ theorem supᵢ_induction' {ι : Sort _} (p : ι → Submodule R M) {C : ∀ x, (
     (hx : x ∈ ⨆ i, p i) : C x hx := by
   refine' Exists.elim _ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
   refine' supᵢ_induction p hx (fun i x hx => _) _ fun x y => _
-  · exact ⟨_, hp _ _ hx⟩
+  · exact ⟨_, hp _ x hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
@@ -919,7 +919,7 @@ def toSpanSingleton (x : M) : R →ₗ[R] M :=
 #align linear_map.to_span_singleton LinearMap.toSpanSingleton
 
 /-- The range of `toSpanSingleton x` is the span of `x`.-/
-theorem span_singleton_eq_range (x : M) : (R ∙ x) = (toSpanSingleton R M x).range :=
+theorem span_singleton_eq_range (x : M) : (R ∙ x) = LinearMap.range (toSpanSingleton R M x) :=
   Submodule.ext fun y => by
     refine' Iff.trans _ LinearMap.mem_range.symm
     exact mem_span_singleton
@@ -950,7 +950,7 @@ variable {σ₁₂ : R →+* R₂}
 
 See also `linear_map.eq_on_span'` for a version using `set.eq_on`. -/
 theorem eqOn_span {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ span R s) :
-    f x = g x := by apply span_induction h H <;> simp (config := { contextual := true })
+    f x = g x := by refine' span_induction h H _ _ _ <;> simp (config := { contextual := true })
 #align linear_map.eq_on_span LinearMap.eqOn_span
 
 /-- If two linear maps are equal on a set `s`, then they are equal on `submodule.span s`.
@@ -998,7 +998,7 @@ theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 
 
 variable (K V)
 
-theorem ker_toSpanSingleton {x : V} (h : x ≠ 0) : (toSpanSingleton K V x).ker = ⊥ := by
+theorem ker_toSpanSingleton {x : V} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton K V x) = ⊥ := by
   ext c; constructor
   · intro hc
     rw [Submodule.mem_bot]
@@ -1007,7 +1007,7 @@ theorem ker_toSpanSingleton {x : V} (h : x ≠ 0) : (toSpanSingleton K V x).ker 
     have : x = 0
     calc
       x = c⁻¹ • c • x := by rw [← mul_smul, inv_mul_cancel hc', one_smul]
-      _ = c⁻¹ • (to_span_singleton K V x) c := rfl
+      _ = c⁻¹ • (toSpanSingleton K V x) c := rfl
       _ = 0 := by rw [hc, smul_zero]
 
     tauto
