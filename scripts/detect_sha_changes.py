@@ -34,7 +34,7 @@ class VersionInfo:
         except git.exc.NoSuchPathError:
             raise ValueError(f"Repo {self.repo} not recognized")
         try:
-            repo.remotes.origin.fetch(self.commit)
+            repo.remotes.origin.fetch(self.commit, depth=1)
         except Exception:
             pass
         return repo.commit(self.commit)
