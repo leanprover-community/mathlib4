@@ -119,7 +119,7 @@ theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
 #align continuous_on.smul ContinuousOn.smul
 #align continuous_on.vadd ContinuousOn.vadd
 
-@[continuity, to_additive]
+@[to_additive (attr := continuity)]
 theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
   continuous_smul.comp (hf.prod_mk hg)
 #align continuous.smul Continuous.smul
