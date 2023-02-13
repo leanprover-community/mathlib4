@@ -43,8 +43,7 @@ def Embedding.Simps.apply {α β} (e : α ↪ β) : α → β := e
 
 initialize_simps_projections Embedding (toFun → apply)
 
--- porting note: this needs `tactic.lift`.
---instance {α β : Sort _} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
+instance {α β : Sort _} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
 end Function
 
