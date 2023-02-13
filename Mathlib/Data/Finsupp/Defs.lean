@@ -434,7 +434,8 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 #align finsupp.support_single_disjoint Finsupp.support_single_disjoint
 
 @[simp]
-theorem single_eq_zero : single a b = 0 ↔ b = 0 := by simp [FunLike.ext_iff, single_eq_set_indicator]
+theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
+  simp [FunLike.ext_iff, single_eq_set_indicator]
 #align finsupp.single_eq_zero Finsupp.single_eq_zero
 
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
