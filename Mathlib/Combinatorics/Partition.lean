@@ -11,6 +11,7 @@ Authors: Bhavik Mehta
 import Mathlib.Combinatorics.Composition
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Partitions
@@ -61,10 +62,14 @@ structure Partition (n : ℕ) where
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
   /-- proof that the `parts` sum to `n`-/
   parts_sum : parts.sum = n
-  deriving DecidableEq
+  -- porting notes: chokes on `parts_pos`
+  --deriving DecidableEq
 #align nat.partition Nat.Partition
 
 namespace Partition
+
+instance decidableEqParition: DecidableEq (Partition n)
+  | p, q => by simp [Partition.ext_iff]; exact decidableEq p.parts q.parts
 
 /-- A composition induces a partition (just convert the list to a multiset). -/
 def ofComposition (n : ℕ) (c : Composition n) : Partition n
