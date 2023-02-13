@@ -140,6 +140,8 @@ def refl (X : C) : X ≅ X where
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
+theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩ 
+
 @[simp]
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 #align category_theory.iso.refl_symm CategoryTheory.Iso.refl_symm

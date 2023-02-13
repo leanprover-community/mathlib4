@@ -92,9 +92,8 @@ instance nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 #align subsemiring_class.nontrivial SubsemiringClass.nontrivial
 
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
-  eq_zero_or_eq_zero_of_mul_eq_zero {_ _} h :=
-    (eq_zero_or_eq_zero_of_mul_eq_zero <| Subtype.ext_iff.mp h).imp Subtype.eq Subtype.eq
+instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
+  Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ => rfl
 #align subsemiring_class.no_zero_divisors SubsemiringClass.noZeroDivisors
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
@@ -1376,8 +1375,9 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
     MulActionWithZero S α :=
   MulActionWithZero.compHom _ S.subtype.toMonoidWithZeroHom
 
+-- Porting note: instance named explicitly for use in `RingTheory/Subring/Basic`
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
+instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
   -- Porting note: copying over the `smul` field causes a timeout
   -- { Module.compHom _ S.subtype with smul := (· • ·) }
   Module.compHom _ S.subtype
