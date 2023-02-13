@@ -47,7 +47,8 @@ This is defined as the maximum of the lengths of `set.subchain`s, valued in `ℕ
 -/
 
 
-open List OrderDual
+open List hiding le_antisymm
+open OrderDual
 
 universe u v
 
@@ -64,17 +65,20 @@ def subchain : Set (List α) :=
   { l | l.Chain' (· < ·) ∧ ∀ i ∈ l, i ∈ s }
 #align set.subchain Set.subchain
 
+@[simp] -- porting note: new `simp`
 theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ => fun.⟩
 #align set.nil_mem_subchain Set.nil_mem_subchain
 
 variable {s} {l : List α} {a : α}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem cons_mem_subchain_iff :
     (a::l) ∈ s.subchain ↔ a ∈ s ∧ l ∈ s.subchain ∧ ∀ b ∈ l.head?, a < b := by
   simp only [subchain, mem_setOf_eq, forall_mem_cons, chain'_cons', and_left_comm, and_comm,
     and_assoc]
 #align set.cons_mem_subchain_iff Set.cons_mem_subchain_iff
+
+@[simp] -- porting note: new lemma + `simp`
+theorem singleton_mem_subchain_iff : [a] ∈ s.subchain ↔ a ∈ s := by simp [cons_mem_subchain_iff]
 
 instance : Nonempty s.subchain :=
   ⟨⟨[], s.nil_mem_subchain⟩⟩
@@ -135,14 +139,9 @@ theorem chainHeight_eq_top_iff : s.chainHeight = ⊤ ↔ ∀ n, ∃ l ∈ s.subc
 
 @[simp]
 theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight ↔ s.Nonempty := by
-  change ((1 : ℕ) : ENat) ≤ _ ↔ _
-  rw [Set.le_chainHeight_iff]
-  constructor
-  · rintro ⟨_ | ⟨x, xs⟩, ⟨h₁, h₂⟩, h₃⟩
-    · cases h₃
-    · exact ⟨x, h₂ _ (Or.inl rfl)⟩
-  · rintro ⟨x, hx⟩
-    exact ⟨[x], ⟨Chain.nil, fun y h => (List.mem_singleton.mp h).symm ▸ hx⟩, rfl⟩
+  rw [← Nat.cast_one, Set.le_chainHeight_iff]
+  simp only [length_eq_one, @and_comm (_ ∈ _), @eq_comm _ _ [_], exists_exists_eq_and,
+    singleton_mem_subchain_iff, Set.Nonempty]
 #align set.one_le_chain_height_iff Set.one_le_chainHeight_iff
 
 @[simp]
@@ -218,7 +217,7 @@ theorem chainHeight_mono (h : s ⊆ t) : s.chainHeight ≤ t.chainHeight :=
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) (s : Set α) :
     (f '' s).chainHeight = s.chainHeight := by
-  apply _root_.le_antisymm <;> rw [chainHeight_le_chainHeight_iff]
+  apply le_antisymm <;> rw [chainHeight_le_chainHeight_iff]
   · suffices ∀ l ∈ (f '' s).subchain, ∃ l' ∈ s.subchain, map f l' = l by
       intro l hl
       obtain ⟨l', h₁, rfl⟩ := this l hl
