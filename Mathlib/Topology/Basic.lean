@@ -1655,6 +1655,7 @@ theorem Continuous.comp {g : β → γ} {f : α → β} (hg : Continuous g) (hf 
   continuous_def.2 fun _ h => (h.preimage hg).preimage hf
 #align continuous.comp Continuous.comp
 
+-- This is needed due to reducibility issues with the `continuity` tactic.
 @[continuity]
 theorem Continuous.comp' {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
