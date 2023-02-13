@@ -95,10 +95,10 @@ def FreeProd M N := FreeProduct (fun b : Bool => cond b M N)
 There are several reasons to build an API from scratch.
 
 - API about `Con` makes it easy to define the required type and prove the universal property, so
-  there is little overhead compared to transfering API from `FreeProduct`.
+  there is little overhead compared to transferring API from `FreeProduct`.
 - If `M` and `N` live in different universes, then the definition has to add `ULift`s; this makes
   it harder to transfer API and definitions.
-- As of now, we have now way to automatically build an instance of `∀ k : Fin 2, Monoid (![M, N] k)`
+- As of now, we have no way to automatically build an instance of `∀ k : Fin 2, Monoid (![M, N] k)`
   from `[Monoid M]` and `[Monoid N]`, not even speaking about more advanced typeclass assumptions
   that involve both `M` and `N`.
 - Using list of `M ⊕ N` instead of, e.g., a list of `Σ k : Fin 2, ![M, N] k` as the underlying type
