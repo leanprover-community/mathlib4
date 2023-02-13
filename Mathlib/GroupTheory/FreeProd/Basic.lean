@@ -131,10 +131,10 @@ infₛ {c |
 @[to_additive "Free product of two additive monoids or groups."]
 def FreeProd (M N : Type _) [MulOneClass M] [MulOneClass N] := (freeProdCon M N).Quotient
 
-@[inherit_doc]
-local infix:70 " ⋆ " => FreeProd
-
 namespace FreeProd
+
+@[inherit_doc]
+scoped infix:70 " ⋆ " => FreeProd
 
 section MulOneClass
 
