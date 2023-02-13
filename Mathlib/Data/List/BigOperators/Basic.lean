@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 
 ! This file was ported from Lean 3 source module data.list.big_operators.basic
-! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
+! leanprover-community/mathlib commit bb37dbda903641effc74366a2774cefdf2c6734dTODO
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -586,7 +586,19 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
     exact mul_pos (h _ <| mem_cons_self _ _) (ih fun a ha => h a <| mem_cons_of_mem _ ha)
 #align list.prod_pos List.prod_pos
 
--- TODO
+/-- A variant of `list.prod_pos` for `canonically_ordered_comm_semiring`. -/
+@[simp]
+theorem _root_.CanonicallyOrderedCommSemiring.list_prod_pos {α : Type _}
+    [CanonicallyOrderedCommSemiring α]
+    [Nontrivial α] : ∀ {l : List α}, 0 < l.prod ↔ ∀ x ∈ l, (0 : α) < x
+  | [] =>
+    -- porting note: was `hx.elim`
+    ⟨fun _ x hx => ((mem_nil_iff _).mp hx).elim, fun _ => zero_lt_one⟩
+  | x :: xs => by
+    simp_rw [prod_cons, mem_cons, forall_eq_or_imp, CanonicallyOrderedCommSemiring.mul_pos,
+      CanonicallyOrderedCommSemiring.list_prod_pos]
+#align canonically_ordered_comm_semiring.list_prod_pos CanonicallyOrderedCommSemiring.list_prod_pos
+
 
 /-!
 Several lemmas about sum/head/tail for `List ℕ`.

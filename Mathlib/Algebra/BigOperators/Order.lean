@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.big_operators.order
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
+! leanprover-community/mathlib commit bb37dbda903641effc74366a2774cefdf2c6734d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -637,7 +637,20 @@ section CanonicallyOrderedCommSemiring
 
 variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
 
--- TODO
+@[simp]
+theorem _root_.CanonicallyOrderedCommSemiring.multiset_prod_pos [Nontrivial R] {m : Multiset R} :
+    0 < m.prod ↔ ∀ x ∈ m, (0 : R) < x := by
+  induction m using Quotient.inductionOn
+  rw [Multiset.quot_mk_to_coe, Multiset.coe_prod]
+  exact CanonicallyOrderedCommSemiring.list_prod_pos
+#align canonically_ordered_comm_semiring.multiset_prod_pos CanonicallyOrderedCommSemiring.multiset_prod_pos
+
+/-- Note that the name is to match `canonically_ordered_comm_semiring.mul_pos`. -/
+@[simp]
+theorem _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
+    (0 < ∏ i in s, f i) ↔ ∀ i ∈ s, (0 : R) < f i :=
+  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans <| by simp
+#align canonically_ordered_comm_semiring.prod_pos CanonicallyOrderedCommSemiring.prod_pos
 
 theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏ i in s, g i := by
   classical
