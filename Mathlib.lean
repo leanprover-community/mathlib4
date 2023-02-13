@@ -1053,6 +1053,7 @@ import Mathlib.Topology.Algebra.Order.ExtrClosure
 import Mathlib.Topology.Algebra.Order.Filter
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.LeftRight
+import Mathlib.Topology.Algebra.Order.LeftRightLim
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
