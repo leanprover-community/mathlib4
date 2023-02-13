@@ -235,19 +235,24 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
 theorem admissible_of_one_lt_sumInv_aux' {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r)
     (H : 1 < sumInv {p, q, r}) : Admissible {p, q, r} := by
   have hp3 : p < 3 := lt_three hpq hqr H
-  -- porting note: currently cannot work, see line 287 in IntervalCases.lean
-  interval_cases p
+  -- Porting note: `interval_cases` doesn't support `ℕ+` yet.
+  replace hp3 := Finset.mem_Iio.mpr hp3
+  conv at hp3 => change p ∈ ({1, 2} : Multiset ℕ+)
+  fin_cases hp3
   · exact admissible_A' q r
   have hq4 : q < 4 := lt_four hqr H
-  interval_cases
+  replace hq4 := Finset.mem_Ico.mpr ⟨hpq, hq4⟩; clear hpq
+  conv at hq4 => change q ∈ ({2, 3} : Multiset ℕ+)
+  fin_cases hq4
   · exact admissible_D' r
   have hr6 : r < 6 := lt_six H
-  interval_cases
+  replace hr6 := Finset.mem_Ico.mpr ⟨hqr, hr6⟩; clear hqr
+  conv at hr6 => change r ∈ ({3, 4, 5} : Multiset ℕ+)
+  fin_cases hr6
   · exact admissible_E6
   · exact admissible_E7
   · exact admissible_E8
-#align ADE_inequality.admissible_of_one_lt_sum_inv_aux'
-    ADEInequality.admissible_of_one_lt_sumInv_aux'
+#align ADE_inequality.admissible_of_one_lt_sum_inv_aux' ADEInequality.admissible_of_one_lt_sumInv_aux'
 
 theorem admissible_of_one_lt_sumInv_aux :
     ∀ {pqr : List ℕ+} (_ : pqr.Sorted (· ≤ ·)) (_ : pqr.length = 3) (_ : 1 < sumInv pqr),
