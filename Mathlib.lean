@@ -1097,6 +1097,7 @@ import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Partial
 import Mathlib.Topology.Perfect
+import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.Opens
