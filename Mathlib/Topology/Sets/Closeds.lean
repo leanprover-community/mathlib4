@@ -44,6 +44,9 @@ instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
+  prf s hs := ⟨⟨s, hs⟩, rfl⟩
+
 theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
   s.closed'
 #align topological_space.closeds.closed TopologicalSpace.Closeds.closed
@@ -94,9 +97,9 @@ instance : CompleteLattice (Closeds α) :=
     (funext fun s => funext fun t => SetLike.coe_injective (s.2.union t.2).closure_eq.symm)
     -- inf
     (fun s t => ⟨s ∩ t, s.2.inter t.2⟩) rfl
-    -- Sup
+    -- supₛ
     _ rfl
-    -- Inf
+    -- infₛ
     (fun S => ⟨⋂ s ∈ S, ↑s, isClosed_binterᵢ fun s _ => s.2⟩)
     (funext fun _ => SetLike.coe_injective infₛ_image.symm)
 
