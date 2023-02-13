@@ -104,6 +104,11 @@ There are several reasons to build an API from scratch.
 - Using list of `M ⊕ N` instead of, e.g., a list of `Σ k : Fin 2, ![M, N] k` as the underlying type
   makes it possible to write computationally effective code.
 
+## TODO
+
+- Prove `FreeProduct (f : Fin 2 → Type _) ≃* f 0 ⋆ f 1` and
+  `FreeProduct (f : Bool → Type _) ≃* f false ⋆ f true`.
+
 ## Tags
 
 group, monoid, free product
