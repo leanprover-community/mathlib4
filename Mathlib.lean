@@ -232,6 +232,7 @@ import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.Functor.Default
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Functor.Functorial
+import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
