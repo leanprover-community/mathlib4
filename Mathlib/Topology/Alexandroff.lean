@@ -152,8 +152,8 @@ instance canLift : CanLift (Alexandroff X) X (↑) fun x => x ≠ ∞ :=
   WithTop.canLift
 #align alexandroff.can_lift Alexandroff.canLift
 
-theorem not_mem_range_coe_iff {x : Alexandroff X} : x ∉ range ((↑) : X → Alexandroff X) ↔ x = ∞ :=
-  by rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
+theorem not_mem_range_coe_iff {x : Alexandroff X} : x ∉ range some ↔ x = ∞ := by
+  rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
 #align alexandroff.not_mem_range_coe_iff Alexandroff.not_mem_range_coe_iff
 
 theorem infty_not_mem_range_coe : ∞ ∉ range ((↑) : X → Alexandroff X) :=
