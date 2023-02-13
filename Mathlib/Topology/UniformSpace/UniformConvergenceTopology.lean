@@ -766,10 +766,7 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     (hf : UniformContinuous f) : UniformContinuous (ofFun 𝔖 ∘ (· ∘ ·) f ∘ toFun 𝔖) := by
   -- This is a direct consequence of `uniform_convergence.comap_eq`
   rw [uniformContinuous_iff]
-  calc
-    𝒱(α, γ, 𝔖, _) ≤ 𝒱(α, γ, 𝔖, ‹UniformSpace β›.comap f) :=
-      UniformOnFun.mono (uniform_continuous_iff.mp hf) subset_rfl
-    _ = 𝒱(α, β, 𝔖, _).comap ((· ∘ ·) f) := UniformOnFun.comap_eq
+  exact (UniformOnFun.mono (uniformContinuous_iff.mp hf) subset_rfl).trans_eq UniformOnFun.comap_eq
 
 #align uniform_on_fun.postcomp_uniform_continuous UniformOnFun.postcomp_uniformContinuous
 
