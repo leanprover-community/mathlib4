@@ -447,10 +447,10 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
 post-composing. -/
 protected def congrRight [UniformSpace γ] (e : γ ≃ᵤ β) : (α →ᵤ γ) ≃ᵤ (α →ᵤ β) :=
   {
-    Equiv.piCongrRight fun a =>
+    Equiv.piCongrRight fun _a =>
       e.toEquiv with
-    uniformContinuous_toFun := UniformFun.postcomp_uniformContinuous e.UniformContinuous
-    uniformContinuous_invFun := UniformFun.postcomp_uniformContinuous e.symm.UniformContinuous }
+    uniformContinuous_toFun := UniformFun.postcomp_uniformContinuous e.uniformContinuous
+    uniformContinuous_invFun := UniformFun.postcomp_uniformContinuous e.symm.uniformContinuous }
 #align uniform_fun.congr_right UniformFun.congrRight
 
 /-- Pre-composition by a any function is uniformly continuous for the uniform structures of
