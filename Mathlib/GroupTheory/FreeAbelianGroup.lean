@@ -539,7 +539,9 @@ theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
 #align free_abelian_group.lift_monoid_coe FreeAbelianGroup.liftMonoid_coe
 
 @[simp]
-theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) : ⇑(liftMonoid.symm f) = lift.symm ↑f :=
+-- Porting note: Added a type to `↑f`.
+theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
+    ⇑(liftMonoid.symm f) = lift.symm (↑f : FreeAbelianGroup α →+ R) :=
   rfl
 #align free_abelian_group.lift_monoid_symm_coe FreeAbelianGroup.liftMonoid_symm_coe
 
