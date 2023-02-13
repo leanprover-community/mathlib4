@@ -172,14 +172,12 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
 
 @[simp]
 theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = ⊤ :=
-  eq_top_iff.2 fun x =>
-    Subtype.recOn x fun x hx _ =>
-      by
-      refine' span_induction' (fun x hx' => subset_span hx') _ (fun x _ y _ => _) (fun r x _ => _) hx
-      · exact subset_span hx
-      · exact zero_mem _
-      · exact add_mem
-      · exact smul_mem _ _
+  eq_top_iff.2 fun x ↦ Subtype.recOn x fun x hx _ ↦ by
+    refine' span_induction' (p := fun x hx ↦ (⟨x, hx⟩ : span R s) ∈ span R (Subtype.val ⁻¹' s))
+      (fun x' hx' ↦ subset_span hx') _ (fun x _ y _ ↦ _) (fun r x _ ↦ _) hx
+    · exact zero_mem _
+    · exact add_mem
+    · exact smul_mem _ _
 #align submodule.span_span_coe_preimage Submodule.span_span_coe_preimage
 
 theorem span_nat_eq_addSubmonoid_closure (s : Set M) :
