@@ -175,7 +175,6 @@ theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = �
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ =>
       by
-
       refine' span_induction' (fun x hx' => subset_span hx') _ (fun x _ y _ => _) (fun r x _ => _) hx
       · exact subset_span hx
       · exact zero_mem _
@@ -325,7 +324,7 @@ theorem mem_supᵢ_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H 
 theorem mem_supₛ_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
     (hdir : DirectedOn (· ≤ ·) s) : z ∈ supₛ s ↔ ∃ y ∈ s, z ∈ y := by
   haveI : Nonempty s := hs.to_subtype
-  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed _ hdir.directed_coe, SetCoe.exists, Subtype.coe_mk]
+  simp only [supₛ_eq_supᵢ', mem_supᵢ_of_directed _ hdir.directed_val, SetCoe.exists, Subtype.coe_mk]
 #align submodule.mem_Sup_of_directed Submodule.mem_supₛ_of_directed
 
 @[norm_cast, simp]
@@ -333,7 +332,7 @@ theorem coe_supᵢ_of_chain (a : ℕ →o Submodule R M) : (↑(⨆ k, a k) : Se
   coe_supᵢ_of_directed a a.monotone.directed_le
 #align submodule.coe_supr_of_chain Submodule.coe_supᵢ_of_chain
 
-/-- We can regard `coe_supᵢ_of_chain` as the statement that `coe : (submodule R M) → set M` is
+/-- We can regard `coe_supᵢ_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
 Scott continuous for the ω-complete partial order induced by the complete lattice structures. -/
 theorem coe_scott_continuous :
     OmegaCompletePartialOrder.Continuous' ((↑) : Submodule R M → Set M) :=
@@ -676,7 +675,7 @@ theorem finset_span_isCompactElement (S : Finset M) :
   simp only [Finset.mem_coe]
   rw [← Finset.sup_eq_supᵢ]
   exact
-    CompleteLattice.finset_sup_compact_of_compact S fun x _ => singleton_span_is_compact_element x
+    CompleteLattice.finset_sup_compact_of_compact S fun x _ => singleton_span_isCompactElement x
 #align submodule.finset_span_is_compact_element Submodule.finset_span_isCompactElement
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
@@ -689,14 +688,14 @@ instance : IsCompactlyGenerated (Submodule R M) :=
   ⟨fun s =>
     ⟨(fun x => span R {x}) '' s,
       ⟨fun t ht => by
-        rcases(Set.mem_image _ _ _).1 ht with ⟨x, hx, rfl⟩
-        apply singleton_span_is_compact_element, by
+        rcases(Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
+        apply singleton_span_isCompactElement, by
         rw [supₛ_eq_supᵢ, supᵢ_image, ← span_eq_supᵢ_of_singleton_spans, span_eq]⟩⟩⟩
 
 /-- A submodule is equal to the supremum of the spans of the submodule's nonzero elements. -/
 theorem submodule_eq_supₛ_le_nonzero_spans (p : Submodule R M) :
-    p = supₛ { T : Submodule R M | ∃ (m : M)(hm : m ∈ p)(hz : m ≠ 0), T = span R {m} } := by
-  let S := { T : Submodule R M | ∃ (m : M)(hm : m ∈ p)(hz : m ≠ 0), T = span R {m} }
+    p = supₛ { T : Submodule R M | ∃ (m : M) (_ : m ∈ p) (_ : m ≠ 0), T = span R {m} } := by
+  let S := { T : Submodule R M | ∃ (m : M) (_ : m ∈ p) (_ : m ≠ 0), T = span R {m} }
   apply le_antisymm
   · intro m hm
     by_cases h : m = 0
@@ -720,7 +719,7 @@ theorem lt_sup_iff_not_mem {I : Submodule R M} {a : M} : (I < I ⊔ R ∙ a) ↔
     have h2 := gt_of_ge_of_gt h1 h
     exact lt_irrefl I h2
   · intro h
-    apply set_like.lt_iff_le_and_exists.mpr
+    apply SetLike.lt_iff_le_and_exists.mpr
     constructor
     simp only [le_sup_left]
     use a
@@ -800,7 +799,8 @@ theorem prod_top : (prod ⊤ ⊤ : Submodule R (M × M')) = ⊤ := by ext; simp
 theorem prod_bot : (prod ⊥ ⊥ : Submodule R (M × M')) = ⊥ := by ext ⟨x, y⟩; simp [Prod.zero_eq_mk]
 #align submodule.prod_bot Submodule.prod_bot
 
-theorem prod_mono {p p' : Submodule R M} {q q' : Submodule R M'} :
+-- Porting note: Added nonrec
+nonrec theorem prod_mono {p p' : Submodule R M} {q q' : Submodule R M'} :
     p ≤ p' → q ≤ q' → prod p q ≤ prod p' q' :=
   prod_mono
 #align submodule.prod_mono Submodule.prod_mono
@@ -922,10 +922,10 @@ variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
     `R` to scalar multiples of `x`.-/
 @[simps!]
 def toSpanSingleton (x : M) : R →ₗ[R] M :=
-  LinearMap.id.smul_right x
+  LinearMap.id.smulRight x
 #align linear_map.to_span_singleton LinearMap.toSpanSingleton
 
-/-- The range of `to_span_singleton x` is the span of `x`.-/
+/-- The range of `toSpanSingleton x` is the span of `x`.-/
 theorem span_singleton_eq_range (x : M) : (R ∙ x) = (toSpanSingleton R M x).range :=
   Submodule.ext fun y => by
     refine' Iff.trans _ LinearMap.mem_range.symm
@@ -986,7 +986,7 @@ end AddCommMonoid
 
 section Field
 
-variable {K V} [Field K] [AddCommGroup V] [Module K V]
+variable [Field K] [AddCommGroup V] [Module K V]
 
 noncomputable section
 
