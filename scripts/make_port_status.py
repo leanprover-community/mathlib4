@@ -27,16 +27,6 @@ mathlib4_root = 'Mathlib/'
 source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
-synchronized_re = re.compile(r".*SYNCHRONIZED WITH MATHLIB4.*")
-
-# Not using re.compile as this is passed to git which uses a different regex dialect:
-# https://www.sjoerdlangkemper.nl/2021/08/13/how-does-git-diff-ignore-matching-lines-work/
-comment_git_re = r'\`(' + r'|'.join([
-    re.escape("> THIS FILE IS SYNCHRONIZED WITH MATHLIB4."),
-    re.escape("> https://github.com/leanprover-community/mathlib4/pull/") + r"[0-9]*",
-    re.escape("> Any changes to this file require a corresponding PR to mathlib4."),
-    r"",
-]) + r")" + "\n"
 
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
@@ -59,8 +49,6 @@ for path in Path(mathlib3_root).glob('**/*.lean'):
         continue
     graph.add_node(mk_label(path))
 
-synchronized = dict()
-
 for path in Path(mathlib3_root).glob('**/*.lean'):
     if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
         continue
@@ -77,8 +65,6 @@ for path in Path(mathlib3_root).glob('**/*.lean'):
                 else:
                     imported = 'lean_core.' + imported
             graph.add_edge(imported, label)
-        if synchronized_re.match(line):
-            synchronized[label] = True
 
 def get_mathlib4_module_commit_info(contents):
     module = repo = commit = None
@@ -154,10 +140,6 @@ for num in nums:
         _, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
         prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
-def pr_to_str(pr):
-    labels = ' '.join(f'[{l.name}]' for l in pr.labels)
-    return f'[#{pr.number}]({pr.html_url}) (by {pr.user.login}, {labels}, last activity {pr.updated_at})'
-
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"
 comments_dict = yaml.safe_load(requests.get(COMMENTS_URL).content.replace(b"```", b""))
 
@@ -173,7 +155,7 @@ for node in sorted(graph.nodes):
         )
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
         sha = data[node]['source']['commit'] if data[node]['source']['repo'] == 'leanprover-community/mathlib' else "_"
-        
+
         status = f"Yes {pr_status} {sha}"
     else:
         new_status = dict(ported=False)
