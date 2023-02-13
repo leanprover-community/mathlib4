@@ -162,7 +162,7 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq 
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 #align linear_map.apply LinearMap.lsum_apply
 
-@[simp]
+@[simp high]
 theorem lsum_single {ι R : Type _} [Fintype ι] [DecidableEq ι] [CommRing R] {M : ι → Type _}
     [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] :
     LinearMap.lsum R M R LinearMap.single = LinearMap.id :=
@@ -340,13 +340,17 @@ variable [∀ i, AddCommMonoid (χ i)] [∀ i, Module R (χ i)]
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
 
 This is `Equiv.piCongrRight` as a `LinearEquiv` -/
-@[simps apply]
 def piCongrRight (e : ∀ i, φ i ≃ₗ[R] ψ i) : (∀ i, φ i) ≃ₗ[R] ∀ i, ψ i :=
   { AddEquiv.piCongrRight fun j => (e j).toAddEquiv with
     toFun := fun f i => e i (f i)
     invFun := fun f i => (e i).symm (f i)
     map_smul' := fun c f => by ext; simp }
 #align linear_equiv.Pi_congr_right LinearEquiv.piCongrRight
+
+@[simp]
+theorem piCongrRight_apply (e : ∀ i, φ i ≃ₗ[R] ψ i) (f i) :
+    piCongrRight e f i = e i (f i) := rfl
+#align linear_equiv.Pi_congr_right_apply LinearEquiv.piCongrRight
 
 @[simp]
 theorem piCongrRight_refl : (piCongrRight fun j => refl R (φ j)) = refl _ _ :=
@@ -415,14 +419,14 @@ theorem piRing_apply (f : (ι → R) →ₗ[R] M) (i : ι) : piRing R M ι S f i
   rfl
 #align linear_equiv.pi_ring_apply LinearEquiv.piRing_apply
 
-set_option pp.coercions false
-
 @[simp]
 theorem piRing_symmApply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm f g = ∑ i, g i • f i := by
-  simp [piRing, LinearMap.lsum]
+  -- Porting note: `linear_equiv.coe_mk` hadn't been ported yet, so this `coe_mk` is used.
+  have coe_mk : ∀ {f₁ h₁ h₂ f₂ h₃ h₄},
+    (⟨⟨⟨f₁, h₁⟩, h₂⟩, f₂, h₃, h₄⟩ :
+      ((i : ι) → (fun _ => R) i →ₗ[R] M) ≃ₗ[S] ((i : ι) → (fun _ => R) i) →ₗ[R] M) = f₁ := rfl
+  simp [piRing, LinearMap.lsum, coe_mk]
 #align linear_equiv.pi_ring_symm_apply LinearEquiv.piRing_symmApply
-
-#print LinearMap.mk
 
 -- TODO additive version?
 /-- `Equiv.sumArrowEquivProdArrow` as a linear equivalence.
@@ -466,26 +470,38 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
 @[simps (config :=
       { simpRhs := true
-        fullyApplied := false })]
+        fullyApplied := false }) symmApply]
 def funUnique (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
     (ι → M) ≃ₗ[R] M :=
   { Equiv.funUnique ι M with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 #align linear_equiv.fun_unique LinearEquiv.funUnique
+#align linear_equiv.fun_unique_symm_apply LinearEquiv.funUnique_symmApply
+
+@[simp]
+theorem funUnique_apply (ι R M : Type _) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
+    (funUnique ι R M : (ι → M) → M) = eval default := rfl
+#align linear_equiv.fun_unique_apply LinearEquiv.funUnique_apply
 
 variable (R M)
 
 /-- Linear equivalence between dependent functions `(i : fin 2) → M i` and `M 0 × M 1`. -/
 @[simps (config :=
       { simpRhs := true
-        fullyApplied := false })]
+        fullyApplied := false }) symmApply]
 def piFinTwo (M : Fin 2 → Type v) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] :
     (∀ i, M i) ≃ₗ[R] M 0 × M 1 :=
   { piFinTwoEquiv M with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 #align linear_equiv.pi_fin_two LinearEquiv.piFinTwo
+#align linear_equiv.pi_fin_two_symm_apply LinearEquiv.piFinTwo_symmApply
+
+@[simp]
+theorem piFinTwo_apply (M : Fin 2 → Type v) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] :
+    (piFinTwo R M : (∀ i, M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
+#align linear_equiv.pi_fin_two_apply LinearEquiv.piFinTwo_apply
 
 /-- Linear equivalence between vectors in `M² = fin 2 → M` and `M × M`. -/
 @[simps (config :=
@@ -501,7 +517,7 @@ section Extend
 
 variable (R) {η : Type x} [Semiring R] (s : ι → η)
 
-/-- `function.extend s f 0` as a bundled linear map. -/
+/-- `Function.extend s f 0` as a bundled linear map. -/
 @[simps]
 noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → R :=
   {
