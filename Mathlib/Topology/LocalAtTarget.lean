@@ -79,29 +79,31 @@ theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
   exact ⟨fun ⟨a, b, c⟩ => ⟨a, c.symm ▸ hx, b, c⟩, fun ⟨a, _, b, c⟩ => ⟨a, b, c⟩⟩
 #align set.restrict_preimage_is_closed_map Set.restrictPreimage_isClosedMap
 
-include hU
-
 theorem isOpen_iff_inter_of_supᵢ_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) := by
   constructor
   · exact fun H i => H.inter (U i).2
   · intro H
     have : (⋃ i, (U i : Set β)) = Set.univ := by
-      convert congr_arg coe hU
+      convert congr_arg (SetLike.coe) hU
       simp
     rw [← s.inter_univ, ← this, Set.inter_unionᵢ]
     exact isOpen_unionᵢ H
 #align is_open_iff_inter_of_supr_eq_top isOpen_iff_inter_of_supᵢ_eq_top
 
 theorem isOpen_iff_coe_preimage_of_supᵢ_eq_top (s : Set β) :
-    IsOpen s ↔ ∀ i, IsOpen (coe ⁻¹' s : Set (U i)) := by
-  simp_rw [(U _).2.openEmbedding_subtype_val.open_iff_image_open, Set.image_preimage_eq_inter_range,
-    Subtype.range_coe]
-  apply isOpen_iff_inter_of_supᵢ_eq_top
+    IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) := by
+  simp_rw [(U _).2.openEmbedding_subtype_val.open_iff_image_open]
+  simp_rw [@Set.image_preimage_eq_inter_range _ _ Subtype.val s]
+    --Set.image_preimage_eq_inter_range,
+    --Subtype.range_coe]
+  apply isOpen_iff_inter_of_supᵢ_eq_top hU s
   assumption
 #align is_open_iff_coe_preimage_of_supr_eq_top isOpen_iff_coe_preimage_of_supᵢ_eq_top
 
+#exit
+
 theorem isClosed_iff_coe_preimage_of_supᵢ_eq_top (s : Set β) :
-    IsClosed s ↔ ∀ i, IsClosed (coe ⁻¹' s : Set (U i)) := by
+    IsClosed s ↔ ∀ i, IsClosed ((↑) ⁻¹' s : Set (U i)) := by
   simpa using isOpen_iff_coe_preimage_of_supᵢ_eq_top hU (sᶜ)
 #align is_closed_iff_coe_preimage_of_supr_eq_top isClosed_iff_coe_preimage_of_supᵢ_eq_top
 
@@ -142,9 +144,9 @@ theorem embedding_iff_embedding_of_supᵢ_eq_top (h : Continuous f) :
   simp_rw [embedding_iff]
   rw [forall_and]
   apply and_congr
-  · apply inducing_iff_inducing_of_supᵢ_eq_top <;> assumption
+  · apply inducing_iff_inducing_of_supᵢ_eq_top; assumption
   · apply Set.injective_iff_injective_of_unionᵢ_eq_univ
-    convert congr_arg coe hU
+    convert congr_arg SetLike.coe hU
     simp
 #align embedding_iff_embedding_of_supr_eq_top embedding_iff_embedding_of_supᵢ_eq_top
 
@@ -167,4 +169,3 @@ theorem closedEmbedding_iff_closedEmbedding_of_supᵢ_eq_top (h : Continuous f) 
   · simp_rw [Set.range_restrictPreimage]
     apply isClosed_iff_coe_preimage_of_supᵢ_eq_top hU
 #align closed_embedding_iff_closed_embedding_of_supr_eq_top closedEmbedding_iff_closedEmbedding_of_supᵢ_eq_top
-
