@@ -219,10 +219,7 @@ protected def pempty (α) : (∅ : Set α) ≃ PEmpty :=
 /-- If sets `s` and `t` are separated by a decidable predicate, then `s ∪ t` is equivalent to
 `s ⊕ t`. -/
 protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs : ∀ x ∈ s, p x)
-    (ht : ∀ x ∈ t, ¬p x) :
-    (s ∪ t : Set α) ≃
-      Sum s
-        t where
+    (ht : ∀ x ∈ t, ¬p x) : (s ∪ t : Set α) ≃ s ⊕ t where
   toFun x :=
     if hp : p x then Sum.inl ⟨_, x.2.resolve_right fun xt => ht _ xt hp⟩
     else Sum.inr ⟨_, x.2.resolve_left fun xs => hp (hs _ xs)⟩
@@ -237,7 +234,7 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
 
 /-- If sets `s` and `t` are disjoint, then `s ∪ t` is equivalent to `s ⊕ t`. -/
 protected def union {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅) :
-    (s ∪ t : Set α) ≃ Sum s t :=
+    (s ∪ t : Set α) ≃ s ⊕ t :=
   Set.union' (fun x => x ∈ s) (fun _ => id) fun _ xt xs => H ⟨xs, xt⟩
 #align equiv.set.union Equiv.Set.union
 
@@ -551,6 +548,34 @@ noncomputable def rangeSplittingImageEquiv {α β : Type _} (f : α → β) (s :
 #align equiv.set.range_splitting_image_equiv_symm_apply_coe Equiv.Set.rangeSplittingImageEquiv_symm_apply_coe
 #align equiv.set.range_splitting_image_equiv_apply_coe_coe Equiv.Set.rangeSplittingImageEquiv_apply_coe_coe
 
+/-- Equivalence between the range of `Sum.inl : α → α ⊕ β` and `α`. -/
+@[simps symm_apply_coe]
+def rangeInl (α β : Type _) : Set.range (Sum.inl : α → α ⊕ β) ≃ α where
+  toFun
+  | ⟨.inl x, _⟩ => x
+  | ⟨.inr _, h⟩ => False.elim <| by rcases h with ⟨x, h'⟩; cases h'
+  invFun x := ⟨.inl x, mem_range_self _⟩
+  left_inv := fun ⟨_, _, rfl⟩ => rfl
+  right_inv x := rfl
+
+@[simp] lemma rangeInl_apply_inl {α : Type _} (β : Type _) (x : α) :
+    (rangeInl α β) ⟨.inl x, mem_range_self _⟩ = x :=
+  rfl
+
+/-- Equivalence between the range of `Sum.inr : β → α ⊕ β` and `β`. -/
+@[simps symm_apply_coe]
+def rangeInr (α β : Type _) : Set.range (Sum.inr : β → α ⊕ β) ≃ β where
+  toFun
+  | ⟨.inl _, h⟩ => False.elim <| by rcases h with ⟨x, h'⟩; cases h'
+  | ⟨.inr x, _⟩ => x
+  invFun x := ⟨.inr x, mem_range_self _⟩
+  left_inv := fun ⟨_, _, rfl⟩ => rfl
+  right_inv x := rfl
+
+@[simp] lemma rangeInr_apply_inr (α : Type _) {β : Type _} (x : β) :
+    (rangeInr α β) ⟨.inr x, mem_range_self _⟩ = x :=
+  rfl
+
 end Set
 
 /-- If `f : α → β` has a left-inverse when `α` is nonempty, then `α` is computably equivalent to the
@@ -617,10 +642,8 @@ theorem self_comp_ofInjective_symm {α β} {f : α → β} (hf : Injective f) :
 theorem ofLeftInverse_eq_ofInjective {α β : Type _} (f : α → β) (f_inv : Nonempty α → β → α)
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :
     ofLeftInverse f f_inv hf =
-      ofInjective f
-        ((em (Nonempty α)).elim (fun h => (hf h).injective) fun h _ _ _ => by
-          haveI : Subsingleton α := subsingleton_of_not_nonempty h
-          simp) := by
+      ofInjective f ((isEmpty_or_nonempty α).elim (fun h _ _ _ => Subsingleton.elim _ _)
+        (fun h => (hf h).injective)) := by
   ext
   simp
 #align equiv.of_left_inverse_eq_of_injective Equiv.ofLeftInverse_eq_ofInjective

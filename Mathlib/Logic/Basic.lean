@@ -244,11 +244,6 @@ it is better to use explicitly introduced ones rather than allowing Lean to auto
 classical ones, as these may cause instance mismatch errors later.
 -/
 
-/-- The Double Negation Theorem: `¬ ¬ P` is equivalent to `P`.
-The left-to-right direction, double negation elimination (DNE),
-is classically true but not constructively. -/
-add_decl_doc Classical.not_not -- TODO: move to Std
-
 export Classical (not_not)
 attribute [simp] not_not
 #align not_not Classical.not_not
@@ -661,9 +656,6 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
   ⟨fun ⟨x, y, h⟩ ↦ ⟨y, x, h⟩, fun ⟨y, x, h⟩ ↦ ⟨x, y, h⟩⟩
 #align exists_swap exists_swap
 
-@[simp] theorem forall_exists_index {q : (∃ x, p x) → Prop} :
-    (∀ h, q h) ↔ ∀ x (h : p x), q ⟨x, h⟩ :=
-  ⟨fun h x hpx ↦ h ⟨x, hpx⟩, fun h ⟨x, hpx⟩ ↦ h x hpx⟩
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
