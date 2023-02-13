@@ -33,7 +33,10 @@ class VersionInfo:
             repo = git.Repo('port-repos/' + self.repo)
         except git.exc.NoSuchPathError:
             raise ValueError(f"Repo {self.repo} not recognized")
-        repo.remotes.origin.fetch(self.commit)
+        try:
+            repo.remotes.origin.fetch(self.commit)
+        except Exception:
+            pass
         return repo.commit(self.commit)
 
 def get_mathlib4_module_commit_info(contents):
@@ -81,6 +84,8 @@ if __name__ == '__main__':
         if a_info == b_info or b_info is None:
             continue
         diff_infos.append((diff, a_info, b_info))
+
+    all_refs = {}
 
     # produce errors first
     for diff, a_info, b_info in diff_infos:
