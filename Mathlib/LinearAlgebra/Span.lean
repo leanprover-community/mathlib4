@@ -987,10 +987,11 @@ noncomputable section
 
 open Classical
 
+-- Porting note: added the following line, fails to be inferred otherwise. Probably lean4#2074
 instance : Module K K := Semiring.toModule
 
 theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 0) :
-    (K ∙ x) ⊔ f.ker = ⊤ :=
+    (K ∙ x) ⊔ ker f = ⊤ :=
   eq_top_iff.2 fun y hy =>
     Submodule.mem_sup.2
       ⟨(f y * (f x)⁻¹) • x, Submodule.mem_span_singleton.2 ⟨f y * (f x)⁻¹, rfl⟩,
@@ -1032,8 +1033,6 @@ namespace LinearEquiv
 section Field
 
 variable (K V) [Field K] [AddCommGroup V] [Module K V]
-
-instance  : RingHomInvPair (RingHom.id K) (RingHom.id K) := RingHomInvPair.ids
 
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural
     map from `K` to the span of `x`, with invertibility check to consider it as an
