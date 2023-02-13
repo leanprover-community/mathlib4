@@ -107,4 +107,4 @@ if __name__ == '__main__':
                 print(f"::warning file={diff.b_blob.path},line={b_info.commit_line_no},title=Filename changed!::{a_info} -> {b_info}")
 
     if any_errors:
-        raise SystemExit()
+        raise SystemExit("Setting a failure due to errors above")
