@@ -11,7 +11,6 @@ Authors: Bhavik Mehta
 import Mathlib.Combinatorics.Composition
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Partitions
