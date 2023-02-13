@@ -266,18 +266,16 @@ protected theorem gc : GaloisConnection lower_adjoint fun 𝓕 => UniformFun.fil
   symm
   calc
     𝓐 ≤ UniformFun.filter α β 𝓕 ↔ (UniformFun.basis α β 𝓕).sets ⊆ 𝓐.sets :=
-      by rw [UniformFun.filter, ← FilterBasis.generate, sets_iff_generate]
+      by rw [UniformFun.filter, ← FilterBasis.generate, le_generate_iff]
     _ ↔ ∀ U ∈ 𝓕, UniformFun.gen α β U ∈ 𝓐 := image_subset_iff
-    _ ↔
-        ∀ U ∈ 𝓕,
+    _ ↔ ∀ U ∈ 𝓕,
           { uv | ∀ x, (uv, x) ∈ { t : ((α →ᵤ β) × (α →ᵤ β)) × α | (t.1.1 t.2, t.1.2 t.2) ∈ U } } ∈
             𝓐 :=
       Iff.rfl
-    _ ↔
-        ∀ U ∈ 𝓕,
+    _ ↔ ∀ U ∈ 𝓕,
           { uvx : ((α →ᵤ β) × (α →ᵤ β)) × α | (uvx.1.1 uvx.2, uvx.1.2 uvx.2) ∈ U } ∈
             𝓐 ×ᶠ (⊤ : Filter α) :=
-      forall₂_congr fun U hU => mem_prod_top.symm
+      forall₂_congr fun U _hU => mem_prod_top.symm
     _ ↔ lower_adjoint 𝓐 ≤ 𝓕 := Iff.rfl
 
 #align uniform_fun.gc UniformFun.gc
