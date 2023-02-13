@@ -2624,9 +2624,9 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
     rw [Function.update_eq_self]
     use L, hL; rw [Tape.move_left_right]; congr
     cases e : S k; · rfl
-    rw [List.length_cons, iterate_succ', Tape.move_right_left, Tape.move_right_n_head,
-      Tape.mk'_nth_nat, addBottom_nth_snd, stk_nth_val _ (hL k), e, List.reverse_cons, ←
-      List.length_reverse, List.get?_concat_length]
+    rw [List.length_cons, iterate_succ', Function.comp, Tape.move_right_left,
+      Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd, stk_nth_val _ (hL k), e,
+      List.reverse_cons, ← List.length_reverse, List.get?_concat_length]
     rfl
   case pop f =>
     cases e : S k
@@ -2637,8 +2637,8 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
     · refine'
         ⟨_, fun k' ↦ _, by
           rw [List.length_cons, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_succ_fst,
-            cond, iterate_succ', Tape.move_right_left, Tape.move_right_n_head, Tape.mk'_nth_nat,
-            Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k none),
+            cond, iterate_succ', Function.comp, Tape.move_right_left, Tape.move_right_n_head,
+            Tape.mk'_nth_nat, Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k none),
             addBottom_modifyNth fun a ↦ update a k none, addBottom_nth_snd,
             stk_nth_val _ (hL k), e,
             show (List.cons hd tl).reverse.get? tl.length = some hd by
@@ -2722,13 +2722,12 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
   simp only [trNormal_run, step_run]
   have hgo := tr_respects_aux₁ M o q v (hT k) _ le_rfl
   obtain ⟨T', hT', hrun⟩ := tr_respects_aux₂ hT o
-  have hret := tr_respects_aux₃ M _
   have := hgo.tail' rfl
   rw [tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd,
     stk_nth_val _ (hT k), List.get?_len_le (le_of_eq (List.length_reverse _)), Option.isNone, cond,
     hrun, TM1.stepAux] at this
   obtain ⟨c, gc, rc⟩ := IH hT'
-  refine' ⟨c, gc, (this.to₀.trans hret c (trans_gen.head' rfl _)).to_reflTransGen⟩
+  refine' ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl _)).to_reflTransGen⟩
   rw [tr, TM1.stepAux, Tape.mk'_head, addBottom_head_fst]
   exact rc
 #align turing.TM2to1.tr_respects_aux Turing.TM2to1.tr_respects_aux
