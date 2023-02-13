@@ -345,11 +345,11 @@ theorem empty_toColex_lt [LinearOrder α] {A : Finset α} (hA : A.Nonempty) :
 
 /-- If `A ⊂ B`, then `A` is less than `B` in the colex order. Note the converse does not hold, as
 `⊆` is not a linear order. -/
-theorem colex_lt_of_sSubset [LinearOrder α] {A B : Finset α} (h : A ⊂ B) : A.toColex < B.toColex :=
+theorem colex_lt_of_ssubset [LinearOrder α] {A B : Finset α} (h : A ⊂ B) : A.toColex < B.toColex :=
   by
   rw [← sdiff_lt_sdiff_iff_lt, sdiff_eq_empty_iff_subset.2 h.1]
   exact empty_toColex_lt (by simpa [Finset.Nonempty] using exists_of_ssubset h)
-#align colex.colex_lt_of_ssubset Colex.colex_lt_of_sSubset
+#align colex.colex_lt_of_ssubset Colex.colex_lt_of_ssubset
 
 @[simp]
 theorem empty_toColex_le [LinearOrder α] {A : Finset α} : (∅ : Finset α).toColex ≤ A.toColex := by
@@ -386,8 +386,8 @@ instance [LinearOrder α] [Fintype α] : OrderTop (Finset.Colex α)
   le_top _ := colex_le_of_subset (subset_univ _)
 
 instance [LinearOrder α] : Lattice (Finset.Colex α) :=
-  { (by infer_instance : SemilatticeSup (Finset.Colex α)),
-    (by infer_instance : SemilatticeInf (Finset.Colex α)) with }
+  { inferInstanceAs (SemilatticeSup (Finset.Colex α)),
+    inferInstanceAs (SemilatticeInf (Finset.Colex α)) with }
 
 instance [LinearOrder α] [Fintype α] : BoundedOrder (Finset.Colex α) :=
   { (by infer_instance : OrderTop (Finset.Colex α)),
