@@ -510,20 +510,20 @@ protected theorem tendsto_iff_tendstoUniformly {F : ι → α →ᵤ β} {f : α
 isomorphism between `α →ᵤ β × γ` and `(α →ᵤ β) × (α →ᵤ γ)`. -/
 protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃ᵤ (α →ᵤ β) × (α →ᵤ γ) := by
   -- Denote `φ` this bijection. We want to show that
-    -- `comap φ (𝒰(α, β, uβ) × 𝒰(α, γ, uγ)) = 𝒰(α, β × γ, uβ × uγ)`.
-    -- But `uβ × uγ` is defined as `comap fst uβ ⊓ comap snd uγ`, so we just have to apply
-    -- `uniform_convergence.inf_eq` and `uniform_convergence.comap_eq`, which leaves us to check
-    -- that some square commutes.
-    refine' Equiv.toUniformEquivOfUniformInducing (Equiv.arrowProdEquivProdArrow _ _ _) _
-    constructor
-    change
-      comap (Prod.map (Equiv.arrowProdEquivProdArrow _ _ _) (Equiv.arrowProdEquivProdArrow _ _ _))
-          _ = _
-    simp_rw [UniformFun]
-    rw [← uniformity_comap]
-    congr
-    rw [instUniformSpaceProd, instUniformSpaceProd, UniformSpace.comap_inf, UniformFun.inf_eq]
-    congr <;> rw [← UniformSpace.comap_comap, UniformFun.comap_eq] <;> rfl)
+  -- `comap φ (𝒰(α, β, uβ) × 𝒰(α, γ, uγ)) = 𝒰(α, β × γ, uβ × uγ)`.
+  -- But `uβ × uγ` is defined as `comap fst uβ ⊓ comap snd uγ`, so we just have to apply
+  -- `uniform_convergence.inf_eq` and `uniform_convergence.comap_eq`, which leaves us to check
+  -- that some square commutes.
+  refine' Equiv.toUniformEquivOfUniformInducing (Equiv.arrowProdEquivProdArrow _ _ _) _
+  constructor
+  change
+    comap (Prod.map (Equiv.arrowProdEquivProdArrow _ _ _) (Equiv.arrowProdEquivProdArrow _ _ _))
+        _ = _
+  simp_rw [UniformFun]
+  rw [← uniformity_comap]
+  congr
+  rw [instUniformSpaceProd, instUniformSpaceProd, UniformSpace.comap_inf, UniformFun.inf_eq]
+  congr <;> rw [← UniformSpace.comap_comap, UniformFun.comap_eq] <;> rfl
 #align uniform_fun.uniform_equiv_prod_arrow UniformFun.uniformEquivProdArrow
 
 -- the relevant diagram commutes by definition
