@@ -613,5 +613,3 @@ theorem leftAdjoint_of_isEquivalence {F : C ⥤ D} [IsEquivalence F] : leftAdjoi
 end Functor
 
 end CategoryTheory
-
-#lint
