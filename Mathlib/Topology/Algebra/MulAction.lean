@@ -178,13 +178,13 @@ variable {ι : Sort _} {M X : Type _} [TopologicalSpace M] [SMul M X]
 @[to_additive]
 theorem continuousSMul_infₛ {ts : Set (TopologicalSpace X)}
     (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (infₛ ts) :=
-  {
-    continuous_smul := by
+  -- porting note: {} doesn't work because `infₛ ts` isn't found by TC search
+  @ContinuousSMul.mk M X _ _ (infₛ ts) <| by
       rw [← @infₛ_singleton _ _ ‹TopologicalSpace M›]
       exact
         continuous_infₛ_rng.2 fun t ht =>
           continuous_infₛ_dom₂ (Eq.refl _) ht
-            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht)) }
+            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht))
 #align has_continuous_smul_Inf continuousSMul_infₛ
 #align has_continuous_vadd_Inf continuousVAdd_infₛ
 
