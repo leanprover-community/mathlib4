@@ -136,6 +136,7 @@ import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Invertible
+import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Order.Module
 import Mathlib.Algebra.Order.Monoid.Basic
@@ -1040,6 +1041,7 @@ import Mathlib.Tactic.Zify.Attr
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Mathlib.Topology.Alexandroff
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.MulAction
@@ -1098,6 +1100,7 @@ import Mathlib.Topology.Perfect
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Sets.Order
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
 import Mathlib.Topology.Spectral.Hom

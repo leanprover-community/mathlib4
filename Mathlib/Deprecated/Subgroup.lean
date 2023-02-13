@@ -115,7 +115,7 @@ theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : 
 @[to_additive]
 theorem IsSubgroup.interᵢ {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
     IsSubgroup (Set.interᵢ s) :=
-  { IsSubmonoid.Inter fun y => (hs y).toIsSubmonoid with
+  { IsSubmonoid.interᵢ fun y => (hs y).toIsSubmonoid with
     inv_mem := fun h =>
       Set.mem_interᵢ.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_interᵢ.1 h y) }
 #align is_subgroup.Inter IsSubgroup.interᵢ
@@ -128,7 +128,7 @@ theorem isSubgroup_unionᵢ_of_directed {ι : Type _} [Nonempty ι] {s : ι → 
   { inv_mem := fun ha =>
       let ⟨i, hi⟩ := Set.mem_unionᵢ.1 ha
       Set.mem_unionᵢ.2 ⟨i, (hs i).inv_mem hi⟩
-    toIsSubmonoid := is_submonoid_Union_of_directed (fun i => (hs i).toIsSubmonoid) directed }
+    toIsSubmonoid := isSubmonoid_unionᵢ_of_directed (fun i => (hs i).toIsSubmonoid) directed }
 #align is_subgroup_Union_of_directed isSubgroup_unionᵢ_of_directed
 #align is_add_subgroup_Union_of_directed isAddSubgroup_unionᵢ_of_directed
 
@@ -292,10 +292,10 @@ theorem center_normal : IsNormalSubgroup (center G) :=
 #align is_subgroup.center_normal IsSubgroup.center_normal
 #align is_add_subgroup.add_center_normal IsAddSubgroup.add_center_normal
 
-/-- The underlying set of the normalizer of a subset `S : set G` of a group `G`. That is,
+/-- The underlying set of the normalizer of a subset `S : Set G` of a group `G`. That is,
   the elements `g : G` such that `g * S * g⁻¹ = S`. -/
 @[to_additive addNormalizer
-      "The underlying set of the normalizer of a subset `S : set A` of an
+      "The underlying set of the normalizer of a subset `S : Set A` of an
       additive group `A`. That is, the elements `a : A` such that `a + S - a = S`."]
 def normalizer (s : Set G) : Set G :=
   { g : G | ∀ n, n ∈ s ↔ g * n * g⁻¹ ∈ s }
@@ -627,8 +627,8 @@ theorem mclosure_inv_subset {s : Set G} : Monoid.Closure (Inv.inv ⁻¹' s) ⊆ 
 theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.inv ⁻¹' s) :=
   Set.Subset.antisymm
     (@closure_subset _ _ _ (Monoid.Closure (s ∪ Inv.inv ⁻¹' s))
-      { one_mem := (Monoid.closure.IsSubmonoid _).one_mem
-        mul_mem := (Monoid.closure.IsSubmonoid _).mul_mem
+      { one_mem := (Monoid.closure.isSubmonoid _).one_mem
+        mul_mem := (Monoid.closure.isSubmonoid _).mul_mem
         inv_mem := fun hx =>
           Monoid.InClosure.recOn hx
             (fun {x} hx =>
@@ -636,9 +636,9 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
                 (fun hx =>
                   Monoid.subset_closure <| Or.inr <| show x⁻¹⁻¹ ∈ s from (inv_inv x).symm ▸ hx)
                 fun hx => Monoid.subset_closure <| Or.inl hx)
-            ((@inv_one G _).symm ▸ IsSubmonoid.one_mem (Monoid.closure.IsSubmonoid _))
+            ((@inv_one G _).symm ▸ IsSubmonoid.one_mem (Monoid.closure.isSubmonoid _))
             fun {x y} _ _ ihx ihy =>
-            (mul_inv_rev x y).symm ▸ IsSubmonoid.mul_mem (Monoid.closure.IsSubmonoid _) ihy ihx }
+            (mul_inv_rev x y).symm ▸ IsSubmonoid.mul_mem (Monoid.closure.isSubmonoid _) ihy ihx }
       (Set.Subset.trans (Set.subset_union_left _ _) Monoid.subset_closure))
     (Monoid.closure_subset (closure.isSubgroup _).toIsSubmonoid <|
       Set.union_subset subset_closure fun x hx =>
