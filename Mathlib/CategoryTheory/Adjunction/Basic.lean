@@ -133,7 +133,8 @@ theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
 @[simp]
 theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
-  rw [← Equiv.eq_symm_apply] ; simp only [Equiv.symm_apply_apply,eq_self_iff_true,homEquiv_naturality_left_symm]
+  rw [← Equiv.eq_symm_apply]
+  simp only [Equiv.symm_apply_apply,eq_self_iff_true,homEquiv_naturality_left_symm]
 #align category_theory.adjunction.hom_equiv_naturality_left CategoryTheory.Adjunction.homEquiv_naturality_left
 
 @[simp]
@@ -145,7 +146,8 @@ theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
 @[simp]
 theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
-  rw [Equiv.symm_apply_eq] ; simp only [homEquiv_naturality_right,eq_self_iff_true,Equiv.apply_symm_apply]
+  rw [Equiv.symm_apply_eq]
+  simp only [homEquiv_naturality_right,eq_self_iff_true,Equiv.apply_symm_apply]
 #align category_theory.adjunction.hom_equiv_naturality_right_symm CategoryTheory.Adjunction.homEquiv_naturality_right_symm
 
 @[simp]
@@ -494,8 +496,7 @@ Dual to `left_adjoint_of_equiv`. -/
 def rightAdjointOfEquiv : D ⥤ C where
   obj := G_obj
   map {Y} {Y'} g := (e (G_obj Y) Y') ((e (G_obj Y) Y).symm (𝟙 _) ≫ g)
-  map_comp := fun {Y} {Y'} {Y''} g g' =>
-    by
+  map_comp := fun {Y} {Y'} {Y''} g g' => by
     rw [← Equiv.eq_symm_apply, ← he'' e he, Equiv.symm_apply_apply]
     conv =>
       rhs
@@ -509,7 +510,8 @@ to `adjunction_of_equiv_left`. -/
 def adjunctionOfEquivRight : F ⊣ (rightAdjointOfEquiv e he) :=
   mkOfHomEquiv
     { homEquiv := e
-      homEquiv_naturality_left_symm' := by intro X X' Y f g; rw [Equiv.symm_apply_eq]; dsimp; rw [he]; simp
+      homEquiv_naturality_left_symm' := by
+        intro X X' Y f g; rw [Equiv.symm_apply_eq]; dsimp; rw [he]; simp
       homEquiv_naturality_right' := by
         intro X Y Y' g h
         erw [← he, Equiv.apply_eq_iff_eq, ← assoc, he'' e he, comp_id, Equiv.symm_apply_apply] }
@@ -611,3 +613,5 @@ theorem leftAdjoint_of_isEquivalence {F : C ⥤ D} [IsEquivalence F] : leftAdjoi
 end Functor
 
 end CategoryTheory
+
+#lint
