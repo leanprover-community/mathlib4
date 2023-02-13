@@ -117,7 +117,7 @@ theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → Alexandroff X)) 
   isCompl_range_some_none X
 #align alexandroff.is_compl_range_coe_infty Alexandroff.isCompl_range_coe_infty
 
--- porting note: moved @[simp] to a new lwmma
+-- porting note: moved @[simp] to a new lemma
 theorem range_coe_union_infty : range ((↑) : X → Alexandroff X) ∪ {∞} = univ :=
   range_some_union_none X
 #align alexandroff.range_coe_union_infty Alexandroff.range_coe_union_infty
@@ -263,7 +263,7 @@ theorem infty_mem_opensOfCompl {s : Set X} (h₁ : IsClosed s) (h₂ : IsCompact
   mem_compl infty_not_mem_image_coe
 #align alexandroff.infty_mem_opens_of_compl Alexandroff.infty_mem_opensOfCompl
 
--- porting note: todo: add @[continuity]
+@[continuity]
 theorem continuous_coe : Continuous ((↑) : X → Alexandroff X) :=
   continuous_def.mpr fun _s hs => hs.right
 #align alexandroff.continuous_coe Alexandroff.continuous_coe
