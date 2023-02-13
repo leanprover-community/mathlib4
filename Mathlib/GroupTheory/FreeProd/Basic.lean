@@ -70,6 +70,44 @@ The universal property of the free product is given by the definition `FreeProd.
 `FreeProd.hom_ext` for homomorphisms `M ⋆ N →* P` and prove lots of basic lemmas like
 `FreeProd.fst_comp_inl`.
 
+## Implementation details
+
+The definition of the free product of indexed families of monoids is [formalized in Mathlib
+3](https://leanprover-community.github.io/mathlib_docs/find/free_product) under the name
+`free_product` and is [not yet
+ported](https://leanprover-community.github.io/mathlib-port-status/file/group_theory/free_product)
+to Mathlib 4 at the time of writing. We refer to this formalization as `FreeProduct` in the rest of
+this section.
+
+While mathematically `M ⋆ N` is a particular case of the free product of an indexed family of
+monoids, it is easier to build API from scratch instead of using something like
+
+```
+def FreeProd M N := FreeProduct ![M, N]
+```
+
+or
+
+```
+def FreeProd M N := FreeProduct (fun b : Bool => cond b M N)
+```
+
+There are several reasons to build an API from scratch.
+
+- API about `Con` makes it easy to define the required type and prove the universal property, so
+  there is little overhead compared to transfering API from `FreeProduct`.
+- If `M` and `N` live in different universes, then the definition has to add `ULift`s; this makes
+  it harder to transfer API and definitions.
+- As of now, we have now way to automatically build an instance of `∀ k : Fin 2, Monoid (![M, N] k)`
+  from `[Monoid M]` and `[Monoid N]`, not even speaking about more advanced typeclass assumptions
+  that involve both `M` and `N`.
+- Using list of `M ⊕ N` instead of, e.g., a list of `Σ k : Fin 2, ![M, N] k` as the underlying type
+  makes it possible to write computationally effective code.
+
+## Tags
+
+group, monoid, free product
+
 -/
 
 open FreeMonoid Function List Set
