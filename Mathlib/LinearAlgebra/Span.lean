@@ -183,13 +183,8 @@ theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = �
 theorem span_nat_eq_addSubmonoid_closure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by
   refine' Eq.symm (AddSubmonoid.closure_eq_of_le subset_span _)
-  apply (OrderIso.to_galoisConnection (AddSubmonoid.toNatSubmodule (M := span ℕ s)).symm).l_le
-  have this2 : GaloisConnection (RelIso.toRelEmbedding (OrderIso.symm (AddSubmonoid.toNatSubmodule (M := span ℕ s)))).toEmbedding
-    (OrderIso.symm (OrderIso.symm AddSubmonoid.toNatSubmodule))
-      = GaloisConnection (FunLike.coe (OrderIso.symm AddSubmonoid.toNatSubmodule))
-      (OrderIso.symm (OrderIso.symm AddSubmonoid.toNatSubmodule)) := rfl
-  rw [this2] at this1
-  have := this1.l_le
+  apply (OrderIso.to_galoisConnection (AddSubmonoid.toNatSubmodule (M := M)).symm).l_le
+     (a := span ℕ s) (b := AddSubmonoid.closure s)
   rw [span_le]
   exact AddSubmonoid.subset_closure
 #align submodule.span_nat_eq_add_submonoid_closure Submodule.span_nat_eq_addSubmonoid_closure
