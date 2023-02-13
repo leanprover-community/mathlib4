@@ -181,7 +181,8 @@ theorem continuousSMul_infₛ {ts : Set (TopologicalSpace X)}
   -- porting note: {} doesn't work because `infₛ ts` isn't found by TC search. `(_)` finds it by
   -- unification instead.
   @ContinuousSMul.mk M X _ _ (_) <| by
-      rw [← @infₛ_singleton _ _ ‹TopologicalSpace M›]
+      -- porting note: needs `( :)`
+      rw [← (@infₛ_singleton _ _ ‹TopologicalSpace M›:)]
       exact
         continuous_infₛ_rng.2 fun t ht =>
           continuous_infₛ_dom₂ (Eq.refl _) ht
