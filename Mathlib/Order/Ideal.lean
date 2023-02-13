@@ -151,9 +151,9 @@ theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
 #align order.ideal.coe_subset_coe Order.Ideal.coe_subset_coe
 
 -- @[simp] -- Porting note: simp can prove this
-theorem coe_sSubset_coe : (s : Set P) ⊂ t ↔ s < t :=
+theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
   Iff.rfl
-#align order.ideal.coe_ssubset_coe Order.Ideal.coe_sSubset_coe
+#align order.ideal.coe_ssubset_coe Order.Ideal.coe_ssubset_coe
 
 @[trans]
 theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈ J :=
