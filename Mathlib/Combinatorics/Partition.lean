@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.Composition
-import Mathbin.Data.Nat.Parity
-import Mathbin.Tactic.ApplyFun
+import Mathlib.Combinatorics.Composition
+import Mathlib.Data.Nat.Parity
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Partitions
@@ -71,8 +71,7 @@ def ofComposition (n : ℕ) (c : Composition n) : Partition n
   parts_sum := by rw [Multiset.coe_sum, c.blocks_sum]
 #align nat.partition.of_composition Nat.Partition.ofComposition
 
-theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) :=
-  by
+theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
   rcases Quotient.exists_rep b with ⟨b, rfl⟩
   refine' ⟨⟨b, fun i hi => hb₁ hi, _⟩, partition.ext _ _ rfl⟩
