@@ -17,23 +17,23 @@ import Mathlib.CategoryTheory.Equivalence
 `F : C ⥤ D` and `G : D ⥤ C`. `F` is the left adjoint and `G` is the right adjoint.
 
 We provide various useful constructors:
-* `mk_of_hom_equiv`
-* `mk_of_unit_counit`
-* `left_adjoint_of_equiv` / `right_adjoint_of equiv`
+* `mkOfHomEquiv`
+* `mkOfUnitCounit`
+* `leftAdjointOfEquiv` / `rightAdjointOfEquiv`
   construct a left/right adjoint of a given functor given the action on objects and
   the relevant equivalence of morphism spaces.
-* `adjunction_of_equiv_left` / `adjunction_of_equiv_right` witness that these constructions
+* `adjunctionOfEquivLeft` / `adjunctionOfEquivRight` witness that these constructions
   give adjunctions.
 
-There are also typeclasses `is_left_adjoint` / `is_right_adjoint`, carrying data witnessing
+There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, carrying data witnessing
 that a given functor is a left or right adjoint.
-Given `[is_left_adjoint F]`, a right adjoint of `F` can be constructed as `right_adjoint F`.
+Given `[IsLeftAdjoint F]`, a right adjoint of `F` can be constructed as `rightAdjoint F`.
 
-`adjunction.comp` composes adjunctions.
+`Adjunction.comp` composes adjunctions.
 
-`to_equivalence` upgrades an adjunction to an equivalence,
+`toEquivalence` upgrades an adjunction to an equivalence,
 given witnesses that the unit and counit are pointwise isomorphisms.
-Conversely `equivalence.to_adjunction` recovers the underlying adjunction from an equivalence.
+Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an equivalence.
 -/
 
 
@@ -41,7 +41,7 @@ namespace CategoryTheory
 
 open Category
 
--- declare the `v`'s first; see `category_theory.category` for an explanation
+-- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- Porting Note: `elab_without_expected_type` cannot be a local attribute
@@ -53,11 +53,11 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 `F : C ⥤ D` and `G : D ⥤ C`. `F` is the left adjoint and `G` is the right adjoint.
 
 To construct an `adjunction` between two functors, it's often easier to instead use the
-constructors `mk_of_hom_equiv` or `mk_of_unit_counit`. To construct a left adjoint,
-there are also constructors `left_adjoint_of_equiv` and `adjunction_of_equiv_left` (as
+constructors `mkOfHomEquiv` or `mkOfUnitCounit`. To construct a left adjoint,
+there are also constructors `leftAdjointOfEquiv` and `adjunctionOfEquivLeft` (as
 well as their duals) which can be simpler in practice.
 
-Uniqueness of adjoints is shown in `category_theory.adjunction.opposites`.
+Uniqueness of adjoints is shown in `CategoryTheory.Adjunction.Opposites`.
 
 See <https://stacks.math.columbia.edu/tag/0037>.
 -/
@@ -213,7 +213,7 @@ end Adjunction
 namespace Adjunction
 
 /-- This is an auxiliary data structure useful for constructing adjunctions.
-See `adjunction.mk_of_hom_equiv`.
+See `Adjunction.mkOfHomEquiv`.
 This structure won't typically be used anywhere else.
 -/
 -- Porting comment: `has_nonempty_instance` linter doesn't exist (yet?)
@@ -255,7 +255,7 @@ theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
 end CoreHomEquiv
 
 /-- This is an auxiliary data structure useful for constructing adjunctions.
-See `adjunction.mk_of_unit_counit`.
+See `Adjunction.mkOfUnitCounit`.
 This structure won't typically be used anywhere else.
 -/
 -- Porting comment: `has_nonempty_instance` linter doesn't exist (yet?)
@@ -443,7 +443,7 @@ private theorem he' {X Y Y'} (f g) : (e X Y').symm (f ≫ G.map g) = (e X Y).sym
 /-- Construct a left adjoint functor to `G`, given the functor's value on objects `F_obj` and
 a bijection `e` between `F_obj X ⟶ Y` and `X ⟶ G.obj Y` satisfying a naturality law
 `he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g`.
-Dual to `right_adjoint_of_equiv`. -/
+Dual to `rightAdjointOfEquiv`. -/
 @[simps!]
 def leftAdjointOfEquiv : C ⥤ D where
   obj := F_obj
@@ -457,8 +457,8 @@ def leftAdjointOfEquiv : C ⥤ D where
     simp
 #align category_theory.adjunction.left_adjoint_of_equiv CategoryTheory.Adjunction.leftAdjointOfEquiv
 
-/-- Show that the functor given by `left_adjoint_of_equiv` is indeed left adjoint to `G`. Dual
-to `adjunction_of_equiv_right`. -/
+/-- Show that the functor given by `leftAdjointOfEquiv` is indeed left adjoint to `G`. Dual
+to `adjunctionOfRightEquiv`. -/
 @[simps!]
 def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
   mkOfHomEquiv
@@ -491,7 +491,7 @@ private theorem he'' {X' X Y} (f g) : F.map f ≫ (e X Y).symm g = (e X' Y).symm
 /-- Construct a right adjoint functor to `F`, given the functor's value on objects `G_obj` and
 a bijection `e` between `F.obj X ⟶ Y` and `X ⟶ G_obj Y` satisfying a naturality law
 `he : ∀ X Y Y' g h, e X' Y (F.map f ≫ g) = f ≫ e X Y g`.
-Dual to `left_adjoint_of_equiv`. -/
+Dual to `leftAdjointOfEquiv`. -/
 @[simps!]
 def rightAdjointOfEquiv : D ⥤ C where
   obj := G_obj
@@ -504,8 +504,8 @@ def rightAdjointOfEquiv : D ⥤ C where
     simp
 #align category_theory.adjunction.right_adjoint_of_equiv CategoryTheory.Adjunction.rightAdjointOfEquiv
 
-/-- Show that the functor given by `right_adjoint_of_equiv` is indeed right adjoint to `F`. Dual
-to `adjunction_of_equiv_left`. -/
+/-- Show that the functor given by `rightAdjointOfEquiv` is indeed right adjoint to `F`. Dual
+to `adjunctionOfEquivRight`. -/
 @[simps!]
 def adjunctionOfEquivRight : F ⊣ (rightAdjointOfEquiv e he) :=
   mkOfHomEquiv
@@ -551,7 +551,7 @@ open Adjunction
 namespace Equivalence
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
-simply use `e.symm.to_adjunction`. -/
+simply use `e.symm.toAdjunction`. -/
 def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
   mkOfUnitCounit
     ⟨e.unit, e.counit, by
