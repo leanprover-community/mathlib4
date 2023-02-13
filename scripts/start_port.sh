@@ -8,9 +8,30 @@ if [ ! -d Mathlib ] ; then
 fi
 
 if [ ! $1 ] ; then
-    echo "usage: ./scripts/start_port.sh Mathlib/Foo/Bar/Baz.lean"
+    echo "usage: ./scripts/start_port.sh [--restart] Mathlib/Foo/Bar/Baz.lean"
     exit 1
 fi
+
+POSITIONAL_ARGS=()
+RESTART=
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -r|--restart)
+            RESTART=1
+            shift
+            ;;
+        -*|--*)
+            echo "Unknown option $1"
+            exit 1
+            ;;
+        *)
+            POSITIONAL_ARGS+=("$1") # save positional arg
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 case $1 in
     Mathlib/*) true ;;
@@ -39,7 +60,7 @@ curl --silent --show-error --fail -o "$TMP_FILE" "$mathlib3port_url"
 
 mathlib3_module=$(grep '^! .*source module ' <"$TMP_FILE" | sed 's/.*source module \(.*\)$/\1/')
 
-if curl --silent --show-error --fail "$PORT_STATUS_YAML" | grep -F "$mathlib3_module: " | grep "mathlib4#" ; then
+if ![ "$RESTART" ] && curl --silent --show-error --fail "$PORT_STATUS_YAML" | grep -F "$mathlib3_module: " | grep "mathlib4#" ; then
     set +x
     echo "WARNING: The file is already in the process of being ported."
     echo "(See line above for PR number.)"
@@ -52,7 +73,12 @@ mv "$TMP_FILE" "$mathlib4_path"
 
 git fetch
 mathlib4_mod_tail=${mathlib4_mod#Mathlib.}
-branch_name=port/${mathlib4_mod_tail}
+if [ "$RESTART" ]; then
+    old_branch_name=port/${mathlib4_mod_tail}
+    branch_name=port/tmp/${mathlib4_mod_tail}
+else
+    branch_name=port/${mathlib4_mod_tail}
+fi
 git checkout --no-track -b "$branch_name" origin/master
 
 # Empty commit with nice title. Used by gh and hub to suggest PR title.
@@ -82,5 +108,14 @@ git commit \
 
 set +x
 
-echo "After pushing, you can open a PR at:"
-echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod_tail&labels=mathlib-port"
+if [ "$RESTART" ]; then
+    echo "# The script just created a branch $branch_name. You may want to:"
+    echo "git checkout $old_branch_name"
+    echo "git fetch"
+    echo "git rebase origin/master"
+    echo "git reset --soft $branch_name"
+    echo "git add -p # to manually discard/stage diff chunks"
+else
+    echo "After pushing, you can open a PR at:"
+    echo "https://github.com/leanprover-community/mathlib4/compare/$branch_name?expand=1&title=feat:+port+$mathlib4_mod_tail&labels=mathlib-port"
+fi
