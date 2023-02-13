@@ -891,7 +891,7 @@ theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a
   congr_arg _ <| List.replicate_add ..
 #align multiset.replicate_add Multiset.replicate_add
 
-/-- `Multiset.replicate` as an `addMonoidHom`. -/
+/-- `Multiset.replicate` as an `AddMonoidHom`. -/
 @[simps]
 def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
   toFun := fun n => replicate n a
