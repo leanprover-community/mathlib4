@@ -185,9 +185,13 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
+-- Porting note: Because coercions from `LinearEquiv`s to functions is generally implemented by
+--               `FunLike` and coercions are elaborated directly in Lean 4,
+--               This is on different line from Mathlib 3.
 @[simp]
 theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
     (⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun := rfl
+#align linear_equiv.coe_mk LinearEquiv.coe_mk
 
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
   FunLike.coe_injective
