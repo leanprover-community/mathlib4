@@ -51,9 +51,9 @@ theorem inv_mk (hx : 0 ≤ x) : (⟨x, hx⟩ : { x : α // 0 ≤ x })⁻¹ = ⟨
   rfl
 #align nonneg.inv_mk Nonneg.inv_mk
 
-instance hasDiv : Div { x : α // 0 ≤ x } :=
+instance div : Div { x : α // 0 ≤ x } :=
   ⟨fun x y => ⟨x / y, div_nonneg x.2 y.2⟩⟩
-#align nonneg.has_div Nonneg.hasDiv
+#align nonneg.has_div Nonneg.div
 
 @[simp, norm_cast]
 protected theorem coe_div (a b : { x : α // 0 ≤ x }) : ((a / b : { x : α // 0 ≤ x }) : α) = a / b :=
@@ -66,9 +66,9 @@ theorem mk_div_mk (hx : 0 ≤ x) (hy : 0 ≤ y) :
   rfl
 #align nonneg.mk_div_mk Nonneg.mk_div_mk
 
-instance hasZpow : Pow { x : α // 0 ≤ x } ℤ :=
+instance zpow : Pow { x : α // 0 ≤ x } ℤ :=
   ⟨fun a n => ⟨(a : α) ^ n, zpow_nonneg a.2 _⟩⟩
-#align nonneg.has_zpow Nonneg.hasZpow
+#align nonneg.has_zpow Nonneg.zpow
 
 @[simp, norm_cast]
 protected theorem coe_zpow (a : { x : α // 0 ≤ x }) (n : ℤ) :
