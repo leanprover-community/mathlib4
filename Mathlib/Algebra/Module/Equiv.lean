@@ -185,6 +185,12 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
+-- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
+@[simp]
+theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
+    (⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun := rfl
+#align linear_equiv.coe_mk LinearEquiv.coe_mk
+
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
   FunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
