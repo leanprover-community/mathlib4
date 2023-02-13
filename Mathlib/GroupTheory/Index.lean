@@ -204,7 +204,7 @@ theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (
   by_cases hb : b ∈ H; · simp only [hb, iff_true_iff, mul_mem_cancel_right hb]
   simp only [ha, hb, iff_self_iff, iff_true_iff]
   rcases index_eq_two_iff.1 h with ⟨c, hc⟩
-  refine' (hc _).Or.resolve_left _
+  refine' (hc _).or.resolve_left _
   rwa [mul_assoc, mul_mem_cancel_right ((hc _).Or.resolve_right hb)]
 #align subgroup.mul_mem_iff_of_index_two Subgroup.mul_mem_iff_of_index_two
 #align add_subgroup.add_mem_iff_of_index_two AddSubgroup.add_mem_iff_of_index_two
