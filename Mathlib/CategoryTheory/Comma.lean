@@ -8,16 +8,16 @@ Authors: Scott Morrison, Johan Commelin, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Isomorphism
-import Mathbin.CategoryTheory.Functor.Category
-import Mathbin.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.EqToHom
 
 /-!
 # Comma categories
 
 A comma category is a construction in category theory, which builds a category out of two functors
 with a common codomain. Specifically, for functors `L : A ⥤ T` and `R : B ⥤ T`, an object in
-`comma L R` is a morphism `hom : L.obj left ⟶ R.obj right` for some objects `left : A` and
+`Comma L R` is a morphism `hom : L.obj left ⟶ R.obj right` for some objects `left : A` and
 `right : B`, and a morphism in `comma L R` between `hom : L.obj left ⟶ R.obj right` and
 `hom' : L.obj left' ⟶ R.obj right'` is a commutative square
 
@@ -34,10 +34,10 @@ respectively.
 
 ## Main definitions
 
-* `comma L R`: the comma category of the functors `L` and `R`.
-* `over X`: the over category of the object `X` (developed in `over.lean`).
-* `under X`: the under category of the object `X` (also developed in `over.lean`).
-* `arrow T`: the arrow category of the category `T` (developed in `arrow.lean`).
+* `Comma L R`: the comma category of the functors `L` and `R`.
+* `Over X`: the over category of the object `X` (developed in `Over.lean`).
+* `Under X`: the under category of the object `X` (also developed in `Over.lean`).
+* `Arrow T`: the arrow category of the category `T` (developed in `Arrow.lean`).
 
 ## References
 
@@ -63,9 +63,9 @@ variable {T : Type u₃} [Category.{v₃} T]
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`.  -/
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
-  left : A := by obviously
-  right : B := by obviously
-  Hom : L.obj left ⟶ R.obj right
+  left : A --:= by obviously
+  right : B --:= by obviously
+  hom : L.obj left ⟶ R.obj right
 #align category_theory.comma CategoryTheory.Comma
 
 -- Satisfying the inhabited linter
@@ -73,7 +73,7 @@ instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T))
     where default :=
     { left := default
       right := default
-      Hom := 𝟙 default }
+      hom := 𝟙 default }
 #align category_theory.comma.inhabited CategoryTheory.Comma.inhabited
 
 variable {L : A ⥤ T} {R : B ⥤ T}
@@ -83,28 +83,29 @@ variable {L : A ⥤ T} {R : B ⥤ T}
 -/
 @[ext]
 structure CommaMorphism (X Y : Comma L R) where
-  left : X.left ⟶ Y.left := by obviously
-  right : X.right ⟶ Y.right := by obviously
-  w' : L.map left ≫ Y.Hom = X.Hom ≫ R.map right := by obviously
+  left : X.left ⟶ Y.left --:= by obviously
+  right : X.right ⟶ Y.right --:= by obviously
+  w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by aesop_cat
 #align category_theory.comma_morphism CategoryTheory.CommaMorphism
 
 -- Satisfying the inhabited linter
 instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
     Inhabited (CommaMorphism (default : Comma L R) default) :=
-  ⟨⟨𝟙 _, 𝟙 _⟩⟩
+    ⟨{ left := 𝟙 _, right := 𝟙 _}⟩
 #align category_theory.comma_morphism.inhabited CategoryTheory.CommaMorphism.inhabited
 
-restate_axiom comma_morphism.w'
-
-attribute [simp, reassoc.1] comma_morphism.w
+--attribute [simp, reassoc.1] comma_morphism.w
+-- not sure how to make this cleanly
+attribute [reassoc] CommaMorphism.w
+attribute [simp] CommaMorphism.w CommaMorphism.w_assoc
 
 instance commaCategory : Category (Comma L R)
     where
-  Hom := CommaMorphism
+  Hom X Y := CommaMorphism X Y
   id X :=
     { left := 𝟙 X.left
       right := 𝟙 X.right }
-  comp X Y Z f g :=
+  comp f g :=
     { left := f.left ≫ g.left
       right := f.right ≫ g.right }
 #align category_theory.comma_category CategoryTheory.commaCategory
@@ -143,14 +144,14 @@ variable (L) (R)
 @[simps]
 def fst : Comma L R ⥤ A where
   obj X := X.left
-  map _ _ f := f.left
+  map f := f.left
 #align category_theory.comma.fst CategoryTheory.Comma.fst
 
 /-- The functor sending an object `X` in the comma category to `X.right`. -/
 @[simps]
 def snd : Comma L R ⥤ B where
   obj X := X.right
-  map _ _ f := f.right
+  map f := f.right
 #align category_theory.comma.snd CategoryTheory.Comma.snd
 
 /-- We can interpret the commutative square constituting a morphism in the comma category as a
@@ -158,7 +159,7 @@ def snd : Comma L R ⥤ B where
     to `T`, where the components are given by the morphism that constitutes an object of the comma
     category. -/
 @[simps]
-def natTrans : fst L R ⋙ L ⟶ snd L R ⋙ R where app X := X.Hom
+def natTrans : fst L R ⋙ L ⟶ snd L R ⋙ R where app X := X.hom
 #align category_theory.comma.nat_trans CategoryTheory.Comma.natTrans
 
 @[simp]
@@ -194,18 +195,22 @@ directions give a commutative square.
 -/
 @[simps]
 def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.right)
-    (h : L₁.map l.Hom ≫ Y.Hom = X.Hom ≫ R₁.map r.Hom) : X ≅ Y
+    (h : L₁.map l.hom ≫ Y.hom = X.hom ≫ R₁.map r.hom) : X ≅ Y
     where
-  Hom :=
-    { left := l.Hom
-      right := r.Hom }
+  hom :=
+    { left := l.hom
+      right := r.hom }
   inv :=
     { left := l.inv
       right := r.inv
-      w' :=
+      w :=
         by
-        rw [← L₁.map_iso_inv l, iso.inv_comp_eq, L₁.map_iso_hom, reassoc_of h, ← R₁.map_comp]
+        rw [← L₁.mapIso_inv l, Iso.inv_comp_eq, L₁.mapIso_hom, ← Category.assoc, h,
+          Category.assoc, ← R₁.map_comp]
         simp }
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+#exit
 #align category_theory.comma.iso_mk CategoryTheory.Comma.isoMk
 
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `comma L₂ R ⥤ comma L₁ R`. -/
@@ -357,4 +362,3 @@ end
 end Comma
 
 end CategoryTheory
-
