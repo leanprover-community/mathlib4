@@ -466,7 +466,7 @@ theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i
 theorem HasBasis.le_basis_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     l ≤ l' ↔ ∀ i', p' i' → ∃ i, p i ∧ s i ⊆ s' i' := by
   simp only [hl'.ge_iff, hl.mem_iff]
-#align filter.has_basis.le_basis_iff Filter.HasBasis.le_basis_iffₓ
+#align filter.has_basis.le_basis_iff Filter.HasBasis.le_basis_iff
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem HasBasis.ext (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s')

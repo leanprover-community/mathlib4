@@ -650,7 +650,7 @@ protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·
         GE.ge)
       𝔖 :=
   h.mono fun s t hst =>
-    ((UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _).le_basis_iffₓ
+    ((UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _).le_basis_iff
           (UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _)).mpr
       fun V hV => ⟨V, hV, UniformOnFun.gen_mono hst subset_rfl⟩
 #align uniform_on_fun.has_basis_uniformity_of_basis_aux₂ UniformOnFun.hasBasis_uniformity_of_basis_aux₂
@@ -664,8 +664,8 @@ protected theorem hasBasis_uniformity_of_basis (h : 𝔖.Nonempty) (h' : Directe
       UniformOnFun.gen 𝔖 Si.1 (s Si.2) := by
   simp only [infᵢ_uniformity]
   exact
-    has_basis_binfi_of_directed h (fun S => UniformOnFun.gen 𝔖 S ∘ s) _
-      (fun S hS => UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb S)
+    hasBasis_binfᵢ_of_directed h (fun S => UniformOnFun.gen 𝔖 S ∘ s) _
+      (fun S _hS => UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb S)
       (UniformOnFun.hasBasis_uniformity_of_basis_aux₂ α β 𝔖 h' hb)
 #align uniform_on_fun.has_basis_uniformity_of_basis UniformOnFun.hasBasis_uniformity_of_basis
 
