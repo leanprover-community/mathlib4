@@ -26,47 +26,46 @@ under pointwise addition. In this file, it is defined as the abelianisation
 of the free group on `α`. All the constructions and theorems required to show
 the adjointness of the construction and the forgetful functor are proved in this
 file, but the category-theoretic adjunction statement is in
-`algebra.category.Group.adjunctions` .
+`Algebra.Category.Group.Adjunctions`.
 
 ## Main definitions
 
-Here we use the following variables: `(α β : Type*) (A : Type*) [add_comm_group A]`
+Here we use the following variables: `(α β : Type _) (A : Type _) [AddCommGroup A]`
 
-* `free_abelian_group α` : the free abelian group on a type `α`. As an abelian
+* `FreeAbelianGroup α` : the free abelian group on a type `α`. As an abelian
 group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
 many elements get mapped to zero, however this is not how it is implemented.
 
-* `lift f : free_abelian_group α →+ A` : the group homomorphism induced
+* `lift f : FreeAbelianGroup α →+ A` : the group homomorphism induced
   by the map `f : α → A`.
 
-* `map (f : α → β) : free_abelian_group α →+ free_abelian_group β` : functoriality
-    of `free_abelian_group`
+* `map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β` : functoriality
+    of `FreeAbelianGroup`.
 
-* `instance [monoid α] : semigroup (free_abelian_group α)`
+* `instance [Monoid α] : Semigroup (FreeAbelianGroup α)`
 
-* `instance [comm_monoid α] : comm_ring (free_abelian_group α)`
+* `instance [CommMonoid α] : CommRing (FreeAbelianGroup α)`
 
 It has been suggested that we would be better off refactoring this file
-and using `finsupp` instead.
+and using `Finsupp` instead.
 
 ## Implementation issues
 
-The definition is `def free_abelian_group : Type u :=
-additive $ abelianization $ free_group α`
+The definition is `def FreeAbelianGroup : Type u := Additive <| Abelianization <| FreeGroup α`.
 
-Chris Hughes has suggested that this all be rewritten in terms of `finsupp`.
-Johan Commelin has written all the API relating the definition to `finsupp`
+Chris Hughes has suggested that this all be rewritten in terms of `Finsupp`.
+Johan Commelin has written all the API relating the definition to `Finsupp`
 in the lean-liquid repo.
 
 The lemmas `map_pure`, `map_of`, `map_zero`, `map_add`, `map_neg` and `map_sub`
-are proved about the `functor.map` `<$>` construction, and need `α` and `β` to
+are proved about the `Functor.map` `<$>` construction, and need `α` and `β` to
 be in the same universe. But
-`free_abelian_group.map (f : α → β)` is defined to be the `add_group`
-homomorphism `free_abelian_group α →+ free_abelian_group β` (with `α` and `β` now
+`FreeAbelianGroup.map (f : α → β)` is defined to be the `AddGroup`
+homomorphism `FreeAbelianGroup α →+ FreeAbelianGroup β` (with `α` and `β` now
 allowed to be in different universes), so `(map f).map_add`
-etc can be used to prove that `free_abelian_group.map` preserves addition. The
+etc can be used to prove that `FreeAbelianGroup.map` preserves addition. The
 functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_apply`
-are about `free_abelian_group.map`.
+are about `FreeAbelianGroup.map`.
 
 -/
 
@@ -90,12 +89,12 @@ variable {α}
 
 namespace FreeAbelianGroup
 
-/-- The canonical map from α to `free_abelian_group α` -/
+/-- The canonical map from `α` to `FreeAbelianGroup α`. -/
 def of (x : α) : FreeAbelianGroup α :=
   Abelianization.of <| FreeGroup.of x
 #align free_abelian_group.of FreeAbelianGroup.of
 
-/-- The map `free_abelian_group α →+ A` induced by a map of types `α → A`. -/
+/-- The map `FreeAbelianGroup α →+ A` induced by a map of types `α → A`. -/
 def lift {β : Type v} [AddCommGroup β] : (α → β) ≃ (FreeAbelianGroup α →+ β) :=
   (@FreeGroup.lift _ (Multiplicative β) _).trans <|
     (@Abelianization.lift _ _ (Multiplicative β) _).trans MonoidHom.toAdditive
@@ -174,9 +173,9 @@ theorem lift.add' {α β} [AddCommGroup β] (a : FreeAbelianGroup α) (f g : α 
     simp only [(lift _).map_add, hx, hy, add_add_add_comm]
 #align free_abelian_group.lift.add' FreeAbelianGroup.lift.add'
 
-/-- If `g : free_abelian_group X` and `A` is an abelian group then `lift_add_group_hom g`
+/-- If `g : FreeAbelianGroup X` and `A` is an abelian group then `liftAddGroupHom g`
 is the additive group homomorphism sending a function `X → A` to the term of type `A`
-corresponding to the evaluation of the induced map `free_abelian_group X → A` at `g`. -/
+corresponding to the evaluation of the induced map `FreeAbelianGroup X → A` at `g`. -/
 @[simps!]  -- Porting note: Changed `simps` to `simps!`.
 def liftAddGroupHom {α} (β) [AddCommGroup β] (a : FreeAbelianGroup α) : (α → β) →+ β :=
   AddMonoidHom.mk' (fun f => lift f a) (lift.add' a)
@@ -287,8 +286,8 @@ theorem sub_seq (f g : FreeAbelianGroup (α → β)) (x : FreeAbelianGroup α) :
   sub_bind _ _ _
 #align free_abelian_group.sub_seq FreeAbelianGroup.sub_seq
 
-/-- If `f : free_abelian_group (α → β)`, then `f <*>` is an additive morphism
-`free_abelian_group α →+ free_abelian_group β`. -/
+/-- If `f : FreeAbelianGroup (α → β)`, then `f <*>` is an additive morphism
+`FreeAbelianGroup α →+ FreeAbelianGroup β`. -/
 def seqAddGroupHom (f : FreeAbelianGroup (α → β)) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
   AddMonoidHom.mk' ((· <*> ·) f) fun x y =>
     show lift (· <$> (x + y)) _ = _
@@ -348,8 +347,8 @@ universe w
 
 variable {β : Type v} {γ : Type w}
 
-/-- The additive group homomorphism `free_abelian_group α →+ free_abelian_group β` induced from a
-  map `α → β` -/
+/-- The additive group homomorphism `FreeAbelianGroup α →+ FreeAbelianGroup β` induced from a
+  map `α → β`. -/
 def map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β :=
   lift (of ∘ f)
 #align free_abelian_group.map FreeAbelianGroup.map
@@ -493,7 +492,7 @@ instance ring : Ring (FreeAbelianGroup α) :=
 
 variable {α}
 
-/-- `free_abelian_group.of` is a `monoid_hom` when `α` is a `monoid`. -/
+/-- `FreeAbelianGroup.of` is a `MonoidHom` when `α` is a `Monoid`. -/
 def ofMulHom : α →* FreeAbelianGroup α where
   toFun := of
   map_one' := rfl
