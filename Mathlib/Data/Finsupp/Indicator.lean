@@ -74,4 +74,10 @@ theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := b
   exact hi (indicator_of_not_mem h _)
 #align finsupp.support_indicator_subset Finsupp.support_indicator_subset
 
+lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) := by
+  classical
+  ext j
+  simp [single_apply, indicator_apply, @eq_comm _ j]
+#align finsupp.single_eq_indicator Finsupp.single_eq_indicator
+
 end Finsupp
