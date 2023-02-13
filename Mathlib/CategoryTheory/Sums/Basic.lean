@@ -166,12 +166,12 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
   map_comp := @fun X Y Z f g =>
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => by
-      aesop_cat
-      erw [F.map_comp]
+      aesop_cat <;>
+      erw [F.map_comp] <;>
       rfl
     | inr X, inr Y, inr Z, f, g => by
-      aesop_cat
-      erw [G.map_comp]
+      aesop_cat <;>
+      erw [G.map_comp] <;>
       rfl
 #align category_theory.functor.sum CategoryTheory.Functor.sum
 
@@ -210,8 +210,8 @@ def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H 
     | inr X => β.app X
   naturality X Y f :=
     match X, Y, f with
-    | inl X, inl Y, f => by aesop_cat; erw [α.naturality]; rfl
-    | inr X, inr Y, f => by aesop_cat; erw [β.naturality]; rfl
+    | inl X, inl Y, f => by aesop_cat <;> erw [α.naturality] <;> rfl
+    | inr X, inr Y, f => by aesop_cat <;> erw [β.naturality] <;> rfl
 #align category_theory.nat_trans.sum CategoryTheory.NatTrans.sum
 
 @[simp]
