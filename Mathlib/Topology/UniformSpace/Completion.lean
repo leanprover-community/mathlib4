@@ -329,15 +329,15 @@ section
 
 attribute [local instance] UniformSpace.separationSetoid
 
+-- porting note: added types in Function.Injective
 theorem separated_pureCauchy_injective {α : Type _} [UniformSpace α] [s : SeparatedSpace α] :
-    Function.Injective fun a : α => ⟦pureCauchy a⟧
-  | a, b, h =>
-    separated_def.1 s _ _ fun s hs =>
-      let ⟨t, ht, hts⟩ := by
-        rw [← (@uniform_embedding_pureCauchy α _).comap_uniformity, Filter.mem_comap] at hs <;>
-          exact hs
-      have : (pureCauchy a, pureCauchy b) ∈ t := Quotient.exact h t ht
-      @hts (a, b) this
+    @Function.Injective α (Quotient (UniformSpace.separationSetoid (CauchyCat α)))
+      fun a : α => ⟦pureCauchy a⟧
+  | a, b, h => by
+    refine separated_def.1 s _ _ (fun s hs => ?_)
+    rw [← (@uniformEmbedding_pureCauchy α _).comap_uniformity, Filter.mem_comap] at hs
+    obtain ⟨t, ht, hts⟩ := hs
+    exact @hts (a, b) (Quotient.exact h t ht)
 set_option linter.uppercaseLean3 false in
 #align Cauchy.separated_pure_cauchy_injective CauchyCat.separated_pureCauchy_injective
 
