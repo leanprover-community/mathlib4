@@ -1841,6 +1841,7 @@ variable (encdec : ∀ a, dec (enc a) = a)
 
 --include encdec  -- Porting note: `include` doesn't exist
 
+set_option pp.proofs true in
 theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
     stepAux (read dec f) v (trTape' enc0 L R) = stepAux (f R.head) v (trTape' enc0 L R) := by
   suffices ∀ f, stepAux (readAux n f) v (trTape' enc0 L R) =
@@ -1854,7 +1855,8 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
       stepAux (readAux i f) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂ R')) =
       stepAux (f ⟨l₂, h⟩) v (Tape.mk' (ListBlank.append (l₂.reverseAux l₁) L') R') by
     intro f
-    convert this n f _ _ _ _ (enc a).2 <;> simp
+    exact this n f (L.bind (fun x => (enc x).1.reverse) _)
+      (R.bind (fun x => (enc x).1) _) [] _ (enc a).2
   clear f L a R
   intro i f L' R' l₁ l₂ _
   subst i
