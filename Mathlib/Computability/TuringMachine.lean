@@ -1664,10 +1664,8 @@ local notation "Λ'₁" => @Λ' Γ Λ σ  -- Porting note: Added this to clean u
 instance : Inhabited Λ'₁ :=
   ⟨Λ'.normal default⟩
 
--- mathport name: exprstmt'
 local notation "Stmt'₁" => Stmt Bool Λ'₁ σ
 
--- mathport name: exprcfg'
 local notation "Cfg'₁" => Cfg Bool Λ'₁ σ
 
 /-- Read a vector of length `n` from the tape. -/
