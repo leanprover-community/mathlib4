@@ -73,7 +73,7 @@ theorem even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by
 #align nat.even_xor_odd Nat.even_xor_odd
 
 theorem even_or_odd (n : ℕ) : Even n ∨ Odd n :=
-  xor.or (even_xor_odd n)
+  (even_xor_odd n).or
 #align nat.even_or_odd Nat.even_or_odd
 
 theorem even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
