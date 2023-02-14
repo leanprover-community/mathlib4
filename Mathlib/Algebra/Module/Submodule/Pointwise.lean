@@ -178,7 +178,7 @@ theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
 
 instance : CanonicallyOrderedAddMonoid (Submodule R M) :=
   { Submodule.pointwiseAddCommMonoid,
-    instCompleteLatticeSubmodule with
+    Submodule.completeLattice with
     zero := 0
     bot := ⊥
     add := (· + ·)
@@ -192,7 +192,7 @@ variable [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M)
     where
   smul a S := S.map (DistribMulAction.toLinearMap R M a : M →ₗ[R] M)
@@ -231,13 +231,13 @@ theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 #align submodule.smul_mem_pointwise_smul Submodule.smul_mem_pointwise_smul
 
-/-- See also `submodule.smul_bot`. -/
+/-- See also `Submodule.smul_bot`. -/
 @[simp]
 theorem smul_bot' (a : α) : a • (⊥ : Submodule R M) = ⊥ :=
   map_bot _
 #align submodule.smul_bot' Submodule.smul_bot'
 
-/-- See also `submodule.smul_sup`. -/
+/-- See also `Submodule.smul_sup`. -/
 theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
 #align submodule.smul_sup' Submodule.smul_sup'
