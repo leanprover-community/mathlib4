@@ -102,7 +102,7 @@ theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
 def negOrderIso : Submodule R M ≃o Submodule R M
     where
   toEquiv := Equiv.neg _
-  map_rel_iff' := neg_le_neg
+  map_rel_iff' := @neg_le_neg _ _ _ _ _
 #align submodule.neg_order_iso Submodule.negOrderIso
 
 theorem closure_neg (s : Set M) : span R (-s) = -span R s := by
@@ -175,15 +175,15 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
-
+#synth CompleteLattice (Submodule R M)
 instance : CanonicallyOrderedAddMonoid (Submodule R M) :=
   { Submodule.pointwiseAddCommMonoid,
-    Submodule.completeLattice with
+    instCompleteLatticeSubmodule with
     zero := 0
     bot := ⊥
     add := (· + ·)
     add_le_add_left := fun a b => sup_le_sup_left
-    exists_add_of_le := fun a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+    exists_add_of_le := @fun a b h => ⟨b, (sup_eq_right.2 h).symm⟩
     le_self_add := fun a b => le_sup_left }
 
 section
@@ -285,4 +285,3 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero
 end
 
 end Submodule
-
