@@ -985,12 +985,15 @@ variable [Field K] [AddCommGroup V] [Module K V]
 
 open Classical
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes.
+attribute [-instance] Ring.toNonAssocRing
+
 -- Porting note: added the following line, fails to be inferred otherwise. Probably lean4#2074
 instance : Module K K := Semiring.toModule
 
 theorem span_singleton_sup_ker_eq_top (f : V →ₗ[K] K) {x : V} (hx : f x ≠ 0) :
     (K ∙ x) ⊔ ker f = ⊤ :=
-  eq_top_iff.2 fun y hy =>
+  eq_top_iff.2 fun y _ =>
     Submodule.mem_sup.2
       ⟨(f y * (f x)⁻¹) • x, Submodule.mem_span_singleton.2 ⟨f y * (f x)⁻¹, rfl⟩,
         ⟨y - (f y * (f x)⁻¹) • x, by
@@ -1031,9 +1034,13 @@ section Field
 
 variable (K V) [Field K] [AddCommGroup V] [Module K V]
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes.
+attribute [-instance] Ring.toNonAssocRing
+
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural
     map from `K` to the span of `x`, with invertibility check to consider it as an
     isomorphism.-/
+noncomputable -- Porting note: added since `LinearEquiv.ofInjective` is noncomputable
 def toSpanNonzeroSingleton (x : V) (h : x ≠ 0) : K ≃ₗ[K] K ∙ x :=
   LinearEquiv.trans
     (LinearEquiv.ofInjective (LinearMap.toSpanSingleton K V x)
@@ -1046,11 +1053,12 @@ theorem toSpanNonzeroSingleton_one (x : V) (h : x ≠ 0) :
       (⟨x, Submodule.mem_span_singleton_self x⟩ : K ∙ x) := by
   apply SetLike.coe_eq_coe.mp
   have : ↑(toSpanNonzeroSingleton K V x h 1) = toSpanSingleton K V x 1 := rfl
-  rw [this, to_span_singleton_one, Submodule.coe_mk]
+  rw [this, toSpanSingleton_one, Submodule.coe_mk]
 #align linear_equiv.to_span_nonzero_singleton_one LinearEquiv.toSpanNonzeroSingleton_one
 
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural map
     from the span of `x` to `K`.-/
+noncomputable -- Porting note: added since `toSpanNonzeroSingleton` is noncomputable
 abbrev coord (x : V) (h : x ≠ 0) : (K ∙ x) ≃ₗ[K] K :=
   (toSpanNonzeroSingleton K V x h).symm
 #align linear_equiv.coord LinearEquiv.coord
