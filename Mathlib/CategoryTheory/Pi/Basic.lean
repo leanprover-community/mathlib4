@@ -120,7 +120,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
     app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
     }
-  hom_inv_id := by simp only [comap]; aesop_cat; sorry 
+  hom_inv_id := by simp only [comap]; aesop_cat; sorry  
   inv_hom_id := by simp only [comap]; sorry 
 #align category_theory.pi.comap_comp CategoryTheory.Pi.comapComp
 
@@ -160,9 +160,17 @@ def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s
   obj X :=
     { obj := fun Y s => Sum.rec X Y s
       map := fun {Y} {Y'} f s => Sum.rec (fun i => 𝟙 (X i)) f s 
-      map_id := fun Y => sorry 
-      map_comp := sorry }
-  map {X} {X'} f := { app := fun Y s => Sum.rec f (fun j => 𝟙 (Y j)) s }
+      map_id := fun Y => by 
+          dsimp
+          simp only [CategoryStruct.id]
+          funext s 
+          match s with 
+          | .inl i => simp 
+          | .inr j => simp 
+      map_comp := fun {Y₁} {Y₂} {Y₃} f g => by dsimp; funext s; cases s; repeat {simp} }
+  map {X} {X'} f := 
+    { app := fun Y s => Sum.rec f (fun j => 𝟙 (Y j)) s 
+      naturality := sorry }
   map_id := sorry 
   map_comp := sorry 
 #align category_theory.pi.sum CategoryTheory.Pi.sum
