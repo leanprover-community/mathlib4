@@ -231,7 +231,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option eqn_compiler.zeta -/
+-- porting note: I commented this
 -- set_option eqn_compiler.zeta true
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
