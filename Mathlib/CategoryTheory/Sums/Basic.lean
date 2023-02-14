@@ -36,6 +36,8 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 
+/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did-/
+
 /-- `sum C D` gives the direct sum of two categories.
 -/
 instance sum : Category.{v₁} (Sum C D)
@@ -43,8 +45,8 @@ instance sum : Category.{v₁} (Sum C D)
   Hom X Y :=
     match X, Y with
     | inl X, inl Y => X ⟶ Y
-    | inl X, inr Y => PEmpty
-    | inr X, inl Y => PEmpty
+    | inl _, inr _ => PEmpty
+    | inr _, inl _ => PEmpty
     | inr X, inr Y => X ⟶ Y
   id X :=
     match X with
@@ -54,6 +56,10 @@ instance sum : Category.{v₁} (Sum C D)
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => f ≫ g
     | inr X, inr Y, inr Z, f, g => f ≫ g
+  assoc := @fun W X Y Z f g h => 
+    match X, Y, Z, W with 
+    | inl X, inl Y, inl Z, inl W => Category.assoc f g h  
+    | inr X, inr Y, inr Z, inr W => Category.assoc f g h
 #align category_theory.sum CategoryTheory.sum
 
 @[simp]
@@ -91,6 +97,9 @@ def inr_ : D ⥤ Sum C D where
   map := @fun X Y f => f
 #align category_theory.sum.inr_ CategoryTheory.Sum.inr_
 
+/- Porting note: `aesop_cat` not firing on `map_comp` where autotac in Lean 3 did
+but `map_id` was ok. -/
+
 /-- The functor exchanging two direct summand categories. -/
 def swap : Sum C D ⥤ Sum D C
     where
@@ -100,8 +109,12 @@ def swap : Sum C D ⥤ Sum D C
     | inr X => inl X
   map := @fun X Y f =>
     match X, Y, f with
-    | inl X, inl Y, f => f
-    | inr X, inr Y, f => f
+    | inl _, inl _, f => f
+    | inr _, inr _, f => f
+  map_comp := fun {X} {Y} {Z} _ _ => 
+    match X, Y, Z with 
+    | inl X, inl Y, inl Z => by rfl 
+    | inr X, inr Y, inr Z => by rfl 
 #align category_theory.sum.swap CategoryTheory.Sum.swap
 
 @[simp]
@@ -126,11 +139,15 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 
 namespace Swap
 
+/- Porting note: had ot manually call `cases f` for `f : PEmpty` -/
+
 /-- `swap` gives an equivalence between `C ⊕ D` and `D ⊕ C`. -/
 def equivalence : Sum C D ≌ Sum D C :=
   Equivalence.mk (swap C D) (swap D C)
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)) (by aesop_cat))
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)) (by aesop_cat))
+    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)) 
+    (by simp only [swap]; aesop_cat; cases f; cases f))
+    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
+    (by simp only [swap]; aesop_cat; cases f; cases f))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
 instance isEquivalence : IsEquivalence (swap C D) :=
