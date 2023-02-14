@@ -8,7 +8,7 @@ Authors: Patrick Massot, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.AbstractCompletion
+import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 /-!
 # Hausdorff completions of uniform spaces
@@ -176,8 +176,7 @@ theorem uniformEmbedding_pureCauchy : UniformEmbedding (pure_cauchy : α → Cau
 #align Cauchy.uniform_embedding_pure_cauchy CauchyCat.uniformEmbedding_pureCauchy
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem denseRange_pureCauchy : DenseRange pure_cauchy := fun f =>
-  by
+theorem denseRange_pureCauchy : DenseRange pure_cauchy := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyCat α), ∃ y : α, (f, pure_cauchy y) ∈ s := fun s hs =>
     let ⟨t'', ht''₁, (ht''₂ : gen t'' ⊆ s)⟩ := (mem_lift'_sets monotone_gen).mp hs
     let ⟨t', ht'₁, ht'₂⟩ := comp_mem_uniformity_sets ht''₁
@@ -208,8 +207,7 @@ theorem denseEmbedding_pureCauchy : DenseEmbedding pure_cauchy :=
   uniform_embedding_pure_cauchy.DenseEmbedding dense_range_pure_cauchy
 #align Cauchy.dense_embedding_pure_cauchy CauchyCat.denseEmbedding_pureCauchy
 
-theorem nonempty_cauchyCat_iff : Nonempty (CauchyCat α) ↔ Nonempty α :=
-  by
+theorem nonempty_cauchyCat_iff : Nonempty (CauchyCat α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
   · have := eq_univ_iff_forall.1 dense_embedding_pure_cauchy.to_dense_inducing.closure_range c
     obtain ⟨_, ⟨_, a, _⟩⟩ := mem_closure_iff.1 this _ isOpen_univ trivial
@@ -266,8 +264,7 @@ end SeparatedSpace
 
 variable [CompleteSpace β]
 
-theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) :=
-  by
+theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) := by
   by_cases hf : UniformContinuous f
   · rw [extend, if_pos hf]
     exact uniformContinuous_uniformly_extend uniform_inducing_pure_cauchy dense_range_pure_cauchy hf
@@ -281,8 +278,7 @@ end
 
 theorem cauchyCat_eq {α : Type _} [Inhabited α] [UniformSpace α] [CompleteSpace α]
     [SeparatedSpace α] {f g : CauchyCat α} :
-    lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyCat α) :=
-  by
+    lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyCat α) := by
   constructor
   · intro e s hs
     rcases CauchyCat.mem_uniformity'.1 hs with ⟨t, tu, ts⟩
@@ -386,8 +382,7 @@ protected theorem coe_eq : (coe : α → Completion α) = Quotient.mk' ∘ pureC
 #align uniform_space.completion.coe_eq UniformSpace.Completion.coe_eq
 
 theorem comap_coe_eq_uniformity :
-    ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=
-  by
+    ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α := by
   have :
     (fun x : α × α => ((x.1 : completion α), (x.2 : completion α))) =
       (fun x : CauchyCat α × CauchyCat α => (⟦x.1⟧, ⟦x.2⟧)) ∘ fun x : α × α =>
@@ -617,8 +612,7 @@ section SeparationQuotientCompletion
 /-- The isomorphism between the completion of a uniform space and the completion of its separation
 quotient. -/
 def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
-    Completion (SeparationQuotient α) ≃ Completion α :=
-  by
+    Completion (SeparationQuotient α) ≃ Completion α := by
   refine'
     ⟨completion.extension (SeparationQuotient.lift (coe : α → completion α)),
       completion.map Quotient.mk', _, _⟩
