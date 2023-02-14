@@ -403,6 +403,7 @@ theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial 
 #align nat.desc_factorial_eq_zero_iff_lt Nat.descFactorial_eq_zero_iff_lt
 
 alias descFactorial_eq_zero_iff_lt ↔ _ descFactorial_of_lt
+#align nat.desc_factorial_of_lt Nat.descFactorial_of_lt
 
 theorem add_descFactorial_eq_ascFactorial (n : ℕ) :
     ∀ k : ℕ, (n + k).descFactorial k = n.ascFactorial k
@@ -410,7 +411,7 @@ theorem add_descFactorial_eq_ascFactorial (n : ℕ) :
   | succ k => by
     rw [Nat.add_succ, Nat.succ_eq_add_one, Nat.succ_eq_add_one,
         succ_descFactorial_succ, ascFactorial_succ, add_descFactorial_eq_ascFactorial _ k]
-#align nat.add_descFactorial_eq_asc_factorial Nat.add_descFactorial_eq_ascFactorial
+#align nat.add_desc_factorial_eq_asc_factorial Nat.add_descFactorial_eq_ascFactorial
 
 /-- `n.descFactorial k = n! / (n - k)!` but without ℕ-division. See `Nat.descFactorial_eq_div`
 for the version using ℕ-division. -/

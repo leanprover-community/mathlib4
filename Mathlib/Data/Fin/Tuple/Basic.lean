@@ -611,7 +611,7 @@ variable {α : Fin (n + 1) → Type u} {β : Type v}
 /- Porting note: Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
 automatic insertion and specifying that motive seems to work. -/
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
-`Fin.succAbove i j`, `j : fin n`. This version is elaborated as eliminator and works for
+`Fin.succAbove i j`, `j : Fin n`. This version is elaborated as eliminator and works for
 propositions, see also `Fin.insertNth` for a version without an `@[elab_as_elim]`
 attribute. -/
 @[elab_as_elim]

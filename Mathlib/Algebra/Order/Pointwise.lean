@@ -19,7 +19,7 @@ This file contains lemmas about the effect of pointwise operations on sets with 
 
 ## TODO
 
-`Sup (s • t) = Sup s • Sup t` and `Inf (s • t) = Inf s • Inf t` hold as well but
+`supₛ (s • t) = supₛ s • supₛ t` and `infₛ (s • t) = infₛ s • infₛ t` hold as well but
 `CovariantClass` is currently not polymorphic enough to state it.
 -/
 

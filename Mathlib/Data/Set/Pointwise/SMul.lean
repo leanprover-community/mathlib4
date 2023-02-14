@@ -504,7 +504,7 @@ protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β)
 scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mulAction Set.addAction
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
-multiplicative action on `set β`. -/
+multiplicative action on `Set β`. -/
 protected def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _

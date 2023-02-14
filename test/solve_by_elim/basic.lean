@@ -151,11 +151,11 @@ end apply_assumption
 
 section «using»
 
-@[dummy_tag_attr] axiom foo : 1 = 2
+@[dummy_label_attr] axiom foo : 1 = 2
 
 example : 1 = 2 := by
   fail_if_success solve_by_elim
-  solve_by_elim using dummy_tag_attr
+  solve_by_elim using dummy_label_attr
 
 end «using»
 
@@ -163,10 +163,10 @@ section issue1581
 
 axiom mySorry {α} : α
 
-@[dummy_tag_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
+@[dummy_label_attr] theorem le_rfl [LE α] {b c : α} (_h : b = c) : b ≤ c := mySorry
 
 example : 5 ≤ 7 := by
-  apply_rules using dummy_tag_attr
+  apply_rules using dummy_label_attr
   guard_target = 5 = 7
   exact mySorry
 

@@ -39,6 +39,8 @@ structure TwoPointing (α : Type _) extends α × α where
   fst_ne_snd : fst ≠ snd
   deriving DecidableEq
 #align two_pointing TwoPointing
+#align two_pointing.ext TwoPointing.ext
+#align two_pointing.ext_iff TwoPointing.ext_iff
 
 namespace TwoPointing
 
@@ -53,6 +55,7 @@ theorem snd_ne_fst : p.snd ≠ p.fst :=
 def swap : TwoPointing α :=
   ⟨(p.snd, p.fst), p.snd_ne_fst⟩
 #align two_pointing.swap TwoPointing.swap
+#align two_pointing.swap_to_prod TwoPointing.swap_toProd
 
 theorem swap_fst : p.swap.fst = p.snd := rfl
 #align two_pointing.swap_fst TwoPointing.swap_fst

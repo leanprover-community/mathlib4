@@ -299,6 +299,14 @@ theorem IsGreatest.upperBounds_eq (h : IsGreatest s a) : upperBounds s = Ici a :
   h.isLUB.upperBounds_eq
 #align is_greatest.upper_bounds_eq IsGreatest.upperBounds_eq
 
+-- porting note: new lemma
+theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
+  ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
+
+-- porting note: new lemma
+theorem IsLeast.lt_iff (h : IsLeast s a) : b < a ↔ ∀ x ∈ s, b < x :=
+  h.dual.lt_iff
+
 theorem isLUB_le_iff (h : IsLUB s a) : a ≤ b ↔ b ∈ upperBounds s := by
   rw [h.upperBounds_eq]
   rfl
@@ -348,7 +356,6 @@ theorem IsGreatest.nonempty (h : IsGreatest s a) : s.Nonempty :=
 /-!
 ### Union and intersection
 -/
-
 
 @[simp]
 theorem upperBounds_union : upperBounds (s ∪ t) = upperBounds s ∩ upperBounds t :=
@@ -1410,7 +1417,7 @@ theorem image2_upperBounds_lowerBounds_subset_upperBounds_image2 :
     image2 f (upperBounds s) (lowerBounds t) ⊆ upperBounds (image2 f s t) := by
   rintro _ ⟨a, b, ha, hb, rfl⟩
   exact mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds h₀ h₁ ha hb
-#align image2_upper_bounds_lower_bounds_subset_upperBounds_image2 image2_upperBounds_lowerBounds_subset_upperBounds_image2
+#align image2_upper_bounds_lower_bounds_subset_upper_bounds_image2 image2_upperBounds_lowerBounds_subset_upperBounds_image2
 
 theorem image2_lowerBounds_upperBounds_subset_lowerBounds_image2 :
     image2 f (lowerBounds s) (upperBounds t) ⊆ lowerBounds (image2 f s t) := by

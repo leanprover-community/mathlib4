@@ -19,6 +19,9 @@ namespace CategoryTheory
 
 universe u
 
+-- This file is about Lean 3 declaration "Rel".
+set_option linter.uppercaseLean3 false
+
 /-- A type synonym for `Type`, which carries the category instance for which
     morphisms are binary relations. -/
 def RelCat :=

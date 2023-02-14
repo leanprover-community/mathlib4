@@ -82,6 +82,8 @@ theorem unpair_mkpair (a b : ℕ) : unpair (mkpair a b) = (a, b) := by
 def mkpairEquiv : ℕ × ℕ ≃ ℕ :=
   ⟨uncurry mkpair, unpair, fun ⟨a, b⟩ => unpair_mkpair a b, mkpair_unpair⟩
 #align nat.mkpair_equiv Nat.mkpairEquiv
+#align nat.mkpair_equiv_apply Nat.mkpairEquiv_apply
+#align nat.mkpair_equiv_symm_apply Nat.mkpairEquiv_symm_apply
 
 theorem surjective_unpair : Surjective unpair :=
   mkpairEquiv.symm.surjective
