@@ -58,8 +58,7 @@ For efficiency purposes, the sequence is defined using `Stream.iterate`.
 fib, fibonacci
 -/
 
---Porting note: commented out
---open BigOperators
+open BigOperators
 
 namespace Nat
 

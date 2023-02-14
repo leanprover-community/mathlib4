@@ -72,6 +72,17 @@ def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := (nm.componentsRev.splitAt n)
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
+/-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
+  Note that this includes the case where `nm` has multiple more namespaces.
+  If `pre` is not a prefix of `nm`, it returns `none`. -/
+def isPrefixOf? (pre nm : Name) : Option Name :=
+  if pre == nm then
+    some anonymous
+  else match nm with
+  | anonymous => none
+  | num p' a => (isPrefixOf? pre p').map (·.num a)
+  | str p' s => (isPrefixOf? pre p').map (·.str s)
+
 end Name
 
 
@@ -164,6 +175,19 @@ def fvarId? : Expr → Option FVarId
   | .fvar n => n
   | _ => none
 
+/-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
+  `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
+  it does a syntactic check that the expression does not depend on `yₙ`. -/
+def isConstantApplication (e : Expr) :=
+e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
+where
+  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+    `depth - 1`. -/
+  aux (depth : Nat) : Expr → Nat → Bool
+  | .lam _ _ b _, n + 1  => aux depth b n
+  | e, 0  => !e.hasLooseBVar (depth - 1)
+  | _, _ => false
+
 open Meta
 
 /-- Check that an expression contains no metavariables (after instantiation). -/
@@ -207,10 +231,6 @@ def zero? (e : Expr) : Bool :=
   match e.numeral? with
   | some 0 => true
   | _ => false
-
-/-- Returns a `NameSet` of all constants in an expression starting with a prefix in `pre`. -/
-def listNamesWithPrefixes (pre : NameSet) (e : Expr) : NameSet :=
-  e.foldConsts ∅ fun n l ↦ if pre.contains n.getPrefix then l.insert n else l
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a

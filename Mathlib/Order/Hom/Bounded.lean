@@ -723,6 +723,8 @@ protected def dual :
   left_inv _ := TopHom.ext fun _ => rfl
   right_inv _ := BotHom.ext fun _ => rfl
 #align top_hom.dual TopHom.dual
+#align top_hom.dual_apply_apply TopHom.dual_apply_apply
+#align top_hom.dual_symm_apply_apply TopHom.dual_symm_apply_apply
 
 @[simp]
 theorem dual_id : TopHom.dual (TopHom.id α) = BotHom.id _ :=
@@ -761,6 +763,8 @@ protected def dual :
   left_inv _ := BotHom.ext fun _ => rfl
   right_inv _ := TopHom.ext fun _ => rfl
 #align bot_hom.dual BotHom.dual
+#align bot_hom.dual_apply_apply BotHom.dual_apply_apply
+#align bot_hom.dual_symm_apply_apply BotHom.dual_symm_apply_apply
 
 @[simp]
 theorem dual_id : BotHom.dual (BotHom.id α) = TopHom.id _ :=
@@ -802,6 +806,8 @@ protected def dual :
   left_inv _ := ext fun _ => rfl
   right_inv _ := ext fun _ => rfl
 #align bounded_order_hom.dual BoundedOrderHom.dual
+#align bounded_order_hom.dual_apply_to_order_hom BoundedOrderHom.dual_apply_toOrderHom
+#align bounded_order_hom.dual_symm_apply_to_order_hom BoundedOrderHom.dual_symm_apply_toOrderHom
 
 @[simp]
 theorem dual_id : BoundedOrderHom.dual (BoundedOrderHom.id α) = BoundedOrderHom.id _ :=

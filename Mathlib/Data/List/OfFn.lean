@@ -252,6 +252,9 @@ def equivSigmaTuple : List α ≃ Σn, Fin n → α
   right_inv := fun ⟨_, f⟩ =>
     Fin.sigma_eq_of_eq_comp_cast (length_ofFn _) <| funext fun i => get_ofFn f i
 #align list.equiv_sigma_tuple List.equivSigmaTuple
+#align list.equiv_sigma_tuple_symm_apply List.equivSigmaTuple_symm_apply
+#align list.equiv_sigma_tuple_apply_fst List.equivSigmaTuple_apply_fst
+#align list.equiv_sigma_tuple_apply_snd List.equivSigmaTuple_apply_snd
 
 /-- A recursor for lists that expands a list into a function mapping to its elements.
 

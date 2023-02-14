@@ -412,12 +412,13 @@ theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid
   then `r : R` is invertible if `f r` is.
 
 The inverse is computed as `g (⅟(f r))` -/
-@[simps (config := { attrs := [] })]
+@[simps! (config := { attrs := [] })]
 def Invertible.ofLeftInverse {R : Type _} {S : Type _} {G : Type _} [MulOneClass R] [MulOneClass S]
     [MonoidHomClass G S R] (f : R → S) (g : G) (r : R) (h : Function.LeftInverse g f)
     [Invertible (f r)] : Invertible r :=
   (Invertible.map g (f r)).copy _ (h r).symm
 #align invertible.of_left_inverse Invertible.ofLeftInverse
+#align invertible.of_left_inverse_inv_of Invertible.ofLeftInverse_invOf
 
 /-- Invertibility on either side of a monoid hom with a left-inverse is equivalent. -/
 @[simps]
@@ -431,3 +432,5 @@ def invertibleEquivOfLeftInverse {R : Type _} {S : Type _} {F G : Type _} [Monoi
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 #align invertible_equiv_of_left_inverse invertibleEquivOfLeftInverse
+#align invertible_equiv_of_left_inverse_symm_apply invertibleEquivOfLeftInverse_symm_apply
+#align invertible_equiv_of_left_inverse_apply invertibleEquivOfLeftInverse_apply
