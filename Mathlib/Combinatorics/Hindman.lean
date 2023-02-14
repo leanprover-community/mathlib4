@@ -66,6 +66,7 @@ theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → 
 #align ultrafilter.eventually_mul Ultrafilter.eventually_mul
 #align ultrafilter.eventually_add Ultrafilter.eventually_add
 
+-- porting note: slow to typecheck
 /-- Semigroup structure on `ultrafilter M` induced by a semigroup structure on `M`. -/
 @[to_additive
       "Additive semigroup structure on `ultrafilter M` induced by an additive semigroup\nstructure on `M`."]
