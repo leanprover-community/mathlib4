@@ -38,8 +38,7 @@ variable {δ : α → Type _} [DecidableEq α]
 /-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
 Note that the elements of `s.pi t` are only partially defined, on `s`. -/
---Porting note: marked noncomputable
-noncomputable def pi (s : Finset α) (t : ∀ a, Finset (δ a)) : Finset (∀ a ∈ s, δ a) :=
+def pi (s : Finset α) (t : ∀ a, Finset (δ a)) : Finset (∀ a ∈ s, δ a) :=
   ⟨s.1.pi fun a => (t a).1, s.nodup.pi fun a _ => (t a).nodup⟩
 #align finset.pi Finset.pi
 

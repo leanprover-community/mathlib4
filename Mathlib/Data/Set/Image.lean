@@ -667,6 +667,7 @@ theorem range_iff_surjective : range f = univ ↔ Surjective f :=
 
 -- Porting note: Lean4 unfolds `Surjective` here, ruining dot notation
 alias range_iff_surjective ↔ _ _root_.Function.Surjective.range_eq
+#align function.surjective.range_eq Function.Surjective.range_eq
 
 @[simp]
 theorem image_univ {f : α → β} : f '' univ = range f := by
@@ -777,20 +778,23 @@ theorem subset_range_iff_exists_image_eq {f : α → β} {s : Set β} : s ⊆ ra
   ⟨fun h => ⟨_, image_preimage_eq_iff.2 h⟩, fun ⟨_, ht⟩ => ht ▸ image_subset_range _ _⟩
 #align set.subset_range_iff_exists_image_eq Set.subset_range_iff_exists_image_eq
 
+theorem range_image (f : α → β) : range (image f) = 𝒫 range f :=
+  ext fun _ => subset_range_iff_exists_image_eq.symm
+#align set.range_image Set.range_image
+
 @[simp]
 theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
-    (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) :=
-  ⟨fun ⟨s, hsf, hps⟩ => ⟨f ⁻¹' s, (image_preimage_eq_of_subset hsf).symm ▸ hps⟩,
-   fun ⟨s, hs⟩ => ⟨f '' s, image_subset_range _ _, hs⟩⟩
+    (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) := by
+  rw [← exists_range_iff, range_image]; rfl
 #align set.exists_subset_range_and_iff Set.exists_subset_range_and_iff
 
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
 #align set.exists_subset_range_iff Set.exists_subset_range_iff
 
-theorem range_image (f : α → β) : range (image f) = 𝒫 range f :=
-  ext fun _ => subset_range_iff_exists_image_eq.symm
-#align set.range_image Set.range_image
+theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
+    (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
+  rw [← forall_range_iff, range_image]; rfl
 
 theorem preimage_subset_preimage_iff {s t : Set α} {f : β → α} (hs : s ⊆ range f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
@@ -855,6 +859,9 @@ theorem range_eval {ι : Type _} {α : ι → Sort _} [∀ i, Nonempty (α i)] (
   Function.Surjective.range_eq (surjective_eval i)
   -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works
 #align set.range_eval Set.range_eval
+
+theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_|_) <;> simp
+theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_|_) <;> simp
 
 theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
   IsCompl.of_le
@@ -924,8 +931,7 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  Function.Surjective.range_eq (surjective_quot_mk r)
-  -- Porting note: should be `(surjective_quot_mk r).range_eq` if dot notation works
+  (surjective_quot_mk r).range_eq
 #align set.range_quot_mk Set.range_quot_mk
 
 @[simp]
@@ -1427,14 +1433,12 @@ theorem preimage_val_eq_preimage_val_iff (s t u : Set α) :
 
 theorem exists_set_subtype {t : Set α} (p : Set α → Prop) :
     (∃ s : Set t, p ((fun x : t => (x : α)) '' s)) ↔ ∃ s : Set α, s ⊆ t ∧ p s := by
-  constructor
-  · rintro ⟨s, hs⟩
-    refine' ⟨(fun x : t => (x : α)) '' s, _, hs⟩
-    convert image_subset_range (fun x : t => (x : α)) s
-    rw [range_coe]
-  rintro ⟨s, hs₁, hs₂⟩; refine' ⟨(fun x : t => (x : α)) ⁻¹' s, _⟩
-  rw [image_preimage_eq_of_subset]; exact hs₂; rw [range_coe]; exact hs₁
+  rw [← exists_subset_range_and_iff, range_coe]
 #align subtype.exists_set_subtype Subtype.exists_set_subtype
+
+theorem forall_set_subtype {t : Set α} (p : Set α → Prop) :
+    (∀ s : Set t, p ((fun x : t => (x : α)) '' s)) ↔ ∀ s : Set α, s ⊆ t → p s := by
+  rw [← forall_subset_range_iff, range_coe]
 
 theorem preimage_coe_nonempty {s t : Set α} :
   ((fun x : s => (x : α)) ⁻¹' t).Nonempty ↔ (s ∩ t).Nonempty :=

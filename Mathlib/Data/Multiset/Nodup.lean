@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.nodup
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -197,10 +197,10 @@ protected theorem Nodup.sigma {σ : α → Type _} {t : ∀ a, Multiset (σ a)} 
     simpa [←funext hf] using List.Nodup.sigma
 #align multiset.nodup.sigma Multiset.Nodup.sigma
 
-protected theorem Nodup.filter_map (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
+protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
     Nodup s → Nodup (filterMap f s) :=
-  Quot.induction_on s fun _ => Nodup.filterMap H
-#align multiset.nodup.filter_map Multiset.Nodup.filter_map
+  Quot.induction_on s fun _ => List.Nodup.filterMap H
+#align multiset.nodup.filter_map Multiset.Nodup.filterMap
 
 theorem nodup_range (n : ℕ) : Nodup (range n) :=
   List.nodup_range _

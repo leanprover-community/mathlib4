@@ -39,7 +39,7 @@ universe u v w
 theorem Group.isUnit {G} [Group G] (g : G) : IsUnit g :=
   ⟨⟨g, g⁻¹, mul_inv_self g, inv_mul_self g⟩, rfl⟩
 #align group.is_unit Group.isUnit
-#align add_group.is_unit AddGroup.isAddUnit
+#align add_group.is_add_unit AddGroup.isAddUnit
 
 section MonoidHomClass
 
@@ -132,7 +132,7 @@ variable [DivisionMonoid α]
 theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
   (Units.coeHom α).map_div
 #align units.coe_div Units.val_div_eq_div_val
-#align add_units.coe_neg AddUnits.val_neg_eq_neg_val
+#align add_units.coe_sub AddUnits.val_neg_eq_neg_val
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
@@ -276,12 +276,11 @@ variable [DivisionMonoid α] {a b c : α}
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
 opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
 useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
-@[to_additive
+@[to_additive (attr := simps)
   "The element of the additive group of additive units, corresponding to an element of
   an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is
   computable and comes from the negation on `α`. This is useful to transfer properties of negation
-  in `AddUnits α` to `α`. See also `toAddUnits`.",
-  simps]
+  in `AddUnits α` to `α`. See also `toAddUnits`."]
 def unit' (h : IsUnit a) : αˣ :=
   ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_cancel⟩
 #align is_unit.unit' IsUnit.unit'

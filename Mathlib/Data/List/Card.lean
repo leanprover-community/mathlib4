@@ -29,7 +29,7 @@ theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert 
 theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as.union bs).equiv (as ++ bs) :=
   fun x ↦ by simp
 
-section decidable_eq
+section DecidableEq
 variable [DecidableEq α] [DecidableEq β]
 
 /- remove -/
@@ -189,6 +189,6 @@ theorem card_union_disjoint {as bs : List α} (h : Disjoint as bs) :
     card (as.union bs) = card as + card bs := by
   rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]
 
-end decidable_eq
+end DecidableEq
 
 end List

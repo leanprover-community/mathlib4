@@ -157,7 +157,7 @@ proof that the cardinality of `s` is `k`. We use this instead of an embedding `F
 avoid casting issues in further uses of this function. -/
 def orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ↪o α :=
   (orderIsoOfFin s h).toOrderEmbedding.trans (OrderEmbedding.subtype _)
-#align finset.orderEmbOfFin Finset.orderEmbOfFin
+#align finset.order_emb_of_fin Finset.orderEmbOfFin
 
 @[simp]
 theorem coe_orderIsoOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :

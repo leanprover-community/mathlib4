@@ -84,16 +84,17 @@ theorem smul_mk_zero {β : Type _} [Monoid M] [AddMonoid β] [DistribMulAction M
 
 variable [Pow α E] [Pow β E]
 
-@[to_additive]
+@[to_additive smul]
 instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 #align prod.has_pow Prod.pow
+#align prod.has_smul Prod.smul
 
-@[to_additive (attr := simp) (reorder := 6)]
+@[to_additive (attr := simp) (reorder := 6) smul_fst]
 theorem pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c :=
   rfl
 #align prod.pow_fst Prod.pow_fst
 
-@[to_additive (attr := simp) (reorder := 6)]
+@[to_additive (attr := simp) (reorder := 6) smul_snd]
 theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
   rfl
 #align prod.pow_snd Prod.pow_snd
@@ -101,17 +102,17 @@ theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
 /- Note that the `c` arguments to this lemmas cannot be in the more natural right-most positions due
 to limitations in `to_additive` and `to_additive_reorder`, which will silently fail to reorder more
 than two adjacent arguments -/
-@[to_additive (attr := simp) (reorder := 6)]
+@[to_additive (attr := simp) (reorder := 6) smul_mk]
 theorem pow_mk (c : E) (a : α) (b : β) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) :=
   rfl
 #align prod.pow_mk Prod.pow_mk
 
-@[to_additive (reorder := 6)]
+@[to_additive (reorder := 6) smul_def]
 theorem pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) :=
   rfl
 #align prod.pow_def Prod.pow_def
 
-@[to_additive (attr := simp) (reorder := 6)]
+@[to_additive (attr := simp) (reorder := 6) smul_swap]
 theorem pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c :=
   rfl
 #align prod.pow_swap Prod.pow_swap
@@ -195,6 +196,7 @@ def smulMulHom [Monoid α] [Mul β] [MulAction α β] [IsScalarTower α β β] [
   toFun a := a.1 • a.2
   map_mul' _ _ := (smul_mul_smul _ _ _ _).symm
 #align smul_mul_hom smulMulHom
+#align smul_mul_hom_apply smulMulHom_apply
 
 /-- Scalar multiplication as a monoid homomorphism. -/
 @[simps]
@@ -202,5 +204,6 @@ def smulMonoidHom [Monoid α] [MulOneClass β] [MulAction α β] [IsScalarTower 
     [SMulCommClass α β β] : α × β →* β :=
   { smulMulHom with map_one' := one_smul _ _ }
 #align smul_monoid_hom smulMonoidHom
+#align smul_monoid_hom_apply smulMonoidHom_apply
 
 end BundledSMul

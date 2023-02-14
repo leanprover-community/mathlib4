@@ -85,6 +85,7 @@ theorem left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) :
 #align left_distrib left_distrib
 
 alias left_distrib ← mul_add
+#align mul_add mul_add
 
 theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
     (a + b) * c = a * c + b * c :=
@@ -92,6 +93,7 @@ theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
 #align right_distrib right_distrib
 
 alias right_distrib ← add_mul
+#align add_mul add_mul
 
 theorem distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) :
     (a + b + c) * d = a * d + b * d + c * d := by simp [right_distrib]
@@ -166,11 +168,13 @@ end NonAssocSemiring
 theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
     (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
 #align mul_ite mul_ite
+#align add_ite add_ite
 
 @[to_additive]
 theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
     (if P then a else b) * c = if P then a * c else b * c := by split_ifs <;> rfl
 #align ite_mul ite_mul
+#align ite_add ite_add
 
 -- We make `mul_ite` and `ite_mul` simp lemmas,
 -- but not `add_ite` or `ite_add`.
@@ -285,14 +289,17 @@ section MulOneClass
 variable [MulOneClass α] [HasDistribNeg α]
 
 theorem neg_eq_neg_one_mul (a : α) : -a = -1 * a := by simp
+#align neg_eq_neg_one_mul neg_eq_neg_one_mul
 
 /-- An element of a ring multiplied by the additive inverse of one is the element's additive
   inverse. -/
 theorem mul_neg_one (a : α) : a * -1 = -a := by simp
+#align mul_neg_one mul_neg_one
 
 /-- The additive inverse of one multiplied by an element of a ring is the element's additive
   inverse. -/
 theorem neg_one_mul (a : α) : -1 * a = -a := by simp
+#align neg_one_mul neg_one_mul
 
 end MulOneClass
 
@@ -348,12 +355,14 @@ theorem mul_sub_left_distrib (a b c : α) : a * (b - c) = a * b - a * c := by
 #align mul_sub_left_distrib mul_sub_left_distrib
 
 alias mul_sub_left_distrib ← mul_sub
+#align mul_sub mul_sub
 
 theorem mul_sub_right_distrib (a b c : α) : (a - b) * c = a * c - b * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
 #align mul_sub_right_distrib mul_sub_right_distrib
 
 alias mul_sub_right_distrib ← sub_mul
+#align sub_mul sub_mul
 
 variable {a b c d e : α}
 
@@ -390,12 +399,16 @@ section NonAssocRing
 variable [NonAssocRing α]
 
 theorem sub_one_mul (a b : α) : (a - 1) * b = a * b - b := by rw [sub_mul, one_mul]
+#align sub_one_mul sub_one_mul
 
 theorem mul_sub_one (a b : α) : a * (b - 1) = a * b - a := by rw [mul_sub, mul_one]
+#align mul_sub_one mul_sub_one
 
 theorem one_sub_mul (a b : α) : (1 - a) * b = b - a * b := by rw [sub_mul, one_mul]
+#align one_sub_mul one_sub_mul
 
 theorem mul_one_sub (a b : α) : a * (1 - b) = a - a * b := by rw [mul_sub, mul_one]
+#align mul_one_sub mul_one_sub
 
 end NonAssocRing
 
@@ -450,6 +463,11 @@ instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemir
 instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
   { s with }
 #align comm_ring.to_non_unital_comm_ring CommRing.toNonUnitalCommRing
+
+-- see Note [lower instance priority]
+instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
+    AddCommGroupWithOne α :=
+  { s with }
 
 /-- A domain is a nontrivial semiring such multiplication by a non zero element is cancellative,
   on both sides. In other words, a nontrivial semiring `R` satisfying

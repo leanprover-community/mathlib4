@@ -36,14 +36,17 @@ variable (rα : α → α → Prop) (rβ : β → β → Prop)
 
 namespace Prod
 
-/-- The "addition of games" relation in combinatorial game theory, on the product type: if
-  `rα a' a` means that `a ⟶ a'` is a valid move in game `α`, and `rβ b' b` means that `b ⟶ b'`
-  is a valid move in game `β`, then `GameAdd rα rβ` specifies the valid moves in the juxtaposition
-  of `α` and `β`: the player is free to choose one of the games and make a move in it,
-  while leaving the other game unchanged. -/
+/-- `Prod.GameAdd rα rβ x y` means that `x` can be reached from `y` by decreasing either entry with
+  respect to the relations `rα` and `rβ`.
+
+  It is so called, as it models game addition within combinatorial game theory. If `rα a₁ a₂` means
+  that `a₂ ⟶ a₁` is a valid move in game `α`, and `rβ b₁ b₂` means that `b₂ ⟶ b₁` is a valid move
+  in game `β`, then `GameAdd rα rβ` specifies the valid moves in the juxtaposition of `α` and `β`:
+  the player is free to choose one of the games and make a move in it, while leaving the other game
+  unchanged. -/
 inductive GameAdd : α × β → α × β → Prop
-  | fst {a' a b} : rα a' a → GameAdd (a', b) (a, b)
-  | snd {a b' b} : rβ b' b → GameAdd (a, b') (a, b)
+  | fst {a₁ a₂ b} : rα a₁ a₂ → GameAdd (a₁, b) (a₂, b)
+  | snd {a b₁ b₂} : rβ b₁ b₂ → GameAdd (a, b₁) (a, b₂)
 #align prod.game_add Prod.GameAdd
 
 /-- `GameAdd` is a subrelation of `Prod.Lex`. -/
@@ -74,7 +77,9 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
   exacts[iha _ ra (Acc.intro b hb), ihb _ rb]
 #align acc.prod_game_add Acc.prod_gameAdd
 
-/-- The sum of two well-founded games is well-founded. -/
+/-- The `Prod.GameAdd` relation on well-founded inputs is well-founded.
+
+  In particular, the sum of two well-founded games is well-founded. -/
 theorem WellFounded.prod_gameAdd (hα : WellFounded rα) (hβ : WellFounded rβ) :
     WellFounded (Prod.GameAdd rα rβ) :=
   ⟨fun ⟨a, b⟩ => (hα.apply a).prod_gameAdd (hβ.apply b)⟩

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.list.sort
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -246,9 +246,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
     · -- Porting note: was
       -- `simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)`
       rw [List.orderedInsert, if_pos h', sorted_cons]
-      refine ⟨fun c hc => ?_, h⟩
-      exact (mem_cons.mp hc).casesOn
-        (fun hc => hc ▸ h') (fun hc => trans h' (rel_of_sorted_cons h c hc))
+      exact ⟨forall_mem_cons.2 ⟨h', fun c hc => _root_.trans h' (rel_of_sorted_cons h _ hc)⟩, h⟩
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
@@ -402,7 +400,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
       · subst b'
         assumption
       · exact rel_of_sorted_cons h₁ _ bl
-      · exact trans h (rel_of_sorted_cons h₂ _ bl')
+      · exact _root_.trans h (rel_of_sorted_cons h₂ _ bl')
     · suffices ∀ (b' : α) (_ : b' ∈ List.merge r (a :: l) l'), r b b' by
         simpa [List.merge, h, h₁.merge h₂.of_cons]
       intro b' bm
@@ -411,7 +409,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
       rcases this with (be | bl | bl')
       · subst b'
         assumption
-      · exact trans ba (rel_of_sorted_cons h₁ _ bl)
+      · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
   termination_by Sorted.merge l₁ l₂ _ _ => length l₁ + length l₂
 

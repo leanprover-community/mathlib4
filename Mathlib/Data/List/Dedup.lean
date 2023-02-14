@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.dedup
-! leanprover-community/mathlib commit 6133ae2da6ae6693248bb5451de703f1ef154cc8
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -126,7 +126,7 @@ theorem sum_map_count_dedup_filter_eq_countp (p : α → Bool) (l : List α) :
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only
     · by_cases hp : p a
-      · refine' _root_.trans (sum_map_eq_smul_single a _ fun _ h _ => by simp [h]) _
+      · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
         simp [hp, count_dedup]
       · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map'.1 hn
