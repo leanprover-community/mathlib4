@@ -8,8 +8,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.QuotientGroup
-import Mathbin.LinearAlgebra.Span
+import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.LinearAlgebra.Span
 
 /-!
 # Quotients by submodules
@@ -231,14 +231,12 @@ theorem restrictScalarsEquiv_symm_mk [Ring S] [SMul S R] [Module S M] [IsScalarT
 
 end Module
 
-theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) :=
-  by
+theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
   rintro ⟨x⟩
   exact ⟨x, rfl⟩
 #align submodule.quotient.mk_surjective Submodule.Quotient.mk_surjective
 
-theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) :=
-  by
+theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
   refine' ⟨⟨mk x, 0, _⟩⟩
   simpa using not_mem_s
@@ -263,8 +261,7 @@ instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
 
 variable {p}
 
-theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
-  by
+theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ := by
   constructor
   · rintro h
     refine' eq_top_iff.mpr fun x _ => _
@@ -288,8 +285,7 @@ noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintyp
 #align submodule.quotient.fintype Submodule.Quotient.fintype
 
 theorem card_eq_card_quotient_mul_card [Fintype M] (S : Submodule R M) [DecidablePred (· ∈ S)] :
-    Fintype.card M = Fintype.card S * Fintype.card (M ⧸ S) :=
-  by
+    Fintype.card M = Fintype.card S * Fintype.card (M ⧸ S) := by
   rw [mul_comm, ← Fintype.card_prod]
   exact Fintype.card_congr AddSubgroup.addGroupEquivQuotientProdAddSubgroup
 #align submodule.card_eq_card_quotient_mul_card Submodule.card_eq_card_quotient_mul_card
@@ -419,8 +415,7 @@ theorem mapq_comp {R₃ M₃ : Type _} [Ring R₃] [AddCommGroup M₃] [Module R
     (p₃ : Submodule R₃ M₃) {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃} [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
     (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] M₃) (hf : p ≤ p₂.comap f) (hg : p₂ ≤ p₃.comap g)
     (h := hf.trans (comap_mono hg)) :
-    p.mapq p₃ (g.comp f) h = (p₂.mapq p₃ g hg).comp (p.mapq p₂ f hf) :=
-  by
+    p.mapq p₃ (g.comp f) h = (p₂.mapq p₃ g hg).comp (p.mapq p₂ f hf) := by
   ext
   simp
 #align submodule.mapq_comp Submodule.mapq_comp
@@ -438,8 +433,7 @@ theorem mapq_id
 
 theorem mapq_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
     (h' : p ≤ p.comap (f ^ k) := p.le_comap_pow_of_le_comap h k) :
-    p.mapq p (f ^ k) h' = p.mapq p f h ^ k :=
-  by
+    p.mapq p (f ^ k) h' = p.mapq p f h ^ k := by
   induction' k with k ih
   · simp [LinearMap.one_eq_id]
   · simp only [LinearMap.iterate_succ, ← ih]
@@ -493,8 +487,7 @@ theorem comap_mkq_embedding_eq (p' : Submodule R (M ⧸ p)) :
 #align submodule.comap_mkq_embedding_eq Submodule.comap_mkq_embedding_eq
 
 theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {s : Set M₂} (h₀ : s.Nonempty)
-    (h₁ : s ⊆ range f) : span R (f ⁻¹' s) = (span R₂ s).comap f :=
-  by
+    (h₁ : s ⊆ range f) : span R (f ⁻¹' s) = (span R₂ s).comap f := by
   suffices (span R₂ s).comap f ≤ span R (f ⁻¹' s) by exact le_antisymm (span_preimage_le f s) this
   have hk : ker f ≤ span R (f ⁻¹' s) :=
     by
@@ -545,8 +538,7 @@ theorem Quotient.equiv_trans {N O : Type _} [AddCommGroup N] [Module R N] [AddCo
     [Module R O] (P : Submodule R M) (Q : Submodule R N) (S : Submodule R O) (e : M ≃ₗ[R] N)
     (f : N ≃ₗ[R] O) (he : P.map e = Q) (hf : Q.map f = S) (hef : P.map (e.trans f) = S) :
     Quotient.equiv P S (e.trans f) hef =
-      (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) :=
-  by
+      (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
   ext
   -- `simp` can deal with `hef` depending on `e` and `f`
   simp only [quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
@@ -585,8 +577,7 @@ theorem ker_le_range_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ
 
 /-- An epimorphism is surjective. -/
 theorem range_eq_top_of_cancel {f : M →ₛₗ[τ₁₂] M₂}
-    (h : ∀ u v : M₂ →ₗ[R₂] M₂ ⧸ f.range, u.comp f = v.comp f → u = v) : f.range = ⊤ :=
-  by
+    (h : ∀ u v : M₂ →ₗ[R₂] M₂ ⧸ f.range, u.comp f = v.comp f → u = v) : f.range = ⊤ := by
   have h₁ : (0 : M₂ →ₗ[R₂] M₂ ⧸ f.range).comp f = 0 := zero_comp _
   rw [← Submodule.ker_mkq f.range, ← h 0 f.range.mkq (Eq.trans h₁ (range_mkq_comp _).symm)]
   exact ker_zero
