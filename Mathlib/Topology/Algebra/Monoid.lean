@@ -326,9 +326,10 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
   exact
     isClosed_interᵢ fun x =>
       isClosed_interᵢ fun y =>
-        isClosed_eq (continuous_apply _) (by continuity)
-        -- Porting note: proof was:
-        --((continuous_apply _).mul (continuous_apply _))
+        isClosed_eq (continuous_apply _)
+          -- Porting note: proof was:
+          -- `((continuous_apply _).mul (continuous_apply _))`
+          (by continuity)
 #align is_closed_set_of_map_mul isClosed_setOf_map_mul
 #align is_closed_set_of_map_add isClosed_setOf_map_add
 
