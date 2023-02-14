@@ -44,8 +44,8 @@ open BigOperators Cardinal
 variable {G : Type _} [Group G] (H K L : Subgroup G)
 
 /-- The index of a subgroup as a natural number, and returns 0 if the index is infinite. -/
-@[to_additive
-      "The index of a subgroup as a natural number,\nand returns 0 if the index is infinite."]
+@[to_additive "The index of a subgroup as a natural number,
+and returns 0 if the index is infinite."]
 noncomputable def index : ℕ :=
   Nat.card (G ⧸ H)
 #align subgroup.index Subgroup.index
@@ -53,9 +53,8 @@ noncomputable def index : ℕ :=
 
 /-- The relative index of a subgroup as a natural number,
   and returns 0 if the relative index is infinite. -/
-@[to_additive
-      "The relative index of a subgroup as a natural number, and returns 0 if the relative index is
-      infinite."]
+@[to_additive "The relative index of a subgroup as a natural number,
+and returns 0 if the relative index is infinite."]
 noncomputable def relindex : ℕ :=
   (H.subgroupOf K).index
 #align subgroup.relindex Subgroup.relindex
@@ -181,9 +180,8 @@ theorem relindex_dvd_of_le_left (hHK : H ≤ K) : K.relindex L ∣ H.relindex L 
 
 /-- A subgroup has index two if and only if there exists `a` such that for all `b`, exactly one
 of `b * a` and `b` belong to `H`. -/
-@[to_additive
-      "/-- An additive subgroup has index two if and only if there exists `a` such that for all `b`,
-      exactly one of `b + a` and `b` belong to `H`. -/"]
+@[to_additive "An additive subgroup has index two if and only if there exists `a` such that
+for all `b`, exactly one of `b + a` and `b` belong to `H`."]
 theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈ H) := by
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
     QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne.def, QuotientGroup.eq, mul_one,
