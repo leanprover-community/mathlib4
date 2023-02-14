@@ -102,6 +102,39 @@ end Lean
 
 namespace Lean.Elab.Tactic
 
+/-- Given a local context and an array of `FVarIds` assumed to be in that local context, remove all
+implementation details. -/
+def filterOutImplementationDetails (lctx : LocalContext) (fvarIds : Array FVarId) : Array FVarId :=
+  fvarIds.filter (fun fvar => ! (lctx.fvarIdToDecl.find! fvar).isImplementationDetail)
+
+/-- Elaborate syntax for an `FVarId` in the local context of the given goal. -/
+def getFVarIdAt (goal : MVarId) (id : Syntax) : TacticM FVarId := withRef id do
+  -- use apply-like elaboration to suppress insertion of implicit arguments
+  let e ← goal.withContext do
+    elabTermForApply id (mayPostpone := false)
+  match e with
+  | Expr.fvar fvarId => return fvarId
+  | _                => throwError "unexpected term '{e}'; expected single reference to variable"
+
+/-- Get the array of `FVarId`s in the local context of the given `goal`.
+
+If `ids` is specified, elaborate them in the local context of the given goal to obtain the array of
+`FVarId`s.
+
+If `includeImplementationDetails` is `false` (the default), we filter out implementation details
+(`implDecl`s and `auxDecl`s) from the resulting list of `FVarId`s. -/
+def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
+    (includeImplementationDetails : Bool := false) : TacticM (Array FVarId) :=
+  goal.withContext do
+    let lctx := (← goal.getDecl).lctx
+    let fvarIds ← match ids with
+    | none => pure lctx.getFVarIds
+    | some ids => ids.mapM <| getFVarIdAt goal
+    if includeImplementationDetails then
+      return fvarIds
+    else
+      return filterOutImplementationDetails lctx fvarIds
+
 /--
 Run a tactic on all goals, and always succeeds.
 
