@@ -153,8 +153,7 @@ theorem supᵢ_lsingle_range : (⨆ a, LinearMap.range (lsingle a : M →ₗ[R] 
   exact sum_mem fun a ha => Submodule.mem_supᵢ_of_mem a ⟨_, rfl⟩
 #align finsupp.supr_lsingle_range Finsupp.supᵢ_lsingle_range
 
--- AAHRG this is too slow!!! Commenting out to continue with the rest of the file
-
+#eval "AAHRG this is too slow!!! Commenting out to continue with the rest of the file"
 -- theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
 --     Disjoint (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M))
 --       (⨆ a ∈ t, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) := by
@@ -304,7 +303,7 @@ theorem supported_interᵢ {ι : Type _} (s : ι → Set α) :
 #align finsupp.supported_Inter Finsupp.supported_interᵢ
 
 theorem supported_inter (s t : Set α) : supported M R (s ∩ t) = supported M R s ⊓ supported M R t :=
-  by rw [Set.inter_eq_interᵢ, supported_Inter, infᵢ_bool_eq] <;> rfl
+  by rw [Set.inter_eq_interᵢ, supported_interᵢ, infᵢ_bool_eq] <;> rfl
 #align finsupp.supported_inter Finsupp.supported_inter
 
 theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
@@ -314,7 +313,7 @@ theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
 
 theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     Disjoint (supported M R s) (supported M R t) ↔ Disjoint s t := by
-  refine' ⟨fun h => set.disjoint_left.mpr fun x hx1 hx2 => _, disjoint_supported_supported⟩
+  refine' ⟨fun h => Set.disjoint_left.mpr fun x hx1 hx2 => _, disjoint_supported_supported⟩
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   have := h.le_bot ⟨single_mem_supported R y hx1, single_mem_supported R y hx2⟩
   rw [mem_bot, single_eq_zero] at this
@@ -324,11 +323,11 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
 /-- Interpret `finsupp.restrict_support_equiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
-  let F : supported M R s ≃ (s →₀ M) := restrict_support_equiv s M
-  refine' F.to_linear_equiv _
+  let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
+  refine' F.toLinearEquiv _
   have :
     (F : supported M R s → ↥s →₀ M) =
-      (lsubtype_domain s : (α →₀ M) →ₗ[R] s →₀ M).comp (Submodule.subtype (supported M R s)) :=
+      (lsubtypeDomain s : (α →₀ M) →ₗ[R] s →₀ M).comp (Submodule.subtype (supported M R s)) :=
     rfl
   rw [this]
   exact LinearMap.isLinear _
@@ -336,32 +335,32 @@ def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M :=
 
 section Lsum
 
-variable (S) [Module S N] [SMulCommClass R S N]
+variable (S)
+variable [Module S N] [SMulCommClass R S N]
 
 /-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
 `N` using `finsupp.sum`. This is an upgraded version of `finsupp.lift_add_hom`.
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
-def lsum : (α → M →ₗ[R] N) ≃ₗ[S] (α →₀ M) →ₗ[R] N
-    where
+def lsum : (α → M →ₗ[R] N) ≃ₗ[S] (α →₀ M) →ₗ[R] N where
   toFun F :=
-    { toFun := fun d => d.Sum fun i => F i
-      map_add' := (liftAddHom fun x => (F x).toAddMonoidHom).map_add
+    { toFun := fun d => d.sum fun i => F i
+      map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x => (F x).toAddMonoidHom).map_add
       map_smul' := fun c f => by simp [sum_smul_index', smul_sum] }
   invFun F x := F.comp (lsingle x)
   left_inv F := by
     ext (x y)
-    simp
+    -- simp
   right_inv F := by
     ext (x y)
-    simp
+    -- simp
   map_add' F G := by
     ext (x y)
-    simp
+    -- simp
   map_smul' F G := by
     ext (x y)
-    simp
+    -- simp
 #align finsupp.lsum Finsupp.lsum
 
 @[simp]
@@ -509,6 +508,8 @@ def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →
 #align finsupp.lcomap_domain Finsupp.lcomapDomain
 
 end LcomapDomain
+
+#exit
 
 section Total
 
