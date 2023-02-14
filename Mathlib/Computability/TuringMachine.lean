@@ -363,7 +363,7 @@ instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : Inhabited (PointedMap Γ Γ')
 instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : CoeFun (PointedMap Γ Γ') fun _ ↦ Γ → Γ' :=
   ⟨PointedMap.f⟩
 
-@[simp]
+-- @[simp] -- Porting note: dsimp can prove this
 theorem PointedMap.mk_val {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : Γ → Γ') (pt) :
     (PointedMap.mk f pt : Γ → Γ') = f :=
   rfl
@@ -700,7 +700,9 @@ theorem Tape.map_write {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
   rintro ⟨⟩; rfl
 #align turing.tape.map_write Turing.Tape.map_write
 
-@[simp]
+-- Porting note: `simpNF` complains about LHS does not simplify when using the simp lemma on
+--               itself, but it does indeed.
+@[simp, nolint simpNF]
 theorem Tape.write_move_right_n {Γ} [Inhabited Γ] (f : Γ → Γ) (L R : ListBlank Γ) (n : ℕ) :
     ((Tape.move Dir.right^[n]) (Tape.mk' L R)).write (f (R.nth n)) =
       (Tape.move Dir.right^[n]) (Tape.mk' L (R.modifyNth f n)) := by
@@ -1039,7 +1041,6 @@ instance Stmt.inhabited : Inhabited Stmt₀ :=
   ⟨Stmt.write default⟩
 #align turing.TM0.stmt.inhabited Turing.TM0.Stmt.inhabited
 
--- [inhabited Λ]: this is a deliberate addition, see comment
 /-- A Post-Turing machine with symbol type `Γ` and label type `Λ`
   is a function which, given the current state `q : Λ` and
   the tape head `a : Γ`, either halts (returns `none`) or returns
@@ -1049,7 +1050,8 @@ instance Stmt.inhabited : Inhabited Stmt₀ :=
   Both `Λ` and `Γ` are required to be inhabited; the default value
   for `Γ` is the "blank" tape value, and the default value of `Λ` is
   the initial state. -/
-def Machine :=
+@[nolint unusedArguments] -- this is a deliberate addition, see comment
+def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × Stmt₀)
 #align turing.TM0.machine Turing.TM0.Machine
 
@@ -1463,19 +1465,19 @@ variable (M : Λ → TM1.Stmt Γ Λ σ)  -- Porting note: Unfolded `Stmt₁`.
 
 --include M  -- Porting note: `include` doesn't exist
 
--- [inhabited Λ] [inhabited σ] (M : Λ → Stmt₁): We need the M assumption
--- because of the inhabited instance, but we could avoid the inhabited instances on Λ and σ here.
--- But they are parameters so we cannot easily skip them for just this definition.
+-- Porting note: `Inhabited`s are not necessary, but `M` is necessary.
+set_option linter.unusedVariables false in
 /-- The base machine state space is a pair of an `Option Stmt₁` representing the current program
 to be executed, or `none` for the halt state, and a `σ` which is the local state (stored in the TM,
 not the tape). Because there are an infinite number of programs, this state space is infinite, but
 for a finitely supported TM1 machine and a finite type `σ`, only finitely many of these states are
 reachable. -/
-def Λ' :=
+@[nolint unusedArguments] -- We need the M assumption
+def Λ' (M : Λ → TM1.Stmt Γ Λ σ) :=
   Option Stmt₁ × σ
 #align turing.TM1to0.Λ' Turing.TM1to0.Λ'
 
-local notation "Λ'₁₀" => @Λ' Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Λ'₁₀" => Λ' M -- Porting note: Added this to clean up types.
 
 instance : Inhabited Λ'₁₀ :=
   ⟨(some (M default), default)⟩
@@ -1526,8 +1528,7 @@ theorem tr_respects :
       exact TransGen.single (congr_arg some (congr (congr_arg TM0.Cfg.mk rfl) (Tape.write_self T)))
 #align turing.TM1to0.tr_respects Turing.TM1to0.tr_respects
 
--- Porting note: Added `instInhabitedΛ' M`.
-theorem tr_eval (l : List Γ) : @TM0.eval _ _ _ (instInhabitedΛ' M) (tr M) l = TM1.eval M l :=
+theorem tr_eval (l : List Γ) : TM0.eval (tr M) l = TM1.eval M l :=
   (congr_arg _ (tr_eval' _ _ _ (tr_respects M) ⟨some _, _, _⟩)).trans
     (by
       rw [Part.map_eq_map, Part.map_map, TM1.eval]
@@ -1547,9 +1548,8 @@ open Classical
 
 attribute [local simp] TM1.stmts₁_self
 
--- Porting note: Added `instInhabitedΛ' M`.
 theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
-    @TM0.Supports _ _ (instInhabitedΛ' M) (tr M) ↑(trStmts M S) := by
+    TM0.Supports (tr M) ↑(trStmts M S) := by
   constructor
   · apply Finset.mem_product.2
     constructor
@@ -2378,8 +2378,7 @@ local notation "Stmt₂" => TM2.Stmt Γ Λ σ
 -- mathport name: exprcfg₂
 local notation "Cfg₂" => TM2.Cfg Γ Λ σ
 
--- [decidable_eq K]: Because K is a parameter, we cannot easily skip
--- the decidable_eq assumption, and this is a local definition anyway so it's not important.
+-- Porting note: `DecidableEq K` is not necessary.
 /-- The alphabet of the TM2 simulator on TM1 is a marker for the stack bottom,
 plus a vector of stack elements for each stack, or none if the stack does not extend this far. -/
 def Γ' :=
@@ -2451,8 +2450,7 @@ section
 
 open StAct
 
--- [inhabited Λ]: as this is a local definition it is more trouble than
--- it is worth to omit the typeclass assumption without breaking the parameters
+-- Porting note: `Inhabited Γ` is not necessary.
 /-- The TM2 statement corresponding to a stack action. -/
 def stRun {k : K} : StAct₂ k → Stmt₂ → Stmt₂
   | push f => TM2.Stmt.push k f
@@ -2854,7 +2852,6 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       exact ⟨trivial, fun _ ↦ False.elim⟩⟩
 #align turing.TM2to1.tr_supports Turing.TM2to1.tr_supports
 
--- halt
 end
 
 end TM2to1
