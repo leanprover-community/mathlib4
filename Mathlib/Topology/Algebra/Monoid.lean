@@ -198,7 +198,7 @@ theorem Filter.TendstoNhdsWithinIio.mul_const [MulPosStrictMono 𝕜] [MulPosRef
 end tendsto_nhds
 
 /-- Construct a unit from limits of units and their inverses. -/
-@[to_additive "Construct an additive unit from limits of additive units\nand their negatives.",
+@[to_additive "Construct an additive unit from limits of additive units and their negatives.",
   simps]
 def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Space N]
     {f : ι → Nˣ} {r₁ r₂ : N} {l : Filter ι} [l.NeBot] (h₁ : Tendsto (fun x => ↑(f x)) l (𝓝 r₁))
@@ -244,7 +244,7 @@ instance Pi.continuousMul {C : ι → Type _} [∀ i, TopologicalSpace (C i)] [�
 
 /-- A version of `pi.continuousMul` for non-dependent functions. It is needed because sometimes
 Lean fails to use `pi.continuousMul` for non-dependent functions. -/
-@[to_additive "A version of `pi.continuousAdd` for non-dependent functions. It is needed\n
+@[to_additive "A version of `pi.continuousAdd` for non-dependent functions. It is needed
 because sometimes Lean fails to use `pi.continuousAdd` for non-dependent functions."]
 instance Pi.continuousMul' : ContinuousMul (ι → M) :=
   Pi.continuousMul
@@ -341,8 +341,8 @@ variable [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →* M₂` (or another type of bundled
 homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
-@[to_additive "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`\n
-and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another\n
+@[to_additive "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
+and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
 type of bundled homomorphisms that has a `add_monoid_hom_class` instance) to `M₁ → M₂`.",
   simps (config := { fullyApplied := false })]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
@@ -355,7 +355,7 @@ def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
 #align add_monoid_hom_of_mem_closure_range_coe addMonoidHomOfMemClosureRangeCoe
 
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
-@[to_additive "Construct a bundled additive monoid homomorphism from a pointwise limit of additive\n
+@[to_additive "Construct a bundled additive monoid homomorphism from a pointwise limit of additive
 monoid homomorphisms",
   simps! (config := { fullyApplied := false })]
 def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
@@ -428,7 +428,7 @@ theorem Submonoid.top_closure_mul_self_eq (s : Submonoid M) :
 
 /-- The (topological-space) closure of a submonoid of a space `M` with `ContinuousMul` is
 itself a submonoid. -/
-@[to_additive "The (topological-space) closure of an additive submonoid of a space `M` with\n
+@[to_additive "The (topological-space) closure of an additive submonoid of a space `M` with
 `ContinuousAdd` is itself an additive submonoid."]
 def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M
     where
@@ -462,7 +462,7 @@ theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M}
 #align add_submonoid.topological_closure_minimal AddSubmonoid.topologicalClosure_minimal
 
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
-@[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its\n
+@[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
 topological closure."]
 def Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
@@ -506,7 +506,7 @@ theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
 
 /-- Given a neighborhood `U` of `1` there is an open neighborhood `V` of `1`
 such that `VV ⊆ U`. -/
-@[to_additive "Given a open neighborhood `U` of `0` there is a open neighborhood `V` of `0`\n
+@[to_additive "Given a open neighborhood `U` of `0` there is a open neighborhood `V` of `0`
   such that `V + V ⊆ U`."]
 theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
@@ -652,7 +652,7 @@ theorem Filter.tendsto_cocompact_mul_right {a b : M} (ha : a * b = 1) :
 multiplication by constants.
 
 Notably, this instances applies when `R = A`, or when `[Algebra R A]` is available. -/
-@[to_additive "If `R` acts on `A` via `A`, then continuous addition implies\n
+@[to_additive "If `R` acts on `A` via `A`, then continuous addition implies
 continuous affine addition by constants."]
 instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type _} [Monoid A] [SMul R A]
     [IsScalarTower R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
@@ -665,10 +665,11 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type _} [Mon
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
 
-Notably, this instances applies when `R = Aᵐᵒᵖ` -/
-@[to_additive "If the action of `R` on `A` commutes with left-addition, then\n
-continuous addition implies continuous affine addition by constants.\n\n
-Notably, this instances applies when `R = Aᵃᵒᵖ`. "]
+Notably, this instances applies when `R = Aᵐᵒᵖ`.-/
+@[to_additive "If the action of `R` on `A` commutes with left-addition, then
+continuous addition implies continuous affine addition by constants.
+
+Notably, this instances applies when `R = Aᵃᵒᵖ`."]
 instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type _} [Monoid A] [SMul R A]
     [SMulCommClass R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
     continuous_const_smul q := by
@@ -699,9 +700,10 @@ with respect to the induced topology, is continuous.
 
 Inversion is also continuous, but we register this in a later file, `Topology.Algebra.Group`,
 because the predicate `ContinuousInv` has not yet been defined. -/
-@[to_additive "If addition on an additive monoid is continuous, then addition on the additive units\n
-of the monoid, with respect to the induced topology, is continuous.\n\n
-Negation is also continuous, but we register this in a later file, `topology.algebra.group`, because\n
+@[to_additive "If addition on an additive monoid is continuous, then addition on the additive units
+of the monoid, with respect to the induced topology, is continuous.
+
+Negation is also continuous, but we register this in a later file, `topology.algebra.group`, because
 the predicate `has_continuous_neg` has not yet been defined."]
 instance : ContinuousMul αˣ :=
   inducing_embedProduct.continuousMul (embedProduct α)
