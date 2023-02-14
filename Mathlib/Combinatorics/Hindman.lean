@@ -217,7 +217,7 @@ contains an FP-set. -/
       "The strong form of **Hindman's theorem**: in any finite cover of\nan FS-set, one the parts contains an FS-set."]
 theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M)) (sfin : s.Finite)
     (scov : FP a ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ b : Stream' M, FP b ⊆ c :=
-  let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_fP a
+  let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_FP a
   let ⟨c, cs, hc⟩ := (Ultrafilter.finite_unionₛ_mem_iff sfin).mp (mem_of_superset aU scov)
   ⟨c, cs, exists_FP_of_large U idem c hc⟩
 set_option linter.uppercaseLean3 false in
