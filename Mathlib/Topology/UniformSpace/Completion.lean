@@ -103,7 +103,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
           exact le_rfl)
 
 set_option linter.uppercaseLean3 false in
-#align Cauchy.symm_gen Cauchy.symm_gen
+#align Cauchy.symm_gen CauchyCat.symm_gen
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -112,15 +112,15 @@ set_option linter.uppercaseLean3 false in
 private theorem comp_rel_gen_gen_subset_gen_comp_rel {s t : Set (α × α)} :
     compRel (gen s) (gen t) ⊆ (gen (compRel s t) : Set (CauchyCat α × CauchyCat α)) :=
   fun ⟨f, g⟩ ⟨h, h₁, h₂⟩ =>
-  let ⟨t₁, (ht₁ : t₁ ∈ f), t₂, (ht₂ : t₂ ∈ h), (h₁ : t₁ ×ˢ t₂ ⊆ s)⟩ := mem_prod_iff.mp h₁
-  let ⟨t₃, (ht₃ : t₃ ∈ h), t₄, (ht₄ : t₄ ∈ g), (h₂ : t₃ ×ˢ t₄ ⊆ t)⟩ := mem_prod_iff.mp h₂
+  let ⟨t₁, (ht₁ : t₁ ∈ f.val), t₂, (ht₂ : t₂ ∈ h.val), (h₁ : t₁ ×ˢ t₂ ⊆ s)⟩ := mem_prod_iff.mp h₁
+  let ⟨t₃, (ht₃ : t₃ ∈ h.val), t₄, (ht₄ : t₄ ∈ g.val), (h₂ : t₃ ×ˢ t₄ ⊆ t)⟩ := mem_prod_iff.mp h₂
   have : t₂ ∩ t₃ ∈ h.val := inter_mem ht₂ ht₃
   let ⟨x, xt₂, xt₃⟩ := h.property.left.nonempty_of_mem this
   (f.val ×ᶠ g.val).sets_of_superset (prod_mem_prod ht₁ ht₄)
     fun ⟨a, b⟩ ⟨(ha : a ∈ t₁), (hb : b ∈ t₄)⟩ =>
     ⟨x, h₁ (show (a, x) ∈ t₁ ×ˢ t₂ from ⟨ha, xt₂⟩), h₂ (show (x, b) ∈ t₃ ×ˢ t₄ from ⟨xt₃, hb⟩)⟩
 set_option linter.uppercaseLean3 false in
-#align Cauchy.comp_rel_gen_gen_subset_gen_comp_rel Cauchy.comp_rel_gen_gen_subset_gen_comp_rel
+#align Cauchy.comp_rel_gen_gen_subset_gen_comp_rel CauchyCat.comp_rel_gen_gen_subset_gen_comp_rel
 
 private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) ≤ (𝓤 α).lift' gen :=
   calc
@@ -137,9 +137,8 @@ private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) �
         . exact monotone_id.compRel monotone_id
         . exact monotone_gen
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
-
 set_option linter.uppercaseLean3 false in
-#align Cauchy.comp_gen Cauchy.comp_gen
+#align Cauchy.comp_gen CauchyCat.comp_gen
 
 instance : UniformSpace (CauchyCat α) :=
   UniformSpace.ofCore
@@ -155,8 +154,9 @@ set_option linter.uppercaseLean3 false in
 #align Cauchy.mem_uniformity CauchyCat.mem_uniformity
 
 theorem mem_uniformity' {s : Set (CauchyCat α × CauchyCat α)} :
-    s ∈ 𝓤 (CauchyCat α) ↔ ∃ t ∈ 𝓤 α, ∀ f g : CauchyCat α, t ∈ f.1 ×ᶠ g.1 → (f, g) ∈ s :=
-  mem_uniformity.trans <| bex_congr fun t h => Prod.forall
+    s ∈ 𝓤 (CauchyCat α) ↔ ∃ t ∈ 𝓤 α, ∀ f g : CauchyCat α, t ∈ f.1 ×ᶠ g.1 → (f, g) ∈ s := by
+  refine mem_uniformity.trans (exists_congr (fun t => and_congr_right_iff.mpr (fun _h => ?_)))
+  exact ⟨fun h _f _g ht => h ht, fun h _p hp => h _ _ hp⟩
 set_option linter.uppercaseLean3 false in
 #align Cauchy.mem_uniformity' CauchyCat.mem_uniformity'
 
@@ -200,9 +200,9 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyCat α) :=
           ht'₂ <| prod_mk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
     ⟨x, ht''₂ <| by dsimp [gen] <;> exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
-    Set.inter_comm _ (range pureCauchy), mem_set_of_eq]
+    Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
   exact
-    (lift'_ne_bot_iff <| monotone_const.inter monotone_preimage).mpr fun s hs =>
+    (lift'_neBot_iff <| monotone_const.inter monotone_preimage).mpr fun s hs =>
       let ⟨y, hy⟩ := h_ex s hs
       have : pureCauchy y ∈ range pureCauchy ∩ { y : CauchyCat α | (f, y) ∈ s } :=
         ⟨mem_range_self y, hy⟩
@@ -232,7 +232,7 @@ set_option linter.uppercaseLean3 false in
 section
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option eqn_compiler.zeta -/
-set_option eqn_compiler.zeta true
+-- set_option eqn_compiler.zeta true
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance : CompleteSpace (CauchyCat α) :=
@@ -285,7 +285,7 @@ theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) 
   · rw [extend, if_pos hf]
     exact uniformContinuous_uniformly_extend uniformInducing_pureCauchy denseRange_pureCauchy hf
   · rw [extend, if_neg hf]
-    exact uniformContinuous_of_const fun a b => by congr
+    exact uniformContinuous_of_const fun a _b => by congr
 set_option linter.uppercaseLean3 false in
 #align Cauchy.uniform_continuous_extend CauchyCat.uniformContinuous_extend
 
