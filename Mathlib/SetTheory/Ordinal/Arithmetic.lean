@@ -92,7 +92,7 @@ instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} 
         inductionOn c fun β₂ s₂ hs₂ ⟨f⟩ =>
           ⟨have fl : ∀ a, f (Sum.inl a) = Sum.inl a := fun a => by
               simpa only [InitialSeg.trans_apply, InitialSeg.leAdd_apply] using
-                @InitialSeg.eq _ _ _ _ (@Sum.Lex.isWellOrder _ _ _ _ hr hs₂)
+                @InitialSeg.eq _ _ _ _ _
                   ((InitialSeg.leAdd r s₁).trans f) (InitialSeg.leAdd r s₂) a
             have : ∀ b, { b' // f (Sum.inr b) = Sum.inr b' } :=
               by
@@ -105,7 +105,7 @@ instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} 
             have fr : ∀ b, f (Sum.inr b) = Sum.inr (g b) := fun b => (this b).2
             ⟨⟨⟨g, fun x y h => by
                   injection f.inj' (by rw [fr, fr, h] : f (Sum.inr x) = f (Sum.inr y))⟩,
-                fun a b => by
+                @fun a b => by
                 simpa only [Sum.lex_inr_inr, fr, RelEmbedding.coeFn_toEmbedding,
                   InitialSeg.coeFn_toRelEmbedding, embedding.coe_fn_mk] using
                   @RelEmbedding.map_rel_iff _ _ _ _ f.to_rel_embedding (Sum.inr a) (Sum.inr b)⟩,
@@ -638,7 +638,7 @@ instance : Monoid Ordinal.{u}
     where
   mul a b :=
     Quotient.liftOn₂ a b
-      (fun ⟨α, r, wo⟩ ⟨β, s, wo'⟩ => ⟦⟨β × α, Prod.Lex s r, Prod.Lex.isWellOrder⟩⟧ :
+      (fun ⟨α, r, wo⟩ ⟨β, s, wo'⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :
         WellOrder → WellOrder → Ordinal)
       fun ⟨α₁, r₁, o₁⟩ ⟨α₂, r₂, o₂⟩ ⟨β₁, s₁, p₁⟩ ⟨β₂, s₂, p₂⟩ ⟨f⟩ ⟨g⟩ =>
       Quot.sound ⟨RelIso.prodLexCongr g f⟩
@@ -647,14 +647,14 @@ instance : Monoid Ordinal.{u}
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Eq.symm <|
         Quotient.sound
-          ⟨⟨prodAssoc _ _ _, fun a b => by
+          ⟨⟨prodAssoc _ _ _, @fun a b => by
               rcases a with ⟨⟨a₁, a₂⟩, a₃⟩
               rcases b with ⟨⟨b₁, b₂⟩, b₃⟩
               simp [Prod.lex_def, and_or_left, or_assoc', and_assoc']⟩⟩
   mul_one a :=
     inductionOn a fun α r _ =>
       Quotient.sound
-        ⟨⟨punitProd _, fun a b => by
+        ⟨⟨punitProd _, @fun a b => by
             rcases a with ⟨⟨⟨⟩⟩, a⟩ <;> rcases b with ⟨⟨⟨⟩⟩, b⟩ <;>
                   simp only [Prod.lex_def, EmptyRelation, false_or_iff] <;>
                 simp only [eq_self_iff_true, true_and_iff] <;>
@@ -662,7 +662,7 @@ instance : Monoid Ordinal.{u}
   one_mul a :=
     inductionOn a fun α r _ =>
       Quotient.sound
-        ⟨⟨prodPUnit _, fun a b => by
+        ⟨⟨prodPUnit _, @fun a b => by
             rcases a with ⟨a, ⟨⟨⟩⟩⟩ <;> rcases b with ⟨b, ⟨⟨⟩⟩⟩ <;>
                 simp only [Prod.lex_def, EmptyRelation, and_false_iff, or_false_iff] <;>
               rfl⟩⟩
