@@ -11,25 +11,25 @@ Authors: Eric Wieser
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Span
 
-/-! # Pointwise instances on `submodule`s
+/-! # Pointwise instances on `Submodule`s
 
 This file provides:
 
-* `submodule.has_pointwise_neg`
+* `Submodule.pointwiseNeg`
 
 and the actions
 
-* `submodule.pointwise_distrib_mul_action`
-* `submodule.pointwise_mul_action_with_zero`
+* `Submodule.pointwiseDistribMulAction`
+* `Submodule.pointwiseMulActionWithZero`
 
-which matches the action of `mul_action_set`.
+which matches the action of `Set.mulActionSet`.
 
-These actions are available in the `pointwise` locale.
+These actions are available in the `Pointwise` locale.
 
 ## Implementation notes
 
 Most of the lemmas in this file are direct copies of lemmas from
-`group_theory/submonoid/pointwise.lean`.
+`GroupTheory/Submonoid/Pointwise.lean`.
 -/
 
 
@@ -46,20 +46,20 @@ section Semiring
 variable [Semiring R] [AddCommGroup M] [Module R M]
 
 /-- The submodule with every element negated. Note if `R` is a ring and not just a semiring, this
-is a no-op, as shown by `submodule.neg_eq_self`.
+is a no-op, as shown by `Submodule.neg_eq_self`.
 
 Recall that When `R` is the semiring corresponding to the nonnegative elements of `R'`,
-`submodule R' M` is the type of cones of `M`. This instance reflects such cones about `0`.
+`Submodule R' M` is the type of cones of `M`. This instance reflects such cones about `0`.
 
-This is available as an instance in the `pointwise` locale. -/
-protected def hasPointwiseNeg : Neg (Submodule R M)
+This is available as an instance in the `Pointwise` locale. -/
+protected def pointwiseNeg : Neg (Submodule R M)
     where neg p :=
     { -p.toAddSubmonoid with
       carrier := -(p : Set M)
       smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
-#align submodule.has_pointwise_neg Submodule.hasPointwiseNeg
+#align submodule.has_pointwise_neg Submodule.pointwiseNeg
 
-scoped[Pointwise] attribute [instance] Submodule.hasPointwiseNeg
+scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
 
 open Pointwise
 
@@ -78,16 +78,16 @@ theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
   Iff.rfl
 #align submodule.mem_neg Submodule.mem_neg
 
-/-- `submodule.has_pointwise_neg` is involutive.
+/-- `Submodule.pointwiseNeg` is involutive.
 
-This is available as an instance in the `pointwise` locale. -/
-protected def hasInvolutivePointwiseNeg : InvolutiveNeg (Submodule R M)
+This is available as an instance in the `Pointwise` locale. -/
+protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M)
     where
   neg := Neg.neg
   neg_neg S := SetLike.coe_injective <| neg_neg _
-#align submodule.has_involutive_pointwise_neg Submodule.hasInvolutivePointwiseNeg
+#align submodule.has_involutive_pointwise_neg Submodule.involutivePointwiseNeg
 
-scoped[Pointwise] attribute [instance] Submodule.hasInvolutivePointwiseNeg
+scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
 
 @[simp]
 theorem neg_le_neg (S T : Submodule R M) : -S ≤ -T ↔ S ≤ T :=
@@ -98,7 +98,7 @@ theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset
 #align submodule.neg_le Submodule.neg_le
 
-/-- `submodule.has_pointwise_neg` as an order isomorphism. -/
+/-- `Submodule.pointwiseNeg` as an order isomorphism. -/
 def negOrderIso : Submodule R M ≃o Submodule R M
     where
   toEquiv := Equiv.neg _
@@ -175,7 +175,7 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
-#synth CompleteLattice (Submodule R M)
+
 instance : CanonicallyOrderedAddMonoid (Submodule R M) :=
   { Submodule.pointwiseAddCommMonoid,
     instCompleteLatticeSubmodule with
@@ -250,10 +250,10 @@ theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
   Eq.symm (span_image _).symm
 #align submodule.span_smul Submodule.span_smul
 
-instance pointwise_central_scalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass αᵐᵒᵖ R M]
+instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass αᵐᵒᵖ R M]
     [IsCentralScalar α M] : IsCentralScalar α (Submodule R M) :=
   ⟨fun a S => (congr_arg fun f : Module.End R M => S.map f) <| LinearMap.ext <| op_smul_eq_smul _⟩
-#align submodule.pointwise_central_scalar Submodule.pointwise_central_scalar
+#align submodule.pointwise_central_scalar Submodule.pointwiseCentralScalar
 
 @[simp]
 theorem smul_le_self_of_tower {α : Type _} [Semiring α] [Module α R] [Module α M]
@@ -270,10 +270,10 @@ variable [Semiring α] [Module α M] [SMulCommClass α R M]
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale.
+This is available as an instance in the `Pointwise` locale.
 
-This is a stronger version of `submodule.pointwise_distrib_mul_action`. Note that `add_smul` does
-not hold so this cannot be stated as a `module`. -/
+This is a stronger version of `Submodule.pointwiseDistribMulAction`. Note that `add_smul` does
+not hold so this cannot be stated as a `Module`. -/
 protected def pointwiseMulActionWithZero : MulActionWithZero α (Submodule R M) :=
   { Submodule.pointwiseDistribMulAction with
     zero_smul := fun S =>
