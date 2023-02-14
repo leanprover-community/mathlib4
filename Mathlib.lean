@@ -1102,6 +1102,7 @@ import Mathlib.Topology.Perfect
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Closeds
+import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
 import Mathlib.Topology.ShrinkingLemma

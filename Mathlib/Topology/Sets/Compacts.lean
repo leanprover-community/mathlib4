@@ -8,8 +8,8 @@ Authors: Floris van Doorn, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Sets.Closeds
-import Mathbin.Topology.QuasiSeparated
+import Mathlib.Topology.Sets.Closeds
+import Mathlib.Topology.QuasiSeparated
 
 /-!
 # Compact sets
