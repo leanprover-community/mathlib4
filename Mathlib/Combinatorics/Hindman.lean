@@ -69,7 +69,8 @@ theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → 
 -- porting note: slow to typecheck
 /-- Semigroup structure on `ultrafilter M` induced by a semigroup structure on `M`. -/
 @[to_additive
-      "Additive semigroup structure on `ultrafilter M` induced by an additive semigroup\nstructure on `M`."]
+      "Additive semigroup structure on `ultrafilter M` induced by an additive semigroup
+      structure on `M`."]
 def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.hasMul with
     mul_assoc := fun U V W =>
@@ -116,7 +117,8 @@ set_option linter.uppercaseLean3 false in
 /-- If `m` and `m'` are finite products in `M`, then so is `m * m'`, provided that `m'` is obtained
 from a subsequence of `M` starting sufficiently late. -/
 @[to_additive
-      "If `m` and `m'` are finite sums in `M`, then so is `m + m'`, provided that `m'`\nis obtained from a subsequence of `M` starting sufficiently late."]
+      "If `m` and `m'` are finite sums in `M`, then so is `m + m'`, provided that `m'`
+      is obtained from a subsequence of `M` starting sufficiently late."]
 theorem FP.mul {M} [Semigroup M] {a : Stream' M} {m : M} (hm : m ∈ FP a) :
     ∃ n, ∀ m' ∈ FP (a.drop n), m * m' ∈ FP a := by
   induction' hm with a a m hm ih a m hm ih
@@ -175,9 +177,9 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
     (sU : s₀ ∈ U) : ∃ a, FP a ⊆ s₀ := by
   /- Informally: given a `U`-large set `s₀`, the set `s₀ ∩ { m | ∀ᶠ m' in U, m * m' ∈ s₀ }` is also
   `U`-large (since `U` is idempotent). Thus in particular there is an `a₀` in this intersection. Now
-  let `s₁` be the intersection `s₀ ∩ { m | a₀ * m ∈ s₀ }`. By choice of `a₀`, this is again `U`-large,
-  so we can repeat the argument starting from `s₁`, obtaining `a₁`, `s₂`, etc. This gives the desired
-  infinite sequence. -/
+  let `s₁` be the intersection `s₀ ∩ { m | a₀ * m ∈ s₀ }`. By choice of `a₀`, this is again
+  `U`-large, so we can repeat the argument starting from `s₁`, obtaining `a₁`, `s₂`, etc.
+  This gives the desired infinite sequence. -/
   have exists_elem : ∀ {s : Set M} (hs : s ∈ U), (s ∩ { m | ∀ᶠ m' in U, m * m' ∈ s }).Nonempty :=
     fun {s} hs =>
     Ultrafilter.nonempty_of_mem
@@ -214,7 +216,8 @@ set_option linter.uppercaseLean3 false in
 /-- The strong form of **Hindman's theorem**: in any finite cover of an FP-set, one the parts
 contains an FP-set. -/
 @[to_additive FS_partition_regular
-      "The strong form of **Hindman's theorem**: in any finite cover of\nan FS-set, one the parts contains an FS-set."]
+      "The strong form of **Hindman's theorem**: in any finite cover of
+      an FS-set, one the parts contains an FS-set."]
 theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M)) (sfin : s.Finite)
     (scov : FP a ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ b : Stream' M, FP b ⊆ c :=
   let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_FP a
@@ -228,7 +231,8 @@ set_option linter.uppercaseLean3 false in
 /-- The weak form of **Hindman's theorem**: in any finite cover of a nonempty semigroup, one of the
 parts contains an FP-set. -/
 @[to_additive exists_FS_of_finite_cover
-      "The weak form of **Hindman's theorem**: in any finite cover\nof a nonempty additive semigroup, one of the parts contains an FS-set."]
+      "The weak form of **Hindman's theorem**: in any finite cover
+      of a nonempty additive semigroup, one of the parts contains an FS-set."]
 theorem exists_FP_of_finite_cover {M} [Semigroup M] [Nonempty M] (s : Set (Set M)) (sfin : s.Finite)
     (scov : ⊤ ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ a : Stream' M, FP a ⊆ c :=
   let ⟨U, hU⟩ :=
