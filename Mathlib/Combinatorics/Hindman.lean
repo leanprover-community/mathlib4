@@ -90,12 +90,16 @@ theorem Ultrafilter.continuous_mul_left {M} [Semigroup M] (V : Ultrafilter M) :
 
 namespace Hindman
 
+-- porting note: mathport wants these names to be `fS`, `fP`, etc, but this does violence to
+-- mathmatical naming conventions, as does `fs`, `fp`, so we just followed `mathlib` 3 here
+
 /-- `FS a` is the set of finite sums in `a`, i.e. `m ∈ FS a` if `m` is the sum of a nonempty
 subsequence of `a`. We give a direct inductive definition instead of talking about subsequences. -/
 inductive FS {M} [AddSemigroup M] : Stream' M → Set M
   | head (a : Stream' M) : FS a a.head
   | tail (a : Stream' M) (m : M) (h : FS a.tail m) : FS a m
   | cons (a : Stream' M) (m : M) (h : FS a.tail m) : FS a (a.head + m)
+set_option linter.uppercaseLean3 false in
 #align hindman.FS Hindman.FS
 
 /-- `FP a` is the set of finite products in `a`, i.e. `m ∈ FP a` if `m` is the product of a nonempty
@@ -105,6 +109,7 @@ inductive FP {M} [Semigroup M] : Stream' M → Set M
   | head (a : Stream' M) : FP a a.head
   | tail (a : Stream' M) (m : M) (h : FP a.tail m) : FP a m
   | cons (a : Stream' M) (m : M) (h : FP a.tail m) : FP a (a.head * m)
+set_option linter.uppercaseLean3 false in
 #align hindman.FP Hindman.FP
 
 /-- If `m` and `m'` are finite products in `M`, then so is `m * m'`, provided that `m'` is obtained
@@ -124,7 +129,9 @@ theorem FP.mul {M} [Semigroup M] {a : Stream' M} {m : M} (hm : m ∈ FP a) :
     intro m' hm'
     rw [mul_assoc]
     exact FP.cons _ _ (hn _ hm')
+set_option linter.uppercaseLean3 false in
 #align hindman.FP.mul Hindman.FP.mul
+set_option linter.uppercaseLean3 false in
 #align hindman.FS.add Hindman.FS.add
 
 @[to_additive exists_idempotent_ultrafilter_le_FS]
@@ -133,7 +140,7 @@ theorem exists_idempotent_ultrafilter_le_fP {M} [Semigroup M] (a : Stream' M) :
   let S : Set (Ultrafilter M) := ⋂ n, { U | ∀ᶠ m in U, m ∈ FP (a.drop n) }
   obtain ⟨U, hU, U_idem⟩ := exists_idempotent_in_compact_subsemigroup _ S _ _ _
   · refine' ⟨U, U_idem, _⟩
-    convert Set.mem_inter.mp hU 0
+    convert Set.mem_interᵢ.mp hU 0
   · exact Ultrafilter.continuous_mul_left
   · apply IsCompact.nonempty_interᵢ_of_sequence_nonempty_compact_closed
     · intro n U hU
@@ -157,7 +164,9 @@ theorem exists_idempotent_ultrafilter_le_fP {M} [Semigroup M] (a : Stream' M) :
     intro m' hm'
     apply hn
     simpa only [Stream'.drop_drop] using hm'
+set_option linter.uppercaseLean3 false in
 #align hindman.exists_idempotent_ultrafilter_le_FP Hindman.exists_idempotent_ultrafilter_le_fP
+set_option linter.uppercaseLean3 false in
 #align hindman.exists_idempotent_ultrafilter_le_FS Hindman.exists_idempotent_ultrafilter_le_FS
 
 @[to_additive exists_FS_of_large]
@@ -196,7 +205,9 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
     have := Set.inter_subset_right _ _ (ih (succ p) _)
     · simpa only using this
     rw [Stream'.corec_eq, Stream'.tail_cons]
+set_option linter.uppercaseLean3 false in
 #align hindman.exists_FP_of_large Hindman.exists_FP_of_large
+set_option linter.uppercaseLean3 false in
 #align hindman.exists_FS_of_large Hindman.exists_FS_of_large
 
 /-- The strong form of **Hindman's theorem**: in any finite cover of an FP-set, one the parts
@@ -208,7 +219,9 @@ theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M))
   let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_fP a
   let ⟨c, cs, hc⟩ := (Ultrafilter.finite_unionₛ_mem_iff sfin).mp (mem_of_superset aU scov)
   ⟨c, cs, exists_FP_of_large U idem c hc⟩
+set_option linter.uppercaseLean3 false in
 #align hindman.FP_partition_regular Hindman.FP_partition_regular
+set_option linter.uppercaseLean3 false in
 #align hindman.FS_partition_regular Hindman.FS_partition_regular
 
 /-- The weak form of **Hindman's theorem**: in any finite cover of a nonempty semigroup, one of the
@@ -221,7 +234,9 @@ theorem exists_FP_of_finite_cover {M} [Semigroup M] [Nonempty M] (s : Set (Set M
     exists_idempotent_of_compact_t2_of_continuous_mul_left (@Ultrafilter.continuous_mul_left M _)
   let ⟨c, c_s, hc⟩ := (Ultrafilter.finite_unionₛ_mem_iff sfin).mp (mem_of_superset univ_mem scov)
   ⟨c, c_s, exists_FP_of_large U hU c hc⟩
+set_option linter.uppercaseLean3 false in
 #align hindman.exists_FP_of_finite_cover Hindman.exists_FP_of_finite_cover
+set_option linter.uppercaseLean3 false in
 #align hindman.exists_FS_of_finite_cover Hindman.exists_FS_of_finite_cover
 
 @[to_additive FS_iter_tail_sub_FS]
@@ -229,7 +244,9 @@ theorem FP_drop_subset_FP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : FP (a.dr
   induction' n with n ih; · rfl
   rw [Nat.succ_eq_one_add, ← Stream'.drop_drop]
   exact _root_.trans (FP.tail _) ih
+set_option linter.uppercaseLean3 false in
 #align hindman.FP_drop_subset_FP Hindman.FP_drop_subset_FP
+set_option linter.uppercaseLean3 false in
 #align hindman.FS_iter_tail_sub_FS Hindman.FS_iter_tail_sub_FS
 
 @[to_additive]
@@ -238,7 +255,9 @@ theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.nth i ∈ F
   · apply FP.head
   · apply FP.tail
     apply ih
+set_option linter.uppercaseLean3 false in
 #align hindman.FP.singleton Hindman.FP.singleton
+set_option linter.uppercaseLean3 false in
 #align hindman.FS.singleton Hindman.FS.singleton
 
 @[to_additive]
@@ -252,7 +271,9 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   rw [Stream'.tail_eq_drop, Stream'.nth_drop, Stream'.nth_drop] at this
   convert this
   rw [hd, add_comm, Nat.succ_add, Nat.add_succ]
+set_option linter.uppercaseLean3 false in
 #align hindman.FP.mul_two Hindman.FP.mul_two
+set_option linter.uppercaseLean3 false in
 #align hindman.FS.add_two Hindman.FS.add_two
 
 @[to_additive]
@@ -272,7 +293,9 @@ theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs :
     cases' le_iff_exists_add.mp this with d hd
     rw [hd, add_comm, ← Stream'.drop_drop]
     apply FP_drop_subset_FP
+set_option linter.uppercaseLean3 false in
 #align hindman.FP.finset_prod Hindman.FP.finset_prod
+set_option linter.uppercaseLean3 false in
 #align hindman.FS.finset_sum Hindman.FS.finset_sum
 
 end Hindman
