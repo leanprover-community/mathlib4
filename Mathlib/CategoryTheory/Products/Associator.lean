@@ -8,7 +8,7 @@ Authors: Stephen Morgan, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 The associator functor `((C × D) × E) ⥤ (C × (D × E))` and its inverse form an equivalence.
