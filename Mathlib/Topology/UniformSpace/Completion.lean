@@ -645,21 +645,20 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
   · intro a
     refine' induction_on a (isClosed_eq (continuous_map.comp continuous_extension) continuous_id) _
     rintro ⟨a⟩
-    show
-      Completion.map Quotient.mk' (Completion.extension (SeparationQuotient.lift CoeTC.coe) ↑(⟦a⟧)) =
-        ↑(⟦a⟧)
-    rw [extension_coe (separation_quotient.uniform_continuous_lift _),
-        SeparationQuotient.lift_mk (uniform_continuous_coe α),
-        completion.map_coe uniform_continuous_quotient_mk] <;>
-      infer_instance
+    -- porting note: had to insert rewrites to switch between Quot.mk, Quotient.mk, Quotient.mk'
+    rw [← Quotient.mk,extension_coe (SeparationQuotient.uniformContinuous_lift _),
+      SeparationQuotient.lift_mk (uniformContinuous_coe α), UniformSpace.Completion.coe_eq, map_coe]
+    . rfl
+    . exact uniformContinuous_quotient_mk
   · intro a
-    refine'
-      Completion.induction_on a
+    refine' Completion.induction_on a
         (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a => _
-    rw [map_coe uniformContinuous_quotient_mk,
-        extension_coe (separation_quotient.uniformContinuous_lift _),
-        SeparationQuotient.lift_mk (uniformContinuous_coe α) _] <;>
-      infer_instance
+    rw [map_coe]
+    -- porting note: add SeparationQuotient.lift_mk' for Quotient.mk' ?
+    . rw [extension_coe (SeparationQuotient.uniformContinuous_lift _), Quotient.mk',
+        SeparationQuotient.lift_mk (uniformContinuous_coe α) _]
+      rfl
+    . exact uniformContinuous_quotient_mk
 #align uniform_space.completion.completion_separation_quotient_equiv UniformSpace.Completion.completionSeparationQuotientEquiv
 
 theorem uniformContinuous_completionSeparationQuotientEquiv :
