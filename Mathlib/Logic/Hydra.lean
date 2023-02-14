@@ -8,9 +8,9 @@ Authors: Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Lex
-import Mathbin.Data.Finsupp.Multiset
-import Mathbin.Order.GameAdd
+import Mathlib.Data.Finsupp.Lex
+import Mathlib.Data.Finsupp.Multiset
+import Mathlib.Order.GameAdd
 
 /-!
 # Termination of a hydra game
@@ -93,8 +93,7 @@ theorem cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand
 
 theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     CutExpand r s' s ↔
-      ∃ (t : Multiset α)(a : _), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.eraseₓ a + t :=
-  by
+      ∃ (t : Multiset α)(a : _), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.eraseₓ a + t := by
   simp_rw [cut_expand, add_singleton_eq_iff]
   refine' exists₂_congr fun t a => ⟨_, _⟩
   · rintro ⟨ht, ha, rfl⟩
@@ -113,8 +112,7 @@ theorem not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
 /-- For any relation `r` on `α`, multiset addition `multiset α × multiset α → multiset α` is a
   fibration between the game sum of `cut_expand r` with itself and `cut_expand r` itself. -/
 theorem cutExpand_fibration (r : α → α → Prop) :
-    Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s => s.1 + s.2 :=
-  by
+    Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s => s.1 + s.2 := by
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he⊢
   classical
     obtain ⟨ha, rfl⟩ := add_singleton_eq_iff.1 he
@@ -131,8 +129,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
 /-- A multiset is accessible under `cut_expand` if all its singleton subsets are,
   assuming `r` is irreflexive. -/
 theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} :
-    (∀ a ∈ s, Acc (CutExpand r) {a}) → Acc (CutExpand r) s :=
-  by
+    (∀ a ∈ s, Acc (CutExpand r) {a}) → Acc (CutExpand r) s := by
   refine' Multiset.induction _ _ s
   · exact fun _ => Acc.intro 0 fun s h => (not_cut_expand_zero s h).elim
   · intro a s ih hacc
@@ -145,8 +142,7 @@ theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} :
 
 /-- A singleton `{a}` is accessible under `cut_expand r` if `a` is accessible under `r`,
   assuming `r` is irreflexive. -/
-theorem Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} :=
-  by
+theorem Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
   induction' hacc with a h ih
   refine' Acc.intro _ fun s => _
   classical
