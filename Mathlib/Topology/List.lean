@@ -212,8 +212,8 @@ instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector <;> infe
 
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
     Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ᶠ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
-  simp [tendsto_subtype_rng, ← Subtype.val_eq_coe, cons_val]
-  exact tendsto_fst.cons (tendsto.comp continuousAt_subtype_val tendsto_snd)
+  simp [tendsto_subtype_rng, cons_val]
+  exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
 #align vector.tendsto_cons Vector.tendsto_cons
 
 theorem tendsto_insertNth {n : ℕ} {i : Fin (n + 1)} {a : α} :
@@ -242,8 +242,8 @@ theorem continuousAt_removeNth {n : ℕ} {i : Fin (n + 1)} :
   --| ⟨l, hl⟩ :=
   by
     rw [ContinuousAt, removeNth, tendsto_subtype_rng]
-    simp only [← Subtype.val_eq_coe, Vector.removeNth_val]
-    exact tendsto.comp List.tendsto_removeNth continuousAt_subtype_val
+    simp only [Vector.removeNth_val]
+    exact Tendsto.comp List.tendsto_removeNth continuousAt_subtype_val
 #align vector.continuous_at_remove_nth Vector.continuousAt_removeNth
 
 theorem continuous_removeNth {n : ℕ} {i : Fin (n + 1)} :
