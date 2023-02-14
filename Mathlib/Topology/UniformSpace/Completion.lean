@@ -362,14 +362,15 @@ variable {β : Type _} [UniformSpace β]
 variable {γ : Type _} [UniformSpace γ]
 
 instance completeSpace_separation [h : CompleteSpace α] :
-    CompleteSpace (Quotient (separationSetoid α)) :=
-  ⟨fun f => fun hf : Cauchy f =>
-    have : Cauchy (f.comap fun x => ⟦x⟧) :=
-      hf.comap' comap_quotient_le_uniformity <| hf.left.comap_of_surj (surjective_quotient_mk _)
-    let ⟨x, (hx : (f fun x => ⟦x⟧) ≤ 𝓝 x)⟩ := CompleteSpace.complete this
-    ⟨⟦x⟧,
-      (comap_le_comap_iff <| by simp).1
-        (hx.trans <| map_le_iff_le_comap.1 continuous_quotient_mk'.ContinuousAt)⟩⟩
+    CompleteSpace (Quotient (separationSetoid α)) := by
+  constructor
+  intro f hf
+  have : Cauchy (f.comap fun x => ⟦x⟧) :=
+    hf.comap' comap_quotient_le_uniformity <| hf.left.comap_of_surj (surjective_quotient_mk _)
+  let ⟨x, (hx : (f.comap fun x => ⟦x⟧) ≤ 𝓝 x)⟩ := CompleteSpace.complete this
+  exact ⟨⟦x⟧,
+    (comap_le_comap_iff <| by simp).1
+      (hx.trans <| map_le_iff_le_comap.1 continuous_quotient_mk'.continuousAt)⟩
 #align uniform_space.complete_space_separation UniformSpace.completeSpace_separation
 
 /-- Hausdorff completion of `α` -/
