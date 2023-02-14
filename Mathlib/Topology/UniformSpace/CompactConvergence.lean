@@ -53,15 +53,15 @@ neighbourhood basis (the compact-convergence neighbourhood basis).
 
 ## Main definitions / results
 
- * `compact_open_eq_compact_convergence`: the compact-open topology is equal to the
+ * `ContinuousMap.compactOpen_eq_compactConvergence`: the compact-open topology is equal to the
    compact-convergence topology.
- * `compact_convergence_uniform_space`: the uniform space structure on `C(α, β)`.
- * `mem_compact_convergence_entourage_iff`: a characterisation of the entourages of `C(α, β)`.
- * `tendsto_iff_forall_compact_tendsto_uniformly_on`: a sequence of functions `Fₙ` in `C(α, β)`
+ * `ContinuousMap.compactConvergenceUniformSpace`: the uniform space structure on `C(α, β)`.
+ * `ContinuousMap.mem_compactConvergence_entourage_iff`: a characterisation of the entourages of `C(α, β)`.
+ * `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn`: a sequence of functions `Fₙ` in `C(α, β)`
    converges to some `f` iff `Fₙ` converges to `f` uniformly on each compact subset `K` of `α`.
- * `tendsto_iff_tendsto_locally_uniformly`: on a locally compact space, a sequence of functions
+ * `ContinuousMap.tendsto_iff_tendstoLocallyUniformly`: on a locally compact space, a sequence of functions
    `Fₙ` in `C(α, β)` converges to some `f` iff `Fₙ` converges to `f` locally uniformly.
- * `tendsto_iff_tendsto_uniformly`: on a compact space, a sequence of functions `Fₙ` in `C(α, β)`
+ * `ContinuousMap.tendsto_iff_tendstoUniformly`: on a compact space, a sequence of functions `Fₙ` in `C(α, β)`
    converges to some `f` iff `Fₙ` converges to `f` uniformly.
 
 ## Implementation details
@@ -92,8 +92,8 @@ variable (K : Set α) (V : Set (β × β)) (f : C(α, β))
 
 namespace ContinuousMap
 
-/-- Given `K ⊆ α`, `V ⊆ β × β`, and `f : C(α, β)`, we define `compactConvNhd K V f` to be the set
-of `g : C(α, β)` that are `V`-close to `f` on `K`. -/
+/-- Given `K ⊆ α`, `V ⊆ β × β`, and `f : C(α, β)`, we define `ContinuousMap.compactConvNhd K V f`
+to be the set of `g : C(α, β)` that are `V`-close to `f` on `K`. -/
 def compactConvNhd : Set C(α, β) :=
   { g | ∀ x ∈ K, (f x, g x) ∈ V }
 #align continuous_map.compact_conv_nhd ContinuousMap.compactConvNhd
@@ -114,8 +114,8 @@ theorem compactConvNhd_mem_comp {g₁ g₂ : C(α, β)} {V' : Set (β × β)}
     g₂ ∈ compactConvNhd K (V ○ V') f := fun x hx => ⟨g₁ x, hg₁ x hx, hg₂ x hx⟩
 #align continuous_map.compact_conv_nhd_mem_comp ContinuousMap.compactConvNhd_mem_comp
 
-/-- A key property of `compact_conv_nhd`. It allows us to apply
-`topological_space.nhds_mk_of_nhds_filter_basis` below. -/
+/-- A key property of `ContinuousMap.compactConvNhd`. It allows us to apply
+`TopologicalSpace.nhds_mkOfNhds_filterBasis` below. -/
 theorem compactConvNhd_nhd_basis (hV : V ∈ 𝓤 β) :
     ∃ V' ∈ 𝓤 β,
       V' ⊆ V ∧ ∀ g ∈ compactConvNhd K V' f, compactConvNhd K V' g ⊆ compactConvNhd K V f := by
@@ -163,7 +163,7 @@ theorem mem_compactConvergence_nhd_filter (Y : Set C(α, β)) :
     exact ⟨compactConvNhd K V f, ⟨⟨K, V⟩, ⟨hK, hV⟩, rfl⟩, hY⟩
 #align continuous_map.mem_compact_convergence_nhd_filter ContinuousMap.mem_compactConvergence_nhd_filter
 
-/-- The compact-convergence topology. In fact, see `compact_open_eq_compact_convergence` this is
+/-- The compact-convergence topology. In fact, see `ContinuousMap.compactOpen_eq_compactConvergence` this is
 the same as the compact-open topology. This definition is thus an auxiliary convenience definition
 and is unlikely to be of direct use. -/
 def compactConvergenceTopology : TopologicalSpace C(α, β) :=
@@ -188,7 +188,7 @@ theorem hasBasis_nhds_compactConvergence :
 #align continuous_map.has_basis_nhds_compact_convergence ContinuousMap.hasBasis_nhds_compactConvergence
 
 /-- This is an auxiliary lemma and is unlikely to be of direct use outside of this file. See
-`tendsto_iff_forall_compact_tendsto_uniformly_on` below for the useful version where the topology
+`ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn` below for the useful version where the topology
 is picked up via typeclass inference. -/
 theorem tendsto_iff_forall_compact_tendstoUniformlyOn' {ι : Type u₃} {p : Filter ι}
     {F : ι → C(α, β)} :
@@ -201,7 +201,7 @@ theorem tendsto_iff_forall_compact_tendstoUniformlyOn' {ι : Type u₃} {p : Fil
   exact forall₃_congr fun _hK V _hV => Iff.rfl
 #align continuous_map.tendsto_iff_forall_compact_tendsto_uniformly_on' ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn'
 
-/-- Any point of `compact_open.gen K U` is also an interior point wrt the topology of compact
+/-- Any point of `ContinuousMap.CompactOpen.gen K U` is also an interior point wrt the topology of compact
 convergence.
 
 The topology of compact convergence is thus at least as fine as the compact-open topology. -/
@@ -214,10 +214,10 @@ theorem compactConvNhd_subset_compactOpen (hK : IsCompact K) {U : Set β} (hU : 
   exact hV₃ (f x) ⟨x, hx, rfl⟩ (hg x hx)
 #align continuous_map.compact_conv_nhd_subset_compact_open ContinuousMap.compactConvNhd_subset_compactOpen
 
-/-- The point `f` in `compactConvNhd K V f` is also an interior point wrt the compact-open
+/-- The point `f` in `ContinuousMap.compactConvNhd K V f` is also an interior point wrt the compact-open
 topology.
 
-Since `compactConvNhd K V f` are a neighbourhood basis at `f` for each `f`, it follows that
+Since `ContinuousMap.compactConvNhd K V f` are a neighbourhood basis at `f` for each `f`, it follows that
 the compact-open topology is at least as fine as the topology of compact convergence. -/
 theorem interᵢ_compactOpen_gen_subset_compactConvNhd (hK : IsCompact K) (hV : V ∈ 𝓤 β) :
     ∃ (ι : Sort (u₁ + 1))(_ : Fintype ι)(C : ι → Set α)(_hC : ∀ i, IsCompact (C i))(U :
@@ -308,7 +308,7 @@ theorem hasBasis_compactConvergenceUniformity_aux :
   exact fun f g => forall_imp fun x => by tauto
 #align continuous_map.has_basis_compact_convergence_uniformity_aux ContinuousMap.hasBasis_compactConvergenceUniformity_aux
 
-/-- An intermediate lemma. Usually `mem_compact_convergence_entourage_iff` is more useful. -/
+/-- An intermediate lemma. Usually `ContinuousMap.mem_compactConvergence_entourage_iff` is more useful. -/
 theorem mem_compactConvergenceUniformity (X : Set (C(α, β) × C(α, β))) :
     X ∈ @compactConvergenceUniformity α β _ _ ↔
       ∃ (K : Set α)(V : Set (β × β))(_hK : IsCompact K)(_hV : V ∈ 𝓤 β),
@@ -405,7 +405,7 @@ theorem tendsto_of_tendstoLocallyUniformly (h : TendstoLocallyUniformly (fun i a
 /-- If every point has a compact neighbourhood, then convergence in the compact-open topology
 implies locally uniform convergence.
 
-See also `tendsto_iff_tendsto_locally_uniformly`, especially for T2 spaces. -/
+See also `ContinuousMap.tendsto_iff_tendstoLocallyUniformly`, especially for T2 spaces. -/
 theorem tendstoLocallyUniformly_of_tendsto (hα : ∀ x : α, ∃ n, IsCompact n ∧ n ∈ 𝓝 x)
     (h : Tendsto F p (𝓝 f)) : TendstoLocallyUniformly (fun i a => F i a) f p := by
   rw [tendsto_iff_forall_compact_tendstoUniformlyOn] at h
@@ -417,9 +417,9 @@ theorem tendstoLocallyUniformly_of_tendsto (hα : ∀ x : α, ∃ n, IsCompact n
 /-- Convergence in the compact-open topology is the same as locally uniform convergence on a locally
 compact space.
 
-For non-T2 spaces, the assumption `locally_compact_space α` is stronger than we need and in fact
-the `←` direction is true unconditionally. See `tendsto_locally_uniformly_of_tendsto` and
-`tendsto_of_tendsto_locally_uniformly` for versions requiring weaker hypotheses. -/
+For non-T2 spaces, the assumption `LocallyCompactSpace α` is stronger than we need and in fact
+the `←` direction is true unconditionally. See `ContinuousMap.tendstoLocallyUniformly_of_tendsto` and
+`ContinuousMap.tendsto_of_tendstoLocallyUniformly` for versions requiring weaker hypotheses. -/
 theorem tendsto_iff_tendstoLocallyUniformly [LocallyCompactSpace α] :
     Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a => F i a) f p :=
   ⟨tendstoLocallyUniformly_of_tendsto exists_compact_mem_nhds, tendsto_of_tendstoLocallyUniformly⟩
