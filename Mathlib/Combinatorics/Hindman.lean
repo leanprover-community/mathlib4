@@ -8,9 +8,9 @@ Authors: David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.StoneCech
-import Mathbin.Topology.Algebra.Semigroup
-import Mathbin.Data.Stream.Init
+import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Algebra.Semigroup
+import Mathlib.Data.Stream.Init
 
 /-!
 # Hindman's theorem on finite sums
@@ -113,8 +113,7 @@ from a subsequence of `M` starting sufficiently late. -/
 @[to_additive
       "If `m` and `m'` are finite sums in `M`, then so is `m + m'`, provided that `m'`\nis obtained from a subsequence of `M` starting sufficiently late."]
 theorem fP.mul {M} [Semigroup M] {a : Stream' M} {m : M} (hm : m ∈ fP a) :
-    ∃ n, ∀ m' ∈ fP (a.drop n), m * m' ∈ fP a :=
-  by
+    ∃ n, ∀ m' ∈ fP (a.drop n), m * m' ∈ fP a := by
   induction' hm with a a m hm ih a m hm ih
   · exact ⟨1, fun m hm => FP.cons a m hm⟩
   · cases' ih with n hn
@@ -131,8 +130,7 @@ theorem fP.mul {M} [Semigroup M] {a : Stream' M} {m : M} (hm : m ∈ fP a) :
 
 @[to_additive exists_idempotent_ultrafilter_le_FS]
 theorem exists_idempotent_ultrafilter_le_fP {M} [Semigroup M] (a : Stream' M) :
-    ∃ U : Ultrafilter M, U * U = U ∧ ∀ᶠ m in U, m ∈ fP a :=
-  by
+    ∃ U : Ultrafilter M, U * U = U ∧ ∀ᶠ m in U, m ∈ fP a := by
   let S : Set (Ultrafilter M) := ⋂ n, { U | ∀ᶠ m in U, m ∈ FP (a.drop n) }
   obtain ⟨U, hU, U_idem⟩ := exists_idempotent_in_compact_subsemigroup _ S _ _ _
   · refine' ⟨U, U_idem, _⟩
@@ -165,8 +163,7 @@ theorem exists_idempotent_ultrafilter_le_fP {M} [Semigroup M] (a : Stream' M) :
 
 @[to_additive exists_FS_of_large]
 theorem exists_fP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U = U) (s₀ : Set M)
-    (sU : s₀ ∈ U) : ∃ a, fP a ⊆ s₀ :=
-  by
+    (sU : s₀ ∈ U) : ∃ a, fP a ⊆ s₀ := by
   /- Informally: given a `U`-large set `s₀`, the set `s₀ ∩ { m | ∀ᶠ m' in U, m * m' ∈ s₀ }` is also
   `U`-large (since `U` is idempotent). Thus in particular there is an `a₀` in this intersection. Now
   let `s₁` be the intersection `s₀ ∩ { m | a₀ * m ∈ s₀ }`. By choice of `a₀`, this is again `U`-large,
@@ -229,8 +226,7 @@ theorem exists_fP_of_finite_cover {M} [Semigroup M] [Nonempty M] (s : Set (Set M
 #align hindman.exists_FS_of_finite_cover Hindman.exists_FS_of_finite_cover
 
 @[to_additive FS_iter_tail_sub_FS]
-theorem fP_drop_subset_fP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : fP (a.drop n) ⊆ fP a :=
-  by
+theorem fP_drop_subset_fP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : fP (a.drop n) ⊆ fP a := by
   induction' n with n ih; · rfl
   rw [Nat.succ_eq_one_add, ← Stream'.drop_drop]
   exact trans (FP.tail _) ih
@@ -238,8 +234,7 @@ theorem fP_drop_subset_fP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : fP (a.dr
 #align hindman.FS_iter_tail_sub_FS Hindman.FS_iter_tail_sub_FS
 
 @[to_additive]
-theorem fP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.get? i ∈ fP a :=
-  by
+theorem fP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.get? i ∈ fP a := by
   induction' i with i ih generalizing a
   · apply FP.head
   · apply FP.tail
@@ -263,8 +258,7 @@ theorem fP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
 
 @[to_additive]
 theorem fP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
-    (s.Prod fun i => a.get? i) ∈ fP a :=
-  by
+    (s.Prod fun i => a.get? i) ∈ fP a := by
   refine' FP_drop_subset_FP _ (s.min' hs) _
   induction' s using Finset.strongInduction with s ih
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]
