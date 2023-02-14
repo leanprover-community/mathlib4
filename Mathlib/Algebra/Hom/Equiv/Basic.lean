@@ -207,7 +207,9 @@ theorem coe_toEquiv (f : M ≃* N) : (f.toEquiv : M → N) = f := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
-@[to_additive]
+-- porting note: todo: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
+-- not `f.toEquiv.toFun`; use higher priority as a workaround
+@[to_additive (attr := simp 1100)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 #align mul_equiv.coe_to_mul_hom MulEquiv.coe_toMulHom
 #align add_equiv.coe_to_add_hom AddEquiv.coe_toAddHom
