@@ -101,16 +101,15 @@ theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
 -- porting note: inserted [Group G]
 variable {G} [Group G] (H : Subgroup G)
 
-theorem Subgroup.commProb_subgroup_le : commProb H ≤ (commProb G * H.index : ℚ) ^ 2 := by
+theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
   /- After rewriting with `comm_prob_def`, we reduce to showing that `G` has at least as many
       commuting pairs as `H`. -/
-  rw [commProb_def, commProb_def, div_le_iff, ← mul_pow, mul_assoc, ← Nat.cast_mul,
-    mul_comm H.index, H.card_mul_index]
-  rw [div_mul_cancel, Nat.cast_le]
-  · refine' Finite.card_le_of_injective (fun p => ⟨⟨p.1.1, p.1.2⟩, subtype.ext_iff.mp p.2⟩) _
+  rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
+    mul_comm H.index, H.card_mul_index, div_mul_cancel, Nat.cast_le]
+  · refine' Finite.card_le_of_injective (fun p => ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) _
     exact fun p q h => by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
-  · exact pow_ne_zero 2 (nat.cast_ne_zero.mpr finite.card_pos.ne')
-  · exact pow_pos (nat.cast_pos.mpr Finite.card_pos) 2
+  · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
+  · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
 #align subgroup.comm_prob_subgroup_le Subgroup.commProb_subgroup_le
 
 theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H := by
