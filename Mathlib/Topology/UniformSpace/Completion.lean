@@ -377,7 +377,7 @@ def Completion :=
 namespace Completion
 
 instance [Inhabited α] : Inhabited (Completion α) :=
-  Quotient.inhabited (separationSetoid (CauchyCat α))
+  Quotient.instInhabitedQuotient (separationSetoid (CauchyCat α))
 
 instance (priority := 50) : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace
@@ -419,7 +419,7 @@ theorem uniformInducing_coe : UniformInducing (CoeTC.coe : α → Completion α)
 variable {α}
 
 theorem denseRange_coe : DenseRange (CoeTC.coe : α → Completion α) :=
-  denseRange_pureCauchy.Quotient
+  denseRange_pureCauchy.quotient
 #align uniform_space.completion.dense_range_coe UniformSpace.Completion.denseRange_coe
 
 variable (α)
@@ -487,13 +487,13 @@ theorem denseEmbedding_coe [SeparatedSpace α] : DenseEmbedding (coe : α → Co
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=
-  denseRange_coe.Prod_map denseRange_coe
+  denseRange_coe.prod_map denseRange_coe
 #align uniform_space.completion.dense_range_coe₂ UniformSpace.Completion.denseRange_coe₂
 
 theorem denseRange_coe₃ :
     DenseRange fun x : α × β × γ =>
       ((x.1 : Completion α), ((x.2.1 : Completion β), (x.2.2 : Completion γ))) :=
-  denseRange_coe.Prod_map denseRange_coe₂
+  denseRange_coe.prod_map denseRange_coe₂
 #align uniform_space.completion.dense_range_coe₃ UniformSpace.Completion.denseRange_coe₃
 
 @[elab_as_elim]
@@ -572,7 +572,7 @@ theorem extension_unique (hf : UniformContinuous f) {g : Completion α → β}
 
 @[simp]
 theorem extension_comp_coe {f : Completion α → β} (hf : UniformContinuous f) :
-    Completion.extension (f ∘ coe) = f :=
+    Completion.extension (f ∘ CoeTC.coe) = f :=
   cpkg.extend_comp_coe hf
 #align uniform_space.completion.extension_comp_coe UniformSpace.Completion.extension_comp_coe
 
@@ -636,7 +636,7 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     ⟨Completion.extension (SeparationQuotient.lift (CoeTC.coe : α → Completion α)),
       Completion.map Quotient.mk', _, _⟩
   · intro a
-    refine' induction_on a (isClosed_eq (ContinuousMap.comp continuous_extension) continuous_id) _
+    refine' induction_on a (isClosed_eq (continuous_map.comp continuous_extension) continuous_id) _
     rintro ⟨a⟩
     show
       Completion.map Quotient.mk' (Completion.extension (SeparationQuotient.lift CoeTC.coe) ↑(⟦a⟧)) =
@@ -648,7 +648,7 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
   · intro a
     refine'
       Completion.induction_on a
-        (isClosed_eq (continuous_extension.comp ContinuousMap) continuous_id) fun a => _
+        (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a => _
     rw [map_coe uniformContinuous_quotient_mk,
         extension_coe (separation_quotient.uniformContinuous_lift _),
         SeparationQuotient.lift_mk (uniformContinuous_coe α) _] <;>
@@ -656,12 +656,12 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
 #align uniform_space.completion.completion_separation_quotient_equiv UniformSpace.Completion.completionSeparationQuotientEquiv
 
 theorem uniformContinuous_completionSeparationQuotientEquiv :
-    UniformContinuous ⇑(completionSeparationQuotientEquiv α) :=
+    UniformContinuous (completionSeparationQuotientEquiv α) :=
   uniformContinuous_extension
 #align uniform_space.completion.uniform_continuous_completion_separation_quotient_equiv UniformSpace.Completion.uniformContinuous_completionSeparationQuotientEquiv
 
 theorem uniformContinuous_completionSeparationQuotientEquiv_symm :
-    UniformContinuous ⇑(completionSeparationQuotientEquiv α).symm :=
+    UniformContinuous (completionSeparationQuotientEquiv α).symm :=
   uniformContinuous_map
 #align uniform_space.completion.uniform_continuous_completion_separation_quotient_equiv_symm UniformSpace.Completion.uniformContinuous_completionSeparationQuotientEquiv_symm
 
