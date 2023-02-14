@@ -30,7 +30,7 @@ open Classical Topology BigOperators Pointwise
 
 variable {ι α X M N : Type _} [TopologicalSpace X]
 
-@[to_additive]
+@[to_additive (attr := continuity)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
   @continuous_const _ _ _ _ 1
 #align continuous_one continuous_one
@@ -66,7 +66,7 @@ variable [TopologicalSpace M] [Mul M] [ContinuousMul M]
 instance : ContinuousMul Mᵒᵈ :=
   ‹ContinuousMul M›
 
-@[to_additive]
+@[to_additive (attr := continuity)]
 theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
   ContinuousMul.continuous_mul
 #align continuous_mul continuous_mul
@@ -86,20 +86,20 @@ instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
 #align has_continuous_mul.to_has_continuous_smul_op ContinuousMul.to_continuousSMul_op
 #align has_continuous_add.to_has_continuous_vadd_op ContinuousAdd.to_continuousVAdd_op
 
-@[continuity, to_additive]
+@[to_additive (attr := continuity)]
 theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => f x * g x :=
   continuous_mul.comp (hf.prod_mk hg : _)
 #align continuous.mul Continuous.mul
 #align continuous.add Continuous.add
 
-@[to_additive]
+@[to_additive (attr := continuity)]
 theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
   continuous_const.mul continuous_id
 #align continuous_mul_left continuous_mul_left
 #align continuous_add_left continuous_add_left
 
-@[to_additive]
+@[to_additive (attr := continuity)]
 theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
   continuous_id.mul continuous_const
 #align continuous_mul_right continuous_mul_right
@@ -198,8 +198,7 @@ theorem Filter.TendstoNhdsWithinIio.mul_const [MulPosStrictMono 𝕜] [MulPosRef
 end tendsto_nhds
 
 /-- Construct a unit from limits of units and their inverses. -/
-@[to_additive "Construct an additive unit from limits of additive units and their negatives.",
-  simps]
+@[to_additive "Construct an additive unit from limits of additive units and their negatives." (attr := simps)]
 def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Space N]
     {f : ι → Nˣ} {r₁ r₂ : N} {l : Filter ι} [l.NeBot] (h₁ : Tendsto (fun x => ↑(f x)) l (𝓝 r₁))
     (h₂ : Tendsto (fun x => ↑(f x)⁻¹) l (𝓝 r₂)) : Nˣ
@@ -522,7 +521,6 @@ theorem IsCompact.mul {s t : Set M} (hs : IsCompact s) (ht : IsCompact t) : IsCo
 #align is_compact.mul IsCompact.mul
 #align is_compact.add IsCompact.add
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
 theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
     ∀ l : List ι,
@@ -558,7 +556,7 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
 #align continuous_on_list_prod continuousOn_list_prod
 #align continuous_on_list_sum continuousOn_list_sum
 
-@[continuity, to_additive]
+@[to_additive (attr := continuity)]
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
   | 0 => by simpa using continuous_const
   | k + 1 => by
@@ -577,7 +575,7 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
   ⟨continuous_uncurry_of_discreteTopology continuous_nsmul⟩
 #align add_monoid.has_continuous_smul_nat AddMonoid.continuousSMul_nat
 
-@[continuity, to_additive]
+@[to_additive (attr := continuity)]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow
