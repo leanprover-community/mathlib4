@@ -985,7 +985,7 @@ variable [Field K] [AddCommGroup V] [Module K V]
 
 open Classical
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes.
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
 attribute [-instance] Ring.toNonAssocRing
 
 -- Porting note: added the following line, fails to be inferred otherwise. Probably lean4#2074
@@ -1034,7 +1034,7 @@ section Field
 
 variable (K V) [Field K] [AddCommGroup V] [Module K V]
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes.
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
 attribute [-instance] Ring.toNonAssocRing
 
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural
@@ -1071,5 +1071,3 @@ theorem coord_self (x : V) (h : x ≠ 0) :
 end Field
 
 end LinearEquiv
-
-#lint
