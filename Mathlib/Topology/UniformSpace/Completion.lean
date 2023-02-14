@@ -86,22 +86,23 @@ theorem monotone_gen : Monotone (gen : Set (α × α) → _) :=
 set_option linter.uppercaseLean3 false in
 #align Cauchy.monotone_gen CauchyCat.monotone_gen
 
-private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen :=
-  calc
-    map Prod.swap ((𝓤 α).lift' gen) =
-        (𝓤 α).lift' fun s : Set (α × α) => { p | s ∈ p.2.val ×ᶠ p.1.val } :=
-      by delta gen
-          simp [map_lift'_eq, monotone_set_of, Filter.monotone_mem, Function.comp,
-            image_swap_eq_preimage_swap, -Subtype.val_eq_coe]
-    _ ≤ (𝓤 α).lift' gen :=
-      uniformity_lift_le_swap
-        (monotone_principal.comp
-          (monotone_setOf fun p => @Filter.monotone_mem _ (p.2.val ×ᶠ p.1.val)))
-        (by
-          have h := fun p : CauchyCat α × CauchyCat α => @Filter.prod_comm _ _ p.2.val p.1.val
-          simp [Function.comp, h, -Subtype.val_eq_coe, mem_map']
-          exact le_rfl)
-
+-- porting note: this was a calc proof, but I could not make it work
+private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen := by
+  let f := fun s : Set (α × α) =>
+        { p : CauchyCat α × CauchyCat α | s ∈ (p.2.val ×ᶠ p.1.val : Filter (α × α)) }
+  have h₁ : map Prod.swap ((𝓤 α).lift' gen) = (𝓤 α).lift' f := by
+    delta gen
+    simp [map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp,
+      image_swap_eq_preimage_swap]
+  have h₂ : (𝓤 α).lift' f ≤ (𝓤 α).lift' gen :=
+    uniformity_lift_le_swap
+      (monotone_principal.comp
+        (monotone_setOf fun p => @Filter.monotone_mem _ (p.2.val ×ᶠ p.1.val)))
+      (by
+        have h := fun p : CauchyCat α × CauchyCat α => @Filter.prod_comm _ _ p.2.val p.1.val
+        simp [Function.comp, h, mem_map']
+        exact le_rfl)
+  exact h₁.trans_le h₂
 set_option linter.uppercaseLean3 false in
 #align Cauchy.symm_gen CauchyCat.symm_gen
 
