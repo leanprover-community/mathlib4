@@ -20,18 +20,18 @@ import Mathlib.Combinatorics.Quiver.ConnectedComponent
 We define `groupoid` as a typeclass extending `category`,
 asserting that all morphisms have inverses.
 
-The instance `is_iso.of_groupoid (f : X ⟶ Y) : is_iso f` means that you can then write
+The instance `IsIso.ofGroupoid (f : X ⟶ Y) : IsIso f` means that you can then write
 `inv f` to access the inverse of any morphism `f`.
 
-`groupoid.iso_equiv_hom : (X ≅ Y) ≃ (X ⟶ Y)` provides the equivalence between
+`Groupoid.iso_equiv_hom : (X ≅ Y) ≃ (X ⟶ Y)` provides the equivalence between
 isomorphisms and morphisms in a groupoid.
 
-We provide a (non-instance) constructor `groupoid.of_is_iso` from an existing category
-with `is_iso f` for every `f`.
+We provide a (non-instance) constructor `Groupoid.ofIsIso` from an existing category
+with `IsIso f` for every `f`.
 
 ## See also
 
-See also `category_theory.core` for the groupoid of isomorphisms in a category.
+See also `CategoryTheory.Core` for the groupoid of isomorphisms in a category.
 -/
 
 
@@ -43,13 +43,9 @@ universe v v₂ u u₂
 /-- A `groupoid` is a category such that all morphisms are isomorphisms. -/
 class Groupoid (obj : Type u) extends Category.{v} obj : Type max u (v + 1) where
   inv : ∀ {X Y : obj}, (X ⟶ Y) → (Y ⟶ X)
-  inv_comp' : ∀ {X Y : obj} (f : X ⟶ Y), comp (inv f) f = id Y := by obviously
-  comp_inv' : ∀ {X Y : obj} (f : X ⟶ Y), comp f (inv f) = id X := by obviously
+  inv_comp : ∀ {X Y : obj} (f : X ⟶ Y), comp (inv f) f = id Y := by aesop_cat
+  comp_inv : ∀ {X Y : obj} (f : X ⟶ Y), comp f (inv f) = id X := by aesop_cat
 #align category_theory.groupoid CategoryTheory.Groupoid
-
-restate_axiom groupoid.inv_comp'
-
-restate_axiom groupoid.comp_inv'
 
 /-- A `large_groupoid` is a groupoid
 where the objects live in `Type (u+1)` while the morphisms live in `Type u`.
@@ -75,7 +71,7 @@ instance (priority := 100) IsIso.of_groupoid (f : X ⟶ Y) : IsIso f :=
 #align category_theory.is_iso.of_groupoid CategoryTheory.IsIso.of_groupoid
 
 @[simp]
-theorem Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = inv f :=
+theorem Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = CategoryTheory.inv f :=
   IsIso.eq_inv_of_hom_inv_id <| Groupoid.comp_inv f
 #align category_theory.groupoid.inv_eq_inv CategoryTheory.Groupoid.inv_eq_inv
 
@@ -87,8 +83,8 @@ def Groupoid.invEquiv : (X ⟶ Y) ≃ (Y ⟶ X) :=
 
 instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveReverse C
     where
-  reverse' X Y f := Groupoid.inv f
-  inv' X Y f := by
+  reverse' f := Groupoid.inv f
+  inv' f := by
     dsimp [Quiver.reverse]
     simp
 #align category_theory.groupoid_has_involutive_reverse CategoryTheory.groupoidHasInvolutiveReverse
@@ -99,9 +95,10 @@ theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv 
 #align category_theory.groupoid.reverse_eq_inv CategoryTheory.Groupoid.reverse_eq_inv
 
 instance functorMapReverse {D : Type _} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse
-    where map_reverse' X Y f := by
-    simp only [Quiver.reverse, Quiver.HasReverse.reverse', groupoid.inv_eq_inv,
-      functor.to_prefunctor_map, functor.map_inv]
+    where 
+      map_reverse' f := by
+        simp only [Quiver.reverse, Quiver.HasReverse.reverse', Groupoid.inv_eq_inv,
+          Functor.map_inv]
 #align category_theory.functor_map_reverse CategoryTheory.functorMapReverse
 
 variable (X Y)
@@ -110,7 +107,7 @@ variable (X Y)
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y)
     where
   toFun := Iso.hom
-  invFun f := ⟨f, Groupoid.inv f⟩
+  invFun f := ⟨f, Groupoid.inv f, (by aesop_cat), (by aesop_cat)⟩
   left_inv i := Iso.ext rfl
   right_inv f := rfl
 #align category_theory.groupoid.iso_equiv_hom CategoryTheory.Groupoid.isoEquivHom
@@ -133,12 +130,15 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A category where every morphism `is_iso` is a groupoid. -/
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) : Groupoid.{v} C
-    where inv X Y f := inv f
+    where 
+      inv f := inv f
+      comp_inv := sorry 
+      inv_comp := sorry 
 #align category_theory.groupoid.of_is_iso CategoryTheory.Groupoid.ofIsIso
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
 def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C
-    where inv X Y f := all_unique.default
+    where inv _ := all_unique.default
 #align category_theory.groupoid.of_hom_unique CategoryTheory.Groupoid.ofHomUnique
 
 end
@@ -146,21 +146,24 @@ end
 instance InducedCategory.groupoid {C : Type u} (D : Type u₂) [Groupoid.{v} D] (F : C → D) :
     Groupoid.{v} (InducedCategory D F) :=
   { InducedCategory.category F with
-    inv := fun X Y f => Groupoid.inv f
-    inv_comp' := fun X Y f => Groupoid.inv_comp f
-    comp_inv' := fun X Y f => Groupoid.comp_inv f }
+    inv := fun f => Groupoid.inv f
+    inv_comp := fun f => Groupoid.inv_comp f
+    comp_inv := fun f => Groupoid.comp_inv f }
 #align category_theory.induced_category.groupoid CategoryTheory.InducedCategory.groupoid
 
 section
 
 instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i)] :
     Groupoid.{max u v} (∀ i : I, J i)
-    where inv (x y : ∀ i, J i) (f : ∀ i, x i ⟶ y i) := fun i : I => Groupoid.inv (f i)
+    where 
+      inv f := fun i : I => Groupoid.inv (f i)
+      comp_inv := sorry 
+      inv_comp := sorry 
 #align category_theory.groupoid_pi CategoryTheory.groupoidPi
 
 instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
     Groupoid.{max u₂ v₂} (α × β)
-    where inv (x y : α × β) (f : x ⟶ y) := (Groupoid.inv f.1, Groupoid.inv f.2)
+    where inv f := (Groupoid.inv f.1, Groupoid.inv f.2)
 #align category_theory.groupoid_prod CategoryTheory.groupoidProd
 
 end
