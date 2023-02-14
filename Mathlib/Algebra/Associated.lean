@@ -163,7 +163,7 @@ theorem prime_pow_succ_dvd_mul {α : Type _} [CancelCommMonoidWithZero α] {p x 
 We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a
 monoid allows us to reuse irreducible for associated elements.
 -/
- Irreducible [Monoid α] (p : α) : Prop where
+structure Irreducible [Monoid α] (p : α) : Prop where
   /-- `p` is not a unit -/
   not_unit : ¬IsUnit p
   /-- if `p` factors then one factor is a unit -/
