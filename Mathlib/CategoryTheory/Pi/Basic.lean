@@ -61,7 +61,7 @@ theorem comp_apply {X Y Z : ∀ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (i) :
 /--
 The evaluation functor at `i : I`, sending an `I`-indexed family of objects to the object over `i`.
 -/
-@[simps!]
+@[simps]
 def eval (i : I) : (∀ i, C i) ⥤ C i where
   obj f := f i
   map α := α i
@@ -80,7 +80,7 @@ instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
 
 /-- Pull back an `I`-indexed family of objects to an `J`-indexed family, along a function `J → I`.
 -/
-@[simps!]
+@[simps]
 def comap (h : J → I) : (∀ i, C i) ⥤  (∀ j, C (h j))
     where
   obj f i := f (h i)
@@ -92,7 +92,7 @@ variable (I)
 /-- The natural isomorphism between
 pulling back a grading along the identity function,
 and the identity functor. -/
-@[simps!]
+@[simps]
 def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i)
     where
   hom := { app := fun X => 𝟙 X, naturality := by simp only [comap]; aesop_cat}
@@ -114,14 +114,14 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
     where
   hom := { 
     app := fun X b => 𝟙 (X (g (f b))) 
-    naturality := by intro X Y f'; simp [comap,Function.comp]; aesop_cat
+    naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
     }
   inv := { 
     app := fun X b => 𝟙 (X (g (f b)))
-    naturality := by aesop_cat 
+    naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
     }
-  hom_inv_id := by aesop_cat
-  inv_hom_id := by aesop_cat
+  hom_inv_id := by simp only [comap]; aesop_cat; sorry 
+  inv_hom_id := by simp only [comap]; sorry 
 #align category_theory.pi.comap_comp CategoryTheory.Pi.comapComp
 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
@@ -157,10 +157,14 @@ to obtain an `I ⊕ J`-indexed family of objects.
 @[simps!]
 def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s
     where
-  obj f :=
-    { obj := fun g s => Sum.rec f g s
-      map := fun α s => Sum.rec (fun i => 𝟙 (f i)) α s }
-  map f f' α := { app := fun g s => Sum.rec α (fun j => 𝟙 (g j)) s }
+  obj X :=
+    { obj := fun Y s => Sum.rec X Y s
+      map := fun {Y} {Y'} f s => Sum.rec (fun i => 𝟙 (X i)) f s 
+      map_id := fun Y => sorry 
+      map_comp := sorry }
+  map {X} {X'} f := { app := fun Y s => Sum.rec f (fun j => 𝟙 (Y j)) s }
+  map_id := sorry 
+  map_comp := sorry 
 #align category_theory.pi.sum CategoryTheory.Pi.sum
 
 end
