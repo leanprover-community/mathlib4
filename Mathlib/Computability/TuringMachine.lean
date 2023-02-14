@@ -16,6 +16,7 @@ import Mathlib.Data.PFun
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.WLOG
 
 /-!
 # Turing machines
@@ -312,16 +313,13 @@ theorem ListBlank.nth_succ {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) :
 #align turing.list_blank.nth_succ Turing.ListBlank.nth_succ
 
 @[ext]
-theorem ListBlank.ext {Γ} [Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
+theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
     (∀ i, L₁.nth i = L₂.nth i) → L₁ = L₂ := by
   refine' ListBlank.induction_on L₁ fun l₁ ↦ ListBlank.induction_on L₂ fun l₂ H ↦ _
-  -- Porting note: TODO `wlog` tactic
-  have h : l₁.length ≤ l₂.length := sorry /-
   wlog h : l₁.length ≤ l₂.length
-  · cases le_total l₁.length l₂.length <;> [skip, symm] <;> apply_assumption <;> try assumption
+  · cases le_total l₁.length l₂.length <;> [skip, symm] <;> apply this <;> try assumption
     intro
     rw [H]
-  -/
   refine' Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, _⟩)
   refine' List.ext_get _ fun i h h₂ ↦ Eq.symm _
   · simp only [add_tsub_cancel_of_le h, List.length_append, List.length_replicate]
