@@ -90,9 +90,8 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 alias leOfHom ← _root_.Quiver.Hom.le
 #align quiver.hom.le Quiver.Hom.le
 
--- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
--- itself. This usually means that it will never apply." removing simp? It doesn't fire
--- @[simp]
+-- porting note: linter seems to be wrong here
+@[simp, nolint simpNF]
 theorem le_of_hom_hom_of_le {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.le_of_hom_hom_of_le
@@ -115,14 +114,14 @@ theorem le_ofOp_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
 #align category_theory.le_of_op_hom CategoryTheory.le_ofOp_hom
 
-instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where 
-  default := homOfLE le_top 
-  uniq := fun a => by rfl  
+instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
+  default := homOfLE le_top
+  uniq := fun a => by rfl
 #align category_theory.unique_to_top CategoryTheory.uniqueToTop
 
-instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where 
-  default := homOfLE bot_le 
-  uniq := fun a => by rfl 
+instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
+  default := homOfLE bot_le
+  uniq := fun a => by rfl
 #align category_theory.unique_from_bot CategoryTheory.uniqueFromBot
 
 end CategoryTheory
