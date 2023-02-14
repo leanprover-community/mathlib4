@@ -86,9 +86,9 @@ theorem lift_succ (a) : lift (succ a) = succ (lift a) := by
 
 instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a b c =>
-    induction_on a fun α r hr =>
-      induction_on b fun β₁ s₁ hs₁ =>
-        induction_on c fun β₂ s₂ hs₂ ⟨f⟩ =>
+    inductionOn a fun α r hr =>
+      inductionOn b fun β₁ s₁ hs₁ =>
+        inductionOn c fun β₂ s₂ hs₂ ⟨f⟩ =>
           ⟨have fl : ∀ a, f (Sum.inl a) = Sum.inl a := fun a => by
               simpa only [InitialSeg.trans_apply, InitialSeg.leAdd_apply] using
                 @InitialSeg.eq _ _ _ _ (@Sum.Lex.isWellOrder _ _ _ _ hr hs₂)
@@ -140,7 +140,8 @@ instance add_swap_contravariantClass_lt :
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
   | 0 => by simp
-  | n + 1 => by rw [nat_cast_succ, add_succ, add_succ, succ_le_succ_iff, add_le_add_iff_right]
+  | n + 1 => by
+    simp only [nat_cast_succ, add_succ, add_succ, succ_le_succ_iff, add_le_add_iff_right]
 #align ordinal.add_le_add_iff_right Ordinal.add_le_add_iff_right
 
 theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := by
@@ -148,10 +149,9 @@ theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := 
 #align ordinal.add_right_cancel Ordinal.add_right_cancel
 
 theorem add_eq_zero_iff {a b : Ordinal} : a + b = 0 ↔ a = 0 ∧ b = 0 :=
-  induction_on a fun α r _ =>
-    induction_on b fun β s _ =>
-      by
-      simp_rw [← type_sum_lex, type_eq_zero_iff_is_empty]
+  inductionOn a fun α r _ =>
+    inductionOn b fun β s _ => by
+      simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
       exact isEmpty_sum
 #align ordinal.add_eq_zero_iff Ordinal.add_eq_zero_iff
 
@@ -174,14 +174,14 @@ def pred (o : Ordinal) : Ordinal :=
 
 @[simp]
 theorem pred_succ (o) : pred (succ o) = o := by
-  have h : ∃ a, succ o = succ a := ⟨_, rfl⟩ <;>
+  have h : ∃ a, succ o = succ a := ⟨_, rfl⟩;
     simpa only [pred, dif_pos h] using (succ_injective <| Classical.choose_spec h).symm
 #align ordinal.pred_succ Ordinal.pred_succ
 
 theorem pred_le_self (o) : pred o ≤ o :=
   if h : ∃ a, o = succ a then by
     let ⟨a, e⟩ := h
-    rw [e, pred_succ] <;> exact le_succ a
+    rw [e, pred_succ]; exact le_succ a
   else by rw [pred, dif_neg h]
 #align ordinal.pred_le_self Ordinal.pred_le_self
 
@@ -296,7 +296,7 @@ theorem IsLimit.one_lt {o : Ordinal} (h : IsLimit o) : 1 < o := by
 #align ordinal.is_limit.one_lt Ordinal.IsLimit.one_lt
 
 theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal) < o
-  | 0 => h.Pos
+  | 0 => h.pos
   | n + 1 => h.2 _ (is_limit.nat_lt n)
 #align ordinal.is_limit.nat_lt Ordinal.IsLimit.nat_lt
 
@@ -314,10 +314,10 @@ def limitRecOn {C : Ordinal → Sort _} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o
     (H₃ : ∀ o, IsLimit o → (∀ o' < o, C o') → C o) : C o :=
   lt_wf.fix
     (fun o IH =>
-      if o0 : o = 0 then by rw [o0] <;> exact H₁
+      if o0 : o = 0 then by rw [o0]; exact H₁
       else
         if h : ∃ a, o = succ a then by
-          rw [← succ_pred_iff_is_succ.2 h] <;> exact H₂ _ (IH _ <| pred_lt_iff_is_succ.2 h)
+          rw [← succ_pred_iff_is_succ.2 h]; exact H₂ _ (IH _ <| pred_lt_iff_is_succ.2 h)
         else H₃ _ ⟨o0, fun a => (succ_lt_of_not_succ h).2⟩ IH)
     o
 #align ordinal.limit_rec_on Ordinal.limitRecOn
@@ -475,7 +475,7 @@ theorem IsNormal.trans {f g} (H₁ : IsNormal f) (H₂ : IsNormal g) : IsNormal 
 #align ordinal.is_normal.trans Ordinal.IsNormal.trans
 
 theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (l : IsLimit o) : IsLimit (f o) :=
-  ⟨ne_of_gt <| (Ordinal.zero_le _).trans_lt <| H.lt_iff.2 l.Pos, fun a h =>
+  ⟨ne_of_gt <| (Ordinal.zero_le _).trans_lt <| H.lt_iff.2 l.pos, fun _ h =>
     let ⟨b, h₁, h₂⟩ := (H.limit_lt l).1 h
     (succ_le_of_lt h₂).trans_lt (H.lt_iff.2 h₁)⟩
 #align ordinal.is_normal.is_limit Ordinal.IsNormal.isLimit
@@ -487,9 +487,9 @@ theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
 theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
   ⟨fun h b' l => (add_le_add_left l.le _).trans h, fun H =>
     le_of_not_lt <|
-      induction_on a
+      inductionOn a
         (fun α r _ =>
-          induction_on b fun β s _ h H l => by
+          inductionOn b fun β s _ h H l => by
             skip
             suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ _ l)
               by
@@ -586,7 +586,7 @@ theorem sub_zero (a : Ordinal) : a - 0 = a := by simpa only [zero_add] using add
 #align ordinal.sub_zero Ordinal.sub_zero
 
 @[simp]
-theorem zero_sub (a : Ordinal) : 0 - a = 0 := by rw [← Ordinal.le_zero] <;> apply sub_le_self
+theorem zero_sub (a : Ordinal) : 0 - a = 0 := by rw [← Ordinal.le_zero]; apply sub_le_self
 #align ordinal.zero_sub Ordinal.zero_sub
 
 @[simp]
@@ -608,7 +608,7 @@ theorem add_sub_add_cancel (a b c : Ordinal) : a + b - (a + c) = b - c := by
 
 theorem sub_isLimit {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
   ⟨ne_of_gt <| lt_sub.2 <| by rwa [add_zero], fun c h => by
-    rw [lt_sub, add_succ] <;> exact l.2 _ (lt_sub.1 h)⟩
+    rw [lt_sub, add_succ]; exact l.2 _ (lt_sub.1 h)⟩
 #align ordinal.sub_is_limit Ordinal.sub_isLimit
 
 @[simp]
@@ -644,7 +644,7 @@ instance : Monoid Ordinal.{u}
       Quot.sound ⟨RelIso.prodLexCongr g f⟩
   one := 1
   mul_assoc a b c :=
-    Quotient.induction_on₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
+    Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Eq.symm <|
         Quotient.sound
           ⟨⟨prodAssoc _ _ _, fun a b => by
@@ -652,7 +652,7 @@ instance : Monoid Ordinal.{u}
               rcases b with ⟨⟨b₁, b₂⟩, b₃⟩
               simp [Prod.lex_def, and_or_left, or_assoc', and_assoc']⟩⟩
   mul_one a :=
-    induction_on a fun α r _ =>
+    inductionOn a fun α r _ =>
       Quotient.sound
         ⟨⟨punitProd _, fun a b => by
             rcases a with ⟨⟨⟨⟩⟩, a⟩ <;> rcases b with ⟨⟨⟨⟩⟩, b⟩ <;>
@@ -660,7 +660,7 @@ instance : Monoid Ordinal.{u}
                 simp only [eq_self_iff_true, true_and_iff] <;>
               rfl⟩⟩
   one_mul a :=
-    induction_on a fun α r _ =>
+    inductionOn a fun α r _ =>
       Quotient.sound
         ⟨⟨prodPUnit _, fun a b => by
             rcases a with ⟨a, ⟨⟨⟩⟩⟩ <;> rcases b with ⟨b, ⟨⟨⟩⟩⟩ <;>
@@ -674,13 +674,13 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 #align ordinal.type_prod_lex Ordinal.type_prod_lex
 
 private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
-  induction_on a fun α _ _ =>
-    induction_on b fun β _ _ =>
+  inductionOn a fun α _ _ =>
+    inductionOn b fun β _ _ =>
       by
-      simp_rw [← type_prod_lex, type_eq_zero_iff_is_empty]
-      rw [or_comm']
+      simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty]
+      rw [or_comm]
       exact isEmpty_prod
-#align ordinal.mul_eq_zero' ordinal.mul_eq_zero'
+#align ordinal.mul_eq_zero' Ordinal.mul_eq_zero'
 
 instance : MonoidWithZero Ordinal :=
   { Ordinal.monoid with
@@ -799,7 +799,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
 theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
   ⟨fun h b' l => (mul_le_mul_left' l.le _).trans h, fun H =>
     le_of_not_lt <|
-      induction_on a (fun α r _ => induction_on b fun β s _ => mul_le_of_limit_aux) h H⟩
+      inductionOn a (fun α r _ => inductionOn b fun β s _ => mul_le_of_limit_aux) h H⟩
 #align ordinal.mul_le_of_limit Ordinal.mul_le_of_limit
 
 theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal ((· * ·) a) :=
@@ -976,11 +976,11 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
       exact ⟨h', h⟩
     left
     rw [← add_sub_cancel a b]
-    apply sub_is_limit h
+    apply sub_isLimit h
     suffices : a + 0 < a + b
     simpa only [add_zero]
     rwa [add_lt_add_iff_left, Ordinal.pos_iff_ne_zero]
-  rcases h with (h | ⟨rfl, h⟩); exact add_is_limit a h; simpa only [add_zero]
+  rcases h with (h | ⟨rfl, h⟩); exact add_isLimit a h; simpa only [add_zero]
 #align ordinal.is_limit_add_iff Ordinal.isLimit_add_iff
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)
@@ -1460,7 +1460,7 @@ theorem lt_bsup {o} (f : ∀ a < o, Ordinal) {a} : a < bsup o f ↔ ∃ i hi, a 
 
 theorem IsNormal.bsup {f} (H : IsNormal f) {o} :
     ∀ (g : ∀ a < o, Ordinal) (h : o ≠ 0), f (bsup o g) = bsup o fun a h => f (g a h) :=
-  induction_on o fun α r _ g h => by
+  inductionOn o fun α r _ g h => by
     skip
     haveI := type_ne_zero_iff_nonempty.1 h
     rw [← sup_eq_bsup' r, H.sup, ← sup_eq_bsup' r] <;> rfl
@@ -1621,12 +1621,12 @@ theorem lsub_eq_zero_iff {ι} {f : ι → Ordinal} : lsub f = 0 ↔ IsEmpty ι :
 #align ordinal.lsub_eq_zero_iff Ordinal.lsub_eq_zero_iff
 
 @[simp]
-theorem lsub_const {ι} [hι : Nonempty ι] (o : Ordinal) : (lsub fun _ : ι => o) = succ o :=
+theorem lsub_const {ι} [Nonempty ι] (o : Ordinal) : (lsub fun _ : ι => o) = succ o :=
   sup_const (succ o)
 #align ordinal.lsub_const Ordinal.lsub_const
 
 @[simp]
-theorem lsub_unique {ι} [hι : Unique ι] (f : ι → Ordinal) : lsub f = succ (f default) :=
+theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f default) :=
   sup_unique _
 #align ordinal.lsub_unique Ordinal.lsub_unique
 
@@ -2959,4 +2959,3 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
 #align well_founded.rank_strict_anti WellFounded.rank_strictAnti
 
 end WellFounded
-
