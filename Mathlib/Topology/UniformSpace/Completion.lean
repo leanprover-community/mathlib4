@@ -105,10 +105,6 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
 set_option linter.uppercaseLean3 false in
 #align Cauchy.symm_gen CauchyCat.symm_gen
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 private theorem comp_rel_gen_gen_subset_gen_comp_rel {s t : Set (α × α)} :
     compRel (gen s) (gen t) ⊆ (gen (compRel s t) : Set (CauchyCat α × CauchyCat α)) :=
   fun ⟨f, g⟩ ⟨h, h₁, h₂⟩ =>
