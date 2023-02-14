@@ -1497,7 +1497,6 @@ def trAux (s : Γ) : Stmt₁ → σ → Λ'₁₀ × Stmt₀
   | TM1.Stmt.halt, v => ((none, v), write s)
 #align turing.TM1to0.tr_aux Turing.TM1to0.trAux
 
--- mathport name: exprcfg₀
 local notation "Cfg₁₀" => TM0.Cfg Γ Λ'₁₀
 
 /-- The translated TM0 machine (given the TM1 machine input). -/
