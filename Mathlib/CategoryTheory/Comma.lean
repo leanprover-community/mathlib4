@@ -18,7 +18,7 @@ import Mathlib.CategoryTheory.EqToHom
 A comma category is a construction in category theory, which builds a category out of two functors
 with a common codomain. Specifically, for functors `L : A ⥤ T` and `R : B ⥤ T`, an object in
 `Comma L R` is a morphism `hom : L.obj left ⟶ R.obj right` for some objects `left : A` and
-`right : B`, and a morphism in `comma L R` between `hom : L.obj left ⟶ R.obj right` and
+`right : B`, and a morphism in `Comma L R` between `hom : L.obj left ⟶ R.obj right` and
 `hom' : L.obj left' ⟶ R.obj right'` is a commutative square
 
 ```
@@ -214,7 +214,7 @@ def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.rig
         simp }
 #align category_theory.comma.iso_mk CategoryTheory.Comma.isoMk
 
-/-- A natural transformation `L₁ ⟶ L₂` induces a functor `comma L₂ R ⥤ comma L₁ R`. -/
+/-- A natural transformation `L₁ ⟶ L₂` induces a functor `Comma L₂ R ⥤ Comma L₁ R`. -/
 @[simps]
 def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R
     where
@@ -227,7 +227,7 @@ def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R
       right := f.right }
 #align category_theory.comma.map_left CategoryTheory.Comma.mapLeft
 
-/-- The functor `comma L R ⥤ comma L R` induced by the identity natural transformation on `L` is
+/-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `L` is
     naturally isomorphic to the identity functor. -/
 @[simps]
 def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _
@@ -242,7 +242,7 @@ def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _
           right := 𝟙 _ } }
 #align category_theory.comma.map_left_id CategoryTheory.Comma.mapLeftId
 
-/-- The functor `comma L₁ R ⥤ comma L₃ R` induced by the composition of two natural transformations
+/-- The functor `Comma L₁ R ⥤ Comma L₃ R` induced by the composition of two natural transformations
     `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
     induced by these natural transformations. -/
 @[simps]
@@ -258,7 +258,7 @@ def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) : mapLeft R (l ≫ l') 
           right := 𝟙 _ } }
 #align category_theory.comma.map_left_comp CategoryTheory.Comma.mapLeftComp
 
-/-- A natural transformation `R₁ ⟶ R₂` induces a functor `comma L R₁ ⥤ comma L R₂`. -/
+/-- A natural transformation `R₁ ⟶ R₂` induces a functor `Comma L R₁ ⥤ Comma L R₂`. -/
 @[simps]
 def mapRight (r : R₁ ⟶ R₂) : Comma L R₁ ⥤ Comma L R₂
     where
@@ -271,7 +271,7 @@ def mapRight (r : R₁ ⟶ R₂) : Comma L R₁ ⥤ Comma L R₂
       right := f.right }
 #align category_theory.comma.map_right CategoryTheory.Comma.mapRight
 
-/-- The functor `comma L R ⥤ comma L R` induced by the identity natural transformation on `R` is
+/-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `R` is
     naturally isomorphic to the identity functor. -/
 @[simps]
 def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _
@@ -286,7 +286,7 @@ def mapRightId : mapRight L (𝟙 R) ≅ 𝟭 _
           right := 𝟙 _ } }
 #align category_theory.comma.map_right_id CategoryTheory.Comma.mapRightId
 
-/-- The functor `comma L R₁ ⥤ comma L R₃` induced by the composition of the natural transformations
+/-- The functor `Comma L R₁ ⥤ Comma L R₃` induced by the composition of the natural transformations
     `r : R₁ ⟶ R₂` and `r' : R₂ ⟶ R₃` is naturally isomorphic to the composition of the functors
     induced by these natural transformations. -/
 @[simps]
