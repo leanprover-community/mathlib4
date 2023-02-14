@@ -198,7 +198,8 @@ theorem Filter.TendstoNhdsWithinIio.mul_const [MulPosStrictMono 𝕜] [MulPosRef
 end tendsto_nhds
 
 /-- Construct a unit from limits of units and their inverses. -/
-@[to_additive "Construct an additive unit from limits of additive units and their negatives." (attr := simps)]
+@[to_additive "Construct an additive unit from limits of additive units and their negatives."
+  (attr := simps)]
 def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Space N]
     {f : ι → Nˣ} {r₁ r₂ : N} {l : Filter ι} [l.NeBot] (h₁ : Tendsto (fun x => ↑(f x)) l (𝓝 r₁))
     (h₂ : Tendsto (fun x => ↑(f x)⁻¹) l (𝓝 r₂)) : Nˣ
