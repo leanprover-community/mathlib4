@@ -243,7 +243,7 @@ instance Pi.continuousMul {C : ι → Type _} [∀ i, TopologicalSpace (C i)] [�
 #align pi.has_continuous_add Pi.continuousAdd
 
 /-- A version of `pi.continuousMul` for non-dependent functions. It is needed because sometimes
-Lean fails to use `pi.continuousMul` for non-dependent functions. -/
+Lean 3 fails to use `pi.continuousMul` for non-dependent functions. -/
 @[to_additive "A version of `pi.continuousAdd` for non-dependent functions. It is needed
 because sometimes Lean fails to use `pi.continuousAdd` for non-dependent functions."]
 instance Pi.continuousMul' : ContinuousMul (ι → M) :=
