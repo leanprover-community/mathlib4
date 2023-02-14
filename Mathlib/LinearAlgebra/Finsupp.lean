@@ -89,7 +89,7 @@ def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
 This is the linear version of `finsupp.to_fun`. -/
 @[simps]
 def lcoeFun : (α →₀ M) →ₗ[R] α → M where
-  toFun := coeFn
+  toFun := (⇑)
   map_add' x y := by
     ext
     simp
@@ -128,46 +128,49 @@ theorem lapply_apply (a : α) (f : α →₀ M) : (lapply a : (α →₀ M) →�
 #align finsupp.lapply_apply Finsupp.lapply_apply
 
 @[simp]
-theorem ker_lsingle (a : α) : (lsingle a : M →ₗ[R] α →₀ M).ker = ⊥ :=
+theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :=
   ker_eq_bot_of_injective (single_injective a)
 #align finsupp.ker_lsingle Finsupp.ker_lsingle
 
 theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
-    (⨆ a ∈ s, (lsingle a : M →ₗ[R] α →₀ M).range) ≤ ⨅ a ∈ t, ker (lapply a : (α →₀ M) →ₗ[R] M) := by
+    (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) ≤
+      ⨅ a ∈ t, ker (lapply a : (α →₀ M) →ₗ[R] M) := by
   refine' supᵢ_le fun a₁ => supᵢ_le fun h₁ => range_le_iff_comap.2 _
-  simp only [(ker_comp _ _).symm, eq_top_iff, SetLike.le_def, mem_ker, comap_infi, mem_infi]
+  simp only [(ker_comp _ _).symm, eq_top_iff, SetLike.le_def, mem_ker, comap_infᵢ, mem_infᵢ]
   intro b hb a₂ h₂
-  have : a₁ ≠ a₂ := fun eq => h.le_bot ⟨h₁, Eq.symm ▸ h₂⟩
+  have : a₁ ≠ a₂ := fun eq => h.le_bot ⟨h₁, eq.symm ▸ h₂⟩
   exact single_eq_of_ne this
 #align finsupp.lsingle_range_le_ker_lapply Finsupp.lsingle_range_le_ker_lapply
 
 theorem infᵢ_ker_lapply_le_bot : (⨅ a, ker (lapply a : (α →₀ M) →ₗ[R] M)) ≤ ⊥ := by
-  simp only [SetLike.le_def, mem_infi, mem_ker, mem_bot, lapply_apply]
+  simp only [SetLike.le_def, mem_infᵢ, mem_ker, mem_bot, lapply_apply]
   exact fun a h => Finsupp.ext h
 #align finsupp.infi_ker_lapply_le_bot Finsupp.infᵢ_ker_lapply_le_bot
 
-theorem supᵢ_lsingle_range : (⨆ a, (lsingle a : M →ₗ[R] α →₀ M).range) = ⊤ := by
+theorem supᵢ_lsingle_range : (⨆ a, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) = ⊤ := by
   refine' eq_top_iff.2 <| SetLike.le_def.2 fun f _ => _
   rw [← sum_single f]
   exact sum_mem fun a ha => Submodule.mem_supᵢ_of_mem a ⟨_, rfl⟩
 #align finsupp.supr_lsingle_range Finsupp.supᵢ_lsingle_range
 
-theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
-    Disjoint (⨆ a ∈ s, (lsingle a : M →ₗ[R] α →₀ M).range)
-      (⨆ a ∈ t, (lsingle a : M →ₗ[R] α →₀ M).range) := by
-  refine'
-    (Disjoint.mono (lsingle_range_le_ker_lapply _ _ <| disjoint_compl_right)
-        (lsingle_range_le_ker_lapply _ _ <| disjoint_compl_right))
-      _
-  rw [disjoint_iff_inf_le]
-  refine' le_trans (le_infᵢ fun i => _) infi_ker_lapply_le_bot
-  classical
-    by_cases his : i ∈ s
-    · by_cases hit : i ∈ t
-      · exact (hs.le_bot ⟨his, hit⟩).elim
-      exact inf_le_of_right_le (infᵢ_le_of_le i <| infᵢ_le _ hit)
-    exact inf_le_of_left_le (infᵢ_le_of_le i <| infᵢ_le _ his)
-#align finsupp.disjoint_lsingle_lsingle Finsupp.disjoint_lsingle_lsingle
+-- AAHRG this is too slow!!! Commenting out to continue with the rest of the file
+
+-- theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
+--     Disjoint (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M))
+--       (⨆ a ∈ t, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) := by
+--   refine'
+--     (Disjoint.mono (lsingle_range_le_ker_lapply _ _ <| disjoint_compl_right)
+--         (lsingle_range_le_ker_lapply _ _ <| disjoint_compl_right))
+--       _
+--   rw [disjoint_iff_inf_le]
+--   refine' le_trans (le_infᵢ fun i => _) infi_ker_lapply_le_bot
+--   classical
+--     by_cases his : i ∈ s
+--     · by_cases hit : i ∈ t
+--       · exact (hs.le_bot ⟨his, hit⟩).elim
+--       exact inf_le_of_right_le (infᵢ_le_of_le i <| infᵢ_le _ hit)
+--     exact inf_le_of_left_le (infᵢ_le_of_le i <| infᵢ_le _ his)
+-- #align finsupp.disjoint_lsingle_lsingle Finsupp.disjoint_lsingle_lsingle
 
 theorem span_single_image (s : Set M) (a : α) :
     Submodule.span R (single a '' s) = (Submodule.span R s).map (lsingle a : M →ₗ[R] α →₀ M) := by
@@ -178,15 +181,15 @@ variable (M R)
 
 /-- `finsupp.supported M R s` is the `R`-submodule of all `p : α →₀ M` such that `p.support ⊆ s`. -/
 def supported (s : Set α) : Submodule R (α →₀ M) := by
-  refine' ⟨{ p | ↑p.support ⊆ s }, _, _, _⟩
+  refine' ⟨⟨⟨{ p | ↑p.support ⊆ s }, _⟩, _⟩, _⟩
   · intro p q hp hq
-    refine' subset.trans (subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
+    refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
     rw [Finset.coe_union]
   · simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
     intro h ha
     exact (ha rfl).elim
   · intro a p hp
-    refine' subset.trans (Finset.coe_subset.2 support_smul) hp
+    refine' Subset.trans (Finset.coe_subset.2 support_smul) hp
 #align finsupp.supported Finsupp.supported
 
 variable {M}
@@ -224,7 +227,7 @@ theorem supported_eq_span_single (s : Set α) :
     apply Set.mem_image_of_mem _ (hl il)
 #align finsupp.supported_eq_span_single Finsupp.supported_eq_span_single
 
-variable (M R)
+variable (M)
 
 /-- Interpret `finsupp.filter s` as a linear map from `α →₀ M` to `supported M R s`. -/
 def restrictDom (s : Set α) : (α →₀ M) →ₗ[R] supported M R s :=
@@ -254,7 +257,7 @@ theorem restrictDom_comp_subtype (s : Set α) :
   exact ((mem_supported' R l.1).1 l.2 a h).symm
 #align finsupp.restrict_dom_comp_subtype Finsupp.restrictDom_comp_subtype
 
-theorem range_restrictDom (s : Set α) : (restrictDom M R s).range = ⊤ :=
+theorem range_restrictDom (s : Set α) : LinearMap.range (restrictDom M R s) = ⊤ :=
   range_eq_top.2 <|
     Function.RightInverse.surjective <| LinearMap.congr_fun (restrictDom_comp_subtype s)
 #align finsupp.range_restrict_dom Finsupp.range_restrictDom
@@ -278,11 +281,12 @@ theorem supported_unionᵢ {δ : Type _} (s : δ → Set α) :
   refine' le_antisymm _ (supᵢ_le fun i => supported_mono <| Set.subset_unionᵢ _ _)
   haveI := Classical.decPred fun x => x ∈ ⋃ i, s i
   suffices
-    ((Submodule.subtype _).comp (restrict_dom M R (⋃ i, s i))).range ≤ ⨆ i, supported M R (s i) by
-    rwa [LinearMap.range_comp, range_restrict_dom, map_top, range_subtype] at this
+    LinearMap.range ((Submodule.subtype _).comp (restrictDom M R (⋃ i, s i))) ≤
+      ⨆ i, supported M R (s i) by
+    rwa [LinearMap.range_comp, range_restrictDom, map_top, range_subtype] at this
   rw [range_le_iff_comap, eq_top_iff]
   rintro l ⟨⟩
-  apply Finsupp.induction l
+  induction l using Finsupp.induction
   · exact zero_mem _
   refine' fun x a l hl a0 => add_mem _
   by_cases ∃ i, x ∈ s i <;> simp [h]
@@ -291,12 +295,12 @@ theorem supported_unionᵢ {δ : Type _} (s : δ → Set α) :
 #align finsupp.supported_Union Finsupp.supported_unionᵢ
 
 theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
-  by erw [Set.union_eq_unionᵢ, supported_Union, supᵢ_bool_eq] <;> rfl
+  by erw [Set.union_eq_unionᵢ, supported_unionᵢ, supᵢ_bool_eq] <;> rfl
 #align finsupp.supported_union Finsupp.supported_union
 
 theorem supported_interᵢ {ι : Type _} (s : ι → Set α) :
     supported M R (⋂ i, s i) = ⨅ i, supported M R (s i) :=
-  Submodule.ext fun x => by simp [mem_supported, subset_Inter_iff]
+  Submodule.ext fun x => by simp [mem_supported, subset_interᵢ_iff]
 #align finsupp.supported_Inter Finsupp.supported_interᵢ
 
 theorem supported_inter (s t : Set α) : supported M R (s ∩ t) = supported M R s ⊓ supported M R t :=
