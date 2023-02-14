@@ -63,8 +63,8 @@ variable {T : Type u₃} [Category.{v₃} T]
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`.  -/
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
-  left : A --:= by obviously
-  right : B --:= by obviously
+  left : A
+  right : B
   hom : L.obj left ⟶ R.obj right
 #align category_theory.comma CategoryTheory.Comma
 
@@ -83,8 +83,8 @@ variable {L : A ⥤ T} {R : B ⥤ T}
 -/
 @[ext]
 structure CommaMorphism (X Y : Comma L R) where
-  left : X.left ⟶ Y.left --:= by obviously
-  right : X.right ⟶ Y.right --:= by obviously
+  left : X.left ⟶ Y.left
+  right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by aesop_cat
 #align category_theory.comma_morphism CategoryTheory.CommaMorphism
 
