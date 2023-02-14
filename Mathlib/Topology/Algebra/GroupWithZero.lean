@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Monoid
-import Mathbin.Algebra.Group.Pi
-import Mathbin.Topology.Homeomorph
+import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Algebra.Group.Pi
+import Mathlib.Topology.Homeomorph
 
 /-!
 # Topological group with zero
@@ -166,8 +166,7 @@ theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 
 
 theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : Filter α} {x y : G₀}
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :
-    Tendsto (fun n => f n * g n) l (𝓝 <| x * y) ↔ Tendsto f l (𝓝 x) :=
-  by
+    Tendsto (fun n => f n * g n) l (𝓝 <| x * y) ↔ Tendsto f l (𝓝 x) := by
   refine' ⟨fun hfg => _, fun hf => hf.mul hg⟩
   rw [← mul_div_cancel x hy]
   refine' tendsto.congr' _ (hfg.div hg hy)
@@ -210,8 +209,7 @@ See also `filter.prod_top` and `filter.mem_prod_top`. -/
 theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β) (hf : ContinuousAt f a)
     (hg : ContinuousAt g a) (hh : g a ≠ 0 → ContinuousAt (↿h) (a, f a / g a))
     (h2h : g a = 0 → Tendsto (↿h) (𝓝 a ×ᶠ ⊤) (𝓝 (h a 0))) :
-    ContinuousAt (fun x => h x (f x / g x)) a :=
-  by
+    ContinuousAt (fun x => h x (f x / g x)) a := by
   show ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
   by_cases hga : g a = 0
   · rw [ContinuousAt]
