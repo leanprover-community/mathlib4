@@ -84,7 +84,7 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M)
     where
   neg := Neg.neg
-  neg_neg S := SetLike.coe_injective <| neg_neg _
+  neg_neg _S := SetLike.coe_injective <| neg_neg _
 #align submodule.has_involutive_pointwise_neg Submodule.involutivePointwiseNeg
 
 scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
@@ -182,9 +182,9 @@ instance : CanonicallyOrderedAddMonoid (Submodule R M) :=
     zero := 0
     bot := ⊥
     add := (· + ·)
-    add_le_add_left := fun a b => sup_le_sup_left
-    exists_add_of_le := @fun a b h => ⟨b, (sup_eq_right.2 h).symm⟩
-    le_self_add := fun a b => le_sup_left }
+    add_le_add_left := fun _a _b => sup_le_sup_left
+    exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+    le_self_add := fun _a _b => le_sup_left }
 
 section
 
@@ -198,11 +198,11 @@ protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M)
   smul a S := S.map (DistribMulAction.toLinearMap R M a : M →ₗ[R] M)
   one_smul S :=
     (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id
-  mul_smul a₁ a₂ S :=
+  mul_smul _a₁ _a₂ S :=
     (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| mul_smul _ _)).trans
       (S.map_comp _ _)
-  smul_zero a := map_bot _
-  smul_add a S₁ S₂ := map_sup _ _ _
+  smul_zero _a := map_bot _
+  smul_add _a _S₁ _S₂ := map_sup _ _ _
 #align submodule.pointwise_distrib_mul_action Submodule.pointwiseDistribMulAction
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
@@ -252,7 +252,7 @@ theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
 
 instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass αᵐᵒᵖ R M]
     [IsCentralScalar α M] : IsCentralScalar α (Submodule R M) :=
-  ⟨fun a S => (congr_arg fun f : Module.End R M => S.map f) <| LinearMap.ext <| op_smul_eq_smul _⟩
+  ⟨fun _a S => (congr_arg fun f : Module.End R M => S.map f) <| LinearMap.ext <| op_smul_eq_smul _⟩
 #align submodule.pointwise_central_scalar Submodule.pointwiseCentralScalar
 
 @[simp]
