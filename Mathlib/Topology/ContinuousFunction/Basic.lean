@@ -34,7 +34,7 @@ structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace
   /-- The function `α → β` -/
   toFun : α → β
   /-- Proposition that `toFun` is continuous -/
-  continuous_toFun : Continuous toFun --:= by continuity -- Porting note: need tactic
+  continuous_toFun : Continuous toFun := by continuity
 #align continuous_map ContinuousMap
 
 /-- The type of continuous maps from `α` to `β`. -/
@@ -55,7 +55,7 @@ end
 
 export ContinuousMapClass (map_continuous)
 
---attribute [continuity] map_continuous -- Porting note: need tactic
+attribute [continuity] map_continuous
 
 section ContinuousMapClass
 
@@ -139,7 +139,7 @@ protected theorem continuous (f : C(α, β)) : Continuous f :=
   f.continuous_toFun
 #align continuous_map.continuous ContinuousMap.continuous
 
---porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → β) :=
   f.1.continuous
 #align continuous_map.continuous_set_coe ContinuousMap.continuous_set_coe
@@ -192,9 +192,8 @@ end
 variable (α)
 
 /-- The identity as a continuous map. -/
-protected def id : C(α, α) :=
-  ⟨id, continuous_id⟩
-  -- Porting note: proof was `continuity`
+protected def id : C(α, α) where
+  toFun := id
 #align continuous_map.id ContinuousMap.id
 
 @[simp]
@@ -203,9 +202,8 @@ theorem coe_id : ⇑(ContinuousMap.id α) = id :=
 #align continuous_map.coe_id ContinuousMap.coe_id
 
 /-- The constant map as a continuous map. -/
-def const (b : β) : C(α, β) :=
-  ⟨fun _ : α => b, continuous_const⟩
-  -- Porting note: proof was `continuity`
+def const (b : β) : C(α, β) where
+  toFun := fun _ : α => b
 #align continuous_map.const ContinuousMap.const
 
 @[simp]
@@ -229,9 +227,8 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 #align continuous_map.const_apply ContinuousMap.const_apply
 
 /-- The composition of continuous maps, as a continuous map. -/
-def comp (f : C(β, γ)) (g : C(α, β)) : C(α, γ) :=
-  ⟨f ∘ g, f.continuous.comp g.continuous⟩
-  -- Porting note: proof was `continuity`
+def comp (f : C(β, γ)) (g : C(α, β)) : C(α, γ) where
+  toFun := f ∘ g
 #align continuous_map.comp ContinuousMap.comp
 
 @[simp]
@@ -290,17 +287,13 @@ variable {α₁ α₂ β₁ β₂ : Type _} [TopologicalSpace α₁] [Topologica
   [TopologicalSpace β₂]
 
 /-- Given two continuous maps `f` and `g`, this is the continuous map `x ↦ (f x, g x)`. -/
-def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂)
-    where
+def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂) where
   toFun x := (f x, g x)
-  continuous_toFun := f.continuous.prod_mk g.continuous
-  -- Porting note: proof was `continuity`
 #align continuous_map.prod_mk ContinuousMap.prodMk
 
 /-- Given two continuous maps `f` and `g`, this is the continuous map `(x, y) ↦ (f x, g y)`. -/
 @[simps]
-def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α₂ × β₂)
-    where
+def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α₂ × β₂) where
   toFun := Prod.map f g
   continuous_toFun := f.continuous.prod_map g.continuous
   -- Porting note: proof was `continuity`
@@ -320,8 +313,6 @@ variable {I A : Type _} {X : I → Type _} [TopologicalSpace A] [∀ i, Topologi
 /-- Abbreviation for product of continuous maps, which is continuous -/
 def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where
   toFun (a : A) (i : I) := f i a
-  continuous_toFun := continuous_pi (fun i => (f i).continuous)
-  -- Porting note: proof was `continuity`
 #align continuous_map.pi ContinuousMap.pi
 
 @[simp]
@@ -336,9 +327,8 @@ section Restrict
 variable (s : Set α)
 
 /-- The restriction of a continuous function `α → β` to a subset `s` of `α`. -/
-def restrict (f : C(α, β)) : C(s, β) :=
-  ⟨f ∘ ((↑) : s → α), f.continuous.comp continuous_subtype_val⟩
-  -- Porting note: proof was `continuity`
+def restrict (f : C(α, β)) : C(s, β) where
+  toFun := f ∘ ((↑) : s → α)
 #align continuous_map.restrict ContinuousMap.restrict
 
 @[simp]
