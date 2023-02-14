@@ -47,11 +47,11 @@ def Sym (α : Type _) (n : ℕ) :=
 
 --Porting note: new definition
 /-- The canoncial map to `Multiset α` that forgets that `s` has length `n` -/
-@[coe] def toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
+@[coe] def Sym.toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 
 instance Sym.hasCoe (α : Type _) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
-  ⟨toMultiset⟩
+  ⟨Sym.toMultiset⟩
 #align sym.has_coe Sym.hasCoe
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
