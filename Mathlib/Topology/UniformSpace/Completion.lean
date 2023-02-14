@@ -143,7 +143,8 @@ set_option linter.uppercaseLean3 false in
 instance : UniformSpace (CauchyCat α) :=
   UniformSpace.ofCore
     { uniformity := (𝓤 α).lift' gen
-      refl := principal_le_lift'.2 fun s hs ⟨a, b⟩ (a_eq_b : a = b) => a_eq_b ▸ a.property.right hs
+      refl := principal_le_lift'.2 fun _s hs ⟨a, b⟩ =>
+        fun (a_eq_b : a = b) => a_eq_b ▸ a.property.right hs
       symm := symm_gen
       comp := comp_gen }
 
@@ -198,15 +199,17 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyCat α) :=
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
           fun ⟨a, b⟩ ⟨(h₁ : a ∈ t), (h₂ : (x, b) ∈ t')⟩ =>
           ht'₂ <| prod_mk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
-    ⟨x, ht''₂ <| by dsimp [gen] <;> exact this⟩
+    ⟨x, ht''₂ <| by dsimp [gen] ; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
-  exact
-    (lift'_neBot_iff <| monotone_const.inter monotone_preimage).mpr fun s hs =>
-      let ⟨y, hy⟩ := h_ex s hs
-      have : pureCauchy y ∈ range pureCauchy ∩ { y : CauchyCat α | (f, y) ∈ s } :=
-        ⟨mem_range_self y, hy⟩
-      ⟨_, this⟩
+  refine (lift'_neBot_iff ?_).mpr (fun s hs => ?_)
+  . refine monotone_const.inter ?_
+    simp_rw [UniformSpace.ball]
+    exact monotone_preimage
+  . let ⟨y, hy⟩ := h_ex s hs
+    have : pureCauchy y ∈ range pureCauchy ∩ { y : CauchyCat α | (f, y) ∈ s } :=
+      ⟨mem_range_self y, hy⟩
+    exact ⟨_, this⟩
 set_option linter.uppercaseLean3 false in
 #align Cauchy.dense_range_pure_cauchy CauchyCat.denseRange_pureCauchy
 
@@ -481,7 +484,7 @@ instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Complet
   Completion.denseInducing_coe.separableSpace
 #align uniform_space.completion.separable_space_completion UniformSpace.Completion.separableSpace_completion
 
-theorem denseEmbedding_coe [SeparatedSpace α] : DenseEmbedding (coe : α → Completion α) :=
+theorem denseEmbedding_coe [SeparatedSpace α] : DenseEmbedding (CoeTC.coe : α → Completion α) :=
   { denseInducing_coe with inj := separated_pureCauchy_injective }
 #align uniform_space.completion.dense_embedding_coe UniformSpace.Completion.denseEmbedding_coe
 
@@ -614,7 +617,11 @@ theorem extension_map [CompleteSpace γ] [SeparatedSpace γ] {f : β → γ} {g 
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
     Completion.extension f ∘ Completion.map g = Completion.extension (f ∘ g) :=
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
-    intro a <;> simp only [hg, hf, hf.comp hg, (· ∘ ·), map_coe, extension_coe]
+    intro a
+    -- porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
+    -- but should be?
+    rw [extension_coe (hf.comp hg), Function.comp_apply, map_coe hg, extension_coe hf,
+      Function.comp_apply]
 #align uniform_space.completion.extension_map UniformSpace.Completion.extension_map
 
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
