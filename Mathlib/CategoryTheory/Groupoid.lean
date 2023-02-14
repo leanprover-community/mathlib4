@@ -8,11 +8,11 @@ Authors: Reid Barton, Scott Morrison, David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.FullSubcategory
-import Mathbin.CategoryTheory.Products.Basic
-import Mathbin.CategoryTheory.Pi.Basic
-import Mathbin.CategoryTheory.Category.Basic
-import Mathbin.Combinatorics.Quiver.ConnectedComponent
+import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Pi.Basic
+import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.Combinatorics.Quiver.ConnectedComponent
 
 /-!
 # Groupoids
