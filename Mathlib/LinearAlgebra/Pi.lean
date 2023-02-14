@@ -421,11 +421,7 @@ theorem piRing_apply (f : (ι → R) →ₗ[R] M) (i : ι) : piRing R M ι S f i
 
 @[simp]
 theorem piRing_symmApply (f : ι → M) (g : ι → R) : (piRing R M ι S).symm f g = ∑ i, g i • f i := by
-  -- Porting note: `linear_equiv.coe_mk` hadn't been ported yet, so this `coe_mk` is used.
-  have coe_mk : ∀ {f₁ h₁ h₂ f₂ h₃ h₄},
-    (⟨⟨⟨f₁, h₁⟩, h₂⟩, f₂, h₃, h₄⟩ :
-      ((i : ι) → (fun _ => R) i →ₗ[R] M) ≃ₗ[S] ((i : ι) → (fun _ => R) i) →ₗ[R] M) = f₁ := rfl
-  simp [piRing, LinearMap.lsum, coe_mk]
+  simp [piRing, LinearMap.lsum_apply]
 #align linear_equiv.pi_ring_symm_apply LinearEquiv.piRing_symmApply
 
 -- TODO additive version?
