@@ -20,12 +20,12 @@ import Mathlib.LinearAlgebra.Span -- import Mathlib.LinearAlgebra.Finsupp
 
 # Ideals over a ring
 
-This file defines `ideal R`, the type of (left) ideals over a ring `R`.
+This file defines `Ideal R`, the type of (left) ideals over a ring `R`.
 Note that over commutative rings, left ideals and two-sided ideals are equivalent.
 
 ## Implementation notes
 
-`ideal R` is implemented using `submodule R R`, where `•` is interpreted as `*`.
+`Ideal R` is implemented using `Submodule R R`, where `•` is interpreted as `*`.
 
 ## TODO
 
@@ -236,7 +236,9 @@ def ofRel (r : α → α → Prop) : Ideal α :=
 
 /-- An ideal `P` of a ring `R` is prime if `P ≠ R` and `xy ∈ P → x ∈ P ∨ y ∈ P` -/
 class IsPrime (I : Ideal α) : Prop where
+  /-- The prime ideal is not the entire ring. -/
   ne_top' : I ≠ ⊤
+  /-- If a product lies in the prime ideal, then at least one element lies in the prime ideal. -/
   mem_or_mem' : ∀ {x y : α}, x * y ∈ I → x ∈ I ∨ y ∈ I
 #align ideal.is_prime Ideal.IsPrime
 
@@ -266,10 +268,8 @@ theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ
     exact Or.casesOn (hI.mem_or_mem H) id ih
 #align ideal.is_prime.mem_of_pow_mem Ideal.IsPrime.mem_of_pow_mem
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x «expr ∉ » I) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (y «expr ∉ » I) -/
 theorem not_isPrime_iff {I : Ideal α} :
-    ¬I.IsPrime ↔ I = ⊤ ∨ ∃ (x : _)(_ : x ∉ I)(y : _)(_ : y ∉ I), x * y ∈ I := by
+    ¬I.IsPrime ↔ I = ⊤ ∨ ∃ (x : α) (_hx : x ∉ I) (y : α) (_hy : y ∉ I), x * y ∈ I := by
   simp_rw [Ideal.isPrime_iff, not_and_or, Ne.def, Classical.not_not, not_forall, not_or]
   exact
     or_congr Iff.rfl
@@ -288,6 +288,8 @@ theorem bot_prime {R : Type _} [Ring R] [IsDomain R] : (⊥ : Ideal R).IsPrime :
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals. -/
 class IsMaximal (I : Ideal α) : Prop where
+  /-- The maximal ideal is a coatom in the ordering on ideals; that is, it is not the entire ring,
+  and there are no other proper ideals strictly containing it. -/
   out : IsCoatom I
 #align ideal.is_maximal Ideal.IsMaximal
 
@@ -402,7 +404,7 @@ section Lattice
 
 variable {R : Type u} [Semiring R]
 
--- porting note: is this the right approach? or is there a better way for these below?
+-- porting note: is this the right approach? or is there a better way to prove? (next 4 decls)
 theorem mem_sup_left {S T : Ideal R} : ∀ {x : R}, x ∈ S → x ∈ S ⊔ T :=
   @le_sup_left _ _ S T
 #align ideal.mem_sup_left Ideal.mem_sup_left
@@ -424,17 +426,17 @@ theorem mem_infₛ {s : Set (Ideal R)} {x : R} : x ∈ infₛ s ↔ ∀ ⦃I⦄,
   ⟨fun hx I his => hx I ⟨I, infᵢ_pos his⟩, fun H _I ⟨_J, hij⟩ => hij ▸ fun _S ⟨hj, hS⟩ => hS ▸ H hj⟩
 #align ideal.mem_Inf Ideal.mem_infₛ
 
-@[simp]
+@[simp 1001] -- porting note: increased priority to appease `simpNF`
 theorem mem_inf {I J : Ideal R} {x : R} : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J :=
   Iff.rfl
 #align ideal.mem_inf Ideal.mem_inf
 
-@[simp]
+@[simp 1001] -- porting note: increased priority to appease `simpNF`
 theorem mem_infᵢ {ι : Sort _} {I : ι → Ideal R} {x : R} : x ∈ infᵢ I ↔ ∀ i, x ∈ I i :=
   Submodule.mem_infᵢ _
 #align ideal.mem_infi Ideal.mem_infᵢ
 
-@[simp]
+@[simp 1001] -- porting note: increased priority to appease `simpNF`
 theorem mem_bot {x : R} : x ∈ (⊥ : Ideal R) ↔ x = 0 :=
   Submodule.mem_bot _
 #align ideal.mem_bot Ideal.mem_bot
@@ -557,8 +559,7 @@ theorem factors_decreasing [CommRing β] [IsDomain β] (b₁ b₂ : β) (h₁ : 
     span ({b₁ * b₂} : Set β) < span {b₁} :=
   lt_of_le_not_le
     (Ideal.span_le.2 <| singleton_subset_iff.2 <| Ideal.mem_span_singleton.2 ⟨b₂, rfl⟩) fun h =>
-    h₂ <|
-      isUnit_of_dvd_one _ <|
+    h₂ <| isUnit_of_dvd_one <|
         (mul_dvd_mul_iff_left h₁).1 <| by rwa [mul_one, ← Ideal.span_singleton_le_span_singleton]
 #align ideal.factors_decreasing Ideal.factors_decreasing
 
@@ -616,11 +617,8 @@ theorem pow_multiset_sum_mem_span_pow (s : Multiset α) (n : ℕ) :
 
 theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ i in s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
-  convert pow_multiset_sum_mem_span_pow (s.1.map f) n
-  · rw [Multiset.card_map]
-    apply propext
-    simp only
-  rw [Multiset.map_map, Multiset.toFinset_map, Finset.val_toFinset, Finset.coe_image]
+  simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
+    Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
 #align ideal.sum_pow_mem_span_pow Ideal.sum_pow_mem_span_pow
 
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) : span ((fun (x : α) => x ^ n) '' s) = ⊤ :=
@@ -631,7 +629,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) : span ((fun 
     · rw [Set.image_empty, hs]
       trivial
     · exact subset_span ⟨_, hx, pow_zero _⟩
-  rw [eq_top_iff_one, span, Finsupp.mem_span_iff_total] at hs -- this is where we need the import
+  rw [eq_top_iff_one, span, Finsupp.mem_span_iff_total] at hs
   rcases hs with ⟨f, hf⟩
   change (f.support.sum fun a => f a * a) = 1 at hf
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
@@ -679,8 +677,7 @@ example : Module α α := Semiring.toModule
 
 theorem mem_span_insert' {s : Set α} {x y} : x ∈ span (insert y s) ↔ ∃ a, x + a * y ∈ span s :=
   @Submodule.mem_span_insert' α α _ _ Semiring.toModule _ _ _
--- porting note: Lean can't infer `Module R R` from `Ring R` on its own.
--- reference: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/type.20class.20inference.20fails.20at.20unification.3F
+-- porting note: Lean 4 issue #2074: Lean can't infer `Module R R` from `Ring R` on its own.
 #align ideal.mem_span_insert' Ideal.mem_span_insert'
 
 @[simp]
@@ -712,10 +709,11 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
   simpa [H, h1] using I.mul_mem_left r⁻¹ hr
 #align ideal.eq_bot_or_top Ideal.eq_bot_or_top
 
-/-- Ideals of a `division_semiring` are a simple order. Thanks to the way abbreviations work,
-this automatically gives a `is_simple_module K` instance. -/
-instance : IsSimpleOrder (Ideal K) :=
+/-- Ideals of a `DivisionSemiring` are a simple order. Thanks to the way abbreviations work,
+this automatically gives a `IsSimpleModule K` instance. -/
+instance isSimpleOrder : IsSimpleOrder (Ideal K) :=
   ⟨eq_bot_or_top⟩
+#align ideal.is_simple_order Ideal.isSimpleOrder
 
 theorem eq_bot_of_prime [h : I.IsPrime] : I = ⊥ :=
   or_iff_not_imp_right.mp I.eq_bot_or_top h.1
@@ -747,15 +745,15 @@ end Ideal
 
 end CommRing
 
--- TODO: consider moving the lemmas below out of the `ring` namespace since they are
--- about `comm_semiring`s.
+-- TODO: consider moving the lemmas below out of the `Ring` namespace since they are
+-- about `CommSemiring`s.
 namespace Ring
 
 variable {R : Type _} [CommSemiring R]
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x «expr ≠ » (0 : R)) -/
 theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
-    ∃ (x : _)(_ : x ≠ (0 : R)), ¬IsUnit x := by
+    ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
   have : ¬_ := fun h => hf ⟨exists_pair_ne R, mul_comm, h⟩
   simp_rw [isUnit_iff_exists_inv]
   push_neg  at this⊢
@@ -788,7 +786,7 @@ theorem not_isField_iff_exists_prime [Nontrivial R] :
       fun ⟨p, ne_bot, Prime⟩ => ⟨p, bot_lt_iff_ne_bot.mpr ne_bot, lt_top_iff_ne_top.mpr Prime.1⟩⟩
 #align ring.not_is_field_iff_exists_prime Ring.not_isField_iff_exists_prime
 
-/-- Also see `ideal.is_simple_order` for the forward direction as an instance when `R` is a
+/-- Also see `Ideal.isSimpleOrder` for the forward direction as an instance when `R` is a
 division (semi)ring.
 
 This result actually holds for all division semirings, but we lack the predicate to state it. -/
@@ -856,7 +854,7 @@ theorem zero_mem_nonunits [Semiring α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :
   not_congr isUnit_zero_iff
 #align zero_mem_nonunits zero_mem_nonunits
 
-@[simp]
+@[simp 1001] -- increased priority to appease `simpNF`
 theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
 #align one_not_mem_nonunits one_not_mem_nonunits
