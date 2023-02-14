@@ -927,7 +927,7 @@ theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M
     exact mem_span_singleton
 #align linear_map.span_singleton_eq_range LinearMap.span_singleton_eq_range
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem toSpanSingleton_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 #align linear_map.to_span_singleton_one LinearMap.toSpanSingleton_one
@@ -1071,3 +1071,5 @@ theorem coord_self (x : V) (h : x ≠ 0) :
 end Field
 
 end LinearEquiv
+
+#lint
