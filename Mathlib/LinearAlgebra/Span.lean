@@ -1040,7 +1040,7 @@ attribute [-instance] Ring.toNonAssocRing
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural
     map from `K` to the span of `x`, with invertibility check to consider it as an
     isomorphism.-/
-noncomputable -- Porting note: added since `LinearEquiv.ofInjective` is noncomputable
+noncomputable
 def toSpanNonzeroSingleton (x : V) (h : x ≠ 0) : K ≃ₗ[K] K ∙ x :=
   LinearEquiv.trans
     (LinearEquiv.ofInjective (LinearMap.toSpanSingleton K V x)
@@ -1058,7 +1058,7 @@ theorem toSpanNonzeroSingleton_one (x : V) (h : x ≠ 0) :
 
 /-- Given a nonzero element `x` of a vector space `V` over a field `K`, the natural map
     from the span of `x` to `K`.-/
-noncomputable -- Porting note: added since `toSpanNonzeroSingleton` is noncomputable
+noncomputable
 abbrev coord (x : V) (h : x ≠ 0) : (K ∙ x) ≃ₗ[K] K :=
   (toSpanNonzeroSingleton K V x h).symm
 #align linear_equiv.coord LinearEquiv.coord
