@@ -365,7 +365,7 @@ def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
 variable (M₁ M₂)
 
 @[to_additive]
-theorem MonoidHom.isClosed_range_coe : IsClosed (range (coeFun : (M₁ →* M₂) → M₁ → M₂)) :=
+theorem MonoidHom.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →* M₂) → M₁ → M₂)) :=
   isClosed_of_closure_subset fun f hf => ⟨monoidHomOfMemClosureRangeCoe f hf, rfl⟩
 #align monoid_hom.is_closed_range_coe MonoidHom.isClosed_range_coe
 #align add_monoid_hom.is_closed_range_coe AddMonoidHom.isClosed_range_coe
