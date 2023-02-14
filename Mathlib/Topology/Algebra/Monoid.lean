@@ -332,7 +332,10 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
 #align is_closed_set_of_map_mul isClosed_setOf_map_mul
 #align is_closed_set_of_map_add isClosed_setOf_map_add
 
-variable {M₁ M₂} [MulOneClass M₁] [MulOneClass M₂] [TopologicalSpace M₂] [ContinuousMul M₂]
+-- porting note: split variables command over two lines, can't change explicitness at the same time
+-- as declaring new variables.
+variable {M₁ M₂}
+variable [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
   {F : Type _} [MonoidHomClass F M₁ M₂] {l : Filter α}
 
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
