@@ -983,8 +983,6 @@ section Field
 
 variable [Field K] [AddCommGroup V] [Module K V]
 
-noncomputable section
-
 open Classical
 
 -- Porting note: added the following line, fails to be inferred otherwise. Probably lean4#2074
@@ -1014,7 +1012,6 @@ theorem ker_toSpanSingleton {x : V} (h : x ≠ 0) : LinearMap.ker (toSpanSinglet
       x = c⁻¹ • c • x := by rw [← mul_smul, inv_mul_cancel hc', one_smul]
       _ = c⁻¹ • (toSpanSingleton K V x) c := rfl
       _ = 0 := by rw [hc, smul_zero]
-
     tauto
   · rw [mem_ker, Submodule.mem_bot]
     intro h
@@ -1041,7 +1038,7 @@ def toSpanNonzeroSingleton (x : V) (h : x ≠ 0) : K ≃ₗ[K] K ∙ x :=
   LinearEquiv.trans
     (LinearEquiv.ofInjective (LinearMap.toSpanSingleton K V x)
       (ker_eq_bot.1 <| LinearMap.ker_toSpanSingleton K V h))
-    (LinearEquiv.ofEq (toSpanSingleton K V x).range (K ∙ x) (span_singleton_eq_range K V x).symm)
+    (LinearEquiv.ofEq (range $ toSpanSingleton K V x) (K ∙ x) (span_singleton_eq_range K V x).symm)
 #align linear_equiv.to_span_nonzero_singleton LinearEquiv.toSpanNonzeroSingleton
 
 theorem toSpanNonzeroSingleton_one (x : V) (h : x ≠ 0) :
