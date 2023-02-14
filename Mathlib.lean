@@ -239,6 +239,7 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
