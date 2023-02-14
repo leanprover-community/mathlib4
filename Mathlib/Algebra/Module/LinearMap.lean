@@ -231,9 +231,11 @@ def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ 
 #align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionHom
 
 @[simp]
-theorem to_fun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) :=
-  rfl
-#align linear_map.to_fun_eq_coe LinearMap.to_fun_eq_coe
+theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
+
+-- porting note: no longer a `simp`
+theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
+#align linear_map.to_fun_eq_coe LinearMap.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : M →ₛₗ[σ] M₃} (h : ∀ x, f x = g x) : f = g :=
