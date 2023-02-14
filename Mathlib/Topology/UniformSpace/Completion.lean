@@ -690,7 +690,7 @@ theorem extension₂_coe_coe (hf : UniformContinuous₂ f) (a : α) (b : β) :
 
 end SeparatedSpace
 
-variable [CompleteSpace γ] (f)
+variable [CompleteSpace γ]
 
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (Completion.extension₂ f) :=
   cpkg.uniformContinuous_extension₂ cpkg f
@@ -704,7 +704,7 @@ open Function
 
 /-- Lift a two variable map to the Hausdorff completions. -/
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=
-  cpkg.zipWith cpkg cpkg f
+  cpkg.map₂ cpkg cpkg f
 #align uniform_space.completion.map₂ UniformSpace.Completion.map₂
 
 theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (Completion.map₂ f) :=
