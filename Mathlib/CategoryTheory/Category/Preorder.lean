@@ -23,7 +23,7 @@ categories.
 
 ## Main definitions
 
-* `homOfLe` and `leOfHom` provide translations between inequalities in the preorder, and
+* `homOfLE` and `leOfHom` provide translations between inequalities in the preorder, and
   morphisms in the associated category.
 * `Monotone.functor` is the functor associated to a monotone function.
 
@@ -42,7 +42,7 @@ The category structure coming from a preorder. There is a morphism `X ⟶ Y` if 
 
 Because we don't allow morphisms to live in `Prop`,
 we have to define `X ⟶ Y` as `ulift (plift (X ≤ Y))`.
-See `category_theory.hom_of_le` and `category_theory.le_of_hom`.
+See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`.
 
 See <https://stacks.math.columbia.edu/tag/00D3>.
 -/
@@ -63,11 +63,11 @@ variable {X : Type u} [Preorder X]
 
 /-- Express an inequality as a morphism in the corresponding preorder category.
 -/
-def homOfLe {x y : X} (h : x ≤ y) : x ⟶ y :=
+def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
-#align category_theory.hom_of_le CategoryTheory.homOfLe
+#align category_theory.hom_of_le CategoryTheory.homOfLE
 
-alias homOfLe ← _root_.LE.le.hom
+alias homOfLE ← _root_.LE.le.hom
 #align has_le.le.hom LE.le.hom
 
 @[simp]
@@ -77,7 +77,7 @@ theorem hom_of_le_refl {x : X} : (le_refl x).hom = 𝟙 x :=
 
 @[simp]
 theorem hom_of_le_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
-    homOfLe h ≫ homOfLe k = homOfLe (h.trans k) :=
+    homOfLE h ≫ homOfLE k = homOfLE (h.trans k) :=
   rfl
 #align category_theory.hom_of_le_comp CategoryTheory.hom_of_le_comp
 
@@ -91,14 +91,14 @@ alias leOfHom ← _root_.Quiver.Hom.le
 #align quiver.hom.le Quiver.Hom.le
 
 -- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
--- itself. This usually means that it will never apply." removing simp?
+-- itself. This usually means that it will never apply." removing simp? It doesn't fire
 -- @[simp]
 theorem le_of_hom_hom_of_le {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.le_of_hom_hom_of_le
 
 -- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
--- itself. This usually means that it will never apply." removing simp?
+-- itself. This usually means that it will never apply." removing simp? It doesn't fire
 -- @[simp]
 theorem hom_of_le_le_of_hom {x y : X} (h : x ⟶ y) : h.le.hom = h := by
   cases' h with h
@@ -107,20 +107,22 @@ theorem hom_of_le_le_of_hom {x y : X} (h : x ⟶ y) : h.le.hom = h := by
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.hom_of_le_le_of_hom
 
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
--- porting note: failed to compile definition, consider marking it as 'noncomputable' because it
--- depends on 'LE.le.hom', and it does not have executable code
-noncomputable def opHomOfLe {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
-  h.hom.op
+def opHomOfLe {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
+  (homOfLE h).op
 #align category_theory.op_hom_of_le CategoryTheory.opHomOfLe
 
 theorem le_ofOp_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
 #align category_theory.le_of_op_hom CategoryTheory.le_ofOp_hom
 
-instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) := by aesop_cat
+instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where 
+  default := homOfLE le_top 
+  uniq := fun a => by rfl  
 #align category_theory.unique_to_top CategoryTheory.uniqueToTop
 
-instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) := by aesop_cat
+instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where 
+  default := homOfLE bot_le 
+  uniq := fun a => by rfl 
 #align category_theory.unique_from_bot CategoryTheory.uniqueFromBot
 
 end CategoryTheory
@@ -134,7 +136,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y
     where
   obj := f
-  map := @fun x₁ x₂ g => CategoryTheory.homOfLe (h g.le)
+  map := @fun x₁ x₂ g => CategoryTheory.homOfLE (h g.le)
 #align monotone.functor Monotone.functor
 
 @[simp]
@@ -180,7 +182,7 @@ def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y
       fun h : a ≤ a' => (e.functor.map h.hom).le⟩
 #align category_theory.equivalence.to_order_iso CategoryTheory.Equivalence.toOrderIso
 
--- `@[simps]` on `equivalence.to_order_iso` produces lemmas that fail the `simp_nf` linter,
+-- `@[simps]` on `Equivalence.toOrderIso` produces lemmas that fail the `simpNF` linter,
 -- so we provide them by hand:
 @[simp]
 theorem Equivalence.toOrderIso_apply (e : X ≌ Y) (x : X) : e.toOrderIso x = e.functor.obj x :=
