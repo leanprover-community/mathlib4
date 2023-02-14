@@ -51,9 +51,9 @@ def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by
   rfl
 #align nat.count_set.fintype Nat.CountSet.fintype
 
--- Porting note : TODO -- do something about that
--- scoped[Count]
-attribute [instance] Nat.CountSet.fintype
+scoped[Count] attribute [instance] Nat.CountSet.fintype
+
+open Count
 
 theorem count_eq_card_filter_range (n : ℕ) : count p n = ((range n).filter p).card := by
   rw [count, List.countp_eq_length_filter]
