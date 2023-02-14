@@ -75,16 +75,15 @@ instance right_quotientAction : QuotientAction (opposite (normalizer H)) H :=
 #align add_action.right_quotient_action AddAction.right_quotientAction
 
 @[to_additive]
-instance right_quotient_action' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
+instance right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
   ⟨fun _ _ _ _ => by
     rwa [smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, mul_assoc, hH.mem_comm_iff, mul_assoc,
       mul_inv_cancel_right]⟩
-#align mul_action.right_quotient_action' MulAction.right_quotient_action'
-#align add_action.right_quotient_action' AddAction.right_quotient_action'
+#align mul_action.right_quotient_action' MulAction.right_quotientAction'
+#align add_action.right_quotient_action' AddAction.right_quotientAction'
 
 @[to_additive]
-instance quotient [QuotientAction β H] : MulAction β (α ⧸ H)
-    where
+instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
     Quotient.map' ((· • ·) b) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
@@ -348,8 +347,8 @@ theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a, Fint
 #align add_action.sum_card_fixed_by_eq_card_orbits_add_card_add_group AddAction.sum_card_fixedBy_eq_card_orbits_add_card_addGroup
 
 @[to_additive]
-instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H)
-    where exists_smul_eq := by
+instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H) where
+  exists_smul_eq := by
     { rintro ⟨x⟩ ⟨y⟩
       refine' ⟨y * x⁻¹, QuotientGroup.eq.mpr _⟩
       simp only [smul_eq_mul, H.one_mem, mul_left_inv, inv_mul_cancel_right]}
