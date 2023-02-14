@@ -135,7 +135,7 @@ set_option linter.uppercaseLean3 false in
 #align hindman.FS.add Hindman.FS.add
 
 @[to_additive exists_idempotent_ultrafilter_le_FS]
-theorem exists_idempotent_ultrafilter_le_fP {M} [Semigroup M] (a : Stream' M) :
+theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     ∃ U : Ultrafilter M, U * U = U ∧ ∀ᶠ m in U, m ∈ FP a := by
   let S : Set (Ultrafilter M) := ⋂ n, { U | ∀ᶠ m in U, m ∈ FP (a.drop n) }
   obtain ⟨U, hU, U_idem⟩ := exists_idempotent_in_compact_subsemigroup _ S _ _ _
@@ -165,7 +165,7 @@ theorem exists_idempotent_ultrafilter_le_fP {M} [Semigroup M] (a : Stream' M) :
     apply hn
     simpa only [Stream'.drop_drop] using hm'
 set_option linter.uppercaseLean3 false in
-#align hindman.exists_idempotent_ultrafilter_le_FP Hindman.exists_idempotent_ultrafilter_le_fP
+#align hindman.exists_idempotent_ultrafilter_le_FP Hindman.exists_idempotent_ultrafilter_le_FP
 set_option linter.uppercaseLean3 false in
 #align hindman.exists_idempotent_ultrafilter_le_FS Hindman.exists_idempotent_ultrafilter_le_FS
 
