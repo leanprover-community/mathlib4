@@ -28,29 +28,29 @@ instance : TopologicalSpace (List α) :=
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
-  refine' nhds_mk_of_nhds _ _ _ _
+  refine' nhds_mkOfNhds _ _ _ _
   · intro l
     induction l
     case nil => exact le_rfl
-    case
-      cons a l ih =>
+    case cons a l ih =>
       suffices List.cons <$> pure a <*> pure l ≤ List.cons <$> 𝓝 a <*> traverse 𝓝 l by
         simpa only [functor_norm] using this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
   · intro l s hs
     rcases(mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
     clear as hs
-    have : ∃ v : List (Set α), l.forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s :=
-      by
-      induction hu generalizing s
-      case nil hs this => exists ; simpa only [List.forall₂_nil_left_iff, exists_eq_left]
-      case
-        cons a s as ss ht h ih t hts =>
-        rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
-        rcases ih _ subset.rfl with ⟨v, hv, hvss⟩
-        exact
-          ⟨u::v, List.Forall₂.cons hu hv,
-            subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hts⟩
+    have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
+    induction hu generalizing s
+    case nil hs  =>
+      exists []
+      simp only [List.forall₂_nil_left_iff, exists_eq_left]
+      exact ⟨trivial, hus⟩
+    case cons a s as ss ht h ih t hts =>
+      rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
+      rcases ih _ subset.rfl with ⟨v, hv, hvss⟩
+      exact
+        ⟨u::v, List.Forall₂.cons hu hv,
+          subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hts⟩
     rcases this with ⟨v, hv, hvs⟩
     refine' ⟨sequence v, mem_traverse _ _ _, hvs, _⟩
     · exact hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
