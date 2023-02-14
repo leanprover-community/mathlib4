@@ -201,11 +201,13 @@ variable [Mul M] [Mul N] [Mul P] [Mul Q]
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe
 #noalign add_equiv.to_fun_eq_coe
--- Porting note: `coe_to_equiv` no longer needed in Lean4
-#noalign mul_equiv.coe_to_equiv
-#noalign add_equiv.coe_to_equiv
 
-@[to_additive (attr := simp)]
+@[to_additive]
+theorem coe_toEquiv (f : M ≃* N) : (f.toEquiv : M → N) = f := rfl
+#align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
+#align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
+
+@[to_additive]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 #align mul_equiv.coe_to_mul_hom MulEquiv.coe_toMulHom
 #align add_equiv.coe_to_add_hom AddEquiv.coe_toAddHom
