@@ -112,7 +112,7 @@ if [ "$RESTART" ]; then
     echo "# The script just created a branch $branch_name. You may want to:"
     echo "git checkout $old_branch_name"
     echo "git fetch"
-    echo 'git merge $(git merge-base '"$old_branch_name"' origin/master)'
+    echo 'git merge $(git merge-base '"$branch_name"' origin/master)'
     echo "git reset --soft $branch_name"
     echo "git add -p # to manually discard/stage diff chunks"
 else
