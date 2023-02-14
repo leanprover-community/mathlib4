@@ -8,9 +8,9 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finsupp.Order
-import Mathbin.Data.Dfinsupp.Lex
-import Mathbin.Data.Finsupp.ToDfinsupp
+import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Dfinsupp.Lex
+import Mathlib.Data.Finsupp.ToDfinsupp
 
 /-!
 # Lexicographic order on finitely supported functions
