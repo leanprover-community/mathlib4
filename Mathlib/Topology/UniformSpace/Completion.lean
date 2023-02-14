@@ -447,27 +447,27 @@ theorem nonempty_completion_iff : Nonempty (Completion α) ↔ Nonempty α :=
   cpkg.dense.nonempty_iff.symm
 #align uniform_space.completion.nonempty_completion_iff UniformSpace.Completion.nonempty_completion_iff
 
-theorem uniformContinuous_coe : UniformContinuous (coe : α → Completion α) :=
+theorem uniformContinuous_coe : UniformContinuous (CoeTC.coe : α → Completion α) :=
   cpkg.uniformContinuous_coe
 #align uniform_space.completion.uniform_continuous_coe UniformSpace.Completion.uniformContinuous_coe
 
-theorem continuous_coe : Continuous (coe : α → Completion α) :=
+theorem continuous_coe : Continuous (CoeTC.coe : α → Completion α) :=
   cpkg.continuous_coe
 #align uniform_space.completion.continuous_coe UniformSpace.Completion.continuous_coe
 
-theorem uniformEmbedding_coe [SeparatedSpace α] : UniformEmbedding (coe : α → Completion α) :=
+theorem uniformEmbedding_coe [SeparatedSpace α] : UniformEmbedding (CoeTC.coe : α → Completion α) :=
   { comap_uniformity := comap_coe_eq_uniformity α
     inj := separated_pureCauchy_injective }
 #align uniform_space.completion.uniform_embedding_coe UniformSpace.Completion.uniformEmbedding_coe
 
-theorem coe_injective [SeparatedSpace α] : Function.Injective (coe : α → Completion α) :=
+theorem coe_injective [SeparatedSpace α] : Function.Injective (CoeTC.coe : α → Completion α) :=
   UniformEmbedding.inj (uniformEmbedding_coe _)
 #align uniform_space.completion.coe_injective UniformSpace.Completion.coe_injective
 
 variable {α}
 
-theorem denseInducing_coe : DenseInducing (coe : α → Completion α) :=
-  { (uniformInducing_coe α).Inducing with dense := denseRange_coe }
+theorem denseInducing_coe : DenseInducing (CoeTC.coe : α → Completion α) :=
+  { (uniformInducing_coe α).inducing with dense := denseRange_coe }
 #align uniform_space.completion.dense_inducing_coe UniformSpace.Completion.denseInducing_coe
 
 /-- The uniform bijection between a complete space and its uniform completion. -/
@@ -478,7 +478,7 @@ def UniformCompletion.completeEquivSelf [CompleteSpace α] [SeparatedSpace α] :
 open TopologicalSpace
 
 instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Completion α) :=
-  Completion.denseInducing_coe.SeparableSpace
+  Completion.denseInducing_coe.separableSpace
 #align uniform_space.completion.separable_space_completion UniformSpace.Completion.separableSpace_completion
 
 theorem denseEmbedding_coe [SeparatedSpace α] : DenseEmbedding (coe : α → Completion α) :=
@@ -633,13 +633,13 @@ quotient. -/
 def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     Completion (SeparationQuotient α) ≃ Completion α := by
   refine'
-    ⟨Completion.extension (SeparationQuotient.lift (coe : α → Completion α)),
+    ⟨Completion.extension (SeparationQuotient.lift (CoeTC.coe : α → Completion α)),
       Completion.map Quotient.mk', _, _⟩
   · intro a
     refine' induction_on a (isClosed_eq (ContinuousMap.comp continuous_extension) continuous_id) _
     rintro ⟨a⟩
     show
-      Completion.map Quotient.mk' (Completion.extension (SeparationQuotient.lift coe) ↑(⟦a⟧)) =
+      Completion.map Quotient.mk' (Completion.extension (SeparationQuotient.lift CoeTC.coe) ↑(⟦a⟧)) =
         ↑(⟦a⟧)
     rw [extension_coe (separation_quotient.uniform_continuous_lift _),
         SeparationQuotient.lift_mk (uniform_continuous_coe α),
