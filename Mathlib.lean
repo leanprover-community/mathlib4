@@ -222,6 +222,7 @@ import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.RelCat
+import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Equivalence
@@ -239,6 +240,7 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Pi.Basic
+import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Sigma.Basic
@@ -780,6 +782,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Span
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic
@@ -1055,6 +1058,7 @@ import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Alexandroff
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.Compact
@@ -1125,6 +1129,7 @@ import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.UniformSpace.Pi
