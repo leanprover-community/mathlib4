@@ -1649,10 +1649,8 @@ variable {Λ : Type _} [Inhabited Λ]
 
 variable {σ : Type _} [Inhabited σ]
 
--- mathport name: exprstmt₁
 local notation "Stmt₁" => Stmt Γ Λ σ
 
--- mathport name: exprcfg₁
 local notation "Cfg₁" => Cfg Γ Λ σ
 
 /-- The configuration state of the TM. -/
