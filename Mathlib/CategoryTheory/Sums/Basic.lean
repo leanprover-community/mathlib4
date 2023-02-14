@@ -248,4 +248,3 @@ theorem sum_app_inr {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I
 end NatTrans
 
 end CategoryTheory
-#lint
