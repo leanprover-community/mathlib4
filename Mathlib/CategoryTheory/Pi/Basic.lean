@@ -120,8 +120,14 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
     app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap,Function.comp]; funext; simp
     }
-  hom_inv_id := by simp only [comap]; aesop_cat; sorry  
-  inv_hom_id := by simp only [comap]; sorry 
+  hom_inv_id := by 
+    simp only [comap] 
+    ext Y 
+    simp [CategoryStruct.comp,CategoryStruct.id]
+  inv_hom_id := by 
+    simp only [comap]
+    ext X
+    simp [CategoryStruct.comp,CategoryStruct.id]
 #align category_theory.pi.comap_comp CategoryTheory.Pi.comapComp
 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
@@ -154,12 +160,18 @@ instance sumElimCategory : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
 -/
-@[simps!]
+@[simps]
 def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s
     where
   obj X :=
-    { obj := fun Y s => Sum.rec X Y s
-      map := fun {Y} {Y'} f s => Sum.rec (fun i => 𝟙 (X i)) f s 
+    { obj := fun Y s => 
+        match s with 
+        | .inl i => X i 
+        | .inr j => Y j
+      map := fun {Y} {Y'} f s => 
+        match s with 
+        | .inl i => 𝟙 (X i) 
+        | .inr j => f j
       map_id := fun Y => by 
           dsimp
           simp only [CategoryStruct.id]
@@ -167,12 +179,17 @@ def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : Sum I J, Sum.elim C D s
           match s with 
           | .inl i => simp 
           | .inr j => simp 
-      map_comp := fun {Y₁} {Y₂} {Y₃} f g => by dsimp; funext s; cases s; repeat {simp} }
+      map_comp := fun {Y₁} {Y₂} {Y₃} f g => by funext s; cases s; repeat {simp} }
   map {X} {X'} f := 
-    { app := fun Y s => Sum.rec f (fun j => 𝟙 (Y j)) s 
-      naturality := sorry }
-  map_id := sorry 
-  map_comp := sorry 
+    { app := fun Y s => 
+        match s with 
+        | .inl i => f i 
+        | .inr j => 𝟙 (Y j) 
+      naturality := fun {Y} {Y'} g => by funext s; cases s; repeat {simp} }
+  map_id := fun X => by 
+    ext Y; dsimp; simp only [CategoryStruct.id]; funext s; cases s; repeat {simp}
+  map_comp := fun f g => by 
+    ext Y; dsimp; simp only [CategoryStruct.comp]; funext s; cases s; repeat {simp}
 #align category_theory.pi.sum CategoryTheory.Pi.sum
 
 end
@@ -217,7 +234,7 @@ variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)] {A : Type u₁} [C
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
 -/
-@[simps!]
+@[simps]
 def pi (F : ∀ i, C i ⥤ D i) : (∀ i, C i) ⥤ ∀ i, D i
     where
   obj f i := (F i).obj (f i)
@@ -226,7 +243,7 @@ def pi (F : ∀ i, C i ⥤ D i) : (∀ i, C i) ⥤ ∀ i, D i
 
 /-- Similar to `pi`, but all functors come from the same category `A`
 -/
-@[simps!]
+@[simps]
 def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i
     where
   obj a i := (f i).obj a
@@ -263,10 +280,11 @@ theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙  (Pi.eval C i) = f' �
     specialize h i
     have := congr_obj h X
     simpa
-  · intro x y p
-    ext i
+  · intro X Y g
+    dsimp 
+    funext i
     specialize h i
-    have := congr_hom h p
+    have := congr_hom h g
     simpa
 #align category_theory.functor.pi_ext CategoryTheory.Functor.pi_ext
 
@@ -285,7 +303,7 @@ variable {F G : ∀ i, C i ⥤ D i}
 @[simps!]
 def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where 
   app f i := (α i).app (f i) 
-  naturality := by intro X Y p; simp [Functor.pi]; aesop_cat 
+  naturality := fun X Y f => by simp [Functor.pi,CategoryStruct.comp]
 #align category_theory.nat_trans.pi CategoryTheory.NatTrans.pi
 
 end NatTrans
