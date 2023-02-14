@@ -22,32 +22,21 @@ In this file we define `finsupp.supported s` to be the set `{f : α →₀ M | f
 interpreted as a submodule of `α →₀ M`. We also define `linear_map` versions of various maps:
 
 * `finsupp.lsingle a : M →ₗ[R] ι →₀ M`: `finsupp.single a` as a linear map;
-
 * `finsupp.lapply a : (ι →₀ M) →ₗ[R] M`: the map `λ f, f a` as a linear map;
-
 * `finsupp.lsubtype_domain (s : set α) : (α →₀ M) →ₗ[R] (s →₀ M)`: restriction to a subtype as a
   linear map;
-
 * `finsupp.restrict_dom`: `finsupp.filter` as a linear map to `finsupp.supported s`;
-
 * `finsupp.lsum`: `finsupp.sum` or `finsupp.lift_add_hom` as a `linear_map`;
-
 * `finsupp.total α M R (v : ι → M)`: sends `l : ι → R` to the linear combination of `v i` with
   coefficients `l i`;
-
 * `finsupp.total_on`: a restricted version of `finsupp.total` with domain `finsupp.supported R R s`
   and codomain `submodule.span R (v '' s)`;
-
 * `finsupp.supported_equiv_finsupp`: a linear equivalence between the functions `α →₀ M` supported
   on `s` and the functions `s →₀ M`;
-
 * `finsupp.lmap_domain`: a linear map version of `finsupp.map_domain`;
-
 * `finsupp.dom_lcongr`: a `linear_equiv` version of `finsupp.dom_congr`;
-
 * `finsupp.congr`: if the sets `s` and `t` are equivalent, then `supported M R s` is equivalent to
   `supported M R t`;
-
 * `finsupp.lcongr`: a `linear_equiv`alence between `α →₀ M` and `β →₀ N` constructed using `e : α ≃
   β` and `e' : M ≃ₗ[R] N`.
 
@@ -60,17 +49,13 @@ function with finite support, module, linear algebra
 noncomputable section
 
 open Set LinearMap Submodule
-
 open Classical BigOperators
 
 namespace Finsupp
 
 variable {α : Type _} {M : Type _} {N : Type _} {P : Type _} {R : Type _} {S : Type _}
-
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-
 variable [AddCommMonoid N] [Module R N]
-
 variable [AddCommMonoid P] [Module R P]
 
 /-- Interpret `finsupp.single a` as a linear map. -/
@@ -1239,4 +1224,3 @@ theorem splittingOfFunOnFintypeSurjective_injective [Fintype α] (f : M →ₗ[R
 #align linear_map.splitting_of_fun_on_fintype_surjective_injective LinearMap.splittingOfFunOnFintypeSurjective_injective
 
 end LinearMap
-
