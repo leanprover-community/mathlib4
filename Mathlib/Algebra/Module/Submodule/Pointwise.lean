@@ -8,8 +8,8 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Pointwise
-import Mathbin.LinearAlgebra.Span
+import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.LinearAlgebra.Span
 
 /-! # Pointwise instances on `submodule`s
 
@@ -105,8 +105,7 @@ def negOrderIso : Submodule R M ≃o Submodule R M
   map_rel_iff' := neg_le_neg
 #align submodule.neg_order_iso Submodule.negOrderIso
 
-theorem closure_neg (s : Set M) : span R (-s) = -span R s :=
-  by
+theorem closure_neg (s : Set M) : span R (-s) = -span R s := by
   apply le_antisymm
   · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
     exact subset_span
@@ -258,8 +257,7 @@ instance pointwise_central_scalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClas
 
 @[simp]
 theorem smul_le_self_of_tower {α : Type _} [Semiring α] [Module α R] [Module α M]
-    [SMulCommClass α R M] [IsScalarTower α R M] (a : α) (S : Submodule R M) : a • S ≤ S :=
-  by
+    [SMulCommClass α R M] [IsScalarTower α R M] (a : α) (S : Submodule R M) : a • S ≤ S := by
   rintro y ⟨x, hx, rfl⟩
   exact smul_of_tower_mem _ a hx
 #align submodule.smul_le_self_of_tower Submodule.smul_le_self_of_tower

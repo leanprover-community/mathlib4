@@ -107,6 +107,7 @@ import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
