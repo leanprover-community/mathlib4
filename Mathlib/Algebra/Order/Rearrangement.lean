@@ -169,7 +169,9 @@ theorem MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : MonovaryOn f g s)
   have hσinv : { x | σ⁻¹ x ≠ x } ⊆ s := (set_support_inv_eq _).subset.trans hσ
   refine'
     (Iff.trans _ <| hfg.sum_smul_comp_perm_eq_sum_smul_iff hσinv).trans ⟨fun h => _, fun h => _⟩
-  · simpa only [σ.sum_comp' s (fun i j => f i • g j) hσ]
+  · apply eq_iff_eq_cancel_right.2
+    rw [σ.sum_comp' s (fun i j => f i • g j) hσ]
+    congr
   · convert h.comp_right σ
     · rw [comp.assoc, inv_def, symm_comp_self, comp.right_id]
     · rw [σ.eq_preimage_iff_image_eq, Set.image_perm hσ]
