@@ -37,7 +37,7 @@ section
 variable (α)
 
 /-- `x ↦ x⁻¹` as an order-reversing equivalence. -/
-@[to_additive "`x ↦ -x` as an order-reversing equivalence.", simps]
+@[to_additive (attr := simps!) "`x ↦ -x` as an order-reversing equivalence."]
 def OrderIso.inv : α ≃o αᵒᵈ where
   toEquiv := (Equiv.inv α).trans OrderDual.toDual
   map_rel_iff' {_ _} := @inv_le_inv_iff α _ _ _ _ _ _
@@ -85,8 +85,8 @@ section Right
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
 /-- `Equiv.mulRight` as an `OrderIso`. See also `OrderEmbedding.mulRight`. -/
-@[to_additive "`Equiv.addRight` as an `OrderIso`. See also `OrderEmbedding.addRight`.",
-  simps (config := { simpRhs := true }) toEquiv apply]
+@[to_additive (attr := simps! (config := { simpRhs := true }) toEquiv apply)
+  "`Equiv.addRight` as an `OrderIso`. See also `OrderEmbedding.addRight`."]
 def OrderIso.mulRight (a : α) : α ≃o α where
   map_rel_iff' {_ _} := mul_le_mul_iff_right a
   toEquiv := Equiv.mulRight a
@@ -109,15 +109,16 @@ section Left
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 /-- `Equiv.mulLeft` as an `OrderIso`. See also `OrderEmbedding.mulLeft`. -/
-@[to_additive "`Equiv.addLeft` as an `OrderIso`. See also `OrderEmbedding.addLeft`.",
-  simps (config := { simpRhs := true }) toEquiv apply]
+@[to_additive (attr := simps! (config := { simpRhs := true }) toEquiv apply)
+  "`Equiv.addLeft` as an `OrderIso`. See also `OrderEmbedding.addLeft`."]
 def OrderIso.mulLeft (a : α) : α ≃o α where
   map_rel_iff' {_ _} := mul_le_mul_iff_left a
   toEquiv := Equiv.mulLeft a
 #align order_iso.mul_left OrderIso.mulLeft
 #align order_iso.add_left OrderIso.addLeft
 #align order_iso.mul_left_apply OrderIso.mulLeft_apply
-#align order_iso.mul_left_to_equiv OrderIso.mulLeft_toEquiv
+#align order_iso.add_left_apply OrderIso.addLeft_apply
+#align order_iso.add_left_to_equiv OrderIso.addLeft_toEquiv
 
 @[to_additive (attr := simp)]
 theorem OrderIso.mulLeft_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by

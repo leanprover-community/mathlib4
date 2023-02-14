@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 
 ! This file was ported from Lean 3 source module data.fin.basic
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
+! leanprover-community/mathlib commit 008af8bb14b3ebef7e04ec3b0d63b947dee4d26a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -328,7 +328,7 @@ theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 #align fin.coe_strict_mono Fin.val_strictMono
 
 /-- The equivalence `Fin n ≃ { i // i < n }` is an order isomorphism. -/
-@[simps apply symmApply]
+@[simps! apply symmApply]
 def orderIsoSubtype : Fin n ≃o { i // i < n } :=
   equivSubtype.toOrderIso (by simp [Monotone]) (by simp [Monotone])
 #align fin.order_iso_subtype Fin.orderIsoSubtype
@@ -348,7 +348,7 @@ theorem equivSubtype_symm_trans_valEmbedding :
 #align fin.equiv_subtype_symm_trans_val_embedding Fin.equivSubtype_symm_trans_valEmbedding
 
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
-@[simps apply]
+@[simps! apply]
 def valOrderEmbedding (n) : Fin n ↪o ℕ :=
   ⟨valEmbedding, Iff.rfl⟩
 #align fin.coe_order_embedding Fin.valOrderEmbedding
@@ -493,7 +493,7 @@ theorem rev_lt_rev {i j : Fin n} : rev i < rev j ↔ j < i :=
 #align fin.rev_lt_rev Fin.rev_lt_rev
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
-@[simps apply toEquiv]
+@[simps! apply toEquiv]
 def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
   ⟨OrderDual.ofDual.trans rev, rev_le_rev⟩
 #align fin.rev_order_iso Fin.revOrderIso
@@ -2485,16 +2485,10 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
 #align fin.coe_clamp Fin.coe_clamp
 
 @[simp]
-theorem coe_ofNat_eq_mod' (m n : ℕ) [NeZero m] :
-    (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
+theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
+    ((n : Fin m) : ℕ) = n % m :=
   rfl
--- Porting note: new in mathlib 4?
--- #align fin.coe_of_nat_eq_mod' Fin.coe_ofNat_eq_mod'
-
-@[simp]
-theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (m+1)) : ℕ) = n % Nat.succ m :=
-  rfl
-#align fin.coe_of_nat_eq_mod Fin.coe_of_nat_eq_mod
+#align fin.coe_of_nat_eq_mod Fin.coe_ofNat_eq_mod
 
 section Mul
 

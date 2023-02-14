@@ -326,7 +326,7 @@ end
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
 def starRingAut [CommSemiring R] [StarRing R] : RingAut R :=
-  { starAddEquiv, starMulAut with toFun := star }
+  { starAddEquiv, starMulAut (R := R) with toFun := star }
 #align star_ring_aut starRingAut
 #align star_ring_aut_apply starRingAut_apply
 
@@ -456,8 +456,8 @@ namespace StarOrderedRing
 -- see note [lower instance priority]
 instance (priority := 100) [NonUnitalRing R] [PartialOrder R] [StarOrderedRing R] :
     OrderedAddCommGroup R :=
-  { show NonUnitalRing R by infer_instance, show PartialOrder R by infer_instance,
-    show StarOrderedRing R by infer_instance with }
+  { inferInstanceAs (NonUnitalRing R), inferInstanceAs (PartialOrder R),
+    inferInstanceAs (StarOrderedRing R) with }
 
 end StarOrderedRing
 

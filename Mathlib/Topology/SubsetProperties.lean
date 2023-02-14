@@ -1091,6 +1091,11 @@ theorem local_compact_nhds [LocallyCompactSpace α] {x : α} {n : Set α} (h : n
   LocallyCompactSpace.local_compact_nhds _ _ h
 #align local_compact_nhds local_compact_nhds
 
+/-- In a locally compact space, the filters `𝓝 x` and `cocompact α` are disjoint for all `α`. -/
+theorem disjoint_nhds_cocompact [LocallyCompactSpace α] (x : α) : Disjoint (𝓝 x) (cocompact α) :=
+  let ⟨_, hx, _, hc⟩ := local_compact_nhds (univ_mem (f := 𝓝 x));
+  disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
+
 theorem locallyCompactSpace_of_hasBasis {ι : α → Type _} {p : ∀ x, ι x → Prop}
     {s : ∀ x, ι x → Set α} (h : ∀ x, (𝓝 x).HasBasis (p x) (s x))
     (hc : ∀ x i, p x i → IsCompact (s x i)) : LocallyCompactSpace α :=
@@ -1667,17 +1672,23 @@ theorem isPreirreducible_iff_closure {s : Set α} :
     IsPreirreducible (closure s) ↔ IsPreirreducible s :=
   forall₄_congr fun u v hu hv => by
     iterate 3 rw [closure_inter_open_nonempty_iff]
-    exacts[hu.inter hv, hv, hu]
+    exacts [hu.inter hv, hv, hu]
 #align is_preirreducible_iff_closure isPreirreducible_iff_closure
 
 theorem isIrreducible_iff_closure {s : Set α} : IsIrreducible (closure s) ↔ IsIrreducible s :=
   and_congr closure_nonempty_iff isPreirreducible_iff_closure
 #align is_irreducible_iff_closure isIrreducible_iff_closure
 
-alias isPreirreducible_iff_closure ↔ _ IsPreirreducible.closure
+-- porting note: todo: use `alias` + `@[protected]`
+protected lemma IsPreirreducible.closure {s : Set α} (h : IsPreirreducible s) :
+    IsPreirreducible (closure s) :=
+  isPreirreducible_iff_closure.2 h
 #align is_preirreducible.closure IsPreirreducible.closure
 
-alias isIrreducible_iff_closure ↔ _ IsIrreducible.closure
+-- porting note: todo: use `alias` + `@[protected]`
+protected lemma IsIrreducible.closure {s : Set α} (h : IsIrreducible s) :
+    IsIrreducible (closure s) :=
+  isIrreducible_iff_closure.2 h
 #align is_irreducible.closure IsIrreducible.closure
 
 theorem exists_preirreducible (s : Set α) (H : IsPreirreducible s) :

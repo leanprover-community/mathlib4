@@ -145,7 +145,7 @@ namespace FunLike
 
 variable {F α β} [i : FunLike F α β]
 
-instance (priority := 100) : CoeFun F fun _ ↦ ∀ a : α, β a where coe := FunLike.coe
+instance (priority := 100) hasCoeToFun : CoeFun F fun _ ↦ ∀ a : α, β a where coe := FunLike.coe
 
 #eval Lean.Elab.Command.liftTermElabM do
   Std.Tactic.Coe.registerCoercion ``FunLike.coe

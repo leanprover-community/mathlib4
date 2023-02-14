@@ -59,26 +59,26 @@ def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.
 See also `OrderIso.mulLeft` when working in an ordered group. -/
-@[to_additive
+@[to_additive (attr := simps!)
       "The order embedding sending `b` to `a + b`, for some fixed `a`.
-       See also `OrderIso.addLeft` when working in an additive ordered group.",
-  simps]
+       See also `OrderIso.addLeft` when working in an additive ordered group."]
 def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· < ·)] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => m * n) fun _ _ w => mul_lt_mul_left' w m
 #align order_embedding.mul_left OrderEmbedding.mulLeft
 #align order_embedding.add_left OrderEmbedding.addLeft
 #align order_embedding.mul_left_apply OrderEmbedding.mulLeft_apply
+#align order_embedding.add_left_apply OrderEmbedding.addLeft_apply
 
 /-- The order embedding sending `b` to `b * a`, for some fixed `a`.
 See also `OrderIso.mulRight` when working in an ordered group. -/
-@[to_additive
+@[to_additive (attr := simps!)
       "The order embedding sending `b` to `b + a`, for some fixed `a`.
-       See also `OrderIso.addRight` when working in an additive ordered group.",
-  simps]
+       See also `OrderIso.addRight` when working in an additive ordered group."]
 def OrderEmbedding.mulRight {α : Type _} [Mul α] [LinearOrder α]
     [CovariantClass α α (swap (· * ·)) (· < ·)] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => n * m) fun _ _ w => mul_lt_mul_right' w m
 #align order_embedding.mul_right OrderEmbedding.mulRight
 #align order_embedding.add_right OrderEmbedding.addRight
 #align order_embedding.mul_right_apply OrderEmbedding.mulRight_apply
+#align order_embedding.add_right_apply OrderEmbedding.addRight_apply
