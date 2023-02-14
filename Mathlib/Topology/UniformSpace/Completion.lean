@@ -210,19 +210,19 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyCat α) :=
 set_option linter.uppercaseLean3 false in
 #align Cauchy.dense_range_pure_cauchy CauchyCat.denseRange_pureCauchy
 
-theorem denseInducing_pureCauchy : DenseInducing pureCauchy :=
-  uniform_inducing_pureCauchy.DenseInducing dense_range_pureCauchy
+theorem denseInducing_pureCauchy : DenseInducing (pureCauchy : α → CauchyCat α) :=
+  uniformInducing_pureCauchy.denseInducing denseRange_pureCauchy
 set_option linter.uppercaseLean3 false in
 #align Cauchy.dense_inducing_pure_cauchy CauchyCat.denseInducing_pureCauchy
 
-theorem denseEmbedding_pureCauchy : DenseEmbedding pureCauchy :=
-  uniform_embedding_pureCauchy.DenseEmbedding dense_range_pureCauchy
+theorem denseEmbedding_pureCauchy : DenseEmbedding (pureCauchy : α → CauchyCat α) :=
+  uniformEmbedding_pureCauchy.denseEmbedding denseRange_pureCauchy
 set_option linter.uppercaseLean3 false in
 #align Cauchy.dense_embedding_pure_cauchy CauchyCat.denseEmbedding_pureCauchy
 
 theorem nonempty_cauchyCat_iff : Nonempty (CauchyCat α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
-  · have := eq_univ_iff_forall.1 denseEmbedding_pureCauchy.to_denseInducing.closure_range c
+  · have := eq_univ_iff_forall.1 denseEmbedding_pureCauchy.toDenseInducing.closure_range c
     obtain ⟨_, ⟨_, a, _⟩⟩ := mem_closure_iff.1 this _ isOpen_univ trivial
     exact ⟨a⟩
   · exact ⟨pureCauchy c⟩
@@ -236,7 +236,7 @@ set_option eqn_compiler.zeta true
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance : CompleteSpace (CauchyCat α) :=
-  completeSpace_extension uniform_inducing_pureCauchy dense_range_pureCauchy fun f hf =>
+  completeSpace_extension uniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
     let f' : CauchyCat α := ⟨f, hf⟩
     have : map pureCauchy f ≤ (𝓤 <| CauchyCat α).lift' (preimage (Prod.mk f')) :=
       le_lift'.2 fun s hs =>
@@ -245,7 +245,7 @@ instance : CompleteSpace (CauchyCat α) :=
         have : t' ⊆ { y : α | (f', pureCauchy y) ∈ gen t } := fun x hx =>
           (f ×ᶠ pure x).sets_of_superset (prod_mem_prod ht' hx) h
         f.sets_of_superset ht' <| Subset.trans this (preimage_mono ht₂)
-    ⟨f', by simp [nhds_eq_uniformity] <;> assumption⟩
+    ⟨f', by simp [nhds_eq_uniformity] ; assumption⟩
 
 end
 
@@ -396,7 +396,7 @@ instance : CoeTC α (Completion α) :=
   ⟨Quotient.mk' ∘ pureCauchy⟩
 
 -- note [use has_coe_t]
-protected theorem coe_eq : (coe : α → Completion α) = Quotient.mk' ∘ pureCauchy :=
+protected theorem coe_eq : (CoeTC.coe : α → Completion α) = Quotient.mk' ∘ pureCauchy :=
   rfl
 #align uniform_space.completion.coe_eq UniformSpace.Completion.coe_eq
 
@@ -412,13 +412,13 @@ theorem comap_coe_eq_uniformity :
   rw [comap_quotient_eq_uniformity, uniformEmbedding_pureCauchy.comap_uniformity]
 #align uniform_space.completion.comap_coe_eq_uniformity UniformSpace.Completion.comap_coe_eq_uniformity
 
-theorem uniformInducing_coe : UniformInducing (coe : α → Completion α) :=
+theorem uniformInducing_coe : UniformInducing (CoeTC.coe : α → Completion α) :=
   ⟨comap_coe_eq_uniformity α⟩
 #align uniform_space.completion.uniform_inducing_coe UniformSpace.Completion.uniformInducing_coe
 
 variable {α}
 
-theorem denseRange_coe : DenseRange (coe : α → Completion α) :=
+theorem denseRange_coe : DenseRange (CoeTC.coe : α → Completion α) :=
   denseRange_pureCauchy.Quotient
 #align uniform_space.completion.dense_range_coe UniformSpace.Completion.denseRange_coe
 
@@ -427,12 +427,12 @@ variable (α)
 /-- The Haudorff completion as an abstract completion. -/
 def cpkg {α : Type _} [UniformSpace α] : AbstractCompletion α
     where
-  Space := Completion α
-  coe := coe
+  space := Completion α
+  coe := CoeTC.coe
   uniformStruct := by infer_instance
   complete := by infer_instance
   separation := by infer_instance
-  UniformInducing := Completion.uniformInducing_coe α
+  uniformInducing := Completion.uniformInducing_coe α
   dense := Completion.denseRange_coe
 #align uniform_space.completion.cpkg UniformSpace.Completion.cpkg
 
