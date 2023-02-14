@@ -37,7 +37,7 @@ instance pi : Category.{max w₀ v₁} (∀ i, C i)
 #align category_theory.pi CategoryTheory.pi
 
 /-- This provides some assistance to typeclass search in a common situation,
-which otherwise fails. (Without this `category_theory.pi.has_limit_of_has_limit_comp_eval` fails.)
+which otherwise fails. (Without this `CategoryTheory.Pi.has_limit_of_has_limit_comp_eval` fails.)
 -/
 abbrev pi' {I : Type v₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] : Category.{v₁} (∀ i, C i) :=
   CategoryTheory.pi C
@@ -262,7 +262,7 @@ theorem eqToHom_proj {x x' : ∀ i, C i} (h : x = x') (i : I) :
 end EqToHom
 
 -- One could add some natural isomorphisms showing
--- how `functor.pi` commutes with `pi.eval` and `pi.comap`.
+-- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
 theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i = f i := by
   apply Functor.ext 
@@ -273,7 +273,8 @@ theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i = f i :
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
-theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙  (Pi.eval C i) = f' ⋙  (Pi.eval C i)) : f = f' := by
+theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙  (Pi.eval C i) = f' ⋙  (Pi.eval C i)) 
+    : f = f' := by
   apply Functor.ext; rotate_left
   · intro X
     ext i
@@ -309,4 +310,3 @@ def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
 end NatTrans
 
 end CategoryTheory
-
