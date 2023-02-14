@@ -19,11 +19,11 @@ We define a few types of compact sets in a topological space.
 ## Main Definitions
 
 For a topological space `α`,
-* `compacts α`: The type of compact sets.
-* `nonempty_compacts α`: The type of non-empty compact sets.
-* `positive_compacts α`: The type of compact sets with non-empty interior.
-* `compact_opens α`: The type of compact open sets. This is a central object in the study of
-  spectral spaces.
+* `TopologicalSpace.Compacts α`: The type of compact sets.
+* `TopologicalSpace.NonemptyCompacts α`: The type of non-empty compact sets.
+* `TopologicalSpace.PositiveCompacts α`: The type of compact sets with non-empty interior.
+* `TopologicalSpace.CompactOpens α`: The type of compact open sets. This is a central object in the
+  study of spectral spaces.
 -/
 
 
@@ -34,7 +34,6 @@ variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
 namespace TopologicalSpace
 
 /-! ### Compact sets -/
-
 
 /-- The type of compact sets of a topological space. -/
 structure Compacts (α : Type _) [TopologicalSpace α] where
@@ -160,7 +159,8 @@ theorem equiv_to_fun_val (f : α ≃ₜ β) (K : Compacts α) : (Compacts.equiv 
   congr_fun (image_eq_preimage_of_inverse f.left_inv f.right_inv) K.1
 #align topological_space.compacts.equiv_to_fun_val TopologicalSpace.Compacts.equiv_to_fun_val
 
-/-- The product of two `compacts`, as a `compacts` in the product space. -/
+/-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
+space. -/
 protected def prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) where
   carrier := K ×ˢ L
   isCompact' := IsCompact.prod K.2 L.2
@@ -264,7 +264,8 @@ instance toNonempty {s : NonemptyCompacts α} : Nonempty s :=
   s.nonempty.to_subtype
 #align topological_space.nonempty_compacts.to_nonempty TopologicalSpace.NonemptyCompacts.toNonempty
 
-/-- The product of two `nonempty_compacts`, as a `nonempty_compacts` in the product space. -/
+/-- The product of two `TopologicalSpace.NonemptyCompacts`, as a `TopologicalSpace.NonemptyCompacts`
+in the product space. -/
 protected def prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) : NonemptyCompacts (α × β) :=
   { K.toCompacts.prod L.toCompacts with nonempty' := K.nonempty.prod L.nonempty }
 #align topological_space.nonempty_compacts.prod TopologicalSpace.NonemptyCompacts.prod
@@ -280,7 +281,7 @@ end NonemptyCompacts
 /-! ### Positive compact sets -/
 
 /-- The type of compact sets with nonempty interior of a topological space.
-See also `compacts` and `nonempty_compacts`. -/
+See also `TopologicalSpace.Compacts` and `TopologicalSpace.NonemptyCompacts`. -/
 structure PositiveCompacts (α : Type _) [TopologicalSpace α] extends Compacts α where
   interior_nonempty' : (interior carrier).Nonempty
 #align topological_space.positive_compacts TopologicalSpace.PositiveCompacts
@@ -374,7 +375,8 @@ instance nonempty' [LocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCo
   nonempty_of_exists <| exists_positiveCompacts_subset isOpen_univ univ_nonempty
 #align topological_space.positive_compacts.nonempty' TopologicalSpace.PositiveCompacts.nonempty'
 
-/-- The product of two `positive_compacts`, as a `positive_compacts` in the product space. -/
+/-- The product of two `TopologicalSpace.PositiveCompacts`, as a `TopologicalSpace.PositiveCompacts`
+in the product space. -/
 protected def prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
     PositiveCompacts (α × β) where
   toCompacts := K.toCompacts.prod L.toCompacts
@@ -528,7 +530,8 @@ theorem coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : Com
   rfl
 #align topological_space.compact_opens.coe_map TopologicalSpace.CompactOpens.coe_map
 
-/-- The product of two `compact_opens`, as a `compact_opens` in the product space. -/
+/-- The product of two `TopologicalSpace.CompactOpens`, as a `TopologicalSpace.CompactOpens` in the
+product space. -/
 protected def prod (K : CompactOpens α) (L : CompactOpens β) : CompactOpens (α × β) :=
   { K.toCompacts.prod L.toCompacts with isOpen' := K.isOpen.prod L.isOpen }
 #align topological_space.compact_opens.prod TopologicalSpace.CompactOpens.prod
