@@ -239,14 +239,18 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Pi.Basic
+import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Colex
+import Mathlib.Combinatorics.Composition
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Combinatorics.Hall.Finite
+import Mathlib.Combinatorics.Partition
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
@@ -363,6 +367,7 @@ import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Data.Finsupp.Interval
+import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Finsupp.NeLocus
 import Mathlib.Data.Finsupp.Order
@@ -499,6 +504,7 @@ import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
@@ -519,6 +525,7 @@ import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.PartENat
+import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.PrimeFin
@@ -686,6 +693,7 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Support
 import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.IsFreeGroup
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.Perm.Basic
@@ -771,6 +779,7 @@ import Mathlib.Lean.Meta.Simp
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Pi
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic
@@ -807,6 +816,7 @@ import Mathlib.Mathport.Syntax
 import Mathlib.MeasureTheory.MeasurableSpace
 import Mathlib.MeasureTheory.MeasurableSpaceDef
 import Mathlib.MeasureTheory.PiSystem
+import Mathlib.NumberTheory.ADEInequality
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.FrobeniusNumber
@@ -970,6 +980,7 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
@@ -1029,13 +1040,13 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
-import Mathlib.Tactic.TagAttr
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.Zify.Attr
 import Mathlib.Testing.SlimCheck.Gen
@@ -1052,6 +1063,7 @@ import Mathlib.Topology.Algebra.Order.ExtrClosure
 import Mathlib.Topology.Algebra.Order.Filter
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.LeftRight
+import Mathlib.Topology.Algebra.Order.LeftRightLim
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
@@ -1097,8 +1109,10 @@ import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Partial
 import Mathlib.Topology.Perfect
+import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Closeds
+import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
 import Mathlib.Topology.ShrinkingLemma
