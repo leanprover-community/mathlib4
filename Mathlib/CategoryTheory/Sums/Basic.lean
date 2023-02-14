@@ -62,14 +62,16 @@ instance sum : Category.{v₁} (Sum C D)
     | inr X, inr Y, inr Z, inr W => Category.assoc f g h
 #align category_theory.sum CategoryTheory.sum
 
-@[simp]
+/- Porting note: seems similar to Mathlib4#1036 issue so marked as nolint  -/
+@[simp, nolint simpComm]
 theorem sum_comp_inl {P Q R : C} (f : (inl P : Sum C D) ⟶ inl Q) (g : (inl Q : Sum C D) ⟶ inl R) :
     @CategoryStruct.comp _ _ P Q R (f : P ⟶ Q) (g : Q ⟶ R) =
       @CategoryStruct.comp _ _ (inl P) (inl Q) (inl R) (f : P ⟶ Q) (g : Q ⟶ R) :=
   rfl
 #align category_theory.sum_comp_inl CategoryTheory.sum_comp_inl
 
-@[simp]
+/- Porting note: seems similar to Mathlib4#1036 issue so marked as nolint  -/
+@[simp, nolint simpComm]
 theorem sum_comp_inr {P Q R : D} (f : (inr P : Sum C D) ⟶ inr Q) (g : (inr Q : Sum C D) ⟶ inr R) :
     @CategoryStruct.comp _ _ P Q R (f : P ⟶ Q) (g : Q ⟶ R) =
       @CategoryStruct.comp _ _ (inr P) (inr Q) (inr R) (f : P ⟶ Q) (g : Q ⟶ R) :=
@@ -246,3 +248,4 @@ theorem sum_app_inr {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I
 end NatTrans
 
 end CategoryTheory
+#lint
