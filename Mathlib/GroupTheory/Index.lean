@@ -225,7 +225,7 @@ variable (H K)
 
 @[to_additive (attr := simp)]
 theorem index_top : (⊤ : Subgroup G).index = 1 :=
-  Cardinal.toNat_eq_one_iff_unique.mpr ⟨QuotientGroup.subsingleton_quotient_top, ⟨1⟩⟩
+  Nat.card_eq_one_iff_unique.mpr ⟨QuotientGroup.subsingleton_quotient_top, ⟨1⟩⟩
 #align subgroup.index_top Subgroup.index_top
 #align add_subgroup.index_top AddSubgroup.index_top
 
@@ -459,7 +459,7 @@ theorem relindex_infᵢ_ne_zero {ι : Type _} [_hι : Finite ι] {f : ι → Sub
     Nat.card_pi.symm.trans ∘
       Finite.card_eq_zero_of_embedding (quotientInfᵢSubgroupOfEmbedding f L)
 #align subgroup.relindex_infi_ne_zero Subgroup.relindex_infᵢ_ne_zero
-#align add_subgroup.relindex_infi_ne_zero AddSubgroup.relindex_infi_ne_zero
+#align add_subgroup.relindex_infi_ne_zero AddSubgroup.relindex_infᵢ_ne_zero
 
 @[to_additive]
 theorem relindex_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
@@ -470,7 +470,7 @@ theorem relindex_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
       relindex_eq_zero_of_le_left (infᵢ_le f i) h)
     Nat.card_pi
 #align subgroup.relindex_infi_le Subgroup.relindex_infᵢ_le
-#align add_subgroup.relindex_infi_le AddSubgroup.relindex_infi_le
+#align add_subgroup.relindex_infi_le AddSubgroup.relindex_infᵢ_le
 
 @[to_additive]
 theorem index_infᵢ_ne_zero {ι : Type _} [Finite ι] {f : ι → Subgroup G}
@@ -478,29 +478,29 @@ theorem index_infᵢ_ne_zero {ι : Type _} [Finite ι] {f : ι → Subgroup G}
   simp_rw [← relindex_top_right] at hf⊢
   exact relindex_infᵢ_ne_zero hf
 #align subgroup.index_infi_ne_zero Subgroup.index_infᵢ_ne_zero
-#align add_subgroup.index_infi_ne_zero AddSubgroup.index_infi_ne_zero
+#align add_subgroup.index_infi_ne_zero AddSubgroup.index_infᵢ_ne_zero
 
 @[to_additive]
 theorem index_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
     (⨅ i, f i).index ≤ ∏ i, (f i).index := by simp_rw [← relindex_top_right, relindex_infᵢ_le]
 #align subgroup.index_infi_le Subgroup.index_infᵢ_le
-#align add_subgroup.index_infi_le AddSubgroup.index_infi_le
+#align add_subgroup.index_infi_le AddSubgroup.index_infᵢ_le
 
-@[simp, to_additive index_eq_one]
+@[to_additive (attr := simp) index_eq_one]
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
   ⟨fun h =>
-    QuotientGroup.subgroup_eq_top_of_subsingleton H (Cardinal.toNat_eq_one_iff_unique.mp h).1,
+    QuotientGroup.subgroup_eq_top_of_subsingleton H (Nat.card_eq_one_iff_unique.mp h).1,
     fun h => (congr_arg index h).trans index_top⟩
 #align subgroup.index_eq_one Subgroup.index_eq_one
 #align add_subgroup.index_eq_one AddSubgroup.index_eq_one
 
-@[simp, to_additive relindex_eq_one]
+@[to_additive (attr := simp) relindex_eq_one]
 theorem relindex_eq_one : H.relindex K = 1 ↔ K ≤ H :=
   index_eq_one.trans subgroupOf_eq_top
 #align subgroup.relindex_eq_one Subgroup.relindex_eq_one
 #align add_subgroup.relindex_eq_one AddSubgroup.relindex_eq_one
 
-@[simp, to_additive card_eq_one]
+@[to_additive (attr := simp) card_eq_one]
 theorem card_eq_one : Nat.card H = 1 ↔ H = ⊥ :=
   H.relindex_bot_left ▸ relindex_eq_one.trans le_bot_iff
 #align subgroup.card_eq_one Subgroup.card_eq_one
