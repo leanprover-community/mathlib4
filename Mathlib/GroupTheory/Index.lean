@@ -223,6 +223,7 @@ theorem sq_mem_of_index_two (h : H.index = 2) (a : G) : a ^ 2 ∈ H :=
 
 variable (H K)
 
+--porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
 @[to_additive (attr := simp)]
 theorem index_top : (⊤ : Subgroup G).index = 1 :=
   Nat.card_eq_one_iff_unique.mpr ⟨QuotientGroup.subsingleton_quotient_top, ⟨1⟩⟩
@@ -486,6 +487,7 @@ theorem index_infᵢ_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
 #align subgroup.index_infi_le Subgroup.index_infᵢ_le
 #align add_subgroup.index_infi_le AddSubgroup.index_infᵢ_le
 
+--porting note: had to replace `Cardinal.toNat_eq_one_iff_unique` with `Nat.card_eq_one_iff_unique`
 @[to_additive (attr := simp) index_eq_one]
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
   ⟨fun h =>
@@ -514,6 +516,7 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
 #align subgroup.index_ne_zero_of_finite Subgroup.index_ne_zero_of_finite
 #align add_subgroup.index_ne_zero_of_finite AddSubgroup.index_ne_zero_of_finite
 
+--porting note: changed due to error with `Cardinal.toNat_apply_of_aleph0_le`
 /-- Finite index implies finite quotient. -/
 @[to_additive "Finite index implies finite quotient."]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
@@ -533,18 +536,20 @@ variable (H K)
 
 /-- Typeclass for finite index subgroups. -/
 class FiniteIndex : Prop where
-  FiniteIndex : H.index ≠ 0
+  /-- The subgroup has finite index -/
+  finiteIndex : H.index ≠ 0
 #align subgroup.finite_index Subgroup.FiniteIndex
 
 /-- Typeclass for finite index subgroups. -/
 class _root_.AddSubgroup.FiniteIndex {G : Type _} [AddGroup G] (H : AddSubgroup G) : Prop where
-  FiniteIndex : H.index ≠ 0
+  /-- The additive subgroup has finite index -/
+  finiteIndex : H.index ≠ 0
 #align add_subgroup.finite_index AddSubgroup.FiniteIndex
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
-  fintypeOfIndexNeZero FiniteIndex.FiniteIndex
+  fintypeOfIndexNeZero FiniteIndex.finiteIndex
 #align subgroup.fintype_quotient_of_finite_index Subgroup.fintypeQuotientOfFiniteIndex
 #align add_subgroup.fintype_quotient_of_finite_index AddSubgroup.fintypeQuotientOfFiniteIndex
 
@@ -560,6 +565,7 @@ theorem finiteIndex_of_finite_quotient [Finite (G ⧸ H)] : FiniteIndex H :=
 #align subgroup.finite_index_of_finite_quotient Subgroup.finiteIndex_of_finite_quotient
 #align add_subgroup.finite_index_of_finite_quotient AddSubgroup.finiteIndex_of_finite_quotient
 
+--porting note: had to manually provide finite instance for quotient when it should be automatic
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
   @finiteIndex_of_finite_quotient _ _ H (Quotient.finite _)
@@ -572,13 +578,13 @@ instance : FiniteIndex (⊤ : Subgroup G) :=
 
 @[to_additive]
 instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
-  ⟨index_inf_ne_zero FiniteIndex.FiniteIndex FiniteIndex.FiniteIndex⟩
+  ⟨index_inf_ne_zero FiniteIndex.finiteIndex FiniteIndex.finiteIndex⟩
 
 variable {H K}
 
 @[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
-  ⟨ne_zero_of_dvd_ne_zero FiniteIndex.FiniteIndex (index_dvd_of_le h)⟩
+  ⟨ne_zero_of_dvd_ne_zero FiniteIndex.finiteIndex (index_dvd_of_le h)⟩
 #align subgroup.finite_index_of_le Subgroup.finiteIndex_of_le
 #align add_subgroup.finite_index_of_le AddSubgroup.finiteIndex_of_le
 
