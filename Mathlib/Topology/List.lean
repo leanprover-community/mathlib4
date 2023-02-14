@@ -8,8 +8,8 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Constructions
-import Mathbin.Topology.Algebra.Monoid
+import Mathlib.Topology.Constructions
+import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Topology on lists and vectors
@@ -27,8 +27,7 @@ instance : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as :=
-  by
+theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
   refine' nhds_mk_of_nhds _ _ _ _
   · intro l
     induction l
@@ -97,8 +96,7 @@ namespace List
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem tendsto_cons_iff {β : Type _} {f : List α → β} {b : Filter β} {a : α} {l : List α} :
-    Tendsto f (𝓝 (a::l)) b ↔ Tendsto (fun p : α × List α => f (p.1::p.2)) (𝓝 a ×ᶠ 𝓝 l) b :=
-  by
+    Tendsto f (𝓝 (a::l)) b ↔ Tendsto (fun p : α × List α => f (p.1::p.2)) (𝓝 a ×ᶠ 𝓝 l) b := by
   have : 𝓝 (a::l) = (𝓝 a ×ᶠ 𝓝 l).map fun p : α × List α => p.1::p.2 :=
     by
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
@@ -126,8 +124,7 @@ theorem tendsto_nhds {β : Type _} {f : List α → β} {r : List α → Filter 
   | a::l => by rw [tendsto_cons_iff] <;> exact h_cons l a (tendsto_nhds l)
 #align list.tendsto_nhds List.tendsto_nhds
 
-theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l :=
-  by
+theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
   simp only [ContinuousAt, nhds_discrete]
   refine' tendsto_nhds _ _
   · exact tendsto_pure_pure _ _
@@ -187,8 +184,7 @@ theorem continuous_removeNth {n : ℕ} : Continuous fun l : List α => removeNth
 
 @[to_additive]
 theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
-    Tendsto List.prod (𝓝 l) (𝓝 l.Prod) :=
-  by
+    Tendsto List.prod (𝓝 l) (𝓝 l.Prod) := by
   induction' l with x l ih
   · simp (config := { contextual := true }) [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
   simp_rw [tendsto_cons_iff, prod_cons]
@@ -213,8 +209,7 @@ open List
 instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector <;> infer_instance
 
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
-    Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ᶠ 𝓝 l) (𝓝 (a ::ᵥ l)) :=
-  by
+    Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ᶠ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
   simp [tendsto_subtype_rng, ← Subtype.val_eq_coe, cons_val]
   exact tendsto_fst.cons (tendsto.comp continuousAt_subtype_val tendsto_snd)
 #align vector.tendsto_cons Vector.tendsto_cons
