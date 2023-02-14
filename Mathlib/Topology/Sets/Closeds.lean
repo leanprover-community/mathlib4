@@ -97,9 +97,9 @@ instance : CompleteLattice (Closeds α) :=
     (funext fun s => funext fun t => SetLike.coe_injective (s.2.union t.2).closure_eq.symm)
     -- inf
     (fun s t => ⟨s ∩ t, s.2.inter t.2⟩) rfl
-    -- Sup
+    -- supₛ
     _ rfl
-    -- Inf
+    -- infₛ
     (fun S => ⟨⋂ s ∈ S, ↑s, isClosed_binterᵢ fun s _ => s.2⟩)
     (funext fun _ => SetLike.coe_injective infₛ_image.symm)
 
