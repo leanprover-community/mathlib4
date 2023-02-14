@@ -15,33 +15,33 @@ import Mathlib.Topology.Homeomorph
 /-!
 # Topological group with zero
 
-In this file we define `has_continuous_inv₀` to be a mixin typeclass a type with `has_inv` and
-`has_zero` (e.g., a `group_with_zero`) such that `λ x, x⁻¹` is continuous at all nonzero points. Any
-normed (semi)field has this property. Currently the only example of `has_continuous_inv₀` in
-`mathlib` which is not a normed field is the type `nnnreal` (a.k.a. `ℝ≥0`) of nonnegative real
+In this file we define `HasContinuousInv₀` to be a mixin typeclass a type with `Inv` and
+`Zero` (e.g., a `GroupWithZero`) such that `λ x, x⁻¹` is continuous at all nonzero points. Any
+normed (semi)field has this property. Currently the only example of `HasContinuousInv₀` in
+`mathlib` which is not a normed field is the type `NNReal` (a.k.a. `ℝ≥0`) of nonnegative real
 numbers.
 
-Then we prove lemmas about continuity of `x ↦ x⁻¹` and `f / g` providing dot-style `*.inv'` and
-`*.div` operations on `filter.tendsto`, `continuous_at`, `continuous_within_at`, `continuous_on`,
-and `continuous`. As a special case, we provide `*.div_const` operations that require only
-`group_with_zero` and `has_continuous_mul` instances.
+Then we prove lemmas about continuity of `x ↦ x⁻¹` and `f / g` providing dot-style `*.inv₀` and
+`*.div` operations on `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`,
+and `Continuous`. As a special case, we provide `*.div_const` operations that require only
+`DivInvMonoid` and `ContinuousMul` instances.
 
-All lemmas about `(⁻¹)` use `inv'` in their names because lemmas without `'` are used for
-`topological_group`s. We also use `'` in the typeclass name `has_continuous_inv₀` for the sake of
+All lemmas about `(⁻¹)` use `inv₀` in their names because lemmas without `₀` are used for
+`TopologicalGroup`s. We also use `'` in the typeclass name `HasContinuousInv₀` for the sake of
 consistency of notation.
 
-On a `group_with_zero` with continuous multiplication, we also define left and right multiplication
+On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
 as homeomorphisms.
 -/
 open Topology Filter Function
 
 /-!
-### A group with zero with continuous multiplication
+### A `DivInvMonoid` with continuous multiplication
 
-If `G₀` is a group with zero with continuous `(*)`, then `(/y)` is continuous for any `y`. In this
+If `G₀` is a `DivInvMonoid` with continuous `(*)`, then `(/y)` is continuous for any `y`. In this
 section we prove lemmas that immediately follow from this fact providing `*.div_const` dot-style
-operations on `filter.tendsto`, `continuous_at`, `continuous_within_at`, `continuous_on`, and
-`continuous`.
+operations on `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and
+`Continuous`.
 -/
 
 
@@ -49,7 +49,7 @@ variable {α β G₀ : Type _}
 
 section DivConst
 
-variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousMul G₀] {f : α → G₀} {s : Set α}
+variable [DivInvMonoid G₀] [TopologicalSpace G₀] [ContinuousMul G₀] {f : α → G₀} {s : Set α}
   {l : Filter α}
 
 theorem Filter.Tendsto.div_const {x : G₀} (hf : Tendsto f l (𝓝 x)) (y : G₀) :
@@ -81,7 +81,7 @@ theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x =
 
 end DivConst
 
-/-- A type with `0` and `has_inv` such that `λ x, x⁻¹` is continuous at all nonzero points. Any
+/-- A type with `0` and `Inv` such that `λ x, x⁻¹` is continuous at all nonzero points. Any
 normed (semi)field has this property. -/
 class HasContinuousInv₀ (G₀ : Type _) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
   /-- The map `fun x ↦ x⁻¹` is continuous at all nonzero points. -/
@@ -98,9 +98,9 @@ variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G�
 /-!
 ### Continuity of `λ x, x⁻¹` at a non-zero point
 
-We define `topological_group_with_zero` to be a `group_with_zero` such that the operation `x ↦ x⁻¹`
-is continuous at all nonzero points. In this section we prove dot-style `*.inv'` lemmas for
-`filter.tendsto`, `continuous_at`, `continuous_within_at`, `continuous_on`, and `continuous`.
+We define `HasContinuousinv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
+is continuous at all nonzero points. In this section we prove dot-style `*.inv₀` lemmas for
+`Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and `Continuous`.
 -/
 
 theorem tendsto_inv₀ {x : G₀} (hx : x ≠ 0) : Tendsto Inv.inv (𝓝 x) (𝓝 x⁻¹) :=
@@ -145,7 +145,7 @@ end Inv₀
 /-!
 ### Continuity of division
 
-If `G₀` is a `group_with_zero` with `x ↦ x⁻¹` continuous at all nonzero points and `(*)`, then
+If `G₀` is a `GroupWithZero` with `x ↦ x⁻¹` continuous at all nonzero points and `(*)`, then
 division `(/)` is continuous at any point where the denominator is continuous.
 -/
 
@@ -195,12 +195,11 @@ theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p 
   continuousOn_fst.div continuousOn_snd fun _ => id
 #align continuous_on_div continuousOn_div
 
-/-- The function `f x / g x` is discontinuous when `g x = 0`.
-However, under appropriate conditions, `h x (f x / g x)` is still continuous.
-The condition is that if `g a = 0` then `h x y` must tend to `h a 0` when `x` tends to `a`,
-with no information about `y`. This is represented by the `⊤` filter.
-Note: `filter.tendsto_prod_top_iff` characterizes this convergence in uniform spaces.
-See also `filter.prod_top` and `filter.mem_prod_top`. -/
+/-- The function `f x / g x` is discontinuous when `g x = 0`. However, under appropriate
+conditions, `h x (f x / g x)` is still continuous.  The condition is that if `g a = 0` then `h x y`
+must tend to `h a 0` when `x` tends to `a`, with no information about `y`. This is represented by
+the `⊤` filter.  Note: `tendsto_prod_top_iff` characterizes this convergence in uniform spaces.  See
+also `Filter.prod_top` and `Filter.mem_prod_top`. -/
 theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β) (hf : ContinuousAt f a)
     (hg : ContinuousAt g a) (hh : g a ≠ 0 → ContinuousAt (↿h) (a, f a / g a))
     (h2h : g a = 0 → Tendsto (↿h) (𝓝 a ×ᶠ ⊤) (𝓝 (h a 0))) :
@@ -214,7 +213,7 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
 #align continuous_at.comp_div_cases ContinuousAt.comp_div_cases
 
 /-- `h x (f x / g x)` is continuous under certain conditions, even if the denominator is sometimes
-  `0`. See docstring of `continuous_at.comp_div_cases`. -/
+  `0`. See docstring of `ContinuousAt.comp_div_cases`. -/
 theorem Continuous.comp_div_cases {f g : α → G₀} (h : α → G₀ → β) (hf : Continuous f)
     (hg : Continuous g) (hh : ∀ a, g a ≠ 0 → ContinuousAt (↿h) (a, f a / g a))
     (h2h : ∀ a, g a = 0 → Tendsto (↿h) (𝓝 a ×ᶠ ⊤) (𝓝 (h a 0))) :
@@ -232,7 +231,7 @@ namespace Homeomorph
 
 variable [TopologicalSpace α] [GroupWithZero α] [ContinuousMul α]
 
-/-- Left multiplication by a nonzero element in a `group_with_zero` with continuous multiplication
+/-- Left multiplication by a nonzero element in a `GroupWithZero` with continuous multiplication
 is a homeomorphism of the underlying type. -/
 protected def mulLeft₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
   { Equiv.mulLeft₀ c hc with
@@ -240,7 +239,7 @@ protected def mulLeft₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
     continuous_invFun := continuous_mul_left _ }
 #align homeomorph.mul_left₀ Homeomorph.mulLeft₀
 
-/-- Right multiplication by a nonzero element in a `group_with_zero` with continuous multiplication
+/-- Right multiplication by a nonzero element in a `GroupWithZero` with continuous multiplication
 is a homeomorphism of the underlying type. -/
 protected def mulRight₀ (c : α) (hc : c ≠ 0) : α ≃ₜ α :=
   { Equiv.mulRight₀ c hc with
