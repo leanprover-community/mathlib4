@@ -535,7 +535,7 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
 #align tendsto_list_prod tendsto_list_prod
 #align tendsto_list_sum tendsto_list_sum
 
-@[to_additive]
+@[to_additive (attr := continuity)]
 theorem continuous_list_prod {f : ι → X → M} (l : List ι) (h : ∀ i ∈ l, Continuous (f i)) :
     Continuous fun a => (l.map fun i => f i a).prod :=
   continuous_iff_continuousAt.2 fun x =>
