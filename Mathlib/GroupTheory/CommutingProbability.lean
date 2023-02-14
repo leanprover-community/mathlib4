@@ -8,11 +8,11 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.ConjFinite
-import Mathbin.GroupTheory.Abelianization
-import Mathbin.GroupTheory.GroupAction.ConjAct
-import Mathbin.GroupTheory.GroupAction.Quotient
-import Mathbin.GroupTheory.Index
+import Mathlib.Algebra.Group.ConjFinite
+import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.Index
 
 /-!
 # Commuting Probability
@@ -54,8 +54,7 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
       (pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2)
 #align comm_prob_pos commProb_pos
 
-theorem commProb_le_one : commProb M ≤ 1 :=
-  by
+theorem commProb_le_one : commProb M ≤ 1 := by
   refine' div_le_one_of_le _ (sq_nonneg (Nat.card M))
   rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
@@ -76,8 +75,7 @@ theorem commProb_eq_one_iff [h : Nonempty M] : commProb M = 1 ↔ Commutative ((
 variable (G : Type _) [Group G] [Finite G]
 
 theorem card_comm_eq_card_conjClasses_mul_card :
-    Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = Nat.card (ConjClasses G) * Nat.card G :=
-  by
+    Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = Nat.card (ConjClasses G) * Nat.card G := by
   haveI := Fintype.ofFinite G
   simp only [Nat.card_eq_fintype_card]
   convert
@@ -98,16 +96,14 @@ theorem card_comm_eq_card_conjClasses_mul_card :
       
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 
-theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G :=
-  by
+theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
   rw [commProb, card_comm_eq_card_conjClasses_mul_card, Nat.cast_mul, sq]
   exact mul_div_mul_right _ _ (nat.cast_ne_zero.mpr finite.card_pos.ne')
 #align comm_prob_def' commProb_def'
 
 variable {G} (H : Subgroup G)
 
-theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * H.index ^ 2 :=
-  by
+theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * H.index ^ 2 := by
   /- After rewriting with `comm_prob_def`, we reduce to showing that `G` has at least as many
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
@@ -118,8 +114,7 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * H.index ^ 2 
   · exact pow_pos (nat.cast_pos.mpr Finite.card_pos) 2
 #align subgroup.comm_prob_subgroup_le Subgroup.commProb_subgroup_le
 
-theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H :=
-  by
+theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H := by
   /- After rewriting with `comm_prob_def'`, we reduce to showing that `G` has at least as many
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,

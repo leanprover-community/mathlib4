@@ -668,6 +668,7 @@ import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Commutator
+import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Divisible
