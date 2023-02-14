@@ -17,6 +17,7 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.RSuffices
 
 /-!
 # Turing machines
@@ -2537,7 +2538,7 @@ def trStAct {k : K} (q : Stmt₂₁) : StAct₂ k → Stmt₂₁
 /-- The initial state for the TM2 emulator, given an initial TM2 state. All stacks start out empty
 except for the input stack, and the stack bottom mark is set at the head. -/
 def trInit (k : K) (L : List (Γ k)) : List Γ'₂₁ :=
-  let L' : List Γ'₂₁ := L.reverse.map fun a ↦ (false, update (fun _ ↦ none) k a)
+  let L' : List Γ'₂₁ := L.reverse.map fun a ↦ (false, update (fun _ ↦ none) k (some a))
   (true, L'.headI.2) :: L'.tail
 #align turing.TM2to1.tr_init Turing.TM2to1.trInit
 
@@ -2600,17 +2601,20 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
     dsimp only at this
     refine'
       ⟨_, fun k' ↦ _, by
-        rw [Tape.move_right_n_head, List.length, Tape.mk'_nth_nat, this,
-          addBottom_modifyNth fun a ↦ update a k (some (f v)), Nat.add_one, iterate_succ']⟩
+        -- Porting note: `rw [...]` to `erw [...]; rfl`.
+        erw [Tape.move_right_n_head, List.length, Tape.mk'_nth_nat, this,
+          addBottom_modifyNth fun a ↦ update a k (some (f v)), Nat.add_one, iterate_succ']
+        rfl⟩
     refine' ListBlank.ext fun i ↦ _
     rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
     by_cases h' : k' = k
     · subst k'
-      split_ifs <;> simp only [List.reverse_cons, Function.update_same, ListBlank.nth_mk, List.map]
-      ·
-        rw [List.getI_eq_nthLe, List.nthLe_append_right] <;>
-          simp only [h, List.nthLe_singleton, List.length_map, List.length_reverse, Nat.succ_pos',
-            List.length_append, lt_add_iff_pos_right, List.length]
+      split_ifs with h
+        <;> simp only [List.reverse_cons, Function.update_same, ListBlank.nth_mk, List.map]
+      -- Porting note: `le_refl` is required.
+      · rw [List.getI_eq_get, List.get_append_right'] <;>
+          simp only [h, List.get_singleton, List.length_map, List.length_reverse, Nat.succ_pos',
+            List.length_append, lt_add_iff_pos_right, List.length, le_refl]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
       cases' lt_or_gt_of_ne h with h h
       · rw [List.getI_append]
@@ -2630,26 +2634,26 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
       List.reverse_cons, ← List.length_reverse, List.get?_concat_length]
     rfl
   case pop f =>
-    cases e : S k
+    cases' e : S k with hd tl
     · simp only [Tape.mk'_head, ListBlank.head_cons, Tape.move_left_mk', List.length,
         Tape.write_mk', List.head?, iterate_zero_apply, List.tail_nil]
       rw [← e, Function.update_eq_self]
       exact ⟨L, hL, by rw [addBottom_head_fst, cond]⟩
     · refine'
         ⟨_, fun k' ↦ _, by
-          rw [List.length_cons, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_succ_fst,
+          erw [List.length_cons, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_succ_fst,
             cond, iterate_succ', Function.comp, Tape.move_right_left, Tape.move_right_n_head,
             Tape.mk'_nth_nat, Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k none),
             addBottom_modifyNth fun a ↦ update a k none, addBottom_nth_snd,
             stk_nth_val _ (hL k), e,
             show (List.cons hd tl).reverse.get? tl.length = some hd by
-              rw [List.reverse_cons, ← List.length_reverse, List.get?_concat_length] <;> rfl,
+              rw [List.reverse_cons, ← List.length_reverse, List.get?_concat_length],
             List.head?, List.tail]⟩
       refine' ListBlank.ext fun i ↦ _
       rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
       by_cases h' : k' = k
       · subst k'
-        split_ifs <;> simp only [Function.update_same, ListBlank.nth_mk, List.tail]
+        split_ifs with h <;> simp only [Function.update_same, ListBlank.nth_mk, List.tail]
         · rw [List.getI_eq_default]
           · rfl
           rw [h, List.length_reverse, List.length_map]
@@ -2679,7 +2683,8 @@ def tr : Λ'₂₁ → Stmt₂₁
   | ret q => branch (fun a _ ↦ a.1) (trNormal q) (move Dir.left <| goto fun _ _ ↦ ret q)
 #align turing.TM2to1.tr Turing.TM2to1.tr
 
-attribute [local pp_using_anonymous_constructor] Turing.TM1.Cfg
+-- Porting note: unknown attribute
+-- attribute [local pp_using_anonymous_constructor] Turing.TM1.Cfg
 
 /-- The relation between TM2 configurations and TM1 configurations of the TM2 emulator. -/
 inductive TrCfg : Cfg₂ → Cfg₂₁ → Prop
@@ -2688,7 +2693,6 @@ inductive TrCfg : Cfg₂ → Cfg₂₁ → Prop
       TrCfg ⟨q, v, S⟩ ⟨q.map normal, v, Tape.mk' ∅ (addBottom L)⟩
 #align turing.TM2to1.tr_cfg Turing.TM2to1.TrCfg
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (n «expr ≤ » S.length) -/
 theorem tr_respects_aux₁ {k} (o q v) {S : List (Γ k)} {L : ListBlank (∀ k, Option (Γ k))}
     (hL : L.map (proj k) = ListBlank.mk (S.map some).reverse) (n) (H : n ≤ S.length) :
     Reaches₀ (TM1.step (tr M)) ⟨some (go k o q), v, Tape.mk' ∅ (addBottom L)⟩
@@ -2736,29 +2740,37 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
 attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
+  -- Porting note: `simp only`s are required for beta reductions.
   intro c₁ c₂ h
-  cases' h with l v S L hT; clear h
-  cases l; · constructor
-  simp only [TM2.step, respects, Option.map_some']
-  rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ reaches (TM1.step (tr M)) _ _
-  · exact ⟨b, c, trans_gen.head' rfl r⟩
-  rw [tr]
-  revert v S L hT; refine' stmtStRec _ _ _ _ _ (M l) <;> intros
-  · exact tr_respects_aux M hT s @IH
-  · exact IH _ hT
-  · unfold TM2.stepAux trNormal TM1.stepAux
+  cases' h with l v S L hT
+  cases' l with l; · constructor
+  simp only [TM2.step, Respects, Option.map_some']
+  rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
+  · exact ⟨b, c, TransGen.head' rfl r⟩
+  simp only [tr]
+  -- Porting note: `refine'` failed because of implicit lambda, so `induction` is used.
+  generalize M l = N
+  induction N using stmtStRec generalizing v S L hT with
+  | H₁ k s q IH => exact tr_respects_aux M hT s @IH
+  | H₂ a _ IH => exact IH _ hT
+  | H₃ p q₁ q₂ IH₁ IH₂ =>
+    unfold TM2.stepAux trNormal TM1.stepAux
+    simp only []
     cases p v <;> [exact IH₂ _ hT, exact IH₁ _ hT]
-  · exact ⟨_, ⟨_, hT⟩, refl_trans_gen.refl⟩
-  · exact ⟨_, ⟨_, hT⟩, refl_trans_gen.refl⟩
+  | H₄ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
+  | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
 #align turing.TM2to1.tr_respects Turing.TM2to1.tr_respects
 
 theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trInit k L) : Cfg₂₁) := by
   rw [(_ : TM1.init _ = _)]
   · refine' ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ _⟩
+    simp only [TM2.Cfg.stk, TM2.init]
     refine' ListBlank.ext fun i ↦ _
-    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map,
-      List.get?_map, proj, PointedMap.mk_val]
-    simp only [Function.comp, TM2.init]
+    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map]
+    have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
+      = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
+    rw [this, List.get?_map, proj, PointedMap.mk_val]
+    simp only []
     by_cases k' = k
     · subst k'
       simp only [Function.update_same]
