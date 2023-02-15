@@ -441,20 +441,20 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
 
 /-- The language of the map is the map of the language. -/
 @[simp]
-theorem matches_map (f : α → β) :
+theorem matches'_map (f : α → β) :
     ∀ P : RegularExpression α, (P.map f).matches' = Language.map f P.matches'
   | 0 => (map_zero _).symm
   | 1 => (map_one _).symm
   | char a => by
     rw [eq_comm]
     exact image_singleton
-  | R + S => by simp only [matches_map, map, matches_add, map_add]
-  | R * S => by simp only [matches_map, map, matches_mul, map_mul]
+  | R + S => by simp only [matches'_map, map, matches'_add, map_add]
+  | R * S => by simp only [matches'_map, map, matches'_mul, map_mul]
   | star R => by
-    simp_rw [map, matches', matches_map]
+    simp_rw [map, matches', matches'_map]
     rw [Language.kstar_eq_supᵢ_pow, Language.kstar_eq_supᵢ_pow]
     simp_rw [← map_pow]
-    exact image_Union.symm
-#align regular_expression.matches_map RegularExpression.matches_map
+    exact image_unionᵢ.symm
+#align regular_expression.matches_map RegularExpression.matches'_map
 
 end RegularExpression
