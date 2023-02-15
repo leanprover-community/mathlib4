@@ -533,6 +533,14 @@ def Quotient.equiv {N : Type _} [AddCommGroup N] [Module R N] (P : Submodule R M
     right_inv := fun x => Quotient.inductionOn' x (by simp) }
 #align submodule.quotient.equiv Submodule.Quotient.equiv
 
+-- porting note: `simps` didn't generate this?
+@[simp]
+theorem Quotient.equiv_apply {N : Type _} [AddCommGroup N] [Module R N]
+    (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map f = Q)
+    (hf' :=  fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) (x : M ⧸ P) :
+    (Quotient.equiv P Q f hf) x = (P.mapq Q (f : M →ₗ[R] N) hf') x :=
+  rfl
+
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type _} [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N)
