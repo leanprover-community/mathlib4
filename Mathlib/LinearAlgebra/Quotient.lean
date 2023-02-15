@@ -553,7 +553,7 @@ theorem Quotient.equiv_apply {N : Type _} [AddCommGroup N] [Module R N]
     (Quotient.equiv P Q f hf) x = (P.mapq Q (f : M →ₗ[R] N) hf') x :=
   rfl
 -- porting note: this is `align`ed with an `ₓ` because I had to add `hf'` as an `optParam`.
-#align submodule.quotient.equiv_apply Submodule.Quotient.equiv_apply
+#align submodule.quotient.equiv_apply Submodule.Quotient.equiv_applyₓ
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type _} [CommRing R] [AddCommGroup M] [Module R M]
