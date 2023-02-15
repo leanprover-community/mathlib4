@@ -1780,8 +1780,6 @@ def trCfg : Cfg₁ → Cfg'₁
 
 variable {enc}
 
---include enc0  -- Porting note: `include` doesn't exist
-
 theorem trTape'_move_left (L R : ListBlank Γ) :
     (Tape.move Dir.left^[n]) (trTape' enc0 L R) = trTape' enc0 L.tail (R.cons L.head) := by
   obtain ⟨a, L, rfl⟩ := L.exists_cons
