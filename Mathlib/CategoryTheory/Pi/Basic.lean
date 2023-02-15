@@ -142,31 +142,16 @@ section
 
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
-/- Porting note: We have the following warning but it just looks 
-to me to be permutation of the universe labels 
-
-warning: category_theory.pi.sum_elim_category ->
-\  CategoryTheory.Pi.sumElimCategory is a dubious translation:
-lean 3 declaration is forall {I : Type.{u1}} (C : I -> Type.{u3}) [_inst_1 :
-forall (i : I), CategoryTheory.Category.{u2, u3} (C i)] {J : Type.{u1}} {D : J
--> Type.{u3}} [_inst_2 : forall (j : J), CategoryTheory.Category.{u2, u3} (D
-j)] (s : Sum.{u1, u1} I J), CategoryTheory.Category.{u2, u3} (Sum.elim.{u1, u1,
-succ (succ u3)} I J Type.{u3} C D s) but is expected to have type forall {I :
-Type.{u3}} (C : I -> Type.{u1}) [_inst_1 : forall (i : I),
-CategoryTheory.Category.{u2, u1} (C i)] {J : Type.{u3}} {D : J -> Type.{u1}}
-[_inst_2 : forall (j : J), CategoryTheory.Category.{u2, u1} (D j)] (s :
-Sum.{u3, u3} I J), CategoryTheory.Category.{u2, u1} (Sum.elim.{u3, u3, succ
-(succ u1)} I J Type.{u1} C D s) Case conversion may be inaccurate. Consider
-using '#align category_theory.pi.sum_elim_category
-CategoryTheory.Pi.sumElimCategoryₓ'. -/
-instance sumElimCategory : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
+/- Porting note: maybe mixing up universes -/
+set_option align.precheck false
+instance sumElimCategoryₓ : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
   | Sum.inl i => by
     dsimp
     infer_instance
   | Sum.inr j => by
     dsimp
     infer_instance
-#align category_theory.pi.sum_elim_category CategoryTheory.Pi.sumElimCategory
+#align category_theory.pi.sum_elim_category CategoryTheory.Pi.sumElimCategoryₓ 
 
 /- Porting note: replaced `Sum.rec` with `match`'s per the error about 
 current state of code generation -/ 
