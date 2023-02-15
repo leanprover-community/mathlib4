@@ -255,6 +255,8 @@ instance : LieModule R L (M →ₗ[R] N)
     simp only [smul_sub, LinearMap.smul_apply, LieHom.lie_apply, lie_smul]
 
 end BasicProperties
+
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
 attribute [-instance] Ring.toNonAssocRing
 
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
