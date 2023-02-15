@@ -8,9 +8,9 @@ Authors: Chris Birkbeck
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Index
-import Mathbin.GroupTheory.Subgroup.Pointwise
-import Mathbin.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.Index
+import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.GroupTheory.GroupAction.ConjAct
 
 /-!
 # Commensurability for subgroups

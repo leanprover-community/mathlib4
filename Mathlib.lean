@@ -669,6 +669,7 @@ import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
+import Mathlib.GroupTheory.Commensurable
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
