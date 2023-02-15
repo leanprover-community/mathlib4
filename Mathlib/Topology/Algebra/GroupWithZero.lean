@@ -16,7 +16,7 @@ import Mathlib.Topology.Homeomorph
 # Topological group with zero
 
 In this file we define `HasContinuousInv₀` to be a mixin typeclass a type with `Inv` and
-`Zero` (e.g., a `GroupWithZero`) such that `λ x, x⁻¹` is continuous at all nonzero points. Any
+`Zero` (e.g., a `GroupWithZero`) such that `fun x ↦ x⁻¹` is continuous at all nonzero points. Any
 normed (semi)field has this property. Currently the only example of `HasContinuousInv₀` in
 `mathlib` which is not a normed field is the type `NNReal` (a.k.a. `ℝ≥0`) of nonnegative real
 numbers.
@@ -81,7 +81,7 @@ theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x =
 
 end DivConst
 
-/-- A type with `0` and `Inv` such that `λ x, x⁻¹` is continuous at all nonzero points. Any
+/-- A type with `0` and `Inv` such that `fun x ↦ x⁻¹` is continuous at all nonzero points. Any
 normed (semi)field has this property. -/
 class HasContinuousInv₀ (G₀ : Type _) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
   /-- The map `fun x ↦ x⁻¹` is continuous at all nonzero points. -/
@@ -96,7 +96,7 @@ variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G�
   {s : Set α} {a : α}
 
 /-!
-### Continuity of `λ x, x⁻¹` at a non-zero point
+### Continuity of `fun x ↦ x⁻¹` at a non-zero point
 
 We define `HasContinuousinv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
 is continuous at all nonzero points. In this section we prove dot-style `*.inv₀` lemmas for
@@ -112,7 +112,7 @@ theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) ({0}ᶜ) :=
 #align continuous_on_inv₀ continuousOn_inv₀
 
 /-- If a function converges to a nonzero value, its inverse converges to the inverse of this value.
-We use the name `tendsto.inv₀` as `tendsto.inv` is already used in multiplicative topological
+We use the name `Filter.Tendsto.inv₀` as `Filter.Tendsto.inv` is already used in multiplicative topological
 groups. -/
 theorem Filter.Tendsto.inv₀ {a : G₀} (hf : Tendsto f l (𝓝 a)) (ha : a ≠ 0) :
     Tendsto (fun x => (f x)⁻¹) l (𝓝 a⁻¹) :=
