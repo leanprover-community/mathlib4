@@ -286,6 +286,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
+-- Porting note: `noncomputable` required.
 noncomputable instance : KleeneAlgebra (Language α) :=
   { Language.instSemiringLanguage, Set.instCompleteBooleanAlgebraSet,
       Language.instKStarLanguage with
