@@ -25,6 +25,8 @@ We define
 * coercion from `α → β` to `Germ l β`: `(f : Germ l β)` is the germ of `f : α → β`
   at `l : Filter α`; this coercion is declared as `CoeTC`;
 * `(const l c : Germ l β)` is the germ of the constant function `fun x : α ↦ c` at a filter `l`;
+* coercion from `β` to `Germ l β`: `(↑c : Germ l β)` is the germ of the constant function
+  `fun x : α ↦ c` at a filter `l`; this coercion is declared as `CoeTC`;
 * `map (F : β → γ) (f : Germ l β)` to be the composition of a function `F` and a germ `f`;
 * `map₂ (F : β → γ → δ) (f : Germ l β) (g : Germ l γ)` to be the germ of `fun x ↦ F (f x) (g x)`
   at `l`;
@@ -119,7 +121,10 @@ instance : CoeTC (α → β) (Germ l β) :=
   ⟨ofFun⟩
 
 @[coe] -- Porting note: removed `HasLiftT` instance
-def const (l : Filter α) (b : β) : (Germ l β) := ofFun fun _ => b
+def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
+
+instance : CoeTC β (Germ l β) :=
+  ⟨const⟩
 
 @[simp]
 theorem quot_mk_eq_coe (l : Filter α) (f : α → β) : Quot.mk _ f = (f : Germ l β) :=
@@ -258,30 +263,30 @@ theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : 
 
 -- Porting note: used `const` instead of lift
 @[simp, norm_cast]
-theorem const_inj [NeBot l] {a b : β} : const l a = const l b ↔ a = b :=
+theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=
   coe_eq.trans const_eventuallyEq
 #align filter.germ.const_inj Filter.Germ.const_inj
 
 @[simp]
-theorem map_const (l : Filter α) (a : β) (f : β → γ) : (const l a).map f = const l (f a) :=
+theorem map_const (l : Filter α) (a : β) (f : β → γ) : (↑a : Germ l β).map f = ↑(f a) :=
   rfl
 #align filter.germ.map_const Filter.Germ.map_const
 
 @[simp]
 theorem map₂_const (l : Filter α) (b : β) (c : γ) (f : β → γ → δ) :
-    map₂ f (const l b) (const l c) = const l (f b c) :=
+    map₂ f (↑b : Germ l β) ↑c = ↑(f b c) :=
   rfl
 #align filter.germ.map₂_const Filter.Germ.map₂_const
 
 @[simp]
 theorem const_compTendsto {l : Filter α} (b : β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
-    (const l b).compTendsto g hg = const lc b :=
+    (↑b : Germ l β).compTendsto g hg = ↑b :=
   rfl
 #align filter.germ.const_comp_tendsto Filter.Germ.const_compTendsto
 
 @[simp]
 theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ lc α}
-    (hg : g.Tendsto l) : (const l b).compTendsto' g hg = const _ b :=
+    (hg : g.Tendsto l) : (↑b : Germ l β).compTendsto' g hg = ↑b :=
   inductionOn g (fun _ _ => rfl) hg
 #align filter.germ.const_comp_tendsto' Filter.Germ.const_compTendsto'
 
@@ -296,12 +301,12 @@ theorem liftPred_coe {p : β → Prop} {f : α → β} : LiftPred p (f : Germ l 
   Iff.rfl
 #align filter.germ.lift_pred_coe Filter.Germ.liftPred_coe
 
-theorem liftPred_const {p : β → Prop} {x : β} (hx : p x) : LiftPred p (const l x) :=
+theorem liftPred_const {p : β → Prop} {x : β} (hx : p x) : LiftPred p (↑x : Germ l β) :=
   eventually_of_forall fun _y => hx
 #align filter.germ.lift_pred_const Filter.Germ.liftPred_const
 
 @[simp]
-theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (const l x) ↔ p x :=
+theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (↑x : Germ l β) ↔ p x :=
   @eventually_const _ _ _ (p x)
 #align filter.germ.lift_pred_const_iff Filter.Germ.liftPred_const_iff
 
@@ -318,18 +323,18 @@ theorem liftRel_coe {r : β → γ → Prop} {f : α → β} {g : α → γ} :
 #align filter.germ.lift_rel_coe Filter.Germ.liftRel_coe
 
 theorem liftRel_const {r : β → γ → Prop} {x : β} {y : γ} (h : r x y) :
-    LiftRel r (const l x) (const _ y) :=
+    LiftRel r (↑x : Germ l β) ↑y :=
   eventually_of_forall fun _ => h
 #align filter.germ.lift_rel_const Filter.Germ.liftRel_const
 
 @[simp]
 theorem liftRel_const_iff [NeBot l] {r : β → γ → Prop} {x : β} {y : γ} :
-    LiftRel r (const l x) (const _ y) ↔ r x y :=
+    LiftRel r (↑x : Germ l β) ↑y ↔ r x y :=
   @eventually_const _ _ _ (r x y)
 #align filter.germ.lift_rel_const_iff Filter.Germ.liftRel_const_iff
 
 instance [Inhabited β] : Inhabited (Germ l β) :=
-  ⟨const l default⟩
+  ⟨↑(default : β)⟩
 
 section Monoid
 
@@ -347,7 +352,7 @@ theorem coe_mul [Mul M] (f g : α → M) : ↑(f * g) = (f * g : Germ l M) :=
 
 @[to_additive]
 instance one [One M] : One (Germ l M) :=
-  ⟨const l 1⟩
+  ⟨↑(1 : M)⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one [One M] : ↑(1 : α → M) = (1 : Germ l M) :=
@@ -397,7 +402,7 @@ theorem coe_smul [SMul M G] (n : M) (f : α → G) : ↑(n • f) = n • (f : G
 #align filter.germ.coe_vadd Filter.Germ.coe_vadd
 
 @[to_additive (attr := simp, norm_cast)]
-theorem const_smul [SMul M G] (n : M) (a : G) : const l (n • a) = n • const l a :=
+theorem const_smul [SMul M G] (n : M) (a : G) : (↑(n • a) : Germ l G) = n • (↑a : Germ l G) :=
   rfl
 #align filter.germ.const_smul Filter.Germ.const_smul
 #align filter.germ.const_vadd Filter.Germ.const_vadd
@@ -408,7 +413,7 @@ theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f : Germ l G) ^
 #align filter.germ.coe_pow Filter.Germ.coe_pow
 
 @[to_additive (attr := simp, norm_cast)]
-theorem const_pow [Pow G M] (a : G) (n : M) : const l (a ^ n) = (const l a) ^ n :=
+theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : Germ l G) ^ n :=
   rfl
 #align filter.germ.const_pow Filter.Germ.const_pow
 
@@ -441,9 +446,9 @@ instance commMonoid [CommMonoid M] : CommMonoid (Germ l M) :=
 
 instance addMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) :=
   { Germ.one, Germ.addMonoid with
-    natCast := fun n => const l (n : M)
-    natCast_zero := congr_arg (const l) Nat.cast_zero
-    natCast_succ := fun _ => congr_arg (const l) (Nat.cast_succ _) }
+    natCast := fun n => ↑(n : M)
+    natCast_zero := congr_arg ((↑) : M → Germ l M) Nat.cast_zero
+    natCast_succ := fun _ => congr_arg ((↑) : M → Germ l M) (Nat.cast_succ _) }
 
 @[to_additive]
 instance [Inv G] : Inv (Germ l G) :=
@@ -456,7 +461,7 @@ theorem coe_inv [Inv G] (f : α → G) : ↑f⁻¹ = (f⁻¹ : Germ l G) :=
 #align filter.germ.coe_neg Filter.Germ.coe_neg
 
 @[to_additive (attr := simp, norm_cast)]
-theorem const_inv [Inv G] (a : G) : const l (a⁻¹) = (const l a)⁻¹ :=
+theorem const_inv [Inv G] (a : G) : (↑(a⁻¹) : Germ l G) = (↑a)⁻¹ :=
   rfl
 #align filter.germ.const_inv Filter.Germ.const_inv
 #align filter.germ.const_neg Filter.Germ.const_neg
@@ -472,7 +477,7 @@ theorem coe_div [Div M] (f g : α → M) : ↑(f / g) = (f / g : Germ l M) :=
 #align filter.germ.coe_sub Filter.Germ.coe_sub
 
 @[to_additive (attr := simp, norm_cast)]
-theorem const_div [Div M] (a b : M) : const l (a / b) = (const l a) / (const l b) :=
+theorem const_div [Div M] (a b : M) : (↑(a / b) : Germ l M) = ↑a / ↑b :=
   rfl
 #align filter.germ.const_div Filter.Germ.const_div
 #align filter.germ.const_sub Filter.Germ.const_sub
@@ -511,7 +516,7 @@ variable {R : Type _}
 
 instance nontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) :=
   let ⟨x, y, h⟩ := exists_pair_ne R
-  ⟨⟨const l x, const l y, mt const_inj.1 h⟩⟩
+  ⟨⟨↑x, ↑y, mt const_inj.1 h⟩⟩
 #align filter.germ.nontrivial Filter.Germ.nontrivial
 
 instance mulZeroClass [MulZeroClass R] : MulZeroClass (Germ l R) where
@@ -666,12 +671,12 @@ theorem coe_nonneg [LE β] [Zero β] {f : α → β} : 0 ≤ (f : Germ l β) ↔
   Iff.rfl
 #align filter.germ.coe_nonneg Filter.Germ.coe_nonneg
 
-theorem const_le [LE β] {x y : β} : x ≤ y → const l x ≤ const l y :=
+theorem const_le [LE β] {x y : β} : x ≤ y → (↑x : Germ l β) ≤ ↑y :=
   liftRel_const
 #align filter.germ.const_le Filter.Germ.const_le
 
 @[simp, norm_cast]
-theorem const_le_iff [LE β] [NeBot l] {x y : β} : const l x ≤ const l y ↔ x ≤ y :=
+theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y ↔ x ≤ y :=
   liftRel_const_iff
 #align filter.germ.const_le_iff Filter.Germ.const_le_iff
 
@@ -688,18 +693,18 @@ instance [PartialOrder β] : PartialOrder (Germ l β) :=
       inductionOn₂ f g fun _ _ h₁ h₂ => (EventuallyLe.antisymm h₁ h₂).germ_eq }
 
 instance [Bot β] : Bot (Germ l β) :=
-  ⟨const l ⊥⟩
+  ⟨↑(⊥ : β)⟩
 
 instance [Top β] : Top (Germ l β) :=
-  ⟨const l ⊤⟩
+  ⟨↑(⊤ : β)⟩
 
 @[simp, norm_cast]
-theorem const_bot [Bot β] : const l (⊥ : β) = ⊥ :=
+theorem const_bot [Bot β] : (↑(⊥ : β) : Germ l β) = ⊥ :=
   rfl
 #align filter.germ.const_bot Filter.Germ.const_bot
 
 @[simp, norm_cast]
-theorem const_top [Top β] : const l (⊤ : β) = ⊤ :=
+theorem const_top [Top β] : (↑(⊤ : β) : Germ l β) = ⊤ :=
   rfl
 #align filter.germ.const_top Filter.Germ.const_top
 
