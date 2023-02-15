@@ -238,8 +238,8 @@ theorem coe_compTendsto' (f : α → β) {lc : Filter γ} {g : Germ lc α} (hg :
   rfl
 #align filter.germ.coe_comp_tendsto' Filter.Germ.coe_compTendsto'
 
-/-- Given a germ `f : germ l β` and a function `g : γ → α`, where `l : filter α`, if `g` tends
-to `l` along `lc : filter γ`, then the composition `f ∘ g` is well-defined as a germ at `lc`. -/
+/-- Given a germ `f : Germ l β` and a function `g : γ → α`, where `l : Filter α`, if `g` tends
+to `l` along `lc : Filter γ`, then the composition `f ∘ g` is well-defined as a germ at `lc`. -/
 def compTendsto (f : Germ l β) {lc : Filter γ} (g : γ → α) (hg : Tendsto g lc l) : Germ lc β :=
   f.compTendsto' _ hg.germ_tendsto
 #align filter.germ.comp_tendsto Filter.Germ.compTendsto
