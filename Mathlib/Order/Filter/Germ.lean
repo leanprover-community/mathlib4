@@ -225,7 +225,7 @@ theorem coe_tendsto {f : α → β} {lb : Filter β} : (f : Germ l β).Tendsto l
 alias coe_tendsto ↔ _ _root_.Filter.Tendsto.germ_tendsto
 #align filter.tendsto.germ_tendsto Filter.Tendsto.germ_tendsto
 
-/-- Given two germs `f : germ l β`, and `g : germ lc α`, where `l : filter α`, if `g` tends to `l`,
+/-- Given two germs `f : Germ l β`, and `g : Germ lc α`, where `l : Filter α`, if `g` tends to `l`,
 then the composition `f ∘ g` is well-defined as a germ at `lc`. -/
 def compTendsto' (f : Germ l β) {lc : Filter γ} (g : Germ lc α) (hg : g.Tendsto l) : Germ lc β :=
   liftOn f (fun f => g.map f) fun _f₁ _f₂ hF =>
