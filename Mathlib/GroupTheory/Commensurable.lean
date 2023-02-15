@@ -21,7 +21,7 @@ of `G`.
 
 ## Main definitions
 
-* `commensurable`: defines commensurability for two subgroups `H`, `K` of  `G`
+* `Commensurable`: defines commensurability for two subgroups `H`, `K` of  `G`
 * `commensurator`: defines the commensurator of a subgroup `H` of `G`.
 
 ## Implementation details
@@ -47,13 +47,11 @@ open Pointwise
 protected theorem refl (H : Subgroup G) : Commensurable H H := by simp [Commensurable]
 #align commensurable.refl Commensurable.refl
 
-theorem comm {H K : Subgroup G} : Commensurable H K ↔ Commensurable K H :=
-  and_comm
+theorem comm {H K : Subgroup G} : Commensurable H K ↔ Commensurable K H := and_comm
 #align commensurable.comm Commensurable.comm
 
 @[symm]
-theorem symm {H K : Subgroup G} : Commensurable H K → Commensurable K H :=
-  And.symm
+theorem symm {H K : Subgroup G} : Commensurable H K → Commensurable K H := And.symm
 #align commensurable.symm Commensurable.symm
 
 @[trans]
@@ -63,19 +61,18 @@ theorem trans {H K L : Subgroup G} (hhk : Commensurable H K) (hkl : Commensurabl
 #align commensurable.trans Commensurable.trans
 
 theorem equivalence : Equivalence (@Commensurable G _) :=
-  ⟨Commensurable.refl, fun _ _ => Commensurable.symm, fun _ _ _ => Commensurable.trans⟩
+  ⟨Commensurable.refl, fun h => Commensurable.symm h, fun h₁ h₂ => Commensurable.trans h₁ h₂⟩
 #align commensurable.equivalence Commensurable.equivalence
 
 /-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹`-/
 def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
     K ⧸ H.subgroupOf K ≃ (g • K).1 ⧸ (g • H).subgroupOf (g • K) :=
-  Quotient.congr (K.equivSmul g).toEquiv fun a b =>
-    by
+  Quotient.congr (K.equivSmul g).toEquiv fun a b => by
     dsimp
     rw [← Quotient.eq'', ← Quotient.eq'', QuotientGroup.eq', QuotientGroup.eq',
       Subgroup.mem_subgroupOf, Subgroup.mem_subgroupOf, ← MulEquiv.map_inv, ← MulEquiv.map_mul,
       Subgroup.equivSmul_apply_coe]
-    exact subgroup.smul_mem_pointwise_smul_iff.symm
+    exact Subgroup.smul_mem_pointwise_smul_iff.symm
 #align commensurable.quot_conj_equiv Commensurable.quotConjEquiv
 
 theorem commensurable_conj {H K : Subgroup G} (g : ConjAct G) :
@@ -90,14 +87,12 @@ theorem commensurable_inv (H : Subgroup G) (g : ConjAct G) :
 
 /-- For `H` a subgroup of `G`, this is the subgroup of all elements `g : conj_aut G`
 such that `commensurable (g • H) H` -/
-def commensurator' (H : Subgroup G) : Subgroup (ConjAct G)
-    where
+def commensurator' (H : Subgroup G) : Subgroup (ConjAct G) where
   carrier := { g : ConjAct G | Commensurable (g • H) H }
   one_mem' := by rw [Set.mem_setOf_eq, one_smul]
-  mul_mem' a b ha hb := by
-    rw [Set.mem_setOf_eq, mul_smul]
-    exact trans ((commensurable_conj a).mp hb) ha
-  inv_mem' a ha := by rwa [Set.mem_setOf_eq, comm, ← commensurable_inv]
+  mul_mem' ha hb := by
+    rw [Set.mem_setOf_eq, mul_smul]; exact trans ((commensurable_conj _).mp hb) ha
+  inv_mem' _ := by rwa [Set.mem_setOf_eq, comm, ← commensurable_inv]
 #align commensurable.commensurator' Commensurable.commensurator'
 
 /-- For `H` a subgroup of `G`, this is the subgroup of all elements `g : G`
@@ -108,14 +103,12 @@ def commensurator (H : Subgroup G) : Subgroup G :=
 
 @[simp]
 theorem commensurator'_mem_iff (H : Subgroup G) (g : ConjAct G) :
-    g ∈ commensurator' H ↔ Commensurable (g • H) H :=
-  Iff.rfl
+    g ∈ commensurator' H ↔ Commensurable (g • H) H := Iff.rfl
 #align commensurable.commensurator'_mem_iff Commensurable.commensurator'_mem_iff
 
 @[simp]
 theorem commensurator_mem_iff (H : Subgroup G) (g : G) :
-    g ∈ commensurator H ↔ Commensurable (ConjAct.toConjAct g • H) H :=
-  Iff.rfl
+    g ∈ commensurator H ↔ Commensurable (ConjAct.toConjAct g • H) H := Iff.rfl
 #align commensurable.commensurator_mem_iff Commensurable.commensurator_mem_iff
 
 theorem eq {H K : Subgroup G} (hk : Commensurable H K) : commensurator H = commensurator K :=
@@ -125,4 +118,3 @@ theorem eq {H K : Subgroup G} (hk : Commensurable H K) : commensurator H = comme
 #align commensurable.eq Commensurable.eq
 
 end Commensurable
-
