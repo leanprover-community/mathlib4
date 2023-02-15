@@ -96,7 +96,7 @@ def commensurator' (H : Subgroup G) : Subgroup (ConjAct G) where
 #align commensurable.commensurator' Commensurable.commensurator'
 
 /-- For `H` a subgroup of `G`, this is the subgroup of all elements `g : G`
-such that `commensurable (g H g⁻¹) H` -/
+such that `Commensurable (g H g⁻¹) H` -/
 def commensurator (H : Subgroup G) : Subgroup G :=
   (commensurator' H).comap ConjAct.toConjAct.toMonoidHom
 #align commensurable.commensurator Commensurable.commensurator
