@@ -287,7 +287,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
 #align nat.of_digits_digits Nat.ofDigits_digits
 
 theorem ofDigits_one (L : List ℕ) : ofDigits 1 L = L.sum := by
-  induction' L with d L ih
+  induction' L with _ _ ih
   · rfl
   · simp [ofDigits, List.sum_cons, ih]
 #align nat.of_digits_one Nat.ofDigits_one
@@ -321,7 +321,7 @@ theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
   · norm_num at h
   rcases n with (_ | n)
   · norm_num at w
-  simp
+  . simp only [digits_add_two_add_one, ne_eq]
 #align nat.digits_eq_cons_digits_div Nat.digits_eq_cons_digits_div
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
@@ -347,10 +347,9 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
   by_cases h : n / b = 0
   · have hb0 : b ≠ 0 := (Nat.succ_le_iff.1 hb).ne_bot
     simp [h, log_eq_zero_iff, ← Nat.div_eq_zero_iff hb0.bot_lt]
-  · have hb' : 1 < b := one_lt_two.trans_le hb
-    have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb'
+  · have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb
     rw [IH _ this h, log_div_base, tsub_add_cancel_of_le]
-    refine' Nat.succ_le_of_lt (log_pos hb' _)
+    refine' Nat.succ_le_of_lt (log_pos hb _)
     contrapose! h
     exact div_eq_of_lt h
 #align nat.digits_len Nat.digits_len
@@ -369,10 +368,10 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   intro n IH hn
   by_cases hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
-  · rw [digits_last n (show 2 ≤ b + 2 by decide)]
-    refine' IH _ (Nat.div_lt_self hn.bot_lt (by decide)) _
+  · rw [digits_getLast n (le_add_left 2 b)]
+    refine' IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) _
     · rw [← pos_iff_ne_zero]
-      exact Nat.div_pos (le_of_not_lt hnb) (by decide)
+      exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
 #align nat.last_digit_ne_zero Nat.getLast_digit_ne_zero
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
@@ -386,7 +385,11 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   rw [digits_add_two_add_one] at hd
   cases hd
   · exact n.succ.mod_lt (by simp)
-  · exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
+  -- Porting note: Previous code (single line) contained linarith.
+  -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
+  · apply IH ((n + 1) / (b + 2))
+    . sorry
+    . sorry
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
@@ -438,7 +441,7 @@ theorem digits_len_le_digits_len_succ (b n : ℕ) : (digits b n).length ≤ (dig
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   cases' le_or_lt b 1 with hb hb
-  · interval_cases <;> simp [digits_zero_succ', hn]
+  · interval_cases b <;> simp_arith [digits_zero_succ', hn]
   simpa [digits_len, hb, hn] using log_mono_right (le_succ _)
 #align nat.digits_len_le_digits_len_succ Nat.digits_len_le_digits_len_succ
 
@@ -453,9 +456,9 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
     List.length_dropLast, ofDigits_singleton, add_comm (l.length - 1), pow_add, pow_one]
   apply Nat.mul_le_mul_left
   refine' le_trans _ (Nat.le_add_left _ _)
-  have : 0 < l.last hl := by rwa [pos_iff_ne_zero]
-  convert Nat.mul_le_mul_left _ this
-  rw [mul_one]
+  have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
+  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this
+  rw [Nat.mul_one]
 #align nat.pow_length_le_mul_of_digits Nat.pow_length_le_mul_ofDigits
 
 /-- Any non-zero natural number `m` is greater than
@@ -464,7 +467,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert pow_length_le_mul_ofDigits this (last_digit_ne_zero _ hm)
+  convert pow_length_le_mul_ofDigits this (getLast_digit_ne_zero _ hm)
   rwa [of_digits_digits]
 #align nat.base_pow_length_digits_le' Nat.base_pow_length_digits_le'
 
