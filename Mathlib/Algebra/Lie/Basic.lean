@@ -980,7 +980,7 @@ theorem smul_apply (t : R) (f : M →ₗ⁅R,L⁆ N) (m : M) : (t • f) m = t �
 #align lie_module_hom.smul_apply LieModuleHom.smul_apply
 
 instance : Module R (M →ₗ⁅R,L⁆ N) :=
-  Function.Injective.module R ⟨fun f => f.toLinearMap.toFun, rfl, coe_add⟩ coe_injective coe_smul
+  Function.Injective.module R ⟨⟨fun f => f.toLinearMap.toFun, rfl⟩, coe_add⟩ coe_injective coe_smul
 
 end LieModuleHom
 
