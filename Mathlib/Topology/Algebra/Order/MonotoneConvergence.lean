@@ -9,7 +9,6 @@ Authors: Heather Macbeth, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Bounded monotone sequences converge
