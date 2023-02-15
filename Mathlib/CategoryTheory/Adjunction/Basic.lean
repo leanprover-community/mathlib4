@@ -68,8 +68,12 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   unit : 𝟭 C ⟶ F.comp G
   /-- The counit of an adjunction -/
   counit : G.comp F ⟶ 𝟭 D
-  homEquiv_unit' : ∀ {X Y f}, (homEquiv X Y) f = (unit : _ ⟶ _).app X ≫ G.map f := by aesop_cat
-  homEquiv_counit' : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y := by aesop_cat
+  -- Porting note: It's strange that this `Prop` is being flagged by the `docBlame` linter
+  /-- Naturality of the unit of an adjunction -/
+  homEquiv_unit : ∀ {X Y f}, (homEquiv X Y) f = (unit : _ ⟶ _).app X ≫ G.map f := by aesop_cat
+  -- Porting note: It's strange that this `Prop` is being flagged by the `docBlame` linter
+  /-- Naturality of the counit of an adjunction -/
+  homEquiv_counit : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y := by aesop_cat
 #align category_theory.adjunction CategoryTheory.Adjunction
 
 -- mathport name: «expr ⊣ »
@@ -116,9 +120,10 @@ def Adjunction.ofRightAdjoint (right : C ⥤ D) [IsRightAdjoint right] :
 
 namespace Adjunction
 
-restate_axiom homEquiv_unit'
+-- porting note: Workaround not needed in Lean 4
+-- restate_axiom homEquiv_unit'
 
-restate_axiom homEquiv_counit'
+-- restate_axiom homEquiv_counit'
 
 attribute [simp] homEquiv_unit homEquiv_counit
 
@@ -132,26 +137,34 @@ theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by s
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
 #align category_theory.adjunction.hom_equiv_symm_id CategoryTheory.Adjunction.homEquiv_symm_id
 
-@[simp]
+/-
+Porting note: `nolint simpNF` as the linter was complaining that this was provable using `simp`
+but it is in fact not. Also the `docBlame` linter expects a docstring even though this is `Prop`
+valued
+-/
+@[simp, nolint simpNF]
 theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
     (adj.homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (adj.homEquiv X Y).symm g := by
   rw [homEquiv_counit, F.map_comp, assoc, adj.homEquiv_counit.symm]
 #align category_theory.adjunction.hom_equiv_naturality_left_symm CategoryTheory.Adjunction.homEquiv_naturality_left_symm
 
-@[simp]
+-- Porting note: Same as above
+@[simp, nolint simpNF]
 theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
     (adj.homEquiv X' Y) (F.map f ≫ g) = f ≫ (adj.homEquiv X Y) g := by
   rw [← Equiv.eq_symm_apply]
   simp only [Equiv.symm_apply_apply,eq_self_iff_true,homEquiv_naturality_left_symm]
 #align category_theory.adjunction.hom_equiv_naturality_left CategoryTheory.Adjunction.homEquiv_naturality_left
 
-@[simp]
+-- Porting note: Same as above
+@[simp, nolint simpNF]
 theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
   rw [homEquiv_unit, G.map_comp, ← assoc, ← homEquiv_unit]
 #align category_theory.adjunction.hom_equiv_naturality_right CategoryTheory.Adjunction.homEquiv_naturality_right
 
-@[simp]
+-- Porting note: Same as above
+@[simp, nolint simpNF]
 theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y').symm (f ≫ G.map g) = (adj.homEquiv X Y).symm f ≫ g := by
   rw [Equiv.symm_apply_eq]
@@ -229,11 +242,13 @@ This structure won't typically be used anywhere else.
 structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
   /-- The equivalence between `Hom (F X) Y` and `Hom X (G Y)` -/
   homEquiv : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y)
-  homEquiv_naturality_left_symm' :
+  /-- The property that describes how `homEquiv.symm` transforms compositions `X' ⟶ X ⟶ G Y` -/
+  homEquiv_naturality_left_symm :
     ∀ {X' X Y} (f : X' ⟶ X) (g : X ⟶ G.obj Y),
       (homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (homEquiv X Y).symm g := by
     aesop_cat
-  homEquiv_naturality_right' :
+  /-- The property that describes how `homEquiv` transforms compositions `F X ⟶ Y ⟶ Y'` -/
+  homEquiv_naturality_right :
     ∀ {X Y Y'} (f : F.obj X ⟶ Y) (g : Y ⟶ Y'),
       (homEquiv X Y') (f ≫ g) = (homEquiv X Y) f ≫ G.map g := by
     aesop_cat
@@ -241,9 +256,10 @@ structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
 
 namespace CoreHomEquiv
 
-restate_axiom homEquiv_naturality_left_symm'
+-- Porting note: Workaround not needed in Lean 4.
+-- restate_axiom homEquiv_naturality_left_symm'
 
-restate_axiom homEquiv_naturality_right'
+-- restate_axiom homEquiv_naturality_right'
 
 attribute [simp] homEquiv_naturality_left_symm homEquiv_naturality_right
 
@@ -284,10 +300,14 @@ structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   unit : 𝟭 C ⟶ F.comp G
   /-- The counit of an adjunction between `F` and `G`s -/
   counit : G.comp F ⟶ 𝟭 D
+  /-- Equality of the composition of the unit, associator, and counit with the identity
+  `F ⟶ (F G) F ⟶ F (G F) ⟶ F = NatTrans.id F` -/
   left_triangle :
     whiskerRight unit F ≫ (Functor.associator F G F).hom ≫ whiskerLeft F counit =
       NatTrans.id (𝟭 C ⋙ F) := by
     aesop_cat
+  /-- Equality of the composition of the unit, associator, and counit with the identity
+  `G ⟶ G (F G) ⟶ (F G) F ⟶ G = NatTrans.id G` -/
   right_triangle :
     whiskerLeft G unit ≫ (Functor.associator G F G).inv ≫ whiskerRight counit G =
       NatTrans.id (G ⋙ 𝟭 C) := by
@@ -320,14 +340,14 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
           intros
           erw [← adj.homEquiv_naturality_left_symm, ← adj.homEquiv_naturality_right_symm]
           dsimp; simp }
-    homEquiv_unit' := @fun X Y f => by erw [← adj.homEquiv_naturality_right]; simp
-    homEquiv_counit' := @fun X Y f => by erw [← adj.homEquiv_naturality_left_symm]; simp
+    homEquiv_unit := @fun X Y f => by erw [← adj.homEquiv_naturality_right]; simp
+    homEquiv_counit := @fun X Y f => by erw [← adj.homEquiv_naturality_left_symm]; simp
   }
 #align category_theory.adjunction.mk_of_hom_equiv CategoryTheory.Adjunction.mkOfHomEquiv
 
 /-- Construct an adjunction between functors `F` and `G` given a unit and counit for the adjunction
 satisfying the triangle identities. -/
-@[simps!]
+@[simps!, nolint simpNF]
 def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G :=
   { adj with
     homEquiv := fun X Y =>
@@ -484,7 +504,7 @@ to `adjunctionOfRightEquiv`. -/
 def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
   mkOfHomEquiv
     { homEquiv := e
-      homEquiv_naturality_left_symm' := fun {X'} {X} {Y} f g => by
+      homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
         have := @he' C _ D _ G F_obj e he
         erw [← this, ← Equiv.apply_eq_iff_eq (e X' Y)]
         simp [(he X' (F_obj X) Y (e X Y |>.symm g) (leftAdjointOfEquiv e he |>.map f)).symm]
@@ -531,9 +551,9 @@ to `adjunctionOfEquivRight`. -/
 def adjunctionOfEquivRight : F ⊣ (rightAdjointOfEquiv e he) :=
   mkOfHomEquiv
     { homEquiv := e
-      homEquiv_naturality_left_symm' := by
+      homEquiv_naturality_left_symm := by
         intro X X' Y f g; rw [Equiv.symm_apply_eq]; dsimp; rw [he]; simp
-      homEquiv_naturality_right' := by
+      homEquiv_naturality_right := by
         intro X Y Y' g h
         erw [← he, Equiv.apply_eq_iff_eq, ← assoc, he'' e he, comp_id, Equiv.symm_apply_apply] }
 #align category_theory.adjunction.adjunction_of_equiv_right CategoryTheory.Adjunction.adjunctionOfEquivRight
