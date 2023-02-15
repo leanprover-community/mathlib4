@@ -1221,7 +1221,7 @@ def sup {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal.{max u v} :=
 #align ordinal.sup Ordinal.sup
 
 @[simp]
-theorem supₛ_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : supₛ (Set.range f) = sup f :=
+theorem supₛ_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : supₛ (Set.range f) = sup.{_, v} f :=
   rfl
 #align ordinal.Sup_eq_sup Ordinal.supₛ_eq_sup
 
@@ -1230,15 +1230,16 @@ theorem supₛ_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : supₛ (Set
 theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
   ⟨(supᵢ (succ ∘ card ∘ f)).ord, by
     rintro a ⟨i, rfl⟩
-    exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le (le_csupᵢ (bdd_above_range _) _)))⟩
+    exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
+      (le_csupᵢ (Cardinal.bddAbove_range.{_, v} _) _)))⟩
 #align ordinal.bdd_above_range Ordinal.bddAbove_range
 
-theorem le_sup {ι} (f : ι → Ordinal) : ∀ i, f i ≤ sup f := fun i =>
-  le_csupₛ (bddAbove_range f) (mem_range_self i)
+theorem le_sup {ι : Type u} (f : ι → Ordinal) : ∀ i, f i ≤ sup.{_, u} f := fun i =>
+  le_csupₛ (bddAbove_range.{_, u} f) (mem_range_self i)
 #align ordinal.le_sup Ordinal.le_sup
 
-theorem sup_le_iff {ι} {f : ι → Ordinal} {a} : sup f ≤ a ↔ ∀ i, f i ≤ a :=
-  (csupₛ_le_iff' (bddAbove_range f)).trans (by simp)
+theorem sup_le_iff {ι : Type u} {f : ι → Ordinal} {a} : sup.{_, u} f ≤ a ↔ ∀ i, f i ≤ a :=
+  (csupₛ_le_iff' (bddAbove_range.{_, u} f)).trans (by simp)
 #align ordinal.sup_le_iff Ordinal.sup_le_iff
 
 theorem sup_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i ≤ a) → sup f ≤ a :=
