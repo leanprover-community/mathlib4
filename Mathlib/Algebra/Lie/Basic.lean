@@ -733,19 +733,27 @@ structure LieModuleHom extends M →ₗ[R] N where
 
 attribute [nolint docBlame] LieModuleHom.toLinearMap
 
--- mathport name: «expr →ₗ⁅ , ⁆ »
+@[inherit_doc]
 notation:25 M " →ₗ⁅" R "," L:25 "⁆ " N:0 => LieModuleHom R L M N
 
 namespace LieModuleHom
 
 variable {R L M N P}
 
+-- Porting note: Added this coe attribute
+attribute [coe] LieModuleHom.toLinearMap
+
 instance : Coe (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
 /-- see Note [function coercion] -/
-instance : CoeFun (M →ₗ⁅R,L⁆ N) fun _ => M → N :=
-  ⟨fun f => f.toLinearMap.toFun⟩
+instance : FunLike (M →ₗ⁅R,L⁆ N) M fun _ => N where
+  coe := fun f => f.toFun
+  coe_injective' := by
+    intros f g h
+    obtain ⟨⟨⟨f,_⟩,_⟩ ,_⟩ := f
+    obtain ⟨⟨⟨g,_⟩,_⟩,_⟩ := g
+    congr
 
 @[simp, norm_cast]
 theorem coe_to_linearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
@@ -895,14 +903,13 @@ def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse
          }
 #align lie_module_hom.inverse LieModuleHom.inverse
 
--- Porting note: All the sorrys in the following used to be simps that time out. Fix needed
 instance : Add (M →ₗ⁅R,L⁆ N)
-    where add f g := { (f : M →ₗ[R] N) + (g : M →ₗ[R] N) with map_lie' := by sorry }
+    where add f g := { (f : M →ₗ[R] N) + (g : M →ₗ[R] N) with map_lie' := by simp }
 
 instance : Sub (M →ₗ⁅R,L⁆ N)
-    where sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by sorry }
+    where sub f g := { (f : M →ₗ[R] N) - (g : M →ₗ[R] N) with map_lie' := by simp }
 
-instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := { -(f : M →ₗ[R] N) with map_lie' := by sorry }
+instance : Neg (M →ₗ⁅R,L⁆ N) where neg f := { -(f : M →ₗ[R] N) with map_lie' := by simp }
 
 @[norm_cast, simp]
 theorem coe_add (f g : M →ₗ⁅R,L⁆ N) : ⇑(f + g) = f + g :=
@@ -932,11 +939,11 @@ theorem neg_apply (f : M →ₗ⁅R,L⁆ N) (m : M) : (-f) m = -f m :=
 #align lie_module_hom.neg_apply LieModuleHom.neg_apply
 
 instance hasNsmul : SMul ℕ (M →ₗ⁅R,L⁆ N)
-    where smul n f := { n • (f : M →ₗ[R] N) with map_lie' := fun x m => by simp }
+    where smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
 #align lie_module_hom.has_nsmul LieModuleHom.hasNsmul
 
 @[norm_cast, simp]
-theorem coe_nsmul (n : ℕ) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • f :=
+theorem coe_nsmul (n : ℕ) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑ f) :=
   rfl
 #align lie_module_hom.coe_nsmul LieModuleHom.coe_nsmul
 
@@ -945,11 +952,11 @@ theorem nsmul_apply (n : ℕ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (n • f) m = 
 #align lie_module_hom.nsmul_apply LieModuleHom.nsmul_apply
 
 instance hasZsmul : SMul ℤ (M →ₗ⁅R,L⁆ N)
-    where smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by sorry }
+    where smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
 #align lie_module_hom.has_zsmul LieModuleHom.hasZsmul
 
 @[norm_cast, simp]
-theorem coe_zsmul (z : ℤ) (f : M →ₗ⁅R,L⁆ N) : ⇑(z • f) = z • f :=
+theorem coe_zsmul (z : ℤ) (f : M →ₗ⁅R,L⁆ N) : ⇑(z • f) = z • (⇑ f) :=
   rfl
 #align lie_module_hom.coe_zsmul LieModuleHom.coe_zsmul
 
@@ -961,10 +968,10 @@ instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     (fun _ _ => coe_zsmul _ _)
 
-instance : SMul R (M →ₗ⁅R,L⁆ N) where smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by sorry }
+instance : SMul R (M →ₗ⁅R,L⁆ N) where smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
 
 @[norm_cast, simp]
-theorem coe_smul (t : R) (f : M →ₗ⁅R,L⁆ N) : ⇑(t • f) = t • f :=
+theorem coe_smul (t : R) (f : M →ₗ⁅R,L⁆ N) : ⇑(t • f) = t • (⇑ f) :=
   rfl
 #align lie_module_hom.coe_smul LieModuleHom.coe_smul
 
@@ -987,7 +994,7 @@ structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
 
 attribute [nolint docBlame] LieModuleEquiv.toLieModuleHom
 
--- mathport name: «expr ≃ₗ⁅ , ⁆ »
+@[inherit_doc]
 notation:25 M " ≃ₗ⁅" R "," L:25 "⁆ " N:0 => LieModuleEquiv R L M N
 
 namespace LieModuleEquiv
@@ -1031,7 +1038,7 @@ theorem coe_mk (f : M →ₗ⁅R,L⁆ N) (invFun h₁ h₂) :
 #align lie_module_equiv.coe_mk LieModuleEquiv.coe_mk
 
 @[simp, norm_cast]
-theorem coe_to_lieModuleHom (e : M ≃ₗ⁅R,L⁆ N) : ⇑ (e : M →ₗ⁅R,L⁆ N) = e :=
+theorem coe_to_lieModuleHom (e : M ≃ₗ⁅R,L⁆ N) : ⇑(e : M →ₗ⁅R,L⁆ N) = e :=
   rfl
 #align lie_module_equiv.coe_to_lie_module_hom LieModuleEquiv.coe_to_lieModuleHom
 
