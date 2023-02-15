@@ -388,8 +388,8 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- Porting note: Previous code (single line) contained linarith.
   -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
   · apply IH ((n + 1) / (b + 2))
-    . sorry
-    . sorry
+    . apply Nat.div_lt_self <;> simp
+    . assumption
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
