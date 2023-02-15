@@ -208,21 +208,26 @@ restate_axiom map₂_right_unitor'
 
 attribute [simp] mapComp_naturality_left mapComp_naturality_right map₂_id map₂_associator
 
-attribute [reassoc] map₂_associator
-
-#exit
--- CategoryTheory.OplaxFunctor.map₂_associator_assoc
-
 -- porting note: was auto-ported as `attribute [reassoc.1]` for some reason
-attribute [reassoc (attr := simp)]
-  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_associator map₂_left_unitor map₂_right_unitor
+attribute [reassoc (attr := simp)] -- can't stop this being noisy
+  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_left_unitor map₂_right_unitor
+
+-- porting note: reassoc on the previous line would not mark these as simp;
+-- error was
+/-
+CategoryTheory.OplaxFunctor.map₂_associator and CategoryTheory.OplaxFunctor.map₂_associator_assoc
+do not generate the same number of simp lemmas.
+
+-/
+attribute [reassoc] map₂_associator -- can't stop this being noisy
+attribute [simp] map₂_associator_assoc
 
 attribute [simp] map₂_comp map₂_left_unitor map₂_right_unitor
 
 section
 
 /-- The prelax functor between the underlying quivers. -/
-add_decl_doc oplax_functor.to_prelax_functor
+add_decl_doc OplaxFunctor.toPrelaxFunctor
 
 instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
   ⟨toPrelaxFunctor⟩
@@ -240,22 +245,20 @@ theorem to_prelaxFunctor_obj : (F : PrelaxFunctor B C).obj = F.obj :=
   rfl
 #align category_theory.oplax_functor.to_prelax_functor_obj CategoryTheory.OplaxFunctor.to_prelaxFunctor_obj
 
-@[simp]
-theorem to_prelaxFunctor_map : @PrelaxFunctor.map B _ _ C _ _ F = @map _ _ _ _ F :=
-  rfl
-#align category_theory.oplax_functor.to_prelax_functor_map CategoryTheory.OplaxFunctor.to_prelaxFunctor_map
+--porting note: removed `to_prelaxFunctor_map` relating the now
+-- nonexistent `PrelaxFunctor.map` and `OplaxFunctor.map`
+#noalign CategoryTheory.OplaxFunctor.to_prelaxFunctor_map
 
-@[simp]
-theorem to_prelaxFunctor_map₂ : @PrelaxFunctor.map₂ B _ _ C _ _ F = @map₂ _ _ _ _ F :=
-  rfl
-#align category_theory.oplax_functor.to_prelax_functor_map₂ CategoryTheory.OplaxFunctor.to_prelaxFunctor_map₂
+--porting note: removed `to_prelaxFunctor_map₂` relating
+-- `PrelaxFunctor.map₂` to nonexistent `OplaxFunctor.map₂`
+#noalign category_theory.oplax_functor.to_prelax_functor_map₂
 
 /-- Function between 1-morphisms as a functor. -/
 @[simps]
 def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b)
     where
   obj f := F.map f
-  map f g η := F.zipWith η
+  map η := F.map₂ η
 #align category_theory.oplax_functor.map_functor CategoryTheory.OplaxFunctor.mapFunctor
 
 /-- The identity oplax functor. -/
@@ -263,7 +266,7 @@ def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b)
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B :=
   { PrelaxFunctor.id B with
     map_id := fun a => 𝟙 (𝟙 a)
-    map_comp := fun a b c f g => 𝟙 (f ≫ g) }
+    map_comp := fun f g => 𝟙 (f ≫ g) }
 #align category_theory.oplax_functor.id CategoryTheory.OplaxFunctor.id
 
 instance : Inhabited (OplaxFunctor B B) :=
