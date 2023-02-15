@@ -442,10 +442,10 @@ theorem mapq_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
   induction' k with k ih
   · simp [LinearMap.one_eq_id]
   · simp only [LinearMap.iterate_succ]
-    sorry
-    --rw [← ih]
-    --nth_rewrite 0 [p.mapq_comp p p f (f ^ k) h (p.le_comap_pow_of_le_comap h k)] -- ?_ ?_ ?_--(p.le_comap_pow_of_le_comap h k)
-
+    convert mapq_comp p p p f (f ^ k) h (p.le_comap_pow_of_le_comap h k)
+      (h.trans (comap_mono <| p.le_comap_pow_of_le_comap h k))
+    exact (ih _).symm
+    -- porting note: this is as simple as I could get it.
 #align submodule.mapq_pow Submodule.mapq_pow
 
 theorem comap_liftq (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftq f h) = (q.comap f).map (mkq p) :=
@@ -557,11 +557,17 @@ theorem Quotient.equiv_trans {N O : Type _} [AddCommGroup N] [Module R N] [AddCo
     Quotient.equiv P S (e.trans f) hef =
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
   ext
-  sorry
   -- `simp` can deal with `hef` depending on `e` and `f`
-  -- simp only [Quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
+  -- porting note: this doesn't work in Lean 4?
+  simp only [Quotient.equiv_apply P S (e.trans f) hef (fun _ hx => hef ▸ Submodule.mem_map_of_mem hx) _,
+    Quotient.equiv_apply P Q e he (fun _ hx => he ▸ Submodule.mem_map_of_mem hx) _,
+    Quotient.equiv_apply Q S f hf (fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) _]
+  simp only [LinearEquiv.trans_apply, LinearEquiv.coe_trans]
   -- `rw` can deal with `mapq_comp` needing extra hypotheses coming from the RHS
-  -- rw [mapq_comp, LinearMap.comp_apply]
+  -- porting note: this doesn't work in Lean 4?
+  rw [mapq_comp P Q S e.toLinearMap f.toLinearMap (fun _ hx => he ▸ Submodule.mem_map_of_mem hx)
+    (fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) _]
+  rfl
 #align submodule.quotient.equiv_trans Submodule.Quotient.equiv_trans
 
 end Submodule
