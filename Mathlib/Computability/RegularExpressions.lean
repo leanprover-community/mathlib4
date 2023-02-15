@@ -407,9 +407,9 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
   | 0 => 0
   | 1 => 1
   | char a => char (f a)
-  | R + S => map R + map S
-  | R * S => map R * map S
-  | star R => star (map R)
+  | R + S => map f R + map f S
+  | R * S => map f R * map f S
+  | star R => star (map f R)
 #align regular_expression.map RegularExpression.map
 
 @[simp]
