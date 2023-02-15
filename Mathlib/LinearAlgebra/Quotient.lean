@@ -143,17 +143,17 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
 
 instance sMulCommClass (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P)
-    where smul_comm x y := Quotient.ind' fun z => congr_arg mk (smul_comm _ _ _)
+    where smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
 #align submodule.quotient.smul_comm_class Submodule.Quotient.sMulCommClass
 
 instance isScalarTower (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P)
-    where smul_assoc x y := Quotient.ind' fun z => congr_arg mk (smul_assoc _ _ _)
+    where smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
 #align submodule.quotient.is_scalar_tower Submodule.Quotient.isScalarTower
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P)
-    where op_smul_eq_smul x := Quotient.ind' fun z => congr_arg mk <| op_smul_eq_smul _ _
+    where op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
 #align submodule.quotient.is_central_scalar Submodule.Quotient.isCentralScalar
 
 end SMul
@@ -220,8 +220,8 @@ def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
   {
     Quotient.congrRight fun _ _ =>
       Iff.rfl with
-    map_add' := fun x y => Quotient.inductionOn₂' x y fun x' y' => rfl
-    map_smul' := fun c x => Quotient.inductionOn' x fun x' => rfl }
+    map_add' := fun x y => Quotient.inductionOn₂' x y fun _x' _y' => rfl
+    map_smul' := fun _c x => Quotient.inductionOn' x fun _x' => rfl }
 #align submodule.quotient.restrict_scalars_equiv Submodule.Quotient.restrictScalarsEquiv
 
 @[simp]
@@ -254,14 +254,14 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
-  Infinite.of_injective Submodule.Quotient.mk fun x y h =>
+  Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
     sub_eq_zero.mp <| (Submodule.Quotient.eq ⊥).mp h
 #align submodule.quotient_bot.infinite Submodule.QuotientBot.infinite
 
 instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M))
     where
   default := 0
-  uniq x := Quotient.inductionOn' x fun x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
+  uniq x := Quotient.inductionOn' x fun _x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
 #align submodule.quotient_top.unique Submodule.QuotientTop.unique
 
 instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
@@ -321,7 +321,7 @@ theorem mkq_apply (x : M) : p.mkq x = (Quotient.mk x : M ⧸ p) :=
 #align submodule.mkq_apply Submodule.mkq_apply
 
 theorem mkq_surjective (A : Submodule R M) : Function.Surjective A.mkq := by
-  rintro ⟨x⟩ <;> exact ⟨x, rfl⟩
+  rintro ⟨x⟩; exact ⟨x, rfl⟩
 #align submodule.mkq_surjective Submodule.mkq_surjective
 
 end
@@ -341,7 +341,7 @@ theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp 
 vanishing on `p`, as a linear map. -/
 def liftq (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ ker f) : M ⧸ p →ₛₗ[τ₁₂] M₂ :=
   { QuotientAddGroup.lift p.toAddSubgroup f.toAddMonoidHom h with
-    map_smul' := by rintro a ⟨x⟩ <;> exact f.map_smulₛₗ a x }
+    map_smul' := by rintro a ⟨x⟩; exact f.map_smulₛₗ a x }
 #align submodule.liftq Submodule.liftq
 
 @[simp]
@@ -350,7 +350,7 @@ theorem liftq_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftq f h (
 #align submodule.liftq_apply Submodule.liftq_apply
 
 @[simp]
-theorem liftq_mkq (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftq f h).comp p.mkq = f := by ext <;> rfl
+theorem liftq_mkq (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftq f h).comp p.mkq = f := by ext; rfl
 #align submodule.liftq_mkq Submodule.liftq_mkq
 
 /-- Special case of `liftq` when `p` is the span of `x`. In this case, the condition on `f` simply
@@ -367,11 +367,11 @@ theorem liftqSpanSingleton_apply (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f
 
 @[simp]
 theorem range_mkq : range p.mkq = ⊤ :=
-  eq_top_iff'.2 <| by rintro ⟨x⟩ <;> exact ⟨x, rfl⟩
+  eq_top_iff'.2 <| by rintro ⟨x⟩; exact ⟨x, rfl⟩
 #align submodule.range_mkq Submodule.range_mkq
 
 @[simp]
-theorem ker_mkq : ker p.mkq = p := by ext <;> simp
+theorem ker_mkq : ker p.mkq = p := by ext; simp
 #align submodule.ker_mkq Submodule.ker_mkq
 
 theorem le_comap_mkq (p' : Submodule R (M ⧸ p)) : p ≤ comap p.mkq p' := by
@@ -380,7 +380,7 @@ theorem le_comap_mkq (p' : Submodule R (M ⧸ p)) : p ≤ comap p.mkq p' := by
 
 @[simp]
 theorem mkq_map_self : map p.mkq p = ⊥ := by
-  rw [eq_bot_iff, map_le_iff_le_comap, comap_bot, ker_mkq] <;> exact le_rfl
+  rw [eq_bot_iff, map_le_iff_le_comap, comap_bot, ker_mkq]
 #align submodule.mkq_map_self Submodule.mkq_map_self
 
 @[simp]
@@ -407,7 +407,7 @@ theorem mapq_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) :
 #align submodule.mapq_apply Submodule.mapq_apply
 
 theorem mapq_mkq (f : M →ₛₗ[τ₁₂] M₂) {h} : (mapq p q f h).comp p.mkq = q.mkq.comp f := by
-  ext x <;> rfl
+  ext x; rfl
 #align submodule.mapq_mkq Submodule.mapq_mkq
 
 @[simp]
@@ -449,14 +449,14 @@ theorem mapq_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
 #align submodule.mapq_pow Submodule.mapq_pow
 
 theorem comap_liftq (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftq f h) = (q.comap f).map (mkq p) :=
-  le_antisymm (by rintro ⟨x⟩ hx <;> exact ⟨_, hx, rfl⟩)
-    (by rw [map_le_iff_le_comap, ← comap_comp, liftq_mkq] <;> exact le_rfl)
+  le_antisymm (by rintro ⟨x⟩ hx; exact ⟨_, hx, rfl⟩)
+    (by rw [map_le_iff_le_comap, ← comap_comp, liftq_mkq])
 #align submodule.comap_liftq Submodule.comap_liftq
 
 theorem map_liftq [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) (q : Submodule R (M ⧸ p)) :
     q.map (p.liftq f h) = (q.comap p.mkq).map f :=
-  le_antisymm (by rintro _ ⟨⟨x⟩, hxq, rfl⟩ <;> exact ⟨x, hxq, rfl⟩)
-    (by rintro _ ⟨x, hxq, rfl⟩ <;> exact ⟨Quotient.mk x, hxq, rfl⟩)
+  le_antisymm (by rintro _ ⟨⟨x⟩, hxq, rfl⟩; exact ⟨x, hxq, rfl⟩)
+    (by rintro _ ⟨x, hxq, rfl⟩; exact ⟨Quotient.mk x, hxq, rfl⟩)
 #align submodule.map_liftq Submodule.map_liftq
 
 theorem ker_liftq (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.liftq f h) = (ker f).map (mkq p) :=
