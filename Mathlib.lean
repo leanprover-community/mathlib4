@@ -232,6 +232,7 @@ import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Functor.Default
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Functor.Functorial
