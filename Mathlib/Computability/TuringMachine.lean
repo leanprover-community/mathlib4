@@ -1452,18 +1452,13 @@ variable {Λ : Type _} [Inhabited Λ]
 
 variable {σ : Type _} [Inhabited σ]
 
--- mathport name: exprstmt₁
 local notation "Stmt₁" => TM1.Stmt Γ Λ σ
 
--- mathport name: exprcfg₁
 local notation "Cfg₁" => TM1.Cfg Γ Λ σ
 
--- mathport name: exprstmt₀
 local notation "Stmt₀" => TM0.Stmt Γ
 
 variable (M : Λ → TM1.Stmt Γ Λ σ)  -- Porting note: Unfolded `Stmt₁`.
-
---include M  -- Porting note: `include` doesn't exist
 
 -- Porting note: `Inhabited`s are not necessary, but `M` is necessary.
 set_option linter.unusedVariables false in
@@ -2495,10 +2490,8 @@ instance Λ'.inhabited : Inhabited Λ'₂₁ :=
   ⟨normal default⟩
 #align turing.TM2to1.Λ'.inhabited Turing.TM2to1.Λ'.inhabited
 
--- mathport name: exprstmt₁
 local notation "Stmt₂₁" => TM1.Stmt Γ'₂₁ Λ'₂₁ σ
 
--- mathport name: exprcfg₁
 local notation "Cfg₂₁" => TM1.Cfg Γ'₂₁ Λ'₂₁ σ
 
 open TM1.Stmt
