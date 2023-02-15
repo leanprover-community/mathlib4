@@ -155,7 +155,7 @@ theorem tendsto_insert_nth' {a : α} :
     rw [this, tendsto_map'_iff]
     exact
       (tendsto_fst.comp tendsto_snd).cons
-        ((@tendsto_insert_nth' n l).comp <| tendsto_fst.prod_mk <| tendsto_snd.comp tendsto_snd)
+        ((@tendsto_insert_nth' _ n l).comp <| tendsto_fst.prod_mk <| tendsto_snd.comp tendsto_snd)
 #align list.tendsto_insert_nth' List.tendsto_insert_nth'
 
 theorem tendsto_insertNth {β} {n : ℕ} {a : α} {l : List α} {f : β → α} {g : β → List α}
