@@ -414,7 +414,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : const l (a ^ n) = (const l a) ^ n 
   rfl
 #align filter.germ.const_pow Filter.Germ.const_pow
 
--- Porting note: `to_addive` can't generate this.
+-- Porting note: `to_additive` can't generate this.
 instance addMonoid [AddMonoid M] : AddMonoid (Germ l M) :=
   Function.Surjective.addMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
 
