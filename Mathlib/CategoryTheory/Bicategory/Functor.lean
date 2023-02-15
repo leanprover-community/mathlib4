@@ -8,7 +8,7 @@ Authors: Yuma Mizuno
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.Bicategory.Basic
 
 /-!
 # Oplax functors and pseudofunctors
@@ -561,4 +561,3 @@ end Pseudofunctor
 end
 
 end CategoryTheory
-
