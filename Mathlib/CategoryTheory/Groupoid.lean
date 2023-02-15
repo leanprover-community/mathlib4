@@ -131,9 +131,9 @@ variable {C : Type u} [Category.{v} C]
 /-- A category where every morphism `is_iso` is a groupoid. -/
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) : Groupoid.{v} C
     where 
-      inv f := inv f
-      comp_inv := sorry 
-      inv_comp := sorry 
+      inv := fun f => CategoryTheory.inv f
+      comp_inv := by aesop_cat 
+      inv_comp := fun f => Classical.choose_spec (all_is_iso f).out|>.right  
 #align category_theory.groupoid.of_is_iso CategoryTheory.Groupoid.ofIsIso
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
@@ -157,8 +157,8 @@ instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i
     Groupoid.{max u v} (∀ i : I, J i)
     where 
       inv f := fun i : I => Groupoid.inv (f i)
-      comp_inv := sorry 
-      inv_comp := sorry 
+      comp_inv := fun f => by funext i; apply Groupoid.comp_inv  
+      inv_comp := fun f => by funext i; apply Groupoid.inv_comp  
 #align category_theory.groupoid_pi CategoryTheory.groupoidPi
 
 instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
