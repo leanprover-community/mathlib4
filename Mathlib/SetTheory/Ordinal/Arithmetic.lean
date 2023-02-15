@@ -796,17 +796,25 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
 
 theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
   ⟨fun h b' l => (mul_le_mul_left' l.le _).trans h, fun H =>
-    le_of_not_lt <|
-      inductionOn a (fun α r _ => inductionOn b fun β s _ => mul_le_of_limit_aux) h H⟩
+    -- Porting note: `induction` tactics are required because of the parser bug.
+    le_of_not_lt <| by
+      induction a using inductionOn with
+      | H α r =>
+        induction b using inductionOn with
+        | H β s =>
+          exact mul_le_of_limit_aux h H⟩
 #align ordinal.mul_le_of_limit Ordinal.mul_le_of_limit
 
 theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal ((· * ·) a) :=
-  ⟨fun b => by rw [mul_succ] <;> simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
+  -- Porting note: `simp only []` is required for beta reduction.
+  ⟨fun b => by simp only []; rw [mul_succ] <;>
+      simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
     fun b l c => mul_le_of_limit l⟩
 #align ordinal.mul_is_normal Ordinal.mul_isNormal
 
 theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
-  simpa only [not_ball, not_le] using not_congr (@mul_le_of_limit b c a h)
+  -- Porting note: `bex_def` is required.
+  simpa only [not_ball, not_le, bex_def] using not_congr (@mul_le_of_limit b c a h)
 #align ordinal.lt_mul_of_limit Ordinal.lt_mul_of_limit
 
 theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
@@ -845,13 +853,13 @@ theorem mul_isLimit_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit 
   rcases zero_or_succ_or_limit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
   · rw [mul_succ]
-    exact add_is_limit _ l
-  · exact mul_is_limit l.pos lb
+    exact add_isLimit _ l
+  · exact mul_isLimit l.pos lb
 #align ordinal.mul_is_limit_left Ordinal.mul_isLimit_left
 
 theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_smul, Nat.cast_zero, mul_zero]
-  | n + 1, a => by rw [succ_nsmul', Nat.cast_add, mul_add, Nat.cast_one, mul_one, smul_eq_mul]
+  | n + 1, a => by rw [succ_nsmul', Nat.cast_add, mul_add, Nat.cast_one, mul_one, smul_eq_mul n]
 #align ordinal.smul_eq_mul Ordinal.smul_eq_mul
 
 /-! ### Division on ordinals -/
@@ -859,10 +867,9 @@ theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
 
 /-- The set in the definition of division is nonempty. -/
 theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
-  ⟨a,
-    succ_le_iff.1 <| by
-      simpa only [succ_zero, one_mul] using
-        mul_le_mul_right' (succ_le_of_lt (Ordinal.pos_iff_ne_zero.2 h)) (succ a)⟩
+  ⟨a, (succ_le_iff (a := a) (b := b * succ a)).1 <| by
+    simpa only [succ_zero, one_mul] using
+      mul_le_mul_right' (succ_le_of_lt (Ordinal.pos_iff_ne_zero.2 h)) (succ a)⟩
 #align ordinal.div_nonempty Ordinal.div_nonempty
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
@@ -976,7 +983,7 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
     rw [← add_sub_cancel a b]
     apply sub_isLimit h
     suffices : a + 0 < a + b
-    simpa only [add_zero]
+    simpa only [add_zero] using this
     rwa [add_lt_add_iff_left, Ordinal.pos_iff_ne_zero]
   rcases h with (h | ⟨rfl, h⟩); exact add_isLimit a h; simpa only [add_zero]
 #align ordinal.is_limit_add_iff Ordinal.isLimit_add_iff
@@ -994,10 +1001,13 @@ theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a
 #align ordinal.div_mul_cancel Ordinal.div_mul_cancel
 
 theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
-  | a, _, b0, ⟨b, rfl⟩ => by
+  -- Porting note: `⟨b, rfl⟩ => by` → `⟨b, e⟩ => by subst e`
+  | a, _, b0, ⟨b, e⟩ => by
+    subst e
+    -- Porting note: `Ne` is required.
     simpa only [mul_one] using
-      mul_le_mul_left' (one_le_iff_ne_zero.2 fun h : b = 0 => by simpa only [h, mul_zero] using b0)
-        a
+      mul_le_mul_left'
+        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp only [h, mul_zero, Ne] at b0) a
 #align ordinal.le_of_dvd Ordinal.le_of_dvd
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
@@ -1105,7 +1115,7 @@ def familyOfBfamily (o : Ordinal) (f : ∀ a < o, α) : o.out.α → α :=
 @[simp]
 theorem bfamilyOfFamily'_typein {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) (i) :
     bfamilyOfFamily' r f (typein r i) (typein_lt_type r i) = f i := by
-  simp only [bfamily_of_family', enum_typein]
+  simp only [bfamilyOfFamily', enum_typein]
 #align ordinal.bfamily_of_family'_typein Ordinal.bfamilyOfFamily'_typein
 
 @[simp]
@@ -1118,7 +1128,7 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
 theorem familyOfBfamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBfamily' r ho f (enum r i (by rwa [ho])) = f i hi := by
-  simp only [family_of_bfamily', typein_enum]
+  simp only [familyOfBfamily', typein_enum]
 #align ordinal.family_of_bfamily'_enum Ordinal.familyOfBfamily'_enum
 
 @[simp]
@@ -1152,7 +1162,7 @@ theorem range_familyOfBfamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrd
   · rintro ⟨b, rfl⟩
     apply mem_brange_self
   · rintro ⟨i, hi, rfl⟩
-    exact ⟨_, family_of_bfamily'_enum _ _ _ _ _⟩
+    exact ⟨_, familyOfBfamily'_enum _ _ _ _ _⟩
 #align ordinal.range_family_of_bfamily' Ordinal.range_familyOfBfamily'
 
 @[simp]
@@ -1167,7 +1177,7 @@ theorem brange_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOr
   · rintro ⟨i, hi, rfl⟩
     apply mem_range_self
   · rintro ⟨b, rfl⟩
-    exact ⟨_, _, bfamily_of_family'_typein _ _ _⟩
+    exact ⟨_, _, bfamilyOfFamily'_typein _ _ _⟩
 #align ordinal.brange_bfamily_of_family' Ordinal.brange_bfamilyOfFamily'
 
 @[simp]
@@ -1177,7 +1187,7 @@ theorem brange_bfamilyOfFamily {ι : Type u} (f : ι → α) : brange _ (bfamily
 
 @[simp]
 theorem brange_const {o : Ordinal} (ho : o ≠ 0) {c : α} : (brange o fun _ _ => c) = {c} := by
-  rw [← range_family_of_bfamily]
+  rw [← range_familyOfBfamily]
   exact @Set.range_const _ o.out.α (out_nonempty_iff_ne_zero.2 ho) c
 #align ordinal.brange_const Ordinal.brange_const
 
