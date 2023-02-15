@@ -8,8 +8,8 @@ Authors: Reid Barton, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Products.Basic
-import Mathbin.CategoryTheory.Types
+import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Types
 
 /-!
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.
