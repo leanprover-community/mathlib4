@@ -8,8 +8,9 @@ Authors: Fox Thomson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Rcases
+--import Mathlib.Tactic.Rcases
 import Mathlib.Computability.Language
+import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Regular Expressions
@@ -43,12 +44,12 @@ of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
 * `P * Q` (`comp P Q`) matches `x ++ y` if `x` matches `P` and `y` matches `Q`
 -/
 inductive RegularExpression (α : Type u) : Type u
-  | zero : RegularExpression
-  | epsilon : RegularExpression
-  | Char : α → RegularExpression
-  | plus : RegularExpression → RegularExpression → RegularExpression
-  | comp : RegularExpression → RegularExpression → RegularExpression
-  | star : RegularExpression → RegularExpression
+  | zero : RegularExpression α
+  | epsilon : RegularExpression α
+  | char : α → RegularExpression α
+  | plus : RegularExpression α → RegularExpression α → RegularExpression α
+  | comp : RegularExpression α → RegularExpression α → RegularExpression α
+  | star : RegularExpression α → RegularExpression α
 #align regular_expression RegularExpression
 
 namespace RegularExpression
@@ -73,7 +74,8 @@ instance : Zero (RegularExpression α) :=
 instance : Pow (RegularExpression α) ℕ :=
   ⟨fun n r => npowRec r n⟩
 
-attribute [match_pattern] Mul.mul
+-- porting note: declaration in an imported module
+--attribute [match_pattern] Mul.mul
 
 @[simp]
 theorem zero_def : (zero : RegularExpression α) = 0 :=
@@ -95,71 +97,72 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 #align regular_expression.comp_def RegularExpression.comp_def
 
+-- porting note: `matches` is reserved, moved to `matches'`
 /-- `matches P` provides a language which contains all strings that `P` matches -/
 @[simp]
-def matches : RegularExpression α → Language α
+def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
-  | Char a => {[a]}
-  | P + Q => P.matches + Q.matches
-  | P * Q => P.matches * Q.matches
-  | star P => P.matches∗
-#align regular_expression.matches RegularExpression.matches
+  | char a => {[a]}
+  | P + Q => P.matches' + Q.matches'
+  | P * Q => P.matches' * Q.matches'
+  | star P => P.matches'∗
+#align regular_expression.matches RegularExpression.matches'
 
 @[simp]
-theorem matches_zero : (0 : RegularExpression α).matches = 0 :=
+theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
   rfl
-#align regular_expression.matches_zero RegularExpression.matches_zero
+#align regular_expression.matches_zero RegularExpression.matches'_zero
 
 @[simp]
-theorem matches_epsilon : (1 : RegularExpression α).matches = 1 :=
+theorem matches'_epsilon : (1 : RegularExpression α).matches' = 1 :=
   rfl
-#align regular_expression.matches_epsilon RegularExpression.matches_epsilon
+#align regular_expression.matches_epsilon RegularExpression.matches'_epsilon
 
 @[simp]
-theorem matches_char (a : α) : (char a).matches = {[a]} :=
+theorem matches'_char (a : α) : (char a).matches' = {[a]} :=
   rfl
-#align regular_expression.matches_char RegularExpression.matches_char
+#align regular_expression.matches_char RegularExpression.matches'_char
 
 @[simp]
-theorem matches_add (P Q : RegularExpression α) : (P + Q).matches = P.matches + Q.matches :=
+theorem matches'_add (P Q : RegularExpression α) : (P + Q).matches' = P.matches' + Q.matches' :=
   rfl
-#align regular_expression.matches_add RegularExpression.matches_add
+#align regular_expression.matches_add RegularExpression.matches'_add
 
 @[simp]
-theorem matches_mul (P Q : RegularExpression α) : (P * Q).matches = P.matches * Q.matches :=
+theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches' * Q.matches' :=
   rfl
-#align regular_expression.matches_mul RegularExpression.matches_mul
+#align regular_expression.matches_mul RegularExpression.matches'_mul
 
 @[simp]
-theorem matches_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches = P.matches ^ n
-  | 0 => matches_epsilon
-  | n + 1 => (matches_mul _ _).trans <| Eq.trans (congr_arg _ (matches_pow n)) (pow_succ _ _).symm
-#align regular_expression.matches_pow RegularExpression.matches_pow
+theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' = P.matches' ^ n
+  | 0 => matches'_epsilon
+  | n + 1 => (matches'_mul _ _).trans <| Eq.trans (congr_arg _ (matches'_pow n)) (pow_succ _ _).symm
+#align regular_expression.matches_pow RegularExpression.matches'_pow
 
 @[simp]
-theorem matches_star (P : RegularExpression α) : P.unit.matches = P.matches∗ :=
+theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'∗ :=
   rfl
-#align regular_expression.matches_star RegularExpression.matches_star
+#align regular_expression.matches_star RegularExpression.matches'_star
 
 /-- `match_epsilon P` is true if and only if `P` matches the empty string -/
 def matchEpsilon : RegularExpression α → Bool
   | 0 => false
   | 1 => true
-  | Char _ => false
+  | char _ => false
   | P + Q => P.matchEpsilon || Q.matchEpsilon
   | P * Q => P.matchEpsilon && Q.matchEpsilon
   | star P => true
 #align regular_expression.match_epsilon RegularExpression.matchEpsilon
 
-include dec
+--include dec
 
 /-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
   to `a` -/
 def deriv : RegularExpression α → α → RegularExpression α
   | 0, _ => 0
   | 1, _ => 0
-  | Char a₁, a₂ => if a₁ = a₂ then 1 else 0
+  | char a₁, a₂ => if a₁ = a₂ then 1 else 0
   | P + Q, a => deriv P a + deriv Q a
   | P * Q, a => if P.matchEpsilon then deriv P a * Q + deriv Q a else deriv P a * Q
   | star P, a => deriv P a * star P
@@ -191,7 +194,7 @@ theorem deriv_add (P Q : RegularExpression α) (a : α) : deriv (P + Q) a = deri
 #align regular_expression.deriv_add RegularExpression.deriv_add
 
 @[simp]
-theorem deriv_star (P : RegularExpression α) (a : α) : deriv P.unit a = deriv P a * star P :=
+theorem deriv_star (P : RegularExpression α) (a : α) : deriv P.star a = deriv P a * star P :=
   rfl
 #align regular_expression.deriv_star RegularExpression.deriv_star
 
@@ -204,31 +207,31 @@ def rmatch : RegularExpression α → List α → Bool
 
 @[simp]
 theorem zero_rmatch (x : List α) : rmatch 0 x = false := by
-  induction x <;> simp [rmatch, match_epsilon, *]
+  induction x <;> simp [rmatch, matchEpsilon, *]
 #align regular_expression.zero_rmatch RegularExpression.zero_rmatch
 
 theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
-  induction x <;> simp [rmatch, match_epsilon, *]
+  induction x <;> simp [rmatch, matchEpsilon, *]
 #align regular_expression.one_rmatch_iff RegularExpression.one_rmatch_iff
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
   cases' x with _ x
-  decide
-  cases x
-  rw [rmatch, deriv]
-  split_ifs <;> tauto
-  rw [rmatch, deriv]
-  split_ifs
-  rw [one_rmatch_iff]
-  tauto
-  rw [zero_rmatch]
-  tauto
+  . exact of_decide_eq_true rfl
+  cases' x with head tail
+  . rw [rmatch, deriv]
+    split_ifs
+    . tauto
+    . simp [List.singleton_inj]; tauto
+  . rw [rmatch, rmatch, deriv]
+    split_ifs with h
+    . simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
+    . simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
 #align regular_expression.char_rmatch_iff RegularExpression.char_rmatch_iff
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, match_epsilon, Bool.or_coe_iff]
+  · simp only [rmatch, matchEpsilon, Bool.or_coe_iff]
   · repeat' rw [rmatch]
     rw [deriv]
     exact ih _ _
@@ -237,7 +240,7 @@ theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P * Q).rmatch x ↔ ∃ t u : List α, x = t ++ u ∧ P.rmatch t ∧ Q.rmatch u := by
   induction' x with a x ih generalizing P Q
-  · rw [rmatch, match_epsilon]
+  · rw [rmatch, matchEpsilon]
     constructor
     · intro h
       refine' ⟨[], [], rfl, _⟩
@@ -282,8 +285,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 
 theorem star_rmatch_iff (P : RegularExpression α) :
     ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x = S.join ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t
-  | x =>
-    by
+  | x => by
     have A : ∀ m n : ℕ, n < m + n + 1 := by
       intro m n
       convert add_lt_add_of_le_of_lt (add_le_add (zero_le m) (le_refl n)) zero_lt_one
@@ -293,7 +295,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
     constructor
     · cases' x with a x
       · intro
-        fconstructor
+        constructor
         exact []
         tauto
       · rw [rmatch, deriv, mul_rmatch_iff]
@@ -336,13 +338,14 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             rw [IH _ hwf]
             refine' ⟨U, rfl, fun t h => helem t _⟩
             right
-            assumption termination_by'
-  ⟨fun L₁ L₂ : List _ => L₁.length < L₂.length, InvImage.wf _ Nat.lt_wfRel⟩
+            assumption
+  -- termination_by'
+  -- ⟨fun L₁ L₂ : List _ => L₁.length < L₂.length, InvImage.wf _ Nat.lt_wfRel⟩
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
-theorem rmatch_iff_matches (P : RegularExpression α) : ∀ x : List α, P.rmatch x ↔ x ∈ P.matches :=
-  by
+theorem rmatch_iff_matches' (P : RegularExpression α) : ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' :=
+by
   intro x
   induction P generalizing x
   all_goals
@@ -350,7 +353,7 @@ theorem rmatch_iff_matches (P : RegularExpression α) : ∀ x : List α, P.rmatc
     try rw [one_def]
     try rw [plus_def]
     try rw [comp_def]
-    rw [matches]
+    --rw [matches']
   case zero =>
     rw [zero_rmatch]
     tauto
@@ -390,20 +393,20 @@ theorem rmatch_iff_matches (P : RegularExpression α) : ∀ x : List α, P.rmatc
       tauto
 #align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches
 
-instance (P : RegularExpression α) : DecidablePred P.matches := by
+instance (P : RegularExpression α) : DecidablePred P.matches' := by
   intro x
-  change Decidable (x ∈ P.matches)
-  rw [← rmatch_iff_matches]
-  exact Eq.decidable _ _
+  change Decidable (x ∈ P.matches')
+  rw [← rmatch_iff_matches']
+  --exact Eq.decidable _ _
 
-omit dec
+--omit dec
 
 /-- Map the alphabet of a regular expression. -/
 @[simp]
 def map (f : α → β) : RegularExpression α → RegularExpression β
   | 0 => 0
   | 1 => 1
-  | Char a => char (f a)
+  | char a => char (f a)
   | R + S => map R + map S
   | R * S => map R * map S
   | star R => star (map R)
@@ -412,15 +415,15 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 @[simp]
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
-  | 0 => rfl
+  | 0 => by dsimp; rfl
   | n + 1 => (congr_arg ((· * ·) (map f P)) (map_pow n) : _)
 #align regular_expression.map_pow RegularExpression.map_pow
 
 @[simp]
 theorem map_id : ∀ P : RegularExpression α, P.map id = P
-  | 0 => rfl
-  | 1 => rfl
-  | Char a => rfl
+  | 0 => by dsimp; rfl
+  | 1 => by dsimp; rfl
+  | char a => by dsimp; rfl
   | R + S => by simp_rw [map, map_id]
   | R * S => by simp_rw [map, map_id]
   | star R => by simp_rw [map, map_id]
@@ -430,29 +433,28 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
 theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, (P.map f).map g = P.map (g ∘ f)
   | 0 => rfl
   | 1 => rfl
-  | Char a => rfl
-  | R + S => by simp_rw [map, map_map]
-  | R * S => by simp_rw [map, map_map]
-  | star R => by simp_rw [map, map_map]
+  | char a => rfl
+  | R + S => rfl
+  | R * S => rfl
+  | star R => rfl
 #align regular_expression.map_map RegularExpression.map_map
 
 /-- The language of the map is the map of the language. -/
 @[simp]
 theorem matches_map (f : α → β) :
-    ∀ P : RegularExpression α, (P.map f).matches = Language.map f P.matches
+    ∀ P : RegularExpression α, (P.map f).matches' = Language.map f P.matches'
   | 0 => (map_zero _).symm
   | 1 => (map_one _).symm
-  | Char a => by
+  | char a => by
     rw [eq_comm]
     exact image_singleton
   | R + S => by simp only [matches_map, map, matches_add, map_add]
   | R * S => by simp only [matches_map, map, matches_mul, map_mul]
   | star R => by
-    simp_rw [map, matches, matches_map]
+    simp_rw [map, matches', matches_map]
     rw [Language.kstar_eq_supᵢ_pow, Language.kstar_eq_supᵢ_pow]
     simp_rw [← map_pow]
     exact image_Union.symm
 #align regular_expression.matches_map RegularExpression.matches_map
 
 end RegularExpression
-
