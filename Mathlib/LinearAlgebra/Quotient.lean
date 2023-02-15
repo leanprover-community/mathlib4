@@ -63,6 +63,9 @@ def mk {p : Submodule R M} : M → M ⧸ p :=
   Quotient.mk''
 #align submodule.quotient.mk Submodule.Quotient.mk
 
+/- porting note: here and throughout elaboration is sped up *tremendously* (in some cases even
+avoiding timeouts) by providing type ascriptions to `mk` (or `mk x`) and its variants. Lean 3
+didn't need this help. -/
 @[simp]
 theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
     @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
@@ -131,6 +134,7 @@ instance hasSmul' : SMul S (M ⧸ P) :=
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
 #align submodule.quotient.has_smul' Submodule.Quotient.hasSmul'
 
+-- porting note: should this be marked as a `@[default_instance]`?
 /-- Shortcut to help the elaborator in the common case. -/
 instance hasSmul : SMul R (M ⧸ P) :=
   Quotient.hasSmul' P
@@ -167,6 +171,7 @@ instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
   Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P
 #align submodule.quotient.mul_action' Submodule.Quotient.mulAction'
 
+-- porting note: should this be marked as a `@[default_instance]`?
 instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
   Quotient.mulAction' P
 #align submodule.quotient.mul_action Submodule.Quotient.mulAction
@@ -176,6 +181,7 @@ instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P 
   ZeroHom.smulZeroClass ⟨mk, mk_zero _⟩ <| Submodule.Quotient.mk_smul P
 #align submodule.quotient.smul_zero_class' Submodule.Quotient.smulZeroClass'
 
+-- porting note: should this be marked as a `@[default_instance]`?
 instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
   Quotient.smulZeroClass' P
 #align submodule.quotient.smul_zero_class Submodule.Quotient.smulZeroClass
@@ -186,6 +192,7 @@ instance distribSmul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Su
     (surjective_quot_mk _) (Submodule.Quotient.mk_smul P)
 #align submodule.quotient.distrib_smul' Submodule.Quotient.distribSmul'
 
+-- porting note: should this be marked as a `@[default_instance]`?
 instance distribSmul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
   Quotient.distribSmul' P
 #align submodule.quotient.distrib_smul Submodule.Quotient.distribSmul
@@ -196,6 +203,7 @@ instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScala
     (surjective_quot_mk _) (Submodule.Quotient.mk_smul P)
 #align submodule.quotient.distrib_mul_action' Submodule.Quotient.distribMulAction'
 
+-- porting note: should this be marked as a `@[default_instance]`?
 instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
   Quotient.distribMulAction' P
 #align submodule.quotient.distrib_mul_action Submodule.Quotient.distribMulAction
@@ -206,6 +214,7 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P :
     (surjective_quot_mk _) (Submodule.Quotient.mk_smul P)
 #align submodule.quotient.module' Submodule.Quotient.module'
 
+-- porting note: should this be marked as a `@[default_instance]`?
 instance module (P : Submodule R M) : Module R (M ⧸ P) :=
   Quotient.module' P
 #align submodule.quotient.module Submodule.Quotient.module
@@ -332,7 +341,7 @@ variable {R₂ M₂ : Type _} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂]
 `submodule.mkq` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext 1001]
+@[ext 1001] -- porting note: increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkq = g.comp p.mkq) : f = g :=
   LinearMap.ext fun x => Quotient.inductionOn' x <| (LinearMap.congr_fun h : _)
 #align submodule.linear_map_qext Submodule.linearMap_qext
@@ -353,8 +362,8 @@ theorem liftq_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftq f h (
 theorem liftq_mkq (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftq f h).comp p.mkq = f := by ext; rfl
 #align submodule.liftq_mkq Submodule.liftq_mkq
 
-/-- Special case of `liftq` when `p` is the span of `x`. In this case, the condition on `f` simply
-becomes vanishing at `x`.-/
+/-- Special case of `submodule.liftq` when `p` is the span of `x`. In this case, the condition on
+`f` simply becomes vanishing at `x`.-/
 def liftqSpanSingleton (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) : (M ⧸ R ∙ x) →ₛₗ[τ₁₂] M₂ :=
   (R ∙ x).liftq f <| by rw [span_singleton_le_iff_mem, LinearMap.mem_ker, h]
 #align submodule.liftq_span_singleton Submodule.liftqSpanSingleton
@@ -442,10 +451,11 @@ theorem mapq_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
   induction' k with k ih
   · simp [LinearMap.one_eq_id]
   · simp only [LinearMap.iterate_succ]
+    -- porting note: why does any of these `optParams` need to be applied? Why didn't `simp` handle
+    -- all of this for us?
     convert mapq_comp p p p f (f ^ k) h (p.le_comap_pow_of_le_comap h k)
       (h.trans (comap_mono <| p.le_comap_pow_of_le_comap h k))
     exact (ih _).symm
-    -- porting note: this is as simple as I could get it.
 #align submodule.mapq_pow Submodule.mapq_pow
 
 theorem comap_liftq (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftq f h) = (q.comap f).map (mkq p) :=
@@ -471,6 +481,7 @@ theorem ker_liftq_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p)
   rw [ker_liftq, le_antisymm h h', mkq_map_self]
 #align submodule.ker_liftq_eq_bot Submodule.ker_liftq_eq_bot
 
+-- porting note: is the casing on this correct?
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/
 def ComapMkq.relIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p' }
@@ -482,6 +493,7 @@ def ComapMkq.relIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p
   map_rel_iff' := comap_le_comap_iff <| range_mkq _
 #align submodule.comap_mkq.rel_iso Submodule.ComapMkq.relIso
 
+-- porting note: is the casing on this correct?
 /-- The ordering on submodules of the quotient of `M` by `p` embeds into the ordering on submodules
 of `M`. -/
 def ComapMkq.orderEmbedding : Submodule R (M ⧸ p) ↪o Submodule R M :=
@@ -540,6 +552,8 @@ theorem Quotient.equiv_apply {N : Type _} [AddCommGroup N] [Module R N]
     (hf' :=  fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) (x : M ⧸ P) :
     (Quotient.equiv P Q f hf) x = (P.mapq Q (f : M →ₗ[R] N) hf') x :=
   rfl
+-- porting note: this is `align`ed with an `ₓ` because I had to add `hf'` as an `optParam`.
+#align submodule.quotient.equiv_apply Submodule.Quotient.equiv_apply
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type _} [CommRing R] [AddCommGroup M] [Module R M]
@@ -559,7 +573,8 @@ theorem Quotient.equiv_trans {N O : Type _} [AddCommGroup N] [Module R N] [AddCo
   ext
   -- `simp` can deal with `hef` depending on `e` and `f`
   -- porting note: this doesn't work in Lean 4?
-  simp only [Quotient.equiv_apply P S (e.trans f) hef (fun _ hx => hef ▸ Submodule.mem_map_of_mem hx) _,
+  simp only [Quotient.equiv_apply P S (e.trans f)
+    hef (fun _ hx => hef ▸ Submodule.mem_map_of_mem hx) _,
     Quotient.equiv_apply P Q e he (fun _ hx => he ▸ Submodule.mem_map_of_mem hx) _,
     Quotient.equiv_apply Q S f hf (fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) _]
   simp only [LinearEquiv.trans_apply, LinearEquiv.coe_trans]
