@@ -8,8 +8,8 @@ Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EqToHom
-import Mathbin.Data.Ulift
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.Data.Ulift
 
 /-!
 # Discrete categories
@@ -54,8 +54,7 @@ structure Discrete (α : Type u₁) where
 #align category_theory.discrete CategoryTheory.Discrete
 
 @[simp]
-theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X :=
-  by
+theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
   ext
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
@@ -300,8 +299,7 @@ open Opposite
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
 /-- A discrete category is equivalent to its opposite category. -/
 @[simps functor_obj_as inverse_obj]
-protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
-  by
+protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α := by
   let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
   refine'
     equivalence.mk (functor.left_op F) F _
