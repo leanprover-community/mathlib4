@@ -69,12 +69,12 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
 
 @[simp]
 theorem nhds_nil : 𝓝 ([] : List α) = pure [] := by
-  rw [nhds_list, List.traverse_nil _] <;> infer_instance
+  rw [nhds_list, List.traverse_nil _]
 #align nhds_nil nhds_nil
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem nhds_cons (a : α) (l : List α) : 𝓝 (a::l) = List.cons <$> 𝓝 a <*> 𝓝 l := by
-  rw [nhds_list, List.traverse_cons _, ← nhds_list] <;> infer_instance
+  rw [nhds_list, List.traverse_cons _, ← nhds_list]
 #align nhds_cons nhds_cons
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
