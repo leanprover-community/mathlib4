@@ -551,7 +551,8 @@ theorem continuous_extension : Continuous (Completion.extension f) :=
 
 end CompleteSpace
 
-@[simp]
+/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
+Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem extension_coe [SeparatedSpace β] (hf : UniformContinuous f) (a : α) :
     (Completion.extension f) a = f a :=
   cpkg.extend_coe hf a
@@ -590,7 +591,8 @@ theorem continuous_map : Continuous (Completion.map f) :=
   cpkg.continuous_map cpkg f
 #align uniform_space.completion.continuous_map UniformSpace.Completion.continuous_map
 
-@[simp]
+/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
+Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem map_coe (hf : UniformContinuous f) (a : α) : (Completion.map f) a = f a :=
   cpkg.map_coe cpkg hf a
 #align uniform_space.completion.map_coe UniformSpace.Completion.map_coe
@@ -680,7 +682,8 @@ section SeparatedSpace
 
 variable [SeparatedSpace γ] {f}
 
-@[simp]
+/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
+Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem extension₂_coe_coe (hf : UniformContinuous₂ f) (a : α) (b : β) :
     Completion.extension₂ f a b = f a b :=
   cpkg.extension₂_coe_coe cpkg hf a b
