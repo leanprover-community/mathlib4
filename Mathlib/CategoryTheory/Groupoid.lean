@@ -23,7 +23,7 @@ asserting that all morphisms have inverses.
 The instance `IsIso.ofGroupoid (f : X ⟶ Y) : IsIso f` means that you can then write
 `inv f` to access the inverse of any morphism `f`.
 
-`Groupoid.iso_equiv_hom : (X ≅ Y) ≃ (X ⟶ Y)` provides the equivalence between
+`Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y)` provides the equivalence between
 isomorphisms and morphisms in a groupoid.
 
 We provide a (non-instance) constructor `Groupoid.ofIsIso` from an existing category
@@ -39,22 +39,25 @@ namespace CategoryTheory
 
 universe v v₂ u u₂
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 /-- A `groupoid` is a category such that all morphisms are isomorphisms. -/
 class Groupoid (obj : Type u) extends Category.{v} obj : Type max u (v + 1) where
+  /-- The inverse morphism -/ 
   inv : ∀ {X Y : obj}, (X ⟶ Y) → (Y ⟶ X)
+  /-- `inv f` composed `f` is the identity -/
   inv_comp : ∀ {X Y : obj} (f : X ⟶ Y), comp (inv f) f = id Y := by aesop_cat
+  /-- `f` composed with `inv f` is the identity -/
   comp_inv : ∀ {X Y : obj} (f : X ⟶ Y), comp f (inv f) = id X := by aesop_cat
 #align category_theory.groupoid CategoryTheory.Groupoid
 
-/-- A `large_groupoid` is a groupoid
+/-- A `LargeGroupoid` is a groupoid
 where the objects live in `Type (u+1)` while the morphisms live in `Type u`.
 -/
 abbrev LargeGroupoid (C : Type (u + 1)) : Type (u + 1) :=
   Groupoid.{u} C
 #align category_theory.large_groupoid CategoryTheory.LargeGroupoid
 
-/-- A `small_groupoid` is a groupoid
+/-- A `SmallGroupoid` is a groupoid
 where the objects and morphisms live in the same universe.
 -/
 abbrev SmallGroupoid (C : Type u) : Type (u + 1) :=
@@ -128,7 +131,7 @@ section
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A category where every morphism `is_iso` is a groupoid. -/
+/-- A category where every morphism `IsIso` is a groupoid. -/
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) : Groupoid.{v} C
     where 
       inv := fun f => CategoryTheory.inv f
@@ -169,4 +172,3 @@ instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid
 end
 
 end CategoryTheory
-
