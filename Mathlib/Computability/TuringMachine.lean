@@ -2010,13 +2010,10 @@ local notation "Λ'₁" => @Λ' Γ Λ  -- Porting note: Added this to clean up t
 instance : Inhabited Λ'₁ :=
   ⟨Λ'.normal default⟩
 
--- mathport name: exprcfg₀
 local notation "Cfg₀" => TM0.Cfg Γ Λ
 
--- mathport name: exprstmt₁
 local notation "Stmt₁" => TM1.Stmt Γ Λ'₁ Unit
 
--- mathport name: exprcfg₁
 local notation "Cfg₁" => TM1.Cfg Γ Λ'₁ Unit
 
 variable (M : TM0.Machine Γ Λ)
