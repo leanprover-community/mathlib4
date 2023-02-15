@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Functor.Hom
-import Mathbin.CategoryTheory.Functor.Currying
-import Mathbin.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Functor.Hom
+import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # The Yoneda embedding
@@ -63,8 +63,7 @@ def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁
 namespace Yoneda
 
 theorem obj_map_id {X Y : C} (f : op X ⟶ op Y) :
-    (yoneda.obj X).map f (𝟙 X) = (yoneda.map f.unop).app (op Y) (𝟙 Y) :=
-  by
+    (yoneda.obj X).map f (𝟙 X) = (yoneda.map f.unop).app (op Y) (𝟙 Y) := by
   dsimp
   simp
 #align category_theory.yoneda.obj_map_id CategoryTheory.yoneda.obj_map_id
@@ -231,8 +230,7 @@ theorem reprW_hom : F.reprW.Hom = F.reprF :=
 #align category_theory.functor.repr_w_hom CategoryTheory.Functor.reprW_hom
 
 theorem reprW_app_hom (X : Cᵒᵖ) (f : unop X ⟶ F.reprX) :
-    (F.reprW.app X).Hom f = F.map f.op F.reprX :=
-  by
+    (F.reprW.app X).Hom f = F.map f.op F.reprX := by
   change F.repr_f.app X f = (F.repr_f.app (op F.repr_X) ≫ F.map f.op) (𝟙 F.repr_X)
   rw [← F.repr_f.naturality]
   dsimp
@@ -412,8 +410,7 @@ theorem yonedaEquiv_symm_app_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.ob
 #align category_theory.yoneda_equiv_symm_app_apply CategoryTheory.yonedaEquiv_symm_app_apply
 
 theorem yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F) (g : Y ⟶ X) :
-    F.map g.op (yonedaEquiv f) = yonedaEquiv (yoneda.map g ≫ f) :=
-  by
+    F.map g.op (yonedaEquiv f) = yonedaEquiv (yoneda.map g ≫ f) := by
   change (f.app (op X) ≫ F.map g.op) (𝟙 X) = f.app (op Y) (𝟙 Y ≫ g)
   rw [← f.naturality]
   dsimp
