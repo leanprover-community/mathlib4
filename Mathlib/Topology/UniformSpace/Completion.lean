@@ -103,8 +103,6 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         simp [Function.comp, h, mem_map']
         exact le_rfl)
   exact h₁.trans_le h₂
-set_option linter.uppercaseLean3 false in
-#align Cauchy.symm_gen CauchyCat.symm_gen
 
 private theorem comp_rel_gen_gen_subset_gen_comp_rel {s t : Set (α × α)} :
     compRel (gen s) (gen t) ⊆ (gen (compRel s t) : Set (CauchyCat α × CauchyCat α)) :=
@@ -116,8 +114,6 @@ private theorem comp_rel_gen_gen_subset_gen_comp_rel {s t : Set (α × α)} :
   (f.val ×ᶠ g.val).sets_of_superset (prod_mem_prod ht₁ ht₄)
     fun ⟨a, b⟩ ⟨(ha : a ∈ t₁), (hb : b ∈ t₄)⟩ =>
     ⟨x, h₁ (show (a, x) ∈ t₁ ×ˢ t₂ from ⟨ha, xt₂⟩), h₂ (show (x, b) ∈ t₃ ×ˢ t₄ from ⟨xt₃, hb⟩)⟩
-set_option linter.uppercaseLean3 false in
-#align Cauchy.comp_rel_gen_gen_subset_gen_comp_rel CauchyCat.comp_rel_gen_gen_subset_gen_comp_rel
 
 private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) ≤ (𝓤 α).lift' gen :=
   calc
@@ -134,8 +130,6 @@ private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) �
         . exact monotone_id.compRel monotone_id
         . exact monotone_gen
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
-set_option linter.uppercaseLean3 false in
-#align Cauchy.comp_gen CauchyCat.comp_gen
 
 instance : UniformSpace (CauchyCat α) :=
   UniformSpace.ofCore
