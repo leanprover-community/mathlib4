@@ -249,8 +249,8 @@ instance [h : Nonempty α] : Nonempty (CauchyCat α) :=
 
 section Extend
 
-/-- Extend a uniformly continuous function `α → β` to a function `CauchyCat α → β`. Outputs junk when
-`f` is not uniformly continuous. -/
+/-- Extend a uniformly continuous function `α → β` to a function `CauchyCat α → β`.
+Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyCat α → β :=
   if UniformContinuous f then denseInducing_pureCauchy.extend f
   else fun x => f (nonempty_cauchyCat_iff.1 ⟨x⟩).some
