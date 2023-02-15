@@ -250,7 +250,7 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
   rfl
 #align filter.germ.coe_comp_tendsto Filter.Germ.coe_compTendsto
 
--- @[simp] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
@@ -481,7 +481,7 @@ theorem const_div [Div M] (a b : M) : const l (a / b) = (const l a) / (const l b
 #align filter.germ.const_div Filter.Germ.const_div
 #align filter.germ.const_sub Filter.Germ.const_sub
 
--- Porting note: `to_addive` can't generate this.
+-- Porting note: `to_additive` can't generate this.
 instance subNegMonoid [SubNegMonoid G] : SubNegMonoid (Germ l G) :=
   Function.Surjective.subNegMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
