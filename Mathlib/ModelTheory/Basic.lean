@@ -347,9 +347,8 @@ def inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
   tuples in the second structure where that relation is still true. -/
 structure Hom where
   toFun : M → N
-  map_fun' : ∀ {n} (f : L.Functions n) (x), to_fun (funMap f x) = funMap f (to_fun ∘ x) := by
-    trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r x → RelMap r (to_fun ∘ x) := by trivial
+  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by trivial
+  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by trivial
 #align first_order.language.hom FirstOrder.Language.Hom
 
 -- mathport name: language.hom
@@ -358,9 +357,8 @@ scoped[FirstOrder] notation:25 A " →[" L "] " B => FirstOrder.Language.Hom L A
 /-- An embedding of first-order structures is an embedding that commutes with the
   interpretations of functions and relations. -/
 structure Embedding extends M ↪ N where
-  map_fun' : ∀ {n} (f : L.Functions n) (x), to_fun (funMap f x) = funMap f (to_fun ∘ x) := by
-    trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r (to_fun ∘ x) ↔ RelMap r x := by trivial
+  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by trivial
+  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by trivial
 #align first_order.language.embedding FirstOrder.Language.Embedding
 
 -- mathport name: language.embedding
@@ -369,9 +367,8 @@ scoped[FirstOrder] notation:25 A " ↪[" L "] " B => FirstOrder.Language.Embeddi
 /-- An equivalence of first-order structures is an equivalence that commutes with the
   interpretations of functions and relations. -/
 structure Equiv extends M ≃ N where
-  map_fun' : ∀ {n} (f : L.Functions n) (x), to_fun (funMap f x) = funMap f (to_fun ∘ x) := by
-    trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), RelMap r (to_fun ∘ x) ↔ RelMap r x := by trivial
+  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by trivial
+  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by trivial
 #align first_order.language.equiv FirstOrder.Language.Equiv
 
 -- mathport name: language.equiv
@@ -543,7 +540,7 @@ theorem map_constants (φ : M →[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M →[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    RelMap r x → RelMap r (φ ∘ x) :=
+    rel_map r x → rel_map r (φ ∘ x) :=
   HomClass.map_rel φ r x
 #align first_order.language.hom.map_rel FirstOrder.Language.Hom.map_rel
 
@@ -551,7 +548,11 @@ variable (L) (M)
 
 /-- The identity map from a structure to itself -/
 @[refl]
-def id : M →[L] M where toFun := id
+def id : M →[L] M where
+  toFun m := m
+  -- Porting note: Added two lines below.
+  map_fun' _ _ := rfl
+  map_rel' _ _ h := h
 #align first_order.language.hom.id FirstOrder.Language.Hom.id
 
 variable {L} {M}
@@ -568,7 +569,15 @@ theorem id_apply (x : M) : id L M x = x :=
 @[trans]
 def comp (hnp : N →[L] P) (hmn : M →[L] N) : M →[L] P where
   toFun := hnp ∘ hmn
-  map_rel' _ _ _ h := by simp [h]
+  -- Porting note: Added a line below.
+  map_fun' _ _ := by simp; rfl
+  map_rel' _ _ h := by
+    simp [h]
+    -- Porting note: Previous code was
+    -- simp [h]
+    --
+    -- Does not terminate the proof
+    sorry
 #align first_order.language.hom.comp FirstOrder.Language.Hom.comp
 
 @[simp]
