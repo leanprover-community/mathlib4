@@ -213,7 +213,7 @@ instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector <;> infe
 
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
     Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ᶠ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
-  simp [tendsto_subtype_rng, cons_val]
+  rw [tendsto_subtype_rng, cons_val]
   exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
 #align vector.tendsto_cons Vector.tendsto_cons
 
