@@ -8,8 +8,8 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.VecNotation
-import Mathbin.SetTheory.Cardinal.Basic
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Basics on First-Order Structures
@@ -105,8 +105,7 @@ theorem lift_mk {i : ℕ} :
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
-theorem sum_card : (Cardinal.sum fun i => #Sequence₂ a₀ a₁ a₂ i) = (#a₀) + (#a₁) + (#a₂) :=
-  by
+theorem sum_card : (Cardinal.sum fun i => #Sequence₂ a₀ a₁ a₂ i) = (#a₀) + (#a₁) + (#a₂) := by
   rw [sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ]
   simp [add_assoc]
 #align first_order.sequence₂.sum_card FirstOrder.Sequence₂.sum_card
@@ -240,8 +239,7 @@ instance subsingleton_mk₂_relations {c f₁ f₂ : Type u} {r₁ r₂ : Type v
 theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
 #align first_order.language.empty_card FirstOrder.Language.empty_card
 
-instance isEmpty_empty : IsEmpty Language.empty.Symbols :=
-  by
+instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [language.symbols, isEmpty_sum, isEmpty_sigma]
   exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 #align first_order.language.is_empty_empty FirstOrder.Language.isEmpty_empty
@@ -264,8 +262,7 @@ theorem card_relations_sum (i : ℕ) :
 
 @[simp]
 theorem card_sum :
-    (L.Sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card :=
-  by
+    (L.Sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
   simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
     sum_add_distrib', lift_add, lift_sum, lift_lift]
   rw [add_assoc, ← add_assoc (Cardinal.sum fun i => (#L'.functions i).lift),
@@ -688,8 +685,7 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
 
 @[simp]
 theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
-    (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom :=
-  by
+    (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom := by
   ext
   simp only [coe_to_hom, comp_apply, hom.comp_apply]
 #align first_order.language.embedding.comp_to_hom FirstOrder.Language.Embedding.comp_toHom
