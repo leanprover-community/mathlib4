@@ -367,8 +367,7 @@ by
   case plus _ _ ih₁ ih₂ =>
     rw [add_rmatch_iff, ih₁, ih₂]
     rfl
-  case
-    comp P Q ih₁ ih₂ =>
+  case comp P Q ih₁ ih₂ =>
     simp only [mul_rmatch_iff, comp_def, Language.mul_def, exists_and_left, Set.mem_image2,
       Set.image_prod]
     constructor
@@ -376,7 +375,7 @@ by
       rw [ih₁] at hmatch₁
       rw [ih₂] at hmatch₂
       exact ⟨x, y, hmatch₁, hmatch₂, hsum.symm⟩
-    · rintro ⟨x, hmatch₁, y, hmatch₂, hsum⟩
+    · rintro ⟨x, y, hmatch₁, hmatch₂, hsum⟩
       rw [← ih₁] at hmatch₁
       rw [← ih₂] at hmatch₂
       exact ⟨x, y, hsum.symm, hmatch₁, hmatch₂⟩
