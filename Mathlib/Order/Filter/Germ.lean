@@ -481,7 +481,7 @@ theorem const_div [Div M] (a b : M) : const l (a / b) = (const l a) / (const l b
 #align filter.germ.const_div Filter.Germ.const_div
 #align filter.germ.const_sub Filter.Germ.const_sub
 
--- Porting note: `to_addive` can't generate this.
+-- Porting note: `to_additive` can't generate this.
 instance subNegMonoid [SubNegMonoid G] : SubNegMonoid (Germ l G) :=
   Function.Surjective.subNegMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
