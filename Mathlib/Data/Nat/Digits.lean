@@ -72,7 +72,7 @@ theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
 
-In any base, we have `of_digits b L = L.foldr (λ x y, x + b * y) 0`.
+In any base, we have `ofDigits b L = L.foldr (λ x y, x + b * y) 0`.
 * For any `2 ≤ b`, we have `l < b` for any `l ∈ digits b n`,
   and the last digit is not zero.
   This uniquely specifies the behaviour of `digits b`.
@@ -159,7 +159,7 @@ theorem digits_add (b : ℕ) (h : 1 < b) (x y : ℕ) (hxb : x < b) (hxy : x ≠ 
 -- If we had a function converting a list into a polynomial,
 -- and appropriate lemmas about that function,
 -- we could rewrite this in terms of that.
-/-- `of_digits b L` takes a list `L` of natural numbers, and interprets them
+/-- `ofDigits b L` takes a list `L` of natural numbers, and interprets them
 as a number in semiring, as the little-endian digits in base `b`.
 -/
 def ofDigits {α : Type _} [Semiring α] (b : α) : List ℕ → α
@@ -295,7 +295,7 @@ theorem ofDigits_one (L : List ℕ) : ofDigits 1 L = L.sum := by
 /-!
 ### Properties
 
-This section contains various lemmas of properties relating to `digits` and `of_digits`.
+This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
 
 
@@ -422,7 +422,7 @@ theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : 
 /-- Any number m is less than (b+2)^(number of digits in the base b + 2 representation of m) -/
 theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
   convert ofDigits_lt_base_pow_length' fun _ => digits_lt_base'
-  rw [of_digits_digits (b + 2) m]
+  rw [ofDigits_digits (b + 2) m]
 #align nat.lt_base_pow_length_digits' Nat.lt_base_pow_length_digits'
 
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
@@ -468,7 +468,7 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
   convert pow_length_le_mul_ofDigits this (getLast_digit_ne_zero _ hm)
-  rwa [of_digits_digits]
+  rwa [ofDigits_digits]
 #align nat.base_pow_length_digits_le' Nat.base_pow_length_digits_le'
 
 /-- Any non-zero natural number `m` is greater than
