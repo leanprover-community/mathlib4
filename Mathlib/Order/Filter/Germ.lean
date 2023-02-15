@@ -211,7 +211,7 @@ theorem map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
   rfl
 #align filter.germ.map₂_coe Filter.Germ.map₂_coe
 
-/-- A germ at `l` of maps from `α` to `β` tends to `lb : filter β` if it is represented by a map
+/-- A germ at `l` of maps from `α` to `β` tends to `lb : Filter β` if it is represented by a map
 which tends to `lb` along `l`. -/
 protected def Tendsto (f : Germ l β) (lb : Filter β) : Prop :=
   liftOn f (fun f => Tendsto f l lb) fun _f _g H => propext (tendsto_congr' H)
