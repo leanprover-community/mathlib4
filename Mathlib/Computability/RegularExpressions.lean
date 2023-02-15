@@ -354,7 +354,6 @@ by
     try rw [one_def]
     try rw [plus_def]
     try rw [comp_def]
-    --rw [matches']
   case zero =>
     rw [zero_rmatch]
     tauto
@@ -380,7 +379,8 @@ by
       rw [← ih₂] at hmatch₂
       exact ⟨x, y, hsum.symm, hmatch₁, hmatch₂⟩
   case star _ ih =>
-    rw [star_rmatch_iff, Language.kstar_def_nonempty]
+    rw [star_rmatch_iff]
+    simp only [ne_eq, matches', Language.kstar_def_nonempty, mem_setOf_eq]
     constructor
     all_goals
       rintro ⟨S, hx, hS⟩
@@ -391,7 +391,7 @@ by
       tauto
     · rw [ih y]
       tauto
-#align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches
+#align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches'
 
 instance (P : RegularExpression α) : DecidablePred P.matches' := by
   intro x
