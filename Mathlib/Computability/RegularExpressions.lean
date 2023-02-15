@@ -137,7 +137,8 @@ theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches
 @[simp]
 theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' = P.matches' ^ n
   | 0 => matches'_epsilon
-  | n + 1 => (matches'_mul _ _).trans <| Eq.trans (congr_arg _ (matches'_pow n)) (pow_succ _ _).symm
+  | n + 1 => (matches'_mul _ _).trans <|
+      Eq.trans (congr_arg _ (matches'_pow P n)) (pow_succ _ _).symm
 #align regular_expression.matches_pow RegularExpression.matches'_pow
 
 @[simp]
@@ -240,7 +241,7 @@ theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P * Q).rmatch x ↔ ∃ t u : List α, x = t ++ u ∧ P.rmatch t ∧ Q.rmatch u := by
   induction' x with a x ih generalizing P Q
-  · rw [rmatch, matchEpsilon]
+  · rw [rmatch]; simp only [matchEpsilon]
     constructor
     · intro h
       refine' ⟨[], [], rfl, _⟩
@@ -252,7 +253,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       subst hu
       repeat' rw [rmatch] at h₂
       simp [h₂]
-  · rw [rmatch, deriv]
+  · rw [rmatch]; simp [deriv]
     split_ifs with hepsilon
     · rw [add_rmatch_iff, ih]
       constructor
