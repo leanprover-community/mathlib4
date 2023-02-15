@@ -27,8 +27,8 @@ of `G`.
 ## Implementation details
 
 We define the commensurator of a subgroup `H` of `G` by first defining it as a subgroup of
-`(conj_act G)`, which we call commensurator' and then taking the pre-image under
-the map `G → (conj_act G)` to obtain our commensurator as a subgroup of `G`.
+`(conjAct G)`, which we call commensurator' and then taking the pre-image under
+the map `G → (conjAct G)` to obtain our commensurator as a subgroup of `G`.
 -/
 
 
@@ -85,7 +85,7 @@ theorem commensurable_inv (H : Subgroup G) (g : ConjAct G) :
     Commensurable (g • H) H ↔ Commensurable H (g⁻¹ • H) := by rw [commensurable_conj, inv_smul_smul]
 #align commensurable.commensurable_inv Commensurable.commensurable_inv
 
-/-- For `H` a subgroup of `G`, this is the subgroup of all elements `g : conj_aut G`
+/-- For `H` a subgroup of `G`, this is the subgroup of all elements `g : conjAut G`
 such that `commensurable (g • H) H` -/
 def commensurator' (H : Subgroup G) : Subgroup (ConjAct G) where
   carrier := { g : ConjAct G | Commensurable (g • H) H }
