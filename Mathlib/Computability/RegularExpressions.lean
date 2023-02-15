@@ -233,7 +233,7 @@ theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
   induction' x with _ _ ih generalizing P Q
   · simp only [rmatch, matchEpsilon, Bool.or_coe_iff]
   · repeat' rw [rmatch]
-    rw [deriv]
+    rw [deriv_add]
     exact ih _ _
 #align regular_expression.add_rmatch_iff RegularExpression.add_rmatch_iff
 
