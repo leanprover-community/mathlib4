@@ -296,7 +296,7 @@ def mmap {β : Type v} {m} [Monad m] (a : Array' n α) (f : α → m β) : m (Ar
 /-- Map a function over the array. -/
 @[inline]
 def map {β : Type v} (a : Array' n α) (f : α → β) : Array' n β :=
-  DArray.foreach a (λ _ a => f a)
+  DArray.foreach a (λ _ e => f e)
 #align array.map Array'.map
 
 protected def Mem (v : α) (a : Array' n α) : Prop :=
@@ -316,9 +316,10 @@ instance [Repr α] : Repr (Array' n α) where
 unsafe instance [Std.ToFormat α] : Std.ToFormat (Array' n α) where
   format (a : Array' n α) := Std.format (toList a)
 
-unsafe instance [has_to_tactic_format α] : has_to_tactic_format (Array' n α) :=
+/- Porting note: This is related to tactics-/
+/--unsafe instance [has_to_tactic_format α] : has_to_tactic_format (Array' n α) :=
   ⟨tactic.pp ∘ toList⟩
-
+--/
 @[simp]
 theorem read_write (a : Array' n α) (i : Fin n) (v : α) : read (write a i v) i = v :=
   DArray.read_write a i v
