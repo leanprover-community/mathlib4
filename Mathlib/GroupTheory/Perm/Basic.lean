@@ -60,7 +60,7 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
 
 /-- Lift a monoid homomorphism `f : G →* function.End α` to a monoid homomorphism
 `f : G →* equiv.perm α`. -/
-@[simps]
+@[simps!]
 def _root_.MonoidHom.toHomPerm {G : Type _} [Group G] (f : G →* Function.End α) : G →* Perm α :=
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 #align monoid_hom.to_hom_perm MonoidHom.toHomPerm
@@ -632,44 +632,44 @@ end AddGroup
 section Group
 variable [Group α] (a b : α)
 
-@[simp, to_additive] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
-@[simp, to_additive] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
+@[to_additive (attr := simp)] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+@[to_additive (attr := simp)] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 #align equiv.mul_right_one Equiv.mulRight_one
 #align equiv.mul_left_one Equiv.mulLeft_one
 
-@[simp, to_additive] lemma mulLeft_mul :
+@[to_additive (attr := simp)] lemma mulLeft_mul :
   Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
 ext $ mul_assoc _ _
 #align equiv.mul_left_mul Equiv.mulLeft_mul
 
-@[simp, to_additive] lemma mulRight_mul :
+@[to_additive (attr := simp)] lemma mulRight_mul :
   Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
 ext $ fun _ ↦ (mul_assoc _ _ _).symm
 #align equiv.mul_right_mul Equiv.mulRight_mul
 
-@[simp, to_additive inv_addLeft]
+@[to_additive (attr := simp) inv_addLeft]
 lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
-@[simp, to_additive inv_addRight]
+@[to_additive (attr := simp) inv_addRight]
 lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 #align equiv.inv_mul_right Equiv.inv_mulRight
 #align equiv.inv_mul_left Equiv.inv_mulLeft
 
-@[simp, to_additive pow_addLeft]
+@[to_additive (attr := simp) pow_addLeft]
 lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
 by ext; simp [Perm.coe_pow]
 #align equiv.pow_mul_left Equiv.pow_mulLeft
 
-@[simp, to_additive pow_addRight]
+@[to_additive (attr := simp) pow_addRight]
 lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) :=
 by ext; simp [Perm.coe_pow]
 #align equiv.pow_mul_right Equiv.pow_mulRight
 
-@[simp, to_additive zpow_addLeft]
+@[to_additive (attr := simp) zpow_addLeft]
 lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
 (map_zpow (⟨⟨Equiv.mulLeft, mulLeft_one⟩, mulLeft_mul⟩ : α →* Perm α) _ _).symm
 #align equiv.zpow_mul_left Equiv.zpow_mulLeft
 
-@[simp, to_additive zpow_addRight]
+@[to_additive (attr := simp) zpow_addRight]
 lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
 | (Int.ofNat n) => by simp
 | (Int.negSucc n) => by simp

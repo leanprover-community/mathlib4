@@ -12,7 +12,6 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Pointwise operations of sets
