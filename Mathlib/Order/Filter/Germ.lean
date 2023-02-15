@@ -305,7 +305,7 @@ theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (co
   @eventually_const _ _ _ (p x)
 #align filter.germ.lift_pred_const_iff Filter.Germ.liftPred_const_iff
 
-/-- Lift a relation `r : β → γ → Prop` to `germ l β → germ l γ → Prop`. -/
+/-- Lift a relation `r : β → γ → Prop` to `Germ l β → Germ l γ → Prop`. -/
 def LiftRel (r : β → γ → Prop) (f : Germ l β) (g : Germ l γ) : Prop :=
   Quotient.liftOn₂' f g (fun f g => ∀ᶠ x in l, r (f x) (g x)) fun _f _g _f' _g' Hf Hg =>
     propext <| eventually_congr <| Hg.mp <| Hf.mono fun _x hf hg => hf ▸ hg ▸ Iff.rfl
