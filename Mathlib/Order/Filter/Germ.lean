@@ -33,8 +33,8 @@ We define
 * `f.compTendsto g hg` and `f.compTendsto' g hg`: given `f : Germ l β` and a function
   `g : γ → α` (resp., a germ `g : Germ lc α`), if `g` tends to `l` along `lc`, then the composition
   `f ∘ g` is a well-defined germ at `lc`;
-* `germ.liftPred`, `germ.liftRel`: lift a predicate or a relation to the space of germs:
-  `(f : germ l β).liftPred p` means `∀ᶠ x in l, p (f x)`, and similarly for a relation.
+* `Germ.liftPred`, `Germ.liftRel`: lift a predicate or a relation to the space of germs:
+  `(f : Germ l β).liftPred p` means `∀ᶠ x in l, p (f x)`, and similarly for a relation.
 
 We also define `map (F : β → γ) : Germ l β → Germ l γ` sending each germ `f` to `F ∘ f`.
 
@@ -151,7 +151,7 @@ theorem inductionOn₃ (f : Germ l β) (g : Germ l γ) (h : Germ l δ)
 #align filter.germ.induction_on₃ Filter.Germ.inductionOn₃
 
 /-- Given a map `F : (α → β) → (γ → δ)` that sends functions eventually equal at `l` to functions
-eventually equal at `lc`, returns a map from `germ l β` to `germ lc δ`. -/
+eventually equal at `lc`, returns a map from `Germ l β` to `Germ lc δ`. -/
 def map' {lc : Filter γ} (F : (α → β) → γ → δ) (hF : (l.EventuallyEq ⇒ lc.EventuallyEq) F F) :
     Germ l β → Germ lc δ :=
   Quotient.map' F hF
@@ -211,7 +211,7 @@ theorem map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
   rfl
 #align filter.germ.map₂_coe Filter.Germ.map₂_coe
 
-/-- A germ at `l` of maps from `α` to `β` tends to `lb : filter β` if it is represented by a map
+/-- A germ at `l` of maps from `α` to `β` tends to `lb : Filter β` if it is represented by a map
 which tends to `lb` along `l`. -/
 protected def Tendsto (f : Germ l β) (lb : Filter β) : Prop :=
   liftOn f (fun f => Tendsto f l lb) fun _f _g H => propext (tendsto_congr' H)
@@ -225,7 +225,7 @@ theorem coe_tendsto {f : α → β} {lb : Filter β} : (f : Germ l β).Tendsto l
 alias coe_tendsto ↔ _ _root_.Filter.Tendsto.germ_tendsto
 #align filter.tendsto.germ_tendsto Filter.Tendsto.germ_tendsto
 
-/-- Given two germs `f : germ l β`, and `g : germ lc α`, where `l : filter α`, if `g` tends to `l`,
+/-- Given two germs `f : Germ l β`, and `g : Germ lc α`, where `l : Filter α`, if `g` tends to `l`,
 then the composition `f ∘ g` is well-defined as a germ at `lc`. -/
 def compTendsto' (f : Germ l β) {lc : Filter γ} (g : Germ lc α) (hg : g.Tendsto l) : Germ lc β :=
   liftOn f (fun f => g.map f) fun _f₁ _f₂ hF =>
@@ -238,8 +238,8 @@ theorem coe_compTendsto' (f : α → β) {lc : Filter γ} {g : Germ lc α} (hg :
   rfl
 #align filter.germ.coe_comp_tendsto' Filter.Germ.coe_compTendsto'
 
-/-- Given a germ `f : germ l β` and a function `g : γ → α`, where `l : filter α`, if `g` tends
-to `l` along `lc : filter γ`, then the composition `f ∘ g` is well-defined as a germ at `lc`. -/
+/-- Given a germ `f : Germ l β` and a function `g : γ → α`, where `l : Filter α`, if `g` tends
+to `l` along `lc : Filter γ`, then the composition `f ∘ g` is well-defined as a germ at `lc`. -/
 def compTendsto (f : Germ l β) {lc : Filter γ} (g : γ → α) (hg : Tendsto g lc l) : Germ lc β :=
   f.compTendsto' _ hg.germ_tendsto
 #align filter.germ.comp_tendsto Filter.Germ.compTendsto
@@ -285,7 +285,7 @@ theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ l
   inductionOn g (fun _ _ => rfl) hg
 #align filter.germ.const_comp_tendsto' Filter.Germ.const_compTendsto'
 
-/-- Lift a predicate on `β` to `germ l β`. -/
+/-- Lift a predicate on `β` to `Germ l β`. -/
 def LiftPred (p : β → Prop) (f : Germ l β) : Prop :=
   liftOn f (fun f => ∀ᶠ x in l, p (f x)) fun _f _g H =>
     propext <| eventually_congr <| H.mono fun _x hx => hx ▸ Iff.rfl
@@ -305,7 +305,7 @@ theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (co
   @eventually_const _ _ _ (p x)
 #align filter.germ.lift_pred_const_iff Filter.Germ.liftPred_const_iff
 
-/-- Lift a relation `r : β → γ → Prop` to `germ l β → germ l γ → Prop`. -/
+/-- Lift a relation `r : β → γ → Prop` to `Germ l β → Germ l γ → Prop`. -/
 def LiftRel (r : β → γ → Prop) (f : Germ l β) (g : Germ l γ) : Prop :=
   Quotient.liftOn₂' f g (fun f g => ∀ᶠ x in l, r (f x) (g x)) fun _f _g _f' _g' Hf Hg =>
     propext <| eventually_congr <| Hg.mp <| Hf.mono fun _x hf hg => hf ▸ hg ▸ Iff.rfl
