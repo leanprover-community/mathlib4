@@ -204,29 +204,29 @@ theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l�
   sup_le_sup
 #align language.le_add_congr Language.le_add_congr
 
-theorem mem_supr {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
+theorem mem_supᵢ {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
   mem_unionᵢ
-#align language.mem_supr Language.mem_supr
+#align language.mem_supr Language.mem_supᵢ
 
-theorem supr_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
+theorem supᵢ_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) * m = ⨆ i, l i * m :=
   image2_unionᵢ_left _ _ _
-#align language.supr_mul Language.supr_mul
+#align language.supr_mul Language.supᵢ_mul
 
-theorem mul_supr {ι : Sort v} (l : ι → Language α) (m : Language α) :
+theorem mul_supᵢ {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (m * ⨆ i, l i) = ⨆ i, m * l i :=
   image2_unionᵢ_right _ _ _
-#align language.mul_supr Language.mul_supr
+#align language.mul_supr Language.mul_supᵢ
 
-theorem supr_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+theorem supᵢ_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) + m = ⨆ i, l i + m :=
   supᵢ_sup
-#align language.supr_add Language.supr_add
+#align language.supr_add Language.supᵢ_add
 
-theorem add_supr {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+theorem add_supᵢ {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m + ⨆ i, l i) = ⨆ i, m + l i :=
   sup_supᵢ
-#align language.add_supr Language.add_supr
+#align language.add_supr Language.add_supᵢ
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.join ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
@@ -254,30 +254,30 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
       exact ⟨a, _, hS.1, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
 #align language.mem_pow Language.mem_pow
 
-theorem kstar_eq_supr_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
+theorem kstar_eq_supᵢ_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
-  simp only [mem_kstar, mem_supr, mem_pow]
+  simp only [mem_kstar, mem_supᵢ, mem_pow]
   constructor
   · rintro ⟨S, rfl, hS⟩
     exact ⟨_, S, rfl, rfl, hS⟩
   · rintro ⟨_, S, rfl, rfl, hS⟩
     exact ⟨S, rfl, hS⟩
-#align language.kstar_eq_supr_pow Language.kstar_eq_supr_pow
+#align language.kstar_eq_supr_pow Language.kstar_eq_supᵢ_pow
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
-  rw [kstar_eq_supr_pow, kstar_eq_supr_pow]
+  rw [kstar_eq_supᵢ_pow, kstar_eq_supᵢ_pow]
   simp_rw [← map_pow]
   exact image_unionᵢ
 #align language.map_kstar Language.map_kstar
 
 theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
-  simp only [kstar_eq_supr_pow, mul_supr, supr_mul, ← pow_succ, ← pow_succ']
+  simp only [kstar_eq_supᵢ_pow, mul_supᵢ, supᵢ_mul, ← pow_succ, ← pow_succ']
 #align language.mul_self_kstar_comm Language.mul_self_kstar_comm
 
 @[simp]
 theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ := by
-  simp only [kstar_eq_supr_pow, mul_supr, ← pow_succ, ← pow_zero l]
+  simp only [kstar_eq_supᵢ_pow, mul_supᵢ, ← pow_succ, ← pow_zero l]
   exact sup_supᵢ_nat_succ _
 #align language.one_add_self_mul_kstar_eq_kstar Language.one_add_self_mul_kstar_eq_kstar
 
@@ -293,14 +293,14 @@ noncomputable instance : KleeneAlgebra (Language α) :=
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_self := fun l m h ↦ by
-      rw [kstar_eq_supr_pow, supr_mul]
+      rw [kstar_eq_supᵢ_pow, supᵢ_mul]
       refine' supᵢ_le (fun n ↦ _)
       induction' n with n ih
       · simp
       rw [pow_succ', mul_assoc (l^n) l m]
       exact le_trans (le_mul_congr le_rfl h) ih,
     mul_kstar_le_self := fun l m h ↦ by
-      rw [kstar_eq_supr_pow, mul_supr]
+      rw [kstar_eq_supᵢ_pow, mul_supᵢ]
       refine' supᵢ_le (fun n ↦ _)
       induction' n with n ih
       · simp
