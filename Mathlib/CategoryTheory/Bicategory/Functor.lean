@@ -84,13 +84,15 @@ variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (
 structure PrelaxFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
   (C : Type u₂) [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)] extends
   Prefunctor B C where
-  zipWith {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
+  map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
 #align category_theory.prelax_functor CategoryTheory.PrelaxFunctor
 
 /-- The prefunctor between the underlying quivers. -/
-add_decl_doc prelax_functor.to_prefunctor
+add_decl_doc PrelaxFunctor.toPrefunctor
 
 namespace PrelaxFunctor
+
+attribute [coe] CategoryTheory.PrelaxFunctor.toPrefunctor
 
 instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
   ⟨toPrefunctor⟩
@@ -98,34 +100,27 @@ instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
 
 variable (F : PrelaxFunctor B C)
 
-@[simp]
-theorem toPrefunctor_eq_coe : F.toPrefunctor = F :=
-  rfl
-#align category_theory.prelax_functor.to_prefunctor_eq_coe CategoryTheory.PrelaxFunctor.toPrefunctor_eq_coe
-
-@[simp]
-theorem to_prefunctor_obj : (F : Prefunctor B C).obj = F.obj :=
-  rfl
-#align category_theory.prelax_functor.to_prefunctor_obj CategoryTheory.PrelaxFunctor.to_prefunctor_obj
-
-@[simp]
-theorem to_prefunctor_map : @Prefunctor.map B _ C _ F = @map _ _ _ _ _ _ F :=
-  rfl
-#align category_theory.prelax_functor.to_prefunctor_map CategoryTheory.PrelaxFunctor.to_prefunctor_map
+-- porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
+-- and `to_prefunctor_obj : (F : Prefunctor B C).obj = F.obj`
+-- and `to_prefunctor_map`
+#noalign category_theory.prelax_functor.to_prefunctor_eq_coe
+#noalign category_theory.prelax_functor.to_prefunctor_obj
+#noalign category_theory.prelax_functor.to_prefunctor_map
 
 /-- The identity prelax functor. -/
 @[simps]
 def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] : PrelaxFunctor B B :=
-  { Prefunctor.id B with zipWith := fun a b f g η => η }
+  { Prefunctor.id B with map₂ := fun η => η }
 #align category_theory.prelax_functor.id CategoryTheory.PrelaxFunctor.id
 
 instance : Inhabited (PrelaxFunctor B B) :=
   ⟨PrelaxFunctor.id B⟩
 
+-- porting note: `by exact` was not necessary in mathlib3
 /-- Composition of prelax functors. -/
 @[simps]
 def comp (F : PrelaxFunctor B C) (G : PrelaxFunctor C D) : PrelaxFunctor B D :=
-  { (F : Prefunctor B C).comp ↑G with zipWith := fun a b f g η => G.zipWith (F.zipWith η) }
+  { (F : Prefunctor B C).comp ↑G with map₂ := fun η => by exact G.map₂ (F.map₂ η) }
 #align category_theory.prelax_functor.comp CategoryTheory.PrelaxFunctor.comp
 
 end PrelaxFunctor
@@ -150,8 +145,8 @@ def OplaxFunctor.Map₂AssociatorAux (obj : B → C) (map : ∀ {X Y : B}, (X �
     (map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g))
     (map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) ⟶ map f ≫ map g) {a b c d : B}
     (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : Prop :=
-  map₂ (α_ f g h).Hom ≫ map_comp f (g ≫ h) ≫ map f ◁ map_comp g h =
-    map_comp (f ≫ g) h ≫ map_comp f g ▷ map h ≫ (α_ (map f) (map g) (map h)).Hom
+  map₂ (α_ f g h).hom ≫ map_comp f (g ≫ h) ≫ map f ◁ map_comp g h =
+    map_comp (f ≫ g) h ≫ map_comp f g ▷ map h ≫ (α_ (map f) (map g) (map h)).hom
 #align category_theory.oplax_functor.map₂_associator_aux CategoryTheory.OplaxFunctor.Map₂AssociatorAux
 
 /-- An oplax functor `F` between bicategories `B` and `C` consists of a function between objects
@@ -172,35 +167,34 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
   mapComp_naturality_left' :
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
       map₂ (η ▷ g) ≫ map_comp f' g = map_comp f g ≫ map₂ η ▷ map g := by
-    obviously
+    aesop
   mapComp_naturality_right' :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
       map₂ (f ◁ η) ≫ map_comp f g' = map_comp f g ≫ map f ◁ map₂ η := by
-    obviously
-  map₂_id' : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by obviously
+    aesop
+  map₂_id' : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop
   map₂_comp' :
     ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h), map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
-    obviously
+    aesop
   map₂_associator' :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
-      OplaxFunctor.Map₂AssociatorAux obj (fun _ _ => map) (fun a b f g => map₂)
-        (fun a b c => map_comp) f g h := by
-    obviously
+      OplaxFunctor.Map₂AssociatorAux obj map map₂ map_comp f g h := by
+    aesop
   map₂_left_unitor' :
     ∀ {a b : B} (f : a ⟶ b),
-      map₂ (λ_ f).Hom = map_comp (𝟙 a) f ≫ map_id a ▷ map f ≫ (λ_ (map f)).Hom := by
-    obviously
+      map₂ (λ_ f).hom = map_comp (𝟙 a) f ≫ map_id a ▷ map f ≫ (λ_ (map f)).hom := by
+    aesop
   map₂_right_unitor' :
     ∀ {a b : B} (f : a ⟶ b),
-      map₂ (ρ_ f).Hom = map_comp f (𝟙 b) ≫ map f ◁ map_id b ≫ (ρ_ (map f)).Hom := by
-    obviously
+      map₂ (ρ_ f).hom = map_comp f (𝟙 b) ≫ map f ◁ map_id b ≫ (ρ_ (map f)).hom := by
+    aesop
 #align category_theory.oplax_functor CategoryTheory.OplaxFunctor
 
 namespace OplaxFunctor
 
-restate_axiom map_comp_naturality_left'
+restate_axiom mapComp_naturality_left'
 
-restate_axiom map_comp_naturality_right'
+restate_axiom mapComp_naturality_right'
 
 restate_axiom map₂_id'
 
@@ -212,10 +206,16 @@ restate_axiom map₂_left_unitor'
 
 restate_axiom map₂_right_unitor'
 
-attribute [simp] map_comp_naturality_left map_comp_naturality_right map₂_id map₂_associator
+attribute [simp] mapComp_naturality_left mapComp_naturality_right map₂_id map₂_associator
 
-attribute [reassoc.1]
-  map_comp_naturality_left map_comp_naturality_right map₂_comp map₂_associator map₂_left_unitor map₂_right_unitor
+attribute [reassoc] map₂_associator
+
+#exit
+-- CategoryTheory.OplaxFunctor.map₂_associator_assoc
+
+-- porting note: was auto-ported as `attribute [reassoc.1]` for some reason
+attribute [reassoc (attr := simp)]
+  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_associator map₂_left_unitor map₂_right_unitor
 
 attribute [simp] map₂_comp map₂_left_unitor map₂_right_unitor
 
