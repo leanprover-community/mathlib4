@@ -129,7 +129,7 @@ theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 #align finset.subset_univ Finset.subset_univ
 
 instance : BoundedOrder (Finset α) :=
-  { (show OrderBot (Finset α) by infer_instance) with
+  { inferInstanceAs (OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
 

@@ -37,13 +37,14 @@ section
 -- workaround: we make `WithOne`/`WithZero` irreducible for this definition, otherwise `simps`
 -- will unfold it in the statement of the lemma it generates.
 /-- `WithOne.coe` as a bundled morphism -/
-@[to_additive "`WithZero.coe` as a bundled morphism", simps apply]
+@[to_additive (attr := simps apply) "`WithZero.coe` as a bundled morphism"]
 def coeMulHom [Mul α] : α →ₙ* WithOne α where
   toFun := coe
   map_mul' _ _ := rfl
 #align with_one.coe_mul_hom WithOne.coeMulHom
 #align with_zero.coe_add_hom WithZero.coeAddHom
 #align with_one.coe_mul_hom_apply WithOne.coeMulHom_apply
+#align with_zero.coe_add_hom_apply WithZero.coeAddHom_apply
 
 end
 
@@ -107,7 +108,7 @@ def map (f : α →ₙ* β) : WithOne α →* WithOne β :=
 
 @[to_additive (attr := simp)]
 theorem map_coe (f : α →ₙ* β) (a : α) : map f (a : WithOne α) = f a :=
-  lift_coe _ _
+  rfl
 #align with_one.map_coe WithOne.map_coe
 #align with_zero.map_coe WithZero.map_coe
 
@@ -137,10 +138,8 @@ theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=
   { map e.toMulHom with
     toFun := map e.toMulHom, invFun := map e.symm.toMulHom,
-    left_inv := fun x => (map_map _ _ _).trans <| by
-      induction x using WithOne.cases_on <;> simp
-    right_inv := fun x => (map_map _ _ _).trans <| by
-      induction x using WithOne.cases_on <;> simp }
+    left_inv := (by induction · using WithOne.cases_on <;> simp)
+    right_inv := (by induction · using WithOne.cases_on <;> simp) }
 #align mul_equiv.with_one_congr MulEquiv.withOneCongr
 #align add_equiv.with_zero_congr AddEquiv.withZeroCongr
 

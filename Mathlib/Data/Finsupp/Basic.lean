@@ -1372,7 +1372,7 @@ variable [AddMonoid M]
 /-- The additive equivalence between `(α ⊕ β) →₀ M` and `(α →₀ M) × (β →₀ M)`.
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
-@[simps apply symmApply]
+@[simps! apply symmApply]
 def sumFinsuppAddEquivProdFinsupp {α β : Type _} : (Sum α β →₀ M) ≃+ (α →₀ M) × (β →₀ M) :=
   { sumFinsuppEquivProdFinsupp with
     map_add' := by

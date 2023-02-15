@@ -89,7 +89,7 @@ theorem mem_mk (c : ℕ × ℕ) (cells) (isLowerSet) :
 #align young_diagram.mem_mk YoungDiagram.mem_mk
 
 instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
-  show DecidablePred (· ∈ μ.cells) by infer_instance
+  inferInstanceAs (DecidablePred (· ∈ μ.cells))
 #align young_diagram.decidable_mem YoungDiagram.decidableMem
 
 /-- In "English notation", a Young diagram is drawn so that (i1, j1) ≤ (i2, j2)
@@ -107,9 +107,9 @@ theorem cells_subset_iff {μ ν : YoungDiagram} : μ.cells ⊆ ν.cells ↔ μ �
 #align young_diagram.cells_subset_iff YoungDiagram.cells_subset_iff
 
 @[simp]
-theorem cells_sSubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
+theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
   Iff.rfl
-#align young_diagram.cells_ssubset_iff YoungDiagram.cells_sSubset_iff
+#align young_diagram.cells_ssubset_iff YoungDiagram.cells_ssubset_iff
 
 instance : HasSup YoungDiagram
     where sup μ ν :=
@@ -488,8 +488,8 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
       _ ≤ w.get ⟨i1, _⟩ :=
       by
         obtain rfl | h := eq_or_lt_of_le hi
-        · rfl
-        · apply List.pairwise_iff_get.mp hw _ _ h
+        · convert le_refl (w.get ⟨i1, h1⟩)
+        · exact List.pairwise_iff_get.mp hw _ _ h
 #align young_diagram.of_row_lens YoungDiagram.ofRowLens
 
 -- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
