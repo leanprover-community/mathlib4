@@ -8,8 +8,8 @@ Authors: Fox Thomson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Rcases
-import Mathbin.Computability.Language
+import Mathlib.Tactic.Rcases
+import Mathlib.Computability.Language
 
 /-!
 # Regular Expressions
@@ -211,8 +211,7 @@ theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
   induction x <;> simp [rmatch, match_epsilon, *]
 #align regular_expression.one_rmatch_iff RegularExpression.one_rmatch_iff
 
-theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :=
-  by
+theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
   cases' x with _ x
   decide
   cases x
@@ -227,8 +226,7 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
 #align regular_expression.char_rmatch_iff RegularExpression.char_rmatch_iff
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
-    (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x :=
-  by
+    (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
   · simp only [rmatch, match_epsilon, Bool.or_coe_iff]
   · repeat' rw [rmatch]
@@ -237,8 +235,7 @@ theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 #align regular_expression.add_rmatch_iff RegularExpression.add_rmatch_iff
 
 theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
-    (P * Q).rmatch x ↔ ∃ t u : List α, x = t ++ u ∧ P.rmatch t ∧ Q.rmatch u :=
-  by
+    (P * Q).rmatch x ↔ ∃ t u : List α, x = t ++ u ∧ P.rmatch t ∧ Q.rmatch u := by
   induction' x with a x ih generalizing P Q
   · rw [rmatch, match_epsilon]
     constructor
@@ -393,8 +390,7 @@ theorem rmatch_iff_matches (P : RegularExpression α) : ∀ x : List α, P.rmatc
       tauto
 #align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches
 
-instance (P : RegularExpression α) : DecidablePred P.matches :=
-  by
+instance (P : RegularExpression α) : DecidablePred P.matches := by
   intro x
   change Decidable (x ∈ P.matches)
   rw [← rmatch_iff_matches]
