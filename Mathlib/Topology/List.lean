@@ -45,12 +45,13 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       exists []
       simp only [List.forall₂_nil_left_iff, exists_eq_left]
       exact ⟨trivial, hus⟩
-    case cons a s as ss ht h ih t hts =>
+    -- porting note -- renamed reordered variables based on previous types
+    case cons a s as ss hts h ht _ ih =>
       rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
-      rcases ih _ subset.rfl with ⟨v, hv, hvss⟩
+      rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩
       exact
         ⟨u::v, List.Forall₂.cons hu hv,
-          subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hts⟩
+          Subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hus⟩
     rcases this with ⟨v, hv, hvs⟩
     refine' ⟨sequence v, mem_traverse _ _ _, hvs, _⟩
     · exact hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
