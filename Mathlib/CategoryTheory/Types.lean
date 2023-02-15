@@ -8,9 +8,9 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EpiMono
-import Mathbin.CategoryTheory.Functor.FullyFaithful
-import Mathbin.Logic.Equiv.Basic
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.Logic.Equiv.Basic
 
 /-!
 # The category `Type`.
@@ -228,8 +228,7 @@ theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfEleme
 
 See <https://stacks.math.columbia.edu/tag/003C>.
 -/
-theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f :=
-  by
+theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro H x x' h
     skip
@@ -246,8 +245,7 @@ theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.
 
 See <https://stacks.math.columbia.edu/tag/003C>.
 -/
-theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f :=
-  by
+theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩
     refine' Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => _
