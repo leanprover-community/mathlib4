@@ -2356,10 +2356,8 @@ variable {Λ : Type _} [Inhabited Λ]
 
 variable {σ : Type _} [Inhabited σ]
 
--- mathport name: exprstmt₂
 local notation "Stmt₂" => TM2.Stmt Γ Λ σ
 
--- mathport name: exprcfg₂
 local notation "Cfg₂" => TM2.Cfg Γ Λ σ
 
 -- Porting note: `DecidableEq K` is not necessary.
