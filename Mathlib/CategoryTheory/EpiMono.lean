@@ -8,8 +8,8 @@ Authors: Reid Barton, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Opposites
-import Mathbin.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Facts about epimorphisms and monomorphisms.
@@ -200,8 +200,7 @@ theorem IsIso.of_epi_section {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] [hf' : 
 -- FIXME this has unnecessarily become noncomputable!
 /-- A category where every morphism has a `trunc` retraction is computably a groupoid. -/
 noncomputable def Groupoid.ofTruncSplitMono
-    (all_split_mono : ∀ {X Y : C} (f : X ⟶ Y), Trunc (IsSplitMono f)) : Groupoid.{v₁} C :=
-  by
+    (all_split_mono : ∀ {X Y : C} (f : X ⟶ Y), Trunc (IsSplitMono f)) : Groupoid.{v₁} C := by
   apply groupoid.of_is_iso
   intro X Y f
   trunc_cases all_split_mono f
