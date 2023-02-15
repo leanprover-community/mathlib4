@@ -15,6 +15,7 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Algebra.Parity
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Data.List.BigOperators.Lemmas -- List.alternatingSum_reverse
 -- Porting note: No Default Files
 -- import Mathlib.Tactic.LinArith.Default
 
@@ -624,7 +625,7 @@ theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digit
   let dig := (digits 10 n).map (Coe.coe : ℕ → ℤ)
   replace h : Even dig.length := by rwa [List.length_map]
   refine' eleven_dvd_iff.2 ⟨0, (_ : dig.alternatingSum = 0)⟩
-  have := dig.alternating_sum_reverse
+  have := dig.alternatingSum_reverse
   rw [(p.map _).reverse_eq, pow_succ, h.neg_one_pow, mul_one, neg_one_zsmul] at this
   exact eq_zero_of_neg_eq this.symm
 #align nat.eleven_dvd_of_palindrome Nat.eleven_dvd_of_palindrome
