@@ -291,7 +291,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
       intro m n
       convert add_lt_add_of_le_of_lt (add_le_add (zero_le m) (le_refl n)) zero_lt_one
       simp
-    have IH := fun t (h : List.length t < List.length x) => star_rmatch_iff t
+    have IH := fun t (h : List.length t < List.length x) => star_rmatch_iff P t
     clear star_rmatch_iff
     constructor
     · cases' x with a x
