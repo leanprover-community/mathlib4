@@ -69,8 +69,6 @@ variable {α : Type _} {β : Type _} {γ : Type _} {r : α → α → Prop} {s :
 
 /-! ### Further properties of addition on ordinals -/
 
-set_option pp.universes true
-
 @[simp]
 theorem lift_add (a b : Ordinal.{v}) : lift.{u} (a + b) = lift.{u} a + lift.{u} b :=
   Quotient.inductionOn₂ a b fun ⟨α, r, _⟩ ⟨β, s, _⟩ =>
@@ -493,28 +491,30 @@ theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
 
 theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
   ⟨fun h b' l => (add_le_add_left l.le _).trans h, fun H =>
-    le_of_not_lt <|
-      inductionOn a
-        (fun α r _ =>
-          inductionOn b fun β s _ h H l => by
-            suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ _ l) by
-              -- Porting note: `revert` & `intro` is required because `cases'` doesn't replace
-              --               `enum _ _ l` in `this`.
-              revert this; cases' enum _ _ l with x x <;> intro this
-              · cases this (enum s 0 h.pos)
-              · exact irrefl _ (this _)
-            intro x
-            rw [← typein_lt_typein (Sum.Lex r s), typein_enum]
-            have := H _ (h.2 _ (typein_lt_type s x))
-            rw [add_succ, succ_le_iff] at this
-            refine'
-              (RelEmbedding.ofMonotone (fun a => _) fun a b => _).ordinal_type_le.trans_lt this
-            · rcases a with ⟨a | b, h⟩
-              · exact Sum.inl a
-              · exact Sum.inr ⟨b, by cases h <;> assumption⟩
-            · rcases a with ⟨a | a, h₁⟩ <;> rcases b with ⟨b | b, h₂⟩ <;> cases h₁ <;> cases h₂ <;>
-                rintro ⟨⟩ <;> constructor <;> assumption)
-        h H⟩
+    le_of_not_lt <| by
+      -- Porting note: `induction` tactics are required because of the parser bug.
+      induction a using inductionOn with
+      | H α r =>
+        induction b using inductionOn with
+        | H β s =>
+          intro l
+          suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ _ l) by
+            -- Porting note: `revert` & `intro` is required because `cases'` doesn't replace
+            --               `enum _ _ l` in `this`.
+            revert this; cases' enum _ _ l with x x <;> intro this
+            · cases this (enum s 0 h.pos)
+            · exact irrefl _ (this _)
+          intro x
+          rw [← typein_lt_typein (Sum.Lex r s), typein_enum]
+          have := H _ (h.2 _ (typein_lt_type s x))
+          rw [add_succ, succ_le_iff] at this
+          refine'
+            (RelEmbedding.ofMonotone (fun a => _) fun a b => _).ordinal_type_le.trans_lt this
+          · rcases a with ⟨a | b, h⟩
+            · exact Sum.inl a
+            · exact Sum.inr ⟨b, by cases h; assumption⟩
+          · rcases a with ⟨a | a, h₁⟩ <;> rcases b with ⟨b | b, h₂⟩ <;> cases h₁ <;> cases h₂ <;>
+              rintro ⟨⟩ <;> constructor <;> assumption⟩
 #align ordinal.add_le_of_limit Ordinal.add_le_of_limit
 
 theorem add_isNormal (a : Ordinal) : IsNormal ((· + ·) a) :=
@@ -583,7 +583,7 @@ theorem sub_lt_of_le {a b c : Ordinal} (h : b ≤ a) : a - b < c ↔ a < b + c :
 #align ordinal.sub_lt_of_le Ordinal.sub_lt_of_le
 
 instance : ExistsAddOfLE Ordinal :=
-  ⟨fun a b h => ⟨_, (Ordinal.add_sub_cancel_of_le h).symm⟩⟩
+  ⟨fun h => ⟨_, (Ordinal.add_sub_cancel_of_le h).symm⟩⟩
 
 @[simp]
 theorem sub_zero (a : Ordinal) : a - 0 = a := by simpa only [zero_add] using add_sub_cancel 0 a
@@ -618,14 +618,14 @@ theorem sub_isLimit {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
 @[simp]
 theorem one_add_omega : 1 + ω = ω := by
   refine' le_antisymm _ (le_add_left _ _)
-  rw [omega, ← lift_one.{0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
+  rw [omega, ← lift_one.{_, 0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
   refine' ⟨RelEmbedding.collapse (RelEmbedding.ofMonotone _ _)⟩
   · apply Sum.rec
     exact fun _ => 0
     exact Nat.succ
   · intro a b
-    cases a <;> cases b <;> intro H <;> cases' H with _ _ H _ _ H <;> [cases H,
-      exact Nat.succ_pos _, exact Nat.succ_lt_succ H]
+    cases a <;> cases b <;> intro H <;> cases' H with _ _ H _ _ H <;>
+      [exact H.elim, exact Nat.succ_pos _, exact Nat.succ_lt_succ H]
 #align ordinal.one_add_omega Ordinal.one_add_omega
 
 @[simp]
@@ -684,16 +684,15 @@ private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
       simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty]
       rw [or_comm]
       exact isEmpty_prod
-#align ordinal.mul_eq_zero' Ordinal.mul_eq_zero'
 
 instance : MonoidWithZero Ordinal :=
-  { Ordinal.monoid with
+  { Ordinal.instMonoidOrdinal with
     zero := 0
     mul_zero := fun a => mul_eq_zero'.2 <| Or.inr rfl
     zero_mul := fun a => mul_eq_zero'.2 <| Or.inl rfl }
 
 instance : NoZeroDivisors Ordinal :=
-  ⟨fun a b => mul_eq_zero'.1⟩
+  ⟨fun {_ _} => mul_eq_zero'.1⟩
 
 @[simp]
 theorem lift_mul (a b : Ordinal.{v}) : lift.{u} (a * b) = lift.{u} a * lift.{u} b :=
@@ -706,7 +705,7 @@ theorem lift_mul (a b : Ordinal.{v}) : lift.{u} (a * b) = lift.{u} a * lift.{u} 
 
 @[simp]
 theorem card_mul (a b) : card (a * b) = card a * card b :=
-  Quotient.inductionOn₂ a b fun ⟨α, r, _⟩ ⟨β, s, _⟩ => mul_comm (mk β) (mk α)
+  Quotient.inductionOn₂ a b fun ⟨α, r, _⟩ ⟨β, s, _⟩ => mul_comm (#β) (#α)
 #align ordinal.card_mul Ordinal.card_mul
 
 instance : LeftDistribClass Ordinal.{u} :=
@@ -714,10 +713,12 @@ instance : LeftDistribClass Ordinal.{u} :=
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Quotient.sound
         ⟨⟨sumProdDistrib _ _ _, by
-            rintro ⟨a₁ | a₁, a₂⟩ ⟨b₁ | b₁, b₂⟩ <;>
-                simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl,
-                  Sum.lex_inr_inr, sum_prod_distrib_apply_left, sum_prod_distrib_apply_right] <;>
-              simp only [Sum.inl.inj_iff, true_or_iff, false_and_iff, false_or_iff]⟩⟩⟩
+          rintro ⟨a₁ | a₁, a₂⟩ ⟨b₁ | b₁, b₂⟩ <;>
+            simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl,
+              Sum.lex_inr_inr, sumProdDistrib_apply_left, sumProdDistrib_apply_right] <;>
+            -- Porting note: `Sum.inr.inj_iff` is required.
+            simp only [Sum.inl.inj_iff, Sum.inr.inj_iff,
+              true_or_iff, false_and_iff, false_or_iff]⟩⟩⟩
 
 theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
@@ -725,28 +726,23 @@ theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
 
 instance mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· * ·) (· ≤ ·) :=
   ⟨fun c a b =>
-    Quotient.induction_on₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ =>
-      by
-      skip
+    Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine'
         (RelEmbedding.ofMonotone (fun a : α × γ => (f a.1, a.2)) fun a b h => _).ordinal_type_le
-      clear_
       cases' h with a₁ b₁ a₂ b₂ h' a b₁ b₂ h'
-      · exact Prod.Lex.left _ _ (f.to_rel_embedding.map_rel_iff.2 h')
+      · exact Prod.Lex.left _ _ (f.toRelEmbedding.map_rel_iff.2 h')
       · exact Prod.Lex.right _ h'⟩
 #align ordinal.mul_covariant_class_le Ordinal.mul_covariantClass_le
 
 instance mul_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· * ·)) (· ≤ ·) :=
   ⟨fun c a b =>
-    Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ =>
-      by
-      skip
+    Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine'
         (RelEmbedding.ofMonotone (fun a : γ × α => (a.1, f a.2)) fun a b h => _).ordinal_type_le
       cases' h with a₁ b₁ a₂ b₂ h' a b₁ b₂ h'
       · exact Prod.Lex.left _ _ h'
-      · exact Prod.Lex.right _ (f.to_rel_embedding.map_rel_iff.2 h')⟩
+      · exact Prod.Lex.right _ (f.toRelEmbedding.map_rel_iff.2 h')⟩
 #align ordinal.mul_swap_covariant_class_le Ordinal.mul_swap_covariantClass_le
 
 theorem le_mul_left (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ a * b := by
@@ -760,10 +756,9 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
 #align ordinal.le_mul_right Ordinal.le_mul_right
 
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
-    (h : IsLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) : False :=
-  by
-  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ _ l)
-    by
+    (h : IsLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
+    False := by
+  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ _ l) by
     cases' enum _ _ l with b a
     exact irrefl _ (this _ _)
   intro a b
@@ -792,11 +787,11 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
         eq_self_iff_true, dif_pos, Sum.lex_inr_inr] using h
     · subst b₁
       simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val, eq_self_iff_true,
-        or_false_iff, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and_iff] at h⊢
-      cases h₂ <;> [exact asymm h h₂_h, exact e₂ rfl]
-    · simp [e₂, dif_neg e₁, show b₂ ≠ b₁ by cc]
-    ·
-      simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
+        or_false_iff, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and_iff] at h ⊢
+      cases' h₂ with _ _ _ _ h₂_h h₂_h <;> [exact asymm h h₂_h, exact e₂ rfl]
+    -- Porting note: `cc` hadn't ported yet.
+    · simp [e₂, dif_neg e₁, show b₂ ≠ b₁ from e₂ ▸ e₁]
+    · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
         Sum.lex_inl_inl] using h
 
 theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
