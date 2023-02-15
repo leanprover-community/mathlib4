@@ -112,8 +112,8 @@ theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) ({0}ᶜ) :=
 #align continuous_on_inv₀ continuousOn_inv₀
 
 /-- If a function converges to a nonzero value, its inverse converges to the inverse of this value.
-We use the name `Filter.Tendsto.inv₀` as `Filter.Tendsto.inv` is already used in multiplicative topological
-groups. -/
+We use the name `Filter.Tendsto.inv₀` as `Filter.Tendsto.inv` is already used in multiplicative
+topological groups. -/
 theorem Filter.Tendsto.inv₀ {a : G₀} (hf : Tendsto f l (𝓝 a)) (ha : a ≠ 0) :
     Tendsto (fun x => (f x)⁻¹) l (𝓝 a⁻¹) :=
   (tendsto_inv₀ ha).comp hf
