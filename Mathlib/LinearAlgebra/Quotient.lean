@@ -19,6 +19,7 @@ import Mathlib.LinearAlgebra.Span
 
 -/
 
+section deinstance_nonassocring
 -- porting note: because we're missing lean4#2074 we need this, see:
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/LinearAlgebra.2ESpan.20!4.232248
 attribute [-instance] Ring.toNonAssocRing
@@ -714,3 +715,5 @@ def mapqLinear : compatibleMaps p q →ₗ[R] M ⧸ p →ₗ[R] M₂ ⧸ q
 end Submodule
 
 end CommRing
+
+end deinstance_nonassocring
