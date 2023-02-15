@@ -62,25 +62,33 @@ Uniqueness of adjoints is shown in `CategoryTheory.Adjunction.Opposites`.
 See <https://stacks.math.columbia.edu/tag/0037>.
 -/
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
+  /-- The equivalence between `Hom (F X) Y` and `Hom X (G Y)` coming from an adjunction -/
   homEquiv : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y)
+  /-- The unit of an adjunction -/
   unit : 𝟭 C ⟶ F.comp G
+  /-- The counit of an adjunction -/
   counit : G.comp F ⟶ 𝟭 D
   homEquiv_unit' : ∀ {X Y f}, (homEquiv X Y) f = (unit : _ ⟶ _).app X ≫ G.map f := by aesop_cat
   homEquiv_counit' : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y := by aesop_cat
 #align category_theory.adjunction CategoryTheory.Adjunction
 
 -- mathport name: «expr ⊣ »
+/-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
 
 /-- A class giving a chosen right adjoint to the functor `left`. -/
 class IsLeftAdjoint (left : C ⥤ D) where
+  /-- The right adjoint to `left` -/
   right : D ⥤ C
+  /-- The adjunction between `left` and `right` -/
   adj : left ⊣ right
 #align category_theory.is_left_adjoint CategoryTheory.IsLeftAdjoint
 
 /-- A class giving a chosen left adjoint to the functor `right`. -/
 class IsRightAdjoint (right : D ⥤ C) where
+  /-- The left adjoint to `right` -/
   left : C ⥤ D
+  /-- The adjunction between `left` and `right` -/
   adj : left ⊣ right
 #align category_theory.is_right_adjoint CategoryTheory.IsRightAdjoint
 
@@ -219,6 +227,7 @@ This structure won't typically be used anywhere else.
 -- Porting comment: `has_nonempty_instance` linter doesn't exist (yet?)
 -- @[nolint has_nonempty_instance]
 structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
+  /-- The equivalence between `Hom (F X) Y` and `Hom X (G Y)` -/
   homEquiv : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y)
   homEquiv_naturality_left_symm' :
     ∀ {X' X Y} (f : X' ⟶ X) (g : X ⟶ G.obj Y),
@@ -271,7 +280,9 @@ This structure won't typically be used anywhere else.
 -- Porting comment: `has_nonempty_instance` linter doesn't exist (yet?)
 -- @[nolint has_nonempty_instance]
 structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
+  /-- The unit of an adjunction between `F` and `G` -/
   unit : 𝟭 C ⟶ F.comp G
+  /-- The counit of an adjunction between `F` and `G`s -/
   counit : G.comp F ⟶ 𝟭 D
   left_triangle :
     whiskerRight unit F ≫ (Functor.associator F G F).hom ≫ whiskerLeft F counit =
