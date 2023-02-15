@@ -55,6 +55,8 @@ universe u v w w₁ w₂
 
 open Function
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
+-- adds unnecessary clutter to later code
 /-- A Lie ring is an additive group with compatible product, known as the bracket, satisfying the
 Jacobi identity. -/
 -- @[protect_proj] -- Porting note: Not implemented yet
@@ -65,6 +67,8 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
   leibniz_lie : ∀ x y z : L, ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
 #align lie_ring LieRing
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
+-- adds unnecessary clutter to later code
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
 -- @[protect_proj] -- Porting note: Not implemented yet
@@ -72,6 +76,8 @@ class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Modu
   lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
 #align lie_algebra LieAlgebra
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
+-- adds unnecessary clutter to later code
 /-- A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
 (For representations of Lie *algebras* see `lie_module`.) -/
@@ -82,6 +88,8 @@ class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] exten
   leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 #align lie_ring_module LieRingModule
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
+-- adds unnecessary clutter to later code
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/
 -- @[protect_proj] -- Porting note: Not implemented yet
@@ -181,7 +189,7 @@ theorem lie_sub : ⁅x, m - n⁆ = ⁅x, m⁆ - ⁅x, n⁆ := by simp [sub_eq_ad
 
 @[simp]
 theorem nsmul_lie (n : ℕ) : ⁅n • x, m⁆ = n • ⁅x, m⁆ :=
-  AddMonoidHom.map_nsmul ⟨⟨fun (x : L) => ⁅x, m⁆, zero_lie m⟩, fun _ _ => add_lie _ _ _⟩ _ _
+  AddMonoidHom.map_nsmul ⟨⟨fun x : L => ⁅x, m⁆, zero_lie m⟩, fun _ _ => add_lie _ _ _⟩ _ _
 #align nsmul_lie nsmul_lie
 
 @[simp]
