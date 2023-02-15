@@ -279,6 +279,7 @@ import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
+import Mathlib.Computability.Language
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
@@ -386,6 +387,7 @@ import Mathlib.Data.Finsupp.ToDfinsupp
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
