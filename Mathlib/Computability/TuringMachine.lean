@@ -1746,8 +1746,6 @@ section
 
 variable {enc}
 
---include enc0  -- Porting note: `include` doesn't exist
-
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape' (L R : ListBlank Γ) : Tape Bool := by
   refine'
