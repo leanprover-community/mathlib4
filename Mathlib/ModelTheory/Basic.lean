@@ -571,13 +571,11 @@ def comp (hnp : N →[L] P) (hmn : M →[L] N) : M →[L] P where
   toFun := hnp ∘ hmn
   -- Porting note: Added a line below.
   map_fun' _ _ := by simp; rfl
-  map_rel' _ _ h := by
-    simp [h]
+  map_rel' _ _ h := map_rel _ _ _ (map_rel _ _ _ h)
     -- Porting note: Previous code was
     -- simp [h]
     --
     -- Does not terminate the proof
-    sorry
 #align first_order.language.hom.comp FirstOrder.Language.Hom.comp
 
 @[simp]
@@ -596,14 +594,14 @@ end Hom
 /-- Any element of a `hom_class` can be realized as a first_order homomorphism. -/
 def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M fun _ => N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
-  ⟨φ, fun _ => HomClass.map_fun φ, fun _ => HomClass.map_rel φ⟩
+  ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
 #align first_order.language.hom_class.to_hom FirstOrder.Language.HomClass.toHom
 
 namespace Embedding
 
 instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
   coe f := f.toFun
-  injective' f := f.toEmbedding.Injective
+  injective' f := f.toEmbedding.injective
   coe_injective' f g h := by
     cases f
     cases g
@@ -634,7 +632,7 @@ theorem map_constants (φ : M ↪[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M ↪[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    RelMap r (φ ∘ x) ↔ RelMap r x :=
+    rel_map r (φ ∘ x) ↔ rel_map r x :=
   StrongHomClass.map_rel φ r x
 #align first_order.language.embedding.map_rel FirstOrder.Language.Embedding.map_rel
 
@@ -667,7 +665,7 @@ theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
 #align first_order.language.embedding.ext_iff FirstOrder.Language.Embedding.ext_iff
 
 theorem injective (f : M ↪[L] N) : Function.Injective f :=
-  f.toEmbedding.Injective
+  f.toEmbedding.injective
 #align first_order.language.embedding.injective FirstOrder.Language.Embedding.injective
 
 /-- In an algebraic language, any injective homomorphism is an embedding. -/
@@ -689,8 +687,7 @@ theorem coeFn_ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Inject
 @[simp]
 theorem ofInjective_toHom [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) :
     (ofInjective hf).toHom = f := by
-  ext
-  simp
+  ext; simp
 #align
   first_order.language.embedding.of_injective_to_hom
   FirstOrder.Language.Embedding.ofInjective_toHom
@@ -716,7 +713,7 @@ theorem refl_apply (x : M) : refl L M x = x :=
 @[trans]
 def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   toFun := hnp ∘ hmn
-  inj' := hnp.Injective.comp hmn.Injective
+  inj' := hnp.injective.comp hmn.injective
 #align first_order.language.embedding.comp FirstOrder.Language.Embedding.comp
 
 @[simp]
@@ -734,7 +731,7 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
 theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
     (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom := by
   ext
-  simp only [coe_to_hom, comp_apply, hom.comp_apply]
+  simp only [coe_toHom, comp_apply, Hom.comp_apply]
 #align first_order.language.embedding.comp_to_hom FirstOrder.Language.Embedding.comp_toHom
 
 end Embedding
@@ -742,8 +739,7 @@ end Embedding
 /-- Any element of an injective `strong_hom_class` can be realized as a first_order embedding. -/
 def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [EmbeddingLike F M N]
     [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
-  ⟨⟨φ, EmbeddingLike.injective φ⟩, fun _ => StrongHomClass.map_fun φ, fun _ =>
-    StrongHomClass.map_rel φ⟩
+  ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
 #align
   first_order.language.strong_hom_class.to_embedding
   FirstOrder.Language.StrongHomClass.toEmbedding
@@ -809,7 +805,7 @@ theorem map_constants (φ : M ≃[L] N) (c : L.Constants) : φ c = c :=
 
 @[simp]
 theorem map_rel (φ : M ≃[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
-    RelMap r (φ ∘ x) ↔ RelMap r x :=
+    rel_map r (φ ∘ x) ↔ rel_map r x :=
   StrongHomClass.map_rel φ r x
 #align first_order.language.equiv.map_rel FirstOrder.Language.Equiv.map_rel
 
@@ -848,7 +844,7 @@ theorem ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
 #align first_order.language.equiv.ext FirstOrder.Language.Equiv.ext
 
 theorem ext_iff {f g : M ≃[L] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h x => h ▸ rfl, fun h => ext h⟩
+  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.equiv.ext_iff FirstOrder.Language.Equiv.ext_iff
 
 theorem bijective (f : M ≃[L] N) : Function.Bijective f :=
@@ -876,8 +872,7 @@ instance : Inhabited (M ≃[L] M) :=
   ⟨refl L M⟩
 
 @[simp]
-theorem refl_apply (x : M) : refl L M x = x :=
-  rfl
+theorem refl_apply (x : M) : refl L M x = x := by simp [refl]; rfl
 #align first_order.language.equiv.refl_apply FirstOrder.Language.Equiv.refl_apply
 
 /-- Composition of first-order equivalences -/
@@ -902,8 +897,8 @@ end Equiv
 /-- Any element of a bijective `strong_hom_class` can be realized as a first_order isomorphism. -/
 def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
     [StrongHomClass L F M N] : F → M ≃[L] N := fun φ =>
-  ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, fun _ => HomClass.map_fun φ,
-    fun _ => StrongHomClass.map_rel φ⟩
+  ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, StrongHomClass.map_fun φ,
+    StrongHomClass.map_rel φ⟩
 #align first_order.language.strong_hom_class.to_equiv FirstOrder.Language.StrongHomClass.toEquiv
 
 section SumStructure
@@ -931,13 +926,13 @@ theorem funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
 
 @[simp]
 theorem relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
-    @RelMap (L₁.sum L₂) S _ n (Sum.inl R) = RelMap R :=
+    @rel_map (L₁.sum L₂) S _ n (Sum.inl R) = rel_map R :=
   rfl
 #align first_order.language.rel_map_sum_inl FirstOrder.Language.relMap_sum_inl
 
 @[simp]
 theorem relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
-    @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
+    @rel_map (L₁.sum L₂) S _ n (Sum.inr R) = rel_map R :=
   rfl
 #align first_order.language.rel_map_sum_inr FirstOrder.Language.relMap_sum_inr
 
@@ -968,7 +963,7 @@ theorem empty.nonempty_equiv_iff :
 end
 
 instance emptyStructure : Language.empty.Structure M :=
-  ⟨fun _ => Empty.elim, fun _ => Empty.elim⟩
+  ⟨Empty.elim, Empty.elim⟩
 #align first_order.language.empty_Structure FirstOrder.Language.emptyStructure
 
 instance : Unique (Language.empty.Structure M) :=
