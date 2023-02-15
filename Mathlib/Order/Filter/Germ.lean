@@ -151,7 +151,7 @@ theorem inductionOn₃ (f : Germ l β) (g : Germ l γ) (h : Germ l δ)
 #align filter.germ.induction_on₃ Filter.Germ.inductionOn₃
 
 /-- Given a map `F : (α → β) → (γ → δ)` that sends functions eventually equal at `l` to functions
-eventually equal at `lc`, returns a map from `germ l β` to `germ lc δ`. -/
+eventually equal at `lc`, returns a map from `Germ l β` to `Germ lc δ`. -/
 def map' {lc : Filter γ} (F : (α → β) → γ → δ) (hF : (l.EventuallyEq ⇒ lc.EventuallyEq) F F) :
     Germ l β → Germ lc δ :=
   Quotient.map' F hF
