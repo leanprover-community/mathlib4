@@ -31,7 +31,7 @@ open Opposite
 
 universe v₁ u₁ u₂
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The Yoneda embedding, as a functor from `C` into presheaves on `C`.
@@ -48,9 +48,9 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁
       map_id := fun Y => by funext; dsimp; erw [Category.id_comp] }
   map f := 
     { app := fun Y g => g ≫ f 
-      naturality := sorry }
+      naturality := fun Y Y' g => by funext Z; aesop_cat }
   map_id := by aesop_cat 
-  map_comp := sorry 
+  map_comp := fun f g => by ext Y; dsimp; funext f; simp 
 #align category_theory.yoneda CategoryTheory.yoneda
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
@@ -61,11 +61,11 @@ def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁
   obj X :=
     { obj := fun Y => unop X ⟶ Y
       map := fun f g => g ≫ f 
-      map_comp := sorry 
-      map_id := sorry }
+      map_comp := fun f g => by funext; dsimp; erw [Category.assoc]  
+      map_id := fun Y => by funext; dsimp; erw [Category.comp_id] }
   map f := 
     { app := fun Y g => f.unop ≫ g 
-      naturality := sorry }
+      naturality := fun Y Y' g => by funext Z; aesop_cat }
 #align category_theory.coyoneda CategoryTheory.coyoneda
 
 namespace Yoneda
@@ -88,7 +88,7 @@ See <https://stacks.math.columbia.edu/tag/001P>.
 -/
 instance yonedaFull : Full (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where 
   preimage {X} {Y} f := f.app (op X) (𝟙 X)
-  witness := sorry 
+  witness {X} {Y} f := by dsimp; sorry 
 #align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yonedaFull
 
 /-- The Yoneda embedding is faithful.
