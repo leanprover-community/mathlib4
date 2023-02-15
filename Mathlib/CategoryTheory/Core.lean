@@ -102,7 +102,7 @@ def forgetFunctorToCore : (G ⥤ Core C) ⥤ G ⥤ C :=
 
 end Core
 
-/-- `of_equiv_functor m` lifts a type-level `equiv_functor`
+/-- `of_equiv_functor m` lifts a type-level `EquivFunctor`
 to a categorical functor `core (Type u₁) ⥤ core (Type u₂)`.
 -/
 def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂)
