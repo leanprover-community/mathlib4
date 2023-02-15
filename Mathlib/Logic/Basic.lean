@@ -296,8 +296,8 @@ instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
 @[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
 @[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
 theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
-protected theorem xor.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
-#align xor.or xor.or
+protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
+#align xor.or Xor'.or
 #align xor_not_not xor_not_not
 #align xor_not_right xor_not_right
 #align xor_not_left xor_not_left
