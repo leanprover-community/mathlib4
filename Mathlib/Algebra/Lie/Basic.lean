@@ -226,18 +226,19 @@ instance : LieRingModule L (M →ₗ[R] N) where
         abel
       map_smul' := fun t m => by
         simp only [smul_sub, LinearMap.map_smul, lie_smul, RingHom.id_apply] }
-  add_lie x y f := by
-    ext n
-    simp only [add_lie, LinearMap.coe_mk, LinearMap.add_apply, LinearMap.map_add]
-    abel_nf
-  lie_add x f g := by
-    ext n
-    simp only [LinearMap.coe_mk, lie_add, LinearMap.add_apply]
-    abel_nf
-  leibniz_lie x y f := by
-    ext n
-    simp only [lie_lie, LinearMap.coe_mk, LinearMap.map_sub, LinearMap.add_apply, lie_sub]
-    abel_nf
+  -- Porting note: TODO fill in these sorrys
+  add_lie x y f := by sorry
+    -- ext n
+    -- simp only [add_lie, LinearMap.coe_mk, LinearMap.add_apply, LinearMap.map_add]
+    -- abel_nf
+  lie_add x f g := by sorry
+    -- ext n
+    -- simp only [LinearMap.coe_mk, lie_add, LinearMap.add_apply]
+    -- abel_nf
+  leibniz_lie x y f := by sorry
+    -- ext n
+    -- simp only [lie_lie, LinearMap.coe_mk, LinearMap.map_sub, LinearMap.add_apply, lie_sub]
+    -- abel_nf
 
 @[simp]
 theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = ⁅x, f m⁆ - f ⁅x, m⁆ :=
@@ -254,16 +255,18 @@ instance : LieModule R L (M →ₗ[R] N)
     simp only [smul_sub, LinearMap.smul_apply, LieHom.lie_apply, lie_smul]
 
 end BasicProperties
+attribute [-instance] Ring.toNonAssocRing
 
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
 structure LieHom (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
-  map_lie' : ∀ {x y : L}, to_fun ⁅x, y⁆ = ⁅to_fun x, to_fun y⁆
+  map_lie' : ∀ {x y : L}, toFun ⁅x, y⁆ = ⁅toFun x, toFun y⁆
 #align lie_hom LieHom
 
-attribute [nolint doc_blame] LieHom.toLinearMap
+attribute [nolint docBlame] LieHom.toLinearMap
 
 -- mathport name: «expr →ₗ⁅ ⁆ »
+@[inherit_doc]
 notation:25 L " →ₗ⁅" R:25 "⁆ " L':0 => LieHom R L L'
 
 namespace LieHom
@@ -281,9 +284,10 @@ variable [LieRing L₃] [LieAlgebra R L₃]
 instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
   ⟨LieHom.toLinearMap⟩
 
-/-- see Note [function coercion] -/
-instance : CoeFun (L₁ →ₗ⁅R⁆ L₂) fun _ => L₁ → L₂ :=
-  ⟨fun f => f.toLinearMap.toFun⟩
+-- Porting note: We do not want CoeFun instances like this in lean4, we want FunLike instances
+-- /-- see Note [function coercion] -/
+-- instance : CoeFun (L₁ →ₗ⁅R⁆ L₂) fun _ => L₁ → L₂ :=
+--   ⟨fun f => f.toLinearMap.toFun⟩
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -291,12 +295,12 @@ def Simps.apply (h : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂ :=
   h
 #align lie_hom.simps.apply LieHom.Simps.apply
 
-initialize_simps_projections LieHom (to_linear_map_to_fun → apply)
+initialize_simps_projections LieHom (toLinearMap_toFun → apply)
 
 @[simp, norm_cast]
-theorem coe_to_linearMap (f : L₁ →ₗ⁅R⁆ L₂) : ((f : L₁ →ₗ[R] L₂) : L₁ → L₂) = f :=
+theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ((f : L₁ →ₗ[R] L₂) : L₁ → L₂) = f :=
   rfl
-#align lie_hom.coe_to_linear_map LieHom.coe_to_linearMap
+#align lie_hom.coe_to_linear_map LieHom.coe_toLinearMap
 
 @[simp]
 theorem toFun_eq_coe (f : L₁ →ₗ⁅R⁆ L₂) : f.toFun = ⇑f :=
@@ -335,7 +339,7 @@ theorem map_zero (f : L₁ →ₗ⁅R⁆ L₂) : f 0 = 0 :=
 
 /-- The identity map is a morphism of Lie algebras. -/
 def id : L₁ →ₗ⁅R⁆ L₁ :=
-  { (LinearMap.id : L₁ →ₗ[R] L₁) with map_lie' := fun x y => rfl }
+  { (LinearMap.id : L₁ →ₗ[R] L₁) with map_lie' := rfl }
 #align lie_hom.id LieHom.id
 
 @[simp]
@@ -504,8 +508,8 @@ more convenient to define via linear equivalence to get `.to_linear_equiv` for f
 structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ⁅R⁆ L' where
   invFun : L' → L
-  left_inv : Function.LeftInverse inv_fun to_lie_hom.toFun
-  right_inv : Function.RightInverse inv_fun to_lie_hom.toFun
+  left_inv : Function.LeftInverse invFun to_lie_hom.toFun
+  right_inv : Function.RightInverse invFun to_lie_hom.toFun
 #align lie_equiv LieEquiv
 
 attribute [nolint doc_blame] LieEquiv.toLieHom
@@ -690,7 +694,7 @@ variable [LieModule R L M] [LieModule R L N] [LieModule R L P]
 /-- A morphism of Lie algebra modules is a linear map which commutes with the action of the Lie
 algebra. -/
 structure LieModuleHom extends M →ₗ[R] N where
-  map_lie' : ∀ {x : L} {m : M}, to_fun ⁅x, m⁆ = ⁅x, to_fun m⁆
+  map_lie' : ∀ {x : L} {m : M}, toFun ⁅x, m⁆ = ⁅x, toFun m⁆
 #align lie_module_hom LieModuleHom
 
 attribute [nolint doc_blame] LieModuleHom.toLinearMap
@@ -940,8 +944,8 @@ end LieModuleHom
 Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
   invFun : N → M
-  left_inv : Function.LeftInverse inv_fun to_fun
-  right_inv : Function.RightInverse inv_fun to_fun
+  left_inv : Function.LeftInverse invFun toFun
+  right_inv : Function.RightInverse invFun toFun
 #align lie_module_equiv LieModuleEquiv
 
 attribute [nolint doc_blame] LieModuleEquiv.toLieModuleHom
@@ -984,8 +988,8 @@ theorem injective (e : M ≃ₗ⁅R,L⁆ N) : Function.Injective e :=
 #align lie_module_equiv.injective LieModuleEquiv.injective
 
 @[simp]
-theorem coe_mk (f : M →ₗ⁅R,L⁆ N) (inv_fun h₁ h₂) :
-    ((⟨f, inv_fun, h₁, h₂⟩ : M ≃ₗ⁅R,L⁆ N) : M → N) = f :=
+theorem coe_mk (f : M →ₗ⁅R,L⁆ N) (invFun h₁ h₂) :
+    ((⟨f, invFun, h₁, h₂⟩ : M ≃ₗ⁅R,L⁆ N) : M → N) = f :=
   rfl
 #align lie_module_equiv.coe_mk LieModuleEquiv.coe_mk
 
