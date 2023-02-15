@@ -60,17 +60,17 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E
     { obj := fun Y => F.obj (X, Y)
       map := fun g => F.map (𝟙 X, g) 
       map_id := fun Y => by simp only [F.map_id]; rw [←prod_id]; exact F.map_id ⟨X,Y⟩
-      map_comp := fun f g => by simp; rw [prod_comp]; }
+      map_comp := fun f g => by simp [←F.map_comp]} 
   map f := 
     { app := fun Y => F.map (f, 𝟙 Y) 
-      naturality := sorry }
-  map_id := sorry 
-  map_comp := sorry 
+      naturality := fun {Y} {Y'} g => by simp [←F.map_comp]  }
+  map_id := fun X => by ext Y; exact F.map_id _  
+  map_comp := fun f g => by ext Y; dsimp; simp [←F.map_comp] 
 #align category_theory.curry_obj CategoryTheory.curryObj
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
 -/
-@[simps obj_obj_obj obj_obj_map obj_map_app map_app_app]
+@[simps! obj_obj_obj obj_obj_map obj_map_app map_app_app]
 def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
   obj F := curryObj F
   map T :=
@@ -87,7 +87,7 @@ def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
 -- create projection simp lemmas even though this isn't a `{ .. }`.
 /-- The equivalence of functor categories given by currying/uncurrying.
 -/
-@[simps]
+@[simps!]
 def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
   Equivalence.mk uncurry curry
     (NatIso.ofComponents
@@ -95,19 +95,21 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
         NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => Iso.refl _) (by aesop_cat))
           (by aesop_cat))
       (by aesop_cat))
-    (NatIso.ofComponents (fun F => NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
+    (NatIso.ofComponents (fun F => NatIso.ofComponents (fun X => eqToIso (by simp)) 
+      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [←F.map_comp]; simp ))
       (by aesop_cat))
 #align category_theory.currying CategoryTheory.currying
 
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
-@[simps]
+@[simps!]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
-  NatIso.ofComponents (fun d => NatIso.ofComponents (fun c => Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents (fun d => NatIso.ofComponents (fun c => Iso.refl _) 
+    (by aesop_cat)) (by aesop_cat)
 #align category_theory.flip_iso_curry_swap_uncurry CategoryTheory.flipIsoCurrySwapUncurry
 
 /-- The uncurrying of `F.flip` is isomorphic to
 swapping the factors followed by the uncurrying of `F`. -/
-@[simps]
+@[simps!]
 def uncurryObjFlip (F : C ⥤ D ⥤ E) : uncurry.obj F.flip ≅ Prod.swap _ _ ⋙ uncurry.obj F :=
   NatIso.ofComponents (fun p => Iso.refl _) (by aesop_cat)
 #align category_theory.uncurry_obj_flip CategoryTheory.uncurryObjFlip
@@ -117,11 +119,10 @@ variable (B C D E)
 /-- A version of `category_theory.whiskering_right` for bifunctors, obtained by uncurrying,
 applying `whiskering_right` and currying back
 -/
-@[simps]
+@[simps!]
 def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E :=
   uncurry ⋙
     whiskeringRight _ _ _ ⋙ (whiskeringLeft _ _ _).obj (prodFunctorToFunctorProd _ _ _) ⋙ curry
 #align category_theory.whiskering_right₂ CategoryTheory.whiskeringRight₂
 
 end CategoryTheory
-
