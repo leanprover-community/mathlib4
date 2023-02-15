@@ -415,7 +415,7 @@ def RelMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (r₁' : r₁ → Set 
 protected def Structure.mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : c → M) (f₁' : f₁ → M → M)
     (f₂' : f₂ → M → M → M) (r₁' : r₁ → Set M) (r₂' : r₂ → M → M → Prop) :
     (Language.mk₂ c f₁ f₂ r₁ r₂).Structure M :=
-  ⟨fun _ => funMap₂ c' f₁' f₂', fun _ => RelMap₂ r₁' r₂'⟩
+  ⟨funMap₂ c' f₁' f₂', RelMap₂ r₁' r₂'⟩
 #align first_order.language.Structure.mk₂ FirstOrder.Language.Structure.mk₂
 
 namespace Structure
@@ -661,7 +661,7 @@ theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
 #align first_order.language.embedding.ext FirstOrder.Language.Embedding.ext
 
 theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h x => h ▸ rfl, fun h => ext h⟩
+  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.embedding.ext_iff FirstOrder.Language.Embedding.ext_iff
 
 theorem injective (f : M ↪[L] N) : Function.Injective f :=
