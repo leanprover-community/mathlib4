@@ -375,7 +375,7 @@ by
     · rintro ⟨x, y, hsum, hmatch₁, hmatch₂⟩
       rw [ih₁] at hmatch₁
       rw [ih₂] at hmatch₂
-      exact ⟨x, hmatch₁, y, hmatch₂, hsum.symm⟩
+      exact ⟨x, y, hmatch₁, hmatch₂, hsum.symm⟩
     · rintro ⟨x, hmatch₁, y, hmatch₂, hsum⟩
       rw [← ih₁] at hmatch₁
       rw [← ih₂] at hmatch₂
