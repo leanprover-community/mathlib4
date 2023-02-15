@@ -14,28 +14,28 @@ import Mathlib.Topology.UniformSpace.AbstractCompletion
 # Hausdorff completions of uniform spaces
 
 The goal is to construct a left-adjoint to the inclusion of complete Hausdorff uniform spaces
-into all uniform spaces. Any uniform space `α` gets a completion `completion α` and a morphism
-(ie. uniformly continuous map) `coe : α → completion α` which solves the universal
+into all uniform spaces. Any uniform space `α` gets a completion `Completion α` and a morphism
+(ie. uniformly continuous map) `coe : α → Completion α` which solves the universal
 mapping problem of factorizing morphisms from `α` to any complete Hausdorff uniform space `β`.
 It means any uniformly continuous `f : α → β` gives rise to a unique morphism
-`completion.extension f : completion α → β` such that `f = completion.extension f ∘ coe`.
-Actually `completion.extension f` is defined for all maps from `α` to `β` but it has the desired
+`Completion.extension f : Completion α → β` such that `f = Completion.extension f ∘ coe`.
+Actually `Completion.extension f` is defined for all maps from `α` to `β` but it has the desired
 properties only if `f` is uniformly continuous.
 
 Beware that `coe` is not injective if `α` is not Hausdorff. But its image is always
 dense. The adjoint functor acting on morphisms is then constructed by the usual abstract nonsense.
 For every uniform spaces `α` and `β`, it turns `f : α → β` into a morphism
-  `completion.map f : completion α → completion β`
+  `Completion.map f : Completion α → Completion β`
 such that
-  `coe ∘ f = (completion.map f) ∘ coe`
+  `coe ∘ f = (Completion.map f) ∘ coe`
 provided `f` is uniformly continuous. This construction is compatible with composition.
 
 In this file we introduce the following concepts:
 
-* `Cauchy α` the uniform completion of the uniform space `α` (using Cauchy filters). These are not
+* `CauchyCat α` the uniform completion of the uniform space `α` (using Cauchy filters). These are not
   minimal filters.
 
-* `completion α := quotient (separation_setoid (Cauchy α))` the Hausdorff completion.
+* `Completion α := quotient (separation_setoid (CauchyCat α))` the Hausdorff completion.
 
 ## References
 
@@ -152,7 +152,7 @@ theorem mem_uniformity' {s : Set (CauchyCat α × CauchyCat α)} :
 set_option linter.uppercaseLean3 false in
 #align Cauchy.mem_uniformity' CauchyCat.mem_uniformity'
 
-/-- Embedding of `α` into its completion `Cauchy α` -/
+/-- Embedding of `α` into its completion `CauchyCat α` -/
 def pureCauchy (a : α) : CauchyCat α :=
   ⟨pure a, cauchy_pure⟩
 set_option linter.uppercaseLean3 false in
@@ -177,7 +177,6 @@ theorem uniformEmbedding_pureCauchy : UniformEmbedding (pureCauchy : α → Cauc
 set_option linter.uppercaseLean3 false in
 #align Cauchy.uniform_embedding_pure_cauchy CauchyCat.uniformEmbedding_pureCauchy
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyCat α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyCat α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
     let ⟨t'', ht''₁, (ht''₂ : gen t'' ⊆ s)⟩ := (mem_lift'_sets monotone_gen).mp hs
@@ -250,7 +249,7 @@ instance [h : Nonempty α] : Nonempty (CauchyCat α) :=
 
 section Extend
 
-/-- Extend a uniformly continuous function `α → β` to a function `Cauchy α → β`. Outputs junk when
+/-- Extend a uniformly continuous function `α → β` to a function `CauchyCat α → β`. Outputs junk when
 `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyCat α → β :=
   if UniformContinuous f then denseInducing_pureCauchy.extend f
