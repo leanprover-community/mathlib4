@@ -260,8 +260,6 @@ theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : 
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
 #align filter.germ.comp_tendsto'_coe Filter.Germ.compTendsto'_coe
-
--- Porting note: used `const` instead of lift
 @[simp, norm_cast]
 theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=
   coe_eq.trans const_eventuallyEq
