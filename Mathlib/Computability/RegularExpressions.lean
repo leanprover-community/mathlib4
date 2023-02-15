@@ -267,7 +267,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
           rw [← h] at hQ
           exact hQ
         · left
-          simp only [List.cons_append] at h
+          rw [List.cons_append, List.cons_eq_cons] at h
           refine' ⟨t, u, h.2, _, hQ⟩
           rw [rmatch] at hP
           convert hP
@@ -277,7 +277,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       · exact ⟨a :: t, u, by tauto⟩
       · cases' t with b t
         · contradiction
-        · simp only [List.cons_append] at h
+        · rw [List.cons_append, List.cons_eq_cons] at h
           refine' ⟨t, u, h.2, _, hQ⟩
           rw [rmatch] at hP
           convert hP
