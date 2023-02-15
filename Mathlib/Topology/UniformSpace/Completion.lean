@@ -32,8 +32,8 @@ provided `f` is uniformly continuous. This construction is compatible with compo
 
 In this file we introduce the following concepts:
 
-* `CauchyCat α` the uniform completion of the uniform space `α` (using Cauchy filters). These are not
-  minimal filters.
+* `CauchyCat α` the uniform completion of the uniform space `α` (using Cauchy filters).
+  These are not minimal filters.
 
 * `Completion α := quotient (separation_setoid (CauchyCat α))` the Hausdorff completion.
 
