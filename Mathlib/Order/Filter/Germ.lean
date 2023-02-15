@@ -33,8 +33,8 @@ We define
 * `f.compTendsto g hg` and `f.compTendsto' g hg`: given `f : Germ l β` and a function
   `g : γ → α` (resp., a germ `g : Germ lc α`), if `g` tends to `l` along `lc`, then the composition
   `f ∘ g` is a well-defined germ at `lc`;
-* `germ.liftPred`, `germ.liftRel`: lift a predicate or a relation to the space of germs:
-  `(f : germ l β).liftPred p` means `∀ᶠ x in l, p (f x)`, and similarly for a relation.
+* `Germ.liftPred`, `Germ.liftRel`: lift a predicate or a relation to the space of germs:
+  `(f : Germ l β).liftPred p` means `∀ᶠ x in l, p (f x)`, and similarly for a relation.
 
 We also define `map (F : β → γ) : Germ l β → Germ l γ` sending each germ `f` to `F ∘ f`.
 
