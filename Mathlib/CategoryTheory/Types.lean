@@ -16,23 +16,22 @@ import Mathlib.Logic.Equiv.Basic
 # The category `Type`.
 
 In this section we set up the theory so that Lean's types and functions between them
-can be viewed as a `large_category` in our framework.
+can be viewed as a `LargeCategory` in our framework.
 
 Lean can not transparently view a function as a morphism in this category, and needs a hint in
-order to be able to type check. We provide the abbreviation `as_hom f` to guide type checking,
-as well as a corresponding notation `↾ f`. (Entered as `\upr `.) The notation is enabled using
-`open_locale category_theory.Type`.
+order to be able to type check. We provide the abbreviation `asHom f` to guide type checking,
+as well as a corresponding notation `↾ f`. (Entered as `\upr `.) 
 
 We provide various simplification lemmas for functors and natural transformations valued in `Type`.
 
-We define `ulift_functor`, from `Type u` to `Type (max u v)`, and show that it is fully faithful
+We define `uliftFunctor`, from `Type u` to `Type (max u v)`, and show that it is fully faithful
 (but not, of course, essentially surjective).
 
 We prove some basic facts about the category `Type`:
 *  epimorphisms are surjections and monomorphisms are injections,
-* `iso` is both `iso` and `equiv` to `equiv` (at least within a fixed universe),
-* every type level `is_lawful_functor` gives a categorical functor `Type ⥤ Type`
-  (the corresponding fact about monads is in `src/category_theory/monad/types.lean`).
+* `Iso` is both `Iso` and `Equiv` to `Equiv` (at least within a fixed universe),
+* every type level `IsLawfulFunctor` gives a categorical functor `Type ⥤ Type`
+  (the corresponding fact about monads is in `Mathlib/CategoryTheory/Monad/Types.lean`).
 -/
 
 
@@ -48,8 +47,7 @@ instance types : LargeCategory (Type u)
     where
   Hom a b := a → b
   id a := id
-  comp _ _ _ f g := g ∘ f
-#align category_theory.types CategoryTheory.types
+  comp f g := g ∘ f
 #align category_theory.types CategoryTheory.types
 
 theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
@@ -75,29 +73,28 @@ theorem types_comp_apply {X Y Z : Type u} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : 
 #align category_theory.types_comp_apply CategoryTheory.types_comp_apply
 
 @[simp]
-theorem hom_inv_id_apply {X Y : Type u} (f : X ≅ Y) (x : X) : f.inv (f.Hom x) = x :=
+theorem hom_inv_id_apply {X Y : Type u} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
   congr_fun f.hom_inv_id x
 #align category_theory.hom_inv_id_apply CategoryTheory.hom_inv_id_apply
 
 @[simp]
-theorem inv_hom_id_apply {X Y : Type u} (f : X ≅ Y) (y : Y) : f.Hom (f.inv y) = y :=
+theorem inv_hom_id_apply {X Y : Type u} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
   congr_fun f.inv_hom_id y
 #align category_theory.inv_hom_id_apply CategoryTheory.inv_hom_id_apply
 
--- Unfortunately without this wrapper we can't use `category_theory` idioms, such as `is_iso f`.
-/-- `as_hom f` helps Lean type check a function as a morphism in the category `Type`. -/
+-- Unfortunately without this wrapper we can't use `CategoryTheory` idioms, such as `IsIso f`.
+/-- `asHom f` helps Lean type check a function as a morphism in the category `Type`. -/
 abbrev asHom {α β : Type u} (f : α → β) : α ⟶ β :=
   f
 #align category_theory.as_hom CategoryTheory.asHom
 
--- mathport name: category_theory.as_hom
 -- If you don't mind some notation you can use fewer keystrokes:
-scoped[CategoryTheory.Type] notation "↾" f:200 => CategoryTheory.asHom f
+/-- Type as \upr in VScode -/
+scoped notation "↾" f:200 => CategoryTheory.asHom f
 
--- type as \upr in VScode
 section
 
--- We verify the expected type checking behaviour of `as_hom`.
+-- We verify the expected type checking behaviour of `asHom`
 variable (α β γ : Type u) (f : α → β) (g : β → γ)
 
 example : α → γ :=
@@ -157,22 +154,22 @@ theorem hcomp (x : (I ⋙ F).obj W) : (ρ ◫ σ).app W x = (G.map (ρ.app W)) (
 #align category_theory.functor_to_types.hcomp CategoryTheory.FunctorToTypes.hcomp
 
 @[simp]
-theorem map_inv_map_hom_apply (f : X ≅ Y) (x : F.obj X) : F.map f.inv (F.map f.Hom x) = x :=
+theorem map_inv_map_hom_apply (f : X ≅ Y) (x : F.obj X) : F.map f.inv (F.map f.hom x) = x :=
   congr_fun (F.mapIso f).hom_inv_id x
 #align category_theory.functor_to_types.map_inv_map_hom_apply CategoryTheory.FunctorToTypes.map_inv_map_hom_apply
 
 @[simp]
-theorem map_hom_map_inv_apply (f : X ≅ Y) (y : F.obj Y) : F.map f.Hom (F.map f.inv y) = y :=
+theorem map_hom_map_inv_apply (f : X ≅ Y) (y : F.obj Y) : F.map f.hom (F.map f.inv y) = y :=
   congr_fun (F.mapIso f).inv_hom_id y
 #align category_theory.functor_to_types.map_hom_map_inv_apply CategoryTheory.FunctorToTypes.map_hom_map_inv_apply
 
 @[simp]
-theorem hom_inv_id_app_apply (α : F ≅ G) (X) (x) : α.inv.app X (α.Hom.app X x) = x :=
+theorem hom_inv_id_app_apply (α : F ≅ G) (X) (x) : α.inv.app X (α.hom.app X x) = x :=
   congr_fun (α.hom_inv_id_app X) x
 #align category_theory.functor_to_types.hom_inv_id_app_apply CategoryTheory.FunctorToTypes.hom_inv_id_app_apply
 
 @[simp]
-theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.Hom.app X (α.inv.app X x) = x :=
+theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X x) = x :=
   congr_fun (α.inv_hom_id_app X) x
 #align category_theory.functor_to_types.inv_hom_id_app_apply CategoryTheory.FunctorToTypes.inv_hom_id_app_apply
 
@@ -181,16 +178,20 @@ end FunctorToTypes
 /-- The isomorphism between a `Type` which has been `ulift`ed to the same universe,
 and the original type.
 -/
-def uliftTrivial (V : Type u) : ULift.{u} V ≅ V := by tidy
+def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where 
+  hom a := a.1
+  inv a := .up a  
+  hom_inv_id := by aesop_cat 
+  inv_hom_id := by aesop_cat 
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.
-Write this as `ulift_functor.{5 2}` to get `Type 2 ⥤ Type 5`.
+Write this as `uliftFunctor.{5 2}` to get `Type 2 ⥤ Type 5`.
 -/
 def uliftFunctor : Type u ⥤ Type max u v
     where
   obj X := ULift.{v} X
-  map X Y f := fun x : ULift.{v} X => ULift.up (f x.down)
+  map {X} {Y} f := fun x : ULift.{v} X => ULift.up (f x.down)
 #align category_theory.ulift_functor CategoryTheory.uliftFunctor
 
 @[simp]
@@ -199,11 +200,11 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
   rfl
 #align category_theory.ulift_functor_map CategoryTheory.uliftFunctor_map
 
-instance uliftFunctorFull : Full.{u} uliftFunctor where preimage X Y f x := (f (ULift.up x)).down
+instance uliftFunctorFull : Full.{u} uliftFunctor where preimage f x := (f (ULift.up x)).down
 #align category_theory.ulift_functor_full CategoryTheory.uliftFunctorFull
 
 instance uliftFunctor_faithful : Faithful uliftFunctor
-    where map_injective' X Y f g p :=
+    where map_injective {_X} {_Y} f g p :=
     funext fun x =>
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
 #align category_theory.ulift_functor_faithful CategoryTheory.uliftFunctor_faithful
@@ -211,7 +212,7 @@ instance uliftFunctor_faithful : Faithful uliftFunctor
 /-- The functor embedding `Type u` into `Type u` via `ulift` is isomorphic to the identity functor.
  -/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
-  NatIso.ofComponents uliftTrivial (by tidy)
+  NatIso.ofComponents uliftTrivial (by aesop_cat)
 #align category_theory.ulift_functor_trivial CategoryTheory.uliftFunctorTrivial
 
 -- TODO We should connect this to a general story about concrete categories
@@ -221,7 +222,7 @@ def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 #align category_theory.hom_of_element CategoryTheory.homOfElement
 
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
-  ⟨fun H => congr_fun H PUnit.unit, by cc⟩
+  ⟨fun H => congr_fun H PUnit.unit, by aesop⟩  
 #align category_theory.hom_of_element_eq_iff CategoryTheory.homOfElement_eq_iff
 
 /-- A morphism in `Type` is a monomorphism if and only if it is injective.
@@ -232,9 +233,9 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
   constructor
   · intro H x x' h
     skip
-    rw [← hom_of_element_eq_iff] at h⊢
+    rw [← homOfElement_eq_iff] at h⊢
     exact (cancel_mono f).mp h
-  · exact fun H => ⟨fun Z => H.compLeft⟩
+  · exact fun H => ⟨fun g g' h => H.comp_left h⟩
 #align category_theory.mono_iff_injective CategoryTheory.mono_iff_injective
 
 theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
@@ -249,11 +250,11 @@ theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Sur
   constructor
   · rintro ⟨H⟩
     refine' Function.surjective_of_right_cancellable_Prop fun g₁ g₂ hg => _
-    rw [← equiv.ulift.symm.injective.comp_left.eq_iff]
+    rw [← Equiv.ulift.symm.injective.comp_left.eq_iff]
     apply H
     change ULift.up ∘ g₁ ∘ f = ULift.up ∘ g₂ ∘ f
     rw [hg]
-  · exact fun H => ⟨fun Z => H.injective_comp_right⟩
+  · exact fun H => ⟨fun g g' h => H.injective_comp_right h⟩
 #align category_theory.epi_iff_surjective CategoryTheory.epi_iff_surjective
 
 theorem surjective_of_epi {X Y : Type u} (f : X ⟶ Y) [hf : Epi f] : Function.Surjective f :=
@@ -262,17 +263,19 @@ theorem surjective_of_epi {X Y : Type u} (f : X ⟶ Y) [hf : Epi f] : Function.S
 
 section
 
-/-- `of_type_functor m` converts from Lean's `Type`-based `category` to `category_theory`. This
+/-- `ofTypeFunctor m` converts from Lean's `Type`-based `Category` to `CategoryTheory`. This
 allows us to use these functors in category theory. -/
-def ofTypeFunctor (m : Type u → Type v) [Functor m] [LawfulFunctor m] : Type u ⥤ Type v
+def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v
     where
   obj := m
-  map α β := Functor.map
-  map_id' α := Functor.map_id
-  map_comp' α β γ f g := funext fun a => LawfulFunctor.comp_map f g _
+  map f := Functor.map f  
+  map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via 
+  `fun α => _root_.Functor.map_id` but I cannot get Lean to find this. Reproduced its 
+  original proof -/
+  map_comp f g := funext fun a => LawfulFunctor.comp_map f g _
 #align category_theory.of_type_functor CategoryTheory.ofTypeFunctor
 
-variable (m : Type u → Type v) [Functor m] [LawfulFunctor m]
+variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
 
 @[simp]
 theorem ofTypeFunctor_obj : (ofTypeFunctor m).obj = m :=
@@ -300,14 +303,14 @@ variable {X Y : Type u}
 a categorical isomorphism between those types.
 -/
 def toIso (e : X ≃ Y) : X ≅ Y where
-  Hom := e.toFun
+  hom := e.toFun
   inv := e.invFun
-  hom_inv_id' := funext e.left_inv
-  inv_hom_id' := funext e.right_inv
+  hom_inv_id := funext e.left_inv
+  inv_hom_id := funext e.right_inv
 #align equiv.to_iso Equiv.toIso
 
 @[simp]
-theorem toIso_hom {e : X ≃ Y} : e.toIso.Hom = e :=
+theorem toIso_hom {e : X ≃ Y} : e.toIso.hom = e :=
   rfl
 #align equiv.to_iso_hom Equiv.toIso_hom
 
@@ -329,14 +332,14 @@ variable {X Y : Type u}
 /-- Any isomorphism between types gives an equivalence.
 -/
 def toEquiv (i : X ≅ Y) : X ≃ Y where
-  toFun := i.Hom
+  toFun := i.hom
   invFun := i.inv
   left_inv x := congr_fun i.hom_inv_id x
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
 
 @[simp]
-theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.Hom :=
+theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
   rfl
 #align category_theory.iso.to_equiv_fun CategoryTheory.Iso.toEquiv_fun
 
@@ -362,26 +365,26 @@ namespace CategoryTheory
 
 /-- A morphism in `Type u` is an isomorphism if and only if it is bijective. -/
 theorem isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f :=
-  Iff.intro (fun i => (as_iso f : X ≅ Y).toEquiv.Bijective) fun b =>
+  Iff.intro (fun _ => (asIso f : X ≅ Y).toEquiv.bijective) fun b =>
     IsIso.of_iso (Equiv.ofBijective f b).toIso
 #align category_theory.is_iso_iff_bijective CategoryTheory.isIso_iff_bijective
 
 instance : SplitEpiCategory (Type u)
-    where isSplitEpi_of_epi X Y f hf :=
-    IsSplitEpi.mk'
+    where isSplitEpi_of_epi f hf :=
+    IsSplitEpi.mk' <|
       { section_ := Function.surjInv <| (epi_iff_surjective f).1 hf
-        id' := funext <| Function.rightInverse_surjInv <| (epi_iff_surjective f).1 hf }
+        id := funext <| Function.rightInverse_surjInv <| (epi_iff_surjective f).1 hf }
 
 end CategoryTheory
 
--- We prove `equiv_iso_iso` and then use that to sneakily construct `equiv_equiv_iso`.
+-- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
 -- (In this order the proofs are handled by `obviously`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]
 def equivIsoIso {X Y : Type u} : X ≃ Y ≅ X ≅ Y
     where
-  Hom e := e.toIso
+  hom e := e.toIso
   inv i := i.toEquiv
 #align equiv_iso_iso equivIsoIso
 
@@ -400,4 +403,3 @@ theorem equivEquivIso_hom {X Y : Type u} (e : X ≃ Y) : equivEquivIso e = e.toI
 theorem equivEquivIso_inv {X Y : Type u} (e : X ≅ Y) : equivEquivIso.symm e = e.toEquiv :=
   rfl
 #align equiv_equiv_iso_inv equivEquivIso_inv
-
