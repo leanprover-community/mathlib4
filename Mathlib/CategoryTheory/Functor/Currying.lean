@@ -34,22 +34,22 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E
     where
   obj F :=
     { obj := fun X => (F.obj X.1).obj X.2
-      map := fun X Y f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
-      map_comp' := fun X Y Z f g =>
+      map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
+      map_comp := fun f g =>
         by
-        simp only [prod_comp_fst, prod_comp_snd, functor.map_comp, nat_trans.comp_app,
-          category.assoc]
-        slice_lhs 2 3 => rw [← nat_trans.naturality]
-        rw [category.assoc] }
-  map F G T :=
+        simp only [prod_comp_fst, prod_comp_snd, Functor.map_comp, NatTrans.comp_app,
+          Category.assoc]
+        slice_lhs 2 3 => rw [← NatTrans.naturality]
+        rw [Category.assoc] }
+  map T :=
     { app := fun X => (T.app X.1).app X.2
-      naturality' := fun X Y f =>
+      naturality := fun X Y f =>
         by
-        simp only [prod_comp_fst, prod_comp_snd, category.comp_id, category.assoc, Functor.map_id,
-          functor.map_comp, nat_trans.id_app, nat_trans.comp_app]
-        slice_lhs 2 3 => rw [nat_trans.naturality]
-        slice_lhs 1 2 => rw [← nat_trans.comp_app, nat_trans.naturality, nat_trans.comp_app]
-        rw [category.assoc] }
+        simp only [prod_comp_fst, prod_comp_snd, Category.comp_id, Category.assoc, Functor.map_id,
+          Functor.map_comp, NatTrans.id_app, NatTrans.comp_app]
+        slice_lhs 2 3 => rw [NatTrans.naturality]
+        slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
+        rw [Category.assoc] }
 #align category_theory.uncurry CategoryTheory.uncurry
 
 /-- The object level part of the currying functor. (See `curry` for the functorial version.)
@@ -58,8 +58,14 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E
     where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
-      map := fun Y Y' g => F.map (𝟙 X, g) }
-  map X X' f := { app := fun Y => F.map (f, 𝟙 Y) }
+      map := fun g => F.map (𝟙 X, g) 
+      map_id := fun Y => by simp only [F.map_id]; rw [←prod_id]; exact F.map_id ⟨X,Y⟩
+      map_comp := fun f g => by simp; rw [prod_comp]; }
+  map f := 
+    { app := fun Y => F.map (f, 𝟙 Y) 
+      naturality := sorry }
+  map_id := sorry 
+  map_comp := sorry 
 #align category_theory.curry_obj CategoryTheory.curryObj
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
@@ -67,15 +73,15 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E
 @[simps obj_obj_obj obj_obj_map obj_map_app map_app_app]
 def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
   obj F := curryObj F
-  map F G T :=
+  map T :=
     { app := fun X =>
         { app := fun Y => T.app (X, Y)
-          naturality' := fun Y Y' g => by
-            dsimp [curry_obj]
-            rw [nat_trans.naturality] }
-      naturality' := fun X X' f => by
-        ext; dsimp [curry_obj]
-        rw [nat_trans.naturality] }
+          naturality := fun Y Y' g => by
+            dsimp [curryObj]
+            rw [NatTrans.naturality] }
+      naturality := fun X X' f => by
+        ext; dsimp [curryObj]
+        rw [NatTrans.naturality] }
 #align category_theory.curry CategoryTheory.curry
 
 -- create projection simp lemmas even though this isn't a `{ .. }`.
@@ -86,24 +92,24 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
   Equivalence.mk uncurry curry
     (NatIso.ofComponents
       (fun F =>
-        NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => Iso.refl _) (by tidy))
-          (by tidy))
-      (by tidy))
-    (NatIso.ofComponents (fun F => NatIso.ofComponents (fun X => eqToIso (by simp)) (by tidy))
-      (by tidy))
+        NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => Iso.refl _) (by aesop_cat))
+          (by aesop_cat))
+      (by aesop_cat))
+    (NatIso.ofComponents (fun F => NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
+      (by aesop_cat))
 #align category_theory.currying CategoryTheory.currying
 
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
-  NatIso.ofComponents (fun d => NatIso.ofComponents (fun c => Iso.refl _) (by tidy)) (by tidy)
+  NatIso.ofComponents (fun d => NatIso.ofComponents (fun c => Iso.refl _) (by aesop_cat)) (by aesop_cat)
 #align category_theory.flip_iso_curry_swap_uncurry CategoryTheory.flipIsoCurrySwapUncurry
 
 /-- The uncurrying of `F.flip` is isomorphic to
 swapping the factors followed by the uncurrying of `F`. -/
 @[simps]
 def uncurryObjFlip (F : C ⥤ D ⥤ E) : uncurry.obj F.flip ≅ Prod.swap _ _ ⋙ uncurry.obj F :=
-  NatIso.ofComponents (fun p => Iso.refl _) (by tidy)
+  NatIso.ofComponents (fun p => Iso.refl _) (by aesop_cat)
 #align category_theory.uncurry_obj_flip CategoryTheory.uncurryObjFlip
 
 variable (B C D E)
