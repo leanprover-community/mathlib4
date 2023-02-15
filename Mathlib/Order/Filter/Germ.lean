@@ -157,7 +157,7 @@ def map' {lc : Filter γ} (F : (α → β) → γ → δ) (hF : (l.EventuallyEq 
   Quotient.map' F hF
 #align filter.germ.map' Filter.Germ.map'
 
-/-- Given a germ `f : germ l β` and a function `F : (α → β) → γ` sending eventually equal functions
+/-- Given a germ `f : Germ l β` and a function `F : (α → β) → γ` sending eventually equal functions
 to the same value, returns the value `F` takes on functions having germ `f` at `l`. -/
 def liftOn {γ : Sort _} (f : Germ l β) (F : (α → β) → γ) (hF : (l.EventuallyEq ⇒ (· = ·)) F F) :
     γ :=
@@ -199,7 +199,7 @@ theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
   inductionOn f fun _ => rfl
 #align filter.germ.map_map Filter.Germ.map_map
 
-/-- Lift a binary function `β → γ → δ` to a function `germ l β → germ l γ → germ l δ`. -/
+/-- Lift a binary function `β → γ → δ` to a function `Germ l β → Germ l γ → Germ l δ`. -/
 def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
   Quotient.map₂' (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
     Hg.mp <| Hf.mono fun x Hf Hg => by simp only [Hf, Hg]
