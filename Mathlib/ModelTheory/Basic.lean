@@ -402,7 +402,7 @@ def funMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : c → M) (f₁' 
   | 0, f, _ => c' f
   | 1, f, x => f₁' f (x 0)
   | 2, f, x => f₂' f (x 0) (x 1)
-  | n + 3, f, _ => PEmpty.elim f
+  | _ + 3, f, _ => PEmpty.elim f
 #align first_order.language.fun_map₂ FirstOrder.Language.funMap₂
 
 /-- The relation map for `first_order.language.Structure₂`. -/
@@ -411,7 +411,7 @@ def RelMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (r₁' : r₁ → Set 
   | 0, r, _ => PEmpty.elim r
   | 1, r, x => x 0 ∈ r₁' r
   | 2, r, x => r₂' r (x 0) (x 1)
-  | n + 3, r, _ => PEmpty.elim r
+  | _ + 3, r, _ => PEmpty.elim r
 #align first_order.language.rel_map₂ FirstOrder.Language.RelMap₂
 
 /-- A structure constructor to match `first_order.language₂`. -/
@@ -449,13 +449,13 @@ theorem funMap_apply₂ (f : f₂) (x y : M) :
 
 @[simp]
 theorem relMap_apply₁ (r : r₁) (x : M) :
-    @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
+    @Structure.rel_map _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
   rfl
 #align first_order.language.Structure.rel_map_apply₁ FirstOrder.Language.Structure.relMap_apply₁
 
 @[simp]
 theorem relMap_apply₂ (r : r₂) (x y : M) :
-    @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
+    @Structure.rel_map _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
   rfl
 #align first_order.language.Structure.rel_map_apply₂ FirstOrder.Language.Structure.relMap_apply₂
 
@@ -466,7 +466,7 @@ end Structure
 class HomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
   [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
-  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
+  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), rel_map r x → rel_map r (φ ∘ x)
 #align first_order.language.hom_class FirstOrder.Language.HomClass
 
 /-- `strong_hom_class L F M N` states that `F` is a type of `L`-homomorphisms which preserve
@@ -474,20 +474,20 @@ class HomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
 class StrongHomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
   [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
-  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
+  map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), rel_map r (φ ∘ x) ↔ rel_map r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
 instance (priority := 100) StrongHomClass.homClass {F M N} [L.Structure M] [L.Structure N]
     [FunLike F M fun _ => N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
-  map_rel φ n R x := (StrongHomClass.map_rel φ R x).2
+  map_rel φ _ R x := (StrongHomClass.map_rel φ R x).2
 #align first_order.language.strong_hom_class.hom_class FirstOrder.Language.StrongHomClass.homClass
 
 /-- Not an instance to avoid a loop. -/
 def HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
     [FunLike F M fun _ => N] [HomClass L F M N] : StrongHomClass L F M N where
   map_fun := HomClass.map_fun
-  map_rel φ n R x := (IsAlgebraic.empty_relations n).elim R
+  map_rel _ n R _ := (IsAlgebraic.empty_relations n).elim R
 #align
   first_order.language.hom_class.strong_hom_class_of_is_algebraic
   FirstOrder.Language.HomClass.strongHomClassOfIsAlgebraic
@@ -501,11 +501,7 @@ namespace Hom
 
 instance funLike : FunLike (M →[L] N) M fun _ => N where
   coe := Hom.toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    cases h
-    rfl
+  coe_injective' f g h := by cases f; cases g; cases h; rfl
 #align first_order.language.hom.fun_like FirstOrder.Language.Hom.funLike
 
 instance homClass : HomClass L (M →[L] N) M N where
