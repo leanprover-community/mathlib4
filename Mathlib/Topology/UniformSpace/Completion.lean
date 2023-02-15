@@ -104,7 +104,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         exact le_rfl)
   exact h₁.trans_le h₂
 
-private theorem comp_rel_gen_gen_subset_gen_comp_rel {s t : Set (α × α)} :
+private theorem compRel_gen_gen_subset_gen_compRel {s t : Set (α × α)} :
     compRel (gen s) (gen t) ⊆ (gen (compRel s t) : Set (CauchyCat α × CauchyCat α)) :=
   fun ⟨f, g⟩ ⟨h, h₁, h₂⟩ =>
   let ⟨t₁, (ht₁ : t₁ ∈ f.val), t₂, (ht₂ : t₂ ∈ h.val), (h₁ : t₁ ×ˢ t₂ ⊆ s)⟩ := mem_prod_iff.mp h₁
@@ -123,7 +123,7 @@ private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) �
         . exact monotone_gen
         . exact monotone_id.compRel monotone_id
     _ ≤ (𝓤 α).lift' fun s => gen <| compRel s s :=
-      lift'_mono' fun s _hs => comp_rel_gen_gen_subset_gen_comp_rel
+      lift'_mono' fun s _hs => compRel_gen_gen_subset_gen_compRel
     _ = ((𝓤 α).lift' fun s : Set (α × α) => compRel s s).lift' gen :=
       by
         rw [lift'_lift'_assoc]
@@ -228,7 +228,6 @@ section
 -- porting note: I commented this
 -- set_option eqn_compiler.zeta true
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance : CompleteSpace (CauchyCat α) :=
   completeSpace_extension uniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
     let f' : CauchyCat α := ⟨f, hf⟩
@@ -420,7 +419,7 @@ theorem denseRange_coe : DenseRange (CoeTC.coe : α → Completion α) :=
 variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
-def cpkg {α : Type _} [UniformSpace α] : AbstractCompletion α
+def cPkg {α : Type _} [UniformSpace α] : AbstractCompletion α
     where
   space := Completion α
   coe := CoeTC.coe
@@ -429,25 +428,25 @@ def cpkg {α : Type _} [UniformSpace α] : AbstractCompletion α
   separation := by infer_instance
   uniformInducing := Completion.uniformInducing_coe α
   dense := Completion.denseRange_coe
-#align uniform_space.completion.cpkg UniformSpace.Completion.cpkg
+#align uniform_space.completion.cpkg UniformSpace.Completion.cPkg
 
 instance AbstractCompletion.inhabited : Inhabited (AbstractCompletion α) :=
-  ⟨cpkg⟩
+  ⟨cPkg⟩
 #align uniform_space.completion.abstract_completion.inhabited UniformSpace.Completion.AbstractCompletion.inhabited
 
 attribute [local instance]
   AbstractCompletion.uniformStruct AbstractCompletion.complete AbstractCompletion.separation
 
 theorem nonempty_completion_iff : Nonempty (Completion α) ↔ Nonempty α :=
-  cpkg.dense.nonempty_iff.symm
+  cPkg.dense.nonempty_iff.symm
 #align uniform_space.completion.nonempty_completion_iff UniformSpace.Completion.nonempty_completion_iff
 
 theorem uniformContinuous_coe : UniformContinuous (CoeTC.coe : α → Completion α) :=
-  cpkg.uniformContinuous_coe
+  cPkg.uniformContinuous_coe
 #align uniform_space.completion.uniform_continuous_coe UniformSpace.Completion.uniformContinuous_coe
 
 theorem continuous_coe : Continuous (CoeTC.coe : α → Completion α) :=
-  cpkg.continuous_coe
+  cPkg.continuous_coe
 #align uniform_space.completion.continuous_coe UniformSpace.Completion.continuous_coe
 
 theorem uniformEmbedding_coe [SeparatedSpace α] : UniformEmbedding (CoeTC.coe : α → Completion α) :=
@@ -467,7 +466,7 @@ theorem denseInducing_coe : DenseInducing (CoeTC.coe : α → Completion α) :=
 
 /-- The uniform bijection between a complete space and its uniform completion. -/
 def UniformCompletion.completeEquivSelf [CompleteSpace α] [SeparatedSpace α] : Completion α ≃ᵤ α :=
-  AbstractCompletion.compareEquiv Completion.cpkg AbstractCompletion.ofComplete
+  AbstractCompletion.compareEquiv Completion.cPkg AbstractCompletion.ofComplete
 #align uniform_space.completion.uniform_completion.complete_equiv_self UniformSpace.Completion.UniformCompletion.completeEquivSelf
 
 open TopologicalSpace
@@ -518,7 +517,7 @@ theorem induction_on₃ {p : Completion α → Completion β → Completion γ �
 
 theorem ext {Y : Type _} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
     (hf : Continuous f) (hg : Continuous g) (h : ∀ a : α, f a = g a) : f = g :=
-  cpkg.funext hf hg h
+  cPkg.funext hf hg h
 #align uniform_space.completion.ext UniformSpace.Completion.ext
 
 theorem ext' {Y : Type _} [TopologicalSpace Y] [T2Space Y] {f g : Completion α → Y}
@@ -534,7 +533,7 @@ variable {f : α → β}
 /-- "Extension" to the completion. It is defined for any map `f` but
 returns an arbitrary constant value if `f` is not uniformly continuous -/
 protected def extension (f : α → β) : Completion α → β :=
-  cpkg.extend f
+  cPkg.extend f
 #align uniform_space.completion.extension UniformSpace.Completion.extension
 
 section CompleteSpace
@@ -542,11 +541,11 @@ section CompleteSpace
 variable [CompleteSpace β]
 
 theorem uniformContinuous_extension : UniformContinuous (Completion.extension f) :=
-  cpkg.uniformContinuous_extend
+  cPkg.uniformContinuous_extend
 #align uniform_space.completion.uniform_continuous_extension UniformSpace.Completion.uniformContinuous_extension
 
 theorem continuous_extension : Continuous (Completion.extension f) :=
-  cpkg.continuous_extend
+  cPkg.continuous_extend
 #align uniform_space.completion.continuous_extension UniformSpace.Completion.continuous_extension
 
 end CompleteSpace
@@ -555,7 +554,7 @@ end CompleteSpace
 Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem extension_coe [SeparatedSpace β] (hf : UniformContinuous f) (a : α) :
     (Completion.extension f) a = f a :=
-  cpkg.extend_coe hf a
+  cPkg.extend_coe hf a
 #align uniform_space.completion.extension_coe UniformSpace.Completion.extension_coe
 
 variable [SeparatedSpace β] [CompleteSpace β]
@@ -563,13 +562,13 @@ variable [SeparatedSpace β] [CompleteSpace β]
 theorem extension_unique (hf : UniformContinuous f) {g : Completion α → β}
     (hg : UniformContinuous g) (h : ∀ a : α, f a = g (a : Completion α)) :
     Completion.extension f = g :=
-  cpkg.extend_unique hf hg h
+  cPkg.extend_unique hf hg h
 #align uniform_space.completion.extension_unique UniformSpace.Completion.extension_unique
 
 @[simp]
 theorem extension_comp_coe {f : Completion α → β} (hf : UniformContinuous f) :
     Completion.extension (f ∘ CoeTC.coe) = f :=
-  cpkg.extend_comp_coe hf
+  cPkg.extend_comp_coe hf
 #align uniform_space.completion.extension_comp_coe UniformSpace.Completion.extension_comp_coe
 
 end Extension
@@ -580,31 +579,31 @@ variable {f : α → β}
 
 /-- Completion functor acting on morphisms -/
 protected def map (f : α → β) : Completion α → Completion β :=
-  cpkg.map cpkg f
+  cPkg.map cPkg f
 #align uniform_space.completion.map UniformSpace.Completion.map
 
 theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
-  cpkg.uniformContinuous_map cpkg f
+  cPkg.uniformContinuous_map cPkg f
 #align uniform_space.completion.uniform_continuous_map UniformSpace.Completion.uniformContinuous_map
 
 theorem continuous_map : Continuous (Completion.map f) :=
-  cpkg.continuous_map cpkg f
+  cPkg.continuous_map cPkg f
 #align uniform_space.completion.continuous_map UniformSpace.Completion.continuous_map
 
 /- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
 Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem map_coe (hf : UniformContinuous f) (a : α) : (Completion.map f) a = f a :=
-  cpkg.map_coe cpkg hf a
+  cPkg.map_coe cPkg hf a
 #align uniform_space.completion.map_coe UniformSpace.Completion.map_coe
 
 theorem map_unique {f : α → β} {g : Completion α → Completion β} (hg : UniformContinuous g)
     (h : ∀ a : α, ↑(f a) = g a) : Completion.map f = g :=
-  cpkg.map_unique cpkg hg h
+  cPkg.map_unique cPkg hg h
 #align uniform_space.completion.map_unique UniformSpace.Completion.map_unique
 
 @[simp]
 theorem map_id : Completion.map (@id α) = id :=
-  cpkg.map_id
+  cPkg.map_id
 #align uniform_space.completion.map_id UniformSpace.Completion.map_id
 
 theorem extension_map [CompleteSpace γ] [SeparatedSpace γ] {f : β → γ} {g : α → β}
@@ -675,7 +674,7 @@ open Function
 
 /-- Extend a two variable map to the Hausdorff completions. -/
 protected def extension₂ (f : α → β → γ) : Completion α → Completion β → γ :=
-  cpkg.extend₂ cpkg f
+  cPkg.extend₂ cPkg f
 #align uniform_space.completion.extension₂ UniformSpace.Completion.extension₂
 
 section SeparatedSpace
@@ -686,7 +685,7 @@ variable [SeparatedSpace γ] {f}
 Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem extension₂_coe_coe (hf : UniformContinuous₂ f) (a : α) (b : β) :
     Completion.extension₂ f a b = f a b :=
-  cpkg.extension₂_coe_coe cpkg hf a b
+  cPkg.extension₂_coe_coe cPkg hf a b
 #align uniform_space.completion.extension₂_coe_coe UniformSpace.Completion.extension₂_coe_coe
 
 end SeparatedSpace
@@ -694,7 +693,7 @@ end SeparatedSpace
 variable [CompleteSpace γ]
 
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (Completion.extension₂ f) :=
-  cpkg.uniformContinuous_extension₂ cpkg f
+  cPkg.uniformContinuous_extension₂ cPkg f
 #align uniform_space.completion.uniform_continuous_extension₂ UniformSpace.Completion.uniformContinuous_extension₂
 
 end Extension₂
@@ -705,22 +704,22 @@ open Function
 
 /-- Lift a two variable map to the Hausdorff completions. -/
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=
-  cpkg.map₂ cpkg cpkg f
+  cPkg.map₂ cPkg cPkg f
 #align uniform_space.completion.map₂ UniformSpace.Completion.map₂
 
 theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (Completion.map₂ f) :=
-  cpkg.uniformContinuous_map₂ cpkg cpkg f
+  cPkg.uniformContinuous_map₂ cPkg cPkg f
 #align uniform_space.completion.uniform_continuous_map₂ UniformSpace.Completion.uniformContinuous_map₂
 
 theorem continuous_map₂ {δ} [TopologicalSpace δ] {f : α → β → γ} {a : δ → Completion α}
     {b : δ → Completion β} (ha : Continuous a) (hb : Continuous b) :
     Continuous fun d : δ => Completion.map₂ f (a d) (b d) :=
-  cpkg.continuous_map₂ cpkg cpkg ha hb
+  cPkg.continuous_map₂ cPkg cPkg ha hb
 #align uniform_space.completion.continuous_map₂ UniformSpace.Completion.continuous_map₂
 
 theorem map₂_coe_coe (a : α) (b : β) (f : α → β → γ) (hf : UniformContinuous₂ f) :
     Completion.map₂ f (a : Completion α) (b : Completion β) = f a b :=
-  cpkg.map₂_coe_coe cpkg cpkg a b f hf
+  cPkg.map₂_coe_coe cPkg cPkg a b f hf
 #align uniform_space.completion.map₂_coe_coe UniformSpace.Completion.map₂_coe_coe
 
 end Map₂
