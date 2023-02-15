@@ -152,15 +152,15 @@ theorem cons_inj_right (a : α) : ∀ {s t : Multiset α}, a ::ₘ s = a ::ₘ t
 #align multiset.cons_inj_right Multiset.cons_inj_right
 
 @[recursor 5]
-protected theorem induction {p : Multiset α → Prop} (h₁ : p 0)
-    (h₂ : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : ∀ s, p s := by
-  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact h₁, exact h₂ ih]
+protected theorem induction {p : Multiset α → Prop} (zero : p 0)
+    (cons : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : ∀ s, p s := by
+  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact zero, exact cons ih]
 #align multiset.induction Multiset.induction
 
 @[elab_as_elim]
-protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (h₁ : p 0)
-    (h₂ : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : p s :=
-  Multiset.induction h₁ h₂ s
+protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (zero : p 0)
+    (cons : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : p s :=
+  Multiset.induction zero cons s
 #align multiset.induction_on Multiset.induction_on
 
 theorem cons_swap (a b : α) (s : Multiset α) : a ::ₘ b ::ₘ s = b ::ₘ a ::ₘ s :=
