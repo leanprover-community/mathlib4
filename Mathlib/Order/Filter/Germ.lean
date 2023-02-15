@@ -285,7 +285,7 @@ theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ l
   inductionOn g (fun _ _ => rfl) hg
 #align filter.germ.const_comp_tendsto' Filter.Germ.const_compTendsto'
 
-/-- Lift a predicate on `β` to `germ l β`. -/
+/-- Lift a predicate on `β` to `Germ l β`. -/
 def LiftPred (p : β → Prop) (f : Germ l β) : Prop :=
   liftOn f (fun f => ∀ᶠ x in l, p (f x)) fun _f _g H =>
     propext <| eventually_congr <| H.mono fun _x hx => hx ▸ Iff.rfl
