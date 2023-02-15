@@ -11,7 +11,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Data.Bracket
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.Tactic.NoncommRing
 
 /-!
 # Lie algebras
@@ -56,9 +55,10 @@ universe u v w w₁ w₂
 
 open Function
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
+-- adds unnecessary clutter to later code
 /-- A Lie ring is an additive group with compatible product, known as the bracket, satisfying the
 Jacobi identity. -/
-@[protect_proj]
 class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
   add_lie : ∀ x y z : L, ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
   lie_add : ∀ x y z : L, ⁅x, y + z⁆ = ⁅x, y⁆ + ⁅x, z⁆
@@ -66,26 +66,29 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
   leibniz_lie : ∀ x y z : L, ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
 #align lie_ring LieRing
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
+-- adds unnecessary clutter to later code
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
-@[protect_proj]
 class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
 #align lie_algebra LieAlgebra
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
+-- adds unnecessary clutter to later code
 /-- A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
 (For representations of Lie *algebras* see `lie_module`.) -/
-@[protect_proj]
 class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] extends Bracket L M where
   add_lie : ∀ (x y : L) (m : M), ⁅x + y, m⁆ = ⁅x, m⁆ + ⁅y, m⁆
   lie_add : ∀ (x : L) (m n : M), ⁅x, m + n⁆ = ⁅x, m⁆ + ⁅x, n⁆
   leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 #align lie_ring_module LieRingModule
 
+-- Porting note: mathlib3 had a `@[protect_proj]` here, but adding `protected` to all the fields
+-- adds unnecessary clutter to later code
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/
-@[protect_proj]
 class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] where
   smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
@@ -1089,4 +1092,3 @@ theorem symm_trans_self (e : M ≃ₗ⁅R,L⁆ N) : e.symm.trans e = refl :=
 end LieModuleEquiv
 
 end LieModuleMorphisms
-
