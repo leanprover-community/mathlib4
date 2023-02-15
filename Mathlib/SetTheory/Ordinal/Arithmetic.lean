@@ -497,10 +497,10 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
       inductionOn a
         (fun α r _ =>
           inductionOn b fun β s _ h H l => by
-            skip
-            suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ _ l)
-              by
-              cases' enum _ _ l with x x
+            suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ _ l) by
+              -- Porting note: `revert` & `intro` is required because `cases'` doesn't replace
+              --               `enum _ _ l` in `this`.
+              revert this; cases' enum _ _ l with x x <;> intro this
               · cases this (enum s 0 h.pos)
               · exact irrefl _ (this _)
             intro x
@@ -512,11 +512,8 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
             · rcases a with ⟨a | b, h⟩
               · exact Sum.inl a
               · exact Sum.inr ⟨b, by cases h <;> assumption⟩
-            ·
-              rcases a with ⟨a | a, h₁⟩ <;> rcases b with ⟨b | b, h₂⟩ <;> cases h₁ <;> cases h₂ <;>
-                    rintro ⟨⟩ <;>
-                  constructor <;>
-                assumption)
+            · rcases a with ⟨a | a, h₁⟩ <;> rcases b with ⟨b | b, h₂⟩ <;> cases h₁ <;> cases h₂ <;>
+                rintro ⟨⟩ <;> constructor <;> assumption)
         h H⟩
 #align ordinal.add_le_of_limit Ordinal.add_le_of_limit
 
