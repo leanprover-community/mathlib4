@@ -1903,8 +1903,6 @@ theorem tr_respects : Respects (step M) (step (tr enc dec M)) fun c₁ c₂ ↦ 
       apply ReflTransGen.refl
 #align turing.TM1to1.tr_respects Turing.TM1to1.tr_respects
 
---omit enc0 encdec  -- Porting note: `omit` doesn't exist
-
 open Classical
 
 variable [Fintype Γ]
