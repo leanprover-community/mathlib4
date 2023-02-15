@@ -11,7 +11,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Data.Bracket
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.Tactic.NoncommRing
 
 /-!
 # Lie algebras
@@ -58,7 +57,7 @@ open Function
 
 /-- A Lie ring is an additive group with compatible product, known as the bracket, satisfying the
 Jacobi identity. -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not implemented yet
 class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
   add_lie : ∀ x y z : L, ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
   lie_add : ∀ x y z : L, ⁅x, y + z⁆ = ⁅x, y⁆ + ⁅x, z⁆
@@ -68,7 +67,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not implemented yet
 class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
 #align lie_algebra LieAlgebra
@@ -76,7 +75,7 @@ class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Modu
 /-- A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
 (For representations of Lie *algebras* see `lie_module`.) -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not implemented yet
 class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] extends Bracket L M where
   add_lie : ∀ (x y : L) (m : M), ⁅x + y, m⁆ = ⁅x, m⁆ + ⁅y, m⁆
   lie_add : ∀ (x : L) (m n : M), ⁅x, m + n⁆ = ⁅x, m⁆ + ⁅x, n⁆
@@ -85,7 +84,7 @@ class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] exten
 
 /-- A Lie module is a module over a commutative ring, together with a linear action of a Lie
 algebra on this module, such that the Lie bracket acts as the commutator of endomorphisms. -/
-@[protect_proj]
+-- @[protect_proj] -- Porting note: Not implemented yet
 class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] where
   smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
@@ -182,22 +181,22 @@ theorem lie_sub : ⁅x, m - n⁆ = ⁅x, m⁆ - ⁅x, n⁆ := by simp [sub_eq_ad
 
 @[simp]
 theorem nsmul_lie (n : ℕ) : ⁅n • x, m⁆ = n • ⁅x, m⁆ :=
-  AddMonoidHom.map_nsmul ⟨fun x : L => ⁅x, m⁆, zero_lie m, fun _ _ => add_lie _ _ _⟩ _ _
+  AddMonoidHom.map_nsmul ⟨⟨fun (x : L) => ⁅x, m⁆, zero_lie m⟩, fun _ _ => add_lie _ _ _⟩ _ _
 #align nsmul_lie nsmul_lie
 
 @[simp]
 theorem lie_nsmul (n : ℕ) : ⁅x, n • m⁆ = n • ⁅x, m⁆ :=
-  AddMonoidHom.map_nsmul ⟨fun m : M => ⁅x, m⁆, lie_zero x, fun _ _ => lie_add _ _ _⟩ _ _
+  AddMonoidHom.map_nsmul ⟨⟨fun m : M => ⁅x, m⁆, lie_zero x⟩, fun _ _ => lie_add _ _ _⟩ _ _
 #align lie_nsmul lie_nsmul
 
 @[simp]
 theorem zsmul_lie (a : ℤ) : ⁅a • x, m⁆ = a • ⁅x, m⁆ :=
-  AddMonoidHom.map_zsmul ⟨fun x : L => ⁅x, m⁆, zero_lie m, fun _ _ => add_lie _ _ _⟩ _ _
+  AddMonoidHom.map_zsmul ⟨⟨fun x : L => ⁅x, m⁆, zero_lie m⟩, fun _ _ => add_lie _ _ _⟩ _ _
 #align zsmul_lie zsmul_lie
 
 @[simp]
 theorem lie_zsmul (a : ℤ) : ⁅x, a • m⁆ = a • ⁅x, m⁆ :=
-  AddMonoidHom.map_zsmul ⟨fun m : M => ⁅x, m⁆, lie_zero x, fun _ _ => lie_add _ _ _⟩ _ _
+  AddMonoidHom.map_zsmul ⟨⟨fun m : M => ⁅x, m⁆, lie_zero x⟩, fun _ _ => lie_add _ _ _⟩ _ _
 #align lie_zsmul lie_zsmul
 
 @[simp]
@@ -212,8 +211,10 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
 instance LieRing.intLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
 #align lie_ring.int_lie_algebra LieRing.intLieAlgebra
 
-instance : LieRingModule L (M →ₗ[R] N)
-    where
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
+
+instance : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
     { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
       map_add' := fun m n => by
@@ -224,15 +225,15 @@ instance : LieRingModule L (M →ₗ[R] N)
   add_lie x y f := by
     ext n
     simp only [add_lie, LinearMap.coe_mk, LinearMap.add_apply, LinearMap.map_add]
-    abel
+    abel_nf
   lie_add x f g := by
     ext n
     simp only [LinearMap.coe_mk, lie_add, LinearMap.add_apply]
-    abel
+    abel_nf
   leibniz_lie x y f := by
     ext n
     simp only [lie_lie, LinearMap.coe_mk, LinearMap.map_sub, LinearMap.add_apply, lie_sub]
-    abel
+    abel_nf
 
 @[simp]
 theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = ⁅x, f m⁆ - f ⁅x, m⁆ :=
@@ -1089,4 +1090,3 @@ theorem symm_trans_self (e : M ≃ₗ⁅R,L⁆ N) : e.symm.trans e = refl :=
 end LieModuleEquiv
 
 end LieModuleMorphisms
-
