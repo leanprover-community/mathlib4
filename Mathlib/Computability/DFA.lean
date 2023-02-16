@@ -19,7 +19,7 @@ import Mathlib.Tactic.WLOG
 This file contains the definition of a Deterministic Finite Automaton (DFA), a state machine which
 determines whether a string (implemented as a list over an arbitrary alphabet) is in a regular set
 in linear time.
-Note that this definition allows for Automaton with infinite states, a `fintype` instance must be
+Note that this definition allows for Automaton with infinite states, a `Fintype` instance must be
 supplied for true DFA's.
 -/
 
@@ -43,7 +43,7 @@ variable {α : Type u} {σ : Type v} (M : DFA α σ)
 instance [Inhabited σ] : Inhabited (DFA α σ) :=
   ⟨DFA.mk (fun _ _ => default) default ∅⟩
 
-/-- `M.eval_from s x` evaluates `M` with input `x` starting from the state `s`. -/
+/-- `M.evalFrom s x` evaluates `M` with input `x` starting from the state `s`. -/
 def evalFrom (start : σ) : List α → σ :=
   List.foldl M.step start
 #align DFA.eval_from DFA.evalFrom
