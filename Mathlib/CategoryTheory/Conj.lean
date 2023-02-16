@@ -18,8 +18,8 @@ An isomorphism `α : X ≅ Y` defines
 - a monoid isomorphism `conj : End X ≃* End Y` by `α.conj f = α.inv ≫ f ≫ α.hom`;
 - a group isomorphism `conj_Aut : Aut X ≃* Aut Y` by `α.conj_Aut f = α.symm ≪≫ f ≪≫ α`.
 
-For completeness, we also define `hom_congr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`,
-cf. `equiv.arrow_congr`.
+For completeness, we also define `homCongr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`,
+cf. `Equiv.arrowCongr`.
 -/
 
 
@@ -32,7 +32,7 @@ namespace Iso
 variable {C : Type u} [Category.{v} C]
 
 /-- If `X` is isomorphic to `X₁` and `Y` is isomorphic to `Y₁`, then
-there is a natural bijection between `X ⟶ Y` and `X₁ ⟶ Y₁`. See also `equiv.arrow_congr`. -/
+there is a natural bijection between `X ⟶ Y` and `X₁ ⟶ Y₁`. See also `Equiv.arrowCongr`. -/
 def homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) : (X ⟶ Y) ≃ (X₁ ⟶ Y₁)
     where
   toFun f := α.inv ≫ f ≫ β.hom
@@ -121,41 +121,49 @@ theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
 /-- `conj` defines a group isomorphisms between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y
+set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut CategoryTheory.Iso.conjAut
 
 theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by
   cases f <;> cases α <;> aesop_cat <;> rfl
+set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_apply CategoryTheory.Iso.conjAut_apply
 
 @[simp]
 theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_hom CategoryTheory.Iso.conjAut_hom
 
 @[simp]
 theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
     (α ≪≫ β).conjAut f = β.conjAut (α.conjAut f) := by
   simp only [conjAut_apply, Iso.trans_symm, Iso.trans_assoc]
+set_option linter.uppercaseLean3 false in
 #align category_theory.iso.trans_conj_Aut CategoryTheory.Iso.trans_conjAut
 
 @[simp]
 theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjAut g :=
   α.conjAut.map_mul f g
+set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_mul CategoryTheory.Iso.conjAut_mul
 
 @[simp]
 theorem conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪≫ α.conjAut g :=
   conjAut_mul α g f
+set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_trans CategoryTheory.Iso.conjAut_trans
 
 @[simp]
 theorem conjAut_pow (f : Aut X) (n : ℕ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   α.conjAut.toMonoidHom.map_pow f n
+set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_pow CategoryTheory.Iso.conjAut_pow
 
 @[simp]
 theorem conjAut_zpow (f : Aut X) (n : ℤ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
   α.conjAut.toMonoidHom.map_zpow f n
+set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_zpow CategoryTheory.Iso.conjAut_zpow
 
 end Iso
@@ -177,7 +185,8 @@ theorem map_conj {X Y : C} (α : X ≅ Y) (f : End X) :
 
 theorem map_conjAut (F : C ⥤ D) {X Y : C} (α : X ≅ Y) (f : Aut X) :
     F.mapIso (α.conjAut f) = (F.mapIso α).conjAut (F.mapIso f) := by
-  ext <;> simp only [mapIso_hom, Iso.conjAut_hom, F.map_conj]
+  ext; simp only [mapIso_hom, Iso.conjAut_hom, F.map_conj]
+set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_conj_Aut CategoryTheory.Functor.map_conjAut
 
 -- alternative proof: by simp only [iso.conj_Aut_apply, F.map_iso_trans, F.map_iso_symm]
