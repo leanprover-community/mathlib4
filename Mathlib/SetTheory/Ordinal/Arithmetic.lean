@@ -20,7 +20,7 @@ them into a monoid. One can also define correspondingly a subtraction, a divisio
 function, a power function and a logarithm function.
 
 We also define limit ordinals and prove the basic induction principle on ordinals separating
-successor ordinals and limit ordinals, in `limit_rec_on`.
+successor ordinals and limit ordinals, in `limitRecOn`.
 
 ## Main definitions and results
 
@@ -30,7 +30,7 @@ successor ordinals and limit ordinals, in `limit_rec_on`.
 * `o₁ * o₂` is the lexicographic order on `o₂ × o₁`.
 * `o₁ / o₂` is the ordinal `o` such that `o₁ = o₂ * o + o'` with `o' < o₂`. We also define the
   divisibility predicate, and a modulo operation.
-* `order.succ o = o + 1` is the successor of `o`.
+* `Order.succ o = o + 1` is the successor of `o`.
 * `pred o` if the predecessor of `o`. If `o` is not a successor, we set `pred o = o`.
 
 We also define the power function and the logarithm function on ordinals, and discuss the properties
@@ -38,19 +38,19 @@ of casts of natural numbers of and of `ω` with respect to these operations.
 
 Some properties of the operations are also used to discuss general tools on ordinals:
 
-* `is_limit o`: an ordinal is a limit ordinal if it is neither `0` nor a successor.
-* `limit_rec_on` is the main induction principle of ordinals: if one can prove a property by
+* `IsLimit o`: an ordinal is a limit ordinal if it is neither `0` nor a successor.
+* `limitRecOn` is the main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals.
-* `is_normal`: a function `f : ordinal → ordinal` satisfies `is_normal` if it is strictly increasing
+* `IsNormal`: a function `f : Ordinal → Ordinal` satisfies `IsNormal` if it is strictly increasing
   and order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
   `a < o`.
-* `enum_ord`: enumerates an unbounded set of ordinals by the ordinals themselves.
+* `enumOrd`: enumerates an unbounded set of ordinals by the ordinals themselves.
 * `sup`, `lsub`: the supremum / least strict upper bound of an indexed family of ordinals in
   `Type u`, as an ordinal in `Type u`.
 * `bsup`, `blsub`: the supremum / least strict upper bound of a set of ordinals indexed by ordinals
   less than a given ordinal `o`.
 
-Various other basic arithmetic results are given in `principal.lean` instead.
+Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
 
@@ -1086,19 +1086,19 @@ In many cases, this makes it easy to prove claims about one kind of family via t
 claim on the other. -/
 
 
-/-- Converts a family indexed by a `Type u` to one indexed by an `ordinal.{u}` using a specified
+/-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a specified
 well-ordering. -/
 def bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) :
     ∀ a < type r, α := fun a ha => f (enum r a ha)
 #align ordinal.bfamily_of_family' Ordinal.bfamilyOfFamily'
 
-/-- Converts a family indexed by a `Type u` to one indexed by an `ordinal.{u}` using a well-ordering
+/-- Converts a family indexed by a `Type u` to one indexed by an `Ordinal.{u}` using a well-ordering
 given by the axiom of choice. -/
 def bfamilyOfFamily {ι : Type u} : (ι → α) → ∀ a < type (@WellOrderingRel ι), α :=
   bfamilyOfFamily' WellOrderingRel
 #align ordinal.bfamily_of_family Ordinal.bfamilyOfFamily
 
-/-- Converts a family indexed by an `ordinal.{u}` to one indexed by an `Type u` using a specified
+/-- Converts a family indexed by an `Ordinal.{u}` to one indexed by an `Type u` using a specified
 well-ordering. -/
 def familyOfBfamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
     (f : ∀ a < o, α) : ι → α := fun i =>
@@ -1108,7 +1108,7 @@ def familyOfBfamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {
       exact typein_lt_type r i)
 #align ordinal.family_of_bfamily' Ordinal.familyOfBfamily'
 
-/-- Converts a family indexed by an `ordinal.{u}` to one indexed by a `Type u` using a well-ordering
+/-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a well-ordering
 given by the axiom of choice. -/
 def familyOfBfamily (o : Ordinal) (f : ∀ a < o, α) : o.out.α → α :=
   familyOfBfamily' (· < ·) (type_lt o) f
@@ -1229,7 +1229,7 @@ theorem supₛ_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : supₛ (Set
 #align ordinal.Sup_eq_sup Ordinal.supₛ_eq_sup
 
 /-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
-    inputs, is always bounded above. See `ordinal.lsub` for an explicit bound. -/
+    inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
 theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
   ⟨(supᵢ (succ ∘ card ∘ f)).ord, by
     rintro a ⟨i, rfl⟩
@@ -1410,8 +1410,8 @@ theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' 
 #align ordinal.sup_eq_sup Ordinal.sup_eq_sup
 
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
-    `o : ordinal.{u}`. This is a special case of `sup` over the family provided by
-    `family_of_bfamily`. -/
+    `o : Ordinal.{u}`. This is a special case of `sup` over the family provided by
+    `familyOfBfamily`. -/
 def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
   sup.{_, v} (familyOfBfamily o f)
 #align ordinal.bsup Ordinal.bsup
@@ -1721,7 +1721,7 @@ theorem sup_typein_succ {o : Ordinal} :
 #align ordinal.sup_typein_succ Ordinal.sup_typein_succ
 
 /-- The least strict upper bound of a family of ordinals indexed by the set of ordinals less than
-    some `o : ordinal.{u}`.
+    some `o : Ordinal.{u}`.
 
     This is to `lsub` as `bsup` is to `sup`. -/
 def blsub (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
@@ -2038,8 +2038,8 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
 #align ordinal.mex_lt_ord_succ_mk Ordinal.mex_lt_ord_succ_mk
 
 /-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
-    some `o : ordinal.{u}`. This is a special case of `mex` over the family provided by
-    `family_of_bfamily`.
+    some `o : Ordinal.{u}`. This is a special case of `mex` over the family provided by
+    `familyOfBfamily`.
 
     This is to `mex` as `bsup` is to `sup`. -/
 def bmex (o : Ordinal) (f : ∀ a < o, Ordinal) : Ordinal :=
@@ -2114,7 +2114,7 @@ theorem not_injective_of_ordinal_of_small {α : Type v} [Small.{u} α] (f : Ordi
     ¬Injective f := fun h => not_injective_of_ordinal _ ((equivShrink _).injective.comp h)
 #align not_injective_of_ordinal_of_small not_injective_of_ordinal_of_small
 
-/-- The type of ordinals in universe `u` is not `small.{u}`. This is the type-theoretic analog of
+/-- The type of ordinals in universe `u` is not `Small.{u}`. This is the type-theoretic analog of
 the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>
   @not_injective_of_ordinal_of_small _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
@@ -2134,14 +2134,14 @@ def enumOrd (S : Set Ordinal.{u}) : Ordinal → Ordinal :=
 
 variable {S : Set Ordinal.{u}}
 
-/-- The equation that characterizes `enum_ord` definitionally. This isn't the nicest expression to
-    work with, so consider using `enum_ord_def` instead. -/
+/-- The equation that characterizes `enumOrd` definitionally. This isn't the nicest expression to
+    work with, so consider using `enumOrd_def` instead. -/
 theorem enumOrd_def' (o) :
     enumOrd S o = infₛ (S ∩ Set.Ici (blsub.{u, u} o fun a _ => enumOrd S a)) :=
   lt_wf.fix_eq _ _
 #align ordinal.enum_ord_def' Ordinal.enumOrd_def'
 
-/-- The set in `enum_ord_def'` is nonempty. -/
+/-- The set in `enumOrd_def'` is nonempty. -/
 theorem enumOrd_def'_nonempty (hS : Unbounded (· < ·) S) (a) : (S ∩ Set.Ici a).Nonempty :=
   let ⟨b, hb, hb'⟩ := hS a
   ⟨b, hb, le_of_not_gt hb'⟩
@@ -2165,14 +2165,14 @@ theorem enumOrd_strictMono (hS : Unbounded (· < ·) S) : StrictMono (enumOrd S)
   (lt_blsub.{u, u} _ _ h).trans_le (blsub_le_enumOrd hS _)
 #align ordinal.enum_ord_strict_mono Ordinal.enumOrd_strictMono
 
-/-- A more workable definition for `enum_ord`. -/
+/-- A more workable definition for `enumOrd`. -/
 theorem enumOrd_def (o) : enumOrd S o = infₛ (S ∩ { b | ∀ c, c < o → enumOrd S c < b }) := by
   rw [enumOrd_def']
   congr ; ext
   exact ⟨fun h a hao => (lt_blsub.{u, u} _ _ hao).trans_le h, blsub_le⟩
 #align ordinal.enum_ord_def Ordinal.enumOrd_def
 
-/-- The set in `enum_ord_def` is nonempty. -/
+/-- The set in `enumOrd_def` is nonempty. -/
 theorem enumOrd_def_nonempty (hS : Unbounded (· < ·) S) {o} :
     { x | x ∈ S ∧ ∀ c, c < o → enumOrd S c < x }.Nonempty :=
   ⟨_, enumOrd_mem hS o, fun _ b => enumOrd_strictMono hS b⟩
@@ -2252,7 +2252,7 @@ theorem range_enumOrd (hS : Unbounded (· < ·) S) : range (enumOrd S) = S := by
   exact ⟨enumOrd_mem hS, enumOrd_surjective hS⟩
 #align ordinal.range_enum_ord Ordinal.range_enumOrd
 
-/-- A characterization of `enum_ord`: it is the unique strict monotonic function with range `S`. -/
+/-- A characterization of `enumOrd`: it is the unique strict monotonic function with range `S`. -/
 theorem eq_enumOrd (f : Ordinal → Ordinal) (hS : Unbounded (· < ·) S) :
     StrictMono f ∧ range f = S ↔ f = enumOrd S := by
   constructor
