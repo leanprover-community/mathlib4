@@ -8,7 +8,7 @@ Authors: Scott Morrison, Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Arrow
 
 /-!
 # Commutative squares
@@ -185,21 +185,18 @@ theorem mk' (l : sq.LiftStruct) : HasLift sq :=
 
 variable (sq)
 
-theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct :=
-  by
+theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor
   exacts[fun h => h.exists_lift, fun h => mk h]
 #align category_theory.comm_sq.has_lift.iff CategoryTheory.CommSq.HasLift.iff
 
-theorem iff_op : HasLift sq ↔ HasLift sq.op :=
-  by
+theorem iff_op : HasLift sq ↔ HasLift sq.op := by
   rw [Iff, Iff]
   exact Nonempty.congr (lift_struct.op_equiv sq).toFun (lift_struct.op_equiv sq).invFun
 #align category_theory.comm_sq.has_lift.iff_op CategoryTheory.CommSq.HasLift.iff_op
 
 theorem iff_unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
-    (sq : CommSq f i p g) : HasLift sq ↔ HasLift sq.unop :=
-  by
+    (sq : CommSq f i p g) : HasLift sq ↔ HasLift sq.unop := by
   rw [Iff, Iff]
   exact Nonempty.congr (lift_struct.unop_equiv sq).toFun (lift_struct.unop_equiv sq).invFun
 #align category_theory.comm_sq.has_lift.iff_unop CategoryTheory.CommSq.HasLift.iff_unop
