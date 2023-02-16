@@ -432,9 +432,9 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
   | 0 => rfl
   | 1 => rfl
   | char a => rfl
-  | R + S => rfl
-  | R * S => rfl
-  | star R => rfl
+  | R + S => by cases R <;> cases S <;> simp only [map, Function.comp_apply, map_map]
+  | R * S => by cases R <;> cases S <;> simp only [map, Function.comp_apply, map_map]
+  | star R => by cases R <;> simp only [map, Function.comp_apply, map_map]
 #align regular_expression.map_map RegularExpression.map_map
 
 /-- The language of the map is the map of the language. -/
