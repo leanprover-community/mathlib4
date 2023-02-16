@@ -285,9 +285,9 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 #align regular_expression.mul_rmatch_iff RegularExpression.mul_rmatch_iff
 
 theorem star_rmatch_iff (P : RegularExpression α) :
-    ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x = S.join ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t
-  | _ => by
-    rename_i x
+    ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x
+          = S.join ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
+  fun x => by
     have A : ∀ m n : ℕ, n < m + n + 1 := by
       intro m n
       convert add_lt_add_of_le_of_lt (add_le_add (zero_le m) (le_refl n)) zero_lt_one
