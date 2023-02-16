@@ -153,7 +153,7 @@ def matchEpsilon : RegularExpression α → Bool
   | char _ => false
   | P + Q => P.matchEpsilon || Q.matchEpsilon
   | P * Q => P.matchEpsilon && Q.matchEpsilon
-  | star P => true
+  | star _P => true
 #align regular_expression.match_epsilon RegularExpression.matchEpsilon
 
 --include dec
@@ -292,11 +292,11 @@ theorem star_rmatch_iff (P : RegularExpression α) :
       intro m n
       convert add_lt_add_of_le_of_lt (add_le_add (zero_le m) (le_refl n)) zero_lt_one
       simp
-    have IH := fun t (h : List.length t < List.length x) => star_rmatch_iff P t
+    have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
     clear star_rmatch_iff
     constructor
     · cases' x with a x
-      · intro h
+      · intro _h
         use []; dsimp; tauto
       · rw [rmatch, deriv, mul_rmatch_iff]
         rintro ⟨t, u, hs, ht, hu⟩
