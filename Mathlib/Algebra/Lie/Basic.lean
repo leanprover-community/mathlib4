@@ -1034,6 +1034,11 @@ theorem injective (e : M ≃ₗ⁅R,L⁆ N) : Function.Injective e :=
 #align lie_module_equiv.injective LieModuleEquiv.injective
 
 @[simp]
+theorem toEquiv_mk (f : M →ₗ⁅R, L⁆ N) (g : N → M) (h₁ h₂) :
+  (mk f g h₁ h₂ : M ≃ N) = Equiv.mk f g h₁ h₂ :=
+rfl
+
+@[simp]
 theorem coe_mk (f : M →ₗ⁅R,L⁆ N) (invFun h₁ h₂) :
     ((⟨f, invFun, h₁, h₂⟩ : M ≃ₗ⁅R,L⁆ N) : M → N) = f :=
   rfl
@@ -1049,17 +1054,13 @@ theorem coe_to_linearEquiv (e : M ≃ₗ⁅R,L⁆ N) : ((e : M ≃ₗ[R] N) : M 
   rfl
 #align lie_module_equiv.coe_to_linear_equiv LieModuleEquiv.coe_to_linearEquiv
 
-theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₗ⁅R,L⁆ N) → M ≃ N) := fun e₁ e₂ h =>
+theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₗ⁅R,L⁆ N) → M ≃ N) :=
   by
-  rcases e₁ with ⟨⟨⟩⟩; rcases e₂ with ⟨⟨⟩⟩
-  have inj := Equiv.mk.inj h
-  dsimp at inj
-  apply LieModuleEquiv.mk.inj_eq.mpr
-  constructor
-  · congr
-    ext
-    rw [inj.1]
-  · exact inj.2
+  rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩
+  intro h
+  simp only [toEquiv_mk, LieModuleHom.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Equiv.mk.injEq] at h
+  congr
+  exacts [h.1, h.2]
 #align lie_module_equiv.to_equiv_injective LieModuleEquiv.toEquiv_injective
 
 @[ext]
