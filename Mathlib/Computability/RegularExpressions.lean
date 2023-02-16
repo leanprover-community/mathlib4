@@ -397,9 +397,7 @@ instance (P : RegularExpression α) : DecidablePred P.matches' := by
   intro x
   change Decidable (x ∈ P.matches')
   rw [← rmatch_iff_matches']
-  --exact Eq.decidable _ _
-
---omit dec
+  exact instDecidableEqBool (rmatch P x) True
 
 /-- Map the alphabet of a regular expression. -/
 @[simp]
