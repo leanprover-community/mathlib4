@@ -15,19 +15,19 @@ import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 The goal is to construct a left-adjoint to the inclusion of complete Hausdorff uniform spaces
 into all uniform spaces. Any uniform space `α` gets a completion `Completion α` and a morphism
-(ie. uniformly continuous map) `coe : α → Completion α` which solves the universal
+(ie. uniformly continuous map) `(↑) : α → Completion α` which solves the universal
 mapping problem of factorizing morphisms from `α` to any complete Hausdorff uniform space `β`.
 It means any uniformly continuous `f : α → β` gives rise to a unique morphism
-`Completion.extension f : Completion α → β` such that `f = Completion.extension f ∘ coe`.
+`Completion.extension f : Completion α → β` such that `f = Completion.extension f ∘ (↑)`.
 Actually `Completion.extension f` is defined for all maps from `α` to `β` but it has the desired
 properties only if `f` is uniformly continuous.
 
-Beware that `coe` is not injective if `α` is not Hausdorff. But its image is always
+Beware that `(↑)` is not injective if `α` is not Hausdorff. But its image is always
 dense. The adjoint functor acting on morphisms is then constructed by the usual abstract nonsense.
 For every uniform spaces `α` and `β`, it turns `f : α → β` into a morphism
   `Completion.map f : Completion α → Completion β`
 such that
-  `coe ∘ f = (Completion.map f) ∘ coe`
+  `(↑) ∘ f = (Completion.map f) ∘ (↑)`
 provided `f` is uniformly continuous. This construction is compatible with composition.
 
 In this file we introduce the following concepts:
@@ -389,7 +389,7 @@ instance : CoeTC α (Completion α) :=
   ⟨Quotient.mk' ∘ pureCauchy⟩
 
 -- note [use has_coe_t]
-protected theorem coe_eq : (CoeTC.coe : α → Completion α) = Quotient.mk' ∘ pureCauchy :=
+protected theorem coe_eq : ((↑) : α → Completion α) = Quotient.mk' ∘ pureCauchy :=
   rfl
 #align uniform_space.completion.coe_eq UniformSpace.Completion.coe_eq
 
@@ -405,13 +405,13 @@ theorem comap_coe_eq_uniformity :
   rw [comap_quotient_eq_uniformity, uniformEmbedding_pureCauchy.comap_uniformity]
 #align uniform_space.completion.comap_coe_eq_uniformity UniformSpace.Completion.comap_coe_eq_uniformity
 
-theorem uniformInducing_coe : UniformInducing (CoeTC.coe : α → Completion α) :=
+theorem uniformInducing_coe : UniformInducing ((↑) : α → Completion α) :=
   ⟨comap_coe_eq_uniformity α⟩
 #align uniform_space.completion.uniform_inducing_coe UniformSpace.Completion.uniformInducing_coe
 
 variable {α}
 
-theorem denseRange_coe : DenseRange (CoeTC.coe : α → Completion α) :=
+theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   denseRange_pureCauchy.quotient
 #align uniform_space.completion.dense_range_coe UniformSpace.Completion.denseRange_coe
 
@@ -421,7 +421,7 @@ variable (α)
 def cPkg {α : Type _} [UniformSpace α] : AbstractCompletion α
     where
   space := Completion α
-  coe := CoeTC.coe
+  coe := (↑)
   uniformStruct := by infer_instance
   complete := by infer_instance
   separation := by infer_instance
@@ -440,26 +440,26 @@ theorem nonempty_completion_iff : Nonempty (Completion α) ↔ Nonempty α :=
   cPkg.dense.nonempty_iff.symm
 #align uniform_space.completion.nonempty_completion_iff UniformSpace.Completion.nonempty_completion_iff
 
-theorem uniformContinuous_coe : UniformContinuous (CoeTC.coe : α → Completion α) :=
+theorem uniformContinuous_coe : UniformContinuous ((↑) : α → Completion α) :=
   cPkg.uniformContinuous_coe
 #align uniform_space.completion.uniform_continuous_coe UniformSpace.Completion.uniformContinuous_coe
 
-theorem continuous_coe : Continuous (CoeTC.coe : α → Completion α) :=
+theorem continuous_coe : Continuous ((↑) : α → Completion α) :=
   cPkg.continuous_coe
 #align uniform_space.completion.continuous_coe UniformSpace.Completion.continuous_coe
 
-theorem uniformEmbedding_coe [SeparatedSpace α] : UniformEmbedding (CoeTC.coe : α → Completion α) :=
+theorem uniformEmbedding_coe [SeparatedSpace α] : UniformEmbedding ((↑) : α → Completion α) :=
   { comap_uniformity := comap_coe_eq_uniformity α
     inj := separated_pureCauchy_injective }
 #align uniform_space.completion.uniform_embedding_coe UniformSpace.Completion.uniformEmbedding_coe
 
-theorem coe_injective [SeparatedSpace α] : Function.Injective (CoeTC.coe : α → Completion α) :=
+theorem coe_injective [SeparatedSpace α] : Function.Injective ((↑) : α → Completion α) :=
   UniformEmbedding.inj (uniformEmbedding_coe _)
 #align uniform_space.completion.coe_injective UniformSpace.Completion.coe_injective
 
 variable {α}
 
-theorem denseInducing_coe : DenseInducing (CoeTC.coe : α → Completion α) :=
+theorem denseInducing_coe : DenseInducing ((↑) : α → Completion α) :=
   { (uniformInducing_coe α).inducing with dense := denseRange_coe }
 #align uniform_space.completion.dense_inducing_coe UniformSpace.Completion.denseInducing_coe
 
@@ -474,7 +474,7 @@ instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Complet
   Completion.denseInducing_coe.separableSpace
 #align uniform_space.completion.separable_space_completion UniformSpace.Completion.separableSpace_completion
 
-theorem denseEmbedding_coe [SeparatedSpace α] : DenseEmbedding (CoeTC.coe : α → Completion α) :=
+theorem denseEmbedding_coe [SeparatedSpace α] : DenseEmbedding ((↑) : α → Completion α) :=
   { denseInducing_coe with inj := separated_pureCauchy_injective }
 #align uniform_space.completion.dense_embedding_coe UniformSpace.Completion.denseEmbedding_coe
 
@@ -566,7 +566,7 @@ theorem extension_unique (hf : UniformContinuous f) {g : Completion α → β}
 
 @[simp]
 theorem extension_comp_coe {f : Completion α → β} (hf : UniformContinuous f) :
-    Completion.extension (f ∘ CoeTC.coe) = f :=
+    Completion.extension (f ∘ (↑)) = f :=
   cPkg.extend_comp_coe hf
 #align uniform_space.completion.extension_comp_coe UniformSpace.Completion.extension_comp_coe
 
@@ -632,7 +632,7 @@ quotient. -/
 def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     Completion (SeparationQuotient α) ≃ Completion α := by
   refine'
-    ⟨Completion.extension (SeparationQuotient.lift (CoeTC.coe : α → Completion α)),
+    ⟨Completion.extension (SeparationQuotient.lift ((↑) : α → Completion α)),
       Completion.map Quotient.mk', _, _⟩
   · intro a
     refine' induction_on a (isClosed_eq (continuous_map.comp continuous_extension) continuous_id) _
@@ -649,7 +649,6 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     -- porting note: add SeparationQuotient.lift_mk' for Quotient.mk' ?
     . rw [extension_coe (SeparationQuotient.uniformContinuous_lift _), Quotient.mk',
         SeparationQuotient.lift_mk (uniformContinuous_coe α) _]
-      rfl
     . exact uniformContinuous_quotient_mk
 #align uniform_space.completion.completion_separation_quotient_equiv UniformSpace.Completion.completionSeparationQuotientEquiv
 
