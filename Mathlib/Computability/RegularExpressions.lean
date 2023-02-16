@@ -52,6 +52,15 @@ inductive RegularExpression (α : Type u) : Type u
   | star : RegularExpression α → RegularExpression α
 #align regular_expression RegularExpression
 
+
+-- porting note: `simpNF` gets grumpy about how the `foo_def`s below can simplify these..
+attribute [nolint simpNF] RegularExpression.zero.sizeOf_spec
+attribute [nolint simpNF] RegularExpression.epsilon.sizeOf_spec
+attribute [nolint simpNF] RegularExpression.plus.sizeOf_spec
+attribute [nolint simpNF] RegularExpression.plus.injEq
+attribute [nolint simpNF] RegularExpression.comp.injEq
+attribute [nolint simpNF] RegularExpression.comp.sizeOf_spec
+
 namespace RegularExpression
 
 variable {a b : α}
@@ -99,7 +108,7 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
 
 -- porting note: `matches` is reserved, moved to `matches'`
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
-@[simp]
+@[simp, nolint simpNF]
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
