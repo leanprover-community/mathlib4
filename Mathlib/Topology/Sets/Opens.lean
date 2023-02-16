@@ -160,10 +160,10 @@ instance : CompleteLattice (Opens α) :=
     -- inf
     (fun U V => ⟨↑U ∩ ↑V, U.2.inter V.2⟩)
     (funext₂ fun U V => ext (U.2.inter V.2).interior_eq.symm)
-    -- Sup
+    -- supₛ
     (fun S => ⟨⋃ s ∈ S, ↑s, isOpen_bunionᵢ fun s _ => s.2⟩)
     (funext fun _ => ext supₛ_image.symm)
-    -- Inf
+    -- infₛ
     _ rfl
 
 @[simp]
