@@ -615,7 +615,7 @@ theorem sub_isLimit {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
     rw [lt_sub, add_succ]; exact l.2 _ (lt_sub.1 h)⟩
 #align ordinal.sub_is_limit Ordinal.sub_isLimit
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem one_add_omega : 1 + ω = ω := by
   refine' le_antisymm _ (le_add_left _ _)
   rw [omega, ← lift_one.{_, 0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
@@ -1126,14 +1126,14 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
   bfamilyOfFamily'_typein _ f i
 #align ordinal.bfamily_of_family_typein Ordinal.bfamilyOfFamily_typein
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem familyOfBfamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBfamily' r ho f (enum r i (by rwa [ho])) = f i hi := by
   simp only [familyOfBfamily', typein_enum]
 #align ordinal.family_of_bfamily'_enum Ordinal.familyOfBfamily'_enum
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem familyOfBfamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBfamily o f
         (enum (· < ·) i
@@ -1428,8 +1428,9 @@ theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrde
   sup_eq_sup r _ ho _ f
 #align ordinal.sup_eq_bsup' Ordinal.sup_eq_bsup'
 
-@[simp]
-theorem supₛ_eq_bsup {o} (f : ∀ a < o, Ordinal) : supₛ (brange o f) = bsup o f := by
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+theorem supₛ_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
+    supₛ (brange o f) = bsup.{_, v} o f := by
   congr
   rw [range_familyOfBfamily]
 #align ordinal.Sup_eq_bsup Ordinal.supₛ_eq_bsup
@@ -2883,7 +2884,8 @@ theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a
   · intro c IH
     rw [mul_succ, IH, ← add_assoc, add_assoc _ b, ba, ← mul_succ]
   · intro c l IH
-    have := add_mul_limit_aux ba l IH
+    -- Porting note: Unused.
+    -- have := add_mul_limit_aux ba l IH
     rw [mul_succ, add_mul_limit_aux ba l IH, mul_succ, add_assoc]
 #align ordinal.add_mul_succ Ordinal.add_mul_succ
 
