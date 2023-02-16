@@ -122,7 +122,7 @@ theorem get_eq_get (v : Vector α n) (i : Fin n) :
 
 -- porting notes: `nthLe` deprecated for `get`
 @[deprecated get_eq_get]
-theorem nth_eq_nth_le :
+theorem nth_eq_nthLe :
     ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
   | ⟨_, _⟩, _ => rfl
 
@@ -297,8 +297,9 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [toList_reverse, Fin.val_last, Fin.val_zero]
   rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
-  congr
-  simp; simp
+  · congr
+    simp
+  · simp
 #align vector.reverse_nth_zero Vector.reverse_get_zero
 
 section Scan
@@ -334,7 +335,7 @@ theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v 
   simp only [cons]; rfl
 #align vector.scanl_cons Vector.scanl_cons
 
-/-- The underlying `list` of a `Vector` after a `scanl` is the `List.scanl`
+/-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
 -/
 @[simp]
@@ -355,8 +356,7 @@ theorem toList_scanl : (scanl f b v).toList = List.scanl f b v.toList :=
 and the mapped `f b x : β` as the last value.
 -/
 @[simp]
-theorem scanl_singleton (v : Vector α 1) : scanl f b v = b ::ᵥ f b v.head ::ᵥ nil :=
-  by
+theorem scanl_singleton (v : Vector α 1) : scanl f b v = b ::ᵥ f b v.head ::ᵥ nil := by
   rw [← cons_head_tail v]
   simp only [scanl_cons, scanl_nil, head_cons, singleton_tail]
 #align vector.scanl_singleton Vector.scanl_singleton
@@ -365,8 +365,7 @@ theorem scanl_singleton (v : Vector α 1) : scanl f b v = b ::ᵥ f b v.head ::�
 retrieved via `head`, is the starting value `b : β`.
 -/
 @[simp]
-theorem scanl_head : (scanl f b v).head = b :=
-  by
+theorem scanl_head : (scanl f b v).head = b := by
   cases n
   · have : v = nil := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
@@ -377,15 +376,14 @@ theorem scanl_head : (scanl f b v).head = b :=
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
-function `f : β → α → β` of the `i.cast_succ` element of
+function `f : β → α → β` of the `castSucc i` element of
 `scanl f b v` and `get v i`.
 
 This lemma is the `get` version of `scanl_cons`.
 -/
 @[simp]
 theorem scanl_get (i : Fin n) :
-    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) :=
-  by
+    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
   cases' n with n
   · exact i.elim0
   induction' n with n hn generalizing b
@@ -547,8 +545,7 @@ theorem removeNth_insertNth {v : Vector α n} {i : Fin (n + 1)} :
 theorem removeNth_insertNth' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
       removeNth (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (removeNth i v)
-  | ⟨i, hi⟩, ⟨j, hj⟩ =>
-    by
+  | ⟨i, hi⟩, ⟨j, hj⟩ => by
     dsimp [insertNth, removeNth, Fin.succAbove, Fin.predAbove]
     rw [Subtype.mk_eq_mk]
     simp only [Fin.lt_iff_val_lt_val]
@@ -711,8 +708,7 @@ protected theorem naturality {α β : Type _} (f : α → F β) (x : Vector α n
 
 end Traverse
 
-instance : Traversable.{u} (flip Vector n)
-    where
+instance : Traversable.{u} (flip Vector n) where
   traverse := @Vector.traverse n
   map {α β} := @Vector.map.{u, u} α β n
 

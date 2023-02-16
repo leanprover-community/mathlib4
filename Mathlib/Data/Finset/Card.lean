@@ -18,7 +18,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 
 ## Main declarations
 
-* `Finset.card`: `s.card : ℕ` returns the cardinality of `s : finset α`.
+* `Finset.card`: `s.card : ℕ` returns the cardinality of `s : Finset α`.
 
 ### Induction principles
 
@@ -487,7 +487,7 @@ theorem exists_intermediate_set {A B : Finset α} (i : ℕ) (h₁ : i + card B �
       rintro rfl
       exact not_mem_sdiff_of_mem_right th ha
     rcases ih this z with ⟨B', hB', B'subA', cards⟩
-    exact ⟨B', hB', trans B'subA' (erase_subset _ _), cards⟩
+    exact ⟨B', hB', B'subA'.trans (erase_subset _ _), cards⟩
 #align finset.exists_intermediate_set Finset.exists_intermediate_set
 
 /-- We can shrink `A` to any smaller size. -/

@@ -91,7 +91,7 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 ### Operations on two or more finsets
 
-* `insert` and `finset.cons`: For any `a : α`, `insert s a` returns `s ∪ {a}`. `cons s a h`
+* `insert` and `Finset.cons`: For any `a : α`, `insert s a` returns `s ∪ {a}`. `cons s a h`
   returns the same except that it requires a hypothesis stating that `a` is not already in `s`.
   This does not require decidable equality on the type `α`.
 * `Finset.instUnionFinset`: see "The lattice structure on subsets of finsets"
@@ -1205,8 +1205,8 @@ then it holds for the `Finset` obtained by inserting a new element.
 -/
 @[elab_as_elim]
 protected theorem induction_on {α : Type _} {p : Finset α → Prop} [DecidableEq α] (s : Finset α)
-    (h₁ : p ∅) (h₂ : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : p s :=
-  Finset.induction h₁ h₂ s
+    (empty : p ∅) (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : p s :=
+  Finset.induction empty insert s
 #align finset.induction_on Finset.induction_on
 
 /-- To prove a proposition about `S : Finset α`,
@@ -2492,6 +2492,11 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
   Multiset.decidableDforallMultiset
 #align finset.decidable_dforall_finset Finset.decidableDforallFinset
 
+-- porting notes: In lean3, the above was picked up when decidability of s ⊆ t was needed
+-- in lean4 it seems this is not the case.
+instance decidableSubsetFinset [DecidableEq α] {s t : Finset α} : Decidable (s ⊆ t) :=
+  decidableDforallFinset
+
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type _} [_h : ∀ a, DecidableEq (β a)] :
     DecidableEq (∀ a ∈ s, β a) :=
@@ -3293,7 +3298,7 @@ end ToList
 ### disjUnionᵢ
 
 This section is about the bounded union of a disjoint indexed family `t : α → Finset β` of finite
-sets over a finite set `s : Finset α`. In most cases `finset.bunionᵢ` should be preferred.
+sets over a finite set `s : Finset α`. In most cases `Finset.bunionᵢ` should be preferred.
 -/
 
 
@@ -3385,8 +3390,8 @@ section BUnion
 /-!
 ### bunionᵢ
 
-This section is about the bounded union of an indexed family `t : α → finset β` of finite sets
-over a finite set `s : finset α`.
+This section is about the bounded union of an indexed family `t : α → Finset β` of finite sets
+over a finite set `s : Finset α`.
 -/
 
 -- TODO: should be `bunionᵢ`
@@ -3394,7 +3399,7 @@ over a finite set `s : finset α`.
 variable [DecidableEq β] {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
 /-- `bunionᵢ s t` is the union of `t x` over `x ∈ s`.
-(This was formerly `bind` due to the monad structure on types with `decidable_eq`.) -/
+(This was formerly `bind` due to the monad structure on types with `DecidableEq`.) -/
 protected def bunionᵢ (s : Finset α) (t : α → Finset β) : Finset β :=
   (s.1.bind fun a => (t a).1).toFinset
 #align finset.bUnion Finset.bunionᵢ

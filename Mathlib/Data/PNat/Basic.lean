@@ -145,13 +145,16 @@ def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   left_inv := succPNat_natPred
   right_inv := Nat.natPred_succPNat
 #align equiv.pnat_equiv_nat Equiv.pnatEquivNat
+#align equiv.pnat_equiv_nat_symm_apply Equiv.pnatEquivNat_symm_apply
+#align equiv.pnat_equiv_nat_apply Equiv.pnatEquivNat_apply
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := { fullyApplied := false }) apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
 #align order_iso.pnat_iso_nat OrderIso.pnatIsoNat
+#align order_iso.pnat_iso_nat_apply OrderIso.pnatIsoNat_apply
 
 @[simp]
 theorem _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=
@@ -271,7 +274,7 @@ end deprecated
 -- where the left `^ : ℕ+ → ℕ → ℕ+` was `monoid.has_pow`.
 -- Atm writing `m ^ n` means automatically `(↑m) ^ n`.
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : ((Monoid.Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ((Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 

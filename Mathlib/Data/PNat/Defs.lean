@@ -96,7 +96,7 @@ theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
 @[simp]
 theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
   Subtype.eq <| succ_pred_eq_of_pos n.2
-#align nat._root_.pnat.succ_pnat_nat_pred PNat.succPNat_natPred
+#align pnat.succ_pnat_nat_pred PNat.succPNat_natPred
 
 /-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
@@ -165,7 +165,7 @@ theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
 
 instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
   ⟨a.ne_zero⟩
-#align pnat._root_.ne_zero.pnat NeZero.pnat
+#align ne_zero.pnat NeZero.pnat
 
 theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
   succ_pred_eq_of_pos

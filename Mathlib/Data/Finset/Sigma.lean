@@ -20,8 +20,8 @@ This file defines a few `Finset` constructions on `Σ i, α i`.
 
 * `Finset.sigma`: Given a finset `s` in `ι` and finsets `t i` in each `α i`, `s.sigma t` is the
   finset of the dependent sum `Σ i, α i`
-* `Finset.sigmaLift`: Lifts maps `α i → β i → finset (γ i)` to a map
-  `Σ i, α i → Σ i, β i → finset (Σ i, γ i)`.
+* `Finset.sigmaLift`: Lifts maps `α i → β i → Finset (γ i)` to a map
+  `Σ i, α i → Σ i, β i → Finset (Σ i, γ i)`.
 
 ## TODO
 
@@ -119,7 +119,7 @@ section SigmaLift
 
 variable {α β γ : ι → Type _} [DecidableEq ι]
 
-/-- Lifts maps `α i → β i → finset (γ i)` to a map `Σ i, α i → Σ i, β i → finset (Σ i, γ i)`. -/
+/-- Lifts maps `α i → β i → Finset (γ i)` to a map `Σ i, α i → Σ i, β i → Finset (Σ i, γ i)`. -/
 def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β) :
     Finset (Sigma γ) :=
   dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).map <| Embedding.sigmaMk _) fun _ => ∅

@@ -763,7 +763,7 @@ theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) 
 
 namespace Equiv
 
-/-- Given an equivalence `α` to `β`, produce an equivalence between `finset α` and `finset β`. -/
+/-- Given an equivalence `α` to `β`, produce an equivalence between `Finset α` and `Finset β`. -/
 protected def finsetCongr (e : α ≃ β) : Finset α ≃ Finset β where
   toFun s := s.map e.toEmbedding
   invFun s := s.map e.symm.toEmbedding

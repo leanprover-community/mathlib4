@@ -9,6 +9,7 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
+import Mathlib.Data.Option.NAry
 import Mathlib.Tactic.Lift
 
 /-!
@@ -394,14 +395,12 @@ theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithBot α) =
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithBot α) :=
   { WithBot.partialOrder, @WithBot.orderBot α _ with
-    inf := fun o₁ o₂ => o₁.bind fun a => o₂.map fun b => a ⊓ b,
+    inf := Option.map₂ (· ⊓ ·),
     inf_le_left := fun o₁ o₂ a ha => by
-      simp [map] at ha
-      rcases ha with ⟨b, rfl, c, rfl, rfl⟩
+      rcases Option.mem_map₂_iff.1 ha with ⟨a, b, (rfl : _ = _), (rfl : _ = _), rfl⟩
       exact ⟨_, rfl, inf_le_left⟩,
     inf_le_right := fun o₁ o₂ a ha => by
-      simp [map] at ha
-      rcases ha with ⟨b, rfl, c, rfl, rfl⟩
+      rcases Option.mem_map₂_iff.1 ha with ⟨a, b, (rfl : _ = _), (rfl : _ = _), rfl⟩
       exact ⟨_, rfl, inf_le_right⟩,
     le_inf := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases ha
@@ -1134,14 +1133,12 @@ theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) =
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) :=
   { WithTop.partialOrder with
-    sup := fun o₁ o₂ => o₁.bind fun a => o₂.map fun b => a ⊔ b,
+    sup := Option.map₂ (· ⊔ ·),
     le_sup_left := fun o₁ o₂ a ha => by
-      simp [map] at ha
-      rcases ha with ⟨b, rfl, c, rfl, rfl⟩
+      rcases Option.mem_map₂_iff.1 ha with ⟨a, b, (rfl : _ = _), (rfl : _ = _), rfl⟩
       exact ⟨_, rfl, le_sup_left⟩,
     le_sup_right := fun o₁ o₂ a ha => by
-      simp [map] at ha
-      rcases ha with ⟨b, rfl, c, rfl, rfl⟩
+      rcases Option.mem_map₂_iff.1 ha with ⟨a, b, (rfl : _ = _), (rfl : _ = _), rfl⟩
       exact ⟨_, rfl, le_sup_right⟩,
     sup_le := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases ha
@@ -1290,7 +1287,7 @@ instance _root_.WithBot.trichotomous.gt [Preorder α] [h : IsTrichotomous α (·
 instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
     IsWellOrder (WithBot α) (· > ·) :=
   @WithTop.IsWellOrder.lt αᵒᵈ _ h
-#align with_top._root_.with_bot.is_well_order.gt WithBot.isWellOrder.gt
+#align with_bot.is_well_order.gt WithBot.isWellOrder.gt
 
 instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
   OrderDual.denselyOrdered (WithBot αᵒᵈ)

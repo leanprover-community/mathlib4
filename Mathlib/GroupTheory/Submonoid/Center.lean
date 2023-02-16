@@ -56,7 +56,7 @@ theorem _root_.AddSubmonoid.center_toAddSubsemigroup (M) [AddMonoid M] :
   rfl
 #align add_submonoid.center_to_add_subsemigroup AddSubmonoid.center_toAddSubsemigroup
 
-attribute [to_additive AddSubmonoid.center_to_add_subsemigroup] Submonoid.center_toSubsemigroup
+attribute [to_additive AddSubmonoid.center_toAddSubsemigroup] Submonoid.center_toSubsemigroup
 
 variable {M}
 
@@ -73,7 +73,7 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 #align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
 
 /-- The center of a monoid is commutative. -/
-instance : CommMonoid (center M) :=
+instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMonoid with
     mul_comm := fun _ b => Subtype.ext <| b.prop _ }
 
