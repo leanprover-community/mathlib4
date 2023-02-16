@@ -8,9 +8,9 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Basic
-import Mathbin.CategoryTheory.Equivalence
-import Mathbin.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.EqToHom
 
 /-!
 # Basic API for ulift
