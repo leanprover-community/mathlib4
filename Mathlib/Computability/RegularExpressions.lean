@@ -98,7 +98,7 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
 #align regular_expression.comp_def RegularExpression.comp_def
 
 -- porting note: `matches` is reserved, moved to `matches'`
-/-- `matches P` provides a language which contains all strings that `P` matches -/
+/-- `matches' P` provides a language which contains all strings that `P` matches -/
 @[simp]
 def matches' : RegularExpression α → Language α
   | 0 => 0
@@ -146,7 +146,7 @@ theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'�
   rfl
 #align regular_expression.matches_star RegularExpression.matches'_star
 
-/-- `match_epsilon P` is true if and only if `P` matches the empty string -/
+/-- `matchEpsilon P` is true if and only if `P` matches the empty string -/
 def matchEpsilon : RegularExpression α → Bool
   | 0 => false
   | 1 => true
@@ -200,7 +200,7 @@ theorem deriv_star (P : RegularExpression α) (a : α) : deriv P.star a = deriv 
 #align regular_expression.deriv_star RegularExpression.deriv_star
 
 /-- `P.rmatch x` is true if and only if `P` matches `x`. This is a computable definition equivalent
-  to `matches`. -/
+  to `matches'`. -/
 def rmatch : RegularExpression α → List α → Bool
   | P, [] => matchEpsilon P
   | P, a :: as => rmatch (P.deriv a) as
