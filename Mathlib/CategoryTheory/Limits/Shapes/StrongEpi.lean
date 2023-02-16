@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Balanced
-import Mathbin.CategoryTheory.LiftingProperties.Basic
+import Mathlib.CategoryTheory.Balanced
+import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
 # Strong epimorphisms
@@ -173,15 +173,13 @@ theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
 #align category_theory.strong_mono.of_arrow_iso CategoryTheory.StrongMono.of_arrow_iso
 
 theorem StrongEpi.iff_of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
-    (e : Arrow.mk f ≅ Arrow.mk g) : StrongEpi f ↔ StrongEpi g :=
-  by
+    (e : Arrow.mk f ≅ Arrow.mk g) : StrongEpi f ↔ StrongEpi g := by
   constructor <;> intro
   exacts[strong_epi.of_arrow_iso e, strong_epi.of_arrow_iso e.symm]
 #align category_theory.strong_epi.iff_of_arrow_iso CategoryTheory.StrongEpi.iff_of_arrow_iso
 
 theorem StrongMono.iff_of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
-    (e : Arrow.mk f ≅ Arrow.mk g) : StrongMono f ↔ StrongMono g :=
-  by
+    (e : Arrow.mk f ≅ Arrow.mk g) : StrongMono f ↔ StrongMono g := by
   constructor <;> intro
   exacts[strong_mono.of_arrow_iso e, strong_mono.of_arrow_iso e.symm]
 #align category_theory.strong_mono.iff_of_arrow_iso CategoryTheory.StrongMono.iff_of_arrow_iso
