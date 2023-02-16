@@ -108,8 +108,7 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
 
 -- porting note: `matches` is reserved, moved to `matches'`
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
--- porting note: `simpNF` claims it can "prove" this
-@[simp, nolint simpNF]
+@[simp]
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
@@ -118,6 +117,8 @@ def matches' : RegularExpression α → Language α
   | P * Q => P.matches' * Q.matches'
   | star P => P.matches'∗
 #align regular_expression.matches RegularExpression.matches'
+attribute [nolint simpNF] matches'._eq_4 -- porting note: `simpNF` claims to prove `P + Q` branch
+-- the "proof" is strange: `simp only [matches', add_eq_sup, ge_iff_le, le_eq_subset, sup_eq_union]`
 
 @[simp]
 theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
@@ -134,7 +135,9 @@ theorem matches'_char (a : α) : (char a).matches' = {[a]} :=
   rfl
 #align regular_expression.matches_char RegularExpression.matches'_char
 
-@[simp]
+
+-- porting note: `simpNF` claims it can prove this but the path is super strange
+@[simp, nolint simpNF]
 theorem matches'_add (P Q : RegularExpression α) : (P + Q).matches' = P.matches' + Q.matches' :=
   rfl
 #align regular_expression.matches_add RegularExpression.matches'_add
