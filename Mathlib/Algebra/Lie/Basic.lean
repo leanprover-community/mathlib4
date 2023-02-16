@@ -597,8 +597,11 @@ theorem to_linearEquiv_mk (f : L₁ →ₗ⁅R⁆ L₂) (g h₁ h₂) :
 #align lie_equiv.to_linear_equiv_mk LieEquiv.to_linearEquiv_mk
 
 theorem coe_linearEquiv_injective : Injective ((↑) : (L₁ ≃ₗ⁅R⁆ L₂) → L₁ ≃ₗ[R] L₂) := by
-  intro f₁ f₂ h; cases f₁; cases f₂; dsimp at h; simp only at h
-  congr ; exacts[LieHom.coe_injective h.1, h.2]
+  rintro ⟨⟨⟨⟨f, -⟩, -⟩, -⟩, f_inv⟩ ⟨⟨⟨⟨g, -⟩, -⟩, -⟩, g_inv⟩
+  intro h -- Porting note: TODO understand why `h` cannot be part of the `rintro` above
+  simp only [to_linearEquiv_mk, LinearEquiv.mk.injEq, LinearMap.mk.injEq, AddHom.mk.injEq] at h
+  congr
+  exacts [h.1, h.2]
 #align lie_equiv.coe_linear_equiv_injective LieEquiv.coe_linearEquiv_injective
 
 theorem coe_injective : @Injective (L₁ ≃ₗ⁅R⁆ L₂) (L₁ → L₂) (↑) :=
@@ -622,7 +625,6 @@ instance : Inhabited (L₁ ≃ₗ⁅R⁆ L₁) :=
   ⟨1⟩
 
 /-- Lie algebra equivalences are reflexive. -/
-@[refl]
 def refl : L₁ ≃ₗ⁅R⁆ L₁ :=
   1
 #align lie_equiv.refl LieEquiv.refl
