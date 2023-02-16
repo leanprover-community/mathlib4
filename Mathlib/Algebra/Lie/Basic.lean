@@ -226,19 +226,19 @@ instance : LieRingModule L (M →ₗ[R] N) where
         abel
       map_smul' := fun t m => by
         simp only [smul_sub, LinearMap.map_smul, lie_smul, RingHom.id_apply] }
-  -- Porting note: TODO fill in these sorrys
-  add_lie x y f := by sorry
-    -- ext n
-    -- simp only [add_lie, LinearMap.coe_mk, LinearMap.add_apply, LinearMap.map_add]
-    -- abel_nf
-  lie_add x f g := by sorry
-    -- ext n
-    -- simp only [LinearMap.coe_mk, lie_add, LinearMap.add_apply]
-    -- abel_nf
-  leibniz_lie x y f := by sorry
-    -- ext n
-    -- simp only [lie_lie, LinearMap.coe_mk, LinearMap.map_sub, LinearMap.add_apply, lie_sub]
-    -- abel_nf
+  add_lie x y f := by
+    ext n
+    simp only [add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply, LinearMap.map_add]
+    abel
+  lie_add x f g := by
+    ext n
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, lie_add, LinearMap.add_apply]
+    abel
+  leibniz_lie x y f := by
+    ext n
+    simp only [lie_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.map_sub, LinearMap.add_apply,
+      lie_sub]
+    abel
 
 @[simp]
 theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = ⁅x, f m⁆ - f ⁅x, m⁆ :=

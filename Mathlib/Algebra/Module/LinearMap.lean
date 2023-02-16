@@ -269,7 +269,7 @@ protected def Simps.apply {R S : Type _} [Semiring R] [Semiring S] (σ : R →+*
 initialize_simps_projections LinearMap (toAddHom_toFun → apply)
 
 @[simp]
-theorem coe_mk {σ : R →+* S} (f : M →+ M₃) (h) :
+theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : M → M₃) = f :=
   rfl
 #align linear_map.coe_mk LinearMap.coe_mk
