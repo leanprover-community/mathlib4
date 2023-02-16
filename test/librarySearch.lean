@@ -106,8 +106,8 @@ by library_search using n, r -- exact nsmulRec n r
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)
 
-theorem Bool_eq_iff {A B: Bool} : (A = B) = (A ↔ B)
-  := by (cases A <;> cases B <;> simp)
+theorem Bool_eq_iff {A B: Bool} : (A = B) = (A ↔ B) :=
+  by (cases A <;> cases B <;> simp)
 
-theorem Bool_eq_iff2 {A B: Bool} : (A = B) = (A ↔ B)
-  := by library_search -- exact Bool_eq_iff
+theorem Bool_eq_iff2 {A B: Bool} : (A = B) = (A ↔ B) :=
+  by library_search -- exact Bool_eq_iff
