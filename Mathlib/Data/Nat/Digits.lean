@@ -625,10 +625,10 @@ theorem eleven_dvd_iff :
 
 -- Porting note: Is this proved somewhere in mathlib?
 theorem pow_zero_ {n : ℤ} : n ^ 0 = 1 := by simp
-theorem pow_succ_ {n : ℤ} {p : ℕ} : n ^ (succ p) = (n ^ p) * n := by
+theorem pow_succ_ {n : ℤ} {p : ℕ} : n ^ (succ p) = n * (n ^ p) := by
   induction p
-  case zero => rw [pow_zero_, one_mul, ← one_eq_succ_zero, pow_one]
-  case succ p ih => rw [ih]; rfl
+  case zero => rw [pow_zero_, mul_one, ← one_eq_succ_zero, pow_one]
+  case succ p ih => rw [ih, ← mul_assoc, mul_comm, ← mul_assoc]; rfl
 
 theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digits 10 n).length) :
     11 ∣ n := by
@@ -636,7 +636,7 @@ theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digit
   replace h : Even dig.length := by rwa [List.length_map]
   refine' eleven_dvd_iff.2 ⟨0, (_ : dig.alternatingSum = 0)⟩
   have := dig.alternatingSum_reverse
-  rw [(p.map _).reverse_eq, pow_succ_, h.neg_one_pow, one_mul, neg_one_zsmul] at this
+  rw [(p.map _).reverse_eq, pow_succ_, h.neg_one_pow, mul_one, neg_one_zsmul] at this
   exact eq_zero_of_neg_eq this.symm
 #align nat.eleven_dvd_of_palindrome Nat.eleven_dvd_of_palindrome
 
