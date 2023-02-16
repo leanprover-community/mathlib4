@@ -28,6 +28,9 @@ open Computability
 
 universe u v
 
+-- Porting note: Required as `DFA` is used in mathlib3
+set_option linter.uppercaseLean3 false
+
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
 structure DFA (α : Type u) (σ : Type v) where
