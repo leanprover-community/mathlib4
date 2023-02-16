@@ -1524,7 +1524,8 @@ theorem bsup_zero (f : ∀ a < (0 : Ordinal), Ordinal) : bsup 0 f = 0 :=
   bsup_eq_zero_iff.2 fun i hi => (Ordinal.not_lt_zero i hi).elim
 #align ordinal.bsup_zero Ordinal.bsup_zero
 
-theorem bsup_const {o : Ordinal} (ho : o ≠ 0) (a : Ordinal) : (bsup o fun _ _ => a) = a :=
+theorem bsup_const {o : Ordinal.{u}} (ho : o ≠ 0) (a : Ordinal.{max u v}) :
+    (bsup.{_, v} o fun _ _ => a) = a :=
   le_antisymm (bsup_le fun _ _ => le_rfl) (le_bsup _ 0 (Ordinal.pos_iff_ne_zero.2 ho))
 #align ordinal.bsup_const Ordinal.bsup_const
 
@@ -1866,8 +1867,9 @@ theorem blsub_pos {o : Ordinal} (ho : 0 < o) (f : ∀ a < o, Ordinal) : 0 < blsu
   (Ordinal.zero_le _).trans_lt (lt_blsub f 0 ho)
 #align ordinal.blsub_pos Ordinal.blsub_pos
 
-theorem blsub_type (r : α → α → Prop) [IsWellOrder α r] (f) :
-    blsub (type r) f = lsub fun a => f (typein r a) (typein_lt_type _ _) :=
+theorem blsub_type {α : Type u} (r : α → α → Prop) [IsWellOrder α r]
+    (f : ∀ a < type r, Ordinal.{max u v}) :
+    blsub.{_, v} (type r) f = lsub.{_, v} fun a => f (typein r a) (typein_lt_type _ _) :=
   eq_of_forall_ge_iff fun o => by
     rw [blsub_le_iff, lsub_le_iff] <;>
       exact ⟨fun H b => H _ _, fun H i h => by simpa only [typein_enum] using H (enum r i h)⟩
@@ -1899,7 +1901,7 @@ theorem bsup_id_succ (o) : (bsup.{u, u} (succ o) fun x _ => x) = o :=
 
 theorem blsub_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f ⊆ brange o' g) : blsub.{u, max v w} o f ≤ blsub.{v, max u w} o' g :=
-  bsup_le_of_brange_subset fun a ⟨b, hb, hb'⟩ =>
+  bsup_le_of_brange_subset.{u, v, w} fun a ⟨b, hb, hb'⟩ =>
     by
     obtain ⟨c, hc, hc'⟩ := h ⟨b, hb, rfl⟩
     simp_rw [← hc'] at hb'
@@ -1909,18 +1911,13 @@ theorem blsub_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o
 theorem blsub_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : { o | ∃ i hi, f i hi = o } = { o | ∃ i hi, g i hi = o }) :
     blsub.{u, max v w} o f = blsub.{v, max u w} o' g :=
-  (blsub_le_of_brange_subset h.le).antisymm (blsub_le_of_brange_subset.{v, u, w} h.ge)
+  (blsub_le_of_brange_subset.{u, v, w} h.le).antisymm (blsub_le_of_brange_subset.{v, u, w} h.ge)
 #align ordinal.blsub_eq_of_brange_eq Ordinal.blsub_eq_of_brange_eq
 
-theorem bsup_comp {o o' : Ordinal} {f : ∀ a < o, Ordinal}
-    (hf : ∀ {i j} (hi) (hj), i ≤ j → f i hi ≤ f j hj) {g : ∀ a < o', Ordinal}
-    (hg : blsub o' g = o) :
-    (bsup o' fun a ha =>
-        f (g a ha)
-          (by
-            rw [← hg]
-            apply lt_blsub)) =
-      bsup o f := by
+theorem bsup_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w}}
+    (hf : ∀ {i j} (hi) (hj), i ≤ j → f i hi ≤ f j hj) {g : ∀ a < o', Ordinal.{max u v}}
+    (hg : blsub.{_, u} o' g = o) :
+    (bsup.{_, w} o' fun a ha => f (g a ha) (by rw [← hg]; apply lt_blsub)) = bsup.{_, w} o f := by
   apply le_antisymm <;> refine' bsup_le fun i hi => _
   · apply le_bsup
   · rw [← hg, lt_blsub_iff] at hi
@@ -1928,40 +1925,37 @@ theorem bsup_comp {o o' : Ordinal} {f : ∀ a < o, Ordinal}
     exact (hf _ _ hj').trans (le_bsup _ _ _)
 #align ordinal.bsup_comp Ordinal.bsup_comp
 
-theorem blsub_comp {o o' : Ordinal} {f : ∀ a < o, Ordinal}
-    (hf : ∀ {i j} (hi) (hj), i ≤ j → f i hi ≤ f j hj) {g : ∀ a < o', Ordinal}
-    (hg : blsub o' g = o) :
-    (blsub o' fun a ha =>
-        f (g a ha)
-          (by
-            rw [← hg]
-            apply lt_blsub)) =
-      blsub o f :=
-  @bsup_comp o _ (fun a ha => succ (f a ha)) (fun i j _ _ h => succ_le_succ_iff.2 (hf _ _ h)) g hg
+theorem blsub_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w}}
+    (hf : ∀ {i j} (hi) (hj), i ≤ j → f i hi ≤ f j hj) {g : ∀ a < o', Ordinal.{max u v}}
+    (hg : blsub.{_, u} o' g = o) :
+    (blsub.{_, w} o' fun a ha => f (g a ha) (by rw [← hg]; apply lt_blsub)) = blsub.{_, w} o f :=
+  @bsup_comp.{u, v, w} o _ (fun a ha => succ (f a ha))
+    (fun {_ _} _ _ h => succ_le_succ_iff.2 (hf _ _ h)) g hg
 #align ordinal.blsub_comp Ordinal.blsub_comp
 
-theorem IsNormal.bsup_eq {f} (H : IsNormal f) {o : Ordinal} (h : IsLimit o) :
-    (bsup.{u} o fun x _ => f x) = f o := by
-  rw [← IsNormal.bsup.{u, u} H (fun x _ => x) h.1, bsup_id_limit h.2]
+theorem IsNormal.bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
+    (h : IsLimit o) : (Ordinal.bsup.{_, v} o fun x _ => f x) = f o := by
+  rw [← IsNormal.bsup.{u, u, v} H (fun x _ => x) h.1, bsup_id_limit h.2]
 #align ordinal.is_normal.bsup_eq Ordinal.IsNormal.bsup_eq
 
-theorem IsNormal.blsub_eq {f} (H : IsNormal f) {o : Ordinal} (h : IsLimit o) :
-    (blsub.{u} o fun x _ => f x) = f o := by
-  rw [← H.bsup_eq h, bsup_eq_blsub_of_lt_succ_limit h]
+theorem IsNormal.blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {o : Ordinal.{u}}
+    (h : IsLimit o) : (blsub.{_, v} o fun x _ => f x) = f o := by
+  rw [← IsNormal.bsup_eq.{u, v} H h, bsup_eq_blsub_of_lt_succ_limit h]
   exact fun a _ => H.1 a
 #align ordinal.is_normal.blsub_eq Ordinal.IsNormal.blsub_eq
 
-theorem isNormal_iff_lt_succ_and_bsup_eq {f} :
-    IsNormal f ↔ (∀ a, f a < f (succ a)) ∧ ∀ o, IsLimit o → (bsup o fun x _ => f x) = f o :=
+theorem isNormal_iff_lt_succ_and_bsup_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
+    IsNormal f ↔ (∀ a, f a < f (succ a)) ∧ ∀ o, IsLimit o → (bsup.{_, v} o fun x _ => f x) = f o :=
   ⟨fun h => ⟨h.1, @IsNormal.bsup_eq f h⟩, fun ⟨h₁, h₂⟩ =>
     ⟨h₁, fun o ho a => by
       rw [← h₂ o ho]
       exact bsup_le_iff⟩⟩
 #align ordinal.is_normal_iff_lt_succ_and_bsup_eq Ordinal.isNormal_iff_lt_succ_and_bsup_eq
 
-theorem isNormal_iff_lt_succ_and_blsub_eq {f} :
-    IsNormal f ↔ (∀ a, f a < f (succ a)) ∧ ∀ o, IsLimit o → (blsub o fun x _ => f x) = f o := by
-  rw [is_normal_iff_lt_succ_and_bsup_eq, and_congr_right_iff]
+theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}} :
+    IsNormal f ↔ (∀ a, f a < f (succ a)) ∧
+      ∀ o, IsLimit o → (blsub.{_, v} o fun x _ => f x) = f o := by
+  rw [isNormal_iff_lt_succ_and_bsup_eq.{u, v}, and_congr_right_iff]
   intro h
   constructor <;> intro H o ho <;> have := H o ho <;>
     rwa [← bsup_eq_blsub_of_lt_succ_limit ho fun a _ => h a] at *
@@ -1988,17 +1982,18 @@ def mex {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
   infₛ (Set.range fᶜ)
 #align ordinal.mex Ordinal.mex
 
-theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex f ∉ Set.range f :=
-  cinfₛ_mem (nonempty_compl_range f)
+theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ∉ Set.range f :=
+  cinfₛ_mem (nonempty_compl_range.{_, v} f)
 #align ordinal.mex_not_mem_range Ordinal.mex_not_mem_range
 
 theorem le_mex_of_forall {ι : Type u} {f : ι → Ordinal.{max u v}} {a : Ordinal}
-    (H : ∀ b < a, ∃ i, f i = b) : a ≤ mex f := by
+    (H : ∀ b < a, ∃ i, f i = b) : a ≤ mex.{_, v} f := by
   by_contra' h
   exact mex_not_mem_range f (H _ h)
 #align ordinal.le_mex_of_forall Ordinal.le_mex_of_forall
 
-theorem ne_mex {ι} (f : ι → Ordinal) : ∀ i, f i ≠ mex f := by simpa using mex_not_mem_range f
+theorem ne_mex {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≠ mex.{_, v} f := by
+  simpa using mex_not_mem_range.{_, v} f
 #align ordinal.ne_mex Ordinal.ne_mex
 
 theorem mex_le_of_ne {ι} {f : ι → Ordinal} {a} (ha : ∀ i, f i ≠ a) : mex f ≤ a :=
@@ -2010,12 +2005,12 @@ theorem exists_of_lt_mex {ι} {f : ι → Ordinal} {a} (ha : a < mex f) : ∃ i,
   exact ha.not_le (mex_le_of_ne ha')
 #align ordinal.exists_of_lt_mex Ordinal.exists_of_lt_mex
 
-theorem mex_le_lsub {ι} (f : ι → Ordinal) : mex f ≤ lsub f :=
+theorem mex_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ≤ lsub.{_, v} f :=
   cinfₛ_le' (lsub_not_mem_range f)
 #align ordinal.mex_le_lsub Ordinal.mex_le_lsub
 
-theorem mex_monotone {α β} {f : α → Ordinal} {g : β → Ordinal} (h : Set.range f ⊆ Set.range g) :
-    mex f ≤ mex g := by
+theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β → Ordinal.{max u v}}
+    (h : Set.range f ⊆ Set.range g) : mex.{_, v} f ≤ mex.{_, v} g := by
   refine' mex_le_of_ne fun i hi => _
   cases' h ⟨i, rfl⟩ with j hj
   rw [← hj] at hi
@@ -2027,13 +2022,15 @@ theorem mex_lt_ord_succ_mk {ι} (f : ι → Ordinal) : mex f < (succ (#ι)).ord 
   apply (lt_succ (#ι)).not_le
   have H := fun a => exists_of_lt_mex ((typein_lt_self a).trans_le h)
   let g : (succ (#ι)).ord.out.α → ι := fun a => Classical.choose (H a)
-  have hg : injective g := fun a b h' =>
-    by
-    have Hf : ∀ x, f (g x) = typein (· < ·) x := fun a => Classical.choose_spec (H a)
+  have hg : Injective g := fun a b h' => by
+    have Hf : ∀ x, f (g x) =
+        typein ((· < ·) : (succ (#ι)).ord.out.α → (succ (#ι)).ord.out.α → Prop) x :=
+      fun a => Classical.choose_spec (H a)
     apply_fun f  at h'
     rwa [Hf, Hf, typein_inj] at h'
-  convert Cardinal.mk_le_of_injective hg
-  rw [Cardinal.mk_ord_out]
+  -- Porting note: `convert` & `rw` → `have` & `rwa`
+  have hg' := Cardinal.mk_le_of_injective hg
+  rwa [Cardinal.mk_ord_out (succ (#ι))] at hg'
 #align ordinal.mex_lt_ord_succ_mk Ordinal.mex_lt_ord_succ_mk
 
 /-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
