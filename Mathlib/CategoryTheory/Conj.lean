@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Equiv.Units.Basic
-import Mathbin.CategoryTheory.Endomorphism
+import Mathlib.Algebra.Hom.Equiv.Units.Basic
+import Mathlib.CategoryTheory.Endomorphism
 
 /-!
 # Conjugate morphisms by isomorphisms
