@@ -109,7 +109,8 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} {u : X ⟶ P} {v : Y 
   w := w
 #align category_theory.arrow.hom_mk' CategoryTheory.Arrow.homMk'
 
-/- Porting note : removred simp from reassoc -/
+/- Porting note : was warned simp could prove reassoc'd version. Found simp could not. 
+Added nolint. -/
 @[reassoc (attr := simp, nolint simpNF)]
 theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right :=
   sq.w
@@ -331,6 +332,6 @@ def Arrow.isoOfNatIso {C D : Type _} [Category C] [Category D] {F G : C ⥤ D} (
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
   Arrow.isoMk (e.app f.left) (e.app f.right) (by simp)
 #align category_theory.arrow.iso_of_nat_iso CategoryTheory.Arrow.isoOfNatIso
--- #check @CategoryTheory.Arrow.instCoeHomToQuiverToCategoryStructArrow 
+ 
 end CategoryTheory
 #lint
