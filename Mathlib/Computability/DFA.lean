@@ -8,9 +8,9 @@ Authors: Fox Thomson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.Computability.Language
-import Mathbin.Tactic.NormNum
+import Mathlib.Data.Fintype.Card
+import Mathlib.Computability.Language
+import Mathlib.Tactic.NormNum
 
 /-!
 # Deterministic Finite Automata
@@ -100,8 +100,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
     ∃ q a b c,
       x = a ++ b ++ c ∧
         a.length + b.length ≤ Fintype.card σ ∧
-          b ≠ [] ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t :=
-  by
+          b ≠ [] ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t := by
   obtain ⟨n, m, hneq, heq⟩ :=
     Fintype.exists_ne_map_eq_of_card_lt
       (fun n : Fin (Fintype.card σ + 1) => M.eval_from s (x.take n)) (by norm_num)
@@ -136,8 +135,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
 #align DFA.eval_from_split DFA.evalFrom_split
 
 theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
-    (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s :=
-  by
+    (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
   rw [Language.mem_kstar] at hy
   rcases hy with ⟨S, rfl, hS⟩
   induction' S with a S ih
@@ -154,8 +152,7 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card σ ≤ List.length x) :
     ∃ a b c,
       x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts :=
-  by
+        a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
   obtain ⟨_, a, b, c, hx, hlen, hnil, rfl, hb, hc⟩ := M.eval_from_split hlen rfl
   use a, b, c, hx, hlen, hnil
   intro y hy
