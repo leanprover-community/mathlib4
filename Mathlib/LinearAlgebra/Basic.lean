@@ -1901,11 +1901,11 @@ def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M �
         subst hxy
         simp only [symm_apply_apply, Submodule.coe_mk, coe_coe, hx]⟩
     left_inv := fun x => by
-      simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.to_fun_eq_coe,
+      simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
         LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, SetLike.eta]
     right_inv := fun y => by
       apply SetCoe.ext
-      simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.to_fun_eq_coe,
+      simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
         LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply] }
 #align linear_equiv.submodule_map LinearEquiv.submoduleMap
 

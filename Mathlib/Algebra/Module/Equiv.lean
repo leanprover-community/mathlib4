@@ -228,9 +228,8 @@ theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
   rfl
 #align linear_equiv.coe_to_linear_map LinearEquiv.coe_toLinearMap
 
-@[simp]
-theorem toFun_eq_coe : e.toFun = e :=
-  rfl
+-- porting note: no longer a `simp`
+theorem toFun_eq_coe : e.toFun = e := rfl
 #align linear_equiv.to_fun_eq_coe LinearEquiv.toFun_eq_coe
 
 section
