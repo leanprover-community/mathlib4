@@ -313,7 +313,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
           · simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
           · rename_i ht'; exact helem t' ht'
-    · rintro ⟨S, hsum, helem⟩
+    · rintro ⟨S, hsum, helem⟩ <;> dsimp
       cases' x with a x
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
@@ -322,8 +322,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [eq_self_iff_true, not_true, Ne.def, false_and_iff] at helem
-            cases helem
-          simp only [List.join, List.cons_append] at hsum
+          simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
           refine' ⟨t, U.join, hsum.2, _, _⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
