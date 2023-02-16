@@ -340,7 +340,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             refine' ⟨U, rfl, fun t h => helem t _⟩
             right
             assumption
-  termination_by star_rmatch_iff P => P
+  termination_by star_rmatch_iff P t => (P,t.length)
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
