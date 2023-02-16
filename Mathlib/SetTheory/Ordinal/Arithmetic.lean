@@ -806,9 +806,9 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
 #align ordinal.mul_le_of_limit Ordinal.mul_le_of_limit
 
 theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal ((· * ·) a) :=
-  -- Porting note: `simp only []` is required for beta reduction.
+  -- Porting note: `dsimp only` is required for beta reduction.
   ⟨fun b => by
-      simp only []
+      dsimp only
       rw [mul_succ]
       simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
     fun b l c => mul_le_of_limit l⟩
