@@ -2459,7 +2459,7 @@ theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : (a^b) ∣ (a^c) ↔ b
     opow_dvd_opow _⟩
 #align ordinal.opow_dvd_opow_iff Ordinal.opow_dvd_opow_iff
 
-theorem opow_mul (a b c : Ordinal) : (a^b * c) = ((a^b)^c) := by
+theorem opow_mul (a b c : Ordinal) : a^(b * c) = ((a^b)^c) := by
   by_cases b0 : b = 0; · simp only [b0, zero_mul, opow_zero, one_opow]
   by_cases a0 : a = 0
   · subst a
@@ -2489,7 +2489,7 @@ theorem opow_mul (a b c : Ordinal) : (a^b * c) = ((a^b)^c) := by
 
 /-- The ordinal logarithm is the solution `u` to the equation `x = b ^ u * v + w` where `v < b` and
     `w < b ^ u`. -/
-@[pp_nodot]
+-- @[pp_nodot] -- Porting note: Unknown attribute.
 def log (b : Ordinal) (x : Ordinal) : Ordinal :=
   if h : 1 < b then pred (infₛ { o | x < (b^o) }) else 0
 #align ordinal.log Ordinal.log
@@ -2534,11 +2534,11 @@ theorem log_one_left : ∀ b, log 1 b = 0 :=
 
 theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     succ (log b x) = infₛ { o | x < (b^o) } := by
-  let t := Inf { o | x < (b^o) }
+  let t := infₛ { o | x < (b^o) }
   have : x < (b^t) := cinfₛ_mem (log_nonempty hb)
   rcases zero_or_succ_or_limit t with (h | h | h)
   · refine' ((one_le_iff_ne_zero.2 hx).not_lt _).elim
-    simpa only [h, opow_zero]
+    simpa only [h, opow_zero] using this
   · rw [show log b x = pred t from log_def hb x, succ_pred_iff_is_succ.2 h]
   · rcases(lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
     exact h₁.not_le.elim ((le_cinfₛ_iff'' (log_nonempty hb)).1 le_rfl a h₂)
@@ -2590,7 +2590,7 @@ theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
   · rwa [← Ordinal.le_zero, ← lt_succ_iff, succ_zero, ← lt_opow_iff_log_lt hb ho, opow_one]
 #align ordinal.log_eq_zero Ordinal.log_eq_zero
 
-@[mono]
+-- @[mono] -- Porting note: Unknown attribute.
 theorem log_mono_right (b) {x y : Ordinal} (xy : x ≤ y) : log b x ≤ log b y :=
   if hx : x = 0 then by simp only [hx, log_zero_right, Ordinal.zero_le]
   else
@@ -2620,7 +2620,7 @@ theorem mod_opow_log_lt_self (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : o % (b
 
 theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) :
     log b (o % (b^log b o)) < log b o := by
-  cases eq_or_ne (o % (b^log b o)) 0
+  cases' eq_or_ne (o % (b^log b o)) 0 with h h
   · rw [h, log_zero_right]
     apply log_pos hb ho hbo
   · rw [← succ_le_iff, succ_log_def hb h]
@@ -2652,7 +2652,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hvb : 
   cases' lt_or_gt_of_ne hne with h h
   · rw [← lt_opow_iff_log_lt hb hne'] at h
     exact h.not_le ((le_mul_left _ (Ordinal.pos_iff_ne_zero.2 hv)).trans (le_add_right _ _))
-  · change _ < _ at h
+  · conv at h => change u < log b (b ^ u * v + w)
     rw [← succ_le_iff, ← opow_le_iff_le_log hb hne'] at h
     exact (not_lt_of_le h) (opow_mul_add_lt_opow_succ hvb hw)
 #align ordinal.log_opow_mul_add Ordinal.log_opow_mul_add
@@ -2672,7 +2672,8 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
   by_cases hb : 1 < b
   · rw [← opow_le_iff_le_log hb (mul_ne_zero hx hy), opow_add]
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
-  simp only [log_of_not_one_lt_left hb, zero_add]
+  -- Porting note: `le_refl` is required.
+  simp only [log_of_not_one_lt_left hb, zero_add, le_refl]
 #align ordinal.add_log_le_log_mul Ordinal.add_log_le_log_mul
 
 /-! ### Casting naturals into ordinals, compatibility with operations -/
@@ -2687,14 +2688,14 @@ theorem one_add_nat_cast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
 @[simp, norm_cast]
 theorem nat_cast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
   | 0 => by simp
-  | n + 1 => by rw [Nat.mul_succ, Nat.cast_add, nat_cast_mul, Nat.cast_succ, mul_add_one]
+  | n + 1 => by rw [Nat.mul_succ, Nat.cast_add, nat_cast_mul m n, Nat.cast_succ, mul_add_one]
 #align ordinal.nat_cast_mul Ordinal.nat_cast_mul
 
 @[simp, norm_cast]
-theorem nat_cast_opow (m : ℕ) : ∀ n : ℕ, ((pow m n : ℕ) : Ordinal) = (m^n)
+theorem nat_cast_opow (m : ℕ) : ∀ n : ℕ, ((m ^ n : ℕ) : Ordinal) = (m^n)
   | 0 => by simp
   | n + 1 => by
-    rw [pow_succ', nat_cast_mul, nat_cast_opow, Nat.cast_succ, add_one_eq_succ, opow_succ]
+    rw [pow_succ', nat_cast_mul, nat_cast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
 #align ordinal.nat_cast_opow Ordinal.nat_cast_opow
 
 @[simp, norm_cast]
@@ -2776,25 +2777,30 @@ theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
       by
       rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
       rw [lt_ord, ← lift_card, ← lift_aleph0.{0, u}, lift_lt, ← typein_enum (· < ·) h']
-      exact lt_aleph_0_iff_fintype.2 ⟨Set.fintypeLtNat _⟩
+      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
 #align cardinal.ord_aleph_0 Cardinal.ord_aleph0
 
 @[simp]
 theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
   rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega_le]
-  rwa [← ord_aleph_0, ord_le_ord]
+  rwa [← ord_aleph0, ord_le_ord]
 #align cardinal.add_one_of_aleph_0_le Cardinal.add_one_of_aleph0_le
 
 end Cardinal
 
 namespace Ordinal
 
-theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) : a < b + c ↔ ∃ c' < c, a < b + c' :=
-  by rw [← IsNormal.bsup_eq.{u, u} (add_isNormal b) h, lt_bsup]
+theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
+    a < b + c ↔ ∃ c' < c, a < b + c' := by
+  -- Porting note: `have` & `simp` are required for beta reduction.
+  have := IsNormal.bsup_eq.{u, u} (add_isNormal b) h
+  simp only [] at this
+  -- Porting note: `bex_def` is required.
+  rw [← this, lt_bsup, bex_def]
 #align ordinal.lt_add_of_limit Ordinal.lt_add_of_limit
 
 theorem lt_omega {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
-  simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph_0, card_eq_nat]
+  simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
 #align ordinal.lt_omega Ordinal.lt_omega
 
 theorem nat_lt_omega (n : ℕ) : ↑n < ω :=
@@ -2832,7 +2838,7 @@ theorem sup_nat_cast : sup Nat.cast = ω :=
 
 theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
   | 0 => lt_of_le_of_ne (Ordinal.zero_le o) h.1.symm
-  | n + 1 => h.2 _ (nat_lt_limit n)
+  | n + 1 => h.2 _ (nat_lt_limit h n)
 #align ordinal.nat_lt_limit Ordinal.nat_lt_limit
 
 theorem omega_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
@@ -2858,14 +2864,12 @@ theorem isLimit_iff_omega_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a
 theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
     (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
   le_antisymm
-    ((mul_le_of_limit l).2 fun c' h =>
-      by
+    ((mul_le_of_limit l).2 fun c' h => by
       apply (mul_le_mul_left' (le_succ c') _).trans
       rw [IH _ h]
       apply (add_le_add_left _ _).trans
       · rw [← mul_succ]
         exact mul_le_mul_left' (succ_le_of_lt <| l.2 _ h) _
-      · infer_instance
       · rw [← ba]
         exact le_add_right _ _)
     (mul_le_mul_right' (le_add_right _ _) _)
@@ -2895,11 +2899,11 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
   rw [← H]
   apply add_le_add_left _ a
   by_contra' hb
-  exact (h _ hb).Ne H
+  exact (h _ hb).ne H
 #align ordinal.add_le_of_forall_add_lt Ordinal.add_le_of_forall_add_lt
 
 theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f) :
-    sup.{0, u} (f ∘ Nat.cast) = f ω := by rw [← sup_nat_cast, IsNormal.sup.{0, u, u} hf]
+    Ordinal.sup.{0, u} (f ∘ Nat.cast) = f ω := by rw [← sup_nat_cast, IsNormal.sup.{0, u, u} hf]
 #align ordinal.is_normal.apply_omega Ordinal.IsNormal.apply_omega
 
 @[simp]
@@ -2911,43 +2915,45 @@ theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
 theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
-    exact sup_eq_zero_iff.2 fun n => zero_mul n
+    exact sup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
   · exact (mul_isNormal ho).apply_omega
 #align ordinal.sup_mul_nat Ordinal.sup_mul_nat
 
--- mathport name: ordinal.pow
-local infixr:0 "^" => @pow Ordinal Ordinal Ordinal.hasPow
+-- Porting note: Ambiguous notations.
+-- local infixr:0 "^" => @Pow.pow Ordinal Ordinal Ordinal.instPowOrdinalOrdinal
 
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o^n) = (o^ω) := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)
   · exact (opow_isNormal ho₁).apply_omega
   · rw [one_opow]
     refine' le_antisymm (sup_le fun n => by rw [one_opow]) _
-    convert le_sup _ 0
+    convert le_sup (fun n : ℕ => 1^n) 0
     rw [Nat.cast_zero, opow_zero]
 #align ordinal.sup_opow_nat Ordinal.sup_opow_nat
 
 end Ordinal
 
-namespace Tactic
+-- Porting note: TODO: Port this meta code.
 
-open Ordinal Positivity
+-- namespace Tactic
 
-/-- Extension for the `positivity` tactic: `ordinal.opow` takes positive values on positive inputs.
--/
-@[positivity]
-unsafe def positivity_opow : expr → tactic strictness
-  | q(@Pow.pow _ _ $(inst) $(a) $(b)) => do
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => positive <$> mk_app `` opow_pos [b, p]
-      | _ => failed
-  |-- We already know that `0 ≤ x` for all `x : ordinal`
-    _ =>
-    failed
-#align tactic.positivity_opow tactic.positivity_opow
+-- open Ordinal Mathlib.Meta.Positivity
 
-end Tactic
+-- /-- Extension for the `positivity` tactic: `ordinal.opow` takes positive values on positive inputs.
+-- -/
+-- @[positivity]
+-- unsafe def positivity_opow : expr → tactic strictness
+--   | q(@Pow.pow _ _ $(inst) $(a) $(b)) => do
+--     let strictness_a ← core a
+--     match strictness_a with
+--       | positive p => positive <$> mk_app `` opow_pos [b, p]
+--       | _ => failed
+--   |-- We already know that `0 ≤ x` for all `x : ordinal`
+--     _ =>
+--     failed
+-- #align tactic.positivity_opow Tactic.positivity_opow
+
+-- end Tactic
 
 variable {α : Type u} {r : α → α → Prop} {a b : α}
 
@@ -2980,8 +2986,6 @@ namespace WellFounded
 
 variable (hwf : WellFounded r)
 
-include hwf
-
 /-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
@@ -2998,8 +3002,6 @@ theorem rank_eq :
 theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
   Acc.rank_lt_of_rel _ h
 #align well_founded.rank_lt_of_rel WellFounded.rank_lt_of_rel
-
-omit hwf
 
 theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (rank <| @IsWellFounded.wf α (· < ·) _) := fun _ _ => rank_lt_of_rel _
