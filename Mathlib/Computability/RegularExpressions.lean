@@ -8,9 +8,7 @@ Authors: Fox Thomson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
---import Mathlib.Tactic.Rcases
 import Mathlib.Computability.Language
-import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Regular Expressions
