@@ -111,3 +111,5 @@ theorem Bool_eq_iff {A B: Bool} : (A = B) = (A ↔ B) :=
 
 theorem Bool_eq_iff2 {A B: Bool} : (A = B) = (A ↔ B) :=
   by library_search -- exact Bool_eq_iff
+
+assert_no_sorry Bool_eq_iff2
