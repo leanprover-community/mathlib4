@@ -8,7 +8,7 @@ Authors: Jakob Scholbach, Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.CommSq
+import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Lifting properties
@@ -127,8 +127,7 @@ theorem of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
 #align category_theory.has_lifting_property.of_arrow_iso_left CategoryTheory.HasLiftingProperty.of_arrow_iso_left
 
 theorem of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
-    (e : Arrow.mk p ≅ Arrow.mk p') [hip : HasLiftingProperty i p] : HasLiftingProperty i p' :=
-  by
+    (e : Arrow.mk p ≅ Arrow.mk p') [hip : HasLiftingProperty i p] : HasLiftingProperty i p' := by
   rw [arrow.iso_w' e]
   infer_instance
 #align category_theory.has_lifting_property.of_arrow_iso_right CategoryTheory.HasLiftingProperty.of_arrow_iso_right
@@ -141,8 +140,7 @@ theorem iff_of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
 #align category_theory.has_lifting_property.iff_of_arrow_iso_left CategoryTheory.HasLiftingProperty.iff_of_arrow_iso_left
 
 theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
-    (e : Arrow.mk p ≅ Arrow.mk p') : HasLiftingProperty i p ↔ HasLiftingProperty i p' :=
-  by
+    (e : Arrow.mk p ≅ Arrow.mk p') : HasLiftingProperty i p ↔ HasLiftingProperty i p' := by
   constructor <;> intro
   exacts[of_arrow_iso_right i e, of_arrow_iso_right i e.symm]
 #align category_theory.has_lifting_property.iff_of_arrow_iso_right CategoryTheory.HasLiftingProperty.iff_of_arrow_iso_right
