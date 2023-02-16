@@ -15,15 +15,15 @@ import Mathlib.CategoryTheory.Arrow
 
 This file provide an API for commutative squares in categories.
 If `top`, `left`, `right` and `bottom` are four morphisms which are the edges
-of a square, `comm_sq top left right bottom` is the predicate that this
+of a square, `CommSq top left right bottom` is the predicate that this
 square is commutative.
 
-The structure `comm_sq` is extended in `category_theory/shapes/limits/comm_sq.lean`
-as `is_pullback` and `is_pushout` in order to define pullback and pushout squares.
+The structure `CommSq` is extended in `CategoryTheory/Shapes/Limits/CommSq.lean`
+as `IsPullback` and `IsPushout` in order to define pullback and pushout squares.
 
 ## Future work
 
-Refactor `lift_struct` from `arrow.lean` and lifting properties using `comm_sq.lean`.
+Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lean`.
 
 -/
 
@@ -100,15 +100,11 @@ morphism which makes both triangles commute. -/
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
   l : B ⟶ X
-  fac_left' : i ≫ l = f
-  fac_right' : l ≫ p = g
+  fac_left : i ≫ l = f
+  fac_right: l ≫ p = g
 #align category_theory.comm_sq.lift_struct CategoryTheory.CommSq.LiftStruct
 
 namespace LiftStruct
-
-restate_axiom fac_left'
-
-restate_axiom fac_right'
 
 /-- A `lift_struct` for a commutative square gives a `lift_struct` for the
 corresponding square in the opposite category. -/
@@ -116,8 +112,8 @@ corresponding square in the opposite category. -/
 def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op
     where
   l := l.l.op
-  fac_left' := by rw [← op_comp, l.fac_right]
-  fac_right' := by rw [← op_comp, l.fac_left]
+  fac_left := by rw [← op_comp, l.fac_right]
+  fac_right := by rw [← op_comp, l.fac_left]
 #align category_theory.comm_sq.lift_struct.op CategoryTheory.CommSq.LiftStruct.op
 
 /-- A `lift_struct` for a commutative square in the opposite category
@@ -127,8 +123,8 @@ def unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B �
     (l : LiftStruct sq) : LiftStruct sq.unop
     where
   l := l.l.unop
-  fac_left' := by rw [← unop_comp, l.fac_right]
-  fac_right' := by rw [← unop_comp, l.fac_left]
+  fac_left := by rw [← unop_comp, l.fac_right]
+  fac_right := by rw [← unop_comp, l.fac_left]
 #align category_theory.comm_sq.lift_struct.unop CategoryTheory.CommSq.LiftStruct.unop
 
 /-- Equivalences of `lift_struct` for a square and the corresponding square
@@ -226,3 +222,4 @@ theorem fac_right [hsq : HasLift sq] : sq.lift ≫ p = g :=
 end CommSq
 
 end CategoryTheory
+#lint
