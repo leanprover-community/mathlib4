@@ -222,9 +222,11 @@ import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
+import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EssentialImage
@@ -236,6 +238,7 @@ import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Functor.Default
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Functor.Functorial
+import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Iso
@@ -248,6 +251,7 @@ import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Thin
+import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.Additive.RuzsaCovering
@@ -276,6 +280,7 @@ import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
+import Mathlib.Computability.Language
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
@@ -383,6 +388,7 @@ import Mathlib.Data.Finsupp.ToDfinsupp
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.List
@@ -1105,6 +1111,7 @@ import Mathlib.Topology.Hom.Open
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.Sign
+import Mathlib.Topology.List
 import Mathlib.Topology.LocalExtr
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
