@@ -8,7 +8,7 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Comma
+import Mathlib.CategoryTheory.Comma
 
 /-!
 # The category of arrows
@@ -71,8 +71,7 @@ def mk {X Y : T} (f : X ⟶ Y) : Arrow T where
 #align category_theory.arrow.mk CategoryTheory.Arrow.mk
 
 @[simp]
-theorem mk_eq (f : Arrow T) : Arrow.mk f.Hom = f :=
-  by
+theorem mk_eq (f : Arrow T) : Arrow.mk f.Hom = f := by
   cases f
   rfl
 #align category_theory.arrow.mk_eq CategoryTheory.Arrow.mk_eq
@@ -153,8 +152,7 @@ theorem Hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
   rw [h]
 #align category_theory.arrow.hom.congr_right CategoryTheory.Arrow.Hom.congr_right
 
-theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.Hom = e.inv.left ≫ f.Hom ≫ e.Hom.right :=
-  by
+theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.Hom = e.inv.left ≫ f.Hom ≫ e.Hom.right := by
   have eq := arrow.hom.congr_right e.inv_hom_id
   dsimp at eq
   erw [w_assoc, Eq, category.comp_id]
