@@ -168,3 +168,4 @@ theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
 #align category_theory.map_inv_hom_app_assoc CategoryTheory.map_inv_hom_app_assoc
 
 end CategoryTheory
+

@@ -45,6 +45,7 @@ variable {C : Type _} [Category C]
 is a commuting square.
 -/
 structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop where
+  /-- The square commutes. -/
   w : f ≫ h = g ≫ i
 #align category_theory.comm_sq CategoryTheory.CommSq
 
@@ -92,15 +93,29 @@ alias Functor.map_commSq ← CommSq.map
 
 namespace CommSq
 
+
 variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
-/-- The datum of a lift in a commutative square, i.e. a up-right-diagonal
+/-- Now we consider a square:
+```
+  A ---f---> X
+  |          |
+  i          p
+  |          |
+  v          v
+  B ---g---> Y
+```
+
+The datum of a lift in a commutative square, i.e. a up-right-diagonal
 morphism which makes both triangles commute. -/
 -- Porting note: removed @[nolint has_nonempty_instance]
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
+  /-- The lift. -/
   l : B ⟶ X
+  /-- The upper left triangle commutes. -/
   fac_left : i ≫ l = f
+  /-- The lower right triangle commutes. -/
   fac_right: l ≫ p = g
 #align category_theory.comm_sq.lift_struct CategoryTheory.CommSq.LiftStruct
 
@@ -170,8 +185,10 @@ instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
 
 variable (sq : CommSq f i p g)
 
+
 /-- The assertion that a square has a `lift_struct`. -/
 class HasLift : Prop where
+  /-- Square has a `lift_struct`. -/
   exists_lift : Nonempty sq.LiftStruct
 #align category_theory.comm_sq.has_lift CategoryTheory.CommSq.HasLift
 
@@ -222,4 +239,3 @@ theorem fac_right [hsq : HasLift sq] : sq.lift ≫ p = g :=
 end CommSq
 
 end CategoryTheory
-#lint
