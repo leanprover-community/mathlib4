@@ -8,8 +8,8 @@ Authors: Fox Thomson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Computability.DFA
-import Mathbin.Data.Fintype.Powerset
+import Mathlib.Computability.DFA
+import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Nondeterministic Finite Automata
@@ -115,8 +115,7 @@ def toDFA : DFA α (Set σ) where
 #align NFA.to_DFA NFA.toDFA
 
 @[simp]
-theorem toDFA_correct : M.toDFA.accepts = M.accepts :=
-  by
+theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   ext x
   rw [accepts, DFA.accepts, eval, DFA.eval]
   change List.foldl _ _ _ ∈ { S | _ } ↔ _
@@ -127,8 +126,7 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :
     ∃ a b c,
       x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts :=
-  by
+        a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
   rw [← to_DFA_correct] at hx⊢
   exact M.to_DFA.pumping_lemma hx hlen
 #align NFA.pumping_lemma NFA.pumping_lemma
@@ -148,8 +146,7 @@ def toNFA (M : DFA α σ') : NFA α σ'
 
 @[simp]
 theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
-    M.toNFA.evalFrom {start} s = {M.evalFrom start s} :=
-  by
+    M.toNFA.evalFrom {start} s = {M.evalFrom start s} := by
   change List.foldl M.to_NFA.step_set {start} s = {List.foldl M.step start s}
   induction' s with a s ih generalizing start
   · tauto
@@ -159,8 +156,7 @@ theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
 #align DFA.to_NFA_eval_from_match DFA.toNFA_evalFrom_match
 
 @[simp]
-theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts :=
-  by
+theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by
   ext x
   change (∃ S H, S ∈ M.to_NFA.eval_from {M.start} x) ↔ _
   rw [to_NFA_eval_from_match]
