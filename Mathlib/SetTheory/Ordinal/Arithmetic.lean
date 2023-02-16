@@ -2939,8 +2939,8 @@ end Ordinal
 
 -- open Ordinal Mathlib.Meta.Positivity
 
--- /-- Extension for the `positivity` tactic: `ordinal.opow` takes positive values on positive inputs.
--- -/
+-- /-- Extension for the `positivity` tactic: `ordinal.opow` takes positive values on positive
+-- inputs. -/
 -- @[positivity]
 -- unsafe def positivity_opow : expr → tactic strictness
 --   | q(@Pow.pow _ _ $(inst) $(a) $(b)) => do
