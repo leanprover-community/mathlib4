@@ -1214,6 +1214,7 @@ theorem comp_familyOfBfamily {o} (f : ∀ a < o, α) (g : α → β) :
 
 /-! ### Supremum of a family of ordinals -/
 
+-- Porting note: Universes should be specified in `sup`s.
 
 /-- The supremum of a family of ordinals -/
 def sup {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal.{max u v} :=
@@ -1234,35 +1235,37 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
       (le_csupᵢ (Cardinal.bddAbove_range.{_, v} _) _)))⟩
 #align ordinal.bdd_above_range Ordinal.bddAbove_range
 
-theorem le_sup {ι : Type u} (f : ι → Ordinal) : ∀ i, f i ≤ sup.{_, u} f := fun i =>
-  le_csupₛ (bddAbove_range.{_, u} f) (mem_range_self i)
+theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup.{_, v} f := fun i =>
+  le_csupₛ (bddAbove_range.{_, v} f) (mem_range_self i)
 #align ordinal.le_sup Ordinal.le_sup
 
-theorem sup_le_iff {ι : Type u} {f : ι → Ordinal} {a} : sup.{_, u} f ≤ a ↔ ∀ i, f i ≤ a :=
-  (csupₛ_le_iff' (bddAbove_range.{_, u} f)).trans (by simp)
+theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
+  (csupₛ_le_iff' (bddAbove_range.{_, v} f)).trans (by simp)
 #align ordinal.sup_le_iff Ordinal.sup_le_iff
 
-theorem sup_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i ≤ a) → sup f ≤ a :=
+theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i ≤ a) → sup.{_, v} f ≤ a :=
   sup_le_iff.2
 #align ordinal.sup_le Ordinal.sup_le
 
-theorem lt_sup {ι} {f : ι → Ordinal} {a} : a < sup f ↔ ∃ i, a < f i := by
-  simpa only [not_forall, not_le] using not_congr (@sup_le_iff _ f a)
+theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v} f ↔ ∃ i, a < f i := by
+  simpa only [not_forall, not_le] using not_congr (@sup_le_iff.{_, v} _ f a)
 #align ordinal.lt_sup Ordinal.lt_sup
 
-theorem ne_sup_iff_lt_sup {ι} {f : ι → Ordinal} : (∀ i, f i ≠ sup f) ↔ ∀ i, f i < sup f :=
+theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
+    (∀ i, f i ≠ sup.{_, v} f) ↔ ∀ i, f i < sup.{_, v} f :=
   ⟨fun hf _ => lt_of_le_of_ne (le_sup _ _) (hf _), fun hf _ => ne_of_lt (hf _)⟩
 #align ordinal.ne_sup_iff_lt_sup Ordinal.ne_sup_iff_lt_sup
 
-theorem sup_not_succ_of_ne_sup {ι} {f : ι → Ordinal} (hf : ∀ i, f i ≠ sup f) {a} (hao : a < sup f) :
-    succ a < sup f := by
+theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
+    (hf : ∀ i, f i ≠ sup.{_, v} f) {a} (hao : a < sup.{_, v} f) : succ a < sup.{_, v} f := by
   by_contra' hoa
   exact
     hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 #align ordinal.sup_not_succ_of_ne_sup Ordinal.sup_not_succ_of_ne_sup
 
 @[simp]
-theorem sup_eq_zero_iff {ι} {f : ι → Ordinal} : sup f = 0 ↔ ∀ i, f i = 0 := by
+theorem sup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
+    sup.{_, v} f = 0 ↔ ∀ i, f i = 0 := by
   refine'
     ⟨fun h i => _, fun h =>
       le_antisymm (sup_le fun i => Ordinal.le_zero.2 (h i)) (Ordinal.zero_le _)⟩
@@ -1270,10 +1273,11 @@ theorem sup_eq_zero_iff {ι} {f : ι → Ordinal} : sup f = 0 ↔ ∀ i, f i = 0
   exact le_sup f i
 #align ordinal.sup_eq_zero_iff Ordinal.sup_eq_zero_iff
 
-theorem IsNormal.sup {f} (H : IsNormal f) {ι} (g : ι → Ordinal) [Nonempty ι] :
-    f (sup g) = sup (f ∘ g) :=
+theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
+    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
   eq_of_forall_ge_iff fun a => by
-    rw [sup_le_iff, comp, H.le_set' Set.univ Set.univ_nonempty g] <;> simp [sup_le_iff]
+    rw [sup_le_iff]; simp only [comp]; rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
+      simp [sup_le_iff]
 #align ordinal.is_normal.sup Ordinal.IsNormal.sup
 
 @[simp]
@@ -1300,7 +1304,7 @@ theorem sup_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordina
 
 theorem sup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : sup.{u, max v w} f = sup.{v, max u w} g :=
-  (sup_le_of_range_subset h.le).antisymm (sup_le_of_range_subset.{v, u, w} h.ge)
+  (sup_le_of_range_subset.{u, v, w} h.le).antisymm (sup_le_of_range_subset.{v, u, w} h.ge)
 #align ordinal.sup_eq_of_range_eq Ordinal.sup_eq_of_range_eq
 
 @[simp]
@@ -1328,12 +1332,13 @@ theorem unbounded_range_of_sup_ge {α β : Type u} (r : α → α → Prop) [IsW
 
 theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a ∈ s) :
     a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
-  convert le_sup.{u, u} _ ((@equivShrink s hs) ⟨a, ha⟩)
+  convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
 #align ordinal.le_sup_shrink_equiv Ordinal.le_sup_shrink_equiv
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
-  let f : o.out.α → Set.Iio o := fun x => ⟨typein (· < ·) x, typein_lt_self x⟩
+  let f : o.out.α → Set.Iio o :=
+    fun x => ⟨typein ((· < ·) : o.out.α → o.out.α → Prop) x, typein_lt_self x⟩
   let hf : Surjective f := fun b =>
     ⟨enum (· < ·) b.val
         (by
@@ -1365,40 +1370,40 @@ theorem sup_eq_supₛ {s : Set Ordinal.{u}} (hs : Small.{u} s) :
 #align ordinal.sup_eq_Sup Ordinal.sup_eq_supₛ
 
 theorem supₛ_ord {s : Set Cardinal.{u}} (hs : BddAbove s) : (supₛ s).ord = supₛ (ord '' s) :=
-  eq_of_forall_ge_iff fun a =>
-    by
+  eq_of_forall_ge_iff fun a => by
     rw [csupₛ_le_iff'
-        (bdd_above_iff_small.2 (@small_image _ _ _ s (Cardinal.bddAbove_iff_small.1 hs))),
+        (bddAbove_iff_small.2 (@small_image _ _ _ s (Cardinal.bddAbove_iff_small.1 hs))),
       ord_le, csupₛ_le_iff' hs]
     simp [ord_le]
 #align ordinal.Sup_ord Ordinal.supₛ_ord
 
-theorem supᵢ_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) : (supᵢ f).ord = ⨆ i, (f i).ord :=
-  by
+theorem supᵢ_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
+    (supᵢ f).ord = ⨆ i, (f i).ord := by
   unfold supᵢ
-  convert Sup_ord hf
+  convert supₛ_ord hf
+  -- Porting note: `change` is required.
+  conv_lhs => change range (ord ∘ f)
   rw [range_comp]
 #align ordinal.supr_ord Ordinal.supᵢ_ord
 
 private theorem sup_le_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop)
     [IsWellOrder ι r] [IsWellOrder ι' r'] {o} (ho : type r = o) (ho' : type r' = o)
-    (f : ∀ a < o, Ordinal) : sup (familyOfBfamily' r ho f) ≤ sup (familyOfBfamily' r' ho' f) :=
-  sup_le fun i =>
-    by
+    (f : ∀ a < o, Ordinal.{max u v}) :
+    sup.{_, v} (familyOfBfamily' r ho f) ≤ sup.{_, v} (familyOfBfamily' r' ho' f) :=
+  sup_le fun i => by
     cases'
       typein_surj r'
         (by
           rw [ho', ← ho]
           exact typein_lt_type r i) with
       j hj
-    simp_rw [family_of_bfamily', ← hj]
+    simp_rw [familyOfBfamily', ← hj]
     apply le_sup
-#align ordinal.sup_le_sup ordinal.sup_le_sup
 
 theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
     [IsWellOrder ι' r'] {o : Ordinal.{u}} (ho : type r = o) (ho' : type r' = o)
     (f : ∀ a < o, Ordinal.{max u v}) :
-    sup (familyOfBfamily' r ho f) = sup (familyOfBfamily' r' ho' f) :=
+    sup.{_, v} (familyOfBfamily' r ho f) = sup.{_, v} (familyOfBfamily' r' ho' f) :=
   sup_eq_of_range_eq.{u, u, v} (by simp)
 #align ordinal.sup_eq_sup Ordinal.sup_eq_sup
 
@@ -1406,24 +1411,25 @@ theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' 
     `o : ordinal.{u}`. This is a special case of `sup` over the family provided by
     `family_of_bfamily`. -/
 def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
-  sup (familyOfBfamily o f)
+  sup.{_, v} (familyOfBfamily o f)
 #align ordinal.bsup Ordinal.bsup
 
 @[simp]
-theorem sup_eq_bsup {o} (f : ∀ a < o, Ordinal) : sup (familyOfBfamily o f) = bsup o f :=
+theorem sup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
+    sup.{_, v} (familyOfBfamily o f) = bsup.{_, v} o f :=
   rfl
 #align ordinal.sup_eq_bsup Ordinal.sup_eq_bsup
 
 @[simp]
-theorem sup_eq_bsup' {o ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o) (f) :
-    sup (familyOfBfamily' r ho f) = bsup o f :=
+theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
+    (f : ∀ a < o, Ordinal.{max u v}) : sup.{_, v} (familyOfBfamily' r ho f) = bsup.{_, v} o f :=
   sup_eq_sup r _ ho _ f
 #align ordinal.sup_eq_bsup' Ordinal.sup_eq_bsup'
 
 @[simp]
 theorem supₛ_eq_bsup {o} (f : ∀ a < o, Ordinal) : supₛ (brange o f) = bsup o f := by
   congr
-  rw [range_family_of_bfamily]
+  rw [range_familyOfBfamily]
 #align ordinal.Sup_eq_bsup Ordinal.supₛ_eq_bsup
 
 @[simp]
