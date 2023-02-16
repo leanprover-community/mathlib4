@@ -218,6 +218,7 @@ import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
@@ -282,6 +283,7 @@ import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
+import Mathlib.Computability.DFA
 import Mathlib.Computability.Language
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
@@ -959,6 +961,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Lists
+import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
