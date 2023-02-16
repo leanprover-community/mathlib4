@@ -1036,7 +1036,7 @@ theorem injective (e : M ≃ₗ⁅R,L⁆ N) : Function.Injective e :=
 @[simp]
 theorem toEquiv_mk (f : M →ₗ⁅R, L⁆ N) (g : N → M) (h₁ h₂) :
   (mk f g h₁ h₂ : M ≃ N) = Equiv.mk f g h₁ h₂ :=
-rfl
+  rfl
 
 @[simp]
 theorem coe_mk (f : M →ₗ⁅R,L⁆ N) (invFun h₁ h₂) :
@@ -1109,9 +1109,7 @@ theorem symm_apply_apply (e : M ≃ₗ⁅R,L⁆ N) : ∀ x, e.symm (e x) = x :=
 
 @[simp]
 theorem symm_symm (e : M ≃ₗ⁅R,L⁆ N) : e.symm.symm = e := by
-  ext
-  apply_fun e.symm using e.symm.injective
-  simp
+  rfl
 #align lie_module_equiv.symm_symm LieModuleEquiv.symm_symm
 
 /-- Lie module equivalences are transitive. -/
