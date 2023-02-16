@@ -340,8 +340,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             refine' ⟨U, rfl, fun t h => helem t _⟩
             right
             assumption
-  -- termination_by'
-  -- ⟨fun L₁ L₂ : List _ => L₁.length < L₂.length, InvImage.wf _ Nat.lt_wfRel⟩
+  termination_by star_rmatch_iff P => P
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
