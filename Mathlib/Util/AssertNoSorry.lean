@@ -8,7 +8,7 @@ import Lean.Elab.Print
 import Lean.Environment
 
 /-!
-# Defines `assert_no_sorry` command.
+# Defines the `assert_no_sorry` command.
 
 Throws an error if the given identifier uses sorryAx.
 -/
