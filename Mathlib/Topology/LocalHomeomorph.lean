@@ -69,32 +69,35 @@ namespace LocalHomeomorph
 
 variable (e : LocalHomeomorph α β) (e' : LocalHomeomorph β γ)
 
+/-- Coercion of a local homeomorphisms to a function. We don't use `e.toFun` because it is actually
+`e.toLocalEquiv.toFun`, so `simp` will apply lemmas about `toLocalEquiv`. While we may want to
+switch to this behavior later, doing it mid-port will break a lot of proofs.  -/
+def toFun' : α → β := e.toFun
+
 /-- Coercion of a `LocalHomeomorph` to function. Note that a `LocalHomeomorph` is not `FunLike`. -/
 instance : CoeFun (LocalHomeomorph α β) fun _ => α → β :=
-  ⟨fun e => e.toFun⟩
+  ⟨fun e => e.toFun'⟩
 
 /-- The inverse of a local homeomorphism -/
-protected def symm : LocalHomeomorph β α :=
-  { e.toLocalEquiv.symm with
-    open_source := e.open_target
-    open_target := e.open_source
-    continuous_toFun := e.continuous_invFun
-    continuous_invFun := e.continuous_toFun }
+protected def symm : LocalHomeomorph β α where
+  toLocalEquiv := e.toLocalEquiv.symm
+  open_source := e.open_target
+  open_target := e.open_source
+  continuous_toFun := e.continuous_invFun
+  continuous_invFun := e.continuous_toFun
 #align local_homeomorph.symm LocalHomeomorph.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
-def Simps.apply (e : LocalHomeomorph α β) : α → β :=
-  e
+def Simps.apply (e : LocalHomeomorph α β) : α → β := e
 #align local_homeomorph.simps.apply LocalHomeomorph.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (e : LocalHomeomorph α β) : β → α :=
-  e.symm
-#align local_homeomorph.simps.symm_apply LocalHomeomorph.Simps.symmApply
+def Simps.symm_apply (e : LocalHomeomorph α β) : β → α := e.symm
+#align local_homeomorph.simps.symm_apply LocalHomeomorph.Simps.symm_apply
 
-initialize_simps_projections LocalHomeomorph (to_local_equiv_to_fun → apply,
-  to_local_equiv_inv_fun → symm_apply, toLocalEquiv_source → source, toLocalEquiv_target → target,
+initialize_simps_projections LocalHomeomorph (toLocalEquiv_toFun → apply,
+  toLocalEquiv_invFun → symm_apply, toLocalEquiv_source → source, toLocalEquiv_target → target,
   -toLocalEquiv)
 
 protected theorem continuousOn : ContinuousOn e e.source :=
@@ -197,17 +200,13 @@ protected theorem surjOn : SurjOn e e.source e.target :=
 #align local_homeomorph.surj_on LocalHomeomorph.surjOn
 
 /-- A homeomorphism induces a local homeomorphism on the whole space -/
-@[simps (config := { mfld_cfg with simpRhs := true })]
-def Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β :=
-  { e.toEquiv.toLocalEquiv with
-    open_source := isOpen_univ
-    open_target := isOpen_univ
-    continuous_toFun := by
-      erw [← continuous_iff_continuousOn_univ]
-      exact e.continuous_toFun
-    continuous_invFun := by
-      erw [← continuous_iff_continuousOn_univ]
-      exact e.continuous_inv_fun }
+@[simps! (config := { mfld_cfg with simpRhs := true })]
+def _root_.Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α β where
+  toLocalEquiv := e.toEquiv.toLocalEquiv
+  open_source := isOpen_univ
+  open_target := isOpen_univ
+  continuous_toFun := e.continuous.continuousOn
+  continuous_invFun := e.symm.continuous.continuousOn
 #align homeomorph.to_local_homeomorph Homeomorph.toLocalHomeomorph
 
 /-- Replace `to_local_equiv` field to provide better definitional equalities. -/
@@ -231,12 +230,9 @@ theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 #align local_homeomorph.source_preimage_target LocalHomeomorph.source_preimage_target
 
+@[deprecated toLocalEquiv_injective]
 theorem eq_of_localEquiv_eq {e e' : LocalHomeomorph α β} (h : e.toLocalEquiv = e'.toLocalEquiv) :
-    e = e' := by
-  cases e
-  cases e'
-  cases h
-  rfl
+    e = e' := toLocalEquiv_injective h
 #align local_homeomorph.eq_of_local_equiv_eq LocalHomeomorph.eq_of_localEquiv_eq
 
 theorem eventually_left_inverse (e : LocalHomeomorph α β) {x} (hx : x ∈ e.source) :
@@ -328,7 +324,7 @@ called `eq_on_source`. -/
 @[ext]
 protected theorem ext (e' : LocalHomeomorph α β) (h : ∀ x, e x = e' x)
     (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
-  eq_of_localEquiv_eq (LocalEquiv.ext h hinv hs)
+  toLocalEquiv_injective (LocalEquiv.ext h hinv hs)
 #align local_homeomorph.ext LocalHomeomorph.ext
 
 protected theorem ext_iff {e e' : LocalHomeomorph α β} :
@@ -352,9 +348,7 @@ theorem symm_target : e.symm.target = e.source :=
   rfl
 #align local_homeomorph.symm_target LocalHomeomorph.symm_target
 
-@[simp, mfld_simps]
-theorem symm_symm : e.symm.symm = e :=
-  eq_of_localEquiv_eq <| by simp
+@[simp, mfld_simps] theorem symm_symm : e.symm.symm = e := rfl
 #align local_homeomorph.symm_symm LocalHomeomorph.symm_symm
 
 /-- A local homeomorphism is continuous at any point of its source -/
@@ -390,7 +384,7 @@ theorem map_nhdsWithin_eq (e : LocalHomeomorph α β) {x} (hx : x ∈ e.source) 
     map e (𝓝[s] x) = map e (𝓝[e.source ∩ s] x) :=
       congr_arg (map e) (e.nhdsWithin_source_inter hx _).symm
     _ = 𝓝[e '' (e.source ∩ s)] e x :=
-      (e.LeftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq (e.left_inv hx)
+      (e.leftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq (e.left_inv hx)
         (e.continuousAt_symm (e.map_source hx)).continuousWithinAt
         (e.continuousAt hx).continuousWithinAt
     
@@ -417,7 +411,7 @@ theorem eventually_nhds' (e : LocalHomeomorph α β) {x : α} (p : α → Prop) 
 theorem eventually_nhdsWithin (e : LocalHomeomorph α β) {x : α} (p : β → Prop) {s : Set α}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p y) ↔ ∀ᶠ x in 𝓝[s] x, p (e x) := by
   refine' Iff.trans _ eventually_map
-  rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.nhdsWithin_target_inter (e.maps_to hx)]
+  rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.nhdsWithin_target_inter (e.mapsTo hx)]
 #align local_homeomorph.eventually_nhds_within LocalHomeomorph.eventually_nhdsWithin
 
 theorem eventually_nhdsWithin' (e : LocalHomeomorph α β) {x : α} (p : α → Prop) {s : Set α}
@@ -437,11 +431,11 @@ theorem preimage_eventuallyEq_target_inter_preimage_inter {e : LocalHomeomorph �
     {t : Set γ} {x : α} {f : α → γ} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
     (ht : t ∈ 𝓝 (f x)) : e.symm ⁻¹' s =ᶠ[𝓝 (e x)] (e.target ∩ e.symm ⁻¹' (s ∩ f ⁻¹' t) : Set β) :=
   by
-  rw [eventually_eq_set, e.eventually_nhds _ hxe]
+  rw [eventuallyEq_set, e.eventually_nhds _ hxe]
   filter_upwards [e.open_source.mem_nhds hxe,
     mem_nhdsWithin_iff_eventually.mp (hf.preimage_mem_nhdsWithin ht)]
   intro y hy hyu
-  simp_rw [mem_inter_iff, mem_preimage, mem_inter_iff, e.maps_to hy, true_and_iff, iff_self_and,
+  simp_rw [mem_inter_iff, mem_preimage, mem_inter_iff, e.mapsTo hy, true_and_iff, iff_self_and,
     e.left_inv hy, iff_true_intro hyu]
 #align local_homeomorph.preimage_eventually_eq_target_inter_preimage_inter LocalHomeomorph.preimage_eventuallyEq_target_inter_preimage_inter
 
@@ -596,7 +590,7 @@ theorem map_nhdsWithin_eq (h : e.IsImage s t) (hx : x ∈ e.source) : map e (�
 #align local_homeomorph.is_image.map_nhds_within_eq LocalHomeomorph.IsImage.map_nhdsWithin_eq
 
 protected theorem closure (h : e.IsImage s t) : e.IsImage (closure s) (closure t) := fun x hx => by
-  simp only [mem_closure_iff_nhdsWithin_neBot, ← h.map_nhdsWithin_eq hx, map_ne_bot_iff]
+  simp only [mem_closure_iff_nhdsWithin_neBot, ← h.map_nhdsWithin_eq hx, map_neBot_iff]
 #align local_homeomorph.is_image.closure LocalHomeomorph.IsImage.closure
 
 protected theorem interior (h : e.IsImage s t) : e.IsImage (interior s) (interior t) := by
@@ -604,7 +598,7 @@ protected theorem interior (h : e.IsImage s t) : e.IsImage (interior s) (interio
 #align local_homeomorph.is_image.interior LocalHomeomorph.IsImage.interior
 
 protected theorem frontier (h : e.IsImage s t) : e.IsImage (frontier s) (frontier t) :=
-  h.closure.diffₓ h.interior
+  h.closure.diff h.interior
 #align local_homeomorph.is_image.frontier LocalHomeomorph.IsImage.frontier
 
 theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.target ∩ t) :=
@@ -657,7 +651,7 @@ theorem preimage_open_of_open_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.targ
 
 /-- The image of an open set in the source is open. -/
 theorem image_open_of_open {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) : IsOpen (e '' s) := by
-  have : e '' s = e.target ∩ e.symm ⁻¹' s := e.to_local_equiv.image_eq_target_inter_inv_preimage h
+  have : e '' s = e.target ∩ e.symm ⁻¹' s := e.toLocalEquiv.image_eq_target_inter_inv_preimage h
   rw [this]
   exact e.continuousOn_symm.preimage_open_of_open e.open_target hs
 #align local_homeomorph.image_open_of_open LocalHomeomorph.image_open_of_open
@@ -669,13 +663,12 @@ theorem image_open_of_open' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.sourc
 
 /-- A `local_equiv` with continuous open forward map and an open source is a `local_homeomorph`. -/
 def ofContinuousOpenRestrict (e : LocalEquiv α β) (hc : ContinuousOn e e.source)
-    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : LocalHomeomorph α β
-    where
+    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : LocalHomeomorph α β where
   toLocalEquiv := e
   open_source := hs
-  open_target := by simpa only [range_restrict, e.image_source_eq_target] using ho.is_open_range
+  open_target := by simpa only [range_restrict, e.image_source_eq_target] using ho.isOpen_range
   continuous_toFun := hc
-  continuous_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.LeftInvOn
+  continuous_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.leftInvOn
 #align local_homeomorph.of_continuous_open_restrict LocalHomeomorph.ofContinuousOpenRestrict
 
 /-- A `local_equiv` with continuous open forward map and an open source is a `local_homeomorph`. -/
@@ -707,7 +700,7 @@ theorem restrOpen_source (s : Set α) (hs : IsOpen s) : (e.restrOpen s hs).sourc
 sure that the restriction is well defined whatever the set s, since local homeomorphisms are by
 definition defined on open sets. In applications where `s` is open, this coincides with the
 restriction of local equivalences -/
-@[simps (config := mfld_cfg) apply symm_apply, simps (config := { attrs := [] }) source target]
+@[simps! (config := mfld_cfg) apply symm_apply, simps! (config := { attrs := [] }) source target]
 protected def restr (s : Set α) : LocalHomeomorph α β :=
   e.restrOpen (interior s) isOpen_interior
 #align local_homeomorph.restr LocalHomeomorph.restr
@@ -722,17 +715,14 @@ theorem restr_source' (s : Set α) (hs : IsOpen s) : (e.restr s).source = e.sour
   rw [e.restr_source, hs.interior_eq]
 #align local_homeomorph.restr_source' LocalHomeomorph.restr_source'
 
-theorem restr_to_local_equiv' (s : Set α) (hs : IsOpen s) :
+theorem restr_toLocalEquiv' (s : Set α) (hs : IsOpen s) :
     (e.restr s).toLocalEquiv = e.toLocalEquiv.restr s := by
-  rw [e.restr_to_local_equiv, hs.interior_eq]
-#align local_homeomorph.restr_to_local_equiv' LocalHomeomorph.restr_to_local_equiv'
+  rw [e.restr_toLocalEquiv, hs.interior_eq]
+#align local_homeomorph.restr_to_local_equiv' LocalHomeomorph.restr_toLocalEquiv'
 
 theorem restr_eq_of_source_subset {e : LocalHomeomorph α β} {s : Set α} (h : e.source ⊆ s) :
-    e.restr s = e := by
-  apply eq_of_local_equiv_eq
-  rw [restr_to_local_equiv]
-  apply LocalEquiv.restr_eq_of_source_subset
-  exact interior_maximal h e.open_source
+    e.restr s = e :=
+  toLocalEquiv_injective <| LocalEquiv.restr_eq_of_source_subset <| interior_maximal h e.open_source
 #align local_homeomorph.restr_eq_of_source_subset LocalHomeomorph.restr_eq_of_source_subset
 
 @[simp, mfld_simps]
@@ -766,13 +756,13 @@ section
 variable {s : Set α} (hs : IsOpen s)
 
 /-- The identity local equiv on a set `s` -/
-@[simps (config := mfld_cfg) apply, simps (config := { attrs := [] }) source target]
-def ofSet (s : Set α) (hs : IsOpen s) : LocalHomeomorph α α :=
-  { LocalEquiv.ofSet s with
-    open_source := hs
-    open_target := hs
-    continuous_toFun := continuous_id.continuousOn
-    continuous_invFun := continuous_id.continuousOn }
+@[simps! (config := mfld_cfg) apply, simps! (config := { attrs := [] }) source target]
+def ofSet (s : Set α) (hs : IsOpen s) : LocalHomeomorph α α where
+  toLocalEquiv := LocalEquiv.ofSet s
+  open_source := hs
+  open_target := hs
+  continuous_toFun := continuous_id.continuousOn
+  continuous_invFun := continuous_id.continuousOn
 #align local_homeomorph.of_set LocalHomeomorph.ofSet
 
 @[simp, mfld_simps]
@@ -793,20 +783,12 @@ end
 
 /-- Composition of two local homeomorphisms when the target of the first and the source of
 the second coincide. -/
-protected def trans' (h : e.target = e'.source) : LocalHomeomorph α γ :=
-  {
-    LocalEquiv.trans' e.toLocalEquiv e'.toLocalEquiv
-      h with
-    open_source := e.open_source
-    open_target := e'.open_target
-    continuous_toFun := by
-      apply e'.continuous_toFun.comp e.continuous_toFun
-      rw [← h]
-      exact e.to_local_equiv.source_subset_preimage_target
-    continuous_invFun := by
-      apply e.continuous_inv_fun.comp e'.continuous_inv_fun
-      rw [h]
-      exact e'.to_local_equiv.target_subset_preimage_source }
+protected def trans' (h : e.target = e'.source) : LocalHomeomorph α γ where
+  toLocalEquiv := LocalEquiv.trans' e.toLocalEquiv e'.toLocalEquiv h
+  open_source := e.open_source
+  open_target := e'.open_target
+  continuous_toFun :=  e'.continuousOn.comp e.continuousOn <| h ▸ e.mapsTo
+  continuous_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.symm_mapsTo
 #align local_homeomorph.trans' LocalHomeomorph.trans'
 
 /-- Composing two local homeomorphisms, by restricting to the maximal domain where their
@@ -1072,7 +1054,7 @@ theorem prod_trans {η : Type _} {ε : Type _} [TopologicalSpace η] [Topologica
     (e : LocalHomeomorph α β) (f : LocalHomeomorph β γ) (e' : LocalHomeomorph δ η)
     (f' : LocalHomeomorph η ε) : (e.Prod e').trans (f.Prod f') = (e.trans f).Prod (e'.trans f') :=
   LocalHomeomorph.eq_of_localEquiv_eq <| by
-    dsimp only [trans_to_local_equiv, prod_to_local_equiv] <;> apply LocalEquiv.prod_trans
+    dsimp only [trans_toLocalEquiv, prod_toLocalEquiv] <;> apply LocalEquiv.prod_trans
 #align local_homeomorph.prod_trans LocalHomeomorph.prod_trans
 
 theorem prod_eq_prod_of_nonempty {e₁ e₁' : LocalHomeomorph α β} {e₂ e₂' : LocalHomeomorph γ δ}
@@ -1134,7 +1116,7 @@ theorem symm_piecewise (e e' : LocalHomeomorph α β) {s : Set α} {t : Set β} 
 #align local_homeomorph.symm_piecewise LocalHomeomorph.symm_piecewise
 
 /-- Combine two `local_homeomorph`s with disjoint sources and disjoint targets. We reuse
-`local_homeomorph.piecewise` then override `to_local_equiv` to `local_equiv.disjoint_union`.
+`local_homeomorph.piecewise` then override `toLocalEquiv` to `local_equiv.disjoint_union`.
 This way we have better definitional equalities for `source` and `target`. -/
 def disjointUnion (e e' : LocalHomeomorph α β) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] (Hs : Disjoint e.source e'.source)
