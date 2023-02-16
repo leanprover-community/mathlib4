@@ -219,10 +219,11 @@ theorem supported_eq_span_single (s : Set α) :
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
     refine' sum_mem fun i il => _
-    convert @smul_mem R (α →₀ R) _ _ _ _ (single i 1) (l i) _
-    · simp
-    apply subset_span
-    apply Set.mem_image_of_mem _ (hl il)
+  -- Porting note: Needed to help this convert quite a bit replacing underscores
+    convert smul_mem (M := α →₀ R) (x := single i 1) (span R ((fun i => single i 1) '' s)) (l i) ?_
+    · simp [span]
+    · apply subset_span
+      apply Set.mem_image_of_mem _ (hl il)
 #align finsupp.supported_eq_span_single Finsupp.supported_eq_span_single
 
 variable (M)
@@ -284,12 +285,13 @@ theorem supported_unionᵢ {δ : Type _} (s : δ → Set α) :
     rwa [LinearMap.range_comp, range_restrictDom, map_top, range_subtype] at this
   rw [range_le_iff_comap, eq_top_iff]
   rintro l ⟨⟩
-  induction l using Finsupp.induction
+  -- Porting note: Was ported as `induction l using Finsupp.induction`
+  refine Finsupp.induction l ?_ ?_
   · exact zero_mem _
-  refine' fun x a l hl a0 => add_mem _
-  by_cases ∃ i, x ∈ s i <;> simp [h]
-  · cases' h with i hi
-    exact le_supᵢ (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+  · refine' fun x a l _ _ => add_mem _
+    by_cases ∃ i, x ∈ s i <;> simp [h]
+    · cases' h with i hi
+      exact le_supᵢ (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
 #align finsupp.supported_Union Finsupp.supported_unionᵢ
 
 theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
@@ -400,7 +402,7 @@ theorem lift_symm_apply (f) (x) : ((lift M R X).symm f) x = f (single x 1) :=
 #align finsupp.lift_symm_apply Finsupp.lift_symm_apply
 
 @[simp]
-theorem lift_apply (f) (g) : ((lift M R X) f) g = g.Sum fun x r => r • f x :=
+theorem lift_apply (f) (g) : ((lift M R X) f) g = g.sum fun x r => r • f x :=
   rfl
 #align finsupp.lift_apply Finsupp.lift_apply
 
@@ -425,8 +427,8 @@ theorem lmapDomain_apply (f : α → α') (l : α →₀ M) :
 #align finsupp.lmap_domain_apply Finsupp.lmapDomain_apply
 
 @[simp]
-theorem lmapDomain_id : (lmapDomain M R id : (α →₀ M) →ₗ[R] α →₀ M) = LinearMap.id :=
-  LinearMap.ext fun l => mapDomain_id
+theorem lmapDomain_id : (lmapDomain M R _root_.id : (α →₀ M) →ₗ[R] α →₀ M) = LinearMap.id :=
+  LinearMap.ext fun _ => mapDomain_id
 #align finsupp.lmap_domain_id Finsupp.lmapDomain_id
 
 theorem lmapDomain_comp (f : α → α') (g : α' → α'') :
@@ -446,28 +448,28 @@ theorem supported_comap_lmapDomain (f : α → α') (s : Set α') :
 theorem lmapDomain_supported [Nonempty α] (f : α → α') (s : Set α) :
     (supported M R s).map (lmapDomain M R f) = supported M R (f '' s) := by
   inhabit α
-  refine'
+  refine
     le_antisymm
       (map_le_iff_le_comap.2 <|
         le_trans (supported_mono <| Set.subset_preimage_image _ _)
-          (supported_comap_lmapDomain _ _ _ _))
-      _
+          (supported_comap_lmapDomain M R _ _))
+      ?_
   intro l hl
-  refine' ⟨(lmap_domain M R (Function.invFunOn f s) : (α' →₀ M) →ₗ[R] α →₀ M) l, fun x hx => _, _⟩
-  · rcases Finset.mem_image.1 (map_domain_support hx) with ⟨c, hc, rfl⟩
+  refine' ⟨(lmapDomain M R (Function.invFunOn f s) : (α' →₀ M) →ₗ[R] α →₀ M) l, fun x hx => _, _⟩
+  · rcases Finset.mem_image.1 (mapDomain_support hx) with ⟨c, hc, rfl⟩
     exact Function.invFunOn_mem (by simpa using hl hc)
-  · rw [← LinearMap.comp_apply, ← lmap_domain_comp]
-    refine' (map_domain_congr fun c hc => _).trans map_domain_id
+  · rw [← LinearMap.comp_apply, ← lmapDomain_comp]
+    refine' (mapDomain_congr fun c hc => _).trans mapDomain_id
     exact Function.invFunOn_eq (by simpa using hl hc)
 #align finsupp.lmap_domain_supported Finsupp.lmapDomain_supported
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (a b «expr ∈ » s) -/
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     (H : ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), f a = f b → a = b) :
-    Disjoint (supported M R s) (lmapDomain M R f).ker := by
+    Disjoint (supported M R s) (ker (lmapDomain M R f)) := by
   rw [disjoint_iff_inf_le]
   rintro l ⟨h₁, h₂⟩
-  rw [SetLike.mem_coe, mem_ker, lmap_domain_apply, map_domain] at h₂
+  rw [SetLike.mem_coe, mem_ker, lmapDomain_apply, mapDomain] at h₂
   simp; ext x
   haveI := Classical.decPred fun x => x ∈ s
   by_cases xs : x ∈ s
