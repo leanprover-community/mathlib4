@@ -292,20 +292,33 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
       rw [← map₂_comp_assoc, mapComp_naturality_right, map₂_comp_assoc, mapComp_naturality_right,
         assoc]
     map₂_associator' := fun f g h => by
+      -- ⊢ map₂_associator_aux (↑F.comp ↑G).obj ... (complicated)
       dsimp
+      /- Lean 3 goal now
+
+      G.map₂ (F.map₂ (α_ f g h).hom) ≫
+    (G.map₂ (F.map_comp f (g ≫ h)) ≫ G.map_comp (F.map f) (F.map (g ≫ h))) ≫
+      G.map (F.map f) ◁ (G.map₂ (F.map_comp g h) ≫ G.map_comp (F.map g) (F.map h)) =
+  (G.map₂ (F.map_comp (f ≫ g) h) ≫ G.map_comp (F.map (f ≫ g)) (F.map h)) ≫
+    (G.map₂ (F.map_comp f g) ≫ G.map_comp (F.map f) (F.map g)) ▷ G.map (F.map h) ≫
+      (α_ (G.map (F.map f)) (G.map (F.map g)) (G.map (F.map h))).hom
+
+      but Lean 4 still a mess
+      -/
       simp only [map₂_associator, ← map₂_comp_assoc, ← mapComp_naturality_right_assoc,
         whiskerLeft_comp, assoc]
       simp only [map₂_associator, map₂_comp, mapComp_naturality_left_assoc, comp_whiskerRight,
         assoc]
+      dsimp
+      simp
       sorry
-    -- delete `a b ` in the next line to get PANIC on Ubuntu 20.04
-    map₂_left_unitor' := fun a b f => by
+    map₂_left_unitor' := fun f => by
       dsimp
-      simp only [map₂_left_unitor, map₂_comp, map_comp_naturality_left_assoc, comp_whisker_right,
+      simp only [map₂_left_unitor, map₂_comp, mapComp_naturality_left_assoc, comp_whiskerRight,
         assoc]
-    map₂_right_unitor' := fun a b f => by
+    map₂_right_unitor' := fun f => by
       dsimp
-      simp only [map₂_right_unitor, map₂_comp, map_comp_naturality_right_assoc, whisker_left_comp,
+      simp only [map₂_right_unitor, map₂_comp, mapComp_naturality_right_assoc, whiskerLeft_comp,
         assoc] }
   #exit
     map_comp := fun f g =>
