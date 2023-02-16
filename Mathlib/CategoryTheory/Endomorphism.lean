@@ -8,10 +8,10 @@ Authors: Yury Kudryashov, Scott Morrison, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.CategoryTheory.Opposites
-import Mathbin.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Opposites
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Endomorphisms
