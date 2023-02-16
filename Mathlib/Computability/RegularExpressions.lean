@@ -108,6 +108,7 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
 
 -- porting note: `matches` is reserved, moved to `matches'`
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
+-- porting note: `simpNF` claims it can "prove" this
 @[simp, nolint simpNF]
 def matches' : RegularExpression α → Language α
   | 0 => 0
