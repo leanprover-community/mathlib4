@@ -75,6 +75,11 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   /-- Naturality of the counit of an adjunction -/
   homEquiv_counit : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y := by aesop_cat
 #align category_theory.adjunction CategoryTheory.Adjunction
+#align category_theory.adjunction.hom_equiv CategoryTheory.Adjunction.homEquiv
+#align category_theory.adjunction.hom_equiv_unit CategoryTheory.Adjunction.homEquiv_unit
+#align category_theory.adjunction.hom_equiv_unit' CategoryTheory.Adjunction.homEquiv_unit
+#align category_theory.adjunction.hom_equiv_counit CategoryTheory.Adjunction.homEquiv_counit
+#align category_theory.adjunction.hom_equiv_counit' CategoryTheory.Adjunction.homEquiv_counit
 
 -- mathport name: «expr ⊣ »
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
@@ -253,6 +258,12 @@ structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
       (homEquiv X Y') (f ≫ g) = (homEquiv X Y) f ≫ G.map g := by
     aesop_cat
 #align category_theory.adjunction.core_hom_equiv CategoryTheory.Adjunction.CoreHomEquiv
+#align category_theory.adjunction.core_hom_equiv.hom_equiv CategoryTheory.Adjunction.CoreHomEquiv.homEquiv
+#align category_theory.adjunction.core_hom_equiv.hom_equiv' CategoryTheory.Adjunction.CoreHomEquiv.homEquiv
+#align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_right CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_right
+#align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_right' CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_right
+#align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_left_symm CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_left_symm
+#align category_theory.adjunction.core_hom_equiv.hom_equiv_naturality_left_symm' CategoryTheory.Adjunction.CoreHomEquiv.homEquiv_naturality_left_symm
 
 namespace CoreHomEquiv
 
@@ -313,6 +324,10 @@ structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
       NatTrans.id (G ⋙ 𝟭 C) := by
     aesop_cat
 #align category_theory.adjunction.core_unit_counit CategoryTheory.Adjunction.CoreUnitCounit
+#align category_theory.adjunction.core_unit_counit.left_triangle' CategoryTheory.Adjunction.CoreUnitCounit.left_triangle
+#align category_theory.adjunction.core_unit_counit.left_triangle CategoryTheory.Adjunction.CoreUnitCounit.left_triangle
+#align category_theory.adjunction.core_unit_counit.right_triangle' CategoryTheory.Adjunction.CoreUnitCounit.right_triangle
+#align category_theory.adjunction.core_unit_counit.right_triangle CategoryTheory.Adjunction.CoreUnitCounit.right_triangle
 
 namespace CoreUnitCounit
 
@@ -347,7 +362,8 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
 
 /-- Construct an adjunction between functors `F` and `G` given a unit and counit for the adjunction
 satisfying the triangle identities. -/
-@[simps!, nolint simpNF]
+
+@[simps!]
 def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G :=
   { adj with
     homEquiv := fun X Y =>
@@ -370,6 +386,11 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G :=
           simp only [id_comp] at t
           exact t } }
 #align category_theory.adjunction.mk_of_unit_counit CategoryTheory.Adjunction.mkOfUnitCounit
+
+/- Porting note: simpNF linter claims these are solved by simp but that 
+is not true -/
+attribute [nolint simpNF] CategoryTheory.Adjunction.mkOfUnitCounit_homEquiv_symm_apply 
+attribute [nolint simpNF] CategoryTheory.Adjunction.mkOfUnitCounit_homEquiv_apply 
 
 /-- The adjunction between the identity functor on a category and itself. -/
 def id : 𝟭 C ⊣ 𝟭 C where
