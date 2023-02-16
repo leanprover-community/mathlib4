@@ -286,7 +286,8 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 
 theorem star_rmatch_iff (P : RegularExpression α) :
     ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x = S.join ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t
-  | x => by
+  | _ => by
+    rename_i x
     have A : ∀ m n : ℕ, n < m + n + 1 := by
       intro m n
       convert add_lt_add_of_le_of_lt (add_le_add (zero_le m) (le_refl n)) zero_lt_one
@@ -295,14 +296,11 @@ theorem star_rmatch_iff (P : RegularExpression α) :
     clear star_rmatch_iff
     constructor
     · cases' x with a x
-      · intro
-        constructor
-        exact []
-        tauto
+      · intro h
+        use []; dsimp; tauto
       · rw [rmatch, deriv, mul_rmatch_iff]
         rintro ⟨t, u, hs, ht, hu⟩
-        have hwf : u.length < (List.cons a x).length :=
-          by
+        have hwf : u.length < (List.cons a x).length := by
           rw [hs, List.length_cons, List.length_append]
           apply A
         rw [IH _ hwf] at hu
@@ -312,12 +310,12 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · simp [hs, hsum]
         · intro t' ht'
           cases' ht' with ht' ht'
-          · rw [ht']
-            exact ⟨by decide, ht⟩
+          · simp only [ne_eq, not_false_iff, true_and, rmatch]
+            exact ht
           · exact helem _ ht'
     · rintro ⟨S, hsum, helem⟩
       cases' x with a x
-      · decide
+      · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
         cases' S with t' U
         · exact ⟨[], [], by tauto⟩
