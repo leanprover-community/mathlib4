@@ -213,17 +213,20 @@ The purpose is to make `FreeAddMonoid.lift_eval_of` true by `rfl`."]
 def prodAux {M} [Monoid M] : List M → M
   | []  => 1
   | (x :: xs) => List.foldl (· * ·) x xs
+#align free_monoid.prod_aux FreeMonoid.prodAux
+#align free_add_monoid.sum_aux FreeAddMonoid.sumAux
 
 @[to_additive]
 lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
   | []  => rfl
   | (_ :: xs) => congr_arg (fun x => List.foldl (· * ·) x xs) (one_mul _).symm
+#align free_monoid.prod_aux_eq FreeMonoid.prodAux_eq
+#align free_add_monoid.sum_aux_eq FreeAddMonoid.sumAux_eq
 
 /-- Equivalence between maps `α → M` and monoid homomorphisms `FreeMonoid α →* M`. -/
 @[to_additive "Equivalence between maps `α → A` and additive monoid homomorphisms
 `FreeAddMonoid α →+ A`."]
-def lift : (α → M) ≃ (FreeMonoid α →* M)
-    where
+def lift : (α → M) ≃ (FreeMonoid α →* M) where
   toFun f :=
   { toFun := fun l ↦ prodAux ((toList l).map f)
     map_one' := rfl
@@ -233,6 +236,11 @@ def lift : (α → M) ≃ (FreeMonoid α →* M)
   right_inv f := hom_eq fun x ↦ rfl
 #align free_monoid.lift FreeMonoid.lift
 #align free_add_monoid.lift FreeAddMonoid.lift
+
+-- porting note: new
+@[to_additive (attr := simp)]
+theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
+prodAux_eq _
 
 @[to_additive (attr := simp)]
 theorem lift_symm_apply (f : FreeMonoid α →* M) : lift.symm f = f ∘ of := rfl

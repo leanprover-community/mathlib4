@@ -64,14 +64,17 @@ variable {α}
 --@[pp_nodot]
 def op : α → αᵒᵖ :=
   id
+#align opposite.op Opposite.op
 
 /-- The canonical map `αᵒᵖ → α`. -/
 -- Porting note: pp_nodot has not been implemented.
 --@[pp_nodot]
 def unop : αᵒᵖ → α :=
   id
+#align opposite.unop Opposite.unop
 
 theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => id
+#align opposite.op_injective Opposite.op_injective
 
 theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun _ _ => id
 #align opposite.unop_injective Opposite.unop_injective
@@ -79,20 +82,24 @@ theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun _ _ 
 @[simp]
 theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
   rfl
+#align opposite.op_unop Opposite.op_unop
 
 @[simp]
 theorem unop_op (x : α) : unop (op x) = x :=
   rfl
+#align opposite.unop_op Opposite.unop_op
 
 -- We could prove these by `Iff.rfl`, but that would make these eligible for `dsimp`. That would be
 -- a bad idea because `Opposite` is irreducible.
 @[simp]
 theorem op_inj_iff (x y : α) : op x = op y ↔ x = y :=
   op_injective.eq_iff
+#align opposite.op_inj_iff Opposite.op_inj_iff
 
 @[simp]
 theorem unop_inj_iff (x y : αᵒᵖ) : unop x = unop y ↔ x = y :=
   unop_injective.eq_iff
+#align opposite.unop_inj_iff Opposite.unop_inj_iff
 
 /-- The type-level equivalence between a type and its opposite. -/
 def equivToOpposite : α ≃ αᵒᵖ where
@@ -100,6 +107,7 @@ def equivToOpposite : α ≃ αᵒᵖ where
   invFun := unop
   left_inv := unop_op
   right_inv := op_unop
+#align opposite.equiv_to_opposite Opposite.equivToOpposite
 
 @[simp]
 theorem equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=
@@ -113,9 +121,11 @@ theorem equivToOpposite_symm_coe : (equivToOpposite.symm : αᵒᵖ → α) = un
 
 theorem op_eq_iff_eq_unop {x : α} {y} : op x = y ↔ x = unop y :=
   equivToOpposite.apply_eq_iff_eq_symm_apply
+#align opposite.op_eq_iff_eq_unop Opposite.op_eq_iff_eq_unop
 
 theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
   equivToOpposite.symm.apply_eq_iff_eq_symm_apply
+#align opposite.unop_eq_iff_eq_op Opposite.unop_eq_iff_eq_op
 
 instance [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
@@ -123,5 +133,6 @@ instance [Inhabited α] : Inhabited αᵒᵖ :=
 /-- A recursor for `Opposite`. Use as `induction x using Opposite.rec`. -/
 @[simp]
 protected def rec {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
+#align opposite.rec Opposite.rec
 
 end Opposite

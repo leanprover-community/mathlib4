@@ -15,17 +15,23 @@ import Mathlib.Tactic.Relation.Trans
 /-! ### alignments from lean 3 `init.core` -/
 
 #align id id -- align this first so idDelta doesn't take priority
-#align idDelta id
+#align id_delta id
 
 #align opt_param optParam
 #align out_param outParam
 
-#align idRhs id
+#align id_rhs id
 #align punit PUnit
 #align punit.star PUnit.unit
+#align unit Unit
 #align unit.star Unit.unit
 
 #align thunk Thunkₓ
+
+#align true True
+#align false False
+#align empty Empty
+#align eq Eq
 
 -- Note: we do not currently auto-align constants.
 #align quot Quot
@@ -35,7 +41,11 @@ import Mathlib.Tactic.Relation.Trans
 
 #align heq HEq
 #align prod Prod
+#align prod.fst Prod.fst
+#align prod.snd Prod.snd
 #align pprod PProd
+#align pprod.fst PProd.fst
+#align pprod.snd PProd.snd
 
 #align and.left And.left
 #align and.right And.right
@@ -49,6 +59,11 @@ attribute [refl] Eq.refl
 attribute [trans] Eq.trans
 attribute [symm] Eq.symm
 
+#align eq.subst Eq.subst
+#align eq.refl Eq.refl
+#align eq.symm Eq.symm
+#align eq.trans Eq.trans
+
 def Prod.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
   fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
@@ -57,12 +72,44 @@ def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ 
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
   fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
 
-#align psum PSum
-#align or.intro_right Or.intro_rightₓ -- reorder implicits
-#align psigma PSigma
+#align sum Sum
+#align sum.inl Sum.inl
+#align sum.inr Sum.inr
 
+#align psum PSum
+#align psum.inl PSum.inl
+#align psum.inr PSum.inr
+
+#align or.intro_right Or.intro_rightₓ -- reorder implicits
+
+#align sigma Sigma
+#align sigma.fst Sigma.fst
+#align sigma.snd Sigma.snd
+
+#align psigma PSigma
+#align psigma.fst PSigma.fst
+#align psigma.snd PSigma.snd
+
+#align bool Bool
 #align bool.ff Bool.false
 #align bool.tt Bool.true
+
+#align subtype Subtype
+#align subtype.val Subtype.val
+#align subtype.property Subtype.property
+
+#align decidable Decidable
+#align decidable_pred DecidablePred
+#align decidable_rel DecidableRel
+#align decidable_eq DecidableEq
+
+#align option Option
+
+#align list List
+#align list.nil List.nil
+#align list.cons List.cons
+
+#align nat Nat
 
 -- attribute [pp_using_anonymous_constructor] Sigma PSigma Subtype PProd And
 
@@ -131,9 +178,6 @@ namespace Combinator
 def I (a : α) := a
 def K (a : α) (_b : β) := a
 def S (x : α → β → γ) (y : α → β) (z : α) := x z (y z)
-#align combinator.I Combinator.I
-#align combinator.K Combinator.K
-#align combinator.S Combinator.S
 
 end Combinator
 
@@ -143,3 +187,6 @@ end Combinator
   | node (left right : BinTree α) : BinTree α
 
 attribute [elab_without_expected_type] BinTree.node BinTree.leaf
+
+#align function.const_apply Function.const_apply
+#align function.comp_apply Function.comp_apply

@@ -22,11 +22,13 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
@@ -48,6 +50,7 @@ import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
@@ -57,6 +60,7 @@ import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
@@ -158,8 +162,6 @@ namespace Tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
-/- E -/ syntax (name := rsuffices) "rsuffices"
-    (ppSpace Std.Tactic.RCases.rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
 
 /- M -/ syntax (name := decide!) "decide!" : tactic
 
@@ -249,9 +251,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 
-/- M -/ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
-  (Tactic.simpArgs)? (ppSpace location)? : tactic
-
 /- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> term) (ppSpace location)? :
   tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? term : tactic
@@ -268,16 +267,14 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- B -/ syntax (name := tidy) "tidy" (config)? : tactic
 /- B -/ syntax (name := tidy?) "tidy?" (config)? : tactic
 
-/- B -/ syntax (name := wlog) "wlog" (" (" &"discharger" " := " term ")")?
-  (ppSpace (colGt ident))? (" : " term)? (" := " term)? (" using " (ident*),+)? : tactic
+/- B -/ syntax (name := wlog) "wlog " binderIdent " : " term
+  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := elementwise!) "elementwise!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveElementwiseProof) "derive_elementwise_proof" : tactic
 
 /- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
-
-/- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
 
@@ -287,11 +284,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- S -/ syntax (name := mvBisim) "mv_bisim" (ppSpace (colGt term))? (" with " binderIdent+)? :
   tactic
-
-/- M -/ syntax (name := continuity) "continuity" (config)? : tactic
-/- M -/ syntax (name := continuity!) "continuity!" (config)? : tactic
-/- M -/ syntax (name := continuity?) "continuity?" (config)? : tactic
-/- M -/ syntax (name := continuity!?) "continuity!?" (config)? : tactic
 
 /- E -/ syntax (name := unitInterval) "unit_interval" : tactic
 

@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Lattice
 # Formal concept analysis
 
 This file defines concept lattices. A concept of a relation `r : α → β → Prop` is a pair of sets
-`s : set α` and `t : set β` such that `s` is the set of all `a : α` that are related to all elements
+`s : Set α` and `t : Set β` such that `s` is the set of all `a : α` that are related to all elements
 of `t`, and `t` is the set of all `b : β` that are related to all elements of `s`.
 
 Ordering the concepts of a relation `r` by inclusion on the first component gives rise to a
@@ -48,13 +48,13 @@ variable {ι : Sort _} {α β γ : Type _} {κ : ι → Sort _} (r : α → β �
 /-! ### Intent and extent -/
 
 
-/-- The intent closure of `s : set α` along a relation `r : α → β → Prop` is the set of all elements
+/-- The intent closure of `s : Set α` along a relation `r : α → β → Prop` is the set of all elements
 which `r` relates to all elements of `s`. -/
 def intentClosure (s : Set α) : Set β :=
   { b | ∀ ⦃a⦄, a ∈ s → r a b }
 #align intent_closure intentClosure
 
-/-- The extent closure of `t : set β` along a relation `r : α → β → Prop` is the set of all elements
+/-- The extent closure of `t : Set β` along a relation `r : α → β → Prop` is the set of all elements
 which `r` relates to all elements of `t`. -/
 def extentClosure (t : Set β) : Set α :=
   { a | ∀ ⦃b⦄, b ∈ t → r a b }
@@ -375,6 +375,7 @@ instance : Inhabited (Concept α β r) :=
 def swap (c : Concept α β r) : Concept β α (swap r) :=
   ⟨c.toProd.swap, c.closure_snd, c.closure_fst⟩
 #align concept.swap Concept.swap
+#align concept.swap_to_prod Concept.swap_toProd
 
 @[simp]
 theorem swap_swap (c : Concept α β r) : c.swap.swap = c :=
@@ -400,5 +401,7 @@ def swapEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.swap r) whe
   right_inv := swap_swap
   map_rel_iff' := swap_le_swap_iff
 #align concept.swap_equiv Concept.swapEquiv
+#align concept.swap_equiv_symm_apply Concept.swapEquiv_symmApply
+#align concept.swap_equiv_apply Concept.swapEquiv_apply
 
 end Concept

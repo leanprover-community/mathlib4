@@ -181,9 +181,9 @@ theorem toFinset_subset {t : Finset α} : hs.toFinset ⊆ t ↔ s ⊆ t := by
 #align set.finite.to_finset_subset Set.Finite.toFinset_subset
 
 @[simp]
-theorem toFinset_sSubset {t : Finset α} : hs.toFinset ⊂ t ↔ s ⊂ t := by
+theorem toFinset_ssubset {t : Finset α} : hs.toFinset ⊂ t ↔ s ⊂ t := by
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
-#align set.finite.to_finset_ssubset Set.Finite.toFinset_sSubset
+#align set.finite.to_finset_ssubset Set.Finite.toFinset_ssubset
 
 @[simp]
 theorem subset_toFinset {s : Finset α} : s ⊆ ht.toFinset ↔ ↑s ⊆ t := by
@@ -191,9 +191,9 @@ theorem subset_toFinset {s : Finset α} : s ⊆ ht.toFinset ↔ ↑s ⊆ t := by
 #align set.finite.subset_to_finset Set.Finite.subset_toFinset
 
 @[simp]
-theorem sSubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := by
+theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := by
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
-#align set.finite.ssubset_to_finset Set.Finite.sSubset_toFinset
+#align set.finite.ssubset_to_finset Set.Finite.ssubset_toFinset
 
 -- @[mono] -- Porting note: mono attribute not yet available
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
@@ -428,7 +428,7 @@ is decidable for this particular `a` we can still get a `Fintype` instance by us
 `Set.fintypeInsertOfNotMem` or `Set.fintypeInsertOfMem`.
 
 This instance pre-dates `Set.fintypeInsert`, and it is less efficient.
-When `decidable_mem_of_fintype` is made a local instance, then this instance would
+When `Set.decidableMemOfFintype` is made a local instance, then this instance would
 override `Set.fintypeInsert` if not for the fact that its priority has been
 adjusted. See Note [lower instance priority]. -/
 instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a ∈ s] [Fintype s] :
@@ -462,22 +462,20 @@ instance fintypeMap {α β} [DecidableEq β] :
   Set.fintypeImage
 #align set.fintype_map Set.fintypeMap
 
-instance fintypeLtNat (n : ℕ) : Fintype { i | i < n } :=
+instance fintypeLTNat (n : ℕ) : Fintype { i | i < n } :=
   Fintype.ofFinset (Finset.range n) <| by simp
-#align set.fintype_lt_nat Set.fintypeLtNat
+#align set.fintype_lt_nat Set.fintypeLTNat
 
-instance fintypeLeNat (n : ℕ) : Fintype { i | i ≤ n } := by
-  simpa [Nat.lt_succ_iff] using Set.fintypeLtNat (n + 1)
-#align set.fintype_le_nat Set.fintypeLeNat
+instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
+  simpa [Nat.lt_succ_iff] using Set.fintypeLTNat (n + 1)
+#align set.fintype_le_nat Set.fintypeLENat
 
 /-- This is not an instance so that it does not conflict with the one
-in src/order/locally_finite. -/
+in `Mathlib/Order/LocallyFinite.lean`. -/
 def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
-  Set.fintypeLtNat n
+  Set.fintypeLTNat n
 #align set.nat.fintype_Iio Set.Nat.fintypeIio
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
   Fintype.ofFinset (s.toFinset ×ᶠ t.toFinset) <| by simp
@@ -558,7 +556,7 @@ theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
 in `Data.Set.Finite`. While every `Fintype` instance gives a `Finite` instance, those
-instances that depend on `Fintype` or `decidable` instances need an additional `Finite` instance
+instances that depend on `Fintype` or `Decidable` instances need an additional `Finite` instance
 to be able to generally apply.
 
 Some set instances do not appear here since they are consequences of others, for example
@@ -1003,7 +1001,6 @@ theorem Finite.toFinset_insert' [DecidableEq α] {a : α} {s : Set α} (hs : s.F
   Finite.toFinset_insert _
 #align set.finite.to_finset_insert' Set.Finite.toFinset_insert'
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.Finite) :
     hs.toFinset ×ᶠ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
@@ -1203,7 +1200,7 @@ theorem Finite.card_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
 theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :
     Fintype.card { x : α | x ≠ a } = Fintype.card α - 1 := by
   haveI := Classical.decEq α
-  rw [← toFinset_card, to_finset_set_of, Finset.filter_ne',
+  rw [← toFinset_card, toFinset_setOf, Finset.filter_ne',
     Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ]
 #align set.card_ne_eq Set.card_ne_eq
 
@@ -1367,7 +1364,7 @@ theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
   exists_lower_bound_image (β := βᵒᵈ) s f h
 #align set.exists_upper_bound_image Set.exists_upper_bound_image
 
-theorem Finite.supᵢ_binfi_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
+theorem Finite.supᵢ_binfᵢ_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : (⨆ j, ⨅ i ∈ s, f i j) = ⨅ i ∈ s, ⨆ j, f i j := by
   induction' s, hs using Set.Finite.dinduction_on with a s _ _ ihs hf
@@ -1375,32 +1372,30 @@ theorem Finite.supᵢ_binfi_of_monotone {ι ι' α : Type _} [Preorder ι'] [Non
   · rw [ball_insert_iff] at hf
     simp only [infᵢ_insert, ← ihs hf.2]
     exact supᵢ_inf_of_monotone hf.1 fun j₁ j₂ hj => infᵢ₂_mono fun i hi => hf.2 i hi hj
-#align set.finite.supr_binfi_of_monotone Set.Finite.supᵢ_binfi_of_monotone
+#align set.finite.supr_binfi_of_monotone Set.Finite.supᵢ_binfᵢ_of_monotone
 
--- PORTING NOTE TODO: NAMING IN THIS SECTION I (ERIC R) AM NOT SURE ABOUT
-
-theorem Finite.supᵢ_binfi_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
+theorem Finite.supᵢ_binfᵢ_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : (⨆ j, ⨅ i ∈ s, f i j) = ⨅ i ∈ s, ⨆ j, f i j :=
-  @Finite.supᵢ_binfi_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ hs _ fun i hi => (hf i hi).dual_left
-#align set.finite.supr_binfi_of_antitone Set.Finite.supᵢ_binfi_of_antitone
+  @Finite.supᵢ_binfᵢ_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ hs _ fun i hi => (hf i hi).dual_left
+#align set.finite.supr_binfi_of_antitone Set.Finite.supᵢ_binfᵢ_of_antitone
 
 theorem Finite.infᵢ_bsupᵢ_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : (⨅ j, ⨆ i ∈ s, f i j) = ⨆ i ∈ s, ⨅ j, f i j :=
-  hs.supᵢ_binfi_of_antitone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
+  hs.supᵢ_binfᵢ_of_antitone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
 #align set.finite.infi_bsupr_of_monotone Set.Finite.infᵢ_bsupᵢ_of_monotone
 
 theorem Finite.infᵢ_bsupᵢ_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : (⨅ j, ⨆ i ∈ s, f i j) = ⨆ i ∈ s, ⨅ j, f i j :=
-  hs.supᵢ_binfi_of_monotone (α := αᵒᵈ)  fun i hi => (hf i hi).dual_right
+  hs.supᵢ_binfᵢ_of_monotone (α := αᵒᵈ)  fun i hi => (hf i hi).dual_right
 #align set.finite.infi_bsupr_of_antitone Set.Finite.infᵢ_bsupᵢ_of_antitone
 
 theorem supᵢ_infᵢ_of_monotone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     (⨆ j, ⨅ i, f i j) = ⨅ i, ⨆ j, f i j := by
-  simpa only [infᵢ_univ] using finite_univ.supᵢ_binfi_of_monotone fun i _ => hf i
+  simpa only [infᵢ_univ] using finite_univ.supᵢ_binfᵢ_of_monotone fun i _ => hf i
 #align supr_infi_of_monotone Set.supᵢ_infᵢ_of_monotone
 
 theorem supᵢ_infᵢ_of_antitone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']
@@ -1555,12 +1550,10 @@ variable [LinearOrder α] {s : Set α}
 /-- If a linear order does not contain any triple of elements `x < y < z`, then this type
 is finite. -/
 lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) : Finite α := by
-  -- porting note: todo: use `nontriviality α` instead of the first 2 lines
-  cases subsingleton_or_nontrivial α
-  · exact Finite.of_subsingleton
-  · rcases exists_pair_ne α with ⟨x, y, hne⟩
-    refine' @Finite.of_fintype α ⟨{x, y}, fun z => _⟩
-    simpa [hne] using eq_or_eq_or_eq_of_forall_not_lt_lt h z x y
+  nontriviality α
+  rcases exists_pair_ne α with ⟨x, y, hne⟩
+  refine' @Finite.of_fintype α ⟨{x, y}, fun z => _⟩
+  simpa [hne] using eq_or_eq_or_eq_of_forall_not_lt_lt h z x y
 #align finite.of_forall_not_lt_lt Finite.of_forall_not_lt_lt
 
 /-- If a set `s` does not contain any triple of elements `x < y < z`, then `s` is finite. -/

@@ -72,10 +72,12 @@ infixr:25 " →ₙ+* " => NonUnitalRingHom
 /-- Reinterpret a non-unital ring homomorphism `f : α →ₙ+* β` as a semigroup
 homomorphism `α →ₙ* β`. The `simp`-normal form is `(f : α →ₙ* β)`. -/
 add_decl_doc NonUnitalRingHom.toMulHom
+#align non_unital_ring_hom.to_mul_hom NonUnitalRingHom.toMulHom
 
 /-- Reinterpret a non-unital ring homomorphism `f : α →ₙ+* β` as an additive
 monoid homomorphism `α →+ β`. The `simp`-normal form is `(f : α →+ β)`. -/
 add_decl_doc NonUnitalRingHom.toAddMonoidHom
+#align non_unital_ring_hom.to_add_monoid_hom NonUnitalRingHom.toAddMonoidHom
 
 section NonUnitalRingHomClass
 
@@ -153,9 +155,7 @@ theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
   rfl
 #align non_unital_ring_hom.coe_mul_hom_mk NonUnitalRingHom.coe_mulHom_mk
 
-@[simp]
-theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ↑(f.toMulHom) = ↑f :=
-  rfl
+theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f := rfl
 #align non_unital_ring_hom.coe_to_add_monoid_hom NonUnitalRingHom.coe_toAddMonoidHom
 
 @[simp]
@@ -362,18 +362,22 @@ infixr:25 " →+* " => RingHom
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a monoid with zero homomorphism `α →*₀ β`.
 The `simp`-normal form is `(f : α →*₀ β)`. -/
 add_decl_doc RingHom.toMonoidWithZeroHom
+#align ring_hom.to_monoid_with_zero_hom RingHom.toMonoidWithZeroHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a monoid homomorphism `α →* β`.
 The `simp`-normal form is `(f : α →* β)`. -/
 add_decl_doc RingHom.toMonoidHom
+#align ring_hom.to_monoid_hom RingHom.toMonoidHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as an additive monoid homomorphism `α →+ β`.
 The `simp`-normal form is `(f : α →+ β)`. -/
 add_decl_doc RingHom.toAddMonoidHom
+#align ring_hom.to_add_monoid_hom RingHom.toAddMonoidHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a non-unital ring homomorphism `α →ₙ+* β`. The
 `simp`-normal form is `(f : α →ₙ+* β)`. -/
 add_decl_doc RingHom.toNonUnitalRingHom
+#align ring_hom.to_non_unital_ring_hom RingHom.toNonUnitalRingHom
 
 section RingHomClass
 

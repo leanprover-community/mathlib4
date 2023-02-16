@@ -31,6 +31,8 @@ variable {ι ι' α β γ : Type _}
 
 open Set
 
+open BigOperators
+
 namespace Filter
 
 /-- `atTop` is the filter representing the limit `→ ∞` on an ordered set.
@@ -965,7 +967,7 @@ theorem not_tendsto_pow_atTop_atBot [LinearOrderedRing α] :
     ∀ {n : ℕ}, ¬Tendsto (fun x : α => x ^ n) atTop atBot
   | 0 => by simp [not_tendsto_const_atBot]
   | n + 1 => (tendsto_pow_atTop n.succ_ne_zero).not_tendsto disjoint_atTop_atBot
-#align filter.not_tendsto_pow_at_top_atBot Filter.not_tendsto_pow_atTop_atBot
+#align filter.not_tendsto_pow_at_top_at_bot Filter.not_tendsto_pow_atTop_atBot
 
 section LinearOrderedSemifield
 
@@ -1055,7 +1057,7 @@ and only if `f` tends to negative infinity along the same filter. -/
 theorem tendsto_const_mul_atBot_of_pos (hr : 0 < r) :
     Tendsto (fun x => r * f x) l atBot ↔ Tendsto f l atBot := by
   simpa only [← mul_neg, ← tendsto_neg_atTop_iff] using tendsto_const_mul_atTop_of_pos hr
-#align filter.tendsto_const_mul_atBot_of_pos Filter.tendsto_const_mul_atBot_of_pos
+#align filter.tendsto_const_mul_at_bot_of_pos Filter.tendsto_const_mul_atBot_of_pos
 
 /-- If `r` is a positive constant, then `λ x, f x * r` tends to negative infinity along a filter if
 and only if `f` tends to negative infinity along the same filter. -/
@@ -1579,7 +1581,7 @@ theorem tendsto_Ioi_atTop [SemilatticeSup α] {a : α} {f : β → Ioi a} {l : F
 theorem tendsto_Iio_atBot [SemilatticeInf α] {a : α} {f : β → Iio a} {l : Filter β} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l atBot := by
   rw [atBot_Iio_eq, tendsto_comap_iff]; rfl
-#align filter.tendsto_Iio_atBot Filter.tendsto_Iio_atBot
+#align filter.tendsto_Iio_at_bot Filter.tendsto_Iio_atBot
 
 theorem tendsto_Ici_atTop [SemilatticeSup α] {a : α} {f : β → Ici a} {l : Filter β} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l atTop := by

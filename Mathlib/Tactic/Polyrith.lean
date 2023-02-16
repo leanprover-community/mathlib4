@@ -125,7 +125,7 @@ def Poly.toSyntax : Poly → Syntax.Term
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (c : Ring.Cache α) (e : Q($α)) : AtomM Poly := do
+    (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
     try pure <| Poly.const (← (← NormNum.derive e).toRat)
     catch _ => pure <| Poly.var (← addAtom e)
@@ -166,7 +166,7 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
   have α : Q(Type u) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-  let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
+  let c ← mkCache sα
   let tgt := (← parse sα c e₁).sub (← parse sα c e₂)
   let rec
     /-- Parses a hypothesis and adds it to the `out` list. -/
@@ -340,8 +340,6 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
           | some (p, den) => (p.mul' h).div (.const den)
           | none => p.mul' h
         let stx := p.toSyntax vars
-        println! repr p
-        println! stx
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
           else `(tactic| linear_combination $stx:term)

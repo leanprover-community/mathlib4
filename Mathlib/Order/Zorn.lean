@@ -39,7 +39,7 @@ walkthrough:
   (or whatever you actually need) followed by a `apply some_version_of_zorn`.
 3. Fill in the details. This is where you start talking about chains.
 
-A typical proof using Zorn could look like this
+A typical proof using Zorn could look like this (TODO: update to mathlib4)
 ```lean
 lemma zorny_lemma : zorny_statement :=
 begin

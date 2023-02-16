@@ -248,10 +248,12 @@ theorem div_le_iff₀ (hc : c ≠ 0) : a / c ≤ b ↔ a ≤ b * c := by
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulLeft₀` refers to the `LinearOrderedField` version. -/
-@[simps (config := { simpRhs := true }) apply toEquiv]
+@[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
   { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left₀ ha }
 #align order_iso.mul_left₀' OrderIso.mulLeft₀'
+#align order_iso.mul_left₀'_to_equiv OrderIso.mulLeft₀'_toEquiv
+#align order_iso.mul_left₀'_apply OrderIso.mulLeft₀'_apply
 
 theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
@@ -262,10 +264,12 @@ theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
 /-- `Equiv.mulRight₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulRight₀` refers to the `LinearOrderedField` version. -/
-@[simps (config := { simpRhs := true }) apply toEquiv]
+@[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
   { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right₀ ha }
 #align order_iso.mul_right₀' OrderIso.mulRight₀'
+#align order_iso.mul_right₀'_apply OrderIso.mulRight₀'_apply
+#align order_iso.mul_right₀'_to_equiv OrderIso.mulRight₀'_toEquiv
 
 theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by
