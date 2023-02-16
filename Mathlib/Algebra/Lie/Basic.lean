@@ -267,7 +267,8 @@ structure LieHom (R L L': Type _) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 -- Porting note: Experimental, might not need this
 -- /-- `LieHomClass F R L L'` asserts `F` is a type of Lie algebra morphisms `M → M₂` over `R`. -/
--- class LieHomClass (F : Type _) (R L L' : outParam (Type _)) [CommRing R] [LieRing L] [LieAlgebra R L]
+-- class LieHomClass (F : Type _) (R L L' : outParam (Type _))
+--   [CommRing R] [LieRing L] [LieAlgebra R L]
 --   [LieRing L'] [LieAlgebra R L'] extends SemilinearMapClass F (RingHom.id R) L L' where
 --   map_lie : ∀ (f : F) {x y : L}, f ⁅x, y⁆ = ⁅f x, f y⁆
 
@@ -322,8 +323,8 @@ instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ fun _ => L₂ where
     congr
 
 -- Porting note: Do we need this?
--- /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
---   because it is a composition of multiple projections. -/
+-- /-- See Note [custom simps projection]. We need to specify this projection explicitly in this
+--   case, because it is a composition of multiple projections. -/
 -- def Simps.apply (h : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂ :=
 --   h
 -- #align lie_hom.simps.apply LieHom.Simps.apply
@@ -529,9 +530,12 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
 See note [reducible non-instances]. -/
 @[reducible]
 def LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
-    @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) where
-  smul_lie t x m := by simp only [smul_lie, LieHom.map_smul]
-  lie_smul t x m := by simp only [lie_smul]
+  @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
+  { LieRingModule.compLieHom M f with
+    smul_lie := fun t x m => by
+      simp only [LieRingModule.compLieHom_apply, smul_lie, LieHom.map_smul]
+    lie_smul := fun t x m => by
+      simp only [LieRingModule.compLieHom_apply, lie_smul] }
 #align lie_module.comp_lie_hom LieModule.compLieHom
 
 end ModulePullBack
