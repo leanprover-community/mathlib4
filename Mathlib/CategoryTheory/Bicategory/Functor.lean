@@ -273,13 +273,39 @@ instance : Inhabited (OplaxFunctor B B) :=
   ⟨id B⟩
 
 /-- Composition of oplax functors. -/
-@[simps]
+--@[simps]
 def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
   {
-    (F : PrelaxFunctor B C).comp
-      ↑G with
-    map_id := fun a => (G.mapFunctor _ _).map (F.map_id a) ≫ G.map_id (F.obj a)
-    map_comp := fun a b c f g =>
+    (F : PrelaxFunctor B C).comp G with
+    map_id := fun a => by exact (G.mapFunctor _ _).map (F.map_id a) ≫ G.map_id (F.obj a)
+    map_comp := fun f g => by
+      exact (G.mapFunctor _ _).map (F.map_comp f g) ≫ G.map_comp (F.map f) (F.map g)
+    mapComp_naturality_left' := fun η g =>
+      by
+      dsimp
+      rw [← map₂_comp_assoc, mapComp_naturality_left, map₂_comp_assoc, mapComp_naturality_left,
+        assoc]
+    mapComp_naturality_right' := fun η =>
+      by
+      dsimp
+      rw [← map₂_comp_assoc, map_comp_naturality_right, map₂_comp_assoc, map_comp_naturality_right,
+        assoc]
+    map₂_associator' := fun a b c d f g h => by
+      dsimp
+      simp only [map₂_associator, ← map₂_comp_assoc, ← map_comp_naturality_right_assoc,
+        whisker_left_comp, assoc]
+      simp only [map₂_associator, map₂_comp, map_comp_naturality_left_assoc, comp_whisker_right,
+        assoc]
+    map₂_left_unitor' := fun a b f => by
+      dsimp
+      simp only [map₂_left_unitor, map₂_comp, map_comp_naturality_left_assoc, comp_whisker_right,
+        assoc]
+    map₂_right_unitor' := fun a b f => by
+      dsimp
+      simp only [map₂_right_unitor, map₂_comp, map_comp_naturality_right_assoc, whisker_left_comp,
+        assoc] }
+  #exit
+    map_comp := fun f g =>
       (G.mapFunctor _ _).map (F.map_comp f g) ≫ G.map_comp (F.map f) (F.map g)
     mapComp_naturality_left' := fun a b c f f' η g =>
       by
@@ -305,6 +331,8 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
       dsimp
       simp only [map₂_right_unitor, map₂_comp, map_comp_naturality_right_assoc, whisker_left_comp,
         assoc] }
+
+#exit
 #align category_theory.oplax_functor.comp CategoryTheory.OplaxFunctor.comp
 
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
