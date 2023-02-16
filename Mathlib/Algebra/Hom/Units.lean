@@ -276,12 +276,11 @@ variable [DivisionMonoid α] {a b c : α}
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
 opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
 useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
-@[to_additive
+@[to_additive (attr := simps)
   "The element of the additive group of additive units, corresponding to an element of
   an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is
   computable and comes from the negation on `α`. This is useful to transfer properties of negation
-  in `AddUnits α` to `α`. See also `toAddUnits`.",
-  simps]
+  in `AddUnits α` to `α`. See also `toAddUnits`."]
 def unit' (h : IsUnit a) : αˣ :=
   ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_cancel⟩
 #align is_unit.unit' IsUnit.unit'

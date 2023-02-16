@@ -776,7 +776,7 @@ theorem mem_symm_trans_source {e' : LocalEquiv α γ} {x : α} (he : x ∈ e.sou
 
 /-- Postcompose a local equivalence with an equivalence.
 We modify the source and target to have better definitional behavior. -/
-@[simps]
+@[simps!]
 def transEquiv (e' : β ≃ γ) : LocalEquiv α γ :=
   (e.trans e'.toLocalEquiv).copy _ rfl _ rfl e.source (inter_univ _) (e'.symm ⁻¹' e.target)
     (univ_inter _)
@@ -792,7 +792,7 @@ theorem transEquiv_eq_trans (e' : β ≃ γ) : e.transEquiv e' = e.trans e'.toLo
 
 /-- Precompose a local equivalence with an equivalence.
 We modify the source and target to have better definitional behavior. -/
-@[simps]
+@[simps!]
 def _root_.Equiv.transLocalEquiv (e : α ≃ β) : LocalEquiv α γ :=
   (e.toLocalEquiv.trans e').copy _ rfl _ rfl (e ⁻¹' e'.source) (univ_inter _) e'.target
     (inter_univ _)
@@ -1007,7 +1007,7 @@ theorem symm_piecewise (e e' : LocalEquiv α β) {s : Set α} {t : Set β} [∀ 
 /-- Combine two `LocalEquiv`s with disjoint sources and disjoint targets. We reuse
 `LocalEquiv.piecewise`, then override `source` and `target` to ensure better definitional
 equalities. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def disjointUnion (e e' : LocalEquiv α β) (hs : Disjoint e.source e'.source)
     (ht : Disjoint e.target e'.target) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] : LocalEquiv α β :=

@@ -86,6 +86,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
 
   try
     solveByElim [goal] required solveByElimDepth
+    return none
   catch _ =>
     set state0
 

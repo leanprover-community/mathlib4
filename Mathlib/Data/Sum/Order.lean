@@ -549,7 +549,7 @@ namespace OrderIso
 variable [LE α] [LE β] [LE γ] (a : α) (b : β) (c : γ)
 
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
-@[simps apply]
+@[simps! apply]
 def sumComm (α β : Type _) [LE α] [LE β] : Sum α β ≃o Sum β α :=
   { Equiv.sumComm α β with map_rel_iff' := swap_le_swap_iff }
 #align order_iso.sum_comm OrderIso.sumComm

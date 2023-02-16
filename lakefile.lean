@@ -6,7 +6,10 @@ package mathlib
 
 @[default_target]
 lean_lib Mathlib where
-  moreLeanArgs := #["-DwarningAsError=true", "-Dpp.unicode.fun=true"] -- pretty-prints `fun a ↦ b`
+  moreLeanArgs := #[
+    "-DwarningAsError=true",
+    "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
+  ]
 
 @[default_target]
 lean_exe runLinter where
