@@ -288,14 +288,17 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
     mapComp_naturality_right' := fun η =>
       by
       dsimp
-      rw [← map₂_comp_assoc, map_comp_naturality_right, map₂_comp_assoc, map_comp_naturality_right,
+      intros
+      rw [← map₂_comp_assoc, mapComp_naturality_right, map₂_comp_assoc, mapComp_naturality_right,
         assoc]
-    map₂_associator' := fun a b c d f g h => by
+    map₂_associator' := fun f g h => by
       dsimp
-      simp only [map₂_associator, ← map₂_comp_assoc, ← map_comp_naturality_right_assoc,
-        whisker_left_comp, assoc]
-      simp only [map₂_associator, map₂_comp, map_comp_naturality_left_assoc, comp_whisker_right,
+      simp only [map₂_associator, ← map₂_comp_assoc, ← mapComp_naturality_right_assoc,
+        whiskerLeft_comp, assoc]
+      simp only [map₂_associator, map₂_comp, mapComp_naturality_left_assoc, comp_whiskerRight,
         assoc]
+      sorry
+    -- delete `a b ` in the next line to get PANIC on Ubuntu 20.04
     map₂_left_unitor' := fun a b f => by
       dsimp
       simp only [map₂_left_unitor, map₂_comp, map_comp_naturality_left_assoc, comp_whisker_right,
