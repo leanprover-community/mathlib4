@@ -35,19 +35,19 @@ variable {C : Type u} [Category.{v} C]
 there is a natural bijection between `X ⟶ Y` and `X₁ ⟶ Y₁`. See also `equiv.arrow_congr`. -/
 def homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) : (X ⟶ Y) ≃ (X₁ ⟶ Y₁)
     where
-  toFun f := α.inv ≫ f ≫ β.Hom
-  invFun f := α.Hom ≫ f ≫ β.inv
+  toFun f := α.inv ≫ f ≫ β.hom
+  invFun f := α.hom ≫ f ≫ β.inv
   left_inv f :=
-    show α.Hom ≫ (α.inv ≫ f ≫ β.Hom) ≫ β.inv = f by
-      rw [category.assoc, category.assoc, β.hom_inv_id, α.hom_inv_id_assoc, category.comp_id]
+    show α.hom ≫ (α.inv ≫ f ≫ β.hom) ≫ β.inv = f by
+      rw [Category.assoc, Category.assoc, β.hom_inv_id, α.hom_inv_id_assoc, Category.comp_id]
   right_inv f :=
-    show α.inv ≫ (α.Hom ≫ f ≫ β.inv) ≫ β.Hom = f by
-      rw [category.assoc, category.assoc, β.inv_hom_id, α.inv_hom_id_assoc, category.comp_id]
+    show α.inv ≫ (α.hom ≫ f ≫ β.inv) ≫ β.hom = f by
+      rw [Category.assoc, Category.assoc, β.inv_hom_id, α.inv_hom_id_assoc, Category.comp_id]
 #align category_theory.iso.hom_congr CategoryTheory.Iso.homCongr
 
 @[simp]
 theorem homCongr_apply {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ⟶ Y) :
-    α.homCongr β f = α.inv ≫ f ≫ β.Hom :=
+    α.homCongr β f = α.inv ≫ f ≫ β.hom :=
   rfl
 #align category_theory.iso.hom_congr_apply CategoryTheory.Iso.homCongr_apply
 
@@ -79,7 +79,7 @@ def conj : End X ≃* End Y :=
   { homCongr α α with map_mul' := fun f g => homCongr_comp α α α g f }
 #align category_theory.iso.conj CategoryTheory.Iso.conj
 
-theorem conj_apply (f : End X) : α.conj f = α.inv ≫ f ≫ α.Hom :=
+theorem conj_apply (f : End X) : α.conj f = α.inv ≫ f ≫ α.hom :=
   rfl
 #align category_theory.iso.conj_apply CategoryTheory.Iso.conj_apply
 
@@ -95,7 +95,7 @@ theorem conj_id : α.conj (𝟙 X) = 𝟙 Y :=
 
 @[simp]
 theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
-  rw [conj_apply, iso.refl_inv, iso.refl_hom, category.id_comp, category.comp_id]
+  rw [conj_apply, Iso.refl_inv, Iso.refl_hom, Category.id_comp, Category.comp_id]
 #align category_theory.iso.refl_conj CategoryTheory.Iso.refl_conj
 
 @[simp]
@@ -124,18 +124,18 @@ def conjAut : Aut X ≃* Aut Y :=
 #align category_theory.iso.conj_Aut CategoryTheory.Iso.conjAut
 
 theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by
-  cases f <;> cases α <;> ext <;> rfl
+  cases f <;> cases α <;> aesop_cat <;> rfl
 #align category_theory.iso.conj_Aut_apply CategoryTheory.Iso.conjAut_apply
 
 @[simp]
-theorem conjAut_hom (f : Aut X) : (α.conjAut f).Hom = α.conj f.Hom :=
+theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=
   rfl
 #align category_theory.iso.conj_Aut_hom CategoryTheory.Iso.conjAut_hom
 
 @[simp]
 theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
     (α ≪≫ β).conjAut f = β.conjAut (α.conjAut f) := by
-  simp only [conj_Aut_apply, iso.trans_symm, iso.trans_assoc]
+  simp only [conjAut_apply, Iso.trans_symm, Iso.trans_assoc]
 #align category_theory.iso.trans_conj_Aut CategoryTheory.Iso.trans_conjAut
 
 @[simp]
@@ -177,11 +177,10 @@ theorem map_conj {X Y : C} (α : X ≅ Y) (f : End X) :
 
 theorem map_conjAut (F : C ⥤ D) {X Y : C} (α : X ≅ Y) (f : Aut X) :
     F.mapIso (α.conjAut f) = (F.mapIso α).conjAut (F.mapIso f) := by
-  ext <;> simp only [map_iso_hom, iso.conj_Aut_hom, F.map_conj]
+  ext <;> simp only [mapIso_hom, Iso.conjAut_hom, F.map_conj]
 #align category_theory.functor.map_conj_Aut CategoryTheory.Functor.map_conjAut
 
 -- alternative proof: by simp only [iso.conj_Aut_apply, F.map_iso_trans, F.map_iso_symm]
 end Functor
 
 end CategoryTheory
-
