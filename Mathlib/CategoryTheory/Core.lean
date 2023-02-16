@@ -17,43 +17,41 @@ import Mathlib.CategoryTheory.Types
 # The core of a category
 
 The core of a category `C` is the (non-full) subcategory of `C` consisting of all objects,
-and all isomorphisms. We construct it as a `groupoid`.
+and all isomorphisms. We construct it as a `Groupoid`.
 
-`Core.inclusion : core C ⥤ C` gives the faithful inclusion into the original category.
+`Core.inclusion : Core C ⥤ C` gives the faithful inclusion into the original category.
 
-Any functor `F` from a groupoid `G` into `C` factors through `core C`,
+Any functor `F` from a groupoid `G` into `C` factors through `Core C`,
 but this is not functorial with respect to `F`.
 -/
-
 
 namespace CategoryTheory
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
 -- Porting note: This linter does not exist yet
 -- @[nolint has_nonempty_instance]
-def Core (C : Type u₁) :=
-  C
+
+def Core (C : Type u₁) := C
 #align category_theory.core CategoryTheory.Core
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-instance coreCategory : Groupoid.{v₁} (Core C)
-    where
+instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom := fun X Y : C => X ≅ Y
+  id := fun X => @Iso.refl C _ X
+  comp := @fun {X} {Y} {Z} f g => Iso.trans f g
   inv := @fun X Y f => Iso.symm f
-  id X := Iso.refl _
-  comp := @fun X Y Z f g => Iso.trans f g
 #align category_theory.core_category CategoryTheory.coreCategory
 
 namespace Core
 
 @[simp]
--- port note: change theorem to def, because the linter suggested to do so
-def id_hom (X : Core C) : Iso.hom (𝟙 X) = 𝟙 X :=
+/- Porting note: abomination -/
+theorem id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X := by 
   rfl
 #align category_theory.core.id_hom CategoryTheory.Core.id_hom
 
@@ -72,15 +70,9 @@ def inclusion : Core C ⥤ C where
 
 -- porting note: TODO: fix this! This worked wihtout proof before.
 instance : Faithful (inclusion C) where
-  map_injective := by
-    intro X Y
-    unfold Function.Injective
-    intro h g
-    unfold Prefunctor.map
-    unfold inclusion
-    simp
-    -- at this point, the goal is h.hom = g.hom → h = g
-    sorry
+  map_injective := by 
+    intro _ _
+    apply Iso.ext
 
 variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 
@@ -94,7 +86,7 @@ noncomputable def functorToCore (F : G ⥤ C) : G ⥤ Core C
 #align category_theory.core.functor_to_core CategoryTheory.Core.functorToCore
 
 /-- We can functorially associate to any functor from a groupoid to the core of a category `C`,
-a functor from the groupoid to `C`, simply by composing with the embedding `core C ⥤ C`.
+a functor from the groupoid to `C`, simply by composing with the embedding `Core C ⥤ C`.
 -/
 def forgetFunctorToCore : (G ⥤ Core C) ⥤ G ⥤ C :=
   (whiskeringRight _ _ _).obj (inclusion C)
@@ -102,20 +94,18 @@ def forgetFunctorToCore : (G ⥤ Core C) ⥤ G ⥤ C :=
 
 end Core
 
-/-- `of_equiv_functor m` lifts a type-level `EquivFunctor`
-to a categorical functor `core (Type u₁) ⥤ core (Type u₂)`.
+/-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
+to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 -/
 def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂)
     where
   obj := m
   map := @fun α β f => (EquivFunctor.mapEquiv m f.toEquiv).toIso
-  -- These are not very pretty.
-  map_id α := by aesop_cat; exact congr_fun (EquivFunctor.map_refl' _) x
-  map_comp := @fun  α β γ f g => by
-    aesop_cat
-    simp only [EquivFunctor.mapEquiv_apply, Equiv.toIso_hom, Function.comp_apply, Core.comp_hom,
-      types_comp]
+  map_id α := by apply Iso.ext; funext x; exact congr_fun (EquivFunctor.map_refl' _) x
+  map_comp := @fun α β γ f g => by
+    apply Iso.ext; funext x; dsimp;
     erw [Iso.toEquiv_comp, EquivFunctor.map_trans']
+    rw [Function.comp]
 #align category_theory.of_equiv_functor CategoryTheory.ofEquivFunctor
 
 end CategoryTheory
