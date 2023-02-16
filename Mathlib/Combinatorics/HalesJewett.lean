@@ -77,15 +77,14 @@ function `α → ι → α` from `α` to the hypercube, such that for each coord
 `fun x ↦ l x i` is either `id` or constant. We require lines to be nontrivial in the sense that
 `fun x ↦ l x i` is `id` for at least one `i`.
 
-Formally, a line is represented by the function `l.idxFun : ι → Option α` which says whether
+Formally, a line is represented by a word `l.idxFun : ι → Option α` which says whether
 `fun x ↦ l x i` is `id` (corresponding to `l.idxFun i = none`) or constantly `y` (corresponding to
 `l.idxFun i = some y`).
 
 When `α` has size `1` there can be many elements of `Line α ι` defining the same function. -/
 structure Line (α ι : Type _) where
-  /-- The function `l` underlying a combinatorial line; For each `i : ι`, either `fun x ↦ l x i` is
-   the identity function on `α` (corresponding to `l.idxFun i = none`) or constantly `y`
-   (corresponding to `l.idxFun i = some y`). -/
+  /-- The word representing a combinatorial line. `l.idxfun i = none` means that
+  `l x i = x` for all `x` and `l.idxfun i = some y` means that `l x i = y`. -/
   idxFun : ι → Option α
   /-- We require combinatorial lines to be nontrivial in the sense that `fun x ↦ l x i` is `id` for
   at least one coordinate `i`. -/
