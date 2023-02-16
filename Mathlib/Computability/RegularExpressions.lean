@@ -21,9 +21,11 @@ computer science such as the POSIX standard.
 
 ## TODO
 
-* Show that this regular expressions and DFA/NFA's are equivalent.
-* `attribute [pattern] has_mul.mul` has been added into this file, it could be moved.
--/
+* Show that this regular expressions and DFA/NFA's are equivalent. -/
+
+-- porting note: this has been commented out
+-- * `attribute [pattern] has_mul.mul` has been added into this file, it could be moved.
+
 
 
 open List Set
