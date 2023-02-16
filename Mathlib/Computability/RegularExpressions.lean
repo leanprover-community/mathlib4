@@ -309,10 +309,10 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         constructor
         · simp [hs, hsum]
         · intro t' ht'
-          cases' ht' with ht' ht'
+          cases' ht' with ht' ht' -- porting note: last ht' doesn't take, need to `rename_i` bloew
           · simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
-          · exact helem _ ht'
+          · rename_i ht'; exact helem t' ht'
     · rintro ⟨S, hsum, helem⟩
       cases' x with a x
       · rfl
