@@ -387,10 +387,10 @@ theorem type_subrel_lt (o : Ordinal.{u}) :
   constructor; refine' ((RelIso.preimage Equiv.ulift r).trans (enumIso r).symm).symm
 #align ordinal.type_subrel_lt Ordinal.type_subrel_lt
 
-theorem mk_initial_seg (o : Ordinal.{u}) :
+theorem mk_initialSeg (o : Ordinal.{u}) :
     (#{ o' : Ordinal | o' < o }) = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← type_subrel_lt, card_type]
-#align ordinal.mk_initial_seg Ordinal.mk_initial_seg
+#align ordinal.mk_initial_seg Ordinal.mk_initialSeg
 
 /-! ### Normal ordinal functions -/
 
@@ -638,7 +638,7 @@ theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
 `o₂ × o₁`. -/
-instance : Monoid Ordinal.{u}
+instance monoid : Monoid Ordinal.{u}
     where
   mul a b :=
     Quotient.liftOn₂ a b
@@ -686,7 +686,7 @@ private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
       exact isEmpty_prod
 
 instance : MonoidWithZero Ordinal :=
-  { Ordinal.instMonoidOrdinal with
+  { Ordinal.monoid with
     zero := 0
     mul_zero := fun _a => mul_eq_zero'.2 <| Or.inr rfl
     zero_mul := fun _a => mul_eq_zero'.2 <| Or.inl rfl }
@@ -1100,19 +1100,19 @@ def bfamilyOfFamily {ι : Type u} : (ι → α) → ∀ a < type (@WellOrderingR
 
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by an `Type u` using a specified
 well-ordering. -/
-def familyOfBfamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
+def familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
     (f : ∀ a < o, α) : ι → α := fun i =>
   f (typein r i)
     (by
       rw [← ho]
       exact typein_lt_type r i)
-#align ordinal.family_of_bfamily' Ordinal.familyOfBfamily'
+#align ordinal.family_of_bfamily' Ordinal.familyOfBFamily'
 
 /-- Converts a family indexed by an `Ordinal.{u}` to one indexed by a `Type u` using a well-ordering
 given by the axiom of choice. -/
-def familyOfBfamily (o : Ordinal) (f : ∀ a < o, α) : o.out.α → α :=
-  familyOfBfamily' (· < ·) (type_lt o) f
-#align ordinal.family_of_bfamily Ordinal.familyOfBfamily
+def familyOfBFamily (o : Ordinal) (f : ∀ a < o, α) : o.out.α → α :=
+  familyOfBFamily' (· < ·) (type_lt o) f
+#align ordinal.family_of_bfamily Ordinal.familyOfBFamily
 
 @[simp]
 theorem bfamilyOfFamily'_typein {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) (i) :
@@ -1127,22 +1127,22 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
 #align ordinal.bfamily_of_family_typein Ordinal.bfamilyOfFamily_typein
 
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
-theorem familyOfBfamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
+theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
-    familyOfBfamily' r ho f (enum r i (by rwa [ho])) = f i hi := by
-  simp only [familyOfBfamily', typein_enum]
-#align ordinal.family_of_bfamily'_enum Ordinal.familyOfBfamily'_enum
+    familyOfBFamily' r ho f (enum r i (by rwa [ho])) = f i hi := by
+  simp only [familyOfBFamily', typein_enum]
+#align ordinal.family_of_bfamily'_enum Ordinal.familyOfBFamily'_enum
 
 @[simp, nolint simpNF] -- Porting note: simp cannot prove this
-theorem familyOfBfamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
-    familyOfBfamily o f
+theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
+    familyOfBFamily o f
         (enum (· < ·) i
           (by
             convert hi
             exact type_lt _)) =
       f i hi :=
-  familyOfBfamily'_enum _ (type_lt o) f _ _
-#align ordinal.family_of_bfamily_enum Ordinal.familyOfBfamily_enum
+  familyOfBFamily'_enum _ (type_lt o) f _ _
+#align ordinal.family_of_bfamily_enum Ordinal.familyOfBFamily_enum
 
 /-- The range of a family indexed by ordinals. -/
 def brange (o : Ordinal) (f : ∀ a < o, α) : Set α :=
@@ -1158,19 +1158,19 @@ theorem mem_brange_self {o} (f : ∀ a < o, α) (i hi) : f i hi ∈ brange o f :
 #align ordinal.mem_brange_self Ordinal.mem_brange_self
 
 @[simp]
-theorem range_familyOfBfamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
-    (ho : type r = o) (f : ∀ a < o, α) : range (familyOfBfamily' r ho f) = brange o f := by
+theorem range_familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
+    (ho : type r = o) (f : ∀ a < o, α) : range (familyOfBFamily' r ho f) = brange o f := by
   refine' Set.ext fun a => ⟨_, _⟩
   · rintro ⟨b, rfl⟩
     apply mem_brange_self
   · rintro ⟨i, hi, rfl⟩
-    exact ⟨_, familyOfBfamily'_enum _ _ _ _ _⟩
-#align ordinal.range_family_of_bfamily' Ordinal.range_familyOfBfamily'
+    exact ⟨_, familyOfBFamily'_enum _ _ _ _ _⟩
+#align ordinal.range_family_of_bfamily' Ordinal.range_familyOfBFamily'
 
 @[simp]
-theorem range_familyOfBfamily {o} (f : ∀ a < o, α) : range (familyOfBfamily o f) = brange o f :=
-  range_familyOfBfamily' _ _ f
-#align ordinal.range_family_of_bfamily Ordinal.range_familyOfBfamily
+theorem range_familyOfBFamily {o} (f : ∀ a < o, α) : range (familyOfBFamily o f) = brange o f :=
+  range_familyOfBFamily' _ _ f
+#align ordinal.range_family_of_bfamily Ordinal.range_familyOfBFamily
 
 @[simp]
 theorem brange_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α) :
@@ -1189,7 +1189,7 @@ theorem brange_bfamilyOfFamily {ι : Type u} (f : ι → α) : brange _ (bfamily
 
 @[simp]
 theorem brange_const {o : Ordinal} (ho : o ≠ 0) {c : α} : (brange o fun _ _ => c) = {c} := by
-  rw [← range_familyOfBfamily]
+  rw [← range_familyOfBFamily]
   exact @Set.range_const _ o.out.α (out_nonempty_iff_ne_zero.2 ho) c
 #align ordinal.brange_const Ordinal.brange_const
 
@@ -1203,16 +1203,16 @@ theorem comp_bfamilyOfFamily {ι : Type u} (f : ι → α) (g : α → β) :
   rfl
 #align ordinal.comp_bfamily_of_family Ordinal.comp_bfamilyOfFamily
 
-theorem comp_familyOfBfamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
+theorem comp_familyOfBFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (g : α → β) :
-    g ∘ familyOfBfamily' r ho f = familyOfBfamily' r ho fun i hi => g (f i hi) :=
+    g ∘ familyOfBFamily' r ho f = familyOfBFamily' r ho fun i hi => g (f i hi) :=
   rfl
-#align ordinal.comp_family_of_bfamily' Ordinal.comp_familyOfBfamily'
+#align ordinal.comp_family_of_bfamily' Ordinal.comp_familyOfBFamily'
 
-theorem comp_familyOfBfamily {o} (f : ∀ a < o, α) (g : α → β) :
-    g ∘ familyOfBfamily o f = familyOfBfamily o fun i hi => g (f i hi) :=
+theorem comp_familyOfBFamily {o} (f : ∀ a < o, α) (g : α → β) :
+    g ∘ familyOfBFamily o f = familyOfBFamily o fun i hi => g (f i hi) :=
   rfl
-#align ordinal.comp_family_of_bfamily Ordinal.comp_familyOfBfamily
+#align ordinal.comp_family_of_bfamily Ordinal.comp_familyOfBFamily
 
 /-! ### Supremum of a family of ordinals -/
 
@@ -1391,7 +1391,7 @@ theorem supᵢ_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
 private theorem sup_le_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop)
     [IsWellOrder ι r] [IsWellOrder ι' r'] {o} (ho : type r = o) (ho' : type r' = o)
     (f : ∀ a < o, Ordinal.{max u v}) :
-    sup.{_, v} (familyOfBfamily' r ho f) ≤ sup.{_, v} (familyOfBfamily' r' ho' f) :=
+    sup.{_, v} (familyOfBFamily' r ho f) ≤ sup.{_, v} (familyOfBFamily' r' ho' f) :=
   sup_le fun i => by
     cases'
       typein_surj r'
@@ -1399,32 +1399,32 @@ private theorem sup_le_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' 
           rw [ho', ← ho]
           exact typein_lt_type r i) with
       j hj
-    simp_rw [familyOfBfamily', ← hj]
+    simp_rw [familyOfBFamily', ← hj]
     apply le_sup
 
 theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
     [IsWellOrder ι' r'] {o : Ordinal.{u}} (ho : type r = o) (ho' : type r' = o)
     (f : ∀ a < o, Ordinal.{max u v}) :
-    sup.{_, v} (familyOfBfamily' r ho f) = sup.{_, v} (familyOfBfamily' r' ho' f) :=
+    sup.{_, v} (familyOfBFamily' r ho f) = sup.{_, v} (familyOfBFamily' r' ho' f) :=
   sup_eq_of_range_eq.{u, u, v} (by simp)
 #align ordinal.sup_eq_sup Ordinal.sup_eq_sup
 
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
     `o : Ordinal.{u}`. This is a special case of `sup` over the family provided by
-    `familyOfBfamily`. -/
+    `familyOfBFamily`. -/
 def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
-  sup.{_, v} (familyOfBfamily o f)
+  sup.{_, v} (familyOfBFamily o f)
 #align ordinal.bsup Ordinal.bsup
 
 @[simp]
 theorem sup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
-    sup.{_, v} (familyOfBfamily o f) = bsup.{_, v} o f :=
+    sup.{_, v} (familyOfBFamily o f) = bsup.{_, v} o f :=
   rfl
 #align ordinal.sup_eq_bsup Ordinal.sup_eq_bsup
 
 @[simp]
 theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
-    (f : ∀ a < o, Ordinal.{max u v}) : sup.{_, v} (familyOfBfamily' r ho f) = bsup.{_, v} o f :=
+    (f : ∀ a < o, Ordinal.{max u v}) : sup.{_, v} (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
   sup_eq_sup r _ ho _ f
 #align ordinal.sup_eq_bsup' Ordinal.sup_eq_bsup'
 
@@ -1432,13 +1432,13 @@ theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrde
 theorem supₛ_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     supₛ (brange o f) = bsup.{_, v} o f := by
   congr
-  rw [range_familyOfBfamily]
+  rw [range_familyOfBFamily]
 #align ordinal.Sup_eq_bsup Ordinal.supₛ_eq_bsup
 
 @[simp]
 theorem bsup_eq_sup' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal.{max u v}) :
     bsup.{_, v} _ (bfamilyOfFamily' r f) = sup.{_, v} f := by
-  simp only [← sup_eq_bsup' r, enum_typein, familyOfBfamily', bfamilyOfFamily']
+  simp only [← sup_eq_bsup' r, enum_typein, familyOfBFamily', bfamilyOfFamily']
 #align ordinal.bsup_eq_sup' Ordinal.bsup_eq_sup'
 
 theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
@@ -1464,7 +1464,7 @@ theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v
 theorem bsup_le_iff {o f a} : bsup.{u, v} o f ≤ a ↔ ∀ i h, f i h ≤ a :=
   sup_le_iff.trans
     ⟨fun h i hi => by
-      rw [← familyOfBfamily_enum o f]
+      rw [← familyOfBFamily_enum o f]
       exact h _, fun h i => h _ _⟩
 #align ordinal.bsup_le_iff Ordinal.bsup_le_iff
 
@@ -1534,7 +1534,7 @@ theorem bsup_const {o : Ordinal.{u}} (ho : o ≠ 0) (a : Ordinal.{max u v}) :
 
 @[simp]
 theorem bsup_one (f : ∀ a < (1 : Ordinal), Ordinal) : bsup 1 f = f 0 zero_lt_one := by
-  simp_rw [← sup_eq_bsup, sup_unique, familyOfBfamily, familyOfBfamily', typein_one_out]
+  simp_rw [← sup_eq_bsup, sup_unique, familyOfBFamily, familyOfBFamily', typein_one_out]
 #align ordinal.bsup_one Ordinal.bsup_one
 
 theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
@@ -1735,20 +1735,20 @@ theorem bsup_eq_blsub (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) :
 #align ordinal.bsup_eq_blsub Ordinal.bsup_eq_blsub
 
 theorem lsub_eq_blsub' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o} (ho : type r = o)
-    (f : ∀ a < o, Ordinal.{max u v}) : lsub.{_, v} (familyOfBfamily' r ho f) = blsub.{_, v} o f :=
+    (f : ∀ a < o, Ordinal.{max u v}) : lsub.{_, v} (familyOfBFamily' r ho f) = blsub.{_, v} o f :=
   sup_eq_bsup'.{_, v} r ho fun a ha => succ (f a ha)
 #align ordinal.lsub_eq_blsub' Ordinal.lsub_eq_blsub'
 
 theorem lsub_eq_lsub {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
     [IsWellOrder ι' r'] {o} (ho : type r = o) (ho' : type r' = o)
     (f : ∀ a < o, Ordinal.{max u v}) :
-    lsub.{_, v} (familyOfBfamily' r ho f) = lsub.{_, v} (familyOfBfamily' r' ho' f) := by
+    lsub.{_, v} (familyOfBFamily' r ho f) = lsub.{_, v} (familyOfBFamily' r' ho' f) := by
   rw [lsub_eq_blsub', lsub_eq_blsub']
 #align ordinal.lsub_eq_lsub Ordinal.lsub_eq_lsub
 
 @[simp]
 theorem lsub_eq_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
-    lsub.{_, v} (familyOfBfamily o f) = blsub.{_, v} o f :=
+    lsub.{_, v} (familyOfBFamily o f) = blsub.{_, v} o f :=
   lsub_eq_blsub' _ _ _
 #align ordinal.lsub_eq_blsub Ordinal.lsub_eq_blsub
 
@@ -2039,15 +2039,15 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
 
 /-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
     some `o : Ordinal.{u}`. This is a special case of `mex` over the family provided by
-    `familyOfBfamily`.
+    `familyOfBFamily`.
 
     This is to `mex` as `bsup` is to `sup`. -/
 def bmex (o : Ordinal) (f : ∀ a < o, Ordinal) : Ordinal :=
-  mex (familyOfBfamily o f)
+  mex (familyOfBFamily o f)
 #align ordinal.bmex Ordinal.bmex
 
 theorem bmex_not_mem_brange {o : Ordinal} (f : ∀ a < o, Ordinal) : bmex o f ∉ brange o f := by
-  rw [← range_familyOfBfamily]
+  rw [← range_familyOfBFamily]
   apply mex_not_mem_range
 #align ordinal.bmex_not_mem_brange Ordinal.bmex_not_mem_brange
 
@@ -2059,8 +2059,8 @@ theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
 
 theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
     f i hi ≠ bmex.{_, v} o f := by
-  convert ne_mex.{_, v} (familyOfBfamily o f) (enum (· < ·) i (by rwa [type_lt]))
-  -- Porting note: `familyOfBfamily_enum` → `typein_enum`
+  convert ne_mex.{_, v} (familyOfBFamily o f) (enum (· < ·) i (by rwa [type_lt]))
+  -- Porting note: `familyOfBFamily_enum` → `typein_enum`
   rw [typein_enum]
 #align ordinal.ne_bmex Ordinal.ne_bmex
 
@@ -2083,14 +2083,14 @@ theorem bmex_le_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
 theorem bmex_monotone {o o' : Ordinal.{u}}
     {f : ∀ a < o, Ordinal.{max u v}} {g : ∀ a < o', Ordinal.{max u v}}
     (h : brange o f ⊆ brange o' g) : bmex.{_, v} o f ≤ bmex.{_, v} o' g :=
-  mex_monotone (by rwa [range_familyOfBfamily, range_familyOfBfamily])
+  mex_monotone (by rwa [range_familyOfBFamily, range_familyOfBFamily])
 #align ordinal.bmex_monotone Ordinal.bmex_monotone
 
 theorem bmex_lt_ord_succ_card {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{u}) :
     bmex.{_, u} o f < (succ o.card).ord :=
   by
   rw [← mk_ordinal_out]
-  exact mex_lt_ord_succ_mk (familyOfBfamily o f)
+  exact mex_lt_ord_succ_mk (familyOfBFamily o f)
 #align ordinal.bmex_lt_ord_succ_card Ordinal.bmex_lt_ord_succ_card
 
 end Ordinal
