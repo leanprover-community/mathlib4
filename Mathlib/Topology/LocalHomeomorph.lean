@@ -15,7 +15,7 @@ import Mathlib.Topology.Sets.Opens
 # Local homeomorphisms
 
 This file defines homeomorphisms between open subsets of topological spaces. An element `e` of
-`local_homeomorph α β` is an extension of `local_equiv α β`, i.e., it is a pair of functions
+`LocalHomeomorph α β` is an extension of `LocalEquiv α β`, i.e., it is a pair of functions
 `e.toFun` and `e.inv_fun`, inverse of each other on the sets `e.source` and `e.target`.
 Additionally, we require that these sets are open, and that the functions are continuous on them.
 Equivalently, they are homeomorphisms there.
@@ -25,12 +25,12 @@ instead of `e.toFun x` and `e.inv_fun x`.
 
 ## Main definitions
 
-`homeomorph.to_local_homeomorph`: associating a local homeomorphism to a homeomorphism, with
+`Homeomorph.toLocalHomeomorph`: associating a local homeomorphism to a homeomorphism, with
                                   source = target = univ
-`local_homeomorph.symm`  : the inverse of a local homeomorphism
-`local_homeomorph.trans` : the composition of two local homeomorphisms
-`local_homeomorph.refl`  : the identity local homeomorphism
-`local_homeomorph.of_set`: the identity on a set `s`
+`LocalHomeomorph.symm`  : the inverse of a local homeomorphism
+`LocalHomeomorph.trans` : the composition of two local homeomorphisms
+`LocalHomeomorph.refl`  : the identity local homeomorphism
+`LocalHomeomorph.ofSet`: the identity on a set `s`
 `eq_on_source`           : equivalence relation describing the "right" notion of equality for local
                            homeomorphisms
 
@@ -43,7 +43,7 @@ For design notes, see `local_equiv.lean`.
 
 ### Local coding conventions
 
-If a lemma deals with the intersection of a set with either source or target of a `local_equiv`,
+If a lemma deals with the intersection of a set with either source or target of a `LocalEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 -/
 
@@ -448,21 +448,21 @@ theorem preimage_open_of_open {s : Set β} (hs : IsOpen s) : IsOpen (e.source �
 #align local_homeomorph.preimage_open_of_open LocalHomeomorph.preimage_open_of_open
 
 /-!
-### `local_homeomorph.is_image` relation
+### `LocalHomeomorph.IsImage` relation
 
-We say that `t : set β` is an image of `s : set α` under a local homeomorphism `e` if any of the
+We say that `t : Set β` is an image of `s : Set α` under a local homeomorphism `e` if any of the
 following equivalent conditions hold:
 
 * `e '' (e.source ∩ s) = e.target ∩ t`;
 * `e.source ∩ e ⁻¹ t = e.source ∩ s`;
 * `∀ x ∈ e.source, e x ∈ t ↔ x ∈ s` (this one is used in the definition).
 
-This definition is a restatement of `local_equiv.is_image` for local homeomorphisms. In this section
-we transfer API about `local_equiv.is_image` to local homeomorphisms and add a few
-`local_homeomorph`-specific lemmas like `local_homeomorph.is_image.closure`.
+This definition is a restatement of `LocalEquiv.IsImage` for local homeomorphisms. In this section
+we transfer API about `LocalEquiv.IsImage` to local homeomorphisms and add a few
+`LocalHomeomorph`-specific lemmas like `LocalHomeomorph.IsImage.closure`.
 -/
 
-/-- We say that `t : set β` is an image of `s : set α` under a local homeomorphism `e` if any of the
+/-- We say that `t : Set β` is an image of `s : Set α` under a local homeomorphism `e` if any of the
 following equivalent conditions hold:
 
 * `e '' (e.source ∩ s) = e.target ∩ t`;
@@ -610,7 +610,7 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
     h.preimage_eq' ▸ e.preimage_open_of_open hs⟩
 #align local_homeomorph.is_image.is_open_iff LocalHomeomorph.IsImage.isOpen_iff
 
-/-- Restrict a `local_homeomorph` to a pair of corresponding open sets. -/
+/-- Restrict a `LocalHomeomorph` to a pair of corresponding open sets. -/
 @[simps toLocalEquiv]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : LocalHomeomorph α β where
   toLocalEquiv := h.toLocalEquiv.restr
@@ -664,7 +664,7 @@ theorem image_open_of_open' {s : Set α} (hs : IsOpen s) : IsOpen (e '' (e.sourc
   image_open_of_open _ (IsOpen.inter e.open_source hs) (inter_subset_left _ _)
 #align local_homeomorph.image_open_of_open' LocalHomeomorph.image_open_of_open'
 
-/-- A `local_equiv` with continuous open forward map and an open source is a `local_homeomorph`. -/
+/-- A `LocalEquiv` with continuous open forward map and an open source is a `LocalHomeomorph`. -/
 def ofContinuousOpenRestrict (e : LocalEquiv α β) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : LocalHomeomorph α β where
   toLocalEquiv := e
@@ -674,7 +674,7 @@ def ofContinuousOpenRestrict (e : LocalEquiv α β) (hc : ContinuousOn e e.sourc
   continuous_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.leftInvOn
 #align local_homeomorph.of_continuous_open_restrict LocalHomeomorph.ofContinuousOpenRestrict
 
-/-- A `local_equiv` with continuous open forward map and an open source is a `local_homeomorph`. -/
+/-- A `LocalEquiv` with continuous open forward map and an open source is a `LocalHomeomorph`. -/
 def ofContinuousOpen (e : LocalEquiv α β) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : LocalHomeomorph α β :=
   ofContinuousOpenRestrict e hc (ho.restrict hs) hs
@@ -1078,7 +1078,7 @@ end Prod
 
 section Piecewise
 
-/-- Combine two `local_homeomorph`s using `set.piecewise`. The source of the new `local_homeomorph`
+/-- Combine two `LocalHomeomorph`s using `Set.piecewise`. The source of the new `LocalHomeomorph`
 is `s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly for target.  The
 function sends `e.source ∩ s` to `e.target ∩ t` using `e` and `e'.source \ s` to `e'.target \ t`
 using `e'`, and similarly for the inverse function. To ensure that the maps `toFun` and `inv_fun`
@@ -1114,8 +1114,8 @@ theorem symm_piecewise (e e' : LocalHomeomorph α β) {s : Set α} {t : Set β} 
   rfl
 #align local_homeomorph.symm_piecewise LocalHomeomorph.symm_piecewise
 
-/-- Combine two `local_homeomorph`s with disjoint sources and disjoint targets. We reuse
-`local_homeomorph.piecewise` then override `toLocalEquiv` to `local_equiv.disjoint_union`.
+/-- Combine two `LocalHomeomorph`s with disjoint sources and disjoint targets. We reuse
+`LocalHomeomorph.piecewise` then override `toLocalEquiv` to `LocalEquiv.disjointUnion`.
 This way we have better definitional equalities for `source` and `target`. -/
 def disjointUnion (e e' : LocalHomeomorph α β) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] (Hs : Disjoint e.source e'.source)
@@ -1137,7 +1137,7 @@ section Pi
 variable {ι : Type _} [Fintype ι] {Xi Yi : ι → Type _} [∀ i, TopologicalSpace (Xi i)]
   [∀ i, TopologicalSpace (Yi i)] (ei : ∀ i, LocalHomeomorph (Xi i) (Yi i))
 
-/-- The product of a finite family of `local_homeomorph`s. -/
+/-- The product of a finite family of `LocalHomeomorph`s. -/
 @[simps toLocalEquiv]
 def pi : LocalHomeomorph (∀ i, Xi i) (∀ i, Yi i) where
   toLocalEquiv := LocalEquiv.pi fun i => (ei i).toLocalEquiv
@@ -1225,7 +1225,7 @@ theorem continuous_iff_continuous_comp_left {f : γ → α} (h : f ⁻¹' e.sour
 
 end Continuity
 
-/-- The homeomorphism obtained by restricting a `local_homeomorph` to a subset of the source. -/
+/-- The homeomorphism obtained by restricting a `LocalHomeomorph` to a subset of the source. -/
 @[simps]
 def homeomorphOfImageSubsetSource {s : Set α} {t : Set β} (hs : s ⊆ e.source) (ht : e '' s = t) :
     s ≃ₜ t :=
@@ -1276,7 +1276,7 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set α)) (h' 
 attribute [mfld_simps] toHomeomorphOfSourceEqUnivTargetEqUniv_apply toHomeomorphOfSourceEqUnivTargetEqUniv_symm_apply
 
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
-converse is also true; see `open_embedding.to_local_homeomorph`. -/
+converse is also true; see `OpenEmbedding.toLocalHomeomorph`. -/
 theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e := by
   apply openEmbedding_of_continuous_injective_open
   · apply continuous_iff_continuousOn_univ.mpr
@@ -1320,7 +1320,7 @@ namespace OpenEmbedding
 variable (f : α → β) (h : OpenEmbedding f)
 
 /-- An open embedding of `α` into `β`, with `α` nonempty, defines a local homeomorphism whose source
-is all of `α`.  The converse is also true; see `local_homeomorph.to_open_embedding`. -/
+is all of `α`.  The converse is also true; see `LocalHomeomorph.to_openEmbedding`. -/
 @[simps! (config := mfld_cfg) apply source target]
 noncomputable def toLocalHomeomorph [Nonempty α] : LocalHomeomorph α β :=
   LocalHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn univ).toLocalEquiv _ _)
