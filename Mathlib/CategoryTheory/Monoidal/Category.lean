@@ -15,17 +15,17 @@ import Mathlib.CategoryTheory.Products.Basic
 
 A monoidal category is a category equipped with a tensor product, unitors, and an associator.
 In the definition, we provide the tensor product as a pair of functions
-* `tensor_obj : C → C → C`
-* `tensor_hom : (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → ((X₁ ⊗ X₂) ⟶ (Y₁ ⊗ Y₂))`
+* `tensorObj : C → C → C`
+* `tensorHom : (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → ((X₁ ⊗ X₂) ⟶ (Y₁ ⊗ Y₂))`
 and allow use of the overloaded notation `⊗` for both.
 The unitors and associator are provided componentwise.
 
 The tensor product can be expressed as a functor via `tensor : C × C ⥤ C`.
 The unitors and associator are gathered together as natural
-isomorphisms in `left_unitor_nat_iso`, `right_unitor_nat_iso` and `associator_nat_iso`.
+isomorphisms in `leftUnitor_nat_iso`, `rightUnitor_nat_iso` and `associator_nat_iso`.
 
 Some consequences of the definition are proved in other files,
-e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `category_theory.monoidal.unitors_equal`.
+e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `CategoryTheory.Monoidal.UnitorsEqual`.
 
 ## Implementation
 Dealing with unitors and associators is painful, and at this stage we do not have a useful
