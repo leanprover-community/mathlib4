@@ -1,60 +1,74 @@
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Card
 
-@[derive decidable_eq, to_additive]
-inductive mul_z2 : Type
-| one : mul_z2
-| a : mul_z2
+inductive AddZ2 : Type
+| zero : AddZ2
+| a : AddZ2
+deriving DecidableEq
 
-namespace mul_z2
+@[to_additive]
+inductive MulZ2 : Type
+| one : MulZ2
+| a : MulZ2
+deriving DecidableEq
 
-instance : fintype mul_z2 := ⟨{one, a}, λ x, by cases x; simp⟩
+namespace MulZ2
 
-@[simp] lemma card_eq : fintype.card mul_z2 = 2 := rfl
+-- should not be necessary, if to_additive knew a↦a
+attribute [to_additive?] instDecidableEqMulZ2 a
 
-def elim {α : Sort*} (x y : α) : mul_z2 → α := λ z, mul_z2.rec_on z x y
+@[to_additive]
+instance : Fintype MulZ2 := ⟨{one, a}, fun x ↦ by cases x <;> simp⟩
 
-protected def mul : mul_z2 → mul_z2 → mul_z2
-| one x := x
-| a one := a
-| a a := one
+@[to_additive (attr := simp)] lemma card_eq : Fintype.card MulZ2 = 2 := rfl
 
-instance : comm_group mul_z2 :=
-{ mul := mul_z2.mul,
-  mul_assoc := dec_trivial,
-  mul_comm := dec_trivial,
+@[to_additive] def elim {α : Sort _} (x y : α) : MulZ2 → α
+| one => x
+| a => y
+
+@[to_additive] protected def mul : MulZ2 → MulZ2 → MulZ2
+| one, x => x
+| a, one => a
+| a, a => one
+
+@[to_additive] instance : CommGroup MulZ2 :=
+{ mul := MulZ2.mul,
+  mul_assoc := by decide,
+  mul_comm := by decide,
   one := one,
-  one_mul := λ x, rfl,
-  mul_one := dec_trivial,
-  inv := λ x, x,
-  div := mul_z2.mul,
-  div_eq_mul_inv := λ x y, rfl,
-  mul_left_inv := dec_trivial }
+  one_mul := fun x ↦ rfl,
+  mul_one := by decide,
+  inv := fun x ↦ x,
+  div := MulZ2.mul,
+  div_eq_mul_inv := fun x y ↦ rfl,
+  mul_left_inv := by decide }
 
-@[simp] protected lemma «forall» {p : mul_z2 → Prop} : (∀ x, p x) ↔ p 1 ∧ p a :=
-⟨λ h, ⟨h 1, h a⟩, λ h x, mul_z2.rec_on x h.1 h.2⟩
+@[to_additive (attr := simp)] lemma one_eq_1 : one = 1 := rfl
 
-@[simp] protected lemma «exists» {p : mul_z2 → Prop} : (∃ x, p x) ↔ p 1 ∨ p a :=
-⟨λ ⟨x, hx⟩, mul_z2.rec_on x or.inl or.inr hx, λ h, h.elim (λ h, ⟨_, h⟩) (λ h, ⟨_, h⟩)⟩
+@[to_additive (attr := simp)] protected lemma «forall» {p : MulZ2 → Prop} : (∀ x, p x) ↔ p one ∧ p a :=
+⟨fun h ↦ ⟨h one, h a⟩, fun h x ↦ MulZ2.recOn x h.1 h.2⟩
 
-@[simp] lemma mul_self : ∀ x : mul_z2, x * x = 1 := dec_trivial
+@[to_additive (attr := simp)] protected lemma «exists» {p : MulZ2 → Prop} : (∃ x, p x) ↔ p one ∨ p a :=
+⟨fun ⟨x, hx⟩ ↦ MulZ2.recOn x Or.inl Or.inr hx, fun h ↦ h.elim (fun h ↦ ⟨_, h⟩) (fun h ↦ ⟨_, h⟩)⟩
 
-@[simp] lemma elim_one {α} (x y : α) : elim x y 1 = x := rfl
-@[simp] lemma elim_a {α} (x y : α) : elim x y a = y := rfl
+@[to_additive (attr := simp)] lemma mul_self : ∀ x : MulZ2, x * x = 1 := by decide
 
-lemma a_ne_one : a ≠ 1.
-lemma one_ne_a : 1 ≠ a.
-lemma ne_one_iff : ∀ {x}, x ≠ 1 ↔ x = a := dec_trivial
-lemma one_ne_iff : ∀ {x}, 1 ≠ x ↔ x = a := dec_trivial
+@[to_additive (attr := simp)] lemma elim_one {α} (x y : α) : elim x y 1 = x := rfl
+@[to_additive (attr := simp)] lemma elim_a {α} (x y : α) : elim x y a = y := rfl
 
-lemma hom_ext {M F : Type*} [has_one M] [one_hom_class F mul_z2 M] {f g : F} (h : f a = g a) :
-  f = g :=
-fun_like.ext _ _ $ by simp [h]
+lemma a_ne_one : a ≠ 1 := by decide
+lemma one_ne_a : 1 ≠ a := by decide
+lemma ne_one_iff : ∀ {x}, x ≠ 1 ↔ x = a := by decide
+lemma one_ne_iff : ∀ {x}, 1 ≠ x ↔ x = a := by decide
 
-def lift {M : Type*} [mul_one_class M] : {x : M // x * x = 1} ≃ (mul_z2 →* M) :=
-{ to_fun := λ x, ⟨elim 1 x, rfl, by simpa using x.2.symm⟩,
-  inv_fun := λ f, ⟨f a, by rw [← map_mul, mul_self, map_one]⟩,
-  left_inv := λ x, subtype.ext rfl,
-  right_inv := λ f, hom_ext rfl }
+lemma hom_ext {M F : Type _} [One M] [OneHomClass F MulZ2 M] {f g : F} (h : f a = g a) :
+  f = g := FunLike.ext _ _ $ by simp [h]
 
-end mul_z2
+def lift {M : Type _} [MulOneClass M] : {x : M // x * x = 1} ≃ (MulZ2 →* M) :=
+{ toFun := fun x ↦ ⟨⟨elim 1 x.1, rfl⟩, by simpa using x.2.symm⟩,
+  invFun := fun f ↦ ⟨f a, by rw [← map_mul, mul_self, map_one]⟩,
+  left_inv := fun x ↦ Subtype.ext rfl,
+  right_inv := fun f ↦ hom_ext rfl }
+
+end MulZ2
