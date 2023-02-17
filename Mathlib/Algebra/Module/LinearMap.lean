@@ -274,9 +274,9 @@ theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
   rfl
 #align linear_map.coe_mk LinearMap.coe_mk
 
--- Porting note: This theorem is added.
+-- Porting note: This theorem is new.
 @[simp]
-theorem coe_mk' {σ : R →+* S} (f : AddHom M M₃) (h) :
+theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
   rfl
 

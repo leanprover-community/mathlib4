@@ -322,11 +322,17 @@ variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ 
 
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
--- Porting note: The linter don't thinks the `RingHomCompTriple` argument is doubled, so
---               `nolint unusedArguments` is not necessary.
+-- Porting note: Lean 4 aggressively removes unused variables declared using `variables`, so
+-- we have to list all the variables explicitly here in order to match the Lean 3 signature.
+set_option linter.unusedVariables false in
 /-- Linear equivalences are transitive. -/
-@[trans]
-def trans : M₁ ≃ₛₗ[σ₁₃] M₃ :=
+@[trans, nolint unusedArguments]
+def trans
+  [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
+  {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
+  [RingHomInvPair σ₁₃ σ₃₁] {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+  {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ σ₁₃]
+  (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) : M₁ ≃ₛₗ[σ₁₃] M₃ :=
   { e₂₃.toLinearMap.comp e₁₂.toLinearMap, e₁₂.toEquiv.trans e₂₃.toEquiv with }
 #align linear_equiv.trans LinearEquiv.trans
 
@@ -335,7 +341,7 @@ set_option quotPrecheck false in
 /-- The notation `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
 infixl:80 " ≪≫ₗ " =>
   @LinearEquiv.trans _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
-    (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids
+    (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids
     RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids
     RingHomInvPair.ids
 
