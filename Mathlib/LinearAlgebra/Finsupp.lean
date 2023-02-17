@@ -1191,16 +1191,12 @@ theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : S
 theorem leftInverse_splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     LeftInverse f (splittingOfFinsuppSurjective f s) := fun g =>
   LinearMap.congr_fun (splittingOfFinsuppSurjective_splits f s) g
-#align
-  linear_map.left_inverse_splitting_of_finsupp_surjective
-  LinearMap.leftInverse_splittingOfFinsuppSurjective
+#align linear_map.left_inverse_splitting_of_finsupp_surjective LinearMap.leftInverse_splittingOfFinsuppSurjective
 
 theorem splittingOfFinsuppSurjective_injective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     Injective (splittingOfFinsuppSurjective f s) :=
   (leftInverse_splittingOfFinsuppSurjective f s).Injective
-#align
-  linear_map.splitting_of_finsupp_surjective_injective
-  LinearMap.splittingOfFinsuppSurjective_injective
+#align linear_map.splitting_of_finsupp_surjective_injective LinearMap.splittingOfFinsuppSurjective_injective
 
 -- See also `linear_map.splitting_of_finsupp_surjective`
 /-- A surjective linear map to functions on a finite type has a splitting. -/
@@ -1208,9 +1204,7 @@ def splittingOfFunOnFintypeSurjective [Fintype α] (f : M →ₗ[R] α → R) (s
     (α → R) →ₗ[R] M :=
   (Finsupp.lift _ _ _ fun x : α => (s (Finsupp.single x 1)).some).comp
     (linearEquivFunOnFinite R R α).symm.toLinearMap
-#align
-  linear_map.splitting_of_fun_on_fintype_surjective
-  LinearMap.splittingOfFunOnFintypeSurjective
+#align linear_map.splitting_of_fun_on_fintype_surjective LinearMap.splittingOfFunOnFintypeSurjective
 
 theorem splittingOfFunOnFintypeSurjective_splits [Fintype α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : f.comp (splittingOfFunOnFintypeSurjective f s) = LinearMap.id := by
@@ -1219,22 +1213,16 @@ theorem splittingOfFunOnFintypeSurjective_splits [Fintype α] (f : M →ₗ[R] �
   rw [linear_equiv_fun_on_finite_symm_single, Finsupp.sum_single_index, one_smul,
     (s (Finsupp.single x 1)).choose_spec, Finsupp.single_eq_pi_single]
   rw [zero_smul]
-#align
-  linear_map.splitting_of_fun_on_fintype_surjective_splits
-  LinearMap.splittingOfFunOnFintypeSurjective_splits
+#align linear_map.splitting_of_fun_on_fintype_surjective_splits LinearMap.splittingOfFunOnFintypeSurjective_splits
 
 theorem leftInverse_splittingOfFunOnFintypeSurjective [Fintype α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : LeftInverse f (splittingOfFunOnFintypeSurjective f s) := fun g =>
   LinearMap.congr_fun (splittingOfFunOnFintypeSurjective_splits f s) g
-#align
-  linear_map.left_inverse_splitting_of_fun_on_fintype_surjective
-  LinearMap.leftInverse_splittingOfFunOnFintypeSurjective
+#align linear_map.left_inverse_splitting_of_fun_on_fintype_surjective LinearMap.leftInverse_splittingOfFunOnFintypeSurjective
 
 theorem splittingOfFunOnFintypeSurjective_injective [Fintype α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : Injective (splittingOfFunOnFintypeSurjective f s) :=
   (leftInverse_splittingOfFunOnFintypeSurjective f s).injective
-#align
-  linear_map.splitting_of_fun_on_fintype_surjective_injective
-  LinearMap.splittingOfFunOnFintypeSurjective_injective
+#align linear_map.splitting_of_fun_on_fintype_surjective_injective LinearMap.splittingOfFunOnFintypeSurjective_injective
 
 end LinearMap
