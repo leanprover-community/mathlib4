@@ -15,7 +15,7 @@ import Std.Data.Option.Basic
 import Std.Tactic.NormCast.Ext -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint.Simp -- for DiscrTree.elements
-import Std.Tactic.Lint.Frontend -- useful to lint this file
+import Std.Tactic.Lint -- useful to lint this file
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
 import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
@@ -719,6 +719,7 @@ def nameDict : String → List String
 | "prehaar"     => ["add", "Prehaar"]
 | "unit"        => ["add", "Unit"]
 | "units"       => ["add", "Units"]
+| "rootable"    => ["divisible"]
 | x             => [x]
 
 /--

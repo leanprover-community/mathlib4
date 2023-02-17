@@ -13,9 +13,9 @@ import Mathlib.Topology.Homeomorph
 /-!
 # Topological space structure on the opposite monoid and on the units group
 
-In this file we define `topological_space` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `add_units M`.
+In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `add_units M`.
 This file does not import definitions of a topological monoid and/or a continuous multiplicative
-action, so we postpone the proofs of `has_continuous_mul Mᵐᵒᵖ` etc till we have these definitions.
+action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc till we have these definitions.
 
 ## Tags
 
@@ -37,20 +37,20 @@ instance [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
 
 variable [TopologicalSpace M]
 
-@[to_additive] -- porting note: todo: restore `continuity`
+@[to_additive, continuity]
 theorem continuous_unop : Continuous (unop : Mᵐᵒᵖ → M) :=
   continuous_induced_dom
 #align mul_opposite.continuous_unop MulOpposite.continuous_unop
 #align add_opposite.continuous_unop AddOpposite.continuous_unop
 
-@[to_additive] -- porting note: todo: restore `continuity`
+@[to_additive, continuity]
 theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
   continuous_induced_rng.2 continuous_id
 #align mul_opposite.continuous_op MulOpposite.continuous_op
 #align add_opposite.continuous_op AddOpposite.continuous_op
 
-/-- `mul_opposite.op` as a homeomorphism. -/
-@[to_additive "`add_opposite.op` as a homeomorphism.", simps]
+/-- `MulOpposite.op` as a homeomorphism. -/
+@[to_additive (attr := simps!) "`AddOpposite.op` as a homeomorphism."]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
   continuous_toFun := continuous_op

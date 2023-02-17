@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module dynamics.fixed_points.basic
-! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -58,7 +58,6 @@ protected theorem eq (hf : IsFixedPt f x) : f x = x :=
 
 /-- If `x` is a fixed point of `f` and `g`, then it is a fixed point of `f ∘ g`. -/
 protected theorem comp (hf : IsFixedPt f x) (hg : IsFixedPt g x) : IsFixedPt (f ∘ g) x :=
-  show _ = _ from -- lean4#2073
   calc
     f (g x) = f x := congr_arg f hg
     _ = x := hf
@@ -72,7 +71,6 @@ protected theorem iterate (hf : IsFixedPt f x) (n : ℕ) : IsFixedPt (f^[n]) x :
 
 /-- If `x` is a fixed point of `f ∘ g` and `g`, then it is a fixed point of `f`. -/
 theorem left_of_comp (hfg : IsFixedPt (f ∘ g) x) (hg : IsFixedPt g x) : IsFixedPt f x :=
-  show _ = _ from -- lean4#2073
   calc
     f x = f (g x) := congr_arg f hg.symm
     _ = x := hfg
@@ -82,7 +80,6 @@ theorem left_of_comp (hfg : IsFixedPt (f ∘ g) x) (hg : IsFixedPt g x) : IsFixe
 /-- If `x` is a fixed point of `f` and `g` is a left inverse of `f`, then `x` is a fixed
 point of `g`. -/
 theorem to_leftInverse (hf : IsFixedPt f x) (h : LeftInverse g f) : IsFixedPt g x :=
-  show _ = _ from -- lean4#2073
   calc
     g x = g (f x) := congr_arg g hf.symm
     _ = x := h x
@@ -93,7 +90,6 @@ theorem to_leftInverse (hf : IsFixedPt f x) (h : LeftInverse g f) : IsFixedPt g 
 of `fb`. -/
 protected theorem map {x : α} (hx : IsFixedPt fa x) {g : α → β} (h : Semiconj g fa fb) :
     IsFixedPt fb (g x) :=
-  show _ = _ from -- lean4#2073
   calc
     fb (g x) = g (fa x) := (h.eq x).symm
     _ = g x := congr_arg g hx

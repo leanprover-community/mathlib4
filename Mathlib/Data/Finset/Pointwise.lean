@@ -496,9 +496,8 @@ theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
 #align finset.singleton_add_hom_apply Finset.singletonAddHom_apply
 
 /-- Lift a `MulHom` to `Finset` via `image`. -/
-@[to_additive "Lift an `AddHom` to `Finset` via `image`", simps]
-def imageMulHom : Finset α →ₙ* Finset β
-    where
+@[to_additive (attr := simps) "Lift an `AddHom` to `Finset` via `image`"]
+def imageMulHom : Finset α →ₙ* Finset β where
   toFun := Finset.image f
   map_mul' _ _ := image_mul _
 #align finset.image_mul_hom Finset.imageMulHom
@@ -807,7 +806,7 @@ theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
 #align finset.coe_add_monoid_hom_apply Finset.coeAddMonoidHom_apply
 
 /-- Lift a `MonoidHom` to `Finset` via `image`. -/
-@[to_additive "Lift an `add_monoid_hom` to `Finset` via `image`", simps]
+@[to_additive (attr := simps) "Lift an `add_monoid_hom` to `Finset` via `image`"]
 def imageMonoidHom [MulOneClass β] [MonoidHomClass F α β] (f : F) : Finset α →* Finset β :=
   { imageMulHom f, imageOneHom f with }
 #align finset.image_monoid_hom Finset.imageMonoidHom
@@ -1891,7 +1890,7 @@ theorem mem_inv_smul_finset_iff₀ (ha : a ≠ 0) : b ∈ a⁻¹ • s ↔ a •
   show _ ∈ (Units.mk0 a ha)⁻¹ • _ ↔ _ from mem_inv_smul_finset_iff
 #align finset.mem_inv_smul_finset_iff₀ Finset.mem_inv_smul_finset_iff₀
 
-@[simp]
+-- @[simp] -- Porting note: `simpNF` linter times out
 theorem smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t ↔ s ⊆ t :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_smul_finset_iff
 #align finset.smul_finset_subset_smul_finset_iff₀ Finset.smul_finset_subset_smul_finset_iff₀

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.pointwise
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -34,7 +34,7 @@ Additionally, it provides various degrees of monoid structure:
 * `AddSubmonoid.mulOneClass`
 * `AddSubmonoid.semigroup`
 * `AddSubmonoid.monoid`
-which is available globally to match the monoid structure implied by `Submodule.semiring`.
+which is available globally to match the monoid structure implied by `Submodule.idemSemiring`.
 
 ## Implementation notes
 
@@ -158,7 +158,7 @@ theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
 #align add_submonoid.neg_le AddSubmonoid.neg_le
 
 /-- Pointwise inversion of submonoids as an order isomorphism. -/
-@[to_additive " Pointwise negation of additive submonoids as an order isomorphism ", simps]
+@[to_additive (attr := simps!) "Pointwise negation of additive submonoids as an order isomorphism"]
 def invOrderIso : Submonoid G ≃o Submonoid G where
   toEquiv := Equiv.inv _
   map_rel_iff' := inv_le_inv _ _
