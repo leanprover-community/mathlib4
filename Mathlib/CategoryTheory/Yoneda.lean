@@ -180,6 +180,7 @@ namespace Functor
 See <https://stacks.math.columbia.edu/tag/001Q>.
 -/
 class Representable (F : Cᵒᵖ ⥤ Type v₁) : Prop where
+  /-- `Hom(-,X) ≅ F` via `f` -/
   has_representation : ∃ (X : _)(f : yoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.representable CategoryTheory.Functor.Representable
 
@@ -190,6 +191,7 @@ instance {X : C} : Representable (yoneda.obj X) where has_representation := ⟨X
 See <https://stacks.math.columbia.edu/tag/001Q>.
 -/
 class Corepresentable (F : C ⥤ Type v₁) : Prop where
+  /-- `Hom(X,-) ≅ F` via `f` -/
   has_corepresentation : ∃ (X : _)(f : coyoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.corepresentable CategoryTheory.Functor.Corepresentable
 
@@ -215,13 +217,24 @@ noncomputable def reprF : yoneda.obj F.reprX ⟶ F :=
   Representable.has_representation.choose_spec.choose
 #align category_theory.functor.repr_f CategoryTheory.Functor.reprF
 
-/- warning: category_theory.functor.repr_x clashes with category_theory.functor.repr_X -> CategoryTheory.Functor.reprX
-warning: category_theory.functor.repr_x -> CategoryTheory.Functor.reprX is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2, succ u1} (Opposite.{succ u2} C) (CategoryTheory.Category.opposite.{u1, u2} C _inst_1) Type.{u1} CategoryTheory.types.{u1}) [_inst_2 : CategoryTheory.Functor.Representable.{u1, u2} C _inst_1 F], CategoryTheory.Functor.obj.{u1, u1, u2, succ u1} (Opposite.{succ u2} C) (CategoryTheory.Category.opposite.{u1, u2} C _inst_1) Type.{u1} CategoryTheory.types.{u1} F (Opposite.op.{succ u2} C (CategoryTheory.Functor.reprX.{u1, u2} C _inst_1 F _inst_2))
-but is expected to have type
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2, succ u1} (Opposite.{succ u2} C) (CategoryTheory.Category.opposite.{u1, u2} C _inst_1) Type.{u1} CategoryTheory.types.{u1}) [_inst_2 : CategoryTheory.Functor.Representable.{u1, u2} C _inst_1 F], C
-Case conversion may be inaccurate. Consider using '#align category_theory.functor.repr_x CategoryTheory.Functor.reprXₓ'. -/
+/- warning: category_theory.functor.repr_x clashes with
+\  category_theory.functor.repr_X -> CategoryTheory.Functor.reprX
+warning: category_theory.functor.repr_x -> CategoryTheory.Functor.reprX is a
+dubious translation: lean 3 declaration is forall {C : Type.{u2}} [_inst_1 :
+CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2,
+succ u1} (Opposite.{succ u2} C) (CategoryTheory.Category.opposite.{u1, u2} C
+_inst_1) Type.{u1} CategoryTheory.types.{u1}) [_inst_2 :
+CategoryTheory.Functor.Representable.{u1, u2} C _inst_1 F],
+CategoryTheory.Functor.obj.{u1, u1, u2, succ u1} (Opposite.{succ u2} C)
+(CategoryTheory.Category.opposite.{u1, u2} C _inst_1) Type.{u1}
+CategoryTheory.types.{u1} F (Opposite.op.{succ u2} C
+(CategoryTheory.Functor.reprX.{u1, u2} C _inst_1 F _inst_2)) but is expected to
+have type forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C]
+(F : CategoryTheory.Functor.{u1, u1, u2, succ u1} (Opposite.{succ u2} C)
+(CategoryTheory.Category.opposite.{u1, u2} C _inst_1) Type.{u1}
+CategoryTheory.types.{u1}) [_inst_2 : CategoryTheory.Functor.Representable.{u1,
+u2} C _inst_1 F], C Case conversion may be inaccurate. Consider using '#align
+category_theory.functor.repr_x CategoryTheory.Functor.reprXₓ'. -/
 /-- The representing element for the representable functor `F`, sometimes called the universal
 element of the functor.
 -/
@@ -271,13 +284,21 @@ noncomputable def coreprF : coyoneda.obj (op F.coreprX) ⟶ F :=
   Corepresentable.has_corepresentation.choose_spec.choose
 #align category_theory.functor.corepr_f CategoryTheory.Functor.coreprF
 
-/- warning: category_theory.functor.corepr_x clashes with category_theory.functor.corepr_X -> CategoryTheory.Functor.coreprX
-warning: category_theory.functor.corepr_x -> CategoryTheory.Functor.coreprX is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2, succ u1} C _inst_1 Type.{u1} CategoryTheory.types.{u1}) [_inst_2 : CategoryTheory.Functor.Corepresentable.{u1, u2} C _inst_1 F], CategoryTheory.Functor.obj.{u1, u1, u2, succ u1} C _inst_1 Type.{u1} CategoryTheory.types.{u1} F (CategoryTheory.Functor.coreprX.{u1, u2} C _inst_1 F _inst_2)
-but is expected to have type
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2, succ u1} C _inst_1 Type.{u1} CategoryTheory.types.{u1}) [_inst_2 : CategoryTheory.Functor.Corepresentable.{u1, u2} C _inst_1 F], C
-Case conversion may be inaccurate. Consider using '#align category_theory.functor.corepr_x CategoryTheory.Functor.coreprXₓ'. -/
+/- warning: category_theory.functor.corepr_x clashes with
+\  category_theory.functor.corepr_X -> CategoryTheory.Functor.coreprX
+warning: category_theory.functor.corepr_x -> CategoryTheory.Functor.coreprX is
+a dubious translation: lean 3 declaration is forall {C : Type.{u2}} [_inst_1 :
+CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2,
+succ u1} C _inst_1 Type.{u1} CategoryTheory.types.{u1}) [_inst_2 :
+CategoryTheory.Functor.Corepresentable.{u1, u2} C _inst_1 F],
+CategoryTheory.Functor.obj.{u1, u1, u2, succ u1} C _inst_1 Type.{u1}
+CategoryTheory.types.{u1} F (CategoryTheory.Functor.coreprX.{u1, u2} C _inst_1
+F _inst_2) but is expected to have type forall {C : Type.{u2}} [_inst_1 :
+CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2,
+succ u1} C _inst_1 Type.{u1} CategoryTheory.types.{u1}) [_inst_2 :
+CategoryTheory.Functor.Corepresentable.{u1, u2} C _inst_1 F], C Case conversion
+may be inaccurate. Consider using '#align category_theory.functor.corepr_x
+CategoryTheory.Functor.coreprXₓ'. -/
 /-- The representing element for the corepresentable functor `F`, sometimes called the universal
 element of the functor.
 -/
@@ -457,24 +478,52 @@ theorem yonedaSectionsSmall_inv_app_apply {C : Type u₁} [SmallCategory C] (X :
 
 attribute [local ext] Functor.ext
 
+/- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
-    (yoneda.op ⋙ coyoneda : Cᵒᵖ ⥤ (Cᵒᵖ ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation Cᵒᵖ (Type u₁) :=
-  eqToIso (by apply Functor.ext; intro X Y f; sorry; sorry ) ≪≫
-    curry.mapIso
-        (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial) ≪≫
-      eqToIso (by ext X; intro Y f; sorry; sorry; sorry;) 
+    (yoneda.op ⋙ coyoneda : Cᵒᵖ ⥤ (Cᵒᵖ ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation Cᵒᵖ (Type u₁) := by 
+  refine eqToIso ?_ ≪≫ curry.mapIso 
+    (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial) ≪≫
+    eqToIso ?_
+  · apply Functor.ext 
+    · intro X Y f 
+      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
+      dsimp 
+      apply NatTrans.ext 
+      dsimp at *
+      funext F g 
+      apply NatTrans.ext 
+      simp 
+    · intro X 
+      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
+      aesop_cat
+  · apply Functor.ext
+    · intro X Y f 
+      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
+      dsimp 
+      apply NatTrans.ext 
+      dsimp at *
+      funext F g 
+      simp 
+    · intro X 
+      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
+      aesop_cat 
 #align category_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
-    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ (Type u₁)).obj yoneda.op ≅ 𝟭 (Cᵒᵖ ⥤ Type u₁) :=
-  eqToIso (by sorry) ≪≫
-    curry.mapIso
-        (isoWhiskerLeft (Prod.swap _ _)
-          (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial :
-            _)) ≪≫
-      eqToIso (by sorry)
+    yoneda ⋙ (whiskeringLeft Cᵒᵖ (Cᵒᵖ ⥤ Type u₁)ᵒᵖ (Type u₁)).obj yoneda.op ≅ 𝟭 (Cᵒᵖ ⥤ Type u₁) 
+    := by 
+  refine eqToIso ?_ ≪≫ curry.mapIso (isoWhiskerLeft (Prod.swap _ _)
+    (yonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried Cᵒᵖ (Type u₁)) uliftFunctorTrivial :_)) 
+    ≪≫ eqToIso ?_
+  · apply Functor.ext 
+    · intro X Y f 
+      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
+      aesop_cat
+  · apply Functor.ext
+    · intro X Y f 
+      aesop_cat
 #align category_theory.curried_yoneda_lemma' CategoryTheory.curriedYonedaLemma'
 
 end CategoryTheory
