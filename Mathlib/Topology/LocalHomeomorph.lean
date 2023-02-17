@@ -904,7 +904,7 @@ def transHomeomorph (e' : β ≃ₜ γ) : LocalHomeomorph α γ where
   open_source := e.open_source
   open_target := e.open_target.preimage e'.symm.continuous
   continuous_toFun := e'.continuous.comp_continuousOn e.continuousOn
-  continuous_invFun := e.symm.continuousOn.comp e'.symm.continuous.continuousOn fun x h => h
+  continuous_invFun := e.symm.continuousOn.comp e'.symm.continuous.continuousOn fun _ => id
 #align local_homeomorph.trans_homeomorph LocalHomeomorph.transHomeomorph
 
 theorem trans_equiv_eq_trans (e' : β ≃ₜ γ) : e.transHomeomorph e' = e.trans e'.toLocalHomeomorph :=
@@ -918,7 +918,7 @@ def _root_.Homeomorph.transLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph 
   toLocalEquiv := e.toEquiv.transLocalEquiv e'.toLocalEquiv
   open_source := e'.open_source.preimage e.continuous
   open_target := e'.open_target
-  continuous_toFun := e'.continuousOn.comp e.continuous.continuousOn fun x h => h
+  continuous_toFun := e'.continuousOn.comp e.continuous.continuousOn fun _ => id
   continuous_invFun := e.symm.continuous.comp_continuousOn e'.symm.continuousOn
 #align homeomorph.trans_local_homeomorph Homeomorph.transLocalHomeomorph
 
@@ -1070,7 +1070,7 @@ are inverse of each other on the new `source` and `target`, the definition assum
 and `t` are related both by `e.is_image` and `e'.is_image`. To ensure that the new maps are
 continuous on `source`/`target`, it also assumes that `e.source` and `e'.source` meet `frontier s`
 on the same set and `e x = e' x` on this intersection. -/
-@[simps (config := { fullyApplied := false }) toLocalEquiv apply]
+@[simps! (config := { fullyApplied := false }) toLocalEquiv apply]
 def piecewise (e e' : LocalHomeomorph α β) (s : Set α) (t : Set β) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t)
     (Hs : e.source ∩ frontier s = e'.source ∩ frontier s)
@@ -1125,14 +1125,12 @@ variable {ι : Type _} [Fintype ι] {Xi Yi : ι → Type _} [∀ i, TopologicalS
 @[simps toLocalEquiv]
 def pi : LocalHomeomorph (∀ i, Xi i) (∀ i, Yi i) where
   toLocalEquiv := LocalEquiv.pi fun i => (ei i).toLocalEquiv
-  open_source := isOpen_set_pi finite_univ fun i hi => (ei i).open_source
-  open_target := isOpen_set_pi finite_univ fun i hi => (ei i).open_target
-  continuous_toFun :=
-    continuousOn_pi.2 fun i =>
-      (ei i).continuousOn.comp (continuous_apply _).continuousOn fun f hf => hf i trivial
-  continuous_invFun :=
-    continuousOn_pi.2 fun i =>
-      (ei i).continuousOn_symm.comp (continuous_apply _).continuousOn fun f hf => hf i trivial
+  open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
+  open_target := isOpen_set_pi finite_univ fun i _ => (ei i).open_target
+  continuous_toFun := continuousOn_pi.2 fun i =>
+    (ei i).continuousOn.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
+  continuous_invFun := continuousOn_pi.2 fun i =>
+    (ei i).continuousOn_symm.comp (continuous_apply _).continuousOn fun _f hf => hf i trivial
 #align local_homeomorph.pi LocalHomeomorph.pi
 
 end Pi
@@ -1196,7 +1194,7 @@ theorem continuousAt_iff_continuousAt_comp_left {f : γ → α} {x : γ} (h : f 
 on the left is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_left {f : γ → α} {s : Set γ} (h : s ⊆ f ⁻¹' e.source) :
     ContinuousOn f s ↔ ContinuousOn (e ∘ f) s :=
-  forall₂_congr fun x hx =>
+  forall₂_congr fun _x hx =>
     e.continuousWithinAt_iff_continuousWithinAt_comp_left (h hx)
       (mem_of_superset self_mem_nhdsWithin h)
 #align local_homeomorph.continuous_on_iff_continuous_on_comp_left LocalHomeomorph.continuousOn_iff_continuousOn_comp_left
