@@ -695,8 +695,7 @@ theorem mem_singleton_self (a : α) : a ∈ ({a} : Finset α) :=
 #align finset.mem_singleton_self Finset.mem_singleton_self
 
 @[simp]
-theorem val_eq_singleton_iff {a : α} {s : Finset α} : s.val = {a} ↔ s = {a} :=
-  by
+theorem val_eq_singleton_iff {a : α} {s : Finset α} : s.val = {a} ↔ s = {a} := by
   rw [← val_inj]
   rfl
 #align finset.val_eq_singleton_iff Finset.val_eq_singleton_iff
