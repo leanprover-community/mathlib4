@@ -118,7 +118,7 @@ instance [Subsingleton α] : Subsingleton (Discrete α) :=
 --  add_interactive [`` tactic.discrete_cases]
 
 --attribute [local tidy] tactic.discrete_cases
---`[cases_matching* [discrete _, (_ : discrete _) ⟶ (_ : discrete _), plift _]]
+--`[cases_matching* [discrete _, (_ : discrete _) ⟶ (_ : discrete _), PLift _]]
 
 --macro (name := discrete_cases) "discrete_cases" : tactic =>
 --  `(tactic|casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
@@ -267,7 +267,7 @@ def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : 
 \  tactic `discrete_cases #[] -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
 \  tactic `discrete_cases #[] -/
-/-- We can promote a type-level `equiv` to
+/-- We can promote a type-level `Equiv` to
 an equivalence between the corresponding `discrete` categories.
 -/
 @[simps]
@@ -289,7 +289,7 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
           simp)
 #align category_theory.discrete.equivalence CategoryTheory.Discrete.equivalence
 
-/-- We can convert an equivalence of `discrete` categories to a type-level `equiv`. -/
+/-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]
 def equivOfEquivalence {α : Type u₁} {β : Type u₂} (h : Discrete α ≌ Discrete β) : α ≃ β
     where
