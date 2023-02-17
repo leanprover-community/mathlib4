@@ -588,11 +588,15 @@ theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : Surjective f)
     ⟨inr x, congr_arg inr hx⟩
 #align function.surjective.sum_map Function.Surjective.sum_map
 
+-- TODO: `bijective.sum_map`
+
 end Function
 
 namespace Sum
 
 open Function
+
+-- TODO: `map_injective`, `map_surjective`, `map_bijective`
 
 theorem elim_const_const (c : γ) :
     Sum.elim (const _ c : α → γ) (const _ c : β → γ) = const _ c := by

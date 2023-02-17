@@ -341,3 +341,7 @@ theorem Involutive.Prod_map {f : α → α} {g : β → β} :
 #align function.involutive.prod_map Function.Involutive.Prod_map
 
 end Function
+
+namespace Prod
+-- TODO
+end Prod
