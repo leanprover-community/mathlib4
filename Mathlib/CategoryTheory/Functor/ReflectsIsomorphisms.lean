@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Balanced
-import Mathbin.CategoryTheory.Functor.EpiMono
-import Mathbin.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.Balanced
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Functors which reflect isomorphisms
