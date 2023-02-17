@@ -9,7 +9,7 @@ Authors: Noam Atar
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
-import Mathlib.Order.Pfilter
+import Mathlib.Order.PFilter
 
 /-!
 # Prime ideals
