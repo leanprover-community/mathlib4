@@ -1200,7 +1200,7 @@ theorem Finite.card_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
 theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :
     Fintype.card { x : α | x ≠ a } = Fintype.card α - 1 := by
   haveI := Classical.decEq α
-  rw [← toFinset_card, to_finset_set_of, Finset.filter_ne',
+  rw [← toFinset_card, toFinset_setOf, Finset.filter_ne',
     Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ]
 #align set.card_ne_eq Set.card_ne_eq
 
