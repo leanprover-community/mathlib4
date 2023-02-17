@@ -1273,7 +1273,8 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set α)) (h' 
 #align local_homeomorph.to_homeomorph_of_source_eq_univ_target_eq_univ LocalHomeomorph.toHomeomorphOfSourceEqUnivTargetEqUniv
 
 -- porting note: todo: see #2350
-attribute [mfld_simps] toHomeomorphOfSourceEqUnivTargetEqUniv_apply toHomeomorphOfSourceEqUnivTargetEqUniv_symm_apply
+attribute [mfld_simps] toHomeomorphOfSourceEqUnivTargetEqUniv_apply
+  toHomeomorphOfSourceEqUnivTargetEqUniv_symm_apply
 
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
 converse is also true; see `OpenEmbedding.toLocalHomeomorph`. -/
