@@ -123,14 +123,19 @@ section
 `cone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cones.obj X`.
 -/
 structure Cone (F : J ⥤ C) where
-  x : C
+  X : C
   π : (const J).obj X ⟶ F
 #align category_theory.limits.cone CategoryTheory.Limits.Cone
 
 instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
-  ⟨{  x := F.obj ⟨⟨⟩⟩
+  ⟨{  X := F.obj ⟨⟨⟩⟩
       π := { app := fun ⟨⟨⟩⟩ => 𝟙 _ 
-             naturality := aesop_cat } 
+             naturality := by 
+              dsimp [const]
+              intro _ _ f
+              rw [id_comp,id_comp]
+              sorry 
+           } 
   }⟩
 #align category_theory.limits.inhabited_cone CategoryTheory.Limits.inhabitedCone
 
@@ -148,14 +153,14 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
 `cocone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cocones.obj X`.
 -/
 structure Cocone (F : J ⥤ C) where
-  x : C
+  X : C
   ι : F ⟶ (const J).obj X
 #align category_theory.limits.cocone CategoryTheory.Limits.Cocone
 
 instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
-  ⟨{  x := F.obj ⟨⟨⟩⟩
+  ⟨{  X := F.obj ⟨⟨⟩⟩
       ι := { app := fun ⟨⟨⟩⟩ => 𝟙 _  
-             naturality := aesop_cat} }⟩
+             naturality := by sorry } }⟩
 #align category_theory.limits.inhabited_cocone CategoryTheory.Limits.inhabitedCocone
 
 @[reassoc (attr := simp)]
@@ -175,31 +180,31 @@ namespace Cone
 @[simps!]
 def equiv (F : J ⥤ C) : Cone F ≅ ΣX, F.cones.obj X
     where
-  hom c := ⟨op c.x, c.π⟩
+  hom c := ⟨op c.X, c.π⟩
   inv c :=
-    { x := c.1.unop
+    { X := c.1.unop
       π := c.2 }
   hom_inv_id := by
-    ext1
-    cases x
+    funext X
+    cases X
     rfl
   inv_hom_id := by
-    ext1
-    cases x
+    funext X
+    cases X
     rfl
 #align category_theory.limits.cone.equiv CategoryTheory.Limits.Cone.equiv
 
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps!]
-def extensions (c : Cone F) : yoneda.obj c.x ⋙ uliftFunctor.{u₁} ⟶ F.cones where 
+def extensions (c : Cone F) : yoneda.obj c.X ⋙ uliftFunctor.{u₁} ⟶ F.cones where 
   app X f := (const J).map f.down ≫ c.π
-  naturality := sorry 
+  naturality := by sorry  
 #align category_theory.limits.cone.extensions CategoryTheory.Limits.Cone.extensions
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
 @[simps]
-def extend (c : Cone F) {X : C} (f : X ⟶ c.x) : Cone F :=
-  { x := X 
+def extend (c : Cone F) {X : C} (f : X ⟶ c.X) : Cone F :=
+  { X := X 
     π := c.extensions.app (op X) ⟨f⟩ }
 #align category_theory.limits.cone.extend CategoryTheory.Limits.Cone.extend
 
@@ -207,7 +212,7 @@ def extend (c : Cone F) {X : C} (f : X ⟶ c.x) : Cone F :=
 @[simps]
 def whisker (E : K ⥤ J) (c : Cone F) : Cone (E ⋙ F)
     where
-  x := c.x
+  X := c.X
   π := whiskerLeft E c.π
 #align category_theory.limits.cone.whisker CategoryTheory.Limits.Cone.whisker
 
@@ -218,30 +223,30 @@ namespace Cocone
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
 def equiv (F : J ⥤ C) : Cocone F ≅ ΣX, F.cocones.obj X
     where
-  hom c := ⟨c.x, c.ι⟩
+  hom c := ⟨c.X, c.ι⟩
   inv c :=
-    { x := c.1
+    { X := c.1
       ι := c.2 }
   hom_inv_id := by
-    ext1
-    cases x
+    funext X
+    cases X
     rfl
   inv_hom_id := by
-    ext1
-    cases x
+    funext X
+    cases X
     rfl
 #align category_theory.limits.cocone.equiv CategoryTheory.Limits.Cocone.equiv
 
 /-- A map from the vertex of a cocone naturally induces a cocone by composition. -/
 @[simps]
-def extensions (c : Cocone F) : coyoneda.obj (op c.x) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where 
+def extensions (c : Cocone F) : coyoneda.obj (op c.X) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where 
   app X f := c.ι ≫ (const J).map f.down
   naturality := sorry 
 #align category_theory.limits.cocone.extensions CategoryTheory.Limits.Cocone.extensions
 
 /-- A map from the vertex of a cocone induces a cocone by composition. -/
 @[simps]
-def extend (c : Cocone F) {X : C} (f : c.x ⟶ X) : Cocone F :=
+def extend (c : Cocone F) {X : C} (f : c.X ⟶ X) : Cocone F :=
   { c with 
     ι := c.extensions.app X ⟨f⟩ }
 #align category_theory.limits.cocone.extend CategoryTheory.Limits.Cocone.extend
@@ -252,7 +257,7 @@ version.
 @[simps]
 def whisker (E : K ⥤ J) (c : Cocone F) : Cocone (E ⋙ F)
     where
-  x := c.x
+  X := c.X
   ι := whiskerLeft E c.ι
 #align category_theory.limits.cocone.whisker CategoryTheory.Limits.Cocone.whisker
 
@@ -262,7 +267,7 @@ end Cocone
 commutes with the cone legs. -/
 @[ext]
 structure ConeMorphism (A B : Cone F) where
-  Hom : A.x ⟶ B.x
+  Hom : A.X ⟶ B.X
   w : ∀ j : J, Hom ≫ B.π.app j = A.π.app j := by aesop_cat
 #align category_theory.limits.cone_morphism CategoryTheory.Limits.ConeMorphism
 #align category_theory.limits.cone_morphism.w' CategoryTheory.Limits.ConeMorphism.w
@@ -275,11 +280,10 @@ instance inhabitedConeMorphism (A : Cone F) : Inhabited (ConeMorphism A A) :=
 
 /-- The category of cones on a given diagram. -/
 @[simps]
-instance Cone.category : Category (Cone F)
-    where
+instance Cone.category : Category (Cone F) where
   Hom A B := ConeMorphism A B
   comp f g := { Hom := f.Hom ≫ g.Hom }
-  id B := { Hom := 𝟙 B.x }
+  id B := { Hom := 𝟙 B.X }
 #align category_theory.limits.cone.category CategoryTheory.Limits.Cone.category
 
 namespace Cones
@@ -288,8 +292,7 @@ namespace Cones
   isomorphism between their vertices which commutes with the cone
   maps. -/
 @[ext, simps]
-def ext {c c' : Cone F} (φ : c.x ≅ c'.x) (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j) : c ≅ c'
-    where
+def ext {c c' : Cone F} (φ : c.X ≅ c'.X) (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j) : c ≅ c' where
   hom := { Hom := φ.hom }
   inv :=
     { Hom := φ.inv
@@ -298,7 +301,7 @@ def ext {c c' : Cone F} (φ : c.x ≅ c'.x) (w : ∀ j, c.π.app j = φ.hom ≫ 
 
 /-- Eta rule for cones. -/
 @[simps!]
-def eta (c : Cone F) : c ≅ ⟨c.x, c.π⟩ :=
+def eta (c : Cone F) : c ≅ ⟨c.X, c.π⟩ :=
   Cones.ext (Iso.refl _) (by aesop_cat)
 #align category_theory.limits.cones.eta CategoryTheory.Limits.Cones.eta
 
@@ -317,7 +320,7 @@ Functorially postcompose a cone for `F` by a natural transformation `F ⟶ G` to
 def postcompose {G : J ⥤ C} (α : F ⟶ G) : Cone F ⥤ Cone G
     where
   obj c :=
-    { x := c.x
+    { X := c.X
       π := c.π ≫ α }
   map f := { Hom := f.Hom }
 #align category_theory.limits.cones.postcompose CategoryTheory.Limits.Cones.postcompose
@@ -392,7 +395,7 @@ variable (F)
 /-- Forget the cone structure and obtain just the cone point. -/
 @[simps]
 def forget : Cone F ⥤ C where
-  obj t := t.x
+  obj t := t.X
   map f := f.Hom
 #align category_theory.limits.cones.forget CategoryTheory.Limits.Cones.forget
 
@@ -402,13 +405,13 @@ variable (G : C ⥤ D)
 @[simps]
 def functoriality : Cone F ⥤ Cone (F ⋙ G) where
   obj A :=
-    { x := G.obj A.x
+    { X := G.obj A.X
       π :=
         { app := fun j => G.map (A.π.app j)
-          naturality := by intros <;> erw [← G.map_comp] <;> aesop_cat } }
-  map X Y f :=
+          naturality := by intros; erw [← G.map_comp]; aesop_cat } }
+  map f :=
     { Hom := G.map f.Hom
-      w' := fun j => by simp [-cone_morphism.w, ← f.w j] }
+      w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
 #align category_theory.limits.cones.functoriality CategoryTheory.Limits.Cones.functoriality
 
 instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where 
@@ -418,8 +421,8 @@ instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) wher
 #align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
 
 instance functoriality_faithful [Faithful G] : Faithful (Cones.functoriality F G) where 
-  map_injective f g e := by
-    ext1
+  map_injective _ f g e := by
+    funext 
     injection e
     apply G.map_injective h_1
 #align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functoriality_faithful
@@ -457,7 +460,7 @@ end Cones
 which commutes with the cocone legs. -/
 @[ext]
 structure CoconeMorphism (A B : Cocone F) where
-  Hom : A.x ⟶ B.x
+  Hom : A.X ⟶ B.X
   w : ∀ j : J, A.ι.app j ≫ Hom = B.ι.app j := by aesop_cat
 #align category_theory.limits.cocone_morphism CategoryTheory.Limits.CoconeMorphism
 #align category_theory.limits.cocone_morphism.w' CategoryTheory.Limits.CoconeMorphism.w
@@ -472,7 +475,7 @@ attribute [reassoc (attr := simp)] CoconeMorphism.w
 instance Cocone.category : Category (Cocone F) where
   Hom A B := CoconeMorphism A B
   comp f g := { Hom := f.Hom ≫ g.Hom }
-  id B := { Hom := 𝟙 B.x }
+  id B := { Hom := 𝟙 B.X }
 #align category_theory.limits.cocone.category CategoryTheory.Limits.Cocone.category
 
 namespace Cocones
@@ -481,8 +484,8 @@ namespace Cocones
   isomorphism between their vertices which commutes with the cocone
   maps. -/
 @[ext, simps]
-def ext {c c' : Cocone F} (φ : c.x ≅ c'.x) (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j) : c ≅ c'
-    where
+def ext {c c' : Cocone F} (φ : c.X ≅ c'.X) (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j) 
+    : c ≅ c' where
   hom := { Hom := φ.hom }
   inv :=
     { Hom := φ.inv
@@ -491,7 +494,7 @@ def ext {c c' : Cocone F} (φ : c.x ≅ c'.x) (w : ∀ j, c.ι.app j ≫ φ.hom 
 
 /-- Eta rule for cocones. -/
 @[simps!]
-def eta (c : Cocone F) : c ≅ ⟨c.x, c.ι⟩ :=
+def eta (c : Cocone F) : c ≅ ⟨c.X, c.ι⟩ :=
   Cocones.ext (Iso.refl _) (by aesop_cat)
 #align category_theory.limits.cocones.eta CategoryTheory.Limits.Cocones.eta
 
@@ -509,7 +512,7 @@ for `G`. -/
 @[simps]
 def precompose {G : J ⥤ C} (α : G ⟶ F) : Cocone F ⥤ Cocone G where
   obj c :=
-    { x := c.x
+    { X := c.X
       ι := α ≫ c.ι }
   map f := { Hom := f.Hom }
 #align category_theory.limits.cocones.precompose CategoryTheory.Limits.Cocones.precompose
@@ -573,7 +576,7 @@ def whiskeringEquivalence (e : K ≌ J) : Cocone F ≌ Cocone (e.functor ⋙ F)
 The categories of cocones over `F` and `G` are equivalent if `F` and `G` are naturally isomorphic
 (possibly after changing the indexing category by an equivalence).
 -/
-@[simps functor_obj]
+@[simps! functor_obj]
 def equivalenceOfReindexing {G : K ⥤ C} (e : K ≌ J) (α : e.functor ⋙ F ≅ G) : Cocone F ≌ Cocone G :=
   (whiskeringEquivalence e).trans (precomposeEquivalence α.symm)
 #align category_theory.limits.cocones.equivalence_of_reindexing CategoryTheory.Limits.Cocones.equivalenceOfReindexing
@@ -585,7 +588,7 @@ variable (F)
 /-- Forget the cocone structure and obtain just the cocone point. -/
 @[simps]
 def forget : Cocone F ⥤ C where
-  obj t := t.x
+  obj t := t.X
   map f := f.Hom
 #align category_theory.limits.cocones.forget CategoryTheory.Limits.Cocones.forget
 
@@ -595,13 +598,13 @@ variable (G : C ⥤ D)
 @[simps]
 def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
   obj A :=
-    { x := G.obj A.x
+    { X := G.obj A.X
       ι :=
         { app := fun j => G.map (A.ι.app j)
-          naturality := by intros <;> erw [← G.map_comp] <;> aesop_cat } }
+          naturality := by intros; erw [← G.map_comp]; aesop_cat } }
   map f :=
     { Hom := G.map f.Hom
-      w := by intros <;> rw [← Functor.map_comp, CoconeMorphism.w] }
+      w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
 #align category_theory.limits.cocones.functoriality CategoryTheory.Limits.Cocones.functoriality
 
 instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where 
@@ -836,14 +839,14 @@ variable {F : J ⥤ C}
 /-- Change a `cocone F` into a `cone F.op`. -/
 @[simps]
 def Cocone.op (c : Cocone F) : Cone F.op where
-  x := op c.x
+  X := op c.X
   π := NatTrans.op c.ι
 #align category_theory.limits.cocone.op CategoryTheory.Limits.Cocone.op
 
 /-- Change a `cone F` into a `cocone F.op`. -/
 @[simps]
 def Cone.op (c : Cone F) : Cocone F.op where
-  x := op c.x
+  X := op c.X
   ι := NatTrans.op c.π
 #align category_theory.limits.cone.op CategoryTheory.Limits.Cone.op
 
@@ -851,7 +854,7 @@ def Cone.op (c : Cone F) : Cocone F.op where
 @[simps]
 def Cocone.unop (c : Cocone F.op) : Cone F
     where
-  x := unop c.x
+  X := unop c.X
   π := NatTrans.removeOp c.ι
 #align category_theory.limits.cocone.unop CategoryTheory.Limits.Cocone.unop
 
@@ -859,7 +862,7 @@ def Cocone.unop (c : Cocone F.op) : Cone F
 @[simps]
 def Cone.unop (c : Cone F.op) : Cocone F
     where
-  x := unop c.x
+  X := unop c.X
   ι := NatTrans.removeOp c.π
 #align category_theory.limits.cone.unop CategoryTheory.Limits.Cone.unop
 
@@ -938,7 +941,7 @@ variable {F : J ⥤ Cᵒᵖ}
         simpRhs := true })]
 def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F
     where
-  x := op c.x
+  X := op c.X
   π := NatTrans.removeLeftOp c.ι
 #align category_theory.limits.cone_of_cocone_left_op CategoryTheory.Limits.coneOfCoconeLeftOp
 
@@ -948,7 +951,7 @@ def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F
         simpRhs := true })]
 def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp
     where
-  x := unop c.x
+  X := unop c.X
   ι := NatTrans.leftOp c.π
 #align category_theory.limits.cocone_left_op_of_cone CategoryTheory.Limits.coconeLeftOpOfCone
 
@@ -959,7 +962,7 @@ def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp
 @[simps x]
 def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F
     where
-  x := op c.x
+  X := op c.X
   ι := NatTrans.removeLeftOp c.π
 #align category_theory.limits.cocone_of_cone_left_op CategoryTheory.Limits.coconeOfConeLeftOp
 
@@ -976,7 +979,7 @@ theorem coconeOfConeLeftOp_ι_app (c : Cone F.leftOp) (j) :
         simpRhs := true })]
 def coneLeftOpOfCocone (c : Cocone F) : Cone F.leftOp
     where
-  x := unop c.x
+  X := unop c.X
   π := NatTrans.leftOp c.ι
 #align category_theory.limits.cone_left_op_of_cocone CategoryTheory.Limits.coneLeftOpOfCocone
 
@@ -990,7 +993,7 @@ variable {F : Jᵒᵖ ⥤ C}
 @[simps]
 def coneOfCoconeRightOp (c : Cocone F.rightOp) : Cone F
     where
-  x := unop c.x
+  X := unop c.X
   π := NatTrans.removeRightOp c.ι
 #align category_theory.limits.cone_of_cocone_right_op CategoryTheory.Limits.coneOfCoconeRightOp
 
@@ -998,7 +1001,7 @@ def coneOfCoconeRightOp (c : Cocone F.rightOp) : Cone F
 @[simps]
 def coconeRightOpOfCone (c : Cone F) : Cocone F.rightOp
     where
-  x := op c.x
+  X := op c.X
   ι := NatTrans.rightOp c.π
 #align category_theory.limits.cocone_right_op_of_cone CategoryTheory.Limits.coconeRightOpOfCone
 
@@ -1006,7 +1009,7 @@ def coconeRightOpOfCone (c : Cone F) : Cocone F.rightOp
 @[simps]
 def coconeOfConeRightOp (c : Cone F.rightOp) : Cocone F
     where
-  x := unop c.x
+  X := unop c.X
   ι := NatTrans.removeRightOp c.π
 #align category_theory.limits.cocone_of_cone_right_op CategoryTheory.Limits.coconeOfConeRightOp
 
@@ -1014,7 +1017,7 @@ def coconeOfConeRightOp (c : Cone F.rightOp) : Cocone F
 @[simps]
 def coneRightOpOfCocone (c : Cocone F) : Cone F.rightOp
     where
-  x := op c.x
+  X := op c.X
   π := NatTrans.rightOp c.ι
 #align category_theory.limits.cone_right_op_of_cocone CategoryTheory.Limits.coneRightOpOfCocone
 
@@ -1028,7 +1031,7 @@ variable {F : Jᵒᵖ ⥤ Cᵒᵖ}
 @[simps]
 def coneOfCoconeUnop (c : Cocone F.unop) : Cone F
     where
-  x := op c.x
+  X := op c.X
   π := NatTrans.removeUnop c.ι
 #align category_theory.limits.cone_of_cocone_unop CategoryTheory.Limits.coneOfCoconeUnop
 
@@ -1036,7 +1039,7 @@ def coneOfCoconeUnop (c : Cocone F.unop) : Cone F
 @[simps]
 def coconeUnopOfCone (c : Cone F) : Cocone F.unop
     where
-  x := unop c.x
+  X := unop c.X
   ι := NatTrans.unop c.π
 #align category_theory.limits.cocone_unop_of_cone CategoryTheory.Limits.coconeUnopOfCone
 
@@ -1044,7 +1047,7 @@ def coconeUnopOfCone (c : Cone F) : Cocone F.unop
 @[simps]
 def coconeOfConeUnop (c : Cone F.unop) : Cocone F
     where
-  x := op c.x
+  X := op c.X
   ι := NatTrans.removeUnop c.π
 #align category_theory.limits.cocone_of_cone_unop CategoryTheory.Limits.coconeOfConeUnop
 
@@ -1052,7 +1055,7 @@ def coconeOfConeUnop (c : Cone F.unop) : Cocone F
 @[simps]
 def coneUnopOfCocone (c : Cocone F) : Cone F.unop
     where
-  x := unop c.x
+  X := unop c.X
   π := NatTrans.unop c.ι
 #align category_theory.limits.cone_unop_of_cocone CategoryTheory.Limits.coneUnopOfCocone
 
