@@ -33,12 +33,14 @@ namespace AddHom
 def mulLeft [Distrib R] (r : R) : AddHom R R :=
   ⟨(· * ·) r, mul_add r⟩
 #align add_hom.mul_left AddHom.mulLeft
+#align add_hom.mul_left_apply AddHom.mulLeft_apply
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
 @[simps (config := { fullyApplied := false })]
 def mulRight [Distrib R] (r : R) : AddHom R R :=
   ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
 #align add_hom.mul_right AddHom.mulRight
+#align add_hom.mul_right_apply AddHom.mulRight_apply
 
 end AddHom
 
@@ -135,6 +137,7 @@ theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])
   refine' ⟨b - x, _, by simp, by rw [this]⟩
   rw [this, sub_add, ← sub_mul, sub_self]
+set_option linter.uppercaseLean3 false in
 #align Vieta_formula_quadratic vieta_formula_quadratic
 
 end NonUnitalCommRing

@@ -34,6 +34,7 @@ variable {R : Type _} [AddMonoidWithOne R] [CharZero R]
 def castEmbedding : ℕ ↪ R :=
   ⟨Nat.cast, cast_injective⟩
 #align nat.cast_embedding Nat.castEmbedding
+#align nat.cast_embedding_apply Nat.castEmbedding_apply
 
 @[simp]
 theorem cast_pow_eq_one {R : Type _} [Semiring R] [CharZero R] (q : ℕ) (n : ℕ) (hn : n ≠ 0) :

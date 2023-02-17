@@ -149,13 +149,16 @@ def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   left_inv := succPNat_natPred
   right_inv := Nat.natPred_succPNat
 #align equiv.pnat_equiv_nat Equiv.pnatEquivNat
+#align equiv.pnat_equiv_nat_symm_apply Equiv.pnatEquivNat_symm_apply
+#align equiv.pnat_equiv_nat_apply Equiv.pnatEquivNat_apply
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := { fullyApplied := false }) apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
 #align order_iso.pnat_iso_nat OrderIso.pnatIsoNat
+#align order_iso.pnat_iso_nat_apply OrderIso.pnatIsoNat_apply
 
 @[simp]
 theorem _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=
@@ -275,7 +278,7 @@ end deprecated
 -- where the left `^ : ℕ+ → ℕ → ℕ+` was `monoid.has_pow`.
 -- Atm writing `m ^ n` means automatically `(↑m) ^ n`.
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : ((Monoid.Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ((Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 
@@ -321,7 +324,6 @@ def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
 not only to `Prop`. -/
 @[elab_as_elim]
-noncomputable
 def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
   induction' n with n IH
@@ -329,8 +331,6 @@ def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n 
   · cases' n with n
     · exact p1
     · exact hp _ (IH n.succ_pos)
--- Porting note: added `noncomputable` because of
--- "code generator does not support recursor 'Nat.rec' yet" error.
 #align pnat.rec_on PNat.recOn
 
 @[simp]

@@ -89,7 +89,7 @@ instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type _)
 instance (priority := 100) OrderedCancelCommMonoid.toOrderedCommMonoid : OrderedCommMonoid α :=
   { ‹OrderedCancelCommMonoid α› with }
 #align ordered_cancel_comm_monoid.to_ordered_comm_monoid OrderedCancelCommMonoid.toOrderedCommMonoid
-#align ordered_cancel_add_comm_monoid.to_ordered_comm_monoid OrderedCancelAddCommMonoid.toOrderedAddCommMonoid
+#align ordered_cancel_add_comm_monoid.to_ordered_add_comm_monoid OrderedCancelAddCommMonoid.toOrderedAddCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive OrderedCancelAddCommMonoid.toCancelAddCommMonoid]

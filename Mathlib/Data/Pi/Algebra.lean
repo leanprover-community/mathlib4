@@ -51,22 +51,32 @@ instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
 @[to_additive (attr := simp)]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
+#align pi.one_apply Pi.one_apply
+#align pi.zero_apply Pi.zero_apply
 
 @[to_additive]
 theorem one_def [∀ i, One <| f i] : (1 : ∀ i, f i) = fun _ => 1 :=
   rfl
+#align pi.one_def Pi.one_def
+#align pi.zero_def Pi.zero_def
 
 @[to_additive (attr := simp)]
 theorem const_one [One β] : const α (1 : β) = 1 :=
   rfl
+#align pi.const_one Pi.const_one
+#align pi.const_zero Pi.const_zero
 
 @[to_additive (attr := simp)]
 theorem one_comp [One γ] (x : α → β) : (1 : β → γ) ∘ x = 1 :=
   rfl
+#align pi.one_comp Pi.one_comp
+#align pi.zero_comp Pi.zero_comp
 
 @[to_additive (attr := simp)]
 theorem comp_one [One β] (x : β → γ) : x ∘ (1 : α → β) = const α (x 1) :=
   rfl
+#align pi.comp_one Pi.comp_one
+#align pi.comp_zero Pi.comp_zero
 
 @[to_additive]
 instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
@@ -78,18 +88,26 @@ instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
 @[to_additive (attr := simp)]
 theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
   rfl
+#align pi.mul_apply Pi.mul_apply
+#align pi.add_apply Pi.add_apply
 
 @[to_additive]
 theorem mul_def [∀ i, Mul <| f i] : x * y = fun i => x i * y i :=
   rfl
+#align pi.mul_def Pi.mul_def
+#align pi.add_def Pi.add_def
 
 @[to_additive (attr := simp)]
 theorem const_mul [Mul β] (a b : β) : const α a * const α b = const α (a * b) :=
   rfl
+#align pi.const_mul Pi.const_mul
+#align pi.const_add Pi.const_add
 
 @[to_additive]
 theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x ∘ z * y ∘ z :=
   rfl
+#align pi.mul_comp Pi.mul_comp
+#align pi.add_comp Pi.add_comp
 
 @[to_additive]
 instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
@@ -98,28 +116,39 @@ instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
 #align pi.has_smul Pi.instSMul
 #align pi.has_vadd Pi.instVAdd
 
-@[to_additive]
+@[to_additive instSMul]
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
-@[to_additive (attr := simp) (reorder := 5)]
+@[to_additive (attr := simp) (reorder := 5) smul_apply]
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl
+#align pi.pow_apply Pi.pow_apply
+#align pi.smul_apply Pi.smul_apply
 
-@[to_additive (reorder := 5)]
+@[to_additive (reorder := 5) smul_def]
 theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
   rfl
+#align pi.pow_def Pi.pow_def
+#align pi.smul_def Pi.smul_def
 
--- `to_additive` generates bad output if we take `Pow α β`.
-@[to_additive (attr := simp) (reorder := 5) smul_const]
-theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a) :=
+@[to_additive (attr := simp) (reorder := 2 5) smul_const]
+theorem const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) :=
   rfl
+#align pi.const_pow Pi.const_pow
+#align pi.smul_const Pi.smul_const
 
-@[to_additive (reorder := 6)]
+@[to_additive (reorder := 6) smul_comp]
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
+#align pi.pow_comp Pi.pow_comp
+#align pi.smul_comp Pi.smul_comp
 
 attribute [to_additive] smul_apply smul_def smul_const smul_comp
+#align pi.vadd_def Pi.vadd_def
+#align pi.vadd_const Pi.vadd_const
+#align pi.vadd_apply Pi.vadd_apply
+#align pi.vadd_comp Pi.vadd_comp
 
 /-!
 Porting note: `bit0` and `bit1` are deprecated. This section can be removed entirely
@@ -132,10 +161,12 @@ set_option linter.deprecated false
 @[simp, deprecated]
 theorem bit0_apply [∀ i, Add <| f i] : (bit0 x) i = bit0 (x i) :=
   rfl
+#align pi.bit0_apply Pi.bit0_apply
 
 @[simp, deprecated]
 theorem bit1_apply [∀ i, Add <| f i] [∀ i, One <| f i] : (bit1 x) i = bit1 (x i) :=
   rfl
+#align pi.bit1_apply Pi.bit1_apply
 
 end deprecated
 
@@ -149,18 +180,26 @@ instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
 @[to_additive (attr := simp)]
 theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
   rfl
+#align pi.inv_apply Pi.inv_apply
+#align pi.neg_apply Pi.neg_apply
 
 @[to_additive]
 theorem inv_def [∀ i, Inv <| f i] : x⁻¹ = fun i => (x i)⁻¹ :=
   rfl
+#align pi.inv_def Pi.inv_def
+#align pi.neg_def Pi.neg_def
 
 @[to_additive]
 theorem const_inv [Inv β] (a : β) : (const α a)⁻¹ = const α a⁻¹ :=
   rfl
+#align pi.const_inv Pi.const_inv
+#align pi.const_neg Pi.const_neg
 
 @[to_additive]
 theorem inv_comp [Inv γ] (x : β → γ) (y : α → β) : x⁻¹ ∘ y = (x ∘ y)⁻¹ :=
   rfl
+#align pi.inv_comp Pi.inv_comp
+#align pi.neg_comp Pi.neg_comp
 
 @[to_additive]
 instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
@@ -172,18 +211,26 @@ instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
 @[to_additive (attr := simp)]
 theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
   rfl
+#align pi.div_apply Pi.div_apply
+#align pi.sub_apply Pi.sub_apply
 
 @[to_additive]
 theorem div_def [∀ i, Div <| f i] : x / y = fun i => x i / y i :=
   rfl
+#align pi.div_def Pi.div_def
+#align pi.sub_def Pi.sub_def
 
 @[to_additive]
 theorem div_comp [Div γ] (x y : β → γ) (z : α → β) : (x / y) ∘ z = x ∘ z / y ∘ z :=
   rfl
+#align pi.div_comp Pi.div_comp
+#align pi.sub_comp Pi.sub_comp
 
 @[to_additive (attr := simp)]
 theorem const_div [Div β] (a b : β) : const α a / const α b = const α (a / b) :=
   rfl
+#align pi.const_div Pi.const_div
+#align pi.const_sub Pi.const_sub
 
 section
 
@@ -312,16 +359,19 @@ end
 @[simp]
 protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
   (f' i, g' i)
+#align pi.prod Pi.prod
 
 -- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   funext fun _ => Prod.mk.eta
+#align pi.prod_fst_snd Pi.prod_fst_snd
 
 -- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
   rfl
+#align pi.prod_snd_fst Pi.prod_snd_fst
 
 end Pi
 
@@ -332,6 +382,8 @@ section Extend
 @[to_additive]
 theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) (1 : β → γ) = 1 :=
   funext fun _ => by apply ite_self
+#align function.extend_one Function.extend_one
+#align function.extend_zero Function.extend_zero
 
 @[to_additive]
 theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ):
@@ -344,6 +396,8 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.
+#align function.extend_mul Function.extend_mul
+#align function.extend_add Function.extend_add
 
 @[to_additive]
 theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
@@ -356,6 +410,8 @@ theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
 -- which converts to
 -- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
 -- However this does not work, and we're not sure why.
+#align function.extend_inv Function.extend_inv
+#align function.extend_neg Function.extend_neg
 
 @[to_additive]
 theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
@@ -368,20 +424,25 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.
+#align function.extend_div Function.extend_div
+#align function.extend_sub Function.extend_sub
 
 end Extend
 
 theorem surjective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Surjective (F i)) :
     Surjective fun x : ∀ i, f i => fun i => F i (x i) := fun y =>
   ⟨fun i => (hF i (y i)).choose, funext fun i => (hF i (y i)).choose_spec⟩
+#align function.surjective_pi_map Function.surjective_pi_map
 
 theorem injective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Injective (F i)) :
     Injective fun x : ∀ i, f i => fun i => F i (x i) :=
   fun _ _ h => funext fun i => hF i <| (congr_fun h i : _)
+#align function.injective_pi_map Function.injective_pi_map
 
 theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) :
     Bijective fun x : ∀ i, f i => fun i => F i (x i) :=
   ⟨injective_pi_map fun i => (hF i).injective, surjective_pi_map fun i => (hF i).surjective⟩
+#align function.bijective_pi_map Function.bijective_pi_map
 
 end Function
 
@@ -390,6 +451,8 @@ end Function
 def uniqueOfSurjectiveOne (α : Type _) {β : Type _} [One β] (h : Function.Surjective (1 : α → β)) :
     Unique β :=
   h.uniqueOfSurjectiveConst α (1 : β)
+#align unique_of_surjective_one uniqueOfSurjectiveOne
+#align unique_of_surjective_zero uniqueOfSurjectiveZero
 
 @[to_additive]
 theorem Subsingleton.pi_mulSingle_eq {α : Type _} [DecidableEq I] [Subsingleton I] [One α]
@@ -406,6 +469,8 @@ variable (a a' : α → γ) (b b' : β → γ)
 @[to_additive (attr := simp)]
 theorem elim_one_one [One γ] : Sum.elim (1 : α → γ) (1 : β → γ) = 1 :=
   Sum.elim_const_const 1
+#align sum.elim_one_one Sum.elim_one_one
+#align sum.elim_zero_zero Sum.elim_zero_zero
 
 @[to_additive (attr := simp)]
 theorem elim_mulSingle_one [DecidableEq α] [DecidableEq β] [One γ] (i : α) (c : γ) :
@@ -425,15 +490,21 @@ theorem elim_one_mulSingle [DecidableEq α] [DecidableEq β] [One γ] (i : β) (
 @[to_additive]
 theorem elim_inv_inv [Inv γ] : Sum.elim a⁻¹ b⁻¹ = (Sum.elim a b)⁻¹ :=
   (Sum.comp_elim Inv.inv a b).symm
+#align sum.elim_inv_inv Sum.elim_inv_inv
+#align sum.elim_neg_neg Sum.elim_neg_neg
 
 @[to_additive]
 theorem elim_mul_mul [Mul γ] : Sum.elim (a * a') (b * b') = Sum.elim a b * Sum.elim a' b' := by
   ext x
   cases x <;> rfl
+#align sum.elim_mul_mul Sum.elim_mul_mul
+#align sum.elim_add_add Sum.elim_add_add
 
 @[to_additive]
 theorem elim_div_div [Div γ] : Sum.elim (a / a') (b / b') = Sum.elim a b / Sum.elim a' b' := by
   ext x
   cases x <;> rfl
+#align sum.elim_div_div Sum.elim_div_div
+#align sum.elim_sub_sub Sum.elim_sub_sub
 
 end Sum

@@ -256,7 +256,7 @@ theorem lxor'_right_injective {n : ℕ} : Function.Injective (lxor' n) := fun m 
 theorem lxor'_left_injective {n : ℕ} : Function.Injective fun m => lxor' m n :=
   fun m m' (h : lxor' m n = lxor' m' n) => by
   rw [← lxor_cancel_right n m, ← lxor_cancel_right n m', h]
-#align nat.lxor'_left_injective Nat.lxor'_left_injective
+#align nat.lxor_left_injective Nat.lxor'_left_injective
 
 @[simp]
 theorem lxor'_right_inj {n m m' : ℕ} : lxor' n m = lxor' n m' ↔ m = m' :=
