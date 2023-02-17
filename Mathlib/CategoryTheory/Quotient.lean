@@ -8,8 +8,8 @@ Authors: David Wärn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.NaturalIsomorphism
-import Mathbin.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.NatIso
+import Mathlib.CategoryTheory.EqToHom
 
 /-!
 # Quotient category
@@ -23,16 +23,22 @@ relation, `functor_map_eq_iff` says that no unnecessary identifications have bee
 -/
 
 
-/-- A `hom_rel` on `C` consists of a relation on every hom-set. -/
+/-- A `HomRel` on `C` consists of a relation on every hom-set. -/
 def HomRel (C) [Quiver C] :=
-  ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop deriving Inhabited
+  ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop
+-- deriving Inhabited
 #align hom_rel HomRel
+
+-- Porting Note: `deriving Inhabited` was not able to deduce this typeclass
+instance (C) [Quiver C] : Inhabited (HomRel C) where
+  default := fun _ _ _ _ => PUnit
 
 namespace CategoryTheory
 
 variable {C : Type _} [Category C] (r : HomRel C)
 
-include r
+-- Porting Note: `include r` is not allowed
+-- include r
 
 /-- A `hom_rel` is a congruence when it's an equivalence on every hom-set, and it can be composed
 from left and right. -/
@@ -42,11 +48,11 @@ class Congruence : Prop where
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 #align category_theory.congruence CategoryTheory.Congruence
 
-attribute [instance] congruence.is_equiv
+attribute [instance] Congruence.IsEquiv
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
-structure Quotient where
+structure Quotient (r : HomRel C) where
   as : C
 #align category_theory.quotient CategoryTheory.Quotient
 
@@ -56,24 +62,23 @@ instance [Inhabited C] : Inhabited (Quotient r) :=
 namespace Quotient
 
 /-- Generates the closure of a family of relations w.r.t. composition from left and right. -/
-inductive CompClosure ⦃s t : C⦄ : (s ⟶ t) → (s ⟶ t) → Prop
-  |
-  intro {a b} (f : s ⟶ a) (m₁ m₂ : a ⟶ b) (g : b ⟶ t) (h : r m₁ m₂) :
-    comp_closure (f ≫ m₁ ≫ g) (f ≫ m₂ ≫ g)
+inductive CompClosure (r : HomRel C) ⦃s t : C⦄ : (s ⟶ t) → (s ⟶ t) → Prop
+  | intro {a b : C} (f : s ⟶ a) (m₁ m₂ : a ⟶ b) (g : b ⟶ t) (h : r m₁ m₂) :
+    CompClosure r (f ≫ m₁ ≫ g) (f ≫ m₂ ≫ g)
 #align category_theory.quotient.comp_closure CategoryTheory.Quotient.CompClosure
 
-theorem CompClosure.of {a b} (m₁ m₂ : a ⟶ b) (h : r m₁ m₂) : CompClosure r m₁ m₂ := by
-  simpa using comp_closure.intro (𝟙 _) m₁ m₂ (𝟙 _) h
+theorem CompClosure.of {a b : C} (m₁ m₂ : a ⟶ b) (h : r m₁ m₂) : CompClosure r m₁ m₂ := by
+  simpa using CompClosure.intro (𝟙 _) m₁ m₂ (𝟙 _) h
 #align category_theory.quotient.comp_closure.of CategoryTheory.Quotient.CompClosure.of
 
 theorem comp_left {a b c : C} (f : a ⟶ b) :
-    ∀ (g₁ g₂ : b ⟶ c) (h : CompClosure r g₁ g₂), CompClosure r (f ≫ g₁) (f ≫ g₂)
-  | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using comp_closure.intro (f ≫ x) m₁ m₂ y h
+    ∀ (g₁ g₂ : b ⟶ c) (_ : CompClosure r g₁ g₂), CompClosure r (f ≫ g₁) (f ≫ g₂)
+  | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using CompClosure.intro (f ≫ x) m₁ m₂ y h
 #align category_theory.quotient.comp_left CategoryTheory.Quotient.comp_left
 
 theorem comp_right {a b c : C} (g : b ⟶ c) :
-    ∀ (f₁ f₂ : a ⟶ b) (h : CompClosure r f₁ f₂), CompClosure r (f₁ ≫ g) (f₂ ≫ g)
-  | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using comp_closure.intro x m₁ m₂ (y ≫ g) h
+    ∀ (f₁ f₂ : a ⟶ b) (_ : CompClosure r f₁ f₂), CompClosure r (f₁ ≫ g) (f₂ ≫ g)
+  | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using CompClosure.intro x m₁ m₂ (y ≫ g) h
 #align category_theory.quotient.comp_right CategoryTheory.Quotient.comp_right
 
 /-- Hom-sets of the quotient category. -/
@@ -99,11 +104,10 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
   rfl
 #align category_theory.quotient.comp_mk CategoryTheory.Quotient.comp_mk
 
-instance category : Category (Quotient r)
-    where
+instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
-  comp := comp r
+  comp := @comp _ _ r
 #align category_theory.quotient.category CategoryTheory.Quotient.category
 
 /-- The functor from a category to its quotient. -/
@@ -225,4 +229,3 @@ theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
 end Quotient
 
 end CategoryTheory
-
