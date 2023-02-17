@@ -18,7 +18,7 @@ which determines whether a string (implemented as a list over an arbitrary alpha
 set by evaluating the string over every possible path.
 We show that DFA's are equivalent to NFA's however the construction from NFA to DFA uses an
 exponential number of states.
-Note that this definition allows for Automaton with infinite states, a `fintype` instance must be
+Note that this definition allows for Automaton with infinite states, a `Fintype` instance must be
 supplied for true NFA's.
 -/
 
@@ -34,7 +34,7 @@ set_option linter.uppercaseLean3 false
 
 /-- An NFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`).
-  Note the transition function sends a state to a `set` of states. These are the states that it
+  Note the transition function sends a state to a `Set` of states. These are the states that it
   may be sent to. -/
 structure NFA (α : Type u) (σ : Type v) where
   step : σ → α → Set σ
@@ -112,7 +112,7 @@ def accepts : Language α := fun x => ∃ S ∈ M.accept, S ∈ M.eval x
 theorem mem_accepts : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by rfl
 
 /-- `M.toDFA` is an `DFA` constructed from a `NFA` `M` using the subset construction. The
-  states is the type of `set`s of `M.state` and the step function is `M.stepSet`. -/
+  states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
 def toDFA : DFA α (Set σ) where
   step := M.stepSet
   start := M.start
