@@ -322,8 +322,7 @@ variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ 
 
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
--- Porting note: The linter don't thinks the `RingHomCompTriple` argument is doubled, so
---               `nolint unusedArguments` is not necessary.
+-- Porting note: `nolint unusedArguments` is removed.
 /-- Linear equivalences are transitive. -/
 @[trans]
 def trans : M₁ ≃ₛₗ[σ₁₃] M₃ :=
