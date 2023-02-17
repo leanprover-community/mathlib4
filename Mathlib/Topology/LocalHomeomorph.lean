@@ -1212,24 +1212,17 @@ end Continuity
 /-- The homeomorphism obtained by restricting a `local_homeomorph` to a subset of the source. -/
 @[simps]
 def homeomorphOfImageSubsetSource {s : Set α} {t : Set β} (hs : s ⊆ e.source) (ht : e '' s = t) :
-    s ≃ₜ t where
-  toFun a := ⟨e a, (congr_arg ((· ∈ ·) (e a)) ht).mp ⟨a, a.2, rfl⟩⟩
-  invFun b :=
-    ⟨e.symm b,
-      let ⟨a, ha1, ha2⟩ := (congr_arg ((· ∈ ·) ↑b) ht).mpr b.2
-      ha2 ▸ (e.left_inv (hs ha1)).symm ▸ ha1⟩
-  left_inv a := Subtype.ext (e.left_inv (hs a.2))
-  right_inv b :=
-    let ⟨a, ha1, ha2⟩ := (congr_arg ((· ∈ ·) ↑b) ht).mpr b.2
-    Subtype.ext (e.right_inv (ha2 ▸ e.map_source (hs ha1)))
-  continuous_toFun :=
-    (continuousOn_iff_continuous_restrict.mp (e.continuousOn.mono hs)).subtype_mk _
-  continuous_invFun :=
-    (continuousOn_iff_continuous_restrict.mp
-          (e.continuousOn_symm.mono fun b hb =>
-            let ⟨a, ha1, ha2⟩ := show b ∈ e '' s from ht.symm ▸ hb
-            ha2 ▸ e.map_source (hs ha1))).subtype_mk
-      _
+    s ≃ₜ t :=
+  have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
+  have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_subset e hs
+  have h₃ : MapsTo e.symm t s := ht ▸ ball_image_iff.2 <| fun _x hx =>
+      (e.left_inv (hs hx)).symm ▸ hx
+  { toFun := MapsTo.restrict e s t h₁
+    invFun := MapsTo.restrict e.symm t s h₃
+    left_inv := fun a => Subtype.ext (e.left_inv (hs a.2))
+    right_inv := fun b => Subtype.eq <| e.right_inv (h₂ b.2)
+    continuous_toFun := (e.continuousOn.mono hs).restrict_mapsTo h₁
+    continuous_invFun := (e.continuousOn_symm.mono h₂).restrict_mapsTo h₃ }
 #align local_homeomorph.homeomorph_of_image_subset_source LocalHomeomorph.homeomorphOfImageSubsetSource
 
 /-- A local homeomrphism defines a homeomorphism between its source and target. -/

@@ -307,7 +307,7 @@ theorem copy_eq (e : LocalEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β �
 #align local_equiv.copy_eq LocalEquiv.copy_eq
 
 /-- Associate to a `LocalEquiv` an `Equiv` between the source and the target. -/
-protected def toEquiv : Equiv e.source e.target where
+protected def toEquiv : e.source ≃ e.target where
   toFun x := ⟨e x, e.map_source x.mem⟩
   invFun y := ⟨e.symm y, e.map_target y.mem⟩
   left_inv := fun ⟨_, hx⟩ => Subtype.eq <| e.left_inv hx
