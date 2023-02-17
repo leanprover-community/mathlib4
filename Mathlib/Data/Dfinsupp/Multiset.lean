@@ -8,7 +8,7 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Dfinsupp.Order
+import Mathlib.Data.Dfinsupp.Order
 
 /-!
 # Equivalence between `multiset` and `ℕ`-valued finitely supported functions
@@ -70,8 +70,7 @@ theorem toDfinsupp_support (s : Multiset α) : s.toDfinsupp.support = s.toFinset
 
 @[simp]
 theorem toDfinsupp_replicate (a : α) (n : ℕ) :
-    toDfinsupp (Multiset.replicate n a) = Dfinsupp.single a n :=
-  by
+    toDfinsupp (Multiset.replicate n a) = Dfinsupp.single a n := by
   ext i
   dsimp [to_dfinsupp]
   simp [count_replicate, eq_comm]
