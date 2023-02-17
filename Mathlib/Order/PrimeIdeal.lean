@@ -8,8 +8,8 @@ Authors: Noam Atar
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Ideal
-import Mathbin.Order.Pfilter
+import Mathlib.Order.Ideal
+import Mathlib.Order.Pfilter
 
 /-!
 # Prime ideals
@@ -117,8 +117,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf P] {x y : P} {I : Ideal P}
 
-theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I :=
-  by
+theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ I ∨ y ∈ I := by
   contrapose!
   let F := hI.compl_filter.to_pfilter
   show x ∈ F ∧ y ∈ F → x ⊓ y ∈ F
@@ -148,8 +147,7 @@ section DistribLattice
 
 variable [DistribLattice P] {I : Ideal P}
 
-instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I :=
-  by
+instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   rw [is_prime_iff_mem_or_mem]
   intro x y
   contrapose!
@@ -173,8 +171,7 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra P] {x : P} {I : Ideal P}
 
-theorem IsPrime.mem_or_compl_mem (hI : IsPrime I) : x ∈ I ∨ xᶜ ∈ I :=
-  by
+theorem IsPrime.mem_or_compl_mem (hI : IsPrime I) : x ∈ I ∨ xᶜ ∈ I := by
   apply hI.mem_or_mem
   rw [inf_compl_eq_bot]
   exact I.bot_mem
@@ -184,8 +181,7 @@ theorem IsPrime.mem_compl_of_not_mem (hI : IsPrime I) (hxnI : x ∉ I) : xᶜ �
   hI.mem_or_compl_mem.resolve_left hxnI
 #align order.ideal.is_prime.mem_compl_of_not_mem Order.Ideal.IsPrime.mem_compl_of_not_mem
 
-theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I) : IsPrime I :=
-  by
+theorem isPrime_of_mem_or_compl_mem [IsProper I] (h : ∀ {x : P}, x ∈ I ∨ xᶜ ∈ I) : IsPrime I := by
   simp only [is_prime_iff_mem_or_mem, or_iff_not_imp_left]
   intro x y hxy hxI
   have hxcI : xᶜ ∈ I := h.resolve_left hxI
@@ -197,8 +193,7 @@ theorem isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x
   ⟨fun h _ => h.mem_or_compl_mem, isPrime_of_mem_or_compl_mem⟩
 #align order.ideal.is_prime_iff_mem_or_compl_mem Order.Ideal.isPrime_iff_mem_or_compl_mem
 
-instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I :=
-  by
+instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   simp only [is_maximal_iff, Set.eq_univ_iff_forall, is_prime.to_is_proper, true_and_iff]
   intro J hIJ x
   rcases Set.exists_of_ssubset hIJ with ⟨y, hyJ, hyI⟩
