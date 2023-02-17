@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.pointwise
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
+! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
