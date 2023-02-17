@@ -18,11 +18,11 @@ We prove some miscellaneous results involving the order topology of ordinals.
 
 ### Main results
 
-* `ordinal.is_closed_iff_sup` / `ordinal.is_closed_iff_bsup`: A set of ordinals is closed iff it's
+* `Ordinal.isClosed_iff_sup` / `Ordinal.isClosed_iff_bsup`: A set of ordinals is closed iff it's
   closed under suprema.
-* `ordinal.is_normal_iff_strict_mono_and_continuous`: A characterization of normal ordinal
+* `Ordinal.isNormal_iff_strictMono_and_continuous`: A characterization of normal ordinal
   functions.
-* `ordinal.enum_ord_is_normal_iff_is_closed`: The function enumerating the ordinals of a set is
+* `Ordinal.enumOrd_isNormal_iff_isClosed`: The function enumerating the ordinals of a set is
   normal iff the set is closed.
 -/
 
