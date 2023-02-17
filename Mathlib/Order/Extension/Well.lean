@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Prod.Lex
-import Mathbin.SetTheory.Ordinal.Arithmetic
+import Mathlib.Data.Prod.Lex
+import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Extend a well-founded order to a well-order
