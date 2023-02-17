@@ -49,7 +49,7 @@ variable (hwf : WellFounded r)
 
 /-- An arbitrary well order on `α` that extends `r`.
 
-The construction maps `r` into two well-orders: the first map is `well_founded.rank`, which is not
+The construction maps `r` into two well-orders: the first map is `WellFounded.rank`, which is not
 necessarily injective but respects the order `r`; the other map is the identity (with an arbitrarily
 chosen well-order on `α`), which is injective but doesn't respect `r`.
 
