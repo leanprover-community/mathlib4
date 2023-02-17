@@ -242,8 +242,8 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
     Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt (Fin.is_lt _)]
 #align list.of_fn_fin_repeat List.ofFn_fin_repeat
 
-@[simp] lemma pairwise_ofFn {R : α → α → Prop} {n} {f : fin n → α} :
-  (ofFn f).pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
+@[simp] lemma pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
+  (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
   simp only [pairwise_iff_nthLe, Fin.forall_iff, length_ofFn, nthLe_ofFn', Fin.mk_lt_mk]
   exact ⟨λ h i hi j hj hij ↦ h _ _ hj hij, λ h i j hj hij ↦ h _ (hij.trans hj) _ hj hij⟩
 
