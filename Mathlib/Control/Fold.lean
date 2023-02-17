@@ -170,7 +170,7 @@ def Mfoldl.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α
     where
   toFun xs := op <| flip (List.foldlM f) (FreeMonoid.toList xs)
   map_one' := rfl
-  map_mul' := by intros <;> apply unop_injective <;> ext <;> apply List.foldlM_append
+  map_mul' := by intros; apply unop_injective; funext; apply List.foldlM_append
 #align monoid.mfoldl.of_free_monoid Monoid.Mfoldl.ofFreeMonoid
 
 @[reducible]
@@ -191,7 +191,7 @@ def Mfoldr.ofFreeMonoid [LawfulMonad m] (f : α → β → m β) : FreeMonoid α
     where
   toFun xs := flip (List.foldrM f) (FreeMonoid.toList xs)
   map_one' := rfl
-  map_mul' := by intros <;> ext <;> apply List.foldrM_append
+  map_mul' := by intros; funext; apply List.foldrM_append
 #align monoid.mfoldr.of_free_monoid Monoid.Mfoldr.ofFreeMonoid
 
 end Monoid
