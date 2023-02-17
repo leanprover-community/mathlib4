@@ -68,6 +68,7 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Slice
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
@@ -238,9 +239,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := reassoc!) "reassoc!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveReassocProof) "derive_reassoc_proof" : tactic
 
-/- M -/ syntax (name := sliceLHS) "slice_lhs " num num " => " Conv.convSeq : tactic
-/- M -/ syntax (name := sliceRHS) "slice_rhs " num num " => " Conv.convSeq : tactic
-
 /- S -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
 
 /- M -/ syntax (name := group) "group" (ppSpace location)? : tactic
@@ -319,8 +317,6 @@ namespace Conv
 
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
-
-/- M -/ syntax (name := slice) "slice " num num : conv
 
 end Conv
 end Tactic
