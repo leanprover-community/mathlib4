@@ -925,6 +925,7 @@ import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.PartialSups
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Order.Pfilter
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic

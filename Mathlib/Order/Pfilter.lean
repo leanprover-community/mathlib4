@@ -8,7 +8,7 @@ Authors: Mathieu Guay-Paquet
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Ideal
+import Mathlib.Order.Ideal
 
 /-!
 # Order filters
