@@ -750,6 +750,7 @@ def nameDict : String → List String
 | "unit"        => ["add", "Unit"]
 | "units"       => ["add", "Units"]
 | "rootable"    => ["divisible"]
+| "isCentralScalar" => ["isCentralVAdd"]
 | x             => [x]
 
 /--
