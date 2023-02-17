@@ -49,7 +49,7 @@ namespace NFA
 instance : Inhabited (NFA α σ) :=
   ⟨NFA.mk (fun _ _ => ∅) ∅ ∅⟩
 
-/-- `M.step_set S a` is the union of `M.step s a` for all `s ∈ S`. -/
+/-- `M.stepSet S a` is the union of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
   ⋃ s ∈ S, M.step s a
 #align NFA.step_set NFA.stepSet
@@ -62,7 +62,7 @@ theorem mem_stepSet (s : σ) (S : Set σ) (a : α) : s ∈ M.stepSet S a ↔ ∃
 theorem stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by simp [stepSet]
 #align NFA.step_set_empty NFA.stepSet_empty
 
-/-- `M.eval_from S x` computes all possible paths though `M` with input `x` starting at an element
+/-- `M.evalFrom S x` computes all possible paths though `M` with input `x` starting at an element
   of `S`. -/
 def evalFrom (start : Set σ) : List α → Set σ :=
   List.foldl M.stepSet start
