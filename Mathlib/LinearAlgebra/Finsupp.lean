@@ -157,6 +157,7 @@ theorem supᵢ_lsingle_range : (⨆ a, LinearMap.range (lsingle a : M →ₗ[R] 
 theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
     Disjoint (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M))
       (⨆ a ∈ t, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) := by
+  -- Porting note: 2 placeholders are added to prevent timeout.
   refine'
     (Disjoint.mono
       (lsingle_range_le_ker_lapply s (sᶜ) _)
