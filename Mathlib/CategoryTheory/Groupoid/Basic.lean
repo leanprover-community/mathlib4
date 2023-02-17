@@ -8,13 +8,12 @@ Authors: Rémi Bottinelli
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.Combinatorics.Quiver.Basic
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.Combinatorics.Quiver.Basic
 
 /-!
 This file defines a few basic properties of groupoids.
 -/
-
 
 namespace CategoryTheory
 
@@ -29,10 +28,11 @@ theorem isThin_iff : Quiver.IsThin C ↔ ∀ c : C, Subsingleton (c ⟶ c) :=
   refine' ⟨fun h c => h c c, fun h c d => Subsingleton.intro fun f g => _⟩
   haveI := h d
   calc
-    f = f ≫ inv g ≫ g := by simp only [inv_eq_inv, is_iso.inv_hom_id, category.comp_id]
-    _ = f ≫ inv f ≫ g := by congr
-    _ = g := by simp only [inv_eq_inv, is_iso.hom_inv_id_assoc]
-    
+    f = f ≫ inv g ≫ g := by simp only [inv_eq_inv, IsIso.inv_hom_id, Category.comp_id]
+    _ = f ≫ inv f ≫ g := by congr 1
+                            simp only [inv_eq_inv, IsIso.inv_hom_id, eq_iff_true_of_subsingleton]
+    _ = g := by simp only [inv_eq_inv, IsIso.hom_inv_id_assoc]
+
 #align category_theory.groupoid.is_thin_iff CategoryTheory.Groupoid.isThin_iff
 
 end Thin
@@ -49,4 +49,3 @@ end Disconnected
 end Groupoid
 
 end CategoryTheory
-
