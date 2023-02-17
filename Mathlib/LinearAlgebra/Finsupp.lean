@@ -778,8 +778,8 @@ noncomputable def congr {α' : Type _} (s : Set α) (t : Set α') (e : s ≃ t) 
     supported M R s ≃ₗ[R] supported M R t := by
   haveI := Classical.decPred fun x => x ∈ s
   haveI := Classical.decPred fun x => x ∈ t
-  refine' Finsupp.supportedEquivFinsupp s ≪≫ₗ (_ ≪≫ₗ (Finsupp.supportedEquivFinsupp t).symm)
-  exact Finsupp.domLcongr e
+  exact Finsupp.supportedEquivFinsupp s ≪≫ₗ
+    (Finsupp.domLcongr e ≪≫ₗ (Finsupp.supportedEquivFinsupp t).symm)
 #align finsupp.congr Finsupp.congr
 
 /-- `Finsupp.mapRange` as a `LinearMap`. -/
