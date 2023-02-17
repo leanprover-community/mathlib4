@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module algebra.group_with_zero.units.lemmas
-! leanprover-community/mathlib commit 4dc134b97a3de65ef2ed881f3513d56260971562
+! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -195,7 +195,7 @@ theorem div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b :=
 #align div_div_cancel' div_div_cancel'
 
 theorem div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ :=
-  IsUnit.div_div_cancel_left ha.is_unit
+  ha.IsUnit.div_div_cancel_left
 #align div_div_cancel_left' div_div_cancel_left'
 
 theorem div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
