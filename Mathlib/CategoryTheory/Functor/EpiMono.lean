@@ -8,9 +8,9 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EpiMono
-import Mathbin.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathbin.CategoryTheory.LiftingProperties.Adjunction
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 
 /-!
 # Preservation and reflection of monomorphisms and epimorphisms
@@ -239,8 +239,7 @@ def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f)
 #align category_theory.functor.split_epi_equiv CategoryTheory.Functor.splitEpiEquiv
 
 @[simp]
-theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitEpi f :=
-  by
+theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitEpi f := by
   constructor
   · intro h
     exact is_split_epi.mk' ((split_epi_equiv F f).invFun h.exists_split_epi.some)
@@ -262,8 +261,7 @@ def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
 #align category_theory.functor.split_mono_equiv CategoryTheory.Functor.splitMonoEquiv
 
 @[simp]
-theorem isSplitMono_iff [Full F] [Faithful F] : IsSplitMono (F.map f) ↔ IsSplitMono f :=
-  by
+theorem isSplitMono_iff [Full F] [Faithful F] : IsSplitMono (F.map f) ↔ IsSplitMono f := by
   constructor
   · intro h
     exact is_split_mono.mk' ((split_mono_equiv F f).invFun h.exists_split_mono.some)
