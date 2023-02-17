@@ -41,6 +41,9 @@ def write (a : DArray n α) (i : Fin n) (v : α i) : DArray n α
     where data j := if h : i = j then Eq.recOn h v else a.read j
 #align d_array.write DArray.write
 
+/--`iterateAux a f` returns a function that folds function `f` over the array `a`
+upto a given index `i`. It is used as an auxiliary function in the implementation of `iterate`
+which folds the function over the entire array-/
 def iterateAux (a : DArray n α) (f : ∀ i : Fin n, α i → β → β) : ∀ i : Nat, i ≤ n → β → β
   | 0, _, b => b
   | j + 1, h, b =>
@@ -58,9 +61,11 @@ def foreach (a : DArray n α) (f : ∀ i : Fin n, α i → α' i) : DArray n α'
   ⟨fun i => f _ (a.read i)⟩
 #align d_array.foreach DArray.foreach
 
+/--`map f a` maps the function `f` over the array `a`-/
 def map (f : ∀ i : Fin n, α i → α' i) (a : DArray n α) : DArray n α' :=
   foreach a f
 #align d_array.map DArray.map
+
 
 def map₂ {α'' : Fin n → Type w} (f : ∀ i : Fin n, α i → α' i → α'' i) (a : DArray n α)
     (b : DArray n α') : DArray n α'' :=
