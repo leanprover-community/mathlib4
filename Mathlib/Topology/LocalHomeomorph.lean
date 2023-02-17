@@ -209,6 +209,10 @@ def _root_.Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α 
   continuous_invFun := e.symm.continuous.continuousOn
 #align homeomorph.to_local_homeomorph Homeomorph.toLocalHomeomorph
 
+-- porting note: todo: see #2350
+attribute [mfld_simps] Homeomorph.toLocalHomeomorph_apply Homeomorph.toLocalHomeomorph_symm_apply
+  Homeomorph.toLocalHomeomorph_source Homeomorph.toLocalHomeomorph_target
+
 /-- Replace `to_local_equiv` field to provide better definitional equalities. -/
 def replaceEquiv (e : LocalHomeomorph α β) (e' : LocalEquiv α β) (h : e.toLocalEquiv = e') :
     LocalHomeomorph α β where
@@ -704,6 +708,9 @@ protected def restr (s : Set α) : LocalHomeomorph α β :=
   e.restrOpen (interior s) isOpen_interior
 #align local_homeomorph.restr LocalHomeomorph.restr
 
+-- porting note: todo: see #2350
+attribute [mfld_simps] restr_apply restr_symm_apply
+
 @[simp, mfld_simps]
 theorem restr_toLocalEquiv (s : Set α) :
     (e.restr s).toLocalEquiv = e.toLocalEquiv.restr (interior s) :=
@@ -740,6 +747,9 @@ protected def refl (α : Type _) [TopologicalSpace α] : LocalHomeomorph α α :
   (Homeomorph.refl α).toLocalHomeomorph
 #align local_homeomorph.refl LocalHomeomorph.refl
 
+-- porting note: todo: see #2350
+attribute [mfld_simps] refl_apply
+
 @[simp, mfld_simps]
 theorem refl_localEquiv : (LocalHomeomorph.refl α).toLocalEquiv = LocalEquiv.refl α :=
   rfl
@@ -763,6 +773,9 @@ def ofSet (s : Set α) (hs : IsOpen s) : LocalHomeomorph α α where
   continuous_toFun := continuous_id.continuousOn
   continuous_invFun := continuous_id.continuousOn
 #align local_homeomorph.of_set LocalHomeomorph.ofSet
+
+-- porting note: todo: see #2350
+attribute [mfld_simps] ofSet_apply
 
 @[simp, mfld_simps]
 theorem ofSet_toLocalEquiv : (ofSet s hs).toLocalEquiv = LocalEquiv.ofSet s :=
@@ -990,7 +1003,7 @@ theorem Set.EqOn.restr_eqOn_source {e e' : LocalHomeomorph α β}
     rw [e.restr_source' _ e'.open_source]
     exact Set.inter_comm _ _
   · rw [e.restr_source' _ e'.open_source]
-    refine' (EqOn.trans _ h).trans _ <;> simp only [mfld_simps]
+    refine' (EqOn.trans _ h).trans _ <;> simp only [mfld_simps, eqOn_refl]
 #align local_homeomorph.set.eq_on.restr_eq_on_source LocalHomeomorph.Set.EqOn.restr_eqOn_source
 
 /-- Composition of a local homeomorphism and its inverse is equivalent to the restriction of the
@@ -1021,6 +1034,9 @@ def prod (e : LocalHomeomorph α β) (e' : LocalHomeomorph γ δ) :
   continuous_invFun := e.continuousOn_symm.prod_map e'.continuousOn_symm
   toLocalEquiv := e.toLocalEquiv.prod e'.toLocalEquiv
 #align local_homeomorph.prod LocalHomeomorph.prod
+
+-- porting note: todo: see #2350
+attribute [mfld_simps] prod_toLocalEquiv prod_apply
 
 @[simp, mfld_simps]
 theorem prod_symm (e : LocalHomeomorph α β) (e' : LocalHomeomorph γ δ) :
@@ -1256,6 +1272,9 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set α)) (h' 
     simpa only [continuous_iff_continuousOn_univ, h'] using e.continuousOn_symm
 #align local_homeomorph.to_homeomorph_of_source_eq_univ_target_eq_univ LocalHomeomorph.toHomeomorphOfSourceEqUnivTargetEqUniv
 
+-- porting note: todo: see #2350
+attribute [mfld_simps] toHomeomorphOfSourceEqUnivTargetEqUniv_apply toHomeomorphOfSourceEqUnivTargetEqUniv_symm_apply
+
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
 converse is also true; see `open_embedding.to_local_homeomorph`. -/
 theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e := by
@@ -1307,6 +1326,9 @@ noncomputable def toLocalHomeomorph [Nonempty α] : LocalHomeomorph α β :=
   LocalHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn univ).toLocalEquiv _ _)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 #align open_embedding.to_local_homeomorph OpenEmbedding.toLocalHomeomorph
+
+-- porting note: todo: see #2350
+attribute [mfld_simps] toLocalHomeomorph_apply toLocalHomeomorph_source toLocalHomeomorph_target
 
 theorem continuousAt_iff {f : α → β} {g : β → γ} (hf : OpenEmbedding f) {x : α} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
@@ -1391,7 +1413,7 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : LocalHomeomorph α β) :
   refine' EqOnSource.trans' (eqOnSource_refl _) _
   -- f has been eliminated !!!
   refine' Setoid.trans (trans_symm_self s.localHomeomorphSubtypeCoe) _
-  simp only [mfld_simps]
+  simp only [mfld_simps, Setoid.refl]
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr LocalHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 
 end LocalHomeomorph
