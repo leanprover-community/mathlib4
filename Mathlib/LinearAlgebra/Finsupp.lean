@@ -154,23 +154,25 @@ theorem supᵢ_lsingle_range : (⨆ a, LinearMap.range (lsingle a : M →ₗ[R] 
   exact sum_mem fun a _ => Submodule.mem_supᵢ_of_mem a ⟨_, rfl⟩
 #align finsupp.supr_lsingle_range Finsupp.supᵢ_lsingle_range
 
-#eval "AAHRG this is too slow!!! Commenting out to continue with the rest of the file"
--- theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
---     Disjoint (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M))
---       (⨆ a ∈ t, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) := by
---   refine'
---     (Disjoint.mono (lsingle_range_le_ker_lapply _ _ <| disjoint_compl_right)
---         (lsingle_range_le_ker_lapply _ _ <| disjoint_compl_right))
---       _
---   rw [disjoint_iff_inf_le]
---   refine' le_trans (le_infᵢ fun i => _) infi_ker_lapply_le_bot
---   classical
---     by_cases his : i ∈ s
---     · by_cases hit : i ∈ t
---       · exact (hs.le_bot ⟨his, hit⟩).elim
---       exact inf_le_of_right_le (infᵢ_le_of_le i <| infᵢ_le _ hit)
---     exact inf_le_of_left_le (infᵢ_le_of_le i <| infᵢ_le _ his)
--- #align finsupp.disjoint_lsingle_lsingle Finsupp.disjoint_lsingle_lsingle
+theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
+    Disjoint (⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M))
+      (⨆ a ∈ t, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M)) := by
+  refine'
+    (Disjoint.mono
+      (lsingle_range_le_ker_lapply s (sᶜ) _)
+      (lsingle_range_le_ker_lapply t (tᶜ) _))
+      _
+  · apply disjoint_compl_right
+  · apply disjoint_compl_right
+  rw [disjoint_iff_inf_le]
+  refine' le_trans (le_infᵢ fun i => _) infᵢ_ker_lapply_le_bot
+  classical
+    by_cases his : i ∈ s
+    · by_cases hit : i ∈ t
+      · exact (hs.le_bot ⟨his, hit⟩).elim
+      exact inf_le_of_right_le (infᵢ_le_of_le i <| infᵢ_le _ hit)
+    exact inf_le_of_left_le (infᵢ_le_of_le i <| infᵢ_le _ his)
+#align finsupp.disjoint_lsingle_lsingle Finsupp.disjoint_lsingle_lsingle
 
 theorem span_single_image (s : Set M) (a : α) :
     Submodule.span R (single a '' s) = (Submodule.span R s).map (lsingle a : M →ₗ[R] α →₀ M) := by
