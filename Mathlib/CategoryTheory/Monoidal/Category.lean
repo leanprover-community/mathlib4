@@ -72,85 +72,104 @@ These associators and unitors satisfy the pentagon and triangle equations.
 
 See <https://stacks.math.columbia.edu/tag/0FFK>.
 -/
+-- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] where
-  -- curried tensor product of objects:
+  /-- curried tensor product of objects -/
   tensorObj : C → C → C
-  -- Porting note: The Mathport did not translate the temporary notation
-  -- This notation is only temporary
-  -- curried tensor product of morphisms:
+  /-- curried tensor product of morphisms -/
   tensorHom : ∀ {X₁ Y₁ X₂ Y₂ : C}, (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂)
-  -- Porting note: The Mathport did not translate the temporary notation
-  -- This notation is only temporary
-  -- tensor product laws:
-  tensor_id' : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by aesop_cat
-  tensor_comp' :
+  /-- Tensor product of identiy maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
+  tensor_id : ∀ X₁ X₂ : C, tensorHom (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj X₁ X₂) := by aesop_cat
+  /--
+  Composition of tensor products is tensor product of compositions:
+  `(f₁ ⊗ g₁) ∘ (f₂ ⊗ g₂) = (f₁ ∘ f₂) ⊗ (g₁ ⊗ g₂)`
+  -/
+  tensor_comp :
     ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
       tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
     aesop_cat
   -- Porting note: Adding a prime here, so I can later define `tensorUnit` unprimed with explicit
   --               argument `C`
-  -- tensor unit:
+  /-- The tensor unity in the monoidal structure `𝟙_C` -/
   tensorUnit' : C
-  -- associator:
+  /-- The associator isomorphism `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
   associator : ∀ X Y Z : C, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z)
-  associator_naturality' :
+  /-- Naturality of the associator isomorphism: `(f₁ ⊗ f₂) ⊗ f₃ ≃ f₁ ⊗ (f₂ ⊗ f₃)` -/
+  associator_naturality :
     ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
       tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
         (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
     aesop_cat
-  -- left unitor:
+  /-- The left unitor: `𝟙_C ⊗ X ≃ X` -/
   leftUnitor : ∀ X : C, tensorObj tensorUnit' X ≅ X
-  leftUnitor_naturality' :
+  /--
+  Naturality of the left unitor, commutativity of `𝟙_C ⊗ X ⟶ 𝟙_C ⊗ Y ⟶ Y` and `𝟙_C ⊗ X ⟶ X ⟶ Y`
+  -/
+  leftUnitor_naturality :
     ∀ {X Y : C} (f : X ⟶ Y),
       tensorHom (𝟙 tensorUnit') f ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := by
     aesop_cat
-  -- right unitor:
+  /-- The right unitor: `X ⊗ 𝟙_C ≃ X` -/
   rightUnitor : ∀ X : C, tensorObj X tensorUnit' ≅ X
-  rightUnitor_naturality' :
+  /--
+  Naturality of the right unitor: commutativity of `X ⊗ 𝟙_C ⟶ Y ⊗ 𝟙_C ⟶ Y` and `X ⊗ 𝟙_C ⟶ X ⟶ Y`
+  -/
+  rightUnitor_naturality :
     ∀ {X Y : C} (f : X ⟶ Y),
       tensorHom f (𝟙 tensorUnit') ≫ (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := by
     aesop_cat
-  -- pentagon identity:
-  pentagon' :
+  /--
+  The pentagon identity relating the isomorphism between `X ⊗ (Y ⊗ (Z ⊗ W))` and `((X ⊗ Y) ⊗ Z) ⊗ W`
+  -/
+  pentagon :
     ∀ W X Y Z : C,
       tensorHom (associator W X Y).hom (𝟙 Z) ≫
           (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
         (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
     aesop_cat
-  -- triangle identity:
-  triangle' :
+  /--
+  The identity relating the isomorphisms between `X ⊗ (𝟙_C ⊗ Y)`, `(X ⊗ 𝟙_C) ⊗ Y` and `X ⊗ Y`
+  -/
+  triangle :
     ∀ X Y : C,
       (associator X tensorUnit' Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
         tensorHom (rightUnitor X).hom (𝟙 Y) := by
     aesop_cat
 #align category_theory.monoidal_category CategoryTheory.MonoidalCategory
 
-restate_axiom MonoidalCategory.tensor_id'
+-- Porting Note: `restate_axiom` doesn't seem to be necessary in Lean 4
+-- restate_axiom MonoidalCategory.tensor_id'
 
 attribute [simp] MonoidalCategory.tensor_id
 
-restate_axiom MonoidalCategory.tensor_comp'
+-- Porting Note: same as above
+-- restate_axiom MonoidalCategory.tensor_comp'
 
 attribute [reassoc] MonoidalCategory.tensor_comp
 
 -- This would be redundant in the simp set.
 attribute [simp] MonoidalCategory.tensor_comp
 
-restate_axiom MonoidalCategory.associator_naturality'
+-- Porting Note: same as above
+-- restate_axiom MonoidalCategory.associator_naturality'
 
 attribute [reassoc] MonoidalCategory.associator_naturality
 
-restate_axiom MonoidalCategory.leftUnitor_naturality'
+-- Porting Note: same as above
+-- restate_axiom MonoidalCategory.leftUnitor_naturality'
 
 attribute [reassoc] MonoidalCategory.leftUnitor_naturality
 
-restate_axiom MonoidalCategory.rightUnitor_naturality'
+-- Porting Note: same as above
+-- restate_axiom MonoidalCategory.rightUnitor_naturality'
 
 attribute [reassoc] MonoidalCategory.rightUnitor_naturality
 
-restate_axiom MonoidalCategory.pentagon'
+-- Porting Note: same as above
+-- restate_axiom MonoidalCategory.pentagon'
 
-restate_axiom MonoidalCategory.triangle'
+-- Porting Note: same as above
+-- restate_axiom MonoidalCategory.triangle'
 
 attribute [reassoc] MonoidalCategory.pentagon
 
@@ -159,27 +178,34 @@ attribute [reassoc (attr := simp)] MonoidalCategory.triangle
 -- Porting Note: This is here to make `tensorUnit` explicitly depend on `C`, which was done in
 --               Lean 3 using the `[]` notation in the `tensorUnit'` field.
 open CategoryTheory.MonoidalCategory in
+/-- The tensor unity in the monoidal structure `𝟙_C` -/
 abbrev MonoidalCategory.tensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] : C :=
   tensorUnit' (C := C)
 
 open MonoidalCategory
 
 -- mathport name: tensor_obj
+/-- Notation for `tensorObj`, the tensor product of objects in a monoidal category -/
 infixr:70 " ⊗ " => tensorObj
 
 -- mathport name: tensor_hom
+/-- Notation for `tensorHom`, the tensor product of morphisms in a monoidal category -/
 infixr:70 " ⊗ " => tensorHom
 
 -- mathport name: «expr𝟙_»
+/-- Notation for `tensorUnit`, the two-sided identity of `⊗` -/
 notation "𝟙_" => tensorUnit
 
 -- mathport name: exprα_
+/-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z) ≃ X ⊗ (Y ⊗ Z)` -/
 notation "α_" => associator
 
 -- mathport name: «exprλ_»
+/-- Notation for the `leftUnitor`: `𝟙_C ⊗ X ≃ X` -/
 notation "λ_" => leftUnitor
 
 -- mathport name: exprρ_
+/-- Notation for the `rightUnitor`: `X ⊗ 𝟙_C ≃ X` -/
 notation "ρ_" => rightUnitor
 
 variable (C : Type u) [𝒞 : Category.{v} C] [MonoidalCategory C]
@@ -195,6 +221,7 @@ def tensorIso {C : Type u} {X Y X' Y' : C} [Category.{v} C] [MonoidalCategory.{v
 #align category_theory.tensor_iso CategoryTheory.tensorIso
 
 -- mathport name: tensor_iso
+/-- Notation for `tensorIso`, the tensor product of isomorphisms -/
 infixr:70 " ⊗ " => tensorIso
 
 namespace MonoidalCategory
