@@ -305,8 +305,21 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
 
       but Lean 4 still a mess
       -/
+      change G.map₂ (F.map₂ (α_ f g h).hom) ≫
+        (G.map₂ (F.map_comp f (g ≫ h)) ≫ G.map_comp (F.map f) (F.map (g ≫ h))) ≫
+        G.map (F.map f) ◁ (G.map₂ (F.map_comp g h) ≫ G.map_comp (F.map g) (F.map h)) =
+        (G.map₂ (F.map_comp (f ≫ g) h) ≫ G.map_comp (F.map (f ≫ g)) (F.map h)) ≫
+        (G.map₂ (F.map_comp f g) ≫ G.map_comp (F.map f) (F.map g)) ▷ G.map (F.map h) ≫
+        (α_ (G.map (F.map f)) (G.map (F.map g)) (G.map (F.map h))).hom
       simp only [map₂_associator, ← map₂_comp_assoc, ← mapComp_naturality_right_assoc,
         whiskerLeft_comp, assoc]
+      suffices : G.map₂ (F.map_comp (f ≫ g) h ≫ F.map_comp f g ▷ F.map h ≫ (α_ (F.map f) (F.map g) (F.map h)).hom) ≫
+    G.map_comp (F.map f) (F.map g ≫ F.map h) ≫ G.map (F.map f) ◁ G.map_comp (F.map g) (F.map h) =
+  G.map₂ (F.map_comp (f ≫ g) h) ≫
+    G.map_comp (F.map (f ≫ g)) (F.map h) ≫
+      (G.map₂ (F.map_comp f g) ≫ G.map_comp (F.map f) (F.map g)) ▷ G.map (F.map h) ≫
+        (α_ (G.map (F.map f)) (G.map (F.map g)) (G.map (F.map h))).hom
+        simpa
       simp only [map₂_associator, map₂_comp, mapComp_naturality_left_assoc, comp_whiskerRight,
         assoc]
       dsimp
