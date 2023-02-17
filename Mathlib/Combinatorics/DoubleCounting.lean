@@ -34,8 +34,7 @@ and `t`.
 
 open Finset Function Relator
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 variable {α β : Type _}
 

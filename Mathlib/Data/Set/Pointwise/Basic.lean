@@ -1140,8 +1140,10 @@ theorem not_one_mem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
 #align set.not_zero_mem_sub_iff Set.not_zero_mem_sub_iff
 
 alias not_one_mem_div_iff ↔ _ _root_.Disjoint.one_not_mem_div_set
+#align disjoint.one_not_mem_div_set Disjoint.one_not_mem_div_set
 
 attribute [to_additive] Disjoint.one_not_mem_div_set
+#align disjoint.zero_not_mem_sub_set Disjoint.zero_not_mem_sub_set
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=

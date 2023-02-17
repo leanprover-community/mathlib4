@@ -12,13 +12,13 @@ import Mathlib.Data.Set.Finite
 import Mathlib.Algebra.BigOperators.Basic
 
 /-!
-# Preimage of a `finset` under an injective map.
+# Preimage of a `Finset` under an injective map.
 -/
 
 
 open Set Function
 
--- open BigOperators -- Porting note: notation is global for now
+open BigOperators
 
 universe u v w x
 

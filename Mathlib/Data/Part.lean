@@ -435,6 +435,8 @@ protected def bind (f : Part α) (g : α → Part β) : Part β :=
 def map (f : α → β) (o : Part α) : Part β :=
   ⟨o.Dom, f ∘ o.get⟩
 #align part.map Part.map
+#align part.map_dom Part.map_Dom
+#align part.map_get Part.map_get
 
 theorem mem_map (f : α → β) {o : Part α} : ∀ {a}, a ∈ o → f a ∈ map f o
   | _, ⟨_, rfl⟩ => ⟨_, rfl⟩

@@ -588,13 +588,6 @@ instance MonoidWithZeroHom.coeToZeroHom {_ : MulZeroOneClass M} {_ : MulZeroOneC
   Coe (M →*₀ N) (ZeroHom M N) := ⟨MonoidWithZeroHom.toZeroHom⟩
 #align monoid_with_zero_hom.has_coe_to_zero_hom MonoidWithZeroHom.coeToZeroHom
 
--- Porting note: several `coe_eq_xxx` lemmas removed due to new `coe` in Lean4
-
-attribute [coe] OneHom.toFun
-attribute [coe] ZeroHom.toFun
-attribute [coe] MulHom.toFun
-attribute [coe] AddHom.toFun
-
 -- these must come after the coe_toFun definitions
 initialize_simps_projections ZeroHom (toFun → apply)
 initialize_simps_projections AddHom (toFun → apply)
@@ -604,12 +597,15 @@ initialize_simps_projections MulHom (toFun → apply)
 initialize_simps_projections MonoidHom (toOneHom_toFun → apply, -toOneHom)
 initialize_simps_projections MonoidWithZeroHom (toZeroHom_toFun → apply, -toZeroHom)
 
--- Porting note: removed several `toFun_eq_coe` lemmas due to new Coe in Lean4
-
 @[to_additive (attr := simp)]
 theorem OneHom.coe_mk [One M] [One N] (f : M → N) (h1) : (OneHom.mk f h1 : M → N) = f := rfl
 #align one_hom.coe_mk OneHom.coe_mk
 #align zero_hom.coe_mk ZeroHom.coe_mk
+
+@[to_additive (attr := simp)]
+theorem OneHom.toFun_eq_coe [One M] [One N] (f : OneHom M N) : f.toFun = f := rfl
+#align one_hom.to_fun_eq_coe OneHom.toFun_eq_coe
+#align zero_hom.to_fun_eq_coe ZeroHom.toFun_eq_coe
 
 @[to_additive (attr := simp)]
 theorem MulHom.coe_mk [Mul M] [Mul N] (f : M → N) (hmul) : (MulHom.mk f hmul : M → N) = f := rfl
@@ -617,15 +613,15 @@ theorem MulHom.coe_mk [Mul M] [Mul N] (f : M → N) (hmul) : (MulHom.mk f hmul :
 #align add_hom.coe_mk AddHom.coe_mk
 
 @[to_additive (attr := simp)]
+theorem MulHom.toFun_eq_coe [Mul M] [Mul N] (f : M →ₙ* N) : f.toFun = f := rfl
+#align mul_hom.to_fun_eq_coe MulHom.toFun_eq_coe
+#align add_hom.to_fun_eq_coe AddHom.toFun_eq_coe
+
+@[to_additive (attr := simp)]
 theorem MonoidHom.coe_mk [MulOneClass M] [MulOneClass N] (f hmul) :
   (MonoidHom.mk f hmul : M → N) = f := rfl
 #align monoid_hom.coe_mk MonoidHom.coe_mk
 #align add_monoid_hom.coe_mk AddMonoidHom.coe_mk
-
-@[simp]
-theorem MonoidWithZeroHom.coe_mk [MulZeroOneClass M] [MulZeroOneClass N] (f h1 hmul) :
-  (MonoidWithZeroHom.mk f h1 hmul : M → N) = (f : M → N) := rfl
-#align monoid_with_zero_hom.coe_mk MonoidWithZeroHom.coe_mk
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.toOneHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
@@ -639,12 +635,21 @@ theorem MonoidHom.toMulHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
 #align monoid_hom.to_mul_hom_coe MonoidHom.toMulHom_coe
 #align add_monoid_hom.to_add_hom_coe AddMonoidHom.toAddHom_coe
 
+@[to_additive]
+theorem MonoidHom.toFun_eq_coe [MulOneClass M] [MulOneClass N] (f : M →* N) : f.toFun = f := rfl
+#align monoid_hom.to_fun_eq_coe MonoidHom.toFun_eq_coe
+#align add_monoid_hom.to_fun_eq_coe AddMonoidHom.toFun_eq_coe
+
+@[simp]
+theorem MonoidWithZeroHom.coe_mk [MulZeroOneClass M] [MulZeroOneClass N] (f h1 hmul) :
+  (MonoidWithZeroHom.mk f h1 hmul : M → N) = (f : M → N) := rfl
+#align monoid_with_zero_hom.coe_mk MonoidWithZeroHom.coe_mk
+
 @[simp]
 theorem MonoidWithZeroHom.toZeroHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
   (f.toZeroHom : M → N) = f := rfl
 #align monoid_with_zero_hom.to_zero_hom_coe MonoidWithZeroHom.toZeroHom_coe
 
-@[simp]
 theorem MonoidWithZeroHom.toMonoidHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
   f.toMonoidHom.toFun = f := rfl
 #align monoid_with_zero_hom.to_monoid_hom_coe MonoidWithZeroHom.toMonoidHom_coe
@@ -955,6 +960,8 @@ def OneHom.id (M : Type _) [One M] : OneHom M M where
   map_one' := rfl
 #align one_hom.id OneHom.id
 #align zero_hom.id ZeroHom.id
+#align zero_hom.id_apply ZeroHom.id_apply
+#align one_hom.id_apply OneHom.id_apply
 
 /-- The identity map from a type with multiplication to itself. -/
 @[to_additive (attr := simps)]
@@ -963,6 +970,8 @@ def MulHom.id (M : Type _) [Mul M] : M →ₙ* M where
   map_mul' _ _ := rfl
 #align mul_hom.id MulHom.id
 #align add_hom.id AddHom.id
+#align add_hom.id_apply AddHom.id_apply
+#align mul_hom.id_apply MulHom.id_apply
 
 /-- The identity map from a monoid to itself. -/
 @[to_additive (attr := simps)]
@@ -972,6 +981,8 @@ def MonoidHom.id (M : Type _) [MulOneClass M] : M →* M where
   map_mul' _ _ := rfl
 #align monoid_hom.id MonoidHom.id
 #align add_monoid_hom.id AddMonoidHom.id
+#align monoid_hom.id_apply MonoidHom.id_apply
+#align add_monoid_hom.id_apply AddMonoidHom.id_apply
 
 /-- The identity map from a `MonoidWithZero` to itself. -/
 @[simps]
@@ -981,6 +992,7 @@ def MonoidWithZeroHom.id (M : Type _) [MulZeroOneClass M] : M →*₀ M where
   map_one' := rfl
   map_mul' _ _ := rfl
 #align monoid_with_zero_hom.id MonoidWithZeroHom.id
+#align monoid_with_zero_hom.id_apply MonoidWithZeroHom.id_apply
 
 /-- The identity map from an type with zero to itself. -/
 add_decl_doc ZeroHom.id
@@ -1548,6 +1560,8 @@ def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G 
   map_one' := mul_left_eq_self.1 <| by rw [← map_mul, mul_one]
 #align monoid_hom.mk' MonoidHom.mk'
 #align add_monoid_hom.mk' AddMonoidHom.mk'
+#align add_monoid_hom.mk'_apply AddMonoidHom.mk'_apply
+#align monoid_hom.mk'_apply MonoidHom.mk'_apply
 
 /-- Makes a group homomorphism from a proof that the map preserves right division
 `fun x y => x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y => x / y`.

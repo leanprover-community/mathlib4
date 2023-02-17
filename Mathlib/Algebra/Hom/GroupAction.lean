@@ -185,6 +185,7 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
       g (m • x) = g (m • f (g x)) := by rw [h₂]
       _ = g (f (m • g x)) := by rw [f.map_smul]
       _ = m • g x := by rw [h₁]
+#align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
 
 #align mul_action_hom.inverse MulActionHom.inverse
 
@@ -196,9 +197,11 @@ structure DistribMulActionHom extends A →[M] B, A →+ B
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an additive monoid homomorphism. -/
 add_decl_doc DistribMulActionHom.toAddMonoidHom
+#align distrib_mul_action_hom.to_add_monoid_hom DistribMulActionHom.toAddMonoidHom
 
 /-- Reinterpret an equivariant additive monoid homomorphism as an equivariant function. -/
 add_decl_doc DistribMulActionHom.toMulActionHom
+#align distrib_mul_action_hom.to_mul_action_hom DistribMulActionHom.toMulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
  see https://github.com/leanprover/lean4/issues/2000 -/
@@ -417,9 +420,11 @@ structure MulSemiringActionHom extends R →+[M] S, R →+* S
 
 /-- Reinterpret an equivariant ring homomorphism as a ring homomorphism. -/
 add_decl_doc MulSemiringActionHom.toRingHom
+#align mul_semiring_action_hom.to_ring_hom MulSemiringActionHom.toRingHom
 
 /-- Reinterpret an equivariant ring homomorphism as an equivariant additive monoid homomorphism. -/
 add_decl_doc MulSemiringActionHom.toDistribMulActionHom
+#align mul_semiring_action_hom.to_distrib_mul_action_hom MulSemiringActionHom.toDistribMulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
  see https://github.com/leanprover/lean4/issues/2000 -/
