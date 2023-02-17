@@ -8,10 +8,10 @@ Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Functor.Const
-import Mathbin.CategoryTheory.DiscreteCategory
-import Mathbin.CategoryTheory.Yoneda
-import Mathbin.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Functor.Const
+import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Yoneda
+import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
 
 /-!
 # Cones and cocones
@@ -136,8 +136,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
 
 @[simp, reassoc.1]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
-    c.π.app j ≫ F.map f = c.π.app j' :=
-  by
+    c.π.app j ≫ F.map f = c.π.app j' := by
   rw [← c.π.naturality f]
   apply id_comp
 #align category_theory.limits.cone.w CategoryTheory.Limits.Cone.w
@@ -160,8 +159,7 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
 
 @[simp, reassoc.1]
 theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
-    F.map f ≫ c.ι.app j' = c.ι.app j :=
-  by
+    F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
   apply comp_id
 #align category_theory.limits.cocone.w CategoryTheory.Limits.Cocone.w
@@ -442,8 +440,7 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.Functor) :
 as well.
 -/
 instance reflects_cone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
-    ReflectsIsomorphisms (Cones.functoriality K F) :=
-  by
+    ReflectsIsomorphisms (Cones.functoriality K F) := by
   constructor
   intros
   haveI : is_iso (F.map f.hom) := (cones.forget (K ⋙ F)).map_isIso ((cones.functoriality K F).map f)
@@ -658,8 +655,7 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.Functo
 as well.
 -/
 instance reflects_cocone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
-    ReflectsIsomorphisms (Cocones.functoriality K F) :=
-  by
+    ReflectsIsomorphisms (Cocones.functoriality K F) := by
   constructor
   intros
   haveI : is_iso (F.map f.hom) :=
@@ -973,8 +969,7 @@ def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F
 
 @[simp]
 theorem coconeOfConeLeftOp_ι_app (c : Cone F.leftOp) (j) :
-    (coconeOfConeLeftOp c).ι.app j = (c.π.app (op j)).op :=
-  by
+    (coconeOfConeLeftOp c).ι.app j = (c.π.app (op j)).op := by
   dsimp only [cocone_of_cone_left_op]
   simp
 #align category_theory.limits.cocone_of_cone_left_op_ι_app CategoryTheory.Limits.coconeOfConeLeftOp_ι_app
