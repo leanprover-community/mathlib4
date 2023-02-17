@@ -155,9 +155,7 @@ theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
   rfl
 #align non_unital_ring_hom.coe_mul_hom_mk NonUnitalRingHom.coe_mulHom_mk
 
-@[simp]
-theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ↑(f.toMulHom) = ↑f :=
-  rfl
+theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f := rfl
 #align non_unital_ring_hom.coe_to_add_monoid_hom NonUnitalRingHom.coe_toAddMonoidHom
 
 @[simp]
