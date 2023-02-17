@@ -8,7 +8,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-! # Ordinal exponential
 
@@ -139,8 +139,7 @@ but is expected to have type
   forall (a : Ordinal.{u1}), Eq.{succ (succ u1)} Ordinal.{u1} (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) (OfNat.ofNat.{succ u1} Ordinal.{u1} 1 (One.toOfNat1.{succ u1} Ordinal.{u1} Ordinal.instOneOrdinal.{u1})) a) (OfNat.ofNat.{succ u1} Ordinal.{u1} 1 (One.toOfNat1.{succ u1} Ordinal.{u1} Ordinal.instOneOrdinal.{u1}))
 Case conversion may be inaccurate. Consider using '#align ordinal.one_opow Ordinal.one_opowₓ'. -/
 @[simp]
-theorem one_opow (a : Ordinal) : (1^a) = 1 :=
-  by
+theorem one_opow (a : Ordinal) : (1^a) = 1 := by
   apply limit_rec_on a
   · simp only [opow_zero]
   · intro _ ih
@@ -156,8 +155,7 @@ lean 3 declaration is
 but is expected to have type
   forall {a : Ordinal.{u1}} (b : Ordinal.{u1}), (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1})) a) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1})) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a b))
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_pos Ordinal.opow_posₓ'. -/
-theorem opow_pos {a : Ordinal} (b) (a0 : 0 < a) : 0 < (a^b) :=
-  by
+theorem opow_pos {a : Ordinal} (b) (a0 : 0 < a) : 0 < (a^b) := by
   have h0 : 0 < (a^0) := by simp only [opow_zero, zero_lt_one]
   apply limit_rec_on b
   · exact h0
@@ -235,8 +233,7 @@ lean 3 declaration is
 but is expected to have type
   forall {a : Ordinal.{u1}} {b : Ordinal.{u1}}, (Ordinal.IsLimit.{u1} a) -> (Ne.{succ (succ u1)} Ordinal.{u1} b (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1}))) -> (Ordinal.IsLimit.{u1} (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a b))
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_is_limit_left Ordinal.opow_isLimit_leftₓ'. -/
-theorem opow_isLimit_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLimit (a^b) :=
-  by
+theorem opow_isLimit_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLimit (a^b) := by
   rcases zero_or_succ_or_limit b with (e | ⟨b, rfl⟩ | l')
   · exact absurd e hb
   · rw [opow_succ]
@@ -250,8 +247,7 @@ lean 3 declaration is
 but is expected to have type
   forall {a : Ordinal.{u1}} {b : Ordinal.{u1}} {c : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1})) a) -> (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) b c) -> (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a b) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a c))
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_le_opow_right Ordinal.opow_le_opow_rightₓ'. -/
-theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : (a^b) ≤ (a^c) :=
-  by
+theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : (a^b) ≤ (a^c) := by
   cases' lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ h₁
   · exact (opow_le_opow_iff_right h₁).2 h₂
   · subst a
@@ -264,8 +260,7 @@ lean 3 declaration is
 but is expected to have type
   forall {a : Ordinal.{u1}} {b : Ordinal.{u1}} (c : Ordinal.{u1}), (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) a b) -> (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a c) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b c))
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_le_opow_left Ordinal.opow_le_opow_leftₓ'. -/
-theorem opow_le_opow_left {a b : Ordinal} (c) (ab : a ≤ b) : (a^c) ≤ (b^c) :=
-  by
+theorem opow_le_opow_left {a b : Ordinal} (c) (ab : a ≤ b) : (a^c) ≤ (b^c) := by
   by_cases a0 : a = 0
   · subst a
     by_cases c0 : c = 0
@@ -288,8 +283,7 @@ lean 3 declaration is
 but is expected to have type
   forall (a : Ordinal.{u1}) {b : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1})) b) -> (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) a (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a b))
 Case conversion may be inaccurate. Consider using '#align ordinal.left_le_opow Ordinal.left_le_opowₓ'. -/
-theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ (a^b) :=
-  by
+theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ (a^b) := by
   nth_rw 1 [← opow_one a]
   cases' le_or_gt a 1 with a1 a1
   · cases' lt_or_eq_of_le a1 with a0 a1
@@ -316,8 +310,7 @@ lean 3 declaration is
 but is expected to have type
   forall {a : Ordinal.{u1}} {b : Ordinal.{u1}} {c : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) a b) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a (Order.succ.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1}) Ordinal.instSuccOrderOrdinalToPreorderInstPartialOrderOrdinal.{u1} c)) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b (Order.succ.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1}) Ordinal.instSuccOrderOrdinalToPreorderInstPartialOrderOrdinal.{u1} c)))
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_lt_opow_left_of_succ Ordinal.opow_lt_opow_left_of_succₓ'. -/
-theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : (a^succ c) < (b^succ c) :=
-  by
+theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : (a^succ c) < (b^succ c) := by
   rw [opow_succ, opow_succ]
   exact
     (mul_le_mul_right' (opow_le_opow_left c ab.le) a).trans_lt
@@ -330,8 +323,7 @@ lean 3 declaration is
 but is expected to have type
   forall (a : Ordinal.{u1}) (b : Ordinal.{u1}) (c : Ordinal.{u1}), Eq.{succ (succ u1)} Ordinal.{u1} (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a (HAdd.hAdd.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHAdd.{succ u1} Ordinal.{u1} Ordinal.instAddOrdinal.{u1}) b c)) (HMul.hMul.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHMul.{succ u1} Ordinal.{u1} (MulZeroClass.toMul.{succ u1} Ordinal.{u1} (MulZeroOneClass.toMulZeroClass.{succ u1} Ordinal.{u1} (MonoidWithZero.toMulZeroOneClass.{succ u1} Ordinal.{u1} Ordinal.instMonoidWithZeroOrdinal.{u1})))) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a b) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a c))
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_add Ordinal.opow_addₓ'. -/
-theorem opow_add (a b c : Ordinal) : (a^b + c) = (a^b) * (a^c) :=
-  by
+theorem opow_add (a b c : Ordinal) : (a^b + c) = (a^b) * (a^c) := by
   rcases eq_or_ne a 0 with (rfl | a0)
   · rcases eq_or_ne c 0 with (rfl | c0)
     · simp
@@ -370,8 +362,7 @@ lean 3 declaration is
 but is expected to have type
   forall (a : Ordinal.{u1}) {b : Ordinal.{u1}} {c : Ordinal.{u1}}, (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) b c) -> (Dvd.dvd.{succ u1} Ordinal.{u1} (semigroupDvd.{succ u1} Ordinal.{u1} (SemigroupWithZero.toSemigroup.{succ u1} Ordinal.{u1} (MonoidWithZero.toSemigroupWithZero.{succ u1} Ordinal.{u1} Ordinal.instMonoidWithZeroOrdinal.{u1}))) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a b) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a c))
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_dvd_opow Ordinal.opow_dvd_opowₓ'. -/
-theorem opow_dvd_opow (a) {b c : Ordinal} (h : b ≤ c) : (a^b) ∣ (a^c) :=
-  by
+theorem opow_dvd_opow (a) {b c : Ordinal} (h : b ≤ c) : (a^b) ∣ (a^c) := by
   rw [← Ordinal.add_sub_cancel_of_le h, opow_add]
   apply dvd_mul_right
 #align ordinal.opow_dvd_opow Ordinal.opow_dvd_opow
@@ -396,8 +387,7 @@ lean 3 declaration is
 but is expected to have type
   forall (a : Ordinal.{u1}) (b : Ordinal.{u1}) (c : Ordinal.{u1}), Eq.{succ (succ u1)} Ordinal.{u1} (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a (HMul.hMul.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHMul.{succ u1} Ordinal.{u1} (MulZeroClass.toMul.{succ u1} Ordinal.{u1} (MulZeroOneClass.toMulZeroClass.{succ u1} Ordinal.{u1} (MonoidWithZero.toMulZeroOneClass.{succ u1} Ordinal.{u1} Ordinal.instMonoidWithZeroOrdinal.{u1})))) b c)) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) a b) c)
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_mul Ordinal.opow_mulₓ'. -/
-theorem opow_mul (a b c : Ordinal) : (a^b * c) = ((a^b)^c) :=
-  by
+theorem opow_mul (a b c : Ordinal) : (a^b * c) = ((a^b)^c) := by
   by_cases b0 : b = 0; · simp only [b0, zero_mul, opow_zero, one_opow]
   by_cases a0 : a = 0
   · subst a
@@ -513,8 +503,7 @@ but is expected to have type
   forall {b : Ordinal.{u1}} {x : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 1 (One.toOfNat1.{succ u1} Ordinal.{u1} Ordinal.instOneOrdinal.{u1})) b) -> (Ne.{succ (succ u1)} Ordinal.{u1} x (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1}))) -> (Eq.{succ (succ u1)} Ordinal.{u1} (Order.succ.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1}) Ordinal.instSuccOrderOrdinalToPreorderInstPartialOrderOrdinal.{u1} (Ordinal.log.{u1} b x)) (InfSet.infₛ.{succ u1} Ordinal.{u1} (ConditionallyCompleteLattice.toInfSet.{succ u1} Ordinal.{u1} (ConditionallyCompleteLinearOrder.toConditionallyCompleteLattice.{succ u1} Ordinal.{u1} (ConditionallyCompleteLinearOrderBot.toConditionallyCompleteLinearOrder.{succ u1} Ordinal.{u1} Ordinal.instConditionallyCompleteLinearOrderBotOrdinal.{u1}))) (setOf.{succ u1} Ordinal.{u1} (fun (o : Ordinal.{u1}) => LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) x (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b o)))))
 Case conversion may be inaccurate. Consider using '#align ordinal.succ_log_def Ordinal.succ_log_defₓ'. -/
 theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
-    succ (log b x) = infₛ { o | x < (b^o) } :=
-  by
+    succ (log b x) = infₛ { o | x < (b^o) } := by
   let t := Inf { o | x < (b^o) }
   have : x < (b^t) := cinfₛ_mem (log_nonempty hb)
   rcases zero_or_succ_or_limit t with (h | h | h)
@@ -545,8 +534,7 @@ lean 3 declaration is
 but is expected to have type
   forall (b : Ordinal.{u1}) {x : Ordinal.{u1}}, (Ne.{succ (succ u1)} Ordinal.{u1} x (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1}))) -> (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b (Ordinal.log.{u1} b x)) x)
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_log_le_self Ordinal.opow_log_le_selfₓ'. -/
-theorem opow_log_le_self (b) {x : Ordinal} (hx : x ≠ 0) : (b^log b x) ≤ x :=
-  by
+theorem opow_log_le_self (b) {x : Ordinal} (hx : x ≠ 0) : (b^log b x) ≤ x := by
   rcases eq_or_ne b 0 with (rfl | b0)
   · rw [zero_opow']
     refine' (sub_le_self _ _).trans (one_le_iff_ne_zero.2 hx)
@@ -598,8 +586,7 @@ lean 3 declaration is
 but is expected to have type
   forall {b : Ordinal.{u1}} {o : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) o b) -> (Eq.{succ (succ u1)} Ordinal.{u1} (Ordinal.log.{u1} b o) (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1})))
 Case conversion may be inaccurate. Consider using '#align ordinal.log_eq_zero Ordinal.log_eq_zeroₓ'. -/
-theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 :=
-  by
+theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
   rcases eq_or_ne o 0 with (rfl | ho)
   · exact log_zero_right b
   cases' le_or_lt b 1 with hb hb
@@ -655,8 +642,7 @@ lean 3 declaration is
 but is expected to have type
   forall (b : Ordinal.{u1}) {o : Ordinal.{u1}}, (Ne.{succ (succ u1)} Ordinal.{u1} o (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1}))) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (HMod.hMod.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHMod.{succ u1} Ordinal.{u1} Ordinal.instModOrdinal.{u1}) o (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b (Ordinal.log.{u1} b o))) o)
 Case conversion may be inaccurate. Consider using '#align ordinal.mod_opow_log_lt_self Ordinal.mod_opow_log_lt_selfₓ'. -/
-theorem mod_opow_log_lt_self (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : o % (b^log b o) < o :=
-  by
+theorem mod_opow_log_lt_self (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : o % (b^log b o) < o := by
   rcases eq_or_ne b 0 with (rfl | hb)
   · simpa using Ordinal.pos_iff_ne_zero.2 ho
   · exact (mod_lt _ <| opow_ne_zero _ hb).trans_le (opow_log_le_self _ ho)
@@ -669,8 +655,7 @@ but is expected to have type
   forall {b : Ordinal.{u1}} {o : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 1 (One.toOfNat1.{succ u1} Ordinal.{u1} Ordinal.instOneOrdinal.{u1})) b) -> (Ne.{succ (succ u1)} Ordinal.{u1} o (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1}))) -> (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) b o) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (Ordinal.log.{u1} b (HMod.hMod.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHMod.{succ u1} Ordinal.{u1} Ordinal.instModOrdinal.{u1}) o (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b (Ordinal.log.{u1} b o)))) (Ordinal.log.{u1} b o))
 Case conversion may be inaccurate. Consider using '#align ordinal.log_mod_opow_log_lt_log_self Ordinal.log_mod_opow_log_lt_log_selfₓ'. -/
 theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) :
-    log b (o % (b^log b o)) < log b o :=
-  by
+    log b (o % (b^log b o)) < log b o := by
   cases eq_or_ne (o % (b^log b o)) 0
   · rw [h, log_zero_right]
     apply log_pos hb ho hbo
@@ -709,8 +694,7 @@ but is expected to have type
   forall {b : Ordinal.{u1}} {u : Ordinal.{u1}} {v : Ordinal.{u1}} {w : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) v b) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) w (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b u)) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (HAdd.hAdd.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHAdd.{succ u1} Ordinal.{u1} Ordinal.instAddOrdinal.{u1}) (HMul.hMul.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHMul.{succ u1} Ordinal.{u1} (MulZeroClass.toMul.{succ u1} Ordinal.{u1} (MulZeroOneClass.toMulZeroClass.{succ u1} Ordinal.{u1} (MonoidWithZero.toMulZeroOneClass.{succ u1} Ordinal.{u1} Ordinal.instMonoidWithZeroOrdinal.{u1})))) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b u) v) w) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b (Order.succ.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1}) Ordinal.instSuccOrderOrdinalToPreorderInstPartialOrderOrdinal.{u1} u)))
 Case conversion may be inaccurate. Consider using '#align ordinal.opow_mul_add_lt_opow_succ Ordinal.opow_mul_add_lt_opow_succₓ'. -/
 theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < (b^u)) :
-    (b^u) * v + w < (b^succ u) :=
-  by
+    (b^u) * v + w < (b^succ u) := by
   convert (opow_mul_add_lt_opow_mul_succ v hw).trans_le (mul_le_mul_left' (succ_le_of_lt hvb) _)
   exact opow_succ b u
 #align ordinal.opow_mul_add_lt_opow_succ Ordinal.opow_mul_add_lt_opow_succ
@@ -722,8 +706,7 @@ but is expected to have type
   forall {b : Ordinal.{u1}} {u : Ordinal.{u1}} {v : Ordinal.{u1}} {w : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 1 (One.toOfNat1.{succ u1} Ordinal.{u1} Ordinal.instOneOrdinal.{u1})) b) -> (Ne.{succ (succ u1)} Ordinal.{u1} v (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1}))) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) v b) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) w (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b u)) -> (Eq.{succ (succ u1)} Ordinal.{u1} (Ordinal.log.{u1} b (HAdd.hAdd.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHAdd.{succ u1} Ordinal.{u1} Ordinal.instAddOrdinal.{u1}) (HMul.hMul.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHMul.{succ u1} Ordinal.{u1} (MulZeroClass.toMul.{succ u1} Ordinal.{u1} (MulZeroOneClass.toMulZeroClass.{succ u1} Ordinal.{u1} (MonoidWithZero.toMulZeroOneClass.{succ u1} Ordinal.{u1} Ordinal.instMonoidWithZeroOrdinal.{u1})))) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b u) v) w)) u)
 Case conversion may be inaccurate. Consider using '#align ordinal.log_opow_mul_add Ordinal.log_opow_mul_addₓ'. -/
 theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hvb : v < b)
-    (hw : w < (b^u)) : log b ((b^u) * v + w) = u :=
-  by
+    (hw : w < (b^u)) : log b ((b^u) * v + w) = u := by
   have hne' := (opow_mul_add_pos (zero_lt_one.trans hb).ne' u hv w).ne'
   by_contra' hne
   cases' lt_or_gt_of_ne hne with h h
@@ -740,8 +723,7 @@ lean 3 declaration is
 but is expected to have type
   forall {b : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 1 (One.toOfNat1.{succ u1} Ordinal.{u1} Ordinal.instOneOrdinal.{u1})) b) -> (forall (x : Ordinal.{u1}), Eq.{succ (succ u1)} Ordinal.{u1} (Ordinal.log.{u1} b (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b x)) x)
 Case conversion may be inaccurate. Consider using '#align ordinal.log_opow Ordinal.log_opowₓ'. -/
-theorem log_opow {b : Ordinal} (hb : 1 < b) (x : Ordinal) : log b (b^x) = x :=
-  by
+theorem log_opow {b : Ordinal} (hb : 1 < b) (x : Ordinal) : log b (b^x) = x := by
   convert log_opow_mul_add hb zero_ne_one.symm hb (opow_pos x (zero_lt_one.trans hb))
   rw [add_zero, mul_one]
 #align ordinal.log_opow Ordinal.log_opow
@@ -752,8 +734,7 @@ lean 3 declaration is
 but is expected to have type
   forall {b : Ordinal.{u1}} (o : Ordinal.{u1}), (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 1 (One.toOfNat1.{succ u1} Ordinal.{u1} Ordinal.instOneOrdinal.{u1})) b) -> (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (HDiv.hDiv.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHDiv.{succ u1} Ordinal.{u1} Ordinal.instDivOrdinal.{u1}) o (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) b (Ordinal.log.{u1} b o))) b)
 Case conversion may be inaccurate. Consider using '#align ordinal.div_opow_log_lt Ordinal.div_opow_log_ltₓ'. -/
-theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / (b^log b o) < b :=
-  by
+theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / (b^log b o) < b := by
   rw [div_lt (opow_pos _ (zero_lt_one.trans hb)).ne', ← opow_succ]
   exact lt_opow_succ_log_self hb o
 #align ordinal.div_opow_log_lt Ordinal.div_opow_log_lt
@@ -765,8 +746,7 @@ but is expected to have type
   forall {x : Ordinal.{u1}} {y : Ordinal.{u1}} (b : Ordinal.{u1}), (Ne.{succ (succ u1)} Ordinal.{u1} x (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1}))) -> (Ne.{succ (succ u1)} Ordinal.{u1} y (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1}))) -> (LE.le.{succ u1} Ordinal.{u1} (Preorder.toLE.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (HAdd.hAdd.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHAdd.{succ u1} Ordinal.{u1} Ordinal.instAddOrdinal.{u1}) (Ordinal.log.{u1} b x) (Ordinal.log.{u1} b y)) (Ordinal.log.{u1} b (HMul.hMul.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHMul.{succ u1} Ordinal.{u1} (MulZeroClass.toMul.{succ u1} Ordinal.{u1} (MulZeroOneClass.toMulZeroClass.{succ u1} Ordinal.{u1} (MonoidWithZero.toMulZeroOneClass.{succ u1} Ordinal.{u1} Ordinal.instMonoidWithZeroOrdinal.{u1})))) x y)))
 Case conversion may be inaccurate. Consider using '#align ordinal.add_log_le_log_mul Ordinal.add_log_le_log_mulₓ'. -/
 theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y ≠ 0) :
-    log b x + log b y ≤ log b (x * y) :=
-  by
+    log b x + log b y ≤ log b (x * y) := by
   by_cases hb : 1 < b
   · rw [← opow_le_iff_le_log hb (mul_ne_zero hx hy), opow_add]
     exact mul_le_mul' (opow_log_le_self b hx) (opow_log_le_self b hy)
@@ -798,8 +778,7 @@ lean 3 declaration is
 but is expected to have type
   forall {o : Ordinal.{u1}}, (LT.lt.{succ u1} Ordinal.{u1} (Preorder.toLT.{succ u1} Ordinal.{u1} (PartialOrder.toPreorder.{succ u1} Ordinal.{u1} Ordinal.instPartialOrderOrdinal.{u1})) (OfNat.ofNat.{succ u1} Ordinal.{u1} 0 (Zero.toOfNat0.{succ u1} Ordinal.{u1} Ordinal.instZeroOrdinal.{u1})) o) -> (Eq.{succ (succ u1)} Ordinal.{u1} (Ordinal.sup.{0, u1} Nat (fun (n : Nat) => HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) o (Nat.cast.{succ u1} Ordinal.{u1} (AddMonoidWithOne.toNatCast.{succ u1} Ordinal.{u1} Ordinal.instAddMonoidWithOneOrdinal.{u1}) n))) (HPow.hPow.{succ u1, succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.{u1} (instHPow.{succ u1, succ u1} Ordinal.{u1} Ordinal.{u1} Ordinal.instPowOrdinalOrdinal.{u1}) o Ordinal.omega.{u1}))
 Case conversion may be inaccurate. Consider using '#align ordinal.sup_opow_nat Ordinal.sup_opow_natₓ'. -/
-theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o^n) = (o^ω) :=
-  by
+theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o^n) = (o^ω) := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)
   · exact (opow_is_normal ho₁).apply_omega
   · rw [one_opow]
