@@ -41,8 +41,8 @@ theorem rev_list_reverse_aux :
     ∀ (i) (h : i ≤ n) (t : List α),
       (a.iterateAux (fun _ => (· :: ·)) i h []).reverseAux t =
         a.revIterateAux (fun _ => (· :: ·)) i h t
-  | 0, h, t => rfl
-  | i + 1, h, t => rev_list_reverse_aux i _ _
+  | 0, _, _ => rfl
+  | i + 1, _, _ => rev_list_reverse_aux i _ _
 #align array.rev_list_reverse_aux Array'.rev_list_reverse_aux
 
 @[simp]
@@ -162,7 +162,7 @@ variable {n : ℕ} {α : Type u} {a : Array' n α}
 
 theorem to_list_nthLe_aux (i : ℕ) (ih : i < n) :
     ∀ (j) {jh t h'},
-      (∀ k tl, j + k = i → List.nthLe t k tl = a.read ⟨i, ih⟩) →
+      (∀ k tl, j + k = i → List.get t k tl = a.read ⟨i, ih⟩) →
         (a.revIterateAux (fun _ => (· :: ·)) j jh t).nthLe i h' = a.read ⟨i, ih⟩
   | 0, _, _, _, al => al i _ <| zero_add _
   | j + 1, jh, t, h', al =>
@@ -186,7 +186,7 @@ theorem toList_nth_le' (a : Array' n α) (i : Fin n) (h') : List.get a.toList i 
 #align array.to_list_nth_le' Array'.toList_nth_le'
 
 theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
-  rw [List.get?_eq_some']
+  rw [List.get?_eq_some]
   have ll := toList_length a
   constructor <;> intro h <;> cases' h with h e <;> subst v
   · exact ⟨ll ▸ h, (toList_nthLe _ _ _).symm⟩
@@ -194,7 +194,7 @@ theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i
 #align array.to_list_nth Array'.toList_get?
 
 theorem write_toList {i v} : (a.write i v).toList = a.toList.set i v :=
-  List.ext_nthLe (by simp) fun j h₁ h₂ => by
+  List.ext_get (by simp) fun j h₁ h₂ => by
     have h₃ : j < n := by simpa using h₁
     rw [toList_nthLe _ h₃]
     refine'
@@ -217,7 +217,7 @@ section Enum
 variable {n : ℕ} {α : Type u} {a : Array' n α}
 
 theorem mem_toList_enum {i v} : (i, v) ∈ a.toList.enum ↔ ∃ h, a.read ⟨i, h⟩ = v := by
-  simp [List.mem_iff_get?, to_list_nth, and_comm, and_assoc, and_left_comm]
+  simp [List.mem_iff_get?, toList_nth, and_comm, and_assoc, and_left_comm]
 #align array.mem_to_list_enum Array'.mem_toList_enum
 
 end Enum
@@ -257,16 +257,16 @@ theorem pushBack_rev_list_aux :
   | 0, h, h' => rfl
   | i + 1, h, h' => by
     simp [DArray.iterateAux]
-    refine' ⟨_, push_back_rev_list_aux _ _ _⟩
-    dsimp [read, DArray.read, push_back]
+    refine' ⟨_, pushBack_rev_list_aux _ _ _⟩
+    dsimp [read, DArray.read, pushBack]
     rw [dif_neg]; rfl
     exact ne_of_lt h'
 #align array.push_back_rev_list_aux Array'.pushBack_rev_list_aux
 
 @[simp]
 theorem pushBack_revList : (a.pushBack v).revList = v :: a.revList := by
-  unfold push_back rev_list foldl iterate DArray.iterate
-  dsimp [DArray.iterateAux, read, DArray.read, push_back]
+  unfold pushBack revList foldl iterate DArray.iterate
+  dsimp [DArray.iterateAux, read, DArray.read, pushBack]
   rw [dif_pos (Eq.refl n)]
   apply congr_arg
   apply push_back_rev_list_aux
@@ -274,7 +274,7 @@ theorem pushBack_revList : (a.pushBack v).revList = v :: a.revList := by
 
 @[simp]
 theorem pushBack_toList : (a.pushBack v).toList = a.toList ++ [v] := by
-  rw [← rev_list_reverse, ← rev_list_reverse, push_back_rev_list, List.reverse_cons]
+  rw [← revList_reverse, ← revList_reverse, pushBack_revList, List.reverse_cons]
 #align array.push_back_to_list Array'.pushBack_toList
 
 @[simp]
