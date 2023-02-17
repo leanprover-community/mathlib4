@@ -8,8 +8,8 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Ordinal.Arithmetic
-import Mathbin.Topology.Order.Basic
+import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.Topology.Order.Basic
 
 /-!
 ### Topology of ordinals
@@ -43,8 +43,7 @@ instance : TopologicalSpace Ordinal.{u} :=
 instance : OrderTopology Ordinal.{u} :=
   ⟨rfl⟩
 
-theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a :=
-  by
+theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
   refine' ⟨fun h ha => _, fun ha => _⟩
   · obtain ⟨b, c, hbc, hbc'⟩ :=
       (mem_nhds_iff_exists_Ioo_subset' ⟨0, Ordinal.pos_iff_ne_zero.2 ha.1⟩ ⟨_, lt_succ a⟩).1
@@ -118,8 +117,7 @@ theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsLimit o → ∃ a < o, Set.Ioo 
 
 theorem mem_closure_iff_sup :
     a ∈ closure s ↔
-      ∃ (ι : Type u)(_ : Nonempty ι)(f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup.{u, u} f = a :=
-  by
+      ∃ (ι : Type u)(_ : Nonempty ι)(f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup.{u, u} f = a := by
   refine' mem_closure_iff.trans ⟨fun h => _, _⟩
   · by_cases has : a ∈ s
     · exact ⟨PUnit, by infer_instance, fun _ => a, fun _ => has, sup_const a⟩
@@ -184,8 +182,7 @@ theorem mem_closed_iff_bsup (hs : IsClosed s) :
 
 theorem isClosed_iff_sup :
     IsClosed s ↔
-      ∀ {ι : Type u} (hι : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) → sup.{u, u} f ∈ s :=
-  by
+      ∀ {ι : Type u} (hι : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) → sup.{u, u} f ∈ s := by
   use fun hs ι hι f hf => (mem_closed_iff_sup hs).2 ⟨ι, hι, f, hf, rfl⟩
   rw [← closure_subset_iff_isClosed]
   intro h x hx
@@ -196,8 +193,7 @@ theorem isClosed_iff_sup :
 theorem isClosed_iff_bsup :
     IsClosed s ↔
       ∀ {o : Ordinal} (ho : o ≠ 0) (f : ∀ a < o, Ordinal),
-        (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s :=
-  by
+        (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s := by
   rw [is_closed_iff_sup]
   refine' ⟨fun H o ho f hf => H (out_nonempty_iff_ne_zero.2 ho) _ _, fun H ι hι f hf => _⟩
   · exact fun i => hf _ _
@@ -206,8 +202,7 @@ theorem isClosed_iff_bsup :
     exact fun i hi => hf _
 #align ordinal.is_closed_iff_bsup Ordinal.isClosed_iff_bsup
 
-theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a :=
-  by
+theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a := by
   simp only [frontier_eq_closure_inter_closure, Set.mem_inter_iff, mem_closure_iff] at ha
   by_contra h
   rw [← is_open_singleton_iff] at h
@@ -219,8 +214,7 @@ theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a :=
 #align ordinal.is_limit_of_mem_frontier Ordinal.isLimit_of_mem_frontier
 
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
-    IsNormal f ↔ StrictMono f ∧ Continuous f :=
-  by
+    IsNormal f ↔ StrictMono f ∧ Continuous f := by
   refine' ⟨fun h => ⟨h.StrictMono, _⟩, _⟩
   · rw [continuous_def]
     intro s hs
@@ -245,8 +239,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr < » a) -/
 theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
-    IsNormal (enumOrd s) ↔ IsClosed s :=
-  by
+    IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enum_ord_strict_mono hs
   refine'
     ⟨fun h => is_closed_iff_sup.2 fun ι hι f hf => _, fun h =>
