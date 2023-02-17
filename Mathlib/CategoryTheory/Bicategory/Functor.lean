@@ -23,8 +23,8 @@ An oplax functor `F` between bicategories `B` and `C` consists of
 
 A pseudofunctor is an oplax functor whose `map_id` and `map_comp` are isomorphisms. We provide
 several constructors for pseudofunctors:
-* `pseudofunctor.mk` : the default constructor, which requires `map₂_whisker_left` and
-  `map₂_whisker_right` instead of naturality of `map_comp`.
+* `pseudofunctor.mk` : the default constructor, which requires `map₂_whiskerLeft` and
+  `map₂_whiskerRight` instead of naturality of `map_comp`.
 * `pseudofunctor.mk_of_oplax` : construct a pseudofunctor from an oplax functor whose
   `map_id` and `map_comp` are isomorphisms. This constructor uses `iso` to describe isomorphisms.
 * `pseudofunctor.mk_of_oplax'` : similar to `mk_of_oplax`, but uses `is_iso` to describe
@@ -162,55 +162,58 @@ of 2-morphisms.
 -/
 structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
   [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
-  map_id (a : B) : map (𝟙 a) ⟶ 𝟙 (obj a)
-  map_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map (f ≫ g) ⟶ map f ≫ map g
-  mapComp_naturality_left' :
+  mapId (a : B) : map (𝟙 a) ⟶ 𝟙 (obj a)
+  mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map (f ≫ g) ⟶ map f ≫ map g
+  mapComp_naturality_left :
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
-      map₂ (η ▷ g) ≫ map_comp f' g = map_comp f g ≫ map₂ η ▷ map g := by
+      map₂ (η ▷ g) ≫ mapComp f' g = mapComp f g ≫ map₂ η ▷ map g := by
     aesop
-  mapComp_naturality_right' :
+  mapComp_naturality_right :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
-      map₂ (f ◁ η) ≫ map_comp f g' = map_comp f g ≫ map f ◁ map₂ η := by
+      map₂ (f ◁ η) ≫ mapComp f g' = mapComp f g ≫ map f ◁ map₂ η := by
     aesop
-  map₂_id' : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop
-  map₂_comp' :
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop
+  map₂_comp :
     ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h), map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
     aesop
-  map₂_associator' :
+  map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
       OplaxFunctor.Map₂AssociatorAux obj map map₂ map_comp f g h := by
     aesop
-  map₂_left_unitor' :
+  map₂_leftUnitor :
     ∀ {a b : B} (f : a ⟶ b),
-      map₂ (λ_ f).hom = map_comp (𝟙 a) f ≫ map_id a ▷ map f ≫ (λ_ (map f)).hom := by
+      map₂ (λ_ f).hom = mapComp (𝟙 a) f ≫ mapId a ▷ map f ≫ (λ_ (map f)).hom := by
     aesop
-  map₂_right_unitor' :
+  map₂_rightUnitor :
     ∀ {a b : B} (f : a ⟶ b),
-      map₂ (ρ_ f).hom = map_comp f (𝟙 b) ≫ map f ◁ map_id b ≫ (ρ_ (map f)).hom := by
+      map₂ (ρ_ f).hom = mapComp f (𝟙 b) ≫ map f ◁ mapId b ≫ (ρ_ (map f)).hom := by
     aesop
 #align category_theory.oplax_functor CategoryTheory.OplaxFunctor
+#align category_theory.oplax_functor.map_id CategoryTheory.OplaxFunctor.mapId
+#align category_theory.oplax_functor.map_comp CategoryTheory.OplaxFunctor.mapComp
+#align category_theory.oplax_functor.map_comp_naturality_left' CategoryTheory.OplaxFunctor.mapComp_naturality_left
+#align category_theory.oplax_functor.map_comp_naturality_left CategoryTheory.OplaxFunctor.mapComp_naturality_left
+#align category_theory.oplax_functor.map_comp_naturality_right' CategoryTheory.OplaxFunctor.mapComp_naturality_right
+#align category_theory.oplax_functor.map_comp_naturality_right CategoryTheory.OplaxFunctor.mapComp_naturality_right
+#align category_theory.oplax_functor.map₂_id' CategoryTheory.OplaxFunctor.map₂_id
+#align category_theory.oplax_functor.map₂_comp' CategoryTheory.OplaxFunctor.map₂_comp
+#align category_theory.oplax_functor.map₂_associator' CategoryTheory.OplaxFunctor.map₂_associator
+#align category_theory.oplax_functor.map₂_left_unitor CategoryTheory.OplaxFunctor.map₂_leftUnitor
+#align category_theory.oplax_functor.map₂_left_unitor' CategoryTheory.OplaxFunctor.map₂_leftUnitor
+#align category_theory.oplax_functor.map₂_right_unitor CategoryTheory.OplaxFunctor.map₂_rightUnitor
+#align category_theory.oplax_functor.map₂_right_unitor' CategoryTheory.OplaxFunctor.map₂_rightUnitor
+
 
 namespace OplaxFunctor
 
-restate_axiom mapComp_naturality_left'
-
-restate_axiom mapComp_naturality_right'
-
-restate_axiom map₂_id'
-
-restate_axiom map₂_comp'
-
-restate_axiom map₂_associator'
-
-restate_axiom map₂_left_unitor'
-
-restate_axiom map₂_right_unitor'
+/- Porting note: removed primes from field names and remove `restate_axiom` since 
+that is no longer needed in Lean 4 -/
 
 attribute [simp] mapComp_naturality_left mapComp_naturality_right map₂_id map₂_associator
 
 -- porting note: was auto-ported as `attribute [reassoc.1]` for some reason
 attribute [reassoc (attr := simp)] -- can't stop this being noisy
-  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_left_unitor map₂_right_unitor
+  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_leftUnitor map₂_rightUnitor
 
 -- porting note: reassoc on the previous line would not mark these as simp;
 -- error was
@@ -222,7 +225,7 @@ do not generate the same number of simp lemmas.
 attribute [reassoc] map₂_associator -- can't stop this being noisy
 attribute [simp] map₂_associator_assoc
 
-attribute [simp] map₂_comp map₂_left_unitor map₂_right_unitor
+attribute [simp] map₂_comp map₂_leftUnitor map₂_rightUnitor
 
 section
 
@@ -265,8 +268,10 @@ def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b)
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B :=
   { PrelaxFunctor.id B with
-    map_id := fun a => 𝟙 (𝟙 a)
-    map_comp := fun f g => 𝟙 (f ≫ g) }
+    mapId := fun a => 𝟙 (𝟙 a)
+    mapComp := fun f g => 𝟙 (f ≫ g)
+    map₂_associator := sorry 
+  }
 #align category_theory.oplax_functor.id CategoryTheory.OplaxFunctor.id
 
 instance : Inhabited (OplaxFunctor B B) :=
@@ -277,21 +282,21 @@ instance : Inhabited (OplaxFunctor B B) :=
 def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
   {
     (F : PrelaxFunctor B C).comp G with
-    map_id := fun a => by exact (G.mapFunctor _ _).map (F.map_id a) ≫ G.map_id (F.obj a)
-    map_comp := fun f g => by
-      exact (G.mapFunctor _ _).map (F.map_comp f g) ≫ G.map_comp (F.map f) (F.map g)
-    mapComp_naturality_left' := fun η g =>
+    mapId := fun a => by exact (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
+    mapComp := fun f g => by
+      exact (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
+    mapComp_naturality_left := fun η g =>
       by
       dsimp
       rw [← map₂_comp_assoc, mapComp_naturality_left, map₂_comp_assoc, mapComp_naturality_left,
         assoc]
-    mapComp_naturality_right' := fun η =>
-      by
+    mapComp_naturality_right := fun η =>
+      by 
       dsimp
       intros
       rw [← map₂_comp_assoc, mapComp_naturality_right, map₂_comp_assoc, mapComp_naturality_right,
         assoc]
-    map₂_associator' := fun f g h => by
+    map₂_associator := fun f g h => by
       -- ⊢ map₂_associator_aux (↑F.comp ↑G).obj ... (complicated)
       dsimp
       /- Lean 3 goal now
@@ -325,18 +330,18 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
       dsimp
       simp
       sorry
-    map₂_left_unitor' := fun f => by
+    map₂_leftUnitor := fun f => by
       dsimp
-      simp only [map₂_left_unitor, map₂_comp, mapComp_naturality_left_assoc, comp_whiskerRight,
+      simp only [map₂_leftUnitor, map₂_comp, mapComp_naturality_left_assoc, comp_whiskerRight,
         assoc]
-    map₂_right_unitor' := fun f => by
+    map₂_rightUnitor := fun f => by
       dsimp
-      simp only [map₂_right_unitor, map₂_comp, mapComp_naturality_right_assoc, whiskerLeft_comp,
+      simp only [map₂_rightUnitor, map₂_comp, mapComp_naturality_right_assoc, whiskerLeft_comp,
         assoc] }
   #exit
     map_comp := fun f g =>
       (G.mapFunctor _ _).map (F.map_comp f g) ≫ G.map_comp (F.map f) (F.map g)
-    mapComp_naturality_left' := fun a b c f f' η g =>
+    mapComp_naturality_left := fun a b c f f' η g =>
       by
       dsimp
       rw [← map₂_comp_assoc, map_comp_naturality_left, map₂_comp_assoc, map_comp_naturality_left,
@@ -349,16 +354,16 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
     map₂_associator' := fun a b c d f g h => by
       dsimp
       simp only [map₂_associator, ← map₂_comp_assoc, ← map_comp_naturality_right_assoc,
-        whisker_left_comp, assoc]
-      simp only [map₂_associator, map₂_comp, map_comp_naturality_left_assoc, comp_whisker_right,
+        whiskerLeft_comp, assoc]
+      simp only [map₂_associator, map₂_comp, map_comp_naturality_left_assoc, comp_whiskerRight,
         assoc]
     map₂_left_unitor' := fun a b f => by
       dsimp
-      simp only [map₂_left_unitor, map₂_comp, map_comp_naturality_left_assoc, comp_whisker_right,
+      simp only [map₂_left_unitor, map₂_comp, map_comp_naturality_left_assoc, comp_whiskerRight,
         assoc]
     map₂_right_unitor' := fun a b f => by
       dsimp
-      simp only [map₂_right_unitor, map₂_comp, map_comp_naturality_right_assoc, whisker_left_comp,
+      simp only [map₂_right_unitor, map₂_comp, map_comp_naturality_right_assoc, whiskerLeft_comp,
         assoc] }
 
 #exit
