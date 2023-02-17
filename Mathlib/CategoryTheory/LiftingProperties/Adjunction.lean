@@ -8,8 +8,8 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.LiftingProperties.Basic
-import Mathbin.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.LiftingProperties.Basic
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
@@ -69,14 +69,12 @@ def rightAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.rightAdjoint adj).LiftSt
 #align category_theory.comm_sq.right_adjoint_lift_struct_equiv CategoryTheory.CommSq.rightAdjointLiftStructEquiv
 
 /-- A square has a lifting if and only if its (right) adjoint square has a lifting. -/
-theorem right_adjoint_hasLift_iff : HasLift (sq.rightAdjoint adj) ↔ HasLift sq :=
-  by
+theorem right_adjoint_hasLift_iff : HasLift (sq.rightAdjoint adj) ↔ HasLift sq := by
   simp only [has_lift.iff]
   exact Equiv.nonempty_congr (sq.right_adjoint_lift_struct_equiv adj).symm
 #align category_theory.comm_sq.right_adjoint_has_lift_iff CategoryTheory.CommSq.right_adjoint_hasLift_iff
 
-instance [HasLift sq] : HasLift (sq.rightAdjoint adj) :=
-  by
+instance [HasLift sq] : HasLift (sq.rightAdjoint adj) := by
   rw [right_adjoint_has_lift_iff]
   infer_instance
 
@@ -119,14 +117,12 @@ def leftAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.leftAdjoint adj).LiftStru
 #align category_theory.comm_sq.left_adjoint_lift_struct_equiv CategoryTheory.CommSq.leftAdjointLiftStructEquiv
 
 /-- A (left) adjoint square has a lifting if and only if the original square has a lifting. -/
-theorem left_adjoint_hasLift_iff : HasLift (sq.leftAdjoint adj) ↔ HasLift sq :=
-  by
+theorem left_adjoint_hasLift_iff : HasLift (sq.leftAdjoint adj) ↔ HasLift sq := by
   simp only [has_lift.iff]
   exact Equiv.nonempty_congr (sq.left_adjoint_lift_struct_equiv adj).symm
 #align category_theory.comm_sq.left_adjoint_has_lift_iff CategoryTheory.CommSq.left_adjoint_hasLift_iff
 
-instance [HasLift sq] : HasLift (sq.leftAdjoint adj) :=
-  by
+instance [HasLift sq] : HasLift (sq.leftAdjoint adj) := by
   rw [left_adjoint_has_lift_iff]
   infer_instance
 
@@ -137,8 +133,7 @@ end CommSq
 namespace Adjunction
 
 theorem hasLiftingProperty_iff (adj : G ⊣ F) {A B : C} {X Y : D} (i : A ⟶ B) (p : X ⟶ Y) :
-    HasLiftingProperty (G.map i) p ↔ HasLiftingProperty i (F.map p) :=
-  by
+    HasLiftingProperty (G.map i) p ↔ HasLiftingProperty i (F.map p) := by
   constructor <;> intro <;> constructor <;> intro f g sq
   · rw [← sq.left_adjoint_has_lift_iff adj]
     infer_instance
