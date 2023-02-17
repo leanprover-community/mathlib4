@@ -111,7 +111,7 @@ protected def Homeomorph.mulRight (a : G) : G ≃ₜ G :=
 #align homeomorph.mul_right Homeomorph.mulRight
 #align homeomorph.add_right Homeomorph.addRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Homeomorph.coe_mulRight (a : G) : ⇑(Homeomorph.mulRight a) = fun g => g * a :=
   rfl
 #align homeomorph.coe_mul_right Homeomorph.coe_mulRight
@@ -236,7 +236,7 @@ theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f
 
 variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
 
-@[continuity, to_additive]
+@[to_additive (attr := continuity)]
 theorem Continuous.inv (hf : Continuous f) : Continuous fun x => (f x)⁻¹ :=
   continuous_inv.comp hf
 #align continuous.inv Continuous.inv
@@ -388,7 +388,7 @@ theorem continuousInv_infₛ {ts : Set (TopologicalSpace G)}
 theorem continuousInv_infᵢ {ts' : ι' → TopologicalSpace G}
     (h' : ∀ i, @ContinuousInv G (ts' i) _) : @ContinuousInv G (⨅ i, ts' i) _ := by
   rw [← infₛ_range]
-  exact continuousInv_infₛ (set.forall_range_iff.mpr h')
+  exact continuousInv_infₛ (Set.forall_range_iff.mpr h')
 #align has_continuous_inv_infi continuousInv_infᵢ
 #align has_continuous_neg_infi continuousNeg_infᵢ
 
@@ -482,7 +482,7 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace �
 
 section Zpow
 
-@[continuity, to_additive]
+@[to_additive (attr := continuity)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
   | Int.ofNat n => by simpa using continuous_pow n
   | -[n+1] => by simpa using (continuous_pow (n + 1)).inv
@@ -499,7 +499,7 @@ instance AddGroup.continuousSmul_int {A} [AddGroup A] [TopologicalSpace A]
   ⟨continuous_uncurry_of_discreteTopology continuous_zsmul⟩
 #align add_group.has_continuous_smul_int AddGroup.continuousSmul_int
 
-@[continuity, to_additive]
+@[to_additive (attr := continuity)]
 theorem Continuous.zpow {f : α → G} (h : Continuous f) (z : ℤ) : Continuous fun b => f b ^ z :=
   (continuous_zpow z).comp h
 #align continuous.zpow Continuous.zpow
@@ -652,14 +652,14 @@ protected def Homeomorph.shearMulRight : G × G ≃ₜ G × G :=
 #align homeomorph.shear_mul_right Homeomorph.shearMulRight
 #align homeomorph.shear_add_right Homeomorph.shearAddRight
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Homeomorph.shearMulRight_coe :
     ⇑(Homeomorph.shearMulRight G) = fun z : G × G => (z.1, z.1 * z.2) :=
   rfl
 #align homeomorph.shear_mul_right_coe Homeomorph.shearMulRight_coe
 #align homeomorph.shear_add_right_coe Homeomorph.shearAddRight_coe
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Homeomorph.shearMulRight_symm_coe :
     ⇑(Homeomorph.shearMulRight G).symm = fun z : G × G => (z.1, z.1⁻¹ * z.2) :=
   rfl
@@ -711,7 +711,7 @@ def Subgroup.topologicalClosure (s : Subgroup G) : Subgroup G :=
 #align subgroup.topological_closure Subgroup.topologicalClosure
 #align add_subgroup.topological_closure AddSubgroup.topologicalClosure
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem Subgroup.topologicalClosure_coe {s : Subgroup G} :
     (s.topologicalClosure : Set G) = _root_.closure s :=
   rfl
@@ -821,7 +821,7 @@ theorem nhds_translation_mul_inv (x : G) : comap (fun y : G => y * x⁻¹) (𝓝
 #align nhds_translation_mul_inv nhds_translation_mul_inv
 #align nhds_translation_add_neg nhds_translation_add_neg
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem map_mul_left_nhds (x y : G) : map ((· * ·) x) (𝓝 y) = 𝓝 (x * y) :=
   (Homeomorph.mulLeft x).map_nhds_eq y
 #align map_mul_left_nhds map_mul_left_nhds
@@ -832,7 +832,7 @@ theorem map_mul_left_nhds_one (x : G) : map ((· * ·) x) (𝓝 1) = 𝓝 x := b
 #align map_mul_left_nhds_one map_mul_left_nhds_one
 #align map_add_left_nhds_zero map_add_left_nhds_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem map_mul_right_nhds (x y : G) : map (fun z => z * x) (𝓝 y) = 𝓝 (y * x) :=
   (Homeomorph.mulRight x).map_nhds_eq y
 #align map_mul_right_nhds map_mul_right_nhds
@@ -1854,7 +1854,7 @@ in `t` (`t` is finer than `s`). -/
 instance : PartialOrder (GroupTopology α) :=
   PartialOrder.lift toTopologicalSpace toTopologicalSpace_injective
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toTopologicalSpace_le {x y : GroupTopology α} :
     x.toTopologicalSpace ≤ y.toTopologicalSpace ↔ x ≤ y :=
   Iff.rfl
@@ -1867,7 +1867,7 @@ instance : Top (GroupTopology α) :=
       continuous_mul := continuous_top
       continuous_inv := continuous_top }⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toTopologicalSpace_top : (⊤ : GroupTopology α).toTopologicalSpace = ⊤ :=
   rfl
 #align group_topology.to_topological_space_top GroupTopology.toTopologicalSpace_top
@@ -1882,7 +1882,7 @@ instance : Bot (GroupTopology α) :=
         continuity
       continuous_inv := continuous_bot }⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = ⊥ :=
   rfl
 #align group_topology.to_topological_space_bot GroupTopology.toTopologicalSpace_bot
@@ -1898,7 +1898,7 @@ instance : BoundedOrder (GroupTopology α) where
 @[to_additive]
 instance : HasInf (GroupTopology α) where inf x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toTopologicalSpace_inf (x y : GroupTopology α) :
     (x ⊓ y).toTopologicalSpace = x.toTopologicalSpace ⊓ y.toTopologicalSpace :=
   rfl
@@ -1922,14 +1922,14 @@ instance : InfSet (GroupTopology α)
     where infₛ S :=
     ⟨infₛ (toTopologicalSpace '' S), topologicalGroup_infₛ <| ball_image_iff.2 fun t ht => t.2⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toTopologicalSpace_infₛ (s : Set (GroupTopology α)) :
     (infₛ s).toTopologicalSpace = infₛ (toTopologicalSpace '' s) :=
   rfl
 #align group_topology.to_topological_space_Inf GroupTopology.toTopologicalSpace_infₛ
 #align add_group_topology.to_topological_space_Inf AddGroupTopology.to_topological_space_Inf
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toTopologicalSpace_infᵢ {ι} (s : ι → GroupTopology α) :
     (⨅ i, s i).toTopologicalSpace = ⨅ i, (s i).toTopologicalSpace :=
   congr_arg infₛ (range_comp _ _).symm
