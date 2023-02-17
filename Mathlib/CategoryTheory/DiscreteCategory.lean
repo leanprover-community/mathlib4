@@ -17,22 +17,22 @@ open Lean Meta
 /-!
 # Discrete categories
 
-We define `discrete α` as a structure containing a term `a : α` for any type `α`,
-and use this type alias to provide a `small_category` instance
+We define `Discrete α` as a structure containing a term `a : α` for any type `α`,
+and use this type alias to provide a `SmallCategory` instance
 whose only morphisms are the identities.
 
 There is an annoying technical difficulty that it has turned out to be inconvenient
 to allow categories with morphisms living in `Prop`,
-so instead of defining `X ⟶ Y` in `discrete α` as `X = Y`,
-one might define it as `plift (X = Y)`.
-In fact, to allow `discrete α` to be a `small_category`
+so instead of defining `X ⟶ Y` in `Discrete α` as `X = Y`,
+one might define it as `PLift (X = Y)`.
+In fact, to allow `Discrete α` to be a `SmallCategory`
 (i.e. with morphisms in the same universe as the objects),
-we actually define the hom type `X ⟶ Y` as `ulift (plift (X = Y))`.
+we actually define the hom type `X ⟶ Y` as `ULift (PLift (X = Y))`.
 
-`discrete.functor` promotes a function `f : I → C` (for any category `C`) to a functor
-`discrete.functor f : discrete I ⥤ C`.
+`Discrete.functor` promotes a function `f : I → C` (for any category `C`) to a functor
+`Discrete.functor f : Discrete I ⥤ C`.
 
-Similarly, `discrete.nat_trans` and `discrete.nat_iso` promote `I`-indexed families of morphisms,
+Similarly, `Discrete.natTrans` and `Discrete.natIso` promote `I`-indexed families of morphisms,
 or `I`-indexed families of isomorphisms to natural transformations or natural isomorphism.
 
 We show equivalences of types are the same as (categorical) equivalences of the corresponding
@@ -42,17 +42,20 @@ discrete categories.
 
 namespace CategoryTheory
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 
 -- This is intentionally a structure rather than a type synonym
--- to enforce using `discrete_equiv` (or `discrete.mk` and `discrete.as`) to move between
+-- to enforce using `DiscreteEquiv` (or `Discrete.mk` and `Discrete.as`) to move between
 -- `discrete α` and `α`. Otherwise there is too much API leakage.
 /-- A wrapper for promoting any type to a category,
 with the only morphisms being equalities.
 -/
 @[ext]
 structure Discrete (α : Type u₁) where
+  /-- A wrapper for promoting any type to a category,
+  with the only morphisms being equalities.
+  -/
   as : α
 #align category_theory.discrete CategoryTheory.Discrete
 
@@ -62,7 +65,7 @@ theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
 
-/-- `discrete α` is equivalent to the original type `α`.-/
+/-- `Discrete α` is equivalent to the original type `α`.-/
 @[simps]
 def discreteEquiv {α : Type u₁} : Discrete α ≃ α
     where
@@ -75,10 +78,10 @@ def discreteEquiv {α : Type u₁} : Discrete α ≃ α
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
 
-/-- The "discrete" category on a type, whose morphisms are equalities.
+/-- The "Discrete" category on a type, whose morphisms are equalities.
 
 Because we do not allow morphisms in `Prop` (only in `Type`),
-somewhat annoyingly we have to define `X ⟶ Y` as `ulift (plift (X = Y))`.
+somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`.
 
 See <https://stacks.math.columbia.edu/tag/001A>
 -/
@@ -122,7 +125,7 @@ instance [Subsingleton α] : Subsingleton (Discrete α) :=
 
 --macro (name := discrete_cases) "discrete_cases" : tactic =>
 --  `(tactic|casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
-
+/- Porting note: rewrote `discrete_cases` tactic -/
 macro "discrete_cases": tactic =>
   `(tactic|casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
 
@@ -134,7 +137,7 @@ theorem eq_of_hom {X Y : Discrete α} (i : X ⟶ Y) : X.as = Y.as :=
   i.down.down
 #align category_theory.discrete.eq_of_hom CategoryTheory.Discrete.eq_of_hom
 
-/-- Promote an equation between the wrapped terms in `X Y : discrete α` to a morphism `X ⟶ Y`
+/-- Promote an equation between the wrapped terms in `X Y : Discrete α` to a morphism `X ⟶ Y`
 in the discrete category. -/
 protected abbrev eqToHom {X Y : Discrete α} (h : X.as = Y.as) : X ⟶ Y :=
   eqToHom
@@ -143,7 +146,7 @@ protected abbrev eqToHom {X Y : Discrete α} (h : X.as = Y.as) : X ⟶ Y :=
       exact h)
 #align category_theory.discrete.eq_to_hom CategoryTheory.Discrete.eqToHom
 
-/-- Promote an equation between the wrapped terms in `X Y : discrete α` to an isomorphism `X ≅ Y`
+/-- Promote an equation between the wrapped terms in `X Y : Discrete α` to an isomorphism `X ≅ Y`
 in the discrete category. -/
 protected abbrev eqToIso {X Y : Discrete α} (h : X.as = Y.as) : X ≅ Y :=
   eqToIso
@@ -157,7 +160,7 @@ abbrev eqToHom' {a b : α} (h : a = b) : Discrete.mk a ⟶ Discrete.mk b :=
   Discrete.eqToHom h
 #align category_theory.discrete.eq_to_hom' CategoryTheory.Discrete.eqToHom'
 
-/-- A variant of `eq_to_iso` that lifts terms to the discrete category. -/
+/-- A variant of `eqToIso` that lifts terms to the discrete category. -/
 abbrev eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
   Discrete.eqToIso h
 #align category_theory.discrete.eq_to_iso' CategoryTheory.Discrete.eqToIso'
@@ -172,8 +175,9 @@ variable {C : Type u₂} [Category.{v₂} C]
 instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
   ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by aesop_cat⟩⟩
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
-/-- Any function `I → C` gives a functor `discrete I ⥤ C`.
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
+\  tactic `discrete_cases #[] -/
+/-- Any function `I → C` gives a functor `Discrete I ⥤ C`.
 -/
 def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C
     where
@@ -201,13 +205,14 @@ theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i)
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
 -/
-@[simps]
+@[simps!]
 def functorComp {I : Type u₁} {J : Type u₁'} (f : J → C) (g : I → J) :
     Discrete.functor (f ∘ g) ≅ Discrete.functor (Discrete.mk ∘ g) ⋙ Discrete.functor f :=
   NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
 #align category_theory.discrete.functor_comp CategoryTheory.Discrete.functorComp
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
+\  tactic `discrete_cases #[] -/
 /-- For functors out of a discrete category,
 a natural transformation is just a collection of maps,
 as the naturality squares are trivial.
@@ -224,12 +229,13 @@ def natTrans {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F
     simp
 #align category_theory.discrete.nat_trans CategoryTheory.Discrete.natTrans
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
+\  tactic `discrete_cases #[] -/
 /-- For functors out of a discrete category,
 a natural isomorphism is just a collection of isomorphisms,
 as the naturality squares are trivial.
 -/
-@[simps]
+@[simps!]
 def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i) : F ≅ G :=
   NatIso.ofComponents f fun g => by
     rcases g with ⟨⟨g⟩⟩
@@ -244,7 +250,8 @@ theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discret
     (i : Discrete I) : (Discrete.natIso f).app i = f i := by aesop_cat
 #align category_theory.discrete.nat_iso_app CategoryTheory.Discrete.natIso_app
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
+\  tactic `discrete_cases #[] -/
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
   `discrete.functor (F.obj)`. -/
 @[simp]
@@ -256,11 +263,13 @@ def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functo
 @[simp]
 def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : I → C) (G : C ⥤ D) :
     Discrete.functor F ⋙ G ≅ Discrete.functor (G.obj ∘ F) :=
-  natIso fun i => Iso.refl _
+  natIso fun _ => Iso.refl _
 #align category_theory.discrete.comp_nat_iso_discrete CategoryTheory.Discrete.compNatIsoDiscrete
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
+\  tactic `discrete_cases #[] -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
+\  tactic `discrete_cases #[] -/
 /-- We can promote a type-level `equiv` to
 an equivalence between the corresponding `discrete` categories.
 -/
@@ -352,3 +361,4 @@ theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) : F
 end Discrete
 
 end CategoryTheory
+
