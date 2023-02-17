@@ -19,11 +19,11 @@ import Mathlib.Order.PFilter
 Throughout this file, `P` is at least a preorder, but some sections require more
 structure, such as a bottom element, a top element, or a join-semilattice structure.
 
-- `order.ideal.prime_pair`: A pair of an `ideal` and a `pfilter` which form a partition of `P`.
+- `Order.Ideal.PrimePair`: A pair of an `ideal` and a `pfilter` which form a partition of `P`.
   This is useful as giving the data of a prime ideal is the same as giving the data of a prime
   filter.
-- `order.ideal.is_prime`: a predicate for prime ideals. Dual to the notion of a prime filter.
-- `order.pfilter.is_prime`: a predicate for prime filters. Dual to the notion of a prime ideal.
+- `Order.Ideal.IsPrime`: a predicate for prime ideals. Dual to the notion of a prime filter.
+- `Order.PFilter.IsPrime`: a predicate for prime filters. Dual to the notion of a prime ideal.
 
 ## References
 
@@ -101,8 +101,8 @@ section Preorder
 
 variable [Preorder P]
 
-/-- Create an element of type `order.ideal.prime_pair` from an ideal satisfying the predicate
-`order.ideal.is_prime`. -/
+/-- Create an element of type `Order.Ideal.PrimePair` from an ideal satisfying the predicate
+`Order.Ideal.IsPrime`. -/
 def IsPrime.toPrimePair {I : Ideal P} (h : IsPrime I) : PrimePair P :=
   { I
     F := h.compl_filter.toPFilter
@@ -223,8 +223,8 @@ class IsPrime (F : PFilter P) : Prop where
   compl_ideal : IsIdeal ((F : Set P)ᶜ)
 #align order.pfilter.is_prime Order.PFilter.IsPrime
 
-/-- Create an element of type `order.ideal.prime_pair` from a filter satisfying the predicate
-`order.pfilter.is_prime`. -/
+/-- Create an element of type `Order.Ideal.PrimePair` from a filter satisfying the predicate
+`Order.PFilter.IsPrime`. -/
 def IsPrime.toPrimePair {F : PFilter P} (h : IsPrime F) : Ideal.PrimePair P :=
   { I := h.compl_ideal.toIdeal
     F
