@@ -48,6 +48,7 @@ import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
@@ -219,7 +220,6 @@ syntax termList := " [" term,* "]"
 
 /- M -/ syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- M -/ syntax (name := nlinarith!) "nlinarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
-/- S -/ syntax (name := polyrith) "polyrith" (&" only")? (" [" term,* "]")? : tactic
 
 /- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
