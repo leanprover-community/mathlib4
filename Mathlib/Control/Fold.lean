@@ -8,13 +8,13 @@ Authors: Simon Hudon, Sean Leather
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Opposite
-import Mathbin.Algebra.FreeMonoid.Basic
-import Mathbin.Control.Traversable.Instances
-import Mathbin.Control.Traversable.Lemmas
-import Mathbin.CategoryTheory.Endomorphism
-import Mathbin.CategoryTheory.Types
-import Mathbin.CategoryTheory.Category.Kleisli
+import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Control.Traversable.Instances
+import Mathlib.Control.Traversable.Lemmas
+import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Category.Kleisli
 
 /-!
 
@@ -326,8 +326,7 @@ theorem foldr.ofFreeMonoid_comp_of (f : β → α → α) :
 
 @[simp]
 theorem mfoldl.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
-    Mfoldl.ofFreeMonoid f ∘ FreeMonoid.of = Mfoldl.mk ∘ flip f :=
-  by
+    Mfoldl.ofFreeMonoid f ∘ FreeMonoid.of = Mfoldl.mk ∘ flip f := by
   ext1 x
   simp [(· ∘ ·), mfoldl.of_free_monoid, mfoldl.mk, flip]
   rfl
@@ -335,8 +334,7 @@ theorem mfoldl.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β
 
 @[simp]
 theorem mfoldr.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α → m α) :
-    Mfoldr.ofFreeMonoid f ∘ FreeMonoid.of = Mfoldr.mk ∘ f :=
-  by
+    Mfoldr.ofFreeMonoid f ∘ FreeMonoid.of = Mfoldr.mk ∘ f := by
   ext
   simp [(· ∘ ·), mfoldr.of_free_monoid, mfoldr.mk, flip]
 #align traversable.mfoldr.of_free_monoid_comp_of Traversable.mfoldr.ofFreeMonoid_comp_of
@@ -364,16 +362,14 @@ theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
 #align traversable.fold_map_map Traversable.foldMap_map
 
 theorem foldl_toList (f : α → β → α) (xs : t β) (x : α) :
-    foldl f x xs = List.foldl f x (toList xs) :=
-  by
+    foldl f x xs = List.foldl f x (toList xs) := by
   rw [← FreeMonoid.toList_ofList (to_list xs), ← foldl.unop_of_free_monoid]
   simp only [foldl, to_list_spec, fold_map_hom_free, foldl.of_free_monoid_comp_of, foldl.get,
     FreeMonoid.ofList_toList]
 #align traversable.foldl_to_list Traversable.foldl_toList
 
 theorem foldr_toList (f : α → β → β) (xs : t α) (x : β) :
-    foldr f x xs = List.foldr f x (toList xs) :=
-  by
+    foldr f x xs = List.foldr f x (toList xs) := by
   change _ = foldr.of_free_monoid _ (FreeMonoid.ofList <| to_list xs) _
   rw [to_list_spec, foldr, foldr.get, FreeMonoid.ofList_toList, fold_map_hom_free,
     foldr.of_free_monoid_comp_of]
@@ -399,16 +395,14 @@ theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
 #align traversable.foldr_map Traversable.foldr_map
 
 @[simp]
-theorem toList_eq_self {xs : List α} : toList xs = xs :=
-  by
+theorem toList_eq_self {xs : List α} : toList xs = xs := by
   simp only [to_list_spec, fold_map, traverse]
   induction xs
   case nil => rfl
   case cons _ _ ih => conv_rhs => rw [← ih]; rfl
 #align traversable.to_list_eq_self Traversable.toList_eq_self
 
-theorem length_toList {xs : t α} : length xs = List.length (toList xs) :=
-  by
+theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
   unfold length
   rw [foldl_to_list]
   generalize to_list xs = ys
@@ -438,8 +432,7 @@ theorem mfoldl_toList {f : α → β → m α} {x : α} {xs : t β} :
 #align traversable.mfoldl_to_list Traversable.mfoldl_toList
 
 theorem mfoldr_toList (f : α → β → m β) (x : β) (xs : t α) :
-    mfoldr f x xs = List.foldrM f x (toList xs) :=
-  by
+    mfoldr f x xs = List.foldrM f x (toList xs) := by
   change _ = mfoldr.of_free_monoid f (FreeMonoid.ofList <| to_list xs) x
   simp only [mfoldr, to_list_spec, fold_map_hom_free (mfoldr.of_free_monoid f),
     mfoldr.of_free_monoid_comp_of, mfoldr.get, FreeMonoid.ofList_toList]

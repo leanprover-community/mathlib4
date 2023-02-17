@@ -291,6 +291,7 @@ import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
+import Mathlib.Control.Fold
 import Mathlib.Control.Functor
 import Mathlib.Control.Functor.Multivariate
 import Mathlib.Control.Monad.Basic
