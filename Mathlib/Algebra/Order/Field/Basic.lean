@@ -238,7 +238,7 @@ theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * 
 lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b := by
   obtain rfl | hc := hc.eq_or_lt
   { simpa using hb }
-  { rwa le_div_iff hc at h }
+  { rwa [le_div_iff hc] at h }
 #align mul_le_of_nonneg_of_le_div mul_le_of_nonneg_of_le_div
 
 theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
