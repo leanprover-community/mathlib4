@@ -12,8 +12,6 @@ import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
 import Mathlib.Tactic.CasesM
 
-open Lean Meta
-
 /-!
 # Discrete categories
 
@@ -38,7 +36,6 @@ or `I`-indexed families of isomorphisms to natural transformations or natural is
 We show equivalences of types are the same as (categorical) equivalences of the corresponding
 discrete categories.
 -/
-
 
 namespace CategoryTheory
 
@@ -310,9 +307,12 @@ variable {J : Type v₁}
 
 open Opposite
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic tactic.op_induction' -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
+\  tactic `discrete_cases #[] -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported
+\  non-interactive tactic tactic.op_induction' -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported
+\  tactic `discrete_cases #[] -/
 /-- A discrete category is equivalent to its opposite category. -/
 @[simps! functor_obj_as inverse_obj]
 protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
