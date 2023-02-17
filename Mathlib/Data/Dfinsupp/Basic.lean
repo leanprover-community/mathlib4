@@ -247,7 +247,7 @@ theorem coe_add [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g
   rfl
 #align dfinsupp.coe_add Dfinsupp.coe_add
 
-instance [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
+instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
