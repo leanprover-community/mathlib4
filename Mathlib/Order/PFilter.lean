@@ -19,15 +19,15 @@ Throughout this file, `P` is at least a preorder, but some sections
 require more structure, such as a bottom element, a top element, or
 a join-semilattice structure.
 
-- `order.pfilter P`: The type of nonempty, downward directed, upward closed
-               subsets of `P`. This is dual to `order.ideal`, so it
-               simply wraps `order.ideal Pᵒᵈ`.
-- `order.is_pfilter P`: a predicate for when a `set P` is a filter.
+- `Order.PFilter P`: The type of nonempty, downward directed, upward closed
+               subsets of `P`. This is dual to `Order.Ideal`, so it
+               simply wraps `Order.Ideal Pᵒᵈ`.
+- `Order.IsPFilter P`: a predicate for when a `Set P` is a filter.
 
 
-Note the relation between `order/filter` and `order/pfilter`: for any
-type `α`, `filter α` represents the same mathematical object as
-`pfilter (set α)`.
+Note the relation between `order/Filter` and `order/pfilter`: for any
+type `α`, `Filter α` represents the same mathematical object as
+`pfilter (Set α)`.
 
 ## References
 
@@ -64,8 +64,8 @@ theorem IsPFilter.of_def [Preorder P] {F : Set P} (nonempty : F.Nonempty)
   ⟨fun _ _ _ _ => mem_of_le ‹_› ‹_›, nonempty, directed⟩
 #align order.is_pfilter.of_def Order.IsPFilter.of_def
 
-/-- Create an element of type `order.pfilter` from a set satisfying the predicate
-`order.is_pfilter`. -/
+/-- Create an element of type `Order.PFilter` from a set satisfying the predicate
+`Order.IsPFilter`. -/
 def IsPFilter.toPFilter [Preorder P] {F : Set P} (h : IsPFilter F) : PFilter P :=
   ⟨h.toIdeal⟩
 #align order.is_pfilter.to_pfilter Order.IsPFilter.toPFilter
