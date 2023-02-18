@@ -834,6 +834,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
+import Mathlib.MeasureTheory.Function.AeMeasurableSequence
 import Mathlib.MeasureTheory.MeasurableSpace
 import Mathlib.MeasureTheory.MeasurableSpaceDef
 import Mathlib.MeasureTheory.PiSystem
