@@ -960,3 +960,10 @@ end Module
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=
   Algebra.ofModule smul_mul_assoc mul_smul_comm
+
+-- porting note: disable `dupNamespace` linter for aux lemmas
+open Lean in
+run_cmd do
+  for i in List.range 12 do
+    Elab.Command.elabCommand (← `(attribute [nolint dupNamespace]
+      $(mkCIdent (.num `Mathlib.Algebra.Algebra.Basic._auxLemma (i + 1)))))
