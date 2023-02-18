@@ -53,8 +53,13 @@ noncomputable section
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
-  Ordinal deriving Zero, Inhabited, One, LinearOrder, SuccOrder, WellFoundedRelation
+  -- porting note: used to derive LinearOrder & SuccOrder but need to manually define
+  Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 #align nat_ordinal NatOrdinal
+
+instance NatOrdinal.linearOrder: LinearOrder NatOrdinal := {Ordinal.linearOrder with}
+
+instance NatOrdinal.succOrder: SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
 /-- The identity function between `ordinal` and `nat_ordinal`. -/
 @[match_pattern]
@@ -80,7 +85,7 @@ theorem toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
 #align nat_ordinal.to_ordinal_symm_eq NatOrdinal.toOrdinal_symm_eq
 
 @[simp]
-theorem toOrdinal_toNatOrdinal (a : NatOrdinal) : a.toOrdinal.toNatOrdinal = a :=
+theorem toOrdinal_toNatOrdinal (a : NatOrdinal) : (a.toOrdinal).toNatOrdinal = a :=
   rfl
 #align nat_ordinal.to_ordinal_to_nat_ordinal NatOrdinal.toOrdinal_toNatOrdinal
 
@@ -92,7 +97,7 @@ instance : WellFoundedLT NatOrdinal :=
   Ordinal.wellFoundedLT
 
 instance : IsWellOrder NatOrdinal (· < ·) :=
-  Ordinal.HasLt.Lt.isWellOrder
+  Ordinal.isWellOrder
 
 @[simp]
 theorem toOrdinal_zero : toOrdinal 0 = 0 :=
@@ -181,7 +186,7 @@ theorem toNatOrdinal_max : toNatOrdinal (max a b) = max a.toNatOrdinal b.toNatOr
 
 @[simp]
 theorem toNatOrdinal_min :
-    (LinearOrder.min a b).toNatOrdinal = LinearOrder.min a.toNatOrdinal b.toNatOrdinal :=
+    (linearOrder.min a b).toNatOrdinal = linearOrder.min a.toNatOrdinal b.toNatOrdinal :=
   rfl
 #align ordinal.to_nat_ordinal_min Ordinal.toNatOrdinal_min
 
@@ -193,8 +198,8 @@ Natural addition can equivalently be characterized as the ordinal resulting from
 corresponding coefficients in the Cantor normal forms of `a` and `b`. -/
 noncomputable def nadd : Ordinal → Ordinal → Ordinal
   | a, b =>
-    max (blsub.{u, u} a fun a' h => nadd a' b) (blsub.{u, u} b fun b' h => nadd a b')decreasing_by
-  solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
+    max (blsub.{u, u} a fun a' h => nadd a' b) (blsub.{u, u} b fun b' h => nadd a b')
+  decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd Ordinal.nadd
 
 -- mathport name: ordinal.nadd
@@ -356,7 +361,7 @@ instance : OrderedCancelAddCommMonoid NatOrdinal :=
     add_zero := nadd_zero
     add_comm := nadd_comm }
 
-instance : AddMonoidWithOne NatOrdinal :=
+instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
 @[simp]
@@ -368,7 +373,7 @@ theorem add_one_eq_succ : ∀ a : NatOrdinal, a + 1 = succ a :=
 theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by
   induction' n with n hn
   · rfl
-  · change nadd (to_ordinal n) 1 = n + 1
+  · change nadd (toOrdinal n) 1 = n + 1
     rw [hn]
     apply nadd_one
 #align nat_ordinal.to_ordinal_cast_nat NatOrdinal.toOrdinal_cast_nat
@@ -383,7 +388,7 @@ namespace Ordinal
 
 @[simp]
 theorem toNatOrdinal_cast_nat (n : ℕ) : toNatOrdinal n = n := by
-  rw [← to_ordinal_cast_nat n]
+  rw [← toOrdinal_cast_nat n]
   rfl
 #align ordinal.to_nat_ordinal_cast_nat Ordinal.toNatOrdinal_cast_nat
 
@@ -436,4 +441,3 @@ theorem nadd_right_cancel_iff : ∀ {a b c}, b ♯ a = c ♯ a ↔ b = c :=
 #align ordinal.nadd_right_cancel_iff Ordinal.nadd_right_cancel_iff
 
 end Ordinal
-
