@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient
 
 /-!
 # Isomorphism theorems for modules.

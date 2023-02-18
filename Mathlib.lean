@@ -805,6 +805,7 @@ import Mathlib.Lean.Meta.Simp
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Span
