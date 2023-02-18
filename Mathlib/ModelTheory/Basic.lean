@@ -94,18 +94,14 @@ instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a�
   h
 #align first_order.sequence₂.inhabited₂ FirstOrder.Sequence₂.inhabited₂
 
-instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) where
-  -- Porting note: Previous code was
-  -- PEmpty.isEmpty
-  --
-  -- PEmpty.isEmpty is not defined
-  false h := h.rec
+instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
 
 @[simp]
 theorem lift_mk {i : ℕ} :
-    Cardinal.lift (#Sequence₂ a₀ a₁ a₂ i) = (#Sequence₂ (ULift a₀) (ULift a₁) (ULift a₂) i) := by
+    Cardinal.lift.{v,u} (#Sequence₂ a₀ a₁ a₂ i)
+      = (#Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
-    simp only [sequence₂, mk_ulift, mk_fintype, Fintype.card_of_isEmpty, Nat.cast_zero, lift_zero]
+    simp only [Sequence₂, mk_uLift, mk_fintype, Fintype.card_of_isEmpty, Nat.cast_zero, lift_zero]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
@@ -241,25 +237,21 @@ instance isRelational_mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h0 : Is
     [h2 : IsEmpty f₂] : IsRelational (Language.mk₂ c f₁ f₂ r₁ r₂) :=
   ⟨fun n =>
     Nat.casesOn n h0 fun n => Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ =>
-      -- Porting note: Previous code was
-      -- PEmpty.isEmpty
-      --
-      -- Unknown constant PEmpty.isEmpty
-      by simp [isEmpty_iff]⟩
+      inferInstanceAs (IsEmpty PEmpty)⟩
 #align first_order.language.is_relational_mk₂ FirstOrder.Language.isRelational_mk₂
 
 instance isAlgebraic_mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h1 : IsEmpty r₁] [h2 : IsEmpty r₂] :
     IsAlgebraic (Language.mk₂ c f₁ f₂ r₁ r₂) :=
   ⟨fun n =>
-    Nat.casesOn n PEmpty.isEmpty fun n =>
-      Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => PEmpty.isEmpty⟩
+    Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty)) fun n =>
+      Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => inferInstanceAs (IsEmpty PEmpty)⟩
 #align first_order.language.is_algebraic_mk₂ FirstOrder.Language.isAlgebraic_mk₂
 
 instance subsingleton_mk₂_functions {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h0 : Subsingleton c]
     [h1 : Subsingleton f₁] [h2 : Subsingleton f₂] {n : ℕ} :
     Subsingleton ((Language.mk₂ c f₁ f₂ r₁ r₂).Functions n) :=
   Nat.casesOn n h0 fun n =>
-    Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun n => ⟨fun x => PEmpty.elim x⟩
+    Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => ⟨fun x => PEmpty.elim x⟩
 #align
   first_order.language.subsingleton_mk₂_functions
   FirstOrder.Language.subsingleton_mk₂_functions
@@ -289,14 +281,16 @@ instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ
 
 @[simp]
 theorem card_functions_sum (i : ℕ) :
-    (#(L.sum L').Functions i) = (#L.Functions i).lift + Cardinal.lift.{u} (#L'.Functions i) := by
-  simp [language.sum]
+    (#(L.sum L').Functions i)
+      = (Cardinal.lift.{u} (#L.Functions i) + Cardinal.lift.{u} (#L'.Functions i) : Cardinal) := by
+  simp [Language.sum]
 #align first_order.language.card_functions_sum FirstOrder.Language.card_functions_sum
 
 @[simp]
 theorem card_relations_sum (i : ℕ) :
-    (#(L.sum L').Relations i) = (#L.Relations i).lift + Cardinal.lift.{v} (#L'.Relations i) := by
-  simp [language.sum]
+    (#(L.sum L').Relations i) =
+      Cardinal.lift.{v} (#L.Relations i) + Cardinal.lift.{v} (#L'.Relations i) := by
+  simp [Language.sum]
 #align first_order.language.card_relations_sum FirstOrder.Language.card_relations_sum
 
 @[simp]
@@ -304,8 +298,8 @@ theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
   simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
     sum_add_distrib', lift_add, lift_sum, lift_lift]
-  rw [add_assoc, ← add_assoc (Cardinal.sum fun i => (#L'.functions i).lift),
-    add_comm (Cardinal.sum fun i => (#L'.functions i).lift), add_assoc, add_assoc]
+  simp_rw [add_assoc, ← add_assoc (Cardinal.sum fun i => Cardinal.lift (#L'.Functions i)),
+    add_comm (Cardinal.sum fun i => (#L'.Functions i).lift)]
 #align first_order.language.card_sum FirstOrder.Language.card_sum
 
 @[simp]
@@ -326,6 +320,7 @@ variable (L) (M : Type w)
 class Structure where
   funMap : ∀ {n}, L.Functions n → (Fin n → M) → M
   rel_map : ∀ {n}, L.Relations n → (Fin n → M) → Prop
+set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure FirstOrder.Language.Structure
 
 variable (N : Type w') [L.Structure M] [L.Structure N]
@@ -388,7 +383,7 @@ theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x
 /-- Given a language with a nonempty type of constants, any structure will be nonempty. This cannot
   be a global instance, because `L` becomes a metavariable. -/
 theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :=
-  h.map Coe.coe
+  h.map (↑)
 #align
   first_order.language.nonempty_of_nonempty_constants
   FirstOrder.Language.nonempty_of_nonempty_constants
@@ -416,6 +411,7 @@ protected def Structure.mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : 
     (f₂' : f₂ → M → M → M) (r₁' : r₁ → Set M) (r₂' : r₂ → M → M → Prop) :
     (Language.mk₂ c f₁ f₂ r₁ r₂).Structure M :=
   ⟨funMap₂ c' f₁' f₂', RelMap₂ r₁' r₂'⟩
+set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.mk₂ FirstOrder.Language.Structure.mk₂
 
 namespace Structure
@@ -430,30 +426,35 @@ variable {r₁' : r₁ → Set M} {r₂' : r₂ → M → M → Prop}
 theorem funMap_apply₀ (c₀ : c) {x : Fin 0 → M} :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 0 c₀ x = c' c₀ :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fun_map_apply₀ FirstOrder.Language.Structure.funMap_apply₀
 
 @[simp]
 theorem funMap_apply₁ (f : f₁) (x : M) :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 f ![x] = f₁' f x :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fun_map_apply₁ FirstOrder.Language.Structure.funMap_apply₁
 
 @[simp]
 theorem funMap_apply₂ (f : f₂) (x y : M) :
     @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 f ![x, y] = f₂' f x y :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.fun_map_apply₂ FirstOrder.Language.Structure.funMap_apply₂
 
 @[simp]
 theorem relMap_apply₁ (r : r₁) (x : M) :
     @Structure.rel_map _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.rel_map_apply₁ FirstOrder.Language.Structure.relMap_apply₁
 
 @[simp]
 theorem relMap_apply₂ (r : r₂) (x y : M) :
     @Structure.rel_map _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align first_order.language.Structure.rel_map_apply₂ FirstOrder.Language.Structure.relMap_apply₂
 
 end Structure
@@ -605,7 +606,7 @@ instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
   coe_injective' f g h := by
     cases f
     cases g
-    simp only
+    congr
     ext x
     exact Function.funext_iff.1 h x
 #align first_order.language.embedding.embedding_like FirstOrder.Language.Embedding.embeddingLike
@@ -646,11 +647,11 @@ theorem coe_toHom {f : M ↪[L] N} : (f.toHom : M → N) = f :=
   rfl
 #align first_order.language.embedding.coe_to_hom FirstOrder.Language.Embedding.coe_toHom
 
-theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) coeFn
+theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
   | f, g, h => by
     cases f
     cases g
-    simp only
+    congr
     ext x
     exact Function.funext_iff.1 h x
 #align first_order.language.embedding.coe_injective FirstOrder.Language.Embedding.coe_injective
@@ -669,7 +670,7 @@ theorem injective (f : M ↪[L] N) : Function.Injective f :=
 #align first_order.language.embedding.injective FirstOrder.Language.Embedding.injective
 
 /-- In an algebraic language, any injective homomorphism is an embedding. -/
-@[simps]
+@[simps!]
 def ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) : M ↪[L] N :=
   { f with
     inj' := hf
@@ -834,7 +835,7 @@ theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M �
   rfl
 #align first_order.language.equiv.coe_to_embedding FirstOrder.Language.Equiv.coe_toEmbedding
 
-theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) coeFn :=
+theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
   FunLike.coe_injective
 #align first_order.language.equiv.coe_injective FirstOrder.Language.Equiv.coe_injective
 
@@ -908,6 +909,7 @@ variable (L₁ L₂ : Language) (S : Type _) [L₁.Structure S] [L₂.Structure 
 instance sumStructure : (L₁.sum L₂).Structure S where
   funMap n := Sum.elim funMap funMap
   rel_map n := Sum.elim RelMap RelMap
+set_option linter.uppercaseLean3 false in
 #align first_order.language.sum_Structure FirstOrder.Language.sumStructure
 
 variable {L₁ L₂ S}
@@ -964,6 +966,7 @@ end
 
 instance emptyStructure : Language.empty.Structure M :=
   ⟨Empty.elim, Empty.elim⟩
+set_option linter.uppercaseLean3 false in
 #align first_order.language.empty_Structure FirstOrder.Language.emptyStructure
 
 instance : Unique (Language.empty.Structure M) :=
@@ -1007,17 +1010,19 @@ open FirstOrder
 variable {L : Language} {M : Type _} {N : Type _} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
-@[simps]
+@[simps!]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
   ⟨fun n f x => e (funMap f (e.symm ∘ x)), fun n r x => RelMap r (e.symm ∘ x)⟩
+set_option linter.uppercaseLean3 false in
 #align equiv.induced_Structure Equiv.inducedStructure
 
 /-- A bijection as a first-order isomorphism with the induced structure on the codomain. -/
-@[simps]
+@[simps!]
 def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStructure e) :=
   { e with
     map_fun' := fun n f x => by simp [← Function.comp.assoc e.symm e x]
     map_rel' := fun n r x => by simp [← Function.comp.assoc e.symm e x] }
+set_option linter.uppercaseLean3 false in
 #align equiv.induced_Structure_equiv Equiv.inducedStructureEquiv
 
 end Equiv
