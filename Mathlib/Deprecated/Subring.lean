@@ -110,22 +110,18 @@ variable {s : Set R}
 theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
     ∃ L : List (List R), (∀ l ∈ L, ∀ x ∈ l, x ∈ s ∨ x = (-1 : R)) ∧ (L.map List.prod).sum = a :=
   AddGroup.InClosure.recOn h
-    (fun {x} hx ↦
-      match x, Monoid.exists_list_of_mem_closure hx with
-      | _, ⟨L, h1, rfl⟩ =>
-        ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), zero_add _⟩)
+    fun {x} hx ↦ match x, Monoid.exists_list_of_mem_closure hx with
+    | _, ⟨L, h1, rfl⟩ => ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), zero_add _⟩
     ⟨[], List.forall_mem_nil _, rfl⟩
-    (fun {b} _ ih ↦
-      match b, ih with
-      | _, ⟨L1, h1, rfl⟩ =>
-        ⟨L1.map (List.cons (-1)), fun L2 h2 ↦
-          match L2, List.mem_map'.1 h2 with
-          | _, ⟨L3, h3, rfl⟩ => List.forall_mem_cons.2 ⟨Or.inr rfl, h1 L3 h3⟩, by
-            simp only [List.map_map, (· ∘ ·), List.prod_cons, neg_one_mul]
-            refine' List.recOn L1 neg_zero.symm fun hd tl ih ↦ _
-            rw [List.map_cons, List.sum_cons, ih, List.map_cons, List.sum_cons, neg_add]⟩)
-    fun {r1 r2} _ _ ih1 ih2 ↦
-    match r1, r2, ih1, ih2 with
+    fun {b} _ ih ↦ match b, ih with
+    | _, ⟨L1, h1, rfl⟩ =>
+      ⟨L1.map (List.cons (-1)),
+        fun L2 h2 ↦ match L2, List.mem_map'.1 h2 with
+        | _, ⟨L3, h3, rfl⟩ => List.forall_mem_cons.2 ⟨Or.inr rfl, h1 L3 h3⟩, by
+        simp only [List.map_map, (· ∘ ·), List.prod_cons, neg_one_mul]
+        refine' List.recOn L1 neg_zero.symm fun hd tl ih ↦ _
+        rw [List.map_cons, List.sum_cons, ih, List.map_cons, List.sum_cons, neg_add]⟩
+    fun {r1 r2} _ _ ih1 ih2 ↦ match r1, r2, ih1, ih2 with
     | _, _, ⟨L1, h1, rfl⟩, ⟨L2, h2, rfl⟩ =>
       ⟨L1 ++ L2, List.forall_mem_append.2 ⟨h1, h2⟩, by rw [List.map_append, List.sum_append]⟩
 #align ring.exists_list_of_mem_closure Ring.exists_list_of_mem_closure
@@ -146,8 +142,7 @@ protected theorem InClosure.rec_on {C : R → Prop} {x : R} (hx : x ∈ closure 
   replace HL := HL.1
   clear ih tl
   -- Porting note: Expanded `rsuffices`
-  suffices ∃ L : List R,
-      (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L) by
+  suffices ∃ L, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L) by
     rcases this with ⟨L, HL', HP | HP⟩ <;> rw [HP] <;> clear HP HL
     · induction' L with hd tl ih
       · exact h1
@@ -176,19 +171,16 @@ protected theorem InClosure.rec_on {C : R → Prop} {x : R} (hx : x ∈ closure 
 theorem closure.isSubring : IsSubring (closure s) :=
   { AddGroup.closure.isAddSubgroup _ with
     one_mem := AddGroup.mem_closure <| IsSubmonoid.one_mem <| Monoid.closure.isSubmonoid _
-    mul_mem := fun {a _} ha hb ↦
-      AddGroup.InClosure.recOn hb
-        (fun {c} hc ↦
-          AddGroup.InClosure.recOn ha
-            (fun hd ↦ AddGroup.subset_closure ((Monoid.closure.isSubmonoid _).mul_mem hd hc))
-            ((zero_mul c).symm ▸ (AddGroup.closure.isAddSubgroup _).zero_mem)
-            (fun {d} _ hdc ↦
-              neg_mul_eq_neg_mul d c ▸ (AddGroup.closure.isAddSubgroup _).neg_mem hdc)
-            fun {d e} _ _ hdc hec ↦
-            (add_mul d e c).symm ▸ (AddGroup.closure.isAddSubgroup _).add_mem hdc hec)
-        ((mul_zero a).symm ▸ (AddGroup.closure.isAddSubgroup _).zero_mem)
-        (fun {c} _ hac ↦ neg_mul_eq_mul_neg a c ▸ (AddGroup.closure.isAddSubgroup _).neg_mem hac)
-        fun {c d} _ _ hac had ↦
+    mul_mem := fun {a _} ha hb ↦ AddGroup.InClosure.recOn hb
+      (fun {c} hc ↦ AddGroup.InClosure.recOn ha
+        (fun hd ↦ AddGroup.subset_closure ((Monoid.closure.isSubmonoid _).mul_mem hd hc))
+        ((zero_mul c).symm ▸ (AddGroup.closure.isAddSubgroup _).zero_mem)
+        (fun {d} _ hdc ↦ neg_mul_eq_neg_mul d c ▸ (AddGroup.closure.isAddSubgroup _).neg_mem hdc)
+        fun {d e} _ _ hdc hec ↦
+          (add_mul d e c).symm ▸ (AddGroup.closure.isAddSubgroup _).add_mem hdc hec)
+      ((mul_zero a).symm ▸ (AddGroup.closure.isAddSubgroup _).zero_mem)
+      (fun {c} _ hac ↦ neg_mul_eq_mul_neg a c ▸ (AddGroup.closure.isAddSubgroup _).neg_mem hac)
+      fun {c d} _ _ hac had ↦
         (mul_add a c d).symm ▸ (AddGroup.closure.isAddSubgroup _).add_mem hac had }
 #align ring.closure.is_subring Ring.closure.isSubring
 
@@ -214,25 +206,23 @@ theorem closure_mono {s t : Set R} (H : s ⊆ t) : closure s ⊆ closure t :=
 #align ring.closure_mono Ring.closure_mono
 
 theorem image_closure {S : Type _} [Ring S] (f : R →+* S) (s : Set R) :
-    f '' closure s = closure (f '' s) :=
-  le_antisymm
-    (by
-      rintro _ ⟨x, hx, rfl⟩
-      apply AddGroup.InClosure.recOn (motive := fun {x} _ ↦ f x ∈ closure (f '' s)) hx _ <;> intros
-      · rw [f.map_zero]
-        apply closure.isSubring.zero_mem
-      · rw [f.map_neg]
-        apply closure.isSubring.neg_mem
-        assumption
-      · rw [f.map_add]
-        apply closure.isSubring.add_mem
-        assumption'
-      · apply AddGroup.mem_closure
-        rw [← Monoid.image_closure f.to_isMonoidHom]
-        apply Set.mem_image_of_mem
-        assumption)
-    (closure_subset (RingHom.isSubring_image _ closure.isSubring) <|
-      Set.image_subset _ subset_closure)
+    f '' closure s = closure (f '' s) := by
+  refine' le_antisymm _ (closure_subset (RingHom.isSubring_image _ closure.isSubring) <|
+    Set.image_subset _ subset_closure)
+  rintro _ ⟨x, hx, rfl⟩
+  apply AddGroup.InClosure.recOn (motive := fun {x} _ ↦ f x ∈ closure (f '' s)) hx _ <;> intros
+  · rw [f.map_zero]
+    apply closure.isSubring.zero_mem
+  · rw [f.map_neg]
+    apply closure.isSubring.neg_mem
+    assumption
+  · rw [f.map_add]
+    apply closure.isSubring.add_mem
+    assumption'
+  · apply AddGroup.mem_closure
+    rw [← Monoid.image_closure f.to_isMonoidHom]
+    apply Set.mem_image_of_mem
+    assumption
 #align ring.image_closure Ring.image_closure
 
 end Ring
