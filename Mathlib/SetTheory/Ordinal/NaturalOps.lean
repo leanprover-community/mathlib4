@@ -85,8 +85,8 @@ theorem toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
 #align nat_ordinal.to_ordinal_symm_eq NatOrdinal.toOrdinal_symm_eq
 
 @[simp]
-theorem toOrdinal_toNatOrdinal (a : NatOrdinal) : (a.toOrdinal).toNatOrdinal = a :=
-  rfl
+theorem toOrdinal_toNatOrdinal (a : NatOrdinal) : Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a
+ := rfl
 #align nat_ordinal.to_ordinal_to_nat_ordinal NatOrdinal.toOrdinal_toNatOrdinal
 
 theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
@@ -199,11 +199,13 @@ corresponding coefficients in the Cantor normal forms of `a` and `b`. -/
 noncomputable def nadd : Ordinal → Ordinal → Ordinal
   | a, b =>
     max (blsub.{u, u} a fun a' h => nadd a' b) (blsub.{u, u} b fun b' h => nadd a b')
-  decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
+  termination_by nadd o₁ o₂ => (o₁, o₂)
 #align ordinal.nadd Ordinal.nadd
 
 -- mathport name: ordinal.nadd
 scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
+
+open NaturalOps
 
 theorem nadd_def (a b : Ordinal) :
     a ♯ b = max (blsub.{u, u} a fun a' h => a' ♯ b) (blsub.{u, u} b fun b' h => a ♯ b') := by
