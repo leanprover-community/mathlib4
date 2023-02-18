@@ -806,6 +806,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
