@@ -18,39 +18,39 @@ import Mathlib.Tactic.Positivity
 /-!
 # Nonnegative real numbers
 
-In this file we define `nnreal` (notation: `ℝ≥0`) to be the type of non-negative real numbers,
+In this file we define `NNReal` (notation: `ℝ≥0`) to be the type of non-negative real numbers,
 a.k.a. the interval `[0, ∞)`. We also define the following operations and structures on `ℝ≥0`:
 
 * the order on `ℝ≥0` is the restriction of the order on `ℝ`; these relations define a conditionally
-  complete linear order with a bottom element, `conditionally_complete_linear_order_bot`;
+  complete linear order with a bottom element, `ConditionallyCompleteLinearOrderBot`;
 
 * `a + b` and `a * b` are the restrictions of addition and multiplication of real numbers to `ℝ≥0`;
   these operations together with `0 = ⟨0, _⟩` and `1 = ⟨1, _⟩` turn `ℝ≥0` into a conditionally
   complete linear ordered archimedean commutative semifield; we have no typeclass for this in
   `mathlib` yet, so we define the following instances instead:
 
-  - `linear_ordered_semiring ℝ≥0`;
-  - `ordered_comm_semiring ℝ≥0`;
-  - `canonically_ordered_comm_semiring ℝ≥0`;
-  - `linear_ordered_comm_group_with_zero ℝ≥0`;
-  - `canonically_linear_ordered_add_monoid ℝ≥0`;
-  - `archimedean ℝ≥0`;
-  - `conditionally_complete_linear_order_bot ℝ≥0`.
+  - `LinearOrderedSemiring ℝ≥0`;
+  - `OrderedCommSemiring ℝ≥0`;
+  - `CanonicallyOrderedCommSemiring ℝ≥0`;
+  - `LinearOrderedCommGroupWithZero ℝ≥0`;
+  - `CanonicallyLinearOrderedAddMonoid ℝ≥0`;
+  - `Archimedean ℝ≥0`;
+  - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
   These instances are derived from corresponding instances about the type `{x : α // 0 ≤ x}` in an
-  appropriate ordered field/ring/group/monoid `α`. See `algebra/order/nonneg`.
+  appropriate ordered field/ring/group/monoid `α`, see `Mathlib.Algebra.Order.Nonneg.Ring`.
 
-* `real.to_nnreal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(real.to_nnreal x) = x` when `0 ≤ x` and
-  `↑(real.to_nnreal x) = 0` otherwise.
+* `Real.toNNReal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(Real.toNNReal x) = x` when `0 ≤ x` and
+  `↑(Real.toNNReal x) = 0` otherwise.
 
-We also define an instance `can_lift ℝ ℝ≥0`. This instance can be used by the `lift` tactic to
+We also define an instance `CanLift ℝ ℝ≥0`. This instance can be used by the `lift` tactic to
 replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` while replacing all occurences
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 
 ## Notations
 
-This file defines `ℝ≥0` as a localized notation for `nnreal`.
+This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
 open BigOperators Function
@@ -233,7 +233,7 @@ theorem coe_ne_zero {r : ℝ≥0} : (r : ℝ) ≠ 0 ↔ r ≠ 0 := r.coe_eq_zero
 
 example : CommSemiring ℝ≥0 := by infer_instance
 
-/-- Coercion `ℝ≥0 → ℝ` as a `ring_hom`.
+/-- Coercion `ℝ≥0 → ℝ` as a `RingHom`.
 
 Porting note: todo: what if we define `Coe ℝ≥0 ℝ` using this function? -/
 def toRealHom : ℝ≥0 →+* ℝ where
@@ -249,7 +249,7 @@ def toRealHom : ℝ≥0 →+* ℝ where
 
 section Actions
 
-/-- A `mul_action` over `ℝ` restricts to a `mul_action` over `ℝ≥0`. -/
+/-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
 instance {M : Type _} [MulAction ℝ M] : MulAction ℝ≥0 M :=
   MulAction.compHom M toRealHom.toMonoidHom
 
@@ -268,16 +268,16 @@ instance sMulCommClass_right {M N : Type _} [MulAction ℝ N] [SMul M N] [SMulCo
     SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ) : _)
 #align nnreal.smul_comm_class_right NNReal.sMulCommClass_right
 
-/-- A `distrib_mul_action` over `ℝ` restricts to a `distrib_mul_action` over `ℝ≥0`. -/
+/-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 instance {M : Type _} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
   DistribMulAction.compHom M toRealHom.toMonoidHom
 
-/-- A `module` over `ℝ` restricts to a `module` over `ℝ≥0`. -/
+/-- A `Module` over `ℝ` restricts to a `Module` over `ℝ≥0`. -/
 instance {M : Type _} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
 -- porting note: TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
-/-- An `algebra` over `ℝ` restricts to an `algebra` over `ℝ≥0`. -/
+/-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type _} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
@@ -403,7 +403,7 @@ theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
 #align nnreal.to_nnreal_coe_nat NNReal.toNNReal_coe_nat
 
-/-- `real.to_nnreal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
+/-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
   GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>
     Real.toNNReal_coe
@@ -442,7 +442,7 @@ example : DenselyOrdered ℝ≥0 := by infer_instance
 example : NoMaxOrder ℝ≥0 := by infer_instance
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
-isomorphic to the interval `set.Iic a`. -/
+isomorphic to the interval `Set.Iic a`. -/
 -- porting note: todo: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
   toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
@@ -756,8 +756,9 @@ section Sub
 ### Lemmas about subtraction
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
-typeclass. For lemmas about subtraction and addition see lemmas
-about `has_ordered_sub` in the file `algebra.order.sub`. See also `mul_tsub` and `tsub_mul`. -/
+typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file
+`Mathlib.Algebra.Order.Sub.Bsic`. See also `mul_tsub` and `tsub_mul`.
+-/
 
 theorem sub_def {r p : ℝ≥0} : r - p = Real.toNNReal (r - p) :=
   rfl
