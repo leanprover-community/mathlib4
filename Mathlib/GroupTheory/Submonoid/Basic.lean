@@ -133,7 +133,7 @@ class AddSubmonoidClass (S : Type _) (M : Type _) [AddZeroClass M] [SetLike S M]
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive nsmul_mem]
+@[to_additive]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
