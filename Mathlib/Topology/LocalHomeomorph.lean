@@ -16,12 +16,12 @@ import Mathlib.Topology.Sets.Opens
 
 This file defines homeomorphisms between open subsets of topological spaces. An element `e` of
 `LocalHomeomorph α β` is an extension of `LocalEquiv α β`, i.e., it is a pair of functions
-`e.toFun` and `e.inv_fun`, inverse of each other on the sets `e.source` and `e.target`.
+`e.toFun` and `e.invFun`, inverse of each other on the sets `e.source` and `e.target`.
 Additionally, we require that these sets are open, and that the functions are continuous on them.
 Equivalently, they are homeomorphisms there.
 
 As in equivs, we register a coercion to functions, and we use `e x` and `e.symm x` throughout
-instead of `e.toFun x` and `e.inv_fun x`.
+instead of `e.toFun x` and `e.invFun x`.
 
 ## Main definitions
 
@@ -36,10 +36,10 @@ instead of `e.toFun x` and `e.inv_fun x`.
 
 ## Implementation notes
 
-Most statements are copied from their local_equiv versions, although some care is required
+Most statements are copied from their `LocalEquiv` versions, although some care is required
 especially when restricting to subsets, as these should be open subsets.
 
-For design notes, see `local_equiv.lean`.
+For design notes, see `LocalEquiv.lean`.
 
 ### Local coding conventions
 
@@ -213,7 +213,7 @@ def _root_.Homeomorph.toLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α 
 attribute [mfld_simps] Homeomorph.toLocalHomeomorph_apply Homeomorph.toLocalHomeomorph_symm_apply
   Homeomorph.toLocalHomeomorph_source Homeomorph.toLocalHomeomorph_target
 
-/-- Replace `to_local_equiv` field to provide better definitional equalities. -/
+/-- Replace `toLocalEquiv` field to provide better definitional equalities. -/
 def replaceEquiv (e : LocalHomeomorph α β) (e' : LocalEquiv α β) (h : e.toLocalEquiv = e') :
     LocalHomeomorph α β where
   toLocalEquiv := e'
@@ -321,8 +321,8 @@ theorem symm_image_target_eq_source (e : LocalHomeomorph α β) : e.symm '' e.ta
   e.symm.image_source_eq_target
 #align local_homeomorph.symm_image_target_eq_source LocalHomeomorph.symm_image_target_eq_source
 
-/-- Two local homeomorphisms are equal when they have equal `toFun`, `inv_fun` and `source`.
-It is not sufficient to have equal `toFun` and `source`, as this only determines `inv_fun` on
+/-- Two local homeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
+It is not sufficient to have equal `toFun` and `source`, as this only determines `invFun` on
 the target. This would only be true for a weaker notion of equality, arguably the right one,
 called `eq_on_source`. -/
 @[ext]
@@ -343,7 +343,7 @@ theorem symm_toLocalEquiv : e.symm.toLocalEquiv = e.toLocalEquiv.symm :=
   rfl
 #align local_homeomorph.symm_to_local_equiv LocalHomeomorph.symm_toLocalEquiv
 
--- The following lemmas are already simp via local_equiv
+-- The following lemmas are already simp via `LocalEquiv`
 theorem symm_source : e.symm.source = e.target :=
   rfl
 #align local_homeomorph.symm_source LocalHomeomorph.symm_source
@@ -694,7 +694,7 @@ theorem restrOpen_toLocalEquiv (s : Set α) (hs : IsOpen s) :
   rfl
 #align local_homeomorph.restr_open_to_local_equiv LocalHomeomorph.restrOpen_toLocalEquiv
 
--- Already simp via local_equiv
+-- Already simp via `LocalEquiv`
 theorem restrOpen_source (s : Set α) (hs : IsOpen s) : (e.restrOpen s hs).source = e.source ∩ s :=
   rfl
 #align local_homeomorph.restr_open_source LocalHomeomorph.restrOpen_source
@@ -978,7 +978,7 @@ theorem EqOnSource.eqOn {e e' : LocalHomeomorph α β} (h : e ≈ e') : EqOn e e
   h.2
 #align local_homeomorph.eq_on_source.eq_on LocalHomeomorph.EqOnSource.eqOn
 
-/-- Two equivalent local homeomorphisms have coinciding `inv_fun` on the target -/
+/-- Two equivalent local homeomorphisms have coinciding `invFun` on the target -/
 theorem EqOnSource.symm_eqOn_target {e e' : LocalHomeomorph α β} (h : e ≈ e') :
     EqOn e.symm e'.symm e.target :=
   h.symm'.2
@@ -1081,7 +1081,7 @@ section Piecewise
 /-- Combine two `LocalHomeomorph`s using `Set.piecewise`. The source of the new `LocalHomeomorph`
 is `s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly for target.  The
 function sends `e.source ∩ s` to `e.target ∩ t` using `e` and `e'.source \ s` to `e'.target \ t`
-using `e'`, and similarly for the inverse function. To ensure that the maps `toFun` and `inv_fun`
+using `e'`, and similarly for the inverse function. To ensure that the maps `toFun` and `invFun`
 are inverse of each other on the new `source` and `target`, the definition assumes that the sets `s`
 and `t` are related both by `e.is_image` and `e'.is_image`. To ensure that the new maps are
 continuous on `source`/`target`, it also assumes that `e.source` and `e'.source` meet `frontier s`
