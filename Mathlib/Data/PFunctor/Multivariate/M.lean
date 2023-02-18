@@ -95,7 +95,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Polynomial functor of the M-type of `P`. `A` is a data-less
 possibly infinite tree whereas, for a given `a : A`, `B a` is a valid
-path in tree `a` so that `Wp.obj α` is made of a tree and a function
+path in tree `a` so that `mp.Obj α` is made of a tree and a function
 from its valid paths to the values it contains -/
 def mp : MvPFunctor n where
   A := P.last.M
