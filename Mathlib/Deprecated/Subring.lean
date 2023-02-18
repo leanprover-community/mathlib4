@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Deprecated.Subgroup
-import Mathbin.Deprecated.Group
-import Mathbin.RingTheory.Subring.Basic
+import Mathlib.Deprecated.Subgroup
+import Mathlib.Deprecated.Group
+import Mathlib.RingTheory.Subring.Basic
 
 /-!
 # Unbundled subrings (deprecated)
