@@ -16,25 +16,25 @@ import Mathlib.LinearAlgebra.Span
 # Properties of the module `α →₀ M`
 
 Given an `R`-module `M`, the `R`-module structure on `α →₀ M` is defined in
-`data.Finsupp.basic`.
+`Data.Finsupp.Basic`.
 
 In this file we define `Finsupp.supported s` to be the set `{f : α →₀ M | f.support ⊆ s}`
 interpreted as a submodule of `α →₀ M`. We also define `LinearMap` versions of various maps:
 
 * `Finsupp.lsingle a : M →ₗ[R] ι →₀ M`: `Finsupp.single a` as a linear map;
 * `Finsupp.lapply a : (ι →₀ M) →ₗ[R] M`: the map `λ f, f a` as a linear map;
-* `Finsupp.lsubtype_domain (s : set α) : (α →₀ M) →ₗ[R] (s →₀ M)`: restriction to a subtype as a
+* `Finsupp.lsubtypeDomain (s : set α) : (α →₀ M) →ₗ[R] (s →₀ M)`: restriction to a subtype as a
   linear map;
-* `Finsupp.restrict_dom`: `Finsupp.filter` as a linear map to `Finsupp.supported s`;
-* `Finsupp.lsum`: `Finsupp.sum` or `Finsupp.lift_add_hom` as a `LinearMap`;
+* `Finsupp.restrictDom`: `Finsupp.filter` as a linear map to `Finsupp.supported s`;
+* `Finsupp.lsum`: `Finsupp.sum` or `Finsupp.liftAddHom` as a `LinearMap`;
 * `Finsupp.total α M R (v : ι → M)`: sends `l : ι → R` to the linear combination of `v i` with
   coefficients `l i`;
-* `Finsupp.total_on`: a restricted version of `Finsupp.total` with domain `Finsupp.supported R R s`
+* `Finsupp.totalOn`: a restricted version of `Finsupp.total` with domain `Finsupp.supported R R s`
   and codomain `Submodule.span R (v '' s)`;
-* `Finsupp.supported_equiv_finsupp`: a linear equivalence between the functions `α →₀ M` supported
+* `Finsupp.supportedEquivFinsupp`: a linear equivalence between the functions `α →₀ M` supported
   on `s` and the functions `s →₀ M`;
-* `Finsupp.lmap_domain`: a linear map version of `Finsupp.map_domain`;
-* `Finsupp.dom_lcongr`: a `LinearEquiv` version of `Finsupp.domCongr`;
+* `Finsupp.lmapDomain`: a linear map version of `Finsupp.mapDomain`;
+* `Finsupp.domLCongr`: a `LinearEquiv` version of `Finsupp.domCongr`;
 * `Finsupp.congr`: if the sets `s` and `t` are equivalent, then `supported M R s` is equivalent to
   `supported M R t`;
 * `Finsupp.lcongr`: a `LinearEquiv`alence between `α →₀ M` and `β →₀ N` constructed using `e : α ≃
@@ -80,14 +80,14 @@ theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a, φ.comp (l
   lhom_ext fun a => LinearMap.congr_fun (h a)
 #align finsupp.lhom_ext' Finsupp.lhom_ext'
 
-/-- Interpret `λ (f : α →₀ M), f a` as a linear map. -/
+/-- Interpret `fun f : α →₀ M ↦ f a` as a linear map. -/
 def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
   { Finsupp.applyAddHom a with map_smul' := fun _ _ => rfl }
 #align finsupp.lapply Finsupp.lapply
 
 /-- Forget that a function is finitely supported.
 
-This is the linear version of `Finsupp.to_fun`. -/
+This is the linear version of `Finsupp.toFun`. -/
 @[simps]
 def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   toFun := (⇑)
@@ -99,11 +99,11 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
     simp
 #align finsupp.lcoe_fun Finsupp.lcoeFun
 
-section LsubtypeDomain
+section LSubtypeDomain
 
 variable (s : Set α)
 
-/-- Interpret `Finsupp.subtype_domain s` as a linear map. -/
+/-- Interpret `Finsupp.subtypeDomain s` as a linear map. -/
 def lsubtypeDomain : (α →₀ M) →ₗ[R] s →₀ M
     where
   toFun := subtypeDomain fun x => x ∈ s
@@ -116,7 +116,7 @@ theorem lsubtypeDomain_apply (f : α →₀ M) :
   rfl
 #align finsupp.lsubtype_domain_apply Finsupp.lsubtypeDomain_apply
 
-end LsubtypeDomain
+end LSubtypeDomain
 
 @[simp]
 theorem lsingle_apply (a : α) (b : M) : (lsingle a : M →ₗ[R] α →₀ M) b = single a b :=
@@ -324,7 +324,7 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
   exact hy this
 #align finsupp.disjoint_supported_supported_iff Finsupp.disjoint_supported_supported_iff
 
-/-- Interpret `Finsupp.restrict_support_equiv` as a linear equivalence between
+/-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
   let F : supported M R s ≃ (s →₀ M) := restrictSupportEquiv s M
@@ -337,13 +337,13 @@ def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M :=
   exact LinearMap.isLinear _
 #align finsupp.supported_equiv_finsupp Finsupp.supportedEquivFinsupp
 
-section Lsum
+section LSum
 
 variable (S)
 variable [Module S N] [SMulCommClass R S N]
 
 /-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
-`N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.lift_add_hom`.
+`N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.liftAddHom`.
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
@@ -385,7 +385,7 @@ theorem lsum_symm_apply (f : (α →₀ M) →ₗ[R] N) (x : α) : (lsum S).symm
   rfl
 #align finsupp.lsum_symm_apply Finsupp.lsum_symm_apply
 
-end Lsum
+end LSum
 
 section
 
@@ -411,11 +411,11 @@ theorem lift_apply (f) (g) : ((lift M R X) f) g = g.sum fun x r => r • f x :=
 
 end
 
-section LmapDomain
+section LMapDomain
 
 variable {α' : Type _} {α'' : Type _} (M R)
 
-/-- Interpret `Finsupp.map_domain` as a linear map. -/
+/-- Interpret `Finsupp.mapDomain` as a linear map. -/
 def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M
     where
   toFun := mapDomain f
@@ -487,17 +487,17 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     exact xs (h₁ <| Finsupp.mem_support_iff.2 h)
 #align finsupp.lmap_domain_disjoint_ker Finsupp.lmapDomain_disjoint_ker
 
-end LmapDomain
+end LMapDomain
 
-section LcomapDomain
+section LComapDomain
 
 variable {β : Type _}
 
-/-- Given `f : α → β` and a proof `hf` that `f` is injective, `lcomap_domain f hf` is the linear map
+/-- Given `f : α → β` and a proof `hf` that `f` is injective, `lcomapDomain f hf` is the linear map
 sending  `l : β →₀ M` to the finitely supported function from `α` to `M` given by composing
 `l` with `f`.
 
-This is the linear version of `Finsupp.comap_domain`. -/
+This is the linear version of `Finsupp.comapDomain`. -/
 def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M
     where
   toFun l := Finsupp.comapDomain f l (hf.injOn _)
@@ -505,7 +505,7 @@ def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →
   map_smul' c x := by ext; simp
 #align finsupp.lcomap_domain Finsupp.lcomapDomain
 
-end LcomapDomain
+end LComapDomain
 
 section Total
 
@@ -693,7 +693,7 @@ theorem total_fin_zero (f : Fin 0 → M) : Finsupp.total (Fin 0) M R f = 0 := by
 
 variable (α) (M) (v)
 
-/-- `Finsupp.total_on M v s` interprets `p : α →₀ R` as a linear combination of a
+/-- `Finsupp.totalOn M v s` interprets `p : α →₀ R` as a linear combination of a
 subset of the vectors in `v`, mapping it to the span of those vectors.
 
 The subset is indicated by a set `s : set α` of indices.
@@ -737,40 +737,40 @@ end Total
 /-- An equivalence of domains induces a linear equivalence of finitely supported functions.
 
 This is `Finsupp.domCongr` as a `LinearEquiv`.
-See also `LinearMap.fun_congr_left` for the case of arbitrary functions. -/
-protected def domLcongr {α₁ α₂ : Type _} (e : α₁ ≃ α₂) : (α₁ →₀ M) ≃ₗ[R] α₂ →₀ M :=
+See also `LinearMap.funCongrLeft` for the case of arbitrary functions. -/
+protected def domLCongr {α₁ α₂ : Type _} (e : α₁ ≃ α₂) : (α₁ →₀ M) ≃ₗ[R] α₂ →₀ M :=
   (Finsupp.domCongr e : (α₁ →₀ M) ≃+ (α₂ →₀ M)).toLinearEquiv <| by
     simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using (lmapDomain M R e).map_smul
-#align finsupp.dom_lcongr Finsupp.domLcongr
+#align finsupp.dom_lcongr Finsupp.domLCongr
 
 @[simp]
-theorem domLcongr_apply {α₁ : Type _} {α₂ : Type _} (e : α₁ ≃ α₂) (v : α₁ →₀ M) :
-    (Finsupp.domLcongr e : _ ≃ₗ[R] _) v = Finsupp.domCongr e v :=
+theorem domLCongr_apply {α₁ : Type _} {α₂ : Type _} (e : α₁ ≃ α₂) (v : α₁ →₀ M) :
+    (Finsupp.domLCongr e : _ ≃ₗ[R] _) v = Finsupp.domCongr e v :=
   rfl
-#align finsupp.dom_lcongr_apply Finsupp.domLcongr_apply
+#align finsupp.dom_lcongr_apply Finsupp.domLCongr_apply
 
 @[simp]
-theorem domLcongr_refl : Finsupp.domLcongr (Equiv.refl α) = LinearEquiv.refl R (α →₀ M) :=
+theorem domLCongr_refl : Finsupp.domLCongr (Equiv.refl α) = LinearEquiv.refl R (α →₀ M) :=
   LinearEquiv.ext fun _ => equivMapDomain_refl _
-#align finsupp.dom_lcongr_refl Finsupp.domLcongr_refl
+#align finsupp.dom_lcongr_refl Finsupp.domLCongr_refl
 
-theorem domLcongr_trans {α₁ α₂ α₃ : Type _} (f : α₁ ≃ α₂) (f₂ : α₂ ≃ α₃) :
-    (Finsupp.domLcongr f).trans (Finsupp.domLcongr f₂) =
-      (Finsupp.domLcongr (f.trans f₂) : (_ →₀ M) ≃ₗ[R] _) :=
+theorem domLCongr_trans {α₁ α₂ α₃ : Type _} (f : α₁ ≃ α₂) (f₂ : α₂ ≃ α₃) :
+    (Finsupp.domLCongr f).trans (Finsupp.domLCongr f₂) =
+      (Finsupp.domLCongr (f.trans f₂) : (_ →₀ M) ≃ₗ[R] _) :=
   LinearEquiv.ext fun _ => (equivMapDomain_trans _ _ _).symm
-#align finsupp.dom_lcongr_trans Finsupp.domLcongr_trans
+#align finsupp.dom_lcongr_trans Finsupp.domLCongr_trans
 
 @[simp]
-theorem domLcongr_symm {α₁ α₂ : Type _} (f : α₁ ≃ α₂) :
-    ((Finsupp.domLcongr f).symm : (_ →₀ M) ≃ₗ[R] _) = Finsupp.domLcongr f.symm :=
+theorem domLCongr_symm {α₁ α₂ : Type _} (f : α₁ ≃ α₂) :
+    ((Finsupp.domLCongr f).symm : (_ →₀ M) ≃ₗ[R] _) = Finsupp.domLCongr f.symm :=
   LinearEquiv.ext fun _ => rfl
-#align finsupp.dom_lcongr_symm Finsupp.domLcongr_symm
+#align finsupp.dom_lcongr_symm Finsupp.domLCongr_symm
 
 -- @[simp] -- Porting note: simp can prove this
-theorem domLcongr_single {α₁ : Type _} {α₂ : Type _} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
-    (Finsupp.domLcongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
+theorem domLCongr_single {α₁ : Type _} {α₂ : Type _} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
+    (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp
-#align finsupp.dom_lcongr_single Finsupp.domLcongr_single
+#align finsupp.dom_lcongr_single Finsupp.domLCongr_single
 
 /-- An equivalence of sets induces a linear equivalence of `Finsupp`s supported on those sets. -/
 noncomputable def congr {α' : Type _} (s : Set α) (t : Set α') (e : s ≃ t) :
@@ -778,7 +778,7 @@ noncomputable def congr {α' : Type _} (s : Set α) (t : Set α') (e : s ≃ t) 
   haveI := Classical.decPred fun x => x ∈ s
   haveI := Classical.decPred fun x => x ∈ t
   exact Finsupp.supportedEquivFinsupp s ≪≫ₗ
-    (Finsupp.domLcongr e ≪≫ₗ (Finsupp.supportedEquivFinsupp t).symm)
+    (Finsupp.domLCongr e ≪≫ₗ (Finsupp.supportedEquivFinsupp t).symm)
 #align finsupp.congr Finsupp.congr
 
 /-- `Finsupp.mapRange` as a `LinearMap`. -/
@@ -864,7 +864,7 @@ theorem mapRange.linearEquiv_toLinearMap (f : M ≃ₗ[R] N) :
 /-- An equivalence of domain and a linear equivalence of codomain induce a linear equivalence of the
 corresponding finitely supported functions. -/
 def lcongr {ι κ : Sort _} (e₁ : ι ≃ κ) (e₂ : M ≃ₗ[R] N) : (ι →₀ M) ≃ₗ[R] κ →₀ N :=
-  (Finsupp.domLcongr e₁).trans (mapRange.linearEquiv e₂)
+  (Finsupp.domLCongr e₁).trans (mapRange.linearEquiv e₂)
 #align finsupp.lcongr Finsupp.lcongr
 
 @[simp]
@@ -897,9 +897,9 @@ variable (R)
 
 /-- The linear equivalence between `(α ⊕ β) →₀ M` and `(α →₀ M) × (β →₀ M)`.
 
-This is the `LinearEquiv` version of `Finsupp.sum_finsupp_equiv_prod_finsupp`. -/
+This is the `LinearEquiv` version of `Finsupp.sumFinsuppEquivProdFinsupp`. -/
 @[simps apply symmApply]
-def sumFinsuppLequivProdFinsupp {α β : Type _} : (Sum α β →₀ M) ≃ₗ[R] (α →₀ M) × (β →₀ M) :=
+def sumFinsuppLEquivProdFinsupp {α β : Type _} : (Sum α β →₀ M) ≃ₗ[R] (α →₀ M) × (β →₀ M) :=
   { sumFinsuppAddEquivProdFinsupp with
     map_smul' := by
       intros
@@ -910,27 +910,27 @@ def sumFinsuppLequivProdFinsupp {α β : Type _} : (Sum α β →₀ M) ≃ₗ[R
           Prod.smul_snd, smul_apply,
           snd_sumFinsuppAddEquivProdFinsupp, fst_sumFinsuppAddEquivProdFinsupp,
           RingHom.id_apply] }
-#align finsupp.sum_finsupp_lequiv_prod_finsupp Finsupp.sumFinsuppLequivProdFinsupp
+#align finsupp.sum_finsupp_lequiv_prod_finsupp Finsupp.sumFinsuppLEquivProdFinsupp
 
-theorem fst_sumFinsuppLequivProdFinsupp {α β : Type _} (f : Sum α β →₀ M) (x : α) :
-    (sumFinsuppLequivProdFinsupp R f).1 x = f (Sum.inl x) :=
+theorem fst_sumFinsuppLEquivProdFinsupp {α β : Type _} (f : Sum α β →₀ M) (x : α) :
+    (sumFinsuppLEquivProdFinsupp R f).1 x = f (Sum.inl x) :=
   rfl
-#align finsupp.fst_sum_finsupp_lequiv_prod_finsupp Finsupp.fst_sumFinsuppLequivProdFinsupp
+#align finsupp.fst_sum_finsupp_lequiv_prod_finsupp Finsupp.fst_sumFinsuppLEquivProdFinsupp
 
-theorem snd_sumFinsuppLequivProdFinsupp {α β : Type _} (f : Sum α β →₀ M) (y : β) :
-    (sumFinsuppLequivProdFinsupp R f).2 y = f (Sum.inr y) :=
+theorem snd_sumFinsuppLEquivProdFinsupp {α β : Type _} (f : Sum α β →₀ M) (y : β) :
+    (sumFinsuppLEquivProdFinsupp R f).2 y = f (Sum.inr y) :=
   rfl
-#align finsupp.snd_sum_finsupp_lequiv_prod_finsupp Finsupp.snd_sumFinsuppLequivProdFinsupp
+#align finsupp.snd_sum_finsupp_lequiv_prod_finsupp Finsupp.snd_sumFinsuppLEquivProdFinsupp
 
-theorem sumFinsuppLequivProdFinsupp_symm_inl {α β : Type _} (fg : (α →₀ M) × (β →₀ M)) (x : α) :
-    ((sumFinsuppLequivProdFinsupp R).symm fg) (Sum.inl x) = fg.1 x :=
+theorem sumFinsuppLEquivProdFinsupp_symm_inl {α β : Type _} (fg : (α →₀ M) × (β →₀ M)) (x : α) :
+    ((sumFinsuppLEquivProdFinsupp R).symm fg) (Sum.inl x) = fg.1 x :=
   rfl
-#align finsupp.sum_finsupp_lequiv_prod_finsupp_symm_inl Finsupp.sumFinsuppLequivProdFinsupp_symm_inl
+#align finsupp.sum_finsupp_lequiv_prod_finsupp_symm_inl Finsupp.sumFinsuppLEquivProdFinsupp_symm_inl
 
-theorem sumFinsuppLequivProdFinsupp_symm_inr {α β : Type _} (fg : (α →₀ M) × (β →₀ M)) (y : β) :
-    ((sumFinsuppLequivProdFinsupp R).symm fg) (Sum.inr y) = fg.2 y :=
+theorem sumFinsuppLEquivProdFinsupp_symm_inr {α β : Type _} (fg : (α →₀ M) × (β →₀ M)) (y : β) :
+    ((sumFinsuppLEquivProdFinsupp R).symm fg) (Sum.inr y) = fg.2 y :=
   rfl
-#align finsupp.sum_finsupp_lequiv_prod_finsupp_symm_inr Finsupp.sumFinsuppLequivProdFinsupp_symm_inr
+#align finsupp.sum_finsupp_lequiv_prod_finsupp_symm_inr Finsupp.sumFinsuppLEquivProdFinsupp_symm_inr
 
 end Sum
 
@@ -941,30 +941,30 @@ variable {η : Type _} [Fintype η] {ιs : η → Type _} [Zero α]
 variable (R)
 
 /-- On a `Fintype η`, `Finsupp.split` is a linear equivalence between
-`(Σ (j : η), ιs j) →₀ M` and `Π j, (ιs j →₀ M)`.
+`(Σ (j : η), ιs j) →₀ M` and `(j : η) → (ιs j →₀ M)`.
 
-This is the `LinearEquiv` version of `Finsupp.sigma_finsupp_add_equiv_pi_finsupp`. -/
-noncomputable def sigmaFinsuppLequivPiFinsupp {M : Type _} {ιs : η → Type _} [AddCommMonoid M]
-    [Module R M] : ((Σ j, ιs j) →₀ M) ≃ₗ[R] ∀ j, ιs j →₀ M :=
+This is the `LinearEquiv` version of `Finsupp.sigmaFinsuppAddEquivPiFinsupp`. -/
+noncomputable def sigmaFinsuppLEquivPiFinsupp {M : Type _} {ιs : η → Type _} [AddCommMonoid M]
+    [Module R M] : ((Σ j, ιs j) →₀ M) ≃ₗ[R] (j : _) → (ιs j →₀ M) :=
   -- Porting note: `ιs` should be specified.
   { sigmaFinsuppAddEquivPiFinsupp (ιs := ιs) with
     map_smul' := fun c f => by
       ext
       simp }
-#align finsupp.sigma_finsupp_lequiv_pi_finsupp Finsupp.sigmaFinsuppLequivPiFinsupp
+#align finsupp.sigma_finsupp_lequiv_pi_finsupp Finsupp.sigmaFinsuppLEquivPiFinsupp
 
 @[simp]
-theorem sigmaFinsuppLequivPiFinsupp_apply {M : Type _} {ιs : η → Type _} [AddCommMonoid M]
-    [Module R M] (f : (Σj, ιs j) →₀ M) (j i) : sigmaFinsuppLequivPiFinsupp R f j i = f ⟨j, i⟩ :=
+theorem sigmaFinsuppLEquivPiFinsupp_apply {M : Type _} {ιs : η → Type _} [AddCommMonoid M]
+    [Module R M] (f : (Σj, ιs j) →₀ M) (j i) : sigmaFinsuppLEquivPiFinsupp R f j i = f ⟨j, i⟩ :=
   rfl
-#align finsupp.sigma_finsupp_lequiv_pi_finsupp_apply Finsupp.sigmaFinsuppLequivPiFinsupp_apply
+#align finsupp.sigma_finsupp_lequiv_pi_finsupp_apply Finsupp.sigmaFinsuppLEquivPiFinsupp_apply
 
 @[simp]
-theorem sigmaFinsuppLequivPiFinsupp_symm_apply {M : Type _} {ιs : η → Type _} [AddCommMonoid M]
-    [Module R M] (f : ∀ j, ιs j →₀ M) (ji) :
-    (Finsupp.sigmaFinsuppLequivPiFinsupp R).symm f ji = f ji.1 ji.2 :=
+theorem sigmaFinsuppLEquivPiFinsupp_symm_apply {M : Type _} {ιs : η → Type _} [AddCommMonoid M]
+    [Module R M] (f : (j : _) → (ιs j →₀ M)) (ji) :
+    (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm f ji = f ji.1 ji.2 :=
   rfl
-#align finsupp.sigma_finsupp_lequiv_pi_finsupp_symm_apply Finsupp.sigmaFinsuppLequivPiFinsupp_symm_apply
+#align finsupp.sigma_finsupp_lequiv_pi_finsupp_symm_apply Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply
 
 end Sigma
 
@@ -973,7 +973,7 @@ section Prod
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
 
 This is the `LinearEquiv` version of `Finsupp.finsuppProdEquiv`. -/
-noncomputable def finsuppProdLequiv {α β : Type _} (R : Type _) {M : Type _} [Semiring R]
+noncomputable def finsuppProdLEquiv {α β : Type _} (R : Type _) {M : Type _} [Semiring R]
     [AddCommMonoid M] [Module R M] : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
   { finsuppProdEquiv with
     map_add' := fun f g => by
@@ -982,20 +982,20 @@ noncomputable def finsuppProdLequiv {α β : Type _} (R : Type _) {M : Type _} [
     map_smul' := fun c f => by
       ext
       simp [finsuppProdEquiv, curry_apply] }
-#align finsupp.finsupp_prod_lequiv Finsupp.finsuppProdLequiv
+#align finsupp.finsupp_prod_lequiv Finsupp.finsuppProdLEquiv
 
 @[simp]
-theorem finsuppProdLequiv_apply {α β R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : α × β →₀ M) (x y) : finsuppProdLequiv R f x y = f (x, y) := by
-  rw [finsuppProdLequiv, LinearEquiv.coe_mk, finsuppProdEquiv, Finsupp.curry_apply]
-#align finsupp.finsupp_prod_lequiv_apply Finsupp.finsuppProdLequiv_apply
+theorem finsuppProdLEquiv_apply {α β R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
+    (f : α × β →₀ M) (x y) : finsuppProdLEquiv R f x y = f (x, y) := by
+  rw [finsuppProdLEquiv, LinearEquiv.coe_mk, finsuppProdEquiv, Finsupp.curry_apply]
+#align finsupp.finsupp_prod_lequiv_apply Finsupp.finsuppProdLEquiv_apply
 
 @[simp]
-theorem finsuppProdLequiv_symm_apply {α β R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : α →₀ β →₀ M) (xy) : (finsuppProdLequiv R).symm f xy = f xy.1 xy.2 := by
+theorem finsuppProdLEquiv_symm_apply {α β R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
+    (f : α →₀ β →₀ M) (xy) : (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 := by
   conv_rhs =>
-    rw [← (finsuppProdLequiv R).apply_symm_apply f, finsuppProdLequiv_apply, Prod.mk.eta]
-#align finsupp.finsupp_prod_lequiv_symm_apply Finsupp.finsuppProdLequiv_symm_apply
+    rw [← (finsuppProdLEquiv R).apply_symm_apply f, finsuppProdLEquiv_apply, Prod.mk.eta]
+#align finsupp.finsupp_prod_lequiv_symm_apply Finsupp.finsuppProdLEquiv_symm_apply
 
 end Prod
 
@@ -1149,7 +1149,7 @@ theorem Submodule.exists_finset_of_mem_supᵢ {ι : Sort _} (p : ι → Submodul
   exact this hm
 #align submodule.exists_finset_of_mem_supr Submodule.exists_finset_of_mem_supᵢ
 
-/-- `Submodule.exists_finset_of_mem_supr` as an `iff` -/
+/-- `Submodule.exists_finset_of_mem_supᵢ` as an `iff` -/
 theorem Submodule.mem_supᵢ_iff_exists_finset {ι : Sort _} {p : ι → Submodule R M} {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i :=
   ⟨Submodule.exists_finset_of_mem_supᵢ p, fun ⟨_, hs⟩ =>
