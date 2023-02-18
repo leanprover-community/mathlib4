@@ -869,6 +869,7 @@ import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
 import Mathlib.Order.Disjointed
 import Mathlib.Order.Extension.Linear
+import Mathlib.Order.Extension.Well
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Bases
