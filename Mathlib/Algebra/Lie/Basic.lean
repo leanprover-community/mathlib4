@@ -20,14 +20,14 @@ modules, morphisms and equivalences, as well as various lemmas to make these def
 
 ## Main definitions
 
-  * `lie_ring`
-  * `lie_algebra`
-  * `lie_ring_module`
-  * `lie_module`
-  * `lie_hom`
-  * `lie_equiv`
-  * `lie_module_hom`
-  * `lie_module_equiv`
+  * `LieRing`
+  * `LieAlgebra`
+  * `LieRingModule`
+  * `LieModule`
+  * `LieHom`
+  * `LieEquiv`
+  * `LieModuleHom`
+  * `LieModuleEquiv`
 
 ## Notation
 
@@ -60,9 +60,13 @@ Jacobi identity. -/
 /- @[protect_proj] -- Porting note: Not implemented yet, after the port decide whether we want this,
 removing it could avoid unnecessary clutter -/
 class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
+  /-- The bracket of a Lie ring is additive in its first component.-/
   add_lie : ∀ x y z : L, ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
+  /-- The bracket of a Lie ring is additive in its second component.-/
   lie_add : ∀ x y z : L, ⁅x, y + z⁆ = ⁅x, y⁆ + ⁅x, z⁆
+  /-- The bracket of a Lie ring vanishes on the diagonal in L × L.-/
   lie_self : ∀ x : L, ⁅x, x⁆ = 0
+  /-- The bracket of a Lie ring fulfils a Leibniz rule/Jacobi identity.-/
   leibniz_lie : ∀ x y z : L, ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
 #align lie_ring LieRing
 
@@ -71,6 +75,10 @@ identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring.
 /- @[protect_proj] -- Porting note: Not implemented yet, after the port decide whether we want this,
 removing it could avoid unnecessary clutter -/
 class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
+  /-- The bracket of a Lie algebra is compatible with scalar multiplication in its second argument.
+
+  The compatibility in the first argument is not a class property, but follows since every
+  Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
   lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
 #align lie_algebra LieAlgebra
 
@@ -80,8 +88,11 @@ Lie ring on this group, such that the Lie bracket acts as the commutator of endo
 /- @[protect_proj] -- Porting note: Not implemented yet, after the port decide whether we want this,
 removing it could avoid unnecessary clutter -/
 class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] extends Bracket L M where
+  /-- The bracket of a Lie ring module is additive in its first component.-/
   add_lie : ∀ (x y : L) (m : M), ⁅x + y, m⁆ = ⁅x, m⁆ + ⁅y, m⁆
+  /-- The bracket of a Lie ring module is additive in its second component.-/
   lie_add : ∀ (x : L) (m n : M), ⁅x, m + n⁆ = ⁅x, m⁆ + ⁅x, n⁆
+  /-- The bracket of a Lie ring module fulfils a Leibniz rule/Jacobi identity.-/
   leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 #align lie_ring_module LieRingModule
 
@@ -91,7 +102,9 @@ algebra on this module, such that the Lie bracket acts as the commutator of endo
 removing it could avoid unnecessary clutter -/
 class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] where
+  /-- The bracket of a Lie module is compatible with scalar multiplication in its first argument.-/
   smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
+  /-- The bracket of a Lie module is compatible with scalar multiplication in its second argument.-/
   lie_smul : ∀ (t : R) (x : L) (m : M), ⁅x, t • m⁆ = t • ⁅x, m⁆
 #align lie_module LieModule
 
@@ -262,34 +275,14 @@ attribute [-instance] Ring.toNonAssocRing
 /-- A morphism of Lie algebras is a linear map respecting the bracket operations. -/
 structure LieHom (R L L': Type _) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ[R] L' where
+  /-- A morphism of Lie algebras is compatible with brackets.-/
   map_lie' : ∀ {x y : L}, toFun ⁅x, y⁆ = ⁅toFun x, toFun y⁆
 #align lie_hom LieHom
 
--- Porting note: Experimental, might not need this
--- /-- `LieHomClass F R L L'` asserts `F` is a type of Lie algebra morphisms `M → M₂` over `R`. -/
--- class LieHomClass (F : Type _) (R L L' : outParam (Type _))
---   [CommRing R] [LieRing L] [LieAlgebra R L]
---   [LieRing L'] [LieAlgebra R L'] extends SemilinearMapClass F (RingHom.id R) L L' where
---   map_lie : ∀ (f : F) {x y : L}, f ⁅x, y⁆ = ⁅f x, f y⁆
-
-attribute [nolint docBlame] LieHom.toLinearMap
+-- attribute [nolint docBlame] LieHom.toLinearMap -- Porting note: The linter does not complain
 
 @[inherit_doc]
 notation:25 L " →ₗ⁅" R:25 "⁆ " L':0 => LieHom R L L'
-
--- Porting note: Experimental, might not need this
--- instance (priority := 100) lieHomClass [CommRing R] [LieRing L] [LieAlgebra R L]
---   [LieRing L'] [LieAlgebra R L'] : LieHomClass (L →ₗ⁅R⁆ L') R L L' where
---   coe f := f.toFun
---   coe_injective' f g h := by
---     cases f
---     cases g
---     congr
---     apply FunLike.coe_injective'
---     exact h
---   map_add f := f.map_add'
---   map_smulₛₗ f := f.map_smul'
---   map_lie f := f.map_lie'
 
 namespace LieHom
 
@@ -322,15 +315,14 @@ instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ fun _ => L₂ where
     obtain ⟨⟨⟨g,_⟩,_⟩,_⟩ := g
     congr
 
--- Porting note: Do we need this?
--- /-- See Note [custom simps projection]. We need to specify this projection explicitly in this
---   case, because it is a composition of multiple projections. -/
--- def Simps.apply (h : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂ :=
---   h
--- #align lie_hom.simps.apply LieHom.Simps.apply
+/-- See Note [custom simps projection]. We need to specify this projection explicitly in this
+  case, because it is a composition of multiple projections. -/
+def Simps.apply (h : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂ :=
+  h
+#align lie_hom.simps.apply LieHom.Simps.apply
 
+-- Porting note: Does not work
 -- initialize_simps_projections LieHom (toLinearMap_toFun → apply)
-
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ⇑ (f : L₁ →ₗ[R] L₂) = f :=
@@ -542,15 +534,20 @@ end ModulePullBack
 
 /-- An equivalence of Lie algebras is a morphism which is also a linear equivalence. We could
 instead define an equivalence to be a morphism which is also a (plain) equivalence. However it is
-more convenient to define via linear equivalence to get `.to_linear_equiv` for free. -/
+more convenient to define via linear equivalence to get `.toLinearEquiv` for free. -/
 structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [LieRing L'] [LieAlgebra R L'] extends L →ₗ⁅R⁆ L' where
+  /-- The inverse function of an equivalence of Lie algebras -/
   invFun : L' → L
+  /-- The inverse function of an equivalence of Lie algebras is a left inverse of the underlying
+  function. -/
   left_inv : Function.LeftInverse invFun toLieHom.toFun
+  /-- The inverse function of an equivalence of Lie algebras is a right inverse of the underlying
+  function. -/
   right_inv : Function.RightInverse invFun toLieHom.toFun
 #align lie_equiv LieEquiv
 
-attribute [nolint docBlame] LieEquiv.toLieHom
+-- attribute [nolint docBlame] LieEquiv.toLieHom -- Porting note: The linter does not complain
 
 @[inherit_doc]
 notation:50 L " ≃ₗ⁅" R "⁆ " L' => LieEquiv R L L'
@@ -734,10 +731,12 @@ variable [LieModule R L M] [LieModule R L N] [LieModule R L P]
 /-- A morphism of Lie algebra modules is a linear map which commutes with the action of the Lie
 algebra. -/
 structure LieModuleHom extends M →ₗ[R] N where
+  /-- A module of Lie algebra modules is compatible with the action of the Lie algebra on the
+  modules.-/
   map_lie' : ∀ {x : L} {m : M}, toFun ⁅x, m⁆ = ⁅x, toFun m⁆
 #align lie_module_hom LieModuleHom
 
-attribute [nolint docBlame] LieModuleHom.toLinearMap
+-- attribute [nolint docBlame] LieModuleHom.toLinearMap -- Porting note: linter does not complain
 
 @[inherit_doc]
 notation:25 M " →ₗ⁅" R "," L:25 "⁆ " N:0 => LieModuleHom R L M N
@@ -993,8 +992,13 @@ end LieModuleHom
 /-- An equivalence of Lie algebra modules is a linear equivalence which is also a morphism of
 Lie algebra modules. -/
 structure LieModuleEquiv extends M →ₗ⁅R,L⁆ N where
+/-- The inverse function of an equivalence of Lie modules -/
   invFun : N → M
+  /-- The inverse function of an equivalence of Lie modules is a left inverse of the underlying
+  function. -/
   left_inv : Function.LeftInverse invFun toFun
+  /-- The inverse function of an equivalence of Lie modules is a right inverse of the underlying
+  function. -/
   right_inv : Function.RightInverse invFun toFun
 #align lie_module_equiv LieModuleEquiv
 
