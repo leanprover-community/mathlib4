@@ -161,7 +161,7 @@ theorem coe_mul (a b : R) : (↑(a * b : R) : A) = ↑a * ↑b :=
 #align algebra_map.coe_mul algebraMap.coe_mul
 
 @[norm_cast]
-theorem coe_pow (a : R) (n : ℕ) : (↑(a ^ n : R) : A) = ↑a ^ n :=
+theorem coe_pow (a : R) (n : ℕ) : (↑(a ^ n : R) : A) = (a : A) ^ n :=
   map_pow (algebraMap R A) _ _
 #align algebra_map.coe_pow algebraMap.coe_pow
 
@@ -213,7 +213,7 @@ theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
 
 @[norm_cast, simp]
 theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
-  map_eq_zero_iff _ (algebraMap R A).Injective
+  map_eq_zero_iff _ (algebraMap R A).injective
 #align algebra_map.lift_map_eq_zero_iff algebraMap.lift_map_eq_zero_iff
 
 end FieldNontrivial
@@ -233,7 +233,7 @@ theorem coe_div (r s : R) : ↑(r / s) = (↑r / ↑s : A) :=
 #align algebra_map.coe_div algebraMap.coe_div
 
 @[norm_cast]
-theorem coe_zpow (r : R) (z : ℤ) : ↑(r ^ z) = (↑r ^ z : A) :=
+theorem coe_zpow (r : R) (z : ℤ) : ↑(r ^ z) = (r : A) ^ z :=
   map_zpow₀ (algebraMap R A) r z
 #align algebra_map.coe_zpow algebraMap.coe_zpow
 
@@ -243,9 +243,10 @@ section FieldDivisionRing
 
 variable (R A : Type _) [Field R] [DivisionRing A] [Algebra R A]
 
+-- porting note: todo: drop implicit args
 @[norm_cast]
 theorem coe_rat_cast (q : ℚ) : ↑(q : R) = (q : A) :=
-  map_ratCast (algebraMap R A) q
+  @map_ratCast (R →+* A) R A _ _ _ (algebraMap R A) q
 #align algebra_map.coe_rat_cast algebraMap.coe_rat_cast
 
 end FieldDivisionRing
