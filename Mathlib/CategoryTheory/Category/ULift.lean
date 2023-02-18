@@ -11,6 +11,7 @@ Authors: Adam Topaz
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.Data.ULift
 
 /-!
 # Basic API for ulift
@@ -99,11 +100,13 @@ section UliftHom
 /-- `ulift_hom.{w} C` is an alias for `C`, which is endowed with a category instance
   whose morphisms are obtained by applying `ulift.{w}` to the morphisms from `C`.
 -/
-def UliftHom.{w, u} (C : Type u) := C
+def UliftHom.{w,u} (C : Type u) : Type u := 
+  let _ := ULift.{w} C 
+  C
 #align category_theory.ulift_hom CategoryTheory.UliftHom
 
 instance {C} [Inhabited C] : Inhabited (UliftHom C) :=
-  ⟨(Inhabited.default C : C)⟩
+  ⟨(default : C)⟩
 
 /-- The obvious function `ulift_hom C → C`. -/
 def UliftHom.objDown {C} (A : UliftHom C) : C :=
@@ -128,20 +131,20 @@ theorem objUp_objDown {C} (A : UliftHom C) : UliftHom.objUp A.objDown = A :=
 instance : Category.{max v₂ v₁} (UliftHom.{v₂} C) where
   Hom A B := ULift.{v₂} <| A.objDown ⟶ B.objDown
   id A := ⟨𝟙 _⟩
-  comp A B C f g := ⟨f.down ≫ g.down⟩
+  comp f g := ⟨f.down ≫ g.down⟩
 
 /-- One half of the quivalence between `C` and `ulift_hom C`. -/
 @[simps]
 def UliftHom.up : C ⥤ UliftHom C where
   obj := UliftHom.objUp
-  map X Y f := ⟨f⟩
+  map f := ⟨f⟩
 #align category_theory.ulift_hom.up CategoryTheory.UliftHom.up
 
 /-- One half of the quivalence between `C` and `ulift_hom C`. -/
 @[simps]
 def UliftHom.down : UliftHom C ⥤ C where
   obj := UliftHom.objDown
-  map X Y f := f.down
+  map f := f.down
 #align category_theory.ulift_hom.down CategoryTheory.UliftHom.down
 
 /-- The equivalence between `C` and `ulift_hom C`. -/
@@ -189,16 +192,16 @@ def AsSmall.down : AsSmall C ⥤ C where
 /-- The equivalence between `C` and `as_small C`. -/
 @[simps]
 def AsSmall.equiv : C ≌ AsSmall C where
-  Functor := AsSmall.up
+  functor := AsSmall.up
   inverse := AsSmall.down
-  unitIso := NatIso.ofComponents (fun X => eqToIso rfl) (by tidy)
+  unitIso := NatIso.ofComponents (fun X => eqToIso rfl) (by aesop_cat)
   counitIso :=
     NatIso.ofComponents
       (fun X =>
         eqToIso <| by
-          ext
+          apply ULift.ext
           rfl)
-      (by tidy)
+      (by aesop_cat)
 #align category_theory.as_small.equiv CategoryTheory.AsSmall.equiv
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
