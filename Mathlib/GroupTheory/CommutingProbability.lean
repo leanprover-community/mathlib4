@@ -36,11 +36,11 @@ variable (M : Type _) [Mul M]
 
 /-- The commuting probability of a finite type with a multiplication operation. -/
 def commProb : ℚ :=
-  Nat.card { p : M × M // p.1 * p.2 = p.2 * p.1 } / (Nat.card M : ℚ) ^ (2)
+  Nat.card { p : M × M // p.1 * p.2 = p.2 * p.1 } / (Nat.card M : ℚ) ^ 2
 #align comm_prob commProb
 
 theorem commProb_def :
-    commProb M = Nat.card { p : M × M // p.1 * p.2 = p.2 * p.1 } /(Nat.card M : ℚ)^2 :=
+    commProb M = Nat.card { p : M × M // p.1 * p.2 = p.2 * p.1 } / (Nat.card M : ℚ) ^ 2 :=
   rfl
 #align comm_prob_def commProb_def
 
