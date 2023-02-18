@@ -8,7 +8,6 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Logic.Equiv.Array
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Function.Iterate
 
@@ -75,7 +74,7 @@ def unpaired {α} (f : ℕ → ℕ → α) (n : ℕ) : α :=
 
 /-- The primitive recursive functions `ℕ → ℕ`. -/
 inductive Primrec : (ℕ → ℕ) → Prop
-  | zero : Primrec fun n => 0
+  | zero : Primrec fun _ => 0
   | succ : Primrec succ
   | left : Primrec fun n => n.unpair.1
   | right : Primrec fun n => n.unpair.2
@@ -114,7 +113,7 @@ theorem cases1 {f} (m : ℕ) (hf : Primrec f) : Primrec (Nat.cases m f) :=
 
 theorem cases {f g} (hf : Primrec f) (hg : Primrec g) :
     Primrec (unpaired fun z n => n.cases (f z) fun y => g <| mkpair z y) :=
-  (prec hf (hg.comp (pair left (left.comp right)))).of_eq <| by simp [cases]
+  (prec hf (hg.comp (pair left (left.comp right)))).of_eq <| fun n => by simp [cases]; rfl
 #align nat.primrec.cases Nat.Primrec.cases
 
 protected theorem swap : Primrec (unpaired (swap mkpair)) :=
@@ -131,28 +130,30 @@ theorem pred : Primrec pred :=
 
 theorem add : Primrec (unpaired (· + ·)) :=
   (prec Primrec.id ((succ.comp right).comp right)).of_eq fun p => by
-    simp <;> induction p.unpair.2 <;> simp [*, -add_comm, add_succ]
+    simp; induction p.unpair.2 <;> simp [*, add_succ]
 #align nat.primrec.add Nat.Primrec.add
 
-theorem sub : Primrec (unpaired Sub.sub) :=
+#check Nat.sub_zero
+
+theorem sub : Primrec (unpaired (· - ·)) :=
   (prec Primrec.id ((pred.comp right).comp right)).of_eq fun p => by
-    simp <;> induction p.unpair.2 <;> simp [*, -add_comm, sub_succ]
+    simp; induction p.unpair.2 <;> simp [*, sub_succ]
 #align nat.primrec.sub Nat.Primrec.sub
 
 theorem mul : Primrec (unpaired (· * ·)) :=
   (prec zero (add.comp (pair left (right.comp right)))).of_eq fun p => by
-    simp <;> induction p.unpair.2 <;> simp [*, mul_succ, add_comm]
+    simp; induction p.unpair.2 <;> simp [*, mul_succ, add_comm _ (unpair p).fst]
 #align nat.primrec.mul Nat.Primrec.mul
 
 theorem pow : Primrec (unpaired (· ^ ·)) :=
   (prec (const 1) (mul.comp (pair (right.comp right) left))).of_eq fun p => by
-    simp <;> induction p.unpair.2 <;> simp [*, pow_succ']
+    simp; induction p.unpair.2 <;> simp [*, pow_succ]
 #align nat.primrec.pow Nat.Primrec.pow
 
 end Primrec
 
 end Nat
-
+#exit
 /- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`prim] [] -/
 /-- A `primcodable` type is an `encodable` type for which
   the encode/decode functions are primitive recursive. -/
@@ -1614,4 +1615,3 @@ end Nat.Primrec'
 theorem Primrec.nat_sqrt : Primrec Nat.sqrt :=
   Nat.Primrec'.prim_iff₁.1 Nat.Primrec'.sqrt
 #align primrec.nat_sqrt Primrec.nat_sqrt
-
