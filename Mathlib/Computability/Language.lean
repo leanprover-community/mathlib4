@@ -44,7 +44,7 @@ namespace Language
 variable {l m : Language α} {a b x : List α}
 
 -- Porting note: `reducible` attribute cannot be local.
-attribute [reducible] Language
+-- attribute [local reducible] Language
 
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
@@ -59,7 +59,7 @@ instance : Inhabited (Language α) :=
 
 /-- The sum of two languages is their union. -/
 instance : Add (Language α) :=
-  ⟨(· ∪ ·)⟩
+  ⟨((· ∪ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
 /-- The product of two languages `l` and `m` is the language made of the strings `x ++ y` where
 `x ∈ l` and `y ∈ m`. -/
@@ -70,11 +70,11 @@ theorem zero_def : (0 : Language α) = (∅ : Set _) :=
   rfl
 #align language.zero_def Language.zero_def
 
-theorem one_def : (1 : Language α) = {[]} :=
+theorem one_def : (1 : Language α) = ({[]} : Set (List α)) :=
   rfl
 #align language.one_def Language.one_def
 
-theorem add_def (l m : Language α) : l + m = l ∪ m :=
+theorem add_def (l m : Language α) : l + m = (l ∪ m : Set (List α)) :=
   rfl
 #align language.add_def Language.add_def
 
@@ -89,6 +89,12 @@ instance : KStar (Language α) := ⟨fun l ↦ {x | ∃ L : List (List α), x = 
 lemma kstar_def (l : Language α) : l∗ = {x | ∃ L : List (List α), x = L.join ∧ ∀ y ∈ L, y ∈ l} :=
   rfl
 #align language.kstar_def Language.kstar_def
+
+-- Porting note: `reducible` attribute cannot be local,
+--               so this new theorem is required in place of `Set.ext`.
+@[ext]
+theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l = m :=
+  Set.ext h
 
 @[simp]
 theorem not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
