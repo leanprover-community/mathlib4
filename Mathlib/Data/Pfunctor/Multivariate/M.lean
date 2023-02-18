@@ -8,8 +8,8 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Pfunctor.Multivariate.Basic
-import Mathbin.Data.Pfunctor.Univariate.M
+import Mathlib.Data.PFunctor.Multivariate.Basic
+import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
 # The M construction as a multivariate polynomial functor.
@@ -198,8 +198,7 @@ theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
 #align mvpfunctor.M.dest_corec' MvPFunctor.M.dest_corec'
 
 theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P.Obj (α.append1 β)) (x : β) :
-    M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x :=
-  by
+    M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans; apply M.dest_corec'
   cases' g x with a f; dsimp
   rw [MvPFunctor.map_eq]; congr
@@ -214,8 +213,7 @@ theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ �
     (e₁ : M.dest P ⟨a₁, f₁⟩ = ⟨a', splitFun f' f₁'⟩) :
     ∃ (g₁' : _)(e₁' : PFunctor.M.dest a₁ = ⟨a', g₁'⟩),
       f' = M.pathDestLeft P e₁' f₁ ∧
-        f₁' = fun x : (last P).B a' => ⟨g₁' x, M.pathDestRight P e₁' f₁ x⟩ :=
-  by
+        f₁' = fun x : (last P).B a' => ⟨g₁' x, M.pathDestRight P e₁' f₁ x⟩ := by
   generalize ef : @split_fun n _ (append1 α (M P α)) f' f₁' = ff at e₁
   cases' e₁' : PFunctor.M.dest a₁ with a₁' g₁'
   rw [M.dest_eq_dest' _ e₁'] at e₁
@@ -308,8 +306,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
 #align mvpfunctor.M.bisim' MvPFunctor.M.bisim'
 
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
-    M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x :=
-  by
+    M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
   cases' x with a f
   rw [map_eq]
   conv =>
@@ -322,8 +319,7 @@ theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β)) (x : P.M α)
     (h : ∀ x : P.M α, lastFun g x = (dropFun g <$$> x : P.M β)) :
-    g <$$> M.dest P x = M.dest P (dropFun g <$$> x) :=
-  by
+    g <$$> M.dest P x = M.dest P (dropFun g <$$> x) := by
   rw [M.dest_map]; congr
   apply eq_of_drop_last_eq <;> simp
   ext1; apply h
