@@ -109,10 +109,16 @@ git commit \
 set +x
 
 if [ "$RESTART" ]; then
+    LAST_PORT_COMMIT=$(git rev-list "$old_branch_name" ^origin/master --grep="automated fixes" | head -n1)
+    # create a no-op merge commit with the previous auto-port, to aid with porting manual changes.
+    # note that `-s ours` doesn't actually ensure nothing changes, so we do a checkout for good
+    # measure
+    git merge -s ours "$LAST_PORT_COMMIT" --no-commit
+    git checkout HEAD -- .
+    git commit -m "merge in previous autoported output"
     echo "# The script just created a branch $branch_name. You may want to:"
     echo "git checkout $old_branch_name"
-    echo "git fetch"
-    echo 'git merge $(git merge-base '"$branch_name"' origin/master)'
+    echo 'git merge $branch_name'
     echo "git reset --soft $branch_name"
     echo "git add -p # to manually discard/stage diff chunks"
 else
