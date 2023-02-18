@@ -84,6 +84,7 @@ theorem toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
   rfl
 #align nat_ordinal.to_ordinal_symm_eq NatOrdinal.toOrdinal_symm_eq
 
+-- porting note: used to use dot notation, but doesn't work in Lean 4 with `OrderIso`
 @[simp]
 theorem toOrdinal_toNatOrdinal (a : NatOrdinal) : Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a
  := rfl
@@ -120,22 +121,22 @@ theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
 #align nat_ordinal.to_ordinal_eq_one NatOrdinal.toOrdinal_eq_one
 
 @[simp]
-theorem toOrdinal_max : (max a b).toOrdinal = max a.toOrdinal b.toOrdinal :=
-  rfl
+theorem toOrdinal_max :
+  NatOrdinal.toOrdinal (max a b) = max (NatOrdinal.toOrdinal a) (NatOrdinal.toOrdinal b) := rfl
 #align nat_ordinal.to_ordinal_max NatOrdinal.toOrdinal_max
 
 @[simp]
-theorem toOrdinal_min : (min a b).toOrdinal = min a.toOrdinal b.toOrdinal :=
-  rfl
+theorem toOrdinal_min :
+  NatOrdinal.toOrdinal (min a b) = min (NatOrdinal.toOrdinal a) (NatOrdinal.toOrdinal b) := rfl
 #align nat_ordinal.to_ordinal_min NatOrdinal.toOrdinal_min
 
-theorem succ_def (a : NatOrdinal) : succ a = (a.toOrdinal + 1).toNatOrdinal :=
+theorem succ_def (a : NatOrdinal) : succ a = Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a + 1) :=
   rfl
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
 /-- A recursor for `nat_ordinal`. Use as `induction x using nat_ordinal.rec`. -/
 protected def rec {β : NatOrdinal → Sort _} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
-  h a.toOrdinal
+  h (NatOrdinal.toOrdinal a)
 #align nat_ordinal.rec NatOrdinal.rec
 
 /-- `ordinal.induction` but for `nat_ordinal`. -/
@@ -155,7 +156,7 @@ theorem toNatOrdinal_symm_eq : toNatOrdinal.symm = NatOrdinal.toOrdinal :=
 #align ordinal.to_nat_ordinal_symm_eq Ordinal.toNatOrdinal_symm_eq
 
 @[simp]
-theorem toNatOrdinal_toOrdinal (a : Ordinal) : a.toNatOrdinal.toOrdinal = a :=
+theorem toNatOrdinal_toOrdinal (a : Ordinal) : NatOrdinal.toOrdinal (toNatOrdinal a) = a :=
   rfl
 #align ordinal.to_nat_ordinal_to_ordinal Ordinal.toNatOrdinal_toOrdinal
 
@@ -180,13 +181,13 @@ theorem toNatOrdinal_eq_one (a) : toNatOrdinal a = 1 ↔ a = 1 :=
 #align ordinal.to_nat_ordinal_eq_one Ordinal.toNatOrdinal_eq_one
 
 @[simp]
-theorem toNatOrdinal_max : toNatOrdinal (max a b) = max a.toNatOrdinal b.toNatOrdinal :=
+theorem toNatOrdinal_max : toNatOrdinal (max a b) = max (toNatOrdinal a) (toNatOrdinal b) :=
   rfl
 #align ordinal.to_nat_ordinal_max Ordinal.toNatOrdinal_max
 
 @[simp]
 theorem toNatOrdinal_min :
-    (linearOrder.min a b).toNatOrdinal = linearOrder.min a.toNatOrdinal b.toNatOrdinal :=
+    toNatOrdinal (linearOrder.min a b) = linearOrder.min (toNatOrdinal a) (toNatOrdinal b) :=
   rfl
 #align ordinal.to_nat_ordinal_min Ordinal.toNatOrdinal_min
 
@@ -247,8 +248,8 @@ variable (a b)
 theorem nadd_comm : ∀ a b, a ♯ b = b ♯ a
   | a, b => by
     rw [nadd_def, nadd_def, max_comm]
-    congr <;> ext (c hc) <;> apply nadd_comm decreasing_by
-  solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
+    congr <;> ext (c hc) <;> apply nadd_comm
+  termination_by nadd_comm a b => (a,b)
 #align ordinal.nadd_comm Ordinal.nadd_comm
 
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
