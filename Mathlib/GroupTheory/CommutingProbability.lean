@@ -76,20 +76,17 @@ theorem card_comm_eq_card_conjClasses_mul_card :
     Nat.card { p : G × G // p.1 * p.2 = p.2 * p.1 } = Nat.card (ConjClasses G) * Nat.card G := by
   haveI := Fintype.ofFinite G
   simp only [Nat.card_eq_fintype_card]
-  convert
-    calc
-      card { p : G × G // p.1 * p.2 = p.2 * p.1 } = card (Σg, { h // g * h = h * g }) :=
-        card_congr (Equiv.subtypeProdEquivSigmaSubtype fun g h : G => g * h = h * g)
-      _ = ∑ g, card { h // g * h = h * g } := card_sigma _
-      _ = ∑ g, card (MulAction.fixedBy (ConjAct G) G g) :=
-        sum_equiv ConjAct.toConjAct.toEquiv _ _ fun g =>
-          card_congr' <| congr_arg _ <| funext fun h => mul_inv_eq_iff_eq_mul.symm.to_eq
-      _ = card (Quotient (MulAction.orbitRel (ConjAct G) G)) * card G :=
-        MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group (ConjAct G) G
-      _ = card (Quotient (IsConj.setoid G)) * card G := by sorry
-       -- { have : MulAction.orbitRel (ConjAct G) G = IsConj.setoid G := Setoid.ext fun g h => (Setoid.comm' _).trans is_conj_iff.symm
-        --  -- Porting note: cc missing.
-         -- sorry  }
+  -- Porting note: Changed `calc` proof into a `rw` proof.
+  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype fun g h : G => g * h = h * g), card_sigma,
+    sum_equiv ConjAct.toConjAct.toEquiv (fun a => card { b // a * b = b * a })
+      (fun g => card (MulAction.fixedBy (ConjAct G) G g))
+      fun g => card_congr' <| congr_arg _ <| funext fun h => mul_inv_eq_iff_eq_mul.symm.to_eq,
+    MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group, ConjAct.card,
+    (Setoid.ext fun g h => (Setoid.comm' _).trans isConj_iff.symm :
+      MulAction.orbitRel (ConjAct G) G = IsConj.setoid G), mul_eq_mul_right_iff]
+  apply Or.inl
+  apply card_congr
+  rfl
 
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 
