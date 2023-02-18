@@ -21,28 +21,31 @@ import Mathlib.RingTheory.Subring.Basic
 /-!
 # Algebras over commutative semirings
 
-In this file we define associative unital `algebra`s over commutative (semi)rings, algebra
-homomorphisms `alg_hom`, and algebra equivalences `alg_equiv`.
+In this file we define associative unital `Algebra`s over commutative (semi)rings.
 
-`subalgebra`s are defined in `algebra.algebra.subalgebra`.
+* algebra homomorphisms `AlgHom` are defined in `Mathlib.Algebra.Algebra.Hom`;
 
-For the category of `R`-algebras, denoted `Algebra R`, see the file
-`algebra/category/Algebra/basic.lean`.
+* algebra equivalences `AlgEquiv` are defined in `Mathlib.Algebra.Algebra.Equiv`;
+
+* `Subalgebra`s are defined in `Mathlib.Algebra.Algebra.Subalgebra`;
+
+* The category `AlgebraCat R` of `R`-algebras is defined in the file
+  `Mathlib.Algebra.Category.Algebra.Basic`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
 ## Main definitions:
 
-* `algebra R A`: the algebra typeclass.
-* `algebra_map R A : R →+* A`: the canonical map from `R` to `A`, as a `ring_hom`. This is the
+* `Algebra R A`: the algebra typeclass.
+* `algebraMap R A : R →+* A`: the canonical map from `R` to `A`, as a `RingHom`. This is the
   preferred spelling of this map, it is also available as:
-  * `algebra.linear_map R A : R →ₗ[R] A`, a `linear_map`.
+  * `Algebra.linearMap R A : R →ₗ[R] A`, a `LinearMap`.
   * `algebra.of_id R A : R →ₐ[R] A`, an `alg_hom` (defined in a later file).
-* Instances of `algebra` in this file:
-  * `algebra.id`
-  * `algebra_nat`
-  * `algebra_int`
-  * `algebra_rat`
+* Instances of `Algebra` in this file:
+  * `Algebra.id`
+  * `algebraNat`
+  * `algebraInt`
+  * `algebraRat`
   * `mul_opposite.algebra`
   * `module.End.algebra`
 
@@ -50,43 +53,43 @@ See the implementation notes for remarks about non-associative and non-unital al
 
 Given a commutative (semi)ring `R`, there are two ways to define an `R`-algebra structure on a
 (possibly noncommutative) (semi)ring `A`:
-* By endowing `A` with a morphism of rings `R →+* A` denoted `algebra_map R A` which lands in the
+* By endowing `A` with a morphism of rings `R →+* A` denoted `algebraMap R A` which lands in the
   center of `A`.
 * By requiring `A` be an `R`-module such that the action associates and commutes with multiplication
   as `r • (a₁ * a₂) = (r • a₁) * a₂ = a₁ * (r • a₂)`.
 
-We define `algebra R A` in a way that subsumes both definitions, by extending `has_smul R A` and
+We define `Algebra R A` in a way that subsumes both definitions, by extending `SMul R A` and
 requiring that this scalar action `r • x` must agree with left multiplication by the image of the
-structure morphism `algebra_map R A r * x`.
+structure morphism `algebraMap R A r * x`.
 
 As a result, there are two ways to talk about an `R`-algebra `A` when `A` is a semiring:
 1. ```lean
-   variables [comm_semiring R] [semiring A]
-   variables [algebra R A]
+   variables [CommSemiring R] [Semiring A]
+   variables [Algebra R A]
    ```
 2. ```lean
-   variables [comm_semiring R] [semiring A]
-   variables [module R A] [smul_comm_class R A A] [is_scalar_tower R A A]
+   variables [CommSemiring R] [Semiring A]
+   variables [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
    ```
 
 The first approach implies the second via typeclass search; so any lemma stated with the second set
 of arguments will automatically apply to the first set. Typeclass search does not know that the
 second approach implies the first, but this can be shown with:
 ```lean
-example {R A : Type*} [comm_semiring R] [semiring A]
-  [module R A] [smul_comm_class R A A] [is_scalar_tower R A A] : algebra R A :=
-algebra.of_module smul_mul_assoc mul_smul_comm
+example {R A : Type*} [CommSemiring R] [Semiring A]
+  [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] : Algebra R A :=
+Algebra.ofModule smul_mul_assoc mul_smul_comm
 ```
 
-The advantage of the first approach is that `algebra_map R A` is available, and `alg_hom R A B` and
-`subalgebra R A` can be used. For concrete `R` and `A`, `algebra_map R A` is often definitionally
+The advantage of the first approach is that `algebraMap R A` is available, and `alg_hom R A B` and
+`subalgebra R A` can be used. For concrete `R` and `A`, `algebraMap R A` is often definitionally
 convenient.
 
-The advantage of the second approach is that `comm_semiring R`, `semiring A`, and `module R A` can
+The advantage of the second approach is that `CommSemiring R`, `Semiring A`, and `Module R A` can
 all be relaxed independently; for instance, this allows us to:
-* Replace `semiring A` with `non_unital_non_assoc_semiring A` in order to describe non-unital and/or
+* Replace `Semiring A` with `NonUnitalNonAssocSemiring A` in order to describe non-unital and/or
   non-associative algebras.
-* Replace `comm_semiring R` and `module R A` with `comm_group R'` and `distrib_mul_action R' A`,
+* Replace `CommSemiring R` and `Module R A` with `CommGroup R'` and `DistribMulAction R' A`,
   which when `R' = Rˣ` lets us talk about the "algebra-like" action of `Rˣ` on an
   `R`-algebra `A`.
 
@@ -107,7 +110,7 @@ section Prio
 -- porting note: unsupported set_option extends_priority 200
 
 /- control priority of
-`instance [algebra R A] : has_smul R A` -/
+`instance [Algebra R A] : SMul R A` -/
 /-- An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
 
 See the implementation notes in this file for discussion of the details of this definition.
@@ -121,7 +124,7 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
 
 end Prio
 
-/-- Embedding `R →+* A` given by `algebra` structure. -/
+/-- Embedding `R →+* A` given by `Algebra` structure. -/
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.toRingHom
 #align algebra_map algebraMap
@@ -277,8 +280,8 @@ namespace Algebra
 
 variable {R : Type u} {S : Type v} {A : Type w} {B : Type _}
 
-/-- Let `R` be a commutative semiring, let `A` be a semiring with a `module R` structure.
-If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `A` is an `algebra`
+/-- Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
+If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `A` is an `Algebra`
 over `R`.
 
 See note [reducible non-instances]. -/
@@ -295,9 +298,9 @@ def ofModule' [CommSemiring R] [Semiring A] [Module R A]
   smul_def' r x := by simp [h₁]
 #align algebra.of_module' Algebra.ofModule'
 
-/-- Let `R` be a commutative semiring, let `A` be a semiring with a `module R` structure.
+/-- Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
 If `(r • x) * y = x * (r • y) = r • (x * y)` for all `r : R` and `x y : A`, then `A`
-is an `algebra` over `R`.
+is an `Algebra` over `R`.
 
 See note [reducible non-instances]. -/
 @[reducible]
@@ -314,9 +317,9 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 -- porting note: deleted a private lemma
 
--- We'll later use this to show `algebra ℤ M` is a subsingleton.
-/-- To prove two algebra structures on a fixed `[comm_semiring R] [semiring A]` agree,
-it suffices to check the `algebra_map`s agree.
+-- We'll later use this to show `Algebra ℤ M` is a subsingleton.
+/-- To prove two algebra structures on a fixed `[CommSemiring R] [Semiring A]` agree,
+it suffices to check the `algebraMap`s agree.
 -/
 @[ext]
 theorem algebra_ext {R : Type _} [CommSemiring R] {A : Type _} [Semiring A] (P Q : Algebra R A)
@@ -361,18 +364,18 @@ theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r => r • (1 : A) :
   funext algebraMap_eq_smul_one
 #align algebra.algebra_map_eq_smul_one' Algebra.algebraMap_eq_smul_one'
 
-/-- `mul_comm` for `algebra`s when one element is from the base ring. -/
+/-- `mul_comm` for `Algebra`s when one element is from the base ring. -/
 theorem commutes (r : R) (x : A) : algebraMap R A r * x = x * algebraMap R A r :=
   Algebra.commutes' r x
 #align algebra.commutes Algebra.commutes
 
-/-- `mul_left_comm` for `algebra`s when one element is from the base ring. -/
+/-- `mul_left_comm` for `Algebra`s when one element is from the base ring. -/
 theorem left_comm (x : A) (r : R) (y : A) :
     x * (algebraMap R A r * y) = algebraMap R A r * (x * y) := by
   rw [← mul_assoc, ← commutes, mul_assoc]
 #align algebra.left_comm Algebra.left_comm
 
-/-- `mul_right_comm` for `algebra`s when one element is from the base ring. -/
+/-- `mul_right_comm` for `Algebra`s when one element is from the base ring. -/
 theorem right_comm (x : A) (r : R) (y : A) : x * algebraMap R A r * y = x * y * algebraMap R A r :=
   by rw [mul_assoc, commutes, ← mul_assoc]
 #align algebra.right_comm Algebra.right_comm
@@ -419,7 +422,7 @@ end
 
 variable (R A)
 
-/-- The canonical ring homomorphism `algebra_map R A : R →* A` for any `R`-algebra `A`,
+/-- The canonical ring homomorphism `algebraMap R A : R →* A` for any `R`-algebra `A`,
 packaged as an `R`-linear map.
 -/
 protected def linearMap : R →ₗ[R] A :=
@@ -582,7 +585,7 @@ variable [CommRing R]
 
 variable (R)
 
-/-- A `semiring` that is an `algebra` over a commutative ring carries a natural `ring` structure.
+/-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
 @[reducible]
 def semiringToRing [Semiring A] [Algebra R A] : Ring A :=
@@ -691,7 +694,7 @@ namespace LinearMap
 variable {R : Type _} {A : Type _} {B : Type _} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B]
 
-/-- An alternate statement of `linear_map.map_smul` for when `algebra_map` is more convenient to
+/-- An alternate statement of `LinearMap.map_smul` for when `algebraMap` is more convenient to
 work with than `•`. -/
 theorem map_algebraMap_mul (f : A →ₗ[R] B) (a : A) (r : R) :
     f (algebraMap R A r * a) = algebraMap R B r * f a := by
@@ -715,8 +718,8 @@ section Nat
 
 variable {R : Type _} [Semiring R]
 
--- Lower the priority so that `algebra.id` is picked most of the time when working with
--- `ℕ`-algebras. This is only an issue since `algebra.id` and `algebra_nat` are not yet defeq.
+-- Lower the priority so that `Algebra.id` is picked most of the time when working with
+-- `ℕ`-algebras. This is only an issue since `Algebra.id` and `algebraNat` are not yet defeq.
 -- TODO: fix this by adding an `of_nat` field to semirings.
 /-- Semiring ⥤ ℕ-Alg -/
 instance (priority := 99) algebraNat : Algebra ℕ R where
@@ -754,7 +757,7 @@ instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   commutes' := Rat.cast_commute
 #align algebra_rat algebraRat
 
-/-- The two `algebra ℚ ℚ` instances should coincide. -/
+/-- The two `Algebra ℚ ℚ` instances should coincide. -/
 example : algebraRat = Algebra.id ℚ :=
   rfl
 
@@ -771,8 +774,8 @@ section Int
 
 variable (R : Type _) [Ring R]
 
--- Lower the priority so that `algebra.id` is picked most of the time when working with
--- `ℤ`-algebras. This is only an issue since `algebra.id ℤ` and `algebra_int ℤ` are not yet defeq.
+-- Lower the priority so that `Algebra.id` is picked most of the time when working with
+-- `ℤ`-algebras. This is only an issue since `Algebra.id ℤ` and `algebraInt ℤ` are not yet defeq.
 -- TODO: fix this by adding an `of_int` field to rings.
 /-- Ring ⥤ ℤ-Alg -/
 instance (priority := 99) algebraInt : Algebra ℤ R where
@@ -781,7 +784,7 @@ instance (priority := 99) algebraInt : Algebra ℤ R where
   toRingHom := Int.castRingHom R
 #align algebra_int algebraInt
 
-/-- A special case of `eq_int_cast'` that happens to be true definitionally -/
+/-- A special case of `eq_intCast'` that happens to be true definitionally -/
 @[simp]
 theorem algebraMap_int_eq : algebraMap ℤ R = Int.castRingHom R :=
   rfl
@@ -801,10 +804,10 @@ variable {R A : Type _}
 
 open Algebra
 
-/-- If `algebra_map R A` is injective and `A` has no zero divisors,
+/-- If `algebraMap R A` is injective and `A` has no zero divisors,
 `R`-multiples in `A` are zero only if one of the factors is zero.
 
-Cannot be an instance because there is no `injective (algebra_map R A)` typeclass.
+Cannot be an instance because there is no `injective (algebraMap R A)` typeclass.
 -/
 theorem of_algebraMap_injective [CommSemiring R] [Semiring A] [Algebra R A] [NoZeroDivisors A]
     (h : Function.Injective (algebraMap R A)) : NoZeroSMulDivisors R A :=
@@ -936,8 +939,8 @@ end LinearMap
 
 end IsScalarTower
 
-/-! TODO: The following lemmas no longer involve `algebra` at all, and could be moved closer
-to `algebra/module/submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
+/-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
+to `Algebra/Module/submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
 are all defined in `linear_algebra/basic.lean`. -/
 
 section Module
