@@ -8,7 +8,7 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Natural operations on ordinals
@@ -205,14 +205,12 @@ theorem nadd_def (a b : Ordinal) :
   rw [nadd]
 #align ordinal.nadd_def Ordinal.nadd_def
 
-theorem lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' :=
-  by
+theorem lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' := by
   rw [nadd_def]
   simp [lt_blsub_iff]
 #align ordinal.lt_nadd_iff Ordinal.lt_nadd_iff
 
-theorem nadd_le_iff : b ♯ c ≤ a ↔ (∀ b' < b, b' ♯ c < a) ∧ ∀ c' < c, b ♯ c' < a :=
-  by
+theorem nadd_le_iff : b ♯ c ≤ a ↔ (∀ b' < b, b' ♯ c < a) ∧ ∀ c' < c, b ♯ c' < a := by
   rw [nadd_def]
   simp [blsub_le_iff]
 #align ordinal.nadd_le_iff Ordinal.nadd_le_iff
@@ -225,15 +223,13 @@ theorem nadd_lt_nadd_right (h : b < c) (a) : b ♯ a < c ♯ a :=
   lt_nadd_iff.2 (Or.inl ⟨b, h, le_rfl⟩)
 #align ordinal.nadd_lt_nadd_right Ordinal.nadd_lt_nadd_right
 
-theorem nadd_le_nadd_left (h : b ≤ c) (a) : a ♯ b ≤ a ♯ c :=
-  by
+theorem nadd_le_nadd_left (h : b ≤ c) (a) : a ♯ b ≤ a ♯ c := by
   rcases lt_or_eq_of_le h with (h | rfl)
   · exact (nadd_lt_nadd_left h a).le
   · exact le_rfl
 #align ordinal.nadd_le_nadd_left Ordinal.nadd_le_nadd_left
 
-theorem nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a :=
-  by
+theorem nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a := by
   rcases lt_or_eq_of_le h with (h | rfl)
   · exact (nadd_lt_nadd_right h a).le
   · exact le_rfl
@@ -252,8 +248,7 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
     blsub _ f =
       max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
-        (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) :=
-  by
+        (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
   apply (blsub_le_iff.2 fun i h => _).antisymm (max_le _ _)
   · rcases lt_nadd_iff.1 h with (⟨a', ha', hi⟩ | ⟨b', hb', hi⟩)
     · exact lt_max_of_lt_left ((hf h (nadd_lt_nadd_right ha' b) hi).trans_lt (lt_blsub _ _ _))
@@ -275,8 +270,7 @@ theorem nadd_assoc : ∀ a b c, a ♯ b ♯ c = a ♯ (b ♯ c)
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
 
 @[simp]
-theorem nadd_zero : a ♯ 0 = a :=
-  by
+theorem nadd_zero : a ♯ 0 = a := by
   induction' a using Ordinal.induction with a IH
   rw [nadd_def, blsub_zero, max_zero_right]
   convert blsub_id a
@@ -289,8 +283,7 @@ theorem zero_nadd : 0 ♯ a = a := by rw [nadd_comm, nadd_zero]
 #align ordinal.zero_nadd Ordinal.zero_nadd
 
 @[simp]
-theorem nadd_one : a ♯ 1 = succ a :=
-  by
+theorem nadd_one : a ♯ 1 = succ a := by
   induction' a using Ordinal.induction with a IH
   rw [nadd_def, blsub_one, nadd_zero, max_eq_right_iff, blsub_le_iff]
   intro i hi
@@ -308,8 +301,7 @@ theorem succ_nadd : succ a ♯ b = succ (a ♯ b) := by rw [← one_nadd (a ♯ 
 #align ordinal.succ_nadd Ordinal.succ_nadd
 
 @[simp]
-theorem nadd_nat (n : ℕ) : a ♯ n = a + n :=
-  by
+theorem nadd_nat (n : ℕ) : a ♯ n = a + n := by
   induction' n with n hn
   · simp
   · rw [Nat.cast_succ, add_one_eq_succ, nadd_succ, add_succ, hn]
@@ -373,8 +365,7 @@ theorem add_one_eq_succ : ∀ a : NatOrdinal, a + 1 = succ a :=
 #align nat_ordinal.add_one_eq_succ NatOrdinal.add_one_eq_succ
 
 @[simp]
-theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n :=
-  by
+theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by
   induction' n with n hn
   · rfl
   · change nadd (to_ordinal n) 1 = n + 1
@@ -391,8 +382,7 @@ open NaturalOps
 namespace Ordinal
 
 @[simp]
-theorem toNatOrdinal_cast_nat (n : ℕ) : toNatOrdinal n = n :=
-  by
+theorem toNatOrdinal_cast_nat (n : ℕ) : toNatOrdinal n = n := by
   rw [← to_ordinal_cast_nat n]
   rfl
 #align ordinal.to_nat_ordinal_cast_nat Ordinal.toNatOrdinal_cast_nat
