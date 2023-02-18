@@ -24,7 +24,7 @@ These operations form a rich algebraic structure: they're commutative, associati
 have the usual `0` and `1` from ordinals, and distribute over one another.
 
 Moreover, these operations are the addition and multiplication of ordinals when viewed as
-combinatorial `game`s. This makes them particularly useful for game theory.
+combinatorial `Game`s. This makes them particularly useful for game theory.
 
 Finally, both operations admit simple, intuitive descriptions in terms of the Cantor normal form.
 The natural addition of two ordinals corresponds to adding their Cantor normal forms as if they were
@@ -34,8 +34,8 @@ normal forms as polynomials.
 # Implementation notes
 
 Given the rich algebraic structure of these two operations, we choose to create a type synonym
-`nat_ordinal`, where we provide the appropriate instances. However, to avoid casting back and forth
-between both types, we attempt to prove and state most results on `ordinal`.
+`NatOrdinal`, where we provide the appropriate instances. However, to avoid casting back and forth
+between both types, we attempt to prove and state most results on `Ordinal`.
 
 # Todo
 
@@ -61,13 +61,13 @@ instance NatOrdinal.linearOrder: LinearOrder NatOrdinal := {Ordinal.linearOrder 
 
 instance NatOrdinal.succOrder: SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
-/-- The identity function between `ordinal` and `nat_ordinal`. -/
+/-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
 def Ordinal.toNatOrdinal : Ordinal ≃o NatOrdinal :=
   OrderIso.refl _
 #align ordinal.to_nat_ordinal Ordinal.toNatOrdinal
 
-/-- The identity function between `nat_ordinal` and `ordinal`. -/
+/-- The identity function between `NatOrdinal` and `Ordinal`. -/
 @[match_pattern]
 def NatOrdinal.toOrdinal : NatOrdinal ≃o Ordinal :=
   OrderIso.refl _
@@ -133,12 +133,12 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
   rfl
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
-/-- A recursor for `nat_ordinal`. Use as `induction x using nat_ordinal.rec`. -/
+/-- A recursor for `NatOrdinal`. Use as `induction x using NatOrdinal.rec`. -/
 protected def rec {β : NatOrdinal → Sort _} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
   h (toOrdinal a)
 #align nat_ordinal.rec NatOrdinal.rec
 
-/-- `ordinal.induction` but for `nat_ordinal`. -/
+/-- `Ordinal.induction` but for `NatOrdinal`. -/
 theorem induction {p : NatOrdinal → Prop} : ∀ (i) (_ : ∀ j, (∀ k, k < j → p k) → p j), p i :=
   Ordinal.induction
 #align nat_ordinal.induction NatOrdinal.induction
@@ -275,9 +275,11 @@ theorem nadd_assoc : ∀ a b c, a ♯ b ♯ c = a ♯ (b ♯ c)
     by
     rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
     · congr <;> ext (d hd) <;> apply nadd_assoc
-    · exact fun i j _ _ h => nadd_le_nadd_left h a
-    · exact fun i j _ _ h => nadd_le_nadd_right h c decreasing_by
-  solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
+    · exact fun  _ _ h => nadd_le_nadd_left h a
+    · exact fun  _ _ h => nadd_le_nadd_right h c
+    termination_by' PSigma.lex (inferInstance) (fun _ ↦ inferInstance)
+    -- Porting note: above lines replaces
+    -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
 
 @[simp]
