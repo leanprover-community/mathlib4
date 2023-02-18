@@ -34,7 +34,7 @@ open Fintype
 
 variable (M : Type _) [Mul M]
 
-/-- The commuting probability of a finite type with a multiplication operation -/
+/-- The commuting probability of a finite type with a multiplication operation. -/
 def commProb : ℚ :=
   Nat.card { p : M × M // p.1 * p.2 = p.2 * p.1 } / (Nat.card M : ℚ) ^ (2)
 #align comm_prob commProb
@@ -47,7 +47,7 @@ theorem commProb_def :
 variable [Finite M]
 
 theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
-  h.elim fun x =>
+  h.elim fun x ↦
     div_pos (Nat.cast_pos.mpr (Finite.card_pos_iff.mpr ⟨⟨(x, x), rfl⟩⟩))
       (pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2)
 #align comm_prob_pos commProb_pos
@@ -60,13 +60,13 @@ theorem commProb_le_one : commProb M ≤ 1 := by
 
 variable {M}
 
-theorem commProb_eq_one_iff [h : Nonempty M] : commProb M = 1 ↔ Commutative ((· * ·) : M → M → M) :=
-  by
+theorem commProb_eq_one_iff [h : Nonempty M] :
+    commProb M = 1 ↔ Commutative ((· * ·) : M → M → M) := by
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
-  · exact ⟨fun h x y => h (x, y), fun h x => h x.1 x.2⟩
+  · exact ⟨fun h x y ↦ h (x, y), fun h x ↦ h x.1 x.2⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 #align comm_prob_eq_one_iff commProb_eq_one_iff
 
@@ -77,16 +77,14 @@ theorem card_comm_eq_card_conjClasses_mul_card :
   haveI := Fintype.ofFinite G
   simp only [Nat.card_eq_fintype_card]
   -- Porting note: Changed `calc` proof into a `rw` proof.
-  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype fun g h : G => g * h = h * g), card_sigma,
-    sum_equiv ConjAct.toConjAct.toEquiv (fun a => card { b // a * b = b * a })
-      (fun g => card (MulAction.fixedBy (ConjAct G) G g))
-      fun g => card_congr' <| congr_arg _ <| funext fun h => mul_inv_eq_iff_eq_mul.symm.to_eq,
+  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype fun g h : G ↦ g * h = h * g), card_sigma,
+    sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // a * b = b * a })
+      (fun g ↦ card (MulAction.fixedBy (ConjAct G) G g))
+      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.to_eq,
     MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group, ConjAct.card,
-    (Setoid.ext fun g h => (Setoid.comm' _).trans isConj_iff.symm :
-      MulAction.orbitRel (ConjAct G) G = IsConj.setoid G), mul_eq_mul_right_iff]
-  apply Or.inl
-  apply card_congr
-  rfl
+    (Setoid.ext fun g h ↦ (Setoid.comm' _).trans isConj_iff.symm :
+      MulAction.orbitRel (ConjAct G) G = IsConj.setoid G),
+    @card_congr' (Quotient (IsConj.setoid G)) (ConjClasses G) _ _ rfl]
 
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 
@@ -99,18 +97,18 @@ theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
 variable {G} [Group G] (H : Subgroup G)
 
 theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
-  /- After rewriting with `comm_prob_def`, we reduce to showing that `G` has at least as many
+  /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
     mul_comm H.index, H.card_mul_index, div_mul_cancel, Nat.cast_le]
-  · refine' Finite.card_le_of_injective (fun p => ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) _
-    exact fun p q h => by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
+  · refine' Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) _
+    exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
 #align subgroup.comm_prob_subgroup_le Subgroup.commProb_subgroup_le
 
 theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commProb G * Nat.card H := by
-  /- After rewriting with `comm_prob_def'`, we reduce to showing that `G` has at least as many
+  /- After rewriting with `commProb_def'`, we reduce to showing that `G` has at least as many
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
     H.card_mul_index, div_mul_cancel, Nat.cast_le]
