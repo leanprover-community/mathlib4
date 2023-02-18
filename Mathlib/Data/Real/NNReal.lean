@@ -276,18 +276,16 @@ instance {M : Type _} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction 
 instance {M : Type _} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
--- TODO: RESTORE
+-- porting note: TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
 /-- An `algebra` over `ℝ` restricts to an `algebra` over `ℝ≥0`. -/
--- instance {A : Type _} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A
---     where
---   smul := (· • ·)
---   commutes' r x := by simp [Algebra.commutes]
---   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
---   toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
+instance {A : Type _} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
+  smul := (· • ·)
+  commutes' r x := by simp [Algebra.commutes]
+  smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
+  toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
 
--- TODO: RESTORE
 -- verify that the above produces instances we might care about
--- example : Algebra ℝ≥0 ℝ := by infer_instance
+example : Algebra ℝ≥0 ℝ := by infer_instance
 
 example : DistribMulAction ℝ≥0ˣ ℝ := by infer_instance
 
