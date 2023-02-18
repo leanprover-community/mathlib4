@@ -120,34 +120,32 @@ instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
-@[to_additive (attr := simp) (reorder := 5) smul_apply]
+@[to_additive (attr := simp, to_additive) (reorder := 5) smul_apply]
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl
 #align pi.pow_apply Pi.pow_apply
 #align pi.smul_apply Pi.smul_apply
+#align pi.vadd_apply Pi.vadd_apply
 
-@[to_additive (reorder := 5) smul_def]
+@[to_additive (attr := to_additive) (reorder := 5) smul_def]
 theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
   rfl
 #align pi.pow_def Pi.pow_def
 #align pi.smul_def Pi.smul_def
+#align pi.vadd_def Pi.vadd_def
 
-@[to_additive (attr := simp) (reorder := 2 5) smul_const]
+@[to_additive (attr := simp, to_additive) (reorder := 2 5) smul_const]
 theorem const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) :=
   rfl
 #align pi.const_pow Pi.const_pow
 #align pi.smul_const Pi.smul_const
+#align pi.vadd_const Pi.vadd_const
 
-@[to_additive (reorder := 6) smul_comp]
+@[to_additive (attr := to_additive) (reorder := 6) smul_comp]
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
 #align pi.pow_comp Pi.pow_comp
 #align pi.smul_comp Pi.smul_comp
-
-attribute [to_additive] smul_apply smul_def smul_const smul_comp
-#align pi.vadd_def Pi.vadd_def
-#align pi.vadd_const Pi.vadd_const
-#align pi.vadd_apply Pi.vadd_apply
 #align pi.vadd_comp Pi.vadd_comp
 
 /-!

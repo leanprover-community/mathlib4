@@ -3,7 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 ! This file was ported from Lean 3 source module algebra.order.field.basic
-! leanprover-community/mathlib commit f835503164c75764d4165d9e630bf27694d73ec6
+! leanprover-community/mathlib commit 5a82b0671532663333e205f422124a98bdfe673f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -233,6 +233,13 @@ theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * 
   simp [hc]
   rwa [div_le_iff hb']
 #align div_le_of_nonneg_of_le_mul div_le_of_nonneg_of_le_mul
+
+/-- One direction of `div_le_iff` where `c` is allowed to be `0` (but `b` must be nonnegative) -/
+lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b := by
+  obtain rfl | hc := hc.eq_or_lt
+  . simpa using hb
+  . rwa [le_div_iff hc] at h
+#align mul_le_of_nonneg_of_le_div mul_le_of_nonneg_of_le_div
 
 theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
   div_le_of_nonneg_of_le_mul hb zero_le_one <| by rwa [one_mul]
