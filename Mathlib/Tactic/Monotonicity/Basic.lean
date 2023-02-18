@@ -27,7 +27,7 @@ for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior 
 open Lean Elab Tactic Parser Tactic
 open Mathlib Tactic SolveByElim
 
-namespace Mathlib.Tactic.Monoticity
+namespace Mathlib.Tactic.Monotonicity
 
 /--
 `mono` applies monotonicity rules and local hypotheses repetitively.  For example,
