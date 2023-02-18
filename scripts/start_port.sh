@@ -119,7 +119,7 @@ if [ "$RESTART" ]; then
     echo "# The script just created a branch $branch_name. You may want to:"
     echo "git checkout $old_branch_name"
     echo "git merge $branch_name"
-    echo "git reset --soft $branch_name^   # the ^ is important to discard the merge commit"
+    echo "git reset $branch_name^   # the ^ is important to discard the merge commit"
     echo "git add -p # to manually discard/stage diff chunks"
 else
     echo "After pushing, you can open a PR at:"
