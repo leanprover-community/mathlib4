@@ -93,7 +93,7 @@ def equivDfinsupp : Multiset α ≃+ Π₀ _a : α, ℕ :=
       simp)
     (by
       -- Porting note: used to be ext
-      apply Dfinsupp.add_hom_ext
+      apply Dfinsupp.addHom_ext
       simp)
 #align multiset.equiv_dfinsupp Multiset.equivDfinsupp
 
