@@ -282,7 +282,7 @@ theorem pred : Primrec Nat.pred :=
 #align primrec.pred Primrec.pred
 
 theorem encode_iff {f : α → σ} : (Primrec fun a => encode (f a)) ↔ Primrec f :=
-  ⟨fun h => Nat.Primrec.of_eq h fun n => by cases decode α n <;> rfl, Primrec.encode.comp⟩
+  ⟨fun h => Nat.Primrec.of_eq h fun n => by cases @decode α _ n <;> rfl, Primrec.encode.comp⟩
 #align primrec.encode_iff Primrec.encode_iff
 
 theorem ofNat_iff {α β} [Denumerable α] [Primcodable β] {f : α → β} :
@@ -316,14 +316,14 @@ theorem ofEquiv_iff {β} (e : β ≃ α) {f : σ → β} :
     haveI := Primcodable.ofEquiv α e
     (Primrec fun a => e (f a)) ↔ Primrec f :=
   letI := Primcodable.ofEquiv α e
-  ⟨fun h => (of_equiv_symm.comp h).of_eq fun a => by simp, of_equiv.comp⟩
+  ⟨fun h => (ofEquiv_symm.comp h).of_eq fun a => by simp, ofEquiv.comp⟩
 #align primrec.of_equiv_iff Primrec.ofEquiv_iff
 
 theorem ofEquiv_symm_iff {β} (e : β ≃ α) {f : σ → α} :
     haveI := Primcodable.ofEquiv α e
     (Primrec fun a => e.symm (f a)) ↔ Primrec f :=
   letI := Primcodable.ofEquiv α e
-  ⟨fun h => (of_equiv.comp h).of_eq fun a => by simp, of_equiv_symm.comp⟩
+  ⟨fun h => (ofEquiv.comp h).of_eq fun a => by simp, ofEquiv_symm.comp⟩
 #align primrec.of_equiv_symm_iff Primrec.ofEquiv_symm_iff
 
 end Primrec
@@ -333,12 +333,12 @@ namespace Primcodable
 open Nat.Primrec
 
 instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β) :=
-  ⟨((cases zero ((cases zero succ).comp (pair right ((Primcodable.prim β).comp left)))).comp
-          (pair right ((Primcodable.prim α).comp left))).of_eq
+  ⟨((cases zero ((cases zero succ).comp (pair right ((@Primcodable.prim β).comp left)))).comp
+          (pair right ((@Primcodable.prim α).comp left))).of_eq
       fun n => by
       simp [Nat.unpaired]
-      cases decode α n.unpair.1; · simp
-      cases decode β n.unpair.2 <;> simp⟩
+      cases @decode α _ n.unpair.1; · simp
+      cases @ decode β _ n.unpair.2 <;> simp⟩
 #align primcodable.prod Primcodable.prod
 
 end Primcodable
@@ -352,32 +352,32 @@ open Nat.Primrec
 theorem fst {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.fst α β) :=
   ((cases zero
             ((cases zero (Nat.Primrec.succ.comp left)).comp
-              (pair right ((Primcodable.prim β).comp left)))).comp
-        (pair right ((Primcodable.prim α).comp left))).of_eq
+              (pair right ((@Primcodable.prim β).comp left)))).comp
+        (pair right ((@Primcodable.prim α).comp left))).of_eq
     fun n => by
     simp
-    cases decode α n.unpair.1 <;> simp
-    cases decode β n.unpair.2 <;> simp
+    cases @decode α _ n.unpair.1 <;> simp
+    cases @decode β _ n.unpair.2 <;> simp
 #align primrec.fst Primrec.fst
 
 theorem snd {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.snd α β) :=
   ((cases zero
             ((cases zero (Nat.Primrec.succ.comp right)).comp
-              (pair right ((Primcodable.prim β).comp left)))).comp
-        (pair right ((Primcodable.prim α).comp left))).of_eq
+              (pair right ((@Primcodable.prim β).comp left)))).comp
+        (pair right ((@Primcodable.prim α).comp left))).of_eq
     fun n => by
     simp
-    cases decode α n.unpair.1 <;> simp
-    cases decode β n.unpair.2 <;> simp
+    cases @decode α _ n.unpair.1 <;> simp
+    cases @decode β _ n.unpair.2 <;> simp
 #align primrec.snd Primrec.snd
 
 theorem pair {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {f : α → β} {g : α → γ}
     (hf : Primrec f) (hg : Primrec g) : Primrec fun a => (f a, g a) :=
   ((cases1 0
             (Nat.Primrec.succ.comp <|
-              pair (Nat.Primrec.pred.comp hf) (Nat.Primrec.pred.comp hg))).comp
-        (Primcodable.prim α)).of_eq
-    fun n => by cases decode α n <;> simp [encodek] <;> rfl
+              Nat.Primrec.pair (Nat.Primrec.pred.comp hf) (Nat.Primrec.pred.comp hg))).comp
+        (@Primcodable.prim α _)).of_eq
+    fun n => by cases @decode α _ n <;> simp [encodek]
 #align primrec.pair Primrec.pair
 
 theorem unpair : Primrec Nat.unpair :=
@@ -490,7 +490,7 @@ theorem Primrec.comp₂ {f : γ → σ} {g : α → β → γ} (hf : Primrec f) 
 
 theorem Primrec₂.comp {f : β → γ → σ} {g : α → β} {h : α → γ} (hf : Primrec₂ f) (hg : Primrec g)
     (hh : Primrec h) : Primrec fun a => f (g a) (h a) :=
-  hf.comp (hg.pair hh)
+  Primrec.comp hf (hg.pair hh)
 #align primrec₂.comp Primrec₂.comp
 
 theorem Primrec₂.comp₂ {f : γ → δ → σ} {g : α → β → γ} {h : α → β → δ} (hf : Primrec₂ f)
