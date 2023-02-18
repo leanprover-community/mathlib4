@@ -225,7 +225,7 @@ derives two `simp` lemmas:
   generates the following:
   ```lean
   @[simp] lemma bar_toEquiv : ∀ {α : Sort*}, bar.toEquiv = Equiv.refl α
-  @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = tt
+  @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = true
   ```
   This is true, even though Lean inserts an eta-expanded version of `Equiv.refl α` in the
   definition of `bar`.
@@ -975,8 +975,8 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
         ""}`@[simps?]` to double-check whether `@[simps]` generated satisfactory lemmas.\n{
         ""}Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain {
         ""}cases.\n{
-        ""}Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := semireducible, {
-        ""}simpRhs := tt}]`. You can also try `@[simps (config := \{rhsMd := semireducible}]` {
+        ""}Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := .default, {
+        ""}simpRhs := true}]`. You can also try `@[simps (config := \{rhsMd := .default}]` {
         ""}to still unfold the definitions, but avoid calling `simp` on the resulting statement.\n{
         ""}Note 3: You need `simps!` if not all fields are given explicitly in this definition, {
         ""}even if the definition is a constructor application. For example, if you give a {
