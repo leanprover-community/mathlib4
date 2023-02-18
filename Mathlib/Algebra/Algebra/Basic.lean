@@ -380,12 +380,13 @@ instance _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 #align is_scalar_tower.right IsScalarTower.right
 
+-- TODO: set up `is_scalar_tower.smul_comm_class` earlier so that we can actually prove this using
+-- `mul_smul_comm s x y`.
+
 /-- This is just a special case of the global `mul_smul_comm` lemma that requires less typeclass
 search (and was here first). -/
 @[simp]
-protected theorem mul_smul_comm (s : R) (x y : A) : x * s • y = s • (x * y) :=
-  by-- TODO: set up `is_scalar_tower.smul_comm_class` earlier so that we can actually prove this using
-  -- `mul_smul_comm s x y`.
+protected theorem mul_smul_comm (s : R) (x y : A) : x * s • y = s • (x * y) := by
   rw [smul_def, smul_def, left_comm]
 #align algebra.mul_smul_comm Algebra.mul_smul_comm
 
@@ -822,10 +823,11 @@ theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
   simpa only [algebraMap_eq_smul_one'] using this
 #align no_zero_smul_divisors.algebra_map_injective NoZeroSMulDivisors.algebraMap_injective
 
-theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A] [Nontrivial A]
-    [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
+theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
+    [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
   -- porting note: todo: drop implicit args
-  @NeZero.nat_of_injective R A (R →+* A) _ _ n ‹_› _ _ <| NoZeroSMulDivisors.algebraMap_injective R A
+  @NeZero.nat_of_injective R A (R →+* A) _ _ n ‹_› _ _ <|
+    NoZeroSMulDivisors.algebraMap_injective R A
 #align ne_zero.of_no_zero_smul_divisors NeZero.of_noZeroSMulDivisors
 
 variable {R A}
