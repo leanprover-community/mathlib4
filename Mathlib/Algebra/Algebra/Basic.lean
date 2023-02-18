@@ -8,16 +8,16 @@ Authors: Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Algebra.Module.Ulift
-import Mathbin.Algebra.NeZero
-import Mathbin.Algebra.PunitInstances
-import Mathbin.Algebra.Ring.Aut
-import Mathbin.Algebra.Ring.Ulift
-import Mathbin.Algebra.CharZero.Lemmas
-import Mathbin.LinearAlgebra.Basic
-import Mathbin.RingTheory.Subring.Basic
-import Mathbin.Tactic.Abel
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Ulift
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.PunitInstances
+import Mathlib.Algebra.Ring.Aut
+import Mathlib.Algebra.Ring.Ulift
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.LinearAlgebra.Basic
+import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Tactic.Abel
 
 /-!
 # Algebras over commutative semirings
@@ -449,8 +449,7 @@ theorem bit1_smul_bit0 : bit1 r • bit0 a = r • bit0 (bit0 a) + bit0 a := by
 #align algebra.bit1_smul_bit0 Algebra.bit1_smul_bit0
 
 @[simp]
-theorem bit1_smul_bit1 : bit1 r • bit1 a = r • bit0 (bit1 a) + bit1 a :=
-  by
+theorem bit1_smul_bit1 : bit1 r • bit1 a = r • bit0 (bit1 a) + bit1 a := by
   simp only [bit0, bit1, add_smul, smul_add, one_smul]
   abel
 #align algebra.bit1_smul_bit1 Algebra.bit1_smul_bit1
@@ -605,8 +604,7 @@ theorem mul_sub_algebraMap_commutes [Ring A] [Algebra R A] (x : A) (r : R) :
 #align algebra.mul_sub_algebra_map_commutes Algebra.mul_sub_algebraMap_commutes
 
 theorem mul_sub_algebraMap_pow_commutes [Ring A] [Algebra R A] (x : A) (r : R) (n : ℕ) :
-    x * (x - algebraMap R A r) ^ n = (x - algebraMap R A r) ^ n * x :=
-  by
+    x * (x - algebraMap R A r) ^ n = (x - algebraMap R A r) ^ n * x := by
   induction' n with n ih
   · simp
   · rw [pow_succ, ← mul_assoc, mul_sub_algebra_map_commutes, mul_assoc, ih, ← mul_assoc]
@@ -935,8 +933,7 @@ theorem int_cast_smul {k V : Type _} [CommRing k] [AddCommGroup V] [Module k V] 
 
 theorem NoZeroSMulDivisors.trans (R A M : Type _) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
-    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M :=
-  by
+    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
   refine' ⟨fun r m h => _⟩
   rw [algebra_compatible_smul A r m] at h
   cases' smul_eq_zero.1 h with H H

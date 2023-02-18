@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.AddTorsor
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Basic
