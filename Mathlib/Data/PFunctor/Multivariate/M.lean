@@ -75,6 +75,8 @@ inductive M.Path : P.last.M → Fin2 n → Type u
           (j : P.last.B a)
           (i : Fin2 n)
           (c : M.Path (f j) i) : M.Path x i
+
+set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.path MvPFunctor.M.Path
 
 instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
@@ -312,6 +314,8 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
       cases h'.symm.trans e₂'
   · exact (congr_fun (congr_fun e₃ i) c : _)
   · exact IH _ _ (h'' _)
+
+set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.bisim MvPFunctor.M.bisim
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -347,6 +351,8 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   replace h₁ := Quot.exact _ h₁
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
+
+set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.bisim₀ MvPFunctor.M.bisim₀
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -365,6 +371,8 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
     -- porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
     all_goals aesop
+
+set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.bisim' MvPFunctor.M.bisim'
 
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
@@ -374,6 +382,8 @@ theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
   conv =>
     rhs
     rw [M.dest, M.dest', map_eq, appendFun_comp_splitFun]
+
+set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.dest_map MvPFunctor.M.dest_map
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -384,6 +394,8 @@ theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β))
   rw [M.dest_map]; congr
   apply eq_of_drop_last_eq <;> simp
   ext1; apply h
+
+set_option linter.uppercaseLean3 false in
 #align mvpfunctor.M.map_dest MvPFunctor.M.map_dest
 
 end MvPFunctor
