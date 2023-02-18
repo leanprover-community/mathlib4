@@ -8,8 +8,8 @@ Authors: Reid Barton, Mario Carneiro, Scott Morrison, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Limits.Cones
 
 /-!
 # Limits and colimits
@@ -111,8 +111,7 @@ theorem existsUnique {t : Cone F} (h : IsLimit t) (s : Cone F) :
 
 /-- Noncomputably make a colimit cocone from the existence of unique factorizations. -/
 def ofExistsUnique {t : Cone F}
-    (ht : ∀ s : Cone F, ∃! l : s.x ⟶ t.x, ∀ j, l ≫ t.π.app j = s.π.app j) : IsLimit t :=
-  by
+    (ht : ∀ s : Cone F, ∃! l : s.x ⟶ t.x, ∀ j, l ≫ t.π.app j = s.π.app j) : IsLimit t := by
   choose s hs hs' using ht
   exact ⟨s, hs, hs'⟩
 #align category_theory.limits.is_limit.of_exists_unique CategoryTheory.Limits.IsLimit.ofExistsUnique
@@ -447,8 +446,7 @@ def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [F
 `G.map_cone c` is also a limit.
 -/
 def mapConeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ D} (h : F ≅ G) {c : Cone K}
-    (t : IsLimit (F.mapCone c)) : IsLimit (G.mapCone c) :=
-  by
+    (t : IsLimit (F.mapCone c)) : IsLimit (G.mapCone c) := by
   apply postcompose_inv_equiv (iso_whisker_left K h : _) (G.map_cone c) _
   apply t.of_iso_limit (postcompose_whisker_left_map_cone h.symm c).symm
 #align category_theory.limits.is_limit.map_cone_equiv CategoryTheory.Limits.IsLimit.mapConeEquiv
@@ -483,8 +481,7 @@ def homOfCone (s : Cone F) : s.x ⟶ X :=
 #align category_theory.limits.is_limit.of_nat_iso.hom_of_cone CategoryTheory.Limits.IsLimit.OfNatIso.homOfCone
 
 @[simp]
-theorem coneOfHom_of_cone (s : Cone F) : coneOfHom h (homOfCone h s) = s :=
-  by
+theorem coneOfHom_of_cone (s : Cone F) : coneOfHom h (homOfCone h s) = s := by
   dsimp [cone_of_hom, hom_of_cone]; cases s; congr ; dsimp
   convert congr_fun (congr_fun (congr_arg nat_trans.app h.inv_hom_id) (op s_X)) s_π
   exact ULift.up_down _
@@ -503,8 +500,7 @@ def limitCone : Cone F :=
 
 /-- If `F.cones` is represented by `X`, the cone corresponding to a morphism `f : Y ⟶ X` is
 the limit cone extended by `f`. -/
-theorem coneOfHom_fac {Y : C} (f : Y ⟶ X) : coneOfHom h f = (limitCone h).extend f :=
-  by
+theorem coneOfHom_fac {Y : C} (f : Y ⟶ X) : coneOfHom h f = (limitCone h).extend f := by
   dsimp [cone_of_hom, limit_cone, cone.extend]
   congr with j
   have t := congr_fun (h.hom.naturality f.op) ⟨𝟙 X⟩
@@ -516,8 +512,7 @@ theorem coneOfHom_fac {Y : C} (f : Y ⟶ X) : coneOfHom h f = (limitCone h).exte
 
 /-- If `F.cones` is represented by `X`, any cone is the extension of the limit cone by the
 corresponding morphism. -/
-theorem cone_fac (s : Cone F) : (limitCone h).extend (homOfCone h s) = s :=
-  by
+theorem cone_fac (s : Cone F) : (limitCone h).extend (homOfCone h s) = s := by
   rw [← cone_of_hom_of_cone h s]
   conv_lhs => simp only [hom_of_cone_of_hom]
   apply (cone_of_hom_fac _ _).symm
@@ -614,8 +609,7 @@ theorem existsUnique {t : Cocone F} (h : IsColimit t) (s : Cocone F) :
 
 /-- Noncomputably make a colimit cocone from the existence of unique factorizations. -/
 def ofExistsUnique {t : Cocone F}
-    (ht : ∀ s : Cocone F, ∃! d : t.x ⟶ s.x, ∀ j, t.ι.app j ≫ d = s.ι.app j) : IsColimit t :=
-  by
+    (ht : ∀ s : Cocone F, ∃! d : t.x ⟶ s.x, ∀ j, t.ι.app j ≫ d = s.ι.app j) : IsColimit t := by
   choose s hs hs' using ht
   exact ⟨s, hs, hs'⟩
 #align category_theory.limits.is_colimit.of_exists_unique CategoryTheory.Limits.IsColimit.ofExistsUnique
@@ -961,8 +955,7 @@ def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) 
 `G.map_cone c` is also a colimit.
 -/
 def mapCoconeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ D} (h : F ≅ G)
-    {c : Cocone K} (t : IsColimit (F.mapCocone c)) : IsColimit (G.mapCocone c) :=
-  by
+    {c : Cocone K} (t : IsColimit (F.mapCocone c)) : IsColimit (G.mapCocone c) := by
   apply is_colimit.of_iso_colimit _ (precompose_whisker_left_map_cocone h c)
   apply (precompose_inv_equiv (iso_whisker_left K h : _) _).symm t
 #align category_theory.limits.is_colimit.map_cocone_equiv CategoryTheory.Limits.IsColimit.mapCoconeEquiv
@@ -998,8 +991,7 @@ def homOfCocone (s : Cocone F) : X ⟶ s.x :=
 #align category_theory.limits.is_colimit.of_nat_iso.hom_of_cocone CategoryTheory.Limits.IsColimit.OfNatIso.homOfCocone
 
 @[simp]
-theorem coconeOfHom_of_cocone (s : Cocone F) : coconeOfHom h (homOfCocone h s) = s :=
-  by
+theorem coconeOfHom_of_cocone (s : Cocone F) : coconeOfHom h (homOfCocone h s) = s := by
   dsimp [cocone_of_hom, hom_of_cocone]; cases s; congr ; dsimp
   convert congr_fun (congr_fun (congr_arg nat_trans.app h.inv_hom_id) s_X) s_ι
   exact ULift.up_down _
@@ -1018,8 +1010,7 @@ def colimitCocone : Cocone F :=
 
 /-- If `F.cocones` is corepresented by `X`, the cocone corresponding to a morphism `f : Y ⟶ X` is
 the colimit cocone extended by `f`. -/
-theorem coconeOfHom_fac {Y : C} (f : X ⟶ Y) : coconeOfHom h f = (colimitCocone h).extend f :=
-  by
+theorem coconeOfHom_fac {Y : C} (f : X ⟶ Y) : coconeOfHom h f = (colimitCocone h).extend f := by
   dsimp [cocone_of_hom, colimit_cocone, cocone.extend]
   congr with j
   have t := congr_fun (h.hom.naturality f) ⟨𝟙 X⟩
@@ -1031,8 +1022,7 @@ theorem coconeOfHom_fac {Y : C} (f : X ⟶ Y) : coconeOfHom h f = (colimitCocone
 
 /-- If `F.cocones` is corepresented by `X`, any cocone is the extension of the colimit cocone by the
 corresponding morphism. -/
-theorem cocone_fac (s : Cocone F) : (colimitCocone h).extend (homOfCocone h s) = s :=
-  by
+theorem cocone_fac (s : Cocone F) : (colimitCocone h).extend (homOfCocone h s) = s := by
   rw [← cocone_of_hom_of_cocone h s]
   conv_lhs => simp only [hom_of_cocone_of_hom]
   apply (cocone_of_hom_fac _ _).symm

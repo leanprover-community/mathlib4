@@ -121,7 +121,7 @@ structure LiftStruct (sq : CommSq f i p g) where
 
 namespace LiftStruct
 
-/-- A `LiftStruct` for a commutative square gives a `LiftStruct` for the
+/-- A `lift_struct` for a commutative square gives a `lift_struct` for the
 corresponding square in the opposite category. -/
 @[simps]
 def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op
@@ -131,8 +131,8 @@ def op {sq : CommSq f i p g} (l : LiftStruct sq) : LiftStruct sq.op
   fac_right := by rw [← op_comp, l.fac_left]
 #align category_theory.comm_sq.lift_struct.op CategoryTheory.CommSq.LiftStruct.op
 
-/-- A `LiftStruct` for a commutative square in the opposite category
-gives a `LiftStruct` for the corresponding square in the original category. -/
+/-- A `lift_struct` for a commutative square in the opposite category
+gives a `lift_struct` for the corresponding square in the original category. -/
 @[simps]
 def unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y} {sq : CommSq f i p g}
     (l : LiftStruct sq) : LiftStruct sq.unop
@@ -142,7 +142,7 @@ def unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B �
   fac_right := by rw [← unop_comp, l.fac_left]
 #align category_theory.comm_sq.lift_struct.unop CategoryTheory.CommSq.LiftStruct.unop
 
-/-- Equivalences of `LiftStruct` for a square and the corresponding square
+/-- Equivalences of `lift_struct` for a square and the corresponding square
 in the opposite category. -/
 @[simps]
 def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op
@@ -153,7 +153,7 @@ def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op
   right_inv := by aesop_cat
 #align category_theory.comm_sq.lift_struct.op_equiv CategoryTheory.CommSq.LiftStruct.opEquiv
 
-/-- Equivalences of `LiftStruct` for a square in the oppositive category and
+/-- Equivalences of `lift_struct` for a square in the oppositive category and
 the corresponding square in the original category. -/
 def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
     (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop
@@ -171,7 +171,8 @@ instance subsingleton_liftStruct_of_epi (sq : CommSq f i p g) [Epi i] :
   ⟨fun l₁ l₂ => by
     ext
     rw [← cancel_epi i]
-    simp only [LiftStruct.fac_left]⟩
+    simp only [LiftStruct.fac_left]
+    ⟩
 #align category_theory.comm_sq.subsingleton_lift_struct_of_epi CategoryTheory.CommSq.subsingleton_liftStruct_of_epi
 
 instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
@@ -185,9 +186,9 @@ instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
 variable (sq : CommSq f i p g)
 
 
-/-- The assertion that a square has a `LiftStruct`. -/
+/-- The assertion that a square has a `lift_struct`. -/
 class HasLift : Prop where
-  /-- Square has a `LiftStruct`. -/
+  /-- Square has a `lift_struct`. -/
   exists_lift : Nonempty sq.LiftStruct
 #align category_theory.comm_sq.has_lift CategoryTheory.CommSq.HasLift
 
@@ -219,7 +220,7 @@ theorem iff_unop {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {
 
 end HasLift
 
-/-- A choice of a diagonal morphism that is part of a `LiftStruct` when
+/-- A choice of a diagonal morphism that is part of a `lift_struct` when
 the square has a lift. -/
 noncomputable def lift [hsq : HasLift sq] : B ⟶ X :=
   hsq.exists_lift.some.l

@@ -116,8 +116,8 @@ def uncurryObjFlip (F : C ⥤ D ⥤ E) : uncurry.obj F.flip ≅ Prod.swap _ _ �
 
 variable (B C D E)
 
-/-- A version of `CategoryTheory.whiskeringRight` for bifunctors, obtained by uncurrying,
-applying `whiskeringRight` and currying back
+/-- A version of `category_theory.whiskering_right` for bifunctors, obtained by uncurrying,
+applying `whiskering_right` and currying back
 -/
 @[simps!]
 def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E :=
