@@ -230,6 +230,7 @@ import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Core
+import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
