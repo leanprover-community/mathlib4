@@ -127,7 +127,7 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
 #align ring.exists_list_of_mem_closure Ring.exists_list_of_mem_closure
 
 @[elab_as_elim]
-protected theorem InClosure.rec_on {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
+protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
   have h0 : C 0 := add_neg_self (1 : R) ▸ ha h1 hneg1
@@ -166,7 +166,7 @@ protected theorem InClosure.rec_on {C : R → Prop} {x : R} (hx : x ∈ closure 
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inr <| by rw [List.prod_cons, List.prod_cons, HP, neg_mul_eq_mul_neg]⟩
   · exact ⟨L, HL', Or.inl <| by rw [List.prod_cons, hhd, HP, neg_one_mul, neg_neg]⟩
-#align ring.in_closure.rec_on Ring.InClosure.rec_on
+#align ring.in_closure.rec_on Ring.InClosure.recOn
 
 theorem closure.isSubring : IsSubring (closure s) :=
   { AddGroup.closure.isAddSubgroup _ with
