@@ -27,12 +27,6 @@ We can map our order into two well-orders:
 
 Then their lexicographic product is a well-founded linear order which our original order injects in.
 
-## Porting notes
-
-The definition in `mathlib` 3 used an auxiliary well-founded order on `α` lifted from `Cardinal`
-instead of `Cardinal`. The new definition is definitionally equal to the `mathlib` 3 version but
-avoids non-standard instances.
-
 ## Tags
 
 well founded relation, well order, extension
@@ -47,6 +41,8 @@ namespace WellFounded
 
 variable (hwf : WellFounded r)
 
+-- porting note: this definition is defeq to the mathlib 3 version but is not syntactically equal
+-- to it.
 /-- An arbitrary well order on `α` that extends `r`.
 
 The construction maps `r` into two well-orders: the first map is `WellFounded.rank`, which is not
