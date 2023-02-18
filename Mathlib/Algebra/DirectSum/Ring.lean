@@ -218,7 +218,6 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
 #noalign direct_sum.one_mul
 
 -- Porting note: `suffices` is very slow here.
-set_option maxHeartbeats 500000
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from FunLike.congr_fun this x
   apply addHom_ext; intro i xi
@@ -227,21 +226,28 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 #noalign direct_sum.mul_one
 
--- Porting note: TODO 3000000 heartbeats wasn't enough for `suffices`.
+/- Porting note: Some auxiliary statements were needed in the proof of the `suffices`,
+otherwise would timeout -/
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
-  admit /-
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices (mulHom A).compHom.comp (mulHom A) =
-      (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip
-    from FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
-  ext (ai ax bi bx ci cx) : 6
-  dsimp only [coe_comp, Function.comp_apply, compHom, flip_apply, flip_hom_apply]
-  rw [mulHom_of_of, mulHom_of_of, mulHom_of_of, mulHom_of_of]
-  exact of_eq_of_gradedMonoid_eq (mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
-  -/
+      (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip by
+      have sol := FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
+      have aux : ∀ a b, (mulHom A) a b = a * b := fun _ _ ↦ rfl
+      simp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, aux, flip_apply,
+        AddMonoidHom.flipHom_apply] at sol
+      exact sol
+  -- Porting note: Next three lines used to be a single `ext` which does not work anymore
+  refine DirectSum.addHom_ext' (fun ai ↦ AddMonoidHom.ext (fun ax ↦ ?_))
+  refine DirectSum.addHom_ext' (fun bi ↦ AddMonoidHom.ext (fun bx ↦ ?_))
+  refine DirectSum.addHom_ext' (fun ci ↦ AddMonoidHom.ext (fun cx ↦ ?_))
+  dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
+    AddMonoidHom.flipHom_apply]
+  simp_rw [mulHom_of_of]
+  exact of_eq_of_gradedMonoid_eq (_root_.mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 #noalign direct_sum.mul_assoc
 
-/-- The `semiring` structure derived from `gsemiring A`. -/
+/-- The `Semiring` structure derived from `GSemiring A`. -/
 instance semiring : Semiring (⨁ i, A i) :=
   { (inferInstance : NonUnitalNonAssocSemiring _) with
     one := 1
@@ -254,13 +260,14 @@ instance semiring : Semiring (⨁ i, A i) :=
     natCast := fun n => of _ _ (GSemiring.natCast n)
     natCast_zero := by simp only [GSemiring.natCast_zero, map_zero]
     natCast_succ := fun n => by
-      simp only [GSemiring.natCast_succ, map_add]
+      simp_rw [GSemiring.natCast_succ]
+      rw [map_add]
       rfl }
 #align direct_sum.semiring DirectSum.semiring
 
 theorem ofPow {i} (a : A i) (n : ℕ) :
     of _ i a ^ n = of _ (n • i) (GradedMonoid.GMonoid.gnpow _ a) := by
-  induction' n with n
+  induction' n with n n_ih
   · exact of_eq_of_gradedMonoid_eq (pow_zero <| GradedMonoid.mk _ a).symm
   · rw [pow_succ, n_ih, of_mul_of]
     exact of_eq_of_gradedMonoid_eq (pow_succ (GradedMonoid.mk _ a) n).symm
@@ -284,10 +291,10 @@ theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A
 open BigOperators
 
 theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
-    a * a' = a.sum fun i ai => a'.sum fun j aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj :=
-  by
-  change MulHom _ a a' = _
-  simpa only [MulHom, to_add_monoid, Dfinsupp.liftAddHom_apply, Dfinsupp.sumAddHom_apply,
+    a * a'
+      = a.sum fun i ai => a'.sum fun j aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
+  change mulHom _ a a' = _
+  simpa only [MulHom, toAddMonoid, Dfinsupp.liftAddHom_apply, Dfinsupp.sumAddHom_apply,
     AddMonoidHom.dfinsupp_sum_apply, flip_apply, AddMonoidHom.dfinsupp_sumAddHom_apply]
 #align direct_sum.mul_eq_dfinsupp_sum DirectSum.mul_eq_dfinsupp_sum
 
@@ -313,7 +320,7 @@ private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   exact of_eq_of_gradedMonoid_eq (gcomm_semiring.mul_comm ⟨ai, ax⟩ ⟨bi, bx⟩)
 #noalign direct_sum.mul_comm
 
-/-- The `comm_semiring` structure derived from `gcomm_semiring A`. -/
+/-- The `CommSemiring` structure derived from `gcomm_semiring A`. -/
 instance commSemiring : CommSemiring (⨁ i, A i) :=
   { DirectSum.semiring (⨁ i, A i) with
     one := 1
@@ -355,9 +362,7 @@ instance ring : Ring (⨁ i, A i) :=
     add := (· + ·)
     neg := Neg.neg
     intCast := fun z => of _ _ (GRing.intCast z)
-    intCast_ofNat := fun z => congr_arg _ <| GRing.intCast_ofNat _
-    intCast_negSucc_ofNat := fun z =>
-      (congr_arg _ <| GRing.intCast_negSucc_ofNat _).trans (map_neg _ _) }
+    intCast_ofNat := fun z => congr_arg _ <| GRing.intCast_ofNat _}
 #align direct_sum.ring DirectSum.ring
 
 end Ring
@@ -446,7 +451,7 @@ theorem ofNatCast (n : ℕ) : of A 0 n = n :=
 /-- The `semiring` structure derived from `gsemiring A`. -/
 instance GradeZero.semiring : Semiring (A 0) :=
   Function.Injective.semiring (of A 0) Dfinsupp.single_injective (of A 0).map_zero (of_zero_one A)
-    (of A 0).map_add (of_zero_mul A) (of A 0).map_nsmul (fun x n => of_zero_pow _ _ _)
+    (of A 0).map_add (of_zero_mul A) (of A 0).map_nsmul (fun _ _ => of_zero_pow _ _ _)
     (ofNatCast A)
 #align direct_sum.grade_zero.semiring DirectSum.GradeZero.semiring
 
@@ -461,8 +466,8 @@ def ofZeroRingHom : A 0 →+* ⨁ i, A i :=
 in an overall `module (A 0) (⨁ i, A i)` structure via `direct_sum.module`.
 -/
 instance GradeZero.module {i} : Module (A 0) (A i) :=
-  letI := Module.compHom (⨁ i, A i) (of_zero_ring_hom A)
-  dfinsupp.single_injective.module (A 0) (of A i) fun a => of_zero_smul A a
+  letI := Module.compHom (⨁ i, A i) (ofZeroRingHom A)
+  Dfinsupp.single_injective.module (A 0) (of A i) fun a => of_zero_smul A a
 #align direct_sum.grade_zero.module DirectSum.GradeZero.module
 
 end Semiring
@@ -581,16 +586,17 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
   { toAddMonoid f with
     toFun := toAddMonoid f
     map_one' := by
-      change (to_add_monoid f) (of _ 0 _) = 1
-      rw [to_add_monoid_of]
+      change (toAddMonoid f) (of _ 0 _) = 1
+      rw [toAddMonoid_of]
       exact hone
     map_mul' := by
-      rw [(to_add_monoid f).map_mul_iff]
-      ext (xi xv yi yv) : 4
+      rw [(toAddMonoid f).map_mul_iff]
+      refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
+      refine DirectSum.addHom_ext' (fun yi ↦ AddMonoidHom.ext (fun yv ↦ ?_))
       show
-        to_add_monoid f (of A xi xv * of A yi yv) =
-          to_add_monoid f (of A xi xv) * to_add_monoid f (of A yi yv)
-      rw [of_mul_of, to_add_monoid_of, to_add_monoid_of, to_add_monoid_of]
+        toAddMonoid f (of A xi xv * of A yi yv) =
+          toAddMonoid f (of A xi xv) * toAddMonoid f (of A yi yv)
+      simp_rw [of_mul_of, toAddMonoid_of]
       exact hmul _ _ }
 #align direct_sum.to_semiring DirectSum.toSemiring
 
@@ -617,20 +623,23 @@ def liftRingHom :
       ((⨁ i, A i) →+* R) where
   toFun f := toSemiring (fun _ => f.1) f.2.1 fun _ _ => f.2.2
   invFun F :=
-    ⟨fun i => (F : (⨁ i, A i) →+ R).comp (of _ i), by
-      simp only [AddMonoidHom.comp_apply, [anonymous]]
+    ⟨by intro i; exact (F : (⨁ i, A i) →+ R).comp (of _ i),
+      by
+      simp only [AddMonoidHom.comp_apply]
       rw [← F.map_one]
-      rfl, fun i j ai aj => by
-      simp only [AddMonoidHom.comp_apply, [anonymous]]
+      rfl,
+      by
+      intros i j ai aj
+      simp only [AddMonoidHom.comp_apply]
       rw [← F.map_mul, of_mul_of]⟩
   left_inv f := by
     ext (xi xv)
-    exact to_add_monoid_of (fun _ => f.1) xi xv
+    exact toAddMonoid_of (fun _ => f.1) xi xv
   right_inv F := by
     apply RingHom.coe_addMonoidHom_injective
-    ext (xi xv)
+    refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
     simp only [RingHom.coe_addMonoidHom_mk, DirectSum.toAddMonoid_of, AddMonoidHom.mk_coe,
-      AddMonoidHom.comp_apply, to_semiring_coe_add_monoid_hom]
+      AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
 #align direct_sum.lift_ring_hom DirectSum.liftRingHom
 
 end ToSemiring
@@ -648,10 +657,10 @@ variable (ι)
 instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type _} [AddMonoid ι]
     [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun i : ι => R :=
   { Mul.gMul ι with
-    mul_zero := fun i j => MulZeroClass.mul_zero
-    zero_mul := fun i j => MulZeroClass.zero_mul
-    mul_add := fun i j => mul_add
-    add_mul := fun i j => add_mul }
+    mul_zero := mul_zero
+    zero_mul := zero_mul
+    mul_add := mul_add
+    add_mul := add_mul }
 #align non_unital_non_assoc_semiring.direct_sum_gnon_unital_non_assoc_semiring NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring
 
 /-- A direct sum of copies of a `semiring` inherits the multiplication structure. -/
