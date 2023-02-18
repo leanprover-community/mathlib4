@@ -9,14 +9,11 @@ Authors: Johan Commelin
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Group
--- import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Tactic.Positivity
-import Mathlib.Algebra.BigOperators.Order -- todo: remove
-import Mathlib.Algebra.BigOperators.Ring -- todo: remove
-import Mathlib.Algebra.IndicatorFunction -- todo: remove
 
 /-!
 # Nonnegative real numbers
