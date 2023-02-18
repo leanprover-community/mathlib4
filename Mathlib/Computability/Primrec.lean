@@ -542,20 +542,20 @@ theorem swap {f : α → β → σ} (h : Primrec₂ f) : Primrec₂ (swap f) :=
 theorem nat_iff {f : α → β → σ} :
     Primrec₂ f ↔
       Nat.Primrec
-        (Nat.unpaired fun m n : ℕ => encode <| (decode α m).bind fun a => (decode β n).map (f a)) :=
+        (Nat.unpaired fun m n : ℕ => encode <| (@decode α _ m).bind fun a => (@decode β _ n).map (f a)) :=
   by
   have :
     ∀ (a : Option α) (b : Option β),
       Option.map (fun p : α × β => f p.1 p.2)
           (Option.bind a fun a : α => Option.map (Prod.mk a) b) =
-        Option.bind a fun a => Option.map (f a) b :=
-    by intros <;> cases a <;> [rfl, · cases b <;> rfl]
+        Option.bind a fun a => Option.map (f a) b := fun a b => by
+          cases a <;> cases b <;> rfl
   simp [Primrec₂, Primrec, this]
 #align primrec₂.nat_iff Primrec₂.nat_iff
 
 theorem nat_iff' {f : α → β → σ} :
     Primrec₂ f ↔
-      Primrec₂ fun m n : ℕ => Option.bind (decode α m) fun a => Option.map (f a) (decode β n) :=
+      Primrec₂ fun m n : ℕ => Option.bind (@decode α _ m) fun a => Option.map (f a) (@decode β _ n) :=
   nat_iff.trans <| unpaired'.trans encode_iff
 #align primrec₂.nat_iff' Primrec₂.nat_iff'
 
@@ -572,7 +572,7 @@ theorem to₂ {f : α × β → σ} (hf : Primrec f) : Primrec₂ fun a b => f (
 #align primrec.to₂ Primrec.to₂
 
 theorem nat_elim {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (hg : Primrec₂ g) :
-    Primrec₂ fun a (n : ℕ) => n.elim (f a) fun n IH => g a (n, IH) :=
+    Primrec₂ fun a (n : ℕ) => n.rec (motive := fun _ => β) (f a) fun n IH => g a (n, IH) :=
   Primrec₂.nat_iff.2 <|
     ((Nat.Primrec.cases Nat.Primrec.zero <|
               (Nat.Primrec.prec hf <|
@@ -581,17 +581,17 @@ theorem nat_elim {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) 
                         (Nat.Primrec.left.comp Nat.Primrec.right).pair <|
                           Nat.Primrec.pred.comp <| Nat.Primrec.right.comp Nat.Primrec.right).comp <|
                 Nat.Primrec.right.pair <| Nat.Primrec.right.comp Nat.Primrec.left).comp <|
-          Nat.Primrec.id.pair <| (Primcodable.prim α).comp Nat.Primrec.left).of_eq
+          Nat.Primrec.id.pair <| (@Primcodable.prim α).comp Nat.Primrec.left).of_eq
       fun n => by
       simp
-      cases' decode α n.unpair.1 with a; · rfl
+      cases' @decode α _ n.unpair.1 with a; · rfl
       simp [encodek]
       induction' n.unpair.2 with m <;> simp [encodek]
-      simp [ih, encodek]
+      simp [*, encodek]
 #align primrec.nat_elim Primrec.nat_elim
 
 theorem nat_elim' {f : α → ℕ} {g : α → β} {h : α → ℕ × β → β} (hf : Primrec f) (hg : Primrec g)
-    (hh : Primrec₂ h) : Primrec fun a => (f a).elim (g a) fun n IH => h a (n, IH) :=
+    (hh : Primrec₂ h) : Primrec fun a => (f a).rec (motive := fun _ => β) (g a) fun n IH => h a (n, IH) :=
   (nat_elim hg hh).comp Primrec.id hf
 #align primrec.nat_elim' Primrec.nat_elim'
 
@@ -616,7 +616,7 @@ theorem nat_cases₁ {f : ℕ → α} (a : α) (hf : Primrec f) : Primrec (Nat.c
 theorem nat_iterate {f : α → ℕ} {g : α → β} {h : α → β → β} (hf : Primrec f) (hg : Primrec g)
     (hh : Primrec₂ h) : Primrec fun a => (h a^[f a]) (g a) :=
   (nat_elim' hf hg (hh.comp₂ Primrec₂.left <| snd.comp₂ Primrec₂.right)).of_eq fun a => by
-    induction f a <;> simp [*, Function.iterate_succ']
+    induction f a <;> simp [*, -Function.iterate_succ, Function.iterate_succ']
 #align primrec.nat_iterate Primrec.nat_iterate
 
 theorem option_cases {o : α → Option β} {f : α → σ} {g : α → β → σ} (ho : Primrec o)
@@ -628,7 +628,7 @@ theorem option_cases {o : α → Option β} {f : α → σ} {g : α → β → �
             Primrec₂.encode_iff.2 <|
               (Primrec₂.nat_iff'.1 hg).comp₂ ((@Primrec.encode α _).comp fst).to₂
                 Primrec₂.right).of_eq
-      fun a => by cases' o a with b <;> simp [encodek] <;> rfl
+      fun a => by cases' o a with b <;> simp [encodek]
 #align primrec.option_cases Primrec.option_cases
 
 theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : Primrec f) (hg : Primrec₂ g) :
@@ -642,7 +642,7 @@ theorem option_bind₁ {f : α → Option σ} (hf : Primrec f) : Primrec fun o =
 
 theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Primrec f) (hg : Primrec₂ g) :
     Primrec fun a => (f a).map (g a) :=
-  option_bind hf (option_some.comp₂ hg)
+  (option_bind hf (option_some.comp₂ hg)).of_eq fun x => by cases f x <;> rfl
 #align primrec.option_map Primrec.option_map
 
 theorem option_map₁ {f : α → σ} (hf : Primrec f) : Primrec (Option.map f) :=
@@ -663,21 +663,23 @@ theorem option_getD : Primrec₂ (@Option.getD α) :=
 #align primrec.option_get_or_else Primrec.option_getD
 
 theorem bind_decode_iff {f : α → β → Option σ} :
-    (Primrec₂ fun a n => (decode β n).bind (f a)) ↔ Primrec₂ f :=
+    (Primrec₂ fun a n => (@decode β _ n).bind (f a)) ↔ Primrec₂ f :=
   ⟨fun h => by simpa [encodek] using h.comp fst ((@Primrec.encode β _).comp snd), fun h =>
     option_bind (Primrec.decode.comp snd) <| h.comp (fst.comp fst) snd⟩
 #align primrec.bind_decode_iff Primrec.bind_decode_iff
 
 theorem map_decode_iff {f : α → β → σ} :
-    (Primrec₂ fun a n => (decode β n).map (f a)) ↔ Primrec₂ f :=
-  bind_decode_iff.trans Primrec₂.option_some_iff
+    (Primrec₂ fun a n => (@decode β _ n).map (f a)) ↔ Primrec₂ f := by
+  simp only [Option.map_eq_bind]
+  exact bind_decode_iff.trans Primrec₂.option_some_iff
+
 #align primrec.map_decode_iff Primrec.map_decode_iff
 
 theorem nat_add : Primrec₂ ((· + ·) : ℕ → ℕ → ℕ) :=
   Primrec₂.unpaired'.1 Nat.Primrec.add
 #align primrec.nat_add Primrec.nat_add
 
-theorem nat_sub : Primrec₂ (Sub.sub : ℕ → ℕ → ℕ) :=
+theorem nat_sub : Primrec₂ ((· - ·) : ℕ → ℕ → ℕ) :=
   Primrec₂.unpaired'.1 Nat.Primrec.sub
 #align primrec.nat_sub Primrec.nat_sub
 
@@ -696,8 +698,7 @@ theorem ite {c : α → Prop} [DecidablePred c] {f : α → σ} {g : α → σ} 
 #align primrec.ite Primrec.ite
 
 theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=
-  (nat_cases nat_sub (const true) (const false).to₂).of_eq fun p =>
-    by
+  (nat_cases nat_sub (const true) (const false).to₂).of_eq fun p => by
     dsimp [swap]
     cases' e : p.1 - p.2 with n
     · simp [tsub_eq_zero_iff_le.1 e]
