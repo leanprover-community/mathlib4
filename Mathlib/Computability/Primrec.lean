@@ -153,7 +153,7 @@ theorem pow : Primrec (unpaired (· ^ ·)) :=
 end Primrec
 
 end Nat
-#exit
+
 /- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`prim] [] -/
 /-- A `primcodable` type is an `encodable` type for which
   the encode/decode functions are primitive recursive. -/
