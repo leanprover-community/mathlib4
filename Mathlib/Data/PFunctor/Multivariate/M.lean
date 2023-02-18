@@ -85,7 +85,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
       (PFunctor.M.casesOn' x
         (r:=fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
-        intros <;> simp [PFunctor.M.dest_mk, PFunctor.M.children_mk] <;> rfl)
+        intros; simp [PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
       _ default⟩
 #align mvpfunctor.M.path.inhabited MvPFunctor.M.Path.inhabited
 
@@ -103,7 +103,7 @@ def M (α : TypeVec n) : Type _ :=
   P.mp.Obj α
 #align mvpfunctor.M MvPFunctor.M
 
-instance mvfunctorM : MvFunctor P.M := by delta M <;> infer_instance
+instance mvfunctorM : MvFunctor P.M := by delta M; infer_instance
 #align mvpfunctor.mvfunctor_M MvPFunctor.mvfunctorM
 
 instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabited (α i)] :
@@ -119,7 +119,7 @@ def M.corecShape {β : Type u} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B 
 #align mvpfunctor.M.corec_shape MvPFunctor.M.corecShape
 
 /-- Proof of type equality as an arrow -/
-def castDropB {a a' : P.A} (h : a = a') : P.drop.B a ⟹ P.drop.B a' := fun i b => Eq.recOn h b
+def castDropB {a a' : P.A} (h : a = a') : P.drop.B a ⟹ P.drop.B a' := fun _i b => Eq.recOn h b
 #align mvpfunctor.cast_dropB MvPFunctor.castDropB
 
 /-- Proof of type equality as a function -/
@@ -198,7 +198,7 @@ def M.mk {α : TypeVec n} : P.Obj (α.append1 (P.M α)) → P.M α :=
 theorem M.dest'_eq_dest' {α : TypeVec n} {x : P.last.M} {a₁ : P.A}
     {f₁ : P.last.B a₁ → P.last.M} (h₁ : PFunctor.M.dest x = ⟨a₁, f₁⟩) {a₂ : P.A}
     {f₂ : P.last.B a₂ → P.last.M} (h₂ : PFunctor.M.dest x = ⟨a₂, f₂⟩) (f' : M.Path P x ⟹ α) :
-    M.dest' P h₁ f' = M.dest' P h₂ f' := by cases h₁.symm.trans h₂ <;> rfl
+    M.dest' P h₁ f' = M.dest' P h₂ f' := by cases h₁.symm.trans h₂; rfl
 #align mvpfunctor.M.dest'_eq_dest' MvPFunctor.M.dest'_eq_dest'
 
 theorem M.dest_eq_dest' {α : TypeVec n} {x : P.last.M} {a : P.A}
