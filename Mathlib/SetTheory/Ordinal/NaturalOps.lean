@@ -9,7 +9,7 @@ Authors: Violeta Hernández Palacios
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
-
+import Mathlib.Tactic.SolveByElim
 /-!
 # Natural operations on ordinals
 
@@ -24,7 +24,7 @@ These operations form a rich algebraic structure: they're commutative, associati
 have the usual `0` and `1` from ordinals, and distribute over one another.
 
 Moreover, these operations are the addition and multiplication of ordinals when viewed as
-combinatorial `game`s. This makes them particularly useful for game theory.
+combinatorial `Game`s. This makes them particularly useful for game theory.
 
 Finally, both operations admit simple, intuitive descriptions in terms of the Cantor normal form.
 The natural addition of two ordinals corresponds to adding their Cantor normal forms as if they were
@@ -34,8 +34,8 @@ normal forms as polynomials.
 # Implementation notes
 
 Given the rich algebraic structure of these two operations, we choose to create a type synonym
-`nat_ordinal`, where we provide the appropriate instances. However, to avoid casting back and forth
-between both types, we attempt to prove and state most results on `ordinal`.
+`NatOrdinal`, where we provide the appropriate instances. However, to avoid casting back and forth
+between both types, we attempt to prove and state most results on `Ordinal`.
 
 # Todo
 
@@ -61,13 +61,13 @@ instance NatOrdinal.linearOrder: LinearOrder NatOrdinal := {Ordinal.linearOrder 
 
 instance NatOrdinal.succOrder: SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
-/-- The identity function between `ordinal` and `nat_ordinal`. -/
+/-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
 def Ordinal.toNatOrdinal : Ordinal ≃o NatOrdinal :=
   OrderIso.refl _
 #align ordinal.to_nat_ordinal Ordinal.toNatOrdinal
 
-/-- The identity function between `nat_ordinal` and `ordinal`. -/
+/-- The identity function between `NatOrdinal` and `Ordinal`. -/
 @[match_pattern]
 def NatOrdinal.toOrdinal : NatOrdinal ≃o Ordinal :=
   OrderIso.refl _
@@ -121,26 +121,26 @@ theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
 #align nat_ordinal.to_ordinal_eq_one NatOrdinal.toOrdinal_eq_one
 
 @[simp]
-theorem toOrdinal_max :
-  NatOrdinal.toOrdinal (max a b) = max (NatOrdinal.toOrdinal a) (NatOrdinal.toOrdinal b) := rfl
+theorem toOrdinal_max : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
+  rfl
 #align nat_ordinal.to_ordinal_max NatOrdinal.toOrdinal_max
 
 @[simp]
-theorem toOrdinal_min :
-  NatOrdinal.toOrdinal (min a b) = min (NatOrdinal.toOrdinal a) (NatOrdinal.toOrdinal b) := rfl
+theorem toOrdinal_min : toOrdinal (min a b)= min (toOrdinal a) (toOrdinal b) :=
+  rfl
 #align nat_ordinal.to_ordinal_min NatOrdinal.toOrdinal_min
 
-theorem succ_def (a : NatOrdinal) : succ a = Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a + 1) :=
+theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
   rfl
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
-/-- A recursor for `nat_ordinal`. Use as `induction x using nat_ordinal.rec`. -/
+/-- A recursor for `NatOrdinal`. Use as `induction x using NatOrdinal.rec`. -/
 protected def rec {β : NatOrdinal → Sort _} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
-  h (NatOrdinal.toOrdinal a)
+  h (toOrdinal a)
 #align nat_ordinal.rec NatOrdinal.rec
 
-/-- `ordinal.induction` but for `nat_ordinal`. -/
-theorem induction {p : NatOrdinal → Prop} : ∀ (i) (h : ∀ j, (∀ k, k < j → p k) → p j), p i :=
+/-- `Ordinal.induction` but for `NatOrdinal`. -/
+theorem induction {p : NatOrdinal → Prop} : ∀ (i) (_ : ∀ j, (∀ k, k < j → p k) → p j), p i :=
   Ordinal.induction
 #align nat_ordinal.induction NatOrdinal.induction
 
@@ -156,7 +156,7 @@ theorem toNatOrdinal_symm_eq : toNatOrdinal.symm = NatOrdinal.toOrdinal :=
 #align ordinal.to_nat_ordinal_symm_eq Ordinal.toNatOrdinal_symm_eq
 
 @[simp]
-theorem toNatOrdinal_toOrdinal (a : Ordinal) : NatOrdinal.toOrdinal (toNatOrdinal a) = a :=
+theorem toNatOrdinal_toOrdinal (a : Ordinal) :  NatOrdinal.toOrdinal (toNatOrdinal a) = a :=
   rfl
 #align ordinal.to_nat_ordinal_to_ordinal Ordinal.toNatOrdinal_toOrdinal
 
@@ -181,7 +181,7 @@ theorem toNatOrdinal_eq_one (a) : toNatOrdinal a = 1 ↔ a = 1 :=
 #align ordinal.to_nat_ordinal_eq_one Ordinal.toNatOrdinal_eq_one
 
 @[simp]
-theorem toNatOrdinal_max : toNatOrdinal (max a b) = max (toNatOrdinal a) (toNatOrdinal b) :=
+theorem toNatOrdinal_max : toNatOrdinal (max a b) = max (toNatOrdinal a) (toNatOrdinal b ):=
   rfl
 #align ordinal.to_nat_ordinal_max Ordinal.toNatOrdinal_max
 
@@ -199,17 +199,17 @@ Natural addition can equivalently be characterized as the ordinal resulting from
 corresponding coefficients in the Cantor normal forms of `a` and `b`. -/
 noncomputable def nadd : Ordinal → Ordinal → Ordinal
   | a, b =>
-    max (blsub.{u, u} a fun a' h => nadd a' b) (blsub.{u, u} b fun b' h => nadd a b')
+    max (blsub.{u, u} a fun a' _ => nadd a' b) (blsub.{u, u} b fun b' _ => nadd a b')
   termination_by nadd o₁ o₂ => (o₁, o₂)
 #align ordinal.nadd Ordinal.nadd
 
--- mathport name: ordinal.nadd
+@[inherit_doc]
 scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
 
 open NaturalOps
 
 theorem nadd_def (a b : Ordinal) :
-    a ♯ b = max (blsub.{u, u} a fun a' h => a' ♯ b) (blsub.{u, u} b fun b' h => a ♯ b') := by
+    a ♯ b = max (blsub.{u, u} a fun a' _ => a' ♯ b) (blsub.{u, u} b fun b' _ => a ♯ b') := by
   rw [nadd]
 #align ordinal.nadd_def Ordinal.nadd_def
 
@@ -248,19 +248,25 @@ variable (a b)
 theorem nadd_comm : ∀ a b, a ♯ b = b ♯ a
   | a, b => by
     rw [nadd_def, nadd_def, max_comm]
+    congr <;> ext <;> apply nadd_comm
+    termination_by' PSigma.lex (inferInstance) (fun _ ↦ inferInstance)
+    -- Porting note: above lines replaces
+    -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
     congr <;> ext (c hc) <;> apply nadd_comm
   termination_by nadd_comm a b => (a,b)
 #align ordinal.nadd_comm Ordinal.nadd_comm
 
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
-    blsub _ f =
+    -- Porting note: needed to add universe hint blsub.{u,v} in the line below
+    blsub.{u,v} _ f =
       max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
         (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
   apply (blsub_le_iff.2 fun i h => _).antisymm (max_le _ _)
+  intro i h
   · rcases lt_nadd_iff.1 h with (⟨a', ha', hi⟩ | ⟨b', hb', hi⟩)
-    · exact lt_max_of_lt_left ((hf h (nadd_lt_nadd_right ha' b) hi).trans_lt (lt_blsub _ _ _))
-    · exact lt_max_of_lt_right ((hf h (nadd_lt_nadd_left hb' a) hi).trans_lt (lt_blsub _ _ _))
+    · exact lt_max_of_lt_left ((hf h (nadd_lt_nadd_right ha' b) hi).trans_lt (lt_blsub _ _ ha'))
+    · exact lt_max_of_lt_right ((hf h (nadd_lt_nadd_left hb' a) hi).trans_lt (lt_blsub _ _ hb'))
   all_goals
     apply blsub_le_of_brange_subset.{u, u, v}
     rintro c ⟨d, hd, rfl⟩
@@ -272,9 +278,11 @@ theorem nadd_assoc : ∀ a b c, a ♯ b ♯ c = a ♯ (b ♯ c)
     by
     rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
     · congr <;> ext (d hd) <;> apply nadd_assoc
-    · exact fun i j _ _ h => nadd_le_nadd_left h a
-    · exact fun i j _ _ h => nadd_le_nadd_right h c decreasing_by
-  solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
+    · exact fun  _ _ h => nadd_le_nadd_left h a
+    · exact fun  _ _ h => nadd_le_nadd_right h c
+    termination_by' PSigma.lex (inferInstance) (fun _ ↦ inferInstance)
+    -- Porting note: above lines replaces
+    -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
 
 @[simp]
@@ -320,12 +328,12 @@ theorem nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
 #align ordinal.nat_nadd Ordinal.nat_nadd
 
 theorem add_le_nadd : a + b ≤ a ♯ b := by
-  apply b.limit_rec_on
+  apply b.limitRecOn
   · simp
   · intro c h
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
   · intro c hc H
-    rw [← IsNormal.blsub_eq.{u, u} (add_is_normal a) hc, blsub_le_iff]
+    simp_rw [← IsNormal.blsub_eq.{u, u} (add_isNormal a) hc, blsub_le_iff]
     exact fun i hi => (H i hi).trans_lt (nadd_lt_nadd_left hi a)
 #align ordinal.add_le_nadd Ordinal.add_le_nadd
 
@@ -339,11 +347,11 @@ instance : Add NatOrdinal :=
   ⟨nadd⟩
 
 instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
-  ⟨fun a b c h => nadd_lt_nadd_left h a⟩
+  ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
 #align nat_ordinal.add_covariant_class_lt NatOrdinal.add_covariantClass_lt
 
 instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
-  ⟨fun a b c h => nadd_le_nadd_left h a⟩
+  ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 #align nat_ordinal.add_covariant_class_le NatOrdinal.add_covariantClass_le
 
 instance add_contravariantClass_le :
@@ -424,15 +432,15 @@ theorem nadd_le_nadd_iff_left : ∀ (a) {b c}, a ♯ b ≤ a ♯ c ↔ b ≤ c :
 #align ordinal.nadd_le_nadd_iff_left Ordinal.nadd_le_nadd_iff_left
 
 theorem nadd_le_nadd_iff_right : ∀ (a) {b c}, b ♯ a ≤ c ♯ a ↔ b ≤ c :=
-  @add_le_add_iff_right NatOrdinal _ _ _ _
+  @_root_.add_le_add_iff_right NatOrdinal _ _ _ _
 #align ordinal.nadd_le_nadd_iff_right Ordinal.nadd_le_nadd_iff_right
 
 theorem nadd_left_cancel : ∀ {a b c}, a ♯ b = a ♯ c → b = c :=
-  @add_left_cancel NatOrdinal _ _
+  @_root_.add_left_cancel NatOrdinal _ _
 #align ordinal.nadd_left_cancel Ordinal.nadd_left_cancel
 
 theorem nadd_right_cancel : ∀ {a b c}, a ♯ b = c ♯ b → a = c :=
-  @add_right_cancel NatOrdinal _ _
+  @_root_.add_right_cancel NatOrdinal _ _
 #align ordinal.nadd_right_cancel Ordinal.nadd_right_cancel
 
 theorem nadd_left_cancel_iff : ∀ {a b c}, a ♯ b = a ♯ c ↔ b = c :=
