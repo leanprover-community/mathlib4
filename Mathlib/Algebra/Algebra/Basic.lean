@@ -132,7 +132,8 @@ def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra 
 
 namespace algebraMap
 
-instance coeHTCT (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A] : CoeHTCT R A :=
+instance (priority := 50) coeHTCT (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A] :
+    CoeHTCT R A :=
   ⟨Algebra.cast⟩
 #align algebra_map.has_lift_t algebraMap.coeHTCT
 
