@@ -126,8 +126,10 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut CategoryTheory.Iso.conjAut
 
 theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by
-  cases f; cases α; apply CategoryTheory.Iso.ext 
-  simp only [conjAut, Aut.unitsEndEquivAut, conj]; rfl 
+  aesop_cat
+  apply CategoryTheory.Iso.ext
+  simp only [conjAut, Aut.unitsEndEquivAut, conj]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_apply CategoryTheory.Iso.conjAut_apply
 
