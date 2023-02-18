@@ -41,6 +41,13 @@ def elim {C : Sort _} : C → (ℕ → C → C) → ℕ → C :=
   @Nat.rec fun _ => C
 #align nat.elim Nat.elim
 
+-- porting note: elim is no longer required because lean 4 is better
+-- at inferring motive types (I think this is the reason)
+-- and worst case, we can always explicitly write (motive := fun _ => C)
+-- without having to then add all the other underscores
+example {C : Sort _} (base : C) (succ : ℕ → C → C) (a : ℕ) :
+  a.elim base succ = a.recOn base succ := rfl
+
 @[simp]
 theorem elim_zero {C} (a f) : @Nat.elim C a f 0 = a :=
   rfl
@@ -55,6 +62,11 @@ theorem elim_succ {C} (a f n) : @Nat.elim C a f (succ n) = f n (Nat.elim a f n) 
 def cases {C : Sort _} (a : C) (f : ℕ → C) : ℕ → C :=
   Nat.elim a fun n _ => f n
 #align nat.cases Nat.cases
+
+-- porting note: cases is no longer required because lean 4 is better
+-- at inferring motive types (I think this is the reason)
+example {C : Sort _} (a : C) (f : ℕ → C) (n : ℕ) :
+  n.cases a f = n.casesOn a f := rfl
 
 @[simp]
 theorem cases_zero {C} (a f) : @Nat.cases C a f 0 = a :=
@@ -84,7 +96,7 @@ inductive Primrec : (ℕ → ℕ) → Prop
   prec {f g} :
     Primrec f →
       Primrec g →
-        Primrec (unpaired fun z n => n.elim (f z) fun y IH => g <| mkpair z <| mkpair y IH)
+        Primrec (unpaired fun z n => n.rec (f z) fun y IH => g <| mkpair z <| mkpair y IH)
 #align nat.primrec Nat.Primrec
 
 namespace Primrec
@@ -103,12 +115,12 @@ protected theorem id : Primrec id :=
 #align nat.primrec.id Nat.Primrec.id
 
 theorem prec1 {f} (m : ℕ) (hf : Primrec f) :
-    Primrec fun n => n.elim m fun y IH => f <| mkpair y IH :=
+    Primrec fun n => n.rec m fun y IH => f <| mkpair y IH :=
   ((prec (const m) (hf.comp right)).comp (zero.pair Primrec.id)).of_eq fun n => by simp
 #align nat.primrec.prec1 Nat.Primrec.prec1
 
-theorem cases1 {f} (m : ℕ) (hf : Primrec f) : Primrec (Nat.cases m f) :=
-  (prec1 m (hf.comp left)).of_eq <| by simp [cases]
+theorem cases1 {f} (m : ℕ) (hf : Primrec f) : Primrec (Nat.casesOn · m f) :=
+  (prec1 m (hf.comp left)).of_eq <| by simp
 #align nat.primrec.cases1 Nat.Primrec.cases1
 
 theorem cases {f g} (hf : Primrec f) (hg : Primrec g) :
@@ -132,8 +144,6 @@ theorem add : Primrec (unpaired (· + ·)) :=
   (prec Primrec.id ((succ.comp right).comp right)).of_eq fun p => by
     simp; induction p.unpair.2 <;> simp [*, add_succ]
 #align nat.primrec.add Nat.Primrec.add
-
-#check Nat.sub_zero
 
 theorem sub : Primrec (unpaired (· - ·)) :=
   (prec Primrec.id ((pred.comp right).comp right)).of_eq fun p => by
