@@ -8,9 +8,9 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Equiv.Array
-import Mathbin.Logic.Equiv.List
-import Mathbin.Logic.Function.Iterate
+import Mathlib.Logic.Equiv.Array
+import Mathlib.Logic.Equiv.List
+import Mathlib.Logic.Function.Iterate
 
 /-!
 # The primitive recursive functions
@@ -844,8 +844,7 @@ theorem nat_div_mod : Primrec₂ fun n k : ℕ => (n / k, n % k) :=
               (pair (fst.comp snd) (succ.comp <| snd.comp snd))).comp
           (pair (snd.comp fst) (snd.comp snd))).to₂
   suffices ∀ k n, (n / k, n % k) = f (n, k) from hf.of_eq fun ⟨m, n⟩ => by simp [this]
-  fun k n =>
-  by
+  fun k n => by
   have :
     (f (n, k)).2 + k * (f (n, k)).1 = n ∧ (0 < k → (f (n, k)).2 < k) ∧ (k = 0 → (f (n, k)).1 = 0) :=
     by
@@ -1128,8 +1127,7 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
     · apply IH
 #align primrec.list_nth Primrec.list_get?
 
-theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d :=
-  by
+theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
   simp only [List.getD_eq_getD_get?]
   exact option_get_or_else.comp₂ list_nth (const _)
 #align primrec.list_nthd Primrec.list_getD
@@ -1264,8 +1262,7 @@ variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
-    Primrec (@Subtype.val α p) :=
-  by
+    Primrec (@Subtype.val α p) := by
   letI := Primcodable.subtype hp
   refine' (Primcodable.prim (Subtype p)).of_eq fun n => _
   rcases decode (Subtype p) n with (_ | ⟨a, h⟩) <;> rfl
@@ -1273,8 +1270,7 @@ theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
 
 theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → Subtype p} :
     haveI := Primcodable.subtype hp
-    (Primrec fun a => (f a).1) ↔ Primrec f :=
-  by
+    (Primrec fun a => (f a).1) ↔ Primrec f := by
   letI := Primcodable.subtype hp
   refine' ⟨fun h => _, fun hf => subtype_val.comp hf⟩
   refine' Nat.Primrec.of_eq h fun n => _
@@ -1290,8 +1286,7 @@ theorem subtype_mk {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f :
 #align primrec.subtype_mk Primrec.subtype_mk
 
 theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
-    Primrec f → Primrec fun a => Option.get (h a) :=
-  by
+    Primrec f → Primrec fun a => Option.get (h a) := by
   intro hf
   refine' (nat.primrec.pred.comp hf).of_eq fun n => _
   generalize hx : decode α n = x
@@ -1308,8 +1303,7 @@ theorem ulower_up : Primrec (Ulower.up : Ulower α → α) :=
   option_get (primrec.decode₂.comp subtype_val)
 #align primrec.ulower_up Primrec.ulower_up
 
-theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f :=
-  by
+theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f := by
   let : Primcodable { a // id a < n }; swap
   exact (Iff.trans (by rfl) subtype_val_iff).trans (of_equiv_iff _)
 #align primrec.fin_val_iff Primrec.fin_val_iff
@@ -1425,8 +1419,7 @@ open Nat (Primrec')
 open Nat.Primrec'
 
 /- ./././Mathport/Syntax/Translate/Command.lean:691:6: unsupported: hide command -/
-theorem to_prim {n f} (pf : @Primrec' n f) : Primrec f :=
-  by
+theorem to_prim {n f} (pf : @Primrec' n f) : Primrec f := by
   induction pf
   case zero => exact const 0
   case succ => exact primrec.succ.comp vector_head
@@ -1502,8 +1495,7 @@ theorem add : @Primrec' 2 fun v => v.headI + v.tail.headI :=
     simp <;> induction v.head <;> simp [*, Nat.succ_add]
 #align nat.primrec'.add Nat.Primrec'.add
 
-theorem sub : @Primrec' 2 fun v => v.headI - v.tail.headI :=
-  by
+theorem sub : @Primrec' 2 fun v => v.headI - v.tail.headI := by
   suffices; simpa using comp₂ (fun a b => b - a) this (tail head) head
   refine' (prec head (pred.comp₁ _ (tail head))).of_eq fun v => _
   simp; induction v.head <;> simp [*, Nat.sub_succ]
@@ -1533,8 +1525,7 @@ protected theorem encode : ∀ {n}, @Primrec' n encode
   | n + 1 => (succ.comp₁ _ (mkpair.comp₂ _ head (tail encode))).of_eq fun ⟨a :: l, e⟩ => rfl
 #align nat.primrec'.encode Nat.Primrec'.encode
 
-theorem sqrt : @Primrec' 1 fun v => v.headI.sqrt :=
-  by
+theorem sqrt : @Primrec' 1 fun v => v.headI.sqrt := by
   suffices H : ∀ n : ℕ, n.sqrt = n.elim 0 fun x y => if x.succ < y.succ * y.succ then y else y.succ
   · simp [H]
     have :=
@@ -1560,16 +1551,14 @@ theorem sqrt : @Primrec' 1 fun v => v.headI.sqrt :=
       Nat.eq_sqrt.2 ⟨not_lt.1 h, Nat.sqrt_lt.1 <| Nat.lt_succ_iff.2 <| Nat.sqrt_succ_le_succ_sqrt _⟩
 #align nat.primrec'.sqrt Nat.Primrec'.sqrt
 
-theorem unpair₁ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.1 :=
-  by
+theorem unpair₁ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.1 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
   refine' (if_lt fss s fss s).of_eq fun v => _
   simp [Nat.unpair]; split_ifs <;> rfl
 #align nat.primrec'.unpair₁ Nat.Primrec'.unpair₁
 
-theorem unpair₂ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.2 :=
-  by
+theorem unpair₂ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.2 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
   refine' (if_lt fss s s (sub.comp₂ _ fss s)).of_eq fun v => _
