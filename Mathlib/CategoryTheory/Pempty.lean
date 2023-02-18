@@ -8,7 +8,7 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.DiscreteCategory
 
 /-!
 # The empty category
