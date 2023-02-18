@@ -74,7 +74,7 @@ def uniqueFromEmpty (F : Discrete.{w} PEmpty ⥤ C) : F ≅ empty C :=
 #align category_theory.functor.unique_from_empty CategoryTheory.Functor.uniqueFromEmpty
 
 /-- Any two functors out of the empty category are *equal*. You probably want to use
-`empty_ext` instead of this.
+`emptyExt` instead of this.
 -/
 theorem empty_ext' (F G : Discrete.{w} PEmpty ⥤ C) : F = G :=
   Functor.ext (fun x => x.as.elim) fun x _ _ => x.as.elim
