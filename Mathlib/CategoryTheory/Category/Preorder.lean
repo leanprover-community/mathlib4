@@ -90,14 +90,13 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 alias leOfHom ← _root_.Quiver.Hom.le
 #align quiver.hom.le Quiver.Hom.le
 
--- porting note: linter seems to be wrong here
-@[simp, nolint simpNF]
+-- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
+-- @[simp]
 theorem leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.leOfHom_homOfLE
 
--- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
--- itself. This usually means that it will never apply." removing simp? It doesn't fire
+-- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
 -- @[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h := by
   cases' h with h
