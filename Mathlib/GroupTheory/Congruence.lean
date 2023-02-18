@@ -1150,7 +1150,7 @@ end MulOneClass
 section Monoids
 
 /-- Multiplicative congruence relations preserve natural powers. -/
-@[to_additive AddCon.nsmul "Additive congruence relations preserve natural scaling."]
+@[to_additive "Additive congruence relations preserve natural scaling."]
 protected theorem pow {M : Type _} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
