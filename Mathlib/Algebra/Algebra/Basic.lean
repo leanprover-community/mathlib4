@@ -132,7 +132,7 @@ def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra 
 
 namespace algebraMap
 
-instance (priority := 50) coeHTCT (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A] :
+scoped instance coeHTCT (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A] :
     CoeHTCT R A :=
   ⟨Algebra.cast⟩
 #align algebra_map.has_lift_t algebraMap.coeHTCT
@@ -706,9 +706,9 @@ theorem map_mul_algebraMap (f : A →ₗ[R] B) (a : A) (r : R) :
 end LinearMap
 
 @[simp]
-theorem Rat.smul_one_eq_coe {A : Type _} [DivisionRing A] [ha : Algebra ℚ A] (m : ℚ) :
+theorem Rat.smul_one_eq_coe {A : Type _} [DivisionRing A] [Algebra ℚ A] (m : ℚ) :
     @SMul.smul _ _ Algebra.toSMul m (1 : A) = ↑m :=
-  (@Algebra.smul_def' (self := ha) m 1).trans <| by rw [mul_one]; rfl
+  (Algebra.algebraMap_eq_smul_one m).symm.trans <| @eq_ratCast (ℚ →+* A) A _ _ (algebraMap ℚ A) _
 #align rat.smul_one_eq_coe Rat.smul_one_eq_coe
 
 section Nat
@@ -758,9 +758,7 @@ instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
 example : algebraRat = Algebra.id ℚ :=
   rfl
 
-@[simp]
-theorem algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ :=
-  Subsingleton.elim _ _
+@[simp] theorem algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
 #align algebra_map_rat_rat algebraMap_rat_rat
 
 instance algebra_rat_subsingleton {α} [Semiring α] : Subsingleton (Algebra ℚ α) :=
