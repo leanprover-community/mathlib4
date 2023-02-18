@@ -8,8 +8,8 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Functor.Const
-import Mathbin.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Functor.Const
+import Mathlib.CategoryTheory.DiscreteCategory
 
 /-!
 # The category `discrete punit`
@@ -84,8 +84,7 @@ end Functor
 /-- A category being equivalent to `punit` is equivalent to it having a unique morphism between
   any two objects. (In fact, such a category is also a groupoid; see `groupoid.of_hom_unique`) -/
 theorem equiv_pUnit_iff_unique :
-    Nonempty (C ≌ Discrete PUnit) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) :=
-  by
+    Nonempty (C ≌ Discrete PUnit) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) := by
   constructor
   · rintro ⟨h⟩
     refine' ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro _⟩
