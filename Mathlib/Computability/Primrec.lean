@@ -182,12 +182,10 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
 /-- Builds a `primcodable` instance from an equivalence to a `primcodable` type. -/
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
   { Encodable.ofEquiv α e with
-    prim :=
-      (Primcodable.prim α).of_eq fun n =>
-        show
-          encode (decode α n) =
-            (Option.casesOn (Option.map e.symm (decode α n)) 0 fun a => Nat.succ (encode (e a)) : ℕ)
-          by cases decode α n <;> dsimp <;> simp }
+    prim := (@Primcodable.prim α _).of_eq fun n => by
+      rw [decode_ofEquiv]
+      cases (@decode α _ n) <;>
+        simp [encode_ofEquiv] }
 #align primcodable.of_equiv Primcodable.ofEquiv
 
 instance empty : Primcodable Empty :=
@@ -199,15 +197,19 @@ instance unit : Primcodable PUnit :=
 #align primcodable.unit Primcodable.unit
 
 instance option {α : Type _} [h : Primcodable α] : Primcodable (Option α) :=
-  ⟨(cases1 1 ((cases1 0 (succ.comp succ)).comp (Primcodable.prim α))).of_eq fun n => by
-      cases n <;> simp <;> cases decode α n <;> rfl⟩
+  ⟨(cases1 1 ((cases1 0 (succ.comp succ)).comp (@Primcodable.prim α _))).of_eq fun n => by
+    cases n with
+      | zero => rfl
+      | succ n =>
+        rw [decode_option_succ]
+        cases H : @decode α _ n <;> simp [H]⟩
 #align primcodable.option Primcodable.option
 
 instance bool : Primcodable Bool :=
-  ⟨(cases1 1 (cases1 2 zero)).of_eq fun n => by
-      cases n; · rfl; cases n; · rfl
-      rw [decode_ge_two]; · rfl
-      exact by decide⟩
+  ⟨(cases1 1 (cases1 2 zero)).of_eq fun n => match n with
+    | 0 => rfl
+    | 1 => rfl
+    | (n + 2) => by rw [decode_ge_two] <;> simp⟩
 #align primcodable.bool Primcodable.bool
 
 end Primcodable
@@ -215,7 +217,7 @@ end Primcodable
 /-- `primrec f` means `f` is primitive recursive (after
   encoding its input and output as natural numbers). -/
 def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
-  Nat.Primrec fun n => encode ((decode α n).map f)
+  Nat.Primrec fun n => encode ((@decode α _ n).map f)
 #align primrec Primrec
 
 namespace Primrec
@@ -227,50 +229,48 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 open Nat.Primrec
 
 protected theorem encode : Primrec (@encode α _) :=
-  (Primcodable.prim α).of_eq fun n => by cases decode α n <;> rfl
+  (@Primcodable.prim α _).of_eq fun n => by cases @decode α _ n <;> rfl
 #align primrec.encode Primrec.encode
 
-protected theorem decode : Primrec (decode α) :=
-  succ.comp (Primcodable.prim α)
+protected theorem decode : Primrec (@decode α _) :=
+  succ.comp (@Primcodable.prim α _)
 #align primrec.decode Primrec.decode
 
 theorem dom_denumerable {α β} [Denumerable α] [Primcodable β] {f : α → β} :
     Primrec f ↔ Nat.Primrec fun n => encode (f (ofNat α n)) :=
-  ⟨fun h => (pred.comp h).of_eq fun n => by simp <;> rfl, fun h =>
-    (succ.comp h).of_eq fun n => by simp <;> rfl⟩
+  ⟨fun h => (pred.comp h).of_eq fun n => by simp, fun h =>
+    (succ.comp h).of_eq fun n => by simp⟩
 #align primrec.dom_denumerable Primrec.dom_denumerable
 
 theorem nat_iff {f : ℕ → ℕ} : Primrec f ↔ Nat.Primrec f :=
   dom_denumerable
 #align primrec.nat_iff Primrec.nat_iff
 
-theorem encdec : Primrec fun n => encode (decode α n) :=
-  nat_iff.2 (Primcodable.prim α)
+theorem encdec : Primrec fun n => encode (@decode α _ n) :=
+  nat_iff.2 Primcodable.prim
 #align primrec.encdec Primrec.encdec
 
 theorem option_some : Primrec (@some α) :=
-  ((cases1 0 (succ.comp succ)).comp (Primcodable.prim α)).of_eq fun n => by
-    cases decode α n <;> simp
+  ((cases1 0 (succ.comp succ)).comp (@Primcodable.prim α _)).of_eq fun n => by
+    cases @decode α _ n <;> simp
 #align primrec.option_some Primrec.option_some
 
 theorem of_eq {f g : α → σ} (hf : Primrec f) (H : ∀ n, f n = g n) : Primrec g :=
   (funext H : f = g) ▸ hf
 #align primrec.of_eq Primrec.of_eq
 
-theorem const (x : σ) : Primrec fun a : α => x :=
-  ((cases1 0 (const (encode x).succ)).comp (Primcodable.prim α)).of_eq fun n => by
-    cases decode α n <;> rfl
+theorem const (x : σ) : Primrec fun _ : α => x :=
+  ((cases1 0 (Nat.Primrec.const (encode x).succ)).comp (@Primcodable.prim α _)).of_eq fun n => by
+    cases @decode α _ n <;> rfl
 #align primrec.const Primrec.const
 
 protected theorem id : Primrec (@id α) :=
-  (Primcodable.prim α).of_eq <| by simp
+  (@Primcodable.prim α).of_eq <| by simp
 #align primrec.id Primrec.id
 
 theorem comp {f : β → σ} {g : α → β} (hf : Primrec f) (hg : Primrec g) : Primrec fun a => f (g a) :=
-  ((cases1 0 (hf.comp <| pred.comp hg)).comp (Primcodable.prim α)).of_eq fun n =>
-    by
-    cases decode α n; · rfl
-    simp [encodek]
+  ((cases1 0 (Nat.Primrec.comp hf (pred.comp hg))).comp (@Primcodable.prim α _)).of_eq fun n => by
+    cases @decode α _ n <;> simp [encodek]
 #align primrec.comp Primrec.comp
 
 theorem succ : Primrec Nat.succ :=
