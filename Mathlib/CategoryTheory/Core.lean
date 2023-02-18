@@ -17,11 +17,12 @@ import Mathlib.CategoryTheory.Types
 # The core of a category
 
 The core of a category `C` is the (non-full) subcategory of `C` consisting of all objects,
-and all isomorphisms. We construct it as a `Groupoid`.
+and all isomorphisms. We construct it as a `CategoryTheory.Groupoid`.
 
-`Core.inclusion : Core C ⥤ C` gives the faithful inclusion into the original category.
+`CategoryTheory.Core.inclusion : Core C ⥤ C` gives the faithful inclusion into the original
+category.
 
-Any functor `F` from a groupoid `G` into `C` factors through `Core C`,
+Any functor `F` from a groupoid `G` into `C` factors through `CategoryTheory.Core C`,
 but this is not functorial with respect to `F`.
 -/
 
@@ -29,7 +30,7 @@ namespace CategoryTheory
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category_theory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
 -- Porting note: This linter does not exist yet
@@ -51,7 +52,7 @@ namespace Core
 
 @[simp]
 /- Porting note: abomination -/
-theorem id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X := by 
+theorem id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X := by
   rfl
 #align category_theory.core.id_hom CategoryTheory.Core.id_hom
 
@@ -68,9 +69,9 @@ def inclusion : Core C ⥤ C where
   map := @fun X Y f => f.hom
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
--- porting note: TODO: fix this! This worked wihtout proof before.
+-- porting note: This worked wihtout proof before.
 instance : Faithful (inclusion C) where
-  map_injective := by 
+  map_injective := by
     intro _ _
     apply Iso.ext
 
