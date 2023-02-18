@@ -249,10 +249,7 @@ theorem nadd_comm : ∀ a b, a ♯ b = b ♯ a
   | a, b => by
     rw [nadd_def, nadd_def, max_comm]
     congr <;> ext <;> apply nadd_comm
-    termination_by' PSigma.lex (inferInstance) (fun _ ↦ inferInstance)
-    -- Porting note: above lines replaces
-    -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
-    congr <;> ext (c hc) <;> apply nadd_comm
+    -- porting note: below was decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
   termination_by nadd_comm a b => (a,b)
 #align ordinal.nadd_comm Ordinal.nadd_comm
 
