@@ -15,6 +15,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 /-!
 # Clifford Algebras
 
+Oh no another stupid change
+
 We construct the Clifford algebra of a module `M` over a commutative ring `R`, equipped with
 a quadratic_form `Q`.
 
@@ -213,7 +215,7 @@ theorem ι_mul_ι_add_swap (a b : M) :
       rw [ι_sq_scalar, ι_sq_scalar, ι_sq_scalar]
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
     _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
-    
+
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
 theorem ι_mul_comm (a b : M) :
@@ -386,4 +388,3 @@ theorem toClifford_ι (m : M) : (TensorAlgebra.ι R m).toClifford = CliffordAlge
 #align tensor_algebra.to_clifford_ι TensorAlgebra.toClifford_ι
 
 end TensorAlgebra
-
