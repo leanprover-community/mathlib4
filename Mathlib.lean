@@ -681,6 +681,7 @@ import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Submonoid
+import Mathlib.Deprecated.Subring
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
 import Mathlib.Dynamics.Minimal
