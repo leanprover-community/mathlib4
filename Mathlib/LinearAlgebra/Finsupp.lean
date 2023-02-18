@@ -766,10 +766,10 @@ theorem domLcongr_symm {α₁ α₂ : Type _} (f : α₁ ≃ α₂) :
   LinearEquiv.ext fun _ => rfl
 #align finsupp.dom_lcongr_symm Finsupp.domLcongr_symm
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem domLcongr_single {α₁ : Type _} {α₂ : Type _} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
     (Finsupp.domLcongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
-  simp [Finsupp.domLcongr, Finsupp.domCongr, equivMapDomain_single]
+  simp
 #align finsupp.dom_lcongr_single Finsupp.domLcongr_single
 
 /-- An equivalence of sets induces a linear equivalence of `Finsupp`s supported on those sets. -/
@@ -848,7 +848,8 @@ theorem mapRange.linearEquiv_symm (f : M ≃ₗ[R] N) :
   LinearEquiv.ext fun _x => rfl
 #align finsupp.map_range.linear_equiv_symm Finsupp.mapRange.linearEquiv_symm
 
-@[simp]
+-- Porting note: This priority should be higher than `LinearEquiv.coe_toAddEquiv`.
+@[simp 1500]
 theorem mapRange.linearEquiv_toAddEquiv (f : M ≃ₗ[R] N) :
     (mapRange.linearEquiv f).toAddEquiv = (mapRange.addEquiv f.toAddEquiv : (α →₀ M) ≃+ _) :=
   AddEquiv.ext fun _ => rfl
@@ -1107,6 +1108,11 @@ section
 
 variable (R)
 
+-- Porting note: `irreducible_def` produces a structure.
+--               When a structure is defined, an injectivity theorem of the constructor is
+--               generated, which has `simp` attr, but this get a `simpNF` linter.
+--               So, this option is required.
+set_option genInjectivity false in
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
 using the axiom of choice.
 -/
