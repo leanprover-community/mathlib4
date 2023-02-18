@@ -7,7 +7,7 @@ import Mathlib.Tactic.LabelAttr
 
 /-! # The @[mono] attribute -/
 
-namespace Mathlib.Tactic.Monoticity
+namespace Mathlib.Tactic.Monotonicity
 
 syntax mono.side := &"left" <|> &"right" <|> &"both"
 
