@@ -85,7 +85,10 @@ theorem toDfinsupp_singleton (a : α) : toDfinsupp {a} = Dfinsupp.single a 1 := 
 def equivDfinsupp : Multiset α ≃+ Π₀ _a : α, ℕ :=
   AddMonoidHom.toAddEquiv Multiset.toDfinsupp Dfinsupp.toMultiset
     (by
-      -- Porting note: used to be ext
+      -- Porting note: used to be ext.
+      /- potential bug: in lean 3, `trace.ext` outputs
+         "matched goal to rule: dfinsupp.add_hom_ext'"
+         but that lemma does not apply!-/
       apply Multiset.addHom_ext
       simp)
     (by
