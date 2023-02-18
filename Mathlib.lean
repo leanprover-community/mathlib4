@@ -228,6 +228,8 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
@@ -246,6 +248,7 @@ import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Opposites
@@ -286,6 +289,7 @@ import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.DFA
 import Mathlib.Computability.Language
+import Mathlib.Computability.NFA
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
@@ -561,7 +565,9 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.PEquiv
 import Mathlib.Data.PFun
+import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.PFunctor.Univariate.Basic
+import Mathlib.Data.PFunctor.Univariate.M
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PNat.Factors
@@ -678,6 +684,7 @@ import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Submonoid
+import Mathlib.Deprecated.Subring
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
 import Mathlib.Dynamics.Minimal
@@ -686,6 +693,7 @@ import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.GroupTheory.Commutator
+import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Divisible
@@ -869,6 +877,7 @@ import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
 import Mathlib.Order.Disjointed
 import Mathlib.Order.Extension.Linear
+import Mathlib.Order.Extension.Well
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Bases
@@ -922,6 +931,7 @@ import Mathlib.Order.Monotone.Union
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.PFilter
 import Mathlib.Order.PartialSups
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
@@ -965,6 +975,7 @@ import Mathlib.SetTheory.Lists
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.SetTheory.Ordinal.NaturalOps
+import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
@@ -1119,6 +1130,7 @@ import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.LocalHomeomorph
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
@@ -1152,6 +1164,7 @@ import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.CompleteSeparated
+import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Separation
