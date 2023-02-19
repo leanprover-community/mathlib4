@@ -97,6 +97,7 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IsPrimePow
+import Mathlib.Algebra.Module.Algebra
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Equiv
