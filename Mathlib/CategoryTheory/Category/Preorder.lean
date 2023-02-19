@@ -71,15 +71,15 @@ alias homOfLE ← _root_.LE.le.hom
 #align has_le.le.hom LE.le.hom
 
 @[simp]
-theorem hom_of_le_refl {x : X} : (le_refl x).hom = 𝟙 x :=
+theorem homOfLE_refl {x : X} : (le_refl x).hom = 𝟙 x :=
   rfl
-#align category_theory.hom_of_le_refl CategoryTheory.hom_of_le_refl
+#align category_theory.hom_of_le_refl CategoryTheory.homOfLE_refl
 
 @[simp]
-theorem hom_of_le_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
+theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
     homOfLE h ≫ homOfLE k = homOfLE (h.trans k) :=
   rfl
-#align category_theory.hom_of_le_comp CategoryTheory.hom_of_le_comp
+#align category_theory.hom_of_le_comp CategoryTheory.homOfLE_comp
 
 /-- Extract the underlying inequality from a morphism in a preorder category.
 -/
@@ -90,29 +90,28 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
 alias leOfHom ← _root_.Quiver.Hom.le
 #align quiver.hom.le Quiver.Hom.le
 
--- porting note: linter seems to be wrong here
-@[simp, nolint simpNF]
-theorem le_of_hom_hom_of_le {x y : X} (h : x ≤ y) : h.hom.le = h :=
-  rfl
-#align category_theory.le_of_hom_hom_of_le CategoryTheory.le_of_hom_hom_of_le
-
--- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
--- itself. This usually means that it will never apply." removing simp? It doesn't fire
+-- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
 -- @[simp]
-theorem hom_of_le_le_of_hom {x y : X} (h : x ⟶ y) : h.le.hom = h := by
+theorem leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
+  rfl
+#align category_theory.le_of_hom_hom_of_le CategoryTheory.leOfHom_homOfLE
+
+-- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
+-- @[simp]
+theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h := by
   cases' h with h
   cases h
   rfl
-#align category_theory.hom_of_le_le_of_hom CategoryTheory.hom_of_le_le_of_hom
+#align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
 
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
 def opHomOfLe {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
   (homOfLE h).op
 #align category_theory.op_hom_of_le CategoryTheory.opHomOfLe
 
-theorem le_ofOp_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
+theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
-#align category_theory.le_of_op_hom CategoryTheory.le_ofOp_hom
+#align category_theory.le_of_op_hom CategoryTheory.le_of_op_hom
 
 instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
@@ -132,10 +131,9 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A monotone function between preorders induces a functor between the associated categories.
 -/
-def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y
-    where
+def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
   obj := f
-  map := @fun x₁ x₂ g => CategoryTheory.homOfLE (h g.le)
+  map g := CategoryTheory.homOfLE (h g.le)
 #align monotone.functor Monotone.functor
 
 @[simp]
@@ -169,13 +167,12 @@ theorem Iso.to_eq {x y : X} (f : x ≅ y) : x = y :=
 
 /-- A categorical equivalence between partial orders is just an order isomorphism.
 -/
-def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y
-    where
+def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y where
   toFun := e.functor.obj
   invFun := e.inverse.obj
   left_inv a := (e.unitIso.app a).to_eq.symm
   right_inv b := (e.counitIso.app b).to_eq
-  map_rel_iff' := @fun a a' =>
+  map_rel_iff' {a a'} :=
     ⟨fun h =>
       ((Equivalence.unit e).app a ≫ e.inverse.map h.hom ≫ (Equivalence.unitInv e).app a').le,
       fun h : a ≤ a' => (e.functor.map h.hom).le⟩
