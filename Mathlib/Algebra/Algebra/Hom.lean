@@ -8,7 +8,7 @@ Authors: Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -362,16 +362,14 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
-    ofLinearMap φ.toLinearMap map_one map_mul = φ :=
-  by
+    ofLinearMap φ.toLinearMap map_one map_mul = φ := by
   ext
   rfl
 #align alg_hom.of_linear_map_to_linear_map AlgHom.ofLinearMap_toLinearMap
 
 @[simp]
 theorem toLinearMap_ofLinearMap (f : A →ₗ[R] B) (map_one) (map_mul) :
-    toLinearMap (ofLinearMap f map_one map_mul) = f :=
-  by
+    toLinearMap (ofLinearMap f map_one map_mul) = f := by
   ext
   rfl
 #align alg_hom.to_linear_map_of_linear_map AlgHom.toLinearMap_ofLinearMap
