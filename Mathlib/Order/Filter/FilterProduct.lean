@@ -8,8 +8,8 @@ Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Filter.Ultrafilter
-import Mathbin.Order.Filter.Germ
+import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Germ
 
 /-!
 # Ultraproducts
@@ -78,8 +78,7 @@ theorem const_lt_iff [Preorder β] {x y : β} : (↑x : β*) < ↑y ↔ x < y :=
   coe_lt.trans liftRel_const_iff
 #align filter.germ.const_lt_iff Filter.Germ.const_lt_iff
 
-theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· < ·) :=
-  by
+theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· < ·) := by
   ext (⟨f⟩⟨g⟩)
   exact coe_lt
 #align filter.germ.lt_def Filter.Germ.lt_def
