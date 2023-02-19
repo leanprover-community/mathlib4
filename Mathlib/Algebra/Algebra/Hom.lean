@@ -252,10 +252,12 @@ protected theorem map_finsupp_sum {α : Type _} [Zero α] {ι : Type _} (f : ι 
   map_finsupp_sum _ _ _
 #align alg_hom.map_finsupp_sum AlgHom.map_finsupp_sum
 
+set_option linter.deprecated false in
 protected theorem map_bit0 (x) : φ (bit0 x) = bit0 (φ x) :=
   map_bit0 _ _
 #align alg_hom.map_bit0 AlgHom.map_bit0
 
+set_option linter.deprecated false in
 protected theorem map_bit1 (x) : φ (bit1 x) = bit1 (φ x) :=
   map_bit1 _ _
 #align alg_hom.map_bit1 AlgHom.map_bit1
@@ -300,7 +302,7 @@ theorem id_apply (p : A) : AlgHom.id R A p = p :=
 /-- Composition of algebra homeomorphisms. -/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
   { φ₁.toRingHom.comp ↑φ₂ with
-    commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes] <;> rfl }
+    commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
 #align alg_hom.comp AlgHom.comp
 
 @[simp]
@@ -319,17 +321,17 @@ theorem comp_to_ringHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
 
 @[simp]
 theorem comp_id : φ.comp (AlgHom.id R A) = φ :=
-  ext fun x => rfl
+  ext fun _x => rfl
 #align alg_hom.comp_id AlgHom.comp_id
 
 @[simp]
 theorem id_comp : (AlgHom.id R B).comp φ = φ :=
-  ext fun x => rfl
+  ext fun _x => rfl
 #align alg_hom.id_comp AlgHom.id_comp
 
 theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A →ₐ[R] B) :
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
-  ext fun x => rfl
+  ext fun _x => rfl
 #align alg_hom.comp_assoc AlgHom.comp_assoc
 
 /-- R-Alg ⥤ R-Mod -/
@@ -344,7 +346,8 @@ theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
 #align alg_hom.to_linear_map_apply AlgHom.toLinearMap_apply
 
-theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun φ₁ φ₂ h =>
+theorem toLinearMap_injective :
+    Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
   ext <| LinearMap.congr_fun h
 #align alg_hom.to_linear_map_injective AlgHom.toLinearMap_injective
 
@@ -494,7 +497,7 @@ def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S
 @[simp]
 theorem toRatAlgHom_to_ringHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) :
     ↑f.toRatAlgHom = f :=
-  RingHom.ext fun x => rfl
+  RingHom.ext fun _x => rfl
 #align ring_hom.to_rat_alg_hom_to_ring_hom RingHom.toRatAlgHom_to_ringHom
 
 end RingHom
@@ -509,7 +512,7 @@ variable {R S : Type _}
 @[simp]
 theorem AlgHom.to_ringHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S]
     (f : R →ₐ[ℚ] S) : (f : R →+* S).toRatAlgHom = f :=
-  AlgHom.ext fun x => rfl
+  AlgHom.ext fun _x => rfl
 #align alg_hom.to_ring_hom_to_rat_alg_hom AlgHom.to_ringHom_toRatAlgHom
 
 /-- The equivalence between `ring_hom` and `ℚ`-algebra homomorphisms. -/
@@ -561,7 +564,7 @@ def toAlgHom (m : M) : A →ₐ[R] A :=
 #align mul_semiring_action.to_alg_hom MulSemiringAction.toAlgHom
 
 theorem toAlgHom_injective [FaithfulSMul M A] :
-    Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun m₁ m₂ h =>
+    Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
 #align mul_semiring_action.to_alg_hom_injective MulSemiringAction.toAlgHom_injective
 
