@@ -38,7 +38,6 @@ namespace Germ
 
 open Ultrafilter
 
--- mathport name: «exprβ*»
 local notation "β*" => Germ (φ : Filter α) β
 
 instance divisionSemiring [DivisionSemiring β] : DivisionSemiring β* :=
