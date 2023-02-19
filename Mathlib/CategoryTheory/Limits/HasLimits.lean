@@ -14,38 +14,38 @@ import Mathlib.CategoryTheory.Category.Ulift
 /-!
 # Existence of limits and colimits
 
-In `CategoryTheory.Limits.IsLimit` we defined `is_limit c`,
+In `CategoryTheory.Limits.IsLimit` we defined `IsLimit c`,
 the data showing that a cone `c` is a limit cone.
 
 The two main structures defined in this file are:
-* `limit_cone F`, which consists of a choice of cone for `F` and the fact it is a limit cone, and
-* `has_limit F`, asserting the mere existence of some limit cone for `F`.
+* `LimitCone F`, which consists of a choice of cone for `F` and the fact it is a limit cone, and
+* `HasLimit F`, asserting the mere existence of some limit cone for `F`.
 
-`has_limit` is a propositional typeclass
+`HasLimit` is a propositional typeclass
 (it's important that it is a proposition merely asserting the existence of a limit,
 as otherwise we would have non-defeq problems from incompatible instances).
 
-While `has_limit` only asserts the existence of a limit cone,
+While `HasLimit` only asserts the existence of a limit cone,
 we happily use the axiom of choice in mathlib,
-so there are convenience functions all depending on `has_limit F`:
+so there are convenience functions all depending on `HasLimit F`:
 * `limit F : C`, producing some limit object (of course all such are isomorphic)
 * `limit.π F j : limit F ⟶ F.obj j`, the morphisms out of the limit,
-* `limit.lift F c : c.X ⟶ limit F`, the universal morphism from any other `c : cone F`, etc.
+* `limit.lift F c : c.X ⟶ limit F`, the universal morphism from any other `c : Cone F`, etc.
 
-Key to using the `has_limit` interface is that there is an `@[ext]` lemma stating that
+Key to using the `HasLimit` interface is that there is an `@[ext]` lemma stating that
 to check `f = g`, for `f g : Z ⟶ limit F`, it suffices to check `f ≫ limit.π F j = g ≫ limit.π F j`
 for every `j`.
 This, combined with `@[simp]` lemmas, makes it possible to prove many easy facts about limits using
 automation (e.g. `tidy`).
 
-There are abbreviations `has_limits_of_shape J C` and `has_limits C`
+There are abbreviations `HasLimitsOfShape J C` and `HasLimits C`
 asserting the existence of classes of limits.
 Later more are introduced, for finite limits, special shapes of limits, etc.
 
-Ideally, many results about limits should be stated first in terms of `is_limit`,
-and then a result in terms of `has_limit` derived from this.
+Ideally, many results about limits should be stated first in terms of `IsLimit`,
+and then a result in terms of `HasLimit` derived from this.
 At this point, however, this is far from uniformly achieved in mathlib ---
-often statements are only written in terms of `has_limit`.
+often statements are only written in terms of `HasLimit`.
 
 ## Implementation
 At present we simply say everything twice, in order to handle both limits and colimits.
@@ -64,7 +64,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite
 
 namespace CategoryTheory.Limits
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 universe v₁ u₁ v₂ u₂ v₃ u₃ v v' v'' u u' u''
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
@@ -75,7 +75,7 @@ variable {F : J ⥤ C}
 
 section Limit
 
-/-- `limit_cone F` contains a cone over `F` together with the information that it is a limit. -/
+/-- `LimitCone F` contains a cone over `F` together with the information that it is a limit. -/
 -- @[nolint has_nonempty_instance] -- Porting note: removed
 structure LimitCone (F : J ⥤ C) where
   /-- The cone itself -/
@@ -84,7 +84,7 @@ structure LimitCone (F : J ⥤ C) where
   isLimit : IsLimit cone
 #align category_theory.limits.limit_cone CategoryTheory.Limits.LimitCone
 
-/-- `has_limit F` represents the mere existence of a limit for `F`. -/
+/-- `HasLimit F` represents the mere existence of a limit for `F`. -/
 class HasLimit (F : J ⥤ C) : Prop where mk' ::
   /-- There is some limit cone for `F` -/
   exists_limit : Nonempty (LimitCone F)
@@ -94,7 +94,7 @@ theorem HasLimit.mk {F : J ⥤ C} (d : LimitCone F) : HasLimit F :=
   ⟨Nonempty.intro d⟩
 #align category_theory.limits.has_limit.mk CategoryTheory.Limits.HasLimit.mk
 
-/-- Use the axiom of choice to extract explicit `limit_cone F` from `has_limit F`. -/
+/-- Use the axiom of choice to extract explicit `LimitCone F` from `HasLimit F`. -/
 def getLimitCone (F : J ⥤ C) [HasLimit F] : LimitCone F :=
   Classical.choice <| HasLimit.exists_limit
 #align category_theory.limits.get_limit_cone CategoryTheory.Limits.getLimitCone
@@ -107,8 +107,8 @@ class HasLimitsOfShape : Prop where
   hasLimit : ∀ F : J ⥤ C, HasLimit F := by infer_instance
 #align category_theory.limits.has_limits_of_shape CategoryTheory.Limits.HasLimitsOfShape
 
-/-- `C` has all limits of size `v₁ u₁` (`has_limits_of_size.{v₁ u₁} C`)
-if it has limits of every shape `J : Type u₁` with `[category.{v₁} J]`.
+/-- `C` has all limits of size `v₁ u₁` (`HasLimitsOfSize.{v₁ u₁} C`)
+if it has limits of every shape `J : Type u₁` with `[Category.{v₁} J]`.
 -/
 class HasLimitsOfSize (C : Type u) [Category.{v} C] : Prop where
   /-- All functors `F : J ⥤ C` from all small `J` have limits -/
@@ -140,7 +140,7 @@ instance (priority := 100) hasLimitsOfShapeOfHasLimits {J : Type u₁} [Category
   HasLimitsOfSize.hasLimitsOfShape J
 #align category_theory.limits.has_limits_of_shape_of_has_limits CategoryTheory.Limits.hasLimitsOfShapeOfHasLimits
 
--- Interface to the `has_limit` class.
+-- Interface to the `HasLimit` class.
 /-- An arbitrary choice of limit cone for a functor. -/
 def Limit.cone (F : J ⥤ C) [HasLimit F] : Cone F :=
   (getLimitCone F).cone
@@ -519,8 +519,8 @@ theorem hasLimitOfEquivalenceComp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] : H
   apply hasLimitOfIso (e.invFunIdAssoc F)
 #align category_theory.limits.has_limit_of_equivalence_comp CategoryTheory.Limits.hasLimitOfEquivalenceComp
 
--- `has_limit_comp_equivalence` and `has_limit_of_comp_equivalence`
--- are proved in `category_theory/adjunction/limits.lean`.
+-- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
+-- are proved in `CategoryTheory/Adjunction/Limits.lean`.
 section LimFunctor
 
 variable [HasLimitsOfShape J C]
@@ -645,8 +645,8 @@ theorem hasLimitsOfShapeOfEquivalence {J' : Type u₂} [Category.{v₂} J'] (e :
 
 variable (C)
 
-/-- `has_limits_of_size_shrink.{v u} C` tries to obtain `has_limits_of_size.{v u} C`
-from some other `has_limits_of_size C`.
+/-- `hasLimitsOfSizeShrink.{v u} C` tries to obtain `HasLimitsOfSize.{v u} C`
+from some other `HasLimitsOfSize C`.
 -/
 theorem hasLimitsOfSizeShrink [HasLimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
     HasLimitsOfSize.{v₁, u₁} C :=
@@ -661,7 +661,7 @@ end Limit
 
 section Colimit
 
-/-- `colimit_cocone F` contains a cocone over `F` together with the information that it is a
+/-- `ColimitCocone F` contains a cocone over `F` together with the information that it is a
     colimit. -/
 -- @[nolint has_nonempty_instance] -- Porting note: removed
 structure ColimitCocone (F : J ⥤ C) where
@@ -671,7 +671,7 @@ structure ColimitCocone (F : J ⥤ C) where
   isColimit : IsColimit cocone
 #align category_theory.limits.colimit_cocone CategoryTheory.Limits.ColimitCocone
 
-/-- `has_colimit F` represents the mere existence of a colimit for `F`. -/
+/-- `HasColimit F` represents the mere existence of a colimit for `F`. -/
 class HasColimit (F : J ⥤ C) : Prop where mk' ::
   /-- There exists a colimit for `F` -/
   exists_colimit : Nonempty (ColimitCocone F)
@@ -681,7 +681,7 @@ theorem HasColimit.mk {F : J ⥤ C} (d : ColimitCocone F) : HasColimit F :=
   ⟨Nonempty.intro d⟩
 #align category_theory.limits.has_colimit.mk CategoryTheory.Limits.HasColimit.mk
 
-/-- Use the axiom of choice to extract explicit `colimit_cocone F` from `has_colimit F`. -/
+/-- Use the axiom of choice to extract explicit `ColimitCocone F` from `HasColimit F`. -/
 def getColimitCocone (F : J ⥤ C) [HasColimit F] : ColimitCocone F :=
   Classical.choice <| HasColimit.exists_colimit
 #align category_theory.limits.get_colimit_cocone CategoryTheory.Limits.getColimitCocone
@@ -694,8 +694,8 @@ class HasColimitsOfShape : Prop where
   HasColimit : ∀ F : J ⥤ C, HasColimit F := by infer_instance
 #align category_theory.limits.has_colimits_of_shape CategoryTheory.Limits.HasColimitsOfShape
 
-/-- `C` has all colimits of size `v₁ u₁` (`has_colimits_of_size.{v₁ u₁} C`)
-if it has colimits of every shape `J : Type u₁` with `[category.{v₁} J]`.
+/-- `C` has all colimits of size `v₁ u₁` (`HasColimitsOfSize.{v₁ u₁} C`)
+if it has colimits of every shape `J : Type u₁` with `[Category.{v₁} J]`.
 -/
 class HasColimitsOfSize (C : Type u) [Category.{v} C] : Prop where
   /-- All `F : J ⥤ C` have colimits for all small `J` -/
@@ -728,7 +728,7 @@ instance (priority := 100) hasColimitsOfShapeOfHasColimitsOfSize {J : Type u₁}
   HasColimitsOfSize.hasColimitsOfShape J
 #align category_theory.limits.has_colimits_of_shape_of_has_colimits_of_size CategoryTheory.Limits.hasColimitsOfShapeOfHasColimitsOfSize
 
--- Interface to the `has_colimit` class.
+-- Interface to the `HasColimit` class.
 /-- An arbitrary choice of colimit cocone of a functor. -/
 def Colimit.cocone (F : J ⥤ C) [HasColimit F] : Cocone F :=
   (getColimitCocone F).cocone
@@ -785,7 +785,7 @@ However, since `category.assoc` is a `@[simp]` lemma, often expressions are
 right associated, and it's hard to apply these lemmas about `colimit.ι`.
 
 We thus use `reassoc` to define additional `@[simp]` lemmas, with an arbitrary extra morphism.
-(see `tactic/reassoc_axiom.lean`)
+(see `Tactic/reassoc_axiom.lean`)
  -/
 @[reassoc (attr := simp)]
 theorem colimit.ι_desc {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :
@@ -1126,7 +1126,7 @@ variable [HasColimitsOfShape J C]
 
 section
 
--- attribute [local simp] colimMap
+-- attribute [local simp] colimMap -- Porting note
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
 @[simps obj]
@@ -1256,8 +1256,8 @@ theorem hasColimitsOfShapeOfEquivalence {J' : Type u₂} [Category.{v₂} J'] (e
 
 variable (C)
 
-/-- `has_colimits_of_size_shrink.{v u} C` tries to obtain `has_colimits_of_size.{v u} C`
-from some other `has_colimits_of_size C`.
+/-- `hasColimitsOfSizeShrink.{v u} C` tries to obtain `HasColimitsOfSize.{v u} C`
+from some other `HasColimitsOfSize C`.
 -/
 theorem hasColimitsOfSizeShrink [HasColimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
     HasColimitsOfSize.{v₁, u₁} C :=
@@ -1273,7 +1273,7 @@ end Colimit
 
 section Opposite
 
-/-- If `t : cone F` is a limit cone, then `t.op : cocone F.op` is a colimit cocone.
+/-- If `t : Cone F` is a limit cone, then `t.op : Cocone F.op` is a colimit cocone.
 -/
 def IsLimit.op {t : Cone F} (P : IsLimit t) : IsColimit t.op where
   desc s := (P.lift s.unop).op
@@ -1288,7 +1288,7 @@ def IsLimit.op {t : Cone F} (P : IsLimit t) : IsColimit t.op where
       rfl
 #align category_theory.limits.is_limit.op CategoryTheory.Limits.IsLimit.op
 
-/-- If `t : cocone F` is a colimit cocone, then `t.op : cone F.op` is a limit cone.
+/-- If `t : Cocone F` is a colimit cocone, then `t.op : Cone F.op` is a limit cone.
 -/
 def IsColimit.op {t : Cocone F} (P : IsColimit t) : IsLimit t.op where
   lift s := (P.desc s.unop).op
@@ -1303,7 +1303,7 @@ def IsColimit.op {t : Cocone F} (P : IsColimit t) : IsLimit t.op where
       rfl
 #align category_theory.limits.is_colimit.op CategoryTheory.Limits.IsColimit.op
 
-/-- If `t : cone F.op` is a limit cone, then `t.unop : cocone F` is a colimit cocone.
+/-- If `t : Cone F.op` is a limit cone, then `t.unop : Cocone F` is a colimit cocone.
 -/
 def IsLimit.unop {t : Cone F.op} (P : IsLimit t) : IsColimit t.unop where
   desc s := (P.lift s.op).unop
@@ -1319,7 +1319,7 @@ def IsLimit.unop {t : Cone F.op} (P : IsLimit t) : IsColimit t.unop where
       rfl
 #align category_theory.limits.is_limit.unop CategoryTheory.Limits.IsLimit.unop
 
-/-- If `t : cocone F.op` is a colimit cocone, then `t.unop : cone F.` is a limit cone.
+/-- If `t : Cocone F.op` is a colimit cocone, then `t.unop : Cone F.` is a limit cone.
 -/
 def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
   lift s := (P.desc s.op).unop
@@ -1335,14 +1335,14 @@ def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
       rfl
 #align category_theory.limits.is_colimit.unop CategoryTheory.Limits.IsColimit.unop
 
-/-- `t : cone F` is a limit cone if and only is `t.op : cocone F.op` is a colimit cocone.
+/-- `t : Cone F` is a limit cone if and only is `t.op : Cocone F.op` is a colimit cocone.
 -/
 def isLimitEquivIsColimitOp {t : Cone F} : IsLimit t ≃ IsColimit t.op :=
   equivOfSubsingletonOfSubsingleton IsLimit.op fun P =>
     P.unop.ofIsoLimit (Cones.ext (Iso.refl _) (by aesop_cat))
 #align category_theory.limits.is_limit_equiv_is_colimit_op CategoryTheory.Limits.isLimitEquivIsColimitOp
 
-/-- `t : cocone F` is a colimit cocone if and only is `t.op : cone F.op` is a limit cone.
+/-- `t : Cocone F` is a colimit cocone if and only is `t.op : Cone F.op` is a limit cone.
 -/
 def isColimitEquivIsLimitOp {t : Cocone F} : IsColimit t ≃ IsLimit t.op :=
   equivOfSubsingletonOfSubsingleton IsColimit.op fun P =>
