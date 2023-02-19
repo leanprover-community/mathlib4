@@ -104,7 +104,8 @@ theorem const_inf [HasInf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : β*) 
 instance semilatticeSup [SemilatticeSup β] : SemilatticeSup β* :=
   { Germ.partialOrder with
     sup := (· ⊔ ·)
-    le_sup_left := fun f g => inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => le_sup_left
+    le_sup_left := fun f g =>
+        inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => le_sup_left
     le_sup_right := fun f g =>
       inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => le_sup_right
     sup_le := fun f₁ f₂ g =>
@@ -113,7 +114,8 @@ instance semilatticeSup [SemilatticeSup β] : SemilatticeSup β* :=
 instance semilatticeInf [SemilatticeInf β] : SemilatticeInf β* :=
   { Germ.partialOrder with
     inf := (· ⊓ ·)
-    inf_le_left := fun f g => inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => inf_le_left
+    inf_le_left := fun f g =>
+        inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => inf_le_left
     inf_le_right := fun f g =>
       inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => inf_le_right
     le_inf := fun f₁ f₂ g =>
@@ -163,9 +165,11 @@ instance orderedSemiring [OrderedSemiring β] : OrderedSemiring β* :=
     Germ.orderedAddCommMonoid with
     zero_le_one := const_le zero_le_one
     mul_le_mul_of_nonneg_left := fun x y z =>
-      inductionOn₃ x y z fun _f _g _h hfg hh => hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_left
+      inductionOn₃ x y z fun _f _g _h hfg hh =>
+          hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_left
     mul_le_mul_of_nonneg_right := fun x y z =>
-      inductionOn₃ x y z fun _f _g _h hfg hh => hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_right }
+      inductionOn₃ x y z fun _f _g _h hfg hh =>
+          hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_right }
 
 instance orderedCommSemiring [OrderedCommSemiring β] : OrderedCommSemiring β* :=
   { Germ.orderedSemiring, Germ.commSemiring with }
