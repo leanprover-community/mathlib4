@@ -8,7 +8,7 @@ Authors: Scott Morrison, Reid Barton, Bhavik Mehta, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Preservation and reflection of (co)limits.
@@ -139,8 +139,7 @@ instance preservesColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
 #align category_theory.limits.preserves_colimit_subsingleton CategoryTheory.Limits.preservesColimit_subsingleton
 
 instance preservesLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
-    Subsingleton (PreservesLimitsOfShape J F) :=
-  by
+    Subsingleton (PreservesLimitsOfShape J F) := by
   constructor
   intros
   cases a
@@ -149,8 +148,7 @@ instance preservesLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F :
 #align category_theory.limits.preserves_limits_of_shape_subsingleton CategoryTheory.Limits.preservesLimitsOfShape_subsingleton
 
 instance preservesColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
-    Subsingleton (PreservesColimitsOfShape J F) :=
-  by
+    Subsingleton (PreservesColimitsOfShape J F) := by
   constructor
   intros
   cases a
@@ -159,8 +157,7 @@ instance preservesColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F
 #align category_theory.limits.preserves_colimits_of_shape_subsingleton CategoryTheory.Limits.preservesColimitsOfShape_subsingleton
 
 instance preserves_limits_subsingleton (F : C ⥤ D) :
-    Subsingleton (PreservesLimitsOfSize.{w', w} F) :=
-  by
+    Subsingleton (PreservesLimitsOfSize.{w', w} F) := by
   constructor
   intros
   cases a
@@ -169,8 +166,7 @@ instance preserves_limits_subsingleton (F : C ⥤ D) :
 #align category_theory.limits.preserves_limits_subsingleton CategoryTheory.Limits.preserves_limits_subsingleton
 
 instance preserves_colimits_subsingleton (F : C ⥤ D) :
-    Subsingleton (PreservesColimitsOfSize.{w', w} F) :=
-  by
+    Subsingleton (PreservesColimitsOfSize.{w', w} F) := by
   constructor
   intros
   cases a
@@ -469,8 +465,7 @@ instance reflectsColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
 #align category_theory.limits.reflects_colimit_subsingleton CategoryTheory.Limits.reflectsColimit_subsingleton
 
 instance reflectsLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
-    Subsingleton (ReflectsLimitsOfShape J F) :=
-  by
+    Subsingleton (ReflectsLimitsOfShape J F) := by
   constructor
   intros
   cases a
@@ -479,8 +474,7 @@ instance reflectsLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : 
 #align category_theory.limits.reflects_limits_of_shape_subsingleton CategoryTheory.Limits.reflectsLimitsOfShape_subsingleton
 
 instance reflectsColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
-    Subsingleton (ReflectsColimitsOfShape J F) :=
-  by
+    Subsingleton (ReflectsColimitsOfShape J F) := by
   constructor
   intros
   cases a
@@ -498,8 +492,7 @@ instance reflects_limits_subsingleton (F : C ⥤ D) : Subsingleton (ReflectsLimi
 #align category_theory.limits.reflects_limits_subsingleton CategoryTheory.Limits.reflects_limits_subsingleton
 
 instance reflects_colimits_subsingleton (F : C ⥤ D) :
-    Subsingleton (ReflectsColimitsOfSize.{w', w} F) :=
-  by
+    Subsingleton (ReflectsColimitsOfSize.{w', w} F) := by
   constructor
   intros
   cases a
