@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.LocallyFinite
-import Mathbin.Data.Dfinsupp.Interval
-import Mathbin.Data.Dfinsupp.Multiset
-import Mathbin.Data.Nat.Interval
+import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Dfinsupp.Interval
+import Mathlib.Data.Dfinsupp.Multiset
+import Mathlib.Data.Nat.Interval
 
 /-!
 # Finite intervals of multisets
