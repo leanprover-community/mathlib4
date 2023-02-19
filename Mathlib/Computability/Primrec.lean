@@ -424,7 +424,7 @@ variable {α : Type _} {β : Type _} {σ : Type _}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem of_eq {f g : α → β → σ} (hg : Primrec₂ f) (H : ∀ a b, f a b = g a b) : Primrec₂ g :=
-  (by funext a b <;> apply H : f = g) ▸ hg
+  (by funext a b; apply H : f = g) ▸ hg
 #align primrec₂.of_eq Primrec₂.of_eq
 
 theorem const (x : σ) : Primrec₂ fun (a : α) (b : β) => x :=
@@ -687,8 +687,9 @@ theorem nat_mul : Primrec₂ ((· * ·) : ℕ → ℕ → ℕ) :=
   Primrec₂.unpaired'.1 Nat.Primrec.mul
 #align primrec.nat_mul Primrec.nat_mul
 
+-- porting note: rename to `bite` or `bif`?
 theorem cond {c : α → Bool} {f : α → σ} {g : α → σ} (hc : Primrec c) (hf : Primrec f)
-    (hg : Primrec g) : Primrec fun a => cond (c a) (f a) (g a) :=
+    (hg : Primrec g) : Primrec fun a => bif (c a) then (f a) else (g a) :=
   (nat_cases (encode_iff.2 hc) hg (hf.comp fst).to₂).of_eq fun a => by cases c a <;> rfl
 #align primrec.cond Primrec.cond
 
@@ -741,10 +742,10 @@ lean 3 declaration is
 but is expected to have type
   Primrec.{0, 0} Bool Bool Primcodable.bool Primcodable.bool not
 Case conversion may be inaccurate. Consider using '#align primrec.not Primrec.notₓ'. -/
-protected theorem not {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
+protected theorem pnot {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     PrimrecPred fun a => ¬p a :=
   (Primrec.not.comp hp).of_eq fun n => by simp
-#align primrec.not Primrec.not
+#align primrec.not Primrec.pnot
 
 /- warning: primrec.and clashes with primrec.band -> Primrec.and
 warning: primrec.and -> Primrec.and is a dubious translation:
@@ -753,10 +754,10 @@ lean 3 declaration is
 but is expected to have type
   Primrec₂.{0, 0, 0} Bool Bool Bool Primcodable.bool Primcodable.bool Primcodable.bool and
 Case conversion may be inaccurate. Consider using '#align primrec.and Primrec.andₓ'. -/
-protected theorem and {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
+protected theorem pand {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
     (hq : PrimrecPred q) : PrimrecPred fun a => p a ∧ q a :=
   (Primrec.and.comp hp hq).of_eq fun n => by simp
-#align primrec.and Primrec.and
+#align primrec.and Primrec.pand
 
 /- warning: primrec.or clashes with primrec.bor -> Primrec.or
 warning: primrec.or -> Primrec.or is a dubious translation:
@@ -765,20 +766,26 @@ lean 3 declaration is
 but is expected to have type
   Primrec₂.{0, 0, 0} Bool Bool Bool Primcodable.bool Primcodable.bool Primcodable.bool or
 Case conversion may be inaccurate. Consider using '#align primrec.or Primrec.orₓ'. -/
-protected theorem or {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
+protected theorem por {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
     (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
   (Primrec.or.comp hp hq).of_eq fun n => by simp
-#align primrec.or Primrec.or
+#align primrec.or Primrec.por
 
-protected theorem eq [DecidableEq α] : PrimrecRel (@Eq α) :=
+-- porting note: It is unclear whether we want to boolean versions
+-- of these lemmas, just the prop versions, or both
+-- The boolean versions are often actually easier to use
+-- but did not exist in Lean 3
+protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
-    (Primrec.and nat_le nat_le.symm).of_eq fun a => by simp [le_antisymm_iff]
+    (Primrec.pand nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
   (this.comp₂ (Primrec.encode.comp₂ Primrec₂.left) (Primrec.encode.comp₂ Primrec₂.right)).of_eq
     fun a b => encode_injective.eq_iff
+
+protected theorem eq [DecidableEq α] : PrimrecRel (@Eq α) := Primrec.beq
 #align primrec.eq Primrec.eq
 
 theorem nat_lt : PrimrecRel ((· < ·) : ℕ → ℕ → Prop) :=
-  (nat_le.comp snd fst).Not.of_eq fun p => by simp
+  (nat_le.comp snd fst).pnot.of_eq fun p => by simp
 #align primrec.nat_lt Primrec.nat_lt
 
 theorem option_guard {p : α → β → Prop} [∀ a b, Decidable (p a b)] (hp : PrimrecRel p) {f : α → β}
@@ -792,25 +799,46 @@ theorem option_orelse : Primrec₂ ((· <|> ·) : Option α → Option α → Op
 
 protected theorem decode₂ : Primrec (decode₂ α) :=
   option_bind Primrec.decode <|
-    option_guard ((@Primrec.eq _ _ Nat.decidableEq).comp (encode_iff.2 snd) (fst.comp fst)) snd
+    option_guard (Primrec.beq.comp₂ (by exact encode_iff.mpr snd) (by exact fst.comp fst)) snd
 #align primrec.decode₂ Primrec.decode₂
 
-theorem list_find_index₁ {p : α → β → Prop} [∀ a b, Decidable (p a b)] (hp : PrimrecRel p) :
-    ∀ l : List β, Primrec fun a => l.findIndex (p a)
-  | [] => const 0
-  | a :: l => ite (hp.comp Primrec.id (const a)) (const 0) (succ.comp (list_find_index₁ l))
-#align primrec.list_find_index₁ Primrec.list_find_index₁
+-- TODO: Move to Data.List.Basic
+-- All the `indexOf` lemmas should be generalized to `findIdx` where possible
 
-theorem list_index_of₁ [DecidableEq α] (l : List α) : Primrec fun a => l.indexOfₓ a :=
-  list_find_index₁ Primrec.eq l
-#align primrec.list_index_of₁ Primrec.list_index_of₁
+-- This is copy pasted from Data.List.Basic, but the lemma is hidden behind a where clause for some reason
+theorem _root_.List.findIdx_go_succ {α : Type _} (p : α → Bool) (l : List α) (n : ℕ) :
+  List.findIdx.go p l (n + 1) = (List.findIdx.go p l n) + 1 := by
+    cases l with
+    | nil => unfold List.findIdx.go; exact Nat.succ_eq_add_one n
+    | cons head tail =>
+      unfold List.findIdx.go
+      cases p head <;> simp only [cond_false, cond_true]
+      exact findIdx_go_succ p tail (n + 1)
+
+-- This is copy pasted from `List.indexOf_cons`, which is not written in the most general form for some reason
+theorem _root_.List.findIdx_cons {α : Type _} (p : α → Bool) (b : α) (l : List α) :
+    (b :: l).findIdx p = bif p b then 0 else (l.findIdx p) + 1 := by
+  cases H : p b with
+    | true => simp [H, List.findIdx, List.findIdx.go]
+    | false => simp [H, List.findIdx, List.findIdx.go, List.findIdx_go_succ]
+
+theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
+  ∀ l : List β, Primrec fun a => l.findIdx (p a)
+| [] => const 0
+| a :: l => (cond (hp.comp Primrec.id (const a)) (const 0) (succ.comp (list_findIdx₁ hp l))).of_eq fun n =>
+  by simp [List.findIdx_cons]
+#align primrec.list_find_index₁ Primrec.list_findIdx₁
+
+theorem list_indexOf₁ [DecidableEq α] (l : List α) : Primrec fun a => l.indexOf a :=
+  list_findIdx₁ Primrec.beq l
+#align primrec.list_index_of₁ Primrec.list_indexOf₁
 
 theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
-  let ⟨l, nd, m⟩ := Finite.exists_univ_list α
+  let ⟨l, _, m⟩ := Finite.exists_univ_list α
   option_some_iff.1 <| by
-    haveI := decidable_eq_of_encodable α
-    refine' ((list_nth₁ (l.map f)).comp (list_index_of₁ l)).of_eq fun a => _
-    rw [List.get?_map, List.nthLe_get? (List.indexOf_lt_length.2 (m _)), List.indexOf_nthLe] <;> rfl
+    haveI := decidableEqOfEncodable α
+    refine ((list_nth₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
+    rw [List.get?_map, List.indexOf_get? (m a), Option.map_some']
 #align primrec.dom_fintype Primrec.dom_fintype
 
 theorem nat_boddDiv2 : Primrec Nat.boddDiv2 :=
