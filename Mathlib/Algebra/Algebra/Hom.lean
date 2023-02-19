@@ -467,6 +467,9 @@ end AlgHom
 
 namespace RingHom
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
+
 variable {R S : Type _}
 
 /-- Reinterpret a `ring_hom` as an `ℕ`-algebra homomorphism. -/
@@ -478,7 +481,8 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
 
 /-- Reinterpret a `ring_hom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with commutes' := fun n => by simp }
+  { f with
+    commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
 /-- Reinterpret a `ring_hom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
@@ -497,6 +501,9 @@ end RingHom
 
 section
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
+
 variable {R S : Type _}
 
 @[simp]
@@ -511,8 +518,8 @@ def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] : (
     where
   toFun := RingHom.toRatAlgHom
   invFun := AlgHom.toRingHom
-  left_inv := RingHom.toRatAlgHom_to_ringHom
-  right_inv := AlgHom.to_ringHom_toRatAlgHom
+  left_inv f := RingHom.toRatAlgHom_to_ringHom f
+  right_inv f := AlgHom.to_ringHom_toRatAlgHom f
 #align ring_hom.equiv_rat_alg_hom RingHom.equivRatAlgHom
 
 end
@@ -548,9 +555,7 @@ This is a stronger version of `mul_semiring_action.to_ring_hom` and
 `distrib_mul_action.to_linear_map`. -/
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
-  {
-    MulSemiringAction.toRingHom _ _
-      m with
+  { MulSemiringAction.toRingHom _ _ m with
     toFun := fun a => m • a
     commutes' := smul_algebraMap _ }
 #align mul_semiring_action.to_alg_hom MulSemiringAction.toAlgHom
