@@ -170,13 +170,13 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_rec_eq MvPFunctor.wpRec_eq
 
 -- Note: we could replace Prop by Type _ and obtain a dependent recursor
-theorem Wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
+theorem wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
-  | ⟨a, f⟩, f' => ih a f f' fun _i => Wp_ind ih _ _
+  | ⟨a, f⟩, f' => ih a f f' fun _i => wp_ind ih _ _
 set_option linter.uppercaseLean3 false in
-#align mvpfunctor.Wp_ind MvPFunctor.Wp_ind
+#align mvpfunctor.Wp_ind MvPFunctor.wp_ind
 
 /-!
 Now think of W as defined inductively by the data ⟨a, f', f⟩ where
@@ -222,7 +222,7 @@ theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := by
   intro x; cases' x with a f
-  apply @Wp_ind n P α fun a f => C ⟨a, f⟩; dsimp
+  apply @wp_ind n P α fun a f => C ⟨a, f⟩; dsimp
   intro a f f' ih'
   dsimp [wMk] at ih
   let ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
