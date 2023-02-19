@@ -78,12 +78,15 @@ section Limit
 /-- `limit_cone F` contains a cone over `F` together with the information that it is a limit. -/
 -- @[nolint has_nonempty_instance] -- Porting note: removed
 structure LimitCone (F : J ⥤ C) where
+  /-- The cone itself -/
   cone : Cone F
+  /-- The proof that is the limit cone -/
   isLimit : IsLimit cone
 #align category_theory.limits.limit_cone CategoryTheory.Limits.LimitCone
 
 /-- `has_limit F` represents the mere existence of a limit for `F`. -/
 class HasLimit (F : J ⥤ C) : Prop where mk' ::
+  /-- There is some limit cone for `F` -/
   exists_limit : Nonempty (LimitCone F)
 #align category_theory.limits.has_limit CategoryTheory.Limits.HasLimit
 
@@ -100,6 +103,7 @@ variable (J C)
 
 /-- `C` has limits of shape `J` if there exists a limit for every functor `F : J ⥤ C`. -/
 class HasLimitsOfShape : Prop where
+  /-- All functors `F : J ⥤  C` from `J` have limits -/
   hasLimit : ∀ F : J ⥤ C, HasLimit F := by infer_instance
 #align category_theory.limits.has_limits_of_shape CategoryTheory.Limits.HasLimitsOfShape
 
@@ -107,6 +111,7 @@ class HasLimitsOfShape : Prop where
 if it has limits of every shape `J : Type u₁` with `[category.{v₁} J]`.
 -/
 class HasLimitsOfSize (C : Type u) [Category.{v} C] : Prop where
+  /-- All functors `F : J ⥤ C` from all small `J` have limits -/
   hasLimitsOfShape : ∀ (J : Type u₁) [Category.{v₁} J], HasLimitsOfShape J C := by
     infer_instance
 #align category_theory.limits.has_limits_of_size CategoryTheory.Limits.HasLimitsOfSize
@@ -660,12 +665,15 @@ section Colimit
     colimit. -/
 -- @[nolint has_nonempty_instance] -- Porting note: removed
 structure ColimitCocone (F : J ⥤ C) where
+  /-- The cocone itself -/
   cocone : Cocone F
+  /-- The proof that it is the colimit cocone -/
   isColimit : IsColimit cocone
 #align category_theory.limits.colimit_cocone CategoryTheory.Limits.ColimitCocone
 
 /-- `has_colimit F` represents the mere existence of a colimit for `F`. -/
 class HasColimit (F : J ⥤ C) : Prop where mk' ::
+  /-- There exists a colimit for `F` -/
   exists_colimit : Nonempty (ColimitCocone F)
 #align category_theory.limits.has_colimit CategoryTheory.Limits.HasColimit
 
@@ -682,6 +690,7 @@ variable (J C)
 
 /-- `C` has colimits of shape `J` if there exists a colimit for every functor `F : J ⥤ C`. -/
 class HasColimitsOfShape : Prop where
+  /-- All `F : J ⥤ C` have colimits for a fixed `J` -/
   HasColimit : ∀ F : J ⥤ C, HasColimit F := by infer_instance
 #align category_theory.limits.has_colimits_of_shape CategoryTheory.Limits.HasColimitsOfShape
 
@@ -689,6 +698,7 @@ class HasColimitsOfShape : Prop where
 if it has colimits of every shape `J : Type u₁` with `[category.{v₁} J]`.
 -/
 class HasColimitsOfSize (C : Type u) [Category.{v} C] : Prop where
+  /-- All `F : J ⥤ C` have colimits for all small `J` -/
   hasColimitsOfShape : ∀ (J : Type u₁) [Category.{v₁} J], HasColimitsOfShape J C := by
     infer_instance
 #align category_theory.limits.has_colimits_of_size CategoryTheory.Limits.HasColimitsOfSize
