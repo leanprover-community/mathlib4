@@ -10,8 +10,8 @@ Ported by: Winston Yin
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Set.Pairwise
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.GroupPower.Lemmas
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
