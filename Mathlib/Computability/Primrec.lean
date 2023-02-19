@@ -919,8 +919,7 @@ theorem nat_bit : Primrec₂ Nat.bit :=
 #align primrec.nat_bit Primrec.nat_bit
 
 -- porting note: this is no longer used
---#align primrec.nat_div_mod Primrec.nat_div_mod
-
+-- #align primrec.nat_div_mod Primrec.nat_div_mod
 
 end Primrec
 
@@ -930,77 +929,58 @@ variable {α : Type _} {β : Type _} {σ : Type _}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
-variable (H : Nat.Primrec fun n => Encodable.encode (decode (List β) n))
+variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 
-include H
+-- include H
 
 open Primrec
 
-private def prim : Primcodable (List β) :=
-  ⟨H⟩
-#align prim prim
+private def prim : Primcodable (List β) := ⟨H⟩
 
 private theorem list_cases' {f : α → List β} {g : α → σ} {h : α → β × List β → σ}
-    (hf :
-      haveI := prim H
-      Primrec f)
-    (hg : Primrec g)
-    (hh :
-      haveI := prim H
-      Primrec₂ h) :
+    (hf : haveI := prim H; Primrec f) (hg : Primrec g) (hh : haveI := prim H; Primrec₂ h) :
     @Primrec _ σ _ _ fun a => List.casesOn (f a) (g a) fun b l => h a (b, l) :=
   letI := prim H
   have :
     @Primrec _ (Option σ) _ _ fun a =>
-      (decode (Option (β × List β)) (encode (f a))).map fun o => Option.casesOn o (g a) (h a) :=
+      (@decode (Option (β × List β)) _ (encode (f a))).map fun o => Option.casesOn o (g a) (h a) :=
     ((@map_decode_iff _ (Option (β × List β)) _ _ _ _ _).2 <|
           to₂ <|
             option_cases snd (hg.comp fst) (hh.comp₂ (fst.comp₂ Primrec₂.left) Primrec₂.right)).comp
       Primrec.id (encode_iff.2 hf)
-  option_some_iff.1 <| this.of_eq fun a => by cases' f a with b l <;> simp [encodek] <;> rfl
-#align list_cases' list_cases'
+  option_some_iff.1 <| this.of_eq fun a => by cases' f a with b l <;> simp [encodek]
 
 private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ × β → σ}
-    (hf :
-      haveI := prim H
-      Primrec f)
-    (hg : Primrec g)
-    (hh :
-      haveI := prim H
-      Primrec₂ h) :
-    Primrec fun a => (f a).foldl (fun s b => h a (s, b)) (g a) :=
+    (hf : haveI := prim H; Primrec f) (hg : Primrec g) (hh : haveI := prim H; Primrec₂ h) :
+    Primrec fun a => (f a).foldl (fun s b => h a (s, b)) (g a) := by
   letI := prim H
   let G (a : α) (IH : σ × List β) : σ × List β := List.casesOn IH.2 IH fun b l => (h a (IH.1, b), l)
-  let F (a : α) (n : ℕ) := (G a^[n]) (g a, f a)
-  have : Primrec fun a => (F a (encode (f a))).1 :=
-    fst.comp <|
+  have hG : Primrec₂ G := list_cases' H (snd.comp snd) snd <|
+    to₂ <|
+    pair (hh.comp (fst.comp fst) <| pair ((fst.comp snd).comp fst) (fst.comp snd))
+      (snd.comp snd)
+  let F := fun (a : α) (n : ℕ) => (G a^[n]) (g a, f a)
+  have hF : Primrec fun a => (F a (encode (f a))).1 :=
+    (fst.comp <|
       nat_iterate (encode_iff.2 hf) (pair hg hf) <|
-        list_cases' H (snd.comp snd) snd <|
-          to₂ <|
-            pair (hh.comp (fst.comp fst) <| pair ((fst.comp snd).comp fst) (fst.comp snd))
-              (snd.comp snd)
-  this.of_eq fun a =>
-    by
-    have :
-      ∀ n, F a n = ((List.take n (f a)).foldl (fun s b => h a (s, b)) (g a), List.drop n (f a)) :=
-      by
-      intro
-      simp [F]
-      generalize f a = l
-      generalize g a = x
-      induction' n with n IH generalizing l x
-      · rfl
-      simp
-      cases' l with b l <;> simp [IH]
+      hG)
+  suffices : ∀ a n, F a n = ((List.take n (f a)).foldl (fun s b => h a (s, b)) (g a), List.drop n (f a))
+  · refine hF.of_eq fun a => ?_
     rw [this, List.take_all_of_le (length_le_encode _)]
-#align list_foldl' list_foldl'
+  introv
+  dsimp only
+  generalize f a = l
+  generalize g a = x
+  induction' n with n IH generalizing l x
+  · rfl
+  simp
+  cases' l with b l <;> simp [IH]
+-- porting note: private lemma
+--#align list_foldl' list_foldl'
 
-private theorem list_cons' :
-    haveI := prim H
-    Primrec₂ (@List.cons β) :=
+private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
-  encode_iff.1 (succ.comp <| primrec₂.mkpair.comp (encode_iff.2 fst) (encode_iff.2 snd))
-#align list_cons' list_cons'
+  encode_iff.1 (succ.comp <| Primrec₂.mkpair.comp (encode_iff.2 fst) (encode_iff.2 snd))
 
 private theorem list_reverse' :
     haveI := prim H
@@ -1010,7 +990,6 @@ private theorem list_reverse' :
     (suffices ∀ l r, List.foldl (fun (s : List β) (b : β) => b :: s) r l = List.reverseAux l r from
       fun l => this l []
     fun l => by induction l <;> simp [*, List.reverseAux])
-#align list_reverse' list_reverse'
 
 end
 
