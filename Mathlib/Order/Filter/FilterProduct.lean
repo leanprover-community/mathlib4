@@ -10,14 +10,13 @@ Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.Germ
-import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Ultraproducts
 
 If `φ` is an ultrafilter, then the space of germs of functions `f : α → β` at `φ` is called
 the *ultraproduct*. In this file we prove properties of ultraproducts that rely on `φ` being an
-ultrafilter. Definitions and properties that work for any filter should go to `order.filter.germ`.
+ultrafilter. Definitions and properties that work for any filter should go to `Order.Filter.Germ`.
 
 ## Tags
 
