@@ -40,7 +40,7 @@ See the implementation notes for remarks about non-associative and non-unital al
 * `algebraMap R A : R →+* A`: the canonical map from `R` to `A`, as a `RingHom`. This is the
   preferred spelling of this map, it is also available as:
   * `Algebra.linearMap R A : R →ₗ[R] A`, a `LinearMap`.
-  * `algebra.of_id R A : R →ₐ[R] A`, an `alg_hom` (defined in a later file).
+  * `algebra.ofId R A : R →ₐ[R] A`, an `AlgHom` (defined in a later file).
 * Instances of `Algebra` in this file:
   * `Algebra.id`
   * `algebraNat`
@@ -81,8 +81,8 @@ example {R A : Type*} [CommSemiring R] [Semiring A]
 Algebra.ofModule smul_mul_assoc mul_smul_comm
 ```
 
-The advantage of the first approach is that `algebraMap R A` is available, and `alg_hom R A B` and
-`subalgebra R A` can be used. For concrete `R` and `A`, `algebraMap R A` is often definitionally
+The advantage of the first approach is that `algebraMap R A` is available, and `AlgHom R A B` and
+`Subalgebra R A` can be used. For concrete `R` and `A`, `algebraMap R A` is often definitionally
 convenient.
 
 The advantage of the second approach is that `CommSemiring R`, `Semiring A`, and `Module R A` can
