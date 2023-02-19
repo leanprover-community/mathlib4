@@ -111,7 +111,8 @@ abbrev PreservesColimits (F : C ⥤ D) :=
 
 attribute [instance]
   preserves_limits_of_shape.preserves_limit preserves_limits_of_size.preserves_limits_of_shape 
-  preserves_colimits_of_shape.preserves_colimit preserves_colimits_of_size.preserves_colimits_of_shape
+  preserves_colimits_of_shape.preserves_colimit 
+  preserves_colimits_of_size.preserves_colimits_of_shape
 
 -- see Note [lower instance priority]
 /-- A convenience function for `preserves_limit`, which takes the functor as an explicit argument to
