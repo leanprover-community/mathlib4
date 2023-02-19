@@ -10,6 +10,7 @@ Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.Germ
+import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Ultraproducts
@@ -42,7 +43,7 @@ open Ultrafilter
 -- mathport name: «exprβ*»
 local notation "β*" => Germ (φ : Filter α) β
 
-instance [DivisionSemiring β] : DivisionSemiring β* :=
+instance divisionSemiring [DivisionSemiring β] : DivisionSemiring β* :=
   { Germ.semiring, Germ.divInvMonoid,
     Germ.nontrivial with
     mul_inv_cancel := fun f =>
@@ -50,19 +51,21 @@ instance [DivisionSemiring β] : DivisionSemiring β* :=
         coe_eq.2 <|
           (φ.em fun y => f y = 0).elim (fun H => (hf <| coe_eq.2 H).elim) fun H =>
             H.mono fun x => mul_inv_cancel
-    inv_zero := coe_eq.2 <| by simp only [(· ∘ ·), inv_zero] }
+    inv_zero := coe_eq.2 <| by
+       simp only [Function.comp, inv_zero]
+       exact EventuallyEq.refl _ fun _ => 0}
 
-instance [DivisionRing β] : DivisionRing β* :=
+instance divisionRing [DivisionRing β] : DivisionRing β* :=
   { Germ.ring, Germ.divisionSemiring with }
 
-instance [Semifield β] : Semifield β* :=
+instance semifield [Semifield β] : Semifield β* :=
   { Germ.commSemiring, Germ.divisionSemiring with }
 
-instance [Field β] : Field β* :=
+instance field [Field β] : Field β* :=
   { Germ.commRing, Germ.divisionRing with }
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
-  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, eventually_le]
+  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLe]
 #align filter.germ.coe_lt Filter.Germ.coe_lt
 
 theorem coe_pos [Preorder β] [Zero β] {f : α → β} : 0 < (f : β*) ↔ ∀* x, 0 < f x :=
@@ -83,10 +86,10 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
   exact coe_lt
 #align filter.germ.lt_def Filter.Germ.lt_def
 
-instance [HasSup β] : HasSup β* :=
+instance hasSup [HasSup β] : HasSup β* :=
   ⟨map₂ (· ⊔ ·)⟩
 
-instance [HasInf β] : HasInf β* :=
+instance hasInf [HasInf β] : HasInf β* :=
   ⟨map₂ (· ⊓ ·)⟩
 
 @[simp, norm_cast]
@@ -99,7 +102,7 @@ theorem const_inf [HasInf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : β*) 
   rfl
 #align filter.germ.const_inf Filter.Germ.const_inf
 
-instance [SemilatticeSup β] : SemilatticeSup β* :=
+instance semilatticeSup [SemilatticeSup β] : SemilatticeSup β* :=
   { Germ.partialOrder with
     sup := (· ⊔ ·)
     le_sup_left := fun f g => inductionOn₂ f g fun f g => eventually_of_forall fun x => le_sup_left
@@ -108,7 +111,7 @@ instance [SemilatticeSup β] : SemilatticeSup β* :=
     sup_le := fun f₁ f₂ g =>
       inductionOn₃ f₁ f₂ g fun f₁ f₂ g h₁ h₂ => h₂.mp <| h₁.mono fun x => sup_le }
 
-instance [SemilatticeInf β] : SemilatticeInf β* :=
+instance semilatticeInf [SemilatticeInf β] : SemilatticeInf β* :=
   { Germ.partialOrder with
     inf := (· ⊓ ·)
     inf_le_left := fun f g => inductionOn₂ f g fun f g => eventually_of_forall fun x => inf_le_left
@@ -117,44 +120,46 @@ instance [SemilatticeInf β] : SemilatticeInf β* :=
     le_inf := fun f₁ f₂ g =>
       inductionOn₃ f₁ f₂ g fun f₁ f₂ g h₁ h₂ => h₂.mp <| h₁.mono fun x => le_inf }
 
-instance [Lattice β] : Lattice β* :=
+instance lattice [Lattice β] : Lattice β* :=
   { Germ.semilatticeSup, Germ.semilatticeInf with }
 
-instance [DistribLattice β] : DistribLattice β* :=
+instance distribLattice [DistribLattice β] : DistribLattice β* :=
   { Germ.semilatticeSup, Germ.semilatticeInf with
     le_sup_inf := fun f g h =>
       inductionOn₃ f g h fun f g h => eventually_of_forall fun _ => le_sup_inf }
 
-instance [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
+instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
   ⟨fun f g =>
     inductionOn₂ f g fun f g => eventually_or.1 <| eventually_of_forall fun x => total_of _ _ _⟩
 
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
-noncomputable instance [LinearOrder β] : LinearOrder β* :=
+noncomputable instance linearOrder [LinearOrder β] : LinearOrder β* :=
   Lattice.toLinearOrder _
 
 @[to_additive]
-instance [OrderedCommMonoid β] : OrderedCommMonoid β* :=
+instance orderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid β* :=
   { Germ.partialOrder, Germ.commMonoid with
     mul_le_mul_left := fun f g =>
       inductionOn₂ f g fun f g H h =>
         inductionOn h fun h => H.mono fun x H => mul_le_mul_left' H _ }
 
 @[to_additive]
-instance [OrderedCancelCommMonoid β] : OrderedCancelCommMonoid β* :=
-  { Germ.partialOrder, Germ.orderedCommMonoid with
+instance orderedCancelCommMonoid [OrderedCancelCommMonoid β]  :
+    OrderedCancelCommMonoid β* :=
+  { Germ.orderedCommMonoid with
     le_of_mul_le_mul_left := fun f g h =>
       inductionOn₃ f g h fun f g h H => H.mono fun x => le_of_mul_le_mul_left' }
 
 @[to_additive]
-instance [OrderedCommGroup β] : OrderedCommGroup β* :=
+instance orderedCommGroup [OrderedCommGroup β] : OrderedCommGroup β* :=
   { Germ.orderedCancelCommMonoid, Germ.commGroup with }
 
 @[to_additive]
-noncomputable instance [LinearOrderedCommGroup β] : LinearOrderedCommGroup β* :=
+noncomputable instance linearOrderedCommGroup [LinearOrderedCommGroup β] :
+    LinearOrderedCommGroup β* :=
   { Germ.orderedCommGroup, Germ.linearOrder with }
 
-instance [OrderedSemiring β] : OrderedSemiring β* :=
+instance orderedSemiring [OrderedSemiring β] : OrderedSemiring β* :=
   { Germ.semiring,
     Germ.orderedAddCommMonoid with
     zero_le_one := const_le zero_le_one
@@ -163,21 +168,21 @@ instance [OrderedSemiring β] : OrderedSemiring β* :=
     mul_le_mul_of_nonneg_right := fun x y z =>
       inductionOn₃ x y z fun f g h hfg hh => hh.mp <| hfg.mono fun a => mul_le_mul_of_nonneg_right }
 
-instance [OrderedCommSemiring β] : OrderedCommSemiring β* :=
+instance orderedCommSemiring [OrderedCommSemiring β] : OrderedCommSemiring β* :=
   { Germ.orderedSemiring, Germ.commSemiring with }
 
-instance [OrderedRing β] : OrderedRing β* :=
+instance orderedRing [OrderedRing β] : OrderedRing β* :=
   { Germ.ring,
     Germ.orderedAddCommGroup with
     zero_le_one := const_le zero_le_one
     mul_nonneg := fun x y =>
       inductionOn₂ x y fun f g hf hg => hg.mp <| hf.mono fun a => mul_nonneg }
 
-instance [OrderedCommRing β] : OrderedCommRing β* :=
+instance orderedCommRing [OrderedCommRing β] : OrderedCommRing β* :=
   { Germ.orderedRing, Germ.orderedCommSemiring with }
 
-instance [StrictOrderedSemiring β] : StrictOrderedSemiring β* :=
-  { Germ.orderedSemiring, Germ.orderedCancelAddCommMonoid,
+instance strictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemiring β* :=
+  { Germ.orderedSemiring, Germ.orderedAddCancelCommMonoid,
     Germ.nontrivial with
     mul_lt_mul_of_pos_left := fun x y z =>
       inductionOn₃ x y z fun f g h hfg hh =>
@@ -186,10 +191,10 @@ instance [StrictOrderedSemiring β] : StrictOrderedSemiring β* :=
       inductionOn₃ x y z fun f g h hfg hh =>
         coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun a => mul_lt_mul_of_pos_right }
 
-instance [StrictOrderedCommSemiring β] : StrictOrderedCommSemiring β* :=
+instance strictOrderedCommSemiring [StrictOrderedCommSemiring β] : StrictOrderedCommSemiring β* :=
   { Germ.strictOrderedSemiring, Germ.orderedCommSemiring with }
 
-instance [StrictOrderedRing β] : StrictOrderedRing β* :=
+instance strictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* :=
   { Germ.ring,
     Germ.strictOrderedSemiring with
     zero_le_one := const_le zero_le_one
@@ -197,16 +202,16 @@ instance [StrictOrderedRing β] : StrictOrderedRing β* :=
       inductionOn₂ x y fun f g hf hg =>
         coe_pos.2 <| (coe_pos.1 hg).mp <| (coe_pos.1 hf).mono fun x => mul_pos }
 
-instance [StrictOrderedCommRing β] : StrictOrderedCommRing β* :=
+instance strictOrderedCommRing [StrictOrderedCommRing β] : StrictOrderedCommRing β* :=
   { Germ.strictOrderedRing, Germ.orderedCommRing with }
 
-noncomputable instance [LinearOrderedRing β] : LinearOrderedRing β* :=
+noncomputable instance linearOrderedRing [LinearOrderedRing β] : LinearOrderedRing β* :=
   { Germ.strictOrderedRing, Germ.linearOrder with }
 
-noncomputable instance [LinearOrderedField β] : LinearOrderedField β* :=
+noncomputable instance linearOrderedField [LinearOrderedField β] : LinearOrderedField β* :=
   { Germ.linearOrderedRing, Germ.field with }
 
-noncomputable instance [LinearOrderedCommRing β] : LinearOrderedCommRing β* :=
+noncomputable instance linearOrderedCommRing [LinearOrderedCommRing β] : LinearOrderedCommRing β* :=
   { Germ.linearOrderedRing, Germ.commMonoid with }
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
@@ -249,4 +254,3 @@ theorem const_abs [LinearOrderedAddCommGroup β] (x : β) : (↑(|x|) : β*) = |
 end Germ
 
 end Filter
-
