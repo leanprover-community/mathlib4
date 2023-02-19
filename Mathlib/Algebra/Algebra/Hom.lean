@@ -166,7 +166,7 @@ theorem coe_toAddMonoid_hom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
 
 variable (φ : A →ₐ[R] B)
 
-theorem coeFn_injective : @Function.Injective (A →ₐ[R] B) (A → B) coeFn :=
+theorem coeFn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :=
   FunLike.coe_injective
 #align alg_hom.coe_fn_injective AlgHom.coeFn_injective
 
@@ -174,15 +174,15 @@ theorem coeFn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ 
   FunLike.coe_fn_eq
 #align alg_hom.coe_fn_inj AlgHom.coeFn_inj
 
-theorem coe_ringHom_injective : Function.Injective (coe : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
+theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
   coeFn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
 #align alg_hom.coe_ring_hom_injective AlgHom.coe_ringHom_injective
 
-theorem coe_monoidHom_injective : Function.Injective (coe : (A →ₐ[R] B) → A →* B) :=
+theorem coe_monoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
   RingHom.coe_monoidHom_injective.comp coe_ringHom_injective
 #align alg_hom.coe_monoid_hom_injective AlgHom.coe_monoidHom_injective
 
-theorem coe_addMonoidHom_injective : Function.Injective (coe : (A →ₐ[R] B) → A →+ B) :=
+theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+ B) :=
   RingHom.coe_addMonoidHom_injective.comp coe_ringHom_injective
 #align alg_hom.coe_add_monoid_hom_injective AlgHom.coe_addMonoidHom_injective
 
@@ -204,7 +204,7 @@ theorem ext_iff {φ₁ φ₂ : A →ₐ[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x
 #align alg_hom.ext_iff AlgHom.ext_iff
 
 @[simp]
-theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨f, h₁, h₂, h₃, h₄, h₅⟩ : A →ₐ[R] B) = f :=
+theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
   ext fun _ => rfl
 #align alg_hom.mk_coe AlgHom.mk_coe
 
@@ -248,7 +248,7 @@ protected theorem map_sum {ι : Type _} (f : ι → A) (s : Finset ι) :
 #align alg_hom.map_sum AlgHom.map_sum
 
 protected theorem map_finsupp_sum {α : Type _} [Zero α] {ι : Type _} (f : ι →₀ α) (g : ι → α → A) :
-    φ (f.Sum g) = f.Sum fun i a => φ (g i a) :=
+    φ (f.sum g) = f.sum fun i a => φ (g i a) :=
   map_finsupp_sum _ _ _
 #align alg_hom.map_finsupp_sum AlgHom.map_finsupp_sum
 
@@ -395,12 +395,12 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
   φ.toLinearMap.map_smul_of_tower r x
 #align alg_hom.map_smul_of_tower AlgHom.map_smul_of_tower
 
-theorem map_list_prod (s : List A) : φ s.Prod = (s.map φ).Prod :=
+theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
   φ.toRingHom.map_list_prod s
 #align alg_hom.map_list_prod AlgHom.map_list_prod
 
-@[simps (config := { attrs := [] }) mul one]
-instance end : Monoid (A →ₐ[R] A) where
+@[simps (config := { attrs := [] }) toSemigroup_toMul_mul toOne_one]
+instance «end» : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc ϕ ψ χ := rfl
   one := AlgHom.id R A
@@ -431,7 +431,7 @@ variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
 
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
-protected theorem map_multiset_prod (s : Multiset A) : φ s.Prod = (s.map φ).Prod :=
+protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
   map_multiset_prod _ _
 #align alg_hom.map_multiset_prod AlgHom.map_multiset_prod
 
@@ -441,7 +441,7 @@ protected theorem map_prod {ι : Type _} (f : ι → A) (s : Finset ι) :
 #align alg_hom.map_prod AlgHom.map_prod
 
 protected theorem map_finsupp_prod {α : Type _} [Zero α] {ι : Type _} (f : ι →₀ α) (g : ι → α → A) :
-    φ (f.Prod g) = f.Prod fun i a => φ (g i a) :=
+    φ (f.prod g) = f.prod fun i a => φ (g i a) :=
   map_finsupp_prod _ _ _
 #align alg_hom.map_finsupp_prod AlgHom.map_finsupp_prod
 
