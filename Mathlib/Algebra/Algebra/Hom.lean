@@ -31,14 +31,14 @@ open BigOperators
 universe u v w u₁ v₁
 
 /-- Defining the homomorphism in the category R-Alg. -/
-@[nolint has_nonempty_instance]
+-- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
-  commutes' : ∀ r : R, to_fun (algebraMap R A r) = algebraMap R B r
+  commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_hom AlgHom
 
-run_cmd
-  tactic.add_doc_string `alg_hom.to_ring_hom "Reinterpret an `alg_hom` as a `ring_hom`"
+/-- Reinterpret an `alg_hom` as a `ring_hom` -/
+add_decl_doc AlgHom.toRingHom
 
 -- mathport name: «expr →ₐ »
 infixr:25 " →ₐ " => AlgHom _
@@ -54,8 +54,8 @@ class AlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 
--- `R` becomes a metavariable but that's fine because it's an `out_param`
-attribute [nolint dangerous_instance] AlgHomClass.toRingHomClass
+-- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
+-- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
 
 attribute [simp] AlgHomClass.commutes
 
@@ -65,16 +65,19 @@ variable {R : Type _} {A : Type _} {B : Type _} [CommSemiring R] [Semiring A] [S
   [Algebra R A] [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type _} [AlgHomClass F R A B] : LinearMapClass F R A B :=
+instance (priority := 100) linearMapClass {F : Type _} [AlgHomClass F R A B] :
+    LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
+#align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 
-instance {F : Type _} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B)
-    where coe f :=
-    { (f : A →+* B) with
-      toFun := f
-      commutes' := AlgHomClass.commutes f }
+instance coeTC {F : Type _} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) where
+  coe f :=
+  { (f : A →+* B) with
+    toFun := f
+    commutes' := AlgHomClass.commutes f }
+#align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
 end AlgHomClass
 
@@ -88,13 +91,31 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
-instance : CoeFun (A →ₐ[R] B) fun _ => A → B :=
-  ⟨AlgHom.toFun⟩
+-- Porting note: we don't port specialized `CoeFun` instances if there is `FunLike` instead
+#noalign alg_hom.has_coe_to_fun
 
-initialize_simps_projections AlgHom (toFun → apply)
+-- Porting note: This instance is moved.
+instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+  coe f := f.toFun
+  coe_injective' f g h := by
+    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    congr
+  map_add f := f.map_add'
+  map_zero f := f.map_zero'
+  map_mul f := f.map_mul'
+  map_one f := f.map_one'
+  commutes f := f.commutes'
+#align alg_hom.alg_hom_class AlgHom.algHomClass
 
-@[simp, protected]
-theorem coe_coe {F : Type _} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=
+/-- See Note [custom simps projection] -/
+def Simps.apply {R α β : Type _} [CommSemiring R]
+    [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
+
+initialize_simps_projections AlgHom (toRingHom_toMonoidHom_toOneHom_toFun → apply)
+
+@[simp]
+protected theorem coe_coe {F : Type _} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=
   rfl
 #align alg_hom.coe_coe AlgHom.coe_coe
 
@@ -102,19 +123,6 @@ theorem coe_coe {F : Type _} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R]
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 #align alg_hom.to_fun_eq_coe AlgHom.toFun_eq_coe
-
-instance : AlgHomClass (A →ₐ[R] B) R A B
-    where
-  coe := toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr
-  map_add := map_add'
-  map_zero := map_zero'
-  map_mul := map_mul'
-  map_one := map_one'
-  commutes f := f.commutes'
 
 instance coeRingHom : Coe (A →ₐ[R] B) (A →+* B) :=
   ⟨AlgHom.toRingHom⟩
@@ -551,4 +559,3 @@ theorem toAlgHom_injective [FaithfulSMul M A] :
 #align mul_semiring_action.to_alg_hom_injective MulSemiringAction.toAlgHom_injective
 
 end MulSemiringAction
-
