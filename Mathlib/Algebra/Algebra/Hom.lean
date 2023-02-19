@@ -486,7 +486,17 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
 /-- Reinterpret a `ring_hom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with
-    commutes' := fun n => by simp }
+    commutes' := fun n => by
+      -- Porting note: TODO Erase these `have`s.
+      --               Needed because we don't have η for classes. (lean4#2074)
+      have e₁ : algebraMap ℤ R n = n :=
+        @eq_intCast _ R Ring.toNonAssocRing RingHom.instRingHomClassRingHom (algebraMap ℤ R) n
+      have e₂ : algebraMap ℤ S n = n :=
+        @eq_intCast _ S Ring.toNonAssocRing RingHom.instRingHomClassRingHom (algebraMap ℤ S) n
+      have e₃ : f n = n :=
+        @map_intCast _ R S Ring.toNonAssocRing Ring.toNonAssocRing RingHom.instRingHomClassRingHom
+          f n
+      simp [e₁, e₂, e₃] }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
 /-- Reinterpret a `ring_hom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
