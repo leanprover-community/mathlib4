@@ -63,7 +63,7 @@ Additional useful definitions:
 
 * `Pregroupoid H` : a subset of local maps of `H` stable under composition and
   restriction, but not inverse (ex: smooth maps)
-* `groupoid_of_pregroupoid` : construct a groupoid from a pregroupoid, by requiring that a map and
+* `Pregroupoid.groupoid` : construct a groupoid from a pregroupoid, by requiring that a map and
   its inverse both belong to the pregroupoid (ex: construct diffeos from smooth maps)
 * `chartAt H x` is a preferred chart at `x : M` when `M` has a charted space structure modelled on
   `H`.
@@ -559,7 +559,7 @@ theorem mem_achart_source (x : M) : x ∈ (achart H x).1.source :=
 
 open TopologicalSpace
 
-theorem ChartedSpace.second_countable_of_countable_cover [SecondCountableTopology H] {s : Set M}
+theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology H] {s : Set M}
     (hs : (⋃ (x) (_hx : x ∈ s), (chartAt (H := H) x).source) = univ) (hsc : s.Countable) :
     SecondCountableTopology M := by
   haveI : ∀ x : M, SecondCountableTopology (chartAt x).source :=
@@ -567,20 +567,20 @@ theorem ChartedSpace.second_countable_of_countable_cover [SecondCountableTopolog
   haveI := hsc.toEncodable
   rw [bunionᵢ_eq_unionᵢ] at hs
   exact secondCountableTopology_of_countable_cover (fun x : s ↦ (chartAt (x : M)).open_source) hs
-#align charted_space.second_countable_of_countable_cover ChartedSpace.second_countable_of_countable_cover
+#align charted_space.second_countable_of_countable_cover ChartedSpace.secondCountable_of_countable_cover
 
 variable (M)
 
-theorem ChartedSpace.second_countable_of_sigma_compact [SecondCountableTopology H]
+theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H]
     [SigmaCompactSpace M] : SecondCountableTopology M := by
   obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ (⋃ (x) (hx : x ∈ s), (chartAt x).source) = univ :=
     countable_cover_nhds_of_sigma_compact fun x : M ↦ chart_source_mem_nhds H x
-  exact ChartedSpace.second_countable_of_countable_cover H hsU hsc
-#align charted_space.second_countable_of_sigma_compact ChartedSpace.second_countable_of_sigma_compact
+  exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
+#align charted_space.second_countable_of_sigma_compact ChartedSpace.secondCountable_of_sigma_compact
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
 is locally compact. -/
-theorem ChartedSpace.locally_compact [LocallyCompactSpace H] : LocallyCompactSpace M := by
+theorem ChartedSpace.locallyCompact [LocallyCompactSpace H] : LocallyCompactSpace M := by
   have : ∀ x : M, (𝓝 x).HasBasis
       (fun s ↦ s ∈ 𝓝 (chartAt x x) ∧ IsCompact s ∧ s ⊆ (chartAt x).target)
       fun s ↦ (chartAt x).symm '' s := by
@@ -591,7 +591,7 @@ theorem ChartedSpace.locally_compact [LocallyCompactSpace H] : LocallyCompactSpa
   refine' locallyCompactSpace_of_hasBasis this _
   rintro x s ⟨_, h₂, h₃⟩
   exact h₂.image_of_continuousOn ((chartAt x).continuousOn_symm.mono h₃)
-#align charted_space.locally_compact ChartedSpace.locally_compact
+#align charted_space.locally_compact ChartedSpace.locallyCompact
 
 /-- If a topological space admits an atlas with locally connected charts, then the space itself is
 locally connected. -/
@@ -620,18 +620,18 @@ def ChartedSpace.comp (H : Type _) [TopologicalSpace H] (H' : Type _) [Topologic
 
 end
 
-library_note "Manifold type tags"/-- For technical reasons we introduce two type tags:
+library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
 
 * `ModelProd H H'` is the same as `H × H'`;
 * `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type _` and `ι` is a finite type.
 
 In both cases the reason is the same, so we explain it only in the case of the product. A charted
 space `M` with model `H` is a set of local charts from `M` to `H` covering the space. Every space is
-registered as a charted space over itself, using the only chart `id`, in `manifold_model_space`. You
+registered as a charted space over itself, using the only chart `id`, in `chartedSpaceSelf`. You
 can also define a product of charted space `M` and `M'` (with model space `H × H'`) by taking the
 products of the charts. Now, on `H × H'`, there are two charted space structures with model space
-`H × H'` itself, the one coming from `manifold_model_space`, and the one coming from the product of
-the two `manifold_model_space` on each component. They are equal, but not defeq (because the product
+`H × H'` itself, the one coming from `chartedSpaceSelf`, and the one coming from the product of
+the two `chartedSpaceSelf` on each component. They are equal, but not defeq (because the product
 of `id` and `id` is not defeq to `id`), which is bad as we know. This expedient of renaming `H × H'`
 solves this problem. -/
 
