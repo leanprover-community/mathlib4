@@ -437,8 +437,8 @@ abbrev ReflectsColimits (F : C ⥤ D) :=
 /-- A convenience function for `reflects_limit`, which takes the functor as an explicit argument to
 guide typeclass resolution.
 -/
-def isLimitOfReflects (F : C ⥤ D) {c : Cone K} (t : IsLimit (Functor.mapCone F c)) [ReflectsLimit K F] :
-    IsLimit c := ReflectsLimit.reflects t
+def isLimitOfReflects (F : C ⥤ D) {c : Cone K} (t : IsLimit (Functor.mapCone F c)) 
+    [ReflectsLimit K F] : IsLimit c := ReflectsLimit.reflects t
 #align category_theory.limits.is_limit_of_reflects CategoryTheory.Limits.isLimitOfReflects
 
 /--
@@ -636,7 +636,7 @@ def reflectsSmallestLimitsOfReflectsLimits (F : C ⥤ D) [ReflectsLimitsOfSize.{
 
 /-- If the limit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
 reflects the limit of `F`.
--/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this just errors 
+-/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors 
 def reflectsLimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsIsomorphisms G]
     [HasLimit F] [PreservesLimit F G] : ReflectsLimit F G where 
   reflects {c} t := by
@@ -746,7 +746,7 @@ def reflectsSmallestColimitsOfReflectsColimits (F : C ⥤ D) [ReflectsColimitsOf
 
 /-- If the colimit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
 reflects the colimit of `F`.
--/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this just errors 
+-/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors 
 def reflectsColimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsIsomorphisms G]
     [HasColimit F] [PreservesColimit F G] : ReflectsColimit F G where 
   reflects {c} t := by
