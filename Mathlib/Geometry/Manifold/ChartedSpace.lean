@@ -530,53 +530,54 @@ section
 
 variable (H) [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
-theorem mem_chart_target (x : M) : chartAt H x x ∈ (chartAt H x).target :=
-  (chartAt H x).map_source (mem_chart_source _ _)
+-- Porting note: Added `(H := H)` to avoid typeclass instance problem.
+theorem mem_chart_target (x : M) : chartAt (H := H) x x ∈ (chartAt x).target :=
+  (chartAt x).map_source (mem_chart_source _)
 #align mem_chart_target mem_chart_target
 
-theorem chart_source_mem_nhds (x : M) : (chartAt H x).source ∈ 𝓝 x :=
-  (chartAt H x).open_source.mem_nhds <| mem_chart_source H x
+theorem chart_source_mem_nhds (x : M) : (chartAt (H := H) x).source ∈ 𝓝 x :=
+  (chartAt x).open_source.mem_nhds <| mem_chart_source x
 #align chart_source_mem_nhds chart_source_mem_nhds
 
-theorem chart_target_mem_nhds (x : M) : (chartAt H x).target ∈ 𝓝 (chartAt H x x) :=
-  (chartAt H x).open_target.mem_nhds <| mem_chart_target H x
+theorem chart_target_mem_nhds (x : M) : (chartAt (H := H) x).target ∈ 𝓝 (chartAt x x) :=
+  (chartAt x).open_target.mem_nhds <| mem_chart_target H x
 #align chart_target_mem_nhds chart_target_mem_nhds
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
 Especially useful for working with `basic_smooth_vector_bundle_core` -/
-def achart (x : M) : atlas H M :=
-  ⟨chartAt H x, chart_mem_atlas H x⟩
+def achart (x : M) : atlas (H := H) (M := M) :=
+  ⟨chartAt x, chart_mem_atlas x⟩
 #align achart achart
 
-theorem achart_def (x : M) : achart H x = ⟨chartAt H x, chart_mem_atlas H x⟩ :=
+theorem achart_def (x : M) : achart H x = ⟨chartAt x, chart_mem_atlas x⟩ :=
   rfl
 #align achart_def achart_def
 
 @[simp, mfld_simps]
-theorem coe_achart (x : M) : (achart H x : LocalHomeomorph M H) = chartAt H x :=
+theorem coe_achart (x : M) : (achart H x : LocalHomeomorph M H) = chartAt x :=
   rfl
 #align coe_achart coe_achart
 
 @[simp, mfld_simps]
-theorem achart_val (x : M) : (achart H x).1 = chartAt H x :=
+theorem achart_val (x : M) : (achart H x).1 = chartAt x :=
   rfl
 #align achart_val achart_val
 
 theorem mem_achart_source (x : M) : x ∈ (achart H x).1.source :=
-  mem_chart_source H x
+  mem_chart_source x
 #align mem_achart_source mem_achart_source
 
 open TopologicalSpace
 
 theorem ChartedSpace.second_countable_of_countable_cover [SecondCountableTopology H] {s : Set M}
-    (hs : (⋃ (x) (hx : x ∈ s), (chartAt H x).source) = univ) (hsc : s.Countable) :
+    (hs : (⋃ (x) (_hx : x ∈ s), (chartAt (H := H) x).source) = univ) (hsc : s.Countable) :
     SecondCountableTopology M := by
-  haveI : ∀ x : M, second_countable_topology (chartAt H x).source := fun x =>
-    (chartAt H x).secondCountableTopology_source
-  haveI := hsc.to_encodable
-  rw [bUnion_eq_Union] at hs
+  haveI : ∀ x : M, SecondCountableTopology (chartAt x).source := fun x =>
+    (chartAt (H := H) x).secondCountableTopology_source
+  haveI := hsc.toEncodable
+  rw [bunionᵢ_eq_unionᵢ] at hs
   exact
-    second_countable_topology_of_countable_cover (fun x : s => (chartAt H (x : M)).open_source) hs
+    secondCountableTopology_of_countable_cover (fun x : s => (chartAt (x : M)).open_source) hs
 #align charted_space.second_countable_of_countable_cover ChartedSpace.second_countable_of_countable_cover
 
 variable (M)
@@ -584,7 +585,7 @@ variable (M)
 theorem ChartedSpace.second_countable_of_sigma_compact [SecondCountableTopology H]
     [SigmaCompactSpace M] : SecondCountableTopology M := by
   obtain ⟨s, hsc, hsU⟩ :
-    ∃ s, Set.Countable s ∧ (⋃ (x) (hx : x ∈ s), (chartAt H x).source) = univ :=
+    ∃ s, Set.Countable s ∧ (⋃ (x) (hx : x ∈ s), (chartAt x).source) = univ :=
     countable_cover_nhds_of_sigma_compact fun x : M => chart_source_mem_nhds H x
   exact ChartedSpace.second_countable_of_countable_cover H hsU hsc
 #align charted_space.second_countable_of_sigma_compact ChartedSpace.second_countable_of_sigma_compact
@@ -594,21 +595,21 @@ is locally compact. -/
 theorem ChartedSpace.locally_compact [LocallyCompactSpace H] : LocallyCompactSpace M := by
   have :
     ∀ x : M,
-      (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (chartAt H x x) ∧ IsCompact s ∧ s ⊆ (chartAt H x).target)
-        fun s => (chartAt H x).symm '' s := by
+      (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (chartAt x x) ∧ IsCompact s ∧ s ⊆ (chartAt x).target)
+        fun s => (chartAt x).symm '' s := by
     intro x
-    rw [← (chartAt H x).symm_map_nhds_eq (mem_chart_source H x)]
+    rw [← (chartAt (H := H) x).symm_map_nhds_eq (mem_chart_source x)]
     exact
-      ((compact_basis_nhds (chartAt H x x)).hasBasis_self_subset (chart_target_mem_nhds H x)).map _
+      ((compact_basis_nhds (chartAt x x)).hasBasis_self_subset (chart_target_mem_nhds H x)).map _
   refine' locallyCompactSpace_of_hasBasis this _
-  rintro x s ⟨h₁, h₂, h₃⟩
-  exact h₂.image_of_continuous_on ((chartAt H x).continuousOn_symm.mono h₃)
+  rintro x s ⟨_, h₂, h₃⟩
+  exact h₂.image_of_continuousOn ((chartAt x).continuousOn_symm.mono h₃)
 #align charted_space.locally_compact ChartedSpace.locally_compact
 
 /-- If a topological space admits an atlas with locally connected charts, then the space itself is
 locally connected. -/
 theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyConnectedSpace M := by
-  let E : M → LocalHomeomorph M H := chartAt H
+  let E : M → LocalHomeomorph M H := chartAt
   refine'
     locallyConnectedSpace_of_connected_bases (fun x s => (E x).symm '' s)
       (fun x s => (IsOpen s ∧ E x x ∈ s ∧ IsConnected s) ∧ s ⊆ (E x).target) _ _
@@ -618,7 +619,7 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
             ((E x).open_target.mem_nhds (mem_chart_target H x))).map
         (E x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
-    exact hsconn.is_preconnected.image _ ((E x).continuousOn_symm.mono hssubset)
+    exact hsconn.isPreconnected.image _ ((E x).continuousOn_symm.mono hssubset)
 #align charted_space.locally_connected_space ChartedSpace.locallyConnectedSpace
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
@@ -626,10 +627,10 @@ modelled on `H`. -/
 def ChartedSpace.comp (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H']
     (M : Type _) [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] : ChartedSpace H M
     where
-  atlas := image2 LocalHomeomorph.trans (atlas H' M) (atlas H H')
-  chartAt := fun p : M => (chartAt H' p).trans (chartAt H (chartAt H' p p))
+  atlas := image2 LocalHomeomorph.trans (atlas (H := H')) atlas
+  chartAt := fun p : M => (chartAt p).trans (chartAt (chartAt p p))
   mem_chart_source p := by simp only [mfld_simps]
-  chart_mem_atlas p := ⟨chartAt H' p, chartAt H _, chart_mem_atlas H' p, chart_mem_atlas H _, rfl⟩
+  chart_mem_atlas p := ⟨chartAt p, chartAt _, chart_mem_atlas p, chart_mem_atlas _, rfl⟩
 #align charted_space.comp ChartedSpace.comp
 
 end
@@ -664,15 +665,15 @@ def ModelPi {ι : Type _} (H : ι → Type _) :=
 
 section
 
-attribute [local reducible] ModelProd
+-- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
 
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
-  Prod.inhabited
+  instInhabitedProd
 #align model_prod_inhabited modelProdInhabited
 
 instance (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
-  Prod.topologicalSpace
+  instTopologicalSpaceProd
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- Next lemma shows up often when dealing with derivatives, register it as simp.
@@ -680,6 +681,7 @@ instance (H : Type _) [TopologicalSpace H] (H' : Type _) [TopologicalSpace H'] :
 theorem modelProd_range_prod_id {H : Type _} {H' : Type _} {α : Type _} (f : H → α) :
     (range fun p : ModelProd H H' => (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
+  rfl
 #align model_prod_range_prod_id modelProd_range_prod_id
 
 end
@@ -688,8 +690,9 @@ section
 
 variable {ι : Type _} {Hi : ι → Type _}
 
+-- Porting note: Old proof was `Pi.inhabited _`.
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  Pi.inhabited _
+  ⟨fun _ => default⟩
 #align model_pi_inhabited modelPiInhabited
 
 instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
@@ -702,10 +705,10 @@ construction of the atlas of product maps. -/
 instance prodChartedSpace (H : Type _) [TopologicalSpace H] (M : Type _) [TopologicalSpace M]
     [ChartedSpace H M] (H' : Type _) [TopologicalSpace H'] (M' : Type _) [TopologicalSpace M']
     [ChartedSpace H' M'] : ChartedSpace (ModelProd H H') (M × M') where
-  atlas := image2 LocalHomeomorph.prod (atlas H M) (atlas H' M')
-  chartAt := fun x : M × M' => (chartAt H x.1).Prod (chartAt H' x.2)
-  mem_chart_source x := ⟨mem_chart_source _ _, mem_chart_source _ _⟩
-  chart_mem_atlas x := mem_image2_of_mem (chart_mem_atlas _ _) (chart_mem_atlas _ _)
+  atlas := image2 LocalHomeomorph.prod atlas atlas
+  chartAt x := (chartAt x.1).prod (chartAt x.2)
+  mem_chart_source x := ⟨mem_chart_source x.1, mem_chart_source x.2⟩
+  chart_mem_atlas x := mem_image2_of_mem (chart_mem_atlas x.1) (chart_mem_atlas x.2)
 #align prod_charted_space prodChartedSpace
 
 section prodChartedSpace
@@ -715,7 +718,7 @@ variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [Topologic
 
 @[simp, mfld_simps]
 theorem prodChartedSpace_chartAt :
-    chartAt (ModelProd H H') x = (chartAt H x.fst).Prod (chartAt H' x.snd) :=
+    chartAt (H := ModelProd H H') x = (chartAt x.fst).prod (chartAt x.snd) :=
   rfl
 #align prod_charted_space_chart_at prodChartedSpace_chartAt
 
@@ -734,17 +737,17 @@ canonical construction of the atlas of finite product maps. -/
 instance piChartedSpace {ι : Type _} [Fintype ι] (H : ι → Type _) [∀ i, TopologicalSpace (H i)]
     (M : ι → Type _) [∀ i, TopologicalSpace (M i)] [∀ i, ChartedSpace (H i) (M i)] :
     ChartedSpace (ModelPi H) (∀ i, M i) where
-  atlas := LocalHomeomorph.pi '' Set.pi univ fun i => atlas (H i) (M i)
-  chartAt f := LocalHomeomorph.pi fun i => chartAt (H i) (f i)
-  mem_chart_source f i hi := mem_chart_source (H i) (f i)
-  chart_mem_atlas f := mem_image_of_mem _ fun i hi => chart_mem_atlas (H i) (f i)
+  atlas := LocalHomeomorph.pi '' Set.pi univ fun _ => atlas
+  chartAt f := LocalHomeomorph.pi fun i => chartAt (f i)
+  mem_chart_source f i _ := mem_chart_source (f i)
+  chart_mem_atlas f := mem_image_of_mem _ fun i _ => chart_mem_atlas (f i)
 #align pi_charted_space piChartedSpace
 
 @[simp, mfld_simps]
 theorem piChartedSpace_chartAt {ι : Type _} [Fintype ι] (H : ι → Type _)
     [∀ i, TopologicalSpace (H i)] (M : ι → Type _) [∀ i, TopologicalSpace (M i)]
     [∀ i, ChartedSpace (H i) (M i)] (f : ∀ i, M i) :
-    chartAt (ModelPi H) f = LocalHomeomorph.pi fun i => chartAt (H i) (f i) :=
+    chartAt (H := ModelPi H) f = LocalHomeomorph.pi fun i => chartAt (f i) :=
   rfl
 #align pi_charted_space_chart_at piChartedSpace_chartAt
 
@@ -757,7 +760,7 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only local equivs, and continuity properties for their composition.
 This is formalised in `charted_space_core`. -/
-@[nolint has_nonempty_instance]
+-- @[nolint has_nonempty_instance]  -- Porting note: commented out
 structure ChartedSpaceCore (H : Type _) [TopologicalSpace H] (M : Type _) where
   atlas : Set (LocalEquiv M H)
   chartAt : M → LocalEquiv M H
@@ -788,7 +791,7 @@ theorem open_source' (he : e ∈ c.atlas) : is_open[c.toTopologicalSpace] e.sour
 
 theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
   have E : e.target ∩ e.symm ⁻¹' e.source = e.target :=
-    subset.antisymm (inter_subset_left _ _) fun x hx =>
+    Subset.antisymm (inter_subset_left _ _) fun x hx =>
       ⟨hx, LocalEquiv.target_subset_preimage_source _ hx⟩
   simpa [LocalEquiv.trans_source, E] using c.open_source e e he he
 #align charted_space_core.open_target ChartedSpaceCore.open_target
