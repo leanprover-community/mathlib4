@@ -12,68 +12,73 @@ import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.DiscreteCategory
 
 /-!
-# The category `discrete punit`
+# The category `Discrete PUnit`
 
-We define `star : C ⥤ discrete punit` sending everything to `punit.star`,
-show that any two functors to `discrete punit` are naturally isomorphic,
-and construct the equivalence `(discrete punit ⥤ C) ≌ C`.
+We define `star : C ⥤ Discrete PUnit` sending everything to `punit.star`,
+show that any two functors to `Discrete PUnit` are naturally isomorphic,
+and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 -/
 
 
 universe v u
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
 namespace Functor
 
-/-- The constant functor sending everything to `punit.star`. -/
-@[simps]
+/-- The constant functor sending everything to `PUnit.star`. -/
+@[simps!] 
 def star : C ⥤ Discrete PUnit :=
   (Functor.const _).obj ⟨⟨⟩⟩
 #align category_theory.functor.star CategoryTheory.Functor.star
-
+-- Porting note: simp can simplify this 
+attribute [nolint simpNF] star_map_down_down
 variable {C}
 
-/-- Any two functors to `discrete punit` are isomorphic. -/
-@[simps]
-def punitExt (F G : C ⥤ Discrete PUnit) : F ≅ G :=
-  NatIso.ofComponents (fun _ => eqToIso (by decide)) fun _ _ _ => by decide
-#align category_theory.functor.punit_ext CategoryTheory.Functor.punitExt
+/-- Any two functors to `Discrete PUnit` are isomorphic. -/
+@[simps!] -- Porting note: simp can simplify all generated decls
+def pUnitExt (F G : C ⥤ Discrete PUnit) : F ≅ G := by
+  refine NatIso.ofComponents (fun X => eqToIso ?_) fun {X} {Y} f => ?_
+  · simp only [eq_iff_true_of_subsingleton]
+  · aesop_cat 
+#align category_theory.functor.punit_ext CategoryTheory.Functor.pUnitExt
+-- Porting note: simp can simplify these
+attribute [nolint simpNF] pUnitExt_hom_app_down_down pUnitExt_inv_app_down_down 
 
-/-- Any two functors to `discrete punit` are *equal*.
-You probably want to use `punit_ext` instead of this.
--/
-theorem pUnit_ext' (F G : C ⥤ Discrete PUnit) : F = G :=
-  Functor.ext (fun _ => by decide) fun _ _ _ => by decide
+/-- Any two functors to `Discrete PUnit` are *equal*.
+You probably want to use `pUnitExt` instead of this. -/
+theorem pUnit_ext' (F G : C ⥤ Discrete PUnit) : F = G := by 
+  refine Functor.ext (fun X => ?_) fun {X} {Y} f => ?_ 
+  · simp only [eq_iff_true_of_subsingleton]
+  · aesop_cat
 #align category_theory.functor.punit_ext' CategoryTheory.Functor.pUnit_ext'
 
-/-- The functor from `discrete punit` sending everything to the given object. -/
-abbrev fromPunit (X : C) : Discrete PUnit.{v + 1} ⥤ C :=
+/-- The functor from `Discrete PUnit` sending everything to the given object. -/
+abbrev fromPUnit (X : C) : Discrete PUnit.{v + 1} ⥤ C :=
   (Functor.const _).obj X
-#align category_theory.functor.from_punit CategoryTheory.Functor.fromPunit
+#align category_theory.functor.from_punit CategoryTheory.Functor.fromPUnit
 
-/-- Functors from `discrete punit` are equivalent to the category itself. -/
+/-- Functors from `Discrete PUnit` are equivalent to the category itself. -/
 @[simps]
-def equiv : Discrete PUnit ⥤ C ≌ C
-    where
-  Functor :=
+def equiv : Discrete PUnit ⥤ C ≌ C where
+  functor :=
     { obj := fun F => F.obj ⟨⟨⟩⟩
-      map := fun F G θ => θ.app ⟨⟨⟩⟩ }
+      map := fun θ => θ.app ⟨⟨⟩⟩ }
   inverse := Functor.const _
   unitIso := by
-    apply nat_iso.of_components _ _
+    apply NatIso.ofComponents _ _
     intro X
-    apply discrete.nat_iso
+    apply Discrete.natIso
     rintro ⟨⟨⟩⟩
-    apply iso.refl _
+    apply Iso.refl _
     intros
     ext ⟨⟨⟩⟩
     simp
   counitIso := by
-    refine' nat_iso.of_components iso.refl _
+    refine' NatIso.ofComponents Iso.refl _
     intro X Y f
     dsimp; simp
 #align category_theory.functor.equiv CategoryTheory.Functor.equiv
@@ -81,39 +86,41 @@ def equiv : Discrete PUnit ⥤ C ≌ C
 -- See note [dsimp, simp].
 end Functor
 
-/-- A category being equivalent to `punit` is equivalent to it having a unique morphism between
-  any two objects. (In fact, such a category is also a groupoid; see `groupoid.of_hom_unique`) -/
+/-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
+  any two objects. (In fact, such a category is also a groupoid; 
+  see `CategoryTheory.Groupoid.ofHomUnique`) -/
 theorem equiv_pUnit_iff_unique :
     Nonempty (C ≌ Discrete PUnit) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) := by
   constructor
   · rintro ⟨h⟩
     refine' ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro _⟩
-    apply uniqueOfSubsingleton _
-    swap
-    · have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert h.unit.app x
-      have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert h.unit_inv.app y
+    let f : x ⟶  y := by
+      have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert h.unit.app x
+      have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert h.unitInv.app y
       exact hx ≫ hy
-    have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unit_inv.app y :=
-      by
+    suffices sub : Subsingleton (x ⟶  y) from uniqueOfSubsingleton f
+    have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
       intro z
-      simpa using congr_arg (· ≫ h.unit_inv.app y) (h.unit.naturality z)
+      simp [congrArg (· ≫ h.unitInv.app y) (h.unit.naturality z)]
     apply Subsingleton.intro
     intro a b
     rw [this a, this b]
-    simp only [functor.comp_map]
-    congr
+    simp only [Functor.comp_map]
+    congr 3
+    apply ULift.ext
+    simp
   · rintro ⟨⟨p⟩, h⟩
     haveI := fun x y => (h x y).some
     refine'
       Nonempty.intro
-        (CategoryTheory.Equivalence.mk ((Functor.Const _).obj ⟨⟨⟩⟩) ((Functor.Const _).obj p) _
-          (by apply functor.punit_ext))
+        (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩) 
+          ((@Functor.const <| Discrete PUnit).obj p) ?_ (by apply Functor.pUnitExt))
     exact
-      nat_iso.of_components
+      NatIso.ofComponents
         (fun _ =>
-          { Hom := default
+          { hom := default
             inv := default })
-        fun _ _ _ => by tidy
+        fun {X} {Y} f => by aesop_cat
 #align category_theory.equiv_punit_iff_unique CategoryTheory.equiv_pUnit_iff_unique
 
 end CategoryTheory
