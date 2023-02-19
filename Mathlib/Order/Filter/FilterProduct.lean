@@ -105,20 +105,20 @@ theorem const_inf [HasInf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : β*) 
 instance semilatticeSup [SemilatticeSup β] : SemilatticeSup β* :=
   { Germ.partialOrder with
     sup := (· ⊔ ·)
-    le_sup_left := fun f g => inductionOn₂ f g fun f g => eventually_of_forall fun x => le_sup_left
+    le_sup_left := fun f g => inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => le_sup_left
     le_sup_right := fun f g =>
-      inductionOn₂ f g fun f g => eventually_of_forall fun x => le_sup_right
+      inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => le_sup_right
     sup_le := fun f₁ f₂ g =>
-      inductionOn₃ f₁ f₂ g fun f₁ f₂ g h₁ h₂ => h₂.mp <| h₁.mono fun x => sup_le }
+      inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ => h₂.mp <| h₁.mono fun _x => sup_le }
 
 instance semilatticeInf [SemilatticeInf β] : SemilatticeInf β* :=
   { Germ.partialOrder with
     inf := (· ⊓ ·)
-    inf_le_left := fun f g => inductionOn₂ f g fun f g => eventually_of_forall fun x => inf_le_left
+    inf_le_left := fun f g => inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => inf_le_left
     inf_le_right := fun f g =>
-      inductionOn₂ f g fun f g => eventually_of_forall fun x => inf_le_right
+      inductionOn₂ f g fun _f _g => eventually_of_forall fun _x => inf_le_right
     le_inf := fun f₁ f₂ g =>
-      inductionOn₃ f₁ f₂ g fun f₁ f₂ g h₁ h₂ => h₂.mp <| h₁.mono fun x => le_inf }
+      inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ => h₂.mp <| h₁.mono fun _x => le_inf }
 
 instance lattice [Lattice β] : Lattice β* :=
   { Germ.semilatticeSup, Germ.semilatticeInf with }
@@ -126,11 +126,11 @@ instance lattice [Lattice β] : Lattice β* :=
 instance distribLattice [DistribLattice β] : DistribLattice β* :=
   { Germ.semilatticeSup, Germ.semilatticeInf with
     le_sup_inf := fun f g h =>
-      inductionOn₃ f g h fun f g h => eventually_of_forall fun _ => le_sup_inf }
+      inductionOn₃ f g h fun _f _g _h => eventually_of_forall fun _ => le_sup_inf }
 
 instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
   ⟨fun f g =>
-    inductionOn₂ f g fun f g => eventually_or.1 <| eventually_of_forall fun x => total_of _ _ _⟩
+    inductionOn₂ f g fun _f _g => eventually_or.1 <| eventually_of_forall fun _x => total_of _ _ _⟩
 
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
 noncomputable instance linearOrder [LinearOrder β] : LinearOrder β* :=
@@ -140,15 +140,15 @@ noncomputable instance linearOrder [LinearOrder β] : LinearOrder β* :=
 instance orderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid β* :=
   { Germ.partialOrder, Germ.commMonoid with
     mul_le_mul_left := fun f g =>
-      inductionOn₂ f g fun f g H h =>
-        inductionOn h fun h => H.mono fun x H => mul_le_mul_left' H _ }
+      inductionOn₂ f g fun _f _g H h =>
+        inductionOn h fun _h => H.mono fun _x H => mul_le_mul_left' H _ }
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid β]  :
     OrderedCancelCommMonoid β* :=
   { Germ.orderedCommMonoid with
     le_of_mul_le_mul_left := fun f g h =>
-      inductionOn₃ f g h fun f g h H => H.mono fun x => le_of_mul_le_mul_left' }
+      inductionOn₃ f g h fun _f _g _h H => H.mono fun _x => le_of_mul_le_mul_left' }
 
 @[to_additive]
 instance orderedCommGroup [OrderedCommGroup β] : OrderedCommGroup β* :=
@@ -164,9 +164,9 @@ instance orderedSemiring [OrderedSemiring β] : OrderedSemiring β* :=
     Germ.orderedAddCommMonoid with
     zero_le_one := const_le zero_le_one
     mul_le_mul_of_nonneg_left := fun x y z =>
-      inductionOn₃ x y z fun f g h hfg hh => hh.mp <| hfg.mono fun a => mul_le_mul_of_nonneg_left
+      inductionOn₃ x y z fun _f _g _h hfg hh => hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_left
     mul_le_mul_of_nonneg_right := fun x y z =>
-      inductionOn₃ x y z fun f g h hfg hh => hh.mp <| hfg.mono fun a => mul_le_mul_of_nonneg_right }
+      inductionOn₃ x y z fun _f _g _h hfg hh => hh.mp <| hfg.mono fun _a => mul_le_mul_of_nonneg_right }
 
 instance orderedCommSemiring [OrderedCommSemiring β] : OrderedCommSemiring β* :=
   { Germ.orderedSemiring, Germ.commSemiring with }
@@ -176,7 +176,7 @@ instance orderedRing [OrderedRing β] : OrderedRing β* :=
     Germ.orderedAddCommGroup with
     zero_le_one := const_le zero_le_one
     mul_nonneg := fun x y =>
-      inductionOn₂ x y fun f g hf hg => hg.mp <| hf.mono fun a => mul_nonneg }
+      inductionOn₂ x y fun _f _g hf hg => hg.mp <| hf.mono fun _a => mul_nonneg }
 
 instance orderedCommRing [OrderedCommRing β] : OrderedCommRing β* :=
   { Germ.orderedRing, Germ.orderedCommSemiring with }
@@ -185,11 +185,11 @@ instance strictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemirin
   { Germ.orderedSemiring, Germ.orderedAddCancelCommMonoid,
     Germ.nontrivial with
     mul_lt_mul_of_pos_left := fun x y z =>
-      inductionOn₃ x y z fun f g h hfg hh =>
-        coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun a => mul_lt_mul_of_pos_left
+      inductionOn₃ x y z fun _f _g _h hfg hh =>
+        coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a => mul_lt_mul_of_pos_left
     mul_lt_mul_of_pos_right := fun x y z =>
-      inductionOn₃ x y z fun f g h hfg hh =>
-        coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun a => mul_lt_mul_of_pos_right }
+      inductionOn₃ x y z fun _f _g _h hfg hh =>
+        coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a => mul_lt_mul_of_pos_right }
 
 instance strictOrderedCommSemiring [StrictOrderedCommSemiring β] : StrictOrderedCommSemiring β* :=
   { Germ.strictOrderedSemiring, Germ.orderedCommSemiring with }
@@ -199,8 +199,8 @@ instance strictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* :=
     Germ.strictOrderedSemiring with
     zero_le_one := const_le zero_le_one
     mul_pos := fun x y =>
-      inductionOn₂ x y fun f g hf hg =>
-        coe_pos.2 <| (coe_pos.1 hg).mp <| (coe_pos.1 hf).mono fun x => mul_pos }
+      inductionOn₂ x y fun _f _g hf hg =>
+        coe_pos.2 <| (coe_pos.1 hg).mp <| (coe_pos.1 hf).mono fun _x => mul_pos }
 
 instance strictOrderedCommRing [StrictOrderedCommRing β] : StrictOrderedCommRing β* :=
   { Germ.strictOrderedRing, Germ.orderedCommRing with }
@@ -233,7 +233,7 @@ theorem min_def [K : LinearOrder β] (x y : β*) : min x y = map₂ min x y :=
 #align filter.germ.min_def Filter.Germ.min_def
 
 theorem abs_def [LinearOrderedAddCommGroup β] (x : β*) : |x| = map abs x :=
-  inductionOn x fun a => rfl
+  inductionOn x fun _a => rfl
 #align filter.germ.abs_def Filter.Germ.abs_def
 
 @[simp]
