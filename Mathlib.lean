@@ -505,6 +505,7 @@ import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.Data.Multiset.Fold
 import Mathlib.Data.Multiset.Functor
+import Mathlib.Data.Multiset.Interval
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Multiset.LocallyFinite
 import Mathlib.Data.Multiset.NatAntidiagonal
