@@ -177,14 +177,14 @@ theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
 #align category_theory.adjunction.hom_equiv_naturality_right_symm CategoryTheory.Adjunction.homEquiv_naturality_right_symm
 
 @[simp]
-theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
+theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = NatTrans.id _ := by
   ext; dsimp
   erw [← adj.homEquiv_counit, Equiv.symm_apply_eq, adj.homEquiv_unit]
   simp
 #align category_theory.adjunction.left_triangle CategoryTheory.Adjunction.left_triangle
 
 @[simp]
-theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
+theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = NatTrans.id _ := by
   ext; dsimp
   erw [← adj.homEquiv_unit, ← Equiv.eq_symm_apply, adj.homEquiv_counit]
   simp
@@ -387,10 +387,10 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G :=
           exact t } }
 #align category_theory.adjunction.mk_of_unit_counit CategoryTheory.Adjunction.mkOfUnitCounit
 
-/- Porting note: simpNF linter claims these are solved by simp but that
+/- Porting note: simpNF linter claims these are solved by simp but that 
 is not true -/
-attribute [nolint simpNF] CategoryTheory.Adjunction.mkOfUnitCounit_homEquiv_symm_apply
-attribute [nolint simpNF] CategoryTheory.Adjunction.mkOfUnitCounit_homEquiv_apply
+attribute [nolint simpNF] CategoryTheory.Adjunction.mkOfUnitCounit_homEquiv_symm_apply 
+attribute [nolint simpNF] CategoryTheory.Adjunction.mkOfUnitCounit_homEquiv_apply 
 
 /-- The adjunction between the identity functor on a category and itself. -/
 def id : 𝟭 C ⊣ 𝟭 C where

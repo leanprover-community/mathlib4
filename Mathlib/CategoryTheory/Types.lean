@@ -88,7 +88,8 @@ abbrev asHom {α β : Type u} (f : α → β) : α ⟶ β :=
   f
 #align category_theory.as_hom CategoryTheory.asHom
 
-@[inherit_doc]
+-- If you don't mind some notation you can use fewer keystrokes:
+/-- Type as \upr in VScode -/
 scoped notation "↾" f:200 => CategoryTheory.asHom f
 
 section
