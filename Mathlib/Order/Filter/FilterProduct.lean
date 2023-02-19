@@ -32,7 +32,6 @@ open Classical
 
 namespace Filter
 
--- mathport name: «expr∀* , »
 local notation3"∀* "(...)", "r:(scoped p => Filter.Eventually p φ) => r
 
 namespace Germ
