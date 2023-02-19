@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module group_theory.group_action.sub_mul_action.pointwise
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -16,7 +16,7 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction
 This file provides `SubMulAction.Monoid` and weaker typeclasses, which show that `SubMulAction`s
 inherit the same pointwise multiplications as sets.
 
-To match `Submodule.Semiring`, we do not put these in the `Pointwise` locale.
+To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale.
 
 -/
 

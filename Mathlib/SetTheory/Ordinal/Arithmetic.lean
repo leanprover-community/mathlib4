@@ -537,7 +537,7 @@ theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
 #align ordinal.sub_nonempty Ordinal.sub_nonempty
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
-instance : Sub Ordinal :=
+instance hasSub : Sub Ordinal :=
   ⟨fun a b => infₛ { o | a ≤ b + o }⟩
 
 theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) :=
@@ -582,7 +582,7 @@ theorem sub_lt_of_le {a b c : Ordinal} (h : b ≤ a) : a - b < c ↔ a < b + c :
   lt_iff_lt_of_le_iff_le (le_sub_of_le h)
 #align ordinal.sub_lt_of_le Ordinal.sub_lt_of_le
 
-instance : ExistsAddOfLE Ordinal :=
+instance existsAddOfLE : ExistsAddOfLE Ordinal :=
   ⟨fun h => ⟨_, (Ordinal.add_sub_cancel_of_le h).symm⟩⟩
 
 @[simp]
@@ -685,13 +685,13 @@ private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
       rw [or_comm]
       exact isEmpty_prod
 
-instance : MonoidWithZero Ordinal :=
+instance monoidWithZero : MonoidWithZero Ordinal :=
   { Ordinal.monoid with
     zero := 0
     mul_zero := fun _a => mul_eq_zero'.2 <| Or.inr rfl
     zero_mul := fun _a => mul_eq_zero'.2 <| Or.inl rfl }
 
-instance : NoZeroDivisors Ordinal :=
+instance noZeroDivisors : NoZeroDivisors Ordinal :=
   ⟨fun {_ _} => mul_eq_zero'.1⟩
 
 @[simp]
@@ -708,7 +708,7 @@ theorem card_mul (a b) : card (a * b) = card a * card b :=
   Quotient.inductionOn₂ a b fun ⟨α, _r, _⟩ ⟨β, _s, _⟩ => mul_comm (#β) (#α)
 #align ordinal.card_mul Ordinal.card_mul
 
-instance : LeftDistribClass Ordinal.{u} :=
+instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
   ⟨fun a b c =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Quotient.sound
@@ -875,7 +875,7 @@ theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.None
 #align ordinal.div_nonempty Ordinal.div_nonempty
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
-instance : Div Ordinal :=
+instance hasDiv : Div Ordinal :=
   ⟨fun a b => if _h : b = 0 then 0 else infₛ { o | a < b * succ o }⟩
 
 @[simp]
@@ -1019,12 +1019,12 @@ theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :
     else (le_of_dvd b0 h₁).antisymm (le_of_dvd a0 h₂)
 #align ordinal.dvd_antisymm Ordinal.dvd_antisymm
 
-instance : IsAntisymm Ordinal (· ∣ ·) :=
+instance isAntisymm : IsAntisymm Ordinal (· ∣ ·) :=
   ⟨@dvd_antisymm⟩
 
 /-- `a % b` is the unique ordinal `o'` satisfying
   `a = b * o + o'` with `o' < b`. -/
-instance : Mod Ordinal :=
+instance hasMod : Mod Ordinal :=
   ⟨fun a b => a - b * (a / b)⟩
 
 theorem mod_def (a b : Ordinal) : a % b = a - b * (a / b) :=
