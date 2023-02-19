@@ -74,7 +74,8 @@ theorem preservesLimitsIso_inv_π (j) :
 
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
-    G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom = limit.lift (F ⋙ G) (Functor.mapCone G _) := by
+    G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom = 
+    limit.lift (F ⋙ G) (Functor.mapCone G _) := by
   ext
   simp [← G.map_comp]
 #align category_theory.lift_comp_preserves_limits_iso_hom CategoryTheory.lift_comp_preservesLimitsIso_hom
@@ -130,7 +131,8 @@ theorem ι_preservesColimitsIso_hom (j : J) :
 
 @[reassoc (attr := simp)]
 theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
-    (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) = colimit.desc _ (Functor.mapCocone G t) := by
+    (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) = 
+    colimit.desc _ (Functor.mapCocone G t) := by
   ext
   simp [← G.map_comp]
 #align category_theory.preserves_colimits_iso_inv_comp_desc CategoryTheory.preservesColimitsIso_inv_comp_desc
