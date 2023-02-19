@@ -9,7 +9,7 @@ Authors: Reid Barton, Mario Carneiro, Scott Morrison, Floris van Doorn
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.CategoryTheory.Category.Ulift
+import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Existence of limits and colimits
