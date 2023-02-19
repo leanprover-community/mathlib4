@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 
 /-!
 # Admissible absolute value on the integers
