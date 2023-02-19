@@ -53,7 +53,7 @@ unordered, possibly infinite trees:
 
 ```lean
 coinductive Tree' (a : Type)
-| node : a -> multiset Tree' -> Tree'
+| node : a -> Multiset Tree' -> Tree'
 ```
 
 by using the `cofix` construct. Those options can all be mixed and
@@ -63,13 +63,13 @@ matched because they preserve the properties of QPF. The latter example,
 ## Related modules
 
  * constructions
-   * fix
-   * cofix
-   * quot
-   * comp
-   * sigma / pi
-   * prj
-   * const
+   * Fix
+   * Cofix
+   * Quot
+   * Comp
+   * Sigma / Pi
+   * Prj
+   * Const
 
 each proves that some operations on functors preserves the QPF structure
 
@@ -86,11 +86,11 @@ open MvFunctor
 /-- Multivariate quotients of polynomial functors.
 -/
 class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type _) [MvFunctor F] where
-  p : MvPFunctor.{u} n
-  abs : ∀ {α}, p.Obj α → F α
-  repr : ∀ {α}, F α → p.Obj α
+  P : MvPFunctor.{u} n
+  abs : ∀ {α}, P.Obj α → F α
+  repr : ∀ {α}, F α → P.Obj α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
-  abs_map : ∀ {α β} (f : α ⟹ β) (p : p.Obj α), abs (f <$$> p) = f <$$> abs p
+  abs_map : ∀ {α β} (f : α ⟹ β) (p : P.Obj α), abs (f <$$> p) = f <$$> abs p
 #align mvqpf MvQPF
 
 namespace MvQPF
@@ -213,21 +213,21 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
 /-- A qpf is said to be uniform if every polynomial functor
 representing a single value all have the same range. -/
 def IsUniform : Prop :=
-  ∀ ⦃α : TypeVec n⦄ (a a' : q.p.A) (f : q.p.B a ⟹ α) (f' : q.p.B a' ⟹ α),
+  ∀ ⦃α : TypeVec n⦄ (a a' : q.P.A) (f : q.P.B a ⟹ α) (f' : q.P.B a' ⟹ α),
     abs ⟨a, f⟩ = abs ⟨a', f'⟩ → ∀ i, f i '' univ = f' i '' univ
 #align mvqpf.is_uniform MvQPF.IsUniform
 
 /-- does `abs` preserve `liftp`? -/
-def LiftpPreservation : Prop :=
-  ∀ ⦃α : TypeVec n⦄ (p : ∀ ⦃i⦄, α i → Prop) (x : q.p.Obj α), LiftP p (abs x) ↔ LiftP p x
-#align mvqpf.liftp_preservation MvQPF.LiftpPreservation
+def LiftPPreservation : Prop :=
+  ∀ ⦃α : TypeVec n⦄ (p : ∀ ⦃i⦄, α i → Prop) (x : q.P.Obj α), LiftP p (abs x) ↔ LiftP p x
+#align mvqpf.liftp_preservation MvQPF.LiftPPreservation
 
 /-- does `abs` preserve `supp`? -/
 def SuppPreservation : Prop :=
-  ∀ ⦃α⦄ (x : q.p.Obj α), supp (abs x) = supp x
+  ∀ ⦃α⦄ (x : q.P.Obj α), supp (abs x) = supp x
 #align mvqpf.supp_preservation MvQPF.SuppPreservation
 
-theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.p.A) (f : q.p.B a ⟹ α) :
+theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.P.A) (f : q.P.B a ⟹ α) :
     ∀ i, supp (abs ⟨a, f⟩) i = f i '' univ := by
   intro ; ext u; rw [mem_supp]; constructor
   · intro h'
@@ -258,32 +258,32 @@ theorem supp_map (h : q.IsUniform) {α β : TypeVec n} (g : α ⟹ β) (x : F α
   rfl
 #align mvqpf.supp_map MvQPF.supp_map
 
-theorem suppPreservation_iff_uniform : q.SuppPreservation ↔ q.IsUniform := by
+theorem suppPreservation_iff_isUniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
   · intro h α a a' f f' h' i
     rw [← MvPFunctor.supp_eq, ← MvPFunctor.supp_eq, ← h, h', h]
   · rintro h α ⟨a, f⟩
     ext
     rwa [supp_eq_of_isUniform, MvPFunctor.supp_eq]
-#align mvqpf.supp_preservation_iff_uniform MvQPF.suppPreservation_iff_uniform
+#align mvqpf.supp_preservation_iff_uniform MvQPF.suppPreservation_iff_isUniform
 
-theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpPreservation := by
+theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPPreservation := by
   constructor <;> intro h
   · rintro α p ⟨a, f⟩
     have h' := h
-    rw [suppPreservation_iff_uniform] at h'
+    rw [suppPreservation_iff_isUniform] at h'
     dsimp only [SuppPreservation, supp] at h
     simp only [liftP_iff_of_isUniform, supp_eq_of_isUniform, MvPFunctor.liftP_iff', h',
       image_univ, mem_range, exists_imp]
     constructor <;> intros <;> subst_vars <;> solve_by_elim
   · rintro α ⟨a, f⟩
-    simp only [LiftpPreservation] at h
+    simp only [LiftPPreservation] at h
     ext
     simp only [supp, h, mem_setOf_eq]
 #align mvqpf.supp_preservation_iff_liftp_preservation MvQPF.suppPreservation_iff_liftpPreservation
 
-theorem liftpPreservation_iff_uniform : q.LiftpPreservation ↔ q.IsUniform := by
-  rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_uniform]
+theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := by
+  rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_isUniform]
 #align mvqpf.liftp_preservation_iff_uniform MvQPF.liftpPreservation_iff_uniform
 
 end MvQPF
