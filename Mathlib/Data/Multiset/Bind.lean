@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.bind
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -189,6 +189,7 @@ theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).prod = (s.map fun a => (t a).prod).prod :=
   Multiset.induction_on s (by simp) fun a s ih => by simp [ih, cons_bind]
 #align multiset.prod_bind Multiset.prod_bind
+#align multiset.sum_bind Multiset.sum_bind
 
 theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α → Multiset γ}
     {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) : Rel p (s.bind f) (t.bind g) :=
@@ -290,8 +291,7 @@ theorem mem_product {s t} : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1
 #align multiset.mem_product Multiset.mem_product
 
 @[simp]
-theorem card_product : card (s ×ˢ t) = card s * card t := by
-  simp [product, replicate, (· ∘ ·), mul_comm]
+theorem card_product : card (s ×ˢ t) = card s * card t := by simp [product]
 #align multiset.card_product Multiset.card_product
 
 end Product

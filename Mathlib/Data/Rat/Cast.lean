@@ -308,21 +308,22 @@ theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
--- @[mono]
+@[mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun m n => by
   simpa only [sub_pos, cast_sub] using @cast_pos_of_pos K _ (n - m)
 #align rat.cast_strict_mono Rat.cast_strictMono
 
--- @[mono]
+@[mono]
 theorem cast_mono : Monotone ((↑) : ℚ → K) :=
   cast_strictMono.monotone
 #align rat.cast_mono Rat.cast_mono
 
 /-- Coercion from `ℚ` as an order embedding. -/
-@[simps]
+@[simps!]
 def castOrderEmbedding : ℚ ↪o K :=
   OrderEmbedding.ofStrictMono (↑) cast_strictMono
 #align rat.cast_order_embedding Rat.castOrderEmbedding
+#align rat.cast_order_embedding_apply Rat.castOrderEmbedding_apply
 
 @[simp, norm_cast]
 theorem cast_le {m n : ℚ} : (m : K) ≤ n ↔ m ≤ n :=
@@ -494,9 +495,9 @@ theorem RingHom.ext_rat {R : Type _} [Semiring R] [RingHomClass F ℚ R] (f g : 
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))
 #align ring_hom.ext_rat RingHom.ext_rat
 
-instance Rat.subsingleton_ring_hom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
+instance Rat.subsingleton_ringHom {R : Type _} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
-#align rat.subsingleton_ring_hom Rat.subsingleton_ring_hom
+#align rat.subsingleton_ring_hom Rat.subsingleton_ringHom
 
 namespace MulOpposite
 

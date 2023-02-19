@@ -89,12 +89,12 @@ theorem smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a 
 #align ulift.smul_down ULift.smul_down
 #align ulift.vadd_down ULift.vadd_down
 
-@[to_additive (reorder := 1)]
+@[to_additive (reorder := 1) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 #align ulift.has_pow ULift.pow
 
-@[to_additive (attr := simp) (reorder := 1)]
+@[to_additive (attr := simp) (reorder := 1) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 #align ulift.pow_down ULift.pow_down
@@ -112,11 +112,10 @@ def MulEquiv.ulift [Mul α] : ULift α ≃* α :=
 instance semigroup [Semigroup α] : Semigroup (ULift α) :=
   (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
 #align ulift.semigroup ULift.semigroup
-#align ulift.add_semigroup ULift.semigroup
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (ULift α) :=
   (Equiv.ulift.injective.addSemigroup _) fun _ _ => rfl
-#align add_semigroup.ulift ULift.addSemigroup
+#align ulift.add_semigroup ULift.addSemigroup
 
 
 @[to_additive]
@@ -244,7 +243,7 @@ instance cancelMonoid [CancelMonoid α] : CancelMonoid (ULift α) :=
 instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid (ULift α) :=
   Equiv.ulift.injective.cancelCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.cancel_comm_monoid ULift.cancelCommMonoid
-#align ulift.add_cancel_comm_monoid ULift.addCancelMonoid
+#align ulift.add_cancel_comm_monoid ULift.addCancelCommMonoid
 
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial

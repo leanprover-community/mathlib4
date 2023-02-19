@@ -754,7 +754,7 @@ theorem card_le_of_le {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
 #align multiset.card_le_of_le Multiset.card_le_of_le
 
--- @[mono] -- Porting note: unknown attribute
+@[mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_of_le
 #align multiset.card_mono Multiset.card_mono
 
@@ -876,6 +876,7 @@ instance is_wellFounded_lt : WellFoundedLT (Multiset α) :=
 /-- `replicate n a` is the multiset containing only `a` with multiplicity `n`. -/
 def replicate (n : ℕ) (a : α) : Multiset α :=
   List.replicate n a
+#align multiset.replicate Multiset.replicate
 
 theorem coe_replicate (n : ℕ) (a : α) : (List.replicate n a : Multiset α) = replicate n a := rfl
 #align multiset.coe_replicate Multiset.coe_replicate
@@ -890,13 +891,14 @@ theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a
   congr_arg _ <| List.replicate_add ..
 #align multiset.replicate_add Multiset.replicate_add
 
-/-- `Multiset.replicate` as an `addMonoidHom`. -/
+/-- `Multiset.replicate` as an `AddMonoidHom`. -/
 @[simps]
 def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
   toFun := fun n => replicate n a
   map_zero' := replicate_zero a
   map_add' := fun _ _ => replicate_add _ _ a
 #align multiset.replicate_add_monoid_hom Multiset.replicateAddMonoidHom
+#align multiset.replicate_add_monoid_hom_apply Multiset.replicateAddMonoidHom_apply
 
 -- @[simp] -- Porting note: simp can prove this
 theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
@@ -2617,10 +2619,11 @@ theorem map_le_map_iff {f : α → β} (hf : Function.Injective f) {s t : Multis
 
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a multiset to its
 image under `f`. -/
-@[simps]
+@[simps!]
 def mapEmbedding (f : α ↪ β) : Multiset α ↪o Multiset β :=
   OrderEmbedding.ofMapLeIff (map f) fun _ _ => map_le_map_iff f.inj'
 #align multiset.map_embedding Multiset.mapEmbedding
+#align multiset.map_embedding_apply Multiset.mapEmbedding_apply
 
 end Embedding
 
@@ -2657,6 +2660,7 @@ inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
   | zero : Rel r 0 0
   | cons {a b as bs} : r a b → Rel r as bs → Rel r (a ::ₘ as) (b ::ₘ bs)
 #align multiset.rel Multiset.Rel
+#align multiset.rel_iff Multiset.Rel_iff
 
 variable {δ : Type _} {r : α → β → Prop} {p : γ → δ → Prop}
 
@@ -2841,7 +2845,7 @@ theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} 
   · rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
   · obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
-    exact Multiset.Rel.cons (trans ha1 hb1) (ih ha2 hb2)
+    exact Multiset.Rel.cons (_root_.trans ha1 hb1) (ih ha2 hb2)
 #align multiset.rel.trans Multiset.Rel.trans
 
 theorem Rel.countp_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
@@ -2852,7 +2856,7 @@ theorem Rel.countp_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countp_cons, countp_cons, ih hb2]
     simp only [decide_eq_true_eq, add_right_inj]
-    refine' (if_congr ⟨fun h => trans h hb1, fun h => trans h (symm hb1)⟩ rfl rfl)
+    refine' (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 #align multiset.rel.countp_eq Multiset.Rel.countp_eq
 
 end Rel

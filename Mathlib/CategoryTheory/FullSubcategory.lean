@@ -57,20 +57,20 @@ in `D` from `F X` to `F Y`.
 @[nolint unusedArguments]
 def InducedCategory (_F: C → D): Type u₁ :=
   C
-#align category_theory.InducedCategory CategoryTheory.InducedCategory
+#align category_theory.induced_category CategoryTheory.InducedCategory
 
 variable {D}
 
 instance InducedCategory.hasCoeToSort {α : Sort _} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
   ⟨fun c => F c⟩
-#align category_theory.InducedCategory.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
+#align category_theory.induced_category.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
 
 instance InducedCategory.category : Category.{v} (InducedCategory D F) where
   Hom X Y := F X ⟶ F Y
   id X := 𝟙 (F X)
   comp f g := f ≫ g
-#align category_theory.InducedCategory.category CategoryTheory.InducedCategory.category
+#align category_theory.induced_category.category CategoryTheory.InducedCategory.category
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
@@ -80,12 +80,14 @@ def inducedFunctor : InducedCategory D F ⥤ D where
   obj := F
   map f := f
 #align category_theory.induced_functor CategoryTheory.inducedFunctor
+#align category_theory.induced_functor_map CategoryTheory.inducedFunctor_map
+#align category_theory.induced_functor_obj CategoryTheory.inducedFunctor_obj
 
 instance InducedCategory.full : Full (inducedFunctor F) where preimage f := f
-#align category_theory.InducedCategory.full CategoryTheory.InducedCategory.full
+#align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
 instance InducedCategory.faithful : Faithful (inducedFunctor F) where
-#align category_theory.InducedCategory.faithful CategoryTheory.InducedCategory.faithful
+#align category_theory.induced_category.faithful CategoryTheory.InducedCategory.faithful
 
 end Induced
 
@@ -108,6 +110,8 @@ structure FullSubcategory where
   /--The predicate satisfied by all objects in this subcategory-/
   property : Z obj
 #align category_theory.full_subcategory CategoryTheory.FullSubcategory
+#align category_theory.full_subcategory.ext CategoryTheory.FullSubcategory.ext
+#align category_theory.full_subcategory.ext_iff CategoryTheory.FullSubcategory.ext_iff
 
 instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
@@ -146,6 +150,8 @@ def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ 
   obj X := ⟨X.1, h X.2⟩
   map f := f
 #align category_theory.full_subcategory.map CategoryTheory.FullSubcategory.map
+#align category_theory.full_subcategory.map_obj_obj CategoryTheory.FullSubcategory.map_obj_obj
+#align category_theory.full_subcategory.map_map CategoryTheory.FullSubcategory.map_map
 
 instance (h : ∀ ⦃X⦄, Z X → Z' X) : Full (FullSubcategory.map h) where preimage f := f
 
@@ -168,6 +174,8 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSub
   obj X := ⟨F.obj X, hF X⟩
   map f := F.map f
 #align category_theory.full_subcategory.lift CategoryTheory.FullSubcategory.lift
+#align category_theory.full_subcategory.lift_obj_obj CategoryTheory.FullSubcategory.lift_obj_obj
+#align category_theory.full_subcategory.lift_map CategoryTheory.FullSubcategory.lift_map
 
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
     original functor. Unfortunately, this is not true by definition, so we only get a natural

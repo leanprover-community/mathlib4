@@ -19,8 +19,7 @@ These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize im
 
 namespace Nat
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 /-- See `IsCoprime.prod_left` for the corresponding lemma about `IsCoprime` -/
 theorem coprime_prod_left {ι : Type _} {x : ℕ} {s : ι → ℕ} {t : Finset ι} :

@@ -38,13 +38,11 @@ theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 #align pnat.nat_pred_add_one PNat.natPred_add_one
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 #align pnat.nat_pred_strict_mono PNat.natPred_strictMono
 
- -- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
 #align pnat.nat_pred_monotone PNat.natPred_monotone
@@ -72,13 +70,11 @@ end PNat
 
 namespace Nat
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
 #align nat.succ_pnat_strict_mono Nat.succPNat_strictMono
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
 #align nat.succ_pnat_mono Nat.succPNat_mono
@@ -149,13 +145,16 @@ def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   left_inv := succPNat_natPred
   right_inv := Nat.natPred_succPNat
 #align equiv.pnat_equiv_nat Equiv.pnatEquivNat
+#align equiv.pnat_equiv_nat_symm_apply Equiv.pnatEquivNat_symm_apply
+#align equiv.pnat_equiv_nat_apply Equiv.pnatEquivNat_apply
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := { fullyApplied := false }) apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
 #align order_iso.pnat_iso_nat OrderIso.pnatIsoNat
+#align order_iso.pnat_iso_nat_apply OrderIso.pnatIsoNat_apply
 
 @[simp]
 theorem _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=
@@ -275,7 +274,7 @@ end deprecated
 -- where the left `^ : ℕ+ → ℕ → ℕ+` was `monoid.has_pow`.
 -- Atm writing `m ^ n` means automatically `(↑m) ^ n`.
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : ((Monoid.Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ((Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 

@@ -58,8 +58,7 @@ For efficiency purposes, the sequence is defined using `Stream.iterate`.
 fib, fibonacci
 -/
 
---Porting note: commented out
---open BigOperators
+open BigOperators
 
 namespace Nat
 
@@ -101,8 +100,7 @@ theorem fib_add_two {n : ℕ} : fib (n + 2) = fib n + fib (n + 1) := by
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 #align nat.fib_le_fib_succ Nat.fib_le_fib_succ
 
--- porting note: At the time of this port in time attribute @[mono] is unknown
--- @[mono]
+@[mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 #align nat.fib_mono Nat.fib_mono
@@ -126,12 +124,12 @@ theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) :=
 #align nat.fib_lt_fib_succ Nat.fib_lt_fib_succ
 
 /-- `fib (n + 2)` is strictly monotone. -/
-theorem fib_add_two_strict_mono : StrictMono fun n => fib (n + 2) :=
+theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) :=
   by
   refine' strictMono_nat_of_lt_succ fun n => _
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
-#align nat.fib_add_two_strict_mono Nat.fib_add_two_strict_mono
+#align nat.fib_add_two_strict_mono Nat.fib_add_two_strictMono
 
 theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n :=
   by

@@ -19,8 +19,7 @@ These results are kept separate from `Algebra.Star.Basic` to avoid it needing to
 
 variable {R : Type _}
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 @[simp]
 theorem star_prod [CommMonoid R] [StarSemigroup R] {α : Type _} (s : Finset α) (f : α → R) :

@@ -35,7 +35,7 @@ namespace Pi
 theorem IsSMulRegular.pi {α : Type _} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
   funext fun i => hk i (congr_fun h i : _)
-#align pi.is_smul_regular.pi Pi.IsSMulRegular.pi
+#align is_smul_regular.pi Pi.IsSMulRegular.pi
 
 instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=
@@ -83,7 +83,7 @@ definitions elsewhere in the library without this. -/
 instance Function.module (α β : Type _) [Semiring α] [AddCommMonoid β] [Module α β] :
     Module α (I → β) :=
   Pi.module _ _ _
-#align pi.function.module Pi.Function.module
+#align function.module Pi.Function.module
 
 variable {I f}
 

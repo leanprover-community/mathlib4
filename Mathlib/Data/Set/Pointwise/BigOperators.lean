@@ -20,8 +20,7 @@ namespace Set
 
 section BigOperators
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 open Pointwise Function
 
