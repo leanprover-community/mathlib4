@@ -841,6 +841,29 @@ theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
     rw [List.get?_map, List.indexOf_get? (m a), Option.map_some']
 #align primrec.dom_fintype Primrec.dom_fintype
 
+-- porting note: experimental
+/-- A function is `PrimrecBounded` if its size is bounded by a primitive recursive function -/
+def PrimrecBounded (f : α → β) : Prop :=
+  ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
+
+lemma to_PrimrecBounded {f : α → β} (hf : Primrec f) : PrimrecBounded f :=
+  ⟨fun x => encode (f x), by rwa [encode_iff], fun x => by rfl⟩
+
+theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [∀ x n, Decidable (p x n)]
+    (hf : Primrec f) (hp : PrimrecRel p) : Primrec fun x => (f x).findGreatest (p x) :=
+  (nat_elim' (h := fun x nih => if p x (nih.1 + 1) then nih.1 + 1 else nih.2)
+  hf (const 0) (ite (hp.comp fst (snd |> fst.comp |> succ.comp)) (snd |> fst.comp |> succ.comp) (snd.comp snd))).of_eq fun x => by
+    induction f x <;> simp [Nat.findGreatest, *]
+
+def PrimrecBounded.to_Primrec_of_Primrec_graph {f : α → ℕ}
+  (h₁ : PrimrecBounded f)
+  (h₂ : PrimrecRel fun a b => f a = b) : Primrec f := by
+    rcases h₁ with ⟨g, pg, hg : ∀ x, f x ≤ g x⟩
+    refine (nat_findGreatest pg h₂).of_eq ?_
+
+#exit
+
+
 theorem nat_boddDiv2 : Primrec Nat.boddDiv2 :=
   (nat_elim' Primrec.id (const (false, 0))
         (((cond fst (pair (const false) (succ.comp snd)) (pair (const true) snd)).comp snd).comp
