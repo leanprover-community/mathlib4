@@ -8,10 +8,10 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.ConcreteCategory.Bundled
-import Mathbin.CategoryTheory.DiscreteCategory
-import Mathbin.CategoryTheory.Types
-import Mathbin.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Bicategory.Strict
 
 /-!
 # Category of categories
