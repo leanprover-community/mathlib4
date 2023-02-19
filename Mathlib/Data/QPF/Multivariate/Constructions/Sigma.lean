@@ -57,27 +57,27 @@ instance : MvFunctor (Sigma F) where map := fun f ⟨a, x⟩ => ⟨a, f <$$> x�
 variable [∀ α, MvQPF <| F α]
 
 /-- polynomial functor representation of a dependent sum -/
-protected def p : MvPFunctor n :=
+protected def P : MvPFunctor n :=
   -- Porting note, Σ bind to Sigma, not _root_.Sigma
   -- old code: ⟨Σa, (p (F a)).A, fun x => (p (F x.1)).B x.2⟩
-  ⟨_root_.Sigma fun a => (p (F a)).A, fun x => (p (F x.1)).B x.2⟩
+  ⟨_root_.Sigma fun a => (P (F a)).A, fun x => (P (F x.1)).B x.2⟩
 set_option linter.uppercaseLean3 false in
-#align mvqpf.sigma.P MvQPF.Sigma.p
+#align mvqpf.sigma.P MvQPF.Sigma.P
 
 /-- abstraction function for dependent sums -/
-protected def abs ⦃α⦄ : (Sigma.p F).Obj α → Sigma F α
+protected def abs ⦃α⦄ : (Sigma.P F).Obj α → Sigma F α
   | ⟨a, f⟩ => ⟨a.1, MvQPF.abs ⟨a.2, f⟩⟩
 #align mvqpf.sigma.abs MvQPF.Sigma.abs
 
 /-- representation function for dependent sums -/
-protected def repr ⦃α⦄ : Sigma F α → (Sigma.p F).Obj α
+protected def repr ⦃α⦄ : Sigma F α → (Sigma.P F).Obj α
   | ⟨a, f⟩ =>
     let x := MvQPF.repr f
     ⟨⟨a, x.1⟩, x.2⟩
 #align mvqpf.sigma.repr MvQPF.Sigma.repr
 
 instance : MvQPF (Sigma F) where
-  p := Sigma.p F
+  P := Sigma.P F
   abs {α} := @Sigma.abs _ _ F _ _ α
   repr {α} := @Sigma.repr _ _ F _ _ α
   abs_repr := by rintro α ⟨x, f⟩; simp only [Sigma.abs, Sigma.repr, Sigma.eta, abs_repr]
@@ -95,7 +95,7 @@ variable [∀ α, MvQPF <| F α]
 /-- polynomial functor representation of a dependent product -/
 protected def p : MvPFunctor n :=
   -- Porting note: _root_.Sigma
-  ⟨∀ a, (p (F a)).A, fun x i => _root_.Sigma fun a : A => (p (F a)).B (x a) i⟩
+  ⟨∀ a, (P (F a)).A, fun x i => _root_.Sigma fun a : A => (P (F a)).B (x a) i⟩
 set_option linter.uppercaseLean3 false in
 #align mvqpf.pi.P MvQPF.Pi.p
 
@@ -110,7 +110,7 @@ protected def repr ⦃α⦄ : Pi F α → (Pi.p F).Obj α
 #align mvqpf.pi.repr MvQPF.Pi.repr
 
 instance : MvQPF (Pi F) where
-  p := Pi.p F
+  P := Pi.p F
   abs := @Pi.abs _ _ F _ _
   repr := @Pi.repr _ _ F _ _
   abs_repr := by rintro α f; simp only [Pi.abs, Pi.repr, Sigma.eta, abs_repr]
