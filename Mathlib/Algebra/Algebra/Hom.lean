@@ -127,17 +127,27 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 #align alg_hom.to_fun_eq_coe AlgHom.toFun_eq_coe
 
-instance coeRingHom : Coe (A →ₐ[R] B) (A →+* B) :=
+attribute [coe] AlgHom.toRingHom
+
+instance coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
   ⟨AlgHom.toRingHom⟩
-#align alg_hom.coe_ring_hom AlgHom.coeRingHom
+#align alg_hom.coe_ring_hom AlgHom.coeOutRingHom
 
-instance coeMonoidHom : Coe (A →ₐ[R] B) (A →* B) :=
-  ⟨fun f => ↑(f : A →+* B)⟩
-#align alg_hom.coe_monoid_hom AlgHom.coeMonoidHom
+-- Porting note: The new definition for an notaion `↑`.
+@[coe]
+def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
-instance coeAddMonoidHom : Coe (A →ₐ[R] B) (A →+ B) :=
-  ⟨fun f => ↑(f : A →+* B)⟩
-#align alg_hom.coe_add_monoid_hom AlgHom.coeAddMonoidHom
+instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
+  ⟨AlgHom.toMonoidHom'⟩
+#align alg_hom.coe_monoid_hom AlgHom.coeOutMonoidHom
+
+-- Porting note: The new definition for an notaion `↑`.
+@[coe]
+def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
+
+instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
+  ⟨AlgHom.toAddMonoidHom'⟩
+#align alg_hom.coe_add_monoid_hom AlgHom.coeOutAddMonoidHom
 
 @[simp, norm_cast]
 theorem coe_mk {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
