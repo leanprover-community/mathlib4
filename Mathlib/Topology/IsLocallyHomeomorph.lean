@@ -8,7 +8,7 @@ Authors: Thomas Browning
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.LocalHomeomorph
+import Mathlib.Topology.LocalHomeomorph
 
 /-!
 # Local homeomorphisms
@@ -73,8 +73,7 @@ protected theorem continuousOn (hf : IsLocallyHomeomorphOn f s) : ContinuousOn f
 #align is_locally_homeomorph_on.continuous_on IsLocallyHomeomorphOn.continuousOn
 
 protected theorem comp (hg : IsLocallyHomeomorphOn g t) (hf : IsLocallyHomeomorphOn f s)
-    (h : Set.MapsTo f s t) : IsLocallyHomeomorphOn (g ∘ f) s :=
-  by
+    (h : Set.MapsTo f s t) : IsLocallyHomeomorphOn (g ∘ f) s := by
   intro x hx
   obtain ⟨eg, hxg, rfl⟩ := hg (f x) (h hx)
   obtain ⟨ef, hxf, rfl⟩ := hf x hx
