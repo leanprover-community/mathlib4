@@ -568,7 +568,7 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem to₂ {f : α × β → σ} (hf : Primrec f) : Primrec₂ fun a b => f (a, b) :=
-  hf.of_eq fun ⟨a, b⟩ => rfl
+  hf.of_eq fun _ => rfl
 #align primrec.to₂ Primrec.to₂
 
 theorem nat_elim {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (hg : Primrec₂ g) :
@@ -742,7 +742,7 @@ lean 3 declaration is
 but is expected to have type
   Primrec.{0, 0} Bool Bool Primcodable.bool Primcodable.bool not
 Case conversion may be inaccurate. Consider using '#align primrec.not Primrec.notₓ'. -/
-protected theorem pnot {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
+theorem pnot {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     PrimrecPred fun a => ¬p a :=
   (Primrec.not.comp hp).of_eq fun n => by simp
 #align primrec.not Primrec.pnot
@@ -754,7 +754,7 @@ lean 3 declaration is
 but is expected to have type
   Primrec₂.{0, 0, 0} Bool Bool Bool Primcodable.bool Primcodable.bool Primcodable.bool and
 Case conversion may be inaccurate. Consider using '#align primrec.and Primrec.andₓ'. -/
-protected theorem pand {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
+theorem pand {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
     (hq : PrimrecPred q) : PrimrecPred fun a => p a ∧ q a :=
   (Primrec.and.comp hp hq).of_eq fun n => by simp
 #align primrec.and Primrec.pand
@@ -766,7 +766,7 @@ lean 3 declaration is
 but is expected to have type
   Primrec₂.{0, 0, 0} Bool Bool Bool Primcodable.bool Primcodable.bool Primcodable.bool or
 Case conversion may be inaccurate. Consider using '#align primrec.or Primrec.orₓ'. -/
-protected theorem por {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
+theorem por {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
     (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
   (Primrec.or.comp hp hq).of_eq fun n => by simp
 #align primrec.or Primrec.por
@@ -841,7 +841,10 @@ theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
     rw [List.get?_map, List.indexOf_get? (m a), Option.map_some']
 #align primrec.dom_fintype Primrec.dom_fintype
 
--- porting note: experimental
+-- porting note: These are new lemmas
+-- I added it because it actually simplified the proofs
+-- and because it would be a nightmare to debug the errors that occured
+-- in the monstrosity that was the original proof
 /-- A function is `PrimrecBounded` if its size is bounded by a primitive recursive function -/
 def PrimrecBounded (f : α → β) : Prop :=
   ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
@@ -855,33 +858,52 @@ theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [∀ x n, De
   hf (const 0) (ite (hp.comp fst (snd |> fst.comp |> succ.comp)) (snd |> fst.comp |> succ.comp) (snd.comp snd))).of_eq fun x => by
     induction f x <;> simp [Nat.findGreatest, *]
 
-def PrimrecBounded.to_Primrec_of_Primrec_graph {f : α → ℕ}
-  (h₁ : PrimrecBounded f)
+/-- To show a function `f : α → ℕ` is primitive recursive, it is enough to
+  show that the function is bounded by a primitive recursive function and that its graph is recursive -/
+theorem of_Primrec_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
   (h₂ : PrimrecRel fun a b => f a = b) : Primrec f := by
     rcases h₁ with ⟨g, pg, hg : ∀ x, f x ≤ g x⟩
-    refine (nat_findGreatest pg h₂).of_eq ?_
+    refine (nat_findGreatest pg h₂).of_eq fun n => ?_
+    exact (Nat.findGreatest_spec (P := fun b => f n = b) (hg n) rfl).symm
 
-#exit
+-- TODO: Move to Nat.basic or something
+theorem _root_.Nat.eq_div_iff_mul_le_and_lt_mul {x y k : ℕ} (k₀ : 0 < k) :
+    x = y / k ↔ x * k ≤ y ∧ y < (x + 1) * k := by
+  rw [le_antisymm_iff, ← (@Nat.lt_succ (y/k) x), Nat.le_div_iff_mul_le' k₀, Nat.div_lt_iff_lt_mul' k₀]
 
+-- We show that division is primitive recursive by showing that the graph is
+-- (we can check x = y / k using just multiplication, via the lemma `Nat.eq_div_iff_mul_le_and_lt_mul`)
+theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
+  refine of_Primrec_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
+  have : PrimrecRel fun (a : ℕ × ℕ) (b : ℕ) => (a.2 = 0 ∧ b = 0) ∨ (0 < a.2 ∧ b * a.2 ≤ a.1 ∧ a.1 < (b + 1) * a.2) :=
+    por (pand (const 0 |> Primrec.eq.comp (fst |> snd.comp)) (const 0 |> Primrec.eq.comp snd))
+     (pand (nat_lt.comp (const 0) (fst |> snd.comp)) <|
+      pand (nat_le.comp (nat_mul.comp snd (fst |> snd.comp)) (fst |> fst.comp)) (nat_lt.comp (fst.comp fst)
+      (nat_mul.comp (Primrec.succ.comp snd) (snd.comp fst))))
+  refine this.of_eq ?_
+  rintro ⟨a, k⟩ q
+  if H : k = 0 then simp [H, eq_comm]
+  else simp [H, zero_lt_iff, eq_comm (b := q), Nat.eq_div_iff_mul_le_and_lt_mul]
+#align primrec.nat_div Primrec.nat_div
 
-theorem nat_boddDiv2 : Primrec Nat.boddDiv2 :=
-  (nat_elim' Primrec.id (const (false, 0))
-        (((cond fst (pair (const false) (succ.comp snd)) (pair (const true) snd)).comp snd).comp
-            snd).to₂).of_eq
-    fun n => by
-    simp [-Nat.boddDiv2_eq]
-    induction' n with n IH; · rfl
-    simp [-Nat.boddDiv2_eq, Nat.boddDiv2, *]
-    rcases Nat.boddDiv2 n with ⟨_ | _, m⟩ <;> simp [Nat.boddDiv2]
-#align primrec.nat_bodd_div2 Primrec.nat_boddDiv2
+theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
+  (nat_sub.comp fst (nat_mul.comp snd nat_div)).to₂.of_eq fun m n => by
+    apply Nat.sub_eq_of_eq_add
+    simp [add_comm (m % n), Nat.div_add_mod]
+#align primrec.nat_mod Primrec.nat_mod
 
 theorem nat_bodd : Primrec Nat.bodd :=
-  fst.comp nat_boddDiv2
+  (Primrec.beq.comp (nat_mod.comp Primrec.id (const 2)) (const 1)).of_eq fun n => by
+    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]
 #align primrec.nat_bodd Primrec.nat_bodd
 
 theorem nat_div2 : Primrec Nat.div2 :=
-  snd.comp nat_boddDiv2
+  (nat_div.comp Primrec.id (const 2)).of_eq fun n => n.div2_val.symm
 #align primrec.nat_div2 Primrec.nat_div2
+
+-- porting note: this is no longer used
+-- theorem nat_boddDiv2 : Primrec Nat.boddDiv2 := pair nat_bodd nat_div2
+-- #align primrec.nat_bodd_div2 Primrec.nat_boddDiv2
 
 theorem nat_bit0 : Primrec (@bit0 ℕ _) :=
   nat_add.comp Primrec.id Primrec.id
@@ -896,51 +918,9 @@ theorem nat_bit : Primrec₂ Nat.bit :=
     cases n.1 <;> rfl
 #align primrec.nat_bit Primrec.nat_bit
 
-theorem nat_div_mod : Primrec₂ fun n k : ℕ => (n / k, n % k) :=
-  let f (a : ℕ × ℕ) : ℕ × ℕ :=
-    a.1.elim (0, 0) fun _ IH =>
-      if Nat.succ IH.2 = a.2 then (Nat.succ IH.1, 0) else (IH.1, Nat.succ IH.2)
-  have hf : Primrec f :=
-    nat_elim' fst (const (0, 0)) <|
-      ((ite ((@Primrec.eq ℕ _ _).comp (succ.comp <| snd.comp snd) fst)
-              (pair (succ.comp <| fst.comp snd) (const 0))
-              (pair (fst.comp snd) (succ.comp <| snd.comp snd))).comp
-          (pair (snd.comp fst) (snd.comp snd))).to₂
-  suffices ∀ k n, (n / k, n % k) = f (n, k) from hf.of_eq fun ⟨m, n⟩ => by simp [this]
-  fun k n => by
-  have :
-    (f (n, k)).2 + k * (f (n, k)).1 = n ∧ (0 < k → (f (n, k)).2 < k) ∧ (k = 0 → (f (n, k)).1 = 0) :=
-    by
-    induction' n with n IH
-    · exact ⟨rfl, id, fun _ => rfl⟩
-    rw [fun n : ℕ =>
-      show
-        f (n.succ, k) =
-          _root_.ite ((f (n, k)).2.succ = k) (Nat.succ (f (n, k)).1, 0)
-            ((f (n, k)).1, (f (n, k)).2.succ)
-        from rfl]
-    by_cases h : (f (n, k)).2.succ = k <;> simp [h]
-    · have := congr_arg Nat.succ IH.1
-      refine' ⟨_, fun k0 => Nat.noConfusion (h.trans k0)⟩
-      rwa [← Nat.succ_add, h, add_comm, ← Nat.mul_succ] at this
-    · exact ⟨by rw [Nat.succ_add, IH.1], fun k0 => lt_of_le_of_ne (IH.2.1 k0) h, IH.2.2⟩
-  revert this
-  cases' f (n, k) with D M
-  simp
-  intro h₁ h₂ h₃
-  cases Nat.eq_zero_or_pos k
-  · simp [h, h₃ h] at h₁⊢
-    simp [h₁]
-  · exact (Nat.div_mod_unique h).2 ⟨h₁, h₂ h⟩
-#align primrec.nat_div_mod Primrec.nat_div_mod
+-- porting note: this is no longer used
+--#align primrec.nat_div_mod Primrec.nat_div_mod
 
-theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) :=
-  fst.comp₂ nat_div_mod
-#align primrec.nat_div Primrec.nat_div
-
-theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
-  snd.comp₂ nat_div_mod
-#align primrec.nat_mod Primrec.nat_mod
 
 end Primrec
 
