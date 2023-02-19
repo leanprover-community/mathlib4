@@ -815,9 +815,9 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
     continuous_invFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
-      apply continuousOn_open_of_generateFrom (c.open_target he)
+      apply continuousOn_open_of_generateFrom
       intro t ht
-      simp only [exists_prop, mem_Union, mem_singleton_iff] at ht
+      simp only [exists_prop, mem_unionᵢ, mem_singleton_iff] at ht
       rcases ht with ⟨e', e'_atlas, s, s_open, ts⟩
       rw [ts]
       let f := e.symm.trans e'
@@ -916,8 +916,8 @@ def StructureGroupoid.maximalAtlas : Set (LocalHomeomorph M H) :=
 variable {M}
 
 /-- The elements of the atlas belong to the maximal atlas for any structure groupoid -/
-theorem StructureGroupoid.subset_maximalAtlas [HasGroupoid M G] : atlas H M ⊆ G.maximalAtlas M :=
-  fun e he e' he' => ⟨G.compatible he he', G.compatible he' he⟩
+theorem StructureGroupoid.subset_maximalAtlas [HasGroupoid M G] : atlas ⊆ G.maximalAtlas M :=
+  fun _ he _ he' => ⟨G.compatible he he', G.compatible he' he⟩
 #align structure_groupoid.subset_maximal_atlas StructureGroupoid.subset_maximalAtlas
 
 theorem StructureGroupoid.chart_mem_maximalAtlas [HasGroupoid M G] (x : M) :
@@ -937,13 +937,13 @@ of the structure groupoid. -/
 theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph M H}
     (he : e ∈ G.maximalAtlas M) (he' : e' ∈ G.maximalAtlas M) : e.symm ≫ₕ e' ∈ G := by
   refine' G.locality fun x hx => _
-  set f := chartAt (H := H) (e.symm x) with hf
+  set f := chartAt (H := H) (e.symm x)
   let s := e.target ∩ e.symm ⁻¹' f.source
   have hs : IsOpen s := by
     apply e.symm.continuous_toFun.preimage_open_of_open <;> apply open_source
   have xs : x ∈ s := by
-    dsimp at hx
-    simp [s, hx]
+    simp only [mem_inter_iff, mem_preimage, mem_chart_source, and_true]
+    exact ((mem_inter_iff _ _ _).1 hx).1
   refine' ⟨s, hs, xs, _⟩
   have A : e.symm ≫ₕ f ∈ G := (mem_maximalAtlas_iff.1 he f (chart_mem_atlas _)).1
   have B : f.symm ≫ₕ e' ∈ G := (mem_maximalAtlas_iff.1 he' f (chart_mem_atlas _)).2
@@ -951,11 +951,11 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph
   have D : (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' ≈ (e.symm ≫ₕ e').restr s :=
     calc
       (e.symm ≫ₕ f) ≫ₕ f.symm ≫ₕ e' = e.symm ≫ₕ (f ≫ₕ f.symm) ≫ₕ e' := by simp [trans_assoc]
-      _ ≈ e.symm ≫ₕ ofSet f.source f.open_source ≫ₕ e' := (by
-        simp [EqOnSource.trans', trans_self_symm])
-      _ ≈ (e.symm ≫ₕ ofSet f.source f.open_source) ≫ₕ e' := by simp [trans_assoc]
-      _ ≈ e.symm.restr s ≫ₕ e' := by simp [s, trans_of_set']
-      _ ≈ (e.symm ≫ₕ e').restr s := by simp [restr_trans]
+      _ ≈ e.symm ≫ₕ ofSet f.source f.open_source ≫ₕ e' :=
+        EqOnSource.trans' (refl _) (EqOnSource.trans' (trans_self_symm _) (refl _))
+      _ ≈ (e.symm ≫ₕ ofSet f.source f.open_source) ≫ₕ e' := by rw [trans_assoc]; apply refl
+      _ ≈ e.symm.restr s ≫ₕ e' := by rw [trans_of_set']; apply refl
+      _ ≈ (e.symm ≫ₕ e').restr s := by rw [restr_trans]; apply refl
 
   exact G.eq_on_source C (Setoid.symm D)
 #align structure_groupoid.compatible_of_mem_maximal_atlas StructureGroupoid.compatible_of_mem_maximalAtlas
@@ -1016,11 +1016,11 @@ space `α`, then the induced charted space structure on `α` is `has_groupoid G`
 groupoid `G` which is closed under restrictions. -/
 theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H)
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ (e.singletonChartedSpace h) G :=
-  {
+  { e.singletonChartedSpace h with
     compatible := by
       intro e' e'' he' he''
-      rw [e.singleton_charted_space_mem_atlas_eq h e' he']
-      rw [e.singleton_charted_space_mem_atlas_eq h e'' he'']
+      rw [e.singletonChartedSpace_mem_atlas_eq h e' he',
+        e.singletonChartedSpace_mem_atlas_eq h e'' he'']
       refine' G.eq_on_source _ e.trans_symm_self
       have hle : idRestrGroupoid ≤ G := (closedUnderRestriction_iff_id_le G).mp (by assumption)
       exact StructureGroupoid.le_iff.mp hle _ (idRestrGroupoid_mem _) }
@@ -1062,11 +1062,9 @@ variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
 instance : ChartedSpace H s where
-  atlas := ⋃ x : s, {@LocalHomeomorph.subtypeRestr _ _ _ _ (chartAt H x.1) s ⟨x⟩}
-  chartAt x := @LocalHomeomorph.subtypeRestr _ _ _ _ (chartAt H x.1) s ⟨x⟩
-  mem_chart_source x := by
-    simp only [mfld_simps]
-    exact mem_chart_source H x.1
+  atlas := ⋃ x : s, {@LocalHomeomorph.subtypeRestr _ _ _ _ (chartAt x.1) s ⟨x⟩}
+  chartAt x := @LocalHomeomorph.subtypeRestr _ _ _ _ (chartAt x.1) s ⟨x⟩
+  mem_chart_source x := ⟨trivial, mem_chart_source x.1⟩
   chart_mem_atlas x := by
     simp only [mem_unionᵢ, mem_singleton_iff]
     use x
@@ -1077,14 +1075,14 @@ instance [ClosedUnderRestriction G] : HasGroupoid s G where
   compatible := by
     rintro e e' ⟨_, ⟨x, hc⟩, he⟩ ⟨_, ⟨x', hc'⟩, he'⟩
     haveI : Nonempty s := ⟨x⟩
-    simp only [hc.symm, mem_singleton_iff, Subtype.val_eq_coe] at he
-    simp only [hc'.symm, mem_singleton_iff, Subtype.val_eq_coe] at he'
+    have asdf := he
+    rw [hc.symm, mem_singleton_iff] at he
+    rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
-    convert
-      G.eq_on_source _ (subtype_restr_symm_trans_subtype_restr s (chartAt H x) (chartAt H x'))
+    refine' G.eq_on_source _ (subtypeRestr_symm_trans_subtypeRestr s (chartAt x) (chartAt x'))
     apply closed_under_restriction'
-    · exact G.compatible (chart_mem_atlas H x) (chart_mem_atlas H x')
-    · exact preimage_open_of_open_symm (chartAt H x) s.2
+    · exact G.compatible (chart_mem_atlas _) (chart_mem_atlas _)
+    · exact preimage_open_of_open_symm (chartAt _) s.2
 
 end TopologicalSpace.Opens
 
@@ -1094,13 +1092,13 @@ end TopologicalSpace.Opens
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
-@[nolint has_nonempty_instance]
+-- @[nolint has_nonempty_instance]  -- Porting note: commented out
 structure Structomorph (G : StructureGroupoid H) (M : Type _) (M' : Type _) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid :
     ∀ c : LocalHomeomorph M H,
       ∀ c' : LocalHomeomorph M' H,
-        c ∈ atlas H M → c' ∈ atlas H M' → c.symm ≫ₕ toHomeomorph.toLocalHomeomorph ≫ₕ c' ∈ G
+        c ∈ atlas → c' ∈ atlas → c.symm ≫ₕ toHomeomorph.toLocalHomeomorph ≫ₕ c' ∈ G
 #align structomorph Structomorph
 
 variable [TopologicalSpace M'] [TopologicalSpace M''] {G : StructureGroupoid H} [ChartedSpace H M']
@@ -1113,7 +1111,7 @@ def Structomorph.refl (M : Type _) [TopologicalSpace M] [ChartedSpace H M] [HasG
     mem_groupoid := fun c c' hc hc' => by
       change LocalHomeomorph.symm c ≫ₕ LocalHomeomorph.refl M ≫ₕ c' ∈ G
       rw [LocalHomeomorph.refl_trans]
-      exact HasGroupoid.compatible G hc hc' }
+      exact HasGroupoid.compatible hc hc' }
 #align structomorph.refl Structomorph.refl
 
 /-- The inverse of a structomorphism is a structomorphism -/
@@ -1121,7 +1119,7 @@ def Structomorph.symm (e : Structomorph G M M') : Structomorph G M' M :=
   { e.toHomeomorph.symm with
     mem_groupoid := by
       intro c c' hc hc'
-      have : (c'.symm ≫ₕ e.to_homeomorph.to_local_homeomorph ≫ₕ c).symm ∈ G :=
+      have : (c'.symm ≫ₕ e.toHomeomorph.toLocalHomeomorph ≫ₕ c).symm ∈ G :=
         G.symm (e.mem_groupoid c' c hc' hc)
       rwa [trans_symm_eq_symm_trans_symm, trans_symm_eq_symm_trans_symm, symm_symm, trans_assoc]
         at this }
@@ -1140,14 +1138,14 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
     mem_groupoid := by
       intro c c' hc hc'
       refine' G.locality fun x hx => _
-      let f₁ := e.to_homeomorph.to_local_homeomorph
-      let f₂ := e'.to_homeomorph.to_local_homeomorph
-      let f := (e.to_homeomorph.trans e'.to_homeomorph).toLocalHomeomorph
+      let f₁ := e.toHomeomorph.toLocalHomeomorph
+      let f₂ := e'.toHomeomorph.toLocalHomeomorph
+      let f := (e.toHomeomorph.trans e'.toHomeomorph).toLocalHomeomorph
       have feq : f = f₁ ≫ₕ f₂ := Homeomorph.trans_toLocalHomeomorph _ _
       let y := (c.symm ≫ₕ f₁) x
-      let g := chartAt H y
-      have hg₁ := chart_mem_atlas H y
-      have hg₂ := mem_chart_source H y
+      let g := chartAt (H := H) y
+      have hg₁ := chart_mem_atlas (H := H) y
+      have hg₂ := mem_chart_source (H := H) y
       let s := (c.symm ≫ₕ f₁).source ∩ c.symm ≫ₕ f₁ ⁻¹' g.source
       have open_s : IsOpen s := by
         apply (c.symm ≫ₕ f₁).continuous_toFun.preimage_open_of_open <;> apply open_source
@@ -1163,14 +1161,17 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       let F₂ := (c.symm ≫ₕ f ≫ₕ c').restr s
       have : F₁ ≈ F₂ :=
         calc
-          F₁ ≈ c.symm ≫ₕ f₁ ≫ₕ (g ≫ₕ g.symm) ≫ₕ f₂ ≫ₕ c' := by simp [F₁, trans_assoc]
-          _ ≈ c.symm ≫ₕ f₁ ≫ₕ of_set g.source g.open_source ≫ₕ f₂ ≫ₕ c' := by
-            simp [eq_on_source.trans', trans_self_symm g]
-          _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ of_set g.source g.open_source) ≫ₕ f₂ ≫ₕ c' := by simp [trans_assoc]
-          _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by simp [s, trans_of_set']
-          _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by simp [restr_trans]
-          _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s := by simp [eq_on_source.restr, trans_assoc]
-          _ ≈ F₂ := by simp [F₂, feq]
+          F₁ ≈ c.symm ≫ₕ f₁ ≫ₕ (g ≫ₕ g.symm) ≫ₕ f₂ ≫ₕ c' := by simp only [trans_assoc, _root_.refl]
+          _ ≈ c.symm ≫ₕ f₁ ≫ₕ ofSet g.source g.open_source ≫ₕ f₂ ≫ₕ c' :=
+            EqOnSource.trans' (_root_.refl _) (EqOnSource.trans' (_root_.refl _)
+              (EqOnSource.trans' (trans_self_symm g) (_root_.refl _)))
+          _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ ofSet g.source g.open_source) ≫ₕ f₂ ≫ₕ c' :=
+            by simp only [trans_assoc, _root_.refl]
+          _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by rw [trans_of_set']; apply _root_.refl
+          _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by rw [restr_trans]; apply _root_.refl
+          _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s :=
+            by simp only [EqOnSource.restr, trans_assoc, _root_.refl]
+          _ ≈ F₂ := by simp only [feq, _root_.refl]
 
       have : F₂ ∈ G := G.eq_on_source A (Setoid.symm this)
       exact this }
