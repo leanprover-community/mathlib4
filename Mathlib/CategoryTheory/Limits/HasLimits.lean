@@ -491,10 +491,7 @@ theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ 
     [HasLimit F] [HasLimit (E ⋙ F)] [HasLimit (F ⋙ G)]
     [HasLimit ((E ⋙ F) ⋙ G)] :-- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs 
             -- G (limit F) ⟶ limit F ⋙ G ⟶ limit (E ⋙ (F ⋙ G)) or
-            G.map
-          (limit.pre F E) ≫
-        limit.post (E ⋙ F) G =
-      limit.post F G ≫ limit.pre (F ⋙ G) E := by
+    G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G = limit.post F G ≫ limit.pre (F ⋙ G) E := by
   ext ; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
 #align category_theory.limits.limit.pre_post CategoryTheory.Limits.limit.pre_post
 
@@ -1091,7 +1088,7 @@ theorem colimit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J �
     -- G (colimit F) ⟶ G (colimit (E ⋙ F)) ⟶ colimit ((E ⋙ F) ⋙ G) vs 
     -- G (colimit F) ⟶ colimit F ⋙ G ⟶ colimit (E ⋙ (F ⋙ G)) or
     colimit.post (E ⋙ F) G ≫ G.map (colimit.pre F E) = 
-      (@colimit.pre _ _ _ (F ⋙ G) _ E H ≫ colimit.post F G : _) := by
+      colimit.pre (F ⋙ G) E ≫ colimit.post F G := by
   ext j
   rw [← assoc, colimit.ι_post, ← G.map_comp, colimit.ι_pre, ← assoc]
   letI : HasColimit (E ⋙ F ⋙ G) := show HasColimit ((E ⋙ F) ⋙ G) by infer_instance
