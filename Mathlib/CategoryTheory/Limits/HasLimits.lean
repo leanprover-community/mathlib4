@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Category.Ulift
 /-!
 # Existence of limits and colimits
 
-In `category_theory.limits.is_limit` we defined `is_limit c`,
+In `CategoryTheory.Limits.IsLimit` we defined `is_limit c`,
 the data showing that a cone `c` is a limit cone.
 
 The two main structures defined in this file are:
