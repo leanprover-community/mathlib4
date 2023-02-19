@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Algebra.Algebra.Basic
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Additional facts about modules over algebras.
