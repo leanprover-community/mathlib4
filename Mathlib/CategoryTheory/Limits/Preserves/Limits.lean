@@ -8,7 +8,7 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Isomorphisms about functors which preserve (co)limits
@@ -74,8 +74,7 @@ theorem preserves_limits_iso_inv_π (j) :
 
 @[simp, reassoc.1]
 theorem lift_comp_preserves_limits_iso_hom (t : Cone F) :
-    G.map (limit.lift _ t) ≫ (preservesLimitIso G F).Hom = limit.lift (F ⋙ G) (G.mapCone _) :=
-  by
+    G.map (limit.lift _ t) ≫ (preservesLimitIso G F).Hom = limit.lift (F ⋙ G) (G.mapCone _) := by
   ext
   simp [← G.map_comp]
 #align category_theory.lift_comp_preserves_limits_iso_hom CategoryTheory.lift_comp_preserves_limits_iso_hom
@@ -131,8 +130,7 @@ theorem ι_preserves_colimits_iso_hom (j : J) :
 
 @[simp, reassoc.1]
 theorem preserves_colimits_iso_inv_comp_desc (t : Cocone F) :
-    (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) = colimit.desc _ (G.mapCocone t) :=
-  by
+    (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) = colimit.desc _ (G.mapCocone t) := by
   ext
   simp [← G.map_comp]
 #align category_theory.preserves_colimits_iso_inv_comp_desc CategoryTheory.preserves_colimits_iso_inv_comp_desc
