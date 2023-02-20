@@ -738,7 +738,8 @@ register_option linter.simpsNoConstructor : Bool := {
 structure Simps.Config where
   /-- Make generated lemmas simp lemmas -/
   isSimp := true
-  /-- Other simp-attributes to apply to generated lemmas. Currently only -/
+  /-- Other simp-attributes to apply to generated lemmas.
+  Attributes that are currently not simp-attributes are not supported. -/
   attrs : List Name := []
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
