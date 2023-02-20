@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Algebra.Order.Field.InjSurj
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Order.Field.InjSurj
 
 /-!
 # Subfields
@@ -329,8 +329,7 @@ protected theorem coe_int_mem (n : ℤ) : (n : K) ∈ s :=
   coe_int_mem s n
 #align subfield.coe_int_mem Subfield.coe_int_mem
 
-theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s :=
-  by
+theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
   · simpa using s.pow_mem hx n
   · simpa [pow_succ] using s.inv_mem (s.mul_mem hx (s.pow_mem hx n))
@@ -562,8 +561,7 @@ theorem mem_fieldRange {f : K →+* L} {y : L} : y ∈ f.fieldRange ↔ ∃ x, f
   Iff.rfl
 #align ring_hom.mem_field_range RingHom.mem_fieldRange
 
-theorem fieldRange_eq_map : f.fieldRange = Subfield.map f ⊤ :=
-  by
+theorem fieldRange_eq_map : f.fieldRange = Subfield.map f ⊤ := by
   ext
   simp
 #align ring_hom.field_range_eq_map RingHom.fieldRange_eq_map
@@ -632,8 +630,7 @@ theorem mem_infₛ {S : Set (Subfield K)} {x : K} : x ∈ infₛ S ↔ ∀ p ∈
 
 @[simp]
 theorem infₛ_toSubring (s : Set (Subfield K)) :
-    (infₛ s).toSubring = ⨅ t ∈ s, Subfield.toSubring t :=
-  by
+    (infₛ s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
   ext x
   rw [mem_to_subring, mem_Inf]
   erw [Subring.mem_infₛ]
@@ -646,8 +643,7 @@ theorem infₛ_toSubring (s : Set (Subfield K)) :
               subring.mem_Inf.mpr fun p' ⟨hp, p'_eq⟩ => p'_eq ▸ hx⟩⟩⟩
 #align subfield.Inf_to_subring Subfield.infₛ_toSubring
 
-theorem isGLB_infₛ (S : Set (Subfield K)) : IsGLB S (infₛ S) :=
-  by
+theorem isGLB_infₛ (S : Set (Subfield K)) : IsGLB S (infₛ S) := by
   refine' IsGLB.of_image (fun s t => show (s : Set K) ≤ t ↔ s ≤ t from SetLike.coe_subset_coe) _
   convert isGLB_binfᵢ
   exact coe_Inf _
@@ -823,8 +819,7 @@ theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   Note that this fails without the directedness assumption (the union of two subfields is
   typically not a subfield) -/
 theorem mem_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)
-    {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i :=
-  by
+    {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_supᵢ S i) hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set K)) → ∃ i, x ∈ S i by
     simpa only [closure_unionᵢ, closure_eq]
@@ -848,8 +843,7 @@ theorem coe_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} 
 #align subfield.coe_supr_of_directed Subfield.coe_supᵢ_of_directed
 
 theorem mem_supₛ_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
-    {x : K} : x ∈ supₛ S ↔ ∃ s ∈ S, x ∈ s :=
-  by
+    {x : K} : x ∈ supₛ S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
   simp only [supₛ_eq_supᵢ', mem_supr_of_directed hS.directed_coe, SetCoe.exists, Subtype.coe_mk]
 #align subfield.mem_Sup_of_directed_on Subfield.mem_supₛ_of_directedOn
