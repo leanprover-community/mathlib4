@@ -9,7 +9,7 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
-import Mathlib.Data.Real.Nnreal
+import Mathlib.Data.Real.NNReal
 
 /-!
 # Group seminorms
@@ -57,29 +57,26 @@ variable {ι R R' E F G : Type _}
 
 /-- A seminorm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 subadditive and such that `f (-x) = f x` for all `x`. -/
-@[protect_proj]
+--@[protect_proj]
 structure AddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G ℝ where
-  add_le' : ∀ r s, to_fun (r + s) ≤ to_fun r + to_fun s
-  neg' : ∀ r, to_fun (-r) = to_fun r
+  protected add_le' : ∀ r s, toFun (r + s) ≤ toFun r + toFun s
+  protected neg' : ∀ r, toFun (-r) = toFun r
 #align add_group_seminorm AddGroupSeminorm
 
 /-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` for all `x`. -/
-@[to_additive, protect_proj]
-structure GroupSeminorm (G : Type _) [Group G] where
-  toFun : G → ℝ
-  map_one' : to_fun 1 = 0
-  mul_le' : ∀ x y, to_fun (x * y) ≤ to_fun x + to_fun y
-  inv' : ∀ x, to_fun x⁻¹ = to_fun x
+@[to_additive]
+structure GroupSeminorm (G : Type _) [Group G] extends OneHom G ℝ where
+  mul_le' : ∀ x y, toFun (x * y) ≤ toFun x + toFun y
+  inv' : ∀ x, toFun x⁻¹ = toFun x
 #align group_seminorm GroupSeminorm
-#align add_group_seminorm AddGroupSeminorm
 
 /-- A nonarchimedean seminorm on an additive group `G` is a function `f : G → ℝ` that preserves
 zero, is nonarchimedean and such that `f (-x) = f x` for all `x`. -/
 @[protect_proj]
 structure NonarchAddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G ℝ where
-  add_le_max' : ∀ r s, to_fun (r + s) ≤ max (to_fun r) (to_fun s)
-  neg' : ∀ r, to_fun (-r) = to_fun r
+  add_le_max' : ∀ r s, toFun (r + s) ≤ max (toFun r) (toFun s)
+  neg' : ∀ r, toFun (-r) = toFun r
 #align nonarch_add_group_seminorm NonarchAddGroupSeminorm
 
 /-! NOTE: We do not define `nonarch_add_group_seminorm` as an extension of `add_group_seminorm`
@@ -91,14 +88,14 @@ structure NonarchAddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G �
 and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
 @[protect_proj]
 structure AddGroupNorm (G : Type _) [AddGroup G] extends AddGroupSeminorm G where
-  eq_zero_of_map_eq_zero' : ∀ x, to_fun x = 0 → x = 0
+  eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 #align add_group_norm AddGroupNorm
 
 /-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` and `f x = 0 → x = 1` for all `x`. -/
 @[protect_proj, to_additive]
 structure GroupNorm (G : Type _) [Group G] extends GroupSeminorm G where
-  eq_one_of_map_eq_zero' : ∀ x, to_fun x = 0 → x = 1
+  eq_one_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 1
 #align group_norm GroupNorm
 #align add_group_norm AddGroupNorm
 
@@ -106,7 +103,7 @@ structure GroupNorm (G : Type _) [Group G] extends GroupSeminorm G where
 nonarchimedean and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
 @[protect_proj]
 structure NonarchAddGroupNorm (G : Type _) [AddGroup G] extends NonarchAddGroupSeminorm G where
-  eq_zero_of_map_eq_zero' : ∀ x, to_fun x = 0 → x = 0
+  eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 #align nonarch_add_group_norm NonarchAddGroupNorm
 
 attribute [nolint doc_blame]
@@ -194,17 +191,17 @@ instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
 #align group_seminorm.group_seminorm_class GroupSeminorm.groupSeminormClass
 #align add_group_seminorm.add_group_seminorm_class AddGroupSeminorm.add_group_seminorm_class
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
+/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_to_fun`. "]
+      "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_toFun`. "]
 instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ :=
   ⟨GroupSeminorm.toFun⟩
 
 @[simp, to_additive]
 theorem toFun_eq_coe : p.toFun = p :=
   rfl
-#align group_seminorm.to_fun_eq_coe GroupSeminorm.toFun_eq_coe
-#align add_group_seminorm.to_fun_eq_coe AddGroupSeminorm.toFun_eq_coe
+#align group_seminorm.toFun_eq_coe GroupSeminorm.toFun_eq_coe
+#align add_group_seminorm.toFun_eq_coe AddGroupSeminorm.toFun_eq_coe
 
 @[ext, to_additive]
 theorem ext : (∀ x, p x = q x) → p = q :=
@@ -511,14 +508,14 @@ instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAdd
   map_neg_eq_map' f := f.neg'
 #align nonarch_add_group_seminorm.nonarch_add_group_seminorm_class NonarchAddGroupSeminorm.nonarchAddGroupSeminormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
+/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`. -/
 instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
   ⟨NonarchAddGroupSeminorm.toFun⟩
 
 @[simp]
 theorem toFun_eq_coe : p.toFun = p :=
   rfl
-#align nonarch_add_group_seminorm.to_fun_eq_coe NonarchAddGroupSeminorm.toFun_eq_coe
+#align nonarch_add_group_seminorm.toFun_eq_coe NonarchAddGroupSeminorm.toFun_eq_coe
 
 @[ext]
 theorem ext : (∀ x, p x = q x) → p = q :=
@@ -753,18 +750,18 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
 #align group_norm.group_norm_class GroupNorm.groupNormClass
 #align add_group_norm.add_group_norm_class AddGroupNorm.add_group_norm_class
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
 directly. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_to_fun` directly. "]
+      "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_toFun` directly. "]
 instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
   FunLike.hasCoeToFun
 
 @[simp, to_additive]
 theorem toFun_eq_coe : p.toFun = p :=
   rfl
-#align group_norm.to_fun_eq_coe GroupNorm.toFun_eq_coe
-#align add_group_norm.to_fun_eq_coe AddGroupNorm.toFun_eq_coe
+#align group_norm.toFun_eq_coe GroupNorm.toFun_eq_coe
+#align add_group_norm.toFun_eq_coe AddGroupNorm.toFun_eq_coe
 
 @[ext, to_additive]
 theorem ext : (∀ x, p x = q x) → p = q :=
@@ -903,14 +900,14 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero'
 #align nonarch_add_group_norm.nonarch_add_group_norm_class NonarchAddGroupNorm.nonarchAddGroupNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`. -/
+/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`. -/
 noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
   FunLike.hasCoeToFun
 
 @[simp]
 theorem toFun_eq_coe : p.toFun = p :=
   rfl
-#align nonarch_add_group_norm.to_fun_eq_coe NonarchAddGroupNorm.toFun_eq_coe
+#align nonarch_add_group_norm.toFun_eq_coe NonarchAddGroupNorm.toFun_eq_coe
 
 @[ext]
 theorem ext : (∀ x, p x = q x) → p = q :=
@@ -975,4 +972,3 @@ instance [DecidableEq E] : Inhabited (NonarchAddGroupNorm E) :=
 end AddGroup
 
 end NonarchAddGroupNorm
-
