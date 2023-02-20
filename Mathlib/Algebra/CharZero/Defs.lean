@@ -40,7 +40,7 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
  -/
 class CharZero (R) [AddMonoidWithOne R] : Prop where
-  /-- An additive monoid with one has charateristic zero if the canonical map `ℕ → R` is
+  /-- An additive monoid with one has characteristic zero if the canonical map `ℕ → R` is
   injective. -/
   cast_injective : Function.Injective (Nat.cast : ℕ → R)
 #align char_zero CharZero
