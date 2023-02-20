@@ -26,8 +26,7 @@ open MvFunctor
 variable {n : ℕ} (i : Fin2 n)
 
 /-- The projection `i` functor -/
-def Prj (v : TypeVec.{u} n) : Type u :=
-  v i
+def Prj (v : TypeVec.{u} n) : Type u := v i
 #align mvqpf.prj MvQPF.Prj
 
 instance Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i v) :=
@@ -42,28 +41,28 @@ instance Prj.mvfunctor : MvFunctor (Prj i) where map := @Prj.map _ i
 #align mvqpf.prj.mvfunctor MvQPF.Prj.mvfunctor
 
 /-- Polynomial representation of the projection functor -/
-def Prj.p : MvPFunctor.{u} n where
+def Prj.P : MvPFunctor.{u} n where
   A := PUnit
   B _ j := ULift <| PLift <| i = j
 set_option linter.uppercaseLean3 false in
-#align mvqpf.prj.P MvQPF.Prj.p
+#align mvqpf.prj.P MvQPF.Prj.P
 
 /-- Abstraction function of the `QPF` instance -/
-def Prj.abs ⦃α : TypeVec n⦄ : (Prj.p i).Obj α → Prj i α
+def Prj.abs ⦃α : TypeVec n⦄ : (Prj.P i).Obj α → Prj i α
   | ⟨_x, f⟩ => f _ ⟨⟨rfl⟩⟩
 #align mvqpf.prj.abs MvQPF.Prj.abs
 
 /-- Representation function of the `QPF` instance -/
-def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → (Prj.p i).Obj α := fun x : α i =>
+def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → (Prj.P i).Obj α := fun x : α i =>
   ⟨⟨⟩, fun j ⟨⟨h⟩⟩ => (h.rec x : α j)⟩
 #align mvqpf.prj.repr MvQPF.Prj.repr
 
 instance Prj.mvqpf : MvQPF (Prj i) where
-  p := Prj.p i
+  P := Prj.P i
   abs := @Prj.abs _ i
   repr := @Prj.repr _ i
   abs_repr := by intros; rfl
-  abs_map := by intros α β f p ; cases p ; rfl
+  abs_map := by intros α β f P ; cases P ; rfl
 #align mvqpf.prj.mvqpf MvQPF.Prj.mvqpf
 
 end MvQPF
