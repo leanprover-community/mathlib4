@@ -48,11 +48,14 @@ variable {α : Type _} {p q : ℚ≥0}
 instance : Coe ℚ≥0 ℚ :=
   ⟨Subtype.val⟩
 
+/-
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
 theorem val_eq_coe (q : ℚ≥0) : q.val = q :=
   rfl
-#align nnrat.val_eq_coe NNRat.val_eq_coe
+-/
+-- Porting note: `val_eq_coe` is no longer needed.
+#noalign nnrat.val_eq_coe
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -152,12 +155,12 @@ theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
 #align nnrat.coe_ne_zero NNRat.coe_ne_zero
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: simp can prove this
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align nnrat.coe_le_coe NNRat.coe_le_coe
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: simp can prove this
 theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
