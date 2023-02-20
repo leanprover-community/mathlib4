@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Order.Nonneg.Field
 
 /-!
 # Nonnegative rationals
@@ -266,8 +266,7 @@ theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a in s, f a) = �
 #align nnrat.coe_sum Nnrat.coe_sum
 
 theorem toNnrat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    (∑ a in s, f a).toNnrat = ∑ a in s, (f a).toNnrat :=
-  by
+    (∑ a in s, f a).toNnrat = ∑ a in s, (f a).toNnrat := by
   rw [← coe_inj, coe_sum, Rat.coe_toNnrat _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs => by rw [Rat.coe_toNnrat _ (hf x hxs)]
 #align nnrat.to_nnrat_sum_of_nonneg Nnrat.toNnrat_sum_of_nonneg
@@ -278,8 +277,7 @@ theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a in s, f a) = �
 #align nnrat.coe_prod Nnrat.coe_prod
 
 theorem toNnrat_prod_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a ∈ s, 0 ≤ f a) :
-    (∏ a in s, f a).toNnrat = ∏ a in s, (f a).toNnrat :=
-  by
+    (∏ a in s, f a).toNnrat = ∏ a in s, (f a).toNnrat := by
   rw [← coe_inj, coe_prod, Rat.coe_toNnrat _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs => by rw [Rat.coe_toNnrat _ (hf x hxs)]
 #align nnrat.to_nnrat_prod_of_nonneg Nnrat.toNnrat_prod_of_nonneg
@@ -353,8 +351,7 @@ theorem toNnrat_le_toNnrat_iff (hp : 0 ≤ p) : toNnrat q ≤ toNnrat p ↔ q �
 #align rat.to_nnrat_le_to_nnrat_iff Rat.toNnrat_le_toNnrat_iff
 
 @[simp]
-theorem toNnrat_lt_toNnrat_iff' : toNnrat q < toNnrat p ↔ q < p ∧ 0 < p :=
-  by
+theorem toNnrat_lt_toNnrat_iff' : toNnrat q < toNnrat p ↔ q < p ∧ 0 < p := by
   simp [← coe_lt_coe, to_nnrat, lt_irrefl]
   exact lt_trans'
 #align rat.to_nnrat_lt_to_nnrat_iff' Rat.toNnrat_lt_toNnrat_iff'
@@ -407,16 +404,14 @@ theorem toNnrat_bit1 (hq : 0 ≤ q) : toNnrat (bit1 q) = bit1 (toNnrat q) :=
   (toNnrat_add (by simp [hq]) zero_le_one).trans <| by simp [to_nnrat_one, bit1, hq]
 #align rat.to_nnrat_bit1 Rat.toNnrat_bit1
 
-theorem toNnrat_mul (hp : 0 ≤ p) : toNnrat (p * q) = toNnrat p * toNnrat q :=
-  by
+theorem toNnrat_mul (hp : 0 ≤ p) : toNnrat (p * q) = toNnrat p * toNnrat q := by
   cases' le_total 0 q with hq hq
   · ext <;> simp [to_nnrat, hp, hq, max_eq_left, mul_nonneg]
   · have hpq := mul_nonpos_of_nonneg_of_nonpos hp hq
     rw [to_nnrat_eq_zero.2 hq, to_nnrat_eq_zero.2 hpq, mul_zero]
 #align rat.to_nnrat_mul Rat.toNnrat_mul
 
-theorem toNnrat_inv (q : ℚ) : toNnrat q⁻¹ = (toNnrat q)⁻¹ :=
-  by
+theorem toNnrat_inv (q : ℚ) : toNnrat q⁻¹ = (toNnrat q)⁻¹ := by
   obtain hq | hq := le_total q 0
   · rw [to_nnrat_eq_zero.mpr hq, inv_zero, to_nnrat_eq_zero.mpr (inv_nonpos.mpr hq)]
   · nth_rw 1 [← Rat.coe_toNnrat q hq]
@@ -486,8 +481,7 @@ theorem ext_num_denom_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
 #align nnrat.ext_num_denom_iff Nnrat.ext_num_denom_iff
 
 @[simp]
-theorem num_div_denom (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q :=
-  by
+theorem num_div_denom (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   ext1
   rw [coe_div, coe_nat_cast, coe_nat_cast, Num, ← Int.cast_ofNat,
     Int.natAbs_of_nonneg (Rat.num_nonneg_iff_zero_le.2 q.prop)]
