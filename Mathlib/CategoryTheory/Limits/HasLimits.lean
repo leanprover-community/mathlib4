@@ -691,7 +691,7 @@ variable (J C)
 /-- `C` has colimits of shape `J` if there exists a colimit for every functor `F : J ⥤ C`. -/
 class HasColimitsOfShape : Prop where
   /-- All `F : J ⥤ C` have colimits for a fixed `J` -/
-  HasColimit : ∀ F : J ⥤ C, HasColimit F := by infer_instance
+  hasColimit : ∀ F : J ⥤ C, HasColimit F := by infer_instance
 #align category_theory.limits.has_colimits_of_shape CategoryTheory.Limits.HasColimitsOfShape
 
 /-- `C` has all colimits of size `v₁ u₁` (`HasColimitsOfSize.{v₁ u₁} C`)
@@ -719,7 +719,7 @@ variable {J C}
 -- see Note [lower instance priority]
 instance (priority := 100) hasColimitOfHasColimitsOfShape {J : Type u₁} [Category.{v₁} J]
     [HasColimitsOfShape J C] (F : J ⥤ C) : HasColimit F :=
-  HasColimitsOfShape.HasColimit F
+  HasColimitsOfShape.hasColimit F
 #align category_theory.limits.has_colimit_of_has_colimits_of_shape CategoryTheory.Limits.hasColimitOfHasColimitsOfShape
 
 -- see Note [lower instance priority]
