@@ -48,6 +48,11 @@ theorem top_sub_coe {a : α} : (⊤ : WithTop α) - a = ⊤ :=
 theorem sub_top {a : WithTop α} : a - ⊤ = 0 := by cases a <;> rfl
 #align with_top.sub_top WithTop.sub_top
 
+@[simp] theorem sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := by
+  induction a using recTopCoe <;> induction b using recTopCoe <;>
+    simp only [← coe_sub, coe_ne_top, sub_top, zero_ne_top, coe_ne_top, top_sub_coe, false_and,
+      Ne.def]
+
 theorem map_sub [Sub β] [Zero β] {f : α → β} (h : ∀ x y, f (x - y) = f x - f y) (h₀ : f 0 = 0) :
     ∀ x y : WithTop α, (x - y).map f = x.map f - y.map f
   | _, ⊤ => by simp only [h₀, sub_top, WithTop.map_zero, coe_zero, map_top]

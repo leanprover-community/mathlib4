@@ -48,13 +48,32 @@ theorem mul_def {a b : WithTop α} :
 theorem top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := by simp [mul_def]; rfl
 #align with_top.top_mul_top WithTop.top_mul_top
 
-@[simp]
-theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by cases a <;> simp [mul_def, h] <;> rfl
+theorem mul_top' (a : WithTop α) : a * ⊤ = if a = 0 then 0 else ⊤ := by
+  induction a using recTopCoe <;> simp [mul_def] <;> rfl
+
+@[simp] theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', if_neg h]
 #align with_top.mul_top WithTop.mul_top
 
-@[simp]
-theorem top_mul {a : WithTop α} (h : a ≠ 0) : ⊤ * a = ⊤ := by cases a <;> simp [mul_def, h] <;> rfl
+theorem top_mul' (a : WithTop α) : ⊤ * a = if a = 0 then 0 else ⊤ := by
+  induction a using recTopCoe <;> simp [mul_def] <;> rfl
+
+@[simp] theorem top_mul {a : WithTop α} (h : a ≠ 0) : ⊤ * a = ⊤ := by rw [top_mul', if_neg h]
 #align with_top.top_mul WithTop.top_mul
+
+theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by
+  rw [mul_def, ite_eq_iff, ← none_eq_top, Option.map₂_eq_none_iff]
+  have ha : a = 0 → a ≠ none := fun h => h.symm ▸ zero_ne_top
+  have hb : b = 0 → b ≠ none := fun h => h.symm ▸ zero_ne_top
+  tauto
+#align with_top.mul_eq_top_iff WithTop.mul_eq_top_iff
+
+theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
+  rw [WithTop.lt_top_iff_ne_top] at *
+  simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, false_or]
+
+theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=
+  mul_lt_top' (WithTop.lt_top_iff_ne_top.2 ha) (WithTop.lt_top_iff_ne_top.2 hb)
+#align with_top.mul_lt_top WithTop.mul_lt_top
 
 instance noZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.by_contradiction <| fun h₂ => ?_⟩
@@ -68,7 +87,7 @@ section MulZeroClass
 
 variable [MulZeroClass α]
 
-@[norm_cast]
+@[simp, norm_cast] -- porting note: added `simp`
 theorem coe_mul {a b : α} : (↑(a * b) : WithTop α) = a * b := by
   by_cases ha : a = 0
   · simp [ha]
@@ -86,23 +105,6 @@ theorem mul_coe {b : α} (hb : b ≠ 0) : ∀ {a : WithTop α},
     rw [some_eq_coe, ← coe_mul]
     rfl
 #align with_top.mul_coe WithTop.mul_coe
-
-@[simp]
-theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by
-  match a with
-  | none => match b with
-    | none => simp [none_eq_top]
-    | Option.some b => by_cases hb : b = 0 <;> simp [none_eq_top, some_eq_coe, hb]
-  | Option.some a => match b with
-    | none => by_cases ha : a = 0 <;> simp [none_eq_top, some_eq_coe, ha]
-    | Option.some b => simp [some_eq_coe, ← coe_mul]
-#align with_top.mul_eq_top_iff WithTop.mul_eq_top_iff
-
-theorem mul_lt_top [Preorder α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ := by
-  lift a to α using ha
-  lift b to α using hb
-  simp only [← coe_mul, coe_lt_top]
-#align with_top.mul_lt_top WithTop.mul_lt_top
 
 @[simp]
 theorem untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.untop' 0 := by
@@ -148,7 +150,7 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
       induction' y using WithTop.recTopCoe with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · simp [← coe_mul, map_coe] }
+      · simp only [map_coe, ← coe_mul, map_mul] } -- porting note: todo: `simp [← coe_mul]` fails
 #align monoid_with_zero_hom.with_top_map WithTop.MonoidWithZeroHom.withTopMap
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=
@@ -250,13 +252,25 @@ theorem bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ :=
   WithTop.top_mul_top
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot
 
+@[simp]
+theorem mul_eq_bot_iff {a b : WithBot α} : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠ 0 :=
+  WithTop.mul_eq_top_iff
+#align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
+
+theorem bot_lt_mul' [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
+  WithTop.mul_lt_top' (α := αᵒᵈ) ha hb
+#align with_bot.bot_lt_mul WithBot.bot_lt_mul'
+
+theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : ⊥ < a * b :=
+  WithTop.mul_lt_top (α := αᵒᵈ) ha hb
+
 end Mul
 
 section MulZeroClass
 
 variable [MulZeroClass α]
 
-@[norm_cast]
+@[simp, norm_cast] -- porting note: added `simp`
 theorem coe_mul {a b : α} : (↑(a * b) : WithBot α) = a * b :=
   WithTop.coe_mul
 #align with_bot.coe_mul WithBot.coe_mul
@@ -265,17 +279,6 @@ theorem mul_coe {b : α} (hb : b ≠ 0) {a : WithBot α} :
     a * (b : WithBot α) = a.bind fun a : α => ↑(a * b) :=
   WithTop.mul_coe hb
 #align with_bot.mul_coe WithBot.mul_coe
-
-@[simp]
-theorem mul_eq_bot_iff {a b : WithBot α} : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠ 0 :=
-  WithTop.mul_eq_top_iff
-#align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
-
-theorem bot_lt_mul [Preorder α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b := by
-  lift a to α using ne_bot_of_gt ha
-  lift b to α using ne_bot_of_gt hb
-  simp only [← coe_mul, bot_lt_coe]
-#align with_bot.bot_lt_mul WithBot.bot_lt_mul
 
 end MulZeroClass
 
