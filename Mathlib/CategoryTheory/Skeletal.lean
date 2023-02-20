@@ -116,8 +116,7 @@ theorem skeleton_skeletal : Skeletal (Skeleton C) := by
 #align category_theory.skeleton_skeletal CategoryTheory.skeleton_skeletal
 
 /-- The `skeleton` of `C` given by choice is a skeleton of `C`. -/
-noncomputable def skeletonIsSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C)
-    where
+noncomputable def skeletonIsSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
   skel := skeleton_skeletal C
   eqv := fromSkeleton.isEquivalence C
 #align category_theory.skeleton_is_skeleton CategoryTheory.skeletonIsSkeleton
@@ -217,15 +216,19 @@ def map₂ (F : C ⥤ D ⥤ E) : ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkele
         rintro X₁ X₂ ⟨hX⟩ Y₁ Y₂ ⟨hY⟩ 
         dsimp
         exact ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩  
-      map := fun y₁ y₂ =>
-        Quotient.recOnSubsingleton x fun X =>
-          Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY =>
-            homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
-  map x₁ x₂ :=
-    Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
-      {
-        app := fun y =>
-          Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }
+      map := fun {y₁} {y₂} => by 
+          refine Quotient.recOnSubsingleton x fun X 
+            => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY => homOfLE (hY.le.elim fun g => ?_)
+          exact ⟨(F.obj X).map g⟩ -- Porting note: cannot infer type if condensed to a term 
+    }
+  map {x₁} {x₂} := by sorry 
+    -- refine Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f => ?_
+    -- dsimp 
+    -- exact { app := sorry }
+    -- Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
+      -- {
+        -- app := fun y =>
+          -- Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }
 #align category_theory.thin_skeleton.map₂ CategoryTheory.ThinSkeleton.map₂
 
 variable (C)
@@ -239,24 +242,18 @@ instance toThinSkeleton_faithful : Faithful (toThinSkeleton C) where
 
 /-- Use `quotient.out` to create a functor out of the thin skeleton. -/
 @[simps]
-noncomputable def fromThinSkeleton : ThinSkeleton C ⥤ C
-    where
+noncomputable def fromThinSkeleton : ThinSkeleton C ⥤ C where
   obj := Quotient.out
-  map x y :=
+  map {x} {y} :=
     Quotient.recOnSubsingleton₂ x y fun X Y f =>
-      (Nonempty.some (Quotient.mk_out X)).Hom ≫ f.le.some ≫ (Nonempty.some (Quotient.mk_out Y)).inv
+      (Nonempty.some (Quotient.mk_out X)).hom ≫ f.le.some ≫ (Nonempty.some (Quotient.mk_out Y)).inv
 #align category_theory.thin_skeleton.from_thin_skeleton CategoryTheory.ThinSkeleton.fromThinSkeleton
 
-noncomputable instance fromThinSkeletonEquivalence : IsEquivalence (fromThinSkeleton C)
-    where
+noncomputable instance fromThinSkeletonEquivalence : IsEquivalence (fromThinSkeleton C) where
   inverse := toThinSkeleton C
-  counitIso := NatIso.ofComponents (fun X => Nonempty.some (Quotient.mk_out X)) (by tidy)
-  unitIso :=
-    NatIso.ofComponents
-      (fun x =>
-        Quotient.recOnSubsingleton x fun X =>
-          eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩))
-      (by tidy)
+  counitIso := NatIso.ofComponents (fun X => Nonempty.some (Quotient.mk_out X)) (by aesop_cat)
+  unitIso := NatIso.ofComponents (fun x => Quotient.recOnSubsingleton x fun X =>
+          eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩)) (fun _ => rfl)
 #align category_theory.thin_skeleton.from_thin_skeleton_equivalence CategoryTheory.ThinSkeleton.fromThinSkeletonEquivalence
 
 /-- The equivalence between the thin skeleton and the category itself. -/
@@ -280,22 +277,22 @@ instance thinSkeletonPartialOrder : PartialOrder (ThinSkeleton C) :=
 #align category_theory.thin_skeleton.thin_skeleton_partial_order CategoryTheory.ThinSkeleton.thinSkeletonPartialOrder
 
 theorem skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
-  Quotient.induction_on₂ X Y fun x y h => h.elim fun i => i.1.le.antisymm i.2.le
+  Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i => i.1.le.antisymm i.2.le
 #align category_theory.thin_skeleton.skeletal CategoryTheory.ThinSkeleton.skeletal
 
 theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
   Functor.eq_of_iso skeletal <|
-    NatIso.ofComponents (fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _) (by tidy)
+    NatIso.ofComponents (fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _) (by aesop_cat)
 #align category_theory.thin_skeleton.map_comp_eq CategoryTheory.ThinSkeleton.map_comp_eq
 
 theorem map_id_eq : map (𝟭 C) = 𝟭 (ThinSkeleton C) :=
   Functor.eq_of_iso skeletal <|
-    NatIso.ofComponents (fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _) (by tidy)
+    NatIso.ofComponents (fun X => Quotient.recOnSubsingleton X fun x => Iso.refl _) (by aesop_cat)
 #align category_theory.thin_skeleton.map_id_eq CategoryTheory.ThinSkeleton.map_id_eq
 
 theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F₂ :=
   Functor.eq_of_iso skeletal
-    { Hom := mapNatTrans h.Hom
+    { hom := mapNatTrans h.hom
       inv := mapNatTrans h.inv }
 #align category_theory.thin_skeleton.map_iso_eq CategoryTheory.ThinSkeleton.map_iso_eq
 
@@ -318,17 +315,17 @@ variable {C}
 /-- An adjunction between thin categories gives an adjunction between their thin skeletons. -/
 def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) : ThinSkeleton.map L ⊣ ThinSkeleton.map R :=
   Adjunction.mkOfUnitCounit
-    { Unit :=
+    { unit :=
         {
           app := fun X => by
-            letI := is_isomorphic_setoid C
-            refine' Quotient.recOnSubsingleton X fun x => hom_of_le ⟨h.unit.app x⟩ }
+            letI := isIsomorphicSetoid C
+            refine' Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.unit.app x⟩ }
       -- TODO: make quotient.rec_on_subsingleton' so the letI isn't needed
       counit :=
         {
           app := fun X => by
-            letI := is_isomorphic_setoid D
-            refine' Quotient.recOnSubsingleton X fun x => hom_of_le ⟨h.counit.app x⟩ } }
+            letI := isIsomorphicSetoid D
+            refine' Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ } }
 #align category_theory.thin_skeleton.lower_adjunction CategoryTheory.ThinSkeleton.lowerAdjunction
 
 end ThinSkeleton
