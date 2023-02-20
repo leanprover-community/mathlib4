@@ -269,10 +269,16 @@ protected def Simps.apply {R S : Type _} [Semiring R] [Semiring S] (σ : R →+*
 initialize_simps_projections LinearMap (toAddHom_toFun → apply)
 
 @[simp]
-theorem coe_mk {σ : R →+* S} (f : M →+ M₃) (h) :
+theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : M → M₃) = f :=
   rfl
 #align linear_map.coe_mk LinearMap.coe_mk
+
+-- Porting note: This theorem is new.
+@[simp]
+theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
+    ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
+  rfl
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
@@ -454,15 +460,19 @@ are defined by an action of `R` on `S` (formally, we have two scalar towers), th
 map from `M` to `M₂` is `R`-linear.
 
 See also `LinearMap.map_smul_of_tower`. -/
-def restrictScalars (fₗ : M →ₗ[S] M₂) : M →ₗ[R] M₂
-    where
+@[coe] def restrictScalars (fₗ : M →ₗ[S] M₂) : M →ₗ[R] M₂ where
   toFun := fₗ
   map_add' := fₗ.map_add
   map_smul' := fₗ.map_smul_of_tower
 #align linear_map.restrict_scalars LinearMap.restrictScalars
 
-@[simp]
-theorem coe_restrictScalars (fₗ : M →ₗ[S] M₂) : ⇑(restrictScalars R fₗ) = fₗ :=
+-- porting note: generalized from `Algebra` to `Compatible SMul`
+instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
+  ⟨restrictScalars R⟩
+#align linear_map.coe_is_scalar_tower LinearMap.coeIsScalarTower
+
+@[simp, norm_cast]
+theorem coe_restrictScalars (f : M →ₗ[S] M₂) : ((f : M →ₗ[R] M₂) : M → M₂) = f :=
   rfl
 #align linear_map.coe_restrict_scalars LinearMap.coe_restrictScalars
 

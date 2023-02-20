@@ -82,8 +82,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α]
 
--- porting note: missing mono attribute
--- @[mono]
+@[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
