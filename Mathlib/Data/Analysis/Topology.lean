@@ -62,7 +62,7 @@ variable (F : Ctop α σ)
 instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
-@[simp]
+-- @[simp] -- Porting note: dsimp can prove this
 theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 #align ctop.coe_mk Ctop.coe_mk
 
