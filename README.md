@@ -55,7 +55,7 @@ You will need to make a PR after committing the changes to this file.
 To start a new project that uses mathlib4 as a dependency:
 
 1. Open a folder that contains no file named `lean-toolchain`.
-2.  Update your default toolchain to one that is sufficiently recent with `elan default leanprover/lean4:nightly-2023-02-04`
+2. Update your default toolchain to one that is sufficiently recent with `elan default leanprover/lean4:nightly-2023-02-04`
 
 3. Run `lake new <your_project_name> math`.
 4. You now have a folder named `your_project_name` that contains a new `lake` project. The `lakefile.lean` folder is configured with the `mathlib4` dependency.
