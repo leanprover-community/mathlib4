@@ -8,9 +8,9 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Cat
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.CategoryTheory.Types
+import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Types
 
 /-!
 # Objects of a category up to an isomorphism
