@@ -8,7 +8,7 @@ Authors: Fox Thomson, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Computability.NFA
+import Mathlib.Computability.NFA
 
 /-!
 # Epsilon Nondeterministic Finite Automata
@@ -107,8 +107,7 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
 #align ε_NFA.eval_from_append_singleton εNFA.evalFrom_append_singleton
 
 @[simp]
-theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ :=
-  by
+theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
   induction' x using List.reverseRecOn with x a ih
   · rw [eval_from_nil, ε_closure_empty]
   · rw [eval_from_append_singleton, ih, step_set_empty]
@@ -157,8 +156,7 @@ theorem toNFA_evalFrom_match (start : Set σ) :
 #align ε_NFA.to_NFA_eval_from_match εNFA.toNFA_evalFrom_match
 
 @[simp]
-theorem toNFA_correct : M.toNFA.accepts = M.accepts :=
-  by
+theorem toNFA_correct : M.toNFA.accepts = M.accepts := by
   ext x
   rw [accepts, NFA.accepts, eval, NFA.eval, ← to_NFA_eval_from_match]
   rfl
@@ -188,8 +186,7 @@ def toεNFA (M : NFA α σ) : εNFA α σ
 #align NFA.to_ε_NFA NFA.toεNFA
 
 @[simp]
-theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S :=
-  by
+theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S := by
   ext a
   refine' ⟨_, εNFA.εClosure.base _⟩
   rintro (⟨_, h⟩ | ⟨_, _, h, _⟩)
@@ -199,8 +196,7 @@ theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S =
 
 @[simp]
 theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
-    M.toεNFA.evalFrom start = M.evalFrom start :=
-  by
+    M.toεNFA.evalFrom start = M.evalFrom start := by
   rw [eval_from, εNFA.evalFrom, to_ε_NFA_ε_closure]
   congr
   ext (S s)
@@ -213,8 +209,7 @@ theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
 #align NFA.to_ε_NFA_eval_from_match NFA.toεNFA_evalFrom_match
 
 @[simp]
-theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts :=
-  by
+theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
   rw [accepts, εNFA.accepts, eval, εNFA.eval, to_ε_NFA_eval_from_match]
   rfl
 #align NFA.to_ε_NFA_correct NFA.toεNFA_correct

@@ -290,6 +290,7 @@ import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.DFA
+import Mathlib.Computability.EpsilonNFA
 import Mathlib.Computability.Language
 import Mathlib.Computability.NFA
 import Mathlib.Computability.TuringMachine
