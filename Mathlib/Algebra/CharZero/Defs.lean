@@ -99,10 +99,37 @@ theorem cast_ne_one {n : ℕ} : (n : R) ≠ 1 ↔ n ≠ 1 :=
 
 end Nat
 
+namespace OfNat
+
+variable [AddMonoidWithOne R] [CharZero R]
+
+@[simp] lemma ofNat_ne_zero (n : ℕ) [h : n.AtLeastTwo] : (ofNat n : R) ≠ 0 :=
+  Nat.cast_ne_zero.2 <| ne_of_gt <| lt_trans Nat.one_pos h.prop
+
+@[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (ofNat n : R) :=
+  (ofNat_ne_zero n).symm
+
+@[simp] lemma ofNat_ne_one (n : ℕ) [h : n.AtLeastTwo] : (ofNat n : R) ≠ 1 := by
+  rw [← Nat.cast_eq_ofNat, ← @Nat.cast_one R, Ne.def, Nat.cast_inj]
+  exact ne_of_gt h.prop
+
+@[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ ofNat n :=
+  (ofNat_ne_one n).symm
+
+@[simp] lemma ofNat_eq_ofNat {m n : ℕ} [m.AtLeastTwo] [n.AtLeastTwo] :
+    (ofNat m : R) = ofNat n ↔ (ofNat m : ℕ) = ofNat n :=
+  Nat.cast_inj
+
+end OfNat
+
 namespace NeZero
 
 instance charZero {M} {n : ℕ} [NeZero n] [AddMonoidWithOne M] [CharZero M] : NeZero (n : M) :=
   ⟨Nat.cast_ne_zero.mpr out⟩
 #align ne_zero.char_zero NeZero.charZero
+
+instance charZero_ofNat {M} {n : ℕ} [n.AtLeastTwo] [AddMonoidWithOne M] [CharZero M] :
+    NeZero (OfNat.ofNat n : M) :=
+  ⟨OfNat.ofNat_ne_zero n⟩
 
 end NeZero
