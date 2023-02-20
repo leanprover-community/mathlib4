@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Analysis.Filter
-import Mathbin.Topology.Bases
+import Mathlib.Data.Analysis.Filter
+import Mathlib.Topology.Bases
 
 /-!
 # Computational realization of topological spaces (experimental)
@@ -162,8 +162,7 @@ protected theorem isOpen [TopologicalSpace α] (F : Realizer α) (s : F.σ) : Is
 #align ctop.realizer.is_open Ctop.Realizer.isOpen
 
 theorem ext' [T : TopologicalSpace α] {σ : Type _} {F : Ctop α σ}
-    (H : ∀ a s, s ∈ 𝓝 a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s) : F.toTopsp = T :=
-  by
+    (H : ∀ a s, s ∈ 𝓝 a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s) : F.toTopsp = T := by
   refine' eq_of_nhds_eq_nhds fun x => _
   ext s
   rw [mem_nhds_to_topsp, H]
