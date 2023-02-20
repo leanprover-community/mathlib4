@@ -8,8 +8,8 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Positivity
-import Mathbin.Data.Real.Nnreal
+import Mathlib.Tactic.Positivity
+import Mathlib.Data.Real.Nnreal
 
 /-!
 # Group seminorms
@@ -141,8 +141,7 @@ variable [AddGroup E] [NonarchAddGroupSeminormClass F E] (f : F) (x y : E)
 
 include E
 
-theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) :=
-  by
+theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
   rw [sub_eq_add_neg, ← NonarchAddGroupSeminormClass.map_neg_eq_map' f y]
   exact map_add_le_max _ _ _
 #align map_sub_le_max map_sub_le_max
