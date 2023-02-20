@@ -762,13 +762,14 @@ structure Simps.Config where
 declare_config_elab elabSimpsConfig Simps.Config
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-  between fully applied Expressions. -/
+  between fully applied Expressions. Use this using `@[simps (config := .asFn)]`-/
 def Simps.Config.asFn : Simps.Config where
   fullyApplied := false
 
-/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`. -/
+/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`.
+  Use this using `@[simps (config := .lemmasOnly)]`-/
 def Simps.Config.lemmasOnly : Simps.Config where
-  attrs := []
+  isSimp := false
 
 /-- `instantiateLambdasOrApps es e` instantiates lambdas in `e` by expressions from `es`.
 If the length of `es` is larger than the number of lambdas in `e`,

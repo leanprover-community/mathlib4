@@ -179,7 +179,7 @@ namespace CountNested
 def nested1 : MyProd ℕ $ MyProd ℤ ℕ :=
 ⟨2, -1, 1⟩
 
-@[simps (config := {isSimp := false})]
+@[simps (config := .lemmasOnly)]
 def nested2 : ℕ × MyProd ℕ ℕ :=
 ⟨2, MyProd.map Nat.succ Nat.pred ⟨1, 2⟩⟩
 
@@ -490,7 +490,7 @@ example {α} (x x' : α) (h : x = x') : coercing.rfl2.invFun x = x' := by simp; 
 @[simps] protected def Equiv2.symm2 {α β} (f : Equiv2 α β) : Equiv2 β α :=
 ⟨f.invFun, f.toFun, f.right_inv, f.left_inv⟩
 
-@[simps (config := {fullyApplied := false})] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
+@[simps (config := .asFn)] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
 ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
 example {α β} (f : Equiv2 α β) (y : β) {x} (h : f.invFun y = x) : f.symm y = x := by simp; rw [h]
