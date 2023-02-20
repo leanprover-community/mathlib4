@@ -37,9 +37,7 @@ open Algebra
 
 instance algebra : Algebra R (A × B) :=
   { Prod.module,
-    RingHom.prod (algebraMap R A)
-      (algebraMap R
-        B) with
+    RingHom.prod (algebraMap R A) (algebraMap R B) with
     commutes' := by
       rintro r ⟨a, b⟩
       dsimp
@@ -65,35 +63,35 @@ variable (R A B)
 
 /-- First projection as `alg_hom`. -/
 def fst : A × B →ₐ[R] A :=
-  { RingHom.fst A B with commutes' := fun r => rfl }
+  { RingHom.fst A B with commutes' := fun _r => rfl }
 #align alg_hom.fst AlgHom.fst
 
 /-- Second projection as `alg_hom`. -/
 def snd : A × B →ₐ[R] B :=
-  { RingHom.snd A B with commutes' := fun r => rfl }
+  { RingHom.snd A B with commutes' := fun _r => rfl }
 #align alg_hom.snd AlgHom.snd
 
 variable {R A B}
 
 /-- The `pi.prod` of two morphisms is a morphism. -/
-@[simps]
+@[simps!]
 def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
-  { f.toRingHom.Prod g.toRingHom with
+  { f.toRingHom.prod g.toRingHom with
     commutes' := fun r => by
-      simp only [to_ring_hom_eq_coe, RingHom.toFun_eq_coe, RingHom.prod_apply, coe_to_ring_hom,
+      simp only [toRingHom_eq_coe, RingHom.toFun_eq_coe, RingHom.prod_apply, coe_toRingHom,
         commutes, Prod.algebraMap_apply] }
 #align alg_hom.prod AlgHom.prod
 
-theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.Prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
 #align alg_hom.coe_prod AlgHom.coe_prod
 
 @[simp]
-theorem fst_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (fst R B C).comp (prod f g) = f := by ext <;> rfl
+theorem fst_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (fst R B C).comp (prod f g) = f := by ext; rfl
 #align alg_hom.fst_prod AlgHom.fst_prod
 
 @[simp]
-theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (prod f g) = g := by ext <;> rfl
+theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (prod f g) = g := by ext; rfl
 #align alg_hom.snd_prod AlgHom.snd_prod
 
 @[simp]
@@ -106,11 +104,10 @@ their codomains. -/
 @[simps]
 def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C)
     where
-  toFun f := f.1.Prod f.2
+  toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
 #align alg_hom.prod_equiv AlgHom.prodEquiv
 
 end AlgHom
-
