@@ -149,10 +149,21 @@ instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 #align alg_hom.coe_add_monoid_hom AlgHom.coeOutAddMonoidHom
 
-@[simp, norm_cast]
-theorem coe_mk {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+-- Porting note: Lean 3: `@[simp, norm_cast] coe_mk`
+--               Lean 4: `@[simp] coe_mk` & `@[norm_cast] coe_mks`
+@[simp]
+theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
-#align alg_hom.coe_mk AlgHom.coe_mk
+
+@[norm_cast]
+theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+  rfl
+#align alg_hom.coe_mk AlgHom.coe_mks
+
+-- Porting note: This theorem is new.
+@[simp, norm_cast]
+theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
+  rfl
 
 -- make the coercion the simp-normal form
 @[simp]
