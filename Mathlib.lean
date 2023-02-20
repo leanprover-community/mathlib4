@@ -225,6 +225,7 @@ import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.RelCat
@@ -232,6 +233,7 @@ import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Core
+import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
@@ -250,6 +252,7 @@ import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
