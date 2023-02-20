@@ -8,8 +8,8 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.FunctorCategory
-import Mathbin.Tactic.AssertExists
+import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.Tactic.AssertExists
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -154,16 +154,14 @@ def coyonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ C) (
 
 variable {D : Type u} [SmallCategory D]
 
-instance yonedaFunctorPreservesLimits : PreservesLimits (@yoneda D _) :=
-  by
+instance yonedaFunctorPreservesLimits : PreservesLimits (@yoneda D _) := by
   apply preserves_limits_of_evaluation
   intro K
   change preserves_limits (coyoneda.obj K)
   infer_instance
 #align category_theory.yoneda_functor_preserves_limits CategoryTheory.yonedaFunctorPreservesLimits
 
-instance coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda D _) :=
-  by
+instance coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda D _) := by
   apply preserves_limits_of_evaluation
   intro K
   change preserves_limits (yoneda.obj K)
