@@ -13,13 +13,13 @@ import Mathlib.Algebra.Algebra.Hom
 /-!
 # The R-algebra structure on products of R-algebras
 
-The R-algebra structure on `Π i : I, A i` when each `A i` is an R-algebra.
+The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 
 ## Main defintions
 
-* `pi.algebra`
-* `pi.eval_alg_hom`
-* `pi.const_alg_hom`
+* `Pi.algebra`
+* `Pi.evalAlgHom`
+* `Pi.constAlgHom`
 -/
 
 
@@ -61,19 +61,19 @@ namespace AlgHom
 
 variable (R A B)
 
-/-- First projection as `alg_hom`. -/
+/-- First projection as `AlgHom`. -/
 def fst : A × B →ₐ[R] A :=
   { RingHom.fst A B with commutes' := fun _r => rfl }
 #align alg_hom.fst AlgHom.fst
 
-/-- Second projection as `alg_hom`. -/
+/-- Second projection as `AlgHom`. -/
 def snd : A × B →ₐ[R] B :=
   { RingHom.snd A B with commutes' := fun _r => rfl }
 #align alg_hom.snd AlgHom.snd
 
 variable {R A B}
 
-/-- The `pi.prod` of two morphisms is a morphism. -/
+/-- The `Pi.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
   { f.toRingHom.prod g.toRingHom with
