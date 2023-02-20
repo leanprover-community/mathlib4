@@ -42,7 +42,6 @@ There are three attributes being defined here
 * structure-Eta-reducing subexpressions
   * still useful, since we don't want to recurse into something like `{fst := x.fst, snd := x.snd}`
     obtained by `{ x with ... }`
-* Adding custom simp-attributes / other attributes
 
 ### Improvements
 * If multiple declarations are generated from a `simps` without explicit projection names, then
@@ -56,7 +55,6 @@ There are some small changes in the attribute. None of them should have great ef
   a lemma with that name (in Lean 3 it would generate a different unique name)
 * `transparency.none` has been replaced by `TransparencyMode.reducible`
 * The `attr` configuration option has been split into `isSimp` and `attrs` (for extra attributes)
-  (todo)
 * Because Lean 4 uses bundled structures, this means that `simps` applied to anything that
   implements a notation class will almost certainly require a user-provided custom simps projection.
 
@@ -740,7 +738,7 @@ register_option linter.simpsNoConstructor : Bool := {
 structure Simps.Config where
   /-- Make generated lemmas simp lemmas -/
   isSimp := true
-  /-- [TODO] Other attributes to apply to generated lemmas -/
+  /-- Other simp-attributes to apply to generated lemmas. Currently only -/
   attrs : List Name := []
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
@@ -869,7 +867,10 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
     ← mkConstWithLevelParams declName
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
-  -- cfg.attrs.mapM fun nm ↦ setAttribute nm declName tt -- todo: deal with attributes
+  _ ← cfg.attrs.mapM fun simpAttr ↦ do
+    let .some simpDecl ← getSimpExtension? simpAttr |
+      throwError "{simpAttr} is not a simp-attribute."
+    addSimpTheorem simpDecl declName true false .global <| eval_prio default
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
