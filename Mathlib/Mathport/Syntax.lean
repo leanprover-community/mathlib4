@@ -10,6 +10,7 @@ import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Order.Filter.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.AddTacticDoc
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
@@ -344,8 +345,6 @@ namespace Attr
 end Attr
 
 namespace Command
-
-/- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
 
