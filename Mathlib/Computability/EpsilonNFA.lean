@@ -13,12 +13,12 @@ import Mathlib.Computability.NFA
 /-!
 # Epsilon Nondeterministic Finite Automata
 
-This file contains the definition of an epsilon Nondeterministic Finite Automaton (`ε_NFA`), a state
+This file contains the definition of an epsilon Nondeterministic Finite Automaton (`εNFA`), a state
 machine which determines whether a string (implemented as a list over an arbitrary alphabet) is in a
 regular set by evaluating the string over every possible path, also having access to ε-transitons,
 which can be followed without reading a character.
-Since this definition allows for automata with infinite states, a `fintype` instance must be
-supplied for true `ε_NFA`'s.
+Since this definition allows for automata with infinite states, a `Fintype` instance must be
+supplied for true `εNFA`'s.
 -/
 
 
@@ -31,12 +31,12 @@ set_option linter.uppercaseLean3 false
 
 universe u v
 
-/-- An `ε_NFA` is a set of states (`σ`), a transition function from state to state labelled by the
+/-- An `εNFA` is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`).
-  Note the transition function sends a state to a `set` of states and can make ε-transitions by
+  Note the transition function sends a state to a `Set` of states and can make ε-transitions by
   inputing `none`.
-  Since this definition allows for Automata with infinite states, a `fintype` instance must be
-  supplied for true `ε_NFA`'s.-/
+  Since this definition allows for Automata with infinite states, a `Fintype` instance must be
+  supplied for true `εNFA`'s. -/
 structure εNFA (α : Type u) (σ : Type v) where
   step : σ → Option α → Set σ
   start : Set σ
@@ -47,7 +47,7 @@ variable {α : Type u} {σ σ' : Type v} (M : εNFA α σ) {S : Set σ} {x : Lis
 
 namespace εNFA
 
-/-- The `ε_closure` of a set is the set of states which can be reached by taking a finite string of
+/-- The `εClosure` of a set is the set of states which can be reached by taking a finite string of
 ε-transitions from an element of the set. -/
 inductive εClosure (S : Set σ) : Set σ
   | base : ∀ s ∈ S, εClosure S s
@@ -61,7 +61,7 @@ theorem subset_εClosure (S : Set σ) : S ⊆ M.εClosure S :=
 
 @[simp]
 theorem εClosure_empty : M.εClosure ∅ = ∅ :=
-  eq_empty_of_forall_not_mem fun s hs => by induction' hs with _ ht _ _ _ _ ih <;> assumption
+  eq_empty_of_forall_not_mem fun s hs ↦ by induction hs <;> assumption
 #align ε_NFA.ε_closure_empty εNFA.εClosure_empty
 
 @[simp]
@@ -69,7 +69,7 @@ theorem εClosure_univ : M.εClosure univ = univ :=
   eq_univ_of_univ_subset <| subset_εClosure _ _
 #align ε_NFA.ε_closure_univ εNFA.εClosure_univ
 
-/-- `M.step_set S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
+/-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
   ⋃ s ∈ S, M.εClosure <| M.step s a
 #align ε_NFA.step_set εNFA.stepSet
@@ -88,7 +88,7 @@ theorem stepSet_empty (a : α) : M.stepSet ∅ a = ∅ := by
 
 variable (M)
 
-/-- `M.eval_from S x` computes all possible paths through `M` with input `x` starting at an element
+/-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
 of `S`. -/
 def evalFrom (start : Set σ) : List α → Set σ :=
   List.foldl M.stepSet (M.εClosure start)
@@ -107,7 +107,7 @@ theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet 
 @[simp]
 theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
     M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
-  simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
+  rw [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
 #align ε_NFA.eval_from_append_singleton εNFA.evalFrom_append_singleton
 
 @[simp]
@@ -143,10 +143,10 @@ def accepts : Language α :=
   { x | ∃ S ∈ M.accept, S ∈ M.eval x }
 #align ε_NFA.accepts εNFA.accepts
 
-/-! ### Conversions between `ε_NFA` and `NFA` -/
+/-! ### Conversions between `εNFA` and `NFA` -/
 
 
-/-- `M.to_NFA` is an `NFA` constructed from an `ε_NFA` `M`. -/
+/-- `M.toNFA` is an `NFA` constructed from an `εNFA` `M`. -/
 def toNFA : NFA α σ where
   step S a := M.εClosure (M.step S a)
   start := M.εClosure M.start
@@ -160,31 +160,25 @@ theorem toNFA_evalFrom_match (start : Set σ) :
 #align ε_NFA.to_NFA_eval_from_match εNFA.toNFA_evalFrom_match
 
 @[simp]
-theorem toNFA_correct : M.toNFA.accepts = M.accepts := by
-  ext x
-  simp_rw [accepts, NFA.accepts, eval, NFA.eval, ← toNFA_evalFrom_match]
+theorem toNFA_correct : M.toNFA.accepts = M.accepts :=
   rfl
 #align ε_NFA.to_NFA_correct εNFA.toNFA_correct
 
 theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :
-    ∃ a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts :=
-  by
-  rw [← toNFA_correct] at hx⊢
-  exact M.toNFA.pumping_lemma hx hlen
+    ∃ a b c, x = a ++ b ++ c ∧
+      a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts :=
+  M.toNFA.pumping_lemma hx hlen
 #align ε_NFA.pumping_lemma εNFA.pumping_lemma
 
 end εNFA
 
 namespace NFA
 
-/-- `M.to_ε_NFA` is an `ε_NFA` constructed from an `NFA` `M` by using the same start and accept
+/-- `M.toεNFA` is an `εNFA` constructed from an `NFA` `M` by using the same start and accept
   states and transition functions. -/
-def toεNFA (M : NFA α σ) : εNFA α σ
-    where
-  step s a := a.casesOn' ∅ fun a => M.step s a
+def toεNFA (M : NFA α σ) : εNFA α σ where
+  step s a := a.casesOn' ∅ fun a ↦ M.step s a
   start := M.start
   accept := M.accept
 #align NFA.to_ε_NFA NFA.toεNFA
@@ -203,7 +197,7 @@ theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
     M.toεNFA.evalFrom start = M.evalFrom start := by
   rw [evalFrom, εNFA.evalFrom, toεNFA_εClosure]
   suffices εNFA.stepSet (toεNFA M) = stepSet M by rw [this]
-  ext (S s)
+  ext S s
   simp only [stepSet, εNFA.stepSet, exists_prop, Set.mem_unionᵢ]
   apply exists_congr
   simp only [and_congr_right_iff]
@@ -214,7 +208,7 @@ theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
 
 @[simp]
 theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
-  simp_rw [accepts, εNFA.accepts, eval, εNFA.eval, toεNFA_evalFrom_match]
+  rw [εNFA.accepts, εNFA.eval, toεNFA_evalFrom_match]
   rfl
 #align NFA.to_ε_NFA_correct NFA.toεNFA_correct
 
@@ -226,10 +220,10 @@ end NFA
 namespace εNFA
 
 instance : Zero (εNFA α σ) :=
-  ⟨⟨fun _ _ => ∅, ∅, ∅⟩⟩
+  ⟨⟨fun _ _ ↦ ∅, ∅, ∅⟩⟩
 
 instance : One (εNFA α σ) :=
-  ⟨⟨fun _ _ => ∅, univ, univ⟩⟩
+  ⟨⟨fun _ _ ↦ ∅, univ, univ⟩⟩
 
 instance : Inhabited (εNFA α σ) :=
   ⟨0⟩
