@@ -1144,25 +1144,27 @@ theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := 
 
 end Real
 
--- namespace Tactic
+/-
+namespace Tactic
 
--- open Positivity
+open Positivity
 
--- private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ) :=
---   NNReal.coe_pos.2
--- #align tactic.nnreal_coe_pos tactic.nnreal_coe_pos
+private theorem nnreal_coe_pos {r : ℝ≥0} : 0 < r → 0 < (r : ℝ) :=
+  NNReal.coe_pos.2
+#align tactic.nnreal_coe_pos tactic.nnreal_coe_pos
 
--- /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
--- @[positivity]
--- unsafe def positivity_coe_nnreal_real : expr → tactic strictness
---   | q(@coe _ _ $(inst) $(a)) => do
---     unify inst q(@coeToLift _ _ <| @coeBase _ _ NNReal.Real.hasCoe)
---     let strictness_a ← core a
---     match strictness_a with
---       | positive p => positive <$> mk_app `` nnreal_coe_pos [p]
---       | _ => nonnegative <$> mk_app `` NNReal.coe_nonneg [a]
---   | e =>
---     pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ℝ)` for `r : ℝ≥0`"
--- #align tactic.positivity_coe_nnreal_real tactic.positivity_coe_nnreal_real
+/-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
+@[positivity]
+unsafe def positivity_coe_nnreal_real : expr → tactic strictness
+  | q(@coe _ _ $(inst) $(a)) => do
+    unify inst q(@coeToLift _ _ <| @coeBase _ _ NNReal.Real.hasCoe)
+    let strictness_a ← core a
+    match strictness_a with
+      | positive p => positive <$> mk_app `` nnreal_coe_pos [p]
+      | _ => nonnegative <$> mk_app `` NNReal.coe_nonneg [a]
+  | e =>
+    pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ℝ)` for `r : ℝ≥0`"
+#align tactic.positivity_coe_nnreal_real tactic.positivity_coe_nnreal_real
 
--- end Tactic
+end Tactic
+-/
