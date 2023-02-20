@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Types
 /-!
 # Objects of a category up to an isomorphism
 
-`is_isomorphic X Y := nonempty (X ≅ Y)` is an equivalence relation on the objects of a category.
+`IsIsomorphic X Y := Nonempty (X ≅ Y)` is an equivalence relation on the objects of a category.
 The quotient with respect to this relation defines a functor from our category to `Type`.
 -/
 
@@ -36,18 +36,31 @@ variable (C)
 
 /-- `is_isomorphic` defines a setoid. -/
 def isIsomorphicSetoid : Setoid C where
-  R := IsIsomorphic
-  iseqv := ⟨fun X => ⟨Iso.refl X⟩, fun X Y ⟨α⟩ => ⟨α.symm⟩, fun X Y Z ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩⟩
+  r := IsIsomorphic
+  iseqv := ⟨fun X => ⟨Iso.refl X⟩, fun ⟨α⟩ => ⟨α.symm⟩, fun ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩⟩
 #align category_theory.is_isomorphic_setoid CategoryTheory.isIsomorphicSetoid
 
 end Category
 
 /-- The functor that sends each category to the quotient space of its objects up to an isomorphism.
 -/
-def isomorphismClasses : Cat.{v, u} ⥤ Type u
-    where
+def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quotient (isIsomorphicSetoid C.α)
-  map C D F := Quot.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
+  map {C} {D} F := Quot.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
+  map_id {C} := by  -- Porting note: this used to be `tidy`
+    dsimp; apply funext; intro x
+    apply x.recOn  -- Porting note: `induction x` not working yet 
+    · intro _ _ p 
+      simp only [types_id_apply]
+    · intro _ 
+      rfl 
+  map_comp {C} {D} {E} f g := by -- Porting note(s): idem
+    dsimp; apply funext; intro x
+    apply x.recOn 
+    · intro _ _ _ 
+      simp only [types_id_apply]
+    · intro _
+      rfl 
 #align category_theory.isomorphism_classes CategoryTheory.isomorphismClasses
 
 theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :
@@ -55,7 +68,5 @@ theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X 
   (Groupoid.isoEquivHom X Y).nonempty_congr
 #align category_theory.groupoid.is_isomorphic_iff_nonempty_hom CategoryTheory.Groupoid.isIsomorphic_iff_nonempty_hom
 
--- PROJECT: define `skeletal`, and show every category is equivalent to a skeletal category,
--- using the axiom of choice to pick a representative of every isomorphism class.
 end CategoryTheory
 
