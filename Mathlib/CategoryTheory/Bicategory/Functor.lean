@@ -9,7 +9,6 @@ Authors: Yuma Mizuno
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
-set_option autoImplicit false -- **TODO** remove this
 
 /-!
 # Oplax functors and pseudofunctors
@@ -213,19 +212,7 @@ attribute [simp] mapComp_naturality_left mapComp_naturality_right map₂_id map�
 
 -- porting note: was auto-ported as `attribute [reassoc.1]` for some reason
 attribute [reassoc (attr := simp)] -- can't stop this being noisy
-  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_leftUnitor map₂_rightUnitor
-
--- porting note: reassoc on the previous line would not mark these as simp;
--- error was
-attribute [reassoc] map₂_associator -- can't stop this being noisy. Adding `(attr := simp)`
--- gives the error
-/-
-CategoryTheory.OplaxFunctor.map₂_associator and CategoryTheory.OplaxFunctor.map₂_associator_assoc
-do not generate the same number of simp lemmas.
--/
-attribute [simp] map₂_associator_assoc -- porting note: probably need this
-
-attribute [simp] map₂_comp map₂_leftUnitor map₂_rightUnitor -- porting note: might need these
+  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_leftUnitor map₂_rightUnitor map₂_associator
 
 section
 
@@ -505,19 +492,18 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
 instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
-
--- **TODO** uncomment
--- set_option maxHeartbeats 3000000 in
--- /-- Composition of pseudofunctors. -/
--- @[simps]
--- def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
---   {
---     (F : PrelaxFunctor B C).comp
---       (G : PrelaxFunctor C D) with
---     mapId := fun a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a)
---     mapComp := fun f g =>
---       (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
--- #align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
+-- porting note: this is aesop_cat taking a long time auto-filling in fields
+set_option maxHeartbeats 1000000 in
+/-- Composition of pseudofunctors. -/
+@[simps]
+def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
+  {
+    (F : PrelaxFunctor B C).comp
+      (G : PrelaxFunctor C D) with
+    mapId := fun a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a)
+    mapComp := fun f g =>
+      (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
+#align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
 
 /-- Construct a pseudofunctor from an oplax functor whose `map_id` and `map_comp` are isomorphisms.
 -/
@@ -551,14 +537,14 @@ noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
     mapComp := fun f g => asIso (F.mapComp f g)
     map₂_whisker_left' := fun f g h η => by
       dsimp
-      rw [← assoc, Iso.eq_comp_inv, F.map_comp_naturality_right]
+      rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_right]
     map₂_whisker_right' := fun η h => by
       dsimp
-      rw [← assoc, is_iso.eq_comp_inv, F.map_comp_naturality_left]
-    map₂_associator' := fun a b c d f g h => by
+      rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_left]
+    map₂_associator' := fun f g h => by
       dsimp
       simp only [← assoc]
-      rw [is_iso.eq_comp_inv, ← inv_whisker_left, is_iso.eq_comp_inv]
+      rw [IsIso.eq_comp_inv, ← inv_whiskerLeft, IsIso.eq_comp_inv]
       simp only [assoc, F.map₂_associator] }
 #align category_theory.pseudofunctor.mk_of_oplax' CategoryTheory.Pseudofunctor.mkOfOplax'
 
