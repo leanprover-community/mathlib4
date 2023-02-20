@@ -8,10 +8,10 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.CategoryTheory.Category.Preorder
-import Mathbin.CategoryTheory.IsomorphismClasses
-import Mathbin.CategoryTheory.Thin
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.IsomorphismClasses
+import Mathlib.CategoryTheory.Thin
 
 /-!
 # Skeleton of a category
@@ -99,8 +99,7 @@ noncomputable def skeletonEquivalence : Skeleton C ≌ C :=
   (fromSkeleton C).asEquivalence
 #align category_theory.skeleton_equivalence CategoryTheory.skeletonEquivalence
 
-theorem skeleton_skeletal : Skeletal (Skeleton C) :=
-  by
+theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
   have : X.out ≈ Y.out := ⟨(from_skeleton C).mapIso h⟩
   simpa using Quotient.sound this
