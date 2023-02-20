@@ -73,6 +73,10 @@ initialize docNamesExtension : SimplePersistentEnvExtension
     addEntryFn    := λ xs x => x :: xs
   }
 
+-- Define a macro that matches on `add_tactic_doc where` syntax and expands it into `add_tactic_doc {...}`
+macro_rules (kind := add_tactic_doc_macro)
+  | `(add_tactic_doc $fields:whereStructInst) => `(add_tactic_doc $fields)
+
 /--
 A command used to add documentation for a tactic, command, hole command, or attribute.
 
@@ -116,6 +120,12 @@ Note that providing a badly formed `tactic_doc_entry` to the command can result 
 messages.
 -/
 elab metaDocString:docComment ? "add_tactic_doc " tdeStx:term : command => liftTermElabM do
+  -- 1. Match on `tde` syntax and expand it if it's `add_tactic_doc where` syntax
+  let tdeStx ← match tdeStx with
+    | `(add_tactic_doc $fields:whereStructInst) => `(add_tactic_doc $fields)
+    | _ => pure tdeStx
+
+
   -- 1. Turn tde:TSyntax argument into the actual tde:TacticDocEntry object
   let tde ← unsafe evalTerm TacticDocEntry (mkConst ``TacticDocEntry) tdeStx
   -- 2. Determine tde's docstring
