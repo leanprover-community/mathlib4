@@ -8,7 +8,7 @@ Authors: Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Hom
 
 /-!
 # The R-algebra structure on products of R-algebras
