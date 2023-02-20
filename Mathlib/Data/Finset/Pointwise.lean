@@ -707,7 +707,7 @@ protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align finset.has_npow Finset.npow
 
-attribute [to_additive] Finset.npow
+attribute [to_additive existing] Finset.npow
 
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
@@ -718,7 +718,7 @@ protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
-@[to_additive]
+@[to_additive existing]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align finset.has_zpow Finset.zpow
