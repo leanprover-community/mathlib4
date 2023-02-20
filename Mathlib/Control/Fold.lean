@@ -343,11 +343,11 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
       _ = FreeMonoid.toList (List.foldr cons [] (foldMap FreeMonoid.of xs).reverse).reverse :=
           by simp only [List.foldr_eta]
       _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse :=
-          by simp [flip, List.foldr_reverse, foldl.of_free_monoid, unop_op]
+          by simp [flip, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
       _ = toList xs :=
-          by rw [foldMap_hom_free (foldl.ofFreeMonoid (flip <| @cons α))]
-            · simp only [toList, foldl, List.reverse_inj, foldl.get, foldl.ofFreeMonoid_comp_of]
-            · infer_instance
+          by rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
+             simp only [toList, foldl, List.reverse_inj, Foldl.get, foldl.ofFreeMonoid_comp_of,
+               Function.comp_apply]
 #align traversable.to_list_spec Traversable.toList_spec
 
 theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
@@ -397,16 +397,17 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
   rw [foldl_toList]
   generalize toList xs = ys
   let f (n : ℕ) (a : α) := n + 1
-  trans List.foldl f 0 ys
+  -- porting note: this used to work with `transitivity`, instead of this convert here
+  convert of_eq_true (eq_self (List.foldl f 0 ys))
   · generalize 0 = n
     induction' ys with _ _ ih generalizing n
     · simp only [List.foldl_nil]
-    · simp only [List.foldl, ih (n + 1)]
+    · simp only [List.foldl, ih _]
   · induction' ys with _ tl ih
     · simp only [List.length, List.foldl_nil]
-    · simp only [List.foldl, List.length]
-      rw [← ih]
-      exact tl.foldl_hom (fun x => x + 1) f f 0 fun n x => rfl
+    · rw [List.foldl, List.length]
+      rw [ih]
+      exact (tl.foldl_hom (fun x => x + 1) f f 0 fun n x => rfl).symm
 #align traversable.length_to_list Traversable.length_toList
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
