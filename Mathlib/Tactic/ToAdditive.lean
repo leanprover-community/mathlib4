@@ -629,23 +629,25 @@ def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
+Note: we only consider the first argument of each type-class.
+E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
     let xs := xs.toList
-    let l ← xs.mapM fun x ↦ do
+    let l ← xs.filterMapM fun x ↦ do
       -- x is an argument and i is the index
       -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
         let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isNone then
-            return []
-        return tgt_args.toList.filterMap fun tgt_arg ↦
-          xs.findIdx? fun x ↦ Expr.containsFVar tgt_arg x.fvarId!
+            return none
+        return tgt_args[0]?.bind fun tgtArg ↦
+          xs.findIdx? fun x ↦ Expr.containsFVar tgtArg x.fvarId!
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
-    match l.join with
+    match l with
     | [] => return 0
     | (head :: tail) => return tail.foldr Nat.min head
 
