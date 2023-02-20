@@ -85,9 +85,9 @@ variable (S : Type _) [SetLike S K] [h : SubfieldClass S K]
 Be assured that we're not actually proving that subfields are subgroups:
 `subgroup_class` is really an abbreviation of `subgroup_with_or_without_zero_class`.
  -/
-instance (priority := 100) SubfieldClass.to_subgroupClass : SubgroupClass S K :=
+instance (priority := 100) SubfieldClass.toSubgroupClass : SubgroupClass S K :=
   { h with }
-#align subfield_class.subfield_class.to_subgroup_class SubfieldClass.SubfieldClass.to_subgroupClass
+#align subfield_class.subfield_class.to_subgroup_class SubfieldClass.SubfieldClass.toSubgroupClass
 
 variable {S}
 
@@ -112,7 +112,7 @@ instance (s : S) : SMul ℚ s :=
   ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
 
 @[simp]
-theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : (↑(a • x) : K) = a • x :=
+theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : (a • x : K) = a • (x : K) :=
   rfl
 #align subfield_class.coe_rat_smul SubfieldClass.coe_rat_smul
 
@@ -121,6 +121,10 @@ variable (S)
 -- Prefer subclasses of `field` over subclasses of `subfield_class`.
 /-- A subfield inherits a field structure -/
 instance (priority := 75) toField (s : S) : Field s :=
+  letI tester : SubgroupClass S K := SubfieldClass.toSubgroupClass S
+  letI tester2 : Group K := Field.toCommRing K
+  letI : Inv s := @SubgroupClass.inv _ _ _ _ _ tester
+  letI : Div s := SubgroupClass.div
   Subtype.coe_injective.field (↑)
       (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ ; rfl)
         (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
@@ -164,39 +168,38 @@ def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
 --   { s.toSubring.toSubmonoid with }
 -- #align subfield.to_submonoid Subfield.toSubmonoid
 
-instance : SetLike (Subfield K) K :=
-  ⟨Subfield.carrier, fun p q h => by cases p <;> cases q <;> congr ⟩
+instance : SetLike (Subfield K) K where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
 instance : SubfieldClass (Subfield K) K
     where
-  add_mem := add_mem'
-  zero_mem := zero_mem'
-  neg_mem := neg_mem'
-  mul_mem := mul_mem'
-  one_mem := one_mem'
-  inv_mem := inv_mem'
+  add_mem {s} := s.add_mem'
+  zero_mem s := s.zero_mem'
+  neg_mem {s} := s.neg_mem'
+  mul_mem {s} := s.mul_mem'
+  one_mem s := s.one_mem'
+  inv_mem {s} := s.inv_mem' _
 
 @[simp]
 theorem mem_carrier {s : Subfield K} {x : K} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subfield.mem_carrier Subfield.mem_carrier
 
+-- Porting note: in lean 3, `S` was type `Set K`
 @[simp]
-theorem mem_mk {S : Set K} {x : K} (h₁ h₂ h₃ h₄ h₅ h₆) :
-    x ∈ (⟨S, h₁, h₂, h₃, h₄, h₅, h₆⟩ : Subfield K) ↔ x ∈ S :=
+theorem mem_mk {S : Subring K} {x : K} (h) : x ∈ (⟨S, h⟩ : Subfield K) ↔ x ∈ S :=
   Iff.rfl
 #align subfield.mem_mk Subfield.mem_mk
 
 @[simp]
-theorem coe_set_mk (S : Set K) (h₁ h₂ h₃ h₄ h₅ h₆) :
-    ((⟨S, h₁, h₂, h₃, h₄, h₅, h₆⟩ : Subfield K) : Set K) = S :=
+theorem coe_set_mk (S : Subring K) (h) : ((⟨S, h⟩ : Subfield K) : Set K) = S :=
   rfl
 #align subfield.coe_set_mk Subfield.coe_set_mk
 
 @[simp]
-theorem mk_le_mk {S S' : Set K} (h₁ h₂ h₃ h₄ h₅ h₆ h₁' h₂' h₃' h₄' h₅' h₆') :
-    (⟨S, h₁, h₂, h₃, h₄, h₅, h₆⟩ : Subfield K) ≤ (⟨S', h₁', h₂', h₃', h₄', h₅', h₆'⟩ : Subfield K) ↔
-      S ⊆ S' :=
+theorem mk_le_mk {S S' : Subring K} (h h') : (⟨S, h⟩ : Subfield K) ≤ (⟨S', h'⟩ : Subfield K) ↔
+      S ≤ S' :=
   Iff.rfl
 #align subfield.mk_le_mk Subfield.mk_le_mk
 
@@ -332,8 +335,8 @@ protected theorem coe_int_mem (n : ℤ) : (n : K) ∈ s :=
 
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
-  · simpa using s.pow_mem hx n
-  · simpa [pow_succ] using s.inv_mem (s.mul_mem hx (s.pow_mem hx n))
+  · simpa using s.pow_mem hx _
+  · simpa [pow_succ] using s.inv_mem (s.mul_mem hx (s.pow_mem hx _))
 #align subfield.zpow_mem Subfield.zpow_mem
 
 instance : Ring s :=
@@ -415,9 +418,9 @@ instance toAlgebra : Algebra s K :=
 #align subfield.to_algebra Subfield.toAlgebra
 
 @[simp]
-theorem coeSubtype : ⇑s.subtype = (↑) :=
+theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K)  :=
   rfl
-#align subfield.coe_subtype Subfield.coeSubtype
+#align subfield.coe_subtype Subfield.coe_subtype
 
 theorem toSubring.subtype_eq_subtype (F : Type _) [Field F] (S : Subfield F) :
     S.toSubring.subtype = S.subtype :=
@@ -426,8 +429,6 @@ theorem toSubring.subtype_eq_subtype (F : Type _) [Field F] (S : Subfield F) :
 
 /-! # Partial order -/
 
-
-variable (s t)
 
 @[simp]
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
@@ -470,7 +471,7 @@ theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
 #align subfield.coe_top Subfield.coe_top
 
 /-- The ring equiv between the top element of `subfield K` and `K`. -/
-@[simps]
+@[simps!]
 def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
 #align subfield.top_equiv Subfield.topEquiv
@@ -589,12 +590,12 @@ namespace Subfield
 instance : HasInf (Subfield K) :=
   ⟨fun s t =>
     { s.toSubring ⊓ t.toSubring with
-      inv_mem' := fun x hx =>
+      inv_mem' := fun _ hx =>
         Subring.mem_inf.mpr
           ⟨s.inv_mem (Subring.mem_inf.mp hx).1, t.inv_mem (Subring.mem_inf.mp hx).2⟩ }⟩
 
 @[simp]
-theorem coe_inf (p p' : Subfield K) : ((p ⊓ p' : Subfield K) : Set K) = p ∩ p' :=
+theorem coe_inf (p p' : Subfield K) : ((p ⊓ p' : Subfield K) : Set K) = p.carrier ∩ p'.carrier :=
   rfl
 #align subfield.coe_inf Subfield.coe_inf
 
@@ -626,7 +627,7 @@ theorem coe_infₛ (S : Set (Subfield K)) : ((infₛ S : Subfield K) : Set K) = 
 
 theorem mem_infₛ {S : Set (Subfield K)} {x : K} : x ∈ infₛ S ↔ ∀ p ∈ S, x ∈ p :=
   Subring.mem_infₛ.trans
-    ⟨fun h p hp => h p.toSubring ⟨p, hp, rfl⟩, fun h p ⟨p', hp', p_eq⟩ => p_eq ▸ h p' hp'⟩
+    ⟨fun h p hp => h p.toSubring ⟨p, hp, rfl⟩, fun h _ ⟨p', hp', p_eq⟩ => p_eq ▸ h p' hp'⟩
 #align subfield.mem_Inf Subfield.mem_infₛ
 
 @[simp]
@@ -641,7 +642,7 @@ theorem infₛ_toSubring (s : Set (Subfield K)) :
         ⟨p,
           Subring.ext fun x =>
             ⟨fun hx => Subring.mem_infₛ.mp hx _ ⟨hp, rfl⟩, fun hx =>
-              Subring.mem_infₛ.mpr fun p' ⟨hp, p'_eq⟩ => p'_eq ▸ hx⟩⟩⟩
+              Subring.mem_infₛ.mpr fun p' ⟨_, p'_eq⟩ => p'_eq ▸ hx⟩⟩⟩
 #align subfield.Inf_to_subring Subfield.infₛ_toSubring
 
 theorem isGLB_infₛ (S : Set (Subfield K)) : IsGLB S (infₛ S) := by
@@ -655,11 +656,11 @@ instance : CompleteLattice (Subfield K) :=
   {
     completeLatticeOfInf (Subfield K) isGLB_infₛ with
     top := ⊤
-    le_top := fun s x hx => trivial
+    le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun s t x => And.left
-    inf_le_right := fun s t x => And.right
-    le_inf := fun s t₁ t₂ h₁ h₂ x hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left := fun _ _ _ => And.left
+    inf_le_right := fun  _ _ _ => And.right
+    le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
 /-! # subfield closure of a subset -/
 
@@ -668,13 +669,13 @@ instance : CompleteLattice (Subfield K) :=
 /-- The `subfield` generated by a set. -/
 def closure (s : Set K) : Subfield K
     where
-  carrier :=
-    "./././Mathport/Syntax/Translate/Expr.lean:370:4: unsupported set replacement {(«expr / »(x, y)) | (x «expr ∈ » subring.closure[subring.closure] s) (y «expr ∈ » subring.closure[subring.closure] s)}"
+  carrier := {_x : K | ∃ (x : K) (H : x ∈ Subring.closure s) (y : K)
+    (H : y ∈ Subring.closure s), x / y = _x}
   zero_mem' := ⟨0, Subring.zero_mem _, 1, Subring.one_mem _, div_one _⟩
   one_mem' := ⟨1, Subring.one_mem _, 1, Subring.one_mem _, div_one _⟩
-  neg_mem' := fun x ⟨y, hy, z, hz, x_eq⟩ => ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
-  inv_mem' := fun x ⟨y, hy, z, hz, x_eq⟩ => ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm⟩
-  add_mem' x y x_mem y_mem :=
+  neg_mem' := fun ⟨y, hy, z, hz, x_eq⟩ => ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
+  inv_mem' x := fun ⟨y, hy, z, hz, x_eq⟩ => ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm⟩
+  add_mem' x_mem y_mem :=
     by
     obtain ⟨nx, hnx, dx, hdx, rfl⟩ := id x_mem
     obtain ⟨ny, hny, dy, hdy, rfl⟩ := id y_mem
@@ -683,7 +684,7 @@ def closure (s : Set K) : Subfield K
     exact
       ⟨nx * dy + dx * ny, Subring.add_mem _ (Subring.mul_mem _ hnx hdy) (Subring.mul_mem _ hdx hny),
         dx * dy, Subring.mul_mem _ hdx hdy, (div_add_div nx ny hx0 hy0).symm⟩
-  mul_mem' x y x_mem y_mem :=
+  mul_mem' x_mem y_mem :=
     by
     obtain ⟨nx, hnx, dx, hdx, rfl⟩ := id x_mem
     obtain ⟨ny, hny, dy, hdy, rfl⟩ := id y_mem
