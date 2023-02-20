@@ -127,7 +127,7 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 #align nnrat.coe_mul NNRat.coe_mul
 
 @[simp, norm_cast]
-theorem coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = q⁻¹ :=
+theorem coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ :=
   rfl
 #align nnrat.coe_inv NNRat.coe_inv
 
@@ -136,15 +136,9 @@ theorem coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q :=
   rfl
 #align nnrat.coe_div NNRat.coe_div
 
-@[simp, norm_cast]
-theorem coe_bit0 (q : ℚ≥0) : ((bit0 q : ℚ≥0) : ℚ) = bit0 q :=
-  rfl
-#align nnrat.coe_bit0 NNRat.coe_bit0
-
-@[simp, norm_cast]
-theorem coe_bit1 (q : ℚ≥0) : ((bit1 q : ℚ≥0) : ℚ) = bit1 q :=
-  rfl
-#align nnrat.coe_bit1 NNRat.coe_bit1
+-- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
+#noalign nnrat.coe_bit0
+#noalign nnrat.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
@@ -239,12 +233,12 @@ theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
 
 @[simp, norm_cast]
 theorem coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
-    ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x => f x) a :=
-  rfl
+    ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x => ↑(f x)) a :=
+  (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
 #align nnrat.coe_indicator NNRat.coe_indicator
 
 @[simp, norm_cast]
-theorem coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = q ^ n :=
+theorem coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
   coeHom.map_pow _ _
 #align nnrat.coe_pow NNRat.coe_pow
 
@@ -401,15 +395,9 @@ theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 #align rat.lt_to_nnrat_iff_coe_lt Rat.lt_toNNRat_iff_coe_lt
 
-@[simp]
-theorem toNNRat_bit0 (hq : 0 ≤ q) : toNNRat (bit0 q) = bit0 (toNNRat q) :=
-  toNNRat_add hq hq
-#align rat.to_nnrat_bit0 Rat.toNNRat_bit0
-
-@[simp]
-theorem toNNRat_bit1 (hq : 0 ≤ q) : toNNRat (bit1 q) = bit1 (toNNRat q) :=
-  (toNNRat_add (by simp [hq]) zero_le_one).trans <| by simp [toNNRat_one, bit1, hq]
-#align rat.to_nnrat_bit1 Rat.toNNRat_bit1
+-- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
+#noalign rat.to_nnrat_bit0
+#noalign rat.to_nnrat_bit1
 
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   cases' le_total 0 q with hq hq
@@ -436,7 +424,7 @@ theorem toNNRat_div' (hq : 0 ≤ q) : toNNRat (p / q) = toNNRat p / toNNRat q :=
 end Rat
 
 /-- The absolute value on `ℚ` as a map to `ℚ≥0`. -/
-@[pp_nodot]
+--@[pp_nodot]  -- Porting note: Commented out.
 def Rat.nnabs (x : ℚ) : ℚ≥0 :=
   ⟨abs x, abs_nonneg x⟩
 #align rat.nnabs Rat.nnabs
@@ -472,32 +460,32 @@ theorem den_coe : (q : ℚ).den = q.den :=
   rfl
 #align nnrat.denom_coe NNRat.den_coe
 
-theorem ext_num_denom (hn : p.num = q.num) (hd : p.den = q.den) : p = q :=
+theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q :=
   ext <|
     Rat.ext
       ((Int.natAbs_inj_of_nonneg_of_nonneg (Rat.num_nonneg_iff_zero_le.2 p.2) <|
             Rat.num_nonneg_iff_zero_le.2 q.2).1
         hn)
       hd
-#align nnrat.ext_num_denom NNRat.ext_num_denom
+#align nnrat.ext_num_denom NNRat.ext_num_den
 
-theorem ext_num_denom_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
+theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
   ⟨by
     rintro rfl
-    exact ⟨rfl, rfl⟩, fun h => ext_num_denom h.1 h.2⟩
-#align nnrat.ext_num_denom_iff NNRat.ext_num_denom_iff
+    exact ⟨rfl, rfl⟩, fun h => ext_num_den h.1 h.2⟩
+#align nnrat.ext_num_denom_iff NNRat.ext_num_den_iff
 
 @[simp]
-theorem num_div_denom (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
+theorem num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   ext1
   rw [coe_div, coe_nat_cast, coe_nat_cast, num, ← Int.cast_ofNat,
     Int.natAbs_of_nonneg (Rat.num_nonneg_iff_zero_le.2 q.prop)]
   exact Rat.num_div_den q
-#align nnrat.num_div_denom NNRat.num_div_denom
+#align nnrat.num_div_denom NNRat.num_div_den
 
 /-- A recursor for nonnegative rationals in terms of numerators and denominators. -/
 protected def rec {α : ℚ≥0 → Sort _} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q :=
-  (num_div_denom _).rec (h _ _)
+  (num_div_den _).rec (h _ _)
 #align nnrat.rec NNRat.rec
 
 end NNRat
