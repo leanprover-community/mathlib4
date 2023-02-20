@@ -460,13 +460,12 @@ theorem den_coe : (q : ℚ).den = q.den :=
   rfl
 #align nnrat.denom_coe NNRat.den_coe
 
-theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q :=
-  ext <|
-    Rat.ext
-      ((Int.natAbs_inj_of_nonneg_of_nonneg (Rat.num_nonneg_iff_zero_le.2 p.2) <|
-            Rat.num_nonneg_iff_zero_le.2 q.2).1
-        hn)
-      hd
+theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
+  ext
+  · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
+    exact Rat.num_nonneg_iff_zero_le.2 p.2
+    exact Rat.num_nonneg_iff_zero_le.2 q.2
+  · exact hd
 #align nnrat.ext_num_denom NNRat.ext_num_den
 
 theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
@@ -484,8 +483,9 @@ theorem num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
 #align nnrat.num_div_denom NNRat.num_div_den
 
 /-- A recursor for nonnegative rationals in terms of numerators and denominators. -/
-protected def rec {α : ℚ≥0 → Sort _} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q :=
-  (num_div_den _).rec (h _ _)
+protected def rec {α : ℚ≥0 → Sort _} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by
+  rw [← num_div_den q]
+  apply h
 #align nnrat.rec NNRat.rec
 
 end NNRat
