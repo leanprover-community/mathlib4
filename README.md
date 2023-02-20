@@ -66,7 +66,7 @@ To start a new project that uses mathlib4 as a dependency:
 
 If you already have a project and you want to use `mathlib4`, add these lines to your `lakefile.lean`:
 ```
-require mathlib4 from git
+require mathlib from git
   "https://github.com/leanprover-community/mathlib4" @ "<REVISION>"
 ```
 Where `<REVISION>` can be a commit hash, a branch or a tag. You can check [this section](https://github.com/leanprover/lake/#adding-dependencies) from Lake's README for more info.
