@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Lex
-import Mathbin.Data.Char
+import Mathlib.Data.List.Lex
+import Mathlib.Data.Char
 
 /-!
 # Strings
@@ -91,8 +91,7 @@ theorem toList_empty : "".toList = [] :=
   rfl
 #align string.to_list_empty String.toList_empty
 
-theorem asString_inv_toList (s : String) : s.toList.asString = s :=
-  by
+theorem asString_inv_toList (s : String) : s.toList.asString = s := by
   cases s
   rfl
 #align string.as_string_inv_to_list String.asString_inv_toList
@@ -112,8 +111,7 @@ theorem head_empty : "".headI = default :=
 #align string.head_empty String.head_empty
 
 @[simp]
-theorem popn_empty {n : ℕ} : "".popn n = "" :=
-  by
+theorem popn_empty {n : ℕ} : "".popn n = "" := by
   induction' n with n hn
   · rfl
   · rcases hs : "" with ⟨_ | ⟨hd, tl⟩⟩
@@ -145,8 +143,7 @@ end String
 
 open String
 
-theorem List.toList_inv_asString (l : List Char) : l.asString.toList = l :=
-  by
+theorem List.toList_inv_asString (l : List Char) : l.asString.toList = l := by
   cases hl : l.as_string
   exact StringImp.mk.inj hl.symm
 #align list.to_list_inv_as_string List.toList_inv_asString
