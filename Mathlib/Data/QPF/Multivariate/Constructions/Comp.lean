@@ -78,10 +78,10 @@ theorem get_map (x : Comp F G α) :
 #align mvqpf.comp.get_map MvQPF.Comp.get_map
 
 instance : MvQPF (Comp F G) where
-  p := MvPFunctor.comp (p F) fun i ↦ p <| G i
+  P := MvPFunctor.comp (P F) fun i ↦ P <| G i
   abs := Comp.mk ∘ (map fun i ↦ abs) ∘ abs ∘ MvPFunctor.comp.get
   repr {α} := MvPFunctor.comp.mk ∘ repr ∘
-              (map fun i ↦ (repr : G i α → (fun i : Fin2 n ↦ Obj (p (G i)) α) i)) ∘ Comp.get
+              (map fun i ↦ (repr : G i α → (fun i : Fin2 n ↦ Obj (P (G i)) α) i)) ∘ Comp.get
   abs_repr := by intros; simp only [(· ∘ ·), comp.get_mk, abs_repr, map_map,
                                     TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
   abs_map := by intros; simp only [(· ∘ ·)]; rw [← abs_map]
