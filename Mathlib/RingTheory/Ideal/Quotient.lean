@@ -8,12 +8,12 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Fin
-import Mathbin.Algebra.Ring.Prod
-import Mathbin.LinearAlgebra.Quotient
-import Mathbin.RingTheory.Congruence
-import Mathbin.RingTheory.Ideal.Basic
-import Mathbin.Tactic.FinCases
+import Mathlib.Algebra.Ring.Fin
+import Mathlib.Algebra.Ring.Prod
+import Mathlib.LinearAlgebra.Quotient
+import Mathlib.RingTheory.Congruence
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Tactic.FinCases
 
 /-!
 # Ideal quotients
@@ -149,8 +149,7 @@ instance : RingHomSurjective (mk I) :=
 /-- If `I` is an ideal of a commutative ring `R`, if `q : R → R/I` is the quotient map, and if
 `s ⊆ R` is a subset, then `q⁻¹(q(s)) = ⋃ᵢ(i + s)`, the union running over all `i ∈ I`. -/
 theorem quotient_ring_saturate (I : Ideal R) (s : Set R) :
-    mk I ⁻¹' (mk I '' s) = ⋃ x : I, (fun y => x.1 + y) '' s :=
-  by
+    mk I ⁻¹' (mk I '' s) = ⋃ x : I, (fun y => x.1 + y) '' s := by
   ext x
   simp only [mem_preimage, mem_image, mem_Union, Ideal.Quotient.eq]
   exact
@@ -170,8 +169,7 @@ instance isDomain (I : Ideal R) [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
   NoZeroDivisors.to_isDomain _
 #align ideal.quotient.is_domain Ideal.Quotient.isDomain
 
-theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime :=
-  by
+theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine'
     ⟨fun H => ⟨zero_ne_one_iff.1 _, fun x y h => _⟩, fun h =>
       by
@@ -185,8 +183,7 @@ theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime :=
 #align ideal.quotient.is_domain_iff_prime Ideal.Quotient.isDomain_iff_prime
 
 theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
-    ∀ {a : R ⧸ I}, a ≠ 0 → ∃ b : R ⧸ I, a * b = 1 :=
-  by
+    ∀ {a : R ⧸ I}, a ≠ 0 → ∃ b : R ⧸ I, a * b = 1 := by
   rintro ⟨a⟩ h
   rcases hI.exists_inv (mt eq_zero_iff_mem.2 h) with ⟨b, c, hc, abc⟩
   rw [mul_comm] at abc
@@ -215,8 +212,7 @@ protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R �
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
-theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal :=
-  by
+theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal := by
   apply Ideal.isMaximal_iff.2
   constructor
   · intro h
@@ -257,8 +253,7 @@ theorem lift_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 
 #align ideal.quotient.lift_mk Ideal.Quotient.lift_mk
 
 theorem lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
-    (hf : Function.Surjective f) : Function.Surjective (Ideal.Quotient.lift I f H) :=
-  by
+    (hf : Function.Surjective f) : Function.Surjective (Ideal.Quotient.lift I f H) := by
   intro y
   obtain ⟨x, rfl⟩ := hf y
   use Ideal.Quotient.mk I x
@@ -278,8 +273,7 @@ theorem factor_mk (S T : Ideal R) (H : S ≤ T) (x : R) : factor S T H (mk S x) 
 #align ideal.quotient.factor_mk Ideal.Quotient.factor_mk
 
 @[simp]
-theorem factor_comp_mk (S T : Ideal R) (H : S ≤ T) : (factor S T H).comp (mk S) = mk T :=
-  by
+theorem factor_comp_mk (S T : Ideal R) (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
   ext x
   rw [RingHom.comp_apply, factor_mk]
 #align ideal.quotient.factor_comp_mk Ideal.Quotient.factor_comp_mk
@@ -393,8 +387,7 @@ variable {ι : Type v}
 
 theorem exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
     (hf : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → f i ⊔ f j = ⊤) (i : ι) (his : i ∈ s) :
-    ∃ r : R, r - 1 ∈ f i ∧ ∀ j ∈ s, j ≠ i → r ∈ f j :=
-  by
+    ∃ r : R, r - 1 ∈ f i ∧ ∀ j ∈ s, j ≠ i → r ∈ f j := by
   have : ∀ j ∈ s, j ≠ i → ∃ r : R, ∃ H : r - 1 ∈ f i, r ∈ f j :=
     by
     intro j hjs hji
@@ -435,8 +428,7 @@ theorem exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
 #align ideal.exists_sub_one_mem_and_mem Ideal.exists_sub_one_mem_and_mem
 
 theorem exists_sub_mem [Finite ι] {f : ι → Ideal R} (hf : ∀ i j, i ≠ j → f i ⊔ f j = ⊤)
-    (g : ι → R) : ∃ r : R, ∀ i, r - g i ∈ f i :=
-  by
+    (g : ι → R) : ∃ r : R, ∀ i, r - g i ∈ f i := by
   cases nonempty_fintype ι
   have : ∃ φ : ι → R, (∀ i, φ i - 1 ∈ f i) ∧ ∀ i j, i ≠ j → φ i ∈ f j :=
     by
