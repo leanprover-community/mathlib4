@@ -215,7 +215,7 @@ theorem inl_injective : Function.Injective (inl R M M₂) := fun _ => by simp
 theorem inr_injective : Function.Injective (inr R M M₂) := fun _ => by simp
 #align linear_map.inr_injective LinearMap.inr_injective
 
-/-- The coprod function `λ x : M × M₂, f x.1 + g x.2` is a linear map. -/
+/-- The coprod function `x : M × M₂ ↦ f x.1 + g x.2` is a linear map. -/
 def coprod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : M × M₂ →ₗ[R] M₃ :=
   f.comp (fst _ _ _) + g.comp (snd _ _ _)
 #align linear_map.coprod LinearMap.coprod
@@ -426,7 +426,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂]
 
 variable [Module R M] [Module R M₂]
 
-/-- `LinearMap.prodMap` as an `algebra_hom` -/
+/-- `LinearMap.prodMap` as an `AlgHom` -/
 @[simps]
 def prodMapAlgHom : Module.End R M × Module.End R M₂ →ₐ[R] Module.End R (M × M₂) :=
   { prodMapRingHom R M M₂ with commutes' := fun _ => rfl }
@@ -893,10 +893,8 @@ theorem tunnelAux_injective (f : M × N →ₗ[R] M) (i : Injective f)
   (Subtype.val_injective.comp Kφ.2.symm.injective).comp i
 #align linear_map.tunnel_aux_injective LinearMap.tunnelAux_injective
 
--- Even though we have `noncomputable theory`,
--- we get an error without another `noncomputable` here.
 /-- Auxiliary definition for `tunnel`. -/
-noncomputable def tunnel' (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → ΣK : Submodule R M, K ≃ₗ[R] M
+def tunnel' (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → ΣK : Submodule R M, K ≃ₗ[R] M
   | 0 => ⟨⊤, LinearEquiv.ofTop ⊤ rfl⟩
   | n + 1 =>
     ⟨(Submodule.fst R M N).map (tunnelAux f (tunnel' f i n)),
