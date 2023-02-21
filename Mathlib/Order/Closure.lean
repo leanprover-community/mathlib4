@@ -151,7 +151,7 @@ theorem closure_le_mk₃_iff {f : α → α} {p : α → Prop} {hf : ∀ x, x �
   hmin hxy hy
 #align closure_operator.closure_le_mk₃_iff ClosureOperator.closure_le_mk₃_iff
 
--- @[mono] Porting note: `mono` not yet implemented
+@[mono]
 theorem monotone : Monotone c :=
   c.monotone'
 #align closure_operator.monotone ClosureOperator.monotone
@@ -349,7 +349,7 @@ theorem ext : ∀ l₁ l₂ : LowerAdjoint u, (l₁ : α → β) = (l₂ : α �
     congr
 #align lower_adjoint.ext LowerAdjoint.ext
 
---@[mono] Porting note: `mono` is not implemented yet
+@[mono]
 theorem monotone : Monotone (u ∘ l) :=
   l.gc.monotone_u.comp l.gc.monotone_l
 #align lower_adjoint.monotone LowerAdjoint.monotone
