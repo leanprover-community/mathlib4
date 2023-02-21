@@ -34,17 +34,6 @@ and take a fixed point again.
 For `F` a `QPF`, we define `Fix F α` in terms of the W-type of the polynomial functor `P` of `F`.
 We define the relation `WEquiv` and take its quotient as the definition of `Fix F α`.
 
-```lean
-inductive Wequiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
-| ind (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f₀ f₁ : q.P.last.B a → q.P.W α) :
-    (∀ x, Wequiv (f₀ x) (f₁ x)) → Wequiv (q.P.W_mk a f' f₀) (q.P.W_mk a f' f₁)
-| abs (a₀ : q.P.A) (f'₀ : q.P.drop.B a₀ ⟹ α) (f₀ : q.P.last.B a₀ → q.P.W α)
-      (a₁ : q.P.A) (f'₁ : q.P.drop.B a₁ ⟹ α) (f₁ : q.P.last.B a₁ → q.P.W α) :
-      abs ⟨a₀, q.P.append_contents f'₀ f₀⟩ = abs ⟨a₁, q.P.append_contents f'₁ f₁⟩ →
-        Wequiv (q.P.W_mk a₀ f'₀ f₀) (q.P.W_mk a₁ f'₁ f₁)
-| trans (u v w : q.P.W α) : Wequiv u v → Wequiv v w → Wequiv u w
-```
-
 See [avigad-carneiro-hudon2019] for more details.
 
 ## Reference
