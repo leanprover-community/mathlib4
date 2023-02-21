@@ -57,26 +57,28 @@ variable {ι R R' E F G : Type _}
 
 /-- A seminorm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 subadditive and such that `f (-x) = f x` for all `x`. -/
---@[protect_proj]
-structure AddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G ℝ where
+structure AddGroupSeminorm (G : Type _) [AddGroup G] where
+  protected toFun : G → ℝ
+  protected map_zero' : toFun 0 = 0
   protected add_le' : ∀ r s, toFun (r + s) ≤ toFun r + toFun s
   protected neg' : ∀ r, toFun (-r) = toFun r
 #align add_group_seminorm AddGroupSeminorm
 
 /-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` for all `x`. -/
-@[to_additive]
-structure GroupSeminorm (G : Type _) [Group G] extends OneHom G ℝ where
-  mul_le' : ∀ x y, toFun (x * y) ≤ toFun x + toFun y
-  inv' : ∀ x, toFun x⁻¹ = toFun x
+@[to_additive] -- porting note: @[to_additive] is broken here because of new structures.
+structure GroupSeminorm (G : Type _) [Group G] where
+  protected toFun : G → ℝ
+  protected map_one' : toFun 1 = 0
+  protected mul_le' : ∀ x y, toFun (x * y) ≤ toFun x + toFun y
+  protected inv' : ∀ x, toFun x⁻¹ = toFun x
 #align group_seminorm GroupSeminorm
 
 /-- A nonarchimedean seminorm on an additive group `G` is a function `f : G → ℝ` that preserves
 zero, is nonarchimedean and such that `f (-x) = f x` for all `x`. -/
-@[protect_proj]
 structure NonarchAddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G ℝ where
-  add_le_max' : ∀ r s, toFun (r + s) ≤ max (toFun r) (toFun s)
-  neg' : ∀ r, toFun (-r) = toFun r
+  protected add_le_max' : ∀ r s, toFun (r + s) ≤ max (toFun r) (toFun s)
+  protected neg' : ∀ r, toFun (-r) = toFun r
 #align nonarch_add_group_seminorm NonarchAddGroupSeminorm
 
 /-! NOTE: We do not define `nonarch_add_group_seminorm` as an extension of `add_group_seminorm`
@@ -86,57 +88,49 @@ structure NonarchAddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G �
 
 /-- A norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is subadditive
 and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
-@[protect_proj]
 structure AddGroupNorm (G : Type _) [AddGroup G] extends AddGroupSeminorm G where
-  eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
+  protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 #align add_group_norm AddGroupNorm
 
 /-- A seminorm on a group `G` is a function `f : G → ℝ` that sends one to zero, is submultiplicative
 and such that `f x⁻¹ = f x` and `f x = 0 → x = 1` for all `x`. -/
-@[protect_proj, to_additive]
+@[to_additive]
 structure GroupNorm (G : Type _) [Group G] extends GroupSeminorm G where
-  eq_one_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 1
+  protected eq_one_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 1
 #align group_norm GroupNorm
-#align add_group_norm AddGroupNorm
 
 /-- A nonarchimedean norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 nonarchimedean and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
-@[protect_proj]
 structure NonarchAddGroupNorm (G : Type _) [AddGroup G] extends NonarchAddGroupSeminorm G where
-  eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
+  protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 #align nonarch_add_group_norm NonarchAddGroupNorm
 
-attribute [nolint doc_blame]
-  AddGroupSeminorm.toZeroHom AddGroupNorm.toAddGroupSeminorm GroupNorm.toGroupSeminorm NonarchAddGroupSeminorm.toZeroHom NonarchAddGroupNorm.toNonarchAddGroupSeminorm
-
-attribute [to_additive] GroupNorm.toGroupSeminorm
+-- should we deal with this?
+attribute [nolint docBlame]
+  AddGroupSeminorm.toFun AddGroupNorm.toAddGroupSeminorm GroupNorm.toGroupSeminorm NonarchAddGroupSeminorm.toZeroHom NonarchAddGroupNorm.toNonarchAddGroupSeminorm
 
 /-- `nonarch_add_group_seminorm_class F α` states that `F` is a type of nonarchimedean seminorms on
 the additive group `α`.
 
 You should extend this class when you extend `nonarch_add_group_seminorm`. -/
-@[protect_proj]
 class NonarchAddGroupSeminormClass (F : Type _) (α : outParam <| Type _) [AddGroup α] extends
   NonarchimedeanHomClass F α ℝ where
-  map_zero (f : F) : f 0 = 0
-  map_neg_eq_map' (f : F) (a : α) : f (-a) = f a
+  protected map_zero (f : F) : f 0 = 0
+  protected map_neg_eq_map' (f : F) (a : α) : f (-a) = f a
 #align nonarch_add_group_seminorm_class NonarchAddGroupSeminormClass
 
 /-- `nonarch_add_group_norm_class F α` states that `F` is a type of nonarchimedean norms on the
 additive group `α`.
 
 You should extend this class when you extend `nonarch_add_group_norm`. -/
-@[protect_proj]
 class NonarchAddGroupNormClass (F : Type _) (α : outParam <| Type _) [AddGroup α] extends
   NonarchAddGroupSeminormClass F α where
-  eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
+  protected eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 #align nonarch_add_group_norm_class NonarchAddGroupNormClass
 
 section NonarchAddGroupSeminormClass
 
 variable [AddGroup E] [NonarchAddGroupSeminormClass F E] (f : F) (x y : E)
-
-include E
 
 theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
   rw [sub_eq_add_neg, ← NonarchAddGroupSeminormClass.map_neg_eq_map' f y]
@@ -148,9 +142,7 @@ end NonarchAddGroupSeminormClass
 -- See note [lower instance priority]
 instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass [AddGroup E]
     [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
-  {
-    ‹NonarchAddGroupSeminormClass F
-        E› with
+  { ‹NonarchAddGroupSeminormClass F E› with
     map_add_le_add := fun f x y =>
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
         intro a
@@ -184,26 +176,26 @@ variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
     where
   coe f := f.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by cases f; cases g; congr
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
 #align group_seminorm.group_seminorm_class GroupSeminorm.groupSeminormClass
-#align add_group_seminorm.add_group_seminorm_class AddGroupSeminorm.add_group_seminorm_class
+#align add_group_seminorm.add_group_seminorm_class AddGroupSeminorm.addGroupSeminormClass
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`. -/
 @[to_additive
       "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_toFun`. "]
 instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ :=
-  ⟨GroupSeminorm.toFun⟩
+  ⟨FunLike.coe⟩
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem toFun_eq_coe : p.toFun = p :=
   rfl
-#align group_seminorm.toFun_eq_coe GroupSeminorm.toFun_eq_coe
-#align add_group_seminorm.toFun_eq_coe AddGroupSeminorm.toFun_eq_coe
+#align group_seminorm.to_fun_eq_coe GroupSeminorm.toFun_eq_coe
+#align add_group_seminorm.to_fun_eq_coe AddGroupSeminorm.toFun_eq_coe
 
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 theorem ext : (∀ x, p x = q x) → p = q :=
   FunLike.ext p q
 #align group_seminorm.ext GroupSeminorm.ext
@@ -225,13 +217,13 @@ theorem lt_def : p < q ↔ (p : E → ℝ) < q :=
 #align group_seminorm.lt_def GroupSeminorm.lt_def
 #align add_group_seminorm.lt_def AddGroupSeminorm.lt_def
 
-@[simp, to_additive, norm_cast]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_le_coe : (p : E → ℝ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align group_seminorm.coe_le_coe GroupSeminorm.coe_le_coe
 #align add_group_seminorm.coe_le_coe AddGroupSeminorm.coe_le_coe
 
-@[simp, to_additive, norm_cast]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 #align group_seminorm.coe_lt_coe GroupSeminorm.coe_lt_coe
@@ -239,20 +231,28 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 
 variable (p q) (f : F →* E)
 
+-- porting note: I didn't understand the `to_additive` error so I justed added this
+-- instance manually
+instance _root_.AddGroupSeminorm.zero [AddGroup E] : Zero (AddGroupSeminorm E) :=
+  ⟨{  toFun := 0
+      map_zero' := Pi.zero_apply _
+      add_le' := fun _ _ => (zero_add _).ge
+      neg' := fun _ => rfl }⟩
+
 @[to_additive]
-instance : Zero (GroupSeminorm E) :=
+instance zero : Zero (GroupSeminorm E) :=
   ⟨{  toFun := 0
       map_one' := Pi.zero_apply _
       mul_le' := fun _ _ => (zero_add _).ge
-      inv' := fun x => rfl }⟩
+      inv' := fun _ => rfl }⟩
 
-@[simp, to_additive, norm_cast]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_zero : ⇑(0 : GroupSeminorm E) = 0 :=
   rfl
 #align group_seminorm.coe_zero GroupSeminorm.coe_zero
 #align add_group_seminorm.coe_zero AddGroupSeminorm.coe_zero
 
-@[simp, to_additive]
+@[to_additive (attr := simp)]
 theorem zero_apply (x : E) : (0 : GroupSeminorm E) x = 0 :=
   rfl
 #align group_seminorm.zero_apply GroupSeminorm.zero_apply
@@ -266,7 +266,7 @@ instance : Inhabited (GroupSeminorm E) :=
 instance : Add (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := fun x => p x + q x
-      map_one' := by rw [map_one_eq_zero p, map_one_eq_zero q, zero_add]
+      map_one' := by simp_rw [map_one_eq_zero p, map_one_eq_zero q, zero_add]
       mul_le' := fun _ _ =>
         (add_le_add (map_mul_le_add p _ _) <| map_mul_le_add q _ _).trans_eq <|
           add_add_add_comm _ _ _ _
