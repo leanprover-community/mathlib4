@@ -152,6 +152,7 @@ def UniformFun (α β : Type _) :=
 
 /-- The type of functions from `α` to `β` equipped with the uniform structure and topology of
 uniform convergence on some family `𝔖` of subsets of `α`. We denote it `α →ᵤ[𝔖] β`. -/
+@[nolint unusedArguments]
 def UniformOnFun (α β : Type _) (_ : Set (Set α)) :=
   α → β
 #align uniform_on_fun UniformOnFun
@@ -747,12 +748,12 @@ protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
   cases i <;> rfl
 #align uniform_on_fun.inf_eq UniformOnFun.inf_eq
 
-/-- If `u` is a uniform structures on `β` and `f : γ → β`, then
+/-- If `u` is a uniform structure on `β` and `f : γ → β`, then
 `𝒱(α, γ, 𝔖, comap f u) = comap (λ g, f ∘ g) 𝒱(α, γ, 𝔖, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
     𝒱(α, γ, 𝔖, ‹UniformSpace β›.comap f) = 𝒱(α, β, 𝔖, _).comap ((· ∘ ·) f) := by
   -- We reduce this to `uniform_convergence.comap_eq` using the fact that `comap` distributes
-  -- on `infi`.
+  -- on `infᵢ`.
   simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_infᵢ, UniformFun.comap_eq, ←
     UniformSpace.comap_comap]
   rfl
@@ -889,57 +890,52 @@ protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β}
 isomorphism between `α →ᵤ[𝔖] β × γ` and `(α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] γ)`. -/
 protected def uniformEquivProdArrow [UniformSpace γ] :
     (α →ᵤ[𝔖] β × γ) ≃ᵤ (α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] γ) :=
-  ((-- Denote `φ` this bijection. We want to show that
-    -- `comap φ (𝒱(α, β, 𝔖, uβ) × 𝒱(α, γ, 𝔖, uγ)) = 𝒱(α, β × γ, 𝔖, uβ × uγ)`.
-    -- But `uβ × uγ` is defined as `comap fst uβ ⊓ comap snd uγ`, so we just have to apply
-    -- `uniform_convergence_on.inf_eq` and `uniform_convergence_on.comap_eq`,
-    -- which leaves us to check that some square commutes.
-    -- We could also deduce this from `uniform_convergence.uniform_equiv_prod_arrow`,
-    -- but it turns out to be more annoying.
-    UniformOnFun.ofFun 𝔖).symm.trans <|
-      (Equiv.arrowProdEquivProdArrow _ _ _).trans <|
-        (UniformOnFun.ofFun 𝔖).prodCongr (UniformOnFun.ofFun 𝔖)).toUniformEquivOfUniformInducing
-    (by
+  -- Denote `φ` this bijection. We want to show that
+  -- `comap φ (𝒱(α, β, 𝔖, uβ) × 𝒱(α, γ, 𝔖, uγ)) = 𝒱(α, β × γ, 𝔖, uβ × uγ)`.
+  -- But `uβ × uγ` is defined as `comap fst uβ ⊓ comap snd uγ`, so we just have to apply
+  -- `uniform_convergence_on.inf_eq` and `uniform_convergence_on.comap_eq`,
+  -- which leaves us to check that some square commutes.
+  -- We could also deduce this from `uniform_convergence.uniform_equiv_prod_arrow`,
+  -- but it turns out to be more annoying.
+  ((UniformOnFun.ofFun 𝔖).symm.trans <|
+    (Equiv.arrowProdEquivProdArrow _ _ _).trans <|
+      (UniformOnFun.ofFun 𝔖).prodCongr (UniformOnFun.ofFun 𝔖)).toUniformEquivOfUniformInducing $ by
       constructor
       rw [uniformity_prod, comap_inf, comap_comap, comap_comap]
-      unfold instUniformSpaceProd
-      have H := @UniformFun.inf_eq α (β × γ)
+      have H := @UniformOnFun.inf_eq α (β × γ) 𝔖
         (UniformSpace.comap Prod.fst ‹_›) (UniformSpace.comap Prod.snd ‹_›)
-      rw [UniformFun.comap_eq, UniformFun.comap_eq] at H
       apply_fun (fun u ↦ @uniformity (α →ᵤ[𝔖] β × γ) u) at H
       convert H.symm using 1
-      rw [inf_uniformity]
-      rw [UniformOnFun.comap_eq, UniformOnFun.comap_eq, uniformity_comap]
-      rw [uniformity_comap]
-      rfl)
+      rw [UniformOnFun.comap_eq, UniformOnFun.comap_eq]
+      erw [inf_uniformity]
+      rw [uniformity_comap, uniformity_comap]
+      rfl
 #align uniform_on_fun.uniform_equiv_prod_arrow UniformOnFun.uniformEquivProdArrow
 
 -- the relevant diagram commutes by definition
 variable (𝔖) (δ : ι → Type _) [∀ i, UniformSpace (δ i)]
 
-#exit
-
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/
-protected def uniformEquivPiComm : (α →ᵤ[𝔖] ∀ i, δ i) ≃ᵤ ∀ i, α →ᵤ[𝔖] δ i :=
-  (-- Denote `φ` this bijection. We want to show that
+protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((i:ι) → α →ᵤ[𝔖] δ i) :=
+  -- Denote `φ` this bijection. We want to show that
   -- `comap φ (Π i, 𝒱(α, δ i, 𝔖, uδ i)) = 𝒱(α, (Π i, δ i), 𝔖, (Π i, uδ i))`.
   -- But `Π i, uδ i` is defined as `⨅ i, comap (eval i) (uδ i)`, so we just have to apply
   -- `uniform_convergence_on.infi_eq` and `uniform_convergence_on.comap_eq`,
   -- which leaves us to check that some square commutes.
   -- We could also deduce this from `uniform_convergence.uniform_equiv_Pi_comm`, but it turns out
   -- to be more annoying.
-        Equiv.piComm
-        _).toUniformEquivOfUniformInducing
-    (by
-      constructor
-      change comap (Prod.map Function.swap Function.swap) _ = _
-      rw [← uniformity_comap]
-      congr
-      rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
-        UniformSpace.ofCoreEq_toCore, UniformSpace.comap_infᵢ, UniformOnFun.infᵢ_eq]
-      refine' infᵢ_congr fun i => _
-      rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq])
+  @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i:ι) → δ i)) ((i:ι) → α →ᵤ[𝔖] δ i)
+      _ _ (Equiv.piComm _) $ by
+    constructor
+    change comap (Prod.map Function.swap Function.swap) _ = _
+    erw [← uniformity_comap]
+    congr
+    rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
+      UniformSpace.ofCoreEq_toCore, UniformSpace.comap_infᵢ, UniformOnFun.infᵢ_eq]
+    refine' infᵢ_congr fun i => _
+    rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq]
+    rfl
 #align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm
 
 -- Like in the previous lemma, the diagram actually commutes by definition
