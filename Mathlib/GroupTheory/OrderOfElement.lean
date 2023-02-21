@@ -912,15 +912,15 @@ open QuotientGroup
 theorem orderOf_dvd_card_univ : orderOf x ∣ Fintype.card G := by
   classical
     have ft_prod : Fintype ((G ⧸ zpowers x) × zpowers x) :=
-      Fintype.ofEquiv G group_equiv_quotient_times_subgroup
+      Fintype.ofEquiv G groupEquivQuotientProdSubgroup
     have ft_s : Fintype (zpowers x) := @Fintype.prodRight _ _ _ ft_prod _
     have ft_cosets : Fintype (G ⧸ zpowers x) :=
       @Fintype.prodLeft _ _ _ ft_prod ⟨⟨1, (zpowers x).one_mem⟩⟩
     have eq₁ : Fintype.card G = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
       calc
         Fintype.card G = @Fintype.card _ ft_prod :=
-          @Fintype.card_congr _ _ _ ft_prod group_equiv_quotient_times_subgroup
-        _ = @Fintype.card _ (@Prod.fintype _ _ ft_cosets ft_s) :=
+          @Fintype.card_congr _ _ _ ft_prod groupEquivQuotientProdSubgroup
+        _ = @Fintype.card _ (@instFintypeProd _ _ ft_cosets ft_s) :=
           congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
         _ = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
           @Fintype.card_prod _ _ ft_cosets ft_s
@@ -981,10 +981,12 @@ noncomputable def powCoprime {G : Type _} [Group G] (h : (Nat.card G).coprime n)
   invFun g := g ^ (Nat.card G).gcdB n
   left_inv g := by
     have key := congr_arg ((· ^ ·) g) ((Nat.card G).gcd_eq_gcd_ab n)
+    dsimp only at key
     rwa [zpow_add, zpow_mul, zpow_mul, zpow_ofNat, zpow_ofNat, zpow_ofNat, h.gcd_eq_one, pow_one,
       pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
   right_inv g := by
     have key := congr_arg ((· ^ ·) g) ((Nat.card G).gcd_eq_gcd_ab n)
+    dsimp only at key
     rwa [zpow_add, zpow_mul, zpow_mul', zpow_ofNat, zpow_ofNat, zpow_ofNat, h.gcd_eq_one, pow_one,
       pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
 #align pow_coprime powCoprime
@@ -1044,7 +1046,7 @@ section PowIsSubgroup
 def submonoidOfIdempotent {M : Type _} [LeftCancelMonoid M] [Fintype M] (S : Set M)
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
   have pow_mem : ∀ a : M, a ∈ S → ∀ n : ℕ, a ^ (n + 1) ∈ S := fun a ha =>
-    Nat.rec (by rwa [zero_add, pow_one]) fun n ih =>
+    Nat.rec (by rwa [Nat.zero_eq, zero_add, pow_one]) fun n ih =>
       (congr_arg₂ (· ∈ ·) (pow_succ a (n + 1)).symm hS2).mp (Set.mul_mem_mul ha ih)
   { carrier := S
     one_mem' := by
@@ -1071,17 +1073,15 @@ def subgroupOfIdempotent {G : Type _} [Group G] [Fintype G] (S : Set G) (hS1 : S
 @[to_additive smulCardAddSubgroup "If `S` is a nonempty subset of a finite add group `G`,
 then `|G| • S` is a subgroup", simps!]
 def powCardSubgroup {G : Type _} [Group G] [Fintype G] (S : Set G) (hS : S.Nonempty) : Subgroup G :=
-  have one_mem : (1 : G) ∈ S ^ Fintype.card G :=
-    by
+  have one_mem : (1 : G) ∈ S ^ Fintype.card G := by
     obtain ⟨a, ha⟩ := hS
     rw [← pow_card_eq_one]
     exact Set.pow_mem_pow ha (Fintype.card G)
-  subgroupOfIdempotent (S ^ Fintype.card G) ⟨1, one_mem⟩
-    (by
-      classical!
-      refine' (Set.eq_of_subset_of_card_le (Set.subset_mul_left _ one_mem) (ge_of_eq _)).symm
-      simp_rw [← pow_add, Group.card_pow_eq_card_pow_card_univ S (Fintype.card G) le_rfl,
-        Group.card_pow_eq_card_pow_card_univ S (Fintype.card G + Fintype.card G) le_add_self])
+  subgroupOfIdempotent (S ^ Fintype.card G) ⟨1, one_mem⟩ $ by
+    classical!
+    apply (Set.eq_of_subset_of_card_le (Set.subset_mul_left _ one_mem) (ge_of_eq _)).symm
+    simp_rw [← pow_add, Group.card_pow_eq_card_pow_card_univ S (Fintype.card G) le_rfl,
+        Group.card_pow_eq_card_pow_card_univ S (Fintype.card G + Fintype.card G) le_add_self]
 #align pow_card_subgroup powCardSubgroup
 #align smul_card_add_subgroup smulCardAddSubgroup
 
