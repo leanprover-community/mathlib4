@@ -361,7 +361,7 @@ theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m :=
   (pow_one a).symm.trans_le (pow_le_pow ha <| pos_iff_ne_zero.mpr h)
 #align le_self_pow le_self_pow
 
--- Porting note: removed @[mono], not implemented yet.
+@[mono]
 theorem pow_le_pow_of_le_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i := by
   intro i
   induction i with
