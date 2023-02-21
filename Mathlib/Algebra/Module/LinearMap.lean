@@ -557,8 +557,6 @@ infixr:80 " ∘ₗ " =>
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     RingHomCompTriple.ids
 
-include σ₁₃
-
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
 #align linear_map.comp_apply LinearMap.comp_apply

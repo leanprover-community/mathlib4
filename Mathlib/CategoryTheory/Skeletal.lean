@@ -221,16 +221,16 @@ def map₂ (F : C ⥤ D ⥤ E) : ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkele
             => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY => homOfLE (hY.le.elim fun g => ?_)
           exact ⟨(F.obj X).map g⟩ -- Porting note: cannot infer type if condensed to a term 
     }
-  map {x₁} {x₂} := by sorry 
+  map {x₁} {x₂} :=  
     -- refine Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f => ?_
     -- dsimp 
     -- exact { app := sorry }
-    -- Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
-      -- {
-        -- app := fun y =>
-          -- Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }
+    Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
+      {
+        app := fun y =>
+          Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }
 #align category_theory.thin_skeleton.map₂ CategoryTheory.ThinSkeleton.map₂
-
+#exit 
 variable (C)
 
 section
