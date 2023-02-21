@@ -1,6 +1,8 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Basic
@@ -220,6 +222,7 @@ import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Bicategory.Basic
@@ -228,10 +231,12 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.RelCat
+import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Core
+import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
@@ -259,6 +264,7 @@ import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Sigma.Basic
+import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Whiskering
@@ -268,6 +274,7 @@ import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.Composition
 import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Partition
 import Mathlib.Combinatorics.Pigeonhole
@@ -312,6 +319,7 @@ import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
 import Mathlib.Data.Analysis.Filter
+import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
@@ -593,8 +601,10 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Prod.TProd
 import Mathlib.Data.QPF.Multivariate.Basic
+import Mathlib.Data.QPF.Multivariate.Constructions.Comp
 import Mathlib.Data.QPF.Multivariate.Constructions.Const
 import Mathlib.Data.Qpf.Multivariate.Constructions.Fix
+import Mathlib.Data.QPF.Multivariate.Constructions.Prj
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.BigOperators
@@ -605,6 +615,7 @@ import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Rat.Floor
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Lemmas
+import Mathlib.Data.Rat.NNRat
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Real.Basic
@@ -694,6 +705,7 @@ import Mathlib.Data.W.Constructions
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
+import Mathlib.Deprecated.Subfield
 import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Submonoid
 import Mathlib.Deprecated.Subring
@@ -816,8 +828,10 @@ import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Basic
+import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Logic.Basic
@@ -976,6 +990,7 @@ import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Fintype
+import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
@@ -991,6 +1006,7 @@ import Mathlib.SetTheory.Lists
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.SetTheory.Ordinal.Exponential
+import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.NaturalOps
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.Tactic.Abel
