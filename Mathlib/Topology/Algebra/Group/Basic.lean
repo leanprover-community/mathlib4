@@ -862,12 +862,12 @@ theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
 
 /-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`) from a
 topological group to a topological monoid is continuous provided that it is continuous at one. See
-also `uniform_continuous_of_continuous_at_one`. -/
+also `uniform_continuous_of_continuousAt_one`. -/
 @[to_additive
   "An additive monoid homomorphism (a bundled morphism of a type that implements
   `AddMonoidHomClass`) from an additive topological group to an additive topological monoid is
   continuous provided that it is continuous at zero. See also
-  `uniform_continuous_of_continuous_at_zero`."]
+  `uniform_continuous_of_continuousAt_zero`."]
 theorem continuous_of_continuousAt_one {M hom : Type _} [MulOneClass M] [TopologicalSpace M]
     [ContinuousMul M] [MonoidHomClass hom G M] (f : hom) (hf : ContinuousAt f 1) :
     Continuous f :=
