@@ -211,7 +211,7 @@ instance : HasInf (Submodule R M) :=
       add_mem' := by simp (config := { contextual := true }) [add_mem]
       smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
 
-instance : CompleteLattice (Submodule R M) :=
+instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with
     sup := fun a b ↦ infₛ { x | a ≤ x ∧ b ≤ x }
@@ -226,6 +226,7 @@ instance : CompleteLattice (Submodule R M) :=
     supₛ_le := fun _ _ hs ↦ infₛ_le' hs
     le_infₛ := fun _ _ ↦ le_infₛ'
     infₛ_le := fun _ _ ↦ infₛ_le' }
+#align submodule.complete_lattice Submodule.completeLattice
 
 @[simp]
 theorem inf_coe : ↑(p ⊓ q) = (p ∩ q : Set M) :=
