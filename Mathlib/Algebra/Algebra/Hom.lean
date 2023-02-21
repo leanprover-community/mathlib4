@@ -133,7 +133,7 @@ instance coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
   ⟨AlgHom.toRingHom⟩
 #align alg_hom.coe_ring_hom AlgHom.coeOutRingHom
 
--- Porting note: The new definition for an notaion `↑`.
+-- Porting note: A new definition underlying a coercion `↑`.
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
@@ -141,7 +141,7 @@ instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 #align alg_hom.coe_monoid_hom AlgHom.coeOutMonoidHom
 
--- Porting note: The new definition for an notaion `↑`.
+-- Porting note: A new definition underlying a coercion `↑`.
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
