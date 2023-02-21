@@ -39,13 +39,13 @@ attribute [nolint simpNF] star_map_down_down
 variable {C}
 
 /-- Any two functors to `Discrete PUnit` are isomorphic. -/
-@[simps!] -- Porting note: simp can simplify all generated decls
+@[simps!] 
 def pUnitExt (F G : C ⥤ Discrete PUnit) : F ≅ G := by
   refine NatIso.ofComponents (fun X => eqToIso ?_) fun {X} {Y} f => ?_
   · simp only [eq_iff_true_of_subsingleton]
   · aesop_cat 
 #align category_theory.functor.punit_ext CategoryTheory.Functor.pUnitExt
--- Porting note: simp can simplify these
+-- Porting note: simp does indeed fire for these despite the linter warning 
 attribute [nolint simpNF] pUnitExt_hom_app_down_down pUnitExt_inv_app_down_down 
 
 /-- Any two functors to `Discrete PUnit` are *equal*.
