@@ -748,7 +748,7 @@ variable {R L M N P}
 -- Porting note: Added this coe attribute
 attribute [coe] LieModuleHom.toLinearMap
 
-instance : Coe (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
+instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
 /-- see Note [function coercion] -/
@@ -1021,7 +1021,7 @@ def toEquiv (e : M ≃ₗ⁅R,L⁆ N) : M ≃ N :=
   { e with }
 #align lie_module_equiv.to_equiv LieModuleEquiv.toEquiv
 
-instance hasCoeToEquiv : Coe (M ≃ₗ⁅R,L⁆ N) (M ≃ N) :=
+instance hasCoeToEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ N) :=
   ⟨toEquiv⟩
 #align lie_module_equiv.has_coe_to_equiv LieModuleEquiv.hasCoeToEquiv
 
@@ -1029,7 +1029,7 @@ instance hasCoeToLieModuleHom : Coe (M ≃ₗ⁅R,L⁆ N) (M →ₗ⁅R,L⁆ N) 
   ⟨toLieModuleHom⟩
 #align lie_module_equiv.has_coe_to_lie_module_hom LieModuleEquiv.hasCoeToLieModuleHom
 
-instance hasCoeToLinearEquiv : Coe (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) :=
+instance hasCoeToLinearEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) :=
   ⟨toLinearEquiv⟩
 #align lie_module_equiv.has_coe_to_linear_equiv LieModuleEquiv.hasCoeToLinearEquiv
 
@@ -1042,8 +1042,8 @@ theorem injective (e : M ≃ₗ⁅R,L⁆ N) : Function.Injective e :=
 #align lie_module_equiv.injective LieModuleEquiv.injective
 
 @[simp]
-theorem toEquiv_mk (f : M →ₗ⁅R, L⁆ N) (g : N → M) (h₁ h₂) :
-  (mk f g h₁ h₂ : M ≃ N) = Equiv.mk f g h₁ h₂ :=
+theorem toEquiv_mk (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ h₂) :
+  toEquiv (mk f g h₁ h₂ : M ≃ₗ⁅R,L⁆ N) = Equiv.mk f g h₁ h₂ :=
   rfl
 
 @[simp]
