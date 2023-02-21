@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.DiscreteCategory
 /-!
 # The category `Discrete PUnit`
 
-We define `star : C ⥤ Discrete PUnit` sending everything to `Punit.star`,
+We define `star : C ⥤ Discrete PUnit` sending everything to `PUnit.star`,
 show that any two functors to `Discrete PUnit` are naturally isomorphic,
 and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 -/
