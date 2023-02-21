@@ -117,7 +117,7 @@ theorem recF_eq_of_wequiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) 
 set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_wequiv
 
-theorem WEquiv.abs' {α : TypeVec n} (x y : q.P.W α) (h : abs (q.P.wDest' x ) = abs (q.P.wDest' y)) :
+theorem WEquiv.abs' {α : TypeVec n} (x y : q.P.W α) (h : MvQPF.abs (q.P.wDest' x ) = MvQPF.abs (q.P.wDest' y)) :
     WEquiv x y := by
   revert h
   apply q.P.w_cases _ x
@@ -159,7 +159,7 @@ theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
   apply q.P.w_ind _ x; intro a f' f ih
   apply WEquiv.trans _ (q.P.wMk' (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))
   · apply WEquiv.abs'
-    rw [Wrepr_W_mk, q.P.W_dest'_W_mk', q.P.W_dest'_W_mk', abs_repr]
+    rw [wrepr_wMk, q.P.wDest'_wMk', q.P.wDest'_wMk', abs_repr]
   rw [q.P.map_eq, MvPFunctor.wMk', appendFun_comp_splitFun, id_comp]
   apply WEquiv.ind; exact ih
 set_option linter.uppercaseLean3 false in
@@ -259,9 +259,9 @@ theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a →
     rw [MvPFunctor.wDest'_wMk', abs_map, abs_repr, ← abs_map, MvPFunctor.map_eq]
     conv =>
       rhs
-      rw [Wrepr_W_mk, q.P.W_dest'_W_mk', abs_repr, MvPFunctor.map_eq]
+      rw [wrepr_wMk, q.P.wDest'_wMk', abs_repr, MvPFunctor.map_eq]
     congr 2; rw [MvPFunctor.appendContents, MvPFunctor.appendContents]
-    rw [append_fun, append_fun, ← split_fun_comp, ← split_fun_comp]
+    rw [appendFun, appendFun, ← splitFun_comp, ← splitFun_comp]
     rfl
   rw [this]
   apply Quot.sound
