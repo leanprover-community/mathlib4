@@ -36,7 +36,7 @@ For `F` a QPF`, we define `fix F α` in terms of the W-type of the polynomial fu
 We define the relation `Wequiv` and take its quotient as the definition of `fix F α`.
 
 ```lean
-inductive Wequiv {α : typevec n} : q.P.W α → q.P.W α → Prop
+inductive Wequiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
 | ind (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f₀ f₁ : q.P.last.B a → q.P.W α) :
     (∀ x, Wequiv (f₀ x) (f₁ x)) → Wequiv (q.P.W_mk a f' f₀) (q.P.W_mk a f' f₁)
 | abs (a₀ : q.P.A) (f'₀ : q.P.drop.B a₀ ⟹ α) (f₀ : q.P.last.B a₀ → q.P.W α)
@@ -212,7 +212,6 @@ instance Fix.mvfunctor : MvFunctor (Fix F) where map := @Fix.map _ _ _ _
 
 variable {α : TypeVec.{u} n}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Recursor for `fix F` -/
 def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
   Quot.lift (recF g) (recF_eq_of_wequiv α g)
