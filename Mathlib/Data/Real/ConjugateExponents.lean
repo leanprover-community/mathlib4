@@ -8,7 +8,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Ennreal
+import Mathlib.Data.Real.Ennreal
 
 /-!
 # Real conjugate exponents
@@ -82,8 +82,7 @@ theorem one_div_ne_zero : 1 / p ≠ 0 :=
   ne_of_gt h.one_div_pos
 #align real.is_conjugate_exponent.one_div_ne_zero Real.IsConjugateExponent.one_div_ne_zero
 
-theorem conj_eq : q = p / (p - 1) :=
-  by
+theorem conj_eq : q = p / (p - 1) := by
   have := h.inv_add_inv_conj
   rw [← eq_sub_iff_add_eq', one_div, inv_eq_iff_inv_eq] at this
   field_simp [← this, h.ne_zero]
@@ -109,14 +108,12 @@ protected theorem symm : q.IsConjugateExponent p :=
     inv_add_inv_conj := by simpa [add_comm] using h.inv_add_inv_conj }
 #align real.is_conjugate_exponent.symm Real.IsConjugateExponent.symm
 
-theorem div_conj_eq_sub_one : p / q = p - 1 :=
-  by
+theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
   rw [h.sub_one_mul_conj]
 #align real.is_conjugate_exponent.div_conj_eq_sub_one Real.IsConjugateExponent.div_conj_eq_sub_one
 
-theorem one_lt_nNReal : 1 < Real.toNNReal p :=
-  by
+theorem one_lt_nNReal : 1 < Real.toNNReal p := by
   rw [← Real.toNNReal_one, Real.toNNReal_lt_toNNReal_iff h.pos]
   exact h.one_lt
 #align real.is_conjugate_exponent.one_lt_nnreal Real.IsConjugateExponent.one_lt_nNReal
