@@ -57,7 +57,7 @@ theorem IsSubfield.pow_mem {a : F} {n : ℤ} {s : Set F} (hs : IsSubfield s) (h 
 
 theorem Univ.isSubfield : IsSubfield (@Set.univ F) :=
   { Univ.isSubmonoid, IsAddSubgroup.univ_addSubgroup with
-    inv_mem := fun _ => trivial }
+    inv_mem := fun _ ↦ trivial }
 #align univ.is_subfield Univ.isSubfield
 
 theorem Preimage.isSubfield {K : Type _} [Field K] (f : F →+* K) {s : Set K} (hs : IsSubfield s) :
@@ -71,7 +71,7 @@ theorem Preimage.isSubfield {K : Type _} [Field K] (f : F →+* K) {s : Set K} (
 theorem Image.isSubfield {K : Type _} [Field K] (f : F →+* K) {s : Set F} (hs : IsSubfield s) :
     IsSubfield (f '' s) :=
   { f.isSubring_image hs.toIsSubring with
-    inv_mem := fun ⟨x, xmem, ha⟩ ↦ ⟨x⁻¹, hs.inv_mem xmem, ha ▸ map_inv₀ f _⟩ }
+    inv_mem := fun ⟨x, xmem, ha⟩ ↦ ⟨x⁻¹, hs.inv_mem xmem, ha ▸ map_inv₀ f x⟩ }
 #align image.is_subfield Image.isSubfield
 
 theorem Range.isSubfield {K : Type _} [Field K] (f : F →+* K) : IsSubfield (Set.range f) := by
@@ -102,25 +102,21 @@ theorem closure.isSubmonoid : IsSubmonoid (closure S) :=
 #align field.closure.is_submonoid Field.closure.isSubmonoid
 
 theorem closure.isSubfield : IsSubfield (closure S) :=
-  have h0 : (0 : F) ∈ closure S :=
-    ring_closure_subset <| Ring.closure.isSubring.toIsAddSubgroup.toIsAddSubmonoid.zero_mem
   { closure.isSubmonoid with
     add_mem := by
       intro a b ha hb
       rcases id ha with ⟨p, hp, q, hq, rfl⟩
       rcases id hb with ⟨r, hr, s, hs, rfl⟩
-      classical
-        by_cases hq0 : q = 0
-        · simp [hb, hq0]
-        by_cases hs0 : s = 0
-        · simp [ha, hs0]
-        exact ⟨p * s + q * r,
-          IsAddSubmonoid.add_mem Ring.closure.isSubring.toIsAddSubgroup.toIsAddSubmonoid
-            (Ring.closure.isSubring.toIsSubmonoid.mul_mem hp hs)
-            (Ring.closure.isSubring.toIsSubmonoid.mul_mem hq hr),
-          q * s, Ring.closure.isSubring.toIsSubmonoid.mul_mem hq hs,
-          (div_add_div p r hq0 hs0).symm⟩
-    zero_mem := h0
+      by_cases hq0 : q = 0
+      · rwa [hq0, div_zero, zero_add]
+      by_cases hs0 : s = 0
+      · rwa [hs0, div_zero, add_zero]
+      exact ⟨p * s + q * r,
+        IsAddSubmonoid.add_mem Ring.closure.isSubring.toIsAddSubgroup.toIsAddSubmonoid
+          (Ring.closure.isSubring.toIsSubmonoid.mul_mem hp hs)
+          (Ring.closure.isSubring.toIsSubmonoid.mul_mem hq hr),
+        q * s, Ring.closure.isSubring.toIsSubmonoid.mul_mem hq hs, (div_add_div p r hq0 hs0).symm⟩
+    zero_mem := ring_closure_subset Ring.closure.isSubring.toIsAddSubgroup.toIsAddSubmonoid.zero_mem
     neg_mem := by
       rintro _ ⟨p, hp, q, hq, rfl⟩
       exact ⟨-p, Ring.closure.isSubring.toIsAddSubgroup.neg_mem hp, q, hq, neg_div q p⟩
