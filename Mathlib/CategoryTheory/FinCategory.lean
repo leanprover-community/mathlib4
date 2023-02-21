@@ -19,7 +19,7 @@ import Mathlib.CategoryTheory.Category.ULift
 A category is finite in this sense if it has finitely many objects, and finitely many morphisms.
 
 ## Implementation
-Prior to #14046, `fin_category` required a `DecidableEq` instance on the object and morphism types.
+Prior to #14046, `FinCategory` required a `DecidableEq` instance on the object and morphism types.
 This does not seem to have had any practical payoff (i.e. making some definition constructive)
 so we have removed these requirements to avoid
 having to supply instances or delay with non-defeq conflicts between instances.
@@ -88,7 +88,7 @@ noncomputable instance categoryAsType : SmallCategory (AsType α)
 
 attribute [local simp] categoryAsType_Hom categoryAsType_id categoryAsType_comp
 
-/-- The "identity" functor from `as_type α` to `obj_as_type α`. -/
+/-- The "identity" functor from `AsType α` to `ObjAsType α`. -/
 @[simps]
 noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α
     where
@@ -96,7 +96,7 @@ noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α
   map {X Y} := (Fintype.equivFin _).symm
 #align category_theory.fin_category.as_type_to_obj_as_type CategoryTheory.FinCategory.asTypeToObjAsType
 
-/-- The "identity" functor from `obj_as_type α` to `as_type α`. -/
+/-- The "identity" functor from `ObjAsType α` to `AsType α`. -/
 @[simps]
 noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α
     where
@@ -104,7 +104,7 @@ noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α
   map {X Y} := Fintype.equivFin _
 #align category_theory.fin_category.obj_as_type_to_as_type CategoryTheory.FinCategory.objAsTypeToAsType
 
-/-- The constructed category (`as_type α`) is equivalent to `obj_as_type α`. -/
+/-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
 noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α :=
   Equivalence.mk (asTypeToObjAsType α) (objAsTypeToAsType α)
     (NatIso.ofComponents Iso.refl fun _ => by
@@ -119,7 +119,7 @@ noncomputable instance asTypeFinCategory : FinCategory (AsType α) where
   fintypeHom := fun _ _ => show Fintype (Fin _) from inferInstance
 #align category_theory.fin_category.as_type_fin_category CategoryTheory.FinCategory.asTypeFinCategory
 
-/-- The constructed category (`as_type α`) is indeed equivalent to `α`. -/
+/-- The constructed category (`ObjAsType α`) is indeed equivalent to `α`. -/
 noncomputable def equivAsType : AsType α ≌ α :=
   (asTypeEquivObjAsType α).trans (objAsTypeEquiv α)
 #align category_theory.fin_category.equiv_as_type CategoryTheory.FinCategory.equivAsType
