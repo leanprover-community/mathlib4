@@ -55,6 +55,8 @@ structure LinearEquiv {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : 
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
 #align linear_equiv LinearEquiv
 
+attribute [coe] LinearEquiv.toLinearMap
+
 /-- The linear map underlying a linear equivalence. -/
 add_decl_doc LinearEquiv.toLinearMap
 #align linear_equiv.to_linear_map LinearEquiv.toLinearMap
