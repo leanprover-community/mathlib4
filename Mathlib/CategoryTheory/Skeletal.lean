@@ -146,29 +146,31 @@ def ThinSkeleton : Type u₁ :=
 #align category_theory.thin_skeleton CategoryTheory.ThinSkeleton
 
 instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) :=
-  ⟨Quotient.mk' default⟩
+  ⟨@Quotient.mk' C (isIsomorphicSetoid C) default⟩
 #align category_theory.inhabited_thin_skeleton CategoryTheory.inhabitedThinSkeleton
 
 instance ThinSkeleton.preorder : Preorder (ThinSkeleton C)
     where
   le :=
-    Quotient.lift₂ (fun X Y => Nonempty (X ⟶ Y))
-      (by
-        rintro _ _ _ _ ⟨i₁⟩ ⟨i₂⟩
-        exact
-          propext
-            ⟨Nonempty.map fun f => i₁.inv ≫ f ≫ i₂.hom, Nonempty.map fun f => i₁.hom ≫ f ≫ i₂.inv⟩)
+    @Quotient.lift₂ C C _ (isIsomorphicSetoid C) (isIsomorphicSetoid C) 
+      (fun X Y => Nonempty (X ⟶ Y))
+        (by
+          rintro _ _ _ _ ⟨i₁⟩ ⟨i₂⟩
+          exact
+            propext
+              ⟨Nonempty.map fun f => i₁.inv ≫ f ≫ i₂.hom, 
+                Nonempty.map fun f => i₁.hom ≫ f ≫ i₂.inv⟩)
   le_refl := by
     refine' Quotient.ind fun a => _
     exact ⟨𝟙 _⟩
   le_trans a b c := Quotient.inductionOn₃ a b c fun A B C => Nonempty.map2 (· ≫ ·)
 #align category_theory.thin_skeleton.preorder CategoryTheory.ThinSkeleton.preorder
-
+ 
 /-- The functor from a category to its thin skeleton. -/
 @[simps]
 def toThinSkeleton : C ⥤ ThinSkeleton C
     where
-  obj := Quotient.mk'
+  obj := @Quotient.mk' C _
   map f := homOfLE (Nonempty.intro f)
 #align category_theory.to_thin_skeleton CategoryTheory.toThinSkeleton
 
@@ -204,33 +206,67 @@ theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkele
 def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F₂
     where app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
 #align category_theory.thin_skeleton.map_nat_trans CategoryTheory.ThinSkeleton.mapNatTrans
-
+#check Quotient.recOnSubsingleton 
 -- TODO: state the lemmas about what happens when you compose with `to_thin_skeleton`
 /-- A functor `C ⥤ D ⥤ E` computably lowers to a functor
 `thin_skeleton C ⥤ thin_skeleton D ⥤ thin_skeleton E` -/
 @[simps]
-def map₂ (F : C ⥤ D ⥤ E) : ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkeleton E where
-  obj x :=
-    { obj := fun y => by 
-        refine Quotient.map₂ (fun X Y => (F.obj X).obj Y) ?_ x y 
-        rintro X₁ X₂ ⟨hX⟩ Y₁ Y₂ ⟨hY⟩ 
-        dsimp
-        exact ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩  
-      map := fun {y₁} {y₂} => by 
-          refine Quotient.recOnSubsingleton x fun X 
-            => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY => homOfLE (hY.le.elim fun g => ?_)
-          exact ⟨(F.obj X).map g⟩ -- Porting note: cannot infer type if condensed to a term 
+def map₂ (F : C ⥤ D ⥤ E) : ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkeleton E := 
+  let F' (x : ThinSkeleton C) : ThinSkeleton D → ThinSkeleton E := 
+    fun y => by 
+    refine @Quotient.map₂ C D (isIsomorphicSetoid C) (isIsomorphicSetoid D) E 
+      (isIsomorphicSetoid E) (fun X Y => (F.obj X).obj Y) ?_ x y 
+    rintro X₁ X₂ ⟨hX⟩ Y₁ Y₂ ⟨hY⟩ 
+    dsimp
+    exact ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩ 
+  let F'' (x : ThinSkeleton C) (y₁ y₂ : ThinSkeleton D) : 
+      F' x y₁ ⟶ F' x y₂ := 
+          @Quotient.recOnSubsingleton C (isIsomorphicSetoid C) 
+          ((x' : Quotient (isIsomorphicSetoid C)) → (y₁ : ThinSkeleton D) → 
+          (y₂ :ThinSkeleton D) → F' x' y₁ ⟶ F' x' y₂) _ x fun X 
+            => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY => homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩ )
+  {
+    obj := fun x => 
+    { 
+      obj := F' x 
+      map := fun {y₁} {y₂} g => F'' x y₁ y₂ 
     }
-  map {x₁} {x₂} :=  
-    -- refine Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f => ?_
-    -- dsimp 
-    -- exact { app := sorry }
-    Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
+    map := fun {x₁} {x₂} => Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
       {
         app := fun y =>
-          Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }
+          Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) 
+      }
+    map_id := sorry 
+    map_comp := sorry 
+  }
+--   --
+--   --   obj := fun x => 
+--   --       { obj := fun y => by 
+--   --           refine @Quotient.map₂ C D (isIsomorphicSetoid C) (isIsomorphicSetoid D) E (isIsomorphicSetoid E) (fun X Y => (F.obj X).obj Y) ?_ x y 
+--   --         rintro X₁ X₂ ⟨hX⟩ Y₁ Y₂ ⟨hY⟩ 
+--   --         dsimp
+--   --         exact ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩  
+--   --       map := fun {y₁} {y₂} =>  
+--   --           @Quotient.recOnSubsingleton C (isIsomorphicSetoid C) ((y₁ : ThinSkeleton D) → (y₂ :ThinSkeleton D) → (map F.obj ).obj y₁ ⟶ (map F).obj y₂) _ x fun X 
+--   --             => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY => homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩ )
+--   --       map_id := by aesop_cat 
+--   --       map_comp := by aesop_cat
+--   --     }
+--   --   map := sorry 
+--   --   map_id := sorry 
+--   --   map_comp := sorry 
+--   -- }
+-- #exit 
+--   map {x₁} {x₂} :=  
+--     -- refine Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f => ?_
+--     -- dsimp 
+--     -- exact { app := sorry }
+--     Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
+--       {
+--         app := fun y =>
+--           Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }
 #align category_theory.thin_skeleton.map₂ CategoryTheory.ThinSkeleton.map₂
-#exit 
+
 variable (C)
 
 section
