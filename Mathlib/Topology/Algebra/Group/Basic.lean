@@ -185,7 +185,7 @@ class ContinuousNeg (G : Type u) [TopologicalSpace G] [Neg G] : Prop where
 /-- Basic hypothesis to talk about a topological group. A topological group over `M`, for example,
 is obtained by requiring the instances `Group M` and `ContinuousMul M` and
 `ContinuousInv M`. -/
-@[to_additive]
+@[to_additive (attr := continuity)]
 class ContinuousInv (G : Type u) [TopologicalSpace G] [Inv G] : Prop where
   continuous_inv : Continuous fun a : G => a⁻¹
 #align has_continuous_inv ContinuousInv
@@ -462,7 +462,7 @@ theorem TopologicalGroup.continuous_conj_prod [ContinuousInv G] :
 #align topological_add_group.continuous_conj_sum TopologicalAddGroup.continuous_conj_sum
 
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
-@[to_additive "Conjugation by a fixed element is continuous when `add` is continuous."]
+@[to_additive (attr := continuity) "Conjugation by a fixed element is continuous when `add` is continuous."]
 theorem TopologicalGroup.continuous_conj (g : G) : Continuous fun h : G => g * h * g⁻¹ :=
   (continuous_mul_right g⁻¹).comp (continuous_mul_left g)
 #align topological_group.continuous_conj TopologicalGroup.continuous_conj
@@ -470,7 +470,7 @@ theorem TopologicalGroup.continuous_conj (g : G) : Continuous fun h : G => g * h
 
 /-- Conjugation acting on fixed element of the group is continuous when both `mul` and
 `inv` are continuous. -/
-@[to_additive
+@[to_additive (attr := continuity)
   "Conjugation acting on fixed element of the additive group is continuous when both
     `add` and `neg` are continuous."]
 theorem TopologicalGroup.continuous_conj' [ContinuousInv G] (h : G) :
@@ -1100,19 +1100,19 @@ theorem Filter.Tendsto.div_const' {c : G} {f : α → G} {l : Filter α} (h : Te
 
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
-@[continuity, to_additive sub]
+@[to_additive sub (attr := continuity)]
 theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
   continuous_div'.comp (hf.prod_mk hg : _)
 #align continuous.div' Continuous.div'
 #align continuous.sub Continuous.sub
 
-@[to_additive continuous_sub_left]
+@[to_additive continuous_sub_left (attr := continuity)]
 theorem continuous_div_left' (a : G) : Continuous fun b : G => a / b :=
   continuous_const.div' continuous_id
 #align continuous_div_left' continuous_div_left'
 #align continuous_sub_left continuous_sub_left
 
-@[to_additive continuous_sub_right]
+@[to_additive continuous_sub_right (attr := continuity)]
 theorem continuous_div_right' (a : G) : Continuous fun b : G => b / a :=
   continuous_id.div' continuous_const
 #align continuous_div_right' continuous_div_right'
@@ -1390,8 +1390,6 @@ theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t 
 
 end TopologicalGroup
 
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30:
-  infer kinds are unsupported in Lean 4: #[`z] [] -/
 /-- additive group with a neighbourhood around 0.
 Only used to construct a topology and uniform space.
 
