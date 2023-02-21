@@ -99,3 +99,13 @@ example (a b : List α) (P : a = b) : True := by
 --   apply_fun f,
 --   assumption,
 -- end
+
+example : ∀ m n : ℕ, m = n → (m < 2) = (n < 2) := by
+  refine fun m n h => ?_
+  apply_fun (· < 2) at h
+  exact h
+
+example : ∀ m n : ℕ, m = n → (m < 2) = (n < 2) := by
+  intro m n h
+  apply_fun (· < 2) at h
+  exact h
