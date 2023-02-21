@@ -40,10 +40,10 @@ structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiri
 /-- Reinterpret an `AlgHom` as a `RingHom` -/
 add_decl_doc AlgHom.toRingHom
 
--- mathport name: «expr →ₐ »
+@[inherit_doc AlgHom]
 infixr:25 " →ₐ " => AlgHom _
 
--- mathport name: «expr →ₐ[ ] »
+@[inherit_doc]
 notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
