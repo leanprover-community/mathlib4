@@ -48,15 +48,10 @@ section Prod
 namespace LinearMap
 
 variable (S : Type _) [Semiring R] [Semiring S]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-
 variable [AddCommMonoid M₅] [AddCommMonoid M₆]
-
 variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
-
 variable [Module R M₅] [Module R M₆]
-
 variable (f : M →ₗ[R] M₂)
 
 section
