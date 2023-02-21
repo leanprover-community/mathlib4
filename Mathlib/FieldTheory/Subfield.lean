@@ -125,7 +125,7 @@ instance (priority := 75) toField (s : S) : Field s :=
   letI tester2 : Group K := Field.toCommRing K
   letI : Inv s := @SubgroupClass.inv _ _ _ _ _ tester
   letI : Div s := SubgroupClass.div
-  Subtype.coe_injective.field (↑)
+  Subtype.coe_injective.field ((↑) : s → K )
       (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ ; rfl)
         (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
           (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
@@ -182,7 +182,7 @@ instance : SubfieldClass (Subfield K) K
   one_mem s := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this (with `coe_toSubring`, which comes later)
 theorem mem_carrier {s : Subfield K} {x : K} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subfield.mem_carrier Subfield.mem_carrier
@@ -648,9 +648,10 @@ theorem infₛ_toSubring (s : Set (Subfield K)) :
 #align subfield.Inf_to_subring Subfield.infₛ_toSubring
 
 theorem isGLB_infₛ (S : Set (Subfield K)) : IsGLB S (infₛ S) := by
-  refine' IsGLB.of_image (fun s t => show (s : Set K) ≤ t ↔ s ≤ t from SetLike.coe_subset_coe) _
-  convert isGLB_binfᵢ
-  exact coe_Inf _
+  have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
+  refine' IsGLB.of_image this _
+  convert isGLB_binfᵢ (s := S) (f := SetLike.coe)
+  exact coe_infₛ _
 #align subfield.is_glb_Inf Subfield.isGLB_infₛ
 
 /-- Subfields of a ring form a complete lattice. -/
@@ -696,8 +697,9 @@ def closure (s : Set K) : Subfield K
 #align subfield.closure Subfield.closure
 
 theorem mem_closure_iff {s : Set K} {x} :
-    x ∈ closure s ↔ ∃ y ∈ Subring.closure s, ∃ z ∈ Subring.closure s, y / z = x :=
-  Iff.rfl
+    x ∈ closure s ↔ ∃ y ∈ Subring.closure s, ∃ z ∈ Subring.closure s, y / z = x := by
+  change x ∈ (closure s).carrier ↔ ∃ y ∈ Subring.closure s, ∃ z ∈ Subring.closure s, y / z = x
+  simp only [closure, exists_prop, Set.mem_setOf_eq]
 #align subfield.mem_closure_iff Subfield.mem_closure_iff
 
 theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring := fun x hx =>
@@ -959,5 +961,3 @@ theorem closure_preimage_le (f : K →+* L) (s : Set L) : closure (f ⁻¹' s) �
 #align subfield.closure_preimage_le Subfield.closure_preimage_le
 
 end Subfield
-
-#lint
