@@ -19,16 +19,16 @@ import Mathlib.Topology.Algebra.Constructions
 
 This file defines the following typeclasses:
 
-* `topological_group`, `topological_add_group`: multiplicative and additive topological groups,
+* `TopologicalGroup`, `TopologicalAddGroup`: multiplicative and additive topological groups,
   i.e., groups with continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`;
 
-* `has_continuous_sub G` means that `G` has a continuous subtraction operation.
+* `ContinuousSub G` means that `G` has a continuous subtraction operation.
 
-There is an instance deducing `has_continuous_sub` from `topological_group` but we use a separate
+There is an instance deducing `ContinuousSub` from `TopologicalGroup` but we use a separate
 typeclass because, e.g., `ℕ` and `ℝ≥0` have continuous subtraction but are not additive groups.
 
-We also define `homeomorph` versions of several `equiv`s: `homeomorph.mul_left`,
-`homeomorph.mul_right`, `homeomorph.inv`, and prove a few facts about neighbourhood filters in
+We also define `Homeomorph` versions of several `Equiv`s: `Homeomorph.mulLeft`,
+`Homeomorph.mulRight`, `Homeomorph.inv`, and prove a few facts about neighbourhood filters in
 groups.
 
 ## Tags
@@ -171,20 +171,20 @@ theorem discreteTopology_iff_open_singleton_one : DiscreteTopology G ↔ IsOpen 
 end ContinuousMulGroup
 
 /-!
-### `has_continuous_inv` and `has_continuous_neg`
+### `ContinuousInv` and `ContinuousNeg`
 -/
 
 
 /-- Basic hypothesis to talk about a topological additive group. A topological additive group
-over `M`, for example, is obtained by requiring the instances `add_group M` and
-`has_continuous_add M` and `has_continuous_neg M`. -/
+over `M`, for example, is obtained by requiring the instances `AddGroup M` and
+`ContinuousAdd M` and `ContinuousNeg M`. -/
 class ContinuousNeg (G : Type u) [TopologicalSpace G] [Neg G] : Prop where
   continuous_neg : Continuous fun a : G => -a
 #align has_continuous_neg ContinuousNeg
 
 /-- Basic hypothesis to talk about a topological group. A topological group over `M`, for example,
-is obtained by requiring the instances `group M` and `has_continuous_mul M` and
-`has_continuous_inv M`. -/
+is obtained by requiring the instances `Group M` and `ContinuousMul M` and
+`ContinuousInv M`. -/
 @[to_additive]
 class ContinuousInv (G : Type u) [TopologicalSpace G] [Inv G] : Prop where
   continuous_inv : Continuous fun a : G => a⁻¹
@@ -275,8 +275,8 @@ instance Pi.continuousInv {C : ι → Type _} [∀ i, TopologicalSpace (C i)] [�
 #align pi.has_continuous_inv Pi.continuousInv
 #align pi.has_continuous_neg Pi.continuousNeg
 
-/-- A version of `pi.has_continuous_inv` for non-dependent functions. It is needed because sometimes
-Lean fails to use `pi.has_continuous_inv` for non-dependent functions. -/
+/-- A version of `Pi.continuousInv` for non-dependent functions. It is needed because sometimes
+Lean fails to use `Pi.continuousInv` for non-dependent functions. -/
 @[to_additive
   "A version of `pi.has_continuous_neg` for non-dependent functions. It is needed
   because sometimes Lean fails to use `pi.has_continuous_neg` for non-dependent functions."]
@@ -433,8 +433,8 @@ class TopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
 
-When you declare an instance that does not already have a `uniform_space` instance,
-you should also provide an instance of `uniform_space` and `uniform_group` using
+When you declare an instance that does not already have a `UniformSpace` instance,
+you should also provide an instance of `UniformSpace` and `uniform_group` using
 `topological_group.to_uniform_space` and `topological_comm_group_is_uniform`. -/
 @[to_additive]
 class TopologicalGroup (G : Type _) [TopologicalSpace G] [Group G] extends ContinuousMul G,
@@ -696,7 +696,7 @@ instance (S : Subgroup G) : TopologicalGroup S :=
 
 end Subgroup
 
-/-- The (topological-space) closure of a subgroup of a space `M` with `has_continuous_mul` is
+/-- The (topological-space) closure of a subgroup of a space `M` with `ContinuousMul` is
 itself a subgroup. -/
 @[to_additive
   "The (topological-space) closure of an additive subgroup of a space `M` with
@@ -859,7 +859,7 @@ theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
 #align mem_closure_iff_nhds_one mem_closure_iff_nhds_one
 #align mem_closure_iff_nhds_zero mem_closure_iff_nhds_zero
 
-/-- A monoid homomorphism (a bundled morphism of a type that implements `monoid_hom_class`) from a
+/-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`) from a
 topological group to a topological monoid is continuous provided that it is continuous at one. See
 also `uniform_continuous_of_continuous_at_one`. -/
 @[to_additive
@@ -1005,7 +1005,7 @@ theorem QuotientGroup.nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (�
 variable (G)
 variable [FirstCountableTopology G]
 
-/-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → set G` for
+/-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → Set G` for
 which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a key tool for
 `quotient_group.complete_space` -/
 @[to_additive
@@ -1051,7 +1051,7 @@ class ContinuousSub (G : Type _) [TopologicalSpace G] [Sub G] : Prop where
 
 /-- A typeclass saying that `λ p : G × G, p.1 / p.2` is a continuous function. This property
 automatically holds for topological groups. Lemmas using this class have primes.
-The unprimed version is for `group_with_zero`. -/
+The unprimed version is for `GroupWithZero`. -/
 @[to_additive]
 class ContinuousDiv (G : Type _) [TopologicalSpace G] [Div G] : Prop where
   continuous_div' : Continuous fun p : G × G => p.1 / p.2
@@ -1143,7 +1143,7 @@ section DivInTopologicalGroup
 
 variable [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
-/-- A version of `homeomorph.mul_left a b⁻¹` that is defeq to `a / b`. -/
+/-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive " A version of `homeomorph.add_left a (-b)` that is defeq to `a - b`. ",
   simps! (config := { simpRhs := true })]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
@@ -1165,7 +1165,7 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap ((· / ·) a) :=
 #align is_closed_map_div_left isClosedMap_div_left
 #align is_closed_map_sub_left isClosedMap_sub_left
 
-/-- A version of `homeomorph.mul_right a⁻¹ b` that is defeq to `b / a`. -/
+/-- A version of `Homeomorph.mulRight a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive " A version of `homeomorph.add_right (-a) b` that is defeq to `b - a`. ",
   simps! (config := { simpRhs := true })]
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
@@ -1207,7 +1207,7 @@ end DivInTopologicalGroup
 ### Topological operations on pointwise sums and products
 
 A few results about interior and closure of the pointwise addition/multiplication of sets in groups
-with continuous addition/multiplication. See also `submonoid.top_closure_mul_self_eq` in
+with continuous addition/multiplication. See also `Submonoid.top_closure_mul_self_eq` in
 `topology.algebra.monoid`.
 -/
 
@@ -1462,7 +1462,7 @@ instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the left, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
-`discrete_topology`.) -/
+`DiscreteTopology`.) -/
 @[to_additive
   "A subgroup `S` of an additive topological group `G` acts on `G` properly
   discontinuously on the left, if it is discrete in the sense that `S ∩ K` is finite for all compact
@@ -1484,9 +1484,9 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
-`discrete_topology`.)
+`DiscreteTopology`.)
 
-If `G` is Hausdorff, this can be combined with `t2_space_of_properly_discontinuous_smul_of_t2_space`
+If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousSMul_of_t2Space`
 to show that the quotient group `G ⧸ S` is Hausdorff. -/
 @[to_additive
   "A subgroup `S` of an additive topological group `G`
@@ -1679,7 +1679,7 @@ theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
 #align nhds_mul nhds_mul
 #align nhds_add nhds_add
 
-/-- On a topological group, `𝓝 : G → filter G` can be promoted to a `mul_hom`. -/
+/-- On a topological group, `𝓝 : G → Filter G` can be promoted to a `MulHom`. -/
 @[to_additive
   "On an additive topological group, `𝓝 : G → filter G` can be promoted to an `add_hom`.",
   simps]
@@ -1800,15 +1800,15 @@ end LatticeOps
 /-!
 ### Lattice of group topologies
 
-We define a type class `group_topology α` which endows a group `α` with a topology such that all
+We define a type class `GroupTopology α` which endows a group `α` with a topology such that all
 group operations are continuous.
 
 Group topologies on a fixed group `α` are ordered, by reverse inclusion. They form a complete
 lattice, with `⊥` the discrete topology and `⊤` the indiscrete topology.
 
-Any function `f : α → β` induces `coinduced f : topological_space α → group_topology β`.
+Any function `f : α → β` induces `coinduced f : TopologicalSpace α → GroupTopology β`.
 
-The additive version `add_group_topology α` and corresponding results are provided as well.
+The additive version `AddGroupTopology α` and corresponding results are provided as well.
 -/
 
 
