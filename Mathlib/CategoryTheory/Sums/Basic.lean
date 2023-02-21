@@ -141,7 +141,7 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 
 namespace Swap
 
-/- Porting note: had ot manually call `cases f` for `f : PEmpty` -/
+/- Porting note: had to manually call `cases f` for `f : PEmpty` -/
 
 /-- `swap` gives an equivalence between `C ⊕ D` and `D ⊕ C`. -/
 def equivalence : Sum C D ≌ Sum D C :=
