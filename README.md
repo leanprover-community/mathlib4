@@ -60,7 +60,7 @@ To start a new project that uses mathlib4 as a dependency:
 3. Run `lake new <your_project_name> math`.
 4. You now have a folder named `your_project_name` that contains a new `lake` project. The `lakefile.lean` folder is configured with the `mathlib4` dependency.
 5. Change your current directory to the project folder and run `lake update`. This step downloads `mathlib4` as well as its dependencies.
-6. (Optional) In order to save time compiling all of mathlib and its dependencies, run `lake exe cache`. This step requires that you have `curl 7.69`  or higher.
+6. (Optional) In order to save time compiling all of mathlib and its dependencies, run `lake exe cache get`. This step requires that you have `curl 7.69`  or higher.
 7. Run `lake build`. If you have get no build errors, you are good to go!
 
 
