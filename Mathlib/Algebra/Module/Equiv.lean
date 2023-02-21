@@ -55,6 +55,8 @@ structure LinearEquiv {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : 
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
 #align linear_equiv LinearEquiv
 
+attribute [coe] LinearEquiv.toLinearMap
+
 /-- The linear map underlying a linear equivalence. -/
 add_decl_doc LinearEquiv.toLinearMap
 #align linear_equiv.to_linear_map LinearEquiv.toLinearMap
@@ -322,10 +324,19 @@ variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ 
 
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
--- Note: The linter thinks the `RingHomCompTriple` argument is doubled -- it is not.
+-- Porting note: Lean 4 aggressively removes unused variables declared using `variables`, so
+-- we have to list all the variables explicitly here in order to match the Lean 3 signature.
+set_option linter.unusedVariables false in
 /-- Linear equivalences are transitive. -/
+-- Note: the `ring_hom_comp_triple σ₃₂ σ₂₁ σ₃₁` is unused, but is convenient to carry around
+-- implicitly for lemmas like `linear_equiv.self_trans_symm`.
 @[trans, nolint unusedArguments]
-def trans : M₁ ≃ₛₗ[σ₁₃] M₃ :=
+def trans
+    [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
+    {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₃ : RingHomInvPair σ₂₃ σ₃₂}
+    [RingHomInvPair σ₁₃ σ₃₁] {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+    {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ σ₁₃]
+    (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) : M₁ ≃ₛₗ[σ₁₃] M₃ :=
   { e₂₃.toLinearMap.comp e₁₂.toLinearMap, e₁₂.toEquiv.trans e₂₃.toEquiv with }
 #align linear_equiv.trans LinearEquiv.trans
 

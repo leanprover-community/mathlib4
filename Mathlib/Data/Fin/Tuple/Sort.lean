@@ -62,8 +62,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
 
 /-- `graphEquiv₁ f` is the natural equivalence between `Fin n` and `graph f`,
 mapping `i` to `(f i, i)`. -/
-def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f
-    where
+def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
   toFun i := ⟨(f i, i), by simp [graph]⟩
   invFun p := p.1.2
   left_inv i := by simp
@@ -124,9 +123,7 @@ theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm
     (hfσ : Monotone (f ∘ σ)) (hfτ : Monotone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
     eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
-      -- Porting note: used to use dot notation
-      (List.Monotone.ofFn_sorted hfσ)
-      (List.Monotone.ofFn_sorted hfτ)
+      hfσ.ofFn_sorted hfτ.ofFn_sorted
 #align tuple.unique_monotone Tuple.unique_monotone
 
 variable [LinearOrder α] {f : Fin n → α} {σ : Equiv.Perm (Fin n)}
