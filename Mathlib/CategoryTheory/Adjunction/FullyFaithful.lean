@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.CategoryTheory.Conj
-import Mathbin.CategoryTheory.Yoneda
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # Adjoints of fully faithful functors
@@ -148,8 +148,7 @@ instance whiskerLeft_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
 #align category_theory.whisker_left_counit_iso_of_L_fully_faithful CategoryTheory.whiskerLeft_counit_iso_of_L_fully_faithful
 
 instance whiskerRight_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
-    IsIso (whiskerRight h.counit R) :=
-  by
+    IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle
   rw [← is_iso.eq_inv_comp] at this
   rw [this]
