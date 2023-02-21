@@ -618,7 +618,7 @@ theorem singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} :=
   image2_singleton
 #align set.singleton_vsub_singleton Set.singleton_vsub_singleton
 
--- @[mono] Porting note: mono not implemented yet
+@[mono]
 theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
   image2_subset
 #align set.vsub_subset_vsub Set.vsub_subset_vsub
