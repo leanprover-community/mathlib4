@@ -462,7 +462,8 @@ theorem TopologicalGroup.continuous_conj_prod [ContinuousInv G] :
 #align topological_add_group.continuous_conj_sum TopologicalAddGroup.continuous_conj_sum
 
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
-@[to_additive (attr := continuity) "Conjugation by a fixed element is continuous when `add` is continuous."]
+@[to_additive (attr := continuity)
+  "Conjugation by a fixed element is continuous when `add` is continuous."]
 theorem TopologicalGroup.continuous_conj (g : G) : Continuous fun h : G => g * h * g⁻¹ :=
   (continuous_mul_right g⁻¹).comp (continuous_mul_left g)
 #align topological_group.continuous_conj TopologicalGroup.continuous_conj
