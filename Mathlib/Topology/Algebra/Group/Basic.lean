@@ -997,10 +997,10 @@ instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
   "Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient."]
-theorem QuotientGroup.nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = map coe (𝓝 x) :=
-  le_antisymm ((QuotientGroup.isOpenMap_coe N).nhds_le x) continuous_quot_mk.ContinuousAt
+theorem QuotientGroup.nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
+  le_antisymm ((QuotientGroup.isOpenMap_coe N).nhds_le x) continuous_quot_mk.continuousAt
 #align quotient_group.nhds_eq QuotientGroup.nhds_eq
-#align quotient_add_group.nhds_eq quotientAddGroup.nhds_eq
+#align quotient_add_group.nhds_eq QuotientAddGroup.nhds_eq
 
 variable (G)
 variable [FirstCountableTopology G]
@@ -1016,18 +1016,17 @@ theorem TopologicalGroup.exists_antitone_basis_nhds_one :
     ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
   rcases(𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
   have :=
-    ((hu.prod_nhds hu).tendsto_iffₓ hu).mp
+    ((hu.prod_nhds hu).tendsto_iff hu).mp
       (by simpa only [mul_one] using continuous_mul.tendsto ((1, 1) : G × G))
   simp only [and_self_iff, mem_prod, and_imp, Prod.forall, exists_true_left, Prod.exists,
     forall_true_left] at this
-  have event_mul : ∀ n : ℕ, ∀ᶠ m in at_top, u m * u m ⊆ u n :=
-    by
+  have event_mul : ∀ n : ℕ, ∀ᶠ m in atTop, u m * u m ⊆ u n := by
     intro n
-    rcases this n with ⟨j, k, h⟩
-    refine' at_top_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => _⟩
+    rcases this n with ⟨j, k, -, h⟩
+    refine' atTop_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => _⟩
     rintro - ⟨a, b, ha, hb, rfl⟩
     exact h a b (u_anti ((le_max_left _ _).trans hm) ha) (u_anti ((le_max_right _ _).trans hm) hb)
-  obtain ⟨φ, -, hφ, φ_anti_basis⟩ := has_antitone_basis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
+  obtain ⟨φ, -, hφ, φ_anti_basis⟩ := HasAntitoneBasis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
   exact ⟨u ∘ φ, φ_anti_basis, fun n => hφ n.lt_succ_self⟩
 #align topological_group.exists_antitone_basis_nhds_one TopologicalGroup.exists_antitone_basis_nhds_one
 #align topological_add_group.exists_antitone_basis_nhds_zero TopologicalAddGroup.exists_antitone_basis_nhds_zero
@@ -1040,7 +1039,7 @@ countable neighborhood basis. -/
 instance QuotientGroup.nhds_one_isCountablyGenerated : (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
   (QuotientGroup.nhds_eq N 1).symm ▸ map.isCountablyGenerated _ _
 #align quotient_group.nhds_one_is_countably_generated QuotientGroup.nhds_one_isCountablyGenerated
-#align quotient_add_group.nhds_zero_is_countably_generated quotientAddGroup.nhds_zero_isCountablyGenerated
+#align quotient_add_group.nhds_zero_is_countably_generated QuotientAddGroup.nhds_zero_isCountablyGenerated
 
 end QuotientTopologicalGroup
 
@@ -1057,7 +1056,7 @@ The unprimed version is for `group_with_zero`. -/
 class ContinuousDiv (G : Type _) [TopologicalSpace G] [Div G] : Prop where
   continuous_div' : Continuous fun p : G × G => p.1 / p.2
 #align has_continuous_div ContinuousDiv
-#align has_continuous_sub ContinuousSub
+-- #align has_continuous_sub ContinuousSub
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -1067,7 +1066,7 @@ instance (priority := 100) TopologicalGroup.to_continuousDiv [TopologicalSpace G
     simp only [div_eq_mul_inv]
     exact continuous_fst.mul continuous_snd.inv⟩
 #align topological_group.to_has_continuous_div TopologicalGroup.to_continuousDiv
-#align topological_add_group.to_has_continuous_sub TopologicalAddGroup.to_has_continuous_sub
+#align topological_add_group.to_has_continuous_sub TopologicalAddGroup.to_continuousSub
 
 export ContinuousSub (continuous_sub)
 
@@ -1146,7 +1145,7 @@ variable [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
 /-- A version of `homeomorph.mul_left a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive " A version of `homeomorph.add_left a (-b)` that is defeq to `a - b`. ",
-  simps (config := { simpRhs := true })]
+  simps! (config := { simpRhs := true })]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with
     continuous_toFun := continuous_const.div' continuous_id
@@ -1168,7 +1167,7 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap ((· / ·) a) :=
 
 /-- A version of `homeomorph.mul_right a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive " A version of `homeomorph.add_right (-a) b` that is defeq to `b - a`. ",
-  simps (config := { simpRhs := true })]
+  simps! (config := { simpRhs := true })]
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
   { Equiv.divRight x with
     continuous_toFun := continuous_id.div' continuous_const
@@ -1298,7 +1297,7 @@ theorem IsOpen.mul_right (hs : IsOpen s) : IsOpen (s * t) := by
 
 @[to_additive]
 theorem subset_interior_mul_left : interior s * t ⊆ interior (s * t) :=
-  interior_maximal (Set.mul_subset_mul_right interior_subset) isOpen_interior.mulRight
+  interior_maximal (Set.mul_subset_mul_right interior_subset) isOpen_interior.mul_right
 #align subset_interior_mul_left subset_interior_mul_left
 #align subset_interior_add_left subset_interior_add_left
 
@@ -1310,7 +1309,7 @@ theorem subset_interior_mul' : interior s * interior t ⊆ interior (s * t) :=
 
 @[to_additive]
 theorem mul_singleton_mem_nhds (a : α) {b : α} (h : s ∈ 𝓝 b) : s * {a} ∈ 𝓝 (b * a) := by
-  simp only [← unionᵢ_op_smul_set, mem_singleton_iff, Union_Union_eq_left]
+  simp only [← unionᵢ_op_smul_set, mem_singleton_iff, unionᵢ_unionᵢ_eq_left]
   exact smul_mem_nhds _ h
 #align mul_singleton_mem_nhds mul_singleton_mem_nhds
 #align add_singleton_mem_nhds add_singleton_mem_nhds
@@ -1329,27 +1328,27 @@ variable [TopologicalSpace α] [Group α] [TopologicalGroup α] {s t : Set α}
 
 @[to_additive]
 theorem IsOpen.div_left (ht : IsOpen t) : IsOpen (s / t) := by
-  rw [← Union_div_left_image]
-  exact isOpen_bunionᵢ fun a ha => isOpenMap_div_left a t ht
+  rw [← unionᵢ_div_left_image]
+  exact isOpen_bunionᵢ fun a _ => isOpenMap_div_left a t ht
 #align is_open.div_left IsOpen.div_left
 #align is_open.sub_left IsOpen.sub_left
 
 @[to_additive]
 theorem IsOpen.div_right (hs : IsOpen s) : IsOpen (s / t) := by
-  rw [← Union_div_right_image]
-  exact isOpen_bunionᵢ fun a ha => isOpenMap_div_right a s hs
+  rw [← unionᵢ_div_right_image]
+  exact isOpen_bunionᵢ fun a _ => isOpenMap_div_right a s hs
 #align is_open.div_right IsOpen.div_right
 #align is_open.sub_right IsOpen.sub_right
 
 @[to_additive]
 theorem subset_interior_div_left : interior s / t ⊆ interior (s / t) :=
-  interior_maximal (div_subset_div_right interior_subset) isOpen_interior.divRight
+  interior_maximal (div_subset_div_right interior_subset) isOpen_interior.div_right
 #align subset_interior_div_left subset_interior_div_left
 #align subset_interior_sub_left subset_interior_sub_left
 
 @[to_additive]
 theorem subset_interior_div_right : s / interior t ⊆ interior (s / t) :=
-  interior_maximal (div_subset_div_left interior_subset) isOpen_interior.divLeft
+  interior_maximal (div_subset_div_left interior_subset) isOpen_interior.div_left
 #align subset_interior_div_right subset_interior_div_right
 #align subset_interior_sub_right subset_interior_sub_right
 
@@ -1457,7 +1456,7 @@ instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
   suffices T1Space (G ⧸ S) by exact @TopologicalGroup.t3Space _ _ _ _ this
   have hS : IsClosed (S : Set G) := inferInstance
   rw [← QuotientGroup.ker_mk' S] at hS
-  exact TopologicalGroup.t1Space (G ⧸ S) (quotient_map_quotient_mk.isClosed_preimage.mp hS)
+  exact TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
 #align subgroup.t3_quotient_of_is_closed Subgroup.t3_quotient_of_isClosed
 #align add_subgroup.t3_quotient_of_is_closed AddSubgroup.t3_quotient_of_isClosed
 
@@ -1470,18 +1469,18 @@ it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See a
   `K`. (See also `discrete_topology`."]
 theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S G :=
-  {
-    finite_disjoint_inter_image := by
+  { finite_disjoint_inter_image := by
       intro K L hK hL
       have H : Set.Finite _ := hS ((hL.prod hK).image continuous_div').compl_mem_cocompact
       rw [preimage_compl, compl_compl] at H
       convert H
       ext x
-      simpa only [image_smul, mem_image, Prod.exists] using Set.smul_inter_ne_empty_iff' }
+      simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
+      exact Set.smul_inter_ne_empty_iff' }
 #align subgroup.properly_discontinuous_smul_of_tendsto_cofinite Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite
-#align add_subgroup.properly_discontinuous_vadd_of_tendsto_cofinite AddSubgroup.properly_discontinuous_vadd_of_tendsto_cofinite
+#align add_subgroup.properly_discontinuous_vadd_of_tendsto_cofinite AddSubgroup.properlyDiscontinuousVAdd_of_tendsto_cofinite
 
-attribute [local semireducible] MulOpposite
+-- attribute [local semireducible] MulOpposite -- Porting note: doesn't work in Lean 4
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
@@ -1499,19 +1498,20 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
   `t2_space_of_properly_discontinuous_vadd_of_t2_space`
   to show that the quotient group `G ⧸ S` is Hausdorff."]
 theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
-    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.opposite G :=
-  {
-    finite_disjoint_inter_image := by
+    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul (opposite S) G :=
+  { finite_disjoint_inter_image := by
       intro K L hK hL
       have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prod_map continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
-      rw [preimage_compl, compl_compl] at H
+      simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
+      apply Finite.of_preimage _ (oppositeEquiv S).surjective
       convert H
       ext x
-      simpa only [image_smul, mem_image, Prod.exists] using Set.op_smul_inter_ne_empty_iff }
+      simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
+      exact Set.op_smul_inter_ne_empty_iff }
 #align subgroup.properly_discontinuous_smul_opposite_of_tendsto_cofinite Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite
-#align add_subgroup.properly_discontinuous_vadd_opposite_of_tendsto_cofinite AddSubgroup.properly_discontinuous_vadd_opposite_of_tendsto_cofinite
+#align add_subgroup.properly_discontinuous_vadd_opposite_of_tendsto_cofinite AddSubgroup.properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
 
 end
 
