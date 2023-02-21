@@ -352,12 +352,12 @@ theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
      conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
 #align finset.off_diag_card Finset.offDiag_card
 
---@[mono] Porting note: mono not implemented yet
+@[mono]
 theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
   mem_diag.2 <| And.imp_left (@h _) <| mem_diag.1 hx
 #align finset.diag_mono Finset.diag_mono
 
---@[mono] Porting note: mono not implemented yet
+@[mono]
 theorem offDiag_mono : Monotone (offDiag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
   mem_offDiag.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiag.1 hx
 #align finset.off_diag_mono Finset.offDiag_mono
