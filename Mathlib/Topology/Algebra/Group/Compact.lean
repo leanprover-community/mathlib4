@@ -51,7 +51,7 @@ theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_Group [T2Space 
     convert this
     apply Equiv.image_eq_preimage
   apply ContinuousAt.preimage_mem_nhds F.symm.continuous.continuousAt
-  have : F.symm x = y := by simp [F, Homeomorph.mulLeft_symm]
+  have : F.symm x = y := by simp [F.coe_toEquiv, Homeomorph.mulLeft_symm]
   rw [this]
   exact mem_interior_iff_mem_nhds.1 hy
 #align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_Group
