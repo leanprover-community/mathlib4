@@ -24,12 +24,12 @@ This file defines the order of an element of a finite group. For a finite group 
 
 ## Main definitions
 
-* `is_of_fin_order` is a predicate on an element `x` of a monoid `G` saying that `x` is of finite
+* `IsOfFinOrder` is a predicate on an element `x` of a monoid `G` saying that `x` is of finite
   order.
-* `is_of_fin_add_order` is the additive analogue of `is_of_fin_order`.
-* `order_of x` defines the order of an element `x` of a monoid `G`, by convention its value is `0`
+* `IsOfFinAddOrder` is the additive analogue of `IsOfFinOrder`.
+* `orderOf x` defines the order of an element `x` of a monoid `G`, by convention its value is `0`
   if `x` has infinite order.
-* `add_order_of` is the additive analogue of `order_of`.
+* `addOrderOf` is the additive analogue of `orderOf`.
 
 ## Tags
 order of an element
@@ -59,7 +59,7 @@ theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt ((· * ·) x) n 1
 #align is_periodic_pt_mul_iff_pow_eq_one isPeriodicPt_mul_iff_pow_eq_one
 #align is_periodic_pt_add_iff_nsmul_eq_zero isPeriodicPt_add_iff_nsmul_eq_zero
 
-/-- `is_of_fin_order` is a predicate on an element `x` of a monoid to be of finite order, i.e. there
+/-- `IsOfFinOrder` is a predicate on an element `x` of a monoid to be of finite order, i.e. there
 exists `n ≥ 1` such that `x ^ n = 1`.-/
 @[to_additive IsOfFinAddOrder "`isOfFinAddOrder` is a predicate on an element `a` of an
 additive monoid to be of finite order, i.e. there exists `n ≥ 1` such that `n • a = 0`."]
@@ -82,7 +82,7 @@ theorem isOfFinOrder_iff_pow_eq_one (x : G) : IsOfFinOrder x ↔ ∃ n, 0 < n �
 #align is_of_fin_order_iff_pow_eq_one isOfFinOrder_iff_pow_eq_one
 #align is_of_fin_add_order_iff_nsmul_eq_zero isOfFinAddOrder_iff_nsmul_eq_zero
 
-/-- See also `injective_pow_iff_not_is_of_fin_order`. -/
+/-- See also `injective_pow_iff_not_isOfFinOrder`. -/
 @[to_additive not_isOfFinAddOrder_of_injective_nsmul "See also
 `injective_nsmul_iff_not_isOfFinAddOrder`."]
 theorem not_isOfFinOrder_of_injective_pow {x : G} (h : Injective fun n : ℕ => x ^ n) :
@@ -132,8 +132,8 @@ theorem isOfFinOrder_one : IsOfFinOrder (1 : G) :=
 
 end IsOfFinOrder
 
-/-- `order_of x` is the order of the element `x`, i.e. the `n ≥ 1`, s.t. `x ^ n = 1` if it exists.
-Otherwise, i.e. if `x` is of infinite order, then `order_of x` is `0` by convention.-/
+/-- `orderOf x` is the order of the element `x`, i.e. the `n ≥ 1`, s.t. `x ^ n = 1` if it exists.
+Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by convention.-/
 @[to_additive addOrderOf
   "`add_order_of a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
   exists. Otherwise, i.e. if `a` is of infinite order, then `add_order_of a` is `0` by convention."]
@@ -287,7 +287,7 @@ then `x` has order `n` in `G`. -/
 all prime factors `p` of `n`, then `x` has order `n` in `G`."]
 theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
     (hd : ∀ p : ℕ, p.Prime → p ∣ n → x ^ (n / p) ≠ 1) : orderOf x = n := by
-  -- Let `a` be `n/(order_of x)`, and show `a = 1`
+  -- Let `a` be `n/(orderOf x)`, and show `a = 1`
   cases' exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx) with a ha
   suffices a = 1 by simp [this, ha]
   -- Assume `a` is not one...
@@ -406,7 +406,7 @@ theorem isOfFinOrder_mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
 #align commute.is_of_fin_order_mul Commute.isOfFinOrder_mul
 #align add_commute.is_of_fin_order_add AddCommute.isOfFinOrder_add
 
-/-- If each prime factor of `order_of x` has higher multiplicity in `order_of y`, and `x` commutes
+/-- If each prime factor of `orderOf x` has higher multiplicity in `orderOf y`, and `x` commutes
   with `y`, then `x * y` has the same order as `y`. -/
 @[to_additive addOrderOf_add_eq_right_of_forall_prime_mul_dvd
   "If each prime factor of
@@ -717,7 +717,7 @@ theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
 #align order_of_le_card_univ orderOf_le_card_univ
 #align add_order_of_le_card_univ addOrderOf_le_card_univ
 
-/-- This is the same as `order_of_pos' but with one fewer explicit assumption since this is
+/-- This is the same as `orderOf_pos'` but with one fewer explicit assumption since this is
   automatic in case of a finite cancellative monoid.-/
 @[to_additive addOrderOf_pos "This is the same as `add_order_of_pos' but with one fewer explicit
 assumption since this is automatic in case of a finite cancellative additive monoid."]
@@ -728,7 +728,7 @@ theorem orderOf_pos [Finite G] (x : G) : 0 < orderOf x :=
 
 open Nat
 
-/-- This is the same as `order_of_pow'` and `order_of_pow''` but with one assumption less which is
+/-- This is the same as `orderOf_pow'` and `orderOf_pow''` but with one assumption less which is
 automatic in the case of a finite cancellative monoid.-/
 @[to_additive addOrderOf_nsmul "This is the same as `add_order_of_nsmul'` and
 `add_order_of_nsmul` but with one assumption less which is automatic in the case of a
@@ -751,7 +751,7 @@ noncomputable instance decidablePowers : DecidablePred (· ∈ Submonoid.powers 
 #align decidable_powers decidablePowers
 #align decidable_multiples decidableMultiples
 
-/-- The equivalence between `fin (order_of x)` and `submonoid.powers x`, sending `i` to `x ^ i`."-/
+/-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i`."-/
 @[to_additive finEquivMultiples
   "The equivalence between `fin (add_order_of a)` and
   `add_submonoid.multiples a`, sending `i` to `i • a`."]
@@ -778,7 +778,7 @@ theorem finEquivPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℕ
 #align fin_equiv_powers_symm_apply finEquivPowers_symm_apply
 #align fin_equiv_multiples_symm_apply finEquivMultiples_symm_apply
 
-/-- The equivalence between `submonoid.powers` of two elements `x, y` of the same order, mapping
+/-- The equivalence between `Submonoid.powers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
 @[to_additive multiplesEquivMultiples
   "The equivalence between `submonoid.multiples` of two elements `a, b` of the same additive order,
@@ -851,7 +851,7 @@ noncomputable instance decidableZpowers : DecidablePred (· ∈ Subgroup.zpowers
 #align decidable_zpowers decidableZpowers
 #align decidable_zmultiples decidableZmultiples
 
-/-- The equivalence between `fin (order_of x)` and `subgroup.zpowers x`, sending `i` to `x ^ i`. -/
+/-- The equivalence between `Fin (orderOf x)` and `Subgroup.zpowers x`, sending `i` to `x ^ i`. -/
 @[to_additive finEquivZmultiples "The equivalence between `fin (add_order_of a)` and
 `subgroup.zmultiples a`, sending `i` to `i • a`."]
 noncomputable def finEquivZpowers [Finite G] (x : G) :
@@ -875,7 +875,7 @@ theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : �
 #align fin_equiv_zpowers_symm_apply finEquivZpowers_symm_apply
 #align fin_equiv_zmultiples_symm_apply finEquivZmultiples_symm_apply
 
-/-- The equivalence between `subgroup.zpowers` of two elements `x, y` of the same order, mapping
+/-- The equivalence between `Subgroup.zpowers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
 @[to_additive zmultiplesEquivZmultiples
   "The equivalence between `subgroup.zmultiples` of two elements `a, b` of the same additive order,
@@ -1015,7 +1015,7 @@ theorem inf_eq_bot_of_coprime {G : Type _} [Group G] {H K : Subgroup G} [Fintype
 
 variable (a)
 
-/- TODO: Generalise to `submonoid.powers`.-/
+/- TODO: Generalise to `Submonoid.powers`.-/
 @[to_additive image_range_addOrderOf]
 theorem image_range_orderOf [DecidableEq G] :
     Finset.image (fun i => x ^ i) (Finset.range (orderOf x)) = (zpowers x : Set G).toFinset := by
@@ -1024,7 +1024,7 @@ theorem image_range_orderOf [DecidableEq G] :
 #align image_range_order_of image_range_orderOf
 #align image_range_add_order_of image_range_addOrderOf
 
-/- TODO: Generalise to `finite` + `cancel_monoid`. -/
+/- TODO: Generalise to `Finite` + `CancelMonoid`. -/
 @[to_additive gcd_nsmul_card_eq_zero_iff]
 theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :=
   ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h =>
