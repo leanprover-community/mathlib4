@@ -10,7 +10,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Data.Bitvec.Core
 import Mathlib.Data.Fin.Basic
--- import Mathlib.Tactic.Monotonicity.Default
+import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.NormNum
 
 namespace Bitvec
@@ -38,30 +38,28 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
 #align bitvec.add_lsb_eq_twice_add_one Bitvec.addLsb_eq_twice_add_one
 
 theorem toNat_eq_foldr_reverse {n : ℕ} (v : Bitvec n) :
-    v.toNat = v.toList.reverse.foldr (flip addLsb) 0 := by rw [List.foldr_reverse, flip] <;> rfl
+    v.toNat = v.toList.reverse.foldr (flip addLsb) 0 := by rw [List.foldr_reverse] ; rfl
 #align bitvec.to_nat_eq_foldr_reverse Bitvec.toNat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
-  suffices v.to_nat + 1 ≤ 2 ^ n by simpa
-  rw [to_nat_eq_foldr_reverse]
+  suffices : v.toNat + 1 ≤ 2 ^ n; simpa
+  rw [toNat_eq_foldr_reverse]
   cases' v with xs h
-  dsimp [Bitvec.toNat, bits_to_nat]
+  dsimp
   rw [← List.length_reverse] at h
-  generalize xs.reverse = ys at h⊢
-  clear xs
-  induction ys generalizing n
+  generalize xs.reverse = ys at h
+  induction' ys with head tail ih generalizing n
   · simp [← h]
   · simp only [← h, pow_add, flip, List.length, List.foldr, pow_one]
     rw [addLsb_eq_twice_add_one]
-    trans 2 * List.foldr (fun (x : Bool) (y : ℕ) => addLsb y x) 0 ys_tl + 2 * 1
-    · ac_mono
-      rw [two_mul]
-      mono
-      cases ys_hd <;> simp
+    trans 2 * List.foldr (fun (x : Bool) (y : ℕ) => addLsb y x) 0 tail + 2 * 1
+    · rw [add_assoc]
+      apply Nat.add_le_add_left
+      cases head <;> simp only
     · rw [← left_distrib]
-      ac_mono
-      exact ys_ih rfl
-      norm_num
+      rw [(mul_comm _ 2)]
+      apply Nat.mul_le_mul_left
+      exact ih rfl
 #align bitvec.to_nat_lt Bitvec.toNat_lt
 
 theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
@@ -99,7 +97,7 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat _ v.toNat = v := by
 #align bitvec.of_nat_to_nat Bitvec.ofNat_toNat
 
 theorem toFin_val {n : ℕ} (v : Bitvec n) : (toFin v : ℕ) = v.toNat := by
-  rw [toFin, Fin.coe_ofNat_eq_mod, Nat.mod_eq_of_lt] <;> apply to_nat_lt
+  rw [toFin, Fin.coe_ofNat_eq_mod, Nat.mod_eq_of_lt] ; apply toNat_lt
 #align bitvec.to_fin_val Bitvec.toFin_val
 
 theorem toFin_le_toFin_of_le {n} {v₀ v₁ : Bitvec n} (h : v₀ ≤ v₁) : v₀.toFin ≤ v₁.toFin :=
