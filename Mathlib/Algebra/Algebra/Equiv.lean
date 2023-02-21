@@ -32,16 +32,13 @@ universe u v w u₁ v₁
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
-  commutes' : ∀ r : R, to_fun (algebraMap R A r) = algebraMap R B r
+  commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_equiv AlgEquiv
 
-attribute [nolint doc_blame] AlgEquiv.toRingEquiv
-
-attribute [nolint doc_blame] AlgEquiv.toEquiv
-
-attribute [nolint doc_blame] AlgEquiv.toAddEquiv
-
-attribute [nolint doc_blame] AlgEquiv.toMulEquiv
+attribute [nolint docBlame] AlgEquiv.toRingEquiv
+attribute [nolint docBlame] AlgEquiv.toEquiv
+attribute [nolint docBlame] AlgEquiv.toAddEquiv
+attribute [nolint docBlame] AlgEquiv.toMulEquiv
 
 -- mathport name: «expr ≃ₐ[ ] »
 notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
@@ -54,7 +51,7 @@ class AlgEquivClass (F : Type _) (R A B : outParam (Type _)) [CommSemiring R] [S
 #align alg_equiv_class AlgEquivClass
 
 -- `R` becomes a metavariable but that's fine because it's an `out_param`
-attribute [nolint dangerous_instance] AlgEquivClass.toRingEquivClass
+attribute [nolint dangerousInstance] AlgEquivClass.toRingEquivClass
 
 namespace AlgEquivClass
 
@@ -62,7 +59,7 @@ namespace AlgEquivClass
 instance (priority := 100) toAlgHomClass (F R A B : Type _) [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [h : AlgEquivClass F R A B] : AlgHomClass F R A B :=
   { h with
-    coe := coeFn
+    coe := (⇑)
     coe_injective' := FunLike.coe_injective
     map_zero := map_zero
     map_one := map_one }
@@ -96,8 +93,7 @@ variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 variable (e : A₁ ≃ₐ[R] A₂)
 
-instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂
-    where
+instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
   coe := toFun
   inv := invFun
   coe_injective' f g h₁ h₂ := by
@@ -773,4 +769,3 @@ theorem toAlgEquiv_injective [FaithfulSMul G A] :
 end
 
 end MulSemiringAction
-
