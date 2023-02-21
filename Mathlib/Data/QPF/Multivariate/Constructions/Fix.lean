@@ -168,7 +168,7 @@ set_option linter.uppercaseLean3 false in
 theorem wequiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
     WEquiv x y → WEquiv (g <$$> x) (g <$$> y) := by
   intro h; induction h
-  case ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; apply ih
+  case ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
   case
     abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
     rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.abs
@@ -176,7 +176,7 @@ theorem wequiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
       abs (q.P.objAppend1 a₀ (g ⊚ f'₀) fun x => q.P.wMap g (f₀ x)) =
         abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x => q.P.wMap g (f₁ x))
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
-  case trans x y z e₁ e₂ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
+  case trans x y z _ _ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv_map MvQPF.wequiv_map
 
