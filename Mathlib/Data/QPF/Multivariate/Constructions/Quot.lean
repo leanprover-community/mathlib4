@@ -45,7 +45,7 @@ surjective functions -/
 def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
     (FG_abs_map : ∀ {α β} (f : α ⟹ β) (x : F α), FG_abs (f <$$> x) = f <$$> FG_abs x) : MvQPF G
     where
-  p := q.p
+  P := q.P
   abs p := FG_abs (abs p)
   repr x := repr (FG_repr x)
   abs_repr x := by dsimp; rw [abs_repr, FG_abs_repr]
