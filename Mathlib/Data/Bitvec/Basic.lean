@@ -29,7 +29,7 @@ theorem ofFin_val {n : ℕ} (i : Fin <| 2 ^ n) : (ofFin i).toNat = i.val := by
 #align bitvec.of_fin_val Bitvec.ofFin_val
 
 /-- convert `bitvec` to `fin` -/
-def toFin {n : ℕ} (i : Bitvec n) : Fin <| 2 ^ n :=
+def toFin {n : ℕ} (i : Bitvec n) : Fin (2 ^ n) :=
   i.toNat
 #align bitvec.to_fin Bitvec.toFin
 
@@ -97,8 +97,12 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
     rfl
 #align bitvec.of_nat_to_nat Bitvec.ofNat_toNat
 
+set_option pp.coercions false
 theorem toFin_val {n : ℕ} (v : Bitvec n) : (toFin v : ℕ) = v.toNat := by
-  rw [toFin, Fin.coe_ofNat_eq_mod', Nat.mod_eq_of_lt] ; apply toNat_lt
+  rw [toFin]
+  rw [Fin.coe_ofNat_eq_mod']
+  rw [Nat.mod_eq_of_lt]
+  apply toNat_lt
 #align bitvec.to_fin_val Bitvec.toFin_val
 
 theorem toFin_le_toFin_of_le {n} {v₀ v₁ : Bitvec n} (h : v₀ ≤ v₁) : v₀.toFin ≤ v₁.toFin :=
