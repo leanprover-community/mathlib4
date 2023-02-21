@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Order.Basic
-import Mathbin.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topology on a linear ordered additive commutative group
@@ -71,8 +71,7 @@ protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
 #align filter.tendsto.abs Filter.Tendsto.abs
 
 theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
-    Tendsto f l (𝓝 0) ↔ Tendsto (abs ∘ f) l (𝓝 0) :=
-  by
+    Tendsto f l (𝓝 0) ↔ Tendsto (abs ∘ f) l (𝓝 0) := by
   refine' ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => _⟩
   have : tendsto (fun a => -|f a|) l (𝓝 0) := (neg_zero : -(0 : G) = 0) ▸ h.neg
   exact
