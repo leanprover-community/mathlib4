@@ -472,12 +472,12 @@ theorem pow_injective_of_lt_orderOf (hn : n < orderOf x) (hm : m < orderOf x) (e
 #align pow_injective_of_lt_order_of pow_injective_of_lt_orderOf
 #align nsmul_injective_of_lt_add_order_of nsmul_injective_of_lt_addOrderOf
 
-@[to_additive mem_multiples_iff_mem_range_add_order_of']
+@[to_additive mem_multiples_iff_mem_range_addOrderOf']
 theorem mem_powers_iff_mem_range_order_of' [DecidableEq G] (hx : 0 < orderOf x) :
     y ∈ Submonoid.powers x ↔ y ∈ (Finset.range (orderOf x)).image ((· ^ ·) x : ℕ → G) :=
   Finset.mem_range_iff_mem_finset_range_of_mod_eq' hx fun _ => pow_eq_mod_orderOf.symm
 #align mem_powers_iff_mem_range_order_of' mem_powers_iff_mem_range_order_of'
-#align mem_multiples_iff_mem_range_add_order_of' mem_multiples_iff_mem_range_add_order_of'
+#align mem_multiples_iff_mem_range_add_order_of' mem_multiples_iff_mem_range_addOrderOf'
 
 @[to_additive]
 theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
@@ -495,15 +495,15 @@ theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
 #align pow_eq_pow_iff_modeq pow_eq_pow_iff_modEq
 #align nsmul_eq_nsmul_iff_modeq nsmul_eq_nsmul_iff_modEq
 
-@[to_additive (attr := simp) injective_nsmul_iff_not_is_of_fin_add_order]
+@[to_additive (attr := simp) injective_nsmul_iff_not_isOfFinAddOrder]
 theorem injective_pow_iff_not_isOfFinOrder {x : G} :
     (Injective fun n : ℕ => x ^ n) ↔ ¬IsOfFinOrder x := by
   refine' ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => _⟩
   rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, modEq_zero_iff] at hnm
 #align injective_pow_iff_not_is_of_fin_order injective_pow_iff_not_isOfFinOrder
-#align injective_nsmul_iff_not_is_of_fin_add_order injective_nsmul_iff_not_is_of_fin_add_order
+#align injective_nsmul_iff_not_is_of_fin_add_order injective_nsmul_iff_not_isOfFinAddOrder
 
-@[to_additive infinite_not_is_of_fin_add_order]
+@[to_additive infinite_not_isOfFinAddOrder]
 theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
     { y : G | ¬IsOfFinOrder y }.Infinite := by
   let s := { n | 0 < n }.image fun n : ℕ => x ^ n
@@ -523,7 +523,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
     exact Set.injOn_of_injective H _
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 #align infinite_not_is_of_fin_order infinite_not_isOfFinOrder
-#align infinite_not_is_of_fin_add_order infinite_not_is_of_fin_add_order
+#align infinite_not_is_of_fin_add_order infinite_not_isOfFinAddOrder
 
 end CancelMonoid
 
@@ -600,13 +600,13 @@ theorem pow_inj_mod {n m : ℕ} : x ^ n = x ^ m ↔ n % orderOf x = m % orderOf 
 #align pow_inj_mod pow_inj_mod
 #align nsmul_inj_mod nsmul_inj_mod
 
-@[to_additive (attr := simp) zsmul_smul_orderOf]
+@[to_additive? (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
   by_cases h : IsOfFinOrder x
   · rw [← zpow_ofNat, ← zpow_mul, mul_comm, zpow_mul, zpow_ofNat, pow_orderOf_eq_one, one_zpow]
   · rw [orderOf_eq_zero h, _root_.pow_zero]
 #align zpow_pow_order_of zpow_pow_orderOf
-#align zsmul_smul_order_of zsmul_smul_orderOf
+#align zsmul_smul_order_of zsmul_smul_addOrderOf
 
 @[to_additive]
 theorem IsOfFinOrder.zpow (h : IsOfFinOrder x) {i : ℤ} : IsOfFinOrder (x ^ i) :=
@@ -771,12 +771,12 @@ theorem finEquivPowers_apply [Finite G] {x : G} {n : Fin (orderOf x)} :
 #align fin_equiv_powers_apply finEquivPowers_apply
 #align fin_equiv_multiples_apply finEquivMultiples_apply
 
-@[to_additive (attr := simp) fin_equiv_multiples_symm_apply]
+@[to_additive (attr := simp) finEquivMultiples_symm_apply]
 theorem finEquivPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, pow_eq_mod_orderOf, Fin.val_mk]
 #align fin_equiv_powers_symm_apply finEquivPowers_symm_apply
-#align fin_equiv_multiples_symm_apply fin_equiv_multiples_symm_apply
+#align fin_equiv_multiples_symm_apply finEquivMultiples_symm_apply
 
 /-- The equivalence between `submonoid.powers` of two elements `x, y` of the same order, mapping
   `x ^ i` to `y ^ i`. -/
