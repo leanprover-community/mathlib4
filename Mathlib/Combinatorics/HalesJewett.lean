@@ -65,8 +65,7 @@ combinatorial line, Ramsey theory, arithmetic progession
 
 open Classical
 
--- Porting note: commented out the next line
--- open BigOperators
+open BigOperators
 
 universe u v
 
