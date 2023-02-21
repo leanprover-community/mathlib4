@@ -21,7 +21,7 @@ import Mathlib.Tactic.FinCases
 This file defines ideal quotients as a special case of submodule quotients and proves some basic
 results about these quotients.
 
-See `algebra.ring_quot` for quotients of non-commutative rings.
+See `Algebra.RingQuot` for quotients of non-commutative rings.
 
 ## Main definitions
 
