@@ -63,9 +63,8 @@ infixr:25 " →ₙₐ " => NonUnitalAlgHom _
 -- mathport name: «expr →ₙₐ[ ] »
 notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom R A B
 
-attribute [nolint doc_blame] NonUnitalAlgHom.toDistribMulActionHom
-
-attribute [nolint doc_blame] NonUnitalAlgHom.toMulHom
+attribute [nolint docBlame] NonUnitalAlgHom.toDistribMulActionHom
+attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `non_unital_alg_hom_class F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
@@ -76,17 +75,17 @@ class NonUnitalAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (T
 #align non_unital_alg_hom_class NonUnitalAlgHomClass
 
 -- `R` becomes a metavariable but that's fine because it's an `out_param`
-attribute [nolint dangerous_instance] NonUnitalAlgHomClass.toMulHomClass
+attribute [nolint dangerousInstance] NonUnitalAlgHomClass.toMulHomClass
 
 namespace NonUnitalAlgHomClass
 
 -- `R` becomes a metavariable but that's fine because it's an `out_param`
 -- See note [lower instance priority]
-@[nolint dangerous_instance]
+@[nolint dangerousInstance]
 instance (priority := 100) NonUnitalAlgHomClass.toNonUnitalRingHomClass {F R A B : Type _}
     [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R B] [NonUnitalAlgHomClass F R A B] : NonUnitalRingHomClass F A B :=
-  { ‹NonUnitalAlgHomClass F R A B› with coe := coeFn }
+  { ‹NonUnitalAlgHomClass F R A B› with coe := (⇑) }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.NonUnitalAlgHomClass.toNonUnitalRingHomClass
 
 variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B]
@@ -94,7 +93,7 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAs
 
 -- see Note [lower instance priority]
 instance (priority := 100) {F : Type _} [NonUnitalAlgHomClass F R A B] : LinearMapClass F R A B :=
-  { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := DistribMulActionHomClass.map_smul }
+  { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smul }
 
 instance {F R A B : Type _} [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [NonUnitalAlgHomClass F R A B] :
@@ -435,4 +434,3 @@ theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ((f : A →ₙₐ[R] B) : A
 #align alg_hom.coe_to_non_unital_alg_hom AlgHom.coe_to_nonUnitalAlgHom
 
 end AlgHom
-
