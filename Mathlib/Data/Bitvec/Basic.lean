@@ -88,7 +88,7 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
   rw [← List.length_reverse] at h
   rw [← List.reverse_reverse xs, List.foldl_reverse]
   generalize xs.reverse = ys at h⊢; clear xs
-  induction ys generalizing n
+  induction' ys with ys_head ys_tail ys_ih generalizing n
   · cases h
     simp [Bitvec.ofNat]
   · simp only [← Nat.succ_eq_add_one, List.length] at h
@@ -97,8 +97,7 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
       Vector.toList_append, List.foldr]
     erw [addLsb_div_two, decide_addLsb_mod_two]
     congr
-    rename_i tail_ih
-    apply tail_ih
+    apply ys_ih
     rfl
 #align bitvec.of_nat_to_nat Bitvec.ofNat_toNat
 
