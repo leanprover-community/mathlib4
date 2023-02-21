@@ -35,8 +35,13 @@ open BigOperators
 /-- Nonnegative rational numbers. -/
 def NNRat := { q : ℚ // 0 ≤ q } deriving
   CanonicallyOrderedCommSemiring, CanonicallyLinearOrderedSemifield, LinearOrderedCommGroupWithZero,
-  Sub, Inhabited  -- Porting note: Removed `OrderedSub, DenselyOrdered, Archimedean`
+  Sub, Inhabited
 #align nnrat NNRat
+
+-- Porting note: Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
+instance : OrderedSub NNRat := Nonneg.orderedSub
+instance : DenselyOrdered NNRat := Nonneg.densely_ordered
+instance : Archimedean NNRat := Nonneg.archimedean
 
 -- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat
