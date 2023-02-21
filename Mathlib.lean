@@ -263,7 +263,7 @@ import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
-import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
