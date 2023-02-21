@@ -171,8 +171,7 @@ instance subsingleton_liftStruct_of_epi (sq : CommSq f i p g) [Epi i] :
   ⟨fun l₁ l₂ => by
     ext
     rw [← cancel_epi i]
-    simp only [LiftStruct.fac_left]
-    ⟩
+    simp only [LiftStruct.fac_left]⟩
 #align category_theory.comm_sq.subsingleton_lift_struct_of_epi CategoryTheory.CommSq.subsingleton_liftStruct_of_epi
 
 instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
