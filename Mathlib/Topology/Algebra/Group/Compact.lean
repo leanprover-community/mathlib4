@@ -39,7 +39,8 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 /-- Every separated topological group in which there exists a compact set with nonempty interior
 is locally compact. -/
 @[to_additive
-      "Every separated topological group in which there exists a compact set with nonemptyinterior is locally compact."]
+      "Every separated topological group in which there exists a compact set with nonempty
+      interior is locally compact."]
 theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_Group [T2Space G]
     (K : PositiveCompacts G) : LocallyCompactSpace G := by
   refine' locally_compact_of_compact_nhds fun x => _
