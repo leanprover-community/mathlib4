@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Group.Basic
-import Mathbin.Topology.CompactOpen
-import Mathbin.Topology.Sets.Compacts
+import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Additional results on topological groups
@@ -41,8 +41,7 @@ is locally compact. -/
 @[to_additive
       "Every separated topological group in which there exists a compact set with nonempty\ninterior is locally compact."]
 theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group [T2Space G]
-    (K : PositiveCompacts G) : LocallyCompactSpace G :=
-  by
+    (K : PositiveCompacts G) : LocallyCompactSpace G := by
   refine' locally_compact_of_compact_nhds fun x => _
   obtain ⟨y, hy⟩ := K.interior_nonempty
   let F := Homeomorph.mulLeft (x * y⁻¹)
