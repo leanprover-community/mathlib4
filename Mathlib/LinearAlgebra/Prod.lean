@@ -16,24 +16,24 @@ import Mathlib.Algebra.Algebra.Prod
 
 This file defines constructors for linear maps whose domains or codomains are products.
 
-It contains theorems relating these to each other, as well as to `submodule.prod`, `submodule.map`,
-`submodule.comap`, `linear_map.range`, and `linear_map.ker`.
+It contains theorems relating these to each other, as well as to `Submodule.prod`, `Submodule.map`,
+`Submodule.comap`, `LinearMap.range`, and `LinearMap.ker`.
 
 ## Main definitions
 
 - products in the domain:
-  - `linear_map.fst`
-  - `linear_map.snd`
-  - `linear_map.coprod`
-  - `linear_map.prod_ext`
+  - `LinearMap.fst`
+  - `LinearMap.snd`
+  - `LinearMap.coprod`
+  - `LinearMap.prod_ext`
 - products in the codomain:
-  - `linear_map.inl`
-  - `linear_map.inr`
-  - `linear_map.prod`
+  - `LinearMap.inl`
+  - `LinearMap.inr`
+  - `LinearMap.prod`
 - products in both domain and codomain:
-  - `linear_map.prod_map`
-  - `linear_equiv.prod_map`
-  - `linear_equiv.skew_prod`
+  - `LinearMap.prodMap`
+  - `LinearEquiv.prodMap`
+  - `LinearEquiv.skewProd`
 -/
 
 
@@ -371,7 +371,7 @@ theorem prodMap_smul [Module S M₃] [Module S M₄] [SMulCommClass R S M₃] [S
 
 variable (R M M₂ M₃ M₄)
 
-/-- `linear_map.prod_map` as a `linear_map` -/
+/-- `LinearMap.prodMap` as a `LinearMap` -/
 @[simps]
 def prodMapLinear [Module S M₃] [Module S M₄] [SMulCommClass R S M₃] [SMulCommClass R S M₄] :
     (M →ₗ[R] M₃) × (M₂ →ₗ[R] M₄) →ₗ[S] M × M₂ →ₗ[R] M₃ × M₄
@@ -381,7 +381,7 @@ def prodMapLinear [Module S M₃] [Module S M₄] [SMulCommClass R S M₃] [SMul
   map_smul' _ _ := rfl
 #align linear_map.prod_map_linear LinearMap.prodMapLinear
 
-/-- `linear_map.prod_map` as a `ring_hom` -/
+/-- `LinearMap.prodMap` as a `RingHom` -/
 @[simps]
 def prodMapRingHom : (M →ₗ[R] M) × (M₂ →ₗ[R] M₂) →+* M × M₂ →ₗ[R] M × M₂
     where
@@ -426,7 +426,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂]
 
 variable [Module R M] [Module R M₂]
 
-/-- `linear_map.prod_map` as an `algebra_hom` -/
+/-- `LinearMap.prodMap` as an `algebra_hom` -/
 @[simps]
 def prodMapAlgHom : Module.End R M × Module.End R M₂ →ₐ[R] Module.End R (M × M₂) :=
   { prodMapRingHom R M M₂ with commutes' := fun _ => rfl }
@@ -761,7 +761,7 @@ variable {module_M₃ : Module R M₃} {module_M₄ : Module R M₄}
 
 variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
 
-/-- Product of linear equivalences; the maps come from `equiv.prod_congr`. -/
+/-- Product of linear equivalences; the maps come from `Equiv.prodCongr`. -/
 protected def prod : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
     map_smul' := fun c x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
@@ -833,7 +833,7 @@ variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 /-- If the union of the kernels `ker f` and `ker g` spans the domain, then the range of
-`prod f g` is equal to the product of `range f` and `range g`. -/
+`Prod f g` is equal to the product of `range f` and `range g`. -/
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
   refine' le_antisymm (f.range_prod_le g) _
@@ -873,7 +873,7 @@ and establishes the strong rank condition for any left-noetherian ring.
 
 noncomputable section Tunnel
 
--- (This doesn't work over a semiring: we need to use that `submodule R M` is a modular lattice,
+-- (This doesn't work over a semiring: we need to use that `Submodule R M` is a modular lattice,
 -- which requires cancellation.)
 variable [Ring R]
 
