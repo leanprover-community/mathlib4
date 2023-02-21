@@ -8,8 +8,8 @@ Authors: Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Whiskering
-import Mathbin.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
