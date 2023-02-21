@@ -14,7 +14,7 @@ import Mathlib.Order.Atoms
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Span -- import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp
 
 /-!
 
