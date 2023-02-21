@@ -427,7 +427,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂]
 
 /-- `LinearMap.prodMap` as an `AlgHom` -/
-@[simps]
+@[simps!]
 def prodMapAlgHom : Module.End R M × Module.End R M₂ →ₐ[R] Module.End R (M × M₂) :=
   { prodMapRingHom R M M₂ with commutes' := fun _ => rfl }
 #align linear_map.prod_map_alg_hom LinearMap.prodMapAlgHom
@@ -463,8 +463,7 @@ theorem sup_range_inl_inr : (range $ inl R M M₂) ⊔ (range $ inr R M M₂) = 
 #align linear_map.sup_range_inl_inr LinearMap.sup_range_inl_inr
 
 theorem disjoint_inl_inr : Disjoint (range $ inl R M M₂) (range $ inr R M M₂) := by
-  simp (config := { contextual := true }) [disjoint_def, @eq_comm M 0, @eq_comm M₂ 0] <;> intros <;>
-    rfl
+  simp (config := { contextual := true }) [disjoint_def, @eq_comm M 0, @eq_comm M₂ 0]
 #align linear_map.disjoint_inl_inr LinearMap.disjoint_inl_inr
 
 theorem map_coprod_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (p : Submodule R M)
@@ -795,12 +794,9 @@ variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
 /-- Equivalence given by a block lower diagonal matrix. `e₁` and `e₂` are diagonal square blocks,
   and `f` is a rectangular block below the diagonal. -/
 protected def skewProd (f : M →ₗ[R] M₄) : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
-  {
-    ((e₁ : M →ₗ[R] M₂).comp (LinearMap.fst R M M₃)).prod
+  { ((e₁ : M →ₗ[R] M₂).comp (LinearMap.fst R M M₃)).prod
       ((e₂ : M₃ →ₗ[R] M₄).comp (LinearMap.snd R M M₃) +
-        f.comp
-          (LinearMap.fst R M
-            M₃)) with
+        f.comp (LinearMap.fst R M M₃)) with
     invFun := fun p : M₂ × M₄ => (e₁.symm p.1, e₂.symm (p.2 - f (e₁.symm p.1)))
     left_inv := fun p => by simp
     right_inv := fun p => by simp }
@@ -857,7 +853,7 @@ namespace LinearMap
 
 Some preliminary work for establishing the strong rank condition for noetherian rings.
 
-Given a morphism `f : M × N →ₗ[R] M` which is `i : injective f`,
+Given a morphism `f : M × N →ₗ[R] M` which is `i : Injective f`,
 we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
 and sitting beside these, an infinite sequence of copies of `N`.
 
