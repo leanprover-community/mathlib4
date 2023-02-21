@@ -10,7 +10,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Data.Bitvec.Core
 import Mathlib.Data.Fin.Basic
-import Mathlib.Tactic.Monotonicity
+--import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.NormNum
 
 namespace Bitvec
@@ -75,11 +75,11 @@ theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
         Bool.decide_False, Nat.mul_mod_right, zero_add, cond, zero_ne_one]
 #align bitvec.to_bool_add_lsb_mod_two Bitvec.decide_addLsb_mod_two
 
-theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat _ v.toNat = v := by
+theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
   cases' v with xs h
-  ext1
+  apply Subtype.ext
   change Vector.toList _ = xs
-  dsimp [Bitvec.toNat, bits_to_nat]
+  dsimp [Bitvec.toNat, bitsToNat]
   rw [← List.length_reverse] at h
   rw [← List.reverse_reverse xs, List.foldl_reverse]
   generalize xs.reverse = ys at h⊢; clear xs
@@ -90,14 +90,15 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat _ v.toNat = v := by
     subst n
     simp only [Bitvec.ofNat, Vector.toList_cons, Vector.toList_nil, List.reverse_cons,
       Vector.toList_append, List.foldr]
-    erw [add_lsb_div_two, to_bool_add_lsb_mod_two]
+    erw [addLsb_div_two, decide_addLsb_mod_two]
     congr
-    apply ys_ih
+    rename_i tail_ih
+    apply tail_ih
     rfl
 #align bitvec.of_nat_to_nat Bitvec.ofNat_toNat
 
 theorem toFin_val {n : ℕ} (v : Bitvec n) : (toFin v : ℕ) = v.toNat := by
-  rw [toFin, Fin.coe_ofNat_eq_mod, Nat.mod_eq_of_lt] ; apply toNat_lt
+  rw [toFin, Fin.coe_ofNat_eq_mod', Nat.mod_eq_of_lt] ; apply toNat_lt
 #align bitvec.to_fin_val Bitvec.toFin_val
 
 theorem toFin_le_toFin_of_le {n} {v₀ v₁ : Bitvec n} (h : v₀ ≤ v₁) : v₀.toFin ≤ v₁.toFin :=
