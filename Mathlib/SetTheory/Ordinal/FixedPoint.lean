@@ -551,7 +551,7 @@ end
 
 
 @[simp]
-theorem nfp_add_zero (a) : nfp ((· + ·) a) 0 = a * omega := by
+theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
   simp_rw [← sup_iterate_eq_nfp, ← sup_mul_nat]
   congr ; funext n
   induction' n with n hn
@@ -560,7 +560,7 @@ theorem nfp_add_zero (a) : nfp ((· + ·) a) 0 = a * omega := by
     rw [Nat.cast_add, Nat.cast_one, mul_one_add, iterate_succ_apply', hn]
 #align ordinal.nfp_add_zero Ordinal.nfp_add_zero
 
-theorem nfp_add_eq_mul_omega {a b} (hba : b ≤ a * omega) : nfp ((· + ·) a) b = a * omega := by
+theorem nfp_add_eq_mul_omega {a b} (hba : b ≤ a * omega) : nfp (a + ·) b = a * omega := by
   apply le_antisymm (nfp_le_fp (add_isNormal a).monotone hba _)
   · rw [← nfp_add_zero]
     exact nfp_monotone (add_isNormal a).monotone (Ordinal.zero_le b)
@@ -583,7 +583,7 @@ theorem add_le_right_iff_mul_omega_le {a b : Ordinal} : a + b ≤ b ↔ a * omeg
   exact (add_isNormal a).le_iff_eq
 #align ordinal.add_le_right_iff_mul_omega_le Ordinal.add_le_right_iff_mul_omega_le
 
-theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv ((· + ·) a) b = a * omega + b := by
+theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * omega + b := by
   revert b
   rw [← funext_iff, IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) (add_isNormal _)]
   refine' ⟨_, fun a h => _⟩
@@ -599,7 +599,7 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv ((· + ·) a) b =
 -- local infixr:0 "^" => @Pow.pow Ordinal Ordinal Ordinal.hasPow
 
 @[simp]
-theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp ((· * ·) a) 1 = (a^omega) := by
+theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * .) 1 = (a^omega) := by
   rw [← sup_iterate_eq_nfp, ← sup_opow_nat]
   · dsimp
     congr
@@ -612,7 +612,7 @@ theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp ((· * ·) a) 1 = (a^omega)
 #align ordinal.nfp_mul_one Ordinal.nfp_mul_one
 
 @[simp]
-theorem nfp_mul_zero (a : Ordinal) : nfp ((· * ·) a) 0 = 0 := by
+theorem nfp_mul_zero (a : Ordinal) : nfp (a * .) 0 = 0 := by
   rw [← Ordinal.le_zero, nfp_le_iff]
   intro n
   induction' n with n hn; · rfl
@@ -620,7 +620,7 @@ theorem nfp_mul_zero (a : Ordinal) : nfp ((· * ·) a) 0 = 0 := by
 #align ordinal.nfp_mul_zero Ordinal.nfp_mul_zero
 
 @[simp]
-theorem nfp_zero_mul : nfp ((· * ·) 0) = id := by
+theorem nfp_zero_mul : nfp (HMul.hMul 0) = id := by
   rw [← sup_iterate_eq_nfp]
   refine' funext fun a => (sup_le fun n => _).antisymm (le_sup (fun n => ((· * ·) 0^[n]) a) 0)
   induction' n with n _; · rfl
@@ -631,12 +631,12 @@ theorem nfp_zero_mul : nfp ((· * ·) 0) = id := by
 #align ordinal.nfp_zero_mul Ordinal.nfp_zero_mul
 
 @[simp]
-theorem deriv_mul_zero : deriv ((· * ·) 0) = id :=
+theorem deriv_mul_zero : deriv (HMul.hMul 0) = id :=
   deriv_eq_id_of_nfp_eq_id nfp_zero_mul
 #align ordinal.deriv_mul_zero Ordinal.deriv_mul_zero
 
 theorem nfp_mul_eq_opow_omega {a b : Ordinal} (hb : 0 < b) (hba : b ≤ (a^omega)) :
-    nfp ((· * ·) a) b = (a^omega.{u}) := by
+    nfp (a * ·) b = (a^omega.{u}) := by
   cases' eq_zero_or_pos a with ha ha
   · rw [ha, zero_opow omega_ne_zero] at hba ⊢
     rw [Ordinal.le_zero.1 hba, nfp_zero_mul]
