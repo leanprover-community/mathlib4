@@ -11,6 +11,7 @@ Authors: Jeremy Avigad, Simon Hudon
 import Mathlib.Data.PFunctor.Multivariate.W
 import Mathlib.Data.QPF.Multivariate.Basic
 
+set_option autoImplicit false -- porting note: TODO REMOVE
 /-!
 # The initial algebra of a multivariate qpf is again a qpf.
 
@@ -324,21 +325,19 @@ theorem Fix.ind {α : TypeVec n} (p : Fix F α → Prop)
 
 instance mvqpfFix : MvQPF (Fix F) where
   P := q.P.wp
-  abs α := Quot.mk WEquiv
-  repr α := fixToW
+  abs α := Quot.mk WEquiv α
+  repr α := fixToW α
   abs_repr := by
     intro α
     apply Quot.ind
     intro a
     apply Quot.sound
-    apply Wrepr_equiv
+    apply wrepr_equiv
   abs_map := by
     intro α β g x;
     conv =>
       rhs
       dsimp [MvFunctor.map]
-    rw [fix.map]; apply Quot.sound
-    apply Wequiv.refl
 #align mvqpf.mvqpf_fix MvQPF.mvqpfFix
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
