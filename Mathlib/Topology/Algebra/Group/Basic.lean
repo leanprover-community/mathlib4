@@ -702,17 +702,9 @@ itself a subgroup. -/
   "The (topological-space) closure of an additive subgroup of a space `M` with
   `has_continuous_add` is itself an additive subgroup."]
 def Subgroup.topologicalClosure (s : Subgroup G) : Subgroup G :=
-  {
-    s.toSubmonoid.topologicalClosure with
+  { s.toSubmonoid.topologicalClosure with
     carrier := _root_.closure (s : Set G)
-    inv_mem' := fun g _ m =>
-    by
-      -- simpa [← Set.mem_inv, inv_closure] using m
-      simp only [mem_setOf_eq, and_imp] --[← Set.mem_inv]
-      --intro a b
-      simp only at g
-      sorry
-      }
+    inv_mem' := fun {g} hg => by simpa only [← Set.mem_inv, inv_closure, inv_coe_set] using hg }
 #align subgroup.topological_closure Subgroup.topologicalClosure
 #align add_subgroup.topological_closure AddSubgroup.topologicalClosure
 
@@ -984,26 +976,23 @@ theorem QuotientGroup.isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := by
 #align quotient_add_group.is_open_map_coe QuotientAddGroup.isOpenMap_coe
 
 @[to_additive]
-instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N)
-    where
-  continuous_mul :=
-    by
-    have cont : Continuous (((↑) : G → G ⧸ N) ∘ fun p : G × G => p.fst * p.snd) :=
-      sorry--by continuity
-      --continuous_quot_mk.comp continuous_mul
-    /-have quot : QuotientMap fun p : G × G => ((p.1 : G ⧸ N), (p.2 : G ⧸ N)) :=
-      by
+instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
+  continuous_mul := by
+    have cont : Continuous (((↑) : G → G ⧸ N) ∘ fun p : G × G ↦ p.fst * p.snd) :=
+      continuous_quot_mk.comp continuous_mul
+    have quot : QuotientMap fun p : G × G ↦ ((p.1 : G ⧸ N), (p.2 : G ⧸ N)) := by
       apply IsOpenMap.to_quotientMap
-      · exact (QuotientGroup.isOpenMap_coe N).Prod (QuotientGroup.isOpenMap_coe N)
+      · exact (QuotientGroup.isOpenMap_coe N).prod (QuotientGroup.isOpenMap_coe N)
       · exact continuous_quot_mk.prod_map continuous_quot_mk
       · exact (surjective_quot_mk _).Prod_map (surjective_quot_mk _)
-    exact (QuotientMap.continuous_iff Quot).2 cont-/
-    sorry
-  continuous_inv := by convert (@continuous_inv G _ _ _).quotient_map' _
+    exact quot.continuous_iff.2 cont
+  continuous_inv := by
+    have quot := IsOpenMap.to_quotientMap
+      (QuotientGroup.isOpenMap_coe N) continuous_quot_mk (surjective_quot_mk _)
+    rw [quot.continuous_iff]
+    exact continuous_quot_mk.comp continuous_inv
 #align topological_group_quotient topologicalGroup_quotient
-#align topological_add_group_quotient topological_add_group_quotient
-
-#exit
+#align topological_add_group_quotient topologicalAddGroup_quotient
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
