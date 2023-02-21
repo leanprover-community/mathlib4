@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Card
-import Mathbin.CategoryTheory.DiscreteCategory
-import Mathbin.CategoryTheory.Opposites
-import Mathbin.CategoryTheory.Category.Ulift
+import Mathlib.Data.Fintype.Card
+import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Category.Ulift
 
 /-!
 # Finite categories
