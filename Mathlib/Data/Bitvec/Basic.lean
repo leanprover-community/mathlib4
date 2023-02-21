@@ -10,9 +10,14 @@ Authors: Simon Hudon
 -/
 import Mathlib.Data.Bitvec.Core
 import Mathlib.Data.Fin.Basic
---import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.NormNum
 
+/-!
+# Basic Theorems About Bitvectors
+
+This file contains theorems about bitvectors and their coercions to
+`Nat` and `Fin`.
+-/
 namespace Bitvec
 
 instance (n : ℕ) : Preorder (Bitvec n) :=
@@ -97,7 +102,6 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
     rfl
 #align bitvec.of_nat_to_nat Bitvec.ofNat_toNat
 
-set_option pp.coercions false
 theorem toFin_val {n : ℕ} (v : Bitvec n) : (toFin v : ℕ) = v.toNat := by
   rw [toFin]
   dsimp only [Fin.coe_ofNat_eq_mod]
