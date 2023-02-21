@@ -19,7 +19,7 @@ import Mathlib.CategoryTheory.Category.ULift
 A category is finite in this sense if it has finitely many objects, and finitely many morphisms.
 
 ## Implementation
-Prior to #14046, `fin_category` required a `decidable_eq` instance on the object and morphism types.
+Prior to #14046, `fin_category` required a `DecidableEq` instance on the object and morphism types.
 This does not seem to have had any practical payoff (i.e. making some definition constructive)
 so we have removed these requirements to avoid
 having to supply instances or delay with non-defeq conflicts between instances.
@@ -42,7 +42,7 @@ instance discreteHomFintype {α : Type _} (X Y : Discrete α) : Fintype (X ⟶ Y
   apply instFintypeULift
 #align category_theory.discrete_hom_fintype CategoryTheory.discreteHomFintype
 
-/-- A category with a `fintype` of objects, and a `fintype` for each morphism space. -/
+/-- A category with a `Fintype` of objects, and a `Fintype` for each morphism space. -/
 class FinCategory (J : Type v) [SmallCategory J] where
   fintypeObj : Fintype J := by infer_instance
   fintypeHom : ∀ j j' : J, Fintype (j ⟶ j') := by infer_instance
@@ -136,7 +136,7 @@ instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : Fi
   fintypeHom j j' := Fintype.ofEquiv _ (opEquiv j j').symm
 #align category_theory.fin_category_opposite CategoryTheory.finCategoryOpposite
 
-/-- Applying `ulift` to morphisms and objects of a category preserves finiteness. -/
+/-- Applying `ULift` to morphisms and objects of a category preserves finiteness. -/
 instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
     FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J))
     where
