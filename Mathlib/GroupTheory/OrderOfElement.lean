@@ -562,7 +562,7 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 #align order_of_inv orderOf_inv
 #align order_of_neg orderOf_neg
 
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive (attr := norm_cast)] -- Porting note: simp can prove this (so removed simp)
 theorem orderOf_subgroup {H : Subgroup G} (y : H) : orderOf (y : G) = orderOf y :=
   orderOf_injective H.subtype Subtype.coe_injective y
 #align order_of_subgroup orderOf_subgroup
@@ -600,7 +600,7 @@ theorem pow_inj_mod {n m : ℕ} : x ^ n = x ^ m ↔ n % orderOf x = m % orderOf 
 #align pow_inj_mod pow_inj_mod
 #align nsmul_inj_mod nsmul_inj_mod
 
-@[to_additive? (attr := simp) zsmul_smul_addOrderOf]
+@[to_additive (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
   by_cases h : IsOfFinOrder x
   · rw [← zpow_ofNat, ← zpow_mul, mul_comm, zpow_mul, zpow_ofNat, pow_orderOf_eq_one, one_zpow]
@@ -789,7 +789,9 @@ noncomputable def powersEquivPowers [Finite G] (h : orderOf x = orderOf y) :
 #align powers_equiv_powers powersEquivPowers
 #align multiples_equiv_multiples multiplesEquivMultiples
 
-@[to_additive (attr := simp) multiplesEquivMultiples_apply]
+-- Porting note: the simpNF linter complains that simp can change the LHS to something
+-- that looks the same as the current LHS even with `pp.explicit`
+@[to_additive (attr := simp, nolint simpNF) multiplesEquivMultiples_apply]
 theorem powersEquivPowers_apply [Finite G] (h : orderOf x = orderOf y) (n : ℕ) :
     powersEquivPowers h ⟨x ^ n, n, rfl⟩ = ⟨y ^ n, n, rfl⟩ := by
   rw [powersEquivPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivPowers_symm_apply, ←
@@ -797,6 +799,12 @@ theorem powersEquivPowers_apply [Finite G] (h : orderOf x = orderOf y) (n : ℕ)
   simp [h]
 #align powers_equiv_powers_apply powersEquivPowers_apply
 #align multiples_equiv_multiples_apply multiplesEquivMultiples_apply
+
+-- Porting note: TODO the following instance should follow from a more general principle
+-- See also mathlib4#2417
+@[to_additive]
+noncomputable instance [Fintype G] : Fintype (Submonoid.powers x) :=
+  inferInstanceAs $ Fintype {y // y ∈ Submonoid.powers x}
 
 @[to_additive addOrderOf_eq_card_multiples]
 theorem orderOf_eq_card_powers [Fintype G] :
@@ -887,7 +895,9 @@ noncomputable def zpowersEquivZpowers [Finite G] (h : orderOf x = orderOf y) :
 #align zpowers_equiv_zpowers zpowersEquivZpowers
 #align zmultiples_equiv_zmultiples zmultiplesEquivZmultiples
 
-@[to_additive (attr := simp) zmultiples_equiv_zmultiples_apply]
+-- Porting note: the simpNF linter complains that simp can change the LHS to something
+-- that looks the same as the current LHS even with `pp.explicit`
+@[to_additive (attr := simp, nolint simpNF) zmultiples_equiv_zmultiples_apply]
 theorem zpowersEquivZpowers_apply [Finite G] (h : orderOf x = orderOf y) (n : ℕ) :
     zpowersEquivZpowers h ⟨x ^ n, n, zpow_ofNat x n⟩ = ⟨y ^ n, n, zpow_ofNat y n⟩ := by
   rw [zpowersEquivZpowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZpowers_symm_apply, ←
@@ -992,13 +1002,13 @@ noncomputable def powCoprime {G : Type _} [Group G] (h : (Nat.card G).coprime n)
 #align pow_coprime powCoprime
 #align nsmul_coprime nsmulCoprime
 
-@[to_additive (attr := simp)]
+@[to_additive] -- Porting note: simp can prove this (so removed simp)
 theorem powCoprime_one {G : Type _} [Group G] (h : (Nat.card G).coprime n) : powCoprime h 1 = 1 :=
   one_pow n
 #align pow_coprime_one powCoprime_one
 #align nsmul_coprime_zero nsmulCoprime_zero
 
-@[to_additive (attr := simp)]
+@[to_additive] -- Porting note: simp can prove this (so removed simp)
 theorem powCoprime_inv {G : Type _} [Group G] (h : (Nat.card G).coprime n) {g : G} :
     powCoprime h g⁻¹ = (powCoprime h g)⁻¹ :=
   inv_pow g n
