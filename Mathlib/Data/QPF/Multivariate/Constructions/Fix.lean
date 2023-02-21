@@ -340,15 +340,13 @@ instance mvqpfFix : MvQPF (Fix F) where
       dsimp [MvFunctor.map]
 #align mvqpf.mvqpf_fix MvQPF.mvqpfFix
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Dependent recursor for `fix F` -/
 def Fix.drec {β : Fix F α → Type u}
     (g : ∀ x : F (α ::: Sigma β), β (Fix.mk <| (id ::: Sigma.fst) <$$> x)) (x : Fix F α) : β x :=
   let y := @Fix.rec _ F _ _ α (Sigma β) (fun i => ⟨_, g i⟩) x
   have : x = y.1 := by
     symm
-    dsimp [y]
+    dsimp
     apply Fix.ind_rec _ id _ x
     intro x' ih
     rw [Fix.rec_eq]
@@ -359,7 +357,9 @@ def Fix.drec {β : Fix F α → Type u}
       rhs
       rw [← ih]
     rw [MvFunctor.map_map, ← appendFun_comp, id_comp]
+    simp only [Function.comp]
   cast (by rw [this]) y.2
+
 #align mvqpf.fix.drec MvQPF.Fix.drec
 
 end MvQPF
