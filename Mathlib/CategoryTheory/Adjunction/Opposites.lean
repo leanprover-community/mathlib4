@@ -33,14 +33,18 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
 
+#check opEquiv
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
-@[simps]
+@[simps!]
 def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
-  Adjunction.mkOfHomEquiv
-    {
-      homEquiv := fun X Y =>
-        ((h.homEquiv (Opposite.op Y) (Opposite.op X)).trans (opEquiv _ _)).symm.trans
-          (opEquiv _ _) }
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun {X Y} =>
+      ((h.homEquiv (Opposite.op Y) (Opposite.op X)).trans (opEquiv _ _)).symm.trans
+        (opEquiv _ _)
+    homEquiv_naturality_left_symm := by
+      sorry
+    homEquiv_naturality_right := by
+      sorry }
 #align category_theory.adjunction.adjoint_of_op_adjoint_op CategoryTheory.Adjunction.adjointOfOpAdjointOp
 
 /-- If `G` is adjoint to `F.op` then `F` is adjoint to `G.unop`. -/
@@ -59,12 +63,15 @@ def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ)
 #align category_theory.adjunction.unop_adjoint_unop_of_adjoint CategoryTheory.Adjunction.unopAdjointUnopOfAdjoint
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
-@[simps]
+@[simps!]
 def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=
-  Adjunction.mkOfHomEquiv
-    {
-      homEquiv := fun X Y =>
-        (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (Opposite.op _)).symm) }
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun X Y =>
+      (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (Opposite.op _)).symm)
+    homEquiv_naturality_left_symm := by
+      sorry
+    homEquiv_naturality_right := by
+      sorry }
 #align category_theory.adjunction.op_adjoint_op_of_adjoint CategoryTheory.Adjunction.opAdjointOpOfAdjoint
 
 /-- If `G` is adjoint to `F.unop` then `F` is adjoint to `G.op`. -/
@@ -91,8 +98,8 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
   NatIso.ofComponents
     (fun X =>
       NatIso.ofComponents
-        (fun Y => ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso) (by tidy))
-    (by tidy)
+        (fun Y => ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso) (by sorry)) -- aesop_cat fails
+    (by sorry) -- aesop_cat fails
 #align category_theory.adjunction.left_adjoints_coyoneda_equiv CategoryTheory.Adjunction.leftAdjointsCoyonedaEquiv
 
 /-- If `F` and `F'` are both left adjoint to `G`, then they are naturally isomorphic. -/
@@ -102,54 +109,57 @@ def leftAdjointUniq {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' �
 
 @[simp]
 theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
-    (x : C) : adj1.homEquiv _ _ ((leftAdjointUniq adj1 adj2).Hom.app x) = adj2.Unit.app x := by
-  apply (adj1.hom_equiv _ _).symm.Injective
+    (x : C) : adj1.homEquiv _ _ ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x := by
+  apply (adj1.homEquiv _ _).symm.injective
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
-  swap; infer_instance
-  ext (f y)
-  simpa [left_adjoint_uniq, left_adjoints_coyoneda_equiv]
+  --swap; infer_instance
+  ext f
+  -- Porting note: Why do I need this with the `ext` from the previous line?
+  funext y
+  simp [leftAdjointUniq, leftAdjointsCoyonedaEquiv]
 #align category_theory.adjunction.hom_equiv_left_adjoint_uniq_hom_app CategoryTheory.Adjunction.homEquiv_leftAdjointUniq_hom_app
 
-@[simp, reassoc.1]
+@[simp, reassoc]
 theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
-    adj1.Unit ≫ whiskerRight (leftAdjointUniq adj1 adj2).Hom G = adj2.Unit := by
+    adj1.unit ≫ whiskerRight (leftAdjointUniq adj1 adj2).hom G = adj2.unit := by
   ext x
-  rw [nat_trans.comp_app, ← hom_equiv_left_adjoint_uniq_hom_app adj1 adj2]
-  simp [-hom_equiv_left_adjoint_uniq_hom_app, ← G.map_comp]
+  rw [NatTrans.comp_app, ← homEquiv_leftAdjointUniq_hom_app adj1 adj2]
+  simp [-homEquiv_leftAdjointUniq_hom_app, ← G.map_comp]
 #align category_theory.adjunction.unit_left_adjoint_uniq_hom CategoryTheory.Adjunction.unit_leftAdjointUniq_hom
 
-@[simp, reassoc.1]
+@[simp, reassoc]
 theorem unit_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
-    (x : C) : adj1.Unit.app x ≫ G.map ((leftAdjointUniq adj1 adj2).Hom.app x) = adj2.Unit.app x :=
+    (x : C) : adj1.unit.app x ≫ G.map ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x :=
   by
-  rw [← unit_left_adjoint_uniq_hom adj1 adj2]
+  rw [← unit_leftAdjointUniq_hom adj1 adj2]
   rfl
 #align category_theory.adjunction.unit_left_adjoint_uniq_hom_app CategoryTheory.Adjunction.unit_leftAdjointUniq_hom_app
 
-@[simp, reassoc.1]
+@[simp, reassoc]
 theorem leftAdjointUniq_hom_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
-    whiskerLeft G (leftAdjointUniq adj1 adj2).Hom ≫ adj2.counit = adj1.counit := by
+    whiskerLeft G (leftAdjointUniq adj1 adj2).hom ≫ adj2.counit = adj1.counit := by
   ext x
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
-  swap
-  infer_instance
-  ext (y f)
+  ext y
+  funext f
+  /-
   have :
     F.map (adj2.unit.app (G.obj x)) ≫ adj1.counit.app (F'.obj (G.obj x)) ≫ adj2.counit.app x ≫ f =
       adj1.counit.app x ≫ f :=
     by
     erw [← adj1.counit.naturality, ← F.map_comp_assoc]
-    simpa
-  simpa [left_adjoint_uniq, left_adjoints_coyoneda_equiv] using this
+    simp
+  -/
+  simp [leftAdjointUniq, leftAdjointsCoyonedaEquiv]
 #align category_theory.adjunction.left_adjoint_uniq_hom_counit CategoryTheory.Adjunction.leftAdjointUniq_hom_counit
 
-@[simp, reassoc.1]
+@[simp, reassoc]
 theorem leftAdjointUniq_hom_app_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : D) :
-    (leftAdjointUniq adj1 adj2).Hom.app (G.obj x) ≫ adj2.counit.app x = adj1.counit.app x := by
-  rw [← left_adjoint_uniq_hom_counit adj1 adj2]
+    (leftAdjointUniq adj1 adj2).hom.app (G.obj x) ≫ adj2.counit.app x = adj1.counit.app x := by
+  rw [← leftAdjointUniq_hom_counit adj1 adj2]
   rfl
 #align category_theory.adjunction.left_adjoint_uniq_hom_app_counit CategoryTheory.Adjunction.leftAdjointUniq_hom_app_counit
 
@@ -294,4 +304,3 @@ def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G
 #align category_theory.adjunction.nat_iso_of_right_adjoint_nat_iso CategoryTheory.Adjunction.natIsoOfRightAdjointNatIso
 
 end CategoryTheory.Adjunction
-
