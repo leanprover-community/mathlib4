@@ -1706,7 +1706,10 @@ variable [Group G] [TopologicalSpace G] [TopologicalGroup G] {Γ : Subgroup G}
 @[to_additive]
 instance QuotientGroup.continuousConstSMul : ContinuousConstSMul G (G ⧸ Γ) where
   continuous_const_smul g := by
-    convert ((@continuous_const _ _ _ _ g).mul continuous_id).quotient_map' _
+    have quot := IsOpenMap.to_quotientMap
+      (QuotientGroup.isOpenMap_coe Γ) continuous_quot_mk (surjective_quot_mk _)
+    rw [quot.continuous_iff]
+    exact continuous_quot_mk.comp (continuous_mul_left _)
 #align quotient_group.has_continuous_const_smul QuotientGroup.continuousConstSMul
 #align quotient_add_group.has_continuous_const_vadd QuotientAddGroup.continuousConstVAdd
 
@@ -1971,18 +1974,19 @@ topologies contained in the intersection of `s` and `t`. -/
   The supremum of two group topologies `s` and `t` is the infimum of the family of all group
   topologies contained in the intersection of `s` and `t`."]
 instance : CompleteSemilatticeInf (GroupTopology α) :=
-  { GroupTopology.hasInf,
-    GroupTopology.partialOrder with
-    inf_le := fun S a haS => toTopologicalSpace_le.1 <| infₛ_le ⟨a, haS, rfl⟩
-    le_inf := by
+  { inferInstanceAs (InfSet (GroupTopology α)),
+    inferInstanceAs (PartialOrder (GroupTopology α)) with
+    infₛ_le := fun S a haS => toTopologicalSpace_le.1 <| infₛ_le ⟨a, haS, rfl⟩
+    le_infₛ := by
       intro S a hab
-      apply topological_space.complete_lattice.le_Inf
+      apply (inferInstanceAs (CompleteLattice (TopologicalSpace α))).le_infₛ
       rintro _ ⟨b, hbS, rfl⟩
       exact hab b hbS }
 
 @[to_additive]
 instance : CompleteLattice (GroupTopology α) :=
-  { GroupTopology.boundedOrder, GroupTopology.semilatticeInf,
+  { inferInstanceAs (BoundedOrder (GroupTopology α)),
+    inferInstanceAs (SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
     inf := (· ⊓ ·)
     top := ⊤
