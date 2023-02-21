@@ -1101,19 +1101,19 @@ theorem Filter.Tendsto.div_const' {c : G} {f : α → G} {l : Filter α} (h : Te
 
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
-@[to_additive sub (attr := continuity)]
+@[to_additive (attr := continuity) sub]
 theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
   continuous_div'.comp (hf.prod_mk hg : _)
 #align continuous.div' Continuous.div'
 #align continuous.sub Continuous.sub
 
-@[to_additive continuous_sub_left (attr := continuity)]
+@[to_additive (attr := continuity) continuous_sub_left]
 theorem continuous_div_left' (a : G) : Continuous fun b : G => a / b :=
   continuous_const.div' continuous_id
 #align continuous_div_left' continuous_div_left'
 #align continuous_sub_left continuous_sub_left
 
-@[to_additive continuous_sub_right (attr := continuity)]
+@[to_additive (attr := continuity) continuous_sub_right]
 theorem continuous_div_right' (a : G) : Continuous fun b : G => b / a :=
   continuous_id.div' continuous_const
 #align continuous_div_right' continuous_div_right'
