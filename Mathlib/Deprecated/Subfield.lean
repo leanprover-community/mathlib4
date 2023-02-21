@@ -8,7 +8,7 @@ Authors: Andreas Swerdlow
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Deprecated.Subring
+import Mathlib.Deprecated.Subring
 
 /-!
 # Unbundled subfields (deprecated)
@@ -73,8 +73,7 @@ theorem Image.isSubfield {K : Type _} [Field K] (f : F →+* K) {s : Set F} (hs 
     inv_mem := fun a ⟨x, xmem, ha⟩ => ⟨x⁻¹, hs.inv_mem xmem, ha ▸ map_inv₀ f _⟩ }
 #align image.is_subfield Image.isSubfield
 
-theorem Range.isSubfield {K : Type _} [Field K] (f : F →+* K) : IsSubfield (Set.range f) :=
-  by
+theorem Range.isSubfield {K : Type _} [Field K] (f : F →+* K) : IsSubfield (Set.range f) := by
   rw [← Set.image_univ]
   apply Image.isSubfield _ Univ.isSubfield
 #align range.is_subfield Range.isSubfield
