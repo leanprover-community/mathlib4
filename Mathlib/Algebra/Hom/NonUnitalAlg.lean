@@ -8,7 +8,7 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Hom
 
 /-!
 # Morphisms of non-unital algebras
@@ -166,8 +166,7 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ((⟨f, h₁, h₂, h₃, h
 #align non_unital_alg_hom.coe_mk NonUnitalAlgHom.coe_mk
 
 @[simp]
-theorem mk_coe (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) : (⟨f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) = f :=
-  by
+theorem mk_coe (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) : (⟨f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) = f := by
   ext
   rfl
 #align non_unital_alg_hom.mk_coe NonUnitalAlgHom.mk_coe
@@ -199,30 +198,26 @@ theorem coe_to_mulHom (f : A →ₙₐ[R] B) : ((f : A →ₙ* B) : A → B) = f
 #align non_unital_alg_hom.coe_to_mul_hom NonUnitalAlgHom.coe_to_mulHom
 
 theorem to_distribMulActionHom_injective {f g : A →ₙₐ[R] B}
-    (h : (f : A →+[R] B) = (g : A →+[R] B)) : f = g :=
-  by
+    (h : (f : A →+[R] B) = (g : A →+[R] B)) : f = g := by
   ext a
   exact DistribMulActionHom.congr_fun h a
 #align non_unital_alg_hom.to_distrib_mul_action_hom_injective NonUnitalAlgHom.to_distribMulActionHom_injective
 
-theorem to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g :=
-  by
+theorem to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
   exact MulHom.congr_fun h a
 #align non_unital_alg_hom.to_mul_hom_injective NonUnitalAlgHom.to_mulHom_injective
 
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
-    ((⟨f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) : A →+[R] B) = ⟨f, h₁, h₂, h₃⟩ :=
-  by
+    ((⟨f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) : A →+[R] B) = ⟨f, h₁, h₂, h₃⟩ := by
   ext
   rfl
 #align non_unital_alg_hom.coe_distrib_mul_action_hom_mk NonUnitalAlgHom.coe_distribMulActionHom_mk
 
 @[norm_cast]
 theorem coe_mulHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
-    ((⟨f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) : A →ₙ* B) = ⟨f, h₄⟩ :=
-  by
+    ((⟨f, h₁, h₂, h₃, h₄⟩ : A →ₙₐ[R] B) : A →ₙ* B) = ⟨f, h₄⟩ := by
   ext
   rfl
 #align non_unital_alg_hom.coe_mul_hom_mk NonUnitalAlgHom.coe_mulHom_mk
