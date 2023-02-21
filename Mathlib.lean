@@ -272,6 +272,7 @@ import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.Composition
 import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.HalesJewett
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Partition
 import Mathlib.Combinatorics.Pigeonhole
