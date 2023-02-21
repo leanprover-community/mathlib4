@@ -855,19 +855,16 @@ theorem congr_fun {f g : M →ₗ⁅R,L⁆ N} (h : f = g) (x : M) : f x = g x :=
 
 @[simp]
 theorem mk_coe (f : M →ₗ⁅R,L⁆ N) (h) : (⟨f, h⟩ : M →ₗ⁅R,L⁆ N) = f := by
-  ext
   rfl
 #align lie_module_hom.mk_coe LieModuleHom.mk_coe
 
 @[simp]
 theorem coe_mk (f : M →ₗ[R] N) (h) : ((⟨f, h⟩ : M →ₗ⁅R,L⁆ N) : M → N) = f := by
-  ext
   rfl
 #align lie_module_hom.coe_mk LieModuleHom.coe_mk
 
-@[norm_cast, simp]
+@[norm_cast]
 theorem coe_linear_mk (f : M →ₗ[R] N) (h) : ((⟨f, h⟩ : M →ₗ⁅R,L⁆ N) : M →ₗ[R] N) = f := by
-  ext
   rfl
 #align lie_module_hom.coe_linear_mk LieModuleHom.coe_linear_mk
 
