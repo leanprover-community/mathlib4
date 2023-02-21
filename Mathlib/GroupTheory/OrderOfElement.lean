@@ -799,7 +799,8 @@ theorem powersEquivPowers_apply [Finite G] (h : orderOf x = orderOf y) (n : ℕ)
 #align multiples_equiv_multiples_apply multiplesEquivMultiples_apply
 
 @[to_additive addOrderOf_eq_card_multiples]
-theorem orderOf_eq_card_powers [Fintype G] : orderOf x = Fintype.card (Submonoid.powers x : Set G) :=
+theorem orderOf_eq_card_powers [Fintype G] :
+    orderOf x = Fintype.card (Submonoid.powers x : Set G) :=
   (Fintype.card_fin (orderOf x)).symm.trans (Fintype.card_eq.2 ⟨finEquivPowers x⟩)
 #align order_eq_card_powers orderOf_eq_card_powers
 #align add_order_of_eq_card_multiples addOrderOf_eq_card_multiples
