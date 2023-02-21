@@ -295,15 +295,6 @@ def additiveTest (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
   additiveTestAux findTranslation? ignore false e
 
-/-- Checks whether a numeral should be translated. -/
-def shouldTranslateNumeral (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (fixedNumeral : Name → Option Bool)
-  (nm : Name) (firstArg : Expr) : Bool :=
-  match fixedNumeral nm with
-  | some true => additiveTest findTranslation? ignore firstArg
-  | some false => false
-  | none => true
-
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
 | []      => []
@@ -375,11 +366,23 @@ where /-- Implementation of `applyReplacementFun`. -/
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
-        let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
-        if !shouldTranslateNumeral findTranslation? ignore fixedNumeral nm firstArg then
+        let gAllArgs := gArgs.push x
+        let firstArg := gAllArgs[0]
+        match fixedNumeral nm with
+        | some true =>
+          if !additiveTest findTranslation? ignore firstArg then
+            if trace then
+              dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}. {
+                ""}However, we will still recurse into the first argument."
+            -- In this case, we still have to update the first argument of `g`, since it could be
+            -- something like `(fun x => ℕ) (1 : G)`, and we have to update the `(1 : G)` to
+            -- `(0 : G)`
+            return some <| mkAppN gf <| gAllArgs.setD 0 <| ← r firstArg
+        | some false =>
           if trace then
             dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
+        | none => pure () -- nothing special, recurse in the arguments
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
