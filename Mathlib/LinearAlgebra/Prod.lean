@@ -894,8 +894,8 @@ def tunnel' (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → ΣK : Submodule
   | 0 => ⟨⊤, LinearEquiv.ofTop ⊤ rfl⟩
   | n + 1 =>
     ⟨(Submodule.fst R M N).map (tunnelAux f (tunnel' f i n)),
-      ((Submodule.fst R M N).equivMapOfInjective _ (tunnelAux_injective f i (tunnel' f i n))).symm.trans
-        (Submodule.fstEquiv R M N)⟩
+      ((Submodule.fst R M N).equivMapOfInjective _
+        (tunnelAux_injective f i (tunnel' f i n))).symm.trans (Submodule.fstEquiv R M N)⟩
 #align linear_map.tunnel' LinearMap.tunnel'ₓ -- Porting note: different universes
 
 /-- Give an injective map `f : M × N →ₗ[R] M` we can find a nested sequence of submodules
