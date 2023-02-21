@@ -698,6 +698,7 @@ import Mathlib.Data.W.Constructions
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
+import Mathlib.Deprecated.Subfield
 import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Submonoid
 import Mathlib.Deprecated.Subring
