@@ -39,6 +39,7 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
 #align nnrat NNRat
 
 -- Porting note: Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
+-- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
 instance : DenselyOrdered NNRat := Nonneg.densely_ordered
 instance : Archimedean NNRat := Nonneg.archimedean
