@@ -446,8 +446,7 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ γ) ≃ᵤ (α →ᵤ β)` by
 post-composing. -/
 protected def congrRight [UniformSpace γ] (e : γ ≃ᵤ β) : (α →ᵤ γ) ≃ᵤ (α →ᵤ β) :=
-  {
-    Equiv.piCongrRight fun _a =>
+  { Equiv.piCongrRight fun _a =>
       e.toEquiv with
     uniformContinuous_toFun := UniformFun.postcomp_uniformContinuous e.uniformContinuous
     uniformContinuous_invFun := UniformFun.postcomp_uniformContinuous e.symm.uniformContinuous }
@@ -472,8 +471,7 @@ protected theorem precomp_uniformContinuous {f : γ → α} :
 /-- Turn a bijection `γ ≃ α` into a uniform isomorphism
 `(γ →ᵤ β) ≃ᵤ (α →ᵤ β)` by pre-composing. -/
 protected def congrLeft (e : γ ≃ α) : (γ →ᵤ β) ≃ᵤ (α →ᵤ β) :=
-  {
-    Equiv.arrowCongr e
+  { Equiv.arrowCongr e
       (Equiv.refl
         _) with
     uniformContinuous_toFun := UniformFun.precomp_uniformContinuous
@@ -514,8 +512,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃
   -- But `uβ × uγ` is defined as `comap fst uβ ⊓ comap snd uγ`, so we just have to apply
   -- `uniform_convergence.inf_eq` and `uniform_convergence.comap_eq`, which leaves us to check
   -- that some square commutes.
-  Equiv.toUniformEquivOfUniformInducing (Equiv.arrowProdEquivProdArrow _ _ _)
-  (by
+  Equiv.toUniformEquivOfUniformInducing (Equiv.arrowProdEquivProdArrow _ _ _) $ by
     constructor
     change
       comap (Prod.map (Equiv.arrowProdEquivProdArrow _ _ _) (Equiv.arrowProdEquivProdArrow _ _ _))
@@ -523,8 +520,11 @@ protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃
     simp_rw [UniformFun]
     rw [← uniformity_comap]
     congr
-    rw [instUniformSpaceProd, instUniformSpaceProd, UniformSpace.comap_inf, UniformFun.inf_eq]
-    congr <;> rw [← UniformSpace.comap_comap, UniformFun.comap_eq] <;> rfl)
+    unfold instUniformSpaceProd
+    rw [UniformSpace.comap_inf, ← UniformSpace.comap_comap, ← UniformSpace.comap_comap]
+    have := (@UniformFun.inf_eq α (β × γ)
+      (UniformSpace.comap Prod.fst ‹_›) (UniformSpace.comap Prod.snd ‹_›)).symm
+    rwa [UniformFun.comap_eq, UniformFun.comap_eq] at this
 #align uniform_fun.uniform_equiv_prod_arrow UniformFun.uniformEquivProdArrow
 
 -- the relevant diagram commutes by definition
@@ -540,16 +540,17 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
     -- that some square commutes.
     @Equiv.toUniformEquivOfUniformInducing
     _ _ 𝒰(α, ∀ i, δ i, Pi.uniformSpace δ)
-    (@Pi.uniformSpace ι (fun i => α → δ i) fun i => 𝒰(α, δ i, _)) (Equiv.piComm _)
-    (by
-      constructor
+    (@Pi.uniformSpace ι (fun i => α → δ i) fun i => 𝒰(α, δ i, _)) (Equiv.piComm _) $ by
+      refine @UniformInducing.mk ?_ ?_ ?_ ?_ ?_ ?_
       change comap (Prod.map Function.swap Function.swap) _ = _
       rw [← uniformity_comap]
       congr
-      rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
-        UniformSpace.ofCoreEq_toCore, UniformSpace.comap_infᵢ, UniformFun.infᵢ_eq]
+      unfold Pi.uniformSpace
+      rw [UniformSpace.ofCoreEq_toCore, UniformSpace.ofCoreEq_toCore,
+        UniformSpace.comap_infᵢ, UniformFun.infᵢ_eq]
       refine' infᵢ_congr fun i => _
-      rw [← UniformSpace.comap_comap, UniformFun.comap_eq])
+      rw [← UniformSpace.comap_comap, UniformFun.comap_eq]
+      rfl
 #align uniform_fun.uniform_equiv_Pi_comm UniformFun.uniformEquivPiComm
 
 -- Like in the previous lemma, the diagram actually commutes by definition
@@ -599,12 +600,12 @@ protected theorem isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : Di
     (𝓑 : FilterBasis <| β × β) :
     IsBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓑) fun SV =>
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
-  ⟨h.prod 𝓑.nonempty, fun U₁V₁ U₂V₂ h₁ h₂ =>
+  ⟨h.prod 𝓑.nonempty, fun {U₁V₁ U₂V₂} h₁ h₂ =>
     let ⟨U₃, hU₃, hU₁₃, hU₂₃⟩ := h' U₁V₁.1 h₁.1 U₂V₂.1 h₂.1
     let ⟨V₃, hV₃, hV₁₂₃⟩ := 𝓑.inter_sets h₁.2 h₂.2
     ⟨⟨U₃, V₃⟩,
-      ⟨⟨hU₃, hV₃⟩, fun uv huv =>
-        ⟨fun x hx => (hV₁₂₃ <| huv x <| hU₁₃ hx).1, fun x hx => (hV₁₂₃ <| huv x <| hU₂₃ hx).2⟩⟩⟩⟩
+      ⟨⟨hU₃, hV₃⟩, fun _ H =>
+        ⟨fun x hx => (hV₁₂₃ <| H x <| hU₁₃ hx).1, fun x hx => (hV₁₂₃ <| H x <| hU₂₃ hx).2⟩⟩⟩⟩
 #align uniform_on_fun.is_basis_gen UniformOnFun.isBasis_gen
 
 variable (α β) [UniformSpace β] (𝔖 : Set (Set α))
@@ -650,7 +651,7 @@ protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·
       ((fun s : Set α => (UniformFun.uniformSpace s β).comap (s.restrict : (α →ᵤ β) → s →ᵤ β)) ⁻¹'o
         GE.ge)
       𝔖 :=
-  h.mono fun s t hst =>
+  h.mono fun hst =>
     ((UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _).le_basis_iff
           (UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb _)).mpr
       fun V hV => ⟨V, hV, UniformOnFun.gen_mono hst subset_rfl⟩
@@ -835,8 +836,7 @@ protected theorem precomp_uniformContinuous {𝔗 : Set (Set γ)} {f : γ → α
 `∀ S ∈ 𝔖, e ⁻¹' S ∈ 𝔗` into a uniform isomorphism `(γ →ᵤ[𝔗] β) ≃ᵤ (α →ᵤ[𝔖] β)` by pre-composing. -/
 protected def congrLeft {𝔗 : Set (Set γ)} (e : γ ≃ α) (he : 𝔗 ⊆ image e ⁻¹' 𝔖)
     (he' : 𝔖 ⊆ preimage e ⁻¹' 𝔗) : (γ →ᵤ[𝔗] β) ≃ᵤ (α →ᵤ[𝔖] β) :=
-  {
-    Equiv.arrowCongr e
+  { Equiv.arrowCongr e
       (Equiv.refl
         _) with
     uniformContinuous_toFun :=
@@ -880,7 +880,7 @@ protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β}
   refine' forall_congr' fun s => _
   rw [nhds_infᵢ, tendsto_infᵢ]
   refine' forall_congr' fun hs => _
-  rw [nhds_induced, tendsto_comap_iff, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe,
+  rw [nhds_induced (T := _), tendsto_comap_iff, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe,
     UniformFun.tendsto_iff_tendstoUniformly]
   rfl
 #align uniform_on_fun.tendsto_iff_tendsto_uniformly_on UniformOnFun.tendsto_iff_tendstoUniformlyOn
@@ -901,13 +901,23 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
         (UniformOnFun.ofFun 𝔖).prodCongr (UniformOnFun.ofFun 𝔖)).toUniformEquivOfUniformInducing
     (by
       constructor
-      rw [uniformity_prod, comap_inf, comap_comap, comap_comap, UniformOnFun.inf_eq, inf_uniformity,
-        UniformOnFun.comap_eq, UniformOnFun.comap_eq, uniformity_comap, uniformity_comap]
+      rw [uniformity_prod, comap_inf, comap_comap, comap_comap]
+      unfold instUniformSpaceProd
+      have H := @UniformFun.inf_eq α (β × γ)
+        (UniformSpace.comap Prod.fst ‹_›) (UniformSpace.comap Prod.snd ‹_›)
+      rw [UniformFun.comap_eq, UniformFun.comap_eq] at H
+      apply_fun (fun u ↦ @uniformity (α →ᵤ[𝔖] β × γ) u) at H
+      convert H.symm using 1
+      rw [inf_uniformity]
+      rw [UniformOnFun.comap_eq, UniformOnFun.comap_eq, uniformity_comap]
+      rw [uniformity_comap]
       rfl)
 #align uniform_on_fun.uniform_equiv_prod_arrow UniformOnFun.uniformEquivProdArrow
 
 -- the relevant diagram commutes by definition
 variable (𝔖) (δ : ι → Type _) [∀ i, UniformSpace (δ i)]
+
+#exit
 
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/
