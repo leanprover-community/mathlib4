@@ -226,37 +226,44 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
           appendFun id (Quot.mk r) <$$> Cofix.dest x = appendFun id (Quot.mk r) <$$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
   intro x
-  apply Quot.inductionOn x
-  clear x
-  intro x y
-  apply Quot.inductionOn y
-  clear y
-  intro y rxy
+  rcases x; clear x; rename M (P F) α => x;
+  intro y
+  rcases y; clear y; rename M (P F) α => y;
+  intro rxy
   apply Quot.sound
-  let r' x y := r (Quot.mk _ x) (Quot.mk _ y)
-  have : is_precongr r' := by
+  let r' := fun x y => r (Quot.mk _ x) (Quot.mk _ y)
+  have hr' : r' = fun x y => r (Quot.mk _ x) (Quot.mk _ y) := by rfl;
+
+  have : IsPrecongr r' := by
     intro a b r'ab
     have h₀ :
-      appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> abs (M.dest q.P a) =
-        appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> abs (M.dest q.P b) :=
+      appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P a) =
+        appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P b) :=
       by rw [appendFun_comp_id, comp_map, comp_map] <;> exact h _ _ r'ab
     have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
-      dsimp [r']
+      dsimp [hr']
       rw [Quot.sound cuv]
       apply h'
     let f : Quot r → Quot r' :=
       Quot.lift (Quot.lift (Quot.mk r') h₁)
         (by
-          intro c; apply Quot.inductionOn c; clear c
-          intro c d; apply Quot.inductionOn d; clear d
+          intro c;
+          apply Quot.inductionOn
+                  (motive := fun c => ∀b, r c b → Quot.lift (Quot.mk r') h₁ c = Quot.lift (Quot.mk r') h₁ b)
+                  c;
+          clear c
+          intro c d
+          apply Quot.inductionOn
+                  (motive := fun d => r (Quot.mk Mcongr c) d → Quot.lift (Quot.mk r') h₁ (Quot.mk Mcongr c) = Quot.lift (Quot.mk r') h₁ d)
+                  d
+          clear d
           intro d rcd; apply Quot.sound; apply rcd)
     have : f ∘ Quot.mk r ∘ Quot.mk Mcongr = Quot.mk r' := rfl
     rw [← this, appendFun_comp_id, q.P.comp_map, q.P.comp_map, abs_map, abs_map, abs_map, abs_map,
       h₀]
   refine' ⟨r', this, rxy⟩
-#align mvqpf.cofix.bisim_aux mvqpf.cofix.bisim_aux
 
 /-- Bisimulation principle using `map` and `quot.mk` to match and relate children of two trees. -/
 theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
