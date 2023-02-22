@@ -208,12 +208,14 @@ class StrongEpiCategory : Prop where
   /-- A strong epi category is a category in which every epimorphism is strong. -/
   strongEpi_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], StrongEpi f
 #align category_theory.strong_epi_category CategoryTheory.StrongEpiCategory
+#align category_theory.strong_epi_category.strong_epi_of_epi CategoryTheory.StrongEpiCategory.strongEpi_of_epi
 
 /-- A strong mono category is a category in which every monomorphism is strong. -/
 class StrongMonoCategory : Prop where
   /-- A strong mono category is a category in which every monomorphism is strong. -/
   strongMono_of_mono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], StrongMono f
 #align category_theory.strong_mono_category CategoryTheory.StrongMonoCategory
+#align category_theory.strong_mono_category.strong_mono_of_mono CategoryTheory.StrongMonoCategory.strongMono_of_mono
 
 end
 
