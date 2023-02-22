@@ -16,7 +16,7 @@ import Mathlib.Order.GaloisConnection
 
 # Galois connections between preorders are adjunctions.
 
-* `galois_connection.adjunction` is the adjunction associated to a galois connection.
+* `GaloisConnection.adjunction` is the adjunction associated to a galois connection.
 
 -/
 
@@ -30,11 +30,11 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 /-- A galois connection between preorders induces an adjunction between the associated categories.
 -/
 def GaloisConnection.adjunction {l : X → Y} {u : Y → X} (gc : GaloisConnection l u) :
-    gc.monotone_l.Functor ⊣ gc.monotone_u.Functor :=
+    gc.monotone_l.functor ⊣ gc.monotone_u.functor :=
   CategoryTheory.Adjunction.mkOfHomEquiv
-    {
-      homEquiv := fun X Y =>
-        ⟨fun f => (gc.le_u f.le).Hom, fun f => (gc.l_le f.le).Hom, by tidy, by tidy⟩ }
+    { homEquiv := fun X Y =>
+        ⟨fun f => CategoryTheory.homOfLE (gc.le_u f.le),
+         fun f => CategoryTheory.homOfLE (gc.l_le f.le), _, _⟩ }
 #align galois_connection.adjunction GaloisConnection.adjunction
 
 end
@@ -47,8 +47,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 -/
 theorem Adjunction.gc {L : X ⥤ Y} {R : Y ⥤ X} (adj : L ⊣ R) : GaloisConnection L.obj R.obj :=
   fun x y =>
-  ⟨fun h => ((adj.homEquiv x y).toFun h.Hom).le, fun h => ((adj.homEquiv x y).invFun h.Hom).le⟩
+  ⟨fun h => ((adj.homEquiv x y).toFun h.hom).le, fun h => ((adj.homEquiv x y).invFun h.hom).le⟩
 #align category_theory.adjunction.gc CategoryTheory.Adjunction.gc
 
 end CategoryTheory
-
