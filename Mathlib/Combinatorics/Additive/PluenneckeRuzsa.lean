@@ -10,7 +10,7 @@ Authors: Yaël Dillies, George Shakan
 -/
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
-import Mathlib.Data.Rat.Nnrat
+import Mathlib.Data.Rat.NNRat
 
 /-!
 # The Plünnecke-Ruzsa inequality
