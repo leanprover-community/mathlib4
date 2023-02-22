@@ -87,7 +87,7 @@ theorem dvd_factorial : ∀ {m n}, 0 < m → m ≤ n → m ∣ n !
   | succ _, _, _, h => dvd_of_mul_right_dvd (factorial_dvd_factorial h)
 #align nat.dvd_factorial Nat.dvd_factorial
 
--- Porting note: `mono` not yet implemented @[mono]
+@[mono]
 theorem factorial_le {m n} (h : m ≤ n) : m ! ≤ n ! :=
   le_of_dvd (factorial_pos _) (factorial_dvd_factorial h)
 #align nat.factorial_le Nat.factorial_le
