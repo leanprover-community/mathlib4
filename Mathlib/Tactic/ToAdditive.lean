@@ -39,7 +39,7 @@ syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 /-- The  `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
-syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
+syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" num ? : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
 /-- An `reorder := ...` option for `to_additive`. -/
@@ -200,18 +200,19 @@ An attribute that stores all the declarations that deal with numeric literals on
 *  `@[to_additive_fixed_numeral]` should be added to all functions that take a numeral as argument
   that should never be changed by `@[to_additive]` (because it represents a numeral in a fixed
   type).
-* `@[to_additive_fixed_numeral?]` should be added to all functions that take a numeral as argument
+* `@[to_additive_fixed_numeral n]` should be added to all functions that take a numeral as argument
   that should only be changed if `additiveTest` succeeds on the first argument, i.e. when the
   numeral is only translated if the first argument is a variable (or consists of variables).
+  The argument `n` is the position of the numeral argument (starting to count from 0).
 -/
-initialize fixedNumeralAttr : NameMapExtension Bool ←
+initialize fixedNumeralAttr : NameMapExtension (Option Nat) ←
   registerNameMapAttribute {
     name := `to_additive_fixed_numeral
     descr :=
       "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
     add := fun
-    | _, `(attr| to_additive_fixed_numeral $[?%$conditional]?) =>
-      pure <| conditional.isSome
+    | _, `(attr| to_additive_fixed_numeral $[$arg]?) =>
+      pure <| .map (·.1.isNatLit?.get!) arg
     | _, _ => throwUnsupportedSyntax }
 
 /-- Maps multiplicative names to their additive counterparts. -/
@@ -322,7 +323,7 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
-    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    (fixedNumeral : Name → Option (Option Nat)) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
     Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
@@ -369,20 +370,25 @@ where /-- Implementation of `applyReplacementFun`. -/
         let gAllArgs := gArgs.push x
         let firstArg := gAllArgs[0]
         match fixedNumeral nm with
-        | some true =>
+        | some (some fixedArgNr) =>
           if !additiveTest findTranslation? ignore firstArg then
             if trace then
               dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}. {
-                ""}However, we will still recurse into the first argument."
-            -- In this case, we still have to update the first argument of `g`, since it could be
-            -- something like `(fun x => ℕ) (1 : G)`, and we have to update the `(1 : G)` to
-            -- `(0 : G)`
-            return some <| mkAppN gf <| gAllArgs.setD 0 <| ← r firstArg
-        | some false =>
+                ""}However, we will still recurse into all the non-numeral arguments."
+            -- In this case, we still update all arguments of `g`, other than the one that contains
+            -- the numeral, since all other arguments can contain subexpressions like
+            -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+            let newArgs ← gAllArgs.mapIdx fun argNr arg ↦
+              if argNr == fixedArgNr then
+                arg
+              else
+                r arg
+            return some <| mkAppN gf newArgs
+        | some none =>
           if trace then
             dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
-        | none => pure () -- nothing special, recurse in the arguments
+        | none => pure () -- no attribute; recurse in the arguments
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
