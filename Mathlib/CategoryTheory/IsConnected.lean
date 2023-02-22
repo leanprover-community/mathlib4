@@ -172,7 +172,7 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
     IsConnected J :=
   IsConnected.of_constant_of_preserves_morphisms @fun α F a =>
     by
-    have w := h { j | F j = F j₀ } rfl @fun _ _ f => by simp [a f]
+    have w := h { j | F j = F j₀ } rfl (@fun _ _ f => by simp [a f])
     dsimp at w
     intro j j'
     rw [w j, w j']
@@ -186,7 +186,7 @@ instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) :
   let p' : Set J := (fun j : J => p { down := j } : Set J)
   have hj₀' : Classical.choice hc.is_nonempty ∈ p' :=
     by
-    simp only [p']
+    simp only [(eq_self p')]
     exact hj₀
   apply
     induct_on_objects (fun j : J => p { down := j }) hj₀' @fun _ _ f =>
