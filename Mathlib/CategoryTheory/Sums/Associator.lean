@@ -36,11 +36,14 @@ def associator : Sum (Sum C D) E ⥤ Sum C (Sum D E)
     | inl (inl X) => inl X
     | inl (inr X) => inr (inl X)
     | inr X => inr (inr X)
-  map X Y f :=
+  map {X Y} f :=
     match X, Y, f with
-    | inl (inl X), inl (inl Y), f => f
-    | inl (inr X), inl (inr Y), f => f
-    | inr X, inr Y, f => f
+    | inl (inl _), inl (inl _), f => f
+    | inl (inr _), inl (inr _), f => f
+    | inr _, inr _, f => f
+  map_id := by rintro ((_|_)|_) <;> rfl
+  map_comp := by
+    rintro ((_|_)|_) ((_|_)|_) ((_|_)|_) f g <;> first | cases f | cases g | aesop_cat
 #align category_theory.sum.associator CategoryTheory.sum.associator
 
 @[simp]
@@ -84,11 +87,14 @@ def inverseAssociator : Sum C (Sum D E) ⥤ Sum (Sum C D) E
     | inl X => inl (inl X)
     | inr (inl X) => inl (inr X)
     | inr (inr X) => inr X
-  map X Y f :=
+  map {X Y} f :=
     match X, Y, f with
-    | inl X, inl Y, f => f
-    | inr (inl X), inr (inl Y), f => f
-    | inr (inr X), inr (inr Y), f => f
+    | inl _, inl _, f => f
+    | inr (inl _), inr (inl _), f => f
+    | inr (inr _), inr (inr _), f => f
+  map_id := by rintro (_|(_|_)) <;> rfl
+  map_comp := by
+    rintro (_|(_|_)) (_|(_|_)) (_|(_|_)) f g <;> first | cases f | cases g | aesop_cat
 #align category_theory.sum.inverse_associator CategoryTheory.sum.inverseAssociator
 
 @[simp]
@@ -129,12 +135,12 @@ theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)
 -/
 def associativity : Sum (Sum C D) E ≌ Sum C (Sum D E) :=
   Equivalence.mk (associator C D E) (inverseAssociator C D E)
-    (NatIso.ofComponents (fun X => eqToIso (by tidy)) (by tidy))
-    (NatIso.ofComponents (fun X => eqToIso (by tidy)) (by tidy))
+    (NatIso.ofComponents (fun X => eqToIso (by sorry)) (by sorry)) -- aesop_cat fails
+    (NatIso.ofComponents (fun X => eqToIso (by sorry)) (by sorry)) -- aesop_cat fails
 #align category_theory.sum.associativity CategoryTheory.sum.associativity
 
 instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
-  (by infer_instance : IsEquivalence (associativity C D E).Functor)
+  (by infer_instance : IsEquivalence (associativity C D E).functor)
 #align category_theory.sum.associator_is_equivalence CategoryTheory.sum.associatorIsEquivalence
 
 instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
@@ -144,4 +150,3 @@ instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E
 -- TODO unitors?
 -- TODO pentagon natural transformation? ...satisfying?
 end CategoryTheory.sum
-
