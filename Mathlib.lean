@@ -724,6 +724,7 @@ import Mathlib.Deprecated.Submonoid
 import Mathlib.Deprecated.Subring
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
+import Mathlib.Dynamics.Flow
 import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Abelianization
