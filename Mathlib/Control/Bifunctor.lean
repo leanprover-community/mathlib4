@@ -8,8 +8,8 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Functor
-import Mathbin.Data.Sum.Basic
+import Mathlib.Control.Functor
+import Mathlib.Data.Sum.Basic
 
 /-!
 # Functors with two arguments

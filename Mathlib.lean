@@ -313,6 +313,7 @@ import Mathlib.Computability.NFA
 import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
+import Mathlib.Control.Bifunctor
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
