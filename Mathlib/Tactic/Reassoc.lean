@@ -78,7 +78,7 @@ initialize registerBuiltinAttribute {
     if isProtected (← getEnv) src then
       setEnv $ addProtected (← getEnv) tgt
     let stx := match stx? with | some stx => stx | none => #[]
-    Term.TermElabM.run' <| ToAdditive.applyAttributes stx `reassoc src tgt
+    _ ← Term.TermElabM.run' <| ToAdditive.applyAttributes ref stx `reassoc src tgt
   | _ => throwUnsupportedSyntax }
 
 end CategoryTheory

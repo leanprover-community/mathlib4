@@ -332,8 +332,8 @@ variable {S}
 open Set
 
 /-- A subsemigroup `S` includes `closure s` if and only if it includes `s`. -/
-@[simp,
-  to_additive "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
+@[to_additive (attr := simp)
+  "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
 #align subsemigroup.closure_le Subsemigroup.closure_le
