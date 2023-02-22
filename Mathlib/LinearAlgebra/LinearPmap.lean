@@ -34,6 +34,7 @@ They are also the basis for the theory of unbounded operators.
 
 -/
 
+set_option synthInstance.etaExperiment true
 
 open Set
 
@@ -149,7 +150,7 @@ theorem domain_mk_span_singleton (x : E) (y : F) (H : ∀ c : R, c • x = 0 →
 @[simp]
 theorem mkSpanSingleton'_apply (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c • y = 0) (c : R) (h) :
     mkSpanSingleton' x y H ⟨c • x, h⟩ = c • y := by
-  dsimp [mk_span_singleton']
+  dsimp [mkSpanSingleton']
   rw [← sub_eq_zero, ← sub_smul]
   apply H
   simp only [sub_smul, one_smul, sub_eq_zero]
@@ -181,12 +182,12 @@ theorem mkSpanSingleton_apply (K : Type _) {E F : Type _} [DivisionRing K] [AddC
 /-- Projection to the first coordinate as a `linear_pmap` -/
 protected def fst (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] E
     where
-  domain := p.Prod p'
-  toFun := (LinearMap.fst R E F).comp (p.Prod p').Subtype
+  domain := p.prod p'
+  toFun := (LinearMap.fst R E F).comp (p.prod p').Subtype
 #align linear_pmap.fst LinearPmap.fst
 
 @[simp]
-theorem fst_apply (p : Submodule R E) (p' : Submodule R F) (x : p.Prod p') :
+theorem fst_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
     LinearPmap.fst p p' x = (x : E × F).1 :=
   rfl
 #align linear_pmap.fst_apply LinearPmap.fst_apply
@@ -194,12 +195,12 @@ theorem fst_apply (p : Submodule R E) (p' : Submodule R F) (x : p.Prod p') :
 /-- Projection to the second coordinate as a `linear_pmap` -/
 protected def snd (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] F
     where
-  domain := p.Prod p'
-  toFun := (LinearMap.snd R E F).comp (p.Prod p').Subtype
+  domain := p.prod p'
+  toFun := (LinearMap.snd R E F).comp (p.prod p').Subtype
 #align linear_pmap.snd LinearPmap.snd
 
 @[simp]
-theorem snd_apply (p : Submodule R E) (p' : Submodule R F) (x : p.Prod p') :
+theorem snd_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
     LinearPmap.snd p p' x = (x : E × F).2 :=
   rfl
 #align linear_pmap.snd_apply LinearPmap.snd_apply
@@ -909,4 +910,3 @@ theorem toLinearPmap_graph_eq (g : Submodule R (E × F))
 end SubmoduleToLinearPmap
 
 end Submodule
-
