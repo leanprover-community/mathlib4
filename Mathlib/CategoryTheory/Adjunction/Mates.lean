@@ -163,10 +163,7 @@ def transferNatTransSelf : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
 theorem transferNatTransSelf_counit (f : L₂ ⟶ L₁) (X) :
     L₂.map ((transferNatTransSelf adj₁ adj₂ f).app _) ≫ adj₂.counit.app X =
       f.app _ ≫ adj₁.counit.app X := by
-  -- TODO: Need a `simps` tag for the `Trans` instance for `Equiv`s.
-  -- Once that's done, we can remove `Trans.trans` from the next line
-  -- and elsewhere in this file.
-  dsimp [transferNatTransSelf, Trans.trans]
+  dsimp [transferNatTransSelf]
   rw [id_comp, comp_id]
   have := transferNatTrans_counit adj₁ adj₂ (L₂.leftUnitor.hom ≫ f ≫ L₁.rightUnitor.inv) X
   dsimp at this
@@ -177,7 +174,7 @@ theorem transferNatTransSelf_counit (f : L₂ ⟶ L₁) (X) :
 theorem unit_transferNatTransSelf (f : L₂ ⟶ L₁) (X) :
     adj₁.unit.app _ ≫ (transferNatTransSelf adj₁ adj₂ f).app _ =
       adj₂.unit.app X ≫ R₂.map (f.app _) := by
-  dsimp [transferNatTransSelf, Trans.trans]
+  dsimp [transferNatTransSelf]
   rw [id_comp, comp_id]
   have := unit_transferNatTrans adj₁ adj₂ (L₂.leftUnitor.hom ≫ f ≫ L₁.rightUnitor.inv) X
   dsimp at this
@@ -188,7 +185,7 @@ theorem unit_transferNatTransSelf (f : L₂ ⟶ L₁) (X) :
 @[simp]
 theorem transferNatTransSelf_id : transferNatTransSelf adj₁ adj₁ (𝟙 _) = 𝟙 _ := by
   ext
-  dsimp [transferNatTransSelf, transferNatTrans, Trans.trans]
+  dsimp [transferNatTransSelf, transferNatTrans]
   simp
 #align category_theory.transfer_nat_trans_self_id CategoryTheory.transferNatTransSelf_id
 
@@ -203,7 +200,7 @@ theorem transferNatTransSelf_comp (f g) :
     transferNatTransSelf adj₁ adj₂ f ≫ transferNatTransSelf adj₂ adj₃ g =
       transferNatTransSelf adj₁ adj₃ (g ≫ f) := by
   ext
-  dsimp [transferNatTransSelf, transferNatTrans, Trans.trans]
+  dsimp [transferNatTransSelf, transferNatTrans]
   simp only [id_comp, comp_id]
   rw [← adj₃.unit_naturality_assoc, ← R₃.map_comp, g.naturality_assoc, L₂.map_comp, assoc,
     adj₂.counit_naturality, adj₂.left_triangle_components_assoc, assoc]
@@ -212,13 +209,13 @@ theorem transferNatTransSelf_comp (f g) :
 
 theorem transferNatTransSelf_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (f : 𝟭 C ⟶ L) (X : C) :
     (transferNatTransSelf adj Adjunction.id f).app X = f.app (R.obj X) ≫ adj.counit.app X := by
-  dsimp [transferNatTransSelf, transferNatTrans, Adjunction.id, Trans.trans]
+  dsimp [transferNatTransSelf, transferNatTrans, Adjunction.id]
   simp only [comp_id, id_comp]
 #align category_theory.transfer_nat_trans_self_adjunction_id CategoryTheory.transferNatTransSelf_adjunction_id
 
 theorem transferNatTransSelf_adjunction_id_symm {L R : C ⥤ C} (adj : L ⊣ R) (g : R ⟶ 𝟭 C) (X : C) :
     ((transferNatTransSelf adj Adjunction.id).symm g).app X = adj.unit.app X ≫ g.app (L.obj X) := by
-  dsimp [transferNatTransSelf, transferNatTrans, Adjunction.id, Trans.trans]
+  dsimp [transferNatTransSelf, transferNatTrans, Adjunction.id]
   simp only [comp_id, id_comp]
 #align category_theory.transfer_nat_trans_self_adjunction_id_symm CategoryTheory.transferNatTransSelf_adjunction_id_symm
 
