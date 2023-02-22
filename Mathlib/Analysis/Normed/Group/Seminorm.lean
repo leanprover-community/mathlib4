@@ -122,10 +122,6 @@ structure NonarchAddGroupNorm (G : Type _) [AddGroup G] extends NonarchAddGroupS
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 #align nonarch_add_group_norm NonarchAddGroupNorm
 
--- should we deal with this?
-attribute [nolint docBlame]
-  AddGroupSeminorm.toFun AddGroupNorm.toAddGroupSeminorm GroupNorm.toGroupSeminorm NonarchAddGroupSeminorm.toZeroHom NonarchAddGroupNorm.toNonarchAddGroupSeminorm
-
 /-- `nonarch_add_group_seminorm_class F α` states that `F` is a type of nonarchimedean seminorms on
 the additive group `α`.
 
@@ -630,7 +626,7 @@ namespace GroupSeminorm
 
 variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
-
+-- porting note: added manually because of problems with `to_additive`
 instance _root_.AddGroupSeminorm.toOne [DecidableEq E] [AddGroup E] : One (AddGroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
       map_zero' := if_pos rfl
@@ -802,11 +798,12 @@ directly. -/
 instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
   FunLike.hasCoeToFun
 
+-- porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
-theorem toFun_eq_coe : p.toFun = p :=
+theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
   rfl
-#align group_norm.to_fun_eq_coe GroupNorm.toFun_eq_coe
-#align add_group_norm.to_fun_eq_coe AddGroupNorm.toFun_eq_coe
+#align group_norm.to_fun_eq_coe GroupNorm.toGroupSeminorm_eq_coe
+#align add_group_norm.to_fun_eq_coe AddGroupNorm.toAddGroupSeminorm_eq_coe
 
 @[to_additive (attr := ext)]
 theorem ext : (∀ x, p x = q x) → p = q :=
@@ -952,10 +949,11 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
 noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
   FunLike.hasCoeToFun
 
+-- porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
-theorem toFun_eq_coe : p.toFun = p :=
+theorem toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
   rfl
-#align nonarch_add_group_norm.to_fun_eq_coe NonarchAddGroupNorm.toFun_eq_coe
+#align nonarch_add_group_norm.to_fun_eq_coe NonarchAddGroupNorm.toNonarchAddGroupSeminorm_eq_coe
 
 @[ext]
 theorem ext : (∀ x, p x = q x) → p = q :=
