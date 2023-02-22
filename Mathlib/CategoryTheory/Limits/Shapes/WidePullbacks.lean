@@ -8,8 +8,8 @@ Authors: Bhavik Mehta, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.HasLimits
-import Mathbin.CategoryTheory.Thin
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Thin
 
 /-!
 # Wide pullbacks
@@ -304,22 +304,19 @@ variable (arrows)
 variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
 @[simp, reassoc.1]
-theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ :=
-  by
+theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
   simp
   rfl
 #align category_theory.limits.wide_pullback.lift_π CategoryTheory.Limits.widePullback.lift_π
 
 @[simp, reassoc.1]
-theorem lift_base : lift f fs w ≫ base arrows = f :=
-  by
+theorem lift_base : lift f fs w ≫ base arrows = f := by
   simp
   rfl
 #align category_theory.limits.wide_pullback.lift_base CategoryTheory.Limits.widePullback.lift_base
 
 theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
-    (∀ j : J, g ≫ π arrows j = fs j) → g ≫ base arrows = f → g = lift f fs w :=
-  by
+    (∀ j : J, g ≫ π arrows j = fs j) → g ≫ base arrows = f → g = lift f fs w := by
   intro h1 h2
   apply
     (limit.is_limit (wide_pullback_shape.wide_cospan B objs arrows)).uniq
@@ -330,8 +327,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
 #align category_theory.limits.wide_pullback.eq_lift_of_comp_eq CategoryTheory.Limits.widePullback.eq_lift_of_comp_eq
 
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
-    g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by tidy) :=
-  by
+    g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by tidy) := by
   apply eq_lift_of_comp_eq
   tidy
 #align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.widePullback.hom_eq_lift
@@ -383,22 +379,19 @@ variable (arrows)
 variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
 @[simp, reassoc.1]
-theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ :=
-  by
+theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
   simp
   rfl
 #align category_theory.limits.wide_pushout.ι_desc CategoryTheory.Limits.widePushout.ι_desc
 
 @[simp, reassoc.1]
-theorem head_desc : head arrows ≫ desc f fs w = f :=
-  by
+theorem head_desc : head arrows ≫ desc f fs w = f := by
   simp
   rfl
 #align category_theory.limits.wide_pushout.head_desc CategoryTheory.Limits.widePushout.head_desc
 
 theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
-    (∀ j : J, ι arrows j ≫ g = fs j) → head arrows ≫ g = f → g = desc f fs w :=
-  by
+    (∀ j : J, ι arrows j ≫ g = fs j) → head arrows ≫ g = f → g = desc f fs w := by
   intro h1 h2
   apply
     (colimit.is_colimit (wide_pushout_shape.wide_span B objs arrows)).uniq
@@ -413,8 +406,7 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j =>
         by
         rw [← category.assoc]
-        simp :=
-  by
+        simp := by
   apply eq_desc_of_comp_eq
   tidy
 #align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.widePushout.hom_eq_desc

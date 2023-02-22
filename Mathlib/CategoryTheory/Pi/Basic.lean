@@ -151,6 +151,9 @@ instance sumElimCategory : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
 /- Porting note: replaced `Sum.rec` with `match`'s per the error about
 current state of code generation -/
 
+/- Porting note: replaced `Sum.rec` with `match`'s per the error about 
+current state of code generation -/ 
+
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
 -/
