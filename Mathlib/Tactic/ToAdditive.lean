@@ -39,7 +39,7 @@ syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 /-- The  `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
-syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" num ? : attr
+syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" num* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
 /-- An `reorder := ...` option for `to_additive`. -/
@@ -200,19 +200,20 @@ An attribute that stores all the declarations that deal with numeric literals on
 *  `@[to_additive_fixed_numeral]` should be added to all functions that take a numeral as argument
   that should never be changed by `@[to_additive]` (because it represents a numeral in a fixed
   type).
-* `@[to_additive_fixed_numeral n]` should be added to all functions that take a numeral as argument
-  that should only be changed if `additiveTest` succeeds on the first argument, i.e. when the
-  numeral is only translated if the first argument is a variable (or consists of variables).
-  The argument `n` is the position of the numeral argument (starting to count from 0).
+* `@[to_additive_fixed_numeral n₁ ...]` should be added to all functions that take one or more
+  numerals as argument that should only be changed if `additiveTest` succeeds on the first argument,
+  i.e. when the numeral is only translated if the first argument is a variable
+  (or consists of variables).
+  The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1).
 -/
-initialize fixedNumeralAttr : NameMapExtension (Option Nat) ←
+initialize fixedNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_fixed_numeral
     descr :=
       "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
     add := fun
-    | _, `(attr| to_additive_fixed_numeral $[$arg]?) =>
-      pure <| .map (·.1.isNatLit?.get!) arg
+    | _, `(attr| to_additive_fixed_numeral $[$arg]*) =>
+      pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
 /-- Maps multiplicative names to their additive counterparts. -/
@@ -323,7 +324,7 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
-    (fixedNumeral : Name → Option (Option Nat)) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    (fixedNumeral : Name → Option (List Nat)) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
     Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
@@ -370,24 +371,24 @@ where /-- Implementation of `applyReplacementFun`. -/
         let gAllArgs := gArgs.push x
         let firstArg := gAllArgs[0]
         match fixedNumeral nm with
-        | some (some fixedArgNr) =>
+        | some [] =>
+          if trace then
+            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
+          return some <| g.app x
+        | some fixedArgNrs =>
           if !additiveTest findTranslation? ignore firstArg then
             if trace then
               dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}. {
                 ""}However, we will still recurse into all the non-numeral arguments."
-            -- In this case, we still update all arguments of `g`, other than the one that contains
-            -- the numeral, since all other arguments can contain subexpressions like
+            -- In this case, we still update all arguments of `g` that are not numerals,
+            -- since all other arguments can contain subexpressions like
             -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
             let newArgs ← gAllArgs.mapIdx fun argNr arg ↦
-              if argNr == fixedArgNr then
+              if fixedArgNrs.contains argNr then
                 arg
               else
                 r arg
             return some <| mkAppN gf newArgs
-        | some none =>
-          if trace then
-            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
-          return some <| g.app x
         | none => pure () -- no attribute; recurse in the arguments
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
