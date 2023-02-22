@@ -92,7 +92,7 @@ inductive WEquiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv MvQPF.WEquiv
 
-theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) → β) (x y : q.P.W α) :
+theorem recF_eq_of_WEquiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) → β) (x y : q.P.W α) :
     WEquiv x y → recF u x = recF u y := by
   apply q.P.w_cases _ x
   intro a₀ f'₀ f₀
@@ -106,7 +106,7 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) 
   · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
   · intros x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
 set_option linter.uppercaseLean3 false in
-#align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_wequiv
+#align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_WEquiv
 
 theorem WEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
                     (h : MvQPF.abs (q.P.wDest' x ) = MvQPF.abs (q.P.wDest' y)) :
@@ -157,7 +157,7 @@ theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wrepr_equiv MvQPF.wrepr_equiv
 
-theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
+theorem WEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
     WEquiv x y → WEquiv (g <$$> x) (g <$$> y) := by
   intro h; induction h
   case ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
@@ -170,7 +170,7 @@ theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
   case trans x y z _ _ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
 set_option linter.uppercaseLean3 false in
-#align mvqpf.Wequiv_map MvQPF.wequiv_map
+#align mvqpf.Wequiv_map MvQPF.WEquiv_map
 
 /-- Define the fixed point as the quotient of trees under the equivalence relation.
 -/
@@ -196,7 +196,7 @@ def Fix {n : ℕ} (F : TypeVec (n + 1) → Type _) [MvFunctor F] [q : MvQPF F] (
 
 /-- `Fix F` is a functor -/
 def Fix.map {α β : TypeVec n} (g : α ⟹ β) : Fix F α → Fix F β :=
-  Quotient.lift (fun x : q.P.W α => ⟦q.P.wMap g x⟧) fun _a _b h => Quot.sound (wequiv_map _ _ _ h)
+  Quotient.lift (fun x : q.P.W α => ⟦q.P.wMap g x⟧) fun _a _b h => Quot.sound (WEquiv_map _ _ _ h)
 #align mvqpf.fix.map MvQPF.Fix.map
 
 instance Fix.mvfunctor : MvFunctor (Fix F) where map := @Fix.map _ _ _ _
@@ -206,12 +206,12 @@ variable {α : TypeVec.{u} n}
 
 /-- Recursor for `Fix F` -/
 def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
-  Quot.lift (recF g) (recF_eq_of_wequiv α g)
+  Quot.lift (recF g) (recF_eq_of_WEquiv α g)
 #align mvqpf.fix.rec MvQPF.Fix.rec
 
 /-- Access W-type underlying `Fix F`  -/
 def fixToW : Fix F α → q.P.W α :=
-  Quotient.lift wrepr (recF_eq_of_wequiv α fun x => q.P.wMk' (repr x))
+  Quotient.lift wrepr (recF_eq_of_WEquiv α fun x => q.P.wMk' (repr x))
 set_option linter.uppercaseLean3 false in
 #align mvqpf.fix_to_W MvQPF.fixToW
 
@@ -231,7 +231,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
     apply funext
     apply Quotient.ind
     intro x
-    apply recF_eq_of_wequiv
+    apply recF_eq_of_WEquiv
     apply wrepr_equiv
   conv =>
     lhs
