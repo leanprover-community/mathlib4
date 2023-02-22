@@ -143,13 +143,13 @@ variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R�
 
 /-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both between categories `C`, `D`, there is a
 bijection between natural transformations `L₂ ⟶ L₁` and natural transformations `R₁ ⟶ R₂`.
-This is defined as a special case of `transfer_nat_trans`, where the two "vertical" functors are
+This is defined as a special case of `transferNatTrans`, where the two "vertical" functors are
 identity.
 TODO: Generalise to when the two vertical functors are equivalences rather than being exactly `𝟭`.
 
 Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transformation is an iso
-iff its image under the bijection is an iso, see eg `category_theory.transfer_nat_trans_self_iso`.
-This is in contrast to the general case `transfer_nat_trans` which does not in general have this
+iff its image under the bijection is an iso, see eg `CategoryTheory.transferNatTransSelf_iso`.
+This is in contrast to the general case `transferNatTrans` which does not in general have this
 property.
 -/
 def transferNatTransSelf : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
@@ -240,7 +240,7 @@ theorem transferNatTransSelf_symm_comm {f g} (gf : g ≫ f = 𝟙 _) :
 #align category_theory.transfer_nat_trans_self_symm_comm CategoryTheory.transferNatTransSelf_symm_comm
 
 /-- If `f` is an isomorphism, then the transferred natural transformation is an isomorphism.
-The converse is given in `transfer_nat_trans_self_of_iso`.
+The converse is given in `transferNatTransSelf_of_iso`.
 -/
 instance transferNatTransSelf_iso (f : L₂ ⟶ L₁) [IsIso f] :
     IsIso (transferNatTransSelf adj₁ adj₂ f) :=
@@ -249,7 +249,7 @@ instance transferNatTransSelf_iso (f : L₂ ⟶ L₁) [IsIso f] :
 #align category_theory.transfer_nat_trans_self_iso CategoryTheory.transferNatTransSelf_iso
 
 /-- If `f` is an isomorphism, then the un-transferred natural transformation is an isomorphism.
-The converse is given in `transfer_nat_trans_self_symm_of_iso`.
+The converse is given in `transferNatTransSelf_symm_of_iso`.
 -/
 instance transferNatTransSelf_symm_iso (f : R₁ ⟶ R₂) [IsIso f] :
     IsIso ((transferNatTransSelf adj₁ adj₂).symm f) :=
@@ -259,7 +259,7 @@ instance transferNatTransSelf_symm_iso (f : R₁ ⟶ R₂) [IsIso f] :
 
 /-- If `f` is a natural transformation whose transferred natural transformation is an isomorphism,
 then `f` is an isomorphism.
-The converse is given in `transfer_nat_trans_self_iso`.
+The converse is given in `transferNatTransSelf_iso`.
 -/
 theorem transferNatTransSelf_of_iso (f : L₂ ⟶ L₁) [IsIso (transferNatTransSelf adj₁ adj₂ f)] :
     IsIso f := by
@@ -271,7 +271,7 @@ theorem transferNatTransSelf_of_iso (f : L₂ ⟶ L₁) [IsIso (transferNatTrans
 /--
 If `f` is a natural transformation whose un-transferred natural transformation is an isomorphism,
 then `f` is an isomorphism.
-The converse is given in `transfer_nat_trans_self_symm_iso`.
+The converse is given in `transferNatTransSelf_symm_iso`.
 -/
 theorem transferNatTransSelf_symm_of_iso (f : R₁ ⟶ R₂)
     [IsIso ((transferNatTransSelf adj₁ adj₂).symm f)] : IsIso f := by
