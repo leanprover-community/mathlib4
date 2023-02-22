@@ -9,9 +9,9 @@ Authors: Bhavik Mehta, Jakob von Raumer
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Category.Ulift
+import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Connected category
@@ -79,7 +79,7 @@ class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J :
   [is_nonempty : Nonempty J]
 #align category_theory.is_connected CategoryTheory.IsConnected
 
-attribute [instance] is_connected.is_nonempty
+attribute [instance] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
 
@@ -99,7 +99,7 @@ The converse is given in `is_connected.of_any_functor_const_on_obj`.
 theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₁} (F : J ⥤ Discrete α) (j j' : J) :
     F.obj j = F.obj j' := by
   ext
-  exact ((iso_constant F j').Hom.app j).down.1
+  exact ((isoConstant F j').hom.app j).down.1
 #align category_theory.any_functor_const_on_obj CategoryTheory.any_functor_const_on_obj
 
 /-- If any functor to a discrete category is constant on objects, J is connected.
@@ -107,9 +107,8 @@ The converse of `any_functor_const_on_obj`.
 -/
 theorem IsConnected.of_any_functor_const_on_obj [Nonempty J]
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') : IsConnected J :=
-  {
-    iso_constant := fun α F j' =>
-      ⟨NatIso.ofComponents (fun j => eqToIso (h F j j')) fun _ _ _ => Subsingleton.elim _ _⟩ }
+  { iso_constant := @fun α F j' =>
+      ⟨NatIso.ofComponents (fun j => eqToIso (h F j j')) @fun _ _ _ => Subsingleton.elim _ _⟩ }
 #align category_theory.is_connected.of_any_functor_const_on_obj CategoryTheory.IsConnected.of_any_functor_const_on_obj
 
 /-- If `J` is connected, then given any function `F` such that the presence of a
@@ -119,12 +118,12 @@ This can be thought of as a local-to-global property.
 The converse is shown in `is_connected.of_constant_of_preserves_morphisms`
 -/
 theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₁} (F : J → α)
-    (h : ∀ (j₁ j₂ : J) (f : j₁ ⟶ j₂), F j₁ = F j₂) (j j' : J) : F j = F j' := by
+    (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) (j j' : J) : F j = F j' := by
   simpa using
     any_functor_const_on_obj
-      { obj := discrete.mk ∘ F
-        map := fun _ _ f =>
-          eq_to_hom
+      { obj := Discrete.mk ∘ F
+        map := @fun _ _ f =>
+          eqToHom
             (by
               ext
               exact h _ _ f) }
@@ -140,12 +139,12 @@ The converse of `constant_of_preserves_morphisms`.
 theorem IsConnected.of_constant_of_preserves_morphisms [Nonempty J]
     (h :
       ∀ {α : Type u₁} (F : J → α),
-        (∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), F j₁ = F j₂) → ∀ j j' : J, F j = F j') :
+        (∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), F j₁ = F j₂) → ∀ j j' : J, F j = F j') :
     IsConnected J :=
-  IsConnected.of_any_functor_const_on_obj fun _ F =>
-    h F.obj fun _ _ f => by
+  IsConnected.of_any_functor_const_on_obj @fun _ F =>
+    h F.obj @fun _ _ f => by
       ext
-      exact discrete.eq_of_hom (F.map f)
+      exact Discrete.eq_of_hom (F.map f)
 #align category_theory.is_connected.of_constant_of_preserves_morphisms CategoryTheory.IsConnected.of_constant_of_preserves_morphisms
 
 /-- An inductive-like property for the objects of a connected category.
@@ -171,9 +170,9 @@ The converse of `induct_on_objects`.
 theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
     (h : ∀ p : Set J, j₀ ∈ p → (∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) → ∀ j : J, j ∈ p) :
     IsConnected J :=
-  IsConnected.of_constant_of_preserves_morphisms fun α F a =>
+  IsConnected.of_constant_of_preserves_morphisms @fun α F a =>
     by
-    have w := h { j | F j = F j₀ } rfl fun _ _ f => by simp [a f]
+    have w := h { j | F j = F j₀ } rfl @fun _ _ f => by simp [a f]
     dsimp at w
     intro j j'
     rw [w j, w j']
@@ -181,8 +180,8 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
 
 /-- Lifting the universe level of morphisms and objects preserves connectedness. -/
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
-  have : Nonempty (ULiftHom.{v₂} (ULift.{u₂} J)) := by simp [ulift_hom, hc.is_nonempty]
-  apply is_connected.of_induct
+  have : Nonempty (ULiftHom.{v₂} (ULift.{u₂} J)) := by simp [ULiftHom, hc.is_nonempty]
+  apply IsConnected.of_induct
   rintro p hj₀ h ⟨j⟩
   let p' : Set J := (fun j : J => p { down := j } : Set J)
   have hj₀' : Classical.choice hc.is_nonempty ∈ p' :=
@@ -190,8 +189,8 @@ instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) :
     simp only [p']
     exact hj₀
   apply
-    induct_on_objects (fun j : J => p { down := j }) hj₀' fun _ _ f =>
-      h ((ulift_hom_ulift_category.equiv J).Functor.map f)
+    induct_on_objects (fun j : J => p { down := j }) hj₀' @fun _ _ f =>
+      h ((ULiftHomULiftCategory.equiv J).functor.map f)
 
 /-- Another induction principle for `is_preconnected J`:
 given a type family `Z : J → Sort*` and
@@ -199,10 +198,10 @@ a rule for transporting in *both* directions along a morphism in `J`,
 we can transport an `x : Z j₀` to a point in `Z j` for any `j`.
 -/
 theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort _)
-    (h₁ : ∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), Z j₁ → Z j₂) (h₂ : ∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), Z j₂ → Z j₁)
+    (h₁ : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), Z j₁ → Z j₂) (h₂ : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), Z j₂ → Z j₁)
     {j₀ : J} (x : Z j₀) (j : J) : Nonempty (Z j) :=
   (induct_on_objects { j | Nonempty (Z j) } ⟨x⟩
-      (fun j₁ j₂ f =>
+      (@fun j₁ j₂ f =>
         ⟨by
           rintro ⟨y⟩
           exact ⟨h₁ f y⟩, by
@@ -216,11 +215,11 @@ theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort _)
 theorem isPreconnected_of_equivalent {K : Type u₁} [Category.{v₂} K] [IsPreconnected J]
     (e : J ≌ K) : IsPreconnected K :=
   {
-    iso_constant := fun α F k =>
+    iso_constant := @fun α F k =>
       ⟨calc
-          F ≅ e.inverse ⋙ e.Functor ⋙ F := (e.invFunIdAssoc F).symm
-          _ ≅ e.inverse ⋙ (Functor.const J).obj ((e.Functor ⋙ F).obj (e.inverse.obj k)) :=
-            isoWhiskerLeft e.inverse (isoConstant (e.Functor ⋙ F) (e.inverse.obj k))
+          F ≅ e.inverse ⋙ e.functor ⋙ F := (e.invFunIdAssoc F).symm
+          _ ≅ e.inverse ⋙ (Functor.const J).obj ((e.functor ⋙ F).obj (e.inverse.obj k)) :=
+            isoWhiskerLeft e.inverse (isoConstant (e.functor ⋙ F) (e.inverse.obj k))
           _ ≅ e.inverse ⋙ (Functor.const J).obj (F.obj k) :=
             isoWhiskerLeft _ ((F ⋙ Functor.const J).mapIso (e.counitIso.app k))
           _ ≅ (Functor.const K).obj (F.obj k) := NatIso.ofComponents (fun X => Iso.refl _) (by simp)
@@ -230,8 +229,8 @@ theorem isPreconnected_of_equivalent {K : Type u₁} [Category.{v₂} K] [IsPrec
 /-- If `J` and `K` are equivalent, then if `J` is connected then `K` is as well. -/
 theorem isConnected_of_equivalent {K : Type u₁} [Category.{v₂} K] (e : J ≌ K) [IsConnected J] :
     IsConnected K :=
-  { is_nonempty := Nonempty.map e.Functor.obj (by infer_instance)
-    to_isPreconnected := isPreconnected_of_equivalent e }
+  { is_nonempty := Nonempty.map e.functor.obj (by infer_instance)
+    toIsPreconnected := isPreconnected_of_equivalent e }
 #align category_theory.is_connected_of_equivalent CategoryTheory.isConnected_of_equivalent
 
 /-- If `J` is preconnected, then `Jᵒᵖ` is preconnected as well. -/
@@ -268,7 +267,7 @@ def Zag (j₁ j₂ : J) : Prop :=
   Nonempty (j₁ ⟶ j₂) ∨ Nonempty (j₂ ⟶ j₁)
 #align category_theory.zag CategoryTheory.Zag
 
-theorem zag_symmetric : Symmetric (@Zag J _) := fun j₂ j₁ h => h.symm
+theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
 #align category_theory.zag_symmetric CategoryTheory.zag_symmetric
 
 /-- `j₁` and `j₂` are related by `zigzag` if there is a chain of
@@ -283,8 +282,8 @@ theorem zigzag_symmetric : Symmetric (@Zigzag J _) :=
   Relation.ReflTransGen.symmetric zag_symmetric
 #align category_theory.zigzag_symmetric CategoryTheory.zigzag_symmetric
 
-theorem zigzag_equivalence : Equivalence (@Zigzag J _) :=
-  Equivalence.mk _ Relation.reflexive_reflTransGen zigzag_symmetric Relation.transitive_reflTransGen
+theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
+  _root_.Equivalence.mk _ Relation.reflexive_reflTransGen zigzag_symmetric Relation.transitive_reflTransGen
 #align category_theory.zigzag_equivalence CategoryTheory.zigzag_equivalence
 
 /-- The setoid given by the equivalence relation `zigzag`. A quotient for this
@@ -301,44 +300,44 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J
 -/
 theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
-  h.lift _ fun j k => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
+  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
 #align category_theory.zigzag_obj_of_zigzag CategoryTheory.zigzag_obj_of_zigzag
 
 -- TODO: figure out the right way to generalise this to `zigzag`.
 theorem zag_of_zag_obj (F : J ⥤ K) [Full F] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
     Zag j₁ j₂ :=
-  Or.imp (Nonempty.map F.Preimage) (Nonempty.map F.Preimage) h
+  Or.imp (Nonempty.map F.preimage) (Nonempty.map F.preimage) h
 #align category_theory.zag_of_zag_obj CategoryTheory.zag_of_zag_obj
 
 /-- Any equivalence relation containing (⟶) holds for all pairs of a connected category. -/
-theorem equiv_relation [IsConnected J] (r : J → J → Prop) (hr : Equivalence r)
+theorem equiv_relation [IsConnected J] (r : J → J → Prop) (hr : _root_.Equivalence r)
     (h : ∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), r j₁ j₂) : ∀ j₁ j₂ : J, r j₁ j₂ := by
   have z : ∀ j : J, r (Classical.arbitrary J) j :=
     induct_on_objects (fun k => r (Classical.arbitrary J) k) (hr.1 (Classical.arbitrary J))
-      fun _ _ f => ⟨fun t => hr.2.2 t (h f), fun t => hr.2.2 t (hr.2.1 (h f))⟩
-  intros ; apply hr.2.2 (hr.2.1 (z _)) (z _)
+      @ fun _ _ f => ⟨fun t => hr.3 t (h f), fun t => hr.3 t (hr.2 (h f))⟩
+  intros ; apply hr.3 (hr.2 (z _)) (z _)
 #align category_theory.equiv_relation CategoryTheory.equiv_relation
 
 /-- In a connected category, any two objects are related by `zigzag`. -/
 theorem isConnected_zigzag [IsConnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
   equiv_relation _ zigzag_equivalence
-    (fun _ _ f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
+    (@fun _ _ f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 #align category_theory.is_connected_zigzag CategoryTheory.isConnected_zigzag
 
 /-- If any two objects in an nonempty category are related by `zigzag`, the category is connected.
 -/
 theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J := by
-  apply is_connected.of_induct
+  apply IsConnected.of_induct
   intro p hp hjp j
-  have : ∀ j₁ j₂ : J, zigzag j₁ j₂ → (j₁ ∈ p ↔ j₂ ∈ p) :=
+  have : ∀ j₁ j₂ : J, Zigzag j₁ j₂ → (j₁ ∈ p ↔ j₂ ∈ p) :=
     by
     introv k
-    induction' k with _ _ rt_zag zag
+    induction' k with _ _ _ zag k_ih
     · rfl
     · rw [k_ih]
-      rcases zag with (⟨⟨_⟩⟩ | ⟨⟨_⟩⟩)
-      apply hjp zag
-      apply (hjp zag).symm
+      cases' zag with zag zag
+      apply hjp (Nonempty.some zag)
+      exact (hjp (Nonempty.some zag)).symm
   rwa [this j (Classical.arbitrary J) (h _ _)]
 #align category_theory.zigzag_is_connected CategoryTheory.zigzag_isConnected
 
@@ -356,7 +355,7 @@ theorem isConnected_of_zigzag [Nonempty J]
     (h :
       ∀ j₁ j₂ : J, ∃ l, List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
     IsConnected J := by
-  apply zigzag_is_connected
+  apply zigzag_isConnected
   intro j₁ j₂
   rcases h j₁ j₂ with ⟨l, hl₁, hl₂⟩
   apply List.relationReflTransGen_of_exists_chain l hl₁ hl₂
@@ -365,9 +364,9 @@ theorem isConnected_of_zigzag [Nonempty J]
 /-- If `discrete α` is connected, then `α` is (type-)equivalent to `punit`. -/
 def discreteIsConnectedEquivPunit {α : Type u₁} [IsConnected (Discrete α)] : α ≃ PUnit :=
   Discrete.equivOfEquivalence.{u₁, u₁}
-    { Functor := Functor.star (Discrete α)
+    { functor := Functor.star (Discrete α)
       inverse := Discrete.functor fun _ => Classical.arbitrary _
-      unitIso := iso_constant _ (Classical.arbitrary _)
+      unitIso := isoConstant _ (Classical.arbitrary _)
       counitIso := Functor.pUnitExt _ _ }
 #align category_theory.discrete_is_connected_equiv_punit CategoryTheory.discreteIsConnectedEquivPunit
 
@@ -389,17 +388,16 @@ theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
 
 instance [IsConnected J] : Full (Functor.const J : C ⥤ J ⥤ C)
     where
-  Preimage X Y f := f.app (Classical.arbitrary J)
-  witness' X Y f := by
+  preimage := @fun X Y f => f.app (Classical.arbitrary J)
+  witness := @fun X Y f => by
     ext j
     apply nat_trans_from_is_connected f (Classical.arbitrary J) j
 
 instance nonempty_hom_of_connected_groupoid {G} [Groupoid G] [IsConnected G] :
     ∀ x y : G, Nonempty (x ⟶ y) := by
-  refine' equiv_relation _ _ fun j₁ j₂ => Nonempty.intro
+  refine' equiv_relation _ _ @fun j₁ j₂ => Nonempty.intro
   exact
-    ⟨fun j => ⟨𝟙 _⟩, fun j₁ j₂ => Nonempty.map fun f => inv f, fun _ _ _ => Nonempty.map2 (· ≫ ·)⟩
+    ⟨fun j => ⟨𝟙 _⟩, @fun j₁ j₂ => Nonempty.map fun f => inv f, @fun _ _ _ => Nonempty.map2 (· ≫ ·)⟩
 #align category_theory.nonempty_hom_of_connected_groupoid CategoryTheory.nonempty_hom_of_connected_groupoid
 
 end CategoryTheory
-
