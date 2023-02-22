@@ -226,7 +226,7 @@ def map₂ObjMap (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D → Thi
       (fun X Y => (F.obj X).obj Y)
           (fun X₁ _ ⟨hX⟩ _ Y₂ ⟨hY⟩ => ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩) x y
 
-/-- For each `x : ThinkSkeleton C`, we promote `map₂ObjMap F x` to a functor -/
+/-- For each `x : ThinSkeleton C`, we promote `map₂ObjMap F x` to a functor -/
 def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ ThinSkeleton E := 
   fun x => 
     { obj := fun y => map₂ObjMap F x y
