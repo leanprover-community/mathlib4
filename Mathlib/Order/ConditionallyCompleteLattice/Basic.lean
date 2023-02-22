@@ -1460,7 +1460,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
   { instInfSetWithTop, instSupSetWithTop, WithTop.boundedOrder, WithTop.lattice with
     le_supₛ := fun S a haS => (WithTop.isLUB_supₛ' ⟨a, haS⟩).1 haS
     supₛ_le := fun S a ha => by
-      cases' S.eq_empty_or_nonempty with h
+      cases' S.eq_empty_or_nonempty with h h
       · show ite _ _ _ ≤ a
         split_ifs with h₁ h₂
         · rw [h] at h₁
@@ -1474,8 +1474,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type _}
           use ⊥
           rw [h]
           rintro b ⟨⟩
-      · rename_i h
-        refine' (WithTop.isLUB_supₛ' h).2 ha
+      · refine' (WithTop.isLUB_supₛ' h).2 ha
     infₛ_le := fun S a haS =>
       show ite _ _ _ ≤ a by
         split_ifs with h₁
