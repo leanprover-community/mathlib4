@@ -98,10 +98,13 @@ theorem recF_eq_of_wequiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) 
   intro a₀ f'₀ f₀
   apply q.P.w_cases _ y
   intro a₁ f'₁ f₁
-  intro h; induction h
-  case ind a f' f₀ f₁ h ih => simp only [recF_eq, Function.comp, ih]
-  case abs a₀ f'₀ f₀ a₁ f'₁ f₁ h => simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
-  case trans x y z e₁ e₂ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
+  intro h
+  -- porting note: induction on h doesn't work.
+  refine' @WEquiv.recOn _ _ _ _ _ (λ a a' _ => recF u a = recF u a') _ _ h _ _ _
+  · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
+    congr; funext; congr; funext; apply ih
+  · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
+  · intros x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
 set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_wequiv
 
