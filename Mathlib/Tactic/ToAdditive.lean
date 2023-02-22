@@ -388,7 +388,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           if trace then
             dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
-        | none => pure () -- nothing special, recurse in the arguments
+        | none => pure () -- no attribute; recurse in the arguments
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
