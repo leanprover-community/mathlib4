@@ -8,7 +8,7 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.UniformConvergenceTopology
+import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Equicontinuity of a family of functions
@@ -136,8 +136,7 @@ protected abbrev Set.UniformEquicontinuous (H : Set <| β → α) : Prop :=
 only one with `x₀`. -/
 theorem equicontinuousAt_iff_pair {F : ι → X → α} {x₀ : X} :
     EquicontinuousAt F x₀ ↔
-      ∀ U ∈ 𝓤 α, ∃ V ∈ 𝓝 x₀, ∀ (x) (_ : x ∈ V) (y) (_ : y ∈ V) (i), (F i x, F i y) ∈ U :=
-  by
+      ∀ U ∈ 𝓤 α, ∃ V ∈ 𝓝 x₀, ∀ (x) (_ : x ∈ V) (y) (_ : y ∈ V) (i), (F i x, F i y) ∈ U := by
   constructor <;> intro H U hU
   · rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
     refine' ⟨_, H V hV, fun x hx y hy i => hVU (prod_mk_mem_compRel _ (hy i))⟩
@@ -274,8 +273,7 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
 
 theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type _} {p : κ → Prop} {s : κ → Set X}
     {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p s) :
-    EquicontinuousAt F x₀ ↔ ∀ U ∈ 𝓤 α, ∃ (k : _)(_ : p k), ∀ x ∈ s k, ∀ i, (F i x₀, F i x) ∈ U :=
-  by
+    EquicontinuousAt F x₀ ↔ ∀ U ∈ 𝓤 α, ∃ (k : _)(_ : p k), ∀ x ∈ s k, ∀ i, (F i x₀, F i x) ∈ U := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
     hX.tendsto_iff (UniformFun.hasBasis_nhds ι α _)]
   rfl
@@ -283,8 +281,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff_left {κ : Type _} {p : κ → Prop
 
 theorem Filter.HasBasis.equicontinuousAt_iff_right {κ : Type _} {p : κ → Prop} {s : κ → Set (α × α)}
     {F : ι → X → α} {x₀ : X} (hα : (𝓤 α).HasBasis p s) :
-    EquicontinuousAt F x₀ ↔ ∀ k, p k → ∀ᶠ x in 𝓝 x₀, ∀ i, (F i x₀, F i x) ∈ s k :=
-  by
+    EquicontinuousAt F x₀ ↔ ∀ k, p k → ∀ᶠ x in 𝓝 x₀, ∀ i, (F i x₀, F i x) ∈ s k := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
     (UniformFun.hasBasis_nhds_of_basis ι α _ hα).tendsto_right_iff]
   rfl
@@ -294,8 +291,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type _} {p₁ : κ�
     {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → X → α} {x₀ : X} (hX : (𝓝 x₀).HasBasis p₁ s₁)
     (hα : (𝓤 α).HasBasis p₂ s₂) :
     EquicontinuousAt F x₀ ↔
-      ∀ k₂, p₂ k₂ → ∃ (k₁ : _)(_ : p₁ k₁), ∀ x ∈ s₁ k₁, ∀ i, (F i x₀, F i x) ∈ s₂ k₂ :=
-  by
+      ∀ k₂, p₂ k₂ → ∃ (k₁ : _)(_ : p₁ k₁), ∀ x ∈ s₁ k₁, ∀ i, (F i x₀, F i x) ∈ s₂ k₂ := by
   rw [equicontinuousAt_iff_continuousAt, ContinuousAt,
     hX.tendsto_iff (UniformFun.hasBasis_nhds_of_basis ι α _ hα)]
   rfl
@@ -304,8 +300,7 @@ theorem Filter.HasBasis.equicontinuousAt_iff {κ₁ κ₂ : Type _} {p₁ : κ�
 theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type _} {p : κ → Prop}
     {s : κ → Set (β × β)} {F : ι → β → α} (hβ : (𝓤 β).HasBasis p s) :
     UniformEquicontinuous F ↔
-      ∀ U ∈ 𝓤 α, ∃ (k : _)(_ : p k), ∀ x y, (x, y) ∈ s k → ∀ i, (F i x, F i y) ∈ U :=
-  by
+      ∀ U ∈ 𝓤 α, ∃ (k : _)(_ : p k), ∀ x y, (x, y) ∈ s k → ∀ i, (F i x, F i y) ∈ U := by
   rw [uniformEquicontinuous_iff_uniformContinuous, UniformContinuous,
     hβ.tendsto_iff (UniformFun.hasBasis_uniformity ι α)]
   simp_rw [Prod.forall]
@@ -314,8 +309,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff_left {κ : Type _} {p : κ →
 
 theorem Filter.HasBasis.uniformEquicontinuous_iff_right {κ : Type _} {p : κ → Prop}
     {s : κ → Set (α × α)} {F : ι → β → α} (hα : (𝓤 α).HasBasis p s) :
-    UniformEquicontinuous F ↔ ∀ k, p k → ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ s k :=
-  by
+    UniformEquicontinuous F ↔ ∀ k, p k → ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ s k := by
   rw [uniformEquicontinuous_iff_uniformContinuous, UniformContinuous,
     (UniformFun.hasBasis_uniformity_of_basis ι α hα).tendsto_right_iff]
   rfl
@@ -325,8 +319,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type _} {p₁ :
     {s₁ : κ₁ → Set (β × β)} {p₂ : κ₂ → Prop} {s₂ : κ₂ → Set (α × α)} {F : ι → β → α}
     (hβ : (𝓤 β).HasBasis p₁ s₁) (hα : (𝓤 α).HasBasis p₂ s₂) :
     UniformEquicontinuous F ↔
-      ∀ k₂, p₂ k₂ → ∃ (k₁ : _)(_ : p₁ k₁), ∀ x y, (x, y) ∈ s₁ k₁ → ∀ i, (F i x, F i y) ∈ s₂ k₂ :=
-  by
+      ∀ k₂, p₂ k₂ → ∃ (k₁ : _)(_ : p₁ k₁), ∀ x y, (x, y) ∈ s₁ k₁ → ∀ i, (F i x, F i y) ∈ s₂ k₂ := by
   rw [uniformEquicontinuous_iff_uniformContinuous, UniformContinuous,
     hβ.tendsto_iff (UniformFun.hasBasis_uniformity_of_basis ι α hα)]
   simp_rw [Prod.forall]
@@ -337,8 +330,7 @@ theorem Filter.HasBasis.uniformEquicontinuous_iff {κ₁ κ₂ : Type _} {p₁ :
 `x₀ : X` iff the family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is
 equicontinuous at `x₀`. -/
 theorem UniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u : α → β}
-    (hu : UniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((· ∘ ·) u ∘ F) x₀ :=
-  by
+    (hu : UniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((· ∘ ·) u ∘ F) x₀ := by
   have := (UniformFun.postcomp_uniformInducing hu).Inducing
   rw [equicontinuousAt_iff_continuousAt, equicontinuousAt_iff_continuousAt, this.continuous_at_iff]
   rfl
@@ -348,8 +340,7 @@ theorem UniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u
 /-- Given `u : α → β` a uniform inducing map, a family `𝓕 : ι → X → α` is equicontinuous iff the
 family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is equicontinuous. -/
 theorem UniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β} (hu : UniformInducing u) :
-    Equicontinuous F ↔ Equicontinuous ((· ∘ ·) u ∘ F) :=
-  by
+    Equicontinuous F ↔ Equicontinuous ((· ∘ ·) u ∘ F) := by
   trace
     "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `congrm #[[expr ∀ x, (_ : exprProp())]]"
   rw [hu.equicontinuous_at_iff]
@@ -359,8 +350,7 @@ theorem UniformInducing.equicontinuous_iff {F : ι → X → α} {u : α → β}
 iff the family `𝓕'`, obtained by precomposing each function of `𝓕` by `u`, is uniformly
 equicontinuous. -/
 theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α → γ}
-    (hu : UniformInducing u) : UniformEquicontinuous F ↔ UniformEquicontinuous ((· ∘ ·) u ∘ F) :=
-  by
+    (hu : UniformInducing u) : UniformEquicontinuous F ↔ UniformEquicontinuous ((· ∘ ·) u ∘ F) := by
   have := UniformFun.postcomp_uniformInducing hu
   rw [uniformEquicontinuous_iff_uniformContinuous, uniformEquicontinuous_iff_uniformContinuous,
     this.uniform_continuous_iff]
@@ -373,8 +363,7 @@ embedding than continuity, but in practice this will mostly be applied to `fun_l
 the coercion is injective. -/
 theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ coe : A → X → α) x₀) (hu : Continuous u) :
-    EquicontinuousAt (u ∘ coe : closure A → X → α) x₀ :=
-  by
+    EquicontinuousAt (u ∘ coe : closure A → X → α) x₀ := by
   intro U hU
   rcases mem_uniformity_isClosed hU with ⟨V, hV, hVclosed, hVU⟩
   filter_upwards [hA V hV]with x hx
@@ -428,8 +417,7 @@ on the embedding than continuity, but in practice this will mostly be applied to
 where the coercion is injective. -/
 theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
     (hA : UniformEquicontinuous (u ∘ coe : A → β → α)) (hu : Continuous u) :
-    UniformEquicontinuous (u ∘ coe : closure A → β → α) :=
-  by
+    UniformEquicontinuous (u ∘ coe : closure A → β → α) := by
   intro U hU
   rcases mem_uniformity_isClosed hU with ⟨V, hV, hVclosed, hVU⟩
   filter_upwards [hA V hV]
