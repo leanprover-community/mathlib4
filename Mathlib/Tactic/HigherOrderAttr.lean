@@ -67,7 +67,7 @@ def higherOrderAfterSet (thm : Name) (onm : Option Name) : AttrM Unit := do
     let mex ← mkFreshExprMVar hot
     let mvr₁ := mex.mvarId!
     let (_, mvr₂) ← mvr₁.intros
-    let [mvr₃] ← mvr₂.apply (← mkConst ``funext) | throwError "Something went wrong."
+    let [mvr₃] ← mvr₂.apply (← mkConst ``funext) | throwError "failed"
     let (_, mvr₄) ← mvr₃.intro1
     let lmvr ← mvr₄.apply (← mkConst thm)
     lmvr.forM fun mvr₅ ↦ mvr₅.assumption
