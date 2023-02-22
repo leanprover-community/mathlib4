@@ -105,7 +105,8 @@ theorem comp_snd {α β₀ β₁ β₂} (g : β₀ → β₁) (g' : β₁ → β
 #align bifunctor.comp_snd Bifunctor.comp_snd
 
 attribute [functor_norm]
-  bimap_bimap comp_snd comp_fst snd_comp_snd snd_comp_fst fst_comp_snd fst_comp_fst bimap_comp_bimap bimap_id_id fst_id snd_id
+  bimap_bimap comp_snd comp_fst snd_comp_snd snd_comp_fst fst_comp_snd fst_comp_fst
+  bimap_comp_bimap bimap_id_id fst_id snd_id
 
 end Bifunctor
 
