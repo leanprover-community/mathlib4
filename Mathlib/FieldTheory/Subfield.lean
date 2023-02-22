@@ -121,10 +121,6 @@ variable (S)
 -- Prefer subclasses of `field` over subclasses of `subfield_class`.
 /-- A subfield inherits a field structure -/
 instance (priority := 75) toField (s : S) : Field s :=
-  letI tester : SubgroupClass S K := SubfieldClass.toSubgroupClass S
-  letI tester2 : Group K := Field.toCommRing K
-  letI : Inv s := @SubgroupClass.inv _ _ _ _ _ tester
-  letI : Div s := SubgroupClass.div
   Subtype.coe_injective.field ((↑) : s → K )
       (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ ; rfl)
         (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
