@@ -8,9 +8,9 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Preorder
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.Order.GaloisConnection
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.Order.GaloisConnection
 
 /-!
 
