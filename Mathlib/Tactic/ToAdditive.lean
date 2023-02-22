@@ -28,6 +28,55 @@ import Mathlib.Tactic.Simps.Basic
 The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
+
+Ideas for rewriting `@[to_additive]`
+
+New workflow:
+* `to_additive` (optionally) takes some numerical arguments stating which of the types
+  you want to translate (as 1-indexed argument positions). The attribute can be given multiple times
+  with different numerical arguments (and different additive names). No arguments correspond to all
+  type arguments with at least one multiplicative type-class.
+  This will be stored as a `RBMap Name (List (List Nat × Name × Bool))`
+  (ideally a `RBLMap Name (List Nat × Bool)`) (the inner lists will be sorted)
+  The boolean value indicates whether the additivized declaration is itself an additive type
+  This is typically true and true by default,
+  but maybe not if we additivize "a `Group` with a `Group` action" to
+  "a `Group` with an `AddGroup` action" or something; that might still be additive.
+* When we additivize something like `One (α × β)` we automatically mark `α × β` as
+  `@[to_additive existing Prod 1 2]` (if it doesn't have it yet)
+* Maybe `to_additive` can do a coherence check on the type?
+* Then `to_additive` translates the type, while marking certain sub-expressions as additive. The
+  translation is roughly the same as the existing `applyReplacementFun`
+  - A variable is additive iff it's in the argument list
+  - For a function application, if it doesn't have the `to_additive` attribute it is not additive
+  - otherwise, the relevant arguments are the ones in the union of the stored data
+  - we translate the relevant arguments.
+  - if none of them are additive, then this function application is also not additive and
+    not translated.
+  - if some of them are additive, we check whether the precise set of arguments that are additive
+    is a list in the stored data. If not, we throw a nice error. If so, this term is additive
+    when the stored boolean is additive, and translated according to the stored name.
+    (maybe we have an option to ignore all errors, and force a translation)
+  - we translate the remaining arguments, except the ones indicated by
+    `to_additive_fixed_numeral`
+  - figuring out how to throw a nice error with memoFix might be tricky... Maybe using a function
+    `Expr → (Expr × Bool) ⊕ MessageData`? Or asking Gabriel whether we can have a monadic memoFix?
+* We then translate the term by using the previous term, applied to variables `<var>` or
+  `Multiplicative <var>` (maybe we have an option to also translate the term using the above behavior).
+  - Warning: this also comes with issues, look at e.g. `Monotone.dual`
+  - probably every conclusion needs a declaration that is used to massage the
+    multiplicative statement applied to `Multiplicative _` to the corresponding additive statement.
+* potential improvements:
+  - don't make this specific to `additive`. also allow `multiplicative`/`dual`/`op`/...
+  - instead of throwing an error, forcing an argument to be additive using the `Additive` type
+    synonym
+  - allowing `Multiplicative A` to be additivized to `A`
+  A function application is additive if
+    + it has the `to_additive att
+
+  checks whether all the marked types can be additivized. For all functions
+translate t
+
 -/
 
 open Lean Meta Elab Command Std Tactic.NormCast
