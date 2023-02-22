@@ -197,9 +197,9 @@ instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
 #align group_seminorm.group_seminorm_class GroupSeminorm.groupSeminormClass
 #align add_group_seminorm.add_group_seminorm_class AddGroupSeminorm.addGroupSeminormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
 @[to_additive
-      "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_toFun`. "]
+      "Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. "]
 instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ :=
   ⟨FunLike.coe⟩
 
@@ -320,8 +320,8 @@ instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
   FunLike.coe_injective.semilatticeSup _ coe_sup
 
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
-@[to_additive
-      "Composition of an additive group seminorm with an additive monoid homomorphism as an\nadditive group seminorm."]
+@[to_additive "Composition of an additive group seminorm with an additive monoid homomorphism as an
+additive group seminorm."]
 def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F
     where
   toFun x := p (f x)
@@ -522,7 +522,7 @@ instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAdd
   map_neg_eq_map' f := f.neg'
 #align nonarch_add_group_seminorm.nonarch_add_group_seminorm_class NonarchAddGroupSeminorm.nonarchAddGroupSeminormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
 instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
   ⟨FunLike.coe⟩
 
@@ -588,7 +588,7 @@ instance : HasSup (NonarchAddGroupSeminorm E) :=
       add_le_max' := fun x y =>
         sup_le ((map_add_le_max p x y).trans <| max_le_max le_sup_left le_sup_left)
           ((map_add_le_max q x y).trans <| max_le_max le_sup_right le_sup_right)
-      neg' := fun x => by simp_rw [Pi.sup_apply, Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q] }⟩
+      neg' := fun x => by simp_rw [Pi.sup_apply, Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
 
 @[simp, norm_cast]
 theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
@@ -791,10 +791,10 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
 #align group_norm.group_norm_class GroupNorm.groupNormClass
 #align add_group_norm.add_group_norm_class AddGroupNorm.addGroupNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
-@[to_additive
-      "Helper instance for when there's too many metavariables to apply\n`fun_like.has_coe_toFun` directly. "]
+@[to_additive "Helper instance for when there's too many metavariables to apply
+`FunLike.hasCoeToFun` directly. "]
 instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
   FunLike.hasCoeToFun
 
@@ -945,7 +945,7 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 #align nonarch_add_group_norm.nonarch_add_group_norm_class NonarchAddGroupNorm.nonarchAddGroupNormClass
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`. -/
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
 noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
   FunLike.hasCoeToFun
 
