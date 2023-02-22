@@ -19,25 +19,25 @@ is positive-semidefinite and subadditive. A norm further only maps zero to zero.
 
 ## Main declarations
 
-* `add_group_seminorm`: A function `f` from an additive group `G` to the reals that preserves zero,
+* `AddGroupSeminorm`: A function `f` from an additive group `G` to the reals that preserves zero,
   takes nonnegative values, is subadditive and such that `f (-x) = f x` for all `x`.
-* `nonarch_add_group_seminorm`: A function `f` from an additive group `G` to the reals that
+* `NonarchAddGroupSeminorm`: A function `f` from an additive group `G` to the reals that
   preserves zero, takes nonnegative values, is nonarchimedean and such that `f (-x) = f x`
   for all `x`.
-* `group_seminorm`: A function `f` from a group `G` to the reals that sends one to zero, takes
+* `GroupSeminorm`: A function `f` from a group `G` to the reals that sends one to zero, takes
   nonnegative values, is submultiplicative and such that `f x⁻¹ = f x` for all `x`.
-* `add_group_norm`: A seminorm `f` such that `f x = 0 → x = 0` for all `x`.
-* `nonarch_add_group_norm`: A nonarchimedean seminorm `f` such that `f x = 0 → x = 0` for all `x`.
-* `group_norm`: A seminorm `f` such that `f x = 0 → x = 1` for all `x`.
+* `AddGroupNorm`: A seminorm `f` such that `f x = 0 → x = 0` for all `x`.
+* `NonarchAddGroupNorm`: A nonarchimedean seminorm `f` such that `f x = 0 → x = 0` for all `x`.
+* `GroupNorm`: A seminorm `f` such that `f x = 0 → x = 1` for all `x`.
 
 ## Notes
 
 The corresponding hom classes are defined in `analysis.order.hom.basic` to be used by absolute
 values.
 
-We do not define `nonarch_add_group_seminorm` as an extension of `add_group_seminorm` to avoid
+We do not define `NonarchAddGroupSeminorm` as an extension of `AddGroupSeminorm` to avoid
 having a superfluous `add_le'` field in the resulting structure. The same applies to
-`nonarch_add_group_norm`.
+`NonarchAddGroupNorm`.
 
 ## References
 
@@ -95,9 +95,9 @@ structure NonarchAddGroupSeminorm (G : Type _) [AddGroup G] extends ZeroHom G �
   protected neg' : ∀ r, toFun (-r) = toFun r
 #align nonarch_add_group_seminorm NonarchAddGroupSeminorm
 
-/-! NOTE: We do not define `nonarch_add_group_seminorm` as an extension of `add_group_seminorm`
+/-! NOTE: We do not define `NonarchAddGroupSeminorm` as an extension of `AddGroupSeminorm`
   to avoid having a superfluous `add_le'` field in the resulting structure. The same applies to
-  `nonarch_add_group_norm` below. -/
+  `NonarchAddGroupNorm` below. -/
 
 
 /-- A norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is subadditive
@@ -122,10 +122,10 @@ structure NonarchAddGroupNorm (G : Type _) [AddGroup G] extends NonarchAddGroupS
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 #align nonarch_add_group_norm NonarchAddGroupNorm
 
-/-- `nonarch_add_group_seminorm_class F α` states that `F` is a type of nonarchimedean seminorms on
+/-- `NonarchAddGroupSeminormClass F α` states that `F` is a type of nonarchimedean seminorms on
 the additive group `α`.
 
-You should extend this class when you extend `nonarch_add_group_seminorm`. -/
+You should extend this class when you extend `NonarchAddGroupSeminorm`. -/
 class NonarchAddGroupSeminormClass (F : Type _) (α : outParam <| Type _) [AddGroup α] extends
   NonarchimedeanHomClass F α ℝ where
   /-- The image of zero is zero. -/
@@ -134,10 +134,10 @@ class NonarchAddGroupSeminormClass (F : Type _) (α : outParam <| Type _) [AddGr
   protected map_neg_eq_map' (f : F) (a : α) : f (-a) = f a
 #align nonarch_add_group_seminorm_class NonarchAddGroupSeminormClass
 
-/-- `nonarch_add_group_norm_class F α` states that `F` is a type of nonarchimedean norms on the
+/-- `NonarchAddGroupNormClass F α` states that `F` is a type of nonarchimedean norms on the
 additive group `α`.
 
-You should extend this class when you extend `nonarch_add_group_norm`. -/
+You should extend this class when you extend `NonarchAddGroupNorm`. -/
 class NonarchAddGroupNormClass (F : Type _) (α : outParam <| Type _) [AddGroup α] extends
   NonarchAddGroupSeminormClass F α where
   /-- If the image under the norm is zero, then the argument is zero. -/
@@ -198,8 +198,8 @@ instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ
 #align add_group_seminorm.add_group_seminorm_class AddGroupSeminorm.addGroupSeminormClass
 
 /-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. -/
-@[to_additive
-      "Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`. "]
+@[to_additive "Helper instance for when there's too many metavariables to apply
+`FunLike.hasCoeToFun`. "]
 instance : CoeFun (GroupSeminorm E) fun _ => E → ℝ :=
   ⟨FunLike.coe⟩
 
@@ -290,7 +290,7 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 #align group_seminorm.add_apply GroupSeminorm.add_apply
 #align add_group_seminorm.add_apply AddGroupSeminorm.add_apply
 
--- TODO: define `has_Sup` too, from the skeleton at
+-- TODO: define `SupSet` too, from the skeleton at
 -- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
 @[to_additive]
 instance : HasSup (GroupSeminorm E) :=
@@ -444,7 +444,7 @@ end CommGroup
 end GroupSeminorm
 
 /- TODO: All the following ought to be automated using `to_additive`. The problem is that it doesn't
-see that `has_smul R ℝ` should be fixed because `ℝ` is fixed. -/
+see that `SMul R ℝ` should be fixed because `ℝ` is fixed. -/
 namespace AddGroupSeminorm
 
 variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (p : AddGroupSeminorm E)
@@ -466,7 +466,7 @@ theorem apply_one [DecidableEq E] (x : E) : (1 : AddGroupSeminorm E) x = if x = 
   rfl
 #align add_group_seminorm.apply_one AddGroupSeminorm.apply_one
 
-/-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `add_group_seminorm`. -/
+/-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `AddGroupSeminorm`. -/
 instance toSMul : SMul R (AddGroupSeminorm E) :=
   ⟨fun r p =>
     { toFun := fun x => r • p x
@@ -579,7 +579,7 @@ theorem zero_apply (x : E) : (0 : NonarchAddGroupSeminorm E) x = 0 :=
 instance : Inhabited (NonarchAddGroupSeminorm E) :=
   ⟨0⟩
 
--- TODO: define `has_Sup` too, from the skeleton at
+-- TODO: define `SupSet` too, from the skeleton at
 -- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
 instance : HasSup (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
@@ -657,7 +657,7 @@ theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 t
   rfl
 #align group_seminorm.apply_one GroupSeminorm.apply_one
 
-/-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `add_group_seminorm`. -/
+/-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `AddGroupSeminorm`. -/
 @[to_additive AddGroupSeminorm.toSMul]
 instance : SMul R (GroupSeminorm E) :=
   ⟨fun r p =>
@@ -729,7 +729,7 @@ theorem apply_one [DecidableEq E] (x : E) :
   rfl
 #align nonarch_add_group_seminorm.apply_one NonarchAddGroupSeminorm.apply_one
 
-/-- Any action on `ℝ` which factors through `ℝ≥0` applies to a `nonarch_add_group_seminorm`. -/
+/-- Any action on `ℝ` which factors through `ℝ≥0` applies to a `NonarchAddGroupSeminorm`. -/
 instance : SMul R (NonarchAddGroupSeminorm E) :=
   ⟨fun r p =>
     { toFun := fun x => r • p x
@@ -860,7 +860,7 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 #align group_norm.add_apply GroupNorm.add_apply
 #align add_group_norm.add_apply AddGroupNorm.add_apply
 
--- TODO: define `has_Sup`
+-- TODO: define `SupSet`
 @[to_additive]
 instance : HasSup (GroupNorm E) :=
   ⟨fun p q =>
