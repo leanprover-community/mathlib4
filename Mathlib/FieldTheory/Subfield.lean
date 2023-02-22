@@ -14,15 +14,15 @@ import Mathlib.Algebra.Order.Field.InjSurj
 /-!
 # Subfields
 
-Let `K` be a field. This file defines the "bundled" subfield type `subfield K`, a type
+Let `K` be a field. This file defines the "bundled" subfield type `Subfield K`, a type
 whose terms correspond to subfields of `K`. This is the preferred way to talk
-about subfields in mathlib. Unbundled subfields (`s : set K` and `is_subfield s`)
+about subfields in mathlib. Unbundled subfields (`s : Set K` and `is_subfield s`)
 are not in this file, and they will ultimately be deprecated.
 
 We prove that subfields are a complete lattice, and that you can `map` (pushforward) and
 `comap` (pull back) them along ring homomorphisms.
 
-We define the `closure` construction from `set R` to `subfield R`, sending a subset of `R`
+We define the `closure` construction from `Set R` to `Subfield R`, sending a subset of `R`
 to the subfield it generates, and prove that it is a Galois insertion.
 
 ## Main definitions
@@ -30,26 +30,26 @@ to the subfield it generates, and prove that it is a Galois insertion.
 Notation used here:
 
 `(K : Type u) [field K] (L : Type u) [field L] (f g : K →+* L)`
-`(A : subfield K) (B : subfield L) (s : set K)`
+`(A : Subfield K) (B : Subfield L) (s : Set K)`
 
-* `subfield R` : the type of subfields of a ring `R`.
+* `Subfield R` : the type of subfields of a ring `R`.
 
-* `instance : complete_lattice (subfield R)` : the complete lattice structure on the subfields.
+* `instance : CompleteLattice (Subfield R)` : the complete lattice structure on the subfields.
 
-* `subfield.closure` : subfield closure of a set, i.e., the smallest subfield that includes the set.
+* `Subfield.closure` : subfield closure of a set, i.e., the smallest subfield that includes the set.
 
-* `subfield.gi` : `closure : set M → subfield M` and coercion `coe : subfield M → set M`
-  form a `galois_insertion`.
+* `Subfield.gi` : `closure : Set M → subfield M` and coercion `(↑) : Subfield M → Set M`
+  form a `GaloisInsertion`.
 
-* `comap f B : subfield K` : the preimage of a subfield `B` along the ring homomorphism `f`
+* `comap f B : Subfield K` : the preimage of a subfield `B` along the ring homomorphism `f`
 
-* `map f A : subfield L` : the image of a subfield `A` along the ring homomorphism `f`.
+* `map f A : Subfield L` : the image of a subfield `A` along the ring homomorphism `f`.
 
-* `prod A B : subfield (K × L)` : the product of subfields
+* `prod A B : Subfield (K × L)` : the product of subfields
 
-* `f.field_range : subfield B` : the range of the ring homomorphism `f`.
+* `f.fieldRange : Subfield B` : the range of the ring homomorphism `f`.
 
-* `eq_locus_field f g : subfield K` : given ring homomorphisms `f g : K →+* R`,
+* `eqLocusField f g : Subfield K` : given ring homomorphisms `f g : K →+* R`,
      the subfield of `K` where `f x = g x`
 
 ## Implementation notes
@@ -70,7 +70,7 @@ universe u v w
 
 variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Field M]
 
-/-- `subfield_class S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
+/-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
 class SubfieldClass (S K : Type _) [Field K] [SetLike S K] extends SubringClass S K,
   InvMemClass S K : Prop
 #align subfield_class SubfieldClass
@@ -83,7 +83,7 @@ variable (S : Type _) [SetLike S K] [h : SubfieldClass S K]
 /-- A subfield contains `1`, products and inverses.
 
 Be assured that we're not actually proving that subfields are subgroups:
-`subgroup_class` is really an abbreviation of `subgroup_with_or_without_zero_class`.
+`SubgroupClass` is really an abbreviation of `SubgroupWithOrWithoutZeroClass`.
  -/
 instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
   { h with }
@@ -118,7 +118,7 @@ theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : (a • x : K) = a • (x : K) :
 
 variable (S)
 
--- Prefer subclasses of `field` over subclasses of `subfield_class`.
+-- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield inherits a field structure -/
 instance (priority := 75) toField (s : S) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K )
@@ -128,8 +128,8 @@ instance (priority := 75) toField (s : S) : Field s :=
             (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
 #align subfield_class.to_field SubfieldClass.toField
 
--- Prefer subclasses of `field` over subclasses of `subfield_class`.
-/-- A subfield of a `linear_ordered_field` is a `linear_ordered_field`. -/
+-- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
+/-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
 instance (priority := 75) toLinearOrderedField {K} [LinearOrderedField K] [SetLike S K]
     [SubfieldClass S K] (s : S) : LinearOrderedField s :=
   Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl)
@@ -141,7 +141,7 @@ instance (priority := 75) toLinearOrderedField {K} [LinearOrderedField K] [SetLi
 
 end SubfieldClass
 
-/-- `subfield R` is the type of subfields of `R`. A subfield of `R` is a subset `s` that is a
+/-- `Subfield R` is the type of subfields of `R`. A subfield of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
 structure Subfield (K : Type u) [Field K] extends Subring K where
@@ -149,12 +149,12 @@ structure Subfield (K : Type u) [Field K] extends Subring K where
   inv_mem' : ∀ x ∈ carrier, x⁻¹ ∈ carrier
 #align subfield Subfield
 
-/-- Reinterpret a `subfield` as a `subring`. -/
+/-- Reinterpret a `Subfield` as a `Subring`. -/
 add_decl_doc Subfield.toSubring
 
 namespace Subfield
 
-/-- The underlying `add_subgroup` of a subfield. -/
+/-- The underlying `AddSubgroup` of a subfield. -/
 def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
   { s.toSubring.toAddSubgroup with }
 #align subfield.to_add_subgroup Subfield.toAddSubgroup
@@ -235,7 +235,7 @@ theorem mem_toSubring (s : Subfield K) (x : K) : x ∈ s.toSubring ↔ x ∈ s :
 
 end Subfield
 
-/-- A `subring` containing inverses is a `subfield`. -/
+/-- A `Subring` containing inverses is a `Subfield`. -/
 def Subring.toSubfield (s : Subring K) (hinv : ∀ x ∈ s, x⁻¹ ∈ s) : Subfield K :=
   { s with inv_mem' := hinv }
 #align subring.to_subfield Subring.toSubfield
@@ -301,18 +301,18 @@ protected theorem multiset_prod_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) �
   multiset_prod_mem m
 #align subfield.multiset_prod_mem Subfield.multiset_prod_mem
 
-/-- Sum of a multiset of elements in a `subfield` is in the `subfield`. -/
+/-- Sum of a multiset of elements in a `Subfield` is in the `Subfield`. -/
 protected theorem multiset_sum_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
   multiset_sum_mem m
 #align subfield.multiset_sum_mem Subfield.multiset_sum_mem
 
-/-- Product of elements of a subfield indexed by a `finset` is in the subfield. -/
+/-- Product of elements of a subfield indexed by a `Finset` is in the subfield. -/
 protected theorem prod_mem {ι : Type _} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
     (∏ i in t, f i) ∈ s :=
   prod_mem h
 #align subfield.prod_mem Subfield.prod_mem
 
-/-- Sum of elements in a `subfield` indexed by a `finset` is in the `subfield`. -/
+/-- Sum of elements in a `Subfield` indexed by a `Finset` is in the `Subfield`. -/
 protected theorem sum_mem {ι : Type _} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
     (∑ i in t, f i) ∈ s :=
   sum_mem h
@@ -355,7 +355,7 @@ instance toField : Field s :=
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subfield.to_field Subfield.toField
 
-/-- A subfield of a `linear_ordered_field` is a `linear_ordered_field`. -/
+/-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
 instance toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
   Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
@@ -467,7 +467,7 @@ theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
   rfl
 #align subfield.coe_top Subfield.coe_top
 
-/-- The ring equiv between the top element of `subfield K` and `K`. -/
+/-- The ring equiv between the top element of `Subfield K` and `K`. -/
 @[simps!]
 def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
@@ -572,7 +572,7 @@ theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
 
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
 
-Note that this instance can cause a diamond with `subtype.fintype` if `L` is also a fintype.-/
+Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype.-/
 instance fintypeFieldRange [Fintype K] [DecidableEq L] (f : K →+* L) : Fintype f.fieldRange :=
   Set.fintypeRange f
 #align ring_hom.fintype_field_range RingHom.fintypeFieldRange
@@ -663,16 +663,15 @@ instance : CompleteLattice (Subfield K) :=
 
 /-! # subfield closure of a subset -/
 
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:370:4: unsupported set replacement {(«expr / »(x, y)) | (x «expr ∈ » subring.closure[subring.closure] s) (y «expr ∈ » subring.closure[subring.closure] s)} -/
-/-- The `subfield` generated by a set. -/
-def closure (s : Set K) : Subfield K
-    where
+/-- The `Subfield` generated by a set. -/
+def closure (s : Set K) : Subfield K where
   carrier := {z : K | ∃ (x : K) (_ : x ∈ Subring.closure s) (y : K)
     (_ : y ∈ Subring.closure s), x / y = z}
   zero_mem' := ⟨0, Subring.zero_mem _, 1, Subring.one_mem _, div_one _⟩
   one_mem' := ⟨1, Subring.one_mem _, 1, Subring.one_mem _, div_one _⟩
-  neg_mem' {x} := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
+  neg_mem' {x} := by
+    rintro ⟨y, hy, z, hz, x_eq⟩
+    exact ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
   inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm ⟩
   add_mem' x_mem y_mem :=
     by
