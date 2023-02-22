@@ -157,7 +157,7 @@ theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wrepr_equiv MvQPF.wrepr_equiv
 
-theorem wequiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
+theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
     WEquiv x y → WEquiv (g <$$> x) (g <$$> y) := by
   intro h; induction h
   case ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
