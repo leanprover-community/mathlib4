@@ -108,7 +108,8 @@ theorem recF_eq_of_wequiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) 
 set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_wequiv
 
-theorem WEquiv.abs' {α : TypeVec n} (x y : q.P.W α) (h : MvQPF.abs (q.P.wDest' x ) = MvQPF.abs (q.P.wDest' y)) :
+theorem WEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
+                    (h : MvQPF.abs (q.P.wDest' x ) = MvQPF.abs (q.P.wDest' y)) :
     WEquiv x y := by
   revert h
   apply q.P.w_cases _ x
