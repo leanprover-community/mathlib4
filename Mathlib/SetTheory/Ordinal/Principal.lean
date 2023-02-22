@@ -29,7 +29,7 @@ We define principal or indecomposable ordinals, and we prove the standard proper
   of `λ x, ω ^ x`.
 -/
 
-universe u
+universe u v w
 
 noncomputable section
 
@@ -98,12 +98,14 @@ def blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Ordinal :=
   lsub fun x : o.out.α × o.out.α => op (typein LT.lt x.1) (typein LT.lt x.2)
 #align ordinal.blsub₂ Ordinal.blsub₂
 
-theorem lt_blsub₂ (op : Ordinal → Ordinal → Ordinal) {o : Ordinal} {a b : Ordinal.{u}} (ha : a < o)
-    (hb : b < o) : op a b < blsub₂ op o := by
-  convert
-    lt_lsub (fun x => op (typein LT.lt x.fst) (typein LT.lt x.snd))
-      (Prod.mk (enum LT.lt a ?_) (enum.{u} LT.lt b ?_))
-  simp only [typein_enum]
+theorem lt_blsub₂ (op : Ordinal.{u} → Ordinal.{u} → Ordinal.{max u v})
+  {o a b : Ordinal.{u}} (ha : a < o)
+    (hb : b < o) : op a b < blsub₂.{u, v} op o := by
+  convert lt_lsub.{v, u}
+      (fun x : (Quotient.out.{u+2} o).α × (Quotient.out.{u+2} o).α =>
+        op (typein.{u} LT.lt x.fst) (typein.{u} LT.lt x.snd))
+      (Prod.mk.{u, u} (enum.{u} LT.lt a (by rwa [type_lt])) (enum.{u} LT.lt b (by rwa [type_lt])))
+  <;> simp only [typein_enum]
 #align ordinal.lt_blsub₂ Ordinal.lt_blsub₂
 
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
