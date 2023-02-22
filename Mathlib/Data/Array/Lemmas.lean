@@ -164,27 +164,28 @@ variable {n : ℕ} {α : Type u} {a : Array' n α}
 
 theorem toList_get_aux (i : ℕ) (ih : i < n) :
     ∀ (j) {jh t h'},
-      (∀ k tl, j + k = i → List.get t k tl = a.read ⟨i, ih⟩) →
-        (a.revIterateAux (fun _ => (· :: ·)) j jh t).get i h' = a.read ⟨i, ih⟩
+      (∀ k tl, j + k = i → List.get t ⟨k, tl⟩ = a.read ⟨i, ih⟩) →
+        (a.revIterateAux (fun _ => (· :: ·)) j jh t).get ⟨i, h'⟩ = a.read ⟨i, ih⟩
   | 0, _, _, _, al => al i _ <| zero_add _
   | j + 1, jh, t, h', al =>
-    toList_get_aux j fun k tl hjk =>
-      show List.get (a.read ⟨j, jh⟩ :: t) k tl = a.read ⟨i, ih⟩ from
+    toList_get_aux i ih j fun k tl hjk =>
+      show List.get (a.read ⟨j, jh⟩ :: t) ⟨k, tl⟩ = a.read ⟨i, ih⟩ from
         match k, hjk, tl with
         | 0, e, tl =>
           match i, e, ih with
           | _, rfl, _ => rfl
         | k' + 1, _, tl => by
-          simp [List.get] <;> exact al _ _ (by simp [add_comm, add_assoc, *] <;> tauto)
+          simp [List.get]
+          exact al _ _ (by rwa [add_assoc, add_comm 1 k'])
 #align array.to_list_nth_le_aux Array'.toList_get_aux
 
-theorem toList_get (i : ℕ) (h h') : List.get a.toList i h' = a.read ⟨i, h⟩ :=
+theorem toList_get (i : ℕ) (h h') : List.get a.toList ⟨i, h'⟩ = a.read ⟨i, h⟩ :=
   toList_get_aux _ _ _ fun k tl => absurd tl k.not_lt_zero
 #align array.to_list_nth_le Array'.toList_get
 
 @[simp]
-theorem toList_get' (a : Array' n α) (i : Fin n) (h') : List.get a.toList i h' = a.read i := by
-  cases i <;> apply toList_get
+theorem toList_get' (a : Array' n α) (i : Fin n) (h') : List.get a.toList ⟨i, h'⟩ = a.read i := by
+  apply toList_get
 #align array.to_list_nth_le' Array'.toList_get'
 
 theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
@@ -200,7 +201,7 @@ theorem write_toList {i v} : (a.write i v).toList = a.toList.set i v :=
     have h₃ : j < n := by simpa using h₁
     rw [toList_get _ h₃]
     refine'
-      let ⟨_, e⟩ := List.get?_eq_some'.1 _
+      let ⟨_, e⟩ := List.get?_eq_some.1 _
       e.symm
     by_cases ij : (i : ℕ) = j
     · subst j
@@ -241,8 +242,8 @@ theorem toList_toArray (a : Array' n α) : HEq a.toList.toArray a :=
 #align array.to_list_to_array Array'.toList_toArray
 
 @[simp]
-theorem toArray_toList (l : List α) : l.toArray.toList = l :=
-  List.ext_get (toList_length _) fun n h1 h2 => toList_get _ h2 _
+theorem toArray_toList (l : List α) : l.toArray.toList = l := by
+  simp only [Array.toList_eq, Array.data_toArray]
 #align array.to_array_to_list Array'.toArray_toList
 
 end ToArray
@@ -280,9 +281,8 @@ theorem pushBack_toList : (a.pushBack v).toList = a.toList ++ [v] := by
 #align array.push_back_to_list Array'.pushBack_toList
 
 @[simp]
-theorem read_pushBack_left (i : Fin n) : (a.pushBack v).read i.succ = a.read i := by
-  cases' i with i hi
-  have : ¬i = n := ne_of_lt hi
+theorem read_pushBack_left (i : Fin n) : (a.pushBack v).read i = a.read i := by
+  have : ¬i = n := ne_of_lt i.2
   simp [pushBack, this, Fin.castSucc, Fin.castAdd, Fin.castLe, Fin.castLt, read, DArray.read]
 #align array.read_push_back_left Array'.read_pushBack_left
 
