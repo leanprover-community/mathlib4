@@ -71,7 +71,7 @@ noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
   (inducedFunctor (Fintype.equivFin α).symm).asEquivalence
 #align category_theory.fin_category.obj_as_type_equiv CategoryTheory.FinCategory.objAsTypeEquiv
 
-/-- A fin_category `α` is equivalent to a fin_category with in `Type`. -/
+/-- A FinCategory `α` is equivalent to a fin_category with in `Type`. -/
 --@[nolint unused_arguments]
 abbrev AsType : Type :=
   Fin (Fintype.card α)
