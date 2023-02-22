@@ -16,7 +16,7 @@ import Mathlib.Algebra.Order.Field.InjSurj
 
 Let `K` be a field. This file defines the "bundled" subfield type `Subfield K`, a type
 whose terms correspond to subfields of `K`. This is the preferred way to talk
-about subfields in mathlib. Unbundled subfields (`s : Set K` and `is_subfield s`)
+about subfields in mathlib. Unbundled subfields (`s : Set K` and `IsSubfield s`)
 are not in this file, and they will ultimately be deprecated.
 
 We prove that subfields are a complete lattice, and that you can `map` (pushforward) and
@@ -29,7 +29,7 @@ to the subfield it generates, and prove that it is a Galois insertion.
 
 Notation used here:
 
-`(K : Type u) [field K] (L : Type u) [field L] (f g : K →+* L)`
+`(K : Type u) [field K] (L : Type u) [Field L] (f g : K →+* L)`
 `(A : Subfield K) (B : Subfield L) (s : Set K)`
 
 * `Subfield R` : the type of subfields of a ring `R`.
@@ -38,7 +38,7 @@ Notation used here:
 
 * `Subfield.closure` : subfield closure of a set, i.e., the smallest subfield that includes the set.
 
-* `Subfield.gi` : `closure : Set M → subfield M` and coercion `(↑) : Subfield M → Set M`
+* `Subfield.gi` : `closure : Set M → Subfield M` and coercion `(↑) : Subfield M → Set M`
   form a `GaloisInsertion`.
 
 * `comap f B : Subfield K` : the preimage of a subfield `B` along the ring homomorphism `f`
