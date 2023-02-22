@@ -41,7 +41,7 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 /--
 `SubmoduleClass S R M` says `S` is a type of submodules `s ≤ M`.
 
-Note that only `R` is marked as `out_param` since `M` is already supplied by the `SetLike` class.
+Note that only `R` is marked as `outParam` since `M` is already supplied by the `SetLike` class.
 -/
 class SubmoduleClass (S : Type _) (R : outParam <| Type _) (M : Type _) [AddZeroClass M] [SMul R M]
   [SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
