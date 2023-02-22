@@ -92,7 +92,7 @@ inductive WEquiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv MvQPF.WEquiv
 
-theorem recF_eq_of_wequiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) → β) (x y : q.P.W α) :
+theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type _} (u : F (α.append1 β) → β) (x y : q.P.W α) :
     WEquiv x y → recF u x = recF u y := by
   apply q.P.w_cases _ x
   intro a₀ f'₀ f₀
