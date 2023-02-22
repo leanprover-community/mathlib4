@@ -8,11 +8,11 @@ Authors: Joachim Breitner
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.OrderOfElement
-import Mathbin.Data.Finset.NoncommProd
-import Mathbin.Data.Fintype.BigOperators
-import Mathbin.Data.Nat.Gcd.BigOperators
-import Mathbin.Order.SupIndep
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Data.Finset.NoncommProd
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Order.SupIndep
 
 /-!
 # Canonical homomorphism from a finite family of monoids
@@ -136,8 +136,7 @@ include hdec
 
 @[simp, to_additive]
 theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
-    noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y :=
-  by
+    noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y := by
   change finset.univ.noncomm_prod (fun j => ϕ j (Pi.mulSingle i y j)) _ = ϕ i y
   simp (config := { singlePass := true }) only [← Finset.insert_erase (Finset.mem_univ i)]
   rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ (Finset.not_mem_erase i _)]
@@ -256,8 +255,7 @@ omit hfin
 @[to_additive]
 theorem independent_range_of_coprime_order [Finite ι] [∀ i, Fintype (H i)]
     (hcoprime : ∀ i j, i ≠ j → Nat.coprime (Fintype.card (H i)) (Fintype.card (H j))) :
-    CompleteLattice.Independent fun i => (ϕ i).range :=
-  by
+    CompleteLattice.Independent fun i => (ϕ i).range := by
   cases nonempty_fintype ι
   classical
     rintro i
@@ -313,8 +311,7 @@ include hcomm
 
 @[to_additive]
 theorem commute_subtype_of_commute (i j : ι) (hne : i ≠ j) :
-    ∀ (x : H i) (y : H j), Commute ((H i).Subtype x) ((H j).Subtype y) :=
-  by
+    ∀ (x : H i) (y : H j), Commute ((H i).Subtype x) ((H j).Subtype y) := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩
   exact hcomm i j hne x y hx hy
 #align subgroup.commute_subtype_of_commute Subgroup.commute_subtype_of_commute
@@ -351,8 +348,7 @@ theorem noncommPiCoprod_range : (noncommPiCoprod hcomm).range = ⨆ i : ι, H i 
 
 @[to_additive]
 theorem injective_noncommPiCoprod_of_independent (hind : CompleteLattice.Independent H) :
-    Function.Injective (noncommPiCoprod hcomm) :=
-  by
+    Function.Injective (noncommPiCoprod hcomm) := by
   apply MonoidHom.injective_noncommPiCoprod_of_independent
   · simpa using hind
   · intro i
