@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sums.Basic
+import Mathlib.CategoryTheory.Sums.Basic
 
 /-!
 # Associator for binary disjoint union of categories.
