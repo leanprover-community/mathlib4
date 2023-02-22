@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Small.Basic
-import Mathbin.CategoryTheory.Category.Ulift
-import Mathbin.CategoryTheory.Skeletal
+import Mathlib.Logic.Small.Basic
+import Mathlib.CategoryTheory.Category.Ulift
+import Mathlib.CategoryTheory.Skeletal
 
 /-!
 # Essentially small categories.
@@ -67,8 +67,7 @@ noncomputable def equivSmallModel (C : Type u) [Category.{v} C] [EssentiallySmal
 #align category_theory.equiv_small_model CategoryTheory.equivSmallModel
 
 theorem essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-    (e : C ≌ D) : EssentiallySmall.{w} C ↔ EssentiallySmall.{w} D :=
-  by
+    (e : C ≌ D) : EssentiallySmall.{w} C ↔ EssentiallySmall.{w} D := by
   fconstructor
   · rintro ⟨S, 𝒮, ⟨f⟩⟩
     skip
@@ -99,8 +98,7 @@ instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X
   LocallySmall.hom_small X Y
 
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-    (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D :=
-  by
+    (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D := by
   fconstructor
   · rintro ⟨L⟩
     fconstructor
@@ -202,8 +200,7 @@ the underlying type of its skeleton (i.e. the "set" of isomorphism classes) is s
 and it is locally small.
 -/
 theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
-    EssentiallySmall.{w} C ↔ Small.{w} (Skeleton C) ∧ LocallySmall.{w} C :=
-  by
+    EssentiallySmall.{w} C ↔ Small.{w} (Skeleton C) ∧ LocallySmall.{w} C := by
   -- This theorem is the only bit of real work in this file.
   fconstructor
   · intro h
