@@ -446,36 +446,25 @@ end LiftRMap
 variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
 
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
-  let R := fun x y : Cofix F α => Cofix.abs (Cofix.repr y) = x
-  have hR : R = fun x y : Cofix F α => Cofix.abs (Cofix.repr y) = x := by rfl;
+  let R := fun x y : Cofix F α => abs (repr y) = x
   refine' Cofix.bisim₂ R _ _ _ rfl
-  clear x; rintro x y h; dsimp [hR] at h; subst h
+  clear x;
+  rintro x y h;
+  subst h
   dsimp [Cofix.dest, Cofix.abs]
+
   induction y using Quot.ind
-  simp only [Cofix.repr, M.dest_corec, abs_map, abs_repr]
+  simp only [Cofix.repr, M.dest_corec, abs_map, MvQPF.abs_repr, Function.comp]
+
   conv =>
     congr
-    skip
+    rfl
     rw [Cofix.dest]
-  dsimp; rw [MvFunctor.map_map, ← appendFun_comp_id]
 
-  let f : (α ::: (P F).M α) ⟹ Subtype_ (α.RelLast' R) :=
-    splitFun diagSub fun x => ⟨
-      (Cofix.abs (Cofix.abs x).repr, Cofix.abs x),
-      by dsimp[RelLast', splitFun]
-    ⟩
-  refine liftR_map (F':=F) _ _ _ _ f _;
-  · simp only [← append_prod_appendFun, prod_map_id]
-    apply eq_of_drop_last_eq
-    · dsimp
-      simp only [dropFun_diag]
-      erw [subtype_val_diag_sub]
-    ext1
-    simp only [Cofix.abs, Prod.mk.inj_iff, Prod_map, Function.comp_apply, lastFun_appendFun,
-      lastFun_subtype_val, lastFun_comp, lastFun_splitFun]
-    dsimp [dropFun_rel_last, lastFun, prod.diag]
-    constructor <;> rfl
-  dsimp [rel_last', splitFun, Function.uncurry, R]
+  rw [MvFunctor.map_map, MvFunctor.map_map, ←appendFun_comp_id, ←appendFun_comp_id]
+
+  apply liftR_map_last
+  intros
   rfl
 #align mvqpf.cofix.abs_repr MvQPF.Cofix.abs_repr
 
