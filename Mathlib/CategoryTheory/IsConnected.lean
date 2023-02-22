@@ -283,7 +283,7 @@ theorem zigzag_symmetric : Symmetric (@Zigzag J _) :=
 #align category_theory.zigzag_symmetric CategoryTheory.zigzag_symmetric
 
 theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
-  _root_.Equivalence.mk _ Relation.reflexive_reflTransGen zigzag_symmetric Relation.transitive_reflTransGen
+  _root_.Equivalence.mk Relation.reflexive_reflTransGen zigzag_symmetric Relation.transitive_reflTransGen
 #align category_theory.zigzag_equivalence CategoryTheory.zigzag_equivalence
 
 /-- The setoid given by the equivalence relation `zigzag`. A quotient for this
