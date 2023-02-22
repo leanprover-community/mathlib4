@@ -83,7 +83,9 @@ def higherOrderAfterSet (thm : Name) (onm : Option Name) : AttrM Unit := do
 initialize higherOrderAttr : ParametricAttribute (Option Name) ←
   registerParametricAttribute {
     name := `higherOrder,
-    descr := "From a lemma of the shape `∀ x, f (g x) = h x` derive an auxiliary lemma of the form `f ∘ g = h` for reasoning about higher-order functions.",
+    descr :=
+"From a lemma of the shape `∀ x, f (g x) = h x` derive an auxiliary lemma of the
+form `f ∘ g = h` for reasoning about higher-order functions.",
     getParam := fun _thm stx ↦
       match stx with
       | `(attr| higher_order $[$id]?) =>
