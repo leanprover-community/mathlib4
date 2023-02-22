@@ -221,13 +221,12 @@ def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' �
 
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply iD.map_injective
-        sorry --simpa using (comm1.inv.naturality_assoc f _).symm
+        simpa [Trans.trans] using (comm1.inv.naturality_assoc f _).symm
       homEquiv_naturality_right := fun {X Y' Y} f g => by
         apply iC.map_injective
         suffices : R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g)
-        . sorry -- simp [this]
-        . apply comm2.hom.naturality g
-         }
+        . simp [Trans.trans, this]
+        . apply comm2.hom.naturality g }
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 end CategoryTheory
