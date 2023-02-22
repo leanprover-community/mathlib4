@@ -75,6 +75,11 @@ theorem star_rat_smul {R : Type _} [AddCommGroup R] [StarAddMonoid R] [Module �
 
 end SmulLemmas
 
+section deinstance
+-- porting note: this is lean#2074 at play
+attribute [-instance] Ring.toNonUnitalRing
+attribute [-instance] CommRing.toNonUnitalCommRing
+
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
 @[simps]
@@ -84,6 +89,8 @@ def starLinearEquiv (R : Type _) {A : Type _} [CommRing R] [StarRing R] [Semirin
     toFun := star
     map_smul' := star_smul }
 #align star_linear_equiv starLinearEquiv
+
+end deinstance
 
 variable (R : Type _) (A : Type _) [Semiring R] [StarSemigroup R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
@@ -113,7 +120,7 @@ def selfAdjointPart : A →ₗ[R] selfAdjoint A
     simp [add_add_add_comm]
   map_smul' r x := by
     ext
-    simp [← mul_smul, show ⅟ 2 * r = r * ⅟ 2 from Commute.invOf_left (Commute.one_left r).bit0_left]
+    simp [← mul_smul, show ⅟ 2 * r = r * ⅟ 2 from Commute.invOf_left <| (2 : ℕ).cast_commute r]
 #align self_adjoint_part selfAdjointPart
 
 /-- The skew-adjoint part of an element of a star module, as a linear map. -/
@@ -131,7 +138,7 @@ def skewAdjointPart : A →ₗ[R] skewAdjoint A
   map_smul' r x := by
     ext
     simp [← mul_smul, ← smul_sub,
-      show r * ⅟ 2 = ⅟ 2 * r from Commute.invOf_right (Commute.one_right r).bit0_right]
+      show r * ⅟ 2 = ⅟ 2 * r from Commute.invOf_right <| (2 : ℕ).commute_cast r]
 #align skew_adjoint_part skewAdjointPart
 
 theorem StarModule.selfAdjointPart_add_skewAdjointPart (x : A) :
@@ -144,11 +151,13 @@ variable (A)
 
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
-@[simps]
+@[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A :=
-  LinearEquiv.ofLinear ((selfAdjointPart R).Prod (skewAdjointPart R))
-    ((selfAdjoint.submodule R A).Subtype.coprod (skewAdjoint.submodule R A).Subtype)
-    (by ext <;> simp) (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
+  LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
+    ((selfAdjoint.submodule R A).subtype.coprod (skewAdjoint.submodule R A).subtype)
+    (by ext <;> simp <;> sorry) (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
+-- porting note: this is broken because of lean4#2074. I tried to come up with a workaround, but
+-- couldn't manage one.
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]
@@ -157,4 +166,3 @@ theorem algebraMap_star_comm {R A : Type _} [CommSemiring R] [StarRing R] [Semir
     algebraMap R A (star r) = star (algebraMap R A r) := by
   simp only [Algebra.algebraMap_eq_smul_one, star_smul, star_one]
 #align algebra_map_star_comm algebraMap_star_comm
-
