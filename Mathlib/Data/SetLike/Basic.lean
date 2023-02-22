@@ -9,6 +9,7 @@ Authors: Eric Wieser
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -192,7 +193,7 @@ theorem coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
   Iff.rfl
 #align set_like.coe_subset_coe SetLike.coe_subset_coe
 
--- porting note: TODO: add back @[mono]
+@[mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 #align set_like.coe_mono SetLike.coe_mono
 
@@ -201,7 +202,7 @@ theorem coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T :=
   Iff.rfl
 #align set_like.coe_ssubset_coe SetLike.coe_ssubset_coe
 
--- porting note: TODO: add back @[mono]
+@[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 #align set_like.coe_strict_mono SetLike.coe_strictMono
 
