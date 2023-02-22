@@ -1175,7 +1175,7 @@ theorem Continuous.quotient_liftOn' {f : α → β} (h : Continuous f)
   h.quotient_lift hs
 #align continuous.quotient_lift_on' Continuous.quotient_liftOn'
 
-theorem Continuous.quotient_map' {t : Setoid β} {f : α → β} (hf : Continuous f)
+@[continuity] theorem Continuous.quotient_map' {t : Setoid β} {f : α → β} (hf : Continuous f)
     (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map' f H) :=
   (continuous_quotient_mk'.comp hf).quotient_lift _
 #align continuous.quotient_map' Continuous.quotient_map'
