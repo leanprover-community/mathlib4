@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module data.set.n_ary
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
