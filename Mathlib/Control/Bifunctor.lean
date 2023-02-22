@@ -10,6 +10,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
 import Mathlib.Data.Sum.Basic
+import Mathlib.Tactic.HigherOrderAttr
 
 /-!
 # Functors with two arguments
@@ -23,8 +24,8 @@ A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap whi
 
 ## Main declarations
 
-* `bifunctor`: A typeclass for the bare bimap of a bifunctor.
-* `is_lawful_bifunctor`: A typeclass asserting this bimap respects the bifunctor laws.
+* `Bifunctor`: A typeclass for the bare bimap of a bifunctor.
+* `LawfulBifunctor`: A typeclass asserting this bimap respects the bifunctor laws.
 -/
 
 
@@ -39,21 +40,21 @@ class Bifunctor (F : Type u₀ → Type u₁ → Type u₂) where
 
 export Bifunctor (bimap)
 
-/-- Bifunctor. This typeclass asserts that a lawless `bifunctor` is lawful. -/
-class IsLawfulBifunctor (F : Type u₀ → Type u₁ → Type u₂) [Bifunctor F] where
+/-- Bifunctor. This typeclass asserts that a lawless `Bifunctor` is lawful. -/
+class LawfulBifunctor (F : Type u₀ → Type u₁ → Type u₂) [Bifunctor F] where
   id_bimap : ∀ {α β} (x : F α β), bimap id id x = x
   bimap_bimap :
     ∀ {α₀ α₁ α₂ β₀ β₁ β₂} (f : α₀ → α₁) (f' : α₁ → α₂) (g : β₀ → β₁) (g' : β₁ → β₂) (x : F α₀ β₀),
       bimap f' g' (bimap f g x) = bimap (f' ∘ f) (g' ∘ g) x
-#align is_lawful_bifunctor IsLawfulBifunctor
+#align is_lawful_bifunctor LawfulBifunctor
 
-export IsLawfulBifunctor (id_bimap bimap_bimap)
+export LawfulBifunctor (id_bimap bimap_bimap)
 
 attribute [higher_order bimap_id_id] id_bimap
 
 attribute [higher_order bimap_comp_bimap] bimap_bimap
 
-export IsLawfulBifunctor (bimap_id_id bimap_comp_bimap)
+export LawfulBifunctor (bimap_id_id bimap_comp_bimap)
 
 variable {F : Type u₀ → Type u₁ → Type u₂} [Bifunctor F]
 
@@ -71,7 +72,7 @@ def snd {α β β'} (f : β → β') : F α β → F α β' :=
   bimap id f
 #align bifunctor.snd Bifunctor.snd
 
-variable [IsLawfulBifunctor F]
+variable [LawfulBifunctor F]
 
 @[higher_order fst_id]
 theorem id_fst : ∀ {α β} (x : F α β), fst id x = x :=
@@ -110,47 +111,68 @@ end Bifunctor
 
 open Functor
 
-instance : Bifunctor Prod where bimap := @Prod.map
+instance Prod.bifunctor : Bifunctor Prod where bimap := @Prod.map
+#align prod.bifunctor Prod.bifunctor
 
-instance : IsLawfulBifunctor Prod := by refine' { .. } <;> intros <;> cases x <;> rfl
+instance Prod.lawfulBifunctor : LawfulBifunctor Prod := by
+  refine' { .. }
+  -- Porting note: an name of paramaters should be specified
+  · intros _ _ x
+    cases x
+    rfl
+  · intros _ _ _ _ _ _ _ _ _ _ x
+    cases x
+    rfl
+#align prod.is_lawful_bifunctor Prod.lawfulBifunctor
 
-instance Bifunctor.const : Bifunctor Const where bimap α α' β β f _ := f
+instance Bifunctor.const : Bifunctor Const where bimap f _ := f
 #align bifunctor.const Bifunctor.const
 
-instance IsLawfulBifunctor.const : IsLawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
-#align is_lawful_bifunctor.const IsLawfulBifunctor.const
+instance LawfulBifunctor.const : LawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
+#align is_lawful_bifunctor.const LawfulBifunctor.const
 
 instance Bifunctor.flip : Bifunctor (flip F)
-    where bimap α α' β β' f f' x := (bimap f' f x : F β' α')
+    where bimap {_α α' _β β'} f f' x := (bimap f' f x : F β' α')
 #align bifunctor.flip Bifunctor.flip
 
-instance IsLawfulBifunctor.flip [IsLawfulBifunctor F] : IsLawfulBifunctor (flip F) := by
+instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
   refine' { .. } <;> intros <;> simp [bimap, functor_norm]
-#align is_lawful_bifunctor.flip IsLawfulBifunctor.flip
+#align is_lawful_bifunctor.flip LawfulBifunctor.flip
 
-instance : Bifunctor Sum where bimap := @Sum.map
+instance Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map
+#align sum.bifunctor Sum.bifunctor
 
-instance : IsLawfulBifunctor Sum := by refine' { .. } <;> intros <;> cases x <;> rfl
+instance Sum.lawfulBifunctor : LawfulBifunctor Sum := by
+  refine' { .. }
+  -- Porting note: an name of paramaters should be specified
+  · intros _ _ x
+    cases x <;> rfl
+  · intros _ _ _ _ _ _ _ _ _ _ x
+    cases x <;> rfl
+#align sum.is_lawful_bifunctor Sum.lawfulBifunctor
 
 open Bifunctor Functor
 
-instance (priority := 10) Bifunctor.functor {α} : Functor (F α) where map _ _ := snd
+instance (priority := 10) Bifunctor.functor {α} : Functor (F α) where map f x := snd f x
 #align bifunctor.functor Bifunctor.functor
 
-instance (priority := 10) Bifunctor.lawfulFunctor [IsLawfulBifunctor F] {α} : LawfulFunctor (F α) :=
-  by refine' { .. } <;> intros <;> simp [Functor.map, functor_norm]
+instance (priority := 10) Bifunctor.lawfulFunctor [LawfulBifunctor F] {α} : LawfulFunctor (F α) :=
+  -- Porting note: `mapConst` is required to prove new theorem
+  by refine' { .. } <;> intros <;> simp [mapConst, Functor.map, functor_norm]
 #align bifunctor.is_lawful_functor Bifunctor.lawfulFunctor
 
 section Bicompl
 
 variable (G : Type _ → Type u₀) (H : Type _ → Type u₁) [Functor G] [Functor H]
 
-instance : Bifunctor (bicompl F G H)
-    where bimap α α' β β' f f' x := (bimap (map f) (map f') x : F (G α') (H β'))
+instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H)
+    where bimap {_α α' _β β'} f f' x := (bimap (map f) (map f') x : F (G α') (H β'))
+#align function.bicompl.bifunctor Function.bicompl.bifunctor
 
-instance [LawfulFunctor G] [LawfulFunctor H] [IsLawfulBifunctor F] :
-    IsLawfulBifunctor (bicompl F G H) := by
+instance Function.bicompl.lawfulBifunctor [LawfulFunctor G] [LawfulFunctor H] [LawfulBifunctor F] :
+    LawfulBifunctor (bicompl F G H) := by
   constructor <;> intros <;> simp [bimap, map_id, map_comp_map, functor_norm]
+#align function.bicompl.is_lawful_bifunctor Function.bicompl.lawfulBifunctor
 
 end Bicompl
 
@@ -158,11 +180,13 @@ section Bicompr
 
 variable (G : Type u₂ → Type _) [Functor G]
 
-instance : Bifunctor (bicompr G F)
-    where bimap α α' β β' f f' x := (map (bimap f f') x : G (F α' β'))
+instance Function.bicompr.bifunctor : Bifunctor (bicompr G F)
+    where bimap {_α α' _β β'} f f' x := (map (bimap f f') x : G (F α' β'))
+#align function.bicompr.bifunctor Function.bicompr.bifunctor
 
-instance [LawfulFunctor G] [IsLawfulBifunctor F] : IsLawfulBifunctor (bicompr G F) := by
+instance Function.bicompr.lawfulBifunctor [LawfulFunctor G] [LawfulBifunctor F] :
+    LawfulBifunctor (bicompr G F) := by
   constructor <;> intros <;> simp [bimap, functor_norm]
+#align function.bicompr.is_lawful_bifunctor Function.bicompr.lawfulBifunctor
 
 end Bicompr
-
