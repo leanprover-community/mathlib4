@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Quotient
-import Mathbin.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Projection to a subspace
@@ -55,8 +55,7 @@ theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f
   range_eq_top.2 fun x => ⟨x, hf x⟩
 #align linear_map.range_eq_of_proj LinearMap.range_eq_of_proj
 
-theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl p f.ker :=
-  by
+theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl p f.ker := by
   constructor
   · rw [disjoint_iff_inf_le]
     rintro x ⟨hpx, hfx⟩
@@ -103,8 +102,7 @@ theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
 
 /-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. It is the unique
 linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`. -/
-def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E :=
-  by
+def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   apply LinearEquiv.ofBijective (p.subtype.coprod q.subtype)
   constructor
   · rw [← ker_eq_bot, ker_coprod_of_disjoint_range, ker_subtype, ker_subtype, prod_bot]
@@ -139,8 +137,7 @@ theorem prodEquivOfIsCompl_symm_apply_right (h : IsCompl p q) (x : q) :
 
 @[simp]
 theorem prodEquivOfIsCompl_symm_apply_fst_eq_zero (h : IsCompl p q) {x : E} :
-    ((prodEquivOfIsCompl p q h).symm x).1 = 0 ↔ x ∈ q :=
-  by
+    ((prodEquivOfIsCompl p q h).symm x).1 = 0 ↔ x ∈ q := by
   conv_rhs => rw [← (prod_equiv_of_is_compl p q h).apply_symm_apply x]
   rw [coe_prod_equiv_of_is_compl', Submodule.add_mem_iff_left _ (Submodule.coe_mem _),
     mem_right_iff_eq_zero_of_disjoint h.disjoint]
@@ -148,8 +145,7 @@ theorem prodEquivOfIsCompl_symm_apply_fst_eq_zero (h : IsCompl p q) {x : E} :
 
 @[simp]
 theorem prodEquivOfIsCompl_symm_apply_snd_eq_zero (h : IsCompl p q) {x : E} :
-    ((prodEquivOfIsCompl p q h).symm x).2 = 0 ↔ x ∈ p :=
-  by
+    ((prodEquivOfIsCompl p q h).symm x).2 = 0 ↔ x ∈ p := by
   conv_rhs => rw [← (prod_equiv_of_is_compl p q h).apply_symm_apply x]
   rw [coe_prod_equiv_of_is_compl', Submodule.add_mem_iff_right _ (Submodule.coe_mem _),
     mem_left_iff_eq_zero_of_disjoint h.disjoint]
@@ -221,8 +217,7 @@ theorem exists_unique_add_of_isCompl (hc : IsCompl p q) (x : E) :
 #align submodule.exists_unique_add_of_is_compl Submodule.exists_unique_add_of_isCompl
 
 theorem linear_proj_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) :
-    (p.linearProjOfIsCompl q hpq x + q.linearProjOfIsCompl p hpq.symm x : E) = x :=
-  by
+    (p.linearProjOfIsCompl q hpq x + q.linearProjOfIsCompl p hpq.symm x : E) = x := by
   dsimp only [linear_proj_of_is_compl]
   rw [← prod_comm_trans_prod_equiv_of_is_compl _ _ hpq]
   exact (prod_equiv_of_is_compl _ _ hpq).apply_symm_apply x
@@ -253,8 +248,7 @@ theorem ofIsCompl_right_apply (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →
 #align linear_map.of_is_compl_right_apply LinearMap.ofIsCompl_right_apply
 
 theorem ofIsCompl_eq (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
-    (hφ : ∀ u, φ u = χ u) (hψ : ∀ u, ψ u = χ u) : ofIsCompl h φ ψ = χ :=
-  by
+    (hφ : ∀ u, φ u = χ u) (hψ : ∀ u, ψ u = χ u) : ofIsCompl h φ ψ = χ := by
   ext x
   obtain ⟨_, _, rfl, _⟩ := exists_unique_add_of_is_compl h x
   simp [of_is_compl, hφ, hψ]
@@ -325,8 +319,7 @@ end
 
 @[simp]
 theorem linearProjOfIsCompl_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
-    p.linearProjOfIsCompl f.ker (isCompl_of_proj hf) = f :=
-  by
+    p.linearProjOfIsCompl f.ker (isCompl_of_proj hf) = f := by
   ext x
   have : x ∈ p ⊔ f.ker := by simp only [(is_compl_of_proj hf).sup_eq_top, mem_top]
   rcases mem_sup'.1 this with ⟨x, y, rfl⟩
@@ -404,8 +397,7 @@ structure IsProj {F : Type _} [FunLike F M fun _ => M] (f : F) : Prop where
   map_id : ∀ x ∈ m, f x = x
 #align linear_map.is_proj LinearMap.IsProj
 
-theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsProj p f) ↔ f ∘ₗ f = f :=
-  by
+theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsProj p f) ↔ f ∘ₗ f = f := by
   constructor
   · intro h
     obtain ⟨p, hp⟩ := h
@@ -439,8 +431,7 @@ theorem codRestrict_apply {f : M →ₗ[S] M} (h : IsProj m f) (x : M) : ↑(h.c
 #align linear_map.is_proj.cod_restrict_apply LinearMap.IsProj.codRestrict_apply
 
 @[simp]
-theorem codRestrict_apply_cod {f : M →ₗ[S] M} (h : IsProj m f) (x : m) : h.codRestrict x = x :=
-  by
+theorem codRestrict_apply_cod {f : M →ₗ[S] M} (h : IsProj m f) (x : m) : h.codRestrict x = x := by
   ext
   rw [cod_restrict_apply]
   exact h.map_id x x.2
@@ -450,8 +441,7 @@ theorem codRestrict_ker {f : M →ₗ[S] M} (h : IsProj m f) : h.codRestrict.ker
   f.ker_codRestrict m _
 #align linear_map.is_proj.cod_restrict_ker LinearMap.IsProj.codRestrict_ker
 
-theorem isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p f.ker :=
-  by
+theorem isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p f.ker := by
   rw [← cod_restrict_ker]
   exact is_compl_of_proj h.cod_restrict_apply_cod
 #align linear_map.is_proj.is_compl LinearMap.IsProj.isCompl
@@ -459,8 +449,7 @@ theorem isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p f.ker :=
 theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
     f =
       (p.prodEquivOfIsCompl f.ker h.IsCompl).toLinearMap ∘ₗ
-        prodMap id 0 ∘ₗ (p.prodEquivOfIsCompl f.ker h.IsCompl).symm.toLinearMap :=
-  by
+        prodMap id 0 ∘ₗ (p.prodEquivOfIsCompl f.ker h.IsCompl).symm.toLinearMap := by
   refine' (LinearMap.cancel_right (p.prod_equiv_of_is_compl f.ker h.is_compl).Surjective).1 _
   ext
   ·
@@ -488,8 +477,7 @@ namespace LinearMap
 variable {R : Type _} [CommRing R] {E : Type _} [AddCommGroup E] [Module R E] {p : Submodule R E}
 
 theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
-    f = (p.prodEquivOfIsCompl f.ker h.IsCompl).conj (prodMap id 0) :=
-  by
+    f = (p.prodEquivOfIsCompl f.ker h.IsCompl).conj (prodMap id 0) := by
   rw [LinearEquiv.conj_apply]
   exact h.eq_conj_prod_map'
 #align linear_map.is_proj.eq_conj_prod_map LinearMap.IsProj.eq_conj_prodMap
