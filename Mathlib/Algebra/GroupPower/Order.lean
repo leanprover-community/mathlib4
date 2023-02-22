@@ -251,7 +251,7 @@ theorem Left.pow_lt_one_iff [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {
     x ^ n < 1 ↔ x < 1 := Left.pow_lt_one_iff' hn
 #align left.pow_lt_one_iff Left.pow_lt_one_iff
 
-@[to_additive Right.nsmul_neg_iff]
+@[to_additive]
 theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   ⟨fun H =>
@@ -361,7 +361,7 @@ theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m :=
   (pow_one a).symm.trans_le (pow_le_pow ha <| pos_iff_ne_zero.mpr h)
 #align le_self_pow le_self_pow
 
--- Porting note: removed @[mono], not implemented yet.
+@[mono]
 theorem pow_le_pow_of_le_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i := by
   intro i
   induction i with
