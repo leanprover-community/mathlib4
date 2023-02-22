@@ -667,20 +667,25 @@ def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
   CoreM (Array ParsedProjectionData) := do
   let strDecl ← getConstInfo str
   trace[simps.debug] "debug: {projs}"
-  MetaM.run' <| forallTelescope strDecl.type fun args _ ↦ do
+  -- todo: don't use TermElabM here. Attempted in b575c2accdb8f248b8f46d564eac5af71ab0d051, but
+  -- there were some inscrutable errors.
+  MetaM.run' <| TermElabM.run' (s := {levelNames := strDecl.levelParams}) <|
+  forallTelescope strDecl.type fun args _ ↦ do
   let eStr := mkAppN (← mkConstWithLevelParams str) args
   let projs ← projs.mapM fun proj => do
     if let some (className, projName, arity) := Simps.defaultCoercions.find? proj.strName then
       let classArgs := mkArray (arity - 1) Unit.unit
       let classArgs ← classArgs.mapM fun _ => mkFreshExprMVar none
       let classArgs := #[eStr] ++ classArgs
-      let eInstType ← mkAppM className classArgs
+      let classArgs := classArgs.map Arg.expr
+      let eInstType ← elabAppArgs (← Term.mkConst className) #[] classArgs none true false
       trace[simps.debug] "found projection {proj.strName}. Trying to synthesize {eInstType}."
       let eInst ← try synthInstance eInstType <| some 10
       catch ex =>
         trace[simps.debug] "Didn't find instance:\n{ex.toMessageData}"
         return proj
-      let projExpr ← mkAppM projName <| classArgs.push eInst
+      let projExpr ← elabAppArgs (← Term.mkConst projName) #[] (classArgs.push <| .expr eInst)
+        none true false
       let projExpr ← mkLambdaFVars args projExpr
       let projExpr ← instantiateMVars projExpr
       unless ← isDefEq projExpr proj.expr?.get! do
