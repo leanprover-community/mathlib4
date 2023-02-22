@@ -206,65 +206,51 @@ theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkele
 def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F₂
     where app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
 #align category_theory.thin_skeleton.map_nat_trans CategoryTheory.ThinSkeleton.mapNatTrans
-#check Quotient.recOnSubsingleton 
+
+/- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted 
+from the original `map₂` proof. Lean needed an extensive amount explicit type 
+annotations to figure things out. This also translated into repeated deterministic 
+timeouts. 
+
+It would be better to prove that 
+`ThinSkeleton (C × D) ≌ ThinSkeleton C × ThinSkeleton D` 
+which is more immediate from comparing the preorders. Then one could get 
+`map₂` by currying.
+-/
+def map₂ObjMap (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D → ThinSkeleton E := 
+  fun x y =>
+    @Quotient.map₂ C D (isIsomorphicSetoid C) (isIsomorphicSetoid D) E (isIsomorphicSetoid E) 
+      (fun X Y => (F.obj X).obj Y)
+          (fun X₁ _ ⟨hX⟩ _ Y₂ ⟨hY⟩ => ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩) x y
+def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ ThinSkeleton E := 
+  fun x => 
+    { obj := fun y => map₂ObjMap F x y
+      map := fun {y₁} {y₂} => @Quotient.recOnSubsingleton C (isIsomorphicSetoid C) 
+        (fun x => (y₁ ⟶  y₂) → (map₂ObjMap F x y₁ ⟶  map₂ObjMap F x y₂)) _ x fun X 
+          => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY =>
+            homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
+def map₂NatTrans (F : C ⥤ D ⥤ E) : {x₁ x₂ : ThinSkeleton C} → (x₁ ⟶  x₂) →  
+    (map₂Functor F x₁ ⟶  map₂Functor F x₂) := fun {x₁} {x₂} => by 
+  apply @Quotient.recOnSubsingleton₂ C C (isIsomorphicSetoid C) (isIsomorphicSetoid C) 
+      (fun x x' : ThinSkeleton C => (x ⟶  x') → (map₂Functor F x ⟶  map₂Functor F x')) _ x₁ x₂ 
+  intro X₁ X₂ f 
+  apply NatTrans.mk 
+  rotate_left 
+  intro y 
+  let ⟨⟨h⟩⟩ := f
+  simp [toThinSkeleton] at h
+  exact Quotient.recOnSubsingleton y fun Y => homOfLE (h.elim fun f' => ⟨(F.map f').app Y⟩)
+  aesop_cat
+
 -- TODO: state the lemmas about what happens when you compose with `to_thin_skeleton`
 /-- A functor `C ⥤ D ⥤ E` computably lowers to a functor
 `thin_skeleton C ⥤ thin_skeleton D ⥤ thin_skeleton E` -/
 @[simps]
-def map₂ (F : C ⥤ D ⥤ E) : ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkeleton E := 
-  let F' (x : ThinSkeleton C) : ThinSkeleton D → ThinSkeleton E := 
-    fun y => by 
-    refine @Quotient.map₂ C D (isIsomorphicSetoid C) (isIsomorphicSetoid D) E 
-      (isIsomorphicSetoid E) (fun X Y => (F.obj X).obj Y) ?_ x y 
-    rintro X₁ X₂ ⟨hX⟩ Y₁ Y₂ ⟨hY⟩ 
-    dsimp
-    exact ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩ 
-  let F'' (x : ThinSkeleton C) (y₁ y₂ : ThinSkeleton D) : 
-      F' x y₁ ⟶ F' x y₂ := 
-          @Quotient.recOnSubsingleton C (isIsomorphicSetoid C) 
-          ((x' : Quotient (isIsomorphicSetoid C)) → (y₁ : ThinSkeleton D) → 
-          (y₂ :ThinSkeleton D) → F' x' y₁ ⟶ F' x' y₂) _ x fun X 
-            => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY => homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩ )
-  {
-    obj := fun x => 
-    { 
-      obj := F' x 
-      map := fun {y₁} {y₂} g => F'' x y₁ y₂ 
-    }
-    map := fun {x₁} {x₂} => Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
-      {
-        app := fun y =>
-          Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) 
-      }
-    map_id := sorry 
-    map_comp := sorry 
-  }
---   --
---   --   obj := fun x => 
---   --       { obj := fun y => by 
---   --           refine @Quotient.map₂ C D (isIsomorphicSetoid C) (isIsomorphicSetoid D) E (isIsomorphicSetoid E) (fun X Y => (F.obj X).obj Y) ?_ x y 
---   --         rintro X₁ X₂ ⟨hX⟩ Y₁ Y₂ ⟨hY⟩ 
---   --         dsimp
---   --         exact ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩  
---   --       map := fun {y₁} {y₂} =>  
---   --           @Quotient.recOnSubsingleton C (isIsomorphicSetoid C) ((y₁ : ThinSkeleton D) → (y₂ :ThinSkeleton D) → (map F.obj ).obj y₁ ⟶ (map F).obj y₂) _ x fun X 
---   --             => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY => homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩ )
---   --       map_id := by aesop_cat 
---   --       map_comp := by aesop_cat
---   --     }
---   --   map := sorry 
---   --   map_id := sorry 
---   --   map_comp := sorry 
---   -- }
--- #exit 
---   map {x₁} {x₂} :=  
---     -- refine Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f => ?_
---     -- dsimp 
---     -- exact { app := sorry }
---     Quotient.recOnSubsingleton₂ x₁ x₂ fun X₁ X₂ f =>
---       {
---         app := fun y =>
---           Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }
+def map₂ (F : C ⥤ D ⥤ E) : ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkeleton E where 
+  obj := map₂Functor F
+  map := map₂NatTrans F 
+  map_id := by aesop_cat
+  map_comp := by aesop_cat
 #align category_theory.thin_skeleton.map₂ CategoryTheory.ThinSkeleton.map₂
 
 variable (C)
