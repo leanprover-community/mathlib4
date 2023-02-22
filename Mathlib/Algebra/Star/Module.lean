@@ -15,20 +15,20 @@ import Mathlib.LinearAlgebra.Prod
 /-!
 # The star operation, bundled as a star-linear equiv
 
-We define `star_linear_equiv`, which is the star operation bundled as a star-linear map.
+We define `starLinearEquiv`, which is the star operation bundled as a star-linear map.
 It is defined on a star algebra `A` over the base ring `R`.
 
-This file also provides some lemmas that need `algebra.module.basic` imported to prove.
+This file also provides some lemmas that need `Algebra.Module.Basic` imported to prove.
 
 ## TODO
 
-- Define `star_linear_equiv` for noncommutative `R`. We only the commutative case for now since,
+- Define `starLinearEquiv` for noncommutative `R`. We only the commutative case for now since,
   in the noncommutative case, the ring hom needs to reverse the order of multiplication. This
   requires a ring hom of type `R →+* Rᵐᵒᵖ`, which is very undesirable in the commutative case.
-  One way out would be to define a new typeclass `is_op R S` and have an instance `is_op R R`
+  One way out would be to define a new typeclass `IsOp R S` and have an instance `IsOp R R`
   for commutative `R`.
 - Also note that such a definition involving `Rᵐᵒᵖ` or `is_op R S` would require adding
-  the appropriate `ring_hom_inv_pair` instances to be able to define the semilinear
+  the appropriate `RingHomInvPair` instances to be able to define the semilinear
   equivalence.
 -/
 
