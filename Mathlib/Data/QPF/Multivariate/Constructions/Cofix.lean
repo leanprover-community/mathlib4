@@ -170,9 +170,6 @@ def Cofix.corec'₁ {α : TypeVec n} {β : Type u} (g : ∀ {X}, (β → X) → 
   Cofix.corec (fun _ => g id) x
 #align mvqpf.cofix.corec'₁ MvQPF.Cofix.corec'₁
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- More flexible corecursor for `cofix F`. Allows the return of a fully formed
 value instead of making a recursive call -/
 def Cofix.corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Sum (Cofix F α) β))) (x : β) :
@@ -181,7 +178,6 @@ def Cofix.corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Sum (
   Cofix.corec (Sum.elim (MvFunctor.map f ∘ Cofix.dest) g) (Sum.inr x : Sum (Cofix F α) β)
 #align mvqpf.cofix.corec' MvQPF.Cofix.corec'
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Corecursor for `cofix F`. The shape allows recursive calls to
 look like recursive calls. -/
 def Cofix.corec₁ {α : TypeVec n} {β : Type u}
@@ -299,10 +295,11 @@ theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
   by
   apply Cofix.bisim_rel
   intro x y rxy
-  rcases(liftr_iff (rel_last α r) _ _).mp (h x y rxy) with ⟨a, f₀, f₁, dxeq, dyeq, h'⟩
+  rcases (liftR_iff (fun a b => RelLast α r a b) (dest x) (dest y)).mp (h x y rxy)
+    with ⟨a, f₀, f₁, dxeq, dyeq, h'⟩
   rw [dxeq, dyeq, ← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
-  rw [← split_drop_fun_last_fun f₀, ← split_drop_fun_last_fun f₁]
-  rw [appendFun_comp_split_fun, appendFun_comp_split_fun]
+  rw [← split_dropFun_lastFun f₀, ← split_dropFun_lastFun f₁]
+  rw [appendFun_comp_splitFun, appendFun_comp_splitFun]
   rw [id_comp, id_comp]
   congr 2 with (i j); cases' i with _ i <;> dsimp
   · apply Quot.sound
@@ -317,7 +314,7 @@ open MvFunctor
 theorem Cofix.bisim₂ {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
     (h : ∀ x y, r x y → LiftR' (RelLast' α r) (Cofix.dest x) (Cofix.dest y)) :
     ∀ x y, r x y → x = y :=
-  Cofix.bisim _ <| by intros <;> rw [← liftr_last_rel_iff] <;> apply h <;> assumption
+  Cofix.bisim r <| by intros <;> rw [← LiftR_RelLast_iff] <;> apply h <;> assumption
 #align mvqpf.cofix.bisim₂ MvQPF.Cofix.bisim₂
 
 /-- Bisimulation principle the values `⟨a,f⟩` of the polynomial functor representing
@@ -328,8 +325,8 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type _} (Q : β → Prop) (u v : β 
       ∀ x,
         Q x →
           ∃ a f' f₀ f₁,
-            Cofix.dest (u x) = abs ⟨a, q.P.appendContents f' f₀⟩ ∧
-              Cofix.dest (v x) = abs ⟨a, q.P.appendContents f' f₁⟩ ∧
+            Cofix.dest (u x) = q.abs ⟨a, q.P.appendContents f' f₀⟩ ∧
+              Cofix.dest (v x) = q.abs ⟨a, q.P.appendContents f' f₁⟩ ∧
                 ∀ i, ∃ x', Q x' ∧ f₀ i = u x' ∧ f₁ i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : Cofix F α => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
@@ -348,17 +345,23 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type _} (Q : β → Prop) (u v : β 
 #align mvqpf.cofix.bisim' MvQPF.Cofix.bisim'
 
 theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x) = x := by
-  apply Cofix.bisim_rel (fun x y : Cofix F α => x = Cofix.mk (Cofix.dest y)) _ _ _ rfl; dsimp
-  intro x y h; rw [h]
+  apply Cofix.bisim_rel (fun x y : Cofix F α => x = Cofix.mk (Cofix.dest y)) _ _ _ rfl;
+  dsimp
+  intro x y h
+  rw [h]
   conv =>
     lhs
     congr
-    skip
+    rfl
     rw [Cofix.mk]
     rw [Cofix.dest_corec]
   rw [← comp_map, ← appendFun_comp, id_comp]
-  rw [← comp_map, ← appendFun_comp, id_comp, ← cofix.mk]
-  congr 2 with u; apply Quot.sound; rfl
+  rw [← comp_map, ← appendFun_comp, id_comp, ← Cofix.mk]
+  congr
+  apply congrArg
+  funext x
+  apply Quot.sound;
+  rfl
 #align mvqpf.cofix.mk_dest MvQPF.Cofix.mk_dest
 
 theorem Cofix.dest_mk {α : TypeVec n} (x : F (α.append1 <| Cofix F α)) :
@@ -397,15 +400,6 @@ theorem liftR_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F']
 open Function
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem liftr_map_last [LawfulMvFunctor F] {α : TypeVec n} {ι ι'} (R : ι' → ι' → Prop)
     (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
     LiftR' (RelLast' _ R) ((id ::: f) <$$> x) ((id ::: g) <$$> x) :=
@@ -421,24 +415,22 @@ theorem liftr_map_last [LawfulMvFunctor F] {α : TypeVec n} {ι ι'} (R : ι' �
     dsimp [c, b]
     apply eq_of_drop_last_eq
     · dsimp
-      simp only [prod_map_id, drop_fun_prod, drop_fun_appendFun, drop_fun_diag, id_comp,
-        drop_fun_to_subtype]
+      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, id_comp,
+        dropFun_to_subtype]
       erw [to_subtype_of_subtype_assoc, id_comp]
-      clear * -
+      -- clear * -
       ext (i x) : 2
       induction i
       rfl
       apply i_ih
-    simp only [h, last_fun_from_append1_drop_last, last_fun_to_subtype, last_fun_appendFun,
-      last_fun_subtype_val, comp.left_id, last_fun_comp, last_fun_prod]
+    simp only [h, lastFun_from_append1_drop_last, lastFun_to_subtype, lastFun_appendFun,
+      lastFun_subtype_val, comp.left_id, lastFun_comp, lastFun_prod]
     dsimp
     ext1
     rfl
   liftr_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh
 #align mvqpf.liftr_map_last MvQPF.liftr_map_last
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem liftr_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
     (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id ::: f) <$$> x) x := by
   have := liftr_map_last R x f id hh
@@ -447,33 +439,40 @@ theorem liftr_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι
 
 end LiftRMap
 
+variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
+
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => Cofix.abs (Cofix.repr y) = x
+  have hR : R = fun x y : Cofix F α => Cofix.abs (Cofix.repr y) = x := by rfl;
   refine' Cofix.bisim₂ R _ _ _ rfl
-  clear x; rintro x y h; dsimp [R] at h; subst h
-  dsimp [cofix.dest, cofix.abs]
+  clear x; rintro x y h; dsimp [hR] at h; subst h
+  dsimp [Cofix.dest, Cofix.abs]
   induction y using Quot.ind
-  simp only [cofix.repr, M.dest_corec, abs_map, abs_repr]
+  simp only [Cofix.repr, M.dest_corec, abs_map, abs_repr]
   conv =>
     congr
     skip
-    rw [cofix.dest]
-  dsimp; rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
-  let f : (α ::: (P F).M α) ⟹ subtype_ (α.rel_last' R) :=
-    split_fun diag_sub fun x => ⟨(cofix.abs (cofix.abs x).repr, cofix.abs x), _⟩
-  refine' liftr_map _ _ _ _ f _
+    rw [Cofix.dest]
+  dsimp; rw [MvFunctor.map_map, ← appendFun_comp_id]
+
+  let f : (α ::: (P F).M α) ⟹ Subtype_ (α.RelLast' R) :=
+    splitFun diagSub fun x => ⟨
+      (Cofix.abs (Cofix.abs x).repr, Cofix.abs x),
+      by dsimp[RelLast', splitFun]
+    ⟩
+  apply liftR_map _ _ _ _ f _
   · simp only [← append_prod_appendFun, prod_map_id]
     apply eq_of_drop_last_eq
     · dsimp
-      simp only [drop_fun_diag]
+      simp only [dropFun_diag]
       erw [subtype_val_diag_sub]
     ext1
-    simp only [cofix.abs, Prod.mk.inj_iff, Prod_map, Function.comp_apply, last_fun_appendFun,
-      last_fun_subtype_val, last_fun_comp, last_fun_split_fun]
-    dsimp [drop_fun_rel_last, last_fun, prod.diag]
+    simp only [Cofix.abs, Prod.mk.inj_iff, Prod_map, Function.comp_apply, lastFun_appendFun,
+      lastFun_subtype_val, lastFun_comp, lastFun_splitFun]
+    dsimp [dropFun_rel_last, lastFun, prod.diag]
     constructor <;> rfl
-  dsimp [rel_last', split_fun, Function.uncurry, R]
+  dsimp [rel_last', splitFun, Function.uncurry, R]
   rfl
 #align mvqpf.cofix.abs_repr MvQPF.Cofix.abs_repr
 
