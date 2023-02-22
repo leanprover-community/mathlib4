@@ -42,6 +42,9 @@ New workflow:
   This is typically true and true by default,
   but maybe not if we additivize "a `Group` with a `Group` action" to
   "a `Group` with an `AddGroup` action" or something; that might still be additive.
+  An actual example from mathlib: a `GroupSeminorm` additivizes to a `AddGroupSeminorm`, but we want
+  to additivize an `SMul R (GroupSeminorm E)` instance to an `SMul R (AddGroupSeminorm E)` instance,
+  *not* an `VAdd R (AddGroupSeminorm E)` instance.
 * When we additivize something like `One (α × β)` we automatically mark `α × β` as
   `@[to_additive existing Prod 1 2]` (if it doesn't have it yet)
 * Maybe `to_additive` can do a coherence check on the type?
