@@ -210,7 +210,8 @@ def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F�
 /- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted 
 from the original `map₂` proof. Lean needed an extensive amount explicit type 
 annotations to figure things out. This also translated into repeated deterministic 
-timeouts. 
+timeouts. The extracted defs allow for explicit motives for the multiple 
+descents to the quotients.
 
 It would be better to prove that 
 `ThinSkeleton (C × D) ≌ ThinSkeleton C × ThinSkeleton D` 
@@ -230,17 +231,11 @@ def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ Th
           => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY =>
             homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
 def map₂NatTrans (F : C ⥤ D ⥤ E) : {x₁ x₂ : ThinSkeleton C} → (x₁ ⟶  x₂) →  
-    (map₂Functor F x₁ ⟶  map₂Functor F x₂) := fun {x₁} {x₂} => by 
-  apply @Quotient.recOnSubsingleton₂ C C (isIsomorphicSetoid C) (isIsomorphicSetoid C) 
-      (fun x x' : ThinSkeleton C => (x ⟶  x') → (map₂Functor F x ⟶  map₂Functor F x')) _ x₁ x₂ 
-  intro X₁ X₂ f 
-  apply NatTrans.mk 
-  rotate_left 
-  intro y 
-  let ⟨⟨h⟩⟩ := f
-  simp [toThinSkeleton] at h
-  exact Quotient.recOnSubsingleton y fun Y => homOfLE (h.elim fun f' => ⟨(F.map f').app Y⟩)
-  aesop_cat
+    (map₂Functor F x₁ ⟶  map₂Functor F x₂) := fun {x₁} {x₂} => 
+  @Quotient.recOnSubsingleton₂ C C (isIsomorphicSetoid C) (isIsomorphicSetoid C) 
+    (fun x x' : ThinSkeleton C => (x ⟶  x') → (map₂Functor F x ⟶  map₂Functor F x')) _ x₁ x₂ 
+    (fun X₁ X₂ f => { app := fun y =>   
+      Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }) 
 
 -- TODO: state the lemmas about what happens when you compose with `to_thin_skeleton`
 /-- A functor `C ⥤ D ⥤ E` computably lowers to a functor
@@ -249,8 +244,6 @@ def map₂NatTrans (F : C ⥤ D ⥤ E) : {x₁ x₂ : ThinSkeleton C} → (x₁ 
 def map₂ (F : C ⥤ D ⥤ E) : ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkeleton E where 
   obj := map₂Functor F
   map := map₂NatTrans F 
-  map_id := by aesop_cat
-  map_comp := by aesop_cat
 #align category_theory.thin_skeleton.map₂ CategoryTheory.ThinSkeleton.map₂
 
 variable (C)
