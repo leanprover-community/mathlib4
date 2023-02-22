@@ -223,6 +223,7 @@ import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Balanced
