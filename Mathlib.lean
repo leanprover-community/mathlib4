@@ -224,15 +224,19 @@ import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Category.GaloisConnection
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Conj
@@ -243,6 +247,7 @@ import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EssentialImage
+import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
@@ -256,10 +261,15 @@ import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.IsomorphismClasses
+import Mathlib.CategoryTheory.LiftingProperties.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.PEmpty
+import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
@@ -271,6 +281,7 @@ import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.Energy
+import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.Composition
@@ -605,6 +616,8 @@ import Mathlib.Data.QPF.Multivariate.Basic
 import Mathlib.Data.QPF.Multivariate.Constructions.Comp
 import Mathlib.Data.QPF.Multivariate.Constructions.Const
 import Mathlib.Data.QPF.Multivariate.Constructions.Prj
+import Mathlib.Data.QPF.Multivariate.Constructions.Quot
+import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.BigOperators
@@ -832,6 +845,7 @@ import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Logic.Basic
@@ -1110,6 +1124,7 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
+import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace
@@ -1125,6 +1140,8 @@ import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Topology.Alexandroff
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
@@ -1133,6 +1150,7 @@ import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.Algebra.Order.ExtendFrom
 import Mathlib.Topology.Algebra.Order.ExtrClosure
 import Mathlib.Topology.Algebra.Order.Filter
+import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.LeftRight
 import Mathlib.Topology.Algebra.Order.LeftRightLim
