@@ -235,7 +235,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
     have h₀ :
       appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P a) =
         appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P b) :=
-      by rw [appendFun_comp_id, comp_map, comp_map] <;> exact h _ _ r'ab
+      by rw [appendFun_comp_id, comp_map, comp_map]; exact h _ _ r'ab
     have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
@@ -314,7 +314,7 @@ open MvFunctor
 theorem Cofix.bisim₂ {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
     (h : ∀ x y, r x y → LiftR' (RelLast' α r) (Cofix.dest x) (Cofix.dest y)) :
     ∀ x y, r x y → x = y :=
-  Cofix.bisim r <| by intros <;> rw [← LiftR_RelLast_iff] <;> apply h <;> assumption
+  Cofix.bisim r <| by intros; rw [← LiftR_RelLast_iff]; apply h; assumption
 #align mvqpf.cofix.bisim₂ MvQPF.Cofix.bisim₂
 
 /-- Bisimulation principle the values `⟨a,f⟩` of the polynomial functor representing
