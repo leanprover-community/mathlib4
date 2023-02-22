@@ -232,10 +232,7 @@ import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.RelCat
-<<<<<<< HEAD
-=======
 import Mathlib.CategoryTheory.Category.ULift
->>>>>>> master
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
