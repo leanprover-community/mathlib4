@@ -8,9 +8,9 @@ Authors: Scott Morrison, Shing Tak Lam
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Order.ProjIcc
-import Mathbin.Topology.Algebra.Order.Group
-import Mathbin.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Bundled continuous maps into orders, with order-compatible topology
@@ -124,8 +124,7 @@ theorem sup'_apply {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(
 
 @[simp, norm_cast]
 theorem sup'_coe {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
-    ((s.sup' H f : C(β, γ)) : ι → β) = s.sup' H fun a => (f a : β → γ) :=
-  by
+    ((s.sup' H f : C(β, γ)) : ι → β) = s.sup' H fun a => (f a : β → γ) := by
   ext
   simp [sup'_apply]
 #align continuous_map.sup'_coe ContinuousMap.sup'_coe
