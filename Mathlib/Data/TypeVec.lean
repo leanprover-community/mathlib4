@@ -551,9 +551,8 @@ end
 theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
   TypeVec.prod.fst i (prod.mk i a b) = a :=
 by
-  induction i
+  induction' i with _ _ _ i_ih
   simp_all only [prod.fst, prod.mk]
-  rename_i i_ih
   apply i_ih
 #align typevec.prod_fst_mk TypeVec.prod_fst_mk
 
@@ -561,9 +560,8 @@ by
 theorem prod_snd_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
   TypeVec.prod.snd i (prod.mk i a b) = b :=
 by
-  induction i
+  induction' i with _ _ _ i_ih
   simp_all [prod.snd, prod.mk]
-  rename_i i_ih
   apply i_ih
 #align typevec.prod_snd_mk TypeVec.prod_snd_mk
 
@@ -611,9 +609,8 @@ theorem snd_diag {α : TypeVec n} : TypeVec.prod.snd ⊚ (prod.diag : α ⟹ _) 
 theorem repeatEq_iff_eq {α : TypeVec n} {i x y} :
   ofRepeat (repeatEq α i (prod.mk _ x y)) ↔ x = y :=
 by
-  induction i
+  induction' i with _ _ _ i_ih
   rfl
-  rename_i i i_ih
   erw [repeatEq, i_ih]
 #align typevec.repeat_eq_iff_eq TypeVec.repeatEq_iff_eq
 
@@ -676,20 +673,18 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag :=
 by
   ext i x
-  induction i
+  induction' i with _ _ _ i_ih
   simp [prod.diag, diagSub, repeatEq, subtypeVal, comp]
-  rename_i _ i_ih
   apply @i_ih (drop α)
 #align typevec.diag_sub_val TypeVec.diag_sub_val
 
 theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ β ⟹ _) := by
   intros
   ext (i a)
-  induction i
+  induction' i with _ _ _ i_ih
   · cases a
     rfl
-  · rename_i i_ih _ _
-    apply i_ih
+  · apply i_ih
 
 #align typevec.prod_id TypeVec.prod_id
 
@@ -811,10 +806,9 @@ theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ �
 @[simp]
 theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
-  induction i
+  induction' i with _ _ _ i_ih
   . simp [comp, diagSub, subtypeVal, prod.diag]
-  . rename_i i i_ih
-    simp [prod.diag]
+  . simp [prod.diag]
     simp [comp, diagSub, subtypeVal, prod.diag] at *
     apply @i_ih (drop _)
 #align typevec.subtype_val_diag_sub TypeVec.subtypeVal_diagSub
