@@ -46,7 +46,7 @@ def Skeletal : Prop :=
   ∀ ⦃X Y : C⦄, IsIsomorphic X Y → X = Y
 #align category_theory.skeletal CategoryTheory.Skeletal
 
-/-- `is_skeleton_of C D F` says that `F : D ⥤ C` exhibits `D` as a skeletal full subcategory of `C`,
+/-- `IsSkeletonOf C D F` says that `F : D ⥤ C` exhibits `D` as a skeletal full subcategory of `C`,
 in particular `F` is a (strong) equivalence and `D` is skeletal.
 -/
 structure IsSkeletonOf (F : D ⥤ C) where
@@ -67,7 +67,7 @@ theorem Functor.eq_of_iso {F₁ F₂ : D ⥤ C} [Quiver.IsThin C] (hC : Skeletal
 #align category_theory.functor.eq_of_iso CategoryTheory.Functor.eq_of_iso
 
 /-- If `C` is thin and skeletal, `D ⥤ C` is skeletal.
-`category_theory.functor_thin` shows it is thin also.
+`CategoryTheory.functor_thin` shows it is thin also.
 -/
 theorem functor_skeletal [Quiver.IsThin C] (hC : Skeletal C) : Skeletal (D ⥤ C) := fun _ _ h =>
   h.elim (Functor.eq_of_iso hC)
@@ -192,7 +192,7 @@ instance thin : Quiver.IsThin (ThinSkeleton C) := fun _ _ =>
 
 variable {C} {D}
 
-/-- A functor `C ⥤ D` computably lowers to a functor `thin_skeleton C ⥤ thin_skeleton D`. -/
+/-- A functor `C ⥤ D` computably lowers to a functor `ThinSkeleton C ⥤ ThinSkeleton D`. -/
 @[simps]
 def map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D where
   obj := Quotient.map F.obj fun X₁ X₂ ⟨hX⟩ => ⟨F.mapIso hX⟩
@@ -244,9 +244,9 @@ def map₂NatTrans (F : C ⥤ D ⥤ E) : {x₁ x₂ : ThinSkeleton C} → (x₁ 
     (fun X₁ X₂ f => { app := fun y =>   
       Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) }) 
 
--- TODO: state the lemmas about what happens when you compose with `to_thin_skeleton`
+-- TODO: state the lemmas about what happens when you compose with `toThinSkeleton`
 /-- A functor `C ⥤ D ⥤ E` computably lowers to a functor
-`thin_skeleton C ⥤ thin_skeleton D ⥤ thin_skeleton E` -/
+`ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkeleton E` -/
 @[simps]
 def map₂ (F : C ⥤ D ⥤ E) : ThinSkeleton C ⥤ ThinSkeleton D ⥤ ThinSkeleton E where 
   obj := map₂Functor F
@@ -262,7 +262,7 @@ variable [Quiver.IsThin C]
 instance toThinSkeleton_faithful : Faithful (toThinSkeleton C) where
 #align category_theory.thin_skeleton.to_thin_skeleton_faithful CategoryTheory.ThinSkeleton.toThinSkeleton_faithful
 
-/-- Use `quotient.out` to create a functor out of the thin skeleton. -/
+/-- Use `Quotient.out` to create a functor out of the thin skeleton. -/
 @[simps]
 noncomputable def fromThinSkeleton : ThinSkeleton C ⥤ C where
   obj := Quotient.out
@@ -318,7 +318,7 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
       inv := mapNatTrans h.inv }
 #align category_theory.thin_skeleton.map_iso_eq CategoryTheory.ThinSkeleton.map_iso_eq
 
-/-- `from_thin_skeleton C` exhibits the thin skeleton as a skeleton. -/
+/-- `fromThinSkeleton C` exhibits the thin skeleton as a skeleton. -/
 noncomputable def thinSkeletonIsSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C)
     where
   skel := skeletal
@@ -360,7 +360,7 @@ variable {C} {α : Type _} [PartialOrder α]
 
 /--
 When `e : C ≌ α` is a categorical equivalence from a thin category `C` to some partial order `α`,
-the `thin_skeleton C` is order isomorphic to `α`.
+the `ThinSkeleton C` is order isomorphic to `α`.
 -/
 noncomputable def Equivalence.thinSkeletonOrderIso [Quiver.IsThin C] (e : C ≌ α) :
     ThinSkeleton C ≃o α :=
