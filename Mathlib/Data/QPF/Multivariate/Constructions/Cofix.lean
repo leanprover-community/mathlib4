@@ -261,7 +261,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
       h₀]
   refine' ⟨r', this, rxy⟩
 
-/-- Bisimulation principle using `map` and `quot.mk` to match and relate children of two trees. -/
+/-- Bisimulation principle using `map` and `Quot.mk` to match and relate children of two trees. -/
 theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
     (h :
       ∀ x y,
