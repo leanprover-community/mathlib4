@@ -25,13 +25,13 @@ A monoidal functor is a lax monoidal functor for which `ε` and `μ` are isomorp
 
 We show that the composition of (lax) monoidal functors gives a (lax) monoidal functor.
 
-See also `category_theory.monoidal.functorial` for a typeclass decorating an object-level
+See also `CategoryTheory.Monoidal.Functorial` for a typeclass decorating an object-level
 function with the additional data of a monoidal functor.
 This is useful when stating that a pre-existing functor is monoidal.
 
-See `category_theory.monoidal.natural_transformation` for monoidal natural transformations.
+See `CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transformations.
 
-We show in `category_theory.monoidal.Mon_` that lax monoidal functors take monoid objects
+We show in `CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
 to monoid objects.
 
 ## Future work
@@ -68,24 +68,28 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] (D : Ty
 equipped with morphisms `ε : 𝟙 _D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
 satisfying the appropriate coherences. -/
 structure LaxMonoidalFunctor extends C ⥤ D where
-  -- unit morphism
+  /-- unit morphism -/
   ε : 𝟙_ D ⟶ obj (𝟙_ C)
-  -- tensorator
+  /-- tensorator -/
   μ : ∀ X Y : C, obj X ⊗ obj Y ⟶ obj (X ⊗ Y)
   μ_natural :
     ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
       (map f ⊗ map g) ≫ μ Y Y' = μ X X' ≫ map (f ⊗ g) := by
+    --Porting note: was `obviously`
     aesop_cat
-  -- associativity of the tensorator
+  /-- associativity of the tensorator -/
   associativity :
     ∀ X Y Z : C,
       (μ X Y ⊗ 𝟙 (obj Z)) ≫ μ (X ⊗ Y) Z ≫ map (α_ X Y Z).hom =
         (α_ (obj X) (obj Y) (obj Z)).hom ≫ (𝟙 (obj X) ⊗ μ Y Z) ≫ μ X (Y ⊗ Z) := by
+    --Porting note: was `obviously`
     aesop_cat
   -- unitality
   left_unitality : ∀ X : C, (λ_ (obj X)).hom = (ε ⊗ 𝟙 (obj X)) ≫ μ (𝟙_ C) X ≫ map (λ_ X).hom :=
+    --Porting note: was `obviously`
     by aesop_cat
   right_unitality : ∀ X : C, (ρ_ (obj X)).hom = (𝟙 (obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ map (ρ_ X).hom :=
+    --Porting note: was `obviously`
     by aesop_cat
 #align category_theory.lax_monoidal_functor CategoryTheory.LaxMonoidalFunctor
 
@@ -154,8 +158,6 @@ noncomputable def MonoidalFunctor.εIso (F : MonoidalFunctor.{v₁, v₂} C D) :
   asIso F.ε
 #align category_theory.monoidal_functor.ε_iso CategoryTheory.MonoidalFunctor.εIso
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The tensorator of a (strong) monoidal functor as an isomorphism.
 -/
 noncomputable def MonoidalFunctor.μIso (F : MonoidalFunctor.{v₁, v₂} C D) (X Y : C) :
@@ -261,7 +263,7 @@ theorem ε_hom_inv_id : F.ε ≫ F.εIso.inv = 𝟙 _ :=
 #align category_theory.monoidal_functor.ε_hom_inv_id CategoryTheory.MonoidalFunctor.ε_hom_inv_id
 
 /-- Monoidal functors commute with left tensoring up to isomorphism -/
-@[simps]
+@[simps!]
 noncomputable def commTensorLeft (X : C) :
     F.toFunctor ⋙ tensorLeft (F.toFunctor.obj X) ≅ tensorLeft X ⋙ F.toFunctor :=
   NatIso.ofComponents (fun Y => F.μIso X Y) @fun Y Z f => by
@@ -270,7 +272,7 @@ noncomputable def commTensorLeft (X : C) :
 #align category_theory.monoidal_functor.comm_tensor_left CategoryTheory.MonoidalFunctor.commTensorLeft
 
 /-- Monoidal functors commute with right tensoring up to isomorphism -/
-@[simps]
+@[simps!]
 noncomputable def commTensorRight (X : C) :
     F.toFunctor ⋙ tensorRight (F.toFunctor.obj X) ≅ tensorRight X ⋙ F.toFunctor :=
   NatIso.ofComponents (fun Y => F.μIso Y X) @fun Y Z f => by
@@ -345,7 +347,7 @@ def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
         LaxMonoidalFunctor.μ_natural, NatTrans.id_app, map_id, ← Category.assoc, map_comp] }
 #align category_theory.lax_monoidal_functor.comp CategoryTheory.LaxMonoidalFunctor.comp
 
--- mathport name: «expr ⊗⋙ »
+@[inherit_doc]
 infixr:80 " ⊗⋙ " => comp
 
 end LaxMonoidalFunctor
@@ -431,7 +433,7 @@ def comp : MonoidalFunctor.{v₁, v₃} C E :=
       infer_instance }
 #align category_theory.monoidal_functor.comp CategoryTheory.MonoidalFunctor.comp
 
--- mathport name: monoidal_functor.comp
+@[inherit_doc]
 infixr:80
   " ⊗⋙ " =>-- We overload notation; potentially dangerous, but it seems to work.
   comp
@@ -462,7 +464,6 @@ namespace MonoidalFunctor
 
 variable (F : MonoidalFunctor.{v₁, v₂} C D) (G : MonoidalFunctor.{v₁, v₃} C E)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The cartesian product of two monoidal functors starting from the same monoidal category `C`
     is monoidal. -/
 def prod' : MonoidalFunctor C (D × E) :=
@@ -477,10 +478,6 @@ theorem prod'_toLaxMonoidalFunctor :
 
 end MonoidalFunctor
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- If we have a right adjoint functor `G` to a monoidal functor `F`, then `G` has a lax monoidal
 structure as well.
 -/
