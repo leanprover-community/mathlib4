@@ -21,27 +21,27 @@ This file defines the construction of the canonical homomorphism from a family o
 
 Given a family of morphisms `ϕ i : N i →* M` for each `i : ι` where elements in the
 images of different morphisms commute, we obtain a canonical morphism
-`monoid_hom.noncomm_pi_coprod : (Π i, N i) →* M` that coincides with `ϕ`
+`MonoidHom.noncommPiCoprod : (Π i, N i) →* M` that coincides with `ϕ`
 
 ## Main definitions
 
-* `monoid_hom.noncomm_pi_coprod : (Π i, N i) →* M` is the main homomorphism
-* `subgroup.noncomm_pi_coprod : (Π i, H i) →* G` is the specialization to `H i : subgroup G`
+* `MonoidHom.noncommPiCoprod : (Π i, N i) →* M` is the main homomorphism
+* `Subgroup.noncommPiCoprod : (Π i, H i) →* G` is the specialization to `H i : Subgroup G`
    and the subgroup embedding.
 
 ## Main theorems
 
-* `monoid_hom.noncomm_pi_coprod` coincides with `ϕ i` when restricted to `N i`
-* `monoid_hom.noncomm_pi_coprod_mrange`: The range of `monoid_hom.noncomm_pi_coprod` is
+* `MonoidHom.noncommPiCoprod` coincides with `ϕ i` when restricted to `N i`
+* `MonoidHom.noncommPiCoprod_mrange`: The range of `MonoidHom.noncommPiCoprod` is
   `⨆ (i : ι), (ϕ i).mrange`
-* `monoid_hom.noncomm_pi_coprod_range`: The range of `monoid_hom.noncomm_pi_coprod` is
+* `MonoidHom.noncommPiCoprod_range`: The range of `MonoidHom.noncommPiCoprod` is
   `⨆ (i : ι), (ϕ i).range`
-* `subgroup.noncomm_pi_coprod_range`: The range of `subgroup.noncomm_pi_coprod` is `⨆ (i : ι), H i`.
-* `monoid_hom.injective_noncomm_pi_coprod_of_independent`: in the case of groups, `pi_hom.hom` is
+* `Subgroup.noncommPiCoprod_range`: The range of `Subgroup.noncommPiCoprod` is `⨆ (i : ι), H i`.
+* `MonoidHom.injective_noncommPiCoprod_of_independent`: in the case of groups, `pi_hom.hom` is
    injective if the `ϕ` are injective and the ranges of the `ϕ` are independent.
-* `monoid_hom.independent_range_of_coprime_order`: If the `N i` have coprime orders, then the ranges
+* `MonoidHom.independent_range_of_coprime_order`: If the `N i` have coprime orders, then the ranges
    of the `ϕ` are independent.
-* `subgroup.independent_of_coprime_order`: If commuting normal subgroups `H i` have coprime orders,
+* `Subgroup.independent_of_coprime_order`: If commuting normal subgroups `H i` have coprime orders,
    they are independent.
 
 -/
@@ -53,10 +53,10 @@ namespace Subgroup
 
 variable {G : Type _} [Group G]
 
-/-- `finset.noncomm_prod` is “injective” in `f` if `f` maps into independent subgroups.  This
-generalizes (one direction of) `subgroup.disjoint_iff_mul_eq_one`. -/
-@[to_additive
-      "`finset.noncomm_sum` is “injective” in `f` if `f` maps into independent subgroups.\nThis generalizes (one direction of) `add_subgroup.disjoint_iff_add_eq_zero`. "]
+/-- `Finset.noncommProd` is “injective” in `f` if `f` maps into independent subgroups.  This
+generalizes (one direction of) `Subgroup.disjoint_iff_mul_eq_one`. -/
+@[to_additive "`Finset.noncommSum` is “injective” in `f` if `f` maps into independent subgroups.
+This generalizes (one direction of) `AddSubgroup.disjoint_iff_add_eq_zero`. "]
 theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type _} (s : Finset ι) (f : ι → G) (comm)
     (K : ι → Subgroup G) (hind : CompleteLattice.Independent K) (hmem : ∀ x ∈ s, f x ∈ K x)
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
@@ -110,8 +110,8 @@ variable (f g : ∀ i : ι, N i)
 namespace MonoidHom
 
 /-- The canonical homomorphism from a family of monoids. -/
-@[to_additive
-      "The canonical homomorphism from a family of additive monoids.\n\nSee also `linear_map.lsum` for a linear version without the commutativity assumption."]
+@[to_additive "The canonical homomorphism from a family of additive monoids. See also
+`LinearMap.lsum` for a linear version without the commutativity assumption."]
 def noncommPiCoprod : (∀ i : ι, N i) →* M
     where
   toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun i _ j _ h => hcomm h _ _
@@ -121,7 +121,8 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M
   map_mul' f g := by
     classical
       simp only
-      have := @Finset.noncommProd_mul_distrib _ _ _ Finset.univ (fun i => ϕ i (f i)) (fun i => ϕ i (g i)) ?_ ?_ ?_
+      have := @Finset.noncommProd_mul_distrib _ _ _ Finset.univ (fun i => ϕ i (f i))
+        (fun i => ϕ i (g i)) ?_ ?_ ?_
       · convert this
         ext
         exact map_mul _ _ _
@@ -132,8 +133,7 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M
 #align add_monoid_hom.noncomm_pi_coprod AddMonoidHom.noncommPiCoprod
 
 variable {hcomm}
---#print Set.Pairwise
---set_option pp.explicit true
+
 @[to_additive (attr := simp)]
 theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
     noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y := by
@@ -151,8 +151,8 @@ theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
 #align monoid_hom.noncomm_pi_coprod_mul_single MonoidHom.noncommPiCoprod_mulSingle
 #align add_monoid_hom.noncomm_pi_coprod_single AddMonoidHom.noncommPiCoprod_single
 
-/-- The universal property of `noncomm_pi_coprod` -/
-@[to_additive "The universal property of `noncomm_pi_coprod`"]
+/-- The universal property of `MonoidHom.noncommPiCoprod` -/
+@[to_additive "The universal property of `AddMonoidHom.noncommPiCoprod`"]
 def noncommPiCoprodEquiv :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃ ((∀ i, N i) →* M)
     where
@@ -204,7 +204,7 @@ variable (f g : ∀ i : ι, H i)
 
 namespace MonoidHom
 
--- The subgroup version of `noncomm_pi_coprod_mrange`
+-- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
 @[to_additive]
 theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (ϕ i).range := by
   classical
@@ -309,8 +309,8 @@ theorem commute_subtype_of_commute (i j : ι) (hne : i ≠ j) :
 
 /-- The canonical homomorphism from a family of subgroups where elements from different subgroups
 commute -/
-@[to_additive
-      "The canonical homomorphism from a family of additive subgroups where elements from\ndifferent subgroups commute"]
+@[to_additive "The canonical homomorphism from a family of additive subgroups where elements from
+different subgroups commute"]
 def noncommPiCoprod : (∀ i : ι, H i) →* G :=
   MonoidHom.noncommPiCoprod (fun i => (H i).subtype) (commute_subtype_of_commute hcomm)
 #align subgroup.noncomm_pi_coprod Subgroup.noncommPiCoprod
