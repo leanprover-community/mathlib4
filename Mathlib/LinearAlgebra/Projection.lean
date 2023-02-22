@@ -15,11 +15,11 @@ import Mathlib.LinearAlgebra.Prod
 # Projection to a subspace
 
 In this file we define
-* `linear_proj_of_is_compl (p q : submodule R E) (h : is_compl p q)`: the projection of a module `E`
-  to a submodule `p` along its complement `q`; it is the unique linear map `f : E → p` such that
-  `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
-* `is_compl_equiv_proj p`: equivalence between submodules `q` such that `is_compl p q` and
-  projections `f : E → p`, `∀ x ∈ p, f x = x`.
+* `Submodule.linearProjOfIsCompl (p q : Submodule R E) (h : IsCompl p q)`:
+  the projection of a module `E` to a submodule `p` along its complement `q`;
+  it is the unique linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
+* `Submodule.isComplEquivProj p`: equivalence between submodules `q`
+  such that `IsCompl p q` and projections `f : E → p`, `∀ x ∈ p, f x = x`.
 
 We also provide some lemmas justifying correctness of our definitions.
 
@@ -227,7 +227,7 @@ namespace LinearMap
 
 open Submodule
 
-/-- Given linear maps `φ` and `ψ` from complement submodules, `of_is_compl` is
+/-- Given linear maps `φ` and `ψ` from complement submodules, `LinearMap.ofIsCompl` is
 the induced linear map over the entire module. -/
 def ofIsCompl {p q : Submodule R E} (h : IsCompl p q) (φ : p →ₗ[R] F) (ψ : q →ₗ[R] F) : E →ₗ[R] F :=
   LinearMap.coprod φ ψ ∘ₗ ↑(Submodule.prodEquivOfIsCompl _ _ h).symm
@@ -348,7 +348,7 @@ namespace Submodule
 
 open LinearMap
 
-/-- Equivalence between submodules `q` such that `is_compl p q` and linear maps `f : E →ₗ[R] p`
+/-- Equivalence between submodules `q` such that `IsCompl p q` and linear maps `f : E →ₗ[R] p`
 such that `∀ x : p, f x = x`. -/
 def isComplEquivProj : { q // IsCompl p q } ≃ { f : E →ₗ[R] p // ∀ x : p, f x = x } where
   toFun q := ⟨linearProjOfIsCompl p q q.2, linearProjOfIsCompl_apply_left q.2⟩
@@ -376,8 +376,8 @@ open Submodule
 /--
 A linear endomorphism of a module `E` is a projection onto a submodule `p` if it sends every element
 of `E` to `p` and fixes every element of `p`.
-The definition allow more generally any `fun_like` type and not just linear maps, so that it can be
-used for example with `continuous_linear_map` or `matrix`.
+The definition allow more generally any `FunLike` type and not just linear maps, so that it can be
+used for example with `ContinuousLinearMap` or `Matrix`.
 -/
 structure IsProj {F : Type _} [FunLike F M fun _ => M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
