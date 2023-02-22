@@ -8,10 +8,10 @@ Authors: Bhavik Mehta, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Chain
-import Mathbin.CategoryTheory.Punit
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.CategoryTheory.Category.Ulift
+import Mathlib.Data.List.Chain
+import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Category.Ulift
 
 /-!
 # Connected category
@@ -155,8 +155,7 @@ then `p` contains all of `J`.
 The converse is given in `is_connected.of_induct`.
 -/
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
-    (h1 : ∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p :=
-  by
+    (h1 : ∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
   injection constant_of_preserves_morphisms (fun k => ULift.up (k ∈ p)) (fun j₁ j₂ f => _) j j₀ with
     i
   rwa [i]
@@ -181,8 +180,7 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
 #align category_theory.is_connected.of_induct CategoryTheory.IsConnected.of_induct
 
 /-- Lifting the universe level of morphisms and objects preserves connectedness. -/
-instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) :=
-  by
+instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
   have : Nonempty (ULiftHom.{v₂} (ULift.{u₂} J)) := by simp [ulift_hom, hc.is_nonempty]
   apply is_connected.of_induct
   rintro p hj₀ h ⟨j⟩
@@ -314,8 +312,7 @@ theorem zag_of_zag_obj (F : J ⥤ K) [Full F] {j₁ j₂ : J} (h : Zag (F.obj j�
 
 /-- Any equivalence relation containing (⟶) holds for all pairs of a connected category. -/
 theorem equiv_relation [IsConnected J] (r : J → J → Prop) (hr : Equivalence r)
-    (h : ∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), r j₁ j₂) : ∀ j₁ j₂ : J, r j₁ j₂ :=
-  by
+    (h : ∀ {j₁ j₂ : J} (f : j₁ ⟶ j₂), r j₁ j₂) : ∀ j₁ j₂ : J, r j₁ j₂ := by
   have z : ∀ j : J, r (Classical.arbitrary J) j :=
     induct_on_objects (fun k => r (Classical.arbitrary J) k) (hr.1 (Classical.arbitrary J))
       fun _ _ f => ⟨fun t => hr.2.2 t (h f), fun t => hr.2.2 t (hr.2.1 (h f))⟩
@@ -330,8 +327,7 @@ theorem isConnected_zigzag [IsConnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
 
 /-- If any two objects in an nonempty category are related by `zigzag`, the category is connected.
 -/
-theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J :=
-  by
+theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J := by
   apply is_connected.of_induct
   intro p hp hjp j
   have : ∀ j₁ j₂ : J, zigzag j₁ j₂ → (j₁ ∈ p ↔ j₂ ∈ p) :=
@@ -399,8 +395,7 @@ instance [IsConnected J] : Full (Functor.const J : C ⥤ J ⥤ C)
     apply nat_trans_from_is_connected f (Classical.arbitrary J) j
 
 instance nonempty_hom_of_connected_groupoid {G} [Groupoid G] [IsConnected G] :
-    ∀ x y : G, Nonempty (x ⟶ y) :=
-  by
+    ∀ x y : G, Nonempty (x ⟶ y) := by
   refine' equiv_relation _ _ fun j₁ j₂ => Nonempty.intro
   exact
     ⟨fun j => ⟨𝟙 _⟩, fun j₁ j₂ => Nonempty.map fun f => inv f, fun _ _ _ => Nonempty.map2 (· ≫ ·)⟩
