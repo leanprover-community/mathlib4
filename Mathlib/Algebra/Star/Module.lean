@@ -8,9 +8,9 @@ Authors: Eric Wieser, Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.SelfAdjoint
-import Mathbin.Algebra.Module.Equiv
-import Mathbin.LinearAlgebra.Prod
+import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Module.Equiv
+import Mathlib.LinearAlgebra.Prod
 
 /-!
 # The star operation, bundled as a star-linear equiv
