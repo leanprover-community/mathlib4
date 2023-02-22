@@ -83,6 +83,7 @@ structure LimitCone (F : J ⥤ C) where
   /-- The proof that is the limit cone -/
   isLimit : IsLimit cone
 #align category_theory.limits.limit_cone CategoryTheory.Limits.LimitCone
+#align category_theory.limits.limit_cone.is_limit CategoryTheory.Limits.LimitCone.isLimit
 
 /-- `HasLimit F` represents the mere existence of a limit for `F`. -/
 class HasLimit (F : J ⥤ C) : Prop where mk' ::
@@ -104,7 +105,7 @@ variable (J C)
 /-- `C` has limits of shape `J` if there exists a limit for every functor `F : J ⥤ C`. -/
 class HasLimitsOfShape : Prop where
   /-- All functors `F : J ⥤  C` from `J` have limits -/
-  hasLimit : ∀ F : J ⥤ C, HasLimit F := by infer_instance
+  has_limit : ∀ F : J ⥤ C, HasLimit F := by infer_instance
 #align category_theory.limits.has_limits_of_shape CategoryTheory.Limits.HasLimitsOfShape
 
 /-- `C` has all limits of size `v₁ u₁` (`HasLimitsOfSize.{v₁ u₁} C`)
@@ -112,7 +113,7 @@ if it has limits of every shape `J : Type u₁` with `[Category.{v₁} J]`.
 -/
 class HasLimitsOfSize (C : Type u) [Category.{v} C] : Prop where
   /-- All functors `F : J ⥤ C` from all small `J` have limits -/
-  hasLimitsOfShape : ∀ (J : Type u₁) [Category.{v₁} J], HasLimitsOfShape J C := by
+  has_limits_of_shape : ∀ (J : Type u₁) [Category.{v₁} J], HasLimitsOfShape J C := by
     infer_instance
 #align category_theory.limits.has_limits_of_size CategoryTheory.Limits.HasLimitsOfSize
 
@@ -121,23 +122,23 @@ abbrev HasLimits (C : Type u) [Category.{v} C] : Prop :=
   HasLimitsOfSize.{v, v} C
 #align category_theory.limits.has_limits CategoryTheory.Limits.HasLimits
 
-theorem HasLimits.hasLimitsOfShape {C : Type u} [Category.{v} C] [HasLimits C] (J : Type v)
+theorem HasLimits.has_limits_of_shape {C : Type u} [Category.{v} C] [HasLimits C] (J : Type v)
     [Category.{v} J] : HasLimitsOfShape J C :=
-  HasLimitsOfSize.hasLimitsOfShape J
-#align category_theory.limits.has_limits.has_limits_of_shape CategoryTheory.Limits.HasLimits.hasLimitsOfShape
+  HasLimitsOfSize.has_limits_of_shape J
+#align category_theory.limits.has_limits.has_limits_of_shape CategoryTheory.Limits.HasLimits.has_limits_of_shape
 
 variable {J C}
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasLimitOfHasLimitsOfShape {J : Type u₁} [Category.{v₁} J]
     [HasLimitsOfShape J C] (F : J ⥤ C) : HasLimit F :=
-  HasLimitsOfShape.hasLimit F
+  HasLimitsOfShape.has_limit F
 #align category_theory.limits.has_limit_of_has_limits_of_shape CategoryTheory.Limits.hasLimitOfHasLimitsOfShape
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasLimitsOfShapeOfHasLimits {J : Type u₁} [Category.{v₁} J]
     [HasLimitsOfSize.{v₁, u₁} C] : HasLimitsOfShape J C :=
-  HasLimitsOfSize.hasLimitsOfShape J
+  HasLimitsOfSize.has_limits_of_shape J
 #align category_theory.limits.has_limits_of_shape_of_has_limits CategoryTheory.Limits.hasLimitsOfShapeOfHasLimits
 
 -- Interface to the `HasLimit` class.
@@ -650,7 +651,7 @@ from some other `HasLimitsOfSize C`.
 -/
 theorem hasLimitsOfSizeShrink [HasLimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
     HasLimitsOfSize.{v₁, u₁} C :=
-  ⟨fun J _ => hasLimitsOfShapeOfEquivalence (UliftHomUliftCategory.equiv.{v₂, u₂} J).symm⟩
+  ⟨fun J _ => hasLimitsOfShapeOfEquivalence (ULiftHomULiftCategory.equiv.{v₂, u₂} J).symm⟩
 #align category_theory.limits.has_limits_of_size_shrink CategoryTheory.Limits.hasLimitsOfSizeShrink
 
 instance (priority := 100) hasSmallestLimitsOfHasLimits [HasLimits C] : HasLimitsOfSize.{0, 0} C :=
@@ -670,6 +671,7 @@ structure ColimitCocone (F : J ⥤ C) where
   /-- The proof that it is the colimit cocone -/
   isColimit : IsColimit cocone
 #align category_theory.limits.colimit_cocone CategoryTheory.Limits.ColimitCocone
+#align category_theory.limits.colimit_cocone.is_colimit CategoryTheory.Limits.ColimitCocone.isColimit
 
 /-- `HasColimit F` represents the mere existence of a colimit for `F`. -/
 class HasColimit (F : J ⥤ C) : Prop where mk' ::
@@ -691,7 +693,7 @@ variable (J C)
 /-- `C` has colimits of shape `J` if there exists a colimit for every functor `F : J ⥤ C`. -/
 class HasColimitsOfShape : Prop where
   /-- All `F : J ⥤ C` have colimits for a fixed `J` -/
-  hasColimit : ∀ F : J ⥤ C, HasColimit F := by infer_instance
+  has_colimit : ∀ F : J ⥤ C, HasColimit F := by infer_instance
 #align category_theory.limits.has_colimits_of_shape CategoryTheory.Limits.HasColimitsOfShape
 
 /-- `C` has all colimits of size `v₁ u₁` (`HasColimitsOfSize.{v₁ u₁} C`)
@@ -699,7 +701,7 @@ if it has colimits of every shape `J : Type u₁` with `[Category.{v₁} J]`.
 -/
 class HasColimitsOfSize (C : Type u) [Category.{v} C] : Prop where
   /-- All `F : J ⥤ C` have colimits for all small `J` -/
-  hasColimitsOfShape : ∀ (J : Type u₁) [Category.{v₁} J], HasColimitsOfShape J C := by
+  has_colimits_of_shape : ∀ (J : Type u₁) [Category.{v₁} J], HasColimitsOfShape J C := by
     infer_instance
 #align category_theory.limits.has_colimits_of_size CategoryTheory.Limits.HasColimitsOfSize
 
@@ -711,7 +713,7 @@ abbrev HasColimits (C : Type u) [Category.{v} C] : Prop :=
 
 theorem HasColimits.hasColimitsOfShape {C : Type u} [Category.{v} C] [HasColimits C] (J : Type v)
     [Category.{v} J] : HasColimitsOfShape J C :=
-  HasColimitsOfSize.hasColimitsOfShape J
+  HasColimitsOfSize.has_colimits_of_shape J
 #align category_theory.limits.has_colimits.has_colimits_of_shape CategoryTheory.Limits.HasColimits.hasColimitsOfShape
 
 variable {J C}
@@ -719,13 +721,13 @@ variable {J C}
 -- see Note [lower instance priority]
 instance (priority := 100) hasColimitOfHasColimitsOfShape {J : Type u₁} [Category.{v₁} J]
     [HasColimitsOfShape J C] (F : J ⥤ C) : HasColimit F :=
-  HasColimitsOfShape.hasColimit F
+  HasColimitsOfShape.has_colimit F
 #align category_theory.limits.has_colimit_of_has_colimits_of_shape CategoryTheory.Limits.hasColimitOfHasColimitsOfShape
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasColimitsOfShapeOfHasColimitsOfSize {J : Type u₁} [Category.{v₁} J]
     [HasColimitsOfSize.{v₁, u₁} C] : HasColimitsOfShape J C :=
-  HasColimitsOfSize.hasColimitsOfShape J
+  HasColimitsOfSize.has_colimits_of_shape J
 #align category_theory.limits.has_colimits_of_shape_of_has_colimits_of_size CategoryTheory.Limits.hasColimitsOfShapeOfHasColimitsOfSize
 
 -- Interface to the `HasColimit` class.
@@ -1107,18 +1109,18 @@ theorem colimit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J �
 
 open CategoryTheory.Equivalence
 
-instance hasColimitEquivalenceComp (e : K ≌ J) [HasColimit F] : HasColimit (e.functor ⋙ F) :=
+instance hasColimit_equivalence_comp (e : K ≌ J) [HasColimit F] : HasColimit (e.functor ⋙ F) :=
   HasColimit.mk
     { cocone := Cocone.whisker e.functor (Colimit.cocone F)
       isColimit := IsColimit.whiskerEquivalence (colimit.isColimit F) e }
-#align category_theory.limits.has_colimit_equivalence_comp CategoryTheory.Limits.hasColimitEquivalenceComp
+#align category_theory.limits.has_colimit_equivalence_comp CategoryTheory.Limits.hasColimit_equivalence_comp
 
 /-- If a `E ⋙ F` has a colimit, and `E` is an equivalence, we can construct a colimit of `F`.
 -/
-theorem hasColimitOfEquivalenceComp (e : K ≌ J) [HasColimit (e.functor ⋙ F)] : HasColimit F := by
-  haveI : HasColimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasColimitEquivalenceComp e.symm
+theorem hasColimit_of_equivalence_comp (e : K ≌ J) [HasColimit (e.functor ⋙ F)] : HasColimit F := by
+  haveI : HasColimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasColimit_equivalence_comp e.symm
   apply hasColimitOfIso (e.invFunIdAssoc F).symm
-#align category_theory.limits.has_colimit_of_equivalence_comp CategoryTheory.Limits.hasColimitOfEquivalenceComp
+#align category_theory.limits.has_colimit_of_equivalence_comp CategoryTheory.Limits.hasColimit_of_equivalence_comp
 
 section ColimFunctor
 
@@ -1247,26 +1249,26 @@ instance colimMap_epi {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ 
 
 /-- We can transport colimits of shape `J` along an equivalence `J ≌ J'`.
 -/
-theorem hasColimitsOfShapeOfEquivalence {J' : Type u₂} [Category.{v₂} J'] (e : J ≌ J')
+theorem hasColimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e : J ≌ J')
     [HasColimitsOfShape J C] : HasColimitsOfShape J' C := by
   constructor
   intro F
-  apply hasColimitOfEquivalenceComp e
-#align category_theory.limits.has_colimits_of_shape_of_equivalence CategoryTheory.Limits.hasColimitsOfShapeOfEquivalence
+  apply hasColimit_of_equivalence_comp e
+#align category_theory.limits.has_colimits_of_shape_of_equivalence CategoryTheory.Limits.hasColimitsOfShape_of_equivalence
 
 variable (C)
 
 /-- `hasColimitsOfSizeShrink.{v u} C` tries to obtain `HasColimitsOfSize.{v u} C`
 from some other `HasColimitsOfSize C`.
 -/
-theorem hasColimitsOfSizeShrink [HasColimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
+theorem hasColimitsOfSize_shrink [HasColimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
     HasColimitsOfSize.{v₁, u₁} C :=
-  ⟨fun J _ => hasColimitsOfShapeOfEquivalence (UliftHomUliftCategory.equiv.{v₂, u₂} J).symm⟩
-#align category_theory.limits.has_colimits_of_size_shrink CategoryTheory.Limits.hasColimitsOfSizeShrink
+  ⟨fun J _ => hasColimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v₂, u₂} J).symm⟩
+#align category_theory.limits.has_colimits_of_size_shrink CategoryTheory.Limits.hasColimitsOfSize_shrink
 
 instance (priority := 100) hasSmallestColimitsOfHasColimits [HasColimits C] :
     HasColimitsOfSize.{0, 0} C :=
-  hasColimitsOfSizeShrink.{0, 0} C
+  hasColimitsOfSize_shrink.{0, 0} C
 #align category_theory.limits.has_smallest_colimits_of_has_colimits CategoryTheory.Limits.hasSmallestColimitsOfHasColimits
 
 end Colimit
