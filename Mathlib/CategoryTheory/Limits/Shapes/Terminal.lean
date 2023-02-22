@@ -8,10 +8,10 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Pempty
-import Mathbin.CategoryTheory.Limits.HasLimits
-import Mathbin.CategoryTheory.EpiMono
-import Mathbin.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Pempty
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Category.Preorder
 
 /-!
 # Initial and terminal objects in a category.
