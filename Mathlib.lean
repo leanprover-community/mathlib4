@@ -261,6 +261,7 @@ import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.IsomorphismClasses
+import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Monoidal.Category
@@ -274,6 +275,7 @@ import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Sigma.Basic
+import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
@@ -759,6 +761,7 @@ import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.IsFreeGroup
 import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Subgroup
