@@ -52,7 +52,8 @@ on continuous functions.
 section Lattice
 
 instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
-  PartialOrder.lift (fun f => f.toFun) (by tidy)
+  PartialOrder.lift (fun f => f.toFun) (fun f g _ => by cases f; cases g; congr)
+  -- porting note: was `by tidy`, and `by aesop` alone didn't work
 #align continuous_map.partial_order ContinuousMap.partialOrder
 
 theorem le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
@@ -79,7 +80,7 @@ theorem sup_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a
   rfl
 #align continuous_map.sup_apply ContinuousMap.sup_apply
 
-instance [LinearOrder β] [OrderClosedTopology β] : SemilatticeSup C(α, β) :=
+instance semilatticeSup [LinearOrder β] [OrderClosedTopology β] : SemilatticeSup C(α, β) :=
   { ContinuousMap.partialOrder,
     ContinuousMap.hasSup with
     le_sup_left := fun f g => le_def.mpr (by simp [le_refl])
@@ -102,7 +103,7 @@ theorem inf_apply [LinearOrder β] [OrderClosedTopology β] (f g : C(α, β)) (a
   rfl
 #align continuous_map.inf_apply ContinuousMap.inf_apply
 
-instance [LinearOrder β] [OrderClosedTopology β] : SemilatticeInf C(α, β) :=
+instance semilatticeInf [LinearOrder β] [OrderClosedTopology β] : SemilatticeInf C(α, β) :=
   { ContinuousMap.partialOrder,
     ContinuousMap.hasInf with
     inf_le_left := fun f g => le_def.mpr (by simp [le_refl])
@@ -112,19 +113,19 @@ instance [LinearOrder β] [OrderClosedTopology β] : SemilatticeInf C(α, β) :=
 instance [LinearOrder β] [OrderClosedTopology β] : Lattice C(α, β) :=
   { ContinuousMap.semilatticeInf, ContinuousMap.semilatticeSup with }
 
--- TODO transfer this lattice structure to `bounded_continuous_function`
+-- TODO transfer this lattice structure to `BoundedContinuousFunction`
 section Sup'
 
 variable [LinearOrder γ] [OrderClosedTopology γ]
 
 theorem sup'_apply {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) (b : β) :
     s.sup' H f b = s.sup' H fun a => f a b :=
-  Finset.comp_sup'_eq_sup'_comp H (fun f : C(β, γ) => f b) fun i j => rfl
+  Finset.comp_sup'_eq_sup'_comp H (fun f : C(β, γ) => f b) fun _ _ => rfl
 #align continuous_map.sup'_apply ContinuousMap.sup'_apply
 
 @[simp, norm_cast]
 theorem sup'_coe {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
-    ((s.sup' H f : C(β, γ)) : ι → β) = s.sup' H fun a => (f a : β → γ) := by
+    ((s.sup' H f : C(β, γ)) : β → γ) = s.sup' H fun a => (f a : β → γ) := by
   ext
   simp [sup'_apply]
 #align continuous_map.sup'_coe ContinuousMap.sup'_coe
@@ -142,7 +143,7 @@ theorem inf'_apply {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(
 
 @[simp, norm_cast]
 theorem inf'_coe {ι : Type _} {s : Finset ι} (H : s.Nonempty) (f : ι → C(β, γ)) :
-    ((s.inf' H f : C(β, γ)) : ι → β) = s.inf' H fun a => (f a : β → γ) :=
+    ((s.inf' H f : C(β, γ)) : β → γ) = s.inf' H fun a => (f a : β → γ) :=
   @sup'_coe _ γᵒᵈ _ _ _ _ _ _ H f
 #align continuous_map.inf'_coe ContinuousMap.inf'_coe
 
@@ -154,19 +155,17 @@ section Extend
 
 variable [LinearOrder α] [OrderTopology α] {a b : α} (h : a ≤ b)
 
-/-- Extend a continuous function `f : C(set.Icc a b, β)` to a function `f : C(α, β)`.
--/
-def iccExtend (f : C(Set.Icc a b, β)) : C(α, β) :=
-  ⟨Set.IccExtend h f⟩
-#align continuous_map.Icc_extend ContinuousMap.iccExtend
+/-- Extend a continuous function `f : C(set.Icc a b, β)` to a function `f : C(α, β)`.  -/
+def IccExtend (f : C(Set.Icc a b, β)) : C(α, β) where
+  toFun := Set.IccExtend h f
+#align continuous_map.Icc_extend ContinuousMap.IccExtend
 
 @[simp]
-theorem coe_iccExtend (f : C(Set.Icc a b, β)) :
-    ((iccExtend h f : C(α, β)) : α → β) = Set.IccExtend h f :=
+theorem coe_IccExtend (f : C(Set.Icc a b, β)) :
+    ((IccExtend h f : C(α, β)) : α → β) = Set.IccExtend h f :=
   rfl
-#align continuous_map.coe_Icc_extend ContinuousMap.coe_iccExtend
+#align continuous_map.coe_Icc_extend ContinuousMap.coe_IccExtend
 
 end Extend
 
 end ContinuousMap
-
