@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Bicategory.Basic
-import Mathbin.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # Endomorphisms of an object in a bicategory, as a monoidal category.
