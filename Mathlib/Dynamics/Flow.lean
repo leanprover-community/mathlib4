@@ -52,7 +52,7 @@ def IsInvariant (ϕ : τ → α → α) (s : Set α) : Prop :=
 variable (ϕ : τ → α → α) (s : Set α)
 
 theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
-  simp_rw [IsInvariant, maps_to']
+  simp_rw [IsInvariant, mapsTo']
 #align is_invariant_iff_image isInvariant_iff_image
 
 /-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if
@@ -62,7 +62,7 @@ def IsFwInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) :
 #align is_fw_invariant IsFwInvariant
 
 theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
-    (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t ht => h t
+    (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht => h t
 #align is_invariant.is_fw_invariant IsInvariant.isFwInvariant
 
 /-- If `τ` is a `canonically_ordered_add_monoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
@@ -90,9 +90,9 @@ end Invariant
 structure Flow (τ : Type _) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type _)
   [TopologicalSpace α] where
   toFun : τ → α → α
-  cont' : Continuous (uncurry to_fun)
-  map_add' : ∀ t₁ t₂ x, to_fun (t₁ + t₂) x = to_fun t₁ (to_fun t₂ x)
-  map_zero' : ∀ x, to_fun 0 x = x
+  cont' : Continuous (uncurry toFun)
+  map_add' : ∀ t₁ t₂ x, toFun (t₁ + t₂) x = toFun t₁ (toFun t₂ x)
+  map_zero' : ∀ x, toFun 0 x = x
 #align flow Flow
 
 namespace Flow
@@ -124,7 +124,7 @@ protected theorem continuous {β : Type _} [TopologicalSpace β] {t : β → τ}
 #align flow.continuous Flow.continuous
 
 alias Flow.continuous ← _root_.continuous.flow
-#align continuous.flow Continuous.flow
+#align continuous.flow continuous.flow
 
 theorem map_add (t₁ t₂ : τ) (x : α) : ϕ (t₁ + t₂) x = ϕ t₁ (ϕ t₂ x) :=
   ϕ.map_add' _ _ _
@@ -146,14 +146,14 @@ def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α
   toFun n x := (g^[n]) x
   cont' := continuous_uncurry_of_discreteTopology_left (Continuous.iterate h)
   map_add' := iterate_add_apply _
-  map_zero' x := rfl
+  map_zero' _x := rfl
 #align flow.from_iter Flow.fromIter
 
 /-- Restriction of a flow onto an invariant set. -/
-def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ ↥s
+def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s)
     where
   toFun t := (h t).restrict _ _ _
-  cont' := (ϕ.Continuous continuous_fst continuous_subtype_val.snd').subtype_mk _
+  cont' := (ϕ.continuous continuous_fst continuous_subtype_val.snd').subtype_mk _
   map_add' _ _ _ := Subtype.ext (map_add _ _ _ _)
   map_zero' _ := Subtype.ext (map_zero_apply _ _)
 #align flow.restrict Flow.restrict
@@ -176,13 +176,20 @@ theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t
     is defined `ϕ.reverse t x = ϕ (-t) x`. -/
 def reverse : Flow τ α where
   toFun t := ϕ (-t)
-  cont' := ϕ.Continuous continuous_fst.neg continuous_snd
-  map_add' _ _ _ := by rw [neg_add, map_add]
-  map_zero' _ := by rw [neg_zero, map_zero_apply]
+  cont' := ϕ.continuous continuous_fst.neg continuous_snd
+  map_add' _ _ _ := by dsimp; rw [neg_add, map_add]
+  map_zero' _ := by dsimp; rw [neg_zero, map_zero_apply]
 #align flow.reverse Flow.reverse
 
+-- Porting note: add @continuity to Flow.toFun
+@[continuity]
+theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
+  rw [←curry_uncurry ϕ.1]
+  apply continuous_curry
+  exact ϕ.cont'
+
 /-- The map `ϕ t` as a homeomorphism. -/
-def toHomeomorph (t : τ) : α ≃ₜ α where
+def toHomeomorph (t : τ) : (α ≃ₜ α) where
   toFun := ϕ t
   invFun := ϕ (-t)
   left_inv x := by rw [← map_add, neg_add_self, map_zero_apply]
