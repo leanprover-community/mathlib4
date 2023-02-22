@@ -57,7 +57,7 @@ namespace FinCategory
 
 variable (α : Type _) [Fintype α] [SmallCategory α] [FinCategory α]
 
-/-- A fin_category `α` is equivalent to a category with objects in `Type`. -/
+/-- A FinCategory `α` is equivalent to a category with objects in `Type`. -/
 --@[nolint unused_arguments]
 abbrev ObjAsType : Type :=
   InducedCategory α (Fintype.equivFin α).symm
