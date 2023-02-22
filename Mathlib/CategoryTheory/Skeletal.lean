@@ -50,7 +50,9 @@ def Skeletal : Prop :=
 in particular `F` is a (strong) equivalence and `D` is skeletal.
 -/
 structure IsSkeletonOf (F : D ⥤ C) where
+  /-- The category `D` has isomorphic objects equal -/
   skel : Skeletal D
+  /-- The functor `F` is an equivalence -/
   eqv : IsEquivalence F
 #align category_theory.is_skeleton_of CategoryTheory.IsSkeletonOf
 
@@ -168,8 +170,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C)
  
 /-- The functor from a category to its thin skeleton. -/
 @[simps]
-def toThinSkeleton : C ⥤ ThinSkeleton C
-    where
+def toThinSkeleton : C ⥤ ThinSkeleton C where
   obj := @Quotient.mk' C _
   map f := homOfLE (Nonempty.intro f)
 #align category_theory.to_thin_skeleton CategoryTheory.toThinSkeleton
@@ -218,11 +219,14 @@ It would be better to prove that
 which is more immediate from comparing the preorders. Then one could get 
 `map₂` by currying.
 -/
+/-- Given a bifunctor, we descend to a function on objects of `ThinSkeleton` -/
 def map₂ObjMap (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D → ThinSkeleton E := 
   fun x y =>
     @Quotient.map₂ C D (isIsomorphicSetoid C) (isIsomorphicSetoid D) E (isIsomorphicSetoid E) 
       (fun X Y => (F.obj X).obj Y)
           (fun X₁ _ ⟨hX⟩ _ Y₂ ⟨hY⟩ => ⟨(F.obj X₁).mapIso hY ≪≫ (F.mapIso hX).app Y₂⟩) x y
+
+/-- For each `x : ThinkSkeleton C`, we promote `map₂ObjMap F x` to a functor -/
 def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ ThinSkeleton E := 
   fun x => 
     { obj := fun y => map₂ObjMap F x y
@@ -230,6 +234,9 @@ def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ Th
         (fun x => (y₁ ⟶  y₂) → (map₂ObjMap F x y₁ ⟶  map₂ObjMap F x y₂)) _ x fun X 
           => Quotient.recOnSubsingleton₂ y₁ y₂ fun Y₁ Y₂ hY =>
             homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
+
+/-- This provides natural transformations `map₂Functor F x₁ ⟶  map₂Functor F x₂` given 
+`x₁ ⟶  x₂` -/
 def map₂NatTrans (F : C ⥤ D ⥤ E) : {x₁ x₂ : ThinSkeleton C} → (x₁ ⟶  x₂) →  
     (map₂Functor F x₁ ⟶  map₂Functor F x₂) := fun {x₁} {x₂} => 
   @Quotient.recOnSubsingleton₂ C C (isIsomorphicSetoid C) (isIsomorphicSetoid C) 
