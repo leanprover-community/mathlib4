@@ -4256,6 +4256,8 @@ theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
   map_fst_add_enumFrom_eq_enumFrom l _ _
 #align list.map_fst_add_enum_eq_enum_from List.map_fst_add_enum_eq_enumFrom
 
+-- TODO
+
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
     (hi : i.1 < l.length := (by simpa [length_enumFrom] using i.2)) :
     (l.enumFrom n).get i = (n + i, l.get ⟨i, hi⟩) := by
