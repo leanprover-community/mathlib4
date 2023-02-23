@@ -100,7 +100,7 @@ instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) (fun _ ↦ M₂)
 initialize_simps_projections MultilinearMap (toFun → apply)
 
 @[simp]
-theorem toFun_eq_coe : f.toFun = f :=
+theorem toFun_eq_coe : f.toFun = ⇑f :=
   rfl
 #align multilinear_map.to_fun_eq_coe MultilinearMap.toFun_eq_coe
 
@@ -125,7 +125,7 @@ theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i
   rfl
 #align multilinear_map.coe_injective MultilinearMap.coe_injective
 
-@[simp, norm_cast]
+@[norm_cast] -- Porting note: Removed simp attribute, simp can prove this
 theorem coe_inj {f g : MultilinearMap R M₁ M₂} : (f : (∀ i, M₁ i) → M₂) = g ↔ f = g :=
   coe_injective.eq_iff
 #align multilinear_map.coe_inj MultilinearMap.coe_inj
@@ -284,7 +284,8 @@ def ofSubsingleton [Subsingleton ι] (i' : ι) : MultilinearMap R (fun _ : ι =>
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
-@[simps (config := { fullyApplied := false })]
+-- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
+-- @[simps (config := { fullyApplied := false })]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂
     where
   toFun := Function.const _ m
@@ -292,26 +293,56 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂
   map_smul' _ := isEmptyElim
 #align multilinear_map.const_of_is_empty MultilinearMap.constOfIsEmpty
 
+@[simp]
+lemma constOfIsEmpty_apply [inst_6 : IsEmpty ι] (m : M₂) :
+    ⇑(MultilinearMap.constOfIsEmpty R M₁ m) = Function.const ((i : ι) → M₁ i) m := by
+  simp only [constOfIsEmpty, coe_mk]
 end
 
+-- Porting note: Included `FunLike.coe` to avoid strange CoeFun instance for Equiv
 /-- Given a multilinear map `f` on `n` variables (parameterized by `fin n`) and a subset `s` of `k`
 of these variables, one gets a new multilinear map on `fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
 proof that the cardinality of `s` is `k`. The implicit identification between `fin k` and `s` that
 we use is the canonical (increasing) bijection. -/
-def restr {k n : ℕ} (f : MultilinearMap R (fun i : Fin n => M') M₂) (s : Finset (Fin n))
-    (hk : s.card = k) (z : M') : MultilinearMap R (fun i : Fin k => M') M₂
+def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
+    (hk : s.card = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂
     where
-  toFun v := f fun j => if h : j ∈ s then v ((s.orderIsoOfFin hk).symm ⟨j, h⟩) else z
+  toFun v := f fun j => if h : j ∈ s then v ((FunLike.coe (s.orderIsoOfFin hk).symm) ⟨j, h⟩) else z
+  /- Porting note: The proofs of the following two lemmas used to only use simp and
+  `dite_comp_equiv_update`, but getting this lemma to apply takes a lot more work now -/
   map_add' v i x y := by
-    simp_rw [dite_comp_equiv_update]
-    sorry
+    dsimp only
+    have :
+      FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) =
+        FunLike.coe (Equiv.symm (Finset.orderIsoOfFin s hk).toEquiv) := rfl
+    have : ∀ x,
+      (fun j => if h : j ∈ s then update v i x
+        (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
+      = update (fun j =>
+          if h : j ∈ s then v (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
+            ((FunLike.coe (s.orderIsoOfFin hk).toEquiv) i) x := by
+        intro x
+        simp_rw [← Finset.mem_coe]
+        rw [this, dite_comp_equiv_update (s := s) (α := Fin n) (Finset.orderIsoOfFin s hk).toEquiv]
+    simp only [this, Finset.coe_orderIsoOfFin_apply, MultilinearMap.map_add]
   map_smul' v i c x := by
+    have :
+      FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) =
+        FunLike.coe (Equiv.symm (Finset.orderIsoOfFin s hk).toEquiv) := rfl
+    have : ∀ x,
+      (fun j => if h : j ∈ s then update v i x
+        (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
+      = update (fun j =>
+          if h : j ∈ s then v (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
+            ((FunLike.coe (s.orderIsoOfFin hk).toEquiv) i) x := by
+        intro x
+        simp_rw [← Finset.mem_coe]
+        rw [this, dite_comp_equiv_update (s := s) (α := Fin n) (Finset.orderIsoOfFin s hk).toEquiv]
     simp_rw [dite_comp_equiv_update]
-    simp
-    sorry
+    simp only [this, RelIso.coe_fn_toEquiv, Finset.coe_orderIsoOfFin_apply, MultilinearMap.map_smul]
 #align multilinear_map.restr MultilinearMap.restr
-#lint
+
 /-- In the specific case of multilinear maps on spaces indexed by `fin (n+1)`, where one can build
 an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the additivity of a
 multilinear map along the first variable. -/
@@ -652,13 +683,19 @@ end ApplySum
 /-- Restrict the codomain of a multilinear map to a submodule.
 
 This is the multilinear version of `linear_map.cod_restrict`. -/
-@[simps]
+-- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
+-- @[simps]
 def codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p) :
     MultilinearMap R M₁ p where
   toFun v := ⟨f v, h v⟩
   map_add' _ _ _ _ := Subtype.ext <| MultilinearMap.map_add _ _ _ _ _
   map_smul' _ _ _ _ := Subtype.ext <| MultilinearMap.map_smul _ _ _ _ _
 #align multilinear_map.cod_restrict MultilinearMap.codRestrict
+
+@[simp]
+lemma codRestrict_apply_coe (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p)
+    (v : (i : ι) → M₁ i): (codRestrict f p h) v = f v := by
+  simp only [codRestrict, coe_mk]
 
 section RestrictScalar
 
@@ -888,7 +925,6 @@ def domDomCongrLinearEquiv {ι₁ ι₂} [DecidableEq ι₁] [DecidableEq ι₂]
       ext
       simp [MultilinearMap.domDomCongr] }
 #align multilinear_map.dom_dom_congr_linear_equiv MultilinearMap.domDomCongrLinearEquiv
-#lint
 variable (R M₁)
 
 /-- The dependent version of `multilinear_map.dom_dom_congr_linear_equiv`. -/
@@ -1521,7 +1557,7 @@ theorem curryFinFinset_symm_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : s.car
   rfl
 #align multilinear_map.curry_fin_finset_symm_apply MultilinearMap.curryFinFinset_symm_apply
 
-@[simp]
+-- @[simp] -- Porting note: simpNF linter, lhs simplifies, added aux version below
 theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k)
     (hl : sᶜ.card = l)
     (f : MultilinearMap R (fun _ : Fin k => M') (MultilinearMap R (fun _ : Fin l => M') M₂))
@@ -1529,13 +1565,25 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
     (curryFinFinset R M₂ M' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
       f (fun _ => x) fun _ => y := by
   rw [curryFinFinset_symm_apply]; congr
-  · ext i
+  · ext
     rw [finSumEquivOfFinset_inl, Finset.piecewise_eq_of_mem]
     apply Finset.orderEmbOfFin_mem
-  · ext i
+  · ext
     rw [finSumEquivOfFinset_inr, Finset.piecewise_eq_of_not_mem]
     exact Finset.mem_compl.1 (Finset.orderEmbOfFin_mem _ _ _)
 #align multilinear_map.curry_fin_finset_symm_apply_piecewise_const MultilinearMap.curryFinFinset_symm_apply_piecewise_const
+
+@[simp]
+theorem curryFinFinset_symm_apply_piecewise_const_aux {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k)
+    (hl : sᶜ.card = l)
+    (f : MultilinearMap R (fun _ : Fin k => M') (MultilinearMap R (fun _ : Fin l => M') M₂))
+    (x y : M') :
+      ((⇑f fun _ => x) (fun i => (Finset.piecewise s (fun _ => x) (fun _ => y)
+          ((⇑(finSumEquivOfFinset hk hl)) (Sum.inr i)))) =  f (fun _ => x) fun _ => y) := by
+  have := curryFinFinset_symm_apply_piecewise_const hk hl f x y
+  simp only [curryFinFinset_symm_apply, finSumEquivOfFinset_inl, Finset.orderEmbOfFin_mem,
+  Finset.piecewise_eq_of_mem, finSumEquivOfFinset_inr] at this
+  exact this
 
 @[simp]
 theorem curryFinFinset_symm_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k)
@@ -1545,7 +1593,7 @@ theorem curryFinFinset_symm_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk :
   rfl
 #align multilinear_map.curry_fin_finset_symm_apply_const MultilinearMap.curryFinFinset_symm_apply_const
 
-@[simp]
+-- @[simp] -- Porting note: simpNF, lhs simplifies, added aux version below
 theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k)
     (hl : sᶜ.card = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
@@ -1554,6 +1602,14 @@ theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : s.ca
   -- `rw` fails
   rw [LinearEquiv.symm_apply_apply]
 #align multilinear_map.curry_fin_finset_apply_const MultilinearMap.curryFinFinset_apply_const
+
+@[simp]
+theorem curryFinFinset_apply_const_aux {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k)
+    (hl : sᶜ.card = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
+    (f fun i => Sum.elim (fun _ => x) (fun _ => y) ((⇑ (Equiv.symm (finSumEquivOfFinset hk hl))) i)) =
+      f (s.piecewise (fun _ => x) fun _ => y) := by
+  rw [← curryFinFinset_apply]
+  apply curryFinFinset_apply_const
 
 end MultilinearMap
 
@@ -1596,4 +1652,3 @@ def range [Nonempty ι] (f : MultilinearMap R M₁ M₂) : SubMulAction R M₂ :
 end Submodule
 
 end MultilinearMap
-#lint
