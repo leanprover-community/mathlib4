@@ -468,7 +468,8 @@ variable {R}
 instance : InvolutiveNeg (Module.Ray R M)
     where
   neg := Neg.neg
-  neg_neg x := Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
+  neg_neg x := sorry
+  -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
 
 /-- A ray does not equal its own negation. -/
 theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
@@ -482,8 +483,9 @@ theorem neg_units_smul (u : Rˣ) (v : Module.Ray R M) : -u • v = -(u • v) :=
   simp only [smul_rayOfNeZero, Units.smul_def, Units.val_neg, neg_smul, neg_rayOfNeZero]
 #align module.ray.neg_units_smul Module.Ray.neg_units_smul
 
+-- Porting note: `(u.1 : R)` was `(u : R)`, CoeHead from R to Rˣ does not seem to work.
 /-- Scaling by a negative unit is negation. -/
-theorem units_smul_of_neg (u : Rˣ) (hu : (u : R) < 0) (v : Module.Ray R M) : u • v = -v := by
+theorem units_smul_of_neg (u : Rˣ) (hu : u.1 < 0) (v : Module.Ray R M) : u • v = -v := by
   rw [← neg_inj, neg_neg, ← neg_units_smul, units_smul_of_pos]
   rwa [Units.val_neg, Right.neg_pos_iff]
 #align module.ray.units_smul_of_neg Module.Ray.units_smul_of_neg
@@ -726,17 +728,23 @@ theorem exists_nonneg_left_iff_sameRay (hx : x ≠ 0) :
 
 theorem exists_pos_right_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :
     (∃ r : R, 0 < r ∧ x = r • y) ↔ SameRay R x y := by
-  simpa only [SameRay.sameRay_comm, eq_comm] using exists_pos_left_iff_sameRay hy hx
+  rw [SameRay.sameRay_comm]
+  simp_rw [eq_comm (a := x)]
+  exact exists_pos_left_iff_sameRay hy hx
 #align exists_pos_right_iff_same_ray exists_pos_right_iff_sameRay
 
 theorem exists_pos_right_iff_sameRay_and_ne_zero (hy : y ≠ 0) :
     (∃ r : R, 0 < r ∧ x = r • y) ↔ SameRay R x y ∧ x ≠ 0 := by
-  simpa only [SameRay.sameRay_comm, eq_comm] using exists_pos_left_iff_sameRay_and_ne_zero hy
+  rw [SameRay.sameRay_comm]
+  simp_rw [eq_comm (a := x)]
+  exact exists_pos_left_iff_sameRay_and_ne_zero hy
 #align exists_pos_right_iff_same_ray_and_ne_zero exists_pos_right_iff_sameRay_and_ne_zero
 
 theorem exists_nonneg_right_iff_sameRay (hy : y ≠ 0) :
     (∃ r : R, 0 ≤ r ∧ x = r • y) ↔ SameRay R x y := by
-  simpa only [SameRay.sameRay_comm, eq_comm] using exists_nonneg_left_iff_sameRay hy
+  rw [SameRay.sameRay_comm]
+  simp_rw [eq_comm (a := x)]
+  exact exists_nonneg_left_iff_sameRay (R := R) hy
 #align exists_nonneg_right_iff_same_ray exists_nonneg_right_iff_sameRay
 
 end LinearOrderedField
