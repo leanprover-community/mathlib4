@@ -19,6 +19,8 @@ import Mathlib.LinearAlgebra.Quotient
 
 -/
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
 
 universe u v
 
@@ -41,16 +43,16 @@ section IsomorphismLaws
 
 /-- The first isomorphism law for modules. The quotient of `M` by the kernel of `f` is linearly
 equivalent to the range of `f`. -/
-noncomputable def quotKerEquivRange : (M ⧸ f.ker) ≃ₗ[R] f.range :=
+noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
   (LinearEquiv.ofInjective (f.ker.liftQ f <| le_rfl) <|
-        ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ (le_refl f.ker)).trans
+        ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ (le_refl (LinearMap.ker f))).trans
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
 #align linear_map.quot_ker_equiv_range LinearMap.quotKerEquivRange
 
 /-- The first isomorphism theorem for surjective linear maps. -/
 noncomputable def quotKerEquivOfSurjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f) :
-    (M ⧸ f.ker) ≃ₗ[R] M₂ :=
-  f.quotKerEquivRange.trans (LinearEquiv.ofTop f.range (LinearMap.range_eq_top.2 hf))
+    (M ⧸ LinearMap.ker f) ≃ₗ[R] M₂ :=
+  f.quotKerEquivRange.trans (LinearEquiv.ofTop (LinearMap.range f) (LinearMap.range_eq_top.2 hf))
 #align linear_map.quot_ker_equiv_of_surjective LinearMap.quotKerEquivOfSurjective
 
 @[simp]
@@ -60,7 +62,7 @@ theorem quotKerEquivRange_apply_mk (x : M) :
 #align linear_map.quot_ker_equiv_range_apply_mk LinearMap.quotKerEquivRange_apply_mk
 
 @[simp]
-theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ f.range) :
+theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range f) :
     f.quotKerEquivRange.symm ⟨f x, h⟩ = f.ker.mkQ x :=
   f.quotKerEquivRange.symm_apply_apply (f.ker.mkQ x)
 #align linear_map.quot_ker_equiv_range_symm_apply_image LinearMap.quotKerEquivRange_symm_apply_image
@@ -69,10 +71,10 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ f.range) :
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 -/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
-    p ⧸ comap p.Subtype (p ⊓ p') →ₗ[R] _ ⧸ comap (p ⊔ p').Subtype p' :=
-  (comap p.subtype (p ⊓ p')).liftQ ((comap (p ⊔ p').Subtype p').mkQ.comp (of_le le_sup_left))
+    p ⧸ comap p.subtype (p ⊓ p') →ₗ[R] _ ⧸ comap (p ⊔ p').subtype p' :=
+  (comap p.subtype (p ⊓ p')).liftQ ((comap (p ⊔ p').subtype p').mkQ.comp (Submodule.ofLe le_sup_left))
     (by
-      rw [ker_comp, of_le, comap_cod_restrict, ker_mkq, map_comap_subtype]
+      rw [LinearMap.ker_comp, Submodule.ofLe, comap_cod_restrict, ker_mkq, map_comap_subtype]
       exact comap_mono (inf_le_inf_right _ le_sup_left))
 #align linear_map.quotient_inf_to_sup_quotient LinearMap.quotientInfToSupQuotient
 
@@ -80,14 +82,14 @@ def quotientInfToSupQuotient (p p' : Submodule R M) :
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
 -/
 noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
-    (p ⧸ comap p.Subtype (p ⊓ p')) ≃ₗ[R] _ ⧸ comap (p ⊔ p').Subtype p' :=
-  LinearEquiv.ofBijective (quotient_inf_to_sup_quotient p p')
+    (p ⧸ comap p.subtype (p ⊓ p')) ≃ₗ[R] _ ⧸ comap (p ⊔ p').subtype p' :=
+  LinearEquiv.ofBijective (quotientInfToSupQuotient p p')
     ⟨by
-      rw [← ker_eq_bot, quotient_inf_to_sup_quotient, ker_liftq_eq_bot]
+      rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftq_eq_bot]
       rw [ker_comp, ker_mkq]
       exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩,
       by
-      rw [← range_eq_top, quotient_inf_to_sup_quotient, range_liftq, eq_top_iff']
+      rw [← range_eq_top, quotientInfToSupQuotient, range_liftq, eq_top_iff']
       rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
       use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
       change y - (y + z) ∈ p'
@@ -177,4 +179,3 @@ theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
 #align submodule.card_quotient_mul_card_quotient Submodule.card_quotient_mul_card_quotient
 
 end Submodule
-
