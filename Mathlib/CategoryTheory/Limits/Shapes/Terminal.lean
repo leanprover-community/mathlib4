@@ -32,9 +32,9 @@ namespace CategoryTheory.Limits
 variable {C : Type u₁} [Category.{v₁} C]
 
 -- attribute [local dee] tactic.discrete_cases -- Porting note: no dee
-
--- Porting note: trying a macro 
 open Lean Elab Meta Tactic in 
+-- Porting note: trying a macro 
+/-- A local tactic replacing the use of discrete cases in Lean 3 -/
 elab (name := discrete_empty_elim) "dee" : tactic => withMainContext do
   evalTactic (← `(tactic| iterate (try {constructor}; try {intro ⟨a⟩; cases a} <;> intro )))
 
@@ -100,7 +100,7 @@ def isTerminalTop {α : Type _} [Preorder α] [OrderTop α] : IsTerminal (⊤ : 
   IsTerminal.ofUnique _
 #align category_theory.limits.is_terminal_top CategoryTheory.Limits.isTerminalTop
 
-/-- Transport a term of type `is_terminal` across an isomorphism. -/
+/-- Transport a term of type `IsTerminal` across an isomorphism. -/
 def IsTerminal.ofIso {Y Z : C} (hY : IsTerminal Y) (i : Y ≅ Z) : IsTerminal Z :=
   IsLimit.ofIsoLimit hY
     { hom := { Hom := i.hom, w := by dee }
@@ -220,7 +220,7 @@ def IsInitial.uniqueUpToIso {I I' : C} (hI : IsInitial I) (hI' : IsInitial I') :
 variable (C)
 
 /-- A category has a terminal object if it has a limit over the empty diagram.
-Use `has_terminal_of_unique` to construct instances.
+Use `hasTerminal_of_unique` to construct instances.
 -/
 abbrev HasTerminal :=
   HasLimitsOfShape (Discrete.{0} PEmpty) C
@@ -250,7 +250,7 @@ def isLimitChangeEmptyCone {c₁ : Cone F₁} (hl : IsLimit c₁) (c₂ : Cone F
     · dee
 #align category_theory.limits.is_limit_change_empty_cone CategoryTheory.Limits.isLimitChangeEmptyCone
 
-/-- Replacing an empty cone in `is_limit` by another with the same cone point
+/-- Replacing an empty cone in `IsLimit` by another with the same cone point
     is an equivalence. -/
 def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.X ≅ c₂.X) : IsLimit c₁ ≃ IsLimit c₂
     where
@@ -289,7 +289,7 @@ def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ 
     · dee
 #align category_theory.limits.is_colimit_change_empty_cocone CategoryTheory.Limits.isColimitChangeEmptyCocone
 
-/-- Replacing an empty cocone in `is_colimit` by another with the same cocone point
+/-- Replacing an empty cocone in `IsColimit` by another with the same cocone point
     is an equivalence. -/
 def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c₁.X ≅ c₂.X) :
     IsColimit c₁ ≃ IsColimit c₂
@@ -303,7 +303,8 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
 #align category_theory.limits.is_colimit_empty_cocone_equiv CategoryTheory.Limits.isColimitEmptyCoconeEquiv
 
 theorem hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
-  ⟨⟨⟨⟨colimit F₁, by dee, by dee⟩, isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
+  ⟨⟨⟨⟨colimit F₁, by dee, by dee⟩, 
+    isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
 #align category_theory.limits.has_initial_change_diagram CategoryTheory.Limits.hasInitialChangeDiagram
 
 theorem hasInitialChangeUniverse [h : HasColimitsOfShape (Discrete.{w} PEmpty) C] :
@@ -333,10 +334,10 @@ abbrev initial [HasInitial C] : C :=
   colimit (Functor.empty.{0} C)
 #align category_theory.limits.initial CategoryTheory.Limits.initial
 
--- mathport name: «expr⊤_ »
+/-- Notation for the terminal object in `C` -/
 notation "⊤_ " C:20 => terminal C
 
--- mathport name: «expr⊥_ »
+/-- Notation for the initial object in `C` -/
 notation "⊥_ " C:20 => initial C
 
 section
@@ -541,6 +542,8 @@ to terminal is a monomorphism, which is the second of Freyd's axioms for an AT c
 TODO: This is a condition satisfied by categories with zero objects and morphisms.
 -/
 class InitialMonoClass (C : Type u₁) [Category.{v₁} C] : Prop where
+  /-- The map from the (any as stated) initial object to any other object is a 
+    monomorphism -/
   isInitial_mono_from : ∀ {I} (X : C) (hI : IsInitial I), Mono (hI.to X)
 #align category_theory.limits.initial_mono_class CategoryTheory.Limits.InitialMonoClass
 
