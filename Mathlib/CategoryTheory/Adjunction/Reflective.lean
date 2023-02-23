@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.FullyFaithful
-import Mathbin.CategoryTheory.Functor.ReflectsIsomorphisms
-import Mathbin.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Reflective functors
@@ -47,8 +47,7 @@ variable {i : D ⥤ C}
 -/
 theorem unit_obj_eq_map_unit [Reflective i] (X : C) :
     (ofRightAdjoint i).Unit.app (i.obj ((leftAdjoint i).obj X)) =
-      i.map ((leftAdjoint i).map ((ofRightAdjoint i).Unit.app X)) :=
-  by
+      i.map ((leftAdjoint i).map ((ofRightAdjoint i).Unit.app X)) := by
   rw [← cancel_mono (i.map ((of_right_adjoint i).counit.app ((left_adjoint i).obj X))), ←
     i.map_comp]
   simp
@@ -60,8 +59,7 @@ When restricted to objects in `D` given by `i : D ⥤ C`, the unit is an isomorp
 More generally this applies to objects essentially in the reflective subcategory, see
 `functor.ess_image.unit_iso`.
 -/
-instance isIso_unit_obj [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).Unit.app (i.obj B)) :=
-  by
+instance isIso_unit_obj [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).Unit.app (i.obj B)) := by
   have :
     (of_right_adjoint i).Unit.app (i.obj B) = inv (i.map ((of_right_adjoint i).counit.app B)) :=
     by
@@ -78,8 +76,7 @@ reflection of `A`, with the isomorphism as `η_A`.
 (For any `B` in the reflective subcategory, we automatically have that `ε_B` is an iso.)
 -/
 theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : A ∈ i.essImage) :
-    IsIso ((ofRightAdjoint i).Unit.app A) :=
-  by
+    IsIso ((ofRightAdjoint i).Unit.app A) := by
   suffices
     (of_right_adjoint i).Unit.app A =
       h.get_iso.inv ≫
@@ -99,8 +96,7 @@ theorem mem_essImage_of_unit_isIso [IsRightAdjoint i] (A : C)
 
 /-- If `η_A` is a split monomorphism, then `A` is in the reflective subcategory. -/
 theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
-    [IsSplitMono ((ofRightAdjoint i).Unit.app A)] : A ∈ i.essImage :=
-  by
+    [IsSplitMono ((ofRightAdjoint i).Unit.app A)] : A ∈ i.essImage := by
   let η : 𝟭 C ⟶ left_adjoint i ⋙ i := (of_right_adjoint i).Unit
   haveI : is_iso (η.app (i.obj ((left_adjoint i).obj A))) := (i.obj_mem_ess_image _).unit_isIso
   have : epi (η.app A) := by
