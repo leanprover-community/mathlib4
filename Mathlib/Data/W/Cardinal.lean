@@ -15,12 +15,12 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 # Cardinality of W-types
 
 This file proves some theorems about the cardinality of W-types. The main result is
-`cardinal_mk_le_max_aleph_0_of_fintype` which says that if for any `a : α`,
+`cardinal_mk_le_max_aleph0_of_finite` which says that if for any `a : α`,
 `β a` is finite, then the cardinality of `WType β` is at most the maximum of the
 cardinality of `α` and `ℵ₀`.
 This can be used to prove theorems about the cardinality of algebraic constructions such as
-polynomials. There is a surjection from a `WType` to `mv_polynomial` for example, and
-this surjection can be used to put an upper bound on the cardinality of `mv_polynomial`.
+polynomials. There is a surjection from a `WType` to `MvPolynomial` for example, and
+this surjection can be used to put an upper bound on the cardinality of `MvPolynomial`.
 
 ## Tags
 
