@@ -53,9 +53,20 @@ structure MonoidalNatTrans (F G : LaxMonoidalFunctor C D) extends
   tensor : ∀ X Y, F.μ _ _ ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ _ _ := by aesop_cat
 #align category_theory.monoidal_nat_trans CategoryTheory.MonoidalNatTrans
 
-attribute [simp, reassoc (attr := simp)] MonoidalNatTrans.tensor
+attribute [reassoc (attr := simp)] MonoidalNatTrans.tensor
+attribute [reassoc (attr := simp)] MonoidalNatTrans.unit
 
-attribute [simp, reassoc (attr := simp)] MonoidalNatTrans.unit
+#align category_theory.monoidal_nat_trans.unit
+  CategoryTheory.MonoidalNatTrans.unit
+
+#align category_theory.monoidal_nat_trans.unit_assoc
+  CategoryTheory.MonoidalNatTrans.unit_assoc
+
+#align category_theory.monoidal_nat_trans.tensor
+  CategoryTheory.MonoidalNatTrans.tensor
+
+#align category_theory.monoidal_nat_trans.tensor_assoc
+  CategoryTheory.MonoidalNatTrans.tensor_assoc
 
 namespace MonoidalNatTrans
 
