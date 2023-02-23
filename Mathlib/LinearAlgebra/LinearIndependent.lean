@@ -477,6 +477,12 @@ variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
 variable [Module R M] [Module R M'] [Module R M'']
 variable {a b : R} {x y : M}
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
+
+-- Porting note: added the following line, fails to be inferred otherwise. Probably lean4#2074
+instance : Module R R := Semiring.toModule
+
 theorem linearIndependent_iff_injective_total :
     LinearIndependent R v ↔ Function.Injective (Finsupp.total ι M R v) :=
   linearIndependent_iff.trans
@@ -660,32 +666,33 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
   · intro h
     refine' ⟨h.comp _ Sum.inl_injective, h.comp _ Sum.inr_injective, _⟩
     refine' h.disjoint_span_image _
-    sorry
-    -- exact isCompl_range_inl_range_inr.1 -- Porting note: not sure why this is timing out
-    -- Porting note: the above proof was: the following term
-    -- fun h =>
-    --   ⟨h.comp _ Sum.inl_injective, h.comp _ Sum.inr_injective,
-    --     h.disjoint_span_image isCompl_range_inl_range_inr.1⟩,
+    -- Porting note: `isCompl_range_inl_range_inr.1` timeouts.
+    exact IsCompl.Disjoint isCompl_range_inl_range_inr
   rintro ⟨hl, hr, hlr⟩
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
   have :
     ((∑ i in s.preimage Sum.inl (Sum.inl_injective.injOn _), (fun x => g x • v x) (Sum.inl i)) +
         ∑ i in s.preimage Sum.inr (Sum.inr_injective.injOn _), (fun x => g x • v x) (Sum.inr i)) =
-      0 :=
-    by
-    rw [Finset.sum_preimage', Finset.sum_preimage', ← Finset.sum_union, ← Finset.filter_or]
+      0 := by
+    -- Porting note: `g` must be specified.
+    rw [Finset.sum_preimage' (g := fun x => g x • v x),
+      Finset.sum_preimage' (g := fun x => g x • v x), ← Finset.sum_union, ← Finset.filter_or]
     · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_True]
-    · exact Finset.disjoint_filter.2 fun x _ hx => disjoint_left.1 is_compl_range_inl_range_inr.1 hx
+    · -- Porting note: Here was one `exact`, but timeouted.
+      refine Finset.disjoint_filter.2 fun x _ hx =>
+        disjoint_left.1 ?_ hx
+      exact IsCompl.Disjoint isCompl_range_inl_range_inr
   · rw [← eq_neg_iff_add_eq_zero] at this
     rw [disjoint_def'] at hlr
-    have A := hlr _ (sum_mem fun i hi => _) _ (neg_mem <| sum_mem fun i hi => _) this
-    · cases' i with i i
-      · exact hl _ _ A i (Finset.mem_preimage.2 hi)
-      · rw [this, neg_eq_zero] at A
-        exact hr _ _ A i (Finset.mem_preimage.2 hi)
-    · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
-    · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
+    have A := by
+      refine hlr _ (sum_mem fun i _ => ?_) _ (neg_mem <| sum_mem fun i _ => ?_) this
+      · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
+      · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
+    cases' i with i i
+    · exact hl _ _ A i (Finset.mem_preimage.2 hi)
+    · rw [this, neg_eq_zero] at A
+      exact hr _ _ A i (Finset.mem_preimage.2 hi)
 #align linear_independent_sum linearIndependent_sum
 
 theorem LinearIndependent.sum_type {v' : ι' → M} (hv : LinearIndependent R v)
@@ -697,7 +704,7 @@ theorem LinearIndependent.sum_type {v' : ι' → M} (hv : LinearIndependent R v)
 
 theorem LinearIndependent.union {s t : Set M} (hs : LinearIndependent R (fun x => x : s → M))
     (ht : LinearIndependent R (fun x => x : t → M)) (hst : Disjoint (span R s) (span R t)) :
-    LinearIndependent R (fun x => x : s ∪ t → M) :=
+    LinearIndependent R (fun x => x : ↥(s ∪ t) → M) :=
   (hs.sum_type ht <| by simpa).to_subtype_range' <| by simp
 #align linear_independent.union LinearIndependent.union
 
@@ -711,12 +718,12 @@ theorem linearIndependent_unionᵢ_finite_subtype {ι : Type _} {f : ι → Set 
     exact fun t₁ t₂ ht => unionᵢ_mono fun i => unionᵢ_subset_unionᵢ_const fun h => ht h
   intro t
   induction' t using Finset.induction_on with i s his ih
-  · refine' (linearIndependent_empty _ _).mono _
+  · refine' (linearIndependent_empty R M).mono _
     simp
   · rw [Finset.set_bunionᵢ_insert]
     refine' (hl _).union ih _
-    rw [span_Union₂]
-    exact hd i s s.finite_to_set his
+    rw [span_unionᵢ₂]
+    exact hd i s s.finite_toSet his
 #align linear_independent_Union_finite_subtype linearIndependent_unionᵢ_finite_subtype
 
 theorem linearIndependent_Union_finite {η : Type _} {ιs : η → Type _} {f : ∀ j : η, ιs j → M}
@@ -743,8 +750,8 @@ theorem linearIndependent_Union_finite {η : Type _} {ιs : η → Type _} {f : 
         simp only at hxy
         rw [hxy]
         exact subset_span (mem_range_self y₂)
-      exact False.elim ((hindep x₁).NeZero _ h0)
-  rw [range_sigma_eq_Union_range]
+      exact False.elim ((hindep x₁).ne_zero _ h0)
+  rw [range_sigma_eq_unionᵢ_range]
   apply linearIndependent_unionᵢ_finite_subtype (fun j => (hindep j).to_subtype_range) hd
 #align linear_independent_Union_finite linearIndependent_Union_finite
 
@@ -756,21 +763,20 @@ variable (hv : LinearIndependent R v)
 
 /-- Canonical isomorphism between linear combinations and the span of linearly independent vectors.
 -/
-@[simps (config := { rhsMd := semireducible })]
-def LinearIndependent.totalEquiv (hv : LinearIndependent R v) : (ι →₀ R) ≃ₗ[R] span R (range v) :=
-  by
+@[simps (config := { rhsMd := default })]
+def LinearIndependent.totalEquiv (hv : LinearIndependent R v) :
+    (ι →₀ R) ≃ₗ[R] span R (range v) := by
   apply LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v)) (Finsupp.total ι M R v) _)
   constructor
   · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
     apply hv
+    · intro l
+      rw [← Finsupp.range_total]
+      rw [LinearMap.mem_range]
+      apply mem_range_self l
   · rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict, ←
       LinearMap.range_le_iff_comap, range_subtype, map_top]
     rw [Finsupp.range_total]
-    exact le_rfl
-  · intro l
-    rw [← Finsupp.range_total]
-    rw [LinearMap.mem_range]
-    apply mem_range_self l
 #align linear_independent.total_equiv LinearIndependent.totalEquiv
 
 /-- Linear combination representing a vector in the span of linearly independent vectors.
@@ -792,43 +798,41 @@ theorem LinearIndependent.total_comp_repr :
   LinearMap.ext <| hv.total_repr
 #align linear_independent.total_comp_repr LinearIndependent.total_comp_repr
 
-theorem LinearIndependent.repr_ker : hv.repr.ker = ⊥ := by
+theorem LinearIndependent.repr_ker : LinearMap.ker hv.repr = ⊥ := by
   rw [LinearIndependent.repr, LinearEquiv.ker]
 #align linear_independent.repr_ker LinearIndependent.repr_ker
 
-theorem LinearIndependent.repr_range : hv.repr.range = ⊤ := by
+theorem LinearIndependent.repr_range : LinearMap.range hv.repr = ⊤ := by
   rw [LinearIndependent.repr, LinearEquiv.range]
 #align linear_independent.repr_range LinearIndependent.repr_range
 
-theorem LinearIndependent.repr_eq {l : ι →₀ R} {x} (eq : Finsupp.total ι M R v l = ↑x) :
-    hv.repr x = l := by
+theorem LinearIndependent.repr_eq {l : ι →₀ R} {x : span R (range v)}
+    (eq : Finsupp.total ι M R v l = ↑x) : hv.repr x = l := by
   have :
     ↑((LinearIndependent.totalEquiv hv : (ι →₀ R) →ₗ[R] span R (range v)) l) =
       Finsupp.total ι M R v l :=
     rfl
-  have : (LinearIndependent.totalEquiv hv : (ι →₀ R) →ₗ[R] span R (range v)) l = x :=
-    by
-    rw [Eq] at this
+  have : (LinearIndependent.totalEquiv hv : (ι →₀ R) →ₗ[R] span R (range v)) l = x := by
+    rw [eq] at this
     exact Subtype.ext_iff.2 this
-  rw [← LinearEquiv.symm_apply_apply hv.total_equiv l]
+  rw [← LinearEquiv.symm_apply_apply hv.totalEquiv l]
   rw [← this]
   rfl
 #align linear_independent.repr_eq LinearIndependent.repr_eq
 
-theorem LinearIndependent.repr_eq_single (i) (x) (hx : ↑x = v i) : hv.repr x = Finsupp.single i 1 :=
-  by
+theorem LinearIndependent.repr_eq_single (i) (x : span R (range v)) (hx : ↑x = v i) :
+    hv.repr x = Finsupp.single i 1 := by
   apply hv.repr_eq
   simp [Finsupp.total_single, hx]
 #align linear_independent.repr_eq_single LinearIndependent.repr_eq_single
 
 theorem LinearIndependent.span_repr_eq [Nontrivial R] (x) :
-    Span.repr R (Set.range v) x = (hv.repr x).equivMapDomain (Equiv.ofInjective _ hv.Injective) :=
-  by
+    Span.repr R (Set.range v) x =
+      (hv.repr x).equivMapDomain (Equiv.ofInjective _ hv.injective) := by
   have p :
     (Span.repr R (Set.range v) x).equivMapDomain (Equiv.ofInjective _ hv.injective).symm =
-      hv.repr x :=
-    by
-    apply (LinearIndependent.totalEquiv hv).Injective
+      hv.repr x := by
+    apply (LinearIndependent.totalEquiv hv).injective
     ext
     simp only [LinearIndependent.totalEquiv_apply_coe, Equiv.self_comp_ofInjective_symm,
       LinearIndependent.total_repr, Finsupp.total_equivMapDomain, Span.finsupp_total_repr]
