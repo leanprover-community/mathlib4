@@ -18,8 +18,6 @@ import Std.Data.List.Lemmas
 # Basic properties of lists
 -/
 
-#align list.mem_cons_iff List.mem_cons
-
 open Function
 
 open Nat hiding one_pos
@@ -529,9 +527,8 @@ theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
 #align list.bind_singleton' List.bind_singleton'
 
 theorem map_eq_bind {α β} (f : α → β) (l : List α) : map f l = l.bind fun x => [f x] := by
-  trans
-  rw [← bind_singleton' l, bind_map]
-  rfl
+  simp_rw [←map_singleton]
+  rw [← bind_singleton' l, bind_map, bind_singleton']
 #align list.map_eq_bind List.map_eq_bind
 
 theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List γ) :
@@ -696,9 +693,6 @@ theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
 
 /-! ### empty -/
 
--- Porting note: Definition from Lean3 core, so should be moved
-#align list.empty List.isEmpty
-
 -- Porting note: this does not work as desired
 -- attribute [simp] List.isEmpty
 
@@ -722,9 +716,7 @@ theorem dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dr
 
 /-! ### getLast -/
 
--- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
--- @[simp]
-@[simp 1100, nolint simpNF]
+@[simp]
 theorem getLast_cons {a : α} {l : List α} :
     ∀ h : l ≠ nil, getLast (a :: l) (cons_ne_nil a l) = getLast l h := by
   induction l <;> intros
@@ -751,9 +743,7 @@ theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne
   getLast_concat ..
 #align list.last_concat List.getLast_concat'
 
--- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
--- @[simp]
-@[simp 1100, nolint simpNF]
+@[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 #align list.last_singleton List.getLast_singleton'
 
@@ -795,15 +785,13 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 /-! ### getLast? -/
 
 -- Porting note: New lemma, since definition of getLast? is slightly different.
--- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
--- @[simp]
-@[simp 1100, nolint simpNF] theorem getLast?_singleton (a : α) :
+@[simp]
+theorem getLast?_singleton (a : α) :
     getLast? [a] = a := rfl
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
--- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
--- @[simp]
-@[simp 1100, nolint simpNF] theorem getLast?_cons_cons (a b : α) (l : List α) :
+@[simp]
+theorem getLast?_cons_cons (a b : α) (l : List α) :
     getLast? (a :: b :: l) = getLast? (b :: l) := rfl
 
 @[simp]
@@ -980,7 +968,9 @@ set_option linter.deprecated false -- TODO(Mario): make replacements for theorem
     (h' : i + 1 < l.length := (by simpa [← lt_tsub_iff_right] using h)) :
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
   -- Porting note: cases l <;> [cases h, rfl] fails
-  cases l; {cases h}; rfl
+  cases l
+  · cases h
+  · rfl
 #align list.nth_le_tail List.nthLe_tail
 
 theorem nthLe_cons_aux {l : List α} {a : α} {n} (hn : n ≠ 0) (h : n < (a :: l).length) :
@@ -1063,8 +1053,6 @@ def bidirectionalRecOn {C : List α → Sort _} (l : List α) (H0 : C []) (H1 : 
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl
-
-#align list.sublist.cons2 List.Sublist.cons₂
 
 #align list.nil_sublist List.nil_sublist
 #align list.sublist.refl List.Sublist.refl
@@ -1571,7 +1559,7 @@ theorem modifyNthTail_modifyNthTail_le {f g : List α → List α} (m n : ℕ) (
     (l.modifyNthTail f n).modifyNthTail g m =
       l.modifyNthTail (fun l => (f l).modifyNthTail g (m - n)) n := by
   rcases exists_add_of_le h with ⟨m, rfl⟩
-  rw [add_tsub_cancel_left, add_comm, modifyNthTail_modifyNthTail]
+  rw [@add_tsub_cancel_left, add_comm, modifyNthTail_modifyNthTail]
 #align list.modify_nth_tail_modify_nth_tail_le List.modifyNthTail_modifyNthTail_le
 
 theorem modifyNthTail_modifyNthTail_same {f g : List α → List α} (n : ℕ) (l : List α) :
@@ -1768,7 +1756,7 @@ theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n �
     (insertNth n x l).nthLe k hk' = l.nthLe k hk := @get_insertNth_of_lt _
 #align list.nth_le_insert_nth_of_lt List.nthLe_insertNth_of_lt
 
-@[simp, nolint simpNF] -- Porting note: bug in linter, see std4#78
+@[simp]
 theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).get ⟨n, hn'⟩ = x := by
@@ -1781,7 +1769,7 @@ theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
     · simp only [Nat.succ_le_succ_iff, length] at hn
       simpa using IH _ hn
 
-@[simp, deprecated get_insertNth_self, nolint simpNF] -- Porting note: bug in linter, see std4#78
+@[simp, deprecated get_insertNth_self]
 theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).nthLe n hn' = x := get_insertNth_self _ _ _ hn
@@ -1896,27 +1884,27 @@ theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f :=
     apply h
     simp [hxy]
   · induction' y with yh yt y_ih generalizing x
-    simpa using hxy
+    · simpa using hxy
     cases x
-    simp at hxy
-    simp at hxy
-    simp [y_ih hxy.2, h hxy.1]
+    · simp at hxy
+    · simp only [map, cons.injEq] at hxy
+      simp [y_ih hxy.2, h hxy.1]
 #align list.map_injective_iff List.map_injective_iff
 
-/-- A single `list.map` of a composition of functions is equal to
-composing a `list.map` with another `list.map`, fully applied.
-This is the reverse direction of `list.map_map`.
+/-- A single `List.map` of a composition of functions is equal to
+composing a `List.map` with another `List.map`, fully applied.
+This is the reverse direction of `List.map_map`.
 -/
 theorem comp_map (h : β → γ) (g : α → β) (l : List α) : map (h ∘ g) l = map h (map g l) :=
   (map_map _ _ _).symm
 #align list.comp_map List.comp_map
 
-/-- Composing a `list.map` with another `list.map` is equal to
-a single `list.map` of composed functions.
+/-- Composing a `List.map` with another `List.map` is equal to
+a single `List.map` of composed functions.
 -/
 @[simp]
 theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g ∘ f) := by
-  ext l; rw [comp_map]; rfl
+  ext l; rw [comp_map, Function.comp_apply]
 #align list.map_comp_map List.map_comp_map
 
 theorem map_filter_eq_foldr (f : α → β) (p : α → Bool) (as : List α) :
@@ -2362,7 +2350,7 @@ theorem reverse_take {α} {xs : List α} (n : ℕ) (h : n ≤ xs.length) :
   · replace h' := le_of_succ_le_succ h'
     rw [take_append_of_le_length, xs_ih _ h']
     rw [show xs_tl.length + 1 - n = succ (xs_tl.length - n) from _, drop]
-    · rwa [succ_eq_add_one, ← tsub_add_eq_add_tsub]
+    · rwa [succ_eq_add_one, ← @tsub_add_eq_add_tsub]
     · rwa [length_reverse]
   · subst h'
     rw [length, tsub_self, drop]
@@ -2652,7 +2640,6 @@ theorem foldlRecOn_nil {C : β → Sort _} (op : β → α → β) (b) (hb : C b
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
 
--- scanl
 section Scanl
 
 variable {f : β → α → β} {b : β} {a : α} {l : List α}
@@ -3123,7 +3110,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
 end SplitAtOn
 
 /- Porting note: new; here tentatively -/
-/-! ### ModifyLast -/
+/-! ### modifyLast -/
 
 section ModifyLast
 
@@ -4319,7 +4306,7 @@ end Choose
 section Map₂Left'
 
 -- The definitional equalities for `map₂Left'` can already be used by the
--- simplifie because `map₂Left'` is marked `@[simp]`.
+-- simplifier because `map₂Left'` is marked `@[simp]`.
 @[simp]
 theorem map₂Left'_nil_right (f : α → Option β → γ) (as) :
     map₂Left' f as [] = (as.map fun a => f a none, []) := by cases as <;> rfl
@@ -4622,8 +4609,8 @@ The list definitions happen earlier than `to_additive`, so here we tag the few m
 definitions that couldn't be tagged earlier.
 -/
 
-attribute [to_additive] List.prod -- `list.sum`
-attribute [to_additive] alternatingProd -- `list.alternatingSum`
+attribute [to_additive] List.prod -- `List.sum`
+attribute [to_additive] alternatingProd -- `List.alternatingSum`
 
 /-! ### Miscellaneous lemmas -/
 

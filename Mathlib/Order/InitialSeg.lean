@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module order.initial_seg
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! leanprover-community/mathlib commit 7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -76,6 +76,7 @@ instance : EmbeddingLike (r ≼i s) α β :=
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
+#align initial_seg.ext InitialSeg.ext
 
 @[simp]
 theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
@@ -88,6 +89,7 @@ theorem init' (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b 
 
 theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
+#align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 
 theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by

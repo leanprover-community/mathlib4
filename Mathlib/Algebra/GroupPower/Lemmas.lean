@@ -65,14 +65,14 @@ theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, 
 #align is_add_unit.nsmul IsAddUnit.nsmul
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
-@[to_additive AddUnits.ofNSMul
-  "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
+@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
 def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
 #align units.of_pow Units.ofPow
 #align units.of_nsmul AddUnits.ofNSMul
+#align add_units.of_nsmul AddUnits.ofNSMul
 
 @[to_additive (attr := simp)]
 theorem isUnit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
@@ -87,7 +87,7 @@ theorem isUnit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit 
 #align is_add_unit_nsmul_succ_iff isAddUnit_nsmul_succ_iff
 
 /-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
-@[to_additive "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit.", simps]
+@[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
 def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
   Units.ofPow 1 x hn hx
 #align units.of_pow_eq_one Units.ofPowEqOne
@@ -737,6 +737,7 @@ lemma natAbs_sq (x : ℤ) : ↑(x.natAbs ^ 2) = x ^ 2 := by rw [sq, Int.natAbs_m
 #align int.nat_abs_sq Int.natAbs_sq
 
 alias natAbs_sq ← natAbs_pow_two
+#align int.nat_abs_pow_two Int.natAbs_pow_two
 
 theorem natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
   rw [← Int.natAbs_sq a, sq]
@@ -751,6 +752,7 @@ theorem le_self_sq (b : ℤ) : b ≤ b ^ 2 :=
 #align int.le_self_sq Int.le_self_sq
 
 alias le_self_sq ← le_self_pow_two
+#align int.le_self_pow_two Int.le_self_pow_two
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
     Function.Injective ((· ^ ·) x : ℕ → ℤ) := by

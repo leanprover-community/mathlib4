@@ -66,6 +66,8 @@ instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
 @[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
   (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
 
+theorem Nat.cast_eq_ofNat [NatCast R] [Nat.AtLeastTwo n] : (Nat.cast n : R) = OfNat.ofNat n := rfl
+
 /-! ### Additive monoids with one -/
 
 /-- An `AddMonoidWithOne` is an `AddMonoid` with a `1`.
@@ -233,6 +235,7 @@ theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
   rw [←Nat.cast_one, ←Nat.cast_add]
   apply congrArg
   decide
+#align one_add_one_eq_two one_add_one_eq_two
 
 theorem two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
   rw [←one_add_one_eq_two, ←Nat.cast_one, ←Nat.cast_add, ←Nat.cast_add]

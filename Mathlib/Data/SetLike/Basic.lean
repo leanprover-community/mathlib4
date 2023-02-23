@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module data.set_like.basic
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -31,13 +32,13 @@ boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set, a
 
 A typical subobject should be declared as:
 ```
-structure MySubobject (X : Type*) [ObjectTypeclass X] :=
+structure MySubobject (X : Type _) [ObjectTypeclass X] :=
 (carrier : Set X)
 (op_mem' : ∀ {x : X}, x ∈ carrier → sorry ∈ carrier)
 
 namespace MySubobject
 
-variables {X : Type*} [ObjectTypeclass X] {x : X}
+variables {X : Type _} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
 ⟨MySubobject.carrier, λ p q h, by cases p; cases q; congr'⟩
@@ -77,7 +78,7 @@ subobjects
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
 
 This has the effect of giving terms of `A` elements of type `B` (through a `Membership`
-instance) and a compatible coercion to `Type*` as a subtype.
+instance) and a compatible coercion to `Type _` as a subtype.
 
 Note: if `SetLike.coe` is a projection, implementers should create a simp lemma such as
 ```
@@ -192,7 +193,7 @@ theorem coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
   Iff.rfl
 #align set_like.coe_subset_coe SetLike.coe_subset_coe
 
--- porting note: TODO: add back @[mono]
+@[mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 #align set_like.coe_mono SetLike.coe_mono
 
@@ -201,7 +202,7 @@ theorem coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T :=
   Iff.rfl
 #align set_like.coe_ssubset_coe SetLike.coe_ssubset_coe
 
--- porting note: TODO: add back @[mono]
+@[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 #align set_like.coe_strict_mono SetLike.coe_strictMono
 

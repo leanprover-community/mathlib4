@@ -129,7 +129,7 @@ theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 #align finset.subset_univ Finset.subset_univ
 
 instance : BoundedOrder (Finset α) :=
-  { (show OrderBot (Finset α) by infer_instance) with
+  { inferInstanceAs (OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
 
@@ -653,7 +653,7 @@ theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toF
   ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h] ⟩
 #align set.to_finset_inj Set.toFinset_inj
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem toFinset_subset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp [Finset.subset_iff, Set.subset_def]
 #align set.to_finset_subset_to_finset Set.toFinset_subset_toFinset
@@ -673,7 +673,7 @@ theorem ssubset_toFinset {s : Finset α} [Fintype t] : s ⊂ t.toFinset ↔ ↑s
   rw [← Finset.coe_ssubset, coe_toFinset]
 #align set.ssubset_to_finset Set.ssubset_toFinset
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem toFinset_ssubset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
   simp only [Finset.ssubset_def, toFinset_subset_toFinset, ssubset_def]
 #align set.to_finset_ssubset_to_finset Set.toFinset_ssubset_toFinset
@@ -765,12 +765,11 @@ theorem toFinset_eq_univ [Fintype α] [Fintype s] : s.toFinset = Finset.univ ↔
 #align set.to_finset_eq_univ Set.toFinset_eq_univ
 
 @[simp]
-theorem to_finset_set_of [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
-    { x | p x }.toFinset = Finset.univ.filter p :=
-  by
+theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
+    { x | p x }.toFinset = Finset.univ.filter p := by
   ext
   simp
-#align set.to_finset_set_of Set.to_finset_set_of
+#align set.to_finset_set_of Set.toFinset_setOf
 
 --@[simp] Porting note: removing simp, simp can prove it
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
@@ -1027,6 +1026,7 @@ def unitsEquivProdSubtype [Monoid α] : αˣ ≃ { p : α × α // p.1 * p.2 = 1
   left_inv _ := Units.ext rfl
   right_inv _ := Subtype.ext <| Prod.ext rfl rfl
 #align units_equiv_prod_subtype unitsEquivProdSubtype
+#align units_equiv_prod_subtype_apply_coe unitsEquivProdSubtype_apply_coe
 
 /-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
 elements. -/
@@ -1035,6 +1035,8 @@ def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ { a : α // a ≠ 0 } :=
   ⟨fun a => ⟨a, a.ne_zero⟩, fun a => Units.mk0 _ a.prop, fun _ => Units.ext rfl, fun _ =>
     Subtype.ext rfl⟩
 #align units_equiv_ne_zero unitsEquivNeZero
+#align units_equiv_ne_zero_apply_coe unitsEquivNeZero_apply_coe
+#align units_equiv_ne_zero_symm_apply unitsEquivNeZero_symm_apply
 
 end
 
@@ -1098,94 +1100,6 @@ instance pfunFintype (p : Prop) [Decidable p] (α : p → Type _) [∀ hp, Finty
 theorem mem_image_univ_iff_mem_range {α β : Type _} [Fintype α] [DecidableEq β] {f : α → β}
     {b : β} : b ∈ univ.image f ↔ b ∈ Set.range f := by simp
 #align mem_image_univ_iff_mem_range mem_image_univ_iff_mem_range
-
-/-- An auxiliary function for `Quotient.finChoice`.  Given a
-collection of setoids indexed by a type `ι`, a (finite) list `l` of
-indices, and a function that for each `i ∈ l` gives a term of the
-corresponding quotient type, then there is a corresponding term in the
-quotient of the product of the setoids indexed by `l`. -/
-def Quotient.finChoiceAux {ι : Type _} [DecidableEq ι] {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
-    ∀ l : List ι, (∀ i ∈ l, Quotient (S i)) → @Quotient (∀ i ∈ l, α i) (by infer_instance)
-  | [], _ => ⟦fun i h => False.elim (List.not_mem_nil _ h)⟧
-  | i :: l, f =>
-    by
-    refine'
-      Quotient.liftOn₂ (f i (List.mem_cons_self _ _))
-        (Quotient.finChoiceAux l fun j h => f j (List.mem_cons_of_mem _ h)) _ _
-    exact fun a l =>
-      ⟦fun j h => if e : j = i
-        then by rw [e]; exact a else l _ ((List.mem_cons.1 h).resolve_left e)⟧
-    refine' fun a₁ l₁ a₂ l₂ h₁ h₂ => Quotient.sound fun j h => _
-    by_cases e : j = i <;> simp [e]
-    · subst j
-      exact h₁
-    · exact h₂ _ _
-#align quotient.fin_choice_aux Quotient.finChoiceAux
-
-theorem Quotient.finChoiceAux_eq {ι : Type _} [DecidableEq ι] {α : ι → Type _}
-    [S : ∀ i, Setoid (α i)] :
-    ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧
-  | [], f => Quotient.sound fun i h => (List.not_mem_nil _ h).elim
-  | i :: l, f => by
-    simp only [finChoiceAux, Quotient.finChoiceAux_eq l, eq_mpr_eq_cast, lift_mk, eq]
-    intro j _
-    dsimp
-    by_cases e : j = i
-    . subst j; simp; exact refl _
-    . simp [e]
-      exact refl _
-#align quotient.fin_choice_aux_eq Quotient.finChoiceAux_eq
-
---Porting note: new theorem
-private theorem quotientFinChoice_lemma {ι : Type _} {α : ι → Type _}
-    [S : ∀ i, Setoid (α i)]{p q : ι → Prop} (hpq : p = q)
-    (f : (i : ι) → Quotient (S i)) :
-    HEq (Quotient.mk inferInstance (fun i (_ : p i) => Quotient.out (f i)))
-        (Quotient.mk inferInstance (fun i (_ : q i) => Quotient.out (f i))) :=
-  by subst hpq; rfl
-
---Porting note: new definition
-/-- An auxiliary function for `Quotient.finChoice`. -/
-def Quotient.finChoiceAux' {ι : Type _} [DecidableEq ι] {α : ι → Type _}
-    [S : ∀ i, Setoid (α i)] (s : Multiset ι) (f : ∀ i, Quotient (S i)) :
-    @Quotient (∀ i ∈ s, α i) inferInstance :=
-  @Quotient.recOn _ _ (fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
-    s (fun l => Quotient.finChoiceAux l fun i _ => f i) fun a b h => by
-    have := fun a => Quotient.finChoiceAux_eq a fun i _ => Quotient.out (f i)
-    simp [Quotient.out_eq] at this
-    simp [this]
-    let _ := fun a : Multiset ι =>
-      (⟦fun (i : ι) (_ : i ∈ a) => (Quotient.out (f i) : α i)⟧ :
-        @Quotient (∀ i (_ : i ∈ a), α i) (by infer_instance))
-    refine' eq_of_heq (HEq.trans (eqRec_heq' _ _) _)
-    refine' quotientFinChoice_lemma _ f
-    funext i
-    rw [(List.Perm.mem_iff h)]
-
---Porting note: new theorem
-theorem Quotient.finChoiceAux'_eq {ι : Type _} [DecidableEq ι] {α : ι → Type _}
-    [S : ∀ i, Setoid (α i)] (s : Multiset ι)  (f : ∀ i, α i) :
-    (Quotient.finChoiceAux' s (fun i => ⟦f i⟧ : ∀ i, Quotient (S i))) = ⟦fun i _ => f i⟧ :=
-  Quotient.inductionOn s (fun _ => Quotient.finChoiceAux_eq _ _)
-
-/-- Given a collection of setoids indexed by a fintype `ι` and a
-function that for each `i : ι` gives a term of the corresponding
-quotient type, then there is corresponding term in the quotient of the
-product of the setoids. -/
-def Quotient.finChoice {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
-    [S : ∀ i, Setoid (α i)] (f : ∀ i, Quotient (S i)) : @Quotient (∀ i, α i) (by infer_instance) :=
-  Quotient.liftOn (Quotient.finChoiceAux' Finset.univ.val f)
-    (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧)
-    fun a b h => Quotient.sound fun i => by
-      dsimp [HasEquiv.Equiv, Setoid.r] at h
-      exact h i (mem_univ _)
-#align quotient.fin_choice Quotient.finChoice
-
-theorem Quotient.finChoice_eq {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
-    [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ := by
-  rw [Quotient.finChoice, Quotient.finChoiceAux'_eq]
-  exact Eq.refl _
-#align quotient.fin_choice_eq Quotient.finChoice_eq
 
 namespace Fintype
 

@@ -5,7 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth
 
 ! This file was ported from Lean 3 source module algebra.module.linear_map
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -104,6 +104,7 @@ structure LinearMap {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R 
 
 /-- The `add_hom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
+#align linear_map.to_add_hom LinearMap.toAddHom
 
 -- mathport name: «expr →ₛₗ[ ] »
 /-- `M →ₛₗ[σ] N` is the type of `σ`-semilinear maps from `M` to `N`. -/
@@ -230,9 +231,11 @@ def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ 
 #align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionHom
 
 @[simp]
-theorem to_fun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) :=
-  rfl
-#align linear_map.to_fun_eq_coe LinearMap.to_fun_eq_coe
+theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
+
+-- porting note: no longer a `simp`
+theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
+#align linear_map.to_fun_eq_coe LinearMap.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : M →ₛₗ[σ] M₃} (h : ∀ x, f x = g x) : f = g :=
@@ -266,10 +269,16 @@ protected def Simps.apply {R S : Type _} [Semiring R] [Semiring S] (σ : R →+*
 initialize_simps_projections LinearMap (toAddHom_toFun → apply)
 
 @[simp]
-theorem coe_mk {σ : R →+* S} (f : M →+ M₃) (h) :
+theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
     ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : M → M₃) = f :=
   rfl
 #align linear_map.coe_mk LinearMap.coe_mk
+
+-- Porting note: This theorem is new.
+@[simp]
+theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
+    ((LinearMap.mk f h : M →ₛₗ[σ] M₃) : AddHom M M₃) = f :=
+  rfl
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
@@ -451,15 +460,19 @@ are defined by an action of `R` on `S` (formally, we have two scalar towers), th
 map from `M` to `M₂` is `R`-linear.
 
 See also `LinearMap.map_smul_of_tower`. -/
-def restrictScalars (fₗ : M →ₗ[S] M₂) : M →ₗ[R] M₂
-    where
+@[coe] def restrictScalars (fₗ : M →ₗ[S] M₂) : M →ₗ[R] M₂ where
   toFun := fₗ
   map_add' := fₗ.map_add
   map_smul' := fₗ.map_smul_of_tower
 #align linear_map.restrict_scalars LinearMap.restrictScalars
 
-@[simp]
-theorem coe_restrictScalars (fₗ : M →ₗ[S] M₂) : ⇑(restrictScalars R fₗ) = fₗ :=
+-- porting note: generalized from `Algebra` to `Compatible SMul`
+instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
+  ⟨restrictScalars R⟩
+#align linear_map.coe_is_scalar_tower LinearMap.coeIsScalarTower
+
+@[simp, norm_cast]
+theorem coe_restrictScalars (f : M →ₗ[S] M₂) : ((f : M →ₗ[R] M₂) : M → M₂) = f :=
   rfl
 #align linear_map.coe_restrict_scalars LinearMap.coe_restrictScalars
 
@@ -518,6 +531,7 @@ def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
     toFun := f
     map_smul' := f.map_mul }
 #align ring_hom.to_semilinear_map RingHom.toSemilinearMap
+#align ring_hom.to_semilinear_map_apply RingHom.toSemilinearMap_apply
 
 section
 
@@ -542,8 +556,6 @@ This is useful when Lean is struggling to infer the `RingHomCompTriple` instance
 infixr:80 " ∘ₗ " =>
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     RingHomCompTriple.ids
-
-include σ₁₃
 
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
@@ -639,6 +651,7 @@ letI := compHom S g
   map_add' := g.map_add
   map_smul' := g.map_mul }
 #align module.comp_hom.to_linear_map Module.compHom.toLinearMap
+#align module.comp_hom.to_linear_map_apply Module.compHom.toLinearMap_apply
 
 end Module
 
@@ -930,7 +943,7 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
   ext fun _ ↦ g.map_neg _
 #align linear_map.comp_neg LinearMap.comp_neg
 
-/-- The negation of a linear map is linear. -/
+/-- The subtraction of two linear maps is linear. -/
 instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
@@ -1184,6 +1197,7 @@ def toLinearMap (s : S) : M →ₗ[R] M where
   map_add' := smul_add s
   map_smul' _ _ := smul_comm _ _ _
 #align distrib_mul_action.to_linear_map DistribMulAction.toLinearMap
+#align distrib_mul_action.to_linear_map_apply DistribMulAction.toLinearMap_apply
 
 /-- Each element of the monoid defines a module endomorphism.
 
@@ -1195,6 +1209,7 @@ def toModuleEnd : S →* Module.End R M
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
 #align distrib_mul_action.to_module_End DistribMulAction.toModuleEnd
+#align distrib_mul_action.to_module_End_apply DistribMulAction.toModuleEnd_apply
 
 end DistribMulAction
 
@@ -1216,6 +1231,7 @@ def toModuleEnd : S →+* Module.End R M :=
     map_zero' := LinearMap.ext <| zero_smul _
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 #align module.to_module_End Module.toModuleEnd
+#align module.to_module_End_apply Module.toModuleEnd_apply
 
 /-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `Module.End R R` induced by the right
 multiplication. -/
@@ -1227,6 +1243,7 @@ def moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
 #align module.module_End_self Module.moduleEndSelf
+#align module.module_End_self_apply Module.moduleEndSelf_apply
 
 /-- The canonical (semi)ring isomorphism from `R` to `Module.End Rᵐᵒᵖ R` induced by the left
 multiplication. -/
@@ -1238,6 +1255,8 @@ def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 #align module.module_End_self_op Module.moduleEndSelfOp
+#align module.module_End_self_op_symm_apply Module.moduleEndSelfOp_symmApply
+#align module.module_End_self_op_apply Module.moduleEndSelfOp_apply
 
 theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=

@@ -26,8 +26,7 @@ We also define `Function.mulSupport f = {x | f x ≠ 1}`.
 
 open Set
 
---Porting note: namespace does not exist
---open BigOperators
+open BigOperators
 
 namespace Function
 
@@ -264,7 +263,7 @@ theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
 #align function.mul_support_mul Function.mulSupport_mul
 #align function.support_add Function.support_add
 
-@[to_additive support_nsmul]
+@[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction' n with n hfn

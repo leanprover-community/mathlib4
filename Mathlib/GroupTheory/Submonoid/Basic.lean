@@ -6,7 +6,7 @@ Amelia Livingston, Yury Kudryashov
 Ported by: Anatole Dedecker
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -101,6 +101,7 @@ end
 
 /-- A submonoid of a monoid `M` can be considered as a subsemigroup of that monoid. -/
 add_decl_doc Submonoid.toSubsemigroup
+#align submonoid.to_subsemigroup Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
@@ -122,6 +123,7 @@ end
 /-- An additive submonoid of an additive monoid `M` can be considered as an
 additive subsemigroup of that additive monoid. -/
 add_decl_doc AddSubmonoid.toAddSubsemigroup
+#align add_submonoid.to_add_subsemigroup AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
@@ -131,7 +133,7 @@ class AddSubmonoidClass (S : Type _) (M : Type _) [AddZeroClass M] [SetLike S M]
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive nsmul_mem]
+@[to_additive]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by

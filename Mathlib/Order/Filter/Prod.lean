@@ -251,13 +251,21 @@ theorem prod_comm : f ×ᶠ g = map (fun p : β × α => (p.2, p.1)) (g ×ᶠ f)
   rfl
 #align filter.prod_comm Filter.prod_comm
 
+theorem mem_prod_iff_left {s : Set (α × β)} {f : Filter α} {g : Filter β} :
+    s ∈ f ×ᶠ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by
+  simp only [mem_prod_iff, prod_subset_iff]
+  refine exists_congr fun _ => Iff.rfl.and <| Iff.trans ?_ exists_mem_subset_iff
+  exact exists_congr fun _ => Iff.rfl.and forall₂_swap
+
+theorem mem_prod_iff_right {s : Set (α × β)} {f : Filter α} {g : Filter β} :
+    s ∈ f ×ᶠ g ↔ ∃ t ∈ g, ∀ᶠ x in f, ∀ y ∈ t, (x, y) ∈ s := by
+  rw [prod_comm, mem_map, mem_prod_iff_left]; rfl
+
 @[simp]
 theorem map_fst_prod (f : Filter α) (g : Filter β) [NeBot g] : map Prod.fst (f ×ᶠ g) = f := by
-  refine' le_antisymm tendsto_fst fun s hs => _
-  rw [mem_map, mem_prod_iff] at hs
-  rcases hs with ⟨t₁, h₁, t₂, h₂, hs⟩
-  rw [← image_subset_iff, fst_image_prod] at hs
-  exacts[mem_of_superset h₁ hs, nonempty_of_mem h₂]
+  ext s
+  simp only [mem_map, mem_prod_iff_left, mem_preimage, eventually_const, ← subset_def,
+    exists_mem_subset_iff]
 #align filter.map_fst_prod Filter.map_fst_prod
 
 @[simp]
@@ -340,6 +348,14 @@ theorem prod_map_map_eq' {α₁ : Type _} {α₂ : Type _} {β₁ : Type _} {β�
   prod_map_map_eq
 #align filter.prod_map_map_eq' Filter.prod_map_map_eq'
 
+theorem prod_map_left (f : α → β) (F : Filter α) (G : Filter γ) :
+    map f F ×ᶠ G = map (Prod.map f id) (F ×ᶠ G) := by
+  rw [← prod_map_map_eq', map_id]
+
+theorem prod_map_right (f : β → γ) (F : Filter α) (G : Filter β) :
+    F ×ᶠ map f G = map (Prod.map id f) (F ×ᶠ G) := by
+  rw [← prod_map_map_eq', map_id]
+
 theorem le_prod_map_fst_snd {f : Filter (α × β)} : f ≤ map Prod.fst f ×ᶠ map Prod.snd f :=
   le_inf le_comap_map le_comap_map
 #align filter.le_prod_map_fst_snd Filter.le_prod_map_fst_snd
@@ -369,6 +385,12 @@ theorem prod_inf_prod {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} :
     (f₁ ×ᶠ g₁) ⊓ (f₂ ×ᶠ g₂) = (f₁ ⊓ f₂) ×ᶠ (g₁ ⊓ g₂) := by
   simp only [Filter.prod, comap_inf, inf_comm, inf_assoc, inf_left_comm]
 #align filter.prod_inf_prod Filter.prod_inf_prod
+
+theorem inf_prod {f₁ f₂ : Filter α} {g : Filter β} : (f₁ ⊓ f₂) ×ᶠ g = (f₁ ×ᶠ g) ⊓ (f₂ ×ᶠ g) := by
+  rw [prod_inf_prod, inf_idem]
+
+theorem prod_inf {f : Filter α} {g₁ g₂ : Filter β} : f ×ᶠ (g₁ ⊓ g₂) = (f ×ᶠ g₁) ⊓ (f ×ᶠ g₂) := by
+  rw [prod_inf_prod, inf_idem]
 
 @[simp]
 theorem prod_principal_principal {s : Set α} {t : Set β} : 𝓟 s ×ᶠ 𝓟 t = 𝓟 (s ×ˢ t) := by

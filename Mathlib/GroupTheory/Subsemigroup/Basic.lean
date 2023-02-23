@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 
 ! This file was ported from Lean 3 source module group_theory.subsemigroup.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -332,8 +332,8 @@ variable {S}
 open Set
 
 /-- A subsemigroup `S` includes `closure s` if and only if it includes `s`. -/
-@[simp,
-  to_additive "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
+@[to_additive (attr := simp)
+  "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
 #align subsemigroup.closure_le Subsemigroup.closure_le
