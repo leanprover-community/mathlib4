@@ -453,14 +453,13 @@ theorem linearIndependent_unionₛ_of_directed {s : Set (Set M)} (hs : DirectedO
     exact linearIndependent_unionᵢ_of_directed hs.directed_val (by simpa using h)
 #align linear_independent_sUnion_of_directed linearIndependent_unionₛ_of_directed
 
-theorem linearIndependent_bUnion_of_directed {η} {s : Set η} {t : η → Set M}
+theorem linearIndependent_bunionᵢ_of_directed {η} {s : Set η} {t : η → Set M}
     (hs : DirectedOn (t ⁻¹'o (· ⊆ ·)) s) (h : ∀ a ∈ s, LinearIndependent R (fun x => x : t a → M)) :
     LinearIndependent R (fun x => x : (⋃ a ∈ s, t a) → M) := by
-  rw [bunionᵢ_eq_unionᵢ
-];
-    exact
-      linearIndependent_unionᵢ_of_directed (directed_comp.2 <| hs.directed_val) (by simpa using h)
-#align linear_independent_bUnion_of_directed linearIndependent_bUnion_of_directed
+  rw [bunionᵢ_eq_unionᵢ]
+  exact
+    linearIndependent_unionᵢ_of_directed (directed_comp.2 <| hs.directed_val) (by simpa using h)
+#align linear_independent_bUnion_of_directed linearIndependent_bunionᵢ_of_directed
 
 end Subtype
 
@@ -725,13 +724,11 @@ theorem linearIndependent_unionᵢ_finite_subtype {ι : Type _} {f : ι → Set 
     exact hd i s s.finite_toSet his
 #align linear_independent_Union_finite_subtype linearIndependent_unionᵢ_finite_subtype
 
-theorem linearIndependent_Union_finite {η : Type _} {ιs : η → Type _} {f : ∀ j : η, ιs j → M}
+theorem linearIndependent_unionᵢ_finite {η : Type _} {ιs : η → Type _} {f : ∀ j : η, ιs j → M}
     (hindep : ∀ j, LinearIndependent R (f j))
-    (hd :
-      ∀ i,
-        ∀ t : Set η,
-          t.Finite → i ∉ t → Disjoint (span R (range (f i))) (⨆ i ∈ t, span R (range (f i)))) :
-    LinearIndependent R fun ji : Σj, ιs j => f ji.1 ji.2 := by
+    (hd : ∀ i, ∀ t : Set η,
+      t.Finite → i ∉ t → Disjoint (span R (range (f i))) (⨆ i ∈ t, span R (range (f i)))) :
+    LinearIndependent R fun ji : Σ j, ιs j => f ji.1 ji.2 := by
   nontriviality R
   apply LinearIndependent.of_subtype_range
   · rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ hxy
@@ -752,7 +749,7 @@ theorem linearIndependent_Union_finite {η : Type _} {ιs : η → Type _} {f : 
       exact False.elim ((hindep x₁).ne_zero _ h0)
   rw [range_sigma_eq_unionᵢ_range]
   apply linearIndependent_unionᵢ_finite_subtype (fun j => (hindep j).to_subtype_range) hd
-#align linear_independent_Union_finite linearIndependent_Union_finite
+#align linear_independent_Union_finite linearIndependent_unionᵢ_finite
 
 end Subtype
 
