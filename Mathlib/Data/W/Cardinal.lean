@@ -8,8 +8,8 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.W.Basic
-import Mathbin.SetTheory.Cardinal.Ordinal
+import Mathlib.Data.W.Basic
+import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinality of W-types
@@ -40,8 +40,7 @@ open Cardinal
 
 open Cardinal
 
-theorem cardinal_mk_eq_sum : (#WType β) = Sum fun a : α => (#WType β) ^ (#β a) :=
-  by
+theorem cardinal_mk_eq_sum : (#WType β) = Sum fun a : α => (#WType β) ^ (#β a) := by
   simp only [Cardinal.power_def, ← Cardinal.mk_sigma]
   exact mk_congr (equiv_sigma β)
 #align W_type.cardinal_mk_eq_sum WType.cardinal_mk_eq_sum
