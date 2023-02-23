@@ -245,8 +245,11 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
   add_mem' := fun {x y} ⟨hfx, hgx, hx⟩ ⟨hfy, hgy, hy⟩ =>
     ⟨add_mem hfx hfy, add_mem hgx hgy, by
       erw [f.map_add ⟨x, hfx⟩ ⟨y, hfy⟩, g.map_add ⟨x, hgx⟩ ⟨y, hgy⟩, hx, hy]⟩
-  smul_mem' := fun c {x} ⟨hfx, hgx, hx⟩ =>
-    ⟨smul_mem _ c hfx, smul_mem _ c hgx, by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
+  -- Porting note: `by rintro` is required, or error of a free variable happens.
+  smul_mem' := by
+    rintro c x ⟨hfx, hgx, hx⟩
+    exact
+      ⟨smul_mem _ c hfx, smul_mem _ c hgx, by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 #align linear_pmap.eq_locus LinearPmap.eqLocus
 
 instance : HasInf (E →ₗ.[R] F) :=
@@ -267,12 +270,16 @@ instance : SemilatticeInf (E →ₗ.[R] F) where
       (fg_eq hxy).trans (gh_eq <| hxy.symm.trans hxz)⟩
   le_antisymm f g fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
   inf := (· ⊓ ·)
-  le_inf := fun f g h ⟨fg_le, fg_eq⟩ ⟨fh_le, fh_eq⟩ =>
-    ⟨fun x hx =>
-      ⟨fg_le hx, fh_le hx, by refine' (fg_eq _).symm.trans (fh_eq _) <;> [exact ⟨x, hx⟩, rfl, rfl]⟩,
+  -- Porting note: `by rintro` is required, or error of a metavariable happens.
+  le_inf := by
+    rintro f g h ⟨fg_le, fg_eq⟩ ⟨fh_le, fh_eq⟩
+    exact ⟨fun x hx =>
+      ⟨fg_le hx, fh_le hx, by
+        -- Porting note: `[exact ⟨x, hx⟩, rfl, rfl]` → `[skip, exact ⟨x, hx⟩, skip] <;> rfl`
+        refine' (fg_eq _).symm.trans (fh_eq _) <;> [skip, exact ⟨x, hx⟩, skip] <;> rfl⟩,
       fun x ⟨y, yg, hy⟩ h => by
-      apply fg_eq
-      exact h⟩
+        apply fg_eq
+        exact h⟩
   inf_le_left f g := ⟨fun x hx => hx.fst, fun x y h => congr_arg f <| Subtype.eq <| h⟩
   inf_le_right f g :=
     ⟨fun x hx => hx.snd.fst, fun ⟨x, xf, xg, hx⟩ y h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
@@ -291,21 +298,22 @@ theorem le_of_eqLocus_ge {f g : E →ₗ.[R] F} (H : f.domain ≤ f.eqLocus g) :
 #align linear_pmap.le_of_eq_locus_ge LinearPmap.le_of_eqLocus_ge
 
 theorem domain_mono : StrictMono (@domain R _ E _ _ F _ _) := fun f g hlt =>
-  lt_of_le_of_ne hlt.1.1 fun heq => ne_of_lt hlt <| eq_of_le_of_domain_eq (le_of_lt hlt) HEq
+  lt_of_le_of_ne hlt.1.1 fun heq => ne_of_lt hlt <| eq_of_le_of_domain_eq (le_of_lt hlt) heq
 #align linear_pmap.domain_mono LinearPmap.domain_mono
 
 private theorem sup_aux (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) :
     ∃ fg : ↥(f.domain ⊔ g.domain) →ₗ[R] F,
-      ∀ (x : f.domain) (y : g.domain) (z), (x : E) + y = ↑z → fg z = f x + g y := by
-  choose x hx y hy hxy using fun z : f.domain ⊔ g.domain => mem_sup.1 z.Prop
+      ∀ (x : f.domain) (y : g.domain) (z : ↥(f.domain ⊔ g.domain)),
+        (x : E) + y = ↑z → fg z = f x + g y := by
+  choose x hx y hy hxy using fun z : ↥(f.domain ⊔ g.domain) => mem_sup.1 z.prop
   set fg := fun z => f ⟨x z, hx z⟩ + g ⟨y z, hy z⟩
   have fg_eq :
-    ∀ (x' : f.domain) (y' : g.domain) (z' : f.domain ⊔ g.domain) (H : (x' : E) + y' = z'),
+    ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain)) (H : (x' : E) + y' = z'),
       fg z' = f x' + g y' :=
     by
     intro x' y' z' H
-    dsimp [fg]
+    dsimp
     rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← map_sub, ← map_sub]
     apply h
     simp only [← eq_sub_iff_add_eq] at hxy
@@ -322,7 +330,6 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
     rw [smul_add, ← map_smul, ← map_smul]
     apply fg_eq
     simp only [coe_smul, coe_mk, ← smul_add, hxy, RingHom.id_apply]
-#align linear_pmap.sup_aux linear_pmap.sup_aux
 
 /-- Given two partial linear maps that agree on the intersection of their domains,
 `f.sup g h` is the unique partial linear map on `f.domain ⊔ g.domain` that agrees
