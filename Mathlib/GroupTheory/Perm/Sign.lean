@@ -299,12 +299,12 @@ theorem isConj_swap {w x y z : α} (hwx : w ≠ x) (hyz : y ≠ z) : IsConj (swa
     (have h :
       ∀ {y z : α},
         y ≠ z → w ≠ z → swap w y * swap x z * swap w x * (swap w y * swap x z)⁻¹ = swap y z :=
-      fun y z hyz hwz => by
+      fun {y z} hyz hwz => by
       rw [mul_inv_rev, swap_inv, swap_inv, mul_assoc (swap w y), mul_assoc (swap w y), ←
         mul_assoc _ (swap x z), swap_mul_swap_mul_swap hwx hwz, ← mul_assoc,
         swap_mul_swap_mul_swap hwz.symm hyz.symm]
     if hwz : w = z then
-      have hwy : w ≠ y := by cc
+      have hwy : w ≠ y := by rw [hwz]; exact hyz.symm
       ⟨swap w z * swap x y, by rw [swap_comm y z, h hyz.symm hwy]⟩
     else ⟨swap w y * swap x z, h hyz hwz⟩)
 #align equiv.perm.is_conj_swap Equiv.Perm.isConj_swap
