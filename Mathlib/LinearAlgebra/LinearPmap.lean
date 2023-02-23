@@ -34,9 +34,10 @@ They are also the basis for the theory of unbounded operators.
 
 -/
 
-set_option synthInstance.etaExperiment true
-
 open Set
+
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
 
 universe u v w
 
@@ -119,25 +120,30 @@ theorem mk_apply (p : Submodule R E) (f : p →ₗ[R] F) (x : p) : mk p f x = f 
 
 /-- The unique `linear_pmap` on `R ∙ x` that sends `x` to `y`. This version works for modules
 over rings, and requires a proof of `∀ c, c • x = 0 → c • y = 0`. -/
-noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c • y = 0) : E →ₗ.[R] F
-    where
+noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c • y = 0) :
+    E →ₗ.[R] F where
   domain := R ∙ x
   toFun :=
-    have H : ∀ c₁ c₂ : R, c₁ • x = c₂ • x → c₁ • y = c₂ • y :=
-      by
+    have H : ∀ c₁ c₂ : R, c₁ • x = c₂ • x → c₁ • y = c₂ • y := by
       intro c₁ c₂ h
-      rw [← sub_eq_zero, ← sub_smul] at h⊢
+      rw [← sub_eq_zero, ← sub_smul] at h ⊢
       exact H _ h
-    { toFun := fun z => Classical.choose (mem_span_singleton.1 z.Prop) • y
+    { toFun := fun z => Classical.choose (mem_span_singleton.1 z.prop) • y
+      -- Porting note: `dsimp only []` are required.
+      -- Porting note: Were `Classical.choose_spec (mem_span_singleton.1 _)`.
       map_add' := fun y z => by
+        dsimp only []
         rw [← add_smul]
         apply H
-        simp only [add_smul, sub_smul, Classical.choose_spec (mem_span_singleton.1 _)]
+        simp only [add_smul, sub_smul,
+          fun w : R ∙ x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
         apply coe_add
       map_smul' := fun c z => by
+        dsimp only []
         rw [smul_smul]
         apply H
-        simp only [mul_smul, Classical.choose_spec (mem_span_singleton.1 _)]
+        simp only [mul_smul,
+          fun w : R ∙ x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
         apply coe_smul }
 #align linear_pmap.mk_span_singleton' LinearPmap.mkSpanSingleton'
 
@@ -160,7 +166,7 @@ theorem mkSpanSingleton'_apply (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c
 @[simp]
 theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c • y = 0) (h) :
     mkSpanSingleton' x y H ⟨x, h⟩ = y := by
-  convert mk_span_singleton'_apply x y H 1 _ <;> rwa [one_smul]
+  convert mkSpanSingleton'_apply x y H 1 _ <;> rwa [one_smul]
 #align linear_pmap.mk_span_singleton'_apply_self LinearPmap.mkSpanSingleton'_apply_self
 
 /-- The unique `linear_pmap` on `span R {x}` that sends a non-zero vector `x` to `y`.
@@ -183,7 +189,7 @@ theorem mkSpanSingleton_apply (K : Type _) {E F : Type _} [DivisionRing K] [AddC
 protected def fst (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] E
     where
   domain := p.prod p'
-  toFun := (LinearMap.fst R E F).comp (p.prod p').Subtype
+  toFun := (LinearMap.fst R E F).comp (p.prod p').subtype
 #align linear_pmap.fst LinearPmap.fst
 
 @[simp]
@@ -196,7 +202,7 @@ theorem fst_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
 protected def snd (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] F
     where
   domain := p.prod p'
-  toFun := (LinearMap.snd R E F).comp (p.prod p').Subtype
+  toFun := (LinearMap.snd R E F).comp (p.prod p').subtype
 #align linear_pmap.snd LinearPmap.snd
 
 @[simp]
