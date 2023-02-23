@@ -21,40 +21,40 @@ This file defines linear independence in a module or vector space.
 
 It is inspired by Isabelle/HOL's linear algebra, and hence indirectly by HOL Light.
 
-We define `linear_independent R v` as `ker (finsupp.total ι M R v) = ⊥`. Here `finsupp.total` is the
+We define `LinearIndependent R v` as `ker (Finsupp.total ι M R v) = ⊥`. Here `Finsupp.total` is the
 linear map sending a function `f : ι →₀ R` with finite support to the linear combination of vectors
 from `v` with these coefficients. Then we prove that several other statements are equivalent to this
-one, including injectivity of `finsupp.total ι M R v` and some versions with explicitly written
+one, including injectivity of `Finsupp.total ι M R v` and some versions with explicitly written
 linear combinations.
 
 ## Main definitions
 All definitions are given for families of vectors, i.e. `v : ι → M` where `M` is the module or
-vector space and `ι : Type*` is an arbitrary indexing type.
+vector space and `ι : Type _` is an arbitrary indexing type.
 
-* `linear_independent R v` states that the elements of the family `v` are linearly independent.
+* `LinearIndependent R v` states that the elements of the family `v` are linearly independent.
 
-* `linear_independent.repr hv x` returns the linear combination representing `x : span R (range v)`
-on the linearly independent vectors `v`, given `hv : linear_independent R v`
-(using classical choice). `linear_independent.repr hv` is provided as a linear map.
+* `LinearIndependent.repr hv x` returns the linear combination representing `x : span R (range v)`
+on the linearly independent vectors `v`, given `hv : LinearIndependent R v`
+(using classical choice). `LinearIndependent.repr hv` is provided as a linear map.
 
 ## Main statements
 
 We prove several specialized tests for linear independence of families of vectors and of sets of
 vectors.
 
-* `fintype.linear_independent_iff`: if `ι` is a finite type, then any function `f : ι → R` has
+* `Fintype.linearIndependent_iff`: if `ι` is a finite type, then any function `f : ι → R` has
   finite support, so we can reformulate the statement using `∑ i : ι, f i • v i` instead of a sum
   over an auxiliary `s : finset ι`;
-* `linear_independent_empty_type`: a family indexed by an empty type is linearly independent;
-* `linear_independent_unique_iff`: if `ι` is a singleton, then `linear_independent K v` is
+* `linearIndependent_empty_type`: a family indexed by an empty type is linearly independent;
+* `linearIndependent_unique_iff`: if `ι` is a singleton, then `LinearIndependent K v` is
   equivalent to `v default ≠ 0`;
-* linear_independent_option`, `linear_independent_sum`, `linear_independent_fin_cons`,
-  `linear_independent_fin_succ`: type-specific tests for linear independence of families of vector
+* linearIndependent_option`, `linearIndependent_sum`, `linearIndependent_fin_cons`,
+  `linearIndependent_fin_succ`: type-specific tests for linear independence of families of vector
   fields;
-* `linear_independent_insert`, `linear_independent_union`, `linear_independent_pair`,
-  `linear_independent_singleton`: linear independence tests for set operations.
+* `linearIndependent_insert`, `linearIndependent_union`, `linearIndependent_pair`,
+  `linearIndependent_singleton`: linear independence tests for set operations.
 
-In many cases we additionally provide dot-style operations (e.g., `linear_independent.union`) to
+In many cases we additionally provide dot-style operations (e.g., `LinearIndependent.union`) to
 make the linear independence tests usable as `hv.insert ha` etc.
 
 We also prove that, when working over a division ring,
@@ -65,8 +65,8 @@ any family of vectors includes a linear independent subfamily spanning the same 
 We use families instead of sets because it allows us to say that two identical vectors are linearly
 dependent.
 
-If you want to use sets, use the family `(λ x, x : s → M)` given a set `s : set M`. The lemmas
-`linear_independent.to_subtype_range` and `linear_independent.of_subtype_range` connect those two
+If you want to use sets, use the family `(fun x ↦ x : s → M)` given a set `s : Set M`. The lemmas
+`LinearIndependent.to_subtype_range` and `LinearIndependent.of_subtype_range` connect those two
 worlds.
 
 ## Tags
@@ -96,7 +96,7 @@ variable [Module R M] [Module R M'] [Module R M'']
 variable {a b : R} {x y : M}
 variable (R) (v)
 
-/-- `linear_independent R v` states the family of vectors `v` is linearly independent over `R`. -/
+/-- `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. -/
 def LinearIndependent : Prop :=
   LinearMap.ker (Finsupp.total ι M R v) = ⊥
 #align linear_independent LinearIndependent
@@ -209,7 +209,7 @@ theorem LinearIndependent.coe_range (i : LinearIndependent R v) :
 
 /-- If `v` is a linearly independent family of vectors and the kernel of a linear map `f` is
 disjoint with the submodule spanned by the vectors of `v`, then `f ∘ v` is a linearly independent
-family of vectors. See also `linear_independent.map'` for a special case assuming `ker f = ⊥`. -/
+family of vectors. See also `LinearIndependent.map'` for a special case assuming `ker f = ⊥`. -/
 theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
     (hf_inj : Disjoint (span R (range v)) (LinearMap.ker f)) : LinearIndependent R (f ∘ v) := by
   rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_total,
@@ -224,7 +224,7 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
 #align linear_independent.map LinearIndependent.map
 
 /-- An injective linear map sends linearly independent families of vectors to linearly independent
-families of vectors. See also `linear_independent.map` for a more general statement. -/
+families of vectors. See also `LinearIndependent.map` for a more general statement. -/
 theorem LinearIndependent.map' (hv : LinearIndependent R v) (f : M →ₗ[R] M')
     (hf_inj : LinearMap.ker f = ⊥) : LinearIndependent R (f ∘ v) :=
   hv.map <| by simp [hf_inj]
@@ -282,7 +282,7 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
   LinearIndependent.of_comp (span R (range v)).subtype hs
 #align linear_independent_span linearIndependent_span
 
-/-- See `linear_independent.fin_cons` for a family of elements in a vector space. -/
+/-- See `LinearIndependent.fin_cons` for a family of elements in a vector space. -/
 theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : LinearIndependent R v)
     (x_ortho : ∀ (c : R) (y : Submodule.span R (Set.range v)), c • x + y = (0 : M) → c = 0) :
     LinearIndependent R (Fin.cons x v : Fin m.succ → M) := by
@@ -300,7 +300,7 @@ theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : L
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
 The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
-The version where `K` is an `R`-algebra is `linear_independent.restrict_scalars_algebras`.
+The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
  -/
 theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Function.Injective fun r : R => r • (1 : K))
@@ -373,7 +373,7 @@ theorem linear_dependent_comp_subtype' {s : Set ι} :
   by simp [linearIndependent_comp_subtype, and_left_comm]
 #align linear_dependent_comp_subtype' linear_dependent_comp_subtype'
 
-/-- A version of `linear_dependent_comp_subtype'` with `finsupp.total` unfolded. -/
+/-- A version of `linear_dependent_comp_subtype'` with `Finsupp.total` unfolded. -/
 theorem linear_dependent_comp_subtype {s : Set ι} :
     ¬LinearIndependent R (v ∘ (↑) : s → M) ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ (∑ i in f.support, f i • v i) = 0 ∧ f ≠ 0 :=
@@ -465,7 +465,7 @@ end Subtype
 
 end Module
 
-/-! ### Properties which require `ring R` -/
+/-! ### Properties which require `Ring R` -/
 
 
 section Module
@@ -542,7 +542,7 @@ theorem LinearIndependent.group_smul {G : Type _} [hG : Group G] [DistribMulActi
     erw [Pi.smul_apply, smul_assoc, smul_comm]
 #align linear_independent.group_smul LinearIndependent.group_smul
 
--- This lemma cannot be proved with `linear_independent.group_smul` since the action of
+-- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
 -- `Rˣ` on `R` is not commutative.
 theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
     LinearIndependent R (w • v) := by
@@ -787,7 +787,7 @@ theorem LinearIndependent.totalEquiv_apply_coe (hv : LinearIndependent R v) (l :
 
 Given a family of linearly independent vectors, we can represent any vector in their span as
 a linear combination of these vectors. These are provided by this linear map.
-It is simply one direction of `linear_independent.total_equiv`. -/
+It is simply one direction of `LinearIndependent.total_equiv`. -/
 def LinearIndependent.repr (hv : LinearIndependent R v) : span R (range v) →ₗ[R] ι →₀ R :=
   hv.totalEquiv.symm
 #align linear_independent.repr LinearIndependent.repr
@@ -867,7 +867,7 @@ theorem linearIndependent_iff_not_smul_mem_span :
       · simp [hl]⟩
 #align linear_independent_iff_not_smul_mem_span linearIndependent_iff_not_smul_mem_span
 
-/-- See also `complete_lattice.independent_iff_linear_independent_of_ne_zero`. -/
+/-- See also `CompleteLattice.independent_iff_linearIndependent_of_ne_zero`. -/
 theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v) :
     CompleteLattice.Independent fun i => R ∙ v i := by
   refine' CompleteLattice.independent_def.mp fun i => _
@@ -1024,18 +1024,18 @@ theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRi
   letI : MulAction L L := DistribMulAction.toMulAction;
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
   exact linearIndependent_iff'.2
-    -- To do this, we use `finset` induction,
+    -- To do this, we use `Finset` induction,
     -- Porting note: `False.elim` → `fun h => False.elim <| Finset.not_mem_empty _ h`
     fun s =>
       Finset.induction_on s
         (fun g _hg i h => False.elim <| Finset.not_mem_empty _ h) fun a s has ih g hg =>
         -- Here
-        -- * `a` is a new character we will insert into the `finset` of characters `s`,
+        -- * `a` is a new character we will insert into the `Finset` of characters `s`,
         -- * `ih` is the fact that only the trivial linear combination of characters in `s` is zero
         -- * `hg` is the fact that `g` are the coefficients of a linear combination summing to zero
         -- and it remains to prove that `g` vanishes on `insert a s`.
         -- We now make the key calculation:
-        -- For any character `i` in the original `finset`, we have `g i • i = g i • a` as functions
+        -- For any character `i` in the original `Finset`, we have `g i • i = g i • a` as functions
         -- on the monoid `G`.
         have h1 : ∀ i ∈ s, (g i • (i : G → L)) = g i • (a : G → L) := fun i his =>
           funext fun x : G =>
@@ -1152,7 +1152,7 @@ theorem linearIndependent_singleton {x : M} (hx : x ≠ 0) :
 end Nontrivial
 
 /-!
-### Properties which require `division_ring K`
+### Properties which require `DivisionRing K`
 
 These can be considered generalizations of properties of linear independence in vector spaces.
 -/
@@ -1262,7 +1262,7 @@ theorem linearIndependent_fin_snoc {n} {v : Fin n → V} :
   erw [Fin.snoc_eq_cons_rotate, linearIndependent_equiv, linearIndependent_fin_cons]
 #align linear_independent_fin_snoc linearIndependent_fin_snoc
 
-/-- See `linear_independent.fin_cons'` for an uglier version that works if you
+/-- See `LinearIndependent.fin_cons'` for an uglier version that works if you
 only have a module over a semiring. -/
 theorem LinearIndependent.fin_cons {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) :=
@@ -1316,7 +1316,7 @@ theorem exists_linearIndependent :
 
 variable {K t}
 
-/-- `linear_independent.extend` adds vectors to a linear independent set `s ⊆ t` until it spans
+/-- `LinearIndependent.extend` adds vectors to a linear independent set `s ⊆ t` until it spans
 all elements of `t`. -/
 noncomputable def LinearIndependent.extend (hs : LinearIndependent K (fun x => x : s → V))
     (hst : s ⊆ t) : Set V :=
