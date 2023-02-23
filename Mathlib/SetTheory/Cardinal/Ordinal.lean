@@ -581,12 +581,12 @@ theorem mul_aleph0_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a * ℵ₀ = a :=
   (mul_eq_max ha le_rfl).trans (max_eq_left ha)
 #align cardinal.mul_aleph_0_eq Cardinal.mul_aleph0_eq
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it
 theorem aleph0_mul_mk_eq {α : Type _} [Infinite α] : ℵ₀ * (#α) = (#α) :=
   aleph0_mul_eq (aleph0_le_mk α)
 #align cardinal.aleph_0_mul_mk_eq Cardinal.aleph0_mul_mk_eq
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it
 theorem mk_mul_aleph0_eq {α : Type _} [Infinite α] : (#α) * ℵ₀ = (#α) :=
   mul_aleph0_eq (aleph0_le_mk α)
 #align cardinal.mk_mul_aleph_0_eq Cardinal.mk_mul_aleph0_eq
@@ -822,7 +822,7 @@ theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
   add_eq_left ha (one_le_aleph0.trans ha)
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it
 theorem mk_add_one_eq {α : Type _} [Infinite α] : (#α) + 1 = (#α) :=
   add_one_eq (aleph0_le_mk α)
 #align cardinal.mk_add_one_eq Cardinal.mk_add_one_eq
@@ -903,6 +903,10 @@ theorem add_one_le_add_one_iff_of_lt_aleph_0 {α β : Cardinal} : α + 1 ≤ β 
 
 /-! ### Properties about power -/
 
+--Porting note: Annoying workaround because `c ^ n` when `n` is a `ℕ` coerces `c` for some reason.
+local infixr:0 "^'" => @HPow.hPow Cardinal Cardinal Cardinal.instPowCardinal
+-- -- mathport name: cardinal.pow.nat
+local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
 
 theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : κ ^ μ ≤ κ :=
   let ⟨n, H3⟩ := lt_aleph0.1 H2
@@ -916,7 +920,7 @@ theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : 
                 exact one_lt_aleph0)
               H1).le
           fun n ih =>
-          trans_rel_left _
+          le_of_le_of_eq
             (by
               rw [Nat.cast_succ, power_add, power_one]
               exact mul_le_mul_right' ih _)
@@ -956,11 +960,11 @@ theorem nat_power_eq {c : Cardinal.{u}} (h : ℵ₀ ≤ c) {n : ℕ} (hn : 2 ≤
   power_eq_two_power h (by assumption_mod_cast) ((nat_lt_aleph0 n).le.trans h)
 #align cardinal.nat_power_eq Cardinal.nat_power_eq
 
-theorem power_nat_le {c : Cardinal.{u}} {n : ℕ} (h : ℵ₀ ≤ c) : c ^ n ≤ c :=
+theorem power_nat_le {c : Cardinal.{u}} {n : ℕ} (h : ℵ₀ ≤ c) : c ^ℕ n ≤ c :=
   pow_le h (nat_lt_aleph0 n)
 #align cardinal.power_nat_le Cardinal.power_nat_le
 
-theorem power_nat_eq {c : Cardinal.{u}} {n : ℕ} (h1 : ℵ₀ ≤ c) (h2 : 1 ≤ n) : c ^ n = c :=
+theorem power_nat_eq {c : Cardinal.{u}} {n : ℕ} (h1 : ℵ₀ ≤ c) (h2 : 1 ≤ n) : c ^ℕ n = c :=
   pow_eq h1 (by exact_mod_cast h2) (nat_lt_aleph0 n)
 #align cardinal.power_nat_eq Cardinal.power_nat_eq
 
@@ -995,10 +999,10 @@ theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by
 theorem mk_list_eq_mk (α : Type u) [Infinite α] : (#List α) = (#α) :=
   have H1 : ℵ₀ ≤ (#α) := aleph0_le_mk α
   Eq.symm <|
-    le_antisymm ⟨⟨fun x => [x], fun x y H => (List.cons.inj H).1⟩⟩ <|
+    le_antisymm ((le_def _ _).2 ⟨⟨fun a => [a], fun _ => by simp⟩⟩)  <|
       calc
         (#List α) = sum fun n : ℕ => (#α) ^ (n : Cardinal.{u}) := mk_list_eq_sum_pow α
-        _ ≤ sum fun n : ℕ => #α := sum_le_sum _ _ fun n => pow_le H1 <| nat_lt_aleph0 n
+        _ ≤ sum fun _ : ℕ => #α := sum_le_sum _ _ fun n => pow_le H1 <| nat_lt_aleph0 n
         _ = (#α) := by simp [H1]
 
 #align cardinal.mk_list_eq_mk Cardinal.mk_list_eq_mk
@@ -1009,15 +1013,15 @@ theorem mk_list_eq_aleph0 (α : Type u) [Countable α] [Nonempty α] : (#List α
 
 theorem mk_list_eq_max_mk_aleph0 (α : Type u) [Nonempty α] : (#List α) = max (#α) ℵ₀ := by
   cases finite_or_infinite α
-  · rw [mk_list_eq_aleph_0, eq_comm, max_eq_right]
-    exact mk_le_aleph_0
+  · rw [mk_list_eq_aleph0, eq_comm, max_eq_right]
+    exact mk_le_aleph0
   · rw [mk_list_eq_mk, eq_comm, max_eq_left]
-    exact aleph_0_le_mk α
+    exact aleph0_le_mk α
 #align cardinal.mk_list_eq_max_mk_aleph_0 Cardinal.mk_list_eq_max_mk_aleph0
 
 theorem mk_list_le_max (α : Type u) : (#List α) ≤ max ℵ₀ (#α) := by
   cases finite_or_infinite α
-  · exact mk_le_aleph_0.trans (le_max_left _ _)
+  · exact mk_le_aleph0.trans (le_max_left _ _)
   · rw [mk_list_eq_mk]
     apply le_max_right
 #align cardinal.mk_list_le_max Cardinal.mk_list_le_max
@@ -1025,7 +1029,7 @@ theorem mk_list_le_max (α : Type u) : (#List α) ≤ max ℵ₀ (#α) := by
 @[simp]
 theorem mk_finset_of_infinite (α : Type u) [Infinite α] : (#Finset α) = (#α) :=
   Eq.symm <|
-    le_antisymm (mk_le_of_injective fun x y => Finset.singleton_inj.1) <|
+    le_antisymm (mk_le_of_injective fun _ _ => Finset.singleton_inj.1) <|
       calc
         (#Finset α) ≤ (#List α) := mk_le_of_surjective List.toFinset_surjective
         _ = (#α) := mk_list_eq_mk α
@@ -1040,8 +1044,8 @@ theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Z
     calc
       (#α →₀ β) ≤ (#Finset (α × β)) := mk_le_of_injective (Finsupp.graph_injective α β)
       _ = (#α × β) := mk_finset_of_infinite _
-      _ = max (lift.{v} (#α)) (lift.{u} (#β)) := by
-        rw [mk_prod, mul_eq_max_of_aleph_0_le_left] <;> simp
+      _ = max (lift.{v} (#α)) (lift.{u} (#β)) :=
+        by rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
 
   · apply max_le <;> rw [← lift_id (#α →₀ β), ← lift_umax]
     · cases' exists_ne (0 : β) with b hb
@@ -1059,9 +1063,9 @@ theorem mk_finsupp_lift_of_infinite' (α : Type u) (β : Type v) [Nonempty α] [
     (#α →₀ β) = max (lift.{v} (#α)) (lift.{u} (#β)) := by
   cases fintypeOrInfinite α
   · rw [mk_finsupp_lift_of_fintype]
-    have : ℵ₀ ≤ (#β).lift := aleph_0_le_lift.2 (aleph_0_le_mk β)
+    have : ℵ₀ ≤ (#β).lift := aleph0_le_lift.2 (aleph0_le_mk β)
     rw [max_eq_right (le_trans _ this), power_nat_eq this]
-    exacts[Fintype.card_pos, lift_le_aleph_0.2 (lt_aleph_0_of_finite _).le]
+    exacts[Fintype.card_pos, lift_le_aleph0.2 (lt_aleph0_of_finite _).le]
   · apply mk_finsupp_lift_of_infinite
 #align cardinal.mk_finsupp_lift_of_infinite' Cardinal.mk_finsupp_lift_of_infinite'
 
@@ -1091,7 +1095,7 @@ theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : (#
 
 theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal) :
     (#{ t : Set α // (#t) ≤ c }) ≤ (#α) ^ c := by
-  refine' le_trans _ (by rw [← add_one_eq (aleph_0_le_mk α)])
+  refine' le_trans _ (by rw [← add_one_eq (aleph0_le_mk α)])
   induction' c using Cardinal.inductionOn with β
   fapply mk_le_of_surjective
   · intro f
@@ -1100,7 +1104,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     apply mk_range_le
   rintro ⟨s, ⟨g⟩⟩
   use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val else Sum.inr ⟨⟩
-  apply Subtype.eq; ext
+  apply Subtype.eq; ext x
   constructor
   · rintro ⟨y, h⟩
     dsimp only at h
@@ -1125,8 +1129,8 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
 theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
     (#{ t : Set α // (#t) ≤ c }) ≤ max (#α) ℵ₀ ^ c := by
   trans #{ t : Set (Sum (ULift.{u} ℕ) α) // (#t) ≤ c }
-  · refine' ⟨embedding.subtype_map _ _⟩
-    apply embedding.image
+  · refine' ⟨Embedding.subtypeMap _ _⟩
+    apply Embedding.image
     use Sum.inr
     apply Sum.inr.inj
     intro s hs
@@ -1139,12 +1143,12 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     (#{ t : Set α // t ⊆ s ∧ (#t) ≤ c }) ≤ max (#s) ℵ₀ ^ c := by
   refine' le_trans _ (mk_bounded_set_le s c)
   refine' ⟨Embedding.codRestrict _ _ _⟩
-  use fun t => coe ⁻¹' t.1
+  use fun t => (↑) ⁻¹' t.1
   · rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.eq
     dsimp only at h⊢
     refine' (preimage_eq_preimage' _ _).1 h <;> rw [Subtype.range_coe] <;> assumption
-  rintro ⟨t, h1t, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
+  rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
 #align cardinal.mk_bounded_subset_le Cardinal.mk_bounded_subset_le
 
 /-! ### Properties of `compl` -/
@@ -1152,14 +1156,14 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
 
 theorem mk_compl_of_infinite {α : Type _} [Infinite α] (s : Set α) (h2 : (#s) < (#α)) :
     (#(sᶜ : Set α)) = (#α) := by
-  refine' eq_of_add_eq_of_aleph_0_le _ h2 (aleph_0_le_mk α)
+  refine' eq_of_add_eq_of_aleph0_le _ h2 (aleph0_le_mk α)
   exact mk_sum_compl s
 #align cardinal.mk_compl_of_infinite Cardinal.mk_compl_of_infinite
 
 theorem mk_compl_finset_of_infinite {α : Type _} [Infinite α] (s : Finset α) :
     (#(↑sᶜ : Set α)) = (#α) := by
   apply mk_compl_of_infinite
-  exact (finset_card_lt_aleph_0 s).trans_le (aleph_0_le_mk α)
+  exact (finset_card_lt_aleph0 s).trans_le (aleph0_le_mk α)
 #align cardinal.mk_compl_finset_of_infinite Cardinal.mk_compl_finset_of_infinite
 
 theorem mk_compl_eq_mk_compl_infinite {α : Type _} [Infinite α] {s t : Set α} (hs : (#s) < (#α))
@@ -1168,29 +1172,30 @@ theorem mk_compl_eq_mk_compl_infinite {α : Type _} [Infinite α] {s t : Set α}
 #align cardinal.mk_compl_eq_mk_compl_infinite Cardinal.mk_compl_eq_mk_compl_infinite
 
 theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α] {s : Set α}
-    {t : Set β} (h1 : lift.{max v w} (#α) = lift.{max u w} (#β))
-    (h2 : lift.{max v w} (#s) = lift.{max u w} (#t)) :
+    {t : Set β} (h1 : (lift.{max v w, u} (#α)) = (lift.{max u w, v} (#β)))
+    (h2 : lift.{max v w, u} (#s) = lift.{max u w, v} (#t)) :
     lift.{max v w} (#(sᶜ : Set α)) = lift.{max u w} (#(tᶜ : Set β)) := by
   cases nonempty_fintype α
-  rcases lift_mk_eq.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
+  rcases lift_mk_eq.{u, v, w}.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
   replace h1 : Fintype.card α = Fintype.card β := (Fintype.ofEquiv_card _).symm
   classical
-    lift s to Finset α using s.to_finite
-    lift t to Finset β using t.to_finite
-    simp only [Finset.coe_sort_coe, mk_coe_finset, lift_nat_cast, Nat.cast_inj] at h2
+    lift s to Finset α using s.toFinite
+    lift t to Finset β using t.toFinite
+    simp only [Finset.coe_sort_coe, mk_fintype, Fintype.card_coe, lift_natCast, Nat.cast_inj] at h2
     simp only [← Finset.coe_compl, Finset.coe_sort_coe, mk_coe_finset, Finset.card_compl,
-      lift_nat_cast, Nat.cast_inj, h1, h2]
+      lift_natCast, Nat.cast_inj, h1, h2]
 #align cardinal.mk_compl_eq_mk_compl_finite_lift Cardinal.mk_compl_eq_mk_compl_finite_lift
 
 theorem mk_compl_eq_mk_compl_finite {α β : Type u} [Finite α] {s : Set α} {t : Set β}
     (h1 : (#α) = (#β)) (h : (#s) = (#t)) : (#(sᶜ : Set α)) = (#(tᶜ : Set β)) := by
-  rw [← lift_inj]
-  apply mk_compl_eq_mk_compl_finite_lift <;> rwa [lift_inj]
+  rw [← lift_inj.{u, max u v}]
+  apply mk_compl_eq_mk_compl_finite_lift.{u, u, max u v}
+  <;> rwa [lift_inj]
 #align cardinal.mk_compl_eq_mk_compl_finite Cardinal.mk_compl_eq_mk_compl_finite
 
-theorem mk_compl_eq_mk_compl_finite_same {α : Type _} [Finite α] {s t : Set α} (h : (#s) = (#t)) :
+theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α} (h : (#s) = (#t)) :
     (#(sᶜ : Set α)) = (#(tᶜ : Set α)) :=
-  mk_compl_eq_mk_compl_finite rfl h
+  mk_compl_eq_mk_compl_finite.{u, u} rfl h
 #align cardinal.mk_compl_eq_mk_compl_finite_same Cardinal.mk_compl_eq_mk_compl_finite_same
 
 /-! ### Extending an injection to an equiv -/
@@ -1200,18 +1205,18 @@ theorem extend_function {α β : Type _} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ (range fᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   intros ; have := h; cases' this with g
   let h : α ≃ β :=
-    (set.sum_compl (s : Set α)).symm.trans
-      ((sum_congr (Equiv.ofInjective f f.2) g).trans (set.sum_compl (range f)))
-  refine' ⟨h, _⟩; rintro ⟨x, hx⟩; simp [set.sum_compl_symm_apply_of_mem, hx]
+    (Set.sumCompl (s : Set α)).symm.trans
+      ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))
+  refine' ⟨h, _⟩; rintro ⟨x, hx⟩; simp [Set.sumCompl_symm_apply_of_mem, hx]
 #align cardinal.extend_function Cardinal.extend_function
 
-theorem extend_function_finite {α β : Type _} [Finite α] {s : Set α} (f : s ↪ β)
+theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
-  apply extend_function f
+  apply extend_function.{v, u} f
   cases' id h with g
-  rw [← lift_mk_eq] at h
-  rw [← lift_mk_eq, mk_compl_eq_mk_compl_finite_lift h]
-  rw [mk_range_eq_lift]; exact f.2
+  rw [← lift_mk_eq.{u, v, max u v}] at h
+  rw [← lift_mk_eq.{u, v, max u v}, mk_compl_eq_mk_compl_finite_lift.{u, v, max u v} h]
+  rw [mk_range_eq_lift.{u, v, max u v}]; exact f.2
 #align cardinal.extend_function_finite Cardinal.extend_function_finite
 
 theorem extend_function_of_lt {α β : Type _} {s : Set α} (f : s ↪ β) (hs : (#s) < (#α))
@@ -1226,227 +1231,229 @@ theorem extend_function_of_lt {α β : Type _} {s : Set α} (f : s ↪ β) (hs :
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]
 #align cardinal.extend_function_of_lt Cardinal.extend_function_of_lt
 
-section Bit
 
-/-!
-This section proves inequalities for `bit0` and `bit1`, enabling `simp` to solve inequalities
-for numeral cardinals. The complexity of the resulting algorithm is not good, as in some cases
-`simp` reduces an inequality to a disjunction of two situations, depending on whether a cardinal
-is finite or infinite. Since the evaluation of the branches is not lazy, this is bad. It is good
-enough for practical situations, though.
+--Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
+-- section Bit
 
-For specific numbers, these inequalities could also be deduced from the corresponding
-inequalities of natural numbers using `norm_cast`:
-```
-example : (37 : cardinal) < 42 :=
-by { norm_cast, norm_num }
-```
--/
+-- /-!
+-- This section proves inequalities for `bit0` and `bit1`, enabling `simp` to solve inequalities
+-- for numeral cardinals. The complexity of the resulting algorithm is not good, as in some cases
+-- `simp` reduces an inequality to a disjunction of two situations, depending on whether a cardinal
+-- is finite or infinite. Since the evaluation of the branches is not lazy, this is bad. It is good
+-- enough for practical situations, though.
+
+-- For specific numbers, these inequalities could also be deduced from the corresponding
+-- inequalities of natural numbers using `norm_cast`:
+-- ```
+-- example : (37 : cardinal) < 42 :=
+-- by { norm_cast, norm_num }
+-- ```
+-- -/
 
 
-theorem bit0_ne_zero (a : Cardinal) : ¬bit0 a = 0 ↔ ¬a = 0 := by simp [bit0]
-#align cardinal.bit0_ne_zero Cardinal.bit0_ne_zero
+-- theorem bit0_ne_zero (a : Cardinal) : ¬bit0 a = 0 ↔ ¬a = 0 := by simp [bit0]
+-- #align cardinal.bit0_ne_zero Cardinal.bit0_ne_zero
 
-@[simp]
-theorem bit1_ne_zero (a : Cardinal) : ¬bit1 a = 0 := by simp [bit1]
-#align cardinal.bit1_ne_zero Cardinal.bit1_ne_zero
+-- @[simp]
+-- theorem bit1_ne_zero (a : Cardinal) : ¬bit1 a = 0 := by simp [bit1]
+-- #align cardinal.bit1_ne_zero Cardinal.bit1_ne_zero
 
-@[simp]
-theorem zero_lt_bit0 (a : Cardinal) : 0 < bit0 a ↔ 0 < a := by
-  rw [← not_iff_not]
-  simp [bit0]
-#align cardinal.zero_lt_bit0 Cardinal.zero_lt_bit0
+-- @[simp]
+-- theorem zero_lt_bit0 (a : Cardinal) : 0 < bit0 a ↔ 0 < a := by
+--   rw [← not_iff_not]
+--   simp [bit0]
+-- #align cardinal.zero_lt_bit0 Cardinal.zero_lt_bit0
 
-@[simp]
-theorem zero_lt_bit1 (a : Cardinal) : 0 < bit1 a :=
-  zero_lt_one.trans_le (self_le_add_left _ _)
-#align cardinal.zero_lt_bit1 Cardinal.zero_lt_bit1
+-- @[simp]
+-- theorem zero_lt_bit1 (a : Cardinal) : 0 < bit1 a :=
+--   zero_lt_one.trans_le (self_le_add_left _ _)
+-- #align cardinal.zero_lt_bit1 Cardinal.zero_lt_bit1
 
-@[simp]
-theorem one_le_bit0 (a : Cardinal) : 1 ≤ bit0 a ↔ 0 < a :=
-  ⟨fun h => (zero_lt_bit0 a).mp (zero_lt_one.trans_le h), fun h =>
-    (one_le_iff_pos.mpr h).trans (self_le_add_left a a)⟩
-#align cardinal.one_le_bit0 Cardinal.one_le_bit0
+-- @[simp]
+-- theorem one_le_bit0 (a : Cardinal) : 1 ≤ bit0 a ↔ 0 < a :=
+--   ⟨fun h => (zero_lt_bit0 a).mp (zero_lt_one.trans_le h), fun h =>
+--     (one_le_iff_pos.mpr h).trans (self_le_add_left a a)⟩
+-- #align cardinal.one_le_bit0 Cardinal.one_le_bit0
 
-@[simp]
-theorem one_le_bit1 (a : Cardinal) : 1 ≤ bit1 a :=
-  self_le_add_left _ _
-#align cardinal.one_le_bit1 Cardinal.one_le_bit1
+-- @[simp]
+-- theorem one_le_bit1 (a : Cardinal) : 1 ≤ bit1 a :=
+--   self_le_add_left _ _
+-- #align cardinal.one_le_bit1 Cardinal.one_le_bit1
 
-theorem bit0_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : bit0 c = c :=
-  add_eq_self h
-#align cardinal.bit0_eq_self Cardinal.bit0_eq_self
+-- theorem bit0_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : bit0 c = c :=
+--   add_eq_self h
+-- #align cardinal.bit0_eq_self Cardinal.bit0_eq_self
 
-@[simp]
-theorem bit0_lt_aleph0 {c : Cardinal} : bit0 c < ℵ₀ ↔ c < ℵ₀ := by simp [bit0, add_lt_aleph_0_iff]
-#align cardinal.bit0_lt_aleph_0 Cardinal.bit0_lt_aleph0
+-- @[simp]
+-- theorem bit0_lt_aleph0 {c : Cardinal} : bit0 c < ℵ₀ ↔ c < ℵ₀ := by simp [bit0, add_lt_aleph_0_iff]
+-- #align cardinal.bit0_lt_aleph_0 Cardinal.bit0_lt_aleph0
 
-@[simp]
-theorem aleph0_le_bit0 {c : Cardinal} : ℵ₀ ≤ bit0 c ↔ ℵ₀ ≤ c := by
-  rw [← not_iff_not]
-  simp
-#align cardinal.aleph_0_le_bit0 Cardinal.aleph0_le_bit0
+-- @[simp]
+-- theorem aleph0_le_bit0 {c : Cardinal} : ℵ₀ ≤ bit0 c ↔ ℵ₀ ≤ c := by
+--   rw [← not_iff_not]
+--   simp
+-- #align cardinal.aleph_0_le_bit0 Cardinal.aleph0_le_bit0
 
-@[simp]
-theorem bit1_eq_self_iff {c : Cardinal} : bit1 c = c ↔ ℵ₀ ≤ c := by
-  by_cases h : ℵ₀ ≤ c
-  · simp only [bit1, bit0_eq_self h, h, eq_self_iff_true, add_one_of_aleph_0_le]
-  · refine' iff_of_false (ne_of_gt _) h
-    rcases lt_aleph_0.1 (not_le.1 h) with ⟨n, rfl⟩
-    norm_cast
-    dsimp [bit1, bit0]
-    linarith
-#align cardinal.bit1_eq_self_iff Cardinal.bit1_eq_self_iff
+-- @[simp]
+-- theorem bit1_eq_self_iff {c : Cardinal} : bit1 c = c ↔ ℵ₀ ≤ c := by
+--   by_cases h : ℵ₀ ≤ c
+--   · simp only [bit1, bit0_eq_self h, h, eq_self_iff_true, add_one_of_aleph_0_le]
+--   · refine' iff_of_false (ne_of_gt _) h
+--     rcases lt_aleph_0.1 (not_le.1 h) with ⟨n, rfl⟩
+--     norm_cast
+--     dsimp [bit1, bit0]
+--     linarith
+-- #align cardinal.bit1_eq_self_iff Cardinal.bit1_eq_self_iff
 
-@[simp]
-theorem bit1_lt_aleph0 {c : Cardinal} : bit1 c < ℵ₀ ↔ c < ℵ₀ := by
-  simp [bit1, bit0, add_lt_aleph_0_iff, one_lt_aleph_0]
-#align cardinal.bit1_lt_aleph_0 Cardinal.bit1_lt_aleph0
+-- @[simp]
+-- theorem bit1_lt_aleph0 {c : Cardinal} : bit1 c < ℵ₀ ↔ c < ℵ₀ := by
+--   simp [bit1, bit0, add_lt_aleph_0_iff, one_lt_aleph_0]
+-- #align cardinal.bit1_lt_aleph_0 Cardinal.bit1_lt_aleph0
 
-@[simp]
-theorem aleph0_le_bit1 {c : Cardinal} : ℵ₀ ≤ bit1 c ↔ ℵ₀ ≤ c := by
-  rw [← not_iff_not]
-  simp
-#align cardinal.aleph_0_le_bit1 Cardinal.aleph0_le_bit1
+-- @[simp]
+-- theorem aleph0_le_bit1 {c : Cardinal} : ℵ₀ ≤ bit1 c ↔ ℵ₀ ≤ c := by
+--   rw [← not_iff_not]
+--   simp
+-- #align cardinal.aleph_0_le_bit1 Cardinal.aleph0_le_bit1
 
-@[simp]
-theorem bit0_le_bit0 {a b : Cardinal} : bit0 a ≤ bit0 b ↔ a ≤ b := by
-  cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
-  · rw [bit0_eq_self ha, bit0_eq_self hb]
-  · rw [bit0_eq_self ha]
-    refine' iff_of_false (fun h => _) (hb.trans_le ha).not_le
-    have A : bit0 b < ℵ₀ := by simpa using hb
-    exact lt_irrefl _ ((A.trans_le ha).trans_le h)
-  · rw [bit0_eq_self hb]
-    exact iff_of_true ((bit0_lt_aleph_0.2 ha).le.trans hb) (ha.le.trans hb)
-  · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
-    rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
-    norm_cast
-    exact bit0_le_bit0
-#align cardinal.bit0_le_bit0 Cardinal.bit0_le_bit0
+-- @[simp]
+-- theorem bit0_le_bit0 {a b : Cardinal} : bit0 a ≤ bit0 b ↔ a ≤ b := by
+--   cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
+--   · rw [bit0_eq_self ha, bit0_eq_self hb]
+--   · rw [bit0_eq_self ha]
+--     refine' iff_of_false (fun h => _) (hb.trans_le ha).not_le
+--     have A : bit0 b < ℵ₀ := by simpa using hb
+--     exact lt_irrefl _ ((A.trans_le ha).trans_le h)
+--   · rw [bit0_eq_self hb]
+--     exact iff_of_true ((bit0_lt_aleph_0.2 ha).le.trans hb) (ha.le.trans hb)
+--   · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
+--     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
+--     norm_cast
+--     exact bit0_le_bit0
+-- #align cardinal.bit0_le_bit0 Cardinal.bit0_le_bit0
 
-@[simp]
-theorem bit0_le_bit1 {a b : Cardinal} : bit0 a ≤ bit1 b ↔ a ≤ b := by
-  cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
-  · rw [bit0_eq_self ha, bit1_eq_self_iff.2 hb]
-  · rw [bit0_eq_self ha]
-    refine' iff_of_false (fun h => _) (hb.trans_le ha).not_le
-    have A : bit1 b < ℵ₀ := by simpa using hb
-    exact lt_irrefl _ ((A.trans_le ha).trans_le h)
-  · rw [bit1_eq_self_iff.2 hb]
-    exact iff_of_true ((bit0_lt_aleph_0.2 ha).le.trans hb) (ha.le.trans hb)
-  · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
-    rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
-    norm_cast
-    exact Nat.bit0_le_bit1_iff
-#align cardinal.bit0_le_bit1 Cardinal.bit0_le_bit1
+-- @[simp]
+-- theorem bit0_le_bit1 {a b : Cardinal} : bit0 a ≤ bit1 b ↔ a ≤ b := by
+--   cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
+--   · rw [bit0_eq_self ha, bit1_eq_self_iff.2 hb]
+--   · rw [bit0_eq_self ha]
+--     refine' iff_of_false (fun h => _) (hb.trans_le ha).not_le
+--     have A : bit1 b < ℵ₀ := by simpa using hb
+--     exact lt_irrefl _ ((A.trans_le ha).trans_le h)
+--   · rw [bit1_eq_self_iff.2 hb]
+--     exact iff_of_true ((bit0_lt_aleph_0.2 ha).le.trans hb) (ha.le.trans hb)
+--   · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
+--     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
+--     norm_cast
+--     exact Nat.bit0_le_bit1_iff
+-- #align cardinal.bit0_le_bit1 Cardinal.bit0_le_bit1
 
-@[simp]
-theorem bit1_le_bit1 {a b : Cardinal} : bit1 a ≤ bit1 b ↔ a ≤ b :=
-  ⟨fun h => bit0_le_bit1.1 ((self_le_add_right (bit0 a) 1).trans h), fun h =>
-    (add_le_add_right (add_le_add_left h a) 1).trans (add_le_add_right (add_le_add_right h b) 1)⟩
-#align cardinal.bit1_le_bit1 Cardinal.bit1_le_bit1
+-- @[simp]
+-- theorem bit1_le_bit1 {a b : Cardinal} : bit1 a ≤ bit1 b ↔ a ≤ b :=
+--   ⟨fun h => bit0_le_bit1.1 ((self_le_add_right (bit0 a) 1).trans h), fun h =>
+--     (add_le_add_right (add_le_add_left h a) 1).trans (add_le_add_right (add_le_add_right h b) 1)⟩
+-- #align cardinal.bit1_le_bit1 Cardinal.bit1_le_bit1
 
-@[simp]
-theorem bit1_le_bit0 {a b : Cardinal} : bit1 a ≤ bit0 b ↔ a < b ∨ a ≤ b ∧ ℵ₀ ≤ a := by
-  cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
-  · simp only [bit1_eq_self_iff.mpr ha, bit0_eq_self hb, ha, and_true_iff]
-    refine' ⟨fun h => Or.inr h, fun h => _⟩
-    cases h
-    · exact le_of_lt h
-    · exact h
-  · rw [bit1_eq_self_iff.2 ha]
-    refine' iff_of_false (fun h => _) fun h => _
-    · have A : bit0 b < ℵ₀ := by simpa using hb
-      exact lt_irrefl _ ((A.trans_le ha).trans_le h)
-    · exact not_le_of_lt (hb.trans_le ha) (h.elim le_of_lt And.left)
-  · rw [bit0_eq_self hb]
-    exact iff_of_true ((bit1_lt_aleph_0.2 ha).le.trans hb) (Or.inl <| ha.trans_le hb)
-  · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
-    rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
-    norm_cast
-    simp [not_le.mpr ha]
-#align cardinal.bit1_le_bit0 Cardinal.bit1_le_bit0
+-- @[simp]
+-- theorem bit1_le_bit0 {a b : Cardinal} : bit1 a ≤ bit0 b ↔ a < b ∨ a ≤ b ∧ ℵ₀ ≤ a := by
+--   cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
+--   · simp only [bit1_eq_self_iff.mpr ha, bit0_eq_self hb, ha, and_true_iff]
+--     refine' ⟨fun h => Or.inr h, fun h => _⟩
+--     cases h
+--     · exact le_of_lt h
+--     · exact h
+--   · rw [bit1_eq_self_iff.2 ha]
+--     refine' iff_of_false (fun h => _) fun h => _
+--     · have A : bit0 b < ℵ₀ := by simpa using hb
+--       exact lt_irrefl _ ((A.trans_le ha).trans_le h)
+--     · exact not_le_of_lt (hb.trans_le ha) (h.elim le_of_lt And.left)
+--   · rw [bit0_eq_self hb]
+--     exact iff_of_true ((bit1_lt_aleph_0.2 ha).le.trans hb) (Or.inl <| ha.trans_le hb)
+--   · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
+--     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
+--     norm_cast
+--     simp [not_le.mpr ha]
+-- #align cardinal.bit1_le_bit0 Cardinal.bit1_le_bit0
 
-@[simp]
-theorem bit0_lt_bit0 {a b : Cardinal} : bit0 a < bit0 b ↔ a < b := by
-  cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
-  · rw [bit0_eq_self ha, bit0_eq_self hb]
-  · rw [bit0_eq_self ha]
-    refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
-    have A : bit0 b < ℵ₀ := by simpa using hb
-    exact lt_irrefl _ ((A.trans_le ha).trans h)
-  · rw [bit0_eq_self hb]
-    exact iff_of_true ((bit0_lt_aleph_0.2 ha).trans_le hb) (ha.trans_le hb)
-  · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
-    rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
-    norm_cast
-    exact bit0_lt_bit0
-#align cardinal.bit0_lt_bit0 Cardinal.bit0_lt_bit0
+-- @[simp]
+-- theorem bit0_lt_bit0 {a b : Cardinal} : bit0 a < bit0 b ↔ a < b := by
+--   cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
+--   · rw [bit0_eq_self ha, bit0_eq_self hb]
+--   · rw [bit0_eq_self ha]
+--     refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
+--     have A : bit0 b < ℵ₀ := by simpa using hb
+--     exact lt_irrefl _ ((A.trans_le ha).trans h)
+--   · rw [bit0_eq_self hb]
+--     exact iff_of_true ((bit0_lt_aleph_0.2 ha).trans_le hb) (ha.trans_le hb)
+--   · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
+--     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
+--     norm_cast
+--     exact bit0_lt_bit0
+-- #align cardinal.bit0_lt_bit0 Cardinal.bit0_lt_bit0
 
-@[simp]
-theorem bit1_lt_bit0 {a b : Cardinal} : bit1 a < bit0 b ↔ a < b := by
-  cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
-  · rw [bit1_eq_self_iff.2 ha, bit0_eq_self hb]
-  · rw [bit1_eq_self_iff.2 ha]
-    refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
-    have A : bit0 b < ℵ₀ := by simpa using hb
-    exact lt_irrefl _ ((A.trans_le ha).trans h)
-  · rw [bit0_eq_self hb]
-    exact iff_of_true ((bit1_lt_aleph_0.2 ha).trans_le hb) (ha.trans_le hb)
-  · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
-    rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
-    norm_cast
-    exact Nat.bit1_lt_bit0_iff
-#align cardinal.bit1_lt_bit0 Cardinal.bit1_lt_bit0
+-- @[simp]
+-- theorem bit1_lt_bit0 {a b : Cardinal} : bit1 a < bit0 b ↔ a < b := by
+--   cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
+--   · rw [bit1_eq_self_iff.2 ha, bit0_eq_self hb]
+--   · rw [bit1_eq_self_iff.2 ha]
+--     refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
+--     have A : bit0 b < ℵ₀ := by simpa using hb
+--     exact lt_irrefl _ ((A.trans_le ha).trans h)
+--   · rw [bit0_eq_self hb]
+--     exact iff_of_true ((bit1_lt_aleph_0.2 ha).trans_le hb) (ha.trans_le hb)
+--   · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
+--     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
+--     norm_cast
+--     exact Nat.bit1_lt_bit0_iff
+-- #align cardinal.bit1_lt_bit0 Cardinal.bit1_lt_bit0
 
-@[simp]
-theorem bit1_lt_bit1 {a b : Cardinal} : bit1 a < bit1 b ↔ a < b := by
-  cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
-  · rw [bit1_eq_self_iff.2 ha, bit1_eq_self_iff.2 hb]
-  · rw [bit1_eq_self_iff.2 ha]
-    refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
-    have A : bit1 b < ℵ₀ := by simpa using hb
-    exact lt_irrefl _ ((A.trans_le ha).trans h)
-  · rw [bit1_eq_self_iff.2 hb]
-    exact iff_of_true ((bit1_lt_aleph_0.2 ha).trans_le hb) (ha.trans_le hb)
-  · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
-    rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
-    norm_cast
-    exact bit1_lt_bit1
-#align cardinal.bit1_lt_bit1 Cardinal.bit1_lt_bit1
+-- @[simp]
+-- theorem bit1_lt_bit1 {a b : Cardinal} : bit1 a < bit1 b ↔ a < b := by
+--   cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
+--   · rw [bit1_eq_self_iff.2 ha, bit1_eq_self_iff.2 hb]
+--   · rw [bit1_eq_self_iff.2 ha]
+--     refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
+--     have A : bit1 b < ℵ₀ := by simpa using hb
+--     exact lt_irrefl _ ((A.trans_le ha).trans h)
+--   · rw [bit1_eq_self_iff.2 hb]
+--     exact iff_of_true ((bit1_lt_aleph_0.2 ha).trans_le hb) (ha.trans_le hb)
+--   · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
+--     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
+--     norm_cast
+--     exact bit1_lt_bit1
+-- #align cardinal.bit1_lt_bit1 Cardinal.bit1_lt_bit1
 
-@[simp]
-theorem bit0_lt_bit1 {a b : Cardinal} : bit0 a < bit1 b ↔ a < b ∨ a ≤ b ∧ a < ℵ₀ := by
-  cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
-  · simp [bit0_eq_self ha, bit1_eq_self_iff.2 hb, not_lt.mpr ha]
-  · rw [bit0_eq_self ha]
-    refine' iff_of_false (fun h => _) fun h => _
-    · have A : bit1 b < ℵ₀ := by simpa using hb
-      exact lt_irrefl _ ((A.trans_le ha).trans h)
-    · exact (hb.trans_le ha).not_le (h.elim le_of_lt And.left)
-  · rw [bit1_eq_self_iff.2 hb]
-    exact iff_of_true ((bit0_lt_aleph_0.2 ha).trans_le hb) (Or.inl <| ha.trans_le hb)
-  · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
-    rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
-    norm_cast
-    simp only [ha, and_true_iff, Nat.bit0_lt_bit1_iff, or_iff_right_of_imp le_of_lt]
-#align cardinal.bit0_lt_bit1 Cardinal.bit0_lt_bit1
+-- @[simp]
+-- theorem bit0_lt_bit1 {a b : Cardinal} : bit0 a < bit1 b ↔ a < b ∨ a ≤ b ∧ a < ℵ₀ := by
+--   cases' le_or_lt ℵ₀ a with ha ha <;> cases' le_or_lt ℵ₀ b with hb hb
+--   · simp [bit0_eq_self ha, bit1_eq_self_iff.2 hb, not_lt.mpr ha]
+--   · rw [bit0_eq_self ha]
+--     refine' iff_of_false (fun h => _) fun h => _
+--     · have A : bit1 b < ℵ₀ := by simpa using hb
+--       exact lt_irrefl _ ((A.trans_le ha).trans h)
+--     · exact (hb.trans_le ha).not_le (h.elim le_of_lt And.left)
+--   · rw [bit1_eq_self_iff.2 hb]
+--     exact iff_of_true ((bit0_lt_aleph_0.2 ha).trans_le hb) (Or.inl <| ha.trans_le hb)
+--   · rcases lt_aleph_0.1 ha with ⟨m, rfl⟩
+--     rcases lt_aleph_0.1 hb with ⟨n, rfl⟩
+--     norm_cast
+--     simp only [ha, and_true_iff, Nat.bit0_lt_bit1_iff, or_iff_right_of_imp le_of_lt]
+-- #align cardinal.bit0_lt_bit1 Cardinal.bit0_lt_bit1
 
-theorem one_lt_two : (1 : Cardinal) < 2 := by
-  -- This strategy works generally to prove inequalities between numerals in `cardinality`.
-  norm_cast
-  norm_num
-#align cardinal.one_lt_two Cardinal.one_lt_two
+-- theorem one_lt_two : (1 : Cardinal) < 2 := by
+--   -- This strategy works generally to prove inequalities between numerals in `cardinality`.
+--   norm_cast
+--   norm_num
+-- #align cardinal.one_lt_two Cardinal.one_lt_two
 
-@[simp]
-theorem one_lt_bit0 {a : Cardinal} : 1 < bit0 a ↔ 0 < a := by simp [← bit1_zero]
-#align cardinal.one_lt_bit0 Cardinal.one_lt_bit0
+-- @[simp]
+-- theorem one_lt_bit0 {a : Cardinal} : 1 < bit0 a ↔ 0 < a := by simp [← bit1_zero]
+-- #align cardinal.one_lt_bit0 Cardinal.one_lt_bit0
 
-@[simp]
-theorem one_lt_bit1 (a : Cardinal) : 1 < bit1 a ↔ 0 < a := by simp [← bit1_zero]
-#align cardinal.one_lt_bit1 Cardinal.one_lt_bit1
+-- @[simp]
+-- theorem one_lt_bit1 (a : Cardinal) : 1 < bit1 a ↔ 0 < a := by simp [← bit1_zero]
+-- #align cardinal.one_lt_bit1 Cardinal.one_lt_bit1
 
-end Bit
+-- end Bit
 
 end Cardinal
