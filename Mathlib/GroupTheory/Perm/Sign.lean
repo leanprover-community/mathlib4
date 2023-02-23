@@ -487,8 +487,8 @@ theorem signAux_eq_signAux2 {n : ℕ} :
     by_cases hfx : x = f x
     · rw [if_pos hfx]
       exact
-        sign_aux_eq_sign_aux2 l f _ fun y (hy : f y ≠ y) =>
-          List.mem_of_ne_of_mem (fun h : y = x => by simpa [h, hfx.symm] using hy) (h y hy)
+        signAux_eq_signAux2 l f _ fun y (hy : f y ≠ y) =>
+          List.mem_of_ne_of_mem (fun h : y = x => by simp [h, hfx.symm] at hy) (h y hy)
     · have hy : ∀ y : α, (swap x (f x) * f) y ≠ y → y ∈ l := fun y hy =>
         have : f y ≠ y ∧ y ≠ x := ne_and_ne_of_swap_mul_apply_ne_self hy
         List.mem_of_ne_of_mem this.2 (h _ this.1)
@@ -507,8 +507,8 @@ def signAux3 [Fintype α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) →
   Quotient.hrecOn s (fun l h => signAux2 l f)
     (Trunc.induction_on (Fintype.truncEquivFin α) fun e l₁ l₂ h =>
       Function.hfunext (show (∀ x, x ∈ l₁) = ∀ x, x ∈ l₂ by simp only [h.mem_iff]) fun h₁ h₂ _ => by
-        rw [← signAux_eq_signAux2 _ _ e fun _ _ => h₁ _, ←
-          sign_aux_eq_sign_aux2 _ _ e fun _ _ => h₂ _])
+        rw [← signAux_eq_signAux2 _ _ e fun _ _ => h₁ _,
+            ← signAux_eq_signAux2 _ _ e fun _ _ => h₂ _])
 #align equiv.perm.sign_aux3 Equiv.Perm.signAux3
 
 theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
