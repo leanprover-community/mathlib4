@@ -12,6 +12,7 @@ import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Int.Order.Units
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Sign of a permutation
@@ -49,7 +50,7 @@ def modSwap [DecidableEq α] (i j : α) : Setoid (Perm α) :=
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
     fun {σ τ υ} hστ hτυ => by
     cases' hστ with hστ hστ <;> cases' hτυ with hτυ hτυ <;> try rw [hστ, hτυ, swap_mul_self_mul] <;>
-    simp [hστ, hτυ]
+    simp [hστ, hτυ] -- porting note: should close goals, but doesn't
     . simp [hστ, hτυ]
     . simp [hστ, hτυ]
     . simp [hστ, hτυ]⟩
@@ -346,7 +347,10 @@ theorem signBijAux_inj {n : ℕ} {f : Perm (Fin n)} :
   rw [mem_finPairsLT] at *
   have : ¬b₁ < b₂ := hb.le.not_lt
   split_ifs at h <;>
-    simp_all [(Equiv.injective f).eq_iff, eq_self_iff_true, and_self_iff, heq_iff_eq]
+    simp_all [(Equiv.injective f).eq_iff, eq_self_iff_true, and_self_iff, heq_iff_eq] <;>
+  try tauto -- porting note: `<;>` doesn't work here?
+  . exact absurd this (not_le.mpr ha)
+  . exact absurd this (not_le.mpr ha)
 #align equiv.perm.sign_bij_aux_inj Equiv.Perm.signBijAux_inj
 
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
