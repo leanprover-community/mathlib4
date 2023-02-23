@@ -671,7 +671,6 @@ theorem nat_mul : Primrec₂ ((· * ·) : ℕ → ℕ → ℕ) :=
   Primrec₂.unpaired'.1 Nat.Primrec.mul
 #align primrec.nat_mul Primrec.nat_mul
 
--- porting note: rename to `bite` or `bif`?
 theorem cond {c : α → Bool} {f : α → σ} {g : α → σ} (hc : Primrec c) (hf : Primrec f)
     (hg : Primrec g) : Primrec fun a => bif (c a) then (f a) else (g a) :=
   (nat_cases (encode_iff.2 hc) hg (hf.comp fst).to₂).of_eq fun a => by cases c a <;> rfl
@@ -830,8 +829,7 @@ theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
 
 -- porting note: These are new lemmas
 -- I added it because it actually simplified the proofs
--- and because it would be a nightmare to debug the errors that occured
--- in the monstrosity that was the original proof
+-- and because I couldn't understand the original proof
 /-- A function is `PrimrecBounded` if its size is bounded by a primitive recursive function -/
 def PrimrecBounded (f : α → β) : Prop :=
   ∃ g : α → ℕ, Primrec g ∧ ∀ x, encode (f x) ≤ g x
@@ -953,8 +951,6 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
   · rfl
   simp
   cases' l with b l <;> simp [IH]
--- porting note: private lemma
---#align list_foldl' list_foldl'
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
