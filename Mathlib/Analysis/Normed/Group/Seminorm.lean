@@ -449,7 +449,7 @@ namespace AddGroupSeminorm
 
 variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (p : AddGroupSeminorm E)
 
-instance [DecidableEq E] : One (AddGroupSeminorm E) :=
+instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else 1
       map_zero' := if_pos rfl
       add_le' := fun x y => by
@@ -490,8 +490,8 @@ theorem smul_apply (r : R) (p : AddGroupSeminorm E) (x : E) : (r • p) x = r �
   rfl
 #align add_group_seminorm.smul_apply AddGroupSeminorm.smul_apply
 
-instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
-    IsScalarTower R R' (AddGroupSeminorm E) :=
+instance isScalarTower [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R']
+    [IsScalarTower R R' ℝ] : IsScalarTower R R' (AddGroupSeminorm E) :=
   ⟨fun r a p => ext fun x => smul_assoc r a (p x)⟩
 
 theorem smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
@@ -626,19 +626,6 @@ namespace GroupSeminorm
 
 variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
--- porting note: added manually because of problems with `to_additive`
-instance _root_.AddGroupSeminorm.toOne [DecidableEq E] [AddGroup E] : One (AddGroupSeminorm E) :=
-  ⟨{  toFun := fun x => if x = 0 then 0 else 1
-      map_zero' := if_pos rfl
-      add_le' := fun x y => by
-        by_cases hx : x = 0
-        · simp only
-          rw [if_pos hx, hx, zero_add, zero_add]
-        · simp only
-          rw [if_neg hx]
-          refine' le_add_of_le_of_nonneg _ _ <;> split_ifs <;> norm_num
-      neg' := fun x => by simp_rw [neg_eq_zero] }⟩
-
 @[to_additive AddGroupSeminorm.toOne]
 instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 1 then 0 else 1
@@ -672,12 +659,6 @@ instance : SMul R (GroupSeminorm E) :=
           (mul_le_mul_of_nonneg_left (map_mul_le_add p _ _) <| NNReal.coe_nonneg _).trans_eq
             (mul_add _ _ _)
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
-
--- porting note: `to_additive` tried to change `SMul` to `VAdd` so we add this manually
-instance _root_.AddGroupSeminorm.isScalarTower [AddGroup E] [SMul R' ℝ] [SMul R' ℝ≥0]
-    [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
-    IsScalarTower R R' (AddGroupSeminorm E) :=
-  ⟨fun r a p => AddGroupSeminorm.ext fun x => smul_assoc r a <| p x⟩
 
 @[to_additive AddGroupSeminorm.isScalarTower]
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
