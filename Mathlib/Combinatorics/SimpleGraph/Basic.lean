@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 
 ! This file was ported from Lean 3 source module combinatorics.simple_graph.basic
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit db53863fb135228820ee0b08e8dce9349a3d911b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1769,6 +1769,35 @@ theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f 
 #align simple_graph.embedding.coe_comp SimpleGraph.Embedding.coe_comp
 
 end Embedding
+
+section InduceHom
+
+variable {G G'} {G'' : SimpleGraph X} {s : Set V} {t : Set W} {r : Set X}
+         (φ : G →g G') (φst : Set.MapsTo φ s t) (ψ : G' →g G'') (ψtr : Set.MapsTo ψ t r)
+
+/-- The restriction of a morphism of graphs to induced subgraphs. -/
+def InduceHom : G.induce s →g G'.induce t where
+  toFun := Set.MapsTo.restrict φ s t φst
+  map_rel' := φ.map_rel'
+#align simple_graph.induce_hom SimpleGraph.InduceHom
+
+@[simp, norm_cast] lemma coe_induceHom : ⇑(InduceHom φ φst) = Set.MapsTo.restrict φ s t φst :=
+  rfl
+#align simple_graph.coe_induce_hom SimpleGraph.coe_induceHom
+
+@[simp] lemma induceHom_id (G : SimpleGraph V) (s) :
+    InduceHom (Hom.id : G →g G) (Set.mapsTo_id s) = Hom.id := by
+  ext x
+  rfl
+#align simple_graph.induce_hom_id SimpleGraph.induceHom_id
+
+@[simp] lemma induceHom_comp :
+    (InduceHom ψ ψtr).comp (InduceHom φ φst) = InduceHom (ψ.comp φ) (ψtr.comp φst) := by
+  ext x
+  rfl
+#align simple_graph.induce_hom_comp SimpleGraph.induceHom_comp
+
+end InduceHom
 
 namespace Iso
 
