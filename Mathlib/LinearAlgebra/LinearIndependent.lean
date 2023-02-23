@@ -1298,9 +1298,9 @@ theorem linearIndependent_fin2 {f : Fin 2 → V} :
 #align linear_independent_fin2 linearIndependent_fin2
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr ⊆ » t) -/
-theorem exists_linearIndependent_extension (hs : LinearIndependent K (coe : s → V)) (hst : s ⊆ t) :
-    ∃ (b : _)(_ : b ⊆ t), s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K (coe : b → V) := by
-  rcases zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K (coe : b → V) } _ _ ⟨hst, hs⟩ with
+theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
+    ∃ (b : _)(_ : b ⊆ t), s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
+  rcases zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } _ _ ⟨hst, hs⟩ with
     ⟨b, ⟨bt, bi⟩, sb, h⟩
   · refine' ⟨b, bt, sb, fun x xt => _, bi⟩
     by_contra hn
@@ -1317,7 +1317,7 @@ variable (K t)
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr ⊆ » t) -/
 theorem exists_linearIndependent :
-    ∃ (b : _)(_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K (coe : b → V) := by
+    ∃ (b : _)(_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
   obtain ⟨b, hb₁, -, hb₂, hb₃⟩ :=
     exists_linearIndependent_extension (linearIndependent_empty K V) (Set.empty_subset t)
   exact ⟨b, hb₁, (span_eq_of_le _ hb₂ (Submodule.span_mono hb₁)).symm, hb₃⟩
@@ -1351,23 +1351,23 @@ theorem LinearIndependent.subset_span_extend (hs : LinearIndependent K (fun x =>
 #align linear_independent.subset_span_extend LinearIndependent.subset_span_extend
 
 theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fun x => x : s → V))
-    (hst : s ⊆ t) : LinearIndependent K (coe : hs.extend hst → V) :=
+    (hst : s ⊆ t) : LinearIndependent K ((↑) : hs.extend hst → V) :=
   let ⟨hbt, hsb, htb, hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
   hli
 #align linear_independent.linear_independent_extend LinearIndependent.linearIndependent_extend
 
-variable {K V}
+-- variable {K V} -- Porting note: Redundant binder annotation update.
 
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
     (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ (span K ↑t : Submodule K V)) :
     ∃ t' : Finset V, ↑t' ⊆ s ∪ ↑t ∧ s ⊆ ↑t' ∧ t'.card = t.card := by
   have :
-    ∀ t,
+    ∀ t : Finset V,
       ∀ s' : Finset V,
         ↑s' ⊆ s →
           s ∩ ↑t = ∅ →
-            s ⊆ (span K ↑(s' ∪ t) : Submodule K V) →
+            s ⊆ (span K (s' ∪ t) : Submodule K V) →
               ∃ t' : Finset V, ↑t' ⊆ s ∪ ↑t ∧ s ⊆ ↑t' ∧ t'.card = (s' ∪ t).card :=
     fun t =>
     Finset.induction_on t
@@ -1382,7 +1382,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
       have hb₁s' : b₁ ∉ s' := fun h => hb₁s <| hs' h
       have hst : s ∩ ↑t = ∅ :=
         eq_empty_of_subset_empty <|
-          Subset.trans (by simp [inter_subset_inter, subset.refl]) (le_of_eq hst)
+          Subset.trans (by simp [inter_subset_inter, Subset.refl]) (le_of_eq hst)
       by_cases
         (fun this : s ⊆ (span K ↑(s' ∪ t) : Submodule K V) =>
           let ⟨u, hust, hsu, Eq⟩ := ih _ hs' hst this
@@ -1413,7 +1413,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
   apply
     Exists.elim
       (this (t.filter fun x => x ∉ s) (t.filter fun x => x ∈ s) (by simp [Set.subset_def])
-        (by simp (config := { contextual := true }) [Set.ext_iff]) (by rwa [Eq]))
+        (by simp (config := { contextual := true }) [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
     ⟨u, subset.trans h.1 (by simp (config := { contextual := true }) [subset_def, and_imp, or_imp]),
@@ -1425,8 +1425,8 @@ theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Fin
     ∃ h : s.Finite, h.toFinset.card ≤ ht.toFinset.card :=
   have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simp <;> assumption
   let ⟨u, hust, hsu, Eq⟩ := exists_of_linearIndependent_of_finite_span hs this
-  have : s.Finite := u.finite_toSet.Subset hsu
-  ⟨this, by rw [← Eq] <;> exact Finset.card_le_of_subset <| finset.coe_subset.mp <| by simp [hsu]⟩
+  have : s.Finite := u.finite_toSet.subset hsu
+  ⟨this, by rw [← Eq] <;> exact Finset.card_le_of_subset <| Finset.coe_subset.mp <| by simp [hsu]⟩
 #align exists_finite_card_le_of_finite_of_linear_independent_of_span exists_finite_card_le_of_finite_of_linearIndependent_of_span
 
 end Module
