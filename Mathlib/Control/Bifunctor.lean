@@ -10,7 +10,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
 import Mathlib.Data.Sum.Basic
-import Mathlib.Tactic.HigherOrderAttr
+import Mathlib.Tactic.HigherOrder
 
 /-!
 # Functors with two arguments
