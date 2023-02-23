@@ -1020,10 +1020,10 @@ theorem Filter.EventuallyEq.eventuallyEq_nhds {f g : α → β} {a : α} (h : f 
 
 /-- If `f x ≤ g x` in a neighbourhood of `a`, then for `y` sufficiently close to `a` we have
 `f x ≤ g x` in a neighbourhood of `y`. -/
-theorem Filter.EventuallyLe.eventuallyLe_nhds [LE β] {f g : α → β} {a : α} (h : f ≤ᶠ[𝓝 a] g) :
+theorem Filter.EventuallyLE.eventuallyLe_nhds [LE β] {f g : α → β} {a : α} (h : f ≤ᶠ[𝓝 a] g) :
     ∀ᶠ y in 𝓝 a, f ≤ᶠ[𝓝 y] g :=
   h.eventually_nhds
-#align filter.eventually_le.eventually_le_nhds Filter.EventuallyLe.eventuallyLe_nhds
+#align filter.eventually_le.eventually_le_nhds Filter.EventuallyLE.eventuallyLe_nhds
 
 theorem all_mem_nhds (x : α) (P : Set α → Prop) (hP : ∀ s t, s ⊆ t → P s → P t) :
     (∀ s ∈ 𝓝 x, P s) ↔ ∀ s, IsOpen s → x ∈ s → P s :=

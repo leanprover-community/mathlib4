@@ -172,11 +172,11 @@ theorem EventuallyEq.prod_map {δ} {la : Filter α} {fa ga : α → γ} (ha : fa
   (Eventually.prod_mk ha hb).mono fun _ h => Prod.ext h.1 h.2
 #align filter.eventually_eq.prod_map Filter.EventuallyEq.prod_map
 
-theorem EventuallyLe.prod_map {δ} [LE γ] [LE δ] {la : Filter α} {fa ga : α → γ} (ha : fa ≤ᶠ[la] ga)
+theorem EventuallyLE.prod_map {δ} [LE γ] [LE δ] {la : Filter α} {fa ga : α → γ} (ha : fa ≤ᶠ[la] ga)
     {lb : Filter β} {fb gb : β → δ} (hb : fb ≤ᶠ[lb] gb) :
     Prod.map fa fb ≤ᶠ[la ×ᶠ lb] Prod.map ga gb :=
   Eventually.prod_mk ha hb
-#align filter.eventually_le.prod_map Filter.EventuallyLe.prod_map
+#align filter.eventually_le.prod_map Filter.EventuallyLE.prod_map
 
 theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Prop}
     (h : ∀ᶠ x in la ×ᶠ lb, p x) : ∀ᶠ x in la, ∀ᶠ y in lb, p (x, y) := by
