@@ -17,47 +17,48 @@ An oplax functor `F` between bicategories `B` and `C` consists of
 * a function between objects `F.obj : B ⟶ C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
-* a family of 2-morphisms `F.map_id a : F.map (𝟙 a) ⟶ 𝟙 (F.obj a)`,
-* a family of 2-morphisms `F.map_comp f g : F.map (f ≫ g) ⟶ F.map f ≫ F.map g`, and
+* a family of 2-morphisms `F.mapId a : F.map (𝟙 a) ⟶ 𝟙 (F.obj a)`,
+* a family of 2-morphisms `F.mapComp f g : F.map (f ≫ g) ⟶ F.map f ≫ F.map g`, and
 * certain consistency conditions on them.
 
-A pseudofunctor is an oplax functor whose `map_id` and `map_comp` are isomorphisms. We provide
+A pseudofunctor is an oplax functor whose `mapId` and `mapComp` are isomorphisms. We provide
 several constructors for pseudofunctors:
-* `pseudofunctor.mk` : the default constructor, which requires `map₂_whiskerLeft` and
-  `map₂_whiskerRight` instead of naturality of `map_comp`.
-* `pseudofunctor.mk_of_oplax` : construct a pseudofunctor from an oplax functor whose
-  `map_id` and `map_comp` are isomorphisms. This constructor uses `iso` to describe isomorphisms.
-* `pseudofunctor.mk_of_oplax'` : similar to `mk_of_oplax`, but uses `is_iso` to describe
+* `Pseudofunctor.mk` : the default constructor, which requires `map₂_whiskerLeft` and
+  `map₂_whiskerRight` instead of naturality of `mapComp`.
+* `Pseudofunctor.mkOfOplax` : construct a pseudofunctor from an oplax functor whose
+  `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
+* `pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe
   isomorphisms.
 
 The additional constructors are useful when constructing a pseudofunctor where the construction
 of the oplax functor associated with it is already done. For example, the composition of
 pseudofunctors can be defined by using the composition of oplax functors as follows:
 ```lean
-def pseudofunctor.comp (F : pseudofunctor B C) (G : pseudofunctor C D) : pseudofunctor B D :=
-mk_of_oplax ((F : oplax_functor B C).comp G)
-{ map_id_iso := λ a, (G.map_functor _ _).map_iso (F.map_id a) ≪≫ G.map_id (F.obj a),
-  map_comp_iso := λ a b c f g,
-    (G.map_functor _ _).map_iso (F.map_comp f g) ≪≫ G.map_comp (F.map f) (F.map g) }
+def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
+mkOfOplax ((F : OplaxFunctor B C).comp G)
+{ mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
+  mapCompIso := λ f g =>
+    (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 ```
 although the composition of pseudofunctors in this file is defined by using the default constructor
-because `obviously` is smart enough. Similarly, the composition is also defined by using
-`mk_of_oplax'` after giving appropriate instances for `is_iso`. The former constructor
-`mk_of_oplax` requires isomorphisms as data type `iso`, and so it is useful if you don't want
+because `obviously` wasn't smart enough in mathlib3 and the porter of this file was too lazy
+to investigage this issue further in mathlib4. Similarly, the composition is also defined by using
+`mkOfOplax'` after giving appropriate instances for `IsIso`. The former constructor
+`mkOfOplax` requires isomorphisms as data type `Iso`, and so it is useful if you don't want
 to forget the definitions of the inverses. On the other hand, the latter constructor
-`mk_of_oplax'` is useful if you want to use propositional type class `is_iso`.
+`mkOfOplax'` is useful if you want to use propositional type class `IsIso`.
 
 ## Main definitions
 
-* `category_theory.oplax_functor B C` : an oplax functor between bicategories `B` and `C`
-* `category_theory.oplax_functor.comp F G` : the composition of oplax functors
-* `category_theory.pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`
-* `category_theory.pseudofunctor.comp F G` : the composition of pseudofunctors
+* `CategoryTheory.OplaxFunctor B C` : an oplax functor between bicategories `B` and `C`
+* `CategoryTheory.OplaxFunctor.comp F G` : the composition of oplax functors
+* `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`
+* `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
 
 ## Future work
 
 There are two types of functors between bicategories, called lax and oplax functors, depending on
-the directions of `map_id` and `map_comp`. We may need both in mathlib in the future, but for
+the directions of `mapId` and `mapComp`. We may need both in mathlib in the future, but for
 now we only define oplax functors.
 -/
 
@@ -79,7 +80,7 @@ variable {C : Type u₂} [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (
 variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (a ⟶ b)]
 
 /-- A prelax functor between bicategories consists of functions between objects,
-1-morphisms, and 2-morphisms. This structure will be extended to define `oplax_functor`.
+1-morphisms, and 2-morphisms. This structure will be extended to define `Oplaxunctor`.
 -/
 structure PrelaxFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
   (C : Type u₂) [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)] extends
@@ -174,7 +175,9 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
   map₂_comp :
     ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h), map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
     aesop_cat
-  -- porting note: `map₂_associator_aux` was used here in lean 3
+  -- porting note: `map₂_associator_aux` was used here in lean 3, but this was a hack
+  -- to avoid a timeout; we revert this hack here (because it was causing other problems
+  -- and was not necessary in lean 4)
   map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
       map₂ (α_ f g h).hom ≫ mapComp f (g ≫ h) ≫ map f ◁ mapComp g h =
@@ -293,8 +296,8 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
         assoc]
     map₂_associator := fun f g h => by
       dsimp
-      -- porting note: if you use `map₂_associator_aux` in the definition of `map₂_associator`
-      -- then the `simp only` call below does not seem to apply `map₂_associator`
+      -- porting note: if you use the `map₂_associator_aux` hack in the definition of
+      -- `map₂_associator` then the `simp only` call below does not seem to apply `map₂_associator`
       simp only [map₂_associator, ← map₂_comp_assoc, ← mapComp_naturality_right_assoc,
         whiskerLeft_comp, assoc]
       simp only [map₂_associator, map₂_comp, mapComp_naturality_left_assoc, comp_whiskerRight,
@@ -310,7 +313,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
 #align category_theory.oplax_functor.comp CategoryTheory.OplaxFunctor.comp
 
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
-See `pseudofunctor.mk_of_oplax`.
+See `Pseudofunctor.mkOfOplax`.
 -/
 -- porting note: removing no lint for nonempty_instance
 --@[nolint has_nonempty_instance]
@@ -471,6 +474,7 @@ theorem to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
 #align category_theory.pseudofunctor.to_oplax_map_comp CategoryTheory.Pseudofunctor.to_oplax_mapComp
 
 -- porting note: I changed `simps` to `simps!` without understanding what I was doing
+-- (lean 4 told me to do this)
 /-- Function on 1-morphisms as a functor. -/
 @[simps!]
 def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) :=
@@ -489,7 +493,7 @@ instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
 -- porting note: this is aesop_cat taking a long time auto-filling in fields
-set_option maxHeartbeats 1000000 in
+set_option maxHeartbeats 500000 in
 /-- Composition of pseudofunctors. -/
 @[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
@@ -501,7 +505,7 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
       (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 #align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
 
-/-- Construct a pseudofunctor from an oplax functor whose `map_id` and `map_comp` are isomorphisms.
+/-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
 -/
 @[simps]
 def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C :=
@@ -523,7 +527,7 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C :=
         hom_inv_id, comp_id] }
 #align category_theory.pseudofunctor.mk_of_oplax CategoryTheory.Pseudofunctor.mkOfOplax
 
-/-- Construct a pseudofunctor from an oplax functor whose `map_id` and `map_comp` are isomorphisms.
+/-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
 -/
 @[simps]
 noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
