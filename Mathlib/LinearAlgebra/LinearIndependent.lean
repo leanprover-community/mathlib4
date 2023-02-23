@@ -367,18 +367,18 @@ theorem linearIndependent_comp_subtype {s : Set ι} :
       exacts[fun _ => zero_smul _ _, fun _ _ _ => add_smul _ _ _]
 #align linear_independent_comp_subtype linearIndependent_comp_subtype
 
-theorem linear_dependent_comp_subtype' {s : Set ι} :
+theorem linearDependent_comp_subtype' {s : Set ι} :
     ¬LinearIndependent R (v ∘ (↑) : s → M) ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.total ι M R v f = 0 ∧ f ≠ 0 :=
   by simp [linearIndependent_comp_subtype, and_left_comm]
-#align linear_dependent_comp_subtype' linear_dependent_comp_subtype'
+#align linear_dependent_comp_subtype' linearDependent_comp_subtype'
 
 /-- A version of `linear_dependent_comp_subtype'` with `Finsupp.total` unfolded. -/
-theorem linear_dependent_comp_subtype {s : Set ι} :
+theorem linearDependent_comp_subtype {s : Set ι} :
     ¬LinearIndependent R (v ∘ (↑) : s → M) ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ (∑ i in f.support, f i • v i) = 0 ∧ f ≠ 0 :=
-  linear_dependent_comp_subtype'
-#align linear_dependent_comp_subtype linear_dependent_comp_subtype
+  linearDependent_comp_subtype'
+#align linear_dependent_comp_subtype linearDependent_comp_subtype
 
 theorem linearIndependent_subtype {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
@@ -928,10 +928,10 @@ theorem exists_maximal_independent (s : ι → M) :
       · intro h2
         rw [h2] at hi
         exact absurd hiJ hi
-    obtain ⟨f, supp_f, sum_f, f_ne⟩ := linear_dependent_comp_subtype.mp h
+    obtain ⟨f, supp_f, sum_f, f_ne⟩ := linearDependent_comp_subtype.mp h
     have hfi : f i ≠ 0 := by
       contrapose hIlinind
-      refine' linear_dependent_comp_subtype.mpr ⟨f, _, sum_f, f_ne⟩
+      refine' linearDependent_comp_subtype.mpr ⟨f, _, sum_f, f_ne⟩
       simp only [Finsupp.mem_supported, hJ] at supp_f⊢
       rintro x hx
       refine' (memJ.mp (supp_f hx)).resolve_left _
