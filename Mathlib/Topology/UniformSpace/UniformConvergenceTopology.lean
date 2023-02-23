@@ -41,7 +41,7 @@ This file contains a lot of technical facts, so it is heavily commented, proofs 
   We will denote this uniform space as `𝒰(α, β, uβ)`, both in the comments and as a local notation
   in the Lean code, where `uβ` is the uniform space structure on `β`.
   This is declared as an instance on `α →ᵤ β`.
-* `uniform_on_fun.uniform_space`: uniform structure of `𝔖`-convergence, where
+* `UniformOnFun.uniformSpace`: uniform structure of `𝔖`-convergence, where
   `𝔖 : Set (Set α)`. This is the infimum, for `S ∈ 𝔖`, of the pullback of `𝒰 S β` by the map of
   restriction to `S`. We will denote it `𝒱(α, β, 𝔖, uβ)`, where `uβ` is the uniform space structure
   on `β`.
@@ -157,16 +157,12 @@ def UniformOnFun (α β : Type _) (_ : Set (Set α)) :=
   α → β
 #align uniform_on_fun UniformOnFun
 
--- mathport name: «expr →ᵤ »
 scoped[UniformConvergence] notation:25 α " →ᵤ " β:0 => UniformFun α β
 
--- mathport name: «expr →ᵤ[ ] »
 scoped[UniformConvergence] notation:25 α " →ᵤ[" 𝔖 "] " β:0 => UniformOnFun α β 𝔖
 
--- mathport name: «exprλᵘ , »
 -- scoped[UniformConvergence] notation3"λᵘ "(...)", "r:(scoped p => UniformFun.ofFun p) => r
 
--- mathport name: «exprλᵘ[ ] , »
 -- scoped[UniformConvergence] notation3"λᵘ["𝔖"] "(...)", "r:(scoped p => UniformFun.ofFun p) => r
 
 open UniformConvergence
