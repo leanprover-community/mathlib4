@@ -132,7 +132,6 @@ theorem linearIndependent_iff' :
         _root_.by_contradiction fun hni => hni <| hf _ _ hl _ <| Finsupp.mem_support_iff.2 hni⟩
 #align linear_independent_iff' linearIndependent_iff'
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (i «expr ∉ » s) -/
 theorem linearIndependent_iff'' :
     LinearIndependent R v ↔
       ∀ (s : Finset ι) (g : ι → R) (_hg : ∀ (i) (_ : i ∉ s), g i = 0),
@@ -400,7 +399,8 @@ theorem linearIndependent_subtype_disjoint {s : Set M} :
 #align linear_independent_subtype_disjoint linearIndependent_subtype_disjoint
 
 theorem linearIndependent_iff_totalOn {s : Set M} :
-    LinearIndependent R (fun x => x : s → M) ↔ (LinearMap.ker $ Finsupp.totalOn M M R id s) = ⊥ := by
+    LinearIndependent R (fun x => x : s → M) ↔
+    (LinearMap.ker $ Finsupp.totalOn M M R id s) = ⊥ := by
   rw [Finsupp.totalOn, LinearMap.ker, LinearMap.comap_codRestrict, map_bot, comap_bot,
     LinearMap.ker_comp, linearIndependent_subtype_disjoint, disjoint_iff_inf_le, ←
     map_comap_subtype, map_le_iff_le_comap, comap_bot, ker_subtype, le_bot_iff]
@@ -425,7 +425,6 @@ theorem LinearIndependent.mono {t s : Set M} (h : t ⊆ s) :
   exact Disjoint.mono_left (Finsupp.supported_mono h)
 #align linear_independent.mono LinearIndependent.mono
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (t «expr ⊆ » s) -/
 theorem linearIndependent_of_finite (s : Set M)
     (H : ∀ (t) (_ : t ⊆ s), Set.Finite t → LinearIndependent R (fun x => x : t → M)) :
     LinearIndependent R (fun x => x : s → M) :=
@@ -915,7 +914,6 @@ theorem exists_maximal_independent' (s : ι → M) :
   exact ⟨I, hli, fun J hsub hli => Set.Subset.antisymm hsub (hmax ⟨J, hli⟩ hsub)⟩
 #align exists_maximal_independent' exists_maximal_independent'
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (i «expr ∉ » I) -/
 theorem exists_maximal_independent (s : ι → M) :
     ∃ I : Set ι,
       (LinearIndependent R fun x : I => s x) ∧
@@ -1026,98 +1024,93 @@ theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRi
     [NoZeroDivisors L] : @LinearIndependent _ L (G → L) (fun f => f : (G →* L) → G → L) _ _ _ := by
   -- Porting note: Some casts are required.
   letI := Classical.decEq (G →* L);
-      letI : MulAction L L :=
-        DistribMulAction.toMulAction;-- We prove linear independence by showing that only the trivial linear combination vanishes.
-    exact
-      linearIndependent_iff'.2-- To do this, we use `finset` induction,
-      fun s =>
-        -- Porting note: `False.elim` → `fun h => False.elim <| Finset.not_mem_empty _ h`
-        Finset.induction_on s
-          (fun g _hg i h => False.elim <| Finset.not_mem_empty _ h) fun a s has ih g hg =>
-          -- Here
-          -- * `a` is a new character we will insert into the `finset` of characters `s`,
-          -- * `ih` is the fact that only the trivial linear combination of characters in `s` is zero
-          -- * `hg` is the fact that `g` are the coefficients of a linear combination summing to zero
-          -- and it remains to prove that `g` vanishes on `insert a s`.
-          -- We now make the key calculation:
-          -- For any character `i` in the original `finset`, we have `g i • i = g i • a` as functions on the
-          -- monoid `G`.
-          have h1 : ∀ i ∈ s, (g i • (i : G → L)) = g i • (a : G → L) := fun i his =>
-            funext fun x : G =>
-              -- We prove these expressions are equal by showing
-                -- the differences of their values on each monoid element `x` is zero
-                eq_of_sub_eq_zero <|
-                ih (fun j => g j * j x - g j * a x)
-                  (funext fun y : G =>
-                    calc
-                      (-- After that, it's just a chase scene.
-                            ∑ i in s, ((g i * i x - g i * a x) • (i : G → L)))
-                            y =
-                          ∑ i in s, (g i * i x - g i * a x) * i y :=
-                        Finset.sum_apply _ _ _
-                      _ = ∑ i in s, (g i * i x * i y - g i * a x * i y) :=
-                        Finset.sum_congr rfl fun _ _ => sub_mul _ _ _
-                      _ = (∑ i in s, g i * i x * i y) - ∑ i in s, g i * a x * i y :=
-                        Finset.sum_sub_distrib
-                      _ =
-                          (g a * a x * a y + ∑ i in s, g i * i x * i y) -
-                            (g a * a x * a y + ∑ i in s, g i * a x * i y) :=
-                        by rw [add_sub_add_left_eq_sub]
-                      _ =
-                          (∑ i in insert a s, g i * i x * i y) -
-                            ∑ i in insert a s, g i * a x * i y :=
-                        by rw [Finset.sum_insert has, Finset.sum_insert has]
-                      _ =
-                          (∑ i in insert a s, g i * i (x * y)) -
-                            ∑ i in insert a s, a x * (g i * i y) :=
-                        congr
-                          (congr_arg Sub.sub
-                            (Finset.sum_congr rfl fun i _ => by rw [i.map_mul, mul_assoc]))
-                          (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
-                      _ =
-                          (∑ i in insert a s, (g i • (i : G → L))) (x * y) -
-                            a x * (∑ i in insert a s, (g i • (i : G → L))) y :=
-                        by rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
-                      _ = 0 - a x * 0 := by rw [hg]; rfl
-                      _ = 0 := by rw [mul_zero, sub_zero]
-                      )
-                  i his
-          -- On the other hand, since `a` is not already in `s`, for any character `i ∈ s`
-          -- there is some element of the monoid on which it differs from `a`.
-          have h2 : ∀ i : G →* L, i ∈ s → ∃ y, i y ≠ a y := fun i his =>
-            Classical.by_contradiction fun h =>
-              have hia : i = a := MonoidHom.ext fun y =>
-                Classical.by_contradiction fun hy => h ⟨y, hy⟩
-              has <| hia ▸ his
-          -- From these two facts we deduce that `g` actually vanishes on `s`,
-          have h3 : ∀ i ∈ s, g i = 0 := fun i his =>
-            let ⟨y, hy⟩ := h2 i his
-            have h : g i • i y = g i • a y := congr_fun (h1 i his) y
-            Or.resolve_right (mul_eq_zero.1 <| by rw [mul_sub, sub_eq_zero]; exact h)
-              (sub_ne_zero_of_ne hy)
-          -- And so, using the fact that the linear combination over `s` and over `insert a s` both vanish,
-          -- we deduce that `g a = 0`.
-          have h4 : g a = 0 :=
-            calc
-              g a = g a * 1 := (mul_one _).symm
-              _ = (g a • (a : G → L)) 1 := by rw [← a.map_one]; rfl
-              _ = (∑ i in insert a s, (g i • (i : G → L))) 1 :=
-                by
-                  rw [Finset.sum_eq_single a]
-                  · intro i his hia
-                    rw [Finset.mem_insert] at his
-                    rw [h3 i (his.resolve_left hia), zero_smul]
-                  · intro haas
-                    exfalso
-                    apply haas
-                    exact Finset.mem_insert_self a s
-              _ = 0 := by rw [hg]; rfl
-
-          (-- Now we're done; the last two facts together imply that `g` vanishes on every element
-                -- of `insert a s`.
-                Finset.forall_mem_insert
-                _ _ _).2
-            ⟨h4, h3⟩
+  letI : MulAction L L := DistribMulAction.toMulAction;
+  -- We prove linear independence by showing that only the trivial linear combination vanishes.
+  exact linearIndependent_iff'.2
+    -- To do this, we use `finset` induction,
+    -- Porting note: `False.elim` → `fun h => False.elim <| Finset.not_mem_empty _ h`
+    fun s =>
+      Finset.induction_on s
+        (fun g _hg i h => False.elim <| Finset.not_mem_empty _ h) fun a s has ih g hg =>
+        -- Here
+        -- * `a` is a new character we will insert into the `finset` of characters `s`,
+        -- * `ih` is the fact that only the trivial linear combination of characters in `s` is zero
+        -- * `hg` is the fact that `g` are the coefficients of a linear combination summing to zero
+        -- and it remains to prove that `g` vanishes on `insert a s`.
+        -- We now make the key calculation:
+        -- For any character `i` in the original `finset`, we have `g i • i = g i • a` as functions
+        -- on the monoid `G`.
+        have h1 : ∀ i ∈ s, (g i • (i : G → L)) = g i • (a : G → L) := fun i his =>
+          funext fun x : G =>
+            -- We prove these expressions are equal by showing
+            -- the differences of their values on each monoid element `x` is zero
+            eq_of_sub_eq_zero <|
+            ih (fun j => g j * j x - g j * a x)
+              (funext fun y : G => calc
+                -- After that, it's just a chase scene.
+                (∑ i in s, ((g i * i x - g i * a x) • (i : G → L))) y =
+                    ∑ i in s, (g i * i x - g i * a x) * i y :=
+                  Finset.sum_apply _ _ _
+                _ = ∑ i in s, (g i * i x * i y - g i * a x * i y) :=
+                  Finset.sum_congr rfl fun _ _ => sub_mul _ _ _
+                _ = (∑ i in s, g i * i x * i y) - ∑ i in s, g i * a x * i y :=
+                  Finset.sum_sub_distrib
+                _ =
+                    (g a * a x * a y + ∑ i in s, g i * i x * i y) -
+                      (g a * a x * a y + ∑ i in s, g i * a x * i y) :=
+                  by rw [add_sub_add_left_eq_sub]
+                _ =
+                    (∑ i in insert a s, g i * i x * i y) -
+                      ∑ i in insert a s, g i * a x * i y :=
+                  by rw [Finset.sum_insert has, Finset.sum_insert has]
+                _ =
+                    (∑ i in insert a s, g i * i (x * y)) -
+                      ∑ i in insert a s, a x * (g i * i y) :=
+                  congr
+                    (congr_arg Sub.sub
+                      (Finset.sum_congr rfl fun i _ => by rw [i.map_mul, mul_assoc]))
+                    (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
+                _ =
+                    (∑ i in insert a s, (g i • (i : G → L))) (x * y) -
+                      a x * (∑ i in insert a s, (g i • (i : G → L))) y :=
+                  by rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
+                _ = 0 - a x * 0 := by rw [hg]; rfl
+                _ = 0 := by rw [mul_zero, sub_zero]
+                )
+              i his
+        -- On the other hand, since `a` is not already in `s`, for any character `i ∈ s`
+        -- there is some element of the monoid on which it differs from `a`.
+        have h2 : ∀ i : G →* L, i ∈ s → ∃ y, i y ≠ a y := fun i his =>
+          Classical.by_contradiction fun h =>
+            have hia : i = a := MonoidHom.ext fun y =>
+              Classical.by_contradiction fun hy => h ⟨y, hy⟩
+            has <| hia ▸ his
+        -- From these two facts we deduce that `g` actually vanishes on `s`,
+        have h3 : ∀ i ∈ s, g i = 0 := fun i his =>
+          let ⟨y, hy⟩ := h2 i his
+          have h : g i • i y = g i • a y := congr_fun (h1 i his) y
+          Or.resolve_right (mul_eq_zero.1 <| by rw [mul_sub, sub_eq_zero]; exact h)
+            (sub_ne_zero_of_ne hy)
+        -- And so, using the fact that the linear combination over `s` and over `insert a s` both
+        -- vanish, we deduce that `g a = 0`.
+        have h4 : g a = 0 :=
+          calc
+            g a = g a * 1 := (mul_one _).symm
+            _ = (g a • (a : G → L)) 1 := by rw [← a.map_one]; rfl
+            _ = (∑ i in insert a s, (g i • (i : G → L))) 1 :=
+              by
+                rw [Finset.sum_eq_single a]
+                · intro i his hia
+                  rw [Finset.mem_insert] at his
+                  rw [h3 i (his.resolve_left hia), zero_smul]
+                · intro haas
+                  exfalso
+                  apply haas
+                  exact Finset.mem_insert_self a s
+            _ = 0 := by rw [hg]; rfl
+        -- Now we're done; the last two facts together imply that `g` vanishes on every element
+        -- of `insert a s`.
+        (Finset.forall_mem_insert _ _ _).2 ⟨h4, h3⟩
 #align linear_independent_monoid_hom linearIndependent_monoidHom
 
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
@@ -1297,7 +1290,6 @@ theorem linearIndependent_fin2 {f : Fin 2 → V} :
     not_exists, show Fin.tail f default = f 1 by rw [← Fin.succ_zero_eq_one]; rfl]
 #align linear_independent_fin2 linearIndependent_fin2
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr ⊆ » t) -/
 theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
     ∃ (b : _)(_ : b ⊆ t), s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
   -- Porting note: The placeholder should be solved before `rcases`.
@@ -1318,7 +1310,6 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
 
 variable (K t)
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr ⊆ » t) -/
 theorem exists_linearIndependent :
     ∃ (b : _)(_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
   obtain ⟨b, hb₁, -, hb₂, hb₃⟩ :=
