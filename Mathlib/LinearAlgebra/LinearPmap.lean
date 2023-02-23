@@ -58,8 +58,12 @@ namespace LinearPmap
 
 open Submodule
 
+-- Porting note: A new definition underlying a coercion `↑`.
+@[coe]
+def toFun' (f : E →ₗ.[R] F) : f.domain → F := f.toFun
+
 instance : CoeFun (E →ₗ.[R] F) fun f : E →ₗ.[R] F => f.domain → F :=
-  ⟨fun f => f.toFun⟩
+  ⟨toFun'⟩
 
 @[simp]
 theorem toFun_eq_coe (f : E →ₗ.[R] F) (x : f.domain) : f.toFun x = f x :=
@@ -406,7 +410,7 @@ theorem smul_apply (a : M) (f : E →ₗ.[R] F) (x : (a • f).domain) : (a • 
 #align linear_pmap.smul_apply LinearPmap.smul_apply
 
 @[simp]
-theorem coe_smul (a : M) (f : E →ₗ.[R] F) : ⇑(a • f) = a • f :=
+theorem coe_smul (a : M) (f : E →ₗ.[R] F) : ⇑(a • f) = a • ⇑f :=
   rfl
 #align linear_pmap.coe_smul LinearPmap.coe_smul
 
@@ -710,9 +714,9 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
 
 /-- The graph of `-f` as a pushforward. -/
 theorem neg_graph (f : E →ₗ.[R] F) :
-    (-f).graph = f.graph.map ((LinearMap.id : E →ₗ[R] E).Prod_map (-(LinearMap.id : F →ₗ[R] F))) :=
-  by
-  ext; cases x
+    (-f).graph =
+    f.graph.map ((LinearMap.id : E →ₗ[R] E).prodMap (-(LinearMap.id : F →ₗ[R] F))) := by
+  ext x; cases' x with x_fst x_snd
   constructor <;> intro h
   · rw [mem_graph_iff] at h
     rcases h with ⟨y, hy, h⟩
@@ -826,10 +830,9 @@ theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.grap
   intro x hx
   rw [mem_graph_iff] at hx⊢
   cases' hx with y hx
-  use y
-  · exact h.1 y.2
+  use ⟨y, h.1 y.2⟩
   simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and_iff]
-  convert hx.2
+  convert hx.2 using 1
   refine' (h.2 _).symm
   simp only [hx.1, Submodule.coe_mk]
 #align linear_pmap.le_graph_of_le LinearPmap.le_graph_of_le
@@ -839,9 +842,10 @@ theorem le_graph_iff {f g : E →ₗ.[R] F} : f.graph ≤ g.graph ↔ f ≤ g :=
 #align linear_pmap.le_graph_iff LinearPmap.le_graph_iff
 
 theorem eq_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) : f = g := by
-  ext
+  -- Porting note: `ext` → `refine ext ..`
+  refine ext (Submodule.ext fun x => ?_) (fun x y h' => ?_)
   exact mem_domain_iff_of_eq_graph h
-  exact (le_of_le_graph h.le).2
+  exact (le_of_le_graph h.le).2 h'
 #align linear_pmap.eq_of_eq_graph LinearPmap.eq_of_eq_graph
 
 end Graph
@@ -855,7 +859,7 @@ section SubmoduleToLinearPmap
 theorem existsUnique_from_graph {g : Submodule R (E × F)}
     (hg : ∀ {x : E × F} (hx : x ∈ g) (hx' : x.fst = 0), x.snd = 0) {a : E}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : ∃! b : F, (a, b) ∈ g := by
-  refine' existsUnique_of_exists_of_unique _ _
+  refine' exists_unique_of_exists_of_unique _ _
   · convert ha
     simp
   intro y₁ y₂ hy₁ hy₂
@@ -869,13 +873,13 @@ theorem existsUnique_from_graph {g : Submodule R (E × F)}
 noncomputable def valFromGraph {g : Submodule R (E × F)}
     (hg : ∀ (x : E × F) (hx : x ∈ g) (hx' : x.fst = 0), x.snd = 0) {a : E}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : F :=
-  (ExistsUnique.exists (existsUnique_from_graph hg ha)).some
+  (ExistsUnique.exists (existsUnique_from_graph @hg ha)).choose
 #align submodule.val_from_graph Submodule.valFromGraph
 
 theorem valFromGraph_mem {g : Submodule R (E × F)}
     (hg : ∀ (x : E × F) (hx : x ∈ g) (hx' : x.fst = 0), x.snd = 0) {a : E}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : (a, valFromGraph hg ha) ∈ g :=
-  (ExistsUnique.exists (existsUnique_from_graph hg ha)).choose_spec
+  (ExistsUnique.exists (existsUnique_from_graph @hg ha)).choose_spec
 #align submodule.val_from_graph_mem Submodule.valFromGraph_mem
 
 /-- Define a `linear_pmap` from its graph. -/
@@ -885,20 +889,19 @@ noncomputable def toLinearPmap (g : Submodule R (E × F))
   domain := g.map (LinearMap.fst R E F)
   toFun :=
     { toFun := fun x => valFromGraph hg x.2
-      map_add' := fun v w =>
-        by
+      map_add' := fun v w => by
         have hadd := (g.map (LinearMap.fst R E F)).add_mem v.2 w.2
-        have hvw := val_from_graph_mem hg hadd
-        have hvw' := g.add_mem (val_from_graph_mem hg v.2) (val_from_graph_mem hg w.2)
+        have hvw := valFromGraph_mem hg hadd
+        have hvw' := g.add_mem (valFromGraph_mem hg v.2) (valFromGraph_mem hg w.2)
         rw [Prod.mk_add_mk] at hvw'
-        exact (exists_unique_from_graph hg hadd).unique hvw hvw'
+        exact (existsUnique_from_graph @hg hadd).unique hvw hvw'
       map_smul' := fun a v =>
         by
         have hsmul := (g.map (LinearMap.fst R E F)).smul_mem a v.2
-        have hav := val_from_graph_mem hg hsmul
-        have hav' := g.smul_mem a (val_from_graph_mem hg v.2)
+        have hav := valFromGraph_mem hg hsmul
+        have hav' := g.smul_mem a (valFromGraph_mem hg v.2)
         rw [Prod.smul_mk] at hav'
-        exact (exists_unique_from_graph hg hsmul).unique hav hav' }
+        exact (existsUnique_from_graph @hg hsmul).unique hav hav' }
 #align submodule.to_linear_pmap Submodule.toLinearPmap
 
 theorem mem_graph_toLinearPmap (g : Submodule R (E × F))
@@ -911,21 +914,20 @@ theorem mem_graph_toLinearPmap (g : Submodule R (E × F))
 theorem toLinearPmap_graph_eq (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (hx : x ∈ g) (hx' : x.fst = 0), x.snd = 0) :
     (g.toLinearPmap hg).graph = g := by
-  ext
+  ext x
   constructor <;> intro hx
   · rw [LinearPmap.mem_graph_iff] at hx
     rcases hx with ⟨y, hx1, hx2⟩
-    convert g.mem_graph_to_linear_pmap hg y
-    rw [Subtype.val_eq_coe]
+    convert g.mem_graph_toLinearPmap hg y
     exact Prod.ext hx1.symm hx2.symm
   rw [LinearPmap.mem_graph_iff]
-  cases x
+  cases' x with x_fst x_snd
   have hx_fst : x_fst ∈ g.map (LinearMap.fst R E F) :=
     by
     simp only [mem_map, LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
     exact ⟨x_snd, hx⟩
   refine' ⟨⟨x_fst, hx_fst⟩, Subtype.coe_mk x_fst hx_fst, _⟩
-  exact (exists_unique_from_graph hg hx_fst).unique (val_from_graph_mem hg hx_fst) hx
+  exact (existsUnique_from_graph @hg hx_fst).unique (valFromGraph_mem hg hx_fst) hx
 #align submodule.to_linear_pmap_graph_eq Submodule.toLinearPmap_graph_eq
 
 end SubmoduleToLinearPmap
