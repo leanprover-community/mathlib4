@@ -160,7 +160,7 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
 #align linear_locally_finite_order.is_succ_archimedean LinearLocallyFiniteOrder.isSuccArchimedean
 
-instance (priority := 100) LinearOrder.pred_archimedean_of_succ_archimedean [SuccOrder ι]
+instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [SuccOrder ι]
     [PredOrder ι] [IsSuccArchimedean ι] : IsPredArchimedean ι where
   exists_pred_iterate_of_le := by
     intro i j hij
@@ -180,7 +180,7 @@ instance (priority := 100) LinearOrder.pred_archimedean_of_succ_archimedean [Suc
         exact le_succ _
       · rw [hn_eq]
         exact hn_lt_ne _ (Nat.lt_succ_self n)
-#align linear_order.pred_archimedean_of_succ_archimedean LinearOrder.pred_archimedean_of_succ_archimedean
+#align linear_order.pred_archimedean_of_succ_archimedean LinearOrder.isPredArchimedean_of_isSuccArchimedean
 
 section toZ
 
