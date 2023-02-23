@@ -8,14 +8,14 @@ Authors: Julian Kuelshammer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Fin
-import Mathbin.Algebra.BigOperators.NatAntidiagonal
-import Mathbin.Algebra.CharZero.Lemmas
-import Mathbin.Data.Finset.NatAntidiagonal
-import Mathbin.Data.Nat.Choose.Central
-import Mathbin.Data.Tree
-import Mathbin.Tactic.FieldSimp
-import Mathbin.Tactic.LinearCombination
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Nat.Choose.Central
+import Mathlib.Data.Tree
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Catalan numbers
@@ -94,8 +94,7 @@ private def gosper_catalan (n j : ℕ) : ℚ :=
 
 private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
     gosperCatalan (n + 1) (i + 1) - gosperCatalan (n + 1) i =
-      Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) :=
-  by
+      Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
   have : (n : ℚ) + 1 ≠ 0 := by exact_mod_cast n.succ_ne_zero
   have : (n : ℚ) + 1 + 1 ≠ 0 := by exact_mod_cast (n + 1).succ_ne_zero
   have : (i : ℚ) + 1 ≠ 0 := by exact_mod_cast i.succ_ne_zero
@@ -125,8 +124,7 @@ private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) :
   ring
 #align gosper_catalan_sub_eq_central_binom_div gosper_catalan_sub_eq_central_binom_div
 
-theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) :=
-  by
+theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1)
     by
     have h := Nat.succ_dvd_centralBinom n
@@ -193,8 +191,7 @@ theorem trees_of_nodes_eq_zero : treesOfNumNodesEq 0 = {nil} := by rw [trees_of_
 theorem trees_of_nodes_eq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
       (Nat.antidiagonal n).bunionᵢ fun ij =>
-        pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) :=
-  by
+        pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) := by
   rw [trees_of_num_nodes_eq]
   ext
   simp
@@ -218,8 +215,7 @@ theorem coe_trees_of_nodes_eq (n : ℕ) :
   Set.ext (by simp)
 #align tree.coe_trees_of_nodes_eq Tree.coe_trees_of_nodes_eq
 
-theorem trees_of_nodes_eq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n :=
-  by
+theorem trees_of_nodes_eq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
   induction' n using Nat.case_strong_induction_on with n ih
   · simp
   rw [trees_of_nodes_eq_succ, card_bUnion, catalan_succ']
