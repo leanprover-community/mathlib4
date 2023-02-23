@@ -468,7 +468,7 @@ theorem ofNat_iff {α β σ} [Denumerable α] [Denumerable β] [Primcodable σ] 
 #align primrec₂.of_nat_iff Primrec₂.ofNat_iff
 
 theorem uncurry {f : α → β → σ} : Primrec (Function.uncurry f) ↔ Primrec₂ f := by
-  rw [show Function.uncurry f = fun p : α × β => f p.1 p.2 from funext fun ⟨a, b⟩ => rfl] <;> rfl
+  rw [show Function.uncurry f = fun p : α × β => f p.1 p.2 from funext fun ⟨a, b⟩ => rfl]; rfl
 #align primrec₂.uncurry Primrec₂.uncurry
 
 theorem curry {f : α × β → σ} : Primrec₂ (Function.curry f) ↔ Primrec f := by
@@ -905,28 +905,14 @@ theorem nat_div2 : Primrec Nat.div2 :=
 -- theorem nat_boddDiv2 : Primrec Nat.boddDiv2 := pair nat_bodd nat_div2
 -- #align primrec.nat_bodd_div2 Primrec.nat_boddDiv2
 
--- TODO: delete in favor of `nat_double`
-theorem nat_bit0 : Primrec (@bit0 ℕ _) :=
-  nat_add.comp Primrec.id Primrec.id
-#align primrec.nat_bit0 Primrec.nat_bit0
-
 theorem nat_double : Primrec (fun n : ℕ => 2 * n) :=
   nat_mul.comp (const _) Primrec.id
+#align primrec.nat_bit0 Primrec.nat_double
 
-
--- TODO: delete in favor of `nat_double_succ`
-theorem nat_bit1 : Primrec (@bit1 ℕ _ _) :=
-  nat_add.comp nat_bit0 (const 1)
-#align primrec.nat_bit1 Primrec.nat_bit1
 
 theorem nat_double_succ : Primrec (fun n : ℕ => 2 * n + 1) :=
   nat_double |> Primrec.succ.comp
-
--- TODO: delete
-theorem nat_bit : Primrec₂ Nat.bit :=
-  (cond Primrec.fst (nat_bit1.comp Primrec.snd) (nat_bit0.comp Primrec.snd)).of_eq fun n => by
-    cases n.1 <;> rfl
-#align primrec.nat_bit Primrec.nat_bit
+#align primrec.nat_bit1 Primrec.nat_double_succ
 
 -- porting note: this is no longer used
 -- #align primrec.nat_div_mod Primrec.nat_div_mod
@@ -1184,12 +1170,12 @@ theorem list_map {f : α → List β} {g : α → β → σ} (hf : Primrec f) (h
 
 theorem list_range : Primrec List.range :=
   (nat_elim' Primrec.id (const []) ((list_concat.comp snd fst).comp snd).to₂).of_eq fun n => by
-    simp <;> induction n <;> simp [*, List.range_succ] <;> rfl
+    simp; induction n <;> simp [*, List.range_succ]
 #align primrec.list_range Primrec.list_range
 
 theorem list_join : Primrec (@List.join α) :=
   (list_foldr Primrec.id (const []) <| to₂ <| comp (@list_append α _) snd).of_eq fun l => by
-    dsimp <;> induction l <;> simp [*]
+    dsimp; induction l <;> simp [*]
 #align primrec.list_join Primrec.list_join
 
 theorem list_length : Primrec (@List.length α) :=
@@ -1371,7 +1357,7 @@ theorem vector_length {n} : Primrec (@Vector.length α n) :=
 #align primrec.vector_length Primrec.vector_length
 
 theorem vector_head {n} : Primrec (@Vector.head α n) :=
-  option_some_iff.1 <| (list_head?.comp vector_toList).of_eq fun ⟨a :: l, h⟩ => rfl
+  option_some_iff.1 <| (list_head?.comp vector_toList).of_eq fun ⟨_ :: _, _⟩ => rfl
 #align primrec.vector_head Primrec.vector_head
 
 theorem vector_tail {n} : Primrec (@Vector.tail α n) :=
@@ -1419,7 +1405,7 @@ theorem fin_curry {n} {f : α → Fin n → σ} : Primrec f ↔ Primrec₂ f :=
   ⟨fun h => fin_app.comp (h.comp fst) snd, fun h =>
     (vector_nth'.comp
           (vector_ofFn fun i => show Primrec fun a => f a i from h.comp Primrec.id (const i))).of_eq
-      fun a => by funext i <;> simp⟩
+      fun a => by funext i; simp⟩
 #align primrec.fin_curry Primrec.fin_curry
 
 end Primrec
@@ -1568,7 +1554,7 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
     have :=
       @prec' 1 _ _
         (fun v => by
-          have x := v.head <;> have y := v.tail.head <;>
+          have x := v.head; have y := v.tail.head;
             exact if x.succ < y.succ * y.succ then y else y.succ)
         head (const 0) ?_
     · exact this
