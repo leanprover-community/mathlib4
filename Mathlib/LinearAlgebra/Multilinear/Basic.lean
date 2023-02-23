@@ -72,10 +72,13 @@ over `R`. -/
 structure MultilinearMap (R : Type u) {ι : Type u'} (M₁ : ι → Type v) (M₂ : Type w) [DecidableEq ι]
   [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)]
   [Module R M₂] where
+  /-- The underlying multivariate function of a multilinear map. -/
   toFun : (∀ i, M₁ i) → M₂
+  /-- A multilinear map is additive in every argument. -/
   map_add' :
     ∀ (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i),
       toFun (update m i (x + y)) = toFun (update m i x) + toFun (update m i y)
+  /-- A multilinear map is compatible with scalar multiplication in every argument. -/
   map_smul' :
     ∀ (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i),
       toFun (update m i (c • x)) = c • toFun (update m i x)
@@ -209,7 +212,7 @@ theorem smul_apply (f : MultilinearMap A M₁ M₂) (c : R') (m : ∀ i, M₁ i)
   rfl
 #align multilinear_map.smul_apply MultilinearMap.smul_apply
 
-theorem coe_smul (c : R') (f : MultilinearMap A M₁ M₂) : ⇑(c • f) = c • f :=
+theorem coe_smul (c : R') (f : MultilinearMap A M₁ M₂) : ⇑(c • f) = c • (⇑ f) :=
   rfl
 #align multilinear_map.coe_smul MultilinearMap.coe_smul
 
@@ -308,7 +311,7 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun i : Fin n => M') M₂) (s : Fin
     simp
     sorry
 #align multilinear_map.restr MultilinearMap.restr
-
+#lint
 /-- In the specific case of multilinear maps on spaces indexed by `fin (n+1)`, where one can build
 an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the additivity of a
 multilinear map along the first variable. -/
@@ -659,8 +662,10 @@ def codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀
 
 section RestrictScalar
 
+/- Porting note: These used to be a single variable statement, had to split them up to two,
+would not be able to infer SMul A (M₁ i) otherwise -/
 variable (R) {A : Type _} [Semiring A] [SMul R A] [∀ i : ι, Module A (M₁ i)] [Module A M₂]
-  [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
+variable  [∀ i, IsScalarTower R A (M₁ i)] [IsScalarTower R A M₂]
 
 /-- Reinterpret an `A`-multilinear map as an `R`-multilinear map, if `A` is an algebra over `R`
 and their actions on all involved modules agree with the action of `R` on `A`. -/
@@ -883,7 +888,7 @@ def domDomCongrLinearEquiv {ι₁ ι₂} [DecidableEq ι₁] [DecidableEq ι₂]
       ext
       simp [MultilinearMap.domDomCongr] }
 #align multilinear_map.dom_dom_congr_linear_equiv MultilinearMap.domDomCongrLinearEquiv
-
+#lint
 variable (R M₁)
 
 /-- The dependent version of `multilinear_map.dom_dom_congr_linear_equiv`. -/
@@ -918,10 +923,10 @@ def domDomCongrLinearEquiv' {ι' : Type _} [DecidableEq ι'] (σ : ι ≃ ι') :
     simp only [Function.comp, coe_mk, smul_apply, RingHom.id_apply]
   left_inv f := by
     ext
-    simp only [Function.comp, coe_mk, Equiv.symm_apply_apply]
+    simp only [coe_mk, comp_apply, Equiv.symm_apply_apply]
   right_inv f := by
     ext
-    simp only [Function.comp, coe_mk, Equiv.apply_symm_apply]
+    simp only [coe_mk, comp_apply, Equiv.apply_symm_apply]
 #align multilinear_map.dom_dom_congr_linear_equiv' MultilinearMap.domDomCongrLinearEquiv'
 
 /-- The space of constant maps is equivalent to the space of maps that are multilinear with respect
@@ -1034,7 +1039,7 @@ theorem mkPiRing_apply [Fintype ι] (z : M₂) (m : ι → R) :
   rfl
 #align multilinear_map.mk_pi_ring_apply MultilinearMap.mkPiRing_apply
 
-theorem mkPiRing_apply_one_eq_self [Fintype ι] (f : MultilinearMap R (fun i : ι => R) M₂) :
+theorem mkPiRing_apply_one_eq_self [Fintype ι] (f : MultilinearMap R (fun _ : ι => R) M₂) :
     MultilinearMap.mkPiRing R ι (f fun _ => 1) = f := by
   ext m
   have : m = fun i => m i • (1 : R) := by
@@ -1080,7 +1085,13 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
     ⟨fun m => f m - g m, fun m i x y =>
       by
       simp only [MultilinearMap.map_add, sub_eq_add_neg, neg_add]
-      cc, fun m i c x => by simp only [MultilinearMap.map_smul, smul_sub]⟩⟩
+      -- Porting note: Below five lines used to be `cc`
+      rw [add_assoc, add_assoc]
+      congr 1
+      rw [add_comm, add_assoc]
+      congr 1
+      exact add_comm _ _,
+      fun m i c x => by simp only [MultilinearMap.map_smul, smul_sub]⟩⟩
 
 @[simp]
 theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
@@ -1098,10 +1109,12 @@ instance : AddCommGroup (MultilinearMap R M₁ M₂) := by
             sub_eq_add_neg := _
             nsmul := fun n f =>
               ⟨fun m => n • f m, fun m i x y => by simp [smul_add], fun l i x d => by
-                simp [← smul_comm x n]⟩
+                simp only [MultilinearMap.map_smul]
+                rw [smul_comm x n]⟩
             zsmul := fun n f =>
               ⟨fun m => n • f m, fun m i x y => by simp [smul_add], fun l i x d => by
-                simp [← smul_comm x n]⟩
+                simp only [MultilinearMap.map_smul]
+                rw [smul_comm x n]⟩
             zsmul_zero' := _
             zsmul_succ' := _
             zsmul_neg' := _.. } <;>
@@ -1583,3 +1596,4 @@ def range [Nonempty ι] (f : MultilinearMap R M₁ M₂) : SubMulAction R M₂ :
 end Submodule
 
 end MultilinearMap
+#lint
