@@ -399,11 +399,12 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
     prod_bij (fun a ha => signBijAux g a) signBijAux_mem _ signBijAux_inj
     (by simpa using signBijAux_surj)
   rintro ⟨a, b⟩ hab
-  rw [signBijAux, mul_apply, mul_apply]
-  rw [mem_fin_pairs_lt] at hab
+  dsimp only [signBijAux]
+  rw [mul_apply, mul_apply]
+  rw [mem_finPairsLT] at hab
   by_cases h : g b < g a
   · rw [dif_pos h]
-    simp only [not_le_of_gt hab, mul_one, perm.inv_apply_self, if_false]
+    simp only [not_le_of_gt hab, mul_one, Perm.inv_apply_self, if_false]
   · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
     by_cases h₁ : f (g b) ≤ f (g a)
     · have : f (g b) ≠ f (g a) :=
