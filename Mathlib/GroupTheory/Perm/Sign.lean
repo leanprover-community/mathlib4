@@ -87,7 +87,10 @@ theorem perm_inv_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
 
 theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) :=
-  perm_inv_mapsTo_of_mapsTo f h hx
+  -- Porting note: relies heavily on the definitions of `Subtype` and `setOf` unfolding to their
+  -- underlying predicate.
+  have : Finite { x | p x } := ‹_›
+  perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
 #align equiv.perm.perm_inv_on_of_perm_on_finite Equiv.Perm.perm_inv_on_of_perm_on_finite
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
@@ -389,9 +392,10 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   unfold signAux
   rw [← prod_mul_distrib]
   refine'
-    prod_bij (fun a ha => signBijAux g a) signBijAux_mem _ signBijAux_inj signBijAux_surj
+    prod_bij (fun a ha => signBijAux g a) signBijAux_mem _ signBijAux_inj
+    (by simpa using signBijAux_surj)
   rintro ⟨a, b⟩ hab
-  rw [sign_bij_aux, mul_apply, mul_apply]
+  rw [signBijAux, mul_apply, mul_apply]
   rw [mem_fin_pairs_lt] at hab
   by_cases h : g b < g a
   · rw [dif_pos h]
@@ -426,20 +430,20 @@ private theorem sign_aux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 
     rcases a₁.zero_le.eq_or_lt with (rfl | H)
     · exact absurd a₂.zero_le ha₁.not_le
     rcases a₂.zero_le.eq_or_lt with (rfl | H')
-    · simp only [and_true_iff, eq_self_iff_true, heq_iff_eq, mem_singleton] at ha₂
+    · simp only [and_true_iff, eq_self_iff_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
       have : 1 < a₁ := lt_of_le_of_ne (Nat.succ_le_of_lt ha₁)
         (Ne.symm (by intro h; apply ha₂; simp [h]))
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
-      -- TODO : fix properly
-      norm_num [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, this.not_le, h01]
+      -- Porting note: replaced `norm_num` by `rw`
+      rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_le]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
       have lt : 1 < a₁ := le.trans_lt ha₁
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 1 = 0 := by simp
       -- TODO
       rcases le.eq_or_lt with (rfl | lt')
-      · norm_num [swap_apply_of_ne_of_ne H.ne' lt.ne', H.not_le, h01]
-      · norm_num [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
-          swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), ha₁.not_le]
+      · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, if_neg H.not_le]
+      · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
+          swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_le]
 
 private theorem sign_aux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
