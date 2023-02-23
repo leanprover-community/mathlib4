@@ -326,8 +326,8 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Fin
       (fun j => if h : j ∈ s then update v i x
         (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
       = update (fun j =>
-          if h : j ∈ s then v (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
-            ((FunLike.coe (s.orderIsoOfFin hk).toEquiv) i) x := by
+        if h : j ∈ s then v (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
+          ((FunLike.coe (s.orderIsoOfFin hk).toEquiv) i) x := by
         intro x
         simp_rw [← Finset.mem_coe]
         rw [this, dite_comp_equiv_update (s := s) (α := Fin n) (Finset.orderIsoOfFin s hk).toEquiv]
@@ -340,8 +340,8 @@ def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Fin
       (fun j => if h : j ∈ s then update v i x
         (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
       = update (fun j =>
-          if h : j ∈ s then v (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
-            ((FunLike.coe (s.orderIsoOfFin hk).toEquiv) i) x := by
+        if h : j ∈ s then v (FunLike.coe (OrderIso.symm (Finset.orderIsoOfFin s hk)) ⟨j,h⟩) else z)
+          ((FunLike.coe (s.orderIsoOfFin hk).toEquiv) i) x := by
         intro x
         simp_rw [← Finset.mem_coe]
         rw [this, dite_comp_equiv_update (s := s) (α := Fin n) (Finset.orderIsoOfFin s hk).toEquiv]
@@ -1431,9 +1431,9 @@ theorem MultilinearMap.uncurry_curryRight (f : MultilinearMap R M M₂) :
 variable (R M M₂)
 
 /-- The space of multilinear maps on `∀ (i : Fin (n+1)), M i` is canonically isomorphic to
-the space of linear maps from the space of multilinear maps on `∀ (i : Fin n), M (castSucc i)` to the
-space of linear maps on `M (last n)`, by separating the last variable. We register this isomorphism
-as a linear isomorphism in `multilinearCurryRightEquiv R M M₂`.
+the space of linear maps from the space of multilinear maps on `∀ (i : Fin n), M (castSucc i)` to
+the space of linear maps on `M (last n)`, by separating the last variable. We register this
+isomorphism as a linear isomorphism in `multilinearCurryRightEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.uncurryRight` and `f.curryRight`. Use these
 unless you need the full framework of linear equivs. -/
