@@ -252,7 +252,6 @@ theorem bot_mul_bot : (⊥ * ⊥ : WithBot α) = ⊥ :=
   WithTop.top_mul_top
 #align with_bot.bot_mul_bot WithBot.bot_mul_bot
 
-@[simp]
 theorem mul_eq_bot_iff {a b : WithBot α} : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ ∨ a = ⊥ ∧ b ≠ 0 :=
   WithTop.mul_eq_top_iff
 #align with_bot.mul_eq_bot_iff WithBot.mul_eq_bot_iff
