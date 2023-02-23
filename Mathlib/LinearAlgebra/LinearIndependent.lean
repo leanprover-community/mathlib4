@@ -1239,7 +1239,10 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
       (LinearIndependent K fun x : s => f x) ∧ f a ∉ Submodule.span K (f '' s) := by
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
     linearIndependent_option]
-  simp [(· ∘ ·), range_comp f]
+  -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
+  simp [(· ∘ ·)]
+  erw [range_comp f ((↑) : s → ι)]
+  simp
 #align linear_independent_insert' linearIndependent_insert'
 
 theorem linearIndependent_insert (hxs : x ∉ s) :
@@ -1258,18 +1261,15 @@ theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
-  convert Iff.rfl
-  · ext
-    -- TODO: why doesn't simp use `fin_succ_equiv_symm_coe` here?
-    rw [comp_app, comp_app, finSuccEquiv_symm_some, Fin.cons_succ]
-  · ext
-    rw [comp_app, comp_app, finSuccEquiv_symm_some, Fin.cons_succ]
+  -- Porting note: `convert Iff.rfl; ...` → `exact Iff.rfl`
+  exact Iff.rfl
 #align linear_independent_fin_cons linearIndependent_fin_cons
 
 theorem linearIndependent_fin_snoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔
-      LinearIndependent K v ∧ x ∉ Submodule.span K (range v) :=
-  by rw [Fin.snoc_eq_cons_rotate, linearIndependent_equiv, linearIndependent_fin_cons]
+      LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
+  -- Porting note: `rw` → `erw`
+  erw [Fin.snoc_eq_cons_rotate, linearIndependent_equiv, linearIndependent_fin_cons]
 #align linear_independent_fin_snoc linearIndependent_fin_snoc
 
 /-- See `linear_independent.fin_cons'` for an uglier version that works if you
@@ -1300,17 +1300,20 @@ theorem linearIndependent_fin2 {f : Fin 2 → V} :
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (b «expr ⊆ » t) -/
 theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
     ∃ (b : _)(_ : b ⊆ t), s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
-  rcases zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } _ _ ⟨hst, hs⟩ with
+  -- Porting note: The placeholder should be solved before `rcases`.
+  have := by
+    refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } ?_ _ ⟨hst, hs⟩
+    · refine' fun c hc cc c0 => ⟨⋃₀ c, ⟨_, _⟩, fun x => _⟩
+      · exact unionₛ_subset fun x xc => (hc xc).1
+      · exact linearIndependent_unionₛ_of_directed cc.directedOn fun x xc => (hc xc).2
+      · exact subset_unionₛ_of_mem
+  rcases this with
     ⟨b, ⟨bt, bi⟩, sb, h⟩
   · refine' ⟨b, bt, sb, fun x xt => _, bi⟩
     by_contra hn
     apply hn
     rw [← h _ ⟨insert_subset.2 ⟨xt, bt⟩, bi.insert hn⟩ (subset_insert _ _)]
     exact subset_span (mem_insert _ _)
-  · refine' fun c hc cc c0 => ⟨⋃₀ c, ⟨_, _⟩, fun x => _⟩
-    · exact sUnion_subset fun x xc => (hc xc).1
-    · exact linearIndependent_unionₛ_of_directed cc.directed_on fun x xc => (hc xc).2
-    · exact subset_sUnion_of_mem
 #align exists_linear_independent_extension exists_linearIndependent_extension
 
 variable (K t)
@@ -1367,7 +1370,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
       ∀ s' : Finset V,
         ↑s' ⊆ s →
           s ∩ ↑t = ∅ →
-            s ⊆ (span K (s' ∪ t) : Submodule K V) →
+            s ⊆ (span K ↑(s' ∪ t) : Submodule K V) →
               ∃ t' : Finset V, ↑t' ⊆ s ∪ ↑t ∧ s ⊆ ↑t' ∧ t'.card = (s' ∪ t).card :=
     fun t =>
     Finset.induction_on t
@@ -1382,30 +1385,37 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
       have hb₁s' : b₁ ∉ s' := fun h => hb₁s <| hs' h
       have hst : s ∩ ↑t = ∅ :=
         eq_empty_of_subset_empty <|
-          Subset.trans (by simp [inter_subset_inter, Subset.refl]) (le_of_eq hst)
-      by_cases
-        (fun this : s ⊆ (span K ↑(s' ∪ t) : Submodule K V) =>
+          -- Porting note: `-inter_subset_left, -subset_inter_iff` required.
+          Subset.trans
+            (by simp [inter_subset_inter, Subset.refl, -inter_subset_left, -subset_inter_iff])
+            (le_of_eq hst)
+      Classical.by_cases (p := s ⊆ (span K ↑(s' ∪ t) : Submodule K V))
+        (fun this =>
           let ⟨u, hust, hsu, Eq⟩ := ih _ hs' hst this
           have hb₁u : b₁ ∉ u := fun h => (hust h).elim hb₁s hb₁t
           ⟨insert b₁ u, by simp [insert_subset_insert hust], Subset.trans hsu (by simp), by
             simp [Eq, hb₁t, hb₁s', hb₁u]⟩)
-        fun this : ¬s ⊆ (span K ↑(s' ∪ t) : Submodule K V) =>
+        fun this =>
         let ⟨b₂, hb₂s, hb₂t⟩ := not_subset.mp this
         have hb₂t' : b₂ ∉ s' ∪ t := fun h => hb₂t <| subset_span h
-        have : s ⊆ (span K ↑(insert b₂ s' ∪ t) : Submodule K V) := fun b₃ hb₃ =>
-          by
+        have : s ⊆ (span K ↑(insert b₂ s' ∪ t) : Submodule K V) := fun b₃ hb₃ => by
           have : ↑(s' ∪ insert b₁ t) ⊆ insert b₁ (insert b₂ ↑(s' ∪ t) : Set V) := by
-            simp [insert_eq, -singleton_union, -union_singleton, union_subset_union, subset.refl,
-              subset_union_right]
+            -- Porting note: Too many theorems to be excluded, so
+            --               `simp only` is shorter.
+            simp only [insert_eq, union_subset_union, Subset.refl,
+              subset_union_right, Finset.union_insert, Finset.coe_insert]
           have hb₃ : b₃ ∈ span K (insert b₁ (insert b₂ ↑(s' ∪ t) : Set V)) :=
             span_mono this (hss' hb₃)
           have : s ⊆ (span K (insert b₁ ↑(s' ∪ t)) : Submodule K V) := by
             simpa [insert_eq, -singleton_union, -union_singleton] using hss'
-          have hb₁ : b₁ ∈ span K (insert b₂ ↑(s' ∪ t)) := mem_span_insert_exchange (this hb₂s) hb₂t
+          -- Porting note: `by exact` is required to prevent timeout.
+          have hb₁ : b₁ ∈ span K (insert b₂ ↑(s' ∪ t)) := by
+            exact mem_span_insert_exchange (this hb₂s) hb₂t
           rw [span_insert_eq_span hb₁] at hb₃ <;> simpa using hb₃
-        let ⟨u, hust, hsu, Eq⟩ := ih _ (by simp [insert_subset, hb₂s, hs']) hst this
+        let ⟨u, hust, hsu, eq⟩ := ih _ (by simp [insert_subset, hb₂s, hs']) hst this
+        -- Porting note: `hb₂t'` → `Finset.card_insert_of_not_mem hb₂t'`
         ⟨u, Subset.trans hust <| union_subset_union (Subset.refl _) (by simp [subset_insert]), hsu,
-          by simp [Eq, hb₂t', hb₁t, hb₁s']⟩
+          by simp [eq, Finset.card_insert_of_not_mem hb₂t', hb₁t, hb₁s']⟩
   have eq : ((t.filter fun x => x ∈ s) ∪ t.filter fun x => x ∉ s) = t :=
     by
     ext1 x
@@ -1416,8 +1426,8 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
         (by simp (config := { contextual := true }) [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
-    ⟨u, subset.trans h.1 (by simp (config := { contextual := true }) [subset_def, and_imp, or_imp]),
-      h.2.1, by simp only [h.2.2, Eq]⟩
+    ⟨u, Subset.trans h.1 (by simp (config := { contextual := true }) [subset_def, and_imp, or_imp]),
+      h.2.1, by simp only [h.2.2, eq]⟩
 #align exists_of_linear_independent_of_finite_span exists_of_linearIndependent_of_finite_span
 
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Finite)
