@@ -1285,7 +1285,8 @@ theorem extend_function_of_lt {α β : Type _} {s : Set α} (f : s ↪ β) (hs :
 -- #align cardinal.bit0_eq_self Cardinal.bit0_eq_self
 
 -- @[simp]
--- theorem bit0_lt_aleph0 {c : Cardinal} : bit0 c < ℵ₀ ↔ c < ℵ₀ := by simp [bit0, add_lt_aleph_0_iff]
+-- theorem bit0_lt_aleph0 {c : Cardinal} : bit0 c < ℵ₀ ↔ c < ℵ₀ :=
+--   by simp [bit0, add_lt_aleph_0_iff]
 -- #align cardinal.bit0_lt_aleph_0 Cardinal.bit0_lt_aleph0
 
 -- @[simp]
