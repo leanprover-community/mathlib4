@@ -12,7 +12,11 @@ def FILE : FilePath :=
 structure Config where
   url : String
   head : FilePath
-  builds: RBMap String FilePath compare
+  rootRef : FilePath
+  buildDirs: RBMap String FilePath compare
+
+@[inline] def Config.getBuildDir (cfg : Config) (k : String) : Option FilePath :=
+  cfg.buildDirs.find? k
 
 def load : IO $ Except String Config := do
   if !(← FILE.pathExists) then return .error s!"{FILE} not found"
@@ -25,13 +29,15 @@ def load : IO $ Except String Config := do
       | return .error s!"{FILE} is missing the \"url\" (string) field"
     let some $ .str head := x.find compare "head"
       | return .error s!"{FILE} is missing the \"head\" (string) field"
-    let some $ .obj builds := x.find compare "builds"
-      | return .error s!"{FILE} is missing the \"builds\" (object) field"
-    let mut builds' := default
-    for pair in builds.toArray do
+    let some $ .str rootRef := x.find compare "rootRef"
+      | return .error s!"{FILE} is missing the \"rootRef\" (string) field"
+    let some $ .obj buildDirs := x.find compare "buildDirs"
+      | return .error s!"{FILE} is missing the \"buildDirs\" (object) field"
+    let mut buildDirs' := default
+    for pair in buildDirs.toArray do
       let .str path := pair.2 | return .error s!"Error when reading the build path for {pair.1}"
-      builds' := builds'.insert pair.1 (mkFilePath $ path.splitOn "/")
-    return .ok ⟨url, ⟨head⟩, builds'⟩
+      buildDirs' := buildDirs'.insert pair.1 (mkFilePath $ path.splitOn "/")
+    return .ok ⟨url, ⟨head⟩, mkFilePath $ rootRef.splitOn "/", buildDirs'⟩
   | _ => return .error s!"Invalid formatting for {FILE}"
 
 end Cache.Config
