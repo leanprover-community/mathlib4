@@ -570,4 +570,3 @@ end Pseudofunctor
 end
 
 end CategoryTheory
-#lint
