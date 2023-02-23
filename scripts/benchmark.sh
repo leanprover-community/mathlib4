@@ -31,12 +31,12 @@ cd ../mathlib
 echo "corresponding files in mathlib3:"
 /usr/bin/time lean --make $mathlib_targets > /dev/null
 
-cd ../mathlib4
-for t in $targets; do
-  s=$(grep "! This file was ported from Lean 3 source module" < Mathlib/$t.lean | awk '{ print $NF }' | sed -e 's|\.|/|g')
-  echo $t
-  lake env /usr/bin/time lean Mathlib/$t.lean > /dev/null
-  cd ../mathlib
-  /usr/bin/time lean -j1 src/$s.lean
-  cd ../mathlib4
-done
+#cd ../mathlib4
+#for t in $targets; do
+#  s=$(grep "! This file was ported from Lean 3 source module" < Mathlib/$t.lean | awk '{ print $NF }' | sed -e 's|\.|/|g')
+#  echo $t
+#  lake env /usr/bin/time lean Mathlib/$t.lean > /dev/null
+#  cd ../mathlib
+#  /usr/bin/time lean -j1 src/$s.lean
+#  cd ../mathlib4
+#done
