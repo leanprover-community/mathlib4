@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 ! This file was ported from Lean 3 source module algebra.order.ring.with_top
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
+! leanprover-community/mathlib commit e7e2ba8aa216a5833b5ed85a93317263711a36b5
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -425,9 +425,9 @@ instance [MulZeroClass α] [Preorder α] [MulPosMonoRev α] : MulPosMonoRev (Wit
     exact le_of_mul_le_mul_right h x0 ⟩
 
 instance orderedCommSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
-  OrderedCommSemiring (WithBot α) :=
+    OrderedCommSemiring (WithBot α) :=
   { WithBot.zeroLEOneClass, WithBot.orderedAddCommMonoid, WithBot.commSemiring with
-    mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left,
-    mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right, }
+    mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
+    mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right }
 
 end WithBot
