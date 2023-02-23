@@ -213,10 +213,12 @@ namespace OplaxFunctor
 /- Porting note: removed primes from field names and remove `restate_axiom` since
 that is no longer needed in Lean 4 -/
 
-attribute [simp] mapComp_naturality_left mapComp_naturality_right map₂_id map₂_associator
+-- porting note: more stuff was tagged `simp` here in lean 3 but `reassoc (attr := simp)`
+-- is doing this job a couple of lines below this.
+attribute [simp] map₂_id
 
 -- porting note: was auto-ported as `attribute [reassoc.1]` for some reason
-attribute [reassoc (attr := simp)] -- can't stop this being noisy
+attribute [reassoc (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_leftUnitor
   map₂_rightUnitor map₂_associator
 
