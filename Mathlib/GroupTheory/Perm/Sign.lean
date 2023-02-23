@@ -459,12 +459,12 @@ private theorem sign_aux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
   · exact sign_aux_swap_zero_one' n
 
 theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (hxy : x ≠ y), signAux (swap x y) = -1
-  | 0 => by decide
-  | 1 => by decide
-  | n + 2 => fun x y hxy => by
+  | 0, x, y => by intro; exact Fin.elim0 x
+  | 1, x, y => by intro h; decide
+  | n + 2, x, y => fun hxy => by
     have h2n : 2 ≤ n + 2 := by decide
-    rw [← isConj_iff_eq, ← sign_aux_swap_zero_one h2n]
-    exact (MonoidHom.mk' sign_aux sign_aux_mul).map_isConj (is_conj_swap hxy (by decide))
+    rw [← isConj_iff_eq, ← signAux_swap_zero_one h2n]
+    exact (MonoidHom.mk' signAux signAux_mul).map_isConj (isConj_swap hxy (by decide))
 #align equiv.perm.sign_aux_swap Equiv.Perm.signAux_swap
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
