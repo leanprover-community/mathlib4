@@ -96,7 +96,8 @@ attribute [coe] CategoryTheory.PrelaxFunctor.toPrefunctor
 
 instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
   ⟨toPrefunctor⟩
-#align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
+#align category_theory.prelax_functor.has_coe_to_prefunctor
+  CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
 
 variable (F : PrelaxFunctor B C)
 
@@ -190,10 +191,14 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 #align category_theory.oplax_functor CategoryTheory.OplaxFunctor
 #align category_theory.oplax_functor.map_id CategoryTheory.OplaxFunctor.mapId
 #align category_theory.oplax_functor.map_comp CategoryTheory.OplaxFunctor.mapComp
-#align category_theory.oplax_functor.map_comp_naturality_left' CategoryTheory.OplaxFunctor.mapComp_naturality_left
-#align category_theory.oplax_functor.map_comp_naturality_left CategoryTheory.OplaxFunctor.mapComp_naturality_left
-#align category_theory.oplax_functor.map_comp_naturality_right' CategoryTheory.OplaxFunctor.mapComp_naturality_right
-#align category_theory.oplax_functor.map_comp_naturality_right CategoryTheory.OplaxFunctor.mapComp_naturality_right
+#align category_theory.oplax_functor.map_comp_naturality_left'
+  CategoryTheory.OplaxFunctor.mapComp_naturality_left
+#align category_theory.oplax_functor.map_comp_naturality_left
+  CategoryTheory.OplaxFunctor.mapComp_naturality_left
+#align category_theory.oplax_functor.map_comp_naturality_right'
+  CategoryTheory.OplaxFunctor.mapComp_naturality_right
+#align category_theory.oplax_functor.map_comp_naturality_right
+  CategoryTheory.OplaxFunctor.mapComp_naturality_right
 #align category_theory.oplax_functor.map₂_id' CategoryTheory.OplaxFunctor.map₂_id
 #align category_theory.oplax_functor.map₂_comp' CategoryTheory.OplaxFunctor.map₂_comp
 #align category_theory.oplax_functor.map₂_associator' CategoryTheory.OplaxFunctor.map₂_associator
@@ -212,7 +217,8 @@ attribute [simp] mapComp_naturality_left mapComp_naturality_right map₂_id map�
 
 -- porting note: was auto-ported as `attribute [reassoc.1]` for some reason
 attribute [reassoc (attr := simp)] -- can't stop this being noisy
-  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_leftUnitor map₂_rightUnitor map₂_associator
+  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_leftUnitor
+  map₂_rightUnitor map₂_associator
 
 section
 
@@ -233,7 +239,8 @@ theorem to_prelax_eq_coe : F.toPrelaxFunctor = F :=
 @[simp]
 theorem to_prelaxFunctor_obj : (F : PrelaxFunctor B C).obj = F.obj :=
   rfl
-#align category_theory.oplax_functor.to_prelax_functor_obj CategoryTheory.OplaxFunctor.to_prelaxFunctor_obj
+#align category_theory.oplax_functor.to_prelax_functor_obj
+  CategoryTheory.OplaxFunctor.to_prelaxFunctor_obj
 
 --porting note: removed lemma `to_prelaxFunctor_map` relating the now
 -- nonexistent `PrelaxFunctor.map` and `OplaxFunctor.map`
@@ -412,19 +419,22 @@ add_decl_doc Pseudofunctor.toPrelaxFunctor
 
 instance hasCoeToPrelaxFunctor : Coe (Pseudofunctor B C) (PrelaxFunctor B C) :=
   ⟨toPrelaxFunctor⟩
-#align category_theory.pseudofunctor.has_coe_to_prelax_functor CategoryTheory.Pseudofunctor.hasCoeToPrelaxFunctor
+#align category_theory.pseudofunctor.has_coe_to_prelax_functor
+  CategoryTheory.Pseudofunctor.hasCoeToPrelaxFunctor
 
 variable (F : Pseudofunctor B C)
 
 @[simp]
 theorem toPrelaxFunctor_eq_coe : F.toPrelaxFunctor = F :=
   rfl
-#align category_theory.pseudofunctor.to_prelax_functor_eq_coe CategoryTheory.Pseudofunctor.toPrelaxFunctor_eq_coe
+#align category_theory.pseudofunctor.to_prelax_functor_eq_coe
+  CategoryTheory.Pseudofunctor.toPrelaxFunctor_eq_coe
 
 @[simp]
 theorem to_prelaxFunctor_obj : (F : PrelaxFunctor B C).obj = F.obj :=
   rfl
-#align category_theory.pseudofunctor.to_prelax_functor_obj CategoryTheory.Pseudofunctor.to_prelaxFunctor_obj
+#align category_theory.pseudofunctor.to_prelax_functor_obj
+  CategoryTheory.Pseudofunctor.to_prelaxFunctor_obj
 
 --porting note: removed lemma `to_prelaxFunctor_map` relating the now
 -- nonexistent `PrelaxFunctor.map` and the now nonexistent `Pseudofunctor.map`
