@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Functor
-import Mathbin.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.FullSubcategory
 
 /-!
 # Monoidal natural transformations
