@@ -166,7 +166,9 @@ theorem mkSpanSingleton'_apply (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c
 @[simp]
 theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c • y = 0) (h) :
     mkSpanSingleton' x y H ⟨x, h⟩ = y := by
-  convert mkSpanSingleton'_apply x y H 1 _ <;> rwa [one_smul]
+  -- Porting note: A placeholder should be specified before `convert`.
+  have := by refine mkSpanSingleton'_apply x y H 1 ?_; rwa [one_smul]
+  convert this <;> rw [one_smul]
 #align linear_pmap.mk_span_singleton'_apply_self LinearPmap.mkSpanSingleton'_apply_self
 
 /-- The unique `linear_pmap` on `span R {x}` that sends a non-zero vector `x` to `y`.
@@ -186,8 +188,7 @@ theorem mkSpanSingleton_apply (K : Type _) {E F : Type _} [DivisionRing K] [AddC
 #align linear_pmap.mk_span_singleton_apply LinearPmap.mkSpanSingleton_apply
 
 /-- Projection to the first coordinate as a `linear_pmap` -/
-protected def fst (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] E
-    where
+protected def fst (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] E where
   domain := p.prod p'
   toFun := (LinearMap.fst R E F).comp (p.prod p').subtype
 #align linear_pmap.fst LinearPmap.fst
@@ -199,8 +200,7 @@ theorem fst_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
 #align linear_pmap.fst_apply LinearPmap.fst_apply
 
 /-- Projection to the second coordinate as a `linear_pmap` -/
-protected def snd (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] F
-    where
+protected def snd (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] F where
   domain := p.prod p'
   toFun := (LinearMap.snd R E F).comp (p.prod p').subtype
 #align linear_pmap.snd LinearPmap.snd
@@ -234,19 +234,18 @@ theorem exists_of_le {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
 
 theorem eq_of_le_of_domain_eq {f g : E →ₗ.[R] F} (hle : f ≤ g) (heq : f.domain = g.domain) :
     f = g :=
-  ext HEq hle.2
+  ext heq hle.2
 #align linear_pmap.eq_of_le_of_domain_eq LinearPmap.eq_of_le_of_domain_eq
 
 /-- Given two partial linear maps `f`, `g`, the set of points `x` such that
 both `f` and `g` are defined at `x` and `f x = g x` form a submodule. -/
-def eqLocus (f g : E →ₗ.[R] F) : Submodule R E
-    where
-  carrier := { x | ∃ (hf : x ∈ f.domain)(hg : x ∈ g.domain), f ⟨x, hf⟩ = g ⟨x, hg⟩ }
+def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
+  carrier := { x | ∃ (hf : x ∈ f.domain) (hg : x ∈ g.domain), f ⟨x, hf⟩ = g ⟨x, hg⟩ }
   zero_mem' := ⟨zero_mem _, zero_mem _, f.map_zero.trans g.map_zero.symm⟩
-  add_mem' := fun x y ⟨hfx, hgx, hx⟩ ⟨hfy, hgy, hy⟩ =>
+  add_mem' := fun {x y} ⟨hfx, hgx, hx⟩ ⟨hfy, hgy, hy⟩ =>
     ⟨add_mem hfx hfy, add_mem hgx hgy, by
       erw [f.map_add ⟨x, hfx⟩ ⟨y, hfy⟩, g.map_add ⟨x, hgx⟩ ⟨y, hgy⟩, hx, hy]⟩
-  smul_mem' := fun c x ⟨hfx, hgx, hx⟩ =>
+  smul_mem' := fun c {x} ⟨hfx, hgx, hx⟩ =>
     ⟨smul_mem _ c hfx, smul_mem _ c hgx, by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 #align linear_pmap.eq_locus LinearPmap.eqLocus
 
