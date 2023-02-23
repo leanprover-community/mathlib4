@@ -584,8 +584,7 @@ theorem toPmap_apply (f : E →ₗ[R] F) (p : Submodule R E) (x : p) : f.toPmap 
 #align linear_map.to_pmap_apply LinearMap.toPmap_apply
 
 /-- Compose a linear map with a `linear_pmap` -/
-def compPmap (g : F →ₗ[R] G) (f : E →ₗ.[R] F) : E →ₗ.[R] G
-    where
+def compPmap (g : F →ₗ[R] G) (f : E →ₗ.[R] F) : E →ₗ.[R] G where
   domain := f.domain
   toFun := g.comp f.toFun
 #align linear_map.comp_pmap LinearMap.compPmap
@@ -613,11 +612,16 @@ def comp (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) (H : ∀ x : f.domain, f x �
 
 /-- `f.coprod g` is the partially defined linear map defined on `f.domain × g.domain`,
 and sending `p` to `f p.1 + g p.2`. -/
-def coprod (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) : E × F →ₗ.[R] G
-    where
-  domain := f.domain.Prod g.domain
+def coprod (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) : E × F →ₗ.[R] G where
+  domain := f.domain.prod g.domain
   toFun :=
-    (f.comp (LinearPmap.fst f.domain g.domain) fun x => x.2.1).toFun +
+    -- Porting note: This is just
+    -- `(f.comp (LinearPmap.fst f.domain g.domain) fun x => x.2.1).toFun +`
+    -- `  (g.comp (LinearPmap.snd f.domain g.domain) fun x => x.2.2).toFun`,
+    HAdd.hAdd
+      (α := f.domain.prod g.domain →ₗ[R] G)
+      (β := f.domain.prod g.domain →ₗ[R] G)
+      (f.comp (LinearPmap.fst f.domain g.domain) fun x => x.2.1).toFun
       (g.comp (LinearPmap.snd f.domain g.domain) fun x => x.2.2).toFun
 #align linear_pmap.coprod LinearPmap.coprod
 
@@ -638,7 +642,7 @@ theorem domRestrict_domain (f : E →ₗ.[R] F) {S : Submodule R E} :
   rfl
 #align linear_pmap.dom_restrict_domain LinearPmap.domRestrict_domain
 
-theorem domRestrict_apply {f : E →ₗ.[R] F} {S : Submodule R E} ⦃x : S ⊓ f.domain⦄ ⦃y : f.domain⦄
+theorem domRestrict_apply {f : E →ₗ.[R] F} {S : Submodule R E} ⦃x : ↥(S ⊓ f.domain)⦄ ⦃y : f.domain⦄
     (h : (x : E) = y) : f.domRestrict S x = f y := by
   have : Submodule.ofLe (by simp) x = y := by
     ext
@@ -658,7 +662,7 @@ section Graph
 
 /-- The graph of a `linear_pmap` viewed as a submodule on `E × F`. -/
 def graph (f : E →ₗ.[R] F) : Submodule R (E × F) :=
-  f.toFun.graph.map (f.domain.Subtype.Prod_map (LinearMap.id : F →ₗ[R] F))
+  f.toFun.graph.map (f.domain.subtype.prodMap (LinearMap.id : F →ₗ[R] F))
 #align linear_pmap.graph LinearPmap.graph
 
 theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} : x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x :=
@@ -681,8 +685,8 @@ variable {M : Type _} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F] (y
 /-- The graph of `z • f` as a pushforward. -/
 theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     (z • f).graph =
-      f.graph.map ((LinearMap.id : E →ₗ[R] E).Prod_map (z • (LinearMap.id : F →ₗ[R] F))) := by
-  ext x; cases x
+      f.graph.map ((LinearMap.id : E →ₗ[R] E).prodMap (z • (LinearMap.id : F →ₗ[R] F))) := by
+  ext x; cases' x with x_fst x_snd
   constructor <;> intro h
   · rw [mem_graph_iff] at h
     rcases h with ⟨y, hy, h⟩
