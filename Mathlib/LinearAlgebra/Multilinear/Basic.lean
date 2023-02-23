@@ -243,6 +243,7 @@ def toLinearMap (m : ∀ i, M₁ i) (i : ι) : M₁ i →ₗ[R] M₂
   map_add' x y := by simp
   map_smul' c x := by simp
 #align multilinear_map.to_linear_map MultilinearMap.toLinearMap
+#align multilinear_map.to_linear_map_to_add_hom_apply MultilinearMap.toLinearMap_toAddHom_apply
 
 /-- The cartesian product of two multilinear maps, as a multilinear map. -/
 def prod (f : MultilinearMap R M₁ M₂) (g : MultilinearMap R M₁ M₃) : MultilinearMap R M₁ (M₂ × M₃)
@@ -262,6 +263,7 @@ def pi {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)] [∀ i
   map_add' _ _ _ _ := funext fun j => (f j).map_add _ _ _ _
   map_smul' _ _ _ _ := funext fun j => (f j).map_smul _ _ _ _
 #align multilinear_map.pi MultilinearMap.pi
+#align multilinear_map.pi_apply MultilinearMap.pi_apply
 
 section
 
@@ -280,6 +282,8 @@ def ofSubsingleton [Subsingleton ι] (i' : ι) : MultilinearMap R (fun _ : ι =>
     rw [Subsingleton.elim i i']
     simp only [Function.eval, Function.update_same]
 #align multilinear_map.of_subsingleton MultilinearMap.ofSubsingleton
+#align multilinear_map.of_subsingleton_apply MultilinearMap.ofSubsingleton_apply
+
 
 variable (M₁) {M₂}
 
@@ -297,6 +301,7 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂
 lemma constOfIsEmpty_apply [inst_6 : IsEmpty ι] (m : M₂) :
     ⇑(MultilinearMap.constOfIsEmpty R M₁ m) = Function.const ((i : ι) → M₁ i) m := by
   simp only [constOfIsEmpty, coe_mk]
+#align multilinear_map.const_of_is_empty_apply MultilinearMap.constOfIsEmpty_apply
 end
 
 -- Porting note: Included `FunLike.coe` to avoid strange CoeFun instance for Equiv
@@ -696,6 +701,7 @@ def codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀
 lemma codRestrict_apply_coe (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p)
     (v : (i : ι) → M₁ i): (codRestrict f p h) v = f v := by
   simp only [codRestrict, coe_mk]
+#align multilinear_map.cod_restrict_apply_coe MultilinearMap.codRestrict_apply_coe
 
 section RestrictScalar
 
@@ -740,6 +746,7 @@ def domDomCongr (σ : ι₁ ≃ ι₂) (m : MultilinearMap R (fun _ : ι₁ => M
     simp_rw [Function.update_apply_equiv_apply v]
     rw [m.map_smul]
 #align multilinear_map.dom_dom_congr MultilinearMap.domDomCongr
+#align multilinear_map.dom_dom_congr_apply MultilinearMap.domDomCongr_apply
 
 theorem domDomCongr_trans (σ₁ : ι₁ ≃ ι₂) (σ₂ : ι₂ ≃ ι₃)
     (m : MultilinearMap R (fun _ : ι₁ => M₂) M₃) :
@@ -772,6 +779,8 @@ def domDomCongrEquiv (σ : ι₁ ≃ ι₂) :
     ext
     simp [domDomCongr]
 #align multilinear_map.dom_dom_congr_equiv MultilinearMap.domDomCongrEquiv
+#align multilinear_map.dom_dom_congr_equiv_apply MultilinearMap.domDomCongrEquiv_apply
+#align multilinear_map.dom_dom_congr_equiv_symm_apply MultilinearMap.domDomCongrEquiv_symmApply
 
 /-- The results of applying `dom_dom_congr` to two maps are equal if
 and only if those maps are. -/
@@ -925,6 +934,8 @@ def domDomCongrLinearEquiv {ι₁ ι₂} [DecidableEq ι₁] [DecidableEq ι₂]
       ext
       simp [MultilinearMap.domDomCongr] }
 #align multilinear_map.dom_dom_congr_linear_equiv MultilinearMap.domDomCongrLinearEquiv
+#align multilinear_map.dom_dom_congr_linear_equiv_apply MultilinearMap.domDomCongrLinearEquiv_apply
+#align multilinear_map.dom_dom_congr_linear_equiv_symm_apply MultilinearMap.domDomCongrLinearEquiv_symmApply
 variable (R M₁)
 
 /-- The dependent version of `multilinear_map.dom_dom_congr_linear_equiv`. -/
@@ -964,6 +975,8 @@ def domDomCongrLinearEquiv' {ι' : Type _} [DecidableEq ι'] (σ : ι ≃ ι') :
     ext
     simp only [coe_mk, comp_apply, Equiv.apply_symm_apply]
 #align multilinear_map.dom_dom_congr_linear_equiv' MultilinearMap.domDomCongrLinearEquiv'
+#align multilinear_map.dom_dom_congr_linear_equiv'_apply MultilinearMap.domDomCongrLinearEquiv'_apply
+#align multilinear_map.dom_dom_congr_linear_equiv'_symm_apply MultilinearMap.domDomCongrLinearEquiv'_symmApply
 
 /-- The space of constant maps is equivalent to the space of maps that are multilinear with respect
 to an empty family. -/
@@ -977,7 +990,7 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : M₂ ≃ₗ[R] MultilinearMap R M�
   left_inv _ := rfl
   right_inv f := ext fun _ => MultilinearMap.congr_arg f <| Subsingleton.elim _ _
 #align multilinear_map.const_linear_equiv_of_is_empty MultilinearMap.constLinearEquivOfIsEmpty
-
+#align multilinear_map.const_linear_equiv_of_is_empty_apply_to_add_hom_apply MultilinearMap.constLinearEquivOfIsEmpty_apply_toAddHom_apply
 end Module
 
 section
