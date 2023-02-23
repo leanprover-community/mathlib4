@@ -88,6 +88,8 @@ structure PrelaxFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiv
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
 #align category_theory.prelax_functor CategoryTheory.PrelaxFunctor
 
+attribute [nolint docBlame] CategoryTheory.PrelaxFunctor.map₂
+
 /-- The prefunctor between the underlying quivers. -/
 add_decl_doc PrelaxFunctor.toPrefunctor
 
@@ -210,7 +212,6 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 #align category_theory.oplax_functor.map₂_right_unitor CategoryTheory.OplaxFunctor.map₂_rightUnitor
 #align category_theory.oplax_functor.map₂_right_unitor' CategoryTheory.OplaxFunctor.map₂_rightUnitor
 
-
 namespace OplaxFunctor
 
 /- Porting note: removed primes from field names and remove `restate_axiom` since
@@ -222,13 +223,26 @@ attribute [simp] map₂_id
 
 -- porting note: was auto-ported as `attribute [reassoc.1]` for some reason
 attribute [reassoc (attr := simp)]
-  mapComp_naturality_left mapComp_naturality_right map₂_comp map₂_leftUnitor
-  map₂_rightUnitor map₂_associator
+  mapComp_naturality_left mapComp_naturality_right map₂_associator
 
+-- the simpNF linter complains that `map₂_leftUnitor_assoc` etc can be
+-- proved with `simp` so I move them here
+attribute [reassoc] map₂_leftUnitor map₂_comp map₂_rightUnitor
+attribute [simp] map₂_leftUnitor map₂_comp map₂_rightUnitor
 section
 
 /-- The prelax functor between the underlying quivers. -/
 add_decl_doc OplaxFunctor.toPrelaxFunctor
+
+attribute [nolint docBlame] CategoryTheory.OplaxFunctor.mapId
+  CategoryTheory.OplaxFunctor.mapComp
+  CategoryTheory.OplaxFunctor.mapComp_naturality_left
+  CategoryTheory.OplaxFunctor.mapComp_naturality_right
+  CategoryTheory.OplaxFunctor.map₂_id
+  CategoryTheory.OplaxFunctor.map₂_comp
+  CategoryTheory.OplaxFunctor.map₂_associator
+  CategoryTheory.OplaxFunctor.map₂_leftUnitor
+  CategoryTheory.OplaxFunctor.map₂_rightUnitor
 
 instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
   ⟨toPrelaxFunctor⟩
@@ -236,16 +250,10 @@ instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
 
 variable (F : OplaxFunctor B C)
 
-@[simp]
-theorem to_prelax_eq_coe : F.toPrelaxFunctor = F :=
-  rfl
-#align category_theory.oplax_functor.to_prelax_eq_coe CategoryTheory.OplaxFunctor.to_prelax_eq_coe
-
-@[simp]
-theorem to_prelaxFunctor_obj : (F : PrelaxFunctor B C).obj = F.obj :=
-  rfl
-#align category_theory.oplax_functor.to_prelax_functor_obj
-  CategoryTheory.OplaxFunctor.to_prelaxFunctor_obj
+-- porting note: `to_prelax_eq_coe` and `to_prelaxFunctor_obj` are
+-- syntactic tautologies in lean 4
+#noalign category_theory.oplax_functor.to_prelax_eq_coe
+#noalign category_theory.oplax_functor.to_prelax_functor_obj
 
 --porting note: removed lemma `to_prelaxFunctor_map` relating the now
 -- nonexistent `PrelaxFunctor.map` and `OplaxFunctor.map`
@@ -327,6 +335,11 @@ structure PseudoCore (F : OplaxFunctor B C) where
     ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), (mapCompIso f g).hom = F.mapComp f g := by aesop_cat
 #align category_theory.oplax_functor.pseudo_core CategoryTheory.OplaxFunctor.PseudoCore
 
+attribute [nolint docBlame] CategoryTheory.OplaxFunctor.PseudoCore.mapIdIso
+  CategoryTheory.OplaxFunctor.PseudoCore.mapCompIso
+  CategoryTheory.OplaxFunctor.PseudoCore.mapIdIso_hom
+  CategoryTheory.OplaxFunctor.PseudoCore.mapCompIso_hom
+
 attribute [simp] PseudoCore.mapIdIso_hom PseudoCore.mapCompIso_hom
 
 end
@@ -406,6 +419,17 @@ open Iso
 /-- The prelax functor between the underlying quivers. -/
 add_decl_doc Pseudofunctor.toPrelaxFunctor
 
+
+attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
+  CategoryTheory.Pseudofunctor.mapComp
+  CategoryTheory.Pseudofunctor.map₂_id
+  CategoryTheory.Pseudofunctor.map₂_comp
+  CategoryTheory.Pseudofunctor.map₂_whisker_left
+  CategoryTheory.Pseudofunctor.map₂_whisker_right
+  CategoryTheory.Pseudofunctor.map₂_associator
+  CategoryTheory.Pseudofunctor.map₂_left_unitor
+  CategoryTheory.Pseudofunctor.map₂_right_unitor
+
 instance hasCoeToPrelaxFunctor : Coe (Pseudofunctor B C) (PrelaxFunctor B C) :=
   ⟨toPrelaxFunctor⟩
 #align category_theory.pseudofunctor.has_coe_to_prelax_functor
@@ -413,17 +437,10 @@ instance hasCoeToPrelaxFunctor : Coe (Pseudofunctor B C) (PrelaxFunctor B C) :=
 
 variable (F : Pseudofunctor B C)
 
-@[simp]
-theorem toPrelaxFunctor_eq_coe : F.toPrelaxFunctor = F :=
-  rfl
-#align category_theory.pseudofunctor.to_prelax_functor_eq_coe
-  CategoryTheory.Pseudofunctor.toPrelaxFunctor_eq_coe
-
-@[simp]
-theorem to_prelaxFunctor_obj : (F : PrelaxFunctor B C).obj = F.obj :=
-  rfl
-#align category_theory.pseudofunctor.to_prelax_functor_obj
-  CategoryTheory.Pseudofunctor.to_prelaxFunctor_obj
+-- porting note: `toPrelaxFunctor_eq_coe` and `to_prelaxFunctor_obj`
+-- are syntactic tautologies in lean 4
+#noalign category_theory.pseudofunctor.to_prelax_functor_eq_coe
+#noalign category_theory.pseudofunctor.to_prelax_functor_obj
 
 --porting note: removed lemma `to_prelaxFunctor_map` relating the now
 -- nonexistent `PrelaxFunctor.map` and the now nonexistent `Pseudofunctor.map`
@@ -444,10 +461,8 @@ instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
   ⟨toOplax⟩
 #align category_theory.pseudofunctor.has_coe_to_oplax CategoryTheory.Pseudofunctor.hasCoeToOplax
 
-@[simp]
-theorem toOplax_eq_coe : F.toOplax = F :=
-  rfl
-#align category_theory.pseudofunctor.to_oplax_eq_coe CategoryTheory.Pseudofunctor.toOplax_eq_coe
+-- porting note: `toOplax_eq_coe` is a syntactic tautology in lean 4
+#noalign category_theory.pseudofunctor.to_oplax_eq_coe
 
 @[simp]
 theorem to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
@@ -555,3 +570,4 @@ end Pseudofunctor
 end
 
 end CategoryTheory
+#lint
