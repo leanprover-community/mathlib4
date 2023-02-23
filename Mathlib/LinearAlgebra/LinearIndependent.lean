@@ -82,9 +82,9 @@ open Function Set Submodule
 
 open Classical BigOperators Cardinal
 
-universe u
+universe u' u
 
-variable {ι : Type _} {ι' : Type _} {R : Type _} {K : Type _}
+variable {ι : Type u'} {ι' : Type _} {R : Type _} {K : Type _}
 variable {M : Type _} {M' M'' : Type _} {V : Type u} {V' : Type _}
 
 section Module
@@ -1213,7 +1213,8 @@ theorem LinearIndependent.insert (hs : LinearIndependent K (fun b => b : s → V
 theorem linearIndependent_option' :
     LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
-  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit ι).symm, linearIndependent_sum,
+  -- Porting note: Explicit universe level is required in `Equiv.optionEquivSumPUnit`.
+  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{_, u'} ι).symm, linearIndependent_sum,
     @range_unique _ PUnit, @linearIndependent_unique_iff PUnit, disjoint_span_singleton]
   dsimp [(· ∘ ·)]
   refine' ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, _, fun hx => (h.2 hx).elim⟩⟩
@@ -1229,12 +1230,12 @@ theorem LinearIndependent.option (hv : LinearIndependent K v)
 
 theorem linearIndependent_option {v : Option ι → V} :
     LinearIndependent K v ↔
-      LinearIndependent K (v ∘ coe : ι → V) ∧ v none ∉ Submodule.span K (range (v ∘ coe : ι → V)) :=
+      LinearIndependent K (v ∘ (↑) : ι → V) ∧ v none ∉ Submodule.span K (range (v ∘ (↑) : ι → V)) :=
   by simp only [← linearIndependent_option', Option.casesOn'_none_coe]
 #align linear_independent_option linearIndependent_option
 
 theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has : a ∉ s) :
-    (LinearIndependent K fun x : insert a s => f x) ↔
+    (LinearIndependent K fun x : ↥(insert a s) => f x) ↔
       (LinearIndependent K fun x : s => f x) ∧ f a ∉ Submodule.span K (f '' s) := by
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
     linearIndependent_option]
@@ -1242,13 +1243,13 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
 #align linear_independent_insert' linearIndependent_insert'
 
 theorem linearIndependent_insert (hxs : x ∉ s) :
-    (LinearIndependent K fun b : insert x s => (b : V)) ↔
+    (LinearIndependent K fun b : ↥(insert x s) => (b : V)) ↔
       (LinearIndependent K fun b : s => (b : V)) ∧ x ∉ Submodule.span K s :=
   (@linearIndependent_insert' _ _ _ _ _ _ _ _ id hxs).trans <| by simp
 #align linear_independent_insert linearIndependent_insert
 
 theorem linearIndependent_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
-    LinearIndependent K (coe : ({x, y} : Set V) → V) :=
+    LinearIndependent K ((↑) : ({x, y} : Set V) → V) :=
   pair_comm y x ▸ (linearIndependent_singleton hx).insert <|
     mt mem_span_singleton.1 (not_exists.2 hy)
 #align linear_independent_pair linearIndependent_pair
