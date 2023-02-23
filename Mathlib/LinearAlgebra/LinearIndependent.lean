@@ -1024,13 +1024,16 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'} (hv : 
 /-- Dedekind's linear independence of characters -/
 theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRing L]
     [NoZeroDivisors L] : @LinearIndependent _ L (G → L) (fun f => f : (G →* L) → G → L) _ _ _ := by
+  -- Porting note: Some casts are required.
   letI := Classical.decEq (G →* L) <;>
       letI : MulAction L L :=
         DistribMulAction.toMulAction <;>-- We prove linear independence by showing that only the trivial linear combination vanishes.
     exact
       linearIndependent_iff'.2-- To do this, we use `finset` induction,
       fun s =>
-        Finset.induction_on s (fun g hg i => False.elim) fun a s has ih g hg =>
+        -- Porting note: `False.elim` → `fun h => False.elim <| Finset.not_mem_empty _ h`
+        Finset.induction_on s
+          (fun g hg i h => False.elim <| Finset.not_mem_empty _ h) fun a s has ih g hg =>
           -- Here
           -- * `a` is a new character we will insert into the `finset` of characters `s`,
           -- * `ih` is the fact that only the trivial linear combination of characters in `s` is zero
@@ -1039,7 +1042,7 @@ theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRi
           -- We now make the key calculation:
           -- For any character `i` in the original `finset`, we have `g i • i = g i • a` as functions on the
           -- monoid `G`.
-          have h1 : ∀ i ∈ s, (g i • i : G → L) = g i • a := fun i his =>
+          have h1 : ∀ i ∈ s, (g i • (i : G → L)) = g i • (a : G → L) := fun i his =>
             funext fun x : G =>
               -- We prove these expressions are equal by showing
                 -- the differences of their values on each monoid element `x` is zero
@@ -1048,11 +1051,11 @@ theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRi
                   (funext fun y : G =>
                     calc
                       (-- After that, it's just a chase scene.
-                            ∑ i in s, ((g i * i x - g i * a x) • i : G → L))
+                            ∑ i in s, ((g i * i x - g i * a x) • (i : G → L)))
                             y =
                           ∑ i in s, (g i * i x - g i * a x) * i y :=
                         Finset.sum_apply _ _ _
-                      _ = ∑ i in s, g i * i x * i y - g i * a x * i y :=
+                      _ = ∑ i in s, (g i * i x * i y - g i * a x * i y) :=
                         Finset.sum_congr rfl fun _ _ => sub_mul _ _ _
                       _ = (∑ i in s, g i * i x * i y) - ∑ i in s, g i * a x * i y :=
                         Finset.sum_sub_distrib
@@ -1072,8 +1075,8 @@ theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRi
                             (Finset.sum_congr rfl fun i _ => by rw [i.map_mul, mul_assoc]))
                           (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
                       _ =
-                          (∑ i in insert a s, (g i • i : G → L)) (x * y) -
-                            a x * (∑ i in insert a s, (g i • i : G → L)) y :=
+                          (∑ i in insert a s, (g i • (i : G → L))) (x * y) -
+                            a x * (∑ i in insert a s, (g i • (i : G → L))) y :=
                         by rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum] <;> rfl
                       _ = 0 - a x * 0 := by rw [hg] <;> rfl
                       _ = 0 := by rw [mul_zero, sub_zero]
@@ -1082,8 +1085,9 @@ theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRi
           -- On the other hand, since `a` is not already in `s`, for any character `i ∈ s`
           -- there is some element of the monoid on which it differs from `a`.
           have h2 : ∀ i : G →* L, i ∈ s → ∃ y, i y ≠ a y := fun i his =>
-            by_contradiction fun h =>
-              have hia : i = a := MonoidHom.ext fun y => by_contradiction fun hy => h ⟨y, hy⟩
+            Classical.by_contradiction fun h =>
+              have hia : i = a := MonoidHom.ext fun y =>
+                Classical.by_contradiction fun hy => h ⟨y, hy⟩
               has <| hia ▸ his
           -- From these two facts we deduce that `g` actually vanishes on `s`,
           have h3 : ∀ i ∈ s, g i = 0 := fun i his =>
@@ -1096,17 +1100,17 @@ theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRi
           have h4 : g a = 0 :=
             calc
               g a = g a * 1 := (mul_one _).symm
-              _ = (g a • a : G → L) 1 := by rw [← a.map_one] <;> rfl
-              _ = (∑ i in insert a s, (g i • i : G → L)) 1 :=
+              _ = (g a • (a : G → L)) 1 := by rw [← a.map_one] <;> rfl
+              _ = (∑ i in insert a s, (g i • (i : G → L))) 1 :=
                 by
-                rw [Finset.sum_eq_single a]
-                · intro i his hia
-                  rw [Finset.mem_insert] at his
-                  rw [h3 i (his.resolve_left hia), zero_smul]
-                · intro haas
-                  exfalso
-                  apply haas
-                  exact Finset.mem_insert_self a s
+                  rw [Finset.sum_eq_single a]
+                  · intro i his hia
+                    rw [Finset.mem_insert] at his
+                    rw [h3 i (his.resolve_left hia), zero_smul]
+                  · intro haas
+                    exfalso
+                    apply haas
+                    exact Finset.mem_insert_self a s
               _ = 0 := by rw [hg] <;> rfl
 
           (-- Now we're done; the last two facts together imply that `g` vanishes on every element
@@ -1116,7 +1120,7 @@ theorem linearIndependent_monoidHom (G : Type _) [Monoid G] (L : Type _) [CommRi
             ⟨h4, h3⟩
 #align linear_independent_monoid_hom linearIndependent_monoidHom
 
-theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R (coe : u → M))
+theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
     (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
   have :=
     eq_of_linearIndependent_of_span_subtype (hl.mono (Set.union_subset hsu htu))
@@ -1124,7 +1128,7 @@ theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependen
   rw [← this]; apply Set.subset_union_left
 #align le_of_span_le_span le_of_span_le_span
 
-theorem span_le_span_iff [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R (coe : u → M))
+theorem span_le_span_iff [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
     (hsu : s ⊆ u) (htu : t ⊆ u) : span R s ≤ span R t ↔ s ⊆ t :=
   ⟨le_of_span_le_span hl hsu htu, span_mono⟩
 #align span_le_span_iff span_le_span_iff
@@ -1152,7 +1156,7 @@ alias linearIndependent_unique_iff ↔ _ linearIndependent_unique
 
 theorem linearIndependent_singleton {x : M} (hx : x ≠ 0) :
     LinearIndependent R (fun x => x : ({x} : Set M) → M) :=
-  linearIndependent_unique coe hx
+  linearIndependent_unique ((↑) : ({x} : Set M) → M) hx
 #align linear_independent_singleton linearIndependent_singleton
 
 end Nontrivial
@@ -1189,7 +1193,7 @@ theorem mem_span_insert_exchange :
 
 theorem linearIndependent_iff_not_mem_span :
     LinearIndependent K v ↔ ∀ i, v i ∉ span K (v '' (univ \ {i})) := by
-  apply linear_independent_iff_not_smul_mem_span.trans
+  apply linearIndependent_iff_not_smul_mem_span.trans
   constructor
   · intro h i h_in_span
     apply one_ne_zero (h i 1 (by simp [h_in_span]))
@@ -1199,7 +1203,7 @@ theorem linearIndependent_iff_not_mem_span :
 #align linear_independent_iff_not_mem_span linearIndependent_iff_not_mem_span
 
 theorem LinearIndependent.insert (hs : LinearIndependent K (fun b => b : s → V))
-    (hx : x ∉ span K s) : LinearIndependent K (fun b => b : insert x s → V) := by
+    (hx : x ∉ span K s) : LinearIndependent K (fun b => b : ↥(insert x s) → V) := by
   rw [← union_singleton]
   have x0 : x ≠ 0 := mt (by rintro rfl <;> apply zero_mem (span K s)) hx
   apply hs.union (linearIndependent_singleton x0)
