@@ -8,7 +8,7 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Pempty
+import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Category.Preorder
