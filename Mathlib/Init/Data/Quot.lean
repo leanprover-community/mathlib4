@@ -54,7 +54,7 @@ theorem Quot.EqvGen_sound {r : α → α → Prop} {a b : α} (H : EqvGen r a b)
 end
 
 open Decidable
-instance {α : Sort u} {s : Setoid α} [d : ∀ a b : α, Decidable (a ≈ b)] :
+instance Quotient.decidableEq {α : Sort u} {s : Setoid α} [d : ∀ a b : α, Decidable (a ≈ b)] :
     DecidableEq (Quotient s) :=
   λ q₁ q₂ : Quotient s =>
     Quotient.recOnSubsingleton₂ q₁ q₂
