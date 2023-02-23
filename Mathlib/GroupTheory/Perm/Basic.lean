@@ -632,8 +632,10 @@ end AddGroup
 section Group
 variable [Group α] (a b : α)
 
-@[to_additive existing (attr := simp)] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
-@[to_additive existing (attr := simp)] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
+@[to_additive existing (attr := simp)]
+lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+@[to_additive existing (attr := simp)]
+lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 #align equiv.mul_right_one Equiv.mulRight_one
 #align equiv.mul_left_one Equiv.mulLeft_one
 
