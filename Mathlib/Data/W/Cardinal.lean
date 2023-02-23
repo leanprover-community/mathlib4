@@ -16,10 +16,10 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 
 This file proves some theorems about the cardinality of W-types. The main result is
 `cardinal_mk_le_max_aleph_0_of_fintype` which says that if for any `a : α`,
-`β a` is finite, then the cardinality of `W_type β` is at most the maximum of the
+`β a` is finite, then the cardinality of `WType β` is at most the maximum of the
 cardinality of `α` and `ℵ₀`.
 This can be used to prove theorems about the cardinality of algebraic constructions such as
-polynomials. There is a surjection from a `W_type` to `mv_polynomial` for example, and
+polynomials. There is a surjection from a `WType` to `mv_polynomial` for example, and
 this surjection can be used to put an upper bound on the cardinality of `mv_polynomial`.
 
 ## Tags
@@ -47,7 +47,7 @@ theorem cardinal_mk_eq_sum : (#WType β) = sum (fun a : α => (#WType β) ^ (#β
   exact mk_congr (equivSigma β)
 #align W_type.cardinal_mk_eq_sum WType.cardinal_mk_eq_sum
 
-/-- `#(W_type β)` is the least cardinal `κ` such that `sum (λ a : α, κ ^ #(β a)) ≤ κ` -/
+/-- `#(WType β)` is the least cardinal `κ` such that `Sum (λ a : α, κ ^ #(β a)) ≤ κ` -/
 theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ (#β a)) ≤ κ) :
     (#WType β) ≤ κ := by
   induction' κ using Cardinal.inductionOn with γ
@@ -56,7 +56,7 @@ theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ 
   exact Cardinal.mk_le_of_injective (elim_injective _ hκ.1 hκ.2)
 #align W_type.cardinal_mk_le_of_le WType.cardinal_mk_le_of_le
 
-/-- If, for any `a : α`, `β a` is finite, then the cardinality of `W_type β`
+/-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
   is at most the maximum of the cardinality of `α` and `ℵ₀`  -/
 theorem cardinal_mk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : (#WType β) ≤ max (#α) ℵ₀ :=
   (isEmpty_or_nonempty α).elim
