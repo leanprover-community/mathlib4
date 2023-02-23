@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Ordinal.Arithmetic
-import Mathbin.SetTheory.Ordinal.Exponential
+import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Exponential
 
 /-!
 # Cantor Normal Form
@@ -55,8 +55,7 @@ noncomputable def cNFRec (b : Ordinal) {C : Ordinal → Sort _} (H0 : C 0)
 
 @[simp]
 theorem cNFRec_zero {C : Ordinal → Sort _} (b : Ordinal) (H0 : C 0)
-    (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : @cNFRec b C H0 H 0 = H0 :=
-  by
+    (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : @cNFRec b C H0 H 0 = H0 := by
   rw [CNF_rec, dif_pos rfl]
   rfl
 #align ordinal.CNF_rec_zero Ordinal.cNFRec_zero
@@ -96,8 +95,7 @@ theorem zero_cNF {o : Ordinal} (ho : o ≠ 0) : cNF 0 o = [⟨0, o⟩] := by sim
 theorem one_cNF {o : Ordinal} (ho : o ≠ 0) : cNF 1 o = [⟨0, o⟩] := by simp [CNF_ne_zero ho]
 #align ordinal.one_CNF Ordinal.one_cNF
 
-theorem cNF_of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : cNF b o = [⟨0, o⟩] :=
-  by
+theorem cNF_of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : cNF b o = [⟨0, o⟩] := by
   rcases le_one_iff.1 hb with (rfl | rfl)
   · exact zero_CNF ho
   · exact one_CNF ho
@@ -134,8 +132,7 @@ theorem cNF_fst_le {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ cNF b
 #align ordinal.CNF_fst_le Ordinal.cNF_fst_le
 
 /-- Every coefficient in a Cantor normal form is positive. -/
-theorem cNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ cNF b o → 0 < x.2 :=
-  by
+theorem cNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ cNF b o → 0 < x.2 := by
   refine' CNF_rec b _ (fun o ho IH => _) o
   · simp
   · rcases eq_zero_or_pos b with (rfl | hb)
@@ -163,8 +160,7 @@ theorem cNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
 #align ordinal.CNF_snd_lt Ordinal.cNF_snd_lt
 
 /-- The exponents of the Cantor normal form are decreasing. -/
-theorem cNF_sorted (b o : Ordinal) : ((cNF b o).map Prod.fst).Sorted (· > ·) :=
-  by
+theorem cNF_sorted (b o : Ordinal) : ((cNF b o).map Prod.fst).Sorted (· > ·) := by
   refine' CNF_rec b _ (fun o ho IH => _) o
   · simp
   · cases' le_or_lt b 1 with hb hb
