@@ -232,7 +232,7 @@ def swapFactorsAux :
   | x::l => fun f h =>
     if hfx : x = f x then
       swapFactorsAux l f fun {y} hy =>
-        List.mem_of_ne_of_mem (fun h : y = x => by simpa [h, hfx.symm] using hy) (h hy)
+        List.mem_of_ne_of_mem (fun h : y = x => by simp [h, hfx.symm] at hy) (h hy)
     else
       let m :=
         swapFactorsAux l (swap x (f x) * f) fun {y} hy =>
