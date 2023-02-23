@@ -543,7 +543,7 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
   inverse := e.inverse.op
   unitIso := (NatIso.op e.unitIso).symm
   counitIso := (NatIso.op e.counitIso).symm
-  functor_unit_iso_comp X := by
+  functor_unitIso_comp X := by
     apply Quiver.Hom.unop_inj
     dsimp
     simp
@@ -557,7 +557,7 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
   inverse := e.inverse.unop
   unitIso := (NatIso.unop e.unitIso).symm
   counitIso := (NatIso.unop e.counitIso).symm
-  functor_unit_iso_comp X := by
+  functor_unitIso_comp X := by
     apply Quiver.Hom.op_inj
     dsimp
     simp

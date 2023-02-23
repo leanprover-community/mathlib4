@@ -696,7 +696,7 @@ theorem MonoidHom.map_finprod {f : α → M} (g : M →* N) (hf : (mulSupport f)
 #align monoid_hom.map_finprod MonoidHom.map_finprod
 #align add_monoid_hom.map_finsum AddMonoidHom.map_finsum
 
-@[to_additive finsum_nsmul]
+@[to_additive]
 theorem finprod_pow (hf : (mulSupport f).Finite) (n : ℕ) : (∏ᶠ i, f i) ^ n = ∏ᶠ i, f i ^ n :=
   (powMonoidHom n).map_finprod hf
 #align finprod_pow finprod_pow

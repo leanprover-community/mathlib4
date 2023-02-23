@@ -392,6 +392,12 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
   MonoidWithZeroHomClass F α β
 #align ring_hom_class RingHomClass
 
+set_option linter.deprecated false in
+/-- Ring homomorphisms preserve `bit1`. -/
+@[simp] lemma map_bit1 [NonAssocSemiring α] [NonAssocSemiring β] [RingHomClass F α β]
+    (f : F) (a : α) : (f (bit1 a) : β) = bit1 (f a) := by simp [bit1]
+#align map_bit1 map_bit1
+
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
@@ -458,7 +464,7 @@ theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α → β) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) = f :=
+theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α → β) = f :=
   rfl
 #align ring_hom.coe_mk RingHom.coe_mk
 
@@ -488,8 +494,7 @@ theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : 
 #align ring_hom.to_monoid_with_zero_hom_eq_coe RingHom.toMonoidWithZeroHom_eq_coe
 
 @[simp]
-theorem coe_monoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
-    ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) : α →* β) = ⟨⟨f, h₁⟩, h₂⟩ :=
+theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
 #align ring_hom.coe_monoid_hom_mk RingHom.coe_monoidHom_mk
 

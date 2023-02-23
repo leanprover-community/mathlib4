@@ -63,6 +63,8 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 #align category_theory.iso CategoryTheory.Iso
+#align category_theory.iso.hom CategoryTheory.Iso.hom
+#align category_theory.iso.inv CategoryTheory.Iso.inv
 #align category_theory.iso.inv_hom_id CategoryTheory.Iso.inv_hom_id
 #align category_theory.iso.hom_inv_id CategoryTheory.Iso.hom_inv_id
 
@@ -140,7 +142,7 @@ def refl (X : C) : X ≅ X where
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
-theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩ 
+theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 
 @[simp]
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
