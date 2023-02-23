@@ -1951,4 +1951,3 @@ theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : F
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩
 #align uniform.tendsto_congr Uniform.tendsto_congr
 
-#lint
