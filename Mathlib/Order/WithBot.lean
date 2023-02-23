@@ -135,7 +135,7 @@ theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨
   induction x using recBotCoe <;> simp [@eq_comm _ d]
 
 @[simp] -- porting note: new theorem
-theorem unbot'_eq_d_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
+theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
   simp [unbot'_eq_iff]
 
 -- porting note: new theorem
@@ -704,8 +704,8 @@ theorem untop'_eq_iff {d y : α} {x : WithTop α} : untop' d x = y ↔ x = y ∨
   WithBot.unbot'_eq_iff
 
 @[simp] -- porting note: new theorem
-theorem untop'_eq_d_iff {d : α} {x : WithTop α} : untop' d x = d ↔ x = d ∨ x = ⊤ :=
-  WithBot.unbot'_eq_d_iff
+theorem untop'_eq_self_iff {d : α} {x : WithTop α} : untop' d x = d ↔ x = d ∨ x = ⊤ :=
+  WithBot.unbot'_eq_self_iff
 
 -- porting note: new theorem
 theorem untop'_eq_untop'_iff {d : α} {x y : WithTop α} :
