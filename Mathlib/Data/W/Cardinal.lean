@@ -39,18 +39,20 @@ namespace WType
 open Cardinal
 
 open Cardinal
+-- porting note: `W` is a special name, exceptionally in upper case in Lean3
+set_option linter.uppercaseLean3 false
 
-theorem cardinal_mk_eq_sum : (#WType β) = Sum fun a : α => (#WType β) ^ (#β a) := by
+theorem cardinal_mk_eq_sum : (#WType β) = sum (fun a : α => (#WType β) ^ (#β a)) := by
   simp only [Cardinal.power_def, ← Cardinal.mk_sigma]
-  exact mk_congr (equiv_sigma β)
+  exact mk_congr (equivSigma β)
 #align W_type.cardinal_mk_eq_sum WType.cardinal_mk_eq_sum
 
 /-- `#(W_type β)` is the least cardinal `κ` such that `sum (λ a : α, κ ^ #(β a)) ≤ κ` -/
-theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (Sum fun a : α => κ ^ (#β a)) ≤ κ) :
+theorem cardinal_mk_le_of_le {κ : Cardinal.{u}} (hκ : (sum fun a : α => κ ^ (#β a)) ≤ κ) :
     (#WType β) ≤ κ := by
   induction' κ using Cardinal.inductionOn with γ
   simp only [Cardinal.power_def, ← Cardinal.mk_sigma, Cardinal.le_def] at hκ
-  cases hκ
+  cases' hκ with hκ
   exact Cardinal.mk_le_of_injective (elim_injective _ hκ.1 hκ.2)
 #align W_type.cardinal_mk_le_of_le WType.cardinal_mk_le_of_le
 
@@ -80,9 +82,8 @@ theorem cardinal_mk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : (#WType β)
                   rw [← power_zero]
                   exact
                     power_le_power_left
-                      (pos_iff_ne_zero.1 (aleph_0_pos.trans_le (le_max_right _ _))) (zero_le _))
-        
+                      (pos_iff_ne_zero.1 (aleph0_pos.trans_le (le_max_right _ _))) (zero_le _))
+
 #align W_type.cardinal_mk_le_max_aleph_0_of_finite WType.cardinal_mk_le_max_aleph0_of_finite
 
 end WType
-
