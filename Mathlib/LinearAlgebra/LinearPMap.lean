@@ -215,16 +215,18 @@ theorem snd_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
   rfl
 #align linear_pmap.snd_apply LinearPMap.snd_apply
 
-instance : Neg (E →ₗ.[R] F) :=
+instance neg : Neg (E →ₗ.[R] F) :=
   ⟨fun f => ⟨f.domain, -f.toFun⟩⟩
+#align linear_pmap.has_neg LinearPMap.neg
 
 @[simp]
 theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
   rfl
 #align linear_pmap.neg_apply LinearPMap.neg_apply
 
-instance : LE (E →ₗ.[R] F) :=
+instance le : LE (E →ₗ.[R] F) :=
   ⟨fun f g => f.domain ≤ g.domain ∧ ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y⟩
+#align linear_pmap.has_le LinearPMap.le
 
 theorem apply_comp_ofLe {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
     T x = S (Submodule.ofLe h.1 x) :=
@@ -257,16 +259,19 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
         by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 #align linear_pmap.eq_locus LinearPMap.eqLocus
 
-instance : HasInf (E →ₗ.[R] F) :=
+instance hasInf : HasInf (E →ₗ.[R] F) :=
   ⟨fun f g => ⟨f.eqLocus g, f.toFun.comp <| ofLe fun _x hx => hx.fst⟩⟩
+#align linear_pmap.has_inf LinearPMap.hasInf
 
-instance : Bot (E →ₗ.[R] F) :=
+instance bot : Bot (E →ₗ.[R] F) :=
   ⟨⟨⊥, 0⟩⟩
+#align linear_pmap.has_bot LinearPMap.bot
 
-instance : Inhabited (E →ₗ.[R] F) :=
+instance inhabited : Inhabited (E →ₗ.[R] F) :=
   ⟨⊥⟩
+#align linear_pmap.inhabited LinearPMap.inhabited
 
-instance : SemilatticeInf (E →ₗ.[R] F) where
+instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
   le := (· ≤ ·)
   le_refl f := ⟨le_refl f.domain, fun x y h => Subtype.eq h ▸ rfl⟩
   le_trans := fun f g h ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
@@ -288,14 +293,16 @@ instance : SemilatticeInf (E →ₗ.[R] F) where
   inf_le_left f g := ⟨fun x hx => hx.fst, fun x y h => congr_arg f <| Subtype.eq <| h⟩
   inf_le_right f g :=
     ⟨fun x hx => hx.snd.fst, fun ⟨x, xf, xg, hx⟩ y h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
+#align linear_pmap.semilattice_inf LinearPMap.semilatticeInf
 
-instance : OrderBot (E →ₗ.[R] F) where
+instance orderBot : OrderBot (E →ₗ.[R] F) where
   bot := ⊥
   bot_le f :=
     ⟨bot_le, fun x y h => by
       have hx : x = 0 := Subtype.eq ((mem_bot R).1 x.2)
       have hy : y = 0 := Subtype.eq (h.symm.trans (congr_arg _ hx))
       rw [hx, hy, map_zero, map_zero]⟩
+#align linear_pmap.order_bot LinearPMap.orderBot
 
 theorem le_of_eqLocus_ge {f g : E →ₗ.[R] F} (H : f.domain ≤ f.eqLocus g) : f ≤ g :=
   suffices f ≤ f ⊓ g from le_trans this inf_le_right
@@ -396,10 +403,11 @@ variable {M N : Type _} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F]
 
 variable [Monoid N] [DistribMulAction N F] [SMulCommClass R N F]
 
-instance : SMul M (E →ₗ.[R] F) :=
+instance smul : SMul M (E →ₗ.[R] F) :=
   ⟨fun a f =>
     { domain := f.domain
       toFun := a • f.toFun }⟩
+#align linear_pmap.has_smul LinearPMap.smul
 
 @[simp]
 theorem smul_domain (a : M) (f : E →ₗ.[R] F) : (a • f).domain = f.domain :=
@@ -415,25 +423,29 @@ theorem coe_smul (a : M) (f : E →ₗ.[R] F) : ⇑(a • f) = a • ⇑f :=
   rfl
 #align linear_pmap.coe_smul LinearPMap.coe_smul
 
-instance [SMulCommClass M N F] : SMulCommClass M N (E →ₗ.[R] F) :=
+instance smulCommClass [SMulCommClass M N F] : SMulCommClass M N (E →ₗ.[R] F) :=
   ⟨fun a b f => ext' <| smul_comm a b f.toFun⟩
+#align linear_pmap.smul_comm_class LinearPMap.smulCommClass
 
-instance [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₗ.[R] F) :=
+instance isScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N (E →ₗ.[R] F) :=
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
+#align linear_pmap.is_scalar_tower LinearPMap.isScalarTower
 
-instance : MulAction M (E →ₗ.[R] F) where
+instance mulAction : MulAction M (E →ₗ.[R] F) where
   smul := (· • ·)
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
+#align linear_pmap.mul_action LinearPMap.mulAction
 
 end Smul
 
 section Vadd
 
-instance : VAdd (E →ₗ[R] F) (E →ₗ.[R] F) :=
+instance vadd : VAdd (E →ₗ[R] F) (E →ₗ.[R] F) :=
   ⟨fun f g =>
     { domain := g.domain
       toFun := f.comp g.domain.subtype + g.toFun }⟩
+#align linear_pmap.has_vadd LinearPMap.vadd
 
 @[simp]
 theorem vadd_domain (f : E →ₗ[R] F) (g : E →ₗ.[R] F) : (f +ᵥ g).domain = g.domain :=
@@ -450,11 +462,12 @@ theorem coe_vadd (f : E →ₗ[R] F) (g : E →ₗ.[R] F) : ⇑(f +ᵥ g) = ⇑(
   rfl
 #align linear_pmap.coe_vadd LinearPMap.coe_vadd
 
-instance : AddAction (E →ₗ[R] F) (E →ₗ.[R] F)
+instance addAction : AddAction (E →ₗ[R] F) (E →ₗ.[R] F)
     where
   vadd := (· +ᵥ ·)
   zero_vadd := fun ⟨_s, _f⟩ => ext' <| zero_add _
   add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ => ext' <| LinearMap.ext fun _x => add_assoc _ _ _
+#align linear_pmap.add_action LinearPMap.addAction
 
 end Vadd
 
