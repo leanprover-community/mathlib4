@@ -516,20 +516,19 @@ theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs
       ∀ x y, x ≠ y → signAux3 (swap x y) hs = -1 := by
   let ⟨l, hl⟩ := Quotient.exists_rep s
   let e := equivFin α
-  clear _let_match
+  --clear _let_match
   subst hl
   show
-    sign_aux2 l (f * g) = sign_aux2 l f * sign_aux2 l g ∧ ∀ x y, x ≠ y → sign_aux2 l (swap x y) = -1
+    signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧ ∀ x y, x ≠ y → signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
     Equiv.ext fun h => by simp [mul_apply]
   constructor
-  ·
-    rw [← sign_aux_eq_sign_aux2 _ _ e fun _ _ => hs _, ←
-      sign_aux_eq_sign_aux2 _ _ e fun _ _ => hs _, ← sign_aux_eq_sign_aux2 _ _ e fun _ _ => hs _,
-      hfg, sign_aux_mul]
+  · rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, ←
+      signAux_eq_signAux2 _ _ e fun _ _ => hs _, ← signAux_eq_signAux2 _ _ e fun _ _ => hs _,
+      hfg, signAux_mul]
   · intro x y hxy
     have hexy : e x ≠ e y := mt e.injective.eq_iff.1 hxy
-    rw [← sign_aux_eq_sign_aux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, sign_aux_swap hexy]
+    rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, signAux_swap hexy]
 #align equiv.perm.sign_aux3_mul_and_swap Equiv.Perm.signAux3_mul_and_swap
 
 /-- `sign` of a permutation returns the signature or parity of a permutation, `1` for even
@@ -565,7 +564,7 @@ theorem sign_refl : sign (Equiv.refl α) = 1 :=
 
 @[simp]
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
-  rw [MonoidHom.map_inv SignType.sign f, Int.units_inv_eq_self]
+  rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
 #align equiv.perm.sign_inv Equiv.Perm.sign_inv
 
 @[simp]
@@ -578,7 +577,7 @@ theorem sign_swap {x y : α} (h : x ≠ y) : sign (swap x y) = -1 :=
 #align equiv.perm.sign_swap Equiv.Perm.sign_swap
 
 @[simp]
-theorem sign_swap' {x y : α} : (swap x y).sign = if x = y then 1 else -1 :=
+theorem sign_swap' {x y : α} : sign (swap x y) = if x = y then 1 else -1 :=
   if H : x = y then by simp [H, swap_self] else by simp [sign_swap H, H]
 #align equiv.perm.sign_swap' Equiv.Perm.sign_swap'
 
@@ -621,7 +620,7 @@ theorem sign_prod_list_swap {l : List (Perm α)} (hl : ∀ g ∈ l, IsSwap g) :
       ⟨by simp, fun u hu =>
         let ⟨g, hg⟩ := List.mem_map'.1 hu
         hg.2 ▸ (hl _ hg.1).sign_eq⟩
-  rw [← List.prod_replicate, ← h₁, List.prod_hom _ (@SignType.sign α _ _)]
+  rw [← List.prod_replicate, ← h₁, List.prod_hom _ (@sign α _ _)]
 #align equiv.perm.sign_prod_list_swap Equiv.Perm.sign_prod_list_swap
 
 variable (α)
@@ -742,15 +741,15 @@ section congr
 variable [DecidableEq β] [Fintype β]
 
 @[simp]
-theorem sign_prodExtendRight (a : α) (σ : Perm β) : (prodExtendRight a σ).sign = σ.sign :=
+theorem sign_prodExtendRight (a : α) (σ : Perm β) : sign (prodExtendRight a σ) = sign σ :=
   sign_bij (fun (ab : α × β) _ => ab.snd)
-    (fun ⟨a', b⟩ hab hab' => by simp [eq_of_prod_extend_right_ne hab])
+    (fun ⟨a', b⟩ hab hab' => by simp [eq_of_prodExtendRight_ne hab])
     (fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ hab₁ hab₂ h => by
-      simpa [eq_of_prod_extend_right_ne hab₁, eq_of_prod_extend_right_ne hab₂] using h)
+      simpa [eq_of_prodExtendRight_ne hab₁, eq_of_prodExtendRight_ne hab₂] using h)
     fun y hy => ⟨(a, y), by simpa, by simp⟩
 #align equiv.perm.sign_prod_extend_right Equiv.Perm.sign_prodExtendRight
 
-theorem sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = ∏ k, (σ k).sign := by
+theorem sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = ∏ k, sign (σ k) := by
   obtain ⟨l, hl, mem_l⟩ := Finite.exists_univ_list α
   have l_to_finset : l.toFinset = Finset.univ :=
     by
@@ -759,24 +758,24 @@ theorem sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = �
     exact List.mem_toFinset.mpr (mem_l b)
   rw [← prod_prodExtendRight σ hl mem_l, sign.map_list_prod, List.map_map, ← l_to_finset,
     List.prod_toFinset _ hl]
-  simp_rw [← fun a => sign_prodExtendRight a (σ a)]
+  simp_rw [← fun a => sign_prodExtendRight a (σ a), Function.comp]
 #align equiv.perm.sign_prod_congr_right Equiv.Perm.sign_prodCongrRight
 
-theorem sign_prodCongrLeft (σ : α → Perm β) : sign (prodCongrLeft σ) = ∏ k, (σ k).sign := by
-  refine' (sign_eq_sign_of_equiv _ _ (prod_comm β α) _).trans (sign_prod_congr_right σ)
+theorem sign_prodCongrLeft (σ : α → Perm β) : sign (prodCongrLeft σ) = ∏ k, sign (σ k) := by
+  refine' (sign_eq_sign_of_equiv _ _ (prodComm β α) _).trans (sign_prodCongrRight σ)
   rintro ⟨b, α⟩
   rfl
 #align equiv.perm.sign_prod_congr_left Equiv.Perm.sign_prodCongrLeft
 
 @[simp]
-theorem sign_permCongr (e : α ≃ β) (p : Perm α) : (e.permCongr p).sign = p.sign :=
+theorem sign_permCongr (e : α ≃ β) (p : Perm α) : sign (e.permCongr p) = sign p :=
   sign_eq_sign_of_equiv _ _ e.symm (by simp)
 #align equiv.perm.sign_perm_congr Equiv.Perm.sign_permCongr
 
 @[simp]
-theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : (sumCongr σa σb).sign = σa.sign * σb.sign := by
-  suffices (sum_congr σa (1 : perm β)).sign = σa.sign ∧ (sum_congr (1 : perm α) σb).sign = σb.sign
-    by rw [← this.1, ← this.2, ← sign_mul, sum_congr_mul, one_mul, mul_one]
+theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : sign (sumCongr σa σb) = sign σa * sign σb := by
+  suffices sign (sumCongr σa (1 : Perm β)) = sign σa ∧ sign (sumCongr (1 : Perm α) σb) = sign σb
+    by rw [← this.1, ← this.2, ← sign_mul, sumCongr_mul, one_mul, mul_one]
   constructor
   · apply σa.swap_induction_on _ fun σa' a₁ a₂ ha ih => _
     · simp
@@ -790,19 +789,19 @@ theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : (sumCongr σa σb).sign 
 
 @[simp]
 theorem sign_subtypeCongr {p : α → Prop} [DecidablePred p] (ep : Perm { a // p a })
-    (en : Perm { a // ¬p a }) : (ep.subtypeCongr en).sign = ep.sign * en.sign := by
+    (en : Perm { a // ¬p a }) : sign (ep.subtypeCongr en) = sign ep * sign en := by
   simp [subtypeCongr]
 #align equiv.perm.sign_subtype_congr Equiv.Perm.sign_subtypeCongr
 
 @[simp]
 theorem sign_extendDomain (e : Perm α) {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p) :
     Equiv.Perm.sign (e.extendDomain f) = Equiv.Perm.sign e := by
-  simp only [Equiv.Perm.extendDomain, sign_subtypeCongr, sign_perm_congr, sign_refl, mul_one]
+  simp only [Equiv.Perm.extendDomain, sign_subtypeCongr, sign_permCongr, sign_refl, mul_one]
 #align equiv.perm.sign_extend_domain Equiv.Perm.sign_extendDomain
 
 @[simp]
 theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subtype p)) :
-    Equiv.Perm.sign f.ofSubtype = Equiv.Perm.sign f :=
+    ofSubtype (sign f) = sign f :=
   sign_extendDomain f (Equiv.refl (Subtype p))
 #align equiv.perm.sign_of_subtype Equiv.Perm.sign_ofSubtype
 
