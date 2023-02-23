@@ -373,7 +373,7 @@ theorem linearDependent_comp_subtype' {s : Set ι} :
   by simp [linearIndependent_comp_subtype, and_left_comm]
 #align linear_dependent_comp_subtype' linearDependent_comp_subtype'
 
-/-- A version of `linear_dependent_comp_subtype'` with `Finsupp.total` unfolded. -/
+/-- A version of `linearDependent_comp_subtype'` with `Finsupp.total` unfolded. -/
 theorem linearDependent_comp_subtype {s : Set ι} :
     ¬LinearIndependent R (v ∘ (↑) : s → M) ↔
       ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ (∑ i in f.support, f i • v i) = 0 ∧ f ≠ 0 :=
