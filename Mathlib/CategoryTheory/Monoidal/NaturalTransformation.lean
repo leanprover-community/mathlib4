@@ -145,31 +145,30 @@ variable {F G : LaxMonoidalFunctor C D}
 and the monoidal naturality in the forward direction.
 -/
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
-    (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f)
-    (unit : F.ε ≫ (app (𝟙_ C)).hom = G.ε)
-    (tensor : ∀ X Y, F.μ X Y ≫ (app (X ⊗ Y)).hom = ((app X).hom ⊗ (app Y).hom) ≫ G.μ X Y) : F ≅ G
+    (naturality' : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f)
+    (unit' : F.ε ≫ (app (𝟙_ C)).hom = G.ε)
+    (tensor' : ∀ X Y, F.μ X Y ≫ (app (X ⊗ Y)).hom = ((app X).hom ⊗ (app Y).hom) ≫ G.μ X Y) : F ≅ G
     where
   hom := { app := fun X => (app X).hom }
-  inv :=
-    {
-      (NatIso.ofComponents app
-          @naturality).inv with
-      app := fun X => (app X).inv
-      unit := by
-        dsimp
-        --rw [← unit, assoc, Iso.hom_inv_id, comp_id]
-        sorry
-      tensor := fun X Y => by
-        sorry
-        /-
-        dsimp
-        rw [Iso.comp_inv_eq]
-        rw [assoc, tensor, ← tensor_comp_assoc, iso.inv_hom_id, iso.inv_hom_id,
-          tensor_id, id_comp]
-        -/
-          }
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+  inv := {
+    (NatIso.ofComponents app
+        @naturality').inv with
+    app := fun X => (app X).inv
+    unit := by
+      dsimp
+      rw [← unit', assoc, Iso.hom_inv_id, comp_id]
+    tensor := fun X Y => by
+      dsimp
+      rw [Iso.comp_inv_eq, assoc, tensor', ← tensor_comp_assoc,
+        Iso.inv_hom_id, Iso.inv_hom_id, tensor_id, id_comp] }
+  hom_inv_id := by
+    apply MonoidalNatTrans.ext
+    ext x
+    exact (app x).hom_inv_id
+  inv_hom_id := by
+    apply MonoidalNatTrans.ext
+    ext x
+    exact (app x).inv_hom_id
 #align category_theory.monoidal_nat_iso.of_components CategoryTheory.MonoidalNatIso.ofComponents
 
 @[simp]
