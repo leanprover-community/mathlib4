@@ -573,16 +573,18 @@ instance hasCoeToLinearEquiv : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ ≃ₗ[R] L�
   ⟨toLinearEquiv⟩
 #align lie_equiv.has_coe_to_linear_equiv LieEquiv.hasCoeToLinearEquiv
 
+/-- Coercion to a function. -/
+@[coe] def toFun' (e : L₁ ≃ₗ⁅R⁆ L₂) := e.toFun
+
 /-- see Note [function coercion] -/
 instance : CoeFun (L₁ ≃ₗ⁅R⁆ L₂) fun _ => L₁ → L₂ :=
-  ⟨fun e => e.toLieHom.toFun⟩
+  ⟨fun e => e.toFun'⟩
 
-@[norm_cast]
 theorem coe_to_lieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ L₂) = e :=
   rfl
 #align lie_equiv.coe_to_lie_hom LieEquiv.coe_to_lieHom
 
-@[simp, norm_cast]
+@[simp]
 theorem coe_to_linearEquiv (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ ≃ₗ[R] L₂) = e :=
   rfl
 #align lie_equiv.coe_to_linear_equiv LieEquiv.coe_to_linearEquiv
@@ -647,14 +649,12 @@ theorem symm_symm (e : L₁ ≃ₗ⁅R⁆ L₂) : e.symm.symm = e := by
   rfl
 #align lie_equiv.symm_symm LieEquiv.symm_symm
 
--- porting note: TODO find out how to change `simp` set so can restore the `simp` below.
--- @[simp]
+@[simp]
 theorem apply_symm_apply (e : L₁ ≃ₗ⁅R⁆ L₂) : ∀ x, e (e.symm x) = x :=
   e.toLinearEquiv.apply_symm_apply
 #align lie_equiv.apply_symm_apply LieEquiv.apply_symm_apply
 
--- porting note: TODO find out how to change `simp` set so can restore the `simp` below.
--- @[simp]
+@[simp]
 theorem symm_apply_apply (e : L₁ ≃ₗ⁅R⁆ L₂) : ∀ x, e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply
 #align lie_equiv.symm_apply_apply LieEquiv.symm_apply_apply
@@ -1032,9 +1032,12 @@ instance hasCoeToLinearEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) :=
   ⟨toLinearEquiv⟩
 #align lie_module_equiv.has_coe_to_linear_equiv LieModuleEquiv.hasCoeToLinearEquiv
 
+/-- Coercion to function. -/
+@[coe] def toFun' (e : (M ≃ₗ⁅R,L⁆ N)) := e.toFun
+
 /-- see Note [function coercion] -/
 instance : CoeFun (M ≃ₗ⁅R,L⁆ N) fun _ => M → N :=
-  ⟨fun e => e.toLieModuleHom.toFun⟩
+  ⟨fun e => e.toFun'⟩
 
 theorem injective (e : M ≃ₗ⁅R,L⁆ N) : Function.Injective e :=
   e.toEquiv.injective
@@ -1051,12 +1054,11 @@ theorem coe_mk (f : M →ₗ⁅R,L⁆ N) (invFun h₁ h₂) :
   rfl
 #align lie_module_equiv.coe_mk LieModuleEquiv.coe_mk
 
-@[norm_cast]
 theorem coe_to_lieModuleHom (e : M ≃ₗ⁅R,L⁆ N) : ⇑(e : M →ₗ⁅R,L⁆ N) = e :=
   rfl
 #align lie_module_equiv.coe_to_lie_module_hom LieModuleEquiv.coe_to_lieModuleHom
 
-@[simp, norm_cast]
+@[simp]
 theorem coe_to_linearEquiv (e : M ≃ₗ⁅R,L⁆ N) : ((e : M ≃ₗ[R] N) : M → N) = e :=
   rfl
 #align lie_module_equiv.coe_to_linear_equiv LieModuleEquiv.coe_to_linearEquiv
@@ -1104,14 +1106,12 @@ def symm (e : M ≃ₗ⁅R,L⁆ N) : N ≃ₗ⁅R,L⁆ M :=
     (e : M ≃ₗ[R] N).symm with }
 #align lie_module_equiv.symm LieModuleEquiv.symm
 
--- porting note: TODO find out how to change `simp` set so can restore the `simp` below.
--- @[simp]
+@[simp]
 theorem apply_symm_apply (e : M ≃ₗ⁅R,L⁆ N) : ∀ x, e (e.symm x) = x :=
   e.toLinearEquiv.apply_symm_apply
 #align lie_module_equiv.apply_symm_apply LieModuleEquiv.apply_symm_apply
 
--- porting note: TODO find out how to change `simp` set so can restore the `simp` below.
--- @[simp]
+@[simp]
 theorem symm_apply_apply (e : M ≃ₗ⁅R,L⁆ N) : ∀ x, e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply
 #align lie_module_equiv.symm_apply_apply LieModuleEquiv.symm_apply_apply
