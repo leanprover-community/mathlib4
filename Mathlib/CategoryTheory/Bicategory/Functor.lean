@@ -314,17 +314,15 @@ See `pseudofunctor.mk_of_oplax`.
 -/
 -- porting note: removing no lint for nonempty_instance
 --@[nolint has_nonempty_instance]
+-- porting note: removing primes in structure name because
+-- my understanding is that they're no longer needed
 structure PseudoCore (F : OplaxFunctor B C) where
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)
   mapCompIso {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : F.map (f ≫ g) ≅ F.map f ≫ F.map g
-  mapIdIso_hom' : ∀ {a : B}, (mapIdIso a).hom = F.mapId a := by aesop_cat
-  mapCompIso_hom' :
+  mapIdIso_hom : ∀ {a : B}, (mapIdIso a).hom = F.mapId a := by aesop_cat
+  mapCompIso_hom :
     ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), (mapCompIso f g).hom = F.mapComp f g := by aesop_cat
 #align category_theory.oplax_functor.pseudo_core CategoryTheory.OplaxFunctor.PseudoCore
-
-restate_axiom PseudoCore.mapIdIso_hom'
-
-restate_axiom PseudoCore.mapCompIso_hom'
 
 attribute [simp] PseudoCore.mapIdIso_hom PseudoCore.mapCompIso_hom
 
@@ -360,49 +358,35 @@ structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
   [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
   mapId (a : B) : map (𝟙 a) ≅ 𝟙 (obj a)
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map (f ≫ g) ≅ map f ≫ map g
-  map₂_id' : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat
-  map₂_comp' :
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat
+  map₂_comp :
     ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h), map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
     aesop_cat
-  map₂_whisker_left' :
+  map₂_whisker_left :
     ∀ {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h),
       map₂ (f ◁ η) = (mapComp f g).hom ≫ map f ◁ map₂ η ≫ (mapComp f h).inv := by
     aesop_cat
-  map₂_whisker_right' :
+  map₂_whisker_right :
     ∀ {a b c : B} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c),
       map₂ (η ▷ h) = (mapComp f h).hom ≫ map₂ η ▷ map h ≫ (mapComp g h).inv := by
     aesop_cat
-  map₂_associator' :
+  map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
       map₂ (α_ f g h).hom = (mapComp (f ≫ g) h).hom ≫ (mapComp f g).hom ▷ map h ≫
       (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (mapComp g h).inv ≫
       (mapComp f (g ≫ h)).inv := by
     aesop_cat
-  map₂_left_unitor' :
+  map₂_left_unitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (λ_ f).hom = (mapComp (𝟙 a) f).hom ≫ (mapId a).hom ▷ map f ≫ (λ_ (map f)).hom := by
     aesop_cat
-  map₂_right_unitor' :
+  map₂_right_unitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).hom = (mapComp f (𝟙 b)).hom ≫ map f ◁ (mapId b).hom ≫ (ρ_ (map f)).hom := by
     aesop_cat
 #align category_theory.pseudofunctor CategoryTheory.Pseudofunctor
 
 namespace Pseudofunctor
-
-restate_axiom map₂_id'
-
-restate_axiom map₂_comp'
-
-restate_axiom map₂_whisker_left'
-
-restate_axiom map₂_whisker_right'
-
-restate_axiom map₂_associator'
-
-restate_axiom map₂_left_unitor'
-
-restate_axiom map₂_right_unitor'
 
 -- porting note: was `[reassoc.1]` for some reason?
 attribute [reassoc]
