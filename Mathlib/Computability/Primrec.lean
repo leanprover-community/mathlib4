@@ -36,47 +36,30 @@ open Denumerable Encodable Function
 
 namespace Nat
 
-/-- The non-dependent recursor on naturals. -/
-def elim {C : Sort _} : C → (ℕ → C → C) → ℕ → C :=
-  @Nat.rec fun _ => C
-#align nat.elim Nat.elim
+#align nat.elim Nat.rec
 
 -- porting note: elim is no longer required because lean 4 is better
 -- at inferring motive types (I think this is the reason)
 -- and worst case, we can always explicitly write (motive := fun _ => C)
 -- without having to then add all the other underscores
-example {C : Sort _} (base : C) (succ : ℕ → C → C) (a : ℕ) :
-  a.elim base succ = a.recOn base succ := rfl
 
-@[simp]
-theorem elim_zero {C} (a f) : @Nat.elim C a f 0 = a :=
-  rfl
-#align nat.elim_zero Nat.elim_zero
+-- /-- The non-dependent recursor on naturals. -/
+-- def elim {C : Sort _} : C → (ℕ → C → C) → ℕ → C :=
+--   @Nat.rec fun _ => C
+-- example {C : Sort _} (base : C) (succ : ℕ → C → C) (a : ℕ) :
+--   a.elim base succ = a.recOn base succ := rfl
 
-@[simp]
-theorem elim_succ {C} (a f n) : @Nat.elim C a f (succ n) = f n (Nat.elim a f n) :=
-  rfl
-#align nat.elim_succ Nat.elim_succ
 
-/-- Cases on whether the input is 0 or a successor. -/
-def cases {C : Sort _} (a : C) (f : ℕ → C) : ℕ → C :=
-  Nat.elim a fun n _ => f n
-#align nat.cases Nat.cases
+#align nat.cases Nat.casesOn
 
 -- porting note: cases is no longer required because lean 4 is better
 -- at inferring motive types (I think this is the reason)
-example {C : Sort _} (a : C) (f : ℕ → C) (n : ℕ) :
-  n.cases a f = n.casesOn a f := rfl
 
-@[simp]
-theorem cases_zero {C} (a f) : @Nat.cases C a f 0 = a :=
-  rfl
-#align nat.cases_zero Nat.cases_zero
-
-@[simp]
-theorem cases_succ {C} (a f n) : @Nat.cases C a f (succ n) = f n :=
-  rfl
-#align nat.cases_succ Nat.cases_succ
+-- /-- Cases on whether the input is 0 or a successor. -/
+-- def cases {C : Sort _} (a : C) (f : ℕ → C) : ℕ → C :=
+--   Nat.elim a fun n _ => f n
+-- example {C : Sort _} (a : C) (f : ℕ → C) (n : ℕ) :
+--   n.cases a f = n.casesOn a f := rfl
 
 /-- Calls the given function on a pair of entries `n`, encoded via the pairing function. -/
 @[simp, reducible]
@@ -124,8 +107,8 @@ theorem cases1 {f} (m : ℕ) (hf : Primrec f) : Primrec (Nat.casesOn · m f) :=
 #align nat.primrec.cases1 Nat.Primrec.cases1
 
 theorem cases {f g} (hf : Primrec f) (hg : Primrec g) :
-    Primrec (unpaired fun z n => n.cases (f z) fun y => g <| mkpair z y) :=
-  (prec hf (hg.comp (pair left (left.comp right)))).of_eq <| fun n => by simp [cases]; rfl
+    Primrec (unpaired fun z n => n.casesOn (f z) fun y => g <| mkpair z y) :=
+  (prec hf (hg.comp (pair left (left.comp right)))).of_eq <| fun n => by simp
 #align nat.primrec.cases Nat.Primrec.cases
 
 protected theorem swap : Primrec (unpaired (swap mkpair)) :=
@@ -595,21 +578,22 @@ theorem nat_elim' {f : α → ℕ} {g : α → β} {h : α → ℕ × β → β}
   (nat_elim hg hh).comp Primrec.id hf
 #align primrec.nat_elim' Primrec.nat_elim'
 
-theorem nat_elim₁ {f : ℕ → α → α} (a : α) (hf : Primrec₂ f) : Primrec (Nat.elim a f) :=
+theorem nat_elim₁ {f : ℕ → α → α} (a : α) (hf : Primrec₂ f) : Primrec (Nat.rec a f) :=
   nat_elim' Primrec.id (const a) <| comp₂ hf Primrec₂.right
 #align primrec.nat_elim₁ Primrec.nat_elim₁
 
 theorem nat_cases' {f : α → β} {g : α → ℕ → β} (hf : Primrec f) (hg : Primrec₂ g) :
-    Primrec₂ fun a => Nat.cases (f a) (g a) :=
+    Primrec₂ fun a (n : ℕ) => (n.casesOn (f a) (g a) : β) :=
   nat_elim hf <| hg.comp₂ Primrec₂.left <| comp₂ fst Primrec₂.right
 #align primrec.nat_cases' Primrec.nat_cases'
 
 theorem nat_cases {f : α → ℕ} {g : α → β} {h : α → ℕ → β} (hf : Primrec f) (hg : Primrec g)
-    (hh : Primrec₂ h) : Primrec fun a => (f a).cases (g a) (h a) :=
+    (hh : Primrec₂ h) : Primrec fun a => ((f a).casesOn (g a) (h a) : β) :=
   (nat_cases' hg hh).comp Primrec.id hf
 #align primrec.nat_cases Primrec.nat_cases
 
-theorem nat_cases₁ {f : ℕ → α} (a : α) (hf : Primrec f) : Primrec (Nat.cases a f) :=
+theorem nat_cases₁ {f : ℕ → α} (a : α) (hf : Primrec f) :
+    Primrec (fun (n : ℕ) => (n.casesOn a f : α)) :=
   nat_cases Primrec.id (const a) (comp₂ hf Primrec₂.right)
 #align primrec.nat_cases₁ Primrec.nat_cases₁
 
@@ -1123,7 +1107,7 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
   let F (l : List α) (n : ℕ) :=
     l.foldl
       (fun (s : Sum ℕ α) (a : α) =>
-        Sum.casesOn s (@Nat.cases (Sum ℕ α) (Sum.inr a) Sum.inl) Sum.inr)
+        Sum.casesOn s (@Nat.casesOn (fun _ => Sum ℕ α) · (Sum.inr a) Sum.inl) Sum.inr)
       (Sum.inl n)
   have hF : Primrec₂ F :=
     (list_foldl fst (sum_inl.comp snd)
@@ -1429,7 +1413,7 @@ inductive Primrec' : ∀ {n}, (Vector ℕ n → ℕ) → Prop
       @Primrec' n f →
         @Primrec' (n + 2) g →
           Primrec' fun v : Vector ℕ (n + 1) =>
-            v.head.elim (f v.tail) fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)
+            v.head.rec (f v.tail) fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)
 #align nat.primrec' Nat.Primrec'
 
 end Nat
@@ -1505,7 +1489,7 @@ theorem comp₂ (f : ℕ → ℕ → ℕ) (hf : @Primrec' 2 fun v => f v.head v.
 #align nat.primrec'.comp₂ Nat.Primrec'.comp₂
 
 theorem prec' {n f g h} (hf : @Primrec' n f) (hg : @Primrec' n g) (hh : @Primrec' (n + 2) h) :
-    @Primrec' n fun v => (f v).elim (g v) fun y IH : ℕ => h (y ::ᵥ IH ::ᵥ v) := by
+    @Primrec' n fun v => (f v).rec (g v) fun y IH : ℕ => h (y ::ᵥ IH ::ᵥ v) := by
   simpa using comp' (prec hg hh) (hf.cons idv)
 #align nat.primrec'.prec' Nat.Primrec'.prec'
 
@@ -1549,7 +1533,7 @@ protected theorem encode : ∀ {n}, @Primrec' n encode
 #align nat.primrec'.encode Nat.Primrec'.encode
 
 theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
-  suffices H : ∀ n : ℕ, n.sqrt = n.elim 0 fun x y => if x.succ < y.succ * y.succ then y else y.succ
+  suffices H : ∀ n : ℕ, n.sqrt = n.rec 0 fun x y => if x.succ < y.succ * y.succ then y else y.succ
   · simp [H]
     have :=
       @prec' 1 _ _
