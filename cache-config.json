@@ -1,0 +1,11 @@
+{
+  "url":"https://lakecache.blob.core.windows.net/mathlib4",
+  "head":"Mathlib.lean",
+  "builds":
+  {
+    "Mathlib":"build",
+    "Aesop":"lake-packages/aesop/build",
+    "Qq":"lake-packages/Qq/build",
+    "Std":"lake-packages/std/build"
+  }
+}
