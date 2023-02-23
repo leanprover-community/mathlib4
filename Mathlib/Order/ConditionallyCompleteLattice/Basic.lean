@@ -75,8 +75,8 @@ theorem WithTop.coe_infₛ' [InfSet α] {s : Set α} (hs : s.Nonempty) :
     ↑(infₛ s) = (infₛ ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   obtain ⟨x, hx⟩ := hs
   change _ = ite _ _ _
-  split_ifs
-  · rename_i h; cases h (mem_image_of_mem _ hx)
+  split_ifs with h
+  · cases h (mem_image_of_mem _ hx)
   · rw [preimage_image_eq]
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_infₛ'
