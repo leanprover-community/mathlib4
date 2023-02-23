@@ -596,8 +596,8 @@ theorem signAux3_symm_trans_trans [DecidableEq β] [Fintype β] (f : Perm α) (e
         let n := equivFin β
         rw [← signAux_eq_signAux2 _ _ n fun _ _ => h₁ _,
           ← signAux_eq_signAux2 _ _ (e.trans n) fun _ _ => h₂ _]
-        exact congr_arg sign_aux
-          (Equiv.ext fun x => by simp only [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply]))
+        exact congr_arg signAux
+          (Equiv.ext fun x => by simp [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply]))
     ht hs
 #align equiv.perm.sign_aux3_symm_trans_trans Equiv.Perm.signAux3_symm_trans_trans
 
