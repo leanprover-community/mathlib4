@@ -14,21 +14,21 @@ import Mathlib.LinearAlgebra.Prod
 /-!
 # Partially defined linear maps
 
-A `linear_pmap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`.
-We define a `semilattice_inf` with `order_bot` instance on this this, and define three operations:
+A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`.
+We define a `SemilatticeInf` with `OrderBot` instance on this this, and define three operations:
 
-* `mk_span_singleton` defines a partial linear map defined on the span of a singleton.
+* `mkSpanSingleton` defines a partial linear map defined on the span of a singleton.
 * `sup` takes two partial linear maps `f`, `g` that agree on the intersection of their
   domains, and returns the unique partial linear map on `f.domain ⊔ g.domain` that
   extends both `f` and `g`.
-* `Sup` takes a `directed_on (≤)` set of partial linear maps, and returns the unique
-  partial linear map on the `Sup` of their domains that extends all these maps.
+* `supₛ` takes a `DirectedOn (· ≤ ·)` set of partial linear maps, and returns the unique
+  partial linear map on the `supₛ` of their domains that extends all these maps.
 
 Moreover, we define
-* `linear_pmap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
+* `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
 
-Partially defined maps are currently used in `mathlib` to prove Hahn-Banach theorem
-and its variations. Namely, `linear_pmap.Sup` implies that every chain of `linear_pmap`s
+Partially defined maps are currently used in `Mathlib` to prove Hahn-Banach theorem
+and its variations. Namely, `LinearPMap.supₛ` implies that every chain of `LinearPMap`s
 is bounded above.
 They are also the basis for the theory of unbounded operators.
 
@@ -41,7 +41,7 @@ attribute [-instance] Ring.toNonAssocRing
 
 universe u v w
 
-/-- A `linear_pmap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`. -/
+/-- A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`. -/
 structure LinearPMap (R : Type u) [Ring R] (E : Type v) [AddCommGroup E] [Module R E] (F : Type w)
   [AddCommGroup F] [Module R F] where
   domain : Submodule R E
@@ -122,7 +122,7 @@ theorem mk_apply (p : Submodule R E) (f : p →ₗ[R] F) (x : p) : mk p f x = f 
   rfl
 #align linear_pmap.mk_apply LinearPMap.mk_apply
 
-/-- The unique `linear_pmap` on `R ∙ x` that sends `x` to `y`. This version works for modules
+/-- The unique `LinearPMap` on `R ∙ x` that sends `x` to `y`. This version works for modules
 over rings, and requires a proof of `∀ c, c • x = 0 → c • y = 0`. -/
 noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 → c • y = 0) :
     E →ₗ.[R] F where
@@ -175,7 +175,7 @@ theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 
   convert this <;> rw [one_smul]
 #align linear_pmap.mk_span_singleton'_apply_self LinearPMap.mkSpanSingleton'_apply_self
 
-/-- The unique `linear_pmap` on `span R {x}` that sends a non-zero vector `x` to `y`.
+/-- The unique `LinearPMap` on `span R {x}` that sends a non-zero vector `x` to `y`.
 This version works for modules over division rings. -/
 @[reducible]
 noncomputable def mkSpanSingleton {K E F : Type _} [DivisionRing K] [AddCommGroup E] [Module K E]
@@ -191,7 +191,7 @@ theorem mkSpanSingleton_apply (K : Type _) {E F : Type _} [DivisionRing K] [AddC
   LinearPMap.mkSpanSingleton'_apply_self _ _ _ _
 #align linear_pmap.mk_span_singleton_apply LinearPMap.mkSpanSingleton_apply
 
-/-- Projection to the first coordinate as a `linear_pmap` -/
+/-- Projection to the first coordinate as a `LinearPMap` -/
 protected def fst (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] E where
   domain := p.prod p'
   toFun := (LinearMap.fst R E F).comp (p.prod p').subtype
@@ -203,7 +203,7 @@ theorem fst_apply (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
   rfl
 #align linear_pmap.fst_apply LinearPMap.fst_apply
 
-/-- Projection to the second coordinate as a `linear_pmap` -/
+/-- Projection to the second coordinate as a `LinearPMap` -/
 protected def snd (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] F where
   domain := p.prod p'
   toFun := (LinearMap.snd R E F).comp (p.prod p').subtype
@@ -388,7 +388,7 @@ protected theorem sup_le {f g h : E →ₗ.[R] F}
   le_of_eqLocus_ge <| sup_le Hf.1 Hg.1
 #align linear_pmap.sup_le LinearPMap.sup_le
 
-/-- Hypothesis for `linear_pmap.sup` holds, if `f.domain` is disjoint with `g.domain`. -/
+/-- Hypothesis for `LinearPMap.sup` holds, if `f.domain` is disjoint with `g.domain`. -/
 theorem sup_h_of_disjoint (f g : E →ₗ.[R] F) (h : Disjoint f.domain g.domain) (x : f.domain)
     (y : g.domain) (hxy : (x : E) = y) : f x = g y := by
   rw [disjoint_def] at h
@@ -475,7 +475,7 @@ section
 
 variable {K : Type _} [DivisionRing K] [Module K E] [Module K F]
 
-/-- Extend a `linear_pmap` to `f.domain ⊔ K ∙ x`. -/
+/-- Extend a `LinearPMap` to `f.domain ⊔ K ∙ x`. -/
 noncomputable def supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) :
     E →ₗ.[K] F :=
   -- Porting note: `simpa [..]` → `simp [..]; exact ..`
@@ -568,7 +568,7 @@ end LinearPMap
 
 namespace LinearMap
 
-/-- Restrict a linear map to a submodule, reinterpreting the result as a `linear_pmap`. -/
+/-- Restrict a linear map to a submodule, reinterpreting the result as a `LinearPMap`. -/
 def toPMap (f : E →ₗ[R] F) (p : Submodule R E) : E →ₗ.[R] F :=
   ⟨p, f.comp p.subtype⟩
 #align linear_map.to_pmap LinearMap.toPMap
@@ -578,7 +578,7 @@ theorem toPMap_apply (f : E →ₗ[R] F) (p : Submodule R E) (x : p) : f.toPMap 
   rfl
 #align linear_map.to_pmap_apply LinearMap.toPMap_apply
 
-/-- Compose a linear map with a `linear_pmap` -/
+/-- Compose a linear map with a `LinearPMap` -/
 def compPMap (g : F →ₗ[R] G) (f : E →ₗ.[R] F) : E →ₗ.[R] G where
   domain := f.domain
   toFun := g.comp f.toFun
@@ -593,14 +593,14 @@ end LinearMap
 
 namespace LinearPMap
 
-/-- Restrict codomain of a `linear_pmap` -/
+/-- Restrict codomain of a `LinearPMap` -/
 def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p
     where
   domain := f.domain
   toFun := f.toFun.codRestrict p H
 #align linear_pmap.cod_restrict LinearPMap.codRestrict
 
-/-- Compose two `linear_pmap`s -/
+/-- Compose two `LinearPMap`s -/
 def comp (g : F →ₗ.[R] G) (f : E →ₗ.[R] F) (H : ∀ x : f.domain, f x ∈ g.domain) : E →ₗ.[R] G :=
   g.toFun.compPMap <| f.codRestrict _ H
 #align linear_pmap.comp LinearPMap.comp
@@ -655,7 +655,7 @@ theorem domRestrict_le {f : E →ₗ.[R] F} {S : Submodule R E} : f.domRestrict 
 
 section Graph
 
-/-- The graph of a `linear_pmap` viewed as a submodule on `E × F`. -/
+/-- The graph of a `LinearPMap` viewed as a submodule on `E × F`. -/
 def graph (f : E →ₗ.[R] F) : Submodule R (E × F) :=
   f.toFun.graph.map (f.domain.subtype.prodMap (LinearMap.id : F →ₗ[R] F))
 #align linear_pmap.graph LinearPMap.graph
@@ -873,7 +873,7 @@ theorem valFromGraph_mem {g : Submodule R (E × F)}
   (ExistsUnique.exists (existsUnique_from_graph @hg ha)).choose_spec
 #align submodule.val_from_graph_mem Submodule.valFromGraph_mem
 
-/-- Define a `linear_pmap` from its graph. -/
+/-- Define a `LinearPMap` from its graph. -/
 noncomputable def toLinearPMap (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) : E →ₗ.[R] F
     where
