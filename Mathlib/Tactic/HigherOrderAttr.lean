@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 
 import Lean.Attributes
 import Mathlib.Mathport.Syntax
+import Mathlib.Control.SimpSet
 
 /-!
 # HigherOrder attribute
@@ -78,6 +79,13 @@ def higherOrderAfterSet (thm : Name) (onm : Option Name) : AttrM Unit := do
       levelParams := lvl,
       type := hot,
       value := prf }
+    let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
+    if hsm then
+      addSimpTheorem simpExtension thm' true false .global 1000
+    let some fcn ← getSimpExtension? `functor_norm | failure
+    let hfm := fcn.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
+    if hfm then
+      addSimpTheorem fcn thm' true false .global 1000
 
 /-- `higher_order` attribute. -/
 initialize higherOrderAttr : ParametricAttribute (Option Name) ←
