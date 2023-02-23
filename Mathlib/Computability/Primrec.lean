@@ -1414,11 +1414,15 @@ inductive Primrec' : ∀ {n}, (Vector ℕ n → ℕ) → Prop
 
 end Nat
 
--- porting note: TODO fix
-private theorem to_prim_aux {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
+namespace Nat.Primrec'
+
+open Vector Primrec
+
+-- porting note: TODO fix all of the `_root_`'s in here
+theorem to_prim {n f} (pf : @Nat.Primrec' n f) : _root_.Primrec f := by
   induction pf
   case zero => exact .const 0
-  case succ => exact Primrec.succ.comp Primrec.vector_head
+  case succ => exact _root_.Primrec.succ.comp .vector_head
   case get n i => exact Primrec.vector_get.comp .id (.const i)
   case comp m n f g _ _ hf hg => exact hf.comp (Primrec.vector_ofFn fun i => hg i)
   case prec n f g _ _ hf hg =>
@@ -1427,12 +1431,6 @@ private theorem to_prim_aux {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
         (hg.comp <|
             Primrec.vector_cons.comp (Primrec.fst.comp .snd) <|
               Primrec.vector_cons.comp (Primrec.snd.comp .snd) <| (@Primrec.vector_tail _ _ (n + 1)).comp .fst).to₂
-
-namespace Nat.Primrec'
-
-open Vector Primrec
-
-theorem to_prim {n f} (pf : @Nat.Primrec' n f) : _root_.Primrec f := to_prim_aux pf
 #align nat.primrec'.to_prim Nat.Primrec'.to_prim
 
 /- ./././Mathport/Syntax/Translate/Command.lean:691:6: unsupported: hide command -/
