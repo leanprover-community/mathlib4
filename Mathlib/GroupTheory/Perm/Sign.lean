@@ -385,9 +385,22 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
       if h : f⁻¹ b < f⁻¹ a then by
         simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
           if_neg (mem_finPairsLT.1 hab).not_le]
+        split_ifs with h₁
+        . dsimp [finPairsLT] at hab
+          simp at hab
+          exact absurd h₁ (not_le_of_gt hab)
+        . rfl
       else by
         simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
-          if_pos (mem_finPairsLT.1 hab).le])
+          if_pos (mem_finPairsLT.1 hab).le]
+        split_ifs with h₁ h₂ h₃
+        . rfl
+        . exact absurd h (not_le_of_gt h₁)
+        . rfl
+        . dsimp at *
+          dsimp [finPairsLT] at hab
+          simp at *
+          exact absurd h₃ (asymm_of LT.lt hab))
     signBijAux_inj signBijAux_surj
 #align equiv.perm.sign_aux_inv Equiv.Perm.signAux_inv
 
