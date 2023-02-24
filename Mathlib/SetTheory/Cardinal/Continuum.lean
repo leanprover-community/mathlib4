@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinality of continuum
@@ -78,8 +78,7 @@ theorem continuum_ne_zero : 𝔠 ≠ 0 :=
   continuum_pos.ne'
 #align cardinal.continuum_ne_zero Cardinal.continuum_ne_zero
 
-theorem aleph_one_le_continuum : aleph 1 ≤ 𝔠 :=
-  by
+theorem aleph_one_le_continuum : aleph 1 ≤ 𝔠 := by
   rw [← succ_aleph_0]
   exact Order.succ_le_of_lt aleph_0_lt_continuum
 #align cardinal.aleph_one_le_continuum Cardinal.aleph_one_le_continuum
