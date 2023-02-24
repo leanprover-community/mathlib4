@@ -489,7 +489,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
   | [], f, e, h =>
     by
     have : f = 1 := Equiv.ext fun y => Classical.not_not.1 (mt (h y) (List.not_mem_nil _))
-    rw [this, one_def, Equiv.trans_refl, Equiv.symm_trans_self, ← one_def, signAux_one, sign_aux2]
+    rw [this, one_def, Equiv.trans_refl, Equiv.symm_trans_self, ← one_def, signAux_one, signAux2]
   | x::l, f, e, h => by
     rw [signAux2]
     by_cases hfx : x = f x
@@ -503,9 +503,14 @@ theorem signAux_eq_signAux2 {n : ℕ} :
       have :
         (e.symm.trans (swap x (f x) * f)).trans e =
           swap (e x) (e (f x)) * (e.symm.trans f).trans e :=
-        by ext <;> simp [← Equiv.symm_trans_swap_trans, mul_def]
+        by
+          ext
+          rw [← Equiv.symm_trans_swap_trans, mul_def, Equiv.symm_trans_swap_trans, mul_def]
+          rw [trans_apply, trans_apply, trans_apply, trans_apply, trans_apply, trans_apply]
+          simp [swap, swapCore]
+          split_ifs with h₁ h₂ <;> rfl
       have hefx : e x ≠ e (f x) := mt e.injective.eq_iff.1 hfx
-      rw [if_neg hfx, ← sign_aux_eq_sign_aux2 _ _ e hy, this, sign_aux_mul, sign_aux_swap hefx]
+      rw [if_neg hfx, ← signAux_eq_signAux2 _ _ e hy, this, signAux_mul, signAux_swap hefx]
       simp only [neg_neg, one_mul, neg_mul]
 #align equiv.perm.sign_aux_eq_sign_aux2 Equiv.Perm.signAux_eq_signAux2
 
