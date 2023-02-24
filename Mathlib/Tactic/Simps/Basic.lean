@@ -890,7 +890,9 @@ def getProjectionExprs (tgt rhs : Expr) (cfg : Config) :
           |>.instantiateLambdasOrApps params
         projNrs := proj.projNrs.tail })
 
-/-- Apply the projection as a function to the right-hand side. -/
+/-- Apply the projection as a function to the right-hand side.
+Todo: integrate this into addProjections more so that we can also do this when `toApply` is empty.
+-/
 def applyProjectionsAsFunction (tgt rhs : Expr) (toApply : List ℕ) :
   MetaM (Expr × List ℕ) := do
   if toApply.isEmpty then
