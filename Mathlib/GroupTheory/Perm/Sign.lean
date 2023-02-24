@@ -404,7 +404,10 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   rw [mem_finPairsLT] at hab
   by_cases h : g b < g a
   · rw [dif_pos h]
-    simp only [not_le_of_gt hab, mul_one, Perm.inv_apply_self, if_false]
+    simp only [not_le_of_gt hab, mul_one, mul_ite, mul_neg, Perm.inv_apply_self, if_false]
+    split_ifs with h₁ h₂ h₃ <;> dsimp at *
+    . exact absurd hab (not_lt_of_ge h₂)
+    . exact absurd hab (not_lt_of_ge h₃)
   · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
     by_cases h₁ : f (g b) ≤ f (g a)
     · have : f (g b) ≠ f (g a) :=
