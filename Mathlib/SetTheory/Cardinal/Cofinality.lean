@@ -18,22 +18,22 @@ This file contains the definition of cofinality of an ordinal number and regular
 
 ## Main Definitions
 
-* `ordinal.cof o` is the cofinality of the ordinal `o`.
+* `Ordinal.cof o` is the cofinality of the ordinal `o`.
   If `o` is the order type of the relation `<` on `α`, then `o.cof` is the smallest cardinality of a
   subset `s` of α that is *cofinal* in `α`, i.e. `∀ x : α, ∃ y ∈ s, ¬ y < x`.
-* `cardinal.is_limit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
-* `cardinal.is_strong_limit c` means that `c` is a strong limit cardinal:
+* `Cardinal.IsLimit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
+* `Cardinal.IsStrongLimit c` means that `c` is a strong limit cardinal:
   `c ≠ 0 ∧ ∀ x < c, 2 ^ x < c`.
-* `cardinal.is_regular c` means that `c` is a regular cardinal: `ℵ₀ ≤ c ∧ c.ord.cof = c`.
-* `cardinal.is_inaccessible c` means that `c` is strongly inaccessible:
-  `ℵ₀ < c ∧ is_regular c ∧ is_strong_limit c`.
+* `Cardinal.IsRegular c` means that `c` is a regular cardinal: `ℵ₀ ≤ c ∧ c.ord.cof = c`.
+* `Cardinal.IsInaccessible c` means that `c` is strongly inaccessible:
+  `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
 
 ## Main Statements
 
-* `ordinal.infinite_pigeonhole_card`: the infinite pigeonhole principle
-* `cardinal.lt_power_cof`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
+* `Ordinal.infinite_pigeonhole_card`: the infinite pigeonhole principle
+* `Cardinal.lt_power_cof`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
   `c ≥ ℵ₀`
-* `cardinal.univ_inaccessible`: The type of ordinals in `Type u` form an inaccessible cardinal
+* `Cardinal.univ_inaccessible`: The type of ordinals in `Type u` form an inaccessible cardinal
   (in `Type v` with `v > u`). This shows (externally) that in `Type u` there are at least `u`
   inaccessible cardinals.
 
@@ -93,7 +93,7 @@ end Order
 theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} {s} [IsRefl β s]
     (f : r ≃r s) : Cardinal.lift.{max u v} (Order.cof r) ≤ Cardinal.lift.{max u v} (Order.cof s) :=
   by
-  rw [Order.cof, Order.cof, lift_Inf, lift_Inf,
+  rw [Order.cof, Order.cof, lift_infₛ, lift_infₛ,
     le_cinfₛ_iff'' (nonempty_image_iff.2 (Order.cof_nonempty s))]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
   apply cinfₛ_le'
@@ -120,13 +120,13 @@ theorem RelIso.cof_eq {α β : Type u} {r s} [IsRefl α r] [IsRefl β s] (f : r 
   lift_inj.1 (RelIso.cof_eq_lift f)
 #align rel_iso.cof_eq RelIso.cof_eq
 
-/-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : set α` such
+/-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
 that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
 def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
   Order.cof (swap rᶜ)
 #align strict_order.cof StrictOrder.cof
 
-/-- The set in the definition of `order.strict_order.cof` is nonempty. -/
+/-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
 theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ (#S) = c }.Nonempty :=
   @Order.cof_nonempty α _ (IsRefl.swap (rᶜ))
@@ -143,15 +143,18 @@ namespace Ordinal
   `cof 0 = 0` and `cof (succ o) = 1`, so it is only really
   interesting on limit ordinals (when it is an infinite cardinal). -/
 def cof (o : Ordinal.{u}) : Cardinal.{u} :=
-  o.liftOn (fun a => StrictOrder.cof a.R)
+  o.liftOn (fun a => StrictOrder.cof a.r)
     (by
       rintro ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨⟨f, hf⟩⟩
       haveI := wo₁; haveI := wo₂
-      apply @RelIso.cof_eq _ _ _ _ _ _
+      dsimp only
+      apply @RelIso.cof_eq _ _ _ _ ?_ ?_
       · constructor
-        exact fun a b => not_iff_not.2 hf
-      · exact ⟨(IsWellOrder.isIrrefl r).1⟩
-      · exact ⟨(IsWellOrder.isIrrefl s).1⟩)
+        exact @fun a b => not_iff_not.2 hf
+      · dsimp only [swap]
+        exact ⟨fun _ => irrefl _⟩
+      · dsimp only [swap]
+        exact ⟨fun _ => irrefl _⟩)
 #align ordinal.cof Ordinal.cof
 
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = StrictOrder.cof r :=
@@ -182,7 +185,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
   let ⟨S, hS, e⟩ := cof_eq r
   let ⟨s, _, e'⟩ := Cardinal.ord_eq S
   let T : Set α := { a | ∃ aS : a ∈ S, ∀ b : S, s b ⟨_, aS⟩ → r b a }
-  skip; suffices
+  suffices : Unbounded r T
   · refine' ⟨T, this, le_antisymm _ (Cardinal.ord_le.2 <| cof_type_le this)⟩
     rw [← e, e']
     refine'
@@ -206,10 +209,10 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
     have : { b : S | ¬r b a }.Nonempty :=
       let ⟨b, bS, ba⟩ := hS a
       ⟨⟨b, bS⟩, ba⟩
-    let b := IsWellFounded.wf.min _ this
+    let b := (IsWellFounded.wf : WellFounded s).min _ this
     have ba : ¬r b a := IsWellFounded.wf.min_mem _ this
     refine' ⟨b, ⟨b.2, fun c => not_imp_not.1 fun h => _⟩, ba⟩
-    rw [show ∀ b : S, (⟨b, b.2⟩ : S) = b by intro b <;> cases b <;> rfl]
+    rw [show ∀ b : S, (⟨b, b.2⟩ : S) = b by intro b; cases b; rfl]
     exact IsWellFounded.wf.not_lt_min _ this (IsOrderConnected.neg_trans h ba)
 #align ordinal.ord_cof_eq Ordinal.ord_cof_eq
 
@@ -218,7 +221,6 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
 
 private theorem card_mem_cof {o} : ∃ (ι : _)(f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = o.card :=
   ⟨_, _, lsub_typein o, mk_ordinal_out o⟩
-#align ordinal.card_mem_cof ordinal.card_mem_cof
 
 /-- The set in the `lsub` characterization of `cof` is nonempty. -/
 theorem cof_lsub_def_nonempty (o) :
@@ -236,7 +238,7 @@ theorem cof_eq_infₛ_lsub (o : Ordinal.{u}) :
       (cof_type_le fun a => _).trans
         (@mk_le_of_injective _ _
           (fun s : typein ((· < ·) : o.out.α → o.out.α → Prop) ⁻¹' Set.range f =>
-            Classical.choose s.Prop)
+            Classical.choose s.prop)
           fun s t hst => by
           let H := congr_arg f hst
           rwa [Classical.choose_spec s.prop, Classical.choose_spec t.prop, typein_inj,
@@ -250,8 +252,8 @@ theorem cof_eq_infₛ_lsub (o : Ordinal.{u}) :
     · rw [mem_preimage, typein_enum]
       exact mem_range_self i
     · rwa [← typein_le_typein, typein_enum]
-  · rcases cof_eq (· < ·) with ⟨S, hS, hS'⟩
-    let f : S → Ordinal := fun s => typein (· < ·) s.val
+  · rcases cof_eq (· < · : (Quotient.out o).α → (Quotient.out o).α → Prop) with ⟨S, hS, hS'⟩
+    let f : S → Ordinal := fun s => typein LT.lt s.val
     refine'
       ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self i) (le_of_forall_lt fun a ha => _), by
         rwa [type_lt o] at hS'⟩
@@ -260,14 +262,17 @@ theorem cof_eq_infₛ_lsub (o : Ordinal.{u}) :
     rw [← typein_le_typein, typein_enum] at hb'
     exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
 #align ordinal.cof_eq_Inf_lsub Ordinal.cof_eq_infₛ_lsub
-
+#print CoeOTC
+set_option pp.universes true
 @[simp]
-theorem lift_cof (o) : (cof o).lift = cof o.lift := by
-  refine' induction_on o _
+theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o) := by
+  refine' inductionOn o _
   intro α r _
   apply le_antisymm
   · refine' le_cof_type.2 fun S H => _
-    have : (#ULift.up ⁻¹' S).lift ≤ (#S) :=
+    have : LE.le (Cardinal.lift.{u, v}
+        (Cardinal.mk.{v} (@CoeSort.coe (Set α) (Type v) _ (Set.preimage.{v, max u v} (ULift.up.{u, v}) S))))
+        (Cardinal.mk.{max u v} (@CoeSort.coe.{max u v + 1, max u v + 2} (Set (ULift.{u, v} α)) (Type (max u v)) _ S)) :=
       by
       rw [← Cardinal.lift_umax, ← Cardinal.lift_id' (#S)]
       exact mk_preimage_of_injective_lift ULift.up _ ULift.up_injective
@@ -1264,4 +1269,3 @@ theorem lt_cof_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (b1 : 1 < b) : a < cof
 #align cardinal.lt_cof_power Cardinal.lt_cof_power
 
 end Cardinal
-
