@@ -67,7 +67,7 @@ def pprodEquivProd : PProd α β ≃ α × β where
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
 -- porting note: in Lean 3 this had @[congr]`
-@[simps apply]
+@[simps]
 def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
   invFun x := ⟨e₁.symm x.1, e₂.symm x.2⟩
@@ -77,7 +77,7 @@ def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β 
 #align equiv.pprod_congr_apply Equiv.pprodCongr_apply
 
 /-- Combine two equivalences using `PProd` in the domain and `Prod` in the codomain. -/
-@[simps! apply symm_apply]
+@[simps?! apply symm_apply]
 def pprodProd (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
     PProd α₁ β₁ ≃ α₂ × β₂ :=
   (ea.pprodCongr eb).trans pprodEquivProd

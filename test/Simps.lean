@@ -850,6 +850,58 @@ Equiv.symm2
 
 end NestedNonFullyApplied
 
+
+namespace RhsProjApplications
+
+structure Equiv (α : Sort _) (β : Sort _) :=
+(toFun    : α → β)
+(invFun   : β → α)
+
+local infix:25 (priority := high) " ≃ " => RhsProjApplications.Equiv
+
+variable {α β γ : Sort _}
+
+def coe : α ≃ β → α → β := Equiv.toFun
+
+instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨coe⟩
+
+def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
+
+def Equiv.Simps.apply (e : α ≃ β) : α → β := coe e
+/-- See Note [custom simps projection] -/
+def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
+initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
+
+structure EquivPlus (α : Sort _) (β : Sort _) extends α ≃ β where
+  data : Bool
+
+def dcoe : EquivPlus α β → α → β := (·.toEquiv)
+instance {α β} : CoeFun (EquivPlus α β) (λ _ => α → β) := ⟨dcoe⟩
+
+def EquivPlus.symm {α β : Sort _} (e : EquivPlus α β) : EquivPlus β α :=
+{ toEquiv := e.toEquiv.symm
+  data := !e.data }
+
+def EquivPlus.Simps.apply {α β : Sort _} (e : EquivPlus α β) : α → β := e
+def EquivPlus.Simps.symm_apply {α β : Sort _} (e : EquivPlus α β) : β → α := e.symm
+
+initialize_simps_projections EquivPlus (toFun → apply, invFun → symm_apply, -toEquiv)
+
+-- set_option trace.simps.debug true
+@[simps (config := {rhsProjApplications := true})]
+def checkVariableWith (e : α ≃ β) : EquivPlus α β :=
+{ toEquiv := e, data := true }
+
+@[simps (config := {rhsProjApplications := true})]
+def checkVariableWith2 (e : α ≃ β) : EquivPlus α β :=
+{ e with data := true }
+
+@[simps (config := {rhsProjApplications := true})]
+def checkVariableWith3 (e : EquivPlus α β) : EquivPlus α β :=
+e
+
+end RhsProjApplications
+
 -- test that type classes which are props work
 class PropClass (n : ℕ) : Prop :=
 (has_true : True)

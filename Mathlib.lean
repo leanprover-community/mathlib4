@@ -597,6 +597,7 @@ import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
+import Mathlib.Data.Ord
 import Mathlib.Data.PEquiv
 import Mathlib.Data.PFun
 import Mathlib.Data.PFunctor.Multivariate.Basic

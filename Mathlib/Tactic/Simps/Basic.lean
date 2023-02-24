@@ -9,6 +9,7 @@ import Mathlib.Lean.Message
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.KVMap
+import Mathlib.Data.Ord
 import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
 import Std.Util.LibraryNote
@@ -815,6 +816,9 @@ structure Config where
   /-- Generated lemmas that are fully applied, i.e. generates equalities between applied functions.
   Set this to `false` to generate equalities between functions. -/
   fullyApplied := true
+  /-- If this is set to true, then projections can be applied to the right-hand side of
+    as functions, instead of requiring that the right-hand side must reduce to a constructor. -/
+  rhsProjApplications := false
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
@@ -847,7 +851,7 @@ partial def _root_.Lean.Expr.instantiateLambdasOrApps (es : Array Expr) (e : Exp
 /-- Get the projections of a structure used by `@[simps]` applied to the appropriate arguments.
   Returns a list of tuples
   ```
-  (corresponding right-hand-side, given projection name, projection Expression,
+  (corresponding right-hand side, given projection name, projection Expression,
     future projection numbers, used by default, is prefix)
   ```
   (where all fields except the first are packed in a `ProjectionData` structure)
@@ -869,7 +873,7 @@ partial def _root_.Lean.Expr.instantiateLambdasOrApps (es : Array Expr) (e : Exp
      ...]
   ```
 -/
-def getProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Config) :
+def getProjectionExprs (tgt rhs : Expr) (cfg : Config) :
     MetaM <| Array <| Expr × ProjectionData := do
   -- the parameters of the structure
   let params := tgt.getAppArgs
@@ -878,13 +882,32 @@ def getProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Config) :
   let str := tgt.getAppFn.constName?.getD default
   -- the fields of the object
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
-  let (rawUnivs, projDeclata) ← getRawProjections str
-  return projDeclata.map fun proj ↦
+  let (rawUnivs, projDeclData) ← getRawProjections str
+  return projDeclData.map fun proj ↦
     (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
       { proj with
-        expr := (proj.expr.instantiateLevelParams rawUnivs
-          tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
+        expr := proj.expr.instantiateLevelParams rawUnivs tgt.getAppFn.constLevels!
+          |>.instantiateLambdasOrApps params
         projNrs := proj.projNrs.tail })
+
+/-- Apply the projection as a function to the right-hand side. -/
+def applyProjectionsAsFunction (tgt rhs : Expr) (toApply : List ℕ) :
+  MetaM (Expr × List ℕ) := do
+  if toApply.isEmpty then
+    throwError "`simps` currently only supports the option `rhsProjApplications` in certain cases."
+  let params := tgt.getAppArgs
+  let str := tgt.getAppFn.constName?.getD default
+  let (rawUnivs, projDeclData) ← getRawProjections str
+  let projDeclData := projDeclData.filterMap fun proj ↦
+    proj.projNrs.isPrefixOf? toApply |>.map ({proj with projNrs :=  ·})
+  trace[simps.debug] "Applicable projections:\n{projDeclData}"
+  -- we take the last element that contains the longest prefix of `toApply`,
+  -- one with `isDefault := true` if one such exists.
+  let proj := projDeclData.reverse.minI
+    (ord := .comap (ord := lexOrd) fun proj => (!proj.isDefault, proj.projNrs.length))
+  trace[simps.debug] "Chosen projection:\n{proj}"
+  return ⟨proj.expr.instantiateLevelParams rawUnivs tgt.getAppFn.constLevels!
+    |>.instantiateLambdasOrApps <| params.push rhs, proj.projNrs⟩
 
 variable (ref : Syntax) (univs : List Name)
 
@@ -1023,10 +1046,31 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     else
       addProjection stxProj univs nm type lhs rhs args cfg
   let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsEta
-  trace[simps.debug] "The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
+  trace[simps.debug] "The right-hand side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
   if !rhsWhnf.getAppFn.isConstOf ctor then
+    -- we check if this is allowed to be a dead end
+    if !mustBeStr && todoNext.isEmpty && toApply.isEmpty then
+      -- we add the projection if we didn't already before
+      if !addThisProjection then
+        if cfg.fullyApplied then
+          addProjection stxProj univs nm tgt lhsAp rhsEta newArgs cfg
+        else
+          addProjection stxProj univs nm type lhs rhs args cfg
+      return #[nm]
+    -- In some rare cases we want to continue even if the right-hand side is a constructor
+    -- We currently only do this with a configuration option
+    -- In this case, we apply the (custom) projections of the structure to the right-hand side.
+    if cfg.rhsProjApplications then
+      let (newRhs, rest) ← applyProjectionsAsFunction tgt rhsWhnf toApply
+      let newType ← inferType newRhs
+      trace[simps.debug] "Applying a custom composite projection to the variable {rhsWhnf} to get {
+        indentExpr newRhs}. Todo: {toApply}. Current lhs:{indentExpr lhsAp}"
+      return ← addProjections nm newType lhsAp newRhs newArgs false cfg todo rest
+    if rhsWhnf.getAppFn.isFVar then
+      -- we will run into an error, but let's also give the user a hint
+      logInfo "Consider using @[simps (config := {rhsProjApplications := true})]"
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
-    if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
+    else if cfg.rhsMd == .reducible then
       trace[simps.debug] "Using relaxed reducibility."
       Linter.logLint linter.simpsNoConstructor ref
         m!"The definition {nm} is not a constructor application. Please use `@[simps!]` instead.{
@@ -1059,12 +1103,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     if !todoNext.isEmpty then
       throwError "Invalid simp lemma {nm.appendAfter todoNext.head!.1}.\n{""
         }The given definition is not a constructor application:{indentExpr rhsWhnf}"
-    if !addThisProjection then
-      if cfg.fullyApplied then
-        addProjection stxProj univs nm tgt lhsAp rhsEta newArgs cfg
-      else
-        addProjection stxProj univs nm type lhs rhs args cfg
-    return #[nm]
+    unreachable!
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
   let projInfo ← getProjectionExprs tgt rhsWhnf cfg
