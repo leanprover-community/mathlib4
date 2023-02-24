@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.module.submodule.basic
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -38,7 +38,11 @@ universe u'' u' u v w
 
 variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
-/-- `SubmoduleClass S R M` says `S` is a type of submodules `s ≤ M`. -/
+/--
+`SubmoduleClass S R M` says `S` is a type of submodules `s ≤ M`.
+
+Note that only `R` is marked as `outParam` since `M` is already supplied by the `SetLike` class.
+-/
 class SubmoduleClass (S : Type _) (R : outParam <| Type _) (M : Type _) [AddZeroClass M] [SMul R M]
   [SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
 #align submodule_class SubmoduleClass
