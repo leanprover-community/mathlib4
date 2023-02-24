@@ -566,22 +566,14 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
         (@StructuredArrow.isoMk _ _ _ _ _ _ (StructuredArrow.mk (unop X).hom) (unop X) (Iso.refl _)
             (by aesop_cat)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
-        dsimp [StructuredArrow.isoMk,Comma.isoMk,StructuredArrow.homMk] --wtf
-        apply CommaMorphism.ext
-        · apply ULift.ext; simp
-        · dsimp
-          erw [Comma.comp_right, Comma.comp_right]
-          simp )
+        apply CommaMorphism.ext <;>
+          dsimp [StructuredArrow.isoMk,Comma.isoMk,StructuredArrow.homMk] ; simp )
     (NatIso.ofComponents
       (fun X =>
         @CostructuredArrow.isoMk _ _ _ _ _ _ (CostructuredArrow.mk X.hom) X (Iso.refl _)
           (by aesop_cat)) fun {X Y} f => by
-            apply CommaMorphism.ext
-            · dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]
-              erw [Comma.comp_left, Comma.comp_left]
-              simp
-            · dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]
-              erw [Comma.comp_right] )
+            apply CommaMorphism.ext <;>
+              dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk] ; simp )
 #align category_theory.structured_arrow_op_equivalence CategoryTheory.structuredArrowOpEquivalence
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
@@ -597,22 +589,14 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
         (@CostructuredArrow.isoMk _ _ _ _ _ _ (CostructuredArrow.mk (unop X).hom) (unop X)
             (Iso.refl _) (by aesop_cat)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
-        apply CommaMorphism.ext
-        · dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]
-          erw [Comma.comp_left, Comma.comp_left]
-          simp
-        · dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]
-          erw [Comma.comp_right] )
+        apply CommaMorphism.ext <;>
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk] ; simp )
     (NatIso.ofComponents
       (fun X =>
         @StructuredArrow.isoMk _ _ _ _ _ _ (StructuredArrow.mk X.hom) X (Iso.refl _)
           (by aesop_cat)) fun {X Y} f => by
-            apply CommaMorphism.ext
-            · dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]
-              erw [Comma.comp_left]
-            · dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]
-              erw [Comma.comp_right, Comma.comp_right]
-              simp )
+            apply CommaMorphism.ext <;>
+              dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk] ; simp )
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory
