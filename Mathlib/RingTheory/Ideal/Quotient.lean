@@ -38,12 +38,13 @@ universe u v w
 namespace Ideal
 
 open Set
-
 open BigOperators
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
-
 variable {S : Type v}
+
+-- Porting note: we need η for TC
+set_option synthInstance.etaExperiment true
 
 -- Note that at present `ideal` means a left-ideal,
 -- so this quotient is only useful in a commutative ring.
@@ -69,27 +70,28 @@ instance hasOne (I : Ideal R) : One (R ⧸ I) :=
 /-- On `ideal`s, `submodule.quotient_rel` is a ring congruence. -/
 protected def ringCon (I : Ideal R) : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
-    mul' := fun a₁ b₁ a₂ b₂ h₁ h₂ =>
+    mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ =>
       by
       rw [Submodule.quotientRel_r_def] at h₁ h₂⊢
       have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
       have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
         rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
       rw [← this] at F
-      change _ ∈ _
       convert F }
 #align ideal.quotient.ring_con Ideal.Quotient.ringCon
 
 instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
-  { Submodule.Quotient.addCommGroup I,
-    (-- to help with unification
-          Quotient.ringCon
-          I).Quotient.CommRing with }
+  { @Submodule.Quotient.addCommGroup _ _ (id _) (id _) (id _) I,
+    inferInstanceAs (CommRing (Quotient.ringCon I).Quotient) with }
 #align ideal.quotient.comm_ring Ideal.Quotient.commRing
 
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
-def mk (I : Ideal R) : R →+* R ⧸ I :=
-  ⟨fun a => Submodule.Quotient.mk a, rfl, fun _ _ => rfl, rfl, fun _ _ => rfl⟩
+def mk (I : Ideal R) : R →+* R ⧸ I where
+  toFun a := Submodule.Quotient.mk a
+  map_zero' := rfl
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
 #align ideal.quotient.mk Ideal.Quotient.mk
 
 /- Two `ring_homs`s from the quotient by an ideal are equal if their
@@ -111,13 +113,16 @@ protected theorem eq : mk I x = mk I y ↔ x - y ∈ I :=
 #align ideal.quotient.eq Ideal.Quotient.eq
 
 @[simp]
-theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x :=
-  rfl
+theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
 #align ideal.quotient.mk_eq_mk Ideal.Quotient.mk_eq_mk
 
 theorem eq_zero_iff_mem {I : Ideal R} : mk I a = 0 ↔ a ∈ I :=
   Submodule.Quotient.mk_eq_zero _
 #align ideal.quotient.eq_zero_iff_mem Ideal.Quotient.eq_zero_iff_mem
+
+-- Porting note: new theorem
+theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
+  rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 
 theorem zero_eq_one_iff {I : Ideal R} : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
   eq_comm.trans <| eq_zero_iff_mem.trans (eq_top_iff_one _).symm
@@ -132,12 +137,12 @@ protected theorem nontrivial {I : Ideal R} (hI : I ≠ ⊤) : Nontrivial (R ⧸ 
 #align ideal.quotient.nontrivial Ideal.Quotient.nontrivial
 
 theorem subsingleton_iff {I : Ideal R} : Subsingleton (R ⧸ I) ↔ I = ⊤ := by
-  rw [eq_top_iff_one, ← subsingleton_iff_zero_eq_one, eq_comm, ← I.Quotient.mk.map_one,
-    quotient.eq_zero_iff_mem]
+  rw [eq_top_iff_one, ← subsingleton_iff_zero_eq_one, eq_comm, ← (mk I).map_one,
+    Quotient.eq_zero_iff_mem]
 #align ideal.quotient.subsingleton_iff Ideal.Quotient.subsingleton_iff
 
 instance : Unique (R ⧸ (⊤ : Ideal R)) :=
-  ⟨⟨0⟩, by rintro ⟨x⟩ <;> exact quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
+  ⟨⟨0⟩, by rintro ⟨x⟩ <;> exact Quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
 
 theorem mk_surjective : Function.Surjective (mk I) := fun y =>
   Quotient.inductionOn' y fun x => Exists.intro x rfl
@@ -151,15 +156,14 @@ instance : RingHomSurjective (mk I) :=
 theorem quotient_ring_saturate (I : Ideal R) (s : Set R) :
     mk I ⁻¹' (mk I '' s) = ⋃ x : I, (fun y => x.1 + y) '' s := by
   ext x
-  simp only [mem_preimage, mem_image, mem_Union, Ideal.Quotient.eq]
+  simp only [mem_preimage, mem_image, mem_unionᵢ, Ideal.Quotient.eq]
   exact
     ⟨fun ⟨a, a_in, h⟩ => ⟨⟨_, I.neg_mem h⟩, a, a_in, by simp⟩, fun ⟨⟨i, hi⟩, a, ha, Eq⟩ =>
       ⟨a, ha, by rw [← Eq, sub_add_eq_sub_sub_swap, sub_self, zero_sub] <;> exact I.neg_mem hi⟩⟩
 #align ideal.quotient.quotient_ring_saturate Ideal.Quotient.quotient_ring_saturate
 
-instance noZeroDivisors (I : Ideal R) [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I)
-    where eq_zero_or_eq_zero_of_mul_eq_zero a b :=
-    Quotient.inductionOn₂' a b fun a b hab =>
+instance noZeroDivisors (I : Ideal R) [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
+    eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {a b} hab =>
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
         (Or.inr ∘ eq_zero_iff_mem.2)
 #align ideal.quotient.no_zero_divisors Ideal.Quotient.noZeroDivisors
@@ -171,11 +175,11 @@ instance isDomain (I : Ideal R) [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
 
 theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine'
-    ⟨fun H => ⟨zero_ne_one_iff.1 _, fun x y h => _⟩, fun h =>
+    ⟨fun H => ⟨zero_ne_one_iff.1 _, fun {x y} h => _⟩, fun h =>
       by
       skip
       infer_instance⟩
-  · haveI : Nontrivial (R ⧸ I) := ⟨H.3⟩
+  · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h⊢
     haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
@@ -224,10 +228,13 @@ theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal
     refine' J.sub_mem (J.mul_mem_right _ hxJ) (hIJ (Ideal.Quotient.eq.1 hy))
 #align ideal.quotient.maximal_of_is_field Ideal.Quotient.maximal_of_isField
 
+-- -- Porting note: we need η for TC
+-- set_option synthInstance.etaExperiment false
+
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/
 theorem maximal_ideal_iff_isField_quotient (I : Ideal R) : I.IsMaximal ↔ IsField (R ⧸ I) :=
   ⟨fun h =>
-    letI := @quotient.field _ _ I h
+    let _i := @Quotient.field _ _ I h
     Field.toIsField _,
     maximal_of_isField _⟩
 #align ideal.quotient.maximal_ideal_iff_is_field_quotient Ideal.Quotient.maximal_ideal_iff_isField_quotient
@@ -264,7 +271,7 @@ theorem lift_surjective_of_surjective (I : Ideal R) {f : R →+* S} (H : ∀ a :
 
 This is the `ideal.quotient` version of `quot.factor` -/
 def factor (S T : Ideal R) (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
-  Ideal.Quotient.lift S T.Quotient.mk fun x hx => eq_zero_iff_mem.2 (H hx)
+  Ideal.Quotient.lift S (mk T) fun x hx => eq_zero_iff_mem.2 (H hx)
 #align ideal.quotient.factor Ideal.Quotient.factor
 
 @[simp]
@@ -307,65 +314,58 @@ section Pi
 variable (ι : Type v)
 
 /-- `R^n/I^n` is a `R/I`-module. -/
-instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι)
-    where
+instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul c m :=
-    Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m)
-      (by
-        intro c₁ m₁ c₂ m₂ hc hm
-        apply Ideal.Quotient.eq.2
-        rw [Submodule.quotientRel_r_def] at hc hm
-        intro i
-        exact I.mul_sub_mul_mem hc (hm i))
+    Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m) $ by
+      intro c₁ m₁ c₂ m₂ hc hm
+      apply Ideal.Quotient.eq.2
+      rw [Submodule.quotientRel_r_def] at hc hm
+      intro i
+      exact I.mul_sub_mul_mem hc (hm i)
   one_smul := by
     rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _
+    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
     congr with i; exact one_mul (a i)
   mul_smul := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
-    convert_to Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _
-    simp only [(· • ·)]
-    congr with i; exact mul_assoc a b (c i)
+    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
+    congr 1; funext i; exact mul_assoc a b (c i)
   smul_add := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
-    convert_to Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _
+    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
     congr with i; exact mul_add a (b i) (c i)
   smul_zero := by
     rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _
+    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
     congr with i; exact mul_zero a
   add_smul := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
-    convert_to Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _
+    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
     congr with i; exact add_mul a b (c i)
   zero_smul := by
     rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _
+    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
     congr with i; exact zero_mul (a i)
 #align ideal.module_pi Ideal.modulePi
 
+set_option synthInstance.etaExperiment false in -- Porting note: needed, otherwise type times out
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
-noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → R ⧸ I
-    where
-  toFun x :=
-    Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
-      funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
-  map_add' := by
-    rintro ⟨_⟩ ⟨_⟩
-    rfl
-  map_smul' := by
-    rintro ⟨_⟩ ⟨_⟩
-    rfl
-  invFun x := Ideal.Quotient.mk (I.pi ι) fun i => Quotient.out' (x i)
-  left_inv := by
-    rintro ⟨x⟩
+noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) := by
+  refine' ⟨⟨⟨?toFun, _⟩, _⟩, ?invFun, _, _⟩
+  case toFun => set_option synthInstance.etaExperiment true in -- Porting note: to get `Module R R`
+    exact fun x ↦
+      Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
+        funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
+  case invFun =>
+    exact fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
+  · rintro ⟨_⟩ ⟨_⟩; rfl
+  · rintro ⟨_⟩ ⟨_⟩; rfl
+  · rintro ⟨x⟩
     exact Ideal.Quotient.eq.2 fun i => Ideal.Quotient.eq.1 (Quotient.out_eq' _)
-  right_inv := by
-    intro x
+  · intro x
     ext i
     obtain ⟨r, hr⟩ := @Quot.exists_rep _ _ (x i)
-    simp_rw [← hr]
-    convert Quotient.out_eq' _
+    convert Quotient.out_eq' (x i)
 #align ideal.pi_quot_equiv Ideal.piQuotEquiv
 
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
@@ -388,8 +388,7 @@ variable {ι : Type v}
 theorem exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
     (hf : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → f i ⊔ f j = ⊤) (i : ι) (his : i ∈ s) :
     ∃ r : R, r - 1 ∈ f i ∧ ∀ j ∈ s, j ≠ i → r ∈ f j := by
-  have : ∀ j ∈ s, j ≠ i → ∃ r : R, ∃ H : r - 1 ∈ f i, r ∈ f j :=
-    by
+  have : ∀ j ∈ s, j ≠ i → ∃ r : R, ∃ H : r - 1 ∈ f i, r ∈ f j := by
     intro j hjs hji
     specialize hf i his j hjs hji.symm
     rw [eq_top_iff_one, Submodule.mem_sup] at hf
@@ -400,31 +399,33 @@ theorem exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
     · rw [← hrs, add_sub_cancel']
       exact hsj
   classical
-    have : ∃ g : ι → R, (∀ j, g j - 1 ∈ f i) ∧ ∀ j ∈ s, j ≠ i → g j ∈ f j :=
-      by
-      choose g hg1 hg2
+    have : ∃ g : ι → R, (∀ j, g j - 1 ∈ f i) ∧ ∀ j ∈ s, j ≠ i → g j ∈ f j := by
+      choose g hg1 hg2 using this
       refine' ⟨fun j => if H : j ∈ s ∧ j ≠ i then g j H.1 H.2 else 1, fun j => _, fun j => _⟩
-      · split_ifs with h
+      · dsimp only
+        split_ifs with h
         · apply hg1
         rw [sub_self]
         exact (f i).zero_mem
       · intro hjs hji
+        dsimp only
         rw [dif_pos]
         · apply hg2
         exact ⟨hjs, hji⟩
     rcases this with ⟨g, hgi, hgj⟩
     use ∏ x in s.erase i, g x
     constructor
-    · rw [← Quotient.eq', RingHom.map_one, RingHom.map_prod]
+    · rw [← Ideal.Quotient.mk_eq_mk_iff_sub_mem, map_one, map_prod]
       apply Finset.prod_eq_one
       intros
-      rw [← RingHom.map_one, Quotient.eq']
+      rw [← RingHom.map_one, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
       apply hgi
-    intro j hjs hji
-    rw [← quotient.eq_zero_iff_mem, RingHom.map_prod]
-    refine' Finset.prod_eq_zero (Finset.mem_erase_of_ne_of_mem hji hjs) _
-    rw [quotient.eq_zero_iff_mem]
-    exact hgj j hjs hji
+    · intro j hjs hji
+      rw [← Quotient.eq_zero_iff_mem, map_prod]
+      apply Finset.prod_eq_zero
+      -- refine' Finset.prod_eq_zero (Finset.mem_erase_of_ne_of_mem hji hjs) _
+      rw [quotient.eq_zero_iff_mem]
+      exact hgj j hjs hji
 #align ideal.exists_sub_one_mem_and_mem Ideal.exists_sub_one_mem_and_mem
 
 theorem exists_sub_mem [Finite ι] {f : ι → Ideal R} (hf : ∀ i j, i ≠ j → f i ⊔ f j = ⊤)
@@ -525,4 +526,3 @@ theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ J
 #align ideal.snd_comp_quotient_inf_equiv_quotient_prod Ideal.snd_comp_quotientInfEquivQuotientProd
 
 end Ideal
-
