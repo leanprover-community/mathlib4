@@ -79,6 +79,18 @@ theorem w {A B : StructuredArrow S T} (f : A ⟶ B) : A.hom ≫ T.map f.right = 
   have := f.w ; aesop_cat
 #align category_theory.structured_arrow.w CategoryTheory.StructuredArrow.w
 
+@[simp]
+theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  (f ≫ g).right = f.right ≫ g.right := rfl
+
+@[simp]
+theorem id_right (X : StructuredArrow S T) :
+  (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
+
+@[simp]
+theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) :
+  f.left = 𝟙 _ := rfl
+
 /-- To construct a morphism of structured arrows,
 we need a morphism of the objects underlying the target,
 and to check that the triangle commutes.
@@ -192,28 +204,10 @@ instance proj_reflects_iso : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
     ⟨⟨StructuredArrow.homMk (inv ((proj S T).map f))
     (by rw [Functor.map_inv, IsIso.comp_inv_eq] ; simp), by
-      --NOTES: We're missing some simp lemmas...
-      dsimp
       --split <-- fails!?
       refine ⟨?_,?_⟩ -- works
-      · apply CommaMorphism.ext
-        · dsimp [homMk]
-          erw [Comma.comp_left, Comma.id_left]
-          --simp -- UGH! Not working!
-          erw [Category.comp_id f.left]
-        · dsimp [homMk]
-          erw [Comma.comp_right, Comma.id_right]
-          dsimp
-          haveI : IsIso f.right := t
-          rw [IsIso.hom_inv_id f.right]
-      · apply CommaMorphism.ext
-        · dsimp [homMk]
-          erw [Comma.comp_left, Comma.id_left]
-        · dsimp [homMk]
-          erw [Comma.comp_right, Comma.id_right]
-          dsimp
-          haveI : IsIso f.right := t
-          rw [IsIso.inv_hom_id f.right] ⟩⟩
+      · apply CommaMorphism.ext <;> dsimp at t ⊢ ; simp
+      · apply CommaMorphism.ext <;> dsimp at t ⊢ ; simp ⟩⟩
 #align category_theory.structured_arrow.proj_reflects_iso CategoryTheory.StructuredArrow.proj_reflects_iso
 
 open CategoryTheory.Limits
