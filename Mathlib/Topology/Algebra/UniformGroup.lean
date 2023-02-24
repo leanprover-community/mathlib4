@@ -217,10 +217,10 @@ variable [Group β]
 @[to_additive]
 theorem uniformGroup_infₛ {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
     @UniformGroup β (infₛ us) _ :=
-  {
-    uniformContinuous_div :=
-      uniformContinuous_infₛ_rng fun u hu =>
-        uniformContinuous_infₛ_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu)) }
+  -- Porting note: {_} does not find `infₛ us` instance, see `continuousSMul_infₛ`
+  @UniformGroup.mk β (_) _  <|
+    uniformContinuous_infₛ_rng fun u hu =>
+      uniformContinuous_infₛ_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
 #align uniform_group_Inf uniformGroup_infₛ
 #align uniform_add_group_Inf uniformAddGroup_infₛ
 
@@ -244,14 +244,13 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
 @[to_additive]
 theorem uniformGroup_comap {γ : Type _} [Group γ] {u : UniformSpace γ} [UniformGroup γ] {F : Type _}
     [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  {
-    uniformContinuous_div := by
-      letI : UniformSpace β := u.comap f
-      refine' uniformContinuous_comap' _
-      simp_rw [Function.comp, map_div]
-      change UniformContinuous ((fun p : γ × γ => p.1 / p.2) ∘ Prod.map f f)
-      exact
-        uniform_continuous_div.comp (uniform_continuous_comap.prod_map uniformContinuous_comap) }
+  -- Porting note: {_} does not find `u.comap f` instance, see `continuousSMul_infₛ`
+  @UniformGroup.mk β (_) _ <| by
+    letI : UniformSpace β := u.comap f
+    refine' uniformContinuous_comap' _
+    simp_rw [Function.comp, map_div]
+    change UniformContinuous ((fun p : γ × γ => p.1 / p.2) ∘ Prod.map f f)
+    exact uniformContinuous_div.comp (uniformContinuous_comap.prod_map uniformContinuous_comap)
 #align uniform_group_comap uniformGroup_comap
 #align uniform_add_group_comap uniformAddGroup_comap
 
@@ -559,7 +558,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G
     where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
   refl := by
-    refine' map_le_iff_le_comap.1 (le_trans _ (pure_le_nhds 1)) <;>
+    refine' map_le_iff_le_comap.1 (le_trans _ (pure_le_nhds 1));
       simp (config := { contextual := true }) [Set.subset_def]
   symm :=
     by
@@ -575,7 +574,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G
       exists (fun p : G × G => p.2 / p.1) ⁻¹' V
       have H :
         (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G)) := by
-        exists V, V_nhds <;> rfl
+        exists V, V_nhds
       exists H
       have comp_rel_sub :
         compRel ((fun p : G × G => p.2 / p.1) ⁻¹' V) ((fun p => p.2 / p.1) ⁻¹' V) ⊆
@@ -593,7 +592,9 @@ def TopologicalGroup.toUniformSpace : UniformSpace G
     rw [isOpen_iff_mem_nhds]
     refine' forall₂_congr fun a ha => _
     rw [← nhds_translation_div, mem_comap, mem_comap]
-    refine' exists₂_congr fun t ht => _
+    refine exists_congr fun t => (and_congr_right fun _ => ?_)
+    -- Porting note: was
+    --refine' exists₂_congr fun t ht => _
     show (fun y : G => y / a) ⁻¹' t ⊆ S ↔ (fun p : G × G => p.snd / p.fst) ⁻¹' t ⊆ S' a
     constructor
     · rintro h ⟨x, y⟩ hx rfl
@@ -722,7 +723,9 @@ theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : 
       have := group_separationRel x 1
       rw [div_one] at this
       rw [← this, h] at x_in
-      change x = 1 at x_in
+      have x_in : x = 1 := x_in
+      -- Porting note: was
+      --change x = 1 at x_in
       simp [x_in]
     · exact subset_closure
   · ext p
