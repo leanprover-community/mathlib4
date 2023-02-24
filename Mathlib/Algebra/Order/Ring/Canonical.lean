@@ -103,10 +103,6 @@ instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·
 #align canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedCommSemiring.toCovariantClassMulLE
 
 -- see Note [lower instance priority]
-instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where
-  mul_le_mul_left := fun _ _ => mul_le_mul_left'
-
--- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
   { ‹CanonicallyOrderedCommSemiring α› with
     zero_le_one := zero_le _,
