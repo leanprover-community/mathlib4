@@ -8,8 +8,8 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Floor
-import Mathbin.Topology.Algebra.Order.Group
+import Mathlib.Algebra.Order.Floor
+import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Topological facts about `int.floor`, `int.ceil` and `int.fract`
@@ -70,16 +70,14 @@ theorem continuousOn_ceil (n : ℤ) :
 #align continuous_on_ceil continuousOn_ceil
 
 theorem tendsto_floor_right' [OrderClosedTopology α] (n : ℤ) :
-    Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝 n) :=
-  by
+    Tendsto (fun x => floor x : α → α) (𝓝[≥] n) (𝓝 n) := by
   rw [← nhdsWithin_Ico_eq_nhdsWithin_Ici (lt_add_one (n : α))]
   simpa only [floor_int_cast] using
     (continuousOn_floor n _ (left_mem_Ico.mpr <| lt_add_one (_ : α))).Tendsto
 #align tendsto_floor_right' tendsto_floor_right'
 
 theorem tendsto_ceil_left' [OrderClosedTopology α] (n : ℤ) :
-    Tendsto (fun x => ceil x : α → α) (𝓝[≤] n) (𝓝 n) :=
-  by
+    Tendsto (fun x => ceil x : α → α) (𝓝[≤] n) (𝓝 n) := by
   rw [← nhdsWithin_Ioc_eq_nhdsWithin_Iic (sub_one_lt (n : α))]
   simpa only [ceil_int_cast] using
     (continuousOn_ceil _ _ (right_mem_Ioc.mpr <| sub_one_lt (_ : α))).Tendsto
@@ -110,8 +108,7 @@ theorem tendsto_ceil_left [OrderClosedTopology α] (n : ℤ) :
 #align tendsto_ceil_left tendsto_ceil_left
 
 theorem tendsto_floor_left [OrderClosedTopology α] (n : ℤ) :
-    Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝[≤] (n - 1)) :=
-  by
+    Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝[≤] (n - 1)) := by
   rw [← nhdsWithin_Ico_eq_nhdsWithin_Iio (sub_one_lt (n : α))]
   convert
       (tendsto_nhdsWithin_congr fun x hx => (floor_eq_on_Ico' (n - 1) x hx).symm)
@@ -122,8 +119,7 @@ theorem tendsto_floor_left [OrderClosedTopology α] (n : ℤ) :
 #align tendsto_floor_left tendsto_floor_left
 
 theorem tendsto_ceil_right [OrderClosedTopology α] (n : ℤ) :
-    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝[≥] (n + 1)) :=
-  by
+    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝[≥] (n + 1)) := by
   rw [← nhdsWithin_Ioc_eq_nhdsWithin_Ioi (lt_add_one (n : α))]
   convert
       (tendsto_nhdsWithin_congr fun x hx => (ceil_eq_on_Ioc' (n + 1) x hx).symm)
@@ -134,15 +130,13 @@ theorem tendsto_ceil_right [OrderClosedTopology α] (n : ℤ) :
 #align tendsto_ceil_right tendsto_ceil_right
 
 theorem tendsto_floor_left' [OrderClosedTopology α] (n : ℤ) :
-    Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝 (n - 1)) :=
-  by
+    Tendsto (fun x => floor x : α → α) (𝓝[<] n) (𝓝 (n - 1)) := by
   rw [← nhdsWithin_univ]
   exact tendsto_nhdsWithin_mono_right (subset_univ _) (tendsto_floor_left n)
 #align tendsto_floor_left' tendsto_floor_left'
 
 theorem tendsto_ceil_right' [OrderClosedTopology α] (n : ℤ) :
-    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝 (n + 1)) :=
-  by
+    Tendsto (fun x => ceil x : α → α) (𝓝[>] n) (𝓝 (n + 1)) := by
   rw [← nhdsWithin_univ]
   exact tendsto_nhdsWithin_mono_right (subset_univ _) (tendsto_ceil_right n)
 #align tendsto_ceil_right' tendsto_ceil_right'
@@ -188,8 +182,7 @@ variable [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Do not use this, use `continuous_on.comp_fract` instead. -/
 theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncurry f) <| univ ×ˢ I)
-    (hf : ∀ s, f s 0 = f s 1) : Continuous fun st : β × α => f st.1 <| fract st.2 :=
-  by
+    (hf : ∀ s, f s 0 = f s 1) : Continuous fun st : β × α => f st.1 <| fract st.2 := by
   change Continuous (uncurry f ∘ Prod.map id fract)
   rw [continuous_iff_continuousAt]
   rintro ⟨s, t⟩
