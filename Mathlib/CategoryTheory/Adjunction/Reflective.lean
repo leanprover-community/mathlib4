@@ -178,16 +178,14 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory
       (by
         intro X Y f
         dsimp
-        simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.assoc]
-        sorry) --exact ((ofRightAdjoint i).counit.naturality _).symm)
+        rw [IsIso.comp_inv_eq, Category.assoc, IsIso.eq_inv_comp]
+        exact ((ofRightAdjoint i).counit.naturality f).symm)
   counitIso :=
     NatIso.ofComponents
       (fun X => by
-        --refine' Iso.symm <| asIso _
-        --exact (ofRightAdjoint i).unit.app X.obj
-        --apply (config := { instances := false }) is_iso_of_reflects_iso _ i.ess_image_inclusion
-        --exact functor.ess_image.unit_is_iso X.property)
-        sorry)
+        refine' Iso.symm (@asIso _ _ X _ ((ofRightAdjoint i).unit.app X.obj) ?_)
+        refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
+        exact Functor.essImage.unit_isIso  X.property)
       (by
         intro X Y f
         dsimp
@@ -196,7 +194,11 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory
         --rw [functor.id_map] at h
         --erw [← h, is_iso.inv_hom_id_assoc, functor.comp_map])
         sorry)
-  functor_unitIso_comp := sorry
+  functor_unitIso_comp := fun X => by -- automation could handle this in mathlib
+    dsimp [asIso]
+    simp
+    apply IsIso.hom_inv_id -- why does it fail???
+    sorry
 #align category_theory.equiv_ess_image_of_reflective CategoryTheory.equivEssImageOfReflective
 
 end CategoryTheory
