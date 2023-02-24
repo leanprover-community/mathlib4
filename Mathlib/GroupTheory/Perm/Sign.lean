@@ -508,7 +508,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
           rw [← Equiv.symm_trans_swap_trans, mul_def, Equiv.symm_trans_swap_trans, mul_def]
           repeat (rw [trans_apply])
           simp [swap, swapCore]
-          split_ifs with h₁ h₂ <;> rfl
+          split_ifs <;> rfl
       have hefx : e x ≠ e (f x) := mt e.injective.eq_iff.1 hfx
       rw [if_neg hfx, ← signAux_eq_signAux2 _ _ e hy, this, signAux_mul, signAux_swap hefx]
       simp only [neg_neg, one_mul, neg_mul]
