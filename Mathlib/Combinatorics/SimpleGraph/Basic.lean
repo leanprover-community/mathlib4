@@ -57,7 +57,7 @@ finitely many vertices.
 
 * A locally finite graph is one with instances `Π v, Fintype (G.neighborSet v)`.
 
-* Given instances `DecidableRel G.adj` and `Fintype V`, then the graph
+* Given instances `DecidableRel G.Adj` and `Fintype V`, then the graph
   is locally finite, too.
 
 * Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding`, and `RelIso`.
@@ -95,7 +95,7 @@ open Finset Function
 
 universe u v w
 
-/-- A simple graph is an irreflexive symmetric relation `adj` on a vertex type `V`.
+/-- A simple graph is an irreflexive symmetric relation `Adj` on a vertex type `V`.
 The relation describes which pairs of vertices are adjacent.
 There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
@@ -131,11 +131,11 @@ attribute [aesop safe (rule_sets [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets [SimpleGraph])] Ne.irrefl
 
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices
-adjacent. In `mathlib`, this is usually referred to as `⊤`. -/
+adjacent. In `Mathlib`, this is usually referred to as `⊤`. -/
 def completeGraph (V : Type u) : SimpleGraph V where Adj := Ne
 #align complete_graph completeGraph
 
-/-- The graph with no edges on a given vertex type `V`. `mathlib` prefers the notation `⊥`. -/
+/-- The graph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. -/
 def emptyGraph (V : Type u) : SimpleGraph V where Adj _ _ := False
 #align empty_graph emptyGraph
 
@@ -376,11 +376,11 @@ section EdgeSet
 variable {G₁ G₂ : SimpleGraph V}
 
 /-- The edges of G consist of the unordered pairs of vertices related by
-`G.adj`. This is the order embedding; for the edge set of a particular graph, see
+`G.Adj`. This is the order embedding; for the edge set of a particular graph, see
 `SimpleGraph.edgeSet`.
 
 The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `refl`.
-(That is, `⟦(v, w)⟧ ∈ G.edgeSet` is definitionally equal to `G.adj v w`.)
+(That is, `⟦(v, w)⟧ ∈ G.edgeSet` is definitionally equal to `G.Adj v w`.)
 -/
 -- porting note: We need a separate definition so that dot notation works.
 def edgeSetEmbedding (V : Type _) : SimpleGraph V ↪o Set (Sym2 V) :=
@@ -452,8 +452,8 @@ theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := b
   rfl
 #align simple_graph.edge_set_sdiff SimpleGraph.edgeSet_sdiff
 
-/-- This lemma, combined with `edge_set_sdiff` and `edge_set_from_edge_set`,
-allows proving `(G \ from_edge_set s).edge_set = G.edge_set \ s` by `simp`. -/
+/-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_from_edgeSet`,
+allows proving `(G \ from_edgeSet s).edge_set = G.edgeSet \ s` by `simp`. -/
 @[simp]
 theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
     G.edgeSet \ (s \ { e | e.IsDiag }) = G.edgeSet \ s := by
@@ -466,7 +466,7 @@ theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
 /-- Two vertices are adjacent iff there is an edge between them. The
 condition `v ≠ w` ensures they are different endpoints of the edge,
 which is necessary since when `v = w` the existential
-`∃ (e ∈ G.edge_set), v ∈ e ∧ w ∈ e` is satisfied by every edge
+`∃ (e ∈ G.edgeSet), v ∈ e ∧ w ∈ e` is satisfied by every edge
 incident to `v`. -/
 theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.edgeSet, v ∈ e ∧ w ∈ e := by
   refine' ⟨fun _ => ⟨G.ne_of_adj ‹_›, ⟦(v, w)⟧, by simpa⟩, _⟩
@@ -598,7 +598,7 @@ end FromEdgeSet
 
 /-! ## Darts -/
 
-/-- A `dart` is an oriented edge, implemented as an ordered pair of adjacent vertices.
+/-- A `Dart` is an oriented edge, implemented as an ordered pair of adjacent vertices.
 This terminology comes from combinatorial maps, and they are also known as "half-edges"
 or "bonds." -/
 structure Dart extends V × V where
@@ -1255,7 +1255,7 @@ Use `neighborFinset_eq_filter` to rewrite this definition as a `Finset.filter` e
 
 variable (v) [Fintype (G.neighborSet v)]
 
-/-- `G.neighbors v` is the `finset` version of `G.adj v` in case `G` is
+/-- `G.neighbors v` is the `Finset` version of `G.Adj v` in case `G` is
 locally finite at `v`. -/
 def neighborFinset : Finset V :=
   (G.neighborSet v).toFinset
@@ -1518,7 +1518,7 @@ theorem card_commonNeighbors_lt_card_verts [DecidableRel G.Adj] (v w : V) :
   Nat.lt_of_le_of_lt (G.card_commonNeighbors_le_degree_left _ _) (G.degree_lt_card_verts v)
 #align simple_graph.card_common_neighbors_lt_card_verts SimpleGraph.card_commonNeighbors_lt_card_verts
 
-/-- If the condition `G.adj v w` fails, then `card_commonNeighbors_le_degree` is
+/-- If the condition `G.Adj v w` fails, then `card_commonNeighbors_le_degree` is
 the best we can do in general. -/
 theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.Adj] {v w : V}
     (h : G.Adj v w) : Fintype.card (G.commonNeighbors v w) < G.degree v := by
@@ -1557,7 +1557,7 @@ abbrev Hom :=
 #align simple_graph.hom SimpleGraph.Hom
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
-`G.adj (f v) (f w) ↔ G.adj v w `. Its image is an induced subgraph of G'.
+`G.Adj (f v) (f w) ↔ G.Adj v w `. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
 abbrev Embedding :=
