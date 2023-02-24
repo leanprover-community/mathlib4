@@ -610,6 +610,28 @@ theorem image_perm {s : Set α} {σ : Equiv.Perm α} (hs : { a : α | σ a ≠ a
 
 end Image
 
+/-! ### Lemmas about the powerset and image. -/
+
+/-- The powerset of `{a} ∪ s` is `𝒫 s` together with `{a} ∪ t` for each `t ∈ 𝒫 s`. -/
+theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ insert a '' 𝒫 s :=
+  by
+  ext t
+  simp_rw [mem_union, mem_image, mem_powerset_iff]
+  constructor
+  · intro h
+    by_cases hs : a ∈ t
+    · right
+      refine' ⟨t \ {a}, _, _⟩
+      · rw [diff_singleton_subset_iff]
+        assumption
+      · rw [insert_diff_singleton, insert_eq_of_mem hs]
+    · left
+      exact (subset_insert_iff_of_not_mem hs).mp h
+  · rintro (h | ⟨s', h₁, rfl⟩)
+    · exact subset_trans h (subset_insert a s)
+    · exact insert_subset_insert h₁
+#align set.powerset_insert Set.powerset_insert
+
 /-! ### Lemmas about range of a function. -/
 
 

@@ -1154,6 +1154,21 @@ theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ 
   exacts[(ha hx).elim, hxt]
 #align set.insert_subset_insert_iff Set.insert_subset_insert_iff
 
+theorem subset_insert_iff_of_not_mem {s t : Set α} {a : α} (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
+  by
+  constructor
+  · intro g y hy
+    specialize g hy
+    rw [mem_insert_iff] at g
+    rcases g with (g | g)
+    · rw [g] at hy
+      contradiction
+    · assumption
+  · intro g y hy
+    specialize g hy
+    exact mem_insert_of_mem _ g
+#align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
+
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
   simp only [insert_subset, exists_and_right, ssubset_def, not_subset]
   simp only [exists_prop, and_comm]
@@ -2124,6 +2139,13 @@ theorem powerset_empty : 𝒫(∅ : Set α) = {∅} :=
 theorem powerset_univ : 𝒫(univ : Set α) = univ :=
   eq_univ_of_forall subset_univ
 #align set.powerset_univ Set.powerset_univ
+
+/-- The powerset of a singleton contains only `∅` and the singleton itself. -/
+theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} :=
+  by
+  ext y
+  rw [mem_powerset_iff, subset_singleton_iff_eq, mem_insert_iff, mem_singleton_iff]
+#align set.powerset_singleton Set.powerset_singleton
 
 /-! ### Sets defined as an if-then-else -/
 
