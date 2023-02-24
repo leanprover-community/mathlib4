@@ -1154,19 +1154,8 @@ theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ 
   exacts[(ha hx).elim, hxt]
 #align set.insert_subset_insert_iff Set.insert_subset_insert_iff
 
-theorem subset_insert_iff_of_not_mem {s t : Set α} {a : α} (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
-  by
-  constructor
-  · intro g y hy
-    specialize g hy
-    rw [mem_insert_iff] at g
-    rcases g with (g | g)
-    · rw [g] at hy
-      contradiction
-    · assumption
-  · intro g y hy
-    specialize g hy
-    exact mem_insert_of_mem _ g
+theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
+  forall₂_congr <| fun _ hb => or_iff_right <| ne_of_mem_of_not_mem hb ha
 #align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
