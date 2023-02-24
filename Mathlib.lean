@@ -224,6 +224,7 @@ import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Adjunction.Whiskering
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Balanced
@@ -722,6 +723,7 @@ import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Mem
 import Mathlib.Data.Vector.Zip
 import Mathlib.Data.W.Basic
+import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Deprecated.Group
@@ -856,6 +858,7 @@ import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
@@ -1027,6 +1030,7 @@ import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.SetTheory.Cardinal.Divisibility
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Ordinal
@@ -1034,6 +1038,7 @@ import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Lists
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.SetTheory.Ordinal.CantorNormalForm
 import Mathlib.SetTheory.Ordinal.Exponential
 import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.NaturalOps
@@ -1238,10 +1243,12 @@ import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Separation
 import Mathlib.Topology.UniformSpace.UniformConvergence
+import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
