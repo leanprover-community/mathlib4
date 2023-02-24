@@ -857,6 +857,7 @@ import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
