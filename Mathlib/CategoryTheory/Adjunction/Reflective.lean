@@ -166,6 +166,33 @@ theorem unitCompPartialBijective_natural [Reflective i] (A : C) {B B' : C} (h : 
   rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h, Equiv.symm_apply_apply]
 #align category_theory.unit_comp_partial_bijective_natural CategoryTheory.unitCompPartialBijective_natural
 
+instance [Reflective i] (X : Functor.EssImageSubcategory i) :
+  IsIso (NatTrans.app (ofRightAdjoint i).unit X.obj) :=
+Functor.essImage.unit_isIso X.property
+
+-- porting note: the following auxiliary definition and the next two lemmas were
+-- introduced in order to ease the port
+/-- The counit isomorphism of the equivalence `D ≌ i.EssImageSubcategory` given
+by `equivEssImageOfReflective` when the functor `i` is reflective. -/
+def equivEssImageOfReflective_counitIso_app [Reflective i] (X : Functor.EssImageSubcategory i) :
+  ((Functor.essImageInclusion i ⋙ leftAdjoint i) ⋙ Functor.toEssImage i).obj X ≅ X := by
+  refine' Iso.symm (@asIso _ _ X _ ((ofRightAdjoint i).unit.app X.obj) ?_)
+  refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
+  dsimp
+  exact inferInstance
+
+lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
+  (X : Functor.EssImageSubcategory i) :
+  (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
+    inv (NatTrans.app (ofRightAdjoint i).unit X.obj) := by
+    simp [equivEssImageOfReflective_counitIso_app, asIso]
+    rfl
+
+lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
+  (X : Functor.EssImageSubcategory i) :
+  (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).inv =
+    (NatTrans.app (ofRightAdjoint i).unit X.obj) := rfl
+
 /-- If `i : D ⥤ C` is reflective, the inverse functor of `i ≌ F.essImage` can be explicitly
 defined by the reflector. -/
 @[simps]
@@ -181,24 +208,21 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory
         rw [IsIso.comp_inv_eq, Category.assoc, IsIso.eq_inv_comp]
         exact ((ofRightAdjoint i).counit.naturality f).symm)
   counitIso :=
-    NatIso.ofComponents
-      (fun X => by
-        refine' Iso.symm (@asIso _ _ X _ ((ofRightAdjoint i).unit.app X.obj) ?_)
-        refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
-        exact Functor.essImage.unit_isIso  X.property)
+    NatIso.ofComponents equivEssImageOfReflective_counitIso_app
       (by
         intro X Y f
-        dsimp
-        --rw [IsIso.comp_inv_eq, assoc]
-        --have h := ((of_right_adjoint i).Unit.naturality f).symm
-        --rw [functor.id_map] at h
-        --erw [← h, is_iso.inv_hom_id_assoc, functor.comp_map])
-        sorry)
-  functor_unitIso_comp := fun X => by -- automation could handle this in mathlib
-    dsimp [asIso]
-    simp
-    apply IsIso.hom_inv_id -- why does it fail???
-    sorry
+        apply (Functor.essImageInclusion i).map_injective
+        have h := ((ofRightAdjoint i).unit.naturality f).symm
+        rw [Functor.id_map] at h
+        erw [Functor.map_comp, Functor.map_comp,
+          equivEssImageOfReflective_map_counitIso_app_hom,
+          equivEssImageOfReflective_map_counitIso_app_hom,
+          IsIso.comp_inv_eq, assoc, ← h, IsIso.inv_hom_id_assoc, Functor.comp_map])
+  functor_unitIso_comp := fun X => by
+    -- porting note: this proof was automatically handled by the automation in mathlib
+    apply (Functor.essImageInclusion i).map_injective
+    erw [Functor.map_comp, equivEssImageOfReflective_map_counitIso_app_hom]
+    aesop_cat
 #align category_theory.equiv_ess_image_of_reflective CategoryTheory.equivEssImageOfReflective
 
 end CategoryTheory
