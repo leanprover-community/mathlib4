@@ -114,16 +114,14 @@ instance category : Category (Quotient r) where
 @[simps]
 def functor : C ⥤ Quotient r where
   obj a := { as := a }
-  map _ _ f := Quot.mk _ f
+  map := @fun _ _ f => Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance : Full (functor r) where preimage X Y f := Quot.out f
+noncomputable instance : Full (functor r) where preimage := @fun X Y f => Quot.out f
 
 instance : EssSurj (functor r)
     where mem_essImage Y :=
-    ⟨Y.as,
-      ⟨eqToIso
-          (by
+    ⟨Y.as, ⟨eqToIso (by
             ext
             rfl)⟩⟩
 
@@ -136,7 +134,7 @@ protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
 
 protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
     (functor r).map f₁ = (functor r).map f₂ := by
-  simpa using Quot.sound (comp_closure.intro (𝟙 a) f₁ f₂ (𝟙 b) h)
+  simpa using Quot.sound (CompClosure.intro (𝟙 a) f₁ f₂ (𝟙 b) h)
 #align category_theory.quotient.sound CategoryTheory.Quotient.sound
 
 theorem functor_map_eq_iff [Congruence r] {X Y : C} (f f' : X ⟶ Y) :
@@ -147,32 +145,33 @@ theorem functor_map_eq_iff [Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     intro h
     induction' h with m m' hm
     · cases hm
-      apply congruence.comp_left
-      apply congruence.comp_right
+      apply Congruence.compLeft
+      apply Congruence.compRight
       assumption
     · apply refl
     · apply symm
       assumption
-    · apply trans <;> assumption
+    · apply _root_.trans <;> assumption
   · apply Quotient.sound
 #align category_theory.quotient.functor_map_eq_iff CategoryTheory.Quotient.functor_map_eq_iff
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
   (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
-include H
+-- porting note: commented out `include`
+-- include H
 
 /-- The induced functor on the quotient category. -/
 @[simps]
 def lift : Quotient r ⥤ D where
   obj a := F.obj a.as
-  map a b hf :=
+  map := @fun a b hf =>
     Quot.liftOn hf (fun f => F.map f)
       (by
         rintro _ _ ⟨_, _, _, _, h⟩
         simp [H _ _ _ _ h])
-  map_id' a := F.map_id a.as
-  map_comp' := by
+  map_id a := F.map_id a.as
+  map_comp := by
     rintro a b c ⟨f⟩ ⟨g⟩
     exact F.map_comp f g
 #align category_theory.quotient.lift CategoryTheory.Quotient.lift
@@ -189,7 +188,7 @@ theorem lift_spec : functor r ⋙ lift r F H = F :=
 theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H :=
   by
   subst_vars
-  apply functor.hext
+  apply Functor.hext
   · rintro X
     dsimp [lift, Functor]
     congr
@@ -205,11 +204,11 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
 
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by tidy)
+  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
 #align category_theory.quotient.lift.is_lift CategoryTheory.Quotient.lift.isLift
 
 @[simp]
-theorem lift.isLift_hom (X : C) : (lift.isLift r F H).Hom.app X = 𝟙 (F.obj X) :=
+theorem lift.isLift_hom (X : C) : (lift.isLift r F H).hom.app X = 𝟙 (F.obj X) :=
   rfl
 #align category_theory.quotient.lift.is_lift_hom CategoryTheory.Quotient.lift.isLift_hom
 
@@ -221,7 +220,7 @@ theorem lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X)
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
     (lift r F H).map ((functor r).map f) = F.map f :=
   by
-  rw [← nat_iso.naturality_1 (lift.is_lift r F H)]
+  rw [← NatIso.naturality_1 (lift.isLift r F H)]
   dsimp
   simp
 #align category_theory.quotient.lift_map_functor_map CategoryTheory.Quotient.lift_map_functor_map
