@@ -13,12 +13,12 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 /-!
 # Cardinality of continuum
 
-In this file we define `cardinal.continuum` (notation: `𝔠`, localized in `cardinal`) to be `2 ^ ℵ₀`.
+In this file we define `Cardinal.continuum` (notation: `𝔠`, localized in `Cardinal`) to be `2 ^ ℵ₀`.
 We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 ## Notation
 
-- `𝔠` : notation for `cardinal.continuum` in locale `cardinal`.
+- `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`.
 -/
 
 
@@ -33,7 +33,7 @@ def continuum : Cardinal.{u} :=
   2 ^ aleph0.{u}
 #align cardinal.continuum Cardinal.continuum
 
--- mathport name: cardinal.continuum
+-- mathport name: Cardinal.continuum
 scoped notation "𝔠" => Cardinal.continuum
 
 @[simp]
@@ -43,7 +43,7 @@ theorem two_power_aleph0 : 2 ^ aleph0.{u} = continuum.{u} :=
 
 @[simp]
 theorem lift_continuum : lift.{v} 𝔠 = 𝔠 := by
-  rw [← two_power_aleph_0, lift_two_power, lift_aleph_0, two_power_aleph_0]
+  rw [← two_power_aleph0, lift_two_power, lift_aleph0, two_power_aleph0]
 #align cardinal.lift_continuum Cardinal.lift_continuum
 
 /-!
@@ -79,17 +79,17 @@ theorem continuum_ne_zero : 𝔠 ≠ 0 :=
 #align cardinal.continuum_ne_zero Cardinal.continuum_ne_zero
 
 theorem aleph_one_le_continuum : aleph 1 ≤ 𝔠 := by
-  rw [← succ_aleph_0]
-  exact Order.succ_le_of_lt aleph_0_lt_continuum
+  rw [← succ_aleph0]
+  exact Order.succ_le_of_lt aleph0_lt_continuum
 #align cardinal.aleph_one_le_continuum Cardinal.aleph_one_le_continuum
 
 @[simp]
-theorem continuum_toNat : continuum.toNat = 0 :=
+theorem continuum_toNat : toNat continuum = 0 :=
   toNat_apply_of_aleph0_le aleph0_le_continuum
 #align cardinal.continuum_to_nat Cardinal.continuum_toNat
 
 @[simp]
-theorem continuum_toPartENat : continuum.toPartENat = ⊤ :=
+theorem continuum_toPartENat : toPartENat continuum = ⊤ :=
   toPartENat_apply_of_aleph0_le aleph0_le_continuum
 #align cardinal.continuum_to_part_enat Cardinal.continuum_toPartENat
 
@@ -170,8 +170,7 @@ theorem nat_power_aleph0 {n : ℕ} (hn : 2 ≤ n) : (n ^ aleph0.{u} : Cardinal.{
 
 @[simp]
 theorem continuum_power_aleph0 : continuum.{u} ^ aleph0.{u} = 𝔠 := by
-  rw [← two_power_aleph_0, ← power_mul, mul_eq_left le_rfl le_rfl aleph_0_ne_zero]
+  rw [← two_power_aleph0, ← power_mul, mul_eq_left le_rfl le_rfl aleph0_ne_zero]
 #align cardinal.continuum_power_aleph_0 Cardinal.continuum_power_aleph0
 
 end Cardinal
-
