@@ -1236,6 +1236,7 @@ import Mathlib.Topology.Spectral.Hom
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Support
+import Mathlib.Topology.Tactic
 import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.Topology.UniformSpace.Basic

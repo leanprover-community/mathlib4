@@ -8,11 +8,11 @@ Authors: Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.AutoCases
-import Mathbin.Tactic.Tidy
-import Mathbin.Tactic.WithLocalReducibility
-import Mathbin.Tactic.ShowTerm
-import Mathbin.Topology.Basic
+import Mathlib.Tactic.AutoCases
+import Mathlib.Tactic.Tidy
+import Mathlib.Tactic.WithLocalReducibility
+import Mathlib.Tactic.ShowTerm
+import Mathlib.Topology.Basic
 
 /-!
 # Tactics for topology
