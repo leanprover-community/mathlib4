@@ -355,7 +355,7 @@ theorem signBijAux_inj {n : ℕ} {f : Perm (Fin n)} :
 #align equiv.perm.sign_bij_aux_inj Equiv.Perm.signBijAux_inj
 
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
-    ∀ a ∈ finPairsLT n, ∃ b ∈ finPairsLT n, a = signBijAux f b :=
+    ∀ a ∈ finPairsLT n, ∃ (b: Σ (_: Fin n), Fin n) (_H: b ∈ finPairsLT n), a = signBijAux f b :=
   fun ⟨a₁, a₂⟩ ha =>
     if hxa : f⁻¹ a₂ < f⁻¹ a₁ then
       ⟨⟨f⁻¹ a₁, f⁻¹ a₂⟩, mem_finPairsLT.2 hxa, by
