@@ -637,14 +637,8 @@ section CanonicallyOrderedCommSemiring
 
 variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
 
-theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏ i in s, g i := by
-  classical
-    induction' s using Finset.induction with a s has ih h
-    · simp
-    · rw [Finset.prod_insert has, Finset.prod_insert has]
-      apply mul_le_mul'
-      · exact h _ (Finset.mem_insert_self a s)
-      · exact ih fun i hi ↦ h _ (Finset.mem_insert_of_mem hi)
+theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏ i in s, g i :=
+  prod_le_prod'' h
 #align finset.prod_le_prod' Finset.prod_le_prod'
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
