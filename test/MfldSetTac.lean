@@ -46,19 +46,19 @@ structure ModelWithCorners (𝕜 E H : Type u) extends LocalEquiv H E :=
 
 attribute [mfld_simps] ModelWithCorners.source_eq
 
-def ModelWithCorners.symm (I : ModelWithCorners 𝕜 E H) : LocalEquiv E H := sorry
+def ModelWithCorners.symm {E : Type u} (I : ModelWithCorners 𝕜 E H) : LocalEquiv E H := sorry
 
-instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (λ _ => H → E) := sorry
+instance ModelWithCorners.has_coe_to_fun {E : Type u} : CoeFun (ModelWithCorners 𝕜 E H) (λ _ => H → E) := sorry
 
-@[mfld_simps] lemma ModelWithCorners.left_inv (I : ModelWithCorners 𝕜 E H) (x : H) :
+@[mfld_simps] lemma ModelWithCorners.left_inv {E : Type u} (I : ModelWithCorners 𝕜 E H) (x : H) :
   I.symm (I x) = x :=
 sorry
 
-@[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe (I : ModelWithCorners 𝕜 E H) :
+@[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe {E : Type u} (I : ModelWithCorners 𝕜 E H) :
   (I.toLocalEquiv : H → E) = I :=
 sorry
 
-@[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe_symm (I : ModelWithCorners 𝕜 E H) :
+@[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe_symm {E : Type u} (I : ModelWithCorners 𝕜 E H) :
   (I.toLocalEquiv.symm : E → H) = I.symm :=
 sorry
 
@@ -79,6 +79,7 @@ example (s : Set α) (f : LocalHomeomorph α β) :
   = f.symm.toLocalEquiv.source ∩ Set.preimage f.symm s := by mfld_set_tac
 
 example
+  {E : Type u}
   {I : ModelWithCorners 𝕜 E H}
   {I' : ModelWithCorners 𝕜 E' H'}
   {I'' : ModelWithCorners 𝕜 E'' H''}
