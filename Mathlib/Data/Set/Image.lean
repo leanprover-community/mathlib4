@@ -1129,7 +1129,7 @@ theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f
 
 @[simp]
 theorem comp_rangeSplitting (f : α → β) :
-  f ∘ rangeSplitting f = (fun x : ↥(range f) => (x : β)) := by
+  f ∘ rangeSplitting f = (↑) := by
   ext
   simp only [Function.comp_apply]
   apply apply_rangeSplitting

@@ -220,7 +220,7 @@ protected theorem Set.UniformEquicontinuous.mono {H H' : Set <| β → α} (h : 
 i.e the family `(↑) : range F → X → α` is equicontinuous at `x₀`. -/
 theorem equicontinuousAt_iff_range {F : ι → X → α} {x₀ : X} :
     EquicontinuousAt F x₀ ↔ EquicontinuousAt ((↑) : range F → X → α) x₀ :=
-  ⟨fun h => by rw [← comp_rangeSplitting F] <;> exact h.comp _, fun h =>
+  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
     h.comp (rangeFactorization F)⟩
 #align equicontinuous_at_iff_range equicontinuousAt_iff_range
 
@@ -235,7 +235,7 @@ theorem equicontinuous_iff_range {F : ι → X → α} :
 i.e the family `(↑) : range F → β → α` is uniformly equicontinuous. -/
 theorem uniformEquicontinuous_at_iff_range {F : ι → β → α} :
     UniformEquicontinuous F ↔ UniformEquicontinuous ((↑) : range F → β → α) :=
-  ⟨fun h => by rw [← comp_rangeSplitting F] <;> exact h.comp _, fun h =>
+  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
     h.comp (rangeFactorization F)⟩
 #align uniform_equicontinuous_at_iff_range uniformEquicontinuous_at_iff_range
 
