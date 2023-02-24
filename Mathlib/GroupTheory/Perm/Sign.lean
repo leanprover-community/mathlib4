@@ -460,7 +460,10 @@ private theorem sign_aux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
 
 theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (hxy : x ≠ y), signAux (swap x y) = -1
   | 0, x, y => by intro; exact Fin.elim0 x
-  | 1, x, y => by intro h; decide
+  | 1, x, y => by
+    dsimp [signAux, swap, swapCore]
+    simp only [eq_iff_true_of_subsingleton, not_true, ite_true, le_refl, prod_const,
+               IsEmpty.forall_iff]
   | n + 2, x, y => fun hxy => by
     have h2n : 2 ≤ n + 2 := by decide
     rw [← isConj_iff_eq, ← signAux_swap_zero_one h2n]
