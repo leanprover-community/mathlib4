@@ -279,8 +279,6 @@ structure LieHom (R L L': Type _) [CommRing R] [LieRing L] [LieAlgebra R L]
   map_lie' : ∀ {x y : L}, toFun ⁅x, y⁆ = ⁅toFun x, toFun y⁆
 #align lie_hom LieHom
 
--- attribute [nolint docBlame] LieHom.toLinearMap -- Porting note: The linter does not complain
-
 @[inherit_doc]
 notation:25 L " →ₗ⁅" R:25 "⁆ " L':0 => LieHom R L L'
 
@@ -319,7 +317,7 @@ def Simps.apply (h : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂ :=
 -- initialize_simps_projections LieHom (toLinearMap_toFun → apply)
 
 @[simp, norm_cast]
-theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ⇑ (f : L₁ →ₗ[R] L₂) = f :=
+theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ⇑(f : L₁ →ₗ[R] L₂) = f :=
   rfl
 #align lie_hom.coe_to_linear_map LieHom.coe_toLinearMap
 
@@ -516,7 +514,7 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
 See note [reducible non-instances]. -/
 @[reducible]
 def LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
-  @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
+    @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
   { LieRingModule.compLieHom M f with
     smul_lie := fun t x m => by
       simp only [LieRingModule.compLieHom_apply, smul_lie, LieHom.map_smul]
@@ -540,8 +538,6 @@ structure LieEquiv (R : Type u) (L : Type v) (L' : Type w) [CommRing R] [LieRing
   function. -/
   right_inv : Function.RightInverse invFun toLieHom.toFun
 #align lie_equiv LieEquiv
-
--- attribute [nolint docBlame] LieEquiv.toLieHom -- Porting note: The linter does not complain
 
 @[inherit_doc]
 notation:50 L " ≃ₗ⁅" R "⁆ " L' => LieEquiv R L L'
@@ -731,8 +727,6 @@ structure LieModuleHom extends M →ₗ[R] N where
   modules.-/
   map_lie' : ∀ {x : L} {m : M}, toFun ⁅x, m⁆ = ⁅x, toFun m⁆
 #align lie_module_hom LieModuleHom
-
--- attribute [nolint docBlame] LieModuleHom.toLinearMap -- Porting note: linter does not complain
 
 @[inherit_doc]
 notation:25 M " →ₗ⁅" R "," L:25 "⁆ " N:0 => LieModuleHom R L M N
@@ -939,7 +933,7 @@ instance hasNsmul : SMul ℕ (M →ₗ⁅R,L⁆ N)
 #align lie_module_hom.has_nsmul LieModuleHom.hasNsmul
 
 @[norm_cast, simp]
-theorem coe_nsmul (n : ℕ) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑ f) :=
+theorem coe_nsmul (n : ℕ) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
   rfl
 #align lie_module_hom.coe_nsmul LieModuleHom.coe_nsmul
 
@@ -952,7 +946,7 @@ instance hasZsmul : SMul ℤ (M →ₗ⁅R,L⁆ N)
 #align lie_module_hom.has_zsmul LieModuleHom.hasZsmul
 
 @[norm_cast, simp]
-theorem coe_zsmul (z : ℤ) (f : M →ₗ⁅R,L⁆ N) : ⇑(z • f) = z • (⇑ f) :=
+theorem coe_zsmul (z : ℤ) (f : M →ₗ⁅R,L⁆ N) : ⇑(z • f) = z • (⇑f) :=
   rfl
 #align lie_module_hom.coe_zsmul LieModuleHom.coe_zsmul
 
@@ -967,7 +961,7 @@ instance : AddCommGroup (M →ₗ⁅R,L⁆ N) :=
 instance : SMul R (M →ₗ⁅R,L⁆ N) where smul t f := { t • (f : M →ₗ[R] N) with map_lie' := by simp }
 
 @[norm_cast, simp]
-theorem coe_smul (t : R) (f : M →ₗ⁅R,L⁆ N) : ⇑(t • f) = t • (⇑ f) :=
+theorem coe_smul (t : R) (f : M →ₗ⁅R,L⁆ N) : ⇑(t • f) = t • (⇑f) :=
   rfl
 #align lie_module_hom.coe_smul LieModuleHom.coe_smul
 
