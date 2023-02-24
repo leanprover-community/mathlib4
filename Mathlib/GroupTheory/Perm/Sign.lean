@@ -825,7 +825,7 @@ theorem sign_extendDomain (e : Perm α) {p : β → Prop} [DecidablePred p] (f :
 
 @[simp]
 theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subtype p)) :
-    ofSubtype (sign f) = sign f :=
+    sign (ofSubtype f) = sign f :=
   sign_extendDomain f (Equiv.refl (Subtype p))
 #align equiv.perm.sign_of_subtype Equiv.Perm.sign_ofSubtype
 
