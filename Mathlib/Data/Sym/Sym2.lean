@@ -10,6 +10,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
+import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.SetLike.Basic
 
 /-!
@@ -56,9 +57,6 @@ open Finset Function Sym
 universe u
 
 variable {α β γ : Type _}
-
--- porting note: using `aesop` in place of `tidy` to simplify proofs
-declare_aesop_rule_sets [Sym2]
 
 namespace Sym2
 
