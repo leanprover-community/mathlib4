@@ -192,14 +192,16 @@ namespace SubgroupClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of a `add_group` inherits an inverse."]
-instance inv : Inv H :=
+instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
+  [SubgroupClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 #align subgroup_class.has_inv SubgroupClass.inv
 #align add_subgroup_class.has_neg AddSubgroupClass.neg
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `add_group` inherits a subtraction."]
-instance div : Div H :=
+instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
+  [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 #align subgroup_class.has_div SubgroupClass.div
 #align add_subgroup_class.has_sub AddSubgroupClass.sub

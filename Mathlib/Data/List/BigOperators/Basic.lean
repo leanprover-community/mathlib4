@@ -607,7 +607,7 @@ theorem headI_le_sum (L : List ℕ) : L.headI ≤ L.sum :=
 
 /-- This relies on `default ℕ = 0`. -/
 theorem tail_sum (L : List ℕ) : L.tail.sum = L.sum - L.headI := by
-  rw [← headI_add_tail_sum L, add_comm, add_tsub_cancel_right]
+  rw [← headI_add_tail_sum L, add_comm, @add_tsub_cancel_right]
 #align list.tail_sum List.tail_sum
 
 section Alternating

@@ -57,7 +57,7 @@ theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto 
 
 variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
 
--- @[continuity] Porting note: restore attribute
+@[continuity]
 theorem Continuous.star (hf : Continuous f) : Continuous fun x => star (f x) :=
   continuous_star.comp hf
 #align continuous.star Continuous.star

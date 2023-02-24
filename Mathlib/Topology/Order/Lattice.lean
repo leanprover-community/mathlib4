@@ -84,23 +84,23 @@ instance (priority := 100) LinearOrder.topologicalLattice {L : Type _} [Topologi
 
 variable [TopologicalSpace L] [TopologicalSpace X]
 
--- @[continuity] -- Porting note: restore `continuity`
+@[continuity]
 theorem continuous_inf [HasInf L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
   ContinuousInf.continuous_inf
 #align continuous_inf continuous_inf
 
--- @[continuity] -- Porting note: restore `continuity`
+@[continuity]
 theorem Continuous.inf [HasInf L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
   continuous_inf.comp (hf.prod_mk hg : _)
 #align continuous.inf Continuous.inf
 
--- @[continuity] -- Porting note: restore `continuity`
+@[continuity]
 theorem continuous_sup [HasSup L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
   ContinuousSup.continuous_sup
 #align continuous_sup continuous_sup
 
--- @[continuity] -- Porting note: restore `continuity`
+@[continuity]
 theorem Continuous.sup [HasSup L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
   continuous_sup.comp (hf.prod_mk hg : _)

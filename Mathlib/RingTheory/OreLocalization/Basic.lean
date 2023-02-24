@@ -856,7 +856,7 @@ protected theorem add_left_neg (x : R[S⁻¹]) : -x + x = 0 := by
   induction' x using OreLocalization.ind with r s; simp
 #align ore_localization.add_left_neg OreLocalization.add_left_neg
 
-instance : Ring R[S⁻¹] :=
+instance ring : Ring R[S⁻¹] :=
   { OreLocalization.instSemiringOreLocalizationToMonoidToMonoidWithZero,
     OreLocalization.instNegOreLocalizationToMonoidToMonoidWithZeroToSemiring with
     add_left_neg := OreLocalization.add_left_neg }
@@ -868,7 +868,7 @@ theorem numeratorHom_inj (hS : S ≤ R⁰) : Function.Injective (numeratorHom : 
   rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
   rcases h with ⟨u, v, h₁, h₂⟩
   simp only [S.coe_one, one_mul] at h₂
-  rwa [← h₂, mul_cancel_right_mem_non_zero_divisor (hS (SetLike.coe_mem u)), eq_comm] at h₁
+  rwa [← h₂, mul_cancel_right_mem_nonZeroDivisors (hS (SetLike.coe_mem u)), eq_comm] at h₁
 #align ore_localization.numerator_hom_inj OreLocalization.numeratorHom_inj
 
 theorem nontrivial_of_nonZeroDivisors [Nontrivial R] (hS : S ≤ R⁰) : Nontrivial R[S⁻¹] :=
@@ -887,7 +887,7 @@ open Classical
 
 variable {R : Type _} [Ring R] [Nontrivial R] [OreSet R⁰]
 
-instance : Nontrivial R[R⁰⁻¹] :=
+instance nontrivial : Nontrivial R[R⁰⁻¹] :=
   nontrivial_of_nonZeroDivisors (refl R⁰)
 
 variable [NoZeroDivisors R]
@@ -911,7 +911,7 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
           apply OreLocalization.expand)
 #align ore_localization.inv OreLocalization.inv
 
-instance : Inv R[R⁰⁻¹] :=
+instance inv' : Inv R[R⁰⁻¹] :=
   ⟨OreLocalization.inv⟩
 
 protected theorem inv_def {r : R} {s : R⁰} :
@@ -937,10 +937,10 @@ protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   simp
 #align ore_localization.inv_zero OreLocalization.inv_zero
 
-instance : DivisionRing R[R⁰⁻¹] :=
-  { OreLocalization.instNontrivialOreLocalizationToMonoidToMonoidWithZeroToSemiringNonZeroDivisors,
-    OreLocalization.instInvOreLocalizationToMonoidToMonoidWithZeroToSemiringNonZeroDivisors,
-    OreLocalization.instRingOreLocalizationToMonoidToMonoidWithZeroToSemiring with
+instance divisionRing : DivisionRing R[R⁰⁻¹] :=
+  { OreLocalization.nontrivial,
+    OreLocalization.inv',
+    OreLocalization.ring with
     mul_inv_cancel := OreLocalization.mul_inv_cancel
     inv_zero := OreLocalization.inv_zero }
 
