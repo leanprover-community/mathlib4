@@ -506,7 +506,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
         by
           ext
           rw [← Equiv.symm_trans_swap_trans, mul_def, Equiv.symm_trans_swap_trans, mul_def]
-          rw [trans_apply, trans_apply, trans_apply, trans_apply, trans_apply, trans_apply]
+          repeat (rw [trans_apply])
           simp [swap, swapCore]
           split_ifs with h₁ h₂ <;> rfl
       have hefx : e x ≠ e (f x) := mt e.injective.eq_iff.1 hfx
