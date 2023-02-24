@@ -986,7 +986,7 @@ def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp
   reduce the RHS using `expr.dsimp` and `expr.simp`, but for some reason the expression is not
   being simplified properly. -/
 /-- Change a cone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
-@[simps X]
+@[simps pt]
 def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F
     where
   pt := op c.pt
