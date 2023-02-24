@@ -235,17 +235,14 @@ theorem isConnected_of_equivalent {K : Type u₁} [Category.{v₂} K] (e : J ≌
 
 /-- If `J` is preconnected, then `Jᵒᵖ` is preconnected as well. -/
 instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ
-    where iso_constant α F X :=
-    ⟨NatIso.ofComponents
-        (fun Y =>
-          eqToIso
-            (Discrete.ext _ _
+    where iso_constant := @fun α F X =>
+    ⟨NatIso.ofComponents (fun Y =>
+          eqToIso (Discrete.ext _ _
               (Discrete.eq_of_hom
                 ((Nonempty.some
-                        (IsPreconnected.iso_constant (F.rightOp ⋙ (Discrete.opposite α).Functor)
+                 (IsPreconnected.iso_constant (F.rightOp ⋙ (Discrete.opposite α).functor)
                           (unop X))).app
-                    (unop Y)).Hom)))
-        fun Y Z f => Subsingleton.elim _ _⟩
+                    (unop Y)).hom))) @fun Y Z f => Subsingleton.elim _ _⟩
 #align category_theory.is_preconnected_op CategoryTheory.isPreconnected_op
 
 /-- If `J` is connected, then `Jᵒᵖ` is connected as well. -/
