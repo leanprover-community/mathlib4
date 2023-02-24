@@ -339,6 +339,8 @@ def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ_ : Fin n, Fin n) : Σ_ : Fin
   if _ : f a.2 < f a.1 then ⟨f a.1, f a.2⟩ else ⟨f a.2, f a.1⟩
 #align equiv.perm.sign_bij_aux Equiv.Perm.signBijAux
 
+-- porting note: Lean insists `ha` and `hb` are unused despite obvious uses
+set_option linter.unusedVariables false in
 theorem signBijAux_inj {n : ℕ} {f : Perm (Fin n)} :
     ∀ a b : Σ_a : Fin n, Fin n,
       a ∈ finPairsLT n → b ∈ finPairsLT n → signBijAux f a = signBijAux f b → a = b :=
