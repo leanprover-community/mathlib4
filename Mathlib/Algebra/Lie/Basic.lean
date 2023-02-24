@@ -59,13 +59,13 @@ open Function
 Jacobi identity. -/
 /- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
-  /-- The bracket of a Lie ring is additive in its first component. -/
+  /-- A Lie ring bracket is additive in its first component. -/
   add_lie : ∀ x y z : L, ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
-  /-- The bracket of a Lie ring is additive in its second component. -/
+  /-- A Lie ring bracket is additive in its second component. -/
   lie_add : ∀ x y z : L, ⁅x, y + z⁆ = ⁅x, y⁆ + ⁅x, z⁆
-  /-- The bracket of a Lie ring vanishes on the diagonal in L × L. -/
+  /-- A Lie ring bracket vanishes on the diagonal in L × L. -/
   lie_self : ∀ x : L, ⁅x, x⁆ = 0
-  /-- The bracket of a Lie ring fulfils a Leibniz rule/Jacobi identity. -/
+  /-- A Lie ring bracket satisfies a Leibniz / Jacobi identity. -/
   leibniz_lie : ∀ x y z : L, ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
 #align lie_ring LieRing
 
@@ -73,7 +73,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
 /- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
-  /-- The bracket of a Lie algebra is compatible with scalar multiplication in its second argument.
+  /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 
   The compatibility in the first argument is not a class property, but follows since every
   Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
@@ -85,11 +85,11 @@ Lie ring on this group, such that the Lie bracket acts as the commutator of endo
 (For representations of Lie *algebras* see `lie_module`.) -/
 /- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] extends Bracket L M where
-  /-- The bracket of a Lie ring module is additive in its first component. -/
+  /-- A Lie ring module bracket is additive in its first component. -/
   add_lie : ∀ (x y : L) (m : M), ⁅x + y, m⁆ = ⁅x, m⁆ + ⁅y, m⁆
-  /-- The bracket of a Lie ring module is additive in its second component. -/
+  /-- A Lie ring module bracket is additive in its second component. -/
   lie_add : ∀ (x : L) (m n : M), ⁅x, m + n⁆ = ⁅x, m⁆ + ⁅x, n⁆
-  /-- The bracket of a Lie ring module fulfils a Leibniz rule/Jacobi identity. -/
+  /-- A Lie ring module bracket satisfies a Leibniz / Jacobi identity. -/
   leibniz_lie : ∀ (x y : L) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 #align lie_ring_module LieRingModule
 
@@ -98,9 +98,9 @@ algebra on this module, such that the Lie bracket acts as the commutator of endo
 /- @[protect_proj] -- Porting note: not (yet) implemented. -/
 class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] where
-  /-- The bracket of a Lie module is compatible with scalar multiplication in its first argument. -/
+  /-- A Lie module bracket is compatible with scalar multiplication in its first argument. -/
   smul_lie : ∀ (t : R) (x : L) (m : M), ⁅t • x, m⁆ = t • ⁅x, m⁆
-  /-- The bracket of a Lie module is compatible with scalar multiplication in its second argument. -/
+  /-- A Lie module bracket is compatible with scalar multiplication in its second argument. -/
   lie_smul : ∀ (t : R) (x : L) (m : M), ⁅x, t • m⁆ = t • ⁅x, m⁆
 #align lie_module LieModule
 
@@ -692,8 +692,7 @@ protected theorem surjective (e : L₁ ≃ₗ⁅R⁆ L₂) :
 /-- A bijective morphism of Lie algebras yields an equivalence of Lie algebras. -/
 @[simps!]
 noncomputable def ofBijective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Bijective f) : L₁ ≃ₗ⁅R⁆ L₂ :=
-  {
-    LinearEquiv.ofBijective (f : L₁ →ₗ[R] L₂)
+  { LinearEquiv.ofBijective (f : L₁ →ₗ[R] L₂)
       h with
     toFun := f
     map_lie' := by intros x y; exact f.map_lie x y }
