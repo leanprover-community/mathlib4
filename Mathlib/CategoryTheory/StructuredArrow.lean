@@ -105,6 +105,10 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right) (w : f.hom ≫
     simpa using w.symm
 #align category_theory.structured_arrow.hom_mk CategoryTheory.StructuredArrow.homMk
 
+/- Porting note : it appears the simp lemma is not getting generated but the linter 
+picks up on it -/ 
+attribute [-simp, nolint simpNF] homMk_left
+
 /-- Given a structured arrow `X ⟶ F(U)`, and an arrow `U ⟶ Y`, we can construct a morphism of
 structured arrow given by `(X ⟶ F(U)) ⟶ (X ⟶ F(U) ⟶ F(Y))`.
 -/
@@ -123,6 +127,10 @@ def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right) (w : f.hom ≫
     f ≅ f' :=
   Comma.isoMk (eqToIso (by ext)) g (by simpa [eqToHom_map] using w.symm)
 #align category_theory.structured_arrow.iso_mk CategoryTheory.StructuredArrow.isoMk
+
+/- Porting note : it appears the simp lemma is not getting generated but the linter 
+picks up on it. Either way simp solves these. -/ 
+attribute [-simp, nolint simpNF] isoMk_hom_left_down_down isoMk_inv_left_down_down
 
 theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
   --have : Subsingleton (A.left ⟶  B.left) := sorry
@@ -168,6 +176,10 @@ theorem eq_mk (f : StructuredArrow S T) : f = mk f.hom := by
 def eta (f : StructuredArrow S T) : f ≅ mk f.hom :=
   isoMk (Iso.refl _) (by aesop_cat)
 #align category_theory.structured_arrow.eta CategoryTheory.StructuredArrow.eta
+
+/- Porting note : it appears the simp lemma is not getting generated but the linter 
+picks up on it. Either way simp solves these. -/ 
+attribute [-simp, nolint simpNF] eta_hom_left_down_down eta_inv_left_down_down
 
 /-- A morphism between source objects `S ⟶ S'`
 contravariantly induces a functor between structured arrows,
@@ -272,7 +284,6 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
 #align category_theory.costructured_arrow CategoryTheory.CostructuredArrow
 
 instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
-
 namespace CostructuredArrow
 
 /-- The obvious projection functor from costructured arrows. -/
@@ -303,8 +314,9 @@ theorem mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
   rfl
 #align category_theory.costructured_arrow.mk_hom_eq_self CategoryTheory.CostructuredArrow.mk_hom_eq_self
 
-@[reassoc (attr := simp)]
-theorem w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom = A.hom := by aesop_cat
+-- @[reassoc (attr := simp)] Porting note: simp can solve these
+@[reassoc]
+theorem w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom = A.hom := by simp
 #align category_theory.costructured_arrow.w CategoryTheory.CostructuredArrow.w
 
 @[simp]
@@ -331,6 +343,10 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left) (w : S.map g �
   w := by simpa [eqToHom_map] using w
 #align category_theory.costructured_arrow.hom_mk CategoryTheory.CostructuredArrow.homMk
 
+/- Porting note : it appears the simp lemma is not getting generated but the linter 
+picks up on it. Either way simp can prove this -/ 
+attribute [-simp, nolint simpNF] homMk_right_down_down
+
 /-- To construct an isomorphism of costructured arrows,
 we need an isomorphism of the objects underlying the source,
 and to check that the triangle commutes.
@@ -340,6 +356,10 @@ def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left) (w : S.map g.h
     f ≅ f' :=
   Comma.isoMk g (eqToIso (by ext)) (by simpa [eqToHom_map] using w)
 #align category_theory.costructured_arrow.iso_mk CategoryTheory.CostructuredArrow.isoMk
+
+/- Porting note : it appears the simp lemma is not getting generated but the linter 
+picks up on it. Either way simp solves these. -/ 
+attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
 theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
@@ -383,6 +403,10 @@ theorem eq_mk (f : CostructuredArrow S T) : f = mk f.hom := by
 def eta (f : CostructuredArrow S T) : f ≅ mk f.hom :=
   isoMk (Iso.refl _) (by aesop_cat)
 #align category_theory.costructured_arrow.eta CategoryTheory.CostructuredArrow.eta
+
+/- Porting note : it appears the simp lemma is not getting generated but the linter 
+picks up on it. Either way simp solves these. -/ 
+attribute [-simp, nolint simpNF] eta_hom_right_down_down eta_inv_right_down_down
 
 /-- A morphism between target objects `T ⟶ T'`
 covariantly induces a functor between costructured arrows,
@@ -600,3 +624,4 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory
+
