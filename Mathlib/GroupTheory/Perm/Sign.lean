@@ -340,17 +340,16 @@ def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ_ : Fin n, Fin n) : Σ_ : Fin
 #align equiv.perm.sign_bij_aux Equiv.Perm.signBijAux
 
 theorem signBijAux_inj {n : ℕ} {f : Perm (Fin n)} :
-    ∀ a b : Σa : Fin n, Fin n,
+    ∀ a b : Σ_a : Fin n, Fin n,
       a ∈ finPairsLT n → b ∈ finPairsLT n → signBijAux f a = signBijAux f b → a = b :=
   fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ ha hb h => by
-  unfold signBijAux at h
-  rw [mem_finPairsLT] at *
-  have : ¬b₁ < b₂ := hb.le.not_lt
-  split_ifs at h <;>
-    simp_all [(Equiv.injective f).eq_iff, eq_self_iff_true, and_self_iff, heq_iff_eq] <;>
-  try tauto -- porting note: `<;>` doesn't work here?
-  . exact absurd this (not_le.mpr ha)
-  . exact absurd this (not_le.mpr ha)
+    unfold signBijAux at h
+    rw [mem_finPairsLT] at *
+    have : ¬b₁ < b₂ := hb.le.not_lt
+    split_ifs at h <;>
+    simp_all [(Equiv.injective f).eq_iff, eq_self_iff_true, and_self_iff, heq_iff_eq]
+    . exact absurd this (not_le.mpr ha)
+    . exact absurd this (not_le.mpr ha)
 #align equiv.perm.sign_bij_aux_inj Equiv.Perm.signBijAux_inj
 
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
