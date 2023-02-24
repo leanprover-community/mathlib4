@@ -8,7 +8,7 @@ Authors: Yuma Mizuno
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Bicategory.Functor
+import Mathlib.CategoryTheory.Bicategory.Functor
 
 /-!
 # Free bicategories
