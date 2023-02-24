@@ -8,10 +8,10 @@ Authors: Adam Topaz, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Punit
-import Mathbin.CategoryTheory.Comma
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
-import Mathbin.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.Comma
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # The category of "structured arrows"
@@ -139,8 +139,7 @@ instance epi_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h 
 
 /-- Eta rule for structured arrows. Prefer `structured_arrow.eta`, since equality of objects tends
     to cause problems. -/
-theorem eq_mk (f : StructuredArrow S T) : f = mk f.Hom :=
-  by
+theorem eq_mk (f : StructuredArrow S T) : f = mk f.Hom := by
   cases f
   congr
   ext
@@ -171,16 +170,14 @@ theorem map_mk {f : S' ⟶ T.obj Y} (g : S ⟶ S') : (map g).obj (mk f) = mk (g 
 #align category_theory.structured_arrow.map_mk CategoryTheory.StructuredArrow.map_mk
 
 @[simp]
-theorem map_id {f : StructuredArrow S T} : (map (𝟙 S)).obj f = f :=
-  by
+theorem map_id {f : StructuredArrow S T} : (map (𝟙 S)).obj f = f := by
   rw [eq_mk f]
   simp
 #align category_theory.structured_arrow.map_id CategoryTheory.StructuredArrow.map_id
 
 @[simp]
 theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
-    (map (f ≫ f')).obj h = (map f).obj ((map f').obj h) :=
-  by
+    (map (f ≫ f')).obj h = (map f).obj ((map f').obj h) := by
   rw [eq_mk h]
   simp
 #align category_theory.structured_arrow.map_comp CategoryTheory.StructuredArrow.map_comp
@@ -229,8 +226,7 @@ def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ Structure
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
-    Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) :=
-  by
+    Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
   suffices (proj S T).obj ⁻¹' 𝒢 = Set.range fun f : ΣG : 𝒢, S ⟶ T.obj G => mk f.2
     by
     rw [this]
@@ -337,8 +333,7 @@ instance epi_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h 
 
 /-- Eta rule for costructured arrows. Prefer `costructured_arrow.eta`, as equality of objects tends
     to cause problems. -/
-theorem eq_mk (f : CostructuredArrow S T) : f = mk f.Hom :=
-  by
+theorem eq_mk (f : CostructuredArrow S T) : f = mk f.Hom := by
   cases f
   congr
   ext
@@ -369,16 +364,14 @@ theorem map_mk {f : S.obj Y ⟶ T} (g : T ⟶ T') : (map g).obj (mk f) = mk (f �
 #align category_theory.costructured_arrow.map_mk CategoryTheory.CostructuredArrow.map_mk
 
 @[simp]
-theorem map_id {f : CostructuredArrow S T} : (map (𝟙 T)).obj f = f :=
-  by
+theorem map_id {f : CostructuredArrow S T} : (map (𝟙 T)).obj f = f := by
   rw [eq_mk f]
   simp
 #align category_theory.costructured_arrow.map_id CategoryTheory.CostructuredArrow.map_id
 
 @[simp]
 theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
-    (map (f ≫ f')).obj h = (map f').obj ((map f).obj h) :=
-  by
+    (map (f ≫ f')).obj h = (map f').obj ((map f).obj h) := by
   rw [eq_mk h]
   simp
 #align category_theory.costructured_arrow.map_comp CategoryTheory.CostructuredArrow.map_comp
@@ -429,8 +422,7 @@ def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
 #align category_theory.costructured_arrow.post CategoryTheory.CostructuredArrow.post
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
-    Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) :=
-  by
+    Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
   suffices (proj S T).obj ⁻¹' 𝒢 = Set.range fun f : ΣG : 𝒢, S.obj G ⟶ T => mk f.2
     by
     rw [this]
