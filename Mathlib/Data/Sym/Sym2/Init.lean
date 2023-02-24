@@ -6,8 +6,12 @@ Authors: Jannis Limperg
 
 import Aesop
 
--- Aesop rule sets only become visible once the file in which they're declared
--- is imported. This is why we put this command in its own file.
+/-!
+# Sym2 Rule Set
 
--- porting note: using `aesop` in place of `tidy` to simplify proofs
+This module defines the `Sym2` Aesop rule set. Aesop rule sets only become
+visible once the file in which they're declared is imported, so we must put this
+declaration into its own file.
+-/
+
 declare_aesop_rule_sets [Sym2]

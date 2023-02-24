@@ -49,6 +49,7 @@ symmetric square, unordered pairs, symmetric powers
 -/
 
 
+-- porting note: using `aesop` in place of `tidy` to simplify proofs
 -- porting note: remove import `Tactic.Linarith.Default`
 -- porting note: adding the above porting note here to avoid module docs linter error
 
