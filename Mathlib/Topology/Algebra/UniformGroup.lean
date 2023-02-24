@@ -383,8 +383,7 @@ theorem uniformContinuous_of_tendsto_one {hom : Type _} [UniformSpace β] [Group
     [MonoidHomClass hom α β] {f : hom} (h : Tendsto f (𝓝 1) (𝓝 1)) : UniformContinuous f := by
   have :
     ((fun x : β × β => x.2 / x.1) ∘ fun x : α × α => (f x.1, f x.2)) = fun x : α × α =>
-      f (x.2 / x.1) :=
-    by simp only [map_div]
+      f (x.2 / x.1) := by ext; simp only [Function.comp_apply, map_div]
   rw [UniformContinuous, uniformity_eq_comap_nhds_one α, uniformity_eq_comap_nhds_one β,
     tendsto_comap_iff, this]
   exact Tendsto.comp h tendsto_comap
@@ -407,7 +406,7 @@ theorem uniformContinuous_of_continuousAt_one {hom : Type _} [UniformSpace β] [
 @[to_additive]
 theorem MonoidHom.uniformContinuous_of_continuousAt_one [UniformSpace β] [Group β] [UniformGroup β]
     (f : α →* β) (hf : ContinuousAt f 1) : UniformContinuous f :=
-  uniformContinuous_of_continuousAt_one f hf
+  _root_.uniformContinuous_of_continuousAt_one f hf
 #align monoid_hom.uniform_continuous_of_continuous_at_one MonoidHom.uniformContinuous_of_continuousAt_one
 #align add_monoid_hom.uniform_continuous_of_continuous_at_zero AddMonoidHom.uniformContinuous_of_continuousAt_zero
 
@@ -919,7 +918,7 @@ open DenseInducing
 /-- Bourbaki GT III.6.5 Theorem I:
 ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by continuity.
 Note: Bourbaki assumes that α and β are also complete Hausdorff, but this is not necessary. -/
-theorem extend_Z_bilin : Continuous (extend (de.Prod df) Φ) := by
+theorem extend_Z_bilin : Continuous (extend (de.prod df) Φ) := by
   refine' continuous_extend_of_cauchy _ _
   rintro ⟨x₀, y₀⟩
   constructor
@@ -928,7 +927,8 @@ theorem extend_Z_bilin : Continuous (extend (de.Prod df) Φ) := by
     intro U h
     rcases mem_closure_iff_nhds.1 ((de.prod df).dense (x₀, y₀)) U h with ⟨x, x_in, ⟨z, z_x⟩⟩
     exists z
-    cc
+    sorry
+    --cc
   · suffices
       map (fun p : (β × δ) × β × δ => Φ p.2 - Φ p.1)
           (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))
@@ -992,9 +992,9 @@ instance QuotientGroup.complete_space' (G : Type u) [Group G] [TopologicalSpace 
     countably generated, it suffices to show any Cauchy sequence `x` converges. -/
   letI : UniformSpace (G ⧸ N) := TopologicalGroup.toUniformSpace (G ⧸ N)
   letI : UniformSpace G := TopologicalGroup.toUniformSpace G
-  haveI : (𝓤 (G ⧸ N)).IsCountablyGenerated := comap.is_countably_generated _ _
+  haveI : (𝓤 (G ⧸ N)).IsCountablyGenerated := comap.isCountablyGenerated _ _
   obtain ⟨u, hu, u_mul⟩ := TopologicalGroup.exists_antitone_basis_nhds_one G
-  obtain ⟨hv, v_anti⟩ := @has_antitone_basis.map _ _ _ _ _ _ (coe : G → G ⧸ N) hu
+  obtain ⟨hv, v_anti⟩ := @HasAntitoneBasis.map _ _ _ _ _ _ ((↑) : G → G ⧸ N) hu
   rw [← QuotientGroup.nhds_eq N 1, QuotientGroup.mk_one] at hv
   refine' UniformSpace.complete_of_cauchySeq_tendsto fun x hx => _
   /- Given `n : ℕ`, for sufficiently large `a b : ℕ`, given any lift of `x b`, we can find a lift
@@ -1004,9 +1004,9 @@ instance QuotientGroup.complete_space' (G : Type u) [Group G] [TopologicalSpace 
       ∃ M : ℕ,
         j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b → ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' :=
     by
-    have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ coe '' u i } :=
+    have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ (↑) '' u i } :=
       by simpa [uniformity_eq_comap_nhds_one'] using hv.comap _
-    simp only [h𝓤GN.cauchy_seq_iff, ge_iff_le, mem_set_of_eq, forall_true_left, mem_image] at hx
+    simp only [h𝓤GN.cauchySeq_iff, ge_iff_le, mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
     rcases hx i with ⟨M, hM⟩
     refine' ⟨max j M + 1, (le_max_left _ _).trans_lt (lt_add_one _), fun a b ha hb g hg => _⟩
@@ -1062,7 +1062,7 @@ instance QuotientGroup.complete_space' (G : Type u) [Group G] [TopologicalSpace 
   convert ((continuous_coinduced_rng : Continuous (coe : G → G ⧸ N)).Tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 #align quotient_group.complete_space' QuotientGroup.complete_space'
-#align quotient_add_group.complete_space' quotientAddGroup.complete_space'
+#align quotient_add_group.complete_space' QuotientAddGroup.complete_space'
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
 is itself complete. In constrast to `quotient_group.complete_space'`, in this version `G` is
@@ -1090,6 +1090,6 @@ instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G
   rw [← @UniformGroup.toUniformSpace_eq _ us _ _] at hG
   infer_instance
 #align quotient_group.complete_space QuotientGroup.completeSpace
-#align quotient_add_group.complete_space quotientAddGroup.completeSpace
+#align quotient_add_group.complete_space QuotientAddGroup.completeSpace
 
 end CompleteQuotient
