@@ -615,7 +615,6 @@ by `S.restrict`, the map of restriction to `S`, of the uniform structure `𝒰(s
 instance uniformSpace : UniformSpace (α →ᵤ[𝔖] β) :=
   ⨅ (s : Set α) (_hs : s ∈ 𝔖), UniformSpace.comap s.restrict 𝒰(s, β, _)
 
--- mathport name: «expr𝒱( , , , )»
 local notation "𝒱(" α ", " β ", " 𝔖 ", " u ")" => @UniformOnFun.uniformSpace α β u 𝔖
 
 /-- Topology of `𝔖`-convergence, i.e uniform convergence on the elements of `𝔖`, declared as an
