@@ -48,7 +48,6 @@ structure LinearPMap (R : Type u) [Ring R] (E : Type v) [AddCommGroup E] [Module
   toFun : domain →ₗ[R] F
 #align linear_pmap LinearPMap
 
--- mathport name: «expr →ₗ.[ ] »
 notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap R E F
 
 variable {R : Type _} [Ring R] {E : Type _} [AddCommGroup E] [Module R E] {F : Type _}
