@@ -209,9 +209,10 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
+-- Porting note: removed has_nonempty_instance nolint, no such linter
+set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `ray_vector.setoid` can be an instance. -/
-@[nolint unusedArguments] -- Porting note: removed has_nonempty_instance nolint, no such linter
 def RayVector (R M : Type _) [Zero M] :=
   { v : M // v ≠ 0 }
 #align ray_vector RayVector
@@ -237,7 +238,7 @@ instance : Setoid (RayVector R M)
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
 -- Porting note: removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
-  Quotient (inferInstanceAs (Setoid (RayVector R M)))
+  Quotient (instSetoidRayVectorToZeroToAddMonoid R M)
 #align module.ray Module.Ray
 
 variable {R M}
@@ -468,7 +469,7 @@ variable {R}
 instance : InvolutiveNeg (Module.Ray R M)
     where
   neg := Neg.neg
-  neg_neg x := sorry
+  neg_neg x := by apply ind R (by simp) x
   -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
 
 /-- A ray does not equal its own negation. -/
@@ -516,9 +517,9 @@ theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit (Unit
 /-- Scaling by an inverse unit is the same as scaling by itself. -/
 @[simp]
 theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :=
+  have := mul_self_pos.2 u.ne_zero
   calc
-    u⁻¹ • v = (u * u) • u⁻¹ • v :=
-      Eq.symm <| (u⁻¹ • v).units_smul_of_pos _ <| mul_self_pos.2 u.ne_zero
+    u⁻¹ • v = (u * u) • u⁻¹ • v := Eq.symm <| (u⁻¹ • v).units_smul_of_pos _ (?_)
     _ = u • v := by rw [mul_smul, smul_inv_smul]
 
 #align units_inv_smul units_inv_smul
@@ -589,42 +590,45 @@ theorem units_smul_eq_neg_iff {u : Rˣ} {v : Module.Ray R M} : u • v = -v ↔ 
 second, if and only if they are not linearly independent. -/
 theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
     SameRay R x y ∨ SameRay R x (-y) ↔ ¬LinearIndependent R ![x, y] := by
-  by_cases hx : x = 0; · simp [hx, fun h : LinearIndependent R ![0, y] => h.ne_zero 0 rfl]
-  by_cases hy : y = 0; · simp [hy, fun h : LinearIndependent R ![x, 0] => h.ne_zero 1 rfl]
-  simp_rw [Fintype.not_linearIndependent_iff, Fin.sum_univ_two, Fin.exists_fin_two]
+  by_cases hx : x = 0; · simpa [hx] using fun h : LinearIndependent R ![0, y] => h.ne_zero 0 rfl
+  by_cases hy : y = 0; · simpa [hy] using fun h : LinearIndependent R ![x, 0] => h.ne_zero 1 rfl
+  simp_rw [Fintype.not_linearIndependent_iff]
   refine' ⟨fun h => _, fun h => _⟩
-  · rcases h with ((hx0 | hy0 | ⟨r₁, r₂, hr₁, hr₂, h⟩) | (hx0 | hy0 | ⟨r₁, r₂, hr₁, hr₂, h⟩))
+  · rcases h with ((hx0 | hy0 | ⟨r₁, r₂, hr₁, _, h⟩) | (hx0 | hy0 | ⟨r₁, r₂, hr₁, _, h⟩))
     · exact False.elim (hx hx0)
     · exact False.elim (hy hy0)
     · refine' ⟨![r₁, -r₂], _⟩
+      rw [Fin.sum_univ_two, Fin.exists_fin_two]
       simp [h, hr₁.ne.symm]
     · exact False.elim (hx hx0)
     · exact False.elim (hy (neg_eq_zero.1 hy0))
     · refine' ⟨![r₁, r₂], _⟩
+      rw [Fin.sum_univ_two, Fin.exists_fin_two]
       simp [h, hr₁.ne.symm]
   · rcases h with ⟨m, hm, hmne⟩
-    change m 0 • x + m 1 • y = 0 at hm
-    rw [add_eq_zero_iff_eq_neg] at hm
+    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.head_cons] at hm
     rcases lt_trichotomy (m 0) 0 with (hm0 | hm0 | hm0) <;>
       rcases lt_trichotomy (m 1) 0 with (hm1 | hm1 | hm1)
     · refine'
         Or.inr (Or.inr (Or.inr ⟨-m 0, -m 1, Left.neg_pos_iff.2 hm0, Left.neg_pos_iff.2 hm1, _⟩))
-      simp [hm]
+      rw [neg_smul_neg, neg_smul, hm, neg_neg]
     · exfalso
-      simpa [hm1, hx, hm0.ne] using hm
+      simp [hm1, hx, hm0.ne] at hm
     · refine' Or.inl (Or.inr (Or.inr ⟨-m 0, m 1, Left.neg_pos_iff.2 hm0, hm1, _⟩))
-      simp [hm]
+      rw [neg_smul, hm, neg_neg]
     · exfalso
-      simpa [hm0, hy, hm1.ne] using hm
-    · refine' False.elim (not_and_or.2 hmne ⟨hm0, hm1⟩)
+      simp [hm0, hy, hm1.ne] at hm
+    · rw [Fin.exists_fin_two] at hmne
+      exact False.elim (not_and_or.2 hmne ⟨hm0, hm1⟩)
     · exfalso
-      simpa [hm0, hy, hm1.ne.symm] using hm
+      simp [hm0, hy, hm1.ne.symm] at hm
     · refine' Or.inl (Or.inr (Or.inr ⟨m 0, -m 1, hm0, Left.neg_pos_iff.2 hm1, _⟩))
-      simp [hm]
+      rwa [neg_smul]
     · exfalso
-      simpa [hm1, hx, hm0.ne.symm] using hm
+      simp [hm1, hx, hm0.ne.symm] at hm
     · refine' Or.inr (Or.inr (Or.inr ⟨m 0, m 1, hm0, hm1, _⟩))
-      simp [hm]
+      rwa [smul_neg]
 #align same_ray_or_same_ray_neg_iff_not_linear_independent sameRay_or_sameRay_neg_iff_not_linearIndependent
 
 /-- Two vectors are in the same ray, or they are nonzero and the first is in the same ray as the
