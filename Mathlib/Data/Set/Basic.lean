@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
+! leanprover-community/mathlib commit b875cbb7f2aa2b4c685aaa2f99705689c95322ad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
