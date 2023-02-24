@@ -106,7 +106,7 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right) (w : f.hom ≫
 #align category_theory.structured_arrow.hom_mk CategoryTheory.StructuredArrow.homMk
 
 /- Porting note : it appears the simp lemma is not getting generated but the linter 
-picks up on it -/ 
+picks up on it (seems like a bug). Either way simp solves it.  -/ 
 attribute [-simp, nolint simpNF] homMk_left
 
 /-- Given a structured arrow `X ⟶ F(U)`, and an arrow `U ⟶ Y`, we can construct a morphism of
