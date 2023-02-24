@@ -417,7 +417,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
       rfl
 #align equiv.perm.sign_aux_mul Equiv.Perm.signAux_mul
 
-private theorem sign_aux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
+private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
   show
     _ =
       ∏ x : Σa : Fin (n + 2), Fin (n + 2) in {(⟨1, 0⟩ : Σa : Fin (n + 2), Fin (n + 2))},
@@ -450,13 +450,13 @@ private theorem sign_aux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 
       · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
           swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_le]
 
-private theorem sign_aux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
+private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
       -1 := by
   rcases n with (_ | _ | n)
   · norm_num at hn
   · norm_num at hn
-  · exact sign_aux_swap_zero_one' n
+  · exact signAux_swap_zero_one' n
 
 theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (hxy : x ≠ y), signAux (swap x y) = -1
   | 0, x, y => by intro; exact Fin.elim0 x
@@ -465,9 +465,10 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (hxy : x ≠ y), signAux (swa
     simp only [eq_iff_true_of_subsingleton, not_true, ite_true, le_refl, prod_const,
                IsEmpty.forall_iff]
   | n + 2, x, y => fun hxy => by
-    have h2n : 2 ≤ n + 2 := by decide
+    have h2n : 2 ≤ n + 2 := by exact le_add_self
     rw [← isConj_iff_eq, ← signAux_swap_zero_one h2n]
-    exact (MonoidHom.mk' signAux signAux_mul).map_isConj (isConj_swap hxy (by decide))
+    exact (MonoidHom.mk' signAux signAux_mul).map_isConj
+      (isConj_swap hxy (by exact of_decide_eq_true rfl))
 #align equiv.perm.sign_aux_swap Equiv.Perm.signAux_swap
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
