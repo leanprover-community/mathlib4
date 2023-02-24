@@ -18,19 +18,19 @@ import Mathlib.Topology.Support
 
 ## Main statements
 
-* `compact_space_uniformity`: On a compact uniform space, the topology determines the
+* `compactSpace_uniformity`: On a compact uniform space, the topology determines the
   uniform structure, entourages are exactly the neighborhoods of the diagonal.
 
-* `uniform_space_of_compact_t2`: every compact T2 topological structure is induced by a uniform
+* `uniformSpace_of_compact_t2`: every compact T2 topological structure is induced by a uniform
   structure. This uniform structure is described in the previous item.
 
 * **Heine-Cantor** theorem: continuous functions on compact uniform spaces with values in uniform
   spaces are automatically uniformly continuous. There are several variations, the main one is
-  `compact_space.uniform_continuous_of_continuous`.
+  `CompactSpace.uniformContinuous_of_continuous`.
 
 ## Implementation notes
 
-The construction `uniform_space_of_compact_t2` is not declared as an instance, as it would badly
+The construction `uniformSpace_of_compact_t2` is not declared as an instance, as it would badly
 loop.
 
 ## tags
@@ -50,7 +50,6 @@ variable {α β γ : Type _} [UniformSpace α] [UniformSpace β]
 -/
 
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are
 exactly the neighborhoods of the diagonal. -/
 theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α := by
@@ -81,13 +80,6 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
   rw [@compactSpace_uniformity _ u, compactSpace_uniformity, h, h']
 #align unique_uniformity_of_compact unique_uniformity_of_compact
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (y «expr ≠ » x) -/
 /-- The unique uniform structure inducing a given compact topological structure. -/
 def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ
     where
@@ -96,8 +88,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
   symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
   comp :=
     by
-    /-
-        This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
+    /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
         -/
     set 𝓝Δ := 𝓝ˢ (diagonal γ)
@@ -125,7 +116,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- So there are closed neighboords V₁ and V₂ of x and y contained in disjoint open neighborhoods
     -- U₁ and U₂.
     obtain
-      ⟨U₁, U₁_in, V₁, V₁_in, U₂, U₂_in₂, V₂, V₂_in, V₁_cl, V₂_cl, U₁_op, U₂_op, VU₁, VU₂, hU₁₂⟩ :=
+      ⟨U₁, _, V₁, V₁_in, U₂, _, V₂, V₂_in, V₁_cl, V₂_cl, U₁_op, U₂_op, VU₁, VU₂, hU₁₂⟩ :=
       disjoint_nested_nhds x_ne_y
     -- We set U₃ := (V₁ ∪ V₂)ᶜ so that W := U₁ ×ˢ U₁ ∪ U₂ ×ˢ U₂ ∪ U₃ ×ˢ U₃ is an open
     -- neighborhood of Δ.
@@ -140,13 +131,14 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
       · simp only [mem_union, mem_prod, and_self_iff]
         exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h
     -- So W ○ W ∈ F by definition of F
-    have : W ○ W ∈ F := by simpa only using mem_lift' W_in
+    have : W ○ W ∈ F := @mem_lift' _ _ _ (fun s => s ○ s) _ W_in
+      -- Porting note: was `by simpa only using mem_lift' W_in`
     -- And V₁ ×ˢ V₂ ∈ 𝓝 (x, y)
     have hV₁₂ : V₁ ×ˢ V₂ ∈ 𝓝 (x, y) := prod_mem_nhds V₁_in V₂_in
     -- But (x, y) is also a cluster point of F so (V₁ ×ˢ V₂) ∩ (W ○ W) ≠ ∅
     -- However the construction of W implies (V₁ ×ˢ V₂) ∩ (W ○ W) = ∅.
     -- Indeed assume for contradiction there is some (u, v) in the intersection.
-    obtain ⟨⟨u, v⟩, ⟨u_in, v_in⟩, w, huw, hwv⟩ := cluster_pt_iff.mp hxy.of_inf_left hV₁₂ this
+    obtain ⟨⟨u, v⟩, ⟨u_in, v_in⟩, w, huw, hwv⟩ := clusterPt_iff.mp hxy.of_inf_left hV₁₂ this
     -- So u ∈ V₁, v ∈ V₂, and there exists some w such that (u, w) ∈ W and (w ,v) ∈ W.
     -- Because u is in V₁ which is disjoint from U₂ and U₃, (u, w) ∈ W forces (u, w) ∈ U₁ ×ˢ U₁.
     have uw_in : (u, w) ∈ U₁ ×ˢ U₁ :=
@@ -168,9 +160,9 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
       intro s
       simp_rw [isOpen_fold, isOpen_iff_mem_nhds, ← mem_comap_prod_mk, this]
     intro x
-    simp_rw [nhdsSet_diagonal, comap_supr, nhds_prod_eq, comap_prod, (· ∘ ·), comap_id']
+    simp_rw [nhdsSet_diagonal, comap_supᵢ, nhds_prod_eq, comap_prod, (· ∘ ·), comap_id']
     rw [supᵢ_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
-    suffices ∀ (y) (_ : y ≠ x), comap (fun y : γ => x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
+    suffices ∀ (y) (_ : y ≠ x), comap (fun _ : γ => x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
     intro y hxy
     simp [comap_const_of_not_mem (compl_singleton_mem_nhds hxy) (Classical.not_not.2 rfl)]
 #align uniform_space_of_compact_t2 uniformSpaceOfCompactT2
@@ -203,7 +195,7 @@ theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β}
 /-- If `s` is compact and `f` is continuous at all points of `s`, then `f` is
 "uniformly continuous at the set `s`", i.e. `f x` is close to `f y` whenever `x ∈ s` and `y` is
 close to `x` (even if `y` is not itself in `s`, so this is a stronger assertion than
-`uniform_continuous_on s`). -/
+`UniformContinuousOn s`). -/
 theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : Set α}
     (hs : IsCompact s) (f : α → β) (hf : ∀ a ∈ s, ContinuousAt f a) (hr : r ∈ 𝓤 β) :
     { x : α × α | x.1 ∈ s → (f x.1, f x.2) ∈ r } ∈ 𝓤 α := by
@@ -259,10 +251,8 @@ theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [On
 #align has_compact_mul_support.uniform_continuous_of_continuous HasCompactMulSupport.uniformContinuous_of_continuous
 #align has_compact_support.uniform_continuous_of_continuous HasCompactSupport.uniformContinuous_of_continuous
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A family of functions `α → β → γ` tends uniformly to its value at `x` if `α` is locally compact,
-`β` is compact and `f` is continuous on `U × (univ : set β)` for some neighborhood `U` of `x`. -/
+`β` is compact and `f` is continuous on `U × (univ : Set β)` for some neighborhood `U` of `x`. -/
 theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
     {f : α → β → γ} {x : α} {U : Set α} (hxU : U ∈ 𝓝 x) (h : ContinuousOn (↿f) (U ×ˢ univ)) :
     TendstoUniformly f (f x) (𝓝 x) := by
