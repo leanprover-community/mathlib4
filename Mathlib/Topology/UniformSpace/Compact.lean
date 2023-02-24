@@ -8,10 +8,10 @@ Authors: Patrick Massot, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.UniformConvergence
-import Mathbin.Topology.UniformSpace.Equicontinuity
-import Mathbin.Topology.Separation
-import Mathbin.Topology.Support
+import Mathlib.Topology.UniformSpace.UniformConvergence
+import Mathlib.Topology.UniformSpace.Equicontinuity
+import Mathlib.Topology.Separation
+import Mathlib.Topology.Support
 
 /-!
 # Compact separated uniform spaces
@@ -53,8 +53,7 @@ variable {α β γ : Type _} [UniformSpace α] [UniformSpace β]
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- On a compact uniform space, the topology determines the uniform structure, entourages are
 exactly the neighborhoods of the diagonal. -/
-theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α :=
-  by
+theorem nhdsSet_diagonal_eq_uniformity [CompactSpace α] : 𝓝ˢ (diagonal α) = 𝓤 α := by
   refine' nhds_set_diagonal_le_uniformity.antisymm _
   have :
     (𝓤 (α × α)).HasBasis (fun U => U ∈ 𝓤 α) fun U =>
@@ -193,8 +192,7 @@ theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α �
 /-- Heine-Cantor: a continuous function on a compact set of a uniform space is uniformly
 continuous. -/
 theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β} (hs : IsCompact s)
-    (hf : ContinuousOn f s) : UniformContinuousOn f s :=
-  by
+    (hf : ContinuousOn f s) : UniformContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict]
   rw [isCompact_iff_compactSpace] at hs
   rw [continuousOn_iff_continuous_restrict] at hf
@@ -208,8 +206,7 @@ close to `x` (even if `y` is not itself in `s`, so this is a stronger assertion 
 `uniform_continuous_on s`). -/
 theorem IsCompact.uniform_continuousAt_of_continuousAt {r : Set (β × β)} {s : Set α}
     (hs : IsCompact s) (f : α → β) (hf : ∀ a ∈ s, ContinuousAt f a) (hr : r ∈ 𝓤 β) :
-    { x : α × α | x.1 ∈ s → (f x.1, f x.2) ∈ r } ∈ 𝓤 α :=
-  by
+    { x : α × α | x.1 ∈ s → (f x.1, f x.2) ∈ r } ∈ 𝓤 α := by
   obtain ⟨t, ht, htsymm, htr⟩ := comp_symm_mem_uniformity_sets hr
   choose U hU T hT hb using fun a ha =>
     exists_mem_nhds_ball_subset_of_mem_nhds ((hf a ha).preimage_mem_nhds <| mem_nhds_left _ ht)
@@ -243,8 +240,7 @@ theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : �
 /-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
 @[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
 theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
-    (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) :=
-  by
+    (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
   -- porting note: move to src/topology/support.lean once the port is over
   intro N hN
   rw [mem_map, mem_cocompact']
@@ -269,8 +265,7 @@ theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [On
 `β` is compact and `f` is continuous on `U × (univ : set β)` for some neighborhood `U` of `x`. -/
 theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
     {f : α → β → γ} {x : α} {U : Set α} (hxU : U ∈ 𝓝 x) (h : ContinuousOn (↿f) (U ×ˢ univ)) :
-    TendstoUniformly f (f x) (𝓝 x) :=
-  by
+    TendstoUniformly f (f x) (𝓝 x) := by
   rcases LocallyCompactSpace.local_compact_nhds _ _ hxU with ⟨K, hxK, hKU, hK⟩
   have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ)
@@ -290,8 +285,7 @@ section UniformConvergence
 /-- An equicontinuous family of functions defined on a compact uniform space is automatically
 uniformly equicontinuous. -/
 theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type _} {F : ι → β → α}
-    [CompactSpace β] (h : Equicontinuous F) : UniformEquicontinuous F :=
-  by
+    [CompactSpace β] (h : Equicontinuous F) : UniformEquicontinuous F := by
   rw [equicontinuous_iff_continuous] at h
   rw [uniformEquicontinuous_iff_uniformContinuous]
   exact CompactSpace.uniformContinuous_of_continuous h
