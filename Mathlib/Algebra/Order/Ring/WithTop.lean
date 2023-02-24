@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 ! This file was ported from Lean 3 source module algebra.order.ring.with_top
-! leanprover-community/mathlib commit e7e2ba8aa216a5833b5ed85a93317263711a36b5
+! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -50,12 +50,14 @@ theorem top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := by simp [mul_def]; rfl
 
 theorem mul_top' (a : WithTop α) : a * ⊤ = if a = 0 then 0 else ⊤ := by
   induction a using recTopCoe <;> simp [mul_def] <;> rfl
+#align with_top.mul_top' WithTop.mul_top'
 
 @[simp] theorem mul_top {a : WithTop α} (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', if_neg h]
 #align with_top.mul_top WithTop.mul_top
 
 theorem top_mul' (a : WithTop α) : ⊤ * a = if a = 0 then 0 else ⊤ := by
   induction a using recTopCoe <;> simp [mul_def] <;> rfl
+#align with_top.top_mul' WithTop.top_mul'
 
 @[simp] theorem top_mul {a : WithTop α} (h : a ≠ 0) : ⊤ * a = ⊤ := by rw [top_mul', if_neg h]
 #align with_top.top_mul WithTop.top_mul
@@ -70,6 +72,7 @@ theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ 
 theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
   rw [WithTop.lt_top_iff_ne_top] at *
   simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, false_or]
+#align with_top.mul_lt_top' WithTop.mul_lt_top'
 
 theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=
   mul_lt_top' (WithTop.lt_top_iff_ne_top.2 ha) (WithTop.lt_top_iff_ne_top.2 hb)
@@ -87,7 +90,7 @@ section MulZeroClass
 
 variable [MulZeroClass α]
 
-@[simp, norm_cast] -- porting note: added `simp`
+@[simp, norm_cast]
 theorem coe_mul {a b : α} : (↑(a * b) : WithTop α) = a * b := by
   by_cases ha : a = 0
   · simp [ha]
@@ -258,10 +261,11 @@ theorem mul_eq_bot_iff {a b : WithBot α} : a * b = ⊥ ↔ a ≠ 0 ∧ b = ⊥ 
 
 theorem bot_lt_mul' [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
   WithTop.mul_lt_top' (α := αᵒᵈ) ha hb
-#align with_bot.bot_lt_mul WithBot.bot_lt_mul'
+#align with_bot.bot_lt_mul' WithBot.bot_lt_mul'
 
 theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : ⊥ < a * b :=
   WithTop.mul_lt_top (α := αᵒᵈ) ha hb
+#align with_bot.bot_lt_mul WithBot.bot_lt_mul
 
 end Mul
 
