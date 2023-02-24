@@ -21,14 +21,14 @@ divisible as natural numbers. If `b` is greater than `ℵ₀`, then `a ∣ b` if
 furthermore shows that all infinite cardinals are prime; recall that `a * b = max a b` if
 `ℵ₀ ≤ a * b`; therefore `a ∣ b * c = a ∣ max b c` and therefore clearly either `a ∣ b` or `a ∣ c`.
 Note furthermore that no infinite cardinal is irreducible
-(`cardinal.not_irreducible_of_aleph_0_le`), showing that the cardinal numbers do not form a
-`comm_cancel_monoid_with_zero`.
+(`Cardinal.not_irreducible_of_aleph0_le`), showing that the cardinal numbers do not form a
+`CancelCommMonoidWithZero`.
 
 ## Main results
 
-* `cardinal.prime_of_aleph_0_le`: a `cardinal` is prime if it is infinite.
-* `cardinal.is_prime_iff`: a `cardinal` is prime iff it is infinite or a prime natural number.
-* `cardinal.is_prime_pow_iff`: a `cardinal` is a prime power iff it is infinite or a natural number
+* `Cardinal.prime_of_aleph0_le`: a `Cardinal` is prime if it is infinite.
+* `Cardinal.is_prime_iff`: a `Cardinal` is prime iff it is infinite or a prime natural number.
+* `Cardinal.isPrimePow_iff`: a `Cardinal` is a prime power iff it is infinite or a natural number
   which is itself a prime power.
 
 -/
