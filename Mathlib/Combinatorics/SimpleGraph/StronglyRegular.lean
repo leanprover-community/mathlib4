@@ -8,8 +8,8 @@ Authors: Alena Gusakov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Basic
-import Mathbin.Data.Set.Finite
+import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.Set.Finite
 
 /-!
 # Strongly regular graphs
@@ -107,16 +107,14 @@ theorem IsSRGWith.card_neighborFinset_union_of_not_adj {v w : V} (h : G.IsSRGWit
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_of_not_adj SimpleGraph.IsSRGWith.card_neighborFinset_union_of_not_adj
 
 theorem IsSRGWith.card_neighborFinset_union_of_adj {v w : V} (h : G.IsSRGWith n k ℓ μ)
-    (ha : G.Adj v w) : (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - ℓ :=
-  by
+    (ha : G.Adj v w) : (G.neighborFinset v ∪ G.neighborFinset w).card = 2 * k - ℓ := by
   rw [← h.of_adj v w ha]
   apply h.card_neighbor_finset_union_eq
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_of_adj SimpleGraph.IsSRGWith.card_neighborFinset_union_of_adj
 
 theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
     G.neighborFinset vᶜ \ {v} ∩ (G.neighborFinset wᶜ \ {w}) =
-      (G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ) \ ({w} ∪ {v}) :=
-  by
+      (G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ) \ ({w} ∪ {v}) := by
   ext
   rw [← not_iff_not]
   simp [imp_iff_not_or, or_assoc', or_comm', or_left_comm]
@@ -124,8 +122,7 @@ theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
 
 theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
     (G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ) \ ({w} ∪ {v}) =
-      G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ :=
-  by
+      G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ := by
   ext
   simp only [and_imp, mem_union, mem_sdiff, mem_compl, and_iff_left_iff_imp, mem_neighbor_finset,
     mem_inter, mem_singleton]
@@ -142,8 +139,7 @@ theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) : Gᶜ.IsRegular
 #align simple_graph.is_SRG_with.compl_is_regular SimpleGraph.IsSRGWith.compl_is_regular
 
 theorem IsSRGWith.card_commonNeighbors_eq_of_adj_compl (h : G.IsSRGWith n k ℓ μ) {v w : V}
-    (ha : Gᶜ.Adj v w) : Fintype.card ↥(Gᶜ.commonNeighbors v w) = n - (2 * k - μ) - 2 :=
-  by
+    (ha : Gᶜ.Adj v w) : Fintype.card ↥(Gᶜ.commonNeighbors v w) = n - (2 * k - μ) - 2 := by
   simp only [← Set.toFinset_card, common_neighbors, Set.toFinset_inter, neighbor_set_compl,
     Set.toFinset_diff, Set.toFinset_singleton, Set.toFinset_compl, ← neighbor_finset_def]
   simp_rw [compl_neighbor_finset_sdiff_inter_eq]
