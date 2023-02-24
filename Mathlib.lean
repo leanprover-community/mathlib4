@@ -1030,6 +1030,7 @@ import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.SetTheory.Cardinal.Divisibility
 import Mathlib.SetTheory.Cardinal.Finite
