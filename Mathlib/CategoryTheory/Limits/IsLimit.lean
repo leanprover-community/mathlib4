@@ -238,7 +238,8 @@ theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
 
 /-- Two morphisms into a limit are equal if their compositions with
   each cone morphism are equal. -/
-theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt} (w : ∀ j, f ≫ t.π.app j = f' ≫ t.π.app j) :
+theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt} 
+    (w : ∀ j, f ≫ t.π.app j = f' ≫ t.π.app j) :
     f = f' := by rw [h.hom_lift f, h.hom_lift f']; congr; exact funext w
 #align category_theory.limits.is_limit.hom_ext CategoryTheory.Limits.IsLimit.hom_ext
 
