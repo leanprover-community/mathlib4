@@ -302,18 +302,12 @@ attribute [coe] LieHom.toLinearMap
 instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
   ⟨LieHom.toLinearMap⟩
 
--- Porting note: We do not want CoeFun instances like this in lean4, we want FunLike instances
--- /-- see Note [function coercion] -/
--- instance : CoeFun (L₁ →ₗ⁅R⁆ L₂) fun _ => L₁ → L₂ :=
---   ⟨fun f => f.toLinearMap.toFun⟩
+/-- Coercion to a function. -/
+@[coe] def toFun' (f : L₁ →ₗ⁅R⁆ L₂) := f.toFun
 
-instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ fun _ => L₂ where
-  coe := fun f => f.toFun
-  coe_injective' := by
-    intros f g h
-    obtain ⟨⟨⟨f,_⟩,_⟩ ,_⟩ := f
-    obtain ⟨⟨⟨g,_⟩,_⟩,_⟩ := g
-    congr
+/-- see Note [function coercion] -/
+instance : CoeFun (L₁ →ₗ⁅R⁆ L₂) fun _ => L₁ → L₂ :=
+  ⟨toFun'⟩
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this
   case, because it is a composition of multiple projections. -/
@@ -753,14 +747,12 @@ attribute [coe] LieModuleHom.toLinearMap
 instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
+/-- Coercion to a function. -/
+@[coe] def toFun' (f : M →ₗ⁅R,L⁆ N) := f.toFun
+
 /-- see Note [function coercion] -/
-instance : FunLike (M →ₗ⁅R,L⁆ N) M fun _ => N where
-  coe := fun f => f.toFun
-  coe_injective' := by
-    intros f g h
-    obtain ⟨⟨⟨f,_⟩,_⟩ ,_⟩ := f
-    obtain ⟨⟨⟨g,_⟩,_⟩,_⟩ := g
-    congr
+instance : CoeFun (M →ₗ⁅R,L⁆ N) fun _ => M → N :=
+  ⟨toFun'⟩
 
 @[simp, norm_cast]
 theorem coe_to_linearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
