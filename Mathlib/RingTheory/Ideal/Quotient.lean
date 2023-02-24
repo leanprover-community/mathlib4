@@ -424,31 +424,30 @@ theorem exists_sub_one_mem_and_mem (s : Finset ι) {f : ι → Ideal R}
       rw [← Quotient.eq_zero_iff_mem, map_prod]
       apply Finset.prod_eq_zero
       -- refine' Finset.prod_eq_zero (Finset.mem_erase_of_ne_of_mem hji hjs) _
-      rw [quotient.eq_zero_iff_mem]
+      rw [Quotient.eq_zero_iff_mem]
       exact hgj j hjs hji
 #align ideal.exists_sub_one_mem_and_mem Ideal.exists_sub_one_mem_and_mem
 
 theorem exists_sub_mem [Finite ι] {f : ι → Ideal R} (hf : ∀ i j, i ≠ j → f i ⊔ f j = ⊤)
     (g : ι → R) : ∃ r : R, ∀ i, r - g i ∈ f i := by
   cases nonempty_fintype ι
-  have : ∃ φ : ι → R, (∀ i, φ i - 1 ∈ f i) ∧ ∀ i j, i ≠ j → φ i ∈ f j :=
-    by
+  have : ∃ φ : ι → R, (∀ i, φ i - 1 ∈ f i) ∧ ∀ i j, i ≠ j → φ i ∈ f j := by
     have := exists_sub_one_mem_and_mem (Finset.univ : Finset ι) fun i _ j _ hij => hf i j hij
-    choose φ hφ
+    choose φ hφ using this
     exists fun i => φ i (Finset.mem_univ i)
     exact ⟨fun i => (hφ i _).1, fun i j hij => (hφ i _).2 j (Finset.mem_univ j) hij.symm⟩
   rcases this with ⟨φ, hφ1, hφ2⟩
   use ∑ i, g i * φ i
   intro i
-  rw [← Quotient.eq', RingHom.map_sum]
+  rw [← Quotient.mk_eq_mk_iff_sub_mem, map_sum]
   refine' Eq.trans (Finset.sum_eq_single i _ _) _
   · intro j _ hji
-    rw [quotient.eq_zero_iff_mem]
+    rw [Quotient.eq_zero_iff_mem]
     exact (f i).mul_mem_left _ (hφ2 j i hji)
   · intro hi
     exact (hi <| Finset.mem_univ i).elim
   specialize hφ1 i
-  rw [← Quotient.eq', RingHom.map_one] at hφ1
+  rw [← Quotient.mk_eq_mk_iff_sub_mem, RingHom.map_one] at hφ1
   rw [RingHom.map_mul, hφ1, mul_one]
 #align ideal.exists_sub_mem Ideal.exists_sub_mem
 
@@ -459,7 +458,7 @@ def quotientInfToPiQuotient (f : ι → Ideal R) : (R ⧸ ⨅ i, f i) →+* ∀ 
     by
     rw [Submodule.mem_infᵢ] at hr
     ext i
-    exact quotient.eq_zero_iff_mem.2 (hr i)
+    exact Quotient.eq_zero_iff_mem.2 (hr i)
 #align ideal.quotient_inf_to_pi_quotient Ideal.quotientInfToPiQuotient
 
 theorem quotientInfToPiQuotient_bijective [Finite ι] {f : ι → Ideal R}
@@ -487,8 +486,7 @@ end ChineseRemainder
 noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ J = ⊤) :
     R ⧸ I ⊓ J ≃+* (R ⧸ I) × R ⧸ J :=
   let f : Fin 2 → Ideal R := ![I, J]
-  have hf : ∀ i j : Fin 2, i ≠ j → f i ⊔ f j = ⊤ :=
-    by
+  have hf : ∀ i j : Fin 2, i ≠ j → f i ⊔ f j = ⊤ := by
     intro i j h
     fin_cases i <;> fin_cases j <;> try contradiction <;> simpa [f, sup_comm] using coprime
   (Ideal.quotEquivOfEq (by simp [infᵢ, inf_comm])).trans <|
