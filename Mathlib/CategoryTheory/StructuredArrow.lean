@@ -8,7 +8,7 @@ Authors: Adam Topaz, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Comma
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.EssentiallySmall
@@ -38,11 +38,11 @@ and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
 -- @[nolint has_nonempty_instance]
 def StructuredArrow (S : D) (T : C ⥤ D) :=
-  Comma (Functor.fromPUnit S) T 
+  Comma (Functor.fromPUnit S) T
 #align category_theory.structured_arrow CategoryTheory.StructuredArrow
 
 -- Porting note: not found by inferInstance
-instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := commaCategory  
+instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := commaCategory
 
 namespace StructuredArrow
 
@@ -97,8 +97,8 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right) (w : f.hom ≫
 structured arrow given by `(X ⟶ F(U)) ⟶ (X ⟶ F(U) ⟶ F(Y))`.
 -/
 def homMk' {F : C ⥤ D} {X : D} {Y : C} (U : StructuredArrow X F) (f : U.right ⟶ Y) :
-    U ⟶ mk (U.hom ≫ F.map f) where 
-  left := by cases U.left; exact 𝟙 _   
+    U ⟶ mk (U.hom ≫ F.map f) where
+  left := by cases U.left; exact 𝟙 _
   right := f
 #align category_theory.structured_arrow.hom_mk' CategoryTheory.StructuredArrow.homMk'
 
@@ -112,8 +112,8 @@ def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right) (w : f.hom ≫
   Comma.isoMk (eqToIso (by ext)) g (by simpa [eqToHom_map] using w.symm)
 #align category_theory.structured_arrow.iso_mk CategoryTheory.StructuredArrow.isoMk
 
-theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g := 
-  have : Subsingleton (A.left ⟶  B.left) := sorry
+theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
+  --have : Subsingleton (A.left ⟶  B.left) := sorry
   CommaMorphism.ext _ _ (Subsingleton.elim _ _)
 #align category_theory.structured_arrow.ext CategoryTheory.StructuredArrow.ext
 
@@ -121,7 +121,7 @@ theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right 
   ⟨fun h => h ▸ rfl, ext f g⟩
 #align category_theory.structured_arrow.ext_iff CategoryTheory.StructuredArrow.ext_iff
 
-instance proj_faithful : Faithful (proj S T) where 
+instance proj_faithful : Faithful (proj S T) where
   map_injective {_ _} := ext
 #align category_theory.structured_arrow.proj_faithful CategoryTheory.StructuredArrow.proj_faithful
 
@@ -188,9 +188,32 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
   simp
 #align category_theory.structured_arrow.map_comp CategoryTheory.StructuredArrow.map_comp
 
-instance proj_reflects_iso : ReflectsIsomorphisms (proj S T) where 
+instance proj_reflects_iso : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
-    ⟨⟨StructuredArrow.homMk (inv ((proj S T).map f)) (by simp), by aesop_cat⟩⟩
+    ⟨⟨StructuredArrow.homMk (inv ((proj S T).map f))
+    (by rw [Functor.map_inv, IsIso.comp_inv_eq] ; simp), by
+      --NOTES: We're missing some simp lemmas...
+      dsimp
+      --split <-- fails!?
+      refine ⟨?_,?_⟩ -- works
+      · apply CommaMorphism.ext
+        · dsimp [homMk]
+          erw [Comma.comp_left, Comma.id_left]
+          --simp -- UGH! Not working!
+          erw [Category.comp_id f.left]
+        · dsimp [homMk]
+          erw [Comma.comp_right, Comma.id_right]
+          dsimp
+          haveI : IsIso f.right := t
+          rw [IsIso.hom_inv_id f.right]
+      · apply CommaMorphism.ext
+        · dsimp [homMk]
+          erw [Comma.comp_left, Comma.id_left]
+        · dsimp [homMk]
+          erw [Comma.comp_right, Comma.id_right]
+          dsimp
+          haveI : IsIso f.right := t
+          rw [IsIso.inv_hom_id f.right] ⟩⟩
 #align category_theory.structured_arrow.proj_reflects_iso CategoryTheory.StructuredArrow.proj_reflects_iso
 
 open CategoryTheory.Limits
@@ -225,11 +248,11 @@ def pre (S : D) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S (F ⋙ G) ⥤ St
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
     where
   obj X :=
-    { left := ⟨⟨⟩⟩ 
+    { left := ⟨⟨⟩⟩
       right := X.right
       hom := G.map X.hom }
   map f :=
-    { left := 𝟙 ⟨⟨⟩⟩ 
+    { left := 𝟙 ⟨⟨⟩⟩
       right := f.right
       w := by simp [Functor.comp_map, ← G.map_comp, ← f.w] }
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
@@ -386,9 +409,27 @@ theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
   simp
 #align category_theory.costructured_arrow.map_comp CategoryTheory.CostructuredArrow.map_comp
 
-instance proj_reflects_iso : ReflectsIsomorphisms (proj S T) where 
+instance proj_reflects_iso : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
-    ⟨⟨CostructuredArrow.homMk (inv ((proj S T).map f)) (by simp), by aesop_cat⟩⟩
+    ⟨⟨CostructuredArrow.homMk (inv ((proj S T).map f))
+    (by rw [Functor.map_inv, IsIso.inv_comp_eq] ; simp), by
+      refine ⟨?_,?_⟩
+      · apply Comma.hom_ext
+        · dsimp [homMk]
+          erw [Comma.comp_left, Comma.id_left]
+          dsimp
+          haveI : IsIso f.left := t
+          rw [IsIso.hom_inv_id]
+        · dsimp [homMk]
+          erw [Comma.comp_right, Comma.id_right, Category.comp_id f.right]
+      · apply Comma.hom_ext
+        · dsimp [homMk]
+          erw [Comma.comp_left, Comma.id_left]
+          dsimp
+          haveI : IsIso f.left := t
+          rw [IsIso.inv_hom_id]
+        · dsimp [homMk]
+          erw [Comma.comp_right, Comma.id_right, Category.comp_id f.right] ⟩⟩
 #align category_theory.costructured_arrow.proj_reflects_iso CategoryTheory.CostructuredArrow.proj_reflects_iso
 
 open CategoryTheory.Limits
@@ -425,7 +466,7 @@ def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
   obj X :=
     { left := X.left
-      right := ⟨⟨⟩⟩ 
+      right := ⟨⟨⟩⟩
       hom := G.map X.hom }
   map f :=
     { left := f.left
@@ -532,17 +573,23 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X =>
         (@StructuredArrow.isoMk _ _ _ _ _ _ (StructuredArrow.mk (unop X).hom) (unop X) (Iso.refl _)
             (by aesop_cat)).op)
-      fun {X Y} f => Quiver.Hom.unop_inj <| by 
+      fun {X Y} f => Quiver.Hom.unop_inj <| by
         dsimp [StructuredArrow.isoMk,Comma.isoMk,StructuredArrow.homMk] --wtf
-        apply CommaMorphism.ext 
+        apply CommaMorphism.ext
         · apply ULift.ext; simp
-        · sorry  
-      )
+        · dsimp
+          erw [Comma.comp_right, Comma.comp_right]
+          simp )
     (NatIso.ofComponents
       (fun X =>
-        @CostructuredArrow.isoMk _ _ _ _ _ _ (CostructuredArrow.mk X.hom) X (Iso.refl _) 
-          (by aesop_cat)) fun {X Y} f => by 
-            apply CommaMorphism.ext; apply ULift.ext; dsimp; simp)
+        @CostructuredArrow.isoMk _ _ _ _ _ _ (CostructuredArrow.mk X.hom) X (Iso.refl _)
+          (by aesop_cat)) fun {X Y} f => by
+            apply CommaMorphism.ext
+            · dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]
+              erw [Comma.comp_left, Comma.comp_left]
+              simp
+            · dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]
+              erw [Comma.comp_right] )
 #align category_theory.structured_arrow_op_equivalence CategoryTheory.structuredArrowOpEquivalence
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
@@ -557,14 +604,23 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X =>
         (@CostructuredArrow.isoMk _ _ _ _ _ _ (CostructuredArrow.mk (unop X).hom) (unop X)
             (Iso.refl _) (by aesop_cat)).op)
-      fun {X Y} f => Quiver.Hom.unop_inj <| by 
-        apply CommaMorphism.ext; dsimp; simp; sorry; sorry)
+      fun {X Y} f => Quiver.Hom.unop_inj <| by
+        apply CommaMorphism.ext
+        · dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]
+          erw [Comma.comp_left, Comma.comp_left]
+          simp
+        · dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]
+          erw [Comma.comp_right] )
     (NatIso.ofComponents
       (fun X =>
-        @StructuredArrow.isoMk _ _ _ _ _ _ (StructuredArrow.mk X.hom) X (Iso.refl _) 
-          (by aesop_cat)) fun {X Y} f => by 
-            apply CommaMorphism.ext; apply ULift.ext; dsimp; simp; sorry)
+        @StructuredArrow.isoMk _ _ _ _ _ _ (StructuredArrow.mk X.hom) X (Iso.refl _)
+          (by aesop_cat)) fun {X Y} f => by
+            apply CommaMorphism.ext
+            · dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]
+              erw [Comma.comp_left]
+            · dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]
+              erw [Comma.comp_right, Comma.comp_right]
+              simp )
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory
-
