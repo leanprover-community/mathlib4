@@ -36,11 +36,11 @@ set, sets, image, preimage, pre-image, range
 
 universe u v
 
-open Function
+open Function Set
 
 namespace Set
 
-variable {α β γ : Type _} {ι : Sort _}
+variable {α β γ : Type _} {ι ι' : Sort _}
 
 /-! ### Inverse image -/
 
@@ -1301,7 +1301,7 @@ theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective 
   apply subset_univ
 #align function.surjective.preimage_subset_preimage_iff Function.Surjective.preimage_subset_preimage_iff
 
-theorem Surjective.range_comp {ι' : Sort _} {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
+theorem Surjective.range_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 #align function.surjective.range_comp Function.Surjective.range_comp
@@ -1335,6 +1335,15 @@ theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s :
 
 end Function
 
+namespace EquivLike
+variable {E : Type _} [EquivLike E ι ι']
+
+@[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
+(EquivLike.surjective _).range_comp _
+#align equiv_like.range_comp EquivLike.range_comp
+
+end EquivLike
+
 /-! ### Image and preimage on subtypes -/
 
 
@@ -1345,8 +1354,6 @@ namespace Subtype
 -- and that these are syntactically the same.
 -- In mathlib3 we referred to this just as `coe`.
 -- We may want to change the spelling of some statements later.
-
-open Set
 
 variable {α : Type _}
 
