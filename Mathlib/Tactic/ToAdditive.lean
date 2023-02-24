@@ -772,6 +772,10 @@ def fixAbbreviation : List String → List String
 | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
 | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
 | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+| "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
+| "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
+| "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
+| "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
 | []                                => []
 

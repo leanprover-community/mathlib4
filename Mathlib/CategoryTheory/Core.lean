@@ -42,10 +42,10 @@ def Core (C : Type u₁) := C
 variable {C : Type u₁} [Category.{v₁} C]
 
 instance coreCategory : Groupoid.{v₁} (Core C) where
-  Hom := fun X Y : C => X ≅ Y
-  id := fun X => @Iso.refl C _ X
-  comp := @fun {X} {Y} {Z} f g => Iso.trans f g
-  inv := @fun X Y f => Iso.symm f
+  Hom (X Y : C) := X ≅ Y
+  id (X : C) := Iso.refl X
+  comp f g := Iso.trans f g
+  inv {X Y} f := Iso.symm f
 #align category_theory.core_category CategoryTheory.coreCategory
 
 namespace Core
@@ -66,7 +66,7 @@ variable (C)
 /-- The core of a category is naturally included in the category. -/
 def inclusion : Core C ⥤ C where
   obj := id
-  map := @fun X Y f => f.hom
+  map f := f.hom
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
 -- porting note: This worked wihtout proof before.
@@ -80,10 +80,9 @@ variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 -- Note that this function is not functorial
 -- (consider the two functors from [0] to [1], and the natural transformation between them).
 /-- A functor from a groupoid to a category C factors through the core of C. -/
-noncomputable def functorToCore (F : G ⥤ C) : G ⥤ Core C
-    where
+noncomputable def functorToCore (F : G ⥤ C) : G ⥤ Core C where
   obj X := F.obj X
-  map := @fun X Y f => ⟨F.map f, F.map (inv f), _, _⟩
+  map f := ⟨F.map f, F.map (inv f), _, _⟩
 #align category_theory.core.functor_to_core CategoryTheory.Core.functorToCore
 
 /-- We can functorially associate to any functor from a groupoid to the core of a category `C`,
@@ -101,10 +100,10 @@ to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂)
     where
   obj := m
-  map := @fun α β f => (EquivFunctor.mapEquiv m f.toEquiv).toIso
+  map f := (EquivFunctor.mapEquiv m f.toEquiv).toIso
   map_id α := by apply Iso.ext; funext x; exact congr_fun (EquivFunctor.map_refl' _) x
-  map_comp := @fun α β γ f g => by
-    apply Iso.ext; funext x; dsimp;
+  map_comp f g := by
+    apply Iso.ext; funext x; dsimp
     erw [Iso.toEquiv_comp, EquivFunctor.map_trans']
     rw [Function.comp]
 #align category_theory.of_equiv_functor CategoryTheory.ofEquivFunctor
