@@ -307,6 +307,18 @@ theorem mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
 theorem w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom = A.hom := by aesop_cat
 #align category_theory.costructured_arrow.w CategoryTheory.CostructuredArrow.w
 
+@[simp]
+theorem comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  (f ≫ g).left = f.left ≫ g.left := rfl
+
+@[simp]
+theorem id_left (X : CostructuredArrow S T) :
+  (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
+
+@[simp]
+theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) :
+  f.right = 𝟙 _ := rfl
+
 /-- To construct a morphism of costructured arrows,
 we need a morphism of the objects underlying the source,
 and to check that the triangle commutes.
@@ -408,22 +420,8 @@ instance proj_reflects_iso : ReflectsIsomorphisms (proj S T) where
     ⟨⟨CostructuredArrow.homMk (inv ((proj S T).map f))
     (by rw [Functor.map_inv, IsIso.inv_comp_eq] ; simp), by
       refine ⟨?_,?_⟩
-      · apply Comma.hom_ext
-        · dsimp [homMk]
-          erw [Comma.comp_left, Comma.id_left]
-          dsimp
-          haveI : IsIso f.left := t
-          rw [IsIso.hom_inv_id]
-        · dsimp [homMk]
-          erw [Comma.comp_right, Comma.id_right, Category.comp_id f.right]
-      · apply Comma.hom_ext
-        · dsimp [homMk]
-          erw [Comma.comp_left, Comma.id_left]
-          dsimp
-          haveI : IsIso f.left := t
-          rw [IsIso.inv_hom_id]
-        · dsimp [homMk]
-          erw [Comma.comp_right, Comma.id_right, Category.comp_id f.right] ⟩⟩
+      · apply Comma.hom_ext <;> dsimp at t ⊢ ; simp
+      · apply Comma.hom_ext <;> dsimp at t ⊢ ; simp ⟩⟩
 #align category_theory.costructured_arrow.proj_reflects_iso CategoryTheory.CostructuredArrow.proj_reflects_iso
 
 open CategoryTheory.Limits
