@@ -408,7 +408,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   unfold signAux
   rw [← prod_mul_distrib]
   refine'
-    prod_bij (fun a ha => signBijAux g a) signBijAux_mem _ signBijAux_inj
+    prod_bij (fun a _ => signBijAux g a) signBijAux_mem _ signBijAux_inj
     (by simpa using signBijAux_surj)
   rintro ⟨a, b⟩ hab
   dsimp only [signBijAux]
