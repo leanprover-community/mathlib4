@@ -65,12 +65,12 @@ variable {α : Type _} {r : α → α → Prop}
 namespace Order
 
 /-- Cofinality of a reflexive order `≼`. This is the smallest cardinality
-  of a subset `S : set α` such that `∀ a, ∃ b ∈ S, a ≼ b`. -/
+  of a subset `S : Set α` such that `∀ a, ∃ b ∈ S, a ≼ b`. -/
 def cof (r : α → α → Prop) : Cardinal :=
   infₛ { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ (#S) = c }
 #align order.cof Order.cof
 
-/-- The set in the definition of `order.cof` is nonempty. -/
+/-- The set in the definition of `Order.cof` is nonempty. -/
 theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
     { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ (#S) = c }.Nonempty :=
   ⟨_, Set.univ, fun a => ⟨a, ⟨⟩, refl _⟩, rfl⟩
