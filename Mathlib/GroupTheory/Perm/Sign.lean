@@ -353,18 +353,19 @@ theorem signBijAux_inj {n : ℕ} {f : Perm (Fin n)} :
 #align equiv.perm.sign_bij_aux_inj Equiv.Perm.signBijAux_inj
 
 theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
-    ∀ a ∈ finPairsLT n, ∃ b ∈ finPairsLT n, a = signBijAux f b := fun ⟨a₁, a₂⟩ ha =>
-  if hxa : f⁻¹ a₂ < f⁻¹ a₁ then
-    ⟨⟨f⁻¹ a₁, f⁻¹ a₂⟩, mem_finPairsLT.2 hxa, by
-      dsimp [signBijAux]
-      rw [apply_inv_self, apply_inv_self, if_pos (mem_finPairsLT.1 ha)]⟩
-  else
-    ⟨⟨f⁻¹ a₂, f⁻¹ a₁⟩,
-      mem_finPairsLT.2 <|
-        (le_of_not_gt hxa).lt_of_ne fun h => by
-          simp [mem_finPairsLT, f⁻¹.injective h, lt_irrefl] at ha, by
-            dsimp [signBijAux]
-            rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_lt]⟩
+    ∀ a ∈ finPairsLT n, ∃ b ∈ finPairsLT n, a = signBijAux f b :=
+  fun ⟨a₁, a₂⟩ ha =>
+    if hxa : f⁻¹ a₂ < f⁻¹ a₁ then
+      ⟨⟨f⁻¹ a₁, f⁻¹ a₂⟩, mem_finPairsLT.2 hxa, by
+        dsimp [signBijAux]
+        rw [apply_inv_self, apply_inv_self, if_pos (mem_finPairsLT.1 ha)]⟩
+    else
+      ⟨⟨f⁻¹ a₂, f⁻¹ a₁⟩,
+        mem_finPairsLT.2 <|
+          (le_of_not_gt hxa).lt_of_ne fun h => by
+            simp [mem_finPairsLT, f⁻¹.injective h, lt_irrefl] at ha, by
+              dsimp [signBijAux]
+              rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_lt]⟩
 #align equiv.perm.sign_bij_aux_surj Equiv.Perm.signBijAux_surj
 
 theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
