@@ -50,14 +50,15 @@ class AlgEquivClass (F : Type _) (R A B : outParam (Type _)) [CommSemiring R] [S
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_equiv_class AlgEquivClass
 
--- `R` becomes a metavariable but that's fine because it's an `outParam`
-attribute [nolint dangerousInstance] AlgEquivClass.toRingEquivClass
+-- Porting note: Removed nolint dangerousInstance from AlgEquivClass.toRingEquivClass
 
 namespace AlgEquivClass
 
+-- Porting note: Replaced instances [...] with {_ : ...} below to make them not dangerous
 -- See note [lower instance priority]
-instance (priority := 100) toAlgHomClass (F R A B : Type _) [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [h : AlgEquivClass F R A B] : AlgHomClass F R A B :=
+instance (priority := 100) toAlgHomClass (F R A B : Type _) {_ :CommSemiring R} {_ : Semiring A}
+    {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B} [h : AlgEquivClass F R A B] :
+    AlgHomClass F R A B :=
   { h with
     coe := (⇑)
     coe_injective' := FunLike.coe_injective
@@ -65,20 +66,19 @@ instance (priority := 100) toAlgHomClass (F R A B : Type _) [CommSemiring R] [Se
     map_one := map_one }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
 
-instance (priority := 100) toLinearEquivClass (F R A B : Type _) [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [h : AlgEquivClass F R A B] :
-    LinearEquivClass F R A B :=
+instance (priority := 100) toLinearEquivClass (F R A B : Type _) {_ :CommSemiring R}
+    {_ : Semiring A} {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B}
+    [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass
 
 instance (F R A B : Type _) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [h : AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B)
+    [_h : AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B)
     where coe f :=
     { (f : A ≃+* B) with
       toFun := f
       invFun := EquivLike.inv f
       commutes' := AlgHomClass.commutes f }
-
 end AlgEquivClass
 
 namespace AlgEquiv
@@ -94,25 +94,37 @@ variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable (e : A₁ ≃ₐ[R] A₂)
 
 instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
-  coe := toFun
-  inv := invFun
+  coe f := f.toFun
+  inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    cases f
-    cases g
+    obtain ⟨⟨f,_⟩,_⟩ := f
+    obtain ⟨⟨g,_⟩,_⟩ := g
     congr
   map_add := map_add'
   map_mul := map_mul'
   commutes := commutes'
-  left_inv := left_inv
-  right_inv := right_inv
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
 
-/-- Helper instance for when there's too many metavariables to apply
-`fun_like.has_coe_to_fun` directly. -/
-instance : CoeFun (A₁ ≃ₐ[R] A₂) fun _ => A₁ → A₂ :=
-  ⟨AlgEquiv.toFun⟩
+-- Porting note: replaced with EquivLike instance
+-- /-- Helper instance for when there's too many metavariables to apply
+-- `fun_like.has_coe_to_fun` directly. -/
+-- instance : CoeFun (A₁ ≃ₐ[R] A₂) fun _ => A₁ → A₂ :=
+--   ⟨AlgEquiv.toFun⟩
 
-@[simp, protected]
-theorem coe_coe {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) : ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
+instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁  A₂ where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h₁ h₂ := by
+    obtain ⟨⟨f,_⟩,_⟩ := f
+    obtain ⟨⟨g,_⟩,_⟩ := g
+    congr
+
+-- Porting note: `protected` used to be an attribute below
+@[simp]
+protected theorem coe_coe {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) : ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
   rfl
 #align alg_equiv.coe_coe AlgEquiv.coe_coe
 
@@ -236,8 +248,8 @@ theorem coe_algHom : ((e : A₁ →ₐ[R] A₂) : A₁ → A₂) = e :=
   rfl
 #align alg_equiv.coe_alg_hom AlgEquiv.coe_algHom
 
-theorem coe_algHom_injective : Function.Injective (coe : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
-  fun e₁ e₂ h => ext <| AlgHom.congr_fun h
+theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
+  fun _ _ h => ext <| AlgHom.congr_fun h
 #align alg_equiv.coe_alg_hom_injective AlgEquiv.coe_algHom_injective
 
 /-- The two paths coercion can take to a `ringHom` are equivalent -/
@@ -264,7 +276,7 @@ protected theorem bijective : Function.Bijective e :=
 /-- Algebra equivalences are reflexive. -/
 @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
-  { (1 : A₁ ≃+* A₁) with commutes' := fun r => rfl }
+  { (1 : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
 #align alg_equiv.refl AlgEquiv.refl
 
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
@@ -286,7 +298,7 @@ def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
   { e.toRingEquiv.symm with
     commutes' := fun r =>
       by
-      rw [← e.to_ring_equiv.symm_apply_apply (algebraMap R A₁ r)]
+      rw [← e.toRingEquiv.symm_apply_apply (algebraMap R A₁ r)]
       congr
       change _ = e _
       rw [e.commutes] }
@@ -329,7 +341,7 @@ theorem symm_bijective : Function.Bijective (symm : (A₁ ≃ₐ[R] A₂) → A�
 @[simp]
 theorem mk_coe' (e : A₁ ≃ₐ[R] A₂) (f h₁ h₂ h₃ h₄ h₅) :
     (⟨f, e, h₁, h₂, h₃, h₄, h₅⟩ : A₂ ≃ₐ[R] A₁) = e.symm :=
-  symm_bijective.Injective <| ext fun x => rfl
+  symm_bijective.injective <| ext fun x => rfl
 #align alg_equiv.mk_coe' AlgEquiv.mk_coe'
 
 @[simp]
@@ -527,7 +539,7 @@ theorem toLinearEquiv_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] 
 #align alg_equiv.to_linear_equiv_trans AlgEquiv.toLinearEquiv_trans
 
 theorem toLinearEquiv_injective : Function.Injective (toLinearEquiv : _ → A₁ ≃ₗ[R] A₂) :=
-  fun e₁ e₂ h => ext <| LinearEquiv.congr_fun h
+  fun _ _ h => ext <| LinearEquiv.congr_fun h
 #align alg_equiv.to_linear_equiv_injective AlgEquiv.toLinearEquiv_injective
 
 /-- Interpret an algebra equivalence as a linear map. -/
@@ -550,7 +562,7 @@ theorem toLinearMap_apply (x : A₁) : e.toLinearMap x = e x :=
   rfl
 #align alg_equiv.to_linear_map_apply AlgEquiv.toLinearMap_apply
 
-theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A₁ →ₗ[R] A₂) := fun e₁ e₂ h =>
+theorem toLinearMap_injective : Function.Injective (toLinearMap : _ → A₁ →ₗ[R] A₂) := fun _ _ h =>
   ext <| LinearMap.congr_fun h
 #align alg_equiv.to_linear_map_injective AlgEquiv.toLinearMap_injective
 
@@ -689,7 +701,7 @@ protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a 
 #align alg_equiv.smul_def AlgEquiv.smul_def
 
 instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
-  ⟨fun _ _ => AlgEquiv.ext⟩
+  ⟨AlgEquiv.ext⟩
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 
 instance apply_sMulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
@@ -715,11 +727,13 @@ variable [CommSemiring R] [CommSemiring A₁] [CommSemiring A₂]
 
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
-theorem map_prod {ι : Type _} (f : ι → A₁) (s : Finset ι) : e (∏ x in s, f x) = ∏ x in s, e (f x) :=
+-- Porting note: Added nonrec
+nonrec theorem map_prod {ι : Type _} (f : ι → A₁) (s : Finset ι) : e (∏ x in s, f x) = ∏ x in s, e (f x) :=
   map_prod _ f s
 #align alg_equiv.map_prod AlgEquiv.map_prod
 
-theorem map_finsupp_prod {α : Type _} [Zero α] {ι : Type _} (f : ι →₀ α) (g : ι → α → A₁) :
+-- Porting note: Added nonrec
+nonrec theorem map_finsupp_prod {α : Type _} [Zero α] {ι : Type _} (f : ι →₀ α) (g : ι → α → A₁) :
     e (f.prod g) = f.prod fun i a => e (g i a) :=
   map_finsupp_prod _ f g
 #align alg_equiv.map_finsupp_prod AlgEquiv.map_finsupp_prod
@@ -762,7 +776,7 @@ def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
 #align mul_semiring_action.to_alg_equiv MulSemiringAction.toAlgEquiv
 
 theorem toAlgEquiv_injective [FaithfulSMul G A] :
-    Function.Injective (MulSemiringAction.toAlgEquiv R A : G → A ≃ₐ[R] A) := fun m₁ m₂ h =>
+    Function.Injective (MulSemiringAction.toAlgEquiv R A : G → A ≃ₐ[R] A) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => AlgEquiv.ext_iff.1 h r
 #align mul_semiring_action.to_alg_equiv_injective MulSemiringAction.toAlgEquiv_injective
 
