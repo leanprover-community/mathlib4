@@ -8,11 +8,11 @@ Authors: Reid Barton, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.FinCategory
-import Mathbin.CategoryTheory.Limits.Cones
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.CategoryTheory.Category.Preorder
-import Mathbin.CategoryTheory.Category.Ulift
+import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Category.Ulift
 
 /-!
 # Filtered categories
@@ -213,8 +213,7 @@ such that the triangles commute: `f ≫ T Y = T X`, for `f : X ⟶ Y` in the `fi
 theorem sup_exists :
     ∃ (S : C)(T : ∀ {X : C}, X ∈ O → (X ⟶ S)),
       ∀ {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y},
-        (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H → f ≫ T mY = T mX :=
-  by
+        (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H → f ≫ T mY = T mX := by
   classical
     apply Finset.induction_on H
     · obtain ⟨S, f⟩ := sup_objs_exists O
@@ -407,8 +406,7 @@ in a filtered category, we can construct an object `s` and two morphisms from `k
 making the resulting squares commute.
 -/
 theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁) (g₂ : j₂ ⟶ k₂) :
-    ∃ (s : C)(α : k₁ ⟶ s)(β : k₂ ⟶ s), f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = g₂ ≫ β :=
-  by
+    ∃ (s : C)(α : k₁ ⟶ s)(β : k₂ ⟶ s), f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = g₂ ≫ β := by
   obtain ⟨t, k₁t, k₂t, ht⟩ := span f₁ g₁
   obtain ⟨s, ts, hs⟩ := cocone_maps (f₂ ≫ k₁t) (g₂ ≫ k₂t)
   simp_rw [category.assoc] at hs
@@ -435,8 +433,7 @@ to `s`, making the resulting squares commute.
 theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j₂ ⟶ k₁) (f₃ : j₂ ⟶ k₂) (f₄ : j₃ ⟶ k₂)
     (g₁ : j₁ ⟶ l) (g₂ : j₃ ⟶ l) :
     ∃ (s : C)(α : k₁ ⟶ s)(β : l ⟶ s)(γ : k₂ ⟶ s),
-      f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β :=
-  by
+      f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β := by
   obtain ⟨l', k₁l, k₂l, hl⟩ := span f₂ f₃
   obtain ⟨s, ls, l's, hs₁, hs₂⟩ := bowtie g₁ (f₁ ≫ k₁l) g₂ (f₄ ≫ k₂l)
   refine' ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by rw [reassoc_of hl], _⟩ <;>
@@ -575,8 +572,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
 #align category_theory.is_cofiltered.cospan CategoryTheory.IsCofiltered.cospan
 
 theorem CategoryTheory.Functor.ranges_directed (F : C ⥤ Type _) (j : C) :
-    Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ =>
-  by
+    Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine' ⟨⟨l, lk ≫ kj⟩, e ▸ _, _⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 #align category_theory.functor.ranges_directed CategoryTheory.Functor.ranges_directed
@@ -613,8 +609,7 @@ such that the triangles commute: `T X ≫ f = T Y`, for `f : X ⟶ Y` in the `fi
 theorem inf_exists :
     ∃ (S : C)(T : ∀ {X : C}, X ∈ O → (S ⟶ X)),
       ∀ {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y},
-        (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H → T mX ≫ f = T mY :=
-  by
+        (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H → T mX ≫ f = T mY := by
   classical
     apply Finset.induction_on H
     · obtain ⟨S, f⟩ := inf_objs_exists O
