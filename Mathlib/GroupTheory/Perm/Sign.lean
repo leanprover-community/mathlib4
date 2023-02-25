@@ -56,7 +56,8 @@ def modSwap [DecidableEq α] (i j : α) : Setoid (Perm α) :=
     . simp [hστ, hτυ]⟩
 #align equiv.perm.mod_swap Equiv.Perm.modSwap
 
-noncomputable instance {α : Type _} [Fintype α] [DecidableEq α] (i j : α) : DecidableRel (modSwap i j).r :=
+noncomputable instance {α : Type _} [Fintype α] [DecidableEq α] (i j : α) :
+    DecidableRel (modSwap i j).r :=
   fun _ _ => Or.decidable
 
 theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈ s, f x ∈ s) {y : α}
@@ -108,7 +109,8 @@ theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Fintype { x 
   rfl
 #align equiv.perm.subtype_perm_of_fintype_apply Equiv.Perm.subtypePermOfFintype_apply
 
-@[simp]
+-- Porting note: dsimp can not prove this
+@[simp, nolint simpNF]
 theorem subtypePermOfFintype_one (p : α → Prop) [Fintype { x // p x }]
     (h : ∀ x, p x → p ((1 : Perm α) x)) : @subtypePermOfFintype α 1 p _ h = 1 :=
   Equiv.ext fun ⟨_, _⟩ => rfl
@@ -560,7 +562,7 @@ section SignType.sign
 
 variable [Fintype α]
 
-@[simp]
+--@[simp] porting note: simp can prove
 theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
   MonoidHom.map_mul sign f g
 #align equiv.perm.sign_mul Equiv.Perm.sign_mul
@@ -570,7 +572,7 @@ theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
   rw [← mul_def, sign_mul]
 #align equiv.perm.sign_trans Equiv.Perm.sign_trans
 
-@[simp]
+--@[simp] porting note: simp can prove
 theorem sign_one : sign (1 : Perm α) = 1 :=
   MonoidHom.map_one sign
 #align equiv.perm.sign_one Equiv.Perm.sign_one
@@ -580,7 +582,7 @@ theorem sign_refl : sign (Equiv.refl α) = 1 :=
   MonoidHom.map_one sign
 #align equiv.perm.sign_refl Equiv.Perm.sign_refl
 
-@[simp]
+--@[simp] porting note: simp can prove
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
   rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
 #align equiv.perm.sign_inv Equiv.Perm.sign_inv
