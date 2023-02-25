@@ -822,15 +822,15 @@ variable {f : δ →+ γ} (df : DenseInducing f)
 variable {φ : β →+ δ →+ G}
 
 -- mathport name: exprΦ
-local notation "Φ" => fun p : β × δ => φ p.1 p.2
+--local notation "Φ" => fun p : β × δ => φ p.1 p.2
 
-variable (hφ : Continuous Φ)
+variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x x' «expr ∈ » U₂) -/
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) :
-    ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂) (x') (_ : x' ∈ U₂), Φ (x' - x, y₁) ∈ W' := by
+    ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂) (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
   have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁)) (comap e Nx ×ᶠ comap e Nx) (𝓝 (0, y₁)) :=
@@ -840,12 +840,12 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) :
         (tendsto_const_nhds : Tendsto (fun p : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
     exact (this : _)
-  have lim2 : Tendsto Φ (𝓝 (0, y₁)) (𝓝 0) := by simpa using hφ.tendsto (0, y₁)
+  have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by simpa using hφ.tendsto (0, y₁)
   have lim := lim2.comp lim1
   rw [tendsto_prod_self_iff] at lim
   simp_rw [ball_mem_comm]
-  exact limUnder W' W'_nhd
-#align dense_inducing.extend_Z_bilin_aux dense_inducing.extend_Z_bilin_aux
+  exact lim W' W'_nhd
+#noalign dense_inducing.extend_Z_bilin_aux
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x x' «expr ∈ » U₁) -/
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (y y' «expr ∈ » V₁) -/
@@ -855,15 +855,15 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
     ∃ U ∈ comap e (𝓝 x₀),
       ∃ V ∈ comap f (𝓝 y₀),
         ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U),
-          ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V), Φ (x', y') - Φ (x, y) ∈ W' := by
+          ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V), (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
   let Nx := 𝓝 x₀
   let Ny := 𝓝 y₀
   let dp := DenseInducing.prod de df
   let ee := fun u : β × β => (e u.1, e u.2)
   let ff := fun u : δ × δ => (f u.1, f u.2)
-  have lim_φ : Filter.Tendsto Φ (𝓝 (0, 0)) (𝓝 0) := by simpa using hφ.tendsto (0, 0)
+  have lim_φ : Filter.Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, 0)) (𝓝 0) := by simpa using hφ.tendsto (0, 0)
   have lim_φ_sub_sub :
-    Tendsto (fun p : (β × β) × δ × δ => Φ (p.1.2 - p.1.1, p.2.2 - p.2.1))
+    Tendsto (fun p : (β × β) × δ × δ => (fun p : β × δ => φ p.1 p.2) (p.1.2 - p.1.1, p.2.2 - p.2.1))
       ((comap ee <| 𝓝 (x₀, x₀)) ×ᶠ (comap ff <| 𝓝 (y₀, y₀))) (𝓝 0) :=
     by
     have lim_sub_sub :
@@ -879,7 +879,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
     ∃ U₁ ∈ comap e (𝓝 x₀),
       ∃ V₁ ∈ comap f (𝓝 y₀),
         ∀ (x) (_ : x ∈ U₁) (x') (_ : x' ∈ U₁),
-          ∀ (y) (_ : y ∈ V₁) (y') (_ : y' ∈ V₁), Φ (x' - x, y' - y) ∈ W :=
+          ∀ (y) (_ : y ∈ V₁) (y') (_ : y' ∈ V₁), (fun p : β × δ => φ p.1 p.2) (x' - x, y' - y) ∈ W :=
     by
     have := tendsto_prod_iff.1 lim_φ_sub_sub W W_nhd
     repeat' rw [nhds_prod_eq, ← prod_comap_comap_eq] at this
@@ -895,7 +895,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
   obtain ⟨y₁, y₁_in⟩ : V₁.Nonempty := (df.comap_nhds_neBot _).nonempty_of_mem V₁_nhd
   have cont_flip : Continuous fun p : δ × β => φ.flip p.1 p.2 :=
     by
-    show Continuous (Φ ∘ Prod.swap)
+    show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
   rcases extend_Z_bilin_aux de df hφ W_nhd x₀ y₁ with ⟨U₂, U₂_nhd, HU⟩
   rcases extend_Z_bilin_aux df de cont_flip W_nhd y₀ x₁ with ⟨V₂, V₂_nhd, HV⟩
@@ -912,7 +912,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
   have h₃ := HV y yV₂ y' y'V₂
   have h₄ := H x₁ x₁_in x xU₁ y yV₁ y' y'V₁
   exact W4 h₁ h₂ h₃ h₄
-#align dense_inducing.extend_Z_bilin_key dense_inducing.extend_Z_bilin_key
+#noalign dense_inducing.extend_Z_bilin_key
 
 open DenseInducing
 
@@ -922,19 +922,18 @@ open DenseInducing
 /-- Bourbaki GT III.6.5 Theorem I:
 ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by continuity.
 Note: Bourbaki assumes that α and β are also complete Hausdorff, but this is not necessary. -/
-theorem extend_Z_bilin : Continuous (extend (de.prod df) Φ) := by
+theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ p.1 p.2)) := by
   refine' continuous_extend_of_cauchy _ _
   rintro ⟨x₀, y₀⟩
   constructor
-  · apply ne_bot.map
-    apply comap_ne_bot
+  · apply NeBot.map
+    apply comap_neBot
     intro U h
     rcases mem_closure_iff_nhds.1 ((de.prod df).dense (x₀, y₀)) U h with ⟨x, x_in, ⟨z, z_x⟩⟩
     exists z
-    sorry
-    --cc
+    aesop
   · suffices
-      map (fun p : (β × δ) × β × δ => Φ p.2 - Φ p.1)
+      map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 - (fun p : β × δ => φ p.1 p.2) p.1)
           (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))
             (𝓝 (x₀, y₀) ×ᶠ 𝓝 (x₀, y₀))) ≤
         𝓝 0
@@ -953,9 +952,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prod df) Φ) := by
     rw [mem_prod_same_iff]
     simp only [exists_prop]
     constructor
-    · change U' ∈ 𝓝 x₀ at U'_nhd
-      change V' ∈ 𝓝 y₀ at V'_nhd
-      have := prod_mem_prod U'_nhd V'_nhd
+    · have := prod_mem_prod U'_nhd V'_nhd
       tauto
     · intro p h'
       simp only [Set.mem_preimage, Set.prod_mk_mem_set_prod_eq] at h'
