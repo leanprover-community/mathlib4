@@ -923,24 +923,24 @@ theorem deleteEdges_spanningCoe_eq :
 #align simple_graph.subgraph.delete_edges_spanning_coe_eq SimpleGraph.Subgraph.deleteEdges_spanningCoe_eq
 
 theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
-    G'.coe.deleteEdges s = (G'.deleteEdges (Sym2.map coe '' s)).coe := by
+    G'.coe.deleteEdges s = (G'.deleteEdges (Sym2.map (↑) '' s)).coe := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
-  simp only [SimpleGraph.deleteEdges_adj, coe_Adj, Subtype.coe_mk, deleteEdges_adj, Set.mem_image,
-    not_exists, not_and, and_congr_right_iff]
-  intro h
+  simp only [SimpleGraph.deleteEdges_adj, coe_Adj, deleteEdges_adj, Set.mem_image, not_exists,
+    not_and, and_congr_right_iff]
+  intro
   constructor
   · intro hs
     refine' Sym2.ind _
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
-    simp only [Sym2.map_pair_eq, Subtype.coe_mk, Quotient.eq]
+    simp only [Sym2.map_pair_eq, Quotient.eq]
     contrapose!
-    rintro (_ | _) <;> simpa [Sym2.eq_swap]
+    rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
-    exact h' _ hs _
+    exact h' _ hs rfl
 #align simple_graph.subgraph.delete_edges_coe_eq SimpleGraph.Subgraph.deleteEdges_coe_eq
 
 theorem coe_deleteEdges_eq (s : Set (Sym2 V)) :
-    (G'.deleteEdges s).coe = G'.coe.deleteEdges (Sym2.map coe ⁻¹' s) := by
+    (G'.deleteEdges s).coe = G'.coe.deleteEdges (Sym2.map (↑) ⁻¹' s) := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
   simp
 #align simple_graph.subgraph.coe_delete_edges_eq SimpleGraph.Subgraph.coe_deleteEdges_eq
