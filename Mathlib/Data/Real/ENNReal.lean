@@ -1008,7 +1008,7 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   contrapose! h
   simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel h0, coe_one, one_mul]
     using mul_le_mul' (le_refl ↑a⁻¹) h
-#align ennreal.mul_left_strictMono ENNReal.mul_left_strictMono
+#align ennreal.mul_left_strict_mono ENNReal.mul_left_strictMono
 
 -- porting note: todo: generalize to `WithTop`
 theorem mul_eq_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
