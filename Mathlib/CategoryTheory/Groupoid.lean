@@ -17,7 +17,7 @@ import Mathlib.Combinatorics.Quiver.ConnectedComponent
 /-!
 # Groupoids
 
-We define `groupoid` as a typeclass extending `category`,
+We define `Groupoid` as a typeclass extending `category`,
 asserting that all morphisms have inverses.
 
 The instance `IsIso.ofGroupoid (f : X ⟶ Y) : IsIso f` means that you can then write
@@ -40,7 +40,7 @@ namespace CategoryTheory
 universe v v₂ u u₂
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
-/-- A `groupoid` is a category such that all morphisms are isomorphisms. -/
+/-- A `Groupoid` is a category such that all morphisms are isomorphisms. -/
 class Groupoid (obj : Type u) extends Category.{v} obj : Type max u (v + 1) where
   /-- The inverse morphism -/ 
   inv : ∀ {X Y : obj}, (X ⟶ Y) → (Y ⟶ X)
@@ -78,7 +78,7 @@ theorem Groupoid.inv_eq_inv (f : X ⟶ Y) : Groupoid.inv f = CategoryTheory.inv 
   IsIso.eq_inv_of_hom_inv_id <| Groupoid.comp_inv f
 #align category_theory.groupoid.inv_eq_inv CategoryTheory.Groupoid.inv_eq_inv
 
-/-- `groupoid.inv` is involutive. -/
+/-- `Groupoid.inv` is involutive. -/
 @[simps]
 def Groupoid.invEquiv : (X ⟶ Y) ≃ (Y ⟶ X) :=
   ⟨Groupoid.inv, Groupoid.inv, fun f => by simp, fun f => by simp⟩

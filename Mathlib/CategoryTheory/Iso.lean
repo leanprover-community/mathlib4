@@ -142,7 +142,7 @@ def refl (X : C) : X ≅ X where
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
-theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩ 
+theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 
 @[simp]
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
@@ -159,8 +159,9 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
 #align category_theory.iso.trans_hom CategoryTheory.Iso.trans_hom
 #align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
 
-instance : Trans (· ≅ ·) (· ≅ ·) ((·:C) ≅ ·) where 
-  trans := trans 
+@[simps]
+instance : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
+  trans := trans
 
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
