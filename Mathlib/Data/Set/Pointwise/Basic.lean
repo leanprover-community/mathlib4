@@ -414,11 +414,13 @@ theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
 #align set.singleton_mul_singleton Set.singleton_mul_singleton
 #align set.singleton_add_singleton Set.singleton_add_singleton
 
-@[to_additive] -- Porting note: no [mono]
+@[to_additive, mono]
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 #align set.mul_subset_mul Set.mul_subset_mul
 #align set.add_subset_add Set.add_subset_add
+
+attribute [mono] add_subset_add
 
 @[to_additive]
 theorem mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
@@ -437,9 +439,6 @@ theorem mul_subset_iff : s * t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x * y ∈ u :
   image2_subset_iff
 #align set.mul_subset_iff Set.mul_subset_iff
 #align set.add_subset_iff Set.add_subset_iff
-
--- Porting note: no [mono]
--- attribute [mono] add_subset_add
 
 @[to_additive]
 theorem union_mul : (s₁ ∪ s₂) * t = s₁ * t ∪ s₂ * t :=
@@ -671,11 +670,13 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
 #align set.singleton_div_singleton Set.singleton_div_singleton
 #align set.singleton_sub_singleton Set.singleton_sub_singleton
 
-@[to_additive] -- Porting note: no [mono]
+@[to_additive, mono]
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 #align set.div_subset_div Set.div_subset_div
 #align set.sub_subset_sub Set.sub_subset_sub
+
+attribute [mono] sub_subset_sub
 
 @[to_additive]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
@@ -694,9 +695,6 @@ theorem div_subset_iff : s / t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x / y ∈ u :
   image2_subset_iff
 #align set.div_subset_iff Set.div_subset_iff
 #align set.sub_subset_iff Set.sub_subset_iff
-
--- Porting note: no [mono]
--- attribute [mono] sub_subset_sub
 
 @[to_additive]
 theorem union_div : (s₁ ∪ s₂) / t = s₁ / t ∪ s₂ / t :=
