@@ -485,9 +485,11 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ 
   let f : Fin 2 → Ideal R := ![I, J]
   have hf : ∀ i j : Fin 2, i ≠ j → f i ⊔ f j = ⊤ := by
     intro i j h
-    fin_cases i <;> fin_cases j <;> try contradiction <;> simpa [sup_comm] using coprime
-      (Ideal.quotEquivOfEq (by simp [infᵢ, inf_comm])).trans <|
-        (Ideal.quotientInfRingEquivPiQuotient f hf).trans <| RingEquiv.piFinTwo fun i => R ⧸ f i
+    fin_cases i <;> fin_cases j <;> try contradiction
+    · assumption
+    · rwa [sup_comm]
+  (Ideal.quotEquivOfEq (by simp [infᵢ, inf_comm])).trans <|
+            (Ideal.quotientInfRingEquivPiQuotient f hf).trans <| RingEquiv.piFinTwo fun i => R ⧸ f i
 #align ideal.quotient_inf_equiv_quotient_prod Ideal.quotientInfEquivQuotientProd
 
 @[simp]
