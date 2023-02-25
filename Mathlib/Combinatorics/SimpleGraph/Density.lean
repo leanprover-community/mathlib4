@@ -227,7 +227,10 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   obtain rfl | ht₂' := t₂.eq_empty_or_nonempty
   · rw [Finset.card_empty, Nat.cast_zero] at ht₂
     simpa [edgeDensity, (nonpos_of_mul_nonpos_right ht₂ hδ₁).antisymm (Nat.cast_nonneg _)] using hδ'
-  have hr : 2 * δ - δ ^ 2 = 1 - (1 - δ) * (1 - δ) := by sorry -- Porting note: Originally `by ring`
+  have hr : 2 * δ - δ ^ 2 = 1 - (1 - δ) * (1 - δ) := by
+    -- Porting note: Originally `by ring`
+    rw [mul_sub_left_distrib, mul_one, sub_sub, sub_sub_cancel, mul_sub_right_distrib, one_mul,
+      two_mul, pow_two, add_sub_assoc]
   rw [hr]
   norm_cast
   refine'
