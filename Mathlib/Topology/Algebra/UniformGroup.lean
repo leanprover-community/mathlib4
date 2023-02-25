@@ -908,8 +908,6 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
   exact W4 h₁ h₂ h₃ h₄
 #noalign dense_inducing.extend_Z_bilin_key
 
-#exit
-
 open DenseInducing
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
