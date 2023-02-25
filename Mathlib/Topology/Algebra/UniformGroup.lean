@@ -138,7 +138,7 @@ theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : Uni
   | (n : ℕ) => by
     simp_rw [zpow_ofNat]
     exact hf.pow_const _
-  | -[n+1] => by
+  | Int.negSucc n => by
     simp_rw [zpow_negSucc]
     exact (hf.pow_const _).inv
 #align uniform_continuous.zpow_const UniformContinuous.zpow_const
