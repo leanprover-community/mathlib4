@@ -8,8 +8,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Basic
-import Mathbin.Data.Finset.Pairwise
+import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.Finset.Pairwise
 
 /-!
 # Graph cliques
@@ -54,8 +54,7 @@ theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
 #align simple_graph.is_clique_iff SimpleGraph.isClique_iff
 
 /-- A clique is a set of vertices whose induced graph is complete. -/
-theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ :=
-  by
+theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   rw [is_clique_iff]
   constructor
   · intro h
@@ -73,14 +72,12 @@ instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.Is
 
 variable {G H}
 
-theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s :=
-  by
+theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := by
   simp_rw [is_clique_iff]
   exact Set.Pairwise.mono' h
 #align simple_graph.is_clique.mono SimpleGraph.IsClique.mono
 
-theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t :=
-  by
+theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := by
   simp_rw [is_clique_iff]
   exact Set.Pairwise.mono h
 #align simple_graph.is_clique.subset SimpleGraph.IsClique.subset
@@ -118,15 +115,13 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
 
 variable {G H}
 
-theorem IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s :=
-  by
+theorem IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s := by
   simp_rw [is_n_clique_iff]
   exact And.imp_left (is_clique.mono h)
 #align simple_graph.is_n_clique.mono SimpleGraph.IsNClique.mono
 
 @[simp]
-theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n :=
-  by
+theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n := by
   rw [is_n_clique_iff, is_clique_bot_iff]
   refine' and_congr_left _
   rintro rfl
@@ -144,8 +139,7 @@ theorem is_3_clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj
 #align simple_graph.is_3_clique_triple_iff SimpleGraph.is_3_clique_triple_iff
 
 theorem is_3_clique_iff :
-    G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} :=
-  by
+    G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} := by
   refine' ⟨fun h => _, _⟩
   · obtain ⟨a, b, c, -, -, -, rfl⟩ := card_eq_three.1 h.card_eq
     refine' ⟨a, b, c, _⟩
@@ -175,8 +169,7 @@ theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n := fu
 #align simple_graph.is_n_clique.not_clique_free SimpleGraph.IsNClique.not_cliqueFree
 
 theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n)) ↪g G) :
-    ¬G.CliqueFree n :=
-  by
+    ¬G.CliqueFree n := by
   simp only [clique_free, is_n_clique_iff, is_clique_iff_induce_eq, not_forall, Classical.not_not]
   use finset.univ.map f.to_embedding
   simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true_iff]
@@ -192,8 +185,7 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
-    (⊤ : SimpleGraph (Fin n)) ↪g G :=
-  by
+    (⊤ : SimpleGraph (Fin n)) ↪g G := by
   simp only [clique_free, is_n_clique_iff, is_clique_iff_induce_eq, not_forall,
     Classical.not_not] at h
   obtain ⟨ha, hb⟩ := h.some_spec
@@ -223,15 +215,13 @@ theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGrap
   use (iso.complete_graph (Fintype.equivFin α)).symm.toEmbedding.trans f
 #align simple_graph.not_clique_free_card_of_top_embedding SimpleGraph.not_cliqueFree_card_of_top_embedding
 
-theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n :=
-  by
+theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
   rintro t ht
   rw [is_n_clique_bot_iff] at ht
   linarith
 #align simple_graph.clique_free_bot SimpleGraph.cliqueFree_bot
 
-theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n :=
-  by
+theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
   rintro hG s hs
   obtain ⟨t, hts, ht⟩ := s.exists_smaller_set _ (h.trans hs.card_eq.ge)
   exact hG _ ⟨hs.clique.subset hts, ht⟩
@@ -242,8 +232,7 @@ theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
 #align simple_graph.clique_free.anti SimpleGraph.CliqueFree.anti
 
 /-- See `simple_graph.clique_free_chromatic_number_succ` for a tighter bound. -/
-theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n :=
-  by
+theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
   refine' Nat.lt_le_antisymm hc _
   rw [clique_free_iff, not_isEmpty_iff] at h
