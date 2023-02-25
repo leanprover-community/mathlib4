@@ -30,7 +30,7 @@ we happily use the axiom of choice in mathlib,
 so there are convenience functions all depending on `HasLimit F`:
 * `limit F : C`, producing some limit object (of course all such are isomorphic)
 * `limit.π F j : limit F ⟶ F.obj j`, the morphisms out of the limit,
-* `limit.lift F c : c.X ⟶ limit F`, the universal morphism from any other `c : Cone F`, etc.
+* `limit.lift F c : c.pt ⟶ limit F`, the universal morphism from any other `c : Cone F`, etc.
 
 Key to using the `HasLimit` interface is that there is an `@[ext]` lemma stating that
 to check `f = g`, for `f g : Z ⟶ limit F`, it suffices to check `f ≫ limit.π F j = g ≫ limit.π F j`
@@ -149,7 +149,7 @@ def Limit.cone (F : J ⥤ C) [HasLimit F] : Cone F :=
 
 /-- An arbitrary choice of limit object of a functor. -/
 def limit (F : J ⥤ C) [HasLimit F] :=
-  (Limit.cone F).X
+  (Limit.cone F).pt
 #align category_theory.limits.limit CategoryTheory.Limits.limit
 
 /-- The projection from the limit object to a value of the functor. -/
@@ -158,7 +158,7 @@ def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
 #align category_theory.limits.limit.π CategoryTheory.Limits.limit.π
 
 @[simp]
-theorem limit.cone_x {F : J ⥤ C} [HasLimit F] : (Limit.cone F).X = limit F :=
+theorem limit.cone_x {F : J ⥤ C} [HasLimit F] : (Limit.cone F).pt = limit F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.limits.limit.cone_X CategoryTheory.Limits.limit.cone_x
@@ -180,7 +180,7 @@ def limit.isLimit (F : J ⥤ C) [HasLimit F] : IsLimit (Limit.cone F) :=
 #align category_theory.limits.limit.is_limit CategoryTheory.Limits.limit.isLimit
 
 /-- The morphism from the cone point of any other cone to the limit object. -/
-def limit.lift (F : J ⥤ C) [HasLimit F] (c : Cone F) : c.X ⟶ limit F :=
+def limit.lift (F : J ⥤ C) [HasLimit F] (c : Cone F) : c.pt ⟶ limit F :=
   (limit.isLimit F).lift c
 #align category_theory.limits.limit.lift CategoryTheory.Limits.limit.lift
 
@@ -240,13 +240,13 @@ theorem limit.conePointUniqueUpToIso_inv_comp {F : J ⥤ C} [HasLimit F] {c : Co
 #align category_theory.limits.limit.cone_point_unique_up_to_iso_inv_comp CategoryTheory.Limits.limit.conePointUniqueUpToIso_inv_comp
 
 theorem limit.existsUnique {F : J ⥤ C} [HasLimit F] (t : Cone F) :
-    ∃! l : t.X ⟶ limit F, ∀ j, l ≫ limit.π F j = t.π.app j :=
+    ∃! l : t.pt ⟶ limit F, ∀ j, l ≫ limit.π F j = t.π.app j :=
   (limit.isLimit F).existsUnique _
 #align category_theory.limits.limit.exists_unique CategoryTheory.Limits.limit.existsUnique
 
 /-- Given any other limit cone for `F`, the chosen `limit F` is isomorphic to the cone point.
 -/
-def limit.isoLimitCone {F : J ⥤ C} [HasLimit F] (t : LimitCone F) : limit F ≅ t.cone.X :=
+def limit.isoLimitCone {F : J ⥤ C} [HasLimit F] (t : LimitCone F) : limit F ≅ t.cone.pt :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit F) t.isLimit
 #align category_theory.limits.limit.iso_limit_cone CategoryTheory.Limits.limit.isoLimitCone
 
@@ -308,7 +308,7 @@ def limit.homIso' (F : J ⥤ C) [HasLimit F] (W : C) :
   (limit.isLimit F).homIso' W
 #align category_theory.limits.limit.hom_iso' CategoryTheory.Limits.limit.homIso'
 
-theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X ⟶ c.X) :
+theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X ⟶ c.pt) :
     limit.lift F (c.extend f) = f ≫ limit.lift F c := by aesop_cat
 #align category_theory.limits.limit.lift_extend CategoryTheory.Limits.limit.lift_extend
 
@@ -738,7 +738,7 @@ def Colimit.cocone (F : J ⥤ C) [HasColimit F] : Cocone F :=
 
 /-- An arbitrary choice of colimit object of a functor. -/
 def colimit (F : J ⥤ C) [HasColimit F] :=
-  (Colimit.cocone F).X
+  (Colimit.cocone F).pt
 #align category_theory.limits.colimit CategoryTheory.Limits.colimit
 
 /-- The coprojection from a value of the functor to the colimit object. -/
@@ -753,7 +753,7 @@ theorem colimit.cocone_ι {F : J ⥤ C} [HasColimit F] (j : J) :
 #align category_theory.limits.colimit.cocone_ι CategoryTheory.Limits.colimit.cocone_ι
 
 @[simp]
-theorem colimit.cocone_x {F : J ⥤ C} [HasColimit F] : (Colimit.cocone F).X = colimit F :=
+theorem colimit.cocone_x {F : J ⥤ C} [HasColimit F] : (Colimit.cocone F).pt = colimit F :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.limits.colimit.cocone_X CategoryTheory.Limits.colimit.cocone_x
@@ -770,7 +770,7 @@ def colimit.isColimit (F : J ⥤ C) [HasColimit F] : IsColimit (Colimit.cocone F
 #align category_theory.limits.colimit.is_colimit CategoryTheory.Limits.colimit.isColimit
 
 /-- The morphism from the colimit object to the cone point of any other cocone. -/
-def colimit.desc (F : J ⥤ C) [HasColimit F] (c : Cocone F) : colimit F ⟶ c.X :=
+def colimit.desc (F : J ⥤ C) [HasColimit F] (c : Cocone F) : colimit F ⟶ c.pt :=
   (colimit.isColimit F).desc c
 #align category_theory.limits.colimit.desc CategoryTheory.Limits.colimit.desc
 
@@ -841,7 +841,7 @@ theorem colimit.comp_coconePointUniqueUpToIso_inv {F : J ⥤ C} [HasColimit F] {
 #align category_theory.limits.colimit.comp_cocone_point_unique_up_to_iso_inv CategoryTheory.Limits.colimit.comp_coconePointUniqueUpToIso_inv
 
 theorem colimit.existsUnique {F : J ⥤ C} [HasColimit F] (t : Cocone F) :
-    ∃! d : colimit F ⟶ t.X, ∀ j, colimit.ι F j ≫ d = t.ι.app j :=
+    ∃! d : colimit F ⟶ t.pt, ∀ j, colimit.ι F j ≫ d = t.ι.app j :=
   (colimit.isColimit F).existsUnique _
 #align category_theory.limits.colimit.exists_unique CategoryTheory.Limits.colimit.existsUnique
 
@@ -849,7 +849,7 @@ theorem colimit.existsUnique {F : J ⥤ C} [HasColimit F] (t : Cocone F) :
 Given any other colimit cocone for `F`, the chosen `colimit F` is isomorphic to the cocone point.
 -/
 def colimit.isoColimitCocone {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) :
-    colimit F ≅ t.cocone.X :=
+    colimit F ≅ t.cocone.pt :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit F) t.isColimit
 #align category_theory.limits.colimit.iso_colimit_cocone CategoryTheory.Limits.colimit.isoColimitCocone
 
@@ -904,7 +904,7 @@ def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
   (colimit.isColimit F).homIso' W
 #align category_theory.limits.colimit.hom_iso' CategoryTheory.Limits.colimit.homIso'
 
-theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} (f : c.X ⟶ X) :
+theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
     colimit.desc F (c.extend f) = colimit.desc F c ≫ f := by ext1; rw [← Category.assoc]; simp
 #align category_theory.limits.colimit.desc_extend CategoryTheory.Limits.colimit.desc_extend
 
