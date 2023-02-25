@@ -27,19 +27,19 @@ are not required to make this definition.
 This notion of morphism should be useful for any category of non-unital algebras. The motivating
 application at the time it was introduced was to be able to state the adjunction property for
 magma algebras. These are non-unital, non-associative algebras obtained by applying the
-group-algebra construction except where we take a type carrying just `has_mul` instead of `group`.
+group-algebra construction except where we take a type carrying just `Mul` instead of `Group`.
 
 For a plausible future application, one could take the non-unital algebra of compactly-supported
 functions on a non-compact topological space. A proper map between a pair of such spaces
 (contravariantly) induces a morphism between their algebras of compactly-supported functions which
-will be a `non_unital_alg_hom`.
+will be a `NonUnitalAlgHom`.
 
-TODO: add `non_unital_alg_equiv` when needed.
+TODO: add `NonUnitalAlgEquiv` when needed.
 
 ## Main definitions
 
-  * `non_unital_alg_hom`
-  * `alg_hom.to_non_unital_alg_hom`
+  * `NonUnitalAlgHom`
+  * `AlgHom.toNonUnitalAlgHom`
 
 ## Tags
 
@@ -66,7 +66,7 @@ notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom R A B
 attribute [nolint docBlame] NonUnitalAlgHom.toDistribMulActionHom
 attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
-/-- `non_unital_alg_hom_class F R A B` asserts `F` is a type of bundled algebra homomorphisms
+/-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
 class NonUnitalAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
   (B : outParam (Type _)) [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
@@ -132,7 +132,8 @@ theorem toFun_eq_coe (f : A →ₙₐ[R] B) : f.toFun = ⇑f :=
 initialize_simps_projections NonUnitalAlgHom (toDistribMulActionHom_toMulActionHom_toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type _} [NonUnitalAlgHomClass F R A B] (f : F) : ⇑(f : A →ₙₐ[R] B) = f :=
+protected theorem coe_coe {F : Type _} [NonUnitalAlgHomClass F R A B] (f : F) :
+    ⇑(f : A →ₙₐ[R] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_coe NonUnitalAlgHom.coe_coe
 
@@ -302,7 +303,7 @@ theorem coe_inverse (f : A →ₙₐ[R] B) (g : B → A) (h₁ : Function.LeftIn
 
 /-! ### Operations on the product type
 
-Note that much of this is copied from [`linear_algebra/prod`](../../linear_algebra/prod). -/
+Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra/Prod). -/
 
 
 section Prod
@@ -422,7 +423,7 @@ variable {R A B} {_ : CommSemiring R} {_ : Semiring A} {_ : Semiring B} {_ : Alg
 instance (priority := 100) {F : Type _} [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smul := map_smul }
 
-/-- A unital morphism of algebras is a `non_unital_alg_hom`. -/
+/-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/
 @[coe]
 def toNonUnitalAlgHom (f : A →ₐ[R] B) : A →ₙₐ[R] B :=
   { f with map_smul' := map_smul f }
