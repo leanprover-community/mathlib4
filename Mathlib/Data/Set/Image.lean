@@ -36,11 +36,11 @@ set, sets, image, preimage, pre-image, range
 
 universe u v
 
-open Function
+open Function Set
 
 namespace Set
 
-variable {α β γ : Type _} {ι : Sort _}
+variable {α β γ : Type _} {ι ι' : Sort _}
 
 /-! ### Inverse image -/
 
@@ -778,20 +778,23 @@ theorem subset_range_iff_exists_image_eq {f : α → β} {s : Set β} : s ⊆ ra
   ⟨fun h => ⟨_, image_preimage_eq_iff.2 h⟩, fun ⟨_, ht⟩ => ht ▸ image_subset_range _ _⟩
 #align set.subset_range_iff_exists_image_eq Set.subset_range_iff_exists_image_eq
 
+theorem range_image (f : α → β) : range (image f) = 𝒫 range f :=
+  ext fun _ => subset_range_iff_exists_image_eq.symm
+#align set.range_image Set.range_image
+
 @[simp]
 theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
-    (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) :=
-  ⟨fun ⟨s, hsf, hps⟩ => ⟨f ⁻¹' s, (image_preimage_eq_of_subset hsf).symm ▸ hps⟩,
-   fun ⟨s, hs⟩ => ⟨f '' s, image_subset_range _ _, hs⟩⟩
+    (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) := by
+  rw [← exists_range_iff, range_image]; rfl
 #align set.exists_subset_range_and_iff Set.exists_subset_range_and_iff
 
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
 #align set.exists_subset_range_iff Set.exists_subset_range_iff
 
-theorem range_image (f : α → β) : range (image f) = 𝒫 range f :=
-  ext fun _ => subset_range_iff_exists_image_eq.symm
-#align set.range_image Set.range_image
+theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
+    (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
+  rw [← forall_range_iff, range_image]; rfl
 
 theorem preimage_subset_preimage_iff {s t : Set α} {f : β → α} (hs : s ⊆ range f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
@@ -1126,7 +1129,7 @@ theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f
 
 @[simp]
 theorem comp_rangeSplitting (f : α → β) :
-  f ∘ rangeSplitting f = (fun x : ↥(range f) => (x : β)) := by
+  f ∘ rangeSplitting f = (↑) := by
   ext
   simp only [Function.comp_apply]
   apply apply_rangeSplitting
@@ -1298,7 +1301,7 @@ theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective 
   apply subset_univ
 #align function.surjective.preimage_subset_preimage_iff Function.Surjective.preimage_subset_preimage_iff
 
-theorem Surjective.range_comp {ι' : Sort _} {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
+theorem Surjective.range_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 #align function.surjective.range_comp Function.Surjective.range_comp
@@ -1332,6 +1335,15 @@ theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s :
 
 end Function
 
+namespace EquivLike
+variable {E : Type _} [EquivLike E ι ι']
+
+@[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
+(EquivLike.surjective _).range_comp _
+#align equiv_like.range_comp EquivLike.range_comp
+
+end EquivLike
+
 /-! ### Image and preimage on subtypes -/
 
 
@@ -1342,8 +1354,6 @@ namespace Subtype
 -- and that these are syntactically the same.
 -- In mathlib3 we referred to this just as `coe`.
 -- We may want to change the spelling of some statements later.
-
-open Set
 
 variable {α : Type _}
 
@@ -1430,14 +1440,12 @@ theorem preimage_val_eq_preimage_val_iff (s t u : Set α) :
 
 theorem exists_set_subtype {t : Set α} (p : Set α → Prop) :
     (∃ s : Set t, p ((fun x : t => (x : α)) '' s)) ↔ ∃ s : Set α, s ⊆ t ∧ p s := by
-  constructor
-  · rintro ⟨s, hs⟩
-    refine' ⟨(fun x : t => (x : α)) '' s, _, hs⟩
-    convert image_subset_range (fun x : t => (x : α)) s
-    rw [range_coe]
-  rintro ⟨s, hs₁, hs₂⟩; refine' ⟨(fun x : t => (x : α)) ⁻¹' s, _⟩
-  rw [image_preimage_eq_of_subset]; exact hs₂; rw [range_coe]; exact hs₁
+  rw [← exists_subset_range_and_iff, range_coe]
 #align subtype.exists_set_subtype Subtype.exists_set_subtype
+
+theorem forall_set_subtype {t : Set α} (p : Set α → Prop) :
+    (∀ s : Set t, p ((fun x : t => (x : α)) '' s)) ↔ ∀ s : Set α, s ⊆ t → p s := by
+  rw [← forall_subset_range_iff, range_coe]
 
 theorem preimage_coe_nonempty {s t : Set α} :
   ((fun x : s => (x : α)) ⁻¹' t).Nonempty ↔ (s ∩ t).Nonempty :=

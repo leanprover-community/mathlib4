@@ -38,13 +38,11 @@ theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 #align pnat.nat_pred_add_one PNat.natPred_add_one
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 #align pnat.nat_pred_strict_mono PNat.natPred_strictMono
 
- -- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
 #align pnat.nat_pred_monotone PNat.natPred_monotone
@@ -72,13 +70,11 @@ end PNat
 
 namespace Nat
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
 #align nat.succ_pnat_strict_mono Nat.succPNat_strictMono
 
--- Porting note: not implemented yet.
--- @[mono]
+@[mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
 #align nat.succ_pnat_mono Nat.succPNat_mono
