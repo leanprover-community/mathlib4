@@ -625,13 +625,14 @@ variable {G}
 @[to_additive]
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
-  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G)(hV : V ∈ 𝓝 (1 : G)), V ∩ (H : Set G) = {1}
+  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1}
   exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
   haveI : SeparatedSpace G := separated_iff_t2.mpr ‹_›
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
   contrapose!
+  simp only [Set.mem_preimage, not_not]
   rintro (hyp : h' / h ∈ V)
   have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
   exact (eq_of_div_eq_one this).symm
@@ -723,10 +724,10 @@ theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : 
       have := group_separationRel x 1
       rw [div_one] at this
       rw [← this, h] at x_in
-      have x_in : x = 1 := x_in
       -- Porting note: was
       --change x = 1 at x_in
-      simp [x_in]
+      --simp [x_in]
+      rwa [mem_singleton_iff]
     · exact subset_closure
   · ext p
     cases' p with x y
@@ -790,7 +791,7 @@ theorem tendsto_div_comap_self (x₀ : α) :
     rw [← map_div e t.2 t.1]
   have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
     simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
-  simpa using de.tendsto_comap_nhds_nhds limUnder comm
+  simpa using de.tendsto_comap_nhds_nhds lim comm
 #align tendsto_div_comap_self tendsto_div_comap_self
 #align tendsto_sub_comap_self tendsto_sub_comap_self
 
