@@ -19,13 +19,13 @@ sub-relation of the adjacency relation of the simple graph.
 
 ## Main definitions
 
-* `Subgraph G` is the type of subgraphs of a `G : SimpleGraph`.
+* `Subgraph G` is the type of subgraphs of a `G : SimpleGraph V`.
 
 * `Subgraph.neighborSet`, `Subgraph.incidenceSet`, and `Subgraph.degree` are like their
   `SimpleGraph` counterparts, but they refer to vertices from `G` to avoid subtype coercions.
 
 * `Subgraph.coe` is the coercion from a `G' : Subgraph G` to a `SimpleGraph G'.verts`.
-  (This cannot be a `Coe` instance since the destination type depends on `G'`.)
+  (In Lean 3 this could not be a `Coe` instance since the destination type depends on `G'`.)
 
 * `Subgraph.IsSpanning` for whether a subgraph is a spanning subgraph and
   `Subgraph.IsInduced` for whether a subgraph is an induced subgraph.
@@ -146,8 +146,7 @@ theorem coe_adj_sub (G' : Subgraph G) (u v : G'.verts) (h : G'.coe.Adj u v) : G.
 
 -- Given `h : H.Adj u v`, then `h.coe : H.coe.Adj ⟨u, _⟩ ⟨v, _⟩`.
 protected theorem Adj.coe {H : G.Subgraph} {u v : V} (h : H.Adj u v) :
-    H.coe.Adj ⟨u, H.edge_vert h⟩ ⟨v, H.edge_vert h.symm⟩ :=
-  h
+    H.coe.Adj ⟨u, H.edge_vert h⟩ ⟨v, H.edge_vert h.symm⟩ := h
 #align simple_graph.subgraph.adj.coe SimpleGraph.Subgraph.Adj.coe
 
 /-- A subgraph is called a *spanning subgraph* if it contains all the vertices of `G`. -/
@@ -193,12 +192,10 @@ def IsInduced (G' : Subgraph G) : Prop :=
 #align simple_graph.subgraph.is_induced SimpleGraph.Subgraph.IsInduced
 
 /-- `H.support` is the set of vertices that form edges in the subgraph `H`. -/
-def support (H : Subgraph G) : Set V :=
-  Rel.dom H.Adj
+def support (H : Subgraph G) : Set V := Rel.dom H.Adj
 #align simple_graph.subgraph.support SimpleGraph.Subgraph.support
 
-theorem mem_support (H : Subgraph G) {v : V} : v ∈ H.support ↔ ∃ w, H.Adj v w :=
-  Iff.rfl
+theorem mem_support (H : Subgraph G) {v : V} : v ∈ H.support ↔ ∃ w, H.Adj v w := Iff.rfl
 #align simple_graph.subgraph.mem_support SimpleGraph.Subgraph.mem_support
 
 theorem support_subset_verts (H : Subgraph G) : H.support ⊆ H.verts :=
@@ -206,8 +203,7 @@ theorem support_subset_verts (H : Subgraph G) : H.support ⊆ H.verts :=
 #align simple_graph.subgraph.support_subset_verts SimpleGraph.Subgraph.support_subset_verts
 
 /-- `G'.neighborSet v` is the set of vertices adjacent to `v` in `G'`. -/
-def neighborSet (G' : Subgraph G) (v : V) : Set V :=
-  setOf (G'.Adj v)
+def neighborSet (G' : Subgraph G) (v : V) : Set V := {w | G'.Adj v w}
 #align simple_graph.subgraph.neighbor_set SimpleGraph.Subgraph.neighborSet
 
 theorem neighborSet_subset (G' : Subgraph G) (v : V) : G'.neighborSet v ⊆ G.neighborSet v :=
@@ -219,8 +215,7 @@ theorem neighborSet_subset_verts (G' : Subgraph G) (v : V) : G'.neighborSet v �
 #align simple_graph.subgraph.neighbor_set_subset_verts SimpleGraph.Subgraph.neighborSet_subset_verts
 
 @[simp]
-theorem mem_neighborSet (G' : Subgraph G) (v w : V) : w ∈ G'.neighborSet v ↔ G'.Adj v w :=
-  Iff.rfl
+theorem mem_neighborSet (G' : Subgraph G) (v w : V) : w ∈ G'.neighborSet v ↔ G'.Adj v w := Iff.rfl
 #align simple_graph.subgraph.mem_neighbor_set SimpleGraph.Subgraph.mem_neighborSet
 
 /-- A subgraph as a graph has equivalent neighbor sets. -/
@@ -233,23 +228,21 @@ def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) : G'.coe.neighborSet v 
 #align simple_graph.subgraph.coe_neighbor_set_equiv SimpleGraph.Subgraph.coeNeighborSetEquiv
 
 /-- The edge set of `G'` consists of a subset of edges of `G`. -/
-def edgeSet (G' : Subgraph G) : Set (Sym2 V) :=
-  Sym2.fromRel G'.symm
+def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
 #align simple_graph.subgraph.edge_set SimpleGraph.Subgraph.edgeSet
 
 theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ edgeSetEmbedding V G :=
-  Quotient.ind' (fun _ ↦ G'.adj_sub)
+  Sym2.ind (fun _ _ ↦ G'.adj_sub)
 #align simple_graph.subgraph.edge_set_subset SimpleGraph.Subgraph.edgeSet_subset
 
 @[simp]
-theorem mem_edgeSet {G' : Subgraph G} {v w : V} : ⟦(v, w)⟧ ∈ G'.edgeSet ↔ G'.Adj v w :=
-  Iff.rfl
+theorem mem_edgeSet {G' : Subgraph G} {v w : V} : ⟦(v, w)⟧ ∈ G'.edgeSet ↔ G'.Adj v w := Iff.rfl
 #align simple_graph.subgraph.mem_edge_set SimpleGraph.Subgraph.mem_edgeSet
 
 theorem mem_verts_if_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
   revert hv
-  refine' Quotient.ind' (fun e he ↦ _) e he
+  refine' Sym2.ind (fun v w he ↦ _) e he
   intro hv
   rcases Sym2.mem_iff.mp hv with (rfl | rfl)
   · exact G'.edge_vert he
@@ -257,8 +250,7 @@ theorem mem_verts_if_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈
 #align simple_graph.subgraph.mem_verts_if_mem_edge SimpleGraph.Subgraph.mem_verts_if_mem_edge
 
 /-- The `incidenceSet` is the set of edges incident to a given vertex. -/
-def incidenceSet (G' : Subgraph G) (v : V) : Set (Sym2 V) :=
-  { e ∈ G'.edgeSet | v ∈ e }
+def incidenceSet (G' : Subgraph G) (v : V) : Set (Sym2 V) := {e ∈ G'.edgeSet | v ∈ e}
 #align simple_graph.subgraph.incidence_set SimpleGraph.Subgraph.incidenceSet
 
 theorem incidenceSet_subset_incidenceSet (G' : Subgraph G) (v : V) :
@@ -272,16 +264,15 @@ theorem incidenceSet_subset (G' : Subgraph G) (v : V) : G'.incidenceSet v ⊆ G'
 
 /-- Give a vertex as an element of the subgraph's vertex type. -/
 @[reducible]
-def vert (G' : Subgraph G) (v : V) (h : v ∈ G'.verts) : G'.verts :=
-  ⟨v, h⟩
+def vert (G' : Subgraph G) (v : V) (h : v ∈ G'.verts) : G'.verts := ⟨v, h⟩
 #align simple_graph.subgraph.vert SimpleGraph.Subgraph.vert
 
 /--
 Create an equal copy of a subgraph (see `copy_eq`) with possibly different definitional equalities.
 See Note [range copy pattern].
 -/
-def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts) (adj' : V → V → Prop)
-    (hadj : adj' = G'.Adj) : Subgraph G where
+def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
+    (adj' : V → V → Prop) (hadj : adj' = G'.Adj) : Subgraph G where
   verts := V''
   Adj := adj'
   adj_sub := hadj.symm ▸ G'.adj_sub
@@ -289,8 +280,8 @@ def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts) (adj' : V → V �
   symm := hadj.symm ▸ G'.symm
 #align simple_graph.subgraph.copy SimpleGraph.Subgraph.copy
 
-theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts) (adj' : V → V → Prop)
-    (hadj : adj' = G'.Adj) : G'.copy V'' hV adj' hadj = G' :=
+theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
+    (adj' : V → V → Prop) (hadj : adj' = G'.Adj) : G'.copy V'' hV adj' hadj = G' :=
   Subgraph.ext _ _ hV hadj
 #align simple_graph.subgraph.copy_eq SimpleGraph.Subgraph.copy_eq
 
@@ -362,29 +353,24 @@ instance : BoundedOrder (Subgraph G) where
   bot_le _ := ⟨Set.empty_subset _, fun _ _ ↦ False.elim⟩
 
 @[simps]
-instance subgraphInhabited : Inhabited (Subgraph G) :=
-  ⟨⊥⟩
+instance subgraphInhabited : Inhabited (Subgraph G) := ⟨⊥⟩
 #align simple_graph.subgraph.subgraph_inhabited SimpleGraph.Subgraph.subgraphInhabited
 
 -- TODO simp lemmas for the other lattice operations on subgraphs
 @[simp]
-theorem top_verts : (⊤ : Subgraph G).verts = Set.univ :=
-  rfl
+theorem top_verts : (⊤ : Subgraph G).verts = Set.univ := rfl
 #align simple_graph.subgraph.top_verts SimpleGraph.Subgraph.top_verts
 
 @[simp]
-theorem top_adj_iff {v w : V} : (⊤ : Subgraph G).Adj v w ↔ G.Adj v w :=
-  Iff.rfl
+theorem top_adj_iff {v w : V} : (⊤ : Subgraph G).Adj v w ↔ G.Adj v w := Iff.rfl
 #align simple_graph.subgraph.top_adj_iff SimpleGraph.Subgraph.top_adj_iff
 
 @[simp]
-theorem bot_verts : (⊥ : Subgraph G).verts = ∅ :=
-  rfl
+theorem bot_verts : (⊥ : Subgraph G).verts = ∅ := rfl
 #align simple_graph.subgraph.bot_verts SimpleGraph.Subgraph.bot_verts
 
 @[simp]
-theorem not_bot_adj {v w : V} : ¬(⊥ : Subgraph G).Adj v w :=
-  not_false
+theorem not_bot_adj {v w : V} : ¬(⊥ : Subgraph G).Adj v w := not_false
 #align simple_graph.subgraph.not_bot_adj SimpleGraph.Subgraph.not_bot_adj
 
 @[simp]
@@ -398,13 +384,11 @@ theorem sup_adj {H₁ H₂ : Subgraph G} {v w : V} : (H₁ ⊔ H₂).Adj v w ↔
 #align simple_graph.subgraph.sup_adj SimpleGraph.Subgraph.sup_adj
 
 @[simp]
-theorem verts_sup {H H' : G.Subgraph} : (H ⊔ H').verts = H.verts ∪ H'.verts :=
-  rfl
+theorem verts_sup {H H' : G.Subgraph} : (H ⊔ H').verts = H.verts ∪ H'.verts := rfl
 #align simple_graph.subgraph.verts_sup SimpleGraph.Subgraph.verts_sup
 
 @[simp]
-theorem verts_inf {H H' : G.Subgraph} : (H ⊓ H').verts = H.verts ∩ H'.verts :=
-  rfl
+theorem verts_inf {H H' : G.Subgraph} : (H ⊓ H').verts = H.verts ∩ H'.verts := rfl
 #align simple_graph.subgraph.verts_inf SimpleGraph.Subgraph.verts_inf
 
 theorem neighborSet_sup {H H' : G.Subgraph} (v : V) :
@@ -420,8 +404,7 @@ theorem neighborSet_inf {H H' : G.Subgraph} (v : V) :
 #align simple_graph.subgraph.neighbor_set_inf SimpleGraph.Subgraph.neighborSet_inf
 
 @[simp]
-theorem edgeSet_top : (⊤ : Subgraph G).edgeSet = edgeSetEmbedding V G :=
-  rfl
+theorem edgeSet_top : (⊤ : Subgraph G).edgeSet = edgeSetEmbedding V G := rfl
 #align simple_graph.subgraph.edge_set_top SimpleGraph.Subgraph.edgeSet_top
 
 @[simp]
@@ -440,13 +423,11 @@ theorem edgeSet_sup {H₁ H₂ : Subgraph G} : (H₁ ⊔ H₂).edgeSet = H₁.ed
 #align simple_graph.subgraph.edge_set_sup SimpleGraph.Subgraph.edgeSet_sup
 
 @[simp]
-theorem spanningCoe_top : (⊤ : Subgraph G).spanningCoe = G :=
-  rfl
+theorem spanningCoe_top : (⊤ : Subgraph G).spanningCoe = G := rfl
 #align simple_graph.subgraph.spanning_coe_top SimpleGraph.Subgraph.spanningCoe_top
 
 @[simp]
-theorem spanningCoe_bot : (⊥ : Subgraph G).spanningCoe = ⊥ :=
-  rfl
+theorem spanningCoe_bot : (⊥ : Subgraph G).spanningCoe = ⊥ := rfl
 #align simple_graph.subgraph.spanning_coe_bot SimpleGraph.Subgraph.spanningCoe_bot
 
 /-- Turn a subgraph of a `SimpleGraph` into a member of its subgraph type. -/
@@ -688,7 +669,8 @@ theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)
     [Fintype (G'.spanningCoe.neighborSet v)] : G'.spanningCoe.degree v = G'.degree v := by
   rw [← card_neighborSet_eq_degree, Subgraph.degree]
   congr
-  simp only [eq_iff_true_of_subsingleton]
+  -- Porting note: congr doesn't do subsingleton elimination
+  apply Subsingleton.elim
 #align simple_graph.subgraph.degree_spanning_coe SimpleGraph.Subgraph.degree_spanningCoe
 
 theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
