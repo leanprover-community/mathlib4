@@ -33,7 +33,7 @@ group naturally induces a uniform structure.
 
 * extension of ℤ-bilinear maps to complete groups (useful for ring completions)
 
-* `quotient_group.complete_space` and `quotient_add_group.complete_space` guarantee that quotients
+* `QuotientGroup.completeSpace` and `QuotientAddGroup.completeSpace` guarantee that quotients
   of first countable topological groups by normal subgroups are themselves complete. In particular,
   the quotient of a Banach space by a subspace is complete.
 -/
@@ -389,12 +389,12 @@ theorem uniformContinuous_of_tendsto_one {hom : Type _} [UniformSpace β] [Group
 #align uniform_continuous_of_tendsto_one uniformContinuous_of_tendsto_one
 #align uniform_continuous_of_tendsto_zero uniformContinuous_of_tendsto_zero
 
-/-- A group homomorphism (a bundled morphism of a type that implements `monoid_hom_class`) between
+/-- A group homomorphism (a bundled morphism of a type that implements `MonoidHomClass`) between
 two uniform groups is uniformly continuous provided that it is continuous at one. See also
-`continuous_of_continuous_at_one`. -/
+`continuous_of_continuousAt_one`. -/
 @[to_additive "An additive group homomorphism (a bundled morphism of a type that implements
-`add_monoid_hom_class`) between two uniform additive groups is uniformly continuous provided that it
-is continuous at zero. See also `continuous_of_continuous_at_zero`."]
+`AddMonoidHomClass`) between two uniform additive groups is uniformly continuous provided that it
+is continuous at zero. See also `continuous_of_continuousAt_zero`."]
 theorem uniformContinuous_of_continuousAt_one {hom : Type _} [UniformSpace β] [Group β]
     [UniformGroup β] [MonoidHomClass hom α β] (f : hom) (hf : ContinuousAt f 1) :
     UniformContinuous f :=
@@ -544,16 +544,16 @@ variable (G : Type _) [Group G] [TopologicalSpace G] [TopologicalGroup G]
 /-- The right uniformity on a topological group (as opposed to the left uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
-`uniform_group` structure. Two important special cases where they _do_ coincide are for
+`UniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `topological_comm_group_is_uniform`) and for compact groups (see
-`topological_group_is_uniform_of_compact_space`). -/
+`topologicalGroup_is_uniform_of_compactSpace`). -/
 @[to_additive "The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
-`uniform_add_group` structure. Two important special cases where they _do_ coincide are for
+`UniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `topological_add_comm_group_is_uniform`) and for compact
-additive groups (see `topological_add_comm_group_is_uniform_of_compact_space`)."]
+additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
 def TopologicalGroup.toUniformSpace : UniformSpace G
     where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
@@ -824,14 +824,10 @@ variable {f : δ →+ γ} (df : DenseInducing f)
 
 variable {φ : β →+ δ →+ G}
 
--- mathport name: exprΦ
---local notation "Φ" => fun p : β × δ => φ p.1 p.2
-
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x x' «expr ∈ » U₂) -/
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) :
     ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂) (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
@@ -910,9 +906,6 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
 
 open DenseInducing
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Bourbaki GT III.6.5 Theorem I:
 ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by continuity.
 Note: Bourbaki assumes that α and β are also complete Hausdorff, but this is not necessary. -/
@@ -952,6 +945,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ
       simp only [Set.mem_preimage, Set.prod_mk_mem_set_prod_eq] at h'
       rcases p with ⟨⟨x, y⟩, ⟨x', y'⟩⟩
       apply h <;> tauto
+set_option linter.uppercaseLean3 false in
 #align dense_inducing.extend_Z_bilin DenseInducing.extend_Z_bilin
 
 end DenseInducing
@@ -965,18 +959,18 @@ open TopologicalSpace Classical
 /-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
 is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
-Because a topological group is not equipped with a `uniform_space` instance by default, we must
-explicitly provide it in order to consider completeness. See `quotient_group.complete_space` for a
+Because a topological group is not equipped with a `UniformSpace` instance by default, we must
+explicitly provide it in order to consider completeness. See `QuotientGroup.completeSpace` for a
 version in which `G` is already equipped with a uniform structure. -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable topological additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
-Because an additive topological group is not equipped with a `uniform_space` instance by default,
+Because an additive topological group is not equipped with a `UniformSpace` instance by default,
 we must explicitly provide it in order to consider completeness. See
-`quotient_add_group.complete_space` for a version in which `G` is already equipped with a uniform
+`QuotientAddGroup.completeSpace` for a version in which `G` is already equipped with a uniform
 structure."]
-instance QuotientGroup.complete_space' (G : Type u) [Group G] [TopologicalSpace G]
+instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
     [@CompleteSpace G (TopologicalGroup.toUniformSpace G)] :
     @CompleteSpace (G ⧸ N) (TopologicalGroup.toUniformSpace (G ⧸ N)) := by
@@ -1056,26 +1050,26 @@ instance QuotientGroup.complete_space' (G : Type u) [Group G] [TopologicalSpace 
         (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop _⟩
   convert ((continuous_coinduced_rng : Continuous (coe : G → G ⧸ N)).Tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
-#align quotient_group.complete_space' QuotientGroup.complete_space'
-#align quotient_add_group.complete_space' QuotientAddGroup.complete_space'
+#align quotient_group.complete_space' QuotientGroup.completeSpace'
+#align quotient_add_group.complete_space' QuotientAddGroup.completeSpace'
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
-is itself complete. In constrast to `quotient_group.complete_space'`, in this version `G` is
+is itself complete. In constrast to `QuotientGroup.completeSpace'`, in this version `G` is
 already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `topological_group.to_uniform_space`.
+uniform structure, so it is still provided manually via `TopologicalGroup.to_uniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
 quotient obtained via other means.  -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. In constrast to `quotient_add_group.complete_space'`, in this version
+subspaces are complete. In constrast to `QuotientAddGroup.completeSpace'`, in this version
 `G` is already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `topological_add_group.to_uniform_space`.
+uniform structure, so it is still provided manually via `TopologicalAddGroup.to_uniformSpace`.
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here."]
