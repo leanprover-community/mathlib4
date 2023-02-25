@@ -425,6 +425,7 @@ theorem edgeDensity_comm (s t : Finset α) : G.edgeDensity s t = G.edgeDensity t
 
 end SimpleGraph
 
+/- Porting note: Commented out `Tactic` namespace.
 namespace Tactic
 
 open Positivity
@@ -445,3 +446,4 @@ unsafe def positivity_edge_density : expr → tactic strictness
 #align tactic.positivity_edge_density Tactic.positivity_edge_density
 
 end Tactic
+-/
