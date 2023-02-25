@@ -8,10 +8,10 @@ Authors: Johan Commelin, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.StructuredArrow
-import Mathbin.CategoryTheory.Punit
-import Mathbin.CategoryTheory.Functor.ReflectsIsomorphisms
-import Mathbin.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Over and under categories
@@ -224,8 +224,7 @@ If `k` is a monomorphism, then `k.left` is a monomorphism. In other words, `over
 monomorphisms.
 The converse of `category_theory.over.mono_of_mono_left`.
 -/
-instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left :=
-  by
+instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left := by
   refine' ⟨fun (Y : T) l m a => _⟩
   let l' : mk (m ≫ f.hom) ⟶ f :=
     hom_mk l
@@ -483,8 +482,7 @@ If `k` is a epimorphism, then `k.right` is a epimorphism. In other words, `under
 epimorphisms.
 The converse of `category_theory.under.epi_of_epi_right`.
 -/
-instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
-  by
+instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
   refine' ⟨fun (Y : T) l m a => _⟩
   let l' : g ⟶ mk (g.hom ≫ m) :=
     hom_mk l
