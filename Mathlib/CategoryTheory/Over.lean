@@ -114,6 +114,9 @@ def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by 
   CostructuredArrow.homMk f w
 #align category_theory.over.hom_mk CategoryTheory.Over.homMk
 
+-- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
+attribute [-simp, nolint simpNF] homMk_right_down_down
+
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
@@ -122,6 +125,9 @@ def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom
     f ≅ g :=
   CostructuredArrow.isoMk hl hw
 #align category_theory.over.iso_mk CategoryTheory.Over.isoMk
+
+-- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
+attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
 section
 
@@ -359,9 +365,11 @@ def mk {X Y : T} (f : X ⟶ Y) : Under X :=
     commutative triangle. -/
 @[simps!]
 def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by aesop_cat) : U ⟶ V :=
--- def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom) : U ⟶ V :=
   StructuredArrow.homMk f w
 #align category_theory.under.hom_mk CategoryTheory.Under.homMk
+
+-- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
+attribute [-simp, nolint simpNF] homMk_left_down_down
 
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
@@ -488,10 +496,9 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   refine' ⟨fun { Y : T } l m a => _⟩
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc]) 
+  -- Porting note: add type ascription here to `homMk m`
   suffices l' = (homMk m  : g ⟶  mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
-  rw [← cancel_epi k]
-  ext
-  apply a
+  rw [← cancel_epi k]; ext; apply a
 #align category_theory.under.epi_right_of_epi CategoryTheory.Under.epi_right_of_epi
 
 section
@@ -500,8 +507,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- A functor `F : T ⥤ D` induces a functor `under X ⥤ under (F.obj X)` in the obvious way. -/
 @[simps]
-def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X)
-    where
+def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Under.homMk (F.map f.right) (by aesop_cat; erw [← F.map_comp, w])
 #align category_theory.under.post CategoryTheory.Under.post
