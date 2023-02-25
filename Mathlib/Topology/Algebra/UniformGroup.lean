@@ -19,16 +19,16 @@ import Mathlib.Tactic.Abel
 # Uniform structure on topological groups
 
 This file defines uniform groups and its additive counterpart. These typeclasses should be
-preferred over using `[topological_space α] [topological_group α]` since every topological
+preferred over using `[TopologicalSpace α] [TopologicalGroup α]` since every topological
 group naturally induces a uniform structure.
 
 ## Main declarations
-* `uniform_group` and `uniform_add_group`: Multiplicative and additive uniform groups, that
+* `UniformGroup` and `UniformAddGroup`: Multiplicative and additive uniform groups, that
   i.e., groups with uniformly continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`.
 
 ## Main results
 
-* `topological_add_group.to_uniform_space` and `topological_add_comm_group_is_uniform` can be used
+* `TopologicalAddGroup.to_uniformSpace` and `topological_add_comm_group_is_uniform` can be used
   to construct a canonical uniformity for a topological add group.
 
 * extension of ℤ-bilinear maps to complete groups (useful for ring completions)
@@ -840,7 +840,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) :
     by
     have :=
       Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
-        (tendsto_const_nhds : Tendsto (fun p : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
+        (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
     exact (this : _)
   have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by simpa using hφ.tendsto (0, y₁)
@@ -850,18 +850,11 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) :
   exact lim W' W'_nhd
 #noalign dense_inducing.extend_Z_bilin_aux
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x x' «expr ∈ » U₁) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (y y' «expr ∈ » V₁) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x x' «expr ∈ » U) -/
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (y y' «expr ∈ » V) -/
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
     ∃ U ∈ comap e (𝓝 x₀),
       ∃ V ∈ comap f (𝓝 y₀),
         ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U),
           ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V), (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
-  let Nx := 𝓝 x₀
-  let Ny := 𝓝 y₀
-  let dp := DenseInducing.prod de df
   let ee := fun u : β × β => (e u.1, e u.2)
   let ff := fun u : δ × δ => (f u.1, f u.2)
   have lim_φ : Filter.Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, 0)) (𝓝 0) := by simpa using hφ.tendsto (0, 0)
@@ -884,10 +877,8 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
         ∀ (x) (_ : x ∈ U₁) (x') (_ : x' ∈ U₁),
           ∀ (y) (_ : y ∈ V₁) (y') (_ : y' ∈ V₁), (fun p : β × δ => φ p.1 p.2) (x' - x, y' - y) ∈ W :=
     by
-    have := tendsto_prod_iff.1 lim_φ_sub_sub W W_nhd
-    repeat' rw [nhds_prod_eq, ← prod_comap_comap_eq] at this
-    rcases this with ⟨U, U_in, V, V_in, H⟩
-    rw [mem_prod_same_iff] at U_in V_in
+    rcases tendsto_prod_iff.1 lim_φ_sub_sub W W_nhd with ⟨U, U_in, V, V_in, H⟩
+    rw [nhds_prod_eq, ← prod_comap_comap_eq, mem_prod_same_iff] at U_in V_in
     rcases U_in with ⟨U₁, U₁_in, HU₁⟩
     rcases V_in with ⟨V₁, V₁_in, HV₁⟩
     exists U₁, U₁_in, V₁, V₁_in
@@ -900,8 +891,8 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
     by
     show Continuous ((fun p : β × δ => φ p.1 p.2) ∘ Prod.swap)
     exact hφ.comp continuous_swap
-  rcases extend_Z_bilin_aux de df hφ W_nhd x₀ y₁ with ⟨U₂, U₂_nhd, HU⟩
-  rcases extend_Z_bilin_aux df de cont_flip W_nhd y₀ x₁ with ⟨V₂, V₂_nhd, HV⟩
+  rcases extend_Z_bilin_aux de hφ W_nhd x₀ y₁ with ⟨U₂, U₂_nhd, HU⟩
+  rcases extend_Z_bilin_aux df cont_flip W_nhd y₀ x₁ with ⟨V₂, V₂_nhd, HV⟩
   exists U₁ ∩ U₂, inter_mem U₁_nhd U₂_nhd, V₁ ∩ V₂, inter_mem V₁_nhd V₂_nhd
   rintro x ⟨xU₁, xU₂⟩ x' ⟨x'U₁, x'U₂⟩ y ⟨yV₁, yV₂⟩ y' ⟨y'V₁, y'V₂⟩
   have key_formula :
@@ -916,6 +907,8 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
   have h₄ := H x₁ x₁_in x xU₁ y yV₁ y' y'V₁
   exact W4 h₁ h₂ h₃ h₄
 #noalign dense_inducing.extend_Z_bilin_key
+
+#exit
 
 open DenseInducing
 
