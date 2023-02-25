@@ -21,7 +21,7 @@ The main definition of this file is `Equiv.Perm.sign`, associating a `ℤˣ` sig
 permutation.
 
 This file also contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, building on top
-of those in `data/Equiv/basic` and other files in `group_theory/perm/*`.
+of those in `Data/Equiv/Basic` and other files in `GroupTheory/Perm/*`.
 
 -/
 
@@ -40,9 +40,9 @@ example : orderOf (-1 : ℤˣ) = 2 :=
 
 namespace Equiv.Perm
 
-/-- `mod_swap i j` contains permutations up to swapping `i` and `j`.
+/-- `modSwap i j` contains permutations up to swapping `i` and `j`.
 
-We use this to partition permutations in `matrix.det_zero_of_row_eq`, such that each partition
+We use this to partition permutations in `Matrix.det_zero_of_row_eq`, such that each partition
 sums up to `0`.
 -/
 def modSwap [DecidableEq α] (i j : α) : Setoid (Perm α) :=
@@ -213,7 +213,7 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.coprime n (orderOf
 
 end Fintype
 
-/-- Given a list `l : List α` and a permutation `f : perm α` such that the nonfixed points of `f`
+/-- Given a list `l : List α` and a permutation `f : Perm α` such that the nonfixed points of `f`
   are in `l`, recursively factors `f` as a product of transpositions. -/
 def swapFactorsAux :
     ∀ (l : List α) (f : Perm α),
@@ -239,9 +239,9 @@ def swapFactorsAux :
         fun {g} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
 #align equiv.perm.swap_factors_aux Equiv.Perm.swapFactorsAux
 
-/-- `swap_factors` represents a permutation as a product of a list of transpositions.
+/-- `swapFactors` represents a permutation as a product of a list of transpositions.
 The representation is non unique and depends on the linear order structure.
-For types without linear order `trunc_swap_factors` can be used. -/
+For types without linear order `truncSwapFactors` can be used. -/
 def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
     { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
   swapFactorsAux ((@univ α _).sort (· ≤ ·)) f fun {_ _} => (mem_sort _).2 (mem_univ _)
@@ -315,7 +315,7 @@ theorem mem_finPairsLT {n : ℕ} {a : Σ_ : Fin n, Fin n} : a ∈ finPairsLT n �
     mem_sigma]
 #align equiv.perm.mem_fin_pairs_lt Equiv.Perm.mem_finPairsLT
 
-/-- `sign_aux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
+/-- `signAux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
   pairs `(x₁, x₂)` such that `x₂ < x₁` but `σ x₁ ≤ σ x₂` -/
 def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
   ∏ x in finPairsLT n, if a x.1 ≤ a x.2 then -1 else 1
@@ -328,7 +328,7 @@ theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
   exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_le
 #align equiv.perm.sign_aux_one Equiv.Perm.signAux_one
 
-/-- `sign_bij_aux f ⟨a, b⟩` returns the pair consisting of `f a` and `f b` in decreasing order. -/
+/-- `signBijAux f ⟨a, b⟩` returns the pair consisting of `f a` and `f b` in decreasing order. -/
 def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ_ : Fin n, Fin n) : Σ_ : Fin n, Fin n :=
   if _ : f a.2 < f a.1 then ⟨f a.1, f a.2⟩ else ⟨f a.2, f a.1⟩
 #align equiv.perm.sign_bij_aux Equiv.Perm.signBijAux
@@ -455,8 +455,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
       rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_le]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
       have lt : 1 < a₁ := le.trans_lt ha₁
-      have h01 : Equiv.swap (0 : Fin (n + 2)) 1 1 = 0 := by simp
-      -- TODO
+      have h01 : Equiv.swap (0 : Fin (n + 2)) 1 1 = 0 := by simp only [swap_apply_right]
       rcases le.eq_or_lt with (rfl | lt')
       · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, if_neg H.not_le]
       · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
@@ -483,8 +482,8 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (sw
       (isConj_swap hxy (by exact of_decide_eq_true rfl))
 #align equiv.perm.sign_aux_swap Equiv.Perm.signAux_swap
 
-/-- When the list `l : List α` contains all nonfixed points of the permutation `f : perm α`,
-  `sign_aux2 l f` recursively calculates the sign of `f`. -/
+/-- When the list `l : List α` contains all nonfixed points of the permutation `f : Perm α`,
+  `signAux2 l f` recursively calculates the sign of `f`. -/
 def signAux2 : List α → Perm α → ℤˣ
   | [], _ => 1
   | x::l, f => if x = f x then signAux2 l f else -signAux2 l (swap x (f x) * f)
@@ -521,8 +520,8 @@ theorem signAux_eq_signAux2 {n : ℕ} :
       simp only [neg_neg, one_mul, neg_mul]
 #align equiv.perm.sign_aux_eq_sign_aux2 Equiv.Perm.signAux_eq_signAux2
 
-/-- When the multiset `s : Multiset α` contains all nonfixed points of the permutation `f : perm α`,
-  `sign_aux2 f _` recursively calculates the sign of `f`. -/
+/-- When the multiset `s : Multiset α` contains all nonfixed points of the permutation `f : Perm α`,
+  `signAux2 f _` recursively calculates the sign of `f`. -/
 def signAux3 [Fintype α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) → ℤˣ :=
   Quotient.hrecOn s (fun l _ => signAux2 l f)
     (Trunc.induction_on (Fintype.truncEquivFin α) fun e l₁ l₂ h =>
@@ -553,7 +552,7 @@ theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs
 
 /-- `SignType.sign` of a permutation returns the signature or parity of a permutation, `1` for even
 permutations, `-1` for odd permutations. It is the unique surjective group homomorphism from
-`perm α` to the group with two elements.-/
+`Perm α` to the group with two elements.-/
 def sign [Fintype α] : Perm α →* ℤˣ :=
   MonoidHom.mk' (fun f => signAux3 f mem_univ) fun f g => (signAux3_mul_and_swap f g _ mem_univ).1
 #align equiv.perm.sign Equiv.Perm.sign
@@ -724,8 +723,8 @@ theorem sign_bij [DecidableEq β] [Fintype β] {f : Perm α} {g : Perm β} (i : 
 
 #align equiv.perm.sign_bij Equiv.Perm.sign_bij
 
-/-- If we apply `prod_extend_right a (σ a)` for all `a : α` in turn,
-we get `prod_congr_right σ`. -/
+/-- If we apply `prod_extendRight a (σ a)` for all `a : α` in turn,
+we get `prod_congrRight σ`. -/
 theorem prod_prodExtendRight {α : Type _} [DecidableEq α] (σ : α → Perm β) {l : List α}
     (hl : l.Nodup) (mem_l : ∀ a, a ∈ l) :
     (l.map fun a => prodExtendRight a (σ a)).prod = prodCongrRight σ := by
