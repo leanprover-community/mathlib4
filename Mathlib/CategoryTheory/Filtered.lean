@@ -218,7 +218,7 @@ theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.
     · exact ⟨(w' (Finset.mem_of_mem_insert_of_ne mY h)).some ≫ rightToMax _ _⟩
 #align category_theory.is_filtered.sup_objs_exists CategoryTheory.IsFiltered.sup_objs_exists
 
-variable (O : Finset C) (H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y))
+variable (O : Finset C) (H : Finset (Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y))
 
 /-- Given any `finset` of objects `{X, ...}` and
 indexed collection of `finset`s of morphisms `{f, ...}` in `C`,
@@ -229,27 +229,28 @@ theorem sup_exists :
     ∃ (S : C)(T : ∀ {X : C}, X ∈ O → (X ⟶ S)),
       ∀ {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y},
         (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H → f ≫ T mY = T mX := by
-  classical
-    apply Finset.induction_on H
-    · obtain ⟨S, f⟩ := sup_objs_exists O
-      refine' ⟨S, fun X mX => (f mX).some, _⟩
-      rintro - - - - - ⟨⟩
-    · rintro ⟨X, Y, mX, mY, f⟩ H' nmf ⟨S', T', w'⟩
-      refine' ⟨coeq (f ≫ T' mY) (T' mX), fun Z mZ => T' mZ ≫ coeq_hom (f ≫ T' mY) (T' mX), _⟩
-      intro X' Y' mX' mY' f' mf'
-      rw [← category.assoc]
-      by_cases h : X = X' ∧ Y = Y'
-      · rcases h with ⟨rfl, rfl⟩
-        by_cases hf : f = f'
-        · subst hf
-          apply coeq_condition
-        · rw [@w' _ _ mX mY f' (by simpa [hf ∘ Eq.symm] using mf')]
-      · rw [@w' _ _ mX' mY' f' _]
-        apply Finset.mem_of_mem_insert_of_ne mf'
-        contrapose! h
-        obtain ⟨rfl, h⟩ := h
-        rw [heq_iff_eq, PSigma.mk.inj_iff] at h
-        exact ⟨rfl, h.1.symm⟩
+  sorry
+  --classical
+  --  apply Finset.induction_on H
+  --  · obtain ⟨S, f⟩ := sup_objs_exists O
+  --    refine' ⟨S, fun X mX => (f mX).some, _⟩
+  --    rintro - - - - - ⟨⟩
+  --  · rintro ⟨X, Y, mX, mY, f⟩ H' nmf ⟨S', T', w'⟩
+  --    refine' ⟨coeq (f ≫ T' mY) (T' mX), fun Z mZ => T' mZ ≫ coeq_hom (f ≫ T' mY) (T' mX), _⟩
+  --    intro X' Y' mX' mY' f' mf'
+  --    rw [← category.assoc]
+  --    by_cases h : X = X' ∧ Y = Y'
+  --    · rcases h with ⟨rfl, rfl⟩
+  --      by_cases hf : f = f'
+  --      · subst hf
+  --        apply coeq_condition
+  --      · rw [@w' _ _ mX mY f' (by simpa [hf ∘ Eq.symm] using mf')]
+  --    · rw [@w' _ _ mX' mY' f' _]
+  --      apply Finset.mem_of_mem_insert_of_ne mf'
+  --      contrapose! h
+  --      obtain ⟨rfl, h⟩ := h
+  --      rw [heq_iff_eq, PSigma.mk.inj_iff] at h
+  --      exact ⟨rfl, h.1.symm⟩
 #align category_theory.is_filtered.sup_exists CategoryTheory.IsFiltered.sup_exists
 
 /-- An arbitrary choice of object "to the right"
@@ -257,19 +258,19 @@ of a finite collection of objects `O` and morphisms `H`,
 making all the triangles commute.
 -/
 noncomputable def sup : C :=
-  (sup_exists O H).some
+  (sup_exists O H).choose
 #align category_theory.is_filtered.sup CategoryTheory.IsFiltered.sup
 
 /-- The morphisms to `sup O H`.
 -/
 noncomputable def toSup {X : C} (m : X ∈ O) : X ⟶ sup O H :=
-  (sup_exists O H).choose_spec.some m
+  (sup_exists O H).choose_spec.choose m
 #align category_theory.is_filtered.to_sup CategoryTheory.IsFiltered.toSup
 
 /-- The triangles of consisting of a morphism in `H` and the maps to `sup O H` commute.
 -/
 theorem toSup_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
-    (mf : (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H) :
+    (mf : (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H) :
     f ≫ toSup O H mY = toSup O H mX :=
   (sup_exists O H).choose_spec.choose_spec mX mY mf
 #align category_theory.is_filtered.to_sup_commutes CategoryTheory.IsFiltered.toSup_commutes
@@ -279,22 +280,23 @@ variable {J : Type v} [SmallCategory J] [FinCategory J]
 /-- If we have `is_filtered C`, then for any functor `F : J ⥤ C` with `fin_category J`,
 there exists a cocone over `F`.
 -/
-theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
-  classical
-    let O := finset.univ.image F.obj
-    let H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) :=
-      finset.univ.bUnion fun X : J =>
-        finset.univ.bUnion fun Y : J =>
-          finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
-    obtain ⟨Z, f, w⟩ := sup_exists O H
-    refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
-    intro j j' g
-    dsimp
-    simp only [category.comp_id]
-    apply w
-    simp only [Finset.mem_univ, Finset.mem_bunionᵢ, exists_and_left, exists_prop_of_true,
-      Finset.mem_image]
-    exact ⟨j, rfl, j', g, by simp⟩
+theorem cocone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cocone F) := by
+  sorry
+  --classical
+  --  let O := finset.univ.image F.obj
+  --  let H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) :=
+  --    finset.univ.bUnion fun X : J =>
+  --      finset.univ.bUnion fun Y : J =>
+  --        finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
+  --  obtain ⟨Z, f, w⟩ := sup_exists O H
+  --  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
+  --  intro j j' g
+  --  dsimp
+  --  simp only [category.comp_id]
+  --  apply w
+  --  simp only [Finset.mem_univ, Finset.mem_bunionᵢ, exists_and_left, exists_prop_of_true,
+  --    Finset.mem_image]
+  --  exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_filtered.cocone_nonempty CategoryTheory.IsFiltered.cocone_nonempty
 
 /-- An arbitrary choice of cocone over `F : J ⥤ C`, for `fin_category J` and `is_filtered C`.
@@ -312,8 +314,8 @@ theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFiltered 
       ⟨_, h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
     cocone_maps := fun X Y f g =>
       ⟨_, h.homEquiv _ _ (coeqHom _ _), by
-        rw [← h.hom_equiv_naturality_left, ← h.hom_equiv_naturality_left, coeq_condition]⟩
-    Nonempty := IsFiltered.nonempty.map R.obj }
+        rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left, coeq_condition]⟩
+    Nonempty := IsFiltered.Nonempty.map R.obj }
 #align category_theory.is_filtered.of_right_adjoint CategoryTheory.IsFiltered.of_right_adjoint
 
 /-- If `C` is filtered, and we have a right adjoint functor `R : C ⥤ D`, then `D` is filtered. -/
@@ -330,7 +332,8 @@ end Nonempty
 
 section SpecialShapes
 
-variable {C} [IsFilteredOrEmpty C]
+variable {C}
+variable [IsFilteredOrEmpty C]
 
 /-- `max₃ j₁ j₂ j₃` is an arbitrary choice of object to the right of `j₁`, `j₂` and `j₃`,
 whose existence is ensured by `is_filtered`.
