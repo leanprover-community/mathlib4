@@ -17,11 +17,11 @@ import Mathlib.Tactic.LibrarySearch
 /-!
 # Sign of a permutation
 
-The main definition of this file is `equiv.perm.sign`, associating a `ℤˣ` sign with a
+The main definition of this file is `Equiv.Perm.sign`, associating a `ℤˣ` sign with a
 permutation.
 
-This file also contains miscellaneous lemmas about `equiv.perm` and `equiv.swap`, building on top
-of those in `data/equiv/basic` and other files in `group_theory/perm/*`.
+This file also contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, building on top
+of those in `data/Equiv/basic` and other files in `group_theory/perm/*`.
 
 -/
 
@@ -97,7 +97,7 @@ theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { 
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
-  `equiv.perm.subtype_perm`. -/
+  `Equiv.Perm.subtypePerm`. -/
 abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Fintype { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
   f.subtypePerm fun x => ⟨h x, fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂⟩
@@ -213,7 +213,7 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.coprime n (orderOf
 
 end Fintype
 
-/-- Given a list `l : list α` and a permutation `f : perm α` such that the nonfixed points of `f`
+/-- Given a list `l : List α` and a permutation `f : perm α` such that the nonfixed points of `f`
   are in `l`, recursively factors `f` as a product of transpositions. -/
 def swapFactorsAux :
     ∀ (l : List α) (f : Perm α),
@@ -315,7 +315,7 @@ theorem mem_finPairsLT {n : ℕ} {a : Σ_ : Fin n, Fin n} : a ∈ finPairsLT n �
     mem_sigma]
 #align equiv.perm.mem_fin_pairs_lt Equiv.Perm.mem_finPairsLT
 
-/-- `sign_aux σ` is the sign of a permutation on `fin n`, defined as the parity of the number of
+/-- `sign_aux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
   pairs `(x₁, x₂)` such that `x₂ < x₁` but `σ x₁ ≤ σ x₂` -/
 def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
   ∏ x in finPairsLT n, if a x.1 ≤ a x.2 then -1 else 1
@@ -483,7 +483,7 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (sw
       (isConj_swap hxy (by exact of_decide_eq_true rfl))
 #align equiv.perm.sign_aux_swap Equiv.Perm.signAux_swap
 
-/-- When the list `l : list α` contains all nonfixed points of the permutation `f : perm α`,
+/-- When the list `l : List α` contains all nonfixed points of the permutation `f : perm α`,
   `sign_aux2 l f` recursively calculates the sign of `f`. -/
 def signAux2 : List α → Perm α → ℤˣ
   | [], _ => 1
@@ -521,7 +521,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
       simp only [neg_neg, one_mul, neg_mul]
 #align equiv.perm.sign_aux_eq_sign_aux2 Equiv.Perm.signAux_eq_signAux2
 
-/-- When the multiset `s : multiset α` contains all nonfixed points of the permutation `f : perm α`,
+/-- When the multiset `s : Multiset α` contains all nonfixed points of the permutation `f : perm α`,
   `sign_aux2 f _` recursively calculates the sign of `f`. -/
 def signAux3 [Fintype α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) → ℤˣ :=
   Quotient.hrecOn s (fun l _ => signAux2 l f)
@@ -551,7 +551,7 @@ theorem signAux3_mul_and_swap [Fintype α] (f g : Perm α) (s : Multiset α) (hs
     rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, signAux_swap hexy]
 #align equiv.perm.sign_aux3_mul_and_swap Equiv.Perm.signAux3_mul_and_swap
 
-/-- `sign` of a permutation returns the signature or parity of a permutation, `1` for even
+/-- `SignType.sign` of a permutation returns the signature or parity of a permutation, `1` for even
 permutations, `-1` for odd permutations. It is the unique surjective group homomorphism from
 `perm α` to the group with two elements.-/
 def sign [Fintype α] : Perm α →* ℤˣ :=
