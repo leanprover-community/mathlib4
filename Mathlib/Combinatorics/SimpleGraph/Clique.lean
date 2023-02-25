@@ -133,7 +133,6 @@ variable [DecidableEq α] {a b c : α}
 
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
   simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
-  have : ¬1 + 1 = 3 := by norm_num
   by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
     simp [G.ne_of_adj, and_rotate, *]
 #align simple_graph.is_3_clique_triple_iff SimpleGraph.is3Clique_triple_iff
@@ -173,7 +172,7 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
   simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true_iff]
-  ext (⟨v, hv⟩⟨w, hw⟩)
+  ext ⟨v, hv⟩ ⟨w, hw⟩
   simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and_iff] at hv hw
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
@@ -205,7 +204,7 @@ theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty ((⊤ : SimpleGrap
 theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
     ¬G.CliqueFree (card α) := by
   rw [not_cliqueFree_iff]
-  use (Iso.completeGraph (Fintype.equivFin α)).symm.toEmbedding.trans f
+  exact ⟨(Iso.completeGraph (Fintype.equivFin α)).symm.toEmbedding.trans f⟩
 #align simple_graph.not_clique_free_card_of_top_embedding SimpleGraph.not_cliqueFree_card_of_top_embedding
 
 theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
