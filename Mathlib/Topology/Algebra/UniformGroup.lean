@@ -710,7 +710,8 @@ theorem topological_commGroup_is_uniform : UniformGroup G := by
     tendsto_comap_iff, prod_comap_comap_eq]
   simp only [Function.comp, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
   simp [mul_inv_cancel, ←mul_assoc] at this
-  -- porting note: so close
+  simp_rw [←mul_assoc, ←mul_assoc, mul_comm]
+  assumption
 #align topological_comm_group_is_uniform topological_commGroup_is_uniform
 #align topological_add_comm_group_is_uniform topological_addCommGroup_is_uniform
 
