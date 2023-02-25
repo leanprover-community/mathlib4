@@ -142,10 +142,9 @@ theorem is_3_clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj
 theorem is_3_clique_iff :
     G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} := by
   refine' ⟨fun h => _, _⟩
-  · obtain ⟨a, b, c, -, -, -, rfl⟩ := card_eq_three.1 h.card_eq
+  · obtain ⟨a, b, c, -, -, -, hs⟩ := card_eq_three.1 h.card_eq
     refine' ⟨a, b, c, _⟩
-    rw [is_3_clique_triple_iff] at h
-    tauto
+    rwa [hs, eq_self_iff_true, and_true, is_3_clique_triple_iff.symm, ← hs]
   · rintro ⟨a, b, c, hab, hbc, hca, rfl⟩
     exact is_3_clique_triple_iff.2 ⟨hab, hbc, hca⟩
 #align simple_graph.is_3_clique_iff SimpleGraph.is_3_clique_iff
@@ -244,7 +243,7 @@ end CliqueFree
 
 section CliqueSet
 
-variable (G) {n : ℕ} {a b c : α} {s : Finset α}
+variable {n : ℕ} {a b c : α} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a set. -/
 def cliqueSet (n : ℕ) : Set (Finset α) :=
@@ -263,7 +262,7 @@ theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
 alias cliqueSet_eq_empty_iff ↔ _ CliqueFree.cliqueSet
 #align simple_graph.clique_free.clique_set SimpleGraph.CliqueFree.cliqueSet
 
-attribute [protected] CliqueFree.cliqueSet
+--attribute [protected] CliqueFree.cliqueSet -- porting note: removed
 
 variable {G H}
 
@@ -281,11 +280,11 @@ end CliqueSet
 
 section CliqueFinset
 
-variable (G) [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
+variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a finset. -/
 def cliqueFinset (n : ℕ) : Finset (Finset α) :=
-  univ.filterₓ <| G.IsNClique n
+  univ.filter <| G.IsNClique n
 #align simple_graph.clique_finset SimpleGraph.cliqueFinset
 
 theorem mem_cliqueFinset_iff : s ∈ G.cliqueFinset n ↔ G.IsNClique n s :=
@@ -299,13 +298,13 @@ theorem coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cl
 
 @[simp]
 theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n := by
-  simp_rw [clique_free, eq_empty_iff_forall_not_mem, mem_clique_finset_iff]
+  simp_rw [CliqueFree, eq_empty_iff_forall_not_mem, mem_cliqueFinset_iff]
 #align simple_graph.clique_finset_eq_empty_iff SimpleGraph.cliqueFinset_eq_empty_iff
 
-alias clique_finset_eq_empty_iff ↔ _ _root_.simple_graph.clique_free.clique_finset
+alias cliqueFinset_eq_empty_iff ↔ _ CliqueFree.cliqueFinset
 #align simple_graph.clique_free.clique_finset SimpleGraph.CliqueFree.cliqueFinset
 
-attribute [protected] clique_free.clique_finset
+--attribute [protected] CliqueFree.cliqueFinset -- porting note: removed
 
 variable {G} [DecidableRel H.Adj]
 
