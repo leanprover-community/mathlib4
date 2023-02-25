@@ -220,10 +220,10 @@ theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.
 
 variable (O : Finset C) (H : Finset (Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y))
 
-/-- Given any `finset` of objects `{X, ...}` and
-indexed collection of `finset`s of morphisms `{f, ...}` in `C`,
+/-- Given any `Finset` of objects `{X, ...}` and
+indexed collection of `Finset`s of morphisms `{f, ...}` in `C`,
 there exists an object `S`, with a morphism `T X : X ⟶ S` from each `X`,
-such that the triangles commute: `f ≫ T Y = T X`, for `f : X ⟶ Y` in the `finset`.
+such that the triangles commute: `f ≫ T Y = T X`, for `f : X ⟶ Y` in the `Finset`.
 -/
 theorem sup_exists :
     ∃ (S : C)(T : ∀ {X : C}, X ∈ O → (X ⟶ S)),
@@ -385,16 +385,16 @@ noncomputable def coeq₃Hom {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : j₂ ⟶ 
 #align category_theory.is_filtered.coeq₃_hom CategoryTheory.IsFiltered.coeq₃Hom
 
 theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h :=
-  by rw [coeq₃_hom, reassoc_of (coeq_condition f g)]
+  by simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 #align category_theory.is_filtered.coeq₃_condition₁ CategoryTheory.IsFiltered.coeq₃_condition₁
 
 theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : g ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
   by
-  dsimp [coeq₃_hom]
-  slice_lhs 2 4 => rw [← category.assoc, coeq_condition _ _]
-  slice_rhs 2 4 => rw [← category.assoc, coeq_condition _ _]
-  slice_lhs 1 3 => rw [← category.assoc, coeq_condition _ _]
-  simp only [category.assoc]
+  dsimp [coeq₃Hom]
+  slice_lhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
+  slice_rhs 2 4 => rw [← Category.assoc, coeq_condition _ _]
+  slice_lhs 1 3 => rw [← Category.assoc, coeq_condition _ _]
+  simp only [Category.assoc]
 #align category_theory.is_filtered.coeq₃_condition₂ CategoryTheory.IsFiltered.coeq₃_condition₂
 
 theorem coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h :=
@@ -405,9 +405,9 @@ theorem coeq₃_condition₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coe
    exists a cocone `j ⟶ k ⟵ j'` such that the square commutes. -/
 theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
     ∃ (k : C)(g : j ⟶ k)(g' : j' ⟶ k), f ≫ g = f' ≫ g' :=
-  let ⟨K, G, G', _⟩ := cocone_objs j j'
-  let ⟨k, e, he⟩ := cocone_maps (f ≫ G) (f' ≫ G')
-  ⟨k, G ≫ e, G' ≫ e, by simpa only [← category.assoc] ⟩
+  let ⟨K, G, G', _⟩ := IsFilteredOrEmpty.cocone_objs j j'
+  let ⟨k, e, he⟩ := IsFilteredOrEmpty.cocone_maps (f ≫ G) (f' ≫ G')
+  ⟨k, G ≫ e, G' ≫ e, by simpa only [← Category.assoc] ⟩
 #align category_theory.is_filtered.span CategoryTheory.IsFiltered.span
 
 /-- Given a "bowtie" of morphisms
@@ -426,9 +426,9 @@ making the resulting squares commute.
 theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁) (g₂ : j₂ ⟶ k₂) :
     ∃ (s : C)(α : k₁ ⟶ s)(β : k₂ ⟶ s), f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = g₂ ≫ β := by
   obtain ⟨t, k₁t, k₂t, ht⟩ := span f₁ g₁
-  obtain ⟨s, ts, hs⟩ := cocone_maps (f₂ ≫ k₁t) (g₂ ≫ k₂t)
-  simp_rw [category.assoc] at hs
-  exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by rw [reassoc_of ht], hs⟩
+  obtain ⟨s, ts, hs⟩ := IsFilteredOrEmpty.cocone_maps (f₂ ≫ k₁t) (g₂ ≫ k₂t)
+  simp_rw [Category.assoc] at hs
+  exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by simp only [←Category.assoc, ht], hs⟩
 #align category_theory.is_filtered.bowtie CategoryTheory.IsFiltered.bowtie
 
 /-- Given a "tulip" of morphisms
@@ -454,8 +454,8 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
       f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β := by
   obtain ⟨l', k₁l, k₂l, hl⟩ := span f₂ f₃
   obtain ⟨s, ls, l's, hs₁, hs₂⟩ := bowtie g₁ (f₁ ≫ k₁l) g₂ (f₄ ≫ k₂l)
-  refine' ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by rw [reassoc_of hl], _⟩ <;>
-    simp only [hs₁, hs₂, category.assoc]
+  refine' ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by simp only [←Category.assoc, hl], _⟩ <;>
+    simp only [hs₁, hs₂, Category.assoc]
 #align category_theory.is_filtered.tulip CategoryTheory.IsFiltered.tulip
 
 end SpecialShapes
@@ -468,7 +468,7 @@ end IsFiltered
    are equal.
 -/
 class IsCofilteredOrEmpty : Prop where
-  cone_objs : ∀ X Y : C, ∃ (W : _)(f : W ⟶ X)(g : W ⟶ Y), True
+  cone_objs : ∀ X Y : C, ∃ (W : _)(_ : W ⟶ X)(_ : W ⟶ Y), True
   cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _)(h : W ⟶ X), h ≫ f = h ≫ g
 #align category_theory.is_cofiltered_or_empty CategoryTheory.IsCofilteredOrEmpty
 
@@ -488,7 +488,9 @@ instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [
     IsCofilteredOrEmpty α
     where
   cone_objs X Y := ⟨X ⊓ Y, homOfLE inf_le_left, homOfLE inf_le_right, trivial⟩
-  cone_maps X Y f g := ⟨X, 𝟙 _, by ext⟩
+  cone_maps X Y f g := ⟨X, 𝟙 _, by
+    apply ULift.ext
+    apply Subsingleton.elim⟩
 #align category_theory.is_cofiltered_or_empty_of_semilattice_inf CategoryTheory.isCofilteredOrEmpty_of_semilatticeInf
 
 instance (priority := 100) isCofiltered_of_semilatticeInf_nonempty (α : Type u) [SemilatticeInf α]
@@ -501,7 +503,9 @@ instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Pre
   cone_objs X Y :=
     let ⟨Z, hX, hY⟩ := exists_le_le X Y
     ⟨Z, homOfLE hX, homOfLE hY, trivial⟩
-  cone_maps X Y f g := ⟨X, 𝟙 _, by simp⟩
+  cone_maps X Y f g := ⟨X, 𝟙 _, by
+    apply ULift.ext
+    apply Subsingleton.elim⟩
 #align category_theory.is_cofiltered_or_empty_of_directed_ge CategoryTheory.isCofilteredOrEmpty_of_directed_ge
 
 instance (priority := 100) isCofiltered_of_directed_ge_nonempty (α : Type u) [Preorder α]
@@ -515,43 +519,49 @@ example (α : Type u) [SemilatticeInf α] [OrderTop α] : IsCofiltered α := by 
 
 instance : IsCofiltered (Discrete PUnit)
     where
-  cone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by decide⟩⟩, ⟨⟨by decide⟩⟩, trivial⟩
-  cone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by decide⟩⟩, by decide⟩
+  cone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨Subsingleton.elim _ _⟩⟩, trivial⟩
+  cone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
+    apply ULift.ext
+    apply Subsingleton.elim⟩
   Nonempty := ⟨⟨PUnit.unit⟩⟩
 
 namespace IsCofiltered
 
 section AllowEmpty
 
-variable {C} [IsCofilteredOrEmpty C]
+variable {C}
+variable [IsCofilteredOrEmpty C]
 
-theorem cone_objs : ∀ X Y : C, ∃ (W : _)(f : W ⟶ X)(g : W ⟶ Y), True :=
-  IsCofilteredOrEmpty.cone_objs
-#align category_theory.is_cofiltered.cone_objs CategoryTheory.IsCofiltered.cone_objs
-
-theorem cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _)(h : W ⟶ X), h ≫ f = h ≫ g :=
-  IsCofilteredOrEmpty.cone_maps
-#align category_theory.is_cofiltered.cone_maps CategoryTheory.IsCofiltered.cone_maps
+-- porting note: the following definitions were removed because the names are invalid,
+-- direct references to `IsCofilteredOrEmpty` have been added instead
+--
+--theorem cone_objs : ∀ X Y : C, ∃ (W : _)(f : W ⟶ X)(g : W ⟶ Y), True :=
+--  IsCofilteredOrEmpty.cone_objs
+--#align category_theory.is_cofiltered.cone_objs CategoryTheory.IsCofiltered.cone_objs
+--
+--theorem cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _)(h : W ⟶ X), h ≫ f = h ≫ g :=
+--  IsCofilteredOrEmpty.cone_maps
+--#align category_theory.is_cofiltered.cone_maps CategoryTheory.IsCofiltered.cone_maps
 
 /-- `min j j'` is an arbitrary choice of object to the left of both `j` and `j'`,
 whose existence is ensured by `is_cofiltered`.
 -/
 noncomputable def min (j j' : C) : C :=
-  (cone_objs j j').some
+  (IsCofilteredOrEmpty.cone_objs j j').choose
 #align category_theory.is_cofiltered.min CategoryTheory.IsCofiltered.min
 
 /-- `min_to_left j j'` is an arbitrary choice of morphism from `min j j'` to `j`,
 whose existence is ensured by `is_cofiltered`.
 -/
 noncomputable def minToLeft (j j' : C) : min j j' ⟶ j :=
-  (cone_objs j j').choose_spec.some
+  (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose
 #align category_theory.is_cofiltered.min_to_left CategoryTheory.IsCofiltered.minToLeft
 
 /-- `min_to_right j j'` is an arbitrary choice of morphism from `min j j'` to `j'`,
 whose existence is ensured by `is_cofiltered`.
 -/
 noncomputable def minToRight (j j' : C) : min j j' ⟶ j' :=
-  (cone_objs j j').choose_spec.choose_spec.some
+  (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose_spec.choose
 #align category_theory.is_cofiltered.min_to_right CategoryTheory.IsCofiltered.minToRight
 
 /-- `eq f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of object
@@ -560,7 +570,7 @@ which admits a morphism `eq_hom f f' : eq f f' ⟶ j` such that
 Its existence is ensured by `is_cofiltered`.
 -/
 noncomputable def eq {j j' : C} (f f' : j ⟶ j') : C :=
-  (cone_maps f f').some
+  (IsCofilteredOrEmpty.cone_maps f f').choose
 #align category_theory.is_cofiltered.eq CategoryTheory.IsCofiltered.eq
 
 /-- `eq_hom f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of morphism
@@ -569,27 +579,27 @@ noncomputable def eq {j j' : C} (f f' : j ⟶ j') : C :=
 Its existence is ensured by `is_cofiltered`.
 -/
 noncomputable def eqHom {j j' : C} (f f' : j ⟶ j') : eq f f' ⟶ j :=
-  (cone_maps f f').choose_spec.some
+  (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose
 #align category_theory.is_cofiltered.eq_hom CategoryTheory.IsCofiltered.eqHom
 
 /-- `eq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `eq_hom f f' ≫ f = eq_hom f f' ≫ f'`.
 -/
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f' ≫ f' :=
-  (cone_maps f f').choose_spec.choose_spec
+  (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose_spec
 #align category_theory.is_cofiltered.eq_condition CategoryTheory.IsCofiltered.eq_condition
 
 /-- For every cospan `j ⟶ i ⟵ j'`,
  there exists a cone `j ⟵ k ⟶ j'` such that the square commutes. -/
 theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
     ∃ (k : C)(g : k ⟶ j)(g' : k ⟶ j'), g ≫ f = g' ≫ f' :=
-  let ⟨K, G, G', _⟩ := cone_objs j j'
-  let ⟨k, e, he⟩ := cone_maps (G ≫ f) (G' ≫ f')
-  ⟨k, e ≫ G, e ≫ G', by simpa only [category.assoc] using he⟩
+  let ⟨K, G, G', _⟩ := IsCofilteredOrEmpty.cone_objs j j'
+  let ⟨k, e, he⟩ := IsCofilteredOrEmpty.cone_maps (G ≫ f) (G' ≫ f')
+  ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 #align category_theory.is_cofiltered.cospan CategoryTheory.IsCofiltered.cospan
 
-theorem CategoryTheory.Functor.ranges_directed (F : C ⥤ Type _) (j : C) :
+theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type _) (j : C) :
     Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine' ⟨⟨l, lk ≫ kj⟩, e ▸ _, _⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
@@ -601,54 +611,56 @@ section Nonempty
 
 open CategoryTheory.Limits
 
-variable {C} [IsCofiltered C]
+variable {C}
+variable [IsCofiltered C]
 
 /-- Any finite collection of objects in a cofiltered category has an object "to the left".
 -/
-theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (S ⟶ X) := by
+theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (S ⟶ X) := by
   classical
-    apply Finset.induction_on O
-    · exact ⟨is_cofiltered.nonempty.some, by rintro - ⟨⟩⟩
-    · rintro X O' nm ⟨S', w'⟩
-      use min X S'
-      rintro Y mY
-      obtain rfl | h := eq_or_ne Y X
-      · exact ⟨min_to_left _ _⟩
-      · exact ⟨min_to_right _ _ ≫ (w' (Finset.mem_of_mem_insert_of_ne mY h)).some⟩
+  induction' O using Finset.induction with X O' nm h
+  . exact ⟨Classical.choice IsCofiltered.Nonempty, by intro; simp⟩
+  . obtain ⟨S', w'⟩ := h
+    use min X S'
+    rintro Y mY
+    obtain rfl | h := eq_or_ne Y X
+    · exact ⟨minToLeft _ _⟩
+    · exact ⟨minToRight _ _ ≫ (w' (Finset.mem_of_mem_insert_of_ne mY h)).some⟩
 #align category_theory.is_cofiltered.inf_objs_exists CategoryTheory.IsCofiltered.inf_objs_exists
 
-variable (O : Finset C) (H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y))
+variable (O : Finset C) (H : Finset (Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y))
 
-/-- Given any `finset` of objects `{X, ...}` and
-indexed collection of `finset`s of morphisms `{f, ...}` in `C`,
+/-- Given any `Finset` of objects `{X, ...}` and
+indexed collection of `Finset`s of morphisms `{f, ...}` in `C`,
 there exists an object `S`, with a morphism `T X : S ⟶ X` from each `X`,
-such that the triangles commute: `T X ≫ f = T Y`, for `f : X ⟶ Y` in the `finset`.
+such that the triangles commute: `T X ≫ f = T Y`, for `f : X ⟶ Y` in the `Finset`.
 -/
 theorem inf_exists :
     ∃ (S : C)(T : ∀ {X : C}, X ∈ O → (S ⟶ X)),
       ∀ {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y},
         (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H → T mX ≫ f = T mY := by
-  classical
-    apply Finset.induction_on H
-    · obtain ⟨S, f⟩ := inf_objs_exists O
-      refine' ⟨S, fun X mX => (f mX).some, _⟩
-      rintro - - - - - ⟨⟩
-    · rintro ⟨X, Y, mX, mY, f⟩ H' nmf ⟨S', T', w'⟩
-      refine' ⟨Eq (T' mX ≫ f) (T' mY), fun Z mZ => eq_hom (T' mX ≫ f) (T' mY) ≫ T' mZ, _⟩
-      intro X' Y' mX' mY' f' mf'
-      rw [category.assoc]
-      by_cases h : X = X' ∧ Y = Y'
-      · rcases h with ⟨rfl, rfl⟩
-        by_cases hf : f = f'
-        · subst hf
-          apply eq_condition
-        · rw [@w' _ _ mX mY f' (by simpa [hf ∘ Eq.symm] using mf')]
-      · rw [@w' _ _ mX' mY' f' _]
-        apply Finset.mem_of_mem_insert_of_ne mf'
-        contrapose! h
-        obtain ⟨rfl, h⟩ := h
-        rw [heq_iff_eq, PSigma.mk.inj_iff] at h
-        exact ⟨rfl, h.1.symm⟩
+  sorry
+  --classical
+  --  apply Finset.induction_on H
+  --  · obtain ⟨S, f⟩ := inf_objs_exists O
+  --    refine' ⟨S, fun X mX => (f mX).some, _⟩
+  --    rintro - - - - - ⟨⟩
+  --  · rintro ⟨X, Y, mX, mY, f⟩ H' nmf ⟨S', T', w'⟩
+  --    refine' ⟨Eq (T' mX ≫ f) (T' mY), fun Z mZ => eq_hom (T' mX ≫ f) (T' mY) ≫ T' mZ, _⟩
+  --    intro X' Y' mX' mY' f' mf'
+  --    rw [category.assoc]
+  --    by_cases h : X = X' ∧ Y = Y'
+  --    · rcases h with ⟨rfl, rfl⟩
+  --      by_cases hf : f = f'
+  --      · subst hf
+  --        apply eq_condition
+  --      · rw [@w' _ _ mX mY f' (by simpa [hf ∘ Eq.symm] using mf')]
+  --    · rw [@w' _ _ mX' mY' f' _]
+  --      apply Finset.mem_of_mem_insert_of_ne mf'
+  --      contrapose! h
+  --      obtain ⟨rfl, h⟩ := h
+  --      rw [heq_iff_eq, PSigma.mk.inj_iff] at h
+  --      exact ⟨rfl, h.1.symm⟩
 #align category_theory.is_cofiltered.inf_exists CategoryTheory.IsCofiltered.inf_exists
 
 /-- An arbitrary choice of object "to the left"
@@ -656,19 +668,19 @@ of a finite collection of objects `O` and morphisms `H`,
 making all the triangles commute.
 -/
 noncomputable def inf : C :=
-  (inf_exists O H).some
+  (inf_exists O H).choose
 #align category_theory.is_cofiltered.inf CategoryTheory.IsCofiltered.inf
 
 /-- The morphisms from `inf O H`.
 -/
 noncomputable def infTo {X : C} (m : X ∈ O) : inf O H ⟶ X :=
-  (inf_exists O H).choose_spec.some m
+  (inf_exists O H).choose_spec.choose m
 #align category_theory.is_cofiltered.inf_to CategoryTheory.IsCofiltered.infTo
 
 /-- The triangles consisting of a morphism in `H` and the maps from `inf O H` commute.
 -/
 theorem infTo_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
-    (mf : (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) ∈ H) :
+    (mf : (⟨X, Y, mX, mY, f⟩ : Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H) :
     infTo O H mX ≫ f = infTo O H mY :=
   (inf_exists O H).choose_spec.choose_spec mX mY mf
 #align category_theory.is_cofiltered.inf_to_commutes CategoryTheory.IsCofiltered.infTo_commutes
@@ -678,23 +690,24 @@ variable {J : Type w} [SmallCategory J] [FinCategory J]
 /-- If we have `is_cofiltered C`, then for any functor `F : J ⥤ C` with `fin_category J`,
 there exists a cone over `F`.
 -/
-theorem cone_nonempty (F : J ⥤ C) : Nonempty (Cone F) := by
-  classical
-    let O := finset.univ.image F.obj
-    let H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) :=
-      finset.univ.bUnion fun X : J =>
-        finset.univ.bUnion fun Y : J =>
-          finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
-    obtain ⟨Z, f, w⟩ := inf_exists O H
-    refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
-    intro j j' g
-    dsimp
-    simp only [category.id_comp]
-    symm
-    apply w
-    simp only [Finset.mem_univ, Finset.mem_bunionᵢ, exists_and_left, exists_prop_of_true,
-      Finset.mem_image]
-    exact ⟨j, rfl, j', g, by simp⟩
+theorem cone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cone F) := by
+  sorry
+  --classical
+  --  let O := finset.univ.image F.obj
+  --  let H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) :=
+  --    finset.univ.bUnion fun X : J =>
+  --      finset.univ.bUnion fun Y : J =>
+  --        finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
+  --  obtain ⟨Z, f, w⟩ := inf_exists O H
+  --  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
+  --  intro j j' g
+  --  dsimp
+  --  simp only [category.id_comp]
+  --  symm
+  --  apply w
+  --  simp only [Finset.mem_univ, Finset.mem_bunionᵢ, exists_and_left, exists_prop_of_true,
+  --    Finset.mem_image]
+  --  exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_cofiltered.cone_nonempty CategoryTheory.IsCofiltered.cone_nonempty
 
 /-- An arbitrary choice of cone over `F : J ⥤ C`, for `fin_category J` and `is_cofiltered C`.
@@ -714,8 +727,8 @@ theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered
         (h.homEquiv _ Y).symm (minToRight _ _), ⟨⟩⟩
     cone_maps := fun X Y f g =>
       ⟨L.obj (eq (R.map f) (R.map g)), (h.homEquiv _ _).symm (eqHom _ _), by
-        rw [← h.hom_equiv_naturality_right_symm, ← h.hom_equiv_naturality_right_symm, eq_condition]⟩
-    Nonempty := IsCofiltered.nonempty.map L.obj }
+        rw [← h.homEquiv_naturality_right_symm, ← h.homEquiv_naturality_right_symm, eq_condition]⟩
+    Nonempty := IsCofiltered.Nonempty.map L.obj }
 #align category_theory.is_cofiltered.of_left_adjoint CategoryTheory.IsCofiltered.of_left_adjoint
 
 /-- If `C` is cofiltered, and we have a left adjoint functor `L : C ⥤ D`, then `D` is cofiltered. -/
@@ -746,8 +759,8 @@ instance isCofiltered_op_of_isFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ
       by
       rw [show f = f.unop.op by simp, show g = g.unop.op by simp, ← op_comp, ← op_comp]
       congr 1
-      exact is_filtered.coeq_condition f.unop g.unop⟩
-  Nonempty := ⟨op IsFiltered.nonempty.some⟩
+      exact IsFiltered.coeq_condition f.unop g.unop⟩
+  Nonempty := ⟨op IsFiltered.Nonempty.some⟩
 #align category_theory.is_cofiltered_op_of_is_filtered CategoryTheory.isCofiltered_op_of_isFiltered
 
 instance isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ
@@ -760,8 +773,8 @@ instance isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ
       by
       rw [show f = f.unop.op by simp, show g = g.unop.op by simp, ← op_comp, ← op_comp]
       congr 1
-      exact is_cofiltered.eq_condition f.unop g.unop⟩
-  Nonempty := ⟨op IsCofiltered.nonempty.some⟩
+      exact IsCofiltered.eq_condition f.unop g.unop⟩
+  Nonempty := ⟨op IsCofiltered.Nonempty.some⟩
 #align category_theory.is_filtered_op_of_is_cofiltered CategoryTheory.isFiltered_op_of_isCofiltered
 
 end Opposite
