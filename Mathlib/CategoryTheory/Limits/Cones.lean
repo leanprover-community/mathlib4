@@ -701,7 +701,6 @@ variable {F : J ⥤ C} {G : J ⥤ C} (H : C ⥤ D)
 
 open CategoryTheory.Limits
 
-/- Porting note: dot notation on the functor is broken for `mapCone` -/
 /-- The image of a cone in C under a functor G : C ⥤ D is a cone in D. -/
 @[simps!]
 def mapCone (c : Cone F) : Cone (F ⋙ H) :=
@@ -714,6 +713,7 @@ def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
   (Cocones.functoriality F H).obj c
 #align category_theory.functor.map_cocone CategoryTheory.Functor.mapCocone
 
+/- Porting note: dot notation on the functor is broken for `mapCone` -/
 /-- Given a cone morphism `c ⟶ c'`, construct a cone morphism on the mapped cones functorially.  -/
 def mapConeMorphism {c c' : Cone F} (f : c ⟶ c') : mapCone H c ⟶ mapCone _ c' :=
   (Cones.functoriality F H).map f
