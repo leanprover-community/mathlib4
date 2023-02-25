@@ -196,8 +196,10 @@ theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t�
   refine' (sub_le_sub_left (mul_edgeDensity_le_edgeDensity r hs ht hs₂ ht₂) _).trans _
   refine' le_trans _ (mul_le_of_le_one_right _ (edgeDensity_le_one r s₂ t₂))
   · rw [sub_mul, one_mul]
-  refine' sub_nonneg_of_le (mul_le_one _ (by positivity) _) <;>
-    exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_of_subset _)) (Nat.cast_nonneg _)
+  refine' sub_nonneg_of_le (mul_le_one _ _ _)
+  · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_of_subset hs)) (Nat.cast_nonneg _)
+  · apply div_nonneg <;> exact_mod_cast Nat.zero_le _
+  · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_of_subset ht)) (Nat.cast_nonneg _)
 #align rel.edge_density_sub_edge_density_le_one_sub_mul Rel.edgeDensity_sub_edgeDensity_le_one_sub_mul
 
 theorem abs_edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
@@ -225,15 +227,18 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   obtain rfl | ht₂' := t₂.eq_empty_or_nonempty
   · rw [Finset.card_empty, Nat.cast_zero] at ht₂
     simpa [edgeDensity, (nonpos_of_mul_nonpos_right ht₂ hδ₁).antisymm (Nat.cast_nonneg _)] using hδ'
-  rw [show 2 * δ - δ ^ 2 = 1 - (1 - δ) * (1 - δ) by ring]
+  have hr : 2 * δ - δ ^ 2 = 1 - (1 - δ) * (1 - δ) := by sorry -- Porting note: Originally `by ring`
+  rw [hr]
   norm_cast
   refine'
     (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans _
   push_cast
-  have := hs₂'.mono hs
-  have := ht₂'.mono ht
-  refine' sub_le_sub_left (mul_le_mul ((le_div_iff _).2 hs₂) ((le_div_iff _).2 ht₂) hδ₁.le _) _ <;>
-    positivity
+  have h₁ := hs₂'.mono hs
+  have h₂ := ht₂'.mono ht
+  refine' sub_le_sub_left (mul_le_mul ((le_div_iff _).2 hs₂) ((le_div_iff _).2 ht₂) hδ₁.le _) _
+  · exact_mod_cast h₁.card_pos
+  · exact_mod_cast h₂.card_pos
+  · apply div_nonneg <;> exact_mod_cast Nat.zero_le _
 #align rel.abs_edge_density_sub_edge_density_le_two_mul_sub_sq Rel.abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq
 
 /-- If `s₂ ⊆ s₁`, `t₂ ⊆ t₁` and they take up all but a `δ`-proportion, then the difference in edge
@@ -383,7 +388,7 @@ theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) (h
   rw [edgeDensity_def, edgeDensity_def, div_add_div_same, div_eq_one_iff_eq]
   · exact_mod_cast card_interedges_add_card_interedges_compl _ h
   -- Porting note: Wrote a workaround for `positivity` tactic.
-  · apply mul_ne_zero <;> rw [ne_eq, Nat.cast_eq_zero, card_eq_zero] <;> exact Nonempty.ne_empty ‹_›
+  · apply mul_ne_zero <;> exact_mod_cast Nat.pos_iff_ne_zero.1 (Nonempty.card_pos ‹_›)
 #align simple_graph.edge_density_add_edge_density_compl SimpleGraph.edgeDensity_add_edgeDensity_compl
 
 end DecidableEq
