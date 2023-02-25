@@ -13,3 +13,9 @@ example (h₁ : f₁ = f₂) : f₁ ≫ g ≫ h ≫ l = ((f₂ ≫ g) ≫ h) ≫
     lhs
     slice 1 1
     rw [h₁]
+
+example (h₁ : f₁ = f₂) : f₁ ≫ g ≫ h ≫ l = ((f₂ ≫ g) ≫ h) ≫ l := by
+  slice_lhs 1 1 => rw [h₁]
+
+example (h₁ : f₁ = f₂) : ((f₂ ≫ g) ≫ h) ≫ l = f₁ ≫ g ≫ h ≫ l := by
+  slice_rhs 1 1 => rw [h₁]
