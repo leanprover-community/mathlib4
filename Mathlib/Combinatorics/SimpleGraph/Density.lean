@@ -8,9 +8,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Basic
-import Mathbin.Order.Partition.Finpartition
-import Mathbin.Tactic.Positivity
+import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Order.Partition.Finpartition
+import Mathlib.Tactic.Positivity
 
 /-!
 # Edge density
@@ -85,8 +85,7 @@ theorem card_interedges_add_card_interedges_compl (s : Finset α) (t : Finset β
 #align rel.card_interedges_add_card_interedges_compl Rel.card_interedges_add_card_interedges_compl
 
 theorem interedges_disjoint_left {s s' : Finset α} (hs : Disjoint s s') (t : Finset β) :
-    Disjoint (interedges r s t) (interedges r s' t) :=
-  by
+    Disjoint (interedges r s t) (interedges r s' t) := by
   rw [Finset.disjoint_left] at hs⊢
   rintro x hx hy
   rw [mem_interedges_iff] at hx hy
@@ -94,8 +93,7 @@ theorem interedges_disjoint_left {s s' : Finset α} (hs : Disjoint s s') (t : Fi
 #align rel.interedges_disjoint_left Rel.interedges_disjoint_left
 
 theorem interedges_disjoint_right (s : Finset α) {t t' : Finset β} (ht : Disjoint t t') :
-    Disjoint (interedges r s t) (interedges r s t') :=
-  by
+    Disjoint (interedges r s t) (interedges r s t') := by
   rw [Finset.disjoint_left] at ht⊢
   rintro x hx hy
   rw [mem_interedges_iff] at hx hy
@@ -140,8 +138,7 @@ theorem edgeDensity_le_one (s : Finset α) (t : Finset β) : edgeDensity r s t �
 #align rel.edge_density_le_one Rel.edgeDensity_le_one
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) :
-    edgeDensity r s t + edgeDensity (fun x y => ¬r x y) s t = 1 :=
-  by
+    edgeDensity r s t + edgeDensity (fun x y => ¬r x y) s t = 1 := by
   rw [edge_density, edge_density, div_add_div_same, div_eq_one_iff_eq]
   · exact_mod_cast card_interedges_add_card_interedges_compl r s t
   · exact_mod_cast (mul_pos hs.card_pos ht.card_pos).ne'
@@ -221,8 +218,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht 
 theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
     (hδ₀ : 0 ≤ δ) (hδ₁ : δ < 1) (hs₂ : (1 - δ) * s₁.card ≤ s₂.card)
     (ht₂ : (1 - δ) * t₁.card ≤ t₂.card) :
-    |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ - δ ^ 2 :=
-  by
+    |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ - δ ^ 2 := by
   have hδ' : 0 ≤ 2 * δ - δ ^ 2 := by
     rw [sub_nonneg, sq]
     exact mul_le_mul_of_nonneg_right (hδ₁.le.trans (by norm_num)) hδ₀
@@ -250,8 +246,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
 densities is at most `2 * δ`. -/
 theorem abs_edgeDensity_sub_edgeDensity_le_two_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hδ : 0 ≤ δ)
     (hscard : (1 - δ) * s₁.card ≤ s₂.card) (htcard : (1 - δ) * t₁.card ≤ t₂.card) :
-    |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ :=
-  by
+    |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ := by
   cases lt_or_le δ 1
   ·
     exact
@@ -386,8 +381,7 @@ theorem interedges_bunionᵢ (s : Finset ι) (t : Finset κ) (f : ι → Finset 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
-    (G.interedges s t).card + (Gᶜ.interedges s t).card = s.card * t.card :=
-  by
+    (G.interedges s t).card + (Gᶜ.interedges s t).card = s.card * t.card := by
   rw [← card_product, interedges_def, interedges_def]
   have : ((s ×ˢ t).filterₓ fun e => Gᶜ.Adj e.1 e.2) = (s ×ˢ t).filterₓ fun e => ¬G.adj e.1 e.2 :=
     by
@@ -399,8 +393,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
 #align simple_graph.card_interedges_add_card_interedges_compl SimpleGraph.card_interedges_add_card_interedges_compl
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) (h : Disjoint s t) :
-    G.edgeDensity s t + Gᶜ.edgeDensity s t = 1 :=
-  by
+    G.edgeDensity s t + Gᶜ.edgeDensity s t = 1 := by
   rw [edge_density_def, edge_density_def, div_add_div_same, div_eq_one_iff_eq]
   · exact_mod_cast card_interedges_add_card_interedges_compl _ h
   · positivity
