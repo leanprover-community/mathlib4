@@ -211,14 +211,6 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.coprime n (orderOf
 
 end Fintype
 
-/- warning: equiv.perm.swap_factors_aux -> Equiv.Perm.swapFactorsAux is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} [_inst_1 : DecidableEq.{succ u1} α] (l : List.{u1} α) (f : Equiv.Perm.{succ u1} α), (forall {x : α}, (Ne.{succ u1} α (coeFn.{succ u1, succ u1} (Equiv.Perm.{succ u1} α) (fun (_x : Equiv.{succ u1, succ u1} α α) => α -> α) (Equiv.hasCoeToFun.{succ u1, succ u1} α α) f x) x) -> (Membership.Mem.{u1, u1} α (List.{u1} α) (List.hasMem.{u1} α) x l)) -> (Subtype.{succ u1} (List.{u1} (Equiv.Perm.{succ u1} α)) (fun (l : List.{u1} (Equiv.Perm.{succ u1} α)) => And (Eq.{succ u1} (Equiv.Perm.{succ u1} α) (List.prod.{u1} (Equiv.Perm.{succ u1} α) (MulOneClass.toHasMul.{u1} (Equiv.Perm.{succ u1} α) (Monoid.toMulOneClass.{u1} (Equiv.Perm.{succ u1} α) (DivInvMonoid.toMonoid.{u1} (Equiv.Perm.{succ u1} α) (Group.toDivInvMonoid.{u1} (Equiv.Perm.{succ u1} α) (Equiv.Perm.permGroup.{u1} α))))) (MulOneClass.toHasOne.{u1} (Equiv.Perm.{succ u1} α) (Monoid.toMulOneClass.{u1} (Equiv.Perm.{succ u1} α) (DivInvMonoid.toMonoid.{u1} (Equiv.Perm.{succ u1} α) (Group.toDivInvMonoid.{u1} (Equiv.Perm.{succ u1} α) (Equiv.Perm.permGroup.{u1} α))))) l) f) (forall (g : Equiv.Perm.{succ u1} α), (Membership.Mem.{u1, u1} (Equiv.Perm.{succ u1} α) (List.{u1} (Equiv.Perm.{succ u1} α)) (List.hasMem.{u1} (Equiv.Perm.{succ u1} α)) g l) -> (Equiv.Perm.IsSwap.{u1} α (fun (a : α) (b : α) => _inst_1 a b) g))))
-but is expected to have type
-  PUnit.{succ (succ u1)}
-Case conversion may be inaccurate. Consider using '#align equiv.perm.swap_factors_aux Equiv.Perm.swapFactorsAuxₓ'. -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given a list `l : list α` and a permutation `f : perm α` such that the nonfixed points of `f`
   are in `l`, recursively factors `f` as a product of transpositions. -/
 def swapFactorsAux :
@@ -382,7 +374,7 @@ theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
 
 @[simp]
 theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
-  prod_bij (fun a ha => signBijAux f⁻¹ a) signBijAux_mem
+  prod_bij (fun a _ => signBijAux f⁻¹ a) signBijAux_mem
     (fun ⟨a, b⟩ hab =>
       if h : f⁻¹ b < f⁻¹ a then by
         simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
@@ -438,7 +430,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
 private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
   show
     _ =
-      ∏ x : Σa : Fin (n + 2), Fin (n + 2) in {(⟨1, 0⟩ : Σa : Fin (n + 2), Fin (n + 2))},
+      ∏ x : Σ_a : Fin (n + 2), Fin (n + 2) in {(⟨1, 0⟩ : Σa : Fin (n + 2), Fin (n + 2))},
         if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1
     by
     refine'
@@ -476,7 +468,7 @@ private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
   · norm_num at hn
   · exact signAux_swap_zero_one' n
 
-theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (hxy : x ≠ y), signAux (swap x y) = -1
+theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (swap x y) = -1
   | 0, x, y => by intro; exact Fin.elim0 x
   | 1, x, y => by
     dsimp [signAux, swap, swapCore]
@@ -489,7 +481,6 @@ theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (hxy : x ≠ y), signAux (swa
       (isConj_swap hxy (by exact of_decide_eq_true rfl))
 #align equiv.perm.sign_aux_swap Equiv.Perm.signAux_swap
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- When the list `l : list α` contains all nonfixed points of the permutation `f : perm α`,
   `sign_aux2 l f` recursively calculates the sign of `f`. -/
 def signAux2 : List α → Perm α → ℤˣ
@@ -497,9 +488,8 @@ def signAux2 : List α → Perm α → ℤˣ
   | x::l, f => if x = f x then signAux2 l f else -signAux2 l (swap x (f x) * f)
 #align equiv.perm.sign_aux2 Equiv.Perm.signAux2
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem signAux_eq_signAux2 {n : ℕ} :
-    ∀ (l : List α) (f : Perm α) (e : α ≃ Fin n) (h : ∀ x, f x ≠ x → x ∈ l),
+    ∀ (l : List α) (f : Perm α) (e : α ≃ Fin n) (_h : ∀ x, f x ≠ x → x ∈ l),
       signAux ((e.symm.trans f).trans e) = signAux2 l f
   | [], f, e, h =>
     by
