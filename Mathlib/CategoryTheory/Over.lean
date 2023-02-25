@@ -10,7 +10,7 @@ Authors: Johan Commelin, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Punit
-import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
