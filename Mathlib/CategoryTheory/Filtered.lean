@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Category.Ulift
+import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Filtered categories
@@ -25,13 +25,13 @@ We give a simple characterisation of this condition as
 3. there exists some object.
 
 Filtered colimits are often better behaved than arbitrary colimits.
-See `category_theory/limits/types` for some details.
+See `CategoryTheory/Limits/Types` for some details.
 
 Filtered categories are nice because colimits indexed by filtered categories tend to be
 easier to describe than general colimits (and more often preserved by functors).
 
 In this file we show that any functor from a finite category to a filtered category admits a cocone:
-* `cocone_nonempty [fin_category J] [is_filtered C] (F : J ⥤ C) : nonempty (cocone F)`
+* `cocone_nonempty [FinCategory J] [IsFiltered C] (F : J ⥤ C) : Nonempty (Cocone F)`
 More generally,
 for any finite collection of objects and morphisms between them in a filtered category
 (even if not closed under composition) there exists some object `Z` receiving maps from all of them,
@@ -48,7 +48,7 @@ All of the above API, except for the `bowtie` and the `tulip`, is also provided 
 categories.
 
 ## See also
-In `category_theory.limits.filtered_colimit_commutes_finite_limit` we show that filtered colimits
+In `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit` we show that filtered colimits
 commute with finite limits.
 
 -/
@@ -56,24 +56,27 @@ commute with finite limits.
 
 open Function
 
--- declare the `v`'s first; see `category_theory.category` for an explanation
+-- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe w v v₁ u u₁ u₂
 
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
-/-- A category `is_filtered_or_empty` if
+/-- A category `IsFilteredOrEmpty` if
 1. for every pair of objects there exists another object "to the right", and
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal.
 -/
 class IsFilteredOrEmpty : Prop where
-  cocone_objs : ∀ X Y : C, ∃ (Z : _)(f : X ⟶ Z)(g : Y ⟶ Z), True
+  /-- for every pair of objects there exists another object "to the right" -/
+  cocone_objs : ∀ X Y : C, ∃ (Z : _)(_ : X ⟶ Z)(_ : Y ⟶ Z), True
+  /-- for every pair of parallel morphisms there exists a morphism to the right
+    so the compositions are equal -/
   cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _)(h : Y ⟶ Z), f ≫ h = g ≫ h
 #align category_theory.is_filtered_or_empty CategoryTheory.IsFilteredOrEmpty
 
-/-- A category `is_filtered` if
+/-- A category `IsFiltered` if
 1. for every pair of objects there exists another object "to the right",
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal, and
@@ -89,7 +92,9 @@ instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [Se
     IsFilteredOrEmpty α
     where
   cocone_objs X Y := ⟨X ⊔ Y, homOfLE le_sup_left, homOfLE le_sup_right, trivial⟩
-  cocone_maps X Y f g := ⟨Y, 𝟙 _, by ext⟩
+  cocone_maps X Y f g := ⟨Y, 𝟙 _, by
+    apply ULift.ext
+    apply Subsingleton.elim⟩
 #align category_theory.is_filtered_or_empty_of_semilattice_sup CategoryTheory.isFilteredOrEmpty_of_semilatticeSup
 
 instance (priority := 100) isFiltered_of_semilatticeSup_nonempty (α : Type u) [SemilatticeSup α]
@@ -102,7 +107,9 @@ instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preor
   cocone_objs X Y :=
     let ⟨Z, h1, h2⟩ := exists_ge_ge X Y
     ⟨Z, homOfLE h1, homOfLE h2, trivial⟩
-  cocone_maps X Y f g := ⟨Y, 𝟙 _, by simp⟩
+  cocone_maps X Y f g := ⟨Y, 𝟙 _, by
+    apply ULift.ext
+    apply Subsingleton.elim⟩
 #align category_theory.is_filtered_or_empty_of_directed_le CategoryTheory.isFilteredOrEmpty_of_directed_le
 
 instance (priority := 100) isFiltered_of_directed_le_nonempty (α : Type u) [Preorder α]
@@ -116,43 +123,49 @@ example (α : Type u) [SemilatticeSup α] [OrderTop α] : IsFiltered α := by in
 
 instance : IsFiltered (Discrete PUnit)
     where
-  cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by decide⟩⟩, ⟨⟨by decide⟩⟩, trivial⟩
-  cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by decide⟩⟩, by decide⟩
+  cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨Subsingleton.elim _ _⟩⟩, trivial⟩
+  cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
+    apply ULift.ext
+    apply Subsingleton.elim⟩
   Nonempty := ⟨⟨PUnit.unit⟩⟩
 
 namespace IsFiltered
 
 section AllowEmpty
 
-variable {C} [IsFilteredOrEmpty C]
+variable {C}
+variable [IsFilteredOrEmpty C]
 
-theorem cocone_objs : ∀ X Y : C, ∃ (Z : _)(f : X ⟶ Z)(g : Y ⟶ Z), True :=
-  IsFilteredOrEmpty.cocone_objs
-#align category_theory.is_filtered.cocone_objs CategoryTheory.IsFiltered.cocone_objs
-
-theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _)(h : Y ⟶ Z), f ≫ h = g ≫ h :=
-  IsFilteredOrEmpty.cocone_maps
-#align category_theory.is_filtered.cocone_maps CategoryTheory.IsFiltered.cocone_maps
+-- porting note: the following definitions were removed because the names are invalid,
+-- direct references to `IsFilteredOrEmpty` have been added instead
+--
+--theorem cocone_objs : ∀ X Y : C, ∃ (Z : _)(f : X ⟶ Z)(g : Y ⟶ Z), True :=
+--  IsFilteredOrEmpty.cocone_objs
+--#align category_theory.is_filtered.cocone_objs CategoryTheory.IsFiltered.cocone_objs
+--
+--theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _)(h : Y ⟶ Z), f ≫ h = g ≫ h :=
+--  IsFilteredOrEmpty.cocone_maps
+--#align category_theory.is_filtered.cocone_maps CategoryTheory.IsFiltered.cocone_maps
 
 /-- `max j j'` is an arbitrary choice of object to the right of both `j` and `j'`,
-whose existence is ensured by `is_filtered`.
+whose existence is ensured by `IsFiltered`.
 -/
 noncomputable def max (j j' : C) : C :=
-  (cocone_objs j j').some
+  (IsFilteredOrEmpty.cocone_objs j j').choose
 #align category_theory.is_filtered.max CategoryTheory.IsFiltered.max
 
 /-- `left_to_max j j'` is an arbitrary choice of morphism from `j` to `max j j'`,
 whose existence is ensured by `is_filtered`.
 -/
 noncomputable def leftToMax (j j' : C) : j ⟶ max j j' :=
-  (cocone_objs j j').choose_spec.some
+  (IsFilteredOrEmpty.cocone_objs j j').choose_spec.choose
 #align category_theory.is_filtered.left_to_max CategoryTheory.IsFiltered.leftToMax
 
 /-- `right_to_max j j'` is an arbitrary choice of morphism from `j'` to `max j j'`,
 whose existence is ensured by `is_filtered`.
 -/
 noncomputable def rightToMax (j j' : C) : j' ⟶ max j j' :=
-  (cocone_objs j j').choose_spec.choose_spec.some
+  (IsFilteredOrEmpty.cocone_objs j j').choose_spec.choose_spec.choose
 #align category_theory.is_filtered.right_to_max CategoryTheory.IsFiltered.rightToMax
 
 /-- `coeq f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of object
@@ -161,7 +174,7 @@ which admits a morphism `coeq_hom f f' : j' ⟶ coeq f f'` such that
 Its existence is ensured by `is_filtered`.
 -/
 noncomputable def coeq {j j' : C} (f f' : j ⟶ j') : C :=
-  (cocone_maps f f').some
+  (IsFilteredOrEmpty.cocone_maps f f').choose
 #align category_theory.is_filtered.coeq CategoryTheory.IsFiltered.coeq
 
 /-- `coeq_hom f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of morphism
@@ -170,15 +183,15 @@ noncomputable def coeq {j j' : C} (f f' : j ⟶ j') : C :=
 Its existence is ensured by `is_filtered`.
 -/
 noncomputable def coeqHom {j j' : C} (f f' : j ⟶ j') : j' ⟶ coeq f f' :=
-  (cocone_maps f f').choose_spec.some
+  (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose
 #align category_theory.is_filtered.coeq_hom CategoryTheory.IsFiltered.coeqHom
 
 /-- `coeq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `f ≫ coeq_hom f f' = f' ≫ coeq_hom f f'`.
 -/
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' ≫ coeqHom f f' :=
-  (cocone_maps f f').choose_spec.choose_spec
+  (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose_spec
 #align category_theory.is_filtered.coeq_condition CategoryTheory.IsFiltered.coeq_condition
 
 end AllowEmpty
@@ -187,20 +200,22 @@ section Nonempty
 
 open CategoryTheory.Limits
 
-variable {C} [IsFiltered C]
+variable {C}
+variable [IsFiltered C]
 
+#check Classical.choice
 /-- Any finite collection of objects in a filtered category has an object "to the right".
 -/
-theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (X ⟶ S) := by
+theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (X ⟶ S) := by
   classical
-    apply Finset.induction_on O
-    · exact ⟨is_filtered.nonempty.some, by rintro - ⟨⟩⟩
-    · rintro X O' nm ⟨S', w'⟩
-      use max X S'
-      rintro Y mY
-      obtain rfl | h := eq_or_ne Y X
-      · exact ⟨left_to_max _ _⟩
-      · exact ⟨(w' (Finset.mem_of_mem_insert_of_ne mY h)).some ≫ right_to_max _ _⟩
+  induction' O using Finset.induction with X O' nm h
+  . exact ⟨Classical.choice IsFiltered.Nonempty, by intro; simp⟩
+  . obtain ⟨S', w'⟩ := h
+    use max X S'
+    rintro Y mY
+    obtain rfl | h := eq_or_ne Y X
+    · exact ⟨leftToMax _ _⟩
+    · exact ⟨(w' (Finset.mem_of_mem_insert_of_ne mY h)).some ≫ rightToMax _ _⟩
 #align category_theory.is_filtered.sup_objs_exists CategoryTheory.IsFiltered.sup_objs_exists
 
 variable (O : Finset C) (H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y))
@@ -771,4 +786,3 @@ instance [IsCofiltered C] : IsCofiltered (AsSmall C) :=
 end ULift
 
 end CategoryTheory
-
