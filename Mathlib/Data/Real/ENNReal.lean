@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Real.Nnreal
+import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
 
 /-!
