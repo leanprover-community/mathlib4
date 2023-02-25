@@ -17,14 +17,14 @@ import Mathlib.CategoryTheory.Functor.EpiMono
 # Over and under categories
 
 Over (and under) categories are special cases of comma categories.
-* If `L` is the identity functor and `R` is a constant functor, then `comma L R` is the "slice" or
+* If `L` is the identity functor and `R` is a constant functor, then `Comma L R` is the "slice" or
   "over" category over the object `R` maps to.
-* Conversely, if `L` is a constant functor and `R` is the identity functor, then `comma L R` is the
+* Conversely, if `L` is a constant functor and `R` is the identity functor, then `Comma L R` is the
   "coslice" or "under" category under the object `L` maps to.
 
 ## Tags
 
-comma, slice, coslice, over, under
+Comma, Slice, Coslice, Over, Under
 -/
 
 
@@ -32,7 +32,7 @@ namespace CategoryTheory
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 variable {T : Type u₁} [Category.{v₁} T]
 
 /-- The over category has as objects arrows in `T` with codomain `X` and as morphisms commutative
@@ -153,14 +153,14 @@ theorem forget_map {U V : Over X} {f : U ⟶ V} : (forget X).map f = f.left :=
   rfl
 #align category_theory.over.forget_map CategoryTheory.Over.forget_map
 
-/-- The natural cocone over the forgetful functor `over X ⥤ T` with cocone point `X`. -/
+/-- The natural cocone over the forgetful functor `Over X ⥤ T` with cocone point `X`. -/
 @[simps]
 def forgetCocone (X : T) : Limits.Cocone (forget X) :=
   { pt := X
     ι := { app := Comma.hom } }
 #align category_theory.over.forget_cocone CategoryTheory.Over.forgetCocone
 
-/-- A morphism `f : X ⟶ Y` induces a functor `over X ⥤ over Y` in the obvious way.
+/-- A morphism `f : X ⟶ Y` induces a functor `Over X ⥤ Over Y` in the obvious way.
 
 See <https://stacks.math.columbia.edu/tag/001G>.
 -/
@@ -213,19 +213,19 @@ instance forget_faithful : Faithful (forget X) where
 
 -- TODO: Show the converse holds if `T` has binary products.
 /--
-If `k.left` is an epimorphism, then `k` is an epimorphism. In other words, `over.forget X` reflects
+If `k.left` is an epimorphism, then `k` is an epimorphism. In other words, `Over.forget X` reflects
 epimorphisms.
 The converse does not hold without additional assumptions on the underlying category, see
-`category_theory.over.epi_left_of_epi`.
+`CategoryTheory.Over.epi_left_of_epi`.
 -/
 theorem epi_of_epi_left {f g : Over X} (k : f ⟶ g) [hk : Epi k.left] : Epi k :=
   (forget X).epi_of_epi_map hk
 #align category_theory.over.epi_of_epi_left CategoryTheory.Over.epi_of_epi_left
 
 /--
-If `k.left` is a monomorphism, then `k` is a monomorphism. In other words, `over.forget X` reflects
+If `k.left` is a monomorphism, then `k` is a monomorphism. In other words, `Over.forget X` reflects
 monomorphisms.
-The converse of `category_theory.over.mono_left_of_mono`.
+The converse of `CategoryTheory.Over.mono_left_of_mono`.
 
 This lemma is not an instance, to avoid loops in type class inference.
 -/
@@ -234,9 +234,9 @@ theorem mono_of_mono_left {f g : Over X} (k : f ⟶ g) [hk : Mono k.left] : Mono
 #align category_theory.over.mono_of_mono_left CategoryTheory.Over.mono_of_mono_left
 
 /--
-If `k` is a monomorphism, then `k.left` is a monomorphism. In other words, `over.forget X` preserves
+If `k` is a monomorphism, then `k.left` is a monomorphism. In other words, `Over.forget X` preserves
 monomorphisms.
-The converse of `category_theory.over.mono_of_mono_left`.
+The converse of `CategoryTheory.Over.mono_of_mono_left`.
 -/
 instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left := by
   refine' ⟨fun { Y : T } l m a => _⟩
@@ -298,7 +298,7 @@ section
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-/-- A functor `F : T ⥤ D` induces a functor `over X ⥤ over (F.obj X)` in the obvious way. -/
+/-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
 @[simps]
 def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X)
     where
@@ -411,14 +411,14 @@ theorem forget_map {U V : Under X} {f : U ⟶ V} : (forget X).map f = f.right :=
   rfl
 #align category_theory.under.forget_map CategoryTheory.Under.forget_map
 
-/-- The natural cone over the forgetful functor `under X ⥤ T` with cone point `X`. -/
+/-- The natural cone over the forgetful functor `Under X ⥤ T` with cone point `X`. -/
 @[simps]
 def forgetCone (X : T) : Limits.Cone (forget X) :=
   { pt := X
     π := { app := Comma.hom } }
 #align category_theory.under.forget_cone CategoryTheory.Under.forgetCone
 
-/-- A morphism `X ⟶ Y` induces a functor `under Y ⥤ under X` in the obvious way. -/
+/-- A morphism `X ⟶ Y` induces a functor `Under Y ⥤ Under X` in the obvious way. -/
 def map {Y : T} (f : X ⟶ Y) : Under Y ⥤ Under X :=
   Comma.mapLeft _ <| Discrete.natTrans fun _ => f
 #align category_theory.under.map CategoryTheory.Under.map
@@ -467,19 +467,19 @@ instance forget_faithful : Faithful (forget X) where
 #align category_theory.under.forget_faithful CategoryTheory.Under.forget_faithful
 
 -- TODO: Show the converse holds if `T` has binary coproducts.
-/-- If `k.right` is a monomorphism, then `k` is a monomorphism. In other words, `under.forget X`
+/-- If `k.right` is a monomorphism, then `k` is a monomorphism. In other words, `Under.forget X`
 reflects epimorphisms.
 The converse does not hold without additional assumptions on the underlying category, see
-`category_theory.under.mono_right_of_mono`.
+`CategoryTheory.Under.mono_right_of_mono`.
 -/
 theorem mono_of_mono_right {f g : Under X} (k : f ⟶ g) [hk : Mono k.right] : Mono k :=
   (forget X).mono_of_mono_map hk
 #align category_theory.under.mono_of_mono_right CategoryTheory.Under.mono_of_mono_right
 
 /--
-If `k.right` is a epimorphism, then `k` is a epimorphism. In other words, `under.forget X` reflects
+If `k.right` is a epimorphism, then `k` is a epimorphism. In other words, `Under.forget X` reflects
 epimorphisms.
-The converse of `category_theory.under.epi_right_of_epi`.
+The converse of `CategoryTheory.Under.epi_right_of_epi`.
 
 This lemma is not an instance, to avoid loops in type class inference.
 -/
@@ -488,9 +488,9 @@ theorem epi_of_epi_right {f g : Under X} (k : f ⟶ g) [hk : Epi k.right] : Epi 
 #align category_theory.under.epi_of_epi_right CategoryTheory.Under.epi_of_epi_right
 
 /--
-If `k` is a epimorphism, then `k.right` is a epimorphism. In other words, `under.forget X` preserves
+If `k` is a epimorphism, then `k.right` is a epimorphism. In other words, `Under.forget X` preserves
 epimorphisms.
-The converse of `category_theory.under.epi_of_epi_right`.
+The converse of `CategoryTheory.under.epi_of_epi_right`.
 -/
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
   refine' ⟨fun { Y : T } l m a => _⟩
@@ -505,7 +505,7 @@ section
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-/-- A functor `F : T ⥤ D` induces a functor `under X ⥤ under (F.obj X)` in the obvious way. -/
+/-- A functor `F : T ⥤ D` induces a functor `Under X ⥤ Under (F.obj X)` in the obvious way. -/
 @[simps]
 def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
