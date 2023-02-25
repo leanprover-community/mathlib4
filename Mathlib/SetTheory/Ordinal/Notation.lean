@@ -129,9 +129,7 @@ theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by cases n <;> simp
 #align onote.repr_of_nat Onote.repr_ofNat
 
 @[simp]
-theorem repr_one : repr 1 = 1 := by
-  simp [repr_ofNat 1]
-  sorry
+theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
 #align onote.repr_one Onote.repr_one
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
@@ -359,7 +357,7 @@ def TopBelow (b) : Onote → Prop
 #align onote.top_below Onote.TopBelow
 
 instance decidableTopBelow : DecidableRel TopBelow := by
-  intro b o <;> cases o <;> delta top_below <;> infer_instance
+  intro b o <;> cases o <;> delta TopBelow <;> infer_instance
 #align onote.decidable_top_below Onote.decidableTopBelow
 
 theorem nFBelow_iff_topBelow {b} [NF b] : ∀ {o}, NFBelow o (repr b) ↔ NF o ∧ TopBelow b o
@@ -640,7 +638,7 @@ exponentiation in `opow` -/
 def opowAux (e a0 a : Onote) : ℕ → ℕ → Onote
   | _, 0 => 0
   | 0, m + 1 => oadd e m.succPNat 0
-  | k + 1, m => scale (e + mulNat a0 k) a + opow_aux k m
+  | k + 1, m => scale (e + mulNat a0 k) a + opowAux k m
 #align onote.opow_aux Onote.opowAux
 
 /-- `opow o₁ o₂` calculates the ordinal notation for
