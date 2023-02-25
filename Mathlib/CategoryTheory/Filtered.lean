@@ -85,6 +85,7 @@ class IsFilteredOrEmpty : Prop where
 See <https://stacks.math.columbia.edu/tag/002V>. (They also define a diagram being filtered.)
 -/
 class IsFiltered extends IsFilteredOrEmpty C : Prop where
+  /-- a filtered category must be non empty -/
   [Nonempty : Nonempty C]
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
@@ -186,10 +187,11 @@ noncomputable def coeqHom {j j' : C} (f f' : j ⟶ j') : j' ⟶ coeq f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose
 #align category_theory.is_filtered.coeq_hom CategoryTheory.IsFiltered.coeqHom
 
+-- porting note: the simp tag has been removed as the linter complained
 /-- `coeq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `f ≫ coeq_hom f f' = f' ≫ coeq_hom f f'`.
 -/
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' ≫ coeqHom f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose_spec
 #align category_theory.is_filtered.coeq_condition CategoryTheory.IsFiltered.coeq_condition
@@ -281,22 +283,21 @@ variable {J : Type v} [SmallCategory J] [FinCategory J]
 there exists a cocone over `F`.
 -/
 theorem cocone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cocone F) := by
-  sorry
-  --classical
-  --  let O := finset.univ.image F.obj
-  --  let H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) :=
-  --    finset.univ.bUnion fun X : J =>
-  --      finset.univ.bUnion fun Y : J =>
-  --        finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
-  --  obtain ⟨Z, f, w⟩ := sup_exists O H
-  --  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
-  --  intro j j' g
-  --  dsimp
-  --  simp only [category.comp_id]
-  --  apply w
-  --  simp only [Finset.mem_univ, Finset.mem_bunionᵢ, exists_and_left, exists_prop_of_true,
-  --    Finset.mem_image]
-  --  exact ⟨j, rfl, j', g, by simp⟩
+  classical
+  let O := Finset.univ.image F.obj
+  let H : Finset (Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
+    Finset.univ.bunionᵢ   fun X : J =>
+      Finset.univ.bunionᵢ fun Y : J =>
+        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
+  obtain ⟨Z, f, w⟩ := sup_exists O H
+  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
+  intro j j' g
+  dsimp
+  simp only [Category.comp_id]
+  apply w
+  simp only [Finset.mem_bunionᵢ, Finset.mem_univ, Finset.mem_image, PSigma.mk.injEq,
+    true_and, exists_and_left]
+  exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_filtered.cocone_nonempty CategoryTheory.IsFiltered.cocone_nonempty
 
 /-- An arbitrary choice of cocone over `F : J ⥤ C`, for `fin_category J` and `is_filtered C`.
@@ -468,7 +469,10 @@ end IsFiltered
    are equal.
 -/
 class IsCofilteredOrEmpty : Prop where
+  /-- for every pair of objects there exists another object "to the left" -/
   cone_objs : ∀ X Y : C, ∃ (W : _)(_ : W ⟶ X)(_ : W ⟶ Y), True
+  /-- for every pair of parallel morphisms there exists a morphism to the left
+    so the compositions are equal -/
   cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _)(h : W ⟶ X), h ≫ f = h ≫ g
 #align category_theory.is_cofiltered_or_empty CategoryTheory.IsCofilteredOrEmpty
 
@@ -481,6 +485,7 @@ class IsCofilteredOrEmpty : Prop where
 See <https://stacks.math.columbia.edu/tag/04AZ>.
 -/
 class IsCofiltered extends IsCofilteredOrEmpty C : Prop where
+  /-- a cofiltered category must be non empty -/
   [Nonempty : Nonempty C]
 #align category_theory.is_cofiltered CategoryTheory.IsCofiltered
 
@@ -582,10 +587,11 @@ noncomputable def eqHom {j j' : C} (f f' : j ⟶ j') : eq f f' ⟶ j :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose
 #align category_theory.is_cofiltered.eq_hom CategoryTheory.IsCofiltered.eqHom
 
+-- porting note: the simp tag has been removed as the linter complained
 /-- `eq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `eq_hom f f' ≫ f = eq_hom f f' ≫ f'`.
 -/
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem eq_condition {j j' : C} (f f' : j ⟶ j') : eqHom f f' ≫ f = eqHom f f' ≫ f' :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose_spec
 #align category_theory.is_cofiltered.eq_condition CategoryTheory.IsCofiltered.eq_condition
@@ -691,23 +697,22 @@ variable {J : Type w} [SmallCategory J] [FinCategory J]
 there exists a cone over `F`.
 -/
 theorem cone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cone F) := by
-  sorry
-  --classical
-  --  let O := finset.univ.image F.obj
-  --  let H : Finset (Σ'(X Y : C)(mX : X ∈ O)(mY : Y ∈ O), X ⟶ Y) :=
-  --    finset.univ.bUnion fun X : J =>
-  --      finset.univ.bUnion fun Y : J =>
-  --        finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
-  --  obtain ⟨Z, f, w⟩ := inf_exists O H
-  --  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
-  --  intro j j' g
-  --  dsimp
-  --  simp only [category.id_comp]
-  --  symm
-  --  apply w
-  --  simp only [Finset.mem_univ, Finset.mem_bunionᵢ, exists_and_left, exists_prop_of_true,
-  --    Finset.mem_image]
-  --  exact ⟨j, rfl, j', g, by simp⟩
+  classical
+  let O := Finset.univ.image F.obj
+  let H : Finset (Σ'(X Y : C)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
+    Finset.univ.bunionᵢ fun X : J =>
+      Finset.univ.bunionᵢ fun Y : J =>
+        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
+  obtain ⟨Z, f, w⟩ := inf_exists O H
+  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
+  intro j j' g
+  dsimp
+  simp only [Category.id_comp]
+  symm
+  apply w
+  simp only [Finset.mem_bunionᵢ, Finset.mem_univ, Finset.mem_image,
+    PSigma.mk.injEq, true_and, exists_and_left]
+  exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_cofiltered.cone_nonempty CategoryTheory.IsCofiltered.cone_nonempty
 
 /-- An arbitrary choice of cone over `F : J ⥤ C`, for `fin_category J` and `is_cofiltered C`.
