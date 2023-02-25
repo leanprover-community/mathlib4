@@ -688,6 +688,7 @@ theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)
     [Fintype (G'.spanningCoe.neighborSet v)] : G'.spanningCoe.degree v = G'.degree v := by
   rw [← card_neighborSet_eq_degree, Subgraph.degree]
   congr
+  simp only [eq_iff_true_of_subsingleton]
 #align simple_graph.subgraph.degree_spanning_coe SimpleGraph.Subgraph.degree_spanningCoe
 
 theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
