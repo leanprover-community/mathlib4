@@ -353,7 +353,7 @@ def functorProdFunctorEquivCounitIso :
     (by aesop_cat)
 #align category_theory.functor_prod_functor_equiv_counit_iso CategoryTheory.functorProdFunctorEquivCounitIso
 
-/- Porting note: unlike with Lean 3, we needed to provide `functor_unitIso_comp` because
+/- Porting note: unlike with Lean 3, we needed to provide `functor_unitIso_comp` because 
 Lean 4 could not see through `functorProdFunctorEquivUnitIso` (or the co-unit version) 
 to run the auto tactic `by aesop_cat` -/
 
