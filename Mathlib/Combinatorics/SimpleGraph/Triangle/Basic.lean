@@ -8,7 +8,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.Clique
 
 /-!
 # Triangles in graphs
