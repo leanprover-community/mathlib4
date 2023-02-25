@@ -19,28 +19,28 @@ sub-relation of the adjacency relation of the simple graph.
 
 ## Main definitions
 
-* `subgraph G` is the type of subgraphs of a `G : simple_graph`
+* `Subgraph G` is the type of subgraphs of a `G : SimpleGraph`.
 
-* `subgraph.neighbor_set`, `subgraph.incidence_set`, and `subgraph.degree` are like their
-  `simple_graph` counterparts, but they refer to vertices from `G` to avoid subtype coercions.
+* `Subgraph.neighborSet`, `Subgraph.incidenceSet`, and `Subgraph.degree` are like their
+  `SimpleGraph` counterparts, but they refer to vertices from `G` to avoid subtype coercions.
 
-* `subgraph.coe` is the coercion from a `G' : subgraph G` to a `simple_graph G'.verts`.
-  (This cannot be a `has_coe` instance since the destination type depends on `G'`.)
+* `Subgraph.coe` is the coercion from a `G' : Subgraph G` to a `SimpleGraph G'.verts`.
+  (This cannot be a `Coe` instance since the destination type depends on `G'`.)
 
-* `subgraph.is_spanning` for whether a subgraph is a spanning subgraph and
-  `subgraph.is_induced` for whether a subgraph is an induced subgraph.
+* `Subgraph.IsSpanning` for whether a subgraph is a spanning subgraph and
+  `Subgraph.IsInduced` for whether a subgraph is an induced subgraph.
 
-* Instances for `lattice (subgraph G)` and `bounded_order (subgraph G)`.
+* Instances for `Lattice (Subgraph G)` and `BoundedOrder (Subgraph G)`.
 
-* `simple_graph.to_subgraph`: If a `simple_graph` is a subgraph of another, then you can turn it
-  into a member of the larger graph's `simple_graph.subgraph` type.
+* `SimpleGraph.toSubgraph`: If a `SimpleGraph` is a subgraph of another, then you can turn it
+  into a member of the larger graph's `SimpleGraph.Subgraph` type.
 
-* Graph homomorphisms from a subgraph to a graph (`subgraph.map_top`) and between subgraphs
-  (`subgraph.map`).
+* Graph homomorphisms from a subgraph to a graph (`Subgraph.map_top`) and between subgraphs
+  (`Subgraph.map`).
 
 ## Implementation notes
 
-* Recall that subgraphs are not determined by their vertex sets, so `set_like` does not apply to
+* Recall that subgraphs are not determined by their vertex sets, so `SetLike` does not apply to
   this kind of subobject.
 
 ## Todo
@@ -54,11 +54,11 @@ universe u v
 
 namespace SimpleGraph
 
-/-- A subgraph of a `simple_graph` is a subset of vertices along with a restriction of the adjacency
+/-- A subgraph of a `SimpleGraph` is a subset of vertices along with a restriction of the adjacency
 relation that is symmetric and is supported by the vertex subset.  They also form a bounded lattice.
 
-Thinking of `V → V → Prop` as `set (V × V)`, a set of darts (i.e., half-edges), then
-`subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`. -/
+Thinking of `V → V → Prop` as `Set (V × V)`, a set of darts (i.e., half-edges), then
+`Subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`. -/
 @[ext]
 structure Subgraph {V : Type u} (G : SimpleGraph V) where
   verts : Set V
@@ -131,7 +131,7 @@ protected theorem Adj.ne {H : G.Subgraph} {u v : V} (h : H.Adj u v) : u ≠ v :=
   h.adj_sub.ne
 #align simple_graph.subgraph.adj.ne SimpleGraph.Subgraph.Adj.ne
 
-/-- Coercion from `G' : subgraph G` to a `simple_graph ↥G'.verts`. -/
+/-- Coercion from `G' : Subgraph G` to a `SimpleGraph G'.verts`. -/
 @[simps]
 protected def coe (G' : Subgraph G) : SimpleGraph G'.verts where
   Adj v w := G'.Adj v w
@@ -144,7 +144,7 @@ theorem coe_adj_sub (G' : Subgraph G) (u v : G'.verts) (h : G'.coe.Adj u v) : G.
   G'.adj_sub h
 #align simple_graph.subgraph.coe_adj_sub SimpleGraph.Subgraph.coe_adj_sub
 
--- Given `h : H.adj u v`, then `h.coe : H.coe.adj ⟨u, _⟩ ⟨v, _⟩`.
+-- Given `h : H.Adj u v`, then `h.coe : H.coe.Adj ⟨u, _⟩ ⟨v, _⟩`.
 protected theorem Adj.coe {H : G.Subgraph} {u v : V} (h : H.Adj u v) :
     H.coe.Adj ⟨u, H.edge_vert h⟩ ⟨v, H.edge_vert h.symm⟩ :=
   h
@@ -159,8 +159,8 @@ theorem isSpanning_iff {G' : Subgraph G} : G'.IsSpanning ↔ G'.verts = Set.univ
   Set.eq_univ_iff_forall.symm
 #align simple_graph.subgraph.is_spanning_iff SimpleGraph.Subgraph.isSpanning_iff
 
-/-- Coercion from `subgraph G` to `simple_graph V`.  If `G'` is a spanning
-subgraph, then `G'.spanning_coe` yields an isomorphic graph.
+/-- Coercion from `Subgraph G` to `SimpleGraph V`.  If `G'` is a spanning
+subgraph, then `G'.spanningCoe` yields an isomorphic graph.
 In general, this adds in all vertices from `V` as isolated vertices. -/
 @[simps]
 protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
@@ -175,7 +175,7 @@ theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCo
   G'.adj_sub h
 #align simple_graph.subgraph.adj.of_spanning_coe SimpleGraph.Subgraph.Adj.of_spanningCoe
 
-/-- `spanning_coe` is equivalent to `coe` for a subgraph that `is_spanning`.  -/
+/-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
 def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) : G'.spanningCoe ≃g G'.coe
     where
@@ -205,7 +205,7 @@ theorem support_subset_verts (H : Subgraph G) : H.support ⊆ H.verts :=
   fun _ ⟨_, h⟩ => H.edge_vert h
 #align simple_graph.subgraph.support_subset_verts SimpleGraph.Subgraph.support_subset_verts
 
-/-- `G'.neighbor_set v` is the set of vertices adjacent to `v` in `G'`. -/
+/-- `G'.neighborSet v` is the set of vertices adjacent to `v` in `G'`. -/
 def neighborSet (G' : Subgraph G) (v : V) : Set V :=
   setOf (G'.Adj v)
 #align simple_graph.subgraph.neighbor_set SimpleGraph.Subgraph.neighborSet
@@ -258,7 +258,7 @@ theorem mem_verts_if_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈
   · exact G'.edge_vert (G'.symm he)
 #align simple_graph.subgraph.mem_verts_if_mem_edge SimpleGraph.Subgraph.mem_verts_if_mem_edge
 
-/-- The `incidence_set` is the set of edges incident to a given vertex. -/
+/-- The `incidenceSet` is the set of edges incident to a given vertex. -/
 def incidenceSet (G' : Subgraph G) (v : V) : Set (Sym2 V) :=
   { e ∈ G'.edgeSet | v ∈ e }
 #align simple_graph.subgraph.incidence_set SimpleGraph.Subgraph.incidenceSet
@@ -454,7 +454,7 @@ theorem spanningCoe_bot : (⊥ : Subgraph G).spanningCoe = ⊥ :=
   rfl
 #align simple_graph.subgraph.spanning_coe_bot SimpleGraph.Subgraph.spanningCoe_bot
 
-/-- Turn a subgraph of a `simple_graph` into a member of its subgraph type. -/
+/-- Turn a subgraph of a `SimpleGraph` into a member of its subgraph type. -/
 @[simps]
 def _root_.SimpleGraph.toSubgraph (H : SimpleGraph V) (h : H ≤ G) : G.Subgraph where
   verts := Set.univ
@@ -477,7 +477,7 @@ theorem spanningCoe_le_of_le {H H' : Subgraph G} (h : H ≤ H') : H.spanningCoe 
   h.2
 #align simple_graph.subgraph.spanning_coe_le_of_le SimpleGraph.Subgraph.spanningCoe_le_of_le
 
-/-- The top of the `subgraph G` lattice is equivalent to the graph itself. -/
+/-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
 def topEquiv : (⊤ : Subgraph G).coe ≃g G where
   toFun v := ↑v
   invFun v := ⟨v, trivial⟩
@@ -486,7 +486,7 @@ def topEquiv : (⊤ : Subgraph G).coe ≃g G where
   map_rel_iff' := Iff.rfl
 #align simple_graph.subgraph.top_equiv SimpleGraph.Subgraph.topEquiv
 
-/-- The bottom of the `subgraph G` lattice is equivalent to the empty graph on the empty
+/-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
 vertex type. -/
 def botEquiv : (⊥ : Subgraph G).coe ≃g (⊥ : SimpleGraph Empty) where
   toFun v := v.property.elim
@@ -710,7 +710,7 @@ end Subgraph
 
 section MkProperties
 
-/-! ### Properties of `singleton_subgraph` and `subgraph_of_adj` -/
+/-! ### Properties of `singletonSubgraph` and `subgraphOfAdj` -/
 
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
@@ -894,7 +894,7 @@ theorem coeSubgraph_injective (G' : G.Subgraph) :
 /-- Given a subgraph `G'` and a set of vertex pairs, remove all of the corresponding edges
 from its edge set, if present.
 
-See also: `simple_graph.delete_edges`. -/
+See also: `SimpleGraph.deleteEdges`. -/
 def deleteEdges (G' : G.Subgraph) (s : Set (Sym2 V)) : G.Subgraph where
   verts := G'.verts
   Adj := G'.Adj \ Sym2.ToRel s
@@ -998,7 +998,7 @@ end DeleteEdges
 
 
 /- Given a subgraph, we can change its vertex set while removing any invalid edges, which
-gives induced subgraphs. See also `simple_graph.induce` for the `simple_graph` version, which,
+gives induced subgraphs. See also `SimpleGraph.induce` for the `SimpleGraph` version, which,
 unlike for subgraphs, results in a graph with a different vertex type. -/
 /-- The induced subgraph of a subgraph. The expectation is that `s ⊆ G'.verts` for the usual
 notion of an induced subgraph, but, in general, `s` is taken to be the new vertex set and edges
