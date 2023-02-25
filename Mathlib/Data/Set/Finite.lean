@@ -195,12 +195,12 @@ theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := b
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
 #align set.finite.ssubset_to_finset Set.Finite.ssubset_toFinset
 
--- @[mono] -- Porting note: mono attribute not yet available
+@[mono]
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
   simp only [← Finset.coe_subset, Finite.coe_toFinset]
 #align set.finite.to_finset_subset_to_finset Set.Finite.toFinset_subset_toFinset
 
--- @[mono] -- Porting note: mono attribute not yet available
+@[mono]
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 #align set.finite.to_finset_ssubset_to_finset Set.Finite.toFinset_ssubset_toFinset

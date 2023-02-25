@@ -167,7 +167,7 @@ theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monot
     Monotone fun x => f x ○ g x := fun _ _ h _ ⟨z, h₁, h₂⟩ => ⟨z, hf h h₁, hg h h₂⟩
 #align monotone.comp_rel Monotone.compRel
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
   fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h₂ h'⟩
 #align comp_rel_mono compRel_mono
@@ -222,7 +222,7 @@ theorem symmetrizeRel_subset_self (V : Set (α × α)) : symmetrizeRel V ⊆ V :
   sep_subset _ _
 #align symmetrize_rel_subset_self symmetrizeRel_subset_self
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem symmetrize_mono {V W : Set (α × α)} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
   inter_subset_inter h <| preimage_mono h
 #align symmetrize_mono symmetrize_mono
