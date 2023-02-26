@@ -213,17 +213,18 @@ end SameRay
 set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `ray_vector.setoid` can be an instance. -/
+@[nolint unusedArguments]
 def RayVector (R M : Type _) [Zero M] :=
   { v : M // v ≠ 0 }
 #align ray_vector RayVector
 
-instance RayVector.coe {R M : Type _} {_ : Zero M} : Coe (RayVector R M) M where
+-- Porting note: Made Coe into CoeOut so it's not dangeorus anymore
+instance RayVector.coe {R M : Type _} {_ : Zero M} : CoeOut (RayVector R M) M where
   coe := Subtype.val
 #align ray_vector.has_coe RayVector.coe
 instance {R M : Type _} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   let ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
-
 variable (R M)
 
 /-- The setoid of the `same_ray` relation for the subtype of nonzero vectors. -/
@@ -491,6 +492,9 @@ theorem units_smul_of_neg (u : Rˣ) (hu : u.1 < 0) (v : Module.Ray R M) : u • 
   rwa [Units.val_neg, Right.neg_pos_iff]
 #align module.ray.units_smul_of_neg Module.Ray.units_smul_of_neg
 
+-- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
+attribute [-instance] Ring.toNonAssocRing
+
 @[simp]
 protected theorem map_neg (f : M ≃ₗ[R] N) (v : Module.Ray R M) : map f (-v) = -map f v := by
   induction' v using Module.Ray.ind with g hg
@@ -507,10 +511,11 @@ variable {R : Type _} [LinearOrderedCommRing R]
 
 variable {M : Type _} [AddCommGroup M] [Module R M]
 
+-- Porting note: Needed to add coercion ↥ below
 /-- `same_ray` follows from membership of `mul_action.orbit` for the `units.pos_subgroup`. -/
-theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit (Units.posSubgroup R) v₂) :
+theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit (↥Units.posSubgroup R) v₂) :
     SameRay R v₁ v₂ := by
-  rcases h with ⟨⟨r, hr : 0 < (r : R)⟩, rfl : r • v₂ = v₁⟩
+  rcases h with ⟨⟨r, hr : 0 < r.1⟩, rfl : r • v₂ = v₁⟩
   exact SameRay.sameRay_pos_smul_left _ hr
 #align same_ray_of_mem_orbit sameRay_of_mem_orbit
 
@@ -752,5 +757,3 @@ theorem exists_nonneg_right_iff_sameRay (hy : y ≠ 0) :
 #align exists_nonneg_right_iff_same_ray exists_nonneg_right_iff_sameRay
 
 end LinearOrderedField
-
-#lint
