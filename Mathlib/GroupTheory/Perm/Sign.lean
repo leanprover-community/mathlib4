@@ -608,7 +608,8 @@ theorem IsSwap.sign_eq {f : Perm α} (h : f.IsSwap) : sign f = -1 :=
 theorem signAux3_symm_trans_trans [DecidableEq β] [Fintype β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs :=
-  Quotient.inductionOn₂ t s
+  let g :=  @Quotient.inductionOn₂ _ _ _ _ (fun (u : Multiset β) (v : Multiset α) => (hu : ∀ x, x ∈ u) 
+  → (hv : ∀ x, x ∈ v) → signAux3 ((e.symm.trans f).trans e) hu = signAux3 f hv) t s
     (fun l₁ l₂ h₁ h₂ =>
       show signAux2 _ _ = signAux2 _ _ by
         let n := equivFin β
@@ -616,7 +617,7 @@ theorem signAux3_symm_trans_trans [DecidableEq β] [Fintype β] (f : Perm α) (e
           ← signAux_eq_signAux2 _ _ (e.trans n) fun _ _ => h₂ _]
         exact congr_arg signAux
           (Equiv.ext fun x => by simp [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply]))
-    ht hs
+  g ht hs
 #align equiv.perm.sign_aux3_symm_trans_trans Equiv.Perm.signAux3_symm_trans_trans
 
 @[simp]
