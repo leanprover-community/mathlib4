@@ -29,7 +29,7 @@ We also prove some divisibility tests based on digits, in particular completing
 Theorem #85 from https://www.cs.ru.nl/~freek/100/.
 
 A basic `norm_digits` tactic is also provided for proving goals of the form
-`nat.digits a b = l` where `a` and `b` are numerals.
+`Nat.digits a b = l` where `a` and `b` are numerals.
 -/
 
 
@@ -76,11 +76,11 @@ In any base, we have `ofDigits b L = L.foldr (λ x y, x + b * y) 0`.
 * For any `2 ≤ b`, we have `l < b` for any `l ∈ digits b n`,
   and the last digit is not zero.
   This uniquely specifies the behaviour of `digits b`.
-* For `b = 1`, we define `digits 1 n = list.replicate n 1`.
+* For `b = 1`, we define `digits 1 n = List.replicate n 1`.
 * For `b = 0`, we define `digits 0 n = [n]`, except `digits 0 0 = []`.
 
-Note this differs from the existing `nat.to_digits` in core, which is used for printing numerals.
-In particular, `nat.to_digits b 0 = [0]`, while `digits b 0 = []`.
+Note this differs from the existing `Nat.to_digits` in core, which is used for printing numerals.
+In particular, `Nat.to_digits b 0 = [0]`, while `digits b 0 = []`.
 -/
 def digits : ℕ → ℕ → List ℕ
   | 0 => digitsAux0
@@ -282,7 +282,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
         rfl
       · simp only [Nat.succ_eq_add_one, digits_add_two_add_one]
         dsimp [ofDigits]
-        rw [h _ (Nat.div_lt_self' n b)]
+        rw [h _ (Nat.div_lt_self' _ b)]
         rw [Nat.mod_add_div]
 #align nat.of_digits_digits Nat.ofDigits_digits
 
@@ -716,7 +716,7 @@ open Tactic
                     )
 #align nat.norm_digits.eval_aux Nat.NormDigits.eval_aux
 
-/-- A tactic for normalizing expressions of the form `nat.digits a b = l` where
+/-- A tactic for normalizing expressions of the form `Nat.digits a b = l` where
 `a` and `b` are numerals.
 
 ```
