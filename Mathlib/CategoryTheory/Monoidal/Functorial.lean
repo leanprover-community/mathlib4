@@ -66,40 +66,37 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] {D : Ty
 -- but that isn't the immediate plan.
 /-- An unbundled description of lax monoidal functors. -/
 class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
-  -- unit morphism
+  /-- unit morphism -/
   ε : 𝟙_ D ⟶ F (𝟙_ C)
-  -- tensorator
+  /-- tensorator -/
   μ : ∀ X Y : C, F X ⊗ F Y ⟶ F (X ⊗ Y)
-  μ_natural' :
+  /-- natuality -/
+  μ_natural :
     ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
       (map F f ⊗ map F g) ≫ μ Y Y' = μ X X' ≫ map F (f ⊗ g) := by
-    obviously
-  -- associativity of the tensorator
-  associativity' :
+   aesop_cat
+  /-- associativity of the tensorator -/
+  associativity :
     ∀ X Y Z : C,
-      (μ X Y ⊗ 𝟙 (F Z)) ≫ μ (X ⊗ Y) Z ≫ map F (α_ X Y Z).Hom =
-        (α_ (F X) (F Y) (F Z)).Hom ≫ (𝟙 (F X) ⊗ μ Y Z) ≫ μ X (Y ⊗ Z) := by
-    obviously
-  -- unitality
-  left_unitality' : ∀ X : C, (λ_ (F X)).Hom = (ε ⊗ 𝟙 (F X)) ≫ μ (𝟙_ C) X ≫ map F (λ_ X).Hom := by
-    obviously
-  right_unitality' : ∀ X : C, (ρ_ (F X)).Hom = (𝟙 (F X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).Hom := by
-    obviously
+      (μ X Y ⊗ 𝟙 (F Z)) ≫ μ (X ⊗ Y) Z ≫ map F (α_ X Y Z).hom =
+        (α_ (F X) (F Y) (F Z)).hom ≫ (𝟙 (F X) ⊗ μ Y Z) ≫ μ X (Y ⊗ Z) := by
+    aesop_cat
+  /-- left unitality -/
+  left_unitality : ∀ X : C, (λ_ (F X)).hom = (ε ⊗ 𝟙 (F X)) ≫ μ (𝟙_ C) X ≫ map F (λ_ X).hom := by
+    aesop_cat
+  /-- right unitality -/
+  right_unitality : ∀ X : C, (ρ_ (F X)).hom = (𝟙 (F X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom := by
+    aesop_cat
 #align category_theory.lax_monoidal CategoryTheory.LaxMonoidal
 
-restate_axiom lax_monoidal.μ_natural'
+attribute [simp] LaxMonoidal.μ_natural
 
-attribute [simp] lax_monoidal.μ_natural
-
-restate_axiom lax_monoidal.left_unitality'
-
-restate_axiom lax_monoidal.right_unitality'
+attribute [simp] LaxMonoidal.μ_natural
 
 -- The unitality axioms cannot be used as simp lemmas because they require
 -- higher-order matching to figure out the `F` and `X` from `F X`.
-restate_axiom lax_monoidal.associativity'
 
-attribute [simp] lax_monoidal.associativity
+attribute [simp] LaxMonoidal.associativity
 
 namespace LaxMonoidalFunctor
 
@@ -130,4 +127,3 @@ end
 -- TODO instances for composition, as required
 -- TODO `strong_monoidal`, as well as `lax_monoidal`
 end CategoryTheory
-
