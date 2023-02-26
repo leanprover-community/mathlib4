@@ -179,7 +179,6 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
 #align uniformity_translate_mul uniformity_translate_mul
 #align uniformity_translate_add uniformity_translate_add
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1]) } -/
 @[to_additive]
 theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α => x * a :=
   { comap_uniformity := by
@@ -336,7 +335,8 @@ end
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.2 / x.1 ∈ U i } := by
+    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.2 / x.1 ∈ U i } :=
+  by
   rw [uniformity_eq_comap_nhds_one]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one Filter.HasBasis.uniformity_of_nhds_one
@@ -353,7 +353,8 @@ theorem Filter.HasBasis.uniformity_of_nhds_one_inv_mul {ι} {p : ι → Prop} {U
 
 @[to_additive]
 theorem Filter.HasBasis.uniformity_of_nhds_one_swapped {ι} {p : ι → Prop} {U : ι → Set α}
-    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.1 / x.2 ∈ U i } := by
+    (h : (𝓝 (1 : α)).HasBasis p U) : (𝓤 α).HasBasis p fun i => { x : α × α | x.1 / x.2 ∈ U i } :=
+  by
   rw [uniformity_eq_comap_nhds_one_swapped]
   exact h.comap _
 #align filter.has_basis.uniformity_of_nhds_one_swapped Filter.HasBasis.uniformity_of_nhds_one_swapped
@@ -564,8 +565,8 @@ def TopologicalGroup.toUniformSpace : UniformSpace G
   symm :=
     by
     suffices
-      Tendsto (fun p : G × G => (p.2 / p.1)⁻¹) (comap (fun p : G × G => p.2 / p.1) (𝓝 1)) (𝓝 1⁻¹) by
-      simpa [tendsto_comap_iff]
+      Tendsto (fun p : G × G => (p.2 / p.1)⁻¹) (comap (fun p : G × G => p.2 / p.1) (𝓝 1)) (𝓝 1⁻¹)
+      by simpa [tendsto_comap_iff]
     exact tendsto_id.inv.comp tendsto_comap
   comp := by
     intro D H
@@ -830,8 +831,8 @@ variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
 
-private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) :
-    ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂) (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
+private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ (x) (_ : x ∈ U₂)
+    (x') (_ : x' ∈ U₂), (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
   let ee := fun u : β × β => (e u.1, e u.2)
   have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁)) (comap e Nx ×ᶠ comap e Nx) (𝓝 (0, y₁)) :=
@@ -841,18 +842,17 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) :
         (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
     exact (this : _)
-  have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by simpa using hφ.tendsto (0, y₁)
+  have lim2 : Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, y₁)) (𝓝 0) := by
+    simpa using hφ.tendsto (0, y₁)
   have lim := lim2.comp lim1
   rw [tendsto_prod_self_iff] at lim
   simp_rw [ball_mem_comm]
   exact lim W' W'_nhd
 #noalign dense_inducing.extend_Z_bilin_aux
 
-private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
-    ∃ U ∈ comap e (𝓝 x₀),
-      ∃ V ∈ comap f (𝓝 y₀),
-        ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U),
-          ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V), (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
+private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
+    ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U), ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
+    (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
   let ee := fun u : β × β => (e u.1, e u.2)
   let ff := fun u : δ × δ => (f u.1, f u.2)
   have lim_φ : Filter.Tendsto (fun p : β × δ => φ p.1 p.2) (𝓝 (0, 0)) (𝓝 0) := by simpa using hφ.tendsto (0, 0)
@@ -870,11 +870,8 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
     exact Tendsto.comp lim_φ lim_sub_sub
   rcases exists_nhds_zero_quarter W'_nhd with ⟨W, W_nhd, W4⟩
   have :
-    ∃ U₁ ∈ comap e (𝓝 x₀),
-      ∃ V₁ ∈ comap f (𝓝 y₀),
-        ∀ (x) (_ : x ∈ U₁) (x') (_ : x' ∈ U₁),
-          ∀ (y) (_ : y ∈ V₁) (y') (_ : y' ∈ V₁), (fun p : β × δ => φ p.1 p.2) (x' - x, y' - y) ∈ W :=
-    by
+    ∃ U₁ ∈ comap e (𝓝 x₀), ∃ V₁ ∈ comap f (𝓝 y₀), ∀ (x) (_ : x ∈ U₁) (x') (_ : x' ∈ U₁),
+      ∀ (y) (_ : y ∈ V₁) (y') (_ : y' ∈ V₁), (fun p : β × δ => φ p.1 p.2) (x' - x, y' - y) ∈ W := by
     rcases tendsto_prod_iff.1 lim_φ_sub_sub W W_nhd with ⟨U, U_in, V, V_in, H⟩
     rw [nhds_prod_eq, ← prod_comap_comap_eq, mem_prod_same_iff] at U_in V_in
     rcases U_in with ⟨U₁, U₁_in, HU₁⟩
@@ -895,9 +892,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) :
   rintro x ⟨xU₁, xU₂⟩ x' ⟨x'U₁, x'U₂⟩ y ⟨yV₁, yV₂⟩ y' ⟨y'V₁, y'V₂⟩
   have key_formula :
     φ x' y' - φ x y = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) :=
-    by
-    simp
-    abel
+    by simp; abel
   rw [key_formula]
   have h₁ := HU x xU₂ x' x'U₂
   have h₂ := H x xU₁ x' x'U₁ y₁ y₁_in y' y'V₁
@@ -921,12 +916,10 @@ theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ
     rcases mem_closure_iff_nhds.1 ((de.prod df).dense (x₀, y₀)) U h with ⟨x, x_in, ⟨z, z_x⟩⟩
     exists z
     aesop
-  · suffices
-      map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 - (fun p : β × δ => φ p.1 p.2) p.1)
-          (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))
-            (𝓝 (x₀, y₀) ×ᶠ 𝓝 (x₀, y₀))) ≤
-        𝓝 0
-      by
+  · suffices map (fun p : (β × δ) × β × δ => (fun p : β × δ => φ p.1 p.2) p.2 -
+      (fun p : β × δ => φ p.1 p.2) p.1)
+        (comap (fun p : (β × δ) × β × δ => ((e p.1.1, f p.1.2), (e p.2.1, f p.2.2)))
+        (𝓝 (x₀, y₀) ×ᶠ 𝓝 (x₀, y₀))) ≤ 𝓝 0 by
       rwa [uniformity_eq_comap_nhds_zero G, prod_map_map_eq, ← map_le_iff_le_comap, Filter.map_map,
         prod_comap_comap_eq]
     intro W' W'_nhd
