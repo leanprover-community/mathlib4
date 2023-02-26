@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.UniformGroup
-import Mathbin.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # Multiplicative action on the completion of a uniform space
