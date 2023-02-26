@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.UpperLower
-import Mathbin.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Order.UpperLower
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topological facts about upper/lower/order-connected sets
@@ -105,8 +105,7 @@ oooooxx
 oooooxx
 ```
 -/
-protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior s) :=
-  by
+protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior s) := by
   rw [← isLowerSet_compl, ← closure_compl]
   exact h.compl.closure
 #align is_upper_set.interior IsUpperSet.interior
@@ -115,8 +114,7 @@ protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior 
   h.ofDual.interior
 #align is_lower_set.interior IsLowerSet.interior
 
-protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected :=
-  by
+protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by
   rw [← h.upper_closure_inter_lower_closure, interior_inter]
   exact
     (upperClosure s).upper.interior.OrdConnected.inter (lowerClosure s).lower.interior.OrdConnected
