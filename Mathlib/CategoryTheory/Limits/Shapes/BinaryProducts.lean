@@ -8,10 +8,10 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
-import Mathbin.CategoryTheory.DiscreteCategory
-import Mathbin.CategoryTheory.EpiMono
-import Mathbin.CategoryTheory.Over
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Over
 
 /-!
 # Binary (co)products
@@ -434,8 +434,7 @@ theorem BinaryFan.isLimit_iff_isIso_fst {X Y : C} (h : IsTerminal Y) (c : Binary
 #align category_theory.limits.binary_fan.is_limit_iff_is_iso_fst CategoryTheory.Limits.BinaryFan.isLimit_iff_isIso_fst
 
 theorem BinaryFan.isLimit_iff_isIso_snd {X Y : C} (h : IsTerminal X) (c : BinaryFan X Y) :
-    Nonempty (IsLimit c) ↔ IsIso c.snd :=
-  by
+    Nonempty (IsLimit c) ↔ IsIso c.snd := by
   refine' Iff.trans _ (binary_fan.is_limit_iff_is_iso_fst h (binary_fan.mk c.snd c.fst))
   exact
     ⟨fun h => ⟨binary_fan.is_limit_flip h.some⟩, fun h =>
@@ -444,8 +443,7 @@ theorem BinaryFan.isLimit_iff_isIso_snd {X Y : C} (h : IsTerminal X) (c : Binary
 
 /-- If `X' ≅ X`, then `X × Y` also is the product of `X'` and `Y`. -/
 noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) (f : X ⟶ X')
-    [IsIso f] (h : IsLimit c) : IsLimit (BinaryFan.mk (c.fst ≫ f) c.snd) :=
-  by
+    [IsIso f] (h : IsLimit c) : IsLimit (BinaryFan.mk (c.fst ≫ f) c.snd) := by
   fapply binary_fan.is_limit_mk
   · exact fun s => h.lift (binary_fan.mk (s.fst ≫ inv f) s.snd)
   · intro s
@@ -486,8 +484,7 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
 #align category_theory.limits.binary_cofan.is_colimit_iff_is_iso_inl CategoryTheory.Limits.BinaryCofan.isColimit_iff_isIso_inl
 
 theorem BinaryCofan.isColimit_iff_isIso_inr {X Y : C} (h : IsInitial X) (c : BinaryCofan X Y) :
-    Nonempty (IsColimit c) ↔ IsIso c.inr :=
-  by
+    Nonempty (IsColimit c) ↔ IsIso c.inr := by
   refine' Iff.trans _ (binary_cofan.is_colimit_iff_is_iso_inl h (binary_cofan.mk c.inr c.inl))
   exact
     ⟨fun h => ⟨binary_cofan.is_colimit_flip h.some⟩, fun h =>
@@ -496,8 +493,7 @@ theorem BinaryCofan.isColimit_iff_isIso_inr {X Y : C} (h : IsInitial X) (c : Bin
 
 /-- If `X' ≅ X`, then `X ⨿ Y` also is the coproduct of `X'` and `Y`. -/
 noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan X Y) (f : X' ⟶ X)
-    [IsIso f] (h : IsColimit c) : IsColimit (BinaryCofan.mk (f ≫ c.inl) c.inr) :=
-  by
+    [IsIso f] (h : IsColimit c) : IsColimit (BinaryCofan.mk (f ≫ c.inl) c.inr) := by
   fapply binary_cofan.is_colimit_mk
   · exact fun s => h.desc (binary_cofan.mk (inv f ≫ s.inl) s.inr)
   · intro s
@@ -736,8 +732,7 @@ theorem prod.lift_map {V W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y
 
 @[simp]
 theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBinaryProduct X Z]
-    (g : W ⟶ X) (g' : Y ⟶ Z) : prod.lift (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' :=
-  by
+    (g : W ⟶ X) (g' : Y ⟶ Z) : prod.lift (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by
   rw [← prod.lift_map]
   simp
 #align category_theory.limits.prod.lift_fst_comp_snd_comp CategoryTheory.Limits.prod.lift_fst_comp_snd_comp
@@ -858,8 +853,7 @@ theorem coprod.map_desc {S T U V W : C} [HasBinaryCoproduct U W] [HasBinaryCopro
 @[simp]
 theorem coprod.desc_comp_inl_comp_inr {W X Y Z : C} [HasBinaryCoproduct W Y]
     [HasBinaryCoproduct X Z] (g : W ⟶ X) (g' : Y ⟶ Z) :
-    coprod.desc (g ≫ coprod.inl) (g' ≫ coprod.inr) = coprod.map g g' :=
-  by
+    coprod.desc (g ≫ coprod.inl) (g' ≫ coprod.inr) = coprod.map g g' := by
   rw [← coprod.map_desc]
   simp
 #align category_theory.limits.coprod.desc_comp_inl_comp_inr CategoryTheory.Limits.coprod.desc_comp_inl_comp_inr
@@ -1223,8 +1217,7 @@ theorem prodComparison_snd : prodComparison F A B ≫ prod.snd = F.map prod.snd 
 @[reassoc.1]
 theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
     F.map (prod.map f g) ≫ prodComparison F A' B' =
-      prodComparison F A B ≫ prod.map (F.map f) (F.map g) :=
-  by
+      prodComparison F A B ≫ prod.map (F.map f) (F.map g) := by
   rw [prod_comparison, prod_comparison, prod.lift_map, ← F.map_comp, ← F.map_comp, prod.comp_lift, ←
     F.map_comp, Prod.map_fst, ← F.map_comp, Prod.map_snd]
 #align category_theory.limits.prod_comparison_natural CategoryTheory.Limits.prodComparison_natural
@@ -1306,8 +1299,7 @@ theorem coprodComparison_inr : coprod.inr ≫ coprodComparison F A B = F.map cop
 @[reassoc.1]
 theorem coprodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
     coprodComparison F A B ≫ F.map (coprod.map f g) =
-      coprod.map (F.map f) (F.map g) ≫ coprodComparison F A' B' :=
-  by
+      coprod.map (F.map f) (F.map g) ≫ coprodComparison F A' B' := by
   rw [coprod_comparison, coprod_comparison, coprod.map_desc, ← F.map_comp, ← F.map_comp,
     coprod.desc_comp, ← F.map_comp, coprod.inl_map, ← F.map_comp, coprod.inr_map]
 #align category_theory.limits.coprod_comparison_natural CategoryTheory.Limits.coprodComparison_natural
