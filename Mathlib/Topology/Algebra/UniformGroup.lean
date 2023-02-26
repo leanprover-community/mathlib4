@@ -28,7 +28,7 @@ group naturally induces a uniform structure.
 
 ## Main results
 
-* `TopologicalAddGroup.to_uniformSpace` and `topological_add_comm_group_is_uniform` can be used
+* `TopologicalAddGroup.to_uniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
   to construct a canonical uniformity for a topological add group.
 
 * extension of ℤ-bilinear maps to complete groups (useful for ring completions)
@@ -546,14 +546,14 @@ variable (G : Type _) [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `UniformGroup` structure. Two important special cases where they _do_ coincide are for
-commutative groups (see `topological_comm_group_is_uniform`) and for compact groups (see
+commutative groups (see `comm_topologicalGroup_is_uniform`) and for compact groups (see
 `topologicalGroup_is_uniform_of_compactSpace`). -/
 @[to_additive "The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `UniformAddGroup` structure. Two important special cases where they _do_ coincide are for
-commutative additive groups (see `topological_add_comm_group_is_uniform`) and for compact
+commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for compact
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
 def TopologicalGroup.toUniformSpace : UniformSpace G
     where
@@ -699,7 +699,8 @@ attribute [local instance] TopologicalGroup.toUniformSpace
 variable {G}
 
 @[to_additive]
-theorem topological_commGroup_is_uniform : UniformGroup G := by
+-- Porting note: renamed theorem to conform to naming convention
+theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
   have :
     Tendsto
       ((fun p : G × G => p.1 / p.2) ∘ fun p : (G × G) × G × G => (p.1.2 / p.1.1, p.2.2 / p.2.1))
@@ -713,14 +714,14 @@ theorem topological_commGroup_is_uniform : UniformGroup G := by
   simp [mul_inv_cancel, ←mul_assoc] at this
   simp_rw [←mul_assoc, ←mul_assoc, mul_comm]
   assumption
-#align topological_comm_group_is_uniform topological_commGroup_is_uniform
-#align topological_add_comm_group_is_uniform topological_addCommGroup_is_uniform
+#align topological_comm_group_is_uniform comm_topologicalGroup_is_uniform
+#align topological_add_comm_group_is_uniform comm_topologicalAddGroup_is_uniform
 
 open Set
 
 @[to_additive]
 theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Set G) := by
-  haveI : UniformGroup G := topological_commGroup_is_uniform
+  haveI : UniformGroup G := comm_topologicalGroup_is_uniform
   rw [← separated_iff_t2, separatedSpace_iff, ← closure_eq_iff_isClosed]
   constructor <;> intro h
   · apply Subset.antisymm
@@ -996,7 +997,8 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     by
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ (↑) '' u i } :=
       by simpa [uniformity_eq_comap_nhds_one'] using hv.comap _
-    simp only [h𝓤GN.cauchySeq_iff, ge_iff_le, mem_setOf_eq, forall_true_left, mem_image] at hx
+    rw [h𝓤GN.cauchySeq_iff] at hx
+    simp only [ge_iff_le, mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
     rcases hx i with ⟨M, hM⟩
     refine' ⟨max j M + 1, (le_max_left _ _).trans_lt (lt_add_one _), fun a b ha hb g hg => _⟩
@@ -1035,11 +1037,12 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
       simpa [uniformity_eq_comap_nhds_one'] using hu.toHasBasis.comap _
-    simp only [h𝓤G.cauchySeq_iff', ge_iff_le, mem_setOf_eq, forall_true_left]
+    rw [h𝓤G.cauchySeq_iff']
+    simp only [ge_iff_le, mem_setOf_eq, forall_true_left]
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'
-          (fun k hkn hkm hk => u_mul k ⟨_, _, hx' k, hk, div_mul_div_cancel' _ _ _⟩) hmn
+          (fun k _ _ hk => u_mul k ⟨_, _, hx' k, hk, div_mul_div_cancel' _ _ _⟩) hmn
           (by simpa only [div_self'] using mem_of_mem_nhds (hu.mem _))⟩
   /- Since `G` is complete, `x'` converges to some `x₀`, and so the image of this sequence under
     the quotient map converges to `↑x₀`. The image of `x'` is a convergent subsequence of `x`, and
