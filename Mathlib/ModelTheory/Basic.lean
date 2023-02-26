@@ -674,7 +674,7 @@ theorem injective (f : M ↪[L] N) : Function.Injective f :=
 def ofInjective [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Injective f) : M ↪[L] N :=
   { f with
     inj' := hf
-    map_rel' := fun n r x => StrongHomClass.map_rel f r x }
+    map_rel' := fun {_} r x => StrongHomClass.map_rel f r x }
 #align first_order.language.embedding.of_injective FirstOrder.Language.Embedding.ofInjective
 
 @[simp]
