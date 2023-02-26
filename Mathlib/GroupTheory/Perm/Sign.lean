@@ -607,16 +607,15 @@ theorem IsSwap.sign_eq {f : Perm α} (h : f.IsSwap) : sign f = -1 :=
 
 theorem signAux3_symm_trans_trans [DecidableEq β] [Fintype β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
-    signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs :=
-  Quotient.inductionOn₂ t s
-    (fun l₁ l₂ h₁ h₂ =>
-      show signAux2 _ _ = signAux2 _ _ by
-        let n := equivFin β
-        rw [← signAux_eq_signAux2 _ _ n fun _ _ => h₁ _,
-          ← signAux_eq_signAux2 _ _ (e.trans n) fun _ _ => h₂ _]
-        exact congr_arg signAux
-          (Equiv.ext fun x => by simp [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply]))
-    ht hs
+    signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
+  -- porting note: switched from term mode to tactic mode
+  induction' t, s using Quotient.inductionOn₂ with t s ht hs
+  show signAux2 _ _ = signAux2 _ _
+  let n := equivFin β
+  rw [← signAux_eq_signAux2 _ _ n fun _ _ => ht _,
+    ← signAux_eq_signAux2 _ _ (e.trans n) fun _ _ => hs _]
+  exact congr_arg signAux
+    (Equiv.ext fun x => by simp [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply])
 #align equiv.perm.sign_aux3_symm_trans_trans Equiv.Perm.signAux3_symm_trans_trans
 
 @[simp]
