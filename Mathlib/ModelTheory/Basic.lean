@@ -376,8 +376,11 @@ variable {L M N} {P : Type _} [Structure L P] {Q : Type _} [Structure L Q]
 instance : CoeTC L.Constants M :=
   ⟨fun c => funMap c default⟩
 
-theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c :=
-  congr rfl (funext Fin.elim0)
+theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x = c := by
+  congr
+  funext Fin.elim0
+  exact _root_.Fin.elim0 Fin.elim0
+  -- porting note: was `congr rfl (funext Fin.elim0)`
 #align first_order.language.fun_map_eq_coe_constants FirstOrder.Language.funMap_eq_coe_constants
 
 /-- Given a language with a nonempty type of constants, any structure will be nonempty. This cannot
