@@ -183,9 +183,10 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
 @[to_additive]
 theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α => x * a :=
   { comap_uniformity := by
-      rw [← uniformity_translate_mul a, comap_map]
+      nth_rewrite 1 [← uniformity_translate_mul a, comap_map]
+      rfl
       rintro ⟨p₁, p₂⟩ ⟨q₁, q₂⟩
-      simp (config := { contextual := true }) [Prod.eq_iff_fst_eq_snd_eq]
+      simp only [Prod.mk.injEq, mul_left_inj, imp_self]
     inj := mul_left_injective a }
 #align uniform_embedding_translate_mul uniformEmbedding_translate_mul
 #align uniform_embedding_translate_add uniformEmbedding_translate_add
