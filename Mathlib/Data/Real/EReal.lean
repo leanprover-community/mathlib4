@@ -9,7 +9,7 @@ Authors: Kevin Buzzard
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Ennreal
+import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Sign
 
 /-!
