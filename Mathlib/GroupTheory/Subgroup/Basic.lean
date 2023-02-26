@@ -471,7 +471,7 @@ theorem toSubmonoid_eq {p q : Subgroup G} : p.toSubmonoid = q.toSubmonoid ↔ p 
 #align subgroup.to_submonoid_eq Subgroup.toSubmonoid_eq
 #align add_subgroup.to_add_submonoid_eq AddSubgroup.toAddSubmonoid_eq
 
-@[to_additive, mono]
+@[to_additive (attr := mono)]
 theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submonoid G) := fun _ _ =>
   id
 #align subgroup.to_submonoid_strict_mono Subgroup.toSubmonoid_strictMono
@@ -479,7 +479,7 @@ theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submon
 
 attribute [mono] AddSubgroup.toAddSubmonoid_strictMono
 
-@[to_additive, mono]
+@[to_additive (attr := mono)]
 theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :=
   toSubmonoid_strictMono.monotone
 #align subgroup.to_submonoid_mono Subgroup.toSubmonoid_mono

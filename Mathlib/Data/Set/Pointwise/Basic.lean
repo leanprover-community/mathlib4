@@ -414,7 +414,7 @@ theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
 #align set.singleton_mul_singleton Set.singleton_mul_singleton
 #align set.singleton_add_singleton Set.singleton_add_singleton
 
-@[to_additive, mono]
+@[to_additive (attr := mono)]
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 #align set.mul_subset_mul Set.mul_subset_mul
@@ -670,7 +670,7 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
 #align set.singleton_div_singleton Set.singleton_div_singleton
 #align set.singleton_sub_singleton Set.singleton_sub_singleton
 
-@[to_additive, mono]
+@[to_additive (attr := mono)]
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 #align set.div_subset_div Set.div_subset_div
