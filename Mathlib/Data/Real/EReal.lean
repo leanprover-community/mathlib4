@@ -707,7 +707,6 @@ instance : Neg EReal := ⟨EReal.neg⟩
 instance : SubNegZeroMonoid EReal where
   neg_zero := congr_arg Real.toEReal neg_zero
 
-
 @[simp]
 theorem neg_top : -(⊤ : EReal) = ⊥ :=
   rfl
@@ -760,55 +759,44 @@ theorem neg_eq_zero_iff {x : EReal} : -x = 0 ↔ x = 0 :=
 #align ereal.neg_eq_zero_iff EReal.neg_eq_zero_iff
 
 theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
-  WithBot.strictAnti_iff.2 ⟨WithTop.strictAnti_iff.2 ⟨_, _⟩, _⟩
+  WithBot.strictAnti_iff.2 ⟨WithTop.strictAnti_iff.2
+    ⟨coe_strictMono.comp_strictAnti fun _ _ => neg_lt_neg, fun _ => bot_lt_coe _⟩,
+      WithTop.forall.2 ⟨bot_lt_top, fun _ => coe_lt_top _⟩⟩
 
-/-- if `-a ≤ b` then `-b ≤ a` on `ereal`. -/
-protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := by
-  induction a using EReal.rec <;> induction b using EReal.rec
-  · exact h
-  · simp only [coe_ne_top, neg_bot, top_le_iff] at h
-  · exact bot_le
-  · simpa only [coe_ne_top, le_bot_iff] using h
-  · norm_cast  at h⊢
-    exact neg_le.1 h
-  · exact bot_le
-  · exact le_top
-  · exact le_top
-  · exact le_top
-#align ereal.neg_le_of_neg_le EReal.neg_le_of_neg_le
+@[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_le
+#align ereal.neg_le_neg_iff EReal.neg_le_neg_iff
+
+-- porting note: new lemma
+@[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
 
 /-- `-a ≤ b ↔ -b ≤ a` on `ereal`. -/
-protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a :=
-  ⟨EReal.neg_le_of_neg_le, EReal.neg_le_of_neg_le⟩
+protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
+ rw [← neg_le_neg_iff, neg_neg]
 #align ereal.neg_le EReal.neg_le
+
+/-- if `-a ≤ b` then `-b ≤ a` on `ereal`. -/
+protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := EReal.neg_le.mp h
+#align ereal.neg_le_of_neg_le EReal.neg_le_of_neg_le
 
 /-- `a ≤ -b → b ≤ -a` on ereal -/
 theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := by
   rwa [← neg_neg b, EReal.neg_le, neg_neg]
 #align ereal.le_neg_of_le_neg EReal.le_neg_of_le_neg
 
-@[simp]
-theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := by conv_lhs => rw [EReal.neg_le, neg_neg]
-#align ereal.neg_le_neg_iff EReal.neg_le_neg_iff
-
 /-- Negation as an order reversing isomorphism on `ereal`. -/
 def negOrderIso : EReal ≃o ERealᵒᵈ :=
   { Equiv.neg EReal with
     toFun := fun x => OrderDual.toDual (-x)
-    invFun := fun x => -x.ofDual
-    map_rel_iff' := fun x y => neg_le_neg_iff }
+    invFun := fun x => -OrderDual.ofDual x
+    map_rel_iff' := neg_le_neg_iff }
 #align ereal.neg_order_iso EReal.negOrderIso
 
-theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := by
-  apply lt_of_le_of_ne (EReal.neg_le_of_neg_le h.le)
-  intro H
-  rw [← H, neg_neg] at h
-  exact lt_irrefl _ h
-#align ereal.neg_lt_of_neg_lt EReal.neg_lt_of_neg_lt
-
-theorem neg_lt_iff_neg_lt {a b : EReal} : -a < b ↔ -b < a :=
-  ⟨fun h => EReal.neg_lt_of_neg_lt h, fun h => EReal.neg_lt_of_neg_lt h⟩
+theorem neg_lt_iff_neg_lt {a b : EReal} : -a < b ↔ -b < a := by
+  rw [← neg_lt_neg_iff, neg_neg]
 #align ereal.neg_lt_iff_neg_lt EReal.neg_lt_iff_neg_lt
+
+theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_iff_neg_lt.1 h
+#align ereal.neg_lt_of_neg_lt EReal.neg_lt_of_neg_lt
 
 /-!
 ### Subtraction
@@ -817,7 +805,6 @@ Subtraction on `ereal` is defined by `x - y = x + (-y)`. Since addition is badly
 points, so is subtraction. There is no standard algebraic typeclass involving subtraction that is
 registered on `ereal`, beyond `sub_neg_zero_monoid`, because of this bad behavior.
 -/
-
 
 @[simp]
 theorem bot_sub (x : EReal) : ⊥ - x = ⊥ :=
@@ -853,42 +840,27 @@ theorem sub_lt_sub_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz 
   add_lt_add_of_lt_of_le h (neg_le_neg_iff.2 h') (by simp [ht]) (by simp [hz])
 #align ereal.sub_lt_sub_of_lt_of_le EReal.sub_lt_sub_of_lt_of_le
 
+set_option pp.coercions false
 theorem coe_real_ereal_eq_coe_toNNReal_sub_coe_toNNReal (x : ℝ) :
     (x : EReal) = Real.toNNReal x - Real.toNNReal (-x) := by
-  rcases le_or_lt 0 x with (h | h)
-  · have : Real.toNNReal x = ⟨x, h⟩ := by
-      ext
-      simp [h]
-    simp only [Real.toNNReal_of_nonpos (neg_nonpos.mpr h), this, sub_zero, ENNReal.coe_zero,
-      coe_ennreal_zero, coe_coe]
+  rcases le_total 0 x with (h | h)
+  · lift x to ℝ≥0 using h
+    rw [Real.toNNReal_of_nonpos (neg_nonpos.mpr x.coe_nonneg), Real.toNNReal_coe, ENNReal.coe_zero,
+      coe_ennreal_zero, sub_zero]
     rfl
-  · have : (x : EReal) = -(-x : ℝ) := by simp
-    conv_lhs => rw [this]
-    have : Real.toNNReal (-x) = ⟨-x, neg_nonneg.mpr h.le⟩ :=
-      by
-      ext
-      simp [neg_nonneg.mpr h.le]
-    simp only [Real.toNNReal_of_nonpos h.le, this, zero_sub, neg_inj, coe_neg, ENNReal.coe_zero,
-      coe_ennreal_zero, coe_coe]
-    rfl
+  · rw [Real.toNNReal_of_nonpos h, ENNReal.coe_zero, coe_ennreal_zero, coe_nnreal_eq_coe_real,
+      Real.coe_toNNReal, zero_sub, coe_neg, neg_neg]
+    exact neg_nonneg.2 h
 #align ereal.coe_real_ereal_eq_coe_to_nnreal_sub_coe_to_nnreal EReal.coe_real_ereal_eq_coe_toNNReal_sub_coe_toNNReal
 
 theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ ⊤) (h'y : y ≠ ⊥) :
     toReal (x - y) = toReal x - toReal y := by
-  rw [sub_eq_add_neg, to_real_add hx h'x, to_real_neg]
-  · rfl
-  · simpa using hy
-  · simpa using h'y
+  lift x to ℝ using ⟨hx, h'x⟩
+  lift y to ℝ using ⟨hy, h'y⟩
+  rfl
 #align ereal.to_real_sub EReal.toReal_sub
 
 /-! ### Multiplication -/
-
-
-protected theorem mul_comm (x y : EReal) : x * y = y * x := by
-  induction x using EReal.rec <;> induction y using EReal.rec <;> try rfl
-  dsimp only [(· * ·)]
-  simp only [EReal.mul, mul_comm]
-#align ereal.mul_comm EReal.mul_comm
 
 @[simp]
 theorem top_mul_top : (⊤ : EReal) * ⊤ = ⊤ :=
@@ -912,15 +884,15 @@ theorem bot_mul_bot : (⊥ : EReal) * ⊥ = ⊤ :=
 
 theorem mul_top_of_pos {x : EReal} (h : 0 < x) : x * ⊤ = ⊤ := by
   induction x using EReal.rec
-  · simpa only [not_lt_bot] using h
-  · simp only [Mul.mul, EReal.mul, EReal.coe_pos.1 h, if_true]
+  · simp only [not_lt_bot] at h
+  · exact if_pos (EReal.coe_pos.1 h)
   · rfl
 #align ereal.mul_top_of_pos EReal.mul_top_of_pos
 
 theorem mul_top_of_neg {x : EReal} (h : x < 0) : x * ⊤ = ⊥ := by
   induction x using EReal.rec
   · rfl
-  · simp only [EReal.coe_neg'] at h
+  · rw [EReal.coe_neg'] at h
     simp only [Mul.mul, EReal.mul, not_lt.2 h.le, h.ne, if_false]
   · simpa only [not_top_lt] using h
 #align ereal.mul_top_of_neg EReal.mul_top_of_neg
