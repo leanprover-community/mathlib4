@@ -139,7 +139,7 @@ def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
 @[simps]
 def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : ∀ j, X ⟶ F.obj (some j))
     (w : ∀ j, π j ≫ F.map (Hom.term j) = f) : Cone F :=
-  { X
+  { pt := X
     π :=
       { app := fun j =>
           match j with
@@ -260,7 +260,7 @@ def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
 @[simps]
 def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι : ∀ j, F.obj (some j) ⟶ X)
     (w : ∀ j, F.map (Hom.init j) ≫ ι j = f) : Cocone F :=
-  { X
+  { pt := X
     ι :=
       { app := fun j =>
           match j with
@@ -351,14 +351,14 @@ variable {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j �
 -- Porting note: simp can prove this so removed simp attribute
 @[reassoc]
 theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
-  simp only [limit.lift_π, WidePullbackShape.mkCone_X, WidePullbackShape.mkCone_π_app]
+  simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
 set_option align.precheck false in -- Porting note: again 
 #align category_theory.limits.wide_pullback.lift_π CategoryTheory.Limits.widePullback.lift_π
 
 -- Porting note: simp can prove this so removed simp attribute
 @[reassoc]
 theorem lift_base : lift f fs w ≫ base arrows = f := by
-  simp only [limit.lift_π, WidePullbackShape.mkCone_X, WidePullbackShape.mkCone_π_app]
+  simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
 set_option align.precheck false in -- Porting note: again 
 #align category_theory.limits.wide_pullback.lift_base CategoryTheory.Limits.widePullback.lift_base
 
@@ -439,14 +439,14 @@ variable {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows
 -- Porting note: simp can prove this so removed simp attribute
 @[reassoc]
 theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
-  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_X, WidePushoutShape.mkCocone_ι_app]
+  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
 set_option align.precheck false in -- Porting note: again 
 #align category_theory.limits.wide_pushout.ι_desc CategoryTheory.Limits.widePushout.ι_desc
 
 -- Porting note: simp can prove this so removed simp attribute
 @[reassoc]
 theorem head_desc : head arrows ≫ desc f fs w = f := by
-  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_X, WidePushoutShape.mkCocone_ι_app]
+  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
 set_option align.precheck false in -- Porting note: again 
 #align category_theory.limits.wide_pushout.head_desc CategoryTheory.Limits.widePushout.head_desc
 
