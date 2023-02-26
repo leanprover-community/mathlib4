@@ -58,7 +58,7 @@ See <https://stacks.math.columbia.edu/tag/002E>.
   -/
 -- Porting note: removed @[nolint has_nonempty_instance]
 structure IsLimit (t : Cone F) where
-  /-- There is a morphism from any cone vertex to `t.pt` -/
+  /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
   /-- The map makes the triangle with the two natural transformations commute -/
   fac : ∀ (s : Cone F) (j : J), lift s ≫ t.π.app j = s.π.app j := by aesop_cat
@@ -69,8 +69,8 @@ structure IsLimit (t : Cone F) where
 #align category_theory.limits.is_limit.fac' CategoryTheory.Limits.IsLimit.fac
 #align category_theory.limits.is_limit.uniq' CategoryTheory.Limits.IsLimit.uniq
 
--- Porting note: linter claimed it reduced but it did not
-attribute [nolint simpNF] IsLimit.mk.injEq
+-- Porting note:  simp can prove this. Linter complains it still exists
+attribute [-simp, nolint simpNF] IsLimit.mk.injEq
 
 attribute [reassoc (attr := simp)] IsLimit.fac
 
@@ -227,13 +227,8 @@ def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t
 variable {t : Cone F}
 
 theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
-    m =
-      h.lift
-        { pt := W
-          π := { app := fun b => m ≫ t.π.app b } } :=
-  h.uniq
-    { pt := W
-      π := { app := fun b => m ≫ t.π.app b } } m fun b => rfl
+    m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
+  h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun b => rfl
 #align category_theory.limits.is_limit.hom_lift CategoryTheory.Limits.IsLimit.hom_lift
 
 /-- Two morphisms into a limit are equal if their compositions with
@@ -366,7 +361,7 @@ def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (
   ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 #align category_theory.limits.is_limit.whisker_equivalence_equiv CategoryTheory.Limits.IsLimit.whiskerEquivalenceEquiv
 
-/-- We can prove two cone points `(s : Cone F).pt` and `(t.Cone G).pt` are isomorphic if
+/-- We can prove two cone points `(s : Cone F).pt` and `(t : Cone G).pt` are isomorphic if
 * both cones are limit cones
 * their indexing categories are equivalent via some `e : J ≌ K`,
 * the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
@@ -399,13 +394,10 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
 end Equivalence
 
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
-  a cone on `F` with vertex `W`. -/
+  a cone on `F` with cone point `W`. -/
 def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F where
   hom f := (t.extend f.down).π
-  inv π :=
-    ⟨h.lift
-        { pt := W
-          π }⟩
+  inv π := ⟨h.lift { pt := W, π }⟩
   hom_inv_id := by 
     funext f; apply ULift.ext
     apply h.hom_ext; intro j; simp
@@ -420,7 +412,7 @@ theorem homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.pt)) :
 #align category_theory.limits.is_limit.hom_iso_hom CategoryTheory.Limits.IsLimit.homIso_hom
 
 /-- The limit of `F` represents the functor taking `W` to
-  the set of cones on `F` with vertex `W`. -/
+  the set of cones on `F` with cone point `W`. -/
 def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones := by
   refine NatIso.ofComponents (fun W => IsLimit.homIso h (unop W)) ?_
   intro X Y f 
@@ -585,8 +577,8 @@ structure IsColimit (t : Cocone F) where
 
 attribute [reassoc (attr := simp)] IsColimit.fac
 
--- Porting note: linter claimed it reduced but it did not
-attribute [nolint simpNF] IsColimit.mk.injEq
+-- Porting note: simp can prove this. Linter claims it still is tagged with simp
+attribute [-simp, nolint simpNF] IsColimit.mk.injEq
 
 namespace IsColimit
 
@@ -889,7 +881,7 @@ def whiskerEquivalenceEquiv {s : Cocone F} (e : K ≌ J) :
   ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 #align category_theory.limits.is_colimit.whisker_equivalence_equiv CategoryTheory.Limits.IsColimit.whiskerEquivalenceEquiv
 
-/-- We can prove two cocone points `(s : Cocone F).pt` and `(t.Cocone G).pt` are isomorphic if
+/-- We can prove two cocone points `(s : Cocone F).pt` and `(t : Cocone G).pt` are isomorphic if
 * both cocones are colimit cocones
 * their indexing categories are equivalent via some `e : J ≌ K`,
 * the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
@@ -920,7 +912,7 @@ def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t :
 end Equivalence
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
-  a cocone on `F` with vertex `W`. -/
+  a cocone on `F` with cone point `W`. -/
 def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅ F ⟶ (const J).obj W where
   hom f := (t.extend f.down).ι
   inv ι :=
@@ -941,7 +933,7 @@ theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
 #align category_theory.limits.is_colimit.hom_iso_hom CategoryTheory.Limits.IsColimit.homIso_hom
 
 /-- The colimit of `F` represents the functor taking `W` to
-  the set of cocones on `F` with vertex `W`. -/
+  the set of cocones on `F` with cone point `W`. -/
 def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
   NatIso.ofComponents (IsColimit.homIso h) (by intros; funext; aesop_cat)
 #align category_theory.limits.is_colimit.nat_iso CategoryTheory.Limits.IsColimit.natIso
@@ -1082,4 +1074,4 @@ end
 end IsColimit
 
 end CategoryTheory.Limits
-
+#lint
