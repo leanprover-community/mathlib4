@@ -107,9 +107,9 @@ theorem cells_subset_iff {μ ν : YoungDiagram} : μ.cells ⊆ ν.cells ↔ μ �
 #align young_diagram.cells_subset_iff YoungDiagram.cells_subset_iff
 
 @[simp]
-theorem cells_sSubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
+theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
   Iff.rfl
-#align young_diagram.cells_ssubset_iff YoungDiagram.cells_sSubset_iff
+#align young_diagram.cells_ssubset_iff YoungDiagram.cells_ssubset_iff
 
 instance : HasSup YoungDiagram
     where sup μ ν :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module logic.basic
-! leanprover-community/mathlib commit 1c521b4fb909320eca16b2bb6f8b5b0490b1cb5e
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -296,8 +296,8 @@ instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
 @[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
 @[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
 theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
-protected theorem xor.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
-#align xor.or xor.or
+protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
+#align xor.or Xor'.or
 #align xor_not_not xor_not_not
 #align xor_not_right xor_not_right
 #align xor_not_left xor_not_left

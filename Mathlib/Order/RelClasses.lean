@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module order.rel_classes
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit bc7d81beddb3d6c66f71449c5bc76c38cb77cf9e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -291,6 +291,11 @@ theorem WellFoundedRelation.asymmetric {α : Sort _} [WellFoundedRelation α] {a
   fun hab hba => WellFoundedRelation.asymmetric hba hab
 termination_by _ => a
 
+lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
+    (hb : WellFounded rb) : WellFounded (Prod.Lex ra rb) :=
+  (Prod.lex ⟨_, ha⟩ ⟨_, hb⟩).wf
+#align prod.lex_wf WellFounded.prod_lex
+
 namespace IsWellFounded
 
 variable (r) [IsWellFounded α r]
@@ -489,7 +494,7 @@ instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder �
   wf := wellFounded_of_isEmpty r
 
 instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
-  ⟨(Prod.lex (IsWellFounded.toWellFoundedRelation _) (IsWellFounded.toWellFoundedRelation _)).wf⟩
+  ⟨IsWellFounded.wf.prod_lex IsWellFounded.wf⟩
 
 instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
   trichotomous := fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ =>
@@ -505,8 +510,6 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
     cases' h₁ with a₁ a₂ b₁ b₂ ab a₁ b₁ b₂ ab <;> cases' h₂ with _ _ c₁ c₂ bc _ _ c₂ bc
     exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
       .right _ (_root_.trans ab bc)]
-  wf := (Prod.lex (IsWellFounded.toWellFoundedRelation _)
-    (IsWellFounded.toWellFoundedRelation _)).wf
 
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
@@ -600,39 +603,57 @@ variable [HasSubset α] {a b c : α}
 
 lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
 #align subset_of_eq_of_subset subset_of_eq_of_subset
+
 lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [←hbc]
 #align subset_of_subset_of_eq subset_of_subset_of_eq
-@[refl] lemma subset_refl [IsRefl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
+
+@[refl]
+lemma subset_refl [IsRefl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
 #align subset_refl subset_refl
+
 lemma subset_rfl [IsRefl α (· ⊆ ·)] : a ⊆ a := refl _
 #align subset_rfl subset_rfl
+
 lemma subset_of_eq [IsRefl α (· ⊆ ·)] : a = b → a ⊆ b := fun h => h ▸ subset_rfl
 #align subset_of_eq subset_of_eq
+
 lemma superset_of_eq [IsRefl α (· ⊆ ·)] : a = b → b ⊆ a := fun h => h ▸ subset_rfl
 #align superset_of_eq superset_of_eq
+
 lemma ne_of_not_subset [IsRefl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt subset_of_eq
 #align ne_of_not_subset ne_of_not_subset
+
 lemma ne_of_not_superset [IsRefl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt superset_of_eq
 #align ne_of_not_superset ne_of_not_superset
-@[trans] lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
+
+@[trans]
+lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
 #align subset_trans subset_trans
+
 lemma subset_antisymm [IsAntisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → a = b := antisymm
 #align subset_antisymm subset_antisymm
+
 lemma superset_antisymm [IsAntisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → b = a := antisymm'
 #align superset_antisymm superset_antisymm
 
 alias subset_of_eq_of_subset ← Eq.trans_subset
 #align eq.trans_subset Eq.trans_subset
+
 alias subset_of_subset_of_eq ← HasSubset.subset.trans_eq
 #align has_subset.subset.trans_eq HasSubset.subset.trans_eq
+
 alias subset_of_eq ← Eq.subset' --TODO: Fix it and kill `Eq.subset`
 #align eq.subset' Eq.subset'
+
 alias superset_of_eq ← Eq.superset
 #align eq.superset Eq.superset
+
 alias subset_trans ← HasSubset.Subset.trans
 #align has_subset.subset.trans HasSubset.Subset.trans
+
 alias subset_antisymm ← HasSubset.Subset.antisymm
 #align has_subset.subset.antisymm HasSubset.Subset.antisymm
+
 alias superset_antisymm ← HasSubset.Subset.antisymm'
 #align has_subset.subset.antisymm' HasSubset.Subset.antisymm'
 
@@ -651,33 +672,47 @@ variable [HasSSubset α] {a b c : α}
 
 lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
 #align ssubset_of_eq_of_ssubset ssubset_of_eq_of_ssubset
+
 lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [←hbc]
 #align ssubset_of_ssubset_of_eq ssubset_of_ssubset_of_eq
+
 lemma ssubset_irrefl [IsIrrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _
 #align ssubset_irrefl ssubset_irrefl
+
 lemma ssubset_irrfl [IsIrrefl α (· ⊂ ·)] {a : α} : ¬a ⊂ a := irrefl _
 #align ssubset_irrfl ssubset_irrfl
+
 lemma ne_of_ssubset [IsIrrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → a ≠ b := ne_of_irrefl
 #align ne_of_ssubset ne_of_ssubset
+
 lemma ne_of_ssuperset [IsIrrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → b ≠ a := ne_of_irrefl'
 #align ne_of_ssuperset ne_of_ssuperset
-@[trans] lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
+
+@[trans]
+lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
 #align ssubset_trans ssubset_trans
+
 lemma ssubset_asymm [IsAsymm α (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
 #align ssubset_asymm ssubset_asymm
 
 alias ssubset_of_eq_of_ssubset ← Eq.trans_ssubset
 #align eq.trans_ssubset Eq.trans_ssubset
+
 alias ssubset_of_ssubset_of_eq ← HasSSubset.SSubset.trans_eq
 #align has_ssubset.ssubset.trans_eq HasSSubset.SSubset.trans_eq
+
 alias ssubset_irrfl ← HasSSubset.SSubset.false
 #align has_ssubset.ssubset.false HasSSubset.SSubset.false
+
 alias ne_of_ssubset ← HasSSubset.SSubset.ne
 #align has_ssubset.ssubset.ne HasSSubset.SSubset.ne
+
 alias ne_of_ssuperset ← HasSSubset.SSubset.ne'
 #align has_ssubset.ssubset.ne' HasSSubset.SSubset.ne'
+
 alias ssubset_trans ← HasSSubset.SSubset.trans
 #align has_ssubset.ssubset.trans HasSSubset.SSubset.trans
+
 alias ssubset_asymm ← HasSSubset.SSubset.asymm
 #align has_ssubset.ssubset.asymm HasSSubset.SSubset.asymm
 
