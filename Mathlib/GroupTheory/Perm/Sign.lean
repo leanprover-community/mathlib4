@@ -12,7 +12,6 @@ import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Int.Order.Units
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Sign of a permutation
