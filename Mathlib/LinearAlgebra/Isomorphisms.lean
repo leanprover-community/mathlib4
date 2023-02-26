@@ -71,7 +71,7 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 -/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
-    p ⧸ comap p.subtype (p ⊓ p') →ₗ[R] _ ⧸ comap (p ⊔ p').subtype p' :=
+    (↥p) ⧸ (comap p.subtype (p ⊓ p')) →ₗ[R] (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
   (comap p.subtype (p ⊓ p')).liftQ ((comap (p ⊔ p').subtype p').mkQ.comp (Submodule.ofLe le_sup_left))
     (by
       rw [LinearMap.ker_comp, Submodule.ofLe, comap_cod_restrict, ker_mkq, map_comap_subtype]
@@ -140,11 +140,11 @@ variable (S T : Submodule R M) (h : S ≤ T)
 
 /-- The map from the third isomorphism theorem for modules: `(M / S) / (T / S) → M / T`. -/
 def quotientQuotientEquivQuotientAux (h : S ≤ T) : (M ⧸ S) ⧸ T.map S.mkQ →ₗ[R] M ⧸ T :=
-  liftq _ (mapq S T LinearMap.id h)
+  liftQ _ (mapQ S T LinearMap.id h)
     (by
       rintro _ ⟨x, hx, rfl⟩
-      rw [LinearMap.mem_ker, mkq_apply, mapq_apply]
-      exact (quotient.mk_eq_zero _).mpr hx)
+      rw [LinearMap.mem_ker, mkQ_apply, mapQ_apply]
+      exact (Quotient.mk_eq_zero _).mpr hx)
 #align submodule.quotient_quotient_equiv_quotient_aux Submodule.quotientQuotientEquivQuotientAux
 
 @[simp]
@@ -153,17 +153,14 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
   liftQ_apply _ _ _
 #align submodule.quotient_quotient_equiv_quotient_aux_mk Submodule.quotientQuotientEquivQuotientAux_mk
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
-    quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by
-  rw [quotient_quotient_equiv_quotient_aux_mk, mapq_apply, LinearMap.id_apply]
+    quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
 #align submodule.quotient_quotient_equiv_quotient_aux_mk_mk Submodule.quotientQuotientEquivQuotientAux_mk_mk
 
 /-- **Noether's third isomorphism theorem** for modules: `(M / S) / (T / S) ≃ M / T`. -/
 def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ T :=
-  {
-    quotientQuotientEquivQuotientAux S T
-      h with
+  { quotientQuotientEquivQuotientAux S T h with
     toFun := quotientQuotientEquivQuotientAux S T h
     invFun := mapQ _ _ (mkQ S) (le_comap_map _ _)
     left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x => by simp
@@ -174,8 +171,8 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
 theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
     [DecidablePred fun x => x ∈ S.map T.mkQ] [Fintype (M ⧸ S)] [Fintype (M ⧸ T)] :
     Fintype.card (S.map T.mkQ) * Fintype.card (M ⧸ S) = Fintype.card (M ⧸ T) := by
-  rw [Submodule.card_eq_card_quotient_mul_card (map T.mkq S),
-    fintype.card_eq.mpr ⟨(quotient_quotient_equiv_quotient T S hST).toEquiv⟩]
+  rw [Submodule.card_eq_card_quotient_mul_card (map T.mkQ S),
+    Fintype.card_eq.mpr ⟨(quotientQuotientEquivQuotient T S hST).toEquiv⟩]
 #align submodule.card_quotient_mul_card_quotient Submodule.card_quotient_mul_card_quotient
 
 end Submodule
