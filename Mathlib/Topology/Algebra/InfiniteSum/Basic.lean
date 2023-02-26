@@ -656,8 +656,8 @@ theorem tsum_eq_add_tsum_ite' {f : β → α} (b : β) (hf : Summable (update f 
     (∑' x, f x) = f b + ∑' x, ite (x = b) 0 (f x) :=
   calc
     (∑' x, f x) = ∑' x, ite (x = b) (f x) 0 + update f b 0 x :=
-      tsum_congr fun n => by split_ifs <;> simp [update_apply, h]
-    _ = (∑' x, ite (x = b) (f x) 0) + ∑' x, f.update b 0 x :=
+      tsum_congr fun n => by split_ifs with h <;> simp [update_apply, h]
+    _ = (∑' x, ite (x = b) (f x) 0) + ∑' x, update f b 0 x :=
       tsum_add ⟨ite (b = b) (f b) 0, hasSum_single b fun b hb => if_neg hb⟩ hf
     _ = ite (b = b) (f b) 0 + ∑' x, update f b 0 x :=
     by
@@ -982,13 +982,12 @@ theorem tendsto_sum_nat_add [T2Space α] (f : ℕ → α) :
       by
       ext1 i
       rw [sub_eq_iff_eq_add, add_comm, sum_add_tsum_nat_add i hf]
-    have h₁ : Tendsto (fun i : ℕ => ∑' i, f i) atTop (𝓝 (∑' i, f i)) := tendsto_const_nhds
+    have h₁ : Tendsto (fun _ : ℕ => ∑' i, f i) atTop (𝓝 (∑' i, f i)) := tendsto_const_nhds
     simpa only [h₀, sub_self] using Tendsto.sub h₁ hf.hasSum.tendsto_sum_nat
-  · convert tendsto_const_nhds
+  · convert tendsto_const_nhds (α := α) (β := ℕ) (a := 0) (f := atTop)
     ext1 i
     rw [← summable_nat_add_iff i] at hf
-    · exact tsum_eq_zero_of_not_summable hf
-    · infer_instance
+    exact tsum_eq_zero_of_not_summable hf
 #align tendsto_sum_nat_add tendsto_sum_nat_add
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both convergent then so is the `ℤ`-indexed
@@ -1033,7 +1032,7 @@ theorem summable_int_of_summable_nat {f : ℤ → α} (hp : Summable fun n : ℕ
 theorem HasSum.sum_nat_of_sum_int {α : Type _} [AddCommMonoid α] [TopologicalSpace α]
     [ContinuousAdd α] {a : α} {f : ℤ → α} (hf : HasSum f a) :
     HasSum (fun n : ℕ => f n + f (-n)) (a + f 0) := by
-  apply (hf.add (hasSum_ite_eq (0 : ℤ) (f 0))).hasSum_of_sum_eq fun u => _
+  apply (hf.add (hasSum_ite_eq (0 : ℤ) (f 0))).hasSum_of_sum_eq fun u => ?_
   refine' ⟨u.image Int.natAbs, fun v' hv' => _⟩
   let u1 := v'.image fun x : ℕ => (x : ℤ)
   let u2 := v'.image fun x : ℕ => -(x : ℤ)
@@ -1054,7 +1053,7 @@ theorem HasSum.sum_nat_of_sum_int {α : Type _} [AddCommMonoid α] [TopologicalS
   refine' ⟨u1 ∪ u2, A, _⟩
   calc
     (∑ x in u1 ∪ u2, f x + ite (x = 0) (f 0) 0) = (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x := by
-      rw [sum_add_distrib]
+      {rw [sum_add_distrib]
       congr 1
       refine' (sum_subset_zero_on_sdiff inter_subset_union _ _).symm
       · intro x hx
@@ -1070,7 +1069,7 @@ theorem HasSum.sum_nat_of_sum_int {α : Type _} [AddCommMonoid α] [TopologicalS
             simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
           · rcases hx.1 with ⟨a, ha, rfl⟩
             simp only [Nat.cast_nonneg]
-        simp only [this, eq_self_iff_true, if_true]
+        simp only [this, eq_self_iff_true, if_true]}
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
     _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by
       simp only [sum_image, Nat.cast_inj, imp_self, imp_true_iff, neg_inj]
@@ -1132,17 +1131,17 @@ theorem tendsto_tsum_compl_atTop_zero (f : β → α) :
       cauchySeq_finset_iff_vanishing.1 (Tendsto.cauchySeq H.hasSum) o ho
     refine' ⟨s, fun a sa => oe _⟩
     have A : Summable fun b : { x // x ∉ a } => f b := a.summable_compl_iff.2 H
-    apply IsClosed.mem_of_tendsto o_closed A.hasSum (eventually_of_forall fun b => _)
+    refine' IsClosed.mem_of_tendsto o_closed A.hasSum (eventually_of_forall fun b => _)
     have : Disjoint (Finset.image (fun i : { x // x ∉ a } => (i : β)) b) s :=
       by
-      apply disjoint_left.2 fun i hi his => _
+      refine' disjoint_left.2 fun i hi his => _
       rcases mem_image.1 hi with ⟨i', hi', rfl⟩
       exact i'.2 (sa his)
     convert hs _ this using 1
     rw [sum_image]
     intro i hi j hj hij
     exact Subtype.ext hij
-  · convert tendsto_const_nhds
+  · convert tendsto_const_nhds (α := α) (β := ℕ) (f := atTop) (a := 0)
     ext s
     apply tsum_eq_zero_of_not_summable
     rwa [Finset.summable_compl_iff]
@@ -1204,7 +1203,7 @@ theorem Summable.sigma {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : 
 
 theorem Summable.prod_factor {f : β × γ → α} (h : Summable f) (b : β) :
     Summable fun c => f (b, c) :=
-  h.comp_injective fun c₁ c₂ h => (Prod.ext_iff.1 h).2
+  h.comp_injective fun _ _ h => (Prod.ext_iff.1 h).2
 #align summable.prod_factor Summable.prod_factor
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (b c) -/
