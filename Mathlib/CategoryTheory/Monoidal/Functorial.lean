@@ -20,10 +20,10 @@ having an existing (non-monoidal) functor `F : C ⥤ D` between monoidal categor
 and wanting to assert that it has an extension to a lax monoidal functor.
 
 The two options seem to be
-1. Construct a separate `F' : lax_monoidal_functor C D`,
-   and assert `F'.to_functor ≅ F`.
+1. Construct a separate `F' : LaxMonoidalFunctor C D`,
+   and assert `F'.toFunctor ≅ F`.
 2. Introduce unbundled functors and unbundled lax monoidal functors,
-   and construct `lax_monoidal F.obj`, then construct `F' := lax_monoidal_functor.of F.obj`.
+   and construct `LaxMonoidal F.obj`, then construct `F' := LaxMonoidalFunctor.of F.obj`.
 
 Both have costs, but as for option 2. the cost is in library design,
 while in option 1. the cost is users having to carry around additional isomorphisms forever,
@@ -50,7 +50,7 @@ open MonoidalCategory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [MonoidalCategory.{v₂} D]
 
--- Perhaps in the future we'll redefine `lax_monoidal_functor` in terms of this,
+-- Perhaps in the future we'll redefine `LaxMonoidalFunctor` in terms of this,
 -- but that isn't the immediate plan.
 /-- An unbundled description of lax monoidal functors. -/
 class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
@@ -88,8 +88,8 @@ attribute [simp] LaxMonoidal.associativity
 
 namespace LaxMonoidalFunctor
 
-/-- Construct a bundled `lax_monoidal_functor` from the object level function
-and `functorial` and `lax_monoidal` typeclasses.
+/-- Construct a bundled `LaxMonoidalFunctor` from the object level function
+and `Functorial` and `LaxMonoidal` typeclasses.
 -/
 @[simps]
 def of (F : C → D) [I₁ : Functorial.{v₁, v₂} F] [I₂ : LaxMonoidal.{v₁, v₂} F] :
@@ -113,5 +113,5 @@ instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C)
 end
 
 -- TODO instances for composition, as required
--- TODO `strong_monoidal`, as well as `lax_monoidal`
+-- TODO `StrongMonoidal`, as well as `LaxMonoidal`
 end CategoryTheory
