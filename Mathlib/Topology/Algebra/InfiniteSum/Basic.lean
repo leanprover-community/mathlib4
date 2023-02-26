@@ -69,7 +69,7 @@ irreducible_def tsum {β} (f : β → α) :=
   if h : Summable f then Classical.choose h else 0
 #align tsum tsum
 
--- mathport name: «expr∑' , »
+@[inherit_doc tsum]
 notation3"∑' "-- see Note [operator precedence of big operators]
 (...)", "r:(scoped f => tsum f) => r
 
@@ -397,10 +397,10 @@ theorem HasSum.sigma [RegularSpace α] {γ : β → Type _} {f : (Σ b : β, γ 
       (𝓝 <| ∑ b in bs, g b) :=
     by
     simp only [← sigma_preimage_mk, sum_sigma]
-    refine' tendsto_finset_sum _ fun b hb => _
+    refine' tendsto_finset_sum _ fun b _ => _
     change
       Tendsto (fun t => (fun t => ∑ s in t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
-    exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (by sorry))
+    exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
   refine' hsc.mem_of_tendsto this (eventually_atTop.2 ⟨u, fun t ht => hu _ fun x hx => _⟩)
   exact mem_filter.2 ⟨ht hx, hbs <| mem_image_of_mem _ hx⟩
 #align has_sum.sigma HasSum.sigma
@@ -561,10 +561,9 @@ theorem tsum_dite_left (P : Prop) [Decidable P] (x : β → P → α) :
 theorem Function.Surjective.tsum_eq_tsum_of_hasSum_iff_hasSum {α' : Type _} [AddCommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) (h0 : e 0 = 0) {f : β → α}
     {g : γ → α'} (h : ∀ {a}, HasSum f (e a) ↔ HasSum g a) : (∑' b, f b) = e (∑' c, g c) :=
-  by_cases (fun this : Summable g => (h.mpr this.HasSum).tsum_eq) fun hg : ¬Summable g =>
-    by
+  _root_.by_cases (fun x => (h.mpr x.hasSum).tsum_eq) fun hg : ¬Summable g => by
     have hf : ¬Summable f := mt (hes.summable_iff_of_hasSum_iff @h).1 hg
-    simp [tsum, hf, hg, h0]
+    simp [tsum_def, hf, hg, h0]
 #align function.surjective.tsum_eq_tsum_of_has_sum_iff_has_sum Function.Surjective.tsum_eq_tsum_of_hasSum_iff_hasSum
 
 theorem tsum_eq_tsum_of_hasSum_iff_hasSum {f : β → α} {g : γ → α}
@@ -590,7 +589,8 @@ theorem tsum_eq_tsum_of_ne_zero_bij {g : γ → α} (i : support g → β)
 /-! ### `tsum` on subsets -/
 
 
-@[simp]
+-- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
+@[simp, nolint simpNF]
 theorem Finset.tsum_subtype (s : Finset β) (f : β → α) :
     (∑' x : { x // x ∈ s }, f x) = ∑ x in s, f x :=
   (s.hasSum f).tsum_eq
@@ -611,12 +611,14 @@ theorem tsum_subtype_eq_of_support_subset {f : β → α} {s : Set β} (hs : sup
   tsum_eq_tsum_of_hasSum_iff_hasSum (hasSum_subtype_iff_of_support_subset hs)
 #align tsum_subtype_eq_of_support_subset tsum_subtype_eq_of_support_subset
 
-@[simp]
+-- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
+@[simp, nolint simpNF]
 theorem tsum_univ (f : β → α) : (∑' x : (Set.univ : Set β), f x) = ∑' x, f x :=
   tsum_subtype_eq_of_support_subset <| Set.subset_univ _
 #align tsum_univ tsum_univ
 
-@[simp]
+-- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
+@[simp, nolint simpNF]
 theorem tsum_singleton (b : β) (f : β → α) : (∑' x : ({b} : Set β), f x) = f b := by
   rw [_root_.tsum_subtype, tsum_eq_single b]
   · simp
@@ -1052,28 +1054,26 @@ theorem HasSum.sum_nat_of_sum_int {α : Type _} [AddCommMonoid α] [TopologicalS
       · simp only [abs_of_nonpos h'x, Int.coe_natAbs, neg_neg]
   refine' ⟨u1 ∪ u2, A, _⟩
   calc
-    (∑ x in u1 ∪ u2, f x + ite (x = 0) (f 0) 0) = (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x := by
-      {rw [sum_add_distrib]
+    (∑ x in u1 ∪ u2, (f x + ite (x = 0) (f 0) 0)) = (∑ x in u1 ∪ u2, f x) + ∑ x in u1 ∩ u2, f x := by
+     {rw [sum_add_distrib]
       congr 1
       refine' (sum_subset_zero_on_sdiff inter_subset_union _ _).symm
       · intro x hx
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
-        simpa only [mem_sdiff, mem_union, mem_image, neg_eq_zero, or_self_iff, mem_inter,
-          and_self_iff, and_not_self_iff] using hx
+        simp at hx
       · intro x hx
         simp only [mem_inter, mem_image, exists_prop] at hx
         have : x = 0 := by
           apply le_antisymm
-          · rcases hx.2 with ⟨a, ha, rfl⟩
+          · rcases hx.2 with ⟨a, _, rfl⟩
             simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
-          · rcases hx.1 with ⟨a, ha, rfl⟩
+          · rcases hx.1 with ⟨a, _, rfl⟩
             simp only [Nat.cast_nonneg]
         simp only [this, eq_self_iff_true, if_true]}
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
-    _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by
-      simp only [sum_image, Nat.cast_inj, imp_self, imp_true_iff, neg_inj]
-    _ = ∑ b in v', f b + f (-b) := sum_add_distrib.symm
+    _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by simp
+    _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm
 
 #align has_sum.sum_nat_of_sum_int HasSum.sum_nat_of_sum_int
 
@@ -1097,16 +1097,16 @@ theorem cauchySeq_finset_iff_vanishing :
     (CauchySeq fun s : Finset β => ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
   simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·)]
+    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor
   · intro h e he
-    rcases h e he with ⟨⟨s₁, s₂⟩, h⟩
+    obtain ⟨⟨s₁, s₂⟩, h⟩ := h e he
     use s₁ ∪ s₂
     intro t ht
     specialize h (s₁ ∪ s₂, s₁ ∪ s₂ ∪ t) ⟨le_sup_left, le_sup_of_le_left le_sup_right⟩
     simpa only [Finset.sum_union ht.symm, add_sub_cancel'] using h
-  · intro h e he
+  · rintro h e he
     rcases exists_nhds_half_neg he with ⟨d, hd, hde⟩
     rcases h d hd with ⟨s, h⟩
     use (s, s)
@@ -1246,7 +1246,7 @@ variable {G : Type _} [TopologicalSpace G] [AddCommGroup G] [TopologicalAddGroup
 theorem Summable.vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (0 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∑ k in t, f k) ∈ e := by
   letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
-  letI : UniformAddGroup G := topological_add_commGroup_is_uniform
+  letI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
   rcases hf with ⟨y, hy⟩
   exact cauchySeq_finset_iff_vanishing.1 hy.cauchySeq e he
 #align summable.vanishing Summable.vanishing
@@ -1399,7 +1399,7 @@ theorem Summable.star (hf : Summable f) : Summable fun b => star (f b) :=
   hf.hasSum.unit.Summable
 #align summable.star Summable.star
 
-theorem Summable.ofStar (hf : Summable fun b => star (f b)) : Summable f := by
+theorem Summable.ofStar (hf : Summable fun b => Star.star (f b)) : Summable f := by
   simpa only [star_star] using hf.star
 #align summable.of_star Summable.ofStar
 
@@ -1417,9 +1417,8 @@ variable [T2Space α]
 
 theorem tsum_star : star (∑' b, f b) = ∑' b, star (f b) := by
   by_cases hf : Summable f
-  · exact hf.has_sum.star.tsum_eq.symm
-  ·
-    rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (mt Summable.ofStar hf),
+  · exact hf.hasSum.star.tsum_eq.symm
+  · rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (mt Summable.ofStar hf),
       star_zero]
 #align tsum_star tsum_star
 
