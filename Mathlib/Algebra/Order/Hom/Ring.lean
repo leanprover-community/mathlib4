@@ -55,9 +55,15 @@ structure OrderRingHom (α β : Type _) [NonAssocSemiring α] [Preorder α] [Non
 /-- Reinterpret an ordered ring homomorphism as a ring homomorphism. -/
 add_decl_doc OrderRingHom.toRingHom
 
--- mathport name: «expr →+*o »
 @[inherit_doc]
 infixl:25 " →+*o " => OrderRingHom
+
+/- Porting note: Needed to reorder instance arguments below:
+`[Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]`
+to
+`[Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β]`
+otherwise the [refl] attribute on `OrderRingIso.refl` complains.
+TODO: change back when `refl` attribute is fixed, github issue #2505 -/
 
 /-- `OrderRingHom α β` is the type of order-preserving semiring isomorphisms between `α` and `β`.
 
@@ -65,13 +71,12 @@ When possible, instead of parametrizing results over `(f : OrderRingIso α β)`,
 you should parametrize over `(F : Type*) [OrderRingIsoClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderRingIsoClass`. -/
-structure OrderRingIso (α : Type _) (β : Type _) [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] extends
+structure OrderRingIso (α β : Type _) [Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β] extends
   α ≃+* β where
   /-- The proposition that the function preserves the order bijectively. -/
   map_le_map_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
 #align order_ring_iso OrderRingIso
 
--- mathport name: «expr ≃+*o »
 @[inherit_doc]
 infixl:25 " ≃+*o " => OrderRingIso
 
