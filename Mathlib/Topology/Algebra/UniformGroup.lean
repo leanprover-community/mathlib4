@@ -1008,33 +1008,33 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     rw [QuotientGroup.mk_mul, QuotientGroup.mk_inv, hy, hg, inv_div, div_mul_cancel']
   /- Inductively construct a subsequence `φ : ℕ → ℕ` using `key₀` so that if `a b : ℕ` exceed
     `φ (n + 1)`, then we may find lifts whose quotients lie within `u n`. -/
-  set φ : ℕ → ℕ := fun n => Nat.recOn n (some <| key₀ 0 0) fun k yk => some <| key₀ (k + 1) yk
+  set φ : ℕ → ℕ := fun n => Nat.recOn n (choose <| key₀ 0 0) fun k yk => choose <| key₀ (k + 1) yk
   have hφ :
     ∀ n : ℕ,
       φ n < φ (n + 1) ∧
         ∀ a b : ℕ,
           φ (n + 1) ≤ a →
             φ (n + 1) ≤ b → ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u (n + 1) ∧ x a = g' :=
-    fun n => some_spec (key₀ (n + 1) (φ n))
+    fun n => choose_spec (key₀ (n + 1) (φ n))
   /- Inductively construct a sequence `x' n : G` of lifts of `x (φ (n + 1))` such that quotients of
     successive terms lie in `x' n / x' (n + 1) ∈ u (n + 1)`. We actually need the proofs that each
     term is a lift to construct the next term, so we use a Σ-type. -/
   set x' : ∀ n, PSigma fun g : G => x (φ (n + 1)) = g := fun n =>
     Nat.recOn n
-      ⟨some (QuotientGroup.mk_surjective (x (φ 1))),
-        (some_spec (QuotientGroup.mk_surjective (x (φ 1)))).symm⟩
+      ⟨choose (QuotientGroup.mk_surjective (x (φ 1))),
+        (choose_spec (QuotientGroup.mk_surjective (x (φ 1)))).symm⟩
       fun k hk =>
-      ⟨some <| (hφ k).2 _ _ (hφ (k + 1)).1.le le_rfl hk.fst hk.snd,
-        (some_spec <| (hφ k).2 _ _ (hφ (k + 1)).1.le le_rfl hk.fst hk.snd).2⟩
+      ⟨choose <| (hφ k).2 _ _ (hφ (k + 1)).1.le le_rfl hk.fst hk.snd,
+        (choose_spec <| (hφ k).2 _ _ (hφ (k + 1)).1.le le_rfl hk.fst hk.snd).2⟩
   have hx' : ∀ n : ℕ, (x' n).fst / (x' (n + 1)).fst ∈ u (n + 1) := fun n =>
-    (some_spec <| (hφ n).2 _ _ (hφ (n + 1)).1.le le_rfl (x' n).fst (x' n).snd).1
+    (choose_spec <| (hφ n).2 _ _ (hφ (n + 1)).1.le le_rfl (x' n).fst (x' n).snd).1
   /- The sequence `x'` is Cauchy. This is where we exploit the condition on `u`. The key idea
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
   have x'_cauchy : CauchySeq fun n => (x' n).fst :=
     by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
-      simpa [uniformity_eq_comap_nhds_one'] using hu.to_has_basis.comap _
-    simp only [h𝓤G.cauchy_seq_iff', ge_iff_le, mem_set_of_eq, forall_true_left]
+      simpa [uniformity_eq_comap_nhds_one'] using hu.toHasBasis.comap _
+    simp only [h𝓤G.cauchySeq_iff', ge_iff_le, mem_setOf_eq, forall_true_left]
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'
@@ -1048,7 +1048,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     ⟨↑x₀,
       tendsto_nhds_of_cauchySeq_of_subseq hx
         (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop _⟩
-  convert ((continuous_coinduced_rng : Continuous (coe : G → G ⧸ N)).Tendsto x₀).comp hx₀
+  convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 #align quotient_group.complete_space' QuotientGroup.completeSpace'
 #align quotient_add_group.complete_space' QuotientAddGroup.completeSpace'
