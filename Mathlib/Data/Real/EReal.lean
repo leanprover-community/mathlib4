@@ -197,6 +197,17 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
   | ⊤, ⊤ => top_top
 #align ereal.induction₂ EReal.induction₂
 
+/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+infinite. This version eliminates some cases by assuming that the relation is symmetric. -/
+@[elab_as_elim]
+theorem induction₂_symm {P : EReal → EReal → Prop} (symm : Symmetric P) (top_top : P ⊤ ⊤)
+    (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x)
+    (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥) (coe_coe : ∀ x y : ℝ, P x y)
+    (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥) (bot_bot : P ⊥ ⊥) : ∀ x y, P x y :=
+  @induction₂ P top_top top_pos top_zero top_neg top_bot (fun _ h => symm <| top_pos _ h)
+    pos_bot (symm top_zero) coe_coe zero_bot (fun _ h => symm <| top_neg _ h) neg_bot (symm top_bot)
+    (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
+
 /-! `ereal` with its multiplication is a `comm_monoid_with_zero`. However, the proof of
 associativity by hand is extremely painful (with 125 cases...). Instead, we will deduce it later
 on from the facts that the absolute value and the sign are multiplicative functions taking value
@@ -840,7 +851,6 @@ theorem sub_lt_sub_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz 
   add_lt_add_of_lt_of_le h (neg_le_neg_iff.2 h') (by simp [ht]) (by simp [hz])
 #align ereal.sub_lt_sub_of_lt_of_le EReal.sub_lt_sub_of_lt_of_le
 
-set_option pp.coercions false
 theorem coe_real_ereal_eq_coe_toNNReal_sub_coe_toNNReal (x : ℝ) :
     (x : EReal) = Real.toNNReal x - Real.toNNReal (-x) := by
   rcases le_total 0 x with (h | h)
@@ -862,39 +872,44 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
 
 /-! ### Multiplication -/
 
-@[simp]
-theorem top_mul_top : (⊤ : EReal) * ⊤ = ⊤ :=
-  rfl
+@[simp] theorem top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
 #align ereal.top_mul_top EReal.top_mul_top
 
-@[simp]
-theorem top_mul_bot : (⊤ : EReal) * ⊥ = ⊥ :=
-  rfl
+@[simp] theorem top_mul_bot : (⊤ : EReal) * ⊥ = ⊥ := rfl
 #align ereal.top_mul_bot EReal.top_mul_bot
 
-@[simp]
-theorem bot_mul_top : (⊥ : EReal) * ⊤ = ⊥ :=
-  rfl
+@[simp] theorem bot_mul_top : (⊥ : EReal) * ⊤ = ⊥ := rfl
 #align ereal.bot_mul_top EReal.bot_mul_top
 
-@[simp]
-theorem bot_mul_bot : (⊥ : EReal) * ⊥ = ⊤ :=
-  rfl
+@[simp] theorem bot_mul_bot : (⊥ : EReal) * ⊥ = ⊤ := rfl
 #align ereal.bot_mul_bot EReal.bot_mul_bot
 
-theorem mul_top_of_pos {x : EReal} (h : 0 < x) : x * ⊤ = ⊤ := by
-  induction x using EReal.rec
-  · simp only [not_lt_bot] at h
-  · exact if_pos (EReal.coe_pos.1 h)
-  · rfl
+theorem coe_mul_top_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊤ = ⊤ :=
+  if_pos h
+#align ereal.coe_mul_top_of_pos EReal.coe_mul_top_of_pos
+
+theorem coe_mul_top_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊤ = ⊥ :=
+  (if_neg h.not_lt).trans (if_neg h.ne)
+#align ereal.coe_mul_top_of_neg EReal.coe_mul_top_of_neg
+
+theorem top_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊤ : EReal) * x = ⊤ :=
+  if_pos h
+#align ereal.top_mul_coe_of_pos EReal.top_mul_coe_of_pos
+
+theorem top_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊤ : EReal) * x = ⊥ :=
+  (if_neg h.not_lt).trans (if_neg h.ne)
+#align ereal.top_mul_coe_of_neg EReal.top_mul_coe_of_neg
+
+theorem mul_top_of_pos : ∀ {x : EReal}, 0 < x → x * ⊤ = ⊤
+  | ⊥, h => absurd h not_lt_bot
+  | (x : ℝ), h => coe_mul_top_of_pos (EReal.coe_pos.1 h)
+  | ⊤, _ => rfl
 #align ereal.mul_top_of_pos EReal.mul_top_of_pos
 
-theorem mul_top_of_neg {x : EReal} (h : x < 0) : x * ⊤ = ⊥ := by
-  induction x using EReal.rec
-  · rfl
-  · rw [EReal.coe_neg'] at h
-    simp only [Mul.mul, EReal.mul, not_lt.2 h.le, h.ne, if_false]
-  · simpa only [not_top_lt] using h
+theorem mul_top_of_neg : ∀ {x : EReal}, x < 0 → x * ⊤ = ⊥
+  | ⊥, _ => rfl
+  | (x : ℝ), h => coe_mul_top_of_neg (EReal.coe_neg'.1 h)
+  | ⊤, h => absurd h not_top_lt
 #align ereal.mul_top_of_neg EReal.mul_top_of_neg
 
 theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
@@ -907,35 +922,32 @@ theorem top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
   exact mul_top_of_neg h
 #align ereal.top_mul_of_neg EReal.top_mul_of_neg
 
-theorem coe_mul_top_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊤ = ⊤ :=
-  mul_top_of_pos (EReal.coe_pos.2 h)
-#align ereal.coe_mul_top_of_pos EReal.coe_mul_top_of_pos
+theorem coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
+  if_pos h
+#align ereal.coe_mul_bot_of_pos EReal.coe_mul_bot_of_pos
 
-theorem coe_mul_top_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊤ = ⊥ :=
-  mul_top_of_neg (EReal.coe_neg'.2 h)
-#align ereal.coe_mul_top_of_neg EReal.coe_mul_top_of_neg
+theorem coe_mul_bot_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊥ = ⊤ :=
+  (if_neg h.not_lt).trans (if_neg h.ne)
+#align ereal.coe_mul_bot_of_neg EReal.coe_mul_bot_of_neg
 
-theorem top_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊤ : EReal) * x = ⊤ :=
-  top_mul_of_pos (EReal.coe_pos.2 h)
-#align ereal.top_mul_coe_of_pos EReal.top_mul_coe_of_pos
+theorem bot_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊥ : EReal) * x = ⊥ :=
+  if_pos h
+#align ereal.bot_mul_coe_of_pos EReal.bot_mul_coe_of_pos
 
-theorem top_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊤ : EReal) * x = ⊥ :=
-  top_mul_of_neg (EReal.coe_neg'.2 h)
-#align ereal.top_mul_coe_of_neg EReal.top_mul_coe_of_neg
+theorem bot_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊥ : EReal) * x = ⊤ :=
+  (if_neg h.not_lt).trans (if_neg h.ne)
+#align ereal.bot_mul_coe_of_neg EReal.bot_mul_coe_of_neg
 
-theorem mul_bot_of_pos {x : EReal} (h : 0 < x) : x * ⊥ = ⊥ := by
-  induction x using EReal.rec
-  · simpa only [not_lt_bot] using h
-  · simp only [Mul.mul, EReal.mul, EReal.coe_pos.1 h, if_true]
-  · rfl
+theorem mul_bot_of_pos : ∀ {x : EReal}, 0 < x → x * ⊥ = ⊥
+  | ⊥, h => absurd h not_lt_bot
+  | (x : ℝ), h => coe_mul_bot_of_pos (EReal.coe_pos.1 h)
+  | ⊤, _ => rfl
 #align ereal.mul_bot_of_pos EReal.mul_bot_of_pos
 
-theorem mul_bot_of_neg {x : EReal} (h : x < 0) : x * ⊥ = ⊤ := by
-  induction x using EReal.rec
-  · rfl
-  · simp only [EReal.coe_neg'] at h
-    simp only [Mul.mul, EReal.mul, not_lt.2 h.le, h.ne, if_false]
-  · simpa only [not_top_lt] using h
+theorem mul_bot_of_neg : ∀ {x : EReal}, x < 0 → x * ⊥ = ⊤
+  | ⊥, _ => rfl
+  | (x : ℝ), h => coe_mul_bot_of_neg (EReal.coe_neg'.1 h)
+  | ⊤, h => absurd h not_top_lt
 #align ereal.mul_bot_of_neg EReal.mul_bot_of_neg
 
 theorem bot_mul_of_pos {x : EReal} (h : 0 < x) : ⊥ * x = ⊥ := by
@@ -948,77 +960,72 @@ theorem bot_mul_of_neg {x : EReal} (h : x < 0) : ⊥ * x = ⊤ := by
   exact mul_bot_of_neg h
 #align ereal.bot_mul_of_neg EReal.bot_mul_of_neg
 
-theorem coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
-  mul_bot_of_pos (EReal.coe_pos.2 h)
-#align ereal.coe_mul_bot_of_pos EReal.coe_mul_bot_of_pos
-
-theorem coe_mul_bot_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊥ = ⊤ :=
-  mul_bot_of_neg (EReal.coe_neg'.2 h)
-#align ereal.coe_mul_bot_of_neg EReal.coe_mul_bot_of_neg
-
-theorem bot_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊥ : EReal) * x = ⊥ :=
-  bot_mul_of_pos (EReal.coe_pos.2 h)
-#align ereal.bot_mul_coe_of_pos EReal.bot_mul_coe_of_pos
-
-theorem bot_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊥ : EReal) * x = ⊤ :=
-  bot_mul_of_neg (EReal.coe_neg'.2 h)
-#align ereal.bot_mul_coe_of_neg EReal.bot_mul_coe_of_neg
-
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:145:2: warning: unsupported: with_cases -/
 theorem toReal_mul {x y : EReal} : toReal (x * y) = toReal x * toReal y := by
-  -- TODO: replace with `induction using` in Lean 4, which supports multiple premises
-    apply @induction₂ fun x y => to_real (x * y) = to_real x * to_real y <;>
-    propagate_tags try dsimp only
-  case top_zero | bot_zero | zero_top | zero_bot =>
-    all_goals simp only [zero_mul, mul_zero, to_real_zero]
-  case coe_coe x y => norm_cast
-  case top_top => rw [top_mul_top, to_real_top, mul_zero]
-  case top_bot => rw [top_mul_bot, to_real_top, to_real_bot, zero_mul]
-  case bot_top => rw [bot_mul_top, to_real_bot, zero_mul]
-  case bot_bot => rw [bot_mul_bot, to_real_top, to_real_bot, zero_mul]
-  case pos_bot x hx => rw [to_real_bot, to_real_coe, coe_mul_bot_of_pos hx, to_real_bot, mul_zero]
-  case neg_bot x hx => rw [to_real_bot, to_real_coe, coe_mul_bot_of_neg hx, to_real_top, mul_zero]
-  case pos_top x hx => rw [to_real_top, to_real_coe, coe_mul_top_of_pos hx, to_real_top, mul_zero]
-  case neg_top x hx => rw [to_real_top, to_real_coe, coe_mul_top_of_neg hx, to_real_bot, mul_zero]
-  case top_pos y hy => rw [to_real_top, to_real_coe, top_mul_coe_of_pos hy, to_real_top, zero_mul]
-  case top_neg y hy => rw [to_real_top, to_real_coe, top_mul_coe_of_neg hy, to_real_bot, zero_mul]
-  case bot_pos y hy => rw [to_real_bot, to_real_coe, bot_mul_coe_of_pos hy, to_real_bot, zero_mul]
-  case bot_neg y hy => rw [to_real_bot, to_real_coe, bot_mul_coe_of_neg hy, to_real_top, zero_mul]
+  induction x, y using induction₂_symm with
+  | top_zero | zero_bot | top_top | top_bot | bot_bot => simp
+  | symm h => rwa [mul_comm, EReal.mul_comm]
+  | coe_coe => norm_cast
+  | top_pos _ h => simp [top_mul_coe_of_pos h]
+  | top_neg _ h => simp [top_mul_coe_of_neg h]
+  | pos_bot _ h => simp [coe_mul_bot_of_pos h]
+  | neg_bot _ h => simp [coe_mul_bot_of_neg h]
 #align ereal.to_real_mul EReal.toReal_mul
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:145:2: warning: unsupported: with_cases -/
+/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+infinite. This version eliminates some cases by assuming that `P x y` implies `P (-x) y` for all
+`x`, `y`. -/
+@[elab_as_elim]
+theorem induction₂_neg_left {P : EReal → EReal → Prop} (neg_left : ∀ {x y}, P x y → P (-x) y)
+    (top_top : P ⊤ ⊤) (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x)
+    (top_zero : P ⊤ 0) (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x) (top_bot : P ⊤ ⊥)
+    (zero_top : P 0 ⊤) (zero_bot : P 0 ⊥)
+    (pos_top : ∀ x : ℝ, 0 < x → P x ⊤) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥)
+    (coe_coe : ∀ x y : ℝ, P x y) : ∀ x y, P x y :=
+  have : ∀ y, (∀ x : ℝ, 0 < x → P x y) → ∀ x : ℝ, x < 0 → P x y := fun _ h x hx =>
+    neg_neg (x : EReal) ▸ neg_left <| h _ (neg_pos_of_neg hx)
+  @induction₂ P top_top top_pos top_zero top_neg top_bot pos_top pos_bot zero_top
+    coe_coe zero_bot (this _ pos_top) (this _ pos_bot) (neg_left top_top)
+    (fun x hx => neg_left <| top_pos x hx) (neg_left top_zero)
+    (fun x hx => neg_left <| top_neg x hx) (neg_left top_bot)
+
+/-- Induct on two ereals by performing case splits on the sign of one whenever the other is
+infinite. This version eliminates some cases by assuming that `P` is symmetric and `P x y` implies
+`P (-x) y` for all `x`, `y`. -/
+@[elab_as_elim]
+theorem induction₂_symm_neg {P : EReal → EReal → Prop}
+    (symm : Symmetric P) (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤) 
+    (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
+    ∀ x y, P x y :=
+  have neg_right : ∀ {x y}, P x y → P x (-y) := fun h => symm <| neg_left <| symm h
+  have : ∀ x, (∀ y : ℝ, 0 < y → P x y) → ∀ y : ℝ, y < 0 → P x y := fun _ h y hy =>
+    neg_neg (y : EReal) ▸ neg_right (h _ (neg_pos_of_neg hy))
+  @induction₂_neg_left P neg_left top_top top_pos top_zero (this _ top_pos) (neg_right top_top)
+    (symm top_zero) (symm <| neg_left top_zero) (fun x hx => symm <| top_pos x hx)
+    (fun x hx => symm <| neg_left <| top_pos x hx) coe_coe
+
 protected theorem neg_mul (x y : EReal) : -x * y = -(x * y) := by
-  -- TODO: replace with `induction using` in Lean 4, which supports multiple premises
-    apply @induction₂ fun x y => -x * y = -(x * y) <;>
-    propagate_tags try dsimp only
-  case top_top | bot_top | top_bot | bot_bot => all_goals rfl
-  case top_zero | bot_zero | zero_top | zero_bot =>
-    all_goals simp only [zero_mul, mul_zero, neg_zero]
-  case coe_coe x y => norm_cast; exact neg_mul _ _
-  case pos_bot x hx =>
-    rw [coe_mul_bot_of_pos hx, neg_bot, ← coe_neg, coe_mul_bot_of_neg (neg_neg_of_pos hx)]
-  case neg_bot x hx =>
-    rw [coe_mul_bot_of_neg hx, neg_top, ← coe_neg, coe_mul_bot_of_pos (neg_pos_of_neg hx)]
-  case pos_top x hx =>
-    rw [coe_mul_top_of_pos hx, neg_top, ← coe_neg, coe_mul_top_of_neg (neg_neg_of_pos hx)]
-  case neg_top x hx =>
-    rw [coe_mul_top_of_neg hx, neg_bot, ← coe_neg, coe_mul_top_of_pos (neg_pos_of_neg hx)]
-  case top_pos y hy => rw [top_mul_coe_of_pos hy, neg_top, bot_mul_coe_of_pos hy]
-  case top_neg y hy => rw [top_mul_coe_of_neg hy, neg_top, neg_bot, bot_mul_coe_of_neg hy]
-  case bot_pos y hy => rw [bot_mul_coe_of_pos hy, neg_bot, top_mul_coe_of_pos hy]
-  case bot_neg y hy => rw [bot_mul_coe_of_neg hy, neg_bot, neg_top, top_mul_coe_of_neg hy]
+  induction x, y using induction₂_neg_left with
+  | top_zero | zero_top | zero_bot => simp only [zero_mul, mul_zero, neg_zero]
+  | top_top | top_bot => rfl
+  | neg_left h => rw [h, neg_neg, neg_neg]
+  | coe_coe => norm_cast; exact neg_mul _ _
+  | top_pos _ h => rw [top_mul_coe_of_pos h, neg_top, bot_mul_coe_of_pos h]
+  | pos_top _ h => rw [coe_mul_top_of_pos h, neg_top, ← coe_neg,
+    coe_mul_top_of_neg (neg_neg_of_pos h)]
+  | top_neg _ h => rw [top_mul_coe_of_neg h, neg_top, bot_mul_coe_of_neg h, neg_bot]
+  | pos_bot _ h => rw [coe_mul_bot_of_pos h, neg_bot, ← coe_neg,
+    coe_mul_bot_of_neg (neg_neg_of_pos h)]
 #align ereal.neg_mul EReal.neg_mul
 
-instance : HasDistribNeg EReal :=
-  { EReal.hasInvolutiveNeg with
-    neg_mul := EReal.neg_mul
-    mul_neg := fun x y => by
-      rw [x.mul_comm, x.mul_comm]
-      exact y.neg_mul x }
+instance : HasDistribNeg EReal where
+  neg_mul := EReal.neg_mul
+  mul_neg := fun x y => by
+    rw [x.mul_comm, x.mul_comm]
+    exact y.neg_mul x
 
 /-! ### Absolute value -/
 
-
+-- porting note: todo: use `Real.nnabs` for the case `(x : ℝ)`
 /-- The absolute value from `ereal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
 a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
@@ -1027,18 +1034,13 @@ protected def abs : EReal → ℝ≥0∞
   | (x : ℝ) => ENNReal.ofReal (|x|)
 #align ereal.abs EReal.abs
 
-@[simp]
-theorem abs_top : (⊤ : EReal).abs = ⊤ :=
-  rfl
+@[simp] theorem abs_top : (⊤ : EReal).abs = ⊤ := rfl
 #align ereal.abs_top EReal.abs_top
 
-@[simp]
-theorem abs_bot : (⊥ : EReal).abs = ⊤ :=
-  rfl
+@[simp] theorem abs_bot : (⊥ : EReal).abs = ⊤ := rfl
 #align ereal.abs_bot EReal.abs_bot
 
-theorem abs_def (x : ℝ) : (x : EReal).abs = ENNReal.ofReal (|x|) :=
-  rfl
+theorem abs_def (x : ℝ) : (x : EReal).abs = ENNReal.ofReal (|x|) := rfl
 #align ereal.abs_def EReal.abs_def
 
 theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
@@ -1049,7 +1051,7 @@ theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
 theorem abs_eq_zero_iff {x : EReal} : x.abs = 0 ↔ x = 0 := by
   induction x using EReal.rec
   · simp only [abs_bot, ENNReal.top_ne_zero, bot_ne_zero]
-  · simp only [EReal.abs, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
+  · simp only [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
   · simp only [abs_top, ENNReal.top_ne_zero, top_ne_zero]
 #align ereal.abs_eq_zero_iff EReal.abs_eq_zero_iff
 
@@ -1059,217 +1061,178 @@ theorem abs_zero : (0 : EReal).abs = 0 := by rw [abs_eq_zero_iff]
 
 @[simp]
 theorem coe_abs (x : ℝ) : ((x : EReal).abs : EReal) = (|x| : ℝ) := by
-  rcases lt_trichotomy 0 x with (hx | rfl | hx) <;> simp [abs_def]
+  rw [abs_def, ← Real.coe_nnabs, ENNReal.ofReal_coe_nnreal]; rfl
 #align ereal.coe_abs EReal.coe_abs
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:145:2: warning: unsupported: with_cases -/
+@[simp]
+protected theorem abs_neg : ∀ x : EReal, (-x).abs = x.abs
+  | ⊤ => rfl
+  | ⊥ => rfl
+  | (x : ℝ) => by rw [abs_def, ← coe_neg, abs_def, abs_neg]
+
 @[simp]
 theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
-  -- TODO: replace with `induction using` in Lean 4, which supports multiple premises
-    apply @induction₂ fun x y => (x * y).abs = x.abs * y.abs <;>
-    propagate_tags try dsimp only
-  case top_top | bot_top | top_bot | bot_bot => all_goals rfl
-  case top_zero | bot_zero | zero_top | zero_bot =>
-    all_goals simp only [zero_mul, mul_zero, abs_zero]
-  case coe_coe x y => simp only [← coe_mul, EReal.abs, abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
-  case pos_bot x hx =>
-    simp only [coe_mul_bot_of_pos hx, hx.ne', abs_bot, WithTop.mul_top, Ne.def, abs_eq_zero_iff,
-      coe_eq_zero, not_false_iff]
-  case neg_bot x hx =>
-    simp only [coe_mul_bot_of_neg hx, hx.ne, abs_bot, WithTop.mul_top, Ne.def, abs_eq_zero_iff,
-      coe_eq_zero, not_false_iff, abs_top]
-  case pos_top x hx =>
-    simp only [coe_mul_top_of_pos hx, hx.ne', WithTop.mul_top, Ne.def, abs_eq_zero_iff, coe_eq_zero,
-      not_false_iff, abs_top]
-  case neg_top x hx =>
-    simp only [coe_mul_top_of_neg hx, hx.ne, abs_bot, WithTop.mul_top, Ne.def, abs_eq_zero_iff,
-      coe_eq_zero, not_false_iff, abs_top]
-  case top_pos y hy =>
-    simp only [top_mul_coe_of_pos hy, hy.ne', WithTop.top_mul, Ne.def, abs_eq_zero_iff, coe_eq_zero,
-      not_false_iff, abs_top]
-  case top_neg y hy =>
-    simp only [top_mul_coe_of_neg hy, hy.ne, abs_bot, WithTop.top_mul, Ne.def, abs_eq_zero_iff,
-      coe_eq_zero, not_false_iff, abs_top]
-  case bot_pos y hy =>
-    simp only [bot_mul_coe_of_pos hy, hy.ne', abs_bot, WithTop.top_mul, Ne.def, abs_eq_zero_iff,
-      coe_eq_zero, not_false_iff]
-  case bot_neg y hy =>
-    simp only [bot_mul_coe_of_neg hy, hy.ne, abs_bot, WithTop.top_mul, Ne.def, abs_eq_zero_iff,
-      coe_eq_zero, not_false_iff, abs_top]
+  induction x, y using induction₂_symm_neg with
+  | top_zero => simp only [zero_mul, mul_zero, abs_zero]
+  | top_top => rfl
+  | symm h => rwa [mul_comm, EReal.mul_comm]
+  | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
+  | top_pos _ h =>
+    rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
+    rw [Ne.def, abs_eq_zero_iff, coe_eq_zero]
+    exact h.ne'
+  | neg_left h => rwa [neg_mul, EReal.abs_neg, EReal.abs_neg]
 #align ereal.abs_mul EReal.abs_mul
 
 /-! ### Sign -/
 
+open SignType (sign)
 
-@[simp]
-theorem sign_top : SignType.sign (⊤ : EReal) = 1 :=
-  rfl
+@[simp] theorem sign_top : sign (⊤ : EReal) = 1 := rfl
 #align ereal.sign_top EReal.sign_top
 
-@[simp]
-theorem sign_bot : SignType.sign (⊥ : EReal) = -1 :=
-  rfl
+@[simp] theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 #align ereal.sign_bot EReal.sign_bot
 
 @[simp]
-theorem sign_coe (x : ℝ) : SignType.sign (x : EReal) = SignType.sign x := by
-  simp only [SignType.sign, OrderHom.coe_fun_mk, EReal.coe_pos, EReal.coe_neg']
+theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
+  simp only [sign, OrderHom.coe_fun_mk, EReal.coe_pos, EReal.coe_neg']
 #align ereal.sign_coe EReal.sign_coe
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:145:2: warning: unsupported: with_cases -/
+@[simp, norm_cast]
+theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> rfl
+
+@[simp] theorem sign_neg : ∀ x : EReal, sign (-x) = -sign x
+  | ⊤ => rfl
+  | ⊥ => rfl
+  | (x : ℝ) => by rw [← coe_neg, sign_coe, sign_coe, Left.sign_neg]
+
 @[simp]
-theorem sign_mul (x y : EReal) : SignType.sign (x * y) = SignType.sign x * SignType.sign y := by
-  -- TODO: replace with `induction using` in Lean 4, which supports multiple premises
-    apply @induction₂ fun x y => SignType.sign (x * y) = SignType.sign x * SignType.sign y <;>
-    propagate_tags try dsimp only
-  case top_top | bot_top | top_bot | bot_bot => all_goals rfl
-  case top_zero | bot_zero | zero_top | zero_bot =>
-    all_goals simp only [zero_mul, mul_zero, sign_zero]
-  case coe_coe x y => simp only [← coe_mul, sign_coe, sign_mul]
-  case pos_bot x hx => simp_rw [coe_mul_bot_of_pos hx, sign_coe, sign_pos hx, one_mul]
-  case neg_bot x hx =>
-    simp_rw [coe_mul_bot_of_neg hx, sign_coe, sign_neg hx, sign_top, sign_bot, neg_one_mul, neg_neg]
-  case pos_top x hx => simp_rw [coe_mul_top_of_pos hx, sign_coe, sign_pos hx, one_mul]
-  case neg_top x hx =>
-    simp_rw [coe_mul_top_of_neg hx, sign_coe, sign_neg hx, sign_top, sign_bot, mul_one]
-  case top_pos y hy => simp_rw [top_mul_coe_of_pos hy, sign_coe, sign_pos hy, mul_one]
-  case top_neg y hy =>
-    simp_rw [top_mul_coe_of_neg hy, sign_coe, sign_neg hy, sign_top, sign_bot, one_mul]
-  case bot_pos y hy => simp_rw [bot_mul_coe_of_pos hy, sign_coe, sign_pos hy, mul_one]
-  case bot_neg y hy =>
-    simp_rw [bot_mul_coe_of_neg hy, sign_coe, sign_neg hy, sign_top, sign_bot, neg_one_mul, neg_neg]
+theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
+  induction x, y using induction₂_symm_neg with
+  | top_zero => simp only [zero_mul, mul_zero, sign_zero]
+  | top_top => rfl
+  | symm h => rwa [mul_comm, EReal.mul_comm]
+  | coe_coe => simp only [← coe_mul, sign_coe, _root_.sign_mul, ENNReal.ofReal_mul (abs_nonneg _)]
+  | top_pos _ h =>
+    rw [top_mul_coe_of_pos h, sign_top, one_mul, sign_pos (EReal.coe_pos.2 h)]
+  | neg_left h => rw [neg_mul, sign_neg, sign_neg, h, neg_mul]
 #align ereal.sign_mul EReal.sign_mul
 
-theorem sign_mul_abs (x : EReal) : (SignType.sign x * x.abs : EReal) = x := by
-  induction x using EReal.rec
-  · simp
-  · rcases lt_trichotomy 0 x with (hx | rfl | hx)
-    · simp [sign_pos hx, abs_of_pos hx]
-    · simp
-    · simp [sign_neg hx, abs_of_neg hx]
-  · simp
+@[simp] protected theorem sign_mul_abs : ∀ x : EReal, (sign x * x.abs : EReal) = x
+  | ⊥ => by simp
+  | ⊤ => by simp
+  | (x : ℝ) => by rw [sign_coe, coe_abs, ← coe_coe_sign, ← coe_mul, sign_mul_abs]
 #align ereal.sign_mul_abs EReal.sign_mul_abs
 
+@[simp] protected theorem abs_mul_sign (x : EReal) : (x.abs * sign x : EReal) = x := by
+  rw [EReal.mul_comm, EReal.sign_mul_abs]
+
 theorem sign_eq_and_abs_eq_iff_eq {x y : EReal} :
-    x.abs = y.abs ∧ SignType.sign x = SignType.sign y ↔ x = y := by
+    x.abs = y.abs ∧ sign x = sign y ↔ x = y := by
   constructor
   · rintro ⟨habs, hsign⟩
     rw [← x.sign_mul_abs, ← y.sign_mul_abs, habs, hsign]
   · rintro rfl
-    simp only [eq_self_iff_true, and_self_iff]
+    exact ⟨rfl, rfl⟩
 #align ereal.sign_eq_and_abs_eq_iff_eq EReal.sign_eq_and_abs_eq_iff_eq
 
 theorem le_iff_sign {x y : EReal} :
-    x ≤ y ↔
-      SignType.sign x < SignType.sign y ∨
-        SignType.sign x = SignType.neg ∧ SignType.sign y = SignType.neg ∧ y.abs ≤ x.abs ∨
-          SignType.sign x = SignType.zero ∧ SignType.sign y = SignType.zero ∨
-            SignType.sign x = SignType.pos ∧ SignType.sign y = SignType.pos ∧ x.abs ≤ y.abs := by
+    x ≤ y ↔ sign x < sign y ∨
+      sign x = SignType.neg ∧ sign y = SignType.neg ∧ y.abs ≤ x.abs ∨
+        sign x = SignType.zero ∧ sign y = SignType.zero ∨
+          sign x = SignType.pos ∧ sign y = SignType.pos ∧ x.abs ≤ y.abs := by
   constructor
   · intro h
-    rcases(sign.monotone h).lt_or_eq with (hs | hs)
-    · exact Or.inl hs
-    · rw [← x.sign_mul_abs, ← y.sign_mul_abs] at h
-      cases SignType.sign y <;> rw [hs] at *
-      · simp
-      · simp at h⊢
-        exact Or.inl h
-      · simpa using h
+    refine (sign.monotone h).lt_or_eq.imp_right (fun hs => ?_)
+    rw [← x.sign_mul_abs, ← y.sign_mul_abs] at h
+    cases hy : sign y <;> rw [hs, hy] at h ⊢
+    · simp
+    · left; simpa using h
+    · right; right; simpa using h
   · rintro (h | h | h | h)
     · exact (sign.monotone.reflect_lt h).le
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 #align ereal.le_iff_sign EReal.le_iff_sign
 
 instance : CommMonoidWithZero EReal :=
-  { EReal.hasMul, EReal.hasOne, EReal.hasZero,
-    EReal.mulZeroOneClass with
+  { inferInstanceAs (MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
       simp only [mul_assoc, abs_mul, eq_self_iff_true, sign_mul, and_self_iff]
     mul_comm := EReal.mul_comm }
 
-instance : PosMulMono EReal :=
-  posMulMono_iff_covariant_pos.2
-    ⟨by
-      rintro ⟨x, x0⟩ a b h; dsimp
-      rcases le_iff_sign.mp h with (h | h | h | h)
-      · rw [le_iff_sign]
-        left
-        simp [sign_pos x0, h]
-      all_goals
-        rw [← x.sign_mul_abs, ← a.sign_mul_abs, ← b.sign_mul_abs, sign_pos x0]
-        simp only [h]; dsimp
-        simp only [neg_mul, mul_neg, EReal.neg_le_neg_iff, one_mul, le_refl, zero_mul, mul_zero]
-      all_goals norm_cast; exact mul_le_mul_left' h.2.2 _⟩
+instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by
+  rintro ⟨x, x0⟩ a b h
+  simp only [le_iff_sign, EReal.sign_mul, sign_pos x0, one_mul, EReal.abs_mul] at h ⊢
+  exact h.imp_right <| Or.imp (And.imp_right <| And.imp_right (mul_le_mul_left' · _)) <|
+    Or.imp_right <| And.imp_right <| And.imp_right (mul_le_mul_left' · _)
 
-instance : MulPosMono EReal :=
-  posMulMono_iff_mulPosMono.1 EReal.posMulMono
+instance : MulPosMono EReal := posMulMono_iff_mulPosMono.1 inferInstance
 
-instance : PosMulReflectLT EReal :=
-  PosMulMono.toPosMulReflectLT
+instance : PosMulReflectLT EReal := PosMulMono.toPosMulReflectLT
 
 instance : MulPosReflectLT EReal :=
   MulPosMono.toMulPosReflectLT
 
 @[simp, norm_cast]
-theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = x ^ n :=
-  map_pow (⟨coe, coe_one, coe_mul⟩ : ℝ →* EReal) _ _
+theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
+  map_pow (⟨⟨(↑), coe_one⟩, coe_mul⟩ : ℝ →* EReal) _ _
 #align ereal.coe_pow EReal.coe_pow
 
 @[simp, norm_cast]
-theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = x ^ n :=
-  map_pow (⟨coe, coe_ennreal_one, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
+theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
+  map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 #align ereal.coe_ennreal_pow EReal.coe_ennreal_pow
 
 end EReal
 
-namespace Tactic
+-- namespace Tactic
 
-open Positivity
+-- open Positivity
 
-private theorem ereal_coe_ne_zero {r : ℝ} : r ≠ 0 → (r : EReal) ≠ 0 :=
-  EReal.coe_ne_zero.2
-#align tactic.ereal_coe_ne_zero tactic.ereal_coe_ne_zero
+-- private theorem ereal_coe_ne_zero {r : ℝ} : r ≠ 0 → (r : EReal) ≠ 0 :=
+--   EReal.coe_ne_zero.2
+-- #align tactic.ereal_coe_ne_zero tactic.ereal_coe_ne_zero
 
-private theorem ereal_coe_nonneg {r : ℝ} : 0 ≤ r → 0 ≤ (r : EReal) :=
-  EReal.coe_nonneg.2
-#align tactic.ereal_coe_nonneg tactic.ereal_coe_nonneg
+-- private theorem ereal_coe_nonneg {r : ℝ} : 0 ≤ r → 0 ≤ (r : EReal) :=
+--   EReal.coe_nonneg.2
+-- #align tactic.ereal_coe_nonneg tactic.ereal_coe_nonneg
 
-private theorem ereal_coe_pos {r : ℝ} : 0 < r → 0 < (r : EReal) :=
-  EReal.coe_pos.2
-#align tactic.ereal_coe_pos tactic.ereal_coe_pos
+-- private theorem ereal_coe_pos {r : ℝ} : 0 < r → 0 < (r : EReal) :=
+--   EReal.coe_pos.2
+-- #align tactic.ereal_coe_pos tactic.ereal_coe_pos
 
-private theorem ereal_coe_ennreal_pos {r : ℝ≥0∞} : 0 < r → 0 < (r : EReal) :=
-  EReal.coe_ennreal_pos.2
-#align tactic.ereal_coe_ennreal_pos tactic.ereal_coe_ennreal_pos
+-- private theorem ereal_coe_ennreal_pos {r : ℝ≥0∞} : 0 < r → 0 < (r : EReal) :=
+--   EReal.coe_ennreal_pos.2
+-- #align tactic.ereal_coe_ennreal_pos tactic.ereal_coe_ennreal_pos
 
-/-- Extension for the `positivity` tactic: cast from `ℝ` to `ereal`. -/
-@[positivity]
-unsafe def positivity_coe_real_ereal : expr → tactic strictness
-  | q(@coe _ _ $(inst) $(a)) => do
-    unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoe)
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => positive <$> mk_app `` ereal_coe_pos [p]
-      | nonnegative p => nonnegative <$> mk_mapp `` ereal_coe_nonneg [a, p]
-      | nonzero p => nonzero <$> mk_mapp `` ereal_coe_ne_zero [a, p]
-  | e =>
-    pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ`"
-#align tactic.positivity_coe_real_ereal tactic.positivity_coe_real_ereal
+-- /-- Extension for the `positivity` tactic: cast from `ℝ` to `ereal`. -/
+-- @[positivity]
+-- unsafe def positivity_coe_real_ereal : expr → tactic strictness
+--   | q(@coe _ _ $(inst) $(a)) => do
+--     unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoe)
+--     let strictness_a ← core a
+--     match strictness_a with
+--       | positive p => positive <$> mk_app `` ereal_coe_pos [p]
+--       | nonnegative p => nonnegative <$> mk_mapp `` ereal_coe_nonneg [a, p]
+--       | nonzero p => nonzero <$> mk_mapp `` ereal_coe_ne_zero [a, p]
+--   | e =>
+--     pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ`"
+-- #align tactic.positivity_coe_real_ereal tactic.positivity_coe_real_ereal
 
-/-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `ereal`. -/
-@[positivity]
-unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
-  | q(@coe _ _ $(inst) $(a)) => do
-    unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoeENNReal)
-    let strictness_a ← core a
-    match strictness_a with
-      | positive p => positive <$> mk_app `` ereal_coe_ennreal_pos [p]
-      | _ => nonnegative <$> mk_mapp `ereal.coe_ennreal_nonneg [a]
-  | e =>
-    pp e >>=
-      fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ≥0∞`"
-#align tactic.positivity_coe_ennreal_ereal tactic.positivity_coe_ennreal_ereal
+-- /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `ereal`. -/
+-- @[positivity]
+-- unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
+--   | q(@coe _ _ $(inst) $(a)) => do
+--     unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoeENNReal)
+--     let strictness_a ← core a
+--     match strictness_a with
+--       | positive p => positive <$> mk_app `` ereal_coe_ennreal_pos [p]
+--       | _ => nonnegative <$> mk_mapp `ereal.coe_ennreal_nonneg [a]
+--   | e =>
+--     pp e >>=
+--       fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ≥0∞`"
+-- #align tactic.positivity_coe_ennreal_ereal tactic.positivity_coe_ennreal_ereal
 
-end Tactic
-
+-- end Tactic
