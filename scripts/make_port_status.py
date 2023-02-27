@@ -115,7 +115,6 @@ fetch_args = ['git', 'fetch', 'origin']
 nums = []
 
 sync_prs = dict()
-labels = dict()
 
 mathlib4repo = github.Github(github_token).get_repo("leanprover-community/mathlib4")
 for pr in mathlib4repo.get_pulls(state='open'):
@@ -188,9 +187,9 @@ for node in sorted(graph.nodes):
             except KeyError:
                 pass
             else:
-                lab = [{'name': l.name, 'color': l.color} for l in pr.labels]
-                if lab:
-                    new_status.update(labels=lab)
+                labels = [{'name': l.name, 'color': l.color} for l in pr.labels]
+                if labels:
+                    new_status.update(labels=labels)
 
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
             status += f" mathlib4#{pr_info['pr']} {sha}"
