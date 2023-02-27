@@ -43,6 +43,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
+import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
@@ -72,6 +73,7 @@ import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
@@ -223,14 +225,6 @@ syntax termList := " [" term,* "]"
 
 /- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
-/- M -/ syntax (name := tfaeHave) "tfae_have " (ident " : ")? num (" → " <|> " ↔ " <|> " ← ") num :
-  tactic
-/- M -/ syntax (name := tfaeFinish) "tfae_finish" : tactic
-
-syntax mono.side := &"left" <|> &"right" <|> &"both"
-/- B -/ syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
-  (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
-
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic
 
@@ -339,8 +333,6 @@ namespace Attr
 /- S -/ syntax (name := protectProj) "protect_proj" (&" without" (ppSpace ident)+)? : attr
 
 /- M -/ syntax (name := notationClass) "notation_class" "*"? (ppSpace ident)? : attr
-
-/- M -/ syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
