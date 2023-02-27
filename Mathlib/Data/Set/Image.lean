@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 Ported by: Winston Yin
 
 ! This file was ported from Lean 3 source module data.set.image
-! leanprover-community/mathlib commit 2f4cdce0c2f2f3b8cd58f05d556d03b468e1eb2e
+! leanprover-community/mathlib commit 4550138052d0a416b700c27056d492e2ef53214e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

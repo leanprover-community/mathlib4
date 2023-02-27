@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit b875cbb7f2aa2b4c685aaa2f99705689c95322ad
+! leanprover-community/mathlib commit 75608affb24b4f48699fbcd38f227827f7793771
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -2130,8 +2130,7 @@ theorem powerset_univ : 𝒫(univ : Set α) = univ :=
 #align set.powerset_univ Set.powerset_univ
 
 /-- The powerset of a singleton contains only `∅` and the singleton itself. -/
-theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} :=
-  by
+theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by
   ext y
   rw [mem_powerset_iff, subset_singleton_iff_eq, mem_insert_iff, mem_singleton_iff]
 #align set.powerset_singleton Set.powerset_singleton
