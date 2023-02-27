@@ -794,25 +794,6 @@ protected theorem decode₂ : Primrec (decode₂ α) :=
 
 -- This is copy pasted from Data.List.Basic,
 -- but the lemma is hidden behind a where clause for some reason
-theorem _root_.List.findIdx_go_succ {α : Type _} (p : α → Bool) (l : List α) (n : ℕ) :
-  List.findIdx.go p l (n + 1) = (List.findIdx.go p l n) + 1 := by
-    cases l with
-    | nil => unfold List.findIdx.go; exact Nat.succ_eq_add_one n
-    | cons head tail =>
-      unfold List.findIdx.go
-      cases p head <;> simp only [cond_false, cond_true]
-      exact findIdx_go_succ p tail (n + 1)
-
-@[simp] nonrec theorem List.findIdx_nil {α : Type _} (p : α → Bool) :
-  [].findIdx p = 0 := rfl
-
--- This is copy pasted from `List.indexOf_cons`,
--- which is not written in the most general form for some reason
-theorem _root_.List.findIdx_cons {α : Type _} (p : α → Bool) (b : α) (l : List α) :
-    (b :: l).findIdx p = bif p b then 0 else (l.findIdx p) + 1 := by
-  cases H : p b with
-    | true => simp [H, List.findIdx, List.findIdx.go]
-    | false => simp [H, List.findIdx, List.findIdx.go, List.findIdx_go_succ]
 
 theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
   ∀ l : List β, Primrec fun a => l.findIdx (p a)
