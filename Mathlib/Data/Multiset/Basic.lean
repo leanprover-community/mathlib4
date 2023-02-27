@@ -754,7 +754,7 @@ theorem card_le_of_le {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
 #align multiset.card_le_of_le Multiset.card_le_of_le
 
--- @[mono] -- Porting note: unknown attribute
+@[mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_of_le
 #align multiset.card_mono Multiset.card_mono
 
@@ -891,7 +891,7 @@ theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a
   congr_arg _ <| List.replicate_add ..
 #align multiset.replicate_add Multiset.replicate_add
 
-/-- `Multiset.replicate` as an `addMonoidHom`. -/
+/-- `Multiset.replicate` as an `AddMonoidHom`. -/
 @[simps]
 def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
   toFun := fun n => replicate n a
@@ -2619,7 +2619,7 @@ theorem map_le_map_iff {f : α → β} (hf : Function.Injective f) {s t : Multis
 
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a multiset to its
 image under `f`. -/
-@[simps]
+@[simps!]
 def mapEmbedding (f : α ↪ β) : Multiset α ↪o Multiset β :=
   OrderEmbedding.ofMapLeIff (map f) fun _ _ => map_le_map_iff f.inj'
 #align multiset.map_embedding Multiset.mapEmbedding

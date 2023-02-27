@@ -6,6 +6,13 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 import Std.Tactic.Simpa
 import Mathlib.Lean.Expr
 
+/-!
+#
+
+Generally useful tactics.
+
+-/
+
 open Lean.Elab.Tactic
 
 namespace Lean
@@ -95,6 +102,39 @@ end Lean
 
 namespace Lean.Elab.Tactic
 
+/-- Given a local context and an array of `FVarIds` assumed to be in that local context, remove all
+implementation details. -/
+def filterOutImplementationDetails (lctx : LocalContext) (fvarIds : Array FVarId) : Array FVarId :=
+  fvarIds.filter (fun fvar => ! (lctx.fvarIdToDecl.find! fvar).isImplementationDetail)
+
+/-- Elaborate syntax for an `FVarId` in the local context of the given goal. -/
+def getFVarIdAt (goal : MVarId) (id : Syntax) : TacticM FVarId := withRef id do
+  -- use apply-like elaboration to suppress insertion of implicit arguments
+  let e ← goal.withContext do
+    elabTermForApply id (mayPostpone := false)
+  match e with
+  | Expr.fvar fvarId => return fvarId
+  | _                => throwError "unexpected term '{e}'; expected single reference to variable"
+
+/-- Get the array of `FVarId`s in the local context of the given `goal`.
+
+If `ids` is specified, elaborate them in the local context of the given goal to obtain the array of
+`FVarId`s.
+
+If `includeImplementationDetails` is `false` (the default), we filter out implementation details
+(`implDecl`s and `auxDecl`s) from the resulting list of `FVarId`s. -/
+def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
+    (includeImplementationDetails : Bool := false) : TacticM (Array FVarId) :=
+  goal.withContext do
+    let lctx := (← goal.getDecl).lctx
+    let fvarIds ← match ids with
+    | none => pure lctx.getFVarIds
+    | some ids => ids.mapM <| getFVarIdAt goal
+    if includeImplementationDetails then
+      return fvarIds
+    else
+      return filterOutImplementationDetails lctx fvarIds
+
 /--
 Run a tactic on all goals, and always succeeds.
 
@@ -125,7 +165,7 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
 def andThenOnSubgoals (tac1 : TacticM Unit)  (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2
 
-variable [Monad m] [MonadExceptOf Exception m]
+variable [Monad m] [MonadExcept Exception m]
 
 /-- Repeats a tactic at most `n` times, stopping sooner if the
 tactic fails. Always succeeds. -/
@@ -133,9 +173,41 @@ def iterateAtMost : Nat → m Unit → m Unit
 | 0, _ => pure ()
 | n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
 
+/-- `iterateExactly' n t` executes `t` `n` times. If any iteration fails, the whole tactic fails.
+-/
+def iterateExactly' : Nat → m Unit → m Unit
+| 0, _ => pure ()
+| n+1, tac => tac *> iterateExactly' n tac
+
+/--
+`iterateRange m n t`: Repeat the given tactic at least `m` times and
+at most `n` times or until `t` fails. Fails if `t` does not run at least `m` times.
+-/
+def iterateRange : Nat → Nat → m Unit → m Unit
+| 0, 0, _   => pure ()
+| 0, b, tac => iterateAtMost b tac
+| (a+1), n, tac => do tac; iterateRange a (n-1) tac
+
 /-- Repeats a tactic until it fails. Always succeeds. -/
 partial def iterateUntilFailure (tac : m Unit) : m Unit :=
   try tac; iterateUntilFailure tac catch _ => pure ()
+
+/-- `iterateUntilFailureWithResults` is a helper tactic which accumulates the list of results
+obtained from iterating `tac` until it fails. Always succeeds.
+-/
+partial def iterateUntilFailureWithResults {α : Type} (tac : m α) : m (List α) := do
+  try
+    let a ← tac
+    let l ← iterateUntilFailureWithResults tac
+    pure (a :: l)
+  catch _ => pure []
+
+/-- `iterateUntilFailureCount` is similar to `iterateUntilFailure` except it counts
+the number of successful calls to `tac`. Always succeeds.
+-/
+def iterateUntilFailureCount {α : Type} (tac : m α) : m Nat := do
+  let r ← iterateUntilFailureWithResults tac
+  return r.length
 
 end Lean.Elab.Tactic
 

@@ -1093,9 +1093,9 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
 #align add_con.quotient_ker_equiv_range AddCon.quotientKerEquivRange
 
 /-- The first isomorphism theorem for monoids in the case of a homomorphism with right inverse. -/
-@[to_additive "The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
-with right inverse.",
-  simps]
+@[to_additive (attr := simps)
+  "The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
+  with right inverse."]
 def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.RightInverse g f) :
     (ker f).Quotient ≃* P :=
   { kerLift f with
@@ -1106,7 +1106,9 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
 #align con.quotient_ker_equiv_of_right_inverse Con.quotientKerEquivOfRightInverse
 #align add_con.quotient_ker_equiv_of_right_inverse AddCon.quotientKerEquivOfRightInverse
 #align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symmApply
+#align add_con.quotient_ker_equiv_of_right_inverse_symm_apply AddCon.quotientKerEquivOfRightInverse_symmApply
 #align con.quotient_ker_equiv_of_right_inverse_apply Con.quotientKerEquivOfRightInverse_apply
+#align add_con.quotient_ker_equiv_of_right_inverse_apply AddCon.quotientKerEquivOfRightInverse_apply
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 
@@ -1148,7 +1150,7 @@ end MulOneClass
 section Monoids
 
 /-- Multiplicative congruence relations preserve natural powers. -/
-@[to_additive AddCon.nsmul "Additive congruence relations preserve natural scaling."]
+@[to_additive "Additive congruence relations preserve natural scaling."]
 protected theorem pow {M : Type _} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _

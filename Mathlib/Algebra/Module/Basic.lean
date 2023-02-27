@@ -176,7 +176,7 @@ variable (R)
 /-- `(•)` as an `AddMonoidHom`.
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
-@[simps apply_apply]
+@[simps! apply_apply]
 def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
     -- Porting note: the two `show`s weren't needed in mathlib3.
@@ -738,7 +738,7 @@ section GroupWithZero
 variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 
 -- see note [lower instance priority]
-/-- This instance applies to `DivisionSemiring`s, in particular `nnreal` and `nnrat`. -/
+/-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
 instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
   ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
 #align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSMulDivisors

@@ -25,18 +25,8 @@ mathlib3_root = 'port-repos/mathlib/src'
 mathlib4_root = 'Mathlib/'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
-commit_re = re.compile(r"^! leanprover-community/mathlib commit ([0-9a-f]*)")
+commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
-synchronized_re = re.compile(r".*SYNCHRONIZED WITH MATHLIB4.*")
-
-# Not using re.compile as this is passed to git which uses a different regex dialect:
-# https://www.sjoerdlangkemper.nl/2021/08/13/how-does-git-diff-ignore-matching-lines-work/
-comment_git_re = r'\`(' + r'|'.join([
-    re.escape("> THIS FILE IS SYNCHRONIZED WITH MATHLIB4."),
-    re.escape("> https://github.com/leanprover-community/mathlib4/pull/") + r"[0-9]*",
-    re.escape("> Any changes to this file require a corresponding PR to mathlib4."),
-    r"",
-]) + r")" + "\n"
 
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
@@ -59,8 +49,6 @@ for path in Path(mathlib3_root).glob('**/*.lean'):
         continue
     graph.add_node(mk_label(path))
 
-synchronized = dict()
-
 for path in Path(mathlib3_root).glob('**/*.lean'):
     if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
         continue
@@ -77,21 +65,20 @@ for path in Path(mathlib3_root).glob('**/*.lean'):
                 else:
                     imported = 'lean_core.' + imported
             graph.add_edge(imported, label)
-        if synchronized_re.match(line):
-            synchronized[label] = True
 
 def get_mathlib4_module_commit_info(contents):
-    module, commit = None, None
+    module = repo = commit = None
     for line in contents.split('\n'):
         m = source_module_re.match(line)
         if m:
             module = m.group(1)
         m = commit_re.match(line)
         if m:
-            commit = m.group(1)
+            repo = m.group(1)
+            commit = m.group(2)
         if import_re.match(line):
             break
-    return module, commit
+    return module, repo, commit
 
 # contains ported files
 # lean 3 module name -> { mathlib4_file, mathlib3_hash }
@@ -100,7 +87,7 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
     if path4.relative_to(mathlib4_root).parts[0] in \
        ['Init', 'Lean', 'Mathport', 'Tactic', 'Testing', 'Util']:
         continue
-    module, commit = get_mathlib4_module_commit_info(path4.read_text())
+    module, repo, commit = get_mathlib4_module_commit_info(path4.read_text())
     if module is None:
         continue
 
@@ -119,30 +106,9 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
 
     data[module] = {
         'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
-        'mathlib3_hash': commit,
-        'mathlib4_pr': mathlib4_pr
+        'mathlib4_pr': mathlib4_pr,
+        'source': dict(repo=repo, commit=commit)
     }
-
-allDone = dict()
-parentsDone = dict()
-verified = dict()
-touched = dict()
-for node in graph.nodes:
-    if node in data:
-        git_command = ['git', 'diff', '--quiet',
-            # f'--ignore-matching-lines={comment_git_re}',
-            data[node]['mathlib3_hash'] + "..HEAD", "--", "src" + os.sep + node.replace('.', os.sep) + ".lean"]
-        result = subprocess.run(git_command, cwd='port-repos/mathlib')
-        if result.returncode == 1:
-            git_command.remove('--quiet')
-            # git_command.remove(f'--ignore-matching-lines={comment_git_re}')
-            touched[node] = git_command
-    ancestors = nx.ancestors(graph, node)
-    if all(imported in data for imported in ancestors) and not node in data:
-        allDone[node] = (len(nx.descendants(graph, node)), "")
-    else:
-        if all(imported in data for imported in graph.predecessors(node)) and not node in data:
-            parentsDone[node] = (len(nx.descendants(graph, node)), "")
 
 prs = {}
 fetch_args = ['git', 'fetch', 'origin']
@@ -171,19 +137,8 @@ for num in nums:
         f = subprocess.run(
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
-        _, commit = get_mathlib4_module_commit_info(f.stdout.decode())
-        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'commit': commit})
-
-def pr_to_str(pr):
-    labels = ' '.join(f'[{l.name}]' for l in pr.labels)
-    return f'[#{pr.number}]({pr.html_url}) (by {pr.user.login}, {labels}, last activity {pr.updated_at})'
-
-# print('# The following files have all dependencies ported already, and should be ready to port:')
-# print('# Earlier items in the list are required in more places in mathlib.')
-# allDone = dict(sorted(allDone.items(), key=lambda item: -item[1][0]))
-# for k, v in allDone.items():
-#     print(f' * `{k}` ',
-#           ' '.join(pr_to_str(prs[num]) for num in prs_of_condensed.get(condense(k), [])))
+        _, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
+        prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"
 comments_dict = yaml.safe_load(requests.get(COMMENTS_URL).content.replace(b"```", b""))
@@ -196,10 +151,12 @@ for node in sorted(graph.nodes):
             ported=True,
             mathlib4_file=data[node]['mathlib4_file'],
             mathlib4_pr=data[node]['mathlib4_pr'],
-            mathlib3_hash=data[node]['mathlib3_hash']
+            source=data[node]['source']
         )
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
-        status = f"Yes {pr_status} {data[node]['mathlib3_hash']}"
+        sha = data[node]['source']['commit'] if data[node]['source']['repo'] == 'leanprover-community/mathlib' else "_"
+
+        status = f"Yes {pr_status} {sha}"
     else:
         new_status = dict(ported=False)
         status = f'No'
@@ -208,8 +165,12 @@ for node in sorted(graph.nodes):
             if pr_info['commit'] is None:
                 print('PR seems to be missing a source header', node, pr_info)
                 assert(False)
-            new_status.update(mathlib4_pr=pr_info['pr'], mathlib3_hash=pr_info['commit'])
-            status += ' mathlib4#' + str(pr_info['pr']) + ' ' + pr_info['commit']
+            new_status.update(
+                mathlib4_pr=pr_info['pr'],
+                mathlib4_file=pr_info['fname'],
+                source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
+            sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
+            status += f" mathlib4#{pr_info['pr']} {sha}"
     try:
         comment_data = comments_dict[node]
     except KeyError:

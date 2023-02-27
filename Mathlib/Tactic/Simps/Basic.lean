@@ -225,7 +225,7 @@ derives two `simp` lemmas:
   generates the following:
   ```lean
   @[simp] lemma bar_toEquiv : ∀ {α : Sort*}, bar.toEquiv = Equiv.refl α
-  @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = tt
+  @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = true
   ```
   This is true, even though Lean inserts an eta-expanded version of `Equiv.refl α` in the
   definition of `bar`.
@@ -240,10 +240,12 @@ derives two `simp` lemmas:
 -/
 /- If one of the fields is a partially applied constructor, we will eta-expand it
   (this likely never happens, so is not included in the official doc). -/
-syntax (name := simps) "simps" "?"? simpsArgsRest : attr
+syntax (name := simps) "simps" "!"? "?"? simpsArgsRest : attr
 
-@[inherit_doc simps]
-macro "simps?" rest:simpsArgsRest : attr => `(attr| simps ? $rest)
+@[inherit_doc simps] macro "simps?"  rest:simpsArgsRest : attr => `(attr| simps   ? $rest)
+@[inherit_doc simps] macro "simps!"  rest:simpsArgsRest : attr => `(attr| simps !   $rest)
+@[inherit_doc simps] macro "simps!?" rest:simpsArgsRest : attr => `(attr| simps ! ? $rest)
+@[inherit_doc simps] macro "simps?!" rest:simpsArgsRest : attr => `(attr| simps ! ? $rest)
 
 end Attr
 
@@ -729,6 +731,11 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
   _ ← liftCoreM <| simpsGetRawProjections nm true rules trc.isSome
 | _ => throwUnsupportedSyntax
 
+/-- Linter to check that `simps!` is used when needed -/
+register_option linter.simpsNoConstructor : Bool := {
+  defValue := true
+  descr := "Linter to check that `simps!` is used" }
+
 /-- Configuration options for `@[simps]` -/
 structure Simps.Config where
   /-- Make generated lemmas simp lemmas -/
@@ -956,9 +963,26 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
   if !rhsWhnf.getAppFn.isConstOf ctor then
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
-      trace[simps.verbose] "[simps] > The given definition is not a constructor {""
-          }application:\n        >   {rhsWhnf}\n        > Retrying with the options {""
-          }\{rhsMd := semireducible, simpRhs := tt}."
+      trace[simps.debug] "Using relaxed reducibility."
+      Linter.logLint linter.simpsNoConstructor ref
+        m!"The definition {nm} is not a constructor application. Please use `@[simps!]` instead.{
+        ""}\n\nExplanation: `@[simps]` uses the definition to find what the simp lemmas should {
+        ""}be. If the definition is a constructor, then this is easy, since the values of the {
+        ""}projections are just the arguments to the constructor. If the definition is not a {
+        ""}constructor, then `@[simps]` will unfold the right-hand side until it has found a {
+        ""}constructor application, and uses those values.\n\n{
+        ""}This might not always result in the simp-lemmas you want, so you are advised to use {
+        ""}`@[simps?]` to double-check whether `@[simps]` generated satisfactory lemmas.\n{
+        ""}Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain {
+        ""}cases.\n{
+        ""}Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := .default, {
+        ""}simpRhs := true}]`. You can also try `@[simps (config := \{rhsMd := .default}]` {
+        ""}to still unfold the definitions, but avoid calling `simp` on the resulting statement.\n{
+        ""}Note 3: You need `simps!` if not all fields are given explicitly in this definition, {
+        ""}even if the definition is a constructor application. For example, if you give a {
+        ""}`MulEquiv` by giving the corresponding `Equiv` and the proof that it respects {
+        ""}multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to {
+        ""}unfold the corresponding `Equiv` to get to the `toFun` field."
       let nms ← simpsAddProjections nm type lhs rhs args mustBeStr
         { cfg with rhsMd := .default, simpRhs := true } todo toApply
       return if addThisProjection then nms.push nm else nms
@@ -1036,8 +1060,9 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Simps.Config := {})
 /-- same as `simpsTac`, but taking syntax as an argument. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   match stx with
-  | `(attr| simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
-    let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[2][0]
+  | `(attr| simps $[!%$bang]? $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
+    let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[3][0]
+    let cfg := if bang.isNone then cfg else { cfg with rhsMd := .default, simpRhs := true }
     let ids := ids.map fun x => (x.getId.eraseMacroScopes.getString, x.raw)
     simpsTac stx nm cfg ids.toList trc.isSome
   | _ => throwUnsupportedSyntax
