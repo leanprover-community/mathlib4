@@ -9,6 +9,7 @@ import subprocess
 import sys
 import yaml
 import networkx as nx
+from collections import defaultdict
 from pathlib import Path
 
 # Must run from root of mathlib4 directory.
@@ -114,7 +115,7 @@ prs = {}
 fetch_args = ['git', 'fetch', 'origin']
 nums = []
 
-sync_prs = dict()
+sync_prs = defaultdict(set)
 
 mathlib4repo = github.Github(github_token).get_repo("leanprover-community/mathlib4")
 for pr in mathlib4repo.get_pulls(state='open'):
@@ -124,7 +125,7 @@ for pr in mathlib4repo.get_pulls(state='open'):
         continue
     if 'mathlib3-pair' in (l.name for l in pr.labels):
         for file in (f.filename for f in pr.get_files()):
-            sync_prs[file] = sync_prs.get(file, set()).union([pr.number])
+            sync_prs[file].add(pr.number)
     num = pr.number
     nums.append(num)
     prs[num] = pr
