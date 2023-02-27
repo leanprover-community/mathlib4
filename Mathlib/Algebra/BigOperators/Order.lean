@@ -671,13 +671,12 @@ namespace Fintype
 
 variable [Fintype ι]
 
-@[to_additive sum_mono]
+@[to_additive (attr := mono) sum_mono]
 theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
   Finset.prod_le_prod'' fun x _ ↦ hfg x
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
-attribute [mono] prod_mono'
 attribute [mono] sum_mono
 
 @[to_additive sum_strict_mono]

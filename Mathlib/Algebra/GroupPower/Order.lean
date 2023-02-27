@@ -39,7 +39,7 @@ section Left
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
 
-@[to_additive nsmul_le_nsmul_of_le_right]
+@[to_additive (attr := mono) nsmul_le_nsmul_of_le_right]
 theorem pow_le_pow_of_le_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {a b : M} (hab : a ≤ b) :
     ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
@@ -49,7 +49,6 @@ theorem pow_le_pow_of_le_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 #align pow_le_pow_of_le_left' pow_le_pow_of_le_left'
 #align nsmul_le_nsmul_of_le_right nsmul_le_nsmul_of_le_right
 
-attribute [mono] pow_le_pow_of_le_left'
 attribute [mono] nsmul_le_nsmul_of_le_right
 
 @[to_additive nsmul_nonneg]
