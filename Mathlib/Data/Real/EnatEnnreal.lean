@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Enat.Basic
-import Mathbin.Data.Real.Ennreal
+import Mathlib.Data.Enat.Basic
+import Mathlib.Data.Real.Ennreal
 
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`
