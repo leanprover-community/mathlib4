@@ -34,11 +34,14 @@ namespace CategoryTheory.Limits
 
 universe w v₁ v₂ v u u₂
 
+attribute [aesop safe cases (rule_sets [CategoryTheory])] Option 
+attribute [aesop norm unfold (rule_sets [CategoryTheory])] WidePullbackShape WidePushoutShape 
+
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
 
 /-- The type of objects for the diagram indexing a pullback, defined as a special case of
-`wide_pullback_shape`.
--/
+`wide_pullback_shape`. -/
+@[aesop norm unfold] 
 abbrev WalkingCospan : Type :=
   WidePullbackShape WalkingPair
 #align category_theory.limits.walking_cospan CategoryTheory.Limits.WalkingCospan
@@ -64,6 +67,7 @@ abbrev WalkingCospan.one : WalkingCospan :=
 /-- The type of objects for the diagram indexing a pushout, defined as a special case of
 `wide_pushout_shape`.
 -/
+@[aesop norm default (rule_sets [CategoryTheory])] 
 abbrev WalkingSpan : Type :=
   WidePushoutShape WalkingPair
 #align category_theory.limits.walking_span CategoryTheory.Limits.WalkingSpan
@@ -260,12 +264,13 @@ theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ :=
   rfl
 #align category_theory.limits.span_map_id CategoryTheory.Limits.span_map_id
-
+set_option trace.aesop.steps true
 /-- Every diagram indexing an pullback is naturally isomorphic (actually, equal) to a `cospan` -/
 -- @[simps (config := { rhsMd := semireducible })]  Porting note: no semireducible
 @[simps]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
-  NatIso.ofComponents (fun j => eqToIso (by cases' j with u ; cases F; rfl; cases u; cases F; rfl; cases F; rfl )) (by sorry)
+  NatIso.ofComponents (fun j => eqToIso (by cases j; repeat sorry)) (by aesop_cat)
+  -- (fun j => eqToIso (by cases' j with u ; cases F; rfl; cases u; cases F; rfl; cases F; rfl )) (by sorry)
 #align category_theory.limits.diagram_iso_cospan CategoryTheory.Limits.diagramIsoCospan
 
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
