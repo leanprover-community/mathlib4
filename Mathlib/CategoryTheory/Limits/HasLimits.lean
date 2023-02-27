@@ -428,16 +428,6 @@ variable {L : Type u₃} [Category.{v₃} L]
 
 variable (D : L ⥤ K) [HasLimit (D ⋙ E ⋙ F)]
 
--- Porting note: added because instance not automatically synthesized
--- instance [h : HasLimit (D ⋙ E ⋙ F)] : HasLimit ((D ⋙ E) ⋙ F) := h 
-  -- exists_limit := by 
-    -- rw [Functor.assoc]
-    -- exact h.exists_limit
--- instance [h : HasLimit ((D ⋙ E) ⋙ F)] : HasLimit (D ⋙ E ⋙ F) where 
---   exists_limit := by 
---     rw [← Functor.assoc]
---     exact h.exists_limit
-
 @[simp]
 theorem limit.pre_pre [h : HasLimit (D ⋙  E ⋙  F)] : haveI : HasLimit ((D ⋙  E) ⋙  F) := h;
     limit.pre F E ≫ limit.pre (E ⋙ F) D = limit.pre F (D ⋙ E) := by
@@ -1013,16 +1003,6 @@ variable {L : Type u₃} [Category.{v₃} L]
 
 variable (D : L ⥤ K) [HasColimit (D ⋙ E ⋙ F)]
 
--- Porting note : added these instances 
--- instance [h : HasColimit (D ⋙ E ⋙ F)] : HasColimit ((D ⋙ E) ⋙ F) where 
---   exists_colimit := by 
---     rw [Functor.assoc]
---     exact h.exists_colimit
--- instance [h : HasColimit ((D ⋙ E) ⋙ F)] : HasColimit (D ⋙ E ⋙ F) where 
---   exists_colimit := by 
---     rw [← Functor.assoc]
---     exact h.exists_colimit
-
 @[simp]
 theorem colimit.pre_pre [h : HasColimit (D ⋙  E ⋙  F)] :
     haveI : HasColimit ((D ⋙  E) ⋙  F) := h
@@ -1127,7 +1107,7 @@ section
 -- attribute [local simp] colimMap -- Porting note
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
-@[simps]
+@[simps] -- Porting note: simps on all fields now
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
@@ -1139,16 +1119,15 @@ end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
 
-@[reassoc (attr := simp)]
-theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by
-  apply IsColimit.fac
+-- @[reassoc (attr := simp)] Porting note: now simp can prove these
+theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp
 #align category_theory.limits.colimit.ι_map CategoryTheory.Limits.colimit.ι_map
 
-@[simp]
+@[simp] -- Porting note: adjusted this with full simps on colim
 theorem colimit.map_desc (c : Cocone G) :
-    colim.map α ≫ colimit.desc G c = colimit.desc F ((Cocones.precompose α).obj c) := by
-  apply Limits.colimit.hom_ext; intro 
-  rw [← assoc, colimit.ι_map, assoc, colimit.ι_desc, colimit.ι_desc]; rfl
+    colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocones.precompose α).obj c) := by
+  apply Limits.colimit.hom_ext; intro j
+  simp [← assoc, colimit.ι_map, assoc, colimit.ι_desc, colimit.ι_desc]
 #align category_theory.limits.colimit.map_desc CategoryTheory.Limits.colimit.map_desc
 
 theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
@@ -1334,4 +1313,4 @@ def isColimitEquivIsLimitOp {t : Cocone F} : IsColimit t ≃ IsLimit t.op :=
 #align category_theory.limits.is_colimit_equiv_is_limit_op CategoryTheory.Limits.isColimitEquivIsLimitOp
 
 end Opposite
-
+#lint
