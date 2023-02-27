@@ -12,6 +12,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Derangements on types
@@ -62,8 +63,9 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
       by
         refine' (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => _, _⟩
         · refine' hf ⟨a, ha⟩ (Subtype.ext _)
-          rwa [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm, @CoeFn_coe_base',
-          Equiv.coe_fn_mk, Subtype.coe_mk, Equiv.Perm.ofSubtype_apply_of_mem] at hfa
+          simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
+          Equiv.coe_fn_mk, Subtype.coe_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
+          assumption
         rintro hf ⟨a, ha⟩ hfa
         refine' hf _ _ ha
         change Perm.subtypeEquivSubtypePerm p f a = a
