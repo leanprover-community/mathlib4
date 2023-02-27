@@ -126,8 +126,6 @@ for pr in mathlib4repo.get_pulls(state='open'):
     if 'mathlib3-pair' in (l.name for l in pr.labels):
         for file in (f.filename for f in pr.get_files()):
             sync_prs[file] = sync_prs.get(file, set()).union([pr.number])
-    if 'mathlib-port' in (l.name for l in pr.labels):
-        labels[pr.number] = [dict(name=l.name, color=l.color) for l in pr.labels]
     num = pr.number
     nums.append(num)
     prs[num] = pr
@@ -183,9 +181,17 @@ for node in sorted(graph.nodes):
             new_status.update(
                 mathlib4_pr=pr_info['pr'],
                 mathlib4_file=pr_info['fname'],
-                source=dict(repo=pr_info['repo'], commit=pr_info['commit']),
-                labels=labels.get(pr_info['pr'], [])
-                )
+                source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
+
+            try:
+                pr = prs[pr_info['pr']]
+            except KeyError:
+                pass
+            else:
+                lab = [{'name': l.name, 'color': l.color} for l in pr.labels]
+                if lab:
+                    new_status.update(labels=lab)
+
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
             status += f" mathlib4#{pr_info['pr']} {sha}"
     try:
