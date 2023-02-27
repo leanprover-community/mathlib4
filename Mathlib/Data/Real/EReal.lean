@@ -15,36 +15,36 @@ import Mathlib.Data.Sign
 /-!
 # The extended reals [-∞, ∞].
 
-This file defines `ereal`, the real numbers together with a top and bottom element,
-referred to as ⊤ and ⊥. It is implemented as `with_bot (with_top ℝ)`
+This file defines `EReal`, the real numbers together with a top and bottom element,
+referred to as ⊤ and ⊥. It is implemented as `WithBot (WithTop ℝ)`
 
 Addition and multiplication are problematic in the presence of ±∞, but
 negation has a natural definition and satisfies the usual properties.
 
-An ad hoc addition is defined, for which `ereal` is an `add_comm_monoid`, and even an ordered one
+An ad hoc addition is defined, for which `EReal` is an `AddCommMonoid`, and even an ordered one
 (if `a ≤ a'` and `b ≤ b'` then `a + b ≤ a' + b'`).
 Note however that addition is badly behaved at `(⊥, ⊤)` and `(⊤, ⊥)` so this can not be upgraded
 to a group structure. Our choice is that `⊥ + ⊤ = ⊤ + ⊥ = ⊥`, to make sure that the exponential
-and the logarithm between `ereal` and `ℝ≥0∞` respect the operations (notice that the
+and the logarithm between `EReal` and `ℝ≥0∞` respect the operations (notice that the
 convention `0 * ∞ = 0` on `ℝ≥0∞` is enforced by measure theory).
 
 An ad hoc subtraction is then defined by `x - y = x + (-y)`. It does not have nice properties,
 but it is sometimes convenient to have.
 
-An ad hoc multiplication is defined, for which `ereal` is a `comm_monoid_with_zero`. We make the
+An ad hoc multiplication is defined, for which `EReal` is a `CommMonoidWithZero`. We make the
 choice that `0 * x = x * 0 = 0` for any `x` (while the other cases are defined non-ambiguously).
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1*⊥ + (-1)*⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
 
-`ereal` is a `complete_linear_order`; this is deduced by type class inference from
-the fact that `with_bot (with_top L)` is a complete linear order if `L` is
+`EReal` is a `CompleteLinearOrder`; this is deduced by type class inference from
+the fact that `WithBot (WithTop L)` is a complete linear order if `L` is
 a conditionally complete linear order.
 
 Coercions from `ℝ` and from `ℝ≥0∞` are registered, and their basic properties are proved. The main
 one is the real coercion, and is usually referred to just as `coe` (lemmas such as
-`ereal.coe_add` deal with this coercion). The one from `ennreal` is usually called `coe_ennreal`
-in the `ereal` namespace.
+`EReal.coe_add` deal with this coercion). The one from `ENNReal` is usually called `coe_ennreal`
+in the `EReal` namespace.
 
-We define an absolute value `ereal.abs` from `ereal` to `ℝ≥0∞`. Two elements of `ereal` coincide
+We define an absolute value `EReal.abs` from `EReal` to `ℝ≥0∞`. Two elements of `EReal` coincide
 if and only if they have the same absolute value and the same sign.
 
 ## Tags
@@ -77,12 +77,12 @@ instance : LinearOrderedAddCommMonoid EReal :=
 
 namespace EReal
 
--- things unify with `with_bot.decidable_lt` later if we we don't provide this explicitly.
+-- things unify with `WithBot.decidableLT` later if we we don't provide this explicitly.
 instance decidableLt : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
   WithBot.decidableLT
 #align ereal.decidable_lt EReal.decidableLt
 
--- TODO: Provide explicitly, otherwise it is inferred noncomputably from `complete_linear_order`
+-- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
 instance : Top EReal := ⟨some ⊤⟩
 
 instance : Coe ℝ EReal := ⟨Real.toEReal⟩
@@ -134,10 +134,10 @@ theorem coe_zero : ((0 : ℝ) : EReal) = 0 := rfl
 theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 #align ereal.coe_one EReal.coe_one
 
-/-- A recursor for `ereal` in terms of the coercion.
+/-- A recursor for `EReal` in terms of the coercion.
 
-A typical invocation looks like `induction x using ereal.rec`. Note that using `induction`
-directly will unfold `ereal` to `option` which is undesirable.
+A typical invocation looks like `induction x using EReal.rec`. Note that using `induction`
+directly will unfold `EReal` to `Option` which is undesirable.
 
 When working in term mode, note that pattern matching can be used directly. -/
 @[elab_as_elim]
@@ -148,7 +148,7 @@ protected def rec {C : EReal → Sort _} (h_bot : C ⊥) (h_real : ∀ a : ℝ, 
   | ⊤ => h_top
 #align ereal.rec EReal.rec
 
-/-- The multiplication on `ereal`. Our definition satisfies `0 * x = x * 0 = 0` for any `x`, and
+/-- The multiplication on `EReal`. Our definition satisfies `0 * x = x * 0 = 0` for any `x`, and
 picks the only sensible value elsewhere. -/
 protected def mul : EReal → EReal → EReal
   | ⊥, ⊥ => ⊤
@@ -208,7 +208,7 @@ theorem induction₂_symm {P : EReal → EReal → Prop} (symm : Symmetric P) (t
     pos_bot (symm top_zero) coe_coe zero_bot (fun _ h => symm <| top_neg _ h) neg_bot (symm top_bot)
     (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
 
-/-! `ereal` with its multiplication is a `comm_monoid_with_zero`. However, the proof of
+/-! `EReal` with its multiplication is a `CommMonoidWithZero`. However, the proof of
 associativity by hand is extremely painful (with 125 cases...). Instead, we will deduce it later
 on from the facts that the absolute value and the sign are multiplicative functions taking value
 in associative objects, and that they characterize an extended real number. For now, we only
@@ -602,7 +602,7 @@ theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧
     fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
 #align ereal.lt_iff_exists_real_btwn EReal.lt_iff_exists_real_btwn
 
-/-- The set of numbers in `ereal` that are not equal to `±∞` is equivalent to `ℝ`. -/
+/-- The set of numbers in `EReal` that are not equal to `±∞` is equivalent to `ℝ`. -/
 def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
   toFun x := EReal.toReal x
   invFun x := ⟨x, by simp⟩
@@ -706,7 +706,7 @@ theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤
 
 /-! ### Negation -/
 
-/-- negation on `ereal` -/
+/-- negation on `EReal` -/
 protected def neg : EReal → EReal
   | ⊥ => ⊤
   | ⊤ => ⊥
@@ -780,12 +780,12 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 -- porting note: new lemma
 @[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
 
-/-- `-a ≤ b ↔ -b ≤ a` on `ereal`. -/
+/-- `-a ≤ b ↔ -b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
  rw [← neg_le_neg_iff, neg_neg]
 #align ereal.neg_le EReal.neg_le
 
-/-- if `-a ≤ b` then `-b ≤ a` on `ereal`. -/
+/-- if `-a ≤ b` then `-b ≤ a` on `EReal`. -/
 protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := EReal.neg_le.mp h
 #align ereal.neg_le_of_neg_le EReal.neg_le_of_neg_le
 
@@ -794,7 +794,7 @@ theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := by
   rwa [← neg_neg b, EReal.neg_le, neg_neg]
 #align ereal.le_neg_of_le_neg EReal.le_neg_of_le_neg
 
-/-- Negation as an order reversing isomorphism on `ereal`. -/
+/-- Negation as an order reversing isomorphism on `EReal`. -/
 def negOrderIso : EReal ≃o ERealᵒᵈ :=
   { Equiv.neg EReal with
     toFun := fun x => OrderDual.toDual (-x)
@@ -812,9 +812,9 @@ theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_iff_neg_l
 /-!
 ### Subtraction
 
-Subtraction on `ereal` is defined by `x - y = x + (-y)`. Since addition is badly behaved at some
+Subtraction on `EReal` is defined by `x - y = x + (-y)`. Since addition is badly behaved at some
 points, so is subtraction. There is no standard algebraic typeclass involving subtraction that is
-registered on `ereal`, beyond `sub_neg_zero_monoid`, because of this bad behavior.
+registered on `EReal`, beyond `SubNegZeroMonoid`, because of this bad behavior.
 -/
 
 @[simp]
@@ -1026,7 +1026,7 @@ instance : HasDistribNeg EReal where
 /-! ### Absolute value -/
 
 -- porting note: todo: use `Real.nnabs` for the case `(x : ℝ)`
-/-- The absolute value from `ereal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
+/-- The absolute value from `EReal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
 a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
   | ⊥ => ⊤
@@ -1208,7 +1208,7 @@ private theorem ereal_coe_ennreal_pos {r : ℝ≥0∞} : 0 < r → 0 < (r : ERea
   EReal.coe_ennreal_pos.2
 #align tactic.ereal_coe_ennreal_pos tactic.ereal_coe_ennreal_pos
 
-/-- Extension for the `positivity` tactic: cast from `ℝ` to `ereal`. -/
+/-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity]
 unsafe def positivity_coe_real_ereal : expr → tactic strictness
   | q(@coe _ _ $(inst) $(a)) => do
@@ -1222,7 +1222,7 @@ unsafe def positivity_coe_real_ereal : expr → tactic strictness
     pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ`"
 #align tactic.positivity_coe_real_ereal tactic.positivity_coe_real_ereal
 
-/-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `ereal`. -/
+/-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity]
 unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
   | q(@coe _ _ $(inst) $(a)) => do
