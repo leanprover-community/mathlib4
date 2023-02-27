@@ -228,7 +228,7 @@ instance {R M : Type _} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
 variable (R M)
 
 /-- The setoid of the `SameRay` relation for the subtype of nonzero vectors. -/
-instance : Setoid (RayVector R M)
+instance Setoid : Setoid (RayVector R M)
     where
   r x y := SameRay R (x : M) y
   iseqv :=
@@ -239,7 +239,7 @@ instance : Setoid (RayVector R M)
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
 -- Porting note: removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
-  Quotient (instSetoidRayVectorToZeroToAddMonoid R M)
+  Quotient (RayVEctor.Setoid R M)
 #align module.ray Module.Ray
 
 variable {R M}
