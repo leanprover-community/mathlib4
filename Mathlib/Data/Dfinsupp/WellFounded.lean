@@ -8,10 +8,10 @@ Authors: Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Dfinsupp.Lex
-import Mathbin.Order.GameAdd
-import Mathbin.Order.Antisymmetrization
-import Mathbin.SetTheory.Ordinal.Basic
+import Mathlib.Data.Dfinsupp.Lex
+import Mathlib.Order.GameAdd
+import Mathlib.Order.Antisymmetrization
+import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `dfinsupp` and `pi`
@@ -70,8 +70,7 @@ open Relation Prod
   (`dfinsupp.lex.acc_of_single`). -/
 theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
     Fibration (InvImage (GameAdd (Dfinsupp.Lex r s) (Dfinsupp.Lex r s)) snd) (Dfinsupp.Lex r s)
-      fun x => piecewise x.2.1 x.2.2 x.1 :=
-  by
+      fun x => piecewise x.2.1 x.2.2 x.1 := by
   rintro ⟨p, x₁, x₂⟩ x ⟨i, hr, hs⟩
   simp_rw [piecewise_apply] at hs hr
   split_ifs  at hs
@@ -118,8 +117,7 @@ theorem Lex.acc_zero : Acc (Dfinsupp.Lex r s) 0 :=
 #align dfinsupp.lex.acc_zero Dfinsupp.Lex.acc_zero
 
 theorem Lex.acc_of_single [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] (x : Π₀ i, α i) :
-    (∀ i ∈ x.support, Acc (Dfinsupp.Lex r s) <| single i (x i)) → Acc (Dfinsupp.Lex r s) x :=
-  by
+    (∀ i ∈ x.support, Acc (Dfinsupp.Lex r s) <| single i (x i)) → Acc (Dfinsupp.Lex r s) x := by
   generalize ht : x.support = t; revert x
   classical
     induction' t using Finset.induction with b t hb ih
@@ -137,8 +135,7 @@ variable (hs : ∀ i, WellFounded (s i))
 include hs
 
 theorem Lex.acc_single [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)) i) :
-    ∀ a, Acc (Dfinsupp.Lex r s) (single i a) :=
-  by
+    ∀ a, Acc (Dfinsupp.Lex r s) (single i a) := by
   induction' hi with i hi ih
   refine' fun a => (hs i).induction a fun a ha => _
   refine' Acc.intro _ fun x => _
@@ -189,8 +186,7 @@ open Dfinsupp
 variable (r : ι → ι → Prop) {s : ∀ i, α i → α i → Prop}
 
 theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, WellFounded (s i)) :
-    WellFounded (Pi.Lex r s) :=
-  by
+    WellFounded (Pi.Lex r s) := by
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
   · convert empty_wf
     ext1 x

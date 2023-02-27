@@ -536,6 +536,7 @@ import Mathlib.Data.Dfinsupp.Lex
 import Mathlib.Data.Dfinsupp.Multiset
 import Mathlib.Data.Dfinsupp.NeLocus
 import Mathlib.Data.Dfinsupp.Order
+import Mathlib.Data.Dfinsupp.WellFounded
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Equiv.Functor
