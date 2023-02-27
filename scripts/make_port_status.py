@@ -113,12 +113,21 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
 prs = {}
 fetch_args = ['git', 'fetch', 'origin']
 nums = []
+
+sync_prs = dict()
+labels = dict()
+
 mathlib4repo = github.Github(github_token).get_repo("leanprover-community/mathlib4")
 for pr in mathlib4repo.get_pulls(state='open'):
     if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0):
         continue
     if 'no-source-header' in (l.name for l in pr.labels):
         continue
+    if 'mathlib3-pair' in (l.name for l in pr.labels):
+        for file in (f.filename for f in pr.get_files()):
+            sync_prs[file] = sync_prs.get(file, set()).union([pr.number])
+    if 'mathlib-port' in (l.name for l in pr.labels):
+        labels[pr.number] = [[l.name, l.color] for l in pr.labels]
     num = pr.number
     nums.append(num)
     prs[num] = pr
@@ -153,6 +162,12 @@ for node in sorted(graph.nodes):
             mathlib4_pr=data[node]['mathlib4_pr'],
             source=data[node]['source']
         )
+
+        # This is separate from the `dict()` above to prevent tons of `sync_prs: []` in the yaml.
+        _sync_prs = list(sync_prs.get(data[node]['mathlib4_file'], set()))
+        if _sync_prs:
+            new_status.update(sync_prs=_sync_prs)
+
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
         sha = data[node]['source']['commit'] if data[node]['source']['repo'] == 'leanprover-community/mathlib' else "_"
 
@@ -168,7 +183,10 @@ for node in sorted(graph.nodes):
             new_status.update(
                 mathlib4_pr=pr_info['pr'],
                 mathlib4_file=pr_info['fname'],
-                source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
+                source=dict(repo=pr_info['repo'],
+                commit=pr_info['commit']),
+                labels=labels.get(pr_info['pr'], [])
+                )
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
             status += f" mathlib4#{pr_info['pr']} {sha}"
     try:
