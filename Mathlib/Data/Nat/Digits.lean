@@ -168,7 +168,7 @@ def ofDigits {α : Type _} [Semiring α] (b : α) : List ℕ → α
 #align nat.of_digits Nat.ofDigits
 
 theorem ofDigits_eq_foldr {α : Type _} [Semiring α] (b : α) (L : List ℕ) :
-    ofDigits b L = L.foldr (fun x y => x + b * y) 0 := by
+    ofDigits b L = List.foldr (fun x y => ↑x + b * y) 0 L := by
   induction' L with d L ih
   · rfl
   · dsimp [ofDigits]
