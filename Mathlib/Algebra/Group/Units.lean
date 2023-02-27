@@ -739,7 +739,7 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
-@[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M"]
+@[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 attribute [instance] IsAddUnit.instDecidableIsAddUnit
