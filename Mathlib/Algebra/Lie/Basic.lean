@@ -45,7 +45,7 @@ are partially unbundled.
 ## References
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
-## Tags
+## Tagsc
 
 lie bracket, jacobi identity, lie ring, lie algebra, lie module
 -/
@@ -295,12 +295,10 @@ attribute [coe] LieHom.toLinearMap
 instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
   ⟨LieHom.toLinearMap⟩
 
-/-- Coercion to a function. -/
-@[coe] def toFun' (f : L₁ →ₗ⁅R⁆ L₂) := f.toFun
-
-/-- see Note [function coercion] -/
-instance : CoeFun (L₁ →ₗ⁅R⁆ L₂) fun _ => L₁ → L₂ :=
-  ⟨toFun'⟩
+instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ (fun _ => L₂) :=
+  { coe := fun f => f.toFun,
+    coe_injective' := fun x y h =>
+      by cases x; cases y; simp at h; simp [h]  }
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this
   case, because it is a composition of multiple projections. -/
@@ -558,12 +556,13 @@ instance hasCoeToLinearEquiv : Coe (L₁ ≃ₗ⁅R⁆ L₂) (L₁ ≃ₗ[R] L�
   ⟨toLinearEquiv⟩
 #align lie_equiv.has_coe_to_linear_equiv LieEquiv.hasCoeToLinearEquiv
 
-/-- Coercion to a function. -/
-@[coe] def toFun' (e : L₁ ≃ₗ⁅R⁆ L₂) := e.toFun
-
-/-- see Note [function coercion] -/
-instance : CoeFun (L₁ ≃ₗ⁅R⁆ L₂) fun _ => L₁ → L₂ :=
-  ⟨fun e => e.toFun'⟩
+instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ :=
+  { coe := fun f => f.toFun,
+    inv := fun f => f.invFun,
+    left_inv := fun f => f.left_inv,
+    right_inv := fun f => f.right_inv,
+    coe_injective' := fun f g h₁ h₂ =>
+      by cases f; cases g; simp at h₁ h₂; simp [*] }
 
 theorem coe_to_lieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ L₂) = e :=
   rfl
@@ -734,12 +733,10 @@ attribute [coe] LieModuleHom.toLinearMap
 instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
-/-- Coercion to a function. -/
-@[coe] def toFun' (f : M →ₗ⁅R,L⁆ N) := f.toFun
-
-/-- see Note [function coercion] -/
-instance : CoeFun (M →ₗ⁅R,L⁆ N) fun _ => M → N :=
-  ⟨toFun'⟩
+instance : FunLike (M →ₗ⁅R, L⁆ N) M (fun _ => N) :=
+  { coe := fun f => f.toFun,
+    coe_injective' := fun x y h =>
+      by cases x; cases y; simp at h; simp [h]  }
 
 @[simp, norm_cast]
 theorem coe_to_linearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
@@ -1011,12 +1008,13 @@ instance hasCoeToLinearEquiv : CoeOut (M ≃ₗ⁅R,L⁆ N) (M ≃ₗ[R] N) :=
   ⟨toLinearEquiv⟩
 #align lie_module_equiv.has_coe_to_linear_equiv LieModuleEquiv.hasCoeToLinearEquiv
 
-/-- Coercion to function. -/
-@[coe] def toFun' (e : (M ≃ₗ⁅R,L⁆ N)) := e.toFun
-
-/-- see Note [function coercion] -/
-instance : CoeFun (M ≃ₗ⁅R,L⁆ N) fun _ => M → N :=
-  ⟨fun e => e.toFun'⟩
+instance : EquivLike (M ≃ₗ⁅R,L⁆ N) M N :=
+  { coe := fun f => f.toFun,
+    inv := fun f => f.invFun,
+    left_inv := fun f => f.left_inv,
+    right_inv := fun f => f.right_inv,
+    coe_injective' := fun f g h₁ h₂ =>
+      by cases f; cases g; simp at h₁ h₂; simp [*] }
 
 theorem injective (e : M ≃ₗ⁅R,L⁆ N) : Function.Injective e :=
   e.toEquiv.injective
