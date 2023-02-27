@@ -128,7 +128,7 @@ theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colo
 #align simple_graph.coloring.not_adj_of_mem_color_class SimpleGraph.Coloring.not_adj_of_mem_colorClass
 
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
-  fun v hv w hw h => C.not_adj_of_mem_colorClass hv hw
+  fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
 #align simple_graph.coloring.color_classes_independent SimpleGraph.Coloring.color_classes_independent
 
 -- TODO make this computable
@@ -162,7 +162,7 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
 
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
 def selfColoring : G.Coloring V :=
-  Coloring.mk id fun {v w} => G.ne_of_adj
+  Coloring.mk id fun {_ _} => G.ne_of_adj
 #align simple_graph.self_coloring SimpleGraph.selfColoring
 
 /-- The chromatic number of a graph is the minimal number of colors needed to color it.
@@ -341,7 +341,7 @@ theorem Colorable.chromaticNumber_le_of_forall_imp {V' : Type _} {G' : SimpleGra
 
 theorem Colorable.chromaticNumber_mono (G' : SimpleGraph V) {m : ℕ} (hc : G'.Colorable m)
     (h : G ≤ G') : G.chromaticNumber ≤ G'.chromaticNumber :=
-  hc.chromaticNumber_le_of_forall_imp fun n => Colorable.mono_left h
+  hc.chromaticNumber_le_of_forall_imp fun _ => Colorable.mono_left h
 #align simple_graph.colorable.chromatic_number_mono SimpleGraph.Colorable.chromaticNumber_mono
 
 theorem Colorable.chromaticNumber_mono_of_embedding {V' : Type _} {G' : SimpleGraph V'} {n : ℕ}
