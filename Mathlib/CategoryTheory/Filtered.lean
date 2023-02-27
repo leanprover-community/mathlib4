@@ -122,8 +122,7 @@ example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by in
 
 example (α : Type u) [SemilatticeSup α] [OrderTop α] : IsFiltered α := by infer_instance
 
-instance : IsFiltered (Discrete PUnit)
-    where
+instance : IsFiltered (Discrete PUnit) where
   cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨Subsingleton.elim _ _⟩⟩, trivial⟩
   cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
     apply ULift.ext
@@ -140,9 +139,9 @@ variable [IsFilteredOrEmpty C]
 -- porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsFilteredOrEmpty` have been added instead
 --
---theorem cocone_objs : ∀ X Y : C, ∃ (Z : _)(f : X ⟶ Z)(g : Y ⟶ Z), True :=
+-- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _)(f : X ⟶ Z)(g : Y ⟶ Z), True :=
 --  IsFilteredOrEmpty.cocone_objs
---#align category_theory.is_filtered.cocone_objs CategoryTheory.IsFiltered.cocone_objs
+-- #align category_theory.is_filtered.cocone_objs CategoryTheory.IsFiltered.cocone_objs
 --
 --theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _)(h : Y ⟶ Z), f ≫ h = g ≫ h :=
 --  IsFilteredOrEmpty.cocone_maps
