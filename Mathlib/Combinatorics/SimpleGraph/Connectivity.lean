@@ -1938,7 +1938,7 @@ exactly one connected component.
 
 There is a `has_coe_to_fun` instance so that `h u v` can be used instead
 of `h.preconnected u v`. -/
-@[mk_iff]
+@[mk_iff connected_iff]
 structure Connected : Prop where
   protected preconnected : G.Preconnected
   protected [nonempty : Nonempty V]
@@ -2146,9 +2146,10 @@ theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
 
 @[simp]
 theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgraph := by
-  induction p
-  · simp
-  · simp only [*, Walk.toSubgraph, reverse_cons, toSubgraph_append, subgraphOfAdj_symm]
+  induction p with
+  | nil => simp
+  | cons _ _ _ =>
+    simp only [*, Walk.toSubgraph, reverse_cons, toSubgraph_append, subgraphOfAdj_symm]
     rw [sup_comm]
     congr
     ext <;> simp [-Set.bot_eq_empty]
@@ -2186,29 +2187,29 @@ end Walk
 
 section WalkCounting
 
-theorem set_walk_self_length_zero_eq (u : V) : { p : G.Walk u u | p.length = 0 } = {Walk.nil} := by
+theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {Walk.nil} := by
   ext p
   simp
 #align simple_graph.set_walk_self_length_zero_eq SimpleGraph.set_walk_self_length_zero_eq
 
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
-    { p : G.Walk u v | p.length = 0 } = ∅ := by
+    {p : G.Walk u v | p.length = 0} = ∅ := by
   ext p
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
-  exact fun h' => absurd (walk.eq_of_length_eq_zero h') h
+  exact fun h' => absurd (Walk.eq_of_length_eq_zero h') h
 #align simple_graph.set_walk_length_zero_eq_of_ne SimpleGraph.set_walk_length_zero_eq_of_ne
 
 theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
-    { p : G.Walk u v | p.length = n.succ } =
-      ⋃ (w : V) (h : G.Adj u w), Walk.cons h '' { p' : G.Walk w v | p'.length = n } := by
+    {p : G.Walk u v | p.length = n.succ} =
+      ⋃ (w : V) (h : G.Adj u w), Walk.cons h '' {p' : G.Walk w v | p'.length = n} := by
   ext p
   cases' p with _ _ w _ huw pwv
   · simp [eq_comm]
-  · simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, walk.length_cons, add_left_inj,
+  · simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
       Set.mem_unionᵢ, Set.mem_image, exists_prop]
     constructor
     · rintro rfl
-      exact ⟨w, huw, pwv, rfl, rfl, HEq.rfl⟩
+      exact ⟨w, huw, pwv, rfl, rfl⟩
     · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
       rfl
 #align simple_graph.set_walk_length_succ_eq SimpleGraph.set_walk_length_succ_eq
@@ -2225,33 +2226,34 @@ can also be useful as a recursive description of this set when `V` is finite.
 
 See `simple_graph.coe_finset_walk_length_eq` for the relationship between this `finset` and
 the set of length-`n` walks. -/
-def finsetWalkLength : ∀ (n : ℕ) (u v : V), Finset (G.Walk u v)
-  | 0, u, v =>
+def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
+  match n with
+  | 0 =>
     if h : u = v then by
       subst u
-      exact {walk.nil}
+      exact {Walk.nil}
     else ∅
-  | n + 1, u, v =>
-    Finset.univ.bunionᵢ fun w : G.neighborSet u =>
-      (finset_walk_length n w v).map ⟨fun p => Walk.cons w.property p, fun p q => by simp⟩
+  | n + 1 =>
+    Finset.univ.bunionᵢ fun (w : G.neighborSet u) =>
+      (finsetWalkLength n w v).map ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
 #align simple_graph.finset_walk_length SimpleGraph.finsetWalkLength
 
 theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
-    (G.finsetWalkLength n u v : Set (G.Walk u v)) = { p : G.Walk u v | p.length = n } := by
+    (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
   induction' n with n ih generalizing u v
-  · obtain rfl | huv := eq_or_ne u v <;> simp [finset_walk_length, set_walk_length_zero_eq_of_ne, *]
-  · simp only [finset_walk_length, set_walk_length_succ_eq, Finset.coe_bunionᵢ, Finset.mem_coe,
+  · obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
+  · simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_bunionᵢ, Finset.mem_coe,
       Finset.mem_univ, Set.unionᵢ_true]
     ext p
-    simp only [mem_neighbor_set, Finset.coe_map, embedding.coe_fn_mk, Set.unionᵢ_coe_set,
+    simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.unionᵢ_coe_set,
       Set.mem_unionᵢ, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
-    congr with w
-    congr with h
-    congr with q
-    have := set.ext_iff.mp (ih w v) q
+    -- porting note: using `apply iff_of_eq` to help `congr`
+    apply iff_of_eq; congr with w
+    apply iff_of_eq; congr with h
+    apply iff_of_eq; congr with q
+    have := Set.ext_iff.mp (ih w v) q
     simp only [Finset.mem_coe, Set.mem_setOf_eq] at this
     rw [← this]
-    rfl
 #align simple_graph.coe_finset_walk_length_eq SimpleGraph.coe_finsetWalkLength_eq
 
 variable {G}
@@ -2263,29 +2265,29 @@ theorem Walk.mem_finsetWalkLength_iff_length_eq {n : ℕ} {u v : V} (p : G.Walk 
 
 variable (G)
 
-instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype { p : G.Walk u v | p.length = n } :=
+instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} :=
   Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
-    rw [← Finset.mem_coe, coe_finset_walk_length_eq]
+    rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 #align simple_graph.fintype_set_walk_length SimpleGraph.fintypeSetWalkLength
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
-    { p : G.Walk u v | p.length = n }.toFinset = G.finsetWalkLength n u v := by
+    {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
   ext p
-  simp [← coe_finset_walk_length_eq]
+  simp [← coe_finsetWalkLength_eq]
 #align simple_graph.set_walk_length_to_finset_eq SimpleGraph.set_walk_length_toFinset_eq
 
 /- See `simple_graph.adj_matrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
 power of the adjacency matrix. -/
 theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
-    Fintype.card { p : G.Walk u v | p.length = n } = (G.finsetWalkLength n u v).card :=
+    Fintype.card {p : G.Walk u v | p.length = n} = (G.finsetWalkLength n u v).card :=
   Fintype.card_ofFinset (G.finsetWalkLength n u v) fun p => by
-    rw [← Finset.mem_coe, coe_finset_walk_length_eq]
+    rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
 #align simple_graph.card_set_walk_length_eq SimpleGraph.card_set_walk_length_eq
 
 instance fintypeSetPathLength (u v : V) (n : ℕ) :
-    Fintype { p : G.Walk u v | p.IsPath ∧ p.length = n } :=
-  Fintype.ofFinset ((G.finsetWalkLength n u v).filterₓ Walk.IsPath) <| by
-    simp [walk.mem_finset_walk_length_iff_length_eq, and_comm']
+    Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n} :=
+  Fintype.ofFinset ((G.finsetWalkLength n u v).filter Walk.IsPath) <| by
+    simp [Walk.mem_finsetWalkLength_iff_length_eq, and_comm]
 #align simple_graph.fintype_set_path_length SimpleGraph.fintypeSetPathLength
 
 end LocallyFinite
@@ -2298,11 +2300,11 @@ theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
     G.Reachable u v ↔ ∃ n : Fin (Fintype.card V), (G.finsetWalkLength n u v).Nonempty := by
   constructor
   · intro r
-    refine' r.elim_path fun p => _
-    refine' ⟨⟨_, p.is_path.length_lt⟩, p, _⟩
-    simp [walk.mem_finset_walk_length_iff_length_eq]
+    refine r.elim_path fun p => ?_
+    refine ⟨⟨_, p.isPath.length_lt⟩, p, ?_⟩
+    simp [Walk.mem_finsetWalkLength_iff_length_eq]
   · rintro ⟨_, p, _⟩
-    use p
+    exact ⟨p⟩
 #align simple_graph.reachable_iff_exists_finset_walk_length_nonempty SimpleGraph.reachable_iff_exists_finsetWalkLength_nonempty
 
 instance : DecidableRel G.Reachable := fun u v =>
@@ -2311,19 +2313,19 @@ instance : DecidableRel G.Reachable := fun u v =>
 instance : Fintype G.ConnectedComponent :=
   @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
 
-instance : Decidable G.Preconnected := by
-  unfold preconnected
-  infer_instance
+instance : Decidable G.Preconnected :=
+  inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)
 
 instance : Decidable G.Connected := by
   rw [connected_iff, ← Finset.univ_nonempty_iff]
-  exact And.decidable
+  infer_instance
 
 end Finite
 
 end WalkCounting
 
 section BridgeEdges
+
 
 /-! ### Bridge edges -/
 
@@ -2336,32 +2338,31 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 #align simple_graph.is_bridge SimpleGraph.IsBridge
 
 theorem isBridge_iff {u v : V} :
-    G.IsBridge ⟦(u, v)⟧ ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {⟦(u, v)⟧}).Reachable u v :=
-  Iff.rfl
+    G.IsBridge ⟦(u, v)⟧ ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {⟦(u, v)⟧}).Reachable u v := Iff.rfl
 #align simple_graph.is_bridge_iff SimpleGraph.isBridge_iff
 
 theorem reachable_delete_edges_iff_exists_walk {v w : V} :
     (G \ fromEdgeSet {⟦(v, w)⟧}).Reachable v w ↔ ∃ p : G.Walk v w, ¬⟦(v, w)⟧ ∈ p.edges := by
   constructor
   · rintro ⟨p⟩
-    use p.map (hom.map_spanning_subgraphs (by simp))
-    simp_rw [walk.edges_map, List.mem_map', hom.map_spanning_subgraphs_apply, Sym2.map_id', id.def]
+    use p.map (Hom.mapSpanningSubgraphs (by simp))
+    simp_rw [Walk.edges_map, List.mem_map', Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id.def]
     rintro ⟨e, h, rfl⟩
-    simpa using p.edges_subset_edge_set h
+    simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩
-    refine' ⟨p.transfer _ fun e ep => _⟩
-    simp only [edge_set_sdiff, edge_set_from_edge_set, edge_set_sdiff_sdiff_is_diag, Set.mem_diff,
+    refine ⟨p.transfer _ fun e ep => ?_⟩
+    simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_diff,
       Set.mem_singleton_iff]
-    exact ⟨p.edges_subset_edge_set ep, fun h' => h (h' ▸ ep)⟩
+    exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
 #align simple_graph.reachable_delete_edges_iff_exists_walk SimpleGraph.reachable_delete_edges_iff_exists_walk
 
 theorem isBridge_iff_adj_and_forall_walk_mem_edges {v w : V} :
     G.IsBridge ⟦(v, w)⟧ ↔ G.Adj v w ∧ ∀ p : G.Walk v w, ⟦(v, w)⟧ ∈ p.edges := by
-  rw [is_bridge_iff, and_congr_right']
+  rw [isBridge_iff, and_congr_right']
   rw [reachable_delete_edges_iff_exists_walk, not_exists_not]
 #align simple_graph.is_bridge_iff_adj_and_forall_walk_mem_edges SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges
 
-theorem ReachableDeleteEdgesIffExistsCycle.aux [DecidableEq V] {u v w : V}
+theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
     (hb : ∀ p : G.Walk v w, ⟦(v, w)⟧ ∈ p.edges) (c : G.Walk u u) (hc : c.IsTrail)
     (he : ⟦(v, w)⟧ ∈ c.edges)
     (hw : w ∈ (c.takeUntil v (c.fst_mem_support_of_mem_edges he)).support) : False := by
@@ -2369,9 +2370,9 @@ theorem ReachableDeleteEdgesIffExistsCycle.aux [DecidableEq V] {u v w : V}
   -- decompose c into
   --      puw     pwv     pvu
   --   u ----> w ----> v ----> u
-  let puw := (c.take_until v hv).takeUntil w hw
-  let pwv := (c.take_until v hv).dropUntil w hw
-  let pvu := c.drop_until v hv
+  let puw := (c.takeUntil v hv).takeUntil w hw
+  let pwv := (c.takeUntil v hv).dropUntil w hw
+  let pvu := c.dropUntil v hv
   have : c = (puw.append pwv).append pvu := by simp
   -- We have two walks from v to w
   --      pvu     puw
@@ -2382,52 +2383,46 @@ theorem ReachableDeleteEdgesIffExistsCycle.aux [DecidableEq V] {u v w : V}
   -- so they both contain the edge ⟦(v, w)⟧, but that's a contradiction since c is a trail.
   have hbq := hb (pvu.append puw)
   have hpq' := hb pwv.reverse
-  rw [walk.edges_reverse, List.mem_reverse'] at hpq'
-  rw [walk.is_trail_def, this, walk.edges_append, walk.edges_append, List.nodup_append_comm, ←
-    List.append_assoc, ← walk.edges_append] at hc
+  rw [Walk.edges_reverse, List.mem_reverse'] at hpq'
+  rw [Walk.isTrail_def, this, Walk.edges_append, Walk.edges_append, List.nodup_append_comm, ←
+    List.append_assoc, ← Walk.edges_append] at hc
   exact List.disjoint_of_nodup_append hc hbq hpq'
-#align simple_graph.reachable_delete_edges_iff_exists_cycle.aux SimpleGraph.ReachableDeleteEdgesIffExistsCycle.aux
+#align simple_graph.reachable_delete_edges_iff_exists_cycle.aux SimpleGraph.reachable_deleteEdges_iff_exists_cycle.aux
 
+-- porting note: the unused variable checker helped eliminate a good amount of this proof (!)
 theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     G.Adj v w ∧ (G \ fromEdgeSet {⟦(v, w)⟧}).Reachable v w ↔
       ∃ (u : V)(p : G.Walk u u), p.IsCycle ∧ ⟦(v, w)⟧ ∈ p.edges := by
   classical
-    rw [reachable_delete_edges_iff_exists_walk]
-    constructor
-    · rintro ⟨h, p, hp⟩
-      refine' ⟨w, walk.cons h.symm p.to_path, _, _⟩
-      · apply path.cons_is_cycle
-        rw [Sym2.eq_swap]
-        intro h
-        exact absurd (walk.edges_to_path_subset p h) hp
-      simp only [Sym2.eq_swap, walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
-    · rintro ⟨u, c, hc, he⟩
-      have hvc : v ∈ c.support := walk.fst_mem_support_of_mem_edges c he
-      have hwc : w ∈ c.support := walk.snd_mem_support_of_mem_edges c he
-      let puv := c.take_until v hvc
-      let pvu := c.drop_until v hvc
-      obtain hw | hw' : w ∈ puv.support ∨ w ∈ pvu.support := by
-        rwa [← walk.mem_support_append_iff, walk.take_spec]
-      · by_contra' h
-        specialize h (c.adj_of_mem_edges he)
-        exact reachable_delete_edges_iff_exists_cycle.aux h c hc.to_trail he hw
-      · by_contra' hb
-        specialize hb (c.adj_of_mem_edges he)
-        have hb' : ∀ p : G.walk w v, ⟦(w, v)⟧ ∈ p.edges :=
-          by
-          intro p
-          simpa [Sym2.eq_swap] using hb p.reverse
-        apply
-          reachable_delete_edges_iff_exists_cycle.aux hb' (pvu.append puv) (hc.to_trail.rotate hvc)
-            _ (walk.start_mem_support _)
-        rwa [walk.edges_append, List.mem_append, or_comm', ← List.mem_append, ← walk.edges_append,
-          walk.take_spec, Sym2.eq_swap]
+  rw [reachable_delete_edges_iff_exists_walk]
+  constructor
+  · rintro ⟨h, p, hp⟩
+    refine ⟨w, Walk.cons h.symm p.toPath, ?_, ?_⟩
+    · apply Path.cons_isCycle
+      rw [Sym2.eq_swap]
+      intro h
+      exact absurd (Walk.edges_toPath_subset p h) hp
+    simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
+  · rintro ⟨u, c, hc, he⟩
+    have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
+    let puv := c.takeUntil v hvc
+    let pvu := c.dropUntil v hvc
+    refine ⟨c.adj_of_mem_edges he, ?_⟩
+    by_contra' hb
+    have hb' : ∀ p : G.Walk w v, ⟦(w, v)⟧ ∈ p.edges := by
+      intro p
+      simpa [Sym2.eq_swap] using hb p.reverse
+    apply
+      reachable_deleteEdges_iff_exists_cycle.aux hb' (pvu.append puv) (hc.isTrail.rotate hvc)
+        _ (Walk.start_mem_support _)
+    rwa [Walk.edges_append, List.mem_append, or_comm, ← List.mem_append, ← Walk.edges_append,
+      Walk.take_spec, Sym2.eq_swap]
 #align simple_graph.adj_and_reachable_delete_edges_iff_exists_cycle SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle
 
 theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} :
     G.IsBridge ⟦(v, w)⟧ ↔ G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → ⟦(v, w)⟧ ∉ p.edges :=
   by
-  rw [is_bridge_iff, and_congr_right_iff]
+  rw [isBridge_iff, and_congr_right_iff]
   intro h
   rw [← not_iff_not]
   push_neg
@@ -2437,7 +2432,7 @@ theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} :
 
 theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
-  Sym2.ind (fun v w => isBridge_iff_adj_and_forall_cycle_not_mem) e
+  Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_not_mem) e
 #align simple_graph.is_bridge_iff_mem_and_forall_cycle_not_mem SimpleGraph.isBridge_iff_mem_and_forall_cycle_not_mem
 
 end BridgeEdges
