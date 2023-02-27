@@ -139,20 +139,20 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
 def unpackCache (cfg : Config) (hashMap : HashMap) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
   let size := hashMap.size
-  if size > 0 then
+  if size == 0 then IO.println "No cache files to decompress"
+  else
     IO.println s!"Decompressing {size} file(s)"
-    let rootRefStr := cfg.rootRef.toString
+    let rootDirStr := cfg.rootDir.toString
     hashMap.forM fun path hash => do
       match path.parent with
       | none | some path => do
         let pkgDir ← getPackageDir cfg.pkgDirs path
         mkDir $ pkgDir / LIBDIR / path
         mkDir $ pkgDir / IRDIR / path
-        if rootRefStr != "." && cfg.rootRef == pkgDir then
-          discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}", "-C", rootRefStr]
+        if rootDirStr != "." && cfg.rootDir == pkgDir then
+          discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}", "-C", rootDirStr]
         else
           discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
-  else IO.println "No cache files to decompress"
 
 /-- Retrieves the azure token from the environment -/
 def getToken (tokenEnvVar : String) : IO String := do

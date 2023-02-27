@@ -5,9 +5,8 @@ Authors: Arthur Paulino
 -/
 
 import Cache.Requests
-import Cache.Config
 
-def help : String := "Mathlib4 caching CLI
+def help : String := "Caching CLI
 Usage: cache [COMMAND]
 
 Commands:
@@ -55,6 +54,7 @@ def curlArgs : List String :=
 
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
+  if !(← Config.check) then IO.println "Cache config file not found"; return
   let config ← match ← Config.load with
     | .ok config => pure config
     | .error err => IO.println err; return

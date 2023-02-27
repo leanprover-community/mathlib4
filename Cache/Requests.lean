@@ -33,14 +33,14 @@ def mkGetConfigContent (url : String) (hashMap : IO.HashMap) : IO String := do
 def downloadFiles (url : String) (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
   let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
   let size := hashMap.size
-  if size > 0 then
+  if size == 0 then IO.println "No files to download"
+  else
     IO.mkDir IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s)"
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent url hashMap)
     discard $ IO.runCmd "curl"
       #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
     IO.FS.removeFile IO.CURLCFG
-  else IO.println "No files to download"
 
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (cfg : Config) (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
@@ -61,7 +61,8 @@ def mkPutConfigContent (url : String) (fileNames : Array String) (token : String
 def putFiles (url : String) (fileNames : Array String) (overwrite : Bool) (token : String) :
     IO Unit := do
   let size := fileNames.size
-  if size > 0 then
+  if size == 0 then IO.println "No files to upload"
+  else
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent url fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
     if overwrite then
@@ -71,7 +72,6 @@ def putFiles (url : String) (fileNames : Array String) (overwrite : Bool) (token
       discard $ IO.runCmd "curl" #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
         "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
     IO.FS.removeFile IO.CURLCFG
-  else IO.println "No files to upload"
 
 end Put
 

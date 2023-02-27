@@ -1,7 +1,7 @@
 {
   "url":"https://lakecache.blob.core.windows.net/mathlib4",
   "head":"Mathlib.lean",
-  "rootRef":".",
+  "rootDir":".",
   "tokenEnvVar":"MATHLIB_CACHE_SAS",
   "pkgDirs":
   {

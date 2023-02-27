@@ -58,10 +58,9 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lean-toolchain`
 * `lake-manifest.json`
 -/
-def getRootHash (rootRef : FilePath) : IO UInt64 := do
+def getRootHash (rootDir : FilePath) : IO UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
-  return hash $ ← rootFiles.mapM fun path => do
-    pure $ ← IO.FS.readFile $ rootRef / path
+  return hash $ ← rootFiles.mapM (do pure $ ← IO.FS.readFile $ rootDir / ·)
 
 /--
 Computes the hash of a file, which mixes:
@@ -100,7 +99,7 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (cfg : Config) : IO HashMemo := do
-  let rootHash ← getRootHash cfg.rootRef
+  let rootHash ← getRootHash cfg.rootDir
   return (← StateT.run (ReaderT.run (getFileHash cfg.head) ⟨cfg.pkgDirs, rootHash⟩) default).2
 
 end Cache.Hashing
