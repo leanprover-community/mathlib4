@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.big_operators.order
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
+! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -637,6 +637,12 @@ section CanonicallyOrderedCommSemiring
 
 variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
 
+/-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
+@[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
+    0 < ∏ i in s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
+  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
+#align canonically_ordered_comm_semiring.prod_pos CanonicallyOrderedCommSemiring.prod_pos
+
 theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏ i in s, g i := by
   classical
     induction' s using Finset.induction with a s has ih h
@@ -694,35 +700,29 @@ namespace WithTop
 open Finset
 
 /-- A product of finite numbers is still finite -/
-theorem prod_lt_top [CanonicallyOrderedCommSemiring R] [Nontrivial R] [DecidableEq R] {s : Finset ι}
-    {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : (∏ i in s, f i) < ⊤ :=
-  prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top h₁.ne h₂.ne) (coe_lt_top 1)
-    fun a ha ↦ lt_top_iff_ne_top.2 (h a ha)
+theorem prod_lt_top [CommMonoidWithZero R] [NoZeroDivisors R] [Nontrivial R] [DecidableEq R] [LT R]
+    {s : Finset ι} {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : (∏ i in s, f i) < ⊤ :=
+  prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top' h₁ h₂) (coe_lt_top 1)
+    fun a ha ↦ WithTop.lt_top_iff_ne_top.2 (h a ha)
 #align with_top.prod_lt_top WithTop.prod_lt_top
 
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top [OrderedAddCommMonoid M] {s : Finset ι} {f : ι → WithTop M}
-    (h : ∀ i ∈ s, f i ≠ ⊤) : (∑ i in s, f i) < ⊤ :=
-  sum_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ add_lt_top.2 ⟨h₁, h₂⟩) zero_lt_top fun i hi ↦
-    lt_top_iff_ne_top.2 (h i hi)
-#align with_top.sum_lt_top WithTop.sum_lt_top
-
 /-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff [OrderedAddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
+theorem sum_eq_top_iff [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
     (∑ i in s, f i) = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
-  classical
-    constructor
-    · contrapose!
-      exact fun h ↦ (sum_lt_top fun i hi ↦ h i hi).ne
-    · rintro ⟨i, his, hi⟩
-      rw [sum_eq_add_sum_diff_singleton his, hi, top_add]
+  induction s using Finset.cons_induction <;> simp [*]
 #align with_top.sum_eq_top_iff WithTop.sum_eq_top_iff
 
 /-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff [OrderedAddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
+theorem sum_lt_top_iff [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M} :
     (∑ i in s, f i) < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
-  simp only [lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
+  simp only [WithTop.lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
 #align with_top.sum_lt_top_iff WithTop.sum_lt_top_iff
+
+/-- A sum of finite numbers is still finite -/
+theorem sum_lt_top [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M}
+    (h : ∀ i ∈ s, f i ≠ ⊤) : (∑ i in s, f i) < ⊤ :=
+  sum_lt_top_iff.2 fun i hi => WithTop.lt_top_iff_ne_top.2 (h i hi)
+#align with_top.sum_lt_top WithTop.sum_lt_top
 
 end WithTop
 
@@ -731,12 +731,8 @@ section AbsoluteValue
 variable {S : Type _}
 
 theorem AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
-    (s : Finset ι) (f : ι → R) : abv (∑ i in s, f i) ≤ ∑ i in s, abv (f i) := by
-  letI := Classical.decEq ι
-  refine' Finset.induction_on s _ fun i s hi ih ↦ _
-  · simp
-  · simp only [Finset.sum_insert hi]
-    exact (abv.add_le _ _).trans (add_le_add le_rfl ih)
+    (s : Finset ι) (f : ι → R) : abv (∑ i in s, f i) ≤ ∑ i in s, abv (f i) :=
+  Finset.le_sum_of_subadditive abv (map_zero _) abv.add_le _ _
 #align absolute_value.sum_le AbsoluteValue.sum_le
 
 theorem IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]

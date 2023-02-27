@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 
 ! This file was ported from Lean 3 source module data.set.finite
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
+! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
