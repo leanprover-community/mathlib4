@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module set_theory.lists
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 497d1e06409995dd8ec95301fa8d8f3480187f4c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -39,11 +39,9 @@ This calls for a two-steps definition of ZFA lists:
 * `Lists' α true`: Proper ZFA prelists. Defined inductively from the empty ZFA prelist
   (`Lists'.nil`) and from appending a ZFA prelist to a proper ZFA prelist (`Lists'.cons a l`).
 * `Lists α`: ZFA lists. Sum of the atoms and proper ZFA prelists.
-
-## TODO
-
-The next step is to define ZFA sets as lists quotiented by `Lists.Equiv`.
-(-/
+* `Finsets α`: ZFA sets. Defined as `Lists` quotiented by `Lists.Equiv`, the extensional
+  equivalence.
+-/
 
 
 variable {α : Type _}
