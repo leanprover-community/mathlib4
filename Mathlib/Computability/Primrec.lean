@@ -15,15 +15,15 @@ import Mathlib.Logic.Function.Iterate
 # The primitive recursive functions
 
 The primitive recursive functions are the least collection of functions
-`nat → nat` which are closed under projections (using the mkpair
+`ℕ → ℕ` which are closed under projections (using the mkpair
 pairing function), composition, zero, successor, and primitive recursion
-(i.e. nat.rec where the motive is C n := nat).
+(i.e. Nat.rec where the motive is C n := ℕ).
 
 We can extend this definition to a large class of basic types by
 using canonical encodings of types as natural numbers (Gödel numbering),
-which we implement through the type class `encodable`. (More precisely,
+which we implement through the type class `Encodable`. (More precisely,
 we need that the composition of encode with decode yields a
-primitive recursive function, so we have the `primcodable` type class
+primitive recursive function, so we have the `Primcodable` type class
 for this.)
 
 ## References
@@ -147,7 +147,7 @@ end Primrec
 
 end Nat
 
-/-- A `primcodable` type is an `encodable` type for which
+/-- A `Primcodable` type is an `Encodable` type for which
   the encode/decode functions are primitive recursive. -/
 class Primcodable (α : Type _) extends Encodable α where
   -- porting note: was `prim [] `.
@@ -163,7 +163,7 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
   ⟨Nat.Primrec.succ.of_eq <| by simp⟩
 #align primcodable.of_denumerable Primcodable.ofDenumerable
 
-/-- Builds a `primcodable` instance from an equivalence to a `primcodable` type. -/
+/-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
   { Encodable.ofEquiv α e with
     prim := (@Primcodable.prim α _).of_eq fun n => by
@@ -198,7 +198,7 @@ instance bool : Primcodable Bool :=
 
 end Primcodable
 
-/-- `primrec f` means `f` is primitive recursive (after
+/-- `Primrec f` means `f` is primitive recursive (after
   encoding its input and output as natural numbers). -/
 def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
   Nat.Primrec fun n => encode ((@decode α _ n).map f)
@@ -378,7 +378,7 @@ theorem list_get?₁ : ∀ l : List α, Primrec l.get?
 
 end Primrec
 
-/-- `primrec₂ f` means `f` is a binary primitive recursive function.
+/-- `Primrec₂ f` means `f` is a binary primitive recursive function.
   This is technically unnecessary since we can always curry all
   the arguments together, but there are enough natural two-arg
   functions that it is convenient to express this directly. -/
@@ -386,16 +386,16 @@ def Primrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f 
   Primrec fun p : α × β => f p.1 p.2
 #align primrec₂ Primrec₂
 
-/-- `primrec_pred p` means `p : α → Prop` is a (decidable)
+/-- `PrimrecPred p` means `p : α → Prop` is a (decidable)
   primitive recursive predicate, which is to say that
-  `to_bool ∘ p : α → bool` is primitive recursive. -/
+  `decide ∘ p : α → bool` is primitive recursive. -/
 def PrimrecPred {α} [Primcodable α] (p : α → Prop) [DecidablePred p] :=
   Primrec fun a => decide (p a)
 #align primrec_pred PrimrecPred
 
-/-- `primrec_rel p` means `p : α → β → Prop` is a (decidable)
+/-- `PrimrecRel p` means `p : α → β → Prop` is a (decidable)
   primitive recursive relation, which is to say that
-  `to_bool ∘ p : α → β → bool` is primitive recursive. -/
+  `decide ∘ p : α → β → bool` is primitive recursive. -/
 def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop)
     [∀ a b, Decidable (s a b)] :=
   Primrec₂ fun a b => decide (s a b)
@@ -780,9 +780,9 @@ theorem option_guard {p : α → β → Prop} [∀ a b, Decidable (p a b)] (hp :
   ite (hp.comp Primrec.id hf) (option_some_iff.2 hf) (const none)
 #align primrec.option_guard Primrec.option_guard
 
-theorem option_orelse : Primrec₂ ((· <|> ·) : Option α → Option α → Option α) :=
+theorem option_orElse : Primrec₂ ((· <|> ·) : Option α → Option α → Option α) :=
   (option_cases fst snd (fst.comp fst).to₂).of_eq fun ⟨o₁, o₂⟩ => by cases o₁ <;> cases o₂ <;> rfl
-#align primrec.option_orelse Primrec.option_orelse
+#align primrec.option_orelse Primrec.option_orElse
 
 protected theorem decode₂ : Primrec (decode₂ α) :=
   option_bind .decode <|
@@ -849,7 +849,7 @@ theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [∀ x n, De
 
 /-- To show a function `f : α → ℕ` is primitive recursive, it is enough to show that the function
   is bounded by a primitive recursive function and that its graph is recursive -/
-theorem of_primrec_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
+theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
     (h₂ : PrimrecRel fun a b => f a = b) : Primrec f := by
   rcases h₁ with ⟨g, pg, hg : ∀ x, f x ≤ g x⟩
   refine (nat_findGreatest pg h₂).of_eq fun n => ?_
@@ -862,7 +862,7 @@ nonrec theorem Nat.eq_div_iff_mul_le_and_lt_mul {x y k : ℕ} (k₀ : 0 < k) :
 
 -- We show that division is primitive recursive by showing that the graph is
 theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
-  refine of_primrec_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
+  refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
   have : PrimrecRel fun (a : ℕ × ℕ) (b : ℕ) => (a.2 = 0 ∧ b = 0) ∨
       (0 < a.2 ∧ b * a.2 ≤ a.1 ∧ a.1 < (b + 1) * a.2) :=
     por (pand (const 0 |> Primrec.eq.comp (fst |> snd.comp)) (const 0 |> Primrec.eq.comp snd))
@@ -894,11 +894,12 @@ theorem nat_div2 : Primrec Nat.div2 :=
 -- theorem nat_boddDiv2 : Primrec Nat.boddDiv2 := pair nat_bodd nat_div2
 -- #align primrec.nat_bodd_div2 Primrec.nat_boddDiv2
 
+-- porting note: bit0 is deprecated
 theorem nat_double : Primrec (fun n : ℕ => 2 * n) :=
   nat_mul.comp (const _) Primrec.id
 #align primrec.nat_bit0 Primrec.nat_double
 
-
+-- porting note: bit1 is deprecated
 theorem nat_double_succ : Primrec (fun n : ℕ => 2 * n + 1) :=
   nat_double |> Primrec.succ.comp
 #align primrec.nat_bit1 Primrec.nat_double_succ
@@ -1209,7 +1210,7 @@ variable [Primcodable α] [Primcodable β]
 
 open Primrec
 
-/-- A subtype of a primitive recursive predicate is `primcodable`. -/
+/-- A subtype of a primitive recursive predicate is `Primcodable`. -/
 def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodable (Subtype p) :=
   ⟨have : Primrec fun n => (@decode α _ n).bind fun a => Option.guard p a :=
     option_bind .decode (option_guard (hp.comp snd).to₂ snd)
@@ -1401,7 +1402,7 @@ namespace Nat
 
 open Vector
 
-/-- An alternative inductive definition of `primrec` which
+/-- An alternative inductive definition of `Primrec` which
   does not use the pairing function on ℕ, and so has to
   work with n-ary functions on ℕ instead of unary functions.
   We prove that this is equivalent to the regular notion
