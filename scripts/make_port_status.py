@@ -183,8 +183,7 @@ for node in sorted(graph.nodes):
             new_status.update(
                 mathlib4_pr=pr_info['pr'],
                 mathlib4_file=pr_info['fname'],
-                source=dict(repo=pr_info['repo'],
-                commit=pr_info['commit']),
+                source=dict(repo=pr_info['repo'], commit=pr_info['commit']),
                 labels=labels.get(pr_info['pr'], [])
                 )
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
