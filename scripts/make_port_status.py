@@ -183,14 +183,9 @@ for node in sorted(graph.nodes):
                 mathlib4_file=pr_info['fname'],
                 source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
 
-            try:
-                pr = prs[pr_info['pr']]
-            except KeyError:
-                pass
-            else:
-                labels = [{'name': l.name, 'color': l.color} for l in pr.labels]
-                if labels:
-                    new_status.update(labels=labels)
+            labels = [{'name': l.name, 'color': l.color} for l in prs[pr_info['pr']].labels]
+            if labels:
+                new_status.update(labels=labels)
 
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
             status += f" mathlib4#{pr_info['pr']} {sha}"
