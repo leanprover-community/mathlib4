@@ -1695,89 +1695,99 @@ theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
   induction p with
   | nil => rfl
   | cons _ _ ih =>
-    simp only [Walk.transfer, cons.injEq, heq_eq_eq, true_and]
     simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hp
-    rw [ih q hp.2 hq]
+    simp [ih q hp.2 hq]
 #align simple_graph.walk.transfer_self SimpleGraph.Walk.transfer_self
 
 theorem transfer_eq_map_of_le (GH : G ≤ H) :
     p.transfer H hp = p.map (SimpleGraph.Hom.mapSpanningSubgraphs GH) := by
   induction p with
   | nil => rfl
-  | cons _ _ ih =>
-    simp only [Walk.transfer, map_cons, Hom.mapSpanningSubgraphs_apply, cons.injEq,
-      heq_eq_eq, true_and]
-    rw [ih q _ hq]
+  | cons _ _ ih => simp [ih q _ hq]
 #align simple_graph.walk.transfer_eq_map_of_le SimpleGraph.Walk.transfer_eq_map_of_le
 
 @[simp]
 theorem edges_transfer : (p.transfer H hp).edges = p.edges := by
-  induction p <;> simp only [*, transfer, edges_nil, edges_cons, eq_self_iff_true, and_self_iff]
+  induction p with
+  | nil => rfl
+  | cons _ _ ih => simp [ih q _ hq]
 #align simple_graph.walk.edges_transfer SimpleGraph.Walk.edges_transfer
 
 @[simp]
 theorem support_transfer : (p.transfer H hp).support = p.support := by
-  induction p <;> simp only [*, transfer, eq_self_iff_true, and_self_iff, support_nil, support_cons]
+  induction p with
+  | nil => rfl
+  | cons _ _ ih => simp [ih q _ hq]
 #align simple_graph.walk.support_transfer SimpleGraph.Walk.support_transfer
 
 @[simp]
-theorem length_transfer : (p.transfer H hp).length = p.length := by induction p <;> simp [*]
+theorem length_transfer : (p.transfer H hp).length = p.length := by
+  induction p with
+  | nil => rfl
+  | cons _ _ ih => simp [ih q _ hq]
 #align simple_graph.walk.length_transfer SimpleGraph.Walk.length_transfer
 
 variable {p}
 
 protected theorem IsPath.transfer (pp : p.IsPath) : (p.transfer H hp).IsPath := by
-  induction p <;> simp only [transfer, is_path.nil, cons_is_path_iff, support_transfer] at pp⊢
-  · tauto
+  induction p with
+  | nil => simp
+  | cons _ _ ih =>
+    simp only [Walk.transfer, cons_isPath_iff, support_transfer _ q _ hq] at pp ⊢
+    exact ⟨ih _ _ hq pp.1, pp.2⟩
 #align simple_graph.walk.is_path.transfer SimpleGraph.Walk.IsPath.transfer
 
 protected theorem IsCycle.transfer {p : G.Walk u u} (pc : p.IsCycle) (hp) :
     (p.transfer H hp).IsCycle := by
-  cases p <;>
-    simp only [transfer, is_cycle.not_of_nil, cons_is_cycle_iff, transfer, edges_transfer] at pc⊢
-  · exact pc
-  · exact ⟨pc.left.transfer _, pc.right⟩
+  cases p with
+  | nil => simp at pc
+  | cons _ p' =>
+    simp only [Walk.transfer, cons_isCycle_iff, edges_transfer p' p _ ‹_›] at pc ⊢
+    exact ⟨pc.1.transfer _ _ hp, pc.2⟩
 #align simple_graph.walk.is_cycle.transfer SimpleGraph.Walk.IsCycle.transfer
 
 variable (p)
 
 @[simp]
 theorem transfer_transfer {K : SimpleGraph V} (hp' : ∀ e, e ∈ p.edges → e ∈ K.edgeSet) :
-    (p.transfer H hp).transfer K
-        (by
-          rw [p.edges_transfer hp]
-          exact hp') =
-      p.transfer K hp' := by
-  induction p <;> simp only [transfer, eq_self_iff_true, heq_iff_eq, true_and_iff]
-  apply p_ih
+    (p.transfer H hp).transfer K (p.edges_transfer _ hp hq ▸ hp') = p.transfer K hp' := by
+  induction p with
+  | nil => simp
+  | cons _ _ ih =>
+    simp only [Walk.transfer, cons.injEq, heq_eq_eq, true_and]
+    apply ih <;> assumption
 #align simple_graph.walk.transfer_transfer SimpleGraph.Walk.transfer_transfer
 
 @[simp]
 theorem transfer_append (hpq) :
     (p.append q).transfer H hpq =
-      (p.transfer H fun e he => by
-            apply hpq
-            simp [he]).append
-        (q.transfer H fun e he => by
-          apply hpq
-          simp [he]) := by
-  induction p <;>
-    simp only [transfer, nil_append, cons_append, eq_self_iff_true, heq_iff_eq, true_and_iff]
-  apply p_ih
+      (p.transfer H fun e he => hpq _ (by simp [he])).append
+        (q.transfer H fun e he => hpq _ (by simp [he])) := by
+  induction p with
+  | nil => simp
+  | cons _ _ ih =>
+    simp only [Walk.transfer, cons_append, cons.injEq, heq_eq_eq, true_and]
+    simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hp
+    exact ih _ hp.2 hq _
 #align simple_graph.walk.transfer_append SimpleGraph.Walk.transfer_append
 
 @[simp]
 theorem reverse_transfer :
     (p.transfer H hp).reverse =
-      p.reverse.transfer H
-        (by
-          simp only [edges_reverse, List.mem_reverse']
-          exact hp) := by
-  induction p <;> simp only [*, transfer_append, transfer, reverse_nil, reverse_cons]
-  rfl
+      p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse']; exact hp) := by
+  induction p with
+  | nil => simp
+  | cons _ _ ih =>
+    simp only [transfer_append, Walk.transfer, reverse_nil, reverse_cons]
+    simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hp
+    rw [ih _ _ hq, transfer_append]
+    · exact rfl
+    · simpa using hp.2
+    · simpa using hp.1.symm
 #align simple_graph.walk.reverse_transfer SimpleGraph.Walk.reverse_transfer
 
 end Walk
+
 
 /-! ## Deleting edges -/
 
