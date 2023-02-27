@@ -8,10 +8,10 @@ Authors: Henry Swanson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Dynamics.FixedPoints.Basic
-import Mathbin.GroupTheory.Perm.Option
-import Mathbin.Logic.Equiv.Defs
-import Mathbin.Logic.Equiv.Option
+import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.GroupTheory.Perm.Option
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Equiv.Option
 
 /-!
 # Derangements on types
@@ -126,8 +126,7 @@ theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
   by simp [remove_none.fiber, derangements]
 #align derangements.equiv.remove_none.mem_fiber derangements.Equiv.RemoveNone.mem_fiber
 
-theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ :=
-  by
+theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
   rw [Set.eq_empty_iff_forall_not_mem]
   intro f hyp
   rw [remove_none.mem_fiber] at hyp
@@ -138,8 +137,7 @@ theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ :=
 /-- For any `a : α`, the fiber over `some a` is the set of permutations
     where `a` is the only possible fixed point. -/
 theorem RemoveNone.fiber_some (a : α) :
-    RemoveNone.fiber (some a) = { f : Perm α | fixedPoints f ⊆ {a} } :=
-  by
+    RemoveNone.fiber (some a) = { f : Perm α | fixedPoints f ⊆ {a} } := by
   ext f
   constructor
   · rw [remove_none.mem_fiber]
@@ -180,8 +178,7 @@ variable [DecidableEq α]
 /-- The set of derangements on `option α` is equivalent to the union over `a : α`
     of "permutations with `a` the only possible fixed point". -/
 def derangementsOptionEquivSigmaAtMostOneFixedPoint :
-    derangements (Option α) ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } :=
-  by
+    derangements (Option α) ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
   have fiber_none_is_false : equiv.remove_none.fiber (@none α) → False :=
     by
     rw [equiv.remove_none.fiber_none]
