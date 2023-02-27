@@ -68,8 +68,9 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
           assumption
         rintro hf ⟨a, ha⟩ hfa
         refine' hf _ _ ha
-        change Perm.subtypeEquivSubtypePerm p f a = a
-        rw [Perm.subtypeEquivSubtypePerm_apply_ofMem f ha, hfa, Subtype.coe_mk]
+        simp only [Perm.subtypeEquivSubtypePerm_apply_coe, mem_fixedPoints]
+        dsimp [IsFixedPt]
+        simp_rw [Perm.ofSubtype_apply_of_mem _ ha, hfa]
     _ ≃ { f : Perm α // ∃ h : ∀ a, ¬p a → a ∈ fixedPoints f, ∀ a, a ∈ fixedPoints f → ¬p a } :=
       subtypeSubtypeEquivSubtypeExists _ _
     _ ≃ { f : Perm α // ∀ a, ¬p a ↔ a ∈ fixedPoints f } :=
