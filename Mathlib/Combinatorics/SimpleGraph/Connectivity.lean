@@ -474,8 +474,8 @@ theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
   trans concatRecAux @Hnil @Hconcat (cons h.symm p.reverse)
   · congr
     simp
-  · rw [concatRecAux, ndrec_hEq_iff_hEq]
-    congr <;> simp [hEq_ndrec_iff_hEq]
+  · rw [concatRecAux, rec_heq_iff_heq]
+    congr <;> simp [heq_rec_iff_heq]
 #align simple_graph.walk.concat_rec_concat SimpleGraph.Walk.concatRec_concat
 
 end ConcatRec
@@ -486,64 +486,59 @@ theorem concat_ne_nil {u v : V} (p : G.Walk u v) (h : G.Adj v u) : p.concat h �
 
 theorem concat_inj {u v v' w : V} {p : G.Walk u v} {h : G.Adj v w} {p' : G.Walk u v'}
     {h' : G.Adj v' w} (he : p.concat h = p'.concat h') : ∃ hv : v = v', p.copy rfl hv = p' := by
-  induction p
-  · cases p'
+  induction p with
+  | nil =>
+    cases p'
     · exact ⟨rfl, rfl⟩
     · exfalso
-      simp only [concat_nil, concat_cons] at he
+      simp only [concat_nil, concat_cons, cons.injEq] at he
       obtain ⟨rfl, he⟩ := he
       simp only [heq_iff_eq] at he
       exact concat_ne_nil _ _ he.symm
-  · rw [concat_cons] at he
+  | cons _ _ ih =>
+    rw [concat_cons] at he
     cases p'
     · exfalso
-      simp only [concat_nil] at he
+      simp only [concat_nil, cons.injEq] at he
       obtain ⟨rfl, he⟩ := he
       rw [heq_iff_eq] at he
       exact concat_ne_nil _ _ he
-    · rw [concat_cons] at he
-      simp only at he
+    · rw [concat_cons, cons.injEq] at he
       obtain ⟨rfl, he⟩ := he
       rw [heq_iff_eq] at he
-      obtain ⟨rfl, rfl⟩ := p_ih he
+      obtain ⟨rfl, rfl⟩ := ih he
       exact ⟨rfl, rfl⟩
 #align simple_graph.walk.concat_inj SimpleGraph.Walk.concat_inj
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The `support` of a walk is the list of vertices it visits in order. -/
-def support : ∀ {u v : V}, G.Walk u v → List V
-  | u, v, nil => [u]
-  | u, v, cons h p => u::p.support
+def support {u v : V} : G.Walk u v → List V
+  | nil => [u]
+  | cons _ p => u :: p.support
 #align simple_graph.walk.support SimpleGraph.Walk.support
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The `darts` of a walk is the list of darts it visits in order. -/
-def darts : ∀ {u v : V}, G.Walk u v → List G.Dart
-  | u, v, nil => []
-  | u, v, cons h p => ⟨(u, _), h⟩::p.darts
+def darts {u v : V} : G.Walk u v → List G.Dart
+  | nil => []
+  | cons h p => ⟨(u, _), h⟩ :: p.darts
 #align simple_graph.walk.darts SimpleGraph.Walk.darts
 
 /-- The `edges` of a walk is the list of edges it visits in order.
 This is defined to be the list of edges underlying `simple_graph.walk.darts`. -/
-def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) :=
-  p.darts.map Dart.edge
+def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) := p.darts.map Dart.edge
 #align simple_graph.walk.edges SimpleGraph.Walk.edges
 
 @[simp]
-theorem support_nil {u : V} : (nil : G.Walk u u).support = [u] :=
-  rfl
+theorem support_nil {u : V} : (nil : G.Walk u u).support = [u] := rfl
 #align simple_graph.walk.support_nil SimpleGraph.Walk.support_nil
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem support_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).support = u::p.support :=
-  rfl
+    (cons h p).support = u :: p.support := rfl
 #align simple_graph.walk.support_cons SimpleGraph.Walk.support_cons
 
 @[simp]
 theorem support_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).support = p.support.concat w := by induction p <;> simp [*, concat_nil]
+    (p.concat h).support = p.support.concat w := by
+  induction p <;> simp [*, concat_nil]
 #align simple_graph.walk.support_concat SimpleGraph.Walk.support_concat
 
 @[simp]
@@ -554,7 +549,8 @@ theorem support_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
 #align simple_graph.walk.support_copy SimpleGraph.Walk.support_copy
 
 theorem support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
-    (p.append p').support = p.support ++ p'.support.tail := by induction p <;> cases p' <;> simp [*]
+    (p.append p').support = p.support ++ p'.support.tail := by
+  induction p <;> cases p' <;> simp [*]
 #align simple_graph.walk.support_append SimpleGraph.Walk.support_append
 
 @[simp]
@@ -570,8 +566,7 @@ theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
   rw [support_append, List.tail_append_of_ne_nil _ _ (support_ne_nil _)]
 #align simple_graph.walk.tail_support_append SimpleGraph.Walk.tail_support_append
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u::p.support.tail := by
+theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp
 #align simple_graph.walk.support_eq_cons SimpleGraph.Walk.support_eq_cons
 
@@ -611,18 +606,19 @@ theorem end_mem_tail_support_of_ne {u v : V} (h : u ≠ v) (p : G.Walk u v) : v 
 theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     t ∈ (p.append p').support ↔ t ∈ p.support ∨ t ∈ p'.support := by
   simp only [mem_support_iff, mem_tail_support_append_iff]
-  by_cases h : t = v <;> by_cases h' : t = u <;> subst_vars <;> try have := Ne.symm h' <;> simp [*]
+  by_cases h : t = v <;> by_cases h' : t = u <;>
+    subst_vars <;> (try have := Ne.symm h') <;> simp [*]
 #align simple_graph.walk.mem_support_append_iff SimpleGraph.Walk.mem_support_append_iff
 
 @[simp]
-theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V} (p : G.Walk u v)
-    (q : G.Walk v w) : p.support ⊆ (p.append q).support := by
-  simp only [walk.support_append, List.subset_append_left]
+theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support := by
+  simp only [Walk.support_append, List.subset_append_left]
 #align simple_graph.walk.subset_support_append_left SimpleGraph.Walk.subset_support_append_left
 
 @[simp]
-theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V} (p : G.Walk u v)
-    (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
+theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
   intro h
   simp (config := { contextual := true }) only [mem_support_append_iff, or_true_iff, imp_true_iff]
 #align simple_graph.walk.subset_support_append_right SimpleGraph.Walk.subset_support_append_right
@@ -640,58 +636,62 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
     ((p.append p').support : Multiset V) = p.support + p'.support - {v} := by
   rw [support_append, ← Multiset.coe_add]
   simp only [coe_support]
-  rw [add_comm {v}]
+  rw [add_comm ({v} : Multiset V)]
   simp only [← add_assoc, add_tsub_cancel_right]
 #align simple_graph.walk.coe_support_append' SimpleGraph.Walk.coe_support_append'
 
-theorem chain_adj_support :
-    ∀ {u v w : V} (h : G.Adj u v) (p : G.Walk v w), List.Chain G.Adj u p.support
-  | _, _, _, h, nil => List.Chain.cons h List.Chain.nil
-  | _, _, _, h, cons h' p => List.Chain.cons h (chain_adj_support h' p)
+theorem chain_adj_support {u v w : V} (h : G.Adj u v) :
+    ∀ (p : G.Walk v w), List.Chain G.Adj u p.support
+  | nil => List.Chain.cons h List.Chain.nil
+  | cons h' p => List.Chain.cons h (chain_adj_support h' p)
 #align simple_graph.walk.chain_adj_support SimpleGraph.Walk.chain_adj_support
 
-theorem chain'_adj_support : ∀ {u v : V} (p : G.Walk u v), List.Chain' G.Adj p.support
-  | _, _, nil => List.Chain.nil
-  | _, _, cons h p => chain_adj_support h p
+theorem chain'_adj_support {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Adj p.support
+  | nil => List.Chain.nil
+  | cons h p => chain_adj_support h p
 #align simple_graph.walk.chain'_adj_support SimpleGraph.Walk.chain'_adj_support
 
-theorem chain_dartAdj_darts :
-    ∀ {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w), List.Chain G.DartAdj d p.darts
-  | _, _, _, h, nil => List.Chain.nil
-  | _, _, _, h, cons h' p => List.Chain.cons h (chain_dart_adj_darts rfl p)
+theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
+    List.Chain G.DartAdj d p.darts := by
+  induction p generalizing d with
+  | nil => exact List.Chain.nil
+  -- porting note: needed to defer `h` and `rfl` to help elaboration
+  | cons h' p ih => exact List.Chain.cons (by exact h) (ih (by rfl))
 #align simple_graph.walk.chain_dart_adj_darts SimpleGraph.Walk.chain_dartAdj_darts
 
-theorem chain'_dartAdj_darts : ∀ {u v : V} (p : G.Walk u v), List.Chain' G.DartAdj p.darts
-  | _, _, nil => trivial
-  | _, _, cons h p => chain_dartAdj_darts rfl p
+theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
+  | nil => trivial
+  -- porting note: needed to defer `rfl` to help elaboration
+  | cons h p => chain_dartAdj_darts (by rfl) p
 #align simple_graph.walk.chain'_dart_adj_darts SimpleGraph.Walk.chain'_dartAdj_darts
 
 /-- Every edge in a walk's edge list is an edge of the graph.
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
-theorem edges_subset_edgeSetEmbedding :
-    ∀ {u v : V} (p : G.Walk u v) ⦃e : Sym2 V⦄ (h : e ∈ p.edges), e ∈ G.edgeSetEmbedding
-  | _, _, cons h' p', e, h => by rcases h with ⟨rfl, h⟩ <;> solve_by_elim
-#align simple_graph.walk.edges_subset_edge_set SimpleGraph.Walk.edges_subset_edgeSetEmbedding
+theorem edges_subset_edgeSet {u v : V} :
+    ∀ (p : G.Walk u v) ⦃e : Sym2 V⦄ (h : e ∈ p.edges), e ∈ G.edgeSet
+  | cons h' p', e, h  => by
+    rcases List.mem_cons.1 h with ⟨rfl, _⟩
+    · exact h'
+    next h' => exact edges_subset_edgeSet p' h'
+#align simple_graph.walk.edges_subset_edge_set SimpleGraph.Walk.edges_subset_edgeSet
 
 theorem adj_of_mem_edges {u v x y : V} (p : G.Walk u v) (h : ⟦(x, y)⟧ ∈ p.edges) : G.Adj x y :=
-  edges_subset_edgeSetEmbedding p h
+  edges_subset_edgeSet p h
 #align simple_graph.walk.adj_of_mem_edges SimpleGraph.Walk.adj_of_mem_edges
 
 @[simp]
-theorem darts_nil {u : V} : (nil : G.Walk u u).darts = [] :=
-  rfl
+theorem darts_nil {u : V} : (nil : G.Walk u u).darts = [] := rfl
 #align simple_graph.walk.darts_nil SimpleGraph.Walk.darts_nil
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem darts_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).darts = ⟨(u, v), h⟩::p.darts :=
-  rfl
+    (cons h p).darts = ⟨(u, v), h⟩ :: p.darts := rfl
 #align simple_graph.walk.darts_cons SimpleGraph.Walk.darts_cons
 
 @[simp]
 theorem darts_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).darts = p.darts.concat ⟨(v, w), h⟩ := by induction p <;> simp [*, concat_nil]
+    (p.concat h).darts = p.darts.concat ⟨(v, w), h⟩ := by
+  induction p <;> simp [*, concat_nil]
 #align simple_graph.walk.darts_concat SimpleGraph.Walk.darts_concat
 
 @[simp]
@@ -703,45 +703,44 @@ theorem darts_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
 
 @[simp]
 theorem darts_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
-    (p.append p').darts = p.darts ++ p'.darts := by induction p <;> simp [*]
+    (p.append p').darts = p.darts ++ p'.darts := by
+  induction p <;> simp [*]
 #align simple_graph.walk.darts_append SimpleGraph.Walk.darts_append
 
 @[simp]
 theorem darts_reverse {u v : V} (p : G.Walk u v) :
-    p.reverse.darts = (p.darts.map Dart.symm).reverse := by induction p <;> simp [*, Sym2.eq_swap]
+    p.reverse.darts = (p.darts.map Dart.symm).reverse := by
+  induction p <;> simp [*, Sym2.eq_swap]
 #align simple_graph.walk.darts_reverse SimpleGraph.Walk.darts_reverse
 
 theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
     d ∈ p.reverse.darts ↔ d.symm ∈ p.darts := by simp
 #align simple_graph.walk.mem_darts_reverse SimpleGraph.Walk.mem_darts_reverse
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem cons_map_snd_darts {u v : V} (p : G.Walk u v) : (u::p.darts.map Dart.snd) = p.support := by
+theorem cons_map_snd_darts {u v : V} (p : G.Walk u v) : (u :: p.darts.map (·.snd)) = p.support := by
   induction p <;> simp! [*]
 #align simple_graph.walk.cons_map_snd_darts SimpleGraph.Walk.cons_map_snd_darts
 
-theorem map_snd_darts {u v : V} (p : G.Walk u v) : p.darts.map Dart.snd = p.support.tail := by
+theorem map_snd_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.snd) = p.support.tail := by
   simpa using congr_arg List.tail (cons_map_snd_darts p)
 #align simple_graph.walk.map_snd_darts SimpleGraph.Walk.map_snd_darts
 
-theorem map_fst_darts_append {u v : V} (p : G.Walk u v) : p.darts.map Dart.fst ++ [v] = p.support :=
-  by induction p <;> simp! [*]
+theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
+    p.darts.map (·.fst) ++ [v] = p.support := by
+  induction p <;> simp! [*]
 #align simple_graph.walk.map_fst_darts_append SimpleGraph.Walk.map_fst_darts_append
 
-theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map Dart.fst = p.support.dropLast := by
+theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
   simpa! using congr_arg List.dropLast (map_fst_darts_append p)
 #align simple_graph.walk.map_fst_darts SimpleGraph.Walk.map_fst_darts
 
 @[simp]
-theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] :=
-  rfl
+theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
 #align simple_graph.walk.edges_nil SimpleGraph.Walk.edges_nil
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem edges_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).edges = ⟦(u, v)⟧::p.edges :=
-  rfl
+    (cons h p).edges = ⟦(u, v)⟧ :: p.edges := rfl
 #align simple_graph.walk.edges_cons SimpleGraph.Walk.edges_cons
 
 @[simp]
@@ -763,7 +762,7 @@ theorem edges_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
 
 @[simp]
 theorem edges_reverse {u v : V} (p : G.Walk u v) : p.reverse.edges = p.edges.reverse := by
-  simp [edges]
+  simp [edges, List.map_reverse]
 #align simple_graph.walk.edges_reverse SimpleGraph.Walk.edges_reverse
 
 @[simp]
@@ -780,11 +779,10 @@ theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := b
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
 #align simple_graph.walk.length_edges SimpleGraph.Walk.length_edges
 
-theorem dart_fst_mem_support_of_mem_darts :
-    ∀ {u v : V} (p : G.Walk u v) {d : G.Dart}, d ∈ p.darts → d.fst ∈ p.support
-  | u, v, cons h p', d, hd =>
-    by
-    simp only [support_cons, darts_cons, List.mem_cons] at hd⊢
+theorem dart_fst_mem_support_of_mem_darts {u v : V} :
+    ∀ (p : G.Walk u v) {d : G.Dart}, d ∈ p.darts → d.fst ∈ p.support
+  | cons h p', d, hd => by
+    simp only [support_cons, darts_cons, List.mem_cons] at hd ⊢
     rcases hd with (rfl | hd)
     · exact Or.inl rfl
     · exact Or.inr (dart_fst_mem_support_of_mem_darts _ hd)
@@ -797,8 +795,8 @@ theorem dart_snd_mem_support_of_mem_darts {u v : V} (p : G.Walk u v) {d : G.Dart
 
 theorem fst_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : ⟦(t, u)⟧ ∈ p.edges) :
     t ∈ p.support := by
-  obtain ⟨d, hd, he⟩ := list.mem_map.mp he
-  rw [dart_edge_eq_mk_iff'] at he
+  obtain ⟨d, hd, he⟩ := List.mem_map.mp he
+  rw [eq_comm, dart_edge_eq_mk'_iff'] at he
   rcases he with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
   · exact dart_fst_mem_support_of_mem_darts _ hd
   · exact dart_snd_mem_support_of_mem_darts _ hd
@@ -812,18 +810,20 @@ theorem snd_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : ⟦(t,
 
 theorem darts_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.Nodup) :
     p.darts.Nodup := by
-  induction p
-  · simp
-  · simp only [darts_cons, support_cons, List.nodup_cons] at h⊢
-    refine' ⟨fun h' => h.1 (dart_fst_mem_support_of_mem_darts p_p h'), p_ih h.2⟩
+  induction p with
+  | nil => simp
+  | cons _ p' ih =>
+    simp only [darts_cons, support_cons, List.nodup_cons] at h ⊢
+    exact ⟨fun h' => h.1 (dart_fst_mem_support_of_mem_darts p' h'), ih h.2⟩
 #align simple_graph.walk.darts_nodup_of_support_nodup SimpleGraph.Walk.darts_nodup_of_support_nodup
 
 theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.Nodup) :
     p.edges.Nodup := by
-  induction p
-  · simp
-  · simp only [edges_cons, support_cons, List.nodup_cons] at h⊢
-    exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p_p h'), p_ih h.2⟩
+  induction p with
+  | nil => simp
+  | cons _ p' ih =>
+    simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
+    exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 #align simple_graph.walk.edges_nodup_of_support_nodup SimpleGraph.Walk.edges_nodup_of_support_nodup
 
 /-! ### Trails, paths, circuits, cycles -/
@@ -1662,16 +1662,16 @@ variable {G}
 @[protected, simp]
 def transfer :
     ∀ {u v : V} (p : G.Walk u v) (H : SimpleGraph V)
-      (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSetEmbedding), H.Walk u v
+      (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSet), H.Walk u v
   | _, _, walk.nil, H, h => Walk.nil
   | _, _, walk.cons' u v w a p, H, h =>
     Walk.cons (h (⟦(u, v)⟧ : Sym2 V) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
 #align simple_graph.walk.transfer SimpleGraph.Walk.transfer
 
 variable {u v w : V} (p : G.Walk u v) (q : G.Walk v w) {H : SimpleGraph V}
-  (hp : ∀ e, e ∈ p.edges → e ∈ H.edgeSetEmbedding) (hq : ∀ e, e ∈ q.edges → e ∈ H.edgeSetEmbedding)
+  (hp : ∀ e, e ∈ p.edges → e ∈ H.edgeSet) (hq : ∀ e, e ∈ q.edges → e ∈ H.edgeSet)
 
-theorem transfer_self : p.transfer G p.edges_subset_edgeSetEmbedding = p := by
+theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
   induction p <;> simp only [*, transfer, eq_self_iff_true, heq_iff_eq, and_self_iff]
 #align simple_graph.walk.transfer_self SimpleGraph.Walk.transfer_self
 
@@ -1714,7 +1714,7 @@ protected theorem IsCycle.transfer {p : G.Walk u u} (pc : p.IsCycle) (hp) :
 variable (p)
 
 @[simp]
-theorem transfer_transfer {K : SimpleGraph V} (hp' : ∀ e, e ∈ p.edges → e ∈ K.edgeSetEmbedding) :
+theorem transfer_transfer {K : SimpleGraph V} (hp' : ∀ e, e ∈ p.edges → e ∈ K.edgeSet) :
     (p.transfer H hp).transfer K
         (by
           rw [p.edges_transfer hp]
@@ -2129,11 +2129,11 @@ theorem verts_toSubgraph (p : G.Walk u v) : p.toSubgraph.verts = { w | w ∈ p.s
 #align simple_graph.walk.verts_to_subgraph SimpleGraph.Walk.verts_toSubgraph
 
 theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
-    e ∈ p.toSubgraph.edgeSetEmbedding ↔ e ∈ p.edges := by induction p <;> simp [*]
+    e ∈ p.toSubgraph.edgeSet ↔ e ∈ p.edges := by induction p <;> simp [*]
 #align simple_graph.walk.mem_edges_to_subgraph SimpleGraph.Walk.mem_edges_toSubgraph
 
 @[simp]
-theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSetEmbedding = { e | e ∈ p.edges } :=
+theorem edgeSet_toSubgraph (p : G.Walk u v) : p.toSubgraph.edgeSet = { e | e ∈ p.edges } :=
   Set.ext fun _ => p.mem_edges_toSubgraph
 #align simple_graph.walk.edge_set_to_subgraph SimpleGraph.Walk.edgeSet_toSubgraph
 
@@ -2326,7 +2326,7 @@ section BridgeEdges
 /-- An edge of a graph is a *bridge* if, after removing it, its incident vertices
 are no longer reachable from one another. -/
 def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
-  e ∈ G.edgeSetEmbedding ∧
+  e ∈ G.edgeSet ∧
     Sym2.lift ⟨fun v w => ¬(G \ fromEdgeSet {e}).Reachable v w, by simp [reachable_comm]⟩ e
 #align simple_graph.is_bridge SimpleGraph.IsBridge
 
@@ -2431,7 +2431,7 @@ theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} :
 #align simple_graph.is_bridge_iff_adj_and_forall_cycle_not_mem SimpleGraph.isBridge_iff_adj_and_forall_cycle_not_mem
 
 theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
-    G.IsBridge e ↔ e ∈ G.edgeSetEmbedding ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
+    G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun v w => isBridge_iff_adj_and_forall_cycle_not_mem) e
 #align simple_graph.is_bridge_iff_mem_and_forall_cycle_not_mem SimpleGraph.isBridge_iff_mem_and_forall_cycle_not_mem
 
