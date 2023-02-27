@@ -127,7 +127,7 @@ for pr in mathlib4repo.get_pulls(state='open'):
         for file in (f.filename for f in pr.get_files()):
             sync_prs[file] = sync_prs.get(file, set()).union([pr.number])
     if 'mathlib-port' in (l.name for l in pr.labels):
-        labels[pr.number] = [[l.name, l.color] for l in pr.labels]
+        labels[pr.number] = [dict(name=l.name, color=l.color) for l in pr.labels]
     num = pr.number
     nums.append(num)
     prs[num] = pr
