@@ -114,19 +114,19 @@ namespace Walk
 
 variable {G}
 
-/-- Pattern to get `walk.nil` with the vertex as an explicit argument. -/
+/-- Pattern to get `Walk.nil` with the vertex as an explicit argument. -/
 @[match_pattern]
 abbrev nil' (u : V) : G.Walk u u := Walk.nil
 #align simple_graph.walk.nil' SimpleGraph.Walk.nil'
 
-/-- Pattern to get `walk.cons` with the vertices as explicit arguments. -/
+/-- Pattern to get `Walk.cons` with the vertices as explicit arguments. -/
 @[match_pattern]
 abbrev cons' (u v w : V) (h : G.Adj u v) (p : G.Walk v w) : G.Walk u w := Walk.cons h p
 #align simple_graph.walk.cons' SimpleGraph.Walk.cons'
 
 /-- Change the endpoints of a walk using equalities. This is helpful for relaxing
 definitional equality constraints and to be able to state otherwise difficult-to-state
-lemmas. While this is a simple wrapper around `eq.rec`, it gives a canonical way to write it.
+lemmas. While this is a simple wrapper around `Eq.rec`, it gives a canonical way to write it.
 
 The simp-normal form is for the `copy` to be pushed outward. That way calculations can
 occur within the "copy context." -/
@@ -184,7 +184,7 @@ def append {u v w : V} : G.Walk u v → G.Walk v w → G.Walk u w
   | cons h p, q => cons h (p.append q)
 #align simple_graph.walk.append SimpleGraph.Walk.append
 
-/-- The reversed version of `simple_graph.walk.cons`, concatenating an edge to
+/-- The reversed version of `SimpleGraph.Walk.cons`, concatenating an edge to
 the end of a walk. -/
 def concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) : G.Walk u w := p.append (cons h nil)
 #align simple_graph.walk.concat SimpleGraph.Walk.concat
@@ -444,16 +444,16 @@ section ConcatRec
 variable {motive : ∀ u v : V, G.Walk u v → Sort _} (Hnil : ∀ {u : V}, motive u u nil)
   (Hconcat : ∀ {u v w : V} (p : G.Walk u v) (h : G.Adj v w), motive u v p → motive u w (p.concat h))
 
-/-- Auxiliary definition for `simple_graph.walk.concat_rec` -/
+/-- Auxiliary definition for `SimpleGraph.Walk.concatRec` -/
 def concatRecAux {u v : V} : (p : G.Walk u v) → motive v u p.reverse
   | nil => Hnil
   | cons h p => reverse_cons h p ▸ Hconcat p.reverse h.symm (concatRecAux p)
 #align simple_graph.walk.concat_rec_aux SimpleGraph.Walk.concatRecAux
 
-/-- Recursor on walks by inducting on `simple_graph.walk.concat`.
+/-- Recursor on walks by inducting on `SimpleGraph.Walk.concat`.
 
 This is inducting from the opposite end of the walk compared
-to `simple_graph.walk.rec`, which inducts on `simple_graph.walk.cons`. -/
+to `SimpleGraph.Walk.rec`, which inducts on `SimpleGraph.Walk.cons`. -/
 @[elab_as_elim]
 def concatRec {u v : V} (p : G.Walk u v) : motive u v p :=
   reverse_reverse p ▸ concatRecAux @Hnil @Hconcat p.reverse
@@ -515,6 +515,7 @@ def support {u v : V} : G.Walk u v → List V
   | nil => [u]
   | cons _ p => u :: p.support
 #align simple_graph.walk.support SimpleGraph.Walk.support
+
 /-- The `darts` of a walk is the list of darts it visits in order. -/
 def darts {u v : V} : G.Walk u v → List G.Dart
   | nil => []
@@ -522,7 +523,7 @@ def darts {u v : V} : G.Walk u v → List G.Dart
 #align simple_graph.walk.darts SimpleGraph.Walk.darts
 
 /-- The `edges` of a walk is the list of edges it visits in order.
-This is defined to be the list of edges underlying `simple_graph.walk.darts`. -/
+This is defined to be the list of edges underlying `SimpleGraph.Walk.darts`. -/
 def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) := p.darts.map Dart.edge
 #align simple_graph.walk.edges SimpleGraph.Walk.edges
 
@@ -829,7 +830,6 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
 
 /-! ### Trails, paths, circuits, cycles -/
 
-
 /-- A *trail* is a walk with no repeating edges. -/
 structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
   edges_nodup : p.edges.Nodup
@@ -1016,7 +1016,6 @@ theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
 
 /-! ### About paths -/
 
-
 instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := by
   rw [isPath_def]
   infer_instance
@@ -1029,7 +1028,6 @@ theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) 
 
 
 /-! ### Walk decompositions -/
-
 
 section WalkDecomp
 
@@ -1057,8 +1055,8 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     else dropUntil p u <| by cases h; exact (hx rfl).elim; assumption
 #align simple_graph.walk.drop_until SimpleGraph.Walk.dropUntil
 
-/-- The `take_until` and `drop_until` functions split a walk into two pieces.
-The lemma `count_support_take_until_eq_one` specifies where this split occurs. -/
+/-- The `takeUntil` and `dropUntil` functions split a walk into two pieces.
+The lemma `SimpleGraph.Walk.count_support_takeUntil_eq_one` specifies where this split occurs. -/
 @[simp]
 theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).append (p.dropUntil u h) = p := by
@@ -1252,8 +1250,7 @@ protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h 
 end WalkDecomp
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
-there exists a dart in the walk whose start is in `S` but whose end is not.
--/
+there exists a dart in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
     ∃ d : G.Dart, d ∈ p.darts ∧ d.fst ∈ S ∧ d.snd ∉ S := by
   induction' p with _ x y w a p' ih
@@ -1268,7 +1265,6 @@ end Walk
 
 
 /-! ### Type of paths -/
-
 
 /-- The type for paths between two vertices. -/
 abbrev Path (u v : V) := { p : G.Walk u v // p.IsPath }
@@ -1303,7 +1299,7 @@ theorem mk'_mem_edges_singleton {u v : V} (h : G.Adj u v) :
     ⟦(u, v)⟧ ∈ (singleton h : G.Walk u v).edges := by simp [singleton]
 #align simple_graph.path.mk_mem_edges_singleton SimpleGraph.Path.mk'_mem_edges_singleton
 
-/-- The reverse of a path is another path.  See also `simple_graph.walk.reverse`. -/
+/-- The reverse of a path is another path.  See also `SimpleGraph.Walk.reverse`. -/
 @[symm, simps]
 def reverse {u v : V} (p : G.Path u v) : G.Path v u :=
   ⟨Walk.reverse p, p.property.reverse⟩
@@ -1344,14 +1340,13 @@ end Path
 
 /-! ### Walks to paths -/
 
-
 namespace Walk
 
 variable {G} [DecidableEq V]
 
 /-- Given a walk, produces a walk from it by bypassing subwalks between repeated vertices.
-The result is a path, as shown in `simple_graph.walk.bypass_is_path`.
-This is packaged up in `simple_graph.walk.to_path`. -/
+The result is a path, as shown in `SimpleGraph.Walk.bypass_isPath`.
+This is packaged up in `SimpleGraph.Walk.toPath`. -/
 def bypass {u v : V} : G.Walk u v → G.Walk u v
   | nil => nil
   | cons ha p =>
@@ -1393,7 +1388,7 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
       exact add_le_add_right ih 1
 #align simple_graph.walk.length_bypass_le SimpleGraph.Walk.length_bypass_le
 
-/-- Given a walk, produces a path with the same endpoints using `simple_graph.walk.bypass`. -/
+/-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/
 def toPath {u v : V} (p : G.Walk u v) : G.Path u v :=
   ⟨p.bypass, p.bypass_isPath⟩
 #align simple_graph.walk.to_path SimpleGraph.Walk.toPath
@@ -1445,7 +1440,6 @@ end Walk
 
 
 /-! ### Mapping paths -/
-
 
 namespace Walk
 
@@ -1602,7 +1596,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
       simpa using h.2
 #align simple_graph.walk.map_injective_of_injective SimpleGraph.Walk.map_injective_of_injective
 
-/-- The specialization of `simple_graph.walk.map` for mapping walks to supergraphs. -/
+/-- The specialization of `SimpleGraph.Walk.map` for mapping walks to supergraphs. -/
 @[reducible]
 def mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
   p.map (Hom.mapSpanningSubgraphs h)
@@ -1672,7 +1666,6 @@ theorem mapEmbedding_injective (f : G ↪g G') (u v : V) :
 end Path
 
 /-! ### Transferring between graphs -/
-
 
 namespace Walk
 
@@ -1771,7 +1764,6 @@ end Walk
 
 /-! ## Deleting edges -/
 
-
 namespace Walk
 
 variable {G}
@@ -1800,7 +1792,7 @@ theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G
 #align simple_graph.walk.to_delete_edges_cons SimpleGraph.Walk.toDeleteEdges_cons
 
 /-- Given a walk that avoids an edge, create a walk in the subgraph with that edge deleted.
-This is an abbreviation for `simple_graph.walk.to_delete_edges`. -/
+This is an abbreviation for `SimpleGraph.Walk.toDeleteEdges`. -/
 abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
     (G.deleteEdges {e}).Walk v w :=
   p.toDeleteEdges {e} (fun e' => by contrapose!; simp (config := { contextual := true }) [hp])
@@ -1836,10 +1828,9 @@ end Walk
 
 /-! ## `Reachable` and `Connected` -/
 
-
 /-- Two vertices are *reachable* if there is a walk between them.
-This is equivalent to `relation.refl_trans_gen` of `G.adj`.
-See `simple_graph.reachable_iff_refl_trans_gen`. -/
+This is equivalent to `Relation.ReflTransGen` of `G.Adj`.
+See `SimpleGraph.reachable_iff_reflTransGen`. -/
 def Reachable (u v : V) : Prop := Nonempty (G.Walk u v)
 #align simple_graph.reachable SimpleGraph.Reachable
 
@@ -1913,7 +1904,7 @@ theorem reachable_is_equivalence : Equivalence G.Reachable :=
   Equivalence.mk (@Reachable.refl _ G) (@Reachable.symm _ G) (@Reachable.trans _ G)
 #align simple_graph.reachable_is_equivalence SimpleGraph.reachable_is_equivalence
 
-/-- The equivalence relation on vertices given by `simple_graph.reachable`. -/
+/-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 #align simple_graph.reachable_setoid SimpleGraph.reachableSetoid
 
@@ -1936,8 +1927,7 @@ theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃
 This follows the convention observed by mathlib that something is connected iff it has
 exactly one connected component.
 
-There is a `has_coe_to_fun` instance so that `h u v` can be used instead
-of `h.preconnected u v`. -/
+There is a `CoeFun` instance so that `h u v` can be used instead of `h.Preconnected u v`. -/
 @[mk_iff connected_iff]
 structure Connected : Prop where
   protected preconnected : G.Preconnected
@@ -1957,7 +1947,7 @@ theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H
   ⟨Connected.map e.toHom e.toEquiv.surjective, Connected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 #align simple_graph.iso.connected_iff SimpleGraph.Iso.connected_iff
 
-/-- The quotient of `V` by the `simple_graph.reachable` relation gives the connected
+/-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
 components of a graph. -/
 def ConnectedComponent := Quot G.Reachable
 #align simple_graph.connected_component SimpleGraph.ConnectedComponent
@@ -2004,7 +1994,7 @@ protected theorem ConnectedComponent.eq {v w : V} :
   @Quotient.eq' _ G.reachableSetoid _ _
 #align simple_graph.connected_component.eq SimpleGraph.ConnectedComponent.eq
 
-/-- The `connected_component` specialization of `quot.lift`. Provides the stronger
+/-- The `ConnectedComponent` specialization of `Quot.lift`. Provides the stronger
 assumption that the vertices are connected by a path. -/
 protected def ConnectedComponent.lift {β : Sort _} (f : V → β)
     (h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w) : G.ConnectedComponent → β :=
@@ -2101,7 +2091,6 @@ theorem Connected.set_univ_walk_nonempty (hconn : G.Connected) (u v : V) :
 
 /-! ### Walks as subgraphs -/
 
-
 namespace Walk
 
 variable {G'} {u v w : V}
@@ -2184,7 +2173,6 @@ end Walk
 
 /-! ### Walks of a given length -/
 
-
 section WalkCounting
 
 theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {Walk.nil} := by
@@ -2220,11 +2208,11 @@ section LocallyFinite
 
 variable [LocallyFinite G]
 
-/-- The `finset` of length-`n` walks from `u` to `v`.
-This is used to give `{p : G.walk u v | p.length = n}` a `fintype` instance, and it
+/-- The `Finset` of length-`n` walks from `u` to `v`.
+This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
 can also be useful as a recursive description of this set when `V` is finite.
 
-See `simple_graph.coe_finset_walk_length_eq` for the relationship between this `finset` and
+See `SimpleGraph.coe_finsetWalkLength_eq` for the relationship between this `Finset` and
 the set of length-`n` walks. -/
 def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   match n with
@@ -2276,7 +2264,7 @@ theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
   simp [← coe_finsetWalkLength_eq]
 #align simple_graph.set_walk_length_to_finset_eq SimpleGraph.set_walk_length_toFinset_eq
 
-/- See `simple_graph.adj_matrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
+/- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
 power of the adjacency matrix. -/
 theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
     Fintype.card {p : G.Walk u v | p.length = n} = (G.finsetWalkLength n u v).card :=
@@ -2328,7 +2316,6 @@ section BridgeEdges
 
 
 /-! ### Bridge edges -/
-
 
 /-- An edge of a graph is a *bridge* if, after removing it, its incident vertices
 are no longer reachable from one another. -/
