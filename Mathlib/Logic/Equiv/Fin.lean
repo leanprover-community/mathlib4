@@ -496,8 +496,7 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
 This is like `finProdFinEquiv.symm` but with `m` infinite.
 See `Nat.div_mod_unique` for a similar propositional statement. -/
 @[simps]
-def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n
-    where
+def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   toFun a := (a / n, ↑a)
   invFun p := p.1 * n + ↑p.2
   -- TODO: is there a canonical order of `*` and `+` here?
@@ -511,21 +510,22 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 See `Int.ediv_mod_unique` for a similar propositional statement. -/
 @[simps]
-def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n
-    where
+def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   -- TODO: could cast from int directly if we import `data.zmod.defs`, though there are few lemmas
   -- about that coercion.
   toFun a := (a / n, ↑(a.natMod n))
-  invFun p := p.1 * n + ↑p.2
+  -- porting note: need explicit `Nat.cast` else we get `Int.ofNat` as the coercion instead.
+  invFun p := p.1 * n + Nat.cast ↑p.2
   left_inv a := by
-    simp_rw [coe_coe, Fin.coe_of_nat_eq_mod, Int.coe_nat_mod, Int.natMod,
-      Int.toNat_of_nonneg (Int.emod_nonneg _ <| NeZero.ne n), Int.emod_emod, Int.div_add_mod']
+    simp_rw [Fin.coe_ofNat_eq_mod, Int.coe_nat_mod, Int.natMod,
+      Int.toNat_of_nonneg (Int.emod_nonneg _ <| NeZero.ne ↑n), Int.emod_emod,
+      Int.ediv_add_emod']
   right_inv := fun ⟨q, r, hrn⟩ =>
     by
-    simp only [Fin.val_mk, Prod.mk.inj_iff, Fin.ext_iff, coe_coe]
+    simp only [Fin.val_mk, Prod.mk.inj_iff, Fin.ext_iff]
     obtain ⟨h1, h2⟩ := Int.coe_nat_nonneg r, Int.ofNat_lt.2 hrn
-    rw [add_comm, Int.add_mul_ediv_right _ _ (NeZero.ne n), Int.div_eq_zero_of_lt h1 h2, Int.natMod,
-      Int.add_mul_emod_self, Int.emod_eq_of_lt h1 h2, Int.toNat_coe_nat]
+    rw [add_comm, Int.add_mul_ediv_right _ _ (NeZero.ne ↑n), Int.ediv_eq_zero_of_lt h1 h2,
+      Int.natMod, Int.add_mul_emod_self, Int.emod_eq_of_lt h1 h2, Int.toNat_coe_nat]
     exact ⟨zero_add q, Fin.val_cast_of_lt hrn⟩
 #align int.div_mod_equiv Int.divModEquiv
 
