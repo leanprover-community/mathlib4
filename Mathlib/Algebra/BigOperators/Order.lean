@@ -113,9 +113,9 @@ variable {f g : ι → N} {s t : Finset ι}
 equal to the corresponding factor `g i` of another finite product, then
 `∏ i in s, f i ≤ ∏ i in s, g i`. -/
 @[to_additive sum_le_sum]
-theorem prod_le_prod'' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏ i in s, g i :=
+theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏ i in s, g i :=
   Multiset.prod_map_le_prod_map f g h
-#align finset.prod_le_prod'' Finset.prod_le_prod''
+#align finset.prod_le_prod' Finset.prod_le_prod'
 #align finset.sum_le_sum Finset.sum_le_sum
 
 /-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
@@ -125,7 +125,7 @@ add_decl_doc sum_le_sum
 
 @[to_additive sum_nonneg]
 theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i in s, f i :=
-  le_trans (by rw [prod_const_one]) (prod_le_prod'' h)
+  le_trans (by rw [prod_const_one]) (prod_le_prod' h)
 #align finset.one_le_prod' Finset.one_le_prod'
 #align finset.sum_nonneg Finset.sum_nonneg
 
@@ -137,7 +137,7 @@ theorem one_le_prod'' (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i : ι in s, f i :
 
 @[to_additive sum_nonpos]
 theorem prod_le_one' (h : ∀ i ∈ s, f i ≤ 1) : (∏ i in s, f i) ≤ 1 :=
-  (prod_le_prod'' h).trans_eq (by rw [prod_const_one])
+  (prod_le_prod' h).trans_eq (by rw [prod_const_one])
 #align finset.prod_le_one' Finset.prod_le_one'
 #align finset.sum_nonpos Finset.sum_nonpos
 
@@ -442,7 +442,7 @@ theorem prod_lt_prod' (Hle : ∀ i ∈ s, f i ≤ g i) (Hlt : ∃ i ∈ s, f i <
   classical
     rcases Hlt with ⟨i, hi, hlt⟩
     rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
-    exact mul_lt_mul_of_lt_of_le hlt (prod_le_prod'' fun j hj ↦ Hle j <| mem_of_mem_erase hj)
+    exact mul_lt_mul_of_lt_of_le hlt (prod_le_prod' fun j hj ↦ Hle j <| mem_of_mem_erase hj)
 #align finset.prod_lt_prod' Finset.prod_lt_prod'
 #align finset.sum_lt_sum Finset.sum_lt_sum
 
@@ -524,7 +524,7 @@ theorem prod_eq_prod_iff_of_le {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
     rw [Finset.prod_insert ha, Finset.prod_insert ha, Finset.forall_mem_insert, ← ih]
     exact
       mul_eq_mul_iff_eq_and_eq (H a (s.mem_insert_self a))
-        (Finset.prod_le_prod'' fun i ↦ H i ∘ Finset.mem_insert_of_mem)
+        (Finset.prod_le_prod' fun i ↦ H i ∘ Finset.mem_insert_of_mem)
 #align finset.prod_eq_prod_iff_of_le Finset.prod_eq_prod_iff_of_le
 #align finset.sum_eq_sum_iff_of_le Finset.sum_eq_sum_iff_of_le
 
@@ -537,7 +537,7 @@ variable [LinearOrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
 @[to_additive exists_lt_of_sum_lt]
 theorem exists_lt_of_prod_lt' (Hlt : (∏ i in s, f i) < ∏ i in s, g i) : ∃ i ∈ s, f i < g i := by
   contrapose! Hlt with Hle
-  exact prod_le_prod'' Hle
+  exact prod_le_prod' Hle
 #align finset.exists_lt_of_prod_lt' Finset.exists_lt_of_prod_lt'
 #align finset.exists_lt_of_sum_lt Finset.exists_lt_of_sum_lt
 
@@ -579,7 +579,7 @@ theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=
 #align finset.prod_nonneg Finset.prod_nonneg
 
 /-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
-product of `f i` is less than or equal to the product of `g i`. See also `Finset.prod_le_prod''` for
+product of `f i` is less than or equal to the product of `g i`. See also `Finset.prod_le_prod'` for
 the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     (∏ i in s, f i) ≤ ∏ i in s, g i := by
@@ -637,10 +637,6 @@ section CanonicallyOrderedCommSemiring
 
 variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
 
-theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏ i in s, g i :=
-  prod_le_prod'' h
-#align finset.prod_le_prod' Finset.prod_le_prod'
-
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
 -/
@@ -668,7 +664,7 @@ variable [Fintype ι]
 -- Porting note: remove the attribute `mono` since tactic mono does not yet exist
 @[to_additive sum_mono]
 theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
-  Finset.prod_le_prod'' fun x _ ↦ hfg x
+  Finset.prod_le_prod' fun x _ ↦ hfg x
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
