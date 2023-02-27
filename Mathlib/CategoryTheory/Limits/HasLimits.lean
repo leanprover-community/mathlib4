@@ -429,17 +429,19 @@ variable {L : Type u₃} [Category.{v₃} L]
 variable (D : L ⥤ K) [HasLimit (D ⋙ E ⋙ F)]
 
 -- Porting note: added because instance not automatically synthesized
-instance [h : HasLimit (D ⋙ E ⋙ F)] : HasLimit ((D ⋙ E) ⋙ F) where 
-  exists_limit := by 
-    rw [Functor.assoc]
-    exact h.exists_limit
-instance [h : HasLimit ((D ⋙ E) ⋙ F)] : HasLimit (D ⋙ E ⋙ F) where 
-  exists_limit := by 
-    rw [← Functor.assoc]
-    exact h.exists_limit
+-- instance [h : HasLimit (D ⋙ E ⋙ F)] : HasLimit ((D ⋙ E) ⋙ F) := h 
+  -- exists_limit := by 
+    -- rw [Functor.assoc]
+    -- exact h.exists_limit
+-- instance [h : HasLimit ((D ⋙ E) ⋙ F)] : HasLimit (D ⋙ E ⋙ F) where 
+--   exists_limit := by 
+--     rw [← Functor.assoc]
+--     exact h.exists_limit
 
 @[simp]
-theorem limit.pre_pre : limit.pre F E ≫ limit.pre (E ⋙ F) D = limit.pre F (D ⋙ E) := by
+theorem limit.pre_pre [h : HasLimit (D ⋙  E ⋙  F)] : haveI : HasLimit ((D ⋙  E) ⋙  F) := h;
+    limit.pre F E ≫ limit.pre (E ⋙ F) D = limit.pre F (D ⋙ E) := by
+  haveI : HasLimit ((D ⋙  E) ⋙  F) := h
   ext j; erw [assoc, limit.pre_π, limit.pre_π, limit.pre_π]; rfl
 #align category_theory.limits.limit.pre_pre CategoryTheory.Limits.limit.pre_pre
 
@@ -484,20 +486,24 @@ theorem limit.lift_post (c : Cone F) :
 #align category_theory.limits.limit.lift_post CategoryTheory.Limits.limit.lift_post
 
 @[simp]
-theorem limit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) [HasLimit ((F ⋙ G) ⋙ H)] :
+theorem limit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) [h : HasLimit ((F ⋙ G) ⋙ H)] :
     -- H G (limit F) ⟶ H (limit (F ⋙ G)) ⟶ limit ((F ⋙ G) ⋙ H) equals 
     -- H G (limit F) ⟶ limit (F ⋙ (G ⋙ H))
-    H.map (limit.post F G) ≫ limit.post (F ⋙ G) H = limit.post F (G ⋙ H) :=
-  by ext; erw [assoc, limit.post_π, ← H.map_comp, limit.post_π, limit.post_π]; rfl
+    haveI : HasLimit (F ⋙  G ⋙  H) := h 
+    H.map (limit.post F G) ≫ limit.post (F ⋙ G) H = limit.post F (G ⋙ H) := by 
+  haveI : HasLimit (F ⋙  G ⋙  H) := h 
+  ext; erw [assoc, limit.post_π, ← H.map_comp, limit.post_π, limit.post_π]; rfl
 #align category_theory.limits.limit.post_post CategoryTheory.Limits.limit.post_post
 
 end Post
 
 theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasLimit F] [HasLimit (E ⋙ F)] [HasLimit (F ⋙ G)]
-    [HasLimit ((E ⋙ F) ⋙ G)] :-- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs 
+    [h : HasLimit ((E ⋙ F) ⋙ G)] :-- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs 
             -- G (limit F) ⟶ limit F ⋙ G ⟶ limit (E ⋙ (F ⋙ G)) or
+    haveI : HasLimit (E ⋙  F ⋙  G) := h 
     G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G = limit.post F G ≫ limit.pre (F ⋙ G) E := by
+  haveI : HasLimit (E ⋙  F ⋙  G) := h 
   ext ; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
 #align category_theory.limits.limit.pre_post CategoryTheory.Limits.limit.pre_post
 
@@ -1022,21 +1028,22 @@ variable {L : Type u₃} [Category.{v₃} L]
 variable (D : L ⥤ K) [HasColimit (D ⋙ E ⋙ F)]
 
 -- Porting note : added these instances 
-instance [h : HasColimit (D ⋙ E ⋙ F)] : HasColimit ((D ⋙ E) ⋙ F) where 
-  exists_colimit := by 
-    rw [Functor.assoc]
-    exact h.exists_colimit
-instance [h : HasColimit ((D ⋙ E) ⋙ F)] : HasColimit (D ⋙ E ⋙ F) where 
-  exists_colimit := by 
-    rw [← Functor.assoc]
-    exact h.exists_colimit
-
+-- instance [h : HasColimit (D ⋙ E ⋙ F)] : HasColimit ((D ⋙ E) ⋙ F) where 
+--   exists_colimit := by 
+--     rw [Functor.assoc]
+--     exact h.exists_colimit
+-- instance [h : HasColimit ((D ⋙ E) ⋙ F)] : HasColimit (D ⋙ E ⋙ F) where 
+--   exists_colimit := by 
+--     rw [← Functor.assoc]
+--     exact h.exists_colimit
 
 @[simp]
-theorem colimit.pre_pre : colimit.pre (E ⋙ F) D ≫ colimit.pre F E = colimit.pre F (D ⋙ E) := by
+theorem colimit.pre_pre [h : HasColimit (D ⋙  E ⋙  F)] :
+    haveI : HasColimit ((D ⋙  E) ⋙  F) := h
+    colimit.pre (E ⋙ F) D ≫ colimit.pre F E = colimit.pre F (D ⋙ E) := by
   ext j
   rw [← assoc, colimit.ι_pre, colimit.ι_pre]
-  letI : HasColimit ((D ⋙ E) ⋙ F) := show HasColimit (D ⋙ E ⋙ F) by infer_instance
+  haveI : HasColimit ((D ⋙ E) ⋙ F) := h
   exact (colimit.ι_pre F (D ⋙ E) j).symm
 #align category_theory.limits.colimit.pre_pre CategoryTheory.Limits.colimit.pre_pre
 
@@ -1084,26 +1091,29 @@ theorem colimit.post_desc (c : Cocone F) :
 #align category_theory.limits.colimit.post_desc CategoryTheory.Limits.colimit.post_desc
 
 @[simp]
-theorem colimit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) [HasColimit ((F ⋙ G) ⋙ H)]
+theorem colimit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) 
     -- H G (colimit F) ⟶ H (colimit (F ⋙ G)) ⟶ colimit ((F ⋙ G) ⋙ H) equals 
     -- H G (colimit F) ⟶ colimit (F ⋙ (G ⋙ H))
-    : colimit.post (F ⋙ G) H ≫ H.map (colimit.post F G) = colimit.post F (G ⋙ H) := by
+    [h : HasColimit ((F ⋙ G) ⋙ H)] : haveI : HasColimit (F ⋙  G ⋙  H) := h 
+    colimit.post (F ⋙ G) H ≫ H.map (colimit.post F G) = colimit.post F (G ⋙ H) := by
   ext j
   rw [← assoc, colimit.ι_post, ← H.map_comp, colimit.ι_post]
+  haveI : HasColimit (F ⋙  G ⋙  H) := h 
   exact (colimit.ι_post F (G ⋙ H) j).symm
 #align category_theory.limits.colimit.post_post CategoryTheory.Limits.colimit.post_post
 
 end Post
 
 theorem colimit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
-    [HasColimit F] [HasColimit (E ⋙ F)] [HasColimit (F ⋙ G)] [H : HasColimit ((E ⋙ F) ⋙ G)] :
+    [HasColimit F] [HasColimit (E ⋙ F)] [HasColimit (F ⋙ G)] [h : HasColimit ((E ⋙ F) ⋙ G)] :
     -- G (colimit F) ⟶ G (colimit (E ⋙ F)) ⟶ colimit ((E ⋙ F) ⋙ G) vs 
     -- G (colimit F) ⟶ colimit F ⋙ G ⟶ colimit (E ⋙ (F ⋙ G)) or
+    haveI : HasColimit (E ⋙  F ⋙  G) := h 
     colimit.post (E ⋙ F) G ≫ G.map (colimit.pre F E) = 
       colimit.pre (F ⋙ G) E ≫ colimit.post F G := by
   ext j
   rw [← assoc, colimit.ι_post, ← G.map_comp, colimit.ι_pre, ← assoc]
-  letI : HasColimit (E ⋙ F ⋙ G) := show HasColimit ((E ⋙ F) ⋙ G) by infer_instance
+  haveI : HasColimit (E ⋙ F ⋙ G) := h
   erw [colimit.ι_pre (F ⋙ G) E j, colimit.ι_post]
 #align category_theory.limits.colimit.pre_post CategoryTheory.Limits.colimit.pre_post
 
