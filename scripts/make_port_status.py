@@ -124,7 +124,7 @@ for pr in mathlib4repo.get_pulls(state='open'):
         continue
     if 'mathlib3-pair' in (l.name for l in pr.labels):
         for file in (f.filename for f in pr.get_files()):
-            sync_prs[file] = sync_prs.get(file, set()).add(pr.number)
+            sync_prs[file] = sync_prs.get(file, set()).union([pr.number])
     num = pr.number
     nums.append(num)
     prs[num] = pr
