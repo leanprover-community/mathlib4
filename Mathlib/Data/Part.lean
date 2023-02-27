@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 
 ! This file was ported from Lean 3 source module data.part
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! leanprover-community/mathlib commit 80c43012d26f63026d362c3aba28f3c3bafb07e6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,7 +14,7 @@ import Mathlib.Logic.Equiv.Defs
 /-!
 # Partial values of a type
 This file defines `Part α`, the partial values of a type.
-`o : Part α` carries a proposition `o.dom`, its domain, along with a function `get : o.dom → α`, its
+`o : Part α` carries a proposition `o.Dom`, its domain, along with a function `get : o.Dom → α`, its
 value. The rule is then that every partial value has a value but, to access it, you need to provide
 a proof of the domain.
 `Part α` behaves the same as `Option α` except that `o : Option α` is decidably `none` or `some a`
@@ -38,7 +38,7 @@ Monadic structure:
 * `Part.map`: Maps the value and keeps the same domain.
 Other:
 * `Part.restrict`: `Part.restrict p o` replaces the domain of `o : Part α` by `p : Prop` so long as
-  `p → o.dom`.
+  `p → o.Dom`.
 * `Part.assert`: `assert p f` appends `p` to the domains of the values of a partial function.
 * `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
 ## Notation
