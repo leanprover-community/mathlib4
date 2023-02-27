@@ -1194,7 +1194,8 @@ protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
   IsPath.of_append_left (by rwa [← take_spec _ h] at hc)
 #align simple_graph.walk.is_path.take_until SimpleGraph.Walk.IsPath.takeUntil
 
-protected theorem IsPath.dropUntil {u v w : V} (p : G.Walk v w) (hc : p.IsPath)
+-- porting note: p was previously accidentally an explicit argument
+protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
   IsPath.of_append_right (by rwa [← take_spec _ h] at hc)
 #align simple_graph.walk.is_path.drop_until SimpleGraph.Walk.IsPath.dropUntil
@@ -1270,8 +1271,7 @@ end Walk
 
 
 /-- The type for paths between two vertices. -/
-abbrev Path (u v : V) :=
-  { p : G.Walk u v // p.IsPath }
+abbrev Path (u v : V) := { p : G.Walk u v // p.IsPath }
 #align simple_graph.path SimpleGraph.Path
 
 namespace Path
@@ -1279,13 +1279,12 @@ namespace Path
 variable {G G'}
 
 @[simp]
-protected theorem isPath {u v : V} (p : G.Path u v) : (p : G.Walk u v).IsPath :=
-  p.property
+protected theorem isPath {u v : V} (p : G.Path u v) : (p : G.Walk u v).IsPath := p.property
 #align simple_graph.path.is_path SimpleGraph.Path.isPath
 
 @[simp]
 protected theorem isTrail {u v : V} (p : G.Path u v) : (p : G.Walk u v).IsTrail :=
-  p.property.to_trail
+  p.property.isTrail
 #align simple_graph.path.is_trail SimpleGraph.Path.isTrail
 
 /-- The length-0 path at a vertex. -/
@@ -1317,7 +1316,7 @@ theorem count_support_eq_one [DecidableEq V] {u v w : V} {p : G.Path u v}
 
 theorem count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Path u v} (e : Sym2 V)
     (hw : e ∈ (p : G.Walk u v).edges) : (p : G.Walk u v).edges.count e = 1 :=
-  List.count_eq_one_of_mem p.property.to_trail.edges_nodup hw
+  List.count_eq_one_of_mem p.property.isTrail.edges_nodup hw
 #align simple_graph.path.count_edges_eq_one SimpleGraph.Path.count_edges_eq_one
 
 @[simp]
@@ -1326,9 +1325,9 @@ theorem nodup_support {u v : V} (p : G.Path u v) : (p : G.Walk u v).support.Nodu
 #align simple_graph.path.nodup_support SimpleGraph.Path.nodup_support
 
 theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
-  obtain ⟨_ | _, this⟩ := p
+  obtain ⟨_ | _, h⟩ := p
   · rfl
-  · simpa
+  · simp at h
 #align simple_graph.path.loop_eq SimpleGraph.Path.loop_eq
 
 theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} : ¬e ∈ (p : G.Walk v v).edges :=
@@ -1337,10 +1336,11 @@ theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} : ¬e ∈ (p
 
 theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
     (he : ¬⟦(u, v)⟧ ∈ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
-  simp [walk.is_cycle_def, walk.cons_is_trail_iff, he]
+  simp [Walk.isCycle_def, Walk.cons_isTrail_iff, he]
 #align simple_graph.path.cons_is_cycle SimpleGraph.Path.cons_isCycle
 
 end Path
+
 
 /-! ### Walks to paths -/
 
@@ -1352,11 +1352,14 @@ variable {G} [DecidableEq V]
 /-- Given a walk, produces a walk from it by bypassing subwalks between repeated vertices.
 The result is a path, as shown in `simple_graph.walk.bypass_is_path`.
 This is packaged up in `simple_graph.walk.to_path`. -/
-def bypass : ∀ {u v : V}, G.Walk u v → G.Walk u v
-  | u, v, nil => nil
-  | u, v, cons ha p =>
+def bypass {u v : V} : G.Walk u v → G.Walk u v
+  | nil => nil
+  | cons ha p =>
     let p' := p.bypass
-    if hs : u ∈ p'.support then p'.dropUntil u hs else cons ha p'
+    if hs : u ∈ p'.support then
+      p'.dropUntil u hs
+    else
+      cons ha p'
 #align simple_graph.walk.bypass SimpleGraph.Walk.bypass
 
 @[simp]
@@ -1367,26 +1370,27 @@ theorem bypass_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
 #align simple_graph.walk.bypass_copy SimpleGraph.Walk.bypass_copy
 
 theorem bypass_isPath {u v : V} (p : G.Walk u v) : p.bypass.IsPath := by
-  induction p
-  · simp!
-  · simp only [bypass]
-    split_ifs
-    · apply is_path.drop_until
-      assumption
-    · simp [*, cons_is_path_iff]
+  induction p with
+  | nil => simp!
+  | cons _ p' ih =>
+    simp only [bypass]
+    split_ifs with hs
+    · exact ih.dropUntil hs
+    · simp [*, cons_isPath_iff]
 #align simple_graph.walk.bypass_is_path SimpleGraph.Walk.bypass_isPath
 
 theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.length := by
-  induction p
-  · rfl
-  · simp only [bypass]
+  induction p with
+  | nil => rfl
+  | cons _ _ ih =>
+    simp only [bypass]
     split_ifs
     · trans
-      apply length_drop_until_le
+      apply length_dropUntil_le
       rw [length_cons]
-      exact le_add_right p_ih
+      exact le_add_right ih
     · rw [length_cons, length_cons]
-      exact add_le_add_right p_ih 1
+      exact add_le_add_right ih 1
 #align simple_graph.walk.length_bypass_le SimpleGraph.Walk.length_bypass_le
 
 /-- Given a walk, produces a path with the same endpoints using `simple_graph.walk.bypass`. -/
@@ -1395,11 +1399,12 @@ def toPath {u v : V} (p : G.Walk u v) : G.Path u v :=
 #align simple_graph.walk.to_path SimpleGraph.Walk.toPath
 
 theorem support_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.support ⊆ p.support := by
-  induction p
-  · simp!
-  · simp! only
+  induction p with
+  | nil => simp!
+  | cons _ _ ih =>
+    simp! only
     split_ifs
-    · apply List.Subset.trans (support_drop_until_subset _ _)
+    · apply List.Subset.trans (support_dropUntil_subset _ _)
       apply List.subset_cons_of_subset
       assumption
     · rw [support_cons]
@@ -1413,14 +1418,15 @@ theorem support_toPath_subset {u v : V} (p : G.Walk u v) :
 #align simple_graph.walk.support_to_path_subset SimpleGraph.Walk.support_toPath_subset
 
 theorem darts_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.darts ⊆ p.darts := by
-  induction p
-  · simp!
-  · simp! only
+  induction p with
+  | nil => simp!
+  | cons _ _ ih =>
+    simp! only
     split_ifs
-    · apply List.Subset.trans (darts_drop_until_subset _ _)
-      apply List.subset_cons_of_subset _ p_ih
+    · apply List.Subset.trans (darts_dropUntil_subset _ _)
+      apply List.subset_cons_of_subset _ ih
     · rw [darts_cons]
-      exact List.cons_subset_cons _ p_ih
+      exact List.cons_subset_cons _ ih
 #align simple_graph.walk.darts_bypass_subset SimpleGraph.Walk.darts_bypass_subset
 
 theorem edges_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
@@ -1437,6 +1443,7 @@ theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v)
 
 end Walk
 
+
 /-! ### Mapping paths -/
 
 
@@ -1445,42 +1452,46 @@ namespace Walk
 variable {G G' G''}
 
 /-- Given a graph homomorphism, map walks to walks. -/
-protected def map (f : G →g G') : ∀ {u v : V}, G.Walk u v → G'.Walk (f u) (f v)
-  | _, _, nil => nil
-  | _, _, cons h p => cons (f.map_adj h) (map p)
+protected def map (f : G →g G') {u v : V} : G.Walk u v → G'.Walk (f u) (f v)
+  | nil => nil
+  | cons h p => cons (f.map_adj h) (p.map f)
 #align simple_graph.walk.map SimpleGraph.Walk.map
 
 variable (f : G →g G') (f' : G' →g G'') {u v u' v' : V} (p : G.Walk u v)
 
 @[simp]
-theorem map_nil : (nil : G.Walk u u).map f = nil :=
-  rfl
+theorem map_nil : (nil : G.Walk u u).map f = nil := rfl
 #align simple_graph.walk.map_nil SimpleGraph.Walk.map_nil
 
 @[simp]
-theorem map_cons {w : V} (h : G.Adj w u) : (cons h p).map f = cons (f.map_adj h) (p.map f) :=
-  rfl
+theorem map_cons {w : V} (h : G.Adj w u) : (cons h p).map f = cons (f.map_adj h) (p.map f) := rfl
 #align simple_graph.walk.map_cons SimpleGraph.Walk.map_cons
 
 @[simp]
 theorem map_copy (hu : u = u') (hv : v = v') :
-    (p.copy hu hv).map f = (p.map f).copy (by rw [hu]) (by rw [hv]) := by
+    (p.copy hu hv).map f = (p.map f).copy (hu ▸ rfl) (hv ▸ rfl) := by
   subst_vars
   rfl
 #align simple_graph.walk.map_copy SimpleGraph.Walk.map_copy
 
 @[simp]
-theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by induction p <;> simp [*]
+theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by
+  induction p with
+  | nil => rfl
+  | cons _ p' ih => simp [ih p']
 #align simple_graph.walk.map_id SimpleGraph.Walk.map_id
 
 @[simp]
-theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by induction p <;> simp [*]
+theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
+  induction p with
+  | nil => rfl
+  | cons _ _ ih => simp [ih]
 #align simple_graph.walk.map_map SimpleGraph.Walk.map_map
 
 /-- Unlike categories, for graphs vertex equality is an important notion, so needing to be able to
 to work with equality of graph homomorphisms is a necessary evil. -/
 theorem map_eq_of_eq {f : G →g G'} (f' : G →g G') (h : f = f') :
-    p.map f = (p.map f').copy (by rw [h]) (by rw [h]) := by
+    p.map f = (p.map f').copy (h ▸ rfl) (h ▸ rfl) := by
   subst_vars
   rfl
 #align simple_graph.walk.map_eq_of_eq SimpleGraph.Walk.map_eq_of_eq
@@ -1510,16 +1521,22 @@ theorem darts_map : (p.map f).darts = p.darts.map f.mapDart := by induction p <;
 #align simple_graph.walk.darts_map SimpleGraph.Walk.darts_map
 
 @[simp]
-theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by induction p <;> simp [*]
+theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
+  induction p with
+  | nil => rfl
+  | cons _ _ ih =>
+    simp only [Walk.map_cons, edges_cons, List.map_cons, Sym2.map_pair_eq, List.cons.injEq,
+      true_and, ih]
 #align simple_graph.walk.edges_map SimpleGraph.Walk.edges_map
 
 variable {p f}
 
-theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) : (p.map f).IsPath :=
-  by
-  induction' p with w u v w huv hvw ih
-  · simp
-  · rw [walk.cons_is_path_iff] at hp
+theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
+    (p.map f).IsPath := by
+  induction p with
+  | nil => simp
+  | cons _ _ ih =>
+    rw [Walk.cons_isPath_iff] at hp
     simp [ih hp.1]
     intro x hx hf
     cases hinj hf
@@ -1527,10 +1544,11 @@ theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) : 
 #align simple_graph.walk.map_is_path_of_injective SimpleGraph.Walk.map_isPath_of_injective
 
 protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPath := by
-  induction' p with w u v w huv hvw ih
-  · simp
-  · rw [map_cons, walk.cons_is_path_iff, support_map] at hp
-    rw [walk.cons_is_path_iff]
+  induction p with
+  | nil => simp
+  | cons _ _ ih =>
+    rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
+    rw [Walk.cons_isPath_iff]
     cases' hp with hp1 hp2
     refine' ⟨ih hp1, _⟩
     contrapose! hp2
@@ -1543,24 +1561,24 @@ theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).Is
 
 theorem map_isTrail_iff_of_injective (hinj : Function.Injective f) :
     (p.map f).IsTrail ↔ p.IsTrail := by
-  induction' p with w u v w huv hvw ih
-  · simp
-  · rw [map_cons, cons_is_trail_iff, cons_is_trail_iff, edges_map]
-    change _ ∧ Sym2.map f ⟦(u, v)⟧ ∉ _ ↔ _
-    rw [List.mem_map_of_injective (Sym2.map.injective hinj)]
-    exact and_congr_left' ih
+  induction p with
+  | nil => simp
+  | cons _ _ ih =>
+    rw [map_cons, cons_isTrail_iff, ih, cons_isTrail_iff]
+    apply and_congr_right'
+    rw [← Sym2.map_pair_eq, edges_map, ← List.mem_map_of_injective (Sym2.map.injective hinj)]
 #align simple_graph.walk.map_is_trail_iff_of_injective SimpleGraph.Walk.map_isTrail_iff_of_injective
 
-alias map_is_trail_iff_of_injective ↔ _ map_is_trail_of_injective
+alias map_isTrail_iff_of_injective ↔ _ map_isTrail_of_injective
 #align simple_graph.walk.map_is_trail_of_injective SimpleGraph.Walk.map_isTrail_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [is_cycle_def, is_cycle_def, map_is_trail_iff_of_injective hinj, Ne.def, map_eq_nil_iff,
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne.def, map_eq_nil_iff,
     support_map, ← List.map_tail, List.nodup_map_iff hinj]
 #align simple_graph.walk.map_is_cycle_iff_of_injective SimpleGraph.Walk.map_isCycle_iff_of_injective
 
-alias map_is_cycle_iff_of_injective ↔ _ map_is_cycle_of_injective
+alias map_isCycle_iff_of_injective ↔ _ map_isCycle_of_injective
 #align simple_graph.walk.map_is_cycle_of_injective SimpleGraph.Walk.map_isCycle_of_injective
 
 variable (p f)
@@ -1568,15 +1586,18 @@ variable (p f)
 theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Walk.map f : G.Walk u v → G'.Walk (f u) (f v)) := by
   intro p p' h
-  induction' p with _ _ _ _ _ _ ih generalizing p'
-  · cases p'
+  induction p with
+  | nil =>
+    cases p'
     · rfl
-    simpa using h
-  · induction p'
-    · simpa using h
-    · simp only [map_cons] at h
+    · simp at h
+  | cons _ _ ih =>
+    cases p' with
+    | nil => simp at h
+    | cons _ _ =>
+      simp only [map_cons, cons.injEq] at h
       cases hinj h.1
-      simp only [eq_self_iff_true, heq_iff_eq, true_and_iff]
+      simp only [cons.injEq, heq_iff_eq, true_and_iff]
       apply ih
       simpa using h.2
 #align simple_graph.walk.map_injective_of_injective SimpleGraph.Walk.map_injective_of_injective
@@ -1593,7 +1614,7 @@ theorem mapLe_isTrail {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Wal
   map_isTrail_iff_of_injective Function.injective_id
 #align simple_graph.walk.map_le_is_trail SimpleGraph.Walk.mapLe_isTrail
 
-alias map_le_is_trail ↔ is_trail.of_map_le is_trail.map_le
+alias mapLe_isTrail ↔ IsTrail.of_mapLe IsTrail.mapLe
 #align simple_graph.walk.is_trail.of_map_le SimpleGraph.Walk.IsTrail.of_mapLe
 #align simple_graph.walk.is_trail.map_le SimpleGraph.Walk.IsTrail.mapLe
 
@@ -1603,7 +1624,7 @@ theorem mapLe_isPath {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk
   map_isPath_iff_of_injective Function.injective_id
 #align simple_graph.walk.map_le_is_path SimpleGraph.Walk.mapLe_isPath
 
-alias map_le_is_path ↔ is_path.of_map_le is_path.map_le
+alias mapLe_isPath ↔ IsPath.of_mapLe IsPath.mapLe
 #align simple_graph.walk.is_path.of_map_le SimpleGraph.Walk.IsPath.of_mapLe
 #align simple_graph.walk.is_path.map_le SimpleGraph.Walk.IsPath.mapLe
 
@@ -1613,7 +1634,7 @@ theorem mapLe_isCycle {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk 
   map_isCycle_iff_of_injective Function.injective_id
 #align simple_graph.walk.map_le_is_cycle SimpleGraph.Walk.mapLe_isCycle
 
-alias map_le_is_cycle ↔ is_cycle.of_map_le is_cycle.map_le
+alias mapLe_isCycle ↔ IsCycle.of_mapLe IsCycle.mapLe
 #align simple_graph.walk.is_cycle.of_map_le SimpleGraph.Walk.IsCycle.of_mapLe
 #align simple_graph.walk.is_cycle.map_le SimpleGraph.Walk.IsCycle.mapLe
 
