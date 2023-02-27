@@ -559,15 +559,15 @@ theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → S
     HEq (@Eq.rec α a' motive p a t) p :=
   by subst t; rfl
 
-lemma rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
+theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
   HEq (e ▸ x) y := by subst e; exact h
 #align rec_heq_of_heq rec_heq_of_heq
 
-lemma rec_heq_iff_heq {C : α → Sort _} {x : C a} {y : β} {e : a = b} :
+theorem rec_heq_iff_heq {C : α → Sort _} {x : C a} {y : β} {e : a = b} :
   HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
 #align rec_heq_iff_heq rec_heq_iff_heq
 
-lemma heq_rec_iff_heq {C : α → Sort _} {x : β} {y : C a} {e : a = b} :
+theorem heq_rec_iff_heq {C : α → Sort _} {x : β} {y : C a} {e : a = b} :
   HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 #align heq_rec_iff_heq heq_rec_iff_heq
 
