@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 
 ! This file was ported from Lean 3 source module data.list.big_operators.basic
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
+! leanprover-community/mathlib commit 6c5f73fd6f6cc83122788a80a27cdd54663609f4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
 
 /-!
@@ -586,18 +587,24 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
     exact mul_pos (h _ <| mem_cons_self _ _) (ih fun a ha => h a <| mem_cons_of_mem _ ha)
 #align list.prod_pos List.prod_pos
 
+/-- A variant of `List.prod_pos` for `CanonicallyOrderedCommSemiring`. -/
+@[simp] lemma _root_.CanonicallyOrderedCommSemiring.list_prod_pos
+    {α : Type _} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+    ∀ {l : List α}, 0 < l.prod ↔ (∀ x ∈ l, (0 : α) < x)
+  | [] => by simp
+  | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,
+    list_prod_pos]
+#align canonically_ordered_comm_semiring.list_prod_pos CanonicallyOrderedCommSemiring.list_prod_pos
+
 /-!
 Several lemmas about sum/head/tail for `List ℕ`.
 These are hard to generalize well, as they rely on the fact that `default ℕ = 0`.
 If desired, we could add a class stating that `default = 0`.
 -/
 
-
 /-- This relies on `default ℕ = 0`. -/
 theorem headI_add_tail_sum (L : List ℕ) : L.headI + L.tail.sum = L.sum := by
-  cases L
-  · simp
-  · simp
+  cases L <;> simp
 #align list.head_add_tail_sum List.headI_add_tail_sum
 
 /-- This relies on `default ℕ = 0`. -/
@@ -663,6 +670,22 @@ theorem alternatingProd_cons (a : α) (l : List α) :
 #align list.alternating_sum_cons List.alternatingSum_cons
 
 end Alternating
+
+lemma sum_nat_mod (l : List ℕ) (n : ℕ) : l.sum % n = (l.map (· % n)).sum % n := by
+  induction l <;> simp [Nat.add_mod, *]
+#align list.sum_nat_mod List.sum_nat_mod
+
+lemma prod_nat_mod (l : List ℕ) (n : ℕ) : l.prod % n = (l.map (· % n)).prod % n := by
+  induction l <;> simp [Nat.mul_mod, *]
+#align list.prod_nat_mod List.prod_nat_mod
+
+lemma sum_int_mod (l : List ℤ) (n : ℤ) : l.sum % n = (l.map (· % n)).sum % n := by
+  induction l <;> simp [Int.add_emod, *]
+#align list.sum_int_mod List.sum_int_mod
+
+lemma prod_int_mod (l : List ℤ) (n : ℤ) : l.prod % n = (l.map (· % n)).prod % n := by
+  induction l <;> simp [Int.mul_emod, *]
+#align list.prod_int_mod List.prod_int_mod
 
 end List
 

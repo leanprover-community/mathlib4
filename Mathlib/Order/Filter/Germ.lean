@@ -103,10 +103,10 @@ namespace Product
 
 variable {ε : α → Type _}
 
-instance : CoeTC ((a : _) → ε a) (l.Product ε) :=
+instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) :=
   ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
 
-instance [(a : _) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
+instance inhabited [(a : _) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
   ⟨(↑fun a => (default : ε a) : l.Product ε)⟩
 
 end Product
@@ -123,7 +123,7 @@ instance : CoeTC (α → β) (Germ l β) :=
 @[coe] -- Porting note: removed `HasLiftT` instance
 def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 
-instance : CoeTC β (Germ l β) :=
+instance coeTC : CoeTC β (Germ l β) :=
   ⟨const⟩
 
 @[simp]
@@ -331,7 +331,7 @@ theorem liftRel_const_iff [NeBot l] {r : β → γ → Prop} {x : β} {y : γ} :
   @eventually_const _ _ _ (r x y)
 #align filter.germ.lift_rel_const_iff Filter.Germ.liftRel_const_iff
 
-instance [Inhabited β] : Inhabited (Germ l β) :=
+instance inhabited [Inhabited β] : Inhabited (Germ l β) :=
   ⟨↑(default : β)⟩
 
 section Monoid
@@ -382,15 +382,15 @@ instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (G
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
 
-instance [VAdd M G] : VAdd M (Germ l G) :=
+instance vAdd [VAdd M G] : VAdd M (Germ l G) :=
   ⟨fun n => map ((· +ᵥ ·) n)⟩
 
 @[to_additive]
-instance [SMul M G] : SMul M (Germ l G) :=
+instance sMul [SMul M G] : SMul M (Germ l G) :=
   ⟨fun n => map (n • ·)⟩
 
-@[to_additive instSMulGerm]
-instance [Pow G M] : Pow (Germ l G) M :=
+@[to_additive sMul]
+instance pow [Pow G M] : Pow (Germ l G) M :=
   ⟨fun f n => map (· ^ n) f⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -449,7 +449,7 @@ instance addMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) :=
     natCast_succ := fun _ => congr_arg ((↑) : M → Germ l M) (Nat.cast_succ _) }
 
 @[to_additive]
-instance [Inv G] : Inv (Germ l G) :=
+instance inv [Inv G] : Inv (Germ l G) :=
   ⟨map Inv.inv⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -582,7 +582,7 @@ theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c
 #align filter.germ.coe_vadd' Filter.Germ.coe_vadd'
 
 @[to_additive]
-instance [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
+instance mulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
   -- Porting note: `rfl` required.
   one_smul f :=
     inductionOn f fun f => by
@@ -653,7 +653,7 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module (Germ l R)
 
 end Module
 
-instance [LE β] : LE (Germ l β) :=
+instance le [LE β] : LE (Germ l β) :=
   ⟨LiftRel (· ≤ ·)⟩
 
 theorem le_def [LE β] : ((· ≤ ·) : Germ l β → Germ l β → Prop) = LiftRel (· ≤ ·) :=
@@ -678,22 +678,22 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
   liftRel_const_iff
 #align filter.germ.const_le_iff Filter.Germ.const_le_iff
 
-instance [Preorder β] : Preorder (Germ l β)
+instance preorder [Preorder β] : Preorder (Germ l β)
     where
   le := (· ≤ ·)
   le_refl f := inductionOn f <| EventuallyLe.refl l
   le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLe.trans
 
-instance [PartialOrder β] : PartialOrder (Germ l β) :=
-  { Filter.Germ.instPreorderGerm with
+instance partialOrder [PartialOrder β] : PartialOrder (Germ l β) :=
+  { Filter.Germ.preorder with
     le := (· ≤ ·)
     le_antisymm := fun f g =>
       inductionOn₂ f g fun _ _ h₁ h₂ => (EventuallyLe.antisymm h₁ h₂).germ_eq }
 
-instance [Bot β] : Bot (Germ l β) :=
+instance bot [Bot β] : Bot (Germ l β) :=
   ⟨↑(⊥ : β)⟩
 
-instance [Top β] : Top (Germ l β) :=
+instance top [Top β] : Top (Germ l β) :=
   ⟨↑(⊤ : β)⟩
 
 @[simp, norm_cast]
@@ -706,18 +706,18 @@ theorem const_top [Top β] : (↑(⊤ : β) : Germ l β) = ⊤ :=
   rfl
 #align filter.germ.const_top Filter.Germ.const_top
 
-instance [LE β] [OrderBot β] : OrderBot (Germ l β)
+instance orderBot [LE β] [OrderBot β] : OrderBot (Germ l β)
     where
   bot := ⊥
   bot_le f := inductionOn f fun _ => eventually_of_forall fun _ => bot_le
 
-instance [LE β] [OrderTop β] : OrderTop (Germ l β)
+instance orderTop [LE β] [OrderTop β] : OrderTop (Germ l β)
     where
   top := ⊤
   le_top f := inductionOn f fun _ => eventually_of_forall fun _ => le_top
 
 instance [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) :=
-  { Filter.Germ.instOrderBotGermInstLEGerm, Filter.Germ.instOrderTopGermInstLEGerm with }
+  { Filter.Germ.orderBot, Filter.Germ.orderTop with }
 
 end Germ
 
