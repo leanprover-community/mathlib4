@@ -9,6 +9,7 @@ Authors: Floris van Doorn
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Order.Kleene
 
 /-!
 # Sets as a semiring under union
@@ -97,6 +98,8 @@ instance : AddCommMonoid (SetSemiring α) where
   add_zero := union_empty
   add_comm := union_comm
 
+-- TODO: port
+
 /- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `CovariantClass (SetSemiring α) (SetSemiring α) (swap (+)) (≤)`. -/
 instance covariantClass_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
@@ -116,6 +119,8 @@ instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
     left_distrib := fun _ _ _ => mul_union
     right_distrib := fun _ _ _ => union_mul }
 
+-- TODO: port
+
 instance : NoZeroDivisors (SetSemiring α) :=
   ⟨fun {a b} ab =>
     a.eq_empty_or_nonempty.imp_right fun ha =>
@@ -134,6 +139,9 @@ instance covariantClass_mul_right :
 
 end Mul
 
+
+-- TODO: port
+
 -- Porting note: this was `one := 1`
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
@@ -144,12 +152,14 @@ instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }
 
-instance [Monoid α] : Semiring (SetSemiring α) :=
+instance [Monoid α] : IdemSemiring (SetSemiring α) :=
   { (inferInstance : NonAssocSemiring (SetSemiring α)),
     (inferInstance : NonUnitalSemiring (SetSemiring α)) with }
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalSemiring (SetSemiring α)), Set.commSemigroup with }
+
+-- TODO: port
 
 instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
