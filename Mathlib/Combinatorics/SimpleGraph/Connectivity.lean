@@ -38,34 +38,34 @@ counterparts in [Chou1994].
 
 ## Main definitions
 
-* `simple_graph.walk` (with accompanying pattern definitions
-  `simple_graph.walk.nil'` and `simple_graph.walk.cons'`)
+* `SimpleGraph.Walk` (with accompanying pattern definitions
+  `SimpleGraph.Walk.nil'` and `SimpleGraph.Walk.cons'`)
 
-* `simple_graph.walk.is_trail`, `simple_graph.walk.is_path`, and `simple_graph.walk.is_cycle`.
+* `SimpleGraph.Walk.IsTrail`, `SimpleGraph.Walk.IsPath`, and `SimpleGraph.Walk.IsCycle`.
 
-* `simple_graph.path`
+* `SimpleGraph.Path`
 
-* `simple_graph.walk.map` and `simple_graph.path.map` for the induced map on walks,
+* `SimpleGraph.Walk.map` and `SimpleGraph.Path.map` for the induced map on walks,
   given an (injective) graph homomorphism.
 
-* `simple_graph.reachable` for the relation of whether there exists
+* `SimpleGraph.Reachable` for the relation of whether there exists
   a walk between a given pair of vertices
 
-* `simple_graph.preconnected` and `simple_graph.connected` are predicates
+* `SimpleGraph.Preconnected` and `SimpleGraph.Connected` are predicates
   on simple graphs for whether every vertex can be reached from every other,
   and in the latter case, whether the vertex type is nonempty.
 
-* `simple_graph.subgraph.connected` gives subgraphs the connectivity
-  predicate via `simple_graph.subgraph.coe`.
+* `SimpleGraph.Subgraph.Connected` gives subgraphs the connectivity
+  predicate via `SimpleGraph.subgraph.coe`.
 
-* `simple_graph.connected_component` is the type of connected components of
+* `SimpleGraph.ConnectedComponent` is the type of connected components of
   a given graph.
 
-* `simple_graph.is_bridge` for whether an edge is a bridge edge
+* `SimpleGraph.IsBridge` for whether an edge is a bridge edge
 
 ## Main statements
 
-* `simple_graph.is_bridge_iff_mem_and_forall_cycle_not_mem` characterizes bridge edges in terms of
+* `SimpleGraph.isBridge_iff_mem_and_forall_cycle_not_mem` characterizes bridge edges in terms of
   there being no cycle containing them.
 
 ## Tags
@@ -88,22 +88,21 @@ variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
 the type `walk u v` consists of all walks starting at `u` and ending at `v`.
 
 We say that a walk *visits* the vertices it contains.  The set of vertices a
-walk visits is `simple_graph.walk.support`.
+walk visits is `SimpleGraph.Walk.support`.
 
-See `simple_graph.walk.nil'` and `simple_graph.walk.cons'` for patterns that
+See `SimpleGraph.Walk.nil'` and `SimpleGraph.Walk.cons'` for patterns that
 can be useful in definitions since they make the vertices explicit. -/
 inductive Walk : V → V → Type u
-  | nil {u : V} : walk u u
-  | cons {u v w : V} (h : G.Adj u v) (p : walk v w) : walk u w
+  | nil {u : V} : Walk u u
+  | cons {u v w : V} (h : G.Adj u v) (p : Walk v w) : Walk u w
   deriving DecidableEq
 #align simple_graph.walk SimpleGraph.Walk
 
-attribute [refl] walk.nil
+attribute [refl] Walk.nil
 
 @[simps]
-instance Walk.inhabited (v : V) : Inhabited (G.Walk v v) :=
-  ⟨Walk.nil⟩
-#align simple_graph.walk.inhabited SimpleGraph.Walk.inhabited
+instance Walk.instInhabited (v : V) : Inhabited (G.Walk v v) := ⟨Walk.nil⟩
+#align simple_graph.walk.inhabited SimpleGraph.Walk.instInhabited
 
 /-- The one-edge walk associated to a pair of adjacent vertices. -/
 @[match_pattern, reducible]
@@ -117,14 +116,12 @@ variable {G}
 
 /-- Pattern to get `walk.nil` with the vertex as an explicit argument. -/
 @[match_pattern]
-abbrev nil' (u : V) : G.Walk u u :=
-  Walk.nil
+abbrev nil' (u : V) : G.Walk u u := Walk.nil
 #align simple_graph.walk.nil' SimpleGraph.Walk.nil'
 
 /-- Pattern to get `walk.cons` with the vertices as explicit arguments. -/
 @[match_pattern]
-abbrev cons' (u v w : V) (h : G.Adj u v) (p : G.Walk v w) : G.Walk u w :=
-  Walk.cons h p
+abbrev cons' (u v w : V) (h : G.Adj u v) (p : G.Walk v w) : G.Walk u w := Walk.cons h p
 #align simple_graph.walk.cons' SimpleGraph.Walk.cons'
 
 /-- Change the endpoints of a walk using equalities. This is helpful for relaxing
@@ -134,17 +131,17 @@ lemmas. While this is a simple wrapper around `eq.rec`, it gives a canonical way
 The simp-normal form is for the `copy` to be pushed outward. That way calculations can
 occur within the "copy context." -/
 protected def copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') : G.Walk u' v' :=
-  Eq.ndrec (Eq.ndrec p hv) hu
+  hu ▸ hv ▸ p
 #align simple_graph.walk.copy SimpleGraph.Walk.copy
 
 @[simp]
-theorem copy_rfl_rfl {u v} (p : G.Walk u v) : p.copy rfl rfl = p :=
-  rfl
+theorem copy_rfl_rfl {u v} (p : G.Walk u v) : p.copy rfl rfl = p := rfl
 #align simple_graph.walk.copy_rfl_rfl SimpleGraph.Walk.copy_rfl_rfl
 
 @[simp]
-theorem copy_copy {u v u' v' u'' v''} (p : G.Walk u v) (hu : u = u') (hv : v = v') (hu' : u' = u'')
-    (hv' : v' = v'') : (p.copy hu hv).copy hu' hv' = p.copy (hu.trans hu') (hv.trans hv') := by
+theorem copy_copy {u v u' v' u'' v''} (p : G.Walk u v)
+    (hu : u = u') (hv : v = v') (hu' : u' = u'') (hv' : v' = v'') :
+    (p.copy hu hv).copy hu' hv' = p.copy (hu.trans hu') (hv.trans hv') := by
   subst_vars
   rfl
 #align simple_graph.walk.copy_copy SimpleGraph.Walk.copy_copy
@@ -156,81 +153,78 @@ theorem copy_nil {u u'} (hu : u = u') : (Walk.nil : G.Walk u u).copy hu hu = Wal
 #align simple_graph.walk.copy_nil SimpleGraph.Walk.copy_nil
 
 theorem copy_cons {u v w u' w'} (h : G.Adj u v) (p : G.Walk v w) (hu : u = u') (hw : w = w') :
-    (Walk.cons h p).copy hu hw = Walk.cons (by rwa [← hu]) (p.copy rfl hw) := by
+    (Walk.cons h p).copy hu hw = Walk.cons (hu ▸ h) (p.copy rfl hw) := by
   subst_vars
   rfl
 #align simple_graph.walk.copy_cons SimpleGraph.Walk.copy_cons
 
 @[simp]
 theorem cons_copy {u v w v' w'} (h : G.Adj u v) (p : G.Walk v' w') (hv : v' = v) (hw : w' = w) :
-    Walk.cons h (p.copy hv hw) = (Walk.cons (by rwa [hv]) p).copy rfl hw := by
+    Walk.cons h (p.copy hv hw) = (Walk.cons (hv ▸ h) p).copy rfl hw := by
   subst_vars
   rfl
 #align simple_graph.walk.cons_copy SimpleGraph.Walk.cons_copy
 
-theorem exists_eq_cons_of_ne :
-    ∀ {u v : V} (hne : u ≠ v) (p : G.Walk u v),
-      ∃ (w : V)(h : G.Adj u w)(p' : G.Walk w v), p = cons h p'
-  | _, _, hne, nil => (hne rfl).elim
-  | _, _, _, cons h p' => ⟨_, h, p', rfl⟩
+theorem exists_eq_cons_of_ne {u v : V} (hne : u ≠ v) :
+    ∀ (p : G.Walk u v), ∃ (w : V)(h : G.Adj u w)(p' : G.Walk w v), p = cons h p'
+  | nil => (hne rfl).elim
+  | cons h p' => ⟨_, h, p', rfl⟩
 #align simple_graph.walk.exists_eq_cons_of_ne SimpleGraph.Walk.exists_eq_cons_of_ne
 
 /-- The length of a walk is the number of edges/darts along it. -/
-def length : ∀ {u v : V}, G.Walk u v → ℕ
-  | _, _, nil => 0
-  | _, _, cons _ q => q.length.succ
+def length {u v : V} : G.Walk u v → ℕ
+  | nil => 0
+  | cons _ q => q.length.succ
 #align simple_graph.walk.length SimpleGraph.Walk.length
 
 /-- The concatenation of two compatible walks. -/
 @[trans]
-def append : ∀ {u v w : V}, G.Walk u v → G.Walk v w → G.Walk u w
-  | _, _, _, nil, q => q
-  | _, _, _, cons h p, q => cons h (p.append q)
+def append {u v w : V} : G.Walk u v → G.Walk v w → G.Walk u w
+  | nil, q => q
+  | cons h p, q => cons h (p.append q)
 #align simple_graph.walk.append SimpleGraph.Walk.append
 
 /-- The reversed version of `simple_graph.walk.cons`, concatenating an edge to
 the end of a walk. -/
-def concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) : G.Walk u w :=
-  p.append (cons h nil)
+def concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) : G.Walk u w := p.append (cons h nil)
 #align simple_graph.walk.concat SimpleGraph.Walk.concat
 
 theorem concat_eq_append {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    p.concat h = p.append (cons h nil) :=
-  rfl
+    p.concat h = p.append (cons h nil) := rfl
 #align simple_graph.walk.concat_eq_append SimpleGraph.Walk.concat_eq_append
 
 /-- The concatenation of the reverse of the first walk with the second walk. -/
-protected def reverseAux : ∀ {u v w : V}, G.Walk u v → G.Walk u w → G.Walk v w
-  | _, _, _, nil, q => q
-  | _, _, _, cons h p, q => reverse_aux p (cons (G.symm h) q)
+protected def reverseAux {u v w : V} : G.Walk u v → G.Walk u w → G.Walk v w
+  | nil, q => q
+  | cons h p, q => Walk.reverseAux p (cons (G.symm h) q)
 #align simple_graph.walk.reverse_aux SimpleGraph.Walk.reverseAux
 
 /-- The walk in reverse. -/
 @[symm]
-def reverse {u v : V} (w : G.Walk u v) : G.Walk v u :=
-  w.reverseAux nil
+def reverse {u v : V} (w : G.Walk u v) : G.Walk v u := w.reverseAux nil
 #align simple_graph.walk.reverse SimpleGraph.Walk.reverse
 
 /-- Get the `n`th vertex from a walk, where `n` is generally expected to be
 between `0` and `p.length`, inclusive.
 If `n` is greater than or equal to `p.length`, the result is the path's endpoint. -/
-def getVert : ∀ {u v : V} (p : G.Walk u v) (n : ℕ), V
-  | u, v, nil, _ => u
-  | u, v, cons _ _, 0 => u
-  | u, v, cons _ q, n + 1 => q.getVert n
+def getVert {u v : V} : G.Walk u v → ℕ → V
+  | nil, _ => u
+  | cons _ _, 0 => u
+  | cons _ q, n + 1 => q.getVert n
 #align simple_graph.walk.get_vert SimpleGraph.Walk.getVert
 
 @[simp]
 theorem getVert_zero {u v} (w : G.Walk u v) : w.getVert 0 = u := by cases w <;> rfl
 #align simple_graph.walk.get_vert_zero SimpleGraph.Walk.getVert_zero
 
-theorem getVert_of_length_le {u v} (w : G.Walk u v) {i : ℕ} (hi : w.length ≤ i) : w.getVert i = v :=
-  by
-  induction' w with _ x y z hxy wyz IH generalizing i
-  · rfl
-  · cases i
+theorem getVert_of_length_le {u v} (w : G.Walk u v) {i : ℕ} (hi : w.length ≤ i) :
+    w.getVert i = v := by
+  induction w generalizing i with
+  | nil => rfl
+  | cons _ _ ih =>
+    cases i
     · cases hi
-    · exact IH (Nat.succ_le_succ_iff.1 hi)
+    · exact ih (Nat.succ_le_succ_iff.1 hi)
 #align simple_graph.walk.get_vert_of_length_le SimpleGraph.Walk.getVert_of_length_le
 
 @[simp]
@@ -240,29 +234,29 @@ theorem getVert_length {u v} (w : G.Walk u v) : w.getVert w.length = v :=
 
 theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     G.Adj (w.getVert i) (w.getVert (i + 1)) := by
-  induction' w with _ x y z hxy wyz IH generalizing i
-  · cases hi
-  · cases i
-    · simp [get_vert, hxy]
-    · exact IH (Nat.succ_lt_succ_iff.1 hi)
+  induction w generalizing i with
+  | nil => cases hi
+  | cons hxy _ ih =>
+    cases i
+    · simp [getVert, hxy]
+    · exact ih (Nat.succ_lt_succ_iff.1 hi)
 #align simple_graph.walk.adj_get_vert_succ SimpleGraph.Walk.adj_getVert_succ
 
 @[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
-    (cons h p).append q = cons h (p.append q) :=
-  rfl
+    (cons h p).append q = cons h (p.append q) := rfl
 #align simple_graph.walk.cons_append SimpleGraph.Walk.cons_append
 
 @[simp]
 theorem cons_nil_append {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h nil).append p = cons h p :=
-  rfl
+    (cons h nil).append p = cons h p := rfl
 #align simple_graph.walk.cons_nil_append SimpleGraph.Walk.cons_nil_append
 
 @[simp]
-theorem append_nil : ∀ {u v : V} (p : G.Walk u v), p.append nil = p
-  | _, _, nil => rfl
-  | _, _, cons h p => by rw [cons_append, append_nil]
+theorem append_nil {u v : V} (p : G.Walk u v) : p.append nil = p := by
+  induction p with
+  | nil => rfl
+  | cons _ _ ih => rw [cons_append, ih]
 #align simple_graph.walk.append_nil SimpleGraph.Walk.append_nil
 
 @[simp]
@@ -270,36 +264,33 @@ theorem nil_append {u v : V} (p : G.Walk u v) : nil.append p = p :=
   rfl
 #align simple_graph.walk.nil_append SimpleGraph.Walk.nil_append
 
-theorem append_assoc :
-    ∀ {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (r : G.Walk w x),
-      p.append (q.append r) = (p.append q).append r
-  | _, _, _, _, nil, _, _ => rfl
-  | _, _, _, _, cons h p', q, r => by
+theorem append_assoc {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (r : G.Walk w x) :
+    p.append (q.append r) = (p.append q).append r := by
+  induction p with
+  | nil => rfl
+  | cons h p' ih =>
     dsimp only [append]
-    rw [append_assoc]
+    rw [ih]
 #align simple_graph.walk.append_assoc SimpleGraph.Walk.append_assoc
 
 @[simp]
-theorem append_copy_copy {u v w u' v' w'} (p : G.Walk u v) (q : G.Walk v w) (hu : u = u')
-    (hv : v = v') (hw : w = w') : (p.copy hu hv).append (q.copy hv hw) = (p.append q).copy hu hw :=
-  by
+theorem append_copy_copy {u v w u' v' w'} (p : G.Walk u v) (q : G.Walk v w)
+    (hu : u = u') (hv : v = v') (hw : w = w') :
+    (p.copy hu hv).append (q.copy hv hw) = (p.append q).copy hu hw := by
   subst_vars
   rfl
 #align simple_graph.walk.append_copy_copy SimpleGraph.Walk.append_copy_copy
 
-theorem concat_nil {u v : V} (h : G.Adj u v) : nil.concat h = cons h nil :=
-  rfl
+theorem concat_nil {u v : V} (h : G.Adj u v) : nil.concat h = cons h nil := rfl
 #align simple_graph.walk.concat_nil SimpleGraph.Walk.concat_nil
 
 @[simp]
 theorem concat_cons {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (h' : G.Adj w x) :
-    (cons h p).concat h' = cons h (p.concat h') :=
-  rfl
+    (cons h p).concat h' = cons h (p.concat h') := rfl
 #align simple_graph.walk.concat_cons SimpleGraph.Walk.concat_cons
 
 theorem append_concat {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (h : G.Adj w x) :
-    p.append (q.concat h) = (p.append q).concat h :=
-  append_assoc _ _ _
+    p.append (q.concat h) = (p.append q).concat h := append_assoc _ _ _
 #align simple_graph.walk.append_concat SimpleGraph.Walk.append_concat
 
 theorem concat_append {u v w x : V} (p : G.Walk u v) (h : G.Adj v w) (q : G.Walk w x) :
@@ -308,28 +299,26 @@ theorem concat_append {u v w x : V} (p : G.Walk u v) (h : G.Adj v w) (q : G.Walk
 #align simple_graph.walk.concat_append SimpleGraph.Walk.concat_append
 
 /-- A non-trivial `cons` walk is representable as a `concat` walk. -/
-theorem exists_cons_eq_concat :
-    ∀ {u v w : V} (h : G.Adj u v) (p : G.Walk v w),
-      ∃ (x : V)(q : G.Walk u x)(h' : G.Adj x w), cons h p = q.concat h'
-  | _, _, _, h, nil => ⟨_, nil, h, rfl⟩
-  | _, _, _, h, cons h' p =>
-    by
-    obtain ⟨y, q, h'', hc⟩ := exists_cons_eq_concat h' p
+theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
+    ∃ (x : V)(q : G.Walk u x)(h' : G.Adj x w), cons h p = q.concat h' := by
+  induction p generalizing u with
+  | nil => exact ⟨_, nil, h, rfl⟩
+  | cons h' p ih =>
+    obtain ⟨y, q, h'', hc⟩ := ih h'
     refine' ⟨y, cons h q, h'', _⟩
     rw [concat_cons, hc]
 #align simple_graph.walk.exists_cons_eq_concat SimpleGraph.Walk.exists_cons_eq_concat
 
 /-- A non-trivial `concat` walk is representable as a `cons` walk. -/
-theorem exists_concat_eq_cons :
-    ∀ {u v w : V} (p : G.Walk u v) (h : G.Adj v w),
+theorem exists_concat_eq_cons {u v w : V} :
+    ∀ (p : G.Walk u v) (h : G.Adj v w),
       ∃ (x : V)(h' : G.Adj u x)(q : G.Walk x w), p.concat h = cons h' q
-  | _, _, _, nil, h => ⟨_, h, nil, rfl⟩
-  | _, _, _, cons h' p, h => ⟨_, h', Walk.concat p h, concat_cons _ _ _⟩
+  | nil, h => ⟨_, h, nil, rfl⟩
+  | cons h' p, h => ⟨_, h', Walk.concat p h, concat_cons _ _ _⟩
 #align simple_graph.walk.exists_concat_eq_cons SimpleGraph.Walk.exists_concat_eq_cons
 
 @[simp]
-theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil :=
-  rfl
+theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil := rfl
 #align simple_graph.walk.reverse_nil SimpleGraph.Walk.reverse_nil
 
 theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons (G.symm h) nil :=
@@ -338,24 +327,25 @@ theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = con
 
 @[simp]
 theorem cons_reverseAux {u v w x : V} (p : G.Walk u v) (q : G.Walk w x) (h : G.Adj w u) :
-    (cons h p).reverseAux q = p.reverseAux (cons (G.symm h) q) :=
-  rfl
+    (cons h p).reverseAux q = p.reverseAux (cons (G.symm h) q) := rfl
 #align simple_graph.walk.cons_reverse_aux SimpleGraph.Walk.cons_reverseAux
 
 @[simp]
-protected theorem append_reverseAux :
-    ∀ {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (r : G.Walk u x),
-      (p.append q).reverseAux r = q.reverseAux (p.reverseAux r)
-  | _, _, _, _, nil, _, _ => rfl
-  | _, _, _, _, cons h p', q, r => append_reverse_aux p' q (cons (G.symm h) r)
+protected theorem append_reverseAux {u v w x : V}
+    (p : G.Walk u v) (q : G.Walk v w) (r : G.Walk u x) :
+    (p.append q).reverseAux r = q.reverseAux (p.reverseAux r) := by
+  induction p with
+  | nil => rfl
+  | cons h _ ih => exact ih q (cons (G.symm h) r)
 #align simple_graph.walk.append_reverse_aux SimpleGraph.Walk.append_reverseAux
 
 @[simp]
-protected theorem reverseAux_append :
-    ∀ {u v w x : V} (p : G.Walk u v) (q : G.Walk u w) (r : G.Walk w x),
-      (p.reverseAux q).append r = p.reverseAux (q.append r)
-  | _, _, _, _, nil, _, _ => rfl
-  | _, _, _, _, cons h p', q, r => by simp [reverse_aux_append p' (cons (G.symm h) q) r]
+protected theorem reverseAux_append {u v w x : V}
+    (p : G.Walk u v) (q : G.Walk u w) (r : G.Walk w x) :
+    (p.reverseAux q).append r = p.reverseAux (q.append r) := by
+  induction p with
+  | nil => rfl
+  | cons h _ ih => simp [ih (cons (G.symm h) q)]
 #align simple_graph.walk.reverse_aux_append SimpleGraph.Walk.reverseAux_append
 
 protected theorem reverseAux_eq_reverse_append {u v w : V} (p : G.Walk u v) (q : G.Walk u w) :
@@ -385,20 +375,19 @@ theorem reverse_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
 #align simple_graph.walk.reverse_concat SimpleGraph.Walk.reverse_concat
 
 @[simp]
-theorem reverse_reverse : ∀ {u v : V} (p : G.Walk u v), p.reverse.reverse = p
-  | _, _, nil => rfl
-  | _, _, cons h p => by simp [reverse_reverse]
+theorem reverse_reverse {u v : V} (p : G.Walk u v) : p.reverse.reverse = p := by
+  induction p with
+  | nil => rfl
+  | cons _ _ ih => simp [ih]
 #align simple_graph.walk.reverse_reverse SimpleGraph.Walk.reverse_reverse
 
 @[simp]
-theorem length_nil {u : V} : (nil : G.Walk u u).length = 0 :=
-  rfl
+theorem length_nil {u : V} : (nil : G.Walk u u).length = 0 := rfl
 #align simple_graph.walk.length_nil SimpleGraph.Walk.length_nil
 
 @[simp]
 theorem length_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).length = p.length + 1 :=
-  rfl
+    (cons h p).length = p.length + 1 := rfl
 #align simple_graph.walk.length_cons SimpleGraph.Walk.length_cons
 
 @[simp]
@@ -409,31 +398,32 @@ theorem length_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
 #align simple_graph.walk.length_copy SimpleGraph.Walk.length_copy
 
 @[simp]
-theorem length_append :
-    ∀ {u v w : V} (p : G.Walk u v) (q : G.Walk v w), (p.append q).length = p.length + q.length
-  | _, _, _, nil, _ => by simp
-  | _, _, _, cons _ _, _ => by simp [length_append, add_left_comm, add_comm]
+theorem length_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).length = p.length + q.length := by
+  induction p with
+  | nil => simp
+  | cons _ _ ih => simp [ih, add_comm, add_left_comm, add_assoc]
 #align simple_graph.walk.length_append SimpleGraph.Walk.length_append
 
 @[simp]
 theorem length_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).length = p.length + 1 :=
-  length_append _ _
+    (p.concat h).length = p.length + 1 := length_append _ _
 #align simple_graph.walk.length_concat SimpleGraph.Walk.length_concat
 
 @[simp]
-protected theorem length_reverseAux :
-    ∀ {u v w : V} (p : G.Walk u v) (q : G.Walk u w), (p.reverseAux q).length = p.length + q.length
-  | _, _, _, nil, _ => by simp!
-  | _, _, _, cons _ _, _ => by simp [length_reverse_aux, Nat.add_succ, Nat.succ_add]
+protected theorem length_reverseAux {u v w : V} (p : G.Walk u v) (q : G.Walk u w) :
+    (p.reverseAux q).length = p.length + q.length := by
+  induction p with
+  | nil => simp!
+  | cons _ _ ih => simp [ih, Nat.add_succ, Nat.succ_add]
 #align simple_graph.walk.length_reverse_aux SimpleGraph.Walk.length_reverseAux
 
 @[simp]
 theorem length_reverse {u v : V} (p : G.Walk u v) : p.reverse.length = p.length := by simp [reverse]
 #align simple_graph.walk.length_reverse SimpleGraph.Walk.length_reverse
 
-theorem eq_of_length_eq_zero : ∀ {u v : V} {p : G.Walk u v}, p.length = 0 → u = v
-  | _, _, nil, _ => rfl
+theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → u = v
+  | nil, _ => rfl
 #align simple_graph.walk.eq_of_length_eq_zero SimpleGraph.Walk.eq_of_length_eq_zero
 
 @[simp]
@@ -455,10 +445,9 @@ variable {motive : ∀ u v : V, G.Walk u v → Sort _} (Hnil : ∀ {u : V}, moti
   (Hconcat : ∀ {u v w : V} (p : G.Walk u v) (h : G.Adj v w), motive u v p → motive u w (p.concat h))
 
 /-- Auxiliary definition for `simple_graph.walk.concat_rec` -/
-def concatRecAux : ∀ {u v : V} (p : G.Walk u v), motive v u p.reverse
-  | _, _, nil => Hnil
-  | _, _, cons h p =>
-    Eq.ndrec (Hconcat p.reverse (G.symm h) (concat_rec_aux p)) (reverse_cons h p).symm
+def concatRecAux {u v : V} : (p : G.Walk u v) → motive v u p.reverse
+  | nil => Hnil
+  | cons h p => reverse_cons h p ▸ Hconcat p.reverse h.symm (concatRecAux p)
 #align simple_graph.walk.concat_rec_aux SimpleGraph.Walk.concatRecAux
 
 /-- Recursor on walks by inducting on `simple_graph.walk.concat`.
@@ -467,26 +456,25 @@ This is inducting from the opposite end of the walk compared
 to `simple_graph.walk.rec`, which inducts on `simple_graph.walk.cons`. -/
 @[elab_as_elim]
 def concatRec {u v : V} (p : G.Walk u v) : motive u v p :=
-  Eq.ndrec (concatRecAux (@Hnil) (@Hconcat) p.reverse) (reverse_reverse p)
+  reverse_reverse p ▸ concatRecAux @Hnil @Hconcat p.reverse
 #align simple_graph.walk.concat_rec SimpleGraph.Walk.concatRec
 
 @[simp]
 theorem concatRec_nil (u : V) :
-    @concatRec _ _ motive @Hnil @Hconcat _ _ (nil : G.Walk u u) = Hnil :=
-  rfl
+    @concatRec _ _ motive @Hnil @Hconcat _ _ (nil : G.Walk u u) = Hnil := rfl
 #align simple_graph.walk.concat_rec_nil SimpleGraph.Walk.concatRec_nil
 
 @[simp]
 theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
     @concatRec _ _ motive @Hnil @Hconcat _ _ (p.concat h) =
-      Hconcat p h (concatRec (@Hnil) (@Hconcat) p) := by
-  simp only [concat_rec]
-  apply eq_of_hEq
+      Hconcat p h (concatRec @Hnil @Hconcat p) := by
+  simp only [concatRec]
+  apply eq_of_heq
   apply rec_heq_of_heq
-  trans concat_rec_aux (@Hnil) (@Hconcat) (cons h.symm p.reverse)
+  trans concatRecAux @Hnil @Hconcat (cons h.symm p.reverse)
   · congr
     simp
-  · rw [concat_rec_aux, ndrec_hEq_iff_hEq]
+  · rw [concatRecAux, ndrec_hEq_iff_hEq]
     congr <;> simp [hEq_ndrec_iff_hEq]
 #align simple_graph.walk.concat_rec_concat SimpleGraph.Walk.concatRec_concat
 
@@ -1834,7 +1822,7 @@ theorem toDeleteEdges_copy (s : Set (Sym2 V)) {u v u' v'} (p : G.Walk u v) (hu :
 
 end Walk
 
-/-! ## `reachable` and `connected` -/
+/-! ## `Reachable` and `Connected` -/
 
 
 /-- Two vertices are *reachable* if there is a walk between them.
@@ -2450,4 +2438,3 @@ theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
 end BridgeEdges
 
 end SimpleGraph
-
