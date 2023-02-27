@@ -560,15 +560,15 @@ theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → S
   by subst t; rfl
 
 theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
-  HEq (e ▸ x) y := by subst e; exact h
+    HEq (e ▸ x) y := by subst e; exact h
 #align rec_heq_of_heq rec_heq_of_heq
 
 theorem rec_heq_iff_heq {C : α → Sort _} {x : C a} {y : β} {e : a = b} :
-  HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
+    HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
 #align rec_heq_iff_heq rec_heq_iff_heq
 
 theorem heq_rec_iff_heq {C : α → Sort _} {x : β} {y : C a} {e : a = b} :
-  HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
+    HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 #align heq_rec_iff_heq heq_rec_iff_heq
 
 protected theorem Eq.congr (h₁ : x₁ = y₁) (h₂ : x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
