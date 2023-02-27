@@ -12,6 +12,7 @@ import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Order.Antichain
+import Mathlib.Tactic.LibrarySearch -- porting notes: TODO REMOVE
 
 /-!
 # Graph Coloring
@@ -117,9 +118,9 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
 
 -- porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
 theorem Coloring.card_colorClasses_le [Fintype α] [Fintype (Setoid.classes (Setoid.ker C))]
-    [Fintype ↑C.colorClasses] : Fintype.card C.colorClasses ≤ Fintype.card α := by
+    [Fintype C.colorClasses] : Fintype.card C.colorClasses ≤ Fintype.card α := by
   simp [colorClasses]
-  exact @Setoid.card_classes_ker_le _ _ _ C _
+  exact Setoid.card_classes_ker_le C
 #align simple_graph.coloring.card_color_classes_le SimpleGraph.Coloring.card_colorClasses_le
 
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
