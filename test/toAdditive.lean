@@ -189,6 +189,12 @@ instance : One (myFin n) := ⟨(1 : ℕ)⟩
 @[to_additive bar]
 def myFin.foo : myFin (n+1) := 1
 
+/-- We can pattern-match with `1`, which creates a term with a pure nat literal. See #2046 -/
+@[to_additive]
+def mul_foo {α} [Monoid α] (a : α) : ℕ → α
+| 0 => 1
+| 1 => 1
+| (_ + 2) => a
 
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
