@@ -74,8 +74,6 @@ def upperSetTopology : TopologicalSpace α :=
   isOpen_inter := fun _ _ => IsUpperSet.inter,
   isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
 
-
-
 lemma directed_on_pair (a b : α) (hab: a ≤ b) : DirectedOn (· ≤ ·) ({a, b} : Set α) :=
   (pair_isChain _ _ hab).directedOn
 
