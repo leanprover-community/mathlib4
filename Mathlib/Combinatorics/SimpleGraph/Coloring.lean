@@ -392,7 +392,8 @@ theorem chromaticNumber_top_eq_zero_of_infinite (V : Type _) [Infinite V] :
   replace hc := pos_iff_ne_zero.mpr hc
   apply Nat.not_succ_le_self n
   convert_to (⊤ : SimpleGraph { m | m < n + 1 }).chromaticNumber ≤ _
-  · simp
+  · rw [SimpleGraph.chromaticNumber_top, Fintype.card_ofFinset,
+        Finset.card_range, Nat.succ_eq_add_one]
   refine' (colorable_of_chromaticNumber_pos hc).chromaticNumber_mono_of_embedding _
   apply Embedding.completeGraph
   exact (Function.Embedding.subtype _).trans (Infinite.natEmbedding V)
