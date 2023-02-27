@@ -160,11 +160,9 @@ theorem continuousOn_fract [TopologicalAddGroup α] (n : ℤ) :
 #align continuous_on_fract continuousOn_fract
 
 theorem continuousAt_fract [OrderClosedTopology α] [TopologicalAddGroup α]
-    {x : α} (h : fract x ≠ 0) : ContinuousAt fract x := by
-  refine (continuousOn_fract ⌊x⌋).continuousAt <| Ico_mem_nhds ?_ (lt_floor_add_one _)
-  refine (floor_le _).lt_of_ne fun h' => ?_
-  rw [← h', fract_intCast] at h
-  exact h rfl
+    {x : α} (h : x ≠ ⌊x⌋) : ContinuousAt fract x :=
+  (continuousOn_fract ⌊x⌋).continuousAt <|
+    Ico_mem_nhds ((floor_le _).lt_of_ne h.symm) (lt_floor_add_one _)
 
 theorem tendsto_fract_left' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝 1) := by
@@ -200,43 +198,20 @@ theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncur
   change Continuous (uncurry f ∘ Prod.map id fract)
   rw [continuous_iff_continuousAt]
   rintro ⟨s, t⟩
-  cases' eq_or_ne (fract t) 0 with ht₀ ht₀
-  · 
-  by_cases ht : t = floor t
-  · rw [ht]
-    rw [← continuousWithinAt_univ]
-    have : (univ : Set (β × α)) ⊆ univ ×ˢ Iio ↑⌊t⌋ ∪ univ ×ˢ Ici ↑⌊t⌋ :=
-      by
-      rintro p -
-      rw [← prod_union]
-      exact ⟨trivial, lt_or_le p.2 _⟩
-    refine' ContinuousWithinAt.mono _ this
-    refine' ContinuousWithinAt.union _ _
-    · simp only [ContinuousWithinAt, fract_intCast, nhdsWithin_prod_eq, nhdsWithin_univ, id.def,
-        comp_apply, Prod.map_mk]
-      have : (uncurry f) (s, 0) = (uncurry f) (s, (1 : α)) := by simp [uncurry, hf]
-      rw [this]
-      refine' (h _ ⟨⟨⟩, by exact_mod_cast right_mem_Icc.2 (zero_le_one' α)⟩).Tendsto.comp _
-      rw [nhdsWithin_prod_eq, nhdsWithin_univ]
-      rw [nhdsWithin_Icc_eq_nhdsWithin_Iic (zero_lt_one' α)]
-      exact
-        tendsto_id.prod_map
-          (tendsto_nhdsWithin_mono_right Iio_subset_Iic_self <| tendsto_fract_left _)
-    · simp only [ContinuousWithinAt, fract_int_cast, nhdsWithin_prod_eq, nhdsWithin_univ, id.def,
-        comp_app, Prod.map_mk]
-      refine' (h _ ⟨⟨⟩, by exact_mod_cast left_mem_Icc.2 (zero_le_one' α)⟩).Tendsto.comp _
-      rw [nhdsWithin_prod_eq, nhdsWithin_univ, nhdsWithin_Icc_eq_nhdsWithin_Ici (zero_lt_one' α)]
-      exact tendsto_id.prod_map (tendsto_fract_right _)
-  · have : t ∈ Ioo (floor t : α) ((floor t : α) + 1) :=
-      ⟨lt_of_le_of_ne (floor_le t) (Ne.symm ht), lt_floor_add_one _⟩
-    apply (h ((Prod.map _ fract) _) ⟨trivial, ⟨fract_nonneg _, (fract_lt_one _).le⟩⟩).tendsto.comp
-    simp only [nhds_prod_eq, nhdsWithin_prod_eq, nhdsWithin_univ, id.def, Prod.map_mk]
-    exact continuousAt_id.tendsto.prod_map
-        (tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
-          (((continuousOn_fract _ _ (Ioo_subset_Ico_self this)).mono
-                Ioo_subset_Ico_self).ContinuousAt
-            (Ioo_mem_nhds this.1 this.2))
-          (eventually_of_forall fun x => ⟨fract_nonneg _, (fract_lt_one _).le⟩))
+  rcases em (∃ n : ℤ, t = n) with (⟨n, rfl⟩ | ht)
+  · rw [ContinuousAt, nhds_prod_eq, ← nhds_left'_sup_nhds_right (n : α), prod_sup, tendsto_sup]
+    constructor
+    · refine (((h (s, 1) ⟨trivial, zero_le_one, le_rfl⟩).tendsto.mono_left ?_).comp
+        (tendsto_id.prod_map (tendsto_fract_left _))).mono_right (le_of_eq ?_)
+      · rw [nhdsWithin_prod_eq, nhdsWithin_univ, ← nhdsWithin_Ico_eq_nhdsWithin_Iio one_pos]
+        exact Filter.prod_mono le_rfl (nhdsWithin_mono _ Ico_subset_Icc_self)
+      · simp [hf]
+    · refine (((h (s, 0) ⟨trivial, le_rfl, zero_le_one⟩).tendsto.mono_left <| le_of_eq ?_).comp
+        (tendsto_id.prod_map (tendsto_fract_right _))).mono_right (le_of_eq ?_) <;>
+        simp [nhdsWithin_prod_eq, nhdsWithin_univ]
+  · replace ht : t ≠ ⌊t⌋ := fun ht' => ht ⟨_, ht'⟩
+    refine (h.continuousAt ?_).comp (continuousAt_id.prod_map (continuousAt_fract ht))
+    exact prod_mem_nhds univ_mem (Icc_mem_nhds (fract_pos.2 ht) (fract_lt_one _))
 #align continuous_on.comp_fract' ContinuousOn.comp_fract'
 
 theorem ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}
