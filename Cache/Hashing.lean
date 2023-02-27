@@ -36,7 +36,7 @@ def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath)
     else throw $ IO.userError s!"No match for {filePath}"
   return hashMap
 
-/-- Gets the file paths to Mathlib files imported on a Lean source -/
+/-- Gets the file paths to files imported on a Lean source -/
 def getFileImports (source : String) (pkgDirs : PkgDirs) : Array FilePath :=
   let s := Lean.ParseImports.main source (Lean.ParseImports.whitespace source {})
   let imps := s.imports.map (·.module.components |> .map toString)
@@ -68,7 +68,7 @@ Computes the hash of a file, which mixes:
 * The root hash
 * The hash of its relative path (inside its package directory)
 * The hash of its content
-* The hashes of the imported files that are part of `Mathlib`
+* The hashes of the imported files that mapped `pkgDirs` in the config file
 -/
 partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
   let stt ← get
