@@ -62,19 +62,19 @@ variable {α} {β}
 
 variable [Preorder α] [Preorder β]
 
-lemma is_upper_set_iff_forall_le  {s : Set α} : IsUpperSet s ↔ ∀ ⦃a b : α⦄, a ≤ b →
+lemma isUpperSet_iff_forall_le  {s : Set α} : IsUpperSet s ↔ ∀ ⦃a b : α⦄, a ≤ b →
   a ∈ s → b ∈ s := Iff.rfl
 
 /--
 The set of upper sets forms a topology
 -/
-def upper_set_topology : TopologicalSpace α :=
+def upperSetTopology : TopologicalSpace α :=
 { IsOpen := IsUpperSet,
   isOpen_univ := isUpperSet_univ,
   isOpen_inter := fun _ _ => IsUpperSet.inter,
   isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
 
-lemma pair_is_chain (a b : α) (hab: a ≤ b) : IsChain (· ≤ ·) ({a, b} : Set α) := by
+lemma pair_isChain (a b : α) (hab: a ≤ b) : IsChain (· ≤ ·) ({a, b} : Set α) := by
   apply IsChain.insert (Set.Subsingleton.isChain subsingleton_singleton)
   intros c h₁ h₂
   rw [mem_singleton_iff] at h₁
@@ -82,18 +82,18 @@ lemma pair_is_chain (a b : α) (hab: a ≤ b) : IsChain (· ≤ ·) ({a, b} : Se
   exact Or.inl hab
 
 lemma directed_on_pair (a b : α) (hab: a ≤ b) : DirectedOn (· ≤ ·) ({a, b} : Set α) :=
-  (pair_is_chain _ _ hab).directedOn
+  (pair_isChain _ _ hab).directedOn
 
 /--
 A function which preserves lub on directed sets
 -/
-def preserve_lub_on_directed (f : α → β) := ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·)
+def preserve_LUB_on_directed (f : α → β) := ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·)
   d → IsLUB d a → IsLUB (f '' d) (f a)
 
-lemma preserve_lub_on_directed_montotone (f : α → β) (h: preserve_lub_on_directed f) :
+lemma preserve_LUB_on_directed_montotone (f : α → β) (h: preserve_LUB_on_directed f) :
   Monotone f := by
   intro a b hab
-  rw [preserve_lub_on_directed] at h
+  rw [preserve_LUB_on_directed] at h
   let d := ({a, b} : Set α)
   have e1: IsLUB (f '' d) (f b) := by
     apply h
@@ -157,7 +157,7 @@ variable [Preorder α] [Preorder β]
 instance : Preorder (WithScottTopology α) := ‹Preorder α›
 
 instance : TopologicalSpace (WithScottTopology α) :=
-  (upper_set_topology ⊔
+  (upperSetTopology ⊔
     { IsOpen := fun u => ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d a →
       a ∈ u → ∃ b ∈ d, (Ici b) ∩ d ⊆ u,
       isOpen_univ := by
@@ -297,7 +297,7 @@ lemma continuous_monotone {f : WithScottTopology α → WithScottTopology β}
   { rw [isOpen_compl_iff, ← closure_singleton]
     exact isClosed_closure }
   have s2 :  IsOpen (f⁻¹'  u) := IsOpen.preimage hf s1
-  have u3 : b ∈ (f⁻¹'  u) := is_upper_set_iff_forall_le.mp s2.1 hab u2
+  have u3 : b ∈ (f⁻¹'  u) := isUpperSet_iff_forall_le.mp s2.1 hab u2
   have c1 : f b ∈ (Iic (f b))ᶜ := by
     simp only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true] at u3
   simp only [mem_compl_iff, mem_Iic, le_refl, not_true] at c1
@@ -306,7 +306,7 @@ end WithScottTopology
 
 lemma preserve_LUB_on_directed_iff_scott_continuity
   (f : (WithScottTopology α) → (WithScottTopology β)) :
-  preserve_lub_on_directed f ↔ Continuous f := by
+  preserve_LUB_on_directed f ↔ Continuous f := by
   constructor
   . intro h
     rw [continuous_def]
@@ -314,7 +314,7 @@ lemma preserve_LUB_on_directed_iff_scott_continuity
     rw [WithScottTopology.isOpen_iff_upper_and_LUB_mem_implies_inter_nonempty]
     constructor
     . apply IsUpperSet.preimage (WithScottTopology.isOpen_isUpper hu)
-      apply preserve_lub_on_directed_montotone
+      apply preserve_LUB_on_directed_montotone
       exact h
     . intros d a hd₁ hd₂ hd₃ ha
       have e1: IsLUB (f '' d) (f a) := by
@@ -327,7 +327,7 @@ lemma preserve_LUB_on_directed_iff_scott_continuity
         apply hu.2
         exact Nonempty.image f hd₁
         have e3: Monotone f := by
-          apply preserve_lub_on_directed_montotone
+          apply preserve_LUB_on_directed_montotone
           exact h
         apply directedOn_image.mpr
         apply DirectedOn.mono hd₂
