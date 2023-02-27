@@ -26,101 +26,100 @@ namespace ENat
 
 variable {m n : ℕ∞}
 
-instance hasCoeEnnreal : CoeTC ℕ∞ ℝ≥0∞ :=
-  ⟨WithTop.map coe⟩
-#align enat.has_coe_ennreal ENat.hasCoeEnnreal
+/-- Coercion from `ℕ∞` to `ℝ≥0∞`. -/
+@[coe] def toENNReal : ℕ∞ → ℝ≥0∞ := WithTop.map Nat.cast
+
+instance hasCoeENNReal : CoeTC ℕ∞ ℝ≥0∞ := ⟨toENNReal⟩
+#align enat.has_coe_ennreal ENat.hasCoeENNReal
 
 @[simp]
-theorem map_coe_nNReal : WithTop.map (coe : ℕ → ℝ≥0) = (coe : ℕ∞ → ℝ≥0∞) :=
+theorem map_coe_nnreal : WithTop.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ → ℝ≥0∞) :=
   rfl
-#align enat.map_coe_nnreal ENat.map_coe_nNReal
+#align enat.map_coe_nnreal ENat.map_coe_nnreal
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as an `order_embedding`. -/
-@[simps (config := { fullyApplied := false })]
-def toEnnrealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
-  Nat.castOrderEmbedding.withTop_map
-#align enat.to_ennreal_order_embedding ENat.toEnnrealOrderEmbedding
+@[simps! (config := { fullyApplied := false })]
+def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
+  Nat.castOrderEmbedding.withTopMap
+#align enat.to_ennreal_order_embedding ENat.toENNRealOrderEmbedding
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as a ring homomorphism. -/
-@[simps (config := { fullyApplied := false })]
-def toEnnrealRingHom : ℕ∞ →+* ℝ≥0∞ :=
-  (Nat.castRingHom ℝ≥0).withTop_map Nat.cast_injective
-#align enat.to_ennreal_ring_hom ENat.toEnnrealRingHom
+@[simps! (config := { fullyApplied := false })]
+def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
+  .withTopMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
+#align enat.to_ennreal_ring_hom ENat.toENNRealRingHom
 
 @[simp, norm_cast]
-theorem coe_eNNReal_top : ((⊤ : ℕ∞) : ℝ≥0∞) = ⊤ :=
+theorem coe_ennreal_top : ((⊤ : ℕ∞) : ℝ≥0∞) = ⊤ :=
   rfl
-#align enat.coe_ennreal_top ENat.coe_eNNReal_top
+#align enat.coe_ennreal_top ENat.coe_ennreal_top
 
 @[simp, norm_cast]
-theorem coe_eNNReal_coe (n : ℕ) : ((n : ℕ∞) : ℝ≥0∞) = n :=
+theorem coe_ennreal_coe (n : ℕ) : ((n : ℕ∞) : ℝ≥0∞) = n :=
   rfl
-#align enat.coe_ennreal_coe ENat.coe_eNNReal_coe
+#align enat.coe_ennreal_coe ENat.coe_ennreal_coe
 
 @[simp, norm_cast]
-theorem coe_eNNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
-  toEnnrealOrderEmbedding.le_iff_le
-#align enat.coe_ennreal_le ENat.coe_eNNReal_le
+theorem coe_ennreal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℕ∞) : ℝ≥0∞) = OfNat.ofNat n :=
+  rfl
 
 @[simp, norm_cast]
-theorem coe_eNNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
-  toEnnrealOrderEmbedding.lt_iff_lt
-#align enat.coe_ennreal_lt ENat.coe_eNNReal_lt
+theorem coe_ennreal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
+  toENNRealOrderEmbedding.le_iff_le
+#align enat.coe_ennreal_le ENat.coe_ennreal_le
+
+@[simp, norm_cast]
+theorem coe_ennreal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
+  toENNRealOrderEmbedding.lt_iff_lt
+#align enat.coe_ennreal_lt ENat.coe_ennreal_lt
 
 @[mono]
-theorem coe_eNNReal_mono : Monotone (coe : ℕ∞ → ℝ≥0∞) :=
-  toEnnrealOrderEmbedding.Monotone
-#align enat.coe_ennreal_mono ENat.coe_eNNReal_mono
+theorem coe_ennreal_mono : Monotone ((↑) : ℕ∞ → ℝ≥0∞) :=
+  toENNRealOrderEmbedding.monotone
+#align enat.coe_ennreal_mono ENat.coe_ennreal_mono
 
 @[mono]
-theorem coe_eNNReal_strictMono : StrictMono (coe : ℕ∞ → ℝ≥0∞) :=
-  toEnnrealOrderEmbedding.StrictMono
-#align enat.coe_ennreal_strict_mono ENat.coe_eNNReal_strictMono
+theorem coe_ennreal_strictMono : StrictMono ((↑) : ℕ∞ → ℝ≥0∞) :=
+  toENNRealOrderEmbedding.strictMono
+#align enat.coe_ennreal_strict_mono ENat.coe_ennreal_strictMono
 
 @[simp, norm_cast]
-theorem coe_eNNReal_zero : ((0 : ℕ∞) : ℝ≥0∞) = 0 :=
-  map_zero toEnnrealRingHom
-#align enat.coe_ennreal_zero ENat.coe_eNNReal_zero
+theorem coe_ennreal_zero : ((0 : ℕ∞) : ℝ≥0∞) = 0 :=
+  map_zero toENNRealRingHom
+#align enat.coe_ennreal_zero ENat.coe_ennreal_zero
 
 @[simp]
-theorem coe_eNNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=
-  map_add toEnnrealRingHom m n
-#align enat.coe_ennreal_add ENat.coe_eNNReal_add
+theorem coe_ennreal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=
+  map_add toENNRealRingHom m n
+#align enat.coe_ennreal_add ENat.coe_ennreal_add
 
 @[simp]
-theorem coe_eNNReal_one : ((1 : ℕ∞) : ℝ≥0∞) = 1 :=
-  map_one toEnnrealRingHom
-#align enat.coe_ennreal_one ENat.coe_eNNReal_one
+theorem coe_ennreal_one : ((1 : ℕ∞) : ℝ≥0∞) = 1 :=
+  map_one toENNRealRingHom
+#align enat.coe_ennreal_one ENat.coe_ennreal_one
+
+#noalign enat.coe_ennreal_bit0
+#noalign enat.coe_ennreal_bit1
 
 @[simp]
-theorem coe_eNNReal_bit0 (n : ℕ∞) : ↑(bit0 n) = bit0 (n : ℝ≥0∞) :=
-  coe_eNNReal_add n n
-#align enat.coe_ennreal_bit0 ENat.coe_eNNReal_bit0
+theorem coe_ennreal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=
+  map_mul toENNRealRingHom m n
+#align enat.coe_ennreal_mul ENat.coe_ennreal_mul
 
 @[simp]
-theorem coe_eNNReal_bit1 (n : ℕ∞) : ↑(bit1 n) = bit1 (n : ℝ≥0∞) :=
-  map_bit1 toEnnrealRingHom n
-#align enat.coe_ennreal_bit1 ENat.coe_eNNReal_bit1
+theorem coe_ennreal_min (m n : ℕ∞) : ↑(min m n) = (min m n : ℝ≥0∞) :=
+  coe_ennreal_mono.map_min
+#align enat.coe_ennreal_min ENat.coe_ennreal_min
 
 @[simp]
-theorem coe_eNNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=
-  map_mul toEnnrealRingHom m n
-#align enat.coe_ennreal_mul ENat.coe_eNNReal_mul
+theorem coe_ennreal_max (m n : ℕ∞) : ↑(max m n) = (max m n : ℝ≥0∞) :=
+  coe_ennreal_mono.map_max
+#align enat.coe_ennreal_max ENat.coe_ennreal_max
 
 @[simp]
-theorem coe_eNNReal_min (m n : ℕ∞) : ↑(min m n) = (min m n : ℝ≥0∞) :=
-  coe_eNNReal_mono.map_min
-#align enat.coe_ennreal_min ENat.coe_eNNReal_min
-
-@[simp]
-theorem coe_eNNReal_max (m n : ℕ∞) : ↑(max m n) = (max m n : ℝ≥0∞) :=
-  coe_eNNReal_mono.map_max
-#align enat.coe_ennreal_max ENat.coe_eNNReal_max
-
-@[simp]
-theorem coe_eNNReal_sub (m n : ℕ∞) : ↑(m - n) = (m - n : ℝ≥0∞) :=
+theorem coe_ennreal_sub (m n : ℕ∞) : ↑(m - n) = (m - n : ℝ≥0∞) :=
   WithTop.map_sub Nat.cast_tsub Nat.cast_zero m n
-#align enat.coe_ennreal_sub ENat.coe_eNNReal_sub
+#align enat.coe_ennreal_sub ENat.coe_ennreal_sub
 
 end ENat
 
