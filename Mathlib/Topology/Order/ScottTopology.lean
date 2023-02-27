@@ -77,12 +77,6 @@ def upperSetTopology : TopologicalSpace α :=
 lemma directed_on_pair (a b : α) (hab: a ≤ b) : DirectedOn (· ≤ ·) ({a, b} : Set α) :=
   (pair_isChain _ _ hab).directedOn
 
-/--
-A function which preserves lub on directed sets
--/
-def preserve_LUB_on_directed (f : α → β) := ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·)
-  d → IsLUB d a → IsLUB (f '' d) (f a)
-
 lemma preserve_LUB_on_directed_montotone (f : α → β) (h: preserve_LUB_on_directed f) :
   Monotone f := by
   intro a b hab
