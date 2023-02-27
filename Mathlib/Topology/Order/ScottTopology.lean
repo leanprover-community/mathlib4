@@ -74,12 +74,7 @@ def upperSetTopology : TopologicalSpace α :=
   isOpen_inter := fun _ _ => IsUpperSet.inter,
   isOpen_unionₛ := fun _ h => isUpperSet_unionₛ h, }
 
-lemma pair_isChain (a b : α) (hab: a ≤ b) : IsChain (· ≤ ·) ({a, b} : Set α) := by
-  apply IsChain.insert (Set.Subsingleton.isChain subsingleton_singleton)
-  intros c h₁ h₂
-  rw [mem_singleton_iff] at h₁
-  rw [h₁]
-  exact Or.inl hab
+
 
 lemma directed_on_pair (a b : α) (hab: a ≤ b) : DirectedOn (· ≤ ·) ({a, b} : Set α) :=
   (pair_isChain _ _ hab).directedOn

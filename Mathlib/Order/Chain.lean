@@ -351,6 +351,13 @@ section Preorder
 
 variable [Preorder α] {a b : α}
 
+lemma pair_isChain (a b : α) (hab: a ≤ b) : IsChain (· ≤ ·) ({a, b} : Set α) := by
+  apply IsChain.insert (Set.Subsingleton.isChain subsingleton_singleton)
+  intros c h₁ h₂
+  rw [mem_singleton_iff] at h₁
+  rw [h₁]
+  exact Or.inl hab
+
 protected theorem le_or_le (s : Flag α) (ha : a ∈ s) (hb : b ∈ s) : a ≤ b ∨ b ≤ a :=
   s.chain_le.total ha hb
 #align flag.le_or_le Flag.le_or_le
