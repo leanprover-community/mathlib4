@@ -24,22 +24,22 @@ a complete graph, whose vertices represent the colors.
 
 ## Main definitions
 
-* `G.coloring α` is the type of `α`-colorings of a simple graph `G`,
+* `G.Coloring α` is the type of `α`-colorings of a simple graph `G`,
   with `α` being the set of available colors. The type is defined to
   be homomorphisms from `G` into the complete graph on `α`, and
   colorings have a coercion to `V → α`.
 
-* `G.colorable n` is the proposition that `G` is `n`-colorable, which
+* `G.Colorable n` is the proposition that `G` is `n`-colorable, which
   is whether there exists a coloring with at most *n* colors.
 
-* `G.chromatic_number` is the minimal `n` such that `G` is
+* `G.chromaticNumber` is the minimal `n` such that `G` is
   `n`-colorable, or `0` if it cannot be colored with finitely many
   colors.
 
-* `C.color_class c` is the set of vertices colored by `c : α` in the
-  coloring `C : G.coloring α`.
+* `C.colorClass c` is the set of vertices colored by `c : α` in the
+  coloring `C : G.Coloring α`.
 
-* `C.color_classes` is the set containing all color classes.
+* `C.colorClasses` is the set containing all color classes.
 
 ## Todo:
 
@@ -53,7 +53,7 @@ a complete graph, whose vertices represent the colors.
 
   * Chromatic polynomials
 
-  * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.coloring α`)
+  * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
 
