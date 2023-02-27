@@ -256,8 +256,8 @@ theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
 /--
 A function which preserves lub on directed sets
 -/
-def preserve_LUB_on_directed (f : α → β) := ∀ (d : Set α) (a : α), d.Nonempty → DirectedOn (· ≤ ·)
-  d → IsLUB d a → IsLUB (f '' d) (f a)
+def preserve_LUB_on_directed [Preorder β] (f : α → β) := ∀ (d : Set α) (a : α), d.Nonempty →
+DirectedOn (· ≤ ·) d → IsLUB d a → IsLUB (f '' d) (f a)
 
 variable (β) [PartialOrder β]
 
