@@ -67,8 +67,7 @@ variable {V : Type u} (G : SimpleGraph V)
 /-- An `α`-coloring of a simple graph `G` is a homomorphism of `G` into the complete graph on `α`.
 This is also known as a proper coloring.
 -/
-abbrev Coloring (α : Type v) :=
-  G →g (⊤ : SimpleGraph α)
+abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
 #align simple_graph.coloring SimpleGraph.Coloring
 
 variable {G} {α : Type v} (C : G.Coloring α)
@@ -91,17 +90,14 @@ def Coloring.mk (color : V → α) (valid : ∀ {v w : V}, G.Adj v w → color v
 
 /-- The color class of a given color.
 -/
-def Coloring.colorClass (c : α) : Set V :=
-  { v : V | C v = c }
+def Coloring.colorClass (c : α) : Set V := { v : V | C v = c }
 #align simple_graph.coloring.color_class SimpleGraph.Coloring.colorClass
 
 /-- The set containing all color classes. -/
-def Coloring.colorClasses : Set (Set V) :=
-  (Setoid.ker C).classes
+def Coloring.colorClasses : Set (Set V) := (Setoid.ker C).classes
 #align simple_graph.coloring.color_classes SimpleGraph.Coloring.colorClasses
 
-theorem Coloring.mem_colorClass (v : V) : v ∈ C.colorClass (C v) :=
-  rfl
+theorem Coloring.mem_colorClass (v : V) : v ∈ C.colorClass (C v) := rfl
 #align simple_graph.coloring.mem_color_class SimpleGraph.Coloring.mem_colorClass
 
 theorem Coloring.colorClasses_isPartition : Setoid.IsPartition C.colorClasses :=
@@ -120,7 +116,9 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
 theorem Coloring.card_colorClasses_le [Fintype α] [Fintype (Setoid.classes (Setoid.ker C))]
     [Fintype C.colorClasses] : Fintype.card C.colorClasses ≤ Fintype.card α := by
   simp [colorClasses]
-  exact Setoid.card_classes_ker_le C
+  convert Setoid.card_classes_ker_le C
+  -- porting note: convert would have handled this already in Lean 3:
+  apply Subsingleton.elim
 #align simple_graph.coloring.card_color_classes_le SimpleGraph.Coloring.card_colorClasses_le
 
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
@@ -134,19 +132,18 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   classical
-    change Fintype (RelHom G.Adj (⊤ : SimpleGraph α).Adj)
-    apply Fintype.ofInjective _ RelHom.coe_fn_injective
+  change Fintype (RelHom G.Adj (⊤ : SimpleGraph α).Adj)
+  apply Fintype.ofInjective _ RelHom.coe_fn_injective
 
 variable (G)
 
 /-- Whether a graph can be colored by at most `n` colors. -/
-def Colorable (n : ℕ) : Prop :=
-  Nonempty (G.Coloring (Fin n))
+def Colorable (n : ℕ) : Prop := Nonempty (G.Coloring (Fin n))
 #align simple_graph.colorable SimpleGraph.Colorable
 
 /-- The coloring of an empty graph. -/
 def coloringOfIsEmpty [IsEmpty V] : G.Coloring α :=
-  Coloring.mk isEmptyElim fun v => isEmptyElim
+  Coloring.mk isEmptyElim fun {v} => isEmptyElim v
 #align simple_graph.coloring_of_is_empty SimpleGraph.coloringOfIsEmpty
 
 theorem colorable_of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n :=
@@ -161,8 +158,7 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
 #align simple_graph.is_empty_of_colorable_zero SimpleGraph.isEmpty_of_colorable_zero
 
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
-def selfColoring : G.Coloring V :=
-  Coloring.mk id fun {_ _} => G.ne_of_adj
+def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
 #align simple_graph.self_coloring SimpleGraph.selfColoring
 
 /-- The chromatic number of a graph is the minimal number of colors needed to color it.
@@ -172,12 +168,9 @@ noncomputable def chromaticNumber : ℕ :=
 #align simple_graph.chromatic_number SimpleGraph.chromaticNumber
 
 /-- Given an embedding, there is an induced embedding of colorings. -/
-def recolorOfEmbedding {α β : Type _} (f : α ↪ β) : G.Coloring α ↪ G.Coloring β
-    where
+def recolorOfEmbedding {α β : Type _} (f : α ↪ β) : G.Coloring α ↪ G.Coloring β where
   toFun C := (Embedding.completeGraph f).toHom.comp C
-  inj' :=
-    by
-    -- this was strangely painful; seems like missing lemmas about embeddings
+  inj' := by -- this was strangely painful; seems like missing lemmas about embeddings
     intro C C' h
     dsimp only at h
     ext v
@@ -188,8 +181,7 @@ def recolorOfEmbedding {α β : Type _} (f : α ↪ β) : G.Coloring α ↪ G.Co
 #align simple_graph.recolor_of_embedding SimpleGraph.recolorOfEmbedding
 
 /-- Given an equivalence, there is an induced equivalence between colorings. -/
-def recolorOfEquiv {α β : Type _} (f : α ≃ β) : G.Coloring α ≃ G.Coloring β
-    where
+def recolorOfEquiv {α β : Type _} (f : α ≃ β) : G.Coloring α ≃ G.Coloring β where
   toFun := G.recolorOfEmbedding f.toEmbedding
   invFun := G.recolorOfEmbedding f.symm.toEmbedding
   left_inv C := by
@@ -273,6 +265,7 @@ theorem chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
 #align simple_graph.chromatic_number_le_card SimpleGraph.chromaticNumber_le_card
 
 theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) : G.Colorable G.chromaticNumber := by
+  classical
   dsimp only [chromaticNumber]
   rw [Nat.infₛ_def]
   apply Nat.find_spec
