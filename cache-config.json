@@ -2,11 +2,12 @@
   "url":"https://lakecache.blob.core.windows.net/mathlib4",
   "head":"Mathlib.lean",
   "rootRef":".",
-  "buildDirs":
+  "tokenEnvVar":"MATHLIB_CACHE_SAS",
+  "pkgDirs":
   {
-    "Mathlib":"build",
-    "Aesop":"lake-packages/aesop/build",
-    "Qq":"lake-packages/Qq/build",
-    "Std":"lake-packages/std/build"
+    "Mathlib":".",
+    "Aesop":"lake-packages/aesop",
+    "Qq":"lake-packages/Qq",
+    "Std":"lake-packages/std"
   }
 }

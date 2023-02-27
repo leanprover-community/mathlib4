@@ -5,6 +5,7 @@ Authors: Arthur Paulino
 -/
 
 import Cache.Requests
+import Cache.Config
 
 def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
@@ -54,27 +55,33 @@ def curlArgs : List String :=
 
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
+  let config ← match ← Config.load with
+    | .ok config => pure config
+    | .error err => IO.println err; return
   if curlArgs.contains (args.headD "") && !(← validateCurl) then return
-  let hashMemo ← getHashMemo
+  let hashMemo ← getHashMemo config
   let hashMap := hashMemo.hashMap
+  let url := config.url
   match args with
-  | ["get"] => getFiles hashMap false
-  | ["get!"] => getFiles hashMap true
-  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false
-  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true
-  | ["pack"] => discard $ packCache hashMap false
-  | ["pack!"] => discard $ packCache hashMap true
-  | ["unpack"] => unpackCache hashMap
+  | ["get"] => getFiles config hashMap false
+  | ["get!"] => getFiles config hashMap true
+  | "get"  :: args => getFiles config (← hashMemo.filterByFilePaths (toPaths args)) false
+  | "get!" :: args => getFiles config (← hashMemo.filterByFilePaths (toPaths args)) true
+  | ["pack"] => discard $ packCache config.pkgDirs hashMap false
+  | ["pack!"] => discard $ packCache config.pkgDirs hashMap true
+  | ["unpack"] => unpackCache config hashMap
   | ["clean"] =>
     cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
   | ["clean!"] => cleanCache
-  | ["put"] => putFiles (← packCache hashMap false) false (← getToken)
-  | ["put!"] => putFiles (← packCache hashMap false) true (← getToken)
+  | ["put"] =>
+    putFiles url (← packCache config.pkgDirs hashMap false) false (← getToken config.tokenEnvVar)
+  | ["put!"] =>
+    putFiles url (← packCache config.pkgDirs hashMap false) true (← getToken config.tokenEnvVar)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getToken)
+    commit url hashMap false (← getToken config.tokenEnvVar)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getToken)
+    commit url hashMap true (← getToken config.tokenEnvVar)
   | ["collect"] => IO.println "TODO"
   | _ => println help

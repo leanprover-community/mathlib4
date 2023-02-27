@@ -7,6 +7,7 @@ Authors: Arthur Paulino
 import Lean.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
+import Cache.Config
 
 /-- Removes a parent path from the beginning of a path -/
 def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
@@ -34,37 +35,16 @@ def IRDIR : FilePath :=
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
   match ← IO.getEnv "XDG_CACHE_HOME" with
-  | some path => return path / "mathlib"
+  | some path => return path / "lean4_cache"
   | none => match ← IO.getEnv "HOME" with
-    | some path => return path / ".cache" / "mathlib"
+    | some path => return path / ".cache" / "lean4_cache"
     | none => pure ⟨".cache"⟩
 
 /-- Target file path for `curl` configurations -/
 def CURLCFG :=
   IO.CACHEDIR / "curl.cfg"
 
-def LAKEPACKAGESDIR : FilePath :=
-  ⟨"lake-packages"⟩
-
-abbrev PackageDirs := Lean.RBMap String FilePath compare
-
-/-- Whether this is running on Mathlib repo or not -/
-def isMathlibRoot : IO Bool :=
-  FilePath.mk "Mathlib" |>.pathExists
-
-def mathlibDepPath : FilePath :=
-  LAKEPACKAGESDIR / "mathlib"
-
-def getPackageDirs : IO PackageDirs := return .ofList [
-  ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
-  ("Aesop", LAKEPACKAGESDIR / "aesop"),
-  ("Std", LAKEPACKAGESDIR / "std"),
-  ("Qq", LAKEPACKAGESDIR / "Qq")
-]
-
-initialize pkgDirs : PackageDirs ← getPackageDirs
-
-def getPackageDir (path : FilePath) : IO FilePath :=
+def getPackageDir (pkgDirs : PkgDirs) (path : FilePath) : IO FilePath :=
   match path.withExtension "" |>.components.head? with
   | none => throw $ IO.userError "Can't find package directory for empty path"
   | some pkg => match pkgDirs.find? pkg with
@@ -120,14 +100,14 @@ def mkDir (path : FilePath) : IO Unit := do
   if !(← path.pathExists) then IO.FS.createDirAll path
 
 /-- Given a path to a Lean file, concatenates the paths to its build files -/
-def mkBuildPaths (path : FilePath) : IO $ Array FilePath := do
-  let packageDir ← getPackageDir path
+def mkBuildPaths (pkgDirs : PkgDirs) (path : FilePath) : IO $ Array FilePath := do
+  let pkgDir ← getPackageDir pkgDirs path
   return #[
-    packageDir / LIBDIR / path.withExtension "olean",
-    packageDir / LIBDIR / path.withExtension "ilean",
-    packageDir / LIBDIR / path.withExtension "trace",
-    packageDir / IRDIR  / path.withExtension "c",
-    packageDir / IRDIR  / path.withExtension "c.trace"]
+    pkgDir / LIBDIR / path.withExtension "olean",
+    pkgDir / LIBDIR / path.withExtension "ilean",
+    pkgDir / LIBDIR / path.withExtension "trace",
+    pkgDir / IRDIR  / path.withExtension "c",
+    pkgDir / IRDIR  / path.withExtension "c.trace"]
 
 def allExist (paths : Array FilePath) : IO Bool := do
   for path in paths do
@@ -135,14 +115,14 @@ def allExist (paths : Array FilePath) : IO Bool := do
   pure true
 
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
-def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
+def packCache (pkgDirs : PkgDirs) (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := default
   for (path, hash) in hashMap.toList do
     let zip := hash.asTarGz
     let zipPath := CACHEDIR / zip
-    let buildPaths ← mkBuildPaths path
+    let buildPaths ← mkBuildPaths pkgDirs path
     if ← allExist buildPaths then
       if (overwrite || !(← zipPath.pathExists)) then
         discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
@@ -155,36 +135,29 @@ def getLocalCacheSet : IO $ Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "gz"
   return .ofList (paths.data.map (·.withoutParent CACHEDIR |>.toString))
 
-def isPathFromMathlib (path : FilePath) : Bool :=
-  match path.components with
-  | "Mathlib" :: _ => true
-  | ["Mathlib.lean"] => true
-  | _ => false
-
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) : IO Unit := do
+def unpackCache (cfg : Config) (hashMap : HashMap) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
   let size := hashMap.size
   if size > 0 then
     IO.println s!"Decompressing {size} file(s)"
-    let isMathlibRoot ← isMathlibRoot
+    let rootRefStr := cfg.rootRef.toString
     hashMap.forM fun path hash => do
       match path.parent with
       | none | some path => do
-        let packageDir ← getPackageDir path
-        mkDir $ packageDir / LIBDIR / path
-        mkDir $ packageDir / IRDIR / path
-      if isMathlibRoot || !isPathFromMathlib path then
-        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
-      else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}",
-          "-C", mathlibDepPath.toString]
+        let pkgDir ← getPackageDir cfg.pkgDirs path
+        mkDir $ pkgDir / LIBDIR / path
+        mkDir $ pkgDir / IRDIR / path
+        if rootRefStr != "." && cfg.rootRef == pkgDir then
+          discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}", "-C", rootRefStr]
+        else
+          discard $ runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
   else IO.println "No cache files to decompress"
 
 /-- Retrieves the azure token from the environment -/
-def getToken : IO String := do
-  let some token ← IO.getEnv "MATHLIB_CACHE_SAS"
-    | throw $ IO.userError "environment variable MATHLIB_CACHE_SAS must be set to upload caches"
+def getToken (tokenEnvVar : String) : IO String := do
+  let some token ← IO.getEnv tokenEnvVar
+    | throw $ IO.userError s!"environment variable {tokenEnvVar} must be set to upload caches"
   return token
 
 instance : Ord FilePath where
