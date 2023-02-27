@@ -1801,22 +1801,21 @@ with those edges deleted. -/
 @[reducible]
 def toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w) (hp : ∀ e, e ∈ p.edges → ¬e ∈ s) :
     (G.deleteEdges s).Walk v w :=
-  p.transfer _
-    (by
-      simp only [edge_set_delete_edges, Set.mem_diff]
-      exact fun e ep => ⟨edges_subset_edge_set p ep, hp e ep⟩)
+  p.transfer _ <| by
+    simp only [edgeSet_deleteEdges, Set.mem_diff]
+    exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩
 #align simple_graph.walk.to_delete_edges SimpleGraph.Walk.toDeleteEdges
 
 @[simp]
 theorem toDeleteEdges_nil (s : Set (Sym2 V)) {v : V} (hp) :
-    (Walk.nil : G.Walk v v).toDeleteEdges s hp = Walk.nil :=
-  rfl
+    (Walk.nil : G.Walk v v).toDeleteEdges s hp = Walk.nil := rfl
 #align simple_graph.walk.to_delete_edges_nil SimpleGraph.Walk.toDeleteEdges_nil
 
 @[simp]
 theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G.Walk v w) (hp) :
     (Walk.cons h p).toDeleteEdges s hp =
-      Walk.cons ⟨h, hp _ (Or.inl rfl)⟩ (p.toDeleteEdges s fun _ he => hp _ <| Or.inr he) :=
+      Walk.cons ((deleteEdges_adj _ _ _ _).mpr ⟨h, hp _ (List.Mem.head _)⟩)
+        (p.toDeleteEdges s fun _ he => hp _ <| List.Mem.tail _ he) :=
   rfl
 #align simple_graph.walk.to_delete_edges_cons SimpleGraph.Walk.toDeleteEdges_cons
 
@@ -1824,9 +1823,7 @@ theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G
 This is an abbreviation for `simple_graph.walk.to_delete_edges`. -/
 abbrev toDeleteEdge {v w : V} (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
     (G.deleteEdges {e}).Walk v w :=
-  p.toDeleteEdges {e} fun e' => by
-    contrapose!
-    simp (config := { contextual := true }) [hp]
+  p.toDeleteEdges {e} (fun e' => by contrapose!; simp (config := { contextual := true }) [hp])
 #align simple_graph.walk.to_delete_edge SimpleGraph.Walk.toDeleteEdge
 
 @[simp]
