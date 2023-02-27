@@ -400,9 +400,9 @@ def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedAddCommMonoid β]
     refl := le_infᵢ₂ fun r hr => principal_mono.2 <| idRel_subset.2 fun x => by simpa [refl]
     symm := tendsto_infᵢ_infᵢ fun r => tendsto_infᵢ_infᵢ fun _ => tendsto_principal_principal.2
       fun x hx => by rwa [mem_setOf, symm]
-    comp := le_infᵢ₂ fun r hr => let ⟨δ, h0, hδr⟩ := half r hr; le_principal_iff.2 <| mem_of_superset
-      (mem_lift' <| mem_infᵢ_of_mem δ <| mem_infᵢ_of_mem h0 <| mem_principal_self _)
-      fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
+    comp := le_infᵢ₂ fun r hr => let ⟨δ, h0, hδr⟩ := half r hr; le_principal_iff.2 <|
+      mem_of_superset (mem_lift' <| mem_infᵢ_of_mem δ <| mem_infᵢ_of_mem h0 <| mem_principal_self _)
+        fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
 #align uniform_space.of_fun UniformSpace.ofFun
 
 theorem UniformSpace.hasBasis_ofFun {α : Type u} {β : Type v} [LinearOrderedAddCommMonoid β]
