@@ -12,20 +12,20 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Topology.Algebra.Order.Group
 
 /-!
-# Topological facts about `int.floor`, `int.ceil` and `int.fract`
+# Topological facts about `Int.floor`, `Int.ceil` and `Int.fract`
 
 This file proves statements about limits and continuity of functions involving `floor`, `ceil` and
 `fract`.
 
 ## Main declarations
 
-* `tendsto_floor_at_top`, `tendsto_floor_at_bot`, `tendsto_ceil_at_top`, `tendsto_ceil_at_bot`:
-  `int.floor` and `int.ceil` tend to +-∞ in +-∞.
-* `continuous_on_floor`: `int.floor` is continuous on `Ico n (n + 1)`, because constant.
-* `continuous_on_ceil`: `int.ceil` is continuous on `Ioc n (n + 1)`, because constant.
-* `continuous_on_fract`: `int.fract` is continuous on `Ico n (n + 1)`.
-* `continuous_on.comp_fract`: Precomposing a continuous function satisfying `f 0 = f 1` with
-  `int.fract` yields another continuous function.
+* `tendsto_floor_atTop`, `tendsto_floor_atBot`, `tendsto_ceil_atTop`, `tendsto_ceil_atBot`:
+  `Int.floor` and `Int.ceil` tend to +-∞ in +-∞.
+* `continuousOn_floor`: `Int.floor` is continuous on `Ico n (n + 1)`, because constant.
+* `continuousOn_ceil`: `Int.ceil` is continuous on `Ioc n (n + 1)`, because constant.
+* `continuousOn_fract`: `Int.fract` is continuous on `Ico n (n + 1)`.
+* `ContinuousOn.comp_fract`: Precomposing a continuous function satisfying `f 0 = f 1` with
+  `Int.fract` yields another continuous function.
 -/
 
 
@@ -192,7 +192,7 @@ local notation "I" => (Icc 0 1 : Set α)
 
 variable [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
-/-- Do not use this, use `continuous_on.comp_fract` instead. -/
+/-- Do not use this, use `ContinuousOn.comp_fract` instead. -/
 theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncurry f) <| univ ×ˢ I)
     (hf : ∀ s, f s 0 = f s 1) : Continuous fun st : β × α => f st.1 (fract st.2) := by
   change Continuous (uncurry f ∘ Prod.map id fract)
@@ -220,7 +220,7 @@ theorem ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}
   (h.comp_fract' hf).comp (continuous_id.prod_mk hs)
 #align continuous_on.comp_fract ContinuousOn.comp_fract
 
-/-- A special case of `continuous_on.comp_fract`. -/
+/-- A special case of `ContinuousOn.comp_fract`. -/
 theorem ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f 0 = f 1) :
     Continuous (f ∘ fract) :=
   ContinuousOn.comp_fract (h.comp continuousOn_snd fun _x hx => (mem_prod.mp hx).2) continuous_id
