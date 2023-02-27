@@ -1654,19 +1654,19 @@ protected def map (f : G →g G') (hinj : Function.Injective f) {u v : V} (p : G
 theorem map_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Path.map f hinj : G.Path u v → G'.Path (f u) (f v)) := by
   rintro ⟨p, hp⟩ ⟨p', hp'⟩ h
-  simp only [path.map, Subtype.coe_mk] at h
-  simp [walk.map_injective_of_injective hinj u v h]
+  simp only [Path.map, Subtype.coe_mk, Subtype.mk.injEq] at h
+  simp [Walk.map_injective_of_injective hinj u v h]
 #align simple_graph.path.map_injective SimpleGraph.Path.map_injective
 
 /-- Given a graph embedding, map paths to paths. -/
-@[simps]
+@[simps!]
 protected def mapEmbedding (f : G ↪g G') {u v : V} (p : G.Path u v) : G'.Path (f u) (f v) :=
-  Path.map f.toHom f.Injective p
+  Path.map f.toHom f.injective p
 #align simple_graph.path.map_embedding SimpleGraph.Path.mapEmbedding
 
 theorem mapEmbedding_injective (f : G ↪g G') (u v : V) :
     Function.Injective (Path.mapEmbedding f : G.Path u v → G'.Path (f u) (f v)) :=
-  map_injective f.Injective u v
+  map_injective f.injective u v
 #align simple_graph.path.map_embedding_injective SimpleGraph.Path.mapEmbedding_injective
 
 end Path
@@ -1679,27 +1679,35 @@ namespace Walk
 variable {G}
 
 /-- The walk `p` transferred to lie in `H`, given that `H` contains its edges. -/
-@[protected, simp]
-def transfer :
-    ∀ {u v : V} (p : G.Walk u v) (H : SimpleGraph V)
-      (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSet), H.Walk u v
-  | _, _, walk.nil, H, h => Walk.nil
-  | _, _, walk.cons' u v w a p, H, h =>
-    Walk.cons (h (⟦(u, v)⟧ : Sym2 V) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
+@[simp]
+protected def transfer {u v : V} (p : G.Walk u v)
+    (H : SimpleGraph V) (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSet) : H.Walk u v :=
+  match p with
+  | nil => nil
+  | cons' u v w a p =>
+    cons (h ⟦(u, v)⟧ (by simp)) (p.transfer H fun e he => h e (by simp [he]))
 #align simple_graph.walk.transfer SimpleGraph.Walk.transfer
 
 variable {u v w : V} (p : G.Walk u v) (q : G.Walk v w) {H : SimpleGraph V}
   (hp : ∀ e, e ∈ p.edges → e ∈ H.edgeSet) (hq : ∀ e, e ∈ q.edges → e ∈ H.edgeSet)
 
 theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
-  induction p <;> simp only [*, transfer, eq_self_iff_true, heq_iff_eq, and_self_iff]
+  induction p with
+  | nil => rfl
+  | cons _ _ ih =>
+    simp only [Walk.transfer, cons.injEq, heq_eq_eq, true_and]
+    simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hp
+    rw [ih q hp.2 hq]
 #align simple_graph.walk.transfer_self SimpleGraph.Walk.transfer_self
 
 theorem transfer_eq_map_of_le (GH : G ≤ H) :
     p.transfer H hp = p.map (SimpleGraph.Hom.mapSpanningSubgraphs GH) := by
-  induction p <;>
-    simp only [*, transfer, map_cons, hom.map_spanning_subgraphs_apply, eq_self_iff_true,
-      heq_iff_eq, and_self_iff, map_nil]
+  induction p with
+  | nil => rfl
+  | cons _ _ ih =>
+    simp only [Walk.transfer, map_cons, Hom.mapSpanningSubgraphs_apply, cons.injEq,
+      heq_eq_eq, true_and]
+    rw [ih q _ hq]
 #align simple_graph.walk.transfer_eq_map_of_le SimpleGraph.Walk.transfer_eq_map_of_le
 
 @[simp]
