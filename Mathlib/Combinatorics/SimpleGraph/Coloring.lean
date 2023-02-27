@@ -112,10 +112,11 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
   Setoid.finite_classes_ker _
 #align simple_graph.coloring.color_classes_finite SimpleGraph.Coloring.colorClasses_finite
 
--- porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
-theorem Coloring.card_colorClasses_le [Fintype α] [Fintype (Setoid.classes (Setoid.ker C))]
-    [Fintype C.colorClasses] : Fintype.card C.colorClasses ≤ Fintype.card α := by
+theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
+    Fintype.card C.colorClasses ≤ Fintype.card α := by
   simp [colorClasses]
+  -- porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
+  haveI : Fintype (Setoid.classes (Setoid.ker C)) := by assumption
   convert Setoid.card_classes_ker_le C
   -- porting note: convert would have handled this already in Lean 3:
   apply Subsingleton.elim
