@@ -134,8 +134,10 @@ namespace WithScottTopology
 @[simp] lemma of_scott_symm_eq : (@ofScott α).symm = toScott := rfl
 @[simp] lemma toScott_ofScott (a : WithScottTopology α) : toScott (ofScott a) = a := rfl
 @[simp] lemma ofScott_toScott (a : α) : ofScott (toScott a) = a := rfl
-@[simp] lemma toScott_inj {a b : α} : toScott a = toScott b ↔ a = b := Iff.rfl
-@[simp] lemma ofScott_inj {a b : WithScottTopology α} : ofScott a = ofScott b ↔ a = b :=
+-- porting note: removed @[simp] to make linter happy
+lemma toScott_inj {a b : α} : toScott a = toScott b ↔ a = b := Iff.rfl
+-- porting note: removed @[simp] to make linter happy
+lemma ofScott_inj {a b : WithScottTopology α} : ofScott a = ofScott b ↔ a = b :=
 Iff.rfl
 
 /-- A recursor for `WithScottTopology`. Use as `induction x using WithScottTopology.rec`. -/
