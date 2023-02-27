@@ -80,7 +80,6 @@ variable {C : Type u₂} [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (
 variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (a ⟶ b)]
 
 /-- A prelax functor between bicategories consists of functions between objects,
-
 1-morphisms, and 2-morphisms. This structure will be extended to define `OplaxFunctor`.
 -/
 structure PrelaxFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
