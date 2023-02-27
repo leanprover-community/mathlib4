@@ -108,11 +108,9 @@ theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Fintype { x 
   rfl
 #align equiv.perm.subtype_perm_of_fintype_apply Equiv.Perm.subtypePermOfFintype_apply
 
--- Porting note: dsimp can not prove this
-@[simp, nolint simpNF]
 theorem subtypePermOfFintype_one (p : α → Prop) [Fintype { x // p x }]
     (h : ∀ x, p x → p ((1 : Perm α) x)) : @subtypePermOfFintype α 1 p _ h = 1 :=
-  Equiv.ext fun ⟨_, _⟩ => rfl
+  rfl
 #align equiv.perm.subtype_perm_of_fintype_one Equiv.Perm.subtypePermOfFintype_one
 
 theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type _} [Finite m] [Finite n] (σ : Perm (Sum m n)) :
