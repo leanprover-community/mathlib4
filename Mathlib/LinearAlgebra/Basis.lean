@@ -400,7 +400,13 @@ def mapCoeffs : Basis ι R' M := by
 #align basis.map_coeffs Basis.mapCoeffs
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
-  apply_eq_iff.mpr <| by simp [f.toAddEquiv_eq_coe]
+  apply_eq_iff.mpr <| by
+    simp
+    rw [LinearEquiv.restrictScalars_apply]
+    simp [repr_self, Finsupp.mapRange.linearEquiv_apply,
+      Finsupp.mapRange_single, Module.compHom.toLinearEquiv_symmApply, map_one,
+      LinearEquiv.restrictScalars_apply_apply]
+
 #align basis.map_coeffs_apply Basis.mapCoeffs_apply
 
 @[simp]
