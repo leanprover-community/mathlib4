@@ -668,9 +668,9 @@ theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Dar
 /-- Every edge in a walk's edge list is an edge of the graph.
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
 theorem edges_subset_edgeSet {u v : V} :
-    ∀ (p : G.Walk u v) ⦃e : Sym2 V⦄ (h : e ∈ p.edges), e ∈ G.edgeSet
+    ∀ (p : G.Walk u v) ⦃e : Sym2 V⦄, e ∈ p.edges → e ∈ G.edgeSet
   | cons h' p', e, h  => by
-    rcases List.mem_cons.1 h with ⟨rfl, _⟩
+    cases h
     · exact h'
     next h' => exact edges_subset_edgeSet p' h'
 #align simple_graph.walk.edges_subset_edge_set SimpleGraph.Walk.edges_subset_edgeSet
@@ -825,6 +825,7 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 #align simple_graph.walk.edges_nodup_of_support_nodup SimpleGraph.Walk.edges_nodup_of_support_nodup
+
 
 /-! ### Trails, paths, circuits, cycles -/
 
@@ -1012,11 +1013,12 @@ theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
   tauto
 #align simple_graph.walk.cons_is_cycle_iff SimpleGraph.Walk.cons_isCycle_iff
 
+
 /-! ### About paths -/
 
 
 instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := by
-  rw [is_path_def]
+  rw [isPath_def]
   infer_instance
 
 theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) :
@@ -1024,6 +1026,7 @@ theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) 
   rw [Nat.lt_iff_add_one_le, ← length_support]
   exact hp.support_nodup.length_le_card
 #align simple_graph.walk.is_path.length_lt SimpleGraph.Walk.IsPath.length_lt
+
 
 /-! ### Walk decompositions -/
 
@@ -1033,23 +1036,25 @@ section WalkDecomp
 variable [DecidableEq V]
 
 /-- Given a vertex in the support of a path, give the path up until (and including) that vertex. -/
-def takeUntil : ∀ {v w : V} (p : G.Walk v w) (u : V) (h : u ∈ p.support), G.Walk v u
-  | v, w, nil, u, h => by rw [mem_support_nil_iff.mp h]
-  | v, w, cons r p, u, h =>
-    if hx : v = u then by subst u
-    else cons r (take_until p _ <| h.casesOn (fun h' => (hx h'.symm).elim) id)
+def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk v u
+  | nil, u, h => by rw [mem_support_nil_iff.mp h]
+  | cons r p, u, h =>
+    if hx : v = u then
+      by subst u; exact Walk.nil
+    else
+      cons r (takeUntil p u <| by cases h; exact (hx rfl).elim; assumption)
 #align simple_graph.walk.take_until SimpleGraph.Walk.takeUntil
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
 that vertex. -/
-def dropUntil : ∀ {v w : V} (p : G.Walk v w) (u : V) (h : u ∈ p.support), G.Walk u w
-  | v, w, nil, u, h => by rw [mem_support_nil_iff.mp h]
-  | v, w, cons r p, u, h =>
+def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk u w
+  | nil, u, h => by rw [mem_support_nil_iff.mp h]
+  | cons r p, u, h =>
     if hx : v = u then by
       subst u
       exact cons r p
-    else drop_until p _ <| h.casesOn (fun h' => (hx h'.symm).elim) id
+    else dropUntil p u <| by cases h; exact (hx rfl).elim; assumption
 #align simple_graph.walk.drop_until SimpleGraph.Walk.dropUntil
 
 /-- The `take_until` and `drop_until` functions split a walk into two pieces.
@@ -1061,7 +1066,7 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   · rw [mem_support_nil_iff] at h
     subst u
     rfl
-  · obtain rfl | h := h
+  · cases h
     · simp!
     · simp! only
       split_ifs with h' <;> subst_vars <;> simp [*]
@@ -1070,10 +1075,10 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
     {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w)(r : G.Walk w v), p = q.append r := by
   classical
-    constructor
-    · exact fun h => ⟨_, _, (p.take_spec h).symm⟩
-    · rintro ⟨q, r, rfl⟩
-      simp only [mem_support_append_iff, end_mem_support, start_mem_support, or_self_iff]
+  constructor
+  · exact fun h => ⟨_, _, (p.take_spec h).symm⟩
+  · rintro ⟨q, r, rfl⟩
+    simp only [mem_support_append_iff, end_mem_support, start_mem_support, or_self_iff]
 #align simple_graph.walk.mem_support_iff_exists_append SimpleGraph.Walk.mem_support_iff_exists_append
 
 @[simp]
@@ -1083,7 +1088,7 @@ theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p
   · rw [mem_support_nil_iff] at h
     subst u
     simp!
-  · obtain rfl | h := h
+  · cases h
     · simp!
     · simp! only
       split_ifs with h' <;> rw [eq_comm] at h' <;> subst_vars <;> simp! [*, List.count_cons]
@@ -1095,7 +1100,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
   · rw [mem_support_nil_iff] at h
     subst u
     simp!
-  · obtain rfl | h := h
+  · cases h
     · simp!
     · simp! only
       split_ifs with h'
@@ -1113,12 +1118,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
 @[simp]
 theorem takeUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
     (h : u ∈ (p.copy hv hw).support) :
-    (p.copy hv hw).takeUntil u h =
-      (p.takeUntil u
-            (by
-              subst_vars
-              exact h)).copy
-        hv rfl := by
+    (p.copy hv hw).takeUntil u h = (p.takeUntil u (by subst_vars; exact h)).copy hv rfl := by
   subst_vars
   rfl
 #align simple_graph.walk.take_until_copy SimpleGraph.Walk.takeUntil_copy
@@ -1126,12 +1126,7 @@ theorem takeUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
 @[simp]
 theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
     (h : u ∈ (p.copy hv hw).support) :
-    (p.copy hv hw).dropUntil u h =
-      (p.dropUntil u
-            (by
-              subst_vars
-              exact h)).copy
-        rfl hw := by
+    (p.copy hv hw).dropUntil u h = (p.dropUntil u (by subst_vars; exact h)).copy rfl hw := by
   subst_vars
   rfl
 #align simple_graph.walk.drop_until_copy SimpleGraph.Walk.dropUntil_copy
@@ -1172,14 +1167,14 @@ theorem edges_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support
 
 theorem length_takeUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).length ≤ p.length := by
-  have := congr_arg walk.length (p.take_spec h)
+  have := congr_arg Walk.length (p.take_spec h)
   rw [length_append] at this
   exact Nat.le.intro this
 #align simple_graph.walk.length_take_until_le SimpleGraph.Walk.length_takeUntil_le
 
 theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.dropUntil u h).length ≤ p.length := by
-  have := congr_arg walk.length (p.take_spec h)
+  have := congr_arg Walk.length (p.take_spec h)
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
 #align simple_graph.walk.length_drop_until_le SimpleGraph.Walk.length_dropUntil_le
@@ -1231,24 +1226,24 @@ theorem rotate_edges {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
 
 protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h : u ∈ c.support) :
     (c.rotate h).IsTrail := by
-  rw [is_trail_def, (c.rotate_edges h).Perm.nodup_iff]
+  rw [isTrail_def, (c.rotate_edges h).perm.nodup_iff]
   exact hc.edges_nodup
 #align simple_graph.walk.is_trail.rotate SimpleGraph.Walk.IsTrail.rotate
 
 protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
     (h : u ∈ c.support) : (c.rotate h).IsCircuit := by
-  refine' ⟨hc.to_trail.rotate _, _⟩
+  refine ⟨hc.isTrail.rotate _, ?_⟩
   cases c
   · exact (hc.ne_nil rfl).elim
   · intro hn
     have hn' := congr_arg length hn
     rw [rotate, length_append, add_comm, ← length_append, take_spec] at hn'
-    simpa using hn'
+    simp at hn'
 #align simple_graph.walk.is_circuit.rotate SimpleGraph.Walk.IsCircuit.rotate
 
 protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h : u ∈ c.support) :
     (c.rotate h).IsCycle := by
-  refine' ⟨hc.to_circuit.rotate _, _⟩
+  refine ⟨hc.isCircuit.rotate _, ?_⟩
   rw [List.IsRotated.nodup_iff (support_rotate _ _)]
   exact hc.support_nodup
 #align simple_graph.walk.is_cycle.rotate SimpleGraph.Walk.IsCycle.rotate
@@ -1261,14 +1256,15 @@ there exists a dart in the walk whose start is in `S` but whose end is not.
 theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
     ∃ d : G.Dart, d ∈ p.darts ∧ d.fst ∈ S ∧ d.snd ∉ S := by
   induction' p with _ x y w a p' ih
-  · exact absurd uS vS
+  · cases vS uS
   · by_cases h : y ∈ S
     · obtain ⟨d, hd, hcd⟩ := ih h vS
-      exact ⟨d, Or.inr hd, hcd⟩
-    · exact ⟨⟨(x, y), a⟩, Or.inl rfl, uS, h⟩
+      exact ⟨d, List.Mem.tail _ hd, hcd⟩
+    · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
 #align simple_graph.walk.exists_boundary_dart SimpleGraph.Walk.exists_boundary_dart
 
 end Walk
+
 
 /-! ### Type of paths -/
 
