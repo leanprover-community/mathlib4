@@ -143,7 +143,7 @@ theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
 #align onote.omega_le_oadd Onote.omega_le_oadd
 
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
-  @lt_of_lt_of_le _ _ _ _ _ (opow_pos _ omega_pos) (omega_le_oadd _ _ _)
+  @lt_of_lt_of_le _ _ _ _ _ (opow_pos _ omega_pos) (omega_le_oadd e n a)
 #align onote.oadd_pos Onote.oadd_pos
 
 /-- Compare ordinal notations -/
@@ -174,7 +174,7 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
 #align onote.eq_of_cmp_eq Onote.eq_of_cmp_eq
 
 protected theorem zero_lt_one : (0 : Onote) < 1 := by
-  rw [lt_def, repr, repr_one] <;> exact zero_lt_one
+  simp only [lt_def, repr, repr_one, opow_zero, one_mul, add_zero, nat_cast_pos]
 #align onote.zero_lt_one Onote.zero_lt_one
 
 /-- `NF_below o b` says that `o` is a normal form ordinal notation
