@@ -14,16 +14,16 @@ import Mathlib.Topology.UniformSpace.Completion
 /-!
 # Multiplicative action on the completion of a uniform space
 
-In this file we define typeclasses `has_uniform_continuous_const_vadd` and
-`has_uniform_continuous_const_smul` and prove that a multiplicative action on `X` with uniformly
-continuous `(•) c` can be extended to a multiplicative action on `uniform_space.completion X`.
+In this file we define typeclasses `UniformContinuousConstVAdd` and
+`UniformContinuousConstSMul` and prove that a multiplicative action on `X` with uniformly
+continuous `(•) c` can be extended to a multiplicative action on `UniformSpace.Completion X`.
 
 In later files once the additive group structure is set up, we provide
-* `uniform_space.completion.distrib_mul_action`
-* `uniform_space.completion.mul_action_with_zero`
-* `uniform_space.completion.module`
+* `UniformSpace.Completion.DistribMulAction`
+* `UniformSpace.Completion.MulActionWithZero`
+* `UniformSpace.Completion.Module`
 
-TODO: Generalise the results here from the concrete `completion` to any `abstract_completion`.
+TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
 
 
@@ -59,9 +59,9 @@ instance AddGroup.hasUniformContinuousConstSMul_int [AddGroup X] [UniformAddGrou
   ⟨uniformContinuous_const_zsmul⟩
 #align add_group.has_uniform_continuous_const_smul_int AddGroup.hasUniformContinuousConstSMul_int
 
-/-- A `distrib_mul_action` that is continuous on a uniform group is uniformly continuous.
+/-- A `DistribMulAction` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
-`has_uniform_continuous_const_smul.to_has_continuous_const_smul` -/
+`UniformContinuousConstSMul.to_continuousConstSMul` -/
 theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGroup M]
     [DistribMulAction R M] [UniformSpace M] [UniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
@@ -70,13 +70,17 @@ theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGro
       (Continuous.continuousAt (continuous_const_smul r))⟩
 #align has_uniform_continuous_const_smul_of_continuous_const_smul uniformContinuousConstSMul_of_continuousConstSMul
 
-/-- The action of `semiring.to_module` is uniformly continuous. -/
+-- Porting note: needs Lean4#2074
+set_option synthInstance.etaExperiment true in
+/-- The action of `Semiring.to_module` is uniformly continuous. -/
 instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul R R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 #align ring.has_uniform_continuous_const_smul Ring.uniformContinuousConstSMul
 
-/-- The action of `semiring.to_opposite_module` is uniformly continuous. -/
+-- Porting note: needs Lean4#2074
+set_option synthInstance.etaExperiment true in
+/-- The action of `Semiring.to_oppositeModule` is uniformly continuous. -/
 instance Ring.has_uniform_continuous_const_op_smul [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul Rᵐᵒᵖ R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
@@ -183,8 +187,8 @@ instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completi
 variable {M X}
 variable [UniformContinuousConstSMul M X]
 
-@[simp, norm_cast, to_additive]
-theorem coe_smul (c : M) (x : X) : ↑(c • x) = (c • x : Completion X) :=
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_smul (c : M) (x : X) : ↑(c • x) = c • (x : Completion X) :=
   (map_coe (uniformContinuous_const_smul c) x).symm
 #align uniform_space.completion.coe_smul UniformSpace.Completion.coe_smul
 #align uniform_space.completion.coe_vadd UniformSpace.Completion.coe_vadd
