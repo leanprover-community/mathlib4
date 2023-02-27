@@ -15,9 +15,8 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Algebra.Parity
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Linarith
 import Mathlib.Data.List.BigOperators.Lemmas -- List.alternatingSum_reverse
--- Porting note: No Default Files
--- import Mathlib.Tactic.LinArith.Default
 
 /-!
 # Digits of a natural number
@@ -271,7 +270,8 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   · cases' b with b
     · induction' n with n ih
       · rfl
-      · simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
+      · rw[show succ zero = 1 by rfl] at ih ⊢
+        simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n
       intro n h
@@ -409,7 +409,7 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
     have : (ofDigits (b + 2) tl + 1) * (b + 2) ≤ (b + 2) ^ tl.length * (b + 2) :=
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
-    suffices ↑hd < b + 2 by linarith`
+    suffices ↑hd < b + 2 by linarith
     norm_cast
     exact hl hd (List.mem_cons_self _ _)
 #align nat.of_digits_lt_base_pow_length' Nat.ofDigits_lt_base_pow_length'
