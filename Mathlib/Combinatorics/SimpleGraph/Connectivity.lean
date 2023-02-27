@@ -2384,8 +2384,8 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   have hbq := hb (pvu.append puw)
   have hpq' := hb pwv.reverse
   rw [Walk.edges_reverse, List.mem_reverse'] at hpq'
-  rw [Walk.isTrail_def, this, Walk.edges_append, Walk.edges_append, List.nodup_append_comm, ←
-    List.append_assoc, ← Walk.edges_append] at hc
+  rw [Walk.isTrail_def, this, Walk.edges_append, Walk.edges_append, List.nodup_append_comm,
+    ← List.append_assoc, ← Walk.edges_append] at hc
   exact List.disjoint_of_nodup_append hc hbq hpq'
 #align simple_graph.reachable_delete_edges_iff_exists_cycle.aux SimpleGraph.reachable_deleteEdges_iff_exists_cycle.aux
 
@@ -2401,22 +2401,18 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     · apply Path.cons_isCycle
       rw [Sym2.eq_swap]
       intro h
-      exact absurd (Walk.edges_toPath_subset p h) hp
-    simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
+      cases hp (Walk.edges_toPath_subset p h)
+    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
   · rintro ⟨u, c, hc, he⟩
-    have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
-    let puv := c.takeUntil v hvc
-    let pvu := c.dropUntil v hvc
     refine ⟨c.adj_of_mem_edges he, ?_⟩
     by_contra' hb
     have hb' : ∀ p : G.Walk w v, ⟦(w, v)⟧ ∈ p.edges := by
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse
-    apply
-      reachable_deleteEdges_iff_exists_cycle.aux hb' (pvu.append puv) (hc.isTrail.rotate hvc)
-        _ (Walk.start_mem_support _)
-    rwa [Walk.edges_append, List.mem_append, or_comm, ← List.mem_append, ← Walk.edges_append,
-      Walk.take_spec, Sym2.eq_swap]
+    have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
+    refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate hvc) (hc.isTrail.rotate hvc)
+      ?_ (Walk.start_mem_support _)
+    rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 #align simple_graph.adj_and_reachable_delete_edges_iff_exists_cycle SimpleGraph.adj_and_reachable_delete_edges_iff_exists_cycle
 
 theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} :
