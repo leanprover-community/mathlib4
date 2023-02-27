@@ -455,7 +455,7 @@ theorem IsClique.card_le_chromaticNumber [Finite V] {s : Finset V} (h : G.IsCliq
 protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n < m) :
     G.CliqueFree m := by
   by_contra h
-  simp only [Colorable.cliqueFree, isNClique_iff, not_forall, Classical.not_not] at h
+  simp only [CliqueFree, isNClique_iff, not_forall, Classical.not_not] at h
   obtain ⟨s, h, rfl⟩ := h
   exact Nat.lt_le_antisymm hm (h.card_le_of_colorable hc)
 #align simple_graph.colorable.clique_free SimpleGraph.Colorable.cliqueFree
