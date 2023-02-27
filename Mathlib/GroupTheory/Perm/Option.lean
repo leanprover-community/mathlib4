@@ -8,9 +8,9 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Perm
-import Mathbin.GroupTheory.Perm.Sign
-import Mathbin.Logic.Equiv.Option
+import Mathlib.Data.Fintype.Perm
+import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.Logic.Equiv.Option
 
 /-!
 # Permutations of `option α`
@@ -26,8 +26,7 @@ theorem Equiv.optionCongr_one {α : Type _} : (1 : Perm α).optionCongr = 1 :=
 
 @[simp]
 theorem Equiv.optionCongr_swap {α : Type _} [DecidableEq α] (x y : α) :
-    optionCongr (swap x y) = swap (some x) (some y) :=
-  by
+    optionCongr (swap x y) = swap (some x) (some y) := by
   ext (_ | i)
   · simp [swap_apply_of_ne_of_ne]
   · by_cases hx : i = x
@@ -37,8 +36,7 @@ theorem Equiv.optionCongr_swap {α : Type _} [DecidableEq α] (x y : α) :
 
 @[simp]
 theorem Equiv.optionCongr_sign {α : Type _} [DecidableEq α] [Fintype α] (e : Perm α) :
-    Perm.sign e.optionCongr = Perm.sign e :=
-  by
+    Perm.sign e.optionCongr = Perm.sign e := by
   apply perm.swap_induction_on e
   · simp [perm.one_def]
   · intro f x y hne h
@@ -47,8 +45,7 @@ theorem Equiv.optionCongr_sign {α : Type _} [DecidableEq α] [Fintype α] (e : 
 
 @[simp]
 theorem map_equiv_removeNone {α : Type _} [DecidableEq α] (σ : Perm (Option α)) :
-    (removeNone σ).optionCongr = swap none (σ none) * σ :=
-  by
+    (removeNone σ).optionCongr = swap none (σ none) * σ := by
   ext1 x
   have : Option.map (⇑(remove_none σ)) x = (swap none (σ none)) (σ x) :=
     by
