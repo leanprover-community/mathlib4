@@ -1840,8 +1840,7 @@ end Walk
 /-- Two vertices are *reachable* if there is a walk between them.
 This is equivalent to `relation.refl_trans_gen` of `G.adj`.
 See `simple_graph.reachable_iff_refl_trans_gen`. -/
-def Reachable (u v : V) : Prop :=
-  Nonempty (G.Walk u v)
+def Reachable (u v : V) : Prop := Nonempty (G.Walk u v)
 #align simple_graph.reachable SimpleGraph.Reachable
 
 variable {G}
@@ -1851,8 +1850,8 @@ theorem reachable_iff_nonempty_univ {u v : V} :
   Set.nonempty_iff_univ_nonempty
 #align simple_graph.reachable_iff_nonempty_univ SimpleGraph.reachable_iff_nonempty_univ
 
-protected theorem Reachable.elim {p : Prop} {u v : V} (h : G.Reachable u v) (hp : G.Walk u v → p) :
-    p :=
+protected theorem Reachable.elim {p : Prop} {u v : V} (h : G.Reachable u v)
+    (hp : G.Walk u v → p) : p :=
   Nonempty.elim h hp
 #align simple_graph.reachable.elim SimpleGraph.Reachable.elim
 
@@ -1865,17 +1864,14 @@ protected theorem Walk.reachable {G : SimpleGraph V} {u v : V} (p : G.Walk u v) 
 #align simple_graph.walk.reachable SimpleGraph.Walk.reachable
 
 protected theorem Adj.reachable {u v : V} (h : G.Adj u v) : G.Reachable u v :=
-  h.toWalk.Reachable
+  h.toWalk.reachable
 #align simple_graph.adj.reachable SimpleGraph.Adj.reachable
 
 @[refl]
-protected theorem Reachable.refl (u : V) : G.Reachable u u := by
-  fconstructor
-  rfl
+protected theorem Reachable.refl (u : V) : G.Reachable u u := ⟨Walk.nil⟩
 #align simple_graph.reachable.refl SimpleGraph.Reachable.refl
 
-protected theorem Reachable.rfl {u : V} : G.Reachable u u :=
-  Reachable.refl _
+protected theorem Reachable.rfl {u : V} : G.Reachable u u := Reachable.refl _
 #align simple_graph.reachable.rfl SimpleGraph.Reachable.rfl
 
 @[symm]
@@ -1897,16 +1893,16 @@ theorem reachable_iff_reflTransGen (u v : V) : G.Reachable u v ↔ Relation.Refl
   by
   constructor
   · rintro ⟨h⟩
-    induction h
-    · rfl
-    · exact (Relation.ReflTransGen.single h_h).trans h_ih
+    induction h with
+    | nil => rfl
+    | cons h' _ ih => exact (Relation.ReflTransGen.single h').trans ih
   · intro h
-    induction' h with _ _ _ ha hr
-    · rfl
-    · exact reachable.trans hr ⟨walk.cons ha walk.nil⟩
+    induction h with
+    | refl => rfl
+    | tail _ ha hr => exact Reachable.trans hr ⟨Walk.cons ha Walk.nil⟩
 #align simple_graph.reachable_iff_refl_trans_gen SimpleGraph.reachable_iff_reflTransGen
 
-protected theorem Reachable.map {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G') {u v : V}
+protected theorem Reachable.map {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
   h.elim fun p => ⟨p.map f⟩
 #align simple_graph.reachable.map SimpleGraph.Reachable.map
@@ -1914,28 +1910,26 @@ protected theorem Reachable.map {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G
 variable (G)
 
 theorem reachable_is_equivalence : Equivalence G.Reachable :=
-  Equivalence.mk _ (@Reachable.refl _ G) (@Reachable.symm _ G) (@Reachable.trans _ G)
+  Equivalence.mk (@Reachable.refl _ G) (@Reachable.symm _ G) (@Reachable.trans _ G)
 #align simple_graph.reachable_is_equivalence SimpleGraph.reachable_is_equivalence
 
 /-- The equivalence relation on vertices given by `simple_graph.reachable`. -/
-def reachableSetoid : Setoid V :=
-  Setoid.mk _ G.reachable_is_equivalence
+def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 #align simple_graph.reachable_setoid SimpleGraph.reachableSetoid
 
 /-- A graph is preconnected if every pair of vertices is reachable from one another. -/
-def Preconnected : Prop :=
-  ∀ u v : V, G.Reachable u v
+def Preconnected : Prop := ∀ u v : V, G.Reachable u v
 #align simple_graph.preconnected SimpleGraph.Preconnected
 
 theorem Preconnected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (hf : Surjective f)
     (hG : G.Preconnected) : H.Preconnected :=
-  hf.forall₂.2 fun a b => Nonempty.map (Walk.map _) <| hG _ _
+  hf.forall₂.2 fun _ _ => Nonempty.map (Walk.map _) <| hG _ _
 #align simple_graph.preconnected.map SimpleGraph.Preconnected.map
 
 theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Preconnected ↔ H.Preconnected :=
-  ⟨Preconnected.map e.toHom e.toEquiv.Surjective,
-    Preconnected.map e.symm.toHom e.symm.toEquiv.Surjective⟩
+  ⟨Preconnected.map e.toHom e.toEquiv.surjective,
+    Preconnected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 #align simple_graph.iso.preconnected_iff SimpleGraph.Iso.preconnected_iff
 
 /-- A graph is connected if it's preconnected and contains at least one vertex.
@@ -1944,14 +1938,13 @@ exactly one connected component.
 
 There is a `has_coe_to_fun` instance so that `h u v` can be used instead
 of `h.preconnected u v`. -/
-@[protect_proj, mk_iff]
+@[mk_iff]
 structure Connected : Prop where
-  Preconnected : G.Preconnected
-  [Nonempty : Nonempty V]
+  protected preconnected : G.Preconnected
+  protected [nonempty : Nonempty V]
 #align simple_graph.connected SimpleGraph.Connected
 
-instance : CoeFun G.Connected fun _ => ∀ u v : V, G.Reachable u v :=
-  ⟨fun h => h.Preconnected⟩
+instance : CoeFun G.Connected fun _ => ∀ u v : V, G.Reachable u v := ⟨fun h => h.preconnected⟩
 
 theorem Connected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (hf : Surjective f)
     (hG : G.Connected) : H.Connected :=
@@ -1961,18 +1954,16 @@ theorem Connected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (h
 
 theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Connected ↔ H.Connected :=
-  ⟨Connected.map e.toHom e.toEquiv.Surjective, Connected.map e.symm.toHom e.symm.toEquiv.Surjective⟩
+  ⟨Connected.map e.toHom e.toEquiv.surjective, Connected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 #align simple_graph.iso.connected_iff SimpleGraph.Iso.connected_iff
 
 /-- The quotient of `V` by the `simple_graph.reachable` relation gives the connected
 components of a graph. -/
-def ConnectedComponent :=
-  Quot G.Reachable
+def ConnectedComponent := Quot G.Reachable
 #align simple_graph.connected_component SimpleGraph.ConnectedComponent
 
 /-- Gives the connected component containing a particular vertex. -/
-def connectedComponentMk (v : V) : G.ConnectedComponent :=
-  Quot.mk G.Reachable v
+def connectedComponentMk (v : V) : G.ConnectedComponent := Quot.mk G.Reachable v
 #align simple_graph.connected_component_mk SimpleGraph.connectedComponentMk
 
 @[simps]
@@ -2045,8 +2036,8 @@ theorem Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
 /-- The map on connected components induced by a graph homomorphism. -/
 def ConnectedComponent.map {V : Type _} {G : SimpleGraph V} {V' : Type _} {G' : SimpleGraph V'}
     (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
-  C.lift (fun v => G'.connectedComponentMk (φ v)) fun v w p _ =>
-    ConnectedComponent.eq.mpr (p.map φ).Reachable
+  C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
+    ConnectedComponent.eq.mpr (p.map φ).reachable
 #align simple_graph.connected_component.map SimpleGraph.ConnectedComponent.map
 
 @[simp]
@@ -2082,20 +2073,18 @@ abbrev Subgraph.Connected (H : G.Subgraph) : Prop :=
 theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected := by
   constructor
   rintro ⟨a, ha⟩ ⟨b, hb⟩
-  simp only [singleton_subgraph_verts, Set.mem_singleton_iff] at ha hb
+  simp only [singletonSubgraph_verts, Set.mem_singleton_iff] at ha hb
   subst_vars
+  rfl
 #align simple_graph.singleton_subgraph_connected SimpleGraph.singletonSubgraph_connected
 
 @[simp]
 theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
   constructor
   rintro ⟨a, ha⟩ ⟨b, hb⟩
-  simp only [subgraph_of_adj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at ha hb
+  simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at ha hb
   obtain rfl | rfl := ha <;> obtain rfl | rfl := hb <;>
-    first
-      |rfl|·
-        apply adj.reachable
-        simp
+    first | rfl | (apply Adj.reachable; simp)
 #align simple_graph.subgraph_of_adj_connected SimpleGraph.subgraphOfAdj_connected
 
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
@@ -2106,21 +2095,22 @@ theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
 
 theorem Connected.set_univ_walk_nonempty (hconn : G.Connected) (u v : V) :
     (Set.univ : Set (G.Walk u v)).Nonempty :=
-  hconn.Preconnected.set_univ_walk_nonempty u v
+  hconn.preconnected.set_univ_walk_nonempty u v
 #align simple_graph.connected.set_univ_walk_nonempty SimpleGraph.Connected.set_univ_walk_nonempty
+
 
 /-! ### Walks as subgraphs -/
 
 
 namespace Walk
 
-variable {G G'} {u v w : V}
+variable {G'} {u v w : V}
 
 /-- The subgraph consisting of the vertices and edges of the walk. -/
 @[simp]
-protected def toSubgraph : ∀ {u v : V}, G.Walk u v → G.Subgraph
-  | u, _, nil => G.singletonSubgraph u
-  | _, _, cons h p => G.subgraphOfAdj h ⊔ p.toSubgraph
+protected def toSubgraph {u v : V} : G.Walk u v → G.Subgraph
+  | nil => G.singletonSubgraph u
+  | cons h p => G.subgraphOfAdj h ⊔ p.toSubgraph
 #align simple_graph.walk.to_subgraph SimpleGraph.Walk.toSubgraph
 
 theorem toSubgraph_cons_nil_eq_subgraphOfAdj (h : G.Adj u v) :
@@ -2132,7 +2122,7 @@ theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w �
   · simp
   · have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
       ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
-    simp [ih, or_assoc', this]
+    simp [ih, or_assoc, this]
 #align simple_graph.walk.mem_verts_to_subgraph SimpleGraph.Walk.mem_verts_toSubgraph
 
 @[simp]
@@ -2158,7 +2148,7 @@ theorem toSubgraph_append (p : G.Walk u v) (q : G.Walk v w) :
 theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgraph := by
   induction p
   · simp
-  · simp only [*, walk.to_subgraph, reverse_cons, to_subgraph_append, subgraph_of_adj_symm]
+  · simp only [*, Walk.toSubgraph, reverse_cons, toSubgraph_append, subgraphOfAdj_symm]
     rw [sup_comm]
     congr
     ext <;> simp [-Set.bot_eq_empty]
@@ -2167,26 +2157,29 @@ theorem toSubgraph_reverse (p : G.Walk u v) : p.reverse.toSubgraph = p.toSubgrap
 @[simp]
 theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).toSubgraph = c.toSubgraph := by
-  rw [rotate, to_subgraph_append, sup_comm, ← to_subgraph_append, take_spec]
+  rw [rotate, toSubgraph_append, sup_comm, ← toSubgraph_append, take_spec]
 #align simple_graph.walk.to_subgraph_rotate SimpleGraph.Walk.toSubgraph_rotate
 
 @[simp]
 theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) : (p.map f).toSubgraph = p.toSubgraph.map f :=
-  by induction p <;> simp [*, subgraph.map_sup]
+  by induction p <;> simp [*, Subgraph.map_sup]
 #align simple_graph.walk.to_subgraph_map SimpleGraph.Walk.toSubgraph_map
 
 @[simp]
 theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborSet w).Finite := by
-  induction p
-  · rw [walk.to_subgraph, neighbor_set_singleton_subgraph]
+  induction p with
+  | nil =>
+    rw [Walk.toSubgraph, neighborSet_singletonSubgraph]
     apply Set.toFinite
-  · rw [walk.to_subgraph, subgraph.neighbor_set_sup]
-    refine' Set.Finite.union _ p_ih
-    refine' Set.Finite.subset _ (neighbor_set_subgraph_of_adj_subset p_h)
+  | cons ha _ ih =>
+    rw [Walk.toSubgraph, Subgraph.neighborSet_sup]
+    refine Set.Finite.union ?_ ih
+    refine Set.Finite.subset ?_ (neighborSet_subgraphOfAdj_subset ha)
     apply Set.toFinite
 #align simple_graph.walk.finite_neighbor_set_to_subgraph SimpleGraph.Walk.finite_neighborSet_toSubgraph
 
 end Walk
+
 
 /-! ### Walks of a given length -/
 
