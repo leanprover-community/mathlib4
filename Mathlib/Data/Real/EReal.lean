@@ -1088,10 +1088,10 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
 
 open SignType (sign)
 
-@[simp] theorem sign_top : sign (⊤ : EReal) = 1 := rfl
+theorem sign_top : sign (⊤ : EReal) = 1 := rfl
 #align ereal.sign_top EReal.sign_top
 
-@[simp] theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
+theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 #align ereal.sign_bot EReal.sign_bot
 
 @[simp]
@@ -1187,52 +1187,54 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
 
 end EReal
 
--- namespace Tactic
+/-
+namespace Tactic
 
--- open Positivity
+open Positivity
 
--- private theorem ereal_coe_ne_zero {r : ℝ} : r ≠ 0 → (r : EReal) ≠ 0 :=
---   EReal.coe_ne_zero.2
--- #align tactic.ereal_coe_ne_zero tactic.ereal_coe_ne_zero
+private theorem ereal_coe_ne_zero {r : ℝ} : r ≠ 0 → (r : EReal) ≠ 0 :=
+  EReal.coe_ne_zero.2
+#align tactic.ereal_coe_ne_zero tactic.ereal_coe_ne_zero
 
--- private theorem ereal_coe_nonneg {r : ℝ} : 0 ≤ r → 0 ≤ (r : EReal) :=
---   EReal.coe_nonneg.2
--- #align tactic.ereal_coe_nonneg tactic.ereal_coe_nonneg
+private theorem ereal_coe_nonneg {r : ℝ} : 0 ≤ r → 0 ≤ (r : EReal) :=
+  EReal.coe_nonneg.2
+#align tactic.ereal_coe_nonneg tactic.ereal_coe_nonneg
 
--- private theorem ereal_coe_pos {r : ℝ} : 0 < r → 0 < (r : EReal) :=
---   EReal.coe_pos.2
--- #align tactic.ereal_coe_pos tactic.ereal_coe_pos
+private theorem ereal_coe_pos {r : ℝ} : 0 < r → 0 < (r : EReal) :=
+  EReal.coe_pos.2
+#align tactic.ereal_coe_pos tactic.ereal_coe_pos
 
--- private theorem ereal_coe_ennreal_pos {r : ℝ≥0∞} : 0 < r → 0 < (r : EReal) :=
---   EReal.coe_ennreal_pos.2
--- #align tactic.ereal_coe_ennreal_pos tactic.ereal_coe_ennreal_pos
+private theorem ereal_coe_ennreal_pos {r : ℝ≥0∞} : 0 < r → 0 < (r : EReal) :=
+  EReal.coe_ennreal_pos.2
+#align tactic.ereal_coe_ennreal_pos tactic.ereal_coe_ennreal_pos
 
--- /-- Extension for the `positivity` tactic: cast from `ℝ` to `ereal`. -/
--- @[positivity]
--- unsafe def positivity_coe_real_ereal : expr → tactic strictness
---   | q(@coe _ _ $(inst) $(a)) => do
---     unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoe)
---     let strictness_a ← core a
---     match strictness_a with
---       | positive p => positive <$> mk_app `` ereal_coe_pos [p]
---       | nonnegative p => nonnegative <$> mk_mapp `` ereal_coe_nonneg [a, p]
---       | nonzero p => nonzero <$> mk_mapp `` ereal_coe_ne_zero [a, p]
---   | e =>
---     pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ`"
--- #align tactic.positivity_coe_real_ereal tactic.positivity_coe_real_ereal
+/-- Extension for the `positivity` tactic: cast from `ℝ` to `ereal`. -/
+@[positivity]
+unsafe def positivity_coe_real_ereal : expr → tactic strictness
+  | q(@coe _ _ $(inst) $(a)) => do
+    unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoe)
+    let strictness_a ← core a
+    match strictness_a with
+      | positive p => positive <$> mk_app `` ereal_coe_pos [p]
+      | nonnegative p => nonnegative <$> mk_mapp `` ereal_coe_nonneg [a, p]
+      | nonzero p => nonzero <$> mk_mapp `` ereal_coe_ne_zero [a, p]
+  | e =>
+    pp e >>= fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ`"
+#align tactic.positivity_coe_real_ereal tactic.positivity_coe_real_ereal
 
--- /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `ereal`. -/
--- @[positivity]
--- unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
---   | q(@coe _ _ $(inst) $(a)) => do
---     unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoeENNReal)
---     let strictness_a ← core a
---     match strictness_a with
---       | positive p => positive <$> mk_app `` ereal_coe_ennreal_pos [p]
---       | _ => nonnegative <$> mk_mapp `ereal.coe_ennreal_nonneg [a]
---   | e =>
---     pp e >>=
---       fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ≥0∞`"
--- #align tactic.positivity_coe_ennreal_ereal tactic.positivity_coe_ennreal_ereal
+/-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `ereal`. -/
+@[positivity]
+unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
+  | q(@coe _ _ $(inst) $(a)) => do
+    unify inst q(@coeToLift _ _ <| @coeBase _ _ EReal.hasCoeENNReal)
+    let strictness_a ← core a
+    match strictness_a with
+      | positive p => positive <$> mk_app `` ereal_coe_ennreal_pos [p]
+      | _ => nonnegative <$> mk_mapp `ereal.coe_ennreal_nonneg [a]
+  | e =>
+    pp e >>=
+      fail ∘ format.bracket "The expression " " is not of the form `(r : ereal)` for `r : ℝ≥0∞`"
+#align tactic.positivity_coe_ennreal_ereal tactic.positivity_coe_ennreal_ereal
 
--- end Tactic
+end Tactic
+-/
