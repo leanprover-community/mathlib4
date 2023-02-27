@@ -164,7 +164,7 @@ for node in sorted(graph.nodes):
         # This is separate from the `dict()` above to prevent tons of `sync_prs: []` in the yaml.
         _sync_prs = list(sync_prs.get(data[node]['mathlib4_file'], set()))
         if _sync_prs:
-            new_status.update(sync_prs=_sync_prs)
+            new_status.update(mathlib4_sync_prs=_sync_prs)
 
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
         sha = data[node]['source']['commit'] if data[node]['source']['repo'] == 'leanprover-community/mathlib' else "_"
