@@ -190,12 +190,12 @@ theorem log_monotone {b : ℕ} : Monotone (log b) := by
   · exact le_log_of_pow_le hb (pow_log_le_add_one _ _)
 #align nat.log_monotone Nat.log_monotone
 
---@[mono] -- porting note: unknown attribute
+@[mono]
 theorem log_mono_right {b n m : ℕ} (h : n ≤ m) : log b n ≤ log b m :=
   log_monotone h
 #align nat.log_mono_right Nat.log_mono_right
 
---@[mono]
+@[mono]
 theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ log c n := by
   rcases eq_or_ne n 0 with (rfl | hn); · rw [log_zero_right, log_zero_right]
   apply le_log_of_pow_le hc
@@ -332,7 +332,7 @@ theorem le_pow_clog {b : ℕ} (hb : 1 < b) (x : ℕ) : x ≤ b ^ clog b x :=
   (le_pow_iff_clog_le hb).2 le_rfl
 #align nat.le_pow_clog Nat.le_pow_clog
 
---@[mono]
+@[mono]
 theorem clog_mono_right (b : ℕ) {n m : ℕ} (h : n ≤ m) : clog b n ≤ clog b m := by
   cases' le_or_lt b 1 with hb hb
   · rw [clog_of_left_le_one hb]
@@ -341,7 +341,7 @@ theorem clog_mono_right (b : ℕ) {n m : ℕ} (h : n ≤ m) : clog b n ≤ clog 
     exact h.trans (le_pow_clog hb _)
 #align nat.clog_mono_right Nat.clog_mono_right
 
---@[mono]
+@[mono]
 theorem clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ clog c n := by
   rw [← le_pow_iff_clog_le (lt_of_lt_of_le hc hb)]
   calc

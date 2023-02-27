@@ -13,6 +13,7 @@ import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Lift
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -485,7 +486,9 @@ theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u�
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 #align divp_divp_eq_divp_mul divp_divp_eq_divp_mul
 
-@[field_simps]
+/- Port note: to match the mathlib3 behavior, this needs to have higher simp
+priority than eq_divp_iff_mul_eq. -/
+@[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
   u.mul_left_inj.symm.trans <| by rw [divp_mul_cancel]; exact ⟨Eq.symm, Eq.symm⟩
 #align divp_eq_iff_mul_eq divp_eq_iff_mul_eq
@@ -580,7 +583,9 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 
 attribute [nontriviality] isAddUnit_of_subsingleton
 
--- Porting note: removing the `CanLift` instance
+@[to_additive]
+instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
+{ prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
