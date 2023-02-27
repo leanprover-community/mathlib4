@@ -330,7 +330,7 @@ theorem coe_mono : Monotone some := fun _ _ => coe_le_coe.2
 #align ennreal.one_eq_coe ENNReal.one_eq_coe
 
 -- porting note: no longer a `simp`, deprecated, protected
-@[deprecated] protected theorem coe_nonneg : 0 ≤ (r : ℝ≥0∞) := zero_le _
+@[deprecated zero_le] protected theorem coe_nonneg : 0 ≤ (r : ℝ≥0∞) := zero_le _
 #align ennreal.coe_nonneg ENNReal.coe_nonneg
 
 @[simp, norm_cast] theorem coe_pos : 0 < (r : ℝ≥0∞) ↔ 0 < r := coe_lt_coe
