@@ -20,8 +20,8 @@ axioms of a bicategory.
 
 ## Main definitions
 
-* `free_bicategory B`: the free bicategory over a quiver `B`.
-* `free_bicategory.lift F`: the pseudofunctor from `free_bicategory B` to `C` associated with a
+* `FreeBicategory B`: the free bicategory over a quiver `B`.
+* `FreeBicategory.lift F`: the pseudofunctor from `FreeBicategory B` to `C` associated with a
   prefunctor `F` from `B` to `C`.
 -/
 
@@ -84,10 +84,11 @@ inductive Hom₂ : ∀ {a b : B}, Hom a b → Hom a b → Type max u v
 
 section
 
+-- porting note: commenting out redundant binder annotation update
 -- variable {B}
 
 -- mathport name: vcomp
--- The following notations are only used in the definition of `rel` to simplify the notation.
+-- The following notations are only used in the definition of `Rel` to simplify the notation.
 local infixr:0 " ≫ " => Hom₂.vcomp
 
 -- mathport name: id
@@ -176,6 +177,7 @@ inductive Rel : ∀ {a b : B} {f g : Hom a b}, Hom₂ f g → Hom₂ f g → Pro
 
 end
 
+-- porting note: commenting out redundant binder annotation update
 -- variable {B}
 
 instance homCategory (a b : B) : Category (Hom a b) where
@@ -394,8 +396,8 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   obj := F.obj
   map := liftHom F
   map₂ a b f g := Quot.lift (liftHom₂ F) fun η θ H => liftHom₂_congr F H
-  map_id a := Iso.refl _
-  map_comp a b c f g := Iso.refl _
+  map₂_id a := Iso.refl _
+  map₂_comp a b c f g := Iso.refl _
 #align category_theory.free_bicategory.lift CategoryTheory.FreeBicategory.lift
 
 end
