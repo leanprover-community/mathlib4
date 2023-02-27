@@ -1,8 +1,14 @@
+/-
+Copyright (c) 2023 Arthur Paulino. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Arthur Paulino
+-/
+
 import Lean.Data.RBMap
 import Lean.Data.Json
 
 open System (FilePath mkFilePath)
-open Lean (Json RBMap)
+open Lean (Json FromJson RBMap)
 
 namespace Cache
 
@@ -14,6 +20,7 @@ structure Config where
   rootDir : FilePath
   tokenEnvVar : String
   pkgDirs: PkgDirs
+  deriving FromJson
 
 namespace Config
 
@@ -59,26 +66,8 @@ def check : IO Bool := do
   | _ => IO.println "Invalid template"; return false
 
 def load : IO $ Except String Config := do
-  let json ← match Json.parse (← IO.FS.readFile FILE) with
-    | .ok json => pure json
-    | .error e => return .error s!"Error when parsing {FILE}: {e}"
-  match json with
-  | .obj x =>
-    let some $ .str url := x.find compare "url"
-      | return .error s!"{FILE} is missing the \"url\" (string) field"
-    let some $ .str head := x.find compare "head"
-      | return .error s!"{FILE} is missing the \"head\" (string) field"
-    let some $ .str rootDir := x.find compare "rootDir"
-      | return .error s!"{FILE} is missing the \"rootDir\" (string) field"
-    let some $ .str tokenEnvVar := x.find compare "tokenEnvVar"
-      | return .error s!"{FILE} is missing the \"tokenEnvVar\" (string) field"
-    let some $ .obj pkgDirs := x.find compare "pkgDirs"
-      | return .error s!"{FILE} is missing the \"pkgDirs\" (object) field"
-    let mut pkgDirs' := default
-    for pair in pkgDirs.toArray do
-      let .str path := pair.2 | return .error s!"Error when reading the build path for {pair.1}"
-      pkgDirs' := pkgDirs'.insert pair.1 (mkFilePath $ path.splitOn "/")
-    return .ok ⟨url, ⟨head⟩, mkFilePath $ rootDir.splitOn "/", tokenEnvVar, pkgDirs'⟩
-  | _ => return .error s!"Invalid formatting for {FILE}"
+  match Json.parse (← IO.FS.readFile FILE) with
+  | .ok json => pure $ Lean.fromJson? json
+  | .error e => return .error s!"Error when parsing {FILE}: {e}"
 
 end Cache.Config
