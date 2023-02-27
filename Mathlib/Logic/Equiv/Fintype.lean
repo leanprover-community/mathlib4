@@ -8,9 +8,9 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.GroupTheory.Perm.Sign
-import Mathbin.Logic.Equiv.Defs
+import Mathlib.Data.Fintype.Basic
+import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.Logic.Equiv.Defs
 
 /-! # Equivalence between fintypes
 
@@ -54,8 +54,7 @@ theorem Function.Embedding.toEquivRange_symm_apply_self (a : α) :
 #align function.embedding.to_equiv_range_symm_apply_self Function.Embedding.toEquivRange_symm_apply_self
 
 theorem Function.Embedding.toEquivRange_eq_ofInjective :
-    f.toEquivRange = Equiv.ofInjective f f.Injective :=
-  by
+    f.toEquivRange = Equiv.ofInjective f f.Injective := by
   ext
   simp
 #align function.embedding.to_equiv_range_eq_of_injective Function.Embedding.toEquivRange_eq_ofInjective
@@ -73,8 +72,7 @@ def Equiv.Perm.viaFintypeEmbedding : Equiv.Perm β :=
 
 @[simp]
 theorem Equiv.Perm.viaFintypeEmbedding_apply_image (a : α) :
-    e.viaFintypeEmbedding f (f a) = f (e a) :=
-  by
+    e.viaFintypeEmbedding f (f a) = f (e a) := by
   rw [Equiv.Perm.viaFintypeEmbedding]
   convert Equiv.Perm.extendDomain_apply_image e _ _
 #align equiv.perm.via_fintype_embedding_apply_image Equiv.Perm.viaFintypeEmbedding_apply_image
@@ -118,8 +116,7 @@ noncomputable abbrev extendSubtype (e : { x // p x } ≃ { x // q x }) : Perm α
 #align equiv.extend_subtype Equiv.extendSubtype
 
 theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
-    e.extendSubtype x = e ⟨x, hx⟩ :=
-  by
+    e.extendSubtype x = e ⟨x, hx⟩ := by
   dsimp only [extend_subtype]
   simp only [subtype_congr, Equiv.trans_apply, Equiv.sumCongr_apply]
   rw [sum_compl_apply_symm_of_pos _ _ hx, Sum.map_inl, sum_compl_apply_inl]
@@ -132,8 +129,7 @@ theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
 #align equiv.extend_subtype_mem Equiv.extendSubtype_mem
 
 theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
-    e.extendSubtype x = e.toCompl ⟨x, hx⟩ :=
-  by
+    e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
   dsimp only [extend_subtype]
   simp only [subtype_congr, Equiv.trans_apply, Equiv.sumCongr_apply]
   rw [sum_compl_apply_symm_of_neg _ _ hx, Sum.map_inr, sum_compl_apply_inr]
