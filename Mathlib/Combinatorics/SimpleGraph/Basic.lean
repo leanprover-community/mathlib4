@@ -1286,6 +1286,13 @@ def degree : ℕ :=
   (G.neighborFinset v).card
 #align simple_graph.degree SimpleGraph.degree
 
+-- Porting note: in Lean 3 we could do `simp [← degree]`, but that gives
+-- "invalid '←' modifier, 'SimpleGraph.degree' is a declaration name to be unfolded".
+-- In any case, having this lemma is good since there's no guarantee we won't still change
+-- the definition of `degree`.
+@[simp]
+theorem card_neighborFinset_eq_degree : (G.neighborFinset v).card = G.degree v := rfl
+
 @[simp]
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
   (Set.toFinset_card _).symm
