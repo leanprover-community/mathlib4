@@ -115,9 +115,10 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
   Setoid.finite_classes_ker _
 #align simple_graph.coloring.color_classes_finite SimpleGraph.Coloring.colorClasses_finite
 
-theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
-    Fintype.card C.colorClasses ≤ Fintype.card α :=
-  Setoid.card_classes_ker_le C
+theorem Coloring.card_colorClasses_le [Fintype α]  [Fintype ↑(Setoid.classes (Setoid.ker ↑C))] [Fintype ↑C.colorClasses] :
+    Fintype.card C.colorClasses ≤ Fintype.card α := by
+  simp [colorClasses]
+  exact @Setoid.card_classes_ker_le _ _ _ C _
 #align simple_graph.coloring.card_color_classes_le SimpleGraph.Coloring.card_colorClasses_le
 
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
