@@ -2995,6 +2995,11 @@ theorem tendsto_infᵢ' {f : α → β} {x : ι → Filter α} {y : Filter β} (
   hi.mono_left <| infᵢ_le _ _
 #align filter.tendsto_infi' Filter.tendsto_infᵢ'
 
+theorem tendsto_infᵢ_infᵢ {f : α → β} {x : ι → Filter α} {y : ι → Filter β}
+    (h : ∀ i, Tendsto f (x i) (y i)) : Tendsto f (infᵢ x) (infᵢ y) :=
+  tendsto_infᵢ.2 fun i => tendsto_infᵢ' i (h i)
+#align filter.tendsto_infi_infi Filter.tendsto_infᵢ_infᵢ
+
 @[simp]
 theorem tendsto_sup {f : α → β} {x₁ x₂ : Filter α} {y : Filter β} :
     Tendsto f (x₁ ⊔ x₂) y ↔ Tendsto f x₁ y ∧ Tendsto f x₂ y := by
@@ -3009,6 +3014,11 @@ theorem Tendsto.sup {f : α → β} {x₁ x₂ : Filter α} {y : Filter β} :
 theorem tendsto_supᵢ {f : α → β} {x : ι → Filter α} {y : Filter β} :
     Tendsto f (⨆ i, x i) y ↔ ∀ i, Tendsto f (x i) y := by simp only [Tendsto, map_supᵢ, supᵢ_le_iff]
 #align filter.tendsto_supr Filter.tendsto_supᵢ
+
+theorem tendsto_supᵢ_supᵢ {f : α → β} {x : ι → Filter α} {y : ι → Filter β}
+    (h : ∀ i, Tendsto f (x i) (y i)) : Tendsto f (supᵢ x) (supᵢ y) :=
+  tendsto_supᵢ.2 fun i => (h i).mono_right <| le_supᵢ _ _
+#align filter.tendsto_supr_supr Filter.tendsto_supᵢ_supᵢ
 
 @[simp] theorem tendsto_principal {f : α → β} {l : Filter α} {s : Set β} :
     Tendsto f l (𝓟 s) ↔ ∀ᶠ a in l, f a ∈ s := by
