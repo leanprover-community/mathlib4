@@ -228,13 +228,11 @@ theorem coe_int_ofDigits (b : ℕ) (L : List ℕ) : ((ofDigits b L : ℕ) : ℤ)
   · dsimp [ofDigits]; push_cast; simp only
 #align nat.coe_int_of_digits Nat.coe_int_ofDigits
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem digits_zero_of_eq_zero {b : ℕ} (h : b ≠ 0) :
-    ∀ {L : List ℕ} (h0 : ofDigits b L = 0), ∀ l ∈ L, l = 0
-  | a :: L, h0, l, Or.inl rfl => Nat.eq_zero_of_add_eq_zero_right h0
-  | a :: L, h0, l, Or.inr hL =>
-    digits_zero_of_eq_zero (mul_right_injective₀ h (Nat.eq_zero_of_add_eq_zero_left h0)) _ hL
+    ∀ {L : List ℕ} (_ : ofDigits b L = 0), ∀ l ∈ L, l = 0
+  | _ :: _, h0, _, List.Mem.head .. => Nat.eq_zero_of_add_eq_zero_right h0
+  | _ :: _, h0, _, List.Mem.tail _ hL =>
+    digits_zero_of_eq_zero h (mul_right_injective₀ h (Nat.eq_zero_of_add_eq_zero_left h0)) _ hL
 #align nat.digits_zero_of_eq_zero Nat.digits_zero_of_eq_zero
 
 theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L, l < b)
