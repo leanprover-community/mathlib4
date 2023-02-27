@@ -8,9 +8,9 @@ Authors: Rémy Degenne
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Ennreal
-import Mathbin.Order.Filter.CountableInter
-import Mathbin.Order.LiminfLimsup
+import Mathlib.Data.Real.Ennreal
+import Mathlib.Order.Filter.CountableInter
+import Mathlib.Order.LiminfLimsup
 
 /-!
 # Order properties of extended non-negative reals
@@ -28,8 +28,7 @@ namespace Ennreal
 variable {α : Type _} {f : Filter α}
 
 theorem eventually_le_limsup [CountableInterFilter f] (u : α → ℝ≥0∞) :
-    ∀ᶠ y in f, u y ≤ f.limsup u :=
-  by
+    ∀ᶠ y in f, u y ≤ f.limsup u := by
   by_cases hx_top : f.limsup u = ⊤
   · simp_rw [hx_top]
     exact eventually_of_forall fun a => le_top
@@ -60,8 +59,7 @@ theorem limsup_eq_zero_iff [CountableInterFilter f] {u : α → ℝ≥0∞} : f.
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic filter.is_bounded_default -/
 theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
-    (f.limsup fun x : α => a * u x) = a * f.limsup u :=
-  by
+    (f.limsup fun x : α => a * u x) = a * f.limsup u := by
   by_cases ha_zero : a = 0
   · simp_rw [ha_zero, zero_mul, ← Ennreal.bot_eq_zero]
     exact limsup_const_bot
@@ -81,8 +79,7 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
 #align ennreal.limsup_const_mul_of_ne_top Ennreal.limsup_const_mul_of_ne_top
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
-    (f.limsup fun x : α => a * u x) = a * f.limsup u :=
-  by
+    (f.limsup fun x : α => a * u x) = a * f.limsup u := by
   by_cases ha_top : a ≠ ⊤
   · exact limsup_const_mul_of_ne_top ha_top
   push_neg  at ha_top
@@ -134,8 +131,7 @@ theorem limsup_add_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
 theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [CountableInterFilter f]
     {g : Filter β} (u : α → β → ℝ≥0∞) :
     (f.limsup fun a : α => g.liminf fun b : β => u a b) ≤
-      g.liminf fun b => f.limsup fun a => u a b :=
-  by
+      g.liminf fun b => f.limsup fun a => u a b := by
   have h1 : ∀ᶠ a in f, ∀ b, u a b ≤ f.limsup fun a' => u a' b :=
     by
     rw [eventually_countable_forall]

@@ -948,6 +948,7 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.Curry
+import Mathlib.Order.Filter.Ennreal
 import Mathlib.Order.Filter.Extr
 import Mathlib.Order.Filter.FilterProduct
 import Mathlib.Order.Filter.Germ
