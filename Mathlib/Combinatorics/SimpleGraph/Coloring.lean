@@ -12,7 +12,6 @@ import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Order.Antichain
-import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Graph Coloring
@@ -77,10 +76,10 @@ theorem Coloring.valid {v w : V} (h : G.Adj v w) : C v ≠ C w :=
   C.map_rel h
 #align simple_graph.coloring.valid SimpleGraph.Coloring.valid
 
-/-- Construct a term of `simple_graph.coloring` using a function that
+/-- Construct a term of `SimpleGraph.Coloring` using a function that
 assigns vertices to colors and a proof that it is as proper coloring.
 
-(Note: this is a definitionally the constructor for `simple_graph.hom`,
+(Note: this is a definitionally the constructor for `SimpleGraph.Hom`,
 but with a syntactically better proper coloring hypothesis.)
 -/
 @[match_pattern]
@@ -445,7 +444,7 @@ theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) {n : ℕ
   simp
 #align simple_graph.is_clique.card_le_of_colorable SimpleGraph.IsClique.card_le_of_colorable
 
--- TODO eliminate `finite V` constraint once chromatic numbers are refactored.
+-- TODO eliminate `Finite V` constraint once chromatic numbers are refactored.
 -- This is just to ensure the chromatic number exists.
 theorem IsClique.card_le_chromaticNumber [Finite V] {s : Finset V} (h : G.IsClique s) :
     s.card ≤ G.chromaticNumber := by
@@ -461,7 +460,7 @@ protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n 
   exact Nat.lt_le_antisymm hm (h.card_le_of_colorable hc)
 #align simple_graph.colorable.clique_free SimpleGraph.Colorable.cliqueFree
 
--- TODO eliminate `finite V` constraint once chromatic numbers are refactored.
+-- TODO eliminate `Finite V` constraint once chromatic numbers are refactored.
 -- This is just to ensure the chromatic number exists.
 theorem cliqueFree_of_chromaticNumber_lt [Finite V] {n : ℕ} (hc : G.chromaticNumber < n) :
     G.CliqueFree n :=
