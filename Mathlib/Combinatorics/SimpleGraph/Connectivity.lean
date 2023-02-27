@@ -834,31 +834,34 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
   edges_nodup : p.edges.Nodup
 #align simple_graph.walk.is_trail SimpleGraph.Walk.IsTrail
 
-/- ./././Mathport/Syntax/Translate/Command.lean:417:11: unsupported: advanced extends in structure -/
 /-- A *path* is a walk with no repeating vertices.
 Use `simple_graph.walk.is_path.mk'` for a simpler constructor. -/
-structure IsPath {u v : V} (p : G.Walk u v) extends
-  "./././Mathport/Syntax/Translate/Command.lean:417:11: unsupported: advanced extends in structure" :
-  Prop where
+structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
   support_nodup : p.support.Nodup
 #align simple_graph.walk.is_path SimpleGraph.Walk.IsPath
 
-/- ./././Mathport/Syntax/Translate/Command.lean:417:11: unsupported: advanced extends in structure -/
+-- porting note: used to use `extends to_trail : is_trail p` in structure
+protected lemma IsPath.isTrail (h : IsPath p) : IsTrail p := h.toIsTrail
+#align simple_graph.walk.is_path.to_trail SimpleGraph.Walk.IsPath.isTrail
+
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
-structure IsCircuit {u : V} (p : G.Walk u u) extends
-  "./././Mathport/Syntax/Translate/Command.lean:417:11: unsupported: advanced extends in structure" :
-  Prop where
+structure IsCircuit {u : V} (p : G.Walk u u) extends IsTrail p : Prop where
   ne_nil : p ≠ nil
 #align simple_graph.walk.is_circuit SimpleGraph.Walk.IsCircuit
 
-/- ./././Mathport/Syntax/Translate/Command.lean:417:11: unsupported: advanced extends in structure -/
+-- porting note: used to use `extends to_trail : is_trail p` in structure
+protected lemma IsCircuit.isTrail (h : IsCircuit p) : IsTrail p := h.toIsTrail
+#align simple_graph.walk.is_circuit.to_trail SimpleGraph.Walk.IsCircuit.isTrail
+
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
 is `u` (which appears exactly twice). -/
-structure IsCycle {u : V} (p : G.Walk u u) extends
-  "./././Mathport/Syntax/Translate/Command.lean:417:11: unsupported: advanced extends in structure" :
-  Prop where
+structure IsCycle {u : V} (p : G.Walk u u) extends IsCircuit p : Prop where
   support_nodup : p.support.tail.Nodup
 #align simple_graph.walk.is_cycle SimpleGraph.Walk.IsCycle
+
+-- porting note: used to use `extends to_circuit : is_circuit p` in structure
+protected lemma IsCycle.isCircuit (h : IsCycle p) : IsCircuit p := h.toIsCircuit
+#align simple_graph.walk.is_cycle.to_circuit SimpleGraph.Walk.IsCycle.isCircuit
 
 theorem isTrail_def {u v : V} (p : G.Walk u v) : p.IsTrail ↔ p.edges.Nodup :=
   ⟨IsTrail.edges_nodup, fun h => ⟨h⟩⟩
@@ -871,7 +874,7 @@ theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
   rfl
 #align simple_graph.walk.is_trail_copy SimpleGraph.Walk.isTrail_copy
 
-theorem IsPath.mk' {u v : V} {p : G.Walk u v} (h : p.support.Nodup) : IsPath p :=
+theorem IsPath.mk' {u v : V} {p : G.Walk u v} (h : p.support.Nodup) : p.IsPath :=
   ⟨⟨edges_nodup_of_support_nodup h⟩, h⟩
 #align simple_graph.walk.is_path.mk' SimpleGraph.Walk.IsPath.mk'
 
@@ -886,7 +889,7 @@ theorem isPath_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
   rfl
 #align simple_graph.walk.is_path_copy SimpleGraph.Walk.isPath_copy
 
-theorem isCircuit_def {u : V} (p : G.Walk u u) : p.IsCircuit ↔ IsTrail p ∧ p ≠ nil :=
+theorem isCircuit_def {u : V} (p : G.Walk u u) : p.IsCircuit ↔ p.IsTrail ∧ p ≠ nil :=
   Iff.intro (fun h => ⟨h.1, h.2⟩) fun h => ⟨h.1, h.2⟩
 #align simple_graph.walk.is_circuit_def SimpleGraph.Walk.isCircuit_def
 
@@ -898,13 +901,13 @@ theorem isCircuit_copy {u u'} (p : G.Walk u u) (hu : u = u') :
 #align simple_graph.walk.is_circuit_copy SimpleGraph.Walk.isCircuit_copy
 
 theorem isCycle_def {u : V} (p : G.Walk u u) :
-    p.IsCycle ↔ IsTrail p ∧ p ≠ nil ∧ p.support.tail.Nodup :=
+    p.IsCycle ↔ p.IsTrail ∧ p ≠ nil ∧ p.support.tail.Nodup :=
   Iff.intro (fun h => ⟨h.1.1, h.1.2, h.2⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
 #align simple_graph.walk.is_cycle_def SimpleGraph.Walk.isCycle_def
 
 @[simp]
-theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') : (p.copy hu hu).IsCycle ↔ p.IsCycle :=
-  by
+theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
+    (p.copy hu hu).IsCycle ↔ p.IsCycle := by
   subst_vars
   rfl
 #align simple_graph.walk.is_cycle_copy SimpleGraph.Walk.isCycle_copy
@@ -915,16 +918,16 @@ theorem IsTrail.nil {u : V} : (nil : G.Walk u u).IsTrail :=
 #align simple_graph.walk.is_trail.nil SimpleGraph.Walk.IsTrail.nil
 
 theorem IsTrail.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
-    (cons h p).IsTrail → p.IsTrail := by simp [is_trail_def]
+    (cons h p).IsTrail → p.IsTrail := by simp [isTrail_def]
 #align simple_graph.walk.is_trail.of_cons SimpleGraph.Walk.IsTrail.of_cons
 
 @[simp]
 theorem cons_isTrail_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).IsTrail ↔ p.IsTrail ∧ ⟦(u, v)⟧ ∉ p.edges := by simp [is_trail_def, and_comm']
+    (cons h p).IsTrail ↔ p.IsTrail ∧ ⟦(u, v)⟧ ∉ p.edges := by simp [isTrail_def, and_comm]
 #align simple_graph.walk.cons_is_trail_iff SimpleGraph.Walk.cons_isTrail_iff
 
 theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.IsTrail := by
-  simpa [is_trail_def] using h
+  simpa [isTrail_def] using h
 #align simple_graph.walk.is_trail.reverse SimpleGraph.Walk.IsTrail.reverse
 
 @[simp]
@@ -937,13 +940,13 @@ theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p
 
 theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (h : (p.append q).IsTrail) : p.IsTrail := by
-  rw [is_trail_def, edges_append, List.nodup_append] at h
+  rw [isTrail_def, edges_append, List.nodup_append] at h
   exact ⟨h.1⟩
 #align simple_graph.walk.is_trail.of_append_left SimpleGraph.Walk.IsTrail.of_append_left
 
 theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (h : (p.append q).IsTrail) : q.IsTrail := by
-  rw [is_trail_def, edges_append, List.nodup_append] at h
+  rw [isTrail_def, edges_append, List.nodup_append] at h
   exact ⟨h.2.1⟩
 #align simple_graph.walk.is_trail.of_append_right SimpleGraph.Walk.IsTrail.of_append_right
 
@@ -957,42 +960,42 @@ theorem IsTrail.count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h
   List.count_eq_one_of_mem h.edges_nodup he
 #align simple_graph.walk.is_trail.count_edges_eq_one SimpleGraph.Walk.IsTrail.count_edges_eq_one
 
-theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by fconstructor <;> simp
+theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 #align simple_graph.walk.is_path.nil SimpleGraph.Walk.IsPath.nil
 
 theorem IsPath.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
-    (cons h p).IsPath → p.IsPath := by simp [is_path_def]
+    (cons h p).IsPath → p.IsPath := by simp [isPath_def]
 #align simple_graph.walk.is_path.of_cons SimpleGraph.Walk.IsPath.of_cons
 
 @[simp]
 theorem cons_isPath_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).IsPath ↔ p.IsPath ∧ u ∉ p.support := by
-  constructor <;> simp (config := { contextual := true }) [is_path_def]
+  constructor <;> simp (config := { contextual := true }) [isPath_def]
 #align simple_graph.walk.cons_is_path_iff SimpleGraph.Walk.cons_isPath_iff
 
 @[simp]
 theorem isPath_iff_eq_nil {u : V} (p : G.Walk u u) : p.IsPath ↔ p = nil := by
-  cases p <;> simp [is_path.nil]
+  cases p <;> simp [IsPath.nil]
 #align simple_graph.walk.is_path_iff_eq_nil SimpleGraph.Walk.isPath_iff_eq_nil
 
 theorem IsPath.reverse {u v : V} {p : G.Walk u v} (h : p.IsPath) : p.reverse.IsPath := by
-  simpa [is_path_def] using h
+  simpa [isPath_def] using h
 #align simple_graph.walk.is_path.reverse SimpleGraph.Walk.IsPath.reverse
 
 @[simp]
 theorem isPath_reverse_iff {u v : V} (p : G.Walk u v) : p.reverse.IsPath ↔ p.IsPath := by
-  constructor <;> intro h <;> convert h.reverse <;> simp
+  constructor <;> intro h <;> convert h.reverse; simp
 #align simple_graph.walk.is_path_reverse_iff SimpleGraph.Walk.isPath_reverse_iff
 
 theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by
-  simp only [is_path_def, support_append]
+  simp only [isPath_def, support_append]
   exact List.Nodup.of_append_left
 #align simple_graph.walk.is_path.of_append_left SimpleGraph.Walk.IsPath.of_append_left
 
 theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (h : (p.append q).IsPath) : q.IsPath := by
-  rw [← is_path_reverse_iff] at h⊢
+  rw [← isPath_reverse_iff] at h ⊢
   rw [reverse_append] at h
   apply h.of_append_left
 #align simple_graph.walk.is_path.of_append_right SimpleGraph.Walk.IsPath.of_append_right
@@ -1003,9 +1006,9 @@ theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬⟦(u, v)⟧ ∈ p.edges := by
-  simp only [walk.is_cycle_def, walk.is_path_def, walk.is_trail_def, edges_cons, List.nodup_cons,
+  simp only [Walk.isCycle_def, Walk.isPath_def, Walk.isTrail_def, edges_cons, List.nodup_cons,
     support_cons, List.tail_cons]
-  have : p.support.nodup → p.edges.nodup := edges_nodup_of_support_nodup
+  have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
   tauto
 #align simple_graph.walk.cons_is_cycle_iff SimpleGraph.Walk.cons_isCycle_iff
 
