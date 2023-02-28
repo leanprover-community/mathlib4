@@ -155,9 +155,9 @@ theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
 #align order.ideal.coe_subset_coe Order.Ideal.coe_subset_coe
 
 -- @[simp] -- Porting note: simp can prove this
-theorem coe_sSubset_coe : (s : Set P) ⊂ t ↔ s < t :=
+theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
   Iff.rfl
-#align order.ideal.coe_ssubset_coe Order.Ideal.coe_sSubset_coe
+#align order.ideal.coe_ssubset_coe Order.Ideal.coe_ssubset_coe
 
 @[trans]
 theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈ J :=
@@ -360,7 +360,7 @@ section SemilatticeSupDirected
 variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J K s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
-instance : HasInf (Ideal P) :=
+instance : Inf (Ideal P) :=
   ⟨fun I J ↦
     { toLowerSet := I.toLowerSet ⊓ J.toLowerSet
       nonempty' := inter_nonempty I J
@@ -368,7 +368,7 @@ instance : HasInf (Ideal P) :=
 
 /-- The supremum of two ideals of a co-directed order is the union of the down sets of the pointwise
 supremum of `I` and `J`. -/
-instance : HasSup (Ideal P) :=
+instance : Sup (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by

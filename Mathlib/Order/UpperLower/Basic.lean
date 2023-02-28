@@ -424,6 +424,11 @@ theorem ext {s t : UpperSet α} : (s : Set α) = t → s = t :=
   SetLike.ext'
 #align upper_set.ext UpperSet.ext
 
+/-- See Note [custom simps projection]. -/
+def Simps.coe (s : UpperSet α) : Set α := s
+
+initialize_simps_projections UpperSet (carrier → coe)
+
 @[simp]
 theorem carrier_eq_coe (s : UpperSet α) : s.carrier = s :=
   rfl
@@ -445,6 +450,11 @@ namespace LowerSet
 instance : SetLike (LowerSet α) α where
   coe := LowerSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
+
+/-- See Note [custom simps projection]. -/
+def Simps.coe (s : LowerSet α) : Set α := s
+
+initialize_simps_projections LowerSet (carrier → coe)
 
 @[ext]
 theorem ext {s t : LowerSet α} : (s : Set α) = t → s = t :=
@@ -473,10 +483,10 @@ namespace UpperSet
 
 variable {S : Set (UpperSet α)} {s t : UpperSet α} {a : α}
 
-instance : HasSup (UpperSet α) :=
+instance : Sup (UpperSet α) :=
   ⟨fun s t => ⟨s ∩ t, s.upper.inter t.upper⟩⟩
 
-instance : HasInf (UpperSet α) :=
+instance : Inf (UpperSet α) :=
   ⟨fun s t => ⟨s ∪ t, s.upper.union t.upper⟩⟩
 
 instance : Top (UpperSet α) :=
@@ -622,10 +632,10 @@ namespace LowerSet
 
 variable {S : Set (LowerSet α)} {s t : LowerSet α} {a : α}
 
-instance : HasSup (LowerSet α) :=
+instance : Sup (LowerSet α) :=
   ⟨fun s t => ⟨s ∪ t, fun _ _ h => Or.imp (s.lower h) (t.lower h)⟩⟩
 
-instance : HasInf (LowerSet α) :=
+instance : Inf (LowerSet α) :=
   ⟨fun s t => ⟨s ∩ t, fun _ _ h => And.imp (s.lower h) (t.lower h)⟩⟩
 
 instance : Top (LowerSet α) :=

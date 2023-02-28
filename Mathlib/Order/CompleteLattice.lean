@@ -403,8 +403,8 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
   { i with
-    min := HasInf.inf
-    max := HasSup.sup
+    min := Inf.inf
+    max := Sup.sup
     min_def := fun a b => by
       split_ifs with h
       . simp [h]
@@ -1978,7 +1978,7 @@ end CompleteLattice
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
 @[reducible]
-protected def Function.Injective.completeLattice [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α]
+protected def Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_supₛ : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a) (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a)

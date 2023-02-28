@@ -45,6 +45,7 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
   map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop_cat
   /-- A functor preserves composition. -/
   map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop_cat
+
 #align category_theory.functor CategoryTheory.Functor
 #align category_theory.functor.map_comp CategoryTheory.Functor.map_comp
 #align category_theory.functor.map_id CategoryTheory.Functor.map_id

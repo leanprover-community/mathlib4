@@ -212,7 +212,7 @@ theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ =>
 theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
 #align concept.snd_injective Concept.snd_injective
 
-instance : HasSup (Concept α β r) :=
+instance : Sup (Concept α β r) :=
   ⟨fun c d =>
     { fst := extentClosure r (c.snd ∩ d.snd)
       snd := c.snd ∩ d.snd
@@ -221,7 +221,7 @@ instance : HasSup (Concept α β r) :=
           intentClosure_extentClosure_intentClosure]
       closure_snd := rfl }⟩
 
-instance : HasInf (Concept α β r) :=
+instance : Inf (Concept α β r) :=
   ⟨fun c d =>
     { fst := c.fst ∩ d.fst
       snd := intentClosure r (c.fst ∩ d.fst)
@@ -301,11 +301,11 @@ instance : InfSet (Concept α β r) :=
 instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConceptToLEToPreorderToPartialOrderInstSemilatticeInfConcept with
-    sup := Concept.instHasSupConcept.sup
+    sup := Concept.instSupConcept.sup
     le_supₛ := fun _ _ hc => snd_subset_snd_iff.1 <| binterᵢ_subset_of_mem hc
     supₛ_le := fun _ _ hc =>
       snd_subset_snd_iff.1 <| subset_interᵢ₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
-    inf := Concept.instHasInfConcept.inf
+    inf := Concept.instInfConcept.inf
     infₛ_le := fun _ _ => binterᵢ_subset_of_mem
     le_infₛ := fun _ _ => subset_interᵢ₂ }
 
