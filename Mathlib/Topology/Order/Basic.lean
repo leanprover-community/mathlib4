@@ -401,6 +401,9 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
+theorem Covby.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
+  empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Ioi' h.1
+
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
 #align Ioc_mem_nhds_within_Ioi Ioc_mem_nhdsWithin_Ioi
@@ -459,6 +462,9 @@ theorem Ioo_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ioo a c ∈ �
 -- porting note: new lemma; todo: swap `'`?
 theorem Ioo_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[<] b :=
   Ioo_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
+
+theorem Covby.nhdsWithin_Iio {a b : α} (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
+  empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Iio' h.1
 
 theorem Ico_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
@@ -1556,6 +1562,17 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' 
   (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 4
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset' mem_nhdsWithin_Ioi_iff_exists_Ioo_subset'
 
+theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
+  let ⟨_, h⟩ := h
+  ⟨fun _ => mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' h⟩
+
+theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
+  by_cases ha : IsTop a
+  · simp [ha, ha.isMax.Ioi_eq]
+  · simp only [ha, false_or]
+    rw [isTop_iff_isMax, not_isMax_iff] at ha
+    simp only [(nhdsWithin_Ioi_basis' ha).eq_bot_iff, covby_iff_Ioo_eq]
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u`. -/
 theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : Set α} :
@@ -1563,6 +1580,19 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : S
   let ⟨_u', hu'⟩ := exists_gt a
   mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' hu'
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset mem_nhdsWithin_Ioi_iff_exists_Ioo_subset
+
+/-- The set of points which are isolated on the right is countable when the space is
+second-countable. -/
+theorem countable_setOf_isolated_right [SecondCountableTopology α] :
+    { x : α | 𝓝[>] x = ⊥ }.Countable := by
+  simp only [nhdsWithin_Ioi_eq_bot_iff, setOf_or]
+  exact (subsingleton_isTop α).countable.union countable_setOf_covby_right
+
+/-- The set of points which are isolated on the left is countable when the space is
+second-countable. -/
+theorem countable_setOf_isolated_left [SecondCountableTopology α] :
+    { x : α | 𝓝[<] x = ⊥ }.Countable :=
+  countable_setOf_isolated_right (α := αᵒᵈ)
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
@@ -1622,6 +1652,14 @@ theorem mem_nhdsWithin_Iio_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered
   have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
   simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
 #align mem_nhds_within_Iio_iff_exists_Ico_subset mem_nhdsWithin_Iio_iff_exists_Ico_subset
+
+theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
+  let ⟨_, h⟩ := h
+  ⟨fun _ => mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h⟩
+
+theorem nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
+    convert nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a)
+    exact funext <| fun _ => propext ofDual_covby_ofDual_iff
 
 open List in
 /-- The following statements are equivalent:
