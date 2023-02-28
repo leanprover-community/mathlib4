@@ -36,8 +36,6 @@ open Denumerable Encodable Function
 
 namespace Nat
 
-#align nat.elim Nat.rec
-
 -- porting note: elim is no longer required because lean 4 is better
 -- at inferring motive types (I think this is the reason)
 -- and worst case, we can always explicitly write (motive := fun _ => C)
@@ -47,10 +45,13 @@ namespace Nat
 -- def elim {C : Sort _} : C → (ℕ → C → C) → ℕ → C :=
 --   @Nat.rec fun _ => C
 -- example {C : Sort _} (base : C) (succ : ℕ → C → C) (a : ℕ) :
---   a.elim base succ = a.recOn base succ := rfl
+--   a.elim base succ = a.rec base succ := rfl
 
+#align nat.elim Nat.rec
 
-#align nat.cases Nat.casesOn
+#align nat.elim_zero Nat.rec_zero
+
+#align nat.elim_succ Nat.rec_add_one
 
 -- porting note: cases is no longer required because lean 4 is better
 -- at inferring motive types (I think this is the reason)
@@ -60,6 +61,12 @@ namespace Nat
 --   Nat.elim a fun n _ => f n
 -- example {C : Sort _} (a : C) (f : ℕ → C) (n : ℕ) :
 --   n.cases a f = n.casesOn a f := rfl
+
+#align nat.cases Nat.casesOn
+
+#align nat.cases_zero Nat.rec_zero
+
+#align nat.cases_succ Nat.rec_add_one
 
 /-- Calls the given function on a pair of entries `n`, encoded via the pairing function. -/
 @[simp, reducible]
@@ -322,7 +329,7 @@ instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β)
       fun n => by
       simp [Nat.unpaired]
       cases @decode α _ n.unpair.1; · simp
-      cases @ decode β _ n.unpair.2 <;> simp⟩
+      cases @decode β _ n.unpair.2 <;> simp⟩
 #align primcodable.prod Primcodable.prod
 
 end Primcodable
@@ -725,13 +732,13 @@ theorem _root_.PrimrecPred.not {p : α → Prop} [DecidablePred p] (hp : Primrec
   (Primrec.not.comp hp).of_eq fun n => by simp
 #align primrec.not PrimrecPred.not
 
-theorem _root_.PrimrecPred.and {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
-    (hq : PrimrecPred q) : PrimrecPred fun a => p a ∧ q a :=
+theorem _root_.PrimrecPred.and {p q : α → Prop} [DecidablePred p] [DecidablePred q]
+    (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∧ q a :=
   (Primrec.and.comp hp hq).of_eq fun n => by simp
 #align primrec.and PrimrecPred.and
 
-theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
-    (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
+theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePred q]
+    (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
   (Primrec.or.comp hp hq).of_eq fun n => by simp
 #align primrec.or PrimrecPred.or
 
@@ -765,12 +772,6 @@ protected theorem decode₂ : Primrec (decode₂ α) :=
   option_bind .decode <|
     option_guard (Primrec.beq.comp₂ (by exact encode_iff.mpr snd) (by exact fst.comp fst)) snd
 #align primrec.decode₂ Primrec.decode₂
-
--- TODO: Move to Data.List.Basic
--- All the `indexOf` lemmas should be generalized to `findIdx` where possible
-
--- This is copy pasted from Data.List.Basic,
--- but the lemma is hidden behind a where clause for some reason
 
 theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
   ∀ l : List β, Primrec fun a => l.findIdx (p a)
@@ -806,7 +807,7 @@ theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [∀ x n, De
         induction f x <;> simp [Nat.findGreatest, *]
 
 /-- To show a function `f : α → ℕ` is primitive recursive, it is enough to show that the function
-  is bounded by a primitive recursive function and that its graph is recursive -/
+  is bounded by a primitive recursive function and that its graph is primitive recursive -/
 theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
     (h₂ : PrimrecRel fun a b => f a = b) : Primrec f := by
   rcases h₁ with ⟨g, pg, hg : ∀ x, f x ≤ g x⟩
@@ -850,7 +851,7 @@ theorem nat_div2 : Primrec Nat.div2 :=
 
 -- porting note: this is no longer used
 -- theorem nat_boddDiv2 : Primrec Nat.boddDiv2 := pair nat_bodd nat_div2
--- #align primrec.nat_bodd_div2 Primrec.nat_boddDiv2
+#noalign primrec.nat_bodd_div2
 
 -- porting note: bit0 is deprecated
 theorem nat_double : Primrec (fun n : ℕ => 2 * n) :=
@@ -863,7 +864,8 @@ theorem nat_double_succ : Primrec (fun n : ℕ => 2 * n + 1) :=
 #align primrec.nat_bit1 Primrec.nat_double_succ
 
 -- porting note: this is no longer used
--- #align primrec.nat_div_mod Primrec.nat_div_mod
+-- theorem nat_div_mod : Primrec₂ fun n k : ℕ => (n / k, n % k) := pair nat_div nat_mod
+#noalign primrec.nat_div_mod
 
 end Primrec
 
