@@ -1460,8 +1460,12 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
   rw [coe_extend, Subtype.range_coe_subtype, setOf_mem_eq]
 #align basis.range_extend Basis.range_extend
 
+-- Porting note: adding this to make the statement of `subExtend` more readable
+def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
+LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
+
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
-noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ _) K V :=
+noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExtendIndex hs) K V :=
   let s := Set.range v
   let e : ι ≃ s := Equiv.ofInjective v hs.injective
   let b := hs.to_subtype_range.extend (subset_univ (Set.range v))
