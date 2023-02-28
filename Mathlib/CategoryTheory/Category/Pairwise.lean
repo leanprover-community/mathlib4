@@ -87,7 +87,8 @@ def comp : ∀ {o₁ o₂ o₃ : Pairwise ι} (_ : Hom o₁ o₂) (_ : Hom o₂ 
 
 section
 
--- what is the Lean4 analogue of this?
+-- porting note: aesop_cat does not support local attributes yet so that
+-- proofs had to be provided for the Category structure on `Pairwise ι`
 --attribute [local tidy] tactic.case_bash
 
 instance : Category (Pairwise ι) where
