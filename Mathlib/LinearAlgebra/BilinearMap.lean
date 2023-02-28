@@ -20,13 +20,13 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 
 ## Main declarations
 
-* `linear_map.mk₂`: a constructor for bilinear maps,
+* `LinearMap.mk₂`: a constructor for bilinear maps,
   taking an unbundled function together with proof witnesses of bilinearity
-* `linear_map.flip`: turns a bilinear map `M × N → P` into `N × M → P`
-* `linear_map.lcomp` and `linear_map.llcomp`: composition of linear maps as a bilinear map
-* `linear_map.compl₂`: composition of a bilinear map `M × N → P` with a linear map `Q → M`
-* `linear_map.compr₂`: composition of a bilinear map `M × N → P` with a linear map `Q → N`
-* `linear_map.lsmul`: scalar multiplication as a bilinear map `R × M → M`
+* `LinearMap.flip`: turns a bilinear map `M × N → P` into `N × M → P`
+* `LinearMap.lcomp` and `LinearMap.llcomp`: composition of linear maps as a bilinear map
+* `LinearMap.compl₂`: composition of a bilinear map `M × N → P` with a linear map `Q → M`
+* `LinearMap.compr₂`: composition of a bilinear map `M × N → P` with a linear map `Q → N`
+* `LinearMap.lsmul`: scalar multiplication as a bilinear map `R × M → M`
 
 ## Tags
 
@@ -94,8 +94,7 @@ variable {ρ₁₂ σ₁₂}
 
 @[simp]
 theorem mk₂'ₛₗ_apply (f : M → N → P) {H1 H2 H3 H4} (m : M) (n : N) :
-    (mk₂'ₛₗ ρ₁₂ σ₁₂ f H1 H2 H3 H4 : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) m n = f m n :=
-  rfl
+    (mk₂'ₛₗ ρ₁₂ σ₁₂ f H1 H2 H3 H4 : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) m n = f m n := rfl
 #align linear_map.mk₂'ₛₗ_apply LinearMap.mk₂'ₛₗ_apply
 
 variable (R S)
@@ -113,8 +112,7 @@ variable {R S}
 
 @[simp]
 theorem mk₂'_apply (f : M → N → Pₗ) {H1 H2 H3 H4} (m : M) (n : N) :
-    (mk₂' R S f H1 H2 H3 H4 : M →ₗ[R] N →ₗ[S] Pₗ) m n = f m n :=
-  rfl
+    (mk₂' R S f H1 H2 H3 H4 : M →ₗ[R] N →ₗ[S] Pₗ) m n = f m n := rfl
 #align linear_map.mk₂'_apply LinearMap.mk₂'_apply
 
 theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m n, f m n = g m n) : f = g :=
@@ -133,20 +131,20 @@ attribute [local instance] SMulCommClass.symm
 `P`, change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
 def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P :=
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun n₁ n₂ m => (f m).map_add _ _)
-    (fun c n m => (f m).map_smulₛₗ _ _) (fun n m₁ m₂ => by simp only [map_add, add_apply]) fun c n m => by
-    simp only [map_smulₛₗ, smul_apply]
+    (fun c n  m  => (f m).map_smulₛₗ _ _)
+    (fun n m₁ m₂ => by simp only [map_add, add_apply])
+    (fun c n  m  => by simp only [map_smulₛₗ, smul_apply])
 #align linear_map.flip LinearMap.flip
 
 end
 
 @[simp]
-theorem flip_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) : flip f n m = f m n :=
-  rfl
+theorem flip_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) : flip f n m = f m n := rfl
 #align linear_map.flip_apply LinearMap.flip_apply
 
 @[simp]
 theorem flip_flip [SMulCommClass R₂ S₂ P] (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.flip = f :=
-  LinearMap.ext₂ fun x y => (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
+  LinearMap.ext₂ fun _x _y => (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
 #align linear_map.flip_flip LinearMap.flip_flip
 
 open BigOperators
@@ -194,8 +192,7 @@ def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Subm
 #align linear_map.dom_restrict₂ LinearMap.domRestrict₂
 
 theorem domRestrict₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) (x : M) (y : q) :
-    f.domRestrict₂ q x y = f x y :=
-  rfl
+    f.domRestrict₂ q x y = f x y := rfl
 #align linear_map.dom_restrict₂_apply LinearMap.domRestrict₂_apply
 
 /-- Restricting a bilinear map in both components -/
@@ -205,8 +202,7 @@ def domRestrict₁₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (p : S
 #align linear_map.dom_restrict₁₂ LinearMap.domRestrict₁₂
 
 theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (p : Submodule R M) (q : Submodule S N)
-    (x : p) (y : q) : f.domRestrict₁₂ p q x y = f x y :=
-  rfl
+    (x : p) (y : q) : f.domRestrict₁₂ p q x y = f x y := rfl
 #align linear_map.dom_restrict₁₂_apply LinearMap.domRestrict₁₂_apply
 
 end Semiring
@@ -251,8 +247,7 @@ def mk₂ (f : M → Nₗ → Pₗ) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f
 
 @[simp]
 theorem mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
-    (mk₂ R f H1 H2 H3 H4 : M →ₗ[R] Nₗ →ₗ[R] Pₗ) m n = f m n :=
-  rfl
+    (mk₂ R f H1 H2 H3 H4 : M →ₗ[R] Nₗ →ₗ[R] Pₗ) m n = f m n := rfl
 #align linear_map.mk₂_apply LinearMap.mk₂_apply
 
 variable {R}
@@ -269,8 +264,7 @@ def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →�
 variable (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
 
 @[simp]
-theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n :=
-  rfl
+theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n := rfl
 #align linear_map.lflip_apply LinearMap.lflip_apply
 
 variable (R Pₗ)
@@ -283,12 +277,10 @@ def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[R] M →ₗ[R] P
 variable {R Pₗ}
 
 @[simp]
-theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp _ _ f g x = g (f x) :=
-  rfl
+theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp _ _ f g x = g (f x) := rfl
 #align linear_map.lcomp_apply LinearMap.lcomp_apply
 
-theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f :=
-  rfl
+theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp R Pₗ f g = g ∘ₗ f := rfl
 #align linear_map.lcomp_apply' LinearMap.lcomp_apply'
 
 variable (P σ₂₃)
@@ -303,8 +295,7 @@ variable {P σ₂₃}
 
 @[simp]
 theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
-    lcompₛₗ P σ₂₃ f g x = g (f x) :=
-  rfl
+    lcompₛₗ P σ₂₃ f g x = g (f x) := rfl
 #align linear_map.lcompₛₗ_apply LinearMap.lcompₛₗ_apply
 
 variable (R M Nₗ Pₗ)
@@ -313,8 +304,8 @@ variable (R M Nₗ Pₗ)
 def llcomp : (Nₗ →ₗ[R] Pₗ) →ₗ[R] (M →ₗ[R] Nₗ) →ₗ[R] M →ₗ[R] Pₗ :=
   flip
     { toFun := lcomp R Pₗ
-      map_add' := fun f f' => ext₂ fun g x => g.map_add _ _
-      map_smul' := fun (c : R) f => ext₂ fun g x => g.map_smul _ _ }
+      map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
+      map_smul' := fun (_c : R) _f => ext₂ fun g _x => g.map_smul _ _ }
 #align linear_map.llcomp LinearMap.llcomp
 
 variable {R M Nₗ Pₗ}
@@ -323,12 +314,10 @@ section
 
 @[simp]
 theorem llcomp_apply (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (x : M) :
-    llcomp R M Nₗ Pₗ f g x = f (g x) :=
-  rfl
+    llcomp R M Nₗ Pₗ f g x = f (g x) := rfl
 #align linear_map.llcomp_apply LinearMap.llcomp_apply
 
-theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g :=
-  rfl
+theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g := rfl
 #align linear_map.llcomp_apply' LinearMap.llcomp_apply'
 
 end
@@ -340,8 +329,7 @@ def compl₂ (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₃] Q →ₛₗ[�
 #align linear_map.compl₂ LinearMap.compl₂
 
 @[simp]
-theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) :=
-  rfl
+theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) := rfl
 #align linear_map.compl₂_apply LinearMap.compl₂_apply
 
 @[simp]
@@ -359,8 +347,7 @@ def compl₁₂ (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] M�
 
 @[simp]
 theorem compl₁₂_apply (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →ₗ[R] Mₗ) (g' : Qₗ' →ₗ[R] Nₗ) (x : Qₗ)
-    (y : Qₗ') : f.compl₁₂ g g' x y = f (g x) (g' y) :=
-  rfl
+    (y : Qₗ') : f.compl₁₂ g g' x y = f (g x) (g' y) := rfl
 #align linear_map.compl₁₂_apply LinearMap.compl₁₂_apply
 
 @[simp]
@@ -392,8 +379,7 @@ def compr₂ (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) : M
 
 @[simp]
 theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (m : M) (n : Nₗ) :
-    f.compr₂ g m n = g (f m n) :=
-  rfl
+    f.compr₂ g m n = g (f m n) := rfl
 #align linear_map.compr₂_apply LinearMap.compr₂_apply
 
 variable (R M)
@@ -407,8 +393,7 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 variable {R M}
 
 @[simp]
-theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m :=
-  rfl
+theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
 end CommSemiring
@@ -432,7 +417,8 @@ theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
   smul_right_injective _ hx
 #align linear_map.lsmul_injective LinearMap.lsmul_injective
 
-theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) : LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
+theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
+  LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 #align linear_map.ker_lsmul LinearMap.ker_lsmul
 
@@ -441,4 +427,3 @@ end AddCommGroup
 end CommRing
 
 end LinearMap
-
