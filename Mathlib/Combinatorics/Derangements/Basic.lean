@@ -169,7 +169,7 @@ theorem RemoveNone.fiber_some (a : α) :
         apply Option.some_ne_none
       have ne_1 : some x ≠ none := Option.some_ne_none _
       have ne_2 : some x ≠ some a := (Option.some_injective α).ne_iff.mpr x_vs_a
-      rw [swap_apply_of_ne_of_ne ne_1 ne_2, (Option.some_injective α).ne_iff]
+      rw [swap_apply_of_ne_of_ne ne_1 ne_2, Option.some.injEq]
       intro contra
       exact x_vs_a (h_opfp contra)
     · rw [apply_symm_apply]
