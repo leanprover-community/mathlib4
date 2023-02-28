@@ -329,6 +329,7 @@ import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.DFA
