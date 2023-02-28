@@ -318,10 +318,13 @@ theorem Summable.add (hf : Summable f) (hg : Summable g) : Summable fun b => f b
 
 theorem hasSum_sum {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasSum (f i) (a i)) → HasSum (fun b => ∑ i in s, f i b) (∑ i in s, a i) :=
-  Finset.induction_on s (by simp only [hasSum_zero, sum_empty, forall_true_iff])
-    (by
-      simp (config := { contextual := true }) only [HasSum.add, sum_insert, mem_insert,
-        forall_eq_or_imp, forall₂_true_iff, not_false_iff, forall_true_iff])
+  Finset.induction_on s (by simp only [hasSum_zero, sum_empty, forall_true_iff]) <| by
+    -- Porting note: with some help, `simp` used to be able to close the goal
+    simp (config := { contextual := true }) only [mem_insert, forall_eq_or_imp, not_false_iff,
+      sum_insert, and_imp]
+    exact fun x s _ IH hx h ↦ hx.add (IH h)
+
+
 #align has_sum_sum hasSum_sum
 
 theorem summable_sum {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Summable (f i)) :
@@ -703,12 +706,12 @@ variable [Encodable γ]
   taking a supremum. This is useful for outer measures. -/
 theorem tsum_supᵢ_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
     (∑' i : ℕ, m (⨆ b ∈ decode₂ γ i, s b)) = ∑' b : γ, m (s b) := by
-  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome :=
-    by
+  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome :=by
     intro n h
-    cases' decode₂ γ n with b
-    · refine' (h <| by simp [m0]).elim
-    · exact rfl
+    generalize decode₂ γ n = foo at *
+    cases' foo with b
+    . refine' (h <| by simp [m0]).elim
+    . exact rfl
   symm
   refine' tsum_eq_tsum_of_ne_zero_bij (fun a => Option.get (H a.1 a.2)) _ _ _
   · rintro ⟨m, hm⟩ ⟨n, hn⟩ e
