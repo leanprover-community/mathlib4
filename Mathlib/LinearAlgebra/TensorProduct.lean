@@ -73,18 +73,16 @@ end TensorProduct
 variable (R)
 
 /-- The tensor product of two modules `M` and `N` over the same commutative semiring `R`.
-The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open_locale TensorProduct`. -/
+The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. -/
 def TensorProduct : Type _ :=
   (addConGen (TensorProduct.Eqv R M N)).Quotient
 #align tensor_product TensorProduct
 
 variable {R}
 
--- mathport name: tensor_product.infer
 set_option quotPrecheck false in
 scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
--- mathport name: tensor_product
 scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
 
 namespace TensorProduct
@@ -111,17 +109,15 @@ instance : Inhabited (M ⊗[R] N) :=
 variable (R) {M N}
 
 /-- The canonical function `M → N → M ⊗ N`. The localized notations are `m ⊗ₜ n` and `m ⊗ₜ[R] n`,
-accessed by `open_locale TensorProduct`. -/
+accessed by `open scoped TensorProduct`. -/
 def tmul (m : M) (n : N) : M ⊗[R] N :=
   AddCon.mk' _ <| FreeAddMonoid.of (m, n)
 #align tensor_product.tmul TensorProduct.tmul
 
 variable {R}
 
--- mathport name: «expr ⊗ₜ »
 infixl:100 " ⊗ₜ " => tmul _
 
--- mathport name: «expr ⊗ₜ[ ] »
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- porting note: make the arguments of induction_on explicit
