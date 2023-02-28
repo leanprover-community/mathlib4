@@ -114,9 +114,7 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
 prs = {}
 fetch_args = ['git', 'fetch', 'origin']
 nums = []
-
 sync_prs = defaultdict(set)
-
 mathlib4repo = github.Github(github_token).get_repo("leanprover-community/mathlib4")
 for pr in mathlib4repo.get_pulls(state='open'):
     if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0):
@@ -160,12 +158,9 @@ for node in sorted(graph.nodes):
             mathlib4_pr=data[node]['mathlib4_pr'],
             source=data[node]['source']
         )
-
-        # This is separate from the `dict()` above to prevent tons of `sync_prs: []` in the yaml.
-        _sync_prs = list(sync_prs.get(data[node]['mathlib4_file'], set()))
+        _sync_prs = list(sync_prs[data[node]['mathlib4_file']])
         if _sync_prs:
             new_status.update(mathlib4_sync_prs=_sync_prs)
-
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
         sha = data[node]['source']['commit'] if data[node]['source']['repo'] == 'leanprover-community/mathlib' else "_"
 
@@ -182,7 +177,6 @@ for node in sorted(graph.nodes):
                 mathlib4_pr=pr_info['pr'],
                 mathlib4_file=pr_info['fname'],
                 source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
-
             labels = [{'name': l.name, 'color': l.color} for l in prs[pr_info['pr']].labels]
             if labels:
                 new_status.update(labels=labels)
