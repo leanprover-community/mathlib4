@@ -34,7 +34,7 @@ def IsIsomorphic : C → C → Prop := fun X Y => Nonempty (X ≅ Y)
 
 variable (C)
 
-/-- `is_isomorphic` defines a setoid. -/
+/-- `IsIsomorphic` defines a setoid. -/
 def isIsomorphicSetoid : Setoid C where
   r := IsIsomorphic
   iseqv := ⟨fun X => ⟨Iso.refl X⟩, fun ⟨α⟩ => ⟨α.symm⟩, fun ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩⟩
@@ -46,21 +46,21 @@ end Category
 -/
 def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quotient (isIsomorphicSetoid C.α)
-  map {C} {D} F := Quot.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
+  map {C D} F := Quot.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
     dsimp; apply funext; intro x
-    apply x.recOn  -- Porting note: `induction x` not working yet 
-    · intro _ _ p 
-      simp only [types_id_apply]
-    · intro _ 
-      rfl 
-  map_comp {C} {D} {E} f g := by -- Porting note(s): idem
-    dsimp; apply funext; intro x
-    apply x.recOn 
-    · intro _ _ _ 
+    apply x.recOn  -- Porting note: `induction x` not working yet
+    · intro _ _ p
       simp only [types_id_apply]
     · intro _
-      rfl 
+      rfl
+  map_comp {C D E} f g := by -- Porting note(s): idem
+    dsimp; apply funext; intro x
+    apply x.recOn
+    · intro _ _ _
+      simp only [types_id_apply]
+    · intro _
+      rfl
 #align category_theory.isomorphism_classes CategoryTheory.isomorphismClasses
 
 theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :
@@ -69,4 +69,3 @@ theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X 
 #align category_theory.groupoid.is_isomorphic_iff_nonempty_hom CategoryTheory.Groupoid.isIsomorphic_iff_nonempty_hom
 
 end CategoryTheory
-

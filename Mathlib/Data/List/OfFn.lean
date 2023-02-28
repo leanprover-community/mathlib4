@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.of_fn
-! leanprover-community/mathlib commit fd838fdf07a83ca89fb66d30bebf6f0e02908c3f
+! leanprover-community/mathlib commit bf27744463e9620ca4e4ebe951fe83530ae6949b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Join
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Lists from functions
@@ -20,12 +20,11 @@ of length `n`.
 
 ## Main Statements
 
-The main statements pertain to lists generated using `of_fn`
+The main statements pertain to lists generated using `List.ofFn`
 
 - `List.length_ofFn`, which tells us the length of such a list
-- `List.nth_ofFn`, which tells us the nth element of such a list
-- `List.array_eq_ofFn`, which interprets the list form of an array as such a list.
-- `List.equiv_sigma_tuple`, which is an `Equiv` between lists and the functions that generate them
+- `List.get?_ofFn`, which tells us the nth element of such a list
+- `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
   via `List.ofFn`.
 -/
 
@@ -242,10 +241,16 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
     Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt (Fin.is_lt _)]
 #align list.of_fn_fin_repeat List.ofFn_fin_repeat
 
+@[simp]
+theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
+    (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
+  simp only [pairwise_iff_get, (Fin.cast (length_ofFn f)).surjective.forall, get_ofFn,
+    OrderIso.lt_iff_lt]
+#align list.pairwise_of_fn List.pairwise_ofFn
+
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
 @[simps]
-def equivSigmaTuple : List α ≃ Σn, Fin n → α
-    where
+def equivSigmaTuple : List α ≃ Σn, Fin n → α where
   toFun l := ⟨l.length, l.get⟩
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get
