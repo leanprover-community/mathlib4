@@ -214,7 +214,7 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive "The inf of two `AddSubsemigroup`s is their intersection."]
-instance : HasInf (Subsemigroup M) :=
+instance : Inf (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
@@ -325,8 +325,8 @@ variable {S}
 open Set
 
 /-- A subsemigroup `S` includes `closure s` if and only if it includes `s`. -/
-@[simp,
-  to_additive "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
+@[to_additive (attr := simp)
+  "An additive subsemigroup `S` includes `closure s` if and only if it includes `s`"]
 theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
   ⟨Subset.trans subset_closure, fun h => infₛ_le h⟩
 #align subsemigroup.closure_le Subsemigroup.closure_le

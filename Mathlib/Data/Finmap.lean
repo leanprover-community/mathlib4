@@ -65,7 +65,6 @@ def AList.toFinmap (s : AList β) : Finmap β :=
   ⟨s.entries, s.nodupKeys⟩
 #align alist.to_finmap AList.toFinmap
 
--- mathport name: to_finmap
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
@@ -95,8 +94,7 @@ open AList
 /-- Lift a permutation-respecting function on `AList` to `Finmap`. -/
 -- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
 def liftOn {γ} (s : Finmap β) (f : AList β → γ)
-    (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ :=
-  by
+    (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ := by
   refine'
     (Quotient.liftOn s.entries
       (fun (l : List (Sigma β)) => (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ))
@@ -248,9 +246,9 @@ section
 
 variable [DecidableEq α]
 
-instance hasDecidableEq [∀ a, DecidableEq (β a)] : DecidableEq (Finmap β)
+instance decidableEq [∀ a, DecidableEq (β a)] : DecidableEq (Finmap β)
   | _, _ => decidable_of_iff _ ext_iff
-#align finmap.has_decidable_eq Finmap.hasDecidableEq
+#align finmap.has_decidable_eq Finmap.decidableEq
 
 /-! ### lookup -/
 
@@ -301,8 +299,7 @@ theorem mem_of_lookup_eq_some {a : α} {b : β a} {s : Finmap β} (h : s.lookup 
 #align finmap.mem_of_lookup_eq_some Finmap.mem_of_lookup_eq_some
 
 theorem ext_lookup {s₁ s₂ : Finmap β} : (∀ x, s₁.lookup x = s₂.lookup x) → s₁ = s₂ :=
-  induction_on₂ s₁ s₂ fun s₁ s₂ h =>
-    by
+  induction_on₂ s₁ s₂ fun s₁ s₂ h => by
     simp only [AList.lookup, lookup_toFinmap] at h
     rw [AList.toFinmap_eq]
     apply lookup_ext s₁.nodupKeys s₂.nodupKeys
@@ -348,20 +345,13 @@ def foldl {δ : Type w} (f : δ → ∀ a, β a → δ)
 
 /-- `any f s` returns `true` iff there exists a value `v` in `s` such that `f v = true`. -/
 def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
-  s.foldl (fun x y z => x ∨ f y z)
-    (by
-      intros
-      simp [or_right_comm])
-    false
+  s.foldl (fun x y z => x ∨ f y z) (fun _ _ _ _ => by simp [or_right_comm]) false
 #align finmap.any Finmap.any
 
+-- TODO: should this really return `false` if `s` is empty?
 /-- `all f s` returns `true` iff `f v = true` for all values `v` in `s`. -/
 def all (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
-  s.foldl (fun x y z => x ∧ f y z)
-    (by
-      intros
-      simp [and_right_comm])
-    false
+  s.foldl (fun x y z => x ∧ f y z) (fun _ _ _ _ => by simp [and_right_comm]) false
 #align finmap.all Finmap.all
 
 /-! ### erase -/
@@ -482,8 +472,7 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 #align finmap.to_finmap_cons Finmap.toFinmap_cons
 
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
-    a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs :=
-  by
+    a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
   induction' xs with x xs <;> [skip, cases x] <;>
       -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
       simp only [toFinmap_cons, *, not_mem_empty, exists_or, not_mem_nil, toFinmap_nil,
@@ -553,8 +542,7 @@ theorem lookup_union_right {a} {s₁ s₂ : Finmap β} : a ∉ s₁ → lookup a
 #align finmap.lookup_union_right Finmap.lookup_union_right
 
 theorem lookup_union_left_of_not_in {a} {s₁ s₂ : Finmap β} (h : a ∉ s₂) :
-    lookup a (s₁ ∪ s₂) = lookup a s₁ :=
-  by
+    lookup a (s₁ ∪ s₂) = lookup a s₁ := by
   by_cases h' : a ∈ s₁
   · rw [lookup_union_left h']
   · rw [lookup_union_right h', lookup_eq_none.mpr h, lookup_eq_none.mpr h']
@@ -583,15 +571,15 @@ theorem union_assoc {s₁ s₂ s₃ : Finmap β} : s₁ ∪ s₂ ∪ s₃ = s₁
 @[simp]
 theorem empty_union {s₁ : Finmap β} : ∅ ∪ s₁ = s₁ :=
   induction_on s₁ fun s₁ => by
-    rw [← empty_toFinmap];
-      simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    rw [← empty_toFinmap]
+    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
 #align finmap.empty_union Finmap.empty_union
 
 @[simp]
 theorem union_empty {s₁ : Finmap β} : s₁ ∪ ∅ = s₁ :=
   induction_on s₁ fun s₁ => by
-    rw [← empty_toFinmap];
-      simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    rw [← empty_toFinmap]
+    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
 #align finmap.union_empty Finmap.union_empty
 
 theorem erase_union_singleton (a : α) (b : β a) (s : Finmap β) (h : s.lookup a = some b) :

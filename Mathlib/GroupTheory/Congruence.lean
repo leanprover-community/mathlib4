@@ -1150,7 +1150,7 @@ end MulOneClass
 section Monoids
 
 /-- Multiplicative congruence relations preserve natural powers. -/
-@[to_additive AddCon.nsmul "Additive congruence relations preserve natural scaling."]
+@[to_additive "Additive congruence relations preserve natural scaling."]
 protected theorem pow {M : Type _} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
@@ -1173,7 +1173,7 @@ instance _root_.AddCon.Quotient.nsmul {M : Type _} [AddMonoid M] (c : AddCon M) 
     where smul n := (Quotient.map' ((· • ·) n)) fun _ _ => c.nsmul n
 #align add_con.quotient.has_nsmul AddCon.Quotient.nsmul
 
-@[to_additive AddCon.Quotient.nsmul]
+@[to_additive existing AddCon.Quotient.nsmul]
 instance {M : Type _} [Monoid M] (c : Con M) : Pow c.Quotient ℕ
     where pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
 
@@ -1265,7 +1265,7 @@ instance _root_.AddCon.Quotient.zsmul {M : Type _} [AddGroup M] (c : AddCon M) :
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
     division. -/
-@[to_additive AddCon.Quotient.zsmul]
+@[to_additive existing AddCon.Quotient.zsmul]
 instance zpowinst : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 #align con.has_zpow Con.zpowinst
