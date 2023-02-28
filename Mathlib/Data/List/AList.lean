@@ -347,25 +347,19 @@ theorem toAList_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 
 theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).NodupKeys) :
     (⟨c :: l, h⟩ : AList β) = insert c.1 c.2 ⟨l, nodupKeys_of_nodupKeys_cons h⟩ := by
-  simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupkeys_cons h).symm
+  simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupKeys_cons h).symm
 #align alist.mk_cons_eq_insert AList.mk_cons_eq_insert
 
-/- warning: alist.insert_rec -> AList.insertRec is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : α -> Type.{u2}} [_inst_1 : DecidableEq.{succ u1} α] {C : (AList.{u1, u2} α β) -> Sort.{u3}}, (C (EmptyCollection.emptyCollection.{max u1 u2} (AList.{u1, u2} α β) (AList.hasEmptyc.{u1, u2} α β))) -> (forall (a : α) (b : β a) (l : AList.{u1, u2} α β), (Not (Membership.Mem.{u1, max u1 u2} α (AList.{u1, u2} α β) (AList.hasMem.{u1, u2} α β) a l)) -> (C l) -> (C (AList.insert.{u1, u2} α β (fun (a : α) (b : α) => _inst_1 a b) a b l))) -> (forall (l : AList.{u1, u2} α β), C l)
-but is expected to have type
-  forall {α : Type.{u2}} {β : α -> Type.{u3}} [_inst_1 : DecidableEq.{succ u2} α] {C : (AList.{u2, u3} α β) -> Sort.{u1}}, (C (EmptyCollection.emptyCollection.{max u2 u3} (AList.{u2, u3} α β) (AList.hasEmptyc.{u2, u3} α β))) -> (forall (a : α) (b : β a) (l : AList.{u2, u3} α β), (Not (Membership.Mem.{u2, max u2 u3} α (AList.{u2, u3} α β) (AList.hasMem.{u2, u3} α β) a l)) -> (C l) -> (C (AList.insert.{u2, u3} α β (fun (a : α) (b : α) => _inst_1 a b) a b l))) -> (forall (l : AList.{u2, u3} α β), C l)
-Case conversion may be inaccurate. Consider using '#align alist.insert_rec AList.insertRecₓ'. -/
 /-- Recursion on an `alist`, using `insert`. Use as `induction l using alist.insert_rec`. -/
 @[elab_as_elim]
 def insertRec {C : AList β → Sort _} (H0 : C ∅)
-    (IH : ∀ (a : α) (b : β a) (l : AList β) (h : a ∉ l), C l → C (l.insert a b)) :
+    (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     ∀ l : AList β, C l
   | ⟨[], _⟩ => H0
   | ⟨c :: l, h⟩ => by
     rw [mk_cons_eq_insert]
-    refine' IH _ _ _ _ (insert_rec _)
-    exact not_mem_keys_of_nodupkeys_cons h
+    refine' IH _ _ _ _ (insertRec H0 IH _)
+    exact not_mem_keys_of_nodupKeys_cons h
 #align alist.insert_rec AList.insertRec
 
 -- Test that the `induction` tactic works on `insert_rec`.
@@ -373,36 +367,36 @@ example (l : AList β) : True := by induction l using AList.insertRec <;> trivia
 
 @[simp]
 theorem insertRec_empty {C : AList β → Sort _} (H0 : C ∅)
-    (IH : ∀ (a : α) (b : β a) (l : AList β) (h : a ∉ l), C l → C (l.insert a b)) :
+    (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     @insertRec α β _ C H0 IH ∅ = H0 :=
   by
-  change @insert_rec α β _ C H0 IH ⟨[], _⟩ = H0
-  rw [insert_rec]
+  change @insertRec α β _ C H0 IH ⟨[], _⟩ = H0
+  rw [insertRec]
 #align alist.insert_rec_empty AList.insertRec_empty
 
 theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
-    (IH : ∀ (a : α) (b : β a) (l : AList β) (h : a ∉ l), C l → C (l.insert a b)) {c : Sigma β}
+    (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {c : Sigma β}
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) :=
   by
   cases' l with l hl
   suffices
-    HEq (@insert_rec α β _ C H0 IH ⟨c :: l, nodupkeys_cons.2 ⟨h, hl⟩⟩)
-      (IH c.1 c.2 ⟨l, hl⟩ h (@insert_rec α β _ C H0 IH ⟨l, hl⟩))
+    HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
+      (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩))
     by
     cases c
-    apply eq_of_hEq
+    apply eq_of_heq
     convert this <;> rw [insert_of_neg h]
-  rw [insert_rec]
-  apply cast_hEq
+  rw [insertRec]
+  apply cast_heq
 #align alist.insert_rec_insert AList.insertRec_insert
 
-theorem recursion_insert_mk {C : AList β → Sort _} (H0 : C ∅)
-    (IH : ∀ (a : α) (b : β a) (l : AList β) (h : a ∉ l), C l → C (l.insert a b)) {a : α} (b : β a)
+theorem insertRec_insert_mk {C : AList β → Sort _} (H0 : C ∅)
+    (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {a : α} (b : β a)
     {l : AList β} (h : a ∉ l) :
     @insertRec α β _ C H0 IH (l.insert a b) = IH a b l h (@insertRec α β _ C H0 IH l) :=
   @insertRec_insert α β _ C H0 IH ⟨a, b⟩ l h
-#align alist.recursion_insert_mk AList.recursion_insert_mk
+#align alist.recursion_insert_mk AList.insertRec_insert_mk
 
 /-! ### extract -/
 
