@@ -99,8 +99,12 @@ To turn a linear independent family of vectors spanning `M` into a basis, use `b
 They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `basis.repr`.
 -/
-structure Basis where of_repr ::
-  repr : M ≃ₗ[R] ι →₀ R
+structure Basis where
+  /-- `Basis.of_repr` constructs a basis given an assignment of coordinates to each vector. -/
+  of_repr ::
+    /-- `repr` is the linear equivalence sending a vector `x` to its coordinates:
+    the `c`s such that `x = ∑ i, c i`. -/
+    repr : M ≃ₗ[R] ι →₀ R
 #align basis Basis
 
 end
@@ -249,7 +253,7 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
     Finsupp.fun_support_eq]
 #align basis.coe_sum_coords_eq_finsum Basis.coe_sumCoords_eq_finsum
 
-@[simp]
+@[simp high]
 theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i, b.coord i := by
   ext m
   -- Porting note: - `eq_self_iff_true`
@@ -1120,8 +1124,6 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   let u : ι ↪ w :=
     ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
       b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
-  have r : ∀ i, b i = u i := fun i => rfl
-  simp_rw [r] at e
   simp_rw [Finsupp.total_apply] at e
   -- Porting note: `change at` doesn't work
   replace e : ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) =
@@ -1131,7 +1133,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   refine' hi.total_ne_of_not_mem_support _ _ e
   simp only [Finset.mem_map, Finsupp.support_embDomain]
   rintro ⟨j, -, W⟩
-  simp only [Embedding.coeFn_mk, Subtype.mk_eq_mk, ← r] at W
+  simp only [Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
   apply q ⟨j, W⟩
 #align basis.maximal Basis.maximal
 
@@ -1460,6 +1462,10 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
 #align basis.range_extend Basis.range_extend
 
 -- Porting note: adding this to make the statement of `subExtend` more readable
+/-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
+
+The specific value of this definition should be considered an implementation detail.
+-/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
 LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
 
