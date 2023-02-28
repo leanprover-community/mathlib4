@@ -37,7 +37,7 @@ universe w v₁ v₂ v u u₂
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
 
 /-- The type of objects for the diagram indexing a pullback, defined as a special case of
-`wide_pullback_shape`. -/
+`WidePullbackShape`. -/
 abbrev WalkingCospan : Type :=
   WidePullbackShape WalkingPair
 #align category_theory.limits.walking_cospan CategoryTheory.Limits.WalkingCospan
@@ -61,7 +61,7 @@ abbrev WalkingCospan.one : WalkingCospan :=
 #align category_theory.limits.walking_cospan.one CategoryTheory.Limits.WalkingCospan.one
 
 /-- The type of objects for the diagram indexing a pushout, defined as a special case of
-`wide_pushout_shape`.
+`WidePushoutShape`.
 -/
 abbrev WalkingSpan : Type :=
   WidePushoutShape WalkingPair
@@ -352,7 +352,7 @@ def spanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
   NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩) <;> exact Iso.refl _) (by 
   intros j₁ j₂ h; cases' j₁ with u; cases' j₂ with v; cases h; dsimp; simp; cases v; cases h; dsimp;
   simp; cases h; dsimp; simp; cases u; cases h; dsimp; simp; cases j₂; cases h; cases h; simp)
-    -- (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) ⟨⟩ <;> repeat' dsimp; simp) abomination
+    -- Porting note: was (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) ⟨⟩ <;> repeat' dsimp; simp) abomination
 #align category_theory.limits.span_comp_iso CategoryTheory.Limits.spanCompIso
 
 section
@@ -697,8 +697,8 @@ def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) 
   ⟨ht.lift <| PullbackCone.mk _ _ w, ht.fac _ _, ht.fac _ _⟩
 #align category_theory.limits.pullback_cone.is_limit.lift' CategoryTheory.Limits.PullbackCone.IsLimit.lift'
 
-/-- This is a more convenient formulation to show that a `pullback_cone` constructed using
-`pullback_cone.mk` is a limit cone.
+/-- This is a more convenient formulation to show that a `PullbackCone` constructed using
+`PullbackCone.mk` is a limit cone.
 -/
 def IsLimit.mk {W : C} {fst : W ⟶ X} {snd : W ⟶ Y} (eq : fst ≫ f = snd ≫ g)
     (lift : ∀ s : PullbackCone f g, s.pt ⟶ W)
@@ -737,7 +737,7 @@ def isLimitMkIdId (f : X ⟶ Y) [Mono f] : IsLimit (mk (𝟙 X) (𝟙 X) rfl : P
 
 /--
 `f` is a mono if the pullback cone `(𝟙 X, 𝟙 X)` is a limit for the pair `(f, f)`. The converse is
-given in `pullback_cone.is_id_of_mono`.
+given in `PullbackCone.is_id_of_mono`.
 -/
 theorem mono_of_isLimit_mk_id_id (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f)) :
     Mono f :=
@@ -942,8 +942,8 @@ def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = 
   WalkingSpan.ext i w₁ w₂
 #align category_theory.limits.pushout_cocone.ext CategoryTheory.Limits.PushoutCocone.ext
 
-/-- This is a more convenient formulation to show that a `pushout_cocone` constructed using
-`pushout_cocone.mk` is a colimit cocone.
+/-- This is a more convenient formulation to show that a `PushoutCocone` constructed using
+`PushoutCocone.mk` is a colimit cocone.
 -/
 def IsColimit.mk {W : C} {inl : Y ⟶ W} {inr : Z ⟶ W} (eq : f ≫ inl = g ≫ inr)
     (desc : ∀ s : PushoutCocone f g, W ⟶ s.pt)
@@ -972,7 +972,7 @@ def flipIsColimit {W : C} {h : Y ⟶ W} {k : Z ⟶ W} {comm : f ≫ h = g ≫ k}
 
 /--
 The pushout cocone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a colimit if `f` is an epi. The converse is
-shown in `epi_of_is_colimit_mk_id_id`.
+shown in `epi_of_isColimit_mk_id_id`.
 -/
 def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) :=
   IsColimit.mk _ (fun s => s.inl) (fun s => Category.id_comp _)
@@ -981,7 +981,7 @@ def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl 
 #align category_theory.limits.pushout_cocone.is_colimit_mk_id_id CategoryTheory.Limits.PushoutCocone.isColimitMkIdId
 
 /-- `f` is an epi if the pushout cocone `(𝟙 X, 𝟙 X)` is a colimit for the pair `(f, f)`.
-The converse is given in `pushout_cocone.is_colimit_mk_id_id`.
+The converse is given in `PushoutCocone.isColimitMkIdId`.
 -/
 theorem epi_of_isColimit_mk_id_id (f : X ⟶ Y)
     (t : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f)) : Epi f :=
@@ -1038,11 +1038,11 @@ def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : Pu
 end PushoutCocone
 
 /-- This is a helper construction that can be useful when verifying that a category has all
-    pullbacks. Given `F : walking_cospan ⥤ C`, which is really the same as
+    pullbacks. Given `F : WalkingCospan ⥤ C`, which is really the same as
     `cospan (F.map inl) (F.map inr)`, and a pullback cone on `F.map inl` and `F.map inr`, we
     get a cone on `F`.
 
-    If you're thinking about using this, have a look at `has_pullbacks_of_has_limit_cospan`,
+    If you're thinking about using this, have a look at `hasPullbacks_of_hasLimit_cospan`,
     which you may find to be an easier way of achieving your goal. -/
 @[simps]
 def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) (F.map inr)) : Cone F
@@ -1052,11 +1052,11 @@ def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) 
 #align category_theory.limits.cone.of_pullback_cone CategoryTheory.Limits.Cone.ofPullbackCone
 
 /-- This is a helper construction that can be useful when verifying that a category has all
-    pushout. Given `F : walking_span ⥤ C`, which is really the same as
+    pushout. Given `F : WalkingSpan ⥤ C`, which is really the same as
     `span (F.map fst) (F.mal snd)`, and a pushout cocone on `F.map fst` and `F.map snd`,
     we get a cocone on `F`.
 
-    If you're thinking about using this, have a look at `has_pushouts_of_has_colimit_span`, which
+    If you're thinking about using this, have a look at `hasPushouts_of_hasColimit_span`, which
     you may find to be an easiery way of achieving your goal.  -/
 @[simps]
 def Cocone.ofPushoutCocone {F : WalkingSpan ⥤ C} (t : PushoutCocone (F.map fst) (F.map snd)) :
@@ -1065,7 +1065,7 @@ def Cocone.ofPushoutCocone {F : WalkingSpan ⥤ C} (t : PushoutCocone (F.map fst
   ι := (diagramIsoSpan F).hom ≫ t.ι
 #align category_theory.limits.cocone.of_pushout_cocone CategoryTheory.Limits.Cocone.ofPushoutCocone
 
-/-- Given `F : walking_cospan ⥤ C`, which is really the same as `cospan (F.map inl) (F.map inr)`,
+/-- Given `F : WalkingCospan ⥤ C`, which is really the same as `cospan (F.map inl) (F.map inr)`,
     and a cone on `F`, we get a pullback cone on `F.map inl` and `F.map inr`. -/
 @[simps]
 def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) : PullbackCone (F.map inl) (F.map inr)
@@ -1074,8 +1074,8 @@ def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) : PullbackCone (F
   π := t.π ≫ (diagramIsoCospan F).hom
 #align category_theory.limits.pullback_cone.of_cone CategoryTheory.Limits.PullbackCone.ofCone
 
-/-- A diagram `walking_cospan ⥤ C` is isomorphic to some `pullback_cone.mk` after
-composing with `diagram_iso_cospan`. -/
+/-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
+composing with `diagramIsoCospan`. -/
 @[simps!]
 def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
     (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
@@ -1087,7 +1087,7 @@ def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
         simp
 #align category_theory.limits.pullback_cone.iso_mk CategoryTheory.Limits.PullbackCone.isoMk
 
-/-- Given `F : walking_span ⥤ C`, which is really the same as `span (F.map fst) (F.map snd)`,
+/-- Given `F : WalkingSpan ⥤ C`, which is really the same as `span (F.map fst) (F.map snd)`,
     and a cocone on `F`, we get a pushout cocone on `F.map fst` and `F.map snd`. -/
 @[simps]
 def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
@@ -1096,8 +1096,8 @@ def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
   ι := (diagramIsoSpan F).inv ≫ t.ι
 #align category_theory.limits.pushout_cocone.of_cocone CategoryTheory.Limits.PushoutCocone.ofCocone
 
-/-- A diagram `walking_span ⥤ C` is isomorphic to some `pushout_cocone.mk` after composing with
-`diagram_iso_span`. -/
+/-- A diagram `WalkingSpan ⥤ C` is isomorphic to some `PushoutCocone.mk` after composing with
+`diagramIsoSpan`. -/
 @[simps!]
 def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
     (Cocones.precompose (diagramIsoSpan.{v} _).inv).obj t ≅
@@ -1109,14 +1109,14 @@ def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
         simp
 #align category_theory.limits.pushout_cocone.iso_mk CategoryTheory.Limits.PushoutCocone.isoMk
 
-/-- `has_pullback f g` represents a particular choice of limiting cone
+/-- `HasPullback f g` represents a particular choice of limiting cone
 for the pair of morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`.
 -/
 abbrev HasPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasLimit (cospan f g)
 #align category_theory.limits.has_pullback CategoryTheory.Limits.HasPullback
 
-/-- `has_pushout f g` represents a particular choice of colimiting cocone
+/-- `HasPushout f g` represents a particular choice of colimiting cocone
 for the pair of morphisms `f : X ⟶ Y` and `g : X ⟶ Z`.
 -/
 abbrev HasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :=
@@ -1457,7 +1457,7 @@ variable (G : C ⥤ D)
 
 /-- The comparison morphism for the pullback of `f,g`.
 This is an isomorphism iff `G` preserves the pullback of `f,g`; see
-`category_theory/limits/preserves/shapes/pullbacks.lean`
+`CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
 -/
 def pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [HasPullback (G.map f) (G.map g)] :
     G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g) :=
@@ -1489,7 +1489,7 @@ theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
 
 /-- The comparison morphism for the pushout of `f,g`.
 This is an isomorphism iff `G` preserves the pushout of `f,g`; see
-`category_theory/limits/preserves/shapes/pullbacks.lean`
+`CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
 -/
 def pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] [HasPushout (G.map f) (G.map g)] :
     pushout (G.map f) (G.map g) ⟶ G.obj (pushout f g) :=
@@ -1694,12 +1694,9 @@ instance hasPullback_of_right_factors_mono (f : X ⟶ Z) : HasPullback i (f ≫ 
 
 instance pullback_snd_iso_of_right_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.snd : pullback i (f ≫ i) ⟶ _) := by
-  convert
-      (congrArg IsIso
-            (show _ ≫ pullback.snd = _ from
-              limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩
-                WalkingCospan.right)).mp
-        inferInstance;
+  convert (congrArg IsIso (show _ ≫ pullback.snd = _ from
+    limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right)).mp
+    inferInstance;
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
   · simp
@@ -1777,12 +1774,9 @@ instance hasPullback_of_left_factors_mono (f : X ⟶ Z) : HasPullback (f ≫ i) 
 
 instance pullback_snd_iso_of_left_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.fst : pullback (f ≫ i) i ⟶ _) := by
-  convert
-      (congrArg IsIso
-            (show _ ≫ pullback.fst = _ from
-              limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩
-                WalkingCospan.left)).mp
-        inferInstance;
+  convert (congrArg IsIso (show _ ≫ pullback.fst = _ from 
+    limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left)).mp
+    inferInstance;
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
   · simp
@@ -2340,48 +2334,36 @@ variable {X₁ X₂ X₃ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ 
 
 variable (f₄ : X₃ ⟶ Y₂) [HasPullback f₁ f₂] [HasPullback f₃ f₄]
 
--- include f₁ f₂ f₃ f₄
+-- include f₁ f₂ f₃ f₄ Porting note: removed
 
--- mathport name: exprZ₁
 local notation "Z₁" => pullback f₁ f₂
 
--- mathport name: exprZ₂
 local notation "Z₂" => pullback f₃ f₄
 
--- mathport name: exprg₁
 local notation "g₁" => (pullback.fst : Z₁ ⟶ X₁)
 
--- mathport name: exprg₂
 local notation "g₂" => (pullback.snd : Z₁ ⟶ X₂)
 
--- mathport name: exprg₃
 local notation "g₃" => (pullback.fst : Z₂ ⟶ X₂)
 
--- mathport name: exprg₄
 local notation "g₄" => (pullback.snd : Z₂ ⟶ X₃)
 
--- mathport name: exprW
 local notation "W" => pullback (g₂ ≫ f₃) f₄
 
--- mathport name: exprW'
 local notation "W'" => pullback f₁ (g₃ ≫ f₂)
 
--- mathport name: exprl₁
 local notation "l₁" => (pullback.fst : W ⟶ Z₁)
 
--- mathport name: exprl₂
 local notation "l₂" =>
   (pullback.lift (pullback.fst ≫ g₂) pullback.snd
       (Eq.trans (Category.assoc _ _ _) pullback.condition) :
     W ⟶ Z₂)
 
--- mathport name: exprl₁'
 local notation "l₁'" =>
   (pullback.lift pullback.fst (pullback.snd ≫ g₃)
       (pullback.condition.trans (Eq.symm (Category.assoc _ _ _))) :
     W' ⟶ Z₁)
 
--- mathport name: exprl₂'
 local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
@@ -2442,8 +2424,8 @@ theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback 
   ⟨⟨⟨_, pullbackAssocSymmIsPullback f₁ f₂ f₃ f₄⟩⟩⟩
 #align category_theory.limits.has_pullback_assoc_symm CategoryTheory.Limits.hasPullback_assoc_symm
 
-/- Porting note : these don't seem to be propogating -/
--- variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ (g₃ ≫ f₂)]
+/- Porting note : these don't seem to be propogating change from
+-- variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ (g₃ ≫ f₂)] -/
 variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)]
 
 /-- The canonical isomorphism `(X₁ ×[Y₁] X₂) ×[Y₂] X₃ ≅ X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
@@ -2555,44 +2537,32 @@ variable {X₁ X₂ X₃ Z₁ Z₂ : C} (g₁ : Z₁ ⟶ X₁) (g₂ : Z₁ ⟶ 
 
 variable (g₄ : Z₂ ⟶ X₃) [HasPushout g₁ g₂] [HasPushout g₃ g₄]
 
--- include g₁ g₂ g₃ g₄
+-- include g₁ g₂ g₃ g₄ Porting note: removed
 
--- mathport name: exprY₁
 local notation "Y₁" => pushout g₁ g₂
 
--- mathport name: exprY₂
 local notation "Y₂" => pushout g₃ g₄
 
--- mathport name: exprf₁
 local notation "f₁" => (pushout.inl : X₁ ⟶ Y₁)
 
--- mathport name: exprf₂
 local notation "f₂" => (pushout.inr : X₂ ⟶ Y₁)
 
--- mathport name: exprf₃
 local notation "f₃" => (pushout.inl : X₂ ⟶ Y₂)
 
--- mathport name: exprf₄
 local notation "f₄" => (pushout.inr : X₃ ⟶ Y₂)
 
--- mathport name: exprW
 local notation "W" => pushout g₁ (g₂ ≫ f₃)
 
--- mathport name: exprW'
 local notation "W'" => pushout (g₃ ≫ f₂) g₄
 
--- mathport name: exprl₁
 local notation "l₁" =>
   (pushout.desc pushout.inl (f₃ ≫ pushout.inr) (pushout.condition.trans (Category.assoc _ _ _)) :
     Y₁ ⟶ W)
 
--- mathport name: exprl₂
 local notation "l₂" => (pushout.inr : Y₂ ⟶ W)
 
--- mathport name: exprl₁'
 local notation "l₁'" => (pushout.inl : Y₁ ⟶ W')
 
--- mathport name: exprl₂'
 local notation "l₂'" =>
   (pushout.desc (f₂ ≫ pushout.inl) pushout.inr
       (Eq.trans (Eq.symm (Category.assoc _ _ _)) pushout.condition) :
@@ -2656,7 +2626,7 @@ theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g�
   ⟨⟨⟨_, pushoutAssocSymmIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
 #align category_theory.limits.has_pushout_assoc_symm CategoryTheory.Limits.hasPushout_assoc_symm
 
--- Porting note: these are not propogating
+-- Porting note: these are not propogating so moved into statements
 -- variable [HasPushout (g₃ ≫ f₂) g₄] [HasPushout g₁ (g₂ ≫ f₃)]
 
 /-- The canonical isomorphism `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃ ≅ X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
@@ -2729,7 +2699,7 @@ end PushoutAssoc
 
 variable (C)
 
-/-- `has_pullbacks` represents a choice of pullback for every pair of morphisms
+/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms
 
 See <https://stacks.math.columbia.edu/tag/001W>
 -/
@@ -2737,7 +2707,7 @@ abbrev HasPullbacks :=
   HasLimitsOfShape WalkingCospan C
 #align category_theory.limits.has_pullbacks CategoryTheory.Limits.HasPullbacks
 
-/-- `has_pushouts` represents a choice of pushout for every pair of morphisms -/
+/-- `HasPushouts` represents a choice of pushout for every pair of morphisms -/
 abbrev HasPushouts :=
   HasColimitsOfShape WalkingSpan C
 #align category_theory.limits.has_pushouts CategoryTheory.Limits.HasPushouts
@@ -2754,13 +2724,13 @@ theorem hasPushouts_of_hasColimit_span
   { has_colimit := fun F => hasColimitOfIso (diagramIsoSpan F) }
 #align category_theory.limits.has_pushouts_of_has_colimit_span CategoryTheory.Limits.hasPushouts_of_hasColimit_span
 
-/-- The duality equivalence `walking_spanᵒᵖ ≌ walking_cospan` -/
+/-- The duality equivalence `WalkingSpanᵒᵖ ≌ WalkingCospan` -/
 @[simps!]
 def walkingSpanOpEquiv : WalkingSpanᵒᵖ ≌ WalkingCospan :=
   widePushoutShapeOpEquiv _
 #align category_theory.limits.walking_span_op_equiv CategoryTheory.Limits.walkingSpanOpEquiv
 
-/-- The duality equivalence `walking_cospanᵒᵖ ≌ walking_span` -/
+/-- The duality equivalence `WalkingCospanᵒᵖ ≌ WalkingSpan` -/
 @[simps!]
 def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
   widePullbackShapeOpEquiv _
