@@ -25,7 +25,7 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
   - `LinearMap.single`
 - pi types in the domain:
   - `LinearMap.proj`
-- `LinearMap.diag`
+  - `LinearMap.diag`
 
 -/
 
@@ -511,6 +511,7 @@ theorem piFinTwo_apply (M : Fin 2 → Type v)
 /-- Linear equivalence between vectors in `M² = fin 2 → M` and `M × M`. -/
 @[simps (config :=
       { simpRhs := true
+        rhsMd := .default
         fullyApplied := false })]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
   { finTwoArrowEquiv M, piFinTwo R fun _ => M with }

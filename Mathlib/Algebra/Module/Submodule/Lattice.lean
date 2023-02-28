@@ -204,7 +204,7 @@ private theorem infₛ_le' {S : Set (Submodule R M)} {p} : p ∈ S → infₛ S 
 private theorem le_infₛ' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ infₛ S :=
   Set.subset_interᵢ₂
 
-instance : HasInf (Submodule R M) :=
+instance : Inf (Submodule R M) :=
   ⟨fun p q ↦
     { carrier := p ∩ q
       zero_mem' := by simp [zero_mem]
