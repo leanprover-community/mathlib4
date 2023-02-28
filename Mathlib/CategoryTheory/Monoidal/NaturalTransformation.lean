@@ -95,23 +95,27 @@ instance categoryLaxMonoidalFunctor : Category (LaxMonoidalFunctor C D)
   Hom := MonoidalNatTrans
   id := id
   comp α β := vcomp α β
-#align category_theory.monoidal_nat_trans.category_lax_monoidal_functor CategoryTheory.MonoidalNatTrans.categoryLaxMonoidalFunctor
+#align category_theory.monoidal_nat_trans.category_lax_monoidal_functor
+  CategoryTheory.MonoidalNatTrans.categoryLaxMonoidalFunctor
 
 @[simp]
 theorem comp_toNatTrans_lax {F G H : LaxMonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
     (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
   rfl
-#align category_theory.monoidal_nat_trans.comp_to_nat_trans_lax CategoryTheory.MonoidalNatTrans.comp_toNatTrans_lax
+#align category_theory.monoidal_nat_trans.comp_to_nat_trans_lax
+  CategoryTheory.MonoidalNatTrans.comp_toNatTrans_lax
 
 instance categoryMonoidalFunctor : Category (MonoidalFunctor C D) :=
   InducedCategory.category MonoidalFunctor.toLaxMonoidalFunctor
-#align category_theory.monoidal_nat_trans.category_monoidal_functor CategoryTheory.MonoidalNatTrans.categoryMonoidalFunctor
+#align category_theory.monoidal_nat_trans.category_monoidal_functor
+  CategoryTheory.MonoidalNatTrans.categoryMonoidalFunctor
 
 @[simp]
 theorem comp_toNatTrans {F G H : MonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
     (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
   rfl
-#align category_theory.monoidal_nat_trans.comp_to_nat_trans CategoryTheory.MonoidalNatTrans.comp_toNatTrans
+#align category_theory.monoidal_nat_trans.comp_to_nat_trans
+  CategoryTheory.MonoidalNatTrans.comp_toNatTrans
 
 variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
 
@@ -122,8 +126,7 @@ variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
 @[simps]
 def hcomp {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor D E} (α : MonoidalNatTrans F G)
     (β : MonoidalNatTrans H K) : MonoidalNatTrans (F ⊗⋙ H) (G ⊗⋙ K) :=
-  {
-    NatTrans.hcomp α.toNatTrans
+  { NatTrans.hcomp α.toNatTrans
       β.toNatTrans with
     unit := by
       dsimp; simp
@@ -188,18 +191,21 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
 theorem ofComponents.hom_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (unit) (tensor) (X) :
     (ofComponents app naturality unit tensor).hom.app X = (app X).hom :=
   rfl
-#align category_theory.monoidal_nat_iso.of_components.hom_app CategoryTheory.MonoidalNatIso.ofComponents.hom_app
+#align category_theory.monoidal_nat_iso.of_components.hom_app
+  CategoryTheory.MonoidalNatIso.ofComponents.hom_app
 
 @[simp]
 theorem ofComponents.inv_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (unit) (tensor) (X) :
     (ofComponents app naturality unit tensor).inv.app X = (app X).inv := by simp [ofComponents]
-#align category_theory.monoidal_nat_iso.of_components.inv_app CategoryTheory.MonoidalNatIso.ofComponents.inv_app
+#align category_theory.monoidal_nat_iso.of_components.inv_app
+  CategoryTheory.MonoidalNatIso.ofComponents.inv_app
 
 instance isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
   ⟨(IsIso.of_iso
         (ofComponents (fun X => asIso (α.app X)) (fun f => α.toNatTrans.naturality f) α.unit
           α.tensor)).1⟩
-#align category_theory.monoidal_nat_iso.is_iso_of_is_iso_app CategoryTheory.MonoidalNatIso.isIso_of_isIso_app
+#align category_theory.monoidal_nat_iso.is_iso_of_is_iso_app
+  CategoryTheory.MonoidalNatIso.isIso_of_isIso_app
 
 end MonoidalNatIso
 
@@ -261,20 +267,16 @@ def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
       simp only [assoc]
       erw [← e.functor.map_comp_assoc]
       simp only [CategoryTheory.Iso.inv_hom_id_app, CategoryTheory.Iso.inv_hom_id_app_assoc]
-      erw [Iso.hom_inv_id_app]
-      erw [CategoryTheory.Functor.map_id]
-      simp only [id_comp]
-      simp only [CategoryTheory.Iso.inv_hom_id_app, CategoryTheory.IsIso.hom_inv_id_assoc]
+      erw [Iso.hom_inv_id_app, CategoryTheory.Functor.map_id]
+      simp only [id_comp, CategoryTheory.Iso.inv_hom_id_app,
+        CategoryTheory.IsIso.hom_inv_id_assoc]
       erw [comp_id]
       rfl }
 #align category_theory.monoidal_counit CategoryTheory.monoidalCounit
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalCounit F) :=
   haveI : ∀ X : D, IsIso ((monoidalCounit F).toNatTrans.app X) :=
-    by
-    intros
-    dsimp
-    infer_instance
+    by dsimp ; infer_instance
   MonoidalNatIso.isIso_of_isIso_app _
 
 end
