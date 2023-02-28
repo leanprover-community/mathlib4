@@ -287,6 +287,7 @@ def Simps.apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
     {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
   e
+#align linear_equiv.simps.apply LinearEquiv.Simps.apply
 
 /-- See Note [custom simps projection] -/
 def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
@@ -296,7 +297,7 @@ def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
   e.symm
 #align linear_equiv.simps.symm_apply LinearEquiv.Simps.symmApply
 
-initialize_simps_projections LinearEquiv (toLinearMap_toAddHom_toFun → apply, invFun → symmApply)
+initialize_simps_projections LinearEquiv (toFun → apply, invFun → symmApply)
 
 @[simp]
 theorem invFun_eq_symm : e.invFun = e.symm :=
