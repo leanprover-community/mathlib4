@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.uniform_space.absolute_value
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
+! leanprover-community/mathlib commit e1a7bdeb4fd826b7e71d130d34988f0a2d26a177
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
