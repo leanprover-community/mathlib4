@@ -155,7 +155,7 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
   apply isClopen_preimage
 #align discrete_quotient.is_clopen_set_of_rel DiscreteQuotient.isClopen_setOf_rel
 
-instance : HasInf (DiscreteQuotient X) :=
+instance : Inf (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : SemilatticeInf (DiscreteQuotient X) :=

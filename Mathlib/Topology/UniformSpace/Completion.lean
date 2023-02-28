@@ -35,7 +35,7 @@ In this file we introduce the following concepts:
 * `CauchyFilter α` the uniform completion of the uniform space `α` (using Cauchy filters).
   These are not minimal filters.
 
-* `Completion α := quotient (separation_setoid (CauchyFilter α))` the Hausdorff completion.
+* `Completion α := Quotient (separationSetoid (CauchyFilter α))` the Hausdorff completion.
 
 ## References
 
@@ -213,14 +213,14 @@ theorem denseEmbedding_pureCauchy : DenseEmbedding (pureCauchy : α → CauchyFi
 set_option linter.uppercaseLean3 false in
 #align Cauchy.dense_embedding_pure_cauchy CauchyFilter.denseEmbedding_pureCauchy
 
-theorem nonempty_cauchyCat_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
+theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
   · have := eq_univ_iff_forall.1 denseEmbedding_pureCauchy.toDenseInducing.closure_range c
     obtain ⟨_, ⟨_, a, _⟩⟩ := mem_closure_iff.1 this _ isOpen_univ trivial
     exact ⟨a⟩
   · exact ⟨pureCauchy c⟩
 set_option linter.uppercaseLean3 false in
-#align Cauchy.nonempty_Cauchy_iff CauchyFilter.nonempty_cauchyCat_iff
+#align Cauchy.nonempty_Cauchy_iff CauchyFilter.nonempty_cauchyFilter_iff
 
 section
 
@@ -253,7 +253,7 @@ section Extend
 Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyFilter α → β :=
   if UniformContinuous f then denseInducing_pureCauchy.extend f
-  else fun x => f (nonempty_cauchyCat_iff.1 ⟨x⟩).some
+  else fun x => f (nonempty_cauchyFilter_iff.1 ⟨x⟩).some
 set_option linter.uppercaseLean3 false in
 #align Cauchy.extend CauchyFilter.extend
 
@@ -285,7 +285,7 @@ end Extend
 
 end
 
-theorem cauchyCat_eq {α : Type _} [Inhabited α] [UniformSpace α] [CompleteSpace α]
+theorem cauchyFilter_eq {α : Type _} [Inhabited α] [UniformSpace α] [CompleteSpace α]
     [SeparatedSpace α] {f g : CauchyFilter α} :
     lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
   constructor
@@ -307,8 +307,7 @@ theorem cauchyCat_eq {α : Type _} [Inhabited α] [UniformSpace α] [CompleteSpa
     refine'
       H { p | (lim p.1.1, lim p.2.1) ∈ t } (CauchyFilter.mem_uniformity'.2 ⟨d, du, fun f g h => _⟩)
     rcases mem_prod_iff.1 h with ⟨x, xf, y, yg, h⟩
-    have limc : ∀ (f : CauchyFilter α), ∀ x ∈ f.1, lim f.1 ∈ closure x :=
-      by
+    have limc : ∀ (f : CauchyFilter α), ∀ x ∈ f.1, lim f.1 ∈ closure x := by
       intro f x xf
       rw [closure_eq_cluster_pts]
       exact f.2.1.mono (le_inf f.2.le_nhds_lim (le_principal_iff.2 xf))
@@ -316,7 +315,7 @@ theorem cauchyCat_eq {α : Type _} [Inhabited α] [UniformSpace α] [CompleteSpa
     rw [closure_prod_eq] at this
     refine' dt (this ⟨_, _⟩) <;> dsimp <;> apply limc <;> assumption
 set_option linter.uppercaseLean3 false in
-#align Cauchy.Cauchy_eq CauchyFilter.cauchyCat_eq
+#align Cauchy.Cauchy_eq CauchyFilter.cauchyFilter_eq
 
 section
 
@@ -418,8 +417,7 @@ theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
 variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
-def cPkg {α : Type _} [UniformSpace α] : AbstractCompletion α
-    where
+def cPkg {α : Type _} [UniformSpace α] : AbstractCompletion α where
   space := Completion α
   coe := (↑)
   uniformStruct := by infer_instance
