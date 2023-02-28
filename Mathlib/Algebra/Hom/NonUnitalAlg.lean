@@ -63,7 +63,6 @@ infixr:25 " →ₙₐ " => NonUnitalAlgHom _
 @[inherit_doc]
 notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom R A B
 
-attribute [nolint docBlame] NonUnitalAlgHom.toDistribMulActionHom
 attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
@@ -147,7 +146,7 @@ theorem coe_injective : @Function.Injective (A →ₙₐ[R] B) (A → B) (↑) :
 
 instance : NonUnitalAlgHomClass (A →ₙₐ[R] B) R A B
     where
-  coe f:= f.toFun
+  coe f := f.toFun
   coe_injective' := coe_injective
   map_smul f := f.map_smul'
   map_add f := f.map_add'
@@ -176,7 +175,6 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 
 @[simp]
 theorem mk_coe (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) = f := by
-  ext
   rfl
 #align non_unital_alg_hom.mk_coe NonUnitalAlgHom.mk_coe
 
@@ -220,14 +218,12 @@ theorem to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) : A →+[R] B) = ⟨⟨f, h₁⟩, h₂, h₃⟩ := by
-  ext
   rfl
 #align non_unital_alg_hom.coe_distrib_mul_action_hom_mk NonUnitalAlgHom.coe_distribMulActionHom_mk
 
 @[norm_cast]
 theorem coe_mulHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
     ((⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) : A →ₙ* B) = ⟨f, h₄⟩ := by
-  ext
   rfl
 #align non_unital_alg_hom.coe_mul_hom_mk NonUnitalAlgHom.coe_mulHom_mk
 
@@ -353,13 +349,11 @@ theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) =
 
 @[simp]
 theorem fst_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (fst R B C).comp (prod f g) = f := by
-  ext
   rfl
 #align non_unital_alg_hom.fst_prod NonUnitalAlgHom.fst_prod
 
 @[simp]
 theorem snd_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (snd R B C).comp (prod f g) = g := by
-  ext
   rfl
 #align non_unital_alg_hom.snd_prod NonUnitalAlgHom.snd_prod
 
@@ -375,8 +369,8 @@ def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B �
     where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align non_unital_alg_hom.prod_equiv NonUnitalAlgHom.prodEquiv
 
 variable (R A B)
