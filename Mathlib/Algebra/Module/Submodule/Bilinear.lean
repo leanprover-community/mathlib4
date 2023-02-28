@@ -8,8 +8,8 @@ Authors: Kenny Lau, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Span
-import Mathbin.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Images of pairs of submodules under bilinear maps
@@ -65,8 +65,7 @@ theorem map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submo
 variable (R)
 
 theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N) :
-    map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) :=
-  by
+    map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) := by
   apply le_antisymm
   · rw [map₂_le]
     intro a ha b hb
@@ -143,8 +142,7 @@ theorem map₂_sup_left (f : M →ₗ[R] N →ₗ[R] P) (p₁ p₂ : Submodule R
 #align submodule.map₂_sup_left Submodule.map₂_sup_left
 
 theorem image2_subset_map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
-    Set.image2 (fun m n => f m n) (↑p : Set M) (↑q : Set N) ⊆ (↑(map₂ f p q) : Set P) :=
-  by
+    Set.image2 (fun m n => f m n) (↑p : Set M) (↑q : Set N) ⊆ (↑(map₂ f p q) : Set P) := by
   rintro _ ⟨i, j, hi, hj, rfl⟩
   exact apply_mem_map₂ _ hi hj
 #align submodule.image2_subset_map₂ Submodule.image2_subset_map₂
@@ -155,23 +153,20 @@ theorem map₂_eq_span_image2 (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M
 #align submodule.map₂_eq_span_image2 Submodule.map₂_eq_span_image2
 
 theorem map₂_flip (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
-    map₂ f.flip q p = map₂ f p q :=
-  by
+    map₂ f.flip q p = map₂ f p q := by
   rw [map₂_eq_span_image2, map₂_eq_span_image2, Set.image2_swap]
   rfl
 #align submodule.map₂_flip Submodule.map₂_flip
 
 theorem map₂_supᵢ_left (f : M →ₗ[R] N →ₗ[R] P) (s : ι → Submodule R M) (t : Submodule R N) :
-    map₂ f (⨆ i, s i) t = ⨆ i, map₂ f (s i) t :=
-  by
+    map₂ f (⨆ i, s i) t = ⨆ i, map₂ f (s i) t := by
   suffices map₂ f (⨆ i, span R (s i : Set M)) (span R t) = ⨆ i, map₂ f (span R (s i)) (span R t) by
     simpa only [span_eq] using this
   simp_rw [map₂_span_span, ← span_Union, map₂_span_span, Set.image2_unionᵢ_left]
 #align submodule.map₂_supr_left Submodule.map₂_supᵢ_left
 
 theorem map₂_supᵢ_right (f : M →ₗ[R] N →ₗ[R] P) (s : Submodule R M) (t : ι → Submodule R N) :
-    map₂ f s (⨆ i, t i) = ⨆ i, map₂ f s (t i) :=
-  by
+    map₂ f s (⨆ i, t i) = ⨆ i, map₂ f s (t i) := by
   suffices map₂ f (span R s) (⨆ i, span R (t i : Set N)) = ⨆ i, map₂ f (span R s) (span R (t i)) by
     simpa only [span_eq] using this
   simp_rw [map₂_span_span, ← span_Union, map₂_span_span, Set.image2_unionᵢ_right]
