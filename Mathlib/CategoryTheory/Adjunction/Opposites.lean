@@ -33,7 +33,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
 
-#check opEquiv
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
 @[simps!]
 def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
@@ -42,9 +41,15 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
       ((h.homEquiv (Opposite.op Y) (Opposite.op X)).trans (opEquiv _ _)).symm.trans
         (opEquiv _ _)
     homEquiv_naturality_left_symm := by
-      sorry
+      intros X' X Y f g
+      dsimp [opEquiv]
+      erw [homEquiv_unit, homEquiv_unit] -- Porting note: Why is `erw` needed here?
+      simp
     homEquiv_naturality_right := by
-      sorry }
+      intros X Y Y' f g
+      dsimp [opEquiv]
+      erw [homEquiv_counit, homEquiv_counit] -- Porting note: Why is `erw` needed here?
+      simp }
 #align
   category_theory.adjunction.adjoint_of_op_adjoint_op
   CategoryTheory.Adjunction.adjointOfOpAdjointOp
@@ -71,15 +76,21 @@ def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ)
   CategoryTheory.Adjunction.unopAdjointUnopOfAdjoint
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
-@[simps!?]
+@[simps!]
 def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun X Y =>
       (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (Opposite.op _)).symm)
     homEquiv_naturality_left_symm := by
-      sorry
+      intros X' X Y f g
+      dsimp [opEquiv]
+      erw [homEquiv_unit, homEquiv_unit] -- Porting note: Why is `erw` needed here?
+      simp
     homEquiv_naturality_right := by
-      sorry }
+      intros X' X Y f g
+      dsimp [opEquiv]
+      erw [homEquiv_counit, homEquiv_counit] -- Porting note: Why is `erw` needed here?
+      simp }
 #align
   category_theory.adjunction.op_adjoint_op_of_adjoint
   CategoryTheory.Adjunction.opAdjointOpOfAdjoint
@@ -114,8 +125,9 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
   NatIso.ofComponents
     (fun X =>
       NatIso.ofComponents
-        (fun Y => ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso) (by sorry)) -- aesop_cat fails
-    (by sorry) -- aesop_cat fails
+        (fun Y => ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso)
+          (fun {X' Y} f => by funext ; simp))
+    (fun {X Y} f => by ext ; funext ; dsimp ; simp)
 #align
   category_theory.adjunction.left_adjoints_coyoneda_equiv
   CategoryTheory.Adjunction.leftAdjointsCoyonedaEquiv
@@ -140,7 +152,7 @@ theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : 
   category_theory.adjunction.hom_equiv_left_adjoint_uniq_hom_app
   CategoryTheory.Adjunction.homEquiv_leftAdjointUniq_hom_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
     adj1.unit ≫ whiskerRight (leftAdjointUniq adj1 adj2).hom G = adj2.unit := by
   ext x
@@ -150,7 +162,7 @@ theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G)
   category_theory.adjunction.unit_left_adjoint_uniq_hom
   CategoryTheory.Adjunction.unit_leftAdjointUniq_hom
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.unit.app x ≫ G.map ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x :=
   by
@@ -160,7 +172,7 @@ theorem unit_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F �
   category_theory.adjunction.unit_left_adjoint_uniq_hom_app
   CategoryTheory.Adjunction.unit_leftAdjointUniq_hom_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem leftAdjointUniq_hom_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
     whiskerLeft G (leftAdjointUniq adj1 adj2).hom ≫ adj2.counit = adj1.counit := by
   ext x
@@ -181,7 +193,7 @@ theorem leftAdjointUniq_hom_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ 
   category_theory.adjunction.left_adjoint_uniq_hom_counit
   CategoryTheory.Adjunction.leftAdjointUniq_hom_counit
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem leftAdjointUniq_hom_app_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : D) :
     (leftAdjointUniq adj1 adj2).hom.app (G.obj x) ≫ adj2.counit.app x = adj1.counit.app x := by
@@ -199,7 +211,7 @@ theorem leftAdjointUniq_inv_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) 
   category_theory.adjunction.left_adjoint_uniq_inv_app
   CategoryTheory.Adjunction.leftAdjointUniq_inv_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem leftAdjointUniq_trans {F F' F'' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (adj3 : F'' ⊣ G) :
     (leftAdjointUniq adj1 adj2).hom ≫ (leftAdjointUniq adj2 adj3).hom =
@@ -215,7 +227,7 @@ theorem leftAdjointUniq_trans {F F' F'' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G
   category_theory.adjunction.left_adjoint_uniq_trans
   CategoryTheory.Adjunction.leftAdjointUniq_trans
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem leftAdjointUniq_trans_app {F F' F'' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (adj3 : F'' ⊣ G) (x : C) :
     (leftAdjointUniq adj1 adj2).hom.app x ≫ (leftAdjointUniq adj2 adj3).hom.app x =
@@ -262,7 +274,7 @@ theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (a
   category_theory.adjunction.hom_equiv_symm_right_adjoint_uniq_hom_app
   CategoryTheory.Adjunction.homEquiv_symm_rightAdjointUniq_hom_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem unit_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G')
     (x : C) : adj1.unit.app x ≫ (rightAdjointUniq adj1 adj2).hom.app (F.obj x) = adj2.unit.app x :=
   by
@@ -283,7 +295,7 @@ theorem unit_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F �
   category_theory.adjunction.unit_right_adjoint_uniq_hom_app
   CategoryTheory.Adjunction.unit_rightAdjointUniq_hom_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem unit_rightAdjointUniq_hom {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G') :
     adj1.unit ≫ whiskerLeft F (rightAdjointUniq adj1 adj2).hom = adj2.unit := by
   ext x
@@ -292,7 +304,7 @@ theorem unit_rightAdjointUniq_hom {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G
   category_theory.adjunction.unit_right_adjoint_uniq_hom
   CategoryTheory.Adjunction.unit_rightAdjointUniq_hom
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem rightAdjointUniq_hom_app_counit {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G')
     (x : D) :
     F.map ((rightAdjointUniq adj1 adj2).hom.app x) ≫ adj2.counit.app x = adj1.counit.app x := by
@@ -300,13 +312,20 @@ theorem rightAdjointUniq_hom_app_counit {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F
   convert
     unit_leftAdjointUniq_hom_app (opAdjointOpOfAdjoint _ _ adj2)
       (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x) using 1
-  --all_goals simpa -- :-(
-  all_goals sorry
+  · simp only [Functor.id_obj, op_comp, Functor.comp_obj, Functor.op_obj, Opposite.unop_op,
+      opAdjointOpOfAdjoint_unit_app, Functor.op_map]
+    dsimp [opEquiv]
+    simp only [← op_comp]
+    congr 2
+    simp
+  · simp only [Functor.id_obj, opAdjointOpOfAdjoint_unit_app, Opposite.unop_op]
+    erw [Functor.map_id, Category.id_comp]
+    rfl
 #align
   category_theory.adjunction.right_adjoint_uniq_hom_app_counit
   CategoryTheory.Adjunction.rightAdjointUniq_hom_app_counit
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem rightAdjointUniq_hom_counit {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G') :
     whiskerRight (rightAdjointUniq adj1 adj2).hom F ≫ adj2.counit = adj1.counit := by
   ext
@@ -323,21 +342,19 @@ theorem rightAdjointUniq_inv_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G)
   category_theory.adjunction.right_adjoint_uniq_inv_app
   CategoryTheory.Adjunction.rightAdjointUniq_inv_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem rightAdjointUniq_trans_app {F : C ⥤ D} {G G' G'' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G')
     (adj3 : F ⊣ G'') (x : D) :
     (rightAdjointUniq adj1 adj2).hom.app x ≫ (rightAdjointUniq adj2 adj3).hom.app x =
       (rightAdjointUniq adj1 adj3).hom.app x := by
   apply Quiver.Hom.op_inj
-  sorry -- :-(
-  --exact
-  --  leftAdjointUniq_trans_app (op_adjoint_op_of_adjoint _ _ adj3)
-  --    (op_adjoint_op_of_adjoint _ _ adj2) (op_adjoint_op_of_adjoint _ _ adj1) (Opposite.op x)
+  dsimp [rightAdjointUniq]
+  simp
 #align
   category_theory.adjunction.right_adjoint_uniq_trans_app
   CategoryTheory.Adjunction.rightAdjointUniq_trans_app
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem rightAdjointUniq_trans {F : C ⥤ D} {G G' G'' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G')
     (adj3 : F ⊣ G'') :
     (rightAdjointUniq adj1 adj2).hom ≫ (rightAdjointUniq adj2 adj3).hom =
