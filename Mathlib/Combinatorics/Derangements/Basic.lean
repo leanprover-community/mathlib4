@@ -71,7 +71,7 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
         simp only [Perm.subtypeEquivSubtypePerm_apply_coe, mem_fixedPoints]
         dsimp [IsFixedPt]
         simp_rw [Perm.ofSubtype_apply_of_mem _ ha, hfa]
-    _ ≃ { f : Perm α // ∃ h : ∀ a, ¬p a → a ∈ fixedPoints f, ∀ a, a ∈ fixedPoints f → ¬p a } :=
+    _ ≃ { f : Perm α // ∃ _h : ∀ a, ¬p a → a ∈ fixedPoints f, ∀ a, a ∈ fixedPoints f → ¬p a } :=
       subtypeSubtypeEquivSubtypeExists _ _
     _ ≃ { f : Perm α // ∀ a, ¬p a ↔ a ∈ fixedPoints f } :=
       subtypeEquivRight fun f => by
