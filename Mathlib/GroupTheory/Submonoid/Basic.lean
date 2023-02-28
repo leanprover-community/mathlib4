@@ -296,7 +296,7 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
 
 /-- The inf of two submonoids is their intersection. -/
 @[to_additive "The inf of two `AddSubmonoid`s is their intersection."]
-instance : HasInf (Submonoid M) :=
+instance : Inf (Submonoid M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩

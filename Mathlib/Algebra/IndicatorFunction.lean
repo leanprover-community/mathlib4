@@ -53,7 +53,7 @@ noncomputable def indicator {M} [Zero M] (s : Set α) (f : α → M) : α → M
 #align set.indicator Set.indicator
 
 /-- `mulIndicator s f a` is `f a` if `a ∈ s`, `1` otherwise.  -/
-@[to_additive]
+@[to_additive existing]
 noncomputable def mulIndicator (s : Set α) (f : α → M) : α → M
   | x =>
     haveI := Classical.decPred (· ∈ s)
