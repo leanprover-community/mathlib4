@@ -22,7 +22,7 @@ the `measure.ae` filter defined in `measure_theory.measure_space`.
 
 We reformulate the definition in terms of indexed intersection and in terms of `filter.eventually`
 and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.principal`, `Filter.map`,
-`Filter.comap`, `HasInf.inf`). We also provide a custom constructor `Filter.ofCountableInter`
+`Filter.comap`, `Inf.inf`). We also provide a custom constructor `Filter.ofCountableInter`
 that deduces two axioms of a `Filter` from the countable intersection property.
 
 ## Tags

@@ -215,7 +215,7 @@ theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Pro
 #align simple_graph.is_subgraph_eq_le SimpleGraph.isSubgraph_eq_le
 
 /-- The supremum of two graphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
-instance : HasSup (SimpleGraph V) :=
+instance : Sup (SimpleGraph V) :=
   ⟨fun x y =>
     { Adj := x.Adj ⊔ y.Adj
       symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }⟩
@@ -226,7 +226,7 @@ theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v 
 #align simple_graph.sup_adj SimpleGraph.sup_adj
 
 /-- The infimum of two graphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
-instance : HasInf (SimpleGraph V) :=
+instance : Inf (SimpleGraph V) :=
   ⟨fun x y =>
     { Adj := x.Adj ⊓ y.Adj
       symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }⟩

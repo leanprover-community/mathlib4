@@ -1169,7 +1169,7 @@ instance : Bot (UniformSpace α) :=
         let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
         simp [subset_def, idRel] }⟩
 
-instance : HasInf (UniformSpace α) :=
+instance : Inf (UniformSpace α) :=
   ⟨fun u₁ u₂ => .ofNhdsEqComap
     { uniformity := u₁.uniformity ⊓ u₂.uniformity
       refl := le_inf u₁.refl u₂.refl
@@ -1950,4 +1950,3 @@ theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : F
     (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩
 #align uniform.tendsto_congr Uniform.tendsto_congr
-
