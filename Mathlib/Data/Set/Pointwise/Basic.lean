@@ -420,8 +420,6 @@ theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t�
 #align set.mul_subset_mul Set.mul_subset_mul
 #align set.add_subset_add Set.add_subset_add
 
-attribute [mono] add_subset_add
-
 @[to_additive]
 theorem mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
   image2_subset_left
@@ -675,8 +673,6 @@ theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t�
   image2_subset
 #align set.div_subset_div Set.div_subset_div
 #align set.sub_subset_sub Set.sub_subset_sub
-
-attribute [mono] sub_subset_sub
 
 @[to_additive]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=

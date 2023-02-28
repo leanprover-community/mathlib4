@@ -49,8 +49,6 @@ theorem pow_le_pow_of_le_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 #align pow_le_pow_of_le_left' pow_le_pow_of_le_left'
 #align nsmul_le_nsmul_of_le_right nsmul_le_nsmul_of_le_right
 
-attribute [mono] nsmul_le_nsmul_of_le_right
-
 @[to_additive nsmul_nonneg]
 theorem one_le_pow_of_one_le' {a : M} (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
   | 0 => by simp

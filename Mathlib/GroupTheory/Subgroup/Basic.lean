@@ -477,15 +477,11 @@ theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submon
 #align subgroup.to_submonoid_strict_mono Subgroup.toSubmonoid_strictMono
 #align add_subgroup.to_add_submonoid_strict_mono AddSubgroup.toAddSubmonoid_strictMono
 
-attribute [mono] AddSubgroup.toAddSubmonoid_strictMono
-
 @[to_additive (attr := mono)]
 theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :=
   toSubmonoid_strictMono.monotone
 #align subgroup.to_submonoid_mono Subgroup.toSubmonoid_mono
 #align add_subgroup.to_add_submonoid_mono AddSubgroup.toAddSubmonoid_mono
-
-attribute [mono] AddSubgroup.toAddSubmonoid_mono
 
 @[to_additive (attr := simp)]
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=

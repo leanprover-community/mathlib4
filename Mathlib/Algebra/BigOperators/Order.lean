@@ -683,8 +683,6 @@ theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, 
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
 
-attribute [mono] sum_mono
-
 @[to_additive sum_strict_mono]
 theorem prod_strict_mono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
   fun _ _ hfg ↦

@@ -173,8 +173,6 @@ theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆
 #align set.smul_subset_smul Set.smul_subset_smul
 #align set.vadd_subset_vadd Set.vadd_subset_vadd
 
-attribute [mono] vadd_subset_vadd
-
 @[to_additive]
 theorem smul_subset_smul_left : t₁ ⊆ t₂ → s • t₁ ⊆ s • t₂ :=
   image2_subset_left
