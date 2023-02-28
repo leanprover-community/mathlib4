@@ -202,6 +202,8 @@ instance : NonUnitalNonAssocSemiring (⨁ i, A i) :=
 
 variable {A}
 
+theorem mulHom_apply (a b : ⨁ i, A i) : mulHom A a b = a * b := rfl
+
 theorem mulHom_of_of {i j} (a : A i) (b : A j) :
     mulHom A (of A i a) (of A j b) = of A (i + j) (GradedMonoid.GMul.mul a b) := by
   unfold mulHom
@@ -328,13 +330,9 @@ variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 
 private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   suffices mulHom A = (mulHom A).flip by
-    have sol := FunLike.congr_fun (FunLike.congr_fun this a) b
-    have aux : ∀ a b, (mulHom A) a b = a * b := fun _ _ ↦ rfl
-    simp only [aux, AddMonoidHom.flip_apply] at sol
-    exact sol
-  refine DirectSum.addHom_ext' (fun ai ↦ AddMonoidHom.ext (fun ax ↦ ?_))
-  refine DirectSum.addHom_ext' (fun bi ↦ AddMonoidHom.ext (fun bx ↦ ?_))
-  rw [AddMonoidHom.flip_apply, mulHom_of_of]
+    rw [← mulHom_apply, this, AddMonoidHom.flip_apply, mulHom_apply]
+  apply addHom_ext; intro ai ax; apply addHom_ext; intro bi bx
+  rw [AddMonoidHom.flip_apply, mulHom_of_of, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (GCommSemiring.mul_comm ⟨ai, ax⟩ ⟨bi, bx⟩)
 #noalign direct_sum.mul_comm
 
