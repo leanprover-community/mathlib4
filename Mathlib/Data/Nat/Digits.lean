@@ -52,8 +52,8 @@ def digitsAux1 (n : ℕ) : List ℕ :=
 def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
   | 0 => []
   | n + 1 =>
-    have : (n + 1) / b < n + 1 := Nat.div_lt_self (Nat.succ_pos _) h
     ((n + 1) % b) :: digitsAux b h ((n + 1) / b)
+decreasing_by exact Nat.div_lt_self (Nat.succ_pos _) h
 #align nat.digits_aux Nat.digitsAux
 
 @[simp]
