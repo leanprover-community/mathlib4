@@ -8,8 +8,8 @@ Authors: Scott Morrison, Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EpiMono
-import Mathbin.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Equalizers and coequalizers
@@ -512,16 +512,14 @@ def Cofork.IsColimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Cofork f g)
 
 /-- Noncomputably make a limit cone from the existence of unique factorizations. -/
 def Fork.IsLimit.ofExistsUnique {t : Fork f g}
-    (hs : ∀ s : Fork f g, ∃! l : s.x ⟶ t.x, l ≫ Fork.ι t = Fork.ι s) : IsLimit t :=
-  by
+    (hs : ∀ s : Fork f g, ∃! l : s.x ⟶ t.x, l ≫ Fork.ι t = Fork.ι s) : IsLimit t := by
   choose d hd hd' using hs
   exact fork.is_limit.mk _ d hd fun s m hm => hd' _ _ hm
 #align category_theory.limits.fork.is_limit.of_exists_unique CategoryTheory.Limits.Fork.IsLimit.ofExistsUnique
 
 /-- Noncomputably make a colimit cocone from the existence of unique factorizations. -/
 def Cofork.IsColimit.ofExistsUnique {t : Cofork f g}
-    (hs : ∀ s : Cofork f g, ∃! d : t.x ⟶ s.x, Cofork.π t ≫ d = Cofork.π s) : IsColimit t :=
-  by
+    (hs : ∀ s : Cofork f g, ∃! d : t.x ⟶ s.x, Cofork.π t ≫ d = Cofork.π s) : IsColimit t := by
   choose d hd hd' using hs
   exact cofork.is_colimit.mk _ d hd fun s m hm => hd' _ _ hm
 #align category_theory.limits.cofork.is_colimit.of_exists_unique CategoryTheory.Limits.Cofork.IsColimit.ofExistsUnique
@@ -897,8 +895,7 @@ theorem equalizer.isoSourceOfSelf_hom : (equalizer.isoSourceOfSelf f).Hom = equa
 
 @[simp]
 theorem equalizer.isoSourceOfSelf_inv :
-    (equalizer.isoSourceOfSelf f).inv = equalizer.lift (𝟙 X) (by simp) :=
-  by
+    (equalizer.isoSourceOfSelf f).inv = equalizer.lift (𝟙 X) (by simp) := by
   ext
   simp [equalizer.iso_source_of_self]
 #align category_theory.limits.equalizer.iso_source_of_self_inv CategoryTheory.Limits.equalizer.isoSourceOfSelf_inv
@@ -1082,8 +1079,7 @@ def coequalizer.isoTargetOfSelf : coequalizer f f ≅ Y :=
 
 @[simp]
 theorem coequalizer.isoTargetOfSelf_hom :
-    (coequalizer.isoTargetOfSelf f).Hom = coequalizer.desc (𝟙 Y) (by simp) :=
-  by
+    (coequalizer.isoTargetOfSelf f).Hom = coequalizer.desc (𝟙 Y) (by simp) := by
   ext
   simp [coequalizer.iso_target_of_self]
 #align category_theory.limits.coequalizer.iso_target_of_self_hom CategoryTheory.Limits.coequalizer.isoTargetOfSelf_hom
@@ -1116,8 +1112,7 @@ theorem equalizerComparison_comp_π [HasEqualizer f g] [HasEqualizer (G.map f) (
 theorem map_lift_equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] {Z : C}
     {h : Z ⟶ X} (w : h ≫ f = h ≫ g) :
     G.map (equalizer.lift h w) ≫ equalizerComparison f g G =
-      equalizer.lift (G.map h) (by simp only [← G.map_comp, w]) :=
-  by
+      equalizer.lift (G.map h) (by simp only [← G.map_comp, w]) := by
   ext
   simp [← G.map_comp]
 #align category_theory.limits.map_lift_equalizer_comparison CategoryTheory.Limits.map_lift_equalizerComparison
@@ -1138,8 +1133,7 @@ theorem ι_comp_coequalizerComparison [HasCoequalizer f g] [HasCoequalizer (G.ma
 theorem coequalizerComparison_map_desc [HasCoequalizer f g] [HasCoequalizer (G.map f) (G.map g)]
     {Z : C} {h : Y ⟶ Z} (w : f ≫ h = g ≫ h) :
     coequalizerComparison f g G ≫ G.map (coequalizer.desc h w) =
-      coequalizer.desc (G.map h) (by simp only [← G.map_comp, w]) :=
-  by
+      coequalizer.desc (G.map h) (by simp only [← G.map_comp, w]) := by
   ext
   simp [← G.map_comp]
 #align category_theory.limits.coequalizer_comparison_map_desc CategoryTheory.Limits.coequalizerComparison_map_desc
