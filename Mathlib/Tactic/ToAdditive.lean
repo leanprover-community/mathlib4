@@ -710,7 +710,6 @@ def nameDict : String → List String
 | "unit"        => ["add", "Unit"]
 | "units"       => ["add", "Units"]
 | "rootable"    => ["divisible"]
-| "isCentralScalar" => ["isCentralVAdd"]
 | x             => [x]
 
 /--
@@ -781,6 +780,8 @@ def fixAbbreviation : List String → List String
 | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
 | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
 | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
+| "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
+| "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
 | []                                => []
 
