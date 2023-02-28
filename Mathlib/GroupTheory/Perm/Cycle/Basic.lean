@@ -994,19 +994,21 @@ theorem cycleOf_inv (f : Perm α) (x : α) : (cycleOf f x)⁻¹ = cycleOf f⁻¹
 #align equiv.perm.cycle_of_inv Equiv.Perm.cycleOf_inv
 
 @[simp]
-theorem cycleOf_pow_apply_self (f : Perm α) (x : α) : ∀ n : ℕ, (cycleOf f x ^ n) x = (f ^ n) x
-  | 0 => rfl
-  | n + 1 =>
-    by
-    rw [pow_succ, mul_apply, cycleOf_apply, cycleOf_pow_apply_self, if_pos, pow_succ, mul_apply]
-    exact ⟨n, rfl⟩
+theorem cycleOf_pow_apply_self (f : Perm α) (x : α) : ∀ n : ℕ, (cycleOf f x ^ n) x = (f ^ n) x := by
+  intro n
+  induction' n with n hn
+  · rfl
+  · rw [pow_succ, mul_apply, cycleOf_apply, hn, if_pos, pow_succ, mul_apply]
+    simpa [SameCycle] using ⟨n,rfl⟩
 #align equiv.perm.cycle_of_pow_apply_self Equiv.Perm.cycleOf_pow_apply_self
 
 @[simp]
-theorem cycleOf_zpow_apply_self (f : Perm α) (x : α) : ∀ n : ℤ, (cycleOf f x ^ n) x = (f ^ n) x
-  | (n : ℕ) => cycleOf_pow_apply_self f x n
-  | -[n+1] => by
-    rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
+theorem cycleOf_zpow_apply_self (f : Perm α) (x : α) :
+    ∀ n : ℤ, (cycleOf f x ^ n) x = (f ^ n) x := by
+  intro z
+  induction' z with z hz
+  · exact cycleOf_pow_apply_self f x z
+  · rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
 #align equiv.perm.cycle_of_zpow_apply_self Equiv.Perm.cycleOf_zpow_apply_self
 
 theorem SameCycle.cycleOf_apply : SameCycle f x y → cycleOf f x y = f y :=
@@ -1998,3 +2000,5 @@ theorem _root_.Finset.sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι �
 #align finset.sum_mul_sum_eq_sum_perm Finset.sum_mul_sum_eq_sum_perm
 
 end Finset
+
+#lint
