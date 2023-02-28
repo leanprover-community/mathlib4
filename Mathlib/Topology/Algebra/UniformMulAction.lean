@@ -146,7 +146,7 @@ section SMul
 variable [SMul M X]
 
 @[to_additive]
-instance : SMul M (Completion X) :=
+noncomputable instance : SMul M (Completion X) :=
   ⟨fun c => Completion.map ((· • ·) c)⟩
 
 @[to_additive]
