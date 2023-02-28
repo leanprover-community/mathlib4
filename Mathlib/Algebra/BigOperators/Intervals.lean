@@ -127,13 +127,13 @@ theorem sum_Ico_Ico_comm {M : Type _} [AddCommMonoid M] (a b : ℕ) (f : ℕ →
       ∑ j in Finset.Ico a b, ∑ i in Finset.Ico a (j + 1), f i j := by
   rw [Finset.sum_sigma', Finset.sum_sigma']
   refine'
-            Finset.sum_bij' (fun (x : Σ _ : ℕ, ℕ) _ => (⟨x.2, x.1⟩ : Σ _ : ℕ, ℕ)) _ (fun _ _ => rfl)
-              (fun (x : Σ _ : ℕ, ℕ) _ => (⟨x.2, x.1⟩ : Σ _ : ℕ, ℕ)) _ (by (rintro ⟨⟩ _; rfl))
-              (by (rintro ⟨⟩ _; rfl)) <;>
-          simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
-        rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
-      refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
-    linarith
+    Finset.sum_bij' (fun (x : Σ _ : ℕ, ℕ) _ => (⟨x.2, x.1⟩ : Σ _ : ℕ, ℕ)) _ (fun _ _ => rfl)
+      (fun (x : Σ _ : ℕ, ℕ) _ => (⟨x.2, x.1⟩ : Σ _ : ℕ, ℕ)) _ (by (rintro ⟨⟩ _; rfl))
+      (by (rintro ⟨⟩ _; rfl)) <;>
+  simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
+  rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
+  refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
+  linarith
 #align finset.sum_Ico_Ico_comm Finset.sum_Ico_Ico_comm
 
 @[to_additive]
@@ -208,12 +208,11 @@ theorem sum_range_id_mul_two (n : ℕ) : (∑ i in range n, i) * 2 = n * (n - 1)
     _ = ∑ i in range n, (n - 1) :=
       sum_congr rfl fun i hi => add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| mem_range.1 hi
     _ = n * (n - 1) := by rw [sum_const, card_range, Nat.nsmul_eq_mul]
-
 #align finset.sum_range_id_mul_two Finset.sum_range_id_mul_two
 
 /-- Gauss' summation formula -/
 theorem sum_range_id (n : ℕ) : (∑ i in range n, i) = n * (n - 1) / 2 := by
-  (rw [← sum_range_id_mul_two n, Nat.mul_div_cancel]; exact by decide)
+  rw [← sum_range_id_mul_two n, Nat.mul_div_cancel _ zero_lt_two]
 #align finset.sum_range_id Finset.sum_range_id
 
 end GaussSum
@@ -265,7 +264,6 @@ variable {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (
 
 open Finset
 
--- mathport name: «exprG »
 -- The partial sum of `g`, starting from zero
 local notation "G " n:80 => ∑ i in range n, g i
 

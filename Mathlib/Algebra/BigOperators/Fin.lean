@@ -214,8 +214,8 @@ section PartialProd
 
 variable [Monoid α] {n : ℕ}
 
-/-- For `f = (a₁, ..., aₙ)` in `αⁿ`, `partial_prod f` is `(1, a₁, a₁a₂, ..., a₁...aₙ)` in `αⁿ⁺¹`. -/
-@[to_additive "For `f = (a₁, ..., aₙ)` in `αⁿ`, `partial_sum f` is\n
+/-- For `f = (a₁, ..., aₙ)` in `αⁿ`, `partialProd f` is `(1, a₁, a₁a₂, ..., a₁...aₙ)` in `αⁿ⁺¹`. -/
+@[to_additive "For `f = (a₁, ..., aₙ)` in `αⁿ`, `partialSum f` is\n
 `(0, a₁, a₁ + a₂, ..., a₁ + ... + aₙ)` in `αⁿ⁺¹`."]
 def partialProd (f : Fin n → α) (i : Fin (n + 1)) : α :=
   ((List.ofFn f).take i).prod
@@ -253,7 +253,7 @@ theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
 
 -- Porting note:
 -- 1) Changed `i` in statement to `(Fin.castLt i (Nat.lt_succ_of_lt i.2))` because of
---    coersion issues. Might need to be fixed later.
+--    coercion issues. Might need to be fixed later.
 -- 2) The current proof is really bad! It should be redone once `assoc_rw` is
 --    implemented and `rw` knows that `i.succ = i + 1`.
 -- 3) The original Mathport output was:

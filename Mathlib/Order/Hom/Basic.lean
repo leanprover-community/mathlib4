@@ -12,6 +12,7 @@ import Mathlib.Logic.Equiv.Option
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
+import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Replace
 
 /-!
@@ -313,8 +314,7 @@ theorem mk_le_mk {f g : α → β} {hf hg} : mk f hf ≤ mk g hg ↔ f ≤ g :=
   Iff.rfl
 #align order_hom.mk_le_mk OrderHom.mk_le_mk
 
--- Porting note: `mono` tactic not implemented yet.
--- @[mono]
+@[mono]
 theorem apply_mono {f g : α →o β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   (h₁ x).trans <| g.mono h₂
 #align order_hom.apply_mono OrderHom.apply_mono
@@ -352,8 +352,7 @@ def comp (g : β →o γ) (f : α →o β) : α →o γ :=
 #align order_hom.comp OrderHom.comp
 #align order_hom.comp_coe OrderHom.comp_coe
 
--- Porting note: `mono` tactic not implemented yet.
--- @[mono]
+@[mono]
 theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂ : α →o β⦄ (hf : f₁ ≤ f₂) :
     g₁.comp f₁ ≤ g₂.comp f₂ := fun _ => (hg _).trans (g₂.mono <| hf _)
 #align order_hom.comp_mono OrderHom.comp_mono
@@ -404,7 +403,7 @@ protected def prod (f : α →o β) (g : α →o γ) : α →o β × γ :=
 #align order_hom.prod OrderHom.prod
 #align order_hom.prod_coe OrderHom.prod_coe
 
---@[mono]
+@[mono]
 theorem prod_mono {f₁ f₂ : α →o β} (hf : f₁ ≤ f₂) {g₁ g₂ : α →o γ} (hg : g₁ ≤ g₂) :
     f₁.prod g₁ ≤ f₂.prod g₂ := fun _ => Prod.le_def.2 ⟨hf _, hg _⟩
 #align order_hom.prod_mono OrderHom.prod_mono

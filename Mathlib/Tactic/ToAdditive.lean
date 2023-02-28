@@ -351,7 +351,7 @@ where /-- Implementation of `applyReplacementFun`. -/
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
-    | .lit (.natVal 1) => pure <| mkRawNatLit 0
+    | .lit (.natVal 1) => some <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
       if trace && n₀ != n₁ then
@@ -394,6 +394,10 @@ where /-- Implementation of `applyReplacementFun`. -/
           if trace then
             dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
+      if gf.isBVar && x.isLit then
+        if trace then
+          dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
+        return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
@@ -786,6 +790,10 @@ def fixAbbreviation : List String → List String
 | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
 | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
 | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+| "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
+| "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
+| "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
+| "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
 | []                                => []
 

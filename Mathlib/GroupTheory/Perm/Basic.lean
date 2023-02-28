@@ -364,7 +364,7 @@ theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p x ↔ p (f x)) (x : { x //
 
 @[simp]
 theorem subtypePerm_one (p : α → Prop) (h := fun _ => Iff.rfl) : @subtypePerm α p 1 h = 1 :=
-  Equiv.ext fun ⟨_, _⟩ => rfl
+  rfl
 #align equiv.perm.subtype_perm_one Equiv.Perm.subtypePerm_one
 
 @[simp]
