@@ -78,10 +78,11 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
 
 #align derangements.subtype_equiv Derangements.subtypeEquiv
 
+universe u
 /-- The set of permutations that fix either `a` or nothing is equivalent to the sum of:
     - derangements on `α`
     - derangements on `α` minus `a`. -/
-def atMostOneFixedPointEquivSumDerangements [DecidableEq α] (a : α) :
+def atMostOneFixedPointEquivSumDerangements {α: Type u} [DecidableEq α] (a : α) :
     { f : Perm α // fixedPoints f ⊆ {a} } ≃ Sum (Derangements ({a}ᶜ : Set α)) (Derangements α) :=
   calc
     { f : Perm α // fixedPoints f ⊆ {a} } ≃
@@ -92,7 +93,7 @@ def atMostOneFixedPointEquivSumDerangements [DecidableEq α] (a : α) :
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
         {
           refine' Equiv.sumCongr _ _ <;>
-            · convert subtypeSubtypeEquivSubtypeInter _ _
+            · convert subtypeSubtypeEquivSubtypeInter.{u} _ _
               ext f
               rfl
         }
