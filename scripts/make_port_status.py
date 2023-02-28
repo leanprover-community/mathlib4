@@ -158,7 +158,13 @@ for node in sorted(graph.nodes):
             mathlib4_pr=data[node]['mathlib4_pr'],
             source=data[node]['source']
         )
-        _sync_prs = list(sync_prs[data[node]['mathlib4_file']])
+        _sync_prs = [
+            dict(
+                num=sync_pr_num,
+                labels=[dict(name=l.name, color=l.color) for l in prs[sync_pr_num].labels]
+            )
+            for sync_pr_num in sync_prs[data[node]['mathlib4_file']]
+        ]
         if _sync_prs:
             new_status.update(mathlib4_sync_prs=_sync_prs)
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
