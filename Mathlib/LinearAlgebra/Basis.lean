@@ -849,7 +849,6 @@ theorem singleton_repr (ι R : Type _) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
 #align basis.singleton_repr Basis.singleton_repr
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x «expr ≠ » 0) -/
 theorem basis_singleton_iff {R M : Type _} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type _) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ (x : _)(_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
