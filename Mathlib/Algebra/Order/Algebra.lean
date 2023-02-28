@@ -33,6 +33,8 @@ mixin.
 ordered algebra
 -/
 
+-- Porting note: TODO -- this should not be necessary
+set_option synthInstance.etaExperiment true
 
 section OrderedAlgebra
 
@@ -48,4 +50,3 @@ theorem algebraMap_monotone : Monotone (algebraMap R A) := fun a b h => by
 #align algebra_map_monotone algebraMap_monotone
 
 end OrderedAlgebra
-
