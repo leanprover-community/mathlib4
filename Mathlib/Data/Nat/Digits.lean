@@ -11,12 +11,12 @@ Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
+import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Algebra.Parity
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.List.BigOperators.Lemmas -- List.alternatingSum_reverse
 
 /-!
 # Digits of a natural number
