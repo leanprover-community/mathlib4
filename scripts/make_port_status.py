@@ -180,7 +180,6 @@ for node in sorted(graph.nodes):
             labels = [{'name': l.name, 'color': l.color} for l in prs[pr_info['pr']].labels]
             if labels:
                 new_status.update(labels=labels)
-
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
             status += f" mathlib4#{pr_info['pr']} {sha}"
     try:
