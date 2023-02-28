@@ -1592,6 +1592,8 @@ instance : IsAtomistic (Submodule K V)
 
 end AtomsOfSubmoduleLattice
 
+attribute [-instance] Ring.toNonAssocRing -- Porting note: TODO: workaround for #2074
+
 variable {K V}
 
 theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj : LinearMap.ker f = ⊥) :
