@@ -124,6 +124,11 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
     obtain ⟨⟨g,_⟩,_⟩ := g
     congr
 
+-- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `FunLike.coe`
+/-- See Note [custom simps projection] -/
+def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
+  e
+
 -- Porting note: `protected` used to be an attribute below
 @[simp]
 protected theorem coe_coe {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) :
@@ -325,7 +330,11 @@ theorem coe_coe_symm_apply_coe_apply {F : Type _} [AlgEquivClass F R A₁ A₂] 
   EquivLike.left_inv f x
 #align alg_equiv.coe_coe_symm_apply_coe_apply AlgEquiv.coe_coe_symm_apply_coe_apply
 
+-- Porting note: `simp` normal form of `invFun_eq_symm`
 @[simp]
+theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.toEquiv.symm = e.symm :=
+  rfl
+
 theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
   rfl
 #align alg_equiv.inv_fun_eq_symm AlgEquiv.invFun_eq_symm
@@ -514,13 +523,21 @@ theorem ofBijective_apply {f : A₁ →ₐ[R] A₂} {hf : Function.Bijective f} 
 #align alg_equiv.of_bijective_apply AlgEquiv.ofBijective_apply
 
 /-- Forgetting the multiplicative structures, an equivalence of algebras is a linear equivalence. -/
-@[simps apply]
+-- Porting note: writing the `@[simps apply]`-generated lemma by hand
+-- Maybe fixed by the changes in #2435?
 def toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ₗ[R] A₂ :=
   { e with
     toFun := e
     map_smul' := e.map_smul
     invFun := e.symm }
 #align alg_equiv.to_linear_equiv AlgEquiv.toLinearEquiv
+
+-- Porting note: writing the `@[simps apply]`-generated lemma by hand
+-- Maybe fixed by the changes in #2435?
+@[simp]
+theorem toLinearEquiv_apply : e.toLinearEquiv x = e x :=
+  rfl
+#align alg_equiv.to_linear_equiv_apply AlgEquiv.toLinearEquiv_apply
 
 @[simp]
 theorem toLinearEquiv_refl : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).toLinearEquiv = LinearEquiv.refl R A₁ :=
@@ -615,7 +632,7 @@ end OfLinearEquiv
 section OfRingEquiv
 
 /-- Promotes a linear ring_equiv to an AlgEquiv. -/
-@[simps]
+@[simps apply symmApply toEquiv] -- Porting note: don't want redundant `toEquiv_symm_apply` simps
 def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = algebraMap R A₂ x) :
     A₁ ≃ₐ[R] A₂ :=
   { f with
@@ -778,7 +795,7 @@ variable [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
 
 This is a stronger version of `MulSemiringAction.toRingEquiv` and
 `DistribMulAction.toLinearEquiv`. -/
-@[simps!]
+@[simps! apply symmApply toEquiv] -- Porting note: don't want redundant simps lemma `toEquiv_symm`
 def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
   { MulSemiringAction.toRingEquiv _ _ g, MulSemiringAction.toAlgHom R A g with }
 #align mul_semiring_action.to_alg_equiv MulSemiringAction.toAlgEquiv
