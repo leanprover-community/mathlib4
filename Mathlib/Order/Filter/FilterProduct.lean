@@ -83,19 +83,19 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
   exact coe_lt
 #align filter.germ.lt_def Filter.Germ.lt_def
 
-instance hasSup [HasSup β] : HasSup β* :=
+instance sup [Sup β] : Sup β* :=
   ⟨map₂ (· ⊔ ·)⟩
 
-instance hasInf [HasInf β] : HasInf β* :=
+instance inf [Inf β] : Inf β* :=
   ⟨map₂ (· ⊓ ·)⟩
 
 @[simp, norm_cast]
-theorem const_sup [HasSup β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : β*) :=
+theorem const_sup [Sup β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : β*) :=
   rfl
 #align filter.germ.const_sup Filter.Germ.const_sup
 
 @[simp, norm_cast]
-theorem const_inf [HasInf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : β*) :=
+theorem const_inf [Inf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : β*) :=
   rfl
 #align filter.germ.const_inf Filter.Germ.const_inf
 
