@@ -163,10 +163,9 @@ theorem RemoveNone.fiber_some (a : α) :
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
       cases' x with x
       · simp
-      simp only [Equiv.optionCongr_apply, Option.map_some']
+      simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self, ne_eq]
       by_cases x_vs_a : x = a
-      · rw [x_vs_a]
-        simp only [comp, optionCongr_apply, Option.map_some', ne_eq]
+      · rw [x_vs_a, swap_apply_right]
         apply Option.some_ne_none
       have ne_1 : some x ≠ none := Option.some_ne_none _
       have ne_2 : some x ≠ some a := (Option.some_injective α).ne_iff.mpr x_vs_a
