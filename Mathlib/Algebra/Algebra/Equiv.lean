@@ -58,7 +58,7 @@ namespace AlgEquivClass
 
 -- Porting note: Replaced instances [...] with {_ : ...} below to make them not dangerous
 -- See note [lower instance priority]
-instance (priority := 100) toAlgHomClass (F R A B : Type _) {_ :CommSemiring R} {_ : Semiring A}
+instance (priority := 100) toAlgHomClass (F R A B : Type _) {_ : CommSemiring R} {_ : Semiring A}
     {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B} [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
   { h with
@@ -68,15 +68,15 @@ instance (priority := 100) toAlgHomClass (F R A B : Type _) {_ :CommSemiring R} 
     map_one := map_one }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
 
-instance (priority := 100) toLinearEquivClass (F R A B : Type _) {_ :CommSemiring R}
+instance (priority := 100) toLinearEquivClass (F R A B : Type _) {_ : CommSemiring R}
     {_ : Semiring A} {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B}
     [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass
 
 instance (F R A B : Type _) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [_h : AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B)
-    where coe f :=
+    [_h : AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) where
+  coe f :=
     { (f : A ≃+* B) with
       toFun := f
       invFun := EquivLike.inv f
@@ -114,7 +114,7 @@ instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
 -- instance : CoeFun (A₁ ≃ₐ[R] A₂) fun _ => A₁ → A₂ :=
 --   ⟨AlgEquiv.toFun⟩
 
-instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁  A₂ where
+instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
