@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.CompleteLattice
-import Mathbin.CategoryTheory.Category.Preorder
-import Mathbin.CategoryTheory.Limits.IsLimit
+import Mathlib.Order.CompleteLattice
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Limits.IsLimit
 
 /-!
 # The category of "pairwise intersections".
