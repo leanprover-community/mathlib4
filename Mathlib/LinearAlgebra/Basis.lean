@@ -401,12 +401,16 @@ def mapCoeffs : Basis ι R' M := by
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
   apply_eq_iff.mpr <| by
+    -- Porting note: in Lean 3, these were automatically infered from the definition of
+    -- `mapCoeffs`.
+    letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
+    haveI : IsScalarTower R' R M :=
+    { smul_assoc := fun x y z => by
+        -- Porting note: `dsimp [(· • ·)]` is unavailable because
+        --               `HSMul.hsmul` becomes `SMul.smul`.
+        change (f.symm x * y) • z = x • (y • z)
+        rw [mul_smul, ← h, f.apply_symm_apply] }
     simp
-    rw [LinearEquiv.restrictScalars_apply]
-    simp [repr_self, Finsupp.mapRange.linearEquiv_apply,
-      Finsupp.mapRange_single, Module.compHom.toLinearEquiv_symmApply, map_one,
-      LinearEquiv.restrictScalars_apply_apply]
-
 #align basis.map_coeffs_apply Basis.mapCoeffs_apply
 
 @[simp]
@@ -1120,15 +1124,15 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   have r : ∀ i, b i = u i := fun i => rfl
   simp_rw [r] at e
   simp_rw [Finsupp.total_apply] at e
-  change
-    ((b.repr x).Sum fun (i : ι) (a : R) => (fun (x : w) (r : R) => r • (x : M)) (u i) a) =
-      ((⟨x, p⟩ : w) : M) at e
-  rw [← Finsupp.sum_embDomain, ← Finsupp.total_apply] at e
+  -- Porting note: `change at` doesn't work
+  replace e : ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) =
+      ((⟨x, p⟩ : w) : M) := e
+  rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)), ← Finsupp.total_apply] at e
   -- Now we can contradict the linear independence of `hi`
   refine' hi.total_ne_of_not_mem_support _ _ e
   simp only [Finset.mem_map, Finsupp.support_embDomain]
   rintro ⟨j, -, W⟩
-  simp only [embedding.coe_fn_mk, Subtype.mk_eq_mk, ← r] at W
+  simp only [Embedding.coeFn_mk, Subtype.mk_eq_mk, ← r] at W
   apply q ⟨j, W⟩
 #align basis.maximal Basis.maximal
 
@@ -1196,14 +1200,15 @@ variable (hli : LinearIndependent R v)
 protected noncomputable def span : Basis ι R (span R (range v)) :=
   Basis.mk (linearIndependent_span hli) <| by
     intro x _
-    have h₁ : (((↑) : span R (range v) → M) '' Set.range fun i => Subtype.mk (v i) _) = range v :=
-      by
+    have : ∀ i, v i ∈ span R (range v) := fun i ↦ subset_span (Set.mem_range_self _)
+    have h₁ : (((↑) : span R (range v) → M) '' range fun i => ⟨v i, this i⟩) = range v := by
       simp only [SetLike.coe_sort_coe, ← Set.range_comp]
       rfl
-    have h₂ :
-      map (Submodule.subtype (span R (range v))) (span R (Set.range fun i => Subtype.mk (v i) _)) =
-        span R (range v) :=
-      by rw [← span_image, Submodule.coeSubtype, h₁]
+    have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
+        span R (range v) := by
+      rw [← span_image, Submodule.coeSubtype]
+      -- Porting note: why doesn't `rw [h₁]` work here?
+      exact congr_arg _ h₁
     have h₃ :
       (x : M) ∈
         map (Submodule.subtype (span R (range v)))
@@ -1219,7 +1224,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
 #align basis.span Basis.span
 
 protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
-  congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply (linearIndependent_span hli) _ i
+  congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
 #align basis.span_apply Basis.span_apply
 
 end Span
@@ -1233,7 +1238,7 @@ theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [Dis
   rw [Submodule.mem_span] at hj⊢
   refine' fun p hp => hj p fun u hu => _
   obtain ⟨i, rfl⟩ := hu
-  have : ((w i)⁻¹ • 1 : R) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • 1 : R) (hp ⟨i, rfl⟩)
+  have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
   rwa [smul_one_smul, inv_smul_smul] at this
 #align basis.group_smul_span_eq_top Basis.groupSmul_span_eq_top
 
@@ -1246,7 +1251,7 @@ def groupSmul {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G 
 
 theorem groupSmul_apply {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
     [IsScalarTower G R M] [SMulCommClass G R M] {v : Basis ι R M} {w : ι → G} (i : ι) :
-    v.groupSmul w i = (w • v : ι → M) i :=
+    v.groupSmul w i = (w • (v : ι → M)) i :=
   mk_apply (LinearIndependent.group_smul v.linearIndependent w)
     (groupSmul_span_eq_top v.span_eq).ge i
 #align basis.group_smul_apply Basis.groupSmul_apply
@@ -1310,22 +1315,22 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
     Basis (Fin (n + 1)) R M :=
   have span_b : Submodule.span R (Set.range (N.subtype ∘ b)) = N := by
     rw [Set.range_comp, Submodule.span_image, b.span_eq, Submodule.map_subtype_top]
-  @Basis.mk _ _ _ (Fin.cons y (N.subtype ∘ b) : Fin (n + 1) → M) _ _ _
-    ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).fin_cons' _ _ <|
-      by
-      rintro c ⟨x, hx⟩ hc
-      rw [span_b] at hx
-      exact hli c x hx hc)
+  Basis.mk (v := Fin.cons y (N.subtype ∘ b))
+    ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).fin_cons' _ _
+      (by
+        rintro c ⟨x, hx⟩ hc
+        rw [span_b] at hx
+        exact hli c x hx hc))
     fun x _ => by
-    rw [Fin.range_cons, Submodule.mem_span_insert', span_b]
-    exact hsp x
+      rw [Fin.range_cons, Submodule.mem_span_insert', span_b]
+      exact hsp x
 #align basis.mk_fin_cons Basis.mkFinCons
 
 @[simp]
 theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R N)
     (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N) :
     (mkFinCons y b hli hsp : Fin (n + 1) → M) = Fin.cons y ((↑) ∘ b) :=
-  coe_mk _ _
+  coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 #align basis.coe_mk_fin_cons Basis.coe_mkFinCons
 
 /-- Let `b` be a basis for a submodule `N ≤ O`. If `y ∈ O` is linear independent of `N`
@@ -1392,23 +1397,23 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort 
   haveI : DecidableEq M := Classical.decEq M
   have Pbot : P ⊥ := by
     apply ih
-    intro N N_le x x_mem x_ortho
+    intro N _ x x_mem x_ortho
     exfalso
     rw [mem_bot] at x_mem
     simpa [x_mem] using x_ortho 1 0 N.zero_mem
   induction' n with n rank_ih generalizing N
   · suffices N = ⊥ by rwa [this]
-    apply Basis.eq_bot_of_rank_eq_zero b _ fun m v hv => le_zero_iff.mp (rank_le v hv)
+    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => le_zero_iff.mp (rank_le _ hv)
   apply ih
   intro N' N'_le x x_mem x_ortho
   apply rank_ih
   intro m v hli
   refine' Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) _)
-  convert hli.fin_cons' x _ _
+  convert hli.fin_cons' x _ ?_
   · ext i
     refine' Fin.cases _ _ i <;> simp
   · intro c y hcy
-    refine' x_ortho c y (submodule.span_le.mpr _ y.2) hcy
+    refine' x_ortho c y (Submodule.span_le.mpr _ y.2) hcy
     rintro _ ⟨z, rfl⟩
     exact (v z).2
 #align submodule.induction_on_rank_aux Submodule.inductionOnRankAux
@@ -1451,7 +1456,7 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
 #align basis.range_extend Basis.range_extend
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
-noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (Sum ι _) K V :=
+noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ _) K V :=
   let s := Set.range v
   let e : ι ≃ s := Equiv.ofInjective v hs.injective
   let b := hs.to_subtype_range.extend (subset_univ (Set.range v))
