@@ -561,12 +561,10 @@ theorem Quotient.equiv_trans {N O : Type _} [AddCommGroup N] [Module R N] [AddCo
     Quotient.equiv P S (e.trans f) hef =
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
   ext
+  -- `simp` can deal with `hef` depending on `e` and `f`
   simp only [Quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
   -- `rw` can deal with `mapQ_comp` needing extra hypotheses coming from the RHS
-  -- porting note: this doesn't work in Lean 4?
-  rw [mapQ_comp P Q S e.toLinearMap f.toLinearMap (fun _ hx => he ▸ Submodule.mem_map_of_mem hx)
-    (fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) _]
-  rfl
+  rw [mapQ_comp, LinearMap.comp_apply]
 #align submodule.quotient.equiv_trans Submodule.Quotient.equiv_trans
 
 end Submodule
