@@ -603,12 +603,13 @@ theorem end_mem_tail_support_of_ne {u v : V} (h : u ≠ v) (p : G.Walk u v) : v 
   simp
 #align simple_graph.walk.end_mem_tail_support_of_ne SimpleGraph.Walk.end_mem_tail_support_of_ne
 
-@[simp]
+@[simp, nolint unusedHavesSuffices]
 theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     t ∈ (p.append p').support ↔ t ∈ p.support ∨ t ∈ p'.support := by
   simp only [mem_support_iff, mem_tail_support_append_iff]
-  by_cases h : t = v <;> by_cases h' : t = u <;>
-    subst_vars <;> (try have := Ne.symm h') <;> simp [*]
+  obtain rfl | h := eq_or_ne t v <;> obtain rfl | h' := eq_or_ne t u <;>
+    -- this `have` triggers the unusedHavesSuffices linter:
+    (try have := h'.symm) <;> simp [*]
 #align simple_graph.walk.mem_support_append_iff SimpleGraph.Walk.mem_support_append_iff
 
 @[simp]
@@ -1731,8 +1732,8 @@ protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
 variable (p)
 
 @[simp]
-theorem transfer_transfer (hp) {K : SimpleGraph V} (hp' : ∀ e, e ∈ p.edges → e ∈ K.edgeSet) :
-    (p.transfer H hp).transfer K (p.edges_transfer hp ▸ hp') = p.transfer K hp' := by
+theorem transfer_transfer (hp) {K : SimpleGraph V} (hp') :
+    (p.transfer H hp).transfer K hp' = p.transfer K (p.edges_transfer hp ▸ hp') := by
   induction p with
   | nil => simp
   | cons _ _ ih =>
@@ -1802,6 +1803,9 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
     Walk.map (Hom.mapSpanningSubgraphs (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
   rw [← transfer_eq_map_of_le, transfer_transfer, transfer_self]
+  · intros e
+    rw [edges_transfer]
+    apply edges_subset_edgeSet p
 #align simple_graph.walk.map_to_delete_edges_eq SimpleGraph.Walk.map_toDeleteEdges_eq
 
 protected theorem IsPath.toDeleteEdges (s : Set (Sym2 V))
