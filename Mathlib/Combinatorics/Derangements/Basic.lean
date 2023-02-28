@@ -159,7 +159,7 @@ theorem RemoveNone.fiber_some (a : α) :
     use Equiv.Perm.decomposeOption.symm (some a, f)
     constructor
     · intro x
-      --apply_fun Equiv.swap none (some a)
+      apply_fun fun x => Equiv.swap none (some a) x
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
       cases' x with x
       · simp
