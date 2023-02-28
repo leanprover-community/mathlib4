@@ -16,7 +16,7 @@ This file defines the `@[higher_order]` attribute that applies to lemmas of the 
 higher-order functions.
 -/
 
-open Lean Name Meta Elab Expr Term Macro
+open Lean Name Meta Elab Expr Term
 
 namespace Tactic
 
