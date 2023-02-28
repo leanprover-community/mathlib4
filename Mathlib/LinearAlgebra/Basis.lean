@@ -76,7 +76,7 @@ open Function Set Submodule
 open BigOperators
 
 -- Porting note: TODO Erase this line.
-attribute [-instance] Ring.toNonAssocRing
+-- attribute [-instance] Ring.toNonAssocRing
 
 variable {ι : Type _} {ι' : Type _} {R : Type _} {R₂ : Type _} {K : Type _}
 
@@ -1289,6 +1289,7 @@ theorem coord_unitsSmul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     · simp
 #align basis.coord_units_smul Basis.coord_unitsSmul
 
+attribute [-instance] Ring.toNonAssocRing in -- Porting note: TODO: workaround for #2074
 @[simp]
 theorem repr_unitsSmul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι) :
     (e.unitsSmul w).repr v i = (w i)⁻¹ • e.repr v i :=
