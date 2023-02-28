@@ -51,8 +51,10 @@ class LawfulBifunctor (F : Type u₀ → Type u₁ → Type u₂) [Bifunctor F] 
 export LawfulBifunctor (id_bimap bimap_bimap)
 
 attribute [higher_order bimap_id_id] id_bimap
+#align is_lawful_bifunctor.bimap_id_id LawfulBifunctor.bimap_id_id
 
 attribute [higher_order bimap_comp_bimap] bimap_bimap
+#align is_lawful_bifunctor.bimap_comp_bimap LawfulBifunctor.bimap_comp_bimap
 
 export LawfulBifunctor (bimap_id_id bimap_comp_bimap)
 
@@ -78,31 +80,37 @@ variable [LawfulBifunctor F]
 theorem id_fst : ∀ {α β} (x : F α β), fst id x = x :=
   @id_bimap _ _ _
 #align bifunctor.id_fst Bifunctor.id_fst
+#align bifunctor.fst_id Bifunctor.fst_id
 
 @[higher_order snd_id]
 theorem id_snd : ∀ {α β} (x : F α β), snd id x = x :=
   @id_bimap _ _ _
 #align bifunctor.id_snd Bifunctor.id_snd
+#align bifunctor.snd_id Bifunctor.snd_id
 
 @[higher_order fst_comp_fst]
 theorem comp_fst {α₀ α₁ α₂ β} (f : α₀ → α₁) (f' : α₁ → α₂) (x : F α₀ β) :
     fst f' (fst f x) = fst (f' ∘ f) x := by simp [fst, bimap_bimap]
 #align bifunctor.comp_fst Bifunctor.comp_fst
+#align bifunctor.fst_comp_fst Bifunctor.fst_comp_fst
 
 @[higher_order fst_comp_snd]
 theorem fst_snd {α₀ α₁ β₀ β₁} (f : α₀ → α₁) (f' : β₀ → β₁) (x : F α₀ β₀) :
     fst f (snd f' x) = bimap f f' x := by simp [fst, bimap_bimap]
 #align bifunctor.fst_snd Bifunctor.fst_snd
+#align bifunctor.fst_comp_snd Bifunctor.fst_comp_snd
 
 @[higher_order snd_comp_fst]
 theorem snd_fst {α₀ α₁ β₀ β₁} (f : α₀ → α₁) (f' : β₀ → β₁) (x : F α₀ β₀) :
     snd f' (fst f x) = bimap f f' x := by simp [snd, bimap_bimap]
 #align bifunctor.snd_fst Bifunctor.snd_fst
+#align bifunctor.snd_comp_fst Bifunctor.snd_comp_fst
 
 @[higher_order snd_comp_snd]
 theorem comp_snd {α β₀ β₁ β₂} (g : β₀ → β₁) (g' : β₁ → β₂) (x : F α β₀) :
     snd g' (snd g x) = snd (g' ∘ g) x := by simp [snd, bimap_bimap]
 #align bifunctor.comp_snd Bifunctor.comp_snd
+#align bifunctor.snd_comp_snd Bifunctor.snd_comp_snd
 
 attribute [functor_norm]
   bimap_bimap comp_snd comp_fst snd_comp_snd snd_comp_fst fst_comp_snd fst_comp_fst
