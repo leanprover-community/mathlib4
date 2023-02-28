@@ -133,8 +133,8 @@ attribute [local instance] SMulCommClass.symm
 `P`, change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
 def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P :=
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun n₁ n₂ m => (f m).map_add _ _)
-    (fun c n m => (f m).map_smulₛₗ _ _) (fun n m₁ m₂ => by rw [f.map_add] <;> rfl) fun c n m => by
-    rw [f.map_smulₛₗ] <;> rfl
+    (fun c n m => (f m).map_smulₛₗ _ _) (fun n m₁ m₂ => by simp only [map_add, add_apply]) fun c n m => by
+    simp only [map_smulₛₗ, smul_apply]
 #align linear_map.flip LinearMap.flip
 
 end
@@ -150,8 +150,6 @@ theorem flip_flip [SMulCommClass R₂ S₂ P] (f : M →ₛₗ[ρ₁₂] N →�
 #align linear_map.flip_flip LinearMap.flip_flip
 
 open BigOperators
-
-variable {R}
 
 theorem flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
   ext₂ fun m n => show flip f n m = flip g n m by rw [H]
@@ -190,9 +188,9 @@ theorem map_sum₂ {ι : Type _} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂
 def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) : M →ₛₗ[ρ₁₂] q →ₛₗ[σ₁₂] P
     where
   toFun m := (f m).domRestrict q
-  map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, dom_restrict_apply, add_apply]
+  map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply, add_apply]
   map_smul' c m :=
-    LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, dom_restrict_apply, smul_apply]
+    LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, domRestrict_apply, smul_apply]
 #align linear_map.dom_restrict₂ LinearMap.domRestrict₂
 
 theorem domRestrict₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) (x : M) (y : q) :
@@ -257,7 +255,7 @@ theorem mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
   rfl
 #align linear_map.mk₂_apply LinearMap.mk₂_apply
 
-variable (R M N P)
+variable {R}
 
 /-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map `M → N → P`,
 change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
@@ -268,12 +266,10 @@ def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →�
   map_smul' _ _ := rfl
 #align linear_map.lflip LinearMap.lflip
 
-variable {R M N P}
-
 variable (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
 
 @[simp]
-theorem lflip_apply (m : M) (n : N) : lflip R M N P f n m = f m n :=
+theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n :=
   rfl
 #align linear_map.lflip_apply LinearMap.lflip_apply
 
@@ -287,7 +283,7 @@ def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[R] M →ₗ[R] P
 variable {R Pₗ}
 
 @[simp]
-theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp R Pₗ f g x = g (f x) :=
+theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp _ _ f g x = g (f x) :=
   rfl
 #align linear_map.lcomp_apply LinearMap.lcomp_apply
 
@@ -305,15 +301,11 @@ def lcompₛₗ (f : M →ₛₗ[σ₁₂] N) : (N →ₛₗ[σ₂₃] P) →ₗ
 
 variable {P σ₂₃}
 
-include σ₁₃
-
 @[simp]
 theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
     lcompₛₗ P σ₂₃ f g x = g (f x) :=
   rfl
 #align linear_map.lcompₛₗ_apply LinearMap.lcompₛₗ_apply
-
-omit σ₁₃
 
 variable (R M Nₗ Pₗ)
 
@@ -347,14 +339,10 @@ def compl₂ (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₃] Q →ₛₗ[�
   (lcompₛₗ _ _ g).comp f
 #align linear_map.compl₂ LinearMap.compl₂
 
-include σ₄₃
-
 @[simp]
 theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl₂ g m q = f m (g q) :=
   rfl
 #align linear_map.compl₂_apply LinearMap.compl₂_apply
-
-omit σ₄₃
 
 @[simp]
 theorem compl₂_id : f.compl₂ LinearMap.id = f := by
@@ -392,8 +380,8 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
     cases' hᵣ y with y' hy
     subst hy
     convert LinearMap.congr_fun₂ h x' y'
-  ·-- B₁ = B₂ → B₁.comp l r = B₂.comp l r
-    subst h
+  · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
+    subst h; rfl
 #align linear_map.compl₁₂_inj LinearMap.compl₁₂_inj
 
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
@@ -444,7 +432,7 @@ theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
   smul_right_injective _ hx
 #align linear_map.lsmul_injective LinearMap.lsmul_injective
 
-theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) : (LinearMap.lsmul R M a).ker = ⊥ :=
+theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) : LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 #align linear_map.ker_lsmul LinearMap.ker_lsmul
 
