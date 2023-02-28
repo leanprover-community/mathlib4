@@ -18,10 +18,10 @@ This file constructs the tensor product of modules over commutative semirings. G
 `R` and modules over it `M` and `N`, the standard construction of the tensor product is
 `TensorProduct R M N`. It is also a module over `R`.
 
-It comes with a canonical bilinear map `M → N → tensor_product R M N`.
+It comes with a canonical bilinear map `M → N → TensorProduct R M N`.
 
 Given any bilinear map `M → N → P`, there is a unique linear map `TensorProduct R M N → P` whose
-composition with the canonical bilinear map `M → N → tensor_product R M N` is the given bilinear
+composition with the canonical bilinear map `M → N → TensorProduct R M N` is the given bilinear
 map `M → N → P`.
 
 We start by proving basic lemmas about bilinear maps.
@@ -55,7 +55,7 @@ section
 
 variable (R)
 
-/-- The relation on `free_add_monoid (M × N)` that generates a congruence whose quotient is
+/-- The relation on `FreeAddMonoid (M × N)` that generates a congruence whose quotient is
 the tensor product. -/
 inductive Eqv : FreeAddMonoid (M × N) → FreeAddMonoid (M × N) → Prop
   | of_zero_left : ∀ n : N, Eqv (.of (0, n)) 0
@@ -73,7 +73,7 @@ end TensorProduct
 variable (R)
 
 /-- The tensor product of two modules `M` and `N` over the same commutative semiring `R`.
-The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open_locale tensor_product`. -/
+The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open_locale TensorProduct`. -/
 def TensorProduct : Type _ :=
   (addConGen (TensorProduct.Eqv R M N)).Quotient
 #align tensor_product TensorProduct
@@ -111,7 +111,7 @@ instance : Inhabited (M ⊗[R] N) :=
 variable (R) {M N}
 
 /-- The canonical function `M → N → M ⊗ N`. The localized notations are `m ⊗ₜ n` and `m ⊗ₜ[R] n`,
-accessed by `open_locale tensor_product`. -/
+accessed by `open_locale TensorProduct`. -/
 def tmul (m : M) (n : N) : M ⊗[R] N :=
   AddCon.mk' _ <| FreeAddMonoid.of (m, n)
 #align tensor_product.tmul TensorProduct.tmul
@@ -164,13 +164,13 @@ section
 
 variable (R R' M N)
 
-/-- A typeclass for `has_smul` structures which can be moved across a tensor product.
+/-- A typeclass for `SMul` structures which can be moved across a tensor product.
 
-This typeclass is generated automatically from a `is_scalar_tower` instance, but exists so that
-we can also add an instance for `add_comm_group.int_module`, allowing `z •` to be moved even if
+This typeclass is generated automatically from a `IsScalarTower` instance, but exists so that
+we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
 `R` does not support negation.
 
-Note that `module R' (M ⊗[R] N)` is available even without this typeclass on `R'`; it's only
+Note that `Module R' (M ⊗[R] N)` is available even without this typeclass on `R'`; it's only
 needed if `TensorProduct.smul_tmul`, `TensorProduct.smul_tmul'`, or `TensorProduct.tmul_smul` is
 used.
 -/
@@ -331,11 +331,11 @@ instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] : IsCentralScalar R'' (
 
 section
 
--- Like `R'`, `R'₂` provides a `distrib_mul_action R'₂ (M ⊗[R] N)`
+-- Like `R'`, `R'₂` provides a `DistribMulAction R'₂ (M ⊗[R] N)`
 variable {R'₂ : Type _} [Monoid R'₂] [DistribMulAction R'₂ M]
 variable [SMulCommClass R R'₂ M] [SMul R'₂ R']
 
-/-- `is_scalar_tower R'₂ R' M` implies `is_scalar_tower R'₂ R' (M ⊗[R] N)` -/
+/-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
 instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
     x.induction_on (by simp)
@@ -346,7 +346,7 @@ instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' 
 variable [DistribMulAction R'₂ N] [DistribMulAction R' N]
 variable [CompatibleSMul R R'₂ M N] [CompatibleSMul R R' M N]
 
-/-- `is_scalar_tower R'₂ R' N` implies `is_scalar_tower R'₂ R' (M ⊗[R] N)` -/
+/-- `IsScalarTower R'₂ R' N` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
 instance isScalarTower_right [IsScalarTower R'₂ R' N] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
   ⟨fun s r x =>
     x.induction_on (by simp)
@@ -1262,11 +1262,11 @@ theorem sub_tmul (m₁ m₂ : M) (n : N) : (m₁ - m₂) ⊗ₜ n = m₁ ⊗ₜ[
 #align tensor_product.sub_tmul TensorProduct.sub_tmul
 
 /-- While the tensor product will automatically inherit a ℤ-module structure from
-`add_comm_group.int_module`, that structure won't be compatible with lemmas like `tmul_smul` unless
-we use a `ℤ-module` instance provided by `TensorProduct.left_module`.
+`AddCommGroup.intModule`, that structure won't be compatible with lemmas like `tmul_smul` unless
+we use a `ℤ-Module` instance provided by `TensorProduct.left_module`.
 
-When `R` is a `ring` we get the required `TensorProduct.compatible_smul` instance through
-`is_scalar_tower`, but when it is only a `semiring` we need to build it from scratch.
+When `R` is a `Ring` we get the required `TensorProduct.compatible_smul` instance through
+`IsScalarTower`, but when it is only a `Semiring` we need to build it from scratch.
 The instance diamond in `compatible_smul` doesn't matter because it's in `Prop`.
 -/
 instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
