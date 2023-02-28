@@ -280,6 +280,7 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     map_smul' := fun r x => by dsimp only; rw [map_smulₛₗ] }
 #align linear_equiv.symm LinearEquiv.symm
 
+-- Porting note: this is new
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
