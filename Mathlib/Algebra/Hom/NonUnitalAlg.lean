@@ -129,7 +129,11 @@ theorem toFun_eq_coe (f : A →ₙₐ[R] B) : f.toFun = ⇑f :=
   rfl
 #align non_unital_alg_hom.to_fun_eq_coe NonUnitalAlgHom.toFun_eq_coe
 
-initialize_simps_projections NonUnitalAlgHom (toDistribMulActionHom_toMulActionHom_toFun → apply)
+/-- See Note [custom simps projection] -/
+def Simps.apply (f : A →ₙₐ[R] B) : A → B := f
+
+initialize_simps_projections NonUnitalAlgHom
+  (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
 
 @[simp]
 protected theorem coe_coe {F : Type _} [NonUnitalAlgHomClass F R A B] (f : F) :
@@ -444,5 +448,3 @@ theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f.toNonUnitalAlgHom) = 
 #align alg_hom.coe_to_non_unital_alg_hom AlgHom.coe_to_nonUnitalAlgHom
 
 end AlgHom
-
-#lint
