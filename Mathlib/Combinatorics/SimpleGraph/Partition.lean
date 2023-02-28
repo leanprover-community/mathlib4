@@ -29,20 +29,20 @@ graph colorings and back is the identity.
 
 ## Main definitions
 
-* `simple_graph.partition` is a structure to represent a partition of a simple graph
+* `SimpleGraph.Partition` is a structure to represent a partition of a simple graph
 
-* `simple_graph.partition.parts_card_le` is whether a given partition is an `n`-partition.
+* `SimpleGraph.Partition.PartsCardLe` is whether a given partition is an `n`-partition.
   (a partition with at most `n` parts).
 
-* `simple_graph.partitionable n` is whether a given graph is `n`-partite
+* `SimpleGraph.Partitionable n` is whether a given graph is `n`-partite
 
-* `simple_graph.partition.to_coloring` creates colorings from partitions
+* `SimpleGraph.Partition.toColoring` creates colorings from partitions
 
-* `simple_graph.coloring.to_partition` creates partitions from colorings
+* `SimpleGraph.Coloring.toPartition` creates partitions from colorings
 
 ## Main statements
 
-* `simple_graph.partitionable_iff_colorable` is that `n`-partitionability and
+* `SimpleGraph.partitionable_iff_colorable` is that `n`-partitionability and
   `n`-colorability are equivalent.
 
 -/
@@ -54,67 +54,65 @@ namespace SimpleGraph
 
 variable {V : Type u} (G : SimpleGraph V)
 
-/-- A `partition` of a simple graph `G` is a structure constituted by
+/-- A `Partition` of a simple graph `G` is a structure constituted by
 * `parts`: a set of subsets of the vertices `V` of `G`
-* `is_partition`: a proof that `parts` is a proper partition of `V`
+* `isPartition`: a proof that `parts` is a proper partition of `V`
 * `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices
 -/
 structure Partition where
   parts : Set (Set V)
-  IsPartition : Setoid.IsPartition parts
-  Independent : ∀ s ∈ parts, IsAntichain G.Adj s
+  isPartition : Setoid.IsPartition parts
+  independent : ∀ s ∈ parts, IsAntichain G.Adj s
 #align simple_graph.partition SimpleGraph.Partition
 
 /-- Whether a partition `P` has at most `n` parts. A graph with a partition
-satisfying this predicate called `n`-partite. (See `simple_graph.partitionable`.) -/
-def Partition.PartsCardLe {G : SimpleGraph V} (P : G.partitionₓ) (n : ℕ) : Prop :=
+satisfying this predicate called `n`-partite. (See `SimpleGraph.Partitionable`.) -/
+def Partition.PartsCardLe {G : SimpleGraph V} (P : G.Partition) (n : ℕ) : Prop :=
   ∃ h : P.parts.Finite, h.toFinset.card ≤ n
 #align simple_graph.partition.parts_card_le SimpleGraph.Partition.PartsCardLe
 
 /-- Whether a graph is `n`-partite, which is whether its vertex set
 can be partitioned in at most `n` independent sets. -/
-def Partitionable (n : ℕ) : Prop :=
-  ∃ P : G.partitionₓ, P.PartsCardLe n
+def Partitionable (n : ℕ) : Prop := ∃ P : G.Partition, P.PartsCardLe n
 #align simple_graph.partitionable SimpleGraph.Partitionable
 
 namespace Partition
 
-variable {G} (P : G.partitionₓ)
+variable {G} (P : G.Partition)
 
 /-- The part in the partition that `v` belongs to -/
-def partOfVertex (v : V) : Set V :=
-  Classical.choose (P.IsPartition.2 v)
+def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
 #align simple_graph.partition.part_of_vertex SimpleGraph.Partition.partOfVertex
 
 theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
-  obtain ⟨h, -⟩ := (P.is_partition.2 v).choose_spec.1
+  obtain ⟨h, -⟩ := (P.isPartition.2 v).choose_spec.1
   exact h
 #align simple_graph.partition.part_of_vertex_mem SimpleGraph.Partition.partOfVertex_mem
 
 theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
-  obtain ⟨⟨h1, h2⟩, h3⟩ := (P.is_partition.2 v).choose_spec
+  obtain ⟨⟨h1, h2⟩, h3⟩ := (P.isPartition.2 v).choose_spec
   exact h2.1
 #align simple_graph.partition.mem_part_of_vertex SimpleGraph.Partition.mem_partOfVertex
 
 theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w := by
   intro hn
-  have hw := P.mem_part_of_vertex w
+  have hw := P.mem_partOfVertex w
   rw [← hn] at hw
-  exact P.independent _ (P.part_of_vertex_mem v) (P.mem_part_of_vertex v) hw (G.ne_of_adj h) h
+  exact P.independent _ (P.partOfVertex_mem v) (P.mem_partOfVertex v) hw (G.ne_of_adj h) h
 #align simple_graph.partition.part_of_vertex_ne_of_adj SimpleGraph.Partition.partOfVertex_ne_of_adj
 
 /-- Create a coloring using the parts themselves as the colors.
 Each vertex is colored by the part it's contained in. -/
 def toColoring : G.Coloring P.parts :=
-  Coloring.mk (fun v => ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun _ _ hvw =>
+  Coloring.mk (fun v => ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦
     by
     rw [Ne.def, Subtype.mk_eq_mk]
-    exact P.part_of_vertex_ne_of_adj hvw
+    exact P.partOfVertex_ne_of_adj hvw
 #align simple_graph.partition.to_coloring SimpleGraph.Partition.toColoring
 
-/-- Like `simple_graph.partition.to_coloring` but uses `set V` as the coloring type. -/
+/-- Like `SimpleGraph.Partition.toColoring` but uses `Set V` as the coloring type. -/
 def toColoring' : G.Coloring (Set V) :=
-  Coloring.mk P.partOfVertex fun _ _ hvw => P.partOfVertex_ne_of_adj hvw
+  Coloring.mk P.partOfVertex fun hvw ↦ P.partOfVertex_ne_of_adj hvw
 #align simple_graph.partition.to_coloring' SimpleGraph.Partition.toColoring'
 
 theorem to_colorable [Fintype P.parts] : G.Colorable (Fintype.card P.parts) :=
@@ -127,19 +125,18 @@ variable {G}
 
 /-- Creates a partition from a coloring. -/
 @[simps]
-def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.partitionₓ
+def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.Partition
     where
   parts := C.colorClasses
-  IsPartition := C.colorClasses_isPartition
-  Independent := by
+  isPartition := C.colorClasses_isPartition
+  independent := by
     rintro s ⟨c, rfl⟩
     apply C.color_classes_independent
 #align simple_graph.coloring.to_partition SimpleGraph.Coloring.toPartition
 
 /-- The partition where every vertex is in its own part. -/
 @[simps]
-instance : Inhabited (Partition G) :=
-  ⟨G.selfColoring.toPartition⟩
+instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
 
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
@@ -148,12 +145,11 @@ theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorabl
     rw [Set.Finite.card_toFinset] at h
     apply P.to_colorable.mono h
   · rintro ⟨C⟩
-    refine' ⟨C.to_partition, C.color_classes_finite, le_trans _ (Fintype.card_fin n).le⟩
+    refine' ⟨C.toPartition, C.colorClasses_finite, le_trans _ (Fintype.card_fin n).le⟩
     generalize_proofs h
-    haveI : Fintype C.color_classes := C.color_classes_finite.fintype
-    rw [h.card_to_finset]
-    exact C.card_color_classes_le
+    haveI : Fintype C.colorClasses := C.colorClasses_finite.fintype
+    rw [h.card_toFinset]
+    exact C.card_colorClasses_le
 #align simple_graph.partitionable_iff_colorable SimpleGraph.partitionable_iff_colorable
 
 end SimpleGraph
-
