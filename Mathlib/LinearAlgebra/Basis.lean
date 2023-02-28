@@ -557,7 +557,7 @@ theorem reindexFinsetRange_repr_self (i : ι) :
       Finsupp.single ⟨b i, Finset.mem_image_of_mem b (Finset.mem_univ i)⟩ 1 := by
   ext ⟨bi, hbi⟩
   rw [reindexFinsetRange, repr_reindex, Finsupp.mapDomain_equiv_apply, reindexRange_repr_self]
-  convert Finsupp.single_apply_left ((Equiv.refl M).subtypeEquiv _).symm.injective _ _ _
+  convert Finsupp.single_apply_left ((Equiv.refl M).subtypeEquiv _).symm.injective _ _ (1 : R)
   rfl
 #align basis.reindex_finset_range_repr_self Basis.reindexFinsetRange_repr_self
 
@@ -1329,8 +1329,11 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
 @[simp]
 theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R N)
     (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N) :
-    (mkFinCons y b hli hsp : Fin (n + 1) → M) = Fin.cons y ((↑) ∘ b) :=
-  coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
+    (mkFinCons y b hli hsp : Fin (n + 1) → M) = Fin.cons y ((↑) ∘ b) := by
+  -- porting note: without `unfold`, Lean can't reuse the proofs included in the definition
+  -- `mkFinCons`
+  unfold mkFinCons
+  exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 #align basis.coe_mk_fin_cons Basis.coe_mkFinCons
 
 /-- Let `b` be a basis for a submodule `N ≤ O`. If `y ∈ O` is linear independent of `N`
@@ -1340,7 +1343,8 @@ noncomputable def mkFinConsOfLe {n : ℕ} {N O : Submodule R M} (y : M) (yO : y 
     (b : Basis (Fin n) R N) (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) : Basis (Fin (n + 1)) R O :=
   mkFinCons ⟨y, yO⟩ (b.map (Submodule.comapSubtypeEquivOfLe hNO).symm)
-    (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg (↑) hx)) fun z => hsp z z.2
+    (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
+    fun z => hsp z z.2
 #align basis.mk_fin_cons_of_le Basis.mkFinConsOfLe
 
 @[simp]
@@ -1489,8 +1493,9 @@ noncomputable def ofVectorSpace : Basis (ofVectorSpaceIndex K V) K V :=
   Basis.extend (linearIndependent_empty K V)
 #align basis.of_vector_space Basis.ofVectorSpace
 
-theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K V x = x :=
-  Basis.mk_apply _ _ _
+theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K V x = x := by
+  unfold ofVectorSpace
+  exact Basis.mk_apply _ _ _
 #align basis.of_vector_space_apply_self Basis.ofVectorSpace_apply_self
 
 @[simp]
@@ -1499,7 +1504,7 @@ theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
 #align basis.coe_of_vector_space Basis.coe_ofVectorSpace
 
 theorem ofVectorSpaceIndex.linearIndependent :
-    LinearIndependent K (coe : ofVectorSpaceIndex K V → V) := by
+    LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
   convert (ofVectorSpace K V).linearIndependent
   ext x
   rw [ofVectorSpace_apply_self]
@@ -1524,8 +1529,8 @@ open Fintype
 variable (K V)
 
 theorem VectorSpace.card_fintype [Fintype K] [Fintype V] : ∃ n : ℕ, card V = card K ^ n := by
-  classical exact
-      ⟨card (Basis.ofVectorSpaceIndex K V), Module.card_fintype (Basis.ofVectorSpace K V)⟩
+  classical
+  exact ⟨card (Basis.ofVectorSpaceIndex K V), Module.card_fintype (Basis.ofVectorSpace K V)⟩
 #align vector_space.card_fintype VectorSpace.card_fintype
 
 section AtomsOfSubmoduleLattice
@@ -1585,33 +1590,31 @@ end AtomsOfSubmoduleLattice
 
 variable {K V}
 
-theorem LinearMap.exists_left_inverse_of_injective (f : V →ₗ[K] V') (hf_inj : LinearMap.ker f = ⊥) :
+theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj : LinearMap.ker f = ⊥) :
     ∃ g : V' →ₗ[K] V, g.comp f = LinearMap.id := by
   let B := Basis.ofVectorSpaceIndex K V
   let hB := Basis.ofVectorSpace K V
   have hB₀ : _ := hB.linearIndependent.to_subtype_range
-  have : LinearIndependent K (fun x => x : f '' B → V') :=
-    by
-    have h₁ : LinearIndependent K fun x : ↥(⇑f '' range (Basis.ofVectorSpace _ _)) => ↑x :=
+  have : LinearIndependent K (fun x => x : f '' B → V') := by
+    have h₁ : LinearIndependent K ((↑) : ↥(f '' Set.range (Basis.ofVectorSpace K V)) → V') :=
       @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ f hB₀ (show Disjoint _ _ by simp [hf_inj])
     rwa [Basis.range_ofVectorSpace K V] at h₁
   let C := this.extend (subset_univ _)
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
-  haveI : Inhabited V := ⟨0⟩
-  refine' ⟨hC.constr ℕ (C.restrict (invFun f)), hB.ext fun b => _⟩
+  haveI Vinh : Inhabited V := ⟨0⟩
+  refine' ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => _⟩
   rw [image_subset_iff] at BC
-  have fb_eq : f b = hC ⟨f b, BC b.2⟩ :=
-    by
+  have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
-    rw [Basis.extend_apply_self, Subtype.coe_mk]
-  dsimp [hB]
+    simp_rw [Basis.extend_apply_self]
+  dsimp []
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
-  exact left_inverse_inv_fun (LinearMap.ker_eq_bot.1 hf_inj) _
-#align linear_map.exists_left_inverse_of_injective LinearMap.exists_left_inverse_of_injective
+  exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
+#align linear_map.exists_left_inverse_of_injective LinearMap.exists_leftInverse_of_injective
 
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
-  let ⟨f, hf⟩ := p.subtype.exists_left_inverse_of_injective p.ker_subtype
+  let ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
 #align submodule.exists_is_compl Submodule.exists_isCompl
 
@@ -1619,32 +1622,30 @@ instance Module.Submodule.complementedLattice : ComplementedLattice (Submodule K
   ⟨Submodule.exists_isCompl⟩
 #align module.submodule.complemented_lattice Module.Submodule.complementedLattice
 
-theorem LinearMap.exists_right_inverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
+theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
     ∃ g : V' →ₗ[K] V, f.comp g = LinearMap.id := by
   let C := Basis.ofVectorSpaceIndex K V'
   let hC := Basis.ofVectorSpace K V'
   haveI : Inhabited V := ⟨0⟩
-  use hC.constr ℕ (C.restrict (invFun f))
-  refine' hC.ext fun c => _
+  refine' ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hC.ext fun c => _⟩
   rw [LinearMap.comp_apply, hC.constr_basis]
-  simp [right_inverse_inv_fun (LinearMap.range_eq_top.1 hf_surj) c]
-#align linear_map.exists_right_inverse_of_surjective LinearMap.exists_right_inverse_of_surjective
+  simp [rightInverse_invFun (LinearMap.range_eq_top.1 hf_surj) c]
+#align linear_map.exists_right_inverse_of_surjective LinearMap.exists_rightInverse_of_surjective
 
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole
 space. -/
 theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
     ∃ g : V →ₗ[K] V', g.comp p.subtype = f :=
-  let ⟨g, hg⟩ := p.subtype.exists_left_inverse_of_injective p.ker_subtype
+  let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩
 #align linear_map.exists_extend LinearMap.exists_extend
 
 open Submodule LinearMap
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (f «expr ≠ » (0 : «expr →ₗ[ ] »(V, K, K))) -/
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
-    ∃ (f : _)(_ : f ≠ (0 : V →ₗ[K] K)), p ≤ ker f := by
+    ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
   rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩; clear hp
   rcases(LinearPMap.supSpanSingleton ⟨p, 0⟩ v (1 : K) hpv).toFun.exists_extend with ⟨f, hf⟩
   refine' ⟨f, _, _⟩
