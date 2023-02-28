@@ -60,8 +60,12 @@ variable {V : Type u} (G : SimpleGraph V)
 * `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices
 -/
 structure Partition where
+  /-- `parts`: a set of subsets of the vertices `V` of `G`. -/
   parts : Set (Set V)
+  /-- `isPartition`: a proof that `parts` is a proper partition of `V`. -/
   isPartition : Setoid.IsPartition parts
+  /-- `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices.
+-/
   independent : ∀ s ∈ parts, IsAntichain G.Adj s
 #align simple_graph.partition SimpleGraph.Partition
 
@@ -90,7 +94,7 @@ theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
 #align simple_graph.partition.part_of_vertex_mem SimpleGraph.Partition.partOfVertex_mem
 
 theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
-  obtain ⟨⟨h1, h2⟩, h3⟩ := (P.isPartition.2 v).choose_spec
+  obtain ⟨⟨h1, h2⟩, _h3⟩ := (P.isPartition.2 v).choose_spec
   exact h2.1
 #align simple_graph.partition.mem_part_of_vertex SimpleGraph.Partition.mem_partOfVertex
 
@@ -104,7 +108,7 @@ theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ 
 /-- Create a coloring using the parts themselves as the colors.
 Each vertex is colored by the part it's contained in. -/
 def toColoring : G.Coloring P.parts :=
-  Coloring.mk (fun v => ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦
+  Coloring.mk (fun v ↦ ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦
     by
     rw [Ne.def, Subtype.mk_eq_mk]
     exact P.partOfVertex_ne_of_adj hvw
@@ -140,10 +144,10 @@ instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
 
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
-  · rintro ⟨P, hf, h⟩
-    haveI : Fintype P.parts := hf.fintype
-    rw [Set.Finite.card_toFinset] at h
-    apply P.to_colorable.mono h
+  · rintro ⟨P, hf, hc⟩
+    have : Fintype P.parts := hf.fintype
+    rw [Set.Finite.card_toFinset hf] at hc
+    apply P.to_colorable.mono hc
   · rintro ⟨C⟩
     refine' ⟨C.toPartition, C.colorClasses_finite, le_trans _ (Fintype.card_fin n).le⟩
     generalize_proofs h
