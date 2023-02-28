@@ -264,7 +264,7 @@ protected def abs : AbsoluteValue S S where
   map_mul' := abs_mul
 #align absolute_value.abs AbsoluteValue.abs
 #align absolute_value.abs_apply AbsoluteValue.abs_apply
-#align absolute_value.abs_to_mul_hom_apply AbsoluteValue.abs_toMulHom_apply
+#align absolute_value.abs_to_mul_hom_apply AbsoluteValue.abs_apply
 
 instance : Inhabited (AbsoluteValue S S) :=
   ⟨AbsoluteValue.abs⟩
@@ -340,7 +340,7 @@ def toAbsoluteValue : AbsoluteValue R S where
   map_mul' := abv_mul'
 #align is_absolute_value.to_absolute_value IsAbsoluteValue.toAbsoluteValue
 #align is_absolute_value.to_absolute_value_apply IsAbsoluteValue.toAbsoluteValue_apply
-#align is_absolute_value.to_absolute_value_to_mul_hom_apply IsAbsoluteValue.toAbsoluteValue_toMulHom_apply
+#align is_absolute_value.to_absolute_value_to_mul_hom_apply IsAbsoluteValue.toAbsoluteValue_apply
 
 theorem abv_zero : abv 0 = 0 :=
   map_zero (toAbsoluteValue abv)
