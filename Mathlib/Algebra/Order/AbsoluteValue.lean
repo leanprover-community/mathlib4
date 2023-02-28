@@ -47,8 +47,6 @@ namespace AbsoluteValue
 -- Porting note: Removing nolints.
 -- attribute [nolint doc_blame] AbsoluteValue.toMulHom
 
-initialize_simps_projections AbsoluteValue (toFun → apply)
-
 section OrderedSemiring
 
 section Semiring
@@ -90,7 +88,7 @@ theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
 def Simps.apply (f : AbsoluteValue R S) : R → S := f
 #align absolute_value.simps.apply AbsoluteValue.Simps.apply
 
-initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
+initialize_simps_projections AbsoluteValue (toFun → apply)
 
 -- Porting note:
 -- These helper instances are unhelpful in Lean 4, so omitting:
