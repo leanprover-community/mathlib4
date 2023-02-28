@@ -25,7 +25,7 @@ i.e. `A ≤ B` iff `B - A = star R * R` for some `R`.
 ## Implementation
 
 Because the axioms for an ordered algebra are exactly the same as those for the underlying
-module being ordered, we don't actually introduce a new class, but just use the `ordered_smul`
+module being ordered, we don't actually introduce a new class, but just use the `OrderedSMul`
 mixin.
 
 ## Tags
