@@ -180,7 +180,7 @@ theorem prod_eq_one_iff_of_one_le' :
 #align finset.prod_eq_one_iff_of_one_le' Finset.prod_eq_one_iff_of_one_le'
 #align finset.sum_eq_zero_iff_of_nonneg Finset.sum_eq_zero_iff_of_nonneg
 
-@[to_additive sum_eq_zero_iff_of_nonneg]
+@[to_additive existing sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   @prod_eq_one_iff_of_one_le' _ Nᵒᵈ _ _ _

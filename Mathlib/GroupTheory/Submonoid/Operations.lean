@@ -556,7 +556,7 @@ instance nPow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] (S 
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
 #align submonoid_class.has_pow SubmonoidClass.nPow
 
-attribute [to_additive nSMul] nPow
+attribute [to_additive existing nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type _} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
