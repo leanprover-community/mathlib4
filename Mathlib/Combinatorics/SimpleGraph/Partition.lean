@@ -8,7 +8,7 @@ Authors: Arthur Paulino, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Coloring
 
 /-!
 # Graph partitions
@@ -86,20 +86,17 @@ def partOfVertex (v : V) : Set V :=
   Classical.choose (P.IsPartition.2 v)
 #align simple_graph.partition.part_of_vertex SimpleGraph.Partition.partOfVertex
 
-theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts :=
-  by
+theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
   obtain ⟨h, -⟩ := (P.is_partition.2 v).choose_spec.1
   exact h
 #align simple_graph.partition.part_of_vertex_mem SimpleGraph.Partition.partOfVertex_mem
 
-theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v :=
-  by
+theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
   obtain ⟨⟨h1, h2⟩, h3⟩ := (P.is_partition.2 v).choose_spec
   exact h2.1
 #align simple_graph.partition.mem_part_of_vertex SimpleGraph.Partition.mem_partOfVertex
 
-theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w :=
-  by
+theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w := by
   intro hn
   have hw := P.mem_part_of_vertex w
   rw [← hn] at hw
@@ -144,8 +141,7 @@ def Coloring.toPartition {α : Type v} (C : G.Coloring α) : G.partitionₓ
 instance : Inhabited (Partition G) :=
   ⟨G.selfColoring.toPartition⟩
 
-theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n :=
-  by
+theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
   · rintro ⟨P, hf, h⟩
     haveI : Fintype P.parts := hf.fintype
