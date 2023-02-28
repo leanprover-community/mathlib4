@@ -8,7 +8,7 @@ Authors: Kenny Lau, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Basic
+import Mathlib.LinearAlgebra.Basic
 
 /-!
 # Basics on bilinear maps
@@ -357,8 +357,7 @@ theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl�
 omit σ₄₃
 
 @[simp]
-theorem compl₂_id : f.compl₂ LinearMap.id = f :=
-  by
+theorem compl₂_id : f.compl₂ LinearMap.id = f := by
   ext
   rw [compl₂_apply, id_coe, id.def]
 #align linear_map.compl₂_id LinearMap.compl₂_id
@@ -377,16 +376,14 @@ theorem compl₁₂_apply (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →
 #align linear_map.compl₁₂_apply LinearMap.compl₁₂_apply
 
 @[simp]
-theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁₂ LinearMap.id LinearMap.id = f :=
-  by
+theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁₂ LinearMap.id LinearMap.id = f := by
   ext
   simp_rw [compl₁₂_apply, id_coe, id.def]
 #align linear_map.compl₁₂_id_id LinearMap.compl₁₂_id_id
 
 theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Qₗ →ₗ[R] Mₗ} {g' : Qₗ' →ₗ[R] Nₗ}
     (hₗ : Function.Surjective g) (hᵣ : Function.Surjective g') :
-    f₁.compl₁₂ g g' = f₂.compl₁₂ g g' ↔ f₁ = f₂ :=
-  by
+    f₁.compl₁₂ g g' = f₂.compl₁₂ g g' ↔ f₁ = f₂ := by
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext (x y)
