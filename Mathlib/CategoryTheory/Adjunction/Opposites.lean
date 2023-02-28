@@ -144,9 +144,9 @@ theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : 
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   --swap; infer_instance
-  ext f
+  ext
   -- Porting note: Why do I need this with the `ext` from the previous line?
-  funext y
+  funext
   simp [leftAdjointUniq, leftAdjointsCoyonedaEquiv]
 #align
   category_theory.adjunction.hom_equiv_left_adjoint_uniq_hom_app
@@ -165,9 +165,7 @@ theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G)
 @[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.unit.app x ≫ G.map ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x :=
-  by
-  rw [← unit_leftAdjointUniq_hom adj1 adj2]
-  rfl
+  by rw [← unit_leftAdjointUniq_hom adj1 adj2] ; rfl
 #align
   category_theory.adjunction.unit_left_adjoint_uniq_hom_app
   CategoryTheory.Adjunction.unit_leftAdjointUniq_hom_app
@@ -178,16 +176,8 @@ theorem leftAdjointUniq_hom_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ 
   ext x
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
-  ext y
-  funext f
-  /-
-  have :
-    F.map (adj2.unit.app (G.obj x)) ≫ adj1.counit.app (F'.obj (G.obj x)) ≫ adj2.counit.app x ≫ f =
-      adj1.counit.app x ≫ f :=
-    by
-    erw [← adj1.counit.naturality, ← F.map_comp_assoc]
-    simp
-  -/
+  ext
+  funext
   simp [leftAdjointUniq, leftAdjointsCoyonedaEquiv]
 #align
   category_theory.adjunction.left_adjoint_uniq_hom_counit
@@ -219,7 +209,6 @@ theorem leftAdjointUniq_trans {F F' F'' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G
   ext
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
---  swap; infer_instance
   ext
   funext
   simp [leftAdjointsCoyonedaEquiv, leftAdjointUniq]
@@ -244,7 +233,6 @@ theorem leftAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
   ext
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
-  --swap; infer_instance
   ext
   funext
   simp [leftAdjointsCoyonedaEquiv, leftAdjointUniq]
@@ -267,7 +255,7 @@ theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (a
     (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x) using 1
   simp only [opAdjointOpOfAdjoint, Functor.op_obj, Opposite.unop_op, mkOfHomEquiv_unit_app,
     Equiv.trans_apply, homEquiv_counit, Functor.id_obj]
-  erw [F.map_id] -- Porting note: This isn't good.
+  erw [F.map_id] -- Porting note: Yet another `erw`...
   rw [Category.id_comp]
   rfl
 #align
