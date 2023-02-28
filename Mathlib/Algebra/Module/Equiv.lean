@@ -287,13 +287,6 @@ def Simps.apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
     {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
   e
-
-/-- See Note [custom simps projection] -/
-def Simps.apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
-    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
-    (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
-  e
 #align linear_equiv.simps.apply LinearEquiv.Simps.apply
 
 /-- See Note [custom simps projection] -/
