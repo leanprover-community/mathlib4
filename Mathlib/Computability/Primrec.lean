@@ -720,43 +720,20 @@ protected theorem or : Primrec₂ or :=
   dom_bool₂ _
 #align primrec.bor Primrec.or
 
--- porting note: how do we distinguish between propositional and boolean connectives?
-theorem pnot {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
+theorem _root_.PrimrecPred.not {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     PrimrecPred fun a => ¬p a :=
   (Primrec.not.comp hp).of_eq fun n => by simp
-#align primrec.not Primrec.pnot
+#align primrec.not PrimrecPred.not
 
-/- warning: primrec.and clashes with primrec.band -> Primrec.and
-warning: primrec.and -> Primrec.and is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} [_inst_1 : Primcodable.{u_1} α] {p : α -> Prop} {q : α -> Prop}
-  [_inst_6 : DecidablePred.{succ u_1} α p] [_inst_7 : DecidablePred.{succ u_1} α q],
-  (PrimrecPred.{u_1} α _inst_1 p (fun (a : α) => _inst_6 a)) -> (PrimrecPred.{u_1} α _inst_1 q
-    (fun (a : α) => _inst_7 a)) -> (PrimrecPred.{u_1} α _inst_1 (fun (a : α) => And (p a) (q a))
-    (fun (a : α) => And.decidable (p a) (q a) (_inst_6 a) (_inst_7 a)))
-but is expected to have type
-  Primrec₂.{0, 0, 0} Bool Bool Bool Primcodable.bool Primcodable.bool Primcodable.bool and
-Case conversion may be inaccurate. Consider using '#align primrec.and Primrec.andₓ'. -/
-theorem pand {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
+theorem _root_.PrimrecPred.and {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
     (hq : PrimrecPred q) : PrimrecPred fun a => p a ∧ q a :=
   (Primrec.and.comp hp hq).of_eq fun n => by simp
-#align primrec.and Primrec.pand
+#align primrec.and PrimrecPred.and
 
-/- warning: primrec.or clashes with primrec.bor -> Primrec.or
-warning: primrec.or -> Primrec.or is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} [_inst_1 : Primcodable.{u_1} α] {p : α -> Prop} {q : α -> Prop}
-  [_inst_6 : DecidablePred.{succ u_1} α p] [_inst_7 : DecidablePred.{succ u_1} α q],
-  (PrimrecPred.{u_1} α _inst_1 p (fun (a : α) => _inst_6 a)) -> (PrimrecPred.{u_1} α _inst_1 q
-    (fun (a : α) => _inst_7 a)) -> (PrimrecPred.{u_1} α _inst_1 (fun (a : α) => Or (p a) (q a))
-    (fun (a : α) => Or.decidable (p a) (q a) (_inst_6 a) (_inst_7 a)))
-but is expected to have type
-  Primrec₂.{0, 0, 0} Bool Bool Bool Primcodable.bool Primcodable.bool Primcodable.bool or
-Case conversion may be inaccurate. Consider using '#align primrec.or Primrec.orₓ'. -/
-theorem por {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
+theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : PrimrecPred p)
     (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
   (Primrec.or.comp hp hq).of_eq fun n => by simp
-#align primrec.or Primrec.por
+#align primrec.or PrimrecPred.or
 
 -- porting note: It is unclear whether we want to boolean versions
 -- of these lemmas, just the prop versions, or both
@@ -764,7 +741,7 @@ theorem por {p q : α → Prop} [DecidablePred p] [DecidablePred q] (hp : Primre
 -- but did not exist in Lean 3
 protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
-    (Primrec.pand nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
+    (PrimrecPred.and nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
   (this.comp₂ (Primrec.encode.comp₂ Primrec₂.left) (Primrec.encode.comp₂ Primrec₂.right)).of_eq
     fun a b => encode_injective.eq_iff
 
@@ -772,7 +749,7 @@ protected theorem eq [DecidableEq α] : PrimrecRel (@Eq α) := Primrec.beq
 #align primrec.eq Primrec.eq
 
 theorem nat_lt : PrimrecRel ((· < ·) : ℕ → ℕ → Prop) :=
-  (nat_le.comp snd fst).pnot.of_eq fun p => by simp
+  (nat_le.comp snd fst).not.of_eq fun p => by simp
 #align primrec.nat_lt Primrec.nat_lt
 
 theorem option_guard {p : α → β → Prop} [∀ a b, Decidable (p a b)] (hp : PrimrecRel p) {f : α → β}
@@ -836,24 +813,24 @@ theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
   refine (nat_findGreatest pg h₂).of_eq fun n => ?_
   exact (Nat.findGreatest_spec (P := fun b => f n = b) (hg n) rfl).symm
 
--- TODO: Move to Nat.basic or something
-nonrec theorem Nat.eq_div_iff_mul_le_and_lt_mul {x y k : ℕ} (k₀ : 0 < k) :
-    x = y / k ↔ x * k ≤ y ∧ y < (x + 1) * k := by
-  rw [le_antisymm_iff, ← (@Nat.lt_succ _ x), Nat.le_div_iff_mul_le' k₀, Nat.div_lt_iff_lt_mul' k₀]
-
 -- We show that division is primitive recursive by showing that the graph is
 theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
   refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
   have : PrimrecRel fun (a : ℕ × ℕ) (b : ℕ) => (a.2 = 0 ∧ b = 0) ∨
       (0 < a.2 ∧ b * a.2 ≤ a.1 ∧ a.1 < (b + 1) * a.2) :=
-    por (pand (const 0 |> Primrec.eq.comp (fst |> snd.comp)) (const 0 |> Primrec.eq.comp snd))
-     (pand (nat_lt.comp (const 0) (fst |> snd.comp)) <|
-        pand (nat_le.comp (nat_mul.comp snd (fst |> snd.comp)) (fst |> fst.comp))
-        (nat_lt.comp (fst.comp fst) (nat_mul.comp (Primrec.succ.comp snd) (snd.comp fst))))
+    PrimrecPred.or
+      (.and (const 0 |> Primrec.eq.comp (fst |> snd.comp)) (const 0 |> Primrec.eq.comp snd))
+      (.and (nat_lt.comp (const 0) (fst |> snd.comp)) <|
+          .and (nat_le.comp (nat_mul.comp snd (fst |> snd.comp)) (fst |> fst.comp))
+          (nat_lt.comp (fst.comp fst) (nat_mul.comp (Primrec.succ.comp snd) (snd.comp fst))))
   refine this.of_eq ?_
   rintro ⟨a, k⟩ q
   if H : k = 0 then simp [H, eq_comm]
-  else simp [H, zero_lt_iff, eq_comm (b := q), Nat.eq_div_iff_mul_le_and_lt_mul]
+  else
+    have : q * k ≤ a ∧ a < (q + 1) * k ↔ q = a / k := by
+      rw [le_antisymm_iff, ← (@Nat.lt_succ _ q), Nat.le_div_iff_mul_le' (Nat.pos_of_ne_zero H),
+          Nat.div_lt_iff_lt_mul' (Nat.pos_of_ne_zero H)]
+    simpa [H, zero_lt_iff, eq_comm (b := q)]
 #align primrec.nat_div Primrec.nat_div
 
 theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
@@ -1223,13 +1200,9 @@ section Ulower
 
 attribute [local instance] Encodable.decidableRangeEncode Encodable.decidableEqOfEncodable
 
--- porting note: while this lemma isn't used, it is necessary
--- because Lean is unfolding the proof of `Primcodable ulower`
--- in order to synthesize some proofs, and there are apparently
--- some differences between Lean 3 and 4 in how that happens
 theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α → ℕ)) :=
   have : PrimrecPred fun n => Encodable.decode₂ α n ≠ none :=
-    .pnot
+    .not
       (Primrec.eq.comp
         (.option_bind .decode
           (.ite (Primrec.eq.comp (Primrec.encode.comp .snd) .fst)
