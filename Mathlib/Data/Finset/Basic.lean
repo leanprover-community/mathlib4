@@ -1296,12 +1296,12 @@ instance : Lattice (Finset α) :=
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
-theorem sup_eq_union : (HasSup.sup : Finset α → Finset α → Finset α) = Union.union :=
+theorem sup_eq_union : (Sup.sup : Finset α → Finset α → Finset α) = Union.union :=
   rfl
 #align finset.sup_eq_union Finset.sup_eq_union
 
 @[simp]
-theorem inf_eq_inter : (HasInf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
+theorem inf_eq_inter : (Inf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
   rfl
 #align finset.inf_eq_inter Finset.inf_eq_inter
 

@@ -68,10 +68,10 @@ theorem coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
   rfl
 #align clopen_upper_set.coe_mk ClopenUpperSet.coe_mk
 
-instance : HasSup (ClopenUpperSet α) :=
+instance : Sup (ClopenUpperSet α) :=
   ⟨fun s t => ⟨s.toClopens ⊔ t.toClopens, s.upper.union t.upper⟩⟩
 
-instance : HasInf (ClopenUpperSet α) :=
+instance : Inf (ClopenUpperSet α) :=
   ⟨fun s t => ⟨s.toClopens ⊓ t.toClopens, s.upper.inter t.upper⟩⟩
 
 instance : Top (ClopenUpperSet α) :=
@@ -110,4 +110,3 @@ instance : Inhabited (ClopenUpperSet α) :=
   ⟨⊥⟩
 
 end ClopenUpperSet
-
