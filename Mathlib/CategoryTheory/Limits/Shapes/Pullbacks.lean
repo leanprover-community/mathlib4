@@ -259,7 +259,7 @@ theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ :=
   rfl
 #align category_theory.limits.span_map_id CategoryTheory.Limits.span_map_id
-set_option trace.aesop.steps true
+
 /-- Every diagram indexing an pullback is naturally isomorphic (actually, equal) to a `cospan` -/
 -- @[simps (config := { rhsMd := semireducible })]  Porting note: no semireducible
 @[simps!]
@@ -289,9 +289,10 @@ variable {D : Type u₂} [Category.{v₂} D]
 /-- A functor applied to a cospan is a cospan. -/
 def cospanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     cospan f g ⋙ F ≅ cospan (F.map f) (F.map g) :=
-  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩) <;> exact Iso.refl _)
-  (fun {X} {Y} j => by cases' X with x; cases' Y with y; cases j; dsimp; simp; cases y; cases j; cases j; cases' Y with y; cases x; cases j; dsimp; simp; cases j; dsimp; simp; cases x; cases y; cases j; dsimp; simp; cases j; cases y; cases j; cases j; dsimp; simp)
-    -- (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) ⟨⟩ <;> repeat' dsimp; simp)
+  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩) <;> exact Iso.refl _) (fun {X} {Y} j => by 
+  cases' X with x; cases' Y with y; cases j; dsimp; simp; cases y; cases j; cases j; 
+  cases' Y with y; cases x; cases j; dsimp; simp; cases j; dsimp; simp; cases x; cases y; 
+  cases j; dsimp; simp; cases j; cases y; cases j; cases j; dsimp; simp) -- Porting note: horror
 #align category_theory.limits.cospan_comp_iso CategoryTheory.Limits.cospanCompIso
 
 section
@@ -348,8 +349,9 @@ end
 /-- A functor applied to a span is a span. -/
 def spanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     span f g ⋙ F ≅ span (F.map f) (F.map g) :=
-  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩) <;> exact Iso.refl _)
-  (by intros j₁ j₂ h; cases' j₁ with u; cases' j₂ with v; cases h; dsimp; simp; cases v; cases h; dsimp; simp; cases h; dsimp; simp; cases u; cases h; dsimp; simp; cases j₂; cases h; cases h; simp)
+  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩) <;> exact Iso.refl _) (by 
+  intros j₁ j₂ h; cases' j₁ with u; cases' j₂ with v; cases h; dsimp; simp; cases v; cases h; dsimp;
+  simp; cases h; dsimp; simp; cases u; cases h; dsimp; simp; cases j₂; cases h; cases h; simp)
     -- (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) ⟨⟩ <;> repeat' dsimp; simp) abomination
 #align category_theory.limits.span_comp_iso CategoryTheory.Limits.spanCompIso
 
@@ -415,11 +417,10 @@ variable {f : X ⟶ Z} {g : Y ⟶ Z} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
 /-- Construct an isomorphism of cospans from components. -/
 def cospanExt (wf : iX.hom ≫ f' = f ≫ iZ.hom) (wg : iY.hom ≫ g' = g ≫ iZ.hom) :
     cospan f g ≅ cospan f' g' :=
-  NatIso.ofComponents
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts [iZ, iX, iY])
-    (by intros j₁ j₂ h; cases' j₁ with u; cases' j₂ with v; cases h; dsimp; simp; cases v; cases h; cases h; cases h; cases u; dsimp; simp; dsimp; simp; cases u; dsimp; simp [wf,wg]; dsimp; simp [wf,wg])
-    -- fix abominaton
-    -- (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) ⟨⟩ <;> repeat' dsimp; simp [wf, wg])
+  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts [iZ, iX, iY]) (by 
+    intros j₁ j₂ h; cases' j₁ with u; cases' j₂ with v; cases h; dsimp; simp; cases v; cases h; 
+    cases h; cases h; cases u; dsimp; simp; dsimp; simp; cases u; dsimp; simp [wf,wg]; dsimp; 
+    simp [wf,wg]) -- Porting note: abomination
 #align category_theory.limits.cospan_ext CategoryTheory.Limits.cospanExt
 
 variable (wf : iX.hom ≫ f' = f ≫ iZ.hom) (wg : iY.hom ≫ g' = g ≫ iZ.hom)
@@ -478,10 +479,10 @@ variable {f : X ⟶ Y} {g : X ⟶ Z} {f' : X' ⟶ Y'} {g' : X' ⟶ Z'}
 /-- Construct an isomorphism of spans from components. -/
 def spanExt (wf : iX.hom ≫ f' = f ≫ iY.hom) (wg : iX.hom ≫ g' = g ≫ iZ.hom) :
     span f g ≅ span f' g' :=
-  NatIso.ofComponents
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts[iX, iY, iZ])
-    (by intros j₁ j₂ h; cases' j₁ with u; cases' j₂ with v; cases h; dsimp; simp; cases h; dsimp; simp; cases v; dsimp; simp [wf,wg]; dsimp; simp [wf,wg]; cases h; cases u; dsimp; simp [wf,wg]; dsimp; simp [wf,wg]) -- fix this abomination 
-    -- (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) ⟨⟩ <;> repeat' dsimp; simp [wf, wg])
+  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts[iX, iY, iZ]) (by 
+  intros j₁ j₂ h; cases' j₁ with u; cases' j₂ with v; cases h; dsimp; simp; cases h; dsimp; simp; 
+  cases v; dsimp; simp [wf,wg]; dsimp; simp [wf,wg]; cases h; cases u; dsimp; simp [wf,wg]; dsimp; 
+  simp [wf,wg]) -- Porting note: fix this abomination with aesop later
 #align category_theory.limits.span_ext CategoryTheory.Limits.spanExt
 
 variable (wf : iX.hom ≫ f' = f ≫ iY.hom) (wg : iX.hom ≫ g' = g ≫ iZ.hom)
@@ -578,18 +579,14 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
 def isLimitAux (t : PullbackCone f g) (lift : ∀ s : PullbackCone f g, s.pt ⟶ t.pt)
     (fac_left : ∀ s : PullbackCone f g, lift s ≫ t.fst = s.fst)
     (fac_right : ∀ s : PullbackCone f g, lift s ≫ t.snd = s.snd)
-    (uniq :
-      ∀ (s : PullbackCone f g) (m : s.pt ⟶ t.pt) (_ : ∀ j : WalkingCospan, m ≫ t.π.app j = s.π.app j),
-        m = lift s) :
-    IsLimit t :=
+    (uniq : ∀ (s : PullbackCone f g) (m : s.pt ⟶ t.pt) 
+      (_ : ∀ j : WalkingCospan, m ≫ t.π.app j = s.π.app j), m = lift s) : IsLimit t :=
   { lift
-    fac := fun s j =>
-      Option.casesOn j
-        (by
-          rw [← s.w inl, ← t.w inl, ← Category.assoc]
-          congr
-          exact fac_left s)
-        fun j' => WalkingPair.casesOn j' (fac_left s) (fac_right s)
+    fac := fun s j => Option.casesOn j (by
+        rw [← s.w inl, ← t.w inl, ← Category.assoc]
+        congr
+        exact fac_left s)
+      fun j' => WalkingPair.casesOn j' (fac_left s) (fac_right s)
     uniq := uniq }
 #align category_theory.limits.pullback_cone.is_limit_aux CategoryTheory.Limits.PullbackCone.isLimitAux
 
@@ -614,7 +611,10 @@ def isLimitAux' (t : PullbackCone f g)
 def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) : PullbackCone f g where
   pt := W
   π := { app := fun j => Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd 
-         naturality := fun {X} {Y} j => by cases' X with x; cases' Y with y; cases j; dsimp; simp; cases y; cases j; cases j; cases' Y with y; cases x; cases j; dsimp; simp; cases j; dsimp; simpa; cases x; cases y; cases j; dsimp; simp; cases j; cases y; cases j; cases j; dsimp; simp }
+         naturality := fun {X} {Y} j => (by 
+         cases' X with x; cases' Y with y; cases j; dsimp; simp; cases y; cases j; cases j; 
+         cases' Y with y; cases x; cases j; dsimp; simp; cases j; dsimp; simpa; cases x; 
+         cases y; cases j; dsimp; simp; cases j; cases y; cases j; cases j; dsimp; simp) }
 #align category_theory.limits.pullback_cone.mk CategoryTheory.Limits.PullbackCone.mk
 
 @[simp]
@@ -831,10 +831,8 @@ theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f �
 def isColimitAux (t : PushoutCocone f g) (desc : ∀ s : PushoutCocone f g, t.pt ⟶ s.pt)
     (fac_left : ∀ s : PushoutCocone f g, t.inl ≫ desc s = s.inl)
     (fac_right : ∀ s : PushoutCocone f g, t.inr ≫ desc s = s.inr)
-    (uniq :
-      ∀ (s : PushoutCocone f g) (m : t.pt ⟶ s.pt) (_ : ∀ j : WalkingSpan, t.ι.app j ≫ m = s.ι.app j),
-        m = desc s) :
-    IsColimit t :=
+    (uniq : ∀ (s : PushoutCocone f g) (m : t.pt ⟶ s.pt) 
+    (_ : ∀ j : WalkingSpan, t.ι.app j ≫ m = s.ι.app j), m = desc s) : IsColimit t :=
   { desc
     fac := fun s j =>
       Option.casesOn j (by simp [← s.w fst, ← t.w fst, fac_left s]) fun j' =>
@@ -862,8 +860,10 @@ def isColimitAux' (t : PushoutCocone f g)
 def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : PushoutCocone f g where
   pt := W
   ι := { app := fun j => Option.casesOn j (f ≫ inl) fun j' => WalkingPair.casesOn j' inl inr 
-         naturality := 
-         by intros j j' h; cases' j with u; cases' j' with v; cases h; dsimp; simp; cases v; cases h; dsimp; simp; cases h; dsimp; simp; exact eq.symm; cases u; cases j'; cases h; cases h; dsimp; simp; cases h; dsimp; simp -- Come back and fix this horror show
+         naturality := (by 
+           intros j j' h; cases' j with u; cases' j' with v; cases h; dsimp; simp; cases v; 
+           cases h; dsimp; simp; cases h; dsimp; simp; exact eq.symm; cases u; cases j'; 
+           cases h; cases h; dsimp; simp; cases h; dsimp; simp) -- Porting note: fix later 
           }
 #align category_theory.limits.pushout_cocone.mk CategoryTheory.Limits.PushoutCocone.mk
 
@@ -904,8 +904,9 @@ theorem condition (t : PushoutCocone f g) : f ≫ inl t = g ≫ inr t :=
 
 /-- To check whether a morphism is coequalized by the maps of a pushout cocone, it suffices to check
   it for `inl t` and `inr t` -/
-theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W} (h₀ : inl t ≫ k = inl t ≫ l)
-    (h₁ : inr t ≫ k = inr t ≫ l) : ∀ j : WalkingSpan, t.ι.app j ≫ k = t.ι.app j ≫ l
+theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W} 
+    (h₀ : inl t ≫ k = inl t ≫ l) (h₁ : inr t ≫ k = inr t ≫ l) : 
+    ∀ j : WalkingSpan, t.ι.app j ≫ k = t.ι.app j ≫ l
   | some WalkingPair.left => h₀
   | some WalkingPair.right => h₁
   | none => by rw [← t.w fst, Category.assoc, Category.assoc, h₀]
