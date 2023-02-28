@@ -92,7 +92,7 @@ theorem digits_zero (b : ℕ) : digits b 0 = [] := by
   rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 #align nat.digits_zero Nat.digits_zero
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
 #align nat.digits_zero_zero Nat.digits_zero_zero
@@ -113,7 +113,7 @@ theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
 #align nat.digits_one Nat.digits_one
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-@[simp]
+-- @[simp] -- Porting note: dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 #align nat.digits_one_succ Nat.digits_one_succ
@@ -668,9 +668,10 @@ theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 
     (Nat.div_eq_zero_iff ((zero_le n).trans_lt nb)).2 nb, Nat.digits_zero]
 #align nat.norm_digits.digits_one Nat.NormDigits.digits_one
 
-open Tactic
 /-
+Porting note: this part of the file is tactic related.
 
+open Tactic
 -- failed to format: unknown constant 'term.pseudo.antiquot'
 /-- Helper function for the `norm_digits` tactic. -/ unsafe
   def
