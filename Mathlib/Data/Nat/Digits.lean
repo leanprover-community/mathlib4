@@ -423,7 +423,7 @@ theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : 
 
 /-- Any number m is less than (b+2)^(number of digits in the base b + 2 representation of m) -/
 theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
-  convert ofDigits_lt_base_pow_length' fun _ => digits_lt_base'
+  convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 #align nat.lt_base_pow_length_digits' Nat.lt_base_pow_length_digits'
 
@@ -469,8 +469,9 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert pow_length_le_mul_ofDigits this (getLast_digit_ne_zero _ hm)
-  rwa [ofDigits_digits]
+  convert @pow_length_le_mul_ofDigits b (digits (b+2) m)
+    this (getLast_digit_ne_zero _ hm)
+  rw [ofDigits_digits]
 #align nat.base_pow_length_digits_le' Nat.base_pow_length_digits_le'
 
 /-- Any non-zero natural number `m` is greater than
@@ -550,10 +551,9 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
   rw [← ofDigits_one]
   conv =>
     congr
-    skip
-    rw [← ofDigits_digits b' n]
-  convert ofDigits_modeq _ _ _
-  exact h.symm
+    · skip
+    · rw [← ofDigits_digits b' n]
+  convert ofDigits_modEq b' b (digits b' n) <;> exact h.symm
 #align nat.modeq_digits_sum Nat.modEq_digits_sum
 
 theorem modEq_three_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 3] :=
@@ -568,8 +568,8 @@ theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n
     n ≡ ofDigits c (digits b' n) [ZMOD b] := by
   conv =>
     congr
-    skip
-    rw [← ofDigits_digits b' n]
+    · skip
+    · rw [← ofDigits_digits b' n]
   rw [coe_int_ofDigits]
   apply ofDigits_zmodeq' _ _ _ h
 #align nat.zmodeq_of_digits_digits Nat.zmodeq_ofDigits_digits
@@ -669,6 +669,7 @@ theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 
 #align nat.norm_digits.digits_one Nat.NormDigits.digits_one
 
 open Tactic
+/-
 
 -- failed to format: unknown constant 'term.pseudo.antiquot'
 /-- Helper function for the `norm_digits` tactic. -/ unsafe
@@ -746,6 +747,7 @@ unsafe def eval : expr → tactic (expr × expr)
             return (l, p)
   | _ => failed
 #align nat.norm_digits.eval Nat.NormDigits.eval
+-/
 
 end NormDigits
 
