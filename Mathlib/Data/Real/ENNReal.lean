@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -15,8 +15,8 @@ import Mathlib.Algebra.Order.Sub.WithTop
 # Extended non-negative reals
 
 We define `ENNReal = ℝ≥0∞ := WithTop ℝ≥0` to be the type of extended nonnegative real numbers,
-i.e., the interval `[0, +∞]`. This type is used as the codomain of a `measure_theory.measure`,
-and of the extended distance `edist` in a `emetric_space`.
+i.e., the interval `[0, +∞]`. This type is used as the codomain of a `MeasureTheory.Measure`,
+and of the extended distance `edist` in a `EMetricSpace`.
 In this file we define some algebraic operations and a linear order on `ℝ≥0∞`
 and prove basic properties of these operations, order, and conversions to/from `ℝ`, `ℝ≥0`, and `ℕ`.
 
@@ -329,10 +329,6 @@ theorem coe_mono : Monotone some := fun _ _ => coe_le_coe.2
 @[simp, norm_cast] theorem one_eq_coe : 1 = (↑r : ℝ≥0∞) ↔ 1 = r := coe_eq_coe
 #align ennreal.one_eq_coe ENNReal.one_eq_coe
 
--- porting note: no longer a `simp`, deprecated, protected
-@[deprecated zero_le] protected theorem coe_nonneg : 0 ≤ (r : ℝ≥0∞) := zero_le _
-#align ennreal.coe_nonneg ENNReal.coe_nonneg
-
 @[simp, norm_cast] theorem coe_pos : 0 < (r : ℝ≥0∞) ↔ 0 < r := coe_lt_coe
 #align ennreal.coe_pos ENNReal.coe_pos
 
@@ -378,21 +374,10 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
   simp only [ENNReal.toReal, NNReal.coe_eq, toNNReal_eq_toNNReal_iff' hx hy]
 #align ennreal.to_real_eq_to_real_iff' ENNReal.toReal_eq_toReal_iff'
 
-@[deprecated zero_lt_one]
-protected theorem zero_lt_one : 0 < (1 : ℝ≥0∞) := zero_lt_one
-#align ennreal.zero_lt_one ENNReal.zero_lt_one
-
 @[simp]
 nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
   coe_one ▸ coe_two ▸ by exact_mod_cast (one_lt_two : 1 < 2)
 #align ennreal.one_lt_two ENNReal.one_lt_two
-
-@[deprecated zero_lt_two]
-protected theorem zero_lt_two : (0 : ℝ≥0∞) < 2 := zero_lt_two
-#align ennreal.zero_lt_two ENNReal.zero_lt_two
-
-theorem two_ne_zero : (2 : ℝ≥0∞) ≠ 0 := ne_of_gt zero_lt_two
-#align ennreal.two_ne_zero ENNReal.two_ne_zero
 
 theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
 #align ennreal.two_ne_top ENNReal.two_ne_top
@@ -446,14 +431,6 @@ theorem supᵢ_ennreal {α : Type _} [CompleteLattice α] {f : ℝ≥0∞ → α
     (⨆ n, f n) = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
   @infᵢ_ennreal αᵒᵈ _ _
 #align ennreal.supr_ennreal ENNReal.supᵢ_ennreal
-
-@[deprecated add_top]
-protected theorem add_top : a + ∞ = ∞ := add_top _
-#align ennreal.add_top ENNReal.add_top
-
-@[deprecated top_add]
-protected theorem top_add : ∞ + a = ∞ := top_add _
-#align ennreal.top_add ENNReal.top_add
 
 /-- Coercion `ℝ≥0 → ℝ≥0∞` as a `RingHom`. -/
 def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
@@ -717,14 +694,6 @@ theorem coe_finset_sup {s : Finset α} {f : α → ℝ≥0} : ↑(s.sup f) = s.s
   Finset.comp_sup_eq_sup_comp_of_is_total _ coe_mono rfl
 #align ennreal.coe_finset_sup ENNReal.coe_finset_sup
 
-@[deprecated pow_le_pow']
-protected theorem pow_le_pow {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_le_pow' ha h
-#align ennreal.pow_le_pow ENNReal.pow_le_pow
-
-@[deprecated one_le_pow_of_one_le']
-theorem one_le_pow_of_one_le (ha : 1 ≤ a) (n : ℕ) : 1 ≤ a ^ n := one_le_pow_of_one_le' ha n
-#align ennreal.one_le_pow_of_one_le ENNReal.one_le_pow_of_one_le
-
 @[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 #align ennreal.max_eq_zero_iff ENNReal.max_eq_zero_iff
 
@@ -846,20 +815,6 @@ theorem coe_lt_coe_nat {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n :=
   ENNReal.coe_nat n ▸ coe_lt_coe
 #align ennreal.coe_lt_coe_nat ENNReal.coe_lt_coe_nat
 
-@[deprecated Nat.cast_lt]
-theorem coe_nat_lt_coe_nat {m n : ℕ} : (m : ℝ≥0∞) < n ↔ m < n := Nat.cast_lt
-#align ennreal.coe_nat_lt_coe_nat ENNReal.coe_nat_lt_coe_nat
-
-@[deprecated Nat.strictMono_cast]
-theorem coe_nat_strictMono : StrictMono ((↑) : ℕ → ℝ≥0∞) := Nat.strictMono_cast
-#align ennreal.coe_nat_mono ENNReal.coe_nat_strictMono
-
-@[deprecated Nat.cast_le]
-theorem coe_nat_le_coe_nat {m n : ℕ} : (m : ℝ≥0∞) ≤ n ↔ m ≤ n := Nat.cast_le
-#align ennreal.coe_nat_le_coe_nat ENNReal.coe_nat_le_coe_nat
-
--- porting note: moved `CharZero` up
-
 protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
   lift r to ℝ≥0 using h
   rcases exists_nat_gt r with ⟨n, hn⟩
@@ -948,11 +903,6 @@ theorem coe_infₛ {s : Set ℝ≥0} : s.Nonempty → (↑(infₛ s) : ℝ≥0�
   WithTop.coe_infₛ
 #align ennreal.coe_Inf ENNReal.coe_infₛ
 
-@[simp, deprecated _root_.top_mem_upperBounds]
-nonrec theorem top_mem_upperBounds {s : Set ℝ≥0∞} : ∞ ∈ upperBounds s :=
-  top_mem_upperBounds s
-#align ennreal.top_mem_upper_bounds ENNReal.top_mem_upperBounds
-
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (some '' s) ↔ r ∈ upperBounds s := by
   simp (config := { contextual := true }) [upperBounds, ball_image_iff, -mem_image, *]
@@ -961,11 +911,6 @@ theorem coe_mem_upperBounds {s : Set ℝ≥0} :
 end CompleteLattice
 
 section Mul
-
--- porting note: todo: restore @[mono]
-@[deprecated mul_le_mul']
-theorem mul_le_mul : a ≤ b → c ≤ d → a * c ≤ b * d := mul_le_mul'
-#align ennreal.mul_le_mul ENNReal.mul_le_mul
 
 -- porting note: todo: restore @[mono]
 -- porting note: todo: generalize to `WithTop`
@@ -981,9 +926,11 @@ theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
     _ ≤ c * d := mul_le_mul' a'c.le b'd.le
 #align ennreal.mul_lt_mul ENNReal.mul_lt_mul
 
+-- TODO: generalize to `CovariantClass α α (· * ·) (· ≤ ·)`
 theorem mul_left_mono : Monotone (a * ·) := fun _ _ => mul_le_mul' le_rfl
 #align ennreal.mul_left_mono ENNReal.mul_left_mono
 
+-- TODO: generalize to `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
 theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
 #align ennreal.mul_right_mono ENNReal.mul_right_mono
 
@@ -1007,7 +954,7 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   intro x y h
   contrapose! h
   simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel h0, coe_one, one_mul]
-    using mul_le_mul' (le_refl ↑a⁻¹) h
+    using mul_le_mul_left' h (↑a⁻¹)
 #align ennreal.mul_left_strict_mono ENNReal.mul_left_strictMono
 
 -- porting note: todo: generalize to `WithTop`
@@ -1524,11 +1471,6 @@ theorem _root_.OrderIso.invENNReal_symm_apply (a : ℝ≥0∞ᵒᵈ) :
     OrderIso.invENNReal.symm a = (OrderDual.ofDual a)⁻¹ :=
   rfl
 #align order_iso.inv_ennreal_symm_apply OrderIso.invENNReal_symm_apply
-
-@[deprecated pow_le_pow_of_le_one']
-protected theorem pow_le_pow_of_le_one {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
-  pow_le_pow_of_le_one' ha h
-#align ennreal.pow_le_pow_of_le_one ENNReal.pow_le_pow_of_le_one
 
 @[simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
 #align ennreal.div_top ENNReal.div_top

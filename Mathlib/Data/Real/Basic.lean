@@ -458,7 +458,7 @@ instance nontrivial : Nontrivial ℝ :=
 private irreducible_def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
-instance : HasSup ℝ :=
+instance : Sup ℝ :=
   ⟨sup⟩
 
 theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
@@ -475,7 +475,7 @@ theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
 private irreducible_def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
-instance : HasInf ℝ :=
+instance : Inf ℝ :=
   ⟨inf⟩
 
 theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=

@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Associated
@@ -93,6 +94,7 @@ import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
@@ -111,6 +113,7 @@ import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.ULift
@@ -324,11 +327,14 @@ import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Density
+import Mathlib.Combinatorics.SimpleGraph.Partition
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.DFA
@@ -657,7 +663,9 @@ import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.CauSeq
 import Mathlib.Data.Real.CauSeqCompletion
+import Mathlib.Data.Real.ConjugateExponents
 import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.Real.EReal
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Data.Real.Sign
@@ -791,6 +799,7 @@ import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.List
+import Mathlib.GroupTheory.Perm.Option
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.GroupTheory.Perm.Subgroup
 import Mathlib.GroupTheory.Perm.Support
@@ -872,6 +881,7 @@ import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Basic
+import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.LinearIndependent
@@ -892,6 +902,7 @@ import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Embedding
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
