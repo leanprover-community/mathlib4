@@ -12,22 +12,21 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Option
-import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 /-!
 # Derangements on types
 
 In this file we define `derangements α`, the set of derangements on a type `α`.
 
-We also define some equivalences involving various subtypes of `perm α` and `derangements α`:
+We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
 * `derangements_option_equiv_sigma_at_most_one_fixed_point`: An equivalence between
-  `derangements (option α)` and the sigma-type `Σ a : α, {f : perm α // fixed_points f ⊆ a}`.
-* `derangements_recursion_equiv`: An equivalence between `derangements (option α)` and the
-  sigma-type `Σ a : α, (derangements (({a}ᶜ : set α) : Type _) ⊕ derangements α)` which is later
+  `derangements (Option α)` and the sigma-type `Σ a : α, {f : perm α // fixed_points f ⊆ a}`.
+* `derangements_recursion_equiv`: An equivalence between `derangements (Option α)` and the
+  sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
 
-In order to prove the above, we also prove some results about the effect of `equiv.remove_none`
-on derangements: `remove_none.fiber_none` and `remove_none.fiber_some`.
+In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
+on derangements: `RemoveNone.fiberNone` and `RemoveNone.fiber_some`.
 -/
 
 
@@ -89,14 +88,14 @@ def atMostOneFixedPointEquivSumDerangements [DecidableEq α] (a : α) :
         Sum { f : { f : Perm α // fixedPoints f ⊆ {a} } // a ∈ fixedPoints f }
           { f : { f : Perm α // fixedPoints f ⊆ {a} } // a ∉ fixedPoints f } :=
       (Equiv.sumCompl _).symm
-    _ ≃
-        Sum { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f }
-          { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } :=
-      by
-        refine' Equiv.sumCongr _ _ <;>
-          · convert subtypeSubtypeEquivSubtypeInter _ _
-            ext f
-            rfl
+    _ ≃ Sum { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f }
+          { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
+        {
+          refine' Equiv.sumCongr _ _ <;>
+            · convert subtypeSubtypeEquivSubtypeInter _ _
+              ext f
+              rfl
+        }
     _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by
       {
         refine' Equiv.sumCongr (subtypeEquivRight fun f => _) (subtypeEquivRight fun f => _)
@@ -121,7 +120,7 @@ namespace Equiv
 variable [DecidableEq α]
 
 /-- The set of permutations `f` such that the preimage of `(a, f)` under
-    `equiv.perm.decompose_option` is a derangement. -/
+    `Equiv.Perm.decomposeOption` is a derangement. -/
 def RemoveNone.fiber (a : Option α) : Set (Perm α) :=
   { f : Perm α | (a, f) ∈ Equiv.Perm.decomposeOption '' derangements (Option α) }
 #align derangements.equiv.remove_none.fiber derangements.Equiv.RemoveNone.fiber
@@ -181,7 +180,7 @@ section Option
 
 variable [DecidableEq α]
 
-/-- The set of derangements on `option α` is equivalent to the union over `a : α`
+/-- The set of derangements on `Option α` is equivalent to the union over `a : α`
     of "permutations with `a` the only possible fixed point". -/
 def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     derangements (Option α) ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
@@ -199,7 +198,7 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
 
 #align derangements.derangements_option_equiv_sigma_at_most_one_fixed_point derangements.derangementsOptionEquivSigmaAtMostOneFixedPoint
 
-/-- The set of derangements on `option α` is equivalent to the union over all `a : α` of
+/-- The set of derangements on `Option α` is equivalent to the union over all `a : α` of
     "derangements on `α` ⊕ derangements on `{a}ᶜ`". -/
 def derangementsRecursionEquiv :
     derangements (Option α) ≃
