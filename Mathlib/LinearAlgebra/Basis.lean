@@ -557,8 +557,8 @@ theorem reindexFinsetRange_repr_self (i : ι) :
       Finsupp.single ⟨b i, Finset.mem_image_of_mem b (Finset.mem_univ i)⟩ 1 := by
   ext ⟨bi, hbi⟩
   rw [reindexFinsetRange, repr_reindex, Finsupp.mapDomain_equiv_apply, reindexRange_repr_self]
-  convert Finsupp.single_apply_left ((Equiv.refl M).subtypeEquiv _).symm.injective _ _ (1 : R)
-  rfl
+  -- Porting note: replaced a `convert; refl` with `simp`
+  simp [Finsupp.single_apply]
 #align basis.reindex_finset_range_repr_self Basis.reindexFinsetRange_repr_self
 
 @[simp]
@@ -600,11 +600,11 @@ theorem index_nonempty (b : Basis ι R M) [Nontrivial M] : Nonempty ι := by
 
 /-- If the submodule `P` has a basis, `x ∈ P` iff it is a linear combination of basis vectors. -/
 theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
-    x ∈ P ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x => x • b i := by
+    x ∈ P ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x => x • (b i : M) := by
   conv_lhs =>
-    rw [← P.range_subtype, ← Submodule.map_top, ← b.span_eq, Submodule.map_span, ← Set.range_comp, ←
-      Finsupp.range_total]
-  simp [@eq_comm _ x, Function.comp, Finsupp.total]
+    rw [← P.range_subtype, ← Submodule.map_top, ← b.span_eq, Submodule.map_span, ← Set.range_comp,
+        ← Finsupp.range_total]
+  simp [@eq_comm _ x, Function.comp, Finsupp.total_apply]
 #align basis.mem_submodule_iff Basis.mem_submodule_iff
 
 section Constr
