@@ -58,47 +58,52 @@ partial def mkHigherOrderType : Expr → MetaM Expr
 /-- A user attribute that applies to lemmas of the shape `∀ x, f (g x) = h x`.
 It derives an auxiliary lemma of the form `f ∘ g = h` for reasoning about higher-order functions.
 -/
-def higherOrderAfterSet (thm : Name) (onm : Option Name) : AttrM Unit := do
-  MetaM.run' <| TermElabM.run' <| do
-    let inf ← getConstInfo thm
-    let lvl := inf.levelParams
-    let cst ← mkConst thm (lvl.map mkLevelParam)
-    let typ ← inferType cst
-    let hot ← mkHigherOrderType typ
-    let mex ← mkFreshExprMVar hot
-    let mvr₁ := mex.mvarId!
-    let (_, mvr₂) ← mvr₁.intros
-    let [mvr₃] ← mvr₂.apply (← mkConst ``funext) | throwError "failed"
-    let (_, mvr₄) ← mvr₃.intro1
-    let lmvr ← mvr₄.apply (← mkConst thm)
-    lmvr.forM fun mvr₅ ↦ mvr₅.assumption
-    let prf ← instantiateMVars mex
-    let thm' := Option.getD (flip updatePrefix thm.getPrefix <$> onm) (thm.appendAfter "\'")
-    addDecl <| .thmDecl {
-      name := thm',
-      levelParams := lvl,
-      type := hot,
-      value := prf }
-    let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
-    if hsm then
-      addSimpTheorem simpExtension thm' true false .global 1000
-    let some fcn ← getSimpExtension? `functor_norm | failure
-    let hfm := fcn.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
-    if hfm then
-      addSimpTheorem fcn thm' true false .global 1000
+def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
+  match stx with
+  | `(attr| higher_order $[$id]?) =>
+    let onm := id.map TSyntax.getId
+    MetaM.run' <| TermElabM.run' <| do
+      let inf ← getConstInfo thm
+      let lvl := inf.levelParams
+      let cst ← mkConst thm (lvl.map mkLevelParam)
+      let typ ← inferType cst
+      let hot ← mkHigherOrderType typ
+      let mex ← mkFreshExprMVar hot
+      let mvr₁ := mex.mvarId!
+      let (_, mvr₂) ← mvr₁.intros
+      let [mvr₃] ← mvr₂.apply (← mkConst ``funext) | throwError "failed"
+      let (_, mvr₄) ← mvr₃.intro1
+      let lmvr ← mvr₄.apply (← mkConst thm)
+      lmvr.forM fun mvr₅ ↦ mvr₅.assumption
+      let prf ← instantiateMVars mex
+      let thm' := Option.getD (flip updatePrefix thm.getPrefix <$> onm) (thm.appendAfter "\'")
+      addDecl <| .thmDecl {
+        name := thm',
+        levelParams := lvl,
+        type := hot,
+        value := prf }
+      let ref := (id : Option Syntax).getD stx[0]
+      addDeclarationRanges thm' {
+        range := ← getDeclarationRange (← getRef)
+        selectionRange := ← getDeclarationRange ref }
+      discard <| addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams thm'
+      let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
+      if hsm then
+        addSimpTheorem simpExtension thm' true false .global 1000
+      let some fcn ← getSimpExtension? `functor_norm | failure
+      let hfm := fcn.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
+      if hfm then
+        addSimpTheorem fcn thm' true false .global 1000
+      return thm'
+  | _ => throwUnsupportedSyntax
 
 /-- `higher_order` attribute. -/
-initialize higherOrderAttr : ParametricAttribute (Option Name) ←
+initialize higherOrderAttr : ParametricAttribute Name ←
   registerParametricAttribute {
     name := `higherOrder,
     descr :=
 "From a lemma of the shape `∀ x, f (g x) = h x` derive an auxiliary lemma of the
 form `f ∘ g = h` for reasoning about higher-order functions.",
-    getParam := fun _thm stx ↦
-      match stx with
-      | `(attr| higher_order $[$id]?) =>
-        pure <| id.map TSyntax.getId
-      | _ => throwUnsupportedSyntax,
-    afterSet := higherOrderAfterSet }
+    getParam := higherOrderGetParam }
 
 end Tactic
