@@ -317,8 +317,7 @@ def Simps.symmApply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
 
 initialize_simps_projections AlgEquiv (toEquiv_toFun → apply,toEquiv_invFun → symmApply)
 
--- Porting note: Added nolint simpNF, simp times out when proving this (once symm_mk is introduced)
-@[simp, nolint simpNF]
+--@[simp] -- Porting note: simp can prove this once symm_mk is introduced
 theorem coe_apply_coe_coe_symm_apply {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) (x : A₂) :
     f ((f : A₁ ≃ₐ[R] A₂).symm x) = x :=
   EquivLike.right_inv f x
@@ -815,5 +814,3 @@ run_cmd do
   for i in List.range 2 do
     Elab.Command.elabCommand (← `(attribute [nolint dupNamespace]
       $(mkCIdent (.num `Mathlib.Algebra.Algebra.Equiv._auxLemma (i + 1)))))
-
-#lint
