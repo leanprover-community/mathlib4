@@ -8,8 +8,8 @@ Authors: Kenny Lau, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Congruence
-import Mathbin.Algebra.Module.Submodule.Bilinear
+import Mathlib.GroupTheory.Congruence
+import Mathlib.Algebra.Module.Submodule.Bilinear
 
 /-!
 # Tensor product of modules over commutative semirings.
