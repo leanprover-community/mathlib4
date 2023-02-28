@@ -176,7 +176,6 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
 #align linear_equiv.to_linear_map_inj LinearEquiv.toLinearMap_inj
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
-  coe e := e.toFun
   inv := LinearEquiv.invFun
   coe_injective' _ _ h _ := toLinearMap_injective (FunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
