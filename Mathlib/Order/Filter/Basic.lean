@@ -1632,10 +1632,10 @@ theorem EventuallyLE.congr {f f' g g' : α → β} (H : f ≤ᶠ[l] g) (hf : f =
   H.mp <| hg.mp <| hf.mono fun x hf hg H => by rwa [hf, hg] at H
 #align filter.eventually_le.congr Filter.EventuallyLE.congr
 
-theorem eventuallyLe_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
+theorem eventuallyLE_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
     f ≤ᶠ[l] g ↔ f' ≤ᶠ[l] g' :=
   ⟨fun H => H.congr hf hg, fun H => H.congr hf.symm hg.symm⟩
-#align filter.eventually_le_congr Filter.eventuallyLe_congr
+#align filter.eventually_le_congr Filter.eventuallyLE_congr
 
 end LE
 
@@ -1678,10 +1678,10 @@ theorem EventuallyLE.antisymm [PartialOrder β] {l : Filter α} {f g : α → β
   h₂.mp <| h₁.mono fun _ => le_antisymm
 #align filter.eventually_le.antisymm Filter.EventuallyLE.antisymm
 
-theorem eventuallyLe_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α → β} :
+theorem eventuallyLE_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α → β} :
     f =ᶠ[l] g ↔ f ≤ᶠ[l] g ∧ g ≤ᶠ[l] f := by
   simp only [EventuallyEq, EventuallyLE, le_antisymm_iff, eventually_and]
-#align filter.eventually_le_antisymm_iff Filter.eventuallyLe_antisymm_iff
+#align filter.eventually_le_antisymm_iff Filter.eventuallyLE_antisymm_iff
 
 theorem EventuallyLE.le_iff_eq [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
     g ≤ᶠ[l] f ↔ g =ᶠ[l] f :=
@@ -2706,10 +2706,10 @@ theorem eventuallyEq_bind {f : Filter α} {m : α → Filter β} {g₁ g₂ : β
 #align filter.eventually_eq_bind Filter.eventuallyEq_bind
 
 @[simp]
-theorem eventuallyLe_bind [LE γ] {f : Filter α} {m : α → Filter β} {g₁ g₂ : β → γ} :
+theorem eventuallyLE_bind [LE γ] {f : Filter α} {m : α → Filter β} {g₁ g₂ : β → γ} :
     g₁ ≤ᶠ[bind f m] g₂ ↔ ∀ᶠ x in f, g₁ ≤ᶠ[m x] g₂ :=
   Iff.rfl
-#align filter.eventually_le_bind Filter.eventuallyLe_bind
+#align filter.eventually_le_bind Filter.eventuallyLE_bind
 
 theorem mem_bind' {s : Set β} {f : Filter α} {m : α → Filter β} :
     s ∈ bind f m ↔ { a | s ∈ m a } ∈ f :=
@@ -3103,9 +3103,9 @@ theorem Set.EqOn.eventuallyEq_of_mem {α β} {s : Set α} {l : Filter α} {f g :
   h.eventuallyEq.filter_mono <| Filter.le_principal_iff.2 hl
 #align set.eq_on.eventually_eq_of_mem Set.EqOn.eventuallyEq_of_mem
 
-theorem HasSubset.Subset.eventuallyLe {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
+theorem HasSubset.Subset.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s ≤ᶠ[l] t :=
   Filter.eventually_of_forall h
-#align has_subset.subset.eventually_le HasSubset.Subset.eventuallyLe
+#align has_subset.subset.eventually_le HasSubset.Subset.eventuallyLE
 
 theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h : MapsTo f s t) :
     Filter.Tendsto f (𝓟 s) (𝓟 t) :=
