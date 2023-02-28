@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Filtered
-import Mathbin.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Filtered
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Possession of filtered colimits
