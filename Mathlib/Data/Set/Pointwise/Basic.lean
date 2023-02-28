@@ -806,7 +806,7 @@ protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Set`. See note [pointwise nat action]. -/
-@[to_additive]
+@[to_additive existing]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align set.has_npow Set.NPow
@@ -819,7 +819,7 @@ protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
-@[to_additive]
+@[to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align set.has_zpow Set.ZPow
@@ -970,7 +970,7 @@ theorem nsmul_univ {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n �
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
 #align set.nsmul_univ Set.nsmul_univ
 
-@[to_additive (attr := simp) nsmul_univ]
+@[to_additive existing (attr := simp) nsmul_univ]
 theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _

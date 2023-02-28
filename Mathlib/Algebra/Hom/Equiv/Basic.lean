@@ -85,7 +85,7 @@ add_decl_doc AddEquiv.toAddHom
 structure MulEquiv (M N : Type _) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 -- Porting note: remove when `to_additive` can do this
 -- https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive] MulEquiv.toMulHom
+attribute [to_additive existing] MulEquiv.toMulHom
 #align mul_equiv MulEquiv
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
