@@ -8,7 +8,7 @@ Authors: Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Equiv
 
 /-!
 # The R-algebra structure on families of R-algebras
