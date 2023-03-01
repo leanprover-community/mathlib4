@@ -727,9 +727,9 @@ instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
   ⟨AlgEquiv.ext⟩
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 
-instance apply_sMulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
+instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
     where smul_comm r e a := (e.map_smul r a).symm
-#align alg_equiv.apply_smul_comm_class AlgEquiv.apply_sMulCommClass
+#align alg_equiv.apply_smul_comm_class AlgEquiv.apply_smulCommClass
 
 instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁
     where smul_comm e r a := e.map_smul r a

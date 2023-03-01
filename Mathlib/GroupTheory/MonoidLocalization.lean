@@ -461,7 +461,7 @@ instance [SMul R₁ M] [SMul R₂ M] [IsScalarTower R₁ M M] [IsScalarTower R�
   [IsScalarTower R₁ R₂ M] : IsScalarTower R₁ R₂ (Localization S) where
   smul_assoc s t := Localization.ind <| Prod.rec fun r x ↦ by simp only [smul_mk, smul_assoc s t r]
 
-instance sMulCommClass_right {R : Type _} [SMul R M] [IsScalarTower R M M] :
+instance smulCommClass_right {R : Type _} [SMul R M] [IsScalarTower R M M] :
   SMulCommClass R (Localization S) (Localization S) where
   smul_comm s :=
       Localization.ind <|
@@ -469,7 +469,7 @@ instance sMulCommClass_right {R : Type _} [SMul R M] [IsScalarTower R M M] :
           Localization.ind <|
             Prod.rec fun r₂ x₂ ↦ by
               simp only [smul_mk, smul_eq_mul, mk_mul, mul_comm r₁, smul_mul_assoc]
-#align localization.smul_comm_class_right Localization.sMulCommClass_right
+#align localization.smul_comm_class_right Localization.smulCommClass_right
 
 instance isScalarTower_right {R : Type _} [SMul R M] [IsScalarTower R M M] :
   IsScalarTower R (Localization S) (Localization S) where
