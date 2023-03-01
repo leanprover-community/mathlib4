@@ -240,6 +240,11 @@ section Ring
 
 variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
 
+-- porting note: find out how to remove these instances, they should not be necessary.
+local instance : Module R A := @Algebra.toModule R A _ _ _
+local instance : SMulCommClass R A A :=
+@IsScalarTower.to_sMulCommClass R _ A _ _ A _ Semiring.toModule _ _
+
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
     Function.Injective (mulLeft R x) := by
   letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
