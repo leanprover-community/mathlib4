@@ -171,28 +171,28 @@ noncomputable def nonuniformWitness (ε : 𝕜) (s t : Finset α) : Finset α :=
 #align simple_graph.nonuniform_witness SimpleGraph.nonuniformWitness
 
 theorem nonuniformWitness_subset (h : ¬G.IsUniform ε s t) : G.nonuniformWitness ε s t ⊆ s := by
-  unfold nonuniformWitnesses
+  unfold nonuniformWitness
   split_ifs
-  · exact G.left_nonuniform_witnesses_subset h
-  · exact G.right_nonuniform_witnesses_subset fun i => h i.symm
+  · exact G.left_nonuniformWitnesses_subset h
+  · exact G.right_nonuniformWitnesses_subset fun i => h i.symm
 #align simple_graph.nonuniform_witness_subset SimpleGraph.nonuniformWitness_subset
 
 theorem nonuniformWitness_card_le (h : ¬G.IsUniform ε s t) :
     (s.card : 𝕜) * ε ≤ (G.nonuniformWitness ε s t).card := by
-  unfold nonuniformWitnesses
+  unfold nonuniformWitness
   split_ifs
-  · exact G.left_nonuniform_witnesses_card h
-  · exact G.right_nonuniform_witnesses_card fun i => h i.symm
+  · exact G.left_nonuniformWitnesses_card h
+  · exact G.right_nonuniformWitnesses_card fun i => h i.symm
 #align simple_graph.nonuniform_witness_card_le SimpleGraph.nonuniformWitness_card_le
 
 theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) :
     ε ≤
       |G.edgeDensity (G.nonuniformWitness ε s t) (G.nonuniformWitness ε t s) - G.edgeDensity s t| :=
   by
-  unfold nonuniformWitnesses
+  unfold nonuniformWitness
   rcases trichotomous_of WellOrderingRel s t with (lt | rfl | gt)
   · rw [if_pos lt, if_neg (asymm lt)]
-    exact G.nonuniform_witnesses_spec h₂
+    exact G.nonuniformWitnesses_spec h₂
   · cases h₁ rfl
   · rw [if_neg (asymm GT.gt), if_pos GT.gt, edge_density_comm, edge_density_comm _ s]
     apply G.nonuniform_witnesses_spec fun i => h₂ i.symm
