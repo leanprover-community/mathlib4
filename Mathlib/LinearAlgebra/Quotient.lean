@@ -560,7 +560,7 @@ theorem Quotient.equiv_trans {N O : Type _} [AddCommGroup N] [Module R N] [AddCo
     (f : N ≃ₗ[R] O) (he : P.map e = Q) (hf : Q.map f = S) (hef : P.map (e.trans f) = S) :
     Quotient.equiv P S (e.trans f) hef =
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
-  ext x
+  ext
   -- `simp` can deal with `hef` depending on `e` and `f`
   simp only [Quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
   -- `rw` can deal with `mapQ_comp` needing extra hypotheses coming from the RHS

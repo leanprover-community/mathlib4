@@ -1,9 +1,12 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Basic
@@ -278,8 +281,13 @@ import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.Functorial
@@ -326,12 +334,15 @@ import Mathlib.Combinatorics.SetFamily.Intersecting
 import Mathlib.Combinatorics.SetFamily.Kleitman
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Partition
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
+import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
@@ -580,6 +591,7 @@ import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Count
+import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
@@ -883,6 +895,7 @@ import Mathlib.Lean.Meta.Simp
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
@@ -894,6 +907,7 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic

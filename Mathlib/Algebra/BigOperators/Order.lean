@@ -180,7 +180,7 @@ theorem prod_eq_one_iff_of_one_le' :
 #align finset.prod_eq_one_iff_of_one_le' Finset.prod_eq_one_iff_of_one_le'
 #align finset.sum_eq_zero_iff_of_nonneg Finset.sum_eq_zero_iff_of_nonneg
 
-@[to_additive sum_eq_zero_iff_of_nonneg]
+@[to_additive existing sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   @prod_eq_one_iff_of_one_le' _ Nᵒᵈ _ _ _
@@ -667,15 +667,11 @@ namespace Fintype
 
 variable [Fintype ι]
 
--- Porting note: remove the attribute `mono` since tactic mono does not yet exist
-@[to_additive sum_mono]
+@[to_additive (attr := mono) sum_mono]
 theorem prod_mono' [OrderedCommMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
   Finset.prod_le_prod' fun x _ ↦ hfg x
 #align fintype.prod_mono' Fintype.prod_mono'
 #align fintype.sum_mono Fintype.sum_mono
-
--- Porting note: commented out the next line since tactic `mono` does not yet exist
--- attribute [mono] sum_mono
 
 @[to_additive sum_strict_mono]
 theorem prod_strict_mono' [OrderedCancelCommMonoid M] : StrictMono fun f : ι → M ↦ ∏ x, f x :=
