@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.big_operators.basic
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
+! leanprover-community/mathlib commit 6c5f73fd6f6cc83122788a80a27cdd54663609f4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1409,6 +1409,12 @@ theorem prod_const (b : β) : (∏ _x in s, b) = b ^ s.card :=
 #align finset.prod_const Finset.prod_const
 #align finset.sum_const Finset.sum_const
 
+@[to_additive sum_eq_card_nsmul] lemma prod_eq_pow_card {b : β} (hf : ∀ a ∈ s, f a = b) :
+  ∏ a in s, f a = b ^ s.card :=
+(prod_congr rfl hf).trans $ prod_const _
+#align finset.prod_eq_pow_card prod_eq_pow_card.prod_const
+#align finset.sum_eq_card_nsmul Finset.sum_eq_card_nsmul
+
 @[to_additive]
 theorem pow_eq_prod_const (b : β) : ∀ n, b ^ n = ∏ _k in range n, b := by simp
 #align finset.pow_eq_prod_const Finset.pow_eq_prod_const
@@ -1903,6 +1909,26 @@ theorem prod_unique_nonempty {α β : Type _} [CommMonoid β] [Unique α] (s : F
   rw [h.eq_singleton_default, Finset.prod_singleton]
 #align finset.prod_unique_nonempty Finset.prod_unique_nonempty
 #align finset.sum_unique_nonempty Finset.sum_unique_nonempty
+
+lemma sum_nat_mod (s : Finset α) (n : ℕ) (f : α → ℕ) :
+  (∑ i in s, f i) % n = (∑ i in s, f i % n) % n :=
+(multiset.sum_nat_mod _ _).trans $ by rw [finset.sum, multiset.map_map]
+#align finset.sum_nat_mod Finset.sum_nat_mod
+
+lemma prod_nat_mod (s : Finset α) (n : ℕ) (f : α → ℕ) :
+  (∏ i in s, f i) % n = (∏ i in s, f i % n) % n :=
+(multiset.prod_nat_mod _ _).trans $ by rw [finset.prod, multiset.map_map]
+#align finset.prod_nat_mod Finset.prod_nat_mod
+
+lemma sum_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
+  (∑ i in s, f i) % n = (∑ i in s, f i % n) % n :=
+(multiset.sum_int_mod _ _).trans $ by rw [finset.sum, multiset.map_map]
+#align finset.sum_int_mod Finset.sum_int_mod
+
+lemma prod_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
+  (∏ i in s, f i) % n = (∏ i in s, f i % n) % n :=
+(multiset.prod_int_mod _ _).trans $ by rw [finset.prod, multiset.map_map]
+#align finset.prod_int_mod Finset.prod_int_mod
 
 end Finset
 
