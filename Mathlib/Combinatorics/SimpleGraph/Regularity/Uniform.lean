@@ -29,7 +29,7 @@ is less than `ε`.
 ## Main declarations
 
 * `SimpleGraph.IsUniform`: Graph uniformity of a pair of finsets of vertices.
-* `SimpleGraph.nonuniformWitness`: `G.nonuniform_witness ε s t` and `G.nonuniform_witness ε t s`
+* `SimpleGraph.nonuniformWitness`: `G.nonuniformWitness ε s t` and `G.nonuniformWitness ε t s`
   together witness the non-uniformity of `s` and `t`.
 * `Finpartition.nonUniforms`: Non uniform pairs of parts of a partition.
 * `Finpartition.IsUniform`: Uniformity of a partition.
@@ -163,8 +163,8 @@ theorem nonuniformWitnesses_spec (h : ¬G.IsUniform ε s t) :
   exact (not_isUniform_iff.1 h).choose_spec.2.choose_spec.2.2.2
 #align simple_graph.nonuniform_witnesses_spec SimpleGraph.nonuniformWitnesses_spec
 
-/-- Arbitrary witness of non-uniformity. `G.nonuniform_witness ε s t` and
-`G.nonuniform_witness ε t s` form a pair of subsets witnessing the non-uniformity of `(s, t)`. If
+/-- Arbitrary witness of non-uniformity. `G.nonuniformWitness ε s t` and
+`G.nonuniformWitness ε t s` form a pair of subsets witnessing the non-uniformity of `(s, t)`. If
 `(s, t)` is uniform, returns `s`. -/
 noncomputable def nonuniformWitness (ε : 𝕜) (s t : Finset α) : Finset α :=
   if WellOrderingRel s t then (G.nonuniformWitnesses ε s t).1 else (G.nonuniformWitnesses ε t s).2
