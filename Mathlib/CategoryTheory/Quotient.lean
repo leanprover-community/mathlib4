@@ -157,7 +157,8 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
       apply Congruence.compLeft
       apply Congruence.compRight
       assumption
-    · haveI := (h.IsEquiv : IsEquiv _ (@r X Y)) -- porting note: had to add this line for `refl`
+    · haveI := (h.IsEquiv : IsEquiv _ (@r X Y))
+      -- porting note: had to add this line for `refl` (and name the `Congruence` argument)
       apply refl
     · apply symm
       assumption
