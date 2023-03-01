@@ -58,7 +58,9 @@ def IsAcyclic : Prop :=
 -- @[mk_iff, protect_proj]
 @[mk_iff]
 structure IsTree : Prop where
-  is_connected : G.Connected
+  /-- Graph is connected. -/
+  isConnected : G.Connected
+  /-- Graph is acyclic. -/
   IsAcyclic : G.IsAcyclic
 #align simple_graph.is_tree SimpleGraph.IsTree
 
@@ -85,6 +87,8 @@ theorem isAcyclic_iff_forall_edge_isBridge :
   simp [isAcyclic_iff_forall_adj_isBridge, Sym2.forall]
 #align simple_graph.is_acyclic_iff_forall_edge_is_bridge SimpleGraph.isAcyclic_iff_forall_edge_isBridge
 
+-- porting note: `simpa` seems necessary here
+set_option linter.unnecessarySimpa false in
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
   obtain ⟨p, hp⟩ := p
@@ -98,13 +102,16 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
     replace h := h.2 (q.append p.reverse)
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse'] at h
-    cases' h with h
-    · cases q
+    cases' h with h h
+    · cases' q with _ _ _ _ _ q
       · simp [Walk.isPath_def] at hp
       · rw [Walk.cons_isPath_iff] at hp hq
         simp only [Walk.edges_cons, List.mem_cons, Sym2.eq_iff] at h
-        obtain (⟨h, rfl⟩ | ⟨rfl, rfl⟩) | h := h
-        · rw [ih hp.1 _ hq.1]
+        simp at h
+        rcases h with  (⟨h, rfl⟩ | ⟨rfl, rfl⟩) | h
+        · have := ih hp.1 q hq.1
+          simp at this
+          simp only [this]
         · simpa using hq
         · exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hq.2
     · rw [Walk.cons_isPath_iff] at hp
@@ -114,13 +121,14 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
   intro v c hc
   simp only [Walk.isCycle_def, Ne.def] at hc
-  cases c
+  cases' c with _ _ c_v _ c_h c_p
   · exact absurd rfl hc.2.1
-  · simp only [Walk.cons_isTrail_iff, not_false_iff, Walk.support_cons, List.tail_cons,
+  · simp only [Walk.cons_isTrail_iff, Walk.support_cons, List.tail_cons,
       true_and_iff] at hc
-    specialize h _ _ ⟨c_p, by simp only [Walk.is_path_def, hc.2]⟩ (Path.singleton (G.symm c_h))
+    specialize h _ _ ⟨c_p, by simp only [Walk.isPath_def, hc.2]⟩ (Path.singleton (G.symm c_h))
     simp only [Path.singleton] at h
-    simpa [-Quotient.eq', Sym2.eq_swap, h] using hc
+    simp at h
+    simp [h] at hc
 #align simple_graph.is_acyclic_of_path_unique SimpleGraph.isAcyclic_of_path_unique
 
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
