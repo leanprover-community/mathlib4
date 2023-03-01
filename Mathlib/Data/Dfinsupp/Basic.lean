@@ -143,10 +143,10 @@ theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
 This preserves the structure on `f`, and exists in various bundled forms for when `f` is itself
 bundled:
 
-* `Dfinsupp.mapRange.addMonoidHom`
-* `Dfinsupp.mapRange.addEquiv`
-* `dfinsupp.mapRange.linearMap`
-* `dfinsupp.mapRange.linearEquiv`
+* `Dfinsupp.MapRange.addMonoidHom`
+* `Dfinsupp.MapRange.addEquiv`
+* `dfinsupp.MapRange.linearMap`
+* `dfinsupp.MapRange.linearEquiv`
 -/
 def mapRange (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (x : Π₀ i, β₁ i) : Π₀ i, β₂ i :=
   ⟨fun i => f i (x i),
@@ -2173,33 +2173,33 @@ theorem mapRange_add (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0)
 
 /-- `Dfinsupp.mapRange` as an `AddMonoidHom`. -/
 @[simps apply]
-def mapRange.addMonoidHom (f : ∀ i, β₁ i →+ β₂ i) : (Π₀ i, β₁ i) →+ Π₀ i, β₂ i
+def MapRange.addMonoidHom (f : ∀ i, β₁ i →+ β₂ i) : (Π₀ i, β₁ i) →+ Π₀ i, β₂ i
     where
   toFun := mapRange (fun i x => f i x) fun i => (f i).map_zero
   map_zero' := mapRange_zero _ _
   map_add' := mapRange_add _ (fun i => (f i).map_zero) fun i => (f i).map_add
-#align dfinsupp.map_range.add_monoid_hom Dfinsupp.mapRange.addMonoidHom
-#align dfinsupp.map_range.add_monoid_hom_apply Dfinsupp.mapRange.addMonoidHom_apply
+#align dfinsupp.map_range.add_monoid_hom Dfinsupp.MapRange.addMonoidHom
+#align dfinsupp.map_range.add_monoid_hom_apply Dfinsupp.MapRange.addMonoidHom_apply
 
 @[simp]
-theorem mapRange.addMonoidHom_id :
-    (mapRange.addMonoidHom fun i => AddMonoidHom.id (β₂ i)) = AddMonoidHom.id _ :=
+theorem MapRange.addMonoidHom_id :
+    (MapRange.addMonoidHom fun i => AddMonoidHom.id (β₂ i)) = AddMonoidHom.id _ :=
   AddMonoidHom.ext mapRange_id
-#align dfinsupp.map_range.add_monoid_hom_id Dfinsupp.mapRange.addMonoidHom_id
+#align dfinsupp.map_range.add_monoid_hom_id Dfinsupp.MapRange.addMonoidHom_id
 
-theorem mapRange.addMonoidHom_comp (f : ∀ i, β₁ i →+ β₂ i) (f₂ : ∀ i, β i →+ β₁ i) :
-    (mapRange.addMonoidHom fun i => (f i).comp (f₂ i)) =
-      (mapRange.addMonoidHom f).comp (mapRange.addMonoidHom f₂) := by
+theorem MapRange.addMonoidHom_comp (f : ∀ i, β₁ i →+ β₂ i) (f₂ : ∀ i, β i →+ β₁ i) :
+    (MapRange.addMonoidHom fun i => (f i).comp (f₂ i)) =
+      (MapRange.addMonoidHom f).comp (MapRange.addMonoidHom f₂) := by
   refine' AddMonoidHom.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x) _ _ _
   · intros; apply map_zero
   · intros; apply map_zero
   · intros; dsimp; simp only [map_zero]
-#align dfinsupp.map_range.add_monoid_hom_comp Dfinsupp.mapRange.addMonoidHom_comp
+#align dfinsupp.map_range.add_monoid_hom_comp Dfinsupp.MapRange.addMonoidHom_comp
 
-/-- `Dfinsupp.mapRange.addMonoidHom` as an `AddEquiv`. -/
+/-- `Dfinsupp.MapRange.addMonoidHom` as an `AddEquiv`. -/
 @[simps apply]
-def mapRange.addEquiv (e : ∀ i, β₁ i ≃+ β₂ i) : (Π₀ i, β₁ i) ≃+ Π₀ i, β₂ i :=
-  { mapRange.addMonoidHom fun i =>
+def MapRange.addEquiv (e : ∀ i, β₁ i ≃+ β₂ i) : (Π₀ i, β₁ i) ≃+ Π₀ i, β₂ i :=
+  { MapRange.addMonoidHom fun i =>
       (e i).toAddMonoidHom with
     toFun := mapRange (fun i x => e i x) fun i => (e i).map_zero
     invFun := mapRange (fun i x => (e i).symm x) fun i => (e i).symm.map_zero
@@ -2211,29 +2211,29 @@ def mapRange.addEquiv (e : ∀ i, β₁ i ≃+ β₂ i) : (Π₀ i, β₁ i) ≃
       rw [← mapRange_comp] <;>
         · simp_rw [AddEquiv.self_comp_symm]
           simp }
-#align dfinsupp.map_range.add_equiv Dfinsupp.mapRange.addEquiv
-#align dfinsupp.map_range.add_equiv_apply Dfinsupp.mapRange.addEquiv_apply
+#align dfinsupp.map_range.add_equiv Dfinsupp.MapRange.addEquiv
+#align dfinsupp.map_range.add_equiv_apply Dfinsupp.MapRange.addEquiv_apply
 
 @[simp]
-theorem mapRange.addEquiv_refl :
-    (mapRange.addEquiv fun i => AddEquiv.refl (β₁ i)) = AddEquiv.refl _ :=
+theorem MapRange.addEquiv_refl :
+    (MapRange.addEquiv fun i => AddEquiv.refl (β₁ i)) = AddEquiv.refl _ :=
   AddEquiv.ext mapRange_id
-#align dfinsupp.map_range.add_equiv_refl Dfinsupp.mapRange.addEquiv_refl
+#align dfinsupp.map_range.add_equiv_refl Dfinsupp.MapRange.addEquiv_refl
 
-theorem mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
-    (mapRange.addEquiv fun i => (f i).trans (f₂ i)) =
-      (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) := by
+theorem MapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
+    (MapRange.addEquiv fun i => (f i).trans (f₂ i)) =
+      (MapRange.addEquiv f).trans (MapRange.addEquiv f₂) := by
   refine' AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) _ _ _
   · intros; apply map_zero
   · intros; apply map_zero
   · intros; dsimp; simp only [map_zero]
-#align dfinsupp.map_range.add_equiv_trans Dfinsupp.mapRange.addEquiv_trans
+#align dfinsupp.map_range.add_equiv_trans Dfinsupp.MapRange.addEquiv_trans
 
 @[simp]
-theorem mapRange.addEquiv_symm (e : ∀ i, β₁ i ≃+ β₂ i) :
-    (mapRange.addEquiv e).symm = mapRange.addEquiv fun i => (e i).symm :=
+theorem MapRange.addEquiv_symm (e : ∀ i, β₁ i ≃+ β₂ i) :
+    (MapRange.addEquiv e).symm = MapRange.addEquiv fun i => (e i).symm :=
   rfl
-#align dfinsupp.map_range.add_equiv_symm Dfinsupp.mapRange.addEquiv_symm
+#align dfinsupp.map_range.add_equiv_symm Dfinsupp.MapRange.addEquiv_symm
 
 end MapRange
 
