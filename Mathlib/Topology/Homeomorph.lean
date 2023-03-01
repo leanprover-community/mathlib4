@@ -42,9 +42,9 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 structure Homeomorph (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β]
     extends α ≃ β where
   /-- The forward map of a homeomorphism is a continuous function. -/
-  continuous_toFun : Continuous toFun -- porting note: todo: := by continuity
+  continuous_toFun : Continuous toFun := by continuity
   /-- The inverse map of a homeomorphism is a continuous function. -/
-  continuous_invFun : Continuous invFun -- porting note: todo: := by continuity
+  continuous_invFun : Continuous invFun := by continuity
 #align homeomorph Homeomorph
 
 @[inherit_doc]
@@ -88,8 +88,7 @@ def Simps.symm_apply (h : α ≃ₜ β) : β → α :=
   h.symm
 #align homeomorph.simps.symm_apply Homeomorph.Simps.symm_apply
 
-initialize_simps_projections Homeomorph (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
-  -toEquiv)
+initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem coe_toEquiv (h : α ≃ₜ β) : ⇑h.toEquiv = h :=
@@ -137,13 +136,13 @@ theorem refl_symm : (Homeomorph.refl α).symm = Homeomorph.refl α :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem continuous (h : α ≃ₜ β) : Continuous h :=
   h.continuous_toFun
 #align homeomorph.continuous Homeomorph.continuous
 
 -- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem continuous_symm (h : α ≃ₜ β) : Continuous h.symm :=
   h.continuous_invFun
 #align homeomorph.continuous_symm Homeomorph.continuous_symm

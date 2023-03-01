@@ -719,7 +719,7 @@ theorem irreducibleComponent_subset_connectedComponent {x : α} :
   isIrreducible_irreducibleComponent.isConnected.subset_connectedComponent mem_irreducibleComponent
 #align irreducible_component_subset_connected_component irreducibleComponent_subset_connectedComponent
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
     connectedComponentIn F x ⊆ connectedComponentIn G x := by
   by_cases hx : x ∈ F
@@ -1467,7 +1467,7 @@ theorem quotientMap_coe : QuotientMap (mk : α → ConnectedComponents α) :=
   quotientMap_quot_mk
 #align connected_components.quotient_map_coe ConnectedComponents.quotientMap_coe
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_coe : Continuous (mk : α → ConnectedComponents α) :=
   quotientMap_coe.continuous
 #align connected_components.continuous_coe ConnectedComponents.continuous_coe
@@ -1495,7 +1495,7 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
   Quotient.liftOn' x f h.image_eq_of_connectedComponent_eq
 #align continuous.connected_components_lift Continuous.connectedComponentsLift
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
   h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq

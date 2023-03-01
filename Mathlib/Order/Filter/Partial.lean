@@ -58,12 +58,11 @@ open Filter
 
 /-- The forward map of a filter under a relation. Generalization of `Filter.map` to relations. Note
 that `Rel.core` generalizes `Set.preimage`. -/
-def rmap (r : Rel α β) (l : Filter α) : Filter β
-    where
+def rmap (r : Rel α β) (l : Filter α) : Filter β where
   sets := { s | r.core s ∈ l }
   univ_sets := by simp
-  sets_of_superset := @fun s t hs st => mem_of_superset hs (Rel.core_mono _ st)
-  inter_sets := @fun s t hs ht => by
+  sets_of_superset hs st := mem_of_superset hs (Rel.core_mono _ st)
+  inter_sets hs ht := by
     simp only [Set.mem_setOf_eq]
     convert inter_mem hs ht
     rw [←Rel.core_inter]
@@ -91,7 +90,7 @@ theorem rmap_compose (r : Rel α β) (s : Rel β γ) : rmap s ∘ rmap r = rmap 
 
 /-- Generic "limit of a relation" predicate. `Rtendsto r l₁ l₂` asserts that for every
 `l₂`-neighborhood `a`, the `r`-core of `a` is an `l₁`-neighborhood. One generalization of
-`filter.Tendsto` to relations. -/
+`Filter.Tendsto` to relations. -/
 def Rtendsto (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.rmap r ≤ l₂
 #align filter.rtendsto Filter.Rtendsto
@@ -103,12 +102,11 @@ theorem rtendsto_def (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
 
 /-- One way of taking the inverse map of a filter under a relation. One generalization of
 `Filter.comap` to relations. Note that `Rel.core` generalizes `Set.preimage`. -/
-def rcomap (r : Rel α β) (f : Filter β) : Filter α
-    where
+def rcomap (r : Rel α β) (f : Filter β) : Filter α where
   sets := Rel.image (fun s t => r.core s ⊆ t) f.sets
   univ_sets := ⟨Set.univ, univ_mem, Set.subset_univ _⟩
-  sets_of_superset := @fun _ _ ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
-  inter_sets := @fun _ _ ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
+  sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
+  inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
     ⟨a' ∩ b', inter_mem ha₁ hb₁, (r.core_inter a' b').subset.trans (Set.inter_subset_inter ha₂ hb₂)⟩
 #align filter.rcomap Filter.rcomap
 
@@ -135,7 +133,7 @@ theorem rcomap_compose (r : Rel α β) (s : Rel β γ) : rcomap r ∘ rcomap s =
 theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter β) :
     Rtendsto r l₁ l₂ ↔ l₁ ≤ l₂.rcomap r := by
   rw [rtendsto_def]
-  change (∀ s : Set β, s ∈ l₂.sets → r.core s ∈ l₁) ↔ l₁ ≤ rcomap r l₂
+  simp_rw [←l₂.mem_sets]
   simp [Filter.le_def, rcomap, Rel.mem_image]; constructor
   · exact fun h s t tl₂ => mem_of_superset (h t tl₂)
   · exact fun h t tl₂ => h _ t tl₂ Set.Subset.rfl
@@ -146,12 +144,11 @@ theorem rtendsto_iff_le_rcomap (r : Rel α β) (l₁ : Filter α) (l₂ : Filter
 -- and only if `s ∈ f'`. But the intersection of two sets satisfying the lhs may be empty.
 /-- One way of taking the inverse map of a filter under a relation. Generalization of `Filter.comap`
 to relations. -/
-def rcomap' (r : Rel α β) (f : Filter β) : Filter α
-    where
+def rcomap' (r : Rel α β) (f : Filter β) : Filter α where
   sets := Rel.image (fun s t => r.preimage s ⊆ t) f.sets
   univ_sets := ⟨Set.univ, univ_mem, Set.subset_univ _⟩
-  sets_of_superset := @fun _ _ ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
-  inter_sets := @fun _ _ ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
+  sets_of_superset := fun ⟨a', ha', ma'a⟩ ab => ⟨a', ha', ma'a.trans ab⟩
+  inter_sets := fun ⟨a', ha₁, ha₂⟩ ⟨b', hb₁, hb₂⟩ =>
     ⟨a' ∩ b', inter_mem ha₁ hb₁,
       (@Rel.preimage_inter _ _ r _ _).trans (Set.inter_subset_inter ha₂ hb₂)⟩
 #align filter.rcomap' Filter.rcomap'
@@ -171,7 +168,8 @@ theorem rcomap'_sets (r : Rel α β) (f : Filter β) :
 theorem rcomap'_rcomap' (r : Rel α β) (s : Rel β γ) (l : Filter γ) :
     rcomap' r (rcomap' s l) = rcomap' (r.comp s) l :=
   Filter.ext fun t => by
-    simp [rcomap'_sets, Rel.image, Rel.preimage_comp]; constructor
+    simp only [mem_rcomap', Rel.preimage_comp]
+    constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩
       exact ⟨v, vsets, (Rel.preimage_mono _ hv).trans h⟩
     rintro ⟨t, tsets, ht⟩

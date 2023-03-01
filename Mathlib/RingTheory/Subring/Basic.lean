@@ -256,12 +256,12 @@ theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R 
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_subsemiring_injective Subring.toSubsemiring_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 #align subring.to_subsemiring_strict_mono Subring.toSubsemiring_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 #align subring.to_subsemiring_mono Subring.toSubsemiring_mono
@@ -270,12 +270,12 @@ theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R 
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_add_subgroup_injective Subring.toAddSubgroup_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 #align subring.to_add_subgroup_strict_mono Subring.toAddSubgroup_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 #align subring.to_add_subgroup_mono Subring.toAddSubgroup_mono
@@ -284,11 +284,11 @@ theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSub
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_submonoid_injective Subring.toSubmonoid_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
 #align subring.to_submonoid_strict_mono Subring.toSubmonoid_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
   toSubmonoid_strictMono.monotone
 #align subring.to_submonoid_mono Subring.toSubmonoid_mono
@@ -502,14 +502,14 @@ theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
 #align subring.coe_subtype Subring.coeSubtype
 
 @[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
-theorem coe_nat_cast : ∀ n : ℕ, ((n : s) : R) = n :=
+theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
   map_natCast s.subtype
-#align subring.coe_nat_cast Subring.coe_nat_cast
+#align subring.coe_nat_cast Subring.coe_natCast
 
 @[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
-theorem coe_int_cast : ∀ n : ℤ, ((n : s) : R) = n :=
+theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
   map_intCast s.subtype
-#align subring.coe_int_cast Subring.coe_int_cast
+#align subring.coe_int_cast Subring.coe_intCast
 
 /-! ## Partial order -/
 
@@ -624,9 +624,7 @@ theorem gc_map_comap (f : R →+* S) : GaloisConnection (map f) (comap f) := fun
 
 /-- A subring is isomorphic to its image under an injective function -/
 noncomputable def equivMapOfInjective (f : R →+* S) (hf : Function.Injective f) : s ≃+* s.map f :=
-  {
-    Equiv.Set.image f s
-      hf with
+  { Equiv.Set.image f s hf with
     map_mul' := fun _ _ => Subtype.ext (f.map_mul _ _)
     map_add' := fun _ _ => Subtype.ext (f.map_add _ _) }
 #align subring.equiv_map_of_injective Subring.equivMapOfInjective
@@ -706,7 +704,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : Subring R) ↔ ∃ n : ℤ, ↑n = x :=
 
 
 /-- The inf of two subrings is their intersection. -/
-instance : HasInf (Subring R) :=
+instance : Inf (Subring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubgroup ⊓ t.toAddSubgroup with carrier := s ∩ t }⟩
 
@@ -758,9 +756,7 @@ theorem infₛ_toAddSubgroup (s : Set (Subring R)) :
 /-- Subrings of a ring form a complete lattice. -/
 instance : CompleteLattice (Subring R) :=
   { completeLatticeOfInf (Subring R) fun _ =>
-      IsGLB.of_image (fun {s t : Subring R} =>
-        show (s : Set R) ≤ t ↔ s ≤ t from SetLike.coe_subset_coe)
-        isGLB_binfᵢ with
+      IsGLB.of_image SetLike.coe_subset_coe isGLB_binfᵢ with
     bot := ⊥
     bot_le := fun s _x hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx
@@ -1045,14 +1041,12 @@ theorem comap_top (f : R →+* S) : (⊤ : Subring S).comap f = ⊤ :=
   (gc_map_comap f).u_top
 #align subring.comap_top Subring.comap_top
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given `Subring`s `s`, `t` of rings `R`, `S` respectively, `s.prod t` is `s ×̂ t`
 as a subring of `R × S`. -/
 def prod (s : Subring R) (t : Subring S) : Subring (R × S) :=
   { s.toSubmonoid.prod t.toSubmonoid, s.toAddSubgroup.prod t.toAddSubgroup with carrier := s ×ˢ t }
 #align subring.prod Subring.prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[norm_cast]
 theorem coe_prod (s : Subring R) (t : Subring S) : (s.prod t : Set (R × S)) = s ×ˢ t :=
   rfl
@@ -1062,7 +1056,7 @@ theorem mem_prod {s : Subring R} {t : Subring S} {p : R × S} : p ∈ s.prod t �
   Iff.rfl
 #align subring.mem_prod Subring.mem_prod
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem prod_mono ⦃s₁ s₂ : Subring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subring S⦄ (ht : t₁ ≤ t₂) :
     s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
@@ -1262,8 +1256,7 @@ variable {s t : Subring R}
 /-- Makes the identity isomorphism from a proof two subrings of a multiplicative
     monoid are equal. -/
 def subringCongr (h : s = t) : s ≃+* t :=
-  {
-    Equiv.setCongr <| congr_arg _ h with
+  { Equiv.setCongr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 #align ring_equiv.subring_congr RingEquiv.subringCongr
@@ -1347,13 +1340,11 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
   · exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
   rw [List.forall_mem_cons] at HL
   rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> cases' HL.1 with hhd hhd
-  ·
-    exact
+  · exact
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inl <| by rw [List.prod_cons, List.prod_cons, HP]⟩
   · exact ⟨L, HL', Or.inr <| by rw [List.prod_cons, hhd, neg_one_mul, HP]⟩
-  ·
-    exact
+  · exact
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inr <| by rw [List.prod_cons, List.prod_cons, HP, neg_mul_eq_mul_neg]⟩
   · exact ⟨L, HL', Or.inl <| by rw [List.prod_cons, hhd, HP, neg_one_mul, neg_neg]⟩
@@ -1365,8 +1356,8 @@ theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) �
 
 end Subring
 
-theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) : (k : R) * g ∈ G :=
-  by
+theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
+    (k : R) * g ∈ G := by
   convert AddSubgroup.zsmul_mem G h k
   simp
 #align add_subgroup.int_mul_mem AddSubgroup.int_mul_mem
@@ -1398,16 +1389,16 @@ theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R
 #align subring.smul_def Subring.smul_def
 
 -- Porting note: Lean can find this instance already
-instance sMulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
+instance smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
     SMulCommClass S α β :=
   inferInstanceAs (SMulCommClass S.toSubsemiring α β)
-#align subring.smul_comm_class_left Subring.sMulCommClass_left
+#align subring.smul_comm_class_left Subring.smulCommClass_left
 
 -- Porting note: Lean can find this instance already
-instance sMulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
+instance smulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
     SMulCommClass α S β :=
   inferInstanceAs (SMulCommClass α S.toSubsemiring β)
-#align subring.smul_comm_class_right Subring.sMulCommClass_right
+#align subring.smul_comm_class_right Subring.smulCommClass_right
 
 -- Porting note: Lean can find this instance already
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
@@ -1472,8 +1463,7 @@ end Actions
 -- both ordered ring structures and submonoids available
 /-- The subgroup of positive units of a linear ordered semiring. -/
 def Units.posSubgroup (R : Type _) [LinearOrderedSemiring R] : Subgroup Rˣ :=
-  { (posSubmonoid R).comap
-      (Units.coeHom R) with
+  { (posSubmonoid R).comap (Units.coeHom R) with
     carrier := { x | (0 : R) < x }
     inv_mem' := Units.inv_pos.mpr }
 #align units.pos_subgroup Units.posSubgroup
