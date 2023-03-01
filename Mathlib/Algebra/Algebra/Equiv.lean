@@ -311,11 +311,11 @@ def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
 #align alg_equiv.symm AlgEquiv.symm
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
+def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
   e.symm
-#align alg_equiv.simps.symm_apply AlgEquiv.Simps.symmApply
+#align alg_equiv.simps.symm_apply AlgEquiv.Simps.symm_apply
 
-initialize_simps_projections AlgEquiv (toEquiv_toFun → apply,toEquiv_invFun → symmApply)
+initialize_simps_projections AlgEquiv (toEquiv_toFun → apply,toEquiv_invFun → symm_apply)
 
 --@[simp] -- Porting note: simp can prove this once symm_mk is introduced
 theorem coe_apply_coe_coe_symm_apply {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) (x : A₂) :
@@ -631,7 +631,7 @@ end OfLinearEquiv
 section OfRingEquiv
 
 /-- Promotes a linear ring_equiv to an AlgEquiv. -/
-@[simps apply symmApply toEquiv] -- Porting note: don't want redundant `toEquiv_symm_apply` simps
+@[simps apply symm_apply toEquiv] -- Porting note: don't want redundant `toEquiv_symm_apply` simps
 def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = algebraMap R A₂ x) :
     A₁ ≃ₐ[R] A₂ :=
   { f with
@@ -794,7 +794,7 @@ variable [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
 
 This is a stronger version of `MulSemiringAction.toRingEquiv` and
 `DistribMulAction.toLinearEquiv`. -/
-@[simps! apply symmApply toEquiv] -- Porting note: don't want redundant simps lemma `toEquiv_symm`
+@[simps! apply symm_apply toEquiv] -- Porting note: don't want redundant simps lemma `toEquiv_symm`
 def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
   { MulSemiringAction.toRingEquiv _ _ g, MulSemiringAction.toAlgHom R A g with }
 #align mul_semiring_action.to_alg_equiv MulSemiringAction.toAlgEquiv
