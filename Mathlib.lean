@@ -244,6 +244,7 @@ import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.GaloisConnection
+import Mathlib.CategoryTheory.Category.Init
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.RelCat
@@ -340,6 +341,7 @@ import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Density
+import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Combinatorics.SimpleGraph.Partition
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
@@ -748,6 +750,7 @@ import Mathlib.Data.Sum.Interval
 import Mathlib.Data.Sum.Order
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeVec
 import Mathlib.Data.TypeVec.Attr
@@ -1108,6 +1111,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
+import Mathlib.Tactic.Continuity.Init
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert

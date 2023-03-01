@@ -4,14 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 
-import Aesop
+import Mathlib.Tactic.Continuity.Init
 
 /-!
 # Continuity
 
 We define the `continuity` tactic using `aesop`. -/
-
-declare_aesop_rule_sets [Continuous]
 
 attribute [aesop (rule_sets [Continuous]) unfold norm] Function.comp
 
