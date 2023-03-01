@@ -120,8 +120,7 @@ variable (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMu
 
 A weaker version of this for non-unital non-associative algebras exists as `LinearMap.mul`. -/
 def NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
-  {
-    mul R A with
+  { mul R A with
     map_mul' := by
       intro a b
       ext c
@@ -166,8 +165,7 @@ the algebra.
 
 A weaker version of this for non-unital algebras exists as `NonUnitalAlgHom.mul`. -/
 def Algebra.lmul : A →ₐ[R] End R A :=
-  {
-    LinearMap.mul R
+  { LinearMap.mul R
       A with
     map_one' := by
       ext a
@@ -195,7 +193,7 @@ theorem Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  -- porting note: can we avoid supplying `R` explicitly in `@mulLeft_apply` below?
+  -- porting note: had to supply `R` explicitly in `@mulLeft_apply` below
   · rw [← mul_one a, ← @mulLeft_apply R _ _ _ _ _ _ a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulLeft_zero_eq_zero
@@ -204,7 +202,7 @@ theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
 @[simp]
 theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  -- porting note: can we avoid supplying `R` explicitly in `@mulRight_apply` below?
+  -- porting note: had to supply `R` explicitly in `@mulRight_apply` below
   · rw [← one_mul a, ← @mulRight_apply R _ _ _ _ _ _ a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulRight_zero_eq_zero
@@ -240,10 +238,10 @@ section Ring
 
 variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
 
-/-- This instance should not be necessary. porting note: can we drop this? -/
+/-- This instance should not be necessary. porting note: drop after lean4#2074 resolved? -/
 local instance : Module R A := Algebra.toModule
 
-/-- This instance should not be necessary. porting note: can we drop this? -/
+/-- This instance should not be necessary. porting note: drop after lean4#2074 resolved? -/
 local instance : Module A A := Semiring.toModule
 
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
