@@ -75,7 +75,7 @@ protected def ringCon (I : Ideal R) : RingCon R :=
 #align ideal.quotient.ring_con Ideal.Quotient.ringCon
 
 instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
-  { @Submodule.Quotient.addCommGroup _ _ (id _) (id _) (id _) I,
+  { Submodule.Quotient.addCommGroup I,
     inferInstanceAs (CommRing (Quotient.ringCon I).Quotient) with }
 #align ideal.quotient.comm_ring Ideal.Quotient.commRing
 
@@ -231,12 +231,8 @@ variable [CommRing S]
 /-- Given a ring homomorphism `f : R →+* S` sending all elements of an ideal to zero,
 lift it to the quotient by this ideal. -/
 def lift (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
-  {
-    QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom
-      H with
+  { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
-    map_zero' := f.map_zero
-    map_add' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_add
     map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
 #align ideal.quotient.lift Ideal.Quotient.lift
 
@@ -336,21 +332,16 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
 #align ideal.module_pi Ideal.modulePi
 
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
-noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) := by
-  refine' ⟨⟨⟨?toFun, _⟩, _⟩, ?invFun, _, _⟩
-  case toFun => exact fun x ↦
-    Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
-      funext (fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i))
-  case invFun =>
-    exact fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
-  · rintro ⟨_⟩ ⟨_⟩; rfl
-  · rintro ⟨_⟩ ⟨_⟩; rfl
-  · rintro ⟨x⟩
-    exact Ideal.Quotient.eq.2 fun i => Ideal.Quotient.eq.1 (Quotient.out_eq' _)
-  · intro x
-    ext i
-    obtain ⟨_, _⟩ := @Quot.exists_rep _ _ (x i)
-    convert Quotient.out_eq' (x i)
+noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
+  toFun x := Quotient.liftOn' x (fun (f : ι → R) (i : ι) => Ideal.Quotient.mk I (f i))
+    fun a b hab => funext fun i => (Submodule.Quotient.eq' _).2
+      (QuotientAddGroup.leftRel_apply.mp hab i)
+  invFun x := Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
+  map_add' := by rintro ⟨_⟩ ⟨_⟩; rfl
+  map_smul' := by rintro ⟨_⟩ ⟨_⟩; rfl
+  left_inv := by rintro ⟨_⟩; exact Ideal.Quotient.eq.2 fun i =>
+    Ideal.Quotient.eq.1 (Quotient.out_eq' _)
+  right_inv f := funext fun i => Quotient.out_eq' (f i)
 #align ideal.pi_quot_equiv Ideal.piQuotEquiv
 
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
@@ -440,8 +431,7 @@ theorem exists_sub_mem [Finite ι] {f : ι → Ideal R} (hf : ∀ i j, i ≠ j �
 /-- The homomorphism from `R/(⋂ i, f i)` to `∏ i, (R / f i)` featured in the Chinese
   Remainder Theorem. It is bijective if the ideals `f i` are comaximal. -/
 def quotientInfToPiQuotient (f : ι → Ideal R) : (R ⧸ ⨅ i, f i) →+* ∀ i, R ⧸ f i :=
-  Quotient.lift (⨅ i, f i) (Pi.ringHom fun i : ι => (Quotient.mk (f i) : _)) fun r hr =>
-    by
+  Quotient.lift (⨅ i, f i) (Pi.ringHom fun i : ι => (Quotient.mk (f i) : _)) fun r hr => by
     rw [Submodule.mem_infᵢ] at hr
     ext i
     exact Quotient.eq_zero_iff_mem.2 (hr i)
