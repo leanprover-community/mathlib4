@@ -135,7 +135,6 @@ def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
     else
       return filterOutImplementationDetails lctx fvarIds
 
-
 /--
 Run a tactic on all goals, and always succeeds.
 

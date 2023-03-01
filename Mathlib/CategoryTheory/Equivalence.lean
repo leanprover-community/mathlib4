@@ -96,7 +96,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
 
 /-- We infix the usual notation for an equivalence -/
 infixr:10 " ≌ " => Equivalence
-
+ 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Equivalence
@@ -175,7 +175,8 @@ theorem counit_app_functor (e : C ≌ D) (X : C) :
   by
   erw [← Iso.hom_comp_eq_id (e.functor.mapIso (e.unitIso.app X)), functor_unit_comp]
   rfl
-#align category_theory.equivalence.counit_app_functor CategoryTheory.Equivalence.counit_app_functor
+#align 
+  category_theory.equivalence.counit_app_functor CategoryTheory.Equivalence.counit_app_functor
 
 /-- The other triangle equality. The proof follows the following proof in Globular:
   http://globular.science/1905.001 -/
