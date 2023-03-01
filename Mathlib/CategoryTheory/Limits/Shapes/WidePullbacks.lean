@@ -39,8 +39,7 @@ namespace CategoryTheory.Limits
 variable (J : Type w)
 
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
-def WidePullbackShape :=
-  Option J 
+def WidePullbackShape := Option J 
 #align category_theory.limits.wide_pullback_shape CategoryTheory.Limits.WidePullbackShape
 
 -- Porting note: strangely this could be synthesized
@@ -48,8 +47,7 @@ instance : Inhabited (WidePullbackShape J) where
   default := none
 
 /-- A wide pushout shape for any type `J` can be written simply as `Option J`. -/
-def WidePushoutShape :=
-  Option J 
+def WidePushoutShape := Option J 
 #align category_theory.limits.wide_pushout_shape CategoryTheory.Limits.WidePushoutShape
 
 instance : Inhabited (WidePushoutShape J) where 
@@ -185,8 +183,7 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
 
 attribute [nolint unusedArguments] instDecidableEqHom
 
-instance struct : CategoryStruct (WidePushoutShape J)
-    where
+instance struct : CategoryStruct (WidePushoutShape J) where
   Hom := Hom
   id j := Hom.id j
   comp f g := by
@@ -320,20 +317,18 @@ variable [HasWidePullback B objs arrows]
 /-- The `j`-th projection from the pullback. -/
 noncomputable abbrev π (j : J) : widePullback _ _ arrows ⟶ objs j :=
   limit.π (WidePullbackShape.wideCospan _ _ _) (Option.some j)
-set_option align.precheck false in
-#align category_theory.limits.wide_pullback.π CategoryTheory.Limits.widePullback.π
+#align category_theory.limits.wide_pullback.π CategoryTheory.Limits.WidePullback.π
+
 
 /-- The unique map to the base from the pullback. -/
 noncomputable abbrev base : widePullback _ _ arrows ⟶ B :=
   limit.π (WidePullbackShape.wideCospan _ _ _) Option.none
-set_option align.precheck false in
-#align category_theory.limits.wide_pullback.base CategoryTheory.Limits.widePullback.base
+#align category_theory.limits.wide_pullback.base CategoryTheory.Limits.WidePullback.base
 
 @[reassoc (attr := simp)]
 theorem π_arrow (j : J) : π arrows j ≫ arrows _ = base arrows := by
   apply limit.w (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.Hom.term j)
-set_option align.precheck false in -- Porting note: it is in the context what is going on?
-#align category_theory.limits.wide_pullback.π_arrow CategoryTheory.Limits.widePullback.π_arrow
+#align category_theory.limits.wide_pullback.π_arrow CategoryTheory.Limits.WidePullback.π_arrow
  
 variable {arrows}
 
@@ -341,8 +336,7 @@ variable {arrows}
 noncomputable abbrev lift {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
     (w : ∀ j, fs j ≫ arrows j = f) : X ⟶ widePullback _ _ arrows :=
   limit.lift (WidePullbackShape.wideCospan _ _ _) (WidePullbackShape.mkCone f fs <| w)
-set_option align.precheck false in
-#align category_theory.limits.wide_pullback.lift CategoryTheory.Limits.widePullback.lift
+#align category_theory.limits.wide_pullback.lift CategoryTheory.Limits.WidePullback.lift
 
 variable (arrows)
 
@@ -352,15 +346,13 @@ variable {X : D} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j �
 @[reassoc]
 theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pullback.lift_π CategoryTheory.Limits.widePullback.lift_π
+#align category_theory.limits.wide_pullback.lift_π CategoryTheory.Limits.WidePullback.lift_π
 
 -- Porting note: simp can prove this so removed simp attribute
 @[reassoc]
 theorem lift_base : lift f fs w ≫ base arrows = f := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pullback.lift_base CategoryTheory.Limits.widePullback.lift_base
+#align category_theory.limits.wide_pullback.lift_base CategoryTheory.Limits.WidePullback.lift_base
 
 theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
     (∀ j : J, g ≫ π arrows j = fs j) → g ≫ base arrows = f → g = lift f fs w := by
@@ -371,16 +363,14 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   rintro (_ | _)
   · apply h2
   · apply h1
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pullback.eq_lift_of_comp_eq CategoryTheory.Limits.widePullback.eq_lift_of_comp_eq
+#align category_theory.limits.wide_pullback.eq_lift_of_comp_eq CategoryTheory.Limits.WidePullback.eq_lift_of_comp_eq
 
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by aesop_cat) := by
   apply eq_lift_of_comp_eq
   aesop_cat
   rfl  -- Porting note: quite a few missing refl's in aesop_cat now
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.widePullback.hom_eq_lift
+#align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.WidePullback.hom_eq_lift
 
 @[ext]
 theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) :
@@ -391,8 +381,7 @@ theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) :
   rintro (_ | _)
   · apply h2
   · apply h1
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pullback.hom_ext CategoryTheory.Limits.widePullback.hom_ext
+#align category_theory.limits.wide_pullback.hom_ext CategoryTheory.Limits.WidePullback.hom_ext
 
 end WidePullback
 
@@ -405,20 +394,17 @@ variable [HasWidePushout B objs arrows]
 /-- The `j`-th inclusion to the pushout. -/
 noncomputable abbrev ι (j : J) : objs j ⟶ widePushout _ _ arrows :=
   colimit.ι (WidePushoutShape.wideSpan _ _ _) (Option.some j)
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.ι CategoryTheory.Limits.widePushout.ι
+#align category_theory.limits.wide_pushout.ι CategoryTheory.Limits.WidePushout.ι
 
 /-- The unique map from the head to the pushout. -/
 noncomputable abbrev head : B ⟶ widePushout B objs arrows :=
   colimit.ι (WidePushoutShape.wideSpan _ _ _) Option.none
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.head CategoryTheory.Limits.widePushout.head
+#align category_theory.limits.wide_pushout.head CategoryTheory.Limits.WidePushout.head
 
 @[reassoc (attr := simp)]
 theorem arrow_ι (j : J) : arrows j ≫ ι arrows j = head arrows := by
   apply colimit.w (WidePushoutShape.wideSpan _ _ _) (WidePushoutShape.Hom.init j)
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.arrow_ι CategoryTheory.Limits.widePushout.arrow_ι
+#align category_theory.limits.wide_pushout.arrow_ι CategoryTheory.Limits.WidePushout.arrow_ι
 
 -- Porting note: this can simplify itself
 attribute [nolint simpNF] WidePushout.arrow_ι WidePushout.arrow_ι_assoc 
@@ -429,8 +415,7 @@ variable {arrows}
 noncomputable abbrev desc {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
     (w : ∀ j, arrows j ≫ fs j = f) : widePushout _ _ arrows ⟶ X :=
   colimit.desc (WidePushoutShape.wideSpan B objs arrows) (WidePushoutShape.mkCocone f fs <| w)
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.desc CategoryTheory.Limits.widePushout.desc
+#align category_theory.limits.wide_pushout.desc CategoryTheory.Limits.WidePushout.desc
 
 variable (arrows)
 
@@ -440,15 +425,13 @@ variable {X : D} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows
 @[reassoc]
 theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.ι_desc CategoryTheory.Limits.widePushout.ι_desc
+#align category_theory.limits.wide_pushout.ι_desc CategoryTheory.Limits.WidePushout.ι_desc
 
 -- Porting note: simp can prove this so removed simp attribute
 @[reassoc]
 theorem head_desc : head arrows ≫ desc f fs w = f := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.head_desc CategoryTheory.Limits.widePushout.head_desc
+#align category_theory.limits.wide_pushout.head_desc CategoryTheory.Limits.WidePushout.head_desc
 
 theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
     (∀ j : J, ι arrows j ≫ g = fs j) → head arrows ≫ g = f → g = desc f fs w := by
@@ -459,8 +442,7 @@ theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
   rintro (_ | _)
   · apply h2
   · apply h1
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.eq_desc_of_comp_eq CategoryTheory.Limits.widePushout.eq_desc_of_comp_eq
+#align category_theory.limits.wide_pushout.eq_desc_of_comp_eq CategoryTheory.Limits.WidePushout.eq_desc_of_comp_eq
 
 theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
     g =
@@ -471,8 +453,7 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
   apply eq_desc_of_comp_eq
   aesop_cat
   rfl -- Porting note: another missing rfl 
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.widePushout.hom_eq_desc
+#align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.WidePushout.hom_eq_desc
 
 @[ext]
 theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) :
@@ -483,8 +464,7 @@ theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) :
   rintro (_ | _)
   · apply h2
   · apply h1
-set_option align.precheck false in -- Porting note: again 
-#align category_theory.limits.wide_pushout.hom_ext CategoryTheory.Limits.widePushout.hom_ext
+#align category_theory.limits.wide_pushout.hom_ext CategoryTheory.Limits.WidePushout.hom_ext
 
 end WidePushout
 
@@ -501,8 +481,7 @@ def widePullbackShapeOpMap :
 
 /-- The obvious functor `WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ` -/
 @[simps]
-def widePullbackShapeOp : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ
-    where
+def widePullbackShapeOp : WidePullbackShape J ⥤ (WidePushoutShape J)ᵒᵖ where
   obj X := op X
   map {X₁} {X₂} := widePullbackShapeOpMap J X₁ X₂ 
 #align category_theory.limits.wide_pullback_shape_op CategoryTheory.Limits.widePullbackShapeOp
@@ -518,8 +497,7 @@ def widePushoutShapeOpMap :
 
 /-- The obvious functor `WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ` -/
 @[simps]
-def widePushoutShapeOp : WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ
-    where
+def widePushoutShapeOp : WidePushoutShape J ⥤ (WidePullbackShape J)ᵒᵖ where
   obj X := op X
   map := fun {X} {Y} => widePushoutShapeOpMap J X Y 
 #align category_theory.limits.wide_pushout_shape_op CategoryTheory.Limits.widePushoutShapeOp
@@ -562,8 +540,7 @@ def widePullbackShapeUnopOp : widePullbackShapeOp J ⋙ widePushoutShapeUnop J �
 
 /-- The duality equivalence `(WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 @[simps]
-def widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J
-    where
+def widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J where
   functor := widePushoutShapeUnop J
   inverse := widePullbackShapeOp J
   unitIso := (widePushoutShapeOpUnop J).symm
@@ -572,8 +549,7 @@ def widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J
 
 /-- The duality equivalence `(WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 @[simps]
-def widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J
-    where
+def widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J where
   functor := widePullbackShapeUnop J
   inverse := widePushoutShapeOp J
   unitIso := (widePullbackShapeOpUnop J).symm
