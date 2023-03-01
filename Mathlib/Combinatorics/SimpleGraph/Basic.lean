@@ -606,6 +606,8 @@ structure Dart extends V × V where
   deriving DecidableEq
 #align simple_graph.dart SimpleGraph.Dart
 
+initialize_simps_projections Dart (+toProd, -fst, -snd)
+
 section Darts
 
 variable {G}

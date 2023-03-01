@@ -912,8 +912,8 @@ end CompleteLattice
 
 section Mul
 
--- porting note: todo: restore @[mono]
 -- porting note: todo: generalize to `WithTop`
+@[mono]
 theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
   rcases lt_iff_exists_nnreal_btwn.1 ac with ⟨a', aa', a'c⟩
   lift a to ℝ≥0 using ne_top_of_lt aa'

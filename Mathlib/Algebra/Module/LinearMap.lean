@@ -266,7 +266,7 @@ protected def Simps.apply {R S : Type _} [Semiring R] [Semiring S] (σ : R →+*
   f
 #align linear_map.simps.apply LinearMap.Simps.apply
 
-initialize_simps_projections LinearMap (toAddHom_toFun → apply)
+initialize_simps_projections LinearMap (toFun → apply)
 
 @[simp]
 theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
