@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.complete_lattice
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
+! leanprover-community/mathlib commit 5709b0d8725255e76f47debca6400c07b5c2d8e6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
