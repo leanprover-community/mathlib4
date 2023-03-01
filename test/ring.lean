@@ -1,3 +1,4 @@
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
 -- We deliberately mock R here so that we don't have to import the deps
@@ -60,28 +61,22 @@ end Rat
 
 example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
 
--- example (x y z : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
---   x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y :=
--- begin
---   field_simp,
---   ring
--- end
+example (x y : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
+    x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y := by
+  field_simp
+  ring
 
--- example (a b c d x y : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
---   a + b / x - c / x^2 + d / x^3 = a + x⁻¹ * (y * b / y + (d / x - c) / x) :=
--- begin
---   field_simp,
---   ring
--- end
+example (a b c d x y : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
+    a + b / x - c / x^2 + d / x^3 = a + x⁻¹ * (y * b / y + (d / x - c) / x) := by
+  field_simp
+  ring
 
 example : (876544 : ℤ) * -1 + (1000000 - 123456) = 0 := by ring
 
--- example (x y : ℝ) (hx : x ≠ 0) (hy : y ≠ 0) :
---   2 * x ^ 3 * 2 / (24 * x) = x ^ 2 / 6 :=
--- begin
---   field_simp,
---   ring
--- end
+example (x : ℝ) (hx : x ≠ 0) :
+    2 * x ^ 3 * 2 / (24 * x) = x ^ 2 / 6 := by
+  field_simp
+  ring
 
 -- this proof style is not recommended practice
 example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by ring_nf at H ⊢; exact H

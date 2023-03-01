@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.big_operators.basic
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -332,13 +332,11 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 #align finset.prod_map Finset.prod_map
 #align finset.sum_map Finset.sum_map
 
-@[congr, to_additive]
+@[to_additive (attr := congr)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
   rw [h]; exact fold_congr
 #align finset.prod_congr Finset.prod_congr
 #align finset.sum_congr Finset.sum_congr
-
-attribute [congr] Finset.sum_congr
 
 @[to_additive]
 theorem prod_disjUnion (h) :
@@ -1411,12 +1409,12 @@ theorem prod_const (b : β) : (∏ _x in s, b) = b ^ s.card :=
 #align finset.prod_const Finset.prod_const
 #align finset.sum_const Finset.sum_const
 
-@[to_additive nsmul_eq_sum_const]
+@[to_additive]
 theorem pow_eq_prod_const (b : β) : ∀ n, b ^ n = ∏ _k in range n, b := by simp
 #align finset.pow_eq_prod_const Finset.pow_eq_prod_const
 #align finset.nsmul_eq_sum_const Finset.nsmul_eq_sum_const
 
-@[to_additive sum_nsmul]
+@[to_additive]
 theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : (∏ x in s, f x ^ n) = (∏ x in s, f x) ^ n :=
   Multiset.prod_map_pow
 #align finset.prod_pow Finset.prod_pow

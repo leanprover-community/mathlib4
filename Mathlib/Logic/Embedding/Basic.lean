@@ -164,7 +164,7 @@ theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort _} (e : α ≃ β
 #align function.embedding.equiv_symm_to_embedding_trans_to_embedding Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
 
 /-- Transfer an embedding along a pair of equivalences. -/
-@[simps (config := { fullyApplied := false, simpRhs := true })]
+@[simps! (config := { fullyApplied := false, simpRhs := true })]
 protected def congr {α : Sort u} {β : Sort v} {γ : Sort w} {δ : Sort x} (e₁ : α ≃ β) (e₂ : γ ≃ δ)
     (f : α ↪ γ) : β ↪ δ :=
   (Equiv.toEmbedding e₁.symm).trans (f.trans e₂.toEmbedding)
@@ -395,7 +395,7 @@ open Function Embedding
 
 /-- Given an equivalence to a subtype, produce an embedding to the elements of the corresponding
 set. -/
-@[simps]
+@[simps!]
 def asEmbedding {p : β → Prop} (e : α ≃ Subtype p) : α ↪ β :=
   e.toEmbedding.trans (subtype p)
 #align equiv.as_embedding Equiv.asEmbedding

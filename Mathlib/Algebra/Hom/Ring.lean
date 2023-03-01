@@ -142,7 +142,7 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
 def Simps.apply {α β : Type _} [NonUnitalNonAssocSemiring α]
   [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) : α → β := f
 
-initialize_simps_projections NonUnitalRingHom (toMulHom_toFun → apply, -toMulHom)
+initialize_simps_projections NonUnitalRingHom (toFun → apply)
 
 @[simp]
 theorem coe_toMulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
@@ -155,9 +155,7 @@ theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
   rfl
 #align non_unital_ring_hom.coe_mul_hom_mk NonUnitalRingHom.coe_mulHom_mk
 
-@[simp]
-theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ↑(f.toMulHom) = ↑f :=
-  rfl
+theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f := rfl
 #align non_unital_ring_hom.coe_to_add_monoid_hom NonUnitalRingHom.coe_toAddMonoidHom
 
 @[simp]
@@ -394,6 +392,12 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
   MonoidWithZeroHomClass F α β
 #align ring_hom_class RingHomClass
 
+set_option linter.deprecated false in
+/-- Ring homomorphisms preserve `bit1`. -/
+@[simp] lemma map_bit1 [NonAssocSemiring α] [NonAssocSemiring β] [RingHomClass F α β]
+    (f : F) (a : α) : (f (bit1 a) : β) = bit1 (f a) := by simp [bit1]
+#align map_bit1 map_bit1
+
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
@@ -448,7 +452,7 @@ instance : RingHomClass (α →+* β) α β where
 /-- See Note [custom simps projection] -/
 def Simps.apply {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β] (f : α →+* β) : α → β := f
 
-initialize_simps_projections RingHom (toMonoidHom_toOneHom_toFun → apply, -toMonoidHom)
+initialize_simps_projections RingHom (toFun → apply)
 
 -- Porting note: is this lemma still needed in Lean4?
 -- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
@@ -460,7 +464,7 @@ theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
 #align ring_hom.to_fun_eq_coe RingHom.toFun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α → β) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) = f :=
+theorem coe_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α → β) = f :=
   rfl
 #align ring_hom.coe_mk RingHom.coe_mk
 
@@ -490,8 +494,7 @@ theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : 
 #align ring_hom.to_monoid_with_zero_hom_eq_coe RingHom.toMonoidWithZeroHom_eq_coe
 
 @[simp]
-theorem coe_monoidHom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
-    ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) : α →* β) = ⟨⟨f, h₁⟩, h₂⟩ :=
+theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
 #align ring_hom.coe_monoid_hom_mk RingHom.coe_monoidHom_mk
 

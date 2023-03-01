@@ -124,7 +124,8 @@ which adds the `CategoryTheory` rule set,
 and allows `aesop` look through semireducible definitions when calling `intros`. -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [CategoryTheory]))
+    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false }) 
+    (rule_sets [CategoryTheory]))
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
@@ -174,8 +175,7 @@ section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
-initialize_simps_projections Category (toCategoryStruct_toQuiver_Hom → Hom,
-  toCategoryStruct_comp → comp, toCategoryStruct_id → id, -toCategoryStruct)
+initialize_simps_projections Category
 
 /-- postcompose an equation between morphisms by another morphism -/
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]

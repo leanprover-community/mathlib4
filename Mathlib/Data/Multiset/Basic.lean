@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.basic
-! leanprover-community/mathlib commit ccad6d5093bd2f5c6ca621fc74674cce51355af6
+! leanprover-community/mathlib commit f3187269ad18e82a809428a42d6282ce81e4ebcc
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -330,7 +330,7 @@ theorem cons_zero (a : α) : a ::ₘ 0 = {a} :=
   rfl
 #align multiset.cons_zero Multiset.cons_zero
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_singleton (a : α) : ([a] : Multiset α) = {a} :=
   rfl
 #align multiset.coe_singleton Multiset.coe_singleton
@@ -352,6 +352,11 @@ theorem singleton_inj {a b : α} : ({a} : Multiset α) = {b} ↔ a = b :=
   simp_rw [← cons_zero]
   exact cons_inj_left _
 #align multiset.singleton_inj Multiset.singleton_inj
+
+@[simp, norm_cast]
+theorem coe_eq_singleton {l : List α} {a : α} : (l : Multiset α) = {a} ↔ l = [a] := by
+  rw [← coe_singleton, coe_eq_coe, List.perm_singleton]
+#align multiset.coe_eq_singleton Multiset.coe_eq_singleton
 
 @[simp]
 theorem singleton_eq_cons_iff {a b : α} (m : Multiset α) : {a} = b ::ₘ m ↔ a = b ∧ m = 0 :=
@@ -476,6 +481,16 @@ theorem toList_zero : (Multiset.toList 0 : List α) = [] :=
 theorem mem_toList {a : α} {s : Multiset α} : a ∈ s.toList ↔ a ∈ s := by
   rw [← mem_coe, coe_toList]
 #align multiset.mem_to_list Multiset.mem_toList
+
+@[simp]
+theorem toList_eq_singleton_iff {a : α} {m : Multiset α} : m.toList = [a] ↔ m = {a} := by
+  rw [← perm_singleton, ← coe_eq_coe, coe_toList, coe_singleton]
+#align multiset.to_list_eq_singleton_iff Multiset.toList_eq_singleton_iff
+
+@[simp]
+theorem toList_singleton (a : α) : ({a} : Multiset α).toList = [a] :=
+  Multiset.toList_eq_singleton_iff.2 rfl
+#align multiset.to_list_singleton Multiset.toList_singleton
 
 end ToList
 
@@ -754,7 +769,7 @@ theorem card_le_of_le {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
 #align multiset.card_le_of_le Multiset.card_le_of_le
 
--- @[mono] -- Porting note: unknown attribute
+@[mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_of_le
 #align multiset.card_mono Multiset.card_mono
 
@@ -891,7 +906,7 @@ theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a
   congr_arg _ <| List.replicate_add ..
 #align multiset.replicate_add Multiset.replicate_add
 
-/-- `Multiset.replicate` as an `addMonoidHom`. -/
+/-- `Multiset.replicate` as an `AddMonoidHom`. -/
 @[simps]
 def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
   toFun := fun n => replicate n a
@@ -2619,7 +2634,7 @@ theorem map_le_map_iff {f : α → β} (hf : Function.Injective f) {s t : Multis
 
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a multiset to its
 image under `f`. -/
-@[simps]
+@[simps!]
 def mapEmbedding (f : α ↪ β) : Multiset α ↪o Multiset β :=
   OrderEmbedding.ofMapLeIff (map f) fun _ _ => map_le_map_iff f.inj'
 #align multiset.map_embedding Multiset.mapEmbedding

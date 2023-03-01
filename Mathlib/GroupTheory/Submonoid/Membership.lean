@@ -459,7 +459,7 @@ theorem powers_one : powers (1 : M) = ⊥ :=
 #align submonoid.powers_one Submonoid.powers_one
 
 /-- Exponentiation map from natural numbers to powers. -/
-@[simps]
+@[simps!]
 def pow (n : M) (m : ℕ) : powers n :=
   (powersHom M n).mrangeRestrict (Multiplicative.ofAdd m)
 #align submonoid.pow Submonoid.pow
@@ -616,7 +616,7 @@ def multiples (x : A) : AddSubmonoid A :=
     Set.ext fun n => exists_congr fun i => by simp
 #align add_submonoid.multiples AddSubmonoid.multiples
 
-attribute [to_additive multiples] Submonoid.powers
+attribute [to_additive existing multiples] Submonoid.powers
 
 attribute [to_additive (attr := simp) mem_multiples] Submonoid.mem_powers
 #align add_submonoid.mem_multiples AddSubmonoid.mem_multiples

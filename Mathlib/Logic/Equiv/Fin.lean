@@ -73,7 +73,7 @@ theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
 /-- A product space `α × β` is equivalent to the space `Π i : Fin 2, γ i`, where
 `γ = Fin.cons α (Fin.cons β finZeroElim)`. See also `piFinTwoEquiv` and
 `finTwoArrowEquiv`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i :=
   (piFinTwoEquiv (Fin.cons α (Fin.cons β finZeroElim))).symm
 #align prod_equiv_pi_fin_two prodEquivPiFinTwo
@@ -309,7 +309,7 @@ def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type u) [∀ i, LE (α i)]
 #align order_iso.pi_fin_succ_above_iso OrderIso.piFinSuccAboveIso
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
   Equiv.piFinSuccAboveEquiv (fun _ => β) 0
 #align equiv.pi_fin_succ Equiv.piFinSucc
@@ -465,7 +465,6 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
     where
   toFun x :=
     ⟨x.2 + n * x.1,
-      show _ ≤ _ from -- lean4#2073
       calc
         x.2.1 + n * x.1.1 + 1 = x.1.1 * n + x.2.1 + 1 := by ac_rfl
         _ ≤ x.1.1 * n + n := Nat.add_le_add_left x.2.2 _

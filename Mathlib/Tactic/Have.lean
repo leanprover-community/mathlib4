@@ -43,7 +43,10 @@ def haveLetCore (goal : MVarId) (name : Option Syntax) (bis : Array Syntax)
     let (goal1, t, p) ← elabBinders fun es ↦ do
       let t ← match t with
       | none => mkFreshTypeMVar
-      | some t => Tactic.elabTerm.go t none
+      | some stx => withRef stx do
+          let e ← Term.elabTerm stx none
+          Term.synthesizeSyntheticMVars false
+          instantiateMVars e
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
     let (fvar, goal2) ← (← declFn goal n t p).intro1P

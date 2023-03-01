@@ -3,7 +3,7 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 ! This file was ported from Lean 3 source module algebra.order.field.basic
-! leanprover-community/mathlib commit f835503164c75764d4165d9e630bf27694d73ec6
+! leanprover-community/mathlib commit 5a82b0671532663333e205f422124a98bdfe673f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -27,7 +27,7 @@ section LinearOrderedSemifield
 variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
 /-- `Equiv.mulLeft₀` as an order_iso. -/
-@[simps (config := { simpRhs := true })]
+@[simps! (config := { simpRhs := true })]
 def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
 #align order_iso.mul_left₀ OrderIso.mulLeft₀
@@ -35,7 +35,7 @@ def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
 #align order_iso.mul_left₀_apply OrderIso.mulLeft₀_apply
 
 /-- `Equiv.mulRight₀` as an order_iso. -/
-@[simps (config := { simpRhs := true })]
+@[simps! (config := { simpRhs := true })]
 def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
 #align order_iso.mul_right₀ OrderIso.mulRight₀
@@ -234,6 +234,13 @@ theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * 
   rwa [div_le_iff hb']
 #align div_le_of_nonneg_of_le_mul div_le_of_nonneg_of_le_mul
 
+/-- One direction of `div_le_iff` where `c` is allowed to be `0` (but `b` must be nonnegative) -/
+lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b := by
+  obtain rfl | hc := hc.eq_or_lt
+  . simpa using hb
+  . rwa [le_div_iff hc] at h
+#align mul_le_of_nonneg_of_le_div mul_le_of_nonneg_of_le_div
+
 theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
   div_le_of_nonneg_of_le_mul hb zero_le_one <| by rwa [one_mul]
 #align div_le_one_of_le div_le_one_of_le
@@ -334,7 +341,7 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
 -/
 
 
---@[mono] -- Porting note: restore mono attribute
+@[mono]
 theorem div_le_div_of_le (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 hc)
@@ -379,7 +386,7 @@ theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤
   rw [le_div_iff d0, div_mul_eq_mul_div, div_le_iff b0]
 #align div_le_div_iff div_le_div_iff
 
--- @[mono] -- Porting note: restore mono attribute
+@[mono]
 theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc
