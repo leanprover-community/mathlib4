@@ -93,6 +93,10 @@ structure LaxMonoidalFunctor extends C ⥤ D where
     by aesop_cat
 #align category_theory.lax_monoidal_functor CategoryTheory.LaxMonoidalFunctor
 
+-- Porting note: todo: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
+initialize_simps_projections LaxMonoidalFunctor (+toFunctor, -obj, -map)
+
 --Porting note: was `[simp, reassoc.1]`
 attribute [reassoc (attr := simp)] LaxMonoidalFunctor.μ_natural
 
@@ -146,6 +150,8 @@ structure MonoidalFunctor extends LaxMonoidalFunctor.{v₁, v₂} C D where
   ε_isIso : IsIso ε := by infer_instance
   μ_isIso : ∀ X Y : C, IsIso (μ X Y) := by infer_instance
 #align category_theory.monoidal_functor CategoryTheory.MonoidalFunctor
+
+initialize_simps_projections MonoidalFunctor (+toLaxMonoidalFunctor, -obj, -map, -ε, -μ)
 
 attribute [instance] MonoidalFunctor.ε_isIso MonoidalFunctor.μ_isIso
 

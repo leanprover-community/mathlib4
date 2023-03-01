@@ -179,6 +179,8 @@ structure Concept extends Set α × Set β where
   closure_snd : extentClosure r snd = fst
 #align concept Concept
 
+initialize_simps_projections Concept (+toProd, -fst, -snd)
+
 namespace Concept
 
 variable {r α β} {c d : Concept α β r}

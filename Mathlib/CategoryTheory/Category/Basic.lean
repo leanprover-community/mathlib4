@@ -175,8 +175,7 @@ section
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
-initialize_simps_projections Category (toCategoryStruct_toQuiver_Hom → Hom,
-  toCategoryStruct_comp → comp, toCategoryStruct_id → id, -toCategoryStruct)
+initialize_simps_projections Category
 
 /-- postcompose an equation between morphisms by another morphism -/
 theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h := by rw [w]
