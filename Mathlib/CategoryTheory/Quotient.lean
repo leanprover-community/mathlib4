@@ -43,8 +43,11 @@ variable {C : Type _} [Category C] (r : HomRel C)
 /-- A `hom_rel` is a congruence when it's an equivalence on every hom-set, and it can be composed
 from left and right. -/
 class Congruence : Prop where
+  /-- `r` is an equivalence on every hom-set. -/
   IsEquiv : ∀ {X Y}, IsEquiv _ (@r X Y)
+  /-- Precomposition with an arrow respects `r`. -/
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
+  /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 #align category_theory.congruence CategoryTheory.Congruence
 
@@ -53,6 +56,7 @@ attribute [instance] Congruence.IsEquiv
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
 structure Quotient (r : HomRel C) where
+  /-- The object of `C`. -/
   as : C
 #align category_theory.quotient CategoryTheory.Quotient
 
@@ -104,10 +108,14 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
   rfl
 #align category_theory.quotient.comp_mk CategoryTheory.Quotient.comp_mk
 
+-- porting note: Had to manually add the proofs of `comp_id` `id_comp` and `assoc`
 instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
   comp := @comp _ _ r
+  comp_id f := Quot.inductionOn f $ by simp
+  id_comp f := Quot.inductionOn f $ by simp
+  assoc f g h := Quot.inductionOn f $ Quot.inductionOn g $ Quot.inductionOn h $ by simp
 #align category_theory.quotient.category CategoryTheory.Quotient.category
 
 /-- The functor from a category to its quotient. -/
@@ -126,7 +134,8 @@ instance : EssSurj (functor r)
             rfl)⟩⟩
 
 protected theorem induction {P : ∀ {a b : Quotient r}, (a ⟶ b) → Prop}
-    (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) : ∀ {a b : Quotient r} (f : a ⟶ b), P f :=
+    (h : ∀ {x y : C} (f : x ⟶ y), P ((functor r).map f)) :
+    ∀ {a b : Quotient r} (f : a ⟶ b), P f :=
   by
   rintro ⟨x⟩ ⟨y⟩ ⟨f⟩
   exact h f
@@ -137,7 +146,7 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
   simpa using Quot.sound (CompClosure.intro (𝟙 a) f₁ f₂ (𝟙 b) h)
 #align category_theory.quotient.sound CategoryTheory.Quotient.sound
 
-theorem functor_map_eq_iff [Congruence r] {X Y : C} (f f' : X ⟶ Y) :
+theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     (functor r).map f = (functor r).map f' ↔ r f f' :=
   by
   constructor
@@ -148,7 +157,8 @@ theorem functor_map_eq_iff [Congruence r] {X Y : C} (f f' : X ⟶ Y) :
       apply Congruence.compLeft
       apply Congruence.compRight
       assumption
-    · apply refl
+    · haveI := (h.IsEquiv : IsEquiv _ (@r X Y)) -- porting note: had to add this line for `refl`
+      apply refl
     · apply symm
       assumption
     · apply _root_.trans <;> assumption
@@ -188,18 +198,15 @@ theorem lift_spec : functor r ⋙ lift r F H = F :=
 theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H :=
   by
   subst_vars
-  apply Functor.hext
+  fapply Functor.hext
   · rintro X
     dsimp [lift, Functor]
     congr
-    ext
-    rfl
-  · rintro X Y f
+  · rintro _ _ f
     dsimp [lift, Functor]
-    apply Quot.inductionOn f
-    rintro ff
-    simp only [Quot.liftOn_mk, functor.comp_map]
-    congr <;> ext <;> rfl
+    refine Quot.inductionOn f (fun _ => ?_) -- porting note: this line was originally an `apply`
+    simp only [Quot.liftOn_mk, Functor.comp_map]
+    congr
 #align category_theory.quotient.lift_unique CategoryTheory.Quotient.lift_unique
 
 /-- The original functor factors through the induced functor. -/
