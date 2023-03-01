@@ -711,8 +711,7 @@ theorem floor_zero : ⌊(0 : α)⌋ = 0 := by rw [← cast_zero, floor_intCast]
 theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_intCast]
 #align int.floor_one Int.floor_one
 
--- Porting note: the `mono` tactic is not implemented yet
--- @[mono]
+@[mono]
 theorem floor_mono : Monotone (floor : α → ℤ) :=
   gc_coe_floor.monotone_u
 #align int.floor_mono Int.floor_mono
