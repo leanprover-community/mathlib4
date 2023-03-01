@@ -43,9 +43,6 @@ open BigOperators
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
 variable {S : Type v}
 
--- Porting note: we need η for TC
-set_option synthInstance.etaExperiment true
-
 -- Note that at present `ideal` means a left-ideal,
 -- so this quotient is only useful in a commutative ring.
 -- We should develop quotients by two-sided ideals as well.
@@ -58,7 +55,6 @@ This definition is marked `reducible` so that typeclass instances can be shared 
 @[reducible]
 instance : HasQuotient R (Ideal R) :=
   Submodule.hasQuotient
-
 namespace Quotient
 
 variable {I} {x y : R}
@@ -70,14 +66,12 @@ instance hasOne (I : Ideal R) : One (R ⧸ I) :=
 /-- On `ideal`s, `submodule.quotient_rel` is a ring congruence. -/
 protected def ringCon (I : Ideal R) : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
-    mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ =>
-      by
+    mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
       rw [Submodule.quotientRel_r_def] at h₁ h₂⊢
       have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
       have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
         rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
-      rw [← this] at F
-      convert F }
+      rwa [← this] at F }
 #align ideal.quotient.ring_con Ideal.Quotient.ringCon
 
 instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
@@ -190,7 +184,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   refine' ⟨mk _ b, Quot.sound _⟩
   --quot.sound hb
   rw [← eq_sub_iff_add_eq'] at abc
-  rw [abc, ← neg_mem_iff, neg_sub] at hc
+  rw [abc, ← I.neg_mem_iff, neg_sub] at hc
   rw [Submodule.quotientRel_r_def]
   convert hc
 #align ideal.quotient.exists_inv Ideal.Quotient.exists_inv
@@ -223,9 +217,6 @@ theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal
     rw [← zero_add (1 : R), ← sub_self (x * y), sub_add]
     refine' J.sub_mem (J.mul_mem_right _ hxJ) (hIJ (Ideal.Quotient.eq.1 hy))
 #align ideal.quotient.maximal_of_is_field Ideal.Quotient.maximal_of_isField
-
--- -- Porting note: we need η for TC
--- set_option synthInstance.etaExperiment false
 
 /-- The quotient of a ring by an ideal is a field iff the ideal is maximal. -/
 theorem maximal_ideal_iff_isField_quotient (I : Ideal R) : I.IsMaximal ↔ IsField (R ⧸ I) :=
@@ -344,14 +335,12 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     congr with i; exact zero_mul (a i)
 #align ideal.module_pi Ideal.modulePi
 
-set_option synthInstance.etaExperiment false in -- Porting note: needed, otherwise type times out
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
 noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) := by
   refine' ⟨⟨⟨?toFun, _⟩, _⟩, ?invFun, _, _⟩
-  case toFun => set_option synthInstance.etaExperiment true in -- Porting note: to get `Module R R`
-    exact fun x ↦
-      Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
-        funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
+  case toFun => exact fun x ↦
+    Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
+      funext (fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i))
   case invFun =>
     exact fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
   · rintro ⟨_⟩ ⟨_⟩; rfl

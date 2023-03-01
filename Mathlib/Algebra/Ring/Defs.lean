@@ -320,7 +320,6 @@ end HasDistribNeg
 ### Rings
 -/
 
-
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
@@ -336,7 +335,7 @@ class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemir
     AddGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (R : Type u) extends AddCommGroup R, Semiring R, AddGroupWithOne R
 #align ring Ring
 
 section NonUnitalNonAssocRing
