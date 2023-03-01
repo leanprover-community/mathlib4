@@ -61,7 +61,7 @@ Without this, we would have `Prefunctor.obj F.toPrefunctor X`.
 @[app_unexpander Prefunctor.obj] def
   unexpandFunctorObj : Lean.PrettyPrinter.Unexpander
   | `($_ $(F).toPrefunctor $X)  => set_option hygiene false in `($(F).obj $X)
-  | _           => throw ()
+  | _                           => throw ()
 
 /--
 This unexpander will pretty print `F.map f` properly.
@@ -70,7 +70,7 @@ Without this, we would have `Prefunctor.map F.toPrefunctor f`.
 @[app_unexpander Prefunctor.map] def
   unexpandFunctorMap : Lean.PrettyPrinter.Unexpander
   | `($_ $(F).toPrefunctor $X)  => set_option hygiene false in `($(F).map $X)
-  | _           => throw ()
+  | _                           => throw ()
 
 end
 
