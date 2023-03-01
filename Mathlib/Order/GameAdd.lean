@@ -58,7 +58,7 @@ theorem gameAdd_iff {rα rβ} {x y : α × β} :
     exacts[Or.inl ⟨h, rfl⟩, Or.inr ⟨h, rfl⟩]
   · revert x y
     rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (⟨h, rfl : b₁ = b₂⟩ | ⟨h, rfl : a₁ = a₂⟩)
-    exacts[game_add.fst h, game_add.snd h]
+    exacts[GameAdd.fst h, GameAdd.snd h]
 #align prod.game_add_iff Prod.gameAdd_iff
 
 theorem gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
@@ -67,8 +67,8 @@ theorem gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
 #align prod.game_add_mk_iff Prod.gameAdd_mk_iff
 
 @[simp]
-theorem gameAdd_swap_swap : ∀ a b : α × β, GameAdd rβ rα a.symm b.symm ↔ GameAdd rα rβ a b :=
-  fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ => by rw [Prod.swap, game_add_mk_iff, game_add_mk_iff, or_comm']
+theorem gameAdd_swap_swap : ∀ a b : α × β, GameAdd rβ rα a.swap b.swap ↔ GameAdd rα rβ a b :=
+  fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ => by rw [Prod.swap, Prod.swap, gameAdd_mk_iff, gameAdd_mk_iff, or_comm]
 #align prod.game_add_swap_swap Prod.gameAdd_swap_swap
 
 theorem gameAdd_swap_swap_mk (a₁ a₂ : α) (b₁ b₂ : β) :
@@ -151,14 +151,13 @@ def GameAdd (rα : α → α → Prop) : Sym2 α → Sym2 α → Prop :=
     ⟨fun a₁ b₁ a₂ b₂ => Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂),
       fun a₁ b₁ a₂ b₂ =>
       by
+      dsimp
       rw [Prod.gameAdd_swap_swap_mk _ _ b₁ b₂ a₁ a₂, Prod.gameAdd_swap_swap_mk _ _ a₁ b₂ b₁ a₂]
-      simp [or_comm']⟩
+      simp [or_comm]⟩
 #align sym2.game_add Sym2.GameAdd
 
-variable {rα}
-
 theorem gameAdd_iff :
-    ∀ {x y : α × α}, GameAdd rα ⟦x⟧ ⟦y⟧ ↔ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.symm y :=
+    ∀ {x y : α × α}, GameAdd rα ⟦x⟧ ⟦y⟧ ↔ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y :=
   by
   rintro ⟨_, _⟩ ⟨_, _⟩
   rfl
@@ -170,7 +169,7 @@ theorem gameAdd_mk'_iff {a₁ a₂ b₁ b₂ : α} :
   Iff.rfl
 #align sym2.game_add_mk_iff Sym2.gameAdd_mk'_iff
 
-theorem Prod.GameAdd.to_sym2 {a₁ a₂ b₁ b₂ : α} (h : Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂)) :
+theorem _root_.Prod.GameAdd.to_sym2 {a₁ a₂ b₁ b₂ : α} (h : Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂)) :
     Sym2.GameAdd rα ⟦(a₁, b₁)⟧ ⟦(a₂, b₂)⟧ :=
   gameAdd_mk'_iff.2 <| Or.inl <| h
 #align prod.game_add.to_sym2 Prod.GameAdd.to_sym2
@@ -186,23 +185,25 @@ theorem GameAdd.snd {a b₁ b₂ : α} (h : rα b₁ b₂) : GameAdd rα ⟦(a, 
 theorem GameAdd.fst_snd {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα ⟦(a₁, b)⟧ ⟦(b, a₂)⟧ :=
   by
   rw [Sym2.eq_swap]
-  exact game_add.snd h
+  exact GameAdd.snd h
 #align sym2.game_add.fst_snd Sym2.GameAdd.fst_snd
 
 theorem GameAdd.snd_fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα ⟦(b, a₁)⟧ ⟦(a₂, b)⟧ :=
   by
   rw [Sym2.eq_swap]
-  exact game_add.fst h
+  exact GameAdd.fst h
 #align sym2.game_add.snd_fst Sym2.GameAdd.snd_fst
 
 end Sym2
 
 theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) : Acc (Sym2.GameAdd rα) ⟦(a, b)⟧ :=
   by
-  induction' ha with a ha iha generalizing b
+  induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
   refine' Acc.intro _ fun s => _
   induction' s using Sym2.inductionOn with c d
+  rw [Sym2.GameAdd]
+  dsimp
   rintro ((rc | rd) | (rd | rc))
   · exact iha c rc ⟨b, hb⟩
   · exact ihb d rd
@@ -220,7 +221,7 @@ theorem WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameA
 namespace Sym2
 
 /-- Recursion on the well-founded `sym2.game_add` relation. -/
-def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
+noncomputable def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
     C a b :=
   @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ hr.sym2_gameAdd.of_quotient_lift₂
@@ -229,7 +230,7 @@ def GameAdd.fix {C : α → α → Sort _} (hr : WellFounded rα)
 
 theorem GameAdd.fix_eq {C : α → α → Sort _} (hr : WellFounded rα)
     (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα ⟦(a₂, b₂)⟧ ⟦(a₁, b₁)⟧ → C a₂ b₂) → C a₁ b₁) (a b : α) :
-    GameAdd.fix hr IH a b = IH a b fun a' b' h => GameAdd.fix hr IH a' b' :=
+    GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' :=
   WellFounded.fix_eq _ _ _
 #align sym2.game_add.fix_eq Sym2.GameAdd.fix_eq
 
