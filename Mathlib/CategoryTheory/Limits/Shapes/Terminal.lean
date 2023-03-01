@@ -31,10 +31,12 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 
--- attribute [local dee] tactic.discrete_cases -- Porting note: no dee
+-- attribute [local tidy] tactic.discrete_cases -- Porting note: no tidy
 open Lean Elab Meta Tactic in 
--- Porting note: trying a macro 
-/-- A local tactic replacing the use of discrete cases in Lean 3 -/
+/- Porting note: adding a lightweight macro intended to serve the narrow use case of casing on 
+`Discrete PEmpty`. -/
+/-- A local tactic replacing the use of discrete cases on `PEmpty` in Lean 3.
+`dee` is short for `discrete_empty_elim`. -/
 elab (name := discrete_empty_elim) "dee" : tactic => withMainContext do
   evalTactic (← `(tactic| iterate (try {constructor}; try {intro ⟨a⟩; cases a} <;> intro )))
 
@@ -44,9 +46,7 @@ def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
   { pt := X
     π := 
     { app := by dee
-      naturality := by dee
-    }
-  }
+      naturality := by dee } }
 #align category_theory.limits.as_empty_cone CategoryTheory.Limits.asEmptyCone
 
 /-- Construct a cocone for the empty diagram given an object. -/
