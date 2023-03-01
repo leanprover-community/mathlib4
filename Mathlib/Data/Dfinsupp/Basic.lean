@@ -2014,7 +2014,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ 
 #align dfinsupp.sum_add_hom_comm Dfinsupp.sumAddHom_comm
 
 /-- The `Dfinsupp` version of `Finsupp.liftAddHom`,-/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i →+ γ) ≃+ ((Π₀ i, β i) →+ γ)
     where
   toFun := sumAddHom
@@ -2035,7 +2035,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 #align dfinsupp.lift_add_hom_apply Dfinsupp.liftAddHom_apply
-#align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symmApply
+#align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symm_apply
 
 -- Porting note: The elaborator is struggling with `liftAddHom`. Passing it `β` explicitly helps.
 -- This applies to roughly the remainder of the file.
@@ -2063,7 +2063,7 @@ theorem comp_liftAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoi
     g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
   (liftAddHom (β := β)).symm_apply_eq.1 <|
     funext fun a => by
-      rw [liftAddHom_symmApply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
+      rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 #align dfinsupp.comp_lift_add_hom Dfinsupp.comp_liftAddHom
 
 @[simp]
