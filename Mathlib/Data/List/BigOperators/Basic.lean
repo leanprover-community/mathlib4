@@ -8,6 +8,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.List.Forall2
 
 /-!
@@ -586,7 +587,7 @@ theorem prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R
     exact mul_pos (h _ <| mem_cons_self _ _) (ih fun a ha => h a <| mem_cons_of_mem _ ha)
 #align list.prod_pos List.prod_pos
 
-/-- A variant of `list.prod_pos` for `canonically_ordered_comm_semiring`. -/
+/-- A variant of `List.prod_pos` for `CanonicallyOrderedCommSemiring`. -/
 @[simp]
 theorem _root_.CanonicallyOrderedCommSemiring.list_prod_pos {α : Type _}
     [CanonicallyOrderedCommSemiring α]
@@ -599,19 +600,15 @@ theorem _root_.CanonicallyOrderedCommSemiring.list_prod_pos {α : Type _}
       CanonicallyOrderedCommSemiring.list_prod_pos]
 #align canonically_ordered_comm_semiring.list_prod_pos CanonicallyOrderedCommSemiring.list_prod_pos
 
-
 /-!
 Several lemmas about sum/head/tail for `List ℕ`.
 These are hard to generalize well, as they rely on the fact that `default ℕ = 0`.
 If desired, we could add a class stating that `default = 0`.
 -/
 
-
 /-- This relies on `default ℕ = 0`. -/
 theorem headI_add_tail_sum (L : List ℕ) : L.headI + L.tail.sum = L.sum := by
-  cases L
-  · simp
-  · simp
+  cases L <;> simp
 #align list.head_add_tail_sum List.headI_add_tail_sum
 
 /-- This relies on `default ℕ = 0`. -/
@@ -621,7 +618,7 @@ theorem headI_le_sum (L : List ℕ) : L.headI ≤ L.sum :=
 
 /-- This relies on `default ℕ = 0`. -/
 theorem tail_sum (L : List ℕ) : L.tail.sum = L.sum - L.headI := by
-  rw [← headI_add_tail_sum L, add_comm, add_tsub_cancel_right]
+  rw [← headI_add_tail_sum L, add_comm, @add_tsub_cancel_right]
 #align list.tail_sum List.tail_sum
 
 section Alternating
@@ -677,6 +674,22 @@ theorem alternatingProd_cons (a : α) (l : List α) :
 #align list.alternating_sum_cons List.alternatingSum_cons
 
 end Alternating
+
+lemma sum_nat_mod (l : List ℕ) (n : ℕ) : l.sum % n = (l.map (· % n)).sum % n := by
+  induction l <;> simp [Nat.add_mod, *]
+#align list.sum_nat_mod List.sum_nat_mod
+
+lemma prod_nat_mod (l : List ℕ) (n : ℕ) : l.prod % n = (l.map (· % n)).prod % n := by
+  induction l <;> simp [Nat.mul_mod, *]
+#align list.prod_nat_mod List.prod_nat_mod
+
+lemma sum_int_mod (l : List ℤ) (n : ℤ) : l.sum % n = (l.map (· % n)).sum % n := by
+  induction l <;> simp [Int.add_emod, *]
+#align list.sum_int_mod List.sum_int_mod
+
+lemma prod_int_mod (l : List ℤ) (n : ℤ) : l.prod % n = (l.map (· % n)).prod % n := by
+  induction l <;> simp [Int.mul_emod, *]
+#align list.prod_int_mod List.prod_int_mod
 
 end List
 
