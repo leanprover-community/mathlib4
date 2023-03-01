@@ -18,22 +18,22 @@ This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.
 
 ## Main definitions
 
-* `simple_graph.is_acyclic` is a predicate for a graph having no cyclic walks
-* `simple_graph.is_tree` is a predicate for a graph being a tree (a connected acyclic graph)
+* `SimpleGraph.IsAcyclic` is a predicate for a graph having no cyclic walks
+* `SimpleGraph.IsTree` is a predicate for a graph being a tree (a connected acyclic graph)
 
 ## Main statements
 
-* `simple_graph.is_acyclic_iff_path_unique` characterizes acyclicity in terms of uniqueness of
+* `SimpleGraph.isAcyclic_iff_path_unique` characterizes acyclicity in terms of uniqueness of
   paths between pairs of vertices.
-* `simple_graph.is_acyclic_iff_forall_edge_is_bridge` characterizes acyclicity in terms of every
+* `SimpleGraph.isAcyclic_iff_forall_edge_isBridge` characterizes acyclicity in terms of every
   edge being a bridge edge.
-* `simple_graph.is_tree_iff_exists_unique_path` characterizes trees in terms of existence and
+* `SimpleGraph.isTree_iff_existsUnique_path` characterizes trees in terms of existence and
   uniqueness of paths between pairs of vertices from a nonempty vertex type.
 
 ## References
 
-The structure of the proofs for `simple_graph.is_acyclic` and `simple_graph.is_tree`, including
-supporting lemmas about `simple_graph.is_bridge`, generally follows the high-level description
+The structure of the proofs for `SimpleGraph.IsAcyclic` and `SimpleGraph.IsTree`, including
+supporting lemmas about `SimpleGraph.IsBridge`, generally follows the high-level description
 for these theorems for multigraphs from [Chou1994].
 
 ## Tags
