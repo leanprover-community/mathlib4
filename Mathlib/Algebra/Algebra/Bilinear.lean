@@ -8,10 +8,10 @@ Authors: Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Algebra.Hom.Iterate
-import Mathbin.Algebra.Hom.NonUnitalAlg
-import Mathbin.LinearAlgebra.TensorProduct
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.LinearAlgebra.TensorProduct
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -138,22 +138,19 @@ theorem NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R 
   rfl
 #align non_unital_alg_hom.coe_lmul_eq_mul NonUnitalAlgHom.coe_lmul_eq_mul
 
-theorem commute_mulLeft_right (a b : A) : Commute (mulLeft R a) (mulRight R b) :=
-  by
+theorem commute_mulLeft_right (a b : A) : Commute (mulLeft R a) (mulRight R b) := by
   ext c
   exact (mul_assoc a c b).symm
 #align linear_map.commute_mul_left_right LinearMap.commute_mulLeft_right
 
 @[simp]
-theorem mulLeft_mul (a b : A) : mulLeft R (a * b) = (mulLeft R a).comp (mulLeft R b) :=
-  by
+theorem mulLeft_mul (a b : A) : mulLeft R (a * b) = (mulLeft R a).comp (mulLeft R b) := by
   ext
   simp only [mul_left_apply, comp_apply, mul_assoc]
 #align linear_map.mul_left_mul LinearMap.mulLeft_mul
 
 @[simp]
-theorem mulRight_mul (a b : A) : mulRight R (a * b) = (mulRight R b).comp (mulRight R a) :=
-  by
+theorem mulRight_mul (a b : A) : mulRight R (a * b) = (mulRight R b).comp (mulRight R a) := by
   ext
   simp only [mul_right_apply, comp_apply, mul_assoc]
 #align linear_map.mul_right_mul LinearMap.mulRight_mul
@@ -196,8 +193,7 @@ theorem Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
 #align algebra.coe_lmul_eq_mul Algebra.coe_lmul_eq_mul
 
 @[simp]
-theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 :=
-  by
+theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
   constructor <;> intro h
   · rw [← mul_one a, ← mul_left_apply a 1, h, LinearMap.zero_apply]
   · rw [h]
@@ -205,8 +201,7 @@ theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 :=
 #align linear_map.mul_left_eq_zero_iff LinearMap.mulLeft_eq_zero_iff
 
 @[simp]
-theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 :=
-  by
+theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
   constructor <;> intro h
   · rw [← one_mul a, ← mul_right_apply a 1, h, LinearMap.zero_apply]
   · rw [h]
@@ -214,15 +209,13 @@ theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 :=
 #align linear_map.mul_right_eq_zero_iff LinearMap.mulRight_eq_zero_iff
 
 @[simp]
-theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id :=
-  by
+theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := by
   ext
   simp only [LinearMap.id_coe, one_mul, id.def, mul_left_apply]
 #align linear_map.mul_left_one LinearMap.mulLeft_one
 
 @[simp]
-theorem mulRight_one : mulRight R (1 : A) = LinearMap.id :=
-  by
+theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := by
   ext
   simp only [LinearMap.id_coe, mul_one, id.def, mul_right_apply]
 #align linear_map.mul_right_one LinearMap.mulRight_one
@@ -233,8 +226,7 @@ theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) := b
 #align linear_map.pow_mul_left LinearMap.pow_mulLeft
 
 @[simp]
-theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) :=
-  by
+theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) := by
   simp only [mul_right, ← Algebra.coe_lmul_eq_mul]
   exact
     LinearMap.coe_injective (((mul_right R a).val_pow_eq_pow_val n).symm ▸ mul_right_iterate a n)
@@ -247,23 +239,20 @@ section Ring
 variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
 
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulLeft R x) :=
-  by
+    Function.Injective (mulLeft R x) := by
   letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
   letI := NoZeroDivisors.to_isDomain A
   exact mul_right_injective₀ hx
 #align linear_map.mul_left_injective LinearMap.mulLeft_injective
 
 theorem mulRight_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulRight R x) :=
-  by
+    Function.Injective (mulRight R x) := by
   letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
   letI := NoZeroDivisors.to_isDomain A
   exact mul_left_injective₀ hx
 #align linear_map.mul_right_injective LinearMap.mulRight_injective
 
-theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) :=
-  by
+theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) := by
   letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
   letI := NoZeroDivisors.to_isDomain A
   exact mul_right_injective₀ hx
@@ -272,4 +261,3 @@ theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injec
 end Ring
 
 end LinearMap
-
