@@ -231,7 +231,7 @@ theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) := b
 theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) := by
   simp only [mulRight, ← Algebra.coe_lmul_eq_mul]
   exact
-    LinearMap.coe_injective (((mulRight R a).val_pow_eq_pow_val n).symm ▸ mul_right_iterate a n)
+    LinearMap.coe_injective (((mulRight R a).coe_pow n).symm ▸ mul_right_iterate a n)
 #align linear_map.pow_mul_right LinearMap.pow_mulRight
 
 end Semiring
