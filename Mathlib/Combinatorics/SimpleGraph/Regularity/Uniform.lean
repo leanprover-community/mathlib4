@@ -194,8 +194,8 @@ theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) :
   · rw [if_pos lt, if_neg (asymm lt)]
     exact G.nonuniformWitnesses_spec h₂
   · cases h₁ rfl
-  · rw [if_neg (asymm GT.gt), if_pos GT.gt, edge_density_comm, edge_density_comm _ s]
-    apply G.nonuniform_witnesses_spec fun i => h₂ i.symm
+  · rw [if_neg (asymm gt), if_pos gt, edgeDensity_comm, edgeDensity_comm _ s]
+    apply G.nonuniformWitnesses_spec fun i => h₂ i.symm
 #align simple_graph.nonuniform_witness_spec SimpleGraph.nonuniformWitness_spec
 
 end SimpleGraph
