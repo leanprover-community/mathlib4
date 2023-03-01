@@ -221,7 +221,7 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
   /-- A proof that the original expression is equal to the normalized result. -/
   proof : Q($e = $expr)
 
-instance {α : Q(Type u)} {E : Q($α) → Type} [Inhabited (Σ e, E e)] : Inhabited (Result E e) :=
+instance [Inhabited (Σ e, E e)] : Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
 variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) [CommSemiring R]

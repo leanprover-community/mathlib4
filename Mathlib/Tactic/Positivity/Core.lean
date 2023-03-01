@@ -103,22 +103,22 @@ initialize registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
 }
 
-lemma lt_of_le_of_ne' {A : Type u} [PartialOrder A] {a b : A} :
-    a ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
+lemma lt_of_le_of_ne' [PartialOrder A] :
+    (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat {A : Type u} [StrictOrderedSemiring A] {e : A} {n : ℕ}
-    (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < e := by
+lemma pos_of_isNat [StrictOrderedSemiring A]
+    (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Nat.cast_pos.2
   simpa using w
 
-lemma nonneg_of_isNat {A : Type u} [OrderedSemiring A] {e : A} {n : ℕ}
-    (h : NormNum.IsNat e n) : 0 ≤ e := by
+lemma nonneg_of_isNat [OrderedSemiring A]
+    (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg n
 
-lemma nz_of_isNegNat {A : Type u} [StrictOrderedRing A] {e : A} {n : ℕ}
-    (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : e ≠ 0 := by
+lemma nz_of_isNegNat [StrictOrderedRing A]
+    (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   simp only [ne_eq, neg_eq_zero]
   apply ne_of_gt
