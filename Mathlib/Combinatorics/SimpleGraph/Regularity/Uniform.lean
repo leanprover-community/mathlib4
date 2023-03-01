@@ -53,12 +53,8 @@ variable (G : SimpleGraph α) [DecidableRel G.Adj] (ε : 𝕜) {s t : Finset α}
 to the density of any big enough pair of subsets. Intuitively, the edges between them are
 random-like. -/
 def IsUniform (s t : Finset α) : Prop :=
-  ∀ ⦃s'⦄,
-    s' ⊆ s →
-      ∀ ⦃t'⦄,
-        t' ⊆ t →
-          (s.card : 𝕜) * ε ≤ s'.card →
-            (t.card : 𝕜) * ε ≤ t'.card → |(G.edgeDensity s' t' : 𝕜) - (G.edgeDensity s t : 𝕜)| < ε
+  ∀ ⦃s'⦄, s' ⊆ s → ∀ ⦃t'⦄, t' ⊆ t → (s.card : 𝕜) * ε ≤ s'.card →
+    (t.card : 𝕜) * ε ≤ t'.card → |(G.edgeDensity s' t' : 𝕜) - (G.edgeDensity s t : 𝕜)| < ε
 #align simple_graph.is_uniform SimpleGraph.IsUniform
 
 variable {G ε}
@@ -107,13 +103,8 @@ theorem isUniform_one : G.IsUniform (1 : 𝕜) s t := by
 variable {G}
 
 theorem not_isUniform_iff :
-    ¬G.IsUniform ε s t ↔
-      ∃ s',
-        s' ⊆ s ∧
-          ∃ t',
-            t' ⊆ t ∧
-              ↑s.card * ε ≤ s'.card ∧
-                ↑t.card * ε ≤ t'.card ∧ ε ≤ |G.edgeDensity s' t' - G.edgeDensity s t| := by
+    ¬G.IsUniform ε s t ↔ ∃ s', s' ⊆ s ∧ ∃ t', t' ⊆ t ∧ ↑s.card * ε ≤ s'.card ∧
+      ↑t.card * ε ≤ t'.card ∧ ε ≤ |G.edgeDensity s' t' - G.edgeDensity s t| := by
   unfold IsUniform
   simp only [not_forall, not_lt, exists_prop, exists_and_left, Rat.cast_abs, Rat.cast_sub]
 #align simple_graph.not_is_uniform_iff SimpleGraph.not_isUniform_iff
