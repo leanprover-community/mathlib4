@@ -217,24 +217,6 @@ noncomputable def reprF : yoneda.obj F.reprX ⟶ F :=
   Representable.has_representation.choose_spec.choose
 #align category_theory.functor.repr_f CategoryTheory.Functor.reprF
 
-/- warning: category_theory.functor.repr_x clashes with
-\  category_theory.functor.repr_X -> CategoryTheory.Functor.reprX
-warning: category_theory.functor.repr_x -> CategoryTheory.Functor.reprX is a
-dubious translation: lean 3 declaration is forall {C : Type.{u2}} [_inst_1 :
-CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2,
-succ u1} (Opposite.{succ u2} C) (CategoryTheory.Category.opposite.{u1, u2} C
-_inst_1) Type.{u1} CategoryTheory.types.{u1}) [_inst_2 :
-CategoryTheory.Functor.Representable.{u1, u2} C _inst_1 F],
-CategoryTheory.Functor.obj.{u1, u1, u2, succ u1} (Opposite.{succ u2} C)
-(CategoryTheory.Category.opposite.{u1, u2} C _inst_1) Type.{u1}
-CategoryTheory.types.{u1} F (Opposite.op.{succ u2} C
-(CategoryTheory.Functor.reprX.{u1, u2} C _inst_1 F _inst_2)) but is expected to
-have type forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C]
-(F : CategoryTheory.Functor.{u1, u1, u2, succ u1} (Opposite.{succ u2} C)
-(CategoryTheory.Category.opposite.{u1, u2} C _inst_1) Type.{u1}
-CategoryTheory.types.{u1}) [_inst_2 : CategoryTheory.Functor.Representable.{u1,
-u2} C _inst_1 F], C Case conversion may be inaccurate. Consider using '#align
-category_theory.functor.repr_x CategoryTheory.Functor.reprXₓ'. -/
 /-- The representing element for the representable functor `F`, sometimes called the universal
 element of the functor.
 -/
@@ -284,21 +266,6 @@ noncomputable def coreprF : coyoneda.obj (op F.coreprX) ⟶ F :=
   Corepresentable.has_corepresentation.choose_spec.choose
 #align category_theory.functor.corepr_f CategoryTheory.Functor.coreprF
 
-/- warning: category_theory.functor.corepr_x clashes with
-\  category_theory.functor.corepr_X -> CategoryTheory.Functor.coreprX
-warning: category_theory.functor.corepr_x -> CategoryTheory.Functor.coreprX is
-a dubious translation: lean 3 declaration is forall {C : Type.{u2}} [_inst_1 :
-CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2,
-succ u1} C _inst_1 Type.{u1} CategoryTheory.types.{u1}) [_inst_2 :
-CategoryTheory.Functor.Corepresentable.{u1, u2} C _inst_1 F],
-CategoryTheory.Functor.obj.{u1, u1, u2, succ u1} C _inst_1 Type.{u1}
-CategoryTheory.types.{u1} F (CategoryTheory.Functor.coreprX.{u1, u2} C _inst_1
-F _inst_2) but is expected to have type forall {C : Type.{u2}} [_inst_1 :
-CategoryTheory.Category.{u1, u2} C] (F : CategoryTheory.Functor.{u1, u1, u2,
-succ u1} C _inst_1 Type.{u1} CategoryTheory.types.{u1}) [_inst_2 :
-CategoryTheory.Functor.Corepresentable.{u1, u2} C _inst_1 F], C Case conversion
-may be inaccurate. Consider using '#align category_theory.functor.corepr_x
-CategoryTheory.Functor.coreprXₓ'. -/
 /-- The representing element for the corepresentable functor `F`, sometimes called the universal
 element of the functor.
 -/

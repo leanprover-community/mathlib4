@@ -174,13 +174,13 @@ def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
   ⟦⟨α, r, wo⟩⟧
 #align ordinal.type Ordinal.type
 
-instance hasZero : Zero Ordinal :=
+instance zero : Zero Ordinal :=
   ⟨type <| @EmptyRelation PEmpty⟩
 
 instance inhabited : Inhabited Ordinal :=
   ⟨0⟩
 
-instance hasOne : One Ordinal :=
+instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
 /-- The order type of an element inside a well order. For the embedding as a principal segment, see
@@ -885,13 +885,12 @@ the addition, together with properties of the other operations, are proved in
 
 /-- `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
   every element of `o₁` is smaller than every element of `o₂`. -/
-instance hasAdd : Add Ordinal.{u} :=
+instance add : Add Ordinal.{u} :=
   ⟨fun o₁ o₂ =>
     Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
       fun _ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.sumLexCongr f g⟩⟩
 
-instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u}
-    where
+instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   add := (· + ·)
   zero := 0
   one := 1

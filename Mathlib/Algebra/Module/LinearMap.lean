@@ -266,7 +266,7 @@ protected def Simps.apply {R S : Type _} [Semiring R] [Semiring S] (σ : R →+*
   f
 #align linear_map.simps.apply LinearMap.Simps.apply
 
-initialize_simps_projections LinearMap (toAddHom_toFun → apply)
+initialize_simps_projections LinearMap (toFun → apply)
 
 @[simp]
 theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
@@ -556,8 +556,6 @@ This is useful when Lean is struggling to infer the `RingHomCompTriple` instance
 infixr:80 " ∘ₗ " =>
   @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     RingHomCompTriple.ids
-
-include σ₁₃
 
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl

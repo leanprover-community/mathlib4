@@ -249,7 +249,7 @@ def Simps.symmApply (e : R ≃+* S) : S → R :=
   e.symm
 #align ring_equiv.simps.symm_apply RingEquiv.Simps.symmApply
 
-initialize_simps_projections RingEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
+initialize_simps_projections RingEquiv (toFun → apply, invFun → symmApply)
 
 @[simp]
 theorem invFun_eq_symm (f : R ≃+* S) : EquivLike.inv f = f.symm :=

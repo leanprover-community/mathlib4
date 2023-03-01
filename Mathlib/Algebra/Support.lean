@@ -42,7 +42,7 @@ def support [Zero A] (f : α → A) : Set α :=
 #align function.support Function.support
 
 /-- `mulSupport` of a function is the set of points `x` such that `f x ≠ 1`. -/
-@[to_additive]
+@[to_additive existing]
 def mulSupport (f : α → M) : Set α :=
   { x | f x ≠ 1 }
 #align function.mul_support Function.mulSupport
