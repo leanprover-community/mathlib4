@@ -111,8 +111,11 @@ def atMostOneFixedPointEquivSumDerangements {α: Type u} [DecidableEq α] (a : �
     _ ≃ Sum (Derangements ({a}ᶜ : Set α)) (Derangements α) := by
       {
         -- porting note: on Lean 3 side, the type hole is `(fun (x: α) => x ∈ ({a}ᶜ : Set α))`
+        -- but plugging this is causes Lean to complain about `DecidablePred`
+        let p := (fun (x: α) => x ∈ ({a}ᶜ : Set α))
+        have h : DecidablePred p := sorry
         refine' Equiv.sumCongr
-          ((Derangements.subtypeEquiv _).trans <| subtypeEquivRight fun x => _).symm
+          ((Derangements.subtypeEquiv p).trans <| subtypeEquivRight fun x => _).symm
           (subtypeEquivRight fun f => mem_Derangements_iff_fixedPoints_eq_empty.symm)
         rw [eq_comm, Set.ext_iff]
         simp_rw [Set.mem_compl_iff, Classical.not_not]
