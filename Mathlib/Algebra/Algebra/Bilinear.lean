@@ -195,7 +195,8 @@ theorem Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  · rw [← mul_one a, ← mulLeft_apply a (1 : ℕ), h, LinearMap.zero_apply]
+  -- porting note: can we avoid supplying `R` explicitly in `@mulLeft_apply` below?
+  · rw [← mul_one a, ← @mulLeft_apply R _ _ _ _ _ _ a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulLeft_zero_eq_zero
 #align linear_map.mul_left_eq_zero_iff LinearMap.mulLeft_eq_zero_iff
@@ -203,7 +204,8 @@ theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
 @[simp]
 theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  · rw [← one_mul a, ← mulRight_apply a 1, h, LinearMap.zero_apply]
+  -- porting note: can we avoid supplying `R` explicitly in `@mulRight_apply` below?
+  · rw [← one_mul a, ← @mulRight_apply R _ _ _ _ _ _ a 1, h, LinearMap.zero_apply]
   · rw [h]
     exact mulRight_zero_eq_zero
 #align linear_map.mul_right_eq_zero_iff LinearMap.mulRight_eq_zero_iff
