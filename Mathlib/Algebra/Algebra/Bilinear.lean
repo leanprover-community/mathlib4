@@ -16,9 +16,9 @@ import Mathlib.LinearAlgebra.TensorProduct
 /-!
 # Facts about algebras involving bilinear maps and tensor products
 
-We move a few basic statements about algebras out of `algebra.algebra.basic`,
-in order to avoid importing `linear_algebra.bilinear_map` and
-`linear_algebra.tensor_product` unnecessarily.
+We move a few basic statements about algebras out of `Algebra.Algebra.Basic`,
+in order to avoid importing `LinearAlgebra.BilinearMap` and
+`LinearAlgebra.TensorProduct` unnecessarily.
 -/
 
 
@@ -35,7 +35,7 @@ variable (R A : Type _) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R
 
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
 
-A weaker version of this for semirings exists as `add_monoid_hom.mul`. -/
+A weaker version of this for semirings exists as `AddMonoidHom.mul`. -/
 def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 #align linear_map.mul LinearMap.mul
@@ -118,7 +118,7 @@ variable (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMu
 
 /-- The multiplication in a non-unital algebra is a bilinear map.
 
-A weaker version of this for non-unital non-associative algebras exists as `linear_map.mul`. -/
+A weaker version of this for non-unital non-associative algebras exists as `LinearMap.mul`. -/
 def NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
   {
     mul R A with
@@ -164,7 +164,7 @@ variable (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A]
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
 
-A weaker version of this for non-unital algebras exists as `non_unital_alg_hom.mul`. -/
+A weaker version of this for non-unital algebras exists as `NonUnitalAlgHom.mul`. -/
 def Algebra.lmul : A →ₐ[R] End R A :=
   {
     LinearMap.mul R
@@ -241,8 +241,8 @@ section Ring
 variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
 
 -- porting note: find out how to remove these instances, they should not be necessary.
-local instance : Module R A := @Algebra.toModule R A _ _ _
-local instance : SMulCommClass R A A :=
+local instance foo : Module R A := @Algebra.toModule R A _ _ _
+local instance bar : SMulCommClass R A A :=
 @IsScalarTower.to_sMulCommClass R _ A _ _ A _ Semiring.toModule _ _
 
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
