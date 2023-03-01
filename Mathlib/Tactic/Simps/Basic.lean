@@ -41,18 +41,7 @@ There are three attributes being defined here
 ## Unimplemented Features
 
 * Correct interaction with heterogenous operations like `HAdd` and `HMul`
-<<<<<<< HEAD
-* structure-Eta-reducing subexpressions
-  * still useful, since we don't want to recurse into something like `{fst := x.fst, snd := x.snd}`
-    obtained by `{ x with ... }`
-||||||| merged common ancestors
-* structure-Eta-reducing subexpressions
-  * still useful, since we don't want to recurse into something like `{fst := x.fst, snd := x.snd}`
-    obtained by `{ x with ... }`
 * Adding custom simp-attributes / other attributes
-=======
-* Adding custom simp-attributes / other attributes
->>>>>>> origin/master
 
 ### Improvements
 * If multiple declarations are generated from a `simps` without explicit projection names, then
