@@ -192,14 +192,16 @@ namespace SubgroupClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of a `add_group` inherits an inverse."]
-instance inv : Inv H :=
+instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
+  [SubgroupClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 #align subgroup_class.has_inv SubgroupClass.inv
 #align add_subgroup_class.has_neg AddSubgroupClass.neg
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `add_group` inherits a subtraction."]
-instance div : Div H :=
+instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
+  [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 #align subgroup_class.has_div SubgroupClass.div
 #align add_subgroup_class.has_sub AddSubgroupClass.sub
@@ -211,7 +213,7 @@ instance _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
 #align add_subgroup_class.has_zsmul AddSubgroupClass.zsmul
 
 /-- A subgroup of a group inherits an integer power. -/
-@[to_additive]
+@[to_additive existing]
 instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
   ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 #align subgroup_class.has_zpow SubgroupClass.zpow
@@ -437,9 +439,9 @@ def Simps.coe (S : Subgroup G) : Set G :=
 #align subgroup.simps.coe Subgroup.Simps.coe
 #align add_subgroup.simps.coe AddSubgroup.Simps.coe
 
-initialize_simps_projections Subgroup (toSubmonoid_toSubsemigroup_carrier → coe)
+initialize_simps_projections Subgroup (carrier → coe)
 
-initialize_simps_projections AddSubgroup (toAddSubmonoid_toAddSubsemigroup_carrier → coe)
+initialize_simps_projections AddSubgroup (carrier → coe)
 
 @[to_additive (attr := simp)]
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=
@@ -469,27 +471,17 @@ theorem toSubmonoid_eq {p q : Subgroup G} : p.toSubmonoid = q.toSubmonoid ↔ p 
 #align subgroup.to_submonoid_eq Subgroup.toSubmonoid_eq
 #align add_subgroup.to_add_submonoid_eq AddSubgroup.toAddSubmonoid_eq
 
--- Porting note: Unknown attribute mono
---@[to_additive, mono]
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submonoid G) := fun _ _ =>
   id
 #align subgroup.to_submonoid_strict_mono Subgroup.toSubmonoid_strictMono
 #align add_subgroup.to_add_submonoid_strict_mono AddSubgroup.toAddSubmonoid_strictMono
 
--- Porting note: Unknown attribute mono
--- attribute [mono] AddSubgroup.to_add_submonoid_strictMono
-
--- Porting note: Unknown attribute mono
---@[to_additive, mono]
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :=
   toSubmonoid_strictMono.monotone
 #align subgroup.to_submonoid_mono Subgroup.toSubmonoid_mono
 #align add_subgroup.to_add_submonoid_mono AddSubgroup.toAddSubmonoid_mono
-
--- Porting note: Unknown attribute mono
--- attribute [mono] AddSubgroup.to_add_submonoid_mono
 
 @[to_additive (attr := simp)]
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=
@@ -700,7 +692,7 @@ instance _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul �
 #align add_subgroup.has_nsmul AddSubgroup.nsmul
 
 /-- A subgroup of a group inherits a natural power -/
-@[to_additive]
+@[to_additive existing]
 protected instance npow : Pow H ℕ :=
   ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
 #align subgroup.has_npow Subgroup.npow
@@ -711,7 +703,7 @@ instance _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul �
 #align add_subgroup.has_zsmul AddSubgroup.zsmul
 
 /-- A subgroup of a group inherits an integer power -/
-@[to_additive]
+@[to_additive existing]
 instance zpow : Pow H ℤ :=
   ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
 #align subgroup.has_zpow Subgroup.zpow
@@ -978,7 +970,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive "The inf of two `add_subgroups`s is their intersection."]
-instance : HasInf (Subgroup G) :=
+instance : Inf (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
       inv_mem' := fun ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩

@@ -58,19 +58,19 @@ See <https://stacks.math.columbia.edu/tag/002E>.
   -/
 -- Porting note: removed @[nolint has_nonempty_instance]
 structure IsLimit (t : Cone F) where
-  /-- There is a morphism from any cone vertex to `t.X` -/
-  lift : ∀ s : Cone F, s.X ⟶ t.X
+  /-- There is a morphism from any cone point to `t.pt` -/
+  lift : ∀ s : Cone F, s.pt ⟶ t.pt
   /-- The map makes the triangle with the two natural transformations commute -/
   fac : ∀ (s : Cone F) (j : J), lift s ≫ t.π.app j = s.π.app j := by aesop_cat
   /-- It is the unique such map to do this -/
-  uniq : ∀ (s : Cone F) (m : s.X ⟶ t.X) (_ : ∀ j : J, m ≫ t.π.app j = s.π.app j), m = lift s := by
+  uniq : ∀ (s : Cone F) (m : s.pt ⟶ t.pt) (_ : ∀ j : J, m ≫ t.π.app j = s.π.app j), m = lift s := by
     aesop_cat
 #align category_theory.limits.is_limit CategoryTheory.Limits.IsLimit
 #align category_theory.limits.is_limit.fac' CategoryTheory.Limits.IsLimit.fac
 #align category_theory.limits.is_limit.uniq' CategoryTheory.Limits.IsLimit.uniq
 
--- Porting note: linter claimed it reduced but it did not
-attribute [nolint simpNF] IsLimit.mk.injEq
+-- Porting note:  simp can prove this. Linter complains it still exists
+attribute [-simp, nolint simpNF] IsLimit.mk.injEq
 
 attribute [reassoc (attr := simp)] IsLimit.fac
 
@@ -82,7 +82,7 @@ instance subsingleton {t : Cone F} : Subsingleton (IsLimit t) :=
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cone point
 of any cone over `F` to the cone point of a limit cone over `G`. -/
-def map {F G : J ⥤ C} (s : Cone F) {t : Cone G} (P : IsLimit t) (α : F ⟶ G) : s.X ⟶ t.X :=
+def map {F G : J ⥤ C} (s : Cone F) {t : Cone G} (P : IsLimit t) (α : F ⟶ G) : s.pt ⟶ t.pt :=
   P.lift ((Cones.postcompose α).obj s)
 #align category_theory.limits.is_limit.map CategoryTheory.Limits.IsLimit.map
 
@@ -92,7 +92,7 @@ theorem map_π {F G : J ⥤ C} (c : Cone F) {d : Cone G} (hd : IsLimit d) (α : 
   fac _ _ _
 #align category_theory.limits.is_limit.map_π CategoryTheory.Limits.IsLimit.map_π
 
-theorem lift_self {c : Cone F} (t : IsLimit c) : t.lift c = 𝟙 c.X :=
+theorem lift_self {c : Cone F} (t : IsLimit c) : t.lift c = 𝟙 c.pt :=
   (t.uniq _ _ fun _ => id_comp _).symm
 #align category_theory.limits.is_limit.lift_self CategoryTheory.Limits.IsLimit.lift_self
 
@@ -110,13 +110,13 @@ theorem uniq_cone_morphism {s t : Cone F} (h : IsLimit t) {f f' : s ⟶ t} : f =
 
 /-- Restating the definition of a limit cone in terms of the ∃! operator. -/
 theorem existsUnique {t : Cone F} (h : IsLimit t) (s : Cone F) :
-    ∃! l : s.X ⟶ t.X, ∀ j, l ≫ t.π.app j = s.π.app j :=
+    ∃! l : s.pt ⟶ t.pt, ∀ j, l ≫ t.π.app j = s.π.app j :=
   ⟨h.lift s, h.fac s, h.uniq s⟩
 #align category_theory.limits.is_limit.exists_unique CategoryTheory.Limits.IsLimit.existsUnique
 
 /-- Noncomputably make a colimit cocone from the existence of unique factorizations. -/
 def ofExistsUnique {t : Cone F}
-    (ht : ∀ s : Cone F, ∃! l : s.X ⟶ t.X, ∀ j, l ≫ t.π.app j = s.π.app j) : IsLimit t := by
+    (ht : ∀ s : Cone F, ∃! l : s.pt ⟶ t.pt, ∀ j, l ≫ t.π.app j = s.π.app j) : IsLimit t := by
   choose s hs hs' using ht
   exact ⟨s, hs, hs'⟩
 #align category_theory.limits.is_limit.of_exists_unique CategoryTheory.Limits.IsLimit.ofExistsUnique
@@ -151,7 +151,7 @@ theorem hom_isIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) (f : s ⟶ t) :
 #align category_theory.limits.is_limit.hom_is_iso CategoryTheory.Limits.IsLimit.hom_isIso
 
 /-- Limits of `F` are unique up to isomorphism. -/
-def conePointUniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s.X ≅ t.X :=
+def conePointUniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s.pt ≅ t.pt :=
   (Cones.forget F).mapIso (uniqueUpToIso P Q)
 #align category_theory.limits.is_limit.cone_point_unique_up_to_iso CategoryTheory.Limits.IsLimit.conePointUniqueUpToIso
 
@@ -226,19 +226,15 @@ def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t
 
 variable {t : Cone F}
 
-theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.X) :
-    m =
-      h.lift
-        { X := W
-          π := { app := fun b => m ≫ t.π.app b } } :=
-  h.uniq
-    { X := W
-      π := { app := fun b => m ≫ t.π.app b } } m fun b => rfl
+theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
+    m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
+  h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun b => rfl
 #align category_theory.limits.is_limit.hom_lift CategoryTheory.Limits.IsLimit.hom_lift
 
 /-- Two morphisms into a limit are equal if their compositions with
   each cone morphism are equal. -/
-theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.X} (w : ∀ j, f ≫ t.π.app j = f' ≫ t.π.app j) :
+theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt} 
+    (w : ∀ j, f ≫ t.π.app j = f' ≫ t.π.app j) :
     f = f' := by rw [h.hom_lift f, h.hom_lift f']; congr; exact funext w
 #align category_theory.limits.is_limit.hom_ext CategoryTheory.Limits.IsLimit.hom_ext
 
@@ -309,7 +305,7 @@ are themselves isomorphic.
 -/
 @[simps]
 def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s) (Q : IsLimit t)
-    (w : F ≅ G) : s.X ≅ t.X where
+    (w : F ≅ G) : s.pt ≅ t.pt where
   hom := Q.map s w.hom
   inv := P.map t w.inv
   hom_inv_id := P.hom_ext (by aesop_cat)
@@ -365,7 +361,7 @@ def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (
   ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 #align category_theory.limits.is_limit.whisker_equivalence_equiv CategoryTheory.Limits.IsLimit.whiskerEquivalenceEquiv
 
-/-- We can prove two cone points `(s : Cone F).X` and `(t.Cone G).X` are isomorphic if
+/-- We can prove two cone points `(s : Cone F).pt` and `(t : Cone G).pt` are isomorphic if
 * both cones are limit cones
 * their indexing categories are equivalent via some `e : J ≌ K`,
 * the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
@@ -376,7 +372,7 @@ and the functor (up to natural isomorphism).
 -/
 @[simps]
 def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Cone G} (P : IsLimit s)
-    (Q : IsLimit t) (e : J ≌ K) (w : e.functor ⋙ G ≅ F) : s.X ≅ t.X :=
+    (Q : IsLimit t) (e : J ≌ K) (w : e.functor ⋙ G ≅ F) : s.pt ≅ t.pt :=
   let w' : e.inverse ⋙ F ≅ G := (isoWhiskerLeft e.inverse w).symm ≪≫ invFunIdAssoc e G
   { hom := Q.lift ((Cones.equivalenceOfReindexing e.symm w').functor.obj s)
     inv := P.lift ((Cones.equivalenceOfReindexing e w).functor.obj t)
@@ -398,13 +394,10 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
 end Equivalence
 
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
-  a cone on `F` with vertex `W`. -/
-def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.X : Type v₃) ≅ (const J).obj W ⟶ F where
+  a cone on `F` with cone point `W`. -/
+def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F where
   hom f := (t.extend f.down).π
-  inv π :=
-    ⟨h.lift
-        { X := W
-          π }⟩
+  inv π := ⟨h.lift { pt := W, π }⟩
   hom_inv_id := by 
     funext f; apply ULift.ext
     apply h.hom_ext; intro j; simp
@@ -413,14 +406,14 @@ def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.X : Type v₃) ≅ (c
 #align category_theory.limits.is_limit.hom_iso CategoryTheory.Limits.IsLimit.homIso
 
 @[simp]
-theorem homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.X)) :
+theorem homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.pt)) :
     (IsLimit.homIso h W).hom f = (t.extend f.down).π :=
   rfl
 #align category_theory.limits.is_limit.hom_iso_hom CategoryTheory.Limits.IsLimit.homIso_hom
 
 /-- The limit of `F` represents the functor taking `W` to
-  the set of cones on `F` with vertex `W`. -/
-def natIso (h : IsLimit t) : yoneda.obj t.X ⋙ uliftFunctor.{u₁} ≅ F.cones := by
+  the set of cones on `F` with cone point `W`. -/
+def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones := by
   refine NatIso.ofComponents (fun W => IsLimit.homIso h (unop W)) ?_
   intro X Y f 
   dsimp [yoneda,homIso,const,uliftFunctor,cones]
@@ -432,7 +425,7 @@ def natIso (h : IsLimit t) : yoneda.obj t.X ⋙ uliftFunctor.{u₁} ≅ F.cones 
 See also `homIso`.
 -/
 def homIso' (h : IsLimit t) (W : C) :
-    ULift.{u₁} (W ⟶ t.X : Type v₃) ≅
+    ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
   h.homIso W ≪≫
     { hom := fun π =>
@@ -446,7 +439,7 @@ def homIso' (h : IsLimit t) (W : C) :
   then it suffices to check that the induced maps for the image of t
   can be lifted to maps of C. -/
 def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [Faithful G]
-    (ht : IsLimit (mapCone G t)) (lift : ∀ s : Cone F, s.X ⟶ t.X)
+    (ht : IsLimit (mapCone G t)) (lift : ∀ s : Cone F, s.pt ⟶ t.pt)
     (h : ∀ s, G.map (lift s) = ht.lift (mapCone G s)) : IsLimit t :=
   { lift
     fac := fun s j => by apply G.map_injective; rw [G.map_comp, h]; apply ht.fac
@@ -485,22 +478,22 @@ variable {X : C} (h : yoneda.obj X ⋙ uliftFunctor.{u₁} ≅ F.cones)
 /-- If `F.cones` is represented by `X`, each morphism `f : Y ⟶ X` gives a cone with cone point
 `Y`. -/
 def coneOfHom {Y : C} (f : Y ⟶ X) : Cone F where
-  X := Y
+  pt := Y
   π := h.hom.app (op Y) ⟨f⟩
 #align category_theory.limits.is_limit.of_nat_iso.cone_of_hom CategoryTheory.Limits.IsLimit.OfNatIso.coneOfHom
 
-/-- If `F.cones` is represented by `X`, each cone `s` gives a morphism `s.X ⟶ X`. -/
-def homOfCone (s : Cone F) : s.X ⟶ X :=
-  (h.inv.app (op s.X) s.π).down
+/-- If `F.cones` is represented by `X`, each cone `s` gives a morphism `s.pt ⟶ X`. -/
+def homOfCone (s : Cone F) : s.pt ⟶ X :=
+  (h.inv.app (op s.pt) s.π).down
 #align category_theory.limits.is_limit.of_nat_iso.hom_of_cone CategoryTheory.Limits.IsLimit.OfNatIso.homOfCone
 
 @[simp]
 theorem coneOfHom_homOfCone (s : Cone F) : coneOfHom h (homOfCone h s) = s := by
-  dsimp [coneOfHom, homOfCone]; 
+  dsimp [coneOfHom, homOfCone]
   match s with 
-  | .mk s_X s_π => 
+  | .mk s_pt s_π => 
     congr ; dsimp
-    convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) (op s_X)) s_π
+    convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) (op s_pt)) s_π
 #align category_theory.limits.is_limit.of_nat_iso.cone_of_hom_of_cone CategoryTheory.Limits.IsLimit.OfNatIso.coneOfHom_homOfCone
 
 @[simp]
@@ -570,13 +563,13 @@ See <https://stacks.math.columbia.edu/tag/002F>.
 -/
 -- Porting note: remove @[nolint has_nonempty_instance]
 structure IsColimit (t : Cocone F) where
-  /-- `t.X` maps to all other cocone covertices -/
-  desc : ∀ s : Cocone F, t.X ⟶ s.X
+  /-- `t.pt` maps to all other cocone covertices -/
+  desc : ∀ s : Cocone F, t.pt ⟶ s.pt
   /-- The map `desc` makes the diagram with the natural transformations commute -/
   fac : ∀ (s : Cocone F) (j : J), t.ι.app j ≫ desc s = s.ι.app j := by aesop_cat
   /-- `desc` is the unique such map -/
   uniq :
-    ∀ (s : Cocone F) (m : t.X ⟶ s.X) (_ : ∀ j : J, t.ι.app j ≫ m = s.ι.app j), m = desc s := by
+    ∀ (s : Cocone F) (m : t.pt ⟶ s.pt) (_ : ∀ j : J, t.ι.app j ≫ m = s.ι.app j), m = desc s := by
     aesop_cat
 #align category_theory.limits.is_colimit CategoryTheory.Limits.IsColimit
 #align category_theory.limits.is_colimit.fac' CategoryTheory.Limits.IsColimit.fac
@@ -584,8 +577,8 @@ structure IsColimit (t : Cocone F) where
 
 attribute [reassoc (attr := simp)] IsColimit.fac
 
--- Porting note: linter claimed it reduced but it did not
-attribute [nolint simpNF] IsColimit.mk.injEq
+-- Porting note: simp can prove this. Linter claims it still is tagged with simp
+attribute [-simp, nolint simpNF] IsColimit.mk.injEq
 
 namespace IsColimit
 
@@ -595,7 +588,7 @@ instance subsingleton {t : Cocone F} : Subsingleton (IsColimit t) :=
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cocone point
 of a colimit cocone over `F` to the cocone point of any cocone over `G`. -/
-def map {F G : J ⥤ C} {s : Cocone F} (P : IsColimit s) (t : Cocone G) (α : F ⟶ G) : s.X ⟶ t.X :=
+def map {F G : J ⥤ C} {s : Cocone F} (P : IsColimit s) (t : Cocone G) (α : F ⟶ G) : s.pt ⟶ t.pt :=
   P.desc ((Cocones.precompose α).obj t)
 #align category_theory.limits.is_colimit.map CategoryTheory.Limits.IsColimit.map
 
@@ -606,7 +599,7 @@ theorem ι_map {F G : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (d : Cocone G) 
 #align category_theory.limits.is_colimit.ι_map CategoryTheory.Limits.IsColimit.ι_map
 
 @[simp]
-theorem desc_self {t : Cocone F} (h : IsColimit t) : h.desc t = 𝟙 t.X :=
+theorem desc_self {t : Cocone F} (h : IsColimit t) : h.desc t = 𝟙 t.pt :=
   (h.uniq _ _ fun _ => comp_id _).symm
 #align category_theory.limits.is_colimit.desc_self CategoryTheory.Limits.IsColimit.desc_self
 
@@ -623,13 +616,13 @@ theorem uniq_cocone_morphism {s t : Cocone F} (h : IsColimit t) {f f' : t ⟶ s}
 
 /-- Restating the definition of a colimit cocone in terms of the ∃! operator. -/
 theorem existsUnique {t : Cocone F} (h : IsColimit t) (s : Cocone F) :
-    ∃! d : t.X ⟶ s.X, ∀ j, t.ι.app j ≫ d = s.ι.app j :=
+    ∃! d : t.pt ⟶ s.pt, ∀ j, t.ι.app j ≫ d = s.ι.app j :=
   ⟨h.desc s, h.fac s, h.uniq s⟩
 #align category_theory.limits.is_colimit.exists_unique CategoryTheory.Limits.IsColimit.existsUnique
 
 /-- Noncomputably make a colimit cocone from the existence of unique factorizations. -/
 def ofExistsUnique {t : Cocone F}
-    (ht : ∀ s : Cocone F, ∃! d : t.X ⟶ s.X, ∀ j, t.ι.app j ≫ d = s.ι.app j) : IsColimit t := by
+    (ht : ∀ s : Cocone F, ∃! d : t.pt ⟶ s.pt, ∀ j, t.ι.app j ≫ d = s.ι.app j) : IsColimit t := by
   choose s hs hs' using ht
   exact ⟨s, hs, hs'⟩
 #align category_theory.limits.is_colimit.of_exists_unique CategoryTheory.Limits.IsColimit.ofExistsUnique
@@ -664,7 +657,7 @@ theorem hom_isIso {s t : Cocone F} (P : IsColimit s) (Q : IsColimit t) (f : s �
 #align category_theory.limits.is_colimit.hom_is_iso CategoryTheory.Limits.IsColimit.hom_isIso
 
 /-- Colimits of `F` are unique up to isomorphism. -/
-def coconePointUniqueUpToIso {s t : Cocone F} (P : IsColimit s) (Q : IsColimit t) : s.X ≅ t.X :=
+def coconePointUniqueUpToIso {s t : Cocone F} (P : IsColimit s) (Q : IsColimit t) : s.pt ≅ t.pt :=
   (Cocones.forget F).mapIso (uniqueUpToIso P Q)
 #align category_theory.limits.is_colimit.cocone_point_unique_up_to_iso CategoryTheory.Limits.IsColimit.coconePointUniqueUpToIso
 
@@ -738,15 +731,15 @@ def ofPointIso {r t : Cocone F} (P : IsColimit r) [i : IsIso (P.desc t)] : IsCol
 
 variable {t : Cocone F}
 
-theorem hom_desc (h : IsColimit t) {W : C} (m : t.X ⟶ W) :
+theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
     m =
       h.desc
-        { X := W
+        { pt := W
           ι :=
             { app := fun b => t.ι.app b ≫ m
               naturality := by intros; erw [← assoc, t.ι.naturality, comp_id, comp_id] } } :=
   h.uniq
-    { X := W
+    { pt := W
       ι :=
         { app := fun b => t.ι.app b ≫ m
           naturality := _ } }
@@ -755,7 +748,7 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.X ⟶ W) :
 
 /-- Two morphisms out of a colimit are equal if their compositions with
   each cocone morphism are equal. -/
-theorem hom_ext (h : IsColimit t) {W : C} {f f' : t.X ⟶ W}
+theorem hom_ext (h : IsColimit t) {W : C} {f f' : t.pt ⟶ W}
     (w : ∀ j, t.ι.app j ≫ f = t.ι.app j ≫ f') : f = f' := by
   rw [h.hom_desc f, h.hom_desc f']; congr; exact funext w
 #align category_theory.limits.is_colimit.hom_ext CategoryTheory.Limits.IsColimit.hom_ext
@@ -828,7 +821,7 @@ are themselves isomorphic.
 -/
 @[simps]
 def coconePointsIsoOfNatIso {F G : J ⥤ C} {s : Cocone F} {t : Cocone G} (P : IsColimit s)
-    (Q : IsColimit t) (w : F ≅ G) : s.X ≅ t.X
+    (Q : IsColimit t) (w : F ≅ G) : s.pt ≅ t.pt
     where
   hom := P.map t w.hom
   inv := Q.map s w.inv
@@ -888,7 +881,7 @@ def whiskerEquivalenceEquiv {s : Cocone F} (e : K ≌ J) :
   ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 #align category_theory.limits.is_colimit.whisker_equivalence_equiv CategoryTheory.Limits.IsColimit.whiskerEquivalenceEquiv
 
-/-- We can prove two cocone points `(s : Cocone F).X` and `(t.Cocone G).X` are isomorphic if
+/-- We can prove two cocone points `(s : Cocone F).pt` and `(t : Cocone G).pt` are isomorphic if
 * both cocones are colimit cocones
 * their indexing categories are equivalent via some `e : J ≌ K`,
 * the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
@@ -899,7 +892,7 @@ and the functor (up to natural isomorphism).
 -/
 @[simps]
 def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t : Cocone G}
-    (P : IsColimit s) (Q : IsColimit t) (e : J ≌ K) (w : e.functor ⋙ G ≅ F) : s.X ≅ t.X :=
+    (P : IsColimit s) (Q : IsColimit t) (e : J ≌ K) (w : e.functor ⋙ G ≅ F) : s.pt ≅ t.pt :=
   let w' : e.inverse ⋙ F ≅ G := (isoWhiskerLeft e.inverse w).symm ≪≫ invFunIdAssoc e G
   { hom := P.desc ((Cocones.equivalenceOfReindexing e w).functor.obj t)
     inv := Q.desc ((Cocones.equivalenceOfReindexing e.symm w').functor.obj s)
@@ -919,12 +912,12 @@ def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t :
 end Equivalence
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
-  a cocone on `F` with vertex `W`. -/
-def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.X ⟶ W : Type v₃) ≅ F ⟶ (const J).obj W where
+  a cocone on `F` with cone point `W`. -/
+def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅ F ⟶ (const J).obj W where
   hom f := (t.extend f.down).ι
   inv ι :=
     ⟨h.desc
-        { X := W
+        { pt := W
           ι }⟩
   hom_inv_id := by 
     funext f; apply ULift.ext
@@ -934,14 +927,14 @@ def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.X ⟶ W : Type v₃) ≅ 
 #align category_theory.limits.is_colimit.hom_iso CategoryTheory.Limits.IsColimit.homIso
 
 @[simp]
-theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.X ⟶ W)) :
+theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
     (IsColimit.homIso h W).hom f = (t.extend f.down).ι :=
   rfl
 #align category_theory.limits.is_colimit.hom_iso_hom CategoryTheory.Limits.IsColimit.homIso_hom
 
 /-- The colimit of `F` represents the functor taking `W` to
-  the set of cocones on `F` with vertex `W`. -/
-def natIso (h : IsColimit t) : coyoneda.obj (op t.X) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
+  the set of cocones on `F` with cone point `W`. -/
+def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
   NatIso.ofComponents (IsColimit.homIso h) (by intros; funext; aesop_cat)
 #align category_theory.limits.is_colimit.nat_iso CategoryTheory.Limits.IsColimit.natIso
 
@@ -949,7 +942,7 @@ def natIso (h : IsColimit t) : coyoneda.obj (op t.X) ⋙ uliftFunctor.{u₁} ≅
 See also `homIso`.
 -/
 def homIso' (h : IsColimit t) (W : C) :
-    ULift.{u₁} (t.X ⟶ W : Type v₃) ≅
+    ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅
       { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
   h.homIso W ≪≫
     { hom := fun ι =>
@@ -963,7 +956,7 @@ def homIso' (h : IsColimit t) (W : C) :
   then it suffices to check that the induced maps for the image of t
   can be lifted to maps of C. -/
 def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [Faithful G]
-    (ht : IsColimit (mapCocone G t)) (desc : ∀ s : Cocone F, t.X ⟶ s.X)
+    (ht : IsColimit (mapCocone G t)) (desc : ∀ s : Cocone F, t.pt ⟶ s.pt)
     (h : ∀ s, G.map (desc s) = ht.desc (mapCocone G s)) : IsColimit t :=
   { desc
     fac := fun s j => by apply G.map_injective ; rw [G.map_comp, h] ; apply ht.fac
@@ -1003,21 +996,21 @@ variable {X : C} (h : coyoneda.obj (op X) ⋙ uliftFunctor.{u₁} ≅ F.cocones)
 point `Y`. -/
 def coconeOfHom {Y : C} (f : X ⟶ Y) : Cocone F
     where
-  X := Y
+  pt := Y
   ι := h.hom.app Y ⟨f⟩
 #align category_theory.limits.is_colimit.of_nat_iso.cocone_of_hom CategoryTheory.Limits.IsColimit.OfNatIso.coconeOfHom
 
-/-- If `F.cocones` is corepresented by `X`, each cocone `s` gives a morphism `X ⟶ s.X`. -/
-def homOfCocone (s : Cocone F) : X ⟶ s.X:=
-  (h.inv.app s.X s.ι).down
+/-- If `F.cocones` is corepresented by `X`, each cocone `s` gives a morphism `X ⟶ s.pt`. -/
+def homOfCocone (s : Cocone F) : X ⟶ s.pt:=
+  (h.inv.app s.pt s.ι).down
 #align category_theory.limits.is_colimit.of_nat_iso.hom_of_cocone CategoryTheory.Limits.IsColimit.OfNatIso.homOfCocone
 
 @[simp]
 theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s) = s := by
   dsimp [coconeOfHom, homOfCocone]; 
-  have ⟨s_X,s_ι⟩ := s
+  have ⟨s_pt,s_ι⟩ := s
   congr ; dsimp
-  convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) s_X) s_ι
+  convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) s_pt) s_ι
 #align category_theory.limits.is_colimit.of_nat_iso.cocone_of_hom_of_cocone CategoryTheory.Limits.IsColimit.OfNatIso.coconeOfHom_homOfCocone
 
 @[simp]
@@ -1081,4 +1074,4 @@ end
 end IsColimit
 
 end CategoryTheory.Limits
-
+#lint
