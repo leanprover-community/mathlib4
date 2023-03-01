@@ -149,7 +149,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A functor between preorder categories is monotone.
 -/
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
 #align category_theory.functor.monotone CategoryTheory.Functor.monotone
 
