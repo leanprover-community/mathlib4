@@ -3,6 +3,7 @@ import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
