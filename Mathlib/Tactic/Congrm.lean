@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Basic
 import Mathlib.Logic.Basic
+import Mathlib.Data.Nat.Basic -- only needed for tests
 
 
 namespace Mathlib.Tactic
@@ -21,6 +22,13 @@ def congrm_core (pat : Expr) : TacticM Unit := withMainContext do
     -- Maybe replace by `forallTelescope`
     liftMetaTactic fun mvarId => do pure [(← mvarId.intro name).2]
     congrm_core body
+  | .lam name _type body _info =>
+    -- `apply funext; intro`
+    evalTactic (← `(tactic| apply funext))
+    liftMetaTactic fun mvarId => do pure [(← mvarId.intro name).2]
+    congrm_core body
+  | .app fn arg =>
+    return
   | _ =>
   return
 
@@ -41,3 +49,8 @@ example (f : α → α → Prop): (∀ a b, f a b) ↔ (∀ a b : α, True) := b
   congrm (∀ x y, _)
   have : ∀ a b, f a b = True := sorry
   exact this x y
+
+example {a b : ℕ} (h : a = b) : (fun y : ℕ => ∀ z, a + a = z) = (fun x => ∀ z, b + a = z) := by
+  congrm λ x => ∀ w, _
+  congr 1
+  simp only [h]
