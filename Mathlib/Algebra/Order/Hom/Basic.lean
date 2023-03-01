@@ -134,7 +134,7 @@ theorem le_map_mul_map_div [Group α] [CommSemigroup β] [LE β] [Submultiplicat
 #align le_map_mul_map_div le_map_mul_map_div
 #align le_map_add_map_sub le_map_add_map_sub
 
-@[to_additive]
+@[to_additive existing]
 theorem le_map_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β] (f : F)
     (a b : α) : f a ≤ f b + f (a / b) := by
   simpa only [add_comm, div_mul_cancel'] using map_mul_le_add f (a / b) b
@@ -148,7 +148,7 @@ theorem le_map_div_mul_map_div [Group α] [CommSemigroup β] [LE β] [Submultipl
 #align le_map_div_mul_map_div le_map_div_mul_map_div
 #align le_map_sub_add_map_sub le_map_sub_add_map_sub
 
-@[to_additive]
+@[to_additive existing]
 theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAddHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel'] using map_mul_le_add f (a / b) (b / c)

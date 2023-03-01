@@ -196,7 +196,7 @@ theorem card_add_nsmul_le {α : Type _} [AddCommGroup α] [DecidableEq α] {A B 
   exact mul_le_mul_of_nonneg_left ih (zero_le _)
 #align finset.card_add_nsmul_le Finset.card_add_nsmul_le
 
-@[to_additive]
+@[to_additive existing]
 theorem card_mul_pow_le (hAB : ∀ (A') (_ : A' ⊆ A), (A * B).card * A'.card ≤ (A' * B).card * A.card)
     (n : ℕ) : (A * B ^ n).card ≤ ((A * B).card / A.card : ℚ≥0) ^ n * A.card := by
   obtain rfl | hA := A.eq_empty_or_nonempty
