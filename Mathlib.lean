@@ -331,6 +331,7 @@ import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Partition
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
