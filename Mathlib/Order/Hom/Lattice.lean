@@ -91,6 +91,13 @@ structure BoundedLatticeHom (α β : Type _) [Lattice α] [Lattice β] [BoundedO
   map_bot' : toFun ⊥ = ⊥
 #align bounded_lattice_hom BoundedLatticeHom
 
+-- Porting note: todo: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
+initialize_simps_projections SupBotHom (+toSupHom, -toFun)
+initialize_simps_projections InfTopHom (+toInfHom, -toFun)
+initialize_simps_projections LatticeHom (+toSupHom, -toFun)
+initialize_simps_projections BoundedLatticeHom (+toLatticeHom, -toFun)
+
 section
 
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.

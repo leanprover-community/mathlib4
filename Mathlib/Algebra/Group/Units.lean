@@ -712,7 +712,7 @@ protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : 
     AddUnits N :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 #align is_add_unit.add_unit IsAddUnit.addUnit
-attribute [to_additive] IsUnit.unit
+attribute [to_additive existing] IsUnit.unit
 
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=

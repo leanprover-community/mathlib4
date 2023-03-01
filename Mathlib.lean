@@ -1,8 +1,11 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Basic
@@ -277,7 +280,10 @@ import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Functor
@@ -293,6 +299,7 @@ import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Skeletal
+import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Types
@@ -324,9 +331,11 @@ import Mathlib.Combinatorics.SetFamily.Intersecting
 import Mathlib.Combinatorics.SetFamily.Kleitman
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Partition
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
@@ -663,6 +672,7 @@ import Mathlib.Data.Real.CauSeq
 import Mathlib.Data.Real.CauSeqCompletion
 import Mathlib.Data.Real.ConjugateExponents
 import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Real.Pointwise
@@ -879,6 +889,8 @@ import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.Basic
+import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
@@ -890,6 +902,7 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic

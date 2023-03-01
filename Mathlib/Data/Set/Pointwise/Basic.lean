@@ -414,7 +414,7 @@ theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
 #align set.singleton_mul_singleton Set.singleton_mul_singleton
 #align set.singleton_add_singleton Set.singleton_add_singleton
 
-@[to_additive] -- Porting note: no [mono]
+@[to_additive (attr := mono)]
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 #align set.mul_subset_mul Set.mul_subset_mul
@@ -437,9 +437,6 @@ theorem mul_subset_iff : s * t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x * y ∈ u :
   image2_subset_iff
 #align set.mul_subset_iff Set.mul_subset_iff
 #align set.add_subset_iff Set.add_subset_iff
-
--- Porting note: no [mono]
--- attribute [mono] add_subset_add
 
 @[to_additive]
 theorem union_mul : (s₁ ∪ s₂) * t = s₁ * t ∪ s₂ * t :=
@@ -671,7 +668,7 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
 #align set.singleton_div_singleton Set.singleton_div_singleton
 #align set.singleton_sub_singleton Set.singleton_sub_singleton
 
-@[to_additive] -- Porting note: no [mono]
+@[to_additive (attr := mono)]
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 #align set.div_subset_div Set.div_subset_div
@@ -694,9 +691,6 @@ theorem div_subset_iff : s / t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x / y ∈ u :
   image2_subset_iff
 #align set.div_subset_iff Set.div_subset_iff
 #align set.sub_subset_iff Set.sub_subset_iff
-
--- Porting note: no [mono]
--- attribute [mono] sub_subset_sub
 
 @[to_additive]
 theorem union_div : (s₁ ∪ s₂) / t = s₁ / t ∪ s₂ / t :=
@@ -806,7 +800,7 @@ protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Set`. See note [pointwise nat action]. -/
-@[to_additive]
+@[to_additive existing]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align set.has_npow Set.NPow
@@ -819,7 +813,7 @@ protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
-@[to_additive]
+@[to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align set.has_zpow Set.ZPow
@@ -970,7 +964,7 @@ theorem nsmul_univ {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n �
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
 #align set.nsmul_univ Set.nsmul_univ
 
-@[to_additive (attr := simp) nsmul_univ]
+@[to_additive existing (attr := simp) nsmul_univ]
 theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _
