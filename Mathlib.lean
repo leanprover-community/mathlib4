@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Algebra.Pi
