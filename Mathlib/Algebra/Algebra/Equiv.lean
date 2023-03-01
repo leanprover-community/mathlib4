@@ -315,7 +315,7 @@ def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
   e.symm
 #align alg_equiv.simps.symm_apply AlgEquiv.Simps.symm_apply
 
-initialize_simps_projections AlgEquiv (toEquiv_toFun → apply,toEquiv_invFun → symm_apply)
+initialize_simps_projections AlgEquiv (toFun → apply, invFun → symm_apply)
 
 --@[simp] -- Porting note: simp can prove this once symm_mk is introduced
 theorem coe_apply_coe_coe_symm_apply {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) (x : A₂) :
