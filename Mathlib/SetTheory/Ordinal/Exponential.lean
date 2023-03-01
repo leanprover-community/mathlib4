@@ -28,7 +28,7 @@ universe u v w
 namespace Ordinal
 
 /-- The ordinal exponential, defined by transfinite recursion. -/
-instance hasPow : Pow Ordinal Ordinal :=
+instance pow : Pow Ordinal Ordinal :=
   ⟨fun a b => if a = 0 then 1 - b else limitRecOn b 1 (fun _ IH => IH * a) fun b _ => bsup.{u, u} b⟩
 
 -- Porting note: Ambiguous notations.
@@ -353,7 +353,7 @@ theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
   · rwa [← Ordinal.le_zero, ← lt_succ_iff, succ_zero, ← lt_opow_iff_log_lt hb ho, opow_one]
 #align ordinal.log_eq_zero Ordinal.log_eq_zero
 
--- @[mono] -- Porting note: Unknown attribute.
+@[mono]
 theorem log_mono_right (b) {x y : Ordinal} (xy : x ≤ y) : log b x ≤ log b y :=
   if hx : x = 0 then by simp only [hx, log_zero_right, Ordinal.zero_le]
   else

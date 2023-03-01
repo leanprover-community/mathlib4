@@ -543,16 +543,7 @@ def Quotient.equiv {N : Type _} [AddCommGroup N] [Module R N] (P : Submodule R M
     left_inv := fun x => Quotient.inductionOn' x (by simp)
     right_inv := fun x => Quotient.inductionOn' x (by simp) }
 #align submodule.quotient.equiv Submodule.Quotient.equiv
-
--- porting note: `simps` didn't generate this?
-@[simp]
-theorem Quotient.equiv_apply {N : Type _} [AddCommGroup N] [Module R N]
-    (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N) (hf : P.map f = Q)
-    (hf' :=  fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) (x : M ⧸ P) :
-    (Quotient.equiv P Q f hf) x = (P.mapQ Q (f : M →ₗ[R] N) hf') x :=
-  rfl
--- porting note: this is `align`ed with an `ₓ` because I had to add `hf'` as an `optParam`.
-#align submodule.quotient.equiv_apply Submodule.Quotient.equiv_applyₓ
+#align submodule.quotient.equiv_apply Submodule.Quotient.equiv_apply
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type _} [CommRing R] [AddCommGroup M] [Module R M]
@@ -571,17 +562,9 @@ theorem Quotient.equiv_trans {N O : Type _} [AddCommGroup N] [Module R N] [AddCo
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
   ext
   -- `simp` can deal with `hef` depending on `e` and `f`
-  -- porting note: this doesn't work in Lean 4?
-  simp only [Quotient.equiv_apply P S (e.trans f)
-    hef (fun _ hx => hef ▸ Submodule.mem_map_of_mem hx) _,
-    Quotient.equiv_apply P Q e he (fun _ hx => he ▸ Submodule.mem_map_of_mem hx) _,
-    Quotient.equiv_apply Q S f hf (fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) _]
-  simp only [LinearEquiv.trans_apply, LinearEquiv.coe_trans]
+  simp only [Quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
   -- `rw` can deal with `mapQ_comp` needing extra hypotheses coming from the RHS
-  -- porting note: this doesn't work in Lean 4?
-  rw [mapQ_comp P Q S e.toLinearMap f.toLinearMap (fun _ hx => he ▸ Submodule.mem_map_of_mem hx)
-    (fun _ hx => hf ▸ Submodule.mem_map_of_mem hx) _]
-  rfl
+  rw [mapQ_comp, LinearMap.comp_apply]
 #align submodule.quotient.equiv_trans Submodule.Quotient.equiv_trans
 
 end Submodule
