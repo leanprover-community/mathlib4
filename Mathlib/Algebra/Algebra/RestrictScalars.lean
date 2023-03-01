@@ -77,7 +77,7 @@ Note that this means we almost always want to state definitions and lemmas in th
 
 An example of when one might want to use `restrict_scalars` would be if one has a vector space
 over a field of characteristic zero and wishes to make use of the `ℚ`-algebra structure. -/
-@[nolint unused_arguments]
+@[nolint unusedArguments]
 def RestrictScalars (R S M : Type _) : Type _ :=
   M
 #align restrict_scalars RestrictScalars
@@ -119,7 +119,7 @@ instance [Module S M] : Module R (RestrictScalars R S M) :=
 /-- This instance is only relevant when `restrict_scalars.module_orig` is available as an instance.
 -/
 instance [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
-  ⟨fun r S M => by
+  ⟨fun r S M ↦ by
     rw [Algebra.smul_def, mul_smul]
     rfl⟩
 
@@ -132,7 +132,7 @@ The preferred way of setting this up is
 -/
 instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (RestrictScalars R S M) :=
   letI : Module Sᵐᵒᵖ (RestrictScalars R S M) := ‹Module Sᵐᵒᵖ M›
-  Module.compHom M (algebraMap R S).op
+  Module.compHom M (RingHom.op $ algebraMap R S)
 #align restrict_scalars.op_module RestrictScalars.opModule
 
 instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :
@@ -233,8 +233,8 @@ instance : Algebra R (RestrictScalars R S A) :=
     (algebraMap S A).comp (algebraMap R
         S) with
     smul := (· • ·)
-    commutes' := fun r x => Algebra.commutes _ _
-    smul_def' := fun _ _ => Algebra.smul_def _ _ }
+    commutes' := fun r x ↦ Algebra.commutes _ _
+    smul_def' := fun _ _ ↦ Algebra.smul_def _ _ }
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :
@@ -244,4 +244,3 @@ theorem RestrictScalars.ringEquiv_algebraMap (r : R) :
 #align restrict_scalars.ring_equiv_algebra_map RestrictScalars.ringEquiv_algebraMap
 
 end Algebra
-
