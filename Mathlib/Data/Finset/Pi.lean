@@ -55,7 +55,7 @@ theorem mem_pi {s : Finset α} {t : ∀ a, Finset (δ a)} {f : ∀ a ∈ s, δ a
 
 /-- Given a function `f` defined on a finset `s`, define a new function on the finset `s ∪ {a}`,
 equal to `f` on `s` and sending `a` to a given value `b`. This function is denoted
-`s.pi.cons a b f`. If `a` already belongs to `s`, the new function takes the value `b` at `a`
+`s.Pi.cons a b f`. If `a` already belongs to `s`, the new function takes the value `b` at `a`
 anyway. -/
 def Pi.cons (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (a' : α) (h : a' ∈ insert a s) :
     δ a' :=
