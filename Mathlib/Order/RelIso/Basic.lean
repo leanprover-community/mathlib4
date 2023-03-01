@@ -627,11 +627,11 @@ def Simps.apply (h : r ≃r s) : α → β :=
 #align rel_iso.simps.apply RelIso.Simps.apply
 
 /-- See Note [custom simps projection]. -/
-def Simps.symmApply (h : r ≃r s) : β → α :=
+def Simps.symm_apply (h : r ≃r s) : β → α :=
   h.symm
-#align rel_iso.simps.symm_apply RelIso.Simps.symmApply
+#align rel_iso.simps.symm_apply RelIso.Simps.symm_apply
 
-initialize_simps_projections RelIso (toFun → apply, invFun → symmApply)
+initialize_simps_projections RelIso (toFun → apply, invFun → symm_apply)
 
 /-- Identity map is a relation isomorphism. -/
 @[refl, simps! apply]

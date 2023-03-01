@@ -336,7 +336,7 @@ variable {c}
 
 /-- The inductive principle used to prove propositions about the elements of a quotient by a
     congruence relation. -/
-@[elab_as_elim, to_additive "The inductive principle used to prove propositions about
+@[to_additive (attr := elab_as_elim) "The inductive principle used to prove propositions about
 the elements of a quotient by an additive congruence relation."]
 protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : ∀ x : M, C x) : C q :=
   Quotient.inductionOn' q H
@@ -344,7 +344,7 @@ protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : �
 #align add_con.induction_on AddCon.induction_on
 
 /-- A version of `con.induction_on` for predicates which take two arguments. -/
-@[elab_as_elim, to_additive "A version of `add_con.induction_on` for predicates which take
+@[to_additive (attr := elab_as_elim) "A version of `add_con.induction_on` for predicates which take
 two arguments."]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
     (q : d.Quotient) (H : ∀ (x : M) (y : N), C x y) : C p q :=
@@ -1105,8 +1105,8 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
     right_inv := fun x => by conv_rhs => rw [← hf x]; rfl }
 #align con.quotient_ker_equiv_of_right_inverse Con.quotientKerEquivOfRightInverse
 #align add_con.quotient_ker_equiv_of_right_inverse AddCon.quotientKerEquivOfRightInverse
-#align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symmApply
-#align add_con.quotient_ker_equiv_of_right_inverse_symm_apply AddCon.quotientKerEquivOfRightInverse_symmApply
+#align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symm_apply
+#align add_con.quotient_ker_equiv_of_right_inverse_symm_apply AddCon.quotientKerEquivOfRightInverse_symm_apply
 #align con.quotient_ker_equiv_of_right_inverse_apply Con.quotientKerEquivOfRightInverse_apply
 #align add_con.quotient_ker_equiv_of_right_inverse_apply AddCon.quotientKerEquivOfRightInverse_apply
 
