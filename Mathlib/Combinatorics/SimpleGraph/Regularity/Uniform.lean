@@ -28,12 +28,12 @@ is less than `ε`.
 
 ## Main declarations
 
-* `simple_graph.is_uniform`: Graph uniformity of a pair of finsets of vertices.
-* `simple_graph.nonuniform_witness`: `G.nonuniform_witness ε s t` and `G.nonuniform_witness ε t s`
+* `SimpleGraph.IsUniform`: Graph uniformity of a pair of finsets of vertices.
+* `SimpleGraph.nonuniformWitness`: `G.nonuniform_witness ε s t` and `G.nonuniform_witness ε t s`
   together witness the non-uniformity of `s` and `t`.
-* `finpartition.non_uniforms`: Non uniform pairs of parts of a partition.
-* `finpartition.is_uniform`: Uniformity of a partition.
-* `finpartition.nonuniform_witnesses`: For each non-uniform pair of parts of a partition, pick
+* `Finpartition.nonUniforms`: Non uniform pairs of parts of a partition.
+* `Finpartition.IsUniform`: Uniformity of a partition.
+* `Finpartition.nonuniformWitnesses`: For each non-uniform pair of parts of a partition, pick
   witnesses of non-uniformity and dump them all together.
 -/
 
@@ -124,7 +124,7 @@ variable (G)
 
 /-- An arbitrary pair of subsets witnessing the non-uniformity of `(s, t)`. If `(s, t)` is uniform,
 returns `(s, t)`. Witnesses for `(s, t)` and `(t, s)` don't necessarily match. See
-`simple_graph.nonuniform_witness`. -/
+`SimpleGraph.nonuniformWitness`. -/
 noncomputable def nonuniformWitnesses (ε : 𝕜) (s t : Finset α) : Finset α × Finset α :=
   if h : ¬G.IsUniform ε s t then
     ((not_isUniform_iff.1 h).choose, (not_isUniform_iff.1 h).choose_spec.2.choose)
