@@ -105,7 +105,7 @@ theorem closure_induction'' {p : G → Prop} {x} (h : x ∈ closure s) (Hk : ∀
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `1` and all elements of `S i` for all `i`, and is preserved under multiplication,
 then it holds for all elements of the supremum of `S`. -/
-@[elab_as_elim, to_additive " An induction principle for elements of `⨆ i, S i`.
+@[to_additive (attr := elab_as_elim) " An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
 then it holds for all elements of the supremum of `S`. "]
 theorem supᵢ_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
@@ -120,7 +120,7 @@ theorem supᵢ_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} 
 #align add_subgroup.supr_induction AddSubgroup.supᵢ_induction
 
 /-- A dependent version of `Subgroup.supᵢ_induction`. -/
-@[elab_as_elim, to_additive "A dependent version of `AddSubgroup.supᵢ_induction`. "]
+@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.supᵢ_induction`. "]
 theorem supᵢ_induction' {ι : Sort _} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i), ∀ x (hx : x ∈ S i), C x (mem_supᵢ_of_mem i hx)) (h1 : C 1 (one_mem _))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}

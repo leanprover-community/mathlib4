@@ -605,7 +605,7 @@ theorem tendsto_inv_nhdsWithin_Iic_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻
 
 end OrderedCommGroup
 
-@[instance, to_additive]
+@[to_additive]
 instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H)
     where continuous_inv := continuous_inv.prod_map continuous_inv
 

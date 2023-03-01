@@ -341,8 +341,7 @@ variable (α)
 
 See note [reducible non-instances]. Since this is reducible, we make sure to go via
 `SMul.comp.smul` to prevent typeclass inference unfolding too far. -/
-@[reducible,
-  to_additive
+@[to_additive (attr := reducible)
       "An additive action of `M` on `α` and a function `N → M` induces
        an additive action of `N` on `α` "]
 def comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
@@ -533,8 +532,7 @@ protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Su
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
-@[reducible,
-  to_additive
+@[to_additive (attr := reducible)
       "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
 def Function.Surjective.mulActionLeft {R S M : Type _} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Function.Surjective f)
