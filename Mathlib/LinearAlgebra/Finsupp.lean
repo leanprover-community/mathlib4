@@ -898,7 +898,7 @@ variable (R)
 /-- The linear equivalence between `(α ⊕ β) →₀ M` and `(α →₀ M) × (β →₀ M)`.
 
 This is the `LinearEquiv` version of `Finsupp.sumFinsuppEquivProdFinsupp`. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def sumFinsuppLEquivProdFinsupp {α β : Type _} : (Sum α β →₀ M) ≃ₗ[R] (α →₀ M) × (β →₀ M) :=
   { sumFinsuppAddEquivProdFinsupp with
     map_smul' := by
