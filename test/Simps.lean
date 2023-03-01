@@ -76,7 +76,7 @@ def NewTop.Simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.eli
 
 initialize_simps_projections NewTop (elim → newElim)
 
-run_cmd liftCoreM <| successIfFail <| getRawProjections `DoesntExist
+run_cmd liftCoreM <| successIfFail <| getRawProjections .missing `DoesntExist
 
 class Something (α : Type _) where
   op : α → α → α → α
@@ -607,7 +607,7 @@ variable {α β γ : Sort _}
 noncomputable def Equiv.Simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
 
 run_cmd liftTermElabM <| do
-  successIfFail (getRawProjections `FaultyManualCoercion.Equiv)
+  successIfFail (getRawProjections .missing `FaultyManualCoercion.Equiv)
 -- "Invalid custom projection:
 --   λ {α : Sort u_1} {β : Sort u_2} (e : α ≃ β), Classical.choice _
 -- Expression is not definitionally equal to
@@ -665,7 +665,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 def Equiv.Simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
 
 run_cmd liftTermElabM <| do
-  successIfFail (getRawProjections `FaultyUniverses.Equiv)
+  successIfFail (getRawProjections .missing `FaultyUniverses.Equiv)
 -- "Invalid custom projection:
 --   fun {α} {β} e => (Equiv.symm e).toFun
 -- Expression has different type than FaultyUniverses.Equiv.invFun. Given type:
@@ -719,7 +719,7 @@ def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
-  let data ← getRawProjections `ManualProjectionNames.Equiv
+  let data ← getRawProjections .missing `ManualProjectionNames.Equiv
   guard <| data.2.map (·.name) == #[`apply, `symm_apply]
 
 @[simps (config := {simpRhs := true})]
@@ -758,7 +758,7 @@ def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → coe, as_prefix coe, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
-  let data ← getRawProjections `PrefixProjectionNames.Equiv
+  let data ← getRawProjections .missing `PrefixProjectionNames.Equiv
   guard $ data.2.map (·.name) = #[`coe, `symm_apply]
   guard $ data.2.map (·.isPrefix) = #[true, false]
 
