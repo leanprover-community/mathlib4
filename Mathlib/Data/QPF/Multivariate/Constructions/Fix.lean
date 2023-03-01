@@ -367,4 +367,10 @@ def Fix.drec {β : Fix F α → Type u}
 
 #align mvqpf.fix.drec MvQPF.Fix.drec
 
+
+instance [IsPolynomial F] : IsPolynomial (Fix F) where
+  repr_abs := by
+    intros α' x;
+    unfold abs repr
+
 end MvQPF

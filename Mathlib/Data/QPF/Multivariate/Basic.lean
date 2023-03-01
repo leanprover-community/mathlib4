@@ -301,12 +301,12 @@ namespace MvQPF
 
 
   namespace IsPolynomial
-    variable {n : ℕ} {F : TypeVec n → Type _} [MvFunctor F]
+    variable {n : ℕ} {F : TypeVec n → Type _}
 
     /--
       Show that the desired equivalence follows from `IsPolynomial`
     -/
-    def equiv [p : IsPolynomial F] :
+    def equiv [MvFunctor F] [p : IsPolynomial F] :
       ∀ α, F α ≃ p.P.Obj α
     := fun _ => {
       toFun := p.repr,
@@ -315,6 +315,17 @@ namespace MvQPF
       right_inv := p.repr_abs,
     }
     #align mvqpf.is_polynomial.equiv MvQPF.IsPolynomial.equiv
+
+    def mvFunctorOfEquiv {P : MvPFunctor n} (eqv : ∀ {α}, F α ≃ P.Obj α) : MvFunctor F where
+      map f x := eqv.invFun <| P.map f <| eqv.toFun <| x
+
+    def ofEquiv {P : MvPFunctor n} (eqv : ∀ {α}, F α ≃ P.Obj α) : @IsPolynomial _ F (mvFunctorOfEquiv eqv) where
+      P         := P
+      abs       := _
+      repr      := _
+      abs_repr  := by sorry
+      abs_map   := by sorry
+
   end IsPolynomial
 
 end MvQPF

@@ -25,8 +25,13 @@ namespace MvQPF
 
 open MvFunctor
 
-variable {n m : ℕ} (F : TypeVec.{u} n → Type _) [fF : MvFunctor F] [q : MvQPF F]
-  (G : Fin2 n → TypeVec.{u} m → Type u) [fG : ∀ i, MvFunctor <| G i] [q' : ∀ i, MvQPF <| G i]
+variable {n m : ℕ}
+  (F : TypeVec.{u} n → Type _)
+  [fF : MvFunctor F]
+  [q : MvQPF F]
+  (G : Fin2 n → TypeVec.{u} m → Type u)
+  [fG : ∀ i, MvFunctor <| G i]
+  [q' : ∀ i, MvQPF <| G i]
 
 /-- Composition of an `n`-ary functor with `n` `m`-ary
 functors gives us one `m`-ary functor -/
@@ -86,6 +91,43 @@ instance : MvQPF (Comp F G) where
                                     TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
   abs_map := by intros; simp only [(· ∘ ·)]; rw [← abs_map]
                 simp only [comp.get_map, map_map, TypeVec.comp, abs_map, map_mk]
+
+
+
+instance [p : IsPolynomial F] [p' : ∀ i, IsPolynomial <| G i] : IsPolynomial (Comp F G) where
+  repr_abs := by
+    intros α x;
+    rcases x with ⟨⟨a', f'⟩, f⟩
+    simp [repr, Comp.get]
+    let h : (G · α) ⟹ fun i => Obj (P (G i)) α
+      := fun (i : Fin2 n) => @repr _ (G i) (fG i) (q' i) α
+    let p : (P (Comp F G)).Obj α
+       := ⟨⟨a', f'⟩, f⟩
+    have hh : h = fun (i : Fin2 n) => @repr _ (G i) (fG i) (q' i) α := rfl;
+    have hp : p = ⟨⟨a', f'⟩, f⟩ := rfl;
+    rw [←hh, ←hp]
+    unfold comp.mk
+    congr
+    .
+    have := abs_map (F := F) (α := fun i => G i α) h (p : (P F).Obj _)
+
+    have := abs_map (f:=h) (p)
+    conv => {
+      arg 1
+      arg 1
+      arg 1
+    }
+    simp [←MvQPF.abs_map]
+    simp [repr, Comp.get, comp.mk]
+    congr
+    . conv => {
+        arg 1
+        arg 1
+        arg 1
+        rw [←MvQPF.abs_map (f := fun i => repr)]
+      }
+
+    aesop
 
 end Comp
 
