@@ -12,7 +12,8 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-! # Ordinal exponential
 
-In this file we define the power function and the logarithm function on ordinals,
+In this file we define the power function and the logarithm function on ordinals. The latter is used
+to define the Cantor Normal Form.
 
 -/
 
