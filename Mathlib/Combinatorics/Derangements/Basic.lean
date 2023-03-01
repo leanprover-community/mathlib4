@@ -110,8 +110,9 @@ def atMostOneFixedPointEquivSumDerangements {α: Type u} [DecidableEq α] (a : �
       }
     _ ≃ Sum (Derangements ({a}ᶜ : Set α)) (Derangements α) := by
       {
-        refine'
-        Equiv.sumCongr ((Derangements.subtypeEquiv _).trans <| subtypeEquivRight fun x => _).symm
+        -- porting note: on Lean 3 side, the type hole is `(fun (x: α) => x ∈ ({a}ᶜ : Set α))`
+        refine' Equiv.sumCongr
+          ((Derangements.subtypeEquiv _).trans <| subtypeEquivRight fun x => _).symm
           (subtypeEquivRight fun f => mem_Derangements_iff_fixedPoints_eq_empty.symm)
         rw [eq_comm, Set.ext_iff]
         simp_rw [Set.mem_compl_iff, Classical.not_not]
@@ -198,7 +199,11 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     _ ≃ Σa : Option α, ↥(Equiv.RemoveNone.fiber a) := setProdEquivSigma _
     _ ≃ Σa : α, ↥(Equiv.RemoveNone.fiber (some a)) :=
       sigmaOptionEquivOfSome _ fiber_none_is_false
-    _ ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by simp_rw [Equiv.RemoveNone.fiber_some]
+    _ ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
+      {
+        simp_rw [Equiv.RemoveNone.fiber_some]
+        rfl
+      }
 
 #align derangements.derangements_option_equiv_sigma_at_most_one_fixed_point
        Derangements.derangementsOptionEquivSigmaAtMostOneFixedPoint
