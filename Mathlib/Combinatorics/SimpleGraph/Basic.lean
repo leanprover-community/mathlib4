@@ -89,7 +89,9 @@ attribute [aesop norm unfold (rule_sets [SimpleGraph])] Irreflexive
 -- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+    aesop $c*
+      (options := { introsTransparency? := some .default })
+      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function
 
