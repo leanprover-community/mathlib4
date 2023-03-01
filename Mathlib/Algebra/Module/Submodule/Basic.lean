@@ -141,8 +141,7 @@ theorem toAddSubmonoid_eq : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
 #align submodule.to_add_submonoid_eq Submodule.toAddSubmonoid_eq
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   fun _ _ => id
 #align submodule.to_add_submonoid_strict_mono Submodule.toAddSubmonoid_strictMono
@@ -151,8 +150,7 @@ theorem toAddSubmonoid_le : p.toAddSubmonoid ≤ q.toAddSubmonoid ↔ p ≤ q :=
   Iff.rfl
 #align submodule.to_add_submonoid_le Submodule.toAddSubmonoid_le
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Submodule R M → AddSubmonoid M) :=
   toAddSubmonoid_strictMono.monotone
 #align submodule.to_add_submonoid_mono Submodule.toAddSubmonoid_mono
@@ -170,14 +168,12 @@ theorem toSubMulAction_eq : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
 #align submodule.to_sub_mul_action_eq Submodule.toSubMulAction_eq
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toSubMulAction_strictMono :
     StrictMono (toSubMulAction : Submodule R M → SubMulAction R M) := fun _ _ => id
 #align submodule.to_sub_mul_action_strict_mono Submodule.toSubMulAction_strictMono
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toSubMulAction_mono : Monotone (toSubMulAction : Submodule R M → SubMulAction R M) :=
   toSubMulAction_strictMono.monotone
 #align submodule.to_sub_mul_action_mono Submodule.toSubMulAction_mono
@@ -460,7 +456,7 @@ def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :
     invFun := id
     map_smul' := fun _ _ => rfl }
 #align submodule.restrict_scalars_equiv Submodule.restrictScalarsEquiv
-#align submodule.restrict_scalars_equiv_symm_apply Submodule.restrictScalarsEquiv_symmApply
+#align submodule.restrict_scalars_equiv_symm_apply Submodule.restrictScalarsEquiv_symm_apply
 
 end RestrictScalars
 
@@ -507,8 +503,7 @@ theorem toAddSubgroup_eq : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
 #align submodule.to_add_subgroup_eq Submodule.toAddSubgroup_eq
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   fun _ _ => id
 #align submodule.to_add_subgroup_strict_mono Submodule.toAddSubgroup_strictMono
@@ -517,8 +512,7 @@ theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
   Iff.rfl
 #align submodule.to_add_subgroup_le Submodule.toAddSubgroup_le
 
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 #align submodule.to_add_subgroup_mono Submodule.toAddSubgroup_mono
