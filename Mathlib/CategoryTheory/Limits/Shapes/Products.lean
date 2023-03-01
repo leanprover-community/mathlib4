@@ -8,8 +8,8 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.HasLimits
-import Mathbin.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.DiscreteCategory
 
 /-!
 # Categorical (co)products
@@ -245,8 +245,7 @@ theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[] -/
 @[simp, reassoc.1]
 theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (P : C)
-    (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) :=
-  by
+    (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
   ext
   trace
     "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[]"
@@ -270,8 +269,7 @@ theorem ι_comp_sigmaComparison [HasCoproduct f] [HasCoproduct fun b => G.obj (f
 @[simp, reassoc.1]
 theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (f b)] (P : C)
     (g : ∀ j, f j ⟶ P) :
-    sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) :=
-  by
+    sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) := by
   ext
   trace
     "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14: unsupported tactic `discrete_cases #[]"
@@ -413,8 +411,7 @@ def Pi.reindex : piObj (f ∘ ε) ≅ piObj f :=
 #align category_theory.limits.pi.reindex CategoryTheory.Limits.Pi.reindex
 
 @[simp, reassoc.1]
-theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).Hom ≫ Pi.π f (ε b) = Pi.π (f ∘ ε) b :=
-  by
+theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).Hom ≫ Pi.π f (ε b) = Pi.π (f ∘ ε) b := by
   dsimp [pi.reindex]
   simp only [has_limit.iso_of_equivalence_hom_π, discrete.nat_iso_inv_app,
     equivalence.equivalence_mk'_counit, discrete.equivalence_counit_iso, discrete.nat_iso_hom_app,
@@ -442,8 +439,7 @@ def Sigma.reindex : sigmaObj (f ∘ ε) ≅ sigmaObj f :=
 
 @[simp, reassoc.1]
 theorem Sigma.ι_reindex_hom (b : β) :
-    Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).Hom = Sigma.ι f (ε b) :=
-  by
+    Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).Hom = Sigma.ι f (ε b) := by
   dsimp [sigma.reindex]
   simp only [has_colimit.iso_of_equivalence_hom_π, equivalence.equivalence_mk'_unit,
     discrete.equivalence_unit_iso, discrete.nat_iso_hom_app, eq_to_iso.hom, eq_to_hom_map,
