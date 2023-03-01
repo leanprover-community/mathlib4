@@ -31,6 +31,13 @@ theorem prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
 
 end Multiset
 
+@[simp]
+lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R} [CanonicallyOrderedCommSemiring R]
+    [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ (∀ x ∈ m, (0 : R) < x) := by
+  rcases m with ⟨l⟩
+  rw [Multiset.quot_mk_to_coe'', Multiset.coe_prod]
+  exact CanonicallyOrderedCommSemiring.list_prod_pos
+
 open Multiset
 
 namespace Commute

@@ -51,23 +51,23 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The functorial version of `ULift.up`. -/
 @[simps]
-def Ulift.upFunctor : C ⥤ ULift.{u₂} C where
+def ULift.upFunctor : C ⥤ ULift.{u₂} C where
   obj := ULift.up
   map f := f
-#align category_theory.ulift.up_functor CategoryTheory.Ulift.upFunctor
+#align category_theory.ulift.up_functor CategoryTheory.ULift.upFunctor
 
 /-- The functorial version of `ULift.down`. -/
 @[simps]
-def Ulift.downFunctor : ULift.{u₂} C ⥤ C where
+def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
-#align category_theory.ulift.down_functor CategoryTheory.Ulift.downFunctor
+#align category_theory.ulift.down_functor CategoryTheory.ULift.downFunctor
 
 /-- The categorical equivalence between `C` and `ULift C`. -/
 @[simps]
-def Ulift.equivalence : C ≌ ULift.{u₂} C where
-  functor := Ulift.upFunctor
-  inverse := Ulift.downFunctor
+def ULift.equivalence : C ≌ ULift.{u₂} C where
+  functor := ULift.upFunctor
+  inverse := ULift.downFunctor
   unitIso :=
     { hom := 𝟙 _
       inv := 𝟙 _ }
@@ -93,70 +93,70 @@ def Ulift.equivalence : C ≌ ULift.{u₂} C where
   functor_unitIso_comp X := by
     change 𝟙 X ≫ 𝟙 X = 𝟙 X
     simp
-#align category_theory.ulift.equivalence CategoryTheory.Ulift.equivalence
+#align category_theory.ulift.equivalence CategoryTheory.ULift.equivalence
 
-section UliftHom
+section ULiftHom
 /- Porting note: obviously we don't want code that looks like this long term 
 the ability to turn off unused universe parameter error is desirable -/
 /-- `ULiftHom.{w} C` is an alias for `C`, which is endowed with a category instance
   whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 -/
-def UliftHom.{w,u} (C : Type u) : Type u := 
+def ULiftHom.{w,u} (C : Type u) : Type u := 
   let _ := ULift.{w} C 
   C
-#align category_theory.ulift_hom CategoryTheory.UliftHom
+#align category_theory.ulift_hom CategoryTheory.ULiftHom
 
-instance {C} [Inhabited C] : Inhabited (UliftHom C) :=
+instance {C} [Inhabited C] : Inhabited (ULiftHom C) :=
   ⟨(default : C)⟩
 
 /-- The obvious function `ULiftHom C → C`. -/
-def UliftHom.objDown {C} (A : UliftHom C) : C :=
+def ULiftHom.objDown {C} (A : ULiftHom C) : C :=
   A
-#align category_theory.ulift_hom.obj_down CategoryTheory.UliftHom.objDown
+#align category_theory.ulift_hom.obj_down CategoryTheory.ULiftHom.objDown
 
 /-- The obvious function `C → ULiftHom C`. -/
-def UliftHom.objUp {C} (A : C) : UliftHom C :=
+def ULiftHom.objUp {C} (A : C) : ULiftHom C :=
   A
-#align category_theory.ulift_hom.obj_up CategoryTheory.UliftHom.objUp
+#align category_theory.ulift_hom.obj_up CategoryTheory.ULiftHom.objUp
 
 @[simp]
-theorem objDown_objUp {C} (A : C) : (UliftHom.objUp A).objDown = A :=
+theorem objDown_objUp {C} (A : C) : (ULiftHom.objUp A).objDown = A :=
   rfl
 #align category_theory.obj_down_obj_up CategoryTheory.objDown_objUp
 
 @[simp]
-theorem objUp_objDown {C} (A : UliftHom C) : UliftHom.objUp A.objDown = A :=
+theorem objUp_objDown {C} (A : ULiftHom C) : ULiftHom.objUp A.objDown = A :=
   rfl
 #align category_theory.obj_up_obj_down CategoryTheory.objUp_objDown
 
-instance : Category.{max v₂ v₁} (UliftHom.{v₂} C) where
+instance : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   Hom A B := ULift.{v₂} <| A.objDown ⟶ B.objDown
   id A := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
 /-- One half of the quivalence between `C` and `ULiftHom C`. -/
 @[simps]
-def UliftHom.up : C ⥤ UliftHom C where
-  obj := UliftHom.objUp
+def ULiftHom.up : C ⥤ ULiftHom C where
+  obj := ULiftHom.objUp
   map f := ⟨f⟩
-#align category_theory.ulift_hom.up CategoryTheory.UliftHom.up
+#align category_theory.ulift_hom.up CategoryTheory.ULiftHom.up
 
 /-- One half of the quivalence between `C` and `ULiftHom C`. -/
 @[simps]
-def UliftHom.down : UliftHom C ⥤ C where
-  obj := UliftHom.objDown
+def ULiftHom.down : ULiftHom C ⥤ C where
+  obj := ULiftHom.objDown
   map f := f.down
-#align category_theory.ulift_hom.down CategoryTheory.UliftHom.down
+#align category_theory.ulift_hom.down CategoryTheory.ULiftHom.down
 
 /-- The equivalence between `C` and `ULiftHom C`. -/
-def UliftHom.equiv : C ≌ UliftHom C where
-  functor := UliftHom.up
-  inverse := UliftHom.down
+def ULiftHom.equiv : C ≌ ULiftHom C where
+  functor := ULiftHom.up
+  inverse := ULiftHom.down
   unitIso := NatIso.ofComponents (fun A => eqToIso rfl) (by aesop_cat)
   counitIso := NatIso.ofComponents (fun A => eqToIso rfl) (by aesop_cat)
-#align category_theory.ulift_hom.equiv CategoryTheory.UliftHom.equiv
+#align category_theory.ulift_hom.equiv CategoryTheory.ULiftHom.equiv
 
-end UliftHom
+end ULiftHom
 /- Porting note: we want to keep around the category instance on `D` 
 so Lean can figure out things further down. So `AsSmall` has been 
 nolinted. -/
@@ -211,11 +211,11 @@ def AsSmall.equiv : C ≌ AsSmall C where
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩
 
-/-- The equivalence between `C` and `ULiftHom (Ulift C)`. -/
-def UliftHomUliftCategory.equiv.{v', u', v, u} (C : Type u) [Category.{v} C] :
-    C ≌ UliftHom.{v'} (ULift.{u'} C) :=
-  Ulift.equivalence.trans UliftHom.equiv
-#align category_theory.ulift_hom_ulift_category.equiv CategoryTheory.UliftHomUliftCategory.equiv
+/-- The equivalence between `C` and `ULiftHom (ULift C)`. -/
+def ULiftHomULiftCategory.equiv.{v', u', v, u} (C : Type u) [Category.{v} C] :
+    C ≌ ULiftHom.{v'} (ULift.{u'} C) :=
+  ULift.equivalence.trans ULiftHom.equiv
+#align category_theory.ulift_hom_ulift_category.equiv CategoryTheory.ULiftHomULiftCategory.equiv
 
 end CategoryTheory
 

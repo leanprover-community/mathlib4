@@ -222,7 +222,7 @@ theorem prod_infᵢ_right [Nonempty ι] {f : Filter α} {g : ι → Filter β} :
   simp only [Filter.prod, eq_self_iff_true]
 #align filter.prod_infi_right Filter.prod_infᵢ_right
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem prod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁ ×ᶠ g₁ ≤ f₂ ×ᶠ g₂ :=
   inf_le_inf (comap_mono hf) (comap_mono hg)
@@ -487,7 +487,7 @@ theorem compl_mem_coprod {s : Set (α × β)} {la : Filter α} {lb : Filter β} 
   simp only [Filter.coprod, mem_sup, compl_mem_comap]
 #align filter.compl_mem_coprod Filter.compl_mem_coprod
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem coprod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁.coprod g₁ ≤ f₂.coprod g₂ :=
   sup_le_sup (comap_mono hf) (comap_mono hg)
