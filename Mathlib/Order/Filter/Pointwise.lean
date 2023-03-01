@@ -1303,7 +1303,7 @@ instance is_scalar_tower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower
 #align filter.is_scalar_tower'' Filter.is_scalar_tower''
 #align filter.vadd_assoc_class'' Filter.vaddAssocClass''
 
-@[to_additive isCentralVAdd]
+@[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Filter β) :=
   ⟨fun _ f => (congr_arg fun m => map m f) <| funext fun _ => op_smul_eq_smul _ _⟩
