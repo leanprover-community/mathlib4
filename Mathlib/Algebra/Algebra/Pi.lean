@@ -13,13 +13,13 @@ import Mathlib.Algebra.Algebra.Equiv
 /-!
 # The R-algebra structure on families of R-algebras
 
-The R-algebra structure on `Π i : I, A i` when each `A i` is an R-algebra.
+The R-algebra structure on `∀ i : I, A i` when each `A i` is an R-algebra.
 
 ## Main defintions
 
-* `pi.algebra`
-* `pi.eval_alg_hom`
-* `pi.const_alg_hom`
+* `Pi.algebra`
+* `Pi.evalAlgHom`
+* `Pi.constAlgHom`
 -/
 
 
@@ -50,43 +50,43 @@ instance algebra {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebr
     smul_def' := fun a f => by ext; simp [Algebra.smul_def] }
 #align pi.algebra Pi.algebra
 
-theorem algebraMap_def {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
+theorem algebraMap_def {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
     (a : R) : algebraMap R (∀ i, f i) a = fun i => algebraMap R (f i) a :=
   rfl
 #align pi.algebra_map_def Pi.algebraMap_def
 
 @[simp]
-theorem algebraMap_apply {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
+theorem algebraMap_apply {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
     (a : R) (i : I) : algebraMap R (∀ i, f i) a i = algebraMap R (f i) a :=
   rfl
 #align pi.algebra_map_apply Pi.algebraMap_apply
 
--- One could also build a `Π i, R i`-algebra structure on `Π i, A i`,
+-- One could also build a `∀ i, R i`-algebra structure on `∀ i, A i`,
 -- when each `A i` is an `R i`-algebra, although I'm not sure that it's useful.
-variable {I} (R) (f)
+variable {I} (R)
 
-/-- `function.eval` as an `alg_hom`. The name matches `pi.eval_ring_hom`, `pi.eval_monoid_hom`,
+/-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
 etc. -/
 @[simps]
-def evalAlgHom {r : CommSemiring R} [∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] (i : I) :
+def evalAlgHom {_ : CommSemiring R} [∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] (i : I) :
     (∀ i, f i) →ₐ[R] f i :=
   { Pi.evalRingHom f i with
     toFun := fun f => f i
-    commutes' := fun r => rfl }
+    commutes' := fun _ => rfl }
 #align pi.eval_alg_hom Pi.evalAlgHom
 
 variable (A B : Type _) [CommSemiring R] [Semiring B] [Algebra R B]
 
-/-- `function.const` as an `alg_hom`. The name matches `pi.const_ring_hom`, `pi.const_monoid_hom`,
+/-- `Function.const` as an `AlgHom`. The name matches `Pi.constRingHhom`, `Pi.constMonoidHom`,
 etc. -/
 @[simps]
 def constAlgHom : B →ₐ[R] A → B :=
   { Pi.constRingHom A B with
     toFun := Function.const _
-    commutes' := fun r => rfl }
+    commutes' := fun _ => rfl }
 #align pi.const_alg_hom Pi.constAlgHom
 
-/-- When `R` is commutative and permits an `algebra_map`, `pi.const_ring_hom` is equal to that
+/-- When `R` is commutative and permits an `algebraMap`, `Pi.constRingHom` is equal to that
 map. -/
 @[simp]
 theorem constRingHom_eq_algebraMap : constRingHom A R = algebraMap R (A → R) :=
@@ -100,7 +100,7 @@ theorem constAlgHom_eq_algebra_ofId : constAlgHom R A R = Algebra.ofId R (A → 
 
 end Pi
 
-/-- A special case of `pi.algebra` for non-dependent types. Lean struggles to elaborate
+/-- A special case of `Pi.algebra` for non-dependent types. Lean struggles to elaborate
 definitions elsewhere in the library without this, -/
 instance Function.algebra {R : Type _} (I : Type _) (A : Type _) [CommSemiring R] [Semiring A]
     [Algebra R A] : Algebra R (I → A) :=
@@ -130,11 +130,11 @@ end AlgHom
 
 namespace AlgEquiv
 
-/-- A family of algebra equivalences `Π j, (A₁ j ≃ₐ A₂ j)` generates a
-multiplicative equivalence between `Π j, A₁ j` and `Π j, A₂ j`.
+/-- A family of algebra equivalences `∀ i, (A₁ i ≃ₐ A₂ i)` generates a
+multiplicative equivalence between `∀ i, A₁ i` and `∀ i, A₂ i`.
 
-This is the `alg_equiv` version of `equiv.Pi_congr_right`, and the dependent version of
-`alg_equiv.arrow_congr`.
+This is the `AlgEquiv` version of `Equiv.Pi_congrRight`, and the dependent version of
+`AlgEquiv.arrowCongr`.
 -/
 @[simps apply]
 def piCongrRight {R ι : Type _} {A₁ A₂ : ι → Type _} [CommSemiring R] [∀ i, Semiring (A₁ i)]
@@ -174,4 +174,3 @@ theorem piCongrRight_trans {R ι : Type _} {A₁ A₂ A₃ : ι → Type _} [Com
 #align alg_equiv.Pi_congr_right_trans AlgEquiv.piCongrRight_trans
 
 end AlgEquiv
-
