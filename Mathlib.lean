@@ -898,6 +898,7 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Embedding.Basic
