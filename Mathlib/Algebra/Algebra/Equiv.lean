@@ -731,7 +731,7 @@ instance apply_sMulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
     where smul_comm r e a := (e.map_smul r a).symm
 #align alg_equiv.apply_smul_comm_class AlgEquiv.apply_sMulCommClass
 
-instance apply_smul_comm_class' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁
+instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁
     where smul_comm e r a := e.map_smul r a
 #align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smul_comm_class'
 
