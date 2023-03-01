@@ -8,7 +8,7 @@ Authors: Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Tower
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 
@@ -184,8 +184,7 @@ theorem RestrictScalars.addEquiv_symm_map_algebraMap_smul (r : R) (x : M) :
 
 theorem RestrictScalars.addEquiv_symm_map_smul_smul (r : R) (s : S) (x : M) :
     (RestrictScalars.addEquiv R S M).symm ((r • s) • x) =
-      r • (RestrictScalars.addEquiv R S M).symm (s • x) :=
-  by
+      r • (RestrictScalars.addEquiv R S M).symm (s • x) := by
   rw [Algebra.smul_def, mul_smul]
   rfl
 #align restrict_scalars.add_equiv_symm_map_smul_smul RestrictScalars.addEquiv_symm_map_smul_smul
