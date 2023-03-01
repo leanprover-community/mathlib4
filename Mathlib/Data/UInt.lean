@@ -64,21 +64,22 @@ run_cmd
       instance : AddSemigroup $typeName where
         add_assoc _ _ _ := congrArg mk (add_assoc _ _ _)
 
-      instance : AddCommSemigroup $typeName where
+      instance : AddCommGroup $typeName where
         add_comm _ _ := congrArg mk (add_comm _ _)
+        add_zero _ := congrArg mk (add_zero _)
+        zero_add _ := congrArg mk (zero_add _)
+        nsmul n a := ⟨AddMonoid.nsmul n a.val⟩
+        nsmul_zero x := congrArg mk (AddMonoid.nsmul_zero x.val)
+        nsmul_succ n a := congrArg mk (AddMonoid.nsmul_succ n a.val)
+        sub_eq_add_neg _ _ := congrArg mk (sub_eq_add_neg _ _)
+        add_left_neg _ := congrArg mk (add_left_neg _)
 
       instance : Semigroup $typeName where
         mul_assoc _ _ _ := congrArg mk (mul_assoc _ _ _)
 
       instance : Semiring $typeName where
-        add_zero _ := congrArg mk (add_zero _)
-        zero_add _ := congrArg mk (zero_add _)
-        add_comm _ _:= congrArg mk (add_comm _ _)
         mul_one _ := congrArg mk (mul_one _)
         one_mul _ := congrArg mk (one_mul _)
-        nsmul n a := ⟨AddMonoid.nsmul n a.val⟩
-        nsmul_zero x := congrArg mk (AddMonoid.nsmul_zero x.val)
-        nsmul_succ n a := congrArg mk (AddMonoid.nsmul_succ n a.val)
         zero_mul _ := congrArg mk (zero_mul _)
         mul_zero _ := congrArg mk (mul_zero _)
         npow_zero := fun _ ↦ rfl
@@ -88,15 +89,15 @@ run_cmd
         natCast n := ⟨n⟩
         natCast_zero := rfl
         natCast_succ _ := congrArg mk (Nat.cast_succ _)
-        __ := inferInstanceAs (AddCommSemigroup $typeName)
+        __ := inferInstanceAs (AddCommGroup $typeName)
         __ := inferInstanceAs (Semigroup $typeName)
 
       instance : Ring $typeName where
-        sub_eq_add_neg _ _ := congrArg mk (sub_eq_add_neg _ _)
-        add_left_neg _ := congrArg mk (add_left_neg _)
+        toAddCommGroup := inferInstanceAs (AddCommGroup $typeName)
         intCast n := ⟨n⟩
         intCast_ofNat _ := rfl
         intCast_negSucc _ := rfl
+        __ := inferInstanceAs (Semiring $typeName)
 
       instance : CommRing $typeName where
         mul_comm := fun _ _ ↦ by
