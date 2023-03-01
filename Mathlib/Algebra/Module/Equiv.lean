@@ -55,11 +55,7 @@ structure LinearEquiv {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : 
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
 #align linear_equiv LinearEquiv
 
-instance {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R →+* S)
-  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type _) (M₂ : Type _)
-  [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
-      EquivLike (LinearEquiv σ M M₂) M M₂ :=
-  inferInstance
+
 
 attribute [coe] LinearEquiv.toLinearMap
 
