@@ -250,7 +250,7 @@ theorem botIsUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := b
 theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
   refine' (card_filter_le _ _).trans _
-  rw [off_diag_card, Nat.mul_sub_left_distrib, mul_one]
+  rw [offDiag_card, Nat.mul_sub_left_distrib, mul_one]
 #align finpartition.is_uniform_one Finpartition.isUniformOne
 
 variable {P G}
