@@ -428,16 +428,6 @@ variable {L : Type u₃} [Category.{v₃} L]
 
 variable (D : L ⥤ K) [HasLimit (D ⋙ E ⋙ F)]
 
--- Porting note: added because instance not automatically synthesized
-instance [h : HasLimit (D ⋙ E ⋙ F)] : HasLimit ((D ⋙ E) ⋙ F) where 
-  exists_limit := by 
-    rw [Functor.assoc]
-    exact h.exists_limit
-instance [h : HasLimit ((D ⋙ E) ⋙ F)] : HasLimit (D ⋙ E ⋙ F) where 
-  exists_limit := by 
-    rw [← Functor.assoc]
-    exact h.exists_limit
-
 @[simp]
 theorem limit.pre_pre [h : HasLimit (D ⋙  E ⋙  F)] : haveI : HasLimit ((D ⋙  E) ⋙  F) := h;
     limit.pre F E ≫ limit.pre (E ⋙ F) D = limit.pre F (D ⋙ E) := by
@@ -1012,17 +1002,6 @@ theorem colimit.pre_desc (c : Cocone F) :
 variable {L : Type u₃} [Category.{v₃} L]
 
 variable (D : L ⥤ K) [HasColimit (D ⋙ E ⋙ F)]
-
--- Porting note : added these instances 
-instance [h : HasColimit (D ⋙ E ⋙ F)] : HasColimit ((D ⋙ E) ⋙ F) where 
-  exists_colimit := by 
-    rw [Functor.assoc]
-    exact h.exists_colimit
-instance [h : HasColimit ((D ⋙ E) ⋙ F)] : HasColimit (D ⋙ E ⋙ F) where 
-  exists_colimit := by 
-    rw [← Functor.assoc]
-    exact h.exists_colimit
-
 
 @[simp]
 theorem colimit.pre_pre [h : HasColimit (D ⋙  E ⋙  F)] :

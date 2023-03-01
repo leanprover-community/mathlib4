@@ -705,7 +705,6 @@ variable {F : J ⥤ C} {G : J ⥤ C} (H : C ⥤ D)
 
 open CategoryTheory.Limits
 
-/- Porting note: dot notation on the functor is broken for `mapCone` -/
 /-- The image of a cone in C under a functor G : C ⥤ D is a cone in D. -/
 @[simps!]
 def mapCone (c : Cone F) : Cone (F ⋙ H) :=

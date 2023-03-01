@@ -163,9 +163,6 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
 instance : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
   trans := trans
 
-instance : Trans (Iso : C → C → Type v) (Iso : C → C → Type v) (Iso : C → C → Type v) where
-  trans := Iso.trans
-
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
 
