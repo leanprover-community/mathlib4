@@ -80,7 +80,10 @@ instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where
   abs_map := fun _ => const.get_map _
 #align mvqpf.const.mvqpf MvQPF.Const.mvqpf
 
+
+instance instIsPolynomial : IsPolynomial (Const n A) where
+  repr_abs := by intros; simp [repr, abs, MvPFunctor.const.mk_get]
+
 end Const
 
 end MvQPF
-

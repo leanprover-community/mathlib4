@@ -65,4 +65,17 @@ instance Prj.mvqpf : MvQPF (Prj i) where
   abs_map := by intros α β f P ; cases P ; rfl
 #align mvqpf.prj.mvqpf MvQPF.Prj.mvqpf
 
+/-- projections are polynomial -/
+instance : IsPolynomial (Prj i) :=
+{
+  repr_abs := by
+    intros _ x
+    rcases x with ⟨⟨⟩, f⟩
+    simp only [repr, abs, Prj.repr]
+    apply congr_arg
+    funext j a
+    rcases a with ⟨⟨⟨⟩⟩⟩
+    rfl
+}
+
 end MvQPF

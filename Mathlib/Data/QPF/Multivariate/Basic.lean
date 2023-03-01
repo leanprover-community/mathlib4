@@ -288,3 +288,60 @@ theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := b
 
 end MvQPF
 
+
+namespace MvQPF
+  /--
+    A QPF is polynomial, if it is equivalent to the underlying `MvPFunctor`.
+    `repr_abs` is the last property needed to show that `abs` is an isomorphism, with `repr`
+    its inverse
+  -/
+  class IsPolynomial (F : TypeVec n → Type _) [MvFunctor F] extends MvQPF F where
+    repr_abs : ∀ {α} (x : P.Obj α), repr (abs x) = x
+  #align mvqpf.is_polynomial MvQPF.IsPolynomial
+
+
+  namespace IsPolynomial
+    variable {n : ℕ} {F : TypeVec n → Type _} [MvFunctor F]
+
+    /--
+      Show that the desired equivalence follows from `IsPolynomial`
+    -/
+    def equiv [p : IsPolynomial F] :
+      ∀ α, F α ≃ p.P.Obj α
+    := fun _ => {
+      toFun := p.repr,
+      invFun := p.abs,
+      left_inv := p.abs_repr,
+      right_inv := p.repr_abs,
+    }
+    #align mvqpf.is_polynomial.equiv MvQPF.IsPolynomial.equiv
+  end IsPolynomial
+
+end MvQPF
+
+
+
+namespace mvpfunctor
+  variable {n : Nat} (P : MvPFunctor n)
+
+  /--
+    Every polynomial functor is trivially a QPF
+  -/
+  instance : MvQPF P.Obj :=
+  {
+    P         := P,
+    abs       := id,
+    repr      := id,
+    abs_repr  := by intros; rfl,
+    abs_map   := by intros; rfl,
+  }
+
+  /--
+    Every polynomial functor is a polynomial QPF
+  -/
+  instance : MvQPF.IsPolynomial P.Obj :=
+  {
+    repr_abs := by intros; rfl
+  }
+
+end mvpfunctor
