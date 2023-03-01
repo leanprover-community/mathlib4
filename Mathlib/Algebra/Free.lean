@@ -445,7 +445,6 @@ end AssocQuotient
 end Magma
 
 /-- Free additive semigroup over a given alphabet. -/
-@[ext]
 structure FreeAddSemigroup (α : Type u) where
 /-- The head of the element -/
   head : α
