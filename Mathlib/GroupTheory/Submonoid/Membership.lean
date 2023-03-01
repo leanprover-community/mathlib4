@@ -274,8 +274,7 @@ theorem mem_supₛ_of_mem {S : Set (Submonoid M)} {s : Submonoid M} (hs : s ∈ 
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `1` and all elements of `S i` for all `i`, and is preserved under multiplication,
 then it holds for all elements of the supremum of `S`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       " An induction principle for elements of `⨆ i, S i`.
       If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
       then it holds for all elements of the supremum of `S`. "]
