@@ -297,10 +297,10 @@ theorem ofList_toList (s : CompositionSeries X) :
 #align composition_series.of_list_to_list CompositionSeries.ofList_toList
 
 @[simp]
-theorem ofList_to_list' (s : CompositionSeries X) :
+theorem ofList_toList' (s : CompositionSeries X) :
     ofList s.toList s.toList_ne_nil s.chain'_toList = s :=
   ofList_toList s
-#align composition_series.of_list_to_list' CompositionSeries.ofList_to_list'
+#align composition_series.of_list_to_list' CompositionSeries.ofList_toList'
 
 @[simp]
 theorem toList_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) :
