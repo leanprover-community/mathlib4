@@ -159,20 +159,23 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 open Quiver
 
+-- porting note:
+-- This def was originally marked `@[simp]`, but the meaning is different in lean4: lean4#2042
+-- So, the `@[simp]` was removed, and the two equational lemmas below added instead.
 /-- A path in a category can be composed to a single morphism. -/
-@[simp]
 def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
   | _, .nil => 𝟙 X
   | _, .cons p e => composePath p ≫ e
 #align category_theory.compose_path CategoryTheory.composePath
 
--- porting note: TODO: lint complains that this is not in simp normal form,
--- so I commented it.
-/-
+@[simp] lemma composePath_nil {X : C} : composePath (Path.nil : Path X X) = 𝟙 X := rfl
+
+@[simp] lemma composePath_cons {X Y Z : C} (p : Path X Y) (e : Y ⟶ Z) :
+  composePath (p.cons e) = composePath p ≫ e := rfl
+
 @[simp]
 theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f := Category.id_comp _
--/
-#noalign category_theory.compose_path_to_path
+#align category_theory.compose_path_to_path CategoryTheory.composePath_toPath
 
 @[simp]
 theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
