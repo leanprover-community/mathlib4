@@ -56,19 +56,19 @@ def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
     (t : ∀ k : K, IsLimit (Functor.mapCone ((evaluation K C).obj k) c)) : IsLimit c
     where
   lift s :=
-    { app := fun k => (t k).lift ⟨s.X.obj k, whiskerRight s.π ((evaluation K C).obj k)⟩
+    { app := fun k => (t k).lift ⟨s.pt.obj k, whiskerRight s.π ((evaluation K C).obj k)⟩
       naturality := fun X Y f =>
         (t Y).hom_ext fun j => by
           rw [assoc, (t Y).fac _ j]
           simpa using
-            ((t X).fac_assoc ⟨s.X.obj X, whiskerRight s.π ((evaluation K C).obj X)⟩ j _).symm }
+            ((t X).fac_assoc ⟨s.pt.obj X, whiskerRight s.π ((evaluation K C).obj X)⟩ j _).symm }
   fac s j := NatTrans.ext _ _ <| funext fun k => (t k).fac _ j
   uniq s m w :=
     NatTrans.ext _ _ <|
       funext fun x =>
         (t x).hom_ext fun j =>
           (congr_app (w j) x).trans
-            ((t x).fac ⟨s.X.obj _, whiskerRight s.π ((evaluation K C).obj _)⟩ j).symm
+            ((t x).fac ⟨s.pt.obj _, whiskerRight s.π ((evaluation K C).obj _)⟩ j).symm
 #align category_theory.limits.evaluation_jointly_reflects_limits CategoryTheory.Limits.evaluationJointlyReflectsLimits
 
 /-- Given a functor `F` and a collection of limit cones for each diagram `X ↦ F X k`, we can stitch
@@ -79,8 +79,8 @@ them together to give a cone for the diagram `F`.
 @[simps]
 def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) : Cone F
     where
-  X :=
-    { obj := fun k => (c k).cone.X
+  pt :=
+    { obj := fun k => (c k).cone.pt
       map := fun {k₁} {k₂} f => (c k₂).isLimit.lift ⟨_, (c k₁).cone.π ≫ F.flip.map f⟩
       map_id := fun k =>
         (c k).isLimit.hom_ext fun j => by
@@ -113,12 +113,12 @@ def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
     (t : ∀ k : K, IsColimit (Functor.mapCocone ((evaluation K C).obj k) c)) : IsColimit c
     where
   desc s :=
-    { app := fun k => (t k).desc ⟨s.X.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
+    { app := fun k => (t k).desc ⟨s.pt.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
       naturality := fun X Y f =>
         (t X).hom_ext fun j => by
           rw [(t X).fac_assoc _ j]
           erw [← (c.ι.app j).naturality_assoc f]
-          erw [(t Y).fac ⟨s.X.obj _, whiskerRight s.ι _⟩ j]
+          erw [(t Y).fac ⟨s.pt.obj _, whiskerRight s.ι _⟩ j]
           dsimp
           simp }
   fac s j := NatTrans.ext _ _ <| funext fun k => (t k).fac _ j
@@ -127,7 +127,7 @@ def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
       funext fun x =>
         (t x).hom_ext fun j =>
           (congr_app (w j) x).trans
-            ((t x).fac ⟨s.X.obj _, whiskerRight s.ι ((evaluation K C).obj _)⟩ j).symm
+            ((t x).fac ⟨s.pt.obj _, whiskerRight s.ι ((evaluation K C).obj _)⟩ j).symm
 #align category_theory.limits.evaluation_jointly_reflects_colimits CategoryTheory.Limits.evaluationJointlyReflectsColimits
 
 /--
@@ -139,8 +139,8 @@ them together to give a cocone for the diagram `F`.
 @[simps]
 def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) : Cocone F
     where
-  X :=
-    { obj := fun k => (c k).cocone.X
+  pt :=
+    { obj := fun k => (c k).cocone.pt
       map := fun {k₁} {k₂} f => (c k₁).isColimit.desc ⟨_, F.flip.map f ≫ (c k₂).cocone.ι⟩
       map_id := fun k =>
         (c k).isColimit.hom_ext fun j => by
@@ -169,7 +169,7 @@ def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.
 noncomputable section
 
 instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (K ⥤ C) where 
-  hasLimit F :=
+  has_limit F :=
     HasLimit.mk
       { cone := combineCones F fun _ => getLimitCone _
         isLimit := combinedIsLimit _ _ }
@@ -177,7 +177,7 @@ instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfSha
 
 instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimitsOfShape J (K ⥤ C)
     where 
-  HasColimit _ :=
+  has_colimit _ :=
     HasColimit.mk
       { cocone := combineCocones _ fun _ => getColimitCocone _
         isColimit := combinedIsColimit _ _ }
@@ -186,22 +186,22 @@ instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimit
 -- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] : 
     HasLimitsOfSize.{v₁, u₁} (K ⥤ C) where  
-  hasLimitsOfShape := fun _ _ => inferInstance 
+  has_limits_of_shape := fun _ _ => inferInstance 
 #align category_theory.limits.functor_category_has_limits_of_size CategoryTheory.Limits.functorCategoryHasLimitsOfSize
 
 -- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where 
-  hasColimitsOfShape := fun _ _ => inferInstance 
+  has_colimits_of_shape := fun _ _ => inferInstance 
 #align category_theory.limits.functor_category_has_colimits_of_size CategoryTheory.Limits.functorCategoryHasColimitsOfSize
 
 instance evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
     PreservesLimitsOfShape J ((evaluation K C).obj k) where 
   preservesLimit {F} := by 
+    -- Porting note: added a let because X was not inferred  
     let X : (k:K)  → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) := 
-    -- Porting note: now needed X has a hint
       fun k => getLimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
-    refine preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
+    exact preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
       IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
 #align category_theory.limits.evaluation_preserves_limits_of_shape CategoryTheory.Limits.evaluationPreservesLimitsOfShape
 
@@ -265,8 +265,8 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
 instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
     PreservesColimitsOfShape J ((evaluation K C).obj k) where 
   preservesColimit {F} := by
+    -- Porting note: added a let because X was not inferred 
     let X : (k:K)  → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) := 
-    -- Porting note: now needed X has a hint
       fun k => getColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     refine preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
       IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
