@@ -382,14 +382,11 @@ instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (G
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
 
-instance vAdd [VAdd M G] : VAdd M (Germ l G) :=
-  ⟨fun n => map ((· +ᵥ ·) n)⟩
-
 @[to_additive]
-instance sMul [SMul M G] : SMul M (Germ l G) :=
+instance smul [SMul M G] : SMul M (Germ l G) :=
   ⟨fun n => map (n • ·)⟩
 
-@[to_additive sMul]
+@[to_additive existing smul]
 instance pow [Pow G M] : Pow (Germ l G) M :=
   ⟨fun f n => map (· ^ n) f⟩
 
@@ -415,11 +412,11 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
   rfl
 #align filter.germ.const_pow Filter.Germ.const_pow
 
--- Porting note: `to_additive` can't generate this.
+-- Porting note: `to_additive` can't generate this (firstMultArg bug).
 instance addMonoid [AddMonoid M] : AddMonoid (Germ l M) :=
   Function.Surjective.addMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
 
-@[to_additive]
+@[to_additive existing]
 instance monoid [Monoid M] : Monoid (Germ l M) :=
   Function.Surjective.monoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) fun _ _ => rfl
 
@@ -485,7 +482,7 @@ instance subNegMonoid [SubNegMonoid G] : SubNegMonoid (Germ l G) :=
   Function.Surjective.subNegMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-@[to_additive subNegMonoid]
+@[to_additive existing subNegMonoid]
 instance divInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) :=
   Function.Surjective.divInvMonoid ofFun (surjective_quot_mk _) rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -681,14 +678,14 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
 instance preorder [Preorder β] : Preorder (Germ l β)
     where
   le := (· ≤ ·)
-  le_refl f := inductionOn f <| EventuallyLe.refl l
-  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLe.trans
+  le_refl f := inductionOn f <| EventuallyLE.refl l
+  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLE.trans
 
 instance partialOrder [PartialOrder β] : PartialOrder (Germ l β) :=
   { Filter.Germ.preorder with
     le := (· ≤ ·)
     le_antisymm := fun f g =>
-      inductionOn₂ f g fun _ _ h₁ h₂ => (EventuallyLe.antisymm h₁ h₂).germ_eq }
+      inductionOn₂ f g fun _ _ h₁ h₂ => (EventuallyLE.antisymm h₁ h₂).germ_eq }
 
 instance bot [Bot β] : Bot (Germ l β) :=
   ⟨↑(⊥ : β)⟩

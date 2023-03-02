@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
+! leanprover-community/mathlib commit 75608affb24b4f48699fbcd38f227827f7793771
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1154,6 +1154,10 @@ theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ 
   exacts[(ha hx).elim, hxt]
 #align set.insert_subset_insert_iff Set.insert_subset_insert_iff
 
+theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
+  forall₂_congr <| fun _ hb => or_iff_right <| ne_of_mem_of_not_mem hb ha
+#align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
+
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
   simp only [insert_subset, exists_and_right, ssubset_def, not_subset]
   simp only [exists_prop, and_comm]
@@ -2124,6 +2128,12 @@ theorem powerset_empty : 𝒫(∅ : Set α) = {∅} :=
 theorem powerset_univ : 𝒫(univ : Set α) = univ :=
   eq_univ_of_forall subset_univ
 #align set.powerset_univ Set.powerset_univ
+
+/-- The powerset of a singleton contains only `∅` and the singleton itself. -/
+theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by
+  ext y
+  rw [mem_powerset_iff, subset_singleton_iff_eq, mem_insert_iff, mem_singleton_iff]
+#align set.powerset_singleton Set.powerset_singleton
 
 /-! ### Sets defined as an if-then-else -/
 
