@@ -773,6 +773,7 @@ import Mathlib.Data.Sum.Order
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Data.Tree
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeVec
 import Mathlib.Data.TypeVec.Attr
