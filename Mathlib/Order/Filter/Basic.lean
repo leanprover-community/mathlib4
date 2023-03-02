@@ -653,7 +653,7 @@ theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
   simp only [le_principal_iff, iff_self_iff, mem_principal]
 #align filter.principal_mono Filter.principal_mono
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ => principal_mono.2
 #align filter.monotone_principal Filter.monotone_principal
 
@@ -1050,7 +1050,7 @@ theorem infᵢ_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : 
 
 end Lattice
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem join_mono {f₁ f₂ : Filter (Filter α)} (h : f₁ ≤ f₂) : join f₁ ≤ join f₂ := fun _ hs => h hs
 #align filter.join_mono Filter.join_mono
 
@@ -1708,25 +1708,25 @@ theorem Eventually.lt_top_iff_ne_top [PartialOrder β] [OrderTop β] {l : Filter
   ⟨Eventually.ne_of_lt, Eventually.lt_top_of_ne⟩
 #align filter.eventually.lt_top_iff_ne_top Filter.Eventually.lt_top_iff_ne_top
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem EventuallyLE.inter {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : s' ≤ᶠ[l] t') :
     (s ∩ s' : Set α) ≤ᶠ[l] (t ∩ t' : Set α) :=
   h'.mp <| h.mono fun _ => And.imp
 #align filter.eventually_le.inter Filter.EventuallyLE.inter
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem EventuallyLE.union {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : s' ≤ᶠ[l] t') :
     (s ∪ s' : Set α) ≤ᶠ[l] (t ∪ t' : Set α) :=
   h'.mp <| h.mono fun _ => Or.imp
 #align filter.eventually_le.union Filter.EventuallyLE.union
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem EventuallyLE.compl {s t : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) :
     (tᶜ : Set α) ≤ᶠ[l] (sᶜ : Set α) :=
   h.mono fun _ => mt
 #align filter.eventually_le.compl Filter.EventuallyLE.compl
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem EventuallyLE.diff {s t s' t' : Set α} {l : Filter α} (h : s ≤ᶠ[l] t) (h' : t' ≤ᶠ[l] s') :
     (s \ s' : Set α) ≤ᶠ[l] (t \ t' : Set α) :=
   h.inter h'.compl
@@ -2135,12 +2135,12 @@ theorem gc_map_comap (m : α → β) : GaloisConnection (map m) (comap m) :=
   fun _ _ => map_le_iff_le_comap
 #align filter.gc_map_comap Filter.gc_map_comap
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem map_mono : Monotone (map m) :=
   (gc_map_comap m).monotone_l
 #align filter.map_mono Filter.map_mono
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem comap_mono : Monotone (comap m) :=
   (gc_map_comap m).monotone_u
 #align filter.comap_mono Filter.comap_mono
@@ -2615,7 +2615,7 @@ theorem le_seq {f : Filter (α → β)} {g : Filter α} {h : Filter β}
   mem_of_superset (hh _ ht _ hu) fun _ ⟨_, hm, _, ha, eq⟩ => eq ▸ hs _ hm _ ha
 #align filter.le_seq Filter.le_seq
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem seq_mono {f₁ f₂ : Filter (α → β)} {g₁ g₂ : Filter α} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁.seq g₁ ≤ f₂.seq g₂ :=
   le_seq fun _ hs _ ht => seq_mem_seq (hf hs) (hg ht)
@@ -2731,7 +2731,7 @@ theorem bind_le {f : Filter α} {g : α → Filter β} {l : Filter β} (h : ∀�
   join_le <| eventually_map.2 h
 #align filter.bind_le Filter.bind_le
 
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem bind_mono {f₁ f₂ : Filter α} {g₁ g₂ : α → Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ᶠ[f₁] g₂) :
     bind f₁ g₁ ≤ bind f₂ g₂ := by
   refine' le_trans (fun s hs => _) (join_mono <| map_mono hf)
