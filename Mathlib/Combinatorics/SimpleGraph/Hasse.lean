@@ -8,9 +8,9 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Prod
-import Mathbin.Data.Fin.SuccPred
-import Mathbin.Order.SuccPred.Relation
+import Mathlib.Combinatorics.SimpleGraph.Prod
+import Mathlib.Data.Fin.SuccPred
+import Mathlib.Order.SuccPred.Relation
 
 /-!
 # The Hasse diagram as a graph
@@ -71,8 +71,7 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β]
 
 @[simp]
-theorem hasse_prod : hasse (α × β) = hasse α □ hasse β :=
-  by
+theorem hasse_prod : hasse (α × β) = hasse α □ hasse β := by
   ext (x y)
   simp_rw [box_prod_adj, hasse_adj, Prod.covby_iff, or_and_right, @eq_comm _ y.1, @eq_comm _ y.2,
     or_or_or_comm]
