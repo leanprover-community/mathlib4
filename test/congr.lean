@@ -51,3 +51,13 @@ theorem ex12 (p q : Prop) (h : p ↔ q) : p = q := by
 
 theorem ex13 (x y : α) (h : x = y) (f : α → Nat) : f x = f y := by
   congr!
+
+theorem ex14 {α : Type} (f : Nat → Nat) (h : ∀ x, f x = 0) (z : α) (hz : HEq z 0) :
+    HEq f (fun (_ : α) => z) := by
+  congr!
+  · guard_target = Nat = α
+    exact type_eq_of_heq hz.symm
+  next n x _ =>
+    guard_target = HEq (f n) z
+    rw [h]
+    exact hz.symm

@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Lean
 import Mathlib.Tactic.Relation.Rfl
+import Std.Logic
 
 /-!
 # The `congr!` tactic
@@ -60,7 +61,7 @@ This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, spec
 -/
 def Lean.MVarId.iffOfEq (mvarId : MVarId) : MetaM MVarId := do
   let res ← observing? do
-    let [mvarId] ← mvarId.apply (mkConst `iff_of_eq []) | failure
+    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
     return mvarId
   return res.getD mvarId
 
@@ -139,9 +140,9 @@ def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
     let res ← observing? do
       mvarId.checkNotAssigned `proofIrrelHeq
       let tgt ← withReducible <| mvarId.getType'
-      let some (_, _, lhs, rhs) := tgt.heq? | failure
+      let some (_, lhs, _, rhs) := tgt.heq? | failure
       -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
-      let pf ← mkAppM `proof_irrel_heq #[lhs, rhs]
+      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
       mvarId.assign pf
       return true
     return res.getD false
@@ -170,11 +171,13 @@ def Lean.MVarId.obviousFunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) 
 Try to apply `Function.hfunext`, returning the new goals if it succeeds.
 Like `Lean.MVarId.obviousFunext?`, we only do so if at least one side of the `HEq` is a
 lambda. This is to prevent unfolding of things like `Set`.
+
+Need to have `Mathlib.Logic.Function.Basic` imported for this to succeed.
 -/
 def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   mvarId.withContext <| observing? do
     let tgt ← mvarId.getType'
-    let some (_, _, lhs, rhs) := tgt.heq? | failure
+    let some (_, lhs, _, rhs) := tgt.heq? | failure
     if not lhs.isLambda && not rhs.isLambda then failure
     mvarId.apply (← mkConstWithFreshMVarLevels `Function.hfunext)
 
