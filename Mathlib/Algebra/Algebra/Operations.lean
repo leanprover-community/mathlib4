@@ -472,7 +472,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     obtain ⟨r, rfl⟩ := hx
     exact hr r
   revert hx
-  simp_rw [pow_succ']  -- porting note: TODO: no longer rewrites
+  simp_rw [pow_succ' M n]  -- porting note: TODO: no longer rewrites
   intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
@@ -553,8 +553,7 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
 on either side). -/
-def span.ringHom : SetSemiring A →+* Submodule R A
-    where
+def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun := Submodule.span R
   map_zero' := span_empty
   map_one' := one_eq_span.symm
@@ -622,17 +621,18 @@ theorem prod_span_singleton {ι : Type _} (s : Finset ι) (x : ι → A) :
 variable (R A)
 
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
-instance moduleSet : Module (SetSemiring A) (Submodule R A)
-    where
-  smul s P := span R s * P
+instance moduleSet : Module (SetSemiring A) (Submodule R A) where
+  -- porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
+  smul s P := span R (SetSemiring.down s) * P
   smul_add _ _ _ := mul_add _ _ _
-  add_smul s t P := show span R (s ⊔ t) * P = _ by erw [span_union, right_distrib]
-  mul_smul s t P := show _ = _ * (_ * _) by rw [← mul_assoc, span_mul_span, ← image_mul_prod]
-  one_smul P :=
-    show span R {(1 : A)} * P = _ by
-      conv_lhs => erw [← span_eq P]
-      erw [span_mul_span, one_mul, span_eq]
-  zero_smul P := show span R ∅ * P = ⊥ by erw [span_empty, bot_mul]
+  add_smul s t P := by
+    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
+  mul_smul s t P := by
+    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_mul, ← mul_assoc, span_mul_span]
+  one_smul P := by
+    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_one, ←one_eq_span_one_set, one_mul]
+  zero_smul P := by
+    simp_rw [HSMul.hSMul, SMul.smul, SetSemiring.down_zero, span_empty, bot_mul, bot_eq_zero]
   smul_zero _ := mul_bot _
 #align submodule.module_set Submodule.moduleSet
 
@@ -643,7 +643,7 @@ theorem smul_def {s : SetSemiring A} {P : Submodule R A} : s • P = span R s * 
 #align submodule.smul_def Submodule.smul_def
 
 theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
-    (h₁ : SetSemiring.down s ≤ SetSemiring.down t)
+    (h₁ : SetSemiring.down s ⊆ SetSemiring.down t)
     (h₂ : M ≤ N) : s • M ≤ t • N :=
   mul_le_mul (span_mono h₁) h₂
 #align submodule.smul_le_smul Submodule.smul_le_smul
@@ -656,7 +656,7 @@ theorem smul_singleton (a : A) (M : Submodule R A) :
   apply le_antisymm
   · rw [span_le]
     rintro _ ⟨b, m, hb, hm, rfl⟩
-    rw [SetLike.mem_coe, mem_map, set.mem_singleton_iff.mp hb]
+    rw [SetLike.mem_coe, mem_map, Set.mem_singleton_iff.mp hb]
     exact ⟨m, hm, rfl⟩
   · rintro _ ⟨m, hm, rfl⟩
     exact subset_span ⟨a, m, Set.mem_singleton a, hm, rfl⟩
