@@ -81,9 +81,10 @@ variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
 instance : One (Submodule R A) :=
-  ⟨(Algebra.linearMap R A).range⟩
+-- porting note: `f.range` notation doesn't work
+  ⟨LinearMap.range (Algebra.linearMap R A)⟩
 
-theorem one_eq_range : (1 : Submodule R A) = (Algebra.linearMap R A).range :=
+theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap R A) :=
   rfl
 #align submodule.one_eq_range Submodule.one_eq_range
 
@@ -117,7 +118,8 @@ theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
 #align submodule.one_eq_span_one_set Submodule.one_eq_span_one_set
 
 theorem one_le : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
-  simpa only [one_eq_span, span_le, Set.singleton_subset_iff]
+  -- porting note: simpa no longer closes refl goals, so added `SetLike.mem_coe`
+  simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]
 #align submodule.one_le Submodule.one_le
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
@@ -130,7 +132,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 theorem map_op_one :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 :=
   by
-  ext
+  ext x
   induction x using MulOpposite.rec'
   simp
 #align submodule.map_op_one Submodule.map_op_one
@@ -170,7 +172,7 @@ theorem mul_le : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
 
 theorem mul_toAddSubmonoid (M N : Submodule R A) :
     (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := by
-  dsimp [Mul.mul]
+  dsimp [HMul.hMul, Mul.mul]  --porting note: added `hMul`
   simp_rw [← LinearMap.mulLeft_toAddMonoid_hom R, LinearMap.mulLeft, ← map_toAddSubmonoid _ N,
     map₂]
   rw [supᵢ_toAddSubmonoid]
@@ -187,7 +189,7 @@ protected theorem mul_induction_on {C : A → Prop} {r : A} (hr : r ∈ M * N)
 /-- A dependent version of `mul_induction_on`. -/
 @[elab_as_elim]
 protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
-    (hm : ∀ m ∈ M, ∀ n ∈ N, C (m * n) (mul_mem_mul ‹_› ‹_›))
+    (hm : ∀ m (_ : m ∈ M), ∀ n (_ : n ∈ N), C (m * n) (mul_mem_mul ‹_› ‹_›))
     (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
   refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
