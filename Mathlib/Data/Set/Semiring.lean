@@ -54,6 +54,10 @@ protected def down : SetSemiring α ≃ Set α :=
   Equiv.refl _
 #align set_semiring.down SetSemiring.down
 
+--Porting note: new, since dot notation doesn't work
+open SetSemiring (down)
+open Set (up)
+
 --Porting note: dot notation no longer works
 @[simp]
 protected theorem down_up (s : Set α) : SetSemiring.down (Set.up s) = s :=
@@ -98,7 +102,33 @@ instance : AddCommMonoid (SetSemiring α) where
   add_zero := union_empty
   add_comm := union_comm
 
--- TODO: port
+theorem zero_def : (0 : SetSemiring α) = Set.up ∅ :=
+  rfl
+#align set_semiring.zero_def SetSemiring.zero_def
+
+@[simp]
+theorem down_zero : down (0 : SetSemiring α) = ∅ :=
+  rfl
+#align set_semiring.down_zero SetSemiring.down_zero
+
+@[simp]
+theorem _root_.Set.up_empty : Set.up (∅ : Set α) = 0 :=
+  rfl
+#align set.up_empty Set.up_empty
+
+theorem add_def (s t : SetSemiring α) : s + t = up (down s ∪ down t) :=
+  rfl
+#align set_semiring.add_def SetSemiring.add_def
+
+@[simp]
+theorem down_add (s t : SetSemiring α) : down (s + t) = down s ∪ down t :=
+  rfl
+#align set_semiring.down_add SetSemiring.down_add
+
+@[simp]
+theorem _root_.Set.up_union (s t : Set α) : up (s ∪ t) = up s + up t :=
+  rfl
+#align set.up_union Set.up_union
 
 /- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `CovariantClass (SetSemiring α) (SetSemiring α) (swap (+)) (≤)`. -/
@@ -120,6 +150,19 @@ instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
     right_distrib := fun _ _ _ => union_mul }
 
 -- TODO: port
+theorem mul_def (s t : SetSemiring α) : s * t = up (down s * down t) :=
+  rfl
+#align set_semiring.mul_def SetSemiring.mul_def
+
+@[simp]
+theorem down_mul (s t : SetSemiring α) : down (s * t) = down s * down t :=
+  rfl
+#align set_semiring.down_mul SetSemiring.down_mul
+
+@[simp]
+theorem _root_.Set.up_mul (s t : Set α) : up (s * t) = up s * up t :=
+  rfl
+#align set.up_mul Set.up_mul
 
 instance : NoZeroDivisors (SetSemiring α) :=
   ⟨fun {a b} ab =>
@@ -140,13 +183,34 @@ instance covariantClass_mul_right :
 end Mul
 
 
--- TODO: port
+section One
+
+variable [One α]
+
+-- porting note: noncomputable?
+noncomputable instance : One (SetSemiring α) where one := Set.up (1 : Set α)
+
+theorem one_def : (1 : SetSemiring α) = Set.up 1 :=
+  rfl
+#align set_semiring.one_def SetSemiring.one_def
+
+@[simp]
+theorem down_one : down (1 : SetSemiring α) = 1 :=
+  rfl
+#align set_semiring.down_one SetSemiring.down_one
+
+@[simp]
+theorem _root_.Set.up_one : up (1 : Set α) = 1 :=
+  rfl
+#align set.up_one Set.up_one
+
+end One
 
 -- Porting note: this was `one := 1`
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
     Set.mulOneClass with
-    one := Set.up ({1} : Set α)
+    one := 1
     mul := (· * ·) }
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
@@ -154,12 +218,15 @@ instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
 
 instance [Monoid α] : IdemSemiring (SetSemiring α) :=
   { (inferInstance : NonAssocSemiring (SetSemiring α)),
-    (inferInstance : NonUnitalSemiring (SetSemiring α)) with }
+    (inferInstance : NonUnitalSemiring (SetSemiring α)),
+    (inferInstance : CompleteBooleanAlgebra (Set α)) with }
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalSemiring (SetSemiring α)), Set.commSemigroup with }
 
--- TODO: port
+instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
+  { (inferInstance : IdemSemiring (SetSemiring α)),
+    (inferInstance : CommMonoid (Set α)) with }
 
 instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
@@ -176,11 +243,24 @@ instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
 with respect to the pointwise operations on sets. -/
 def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β
     where
-  toFun := image f
+  toFun s := up (image f (down s))
   map_zero' := image_empty _
-  map_one' := by rw [image_one, map_one, singleton_one]
+  map_one' := by
+    dsimp only  -- porting note: structures do not do this automatically any more
+    rw [down_one, image_one, map_one, singleton_one, up_one]
   map_add' := image_union _
   map_mul' _ _ := image_mul f
 #align set_semiring.image_hom SetSemiring.imageHom
+
+-- TODO; copy formatting from mathport
+@[simp]
+lemma down_imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
+  down (imageHom f s) = f '' down s := rfl
+#align set_semiring.down_image_hom SetSemiring.down_imageHom
+
+@[simp]
+lemma imageHom_up [MulOneClass α] [MulOneClass β] (f : α →* β) (s : Set α) :
+  imageHom f (up s) = up (f '' s) := rfl
+#align set_semiring.image_hom_up SetSemiring.imageHom_up
 
 end SetSemiring
