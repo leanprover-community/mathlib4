@@ -115,7 +115,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
 def Simps.apply {R α β : Type _} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 
-initialize_simps_projections AlgHom (toRingHom_toMonoidHom_toOneHom_toFun → apply)
+initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type _} [AlgHomClass F R A B] (f : F) : ⇑(f : A →ₐ[R] B) = f :=

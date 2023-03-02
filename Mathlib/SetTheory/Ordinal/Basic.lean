@@ -1408,12 +1408,12 @@ theorem lt_ord_succ_card (o : Ordinal) : o < (succ o.card).ord :=
   lt_ord.2 <| lt_succ _
 #align cardinal.lt_ord_succ_card Cardinal.lt_ord_succ_card
 
--- @[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem ord_strictMono : StrictMono ord :=
   gciOrdCard.strictMono_l
 #align cardinal.ord_strict_mono Cardinal.ord_strictMono
 
--- @[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem ord_mono : Monotone ord :=
   gc_ord_card.monotone_l
 #align cardinal.ord_mono Cardinal.ord_mono

@@ -51,7 +51,7 @@ theorem limsup_eq_zero_iff [CountableInterFilter f] {u : α → ℝ≥0∞} : f.
   by
   constructor <;> intro h
   · have hu_zero :=
-      EventuallyLe.trans (eventually_le_limsup u) (eventually_of_forall fun _ => le_of_eq h)
+      EventuallyLE.trans (eventually_le_limsup u) (eventually_of_forall fun _ => le_of_eq h)
     exact hu_zero.mono fun x hx => le_antisymm hx (zero_le _)
   · rw [limsup_congr h]
     simp_rw [Pi.zero_apply, ← ENNReal.bot_eq_zero, limsup_const_bot]
