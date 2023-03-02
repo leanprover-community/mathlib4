@@ -8,11 +8,11 @@ Authors: Chris Hughes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Lattice
-import Mathbin.Data.List.Sort
-import Mathbin.Logic.Equiv.Fin
-import Mathbin.Logic.Equiv.Functor
-import Mathbin.Data.Fintype.Card
+import Mathlib.Order.Lattice
+import Mathlib.Data.List.Sort
+import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Functor
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Jordan-Hölder Theorem
@@ -98,16 +98,14 @@ namespace JordanHolderLattice
 variable {X : Type u} [Lattice X] [JordanHolderLattice X]
 
 theorem isMaximal_inf_right_of_isMaximal_sup {x y : X} (hxz : IsMaximal x (x ⊔ y))
-    (hyz : IsMaximal y (x ⊔ y)) : IsMaximal (x ⊓ y) y :=
-  by
+    (hyz : IsMaximal y (x ⊔ y)) : IsMaximal (x ⊓ y) y := by
   rw [inf_comm]
   rw [sup_comm] at hxz hyz
   exact is_maximal_inf_left_of_is_maximal_sup hyz hxz
 #align jordan_holder_lattice.is_maximal_inf_right_of_is_maximal_sup JordanHolderLattice.isMaximal_inf_right_of_isMaximal_sup
 
 theorem isMaximal_of_eq_inf (x b : X) {a y : X} (ha : x ⊓ y = a) (hxy : x ≠ y) (hxb : IsMaximal x b)
-    (hyb : IsMaximal y b) : IsMaximal a y :=
-  by
+    (hyb : IsMaximal y b) : IsMaximal a y := by
   have hb : x ⊔ y = b := sup_eq_of_is_maximal hxb hyb hxy
   substs a b
   exact is_maximal_inf_right_of_is_maximal_sup hxb hyb
@@ -191,8 +189,7 @@ theorem mem_def {x : X} {s : CompositionSeries X} : x ∈ s ↔ x ∈ Set.range 
   Iff.rfl
 #align composition_series.mem_def CompositionSeries.mem_def
 
-theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) : x ≤ y ∨ y ≤ x :=
-  by
+theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) : x ≤ y ∨ y ≤ x := by
   rcases Set.mem_range.1 hx with ⟨i, rfl⟩
   rcases Set.mem_range.1 hy with ⟨j, rfl⟩
   rw [s.strict_mono.le_iff_le, s.strict_mono.le_iff_le]
@@ -207,8 +204,7 @@ def toList (s : CompositionSeries X) : List X :=
 /-- Two `composition_series` are equal if they are the same length and
 have the same `i`th element for every `i` -/
 theorem ext_fun {s₁ s₂ : CompositionSeries X} (hl : s₁.length = s₂.length)
-    (h : ∀ i, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ hl) i)) : s₁ = s₂ :=
-  by
+    (h : ∀ i, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ hl) i)) : s₁ = s₂ := by
   cases s₁; cases s₂
   dsimp at *
   subst hl
@@ -225,8 +221,7 @@ theorem toList_ne_nil (s : CompositionSeries X) : s.toList ≠ [] := by
 #align composition_series.to_list_ne_nil CompositionSeries.toList_ne_nil
 
 theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) :=
-  fun s₁ s₂ (h : List.ofFn s₁ = List.ofFn s₂) =>
-  by
+  fun s₁ s₂ (h : List.ofFn s₁ = List.ofFn s₂) => by
   have h₁ : s₁.length = s₂.length :=
     Nat.succ_injective
       ((List.length_ofFn s₁).symm.trans <| (congr_arg List.length h).trans <| List.length_ofFn s₂)
@@ -288,8 +283,7 @@ theorem length_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l
 #align composition_series.length_of_list CompositionSeries.length_ofList
 
 theorem ofList_toList (s : CompositionSeries X) :
-    ofList s.toList s.toList_ne_nil s.chain'_toList = s :=
-  by
+    ofList s.toList s.toList_ne_nil s.chain'_toList = s := by
   refine' ext_fun _ _
   · rw [length_of_list, length_to_list, Nat.succ_sub_one]
   · rintro ⟨i, hi⟩
@@ -425,8 +419,7 @@ theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ 
 #align composition_series.mem_erase_top_of_ne_of_mem CompositionSeries.mem_eraseTop_of_ne_of_mem
 
 theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
-    x ∈ s.eraseTop ↔ x ≠ s.top ∧ x ∈ s :=
-  by
+    x ∈ s.eraseTop ↔ x ≠ s.top ∧ x ∈ s := by
   simp only [mem_def]
   dsimp only [erase_top, [anonymous]]
   constructor
@@ -446,8 +439,7 @@ theorem lt_top_of_mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.leng
 #align composition_series.lt_top_of_mem_erase_top CompositionSeries.lt_top_of_mem_eraseTop
 
 theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
-    IsMaximal s.eraseTop.top s.top :=
-  by
+    IsMaximal s.eraseTop.top s.top := by
   have : s.length - 1 + 1 = s.length := by
     conv_rhs => rw [← Nat.succ_sub_one s.length] <;> rw [Nat.succ_sub h]
   rw [top_erase_top, top]
@@ -461,16 +453,14 @@ variable {α : Type _} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → �
 
 theorem append_castAdd_aux (i : Fin m) :
     Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b (Fin.castAdd n i).cast_succ =
-      a i.cast_succ :=
-  by
+      a i.cast_succ := by
   cases i
   simp [Matrix.vecAppend_eq_ite, *]
 #align composition_series.append_cast_add_aux CompositionSeries.append_castAdd_aux
 
 theorem append_succ_castAdd_aux (i : Fin m) (h : a (Fin.last _) = b 0) :
     Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b (Fin.castAdd n i).succ =
-      a i.succ :=
-  by
+      a i.succ := by
   cases' i with i hi
   simp only [Matrix.vecAppend_eq_ite, hi, Fin.succ_mk, Function.comp_apply, Fin.castSucc_mk,
     Fin.val_mk, Fin.castAdd_mk]
@@ -486,8 +476,7 @@ theorem append_succ_castAdd_aux (i : Fin m) (h : a (Fin.last _) = b 0) :
 
 theorem append_natAdd_aux (i : Fin n) :
     Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b (Fin.natAdd m i).cast_succ =
-      b i.cast_succ :=
-  by
+      b i.cast_succ := by
   cases i
   simp only [Matrix.vecAppend_eq_ite, Nat.not_lt_zero, Fin.natAdd_mk, add_lt_iff_neg_left,
     add_tsub_cancel_left, dif_neg, Fin.castSucc_mk, not_false_iff, Fin.val_mk]
@@ -495,8 +484,7 @@ theorem append_natAdd_aux (i : Fin n) :
 
 theorem append_succ_natAdd_aux (i : Fin n) :
     Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b (Fin.natAdd m i).succ =
-      b i.succ :=
-  by
+      b i.succ := by
   cases' i with i hi
   simp only [Matrix.vecAppend_eq_ite, add_assoc, Nat.not_lt_zero, Fin.natAdd_mk,
     add_lt_iff_neg_left, add_tsub_cancel_left, Fin.succ_mk, dif_neg, not_false_iff, Fin.val_mk]
@@ -588,8 +576,7 @@ theorem bot_snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) :
 #align composition_series.bot_snoc CompositionSeries.bot_snoc
 
 theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} :
-    y ∈ snoc s x hsat ↔ y ∈ s ∨ y = x :=
-  by
+    y ∈ snoc s x hsat ↔ y ∈ s ∨ y = x := by
   simp only [snoc, mem_def]
   constructor
   · rintro ⟨i, rfl⟩
@@ -607,8 +594,7 @@ theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} 
 #align composition_series.mem_snoc CompositionSeries.mem_snoc
 
 theorem eq_snoc_eraseTop {s : CompositionSeries X} (h : 0 < s.length) :
-    s = snoc (eraseTop s) s.top (isMaximal_eraseTop_top h) :=
-  by
+    s = snoc (eraseTop s) s.top (isMaximal_eraseTop_top h) := by
   ext x
   simp [mem_snoc, mem_erase_top h]
   by_cases h : x = s.top <;> simp [*, s.top_mem]
@@ -722,8 +708,7 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
 end Equivalent
 
 theorem length_eq_zero_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero {s₁ s₂ : CompositionSeries X}
-    (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) (hs₁ : s₁.length = 0) : s₂.length = 0 :=
-  by
+    (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) (hs₁ : s₁.length = 0) : s₂.length = 0 := by
   have : s₁.bot = s₁.top := congr_arg s₁ (Fin.ext (by simp [hs₁]))
   have : Fin.last s₂.length = (0 : Fin s₂.length.succ) :=
     s₂.injective (hb.symm.trans (this.trans ht)).symm
@@ -739,8 +724,7 @@ theorem length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos {s₁ s₂ : Compos
 #align composition_series.length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos CompositionSeries.length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos
 
 theorem eq_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero {s₁ s₂ : CompositionSeries X}
-    (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) (hs₁0 : s₁.length = 0) : s₁ = s₂ :=
-  by
+    (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) (hs₁0 : s₁.length = 0) : s₁ = s₂ := by
   have : ∀ x, x ∈ s₁ ↔ x = s₁.top := fun x =>
     ⟨fun hx => forall_mem_eq_of_length_eq_zero hs₁0 hx s₁.top_mem, fun hx => hx.symm ▸ s₁.top_mem⟩
   have : ∀ x, x ∈ s₂ ↔ x = s₂.top := fun x =>
@@ -803,8 +787,7 @@ theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : Is
 /-- The **Jordan-Hölder** theorem, stated for any `jordan_holder_lattice`.
 If two composition series start and finish at the same place, they are equivalent. -/
 theorem jordan_holder (s₁ s₂ : CompositionSeries X) (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) :
-    Equivalent s₁ s₂ :=
-  by
+    Equivalent s₁ s₂ := by
   induction' hle : s₁.length with n ih generalizing s₁ s₂
   · rw [eq_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero hb ht hle]
   · have h0s₂ : 0 < s₂.length :=
