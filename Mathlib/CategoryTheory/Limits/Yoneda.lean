@@ -85,10 +85,8 @@ open Limits
 /--n The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
 instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X)
     where preservesLimitsOfShape {J} 𝒥 :=
-    {
-      preservesLimit := fun {K} =>
-        {
-          preserves := fun {c} t =>
+    { preservesLimit := fun {K} =>
+        { preserves := fun {c} t =>
             { lift := fun s x =>
                 Quiver.Hom.unop (t.lift ⟨op X, fun j => (s.π.app j x).op, fun j₁ j₂ α => _⟩)
               fac := fun s j => funext fun x => Quiver.Hom.op_inj (t.fac _ _)
@@ -105,10 +103,8 @@ instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X)
 /-- The coyoneda embedding `coyoneda.obj X : C ⥤ Type v` for `X : Cᵒᵖ` preserves limits. -/
 instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X)
     where preservesLimitsOfShape {J} 𝒥 :=
-    {
-      preservesLimit := fun {K} =>
-        {
-          preserves := fun {c} t =>
+    { preservesLimit := fun {K} =>
+        { preserves := fun {c} t =>
             { lift := fun s x =>
                 t.lift
                   ⟨unop X, fun j => s.π.app j x, fun j₁ j₂ α =>
