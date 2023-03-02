@@ -40,7 +40,7 @@ variable {C : Type _} [Category C] (r : HomRel C)
 -- Porting Note: `include r` is not allowed
 -- include r
 
-/-- A `hom_rel` is a congruence when it's an equivalence on every hom-set, and it can be composed
+/-- A `HomRel` is a congruence when it's an equivalence on every hom-set, and it can be composed
 from left and right. -/
 class Congruence : Prop where
   /-- `r` is an equivalence on every hom-set. -/
