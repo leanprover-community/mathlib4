@@ -62,7 +62,7 @@ theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : SubMulAction R A) :=
 #align sub_mul_action.algebra_map_mem SubMulAction.algebraMap_mem
 
 theorem mem_one' {x : A} : x ∈ (1 : SubMulAction R A) ↔ ∃ y, algebraMap R A y = x :=
-  exists_congr fun r => by rw [algebra_map_eq_smul_one]
+  exists_congr fun r => by rw [algebraMap_eq_smul_one]
 #align sub_mul_action.mem_one' SubMulAction.mem_one'
 
 end SubMulAction
@@ -171,16 +171,16 @@ theorem mul_le : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
 theorem mul_toAddSubmonoid (M N : Submodule R A) :
     (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := by
   dsimp [Mul.mul]
-  simp_rw [← LinearMap.mulLeft_toAddMonoid_hom R, LinearMap.mulLeft, ← map_to_add_submonoid _ N,
+  simp_rw [← LinearMap.mulLeft_toAddMonoid_hom R, LinearMap.mulLeft, ← map_toAddSubmonoid _ N,
     map₂]
-  rw [supr_to_add_submonoid]
+  rw [supᵢ_toAddSubmonoid]
   rfl
 #align submodule.mul_to_add_submonoid Submodule.mul_toAddSubmonoid
 
 @[elab_as_elim]
 protected theorem mul_induction_on {C : A → Prop} {r : A} (hr : r ∈ M * N)
     (hm : ∀ m ∈ M, ∀ n ∈ N, C (m * n)) (ha : ∀ x y, C x → C y → C (x + y)) : C r := by
-  rw [← mem_to_add_submonoid, mul_to_add_submonoid] at hr
+  rw [← mem_toAddSubmonoid, mul_toAddSubmonoid] at hr
   exact AddSubmonoid.mul_induction_on hr hm ha
 #align submodule.mul_induction_on Submodule.mul_induction_on
 
@@ -264,7 +264,7 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
       map_supᵢ _ _
     _ = map f.toLinearMap M * map f.toLinearMap N :=
       by
-      apply congr_arg Sup
+      apply congr_arg supₛ
       ext S
       constructor <;> rintro ⟨y, hy⟩
       · use f y, mem_map.mpr ⟨y.1, y.2, rfl⟩
@@ -277,7 +277,7 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
         rw [f.to_linear_map_apply] at fy_eq
         ext
         simp [fy_eq]
-    
+
 #align submodule.map_mul Submodule.map_mul
 
 theorem map_op_mul :
@@ -328,7 +328,7 @@ open Pointwise
 
 This is available as an instance in the `pointwise` locale. -/
 protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
-  toAddSubmonoid_injective.HasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
+  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
 #align submodule.has_distrib_pointwise_neg Submodule.hasDistribPointwiseNeg
 
 scoped[Pointwise] attribute [instance] Submodule.hasDistribPointwiseNeg
@@ -419,17 +419,17 @@ theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.
   by
   induction' n with n ih
   · exact (h rfl).elim
-  · rw [pow_succ, pow_succ, mul_to_add_submonoid]
+  · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
     cases n
-    · rw [pow_zero, pow_zero, mul_one, ← mul_to_add_submonoid, mul_one]
+    · rw [pow_zero, pow_zero, mul_one, ← mul_toAddSubmonoid, mul_one]
     · rw [ih n.succ_ne_zero]
 #align submodule.pow_to_add_submonoid Submodule.pow_toAddSubmonoid
 
 theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAddSubmonoid := by
   obtain rfl | hn := Decidable.eq_or_ne n 0
   · rw [pow_zero, pow_zero]
-    exact le_one_to_add_submonoid
-  · exact (pow_to_add_submonoid M hn).ge
+    exact le_one_toAddSubmonoid
+  · exact (pow_toAddSubmonoid M hn).ge
 #align submodule.le_pow_to_add_submonoid Submodule.le_pow_toAddSubmonoid
 
 /-- Dependent version of `Submodule.pow_induction_on_left`. -/
@@ -713,8 +713,7 @@ theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
 
 @[simp]
 protected theorem map_div {B : Type _} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
-    (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap :=
-  by
+    (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
   ext x
   simp only [mem_map, mem_div_iff_forall_mul_mem]
   constructor
@@ -733,4 +732,3 @@ end Quotient
 end CommRing
 
 end Submodule
-
