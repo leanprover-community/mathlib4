@@ -35,8 +35,7 @@ section
 def Paths (V : Type u₁) : Type u₁ := V
 #align category_theory.paths CategoryTheory.Paths
 
-instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) :=
-  ⟨(default : V)⟩
+instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
 
 variable (V : Type u₁) [Quiver.{v₁ + 1} V]
 
@@ -87,8 +86,7 @@ theorem lift_nil {C} [Category C] (φ : V ⥤q C) (X : V) :
 
 @[simp]
 theorem lift_cons {C} [Category C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
-    (lift φ).map (p.cons f) = (lift φ).map p ≫ φ.map f :=
-  rfl
+    (lift φ).map (p.cons f) = (lift φ).map p ≫ φ.map f := rfl
 #align category_theory.paths.lift_cons CategoryTheory.Paths.lift_cons
 
 @[simp]
@@ -170,8 +168,7 @@ def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
 #align category_theory.compose_path CategoryTheory.composePath
 
 @[simp]
-theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f :=
-  Category.id_comp _
+theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f := Category.id_comp _
 #align category_theory.compose_path_to_path CategoryTheory.composePath_toPath
 
 @[simp]
@@ -184,8 +181,7 @@ theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
 
 @[simp]
 -- porting note: TODO get rid of `(id X : C)` somehow?
-theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) :=
-  rfl
+theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) := rfl
 #align category_theory.compose_path_id CategoryTheory.composePath_id
 
 @[simp]
