@@ -26,7 +26,6 @@ relation, `functor_map_eq_iff` says that no unnecessary identifications have bee
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
 def HomRel (C) [Quiver C] :=
   ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop
--- deriving Inhabited
 #align hom_rel HomRel
 
 -- Porting Note: `deriving Inhabited` was not able to deduce this typeclass
@@ -41,14 +40,14 @@ variable {C : Type _} [Category C] (r : HomRel C)
 from left and right. -/
 class Congruence : Prop where
   /-- `r` is an equivalence on every hom-set. -/
-  IsEquiv : ∀ {X Y}, IsEquiv _ (@r X Y)
+  isEquiv : ∀ {X Y}, IsEquiv _ (@r X Y)
   /-- Precomposition with an arrow respects `r`. -/
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
   /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 #align category_theory.congruence CategoryTheory.Congruence
 
-attribute [instance] Congruence.IsEquiv
+attribute [instance] Congruence.isEquiv
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
@@ -154,7 +153,7 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
       apply Congruence.compLeft
       apply Congruence.compRight
       assumption
-    · haveI := (h.IsEquiv : IsEquiv _ (@r X Y))
+    · haveI := (h.isEquiv : IsEquiv _ (@r X Y))
       -- porting note: had to add this line for `refl` (and name the `Congruence` argument)
       apply refl
     · apply symm
