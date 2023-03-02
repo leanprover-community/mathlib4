@@ -12,16 +12,16 @@ import Mathlib.Control.Bifunctor
 import Mathlib.Logic.Equiv.Defs
 
 /-!
-# Functor and bifunctors can be applied to `equiv`s.
+# Functor and bifunctors can be applied to `Equiv`s.
 
 We define
 ```lean
-def functor.map_equiv (f : Type u → Type v) [functor f] [is_lawful_functor f] :
+def Functor.mapEquiv (f : Type u → Type v) [Functor f] [LawfulFunctor f] :
   α ≃ β → f α ≃ f β
 ```
 and
 ```lean
-def bifunctor.map_equiv (F : Type u → Type v → Type w) [bifunctor F] [is_lawful_bifunctor F] :
+def Bifunctor.mapEquiv (F : Type u → Type v → Type w) [Bifunctor F] [LawfulBifunctor F] :
   α ≃ β → α' ≃ β' → F α α' ≃ F β β'
 ```
 -/
@@ -37,7 +37,7 @@ namespace Functor
 
 variable (f : Type u → Type v) [Functor f] [LawfulFunctor f]
 
-/-- Apply a functor to an `equiv`. -/
+/-- Apply a functor to an `Equiv`. -/
 def mapEquiv (h : α ≃ β) : f α ≃ f β where
   toFun := map h
   invFun := map h.symm
@@ -59,7 +59,7 @@ theorem mapEquiv_symm_apply (h : α ≃ β) (y : f β) :
 @[simp]
 theorem mapEquiv_refl : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
   ext x
-  simp only [map_equiv_apply, refl_apply]
+  simp only [mapEquiv_apply, refl_apply]
   exact LawfulFunctor.id_map x
 #align functor.map_equiv_refl Functor.mapEquiv_refl
 
@@ -67,11 +67,10 @@ end Functor
 
 namespace Bifunctor
 
-variable {α' β' : Type v} (F : Type u → Type v → Type w) [Bifunctor F] [IsLawfulBifunctor F]
+variable {α' β' : Type v} (F : Type u → Type v → Type w) [Bifunctor F] [LawfulBifunctor F]
 
-/-- Apply a bifunctor to a pair of `equiv`s. -/
-def mapEquiv (h : α ≃ β) (h' : α' ≃ β') : F α α' ≃ F β β'
-    where
+/-- Apply a bifunctor to a pair of `Equiv`s. -/
+def mapEquiv (h : α ≃ β) (h' : α' ≃ β') : F α α' ≃ F β β' where
   toFun := bimap h h'
   invFun := bimap h.symm h'.symm
   left_inv x := by simp [bimap_bimap, id_bimap]
@@ -97,4 +96,3 @@ theorem mapEquiv_refl_refl : mapEquiv F (Equiv.refl α) (Equiv.refl α') = Equiv
 #align bifunctor.map_equiv_refl_refl Bifunctor.mapEquiv_refl_refl
 
 end Bifunctor
-
