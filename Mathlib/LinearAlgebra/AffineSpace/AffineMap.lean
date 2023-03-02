@@ -50,17 +50,24 @@ topology are defined elsewhere; see `analysis.normed_space.add_torsor` and
 
 open Affine
 
-set_option synthInstance.etaExperiment true
+section defn
+
+variable (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
+  [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+  [AffineSpace V2 P2]
+-- Workaround for lean4#2074
+attribute [-instance] Ring.toNonAssocRing
 
 /-- An `affine_map k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
-structure AffineMap (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
-  [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
-  [AffineSpace V2 P2] where
+structure AffineMap
+  where
   toFun : P1 → P2
   linear : V1 →ₗ[k] V2
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 #align affine_map AffineMap
+
+end defn
 
 -- mathport name: «expr →ᵃ[ ] »
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
@@ -74,6 +81,9 @@ namespace LinearMap
 
 variable {k : Type _} {V₁ : Type _} {V₂ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddCommGroup V₂] [Module k V₂] (f : V₁ →ₗ[k] V₂)
+
+-- Workaround for lean4#2074
+attribute [-instance] Ring.toNonAssocRing
 
 /-- Reinterpret a linear map as an affine map. -/
 def toAffineMap : V₁ →ᵃ[k] V₂ where
@@ -194,6 +204,8 @@ theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) : f.linear = 0 ↔
 instance nonempty : Nonempty (P1 →ᵃ[k] P2) :=
   (AddTorsor.Nonempty : Nonempty P2).elim fun p => ⟨const k P1 p⟩
 #align affine_map.nonempty AffineMap.nonempty
+
+#exit
 
 /-- Construct an affine map by verifying the relation between the map and its linear part at one
 base point. Namely, this function takes a map `f : P₁ → P₂`, a linear map `f' : V₁ →ₗ[k] V₂`, and
