@@ -134,7 +134,7 @@ class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot �
 #align canonically_ordered_monoid CanonicallyOrderedMonoid
 
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive existing]
 instance (priority := 100) CanonicallyOrderedMonoid.toOrderBot (α : Type u)
     [h : CanonicallyOrderedMonoid α] : OrderBot α :=
   { h with }

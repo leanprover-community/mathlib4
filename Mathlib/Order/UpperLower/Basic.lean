@@ -483,10 +483,10 @@ namespace UpperSet
 
 variable {S : Set (UpperSet α)} {s t : UpperSet α} {a : α}
 
-instance : HasSup (UpperSet α) :=
+instance : Sup (UpperSet α) :=
   ⟨fun s t => ⟨s ∩ t, s.upper.inter t.upper⟩⟩
 
-instance : HasInf (UpperSet α) :=
+instance : Inf (UpperSet α) :=
   ⟨fun s t => ⟨s ∪ t, s.upper.union t.upper⟩⟩
 
 instance : Top (UpperSet α) :=
@@ -632,10 +632,10 @@ namespace LowerSet
 
 variable {S : Set (LowerSet α)} {s t : LowerSet α} {a : α}
 
-instance : HasSup (LowerSet α) :=
+instance : Sup (LowerSet α) :=
   ⟨fun s t => ⟨s ∪ t, fun _ _ h => Or.imp (s.lower h) (t.lower h)⟩⟩
 
-instance : HasInf (LowerSet α) :=
+instance : Inf (LowerSet α) :=
   ⟨fun s t => ⟨s ∩ t, fun _ _ h => And.imp (s.lower h) (t.lower h)⟩⟩
 
 instance : Top (LowerSet α) :=
@@ -1569,7 +1569,7 @@ theorem prod_sup_prod : s₁ ×ᵘˢ t₁ ⊔ s₂ ×ᵘˢ t₂ = (s₁ ⊔ s₂
 
 variable {s s₁ s₂ t t₁ t₂}
 
--- porting note: todo: add `@[mono]`
+@[mono]
 theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ᵘˢ t₁ ≤ s₂ ×ᵘˢ t₂ :=
   Set.prod_mono
 #align upper_set.prod_mono UpperSet.prod_mono

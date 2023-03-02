@@ -802,9 +802,9 @@ def zpowersHom [Group G] : G ≃ (Multiplicative ℤ →* G) :=
   Additive.ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 #align zpowers_hom zpowersHom
 
-attribute [to_additive multiplesHom] powersHom
+attribute [to_additive existing multiplesHom] powersHom
 
-attribute [to_additive zmultiplesHom] zpowersHom
+attribute [to_additive existing zmultiplesHom] zpowersHom
 
 variable {M G A}
 
@@ -834,25 +834,25 @@ theorem multiplesHom_apply [AddMonoid A] (x : A) (n : ℕ) : multiplesHom A x n 
   rfl
 #align multiples_hom_apply multiplesHom_apply
 
-attribute [to_additive (attr := simp) multiplesHom_apply] powersHom_apply
+attribute [to_additive existing (attr := simp) multiplesHom_apply] powersHom_apply
 
 theorem multiplesHom_symm_apply [AddMonoid A] (f : ℕ →+ A) : (multiplesHom A).symm f = f 1 :=
   rfl
 #align multiples_hom_symm_apply multiplesHom_symm_apply
 
-attribute [to_additive (attr := simp) multiplesHom_symm_apply] powersHom_symm_apply
+attribute [to_additive existing (attr := simp) multiplesHom_symm_apply] powersHom_symm_apply
 
 theorem zmultiplesHom_apply [AddGroup A] (x : A) (n : ℤ) : zmultiplesHom A x n = n • x :=
   rfl
 #align zmultiples_hom_apply zmultiplesHom_apply
 
-attribute [to_additive (attr := simp) zmultiplesHom_apply] zpowersHom_apply
+attribute [to_additive existing (attr := simp) zmultiplesHom_apply] zpowersHom_apply
 
 theorem zmultiplesHom_symm_apply [AddGroup A] (f : ℤ →+ A) : (zmultiplesHom A).symm f = f 1 :=
   rfl
 #align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
 
-attribute [to_additive (attr := simp) zmultiplesHom_symm_apply] zpowersHom_symm_apply
+attribute [to_additive existing (attr := simp) zmultiplesHom_symm_apply] zpowersHom_symm_apply
 
 -- TODO use to_additive in the rest of this file
 theorem MonoidHom.apply_mnat [Monoid M] (f : Multiplicative ℕ →* M) (n : Multiplicative ℕ) :
