@@ -251,15 +251,21 @@ def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α
   map_mul' _ _ := image_mul f
 #align set_semiring.image_hom SetSemiring.imageHom
 
--- TODO; copy formatting from mathport
+lemma imageHom_def [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
+    imageHom f s = up (image f (down s)) :=
+  rfl
+#align set_semiring.image_hom_def SetSemiring.imageHom_def
+
 @[simp]
 lemma down_imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) (s : SetSemiring α) :
-  down (imageHom f s) = f '' down s := rfl
+    down (imageHom f s) = f '' down s :=
+  rfl
 #align set_semiring.down_image_hom SetSemiring.down_imageHom
 
 @[simp]
-lemma imageHom_up [MulOneClass α] [MulOneClass β] (f : α →* β) (s : Set α) :
-  imageHom f (up s) = up (f '' s) := rfl
-#align set_semiring.image_hom_up SetSemiring.imageHom_up
+lemma _root_.Set.up_image [MulOneClass α] [MulOneClass β] (f : α →* β) (s : Set α) :
+    up (f '' s) = imageHom f (up s) :=
+  rfl
+#align set.up_image Set.up_image
 
 end SetSemiring
