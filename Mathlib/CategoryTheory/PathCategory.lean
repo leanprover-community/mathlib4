@@ -162,12 +162,6 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 open Quiver
 
-/- warning: category_theory.compose_path -> CategoryTheory.composePath is a dubious translation:
-lean 3 declaration is
-  forall {C : Type.{u2}} [_inst_1 : CategoryTheory.Category.{u1, u2} C] {X : C} {Y : C}, (Quiver.Path.{succ u1, u2} C (CategoryTheory.CategoryStruct.toQuiver.{u1, u2} C (CategoryTheory.Category.toCategoryStruct.{u1, u2} C _inst_1)) X Y) -> (Quiver.Hom.{succ u1, u2} C (CategoryTheory.CategoryStruct.toQuiver.{u1, u2} C (CategoryTheory.Category.toCategoryStruct.{u1, u2} C _inst_1)) X Y)
-but is expected to have type
-  forall {C : Type.{u1}} [_inst_1 : CategoryTheory.Category.{u2, u1} C] {X : C} {Y : C}, (Quiver.Path.{succ u2, u1} C (CategoryTheory.CategoryStruct.toQuiver.{u2, u1} C (CategoryTheory.Category.toCategoryStruct.{u2, u1} C _inst_1)) X Y) -> (Quiver.Hom.{succ u2, u1} C (CategoryTheory.CategoryStruct.toQuiver.{u2, u1} C (CategoryTheory.Category.toCategoryStruct.{u2, u1} C _inst_1)) X Y)
-Case conversion may be inaccurate. Consider using '#align category_theory.compose_path CategoryTheory.composePathₓ'. -/
 /-- A path in a category can be composed to a single morphism. -/
 @[simp]
 def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
@@ -189,7 +183,8 @@ theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
 #align category_theory.compose_path_comp CategoryTheory.composePath_comp
 
 @[simp]
-theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 X :=
+-- porting note: TODO get rid of `(id X : C)` somehow?
+theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) :=
   rfl
 #align category_theory.compose_path_id CategoryTheory.composePath_id
 
