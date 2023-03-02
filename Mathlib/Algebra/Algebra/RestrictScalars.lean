@@ -82,14 +82,11 @@ def RestrictScalars (R S M : Type _) : Type _ :=
   M
 #align restrict_scalars RestrictScalars
 
-instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) :=
-  I
+instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I
 
-instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) :=
-  I
+instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) := I
 
-instance [I : AddCommGroup M] : AddCommGroup (RestrictScalars R S M) :=
-  I
+instance [I : AddCommGroup M] : AddCommGroup (RestrictScalars R S M) := I
 
 section Module
 
@@ -98,8 +95,7 @@ section
 variable [Semiring S] [AddCommMonoid M]
 
 /-- We temporarily install an action of the original ring on `restrict_sclars R S M`. -/
-def RestrictScalars.moduleOrig [I : Module S M] : Module S (RestrictScalars R S M) :=
-  I
+def RestrictScalars.moduleOrig [I : Module S M] : Module S (RestrictScalars R S M) := I
 #align restrict_scalars.module_orig RestrictScalars.moduleOrig
 
 variable [CommSemiring R] [Algebra R S]
@@ -199,17 +195,13 @@ end Module
 
 section Algebra
 
-instance [I : Semiring A] : Semiring (RestrictScalars R S A) :=
-  I
+instance [I : Semiring A] : Semiring (RestrictScalars R S A) := I
 
-instance [I : Ring A] : Ring (RestrictScalars R S A) :=
-  I
+instance [I : Ring A] : Ring (RestrictScalars R S A) := I
 
-instance [I : CommSemiring A] : CommSemiring (RestrictScalars R S A) :=
-  I
+instance [I : CommSemiring A] : CommSemiring (RestrictScalars R S A) := I
 
-instance [I : CommRing A] : CommRing (RestrictScalars R S A) :=
-  I
+instance [I : CommRing A] : CommRing (RestrictScalars R S A) := I
 
 variable [Semiring A]
 
@@ -229,12 +221,10 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
 instance : Algebra R (RestrictScalars R S A) :=
-  {
-    (algebraMap S A).comp (algebraMap R
-        S) with
+  { (algebraMap S A).comp (algebraMap R S) with
     smul := (· • ·)
-    commutes' := fun r x ↦ Algebra.commutes _ _
-    smul_def' := fun _ _ ↦ Algebra.smul_def _ _ }
+    commutes' := fun _ _ ↦ Algebra.commutes' _ _
+    smul_def' := fun _ _ ↦ Algebra.smul_def' _ _ }
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :
