@@ -23,7 +23,7 @@ In this file we define `LinearMap` versions of various maps:
 
 * `Dfinsupp.lmk s : (Π i : (↑s : set ι), M i) →ₗ[R] Π₀ i, M i`: `Dfinsupp.single a` as a linear map;
 
-* `Dfinsupp.lapply i : (Π₀ i, M i) →ₗ[R] M`: the map `λ f, f i` as a linear map;
+* `Dfinsupp.lapply i : (Π₀ i, M i) →ₗ[R] M`: the map `fun f ↦ f i` as a linear map;
 
 * `Dfinsupp.lsum`: `Dfinsupp.sum` or `Dfinsupp.liftAddHom` as a `LinearMap`;
 
@@ -37,7 +37,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
--- Porting note: TODO Erase this line.
+-- Porting note: TODO Erase this line. Workaround for lean4#2074.
 attribute [-instance] Ring.toNonAssocRing
 
 variable {ι : Type _} {R : Type _} {S : Type _} {M : ι → Type _} {N : Type _}
@@ -121,7 +121,7 @@ we have with the `∀ i, Zero (M i →ₗ[R] N)` instance which appears as a par
 `Dfinsupp` type. -/
 instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
     Module S (Π₀ i : ι, M i →ₗ[R] N) :=
-  @Dfinsupp.module _ _ (fun i => M i →ₗ[R] N) _ _ _
+  Dfinsupp.module
 #align dfinsupp.module_of_linear_map Dfinsupp.moduleOfLinearMap
 
 variable (S)
@@ -187,7 +187,7 @@ The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 -/
 
 
-section MapRange
+section mapRange
 
 variable {β β₁ β₂ : ι → Type _}
 
@@ -204,67 +204,67 @@ theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (
 
 /-- `Dfinsupp.mapRange` as a `LinearMap`. -/
 @[simps! apply]
-def MapRange.linearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) : (Π₀ i, β₁ i) →ₗ[R] Π₀ i, β₂ i :=
+def mapRange.linearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) : (Π₀ i, β₁ i) →ₗ[R] Π₀ i, β₂ i :=
   {
-    MapRange.addMonoidHom fun i =>
+    mapRange.addMonoidHom fun i =>
       (f i).toAddMonoidHom with
     toFun := mapRange (fun i x => f i x) fun i => (f i).map_zero
     map_smul' := fun r => mapRange_smul _ (fun i => (f i).map_zero) _ fun i => (f i).map_smul r }
-#align dfinsupp.map_range.linear_map Dfinsupp.MapRange.linearMap
+#align dfinsupp.map_range.linear_map Dfinsupp.mapRange.linearMap
 
 @[simp]
-theorem MapRange.linearMap_id :
-    (MapRange.linearMap fun i => (LinearMap.id : β₂ i →ₗ[R] _)) = LinearMap.id := by
+theorem mapRange.linearMap_id :
+    (mapRange.linearMap fun i => (LinearMap.id : β₂ i →ₗ[R] _)) = LinearMap.id := by
   ext
   simp [linearMap]
-#align dfinsupp.map_range.linear_map_id Dfinsupp.MapRange.linearMap_id
+#align dfinsupp.map_range.linear_map_id Dfinsupp.mapRange.linearMap_id
 
-theorem MapRange.linearMap_comp (f : ∀ i, β₁ i →ₗ[R] β₂ i) (f₂ : ∀ i, β i →ₗ[R] β₁ i) :
-    (MapRange.linearMap fun i => (f i).comp (f₂ i)) =
-      (MapRange.linearMap f).comp (MapRange.linearMap f₂) :=
+theorem mapRange.linearMap_comp (f : ∀ i, β₁ i →ₗ[R] β₂ i) (f₂ : ∀ i, β i →ₗ[R] β₁ i) :
+    (mapRange.linearMap fun i => (f i).comp (f₂ i)) =
+      (mapRange.linearMap f).comp (mapRange.linearMap f₂) :=
   LinearMap.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x)
     (fun i => (f i).map_zero) (fun i => (f₂ i).map_zero) (by simp)
-#align dfinsupp.map_range.linear_map_comp Dfinsupp.MapRange.linearMap_comp
+#align dfinsupp.map_range.linear_map_comp Dfinsupp.mapRange.linearMap_comp
 
 theorem sum_mapRange_index.linearMap [∀ (i : ι) (x : β₁ i), Decidable (x ≠ 0)]
     [∀ (i : ι) (x : β₂ i), Decidable (x ≠ 0)] {f : ∀ i, β₁ i →ₗ[R] β₂ i} {h : ∀ i, β₂ i →ₗ[R] N}
     {l : Π₀ i, β₁ i} :
     -- Porting note: Needed to add (M := ...) below
-    (Dfinsupp.lsum ℕ (M := β₂)) h (MapRange.linearMap f l)
+    (Dfinsupp.lsum ℕ (M := β₂)) h (mapRange.linearMap f l)
       = (Dfinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l  := by
   simpa [Dfinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
 #align dfinsupp.sum_map_range_index.linear_map Dfinsupp.sum_mapRange_index.linearMap
 
-/-- `Dfinsupp.MapRange.linearMap` as a `LinearEquiv`. -/
+/-- `Dfinsupp.mapRange.linearMap` as a `LinearEquiv`. -/
 @[simps apply]
-def MapRange.linearEquiv (e : ∀ i, β₁ i ≃ₗ[R] β₂ i) : (Π₀ i, β₁ i) ≃ₗ[R] Π₀ i, β₂ i :=
-  { MapRange.addEquiv fun i => (e i).toAddEquiv,
-    MapRange.linearMap fun i =>
+def mapRange.linearEquiv (e : ∀ i, β₁ i ≃ₗ[R] β₂ i) : (Π₀ i, β₁ i) ≃ₗ[R] Π₀ i, β₂ i :=
+  { mapRange.addEquiv fun i => (e i).toAddEquiv,
+    mapRange.linearMap fun i =>
       (e i).toLinearMap with
     toFun := mapRange (fun i x => e i x) fun i => (e i).map_zero
     invFun := mapRange (fun i x => (e i).symm x) fun i => (e i).symm.map_zero }
-#align dfinsupp.map_range.linear_equiv Dfinsupp.MapRange.linearEquiv
+#align dfinsupp.map_range.linear_equiv Dfinsupp.mapRange.linearEquiv
 
 @[simp]
-theorem MapRange.linearEquiv_refl :
-    (MapRange.linearEquiv fun i => LinearEquiv.refl R (β₁ i)) = LinearEquiv.refl _ _ :=
+theorem mapRange.linearEquiv_refl :
+    (mapRange.linearEquiv fun i => LinearEquiv.refl R (β₁ i)) = LinearEquiv.refl _ _ :=
   LinearEquiv.ext mapRange_id
-#align dfinsupp.map_range.linear_equiv_refl Dfinsupp.MapRange.linearEquiv_refl
+#align dfinsupp.map_range.linear_equiv_refl Dfinsupp.mapRange.linearEquiv_refl
 
-theorem MapRange.linearEquiv_trans (f : ∀ i, β i ≃ₗ[R] β₁ i) (f₂ : ∀ i, β₁ i ≃ₗ[R] β₂ i) :
-    (MapRange.linearEquiv fun i => (f i).trans (f₂ i)) =
-      (MapRange.linearEquiv f).trans (MapRange.linearEquiv f₂) :=
+theorem mapRange.linearEquiv_trans (f : ∀ i, β i ≃ₗ[R] β₁ i) (f₂ : ∀ i, β₁ i ≃ₗ[R] β₂ i) :
+    (mapRange.linearEquiv fun i => (f i).trans (f₂ i)) =
+      (mapRange.linearEquiv f).trans (mapRange.linearEquiv f₂) :=
   LinearEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x)
     (fun i => (f₂ i).map_zero) (fun i => (f i).map_zero) (by simp)
-#align dfinsupp.map_range.linear_equiv_trans Dfinsupp.MapRange.linearEquiv_trans
+#align dfinsupp.map_range.linear_equiv_trans Dfinsupp.mapRange.linearEquiv_trans
 
 @[simp]
-theorem MapRange.linearEquiv_symm (e : ∀ i, β₁ i ≃ₗ[R] β₂ i) :
-    (MapRange.linearEquiv e).symm = MapRange.linearEquiv fun i => (e i).symm :=
+theorem mapRange.linearEquiv_symm (e : ∀ i, β₁ i ≃ₗ[R] β₂ i) :
+    (mapRange.linearEquiv e).symm = mapRange.linearEquiv fun i => (e i).symm :=
   rfl
-#align dfinsupp.map_range.linear_equiv_symm Dfinsupp.MapRange.linearEquiv_symm
+#align dfinsupp.map_range.linear_equiv_symm Dfinsupp.mapRange.linearEquiv_symm
 
-end MapRange
+end mapRange
 
 section CoprodMap
 
@@ -276,7 +276,7 @@ This is the map coming from the universal property of `Π₀ i, M i` as the copr
 See also `LinearMap.coprod` for the binary product version. -/
 noncomputable def coprodMap (f : ∀ i : ι, M i →ₗ[R] N) : (Π₀ i, M i) →ₗ[R] N :=
   (Finsupp.lsum ℕ fun _ : ι => LinearMap.id) ∘ₗ
-    (@finsuppLequivDfinsupp ι R N _ _ _ _ _).symm.toLinearMap ∘ₗ Dfinsupp.MapRange.linearMap f
+    (@finsuppLequivDfinsupp ι R N _ _ _ _ _).symm.toLinearMap ∘ₗ Dfinsupp.mapRange.linearMap f
 #align dfinsupp.coprod_map Dfinsupp.coprodMap
 
 theorem coprodMap_apply (f : ∀ i : ι, M i →ₗ[R] N) (x : Π₀ i, M i) :
@@ -296,7 +296,7 @@ Note that while this is stated for `Dfinsupp` not `direct_sum`, the types are de
 noncomputable def basis {η : ι → Type _} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σi, η i) R (Π₀ i, M i) :=
   Basis.of_repr
-    ((MapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDfinsupp R).symm)
+    ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDfinsupp R).symm)
 #align dfinsupp.basis Dfinsupp.basis
 
 end Basis
@@ -471,7 +471,7 @@ theorem independent_of_dfinsupp_sumAddHom_injective (p : ι → AddSubmonoid N)
 theorem lsum_comp_mapRange_toSpanSingleton [∀ m : R, Decidable (m ≠ 0)] (p : ι → Submodule R N)
     {v : ι → N} (hv : ∀ i : ι, v i ∈ p i) :
     (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype : _ →ₗ[R] _).comp
-        ((MapRange.linearMap fun i => LinearMap.toSpanSingleton R (↥(p i)) ⟨v i, hv i⟩ :
+        ((mapRange.linearMap fun i => LinearMap.toSpanSingleton R (↥(p i)) ⟨v i, hv i⟩ :
               _ →ₗ[R] _).comp
           (finsuppLequivDfinsupp R : (ι →₀ R) ≃ₗ[R] _).toLinearMap) =
       Finsupp.total ι N R v := by
@@ -556,7 +556,7 @@ theorem Independent.linearIndependent [NoZeroSMulDivisors R N] (p : ι → Submo
     rw [linearIndependent_iff]
     intro l hl
     let a :=
-      Dfinsupp.MapRange.linearMap (fun i => LinearMap.toSpanSingleton R (p i) ⟨v i, hv i⟩)
+      Dfinsupp.mapRange.linearMap (fun i => LinearMap.toSpanSingleton R (p i) ⟨v i, hv i⟩)
         l.toDfinsupp
     have ha : a = 0 := by
       apply hp.dfinsupp_lsum_injective
