@@ -42,7 +42,8 @@ section Terminal
 
 /-- The map of an empty cone is a limit iff the mapped object is terminal.
 -/
-def isLimitMapConeEmptyConeEquiv : IsLimit (Functor.mapCone G (asEmptyCone X)) ≃ IsTerminal (G.obj X) :=
+def isLimitMapConeEmptyConeEquiv :
+    IsLimit (Functor.mapCone G (asEmptyCone X)) ≃ IsTerminal (G.obj X) :=
   isLimitEmptyConeEquiv D _ _ (eqToIso rfl)
 #align category_theory.limits.is_limit_map_cone_empty_cone_equiv CategoryTheory.Limits.isLimitMapConeEmptyConeEquiv
 
