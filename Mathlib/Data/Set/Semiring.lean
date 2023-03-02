@@ -8,8 +8,8 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Order.Kleene
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Sets as a semiring under union
