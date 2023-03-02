@@ -328,6 +328,8 @@ section
 
 open Pointwise
 
+-- TODO: lean4#2074
+set_option synthInstance.etaExperiment true in
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
 This is available as an instance in the `pointwise` locale. -/
