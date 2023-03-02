@@ -232,7 +232,7 @@ section Monotone
 
 variable (α β γ)
 
-/-- `sigma.curry` as a monotone function. -/
+/-- `Sigma.curry` as a monotone function. -/
 @[simps]
 def monotoneCurry [(x y : _) → Preorder <| γ x y] :
     (∀ x : Σa, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b where
@@ -240,7 +240,7 @@ def monotoneCurry [(x y : _) → Preorder <| γ x y] :
   monotone' _x _y h a b := h ⟨a, b⟩
 #align pi.monotone_curry Pi.monotoneCurry
 
-/-- `sigma.uncurry` as a monotone function. -/
+/-- `Sigma.uncurry` as a monotone function. -/
 @[simps]
 def monotoneUncurry [(x y : _) → Preorder <| γ x y] :
     (∀ (a) (b : β a), γ a b) →o ∀ x : Σa, β a, γ x.1 x.2 where
