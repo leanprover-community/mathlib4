@@ -198,10 +198,10 @@ instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
 instance evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
     PreservesLimitsOfShape J ((evaluation K C).obj k) where 
   preservesLimit {F} := by 
+    -- Porting note: added a let because X was not inferred  
     let X : (k:K)  → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) := 
-    -- Porting note: now needed X has a hint
       fun k => getLimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
-    refine preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
+    exact preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
       IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
 #align category_theory.limits.evaluation_preserves_limits_of_shape CategoryTheory.Limits.evaluationPreservesLimitsOfShape
 
@@ -265,8 +265,8 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
 instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
     PreservesColimitsOfShape J ((evaluation K C).obj k) where 
   preservesColimit {F} := by
+    -- Porting note: added a let because X was not inferred 
     let X : (k:K)  → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) := 
-    -- Porting note: now needed X has a hint
       fun k => getColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     refine preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
       IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
