@@ -279,10 +279,10 @@ instance [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
 instance [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=
   p.toSubMulAction.isScalarTower
 
-instance is_scalar_tower' {S' : Type _} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
+instance isScalarTower' {S' : Type _} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
     [IsScalarTower S' R M] [IsScalarTower S S' M] [IsScalarTower S R M] : IsScalarTower S S' p :=
   p.toSubMulAction.isScalarTower'
-#align submodule.is_scalar_tower' Submodule.is_scalar_tower'
+#align submodule.is_scalar_tower' Submodule.isScalarTower'
 
 instance [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M]
     [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S p :=

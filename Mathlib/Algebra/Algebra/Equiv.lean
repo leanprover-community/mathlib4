@@ -315,7 +315,7 @@ def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
   e.symm
 #align alg_equiv.simps.symm_apply AlgEquiv.Simps.symm_apply
 
-initialize_simps_projections AlgEquiv (toEquiv_toFun → apply,toEquiv_invFun → symm_apply)
+initialize_simps_projections AlgEquiv (toFun → apply, invFun → symm_apply)
 
 --@[simp] -- Porting note: simp can prove this once symm_mk is introduced
 theorem coe_apply_coe_coe_symm_apply {F : Type _} [AlgEquivClass F R A₁ A₂] (f : F) (x : A₂) :
@@ -727,13 +727,13 @@ instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
   ⟨AlgEquiv.ext⟩
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 
-instance apply_sMulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
+instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
     where smul_comm r e a := (e.map_smul r a).symm
-#align alg_equiv.apply_smul_comm_class AlgEquiv.apply_sMulCommClass
+#align alg_equiv.apply_smul_comm_class AlgEquiv.apply_smulCommClass
 
-instance apply_smul_comm_class' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁
+instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁
     where smul_comm e r a := e.map_smul r a
-#align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smul_comm_class'
+#align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
 
 @[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
