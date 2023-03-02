@@ -26,8 +26,6 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
  * class `LawfulFix`
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
-
 universe u v
 
 open Classical
@@ -218,9 +216,11 @@ theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous
     erw [hc, Chain.map_comp]; rfl
 #align part.to_unit_cont Part.to_unit_cont
 
-instance : LawfulFix (Part α) :=
-  ⟨fun (f : Part α →o Part α) hc ↦ show Part.fix (toUnitMono f) () = _ by
-    rw [Part.fix_eq (to_unit_cont f hc)] <;> rfl⟩
+-- Porting note: `noncomputable` is required because the code generator does not support recursor
+--               `Acc.rec` yet.
+noncomputable instance : LawfulFix (Part α) :=
+  ⟨fun {f : Part α →o Part α} hc ↦ show Part.fix (toUnitMono f) () = _ by
+    rw [Part.fix_eq (to_unit_cont f hc)]; rfl⟩
 
 end Part
 
@@ -228,8 +228,10 @@ open Sigma
 
 namespace Pi
 
-instance {β} : LawfulFix (α → Part β) :=
-  ⟨fun f ↦ Part.fix_eq⟩
+-- Porting note: `noncomputable` is required because the code generator does not support recursor
+--               `Acc.rec` yet.
+noncomputable instance {β} : LawfulFix (α → Part β) :=
+  ⟨fun {_f} ↦ Part.fix_eq⟩
 
 variable {γ : ∀ a : α, β a → Type _}
 
@@ -239,19 +241,18 @@ variable (α β γ)
 
 /-- `sigma.curry` as a monotone function. -/
 @[simps]
-def monotoneCurry [∀ x y, Preorder <| γ x y] : (∀ x : Σa, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b
-    where
+def monotoneCurry [∀ x y, Preorder <| γ x y] :
+    (∀ x : Σa, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b where
   toFun := curry
-  monotone' x y h a b := h ⟨a, b⟩
+  monotone' _x _y h a b := h ⟨a, b⟩
 #align pi.monotone_curry Pi.monotoneCurry
 
 /-- `sigma.uncurry` as a monotone function. -/
 @[simps]
 def monotoneUncurry [∀ x y, Preorder <| γ x y] :
-    (∀ (a) (b : β a), γ a b) →o ∀ x : Σa, β a, γ x.1 x.2
-    where
+    (∀ (a) (b : β a), γ a b) →o ∀ x : Σa, β a, γ x.1 x.2 where
   toFun := uncurry
-  monotone' x y h a := h a.1 a.2
+  monotone' _x _y h a := h a.1 a.2
 #align pi.monotone_uncurry Pi.monotoneUncurry
 
 variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
@@ -294,13 +295,13 @@ theorem uncurry_curry_continuous :
 
 end Curry
 
-instance Pi.lawfulFix' [LawfulFix <| ∀ x : Sigma β, γ x.1 x.2] : LawfulFix (∀ x y, γ x y)
-    where fix_eq f hc := by {
-  dsimp [fix]
-  conv =>
-    lhs
-    erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
-  rfl }
+instance Pi.lawfulFix' [LawfulFix <| ∀ x : Sigma β, γ x.1 x.2] :
+    LawfulFix (∀ x y, γ x y) where
+  fix_eq {_f} hc := by
+    dsimp [fix]
+    conv =>
+      lhs
+      erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
 #align pi.pi.lawful_fix' Pi.Pi.lawfulFix'
 
 end Pi
