@@ -72,7 +72,7 @@ theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGro
 
 -- Porting note: needs Lean4#2074
 set_option synthInstance.etaExperiment true in
-/-- The action of `Semiring.to_module` is uniformly continuous. -/
+/-- The action of `Semiring.toModule` is uniformly continuous. -/
 instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul R R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
@@ -80,7 +80,7 @@ instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGr
 
 -- Porting note: needs Lean4#2074
 set_option synthInstance.etaExperiment true in
-/-- The action of `Semiring.to_oppositeModule` is uniformly continuous. -/
+/-- The action of `Semiring.toOppositeModule` is uniformly continuous. -/
 instance Ring.has_uniform_continuous_const_op_smul [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul Rᵐᵒᵖ R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
@@ -157,7 +157,7 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map ((· • 
 
 @[to_additive]
 instance : UniformContinuousConstSMul M (Completion X) :=
-  ⟨fun c => uniformContinuous_map⟩
+  ⟨fun _ => uniformContinuous_map⟩
 
 @[to_additive]
 instance [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
@@ -187,8 +187,8 @@ instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completi
 variable {M X}
 variable [UniformContinuousConstSMul M X]
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_smul (c : M) (x : X) : ↑(c • x) = c • (x : Completion X) :=
+@[to_additive (attr := simp)] -- Porting note: `norm_cast` claims this is a badly shaped lemma
+theorem coe_smul (c : M) (x : X) : (↑(c • x) : Completion X) = c • (x : Completion X) :=
   (map_coe (uniformContinuous_const_smul c) x).symm
 #align uniform_space.completion.coe_smul UniformSpace.Completion.coe_smul
 #align uniform_space.completion.coe_vadd UniformSpace.Completion.coe_vadd
