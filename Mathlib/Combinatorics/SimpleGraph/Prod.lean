@@ -20,7 +20,7 @@ two edges is a square.
 
 ## Main declarations
 
-* `simple_graph.box_prod`: The box product.
+* `SimpleGraph.boxProd`: The box product.
 
 ## Notation
 
@@ -77,13 +77,13 @@ theorem boxProd_neighborSet (x : α × β) :
 
 variable (G H I)
 
-/-- The box product is commutative up to isomorphism. `equiv.prod_comm` as a graph isomorphism. -/
+/-- The box product is commutative up to isomorphism. `Equiv.prodComm` as a graph isomorphism. -/
 @[simps!]
 def boxProdComm : G □ H ≃g H □ G :=
   ⟨Equiv.prodComm _ _, fun {_ _} => @or_comm _ _⟩
 #align simple_graph.box_prod_comm SimpleGraph.boxProdComm
 
-/-- The box product is associative up to isomorphism. `equiv.prod_assoc` as a graph isomorphism. -/
+/-- The box product is associative up to isomorphism. `Equiv.prodAssoc` as a graph isomorphism. -/
 @[simps!]
 def boxProdAssoc : G □ H □ I ≃g G □ (H □ I) :=
   ⟨Equiv.prodAssoc _ _ _, fun {x y} => by
