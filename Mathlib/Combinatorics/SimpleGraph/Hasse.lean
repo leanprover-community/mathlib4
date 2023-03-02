@@ -38,8 +38,8 @@ variable [Preorder α] [Preorder β]
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
-  symm a b := Or.symm
-  loopless a h := h.elim (irrefl _) (irrefl _)
+  symm _a _b := Or.symm
+  loopless _a h := h.elim (irrefl _) (irrefl _)
 #align simple_graph.hasse SimpleGraph.hasse
 
 variable {α β} {a b : α}
