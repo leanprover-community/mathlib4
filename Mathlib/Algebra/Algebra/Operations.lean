@@ -28,16 +28,16 @@ An interface for multiplication and division of sub-R-modules of an R-algebra A 
 
 Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
-* `1 : submodule R A`       : the R-submodule R of the R-algebra A
-* `has_mul (submodule R A)` : multiplication of two sub-R-modules M and N of A is defined to be
+* `1 : Submodule R A`       : the R-submodule R of the R-algebra A
+* `Mul (Submodule R A)` : multiplication of two sub-R-modules M and N of A is defined to be
                               the smallest submodule containing all the products `m * n`.
-* `has_div (submodule R A)` : `I / J` is defined to be the submodule consisting of all `a : A` such
+* `Div (Submodule R A)` : `I / J` is defined to be the submodule consisting of all `a : A` such
                               that `a • J ⊆ I`
 
-It is proved that `submodule R A` is a semiring, and also an algebra over `set A`.
+It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A`.
 
-Additionally, in the `pointwise` locale we promote `submodule.pointwise_distrib_mul_action` to a
-`mul_semiring_action` as `submodule.pointwise_mul_semiring_action`.
+Additionally, in the `pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
+`MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
 ## Tags
 
@@ -79,7 +79,7 @@ variable {A : Type v} [Semiring A] [Algebra R A]
 
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
-/-- `1 : submodule R A` is the submodule R of A. -/
+/-- `1 : Submodule R A` is the submodule R of A. -/
 instance : One (Submodule R A) :=
   ⟨(Algebra.linearMap R A).range⟩
 
@@ -324,7 +324,7 @@ section
 
 open Pointwise
 
-/-- `submodule.has_pointwise_neg` distributes over multiplication.
+/-- `Submodule.pointwiseNeg` distributes over multiplication.
 
 This is available as an instance in the `pointwise` locale. -/
 protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
@@ -432,7 +432,7 @@ theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAdd
   · exact (pow_to_add_submonoid M hn).ge
 #align submodule.le_pow_to_add_submonoid Submodule.le_pow_toAddSubmonoid
 
-/-- Dependent version of `submodule.pow_induction_on_left`. -/
+/-- Dependent version of `Submodule.pow_induction_on_left`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
     (hr : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
@@ -448,7 +448,7 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
       (fun x hx y hy Cx Cy => hadd _ _ _ _ _ Cx Cy) hx
 #align submodule.pow_induction_on_left' Submodule.pow_induction_on_left'
 
-/-- Dependent version of `submodule.pow_induction_on_right`. -/
+/-- Dependent version of `Submodule.pow_induction_on_right`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
     (hr : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
@@ -487,7 +487,7 @@ protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (al
   Submodule.pow_induction_on_right' M hr (fun x y i hx hy => hadd x y) (fun i x hx => hmul _) hx
 #align submodule.pow_induction_on_right Submodule.pow_induction_on_right
 
-/-- `submonoid.map` as a `monoid_with_zero_hom`, when applied to `alg_hom`s. -/
+/-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
 @[simps]
 def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') : Submodule R A →*₀ Submodule R A'
     where
@@ -558,7 +558,7 @@ variable {α : Type _} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R 
 
 This is available as an instance in the `pointwise` locale.
 
-This is a stronger version of `submodule.pointwise_distrib_mul_action`. -/
+This is a stronger version of `Submodule.pointwiseDistribMulAction`. -/
 protected def pointwiseMulSemiringAction : MulSemiringAction α (Submodule R A) :=
   {
     Submodule.pointwiseDistribMulAction with
@@ -609,7 +609,7 @@ theorem prod_span_singleton {ι : Type _} (s : Finset ι) (x : ι → A) :
 
 variable (R A)
 
-/-- R-submodules of the R-algebra A are a module over `set A`. -/
+/-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A)
     where
   smul s P := span R s * P
