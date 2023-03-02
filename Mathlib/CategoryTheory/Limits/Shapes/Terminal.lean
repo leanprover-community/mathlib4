@@ -37,7 +37,7 @@ open Lean Elab Meta Tactic in
 `Discrete PEmpty`. -/
 /-- A local tactic replacing the use of discrete cases on `PEmpty` in Lean 3.
 `dee` is short for `discrete_empty_elim`. -/
-local elab (name := discrete_empty_elim) "dee" : tactic => withMainContext do
+scoped elab (name := discrete_empty_elim) "dee" : tactic => withMainContext do
   evalTactic (← `(tactic| iterate (try {constructor}; try {intro ⟨a⟩; cases a} <;> intro )))
 
 /-- Construct a cone for the empty diagram given an object. -/
