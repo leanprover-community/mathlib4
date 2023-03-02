@@ -66,8 +66,6 @@ theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b�
   rw [boxProd_adj, and_iff_left rfl, or_iff_right fun h : G.Adj a a ∧ _ => h.1.ne rfl]
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem boxProd_neighborSet (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
@@ -241,6 +239,10 @@ theorem boxProd_neighborFinset (x : α × β) [Fintype (G.neighborSet x.1)]
   -- swap out the fintype instance for the canonical one
   letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
   refine' Eq.trans _ Finset.attach_map_val
+
+  -- porting note:Lean 3 has `(fun (y : α × β) => y ∈ (G □ H).neighborSet x))` for
+  -- 2nd hole but doesn't solve `Finset.univ` instance problem
+  -- `this` seems to fit the first hole, but again, doesn't help
   convert Finset.map_map _ (Function.Embedding.subtype _) Finset.univ
 #align simple_graph.box_prod_neighbor_finset SimpleGraph.boxProd_neighborFinset
 
