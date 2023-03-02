@@ -15,13 +15,13 @@ import Mathlib.Order.SuccPred.Relation
 /-!
 # The Hasse diagram as a graph
 
-This file defines the Hasse diagram of an order (graph of `covby`, the covering relation) and the
+This file defines the Hasse diagram of an order (graph of `Covby`, the covering relation) and the
 path graph on `n` vertices.
 
 ## Main declarations
 
-* `simple_graph.hasse`: Hasse diagram of an order.
-* `simple_graph.path_graph`: Path graph on `n` vertices.
+* `SimpleGraph.hasse`: Hasse diagram of an order.
+* `SimpleGraph.pathGraph`: Path graph on `n` vertices.
 -/
 
 
