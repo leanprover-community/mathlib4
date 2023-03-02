@@ -262,7 +262,7 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
       exact f (bodd n) n' (binaryRec z f n')
   decreasing_by exact binaryRec_decreasing n0
 
-#align nat.binaryRec Nat.binaryRec
+#align nat.binary_rec Nat.binaryRec
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/

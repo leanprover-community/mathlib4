@@ -26,7 +26,7 @@ Association lists are represented by the `AList` structure. This file defines th
 provides ways to access, modify, and combine `AList`s.
 
 * `AList.keys` returns a list of keys of the alist.
-* `AList.has_mem` returns membership in the set of keys.
+* `AList.membership` returns membership in the set of keys.
 * `AList.erase` removes a certain key.
 * `AList.insert` adds a key-value mapping to the list.
 * `AList.union` combines two association lists.

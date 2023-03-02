@@ -15,7 +15,7 @@ import Mathlib.Algebra.Module.Basic
 Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
 should contain all possible results that do not involve any topology.
 
-We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type*`.
+We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type _`.
 
 We provide a type synonym of `Σ x, E x` as `Bundle.TotalSpace E`, to be able to endow it with
 a topology which is not the disjoint union topology `Sigma.TopologicalSpace`. In general, the

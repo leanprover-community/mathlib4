@@ -120,13 +120,13 @@ protected theorem Subsingleton.antivary [Subsingleton ι] (f : ι → α) (g : �
   fun _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
 #align subsingleton.antivary Subsingleton.antivary
 
-protected theorem Subsingleton.monovary_on [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
+protected theorem Subsingleton.monovaryOn [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
     MonovaryOn f g s := fun _ _ _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
-#align subsingleton.monovary_on Subsingleton.monovary_on
+#align subsingleton.monovary_on Subsingleton.monovaryOn
 
-protected theorem Subsingleton.antivary_on [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
+protected theorem Subsingleton.antivaryOn [Subsingleton ι] (f : ι → α) (g : ι → β) (s : Set ι) :
     AntivaryOn f g s := fun _ _ _ _ h => (ne_of_apply_ne _ h.ne <| Subsingleton.elim _ _).elim
-#align subsingleton.antivary_on Subsingleton.antivary_on
+#align subsingleton.antivary_on Subsingleton.antivaryOn
 
 theorem monovaryOn_const_left (g : ι → β) (a : α) (s : Set ι) : MonovaryOn (const ι a) g s :=
   fun _ _ _ _ _ => le_rfl

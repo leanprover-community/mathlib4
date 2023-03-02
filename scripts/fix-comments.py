@@ -7,7 +7,7 @@ import subprocess
 import re
 
 if len(sys.argv) != 2 or not sys.argv[1].endswith('.lean'):
-    print("usage: fix-lints.py X.lean")
+    print("usage: fix-comments.py X.lean")
     sys.exit(1)
 
 leanfile = sys.argv[1]

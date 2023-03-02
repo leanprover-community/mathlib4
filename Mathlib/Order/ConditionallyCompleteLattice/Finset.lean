@@ -87,7 +87,7 @@ non-empty. As a result, we can translate between the two.
 
 namespace Finset
 
-theorem sup'_eq_cSup_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
+theorem sup'_eq_csupₛ_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
     s.sup' H f = supₛ (f '' s) := by
   apply le_antisymm
   · refine' Finset.sup'_le _ _ fun a ha => _
@@ -97,20 +97,20 @@ theorem sup'_eq_cSup_image [ConditionallyCompleteLattice β] (s : Finset α) (H)
   · apply csupₛ_le ((coe_nonempty.mpr H).image _)
     rintro _ ⟨a, ha, rfl⟩
     exact Finset.le_sup' _ ha
-#align finset.sup'_eq_cSup_image Finset.sup'_eq_cSup_image
+#align finset.sup'_eq_cSup_image Finset.sup'_eq_csupₛ_image
 
-theorem inf'_eq_cInf_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
+theorem inf'_eq_cinfₛ_image [ConditionallyCompleteLattice β] (s : Finset α) (H) (f : α → β) :
     s.inf' H f = infₛ (f '' s) :=
-  @sup'_eq_cSup_image _ βᵒᵈ _ _ H _
-#align finset.inf'_eq_cInf_image Finset.inf'_eq_cInf_image
+  @sup'_eq_csupₛ_image _ βᵒᵈ _ _ H _
+#align finset.inf'_eq_cInf_image Finset.inf'_eq_cinfₛ_image
 
-theorem sup'_id_eq_cSup [ConditionallyCompleteLattice α] (s : Finset α) (H) :
-    s.sup' H id = supₛ s := by rw [sup'_eq_cSup_image s H, Set.image_id]
-#align finset.sup'_id_eq_cSup Finset.sup'_id_eq_cSup
+theorem sup'_id_eq_csupₛ [ConditionallyCompleteLattice α] (s : Finset α) (H) :
+    s.sup' H id = supₛ s := by rw [sup'_eq_csupₛ_image s H, Set.image_id]
+#align finset.sup'_id_eq_cSup Finset.sup'_id_eq_csupₛ
 
-theorem inf'_id_eq_cInf [ConditionallyCompleteLattice α] (s : Finset α) (H) :
+theorem inf'_id_eq_cinfₛ [ConditionallyCompleteLattice α] (s : Finset α) (H) :
     s.inf' H id = infₛ s :=
-  @sup'_id_eq_cSup αᵒᵈ _ _ H
-#align finset.inf'_id_eq_cInf Finset.inf'_id_eq_cInf
+  @sup'_id_eq_csupₛ αᵒᵈ _ _ H
+#align finset.inf'_id_eq_cInf Finset.inf'_id_eq_cinfₛ
 
 end Finset

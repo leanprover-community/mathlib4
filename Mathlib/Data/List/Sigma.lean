@@ -16,7 +16,7 @@ import Mathlib.Data.List.Perm
 
 This file includes several ways of interacting with `List (Sigma β)`, treated as a key-value store.
 
-If `α : Type*` and `β : α → Type*`, then we regard `s : Sigma β` as having key `s.1 : α` and value
+If `α : Type _` and `β : α → Type _`, then we regard `s : Sigma β` as having key `s.1 : α` and value
 `s.2 : β s.1`. Hence, `list (sigma β)` behaves like a key-value store.
 
 ## Main Definitions
@@ -475,7 +475,7 @@ theorem Perm.kerase {a : α} {l₁ l₂ : List (Sigma β)} (nd : l₁.NodupKeys)
 #align list.perm.kerase List.Perm.kerase
 
 @[simp]
-theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) : 
+theorem not_mem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
     a ∉ (kerase a l).keys := by
   induction l
   case nil => simp
