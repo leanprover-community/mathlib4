@@ -1387,14 +1387,14 @@ instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemir
   S.toSubmonoid.mulSemiringAction
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_left : SMulCommClass (center R') R' R' :=
+instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
   Submonoid.center.smulCommClass_left
-#align subsemiring.center.smul_comm_class_left Subsemiring.center.sMulCommClass_left
+#align subsemiring.center.smul_comm_class_left Subsemiring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_right : SMulCommClass R' (center R') R' :=
+instance center.smulCommClass_right : SMulCommClass R' (center R') R' :=
   Submonoid.center.smulCommClass_right
-#align subsemiring.center.smul_comm_class_right Subsemiring.center.sMulCommClass_right
+#align subsemiring.center.smul_comm_class_right Subsemiring.center.smulCommClass_right
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
 def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
