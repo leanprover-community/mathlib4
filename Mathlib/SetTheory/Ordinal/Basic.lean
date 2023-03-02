@@ -466,7 +466,7 @@ theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [
         (RelEmbedding.codRestrict _ ((Subrel.relEmbedding _ _).trans f) fun ⟨x, h⟩ => by
           rw [RelEmbedding.trans_apply]; exact f.toRelEmbedding.map_rel_iff.2 h)
           fun ⟨y, h⟩ => by
-            rcases f.init' h with ⟨a, rfl⟩
+            rcases f.init h with ⟨a, rfl⟩
             exact ⟨⟨a, f.toRelEmbedding.map_rel_iff.1 h⟩,
               Subtype.eq <| RelEmbedding.trans_apply _ _ _⟩⟩
 #align ordinal.typein_apply Ordinal.typein_apply

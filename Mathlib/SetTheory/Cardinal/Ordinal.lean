@@ -112,7 +112,7 @@ theorem alephIdx_le {a b} : alephIdx a ≤ alephIdx b ↔ a ≤ b := by
 #align cardinal.aleph_idx_le Cardinal.alephIdx_le
 
 theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
-  alephIdx.initialSeg.init _ _
+  alephIdx.initialSeg.init
 #align cardinal.aleph_idx.init Cardinal.alephIdx.init
 
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.
