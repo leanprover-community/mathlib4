@@ -115,28 +115,29 @@ def Lean.MVarId.congrPi? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   observing? do mvarId.apply (← mkConstWithFreshMVarLevels `pi_congr)
 
 /--
-Try to apply `funext`, but only if it is obviously an equality of two functions
-(we do not want this to apply to equalities of sets).
+Try to apply `funext`, but only if it is an equality of two functions where at least one is
+a lambda expression.
+One thing this check prevents is accidentally applying `funext` to a set equality, but also when
+doing congruence we don't want to apply `funext` unnecessarily.
 "Obvious" means that the type of the terms being equated is a pi type.
 -/
 def Lean.MVarId.obviousFunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   observing? do
     let tgt ← mvarId.getType'
-    let some (ty, _, _) := tgt.eq? | failure
-    let .forallE .. ← Lean.instantiateMVars ty | failure
+    let some (_, lhs, rhs) := tgt.eq? | failure
+    if not lhs.isLambda && not rhs.isLambda then failure
     mvarId.apply (← mkConstWithFreshMVarLevels ``funext)
 
 /--
 Try to apply `Function.hfunext`, returning the new goals if it succeeds.
-Like `Lean.MVarId.obviousFunext?`, we only do so if both sides of the `HEq` are terms
-of pi types. This is to prevent unfolding of things like `Set`.
+Like `Lean.MVarId.obviousFunext?`, we only do so if at least one side of the `HEq` is a
+lambda. This is to prevent unfolding of things like `Set`.
 -/
 def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   observing? do
     let tgt ← mvarId.getType'
-    let some (ty1, ty2, _, _) := tgt.heq? | failure
-    let .forallE .. ← Lean.instantiateMVars ty1 | failure
-    let .forallE .. ← Lean.instantiateMVars ty2 | failure
+    let some (_, _, lhs, rhs) := tgt.heq? | failure
+    if not lhs.isLambda && not rhs.isLambda then failure
     mvarId.apply (← mkConstWithFreshMVarLevels `Function.hfunext)
 
 /-- The list of passes used by `Lean.MVarId.congrCore!`. -/
@@ -154,7 +155,7 @@ def Lean.MVarId.preCongr! (mvarId : MVarId) : MetaM (Option MVarId) := do
   if ← mvarId.assumptionCore then return none
   let mvarId ← mvarId.iffOfEq
   -- Now try definitional equality. No need to try `mvarId.hrefl` since we already did  `heqOfEq`.
-  try withReducible mvarId.refl; return none catch _ => pure ()
+  try mvarId.refl; return none catch _ => pure ()
   -- Now we go for (heterogenous) equality via subsingleton considerations
   if ← mvarId.subsingletonElim then return none
   if ← mvarId.proofIrrelHeq then return none
@@ -186,7 +187,7 @@ where
     let some mvarId ← mvarId.postCongr! | return
     modify (·.push mvarId)
   go (n : Nat) (mvarId : MVarId) : StateRefT (Array MVarId) MetaM Unit := do
-    let some mvarId ← mvarId.preCongr! | return
+    let some mvarId ← withReducible mvarId.preCongr! | return
     match n with
       | 0 => post mvarId
       | n + 1 =>

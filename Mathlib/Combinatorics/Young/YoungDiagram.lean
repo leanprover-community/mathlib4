@@ -356,7 +356,7 @@ theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔
 #align young_diagram.mk_mem_col_iff YoungDiagram.mk_mem_col_iff
 
 protected theorem exists_not_mem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
-  convert μ.transpose.exists_not_mem_row j
+  convert μ.transpose.exists_not_mem_row j using 1
   simp
 #align young_diagram.exists_not_mem_col YoungDiagram.exists_not_mem_col
 
