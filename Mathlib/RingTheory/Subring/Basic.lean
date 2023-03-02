@@ -256,12 +256,12 @@ theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R 
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_subsemiring_injective Subring.toSubsemiring_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 #align subring.to_subsemiring_strict_mono Subring.toSubsemiring_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 #align subring.to_subsemiring_mono Subring.toSubsemiring_mono
@@ -270,12 +270,12 @@ theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R 
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_add_subgroup_injective Subring.toAddSubgroup_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 #align subring.to_add_subgroup_strict_mono Subring.toAddSubgroup_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 #align subring.to_add_subgroup_mono Subring.toAddSubgroup_mono
@@ -284,11 +284,11 @@ theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSub
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subring.to_submonoid_injective Subring.toSubmonoid_injective
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
 #align subring.to_submonoid_strict_mono Subring.toSubmonoid_strictMono
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
   toSubmonoid_strictMono.monotone
 #align subring.to_submonoid_mono Subring.toSubmonoid_mono
@@ -1056,7 +1056,7 @@ theorem mem_prod {s : Subring R} {t : Subring S} {p : R × S} : p ∈ s.prod t �
   Iff.rfl
 #align subring.mem_prod Subring.mem_prod
 
---@[mono] -- Porting note: mono not implemented yet
+@[mono]
 theorem prod_mono ⦃s₁ s₂ : Subring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subring S⦄ (ht : t₁ ≤ t₂) :
     s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
@@ -1446,14 +1446,14 @@ instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAct
   inferInstanceAs (MulSemiringAction S.toSubmonoid α)
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_left : SMulCommClass (center R) R R :=
-  Subsemiring.center.sMulCommClass_left
-#align subring.center.smul_comm_class_left Subring.center.sMulCommClass_left
+instance center.smulCommClass_left : SMulCommClass (center R) R R :=
+  Subsemiring.center.smulCommClass_left
+#align subring.center.smul_comm_class_left Subring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_right : SMulCommClass R (center R) R :=
-  Subsemiring.center.sMulCommClass_right
-#align subring.center.smul_comm_class_right Subring.center.sMulCommClass_right
+instance center.smulCommClass_right : SMulCommClass R (center R) R :=
+  Subsemiring.center.smulCommClass_right
+#align subring.center.smul_comm_class_right Subring.center.smulCommClass_right
 
 end Subring
 
