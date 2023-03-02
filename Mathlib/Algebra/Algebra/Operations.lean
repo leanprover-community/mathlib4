@@ -389,10 +389,9 @@ theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P,
 #align submodule.mem_mul_span_singleton Submodule.mem_mul_span_singleton
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
-instance : IdemSemiring (Submodule R A) :=
+instance idemSemiring : IdemSemiring (Submodule R A) :=
   { toAddSubmonoid_injective.semigroup _ fun m n : Submodule R A => mul_toAddSubmonoid m n,
-    AddMonoidWithOne.unary, Submodule.pointwiseAddCommMonoid, Submodule.one, Submodule.mul,
-    (by infer_instance : OrderBot (Submodule R A)),
+    AddMonoidWithOne.unary, Submodule.pointwiseAddCommMonoid,
     (by infer_instance :
       Lattice (Submodule R A)) with
     one_mul := Submodule.one_mul
@@ -400,13 +399,15 @@ instance : IdemSemiring (Submodule R A) :=
     zero_mul := bot_mul
     mul_zero := mul_bot
     left_distrib := mul_sup
-    right_distrib := sup_mul }
+    right_distrib := sup_mul,
+    -- porting note: removed `(by infer_instance : OrderBot (Submodule R A))`
+    bot_le := fun _ => bot_le }
 
 variable (M)
 
 theorem span_pow (s : Set A) : ∀ n : ℕ, span R s ^ n = span R (s ^ n)
   | 0 => by rw [pow_zero, pow_zero, one_eq_span_one_set]
-  | n + 1 => by rw [pow_succ, pow_succ, span_pow, span_mul_span]
+  | n + 1 => by rw [pow_succ, pow_succ, span_pow s n, span_mul_span]
 #align submodule.span_pow Submodule.span_pow
 
 theorem pow_eq_span_pow_set (n : ℕ) : M ^ n = span R ((M : Set A) ^ n) := by
@@ -426,9 +427,9 @@ theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.
   induction' n with n ih
   · exact (h rfl).elim
   · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
-    cases n
-    · rw [pow_zero, pow_zero, mul_one, ← mul_toAddSubmonoid, mul_one]
-    · rw [ih n.succ_ne_zero]
+    cases n with
+    | zero => rw [pow_zero, pow_zero, mul_one, ← mul_toAddSubmonoid, mul_one]
+    | succ n => rw [ih n.succ_ne_zero]
 #align submodule.pow_to_add_submonoid Submodule.pow_toAddSubmonoid
 
 theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAddSubmonoid := by
@@ -443,7 +444,8 @@ theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAdd
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
     (hr : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
     (hadd : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
-    (hmul : ∀ m ∈ M, ∀ (i x hx), C i x hx → C i.succ (m * x) (mul_mem_mul H hx)) {x : A} {n : ℕ}
+    (hmul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x) (mul_mem_mul hm hx))
+    {x : A} {n : ℕ}
     (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
   · rw [pow_zero] at hx
@@ -460,14 +462,15 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     (hr : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
     (hadd : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
     (hmul :
-      ∀ i x hx, C i x hx → ∀ m ∈ M, C i.succ (x * m) ((pow_succ' M i).symm ▸ mul_mem_mul hx H))
+      ∀ i x hx, C i x hx →
+        ∀ m (hm : m ∈ M), C i.succ (x * m) ((pow_succ' M i).symm ▸ mul_mem_mul hx hm))
     {x : A} {n : ℕ} (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
   · rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
     exact hr r
   revert hx
-  simp_rw [pow_succ']
+  simp_rw [pow_succ']  -- porting note: no longer rewrites
   intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
@@ -670,7 +673,7 @@ instance : Div (Submodule R A) :=
       zero_mem' := fun y hy => by
         rw [zero_mul]
         apply Submodule.zero_mem
-      add_mem' := fun a b ha hb y hy => by
+      add_mem' := fun ha hb y hy => by
         rw [add_mul]
         exact Submodule.add_mem _ (ha _ hy) (hb _ hy)
       smul_mem' := fun r x hx y hy => by
