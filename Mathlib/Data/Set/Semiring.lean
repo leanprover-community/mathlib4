@@ -206,7 +206,6 @@ theorem _root_.Set.up_one : up (1 : Set α) = 1 :=
 
 end One
 
--- Porting note: this was `one := 1`
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
     Set.mulOneClass with
