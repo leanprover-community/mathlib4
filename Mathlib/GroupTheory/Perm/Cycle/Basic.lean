@@ -1917,7 +1917,7 @@ theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
     refine'
       ⟨(Equiv.addRight 1).extendDomain f, _, fun x hx =>
         of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
-    convert Int.add_right_one_isCycle.IsCycleOn.extendDomain _
+    convert Int.addRight_one_isCycle.IsCycleOn.extendDomain _
     rw [image_comp, Equiv.image_eq_preimage]
     ext
     simp
@@ -1927,7 +1927,7 @@ theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
 theorem _root_.Set.prod_self_eq_unionᵢ_perm (hf : f.IsCycleOn s) :
     s ×ˢ s = ⋃ n : ℤ, (fun a => (a, (f ^ n) a)) '' s := by
   ext ⟨a, b⟩
-  simp only [mem_prod, mem_Union, mem_image]
+  simp only [Set.mem_prod, Set.mem_unionᵢ, Set.mem_image]
   refine' ⟨fun hx => _, _⟩
   · obtain ⟨n, rfl⟩ := hf.2 hx.1 hx.2
     exact ⟨_, _, hx.1, rfl⟩
@@ -1972,11 +1972,11 @@ The diagonals are given by the cycle `f`.
 -/
 theorem _root_.Finset.product_self_eq_disjUnion_perm (hf : f.IsCycleOn s) :
     s ×ᶠ s =
-      (range s.card).disjUnion
+      (range s.card).disjUnionᵢ
         (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩)
         (product_self_eq_disj_Union_perm_aux hf) := by
   ext ⟨a, b⟩
-  simp only [mem_product, Equiv.Perm.coe_pow, mem_disj_Union, mem_range, mem_map,
+  simp only [mem_product, Equiv.Perm.coe_pow, mem_disjUnionᵢ, mem_range, mem_map,
     Function.Embedding.coeFn_mk, Prod.mk.inj_iff, exists_prop]
   refine' ⟨fun hx => _, _⟩
   · obtain ⟨n, hn, rfl⟩ := hf.exists_pow_eq hx.1 hx.2
@@ -1993,7 +1993,7 @@ variable [Semiring α] [AddCommMonoid β] [Module α β] {s : Finset ι} {σ : P
 
 theorem _root_.Finset.sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :
     ((∑ i in s, f i) • ∑ i in s, g i) = ∑ k in range s.card, ∑ i in s, f i • g ((σ ^ k) i) := by
-  simp_rw [sum_smul_sum, product_self_eq_disjUnion_perm hσ, sum_disj_Union, sum_map]
+  simp_rw [sum_smul_sum, product_self_eq_disjUnion_perm hσ, sum_disjUnionᵢ, sum_map]
   rfl
 #align finset.sum_smul_sum_eq_sum_perm Finset.sum_smul_sum_eq_sum_perm
 
