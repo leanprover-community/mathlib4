@@ -78,7 +78,7 @@ Note that this means we almost always want to state definitions and lemmas in th
 An example of when one might want to use `restrict_scalars` would be if one has a vector space
 over a field of characteristic zero and wishes to make use of the `ℚ`-algebra structure. -/
 @[nolint unusedArguments]
-def RestrictScalars (R S M : Type _) : Type _ := M
+def RestrictScalars (_R _S M : Type _) : Type _ := M
 #align restrict_scalars RestrictScalars
 
 instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I
@@ -132,7 +132,7 @@ instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (Res
 
 instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :
     IsCentralScalar R (RestrictScalars R S M)
-    where op_smul_eq_smul r x := (op_smul_eq_smul (algebraMap R S r) (_ : M) : _)
+    where op_smul_eq_smul r _x := (op_smul_eq_smul (algebraMap R S r) (_ : M) : _)
 #align restrict_scalars.is_central_scalar RestrictScalars.isCentralScalar
 
 /-- The `R`-algebra homomorphism from the original coefficient algebra `S` to endomorphisms
