@@ -31,7 +31,7 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
 #align order_iso.mul_left₀ OrderIso.mulLeft₀
-#align order_iso.mul_left₀_symm_apply OrderIso.mulLeft₀_symmApply
+#align order_iso.mul_left₀_symm_apply OrderIso.mulLeft₀_symm_apply
 #align order_iso.mul_left₀_apply OrderIso.mulLeft₀_apply
 
 /-- `Equiv.mulRight₀` as an order_iso. -/
@@ -39,7 +39,7 @@ def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
 def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
 #align order_iso.mul_right₀ OrderIso.mulRight₀
-#align order_iso.mul_right₀_symm_apply OrderIso.mulRight₀_symmApply
+#align order_iso.mul_right₀_symm_apply OrderIso.mulRight₀_symm_apply
 #align order_iso.mul_right₀_apply OrderIso.mulRight₀_apply
 
 /-!
@@ -341,7 +341,7 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
 -/
 
 
---@[mono] -- Porting note: restore mono attribute
+@[mono]
 theorem div_le_div_of_le (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 hc)
@@ -386,7 +386,7 @@ theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤
   rw [le_div_iff d0, div_mul_eq_mul_div, div_le_iff b0]
 #align div_le_div_iff div_le_div_iff
 
--- @[mono] -- Porting note: restore mono attribute
+@[mono]
 theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc

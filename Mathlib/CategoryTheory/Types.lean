@@ -42,7 +42,7 @@ universe v v' w u u'
 
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
   still be additivized. -/
-@[to_additive CategoryTheory.types]
+@[to_additive existing CategoryTheory.types]
 instance types : LargeCategory (Type u)
     where
   Hom a b := a → b

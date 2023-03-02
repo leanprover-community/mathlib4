@@ -247,7 +247,7 @@ theorem coe_add [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g
   rfl
 #align dfinsupp.coe_add Dfinsupp.coe_add
 
-instance [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
+instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
@@ -1009,23 +1009,23 @@ theorem add_closure_unionᵢ_range_single :
 
 /-- If two additive homomorphisms from `Π₀ i, β i` are equal on each `single a b`, then
 they are equal. -/
-theorem add_hom_ext {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
+theorem addHom_ext {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ (i : ι) (y : β i), f (single i y) = g (single i y)) : f = g := by
   refine' AddMonoidHom.eq_of_eqOn_denseM add_closure_unionᵢ_range_single fun f hf => _
   simp only [Set.mem_unionᵢ, Set.mem_range] at hf
   rcases hf with ⟨x, y, rfl⟩
   apply H
-#align dfinsupp.add_hom_ext Dfinsupp.add_hom_ext
+#align dfinsupp.add_hom_ext Dfinsupp.addHom_ext
 
 /-- If two additive homomorphisms from `Π₀ i, β i` are equal on each `single a b`, then
 they are equal.
 
 See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem add_hom_ext' {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
+theorem addHom_ext' {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ x, f.comp (singleAddHom β x) = g.comp (singleAddHom β x)) : f = g :=
-  add_hom_ext fun x => FunLike.congr_fun (H x)
-#align dfinsupp.add_hom_ext' Dfinsupp.add_hom_ext'
+  addHom_ext fun x => FunLike.congr_fun (H x)
+#align dfinsupp.add_hom_ext' Dfinsupp.addHom_ext'
 
 end AddMonoid
 
@@ -2014,7 +2014,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type _} {β₂ 
 #align dfinsupp.sum_add_hom_comm Dfinsupp.sumAddHom_comm
 
 /-- The `Dfinsupp` version of `Finsupp.liftAddHom`,-/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i →+ γ) ≃+ ((Π₀ i, β i) →+ γ)
     where
   toFun := sumAddHom
@@ -2035,7 +2035,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] : (∀ i, β i �
     simp [sumAddHom_apply, sum, Finset.sum_add_distrib]
 #align dfinsupp.lift_add_hom Dfinsupp.liftAddHom
 #align dfinsupp.lift_add_hom_apply Dfinsupp.liftAddHom_apply
-#align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symmApply
+#align dfinsupp.lift_add_hom_symm_apply Dfinsupp.liftAddHom_symm_apply
 
 -- Porting note: The elaborator is struggling with `liftAddHom`. Passing it `β` explicitly helps.
 -- This applies to roughly the remainder of the file.
@@ -2063,7 +2063,7 @@ theorem comp_liftAddHom {δ : Type _} [∀ i, AddZeroClass (β i)] [AddCommMonoi
     g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
   (liftAddHom (β := β)).symm_apply_eq.1 <|
     funext fun a => by
-      rw [liftAddHom_symmApply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
+      rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 #align dfinsupp.comp_lift_add_hom Dfinsupp.comp_liftAddHom
 
 @[simp]

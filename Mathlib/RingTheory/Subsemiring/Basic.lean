@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module ring_theory.subsemiring.basic
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -232,12 +232,12 @@ theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subsemiring R 
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subsemiring.to_submonoid_injective Subsemiring.toSubmonoid_injective
 
--- Porting note: no @[mono]
+@[mono]
 theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subsemiring R → Submonoid R) :=
   fun _ _ => id
 #align subsemiring.to_submonoid_strict_mono Subsemiring.toSubmonoid_strictMono
 
--- Porting note: no @[mono]
+@[mono]
 theorem toSubmonoid_mono : Monotone (toSubmonoid : Subsemiring R → Submonoid R) :=
   toSubmonoid_strictMono.monotone
 #align subsemiring.to_submonoid_mono Subsemiring.toSubmonoid_mono
@@ -247,12 +247,12 @@ theorem toAddSubmonoid_injective :
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
 #align subsemiring.to_add_submonoid_injective Subsemiring.toAddSubmonoid_injective
 
--- Porting note: no @[mono]
+@[mono]
 theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Subsemiring R → AddSubmonoid R) :=
   fun _ _ => id
 #align subsemiring.to_add_submonoid_strict_mono Subsemiring.toAddSubmonoid_strictMono
 
--- Porting note: no @[mono]
+@[mono]
 theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Subsemiring R → AddSubmonoid R) :=
   toAddSubmonoid_strictMono.monotone
 #align subsemiring.to_add_submonoid_mono Subsemiring.toAddSubmonoid_mono
@@ -649,7 +649,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : Subsemiring R) ↔ ∃ n : ℕ, ↑n = x 
 #align subsemiring.mem_bot Subsemiring.mem_bot
 
 /-- The inf of two subsemirings is their intersection. -/
-instance : HasInf (Subsemiring R) :=
+instance : Inf (Subsemiring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubmonoid ⊓ t.toAddSubmonoid with carrier := s ∩ t }⟩
 
@@ -1043,7 +1043,7 @@ theorem mem_prod {s : Subsemiring R} {t : Subsemiring S} {p : R × S} :
   Iff.rfl
 #align subsemiring.mem_prod Subsemiring.mem_prod
 
--- Porting note: no @[mono]
+@[mono]
 theorem prod_mono ⦃s₁ s₂ : Subsemiring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subsemiring S⦄ (ht : t₁ ≤ t₂) :
     s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht

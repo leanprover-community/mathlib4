@@ -209,7 +209,7 @@ def gciGenerateFrom (α : Type _) :
   topology whose open sets are those sets open in every member of the collection. -/
 instance : CompleteLattice (TopologicalSpace α) := (gciGenerateFrom α).liftCompleteLattice
 
--- porting note: todo: restore `@[mono]`
+@[mono]
 theorem generateFrom_anti {α} {g₁ g₂ : Set (Set α)} (h : g₁ ⊆ g₂) :
     generateFrom g₂ ≤ generateFrom g₁ :=
   (gc_generateFrom _).monotone_u h
@@ -379,7 +379,7 @@ theorem isClosed_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → 
 #align is_closed_induced_iff isClosed_induced_iff
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced topology on `β` is defined
-  such that `s:set β` is open if the preimage of `s` is open. This is the finest topology that
+  such that `s : Set β` is open if the preimage of `s` is open. This is the finest topology that
   makes `f` continuous. -/
 def TopologicalSpace.coinduced {α : Type u} {β : Type v} (f : α → β) (t : TopologicalSpace α) :
     TopologicalSpace β where
@@ -914,10 +914,10 @@ theorem nhds_false : 𝓝 False = ⊤ :=
 #align nhds_false nhds_false
 
 theorem continuous_Prop {p : α → Prop} : Continuous p ↔ IsOpen { x | p x } :=
-  ⟨fun h : Continuous p =>
-    by
+  ⟨fun h : Continuous p => by
     have : IsOpen (p ⁻¹' {True}) := isOpen_singleton_true.preimage h
-    simpa [preimage] using this, fun h : IsOpen { x | p x } =>
+    simpa [preimage] using this,
+   fun h : IsOpen { x | p x } =>
     continuous_generateFrom fun s (hs : s = {True}) => by simp [hs, preimage, h]⟩
 #align continuous_Prop continuous_Prop
 
