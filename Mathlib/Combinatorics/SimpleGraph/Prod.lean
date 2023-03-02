@@ -78,13 +78,13 @@ theorem boxProd_neighborSet (x : α × β) :
 variable (G H I)
 
 /-- The box product is commutative up to isomorphism. `equiv.prod_comm` as a graph isomorphism. -/
-@[simps]
+@[simps!]
 def boxProdComm : G □ H ≃g H □ G :=
-  ⟨Equiv.prodComm _ _, fun {x y} => @or_comm _ _⟩
+  ⟨Equiv.prodComm _ _, fun {_ _} => @or_comm _ _⟩
 #align simple_graph.box_prod_comm SimpleGraph.boxProdComm
 
 /-- The box product is associative up to isomorphism. `equiv.prod_assoc` as a graph isomorphism. -/
-@[simps]
+@[simps!]
 def boxProdAssoc : G □ H □ I ≃g G □ (H □ I) :=
   ⟨Equiv.prodAssoc _ _ _, fun {x y} => by
     simp only [boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
@@ -95,8 +95,8 @@ def boxProdAssoc : G □ H □ I ≃g G □ (H □ I) :=
 @[simps]
 def boxProdLeft (b : β) : G ↪g G □ H where
   toFun a := (a, b)
-  inj' a₁ a₂ := congr_arg Prod.fst
-  map_rel_iff' {a₁ a₂} := boxProd_adj_left
+  inj' _ _ := congr_arg Prod.fst
+  map_rel_iff' {_ _} := boxProd_adj_left
 #align simple_graph.box_prod_left SimpleGraph.boxProdLeft
 
 /-- The embedding of `H` into `G □ H` given by `a`. -/
@@ -104,8 +104,8 @@ def boxProdLeft (b : β) : G ↪g G □ H where
 def boxProdRight (a : α) : H ↪g G □ H
     where
   toFun := Prod.mk a
-  inj' b₁ b₂ := congr_arg Prod.snd
-  map_rel_iff' {b₁ b₂} := boxProd_adj_right
+  inj' _ _ := congr_arg Prod.snd
+  map_rel_iff' {_ _} := boxProd_adj_right
 #align simple_graph.box_prod_right SimpleGraph.boxProdRight
 
 namespace Walk
