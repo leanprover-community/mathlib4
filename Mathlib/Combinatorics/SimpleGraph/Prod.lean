@@ -244,7 +244,6 @@ theorem boxProd_neighborFinset (x : α × β) [Fintype (G.neighborSet x.1)]
 
   -- porting note:Lean 3 has `(fun (y : α × β) => y ∈ (G □ H).neighborSet x))` for
   -- 2nd hole but doesn't solve `Finset.univ` instance problem
-  -- `this` seems to fit the first hole, but again, doesn't help
   convert Finset.map_map _ (Function.Embedding.subtype _) Finset.univ
 #align simple_graph.box_prod_neighbor_finset SimpleGraph.boxProd_neighborFinset
 
