@@ -123,6 +123,7 @@ import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 import Mathlib.Algebra.Order.Field.Basic
@@ -284,6 +285,7 @@ import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
@@ -369,6 +371,7 @@ import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
 import Mathlib.Control.Functor
 import Mathlib.Control.Functor.Multivariate
+import Mathlib.Control.LawfulFix
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
@@ -1244,6 +1247,7 @@ import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
