@@ -9,7 +9,12 @@ import Mathlib.Tactic.Relation.Rfl
 /-!
 # The `congr!` tactic
 
-This is a more powerful version of the `congr` tactic.
+This is a more powerful version of the `congr` tactic that knows about more congruence lemmas and
+can apply to more situations. It is similar to the `congr'` tactic from Mathlib 3.
+
+The `congr!` tactic is used by the `convert` and `convert_to` tactics.
+
+See the syntax docstring for more details.
 -/
 
 open Lean Meta Elab Tactic
@@ -50,6 +55,8 @@ def Lean.MVarId.userCongr? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
 /--
 Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
 If successful, returns the new goal, and otherwise returns the original `MVarId`.
+
+This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
 -/
 def Lean.MVarId.iffOfEq (mvarId : MVarId) : MetaM MVarId := do
   let res ← observing? do
@@ -99,13 +106,25 @@ def Lean.MVarId.liftReflToEq (mvarId : MVarId) : MetaM MVarId := do
 
 /--
 Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
--/
-def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool := do
-  let res ← observing? do
-    let [] ← mvarId.apply (mkConst ``Subsingleton.elim [← mkFreshLevelMVar]) | failure
-    return true
-  return res.getD false
 
+We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
+This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
+`Sort _` to `Prop`.
+-/
+def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext <| do
+    let res ← observing? do
+      mvarId.checkNotAssigned `subsingletonElim
+      let tgt ← withReducible <| mvarId.getType'
+      let some (_, lhs, rhs) := tgt.eq? | failure
+      let pf ← withNewMCtxDepth <| mkAppM ``Subsingleton.elim #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
+/--
+Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
+-/
 def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool := do
   let res ← observing? do
     let [] ← mvarId.apply (mkConst `proof_irrel_heq []) | failure
@@ -121,9 +140,9 @@ def Lean.MVarId.congrPi? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
 /--
 Try to apply `funext`, but only if it is an equality of two functions where at least one is
 a lambda expression.
+
 One thing this check prevents is accidentally applying `funext` to a set equality, but also when
 doing congruence we don't want to apply `funext` unnecessarily.
-"Obvious" means that the type of the terms being equated is a pi type.
 -/
 def Lean.MVarId.obviousFunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   mvarId.withContext <| observing? do
