@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 Constructions to relate the notions of preserving pullbacks and reflecting pullbacks to concrete
 pullback cones.
 
-In particular, we show that `pullback_comparison G f g` is an isomorphism iff `G` preserves
+In particular, we show that `pullbackComparison G f g` is an isomorphism iff `G` preserves
 the pullback of `f` and `g`.
 
 The dual is also given.
@@ -33,7 +33,8 @@ noncomputable section
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+-- Porting note: need Functor namespace for mapCone
+open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 namespace CategoryTheory.Limits
 
@@ -48,9 +49,9 @@ variable (G : C ⥤ D)
 variable {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {h : W ⟶ X} {k : W ⟶ Y} (comm : h ≫ f = k ≫ g)
 
 /-- The map of a pullback cone is a limit iff the fork consisting of the mapped morphisms is a
-limit. This essentially lets us commute `pullback_cone.mk` with `functor.map_cone`. -/
+limit. This essentially lets us commute `PullbackCone.mk` with `Functor.mapCone`. -/
 def isLimitMapConePullbackConeEquiv :
-    IsLimit (G.mapCone (PullbackCone.mk h k comm)) ≃
+    IsLimit (mapCone G (PullbackCone.mk h k comm)) ≃
       IsLimit
         (PullbackCone.mk (G.map h) (G.map k) (by simp only [← G.map_comp, comm]) :
           PullbackCone (G.map f) (G.map g)) :=
@@ -62,13 +63,18 @@ def isLimitMapConePullbackConeEquiv :
 
 /-- The property of preserving pullbacks expressed in terms of binary fans. -/
 def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
-    (l : IsLimit (PullbackCone.mk h k comm)) : IsLimit (PullbackCone.mk (G.map h) (G.map k) _) :=
+    (l : IsLimit (PullbackCone.mk h k comm)) : 
+    -- Porting note: help figure out the hole
+    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [←G.map_comp,←G.map_comp,comm] 
+    IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
   isLimitMapConePullbackConeEquiv G comm (PreservesLimit.preserves l)
 #align category_theory.limits.is_limit_pullback_cone_map_of_is_limit CategoryTheory.Limits.isLimitPullbackConeMapOfIsLimit
 
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
-    (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) _)) : IsLimit (PullbackCone.mk h k comm) :=
+    -- Porting note: more typeclass help
+    (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
+    from by simp only [←G.map_comp,comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   ReflectsLimit.reflects ((isLimitMapConePullbackConeEquiv G comm).symm l)
 #align category_theory.limits.is_limit_of_is_limit_pullback_cone_map CategoryTheory.Limits.isLimitOfIsLimitPullbackConeMap
 
@@ -76,29 +82,30 @@ variable (f g) [PreservesLimit (cospan f g) G]
 
 /-- If `G` preserves pullbacks and `C` has them, then the pullback cone constructed of the mapped
 morphisms of the pullback cone is a limit. -/
-def isLimitOfHasPullbackOfPreservesLimit [HasPullback f g] :
-    IsLimit (PullbackCone.mk (G.map pullback.fst) (G.map pullback.snd) _) :=
+def isLimitOfHasPullbackOfPreservesLimit [i : HasPullback f g] :
+    -- Porting note: more typeclass help
+    have : G.map pullback.fst ≫ G.map f  = G.map pullback.snd ≫ G.map g := by 
+      simp only [←G.map_comp, pullback.condition];
+    IsLimit (PullbackCone.mk (G.map (@pullback.fst _ _ _ _ _ f g i)) (G.map pullback.snd) this) :=
   isLimitPullbackConeMapOfIsLimit G _ (pullbackIsPullback f g)
 #align category_theory.limits.is_limit_of_has_pullback_of_preserves_limit CategoryTheory.Limits.isLimitOfHasPullbackOfPreservesLimit
 
 /-- If `F` preserves the pullback of `f, g`, it also preserves the pullback of `g, f`. -/
-def preservesPullbackSymmetry : PreservesLimit (cospan g f) G
-    where preserves c hc :=
-    by
-    apply (is_limit.postcompose_hom_equiv (diagramIsoCospan.{v₂} _) _).toFun
-    apply is_limit.of_iso_limit _ (pullback_cone.iso_mk _).symm
-    apply pullback_cone.flip_is_limit
-    apply (is_limit_map_cone_pullback_cone_equiv _ _).toFun
-    · apply (config := { instances := false }) preserves_limit.preserves
+def preservesPullbackSymmetry : PreservesLimit (cospan g f) G where 
+  preserves {c} hc := by
+    apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₂} _) _).toFun
+    apply IsLimit.ofIsoLimit _ (PullbackCone.isoMk _).symm
+    apply PullbackCone.flipIsLimit
+    apply (isLimitMapConePullbackConeEquiv _ _).toFun
+    · refine @PreservesLimit.preserves _ _ _ _ _ _ _ _ ?_ _ ?_
       · dsimp
         infer_instance
-      apply pullback_cone.flip_is_limit
-      apply is_limit.of_iso_limit _ (pullback_cone.iso_mk _)
-      exact (is_limit.postcompose_hom_equiv (diagramIsoCospan.{v₁} _) _).invFun hc
-    ·
-      exact
-        (c.π.naturality walking_cospan.hom.inr).symm.trans
-          (c.π.naturality walking_cospan.hom.inl : _)
+      apply PullbackCone.flipIsLimit
+      apply IsLimit.ofIsoLimit _ (PullbackCone.isoMk _)
+      exact (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₁} _) _).invFun hc
+    · exact
+        (c.π.naturality WalkingCospan.Hom.inr).symm.trans
+          (c.π.naturality WalkingCospan.Hom.inl : _)
 #align category_theory.limits.preserves_pullback_symmetry CategoryTheory.Limits.preservesPullbackSymmetry
 
 theorem hasPullback_of_preserves_pullback [HasPullback f g] : HasPullback (G.map f) (G.map g) :=
@@ -113,28 +120,28 @@ def PreservesPullback.iso : G.obj (pullback f g) ≅ pullback (G.map f) (G.map g
   IsLimit.conePointUniqueUpToIso (isLimitOfHasPullbackOfPreservesLimit G f g) (limit.isLimit _)
 #align category_theory.limits.preserves_pullback.iso CategoryTheory.Limits.PreservesPullback.iso
 
-@[reassoc.1]
+@[reassoc]
 theorem PreservesPullback.iso_hom_fst :
-    (PreservesPullback.iso G f g).Hom ≫ pullback.fst = G.map pullback.fst := by
-  simp [preserves_pullback.iso]
+    (PreservesPullback.iso G f g).hom ≫ pullback.fst = G.map pullback.fst := by
+  simp [PreservesPullback.iso]
 #align category_theory.limits.preserves_pullback.iso_hom_fst CategoryTheory.Limits.PreservesPullback.iso_hom_fst
 
-@[reassoc.1]
+@[reassoc]
 theorem PreservesPullback.iso_hom_snd :
-    (PreservesPullback.iso G f g).Hom ≫ pullback.snd = G.map pullback.snd := by
-  simp [preserves_pullback.iso]
+    (PreservesPullback.iso G f g).hom ≫ pullback.snd = G.map pullback.snd := by
+  simp [PreservesPullback.iso]
 #align category_theory.limits.preserves_pullback.iso_hom_snd CategoryTheory.Limits.PreservesPullback.iso_hom_snd
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_fst :
     (PreservesPullback.iso G f g).inv ≫ G.map pullback.fst = pullback.fst := by
-  simp [preserves_pullback.iso, iso.inv_comp_eq]
+  simp [PreservesPullback.iso, Iso.inv_comp_eq]
 #align category_theory.limits.preserves_pullback.iso_inv_fst CategoryTheory.Limits.PreservesPullback.iso_inv_fst
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_snd :
     (PreservesPullback.iso G f g).inv ≫ G.map pullback.snd = pullback.snd := by
-  simp [preserves_pullback.iso, iso.inv_comp_eq]
+  simp [PreservesPullback.iso, Iso.inv_comp_eq]
 #align category_theory.limits.preserves_pullback.iso_inv_snd CategoryTheory.Limits.PreservesPullback.iso_inv_snd
 
 end Pullback
@@ -150,9 +157,9 @@ variable (G : C ⥤ D)
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
 /-- The map of a pushout cocone is a colimit iff the cofork consisting of the mapped morphisms is a
-colimit. This essentially lets us commute `pushout_cocone.mk` with `functor.map_cocone`. -/
+colimit. This essentially lets us commute `PushoutCocone.mk` with `Functor.mapCocone`. -/
 def isColimitMapCoconePushoutCoconeEquiv :
-    IsColimit (G.mapCocone (PushoutCocone.mk h k comm)) ≃
+    IsColimit (mapCocone G (PushoutCocone.mk h k comm)) ≃
       IsColimit
         (PushoutCocone.mk (G.map h) (G.map k) (by simp only [← G.map_comp, comm]) :
           PushoutCocone (G.map f) (G.map g)) :=
@@ -160,19 +167,21 @@ def isColimitMapCoconePushoutCoconeEquiv :
     IsColimit.equivIsoColimit <|
       Cocones.ext (Iso.refl _) <| by
         rintro (_ | _ | _) <;> dsimp <;>
-          simp only [category.comp_id, category.id_comp, ← G.map_comp]
+          simp only [Category.comp_id, Category.id_comp, ← G.map_comp]
 #align category_theory.limits.is_colimit_map_cocone_pushout_cocone_equiv CategoryTheory.Limits.isColimitMapCoconePushoutCoconeEquiv
 
 /-- The property of preserving pushouts expressed in terms of binary cofans. -/
 def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk h k comm)) :
-    IsColimit (PushoutCocone.mk (G.map h) (G.map k) _) :=
+    IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h = G.map g ≫ G.map k
+      from by simp only [←G.map_comp,comm] )) :=
   isColimitMapCoconePushoutCoconeEquiv G comm (PreservesColimit.preserves l)
 #align category_theory.limits.is_colimit_pushout_cocone_map_of_is_colimit CategoryTheory.Limits.isColimitPushoutCoconeMapOfIsColimit
 
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
 def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
-    (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) _)) :
+    (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h = 
+      G.map g ≫ G.map k from by simp only [←G.map_comp,comm]))) :
     IsColimit (PushoutCocone.mk h k comm) :=
   ReflectsColimit.reflects ((isColimitMapCoconePushoutCoconeEquiv G comm).symm l)
 #align category_theory.limits.is_colimit_of_is_colimit_pushout_cocone_map CategoryTheory.Limits.isColimitOfIsColimitPushoutCoconeMap
@@ -181,26 +190,28 @@ variable (f g) [PreservesColimit (span f g) G]
 
 /-- If `G` preserves pushouts and `C` has them, then the pushout cocone constructed of the mapped
 morphisms of the pushout cocone is a colimit. -/
-def isColimitOfHasPushoutOfPreservesColimit [HasPushout f g] :
-    IsColimit (PushoutCocone.mk (G.map pushout.inl) (G.map pushout.inr) _) :=
+def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
+    IsColimit (PushoutCocone.mk (G.map pushout.inl) (G.map (@pushout.inr _ _ _ _ _ f g i)) 
+    (show G.map f ≫ G.map pushout.inl = G.map g ≫ G.map pushout.inr from by 
+      simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 #align category_theory.limits.is_colimit_of_has_pushout_of_preserves_colimit CategoryTheory.Limits.isColimitOfHasPushoutOfPreservesColimit
 
 /-- If `F` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
-def preservesPushoutSymmetry : PreservesColimit (span g f) G
-    where preserves c hc :=
+def preservesPushoutSymmetry : PreservesColimit (span g f) G where 
+  preserves {c} hc :=
     by
-    apply (is_colimit.precompose_hom_equiv (diagramIsoSpan.{v₂} _).symm _).toFun
-    apply is_colimit.of_iso_colimit _ (pushout_cocone.iso_mk _).symm
-    apply pushout_cocone.flip_is_colimit
-    apply (is_colimit_map_cocone_pushout_cocone_equiv _ _).toFun
-    · apply (config := { instances := false }) preserves_colimit.preserves
+    apply (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).toFun
+    apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _).symm
+    apply PushoutCocone.flipIsColimit
+    apply (isColimitMapCoconePushoutCoconeEquiv _ _).toFun
+    · refine @PreservesColimit.preserves _ _ _ _ _ _ _ _ ?_ _ ?_ -- Porting note: more TC coddling
       · dsimp
         infer_instance
-      apply pushout_cocone.flip_is_colimit
-      apply is_colimit.of_iso_colimit _ (pushout_cocone.iso_mk _)
-      exact (is_colimit.precompose_hom_equiv (diagramIsoSpan.{v₁} _) _).invFun hc
-    · exact (c.ι.naturality walking_span.hom.snd).trans (c.ι.naturality walking_span.hom.fst).symm
+      apply PushoutCocone.flipIsColimit
+      apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _)
+      exact (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₁} _) _).invFun hc
+    · exact (c.ι.naturality WalkingSpan.Hom.snd).trans (c.ι.naturality WalkingSpan.Hom.fst).symm
 #align category_theory.limits.preserves_pushout_symmetry CategoryTheory.Limits.preservesPushoutSymmetry
 
 theorem hasPushout_of_preserves_pushout [HasPushout f g] : HasPushout (G.map f) (G.map g) :=
@@ -216,30 +227,30 @@ def PreservesPushout.iso : pushout (G.map f) (G.map g) ≅ G.obj (pushout f g) :
     (isColimitOfHasPushoutOfPreservesColimit G f g)
 #align category_theory.limits.preserves_pushout.iso CategoryTheory.Limits.PreservesPushout.iso
 
-@[reassoc.1]
+@[reassoc]
 theorem PreservesPushout.inl_iso_hom :
-    pushout.inl ≫ (PreservesPushout.iso G f g).Hom = G.map pushout.inl := by
-  delta preserves_pushout.iso
+    pushout.inl ≫ (PreservesPushout.iso G f g).hom = G.map pushout.inl := by
+  delta PreservesPushout.iso
   simp
 #align category_theory.limits.preserves_pushout.inl_iso_hom CategoryTheory.Limits.PreservesPushout.inl_iso_hom
 
-@[reassoc.1]
+@[reassoc]
 theorem PreservesPushout.inr_iso_hom :
-    pushout.inr ≫ (PreservesPushout.iso G f g).Hom = G.map pushout.inr := by
-  delta preserves_pushout.iso
+    pushout.inr ≫ (PreservesPushout.iso G f g).hom = G.map pushout.inr := by
+  delta PreservesPushout.iso
   simp
 #align category_theory.limits.preserves_pushout.inr_iso_hom CategoryTheory.Limits.PreservesPushout.inr_iso_hom
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem PreservesPushout.inl_iso_inv :
     G.map pushout.inl ≫ (PreservesPushout.iso G f g).inv = pushout.inl := by
-  simp [preserves_pushout.iso, iso.comp_inv_eq]
+  simp [PreservesPushout.iso, Iso.comp_inv_eq]
 #align category_theory.limits.preserves_pushout.inl_iso_inv CategoryTheory.Limits.PreservesPushout.inl_iso_inv
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem PreservesPushout.inr_iso_inv :
     G.map pushout.inr ≫ (PreservesPushout.iso G f g).inv = pushout.inr := by
-  simp [preserves_pushout.iso, iso.comp_inv_eq]
+  simp [PreservesPushout.iso, Iso.comp_inv_eq]
 #align category_theory.limits.preserves_pushout.inr_iso_inv CategoryTheory.Limits.PreservesPushout.inr_iso_inv
 
 end Pushout
@@ -262,21 +273,21 @@ variable [HasPullback f g] [HasPullback (G.map f) (G.map g)]
 pullback of `(f,g)`. -/
 def PreservesPullback.ofIsoComparison [i : IsIso (pullbackComparison G f g)] :
     PreservesLimit (cospan f g) G := by
-  apply preserves_limit_of_preserves_limit_cone (pullback_is_pullback f g)
-  apply (is_limit_map_cone_pullback_cone_equiv _ _).symm _
-  apply is_limit.of_point_iso (limit.is_limit (cospan (G.map f) (G.map g)))
+  apply preservesLimitOfPreservesLimitCone (pullbackIsPullback f g)
+  apply (isLimitMapConePullbackConeEquiv _ _).symm _
+  refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (cospan (G.map f) (G.map g))) ?_
   apply i
 #align category_theory.limits.preserves_pullback.of_iso_comparison CategoryTheory.Limits.PreservesPullback.ofIsoComparison
 
 variable [PreservesLimit (cospan f g) G]
 
 @[simp]
-theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).Hom = pullbackComparison G f g :=
+theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).hom = pullbackComparison G f g :=
   rfl
 #align category_theory.limits.preserves_pullback.iso_hom CategoryTheory.Limits.PreservesPullback.iso_hom
 
 instance : IsIso (pullbackComparison G f g) := by
-  rw [← preserves_pullback.iso_hom]
+  rw [← PreservesPullback.iso_hom]
   infer_instance
 
 end Pullback
@@ -291,21 +302,22 @@ variable [HasPushout f g] [HasPushout (G.map f) (G.map g)]
 pushout of `(f,g)`. -/
 def PreservesPushout.ofIsoComparison [i : IsIso (pushoutComparison G f g)] :
     PreservesColimit (span f g) G := by
-  apply preserves_colimit_of_preserves_colimit_cocone (pushout_is_pushout f g)
-  apply (is_colimit_map_cocone_pushout_cocone_equiv _ _).symm _
-  apply is_colimit.of_point_iso (colimit.is_colimit (span (G.map f) (G.map g)))
+  apply preservesColimitOfPreservesColimitCocone (pushoutIsPushout f g)
+  apply (isColimitMapCoconePushoutCoconeEquiv _ _).symm _
+  -- Porting note: apply no longer creates goals for instances
+  refine @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (span (G.map f) (G.map g))) ?_
   apply i
 #align category_theory.limits.preserves_pushout.of_iso_comparison CategoryTheory.Limits.PreservesPushout.ofIsoComparison
 
 variable [PreservesColimit (span f g) G]
 
 @[simp]
-theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).Hom = pushoutComparison G f g :=
+theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).hom = pushoutComparison G f g :=
   rfl
 #align category_theory.limits.preserves_pushout.iso_hom CategoryTheory.Limits.PreservesPushout.iso_hom
 
 instance : IsIso (pushoutComparison G f g) := by
-  rw [← preserves_pushout.iso_hom]
+  rw [← PreservesPushout.iso_hom]
   infer_instance
 
 end Pushout
