@@ -502,7 +502,7 @@ def powLogEquiv [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n
   right_inv := pow_log_eq_self
   map_mul' _ _ := by simp only [pow, map_mul, ofAdd_add, toAdd_mul]
 #align submonoid.pow_log_equiv Submonoid.powLogEquiv
-#align submonoid.pow_log_equiv_symm_apply Submonoid.powLogEquiv_symmApply
+#align submonoid.pow_log_equiv_symm_apply Submonoid.powLogEquiv_symm_apply
 #align submonoid.pow_log_equiv_apply Submonoid.powLogEquiv_apply
 
 theorem log_mul [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n ^ m)
@@ -616,7 +616,7 @@ def multiples (x : A) : AddSubmonoid A :=
     Set.ext fun n => exists_congr fun i => by simp
 #align add_submonoid.multiples AddSubmonoid.multiples
 
-attribute [to_additive multiples] Submonoid.powers
+attribute [to_additive existing multiples] Submonoid.powers
 
 attribute [to_additive (attr := simp) mem_multiples] Submonoid.mem_powers
 #align add_submonoid.mem_multiples AddSubmonoid.mem_multiples
