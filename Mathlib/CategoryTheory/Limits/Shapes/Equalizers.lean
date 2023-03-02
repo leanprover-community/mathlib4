@@ -56,7 +56,7 @@ open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 
--- attribute [local sorry] tactic.case_bash
+-- attribute [local tidy] tactic.case_bash -- Porting note: no tidy nor cases_bash
 
 universe v v₂ u u₂
 
@@ -96,7 +96,7 @@ def WalkingParallelPairHom.comp :
   | _, _, _, right, id one => right
 #align category_theory.limits.walking_parallel_pair_hom.comp CategoryTheory.Limits.WalkingParallelPairHom.comp
 
--- Porting note: adding these since they are simple and aesop couldn't directly
+-- Porting note: adding these since they are simple and aesop couldn't directly prove them
 theorem WalkingParallelPairHom.id_comp {X Y : WalkingParallelPair} (g : WalkingParallelPairHom X Y):
     comp (id X) g = g := rfl 
 
@@ -122,7 +122,7 @@ theorem walkingParallelPairHom_id (X : WalkingParallelPair) : WalkingParallelPai
   rfl
 #align category_theory.limits.walking_parallel_pair_hom_id CategoryTheory.Limits.walkingParallelPairHom_id
 
--- Porting note: simpNF asks me to do this 
+-- Porting note: simpNF asked me to do this becasue the LHS of the non-primed version reduced
 @[simp] 
 theorem WalkingParallelPairHom.id.sizeOf_spec' (X : WalkingParallelPair) : 
     (WalkingParallelPairHom._sizeOf_inst X X).sizeOf (𝟙 X) = 1 + sizeOf X := by cases X <;> rfl 
