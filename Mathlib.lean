@@ -1244,6 +1244,7 @@ import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
