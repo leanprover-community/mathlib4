@@ -20,18 +20,18 @@ as Eulerian circuits).
 
 ## Main definitions
 
-* `simple_graph.walk.is_eulerian` is the predicate that a trail is an Eulerian trail.
-* `simple_graph.walk.is_trail.even_countp_edges_iff` gives a condition on the number of edges
+* `SimpleGraph.Walk.IsEulerian` is the predicate that a trail is an Eulerian trail.
+* `SimpleGraph.Walk.IsTrail.even_countp_edges_iff` gives a condition on the number of edges
   in a trail that can be incident to a given vertex.
-* `simple_graph.walk.is_eulerian.even_degree_iff` gives a condition on the degrees of vertices
+* `SimpleGraph.Walk.IsEulerian.even_degree_iff` gives a condition on the degrees of vertices
   when there exists an Eulerian trail.
-* `simple_graph.walk.is_eulerian.card_odd_degree` gives the possible numbers of odd-degree
+* `SimpleGraph.Walk.IsEulerian.card_odd_degree` gives the possible numbers of odd-degree
   vertices when there exists an Eulerian trail.
 
 ## Todo
 
 * Prove that there exists an Eulerian trail when the conclusion to
-  `simple_graph.walk.is_eulerian.card_odd_degree` holds.
+  `SimpleGraph.Walk.IsEulerian.card_odd_degree` holds.
 
 ## Tags
 
@@ -86,10 +86,10 @@ theorem IsTrail.even_countp_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
 #align simple_graph.walk.is_trail.even_countp_edges_iff SimpleGraph.Walk.IsTrail.even_countp_edges_iff
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
-`p` that visits every edge exactly once.  The lemma `simple_graph.walk.is_eulerian.is_trail` shows
+`p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
 that these are trails.
 
-Combine with `p.is_circuit` to get an Eulerian circuit (also known as an "Eulerian cycle"). -/
+Combine with `p.IsCircuit` to get an Eulerian circuit (also known as an "Eulerian cycle"). -/
 def IsEulerian {u v : V} (p : G.Walk u v) : Prop :=
   ∀ e, e ∈ G.edgeSet → p.edges.count e = 1
 #align simple_graph.walk.is_eulerian SimpleGraph.Walk.IsEulerian
