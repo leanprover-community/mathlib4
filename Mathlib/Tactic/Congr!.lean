@@ -117,7 +117,8 @@ def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool :=
       mvarId.checkNotAssigned `subsingletonElim
       let tgt ← withReducible <| mvarId.getType'
       let some (_, lhs, rhs) := tgt.eq? | failure
-      let pf ← withNewMCtxDepth <| mkAppM ``Subsingleton.elim #[lhs, rhs]
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on.
+      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
       mvarId.assign pf
       return true
     return res.getD false
