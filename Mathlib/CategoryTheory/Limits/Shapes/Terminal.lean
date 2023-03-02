@@ -55,9 +55,7 @@ def asEmptyCocone (X : C) : Cocone (Functor.empty.{0} C) :=
   { pt := X
     ι := 
     { app := by dee
-      naturality := by dee
-    }
-  }
+      naturality := by dee } }
 #align category_theory.limits.as_empty_cocone CategoryTheory.Limits.asEmptyCocone
 
 /-- `X` is terminal if the cone it induces on the empty diagram is limiting. -/
