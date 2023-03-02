@@ -31,7 +31,8 @@ inductive Path {V : Type u} [Quiver.{v} V] (a : V) : V → Sort max (u + 1) v
   | cons : ∀ {b c : V}, Path a b → (b ⟶ c) → Path a c
 #align quiver.path Quiver.Path
 
-/-- A computable version of `Path.rec`. Workaround until Lean has native support for this. -/
+-- See issue lean4#2049
+/-- A computable version of `Quiver.Path.rec`. Workaround until Lean has native support for this. -/
 def Path.recC.{w, z, t} {V : Type t} [Quiver.{z} V] {a : V} {motive : (b : V) → Path a b → Sort w}
     (nil : motive a Path.nil)
     (cons : ({b c : V} → (p : Path a b) → (e : b ⟶ c) → motive b p → motive c (p.cons e))) :
