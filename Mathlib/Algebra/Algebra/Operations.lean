@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 
 ! This file was ported from Lean 3 source module algebra.algebra.operations
-! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
+! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e TODO: update
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -105,7 +105,7 @@ theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y 
 
 @[simp]
 theorem toSubMulAction_one : (1 : Submodule R A).toSubMulAction = 1 :=
-  SetLike.ext fun x => mem_one.trans SubMulAction.mem_one'.symm
+  SetLike.ext fun _ => mem_one.trans SubMulAction.mem_one'.symm
 #align submodule.to_sub_mul_action_one Submodule.toSubMulAction_one
 
 theorem one_eq_span : (1 : Submodule R A) = R ∙ 1 := by
