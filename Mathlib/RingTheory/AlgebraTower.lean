@@ -8,10 +8,10 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Tower
-import Mathbin.Algebra.Invertible
-import Mathbin.Algebra.Module.BigOperators
-import Mathbin.LinearAlgebra.Basis
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.LinearAlgebra.Basis
 
 /-!
 # Towers of algebras
@@ -119,8 +119,7 @@ variable [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
-    LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 :=
-  by
+    LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
   by_cases hik : (i, k) ∈ s
   · have h1 : (∑ i in s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2) = 0 :=
