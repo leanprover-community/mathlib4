@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.EqToHom
-import Mathbin.CategoryTheory.Quotient
-import Mathbin.Combinatorics.Quiver.Path
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Quotient
+import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # The category paths on a quiver.
@@ -94,14 +94,12 @@ theorem lift_cons {C} [Category C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path 
 
 @[simp]
 theorem lift_toPath {C} [Category C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
-    (lift φ).map f.toPath = φ.map f :=
-  by
+    (lift φ).map f.toPath = φ.map f := by
   dsimp [Quiver.Hom.toPath, lift]
   simp
 #align category_theory.paths.lift_to_path CategoryTheory.Paths.lift_toPath
 
-theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of ⋙q (lift φ).toPrefunctor = φ :=
-  by
+theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of ⋙q (lift φ).toPrefunctor = φ := by
   apply Prefunctor.ext; rotate_left
   · rintro X
     rfl
@@ -112,8 +110,7 @@ theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of ⋙q (lift φ).toPrefunc
 #align category_theory.paths.lift_spec CategoryTheory.Paths.lift_spec
 
 theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
-    (hΦ : of ⋙q Φ.toPrefunctor = φ) : Φ = lift φ :=
-  by
+    (hΦ : of ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   subst_vars
   apply Functor.ext; rotate_left
   · rintro X
@@ -185,8 +182,7 @@ theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f :=
 
 @[simp]
 theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
-    composePath (f.comp g) = composePath f ≫ composePath g :=
-  by
+    composePath (f.comp g) = composePath f ≫ composePath g := by
   induction' g with Y' Z' g e ih
   · simp
   · simp [ih]
