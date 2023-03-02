@@ -55,8 +55,8 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
   right_inv _ := Units.ext rfl
   map_mul' _ _ := rfl
 #align equiv.perm.equiv_units_End Equiv.Perm.equivUnitsEnd
-#align equiv.perm.equiv_units_End_symm_apply_apply Equiv.Perm.equivUnitsEnd_symmApply_apply
-#align equiv.perm.equiv_units_End_symm_apply_symm_apply Equiv.Perm.equivUnitsEnd_symmApply_symm_apply
+#align equiv.perm.equiv_units_End_symm_apply_apply Equiv.Perm.equivUnitsEnd_symm_apply_apply
+#align equiv.perm.equiv_units_End_symm_apply_symm_apply Equiv.Perm.equivUnitsEnd_symm_apply_symm_apply
 
 /-- Lift a monoid homomorphism `f : G →* function.End α` to a monoid homomorphism
 `f : G →* equiv.perm α`. -/

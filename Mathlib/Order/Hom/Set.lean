@@ -149,7 +149,7 @@ def OrderIso.compl : α ≃o αᵒᵈ where
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le
 #align order_iso.compl OrderIso.compl
-#align order_iso.compl_symm_apply OrderIso.compl_symmApply
+#align order_iso.compl_symm_apply OrderIso.compl_symm_apply
 #align order_iso.compl_apply OrderIso.compl_apply
 
 theorem compl_strictAnti : StrictAnti (compl : α → α) :=

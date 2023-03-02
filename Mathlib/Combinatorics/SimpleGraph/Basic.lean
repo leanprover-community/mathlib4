@@ -8,6 +8,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
@@ -80,7 +81,6 @@ finitely many vertices.
 -/
 
 -- porting note: using `aesop` for automation
-declare_aesop_rule_sets [SimpleGraph]
 
 -- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
 attribute [aesop norm unfold (rule_sets [SimpleGraph])] Symmetric

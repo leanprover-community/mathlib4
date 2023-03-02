@@ -1255,7 +1255,7 @@ def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 #align module.module_End_self_op Module.moduleEndSelfOp
-#align module.module_End_self_op_symm_apply Module.moduleEndSelfOp_symmApply
+#align module.module_End_self_op_symm_apply Module.moduleEndSelfOp_symm_apply
 #align module.module_End_self_op_apply Module.moduleEndSelfOp_apply
 
 theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
