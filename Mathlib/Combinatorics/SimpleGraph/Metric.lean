@@ -8,8 +8,8 @@ Authors: Kyle Miller, Vincent Beffara
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Connectivity
-import Mathbin.Data.Nat.Lattice
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Graph metric
@@ -106,23 +106,20 @@ theorem nonempty_of_pos_dist {u v : V} (h : 0 < G.dist u v) :
 #align simple_graph.nonempty_of_pos_dist SimpleGraph.nonempty_of_pos_dist
 
 protected theorem Connected.dist_triangle (hconn : G.Connected) {u v w : V} :
-    G.dist u w ≤ G.dist u v + G.dist v w :=
-  by
+    G.dist u w ≤ G.dist u v + G.dist v w := by
   obtain ⟨p, hp⟩ := hconn.exists_walk_of_dist u v
   obtain ⟨q, hq⟩ := hconn.exists_walk_of_dist v w
   rw [← hp, ← hq, ← walk.length_append]
   apply dist_le
 #align simple_graph.connected.dist_triangle SimpleGraph.Connected.dist_triangle
 
-private theorem dist_comm_aux {u v : V} (h : G.Reachable u v) : G.dist u v ≤ G.dist v u :=
-  by
+private theorem dist_comm_aux {u v : V} (h : G.Reachable u v) : G.dist u v ≤ G.dist v u := by
   obtain ⟨p, hp⟩ := h.symm.exists_walk_of_dist
   rw [← hp, ← walk.length_reverse]
   apply dist_le
 #align simple_graph.dist_comm_aux simple_graph.dist_comm_aux
 
-theorem dist_comm {u v : V} : G.dist u v = G.dist v u :=
-  by
+theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
   by_cases h : G.reachable u v
   · apply le_antisymm (dist_comm_aux h) (dist_comm_aux h.symm)
   · have h' : ¬G.reachable v u := fun h' => absurd h'.symm h
