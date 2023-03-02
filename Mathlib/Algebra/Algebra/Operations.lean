@@ -472,7 +472,11 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     obtain ⟨r, rfl⟩ := hx
     exact hr r
   revert hx
-  simp_rw [pow_succ' M n]  -- porting note: TODO: no longer rewrites
+  -- porting note: workaround for lean4#1926, was `simp_rw [pow_succ']`
+  have h_lean4_1926_aux : x ∈ M ^ Nat.succ n ↔ x ∈ M ^ n * M := by rw [pow_succ']
+  suffices h_lean4_1926 : ∀ (hx' : x ∈ M ^ n * M), C (Nat.succ n) x (h_lean4_1926_aux.mpr hx') from
+    fun hx => h_lean4_1926 (h_lean4_1926_aux.mp hx)
+  -- porting note: end workaround
   intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
