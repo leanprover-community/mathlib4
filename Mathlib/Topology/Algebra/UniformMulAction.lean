@@ -193,7 +193,9 @@ instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completi
 variable {M X}
 variable [UniformContinuousConstSMul M X]
 
-@[to_additive (attr := simp)] -- Porting note: `norm_cast` claims this is a badly shaped lemma
+@[to_additive (attr := simp, nolint simpNF)]
+-- Porting note: `simpNF` complains that this lemma can be reduced using `Function.comp`
+-- Porting note: `norm_cast` claims this is a badly shaped lemma
 theorem coe_smul (c : M) (x : X) : (↑(c • x) : Completion X) = c • (x : Completion X) :=
   (map_coe (uniformContinuous_const_smul c) x).symm
 #align uniform_space.completion.coe_smul UniformSpace.Completion.coe_smul
