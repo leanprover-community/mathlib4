@@ -1095,7 +1095,7 @@ theorem cycleOf_one (x : α) : cycleOf 1 x = 1 :=
 
 theorem isCycle_cycleOf (f : Perm α) (hx : f x ≠ x) : IsCycle (cycleOf f x) :=
   have : cycleOf f x x ≠ x := by rwa [SameCycle.rfl.cycleOf_apply]
-  (isCycle_iff_sameCycle this).2 fun y =>
+  (isCycle_iff_sameCycle this).2 @fun y =>
     ⟨fun h => mt h.apply_eq_self_iff.2 this, fun h =>
       if hxy : SameCycle f x y then
         let ⟨i, hi⟩ := hxy
@@ -1808,32 +1808,32 @@ theorem Disjoint.isConj_mul {α : Type _} [Finite α] {σ τ π ρ : Perm α} (h
           simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
             apply_eq_iff_eq]
     · intro x hx
-      simp only [trans_apply, symm_trans_apply, Set.of_eq_apply, set.of_eq_symm_apply,
+      simp only [trans_apply, symm_trans_apply, setCongr_apply, setCongr_apply,
         Equiv.sumCongr_apply]
       rw [hd1', Set.mem_union] at hx
       cases' hx with hxσ hxτ
       · rw [mem_coe, mem_support] at hxσ
-        rw [set.union_apply_left hd1''.le_bot _, Set.union_apply_left hd1''.le_bot _]
-        simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_app,
-          set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
+        rw [Set.union_apply_left hd1''.le_bot _, Set.union_apply_left hd1''.le_bot _]
+        simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
+          Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
         · have h := (hd2 (f x)).resolve_left _
           · rw [mul_apply, mul_apply] at h
             rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
         · rwa [Subtype.coe_mk, Subtype.coe_mk, mem_coe, mem_support]
-        · rwa [Subtype.coe_mk, Subtype.coe_mk, perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
+        · rwa [Subtype.coe_mk, Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
             apply_mem_support, mem_support]
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
-        rw [set.union_apply_right hd1''.le_bot _, set.union_apply_right hd1''.le_bot _]
-        simp only [subtype_equiv_apply, perm.coe_mul, Sum.map_inr, comp_app,
-          set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
+        rw [Set.union_apply_right hd1''.le_bot _, Set.union_apply_right hd1''.le_bot _]
+        simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
+          Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
         · have h := (hd2 (g (τ x))).resolve_right _
           · rw [mul_apply, mul_apply] at h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
         · rwa [Subtype.coe_mk, Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
         ·
-          rwa [Subtype.coe_mk, Subtype.coe_mk, perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
+          rwa [Subtype.coe_mk, Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
 #align equiv.perm.disjoint.is_conj_mul Equiv.Perm.Disjoint.isConj_mul
 
@@ -1862,9 +1862,9 @@ variable [DecidableEq α] {l : List α}
 
 theorem _root_.List.Nodup.isCycleOn_formPerm (h : l.Nodup) : l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine' ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => _⟩
-  rw [Set.mem_setOf, ← index_of_lt_length] at ha hb
-  rw [← index_of_nth_le ha, ← index_of_nth_le hb]
-  refine' ⟨l.index_of b - l.index_of a, _⟩
+  rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
+  rw [← List.indexOf_get ha, ← List.indexOf_get hb]
+  refine' ⟨l.indexOf b - l.indexOf a, _⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_ofNat,
     Equiv.Perm.coe_mul, formPerm_pow_apply_nth_le _ h]
   rw [add_comm]
