@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module algebra.algebra.restrict_scalars
-! leanprover-community/mathlib commit 5ed2c7289af01c01014aa18f5e77623e776ca7c9
+! leanprover-community/mathlib commit c310cfdc40da4d99a10a58c33a95360ef9e6e0bf
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -156,14 +156,11 @@ def RestrictScalars.addEquiv : RestrictScalars R S M ≃+ M :=
 
 variable [CommSemiring R] [Semiring S] [Algebra R S] [Module S M]
 
-/-- Note that this lemma relies on the definitional equality `restrict_scalars R S M = M`,
-so usage may result in instance leakage.
-`restrict_scalars.add_equiv_map_smul` is the "hygienic" version.
--/
-theorem restrictScalars_smul_def (c : R) (x : RestrictScalars R S M) :
-    c • x = (algebraMap R S c • x : M) :=
+theorem restrictScalars.smul_def (c : R) (x : RestrictScalars R S M) :
+    c • x = (RestrictScalars.addEquiv R S M).symm
+      (algebraMap R S c • RestrictScalars.addEquiv R S M x) :=
   rfl
-#align restrict_scalars_smul_def restrictScalars_smul_def
+#align restrict_scalars.smul_def restrictScalars.smul_def
 
 @[simp]
 theorem RestrictScalars.addEquiv_map_smul (c : R) (x : RestrictScalars R S M) :
