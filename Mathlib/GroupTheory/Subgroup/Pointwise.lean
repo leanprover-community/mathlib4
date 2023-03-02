@@ -19,7 +19,7 @@ This file provides the actions
 * `Subgroup.pointwiseMulAction`
 * `AddSubgroup.pointwiseMulAction`
 
-which matches the action of `mul_action_set`.
+which matches the action of `Set.mulActionSet`.
 
 These actions are available in the `Pointwise` locale.
 
@@ -120,7 +120,7 @@ theorem supᵢ_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} 
 #align add_subgroup.supr_induction AddSubgroup.supᵢ_induction
 
 /-- A dependent version of `Subgroup.supᵢ_induction`. -/
-@[elab_as_elim, to_additive "A dependent version of `add_subgroup.supr_induction`. "]
+@[elab_as_elim, to_additive "A dependent version of `AddSubgroup.supᵢ_induction`. "]
 theorem supᵢ_induction' {ι : Sort _} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i), ∀ x (hx : x ∈ S i), C x (mem_supᵢ_of_mem i hx)) (h1 : C 1 (one_mem _))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
@@ -304,10 +304,10 @@ theorem smul_closure (a : α) (s : Set G) : a • closure s = closure (a • s) 
   MonoidHom.map_closure _ _
 #align subgroup.smul_closure Subgroup.smul_closure
 
-instance pointwise_central_scalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentralScalar α G] :
+instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentralScalar α G] :
     IsCentralScalar α (Subgroup G) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
-#align subgroup.pointwise_central_scalar Subgroup.pointwise_central_scalar
+#align subgroup.pointwise_central_scalar Subgroup.pointwise_isCentralScalar
 
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by
@@ -363,7 +363,7 @@ theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a �
 #align subgroup.smul_inf Subgroup.smul_inf
 
 /-- Applying a `MulDistribMulAction` results in an isomorphic subgroup -/
-@[simps]
+@[simps!]
 def equivSmul (a : α) (H : Subgroup G) : H ≃* (a • H : Subgroup G) :=
   (MulDistribMulAction.toMulEquiv G a).subgroupMap H
 #align subgroup.equiv_smul Subgroup.equivSmul
@@ -471,10 +471,10 @@ theorem mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubgroup A) :
   (Set.mem_smul_set : m ∈ a • (S : Set A) ↔ _)
 #align add_subgroup.mem_smul_pointwise_iff_exists AddSubgroup.mem_smul_pointwise_iff_exists
 
-instance pointwise_central_scalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
+instance pointwise_isCentralScalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
     IsCentralScalar α (AddSubgroup A) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
-#align add_subgroup.pointwise_central_scalar AddSubgroup.pointwise_central_scalar
+#align add_subgroup.pointwise_central_scalar AddSubgroup.pointwise_isCentralScalar
 
 end Monoid
 

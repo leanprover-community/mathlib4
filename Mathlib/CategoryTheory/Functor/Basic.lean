@@ -45,6 +45,7 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
   map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop_cat
   /-- A functor preserves composition. -/
   map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop_cat
+
 #align category_theory.functor CategoryTheory.Functor
 #align category_theory.functor.map_comp CategoryTheory.Functor.map_comp
 #align category_theory.functor.map_id CategoryTheory.Functor.map_id
@@ -72,8 +73,7 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C]
 
-initialize_simps_projections Functor (toPrefunctor_obj → obj,
-  toPrefunctor_map → map, -toPrefunctor)
+initialize_simps_projections Functor
 
 -- We don't use `@[simps]` here because we want `C` implicit for the simp lemmas.
 /-- `𝟭 C` is the identity functor on a category `C`. -/

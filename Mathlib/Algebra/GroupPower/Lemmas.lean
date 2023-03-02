@@ -65,8 +65,7 @@ theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, 
 #align is_add_unit.nsmul IsAddUnit.nsmul
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
-@[to_additive AddUnits.ofNSMul
-  "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
+@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
 def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
@@ -88,7 +87,7 @@ theorem isUnit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit 
 #align is_add_unit_nsmul_succ_iff isAddUnit_nsmul_succ_iff
 
 /-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
-@[to_additive "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit.", simps]
+@[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
 def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
   Units.ofPow 1 x hn hx
 #align units.of_pow_eq_one Units.ofPowEqOne
@@ -803,9 +802,9 @@ def zpowersHom [Group G] : G ≃ (Multiplicative ℤ →* G) :=
   Additive.ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 #align zpowers_hom zpowersHom
 
-attribute [to_additive multiplesHom] powersHom
+attribute [to_additive existing multiplesHom] powersHom
 
-attribute [to_additive zmultiplesHom] zpowersHom
+attribute [to_additive existing zmultiplesHom] zpowersHom
 
 variable {M G A}
 
@@ -835,25 +834,25 @@ theorem multiplesHom_apply [AddMonoid A] (x : A) (n : ℕ) : multiplesHom A x n 
   rfl
 #align multiples_hom_apply multiplesHom_apply
 
-attribute [to_additive (attr := simp) multiplesHom_apply] powersHom_apply
+attribute [to_additive existing (attr := simp) multiplesHom_apply] powersHom_apply
 
 theorem multiplesHom_symm_apply [AddMonoid A] (f : ℕ →+ A) : (multiplesHom A).symm f = f 1 :=
   rfl
 #align multiples_hom_symm_apply multiplesHom_symm_apply
 
-attribute [to_additive (attr := simp) multiplesHom_symm_apply] powersHom_symm_apply
+attribute [to_additive existing (attr := simp) multiplesHom_symm_apply] powersHom_symm_apply
 
 theorem zmultiplesHom_apply [AddGroup A] (x : A) (n : ℤ) : zmultiplesHom A x n = n • x :=
   rfl
 #align zmultiples_hom_apply zmultiplesHom_apply
 
-attribute [to_additive (attr := simp) zmultiplesHom_apply] zpowersHom_apply
+attribute [to_additive existing (attr := simp) zmultiplesHom_apply] zpowersHom_apply
 
 theorem zmultiplesHom_symm_apply [AddGroup A] (f : ℤ →+ A) : (zmultiplesHom A).symm f = f 1 :=
   rfl
 #align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
 
-attribute [to_additive (attr := simp) zmultiplesHom_symm_apply] zpowersHom_symm_apply
+attribute [to_additive existing (attr := simp) zmultiplesHom_symm_apply] zpowersHom_symm_apply
 
 -- TODO use to_additive in the rest of this file
 theorem MonoidHom.apply_mnat [Monoid M] (f : Multiplicative ℕ →* M) (n : Multiplicative ℕ) :

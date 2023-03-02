@@ -192,14 +192,16 @@ namespace SubgroupClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of a `add_group` inherits an inverse."]
-instance inv : Inv H :=
+instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
+  [SubgroupClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 #align subgroup_class.has_inv SubgroupClass.inv
 #align add_subgroup_class.has_neg AddSubgroupClass.neg
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `add_group` inherits a subtraction."]
-instance div : Div H :=
+instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
+  [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 #align subgroup_class.has_div SubgroupClass.div
 #align add_subgroup_class.has_sub AddSubgroupClass.sub
@@ -211,7 +213,7 @@ instance _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
 #align add_subgroup_class.has_zsmul AddSubgroupClass.zsmul
 
 /-- A subgroup of a group inherits an integer power. -/
-@[to_additive]
+@[to_additive existing]
 instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
   ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 #align subgroup_class.has_zpow SubgroupClass.zpow
@@ -437,9 +439,9 @@ def Simps.coe (S : Subgroup G) : Set G :=
 #align subgroup.simps.coe Subgroup.Simps.coe
 #align add_subgroup.simps.coe AddSubgroup.Simps.coe
 
-initialize_simps_projections Subgroup (toSubmonoid_toSubsemigroup_carrier → coe)
+initialize_simps_projections Subgroup (carrier → coe)
 
-initialize_simps_projections AddSubgroup (toAddSubmonoid_toAddSubsemigroup_carrier → coe)
+initialize_simps_projections AddSubgroup (carrier → coe)
 
 @[to_additive (attr := simp)]
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=
@@ -469,27 +471,17 @@ theorem toSubmonoid_eq {p q : Subgroup G} : p.toSubmonoid = q.toSubmonoid ↔ p 
 #align subgroup.to_submonoid_eq Subgroup.toSubmonoid_eq
 #align add_subgroup.to_add_submonoid_eq AddSubgroup.toAddSubmonoid_eq
 
--- Porting note: Unknown attribute mono
---@[to_additive, mono]
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subgroup G → Submonoid G) := fun _ _ =>
   id
 #align subgroup.to_submonoid_strict_mono Subgroup.toSubmonoid_strictMono
 #align add_subgroup.to_add_submonoid_strict_mono AddSubgroup.toAddSubmonoid_strictMono
 
--- Porting note: Unknown attribute mono
--- attribute [mono] AddSubgroup.to_add_submonoid_strictMono
-
--- Porting note: Unknown attribute mono
---@[to_additive, mono]
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :=
   toSubmonoid_strictMono.monotone
 #align subgroup.to_submonoid_mono Subgroup.toSubmonoid_mono
 #align add_subgroup.to_add_submonoid_mono AddSubgroup.toAddSubmonoid_mono
-
--- Porting note: Unknown attribute mono
--- attribute [mono] AddSubgroup.to_add_submonoid_mono
 
 @[to_additive (attr := simp)]
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=
@@ -507,7 +499,7 @@ end Subgroup
 section mul_add
 
 /-- Subgroups of a group `G` are isomorphic to additive subgroups of `Additive G`. -/
-@[simps]
+@[simps!]
 def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   toFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
   invFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
@@ -515,7 +507,7 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 #align subgroup.to_add_subgroup Subgroup.toAddSubgroup
-#align subgroup.to_add_subgroup_symm_apply_coe Subgroup.toAddSubgroup_symmApply_coe
+#align subgroup.to_add_subgroup_symm_apply_coe Subgroup.toAddSubgroup_symm_apply_coe
 #align subgroup.to_add_subgroup_apply_coe Subgroup.toAddSubgroup_apply_coe
 
 /-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
@@ -525,7 +517,7 @@ abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
 
 /-- Additive supgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
-@[simps]
+@[simps!]
 def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) where
   toFun S := { AddSubmonoid.toSubmonoid S.toAddSubmonoid with inv_mem' := S.neg_mem' }
   invFun S := { Submonoid.toAddSubmonoid S.toSubmonoid with neg_mem' := S.inv_mem' }
@@ -534,7 +526,7 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   map_rel_iff' := Iff.rfl
 #align add_subgroup.to_subgroup AddSubgroup.toSubgroup
 #align add_subgroup.to_subgroup_apply_coe AddSubgroup.toSubgroup_apply_coe
-#align add_subgroup.to_subgroup_symm_apply_coe AddSubgroup.toSubgroup_symmApply_coe
+#align add_subgroup.to_subgroup_symm_apply_coe AddSubgroup.toSubgroup_symm_apply_coe
 
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
@@ -700,7 +692,7 @@ instance _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul �
 #align add_subgroup.has_nsmul AddSubgroup.nsmul
 
 /-- A subgroup of a group inherits a natural power -/
-@[to_additive]
+@[to_additive existing]
 protected instance npow : Pow H ℕ :=
   ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
 #align subgroup.has_npow Subgroup.npow
@@ -711,7 +703,7 @@ instance _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul �
 #align add_subgroup.has_zsmul AddSubgroup.zsmul
 
 /-- A subgroup of a group inherits an integer power -/
-@[to_additive]
+@[to_additive existing]
 instance zpow : Pow H ℤ :=
   ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
 #align subgroup.has_zpow Subgroup.zpow
@@ -856,17 +848,17 @@ instance : Top (Subgroup G) :=
 /-- The top subgroup is isomorphic to the group.
 
 This is the group version of `Submonoid.topEquiv`. -/
-@[to_additive
+@[to_additive (attr := simps!)
       "The top additive subgroup is isomorphic to the additive group.
 
-      This is the additive group version of `AddSubmonoid.topEquiv`.",
-  simps]
+      This is the additive group version of `AddSubmonoid.topEquiv`."]
 def topEquiv : (⊤ : Subgroup G) ≃* G :=
   Submonoid.topEquiv
 #align subgroup.top_equiv Subgroup.topEquiv
 #align add_subgroup.top_equiv AddSubgroup.topEquiv
-#align subgroup.top_equiv_symm_apply_coe Subgroup.topEquiv_symmApply_coe
-#align subgroup.top_equiv_apply Subgroup.topEquiv_apply
+#align subgroup.top_equiv_symm_apply_coe Subgroup.topEquiv_symm_apply_coe
+#align add_subgroup.top_equiv_symm_apply_coe AddSubgroup.topEquiv_symm_apply_coe
+#align add_subgroup.top_equiv_apply AddSubgroup.topEquiv_apply
 
 /-- The trivial subgroup `{1}` of an group `G`. -/
 @[to_additive "The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`."]
@@ -978,7 +970,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive "The inf of two `add_subgroups`s is their intersection."]
-instance : HasInf (Subgroup G) :=
+instance : Inf (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
       inv_mem' := fun ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
@@ -1609,9 +1601,9 @@ def subgroupOf (H K : Subgroup G) : Subgroup K :=
 #align add_subgroup.add_subgroup_of AddSubgroup.addSubgroupOf
 
 /-- If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`. -/
-@[to_additive "If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`.", simps]
-def subgroupOfEquivOfLe {G : Type _} [Group G] {H K : Subgroup G} (h : H ≤ K) : H.subgroupOf K ≃* H
-    where
+@[to_additive (attr := simps) "If `H ≤ K`, then `H` as a subgroup of `K` is isomorphic to `H`."]
+def subgroupOfEquivOfLe {G : Type _} [Group G] {H K : Subgroup G} (h : H ≤ K) :
+    H.subgroupOf K ≃* H where
   toFun g := ⟨g.1, g.2⟩
   invFun g := ⟨⟨g.1, h g.2⟩, g.2⟩
   left_inv _g := Subtype.ext (Subtype.ext rfl)
@@ -1619,8 +1611,10 @@ def subgroupOfEquivOfLe {G : Type _} [Group G] {H K : Subgroup G} (h : H ≤ K) 
   map_mul' _g _h := rfl
 #align subgroup.subgroup_of_equiv_of_le Subgroup.subgroupOfEquivOfLe
 #align add_subgroup.add_subgroup_of_equiv_of_le AddSubgroup.addSubgroupOfEquivOfLe
-#align subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe Subgroup.subgroupOfEquivOfLe_symmApply_coe_coe
+#align subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe Subgroup.subgroupOfEquivOfLe_symm_apply_coe_coe
+#align add_subgroup.subgroup_of_equiv_of_le_symm_apply_coe_coe AddSubgroup.addSubgroupOfEquivOfLe_symm_apply_coe_coe
 #align subgroup.subgroup_of_equiv_of_le_apply_coe Subgroup.subgroupOfEquivOfLe_apply_coe
+#align add_subgroup.subgroup_of_equiv_of_le_apply_coe AddSubgroup.addSubgroupOfEquivOfLe_apply_coe
 
 @[to_additive (attr := simp)]
 theorem comap_subtype (H K : Subgroup G) : H.comap K.subtype = H.subgroupOf K :=
@@ -2777,7 +2771,6 @@ variable {M : Type _} [MulOneClass M]
 def ker (f : G →* M) : Subgroup G :=
   { MonoidHom.mker f with
     inv_mem' := fun {x} (hx : f x = 1) =>
-      show _ = _ from -- lean4#2073
       calc
         f x⁻¹ = f x * f x⁻¹ := by rw [hx, one_mul]
         _ = 1 := by rw [← map_mul, mul_inv_self, map_one] }
@@ -3442,7 +3435,7 @@ instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Norm
 namespace MonoidHom
 
 /-- The `MonoidHom` from the preimage of a subgroup to itself. -/
-@[to_additive (attr := simps) "the `AddMonoidHom` from the preimage of an
+@[to_additive (attr := simps!) "the `AddMonoidHom` from the preimage of an
 additive subgroup to itself."]
 def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
   f.submonoidComap H'.toSubmonoid
@@ -3452,7 +3445,7 @@ def subgroupComap (f : G →* G') (H' : Subgroup G') : H'.comap f →* H' :=
 #align monoid_hom.subgroup_comap_apply_coe MonoidHom.subgroupComap_apply_coe
 
 /-- The `MonoidHom` from a subgroup to its image. -/
-@[to_additive (attr := simps) "the `add_monoid_hom` from an additive subgroup to its image"]
+@[to_additive (attr := simps!) "the `add_monoid_hom` from an additive subgroup to its image"]
 def subgroupMap (f : G →* G') (H : Subgroup G) : H →* H.map f :=
   f.submonoidMap H.toSubmonoid
 #align monoid_hom.subgroup_map MonoidHom.subgroupMap

@@ -190,16 +190,14 @@ section add_mul
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-instance : Add c.Quotient :=
-  show Add c.toAddCon.Quotient by infer_instance
+instance : Add c.Quotient := inferInstanceAs (Add c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
   rfl
 #align ring_con.coe_add RingCon.coe_add
 
-instance : Mul c.Quotient :=
-  show Mul c.toCon.Quotient by infer_instance
+instance : Mul c.Quotient := inferInstanceAs (Mul c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_mul (x y : R) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
@@ -212,8 +210,7 @@ section Zero
 
 variable [AddZeroClass R] [Mul R] (c : RingCon R)
 
-instance : Zero c.Quotient :=
-  show Zero c.toAddCon.Quotient by infer_instance
+instance : Zero c.Quotient := inferInstanceAs (Zero c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
@@ -226,8 +223,7 @@ section One
 
 variable [Add R] [MulOneClass R] (c : RingCon R)
 
-instance : One c.Quotient :=
-  show One c.toCon.Quotient by infer_instance
+instance : One c.Quotient := inferInstanceAs (One c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
@@ -240,8 +236,7 @@ section SMul
 
 variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon R)
 
-instance : SMul α c.Quotient :=
-  show SMul α c.toCon.Quotient by infer_instance
+instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
@@ -254,24 +249,21 @@ section NegSubZsmul
 
 variable [AddGroup R] [Mul R] (c : RingCon R)
 
-instance : Neg c.Quotient :=
-  show Neg c.toAddCon.Quotient by infer_instance
+instance : Neg c.Quotient := inferInstanceAs (Neg c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
   rfl
 #align ring_con.coe_neg RingCon.coe_neg
 
-instance : Sub c.Quotient :=
-  show Sub c.toAddCon.Quotient by infer_instance
+instance : Sub c.Quotient := inferInstanceAs (Sub c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
 #align ring_con.coe_sub RingCon.coe_sub
 
-instance hasZsmul : SMul ℤ c.Quotient :=
-  show SMul ℤ c.toAddCon.Quotient by infer_instance
+instance hasZsmul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
 #align ring_con.has_zsmul RingCon.hasZsmul
 
 @[simp, norm_cast]
@@ -285,8 +277,7 @@ section Nsmul
 
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
-instance hasNsmul : SMul ℕ c.Quotient :=
-  show SMul ℕ c.toAddCon.Quotient by infer_instance
+instance hasNsmul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
 #align ring_con.has_nsmul RingCon.hasNsmul
 
 @[simp, norm_cast]
@@ -300,8 +291,7 @@ section Pow
 
 variable [Add R] [Monoid R] (c : RingCon R)
 
-instance : Pow c.Quotient ℕ :=
-  show Pow c.toCon.Quotient ℕ by infer_instance
+instance : Pow c.Quotient ℕ := inferInstanceAs (Pow c.toCon.Quotient ℕ)
 
 @[simp, norm_cast]
 theorem coe_pow (x : R) (n : ℕ) : (↑(x ^ n) : c.Quotient) = (x : c.Quotient) ^ n :=

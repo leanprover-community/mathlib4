@@ -12,7 +12,6 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Set.Pairwise
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Pointwise operations of sets
@@ -168,8 +167,7 @@ theorem singleton_smul_singleton : ({a} : Set α) • ({b} : Set β) = {a • b}
 #align set.singleton_smul_singleton Set.singleton_smul_singleton
 #align set.singleton_vadd_singleton Set.singleton_vadd_singleton
 
---Porting note: no [mono]
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ :=
   image2_subset
 #align set.smul_subset_smul Set.smul_subset_smul
@@ -193,8 +191,6 @@ theorem smul_subset_iff : s • t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a • b �
 #align set.smul_subset_iff Set.smul_subset_iff
 #align set.vadd_subset_iff Set.vadd_subset_iff
 
--- Porting note: no [mono]
--- attribute [mono] vadd_subset_vadd
 
 @[to_additive]
 theorem union_smul : (s₁ ∪ s₂) • t = s₁ • t ∪ s₂ • t :=
@@ -619,7 +615,7 @@ theorem singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} :=
   image2_singleton
 #align set.singleton_vsub_singleton Set.singleton_vsub_singleton
 
--- @[mono] Porting note: mono not implemented yet
+@[mono]
 theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
   image2_subset
 #align set.vsub_subset_vsub Set.vsub_subset_vsub

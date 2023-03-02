@@ -336,7 +336,7 @@ variable {c}
 
 /-- The inductive principle used to prove propositions about the elements of a quotient by a
     congruence relation. -/
-@[elab_as_elim, to_additive "The inductive principle used to prove propositions about
+@[to_additive (attr := elab_as_elim) "The inductive principle used to prove propositions about
 the elements of a quotient by an additive congruence relation."]
 protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : ∀ x : M, C x) : C q :=
   Quotient.inductionOn' q H
@@ -344,7 +344,7 @@ protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : �
 #align add_con.induction_on AddCon.induction_on
 
 /-- A version of `con.induction_on` for predicates which take two arguments. -/
-@[elab_as_elim, to_additive "A version of `add_con.induction_on` for predicates which take
+@[to_additive (attr := elab_as_elim) "A version of `add_con.induction_on` for predicates which take
 two arguments."]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
     (q : d.Quotient) (H : ∀ (x : M) (y : N), C x y) : C p q :=
@@ -1093,9 +1093,9 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
 #align add_con.quotient_ker_equiv_range AddCon.quotientKerEquivRange
 
 /-- The first isomorphism theorem for monoids in the case of a homomorphism with right inverse. -/
-@[to_additive "The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
-with right inverse.",
-  simps]
+@[to_additive (attr := simps)
+  "The first isomorphism theorem for `AddMonoid`s in the case of a homomorphism
+  with right inverse."]
 def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.RightInverse g f) :
     (ker f).Quotient ≃* P :=
   { kerLift f with
@@ -1105,8 +1105,10 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
     right_inv := fun x => by conv_rhs => rw [← hf x]; rfl }
 #align con.quotient_ker_equiv_of_right_inverse Con.quotientKerEquivOfRightInverse
 #align add_con.quotient_ker_equiv_of_right_inverse AddCon.quotientKerEquivOfRightInverse
-#align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symmApply
+#align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symm_apply
+#align add_con.quotient_ker_equiv_of_right_inverse_symm_apply AddCon.quotientKerEquivOfRightInverse_symm_apply
 #align con.quotient_ker_equiv_of_right_inverse_apply Con.quotientKerEquivOfRightInverse_apply
+#align add_con.quotient_ker_equiv_of_right_inverse_apply AddCon.quotientKerEquivOfRightInverse_apply
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 
@@ -1148,7 +1150,7 @@ end MulOneClass
 section Monoids
 
 /-- Multiplicative congruence relations preserve natural powers. -/
-@[to_additive AddCon.nsmul "Additive congruence relations preserve natural scaling."]
+@[to_additive "Additive congruence relations preserve natural scaling."]
 protected theorem pow {M : Type _} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
@@ -1171,7 +1173,7 @@ instance _root_.AddCon.Quotient.nsmul {M : Type _} [AddMonoid M] (c : AddCon M) 
     where smul n := (Quotient.map' ((· • ·) n)) fun _ _ => c.nsmul n
 #align add_con.quotient.has_nsmul AddCon.Quotient.nsmul
 
-@[to_additive AddCon.Quotient.nsmul]
+@[to_additive existing AddCon.Quotient.nsmul]
 instance {M : Type _} [Monoid M] (c : Con M) : Pow c.Quotient ℕ
     where pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
 
@@ -1263,7 +1265,7 @@ instance _root_.AddCon.Quotient.zsmul {M : Type _} [AddGroup M] (c : AddCon M) :
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
     division. -/
-@[to_additive AddCon.Quotient.zsmul]
+@[to_additive existing AddCon.Quotient.zsmul]
 instance zpowinst : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 #align con.has_zpow Con.zpowinst

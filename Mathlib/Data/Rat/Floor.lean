@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 
 ! This file was ported from Lean 3 source module data.rat.floor
-! leanprover-community/mathlib commit 134625f523e737f650a6ea7f0c82a6177e45e622
+! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Rat.Cast
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Set
 
 /-!
@@ -141,10 +142,7 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
   have q_inv_eq : q⁻¹ = q_inv := Rat.inv_def''
   suffices (q_inv - ⌊q_inv⌋).num < q.num by rwa [q_inv_eq]
   suffices ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num < q.num by
-    have hq : (q.num : ℚ) ≠ 0 := by exact_mod_cast ne_of_gt q_num_pos
-    rwa [div_sub' _ _ _ hq]
-    -- Porting note: was
-    -- field_simp [this, ne_of_gt q_num_pos]
+    field_simp [this, ne_of_gt q_num_pos]
   suffices (q.den : ℤ) - q.num * ⌊q_inv⌋ < q.num by
     -- use that `q.num` and `q.den` are coprime to show that the numerator stays unreduced
     have : ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num = q.den - q.num * ⌊q_inv⌋ := by

@@ -275,7 +275,7 @@ class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop wher
 /-- A typeclass indicating that the right (aka `MulOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `•`. -/
-@[to_additive IsCentralVAdd] -- TODO auto-translating
+@[to_additive]
 class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop where
   /-- The right and left actions of `M` on `α` are equal. -/
   op_smul_eq_smul : ∀ (m : M) (a : α), MulOpposite.op m • a = m • a
@@ -673,10 +673,9 @@ theorem SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
 
 /-- If the multiplicative action of `M` on `N` is compatible with multiplication on `N`, then
 `fun x => x • 1` is a monoid homomorphism from `M` to `N`. -/
-@[to_additive
+@[to_additive (attr := simps)
       "If the additive action of `M` on `N` is compatible with addition on `N`, then
-      `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`.",
-  simps]
+      `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
 def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N] :
     M →* N where
   toFun x := x • (1 : N)
@@ -685,6 +684,7 @@ def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N]
 #align smul_one_hom smulOneHom
 #align vadd_zero_hom vaddZeroHom
 #align smul_one_hom_apply smulOneHom_apply
+#align vadd_zero_hom_apply vaddZeroHom_apply
 
 end CompatibleScalar
 
@@ -905,7 +905,7 @@ def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
 #align distrib_mul_action.comp_hom DistribMulAction.compHom
 
 /-- Each element of the monoid defines a additive monoid homomorphism. -/
-@[simps]
+@[simps!]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x
 #align distrib_mul_action.to_add_monoid_hom DistribMulAction.toAddMonoidHom
