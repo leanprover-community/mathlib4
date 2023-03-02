@@ -8,8 +8,8 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Connectivity
-import Mathbin.Data.Nat.Parity
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Data.Nat.Parity
 
 /-!
 
@@ -55,8 +55,7 @@ def IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (Sym
 variable [DecidableEq V]
 
 theorem IsTrail.even_countp_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail) (x : V) :
-    Even (p.edges.countp fun e => x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v :=
-  by
+    Even (p.edges.countp fun e => x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   induction' p with u u v w huv p ih
   · simp
   · rw [cons_is_trail_iff] at ht
@@ -94,8 +93,7 @@ def IsEulerian {u v : V} (p : G.Walk u v) : Prop :=
   ∀ e, e ∈ G.edgeSetEmbedding → p.edges.count e = 1
 #align simple_graph.walk.is_eulerian SimpleGraph.Walk.IsEulerian
 
-theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsTrail :=
-  by
+theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsTrail := by
   rw [is_trail_def, List.nodup_iff_count_le_one]
   intro e
   by_cases he : e ∈ p.edges
@@ -121,8 +119,7 @@ theorem IsTrail.isEulerian_of_forall_mem {u v : V} {p : G.Walk u v} (h : p.IsTra
 #align simple_graph.walk.is_trail.is_eulerian_of_forall_mem SimpleGraph.Walk.IsTrail.isEulerian_of_forall_mem
 
 theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
-    p.IsEulerian ↔ p.IsTrail ∧ ∀ e, e ∈ G.edgeSetEmbedding → e ∈ p.edges :=
-  by
+    p.IsEulerian ↔ p.IsTrail ∧ ∀ e, e ∈ G.edgeSetEmbedding → e ∈ p.edges := by
   constructor
   · intro h
     exact ⟨h.is_trail, fun _ => h.mem_edges_iff.mpr⟩
@@ -131,15 +128,13 @@ theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
 #align simple_graph.walk.is_eulerian_iff SimpleGraph.Walk.isEulerian_iff
 
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSetEmbedding] {u v : V} {p : G.Walk u v}
-    (h : p.IsEulerian) : h.IsTrail.edgesFinset = G.edgeFinset :=
-  by
+    (h : p.IsEulerian) : h.IsTrail.edgesFinset = G.edgeFinset := by
   ext e
   simp [h.mem_edges_iff]
 #align simple_graph.walk.is_eulerian.edges_finset_eq SimpleGraph.Walk.IsEulerian.edgesFinset_eq
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
-    [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v :=
-  by
+    [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   convert ht.is_trail.even_countp_edges_iff x
   rw [← Multiset.coe_countp, Multiset.countp_eq_card_filter, ← card_incidence_finset_eq_degree]
   change Multiset.card _ = _
