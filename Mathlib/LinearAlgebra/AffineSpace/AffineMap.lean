@@ -8,11 +8,11 @@ Authors: Joseph Myers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Pointwise.Interval
-import Mathbin.LinearAlgebra.AffineSpace.Basic
-import Mathbin.LinearAlgebra.BilinearMap
-import Mathbin.LinearAlgebra.Pi
-import Mathbin.LinearAlgebra.Prod
+import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.LinearAlgebra.AffineSpace.Basic
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Affine maps
@@ -132,8 +132,7 @@ theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2
 
 /-- Two affine maps are equal if they coerce to the same function. -/
 @[ext]
-theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g :=
-  by
+theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g := by
   rcases f with ⟨f, f_linear, f_add⟩
   rcases g with ⟨g, g_linear, g_add⟩
   obtain rfl : f = g := funext h
@@ -464,8 +463,7 @@ include V2
 
 @[simp]
 theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
-    Function.Injective f.linear ↔ Function.Injective f :=
-  by
+    Function.Injective f.linear ↔ Function.Injective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
   have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p :=
     by
@@ -476,8 +474,7 @@ theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
 
 @[simp]
 theorem linear_surjective_iff (f : P1 →ᵃ[k] P2) :
-    Function.Surjective f.linear ↔ Function.Surjective f :=
-  by
+    Function.Surjective f.linear ↔ Function.Surjective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
   have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p :=
     by
@@ -622,14 +619,12 @@ theorem snd_lineMap (p₀ p₁ : P1 × P2) (c : k) : (lineMap p₀ p₁ c).2 = l
 omit V2
 
 theorem lineMap_symm (p₀ p₁ : P1) :
-    lineMap p₀ p₁ = (lineMap p₁ p₀).comp (lineMap (1 : k) (0 : k)) :=
-  by
+    lineMap p₀ p₁ = (lineMap p₁ p₀).comp (lineMap (1 : k) (0 : k)) := by
   rw [comp_line_map]
   simp
 #align affine_map.line_map_symm AffineMap.lineMap_symm
 
-theorem lineMap_apply_one_sub (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ (1 - c) = lineMap p₁ p₀ c :=
-  by
+theorem lineMap_apply_one_sub (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ (1 - c) = lineMap p₁ p₀ c := by
   rw [line_map_symm p₀, comp_apply]
   congr
   simp [line_map_apply]
@@ -669,8 +664,7 @@ theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
-theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = f.linear + fun z => f 0 :=
-  by
+theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = f.linear + fun z => f 0 := by
   ext x
   calc
     f x = f.linear x +ᵥ f 0 := by simp [← f.map_vadd]
@@ -687,8 +681,7 @@ theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = f - fun z => f 
 omit V1
 
 theorem image_uIcc {k : Type _} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
-    f '' Set.uIcc a b = Set.uIcc (f a) (f b) :=
-  by
+    f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
   have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) :=
     by
     ext x
@@ -822,8 +815,7 @@ theorem homothety_eq_lineMap (c : P1) (r : k) (p : P1) : homothety c r p = lineM
 #align affine_map.homothety_eq_line_map AffineMap.homothety_eq_lineMap
 
 @[simp]
-theorem homothety_one (c : P1) : homothety c (1 : k) = id k P1 :=
-  by
+theorem homothety_one (c : P1) : homothety c (1 : k) = id k P1 := by
   ext p
   simp [homothety_apply]
 #align affine_map.homothety_one AffineMap.homothety_one
@@ -844,8 +836,7 @@ theorem homothety_mul (c : P1) (r₁ r₂ : k) :
 #align affine_map.homothety_mul AffineMap.homothety_mul
 
 @[simp]
-theorem homothety_zero (c : P1) : homothety c (0 : k) = const k P1 c :=
-  by
+theorem homothety_zero (c : P1) : homothety c (0 : k) = const k P1 c := by
   ext p
   simp [homothety_apply]
 #align affine_map.homothety_zero AffineMap.homothety_zero
@@ -888,8 +879,7 @@ variable {𝕜 E F : Type _} [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Modu
 /-- Applying an affine map to an affine combination of two points yields an affine combination of
 the images. -/
 theorem Convex.combo_affine_apply {x y : E} {a b : 𝕜} {f : E →ᵃ[𝕜] F} (h : a + b = 1) :
-    f (a • x + b • y) = a • f x + b • f y :=
-  by
+    f (a • x + b • y) = a • f x + b • f y := by
   simp only [Convex.combo_eq_smul_sub_add h, ← vsub_eq_sub]
   exact f.apply_line_map _ _ _
 #align convex.combo_affine_apply Convex.combo_affine_apply
