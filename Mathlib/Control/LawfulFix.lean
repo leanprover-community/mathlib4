@@ -12,7 +12,7 @@ import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Tactic.SwapVar
+import Mathlib.Tactic.WLOG
 
 /-!
 # Lawful fixed point operators
@@ -72,8 +72,6 @@ theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j 
   exact le_trans (ih ‹_›) (approx_mono' f)
 #align part.fix.approx_mono Part.Fix.approx_mono
 
-/- Porting note: As-of-yet-unported tactic `wlog` previously used here has been commented out and
-replaced for the time being. Some `swap_var` issues led me to replace an `apply` with a `simp`. -/
 theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
   by_cases h₀ : ∃ i : ℕ, (approx f i a).Dom
   · simp only [Part.fix_def f h₀]
@@ -87,19 +85,14 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     subst this
     exact h₁
     cases' hh with i hh
-    revert h₁
-    generalize succ (Nat.find h₀) = j
-    intro h₁
-    --wlog : i ≤ j := le_total i j using i j b y, j i y b
-    rcases le_total i j with (case|case)
-    on_goal 2 => swap_var i ↔ j, hh ↔ h₁
-    all_goals
-      replace hh := approx_mono f case _ _ hh
-      simp only [Part.mem_unique h₁ hh]
+    revert h₁; generalize succ (Nat.find h₀) = j; intro h₁
+    wlog case : i ≤ j
+    · cases' le_total i j with H H <;> [skip, symm] <;> apply_assumption <;> assumption
+    replace hh := approx_mono f case _ _ hh
+    apply Part.mem_unique h₁ hh
   · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
     simp only [dom_iff_mem, not_exists] at h₀
-    intro
-    apply h₀
+    intro; apply h₀
 #align part.fix.mem_iff Part.Fix.mem_iff
 
 theorem approx_le_fix (i : ℕ) : approx f i ≤ Part.fix f := fun a b hh ↦ by
