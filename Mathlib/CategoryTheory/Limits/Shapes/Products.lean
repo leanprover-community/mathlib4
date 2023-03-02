@@ -49,10 +49,9 @@ variable {β : Type w}
 
 variable {C : Type u} [Category.{v} C]
 
--- porting note: ...
 -- We don't need an analogue of `Pair` (for binary products), `ParallelPair` (for equalizers),
 -- or `(Co)span`, since we already have `Discrete.functor`.
---attribute [local tidy] tactic.discrete_cases
+--attribute [local tidy] tactic.discrete_cases -- Porting note: no tidy
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
 abbrev Fan (f : β → C) :=
