@@ -8,9 +8,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Algebra.Module.Basic
-import Mathbin.Combinatorics.SimpleGraph.Density
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Combinatorics.SimpleGraph.Density
 
 /-!
 # Energy of a partition
