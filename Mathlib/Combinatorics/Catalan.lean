@@ -131,25 +131,27 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
   induction' n using Nat.case_strong_induction_on with d hd
   · simp
   · simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]
-    trans
-      (∑ i : Fin d.succ, Nat.centralBinom i / (i + 1) * (Nat.centralBinom (d - i) / (d - i + 1)) :
-        ℚ)
-    · refine' sum_congr rfl fun i _ => _
+    trans (∑ i : Fin d.succ, Nat.centralBinom i / (i + 1) * (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
+    · congr
+      ext1 x
+      let m := x.val
+      have m_le_d : m ≤ d := by apply Nat.le_of_lt_succ; apply x.2
+      have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
+      rw [hd, hd]
+      simp
+      left
       congr
-      · exact_mod_cast hd i i.is_le
-      · rw_mod_cast [hd (d - i)]
-        push_cast
-        rw [Nat.cast_sub i.is_le]
-        sorry -- exact tsub_le_self
+      norm_cast
+      assumption
+      assumption 
     · trans (∑ i : Fin d.succ, (gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i))
       · refine' sum_congr rfl fun i _ => _
-        rw_mod_cast [gosper_trick i.is_le]
-        norm_cast
+        rw [gosper_trick i.is_le]
         field_simp
-        sorry
       · rw [← sum_range fun i => gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i,
-          sum_range_sub, Nat.succ_eq_add_one]
-        exact_mod_cast gosper_catalan_sub_eq_central_binom_div d
+            sum_range_sub, Nat.succ_eq_add_one]
+        rw [gosper_catalan_sub_eq_central_binom_div d]
+        norm_cast
 #align catalan_eq_central_binom_div catalan_eq_centralBinom_div
 
 theorem succ_mul_catalan_eq_centralBinom (n : ℕ) : (n + 1) * catalan n = n.centralBinom :=
