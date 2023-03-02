@@ -56,7 +56,7 @@ open Part Nat Nat.Upto
 
 namespace Fix
 
-variable (f : (∀ a, Part <| β a) →o ∀ a, Part <| β a)
+variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
 theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   induction i with
@@ -124,7 +124,7 @@ theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := 
 #align part.fix.exists_fix_le_approx Part.Fix.exists_fix_le_approx
 
 /-- The series of approximations of `fix f` (see `approx`) as a `Chain` -/
-def approxChain : Chain (∀ a, Part <| β a) :=
+def approxChain : Chain ((a : _) → Part <| β a) :=
   ⟨approx f, approx_mono f⟩
 #align part.fix.approx_chain Part.Fix.approxChain
 
@@ -144,7 +144,7 @@ open Fix
 
 variable {α : Type _}
 
-variable (f : (∀ a, Part <| β a) →o ∀ a, Part <| β a)
+variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
 open OmegaCompletePartialOrder
 
@@ -171,7 +171,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     apply approx_le_fix f
 #align part.fix_eq_ωSup Part.fix_eq_ωSup
 
-theorem fix_le {X : ∀ a, Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
+theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
   simp only [Fix.approxChain, OrderHom.coe_fun_mk]
@@ -241,7 +241,7 @@ variable (α β γ)
 
 /-- `sigma.curry` as a monotone function. -/
 @[simps]
-def monotoneCurry [∀ x y, Preorder <| γ x y] :
+def monotoneCurry [(x y : _) → Preorder <| γ x y] :
     (∀ x : Σa, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b where
   toFun := curry
   monotone' _x _y h a b := h ⟨a, b⟩
@@ -249,13 +249,13 @@ def monotoneCurry [∀ x y, Preorder <| γ x y] :
 
 /-- `sigma.uncurry` as a monotone function. -/
 @[simps]
-def monotoneUncurry [∀ x y, Preorder <| γ x y] :
+def monotoneUncurry [(x y : _) → Preorder <| γ x y] :
     (∀ (a) (b : β a), γ a b) →o ∀ x : Σa, β a, γ x.1 x.2 where
   toFun := uncurry
   monotone' _x _y h a := h a.1 a.2
 #align pi.monotone_uncurry Pi.monotoneUncurry
 
-variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
+variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 
 open OmegaCompletePartialOrder.Chain
 
@@ -277,14 +277,14 @@ end Monotone
 
 open Fix
 
-instance [Fix <| ∀ x : Sigma β, γ x.1 x.2] : Fix (∀ (x) (y : β x), γ x y) :=
+instance [Fix <| (x : Sigma β) → γ x.1 x.2] : Fix ((x : _) → (y : β x) → γ x y) :=
   ⟨fun f ↦ curry (fix <| uncurry ∘ f ∘ curry)⟩
 
 variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 
 section Curry
 
-variable {f : (∀ (x) (y : β x), γ x y) →o ∀ (x) (y : β x), γ x y}
+variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
 
 variable (hc : Continuous f)
 
@@ -295,8 +295,8 @@ theorem uncurry_curry_continuous :
 
 end Curry
 
-instance Pi.lawfulFix' [LawfulFix <| ∀ x : Sigma β, γ x.1 x.2] :
-    LawfulFix (∀ x y, γ x y) where
+instance Pi.lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
+    LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]
     conv =>
