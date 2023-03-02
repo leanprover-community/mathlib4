@@ -17,52 +17,52 @@ import Mathlib.Data.Fintype.Card
 /-!
 # Jordan-Hölder Theorem
 
-This file proves the Jordan Hölder theorem for a `jordan_holder_lattice`, a class also defined in
-this file. Examples of `jordan_holder_lattice` include `subgroup G` if `G` is a group, and
-`submodule R M` if `M` is an `R`-module. Using this approach the theorem need not be proved
+This file proves the Jordan Hölder theorem for a `JordanHolderLattice`, a class also defined in
+this file. Examples of `JordanHolderLattice` include `Subgroup G` if `G` is a group, and
+`Submodule R M` if `M` is an `R`-module. Using this approach the theorem need not be proved
 seperately for both groups and modules, the proof in this file can be applied to both.
 
 ## Main definitions
-The main definitions in this file are `jordan_holder_lattice` and `composition_series`,
-and the relation `equivalent` on `composition_series`
+The main definitions in this file are `JordanHolderLattice` and `CompositionSeries`,
+and the relation `Equivalent` on `CompositionSeries`
 
-A `jordan_holder_lattice` is the class for which the Jordan Hölder theorem is proved. A
-Jordan Hölder lattice is a lattice equipped with a notion of maximality, `is_maximal`, and a notion
-of isomorphism of pairs `iso`. In the example of subgroups of a group, `is_maximal H K` means that
-`H` is a maximal normal subgroup of `K`, and `iso (H₁, K₁) (H₂, K₂)` means that the quotient
-`H₁ / K₁` is isomorphic to the quotient `H₂ / K₂`. `iso` must be symmetric and transitive and must
-satisfy the second isomorphism theorem `iso (H, H ⊔ K) (H ⊓ K, K)`.
+A `JordanHolderLattice` is the class for which the Jordan Hölder theorem is proved. A
+Jordan Hölder lattice is a lattice equipped with a notion of maximality, `IsMaximal`, and a notion
+of isomorphism of pairs `Iso`. In the example of subgroups of a group, `IsMaximal H K` means that
+`H` is a maximal normal subgroup of `K`, and `Iso (H₁, K₁) (H₂, K₂)` means that the quotient
+`H₁ / K₁` is isomorphic to the quotient `H₂ / K₂`. `Iso` must be symmetric and transitive and must
+satisfy the second isomorphism theorem `Iso (H, H ⊔ K) (H ⊓ K, K)`.
 
-A `composition_series X` is a finite nonempty series of elements of the lattice `X` such that
-each element is maximal inside the next. The length of a `composition_series X` is
+A `CompositionSeries X` is a finite nonempty series of elements of the lattice `X` such that
+each element is maximal inside the next. The length of a `CompositionSeries X` is
 one less than the number of elements in the series. Note that there is no stipulation
 that a series start from the bottom of the lattice and finish at the top.
 For a composition series `s`, `s.top` is the largest element of the series,
 and `s.bot` is the least element.
 
-Two `composition_series X`, `s₁` and `s₂` are equivalent if there is a bijection
-`e : fin s₁.length ≃ fin s₂.length` such that for any `i`,
-`iso (s₁ i, s₁ i.succ) (s₂ (e i), s₂ (e i.succ))`
+Two `CompositionSeries X`, `s₁` and `s₂` are equivalent if there is a bijection
+`e : Fin s₁.length ≃ Fin s₂.length` such that for any `i`,
+`Iso (s₁ i, s₁ i.succ) (s₂ (e i), s₂ (e i.succ))`
 
 ## Main theorems
 
-The main theorem is `composition_series.jordan_holder`, which says that if two composition
+The main theorem is `CompositionSeries.jordan_holder`, which says that if two composition
 series have the same least element and the same largest element,
-then they are `equivalent`.
+then they are `Equivalent`.
 
 ## TODO
 
-Provide instances of `jordan_holder_lattice` for both submodules and subgroups, and potentially
+Provide instances of `JordanHolderLattice` for both submodules and subgroups, and potentially
 for modular lattices.
 
 It is not entirely clear how this should be done. Possibly there should be no global instances
-of `jordan_holder_lattice`, and the instances should only be defined locally in order to prove
+of `JordanHolderLattice`, and the instances should only be defined locally in order to prove
 the Jordan-Hölder theorem for modules/groups and the API should be transferred because many of the
 theorems in this file will have stronger versions for modules. There will also need to be an API for
 mapping composition series across homomorphisms. It is also probably possible to
-provide an instance of `jordan_holder_lattice` for any `modular_lattice`, and in this case the
+provide an instance of `JordanHolderLattice` for any `ModularLattice`, and in this case the
 Jordan-Hölder theorem will say that there is a well defined notion of length of a modular lattice.
-However an instance of `jordan_holder_lattice` for a modular lattice will not be able to contain
+However an instance of `JordanHolderLattice` for a modular lattice will not be able to contain
 the correct notion of isomorphism for modules, so a separate instance for modules will still be
 required and this will clash with the instance for modular lattices, and so at least one of these
 instances should not be a global instance.
@@ -73,13 +73,13 @@ universe u
 
 open Set
 
-/-- A `jordan_holder_lattice` is the class for which the Jordan Hölder theorem is proved. A
-Jordan Hölder lattice is a lattice equipped with a notion of maximality, `is_maximal`, and a notion
-of isomorphism of pairs `iso`. In the example of subgroups of a group, `is_maximal H K` means that
-`H` is a maximal normal subgroup of `K`, and `iso (H₁, K₁) (H₂, K₂)` means that the quotient
-`H₁ / K₁` is isomorphic to the quotient `H₂ / K₂`. `iso` must be symmetric and transitive and must
-satisfy the second isomorphism theorem `iso (H, H ⊔ K) (H ⊓ K, K)`.
-Examples include `subgroup G` if `G` is a group, and `submodule R M` if `M` is an `R`-module.
+/-- A `JordanHolderLattice` is the class for which the Jordan Hölder theorem is proved. A
+Jordan Hölder lattice is a lattice equipped with a notion of maximality, `IsMaximal`, and a notion
+of isomorphism of pairs `Iso`. In the example of subgroups of a group, `IsMaximal H K` means that
+`H` is a maximal normal subgroup of `K`, and `Iso (H₁, K₁) (H₂, K₂)` means that the quotient
+`H₁ / K₁` is isomorphic to the quotient `H₂ / K₂`. `Iso` must be symmetric and transitive and must
+satisfy the second isomorphism theorem `Iso (H, H ⊔ K) (H ⊓ K, K)`.
+Examples include `Subgroup G` if `G` is a group, and `Submodule R M` if `M` is an `R`-module.
 -/
 class JordanHolderLattice (X : Type u) [Lattice X] where
   IsMaximal : X → X → Prop
@@ -128,9 +128,9 @@ attribute [symm] iso_symm
 
 attribute [trans] iso_trans
 
-/-- A `composition_series X` is a finite nonempty series of elements of a
-`jordan_holder_lattice` such that each element is maximal inside the next. The length of a
-`composition_series X` is one less than the number of elements in the series.
+/-- A `CompositionSeries X` is a finite nonempty series of elements of a
+`JordanHolderLattice` such that each element is maximal inside the next. The length of a
+`CompositionSeries X` is one less than the number of elements in the series.
 Note that there is no stipulation that a series start from the bottom of the lattice and finish at
 the top. For a composition series `s`, `s.top` is the largest element of the series,
 and `s.bot` is the least element.
@@ -196,12 +196,12 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
   exact le_total i j
 #align composition_series.total CompositionSeries.total
 
-/-- The ordered `list X` of elements of a `composition_series X`. -/
+/-- The ordered `list X` of elements of a `CompositionSeries X`. -/
 def toList (s : CompositionSeries X) : List X :=
   List.ofFn s
 #align composition_series.to_list CompositionSeries.toList
 
-/-- Two `composition_series` are equal if they are the same length and
+/-- Two `CompositionSeries` are equal if they are the same length and
 have the same `i`th element for every `i` -/
 theorem ext_fun {s₁ s₂ : CompositionSeries X} (hl : s₁.length = s₂.length)
     (h : ∀ i, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ hl) i)) : s₁ = s₂ := by
@@ -267,7 +267,7 @@ theorem mem_toList {s : CompositionSeries X} {x : X} : x ∈ s.toList ↔ x ∈ 
   rw [toList, List.mem_ofFn, mem_def]
 #align composition_series.mem_to_list CompositionSeries.mem_toList
 
-/-- Make a `composition_series X` from the ordered list of its elements. -/
+/-- Make a `CompositionSeries X` from the ordered list of its elements. -/
 def ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) : CompositionSeries X
     where
   length := l.length - 1
@@ -311,7 +311,7 @@ theorem toList_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l
     rfl
 #align composition_series.to_list_of_list CompositionSeries.toList_ofList
 
-/-- Two `composition_series` are equal if they have the same elements. See also `ext_fun`. -/
+/-- Two `CompositionSeries` are equal if they have the same elements. See also `ext_fun`. -/
 @[ext]
 theorem ext {s₁ s₂ : CompositionSeries X} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=
   toList_injective <|
@@ -323,7 +323,7 @@ theorem ext {s₁ s₂ : CompositionSeries X} (h : ∀ x, x ∈ s₁ ↔ x ∈ s
       s₁.toList_sorted s₂.toList_sorted
 #align composition_series.ext CompositionSeries.ext
 
-/-- The largest element of a `composition_series` -/
+/-- The largest element of a `CompositionSeries` -/
 def top (s : CompositionSeries X) : X :=
   s (Fin.last _)
 #align composition_series.top CompositionSeries.top
@@ -342,7 +342,7 @@ theorem le_top_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : x ≤ s
   hi ▸ le_top _
 #align composition_series.le_top_of_mem CompositionSeries.le_top_of_mem
 
-/-- The smallest element of a `composition_series` -/
+/-- The smallest element of a `CompositionSeries` -/
 def bot (s : CompositionSeries X) : X :=
   s 0
 #align composition_series.bot CompositionSeries.bot
@@ -376,8 +376,8 @@ theorem forall_mem_eq_of_length_eq_zero {s : CompositionSeries X} (hs : s.length
   by_contradiction fun hxy => pos_iff_ne_zero.1 (length_pos_of_mem_ne hx hy hxy) hs
 #align composition_series.forall_mem_eq_of_length_eq_zero CompositionSeries.forall_mem_eq_of_length_eq_zero
 
-/-- Remove the largest element from a `composition_series`. If the series `s`
-has length zero, then `s.erase_top = s` -/
+/-- Remove the largest element from a `CompositionSeries`. If the series `s`
+has length zero, then `s.eraseTop = s` -/
 @[simps]
 def eraseTop (s : CompositionSeries X) : CompositionSeries X
     where
@@ -450,7 +450,7 @@ theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
 
 section FinLemmas
 
--- TODO: move these to `vec_notation` and rename them to better describe their statement
+-- TODO: move these to `VecNotation` and rename them to better describe their statement
 variable {α : Type _} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → α)
 
 theorem append_castAdd_aux (i : Fin m) :
@@ -541,7 +541,7 @@ theorem append_succ_natAdd {s₁ s₂ : CompositionSeries X} (h : s₁.top = s�
   rw [coe_append, append_succ_natAdd_aux _ _ i]
 #align composition_series.append_succ_nat_add CompositionSeries.append_succ_natAdd
 
-/-- Add an element to the top of a `composition_series` -/
+/-- Add an element to the top of a `CompositionSeries` -/
 @[simps length]
 def snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) : CompositionSeries X where
   length := s.length + 1
@@ -614,9 +614,9 @@ theorem snoc_eraseTop_top {s : CompositionSeries X} (h : IsMaximal s.eraseTop.to
   (eq_snoc_eraseTop h).symm
 #align composition_series.snoc_erase_top_top CompositionSeries.snoc_eraseTop_top
 
-/-- Two `composition_series X`, `s₁` and `s₂` are equivalent if there is a bijection
-`e : fin s₁.length ≃ fin s₂.length` such that for any `i`,
-`iso (s₁ i) (s₁ i.succ) (s₂ (e i), s₂ (e i.succ))` -/
+/-- Two `CompositionSeries X`, `s₁` and `s₂` are equivalent if there is a bijection
+`e : Fin s₁.length ≃ Fin s₂.length` such that for any `i`,
+`Iso (s₁ i) (s₁ i.succ) (s₂ (e i), s₂ (e i.succ))` -/
 def Equivalent (s₁ s₂ : CompositionSeries X) : Prop :=
   ∃ f : Fin s₁.length ≃ Fin s₂.length,
     ∀ i : Fin s₁.length, Iso (s₁ (Fin.castSucc i), s₁ i.succ)
@@ -744,7 +744,7 @@ theorem eq_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero {s₁ s₂ : Compositio
   simp [*]
 #align composition_series.eq_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero CompositionSeries.eq_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero
 
-/-- Given a `composition_series`, `s`, and an element `x`
+/-- Given a `CompositionSeries`, `s`, and an element `x`
 such that `x` is maximal inside `s.top` there is a series, `t`,
 such that `t.top = x`, `t.bot = s.bot`
 and `snoc t s.top _` is equivalent to `s`. -/
@@ -790,7 +790,7 @@ theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : Is
             (sup_eq_of_isMaximal (isMaximal_eraseTop_top h0s) hm hetx) (by rw [inf_comm, htt])
 #align composition_series.exists_top_eq_snoc_equivalant CompositionSeries.exists_top_eq_snoc_equivalant
 
-/-- The **Jordan-Hölder** theorem, stated for any `jordan_holder_lattice`.
+/-- The **Jordan-Hölder** theorem, stated for any `JordanHolderLattice`.
 If two composition series start and finish at the same place, they are equivalent. -/
 theorem jordan_holder (s₁ s₂ : CompositionSeries X) (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) :
     Equivalent s₁ s₂ := by
