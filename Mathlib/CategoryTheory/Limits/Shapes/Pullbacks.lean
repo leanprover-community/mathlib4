@@ -1169,23 +1169,23 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
 
 @[simp]
 theorem PullbackCone.fst_colimit_cocone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasLimit (cospan f g)] : PullbackCone.fst (Limit.cone (cospan f g)) = pullback.fst :=
+    [HasLimit (cospan f g)] : PullbackCone.fst (limit.cone (cospan f g)) = pullback.fst :=
   rfl
 #align category_theory.limits.pullback_cone.fst_colimit_cocone CategoryTheory.Limits.PullbackCone.fst_colimit_cocone
 
 @[simp]
 theorem PullbackCone.snd_colimit_cocone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasLimit (cospan f g)] : PullbackCone.snd (Limit.cone (cospan f g)) = pullback.snd := rfl
+    [HasLimit (cospan f g)] : PullbackCone.snd (limit.cone (cospan f g)) = pullback.snd := rfl
 #align category_theory.limits.pullback_cone.snd_colimit_cocone CategoryTheory.Limits.PullbackCone.snd_colimit_cocone
 
 -- Porting note: simp can prove this; removed simp
 theorem PushoutCocone.inl_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y)
-    [HasColimit (span f g)] : PushoutCocone.inl (Colimit.cocone (span f g)) = pushout.inl := rfl
+    [HasColimit (span f g)] : PushoutCocone.inl (colimit.cocone (span f g)) = pushout.inl := rfl
 #align category_theory.limits.pushout_cocone.inl_colimit_cocone CategoryTheory.Limits.PushoutCocone.inl_colimit_cocone
 
 -- Porting note: simp can prove this; removed simp
 theorem PushoutCocone.inr_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y) 
-    [HasColimit (span f g)] : PushoutCocone.inr (Colimit.cocone (span f g)) = pushout.inr := rfl
+    [HasColimit (span f g)] : PushoutCocone.inr (colimit.cocone (span f g)) = pushout.inr := rfl
 #align category_theory.limits.pushout_cocone.inr_colimit_cocone CategoryTheory.Limits.PushoutCocone.inr_colimit_cocone
 
 -- Porting note: simp can prove this and reassoced version; removed simp 
