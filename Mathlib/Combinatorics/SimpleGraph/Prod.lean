@@ -8,7 +8,7 @@ Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
 /-!
 # Graph products
@@ -69,8 +69,7 @@ theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b�
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem boxProd_neighborSet (x : α × β) :
-    (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 :=
-  by
+    (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
   simp only [mem_neighbor_set, Set.mem_union, box_prod_adj, Set.mem_prod, Set.mem_singleton_iff]
   simp only [eq_comm, and_comm']
@@ -196,22 +195,19 @@ protected theorem Preconnected.of_boxProd_right [Nonempty α] (h : (G □ H).Pre
     exact ⟨w.of_box_prod_right⟩
 #align simple_graph.preconnected.of_box_prod_right SimpleGraph.Preconnected.of_boxProd_right
 
-protected theorem Connected.boxProd (hG : G.Connected) (hH : H.Connected) : (G □ H).Connected :=
-  by
+protected theorem Connected.boxProd (hG : G.Connected) (hH : H.Connected) : (G □ H).Connected := by
   haveI := hG.nonempty
   haveI := hH.nonempty
   exact ⟨hG.preconnected.box_prod hH.preconnected⟩
 #align simple_graph.connected.box_prod SimpleGraph.Connected.boxProd
 
-protected theorem Connected.of_boxProd_left (h : (G □ H).Connected) : G.Connected :=
-  by
+protected theorem Connected.of_boxProd_left (h : (G □ H).Connected) : G.Connected := by
   haveI := (nonempty_prod.1 h.nonempty).1
   haveI := (nonempty_prod.1 h.nonempty).2
   exact ⟨h.preconnected.of_box_prod_left⟩
 #align simple_graph.connected.of_box_prod_left SimpleGraph.Connected.of_boxProd_left
 
-protected theorem Connected.of_boxProd_right (h : (G □ H).Connected) : H.Connected :=
-  by
+protected theorem Connected.of_boxProd_right (h : (G □ H).Connected) : H.Connected := by
   haveI := (nonempty_prod.1 h.nonempty).1
   haveI := (nonempty_prod.1 h.nonempty).2
   exact ⟨h.preconnected.of_box_prod_right⟩
@@ -242,8 +238,7 @@ theorem boxProd_neighborFinset (x : α × β) [Fintype (G.neighborSet x.1)]
     [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
       (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
-        (Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _) :=
-  by
+        (Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _) := by
   -- swap out the fintype instance for the canonical one
   letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
   refine' Eq.trans _ Finset.attach_map_val
@@ -251,8 +246,7 @@ theorem boxProd_neighborFinset (x : α × β) [Fintype (G.neighborSet x.1)]
 #align simple_graph.box_prod_neighbor_finset SimpleGraph.boxProd_neighborFinset
 
 theorem boxProd_degree (x : α × β) [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)]
-    [Fintype ((G □ H).neighborSet x)] : (G □ H).degree x = G.degree x.1 + H.degree x.2 :=
-  by
+    [Fintype ((G □ H).neighborSet x)] : (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, box_prod_neighbor_finset, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
 #align simple_graph.box_prod_degree SimpleGraph.boxProd_degree
