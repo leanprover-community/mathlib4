@@ -83,7 +83,7 @@ theorem isAcyclic_iff_forall_adj_isBridge :
 #align simple_graph.is_acyclic_iff_forall_adj_is_bridge SimpleGraph.isAcyclic_iff_forall_adj_isBridge
 
 theorem isAcyclic_iff_forall_edge_isBridge :
-    G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ (edgeSetEmbedding V G) → G.IsBridge e := by
+    G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ (G.edgeSet) → G.IsBridge e := by
   simp [isAcyclic_iff_forall_adj_isBridge, Sym2.forall]
 #align simple_graph.is_acyclic_iff_forall_edge_is_bridge SimpleGraph.isAcyclic_iff_forall_edge_isBridge
 

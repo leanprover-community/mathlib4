@@ -1177,8 +1177,7 @@ def Simps.apply (h : α ≃ᵐ β) : α → β := h
 def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 #align measurable_equiv.simps.symm_apply MeasurableEquiv.Simps.symm_apply
 
-initialize_simps_projections MeasurableEquiv (toEquiv_toFun → apply, toEquiv_invFun →
-  symm_apply)
+initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
 
 @[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := FunLike.ext' h
 #align measurable_equiv.ext MeasurableEquiv.ext

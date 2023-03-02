@@ -231,7 +231,7 @@ def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) : G'.coe.neighborSet v 
 def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
 #align simple_graph.subgraph.edge_set SimpleGraph.Subgraph.edgeSet
 
-theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ edgeSetEmbedding V G :=
+theorem edgeSet_subset (G' : Subgraph G) : G'.edgeSet ⊆ G.edgeSet :=
   Sym2.ind (fun _ _ ↦ G'.adj_sub)
 #align simple_graph.subgraph.edge_set_subset SimpleGraph.Subgraph.edgeSet_subset
 
@@ -404,7 +404,7 @@ theorem neighborSet_inf {H H' : G.Subgraph} (v : V) :
 #align simple_graph.subgraph.neighbor_set_inf SimpleGraph.Subgraph.neighborSet_inf
 
 @[simp]
-theorem edgeSet_top : (⊤ : Subgraph G).edgeSet = edgeSetEmbedding V G := rfl
+theorem edgeSet_top : (⊤ : Subgraph G).edgeSet = G.edgeSet := rfl
 #align simple_graph.subgraph.edge_set_top SimpleGraph.Subgraph.edgeSet_top
 
 @[simp]
