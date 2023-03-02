@@ -16,13 +16,13 @@ import Mathlib.Logic.Equiv.Option
 /-!
 # Derangements on types
 
-In this file we define `derangements α`, the set of derangements on a type `α`.
+In this file we define `Derangements α`, the set of derangements on a type `α`.
 
-We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
+We also define some equivalences involving various subtypes of `Perm α` and `Derangements α`:
 * `derangements_option_equiv_sigma_at_most_one_fixed_point`: An equivalence between
-  `derangements (Option α)` and the sigma-type `Σ a : α, {f : perm α // fixed_points f ⊆ a}`.
-* `derangements_recursion_equiv`: An equivalence between `derangements (Option α)` and the
-  sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α)` which is later
+  `Derangements (Option α)` and the sigma-type `Σ a : α, {f : perm α // fixed_points f ⊆ a}`.
+* `derangements_recursion_equiv`: An equivalence between `Derangements (Option α)` and the
+  sigma-type `Σ a : α, (Derangements (({a}ᶜ : Set α) : Type _) ⊕ Derangements α)` which is later
   used to inductively count the number of derangements.
 
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
@@ -44,7 +44,7 @@ theorem mem_Derangements_iff_fixedPoints_eq_empty {f : Perm α} :
   Set.eq_empty_iff_forall_not_mem.symm
 #align mem_derangements_iff_fixed_points_eq_empty mem_Derangements_iff_fixedPoints_eq_empty
 
-/-- If `α` is equivalent to `β`, then `derangements α` is equivalent to `derangements β`. -/
+/-- If `α` is equivalent to `β`, then `Derangements α` is equivalent to `Derangements β`. -/
 def Equiv.derangementsCongr (e : α ≃ β) : Derangements α ≃ Derangements β :=
   e.permCongr.subtypeEquiv fun {f} => e.forall_congr <| by
    intro b; simp only [ne_eq, permCongr_apply, symm_apply_apply, EmbeddingLike.apply_eq_iff_eq]
