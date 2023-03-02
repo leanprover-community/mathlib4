@@ -158,7 +158,7 @@ theorem step (s : CompositionSeries X) :
   s.step'
 #align composition_series.step CompositionSeries.step
 
-@[simp]
+-- @[simp] -- Porting note: dsimp can prove this
 theorem coeFn_mk (length : ℕ) (series step) :
     (@CompositionSeries.mk X _ _ length series step : Fin length.succ → X) = series :=
   rfl
