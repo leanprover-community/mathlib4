@@ -306,8 +306,7 @@ def Simps.apply (h : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂ :=
   h
 #align lie_hom.simps.apply LieHom.Simps.apply
 
--- Porting note: Does not work
--- initialize_simps_projections LieHom (toLinearMap_toFun → apply)
+initialize_simps_projections LieHom (toFun → apply)
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ⇑(f : L₁ →ₗ[R] L₂) = f :=

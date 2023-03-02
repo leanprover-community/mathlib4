@@ -54,10 +54,10 @@ section Order
 
 variable [Zero β] [Preorder β] {s t : Set α} {f g : α → β} {a : α} {l : Filter α}
 
-theorem indicator_eventuallyLe_indicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :
+theorem indicator_eventuallyLE_indicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :
     indicator s f ≤ᶠ[l] indicator s g :=
   (eventually_inf_principal.1 h).mono fun _ => indicator_rel_indicator le_rfl
-#align indicator_eventually_le_indicator indicator_eventuallyLe_indicator
+#align indicator_eventually_le_indicator indicator_eventuallyLE_indicator
 
 end Order
 
