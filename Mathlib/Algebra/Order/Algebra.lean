@@ -33,14 +33,18 @@ mixin.
 ordered algebra
 -/
 
--- Porting note: TODO -- this should not be necessary
-set_option synthInstance.etaExperiment true
-
 section OrderedAlgebra
 
 variable {R A : Type _} {a b : A} {r : R}
 
-variable [OrderedCommRing R] [OrderedRing A] [Algebra R A] [OrderedSMul R A]
+
+
+variable [OrderedCommRing R] [OrderedRing A] [Algebra R A]
+
+-- Porting note: added the following line, fails to be inferred otherwise. Probably lean4#2074
+instance : Module R A := Algebra.toModule
+
+variable [OrderedSMul R A]
 
 theorem algebraMap_monotone : Monotone (algebraMap R A) := fun a b h => by
   rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, ← sub_nonneg, ← sub_smul]
