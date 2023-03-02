@@ -426,13 +426,13 @@ def Sigma.reindex : sigmaObj (f ∘ ε) ≅ sigmaObj f :=
 theorem Sigma.ι_reindex_hom (b : β) :
     Sigma.ι (f ∘ ε) b ≫ (Sigma.reindex ε f).hom = Sigma.ι f (ε b) := by
   dsimp [Sigma.reindex]
-  sorry
-  --simp only [has_colimit.iso_of_equivalence_hom_π, equivalence.equivalence_mk'_unit,
-  --  discrete.equivalence_unit_iso, discrete.nat_iso_hom_app, eq_to_iso.hom, eq_to_hom_map,
-  --  discrete.nat_iso_inv_app]
-  --dsimp
-  --simp [eq_to_hom_map, ←
-  --  colimit.w (discrete.functor f) (discrete.eq_to_hom' (ε.apply_symm_apply (ε b)))]
+  simp only [HasColimit.isoOfEquivalence_hom_π, Functor.id_obj, Discrete.functor_obj,
+    Function.comp_apply, Discrete.equivalence_functor, Discrete.equivalence_inverse,
+    Functor.comp_obj, Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
+  have h := colimit.w (Discrete.functor f) (Discrete.eqToHom' (ε.apply_symm_apply (ε b)))
+  simp only [Discrete.functor_obj] at h
+  erw [← h, eqToHom_map, eqToHom_map, eqToHom_trans_assoc]
+  all_goals { simp }
 #align category_theory.limits.sigma.ι_reindex_hom CategoryTheory.Limits.Sigma.ι_reindex_hom
 
 @[reassoc (attr := simp)]
