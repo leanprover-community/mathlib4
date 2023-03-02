@@ -80,9 +80,10 @@ variable {A : Type v} [Semiring A] [Algebra R A]
 variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
-instance : One (Submodule R A) :=
+instance one : One (Submodule R A) :=
 -- porting note: `f.range` notation doesn't work
   ⟨LinearMap.range (Algebra.linearMap R A)⟩
+#align submodule.has_one Submodule.one
 
 theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap R A) :=
   rfl
@@ -159,8 +160,9 @@ theorem comap_unop_one :
 
 /-- Multiplication of sub-R-modules of an R-algebra A. The submodule `M * N` is the
 smallest R-submodule of `A` containing the elements `m * n` for `m ∈ M` and `n ∈ N`. -/
-instance : Mul (Submodule R A) :=
+instance mul : Mul (Submodule R A) :=
   ⟨Submodule.map₂ <| LinearMap.mul R A⟩
+#align submodule.has_mul Submodule.mul
 
 theorem mul_mem_mul (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
   apply_mem_map₂ _ hm hn
@@ -375,19 +377,21 @@ theorem mem_span_mul_finite_of_mem_mul {P Q : Submodule R A} {x : A} (hx : x ∈
 variable {M N P}
 
 theorem mem_span_singleton_mul {x y : A} : x ∈ span R {y} * P ↔ ∃ z ∈ P, y * z = x := by
-  simp_rw [(· * ·), map₂_span_singleton_eq_map, exists_prop]
+  --porting note: need both `*` and `Mul.mul`
+  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map, exists_prop]
   rfl
 #align submodule.mem_span_singleton_mul Submodule.mem_span_singleton_mul
 
 theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P, z * y = x := by
-  simp_rw [(· * ·), map₂_span_singleton_eq_map_flip, exists_prop]
+  --porting note: need both `*` and `Mul.mul`
+  simp_rw [(· * ·), Mul.mul, map₂_span_singleton_eq_map_flip, exists_prop]
   rfl
 #align submodule.mem_mul_span_singleton Submodule.mem_mul_span_singleton
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance : IdemSemiring (Submodule R A) :=
-  { toAddSubmonoid_injective.Semigroup _ fun m n : Submodule R A => mul_toAddSubmonoid m n,
-    AddMonoidWithOne.unary, Submodule.pointwiseAddCommMonoid, Submodule.hasOne, Submodule.hasMul,
+  { toAddSubmonoid_injective.semigroup _ fun m n : Submodule R A => mul_toAddSubmonoid m n,
+    AddMonoidWithOne.unary, Submodule.pointwiseAddCommMonoid, Submodule.one, Submodule.mul,
     (by infer_instance : OrderBot (Submodule R A)),
     (by infer_instance :
       Lattice (Submodule R A)) with
