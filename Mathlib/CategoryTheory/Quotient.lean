@@ -37,9 +37,6 @@ namespace CategoryTheory
 
 variable {C : Type _} [Category C] (r : HomRel C)
 
--- Porting Note: `include r` is not allowed
--- include r
-
 /-- A `HomRel` is a congruence when it's an equivalence on every hom-set, and it can be composed
 from left and right. -/
 class Congruence : Prop where
@@ -168,9 +165,6 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
   (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
-
--- porting note: commented out `include`
--- include H
 
 /-- The induced functor on the quotient category. -/
 @[simps]
