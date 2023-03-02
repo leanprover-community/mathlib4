@@ -50,22 +50,24 @@ topology are defined elsewhere; see `analysis.normed_space.add_torsor` and
 
 open Affine
 
+set_option synthInstance.etaExperiment true
+
 /-- An `affine_map k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
-  [AddCommGroup V1] [Module k V1] [affine_space V1 P1] [AddCommGroup V2] [Module k V2]
-  [affine_space V2 P2] where
+  [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+  [AffineSpace V2 P2] where
   toFun : P1 → P2
   linear : V1 →ₗ[k] V2
-  map_vadd' : ∀ (p : P1) (v : V1), to_fun (v +ᵥ p) = linear v +ᵥ to_fun p
+  map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 #align affine_map AffineMap
 
 -- mathport name: «expr →ᵃ[ ] »
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
 instance (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
-    [AddCommGroup V1] [Module k V1] [affine_space V1 P1] [AddCommGroup V2] [Module k V2]
-    [affine_space V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
+    [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+    [AffineSpace V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
   ⟨AffineMap.toFun⟩
 
 namespace LinearMap
@@ -96,10 +98,8 @@ namespace AffineMap
 
 variable {k : Type _} {V1 : Type _} {P1 : Type _} {V2 : Type _} {P2 : Type _} {V3 : Type _}
   {P3 : Type _} {V4 : Type _} {P4 : Type _} [Ring k] [AddCommGroup V1] [Module k V1]
-  [affine_space V1 P1] [AddCommGroup V2] [Module k V2] [affine_space V2 P2] [AddCommGroup V3]
-  [Module k V3] [affine_space V3 P3] [AddCommGroup V4] [Module k V4] [affine_space V4 P4]
-
-include V1 V2
+  [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2] [AffineSpace V2 P2] [AddCommGroup V3]
+  [Module k V3] [AffineSpace V3 P3] [AddCommGroup V4] [Module k V4] [AffineSpace V4 P4]
 
 /-- Constructing an affine map and coercing back to a function
 produces the same map. -/
@@ -137,13 +137,13 @@ theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g := by
   rcases g with ⟨g, g_linear, g_add⟩
   obtain rfl : f = g := funext h
   congr with v
-  cases' (AddTorsor.nonempty : Nonempty P1) with p
+  cases' (AddTorsor.Nonempty : Nonempty P1) with p
   apply vadd_right_cancel (f p)
   erw [← f_add, ← g_add]
 #align affine_map.ext AffineMap.ext
 
 theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
-  ⟨fun h p => h ▸ rfl, ext⟩
+  ⟨fun h _ => h ▸ rfl, ext⟩
 #align affine_map.ext_iff AffineMap.ext_iff
 
 theorem coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) coeFn := fun f g H =>
@@ -165,7 +165,7 @@ def const (p : P2) : P1 →ᵃ[k] P2
     where
   toFun := Function.const P1 p
   linear := 0
-  map_vadd' p v := by simp
+  map_vadd' _ _ := by simp
 #align affine_map.const AffineMap.const
 
 @[simp]
@@ -192,7 +192,7 @@ theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) : f.linear = 0 ↔
 #align affine_map.linear_eq_zero_iff_exists_const AffineMap.linear_eq_zero_iff_exists_const
 
 instance nonempty : Nonempty (P1 →ᵃ[k] P2) :=
-  (AddTorsor.nonempty : Nonempty P2).elim fun p => ⟨const k P1 p⟩
+  (AddTorsor.Nonempty : Nonempty P2).elim fun p => ⟨const k P1 p⟩
 #align affine_map.nonempty AffineMap.nonempty
 
 /-- Construct an affine map by verifying the relation between the map and its linear part at one
@@ -356,18 +356,16 @@ theorem snd_linear : (snd : P1 × P2 →ᵃ[k] P2).linear = LinearMap.snd k V1 V
 
 variable (k P1)
 
-omit V2
-
 /-- Identity map as an affine map. -/
 def id : P1 →ᵃ[k] P1 where
-  toFun := id
+  toFun := _root_.id
   linear := LinearMap.id
-  map_vadd' p v := rfl
+  map_vadd' _ _ := rfl
 #align affine_map.id AffineMap.id
 
 /-- The identity affine map acts as the identity. -/
 @[simp]
-theorem coe_id : ⇑(id k P1) = id :=
+theorem coe_id : ⇑(id k P1) = _root_.id :=
   rfl
 #align affine_map.coe_id AffineMap.coe_id
 
@@ -387,8 +385,6 @@ variable {k P1}
 
 instance : Inhabited (P1 →ᵃ[k] P1) :=
   ⟨id k P1⟩
-
-include V2 V3
 
 /-- Composition of affine maps. -/
 def comp (f : P2 →ᵃ[k] P3) (g : P1 →ᵃ[k] P2) : P1 →ᵃ[k] P3
@@ -412,8 +408,6 @@ theorem comp_apply (f : P2 →ᵃ[k] P3) (g : P1 →ᵃ[k] P2) (p : P1) : f.comp
   rfl
 #align affine_map.comp_apply AffineMap.comp_apply
 
-omit V3
-
 @[simp]
 theorem comp_id (f : P1 →ᵃ[k] P2) : f.comp (id k P1) = f :=
   ext fun p => rfl
@@ -424,14 +418,10 @@ theorem id_comp (f : P1 →ᵃ[k] P2) : (id k P2).comp f = f :=
   ext fun p => rfl
 #align affine_map.id_comp AffineMap.id_comp
 
-include V3 V4
-
 theorem comp_assoc (f₃₄ : P3 →ᵃ[k] P4) (f₂₃ : P2 →ᵃ[k] P3) (f₁₂ : P1 →ᵃ[k] P2) :
     (f₃₄.comp f₂₃).comp f₁₂ = f₃₄.comp (f₂₃.comp f₁₂) :=
   rfl
 #align affine_map.comp_assoc AffineMap.comp_assoc
-
-omit V2 V3 V4
 
 instance : Monoid (P1 →ᵃ[k] P1) where
   one := id k P1
@@ -458,8 +448,6 @@ def linearHom : (P1 →ᵃ[k] P1) →* V1 →ₗ[k] V1
   map_one' := rfl
   map_mul' _ _ := rfl
 #align affine_map.linear_hom AffineMap.linearHom
-
-include V2
 
 @[simp]
 theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
@@ -669,7 +657,7 @@ theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = f.linear + fun z => f 0
   calc
     f x = f.linear x +ᵥ f 0 := by simp [← f.map_vadd]
     _ = (f.linear.to_fun + fun z : V1 => f 0) x := by simp
-    
+
 #align affine_map.decomp AffineMap.decomp
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
@@ -885,4 +873,3 @@ theorem Convex.combo_affine_apply {x y : E} {a b : 𝕜} {f : E →ᵃ[𝕜] F} 
 #align convex.combo_affine_apply Convex.combo_affine_apply
 
 end
-
