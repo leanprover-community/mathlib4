@@ -13,6 +13,7 @@ import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
+import Mathlib.Data.Tree
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Find
@@ -168,12 +169,11 @@ namespace Tree
 
 open Tree
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
 @[reducible]
 def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
-  (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
+  (a ×ᶠ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 #align tree.pairwise_node Tree.pairwiseNode
 
 /-- A finset of all trees with `n` nodes. See `mem_trees_of_nodes_eq` -/
