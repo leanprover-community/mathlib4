@@ -8,19 +8,20 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Rbtree.Init
+import Lean.Data.RBTree
 import Mathlib.Data.Num.Basic
 import Mathlib.Order.Basic
+import Mathlib.Init.Data.Ordering.Basic
 
 /-!
 # Binary tree
 
 Provides binary tree storage for values of any type, with O(lg n) retrieval.
-See also `data.rbtree` for red-black trees - this version allows more operations
+See also `Lean.Data.RBTree` for red-black trees - this version allows more operations
 to be defined and is better suited for in-kernel computation.
 
-We also specialize for `tree unit`, which is a binary tree without any
-additional data. We provide the notation `a △ b` for making a `tree unit` with children
+We also specialize for `Tree Unit`, which is a binary tree without any
+additional data. We provide the notation `a △ b` for making a `Tree Unit` with children
 `a` and `b`.
 
 ## References
@@ -31,9 +32,10 @@ additional data. We provide the notation `a △ b` for making a `tree unit` with
 
 /-- A binary tree with values stored in non-leaf nodes. -/
 inductive Tree.{u} (α : Type u) : Type u
-  | nil : Tree
-  | node : α → Tree → Tree → Tree
-  deriving has_reflect, DecidableEq
+  | nil : Tree α
+  | node : α → Tree α → Tree α → Tree α
+  deriving DecidableEq
+-- Porting note: Removed `deriving has_reflect`.
 #align tree Tree
 
 namespace Tree
@@ -42,24 +44,28 @@ universe u
 
 variable {α : Type u}
 
-/-- Construct a string representation of a tree. Provides a `has_repr` instance. -/
+/-- Construct a string representation of a tree. Provides a `hasRepr` instance. -/
 def repr [Repr α] : Tree α → String
   | nil => "nil"
-  | node a t1 t2 => "tree.node " ++ Repr.repr a ++ " (" ++ repr t1 ++ ") (" ++ repr t2 ++ ")"
+  | node a t1 t2 => "Tree.node " ++ reprStr a ++ " (" ++ repr t1 ++ ") (" ++ repr t2 ++ ")"
 #align tree.repr Tree.repr
 
 instance [Repr α] : Repr (Tree α) :=
-  ⟨Tree.repr⟩
+  ⟨fun s _ => Tree.repr s⟩
 
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
 
+open Lean (RBNode)
+
+-- Porting note: In Lean 4 RBNode's definition is changed. In Lean 3 RBNode takes a value only.
+--               In Lean 4 it takes a key and a value (that map depend on a key).
+--               Here we use the key only and discard the value.
 /-- Makes a `tree α` out of a red-black tree. -/
-def ofRbnode : Rbnode α → Tree α
-  | Rbnode.leaf => nil
-  | Rbnode.red_node l a r => node a (of_rbnode l) (of_rbnode r)
-  | Rbnode.black_node l a r => node a (of_rbnode l) (of_rbnode r)
-#align tree.of_rbnode Tree.ofRbnode
+def ofRBNode : RBNode α β → Tree α
+  | RBNode.leaf => nil
+  | RBNode.node _color l key _value r => node key (ofRBNode l) (ofRBNode r)
+#align tree.of_rbnode Tree.ofRBNode
 
 /-- Finds the index of an element in the tree assuming the tree has been
 constructed according to the provided decidable order on its elements.
@@ -69,40 +75,34 @@ def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → O
   | nil => none
   | node a t₁ t₂ =>
     match cmpUsing lt x a with
-    | Ordering.lt => PosNum.bit0 <$> index_of t₁
+    | Ordering.lt => PosNum.bit0 <$> indexOf lt x t₁
     | Ordering.eq => some PosNum.one
-    | Ordering.gt => PosNum.bit1 <$> index_of t₂
+    | Ordering.gt => PosNum.bit1 <$> indexOf lt x t₂
 #align tree.index_of Tree.indexOf
 
-/-- Retrieves an element uniquely determined by a `pos_num` from the tree,
+/-- Retrieves an element uniquely determined by a `PosNum` from the tree,
 taking the following path to get to the element:
 - `bit0` - go to left child
 - `bit1` - go to right child
-- `pos_num.one` - retrieve from here -/
+- `PosNum.one` - retrieve from here -/
 def get : PosNum → Tree α → Option α
   | _, nil => none
-  | PosNum.one, node a t₁ t₂ => some a
-  | PosNum.bit0 n, node a t₁ t₂ => t₁.get n
-  | PosNum.bit1 n, node a t₁ t₂ => t₂.get n
+  | PosNum.one, node a _t₁ _t₂ => some a
+  | PosNum.bit0 n, node _a t₁ _t₂ => t₁.get n
+  | PosNum.bit1 n, node _a _t₁ t₂ => t₂.get n
 #align tree.get Tree.get
 
 /-- Retrieves an element from the tree, or the provided default value
-if the index is invalid. See `tree.get`. -/
+if the index is invalid. See `Tree.get`. -/
 def getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
   (t.get n).getD v
 #align tree.get_or_else Tree.getOrElse
 
-/- warning: tree.map -> Tree.map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}}, (α -> β) -> (Tree.{u1} α) -> (Tree.{u2} β)
-but is expected to have type
-  forall {α : Type.{u2}} {β : Type.{u1}}, (α -> β) -> (Tree.{u2} α) -> (Tree.{u1} β)
-Case conversion may be inaccurate. Consider using '#align tree.map Tree.mapₓ'. -/
 /-- Apply a function to each value in the tree.  This is the `map` function for the `tree` functor.
 TODO: implement `traversable tree`. -/
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil
-  | node a l r => node (f a) (map l) (map r)
+  | node a l r => node (f a) (map f l) (map f r)
 #align tree.map Tree.map
 
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
@@ -131,48 +131,50 @@ theorem numLeaves_eq_numNodes_succ (x : Tree α) : x.numLeaves = x.numNodes + 1 
 #align tree.num_leaves_eq_num_nodes_succ Tree.numLeaves_eq_numNodes_succ
 
 theorem numLeaves_pos (x : Tree α) : 0 < x.numLeaves := by
-  rw [num_leaves_eq_num_nodes_succ]
-  exact x.num_nodes.zero_lt_succ
+  rw [numLeaves_eq_numNodes_succ]
+  exact x.numNodes.zero_lt_succ
 #align tree.num_leaves_pos Tree.numLeaves_pos
 
 theorem height_le_numNodes : ∀ x : Tree α, x.height ≤ x.numNodes
   | nil => le_rfl
   | node _ a b =>
     Nat.succ_le_succ
-      (max_le (trans a.height_le_numNodes <| a.numNodes.le_add_right _)
-        (trans b.height_le_numNodes <| b.numNodes.le_add_left _))
+      (max_le (_root_.trans a.height_le_numNodes <| a.numNodes.le_add_right _)
+        (_root_.trans b.height_le_numNodes <| b.numNodes.le_add_left _))
 #align tree.height_le_num_nodes Tree.height_le_numNodes
 
 /-- The left child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
 def left : Tree α → Tree α
   | nil => nil
-  | node _ l r => l
+  | node _ l _r => l
 #align tree.left Tree.left
 
 /-- The right child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
 def right : Tree α → Tree α
   | nil => nil
-  | node _ l r => r
+  | node _ _l r => r
 #align tree.right Tree.right
 
 -- mathport name: «expr △ »
--- Notation for making a node with `unit` data
+-- Notation for making a node with `Unit` data
 scoped infixr:65 " △ " => Tree.node ()
 
-/-- Recursion on `tree unit`; allows for a better `induction` which does not have to worry
-  about the element of type `α = unit` -/
+/-- Recursion on `Tree Unit`; allows for a better `induction` which does not have to worry
+  about the element of type `α = Unit` -/
 @[elab_as_elim]
 def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil)
-    (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
-  t.recOn base fun u => u.recOn ind
+    (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t := by
+  -- Porting note: code generator does not support recursor 'Tree.recOn'
+  match t with
+  | nil => exact base
+  | node _a l r => exact ind l r (unitRecOn l base ind) (unitRecOn r base ind)
 #align tree.unit_rec_on Tree.unitRecOn
 
-theorem left_node_right_eq_self : ∀ {x : Tree Unit} (hx : x ≠ nil), x.left △ x.right = x
+theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
-  | a △ b, _ => rfl
+  | node a l r, _ => rfl
 #align tree.left_node_right_eq_self Tree.left_node_right_eq_self
 
 end Tree
-
