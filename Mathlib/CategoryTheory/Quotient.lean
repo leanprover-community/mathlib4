@@ -31,7 +31,7 @@ def HomRel (C) [Quiver C] :=
 
 -- Porting Note: `deriving Inhabited` was not able to deduce this typeclass
 instance (C) [Quiver C] : Inhabited (HomRel C) where
-  default := fun _ _ _ _ => PUnit
+  default := fun _ _ _ _ ↦ PUnit
 
 namespace CategoryTheory
 
@@ -91,12 +91,12 @@ instance (a : Quotient r) : Inhabited (Hom r a a) :=
   ⟨Quot.mk _ (𝟙 a.as)⟩
 
 /-- Composition in the quotient category. -/
-def comp ⦃a b c : Quotient r⦄ : Hom r a b → Hom r b c → Hom r a c := fun hf hg =>
+def comp ⦃a b c : Quotient r⦄ : Hom r a b → Hom r b c → Hom r a c := fun hf hg ↦
   Quot.liftOn hf
-    (fun f =>
-      Quot.liftOn hg (fun g => Quot.mk _ (f ≫ g)) fun g₁ g₂ h =>
+    (fun f ↦
+      Quot.liftOn hg (fun g ↦ Quot.mk _ (f ≫ g)) fun g₁ g₂ h ↦
         Quot.sound <| comp_left r f g₁ g₂ h)
-    fun f₁ f₂ h => Quot.inductionOn hg fun g => Quot.sound <| comp_right r g f₁ f₂ h
+    fun f₁ f₂ h ↦ Quot.inductionOn hg fun g ↦ Quot.sound <| comp_right r g f₁ f₂ h
 #align category_theory.quotient.comp CategoryTheory.Quotient.comp
 
 @[simp]
@@ -119,10 +119,10 @@ instance category : Category (Quotient r) where
 @[simps]
 def functor : C ⥤ Quotient r where
   obj a := { as := a }
-  map := @fun _ _ f => Quot.mk _ f
+  map := @fun _ _ f ↦ Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance : Full (functor r) where preimage := @fun X Y f => Quot.out f
+noncomputable instance : Full (functor r) where preimage := @fun X Y f ↦ Quot.out f
 
 instance : EssSurj (functor r)
     where mem_essImage Y :=
@@ -170,8 +170,8 @@ variable {D : Type _} [Category D] (F : C ⥤ D)
 @[simps]
 def lift : Quotient r ⥤ D where
   obj a := F.obj a.as
-  map := @fun a b hf =>
-    Quot.liftOn hf (fun f => F.map f)
+  map := @fun a b hf ↦
+    Quot.liftOn hf (fun f ↦ F.map f)
       (by
         rintro _ _ ⟨_, _, _, _, h⟩
         simp [H _ _ _ _ h])
@@ -199,14 +199,14 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
     congr
   · rintro _ _ f
     dsimp [lift, Functor]
-    refine Quot.inductionOn f (fun _ => ?_) -- porting note: this line was originally an `apply`
+    refine Quot.inductionOn f (fun _ ↦ ?_) -- porting note: this line was originally an `apply`
     simp only [Quot.liftOn_mk, Functor.comp_map]
     congr
 #align category_theory.quotient.lift_unique CategoryTheory.Quotient.lift_unique
 
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun X ↦ Iso.refl _) (by aesop_cat)
 #align category_theory.quotient.lift.is_lift CategoryTheory.Quotient.lift.isLift
 
 @[simp]
