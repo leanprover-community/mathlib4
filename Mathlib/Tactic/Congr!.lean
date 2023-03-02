@@ -51,19 +51,21 @@ def Lean.MVarId.userCongr? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
 Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
 If successful, returns the new goal, and otherwise returns the original `MVarId`.
 -/
-def Lean.MVarId.iffOfEq (mvarId : MVarId) : MetaM MVarId :=
-  mvarId.withContext do
-    let some [mvarId] ← observing? do mvarId.apply (mkConst `iff_of_eq []) | return mvarId
+def Lean.MVarId.iffOfEq (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    let [mvarId] ← mvarId.apply (mkConst `iff_of_eq []) | failure
     return mvarId
+  return res.getD mvarId
 
 /--
 Try to convert an `Eq` into an `Iff` by applying `propext`.
 If successful, then returns then new goal, otherwise returns the original `MVarId`.
 -/
-def Lean.MVarId.propext (mvarId : MVarId) : MetaM MVarId :=
-  mvarId.withContext do
-    let some [mvarId] ← observing? do mvarId.apply (mkConst ``propext []) | return mvarId
+def Lean.MVarId.propext (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    let [mvarId] ← mvarId.apply (mkConst `propext []) | failure
     return mvarId
+  return res.getD mvarId
 
 /-- Helper theorem for `LEan.MVar.liftReflToEq`. -/
 theorem Lean.MVarId.rel_of_eq_and_refl {R : α → α → Prop} (hxy : x = y) (h : R x x) :
@@ -99,14 +101,16 @@ def Lean.MVarId.liftReflToEq (mvarId : MVarId) : MetaM MVarId := do
 Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
 -/
 def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool := do
-  let some [] ← observing? do mvarId.apply (mkConst ``Subsingleton.elim [← mkFreshLevelMVar])
-    | return false
-  return true
+  let res ← observing? do
+    let [] ← mvarId.apply (mkConst ``Subsingleton.elim [← mkFreshLevelMVar]) | failure
+    return true
+  return res.getD false
 
 def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool := do
-  let some [] ← observing? do mvarId.apply (mkConst `proof_irrel_heq [])
-    | return false
-  return true
+  let res ← observing? do
+    let [] ← mvarId.apply (mkConst `proof_irrel_heq []) | failure
+    return true
+  return res.getD false
 
 /--
 Try to apply `pi_congr`. This is similar to `Lean.MVar.congrImplies?`.
@@ -122,7 +126,7 @@ doing congruence we don't want to apply `funext` unnecessarily.
 "Obvious" means that the type of the terms being equated is a pi type.
 -/
 def Lean.MVarId.obviousFunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
-  observing? do
+  mvarId.withContext <| observing? do
     let tgt ← mvarId.getType'
     let some (_, lhs, rhs) := tgt.eq? | failure
     if not lhs.isLambda && not rhs.isLambda then failure
@@ -134,7 +138,7 @@ Like `Lean.MVarId.obviousFunext?`, we only do so if at least one side of the `HE
 lambda. This is to prevent unfolding of things like `Set`.
 -/
 def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
-  observing? do
+  mvarId.withContext <| observing? do
     let tgt ← mvarId.getType'
     let some (_, _, lhs, rhs) := tgt.heq? | failure
     if not lhs.isLambda && not rhs.isLambda then failure
@@ -178,7 +182,8 @@ def Lean.MVarId.postCongr! (mvarId : MVarId) : MetaM (Option MVarId) := do
   if ← mvarId.assumptionCore then return none
   return some mvarId
 
-/-- A more insistent version of `Lean.MVarId.congrN`. -/
+/-- A more insistent version of `Lean.MVarId.congrN`.
+See the documentation on the `congr!` syntax. -/
 def Lean.MVarId.congrN! (mvarId : MVarId) (depth : Nat := 1000000) : MetaM (List MVarId) := do
   let (_, s) ← go depth mvarId |>.run #[]
   return s.toList
@@ -196,13 +201,37 @@ where
         mvarIds.forM (go n)
 
 /--
-Apply congruence (recursively) to goals that have some notion of a left-hand side and a
-right-hand side, for example `⊢ f as = f bs` or `⊢ R (f as) (f bs)` where `R` is a reflexive
-relation. It also applies functional extensionality and propositional extensionality lemmas, as
-well as using `Subsingleton.elim` and `assumption` to dispatch goals.
+Equates pieces of the left-hand side of a goal to corresponding pieces of the right-hand side by
+recursively applying congruence lemmas. For example, with `⊢ f as = g bs` we could get
+two goals `⊢ f = g` and `⊢ as = bs`.
 
-In general, `congr!` aims be able to break up equalities to navigate into arbitrary subterms.
-Everything `simp` is able to rewrite should be doable using `congr!` and `rw`.
+The `congr!` tactic is similar to `congr` but is more insistent in trying to equate left-hand sides
+to right-hand sides of goals. Here is a list of things it can try:
+
+- If `R` in `⊢ R x y` is a reflexive relation, it will convert the goal to `⊢ x = y` if possible.
+  The list of reflexive relations is maintained using the `@[refl]` attribute.
+  As a special case, `⊢ p ↔ q` is converted to `⊢ p = q` during congruence processing and then
+  returned to `⊢ p ↔ q` form at the end.
+
+- If there is a user congruence lemma associated to the goal (for instance, a `@[congr]`-tagged
+  lemma applying to `⊢ List.map f xs = List.map g ys`), then it will use that.
+
+- Like `congr`, it makes use of the `Eq` and `HEq` congruence lemma generator internally used
+  by `simp`. Hence, one can equate any two pieces of an expression that is accessible to `simp`.
+
+- It uses `implies_congr` and `pi_congr` to do congruences of pi types.
+
+- Before applying congruences, it will run the `intros` tactic automatically.
+  The introduced variables can be given names using the `rename_i` tactic as needed.
+  This helps when user congruence lemmas are applied, since they often provide
+  additional hypotheses.
+
+- When there is an equality between functions, so long as at least one is obviously a lambda, we
+  apply `funext` or `Function.hfunext`, which allows for congruence of lambda bodies.
+
+In addition, `congr!` tries to dispatch goals using a few strategies, including checking
+definitional equality, trying to apply `Subsingleton.elim` or `proof_irrel_heq`, and using the
+`assumption` tactic.
 
 The optional parameter is the depth of the recursive applications.
 This is useful when `congr!` is too aggressive in breaking down the goal.

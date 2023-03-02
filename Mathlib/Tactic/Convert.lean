@@ -36,7 +36,8 @@ The `exact e` and `refine e` tactics require a term `e` whose type is
 definitionally equal to the goal. `convert e` is similar to `refine e`,
 but the type of `e` is not required to exactly match the
 goal. Instead, new goals are created for differences between the type
-of `e` and the goal. For example, in the proof state
+of `e` and the goal using the same strategies as the `congr!` tactic.
+For example, in the proof state
 
 ```lean
 n : ℕ,
@@ -59,9 +60,8 @@ def p (n : ℕ) := true
 example (h : p 0) : p 1 := by exact h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
-
-If `x y : t`, and an instance `Subsingleton t` is in scope, then any goals of the form
-`x = y` are solved automatically.
+Limiting the depth of recursion can help with this. For example, `convert h using 1` will work
+in this case.
 
 The syntax `convert ← e` will reverse the direction of the new goals
 (producing `⊢ 2 * n = n + n` in this example).
@@ -69,8 +69,12 @@ The syntax `convert ← e` will reverse the direction of the new goals
 Internally, `convert e` works by creating a new goal asserting that
 the goal equals the type of `e`, then simplifying it using
 `congr!`. The syntax `convert e using n` can be used to control the
-depth of matching (like `congr! n`). In the example, `convert e using
-1` would produce a new goal `⊢ n + n + 1 = 2 * n + 1`.
+depth of matching (like `congr! n`). In the example, `convert e using 1`
+would produce a new goal `⊢ n + n + 1 = 2 * n + 1`.
+
+Refer to the `congr!` tactic to understand the congruence operations. One of its many
+features is that if `x y : t` and an instance `Subsingleton t` is in scope,
+then any goals of the form `x = y` are solved automatically.
 -/
 syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
 

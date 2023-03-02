@@ -1098,11 +1098,14 @@ theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ 
   rfl
 #align equiv.subtype_equiv_refl Equiv.subtypeEquiv_refl
 
+-- Porting note: without giving explicit universe variables, `convert` specializes `β` to `Prop`.
 @[simp]
-theorem subtypeEquiv_symm {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a : α, p a ↔ q (e a)) :
+theorem subtypeEquiv_symm {α : Sort u} {β : Sort v} {p : α → Prop} {q : β → Prop}
+    (e : α ≃ β) (h : ∀ a : α, p a ↔ q (e a)) :
     (e.subtypeEquiv h).symm =
       e.symm.subtypeEquiv fun a => by
-        convert (h <| e.symm a).symm :=
+        convert (h <| e.symm a).symm
+        exact (e.apply_symm_apply a).symm :=
   rfl
 #align equiv.subtype_equiv_symm Equiv.subtypeEquiv_symm
 
