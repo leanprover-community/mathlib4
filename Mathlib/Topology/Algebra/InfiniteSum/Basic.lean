@@ -21,7 +21,7 @@ permutations. For Euclidean spaces (finite dimensional Banach spaces) this is eq
 convergence.
 
 Note: There are summable sequences which are not unconditionally convergent! The other way holds
-generally, see `has_sum.tendsto_sum_nat`.
+generally, see `HasSum.tendsto_sum_nat`.
 
 ## References
 
@@ -44,7 +44,7 @@ variable [AddCommMonoid α] [TopologicalSpace α]
 
 /-- Infinite sum on a topological monoid
 
-The `at_top` filter on `finset β` is the limit of all finite sets towards the entire type. So we sum
+The `atTop` filter on `Finset β` is the limit of all finite sets towards the entire type. So we sum
 up bigger and bigger sets. This sum operation is invariant under reordering. In particular,
 the function `ℕ → ℝ` sending `n` to `(-1)^n / (n+1)` does not have a
 sum for this definition, but a series which is absolutely convergent will have the correct sum.
@@ -59,7 +59,7 @@ def HasSum (f : β → α) (a : α) : Prop :=
   Tendsto (fun s : Finset β => ∑ b in s, f b) atTop (𝓝 a)
 #align has_sum HasSum
 
-/-- `summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value. -/
+/-- `Summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value. -/
 def Summable (f : β → α) : Prop :=
   ∃ a, HasSum f a
 #align summable Summable
@@ -74,9 +74,9 @@ irreducible_def tsum {β} (f : β → α) :=
   if h : Summable f then Classical.choose h else 0
 #align tsum tsum
 
+-- see Note [operator precedence of big operators]
 @[inherit_doc tsum]
-notation3"∑' "-- see Note [operator precedence of big operators]
-(...)", "r:(scoped f => tsum f) => r
+notation3"∑' "(...)", "r:(scoped f => tsum f) => r
 
 variable {f g : β → α} {a b : α} {s : Finset β}
 
@@ -188,7 +188,7 @@ protected theorem Set.Finite.summable {s : Set β} (hs : s.Finite) (f : β → �
   rwa [hs.coe_toFinset] at this
 #align set.finite.summable Set.Finite.summable
 
-/-- If a function `f` vanishes outside of a finite set `s`, then it `has_sum` `∑ b in s, f b`. -/
+/-- If a function `f` vanishes outside of a finite set `s`, then it `HasSum` `∑ b in s, f b`. -/
 theorem hasSum_sum_of_ne_finset_zero (hf : ∀ (b) (_ : b ∉ s), f b = 0) : HasSum f (∑ b in s, f b) :=
   (hasSum_subtype_iff_of_support_subset <| support_subset_iff'.2 hf).1 <| s.hasSum f
 #align has_sum_sum_of_ne_finset_zero hasSum_sum_of_ne_finset_zero
@@ -274,7 +274,7 @@ protected theorem Summable.map_iff_of_leftInverse [AddCommMonoid γ] [Topologica
     rwa [← Function.comp.assoc, hinv.id] at this, fun h => h.map _ hg⟩
 #align summable.map_iff_of_left_inverse Summable.map_iff_of_leftInverse
 
-/-- A special case of `summable.map_iff_of_left_inverse` for convenience -/
+/-- A special case of `Summable.map_iff_of_leftInverse` for convenience -/
 protected theorem Summable.map_iff_of_equiv [AddCommMonoid γ] [TopologicalSpace γ] {G}
     [AddEquivClass G α γ] (g : G) (hg : Continuous g)
     (hg' : Continuous (AddEquivClass.toEquivLike.inv g : γ → α)) : Summable (g ∘ f) ↔ Summable f :=
@@ -425,8 +425,8 @@ theorem HasSum.sigma_of_hasSum [T3Space α] {γ : β → Type _} {f : (Σb : β,
     HasSum f a := by simpa [(hf'.hasSum.sigma hf).unique ha] using hf'.hasSum
 #align has_sum.sigma_of_has_sum HasSum.sigma_of_hasSum
 
-/-- Version of `has_sum.update` for `add_comm_monoid` rather than `add_comm_group`.
-Rather than showing that `f.update` has a specific sum in terms of `has_sum`,
+/-- Version of `HasSum.update` for `AddCommMonoid` rather than `AddCommGroup`.
+Rather than showing that `f.update` has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `f.update` given that both exist. -/
 theorem HasSum.update' {α β : Type _} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
     [ContinuousAdd α] {f : β → α} {a a' : α} (hf : HasSum f a) (b : β) (x : α)
@@ -442,8 +442,8 @@ theorem HasSum.update' {α β : Type _} [TopologicalSpace α] [AddCommMonoid α]
   exact HasSum.unique h (hf'.add (hasSum_ite_eq b (f b)))
 #align has_sum.update' HasSum.update'
 
-/-- Version of `has_sum_ite_sub_has_sum` for `add_comm_monoid` rather than `add_comm_group`.
-Rather than showing that the `ite` expression has a specific sum in terms of `has_sum`,
+/-- Version of `hasSum_ite_sub_hasSum` for `AddCommMonoid` rather than `AddCommGroup`.
+Rather than showing that the `ite` expression has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given that both exist. -/
 theorem eq_add_of_hasSum_ite {α β : Type _} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
     [ContinuousAdd α] {f : β → α} {a : α} (hf : HasSum f a) (b : β) (a' : α)
@@ -650,8 +650,8 @@ theorem tsum_sum {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Summa
   (hasSum_sum fun i hi => (hf i hi).hasSum).tsum_eq
 #align tsum_sum tsum_sum
 
-/-- Version of `tsum_eq_add_tsum_ite` for `add_comm_monoid` rather than `add_comm_group`.
-Requires a different convergence assumption involving `function.update`. -/
+/-- Version of `tsum_eq_add_tsum_ite` for `AddCommMonoid` rather than `AddCommGroup`.
+Requires a different convergence assumption involving `Function.update`. -/
 theorem tsum_eq_add_tsum_ite' {f : β → α} (b : β) (hf : Summable (update f b 0)) :
     (∑' x, f x) = f b + ∑' x, ite (x = b) 0 (f x) :=
   calc
