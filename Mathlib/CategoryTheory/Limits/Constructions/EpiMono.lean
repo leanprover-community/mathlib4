@@ -35,55 +35,55 @@ variable (F : C ⥤ D)
 /-- If `F` preserves pullbacks, then it preserves monomorphisms. -/
 theorem preserves_mono_of_preservesLimit {X Y : C} (f : X ⟶ Y) [PreservesLimit (cospan f f) F]
     [Mono f] : Mono (F.map f) := by
-  have := is_limit_pullback_cone_map_of_is_limit F _ (pullback_cone.is_limit_mk_id_id f)
+  have := isLimitPullbackConeMapOfIsLimit F _ (PullbackCone.isLimitMkIdId f)
   simp_rw [F.map_id] at this
-  apply pullback_cone.mono_of_is_limit_mk_id_id _ this
+  apply PullbackCone.mono_of_isLimitMkIdId _ this
 #align category_theory.preserves_mono_of_preserves_limit CategoryTheory.preserves_mono_of_preservesLimit
 
 instance (priority := 100) preservesMonomorphisms_of_preservesLimitsOfShape
-    [PreservesLimitsOfShape WalkingCospan F] : F.PreservesMonomorphisms
-    where preserves X Y f hf := preserves_mono_of_preserves_limit F f
+    [PreservesLimitsOfShape WalkingCospan F] : F.PreservesMonomorphisms where 
+  preserves f _ := preserves_mono_of_preservesLimit F f
 #align category_theory.preserves_monomorphisms_of_preserves_limits_of_shape CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape
 
 /-- If `F` reflects pullbacks, then it reflects monomorphisms. -/
 theorem reflects_mono_of_reflectsLimit {X Y : C} (f : X ⟶ Y) [ReflectsLimit (cospan f f) F]
     [Mono (F.map f)] : Mono f := by
-  have := pullback_cone.is_limit_mk_id_id (F.map f)
+  have := PullbackCone.isLimitMkIdId (F.map f)
   simp_rw [← F.map_id] at this
-  apply pullback_cone.mono_of_is_limit_mk_id_id _ (is_limit_of_is_limit_pullback_cone_map F _ this)
+  apply PullbackCone.mono_of_isLimitMkIdId _ (isLimitOfIsLimitPullbackConeMap F _ this)
 #align category_theory.reflects_mono_of_reflects_limit CategoryTheory.reflects_mono_of_reflectsLimit
 
 instance (priority := 100) reflectsMonomorphisms_of_reflectsLimitsOfShape
-    [ReflectsLimitsOfShape WalkingCospan F] : F.ReflectsMonomorphisms
-    where reflects X Y f hf := reflects_mono_of_reflects_limit F f
+    [ReflectsLimitsOfShape WalkingCospan F] : F.ReflectsMonomorphisms where 
+  reflects f _ := reflects_mono_of_reflectsLimit F f
 #align category_theory.reflects_monomorphisms_of_reflects_limits_of_shape CategoryTheory.reflectsMonomorphisms_of_reflectsLimitsOfShape
 
 /-- If `F` preserves pushouts, then it preserves epimorphisms. -/
 theorem preserves_epi_of_preservesColimit {X Y : C} (f : X ⟶ Y) [PreservesColimit (span f f) F]
     [Epi f] : Epi (F.map f) := by
-  have := is_colimit_pushout_cocone_map_of_is_colimit F _ (pushout_cocone.is_colimit_mk_id_id f)
+  have := isColimitPushoutCoconeMapOfIsColimit F _ (PushoutCocone.isColimitMkIdId f)
   simp_rw [F.map_id] at this
-  apply pushout_cocone.epi_of_is_colimit_mk_id_id _ this
+  apply PushoutCocone.epi_of_isColimitMkIdId _ this
 #align category_theory.preserves_epi_of_preserves_colimit CategoryTheory.preserves_epi_of_preservesColimit
 
 instance (priority := 100) preservesEpimorphisms_of_preservesColimitsOfShape
-    [PreservesColimitsOfShape WalkingSpan F] : F.PreservesEpimorphisms
-    where preserves X Y f hf := preserves_epi_of_preserves_colimit F f
+    [PreservesColimitsOfShape WalkingSpan F] : F.PreservesEpimorphisms where 
+  preserves f _ := preserves_epi_of_preservesColimit F f
 #align category_theory.preserves_epimorphisms_of_preserves_colimits_of_shape CategoryTheory.preservesEpimorphisms_of_preservesColimitsOfShape
 
 /-- If `F` reflects pushouts, then it reflects epimorphisms. -/
 theorem reflects_epi_of_reflectsColimit {X Y : C} (f : X ⟶ Y) [ReflectsColimit (span f f) F]
     [Epi (F.map f)] : Epi f := by
-  have := pushout_cocone.is_colimit_mk_id_id (F.map f)
+  have := PushoutCocone.isColimitMkIdId (F.map f)
   simp_rw [← F.map_id] at this
   apply
-    pushout_cocone.epi_of_is_colimit_mk_id_id _
-      (is_colimit_of_is_colimit_pushout_cocone_map F _ this)
+    PushoutCocone.epi_of_isColimitMkIdId _
+      (isColimitOfIsColimitPushoutCoconeMap F _ this)
 #align category_theory.reflects_epi_of_reflects_colimit CategoryTheory.reflects_epi_of_reflectsColimit
 
 instance (priority := 100) reflectsEpimorphisms_of_reflectsColimitsOfShape
-    [ReflectsColimitsOfShape WalkingSpan F] : F.ReflectsEpimorphisms
-    where reflects X Y f hf := reflects_epi_of_reflects_colimit F f
+    [ReflectsColimitsOfShape WalkingSpan F] : F.ReflectsEpimorphisms where 
+  reflects f _ := reflects_epi_of_reflectsColimit F f
 #align category_theory.reflects_epimorphisms_of_reflects_colimits_of_shape CategoryTheory.reflectsEpimorphisms_of_reflectsColimitsOfShape
 
 end CategoryTheory

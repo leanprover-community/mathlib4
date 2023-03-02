@@ -739,12 +739,12 @@ def isLimitMkIdId (f : X ⟶ Y) [Mono f] : IsLimit (mk (𝟙 X) (𝟙 X) rfl : P
 `f` is a mono if the pullback cone `(𝟙 X, 𝟙 X)` is a limit for the pair `(f, f)`. The converse is
 given in `PullbackCone.is_id_of_mono`.
 -/
-theorem mono_of_isLimit_mk_id_id (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f)) :
+theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f)) :
     Mono f :=
   ⟨fun {Z} g h eq => by
     rcases PullbackCone.IsLimit.lift' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
-#align category_theory.limits.pullback_cone.mono_of_is_limit_mk_id_id CategoryTheory.Limits.PullbackCone.mono_of_isLimit_mk_id_id
+#align category_theory.limits.pullback_cone.mono_of_is_limit_mk_id_id CategoryTheory.Limits.PullbackCone.mono_of_isLimitMkIdId
 
 /-- Suppose `f` and `g` are two morphisms with a common codomain and `s` is a limit cone over the
     diagram formed by `f` and `g`. Suppose `f` and `g` both factor through a monomorphism `h` via
@@ -983,13 +983,13 @@ def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl 
 /-- `f` is an epi if the pushout cocone `(𝟙 X, 𝟙 X)` is a colimit for the pair `(f, f)`.
 The converse is given in `PushoutCocone.isColimitMkIdId`.
 -/
-theorem epi_of_isColimit_mk_id_id (f : X ⟶ Y)
+theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
     (t : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f)) : Epi f :=
   ⟨fun {Z} g h eq =>
     by
     rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
-#align category_theory.limits.pushout_cocone.epi_of_is_colimit_mk_id_id CategoryTheory.Limits.PushoutCocone.epi_of_isColimit_mk_id_id
+#align category_theory.limits.pushout_cocone.epi_of_is_colimit_mk_id_id CategoryTheory.Limits.PushoutCocone.epi_of_isColimitMkIdId
 
 /-- Suppose `f` and `g` are two morphisms with a common domain and `s` is a colimit cocone over the
     diagram formed by `f` and `g`. Suppose `f` and `g` both factor through an epimorphism `h` via
