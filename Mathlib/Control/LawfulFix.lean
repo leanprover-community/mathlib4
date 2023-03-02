@@ -211,9 +211,10 @@ theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous
 
 -- Porting note: `noncomputable` is required because the code generator does not support recursor
 --               `Acc.rec` yet.
-noncomputable instance : LawfulFix (Part α) :=
+noncomputable instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α →o Part α} hc ↦ show Part.fix (toUnitMono f) () = _ by
     rw [Part.fix_eq (to_unit_cont f hc)]; rfl⟩
+#align part.lawful_fix Part.lawfulFix
 
 end Part
 
@@ -223,8 +224,9 @@ namespace Pi
 
 -- Porting note: `noncomputable` is required because the code generator does not support recursor
 --               `Acc.rec` yet.
-noncomputable instance {β} : LawfulFix (α → Part β) :=
+noncomputable instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq⟩
+#align pi.lawful_fix Pi.lawfulFix
 
 variable {γ : ∀ a : α, β a → Type _}
 
@@ -270,8 +272,9 @@ end Monotone
 
 open Fix
 
-instance [Fix <| (x : Sigma β) → γ x.1 x.2] : Fix ((x : _) → (y : β x) → γ x y) :=
+instance hasFix [Fix <| (x : Sigma β) → γ x.1 x.2] : Fix ((x : _) → (y : β x) → γ x y) :=
   ⟨fun f ↦ curry (fix <| uncurry ∘ f ∘ curry)⟩
+#align pi.has_fix Pi.hasFix
 
 variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 
