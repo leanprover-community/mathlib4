@@ -146,9 +146,7 @@ instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪
     exact Finite.of_injective _ FunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite
 
--- Porting note: we need explicit universe variables since otherwise the `convert` automation
--- specializes to `β : Prop` due to a `Subsingleton.elim`.
-instance Equiv.finite_right {α : Sort u} {β : Sort v} [Finite β] : Finite (α ≃ β) :=
+instance Equiv.finite_right {α β : Sort _} [Finite β] : Finite (α ≃ β) :=
   Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by convert FunLike.congr_fun h
 #align equiv.finite_right Equiv.finite_right
 
