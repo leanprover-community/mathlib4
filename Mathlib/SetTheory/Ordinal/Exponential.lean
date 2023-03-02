@@ -13,7 +13,8 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 /-! # Ordinal exponential
 
 In this file we define the power function and the logarithm function on ordinals. The two are
-related by `x < (b^c) ↔ log b x < c` for nontrivial inputs `b`, `c`.
+related by the lemma `Ordinal.opow_le_iff_le_log : (b^c) ≤ x ↔ c ≤ log b x` for nontrivial inputs 
+`b`, `c`.
 -/
 
 
