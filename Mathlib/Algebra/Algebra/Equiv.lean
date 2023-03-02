@@ -733,7 +733,7 @@ instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
 
 instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁
     where smul_comm e r a := e.map_smul r a
-#align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smul_comm_class'
+#align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
 
 @[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
