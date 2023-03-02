@@ -166,9 +166,13 @@ def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
   | _, .cons p e => composePath p ≫ e
 #align category_theory.compose_path CategoryTheory.composePath
 
+-- porting note: TODO: lint complains that this is not in simp normal form,
+-- so I commented it.
+/-
 @[simp]
 theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f := Category.id_comp _
-#align category_theory.compose_path_to_path CategoryTheory.composePath_toPath
+-/
+#noalign category_theory.compose_path_to_path
 
 @[simp]
 theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
