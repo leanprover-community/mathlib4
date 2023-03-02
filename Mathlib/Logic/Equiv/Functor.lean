@@ -8,8 +8,8 @@ Authors: Johan Commelin, Simon Hudon, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Bifunctor
-import Mathbin.Logic.Equiv.Defs
+import Mathlib.Control.Bifunctor
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Functor and bifunctors can be applied to `equiv`s.
@@ -57,8 +57,7 @@ theorem mapEquiv_symm_apply (h : α ≃ β) (y : f β) :
 #align functor.map_equiv_symm_apply Functor.mapEquiv_symm_apply
 
 @[simp]
-theorem mapEquiv_refl : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) :=
-  by
+theorem mapEquiv_refl : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
   ext x
   simp only [map_equiv_apply, refl_apply]
   exact LawfulFunctor.id_map x
@@ -92,8 +91,7 @@ theorem mapEquiv_symm_apply (h : α ≃ β) (h' : α' ≃ β') (y : F β β') :
 #align bifunctor.map_equiv_symm_apply Bifunctor.mapEquiv_symm_apply
 
 @[simp]
-theorem mapEquiv_refl_refl : mapEquiv F (Equiv.refl α) (Equiv.refl α') = Equiv.refl (F α α') :=
-  by
+theorem mapEquiv_refl_refl : mapEquiv F (Equiv.refl α) (Equiv.refl α') = Equiv.refl (F α α') := by
   ext x
   simp [id_bimap]
 #align bifunctor.map_equiv_refl_refl Bifunctor.mapEquiv_refl_refl
