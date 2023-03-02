@@ -218,12 +218,12 @@ theorem boxProd_connected : (G □ H).Connected ↔ G.Connected ∧ H.Connected 
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 #align simple_graph.box_prod_connected SimpleGraph.boxProd_connected
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance boxProdFintypeNeighborSet (x : α × β) [Fintype (G.neighborSet x.1)]
     [Fintype (H.neighborSet x.2)] : Fintype ((G □ H).neighborSet x) :=
   Fintype.ofEquiv
-    ((G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2) <|
+  -- porting note: was `×ˢ` but ambiguous
+    ((Finset.product (G.neighborFinset x.1) {x.2}).disjUnion
+     (Finset.product {x.1} (H.neighborFinset x.2)) <|
       Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _)
     ((Equiv.refl _).subtypeEquiv fun y =>
       by
@@ -232,12 +232,12 @@ instance boxProdFintypeNeighborSet (x : α × β) [Fintype (G.neighborSet x.1)]
       simp only [eq_comm, and_comm])
 #align simple_graph.box_prod_fintype_neighbor_set SimpleGraph.boxProdFintypeNeighborSet
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem boxProd_neighborFinset (x : α × β) [Fintype (G.neighborSet x.1)]
     [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
-      (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
+      -- porting note: was `×ˢ` but ambiguous
+      (Finset.product (G.neighborFinset x.1) {x.2}).disjUnion
+      (Finset.product {x.1} (H.neighborFinset x.2))
         (Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _) := by
   -- swap out the fintype instance for the canonical one
   letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
