@@ -60,7 +60,8 @@ def of : V ⥤q Paths V where
 
 attribute [local ext] Functor.ext
 
--- porting note: added `noncomputable` because code-gen does not support `Quiver.Path.rec` (lean4#2049)
+-- porting note: added `noncomputable` because code-gen does not support `Quiver.Path.rec`
+-- (lean4#2049)
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
 noncomputable def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C
     where
