@@ -8,8 +8,8 @@ Authors: Bhavik Mehta, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving pullbacks
@@ -218,16 +218,14 @@ def PreservesPushout.iso : pushout (G.map f) (G.map g) ≅ G.obj (pushout f g) :
 
 @[reassoc.1]
 theorem PreservesPushout.inl_iso_hom :
-    pushout.inl ≫ (PreservesPushout.iso G f g).Hom = G.map pushout.inl :=
-  by
+    pushout.inl ≫ (PreservesPushout.iso G f g).Hom = G.map pushout.inl := by
   delta preserves_pushout.iso
   simp
 #align category_theory.limits.preserves_pushout.inl_iso_hom CategoryTheory.Limits.PreservesPushout.inl_iso_hom
 
 @[reassoc.1]
 theorem PreservesPushout.inr_iso_hom :
-    pushout.inr ≫ (PreservesPushout.iso G f g).Hom = G.map pushout.inr :=
-  by
+    pushout.inr ≫ (PreservesPushout.iso G f g).Hom = G.map pushout.inr := by
   delta preserves_pushout.iso
   simp
 #align category_theory.limits.preserves_pushout.inr_iso_hom CategoryTheory.Limits.PreservesPushout.inr_iso_hom
@@ -263,8 +261,7 @@ variable [HasPullback f g] [HasPullback (G.map f) (G.map g)]
 /-- If the pullback comparison map for `G` at `(f,g)` is an isomorphism, then `G` preserves the
 pullback of `(f,g)`. -/
 def PreservesPullback.ofIsoComparison [i : IsIso (pullbackComparison G f g)] :
-    PreservesLimit (cospan f g) G :=
-  by
+    PreservesLimit (cospan f g) G := by
   apply preserves_limit_of_preserves_limit_cone (pullback_is_pullback f g)
   apply (is_limit_map_cone_pullback_cone_equiv _ _).symm _
   apply is_limit.of_point_iso (limit.is_limit (cospan (G.map f) (G.map g)))
@@ -278,8 +275,7 @@ theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).Hom = pullback
   rfl
 #align category_theory.limits.preserves_pullback.iso_hom CategoryTheory.Limits.PreservesPullback.iso_hom
 
-instance : IsIso (pullbackComparison G f g) :=
-  by
+instance : IsIso (pullbackComparison G f g) := by
   rw [← preserves_pullback.iso_hom]
   infer_instance
 
@@ -294,8 +290,7 @@ variable [HasPushout f g] [HasPushout (G.map f) (G.map g)]
 /-- If the pushout comparison map for `G` at `(f,g)` is an isomorphism, then `G` preserves the
 pushout of `(f,g)`. -/
 def PreservesPushout.ofIsoComparison [i : IsIso (pushoutComparison G f g)] :
-    PreservesColimit (span f g) G :=
-  by
+    PreservesColimit (span f g) G := by
   apply preserves_colimit_of_preserves_colimit_cocone (pushout_is_pushout f g)
   apply (is_colimit_map_cocone_pushout_cocone_equiv _ _).symm _
   apply is_colimit.of_point_iso (colimit.is_colimit (span (G.map f) (G.map g)))
@@ -309,8 +304,7 @@ theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).Hom = pushoutCom
   rfl
 #align category_theory.limits.preserves_pushout.iso_hom CategoryTheory.Limits.PreservesPushout.iso_hom
 
-instance : IsIso (pushoutComparison G f g) :=
-  by
+instance : IsIso (pushoutComparison G f g) := by
   rw [← preserves_pushout.iso_hom]
   infer_instance
 
