@@ -382,11 +382,11 @@ instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (G
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
 
-@[to_additive vAdd]
-instance sMul [SMul M G] : SMul M (Germ l G) :=
+@[to_additive]
+instance smul [SMul M G] : SMul M (Germ l G) :=
   ⟨fun n => map (n • ·)⟩
 
-@[to_additive existing sMul]
+@[to_additive existing smul]
 instance pow [Pow G M] : Pow (Germ l G) M :=
   ⟨fun f n => map (· ^ n) f⟩
 
