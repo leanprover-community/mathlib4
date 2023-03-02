@@ -17,11 +17,11 @@ import Mathlib.LinearAlgebra.Basis
 # Towers of algebras
 
 We set up the basic theory of algebra towers.
-An algebra tower A/S/R is expressed by having instances of `algebra A S`,
-`algebra R S`, `algebra R A` and `is_scalar_tower R S A`, the later asserting the
+An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
+`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
-In `field_theory/tower.lean` we use this to prove the tower law for finite extensions,
+In `FieldTheory/Tower.lean` we use this to prove the tower law for finite extensions,
 that if `R` and `S` are both fields, then `[A:R] = [A:S] [S:A]`.
 
 In this file we prepare the main lemma:
@@ -47,9 +47,8 @@ variable [Algebra R S] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
 
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
-variable (R S A B)
 
-/-- Suppose that `R -> S -> A` is a tower of algebras.
+/-- Suppose that `R → S → A` is a tower of algebras.
 If an element `r : R` is invertible in `S`, then it is invertible in `A`. -/
 def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
     Invertible (algebraMap R A r) :=
@@ -61,7 +60,7 @@ def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
 when coerced to any `R`-algebra. -/
 def invertibleAlgebraCoeNat (n : ℕ) [inv : Invertible (n : R)] : Invertible (n : A) :=
   haveI : Invertible (algebraMap ℕ R n) := inv
-  invertible.algebra_tower ℕ R A n
+  Invertible.algebraTower ℕ R A n
 #align is_scalar_tower.invertible_algebra_coe_nat IsScalarTower.invertibleAlgebraCoeNat
 
 end Semiring
@@ -78,15 +77,15 @@ end IsScalarTower
 
 section AlgebraMapCoeffs
 
-variable {R} (A) {ι M : Type _} [CommSemiring R] [Semiring A] [AddCommMonoid M]
+variable {R} {ι M : Type _} [CommSemiring R] [Semiring A] [AddCommMonoid M]
 
 variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
 
 variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
-/-- If `R` and `A` have a bijective `algebra_map R A` and act identically on `M`,
+/-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
-@[simps]
+@[simps!]
 noncomputable def Basis.algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
 #align basis.algebra_map_coeffs Basis.algebraMapCoeffs
@@ -116,13 +115,12 @@ variable [CommSemiring R] [Semiring S] [AddCommMonoid A]
 
 variable [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
   by_cases hik : (i, k) ∈ s
-  · have h1 : (∑ i in s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2) = 0 :=
+  · have h1 : (∑ i in s.image Prod.fst ×ᶠ s.image Prod.snd, g i • b i.1 • c i.2) = 0 :=
       by
       rw [← hsg]
       exact
@@ -134,7 +132,7 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
   exact hg _ hik
 #align linear_independent_smul linearIndependent_smul
 
-/-- `basis.smul (b : basis ι R S) (c : basis ι S A)` is the `R`-basis on `A`
+/-- `Basis.SMul (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
 noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
     Basis (ι × ι') R A :=
@@ -177,9 +175,10 @@ variable {R S}
 
 variable [CommRing R] [Ring S] [Algebra R S]
 
+-- Porting note: Needed to add Algebra.toModule below
 theorem Basis.algebraMap_injective {ι : Type _} [NoZeroDivisors R] [Nontrivial S]
-    (b : Basis ι R S) : Function.Injective (algebraMap R S) :=
-  have : NoZeroSMulDivisors R S := b.NoZeroSMulDivisors
+    (b : @Basis ι R S _ _ Algebra.toModule) : Function.Injective (algebraMap R S) :=
+  have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
   NoZeroSMulDivisors.algebraMap_injective R S
 #align basis.algebra_map_injective Basis.algebraMap_injective
 
@@ -190,39 +189,53 @@ section AlgHomTower
 variable {A} {C D : Type _} [CommSemiring A] [CommSemiring C] [CommSemiring D] [Algebra A C]
   [Algebra A D]
 
-variable (f : C →ₐ[A] D) (B) [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C]
+variable (f : C →ₐ[A] D) [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C]
 
-/-- Restrict the domain of an `alg_hom`. -/
+
+/-- Restrict the domain of an `AlgHom`. -/
 def AlgHom.restrictDomain : B →ₐ[A] D :=
   f.comp (IsScalarTower.toAlgHom A B C)
 #align alg_hom.restrict_domain AlgHom.restrictDomain
 
-/-- Extend the scalars of an `alg_hom`. -/
-def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.toAlgebra :=
-  { f with commutes' := fun _ => rfl }
+-- Porting note: definition below used to be
+--  { f with commutes' := fun _ => rfl }
+-- but it complains about not finding (Algebra B D), despite it being given in the header of the thm
+
+/-- Extend the scalars of an `AlgHom`. -/
+def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.toAlgebra where
+  toFun := f.toFun
+  map_one' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+    map_one]
+  map_mul' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+    MonoidHom.toOneHom_coe, map_mul, MonoidHom.coe_coe, RingHom.coe_coe, forall_const]
+  map_zero' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+    MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_zero]
+  map_add' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+    MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_add, RingHom.coe_coe, forall_const]
+  commutes' := fun _ ↦ rfl
+  __ := (f.restrictDomain B).toRingHom.toAlgebra
 #align alg_hom.extend_scalars AlgHom.extendScalars
 
 variable {B}
 
-/-- `alg_hom`s from the top of a tower are equivalent to a pair of `alg_hom`s. -/
+/-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
 def algHomEquivSigma : (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra
     where
   toFun f := ⟨f.restrictDomain B, f.extendScalars B⟩
   invFun fg :=
-    let alg := fg.1.toRingHom.toAlgebra
+    let _ := fg.1.toRingHom.toAlgebra
     fg.2.restrictScalars A
   left_inv f := by
     dsimp only
     ext
     rfl
   right_inv := by
-    rintro ⟨⟨f, _, _, _, _, _⟩, g, _, _, _, _, hg⟩
+    rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, hg⟩⟩
     obtain rfl : f = fun x => g (algebraMap B C x) :=
       by
-      ext
+      ext x
       exact (hg x).symm
     rfl
 #align alg_hom_equiv_sigma algHomEquivSigma
 
 end AlgHomTower
-
