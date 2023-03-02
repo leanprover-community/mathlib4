@@ -1198,7 +1198,7 @@ theorem isCycleOn_support_cycleOf (f : Perm α) (x : α) : f.IsCycleOn (f.cycleO
   ⟨f.bijOn <| by
     simp only [mem_support_cycleOf_iff]
     refine fun _ ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · simp [h, cycleOf]
+    · simp [mem_support_cycleOf_iff.1 h, SameCycle, *] at *
   ,fun a ha b hb =>
     by
     rw [mem_coe, mem_support_cycleOf_iff] at ha hb
@@ -1351,14 +1351,14 @@ theorem list_cycles_perm_list_cycles {α : Type _} [Finite α] {l₁ l₂ : List
 /-- Factors a permutation `f` into a list of disjoint cyclic permutations that multiply to `f`. -/
 def cycleFactors [Fintype α] [LinearOrder α] (f : Perm α) :
     { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
-  cycleFactorsAux (univ.sort (· ≤ ·)) f fun _ _ => (mem_sort _).2 (mem_univ _)
+  cycleFactorsAux (sort (α := α) (· ≤ ·) univ) f (fun {_ _} ↦ (mem_sort _).2 (mem_univ _))
 #align equiv.perm.cycle_factors Equiv.Perm.cycleFactors
 
 /-- Factors a permutation `f` into a list of disjoint cyclic permutations that multiply to `f`,
   without a linear order. -/
 def truncCycleFactors [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
-  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (cycleFactorsAux l f h))
+  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))
     (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
 #align equiv.perm.trunc_cycle_factors Equiv.Perm.truncCycleFactors
 
@@ -1799,8 +1799,7 @@ theorem Disjoint.isConj_mul {α : Type _} [Finite α] {σ τ π ρ : Perm α} (h
     have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
     have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
     refine' isConj_of_support_equiv _ _
-    ·
-      refine'
+    · refine'
           ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1''.le_bot)).trans
             ((Equiv.sumCongr (subtypeEquiv f fun a => _) (subtypeEquiv g fun a => _)).trans
               ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2''.le_bot)).symm) <;>
@@ -1832,8 +1831,7 @@ theorem Disjoint.isConj_mul {α : Type _} [Finite α] {σ τ π ρ : Perm α} (h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
         · rwa [Subtype.coe_mk, Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
-        ·
-          rwa [Subtype.coe_mk, Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
+        · rwa [Subtype.coe_mk, Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
 #align equiv.perm.disjoint.is_conj_mul Equiv.Perm.Disjoint.isConj_mul
 
@@ -1866,7 +1864,7 @@ theorem _root_.List.Nodup.isCycleOn_formPerm (h : l.Nodup) : l.formPerm.IsCycleO
   rw [← List.indexOf_get ha, ← List.indexOf_get hb]
   refine' ⟨l.indexOf b - l.indexOf a, _⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_ofNat,
-    Equiv.Perm.coe_mul, formPerm_pow_apply_nth_le _ h]
+    Equiv.Perm.coe_mul, List.formPerm_pow_apply_nthLe _ h, Function.comp]
   rw [add_comm]
 #align list.nodup.is_cycle_on_form_perm List.Nodup.isCycleOn_formPerm
 
