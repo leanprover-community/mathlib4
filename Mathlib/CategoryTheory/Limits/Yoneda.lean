@@ -39,7 +39,7 @@ variable {C : Type v} [SmallCategory C]
 -/
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
-  X := PUnit
+  pt := PUnit
   ι := { app := fun {Y} _ => by 
           aesop_cat
           exact ⟨⟩ 
@@ -126,14 +126,14 @@ instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X
 /-- The yoneda embeddings jointly reflect limits. -/
 def yonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ Cᵒᵖ) (c : Cone K)
     (t : ∀ X : C, IsLimit (Functor.mapCone (yoneda.obj X) c)) : IsLimit c :=
-  let s' : ∀ s : Cone K, Cone (K ⋙ yoneda.obj s.X.unop) := fun s =>
+  let s' : ∀ s : Cone K, Cone (K ⋙ yoneda.obj s.pt.unop) := fun s =>
     ⟨PUnit, fun j _ => (s.π.app j).unop, fun j₁ j₂ α =>
       funext fun _ => Quiver.Hom.op_inj (s.w α).symm⟩
-  { lift := fun s => ((t s.X.unop).lift (s' s) PUnit.unit).op
-    fac := fun s j => Quiver.Hom.unop_inj (congr_fun ((t s.X.unop).fac (s' s) j) PUnit.unit)
+  { lift := fun s => ((t s.pt.unop).lift (s' s) PUnit.unit).op
+    fac := fun s j => Quiver.Hom.unop_inj (congr_fun ((t s.pt.unop).fac (s' s) j) PUnit.unit)
     uniq := fun s m w => by
       apply Quiver.Hom.unop_inj
-      suffices (fun _ : PUnit => m.unop) = (t s.X.unop).lift (s' s) by
+      suffices (fun _ : PUnit => m.unop) = (t s.pt.unop).lift (s' s) by
         apply congr_fun this PUnit.unit
       apply (t _).uniq (s' s) _ fun j => _
       intro j 
@@ -144,9 +144,9 @@ def yonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ Cᵒ�
 /-- The coyoneda embeddings jointly reflect limits. -/
 def coyonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ C) (c : Cone K)
     (t : ∀ X : Cᵒᵖ, IsLimit (Functor.mapCone (coyoneda.obj X) c)) : IsLimit c :=
-  let s' : ∀ s : Cone K, Cone (K ⋙ coyoneda.obj (op s.X)) := fun s =>
+  let s' : ∀ s : Cone K, Cone (K ⋙ coyoneda.obj (op s.pt)) := fun s =>
     ⟨PUnit, fun j _ => s.π.app j, fun j₁ j₂ α => funext fun _ => (s.w α).symm⟩
-  { lift := fun s => (t (op s.X)).lift (s' s) PUnit.unit
+  { lift := fun s => (t (op s.pt)).lift (s' s) PUnit.unit
     fac := fun s j => congr_fun ((t _).fac (s' s) j) PUnit.unit
     uniq := fun s m w => by
       suffices (fun _ : PUnit => m) = (t _).lift (s' s) by apply congr_fun this PUnit.unit
