@@ -642,13 +642,14 @@ theorem smul_def {s : SetSemiring A} {P : Submodule R A} : s • P = span R s * 
   rfl
 #align submodule.smul_def Submodule.smul_def
 
-theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A} (h₁ : s.down ≤ t.down)
+theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
+    (h₁ : SetSemiring.down s ≤ SetSemiring.down t)
     (h₂ : M ≤ N) : s • M ≤ t • N :=
   mul_le_mul (span_mono h₁) h₂
 #align submodule.smul_le_smul Submodule.smul_le_smul
 
 theorem smul_singleton (a : A) (M : Submodule R A) :
-    ({a} : Set A).up • M = M.map (LinearMap.mulLeft R a) := by
+    Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
   change span _ _ * span _ _ = _
   rw [span_mul_span]
@@ -673,7 +674,7 @@ This is the general form of the ideal quotient, traditionally written $I : J$.
 instance : Div (Submodule R A) :=
   ⟨fun I J =>
     { carrier := { x | ∀ y ∈ J, x * y ∈ I }
-      zero_mem' := fun y hy => by
+      zero_mem' := fun y _ => by
         rw [zero_mul]
         apply Submodule.zero_mem
       add_mem' := fun ha hb y hy => by
@@ -709,9 +710,8 @@ theorem one_le_one_div {I : Submodule R A} : 1 ≤ 1 / I ↔ I ≤ 1 := by
   · rwa [le_div_iff_mul_le, one_mul]
 #align submodule.one_le_one_div Submodule.one_le_one_div
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([1]) } -/
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
-  rw [← mul_one I]
+  refine (mul_one I).symm.trans_le ?_  -- porting note: drop `rw {occs := _}` in favor of `refine`
   apply mul_le_mul_right (one_le_one_div.mpr hI)
 #align submodule.le_self_mul_one_div Submodule.le_self_mul_one_div
 
