@@ -42,7 +42,7 @@ def support [Zero A] (f : α → A) : Set α :=
 #align function.support Function.support
 
 /-- `mulSupport` of a function is the set of points `x` such that `f x ≠ 1`. -/
-@[to_additive]
+@[to_additive existing]
 def mulSupport (f : α → M) : Set α :=
   { x | f x ≠ 1 }
 #align function.mul_support Function.mulSupport
@@ -263,7 +263,7 @@ theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
 #align function.mul_support_mul Function.mulSupport_mul
 #align function.support_add Function.support_add
 
-@[to_additive support_nsmul]
+@[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction' n with n hfn

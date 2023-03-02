@@ -107,11 +107,11 @@ theorem cells_subset_iff {μ ν : YoungDiagram} : μ.cells ⊆ ν.cells ↔ μ �
 #align young_diagram.cells_subset_iff YoungDiagram.cells_subset_iff
 
 @[simp]
-theorem cells_sSubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
+theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
   Iff.rfl
-#align young_diagram.cells_ssubset_iff YoungDiagram.cells_sSubset_iff
+#align young_diagram.cells_ssubset_iff YoungDiagram.cells_ssubset_iff
 
-instance : HasSup YoungDiagram
+instance : Sup YoungDiagram
     where sup μ ν :=
     { cells := μ.cells ∪ ν.cells
       isLowerSet := by
@@ -133,7 +133,7 @@ theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x 
   Finset.mem_union
 #align young_diagram.mem_sup YoungDiagram.mem_sup
 
-instance : HasInf YoungDiagram
+instance : Inf YoungDiagram
     where inf μ ν :=
     { cells := μ.cells ∩ ν.cells
       isLowerSet := by
@@ -254,7 +254,7 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
     exact YoungDiagram.le_of_transpose_le h ⟩
 #align young_diagram.transpose_le_iff YoungDiagram.transpose_le_iff
 
---@[mono] Porting note: not implemented yet
+@[mono]
 protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.transpose ≤ ν.transpose :=
   transpose_le_iff.mpr h_le
 #align young_diagram.transpose_mono YoungDiagram.transpose_mono
@@ -326,7 +326,7 @@ theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).
   simp [row_eq_prod]
 #align young_diagram.row_len_eq_card YoungDiagram.rowLen_eq_card
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
   by_contra' h_lt
   rw [← lt_self_iff_false (μ.rowLen i1)]
@@ -392,7 +392,7 @@ theorem colLen_eq_card (μ : YoungDiagram) {j : ℕ} : μ.colLen j = (μ.col j).
   simp [col_eq_prod]
 #align young_diagram.col_len_eq_card YoungDiagram.colLen_eq_card
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colLen j2 ≤ μ.colLen j1 := by
   convert μ.transpose.rowLen_anti j1 j2 hj <;> simp
 #align young_diagram.col_len_anti YoungDiagram.colLen_anti

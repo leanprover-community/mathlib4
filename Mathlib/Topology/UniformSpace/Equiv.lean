@@ -86,8 +86,7 @@ def Simps.symm_apply (h : α ≃ᵤ β) : β → α :=
   h.symm
 #align uniform_equiv.simps.symm_apply UniformEquiv.Simps.symm_apply
 
-initialize_simps_projections UniformEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
-  -toEquiv)
+initialize_simps_projections UniformEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem coe_toEquiv (h : α ≃ᵤ β) : ⇑h.toEquiv = h :=
@@ -141,7 +140,7 @@ protected theorem uniformContinuous (h : α ≃ᵤ β) : UniformContinuous h :=
   h.uniformContinuous_toFun
 #align uniform_equiv.uniform_continuous UniformEquiv.uniformContinuous
 
---@[continuity] -- Porting note: missing attribute
+@[continuity]
 protected theorem continuous (h : α ≃ᵤ β) : Continuous h :=
   h.uniformContinuous.continuous
 #align uniform_equiv.continuous UniformEquiv.continuous
@@ -151,7 +150,7 @@ protected theorem uniformContinuous_symm (h : α ≃ᵤ β) : UniformContinuous 
 #align uniform_equiv.uniform_continuous_symm UniformEquiv.uniformContinuous_symm
 
 -- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
---@[continuity] -- Porting note: missing attribute
+@[continuity]
 protected theorem continuous_symm (h : α ≃ᵤ β) : Continuous h.symm :=
   h.uniformContinuous_symm.continuous
 #align uniform_equiv.continuous_symm UniformEquiv.continuous_symm
