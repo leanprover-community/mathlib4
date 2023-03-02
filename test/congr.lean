@@ -45,3 +45,9 @@ theorem ex11 (p q r : Nat → Prop) (h : q = r) : (∀ n, p n → q n) ↔ (∀ 
   rename_i n
   guard_target = q n ↔ r n -- it won't use h itself
   rw [h]
+
+theorem ex12 (p q : Prop) (h : p ↔ q) : p = q := by
+  congr!
+
+theorem ex13 (x y : α) (h : x = y) (f : α → Nat) : f x = f y := by
+  congr!

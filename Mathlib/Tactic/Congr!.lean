@@ -70,7 +70,12 @@ If successful, then returns then new goal, otherwise returns the original `MVarI
 -/
 def Lean.MVarId.propext (mvarId : MVarId) : MetaM MVarId := do
   let res ← observing? do
-    let [mvarId] ← mvarId.apply (mkConst `propext []) | failure
+    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
+    -- We don't want a unification specializing `Sort _` to `Prop`.
+    let tgt ← withReducible <| mvarId.getType'
+    let some (ty, _, _) := tgt.eq? | failure
+    guard ty.isProp
+    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
     return mvarId
   return res.getD mvarId
 
@@ -112,12 +117,12 @@ This is to prevent the `Subsingleton Prop` instance from being used as justifica
 `Sort _` to `Prop`.
 -/
 def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext <| do
+  mvarId.withContext do
     let res ← observing? do
       mvarId.checkNotAssigned `subsingletonElim
       let tgt ← withReducible <| mvarId.getType'
       let some (_, lhs, rhs) := tgt.eq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on.
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
       let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
       mvarId.assign pf
       return true
@@ -125,12 +130,21 @@ def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool :=
 
 /--
 Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
+
+We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
+specialize `Sort _` to `Prop`.
 -/
-def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool := do
-  let res ← observing? do
-    let [] ← mvarId.apply (mkConst `proof_irrel_heq []) | failure
-    return true
-  return res.getD false
+def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `proofIrrelHeq
+      let tgt ← withReducible <| mvarId.getType'
+      let some (_, _, lhs, rhs) := tgt.heq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
+      let pf ← mkAppM `proof_irrel_heq #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
 
 /--
 Try to apply `pi_congr`. This is similar to `Lean.MVar.congrImplies?`.
