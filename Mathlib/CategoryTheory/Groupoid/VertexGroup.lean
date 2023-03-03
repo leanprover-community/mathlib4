@@ -23,7 +23,7 @@ This file defines the vertex group (*aka* isotropy group) of a groupoid at a ver
 ## Implementation notes
 
 * The instance is defined "manually", instead of relying on `category_theory.Aut.group` or
-  using `category_theory.inv`.
+  using `CategoryTheory.inv`.
 * The multiplication order therefore matches the categorical one : `x * y = x ≫ y`.
 * The inverse is directly defined in terms of the groupoidal inverse : `x ⁻¹ = groupoid.inv x`.
 
@@ -54,7 +54,7 @@ instance vertexGroup (c : C) : Group (c ⟶ c)
   mul_left_inv := inv_comp
 #align category_theory.groupoid.vertex_group CategoryTheory.Groupoid.vertexGroup
 
-/-- The inverse in the group is equal to the inverse given by `category_theory.inv`. -/
+/-- The inverse in the group is equal to the inverse given by `CategoryTheory.inv`. -/
 theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory.inv γ :=
   Groupoid.inv_eq_inv γ
 #align category_theory.groupoid.vertex_group.inv_eq_inv CategoryTheory.Groupoid.vertexGroup.inv_eq_inv
