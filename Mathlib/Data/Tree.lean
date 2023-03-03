@@ -44,10 +44,11 @@ universe u
 
 variable {α : Type u}
 
+-- Porting note: changed String to Std.Format
 /-- Construct a string representation of a tree. Provides a `hasRepr` instance. -/
-def repr [Repr α] : Tree α → String
+def repr [Repr α] : Tree α → Std.Format
   | nil => "nil"
-  | node a t1 t2 => "Tree.node " ++ reprStr a ++ " (" ++ repr t1 ++ ") (" ++ repr t2 ++ ")"
+  | node a t1 t2 => "Tree.node " ++ _root_.repr a ++ " (" ++ repr t1 ++ ") (" ++ repr t2 ++ ")"
 #align tree.repr Tree.repr
 
 instance [Repr α] : Repr (Tree α) :=
