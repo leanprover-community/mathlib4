@@ -77,14 +77,12 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     set D : ℕ → ι → Set α := fun n =>
       Nat.strongRecOn' n fun n D' i =>
         ⋃ (x : α) (hxs : ind x = i) (hb : ball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :
-          ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), ball x (2⁻¹ ^ n)
-    have Dn :
-      ∀ n i,
-        D n i =
+          ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), ball x (2⁻¹ ^ n) with hD
+    have Dn : ∀ n i, D n i =
           ⋃ (x : α) (hxs : ind x = i) (hb : ball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :
-            ∀ m < n, ∀ (j : ι), x ∉ D m j), ball x (2⁻¹ ^ n) :=
-      fun n s => by
-      simp only [D]
+            ∀ m < n, ∀ (j : ι), x ∉ D m j), ball x (2⁻¹ ^ n) := by
+      intros n s
+      simp only [hD]
       rw [Nat.strongRecOn'_beta]
     have memD :
       ∀ {n i y},
