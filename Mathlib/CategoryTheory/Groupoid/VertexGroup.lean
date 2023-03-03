@@ -68,13 +68,13 @@ def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d)
   toFun γ := inv f ≫ γ ≫ f
   invFun δ := f ≫ δ ≫ inv f
   left_inv γ := by
-    simp_rw [category.assoc, comp_inv, category.comp_id, ← category.assoc, comp_inv,
-      category.id_comp]
+    simp_rw [Category.assoc, comp_inv, Category.comp_id, ← Category.assoc, comp_inv,
+      Category.id_comp]
   right_inv δ := by
-    simp_rw [category.assoc, inv_comp, ← category.assoc, inv_comp, category.id_comp,
-      category.comp_id]
+    simp_rw [Category.assoc, inv_comp, ← Category.assoc, inv_comp, Category.id_comp,
+      Category.comp_id]
   map_mul' γ₁ γ₂ := by
-    simp only [vertex_group_mul, inv_eq_inv, category.assoc, is_iso.hom_inv_id_assoc]
+    simp only [vertexGroup.mul, inv_eq_inv, Category.assoc, IsIso.hom_inv_id_assoc]
 #align category_theory.groupoid.vertex_group_isom_of_map CategoryTheory.Groupoid.vertexGroupIsomOfMap
 
 /-- A path in the groupoid defines an isomorphism between its endpoints.
@@ -90,9 +90,8 @@ def CategoryTheory.Functor.mapVertexGroup {D : Type v} [Groupoid D] (φ : C ⥤ 
   toFun := φ.map
   map_one' := φ.map_id c
   map_mul' := φ.map_comp
-#align category_theory.functor.map_vertex_group CategoryTheory.Functor.mapVertexGroup
+#align category_theory.functor.map_vertex_group CategoryTheory.Groupoid.CategoryTheory.Functor.mapVertexGroup
 
 end Groupoid
 
 end CategoryTheory
-
