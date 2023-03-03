@@ -8,8 +8,8 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.DirectSum.Basic
-import Mathbin.LinearAlgebra.Dfinsupp
+import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.LinearAlgebra.Dfinsupp
 
 /-!
 # Direct sum of modules
@@ -178,8 +178,7 @@ variable {ι M}
 
 @[simp]
 theorem linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
-    (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m :=
-  by
+    (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
   ext a
   change (Dfinsupp.equivFunOnFintype (lof R ι M i m)) a = _
   convert _root_.congr_fun (Dfinsupp.equivFunOnFintype_single i m) a
@@ -187,8 +186,7 @@ theorem linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : 
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
-    (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m :=
-  by
+    (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m := by
   ext a
   change (dfinsupp.equiv_fun_on_fintype.symm (Pi.single i m)) a = _
   rw [Dfinsupp.equivFunOnFintype_symm_single i m]
@@ -197,8 +195,7 @@ theorem linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : �
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
-    (linearEquivFunOnFintype R ι M).symm f = f :=
-  by
+    (linearEquivFunOnFintype R ι M).symm f = f := by
   ext
   simp [linear_equiv_fun_on_fintype]
 #align direct_sum.linear_equiv_fun_on_fintype_symm_coe DirectSum.linearEquivFunOnFintype_symm_coe
@@ -353,8 +350,7 @@ theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i
 variable {A}
 
 /-- If a direct sum of submodules is internal then the submodules span the module. -/
-theorem IsInternal.submodule_supᵢ_eq_top (h : IsInternal A) : supᵢ A = ⊤ :=
-  by
+theorem IsInternal.submodule_supᵢ_eq_top (h : IsInternal A) : supᵢ A = ⊤ := by
   rw [Submodule.supᵢ_eq_range_dfinsupp_lsum, LinearMap.range_eq_top]
   exact Function.Bijective.surjective h
 #align direct_sum.is_internal.submodule_supr_eq_top DirectSum.IsInternal.submodule_supᵢ_eq_top
@@ -436,8 +432,7 @@ theorem isInternal_submodule_iff_independent_and_supᵢ_eq_top (A : ι → Submo
 /-- If a collection of submodules has just two indices, `i` and `j`, then
 `direct_sum.is_internal` is equivalent to `is_compl`. -/
 theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (hij : i ≠ j)
-    (h : (Set.univ : Set ι) = {i, j}) : IsInternal A ↔ IsCompl (A i) (A j) :=
-  by
+    (h : (Set.univ : Set ι) = {i, j}) : IsInternal A ↔ IsCompl (A i) (A j) := by
   have : ∀ k, k = i ∨ k = j := fun k => by simpa using set.ext_iff.mp h k
   rw [is_internal_submodule_iff_independent_and_supr_eq_top, supᵢ, ← Set.image_univ, h,
     Set.image_insert_eq, Set.image_singleton, supₛ_pair, CompleteLattice.independent_pair hij this]
