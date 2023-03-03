@@ -759,7 +759,6 @@ theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) :
   suffices Function.Injective (natAbs ∘ ((· ^ ·) x : ℕ → ℤ)) by
     exact Function.Injective.of_comp this
   convert Nat.pow_right_injective h
-  ext n
   rw [Function.comp_apply, natAbs_pow]
 #align int.pow_right_injective Int.pow_right_injective
 
