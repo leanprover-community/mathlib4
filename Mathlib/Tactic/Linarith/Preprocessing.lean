@@ -414,6 +414,17 @@ so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
     MetaM (List Branch) :=
-  pps.foldlM (fun ls pp => do pure (← ls.mapM $ fun b => do pp.process b.1 b.2).join) [(g, l)]
+  pps.foldlM (fun ls pp => do
+      pure (← ls.mapM $ fun b => do
+        try
+          pp.process b.1 b.2
+        catch e =>
+          throw (Exception.error e.getRef $
+            MessageData.trace `linarith.internalError
+              m!"Error in the \"{pp.name}\" preprocessor"
+                #[m!"While handling {b.1}\n",
+                  e.toMessageData])
+          ).join
+    ) [(g, l)]
 
 end Linarith
