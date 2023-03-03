@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.EmetricSpace
+import Mathlib.Topology.MetricSpace.EmetricSpace
 
 /-!
 # Metric separated pairs of sets
@@ -80,8 +80,7 @@ theorem mono_right {t'} (h' : IsMetricSeparated s t') (ht : t ⊆ t') : IsMetric
 #align is_metric_separated.mono_right IsMetricSeparated.mono_right
 
 theorem union_left {s'} (h : IsMetricSeparated s t) (h' : IsMetricSeparated s' t) :
-    IsMetricSeparated (s ∪ s') t :=
-  by
+    IsMetricSeparated (s ∪ s') t := by
   rcases h, h' with ⟨⟨r, r0, hr⟩, ⟨r', r0', hr'⟩⟩
   refine' ⟨min r r', _, fun x hx y hy => hx.elim _ _⟩
   · rw [← pos_iff_ne_zero] at r0 r0'⊢
@@ -109,8 +108,7 @@ theorem union_right_iff {t'} :
 #align is_metric_separated.union_right_iff IsMetricSeparated.union_right_iff
 
 theorem finite_unionᵢ_left_iff {ι : Type _} {I : Set ι} (hI : I.Finite) {s : ι → Set X}
-    {t : Set X} : IsMetricSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, IsMetricSeparated (s i) t :=
-  by
+    {t : Set X} : IsMetricSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, IsMetricSeparated (s i) t := by
   refine' finite.induction_on hI (by simp) fun i I hi _ hI => _
   rw [bUnion_insert, ball_insert_iff, union_left_iff, hI]
 #align is_metric_separated.finite_Union_left_iff IsMetricSeparated.finite_unionᵢ_left_iff
