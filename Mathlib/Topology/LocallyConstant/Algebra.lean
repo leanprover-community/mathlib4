@@ -42,7 +42,7 @@ theorem one_apply [One Y] (x : X) : (1 : LocallyConstant X Y) x = 1 :=
 instance [Inv Y] : Inv (LocallyConstant X Y) where inv f := ⟨f⁻¹, f.isLocallyConstant.inv⟩
 
 @[to_additive (attr := simp)]
-theorem coe_inv [Inv Y] (f : LocallyConstant X Y) : ⇑f⁻¹ = f⁻¹ :=
+theorem coe_inv [Inv Y] (f : LocallyConstant X Y) : ⇑(f⁻¹ : LocallyConstant X Y) = (f : X → Y)⁻¹ :=
   rfl
 #align locally_constant.coe_inv LocallyConstant.coe_inv
 #align locally_constant.coe_neg LocallyConstant.coe_neg
@@ -158,7 +158,7 @@ instance instSMulLocallyConstant [SMul α Y] : SMul α (LocallyConstant X Y) whe
   smul n f := f.map (n • ·)
 
 @[to_additive (attr := simp)]
-theorem coe_smul [SMul R Y] (r : R) (f : LocallyConstant X Y) : ⇑(r • f) = r • f :=
+theorem coe_smul [SMul R Y] (r : R) (f : LocallyConstant X Y) : ⇑(r • f) = r • (f : X → Y) :=
   rfl
 #align locally_constant.coe_smul LocallyConstant.coe_smul
 
@@ -295,4 +295,3 @@ theorem coe_algebraMap (r : R) : ⇑(algebraMap R (LocallyConstant X Y) r) = alg
 end Algebra
 
 end LocallyConstant
-
