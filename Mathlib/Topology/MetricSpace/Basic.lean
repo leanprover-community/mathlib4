@@ -1772,7 +1772,7 @@ theorem closedBall_prod_same (x : α) (y : β) (r : ℝ) :
 
 end Prod
 
--- porting note: new 3 lemmas
+-- porting note: 3 new lemmas
 theorem dist_dist_dist_le_left (x y z : α) : dist (dist x z) (dist y z) ≤ dist x y :=
   abs_dist_sub_le ..
 
