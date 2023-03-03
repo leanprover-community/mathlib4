@@ -95,9 +95,12 @@ theorem isOrthoCat_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) {v : 
     B.IsOrthoCat v ↔ B.flip.IsOrthoCat v := by
   simp_rw [isOrtho_def]
   constructor <;> intro h i j hij
-  · rw [flip_apply]
+  · change B.flip (v i) (v j) = 0 -- porting note: added this line (TODO understand why?)
+    rw [flip_apply]
+    rw [isOrthoCat_def] at h -- porting note: added this line (TODO verify this is expected)
     exact h j i (Ne.symm hij)
   simp_rw [flip_apply] at h
+  rw [isOrthoCat_def] at h -- porting note: added this line (TODO verify this is expected)
   exact h j i (Ne.symm hij)
 #align linear_map.is_Ortho_flip LinearMap.isOrthoCat_flip
 
