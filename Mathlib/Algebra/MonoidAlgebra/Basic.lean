@@ -1071,12 +1071,12 @@ protected noncomputable def opRingEquiv [Monoid G] :
 #align monoid_algebra.op_ring_equiv_apply MonoidAlgebra.opRingEquiv_apply
 #align monoid_algebra.op_ring_equiv_symm_apply MonoidAlgebra.opRingEquiv_symm_apply
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
 #align monoid_algebra.op_ring_equiv_single MonoidAlgebra.opRingEquiv_single
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem opRingEquiv_symm_single [Monoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by simp
 #align monoid_algebra.op_ring_equiv_symm_single MonoidAlgebra.opRingEquiv_symm_single
@@ -1711,19 +1711,17 @@ theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : AddMonoidAlge
 /-- The functor `G ↦ add_monoid_algebra k G`, from the category of magmas to the category of
 non-unital, non-associative algebras over `k` is adjoint to the forgetful functor in the other
 direction. -/
-@[simps]
+@[simps apply_apply symm_apply]
 def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     (Multiplicative G →ₙ* A) ≃ (AddMonoidAlgebra k G →ₙₐ[k] A) :=
-  {
-    (MonoidAlgebra.liftMagma k :
-      (Multiplicative G →ₙ* A) ≃
-        (_ →ₙₐ[k]
-          A)) with
+  { (MonoidAlgebra.liftMagma k : (Multiplicative G →ₙ* A) ≃ (_ →ₙₐ[k] A)) with
     toFun := fun f =>
       { (MonoidAlgebra.liftMagma k f : _) with
         toFun := fun a => sum a fun m t => t • f (Multiplicative.ofAdd m) }
     invFun := fun F => F.toMulHom.comp (ofMagma k G) }
 #align add_monoid_algebra.lift_magma AddMonoidAlgebra.liftMagma
+#align add_monoid_algebra.lift_magma_apply_apply AddMonoidAlgebra.liftMagma_apply_apply
+#align add_monoid_algebra.lift_magma_symm_apply AddMonoidAlgebra.liftMagma_symm_apply
 
 end NonUnitalNonAssocAlgebra
 
@@ -1796,12 +1794,12 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
 #align add_monoid_algebra.op_ring_equiv_apply AddMonoidAlgebra.opRingEquiv_apply
 #align add_monoid_algebra.op_ring_equiv_symm_apply AddMonoidAlgebra.opRingEquiv_symm_apply
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem opRingEquiv_single [AddCommMonoid G] (r : k) (x : G) :
     AddMonoidAlgebra.opRingEquiv (op (single x r)) = single x (op r) := by simp
 #align add_monoid_algebra.op_ring_equiv_single AddMonoidAlgebra.opRingEquiv_single
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem opRingEquiv_symm_single [AddCommMonoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     AddMonoidAlgebra.opRingEquiv.symm (single x r) = op (single x r.unop) := by simp
 #align add_monoid_algebra.op_ring_equiv_symm_single AddMonoidAlgebra.opRingEquiv_symm_single
@@ -1971,14 +1969,11 @@ theorem mapDomain_algebraMap {A H F : Type _} [CommSemiring k] [Semiring A] [Alg
 
 /-- If `f : G → H` is a homomorphism between two additive magmas, then `finsupp.mapDomain f` is a
 non-unital algebra homomorphism between their additive magma algebras. -/
-@[simps]
+@[simps apply]
 def mapDomainNonUnitalAlgHom (k A : Type _) [CommSemiring k] [Semiring A] [Algebra k A]
     {G H F : Type _} [Add G] [Add H] [AddHomClass F G H] (f : F) :
     AddMonoidAlgebra A G →ₙₐ[k] AddMonoidAlgebra A H :=
-  {
-    (Finsupp.mapDomain.addMonoidHom f :
-      MonoidAlgebra A G →+
-        MonoidAlgebra A H) with
+  { (Finsupp.mapDomain.addMonoidHom f : MonoidAlgebra A G →+ MonoidAlgebra A H) with
     map_mul' := fun x y => mapDomain_mul f x y
     map_smul' := fun r x => mapDomain_smul r x }
 #align add_monoid_algebra.map_domain_non_unital_alg_hom AddMonoidAlgebra.mapDomainNonUnitalAlgHom
