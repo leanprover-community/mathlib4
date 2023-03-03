@@ -8,8 +8,8 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.NonUnitalAlg
-import Mathbin.Algebra.Lie.Basic
+import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Lie algebras as non-unital, non-associative algebras
