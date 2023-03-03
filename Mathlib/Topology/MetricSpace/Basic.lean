@@ -2772,6 +2772,7 @@ theorem exists_local_min_mem_ball [ProperSpace α] [TopologicalSpace β]
 end Metric
 
 /-
+Porting note: restore positivity extension
 namespace Tactic
 
 open Positivity
