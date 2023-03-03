@@ -34,8 +34,7 @@ additional data. We provide the notation `a △ b` for making a `Tree Unit` with
 inductive Tree.{u} (α : Type u) : Type u
   | nil : Tree α
   | node : α → Tree α → Tree α → Tree α
-  deriving DecidableEq
--- Porting note: Removed `deriving has_reflect`.
+  deriving DecidableEq, Repr -- Porting note: Removed `has_reflect`, added `Repr`.
 #align tree Tree
 
 namespace Tree
@@ -44,15 +43,8 @@ universe u
 
 variable {α : Type u}
 
--- Porting note: changed String to Std.Format
-/-- Construct a string representation of a tree. Provides a `hasRepr` instance. -/
-def repr [Repr α] : Tree α → Std.Format
-  | nil => "nil"
-  | node a t1 t2 => "Tree.node " ++ _root_.repr a ++ " (" ++ repr t1 ++ ") (" ++ repr t2 ++ ")"
-#align tree.repr Tree.repr
-
-instance [Repr α] : Repr (Tree α) :=
-  ⟨fun s _ => Tree.repr s⟩
+-- Porting note: replaced with `deriving Repr` which builds a better instance anyway
+#noalign tree.repr
 
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
