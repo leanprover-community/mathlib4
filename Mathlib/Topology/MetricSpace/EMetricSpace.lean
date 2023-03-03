@@ -707,12 +707,12 @@ theorem closedBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedBa
 
 theorem ball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     ball x r ×ˢ ball y r = ball (x, y) r :=
-  ext fun z => max_lt_iff.symm
+  ext fun z => by simp [Prod.edist_eq]
 #align emetric.ball_prod_same EMetric.ball_prod_same
 
 theorem closedBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     closedBall x r ×ˢ closedBall y r = closedBall (x, y) r :=
-  ext fun z => max_le_iff.symm
+  ext fun z => by simp [Prod.edist_eq]
 #align emetric.closed_ball_prod_same EMetric.closedBall_prod_same
 
 /-- ε-characterization of the closure in pseudoemetric spaces -/
