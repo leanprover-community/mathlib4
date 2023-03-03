@@ -313,8 +313,8 @@ import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Types
