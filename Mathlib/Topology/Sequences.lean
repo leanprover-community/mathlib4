@@ -89,7 +89,7 @@ theorem subset_seqClosure {s : Set X} : s ⊆ seqClosure s := fun p hp =>
 
 /-- The sequential closure of a set is contained in the closure of that set.
 The converse is not true. -/
-theorem seqClosure_subset_closure {s : Set X} : seqClosure s ⊆ closure s := fun p ⟨x, xM, xp⟩ =>
+theorem seqClosure_subset_closure {s : Set X} : seqClosure s ⊆ closure s := fun _p ⟨_x, xM, xp⟩ =>
   mem_closure_of_tendsto xp (univ_mem' xM)
 #align seq_closure_subset_closure seqClosure_subset_closure
 
@@ -102,12 +102,12 @@ def IsSeqClosed (s : Set X) : Prop :=
 
 /-- The sequential closure of a sequentially closed set is the set itself. -/
 theorem IsSeqClosed.seqClosure_eq {s : Set X} (hs : IsSeqClosed s) : seqClosure s = s :=
-  Subset.antisymm (fun p ⟨x, hx, hp⟩ => hs hx hp) subset_seqClosure
+  Subset.antisymm (fun _p ⟨_x, hx, hp⟩ => hs hx hp) subset_seqClosure
 #align is_seq_closed.seq_closure_eq IsSeqClosed.seqClosure_eq
 
 /-- If a set is equal to its sequential closure, then it is sequentially closed. -/
 theorem isSeqClosed_of_seqClosure_eq {s : Set X} (hs : seqClosure s = s) : IsSeqClosed s :=
-  fun x p hxs hxp => hs ▸ ⟨x, hxs, hxp⟩
+  fun x _p hxs hxp => hs ▸ ⟨x, hxs, hxp⟩
 #align is_seq_closed_of_seq_closure_eq isSeqClosed_of_seqClosure_eq
 
 /-- A set is sequentially closed iff it is equal to its sequential closure. -/
@@ -117,7 +117,7 @@ theorem isSeqClosed_iff {s : Set X} : IsSeqClosed s ↔ seqClosure s = s :=
 
 /-- A set is sequentially closed if it is closed. -/
 protected theorem IsClosed.isSeqClosed {s : Set X} (hc : IsClosed s) : IsSeqClosed s :=
-  fun u x hu hx => hc.mem_of_tendsto hx (eventually_of_forall hu)
+  fun _u _x hu hx => hc.mem_of_tendsto hx (eventually_of_forall hu)
 #align is_closed.is_seq_closed IsClosed.isSeqClosed
 
 /-- A topological space is called a *Fréchet-Urysohn space*, if the sequential closure of any set
@@ -160,14 +160,13 @@ theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : 
 /-- An alternative construction for `frechet_urysohn_space`: if sequential convergence implies
 convergence, then the space is a Fréchet-Urysohn space. -/
 theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
-    (h :
-      ∀ (f : X → Prop) (a : X),
-        (∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 (f a))) → ContinuousAt f a) :
+    (h : ∀ (f : X → Prop) (a : X),
+      (∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 (f a))) → ContinuousAt f a) :
     FrechetUrysohnSpace X := by
   refine' ⟨fun s x hcx => _⟩
   specialize h (· ∉ s) x
   by_cases hx : x ∈ s; · exact subset_seqClosure hx
-  simp_rw [(· ∘ ·), ContinuousAt, hx, not_false_iff, nhds_true, tendsto_pure, eq_true_iff, ←
+  simp_rw [(· ∘ ·), ContinuousAt, hx, not_false_iff, nhds_true, tendsto_pure, ←
     mem_compl_iff, eventually_mem_set, ← mem_interior_iff_mem_nhds, interior_compl] at h
   rw [mem_compl_iff, imp_not_comm] at h
   simp only [not_forall, not_eventually, mem_compl_iff, Classical.not_not] at h
