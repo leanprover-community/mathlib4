@@ -75,7 +75,7 @@ instance (priority := 100) linearMapClass {_ : CommSemiring R} {_ : Semiring A} 
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 #align alg_hom_class.linear_map_class AlgHomClass.linearMapClass
 
--- Porting note: this is new
+-- Porting note: A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]

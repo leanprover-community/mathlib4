@@ -45,6 +45,7 @@ TODO: add `star_alg_equiv`.
 non-unital, algebra, morphism, star
 -/
 
+open EquivLike
 
 /-! ### Non-unital star algebra homomorphisms -/
 
@@ -55,14 +56,13 @@ also `star`-preserving. -/
 structure NonUnitalStarAlgHom (R A B : Type _) [Monoid R] [NonUnitalNonAssocSemiring A]
   [DistribMulAction R A] [Star A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
   [Star B] extends A →ₙₐ[R] B where
+  /-- By definition, a non-unital ⋆-algebra homomorphism preserves the `star` operation. -/
   map_star' : ∀ a : A, toFun (star a) = star (toFun a)
 #align non_unital_star_alg_hom NonUnitalStarAlgHom
 
--- mathport name: «expr →⋆ₙₐ »
-infixr:25 " →⋆ₙₐ " => NonUnitalStarAlgHom _
+@[inherit_doc NonUnitalStarAlgHom] infixr:25 " →⋆ₙₐ " => NonUnitalStarAlgHom _
 
--- mathport name: «expr →⋆ₙₐ[ ] »
-notation:25 A " →⋆ₙₐ[" R "] " B => NonUnitalStarAlgHom R A B
+@[inherit_doc] notation:25 A " →⋆ₙₐ[" R "] " B => NonUnitalStarAlgHom R A B
 
 /-- Reinterpret a non-unital star algebra homomorphism as a non-unital algebra homomorphism
 by forgetting the interaction with the star operation. -/
@@ -76,8 +76,9 @@ class NonUnitalStarAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outPara
   NonUnitalAlgHomClass F R A B, StarHomClass F A B
 #align non_unital_star_alg_hom_class NonUnitalStarAlgHomClass
 
--- `R` becomes a metavariable but that's fine because it's an `outParam`
-attribute [nolint dangerousInstance] NonUnitalStarAlgHomClass.toStarHomClass
+-- Porting note: no longer needed
+---- `R` becomes a metavariable but that's fine because it's an `outParam`
+--attribute [nolint dangerousInstance] NonUnitalStarAlgHomClass.toStarHomClass
 
 namespace NonUnitalStarAlgHomClass
 
@@ -125,8 +126,12 @@ instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B
 --instance : CoeFun (A →⋆ₙₐ[R] B) fun _ => A → B :=
 --  FunLike.hasCoeToFun
 
+-- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
+/-- See Note [custom simps projection] -/
+def Simps.apply (f : A →⋆ₙₐ[R] B) : A → B := f
+
 initialize_simps_projections NonUnitalStarAlgHom
-  (toNonUnitalAlgHom_toDistribMulActionHom_toMulActionHom_toFun → apply)
+  (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type _} [NonUnitalStarAlgHomClass F R A B] (f : F) :
@@ -164,18 +169,20 @@ theorem copy_eq (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f
   FunLike.ext' h
 #align non_unital_star_alg_hom.copy_eq NonUnitalStarAlgHom.copy_eq
 
+-- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
     ((⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
   rfl
-#align non_unital_star_alg_hom.coe_mk NonUnitalStarAlgHom.coe_mk
+#align non_unital_star_alg_hom.coe_mk NonUnitalStarAlgHom.coe_mkₓ
 
+-- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) :
   (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
   ext
   rfl
-#align non_unital_star_alg_hom.mk_coe NonUnitalStarAlgHom.mk_coe
+#align non_unital_star_alg_hom.mk_coe NonUnitalStarAlgHom.mk_coeₓ
 
 section
 
@@ -289,14 +296,13 @@ section Unital
 equipped with a `star` operation, and this homomorphism is also `star`-preserving. -/
 structure StarAlgHom (R A B : Type _) [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
   [Semiring B] [Algebra R B] [Star B] extends AlgHom R A B where
+  /-- By definition, a ⋆-algebra homomorphism preserves the `star` operation. -/
   map_star' : ∀ x : A, toFun (star x) = star (toFun x)
 #align star_alg_hom StarAlgHom
 
--- mathport name: «expr →⋆ₐ »
-infixr:25 " →⋆ₐ " => StarAlgHom _
+@[inherit_doc StarAlgHom] infixr:25 " →⋆ₐ " => StarAlgHom _
 
--- mathport name: «expr →⋆ₐ[ ] »
-notation:25 A " →⋆ₐ[" R "] " B => StarAlgHom R A B
+@[inherit_doc] notation:25 A " →⋆ₐ[" R "] " B => StarAlgHom R A B
 
 /-- Reinterpret a unital star algebra homomorphism as a unital algebra homomorphism
 by forgetting the interaction with the star operation. -/
@@ -310,8 +316,9 @@ class StarAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _
   [Algebra R B] [Star B] extends AlgHomClass F R A B, StarHomClass F A B
 #align star_alg_hom_class StarAlgHomClass
 
--- `R` becomes a metavariable but that's fine because it's an `out_param`
-attribute [nolint dangerousInstance] StarAlgHomClass.toStarHomClass
+-- Porting note: no longer needed
+---- `R` becomes a metavariable but that's fine because it's an `out_param`
+--attribute [nolint dangerousInstance] StarAlgHomClass.toStarHomClass
 
 namespace StarAlgHomClass
 
@@ -359,6 +366,10 @@ protected theorem coe_coe {F : Type _} [StarAlgHomClass F R A B] (f : F) : ⇑(f
   rfl
 #align star_alg_hom.coe_coe StarAlgHom.coe_coe
 
+-- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
+/-- See Note [custom simps projection] -/
+def Simps.apply (f : A →⋆ₐ[R] B) : A → B := f
+
 initialize_simps_projections StarAlgHom (toFun → apply)
 
 @[simp]
@@ -393,24 +404,26 @@ theorem copy_eq (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h
   FunLike.ext' h
 #align star_alg_hom.copy_eq StarAlgHom.copy_eq
 
+-- porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
 @[simp]
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
   rfl
-#align star_alg_hom.coe_mk StarAlgHom.coe_mk
+#align star_alg_hom.coe_mk StarAlgHom.coe_mkₓ
 
+-- porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) = f := by
   ext
   rfl
-#align star_alg_hom.mk_coe StarAlgHom.mk_coe
+#align star_alg_hom.mk_coe StarAlgHom.mk_coeₓ
 
 section
 
 variable (R A)
 
-/-- The identity as a `star_alg_hom`. -/
+/-- The identity as a `StarAlgHom`. -/
 protected def id : A →⋆ₐ[R] A :=
   { AlgHom.id _ _ with map_star' := fun _ => rfl }
 #align star_alg_hom.id StarAlgHom.id
@@ -653,15 +666,15 @@ equivalences with a single structure. Currently, `alg_equiv` requires unital alg
 why this structure does not extend it. -/
 structure StarAlgEquiv (R A B : Type _) [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
   [Star A] [Star B] extends A ≃+* B where
+  /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
   map_star' : ∀ a : A, toFun (star a) = star (toFun a)
+  /-- By definition, a ⋆-algebra equivalence commutes with the action of scalars. -/
   map_smul' : ∀ (r : R) (a : A), toFun (r • a) = r • toFun a
 #align star_alg_equiv StarAlgEquiv
 
--- mathport name: «expr ≃⋆ₐ »
-infixr:25 " ≃⋆ₐ " => StarAlgEquiv _
+@[inherit_doc StarAlgEquiv] infixr:25 " ≃⋆ₐ " => StarAlgEquiv _
 
--- mathport name: «expr ≃⋆ₐ[ ] »
-notation:25 A " ≃⋆ₐ[" R "] " B => StarAlgEquiv R A B
+@[inherit_doc] notation:25 A " ≃⋆ₐ[" R "] " B => StarAlgEquiv R A B
 
 /-- Reinterpret a star algebra equivalence as a `ring_equiv` by forgetting the interaction with
 the star operation and scalar multiplication. -/
@@ -674,7 +687,9 @@ You should also extend this typeclass when you extend `star_alg_equiv`. -/
 class StarAlgEquivClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
   (B : outParam (Type _)) [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
   [Star B] extends RingEquivClass F A B where
+  /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
+  /-- By definition, a ⋆-algebra equivalence commutes with the action of scalars. -/
   map_smul : ∀ (f : F) (r : R) (a : A), f (r • a) = r • f a
 #align star_alg_equiv_class StarAlgEquivClass
 
@@ -736,7 +751,7 @@ namespace StarAlgEquiv
 
 section Basic
 
-variable {F R A B C : Type _} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
+variable {F R A B C : Type _} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B] [Star A]
   [Star B] [Add C] [Mul C] [SMul R C] [Star C]
 
 instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
@@ -753,6 +768,10 @@ instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
   map_add f := f.map_add'
   map_star := map_star'
   map_smul := map_smul'
+
+@[simp]
+theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
+  rfl
 
 -- Porting note: this is no longer useful
 --/-- Helper instance for when there's too many metavariables to apply
@@ -785,27 +804,33 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
   rfl
 #align star_alg_equiv.coe_refl StarAlgEquiv.coe_refl
 
+-- Porting note: changed proof a bit by using `EquivLike` to avoid lots of coercions
 /-- Star algebra equivalences are symmetric. -/
 @[symm]
-def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
-  { e.toRingEquiv.symm with
+nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
+  { e.symm with
     map_star' := fun b => by
-      simpa only [e.left_inv (star (e.invFun b)), e.right_inv b] using
-        congr_arg e.invFun (e.map_star' (e.invFun b)).symm
+      simpa only [apply_inv_apply, inv_apply_apply] using
+        congr_arg (inv e) (map_star e (inv e b)).symm
     map_smul' := fun r b => by
-      simpa only [e.left_inv (r • e.invFun b), e.right_inv b] using
-        congr_arg e.invFun (e.map_smul' r (e.invFun b)).symm }
+      simpa only [apply_inv_apply, inv_apply_apply] using
+        congr_arg (inv e) (map_smul e r (inv e b)).symm }
 #align star_alg_equiv.symm StarAlgEquiv.symm
 
+-- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (e : A ≃⋆ₐ[R] B) : B → A :=
+def Simps.apply (e : A ≃⋆ₐ[R] B) : A → B := e
+
+/-- See Note [custom simps projection] -/
+def Simps.symm_apply (e : A ≃⋆ₐ[R] B) : B → A :=
   e.symm
-#align star_alg_equiv.simps.symm_apply StarAlgEquiv.Simps.symmApply
+#align star_alg_equiv.simps.symm_apply StarAlgEquiv.Simps.symm_apply
 
-initialize_simps_projections StarAlgEquiv (toFun → apply, invFun → simps.symm_apply)
+initialize_simps_projections StarAlgEquiv (toFun → apply, invFun → symm_apply)
 
+-- Porting note: use `EquivLike.inv` instead of `invFun`
 @[simp]
-theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : e.invFun = e.symm :=
+theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
   rfl
 #align star_alg_equiv.inv_fun_eq_symm StarAlgEquiv.invFun_eq_symm
 
@@ -819,12 +844,14 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃
   Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
 #align star_alg_equiv.symm_bijective StarAlgEquiv.symm_bijective
 
+-- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
 @[simp]
 theorem mk_coe' (e : A ≃⋆ₐ[R] B) (f h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨f, e, h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : B ≃⋆ₐ[R] A) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
-#align star_alg_equiv.mk_coe' StarAlgEquiv.mk_coe'
+#align star_alg_equiv.mk_coe' StarAlgEquiv.mk_coe'ₓ
 
+-- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
 @[simp]
 theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm =
@@ -832,7 +859,7 @@ theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
         toFun := f'
         invFun := f } :=
   rfl
-#align star_alg_equiv.symm_mk StarAlgEquiv.symm_mk
+#align star_alg_equiv.symm_mk StarAlgEquiv.symm_mkₓ
 
 @[simp]
 theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.refl :=
@@ -852,8 +879,7 @@ theorem symm_to_ringEquiv (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A
 /-- Star algebra equivalences are transitive. -/
 @[trans]
 def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C :=
-  {
-    e₁.toRingEquiv.trans
+  { e₁.toRingEquiv.trans
       e₂.toRingEquiv with
     map_smul' := fun r a =>
       show e₂.toFun (e₁.toFun (r • a)) = r • e₂.toFun (e₁.toFun a) by
