@@ -1740,6 +1740,10 @@ def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃�
 #align to_units_homeomorph toUnits_homeomorph
 #align to_add_units_homeomorph toAddUnits_homeomorph
 
+@[to_additive] theorem Units.embedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
+    Embedding (val : Gˣ → G) :=
+  toUnits_homeomorph.symm.embedding
+
 namespace Units
 
 open MulOpposite (continuous_op continuous_unop)

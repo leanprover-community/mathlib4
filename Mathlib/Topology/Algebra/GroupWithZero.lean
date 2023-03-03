@@ -144,11 +144,10 @@ end Inv₀
 
 /-- If `G₀` is a group with zero with topology such that `x ↦ x⁻¹` is continuous at all nonzero
 points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
-theorem Units.embedding_coe₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
+theorem Units.embedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
     Embedding (val : G₀ˣ → G₀) :=
   embedding_coe_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono <| fun _ ↦ IsUnit.ne_zero
-#align units.embedding_coe₀ Units.embedding_coe₀
-#align add_units.embedding_coe₀ AddUnits.embedding_coe₀
+#align units.embedding_coe₀ Units.embedding_val₀
 
 /-!
 ### Continuity of division

@@ -121,10 +121,10 @@ theorem embedding_embedProduct : Embedding (embedProduct M) :=
 #align add_units.topology_eq_inf AddUnits.topology_eq_inf
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
-Use `units.coe_embedding₀`, `units.coe_embedding`, or `to_units_homeomorph` instead. -/
-@[to_additive "An auxiliary lemma that can be used to prove that coercion `add_units M → M` is a
-topological embedding. Use `add_units.coe_embedding` or `to_add_units_homeomorph` instead."]
-lemma embedding_coe_mk {M : Type _} [DivisionMonoid M] [TopologicalSpace M]
+Use `Units.embedding_val₀`, `Units.embedding_val`, or `toUnits_homeomorph` instead. -/
+@[to_additive "An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
+topological embedding. Use `AddUnits.embedding_val` or `toAddUnits_homeomorph` instead."]
+lemma embedding_val_mk {M : Type _} [DivisionMonoid M] [TopologicalSpace M]
     (h : ContinuousOn Inv.inv {x : M | IsUnit x}) : Embedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, ext⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
@@ -132,8 +132,8 @@ lemma embedding_coe_mk {M : Type _} [DivisionMonoid M] [TopologicalSpace M]
   intros u s hs
   simp only [val_inv_eq_inv_val, nhds_induced, Filter.mem_map] at hs ⊢
   exact ⟨_, mem_inf_principal.1 (h u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
-#align units.embedding_coe_mk Units.embedding_coe_mk
-#align add_units.embedding_coe_mk AddUnits.embedding_coe_mk
+#align units.embedding_coe_mk Units.embedding_val_mk
+#align add_units.embedding_coe_mk AddUnits.embedding_val_mk
 
 @[to_additive]
 theorem continuous_embedProduct : Continuous (embedProduct M) :=
