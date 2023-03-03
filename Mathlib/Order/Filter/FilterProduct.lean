@@ -62,7 +62,7 @@ instance field [Field β] : Field β* :=
   { Germ.commRing, Germ.divisionRing with }
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
-  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLe]
+  simp only [lt_iff_le_not_le, eventually_and, coe_le, eventually_not, EventuallyLE]
 #align filter.germ.coe_lt Filter.Germ.coe_lt
 
 theorem coe_pos [Preorder β] [Zero β] {f : α → β} : 0 < (f : β*) ↔ ∀* x, 0 < f x :=
@@ -83,19 +83,19 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
   exact coe_lt
 #align filter.germ.lt_def Filter.Germ.lt_def
 
-instance hasSup [HasSup β] : HasSup β* :=
+instance sup [Sup β] : Sup β* :=
   ⟨map₂ (· ⊔ ·)⟩
 
-instance hasInf [HasInf β] : HasInf β* :=
+instance inf [Inf β] : Inf β* :=
   ⟨map₂ (· ⊓ ·)⟩
 
 @[simp, norm_cast]
-theorem const_sup [HasSup β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : β*) :=
+theorem const_sup [Sup β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : β*) :=
   rfl
 #align filter.germ.const_sup Filter.Germ.const_sup
 
 @[simp, norm_cast]
-theorem const_inf [HasInf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : β*) :=
+theorem const_inf [Inf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : β*) :=
   rfl
 #align filter.germ.const_inf Filter.Germ.const_inf
 

@@ -155,7 +155,7 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
   apply isClopen_preimage
 #align discrete_quotient.is_clopen_set_of_rel DiscreteQuotient.isClopen_setOf_rel
 
-instance : HasInf (DiscreteQuotient X) :=
+instance : Inf (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : SemilatticeInf (DiscreteQuotient X) :=
@@ -197,7 +197,7 @@ theorem comap_comp (S : DiscreteQuotient Z) : S.comap (g.comp f) = (S.comap g).c
   rfl
 #align discrete_quotient.comap_comp DiscreteQuotient.comap_comp
 
--- porting note: todo: add `@[mono]`
+@[mono]
 theorem comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.comap f := by tauto
 #align discrete_quotient.comap_mono DiscreteQuotient.comap_mono
 
@@ -302,7 +302,7 @@ theorem leComap_id_iff : LeComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
 theorem LeComap.comp : LeComap g B C → LeComap f A B → LeComap (g.comp f) A C := by tauto
 #align discrete_quotient.le_comap.comp DiscreteQuotient.LeComap.comp
 
--- porting note: todo: add `@[mono]`
+@[mono]
 theorem LeComap.mono (h : LeComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LeComap f A' B' :=
   hA.trans <| h.trans <| comap_mono _ hB
 #align discrete_quotient.le_comap.mono DiscreteQuotient.LeComap.mono

@@ -126,6 +126,8 @@ structure Cone (F : J ⥤ C) where
   /-- A natural transformation from the constant functor at `X` to `F` -/
   π : (const J).obj pt ⟶ F
 #align category_theory.limits.cone CategoryTheory.Limits.Cone
+set_option linter.uppercaseLean3 false in
+#align category_theory.limits.cone.X CategoryTheory.Limits.Cone.pt
 
 instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
   ⟨{  pt := F.obj ⟨⟨⟩⟩
@@ -158,6 +160,8 @@ structure Cocone (F : J ⥤ C) where
   /-- A natural transformation from `F` to the constant functor at `X` -/
   ι : F ⟶ (const J).obj pt
 #align category_theory.limits.cocone CategoryTheory.Limits.Cocone
+set_option linter.uppercaseLean3 false in
+#align category_theory.limits.cocone.X CategoryTheory.Limits.Cocone.pt
 
 instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
   ⟨{  pt := F.obj ⟨⟨⟩⟩

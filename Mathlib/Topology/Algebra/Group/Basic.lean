@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.algebra.group.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1730,6 +1730,20 @@ instance QuotientGroup.secondCountableTopology [SecondCountableTopology G] :
 
 end Quotient
 
+/-- If `G` is a group with topological `⁻¹`, then it is homeomorphic to its units. -/
+@[to_additive " If `G` is an additive group with topological negation, then it is homeomorphic to
+its additive units."]
+def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃ₜ Gˣ where
+  toEquiv := toUnits.toEquiv
+  continuous_toFun := Units.continuous_iff.2 ⟨continuous_id, continuous_inv⟩
+  continuous_invFun := Units.continuous_val
+#align to_units_homeomorph toUnits_homeomorph
+#align to_add_units_homeomorph toAddUnits_homeomorph
+
+@[to_additive] theorem Units.embedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
+    Embedding (val : Gˣ → G) :=
+  toUnits_homeomorph.symm.embedding
+
 namespace Units
 
 open MulOpposite (continuous_op continuous_unop)
@@ -1915,7 +1929,7 @@ instance : BoundedOrder (GroupTopology α) where
   bot_le x := show ⊥ ≤ x.toTopologicalSpace from bot_le
 
 @[to_additive]
-instance : HasInf (GroupTopology α) where inf x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
+instance : Inf (GroupTopology α) where inf x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_inf (x y : GroupTopology α) :
