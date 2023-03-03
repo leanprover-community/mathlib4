@@ -756,5 +756,3 @@ end Quotient
 end CommRing
 
 end Submodule
-
-#lint
