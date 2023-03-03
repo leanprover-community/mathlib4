@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Convert
 import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Set.Image
 
 example (P : Prop) (h : P) : P := by convert h
 
@@ -28,21 +29,11 @@ example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
   convert (37, 57, 2, b) using 3
 
--- TODO when `data.set.basic` has been ported, restore these tests from mathlib3
-
--- open set
-
--- variables {α β : Type}
--- @[simp] lemma singleton_inter_singleton_eq_empty {x y : α} :
---   ({x} ∩ {y} = (∅ : set α)) ↔ x ≠ y :=
--- by simp [singleton_inter_eq_empty]
-
--- example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ :=
--- begin
---   have : {x} ∩ {y} = (∅ : set α) := by simpa using h,
---   convert preimage_empty,
---   rw [←preimage_inter,this],
--- end
+example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ :=
+by
+  have : {x} ∩ {y} = (∅ : Set α) := by simpa [ne_comm] using h
+  convert Set.preimage_empty (f := f) -- porting note: mathlib3 didn't need to specify `f`
+  rw [←Set.preimage_inter, this]
 
 section convert_to
 

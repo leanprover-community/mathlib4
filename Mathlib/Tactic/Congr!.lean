@@ -39,7 +39,7 @@ def Lean.MVarId.userCongr? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   mvarId.withContext do
     mvarId.checkNotAssigned `userCongr?
     let some (lhs, _) := (← mvarId.getType').eqOrIff? | return none
-    let some name := lhs.getAppFn.cleanupAnnotations.constName? | return none
+    let some name := lhs.cleanupAnnotations.getAppFn.constName? | return none
     let congrTheorems := (← getSimpCongrTheorems).get name
     -- Note: congruence theorems are in provided in decreasing order of priority.
     for congrTheorem in congrTheorems do
@@ -52,6 +52,43 @@ def Lean.MVarId.userCongr? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
       if let some mvars := res then
         return mvars
     return none
+
+/--
+There are instances where `Lean.MVarId.congr?` might fail, and this is a fallback mimicking
+the fallback behavior present in the `simp` tactic. (For instance, there is issue lean4#2128 where
+congruence lemmas aren't generated correctly for partially applied functions.)
+
+Note that in `f x y = g z` it uses the type of `f` (rather than `g`) to drive the congruence
+lemma generation, which is just like `Lean.MVarId.congr?`.
+
+See `Lean.Meta.Simp.simp.congrArgs` for `simp` version of this fallback.
+-/
+def Lean.MVarId.fallbackCongr? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
+  mvarId.withContext do commitWhenSomeNoEx? do
+    mvarId.checkNotAssigned `fallbackCongr
+    let tgt ← mvarId.getType'
+    let some (_, lhs, _) := tgt.eq? | return none
+    lhs.cleanupAnnotations.withApp fun f args => do
+      if args.isEmpty then
+        return none
+      let infos := (← getFunInfoNArgs f args.size).paramInfo
+      let mut goals : Array MVarId := #[]
+      let mut pf ← mkFreshExprMVar (some (← mkEq f (← mkFreshExprMVar (← inferType f))))
+      goals := goals.push pf.mvarId!
+      let mut i := 0
+      for arg in args do
+        if (i < infos.size && not infos[i]!.hasFwdDeps) || (← whnfD (← inferType f)).isArrow then
+          let eq ← mkFreshExprMVar (some (← mkEq arg (← mkFreshExprMVar (← inferType arg))))
+          goals := goals.push eq.mvarId!
+          pf ← Meta.mkCongr pf eq
+        else
+          pf ← Meta.mkCongrFun pf arg
+        i := i + 1
+
+      guard (← isDefEq (mkMVar mvarId) pf)
+      mvarId.assign pf -- The isDefEq doesn't appear to assign the metavariable?
+
+      return some goals.toList
 
 /--
 Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
@@ -164,7 +201,7 @@ def Lean.MVarId.obviousFunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) 
   mvarId.withContext <| observing? do
     let tgt ← mvarId.getType'
     let some (_, lhs, rhs) := tgt.eq? | failure
-    if not lhs.isLambda && not rhs.isLambda then failure
+    if not lhs.cleanupAnnotations.isLambda && not rhs.cleanupAnnotations.isLambda then failure
     mvarId.apply (← mkConstWithFreshMVarLevels ``funext)
 
 /--
@@ -178,12 +215,21 @@ def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId))
   mvarId.withContext <| observing? do
     let tgt ← mvarId.getType'
     let some (_, lhs, _, rhs) := tgt.heq? | failure
-    if not lhs.isLambda && not rhs.isLambda then failure
+    if not lhs.cleanupAnnotations.isLambda && not rhs.cleanupAnnotations.isLambda then failure
     mvarId.apply (← mkConstWithFreshMVarLevels `Function.hfunext)
 
-/-- The list of passes used by `Lean.MVarId.congrCore!`. -/
+/--
+A list of all the congruence strategies used by `Lean.MVarId.congrCore!`.
+-/
 def Lean.MVarId.congrPasses! : List (MVarId → MetaM (Option (List MVarId))) :=
-  [userCongr?, congr?, hcongr?, obviousFunext?, obviousHfunext?, congrImplies?, congrPi?]
+  [userCongr?,
+   congr?,
+   fallbackCongr?, -- until lean4#2128 is resolved
+   hcongr?,
+   obviousFunext?,
+   obviousHfunext?,
+   congrImplies?,
+   congrPi?]
 
 /-- Convert a goal into an `Eq` goal if possible (since we have a better shot at those).
 Also try to dispatch the goal using an assumption, `Subsingleton.Elim`, or definitional equality. -/
