@@ -160,7 +160,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
         _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) :=
           (mul_le_mul' le_rfl <| add_le_add le_rfl <| hpow_le (add_le_add hm le_rfl))
         _ = 3 * 2⁻¹ ^ m := by
-          rw [mul_add, h2pow, show (3 : ℝ≥0∞) = 2 + 1 from Nat.cast_succ 2, add_mul, one_mul]
+          rw [mul_add, h2pow, ← two_add_one_eq_three, add_mul, one_mul]
     -- Finally, we glue `Hgt` and `Hle`
     have : (⋃ (m ≤ n + k) (i ∈ { i : ι | (D m i ∩ B).Nonempty }), {(m, i)}).Finite :=
       (finite_le_nat _).bunionᵢ' fun i hi =>
