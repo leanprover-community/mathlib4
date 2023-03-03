@@ -584,9 +584,13 @@ instance isScalarTower_self [IsScalarTower R k k] :
   ⟨fun t a b => by
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
     refine Finsupp.ext fun m => ?_
-    classical simp only [mul_apply, Finsupp.smul_sum, smul_ite, smul_mul_assoc, sum_smul_index',
-        zero_mul, ite_self, imp_true_iff, eq_self_iff_true, sum_zero, coe_smul, smul_eq_mul,
-        Pi.smul_apply, smul_zero]⟩
+    -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
+    classical
+      simp only [smul_eq_mul, mul_apply]
+      rw [coe_smul]
+      refine Eq.trans (sum_smul_index' (g := a) (b := t) ?_) ?_ <;>
+        simp only [mul_apply, Finsupp.smul_sum, smul_ite, smul_mul_assoc,
+          zero_mul, ite_self, imp_true_iff, sum_zero, Pi.smul_apply, smul_zero]⟩
 #align monoid_algebra.is_scalar_tower_self MonoidAlgebra.isScalarTower_self
 
 /-- Note that if `k` is a `comm_semiring` then we have `smul_comm_class k k k` and so we can take
@@ -595,12 +599,16 @@ also commute with the algebra multiplication. -/
 instance sMulCommClass_self [SMulCommClass R k k] :
     SMulCommClass R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
+    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+    refine Finsupp.ext fun m => ?_
+    -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
     classical
-      -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun m => ?_
-      simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm, sum_smul_index',
-        imp_true_iff, eq_self_iff_true, coe_smul, ite_eq_right_iff, smul_eq_mul, Pi.smul_apply,
-        mul_zero, smul_zero]⟩
+      simp only [smul_eq_mul, mul_apply]
+      rw [coe_smul]
+      refine Eq.symm (Eq.trans (congr_arg (sum a)
+        (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
+      simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
+        imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]⟩
 #align monoid_algebra.smul_comm_class_self MonoidAlgebra.sMulCommClass_self
 
 instance sMulCommClass_symm_self [SMulCommClass k R k] :
@@ -624,22 +632,20 @@ theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra 
 @[ext]
 theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : φ₁.toMulHom.comp (ofMagma k G) = φ₂.toMulHom.comp (ofMagma k G)) : φ₁ = φ₂ :=
-  nonUnitalAlgHom_ext k <| MulHom.congr_fun h
+  nonUnitalAlgHom_ext k <| FunLike.congr_fun h
 #align monoid_algebra.non_unital_alg_hom_ext' MonoidAlgebra.nonUnitalAlgHom_ext'
 
 /-- The functor `G ↦ monoid_algebra k G`, from the category of magmas to the category of non-unital,
 non-associative algebras over `k` is adjoint to the forgetful functor in the other direction. -/
 @[simps]
 def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
-    (G →ₙ* A) ≃ (MonoidAlgebra k G →ₙₐ[k] A)
-    where
+    (G →ₙ* A) ≃ (MonoidAlgebra k G →ₙₐ[k] A) where
   toFun f :=
-    {
-      liftAddHom fun x =>
-        (smulAddHom k A).flip
-          (f x) with
+    { liftAddHom fun x => (smulAddHom k A).flip (f x) with
       toFun := fun a => a.sum fun m t => t • f m
       map_smul' := fun t' a => by
+        -- Porting note: `dsimp` is required for beta reduction.
+        dsimp only []
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc]
         · intro m
@@ -647,7 +653,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
       map_mul' := fun a₁ a₂ => by
         let g : G → k → A := fun m t => t • f m
         have h₁ : ∀ m, g m 0 = 0 := by
-          intros
+          intro m
           exact zero_smul k (f m)
         have h₂ : ∀ (m) (t₁ t₂ : k), g m (t₁ + t₂) = g m t₁ + g m t₂ :=
           by
@@ -658,12 +664,12 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
   invFun F := F.toMulHom.comp (ofMagma k G)
   left_inv f := by
     ext m
-    simp only [NonUnitalAlgHom.coe_mk, of_magma_apply, NonUnitalAlgHom.toMulHom_eq_coe,
+    simp only [NonUnitalAlgHom.coe_mk, ofMagma_apply, NonUnitalAlgHom.toMulHom_eq_coe,
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
   right_inv F := by
     ext m
-    simp only [NonUnitalAlgHom.coe_mk, of_magma_apply, NonUnitalAlgHom.toMulHom_eq_coe,
+    simp only [NonUnitalAlgHom.coe_mk, ofMagma_apply, NonUnitalAlgHom.toMulHom_eq_coe,
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
 #align monoid_algebra.lift_magma MonoidAlgebra.liftMagma
