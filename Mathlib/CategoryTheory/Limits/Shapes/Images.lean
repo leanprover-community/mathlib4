@@ -20,16 +20,16 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 ## Main definitions
 
-* A `mono_factorisation` is a factorisation `f = e ≫ m`, where `m` is a monomorphism
-* `is_image F` means that a given mono factorisation `F` has the universal property of the image.
-* `has_image f` means that there is some image factorization for the morphism `f : X ⟶ Y`.
+* A `MonoFactorisation` is a factorisation `f = e ≫ m`, where `m` is a monomorphism
+* `IsImage F` means that a given mono factorisation `F` has the universal property of the image.
+* `HasImage f` means that there is some image factorization for the morphism `f : X ⟶ Y`.
   * In this case, `image f` is some image object (selected with choice), `image.ι f : image f ⟶ Y`
-    is the monomorphism `m` of the factorisation and `factor_thru_image f : X ⟶ image f` is the
+    is the monomorphism `m` of the factorisation and `factorThruImage f : X ⟶ image f` is the
     morphism `e`.
-* `has_images C` means that every morphism in `C` has an image.
+* `HasImages C` means that every morphism in `C` has an image.
 * Let `f : X ⟶ Y` and `g : P ⟶ Q` be morphisms in `C`, which we will represent as objects of the
   arrow category `arrow C`. Then `sq : f ⟶ g` is a commutative square in `C`. If `f` and `g` have
-  images, then `has_image_map sq` represents the fact that there is a morphism
+  images, then `HasImageMap sq` represents the fact that there is a morphism
   `i : image f ⟶ image g` making the diagram
 
   X ----→ image f ----→ Y
@@ -40,9 +40,9 @@ so that `m` factors through the `m'` in any other such factorisation.
 
   commute, where the top row is the image factorisation of `f`, the bottom row is the image
   factorisation of `g`, and the outer rectangle is the commutative square `sq`.
-* If a category `has_images`, then `has_image_maps` means that every commutative square admits an
+* If a category `HasImages`, then `HasImageMaps` means that every commutative square admits an
   image map.
-* If a category `has_images`, then `has_strong_epi_images` means that the morphism to the image is
+* If a category `HasImages`, then `HasStrongEpiImages` means that the morphism to the image is
   always a strong epimorphism.
 
 ## Main statements
@@ -208,7 +208,7 @@ instance [Mono f] : Inhabited (IsImage (MonoFactorisation.self f)) :=
 
 variable {f}
 
--- TODO this is another good candidate for a future `unique_up_to_canonical_iso`.
+-- TODO this is another good candidate for a future `UniqueUpToCanonicalIso`.
 /-- Two factorisations through monomorphisms satisfying the universal property
 must factor through isomorphic objects. -/
 @[simps]
@@ -319,8 +319,7 @@ def image.ι : image f ⟶ Y :=
 #align category_theory.limits.image.ι CategoryTheory.Limits.image.ι
 
 @[simp]
-theorem image.as_ι : (Image.monoFactorisation f).m = image.ι f :=
-  rfl
+theorem image.as_ι : (Image.monoFactorisation f).m = image.ι f := rfl
 #align category_theory.limits.image.as_ι CategoryTheory.Limits.image.as_ι
 
 instance : Mono (image.ι f) :=
@@ -331,7 +330,7 @@ def factorThruImage : X ⟶ image f :=
   (Image.monoFactorisation f).e
 #align category_theory.limits.factor_thru_image CategoryTheory.Limits.factorThruImage
 
-/-- Rewrite in terms of the `factor_thru_image` interface. -/
+/-- Rewrite in terms of the `factorThruImage` interface. -/
 @[simp]
 theorem as_factorThruImage : (Image.monoFactorisation f).e = factorThruImage f :=
   rfl
@@ -371,10 +370,10 @@ theorem IsImage.lift_ι {F : MonoFactorisation f} (hF : IsImage F) :
   hF.lift_fac _
 #align category_theory.limits.is_image.lift_ι CategoryTheory.Limits.IsImage.lift_ι
 
--- TODO we could put a category structure on `mono_factorisation f`,
+-- TODO we could put a category structure on `MonoFactorisation f`,
 -- with the morphisms being `g : I ⟶ I'` commuting with the `m`s
 -- (they then automatically commute with the `e`s)
--- and show that an `image_of f` gives an initial object there
+-- and show that an `imageOf f` gives an initial object there
 -- (uniqueness of the lift comes for free).
 instance image.lift_mono (F' : MonoFactorisation f) : Mono (image.lift F') := by
   refine @mono_of_mono _ _ _ _ _ _ F'.m ?_
@@ -405,7 +404,7 @@ section
 
 variable (C)
 
-/-- `has_images` asserts that every morphism has an image. -/
+/-- `HasImages` asserts that every morphism has an image. -/
 class HasImages : Prop where
   /-- Every map in the category has an image -/
   has_image : ∀ {X Y : C} (f : X ⟶ Y), HasImage f
@@ -433,7 +432,7 @@ theorem imageMonoIsoSource_hom_self [Mono f] : (imageMonoIsoSource f).hom ≫ f 
   rw [← Category.assoc, Iso.hom_inv_id, Category.id_comp]
 #align category_theory.limits.image_mono_iso_source_hom_self CategoryTheory.Limits.imageMonoIsoSource_hom_self
 
--- This is the proof that `factor_thru_image f` is an epimorphism
+-- This is the proof that `factorThruImage f` is an epimorphism
 -- from https://en.wikipedia.org/wiki/Image_%28category_theory%29, which is in turn taken from:
 -- Mitchell, Barry (1965), Theory of categories, MR 0202787, p.12, Proposition 10.1
 @[ext]
@@ -462,7 +461,6 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
     _ = v ≫ q ≫ h := by rw [equalizer.condition g h]
     _ = 𝟙 (image f) ≫ h := by rw [← Category.assoc, t]
     _ = h := by rw [Category.id_comp]
-    
 #align category_theory.limits.image.ext CategoryTheory.Limits.image.ext
 
 instance [HasImage f] [∀ {Z : C} (g h : image f ⟶ Z), HasLimit (parallelPair g h)] :
@@ -525,7 +523,7 @@ def image.eqToIso (h : f = f') : image f ≅ image f' :=
 #align category_theory.limits.image.eq_to_iso CategoryTheory.Limits.image.eqToIso
 
 /-- As long as the category has equalizers,
-the image inclusion maps commute with `image.eq_to_iso`.
+the image inclusion maps commute with `image.eqToIso`.
 -/
 theorem image.eq_fac [HasEqualizers C] (h : f = f') :
     image.ι f = (image.eqToIso h).hom ≫ image.ι f' := by
@@ -561,7 +559,7 @@ theorem image.factorThruImage_preComp [HasImage g] [HasImage (f ≫ g)] :
     factorThruImage (f ≫ g) ≫ image.preComp f g = f ≫ factorThruImage g := by simp [image.preComp]
 #align category_theory.limits.image.factor_thru_image_pre_comp CategoryTheory.Limits.image.factorThruImage_preComp
 
-/-- `image.pre_comp f g` is a monomorphism.
+/-- `image.preComp f g` is a monomorphism.
 -/
 instance image.preComp_mono [HasImage g] [HasImage (f ≫ g)] : Mono (image.preComp f g) := by
   refine @mono_of_mono _ _ _ _ _ _ (image.ι g) ?_
@@ -586,7 +584,7 @@ theorem image.preComp_comp {W : C} (h : Z ⟶ W) [HasImage (g ≫ h)] [HasImage 
 
 variable [HasEqualizers C]
 
-/-- `image.pre_comp f g` is an epimorphism when `f` is an epimorphism
+/-- `image.preComp f g` is an epimorphism when `f` is an epimorphism
 (we need `C` to have equalizers to prove this).
 -/
 instance image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
@@ -605,7 +603,7 @@ instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
                     rw [←this,image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
 #align category_theory.limits.has_image_iso_comp CategoryTheory.Limits.hasImage_iso_comp
 
-/-- `image.pre_comp f g` is an isomorphism when `f` is an isomorphism
+/-- `image.preComp f g` is an isomorphism when `f` is an isomorphism
 (we need `C` to have equalizers to prove this).
 -/
 instance image.isIso_precomp_iso (f : X ⟶ Y) [IsIso f] [HasImage g] : IsIso (image.preComp f g) :=
@@ -712,7 +710,7 @@ def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f
   map_ι := by simp [map_ι]
 #align category_theory.limits.image_map.transport CategoryTheory.Limits.ImageMap.transport
 
-/-- `has_image_map sq` means that there is an `image_map` for the square `sq`. -/
+/-- `HasImageMap sq` means that there is an `ImageMap` for the square `sq`. -/
 class HasImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g) : Prop where 
 mk' ::
   /-- There is a `ImageMap` -/
@@ -730,7 +728,7 @@ theorem HasImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] 
   HasImageMap.mk <| ImageMap.transport sq F hF' map_ι
 #align category_theory.limits.has_image_map.transport CategoryTheory.Limits.HasImageMap.transport
 
-/-- Obtain an `image_map` from a `has_image_map` instance. -/
+/-- Obtain an `ImageMap` from a `HasImageMap` instance. -/
 def HasImageMap.imageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
     [HasImageMap sq] : ImageMap sq :=
   Classical.choice <| @HasImageMap.has_image_map _ _ _ _ _ _ sq _
@@ -934,10 +932,10 @@ section HasStrongEpiImages
 
 variable (C) [Category.{v} C] [HasImages C]
 
-/-- A category has strong epi images if it has all images and `factor_thru_image f` is a strong
+/-- A category has strong epi images if it has all images and `factorThruImage f` is a strong
     epimorphism for all `f`. -/
 class HasStrongEpiImages : Prop where
-  /-- A category has strong epi images if it has all images and `factor_thru_image f` is a strong
+  /-- A category has strong epi images if it has all images and `factorThruImage f` is a strong
     epimorphism for all `f`. -/
   strong_factorThruImage : ∀ {X Y : C} (f : X ⟶ Y), StrongEpi (factorThruImage f)
 #align category_theory.limits.has_strong_epi_images CategoryTheory.Limits.HasStrongEpiImages
