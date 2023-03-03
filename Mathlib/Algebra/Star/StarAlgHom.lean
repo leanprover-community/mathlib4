@@ -8,9 +8,9 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Hom.NonUnitalAlg
-import Mathbin.Algebra.Star.Prod
-import Mathbin.Algebra.Algebra.Prod
+import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Star.Prod
+import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # Morphisms of star algebras
@@ -402,8 +402,7 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
 
 @[simp]
 theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨f, h₁, h₂, h₃, h₄, h₅, h₆⟩ : A →⋆ₐ[R] B) = f :=
-  by
+    (⟨f, h₁, h₂, h₃, h₄, h₅, h₆⟩ : A →⋆ₐ[R] B) = f := by
   ext
   rfl
 #align star_alg_hom.mk_coe StarAlgHom.mk_coe
@@ -804,8 +803,7 @@ theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : e.invFun = e.symm :=
 #align star_alg_equiv.inv_fun_eq_symm StarAlgEquiv.invFun_eq_symm
 
 @[simp]
-theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e :=
-  by
+theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := by
   ext
   rfl
 #align star_alg_equiv.symm_symm StarAlgEquiv.symm_symm
