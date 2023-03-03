@@ -151,50 +151,40 @@ variable (A)
 
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
+-- Porting note: This attribute causes a `timeout at 'whnf'`.
 -- @[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
-    (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype) ?_
-    (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  -- Porting note: The remaining proof was `ext <;> simp`.
-  · apply @LinearMap.ext R R
-      ({ x // x ∈ selfAdjoint A } × { x // x ∈ skewAdjoint A })
-      ({ x // x ∈ selfAdjoint A } × { x // x ∈ skewAdjoint A })
-    intro x
-    apply Prod.ext
-    · apply Subtype.ext
-      rw [LinearMap.id_coe, id.def]
-      rw [LinearMap.coe_comp]
-      rw [Function.comp_apply]
-      rw [LinearMap.coprod_apply]
+    (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
+    ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
+  -- Porting note: The remaining proof at this point used to be `ext <;> simp`.
+  ext
+  · rw [LinearMap.id_coe, id.def]
+    rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coprod_apply]
 
-      -- rw [Submodule.coeSubtype]
-      change ↑((LinearMap.prod (selfAdjointPart R) (skewAdjointPart R))
-        (Subtype.val x.fst + Subtype.val x.snd)).fst = (x.fst : A)
+    -- Porting note: It seems that in mathlib4 simp got a problem with defEq things.
+    -- It seems that in mathlib3 this was `submodule.coe_subtype`.
+    -- i.e. `rw [Submodule.coeSubtype]`
+    rename_i x
+    change ↑((LinearMap.prod (selfAdjointPart R) (skewAdjointPart R))
+      (Subtype.val x.fst + Subtype.val x.snd)).fst = (x.fst : A)
 
-      -- rw [LinearMap.prod_apply]
-      -- rw [Pi.prod]
-      -- rw [map_add]
-      -- rw [AddSubgroup.coe_add]
-      -- rw [selfAdjointPart_apply_coe, selfAdjointPart_apply_coe]
-      -- rw [selfAdjoint.star_val_eq, skewAdjoint.star_val_eq]
-      -- rw [add_right_neg, smul_zero, add_zero]
-      -- rw [smul_add]
-      -- rw [inv_of_two_smul_add_inv_of_two_smul]
-      simp
+    simp
+  · rw [LinearMap.id_coe, id.def]
+    rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coprod_apply]
 
-    · apply Subtype.ext
-      rw [LinearMap.id_coe, id.def]
-      rw [LinearMap.coe_comp]
-      rw [Function.comp_apply]
-      rw [LinearMap.coprod_apply]
-      -- rw [Submodule.coeSubtype]
-      change ↑((LinearMap.prod (selfAdjointPart R) (skewAdjointPart R))
-        (Subtype.val x.fst + Subtype.val x.snd)).snd = (x.snd : A)
+    -- Porting note: See note above.
+    rename_i x
+    change ↑((LinearMap.prod (selfAdjointPart R) (skewAdjointPart R))
+      (Subtype.val x.fst + Subtype.val x.snd)).snd = (x.snd : A)
 
-      simp
--- porting note: this is broken because of lean4#2074. I tried to come up with a workaround, but
--- couldn't manage one.
+    -- Porting note: With `set_option synthInstance.etaExperiment true` (lean4#2074) one needs the
+    -- 2 lines below (in particular `Pi.prod`).
+    -- With `etaExperiment false` they are uneccessary as `simp` would succeed without.
+    rw [LinearMap.prod_apply]
+    rw [Pi.prod]
+
+    simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
 @[simp]
