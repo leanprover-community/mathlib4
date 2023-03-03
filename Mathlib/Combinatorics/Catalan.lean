@@ -15,7 +15,6 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Tree
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
 
 /-!
 # Catalan numbers
