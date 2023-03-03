@@ -22,29 +22,29 @@ For example: open and closed sets, compactness, completeness, continuity and uni
 
 ## Main definitions
 
-* `has_dist α`: Endows a space `α` with a function `dist a b`.
-* `pseudo_metric_space α`: A space endowed with a distance function, which can
+* `Dist α`: Endows a space `α` with a function `dist a b`.
+* `PseudoMetricSpace α`: A space endowed with a distance function, which can
   be zero even if the two elements are non-equal.
-* `metric.ball x ε`: The set of all points `y` with `dist y x < ε`.
-* `metric.bounded s`: Whether a subset of a `pseudo_metric_space` is bounded.
-* `metric_space α`: A `pseudo_metric_space` with the guarantee `dist x y = 0 → x = y`.
+* `Metric.ball x ε`: The set of all points `y` with `dist y x < ε`.
+* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
+* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
 
 Additional useful definitions:
 
 * `nndist a b`: `dist` as a function to the non-negative reals.
-* `metric.closed_ball x ε`: The set of all points `y` with `dist y x ≤ ε`.
-* `metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
-* `proper_space α`: A `pseudo_metric_space` where all closed balls are compact.
-* `metric.diam s` : The `supr` of the distances of members of `s`.
-  Defined in terms of `emetric.diam`, for better handling of the case when it should be infinite.
+* `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
+* `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
+* `ProperSpace α`: A `PseudoMetricSpace` where all closed balls are compact.
+* `Metric.diam s` : The `supᵢ` of the distances of members of `s`.
+  Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
 
 TODO (anyone): Add "Main results" section.
 
 ## Implementation notes
 
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
-theory of `pseudo_metric_space`, where we don't require `dist x y = 0 → x = y` and we specialize
-to `metric_space` at the end.
+theory of `PseudoMetricSpace`, where we don't require `dist x y = 0 → x = y` and we specialize
+to `MetricSpace` at the end.
 
 ## Tags
 
@@ -116,9 +116,9 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
 
 A pseudo metric space is endowed with a distance for which the requirement `d(x,y)=0 → x = y` might
 not hold. A metric space is a pseudo metric space such that `d(x,y)=0 → x = y`.
-Each pseudo metric space induces a canonical `uniform_space` and hence a canonical
-`topological_space` This is enforced in the type class definition, by extending the `uniform_space`
-structure. When instantiating a `pseudo_metric_space` structure, the uniformity fields are not
+Each pseudo metric space induces a canonical `UniformSpace` and hence a canonical
+`TopologicalSpace` This is enforced in the type class definition, by extending the `UniformSpace`
+structure. When instantiating a `PseudoMetricSpace` structure, the uniformity fields are not
 necessary, they will be filled in by default. In the same way, each (pseudo) metric space induces a
 (pseudo) emetric space structure. It is included in the structure, but filled in by default.
 -/
@@ -225,7 +225,7 @@ theorem dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
   apply dist_triangle4
 #align dist_triangle4_right dist_triangle4_right
 
-/-- The triangle (polygon) inequality for sequences of points; `finset.Ico` version. -/
+/-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem dist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
     dist (f m) (f n) ≤ ∑ i in Finset.Ico m n, dist (f i) (f (i + 1)) := by
   induction n, h using Nat.le_induction
@@ -238,7 +238,7 @@ theorem dist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
       { rw [Nat.Ico_succ_right_eq_insert_Ico hle, Finset.sum_insert, add_comm]; simp }
 #align dist_le_Ico_sum_dist dist_le_Ico_sum_dist
 
-/-- The triangle (polygon) inequality for sequences of points; `finset.range` version. -/
+/-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem dist_le_range_sum_dist (f : ℕ → α) (n : ℕ) :
     dist (f 0) (f n) ≤ ∑ i in Finset.range n, dist (f i) (f (i + 1)) :=
   Nat.Ico_zero_eq_range ▸ dist_le_Ico_sum_dist f (Nat.zero_le n)
@@ -292,7 +292,7 @@ end
 @[simp] theorem abs_dist {a b : α} : |dist a b| = dist a b := abs_of_nonneg dist_nonneg
 #align abs_dist abs_dist
 
-/-- A version of `has_dist` that takes value in `ℝ≥0`. -/
+/-- A version of `Dist` that takes value in `ℝ≥0`. -/
 class NNDist (α : Type _) where
   nndist : α → α → ℝ≥0
 #align has_nndist NNDist
@@ -956,7 +956,7 @@ theorem eventually_nhds_iff_ball {p : α → Prop} :
   mem_nhds_iff
 #align metric.eventually_nhds_iff_ball Metric.eventually_nhds_iff_ball
 
-/-- A version of `filter.eventually_prod_iff` where the first filter consists of neighborhoods
+/-- A version of `Filter.eventually_prod_iff` where the first filter consists of neighborhoods
 in a pseudo-metric space.-/
 theorem eventually_nhds_prod_iff {ι α} [PseudoMetricSpace α] {f : Filter ι} {x₀ : α}
     {p : α × ι → Prop} :
@@ -967,7 +967,7 @@ theorem eventually_nhds_prod_iff {ι α} [PseudoMetricSpace α] {f : Filter ι} 
   rfl
 #align metric.eventually_nhds_prod_iff Metric.eventually_nhds_prod_iff
 
-/-- A version of `filter.eventually_prod_iff` where the second filter consists of neighborhoods
+/-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space.-/
 theorem eventually_prod_nhds_iff {f : Filter ι} {x₀ : α} {p : ι × α → Prop} :
     (∀ᶠ x in f ×ᶠ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
@@ -1622,7 +1622,7 @@ def PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β)
 #align pseudo_metric_space.induced PseudoMetricSpace.induced
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
-`pseudo_metric_space.induced` useful in case if the domain already has a `topological_space`
+`PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
 def Inducing.comapPseudoMetricSpace {α β} [TopologicalSpace α] [m : PseudoMetricSpace β] {f : α → β}
     (hf : Inducing f) : PseudoMetricSpace α :=
@@ -1630,7 +1630,7 @@ def Inducing.comapPseudoMetricSpace {α β} [TopologicalSpace α] [m : PseudoMet
 #align inducing.comap_pseudo_metric_space Inducing.comapPseudoMetricSpace
 
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
-`pseudo_metric_space.induced` useful in case if the domain already has a `uniform_space`
+`PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
 def UniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
     (f : α → β) (h : UniformInducing f) : PseudoMetricSpace α :=
@@ -2040,7 +2040,7 @@ theorem dist_le_pi_dist (f g : ∀ b, π b) (b : β) : dist (f b) (g b) ≤ dist
 #align dist_le_pi_dist dist_le_pi_dist
 
 /-- An open ball in a product space is a product of open balls. See also `metric.ball_pi'`
-for a version assuming `nonempty β` instead of `0 < r`. -/
+for a version assuming `Nonempty β` instead of `0 < r`. -/
 theorem ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
     ball x r = Set.pi univ fun b => ball (x b) r := by
   ext p
@@ -2048,14 +2048,14 @@ theorem ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
 #align ball_pi ball_pi
 
 /-- An open ball in a product space is a product of open balls. See also `metric.ball_pi`
-for a version assuming `0 < r` instead of `nonempty β`. -/
+for a version assuming `0 < r` instead of `Nonempty β`. -/
 theorem ball_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     ball x r = Set.pi univ fun b => ball (x b) r :=
   (lt_or_le 0 r).elim (ball_pi x) fun hr => by simp [ball_eq_empty.2 hr]
 #align ball_pi' ball_pi'
 
 /-- A closed ball in a product space is a product of closed balls. See also `metric.closed_ball_pi'`
-for a version assuming `nonempty β` instead of `0 ≤ r`. -/
+for a version assuming `Nonempty β` instead of `0 ≤ r`. -/
 theorem closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r := by
   ext p
@@ -2063,7 +2063,7 @@ theorem closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
 #align closed_ball_pi closedBall_pi
 
 /-- A closed ball in a product space is a product of closed balls. See also `metric.closed_ball_pi`
-for a version assuming `0 ≤ r` instead of `nonempty β`. -/
+for a version assuming `0 ≤ r` instead of `Nonempty β`. -/
 theorem closedBall_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r :=
   (le_or_lt 0 r).elim (closedBall_pi x) fun hr => by simp [closedBall_eq_empty.2 hr]
@@ -2125,7 +2125,7 @@ theorem isCompact_sphere {α : Type _} [PseudoMetricSpace α] [ProperSpace α] (
   isCompact_of_isClosed_subset (isCompact_closedBall x r) isClosed_sphere sphere_subset_closedBall
 #align is_compact_sphere isCompact_sphere
 
-/-- In a proper pseudometric space, any sphere is a `compact_space` when considered as a subtype. -/
+/-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
 instance {α : Type _} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
     CompactSpace (sphere x r) :=
   isCompact_iff_compactSpace.mp (isCompact_sphere _ _)
@@ -2606,7 +2606,7 @@ theorem diam_triple :
 #align metric.diam_triple Metric.diam_triple
 
 /-- If the distance between any two points in a set is bounded by some constant `C`,
-then `ennreal.of_real C`  bounds the emetric diameter of this set. -/
+then `ENNReal.ofReal C`  bounds the emetric diameter of this set. -/
 theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) :
     EMetric.diam s ≤ ENNReal.ofReal C :=
   EMetric.diam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
@@ -2674,7 +2674,7 @@ theorem ediam_of_unbounded (h : ¬Bounded s) : EMetric.diam s = ∞ := by
   rwa [bounded_iff_ediam_ne_top, Classical.not_not] at h
 #align metric.ediam_of_unbounded Metric.ediam_of_unbounded
 
-/-- An unbounded set has zero diameter. If you would prefer to get the value ∞, use `emetric.diam`.
+/-- An unbounded set has zero diameter. If you would prefer to get the value ∞, use `EMetric.diam`.
 This lemma makes it possible to avoid side conditions in some situations -/
 theorem diam_eq_zero_of_unbounded (h : ¬Bounded s) : diam s = 0 := by
   rw [diam, ediam_of_unbounded h, ENNReal.top_toReal]
@@ -2814,7 +2814,7 @@ theorem tendsto_cocompact_of_tendsto_dist_comp_atTop {f : β → α} {l : Filter
   rwa [tendsto_comap_iff]
 #align tendsto_cocompact_of_tendsto_dist_comp_at_top tendsto_cocompact_of_tendsto_dist_comp_atTop
 
-/-- We now define `metric_space`, extending `pseudo_metric_space`. -/
+/-- We now define `MetricSpace`, extending `PseudoMetricSpace`. -/
 class MetricSpace (α : Type u) extends PseudoMetricSpace α : Type u where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 #align metric_space MetricSpace
@@ -2924,7 +2924,7 @@ theorem uniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
   rw [uniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
 #align metric.uniform_embedding_iff' Metric.uniformEmbedding_iff'
 
-/-- If a `pseudo_metric_space` is a T₀ space, then it is a `metric_space`. -/
+/-- If a `PseudoMetricSpace` is a T₀ space, then it is a `MetricSpace`. -/
 @[reducible]
 def _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type _) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
@@ -3037,7 +3037,7 @@ def MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m :
 #align metric_space.induced MetricSpace.induced
 
 /-- Pull back a metric space structure by a uniform embedding. This is a version of
-`metric_space.induced` useful in case if the domain already has a `uniform_space` structure. -/
+`MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
 @[reducible]
 def UniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
     (h : UniformEmbedding f) : MetricSpace α :=
@@ -3045,7 +3045,7 @@ def UniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace
 #align uniform_embedding.comap_metric_space UniformEmbedding.comapMetricSpace
 
 /-- Pull back a metric space structure by an embedding. This is a version of
-`metric_space.induced` useful in case if the domain already has a `topological_space` structure. -/
+`MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
 @[reducible]
 def Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)
     (h : Embedding f) : MetricSpace α :=
@@ -3166,7 +3166,7 @@ instance {α : Type u} [PseudoMetricSpace α] : MetricSpace (UniformSpace.Separa
 end EqRel
 
 /-!
-### `additive`, `multiplicative`
+### `Additive`, `Multiplicative`
 
 The distance on those type synonyms is inherited without change.
 -/
