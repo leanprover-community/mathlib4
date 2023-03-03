@@ -608,8 +608,8 @@ theorem mul_mem_mul_rev (hm : m ∈ M) (hn : n ∈ N) : n * m ∈ M * N :=
 variable (M N)
 
 protected theorem mul_comm : M * N = N * M :=
-  le_antisymm (mul_le.2 fun r hrm s hsn => mul_mem_mul_rev hsn hrm)
-    (mul_le.2 fun r hrn s hsm => mul_mem_mul_rev hsm hrn)
+  le_antisymm (mul_le.2 fun _r hrm _s hsn => mul_mem_mul_rev hsn hrm)
+    (mul_le.2 fun _r hrn _s hsm => mul_mem_mul_rev hsm hrn)
 #align submodule.mul_comm Submodule.mul_comm
 
 /-- Sub-R-modules of an R-algebra A form a semiring. -/
