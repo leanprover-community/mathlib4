@@ -8,9 +8,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Interval
-import Mathbin.Topology.MetricSpace.Basic
-import Mathbin.Order.Filter.Archimedean
+import Mathlib.Data.Int.Interval
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Order.Filter.Archimedean
 
 /-!
 # Topology on the integers
@@ -37,8 +37,7 @@ theorem dist_cast_real (x y : ℤ) : dist (x : ℝ) y = dist x y :=
   rfl
 #align int.dist_cast_real Int.dist_cast_real
 
-theorem pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n :=
-  by
+theorem pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n := by
   intro m n hne
   rw [dist_eq]; norm_cast; rwa [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
 #align int.pairwise_one_le_dist Int.pairwise_one_le_dist
