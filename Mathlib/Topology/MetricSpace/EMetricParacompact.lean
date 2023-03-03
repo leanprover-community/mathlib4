@@ -18,9 +18,9 @@ import Mathlib.Topology.Paracompact
 
 In this file we provide two instances:
 
-* `emetric.paracompact_space`: a `pseudo_emetric_space` is paracompact; formalization is based
+* `emetric.paracompact_space`: a `PseudoEMetricSpace` is paracompact; formalization is based
   on [MR0236876];
-* `emetric.normal_of_metric`: an `emetric_space` is a normal topological space.
+* `emetric.normal_of_metric`: an `EMetricSpace` is a normal topological space.
 
 ## Tags
 
@@ -40,7 +40,7 @@ namespace Emetric
 open EMetric
 
 -- See note [lower instance priority]
-/-- A `pseudo_emetric_space` is always a paracompact space. Formalization is based
+/-- A `PseudoEMetricSpace` is always a paracompact space. Formalization is based
 on [MR0236876]. -/
 instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
   classical
@@ -54,7 +54,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       by
       intro n
       simp [pow_succ, ← mul_assoc, ENNReal.mul_inv_cancel]
-    -- Consider an open covering `S : set (set α)`
+    -- Consider an open covering `S : Set (Set α)`
     refine' ⟨fun ι s ho hcov => _⟩
     simp only [unionᵢ_eq_univ_iff] at hcov
     -- choose a well founded order on `S`
@@ -65,7 +65,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wf.min_mem _ (hcov x)
     have nmem_of_lt_ind : ∀ {x i}, i < ind x → x ∉ s i := @fun x i hlt hxi =>
       wf.not_lt_min _ (hcov x) hxi hlt
-    /- The refinement `D : ℕ → ι → set α` is defined recursively. For each `n` and `i`, `D n i`
+    /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
       is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
 
       * `ind x = i`;
