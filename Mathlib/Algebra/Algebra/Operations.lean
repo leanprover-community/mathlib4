@@ -328,13 +328,21 @@ section
 
 open Pointwise
 
--- TODO: lean4#2074
-set_option synthInstance.etaExperiment true in
+/-
+Porting note: the following def ought to be
+```
+protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
+  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
+```
+but this is not possible due to η-for-classes issues. See lean4#2074
+-/
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
 This is available as an instance in the `pointwise` locale. -/
-protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
-  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
+protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] :
+    HasDistribNeg (@Submodule R A _ _ Algebra.toModule) :=
+  @Function.Injective.hasDistribNeg _ _ _ _ (id _) _ _ toAddSubmonoid_injective
+    (@neg_toAddSubmonoid R A _ _ Algebra.toModule) mul_toAddSubmonoid
 #align submodule.has_distrib_pointwise_neg Submodule.hasDistribPointwiseNeg
 
 scoped[Pointwise] attribute [instance] Submodule.hasDistribPointwiseNeg
