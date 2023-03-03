@@ -213,9 +213,9 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
     let certificate : Std.HashMap Nat Nat ← try
       oracle comps max_var
     catch e =>
-      trace[linarith] m!"{e.toMessageData}"
+      trace[linarith] e.toMessageData
       throwError "linarith failed to find a contradiction"
-    trace[linarith] m!"linarith has found a contradiction: {certificate.toList}"
+    trace[linarith] "linarith has found a contradiction: {certificate.toList}"
     let enum_inputs := inputs.enum
     -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
     let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)

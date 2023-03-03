@@ -54,6 +54,8 @@ example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) 
 example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
   linarith
 
+example (s : Set ℕ) (_h : s = ∅) : 0 ≤ 1 := by linarith
+
 -- Needs the `cancel_denoms` preprocessor, which in turn needs the `cancel_denoms` tactic ported.
 section cancel_denoms
 -- example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
