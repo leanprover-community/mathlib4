@@ -17,7 +17,7 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 /-!
 # Extended metric spaces
 
-This file is devoted to the definition and study of `emetric_space`s, i.e., metric
+This file is devoted to the definition and study of `EMetricSpace`s, i.e., metric
 spaces in which the distance is allowed to take the value ∞. This extended distance is
 called `edist`, and takes values in `ℝ≥0∞`.
 
@@ -25,11 +25,11 @@ Many definitions and theorems expected on emetric spaces are already introduced 
 and topological spaces. For example: open and closed sets, compactness, completeness, continuity and
 uniform continuity.
 
-The class `emetric_space` therefore extends `uniform_space` (and `topological_space`).
+The class `EMetricSpace` therefore extends `UniformSpace` (and `TopologicalSpace`).
 
 Since a lot of elementary properties don't require `eq_of_edist_eq_zero` we start setting up the
-theory of `pseudo_emetric_space`, where we don't require `edist x y = 0 → x = y` and we specialize
-to `emetric_space` at the end.
+theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y` and we specialize
+to `EMetricSpace` at the end.
 -/
 
 
@@ -47,7 +47,7 @@ theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α
   HasBasis.eq_binfᵢ ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
 #align uniformity_dist_of_mem_uniformity uniformity_dist_of_mem_uniformity
 
-/-- `has_edist α` means that `α` is equipped with an extended distance. -/
+/-- `EDist α` means that `α` is equipped with an extended distance. -/
 class EDist (α : Type _) where
   edist : α → α → ℝ≥0∞
 #align has_edist EDist
@@ -68,12 +68,12 @@ def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x :
 /-- Extended (pseudo) metric spaces, with an extended distance `edist` possibly taking the
 value ∞
 
-Each pseudo_emetric space induces a canonical `uniform_space` and hence a canonical
-`topological_space`.
-This is enforced in the type class definition, by extending the `uniform_space` structure. When
-instantiating a `pseudo_emetric_space` structure, the uniformity fields are not necessary, they
+Each pseudo_emetric space induces a canonical `UniformSpace` and hence a canonical
+`TopologicalSpace`.
+This is enforced in the type class definition, by extending the `UniformSpace` structure. When
+instantiating a `PseudoEMetricSpace` structure, the uniformity fields are not necessary, they
 will be filled in by default. There is a default value for the uniformity, that can be substituted
-in cases of interest, for instance when instantiating a `pseudo_emetric_space` structure
+in cases of interest, for instance when instantiating a `PseudoEMetricSpace` structure
 on a product.
 
 Continuity of `edist` is proved in `topology.instances.ennreal`
@@ -125,7 +125,7 @@ theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + e
     _ ≤ edist x y + edist y z + edist z t := add_le_add_right (edist_triangle x y z) _
 #align edist_triangle4 edist_triangle4
 
-/-- The triangle (polygon) inequality for sequences of points; `finset.Ico` version. -/
+/-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
     edist (f m) (f n) ≤ ∑ i in Finset.Ico m n, edist (f i) (f (i + 1)) := by
   induction n, h using Nat.le_induction
@@ -138,7 +138,7 @@ theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
       { rw [Nat.Ico_succ_right_eq_insert_Ico hle, Finset.sum_insert, add_comm]; simp }
 #align edist_le_Ico_sum_edist edist_le_Ico_sum_edist
 
-/-- The triangle (polygon) inequality for sequences of points; `finset.range` version. -/
+/-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
     edist (f 0) (f n) ≤ ∑ i in Finset.range n, edist (f i) (f (i + 1)) :=
   Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_edist f (Nat.zero_le n)
@@ -523,7 +523,7 @@ namespace EMetric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
-/-- `emetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
+/-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
 def ball (x : α) (ε : ℝ≥0∞) : Set α :=
   { y | edist y x < ε }
 #align emetric.ball EMetric.ball
@@ -534,7 +534,7 @@ def ball (x : α) (ε : ℝ≥0∞) : Set α :=
 theorem mem_ball' : y ∈ ball x ε ↔ edist x y < ε := by rw [edist_comm, mem_ball]
 #align emetric.mem_ball' EMetric.mem_ball'
 
-/-- `emetric.closed_ball x ε` is the set of all points `y` with `edist y x ≤ ε` -/
+/-- `EMetric.closedBall x ε` is the set of all points `y` with `edist y x ≤ ε` -/
 def closedBall (x : α) (ε : ℝ≥0∞) :=
   { y | edist y x ≤ ε }
 #align emetric.closed_ball EMetric.closedBall
@@ -825,7 +825,7 @@ open TopologicalSpace
 variable (α)
 
 /-- A sigma compact pseudo emetric space has second countable topology. This is not an instance
-to avoid a loop with `sigma_compact_space_of_locally_compact_second_countable`.  -/
+to avoid a loop with `sigmaCompactSpace_of_locally_compact_second_countable`.  -/
 theorem secondCountable_of_sigmaCompact [SigmaCompactSpace α] : SecondCountableTopology α := by
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
   choose T _ hTc hsubT using fun n =>
@@ -851,7 +851,7 @@ end SecondCountable
 
 section Diam
 
-/-- The diameter of a set in a pseudoemetric space, named `emetric.diam` -/
+/-- The diameter of a set in a pseudoemetric space, named `EMetric.diam` -/
 noncomputable def diam (s : Set α) :=
   ⨆ (x ∈ s) (y ∈ s), edist x y
 #align emetric.diam EMetric.diam
@@ -975,7 +975,7 @@ end Diam
 end EMetric
 
 --namespace
-/-- We now define `emetric_space`, extending `pseudo_emetric_space`. -/
+/-- We now define `EMetricSpace`, extending `PseudoEMetricSpace`. -/
 class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 #align emetric_space EMetricSpace
@@ -1023,7 +1023,7 @@ theorem EMetric.uniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
   rw [uniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
 #align emetric.uniform_embedding_iff' EMetric.uniformEmbedding_iff'
 
-/-- If a `pseudo_emetric_space` is a T₀ space, then it is an `emetric_space`. -/
+/-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
 @[reducible] -- porting note: made `reducible`; todo: make it an instance?
 def EMetricSpace.ofT0PseudoEMetricSpace (α : Type _) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
@@ -1155,7 +1155,7 @@ instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient 
         rwa [← h.1, ← h.2] } _
 
 /-!
-### `additive`, `multiplicative`
+### `Additive`, `Multiplicative`
 
 The distance on those type synonyms is inherited without change.
 -/
