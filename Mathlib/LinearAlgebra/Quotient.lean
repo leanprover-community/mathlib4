@@ -146,10 +146,10 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
 #align submodule.quotient.mk_smul Submodule.Quotient.mk_smul
 
-instance sMulCommClass (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M]
+instance smulCommClass (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P)
     where smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
-#align submodule.quotient.smul_comm_class Submodule.Quotient.sMulCommClass
+#align submodule.quotient.smul_comm_class Submodule.Quotient.smulCommClass
 
 instance isScalarTower (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P)
