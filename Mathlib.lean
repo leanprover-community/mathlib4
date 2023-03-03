@@ -1283,6 +1283,7 @@ import Mathlib.Topology.LocalHomeomorph
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
+import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
