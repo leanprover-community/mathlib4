@@ -98,21 +98,19 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
   have l₂ : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast; exact (n + 1).succ_ne_zero
   have l₃ : (i : ℚ) + 1 ≠ 0 := by norm_cast; exact i.succ_ne_zero
   have l₄ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast; exact (n - i).succ_ne_zero
-  have h₁ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom := by
+  have h₁ := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₃).symm
+  have h₂ := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₄).symm
+  have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom := by
     exact_mod_cast Nat.succ_mul_centralBinom_succ i
-  have h₂ :
+  have h₄ :
     ((n : ℚ) - i + 1) * (n - i + 1).centralBinom = 2 * (2 * (n - i) + 1) * (n - i).centralBinom :=
     by exact_mod_cast Nat.succ_mul_centralBinom_succ (n - i)
   simp only [gosperCatalan]
   push_cast
-  field_simp
-  have h₁' := (mul_div_cancel_left (↑(Nat.centralBinom (i + 1))) l₃).symm
-  have h₂' := (mul_div_cancel_left (↑(Nat.centralBinom (n - i + 1))) l₄).symm
-  rw [Nat.succ_sub h]
-  rw [h₁', h₂', h₁, h₂]
+  rw [show n + 1 - i = n - i + 1 by rw [Nat.add_comm (n - i) 1, ←(Nat.add_sub_assoc h 1), add_comm]]
+  rw [h₁, h₂, h₃, h₄]
   field_simp
   ring_nf
-    --   (2 : ℚ) * i.centralBinom * (n + 1) * (n + 2) * (i - (n - i) - 1) * (i + 1) * h₂
 
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) :
     gosperCatalan (n + 1) (n + 1) - gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) :=
@@ -134,16 +132,10 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
     trans (∑ i : Fin d.succ, Nat.centralBinom i / (i + 1) * (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      let m := x.val
-      have m_le_d : m ≤ d := by apply Nat.le_of_lt_succ; apply x.2
+      have m_le_d : x.val ≤ d := by apply Nat.le_of_lt_succ; apply x.2
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
-      rw [hd, hd]
-      simp
-      left
-      congr
+      rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
-      assumption
-      assumption 
     · trans (∑ i : Fin d.succ, (gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i))
       · refine' sum_congr rfl fun i _ => _
         rw [gosper_trick i.is_le]
