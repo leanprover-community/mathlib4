@@ -72,11 +72,23 @@ It is the type of finite formal `k`-linear combinations of terms of `G`,
 endowed with the convolution product.
 -/
 def MonoidAlgebra : Type max u₁ u₂ :=
-  G →₀ k deriving Inhabited, AddCommMonoid
+  G →₀ k
 #align monoid_algebra MonoidAlgebra
 
-instance : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
-  Finsupp.hasCoeToFun
+-- Porting note: The compiler couldn't derive this.
+instance MonoidAlgebra.inhabited : Inhabited (MonoidAlgebra k G) :=
+  inferInstanceAs (Inhabited (G →₀ k))
+#align monoid_algebra.inhabited MonoidAlgebra.inhabited
+
+-- Porting note: The compiler couldn't derive this.
+instance MonoidAlgebra.addCommMonoid : AddCommMonoid (MonoidAlgebra k G) :=
+  inferInstanceAs (AddCommMonoid (G →₀ k))
+#align monoid_algebra.add_comm_monoid MonoidAlgebra.addCommMonoid
+
+#eval "TODO: Rename this instance"
+instance MonoidAlgebra.hasCoeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
+  instCoeFunFinsuppForAll
+#align monoid_algebra.has_coe_to_fun MonoidAlgebra.hasCoeFun
 
 end
 
@@ -90,7 +102,7 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 /-- A non-commutative version of `monoid_algebra.lift`: given a additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
-`monoid_algebra k G` such that `lift_nc f g (single a b) = f b * g a`. If `f` is a ring homomorphism
+`monoid_algebra k G` such that `liftNc f g (single a b) = f b * g a`. If `f` is a ring homomorphism
 and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
 `R` is a `k`-algebra and `f = algebra_map k R`, then the result is an algebra homomorphism called
 `monoid_algebra.lift`. -/
@@ -113,29 +125,38 @@ variable [Semiring k] [Mul G]
 /-- The product of `f g : monoid_algebra k G` is the finitely supported function
   whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
   such that `x * y = a`. (Think of the group ring of a group.) -/
-instance : Mul (MonoidAlgebra k G) :=
-  ⟨fun f g => f.Sum fun a₁ b₁ => g.Sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)⟩
+instance hasMul : Mul (MonoidAlgebra k G) :=
+  ⟨fun f g => f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)⟩
+#align monoid_algebra.has_mul MonoidAlgebra.hasMul
 
 theorem mul_def {f g : MonoidAlgebra k G} :
-    f * g = f.Sum fun a₁ b₁ => g.Sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) :=
+    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) :=
   rfl
 #align monoid_algebra.mul_def MonoidAlgebra.mul_def
 
-instance : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
+instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
   { Finsupp.addCommMonoid with
     zero := 0
     mul := (· * ·)
     add := (· + ·)
+    -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
-      haveI := Classical.decEq G <;>
-        simp only [mul_def, sum_add_index, mul_add, mul_zero, single_zero, single_add,
-          eq_self_iff_true, forall_true_iff, forall₃_true_iff, sum_add]
+      haveI := Classical.decEq G
+      simp only [mul_def]
+      refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index ?_ ?_)) ?_ <;>
+        simp only [mul_add, mul_zero, single_zero, single_add, forall_true_iff, sum_add]
     right_distrib := fun f g h => by
-      haveI := Classical.decEq G <;>
-        simp only [mul_def, sum_add_index, add_mul, zero_mul, single_zero, single_add,
-          eq_self_iff_true, forall_true_iff, forall₃_true_iff, sum_zero, sum_add]
-    zero_mul := fun f => by simp only [mul_def, sum_zero_index]
-    mul_zero := fun f => by simp only [mul_def, sum_zero_index, sum_zero] }
+      haveI := Classical.decEq G
+      simp only [mul_def]
+      refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
+        simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
+    zero_mul := fun f => by
+      simp only [mul_def]
+      exact sum_zero_index
+    mul_zero := fun f => by
+      simp only [mul_def]
+      exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero }
+#align monoid_algebra.non_unital_non_assoc_semiring MonoidAlgebra.nonUnitalNonAssocSemiring
 
 variable [Semiring R]
 
@@ -143,8 +164,8 @@ theorem liftNc_mul {g_hom : Type _} [MulHomClass g_hom G R] (f : k →+* R) (g :
     (a b : MonoidAlgebra k G) (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :
     liftNc (f : k →+ R) g (a * b) = liftNc (f : k →+ R) g a * liftNc (f : k →+ R) g b := by
   conv_rhs => rw [← sum_single a, ← sum_single b]
-  simp_rw [mul_def, (lift_nc _ g).map_finsupp_sum, lift_nc_single, Finsupp.sum_mul, Finsupp.mul_sum]
-  refine' Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x hx => _
+  simp_rw [mul_def, (liftNc _ g).map_finsupp_sum, liftNc_single, Finsupp.sum_mul, Finsupp.mul_sum]
+  refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x hx => ?_
   simp [mul_assoc, (h_comm hy).and_left_comm]
 #align monoid_algebra.lift_nc_mul MonoidAlgebra.liftNc_mul
 
@@ -229,7 +250,7 @@ instance : Semiring (MonoidAlgebra k G) :=
 
 variable [Semiring R]
 
-/-- `lift_nc` as a `ring_hom`, for when `f x` and `g y` commute -/
+/-- `liftNc` as a `ring_hom`, for when `f x` and `g y` commute -/
 def liftNcRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra k G →+* R :=
   { liftNc (f : k →+ R) g with
@@ -335,7 +356,7 @@ variable [Semiring k]
 attribute [local reducible] MonoidAlgebra
 
 theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
-    (f * g) x = f.Sum fun a₁ b₁ => g.Sum fun a₂ b₂ => if a₁ * a₂ = x then b₁ * b₂ else 0 := by
+    (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ * a₂ = x then b₁ * b₂ else 0 := by
   rw [mul_def]
   simp only [Finsupp.sum_apply, single_apply]
 #align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
@@ -364,7 +385,7 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
             by_cases h1 : f p.1 = 0
             · rw [h1, zero_mul]
             · rw [hp hps h1, mul_zero]
-        
+
 #align monoid_algebra.mul_apply_antidiagonal MonoidAlgebra.mul_apply_antidiagonal
 
 @[simp]
@@ -454,7 +475,7 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
   classical exact
       have A :
         ∀ a₁ b₁,
-          ((single x r).Sum fun a₂ b₂ => ite (a₁ * a₂ = z) (b₁ * b₂) 0) =
+          ((single x r).sum fun a₂ b₂ => ite (a₁ * a₂ = z) (b₁ * b₂) 0) =
             ite (a₁ * x = z) (b₁ * r) 0 :=
         fun a₁ b₁ => sum_single_index <| by simp
       calc
@@ -462,7 +483,7 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
           simp only [mul_apply, A, H]
         _ = if y ∈ f.support then f y * r else 0 := (f.support.sum_ite_eq' _ _)
         _ = f y * r := by split_ifs with h <;> simp at h <;> simp [h]
-        
+
 #align monoid_algebra.mul_single_apply_aux MonoidAlgebra.mul_single_apply_aux
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
@@ -480,7 +501,7 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
         _ = f.sum fun a b => ite (a = z) (r * b) 0 := by simp only [H]
         _ = if z ∈ f.support then r * f z else 0 := (f.support.sum_ite_eq' _ _)
         _ = _ := by split_ifs with h <;> simp at h <;> simp [h]
-        
+
 #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
@@ -491,8 +512,8 @@ theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x 
 theorem liftNc_smul [MulOneClass G] {R : Type _} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNc (f : k →+ R) g (c • φ) = f c * liftNc (f : k →+ R) g φ := by
   suffices :
-    (lift_nc (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
-      (AddMonoidHom.mulLeft (f c)).comp (lift_nc (↑f) g)
+    (liftNc (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
+      (AddMonoidHom.mulLeft (f c)).comp (liftNc (↑f) g)
   exact AddMonoidHom.congr_fun this φ
   ext (a b); simp [mul_assoc]
 #align monoid_algebra.lift_nc_smul MonoidAlgebra.liftNc_smul
@@ -563,7 +584,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
       liftAddHom fun x =>
         (smulAddHom k A).flip
           (f x) with
-      toFun := fun a => a.Sum fun m t => t • f m
+      toFun := fun a => a.sum fun m t => t • f m
       map_smul' := fun t' a => by
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc]
@@ -758,12 +779,12 @@ def lift : (G →* A) ≃ (MonoidAlgebra k G →ₐ[k] A)
 variable {k G A}
 
 theorem lift_apply' (F : G →* A) (f : MonoidAlgebra k G) :
-    lift k G A F f = f.Sum fun a b => algebraMap k A b * F a :=
+    lift k G A F f = f.sum fun a b => algebraMap k A b * F a :=
   rfl
 #align monoid_algebra.lift_apply' MonoidAlgebra.lift_apply'
 
 theorem lift_apply (F : G →* A) (f : MonoidAlgebra k G) :
-    lift k G A F f = f.Sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
+    lift k G A F f = f.sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
 #align monoid_algebra.lift_apply MonoidAlgebra.lift_apply
 
 theorem lift_def (F : G →* A) : ⇑(lift k G A F) = liftNc ((algebraMap k A : k →+* A) : k →+ A) F :=
@@ -782,7 +803,7 @@ theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
 
 @[simp]
 theorem lift_single (F : G →* A) (a b) : lift k G A F (single a b) = b • F a := by
-  rw [lift_def, lift_nc_single, Algebra.smul_def, [anonymous]]
+  rw [lift_def, liftNc_single, Algebra.smul_def, [anonymous]]
 #align monoid_algebra.lift_single MonoidAlgebra.lift_single
 
 theorem lift_unique' (F : MonoidAlgebra k G →ₐ[k] A) :
@@ -793,7 +814,7 @@ theorem lift_unique' (F : MonoidAlgebra k G →ₐ[k] A) :
 /-- Decomposition of a `k`-algebra homomorphism from `monoid_algebra k G` by
 its values on `F (single a 1)`. -/
 theorem lift_unique (F : MonoidAlgebra k G →ₐ[k] A) (f : MonoidAlgebra k G) :
-    F f = f.Sum fun a b => b • F (single a 1) := by
+    F f = f.sum fun a b => b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
@@ -924,22 +945,22 @@ theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
 #align monoid_algebra.single_mul_apply MonoidAlgebra.single_mul_apply
 
 theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
-    (f * g) x = f.Sum fun a b => b * g (a⁻¹ * x) :=
+    (f * g) x = f.sum fun a b => b * g (a⁻¹ * x) :=
   calc
     (f * g) x = Sum f fun a b => (single a b * g) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.sum_mul, f.sum_single]
     _ = _ := by simp only [single_mul_apply, Finsupp.sum]
-    
+
 #align monoid_algebra.mul_apply_left MonoidAlgebra.mul_apply_left
 
 -- If we'd assumed `comm_semiring`, we could deduce this from `mul_apply_left`.
 theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
-    (f * g) x = g.Sum fun a b => f (x * a⁻¹) * b :=
+    (f * g) x = g.sum fun a b => f (x * a⁻¹) * b :=
   calc
     (f * g) x = Sum g fun a b => (f * single a b) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.mul_sum, g.sum_single]
     _ = _ := by simp only [mul_single_apply, Finsupp.sum]
-    
+
 #align monoid_algebra.mul_apply_right MonoidAlgebra.mul_apply_right
 
 end
@@ -1015,11 +1036,23 @@ It is the type of finite formal `k`-linear combinations of terms of `G`,
 endowed with the convolution product.
 -/
 def AddMonoidAlgebra :=
-  G →₀ k deriving Inhabited, AddCommMonoid
+  G →₀ k
 #align add_monoid_algebra AddMonoidAlgebra
 
-instance : CoeFun (AddMonoidAlgebra k G) fun _ => G → k :=
-  Finsupp.hasCoeToFun
+-- Porting note: The compiler couldn't derive this.
+instance AddMonoidAlgebra.inhabited : Inhabited (AddMonoidAlgebra k G) :=
+  inferInstanceAs (Inhabited (G →₀ k))
+#align add_monoid_algebra.inhabited AddMonoidAlgebra.inhabited
+
+-- Porting note: The compiler couldn't derive this.
+instance AddMonoidAlgebra.addCommMonoid : AddCommMonoid (AddMonoidAlgebra k G) :=
+  inferInstanceAs (AddCommMonoid (G →₀ k))
+#align add_monoid_algebra.add_comm_monoid AddMonoidAlgebra.addCommMonoid
+
+#eval "TODO: Rename this instance"
+instance AddMonoidAlgebra.hasCoeFun : CoeFun (AddMonoidAlgebra k G) fun _ => G → k :=
+  instCoeFunFinsuppForAll
+#align add_monoid_algebra.has_coe_to_fun AddMonoidAlgebra.hasCoeFun
 
 end
 
@@ -1033,7 +1066,7 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 /-- A non-commutative version of `add_monoid_algebra.lift`: given a additive homomorphism `f : k →+
 R` and a map `g : multiplicative G → R`, returns the additive
-homomorphism from `add_monoid_algebra k G` such that `lift_nc f g (single a b) = f b * g a`. If `f`
+homomorphism from `add_monoid_algebra k G` such that `liftNc f g (single a b) = f b * g a`. If `f`
 is a ring homomorphism and the range of either `f` or `g` is in center of `R`, then the result is a
 ring homomorphism.  If `R` is a `k`-algebra and `f = algebra_map k R`, then the result is an algebra
 homomorphism called `add_monoid_algebra.lift`. -/
@@ -1057,11 +1090,12 @@ variable [Semiring k] [Add G]
   whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
   such that `x + y = a`. (Think of the product of multivariate
   polynomials where `α` is the additive monoid of monomial exponents.) -/
-instance : Mul (AddMonoidAlgebra k G) :=
-  ⟨fun f g => f.Sum fun a₁ b₁ => g.Sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂)⟩
+instance hasMul : Mul (AddMonoidAlgebra k G) :=
+  ⟨fun f g => f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂)⟩
+#align add_monoid_algebra.has_mul AddMonoidAlgebra.hasMul
 
 theorem mul_def {f g : AddMonoidAlgebra k G} :
-    f * g = f.Sum fun a₁ b₁ => g.Sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂) :=
+    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂) :=
   rfl
 #align add_monoid_algebra.mul_def AddMonoidAlgebra.mul_def
 
@@ -1070,16 +1104,23 @@ instance : NonUnitalNonAssocSemiring (AddMonoidAlgebra k G) :=
     zero := 0
     mul := (· * ·)
     add := (· + ·)
+    -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
     left_distrib := fun f g h => by
-      haveI := Classical.decEq G <;>
-        simp only [mul_def, sum_add_index, mul_add, mul_zero, single_zero, single_add,
-          eq_self_iff_true, forall_true_iff, forall₃_true_iff, sum_add]
+      haveI := Classical.decEq G
+      simp only [mul_def]
+      refine Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_add_index ?_ ?_)) ?_ <;>
+        simp only [mul_add, mul_zero, single_zero, single_add, forall_true_iff, sum_add]
     right_distrib := fun f g h => by
-      haveI := Classical.decEq G <;>
-        simp only [mul_def, sum_add_index, add_mul, mul_zero, zero_mul, single_zero, single_add,
-          eq_self_iff_true, forall_true_iff, forall₃_true_iff, sum_zero, sum_add]
-    zero_mul := fun f => by simp only [mul_def, sum_zero_index]
-    mul_zero := fun f => by simp only [mul_def, sum_zero_index, sum_zero]
+      haveI := Classical.decEq G
+      simp only [mul_def]
+      refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
+        simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
+    zero_mul := fun f => by
+      simp only [mul_def]
+      exact sum_zero_index
+    mul_zero := fun f => by
+      simp only [mul_def]
+      exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero
     nsmul := fun n f => n • f
     nsmul_zero := by
       intros
@@ -1186,7 +1227,7 @@ instance : Semiring (AddMonoidAlgebra k G) :=
 
 variable [Semiring R]
 
-/-- `lift_nc` as a `ring_hom`, for when `f` and `g` commute -/
+/-- `liftNc` as a `ring_hom`, for when `f` and `g` commute -/
 def liftNcRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
     AddMonoidAlgebra k G →+* R :=
   { liftNc (f : k →+ R) g with
@@ -1280,7 +1321,7 @@ section MiscTheorems
 variable [Semiring k]
 
 theorem mul_apply [DecidableEq G] [Add G] (f g : AddMonoidAlgebra k G) (x : G) :
-    (f * g) x = f.Sum fun a₁ b₁ => g.Sum fun a₂ b₂ => if a₁ + a₂ = x then b₁ * b₂ else 0 :=
+    (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ + a₂ = x then b₁ * b₂ else 0 :=
   @MonoidAlgebra.mul_apply k (Multiplicative G) _ _ _ _ _ _
 #align add_monoid_algebra.mul_apply AddMonoidAlgebra.mul_apply
 
@@ -1707,12 +1748,12 @@ def lift : (Multiplicative G →* A) ≃ (AddMonoidAlgebra k G →ₐ[k] A) :=
 variable {k G A}
 
 theorem lift_apply' (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
-    lift k G A F f = f.Sum fun a b => algebraMap k A b * F (Multiplicative.ofAdd a) :=
+    lift k G A F f = f.sum fun a b => algebraMap k A b * F (Multiplicative.ofAdd a) :=
   rfl
 #align add_monoid_algebra.lift_apply' AddMonoidAlgebra.lift_apply'
 
 theorem lift_apply (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
-    lift k G A F f = f.Sum fun a b => b • F (Multiplicative.ofAdd a) := by
+    lift k G A F f = f.sum fun a b => b • F (Multiplicative.ofAdd a) := by
   simp only [lift_apply', Algebra.smul_def]
 #align add_monoid_algebra.lift_apply AddMonoidAlgebra.lift_apply
 
@@ -1734,7 +1775,7 @@ theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :
 @[simp]
 theorem lift_single (F : Multiplicative G →* A) (a b) :
     lift k G A F (single a b) = b • F (Multiplicative.ofAdd a) := by
-  rw [lift_def, lift_nc_single, Algebra.smul_def, [anonymous]]
+  rw [lift_def, liftNc_single, Algebra.smul_def, [anonymous]]
 #align add_monoid_algebra.lift_single AddMonoidAlgebra.lift_single
 
 theorem lift_unique' (F : AddMonoidAlgebra k G →ₐ[k] A) :
@@ -1745,7 +1786,7 @@ theorem lift_unique' (F : AddMonoidAlgebra k G →ₐ[k] A) :
 /-- Decomposition of a `k`-algebra homomorphism from `monoid_algebra k G` by
 its values on `F (single a 1)`. -/
 theorem lift_unique (F : AddMonoidAlgebra k G →ₐ[k] A) (f : MonoidAlgebra k G) :
-    F f = f.Sum fun a b => b • F (single a 1) := by
+    F f = f.sum fun a b => b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
@@ -1821,4 +1862,3 @@ def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :
     MonoidAlgebra k G ≃ₐ[R] AddMonoidAlgebra k (Additive G) :=
   { MonoidAlgebra.toAdditive k G with commutes' := fun r => by simp [MonoidAlgebra.toAdditive] }
 #align monoid_algebra.to_additive_alg_equiv MonoidAlgebra.toAdditiveAlgEquiv
-
