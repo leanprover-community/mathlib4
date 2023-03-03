@@ -8,12 +8,12 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.MetricSpace.EmetricSpace
+import Mathlib.Topology.MetricSpace.EMetricSpace
 
 /-!
 # Metric separated pairs of sets
 
-In this file we define the predicate `is_metric_separated`. We say that two sets in an (extended)
+In this file we define the predicate `IsMetricSeparated`. We say that two sets in an (extended)
 metric space are *metric separated* if the (extended) distance between `x ∈ s` and `y ∈ t` is
 bounded from below by a positive constant.
 
@@ -21,11 +21,10 @@ This notion is useful, e.g., to define metric outer measures.
 -/
 
 
-open Emetric Set
+open EMetric Set
 
 noncomputable section
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (r «expr ≠ » 0) -/
 /-- Two sets in an (extended) metric space are called *metric separated* if the (extended) distance
 between `x ∈ s` and `y ∈ t` is bounded from below by a positive constant. -/
 def IsMetricSeparated {X : Type _} [EMetricSpace X] (s t : Set X) :=
@@ -61,8 +60,8 @@ protected theorem disjoint (h : IsMetricSeparated s t) : Disjoint s t :=
   Set.disjoint_left.mpr fun x hx1 hx2 => r0 <| by simpa using hr x hx1 x hx2
 #align is_metric_separated.disjoint IsMetricSeparated.disjoint
 
-theorem subset_compl_right (h : IsMetricSeparated s t) : s ⊆ tᶜ := fun x hs ht =>
-  h.Disjoint.le_bot ⟨hs, ht⟩
+theorem subset_compl_right (h : IsMetricSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>
+  h.disjoint.le_bot ⟨hs, ht⟩
 #align is_metric_separated.subset_compl_right IsMetricSeparated.subset_compl_right
 
 @[mono]
@@ -109,16 +108,16 @@ theorem union_right_iff {t'} :
 
 theorem finite_unionᵢ_left_iff {ι : Type _} {I : Set ι} (hI : I.Finite) {s : ι → Set X}
     {t : Set X} : IsMetricSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, IsMetricSeparated (s i) t := by
-  refine' finite.induction_on hI (by simp) fun i I hi _ hI => _
-  rw [bUnion_insert, ball_insert_iff, union_left_iff, hI]
+  refine' Finite.induction_on hI (by simp) @fun i I _ _ hI => _
+  rw [bunionᵢ_insert, ball_insert_iff, union_left_iff, hI]
 #align is_metric_separated.finite_Union_left_iff IsMetricSeparated.finite_unionᵢ_left_iff
 
-alias finite_Union_left_iff ↔ _ finite_Union_left
+alias finite_unionᵢ_left_iff ↔ _ finite_unionᵢ_left
 #align is_metric_separated.finite_Union_left IsMetricSeparated.finite_unionᵢ_left
 
 theorem finite_unionᵢ_right_iff {ι : Type _} {I : Set ι} (hI : I.Finite) {s : Set X}
     {t : ι → Set X} : IsMetricSeparated s (⋃ i ∈ I, t i) ↔ ∀ i ∈ I, IsMetricSeparated s (t i) := by
-  simpa only [@comm _ _ s] using finite_Union_left_iff hI
+  simpa only [@comm _ _ s] using finite_unionᵢ_left_iff hI
 #align is_metric_separated.finite_Union_right_iff IsMetricSeparated.finite_unionᵢ_right_iff
 
 @[simp]
@@ -127,7 +126,7 @@ theorem finset_unionᵢ_left_iff {ι : Type _} {I : Finset ι} {s : ι → Set X
   finite_unionᵢ_left_iff I.finite_toSet
 #align is_metric_separated.finset_Union_left_iff IsMetricSeparated.finset_unionᵢ_left_iff
 
-alias finset_Union_left_iff ↔ _ finset_Union_left
+alias finset_unionᵢ_left_iff ↔ _ finset_unionᵢ_left
 #align is_metric_separated.finset_Union_left IsMetricSeparated.finset_unionᵢ_left
 
 @[simp]
@@ -136,8 +135,7 @@ theorem finset_unionᵢ_right_iff {ι : Type _} {I : Finset ι} {s : Set X} {t :
   finite_unionᵢ_right_iff I.finite_toSet
 #align is_metric_separated.finset_Union_right_iff IsMetricSeparated.finset_unionᵢ_right_iff
 
-alias finset_Union_right_iff ↔ _ finset_Union_right
+alias finset_unionᵢ_right_iff ↔ _ finset_unionᵢ_right
 #align is_metric_separated.finset_Union_right IsMetricSeparated.finset_unionᵢ_right
 
 end IsMetricSeparated
-
