@@ -55,7 +55,7 @@ also `star`-preserving. -/
 structure NonUnitalStarAlgHom (R A B : Type _) [Monoid R] [NonUnitalNonAssocSemiring A]
   [DistribMulAction R A] [Star A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
   [Star B] extends A →ₙₐ[R] B where
-  map_star' : ∀ a : A, to_fun (star a) = star (to_fun a)
+  map_star' : ∀ a : A, toFun (star a) = star (toFun a)
 #align non_unital_star_alg_hom NonUnitalStarAlgHom
 
 -- mathport name: «expr →⋆ₙₐ »
@@ -68,7 +68,7 @@ notation:25 A " →⋆ₙₐ[" R "] " B => NonUnitalStarAlgHom R A B
 by forgetting the interaction with the star operation. -/
 add_decl_doc NonUnitalStarAlgHom.toNonUnitalAlgHom
 
-/-- `non_unital_star_alg_hom_class F R A B` asserts `F` is a type of bundled non-unital ⋆-algebra
+/-- `NonUnitalStarAlgHomClass F R A B` asserts `F` is a type of bundled non-unital ⋆-algebra
 homomorphisms from `A` to `B`. -/
 class NonUnitalStarAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
   (B : outParam (Type _)) [Monoid R] [Star A] [Star B] [NonUnitalNonAssocSemiring A]
@@ -76,8 +76,8 @@ class NonUnitalStarAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outPara
   NonUnitalAlgHomClass F R A B, StarHomClass F A B
 #align non_unital_star_alg_hom_class NonUnitalStarAlgHomClass
 
--- `R` becomes a metavariable but that's fine because it's an `out_param`
-attribute [nolint dangerous_instance] NonUnitalStarAlgHomClass.toStarHomClass
+-- `R` becomes a metavariable but that's fine because it's an `outParam`
+attribute [nolint dangerousInstance] NonUnitalStarAlgHomClass.toStarHomClass
 
 namespace NonUnitalStarAlgHomClass
 
@@ -111,24 +111,25 @@ variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
 instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B
     where
-  coe := toFun
-  coe_injective' := by rintro ⟨f, _⟩ ⟨g, _⟩ ⟨h⟩ <;> congr
+  coe f := f.toFun
+  coe_injective' := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
   map_smul f := f.map_smul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
   map_star f := f.map_star'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun (A →⋆ₙₐ[R] B) fun _ => A → B :=
-  FunLike.hasCoeToFun
+-- Porting note: this is no longer useful
+--/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+--directly. -/
+--instance : CoeFun (A →⋆ₙₐ[R] B) fun _ => A → B :=
+--  FunLike.hasCoeToFun
 
-initialize_simps_projections NonUnitalStarAlgHom (toFun → apply)
+initialize_simps_projections NonUnitalStarAlgHom (toNonUnitalAlgHom_toFun → apply)
 
-@[simp, protected]
-theorem coe_coe {F : Type _} [NonUnitalStarAlgHomClass F R A B] (f : F) : ⇑(f : A →⋆ₙₐ[R] B) = f :=
-  rfl
+@[simp]
+protected theorem coe_coe {F : Type _} [NonUnitalStarAlgHomClass F R A B] (f : F) :
+  ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
 #align non_unital_star_alg_hom.coe_coe NonUnitalStarAlgHom.coe_coe
 
 @[simp]
@@ -141,7 +142,7 @@ theorem ext {f g : A →⋆ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align non_unital_star_alg_hom.ext NonUnitalStarAlgHom.ext
 
-/-- Copy of a `non_unital_star_alg_hom` with a new `to_fun` equal to the old one. Useful
+/-- Copy of a `NonUnitalStarAlgHom` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
 protected def copy (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆ₙₐ[R] B
     where
@@ -164,13 +165,13 @@ theorem copy_eq (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f
 
 @[simp]
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
-    ((⟨f, h₁, h₂, h₃, h₄, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
+    ((⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
   rfl
 #align non_unital_star_alg_hom.coe_mk NonUnitalStarAlgHom.coe_mk
 
 @[simp]
-theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) : (⟨f, h₁, h₂, h₃, h₄, h₅⟩ : A →⋆ₙₐ[R] B) = f :=
-  by
+theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) :
+  (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
   ext
   rfl
 #align non_unital_star_alg_hom.mk_coe NonUnitalStarAlgHom.mk_coe
@@ -181,7 +182,7 @@ variable (R A)
 
 /-- The identity as a non-unital ⋆-algebra homomorphism. -/
 protected def id : A →⋆ₙₐ[R] A :=
-  { (1 : A →ₙₐ[R] A) with map_star' := fun x => rfl }
+  { (1 : A →ₙₐ[R] A) with map_star' := fun _ => rfl }
 #align non_unital_star_alg_hom.id NonUnitalStarAlgHom.id
 
 @[simp]
@@ -197,7 +198,7 @@ def comp (f : B →⋆ₙₐ[R] C) (g : A →⋆ₙₐ[R] B) : A →⋆ₙₐ[R]
   { f.toNonUnitalAlgHom.comp g.toNonUnitalAlgHom with
     map_star' := by
       simp only [map_star, NonUnitalAlgHom.toFun_eq_coe, eq_self_iff_true, NonUnitalAlgHom.coe_comp,
-        coe_to_non_unital_alg_hom, Function.comp_apply, forall_const] }
+        coe_toNonUnitalAlgHom, Function.comp_apply, forall_const] }
 #align non_unital_star_alg_hom.comp NonUnitalStarAlgHom.comp
 
 @[simp]
@@ -260,10 +261,10 @@ instance : Inhabited (A →⋆ₙₐ[R] B) :=
   ⟨0⟩
 
 instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
-  { NonUnitalStarAlgHom.monoid,
-    NonUnitalStarAlgHom.hasZero with
-    zero_mul := fun f => ext fun x => rfl
-    mul_zero := fun f => ext fun x => map_zero f }
+  { inferInstanceAs (Monoid (A →⋆ₙₐ[R] A)),
+    inferInstanceAs (Zero (A →⋆ₙₐ[R] A)) with
+    zero_mul := fun _ => ext fun _ => rfl
+    mul_zero := fun f => ext fun _ => map_zero f }
 
 @[simp]
 theorem coe_zero : ((0 : A →⋆ₙₐ[R] B) : A → B) = 0 :=
@@ -287,7 +288,7 @@ section Unital
 equipped with a `star` operation, and this homomorphism is also `star`-preserving. -/
 structure StarAlgHom (R A B : Type _) [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
   [Semiring B] [Algebra R B] [Star B] extends AlgHom R A B where
-  map_star' : ∀ x : A, to_fun (star x) = star (to_fun x)
+  map_star' : ∀ x : A, toFun (star x) = star (toFun x)
 #align star_alg_hom StarAlgHom
 
 -- mathport name: «expr →⋆ₐ »
@@ -309,7 +310,7 @@ class StarAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _
 #align star_alg_hom_class StarAlgHomClass
 
 -- `R` becomes a metavariable but that's fine because it's an `out_param`
-attribute [nolint dangerous_instance] StarAlgHomClass.toStarHomClass
+attribute [nolint dangerousInstance] StarAlgHomClass.toStarHomClass
 
 namespace StarAlgHomClass
 
@@ -317,11 +318,9 @@ variable (F R A B : Type _) [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
 
 variable [Semiring B] [Algebra R B] [Star B] [hF : StarAlgHomClass F R A B]
 
-include hF
-
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalStarAlgHomClass : NonUnitalStarAlgHomClass F R A B :=
-  { StarAlgHomClass.toAlgHomClass F R A B, StarAlgHomClass.toStarHomClass F R A B with
+  { StarAlgHomClass.toAlgHomClass, StarAlgHomClass.toStarHomClass with
     map_smul := map_smul }
 #align star_alg_hom_class.to_non_unital_star_alg_hom_class StarAlgHomClass.toNonUnitalStarAlgHomClass
 
@@ -341,29 +340,23 @@ variable {F R A B C D : Type _} [CommSemiring R] [Semiring A] [Algebra R A] [Sta
 instance : StarAlgHomClass (A →⋆ₐ[R] B) R A B
     where
   coe f := f.toFun
-  coe_injective' f g h := by
-    obtain ⟨_, _, _, _, _, _, _⟩ := f <;> obtain ⟨_, _, _, _, _, _, _⟩ := g <;> congr
-  map_mul := map_mul'
-  map_one := map_one'
-  map_add := map_add'
-  map_zero := map_zero'
-  commutes := commutes'
-  map_star := map_star'
+  coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
+  map_mul f := f.map_mul'
+  map_one f := f.map_one'
+  map_add f := f.map_add'
+  map_zero f := f.map_zero'
+  commutes f := f.commutes'
+  map_star f := f.map_star'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun (A →⋆ₐ[R] B) fun _ => A → B :=
-  FunLike.hasCoeToFun
-
-@[simp, protected]
-theorem coe_coe {F : Type _} [StarAlgHomClass F R A B] (f : F) : ⇑(f : A →⋆ₐ[R] B) = f :=
+@[simp]
+protected theorem coe_coe {F : Type _} [StarAlgHomClass F R A B] (f : F) : ⇑(f : A →⋆ₐ[R] B) = f :=
   rfl
 #align star_alg_hom.coe_coe StarAlgHom.coe_coe
 
 initialize_simps_projections StarAlgHom (toFun → apply)
 
 @[simp]
-theorem coe_toAlgHom {f : A →⋆ₐ[R] B} : (f.toAlgHom : A → B) = f :=
+theorem coe_toAlgHom {f : A →⋆ₐ[R] B} : (↑(f.toAlgHom : A →ₐ[R] B) : A → B) = f :=
   rfl
 #align star_alg_hom.coe_to_alg_hom StarAlgHom.coe_toAlgHom
 
@@ -372,7 +365,7 @@ theorem ext {f g : A →⋆ₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align star_alg_hom.ext StarAlgHom.ext
 
-/-- Copy of a `star_alg_hom` with a new `to_fun` equal to the old one. Useful
+/-- Copy of a `star_alg_hom` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
 protected def copy (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆ₐ[R] B
     where
@@ -396,13 +389,13 @@ theorem copy_eq (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h
 
 @[simp]
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
-    ((⟨f, h₁, h₂, h₃, h₄, h₅, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
+    ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
   rfl
 #align star_alg_hom.coe_mk StarAlgHom.coe_mk
 
 @[simp]
 theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨f, h₁, h₂, h₃, h₄, h₅, h₆⟩ : A →⋆ₐ[R] B) = f := by
+    (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) = f := by
   ext
   rfl
 #align star_alg_hom.mk_coe StarAlgHom.mk_coe
@@ -413,7 +406,7 @@ variable (R A)
 
 /-- The identity as a `star_alg_hom`. -/
 protected def id : A →⋆ₐ[R] A :=
-  { AlgHom.id _ _ with map_star' := fun x => rfl }
+  { AlgHom.id _ _ with map_star' := fun _ => rfl }
 #align star_alg_hom.id StarAlgHom.id
 
 @[simp]
@@ -430,7 +423,7 @@ instance : Inhabited (A →⋆ₐ[R] A) :=
 def comp (f : B →⋆ₐ[R] C) (g : A →⋆ₐ[R] B) : A →⋆ₐ[R] C :=
   { f.toAlgHom.comp g.toAlgHom with
     map_star' := by
-      simp only [map_star, AlgHom.toFun_eq_coe, AlgHom.coe_comp, coe_to_alg_hom,
+      simp only [map_star, AlgHom.toFun_eq_coe, AlgHom.coe_comp, coe_toAlgHom,
         Function.comp_apply, eq_self_iff_true, forall_const] }
 #align star_alg_hom.comp StarAlgHom.comp
 
@@ -653,8 +646,8 @@ equivalences with a single structure. Currently, `alg_equiv` requires unital alg
 why this structure does not extend it. -/
 structure StarAlgEquiv (R A B : Type _) [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
   [SMul R B] [Star B] extends A ≃+* B where
-  map_star' : ∀ a : A, to_fun (star a) = star (to_fun a)
-  map_smul' : ∀ (r : R) (a : A), to_fun (r • a) = r • to_fun a
+  map_star' : ∀ a : A, toFun (star a) = star (toFun a)
+  map_smul' : ∀ (r : R) (a : A), toFun (r • a) = r • toFun a
 #align star_alg_equiv StarAlgEquiv
 
 -- mathport name: «expr ≃⋆ₐ »
@@ -748,7 +741,7 @@ instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
   map_smul := map_smul'
 
 /-- Helper instance for when there's too many metavariables to apply
-`fun_like.has_coe_to_fun` directly. -/
+`fun_like.has_coe_toFun` directly. -/
 instance : CoeFun (A ≃⋆ₐ[R] B) fun _ => A → B :=
   ⟨StarAlgEquiv.toFun⟩
 
@@ -945,4 +938,3 @@ theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
 end Bijective
 
 end StarAlgEquiv
-
