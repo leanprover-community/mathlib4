@@ -8,14 +8,14 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
-# `discrete punit` has limits and colimits
+# `Discrete PUnit` has limits and colimits
 
-Mostly for the sake of constructing trivial examples, we show all (co)cones into `discrete punit`
-are (co)limit (co)cones. We also show that such (co)cones exist, and that `discrete punit` has all
+Mostly for the sake of constructing trivial examples, we show all (co)cones into `Discrete PUnit`
+are (co)limit (co)cones. We also show that such (co)cones exist, and that `Discrete PUnit` has all
 (co)limits.
 -/
 
@@ -28,29 +28,32 @@ namespace CategoryTheory.Limits
 
 variable {J : Type v} [Category.{v'} J] {F : J ⥤ Discrete PUnit}
 
-/-- A trivial cone for a functor into `punit`. `punit_cone_is_limit` shows it is a limit. -/
-def punitCone : Cone F :=
-  ⟨⟨⟨⟩⟩, (Functor.pUnitExt _ _).Hom⟩
-#align category_theory.limits.punit_cone CategoryTheory.Limits.punitCone
+/-- A trivial cone for a functor into `PUnit`. `pUnitConeIsLimit` shows it is a limit. -/
+def pUnitCone : Cone F :=
+  ⟨⟨⟨⟩⟩, (Functor.pUnitExt _ _).hom⟩
+#align category_theory.limits.punit_cone CategoryTheory.Limits.pUnitCone
 
-/-- A trivial cocone for a functor into `punit`. `punit_cocone_is_limit` shows it is a colimit. -/
-def punitCocone : Cocone F :=
-  ⟨⟨⟨⟩⟩, (Functor.pUnitExt _ _).Hom⟩
-#align category_theory.limits.punit_cocone CategoryTheory.Limits.punitCocone
+/-- A trivial cocone for a functor into `PUnit`. `pUnitCoconeIsLimit` shows it is a colimit. -/
+def pUnitCocone : Cocone F :=
+  ⟨⟨⟨⟩⟩, (Functor.pUnitExt _ _).hom⟩
+#align category_theory.limits.punit_cocone CategoryTheory.Limits.pUnitCocone
 
-/-- Any cone over a functor into `punit` is a limit cone.
+/-- Any cone over a functor into `PUnit` is a limit cone.
 -/
-def punitConeIsLimit {c : Cone F} : IsLimit c := by tidy
-#align category_theory.limits.punit_cone_is_limit CategoryTheory.Limits.punitConeIsLimit
+def pUnitConeIsLimit {c : Cone F} : IsLimit c where
+  lift := fun s => eqToHom (by simp)
+#align category_theory.limits.punit_cone_is_limit CategoryTheory.Limits.pUnitConeIsLimit
 
-/-- Any cocone over a functor into `punit` is a colimit cocone.
+/-- Any cocone over a functor into `PUnit` is a colimit cocone.
 -/
-def punitCoconeIsColimit {c : Cocone F} : IsColimit c := by tidy
-#align category_theory.limits.punit_cocone_is_colimit CategoryTheory.Limits.punitCoconeIsColimit
+def pUnitCoconeIsColimit {c : Cocone F} : IsColimit c where
+  desc := fun s => eqToHom (by simp)
+#align category_theory.limits.punit_cocone_is_colimit CategoryTheory.Limits.pUnitCoconeIsColimit
 
-instance : HasLimitsOfSize.{v', v} (Discrete PUnit) := by tidy
+instance : HasLimitsOfSize.{v', v} (Discrete PUnit) :=
+  ⟨fun _ _ => ⟨fun _ => ⟨pUnitCone, pUnitConeIsLimit⟩⟩⟩
 
-instance : HasColimitsOfSize.{v', v} (Discrete PUnit) := by tidy
+instance : HasColimitsOfSize.{v', v} (Discrete PUnit) :=
+  ⟨fun _ _ => ⟨fun _ => ⟨pUnitCocone, pUnitCoconeIsColimit⟩⟩⟩
 
 end CategoryTheory.Limits
-
