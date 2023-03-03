@@ -8,7 +8,7 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Lean.Data.RBTree
+import Std.Data.RBMap
 import Mathlib.Data.Num.Basic
 import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic
@@ -56,15 +56,12 @@ instance [Repr α] : Repr (Tree α) :=
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
 
-open Lean (RBNode)
+open Std (RBNode)
 
--- Porting note: In Lean 4 RBNode's definition is changed. In Lean 3 RBNode takes a value only.
---               In Lean 4 it takes a key and a value (that map depend on a key).
---               Here we use the key only and discard the value.
 /-- Makes a `tree α` out of a red-black tree. -/
-def ofRBNode : RBNode α β → Tree α
-  | RBNode.leaf => nil
-  | RBNode.node _color l key _value r => node key (ofRBNode l) (ofRBNode r)
+def ofRBNode : RBNode α → Tree α
+  | RBNode.nil => nil
+  | RBNode.node _color l key r => node key (ofRBNode l) (ofRBNode r)
 #align tree.of_rbnode Tree.ofRBNode
 
 /-- Finds the index of an element in the tree assuming the tree has been
