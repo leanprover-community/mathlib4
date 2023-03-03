@@ -148,14 +148,16 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
         rintro m hm i
         rw [disjoint_iff_inf_le]
         rintro y ⟨hym, hyx⟩
-        rcases memD.1 hym with ⟨z, rfl, hzi, H, hz⟩
-        have : z ∉ ball x (2⁻¹ ^ k) := fun hz => H n (by linarith) i (hsub hz)
+        rcases memD.1 hym with ⟨z, rfl, _hzi, H, hz⟩
+        -- porting note: `clear` needed due to `linarith` bug
+        have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by clear hz hD; linarith) i (hsub hz')
         apply this
         calc
           edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
           _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := (ENNReal.add_lt_add hz hyx)
           _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
-            (add_le_add (hpow_le <| by linarith) (hpow_le <| by linarith))
+            -- porting note: `clear` needed due to `linarith` bug
+            (add_le_add (hpow_le <| by clear hz hD; linarith) (hpow_le <| by clear hz hD; linarith))
           _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]
 
       -- For each `m ≤ n + k` there is at most one `j` such that `D m j ∩ B` is nonempty.
