@@ -86,7 +86,7 @@ theorem comap_prime (hinv : ∀ a, g (f a : β) = a) (hp : Prime (f p)) : Prime 
               simp).imp
           _ _ <;>
       · intro h
-        convert ← map_dvd g h; funext c; rw [hinv, hinv]⟩
+        convert ← map_dvd g h using 2; rw [hinv, hinv]⟩
 #align comap_prime comap_prime
 
 theorem MulEquiv.prime_iff (e : α ≃* β) : Prime p ↔ Prime (e p) :=

@@ -6,6 +6,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
@@ -290,17 +291,22 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Over
 import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.PathCategory
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
@@ -308,6 +314,7 @@ import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Skeletal
+import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Thin
@@ -910,6 +917,7 @@ import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Dfinsupp
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.LinearIndependent
@@ -1119,6 +1127,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Congr!
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Continuity.Init
@@ -1278,6 +1287,7 @@ import Mathlib.Topology.LocalHomeomorph
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
+import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
