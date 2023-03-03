@@ -85,10 +85,9 @@ instance MonoidAlgebra.addCommMonoid : AddCommMonoid (MonoidAlgebra k G) :=
   inferInstanceAs (AddCommMonoid (G →₀ k))
 #align monoid_algebra.add_comm_monoid MonoidAlgebra.addCommMonoid
 
-#eval "TODO: Rename this instance"
-instance MonoidAlgebra.hasCoeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
-  instCoeFunFinsuppForAll
-#align monoid_algebra.has_coe_to_fun MonoidAlgebra.hasCoeFun
+instance MonoidAlgebra.coeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
+  Finsupp.coeFun
+#align monoid_algebra.has_coe_to_fun MonoidAlgebra.coeFun
 
 end
 
@@ -195,8 +194,9 @@ variable [NonAssocSemiring R] [Semiring k] [One G]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function
   that is `1` at `1` and zero elsewhere. -/
-instance : One (MonoidAlgebra k G) :=
+instance one : One (MonoidAlgebra k G) :=
   ⟨single 1 1⟩
+#align monoid_algebra.has_one MonoidAlgebra.one
 
 theorem one_def : (1 : MonoidAlgebra k G) = single 1 1 :=
   rfl
@@ -274,9 +274,8 @@ instance nonUnitalCommSemiring [CommSemiring k] [CommSemigroup G] :
       simp only [mul_comm] }
 #align monoid_algebra.non_unital_comm_semiring MonoidAlgebra.nonUnitalCommSemiring
 
-#eval "TODO: Rename this instance"
 instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial (MonoidAlgebra k G) :=
-  Finsupp.instNontrivialFinsupp
+  Finsupp.nontrivial
 #align monoid_algebra.nontrivial MonoidAlgebra.nontrivial
 
 /-! #### Derived instances -/
@@ -292,9 +291,8 @@ instance unique [Semiring k] [Subsingleton k] : Unique (MonoidAlgebra k G) :=
   Finsupp.uniqueOfRight
 #align monoid_algebra.unique MonoidAlgebra.unique
 
-#eval "TODO: Rename this instance"
 instance addCommGroup [Ring k] : AddCommGroup (MonoidAlgebra k G) :=
-  Finsupp.instAddCommGroupFinsuppToZeroToNegZeroClassToSubNegZeroMonoidToSubtractionMonoidToDivisionAddCommMonoid
+  Finsupp.addCommGroup
 #align monoid_algebra.add_comm_group MonoidAlgebra.addCommGroup
 
 instance nonUnitalNonAssocRing [Ring k] [Mul G] : NonUnitalNonAssocRing (MonoidAlgebra k G) :=
@@ -334,9 +332,8 @@ instance commRing [CommRing k] [CommMonoid G] : CommRing (MonoidAlgebra k G) :=
 
 variable {S : Type _}
 
-#eval "TODO: Rename this instance"
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
-  Finsupp.instSMulZeroClassFinsuppZero
+  Finsupp.smulZeroClass
 #align monoid_algebra.smul_zero_class MonoidAlgebra.smulZeroClass
 
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
@@ -348,33 +345,29 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
   Finsupp.distribMulAction G k
 #align monoid_algebra.distrib_mul_action MonoidAlgebra.distribMulAction
 
-#eval "TODO: Rename this instance"
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
-  Finsupp.instModuleFinsuppToZeroToAddMonoidAddCommMonoid G k
+  Finsupp.module G k
 #align monoid_algebra.module MonoidAlgebra.module
 
-#eval "TODO: Rename this instance"
 instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
     [Nonempty G] : FaithfulSMul R (MonoidAlgebra k G) :=
-  Finsupp.instFaithfulSMulFinsuppToZeroToSMulZeroInstSMulZeroClassFinsuppZeroToSMulZeroClassToAddZeroClass
+  Finsupp.faithfulSMul
 #align monoid_algebra.faithful_smul MonoidAlgebra.faithfulSMul
 
-#eval "TODO: Rename this instance"
-instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k] [DistribMulAction S k] [SMul R S]
-    [IsScalarTower R S k] : IsScalarTower R S (MonoidAlgebra k G) :=
-  Finsupp.instIsScalarTowerFinsuppToZeroToSMulZeroInstSMulZeroClassFinsuppZeroToSMulZeroClassToAddZeroClassToDistribSMulToSMulInstSMulZeroClassFinsuppZeroToSMulZeroClassToDistribSMul G k
+instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
+    [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
+    IsScalarTower R S (MonoidAlgebra k G) :=
+  Finsupp.isScalarTower G k
 #align monoid_algebra.is_scalar_tower MonoidAlgebra.isScalarTower
 
-#eval "TODO: Rename this instance"
-instance smulCommClass [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k] [DistribMulAction S k]
-    [SMulCommClass R S k] : SMulCommClass R S (MonoidAlgebra k G) :=
-  Finsupp.instSMulCommClassFinsuppToZeroToSMulZeroInstSMulZeroClassFinsuppZeroToSMulZeroClassToAddZeroClassToDistribSMulToSMulInstSMulZeroClassFinsuppZeroToSMulZeroClassToDistribSMul G k
+instance smulCommClass [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
+    [DistribMulAction S k] [SMulCommClass R S k] : SMulCommClass R S (MonoidAlgebra k G) :=
+  Finsupp.smulCommClass G k
 #align monoid_algebra.smul_comm_tower MonoidAlgebra.smulCommClass
 
-#eval "TODO: Rename this instance"
 instance isCentralScalar [Monoid R] [Semiring k] [DistribMulAction R k] [DistribMulAction Rᵐᵒᵖ k]
     [IsCentralScalar R k] : IsCentralScalar R (MonoidAlgebra k G) :=
-  Finsupp.instIsCentralScalarFinsuppToZeroToSMulZeroInstSMulZeroClassFinsuppZeroToSMulZeroClassToAddZeroClassToDistribSMulMulOppositeInstMonoidMulOpposite G k
+  Finsupp.isCentralScalar G k
 #align monoid_algebra.is_central_scalar MonoidAlgebra.isCentralScalar
 
 /-- This is not an instance as it conflicts with `monoid_algebra.distrib_mul_action` when `G = kˣ`.
@@ -1134,10 +1127,9 @@ instance AddMonoidAlgebra.addCommMonoid : AddCommMonoid (AddMonoidAlgebra k G) :
   inferInstanceAs (AddCommMonoid (G →₀ k))
 #align add_monoid_algebra.add_comm_monoid AddMonoidAlgebra.addCommMonoid
 
-#eval "TODO: Rename this instance"
-instance AddMonoidAlgebra.hasCoeFun : CoeFun (AddMonoidAlgebra k G) fun _ => G → k :=
-  instCoeFunFinsuppForAll
-#align add_monoid_algebra.has_coe_to_fun AddMonoidAlgebra.hasCoeFun
+instance AddMonoidAlgebra.coeFun : CoeFun (AddMonoidAlgebra k G) fun _ => G → k :=
+  Finsupp.coeFun
+#align add_monoid_algebra.has_coe_to_fun AddMonoidAlgebra.coeFun
 
 end
 
@@ -1301,9 +1293,8 @@ end MulOneClass
 
 section Semiring
 
-#eval "TODO: Rename this instance"
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (AddMonoidAlgebra k G) :=
-  Finsupp.instSMulZeroClassFinsuppZero
+  Finsupp.smulZeroClass
 #align add_monoid_algebra.smul_zero_class AddMonoidAlgebra.smulZeroClass
 
 variable [Semiring k] [AddMonoid G]
@@ -1336,9 +1327,8 @@ instance nonUnitalCommSemiring [CommSemiring k] [AddCommSemigroup G] :
     mul_comm := @mul_comm (MonoidAlgebra k <| Multiplicative G) _ }
 #align add_monoid_algebra.non_unital_comm_semiring AddMonoidAlgebra.nonUnitalCommSemiring
 
-#eval "TODO: Rename this instance"
 instance nontrivial [Semiring k] [Nontrivial k] [Nonempty G] : Nontrivial (AddMonoidAlgebra k G) :=
-  Finsupp.instNontrivialFinsupp
+  Finsupp.nontrivial
 #align add_monoid_algebra.nontrivial AddMonoidAlgebra.nontrivial
 
 /-! #### Derived instances -/
@@ -1350,12 +1340,12 @@ instance commSemiring [CommSemiring k] [AddCommMonoid G] : CommSemiring (AddMono
   { AddMonoidAlgebra.nonUnitalCommSemiring, AddMonoidAlgebra.semiring with }
 #align add_monoid_algebra.comm_semiring AddMonoidAlgebra.commSemiring
 
-instance [Semiring k] [Subsingleton k] : Unique (AddMonoidAlgebra k G) :=
+instance unique [Semiring k] [Subsingleton k] : Unique (AddMonoidAlgebra k G) :=
   Finsupp.uniqueOfRight
+#align add_monoid_algebra.unique AddMonoidAlgebra.unique
 
-#eval "TODO: Rename this instance"
 instance addCommGroup [Ring k] : AddCommGroup (AddMonoidAlgebra k G) :=
-  Finsupp.instAddCommGroupFinsuppToZeroToNegZeroClassToSubNegZeroMonoidToSubtractionMonoidToDivisionAddCommMonoid
+  Finsupp.addCommGroup
 #align add_monoid_algebra.add_comm_group AddMonoidAlgebra.addCommGroup
 
 instance nonUnitalNonAssocRing [Ring k] [Add G] : NonUnitalNonAssocRing (AddMonoidAlgebra k G) :=
@@ -1400,34 +1390,29 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
   Finsupp.distribMulAction G k
 #align add_monoid_algebra.distrib_mul_action AddMonoidAlgebra.distribMulAction
 
-#eval "TODO: Rename this instance"
 instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
     [Nonempty G] : FaithfulSMul R (AddMonoidAlgebra k G) :=
-  Finsupp.instFaithfulSMulFinsuppToZeroToSMulZeroInstSMulZeroClassFinsuppZeroToSMulZeroClassToAddZeroClass
+  Finsupp.faithfulSMul
 #align add_monoid_algebra.faithful_smul AddMonoidAlgebra.faithfulSMul
 
-#eval "TODO: Rename this instance"
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (AddMonoidAlgebra k G) :=
-  Finsupp.instModuleFinsuppToZeroToAddMonoidAddCommMonoid G k
+  Finsupp.module G k
 #align add_monoid_algebra.module AddMonoidAlgebra.module
 
-#eval "TODO: Rename this instance"
 instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
     [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
     IsScalarTower R S (AddMonoidAlgebra k G) :=
-  Finsupp.instIsScalarTowerFinsuppToZeroToSMulZeroInstSMulZeroClassFinsuppZeroToSMulZeroClassToAddZeroClassToDistribSMulToSMulInstSMulZeroClassFinsuppZeroToSMulZeroClassToDistribSMul G k
+  Finsupp.isScalarTower G k
 #align add_monoid_algebra.is_scalar_tower AddMonoidAlgebra.isScalarTower
 
-#eval "TODO: Rename this instance"
 instance smulCommClass [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
     [DistribMulAction S k] [SMulCommClass R S k] : SMulCommClass R S (AddMonoidAlgebra k G) :=
-  Finsupp.instSMulCommClassFinsuppToZeroToSMulZeroInstSMulZeroClassFinsuppZeroToSMulZeroClassToAddZeroClassToDistribSMulToSMulInstSMulZeroClassFinsuppZeroToSMulZeroClassToDistribSMul G k
+  Finsupp.smulCommClass G k
 #align add_monoid_algebra.smul_comm_tower AddMonoidAlgebra.smulCommClass
 
-#eval "TODO: Rename this instance"
 instance isCentralScalar [Monoid R] [Semiring k] [DistribMulAction R k] [DistribMulAction Rᵐᵒᵖ k]
     [IsCentralScalar R k] : IsCentralScalar R (AddMonoidAlgebra k G) :=
-  Finsupp.instIsCentralScalarFinsuppToZeroToSMulZeroInstSMulZeroClassFinsuppZeroToSMulZeroClassToAddZeroClassToDistribSMulMulOppositeInstMonoidMulOpposite G k
+  Finsupp.isCentralScalar G k
 #align add_monoid_algebra.is_central_scalar AddMonoidAlgebra.isCentralScalar
 
 /-! It is hard to state the equivalent of `distrib_mul_action G (add_monoid_algebra k G)`
