@@ -138,8 +138,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
       norm_cast
     · trans (∑ i : Fin d.succ, (gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i))
       · refine' sum_congr rfl fun i _ => _
-        rw [gosper_trick i.is_le]
-        field_simp
+        rw [gosper_trick i.is_le, mul_div]
       · rw [← sum_range fun i => gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i,
             sum_range_sub, Nat.succ_eq_add_one]
         rw [gosper_catalan_sub_eq_central_binom_div d]
@@ -195,7 +194,7 @@ theorem mem_trees_of_nodes_eq {x : Tree Unit} {n : ℕ} : x ∈ treesOfNumNodesE
   by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
     simp [trees_of_nodes_eq_succ, Nat.succ_eq_add_one, *]
-  linarith
+  exact (Nat.succ_ne_zero _).symm
 #align tree.mem_trees_of_nodes_eq Tree.mem_trees_of_nodes_eq
 
 theorem mem_trees_of_nodes_eq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
@@ -214,17 +213,19 @@ theorem trees_of_nodes_eq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card
   rw [trees_of_nodes_eq_succ, card_bunionᵢ, catalan_succ']
   · apply sum_congr rfl
     rintro ⟨i, j⟩ H
-    simp
-    rw [ih _ (fst_le H), ih _ (snd_le H)]
+    rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
   · simp_rw [disjoint_left]
     rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
-    simp;
-    intros h a b c bi cj bc ti tj hti htj tij
-    rw [←bc] at tij
-    cases tij
-    apply h
-    rw [←bi, ←hti]
-    rw [←cj, ←htj]
+    -- Porting note: was clear * -; tidy
+    intros h a
+    cases' a with a l r
+    · intro h; simp at h
+    · intro h1 h2
+      apply h
+      trans (numNodes l, numNodes r)
+      · simp at h1; simp [h1]
+      · simp at h2; simp [h2]
+
 #align tree.trees_of_nodes_eq_card_eq_catalan Tree.trees_of_nodes_eq_card_eq_catalan
 
 end Tree
