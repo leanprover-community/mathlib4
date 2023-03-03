@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Pi
-import Mathbin.Topology.LocallyConstant.Basic
+import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # Algebraic structure on locally constant functions
