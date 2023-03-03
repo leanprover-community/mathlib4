@@ -9,13 +9,14 @@ Authors: Scott Morrison, Johan Commelin
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.Tactic.ScopedNS
 
 /-!
 # Zero objects
 
 A category "has a zero object" if it has an object which is both initial and terminal. Having a
 zero object provides zero morphisms, as the unique morphisms factoring through the zero object;
-see `category_theory.limits.shapes.zero_morphisms`.
+see `CategoryTheory.Limits.Shapes.ZeroMorphisms`.
 
 ## References
 
@@ -44,7 +45,9 @@ there is a unique morphism `to : X → Y` and a unique morphism `from : Y → X`
 
 This is a characteristic predicate for `has_zero_object`. -/
 structure IsZero (X : C) : Prop where
+  /-- there are unique morphisms to the object -/
   unique_to : ∀ Y, Nonempty (Unique (X ⟶ Y))
+  /-- there are unique morphisms from the object -/
   unique_from : ∀ Y, Nonempty (Unique (Y ⟶ X))
 #align category_theory.limits.is_zero CategoryTheory.Limits.IsZero
 
@@ -52,29 +55,31 @@ namespace IsZero
 
 variable {X Y : C}
 
-/-- If `h : is_zero X`, then `h.to Y` is a choice of unique morphism `X → Y`. -/
-protected def to (h : IsZero X) (Y : C) : X ⟶ Y :=
-  @default (X ⟶ Y) <| @Unique.inhabited _ <| (h.unique_to Y).some
-#align category_theory.limits.is_zero.to CategoryTheory.Limits.IsZero.to
+-- Porting: `to` is a reserved word, it was replaced by `to_`
+/-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`. -/
+protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
+  @default _ <| (h.unique_to Y).some.toInhabited
+#align category_theory.limits.is_zero.to CategoryTheory.Limits.IsZero.to_
 
-theorem eq_to (h : IsZero X) (f : X ⟶ Y) : f = h.to Y :=
+theorem eq_to (h : IsZero X) (f : X ⟶ Y) : f = h.to_ Y :=
   @Unique.eq_default _ (id _) _
 #align category_theory.limits.is_zero.eq_to CategoryTheory.Limits.IsZero.eq_to
 
-theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to Y = f :=
+theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
   (h.eq_to f).symm
 #align category_theory.limits.is_zero.to_eq CategoryTheory.Limits.IsZero.to_eq
 
-/-- If `h : is_zero X`, then `h.from Y` is a choice of unique morphism `Y → X`. -/
-protected def from (h : IsZero X) (Y : C) : Y ⟶ X :=
-  @default (Y ⟶ X) <| @Unique.inhabited _ <| (h.unique_from Y).some
-#align category_theory.limits.is_zero.from CategoryTheory.Limits.IsZero.from
+-- Porting: `from` is a reserved word, it was replaced by `from_`
+/-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`. -/
+protected def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
+  @default _ <| (h.unique_from Y).some.toInhabited
+#align category_theory.limits.is_zero.from CategoryTheory.Limits.IsZero.from_
 
-theorem eq_from (h : IsZero X) (f : Y ⟶ X) : f = h.from Y :=
+theorem eq_from (h : IsZero X) (f : Y ⟶ X) : f = h.from_ Y :=
   @Unique.eq_default _ (id _) _
 #align category_theory.limits.is_zero.eq_from CategoryTheory.Limits.IsZero.eq_from
 
-theorem from_eq (h : IsZero X) (f : Y ⟶ X) : h.from Y = f :=
+theorem from_eq (h : IsZero X) (f : Y ⟶ X) : h.from_ Y = f :=
   (h.eq_from f).symm
 #align category_theory.limits.is_zero.from_eq CategoryTheory.Limits.IsZero.from_eq
 
@@ -89,10 +94,10 @@ theorem eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
 /-- Any two zero objects are isomorphic. -/
 def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y
     where
-  Hom := hX.to Y
-  inv := hX.from Y
-  hom_inv_id' := hX.eq_of_src _ _
-  inv_hom_id' := hY.eq_of_src _ _
+  hom := hX.to_ Y
+  inv := hX.from_ Y
+  hom_inv_id := hX.eq_of_src _ _
+  inv_hom_id := hY.eq_of_src _ _
 #align category_theory.limits.is_zero.iso CategoryTheory.Limits.IsZero.iso
 
 /-- A zero object is in particular initial. -/
@@ -107,16 +112,17 @@ protected def isTerminal (hX : IsZero X) : IsTerminal X :=
 
 /-- The (unique) isomorphism between any initial object and the zero object. -/
 def isoIsInitial (hX : IsZero X) (hY : IsInitial Y) : X ≅ Y :=
-  hX.IsInitial.uniqueUpToIso hY
+  IsInitial.uniqueUpToIso hX.isInitial hY
 #align category_theory.limits.is_zero.iso_is_initial CategoryTheory.Limits.IsZero.isoIsInitial
 
 /-- The (unique) isomorphism between any terminal object and the zero object. -/
 def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
-  hX.IsTerminal.uniqueUpToIso hY
+  IsTerminal.uniqueUpToIso hX.isTerminal hY
 #align category_theory.limits.is_zero.iso_is_terminal CategoryTheory.Limits.IsZero.isoIsTerminal
 
 theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
-  refine' ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to Z⟩, fun f => _⟩⟩, fun Z => ⟨⟨⟨hY.from Z ≫ e.inv⟩, fun f => _⟩⟩⟩
+  refine' ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f => _⟩⟩,
+    fun Z => ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f => _⟩⟩⟩
   · rw [← cancel_epi e.inv]
     apply hY.eq_of_src
   · rw [← cancel_mono e.hom]
@@ -124,13 +130,13 @@ theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
 #align category_theory.limits.is_zero.of_iso CategoryTheory.Limits.IsZero.of_iso
 
 theorem op (h : IsZero X) : IsZero (Opposite.op X) :=
-  ⟨fun Y => ⟨⟨⟨(h.from (Opposite.unop Y)).op⟩, fun f => Quiver.Hom.unop_inj (h.eq_of_tgt _ _)⟩⟩,
-    fun Y => ⟨⟨⟨(h.to (Opposite.unop Y)).op⟩, fun f => Quiver.Hom.unop_inj (h.eq_of_src _ _)⟩⟩⟩
+  ⟨fun Y => ⟨⟨⟨(h.from_ (Opposite.unop Y)).op⟩, fun _ => Quiver.Hom.unop_inj (h.eq_of_tgt _ _)⟩⟩,
+    fun Y => ⟨⟨⟨(h.to_ (Opposite.unop Y)).op⟩, fun _ => Quiver.Hom.unop_inj (h.eq_of_src _ _)⟩⟩⟩
 #align category_theory.limits.is_zero.op CategoryTheory.Limits.IsZero.op
 
 theorem unop {X : Cᵒᵖ} (h : IsZero X) : IsZero (Opposite.unop X) :=
-  ⟨fun Y => ⟨⟨⟨(h.from (Opposite.op Y)).unop⟩, fun f => Quiver.Hom.op_inj (h.eq_of_tgt _ _)⟩⟩,
-    fun Y => ⟨⟨⟨(h.to (Opposite.op Y)).unop⟩, fun f => Quiver.Hom.op_inj (h.eq_of_src _ _)⟩⟩⟩
+  ⟨fun Y => ⟨⟨⟨(h.from_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_tgt _ _)⟩⟩,
+    fun Y => ⟨⟨⟨(h.to_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_src _ _)⟩⟩⟩
 #align category_theory.limits.is_zero.unop CategoryTheory.Limits.IsZero.unop
 
 end IsZero
@@ -146,16 +152,16 @@ theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
 theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
   constructor <;> intro G <;> refine' ⟨⟨⟨_⟩, _⟩⟩
   · refine'
-      { app := fun X => (hF _).to _
-        naturality' := _ }
+      { app := fun X => (hF _).to_ _
+        naturality := _ }
     intros
     exact (hF _).eq_of_src _ _
   · intro f
     ext
     apply (hF _).eq_of_src _ _
   · refine'
-      { app := fun X => (hF _).from _
-        naturality' := _ }
+      { app := fun X => (hF _).from_ _
+        naturality := _ }
     intros
     exact (hF _).eq_of_tgt _ _
   · intro f
@@ -169,23 +175,33 @@ variable (C)
 
 /-- A category "has a zero object" if it has an object which is both initial and terminal. -/
 class HasZeroObject : Prop where
+  /-- there exists a zero object -/
   zero : ∃ X : C, IsZero X
 #align category_theory.limits.has_zero_object CategoryTheory.Limits.HasZeroObject
 
-instance hasZeroObject_pUnit : HasZeroObject (Discrete PUnit) where zero := ⟨⟨⟨⟩⟩, by tidy, by tidy⟩
+instance hasZeroObject_pUnit : HasZeroObject (Discrete PUnit) where zero :=
+  ⟨⟨⟨⟩⟩,
+    { unique_to := fun ⟨⟨⟩⟩ =>
+      ⟨{ default := 𝟙 _,
+          uniq := fun _ => Subsingleton.elim _ _ }⟩
+      unique_from := fun ⟨⟨⟩⟩ =>
+      ⟨{ default := 𝟙 _,
+          uniq := fun _ => Subsingleton.elim _ _ }⟩}⟩
 #align category_theory.limits.has_zero_object_punit CategoryTheory.Limits.hasZeroObject_pUnit
 
 section
 
 variable [HasZeroObject C]
 
-/-- Construct a `has_zero C` for a category with a zero object.
-This can not be a global instance as it will trigger for every `has_zero C` typeclass search.
+/-- Construct a `HasZero C` for a category with a zero object.
+This can not be a global instance as it will trigger for every `HasZero C` typeclass search.
 -/
-protected def HasZeroObject.hasZero : Zero C where zero := HasZeroObject.zero.some
+protected def HasZeroObject.hasZero : Zero C where zero := HasZeroObject.zero.choose
 #align category_theory.limits.has_zero_object.has_zero CategoryTheory.Limits.HasZeroObject.hasZero
 
 scoped[ZeroObject] attribute [instance] CategoryTheory.Limits.HasZeroObject.hasZero
+
+open ZeroObject
 
 theorem isZero_zero : IsZero (0 : C) :=
   HasZeroObject.zero.choose_spec
@@ -211,14 +227,14 @@ theorem IsZero.hasZeroObject {X : C} (hX : IsZero X) : HasZeroObject C :=
 
 /-- Every zero object is isomorphic to *the* zero object. -/
 def IsZero.isoZero [HasZeroObject C] {X : C} (hX : IsZero X) : X ≅ 0 :=
-  hX.Iso (isZero_zero C)
+  hX.iso (isZero_zero C)
 #align category_theory.limits.is_zero.iso_zero CategoryTheory.Limits.IsZero.isoZero
 
 theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZero (F.obj X) := by
   let G : C ⥤ D := (CategoryTheory.Functor.const C).obj 0
-  have hG : is_zero G := functor.is_zero _ fun X => is_zero_zero _
+  have hG : IsZero G := Functor.isZero _ fun _ => isZero_zero _
   let e : F ≅ G := hF.iso hG
-  exact (is_zero_zero _).of_iso (e.app X)
+  exact (isZero_zero _).of_iso (e.app X)
 #align category_theory.limits.is_zero.obj CategoryTheory.Limits.IsZero.obj
 
 namespace HasZeroObject
@@ -249,24 +265,25 @@ theorem from_zero_ext {X : C} (f g : 0 ⟶ X) : f = g :=
   (isZero_zero C).eq_of_src _ _
 #align category_theory.limits.has_zero_object.from_zero_ext CategoryTheory.Limits.HasZeroObject.from_zero_ext
 
-instance (X : C) : Subsingleton (X ≅ 0) := by tidy
+instance (X : C) : Subsingleton (X ≅ 0) := ⟨fun f g => by ext⟩
 
-instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation Z g h w := by ext
+instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := by ext
 
-instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation Z g h w := by ext
+instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
-  convert show is_iso (𝟙 (0 : C)) by infer_instance
+  convert show IsIso (𝟙 (0 : C)) by infer_instance
+  ext
 #align category_theory.limits.has_zero_object.zero_to_zero_is_iso CategoryTheory.Limits.HasZeroObject.zero_to_zero_isIso
 
 /-- A zero object is in particular initial. -/
 def zeroIsInitial : IsInitial (0 : C) :=
-  (isZero_zero C).IsInitial
+  (isZero_zero C).isInitial
 #align category_theory.limits.has_zero_object.zero_is_initial CategoryTheory.Limits.HasZeroObject.zeroIsInitial
 
 /-- A zero object is in particular terminal. -/
 def zeroIsTerminal : IsTerminal (0 : C) :=
-  (isZero_zero C).IsTerminal
+  (isZero_zero C).isTerminal
 #align category_theory.limits.has_zero_object.zero_is_terminal CategoryTheory.Limits.HasZeroObject.zeroIsTerminal
 
 /-- A zero object is in particular initial. -/
@@ -300,7 +317,7 @@ def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
 #align category_theory.limits.has_zero_object.zero_iso_terminal CategoryTheory.Limits.HasZeroObject.zeroIsoTerminal
 
 instance (priority := 100) has_strict_initial : InitialMonoClass C :=
-  InitialMonoClass.of_isInitial zeroIsInitial fun X => CategoryTheory.mono _
+  InitialMonoClass.of_isInitial zeroIsInitial fun X => by infer_instance
 #align category_theory.limits.has_zero_object.has_strict_initial CategoryTheory.Limits.HasZeroObject.has_strict_initial
 
 end HasZeroObject
@@ -316,4 +333,3 @@ theorem Functor.isZero_iff [HasZeroObject D] (F : C ⥤ D) : IsZero F ↔ ∀ X,
 #align category_theory.functor.is_zero_iff CategoryTheory.Functor.isZero_iff
 
 end CategoryTheory
-
