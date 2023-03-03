@@ -481,9 +481,8 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     exact hr r
   revert hx
   -- porting note: workaround for lean4#1926, was `simp_rw [pow_succ']`
-  have h_lean4_1926_aux : x ∈ M ^ Nat.succ n ↔ x ∈ M ^ n * M := by rw [pow_succ']
-  suffices h_lean4_1926 : ∀ (hx' : x ∈ M ^ n * M), C (Nat.succ n) x (h_lean4_1926_aux.mpr hx') from
-    fun hx => h_lean4_1926 (h_lean4_1926_aux.mp hx)
+  suffices h_lean4_1926 : ∀ (hx' : x ∈ M ^ n * M), C (Nat.succ n) x (by rwa [pow_succ']) from
+    fun hx => h_lean4_1926 (by rwa [← pow_succ'])
   -- porting note: end workaround
   intro hx
   exact
