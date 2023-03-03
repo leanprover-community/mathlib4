@@ -162,7 +162,7 @@ instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
 /-- Construct a pseudo-metric space structure whose underlying topological space structure
 (definitionally) agrees which a pre-existing topology which is compatible with a given distance
 function. -/
-def PseudoMetricSpace.ofDistTopology {α : Type _} [TopologicalSpace α] (dist : α → α → ℝ)
+def PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z)
     (H : ∀ s : Set α, IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ∀ y, dist x y < ε → y ∈ s) :
@@ -273,19 +273,21 @@ theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 #align dist_nonneg dist_nonneg
 
--- section
+/-
+section
 
--- open Tactic Tactic.Positivity
+open Tactic Tactic.Positivity
 -- porting note: todo: restore `positivity` plugin
 
--- /-- Extension for the `positivity` tactic: distances are nonnegative. -/
--- @[positivity]
--- unsafe def _root_.tactic.positivity_dist : expr → tactic strictness
---   | q(dist $(a) $(b)) => nonnegative <$> mk_app `` dist_nonneg [a, b]
---   | _ => failed
--- #align tactic.positivity_dist tactic.positivity_dist
+/-- Extension for the `positivity` tactic: distances are nonnegative. -/
+@[positivity]
+unsafe def _root_.tactic.positivity_dist : expr → tactic strictness
+  | q(dist $(a) $(b)) => nonnegative <$> mk_app `` dist_nonneg [a, b]
+  | _ => failed
+#align tactic.positivity_dist tactic.positivity_dist
 
--- end
+end
+-/
 
 @[simp] theorem abs_dist {a b : α} : |dist a b| = dist a b := abs_of_nonneg dist_nonneg
 #align abs_dist abs_dist
@@ -1682,10 +1684,10 @@ instance : PseudoMetricSpace ℝ≥0 := Subtype.pseudoMetricSpace
 theorem NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 #align nnreal.dist_eq NNReal.dist_eq
 
-theorem NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) := by
-  refine eq_of_forall_ge_iff fun x => ?_
-  simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, max_le_iff, abs_sub_le_iff,
-    tsub_le_iff_right, NNReal.coe_add]
+theorem NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
+  eq_of_forall_ge_iff fun _ => by
+    simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, max_le_iff, abs_sub_le_iff,
+      tsub_le_iff_right, NNReal.coe_add]
 #align nnreal.nndist_eq NNReal.nndist_eq
 
 @[simp]
@@ -1770,6 +1772,7 @@ theorem closedBall_prod_same (x : α) (y : β) (r : ℝ) :
 
 end Prod
 
+-- porting note: new 3 lemmas
 theorem dist_dist_dist_le_left (x y z : α) : dist (dist x z) (dist y z) ≤ dist x y :=
   abs_dist_sub_le ..
 
@@ -1778,7 +1781,7 @@ theorem dist_dist_dist_le_right (x y z : α) : dist (dist x y) (dist x z) ≤ di
 
 theorem dist_dist_dist_le (x y x' y' : α) : dist (dist x y) (dist x' y') ≤ dist x x' + dist y y' :=
   (dist_triangle _ _ _).trans <|
-    add_le_add (dist_dist_dist_le_left _ _ _) (dist_dist_dist_le_right _ _ _)  
+    add_le_add (dist_dist_dist_le_left _ _ _) (dist_dist_dist_le_right _ _ _)
 
 theorem uniformContinuous_dist : UniformContinuous fun p : α × α => dist p.1 p.2 :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
@@ -1922,6 +1925,8 @@ theorem dense_iff {s : Set α} : Dense s ↔ ∀ x, ∀ r > 0, (ball x r ∩ s).
 theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ y, dist x (f y) < r :=
   forall_congr' fun x => by simp only [mem_closure_iff, exists_range_iff]
 #align metric.dense_range_iff Metric.denseRange_iff
+
+-- porting note: `TopologicalSpace.IsSeparable.separableSpace` moved to `EMetricSpace`
 
 /-- The preimage of a separable set by an inducing map is separable. -/
 protected theorem _root_.Inducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
@@ -2179,7 +2184,7 @@ instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace �
       (Metric.cauchy_iff.1 hf).2 1 zero_lt_one
     rcases hf.1.nonempty_of_mem t_fset with ⟨x, xt⟩
     have : closedBall x 1 ∈ f := mem_of_superset t_fset fun y yt => (ht y yt x xt).le
-    rcases(isCompact_iff_totallyBounded_isComplete.1 (isCompact_closedBall x 1)).2 f hf
+    rcases (isCompact_iff_totallyBounded_isComplete.1 (isCompact_closedBall x 1)).2 f hf
         (le_principal_iff.2 this) with
       ⟨y, -, hy⟩
     exact ⟨y, hy⟩⟩
@@ -2199,8 +2204,7 @@ instance pi_properSpace {π : β → Type _} [Fintype β] [∀ b, PseudoMetricSp
     [h : ∀ b, ProperSpace (π b)] : ProperSpace (∀ b, π b) := by
   refine' properSpace_of_compact_closedBall_of_le 0 fun x r hr => _
   rw [closedBall_pi _ hr]
-  refine isCompact_univ_pi fun b => ?_
-  exact isCompact_closedBall _ _
+  exact isCompact_univ_pi fun _ => isCompact_closedBall _ _
 #align pi_proper_space pi_properSpace
 
 variable [ProperSpace α] {x : α} {r : ℝ} {s : Set α}
@@ -2767,18 +2771,20 @@ theorem exists_local_min_mem_ball [ProperSpace α] [TopologicalSpace β]
 
 end Metric
 
--- namespace Tactic
+/-
+namespace Tactic
 
--- open Positivity
+open Positivity
 
--- /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
--- @[positivity]
--- unsafe def positivity_diam : expr → tactic strictness
---   | q(Metric.diam $(s)) => nonnegative <$> mk_app `` Metric.diam_nonneg [s]
---   | e => pp e >>= fail ∘ format.bracket "The expression " " is not of the form `metric.diam s`"
--- #align tactic.positivity_diam tactic.positivity_diam
+/-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
+@[positivity]
+unsafe def positivity_diam : expr → tactic strictness
+  | q(Metric.diam $(s)) => nonnegative <$> mk_app `` Metric.diam_nonneg [s]
+  | e => pp e >>= fail ∘ format.bracket "The expression " " is not of the form `metric.diam s`"
+#align tactic.positivity_diam tactic.positivity_diam
 
--- end Tactic
+end Tactic
+-/
 
 theorem comap_dist_right_atTop_le_cocompact (x : α) :
     comap (fun y => dist y x) atTop ≤ cocompact α := by
@@ -2830,7 +2836,7 @@ def MetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α �
     (eq_of_dist_eq_zero : ∀ x y : α, dist x y = 0 → x = y) : MetricSpace α :=
   { PseudoMetricSpace.ofDistTopology dist dist_self dist_comm dist_triangle H with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero _ _ }
-#align metric_space.of_metrizable MetricSpace.ofDistTopology
+#align metric_space.of_dist_topology MetricSpace.ofDistTopology
 
 variable {γ : Type w} [MetricSpace γ]
 
@@ -2924,13 +2930,13 @@ def _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type _) [PseudoMetricSpace α
     MetricSpace α where
   toPseudoMetricSpace := ‹_›
   eq_of_dist_eq_zero := fun hdist => (Metric.inseparable_iff.2 hdist).eq
-#align metric.of_t0_pseudo_metric_space MetricSpace.ofT0PseudoMetricSpace
+#align metric_space.of_t0_pseudo_metric_space MetricSpace.ofT0PseudoMetricSpace
 
 -- see Note [lower instance priority]
 /-- A metric space induces an emetric space -/
 instance (priority := 100) _root_.MetricSpace.toEMetricSpace : EMetricSpace γ :=
   .ofT0PseudoEMetricSpace γ
-#align metric.metric_space.to_emetric_space MetricSpace.toEMetricSpace
+#align metric_space.to_emetric_space MetricSpace.toEMetricSpace
 
 theorem isClosed_of_pairwise_le_dist {s : Set γ} {ε : ℝ} (hε : 0 < ε)
     (hs : s.Pairwise fun x y => ε ≤ dist x y) : IsClosed s :=
@@ -3154,7 +3160,7 @@ theorem UniformSpace.SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace
 #align uniform_space.separation_quotient.dist_mk UniformSpace.SeparationQuotient.dist_mk
 
 instance {α : Type u} [PseudoMetricSpace α] : MetricSpace (UniformSpace.SeparationQuotient α) :=
-  EMetricSpace.toMetricSpaceOfDist dist (fun x y => Quotient.inductionOn₂' x y edist_ne_top) $
+  EMetricSpace.toMetricSpaceOfDist dist (fun x y => Quotient.inductionOn₂' x y edist_ne_top)
     fun x y => Quotient.inductionOn₂' x y dist_edist
 
 end EqRel
