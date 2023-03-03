@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.CategoryTheory.Punit
-import Mathbin.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.StructuredArrow
 
 /-!
 # Properties of comma categories relating to adjunctions
