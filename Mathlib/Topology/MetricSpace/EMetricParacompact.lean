@@ -9,7 +9,7 @@ Authors: Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Topology.MetricSpace.EmetricSpace
+import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Paracompact
 
 /-!
@@ -63,11 +63,11 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       wf.not_lt_min _ (hcov x) hxi hlt
     /- The refinement `D : ℕ → ι → set α` is defined recursively. For each `n` and `i`, `D n i`
       is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
-    
+
       * `ind x = i`;
       * `x` does not belong to any `D m j`, `m < n`;
       * `ball x (3 / 2 ^ n) ⊆ s i`;
-    
+
       We define this sequence using `nat.strong_rec_on'`, then restate it as `Dn` and `memD`.
       -/
     set D : ℕ → ι → Set α := fun n =>
@@ -121,7 +121,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       calc
         2⁻¹ ^ n = 1 * 2⁻¹ ^ n := (one_mul _).symm
         _ ≤ 3 * 2⁻¹ ^ n := mul_le_mul_right' _ _
-        
+
       -- TODO: use `norm_num`
       have : ((1 : ℕ) : ℝ≥0∞) ≤ (3 : ℕ) := Nat.cast_le.2 (by norm_num1)
       exact_mod_cast this
@@ -157,7 +157,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
           _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
             (add_le_add (hpow_le <| by linarith) (hpow_le <| by linarith))
           _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]
-          
+
       -- For each `m ≤ n + k` there is at most one `j` such that `D m j ∩ B` is nonempty.
       have Hle : ∀ m ≤ n + k, Set.Subsingleton { j | (D m j ∩ B).Nonempty } :=
         by
@@ -179,7 +179,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
           _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) :=
             (mul_le_mul' le_rfl <| add_le_add le_rfl <| hpow_le (add_le_add hm le_rfl))
           _ = 3 * 2⁻¹ ^ m := by rw [mul_add, h2pow, bit1, add_mul, one_mul]
-          
+
       -- Finally, we glue `Hgt` and `Hle`
       have : (⋃ (m ≤ n + k) (i ∈ { i : ι | (D m i ∩ B).Nonempty }), {(m, i)}).Finite :=
         (finite_le_nat _).bunionᵢ' fun i hi =>
@@ -195,4 +195,3 @@ instance (priority := 100) normal_of_emetric [EMetricSpace α] : NormalSpace α 
 #align emetric.normal_of_emetric Emetric.normal_of_emetric
 
 end Emetric
-
