@@ -306,6 +306,7 @@ import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Over
 import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.PathCategory
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
