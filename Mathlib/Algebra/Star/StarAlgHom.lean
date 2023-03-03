@@ -16,29 +16,27 @@ import Mathlib.Algebra.Algebra.Prod
 # Morphisms of star algebras
 
 This file defines morphisms between `R`-algebras (unital or non-unital) `A` and `B` where both
-`A` and `B` are equipped with a `star` operation. These morphisms, namely `star_alg_hom` and
-`non_unital_star_alg_hom` are direct extensions of their non-`star`red counterparts with a field
+`A` and `B` are equipped with a `star` operation. These morphisms, namely `StarAlgHom` and
+`NonUnitalStarAlgHom` are direct extensions of their non-`star`red counterparts with a field
 `map_star` which guarantees they preserve the star operation. We keep the type classes as generic
-as possible, in keeping with the definition of `non_unital_alg_hom` in the non-unital case. In this
-file, we only assume `has_star` unless we want to talk about the zero map as a
-`non_unital_star_alg_hom`, in which case we need `star_add_monoid`. Note that the scalar ring `R`
-is not required to have a star operation, nor do we need `star_ring` or `star_module` structures on
+as possible, in keeping with the definition of `NonUnitalAlgHom` in the non-unital case. In this
+file, we only assume `Star` unless we want to talk about the zero map as a
+`NonUnitalStarAlgHom`, in which case we need `StarAddMonoid`. Note that the scalar ring `R`
+is not required to have a star operation, nor do we need `StarRing` or `StarModule` structures on
 `A` and `B`.
 
-As with `non_unital_alg_hom`, in the non-unital case the multiplications are not assumed to be
+As with `NonUnitalAlgHom`, in the non-unital case the multiplications are not assumed to be
 associative or unital, or even to be compatible with the scalar actions. In a typical application,
 the operations will satisfy compatibility conditions making them into algebras (albeit possibly
 non-associative and/or non-unital) but such conditions are not required here for the definitions.
 
 The primary impetus for defining these types is that they constitute the morphisms in the categories
-of unital C⋆-algebras (with `star_alg_hom`s) and of C⋆-algebras (with `non_unital_star_alg_hom`s).
-
-TODO: add `star_alg_equiv`.
+of unital C⋆-algebras (with `StarAlgHom`s) and of C⋆-algebras (with `NonUnitalStarAlgHom`s).
 
 ## Main definitions
 
-  * `non_unital_alg_hom`
-  * `star_alg_hom`
+  * `NonUnitalStarAlgHom`
+  * `StarAlgHom`
 
 ## Tags
 
@@ -121,7 +119,7 @@ instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B
   map_star f := f.map_star'
 
 -- Porting note: this is no longer useful
---/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+--/-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
 --directly. -/
 --instance : CoeFun (A →⋆ₙₐ[R] B) fun _ => A → B :=
 --  FunLike.hasCoeToFun
@@ -308,16 +306,16 @@ structure StarAlgHom (R A B : Type _) [CommSemiring R] [Semiring A] [Algebra R A
 by forgetting the interaction with the star operation. -/
 add_decl_doc StarAlgHom.toAlgHom
 
-/-- `star_alg_hom_class F R A B` states that `F` is a type of ⋆-algebra homomorphisms.
+/-- `StarAlgHomClass F R A B` states that `F` is a type of ⋆-algebra homomorphisms.
 
-You should also extend this typeclass when you extend `star_alg_hom`. -/
+You should also extend this typeclass when you extend `StarAlgHom`. -/
 class StarAlgHomClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
   (B : outParam (Type _)) [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
   [Algebra R B] [Star B] extends AlgHomClass F R A B, StarHomClass F A B
 #align star_alg_hom_class StarAlgHomClass
 
 -- Porting note: no longer needed
----- `R` becomes a metavariable but that's fine because it's an `out_param`
+---- `R` becomes a metavariable but that's fine because it's an `outParam`
 --attribute [nolint dangerousInstance] StarAlgHomClass.toStarHomClass
 
 namespace StarAlgHomClass
@@ -382,7 +380,7 @@ theorem ext {f g : A →⋆ₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align star_alg_hom.ext StarAlgHom.ext
 
-/-- Copy of a `star_alg_hom` with a new `toFun` equal to the old one. Useful
+/-- Copy of a `StarAlgHom` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
 protected def copy (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆ₐ[R] B
     where
@@ -479,7 +477,7 @@ instance : Monoid (A →⋆ₐ[R] A) where
   one_mul := id_comp
   mul_one := comp_id
 
-/-- A unital morphism of ⋆-algebras is a `non_unital_star_alg_hom`. -/
+/-- A unital morphism of ⋆-algebras is a `NonUnitalStarAlgHom`. -/
 def toNonUnitalStarAlgHom (f : A →⋆ₐ[R] B) : A →⋆ₙₐ[R] B :=
   { f with map_smul' := map_smul f }
 #align star_alg_hom.to_non_unital_star_alg_hom StarAlgHom.toNonUnitalStarAlgHom
@@ -495,7 +493,7 @@ end Unital
 
 /-! ### Operations on the product type
 
-Note that this is copied from [`algebra/hom/non_unital_alg`](non_unital_alg). -/
+Note that this is copied from [`Algebra/Hom/NonUnitalAlg`](NonUnitalAlg). -/
 
 
 namespace NonUnitalStarAlgHom
@@ -662,7 +660,7 @@ end StarAlgHom
 -- [https://github.com/leanprover-community/mathlib4/issues/2505]
 /-- A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar
 multiplication and the star operation, which allows for considering both unital and non-unital
-equivalences with a single structure. Currently, `alg_equiv` requires unital algebras, which is
+equivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is
 why this structure does not extend it. -/
 structure StarAlgEquiv (R A B : Type _) [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
   [Star A] [Star B] extends A ≃+* B where
@@ -676,14 +674,14 @@ structure StarAlgEquiv (R A B : Type _) [Add A] [Add B] [Mul A] [Mul B] [SMul R 
 
 @[inherit_doc] notation:25 A " ≃⋆ₐ[" R "] " B => StarAlgEquiv R A B
 
-/-- Reinterpret a star algebra equivalence as a `ring_equiv` by forgetting the interaction with
+/-- Reinterpret a star algebra equivalence as a `RingEquiv` by forgetting the interaction with
 the star operation and scalar multiplication. -/
 add_decl_doc StarAlgEquiv.toRingEquiv
 
-/-- `star_alg_equiv_class F R A B` asserts `F` is a type of bundled ⋆-algebra equivalences between
+/-- `StarAlgEquivClass F R A B` asserts `F` is a type of bundled ⋆-algebra equivalences between
 `A` and `B`.
 
-You should also extend this typeclass when you extend `star_alg_equiv`. -/
+You should also extend this typeclass when you extend `StarAlgEquiv`. -/
 class StarAlgEquivClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type _))
   (B : outParam (Type _)) [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
   [Star B] extends RingEquivClass F A B where
@@ -694,7 +692,7 @@ class StarAlgEquivClass (F : Type _) (R : outParam (Type _)) (A : outParam (Type
 #align star_alg_equiv_class StarAlgEquivClass
 
 -- Porting note: no longer needed
----- `R` becomes a metavariable but that's fine because it's an `out_param`
+---- `R` becomes a metavariable but that's fine because it's an `outParam`
 -- attribute [nolint dangerousInstance] StarAlgEquivClass.toRingEquivClass
 
 namespace StarAlgEquivClass
@@ -709,7 +707,7 @@ instance (priority := 50) {F R A B : Type _} {_ : Add A} {_ : Mul A} {_ : SMul R
     coe_injective' := FunLike.coe_injective }
 
 -- Porting note: no longer needed
----- `R` becomes a metavariable but that's fine because it's an `out_param`
+---- `R` becomes a metavariable but that's fine because it's an `outParam`
 -- attribute [nolint dangerousInstance] StarAlgEquivClass.instStarHomClass
 
 -- See note [lower instance priority]
@@ -721,7 +719,7 @@ instance (priority := 50) {F R A B : Type _} {_ : Add A} {_ : Mul A} {_ : Star A
     coe_injective' := FunLike.coe_injective }
 
 -- Porting note: no longer needed
----- `R` becomes a metavariable but that's fine because it's an `out_param`
+---- `R` becomes a metavariable but that's fine because it's an `outParam`
 --attribute [nolint dangerous_instance] StarAlgEquivClass.smulHomClass
 
 -- See note [lower instance priority]
@@ -775,7 +773,7 @@ theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
 
 -- Porting note: this is no longer useful
 --/-- Helper instance for when there's too many metavariables to apply
---`fun_like.has_coe_toFun` directly. -/
+--`FunLike.CoeFun` directly. -/
 --instance : CoeFun (A ≃⋆ₐ[R] B) fun _ => A → B :=
 --  ⟨StarAlgEquiv.toFun⟩
 
