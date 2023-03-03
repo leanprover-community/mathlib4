@@ -63,9 +63,7 @@ sequentially closed, sequentially compact, sequential space
 -/
 
 
-open Set Function Filter TopologicalSpace
-
-open Topology Filter
+open Set Function Filter TopologicalSpace Topology Uniformity
 
 variable {X Y : Type _}
 
@@ -163,23 +161,21 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
     (h : ∀ (f : X → Prop) (a : X),
       (∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 (f a))) → ContinuousAt f a) :
     FrechetUrysohnSpace X := by
-  refine' ⟨fun s x hcx => _⟩
-  specialize h (· ∉ s) x
-  by_cases hx : x ∈ s; · exact subset_seqClosure hx
-  simp_rw [(· ∘ ·), ContinuousAt, hx, not_false_iff, nhds_true, tendsto_pure, ←
-    mem_compl_iff, eventually_mem_set, ← mem_interior_iff_mem_nhds, interior_compl] at h
-  rw [mem_compl_iff, imp_not_comm] at h
-  simp only [not_forall, not_eventually, mem_compl_iff, Classical.not_not] at h
-  rcases h hcx with ⟨u, hux, hus⟩
-  rcases extraction_of_frequently_at_top hus with ⟨φ, φ_mono, hφ⟩
-  exact ⟨u ∘ φ, hφ, hux.comp φ_mono.tendsto_at_top⟩
+  refine ⟨fun s x hcx => ?_⟩
+  by_cases hx : x ∈ s;
+  · exact subset_seqClosure hx
+  · obtain ⟨u, hux, hus⟩ : ∃ u, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s
+    · simpa only [ContinuousAt, hx, tendsto_nhds_true, (· ∘ ·), ← not_frequently, exists_prop,
+        ← mem_closure_iff_frequently, hcx, imp_false, not_forall, not_not] using h (· ∉ s) x
+    rcases extraction_of_frequently_atTop hus with ⟨φ, φ_mono, hφ⟩
+    exact ⟨u ∘ φ, hφ, hux.comp φ_mono.tendsto_atTop⟩
 #align frechet_urysohn_space.of_seq_tendsto_imp_tendsto FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
 
 -- see Note [lower instance priority]
 /-- Every first-countable space is a Fréchet-Urysohn space. -/
 instance (priority := 100) TopologicalSpace.FirstCountableTopology.frechetUrysohnSpace
     [FirstCountableTopology X] : FrechetUrysohnSpace X :=
-  FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto fun f a => tendsto_iff_seq_tendsto.2
+  FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto fun _ _ => tendsto_iff_seq_tendsto.2
 #align topological_space.first_countable_topology.frechet_urysohn_space TopologicalSpace.FirstCountableTopology.frechetUrysohnSpace
 
 /-- A topological space is said to be a *sequential space* if any sequentially closed set in this
@@ -192,7 +188,7 @@ class SequentialSpace (X : Type _) [TopologicalSpace X] : Prop where
 /-- Every Fréchet-Urysohn space is a sequential space. -/
 instance (priority := 100) FrechetUrysohnSpace.to_sequentialSpace [FrechetUrysohnSpace X] :
     SequentialSpace X :=
-  ⟨fun s hs => by rw [← closure_eq_iff_isClosed, ← seqClosure_eq_closure, hs.seq_closure_eq]⟩
+  ⟨fun s hs => by rw [← closure_eq_iff_isClosed, ← seqClosure_eq_closure, hs.seqClosure_eq]⟩
 #align frechet_urysohn_space.to_sequential_space FrechetUrysohnSpace.to_sequentialSpace
 
 /-- In a sequential space, a sequentially closed set is closed. -/
@@ -215,18 +211,18 @@ def SeqContinuous (f : X → Y) : Prop :=
 /-- The preimage of a sequentially closed set under a sequentially continuous map is sequentially
 closed. -/
 theorem IsSeqClosed.preimage {f : X → Y} {s : Set Y} (hs : IsSeqClosed s) (hf : SeqContinuous f) :
-    IsSeqClosed (f ⁻¹' s) := fun x p hx hp => hs hx (hf hp)
+    IsSeqClosed (f ⁻¹' s) := fun _x _p hx hp => hs hx (hf hp)
 #align is_seq_closed.preimage IsSeqClosed.preimage
 
 -- A continuous function is sequentially continuous.
 protected theorem Continuous.seqContinuous {f : X → Y} (hf : Continuous f) : SeqContinuous f :=
-  fun x p hx => (hf.Tendsto p).comp hx
+  fun _x p hx => (hf.tendsto p).comp hx
 #align continuous.seq_continuous Continuous.seqContinuous
 
 /-- A sequentially continuous function defined on a sequential space is continuous. -/
 protected theorem SeqContinuous.continuous [SequentialSpace X] {f : X → Y} (hf : SeqContinuous f) :
     Continuous f :=
-  continuous_iff_isClosed.mpr fun s hs => (hs.IsSeqClosed.Preimage hf).IsClosed
+  continuous_iff_isClosed.mpr fun _s hs => (hs.isSeqClosed.preimage hf).isClosed
 #align seq_continuous.continuous SeqContinuous.continuous
 
 /-- If the domain of a function is a sequential space, then continuity of this function is
@@ -238,12 +234,12 @@ theorem continuous_iff_seqContinuous [SequentialSpace X] {f : X → Y} :
 
 theorem QuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : QuotientMap f) :
     SequentialSpace Y :=
-  ⟨fun s hs => hf.isClosed_preimage.mp <| (hs.Preimage <| hf.Continuous.SeqContinuous).IsClosed⟩
+  ⟨fun _s hs => hf.isClosed_preimage.mp <| (hs.preimage <| hf.continuous.seqContinuous).isClosed⟩
 #align quotient_map.sequential_space QuotientMap.sequentialSpace
 
 /-- The quotient of a sequential space is a sequential space. -/
 instance [SequentialSpace X] {s : Setoid X} : SequentialSpace (Quotient s) :=
-  quotientMap_quot_mk.SequentialSpace
+  quotientMap_quot_mk.sequentialSpace
 
 end TopologicalSpace
 
@@ -289,7 +285,7 @@ variable [FirstCountableTopology X]
 open TopologicalSpace.FirstCountableTopology
 
 protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
-  fun x x_in =>
+  fun _x x_in =>
   let ⟨a, a_in, ha⟩ := hs (tendsto_principal.mpr (eventually_of_forall x_in))
   ⟨a, a_in, tendsto_subseq ha⟩
 #align is_compact.is_seq_compact IsCompact.isSeqCompact
@@ -297,18 +293,18 @@ protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqC
 theorem IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
     (hx : ∃ᶠ n in atTop, x n ∈ s) :
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
-  hs.IsSeqCompact.subseq_of_frequently_in hx
+  hs.isSeqCompact.subseq_of_frequently_in hx
 #align is_compact.tendsto_subseq' IsCompact.tendsto_subseq'
 
 theorem IsCompact.tendsto_subseq {s : Set X} {x : ℕ → X} (hs : IsCompact s) (hx : ∀ n, x n ∈ s) :
     ∃ a ∈ s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
-  hs.IsSeqCompact hx
+  hs.isSeqCompact hx
 #align is_compact.tendsto_subseq IsCompact.tendsto_subseq
 
 -- see Note [lower instance priority]
 instance (priority := 100) FirstCountableTopology.seq_compact_of_compact [CompactSpace X] :
     SeqCompactSpace X :=
-  ⟨isCompact_univ.IsSeqCompact⟩
+  ⟨isCompact_univ.isSeqCompact⟩
 #align first_countable_topology.seq_compact_of_compact FirstCountableTopology.seq_compact_of_compact
 
 theorem CompactSpace.tendsto_subseq [CompactSpace X] (x : ℕ → X) :
@@ -330,7 +326,7 @@ variable [UniformSpace X] {s : Set X}
 
 theorem IsSeqCompact.exists_tendsto_of_frequently_mem (hs : IsSeqCompact s) {u : ℕ → X}
     (hu : ∃ᶠ n in atTop, u n ∈ s) (huc : CauchySeq u) : ∃ x ∈ s, Tendsto u atTop (𝓝 x) :=
-  let ⟨x, hxs, φ, φ_mono, hx⟩ := hs.subseq_of_frequently_in hu
+  let ⟨x, hxs, _φ, φ_mono, hx⟩ := hs.subseq_of_frequently_in hu
   ⟨x, hxs, tendsto_nhds_of_cauchySeq_of_subseq huc φ_mono.tendsto_atTop hx⟩
 #align is_seq_compact.exists_tendsto_of_frequently_mem IsSeqCompact.exists_tendsto_of_frequently_mem
 
@@ -344,46 +340,39 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   intro V V_in
   unfold IsSeqCompact at h
   contrapose! h
-  obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V :=
-    by
-    simp only [not_subset, mem_Union₂, not_exists, exists_prop] at h
+  obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
+    simp only [not_subset, mem_unionᵢ₂, not_exists, exists_prop] at h
     simpa only [forall_and, ball_image_iff, not_and] using seq_of_forall_finite_exists h
-  refine' ⟨u, u_in, fun x x_in φ hφ huφ => _⟩
+  refine' ⟨u, u_in, fun x _ φ hφ huφ => _⟩
   obtain ⟨N, hN⟩ : ∃ N, ∀ p q, p ≥ N → q ≥ N → (u (φ p), u (φ q)) ∈ V
-  exact huφ.cauchy_seq.mem_entourage V_in
+  exact huφ.cauchySeq.mem_entourage V_in
   exact hu (φ <| N + 1) (φ N) (hφ <| lt_add_one N) (hN (N + 1) N N.le_succ le_rfl)
 #align is_seq_compact.totally_bounded IsSeqCompact.totallyBounded
 
 variable [IsCountablyGenerated (𝓤 X)]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A sequentially compact set in a uniform set with countably generated uniformity filter
 is complete. -/
 protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := by
   intro l hl hls
-  haveI := hl.1
+  have := hl.1
   rcases exists_antitone_basis (𝓤 X) with ⟨V, hV⟩
   choose W hW hWV using fun n => comp_mem_uniformity_sets (hV.mem n)
   have hWV' : ∀ n, W n ⊆ V n := fun n ⟨x, y⟩ hx =>
     @hWV n (x, y) ⟨x, refl_mem_uniformity <| hW _, hx⟩
   obtain ⟨t, ht_anti, htl, htW, hts⟩ :
-    ∃ t : ℕ → Set X, Antitone t ∧ (∀ n, t n ∈ l) ∧ (∀ n, t n ×ˢ t n ⊆ W n) ∧ ∀ n, t n ⊆ s :=
-    by
-    have : ∀ n, ∃ t ∈ l, t ×ˢ t ⊆ W n ∧ t ⊆ s :=
-      by
+      ∃ t : ℕ → Set X, Antitone t ∧ (∀ n, t n ∈ l) ∧ (∀ n, t n ×ˢ t n ⊆ W n) ∧ ∀ n, t n ⊆ s := by
+    have : ∀ n, ∃ t ∈ l, t ×ˢ t ⊆ W n ∧ t ⊆ s := by
       rw [le_principal_iff] at hls
       have : ∀ n, W n ∩ s ×ˢ s ∈ l ×ᶠ l := fun n => inter_mem (hl.2 (hW n)) (prod_mem_prod hls hls)
       simpa only [l.basis_sets.prod_self.mem_iff, true_imp_iff, subset_inter_iff,
         prod_self_subset_prod_self, and_assoc] using this
-    choose t htl htW hts
-    have : ∀ n, (⋂ k ≤ n, t k) ⊆ t n := fun n => Inter₂_subset _ le_rfl
-    exact
-      ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
-        bInter_subset_bInter_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
-        (bInter_mem (finite_le_nat n)).2 fun k hk => htl k, fun n =>
-        (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩
+    choose t htl htW hts using this
+    have : ∀ n, (⋂ k ≤ n, t k) ⊆ t n := fun n => interᵢ₂_subset _ le_rfl
+    exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
+      binterᵢ_subset_binterᵢ_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
+      (binterᵢ_mem (finite_le_nat n)).2 fun k hk => htl k, fun n =>
+      (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩
   choose u hu using fun n => Filter.nonempty_of_mem (htl n)
   have huc : CauchySeq u :=
     hV.to_has_basis.cauchy_seq_iff.2 fun N hN =>
