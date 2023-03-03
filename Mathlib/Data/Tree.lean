@@ -159,16 +159,30 @@ def right : Tree α → Tree α
 -- Notation for making a node with `Unit` data
 scoped infixr:65 " △ " => Tree.node ()
 
-/-- Recursion on `Tree Unit`; allows for a better `induction` which does not have to worry
-  about the element of type `α = Unit` -/
+section recursor_workarounds
+/-- A computable version of `Tree.unitRecOn`. Workaround until Lean has native support for this. -/
+def recOnC {α} {motive : Tree α → Sort u} (t : Tree α) (base : motive Tree.nil)
+  (ind : (a : α) → (l : Tree α) → (r : Tree α) → motive l → motive r → motive (Tree.node a l r))
+  : motive t :=
+  match t with
+  | nil => base
+  | Tree.node a l r => ind a l r (recOnC l base ind) (recOnC r base ind)
+
+@[csimp]
+lemma recOn_Unit_eq_recOnC : @Tree.recOn = @Tree.recOnC := by
+  ext α motive t base ind
+  induction t with
+  | nil => rfl
+  | node a l r ihl ihr =>
+    rw [Tree.recOnC, ←ihl, ←ihr]
+
+end recursor_workarounds
+
 @[elab_as_elim]
 def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil)
-    (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t := by
-  -- Porting note: code generator does not support recursor 'Tree.recOn'
-  match t with
-  | nil => exact base
-  | node _a l r => exact ind l r (unitRecOn l base ind) (unitRecOn r base ind)
-#align tree.unit_rec_on Tree.unitRecOn
+    (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
+    t.recOn base fun _ => ind
+#noalign tree.unit_rec_on
 
 theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
