@@ -111,7 +111,7 @@ def toModule : (⨁ i, M i) →ₗ[R] N :=
 /-- Coproducts in the categories of modules and additive monoids commute with the forgetful functor
 from modules to additive monoids. -/
 theorem coe_toModule_eq_coe_toAddMonoid :
-    (toModule R ι N φ : (⨁ i, M i) → N) = toAddMonoid fun i => (φ i).toAddMonoidHom := rfl
+    (toModule R ι N φ : (⨁ i, M i) → N) = toAddMonoid fun i ↦ (φ i).toAddMonoidHom := rfl
 #align direct_sum.coe_to_module_eq_coe_to_add_monoid DirectSum.coe_toModule_eq_coe_toAddMonoid
 
 variable {ι N φ}
@@ -120,14 +120,14 @@ variable {ι N φ}
 restricted to each component. -/
 @[simp]
 theorem toModule_lof (i) (x : M i) : toModule R ι N φ (lof R ι M i x) = φ i x :=
-  toAddMonoid_of (fun i => (φ i).toAddMonoidHom) i x
+  toAddMonoid_of (fun i ↦ (φ i).toAddMonoidHom) i x
 #align direct_sum.to_module_lof DirectSum.toModule_lof
 
 variable (ψ : (⨁ i, M i) →ₗ[R] N)
 
 /-- Every linear map from a direct sum agrees with the one obtained by applying
 the universal property to each of its components. -/
-theorem toModule.unique (f : ⨁ i, M i) : ψ f = toModule R ι N (fun i => ψ.comp <| lof R ι M i) f :=
+theorem toModule.unique (f : ⨁ i, M i) : ψ f = toModule R ι N (fun i ↦ ψ.comp <| lof R ι M i) f :=
   toAddMonoid.unique ψ.toAddMonoidHom f
 #align direct_sum.to_module.unique DirectSum.toModule.unique
 
@@ -145,7 +145,7 @@ theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
 /-- The inclusion of a subset of the direct summands
 into a larger subset of the direct summands, as a linear map. -/
 def lsetToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, M i) →ₗ[R] ⨁ i : T, M i :=
-  toModule R _ _ fun i => lof R T (fun i : Subtype T => M i) ⟨i, H i.prop⟩
+  toModule R _ _ fun i ↦ lof R T (fun i : Subtype T ↦ M i) ⟨i, H i.prop⟩
 #align direct_sum.lset_to_set DirectSum.lsetToSet
 
 variable (ι M)
@@ -156,10 +156,10 @@ between `⨁ i, M i` and `∀ i, M i`. -/
 def linearEquivFunOnFintype [Fintype ι] : (⨁ i, M i) ≃ₗ[R] ∀ i, M i :=
   { Dfinsupp.equivFunOnFintype with
     toFun := (↑)
-    map_add' := fun f g => by
+    map_add' := fun f g ↦ by
       ext
       rw [add_apply, Pi.add_apply]
-    map_smul' := fun c f => by
+    map_smul' := fun c f ↦ by
       simp_rw [RingHom.id_apply]
       rw [Dfinsupp.coe_smul] }
 #align direct_sum.linear_equiv_fun_on_fintype DirectSum.linearEquivFunOnFintype
@@ -191,7 +191,7 @@ theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
 /-- The natural linear equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def lid (M : Type v) (ι : Type _ := PUnit) [AddCommMonoid M] [Module R M] [Unique ι] :
     (⨁ _i : ι, M) ≃ₗ[R] M :=
-  { DirectSum.id M ι, toModule R ι M fun _ => LinearMap.id with }
+  { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 #align direct_sum.lid DirectSum.lid
 
 variable (ι M)
@@ -212,7 +212,7 @@ theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι
 #align direct_sum.ext DirectSum.ext
 
 theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = component R ι M i g :=
-  ⟨fun h _ => by rw [h], ext R⟩
+  ⟨fun h _ ↦ by rw [h], ext R⟩
 #align direct_sum.ext_iff DirectSum.ext_iff
 
 @[simp]
@@ -255,7 +255,7 @@ variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
 noncomputable def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r => by convert @Dfinsupp.sigmaCurry_smul _ _ _ δ _ _ _ r }
+  { sigmaCurry with map_smul' := fun r ↦ by convert @Dfinsupp.sigmaCurry_smul _ _ _ δ _ _ _ r }
 #align direct_sum.sigma_lcurry DirectSum.sigmaLcurry
 
 @[simp]
@@ -315,11 +315,11 @@ variable (A : ι → Submodule R M)
 /-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `Submodule R M`
 indexed by `ι`. This is `DirectSum.coeAddMonoidHom` as a `LinearMap`. -/
 def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
-  toModule R ι M fun i => (A i).subtype
+  toModule R ι M fun i ↦ (A i).subtype
 #align direct_sum.coe_linear_map DirectSum.coeLinearMap
 
 @[simp]
-theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i => A i) i x) = x :=
+theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   toAddMonoid_of _ _ _
 #align direct_sum.coe_linear_map_of DirectSum.coeLinearMap_of
 
@@ -342,13 +342,13 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
     (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M
     where repr :=
     ((LinearEquiv.ofBijective (DirectSum.coeLinearMap A) h).symm ≪≫ₗ
-        Dfinsupp.mapRange.linearEquiv fun i => (v i).repr) ≪≫ₗ
+        Dfinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
       (sigmaFinsuppLequivDfinsupp R).symm
 #align direct_sum.is_internal.collected_basis DirectSum.IsInternal.collectedBasis
 
 @[simp]
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type _}
-    (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σi, α i => ↑(v a.1 a.2) := by
+    (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σi, α i ↦ ↑(v a.1 a.2) := by
   funext a
   simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_of_repr,
     Basis.repr_symm_apply, Dfinsupp.lsum_apply_apply, Dfinsupp.mapRange.linearEquiv_apply,
@@ -356,7 +356,7 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type _}
     LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
     sigmaFinsuppAddEquivDfinsupp_apply, sigmaFinsuppEquivDfinsupp_single,
     sigmaFinsuppLequivDfinsupp_apply]
-  convert Dfinsupp.sumAddHom_single (fun i => (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
+  convert Dfinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
 #align direct_sum.is_internal.collected_basis_coe DirectSum.IsInternal.collectedBasis_coe
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type _}
@@ -395,7 +395,7 @@ theorem isInternal_submodule_of_independent_of_supᵢ_eq_top {A : ι → Submodu
 `DirectSum.IsInternal.submodule_independent`, and `DirectSum.IsInternal.submodule_supᵢ_eq_top`. -/
 theorem isInternal_submodule_iff_independent_and_supᵢ_eq_top (A : ι → Submodule R M) :
     IsInternal A ↔ CompleteLattice.Independent A ∧ supᵢ A = ⊤ :=
-  ⟨fun i => ⟨i.submodule_independent, i.submodule_supᵢ_eq_top⟩,
+  ⟨fun i ↦ ⟨i.submodule_independent, i.submodule_supᵢ_eq_top⟩,
     And.rec isInternal_submodule_of_independent_of_supᵢ_eq_top⟩
 #align direct_sum.is_internal_submodule_iff_independent_and_supr_eq_top DirectSum.isInternal_submodule_iff_independent_and_supᵢ_eq_top
 
@@ -403,10 +403,10 @@ theorem isInternal_submodule_iff_independent_and_supᵢ_eq_top (A : ι → Submo
 `DirectSum.IsInternal` is equivalent to `isCompl`. -/
 theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (hij : i ≠ j)
     (h : (Set.univ : Set ι) = {i, j}) : IsInternal A ↔ IsCompl (A i) (A j) := by
-  have : ∀ k, k = i ∨ k = j := fun k => by simpa using Set.ext_iff.mp h k
+  have : ∀ k, k = i ∨ k = j := fun k ↦ by simpa using Set.ext_iff.mp h k
   rw [isInternal_submodule_iff_independent_and_supᵢ_eq_top, supᵢ, ← Set.image_univ, h,
     Set.image_insert_eq, Set.image_singleton, supₛ_pair, CompleteLattice.independent_pair hij this]
-  exact ⟨fun ⟨hd, ht⟩ => ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ => ⟨hd, ht.eq_top⟩⟩
+  exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 #align direct_sum.is_internal_submodule_iff_is_compl DirectSum.isInternal_submodule_iff_isCompl
 
 /-! Now copy the lemmas for subgroup and submonoids. -/
