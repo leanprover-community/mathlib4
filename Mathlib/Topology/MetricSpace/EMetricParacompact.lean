@@ -9,6 +9,7 @@ Authors: Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Tactic.WLOG
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Paracompact
 
@@ -35,6 +36,9 @@ open Set
 
 namespace Emetric
 
+-- porting note: opening namespace for convenience
+open EMetric
+
 -- See note [lower instance priority]
 /-- A `pseudo_emetric_space` is always a paracompact space. Formalization is based
 on [MR0236876]. -/
@@ -44,22 +48,22 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       the comments and `2⁻¹ ^ k` in the code. -/
     have pow_pos : ∀ k : ℕ, (0 : ℝ≥0∞) < 2⁻¹ ^ k := fun k =>
       ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.two_ne_top) _
-    have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := fun m n h =>
-      pow_le_pow_of_le_one' (ENNReal.inv_le_one.2 ennreal.one_lt_two.le) h
+    have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := @fun m n h =>
+      pow_le_pow_of_le_one' (ENNReal.inv_le_one.2 ENNReal.one_lt_two.le) h
     have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n :=
       by
       intro n
       simp [pow_succ, ← mul_assoc, ENNReal.mul_inv_cancel]
     -- Consider an open covering `S : set (set α)`
     refine' ⟨fun ι s ho hcov => _⟩
-    simp only [Union_eq_univ_iff] at hcov
+    simp only [unionᵢ_eq_univ_iff] at hcov
     -- choose a well founded order on `S`
     letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
     have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
     -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
     set ind : α → ι := fun x => wf.min { i : ι | x ∈ s i } (hcov x)
     have mem_ind : ∀ x, x ∈ s (ind x) := fun x => wf.min_mem _ (hcov x)
-    have nmem_of_lt_ind : ∀ {x i}, i < ind x → x ∉ s i := fun x i hlt hxi =>
+    have nmem_of_lt_ind : ∀ {x i}, i < ind x → x ∉ s i := @fun x i hlt hxi =>
       wf.not_lt_min _ (hcov x) hxi hlt
     /- The refinement `D : ℕ → ι → set α` is defined recursively. For each `n` and `i`, `D n i`
       is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
@@ -73,7 +77,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     set D : ℕ → ι → Set α := fun n =>
       Nat.strongRecOn' n fun n D' i =>
         ⋃ (x : α) (hxs : ind x = i) (hb : ball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :
-          ∀ m < n, ∀ (j : ι), x ∉ D' m ‹_› j), ball x (2⁻¹ ^ n)
+          ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), ball x (2⁻¹ ^ n)
     have Dn :
       ∀ n i,
         D n i =
@@ -90,7 +94,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       by
       intro n i y
       rw [Dn n i]
-      simp only [mem_Union, mem_ball]
+      simp only [mem_unionᵢ, mem_ball]
     -- The sets `D n i` cover the whole space. Indeed, for each `x` we can choose `n` such that
     -- `ball x (3 / 2 ^ n) ⊆ s (ind x)`, then either `x ∈ D n i`, or `x ∈ D m i` for some `m < n`.
     have Dcov : ∀ x, ∃ n i, x ∈ D n i := by
@@ -98,10 +102,10 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       obtain ⟨n, hn⟩ : ∃ n : ℕ, ball x (3 * 2⁻¹ ^ n) ⊆ s (ind x) :=
         by
         -- This proof takes 5 lines because we can't import `specific_limits` here
-        rcases is_open_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩
+        rcases isOpen_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩
         have : 0 < ε / 3 := ENNReal.div_pos_iff.2 ⟨ε0.lt.ne', ENNReal.coe_ne_top⟩
         rcases ENNReal.exists_inv_two_pow_lt this.ne' with ⟨n, hn⟩
-        refine' ⟨n, subset.trans (ball_subset_ball _) hε⟩
+        refine' ⟨n, Subset.trans (ball_subset_ball _) hε⟩
         simpa only [div_eq_mul_inv, mul_comm] using (ENNReal.mul_lt_of_lt_div hn).le
       by_contra' h
       apply h n (ind x)
@@ -111,7 +115,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       intro n i
       rw [Dn]
       iterate 4 refine' isOpen_unionᵢ fun _ => _
-      exact is_open_ball
+      exact isOpen_ball
     -- the covering `D n i` is a refinement of the original covering: `D n i ⊆ s i`
     have HDS : ∀ n i, D n i ⊆ s i := by
       intro n s x
@@ -119,17 +123,17 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
       rintro ⟨y, rfl, hsub, -, hyx⟩
       refine' hsub (lt_of_lt_of_le hyx _)
       calc
-        2⁻¹ ^ n = 1 * 2⁻¹ ^ n := (one_mul _).symm
-        _ ≤ 3 * 2⁻¹ ^ n := mul_le_mul_right' _ _
-
-      -- TODO: use `norm_num`
-      have : ((1 : ℕ) : ℝ≥0∞) ≤ (3 : ℕ) := Nat.cast_le.2 (by norm_num1)
-      exact_mod_cast this
+        (2 : ℝ≥0∞)⁻¹ ^ n = 1 * 2⁻¹ ^ n := (one_mul _).symm
+        _ ≤ 3 * 2⁻¹ ^ n := by
+          refine' mul_le_mul_right' _ _
+          -- TODO: use `norm_num`
+          have : ((1 : ℕ) : ℝ≥0∞) ≤ (3 : ℕ) := Nat.cast_le.2 (by norm_num1)
+          exact_mod_cast this
     -- Let us show the rest of the properties. Since the definition expects a family indexed
     -- by a single parameter, we use `ℕ × ι` as the domain.
     refine' ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, _, _, fun ni => ⟨ni.2, HDS _ _⟩⟩
     -- The sets `D n i` cover the whole space as we proved earlier
-    · refine' Union_eq_univ_iff.2 fun x => _
+    · refine' unionᵢ_eq_univ_iff.2 fun x => _
       rcases Dcov x with ⟨n, i, h⟩
       exact ⟨⟨n, i⟩, h⟩
     · /- Let us prove that the covering `D n i` is locally finite. Take a point `x` and choose
@@ -178,16 +182,21 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
           _ = 2 * (2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1)) := by simp only [two_mul, add_comm]
           _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) :=
             (mul_le_mul' le_rfl <| add_le_add le_rfl <| hpow_le (add_le_add hm le_rfl))
-          _ = 3 * 2⁻¹ ^ m := by rw [mul_add, h2pow, bit1, add_mul, one_mul]
+          _ = 3 * 2⁻¹ ^ m := by
+            rw [mul_add, h2pow]
+            -- porting note: was `bit1`
+            have : (3 : ENNReal) = 2 + 1 := by
+              norm_num
+            rw [this, add_mul, one_mul]
 
       -- Finally, we glue `Hgt` and `Hle`
       have : (⋃ (m ≤ n + k) (i ∈ { i : ι | (D m i ∩ B).Nonempty }), {(m, i)}).Finite :=
         (finite_le_nat _).bunionᵢ' fun i hi =>
-          (Hle i hi).Finite.bunionᵢ' fun _ _ => finite_singleton _
+          (Hle i hi).finite.bunionᵢ' fun _ _ => finite_singleton _
       refine' this.subset fun I hI => _
-      simp only [mem_Union]
-      refine' ⟨I.1, _, I.2, hI, prod.mk.eta.symm⟩
-      exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.some_spec
+      simp only [mem_unionᵢ]
+      refine' ⟨I.1, _, I.2, hI, Prod.mk.eta.symm⟩
+      exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 
 -- see Note [lower instance priority]
 instance (priority := 100) normal_of_emetric [EMetricSpace α] : NormalSpace α :=
