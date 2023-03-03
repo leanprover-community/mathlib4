@@ -237,29 +237,20 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   inverse := toQuotientPaths C
   unitIso :=
     NatIso.ofComponents
-      (fun X => by
-        cases X
-        rfl)
-      (by
-        intros X Y
-        cases X
-        cases Y
-        apply Quot.ind
-        intro f
-        simp only [Category.comp_id, Category.id_comp]
+      (fun X => by cases X; rfl)
+      (fun {X} {Y} => Quot.ind $ fun f => by
         apply Quot.sound
         apply Quotient.CompClosure.of
-        simp [pathsHomRel])
+        simp [Category.comp_id, Category.id_comp, pathsHomRel])
   counitIso := NatIso.ofComponents (fun X => Iso.refl _) (fun f => by simp [Quot.liftOn_mk])
-  functor_unitIso_comp := by
-    intros X
+  functor_unitIso_comp X := by
     cases X
-    dsimp
-    simp
+    simp only [pathsHomRel, pathComposition_obj, pathComposition_map, Functor.id_obj,
+               quotientPathsTo_obj, Functor.comp_obj, toQuotientPaths_obj_as,
+               NatIso.ofComponents_hom_app, Iso.refl_hom, quotientPathsTo_map, Category.comp_id]
     rfl
 #align category_theory.quotient_paths_equiv CategoryTheory.quotientPathsEquiv
 
 end
 
 end CategoryTheory
-
