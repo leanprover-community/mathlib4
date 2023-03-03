@@ -8,11 +8,11 @@ Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Equiv
-import Mathbin.Algebra.BigOperators.Finsupp
-import Mathbin.Algebra.Hom.NonUnitalAlg
-import Mathbin.Algebra.Module.BigOperators
-import Mathbin.LinearAlgebra.Finsupp
+import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.LinearAlgebra.Finsupp
 
 /-!
 # Monoid algebras
@@ -141,8 +141,7 @@ variable [Semiring R]
 
 theorem liftNc_mul {g_hom : Type _} [MulHomClass g_hom G R] (f : k →+* R) (g : g_hom)
     (a b : MonoidAlgebra k G) (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :
-    liftNc (f : k →+ R) g (a * b) = liftNc (f : k →+ R) g a * liftNc (f : k →+ R) g b :=
-  by
+    liftNc (f : k →+ R) g (a * b) = liftNc (f : k →+ R) g a * liftNc (f : k →+ R) g b := by
   conv_rhs => rw [← sum_single a, ← sum_single b]
   simp_rw [mul_def, (lift_nc _ g).map_finsupp_sum, lift_nc_single, Finsupp.sum_mul, Finsupp.mul_sum]
   refine' Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x hx => _
@@ -336,8 +335,7 @@ variable [Semiring k]
 attribute [local reducible] MonoidAlgebra
 
 theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
-    (f * g) x = f.Sum fun a₁ b₁ => g.Sum fun a₂ b₂ => if a₁ * a₂ = x then b₁ * b₂ else 0 :=
-  by
+    (f * g) x = f.Sum fun a₁ b₁ => g.Sum fun a₂ b₂ => if a₁ * a₂ = x then b₁ * b₂ else 0 := by
   rw [mul_def]
   simp only [Finsupp.sum_apply, single_apply]
 #align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
@@ -399,8 +397,7 @@ theorem mapDomain_one {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
 theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β] [Mul α] [Mul α₂]
     {F : Type _} [MulHomClass F α α₂] (f : F) (x y : MonoidAlgebra β α) :
     (mapDomain f (x * y : MonoidAlgebra β α) : MonoidAlgebra β α₂) =
-      (mapDomain f x * mapDomain f y : MonoidAlgebra β α₂) :=
-  by
+      (mapDomain f x * mapDomain f y : MonoidAlgebra β α₂) := by
   simp_rw [mul_def, map_domain_sum, map_domain_single, map_mul]
   rw [Finsupp.sum_mapDomain_index]
   · congr
@@ -492,8 +489,7 @@ theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x 
 #align monoid_algebra.single_one_mul_apply MonoidAlgebra.single_one_mul_apply
 
 theorem liftNc_smul [MulOneClass G] {R : Type _} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
-    (φ : MonoidAlgebra k G) : liftNc (f : k →+ R) g (c • φ) = f c * liftNc (f : k →+ R) g φ :=
-  by
+    (φ : MonoidAlgebra k G) : liftNc (f : k →+ R) g (c • φ) = f c * liftNc (f : k →+ R) g φ := by
   suffices :
     (lift_nc (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
       (AddMonoidHom.mulLeft (f c)).comp (lift_nc (↑f) g)
@@ -702,8 +698,7 @@ theorem single_algebraMap_eq_algebraMap_mul_of {A : Type _} [CommSemiring k] [Se
 
 theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G)
     (hM : ∀ g, p (of k G g)) (hadd : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g))
-    (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f :=
-  by
+    (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
   refine' Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
   · simpa using hsmul 0 (of k G 1) (hM 1)
   · convert hsmul r (of k G g) (hM g)
@@ -1324,8 +1319,7 @@ theorem mapDomain_one {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
 theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β] [Add α] [Add α₂]
     {F : Type _} [AddHomClass F α α₂] (f : F) (x y : AddMonoidAlgebra β α) :
     (mapDomain f (x * y : AddMonoidAlgebra β α) : AddMonoidAlgebra β α₂) =
-      (mapDomain f x * mapDomain f y : AddMonoidAlgebra β α₂) :=
-  by
+      (mapDomain f x * mapDomain f y : AddMonoidAlgebra β α₂) := by
   simp_rw [mul_def, map_domain_sum, map_domain_single, map_add]
   rw [Finsupp.sum_mapDomain_index]
   · congr
@@ -1432,8 +1426,7 @@ theorem liftNc_smul {R : Type _} [AddZeroClass G] [Semiring R] (f : k →+* R)
 theorem induction_on [AddMonoid G] {p : AddMonoidAlgebra k G → Prop} (f : AddMonoidAlgebra k G)
     (hM : ∀ g, p (of k G (Multiplicative.ofAdd g)))
     (hadd : ∀ f g : AddMonoidAlgebra k G, p f → p g → p (f + g))
-    (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f :=
-  by
+    (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
   refine' Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
   · simpa using hsmul 0 (of k G (Multiplicative.ofAdd 0)) (hM 0)
   · convert hsmul r (of k G (Multiplicative.ofAdd g)) (hM g)
