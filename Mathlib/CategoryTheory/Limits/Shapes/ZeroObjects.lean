@@ -8,7 +8,7 @@ Authors: Scott Morrison, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Zero objects
@@ -115,8 +115,7 @@ def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
   hX.IsTerminal.uniqueUpToIso hY
 #align category_theory.limits.is_zero.iso_is_terminal CategoryTheory.Limits.IsZero.isoIsTerminal
 
-theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X :=
-  by
+theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
   refine' ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to Z⟩, fun f => _⟩⟩, fun Z => ⟨⟨⟨hY.from Z ≫ e.inv⟩, fun f => _⟩⟩⟩
   · rw [← cancel_epi e.inv]
     apply hY.eq_of_src
@@ -144,8 +143,7 @@ theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
   ⟨fun h => h.of_iso e.symm, fun h => h.of_iso e⟩
 #align category_theory.iso.is_zero_iff CategoryTheory.Iso.isZero_iff
 
-theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F :=
-  by
+theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
   constructor <;> intro G <;> refine' ⟨⟨⟨_⟩, _⟩⟩
   · refine'
       { app := fun X => (hF _).to _
@@ -216,8 +214,7 @@ def IsZero.isoZero [HasZeroObject C] {X : C} (hX : IsZero X) : X ≅ 0 :=
   hX.Iso (isZero_zero C)
 #align category_theory.limits.is_zero.iso_zero CategoryTheory.Limits.IsZero.isoZero
 
-theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZero (F.obj X) :=
-  by
+theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZero (F.obj X) := by
   let G : C ⥤ D := (CategoryTheory.Functor.const C).obj 0
   have hG : is_zero G := functor.is_zero _ fun X => is_zero_zero _
   let e : F ≅ G := hF.iso hG
