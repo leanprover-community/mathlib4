@@ -151,7 +151,9 @@ def right : Tree α → Tree α
 -- Notation for making a node with `Unit` data
 scoped infixr:65 " △ " => Tree.node ()
 
+-- porting note: workaround for leanprover/lean4#2049
 section recursor_workarounds
+
 /-- A computable version of `Tree.unitRecOn`. Workaround until Lean has native support for this. -/
 def recOnC {α} {motive : Tree α → Sort u} (t : Tree α) (base : motive Tree.nil)
   (ind : (a : α) → (l : Tree α) → (r : Tree α) → motive l → motive r → motive (Tree.node a l r))
