@@ -207,7 +207,7 @@ namespace Lan
 
 attribute [local simp] CostructuredArrow.proj
 
-/-- The diagram indexed by `Ran.index ι x` used to define `Ran`. -/
+/-- The diagram indexed by `Lan.index ι x` used to define `Lan`. -/
 abbrev diagram (F : S ⥤ D) (x : L) : CostructuredArrow ι x ⥤ D :=
   CostructuredArrow.proj ι x ⋙ F
 set_option linter.uppercaseLean3 false in
@@ -257,6 +257,7 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     let ff : CostructuredArrow ι _ ⥤ _ := CostructuredArrow.map f
     let gg : CostructuredArrow ι _ ⥤ _ := CostructuredArrow.map g
     let dd := diagram ι F z
+    -- Porting note: It seems that even Lean3 had some trouble with instances in this case.
     -- I don't know why lean can't deduce the following three instances...
     haveI : HasColimit (ff ⋙ gg ⋙ dd) := I _
     haveI : HasColimit ((ff ⋙ gg) ⋙ dd) := I _
@@ -274,9 +275,7 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
     (loc ι F ⟶ G) ≃ (F ⟶ ((whiskeringLeft _ _ _).obj ι).obj G)
     where
   toFun f :=
-    { app := fun x => by
-        apply colimit.ι (diagram ι F (ι.obj x)) (CostructuredArrow.mk (𝟙 _)) ≫ f.app _
-      -- sigh
+    { app := fun x => colimit.ι (diagram ι F (ι.obj x)) (CostructuredArrow.mk (𝟙 _)) ≫ f.app _
       naturality := by
         intro x y ff
         dsimp only [whiskeringLeft]
