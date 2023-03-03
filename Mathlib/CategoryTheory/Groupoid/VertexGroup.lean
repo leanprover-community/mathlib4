@@ -8,12 +8,12 @@ Authors: Rémi Bottinelli
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.CategoryTheory.PathCategory
-import Mathbin.Algebra.Group.Defs
-import Mathbin.Algebra.Hom.Group
-import Mathbin.Algebra.Hom.Equiv.Basic
-import Mathbin.Combinatorics.Quiver.Path
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.PathCategory
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # Vertex group
