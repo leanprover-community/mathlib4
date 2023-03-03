@@ -8,8 +8,8 @@ Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.SubsetProperties
-import Mathbin.Topology.MetricSpace.Basic
+import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Sequences in topological spaces
@@ -134,8 +134,7 @@ theorem seqClosure_eq_closure [FrechetUrysohnSpace X] (s : Set X) : seqClosure s
 /-- In a Fréchet-Urysohn space, a point belongs to the closure of a set iff it is a limit
 of a sequence taking values in this set. -/
 theorem mem_closure_iff_seq_limit [FrechetUrysohnSpace X] {s : Set X} {a : X} :
-    a ∈ closure s ↔ ∃ x : ℕ → X, (∀ n : ℕ, x n ∈ s) ∧ Tendsto x atTop (𝓝 a) :=
-  by
+    a ∈ closure s ↔ ∃ x : ℕ → X, (∀ n : ℕ, x n ∈ s) ∧ Tendsto x atTop (𝓝 a) := by
   rw [← seqClosure_eq_closure]
   rfl
 #align mem_closure_iff_seq_limit mem_closure_iff_seq_limit
@@ -147,8 +146,7 @@ that works for any pair of filters assuming that the filter in the domain is cou
 This property is equivalent to the definition of `frechet_urysohn_space`, see
 `frechet_urysohn_space.of_seq_tendsto_imp_tendsto`. -/
 theorem tendsto_nhds_iff_seq_tendsto [FrechetUrysohnSpace X] {f : X → Y} {a : X} {b : Y} :
-    Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 b) :=
-  by
+    Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 b) := by
   refine'
     ⟨fun hf u hu => hf.comp hu, fun h =>
       ((nhds_basis_closeds _).tendsto_iffₓ (nhds_basis_closeds _)).2 _⟩
@@ -343,8 +341,7 @@ theorem IsSeqCompact.exists_tendsto (hs : IsSeqCompact s) {u : ℕ → X} (hu : 
 #align is_seq_compact.exists_tendsto IsSeqCompact.exists_tendsto
 
 /-- A sequentially compact set in a uniform space is totally bounded. -/
-protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBounded s :=
-  by
+protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBounded s := by
   intro V V_in
   unfold IsSeqCompact at h
   contrapose! h
@@ -365,8 +362,7 @@ variable [IsCountablyGenerated (𝓤 X)]
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A sequentially compact set in a uniform set with countably generated uniformity filter
 is complete. -/
-protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :=
-  by
+protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := by
   intro l hl hls
   haveI := hl.1
   rcases exists_antitone_basis (𝓤 X) with ⟨V, hV⟩
