@@ -93,7 +93,7 @@ echo ""
 
 mathlib3_module=$(grep '^! .*source module ' <"$GIT_WORK_TREE/$mathlib4_path" | sed 's/.*source module \(.*\)$/\1/')
 
-if git cat-file -e origin/master:$mathlib4_path; then
+if git cat-file -q -e origin/master:$mathlib4_path 2> /dev/null; then
     echo "WARNING: this file has already been ported!"
     echo "To continue anyway with a fresh port, you can run"
     echo ""
@@ -102,7 +102,7 @@ if git cat-file -e origin/master:$mathlib4_path; then
     exit 1
 fi
 
-if PR=$(curl --silent --show-error --fail "$PORT_STATUS_YAML" | grep -F "$mathlib3_module: " | grep "mathlib4#"); then
+if PR=$(curl --silent --show-error --fail "$PORT_STATUS_YAML" | grep -F "$mathlib3_module: " | grep -o -E "mathlib4#[0-9]+"); then
     set +x
     echo "WARNING: The file is already in the process of being ported in $PR."
     echo "To continue anyway with a fresh port, you can run"
