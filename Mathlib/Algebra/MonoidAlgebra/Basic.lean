@@ -488,10 +488,13 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
 
 end
 
-theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by simp
+theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
+  -- Porting note: Was `simp`.
+  rw [of_apply, smul_single', mul_one]
 #align monoid_algebra.smul_of MonoidAlgebra.smul_of
 
-theorem of_injective [MulOneClass G] [Nontrivial k] : Function.Injective (of k G) := fun a b h => by
+theorem of_injective [MulOneClass G] [Nontrivial k] :
+    Function.Injective (of k G) := fun a b h => by
   simpa using (single_eq_single_iff _ _ _ _).mp h
 #align monoid_algebra.of_injective MonoidAlgebra.of_injective
 
@@ -505,11 +508,13 @@ def singleHom [MulOneClass G] : k × G →* MonoidAlgebra k G
     where
   toFun a := single a.2 a.1
   map_one' := rfl
-  map_mul' a b := single_mul_single.symm
+  map_mul' _a _b := single_mul_single.symm
 #align monoid_algebra.single_hom MonoidAlgebra.singleHom
 
+-- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
 theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
-    (H : ∀ a, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
+    (H : ∀ a, a * x = z ↔ a = y) :
+    (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) z = f y * r := by
   classical exact
       have A :
         ∀ a₁ b₁,
@@ -517,24 +522,27 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
             ite (a₁ * x = z) (b₁ * r) 0 :=
         fun a₁ b₁ => sum_single_index <| by simp
       calc
-        (f * single x r) z = Sum f fun a b => if a = y then b * r else 0 := by
-          simp only [mul_apply, A, H]
+        (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) z =
+            sum f fun a b => if a = y then b * r else 0 := by simp only [mul_apply, A, H]
         _ = if y ∈ f.support then f y * r else 0 := (f.support.sum_ite_eq' _ _)
         _ = f y * r := by split_ifs with h <;> simp at h <;> simp [h]
 
 #align monoid_algebra.mul_single_apply_aux MonoidAlgebra.mul_single_apply_aux
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
-    (f * single 1 r) x = f x * r :=
+    (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) x = f x * r :=
   f.mul_single_apply_aux fun a => by rw [mul_one]
 #align monoid_algebra.mul_single_one_apply MonoidAlgebra.mul_single_one_apply
 
+-- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
-    (H : ∀ a, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
+    (H : ∀ a, x * a = y ↔ a = z) :
+    (HMul.hMul (α := MonoidAlgebra k G) (single x r) f) y = r * f z := by
   classical exact
       have : (f.sum fun a b => ite (x * a = y) (0 * b) 0) = 0 := by simp
       calc
-        (single x r * f) y = Sum f fun a b => ite (x * a = y) (r * b) 0 :=
+        (HMul.hMul (α := MonoidAlgebra k G) (single x r) f) y =
+            sum f fun a b => ite (x * a = y) (r * b) 0 :=
           (mul_apply _ _ _).trans <| sum_single_index this
         _ = f.sum fun a b => ite (a = z) (r * b) 0 := by simp only [H]
         _ = if z ∈ f.support then r * f z else 0 := (f.support.sum_ite_eq' _ _)
@@ -542,8 +550,9 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 
 #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
+-- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
-    (single 1 r * f) x = r * f x :=
+    (HMul.hMul (α := MonoidAlgebra k G) (single 1 r) f) x = r * f x :=
   f.single_mul_apply_aux fun a => by rw [one_mul]
 #align monoid_algebra.single_one_mul_apply MonoidAlgebra.single_one_mul_apply
 
@@ -552,8 +561,13 @@ theorem liftNc_smul [MulOneClass G] {R : Type _} [Semiring R] (f : k →+* R) (g
   suffices :
     (liftNc (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNc (↑f) g)
-  exact AddMonoidHom.congr_fun this φ
-  ext (a b); simp [mul_assoc]
+  exact FunLike.congr_fun this φ
+  -- Porting note: `ext` couldn't a find appropriate theorem.
+  refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
+  -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
+  unfold MonoidAlgebra
+  simp
+  rw [liftNc_single, liftNc_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
 #align monoid_algebra.lift_nc_smul MonoidAlgebra.liftNc_smul
 
 end MiscTheorems
@@ -568,9 +582,10 @@ variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 instance isScalarTower_self [IsScalarTower R k k] :
     IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
-    ext m
+    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+    refine Finsupp.ext fun m => ?_
     classical simp only [mul_apply, Finsupp.smul_sum, smul_ite, smul_mul_assoc, sum_smul_index',
-        zero_mul, if_t_t, imp_true_iff, eq_self_iff_true, sum_zero, coe_smul, smul_eq_mul,
+        zero_mul, ite_self, imp_true_iff, eq_self_iff_true, sum_zero, coe_smul, smul_eq_mul,
         Pi.smul_apply, smul_zero]⟩
 #align monoid_algebra.is_scalar_tower_self MonoidAlgebra.isScalarTower_self
 
@@ -581,7 +596,8 @@ instance sMulCommClass_self [SMulCommClass R k k] :
     SMulCommClass R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
     classical
-      ext m
+      -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
+      refine Finsupp.ext fun m => ?_
       simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm, sum_smul_index',
         imp_true_iff, eq_self_iff_true, coe_smul, ite_eq_right_iff, smul_eq_mul, Pi.smul_apply,
         mul_zero, smul_zero]⟩
@@ -985,7 +1001,7 @@ theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
 theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a b => b * g (a⁻¹ * x) :=
   calc
-    (f * g) x = Sum f fun a b => (single a b * g) x := by
+    (f * g) x = sum f fun a b => (single a b * g) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.sum_mul, f.sum_single]
     _ = _ := by simp only [single_mul_apply, Finsupp.sum]
 
@@ -995,7 +1011,7 @@ theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
 theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = g.sum fun a b => f (x * a⁻¹) * b :=
   calc
-    (f * g) x = Sum g fun a b => (f * single a b) x := by
+    (f * g) x = sum g fun a b => (f * single a b) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.mul_sum, g.sum_single]
     _ = _ := by simp only [mul_single_apply, Finsupp.sum]
 
@@ -1661,7 +1677,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
           A)) with
     toFun := fun f =>
       { (MonoidAlgebra.liftMagma k f : _) with
-        toFun := fun a => Sum a fun m t => t • f (Multiplicative.ofAdd m) }
+        toFun := fun a => sum a fun m t => t • f (Multiplicative.ofAdd m) }
     invFun := fun F => F.toMulHom.comp (ofMagma k G) }
 #align add_monoid_algebra.lift_magma AddMonoidAlgebra.liftMagma
 
