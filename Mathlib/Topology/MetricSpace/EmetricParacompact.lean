@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Ordinal.Basic
-import Mathbin.Topology.MetricSpace.EmetricSpace
-import Mathbin.Topology.Paracompact
+import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Topology.MetricSpace.EmetricSpace
+import Mathlib.Topology.Paracompact
 
 /-!
 # (Extended) metric spaces are paracompact
