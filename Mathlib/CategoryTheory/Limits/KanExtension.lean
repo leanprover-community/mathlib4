@@ -8,9 +8,9 @@ Authors: Bhavik Mehta, Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
-import Mathbin.CategoryTheory.Punit
-import Mathbin.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.StructuredArrow
 
 /-!
 
@@ -152,8 +152,7 @@ def adjunction [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
 #align category_theory.Ran.adjunction CategoryTheory.ran.adjunction
 
 theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
-    IsIso (adjunction D ι).counit :=
-  by
+    IsIso (adjunction D ι).counit := by
   apply nat_iso.is_iso_of_is_iso_app _
   intro F
   apply nat_iso.is_iso_of_is_iso_app _
@@ -293,8 +292,7 @@ def adjunction [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
 #align category_theory.Lan.adjunction CategoryTheory.lan.adjunction
 
 theorem coreflective [Full ι] [Faithful ι] [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
-    IsIso (adjunction D ι).Unit :=
-  by
+    IsIso (adjunction D ι).Unit := by
   apply nat_iso.is_iso_of_is_iso_app _
   intro F
   apply nat_iso.is_iso_of_is_iso_app _
