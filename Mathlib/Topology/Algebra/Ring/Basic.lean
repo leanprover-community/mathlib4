@@ -8,9 +8,9 @@ Authors: Patrick Massot, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Prod
-import Mathbin.RingTheory.Subring.Basic
-import Mathbin.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Ring.Prod
+import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 
@@ -217,8 +217,7 @@ variable {R : Type _} [NonUnitalNonAssocRing R] [TopologicalSpace R]
 theorem TopologicalRing.of_add_group_of_nhds_zero [TopologicalAddGroup R]
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ᶠ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
-    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : TopologicalRing R :=
-  by
+    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : TopologicalRing R := by
   refine' { ‹TopologicalAddGroup R› with .. }
   have hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0) := by simp
   have hadd : tendsto (uncurry ((· + ·) : R → R → R)) (𝓝 0 ×ᶠ 𝓝 0) (𝓝 0) :=
@@ -344,8 +343,7 @@ instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
 #align ring_topology.inhabited RingTopology.inhabited
 
 @[ext]
-theorem ext' {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
-  by
+theorem ext' {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g := by
   ext : 2
   exact h
 #align ring_topology.ext' RingTopology.ext'
@@ -411,8 +409,7 @@ def coinduced {α β : Type _} [t : TopologicalSpace α] [Ring β] (f : α → �
 #align ring_topology.coinduced RingTopology.coinduced
 
 theorem coinduced_continuous {α β : Type _} [t : TopologicalSpace α] [Ring β] (f : α → β) :
-    cont t (coinduced f).toTopologicalSpace f :=
-  by
+    cont t (coinduced f).toTopologicalSpace f := by
   rw [continuous_iff_coinduced_le]
   refine' le_infₛ _
   rintro _ ⟨t', ht', rfl⟩
