@@ -220,13 +220,13 @@ theorem bot_mul : ⊥ * M = ⊥ :=
   map₂_bot_left _ _
 #align submodule.bot_mul Submodule.bot_mul
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp can't prove this
 protected theorem one_mul : (1 : Submodule R A) * M = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, one_mul, span_eq]
 #align submodule.one_mul Submodule.one_mul
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simp can't prove this
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, mul_one, span_eq]
@@ -756,3 +756,5 @@ end Quotient
 end CommRing
 
 end Submodule
+
+#lint
