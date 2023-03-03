@@ -507,7 +507,8 @@ is closed under addition, and holds for `x * m` where `m ∈ M` and it holds for
 protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (algebraMap _ _ r))
     (hadd : ∀ x y, C x → C y → C (x + y)) (hmul : ∀ x, C x → ∀ m ∈ M, C (x * m)) {x : A} {n : ℕ}
     (hx : x ∈ M ^ n) : C x :=
-  Submodule.pow_induction_on_right' M hr (fun x y _ _ _ => hadd x y) (fun _ _ _ => hmul _) hx
+  Submodule.pow_induction_on_right' (M := M) (C := fun _ a _ => C a) hr (fun x y _ _ _ => hadd x y)
+    (fun _ _ _ => hmul _) hx
 #align submodule.pow_induction_on_right Submodule.pow_induction_on_right
 
 /-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
