@@ -1177,8 +1177,7 @@ def Simps.apply (h : α ≃ᵐ β) : α → β := h
 def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 #align measurable_equiv.simps.symm_apply MeasurableEquiv.Simps.symm_apply
 
-initialize_simps_projections MeasurableEquiv (toEquiv_toFun → apply, toEquiv_invFun →
-  symm_apply)
+initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
 
 @[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := FunLike.ext' h
 #align measurable_equiv.ext MeasurableEquiv.ext
@@ -1725,7 +1724,7 @@ theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ 
   rfl
 #align measurable_set.coe_union MeasurableSet.coe_union
 
-noncomputable instance : HasSup (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 -- porting note: new lemma
@@ -1740,7 +1739,7 @@ theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ 
   rfl
 #align measurable_set.coe_inter MeasurableSet.coe_inter
 
-noncomputable instance : HasInf (Subtype (MeasurableSet : Set α → Prop)) :=
+noncomputable instance : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 -- porting note: new lemma
