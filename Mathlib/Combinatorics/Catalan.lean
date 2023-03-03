@@ -183,18 +183,18 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
     (Finset.Nat.antidiagonal n).attach.bunionᵢ fun ijh =>
       have := Nat.lt_succ_of_le (fst_le ijh.2)
       have := Nat.lt_succ_of_le (snd_le ijh.2)
-      pairwiseNode (trees_of_num_nodes_eq ijh.1.1) (trees_of_num_nodes_eq ijh.1.2)
+      pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
 #align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]
-theorem trees_of_nodes_eq_zero : treesOfNumNodesEq 0 = {nil} := by rw [trees_of_num_nodes_eq]
+theorem trees_of_nodes_eq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
 #align tree.trees_of_nodes_eq_zero Tree.trees_of_nodes_eq_zero
 
 theorem trees_of_nodes_eq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
       (Nat.antidiagonal n).bunionᵢ fun ij =>
         pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) := by
-  rw [trees_of_num_nodes_eq]
+  rw [treesOfNumNodesEq]
   ext
   simp
 #align tree.trees_of_nodes_eq_succ Tree.trees_of_nodes_eq_succ
@@ -204,7 +204,7 @@ theorem mem_trees_of_nodes_eq {x : Tree Unit} {n : ℕ} : x ∈ treesOfNumNodesE
   by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
     simp [trees_of_nodes_eq_succ, Nat.succ_eq_add_one, *]
-  trivial
+  linarith
 #align tree.mem_trees_of_nodes_eq Tree.mem_trees_of_nodes_eq
 
 theorem mem_trees_of_nodes_eq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
@@ -220,15 +220,20 @@ theorem coe_trees_of_nodes_eq (n : ℕ) :
 theorem trees_of_nodes_eq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
   induction' n using Nat.case_strong_induction_on with n ih
   · simp
-  rw [trees_of_nodes_eq_succ, card_bUnion, catalan_succ']
+  rw [trees_of_nodes_eq_succ, card_bunionᵢ, catalan_succ']
   · apply sum_congr rfl
     rintro ⟨i, j⟩ H
-    simp [ih _ (fst_le H), ih _ (snd_le H)]
+    simp
+    rw [ih _ (fst_le H), ih _ (snd_le H)]
   · simp_rw [disjoint_left]
     rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
-    clear * -
-    tidy
+    simp;
+    intros h a b c bi cj bc ti tj hti htj tij
+    rw [←bc] at tij
+    cases tij
+    apply h
+    rw [←bi, ←hti]
+    rw [←cj, ←htj]
 #align tree.trees_of_nodes_eq_card_eq_catalan Tree.trees_of_nodes_eq_card_eq_catalan
 
 end Tree
-
