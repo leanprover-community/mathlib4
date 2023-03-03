@@ -8,11 +8,11 @@ Authors: Andreas Swerdlow
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.LinearMap
-import Mathbin.LinearAlgebra.Basis.Bilinear
-import Mathbin.LinearAlgebra.BilinearMap
-import Mathbin.Algebra.EuclideanDomain.Instances
-import Mathbin.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.Module.LinearMap
+import Mathlib.LinearAlgebra.Basis.Bilinear
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.RingTheory.NonZeroDivisors
 
 /-!
 # Sesquilinear form
@@ -66,8 +66,7 @@ theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} {x y} : B.
   Iff.rfl
 #align linear_map.is_ortho_def LinearMap.isOrtho_def
 
-theorem isOrthoZeroLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x) : IsOrtho B (0 : M₁) x :=
-  by
+theorem isOrthoZeroLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R) (x) : IsOrtho B (0 : M₁) x := by
   dsimp only [is_ortho]
   rw [map_zero B, zero_apply]
 #align linear_map.is_ortho_zero_left LinearMap.isOrthoZeroLeft
@@ -93,8 +92,7 @@ theorem isOrthoCat_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R} {v : n
 #align linear_map.is_Ortho_def LinearMap.isOrthoCat_def
 
 theorem isOrthoCat_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] R) {v : n → M₁} :
-    B.IsOrthoCat v ↔ B.flip.IsOrthoCat v :=
-  by
+    B.IsOrthoCat v ↔ B.flip.IsOrthoCat v := by
   simp_rw [is_Ortho_def]
   constructor <;> intro h i j hij
   · rw [flip_apply]
@@ -112,8 +110,7 @@ variable [Field K] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁] [Field K�
 
 -- todo: this also holds for [comm_ring R] [is_domain R] when J₁ is invertible
 theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} {a : K₁} (ha : a ≠ 0) :
-    IsOrtho B x y ↔ IsOrtho B (a • x) y :=
-  by
+    IsOrtho B x y ↔ IsOrtho B (a • x) y := by
   dsimp only [is_ortho]
   constructor <;> intro H
   · rw [map_smulₛₗ₂, H, smul_zero]
@@ -126,8 +123,7 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} 
 
 -- todo: this also holds for [comm_ring R] [is_domain R] when J₂ is invertible
 theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} {a : K₂} {ha : a ≠ 0} :
-    IsOrtho B x y ↔ IsOrtho B x (a • y) :=
-  by
+    IsOrtho B x y ↔ IsOrtho B x (a • y) := by
   dsimp only [is_ortho]
   constructor <;> intro H
   · rw [map_smulₛₗ, H, smul_zero]
@@ -194,15 +190,13 @@ theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
   ⟨fun h x y H => h y x ((B.flip_apply _ _).trans H), fun h x y => h y x⟩
 #align linear_map.is_refl.flip_is_refl_iff LinearMap.IsRefl.flip_isRefl_iff
 
-theorem ker_flip_eq_bot (H : B.IsRefl) (h : B.ker = ⊥) : B.flip.ker = ⊥ :=
-  by
+theorem ker_flip_eq_bot (H : B.IsRefl) (h : B.ker = ⊥) : B.flip.ker = ⊥ := by
   refine' ker_eq_bot'.mpr fun _ hx => ker_eq_bot'.mp h _ _
   ext
   exact H _ _ (LinearMap.congr_fun hx _)
 #align linear_map.is_refl.ker_flip_eq_bot LinearMap.IsRefl.ker_flip_eq_bot
 
-theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) : B.ker = ⊥ ↔ B.flip.ker = ⊥ :=
-  by
+theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) : B.ker = ⊥ ↔ B.flip.ker = ⊥ := by
   refine' ⟨ker_flip_eq_bot H, fun h => _⟩
   exact (congr_arg _ B.flip_flip.symm).trans (ker_flip_eq_bot (flip_is_refl_iff.mpr H) h)
 #align linear_map.is_refl.ker_eq_bot_iff_ker_flip_eq_bot LinearMap.IsRefl.ker_eq_bot_iff_ker_flip_eq_bot
@@ -229,8 +223,7 @@ protected theorem eq (H : B.IsSymm) (x y) : I (B x y) = B y x :=
   H x y
 #align linear_map.is_symm.eq LinearMap.IsSymm.eq
 
-theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 =>
-  by
+theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => by
   rw [← H.eq]
   simp [H1]
 #align linear_map.is_symm.is_refl LinearMap.IsSymm.isRefl
@@ -247,8 +240,7 @@ theorem domRestrictSymm (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁�
 
 end IsSymm
 
-theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.flip :=
-  by
+theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
     rw [← h, flip_apply, RingHom.id_apply]
@@ -282,8 +274,7 @@ theorem self_eq_zero (x) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
 
-theorem neg (x y) : -B x y = B y x :=
-  by
+theorem neg (x y) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
   simp [map_add, self_eq_zero H] at H1
   rw [add_eq_zero_iff_neg_eq] at H1
@@ -369,8 +360,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] K) (x : V₁)
-    (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ :=
-  by
+    (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h => _
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
@@ -391,8 +381,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] K} (x : V) :
-    Submodule.orthogonalBilin (K ∙ x) B = (B x).ker :=
-  by
+    Submodule.orthogonalBilin (K ∙ x) B = (B x).ker := by
   ext y
   simp_rw [Submodule.mem_orthogonalBilin_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
   constructor
@@ -404,8 +393,7 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
 
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : ¬B.IsOrtho x x) :
-    (K ∙ x) ⊔ Submodule.orthogonalBilin (K ∙ x) B = ⊤ :=
-  by
+    (K ∙ x) ⊔ Submodule.orthogonalBilin (K ∙ x) B = ⊤ := by
   rw [orthogonal_span_singleton_eq_to_lin_ker]
   exact (B x).span_singleton_sup_ker_eq_top hx
 #align linear_map.span_singleton_sup_orthogonal_eq_top LinearMap.span_singleton_sup_orthogonal_eq_top
@@ -452,8 +440,7 @@ def IsAdjointPair :=
 
 variable {B B' f g}
 
-theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp f = B.compl₂ g :=
-  by
+theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp f = B.compl₂ g := by
   constructor <;> intro h
   · ext (x y)
     rw [comp_apply, compl₂_apply]
@@ -587,8 +574,7 @@ theorem mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
 
 theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
     IsPairSelfAdjoint B F f ↔
-      IsPairSelfAdjoint (B.compl₁₂ ↑e ↑e) (F.compl₁₂ ↑e ↑e) (e.symm.conj f) :=
-  by
+      IsPairSelfAdjoint (B.compl₁₂ ↑e ↑e) (F.compl₁₂ ↑e ↑e) (e.symm.conj f) := by
   have hₗ :
     (F.compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M)).comp (e.symm.conj f) =
       (F.comp f).compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M) :=
@@ -620,8 +606,7 @@ theorem mem_selfAdjointSubmodule (f : Module.End R M) :
 
 @[simp]
 theorem mem_skewAdjointSubmodule (f : Module.End R M) :
-    f ∈ B.skewAdjointSubmodule ↔ B.IsSkewAdjoint f :=
-  by
+    f ∈ B.skewAdjointSubmodule ↔ B.IsSkewAdjoint f := by
   rw [is_skew_adjoint_iff_neg_self_adjoint]
   exact Iff.rfl
 #align linear_map.mem_skew_adjoint_submodule LinearMap.mem_skewAdjointSubmodule
@@ -670,8 +655,7 @@ variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R M�
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] R} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
-    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R R)) B).SeparatingLeft :=
-  by
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R R)) B).SeparatingLeft := by
   intro x hx
   rw [← e₁.symm.map_eq_zero_iff]
   refine' h (e₁.symm x) fun y => _
@@ -721,8 +705,7 @@ theorem flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} : B
 #align linear_map.flip_nondegenerate LinearMap.flip_nondegenerate
 
 theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
-    B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 :=
-  by
+    B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
   · let h' := h x
     simp only [hB, zero_apply, eq_self_iff_true, forall_const] at h'
@@ -758,16 +741,14 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Module R M] {I I' : R →+* R}
 
 theorem IsRefl.nondegenerateOfSeparatingLeft {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
-    (hB' : B.SeparatingLeft) : B.Nondegenerate :=
-  by
+    (hB' : B.SeparatingLeft) : B.Nondegenerate := by
   refine' ⟨hB', _⟩
   rw [separating_right_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separating_left_iff_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerateOfSeparatingLeft
 
 theorem IsRefl.nondegenerateOfSeparatingRight {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
-    (hB' : B.SeparatingRight) : B.Nondegenerate :=
-  by
+    (hB' : B.SeparatingRight) : B.Nondegenerate := by
   refine' ⟨_, hB'⟩
   rw [separating_left_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separating_right_iff_flip_ker_eq_bot]
@@ -778,8 +759,7 @@ nondegenerate if `W` has trivial intersection with its orthogonal complement,
 that is `disjoint W (W.orthogonal_bilin B)`. -/
 theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     {W : Submodule R M} (hW : Disjoint W (W.orthogonalBilin B)) :
-    (B.domRestrict₁₂ W W).Nondegenerate :=
-  by
+    (B.domRestrict₁₂ W W).Nondegenerate := by
   refine' (hB.dom_restrict_refl W).nondegenerateOfSeparatingLeft _
   rintro ⟨x, hx⟩ b₁
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R]
@@ -812,8 +792,7 @@ theorem IsOrthoCat.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
 elements. -/
 theorem IsOrthoCat.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
     {B : M →ₛₗ[I] M →ₛₗ[I'] R} {v : Basis n R M} (h : B.IsOrthoCat v) (hB : B.SeparatingRight)
-    (i : n) : ¬B.IsOrtho (v i) (v i) :=
-  by
+    (i : n) : ¬B.IsOrtho (v i) (v i) := by
   rw [is_Ortho_flip] at h
   rw [is_ortho_flip]
   exact h.not_is_ortho_basis_self_of_separating_left (flip_separating_left.mpr hB) i
