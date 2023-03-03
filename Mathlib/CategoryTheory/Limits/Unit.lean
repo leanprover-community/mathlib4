@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Punit
-import Mathbin.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # `discrete punit` has limits and colimits
