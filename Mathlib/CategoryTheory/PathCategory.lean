@@ -41,8 +41,7 @@ variable (V : Type u₁) [Quiver.{v₁ + 1} V]
 
 namespace Paths
 
-instance categoryPaths : Category.{max u₁ v₁} (Paths V)
-    where
+instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
   Hom := fun X Y : V => Quiver.Path X Y
   id X := Quiver.Path.nil
   comp f g := Quiver.Path.comp f g
@@ -61,12 +60,11 @@ def of : V ⥤q Paths V where
 attribute [local ext] Functor.ext
 
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
-def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C
-    where
+def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
   obj := φ.obj
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
-      (fun p f ihp => ihp ≫ φ.map f) Y f
+      (fun _ f ihp => ihp ≫ φ.map f) Y f
   map_id X := by rfl
   map_comp f g := by
     induction' g with _ _ g' p ih _ _ _
@@ -118,7 +116,7 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
       apply Functor.map_id
     · simp only [Category.comp_id, Category.id_comp] at ih ⊢
       -- porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
-      -- versions in this `have` clause
+      -- versions in this `have` clause (elsewhere too).
       have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') := by
         convert Functor.map_comp Φ p (Quiver.Hom.toPath f')
       rw [this, ih]
@@ -218,8 +216,7 @@ def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
 
 /-- The functor from a category to the canonical quotient of its path category. -/
 @[simps]
-def toQuotientPaths : C ⥤ Quotient (pathsHomRel C)
-    where
+def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
   obj X := Quotient.mk X
   map f := Quot.mk _ f.toPath
   map_id X := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
@@ -235,8 +232,7 @@ def quotientPathsTo : Quotient (pathsHomRel C) ⥤ C :=
 
 /-- The canonical quotient of the path category of a category
 is equivalent to the original category. -/
-def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C
-    where
+def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   functor := quotientPathsTo C
   inverse := toQuotientPaths C
   unitIso :=
@@ -266,3 +262,4 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C
 end
 
 end CategoryTheory
+
