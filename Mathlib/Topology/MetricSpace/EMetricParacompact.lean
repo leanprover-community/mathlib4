@@ -18,9 +18,9 @@ import Mathlib.Topology.Paracompact
 
 In this file we provide two instances:
 
-* `emetric.paracompact_space`: a `PseudoEMetricSpace` is paracompact; formalization is based
+* `EMetric.ParacompactSpace`: a `PseudoEMetricSpace` is paracompact; formalization is based
   on [MR0236876];
-* `emetric.normal_of_metric`: an `EMetricSpace` is a normal topological space.
+* `EMetric.normal_of_metric`: an `EMetricSpace` is a normal topological space.
 
 ## Tags
 
@@ -34,10 +34,8 @@ open ENNReal Topology
 
 open Set
 
-namespace Emetric
+namespace EMetric
 
--- porting note: opening namespace for convenience
-open EMetric
 
 -- See note [lower instance priority]
 /-- A `PseudoEMetricSpace` is always a paracompact space. Formalization is based
@@ -199,6 +197,6 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
 -- see Note [lower instance priority]
 instance (priority := 100) normal_of_emetric [EMetricSpace α] : NormalSpace α :=
   normal_of_paracompact_t2
-#align emetric.normal_of_emetric Emetric.normal_of_emetric
+#align emetric.normal_of_emetric EMetric.normal_of_emetric
 
-end Emetric
+end EMetric
