@@ -16,10 +16,10 @@ import Mathlib.CategoryTheory.StructuredArrow
 # Properties of comma categories relating to adjunctions
 
 This file shows that for a functor `G : D ⥤ C` the data of an initial object in each
-`structured_arrow` category on `G` is equivalent to a left adjoint to `G`, as well as the dual.
+`StructuredArrow` category on `G` is equivalent to a left adjoint to `G`, as well as the dual.
 
-Specifically, `adjunction_of_structured_arrow_initials` gives the left adjoint assuming the
-appropriate initial objects exist, and `mk_initial_of_left_adjoint` constructs the initial objects
+Specifically, `adjunctionOfStructuredArrowInitials` gives the left adjoint assuming the
+appropriate initial objects exist, and `mkInitialOfLeftAdjoint` constructs the initial objects
 provided a left adjoint.
 
 The duals are also shown.
@@ -66,7 +66,7 @@ def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
 
 /--
 If each structured arrow category on `G` has an initial object, construct a left adjoint to `G`. It
-is shown that it is a left adjoint in `adjunction_of_structured_arrow_initials`.
+is shown that it is a left adjoint in `adjunctionOfStructuredArrowInitials`.
 -/
 def leftAdjointOfStructuredArrowInitials : C ⥤ D :=
   Adjunction.leftAdjointOfEquiv (leftAdjointOfStructuredArrowInitialsAux G) fun _ _ => by simp
@@ -118,7 +118,7 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
 
 /--
 If each costructured arrow category on `G` has a terminal object, construct a right adjoint to `G`.
-It is shown that it is a right adjoint in `adjunction_of_structured_arrow_initials`.
+It is shown that it is a right adjoint in `adjunctionOfStructuredArrowInitials`.
 -/
 def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
   Adjunction.rightAdjointOfEquiv (rightAdjointOfCostructuredArrowTerminalsAux G) fun B₁ B₂ A f g =>
@@ -147,7 +147,7 @@ section
 
 variable {F : C ⥤ D}
 
--- porting note: aesop can't seem to add something locally. Also no tactic.discrete_cases?!
+-- porting note: aesop can't seem to add something locally. Also no tactic.discrete_cases.
 -- attribute [local tidy] tactic.discrete_cases
 
 
@@ -160,7 +160,7 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
   uniq s m w := by
     ext
     dsimp
-    rw [Equiv.eq_symm_apply, adjunction.hom_equiv_unit]
+    rw [Equiv.eq_symm_apply, Adjunction.homEquiv_unit]
     apply structured_arrow.w m
 #align category_theory.mk_initial_of_left_adjoint CategoryTheory.mkInitialOfLeftAdjoint
 
@@ -173,7 +173,7 @@ def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
   uniq s m w := by
     ext
     dsimp
-    rw [h.eq_hom_equiv_apply, adjunction.hom_equiv_counit]
+    rw [h.eq_hom_equiv_apply, Adjunction.homEquiv_counit]
     exact CostructuredArrow.w m
 #align category_theory.mk_terminal_of_right_adjoint CategoryTheory.mkTerminalOfRightAdjoint
 
