@@ -238,7 +238,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   unitIso :=
     NatIso.ofComponents
       (fun X => by cases X; rfl)
-      (fun {X} {Y} => Quot.ind $ fun f => by
+      (Quot.ind $ fun f => by
         apply Quot.sound
         apply Quotient.CompClosure.of
         simp [Category.comp_id, Category.id_comp, pathsHomRel])
