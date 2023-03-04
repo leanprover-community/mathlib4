@@ -76,6 +76,7 @@ echo "Applying automated fixes"
 )
 
 # Commit them
+git update-index --add Mathlib.lean
 git update-index --add "$mathlib4_path"
 BASE_COMMIT="$(git commit-tree "$(git write-tree)" -p "$BASE_COMMIT" << EOF
 automated fixes
