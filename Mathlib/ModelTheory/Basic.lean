@@ -342,8 +342,10 @@ def inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
   tuples in the second structure where that relation is still true. -/
 structure Hom where
   toFun : M → N
-  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by trivial
+  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
+    intros; trivial
+  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r x → rel_map r (toFun ∘ x) := by
+    intros; trivial
 #align first_order.language.hom FirstOrder.Language.Hom
 
 -- mathport name: language.hom
@@ -352,8 +354,10 @@ scoped[FirstOrder] notation:25 A " →[" L "] " B => FirstOrder.Language.Hom L A
 /-- An embedding of first-order structures is an embedding that commutes with the
   interpretations of functions and relations. -/
 structure Embedding extends M ↪ N where
-  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by trivial
+  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
+    intros; trivial
+  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by
+    intros; trivial
 #align first_order.language.embedding FirstOrder.Language.Embedding
 
 -- mathport name: language.embedding
@@ -362,8 +366,10 @@ scoped[FirstOrder] notation:25 A " ↪[" L "] " B => FirstOrder.Language.Embeddi
 /-- An equivalence of first-order structures is an equivalence that commutes with the
   interpretations of functions and relations. -/
 structure Equiv extends M ≃ N where
-  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by trivial
-  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by trivial
+  map_fun' : ∀ {n} (f : L.Functions n) (x), toFun (funMap f x) = funMap f (toFun ∘ x) := by
+    intros; trivial
+  map_rel' : ∀ {n} (r : L.Relations n) (x), rel_map r (toFun ∘ x) ↔ rel_map r x := by
+    intros; trivial
 #align first_order.language.equiv FirstOrder.Language.Equiv
 
 -- mathport name: language.equiv
@@ -718,6 +724,12 @@ theorem refl_apply (x : M) : refl L M x = x :=
 def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   toFun := hnp ∘ hmn
   inj' := hnp.injective.comp hmn.injective
+  -- Porting note: Added custom proof for `map_fun'` and `map_rel'`
+  map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
+  map_rel' := by
+    intros _ r x
+    suffices rel_map r (↑hnp ∘ ↑hmn ∘ x) ↔ _ by exact this
+    rw [map_rel, map_rel]
 #align first_order.language.embedding.comp FirstOrder.Language.Embedding.comp
 
 @[simp]
@@ -758,7 +770,7 @@ instance : EquivLike (M ≃[L] N) M N where
   coe_injective' f g h₁ h₂ := by
     cases f
     cases g
-    simp only
+    simp only [mk.injEq]
     ext x
     exact Function.funext_iff.1 h₁ x
 
@@ -867,7 +879,7 @@ variable (L) (M)
 
 /-- The identity equivalence from a structure to itself -/
 @[refl]
-def refl : M ≃[L] M where toEquiv := Equiv.refl M
+def refl : M ≃[L] M where toEquiv := _root_.Equiv.refl M
 #align first_order.language.equiv.refl FirstOrder.Language.Equiv.refl
 
 variable {L} {M}
@@ -910,8 +922,8 @@ section SumStructure
 variable (L₁ L₂ : Language) (S : Type _) [L₁.Structure S] [L₂.Structure S]
 
 instance sumStructure : (L₁.sum L₂).Structure S where
-  funMap := @fun n => Sum.elim funMap funMap
-  rel_map := @fun n => Sum.elim rel_map rel_map
+  funMap := @fun _ => Sum.elim funMap funMap
+  rel_map := @fun _ => Sum.elim rel_map rel_map
 set_option linter.uppercaseLean3 false in
 #align first_order.language.sum_Structure FirstOrder.Language.sumStructure
 
