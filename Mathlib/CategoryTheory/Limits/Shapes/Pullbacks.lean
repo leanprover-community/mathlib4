@@ -1699,7 +1699,6 @@ instance pullback_snd_iso_of_right_factors_mono (f : X ⟶ Z) :
     inferInstance;
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
-  · simp
 #align category_theory.limits.pullback_snd_iso_of_right_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_right_factors_mono
 
 end PullbackLeftIso
@@ -1779,7 +1778,6 @@ instance pullback_snd_iso_of_left_factors_mono (f : X ⟶ Z) :
     inferInstance;
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
-  · simp
 #align category_theory.limits.pullback_snd_iso_of_left_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_left_factors_mono
 
 end PullbackRightIso
@@ -1873,7 +1871,6 @@ instance pushout_inr_iso_of_right_factors_epi (f : X ⟶ Y) :
     inferInstance
   · apply (Category.comp_id _).symm
   · apply (Category.comp_id _).symm
-  · simp
 #align category_theory.limits.pushout_inr_iso_of_right_factors_epi CategoryTheory.Limits.pushout_inr_iso_of_right_factors_epi
 
 end PushoutLeftIso
@@ -1955,7 +1952,6 @@ instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
         inferInstance;
   · exact (Category.comp_id _).symm
   · exact (Category.comp_id _).symm
-  · simp
 #align category_theory.limits.pushout_inl_iso_of_left_factors_epi CategoryTheory.Limits.pushout_inl_iso_of_left_factors_epi
 
 end PushoutRightIso
