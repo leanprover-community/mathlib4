@@ -1857,17 +1857,13 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
   left_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := V)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.symm_apply_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := W)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.apply_symm_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.apply_symm_apply _ _
 #align simple_graph.iso.map_edge_set SimpleGraph.Iso.mapEdgeSet
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
