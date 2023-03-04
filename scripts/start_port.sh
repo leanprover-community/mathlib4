@@ -94,6 +94,10 @@ echo ""
 
 mathlib3_module=$(grep '^! .*source module ' <"$GIT_WORK_TREE/$mathlib4_path" | sed 's/.*source module \(.*\)$/\1/')
 
+# stop using the temporary working tree
+unset GIT_WORK_TREE
+unset GIT_INDEX_FILE
+
 if git cat-file -e origin/master:$mathlib4_path 2> /dev/null; then
     echo "WARNING: this file has already been ported!"
     echo "To continue anyway with a fresh port, you can run"
