@@ -37,9 +37,7 @@ equicontinuity, continuity modulus
 -/
 
 
-open Filter
-
-open Topology uniformity
+open Filter Topology Uniformity
 
 variable {α β ι : Type _} [PseudoMetricSpace α]
 
@@ -58,21 +56,19 @@ theorem equicontinuousAt_iff {ι : Type _} [PseudoMetricSpace β] {F : ι → β
   nhds_basis_ball.equicontinuousAt_iff uniformity_basis_dist
 #align metric.equicontinuous_at_iff Metric.equicontinuousAt_iff
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x x' «expr ∈ » U) -/
 /-- Reformulation of `equicontinuous_at_iff_pair` for families of functions taking values in a
 (pseudo) metric space. -/
 protected theorem equicontinuousAt_iff_pair {ι : Type _} [TopologicalSpace β] {F : ι → β → α}
     {x₀ : β} :
     EquicontinuousAt F x₀ ↔
-      ∀ ε > 0, ∃ U ∈ 𝓝 x₀, ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U), ∀ i, dist (F i x) (F i x') < ε := by
+      ∀ ε > 0, ∃ U ∈ 𝓝 x₀, ∀ x ∈ U, ∀ x' ∈ U, ∀ i, dist (F i x) (F i x') < ε := by
   rw [equicontinuousAt_iff_pair]
   constructor <;> intro H
   · intro ε hε
-    refine' Exists.imp (fun V => Exists.imp fun hV h => _) (H _ (dist_mem_uniformity hε))
-    exact fun x hx x' hx' => h _ hx _ hx'
+    exact H _ (dist_mem_uniformity hε)
   · intro U hU
     rcases mem_uniformity_dist.mp hU with ⟨ε, hε, hεU⟩
-    refine' Exists.imp (fun V => Exists.imp fun hV h => _) (H _ hε)
+    refine' Exists.imp (fun V => And.imp_right fun h => _) (H _ hε)
     exact fun x hx x' hx' i => hεU (h _ hx _ hx' i)
 #align metric.equicontinuous_at_iff_pair Metric.equicontinuousAt_iff_pair
 
@@ -99,7 +95,8 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type _} [TopologicalSpace �
     (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ := by
   rw [Metric.equicontinuousAt_iff_right]
   intro ε ε0
-  filter_upwards [b_lim (Iio_mem_nhds ε0), H]using fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
+  -- porting note: Lean 3 didn't need `Filter.mem_map.mp` here
+  filter_upwards [Filter.mem_map.mp <| b_lim (Iio_mem_nhds ε0), H] using fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
 #align metric.equicontinuous_at_of_continuity_modulus Metric.equicontinuousAt_of_continuity_modulus
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
@@ -117,7 +114,6 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricS
     _ ≤ |b (dist x y)| := (le_abs_self _)
     _ = dist (b (dist x y)) 0 := by simp [Real.dist_eq]
     _ < ε := hδ (by simpa only [Real.dist_eq, tsub_zero, abs_dist] using hxy)
-    
 #align metric.uniform_equicontinuous_of_continuity_modulus Metric.uniformEquicontinuous_of_continuity_modulus
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
@@ -125,8 +121,7 @@ equicontinuity is to show that all of the functions share a common *global* cont
 theorem equicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricSpace β] (b : ℝ → ℝ)
     (b_lim : Tendsto b (𝓝 0) (𝓝 0)) (F : ι → β → α)
     (H : ∀ (x y : β) (i), dist (F i x) (F i y) ≤ b (dist x y)) : Equicontinuous F :=
-  (uniformEquicontinuous_of_continuity_modulus b b_lim F H).Equicontinuous
+  (uniformEquicontinuous_of_continuity_modulus b b_lim F H).equicontinuous
 #align metric.equicontinuous_of_continuity_modulus Metric.equicontinuous_of_continuity_modulus
 
 end Metric
-
