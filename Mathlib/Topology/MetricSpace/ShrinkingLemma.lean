@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Basic
-import Mathbin.Topology.MetricSpace.EmetricParacompact
-import Mathbin.Topology.ShrinkingLemma
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.EmetricParacompact
+import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Shrinking lemma in a proper metric space
@@ -41,8 +41,7 @@ that `λ x, ball (c i) (r i)` is a locally finite covering and provides a coveri
 same type. -/
 theorem exists_subset_unionᵢ_ball_radius_lt {r : ι → ℝ} (hs : IsClosed s)
     (uf : ∀ x ∈ s, { i | x ∈ ball (c i) (r i) }.Finite) (us : s ⊆ ⋃ i, ball (c i) (r i)) :
-    ∃ r' : ι → ℝ, (s ⊆ ⋃ i, ball (c i) (r' i)) ∧ ∀ i, r' i < r i :=
-  by
+    ∃ r' : ι → ℝ, (s ⊆ ⋃ i, ball (c i) (r' i)) ∧ ∀ i, r' i < r i := by
   rcases exists_subset_unionᵢ_closed_subset hs (fun i => @is_open_ball _ _ (c i) (r i)) uf us with
     ⟨v, hsv, hvc, hcv⟩
   have := fun i => exists_lt_subset_ball (hvc i) (hcv i)
@@ -65,8 +64,7 @@ of a closed subset of a proper metric space by nonempty open balls can be shrunk
 nonempty open balls so that each of the new balls has strictly smaller radius than the old one. -/
 theorem exists_subset_unionᵢ_ball_radius_pos_lt {r : ι → ℝ} (hr : ∀ i, 0 < r i) (hs : IsClosed s)
     (uf : ∀ x ∈ s, { i | x ∈ ball (c i) (r i) }.Finite) (us : s ⊆ ⋃ i, ball (c i) (r i)) :
-    ∃ r' : ι → ℝ, (s ⊆ ⋃ i, ball (c i) (r' i)) ∧ ∀ i, r' i ∈ Ioo 0 (r i) :=
-  by
+    ∃ r' : ι → ℝ, (s ⊆ ⋃ i, ball (c i) (r' i)) ∧ ∀ i, r' i ∈ Ioo 0 (r i) := by
   rcases exists_subset_unionᵢ_closed_subset hs (fun i => @is_open_ball _ _ (c i) (r i)) uf us with
     ⟨v, hsv, hvc, hcv⟩
   have := fun i => exists_pos_lt_subset_ball (hr i) (hvc i) (hcv i)
@@ -100,8 +98,7 @@ theorem exists_locallyFinite_subset_unionᵢ_ball_radius_lt (hs : IsClosed s) {R
     (hR : ∀ x ∈ s, 0 < R x) :
     ∃ (ι : Type u)(c : ι → α)(r r' : ι → ℝ),
       (∀ i, c i ∈ s ∧ 0 < r i ∧ r i < r' i ∧ r' i < R (c i)) ∧
-        (LocallyFinite fun i => ball (c i) (r' i)) ∧ s ⊆ ⋃ i, ball (c i) (r i) :=
-  by
+        (LocallyFinite fun i => ball (c i) (r' i)) ∧ s ⊆ ⋃ i, ball (c i) (r i) := by
   have : ∀ x ∈ s, (𝓝 x).HasBasis (fun r : ℝ => 0 < r ∧ r < R x) fun r => ball x r := fun x hx =>
     nhds_basis_uniformity (uniformity_basis_dist_lt (hR x hx))
   rcases refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set hs this with
