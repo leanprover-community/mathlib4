@@ -726,10 +726,7 @@ def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   inj' := hnp.injective.comp hmn.injective
   -- Porting note: Added custom proof for `map_fun'` and `map_rel'`
   map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
-  map_rel' := by
-    intros _ r x
-    suffices rel_map r (↑hnp ∘ ↑hmn ∘ x) ↔ _ by exact this
-    rw [map_rel, map_rel]
+  map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel]
 #align first_order.language.embedding.comp FirstOrder.Language.Embedding.comp
 
 @[simp]
@@ -894,7 +891,11 @@ theorem refl_apply (x : M) : refl L M x = x := by simp [refl]; rfl
 /-- Composition of first-order equivalences -/
 @[trans]
 def comp (hnp : N ≃[L] P) (hmn : M ≃[L] N) : M ≃[L] P :=
-  { hmn.toEquiv.trans hnp.toEquiv with toFun := hnp ∘ hmn }
+  { hmn.toEquiv.trans hnp.toEquiv with
+    toFun := hnp ∘ hmn
+    -- Porting note: Added custom proof for `map_fun'` and `map_rel'`
+    map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
+    map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel] }
 #align first_order.language.equiv.comp FirstOrder.Language.Equiv.comp
 
 @[simp]
@@ -964,7 +965,7 @@ variable [Language.empty.Structure M] [Language.empty.Structure N]
 @[simp]
 theorem empty.nonempty_embedding_iff :
     Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} (#M) ≤ Cardinal.lift.{w} (#N) :=
-  trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
+  _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
     Cardinal.lift_mk_le'.symm
 #align
   first_order.language.empty.nonempty_embedding_iff
@@ -973,7 +974,7 @@ theorem empty.nonempty_embedding_iff :
 @[simp]
 theorem empty.nonempty_equiv_iff :
     Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} (#M) = Cardinal.lift.{w} (#N) :=
-  trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
+  _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
     Cardinal.lift_mk_eq'.symm
 #align first_order.language.empty.nonempty_equiv_iff FirstOrder.Language.empty.nonempty_equiv_iff
 
@@ -986,9 +987,7 @@ set_option linter.uppercaseLean3 false in
 
 instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
-    ext (n f)
-    · exact Empty.elim f
-    · exact Subsingleton.elim _ _⟩
+    ext _ f <;> exact Empty.elim f⟩
 
 instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M fun _ => N] :
     StrongHomClass Language.empty F M N :=
@@ -997,17 +996,17 @@ instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M fun _ => N] 
 
 /-- Makes a `language.empty.hom` out of any function. -/
 @[simps]
-def Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun := f
+def _root_.Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun := f
 #align function.empty_hom Function.emptyHom
 
 /-- Makes a `language.empty.embedding` out of any function. -/
 @[simps]
-def Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbedding := f
+def _root_.Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbedding := f
 #align embedding.empty Embedding.empty
 
 /-- Makes a `language.empty.equiv` out of any function. -/
 @[simps]
-def Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := f
+def _root_.Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := f
 #align equiv.empty Equiv.empty
 
 end Empty
@@ -1027,7 +1026,7 @@ variable {L : Language} {M : Type _} {N : Type _} [L.Structure M]
 /-- A structure induced by a bijection. -/
 @[simps!]
 def inducedStructure (e : M ≃ N) : L.Structure N :=
-  ⟨fun n f x => e (funMap f (e.symm ∘ x)), fun n r x => RelMap r (e.symm ∘ x)⟩
+  ⟨fun f x => e (funMap f (e.symm ∘ x)), fun r x => rel_map r (e.symm ∘ x)⟩
 set_option linter.uppercaseLean3 false in
 #align equiv.induced_Structure Equiv.inducedStructure
 
