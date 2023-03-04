@@ -8,17 +8,17 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Basic
-import Mathbin.Topology.Algebra.UniformGroup
-import Mathbin.Topology.Algebra.UniformMulAction
-import Mathbin.Topology.Algebra.Ring.Basic
-import Mathbin.Topology.Algebra.Star
-import Mathbin.Topology.Algebra.Order.Field
-import Mathbin.RingTheory.Subring.Basic
-import Mathbin.GroupTheory.Archimedean
-import Mathbin.Algebra.Order.Group.Bounds
-import Mathbin.Algebra.Periodic
-import Mathbin.Topology.Instances.Int
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformMulAction
+import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.RingTheory.Subring.Basic
+import Mathlib.GroupTheory.Archimedean
+import Mathlib.Algebra.Order.Group.Bounds
+import Mathlib.Algebra.Periodic
+import Mathlib.Topology.Instances.Int
 
 /-!
 # Topological properties of ℝ
@@ -218,8 +218,7 @@ section Periodic
 namespace Function
 
 theorem Periodic.compact_of_continuous' [TopologicalSpace α] {f : ℝ → α} {c : ℝ} (hp : Periodic f c)
-    (hc : 0 < c) (hf : Continuous f) : IsCompact (range f) :=
-  by
+    (hc : 0 < c) (hf : Continuous f) : IsCompact (range f) := by
   convert is_compact_Icc.image hf
   ext x
   refine' ⟨_, mem_range_of_mem_image f (Icc 0 c)⟩
@@ -230,8 +229,7 @@ theorem Periodic.compact_of_continuous' [TopologicalSpace α] {f : ℝ → α} {
 
 /-- A continuous, periodic function has compact range. -/
 theorem Periodic.compact_of_continuous [TopologicalSpace α] {f : ℝ → α} {c : ℝ} (hp : Periodic f c)
-    (hc : c ≠ 0) (hf : Continuous f) : IsCompact (range f) :=
-  by
+    (hc : c ≠ 0) (hf : Continuous f) : IsCompact (range f) := by
   cases' lt_or_gt_of_ne hc with hneg hpos
   exacts[hp.neg.compact_of_continuous' (neg_pos.mpr hneg) hf, hp.compact_of_continuous' hpos hf]
 #align function.periodic.compact_of_continuous Function.Periodic.compact_of_continuous
@@ -253,8 +251,7 @@ namespace Int
 open Metric
 
 /-- Under the coercion from `ℤ` to `ℝ`, inverse images of compact sets are finite. -/
-theorem tendsto_coe_cofinite : Tendsto (coe : ℤ → ℝ) cofinite (cocompact ℝ) :=
-  by
+theorem tendsto_coe_cofinite : Tendsto (coe : ℤ → ℝ) cofinite (cocompact ℝ) := by
   refine' tendsto_cocompact_of_tendsto_dist_comp_atTop (0 : ℝ) _
   simp only [Filter.tendsto_atTop, eventually_cofinite, not_le, ← mem_ball]
   change ∀ r : ℝ, (coe ⁻¹' ball (0 : ℝ) r).Finite
@@ -264,8 +261,7 @@ theorem tendsto_coe_cofinite : Tendsto (coe : ℤ → ℝ) cofinite (cocompact �
 /-- For nonzero `a`, the "multiples of `a`" map `zmultiples_hom` from `ℤ` to `ℝ` is discrete, i.e.
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
-    Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) :=
-  by
+    Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
   convert (tendsto_cocompact_mul_right₀ ha).comp Int.tendsto_coe_cofinite
   ext n
   simp
@@ -278,8 +274,7 @@ namespace AddSubgroup
 /-- The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite. -/
 theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
-    Tendsto (zmultiples a).Subtype cofinite (cocompact ℝ) :=
-  by
+    Tendsto (zmultiples a).Subtype cofinite (cocompact ℝ) := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     intro K hK
@@ -297,8 +292,7 @@ end AddSubgroup
 
 /-- Given a nontrivial subgroup `G ⊆ ℝ`, if `G ∩ ℝ_{>0}` has no minimum then `G` is dense. -/
 theorem Real.subgroup_dense_of_no_min {G : AddSubgroup ℝ} {g₀ : ℝ} (g₀_in : g₀ ∈ G) (g₀_ne : g₀ ≠ 0)
-    (H' : ¬∃ a : ℝ, IsLeast { g : ℝ | g ∈ G ∧ 0 < g } a) : Dense (G : Set ℝ) :=
-  by
+    (H' : ¬∃ a : ℝ, IsLeast { g : ℝ | g ∈ G ∧ 0 < g } a) : Dense (G : Set ℝ) := by
   let G_pos := { g : ℝ | g ∈ G ∧ 0 < g }
   push_neg  at H'
   intro x
@@ -328,8 +322,7 @@ theorem Real.subgroup_dense_of_no_min {G : AddSubgroup ℝ} {g₀ : ℝ} (g₀_i
 /-- Subgroups of `ℝ` are either dense or cyclic. See `real.subgroup_dense_of_no_min` and
 `subgroup_cyclic_of_min` for more precise statements. -/
 theorem Real.subgroup_dense_or_cyclic (G : AddSubgroup ℝ) :
-    Dense (G : Set ℝ) ∨ ∃ a : ℝ, G = AddSubgroup.closure {a} :=
-  by
+    Dense (G : Set ℝ) ∨ ∃ a : ℝ, G = AddSubgroup.closure {a} := by
   cases' AddSubgroup.bot_or_exists_ne_zero G with H H
   · right
     use 0
