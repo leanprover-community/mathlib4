@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.Int
+import Mathlib.Topology.Instances.Int
 
 /-!
 # Topology on the natural numbers
@@ -39,8 +39,7 @@ theorem dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y :=
   rfl
 #align nat.dist_cast_real Nat.dist_cast_real
 
-theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n :=
-  by
+theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := by
   intro m n hne
   rw [← dist_coe_int]
   apply Int.pairwise_one_le_dist
@@ -66,8 +65,7 @@ theorem preimage_closedBall (x : ℕ) (r : ℝ) : coe ⁻¹' closedBall (x : ℝ
   rfl
 #align nat.preimage_closed_ball Nat.preimage_closedBall
 
-theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ :=
-  by
+theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ := by
   rcases le_or_lt 0 r with (hr | hr)
   · rw [← preimage_closed_ball, Real.closedBall_eq_Icc, preimage_Icc]
     exact add_nonneg (cast_nonneg x) hr
