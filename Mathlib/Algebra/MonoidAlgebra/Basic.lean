@@ -624,7 +624,7 @@ theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra 
 #align monoid_algebra.non_unital_alg_hom_ext MonoidAlgebra.nonUnitalAlgHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : φ₁.toMulHom.comp (ofMagma k G) = φ₂.toMulHom.comp (ofMagma k G)) : φ₁ = φ₂ :=
   nonUnitalAlgHom_ext k <| FunLike.congr_fun h
@@ -728,7 +728,7 @@ theorem ringHom_ext {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : MonoidA
 and `single 1 b`, then they are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem ringHom_ext' {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : MonoidAlgebra k G →+* R}
     (h₁ : f.comp singleOneRingHom = g.comp singleOneRingHom)
     (h_of :
@@ -1692,7 +1692,7 @@ theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : AddMonoidAlgeb
 #align add_monoid_algebra.non_unital_alg_hom_ext AddMonoidAlgebra.nonUnitalAlgHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : AddMonoidAlgebra k G →ₙₐ[k] A}
     (h : φ₁.toMulHom.comp (ofMagma k G) = φ₂.toMulHom.comp (ofMagma k G)) : φ₁ = φ₂ :=
   @MonoidAlgebra.nonUnitalAlgHom_ext' k (Multiplicative G) _ _ _ _ _ φ₁ φ₂ h
@@ -1860,7 +1860,7 @@ theorem algHom_ext ⦃φ₁ φ₂ : AddMonoidAlgebra k G →ₐ[k] A⦄
 #align add_monoid_algebra.alg_hom_ext AddMonoidAlgebra.algHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem algHom_ext' ⦃φ₁ φ₂ : AddMonoidAlgebra k G →ₐ[k] A⦄
     (h :
       (φ₁ : AddMonoidAlgebra k G →* A).comp (of k G) =
