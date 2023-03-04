@@ -23,13 +23,10 @@ of topological (semi)rings.
 
 ## Main Results
 
-- `subring.topological_closure`/`subsemiring.topological_closure`: the topological closure of a
-  `subring`/`subsemiring` is itself a `sub(semi)ring`.
-- `prod.topological_semiring`/`prod.topological_ring`: The product of two topological
-  (semi)rings.
-- `pi.topological_semiring`/`pi.topological_ring`: The arbitrary product of topological
-  (semi)rings.
-
+- `Subring.topologicalClosure`/`Subsemiring.topologicalClosure`: the topological closure of a
+  `Subring`/`Subsemiring` is itself a `sub(semi)Ring`.
+- The product of two topological (semi)rings is a topological (semi)ring.
+- The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
 
 
@@ -44,11 +41,11 @@ variable (α : Type _)
 /-- a topological semiring is a semiring `R` where addition and multiplication are continuous.
 We allow for non-unital and non-associative semirings as well.
 
-The `topological_semiring` class should *only* be instantiated in the presence of a
-`non_unital_non_assoc_semiring` instance; if there is an instance of `non_unital_non_assoc_ring`,
-then `topological_ring` should be used. Note: in the presence of `non_assoc_ring`, these classes are
-mathematically equivalent (see `topological_semiring.has_continuous_neg_of_mul` or
-`topological_semiring.to_topological_ring`).  -/
+The `TopologicalSemiring` class should *only* be instantiated in the presence of a
+`NonUnitalNonAssocSemiring` instance; if there is an instance of `NonUnitalNonAssocRing`,
+then `TopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes are
+mathematically equivalent (see `TopologicalSemiring.continuousNeg_of_mul` or
+`TopologicalSemiring.toTopologicalRing`).  -/
 class TopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] extends
   ContinuousAdd α, ContinuousMul α : Prop
 #align topological_semiring TopologicalSemiring
@@ -57,7 +54,7 @@ class TopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] e
 
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
 multiplication as it is multiplication with `-1`. (See
-`topological_semiring.has_continuous_neg_of_mul` and
+`TopologicalSemiring.continuousNeg_of_mul` and
 `topological_semiring.to_topological_add_group`) -/
 class TopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α] extends TopologicalSemiring α,
   ContinuousNeg α : Prop
@@ -231,12 +228,12 @@ section
 
 variable [NonUnitalNonAssocRing α] [TopologicalRing α]
 
-/-- In a topological semiring, the left-multiplication `add_monoid_hom` is continuous. -/
+/-- In a topological semiring, the left-multiplication `AddMonoidHom` is continuous. -/
 theorem mulLeft_continuous (x : α) : Continuous (AddMonoidHom.mulLeft x) :=
   continuous_const.mul continuous_id
 #align mul_left_continuous mulLeft_continuous
 
-/-- In a topological semiring, the right-multiplication `add_monoid_hom` is continuous. -/
+/-- In a topological semiring, the right-multiplication `AddMonoidHom` is continuous. -/
 theorem mulRight_continuous (x : α) : Continuous (AddMonoidHom.mulRight x) :=
   continuous_id.mul continuous_const
 #align mul_right_continuous mulRight_continuous
@@ -278,13 +275,13 @@ end TopologicalSemiring
 
 /-!
 ### Lattice of ring topologies
-We define a type class `ring_topology α` which endows a ring `α` with a topology such that all ring
+We define a type class `RingTopology α` which endows a ring `α` with a topology such that all ring
 operations are continuous.
 
 Ring topologies on a fixed ring `α` are ordered, by reverse inclusion. They form a complete lattice,
 with `⊥` the discrete topology and `⊤` the indiscrete topology.
 
-Any function `f : α → β` induces `coinduced f : topological_space α → ring_topology β`. -/
+Any function `f : α → β` induces `coinduced f : TopologicalSpace α → RingTopology β`. -/
 
 
 universe u v
