@@ -1224,8 +1224,9 @@ variable [Semiring k] [Zero G] [NonAssocSemiring R]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function
   that is `1` at `0` and zero elsewhere. -/
-instance : One (AddMonoidAlgebra k G) :=
+instance one : One (AddMonoidAlgebra k G) :=
   ⟨single 0 1⟩
+#align add_monoid_algebra.has_one AddMonoidAlgebra.one
 
 theorem one_def : (1 : AddMonoidAlgebra k G) = single 0 1 :=
   rfl
