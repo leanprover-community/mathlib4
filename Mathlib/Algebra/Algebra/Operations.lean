@@ -497,8 +497,9 @@ protected theorem pow_induction_on_left {C : A → Prop} (hr : ∀ r : R, C (alg
     (hadd : ∀ x y, C x → C y → C (x + y)) (hmul : ∀ m ∈ M, ∀ (x), C x → C (m * x)) {x : A} {n : ℕ}
     (hx : x ∈ M ^ n) : C x :=
   -- porting note: `M` is explicit yet can't be passed positionally!
-  Submodule.pow_induction_on_left' (M := M) (C := fun _ a _ => C a) hr (fun x y _ _ _ => hadd x y)
-    (fun _ hm _ _ _ => hmul _ hm _) hx
+  Submodule.pow_induction_on_left' (M := M) (C := fun _ a _ => C a) hr
+    (fun x y _i _hx _hy => hadd x y)
+    (fun _m hm _i _x _hx => hmul _ hm _) hx
 #align submodule.pow_induction_on_left Submodule.pow_induction_on_left
 
 /-- To show a property on elements of `M ^ n` holds, it suffices to show that it holds for scalars,
@@ -507,8 +508,9 @@ is closed under addition, and holds for `x * m` where `m ∈ M` and it holds for
 protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (algebraMap _ _ r))
     (hadd : ∀ x y, C x → C y → C (x + y)) (hmul : ∀ x, C x → ∀ m ∈ M, C (x * m)) {x : A} {n : ℕ}
     (hx : x ∈ M ^ n) : C x :=
-  Submodule.pow_induction_on_right' (M := M) (C := fun _ a _ => C a) hr (fun x y _ _ _ => hadd x y)
-    (fun _ _ _ => hmul _) hx
+  Submodule.pow_induction_on_right' (M := M) (C := fun _ a _ => C a) hr
+    (fun x y _i _hx _hy => hadd x y)
+    (fun _i _x _hx => hmul _) hx
 #align submodule.pow_induction_on_right Submodule.pow_induction_on_right
 
 /-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
