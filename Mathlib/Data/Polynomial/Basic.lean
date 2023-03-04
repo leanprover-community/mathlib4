@@ -119,31 +119,38 @@ private irreducible_def neg {R : Type u} [Ring R] : R[X] → R[X]
 private irreducible_def mul : R[X] → R[X] → R[X]
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
-instance : Zero R[X] :=
+instance zero : Zero R[X] :=
   ⟨⟨0⟩⟩
+#align polynomial.has_zero Polynomial.zero
 
-instance : One R[X] :=
+instance one : One R[X] :=
   ⟨⟨1⟩⟩
+#align polynomial.one Polynomial.one
 
-instance : Add R[X] :=
+instance add' : Add R[X] :=
   ⟨add⟩
+#align polynomial.has_add Polynomial.add'
 
-instance {R : Type u} [Ring R] : Neg R[X] :=
+instance neg' {R : Type u} [Ring R] : Neg R[X] :=
   ⟨neg⟩
+#align polynomial.has_neg Polynomial.neg'
 
-instance {R : Type u} [Ring R] : Sub R[X] :=
+instance sub {R : Type u} [Ring R] : Sub R[X] :=
   ⟨fun a b => a + -b⟩
+#align polynomial.has_sub Polynomial.sub
 
-instance : Mul R[X] :=
+instance mul' : Mul R[X] :=
   ⟨mul⟩
+#align polynomial.has_mul Polynomial.mul'
 
-instance {S : Type _} [SMulZeroClass S R] : SMulZeroClass S R[X] where
+instance smulZeroClass {S : Type _} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
+#align polynomial.smul_zero_class Polynomial.smulZeroClass
 
 -- to avoid a bug in the `ring` tactic
-instance (priority := 1) hasPow : Pow R[X] ℕ where pow p n := npowRec n p
-#align polynomial.has_pow Polynomial.hasPow
+instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
+#align polynomial.has_pow Polynomial.pow
 
 @[simp]
 theorem ofFinsupp_zero : (⟨0⟩ : R[X]) = 0 :=
@@ -281,36 +288,44 @@ instance inhabited : Inhabited R[X] :=
   ⟨0⟩
 #align polynomial.inhabited Polynomial.inhabited
 
-instance : NatCast R[X] :=
+instance natCast : NatCast R[X] :=
   ⟨fun n => Polynomial.ofFinsupp n⟩
+#align polynomial.has_nat_cast Polynomial.natCast
 
-instance : Semiring R[X] :=
+instance semiring : Semiring R[X] :=
   Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
     toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl
+#align polynomial.semiring Polynomial.semiring
 
-instance {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
+instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
   Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
     toFinsupp_injective toFinsupp_smul
+#align polynomial.distrib_mul_action Polynomial.distribMulAction
 
-instance {S} [Monoid S] [DistribMulAction S R] [FaithfulSMul S R] : FaithfulSMul S R[X]
-    where eq_of_smul_eq_smul {_s₁ _s₂} h :=
+instance faithfulSMul {S} [Monoid S] [DistribMulAction S R] [FaithfulSMul S R] :
+    FaithfulSMul S R[X] where
+  eq_of_smul_eq_smul {_s₁ _s₂} h :=
     eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
+#align polynomial.has_faithful_smul Polynomial.faithfulSMul
 
-instance {S} [Semiring S] [Module S R] : Module S R[X] :=
+instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
   Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
     toFinsupp_smul
+#align polynomial.module Polynomial.module
 
-instance {S₁ S₂} [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R] [DistribMulAction S₂ R]
+instance smulCommClass {S₁ S₂} [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R] [DistribMulAction S₂ R]
     [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ R[X] :=
   ⟨by
     rintro m n ⟨f⟩
     simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
+#align polynomial.smul_comm_class Polynomial.smulCommClass
 
-instance {S₁ S₂} [SMul S₁ S₂] [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R]
+instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R]
     [DistribMulAction S₂ R] [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
   ⟨by
     rintro _ _ ⟨⟩
     simp_rw [← ofFinsupp_smul, smul_assoc]⟩
+#align polynomial.is_scalar_tower Polynomial.isScalarTower
 
 instance isScalarTower_right {α K : Type _} [Semiring K] [DistribSMul α K] [IsScalarTower α K K] :
     IsScalarTower α K[X] K[X] :=
@@ -319,18 +334,20 @@ instance isScalarTower_right {α K : Type _} [Semiring K] [DistribSMul α K] [Is
       simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 #align polynomial.is_scalar_tower_right Polynomial.isScalarTower_right
 
-instance {S} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R] [IsCentralScalar S R] :
-    IsCentralScalar S R[X] :=
+instance isCentralScalar {S} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
+    [IsCentralScalar S R] : IsCentralScalar S R[X] :=
   ⟨by
     rintro _ ⟨⟩
     simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
+#align polynomial.is_central_scalar Polynomial.isCentralScalar
 
-instance [Subsingleton R] : Unique R[X] :=
+instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
     uniq := by
       rintro ⟨x⟩
       refine' congr_arg ofFinsupp _
       simp }
+#align polynomial.unique Polynomial.unique
 
 variable (R)
 
@@ -1111,9 +1128,10 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-instance : CommSemiring R[X] :=
+instance commSemiring : CommSemiring R[X] :=
   Function.Injective.commSemiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
     toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl
+#align polynomial.comm_semiring Polynomial.commSemiring
 
 end CommSemiring
 
@@ -1121,13 +1139,15 @@ section Ring
 
 variable [Ring R]
 
-instance : IntCast R[X] :=
+instance intCast : IntCast R[X] :=
   ⟨fun n => ofFinsupp n⟩
+#align polynomial.has_int_cast Polynomial.intCast
 
-instance : Ring R[X] :=
+instance ring : Ring R[X] :=
   Function.Injective.ring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one toFinsupp_add
     toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
     (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl
+#align polynomial.ring Polynomial.ring
 
 @[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by
@@ -1164,10 +1184,11 @@ theorem C_eq_int_cast (n : ℤ) : C (n : R) = n :=
 
 end Ring
 
-instance [CommRing R] : CommRing R[X] :=
+instance commRing [CommRing R] : CommRing R[X] :=
   Function.Injective.commRing toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
     toFinsupp_add toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
     (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl
+#align polynomial.comm_ring Polynomial.commRing
 
 section NonzeroSemiring
 
@@ -1200,7 +1221,7 @@ variable [Semiring R]
 
 open Classical
 
-instance [Repr R] : Repr R[X] :=
+protected instance repr [Repr R] : Repr R[X] :=
   ⟨fun p _ =>
     if p = 0 then "0"
     else
@@ -1214,6 +1235,7 @@ instance [Repr R] : Repr R[X] :=
                 if coeff p n = 1 then "X ^ " ++ repr n
                 else "C (" ++ repr (coeff p n) ++ ") * X ^ " ++ repr n)
         ""⟩
+#align polynomial.has_repr Polynomial.repr
 
 end repr
 
