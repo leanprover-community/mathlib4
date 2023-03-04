@@ -96,7 +96,8 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type _} [TopologicalSpace �
   rw [Metric.equicontinuousAt_iff_right]
   intro ε ε0
   -- porting note: Lean 3 didn't need `Filter.mem_map.mp` here
-  filter_upwards [Filter.mem_map.mp <| b_lim (Iio_mem_nhds ε0), H] using fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
+  filter_upwards [Filter.mem_map.mp <| b_lim (Iio_mem_nhds ε0), H] using
+    fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
 #align metric.equicontinuous_at_of_continuity_modulus Metric.equicontinuousAt_of_continuity_modulus
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
