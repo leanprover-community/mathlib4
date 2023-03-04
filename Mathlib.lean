@@ -675,6 +675,7 @@ import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Polynomial.Coeff
+import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
