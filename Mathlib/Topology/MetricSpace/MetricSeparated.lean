@@ -28,7 +28,7 @@ noncomputable section
 /-- Two sets in an (extended) metric space are called *metric separated* if the (extended) distance
 between `x ∈ s` and `y ∈ t` is bounded from below by a positive constant. -/
 def IsMetricSeparated {X : Type _} [EMetricSpace X] (s t : Set X) :=
-  ∃ (r : _)(_ : r ≠ 0), ∀ x ∈ s, ∀ y ∈ t, r ≤ edist x y
+  ∃ r, r ≠ 0 ∧ ∀ x ∈ s, ∀ y ∈ t, r ≤ edist x y
 #align is_metric_separated IsMetricSeparated
 
 namespace IsMetricSeparated
