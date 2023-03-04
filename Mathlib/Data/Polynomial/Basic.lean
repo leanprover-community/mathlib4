@@ -809,13 +809,13 @@ theorem addHom_ext {M : Type _} [AddMonoid M] {f g : R[X] →+ M}
     exact h n a
 #align polynomial.add_hom_ext Polynomial.addHom_ext
 
-@[ext]
+@[ext high]
 theorem addHom_ext' {M : Type _} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
   addHom_ext fun n => FunLike.congr_fun (h n)
 #align polynomial.add_hom_ext' Polynomial.addHom_ext'
 
-@[ext]
+@[ext high]
 theorem lhom_ext' {M : Type _} [AddCommMonoid M] [Module R M] {f g : R[X] →ₗ[R] M}
     (h : ∀ n, f.comp (monomial n) = g.comp (monomial n)) : f = g :=
   LinearMap.toAddMonoidHom_injective <| addHom_ext fun n => LinearMap.congr_fun (h n)
