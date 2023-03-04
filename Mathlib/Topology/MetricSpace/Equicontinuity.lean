@@ -8,8 +8,8 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Basic
-import Mathbin.Topology.UniformSpace.Equicontinuity
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!
 # Equicontinuity in metric spaces
@@ -64,8 +64,7 @@ theorem equicontinuousAt_iff {ι : Type _} [PseudoMetricSpace β] {F : ι → β
 protected theorem equicontinuousAt_iff_pair {ι : Type _} [TopologicalSpace β] {F : ι → β → α}
     {x₀ : β} :
     EquicontinuousAt F x₀ ↔
-      ∀ ε > 0, ∃ U ∈ 𝓝 x₀, ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U), ∀ i, dist (F i x) (F i x') < ε :=
-  by
+      ∀ ε > 0, ∃ U ∈ 𝓝 x₀, ∀ (x) (_ : x ∈ U) (x') (_ : x' ∈ U), ∀ i, dist (F i x) (F i x') < ε := by
   rw [equicontinuousAt_iff_pair]
   constructor <;> intro H
   · intro ε hε
@@ -97,8 +96,7 @@ equicontinuity at a point is to show that all of the functions share a common *l
 modulus. -/
 theorem equicontinuousAt_of_continuity_modulus {ι : Type _} [TopologicalSpace β] {x₀ : β}
     (b : β → ℝ) (b_lim : Tendsto b (𝓝 x₀) (𝓝 0)) (F : ι → β → α)
-    (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ :=
-  by
+    (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ := by
   rw [Metric.equicontinuousAt_iff_right]
   intro ε ε0
   filter_upwards [b_lim (Iio_mem_nhds ε0), H]using fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
@@ -109,8 +107,7 @@ uniform equicontinuity is to show that all of the functions share a common *glob
 modulus. -/
 theorem uniformEquicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricSpace β] (b : ℝ → ℝ)
     (b_lim : Tendsto b (𝓝 0) (𝓝 0)) (F : ι → β → α)
-    (H : ∀ (x y : β) (i), dist (F i x) (F i y) ≤ b (dist x y)) : UniformEquicontinuous F :=
-  by
+    (H : ∀ (x y : β) (i), dist (F i x) (F i y) ≤ b (dist x y)) : UniformEquicontinuous F := by
   rw [Metric.uniformEquicontinuous_iff]
   intro ε ε0
   rcases tendsto_nhds_nhds.1 b_lim ε ε0 with ⟨δ, δ0, hδ⟩
