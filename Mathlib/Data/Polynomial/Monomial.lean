@@ -61,13 +61,16 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
 #align polynomial.card_support_le_one_iff_monomial Polynomial.card_support_le_one_iff_monomial
 
 theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a) = g (C a))
-    (h₂ : f x = g x) : f = g := by
+    (h₂ : f X = g X) : f = g := by
   set f' := f.comp (toFinsuppIso R).symm.toRingHom with hf'
   set g' := g.comp (toFinsuppIso R).symm.toRingHom with hg'
   have A : f' = g' := by
-    ext
-    · simp [h₁, RingEquiv.toRingHom_eq_coe]
-    · simpa [RingEquiv.toRingHom_eq_coe] using h₂
+    -- Porting note: Was `ext; simp [..]; simpa [..] using h₂`.
+    ext : 1
+    · ext
+      simp [h₁, RingEquiv.toRingHom_eq_coe]
+    · refine MonoidHom.ext_mnat ?_
+      simpa [RingEquiv.toRingHom_eq_coe] using h₂
   have B : f = f'.comp (toFinsuppIso R) := by
     rw [hf', RingHom.comp_assoc]
     ext x
@@ -81,9 +84,9 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
   rw [B, C', A]
 #align polynomial.ring_hom_ext Polynomial.ringHom_ext
 
-@[ext]
+@[ext high]
 theorem ringHom_ext' {S} [Semiring S] {f g : R[X] →+* S} (h₁ : f.comp C = g.comp C)
-    (h₂ : f x = g x) : f = g :=
+    (h₂ : f X = g X) : f = g :=
   ringHom_ext (RingHom.congr_fun h₁) h₂
 #align polynomial.ring_hom_ext' Polynomial.ringHom_ext'
 
