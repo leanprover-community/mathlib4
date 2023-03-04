@@ -8,7 +8,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Basic
+import Mathlib.Data.Polynomial.Basic
 
 /-!
 # Univariate monomials
@@ -30,8 +30,7 @@ variable {R : Type u} {a b : R} {m n : ℕ}
 variable [Semiring R] {p q r : R[X]}
 
 theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
-    (monomial i 1 : R[X]) = monomial j 1 ↔ i = j :=
-  by
+    (monomial i 1 : R[X]) = monomial j 1 ↔ i = j := by
   simp_rw [← of_finsupp_single]
   exact add_monoid_algebra.of_injective.eq_iff
 #align polynomial.monomial_one_eq_iff Polynomial.monomial_one_eq_iff
@@ -40,8 +39,7 @@ instance [Nontrivial R] : Infinite R[X] :=
   Infinite.of_injective (fun i => monomial i 1) fun m n h => by simpa [monomial_one_eq_iff] using h
 
 theorem card_support_le_one_iff_monomial {f : R[X]} :
-    Finset.card f.support ≤ 1 ↔ ∃ n a, f = monomial n a :=
-  by
+    Finset.card f.support ≤ 1 ↔ ∃ n a, f = monomial n a := by
   constructor
   · intro H
     rw [Finset.card_le_one_iff_subset_singleton] at H
@@ -61,8 +59,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
 #align polynomial.card_support_le_one_iff_monomial Polynomial.card_support_le_one_iff_monomial
 
 theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (c a) = g (c a))
-    (h₂ : f x = g x) : f = g :=
-  by
+    (h₂ : f x = g x) : f = g := by
   set f' := f.comp (to_finsupp_iso R).symm.toRingHom with hf'
   set g' := g.comp (to_finsupp_iso R).symm.toRingHom with hg'
   have A : f' = g' := by
