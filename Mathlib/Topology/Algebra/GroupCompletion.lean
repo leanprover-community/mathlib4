@@ -223,8 +223,7 @@ instance [Semiring R] [Module R α] [UniformContinuousConstSMul R α] : Module R
     add_smul := fun a b =>
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x => by
-        norm_cast
-        rw [add_smul] }
+          rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }
 
 end UniformAddCommGroup
 
