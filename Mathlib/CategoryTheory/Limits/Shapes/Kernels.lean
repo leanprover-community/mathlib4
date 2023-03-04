@@ -8,7 +8,7 @@ Authors: Scott Morrison, Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Zero
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Kernels and cokernels
@@ -242,8 +242,7 @@ theorem kernel.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : kernel.lift f k
 #align category_theory.limits.kernel.lift_ι CategoryTheory.Limits.kernel.lift_ι
 
 @[simp]
-theorem kernel.lift_zero {W : C} {h} : kernel.lift f (0 : W ⟶ X) h = 0 :=
-  by
+theorem kernel.lift_zero {W : C} {h} : kernel.lift f (0 : W ⟶ X) h = 0 := by
   ext
   simp
 #align category_theory.limits.kernel.lift_zero CategoryTheory.Limits.kernel.lift_zero
@@ -285,8 +284,7 @@ then we obtain a commutative square
 theorem kernel.lift_map {X Y Z X' Y' Z' : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel g] (w : f ≫ g = 0)
     (f' : X' ⟶ Y') (g' : Y' ⟶ Z') [HasKernel g'] (w' : f' ≫ g' = 0) (p : X ⟶ X') (q : Y ⟶ Y')
     (r : Z ⟶ Z') (h₁ : f ≫ q = p ≫ f') (h₂ : g ≫ r = q ≫ g') :
-    kernel.lift g f w ≫ kernel.map g g' q r h₂ = p ≫ kernel.lift g' f' w' :=
-  by
+    kernel.lift g f w ≫ kernel.map g g' q r h₂ = p ≫ kernel.lift g' f' w' := by
   ext
   simp [h₁]
 #align category_theory.limits.kernel.lift_map CategoryTheory.Limits.kernel.lift_map
@@ -325,8 +323,7 @@ theorem kernelZeroIsoSource_hom : kernelZeroIsoSource.Hom = kernel.ι (0 : X ⟶
 
 @[simp]
 theorem kernelZeroIsoSource_inv :
-    kernelZeroIsoSource.inv = kernel.lift (0 : X ⟶ Y) (𝟙 X) (by simp) :=
-  by
+    kernelZeroIsoSource.inv = kernel.lift (0 : X ⟶ Y) (𝟙 X) (by simp) := by
   ext
   simp [kernel_zero_iso_source]
 #align category_theory.limits.kernel_zero_iso_source_inv CategoryTheory.Limits.kernelZeroIsoSource_inv
@@ -337,24 +334,21 @@ def kernelIsoOfEq {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) : kern
 #align category_theory.limits.kernel_iso_of_eq CategoryTheory.Limits.kernelIsoOfEq
 
 @[simp]
-theorem kernelIsoOfEq_refl {h : f = f} : kernelIsoOfEq h = Iso.refl (kernel f) :=
-  by
+theorem kernelIsoOfEq_refl {h : f = f} : kernelIsoOfEq h = Iso.refl (kernel f) := by
   ext
   simp [kernel_iso_of_eq]
 #align category_theory.limits.kernel_iso_of_eq_refl CategoryTheory.Limits.kernelIsoOfEq_refl
 
 @[simp, reassoc.1]
 theorem kernelIsoOfEq_hom_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) :
-    (kernelIsoOfEq h).Hom ≫ kernel.ι _ = kernel.ι _ :=
-  by
+    (kernelIsoOfEq h).Hom ≫ kernel.ι _ = kernel.ι _ := by
   induction h
   simp
 #align category_theory.limits.kernel_iso_of_eq_hom_comp_ι CategoryTheory.Limits.kernelIsoOfEq_hom_comp_ι
 
 @[simp, reassoc.1]
 theorem kernelIsoOfEq_inv_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) :
-    (kernelIsoOfEq h).inv ≫ kernel.ι _ = kernel.ι _ :=
-  by
+    (kernelIsoOfEq h).inv ≫ kernel.ι _ = kernel.ι _ := by
   induction h
   simp
 #align category_theory.limits.kernel_iso_of_eq_inv_comp_ι CategoryTheory.Limits.kernelIsoOfEq_inv_comp_ι
@@ -362,8 +356,7 @@ theorem kernelIsoOfEq_inv_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h
 @[simp, reassoc.1]
 theorem lift_comp_kernelIsoOfEq_hom {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g)
     (e : Z ⟶ X) (he) :
-    kernel.lift _ e he ≫ (kernelIsoOfEq h).Hom = kernel.lift _ e (by simp [← h, he]) :=
-  by
+    kernel.lift _ e he ≫ (kernelIsoOfEq h).Hom = kernel.lift _ e (by simp [← h, he]) := by
   induction h
   simp
 #align category_theory.limits.lift_comp_kernel_iso_of_eq_hom CategoryTheory.Limits.lift_comp_kernelIsoOfEq_hom
@@ -371,16 +364,14 @@ theorem lift_comp_kernelIsoOfEq_hom {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel
 @[simp, reassoc.1]
 theorem lift_comp_kernelIsoOfEq_inv {Z} {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g)
     (e : Z ⟶ X) (he) :
-    kernel.lift _ e he ≫ (kernelIsoOfEq h).inv = kernel.lift _ e (by simp [h, he]) :=
-  by
+    kernel.lift _ e he ≫ (kernelIsoOfEq h).inv = kernel.lift _ e (by simp [h, he]) := by
   induction h
   simp
 #align category_theory.limits.lift_comp_kernel_iso_of_eq_inv CategoryTheory.Limits.lift_comp_kernelIsoOfEq_inv
 
 @[simp]
 theorem kernelIsoOfEq_trans {f g h : X ⟶ Y} [HasKernel f] [HasKernel g] [HasKernel h] (w₁ : f = g)
-    (w₂ : g = h) : kernelIsoOfEq w₁ ≪≫ kernelIsoOfEq w₂ = kernelIsoOfEq (w₁.trans w₂) :=
-  by
+    (w₂ : g = h) : kernelIsoOfEq w₁ ≪≫ kernelIsoOfEq w₂ = kernelIsoOfEq (w₁.trans w₂) := by
   induction w₁
   induction w₂
   ext
@@ -695,8 +686,7 @@ theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
 #align category_theory.limits.cokernel.π_desc CategoryTheory.Limits.cokernel.π_desc
 
 @[simp]
-theorem cokernel.desc_zero {W : C} {h} : cokernel.desc f (0 : Y ⟶ W) h = 0 :=
-  by
+theorem cokernel.desc_zero {W : C} {h} : cokernel.desc f (0 : Y ⟶ W) h = 0 := by
   ext
   simp
 #align category_theory.limits.cokernel.desc_zero CategoryTheory.Limits.cokernel.desc_zero
@@ -740,8 +730,7 @@ then we obtain a commutative square
 theorem cokernel.map_desc {X Y Z X' Y' Z' : C} (f : X ⟶ Y) [HasCokernel f] (g : Y ⟶ Z)
     (w : f ≫ g = 0) (f' : X' ⟶ Y') [HasCokernel f'] (g' : Y' ⟶ Z') (w' : f' ≫ g' = 0) (p : X ⟶ X')
     (q : Y ⟶ Y') (r : Z ⟶ Z') (h₁ : f ≫ q = p ≫ f') (h₂ : g ≫ r = q ≫ g') :
-    cokernel.map f f' p q h₁ ≫ cokernel.desc f' g' w' = cokernel.desc f g w ≫ r :=
-  by
+    cokernel.map f f' p q h₁ ≫ cokernel.desc f' g' w' = cokernel.desc f g w ≫ r := by
   ext
   simp [h₂]
 #align category_theory.limits.cokernel.map_desc CategoryTheory.Limits.cokernel.map_desc
@@ -775,8 +764,7 @@ def cokernelZeroIsoTarget : cokernel (0 : X ⟶ Y) ≅ Y :=
 
 @[simp]
 theorem cokernelZeroIsoTarget_hom :
-    cokernelZeroIsoTarget.Hom = cokernel.desc (0 : X ⟶ Y) (𝟙 Y) (by simp) :=
-  by
+    cokernelZeroIsoTarget.Hom = cokernel.desc (0 : X ⟶ Y) (𝟙 Y) (by simp) := by
   ext
   simp [cokernel_zero_iso_target]
 #align category_theory.limits.cokernel_zero_iso_target_hom CategoryTheory.Limits.cokernelZeroIsoTarget_hom
@@ -793,24 +781,21 @@ def cokernelIsoOfEq {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g) 
 #align category_theory.limits.cokernel_iso_of_eq CategoryTheory.Limits.cokernelIsoOfEq
 
 @[simp]
-theorem cokernelIsoOfEq_refl {h : f = f} : cokernelIsoOfEq h = Iso.refl (cokernel f) :=
-  by
+theorem cokernelIsoOfEq_refl {h : f = f} : cokernelIsoOfEq h = Iso.refl (cokernel f) := by
   ext
   simp [cokernel_iso_of_eq]
 #align category_theory.limits.cokernel_iso_of_eq_refl CategoryTheory.Limits.cokernelIsoOfEq_refl
 
 @[simp, reassoc.1]
 theorem π_comp_cokernelIsoOfEq_hom {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g) :
-    cokernel.π _ ≫ (cokernelIsoOfEq h).Hom = cokernel.π _ :=
-  by
+    cokernel.π _ ≫ (cokernelIsoOfEq h).Hom = cokernel.π _ := by
   induction h
   simp
 #align category_theory.limits.π_comp_cokernel_iso_of_eq_hom CategoryTheory.Limits.π_comp_cokernelIsoOfEq_hom
 
 @[simp, reassoc.1]
 theorem π_comp_cokernelIsoOfEq_inv {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g) :
-    cokernel.π _ ≫ (cokernelIsoOfEq h).inv = cokernel.π _ :=
-  by
+    cokernel.π _ ≫ (cokernelIsoOfEq h).inv = cokernel.π _ := by
   induction h
   simp
 #align category_theory.limits.π_comp_cokernel_iso_of_eq_inv CategoryTheory.Limits.π_comp_cokernelIsoOfEq_inv
@@ -818,8 +803,7 @@ theorem π_comp_cokernelIsoOfEq_inv {f g : X ⟶ Y} [HasCokernel f] [HasCokernel
 @[simp, reassoc.1]
 theorem cokernelIsoOfEq_hom_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g)
     (e : Y ⟶ Z) (he) :
-    (cokernelIsoOfEq h).Hom ≫ cokernel.desc _ e he = cokernel.desc _ e (by simp [h, he]) :=
-  by
+    (cokernelIsoOfEq h).Hom ≫ cokernel.desc _ e he = cokernel.desc _ e (by simp [h, he]) := by
   induction h
   simp
 #align category_theory.limits.cokernel_iso_of_eq_hom_comp_desc CategoryTheory.Limits.cokernelIsoOfEq_hom_comp_desc
@@ -827,8 +811,7 @@ theorem cokernelIsoOfEq_hom_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCo
 @[simp, reassoc.1]
 theorem cokernelIsoOfEq_inv_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCokernel g] (h : f = g)
     (e : Y ⟶ Z) (he) :
-    (cokernelIsoOfEq h).inv ≫ cokernel.desc _ e he = cokernel.desc _ e (by simp [← h, he]) :=
-  by
+    (cokernelIsoOfEq h).inv ≫ cokernel.desc _ e he = cokernel.desc _ e (by simp [← h, he]) := by
   induction h
   simp
 #align category_theory.limits.cokernel_iso_of_eq_inv_comp_desc CategoryTheory.Limits.cokernelIsoOfEq_inv_comp_desc
@@ -836,8 +819,7 @@ theorem cokernelIsoOfEq_inv_comp_desc {Z} {f g : X ⟶ Y} [HasCokernel f] [HasCo
 @[simp]
 theorem cokernelIsoOfEq_trans {f g h : X ⟶ Y} [HasCokernel f] [HasCokernel g] [HasCokernel h]
     (w₁ : f = g) (w₂ : g = h) :
-    cokernelIsoOfEq w₁ ≪≫ cokernelIsoOfEq w₂ = cokernelIsoOfEq (w₁.trans w₂) :=
-  by
+    cokernelIsoOfEq w₁ ≪≫ cokernelIsoOfEq w₂ = cokernelIsoOfEq (w₁.trans w₂) := by
   induction w₁
   induction w₂
   ext
@@ -1094,8 +1076,7 @@ theorem kernelComparison_comp_ι [HasKernel f] [HasKernel (G.map f)] :
 theorem map_lift_kernelComparison [HasKernel f] [HasKernel (G.map f)] {Z : C} {h : Z ⟶ X}
     (w : h ≫ f = 0) :
     G.map (kernel.lift _ h w) ≫ kernelComparison f G =
-      kernel.lift _ (G.map h) (by simp only [← G.map_comp, w, functor.map_zero]) :=
-  by
+      kernel.lift _ (G.map h) (by simp only [← G.map_comp, w, functor.map_zero]) := by
   ext
   simp [← G.map_comp]
 #align category_theory.limits.map_lift_kernel_comparison CategoryTheory.Limits.map_lift_kernelComparison
@@ -1129,8 +1110,7 @@ theorem π_comp_cokernelComparison [HasCokernel f] [HasCokernel (G.map f)] :
 theorem cokernelComparison_map_desc [HasCokernel f] [HasCokernel (G.map f)] {Z : C} {h : Y ⟶ Z}
     (w : f ≫ h = 0) :
     cokernelComparison f G ≫ G.map (cokernel.desc _ h w) =
-      cokernel.desc _ (G.map h) (by simp only [← G.map_comp, w, functor.map_zero]) :=
-  by
+      cokernel.desc _ (G.map h) (by simp only [← G.map_comp, w, functor.map_zero]) := by
   ext
   simp [← G.map_comp]
 #align category_theory.limits.cokernel_comparison_map_desc CategoryTheory.Limits.cokernelComparison_map_desc
