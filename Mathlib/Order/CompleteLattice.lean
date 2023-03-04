@@ -403,8 +403,8 @@ class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
   { i with
-    min := HasInf.inf
-    max := HasSup.sup
+    min := Inf.inf
+    max := Sup.sup
     min_def := fun a b => by
       split_ifs with h
       . simp [h]
@@ -664,7 +664,7 @@ theorem Equiv.supᵢ_comp {g : ι' → α} (e : ι ≃ ι') : (⨆ x, g (e x)) =
 protected theorem Function.Surjective.supᵢ_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : (⨆ x, f x) = ⨆ y, g y := by
   convert h1.supᵢ_comp g
-  exact (funext h2).symm
+  exact (h2 _).symm
 #align function.surjective.supr_congr Function.Surjective.supᵢ_congr
 
 protected theorem Equiv.supᵢ_congr {g : ι' → α} (e : ι ≃ ι') (h : ∀ x, g (e x) = f x) :
@@ -1978,7 +1978,7 @@ end CompleteLattice
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
 @[reducible]
-protected def Function.Injective.completeLattice [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α]
+protected def Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_supₛ : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a) (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a)

@@ -233,15 +233,11 @@ alias inv_nonempty_iff ↔ nonempty.inv nonempty.of_inv
 #align finset.nonempty.inv Finset.nonempty.inv
 #align finset.nonempty.of_inv Finset.nonempty.of_inv
 
--- porting notes: removed `mono`
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
   image_subset_image h
 #align finset.inv_subset_inv Finset.inv_subset_inv
 #align finset.neg_subset_neg Finset.neg_subset_neg
-
--- porting notes: no `mono` yet
---attribute [mono] neg_subset_neg
 
 @[to_additive (attr := simp)]
 theorem inv_singleton (a : α) : ({a} : Finset α)⁻¹ = {a⁻¹} :=
@@ -339,7 +335,6 @@ theorem card_mul_le : (s * t).card ≤ s.card * t.card :=
 #align finset.card_mul_le Finset.card_mul_le
 #align finset.card_add_le Finset.card_add_le
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
 theorem card_mul_iff :
     (s * t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 :=
@@ -407,8 +402,7 @@ theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :
 #align finset.singleton_mul_singleton Finset.singleton_mul_singleton
 #align finset.singleton_add_singleton Finset.singleton_add_singleton
 
--- porting note: deleted `mono`, not available yet
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem mul_subset_mul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ * t₁ ⊆ s₂ * t₂ :=
   image₂_subset
 #align finset.mul_subset_mul Finset.mul_subset_mul
@@ -431,9 +425,6 @@ theorem mul_subset_iff : s * t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x * y ∈ u :
   image₂_subset_iff
 #align finset.mul_subset_iff Finset.mul_subset_iff
 #align finset.add_subset_iff Finset.add_subset_iff
-
--- porting note: no `mono` yet
---attribute [mono] add_subset_add
 
 @[to_additive]
 theorem union_mul : (s₁ ∪ s₂) * t = s₁ * t ∪ s₂ * t :=
@@ -621,8 +612,7 @@ theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :
 #align finset.singleton_div_singleton Finset.singleton_div_singleton
 #align finset.singleton_sub_singleton Finset.singleton_sub_singleton
 
--- porting note: deleted `mono`, not available yet
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 #align finset.div_subset_div Finset.div_subset_div
@@ -645,9 +635,6 @@ theorem div_subset_iff : s / t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x / y ∈ u :
   image₂_subset_iff
 #align finset.div_subset_iff Finset.div_subset_iff
 #align finset.sub_subset_iff Finset.sub_subset_iff
-
--- porting note: no `mono` yet
---attribute [mono] sub_subset_sub
 
 @[to_additive]
 theorem union_div : (s₁ ∪ s₂) / t = s₁ / t ∪ s₂ / t :=
@@ -707,7 +694,7 @@ protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align finset.has_npow Finset.npow
 
-attribute [to_additive] Finset.npow
+attribute [to_additive existing] Finset.npow
 
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
@@ -718,7 +705,7 @@ protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
-@[to_additive]
+@[to_additive existing]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align finset.has_zpow Finset.zpow
@@ -818,17 +805,12 @@ section Monoid
 
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
-/- porting note: replaced rws with simps because the npowRec equations were not correctly translated
-by to_additive.
-
-See https://leanprover.zulipchat.com/#narrow/stream287929-mathlib4/topic/
-to_additive.20for.20generated.20lemmas-/
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s: Set α) ^ n  := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
-  · simp [npowRec, pow_zero, coe_one]
-  · simp [npowRec, pow_succ, coe_mul, ih]
+  · rw [npowRec, pow_zero, coe_one]
+  · rw [npowRec, pow_succ, coe_mul, ih]
 #align finset.coe_pow Finset.coe_pow
 
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
@@ -1321,8 +1303,7 @@ theorem singleton_smul_singleton (a : α) (b : β) : ({a} : Finset α) • ({b} 
 #align finset.singleton_smul_singleton Finset.singleton_smul_singleton
 #align finset.singleton_vadd_singleton Finset.singleton_vadd_singleton
 
--- porting notes: removed `mono` currently unsupported
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ :=
   image₂_subset
 #align finset.smul_subset_smul Finset.smul_subset_smul
@@ -1345,9 +1326,6 @@ theorem smul_subset_iff : s • t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a • b �
   image₂_subset_iff
 #align finset.smul_subset_iff Finset.smul_subset_iff
 #align finset.vadd_subset_iff Finset.vadd_subset_iff
-
--- porting note: no `mono` yet
---attribute [mono] vadd_subset_vadd
 
 @[to_additive]
 theorem union_smul [DecidableEq α] : (s₁ ∪ s₂) • t = s₁ • t ∪ s₂ • t :=
@@ -1473,8 +1451,7 @@ theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -�
   image₂_singleton
 #align finset.singleton_vsub_singleton Finset.singleton_vsub_singleton
 
--- porting note: no `mono` yet
---@[mono]
+@[mono]
 theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
   image₂_subset
 #align finset.vsub_subset_vsub Finset.vsub_subset_vsub
@@ -1606,15 +1583,11 @@ theorem singleton_smul (a : α) : ({a} : Finset α) • t = a • t :=
 #align finset.singleton_smul Finset.singleton_smul
 #align finset.singleton_vadd Finset.singleton_vadd
 
--- porting note: removed `mono`, not available yet
-@[to_additive]
+@[to_additive (attr := mono)]
 theorem smul_finset_subset_smul_finset : s ⊆ t → a • s ⊆ a • t :=
   image_subset_image
 #align finset.smul_finset_subset_smul_finset Finset.smul_finset_subset_smul_finset
 #align finset.vadd_finset_subset_vadd_finset Finset.vadd_finset_subset_vadd_finset
-
--- porting note: no `mono` yet
---attribute [mono] vadd_finset_subset_vadd_finset
 
 @[to_additive (attr := simp)]
 theorem smul_finset_singleton (b : β) : a • ({b} : Finset β) = {a • b} :=
@@ -1647,57 +1620,57 @@ section Instances
 
 variable [DecidableEq γ]
 
-@[to_additive vAddCommClass_finset]
-instance sMulCommClass_finset [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+@[to_additive]
+instance smulCommClass_finset [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Finset γ) :=
   ⟨fun _ _ => Commute.finset_image <| smul_comm _ _⟩
-#align finset.smul_comm_class_finset Finset.sMulCommClass_finset
-#align finset.vadd_comm_class_finset Finset.vAddCommClass_finset
+#align finset.smul_comm_class_finset Finset.smulCommClass_finset
+#align finset.vadd_comm_class_finset Finset.vaddCommClass_finset
 
-@[to_additive vAddCommClass_finset']
-instance sMulCommClass_finset' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+@[to_additive]
+instance smulCommClass_finset' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α (Finset β) (Finset γ) :=
   ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_comm]⟩
-#align finset.smul_comm_class_finset' Finset.sMulCommClass_finset'
-#align finset.vadd_comm_class_finset' Finset.vAddCommClass_finset'
+#align finset.smul_comm_class_finset' Finset.smulCommClass_finset'
+#align finset.vadd_comm_class_finset' Finset.vaddCommClass_finset'
 
-@[to_additive vAddCommClass_finset'']
-instance sMulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+@[to_additive]
+instance smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Finset α) β (Finset γ) :=
   haveI := SMulCommClass.symm α β γ
   SMulCommClass.symm _ _ _
-#align finset.smul_comm_class_finset'' Finset.sMulCommClass_finset''
-#align finset.vadd_comm_class_finset'' Finset.vAddCommClass_finset''
+#align finset.smul_comm_class_finset'' Finset.smulCommClass_finset''
+#align finset.vadd_comm_class_finset'' Finset.vaddCommClass_finset''
 
-@[to_additive vAddCommClass]
-instance sMulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+@[to_additive]
+instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Finset α) (Finset β) (Finset γ) :=
   ⟨fun s t u => coe_injective <| by simp_rw [coe_smul, smul_comm]⟩
-#align finset.smul_comm_class Finset.sMulCommClass
-#align finset.vadd_comm_class Finset.vAddCommClass
+#align finset.smul_comm_class Finset.smulCommClass
+#align finset.vadd_comm_class Finset.vaddCommClass
 
-@[to_additive vAddAssocClass]
+@[to_additive vaddAssocClass]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Finset γ) :=
   ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp]⟩
 #align finset.is_scalar_tower Finset.isScalarTower
-#align finset.vadd_assoc_class Finset.vAddAssocClass
+#align finset.vadd_assoc_class Finset.vaddAssocClass
 
 variable [DecidableEq β]
 
-@[to_additive vAddAssocClass']
+@[to_additive vaddAssocClass']
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Finset β) (Finset γ) :=
   ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
 #align finset.is_scalar_tower' Finset.isScalarTower'
-#align finset.vadd_assoc_class' Finset.vAddAssocClass'
+#align finset.vadd_assoc_class' Finset.vaddAssocClass'
 
-@[to_additive vAddAssocClass'']
+@[to_additive vaddAssocClass'']
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Finset α) (Finset β) (Finset γ) :=
   ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
 #align finset.is_scalar_tower'' Finset.isScalarTower''
-#align finset.vadd_assoc_class'' Finset.vAddAssocClass''
+#align finset.vadd_assoc_class'' Finset.vaddAssocClass''
 
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Finset β) :=
@@ -1749,7 +1722,7 @@ scoped[Pointwise]
 instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
   Function.Injective.noZeroDivisors (↑) coe_injective coe_zero coe_mul
 
-instance noZeroSmulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
+instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Finset α) (Finset β) :=
   ⟨by
     intro s t h
@@ -1773,7 +1746,6 @@ section LeftCancelSemigroup
 
 variable [LeftCancelSemigroup α] [DecidableEq α] (s t : Finset α) (a : α)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
     s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
