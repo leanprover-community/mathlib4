@@ -14,7 +14,7 @@ import Mathlib.Data.Finset.Sort
 /-!
 # Theory of univariate polynomials
 
-This file defines `polynomial R`, the type of univariate polynomials over the semiring `R`, builds
+This file defines `Polynomial R`, the type of univariate polynomials over the semiring `R`, builds
 a semiring structure on it, and gives basic definitions that are expanded in other files in this
 directory.
 
@@ -32,24 +32,24 @@ polynomials, or on the function. The naming convention is that one adds `index` 
 the polynomials. For instance,
 * `sum_add_index` states that `(p + q).sum f = p.sum f + q.sum f`;
 * `sum_add` states that `p.sum (λ n x, f n x + g n x) = p.sum f + p.sum g`.
-* Notation to refer to `polynomial R`, as `R[X]` or `R[t]`.
+* Notation to refer to `Polynomial R`, as `R[X]` or `R[t]`.
 
 ## Implementation
 
-Polynomials are defined using `add_monoid_algebra R ℕ`, where `R` is a semiring.
+Polynomials are defined using `AddMonoidAlgebra R ℕ`, where `R` is a semiring.
 The variable `X` commutes with every polynomial `p`: lemma `X_mul` proves the identity
-`X * p = p * X`.  The relationship to `add_monoid_algebra R ℕ` is through a structure
+`X * p = p * X`.  The relationship to `AddMonoidAlgebra R ℕ` is through a structure
 to make polynomials irreducible from the point of view of the kernel. Most operations
-are irreducible since Lean can not compute anyway with `add_monoid_algebra`. There are two
+are irreducible since Lean can not compute anyway with `AddMonoidAlgebra`. There are two
 exceptions that we make semireducible:
 * The zero polynomial, so that its coefficients are definitionally equal to `0`.
 * The scalar action, to permit typeclass search to unfold it to resolve potential instance
   diamonds.
 
-The raw implementation of the equivalence between `R[X]` and `add_monoid_algebra R ℕ` is
-done through `of_finsupp` and `to_finsupp` (or, equivalently, `rcases p` when `p` is a polynomial
-gives an element `q` of `add_monoid_algebra R ℕ`, and conversely `⟨q⟩` gives back `p`). The
-equivalence is also registered as a ring equiv in `polynomial.to_finsupp_iso`. These should
+The raw implementation of the equivalence between `R[X]` and `AddMonoidAlgebra R ℕ` is
+done through `ofFinsupp` and `toFinsupp` (or, equivalently, `rcases p` when `p` is a polynomial
+gives an element `q` of `AddMonoidAlgebra R ℕ`, and conversely `⟨q⟩` gives back `p`). The
+equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. These should
 in general not be used once the basic API for polynomials is constructed.
 -/
 
@@ -58,7 +58,7 @@ set_option linter.uppercaseLean3 false
 
 noncomputable section
 
-/-- `polynomial R` is the type of univariate polynomials over `R`.
+/-- `Polynomial R` is the type of univariate polynomials over `R`.
 
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
 The embedding from `R` is called `C`. -/
@@ -100,11 +100,11 @@ theorem exists_iff_exists_finsupp (P : R[X] → Prop) :
 theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := by cases f; rfl
 #align polynomial.eta Polynomial.eta
 
-/-! ### Conversions to and from `add_monoid_algebra`
+/-! ### Conversions to and from `AddMonoidAlgebra`
 
-Since `R[X]` is not defeq to `add_monoid_algebra R ℕ`, but instead is a structure wrapping
+Since `R[X]` is not defeq to `AddMonoidAlgebra R ℕ`, but instead is a structure wrapping
 it, we have to copy across all the arithmetic operators manually, along with the lemmas about how
-they unfold around `polynomial.of_finsupp` and `polynomial.to_finsupp`.
+they unfold around `Polynomial.ofFinsupp` and `Polynomial.toFinsupp`.
 -/
 
 
@@ -263,7 +263,7 @@ theorem toFinsupp_eq_one {a : R[X]} : a.toFinsupp = 1 ↔ a = 1 := by
   rw [← toFinsupp_one, toFinsupp_inj]
 #align polynomial.to_finsupp_eq_one Polynomial.toFinsupp_eq_one
 
-/-- A more convenient spelling of `polynomial.of_finsupp.inj_eq` in terms of `iff`. -/
+/-- A more convenient spelling of `Polynomial.ofFinsupp.injEq` in terms of `Iff`. -/
 theorem ofFinsupp_inj {a b} : (⟨a⟩ : R[X]) = ⟨b⟩ ↔ a = b :=
   iff_of_eq (ofFinsupp.injEq _ _)
 #align polynomial.of_finsupp_inj Polynomial.ofFinsupp_inj
@@ -334,8 +334,8 @@ instance [Subsingleton R] : Unique R[X] :=
 
 variable (R)
 
-/-- Ring isomorphism between `R[X]` and `add_monoid_algebra R ℕ`. This is just an
-implementation detail, but it can be useful to transfer results from `finsupp` to polynomials. -/
+/-- Ring isomorphism between `R[X]` and `AddMonoidAlgebra R ℕ`. This is just an
+implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
 @[simps apply symm_apply]
 def toFinsuppIso : R[X] ≃+* AddMonoidAlgebra R ℕ where
   toFun := toFinsupp
@@ -561,7 +561,7 @@ theorem X_pow_mul {n : ℕ} : X ^ n * p = p * X ^ n := by
 
 /-- Prefer putting constants to the left of `X`.
 
-This lemma is the loop-avoiding `simp` version of `polynomial.X_mul`. -/
+This lemma is the loop-avoiding `simp` version of `Polynomial.X_mul`. -/
 @[simp]
 theorem X_mul_C (r : R) : X * C r = C r * X :=
   X_mul
@@ -1053,7 +1053,7 @@ section Update
 
 /-- Replace the coefficient of a `p : R[X]` at a given degree `n : ℕ`
 by a given value `a : R`. If `a = 0`, this is equal to `p.erase n`
-If `p.nat_degree < n` and `a ≠ 0`, this increases the degree to `n`.  -/
+If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`.  -/
 def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
   Polynomial.ofFinsupp (p.toFinsupp.update n a)
 #align polynomial.update Polynomial.update
