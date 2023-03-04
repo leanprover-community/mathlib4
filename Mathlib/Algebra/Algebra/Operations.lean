@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 
 ! This file was ported from Lean 3 source module algebra.algebra.operations
-! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e TODO: update
+! leanprover-community/mathlib commit 27b54c47c3137250a521aa64e9f1db90be5f6a26
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -524,8 +524,7 @@ def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') : Submodule R 
 /-- The ring of submodules of the opposite algebra is isomorphic to the opposite ring of
 submodules. -/
 @[simps apply symm_apply]
-def equivOpposite : Submodule R Aᵐᵒᵖ ≃+* (Submodule R A)ᵐᵒᵖ
-    where
+def equivOpposite : Submodule R Aᵐᵒᵖ ≃+* (Submodule R A)ᵐᵒᵖ where
   toFun p := op <| p.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ)
   invFun p := p.unop.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A)
   left_inv p := SetLike.coe_injective <| rfl
@@ -565,12 +564,15 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
 on either side). -/
+@[simps]
 def span.ringHom : SetSemiring A →+* Submodule R A where
-  toFun := Submodule.span R
+  toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
   map_add' := span_union
-  map_mul' s t := by erw [span_mul_span, ← image_mul_prod]
+  map_mul' s t := by
+    dsimp only -- porting note: new, needed due to new-style structures
+    rw [SetSemiring.down_mul, span_mul_span, ← image_mul_prod]
 #align submodule.span.ring_hom Submodule.span.ringHom
 
 section
@@ -650,7 +652,8 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 
 variable {R A}
 
-theorem smul_def {s : SetSemiring A} {P : Submodule R A} : s • P = span R s * P :=
+theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
+  s • P = span R (SetSemiring.down s) * P :=
   rfl
 #align submodule.smul_def Submodule.smul_def
 
