@@ -15,7 +15,7 @@ import Mathlib.Topology.UniformSpace.CompleteSeparated
 # Antilipschitz functions
 
 We say that a map `f : α → β` between two (extended) metric spaces is
-`antilipschitz_with K`, `K ≥ 0`, if for all `x, y` we have `edist x y ≤ K * edist (f x) (f y)`.
+`AntilipschitzWith K`, `K ≥ 0`, if for all `x, y` we have `edist x y ≤ K * edist (f x) (f y)`.
 For a metric space, the latter inequality is equivalent to `dist x y ≤ K * dist (f x) (f y)`.
 
 ## Implementation notes
@@ -31,7 +31,7 @@ variable {α β γ : Type _}
 open scoped NNReal ENNReal Uniformity Topology
 open Set Filter Bornology
 
-/-- We say that `f : α → β` is `antilipschitz_with K` if for any two points `x`, `y` we have
+/-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
 `edist x y ≤ K * edist (f x) (f y)`. -/
 def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist x y ≤ K * edist (f x) (f y)
@@ -97,7 +97,7 @@ variable {K : ℝ≥0} {f : α → β}
 open EMetric
 
 -- uses neither `f` nor `hf`
-/-- Extract the constant from `hf : antilipschitz_with K f`. This is useful, e.g.,
+/-- Extract the constant from `hf : AntilipschitzWith K f`. This is useful, e.g.,
 if `K` is given by a long formula, and we want to reuse this value. -/
 protected def k (_hf : AntilipschitzWith K f) : ℝ≥0 := K
 set_option linter.uppercaseLean3 false in
