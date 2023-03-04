@@ -101,19 +101,19 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 /-- A non-commutative version of `monoid_algebra.lift`: given a additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
-`monoid_algebra k G` such that `liftNc f g (single a b) = f b * g a`. If `f` is a ring homomorphism
+`monoid_algebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
 and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
 `R` is a `k`-algebra and `f = algebra_map k R`, then the result is an algebra homomorphism called
 `monoid_algebra.lift`. -/
-def liftNc (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
+def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
   liftAddHom fun x : G => (AddMonoidHom.mulRight (g x)).comp f
-#align monoid_algebra.lift_nc MonoidAlgebra.liftNc
+#align monoid_algebra.lift_nc MonoidAlgebra.liftNC
 
 @[simp]
-theorem liftNc_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
-    liftNc f g (single a b) = f b * g a :=
+theorem liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
+    liftNC f g (single a b) = f b * g a :=
   liftAddHom_apply_single _ _ _
-#align monoid_algebra.lift_nc_single MonoidAlgebra.liftNc_single
+#align monoid_algebra.lift_nc_single MonoidAlgebra.liftNC_single
 
 end
 
@@ -159,15 +159,15 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k 
 
 variable [Semiring R]
 
-theorem liftNc_mul {g_hom : Type _} [MulHomClass g_hom G R] (f : k →+* R) (g : g_hom)
+theorem liftNC_mul {g_hom : Type _} [MulHomClass g_hom G R] (f : k →+* R) (g : g_hom)
     (a b : MonoidAlgebra k G) (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :
-    liftNc (f : k →+ R) g (a * b) = liftNc (f : k →+ R) g a * liftNc (f : k →+ R) g b := by
+    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
   conv_rhs => rw [← sum_single a, ← sum_single b]
-  -- Porting note: `(liftNc _ g).map_finsupp_sum` → `map_finsupp_sum`
-  simp_rw [mul_def, map_finsupp_sum, liftNc_single, Finsupp.sum_mul, Finsupp.mul_sum]
+  -- Porting note: `(liftNC _ g).map_finsupp_sum` → `map_finsupp_sum`
+  simp_rw [mul_def, map_finsupp_sum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
   refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
   simp [mul_assoc, (h_comm hy).left_comm]
-#align monoid_algebra.lift_nc_mul MonoidAlgebra.liftNc_mul
+#align monoid_algebra.lift_nc_mul MonoidAlgebra.liftNC_mul
 
 end Mul
 
@@ -203,9 +203,9 @@ theorem one_def : (1 : MonoidAlgebra k G) = single 1 1 :=
 #align monoid_algebra.one_def MonoidAlgebra.one_def
 
 @[simp]
-theorem liftNc_one {g_hom : Type _} [OneHomClass g_hom G R] (f : k →+* R) (g : g_hom) :
-    liftNc (f : k →+ R) g 1 = 1 := by simp [one_def]
-#align monoid_algebra.lift_nc_one MonoidAlgebra.liftNc_one
+theorem liftNC_one {g_hom : Type _} [OneHomClass g_hom G R] (f : k →+* R) (g : g_hom) :
+    liftNC (f : k →+ R) g 1 = 1 := by simp [one_def]
+#align monoid_algebra.lift_nc_one MonoidAlgebra.liftNC_one
 
 end One
 
@@ -254,14 +254,14 @@ instance semiring : Semiring (MonoidAlgebra k G) :=
 
 variable [Semiring R]
 
-/-- `liftNc` as a `ring_hom`, for when `f x` and `g y` commute -/
-def liftNcRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
+/-- `liftNC` as a `ring_hom`, for when `f x` and `g y` commute -/
+def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra k G →+* R :=
-  { liftNc (f : k →+ R) g with
-    toFun := liftNc (f : k →+ R) g
-    map_one' := liftNc_one _ _
-    map_mul' := fun _a _b => liftNc_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
-#align monoid_algebra.lift_nc_ring_hom MonoidAlgebra.liftNcRingHom
+  { liftNC (f : k →+ R) g with
+    toFun := liftNC (f : k →+ R) g
+    map_one' := liftNC_one _ _
+    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
+#align monoid_algebra.lift_nc_ring_hom MonoidAlgebra.liftNCRingHom
 
 end Semiring
 
@@ -549,19 +549,19 @@ theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x 
   f.single_mul_apply_aux fun a => by rw [one_mul]
 #align monoid_algebra.single_one_mul_apply MonoidAlgebra.single_one_mul_apply
 
-theorem liftNc_smul [MulOneClass G] {R : Type _} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
-    (φ : MonoidAlgebra k G) : liftNc (f : k →+ R) g (c • φ) = f c * liftNc (f : k →+ R) g φ := by
+theorem liftNC_smul [MulOneClass G] {R : Type _} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
+    (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
   suffices :
-    (liftNc (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
-      (AddMonoidHom.mulLeft (f c)).comp (liftNc (↑f) g)
+    (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
+      (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g)
   exact FunLike.congr_fun this φ
   -- Porting note: `ext` couldn't a find appropriate theorem.
   refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
   -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
   unfold MonoidAlgebra
   simp
-  rw [liftNc_single, liftNc_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
-#align monoid_algebra.lift_nc_smul MonoidAlgebra.liftNc_smul
+  rw [liftNC_single, liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
+#align monoid_algebra.lift_nc_smul MonoidAlgebra.liftNC_smul
 
 end MiscTheorems
 
@@ -793,13 +793,13 @@ variable [CommSemiring k] [Monoid G]
 
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type _} [Semiring B] [Algebra k B]
 
-/-- `liftNcRingHom` as a `alg_hom`, for when `f` is an `alg_hom` -/
-def liftNcAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
+/-- `liftNCRingHom` as a `alg_hom`, for when `f` is an `alg_hom` -/
+def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra A G →ₐ[k] B :=
-  { liftNcRingHom (f : A →+* B) g h_comm with
-    toFun := liftNcRingHom (f : A →+* B) g h_comm
-    commutes' := by simp [liftNcRingHom] }
-#align monoid_algebra.lift_nc_alg_hom MonoidAlgebra.liftNcAlgHom
+  { liftNCRingHom (f : A →+* B) g h_comm with
+    toFun := liftNCRingHom (f : A →+* B) g h_comm
+    commutes' := by simp [liftNCRingHom] }
+#align monoid_algebra.lift_nc_alg_hom MonoidAlgebra.liftNCAlgHom
 
 /-- A `k`-algebra homomorphism from `monoid_algebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
@@ -824,13 +824,13 @@ variable (k G A)
 `monoid_algebra k G →ₐ[k] A`. -/
 def lift : (G →* A) ≃ (MonoidAlgebra k G →ₐ[k] A) where
   invFun f := (f : MonoidAlgebra k G →* A).comp (of k G)
-  toFun F := liftNcAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _
+  toFun F := liftNCAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _
   left_inv f := by
     ext
-    simp [liftNcAlgHom, liftNcRingHom]
+    simp [liftNCAlgHom, liftNCRingHom]
   right_inv F := by
     ext
-    simp [liftNcAlgHom, liftNcRingHom]
+    simp [liftNCAlgHom, liftNCRingHom]
 #align monoid_algebra.lift MonoidAlgebra.lift
 
 variable {k G A}
@@ -844,7 +844,7 @@ theorem lift_apply (F : G →* A) (f : MonoidAlgebra k G) :
     lift k G A F f = f.sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
 #align monoid_algebra.lift_apply MonoidAlgebra.lift_apply
 
-theorem lift_def (F : G →* A) : ⇑(lift k G A F) = liftNc ((algebraMap k A : k →+* A) : k →+ A) F :=
+theorem lift_def (F : G →* A) : ⇑(lift k G A F) = liftNC ((algebraMap k A : k →+* A) : k →+ A) F :=
   rfl
 #align monoid_algebra.lift_def MonoidAlgebra.lift_def
 
@@ -860,7 +860,7 @@ theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
 
 @[simp]
 theorem lift_single (F : G →* A) (a b) : lift k G A F (single a b) = b • F a := by
-  rw [lift_def, liftNc_single, Algebra.smul_def, AddMonoidHom.coe_coe]
+  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
 #align monoid_algebra.lift_single MonoidAlgebra.lift_single
 
 theorem lift_unique' (F : MonoidAlgebra k G →ₐ[k] A) :
@@ -1138,19 +1138,19 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 /-- A non-commutative version of `add_monoid_algebra.lift`: given a additive homomorphism `f : k →+
 R` and a map `g : multiplicative G → R`, returns the additive
-homomorphism from `add_monoid_algebra k G` such that `liftNc f g (single a b) = f b * g a`. If `f`
+homomorphism from `add_monoid_algebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f`
 is a ring homomorphism and the range of either `f` or `g` is in center of `R`, then the result is a
 ring homomorphism.  If `R` is a `k`-algebra and `f = algebra_map k R`, then the result is an algebra
 homomorphism called `add_monoid_algebra.lift`. -/
-def liftNc (f : k →+ R) (g : Multiplicative G → R) : AddMonoidAlgebra k G →+ R :=
+def liftNC (f : k →+ R) (g : Multiplicative G → R) : AddMonoidAlgebra k G →+ R :=
   liftAddHom fun x : G => (AddMonoidHom.mulRight (g <| Multiplicative.ofAdd x)).comp f
-#align add_monoid_algebra.lift_nc AddMonoidAlgebra.liftNc
+#align add_monoid_algebra.lift_nc AddMonoidAlgebra.liftNC
 
 @[simp]
-theorem liftNc_single (f : k →+ R) (g : Multiplicative G → R) (a : G) (b : k) :
-    liftNc f g (single a b) = f b * g (Multiplicative.ofAdd a) :=
+theorem liftNC_single (f : k →+ R) (g : Multiplicative G → R) (a : G) (b : k) :
+    liftNC f g (single a b) = f b * g (Multiplicative.ofAdd a) :=
   liftAddHom_apply_single _ _ _
-#align add_monoid_algebra.lift_nc_single AddMonoidAlgebra.liftNc_single
+#align add_monoid_algebra.lift_nc_single AddMonoidAlgebra.liftNC_single
 
 end
 
@@ -1209,12 +1209,12 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (AddMonoidAlgebra
 
 variable [Semiring R]
 
-theorem liftNc_mul {g_hom : Type _} [MulHomClass g_hom (Multiplicative G) R] (f : k →+* R)
+theorem liftNC_mul {g_hom : Type _} [MulHomClass g_hom (Multiplicative G) R] (f : k →+* R)
     (g : g_hom) (a b : AddMonoidAlgebra k G)
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
-    liftNc (f : k →+ R) g (a * b) = liftNc (f : k →+ R) g a * liftNc (f : k →+ R) g b :=
-  (MonoidAlgebra.liftNc_mul f g _ _ @h_comm : _)
-#align add_monoid_algebra.lift_nc_mul AddMonoidAlgebra.liftNc_mul
+    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
+  (MonoidAlgebra.liftNC_mul f g _ _ @h_comm : _)
+#align add_monoid_algebra.lift_nc_mul AddMonoidAlgebra.liftNC_mul
 
 end Mul
 
@@ -1233,10 +1233,10 @@ theorem one_def : (1 : AddMonoidAlgebra k G) = single 0 1 :=
 #align add_monoid_algebra.one_def AddMonoidAlgebra.one_def
 
 @[simp]
-theorem liftNc_one {g_hom : Type _} [OneHomClass g_hom (Multiplicative G) R] (f : k →+* R)
-    (g : g_hom) : liftNc (f : k →+ R) g 1 = 1 :=
-  (MonoidAlgebra.liftNc_one f g : _)
-#align add_monoid_algebra.lift_nc_one AddMonoidAlgebra.liftNc_one
+theorem liftNC_one {g_hom : Type _} [OneHomClass g_hom (Multiplicative G) R] (f : k →+* R)
+    (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 :=
+  (MonoidAlgebra.liftNC_one f g : _)
+#align add_monoid_algebra.lift_nc_one AddMonoidAlgebra.liftNC_one
 
 end One
 
@@ -1306,14 +1306,14 @@ instance semiring : Semiring (AddMonoidAlgebra k G) :=
 
 variable [Semiring R]
 
-/-- `liftNc` as a `ring_hom`, for when `f` and `g` commute -/
-def liftNcRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
+/-- `liftNC` as a `ring_hom`, for when `f` and `g` commute -/
+def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
     AddMonoidAlgebra k G →+* R :=
-  { liftNc (f : k →+ R) g with
-    toFun := liftNc (f : k →+ R) g
-    map_one' := liftNc_one _ _
-    map_mul' := fun _a _b => liftNc_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
-#align add_monoid_algebra.lift_nc_ring_hom AddMonoidAlgebra.liftNcRingHom
+  { liftNC (f : k →+ R) g with
+    toFun := liftNC (f : k →+ R) g
+    map_one' := liftNC_one _ _
+    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
+#align add_monoid_algebra.lift_nc_ring_hom AddMonoidAlgebra.liftNCRingHom
 
 end Semiring
 
@@ -1571,11 +1571,11 @@ theorem single_mul_apply [AddGroup G] (r : k) (x : G) (f : AddMonoidAlgebra k G)
   @MonoidAlgebra.single_mul_apply k (Multiplicative G) _ _ _ _ _ _
 #align add_monoid_algebra.single_mul_apply AddMonoidAlgebra.single_mul_apply
 
-theorem liftNc_smul {R : Type _} [AddZeroClass G] [Semiring R] (f : k →+* R)
+theorem liftNC_smul {R : Type _} [AddZeroClass G] [Semiring R] (f : k →+* R)
     (g : Multiplicative G →* R) (c : k) (φ : MonoidAlgebra k G) :
-    liftNc (f : k →+ R) g (c • φ) = f c * liftNc (f : k →+ R) g φ :=
-  @MonoidAlgebra.liftNc_smul k (Multiplicative G) _ _ _ _ f g c φ
-#align add_monoid_algebra.lift_nc_smul AddMonoidAlgebra.liftNc_smul
+    liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ :=
+  @MonoidAlgebra.liftNC_smul k (Multiplicative G) _ _ _ _ f g c φ
+#align add_monoid_algebra.lift_nc_smul AddMonoidAlgebra.liftNC_smul
 
 theorem induction_on [AddMonoid G] {p : AddMonoidAlgebra k G → Prop} (f : AddMonoidAlgebra k G)
     (hM : ∀ g, p (of k G (Multiplicative.ofAdd g)))
@@ -1831,15 +1831,15 @@ variable [CommSemiring k] [AddMonoid G]
 
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type _} [Semiring B] [Algebra k B]
 
-/-- `liftNcRingHom` as a `alg_hom`, for when `f` is an `alg_hom` -/
-def liftNcAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
+/-- `liftNCRingHom` as a `alg_hom`, for when `f` is an `alg_hom` -/
+def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     AddMonoidAlgebra A G →ₐ[k] B :=
   {
-    liftNcRingHom (f : A →+* B) g
+    liftNCRingHom (f : A →+* B) g
       h_comm with
-    toFun := liftNcRingHom (f : A →+* B) g h_comm
-    commutes' := by simp [liftNcRingHom] }
-#align add_monoid_algebra.lift_nc_alg_hom AddMonoidAlgebra.liftNcAlgHom
+    toFun := liftNCRingHom (f : A →+* B) g h_comm
+    commutes' := by simp [liftNCRingHom] }
+#align add_monoid_algebra.lift_nc_alg_hom AddMonoidAlgebra.liftNCAlgHom
 
 /-- A `k`-algebra homomorphism from `monoid_algebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
@@ -1867,7 +1867,7 @@ def lift : (Multiplicative G →* A) ≃ (AddMonoidAlgebra k G →ₐ[k] A) :=
     invFun := fun f => (f : AddMonoidAlgebra k G →* A).comp (of k G)
     toFun := fun F =>
       { @MonoidAlgebra.lift k (Multiplicative G) _ _ A _ _ F with
-        toFun := liftNcAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _ } }
+        toFun := liftNCAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _ } }
 #align add_monoid_algebra.lift AddMonoidAlgebra.lift
 
 variable {k G A}
@@ -1883,7 +1883,7 @@ theorem lift_apply (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
 #align add_monoid_algebra.lift_apply AddMonoidAlgebra.lift_apply
 
 theorem lift_def (F : Multiplicative G →* A) :
-    ⇑(lift k G A F) = liftNc ((algebraMap k A : k →+* A) : k →+ A) F :=
+    ⇑(lift k G A F) = liftNC ((algebraMap k A : k →+* A) : k →+ A) F :=
   rfl
 #align add_monoid_algebra.lift_def AddMonoidAlgebra.lift_def
 
@@ -1900,7 +1900,7 @@ theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :
 @[simp]
 theorem lift_single (F : Multiplicative G →* A) (a b) :
     lift k G A F (single a b) = b • F (Multiplicative.ofAdd a) := by
-  rw [lift_def, liftNc_single, Algebra.smul_def, AddMonoidHom.coe_coe]
+  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
 #align add_monoid_algebra.lift_single AddMonoidAlgebra.lift_single
 
 theorem lift_unique' (F : AddMonoidAlgebra k G →ₐ[k] A) :
