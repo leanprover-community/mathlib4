@@ -85,15 +85,15 @@ theorem exists_unionᵢ_ball_eq_radius_pos_lt {r : ι → ℝ} (hr : ∀ i, 0 < 
 
 /-- Let `R : α → ℝ` be a (possibly discontinuous) function on a proper metric space.
 Let `s` be a closed set in `α` such that `R` is positive on `s`. Then there exists a collection of
-pairs of balls `metric.ball (c i) (r i)`, `metric.ball (c i) (r' i)` such that
+pairs of balls `Metric.ball (c i) (r i)`, `Metric.ball (c i) (r' i)` such that
 
 * all centers belong to `s`;
 * for all `i` we have `0 < r i < r' i < R (c i)`;
-* the family of balls `metric.ball (c i) (r' i)` is locally finite;
-* the balls `metric.ball (c i) (r i)` cover `s`.
+* the family of balls `Metric.ball (c i) (r' i)` is locally finite;
+* the balls `Metric.ball (c i) (r i)` cover `s`.
 
-This is a simple corollary of `refinement_of_locally_compact_sigma_compact_of_nhds_basis_set`
-and `exists_subset_Union_ball_radius_pos_lt`. -/
+This is a simple corollary of `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set`
+and `exists_subset_unionᵢ_ball_radius_pos_lt`. -/
 theorem exists_locallyFinite_subset_unionᵢ_ball_radius_lt (hs : IsClosed s) {R : α → ℝ}
     (hR : ∀ x ∈ s, 0 < R x) :
     ∃ (ι : Type u)(c : ι → α)(r r' : ι → ℝ),
@@ -110,15 +110,15 @@ theorem exists_locallyFinite_subset_unionᵢ_ball_radius_lt (hs : IsClosed s) {R
 #align exists_locally_finite_subset_Union_ball_radius_lt exists_locallyFinite_subset_unionᵢ_ball_radius_lt
 
 /-- Let `R : α → ℝ` be a (possibly discontinuous) positive function on a proper metric space. Then
-there exists a collection of pairs of balls `metric.ball (c i) (r i)`, `metric.ball (c i) (r' i)`
+there exists a collection of pairs of balls `Metric.ball (c i) (r i)`, `Metric.ball (c i) (r' i)`
 such that
 
 * for all `i` we have `0 < r i < r' i < R (c i)`;
-* the family of balls `metric.ball (c i) (r' i)` is locally finite;
-* the balls `metric.ball (c i) (r i)` cover the whole space.
+* the family of balls `Metric.ball (c i) (r' i)` is locally finite;
+* the balls `Metric.ball (c i) (r i)` cover the whole space.
 
-This is a simple corollary of `refinement_of_locally_compact_sigma_compact_of_nhds_basis`
-and `exists_Union_ball_eq_radius_pos_lt` or `exists_locally_finite_subset_Union_ball_radius_lt`. -/
+This is a simple corollary of `refinement_of_locallyCompact_sigmaCompact_of_nhds_basis`
+and `exists_unionᵢ_ball_eq_radius_pos_lt` or `exists_locallyFinite_subset_unionᵢ_ball_radius_lt`. -/
 theorem exists_locallyFinite_unionᵢ_eq_ball_radius_lt {R : α → ℝ} (hR : ∀ x, 0 < R x) :
     ∃ (ι : Type u)(c : ι → α)(r r' : ι → ℝ),
       (∀ i, 0 < r i ∧ r i < r' i ∧ r' i < R (c i)) ∧
