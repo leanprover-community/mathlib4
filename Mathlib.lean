@@ -304,8 +304,10 @@ import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Over
 import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.PathCategory
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
@@ -1125,6 +1127,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Congr!
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Continuity.Init
@@ -1281,9 +1284,12 @@ import Mathlib.Topology.IsLocallyHomeomorph
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalExtr
 import Mathlib.Topology.LocalHomeomorph
+import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
@@ -1298,6 +1304,7 @@ import Mathlib.Topology.Partial
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Separation
+import Mathlib.Topology.Sequences
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
