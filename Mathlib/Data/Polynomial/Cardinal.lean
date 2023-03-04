@@ -8,8 +8,8 @@ Authors: Chris Hughes, Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Basic
-import Mathbin.SetTheory.Cardinal.Ordinal
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinality of Polynomial Ring
@@ -35,8 +35,7 @@ theorem cardinal_mk_eq_max {R : Type u} [Semiring R] [Nontrivial R] : (#R[X]) = 
     rfl
 #align polynomial.cardinal_mk_eq_max Polynomial.cardinal_mk_eq_max
 
-theorem cardinal_mk_le_max {R : Type u} [Semiring R] : (#R[X]) ≤ max (#R) ℵ₀ :=
-  by
+theorem cardinal_mk_le_max {R : Type u} [Semiring R] : (#R[X]) ≤ max (#R) ℵ₀ := by
   cases subsingleton_or_nontrivial R
   · exact (mk_eq_one _).trans_le (le_max_of_le_right one_le_aleph_0)
   · exact cardinal_mk_eq_max.le
