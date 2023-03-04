@@ -640,8 +640,8 @@ theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s :
     (hf : LipschitzOnWith K f s) : ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn f g s := by
   /- An extension is given by `g y = Inf {f x + K * dist y x | x ∈ s}`. Taking `x = y`, one has
     `g y ≤ f y` for `y ∈ s`, and the other inequality holds because `f` is `K`-Lipschitz, so that it
-    can not counterbalance the growth of `K * dist y x`. One readily checks from the formula that the
-    extended function is also `K`-Lipschitz. -/
+    can not counterbalance the growth of `K * dist y x`. One readily checks from the formula that
+    the extended function is also `K`-Lipschitz. -/
   rcases eq_empty_or_nonempty s with (rfl | hs)
   · exact ⟨fun _ => 0, (LipschitzWith.const _).weaken (zero_le _), eqOn_empty _ _⟩
   have : Nonempty s := by simp only [hs, nonempty_coe_sort]
