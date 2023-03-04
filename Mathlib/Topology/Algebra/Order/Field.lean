@@ -8,10 +8,10 @@ Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Positivity
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Topology.Algebra.Order.Group
-import Mathbin.Topology.Algebra.Field
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Topology.Algebra.Field
 
 /-!
 # Topologies on linear ordered fields
@@ -36,8 +36,7 @@ variable {l : Filter β} {f g : β → α}
 section continuous_mul
 
 theorem mul_tendsto_nhds_zero_right (x : α) :
-    Tendsto (uncurry ((· * ·) : α → α → α)) (𝓝 0 ×ᶠ 𝓝 x) <| 𝓝 0 :=
-  by
+    Tendsto (uncurry ((· * ·) : α → α → α)) (𝓝 0 ×ᶠ 𝓝 x) <| 𝓝 0 := by
   have hx : 0 < 2 * (1 + |x|) := by positivity
   rw [((nhds_basis_zero_abs_sub_lt α).Prod <| nhds_basis_abs_sub_lt x).tendsto_iffₓ
       (nhds_basis_zero_abs_sub_lt α)]
@@ -55,8 +54,7 @@ theorem mul_tendsto_nhds_zero_right (x : α) :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem mul_tendsto_nhds_zero_left (x : α) :
-    Tendsto (uncurry ((· * ·) : α → α → α)) (𝓝 x ×ᶠ 𝓝 0) <| 𝓝 0 :=
-  by
+    Tendsto (uncurry ((· * ·) : α → α → α)) (𝓝 x ×ᶠ 𝓝 0) <| 𝓝 0 := by
   intro s hs
   have := mul_tendsto_nhds_zero_right x hs
   rw [Filter.mem_map, mem_prod_iff] at this⊢
@@ -67,8 +65,7 @@ theorem mul_tendsto_nhds_zero_left (x : α) :
 #align mul_tendsto_nhds_zero_left mul_tendsto_nhds_zero_left
 
 theorem nhds_eq_map_mul_left_nhds_one {x₀ : α} (hx₀ : x₀ ≠ 0) :
-    𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1) :=
-  by
+    𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1) := by
   have hx₀' : 0 < |x₀| := abs_pos.2 hx₀
   refine' Filter.ext fun t => _
   simp only [exists_prop, set_of_subset_set_of, (nhds_basis_abs_sub_lt x₀).mem_iff,
@@ -103,8 +100,7 @@ theorem nhds_eq_map_mul_right_nhds_one {x₀ : α} (hx₀ : x₀ ≠ 0) :
 #align nhds_eq_map_mul_right_nhds_one nhds_eq_map_mul_right_nhds_one
 
 theorem mul_tendsto_nhds_one_nhds_one :
-    Tendsto (uncurry ((· * ·) : α → α → α)) (𝓝 1 ×ᶠ 𝓝 1) <| 𝓝 1 :=
-  by
+    Tendsto (uncurry ((· * ·) : α → α → α)) (𝓝 1 ×ᶠ 𝓝 1) <| 𝓝 1 := by
   rw [((nhds_basis_Ioo_pos (1 : α)).Prod <| nhds_basis_Ioo_pos (1 : α)).tendsto_iffₓ
       (nhds_basis_Ioo_pos_of_pos (zero_lt_one : (0 : α) < 1))]
   intro ε hε
@@ -182,8 +178,7 @@ end continuous_mul
 /-- In a linearly ordered field with the order topology, if `f` tends to `at_top` and `g` tends to
 a positive constant `C` then `f * g` tends to `at_top`. -/
 theorem Filter.Tendsto.atTop_mul {C : α} (hC : 0 < C) (hf : Tendsto f l atTop)
-    (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop :=
-  by
+    (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop := by
   refine' tendsto_at_top_mono' _ _ (hf.at_top_mul_const (half_pos hC))
   filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)),
     hf.eventually (eventually_ge_at_top 0)]with x hg hf using mul_le_mul_of_nonneg_left hg.le hf
@@ -242,8 +237,7 @@ theorem Filter.Tendsto.neg_mul_atBot {C : α} (hC : C < 0) (hf : Tendsto f l (�
 #align filter.tendsto.neg_mul_at_bot Filter.Tendsto.neg_mul_atBot
 
 /-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
-theorem tendsto_inv_zero_atTop : Tendsto (fun x : α => x⁻¹) (𝓝[>] (0 : α)) atTop :=
-  by
+theorem tendsto_inv_zero_atTop : Tendsto (fun x : α => x⁻¹) (𝓝[>] (0 : α)) atTop := by
   refine' (at_top_basis' 1).tendsto_right_iff.2 fun b hb => _
   have hb' : 0 < b := by positivity
   filter_upwards [Ioc_mem_nhdsWithin_Ioi
@@ -251,8 +245,7 @@ theorem tendsto_inv_zero_atTop : Tendsto (fun x : α => x⁻¹) (𝓝[>] (0 : α
 #align tendsto_inv_zero_at_top tendsto_inv_zero_atTop
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
-theorem tendsto_inv_atTop_zero' : Tendsto (fun r : α => r⁻¹) atTop (𝓝[>] (0 : α)) :=
-  by
+theorem tendsto_inv_atTop_zero' : Tendsto (fun r : α => r⁻¹) atTop (𝓝[>] (0 : α)) := by
   refine'
     (has_basis.tendsto_iff at_top_basis ⟨fun s => mem_nhdsWithin_Ioi_iff_exists_Ioc_subset⟩).2 _
   refine' fun b hb => ⟨b⁻¹, trivial, fun x hx => _⟩
@@ -265,8 +258,7 @@ theorem tendsto_inv_atTop_zero : Tendsto (fun r : α => r⁻¹) atTop (𝓝 0) :
 #align tendsto_inv_at_top_zero tendsto_inv_atTop_zero
 
 theorem Filter.Tendsto.div_atTop [ContinuousMul α] {f g : β → α} {l : Filter β} {a : α}
-    (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) : Tendsto (fun x => f x / g x) l (𝓝 0) :=
-  by
+    (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) : Tendsto (fun x => f x / g x) l (𝓝 0) := by
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_at_top_zero.comp hg)
 #align filter.tendsto.div_at_top Filter.Tendsto.div_atTop
@@ -299,8 +291,7 @@ theorem tendsto_const_mul_zpow_atTop_zero {n : ℤ} {c : α} (hn : n < 0) :
 #align tendsto_const_mul_zpow_at_top_zero tendsto_const_mul_zpow_atTop_zero
 
 theorem tendsto_const_mul_pow_nhds_iff' {n : ℕ} {c d : α} :
-    Tendsto (fun x : α => c * x ^ n) atTop (𝓝 d) ↔ (c = 0 ∨ n = 0) ∧ c = d :=
-  by
+    Tendsto (fun x : α => c * x ^ n) atTop (𝓝 d) ↔ (c = 0 ∨ n = 0) ∧ c = d := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp [tendsto_const_nhds_iff]
   rcases lt_trichotomy c 0 with (hc | rfl | hc)
@@ -317,8 +308,7 @@ theorem tendsto_const_mul_pow_nhds_iff {n : ℕ} {c d : α} (hc : c ≠ 0) :
 #align tendsto_const_mul_pow_nhds_iff tendsto_const_mul_pow_nhds_iff
 
 theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : α} (hc : c ≠ 0) :
-    Tendsto (fun x : α => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d ∨ n < 0 ∧ d = 0 :=
-  by
+    Tendsto (fun x : α => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d ∨ n < 0 ∧ d = 0 := by
   refine' ⟨fun h => _, fun h => _⟩
   · by_cases hn : 0 ≤ n
     · lift n to ℕ using hn
@@ -373,8 +363,7 @@ instance (priority := 100) LinearOrderedField.to_topologicalDivisionRing : Topol
 #align linear_ordered_field.to_topological_division_ring LinearOrderedField.to_topologicalDivisionRing
 
 theorem nhdsWithin_pos_comap_mul_left {x : α} (hx : 0 < x) :
-    comap (fun ε => x * ε) (𝓝[>] 0) = 𝓝[>] 0 :=
-  by
+    comap (fun ε => x * ε) (𝓝[>] 0) = 𝓝[>] 0 := by
   suffices ∀ {x : α} (hx : 0 < x), 𝓝[>] 0 ≤ comap (fun ε => x * ε) (𝓝[>] 0)
     by
     refine' le_antisymm _ (this hx)
@@ -391,8 +380,7 @@ theorem nhdsWithin_pos_comap_mul_left {x : α} (hx : 0 < x) :
 #align nhds_within_pos_comap_mul_left nhdsWithin_pos_comap_mul_left
 
 theorem eventually_nhdsWithin_pos_mul_left {x : α} (hx : 0 < x) {p : α → Prop}
-    (h : ∀ᶠ ε in 𝓝[>] 0, p ε) : ∀ᶠ ε in 𝓝[>] 0, p (x * ε) :=
-  by
+    (h : ∀ᶠ ε in 𝓝[>] 0, p ε) : ∀ᶠ ε in 𝓝[>] 0, p (x * ε) := by
   convert h.comap fun ε => x * ε
   exact (nhdsWithin_pos_comap_mul_left hx).symm
 #align eventually_nhds_within_pos_mul_left eventually_nhdsWithin_pos_mul_left
