@@ -910,8 +910,8 @@ section SumStructure
 variable (L₁ L₂ : Language) (S : Type _) [L₁.Structure S] [L₂.Structure S]
 
 instance sumStructure : (L₁.sum L₂).Structure S where
-  funMap n := Sum.elim funMap funMap
-  rel_map n := Sum.elim RelMap RelMap
+  funMap := @fun n => Sum.elim funMap funMap
+  rel_map := @fun n => Sum.elim rel_map rel_map
 set_option linter.uppercaseLean3 false in
 #align first_order.language.sum_Structure FirstOrder.Language.sumStructure
 
