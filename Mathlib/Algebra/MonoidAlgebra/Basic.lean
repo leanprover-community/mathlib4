@@ -1744,7 +1744,7 @@ theorem ringHom_ext {R} [Semiring k] [AddMonoid G] [Semiring R] {f g : AddMonoid
 and `single 0 b`, then they are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext high]
 theorem ringHom_ext' {R} [Semiring k] [AddMonoid G] [Semiring R] {f g : AddMonoidAlgebra k G →+* R}
     (h₁ : f.comp singleZeroRingHom = g.comp singleZeroRingHom)
     (h_of :
