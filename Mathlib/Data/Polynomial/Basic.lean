@@ -345,6 +345,8 @@ def toFinsuppIso : R[X] ≃+* AddMonoidAlgebra R ℕ where
   map_mul' := toFinsupp_mul
   map_add' := toFinsupp_add
 #align polynomial.to_finsupp_iso Polynomial.toFinsuppIso
+#align polynomial.to_finsupp_iso_apply Polynomial.toFinsuppIso_apply
+#align polynomial.to_finsupp_iso_symm_apply Polynomial.toFinsuppIso_symm_apply
 
 end AddMonoidAlgebra
 
