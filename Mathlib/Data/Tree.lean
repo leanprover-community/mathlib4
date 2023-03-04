@@ -176,7 +176,7 @@ end recursor_workarounds
 def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
     t.recOn base fun _ => ind
-#noalign tree.unit_rec_on
+#align tree.unit_rec_on Tree.unitRecOn
 
 theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
