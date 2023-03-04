@@ -15,24 +15,24 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 # `with_initial` and `with_terminal`
 
 Given a category `C`, this file constructs two objects:
-1. `with_terminal C`, the category built from `C` by formally adjoining a terminal object.
-2. `with_initial C`, the category built from `C` by formally adjoining an initial object.
+1. `WithTerminal C`, the category built from `C` by formally adjoining a terminal object.
+2. `WithInitial C`, the category built from `C` by formally adjoining an initial object.
 
-The terminal resp. initial object is `with_terminal.star` resp. `with_initial.star`, and
-the proofs that these are terminal resp. initial are in `with_terminal.star_terminal`
-and `with_initial.star_initial`.
+The terminal resp. initial object is `WithTerminal.star` resp. `WithInitial.star`, and
+the proofs that these are terminal resp. initial are in `WithTerminal.star_terminal`
+and `WithInitial.star_initial`.
 
-The inclusion from `C` intro `with_terminal C` resp. `with_initial C` is denoted
-`with_terminal.incl` resp. `with_initial.incl`.
+The inclusion from `C` intro `WithTerminal C` resp. `WithInitial C` is denoted
+`WithTerminal.incl` resp. `WithInitial.incl`.
 
 The relevant constructions needed for the universal properties of these constructions are:
-1. `lift`, which lifts `F : C ⥤ D` to a functor from `with_terminal C` resp. `with_initial C` in
+1. `lift`, which lifts `F : C ⥤ D` to a functor from `WithTerminal C` resp. `WithInitial C` in
   the case where an object `Z : D` is provided satisfying some additional conditions.
-2. `incl_lift` shows that the composition of `lift` with `incl` is isomorphic to the
+2. `inclLift` shows that the composition of `lift` with `incl` is isomorphic to the
   functor which was lifted.
-3. `lift_unique` provides the uniqueness property of `lift`.
+3. `liftUnique` provides the uniqueness property of `lift`.
 
-In addition to this, we provide `with_terminal.map` and `with_initinal.map` providing the
+In addition to this, we provide `WithTerminal.map` and `WithInitinal.map` providing the
 functoriality of these constructions with respect to functors on the base categories.
 
 -/
@@ -319,6 +319,7 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
     | of x, of y, f => F.map f
     | star, of x, PUnit.unit => PUnit.unit
     | star, star, PUnit.unit => PUnit.unit
+
 #align category_theory.with_initial.map CategoryTheory.WithInitial.map
 
 instance {X : WithInitial C} : Unique (star ⟶ X) where
