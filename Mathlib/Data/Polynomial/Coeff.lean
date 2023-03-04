@@ -8,9 +8,9 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Basic
-import Mathbin.Data.Finset.NatAntidiagonal
-import Mathbin.Data.Nat.Choose.Sum
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Theory of univariate polynomials
@@ -42,8 +42,7 @@ theorem coeff_one (n : ℕ) : coeff (1 : R[X]) n = if 0 = n then 1 else 0 :=
 #align polynomial.coeff_one Polynomial.coeff_one
 
 @[simp]
-theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n :=
-  by
+theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
   simp_rw [← of_finsupp_add, coeff]
@@ -106,8 +105,7 @@ theorem finset_sum_coeff {ι : Type _} (s : Finset ι) (f : ι → R[X]) (n : �
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
 
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
-    coeff (p.Sum f) n = p.Sum fun a b => coeff (f a b) n :=
-  by
+    coeff (p.Sum f) n = p.Sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
   simp [Polynomial.sum, support, coeff]
 #align polynomial.coeff_sum Polynomial.coeff_sum
@@ -116,8 +114,7 @@ theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
 over `nat.antidiagonal`. A version which sums over `range (n + 1)` can be obtained
 by using `finset.nat.sum_antidiagonal_eq_sum_range_succ`. -/
 theorem coeff_mul (p q : R[X]) (n : ℕ) :
-    coeff (p * q) n = ∑ x in Nat.antidiagonal n, coeff p x.1 * coeff q x.2 :=
-  by
+    coeff (p * q) n = ∑ x in Nat.antidiagonal n, coeff p x.1 * coeff q x.2 := by
   rcases p with ⟨⟩; rcases q with ⟨⟩
   simp_rw [← of_finsupp_mul, coeff]
   exact AddMonoidAlgebra.mul_apply_antidiagonal p q n _ fun x => nat.mem_antidiagonal
@@ -149,8 +146,7 @@ theorem coeff_x_mul_zero (p : R[X]) : coeff (x * p) 0 = 0 := by simp
 #align polynomial.coeff_X_mul_zero Polynomial.coeff_x_mul_zero
 
 theorem coeff_c_mul_x_pow (x : R) (k n : ℕ) :
-    coeff (c x * x ^ k : R[X]) n = if n = k then x else 0 :=
-  by
+    coeff (c x * x ^ k : R[X]) n = if n = k then x else 0 := by
   rw [C_mul_X_pow_eq_monomial, coeff_monomial]
   congr 1
   simp [eq_comm]
@@ -161,22 +157,19 @@ theorem coeff_c_mul_x (x : R) (n : ℕ) : coeff (c x * x : R[X]) n = if n = 1 th
 #align polynomial.coeff_C_mul_X Polynomial.coeff_c_mul_x
 
 @[simp]
-theorem coeff_c_mul (p : R[X]) : coeff (c a * p) n = a * coeff p n :=
-  by
+theorem coeff_c_mul (p : R[X]) : coeff (c a * p) n = a * coeff p n := by
   rcases p with ⟨⟩
   simp_rw [← monomial_zero_left, ← of_finsupp_single, ← of_finsupp_mul, coeff]
   exact AddMonoidAlgebra.single_zero_mul_apply p a n
 #align polynomial.coeff_C_mul Polynomial.coeff_c_mul
 
-theorem c_mul' (a : R) (f : R[X]) : c a * f = a • f :=
-  by
+theorem c_mul' (a : R) (f : R[X]) : c a * f = a • f := by
   ext
   rw [coeff_C_mul, coeff_smul, smul_eq_mul]
 #align polynomial.C_mul' Polynomial.c_mul'
 
 @[simp]
-theorem coeff_mul_c (p : R[X]) (n : ℕ) (a : R) : coeff (p * c a) n = coeff p n * a :=
-  by
+theorem coeff_mul_c (p : R[X]) (n : ℕ) (a : R) : coeff (p * c a) n = coeff p n * a := by
   rcases p with ⟨⟩
   simp_rw [← monomial_zero_left, ← of_finsupp_single, ← of_finsupp_mul, coeff]
   exact AddMonoidAlgebra.mul_single_zero_apply p a n
@@ -195,8 +188,7 @@ section Fewnomials
 open Finset
 
 theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
-    (c x * x ^ k + c y * x ^ m).support = {k, m} :=
-  by
+    (c x * x ^ k + c y * x ^ m).support = {k, m} := by
   apply subset_antisymm (support_binomial' k m x y)
   simp_rw [insert_subset, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
@@ -204,8 +196,7 @@ theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (h
 #align polynomial.support_binomial Polynomial.support_binomial
 
 theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
-    (hy : y ≠ 0) (hz : z ≠ 0) : (c x * x ^ k + c y * x ^ m + c z * x ^ n).support = {k, m, n} :=
-  by
+    (hy : y ≠ 0) (hz : z ≠ 0) : (c x * x ^ k + c y * x ^ m + c z * x ^ n).support = {k, m, n} := by
   apply subset_antisymm (support_trinomial' k m n x y z)
   simp_rw [insert_subset, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
@@ -247,8 +238,7 @@ theorem coeff_x_pow_mul (p : R[X]) (n d : ℕ) : coeff (Polynomial.x ^ n * p) (d
 #align polynomial.coeff_X_pow_mul Polynomial.coeff_x_pow_mul
 
 theorem coeff_mul_x_pow' (p : R[X]) (n d : ℕ) :
-    (p * x ^ n).coeff d = ite (n ≤ d) (p.coeff (d - n)) 0 :=
-  by
+    (p * x ^ n).coeff d = ite (n ≤ d) (p.coeff (d - n)) 0 := by
   split_ifs
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
   · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
@@ -297,8 +287,7 @@ theorem mul_x_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * x ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_x_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_x_pow_eq_zero
 
-theorem mul_x_pow_injective (n : ℕ) : Function.Injective fun P : R[X] => x ^ n * P :=
-  by
+theorem mul_x_pow_injective (n : ℕ) : Function.Injective fun P : R[X] => x ^ n * P := by
   intro P Q hPQ
   simp only at hPQ
   ext i
@@ -310,8 +299,7 @@ theorem mul_x_injective : Function.Injective fun P : R[X] => x * P :=
 #align polynomial.mul_X_injective Polynomial.mul_x_injective
 
 theorem coeff_x_add_c_pow (r : R) (n k : ℕ) :
-    ((x + c r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) :=
-  by
+    ((x + c r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
   rw [(commute_X (C r : R[X])).add_pow, ← lcoeff_apply, LinearMap.map_sum]
   simp only [one_pow, mul_one, lcoeff_apply, ← C_eq_nat_cast, ← C_pow, coeff_mul_C, Nat.cast_id]
   rw [Finset.sum_eq_single k, coeff_X_pow_self, one_mul]
@@ -330,8 +318,7 @@ theorem coeff_one_add_x_pow (R : Type _) [Semiring R] (n k : ℕ) :
     ((1 + x) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
 #align polynomial.coeff_one_add_X_pow Polynomial.coeff_one_add_x_pow
 
-theorem c_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : c r ∣ φ ↔ ∀ i, r ∣ φ.coeff i :=
-  by
+theorem c_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : c r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
   · rintro ⟨φ, rfl⟩ c
     rw [coeff_C_mul]
@@ -364,8 +351,7 @@ theorem smul_eq_c_mul (a : R) : a • p = c a * p := by simp [ext_iff]
 #align polynomial.smul_eq_C_mul Polynomial.smul_eq_c_mul
 
 theorem update_eq_add_sub_coeff {R : Type _} [Ring R] (p : R[X]) (n : ℕ) (a : R) :
-    p.update n a = p + Polynomial.c (a - p.coeff n) * Polynomial.x ^ n :=
-  by
+    p.update n a = p + Polynomial.c (a - p.coeff n) * Polynomial.x ^ n := by
   ext
   rw [coeff_update_apply, coeff_add, coeff_C_mul_X_pow]
   split_ifs with h <;> simp [h]
@@ -376,8 +362,7 @@ end Coeff
 section cast
 
 @[simp]
-theorem nat_cast_coeff_zero {n : ℕ} {R : Type _} [Semiring R] : (n : R[X]).coeff 0 = n :=
-  by
+theorem nat_cast_coeff_zero {n : ℕ} {R : Type _} [Semiring R] : (n : R[X]).coeff 0 = n := by
   induction' n with n ih
   · simp
   · simp [ih]
@@ -400,8 +385,7 @@ theorem int_cast_coeff_zero {i : ℤ} {R : Type _} [Ring R] : (i : R[X]).coeff 0
 #align polynomial.int_cast_coeff_zero Polynomial.int_cast_coeff_zero
 
 @[simp, norm_cast]
-theorem int_cast_inj {m n : ℤ} {R : Type _} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n :=
-  by
+theorem int_cast_inj {m n : ℤ} {R : Type _} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   fconstructor
   · intro h
     apply_fun fun p => p.coeff 0  at h
