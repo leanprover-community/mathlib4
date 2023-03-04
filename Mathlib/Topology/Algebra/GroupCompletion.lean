@@ -8,9 +8,9 @@ Authors: Patrick Massot, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.UniformGroup
-import Mathbin.Topology.Algebra.UniformMulAction
-import Mathbin.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformMulAction
+import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # Completion of topological groups:
@@ -278,8 +278,7 @@ theorem AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α
   map_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
 #align add_monoid_hom.completion_coe AddMonoidHom.completion_coe
 
-theorem AddMonoidHom.completion_zero : (0 : α →+ β).Completion continuous_const = 0 :=
-  by
+theorem AddMonoidHom.completion_zero : (0 : α →+ β).Completion continuous_const = 0 := by
   ext x
   apply completion.induction_on x
   · apply isClosed_eq ((0 : α →+ β).continuous_completion continuous_const)
@@ -290,8 +289,7 @@ theorem AddMonoidHom.completion_zero : (0 : α →+ β).Completion continuous_co
 
 theorem AddMonoidHom.completion_add {γ : Type _} [AddCommGroup γ] [UniformSpace γ]
     [UniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
-    (f + g).Completion (hf.add hg) = f.Completion hf + g.Completion hg :=
-  by
+    (f + g).Completion (hf.add hg) = f.Completion hf + g.Completion hg := by
   have hfg := hf.add hg
   ext x
   apply completion.induction_on x

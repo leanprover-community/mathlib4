@@ -1236,6 +1236,7 @@ import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
+import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Monoid
