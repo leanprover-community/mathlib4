@@ -124,9 +124,9 @@ variable [Semiring k] [Mul G]
 /-- The product of `f g : MonoidAlgebra k G` is the finitely supported function
   whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
   such that `x * y = a`. (Think of the group ring of a group.) -/
-instance hasMul : Mul (MonoidAlgebra k G) :=
+instance mul : Mul (MonoidAlgebra k G) :=
   ⟨fun f g => f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)⟩
-#align monoid_algebra.has_mul MonoidAlgebra.hasMul
+#align monoid_algebra.has_mul MonoidAlgebra.mul
 
 theorem mul_def {f g : MonoidAlgebra k G} :
     f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) :=
@@ -352,7 +352,7 @@ instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra
 instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
     [Nonempty G] : FaithfulSMul R (MonoidAlgebra k G) :=
   Finsupp.faithfulSMul
-#align monoid_algebra.faithful_smul MonoidAlgebra.faithfulSMul
+#align monoid_algebra.has_faithful_smul MonoidAlgebra.faithfulSMul
 
 instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
     [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
