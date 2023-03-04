@@ -62,7 +62,7 @@ theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
 #align derived_series_normal derivedSeries_normal
 
-@[simp]
+-- porting note: removed simp attribute since `derivedSeries G 1` is not in simp-normal form
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
 #align derived_series_one derivedSeries_one
@@ -107,6 +107,7 @@ variable (G)
 /-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
   because it's the most convenient one to work with. -/
 class IsSolvable : Prop where
+  /-- A group `G` is solvable if its derived series is eventually trivial. -/
   solvable : ∃ n : ℕ, derivedSeries G n = ⊥
 #align is_solvable IsSolvable
 
