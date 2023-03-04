@@ -239,7 +239,6 @@ theorem boxProd_neighborFinset (x : α × β)
   -- swap out the fintype instance for the canonical one
   letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
   convert_to (G □ H).neighborFinset x = _
-  · apply Subsingleton.elim
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 #align simple_graph.box_prod_neighbor_finset SimpleGraph.boxProd_neighborFinset
 
