@@ -71,7 +71,7 @@ section Zero
 
 instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
     [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) :=
-  { Completion.mulAction M α with
+  { Completion.instMulActionCompletion M α with
     smul := (· • ·)
     smul_zero := fun r => by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
     zero_smul :=
@@ -100,16 +100,16 @@ theorem coe_add (a b : α) : ((a + b : α) : Completion α) = a + b :=
 #align uniform_space.completion.coe_add UniformSpace.Completion.coe_add
 
 instance : AddMonoid (Completion α) :=
-  { Completion.hasZero,
-    Completion.hasAdd with
+  { instZeroCompletion,
+    instAddCompletion with
     zero_add := fun a =>
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ continuous_const continuous_id) continuous_id) fun a =>
-        show 0 + (a : Completion α) = a by rw_mod_cast [zero_add]
+        show 0 + (a : Completion α) = a by rw [← coe_zero, ← coe_add, zero_add]
     add_zero := fun a =>
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ continuous_id continuous_const) continuous_id) fun a =>
-        show (a : Completion α) + 0 = a by rw_mod_cast [add_zero]
+        show (a : Completion α) + 0 = a by rw [← coe_zero, ← coe_add, add_zero]
     add_assoc := fun a b c =>
       Completion.induction_on₃ a b c
         (isClosed_eq
@@ -122,40 +122,41 @@ instance : AddMonoid (Completion α) :=
         show (a : Completion α) + b + c = a + (b + c) by repeat' rw_mod_cast [add_assoc]
     nsmul := (· • ·)
     nsmul_zero := fun a =>
-      Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a => by
-        rw [← coe_smul, ← coe_zero, zero_smul]
+      Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a =>
+        show 0 • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
     nsmul_succ := fun n a =>
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_id continuous_map) fun a => by
-        rw_mod_cast [succ_nsmul] }
+        (isClosed_eq continuous_map <| continuous_map₂ continuous_id continuous_map) fun a =>
+        show (n + 1) • (a : Completion α) = (a : Completion α) + n • (a : Completion α) by
+          rw [← coe_smul, succ_nsmul, coe_add, coe_smul] }
 
 instance : SubNegMonoid (Completion α) :=
-  { Completion.addMonoid, Completion.hasNeg,
-    Completion.hasSub with
+  { Completion.instAddMonoidCompletion, instNegCompletion,
+    instSubCompletion with
     sub_eq_add_neg := fun a b =>
       Completion.induction_on₂ a b
         (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
           (continuous_map₂ continuous_fst (Completion.continuous_map.comp continuous_snd)))
-        fun a b => by exact_mod_cast congr_arg coe (sub_eq_add_neg a b)
+        fun a b => by exact_mod_cast congr_arg ((↑) : α → Completion α) (sub_eq_add_neg a b)
     zsmul := (· • ·)
     zsmul_zero' := fun a =>
       Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a =>
-        by
-        rw_mod_cast [zero_smul]
-        rfl
+        show (0 : ℤ) • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
     zsmul_succ' := fun n a =>
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_id continuous_map) fun a => by
-        rw_mod_cast [show Int.ofNat n.succ • a = a + Int.ofNat n • a from
-            SubNegMonoid.zsmul_succ' n a]
+        (isClosed_eq continuous_map <| continuous_map₂ continuous_id continuous_map) fun a =>
+          show Int.ofNat n.succ • (a : Completion α) = _ by
+            rw [← coe_smul, show Int.ofNat n.succ • a = a + Int.ofNat n • a from
+              SubNegMonoid.zsmul_succ' n a, coe_add, coe_smul]
     zsmul_neg' := fun n a =>
       Completion.induction_on a
-        (isClosed_eq continuous_map <| Completion.continuous_map.comp continuous_map) fun a => by
-        rw [← coe_smul, ← coe_smul, ← coe_neg,
-          show -[n+1] • a = -((n.succ : ℤ) • a) from SubNegMonoid.zsmul_neg' n a] }
+        (isClosed_eq continuous_map <| Completion.continuous_map.comp continuous_map) fun a =>
+          show (Int.negSucc n) • (a : Completion α) = _ by
+            rw [← coe_smul, show (Int.negSucc n) • a = -((n.succ : ℤ) • a) from
+              SubNegMonoid.zsmul_neg' n a, coe_neg, coe_smul] }
 
 instance : AddGroup (Completion α) :=
-  { Completion.subNegMonoid with
+  { Completion.instSubNegMonoidCompletion with
     add_left_neg := fun a =>
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ Completion.continuous_map continuous_id) continuous_const)
@@ -170,7 +171,7 @@ instance : UniformAddGroup (Completion α) :=
 
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
     DistribMulAction M (Completion α) :=
-  { Completion.mulAction M α with
+  { Completion.instMulActionCompletion M α with
     smul := (· • ·)
     smul_add := fun r x y =>
       induction_on₂ x y
@@ -182,7 +183,7 @@ instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α
 /-- The map from a group to its completion as a group hom. -/
 @[simps]
 def toCompl : α →+ Completion α where
-  toFun := coe
+  toFun := (↑)
   map_add' := coe_add
   map_zero' := coe_zero
 #align uniform_space.completion.to_compl UniformSpace.Completion.toCompl
@@ -206,18 +207,18 @@ section UniformAddCommGroup
 variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
 
 instance : AddCommGroup (Completion α) :=
-  { Completion.addGroup with
+  { Completion.instAddGroupCompletion with
     add_comm := fun a b =>
       Completion.induction_on₂ a b
         (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
           (continuous_map₂ continuous_snd continuous_fst))
         fun x y => by
-        change ↑x + ↑y = ↑y + ↑x
+        change (x : Completion α) + ↑y = ↑y + ↑x
         rw [← coe_add, ← coe_add, add_comm] }
 
 instance [Semiring R] [Module R α] [UniformContinuousConstSMul R α] : Module R (Completion α) :=
-  { Completion.distribMulAction,
-    Completion.mulActionWithZero with
+  { Completion.instDistribMulActionCompletionInstAddMonoidCompletion,
+    Completion.instMulActionWithZeroCompletionInstZeroCompletion with
     smul := (· • ·)
     add_smul := fun a b =>
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
@@ -302,4 +303,3 @@ theorem AddMonoidHom.completion_add {γ : Type _} [AddCommGroup γ] [UniformSpac
 #align add_monoid_hom.completion_add AddMonoidHom.completion_add
 
 end AddMonoidHom
-
