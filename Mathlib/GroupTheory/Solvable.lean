@@ -55,10 +55,11 @@ theorem derivedSeries_succ (n : ℕ) :
   rfl
 #align derived_series_succ derivedSeries_succ
 
+-- porting note: had to provide inductive hypothesis explicitly
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction' n with n ih
   · exact (⊤ : Subgroup G).normal_of_characteristic
-  · exact Subgroup.commutator_normal (derivedSeries G n) (derivedSeries G n)
+  · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
 #align derived_series_normal derivedSeries_normal
 
 @[simp]
@@ -184,8 +185,8 @@ variable [IsSimpleGroup G]
 theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = commutator G := by
   induction' n with n ih
   · exact derivedSeries_one G
-  rw [derivedSeries_succ, ih]
-  cases' (commutator.normal G).eq_bot_or_eq_top with h h
+  rw [_root_.derivedSeries_succ, ih, _root_.commutator]
+  cases' (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h h
   · rw [h, commutator_bot_left]
   · rwa [h]
 #align is_simple_group.derived_series_succ IsSimpleGroup.derivedSeries_succ
