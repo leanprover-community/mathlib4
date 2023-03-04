@@ -8,8 +8,8 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Basic
-import Mathbin.Data.Polynomial.Basic
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Data.Polynomial.Basic
 
 /-!
 # Induction on polynomials
@@ -41,8 +41,7 @@ variable [Semiring R] {p q r : R[X]}
 @[elab_as_elim]
 protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (c a))
     (h_add : ∀ p q, M p → M q → M (p + q))
-    (h_monomial : ∀ (n : ℕ) (a : R), M (c a * x ^ n) → M (c a * x ^ (n + 1))) : M p :=
-  by
+    (h_monomial : ∀ (n : ℕ) (a : R), M (c a * x ^ n) → M (c a * x ^ (n + 1))) : M p := by
   have A : ∀ {n : ℕ} {a}, M (C a * X ^ n) := by
     intro n a
     induction' n with n ih
@@ -80,14 +79,12 @@ variable {f : R[X]} {I : Ideal R[X]}
 /-- If the coefficients of a polynomial belong to an ideal, then that ideal contains
 the ideal spanned by the coefficients of the polynomial. -/
 theorem span_le_of_c_coeff_mem (cf : ∀ i : ℕ, c (f.coeff i) ∈ I) :
-    Ideal.span { g | ∃ i, g = c (f.coeff i) } ≤ I :=
-  by
+    Ideal.span { g | ∃ i, g = c (f.coeff i) } ≤ I := by
   simp (config := { singlePass := true }) only [@eq_comm _ _ (C _)]
   exact (ideal.span_le.trans range_subset_iff).mpr cf
 #align polynomial.span_le_of_C_coeff_mem Polynomial.span_le_of_c_coeff_mem
 
-theorem mem_span_c_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = c (coeff f i) } :=
-  by
+theorem mem_span_c_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = c (coeff f i) } := by
   let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) }
   nth_rw 1 [(sum_C_mul_X_pow_eq f).symm]
   refine' Submodule.sum_mem _ fun n hn => _
