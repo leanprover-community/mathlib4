@@ -18,20 +18,20 @@ This file defines first-order languages and structures in the style of the
 structures.
 
 ## Main Definitions
-* A `first_order.language` defines a language as a pair of functions from the natural numbers to
+* A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
   `Type l`. One sends `n` to the type of `n`-ary functions, and the other sends `n` to the type of
   `n`-ary relations.
-* A `first_order.language.Structure` interprets the symbols of a given `first_order.language` in the
+* A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
   context of a given type.
-* A `first_order.language.hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
+* A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
   `L`-structure `N` that commutes with the interpretations of functions, and which preserves the
   interpretations of relations (although only in the forward direction).
-* A `first_order.language.embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
+* A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-* A `first_order.language.elementary_embedding`, denoted `M ↪ₑ[L] N`, is an embedding from the
+* A `FirstOrder.Language.ElementaryEmbedding`, denoted `M ↪ₑ[L] N`, is an embedding from the
   `L`-structure `M` to the `L`-structure `N` that commutes with the realizations of all formulas.
-* A `first_order.language.equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
+* A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
 
@@ -69,7 +69,7 @@ structure Language where
   Relations : ℕ → Type v
 #align first_order.language FirstOrder.Language
 
-/-- Used to define `first_order.language₂`. -/
+/-- Used to define `FirstOrder.Language₂`. -/
 @[simp]
 def Sequence₂ (a₀ a₁ a₂ : Type u) : ℕ → Type u
   | 0 => a₀
@@ -314,7 +314,7 @@ variable (L) (M : Type w)
 
 /-- A first-order structure on a type `M` consists of interpretations of all the symbols in a given
   language. Each function of arity `n` is interpreted as a function sending tuples of length `n`
-  (modeled as `(fin n → M)`) to `M`, and a relation of arity `n` is a function from tuples of length
+  (modeled as `(Fin n → M)`) to `M`, and a relation of arity `n` is a function from tuples of length
   `n` to `Prop`. -/
 @[ext]
 class Structure where
@@ -327,7 +327,7 @@ variable (N : Type w') [L.Structure M] [L.Structure N]
 
 open Structure
 
-/-- Used for defining `first_order.language.Theory.Model.inhabited`. -/
+/-- Used for defining `FirstOrder.Language.Theory.Model.inhabited`. -/
 def inhabited.trivialStructure {α : Type _} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 #align
@@ -397,7 +397,7 @@ theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :
   first_order.language.nonempty_of_nonempty_constants
   FirstOrder.Language.nonempty_of_nonempty_constants
 
-/-- The function map for `first_order.language.Structure₂`. -/
+/-- The function map for `FirstOrder.Language.Structure₂`. -/
 def funMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : c → M) (f₁' : f₁ → M → M)
     (f₂' : f₂ → M → M → M) : ∀ {n}, (Language.mk₂ c f₁ f₂ r₁ r₂).Functions n → (Fin n → M) → M
   | 0, f, _ => c' f
@@ -406,7 +406,7 @@ def funMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : c → M) (f₁' 
   | _ + 3, f, _ => PEmpty.elim f
 #align first_order.language.fun_map₂ FirstOrder.Language.funMap₂
 
-/-- The relation map for `first_order.language.Structure₂`. -/
+/-- The relation map for `FirstOrder.Language.Structure₂`. -/
 def RelMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (r₁' : r₁ → Set M) (r₂' : r₂ → M → M → Prop) :
     ∀ {n}, (Language.mk₂ c f₁ f₂ r₁ r₂).Relations n → (Fin n → M) → Prop
   | 0, r, _ => PEmpty.elim r
@@ -415,7 +415,7 @@ def RelMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (r₁' : r₁ → Set 
   | _ + 3, r, _ => PEmpty.elim r
 #align first_order.language.rel_map₂ FirstOrder.Language.RelMap₂
 
-/-- A structure constructor to match `first_order.language₂`. -/
+/-- A structure constructor to match `FirstOrder.Language₂`. -/
 protected def Structure.mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : c → M) (f₁' : f₁ → M → M)
     (f₂' : f₂ → M → M → M) (r₁' : r₁ → Set M) (r₂' : r₂ → M → M → Prop) :
     (Language.mk₂ c f₁ f₂ r₁ r₂).Structure M :=
@@ -468,15 +468,15 @@ set_option linter.uppercaseLean3 false in
 
 end Structure
 
-/-- `hom_class L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
-  typeclass when you extend `first_order.language.hom`. -/
+/-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
+  typeclass when you extend `FirstOrder.Language.Hom`. -/
 class HomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
   [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), rel_map r x → rel_map r (φ ∘ x)
 #align first_order.language.hom_class FirstOrder.Language.HomClass
 
-/-- `strong_hom_class L F M N` states that `F` is a type of `L`-homomorphisms which preserve
+/-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
   relations in both directions. -/
 class StrongHomClass (L : outParam Language) (F : Type _) (M N : outParam <| Type _)
   [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] where
@@ -556,7 +556,7 @@ theorem map_rel (φ : M →[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n → M
 
 variable (L) (M)
 
-/-- The identity map from a structure to itself -/
+/-- The identity map from a structure to itself. -/
 @[refl]
 def id : M →[L] M where
   toFun m := m
@@ -575,7 +575,7 @@ theorem id_apply (x : M) : id L M x = x :=
   rfl
 #align first_order.language.hom.id_apply FirstOrder.Language.Hom.id_apply
 
-/-- Composition of first-order homomorphisms -/
+/-- Composition of first-order homomorphisms. -/
 @[trans]
 def comp (hnp : N →[L] P) (hmn : M →[L] N) : M →[L] P where
   toFun := hnp ∘ hmn
@@ -601,7 +601,7 @@ theorem comp_assoc (f : M →[L] N) (g : N →[L] P) (h : P →[L] Q) :
 
 end Hom
 
-/-- Any element of a `hom_class` can be realized as a first_order homomorphism. -/
+/-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
 def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M fun _ => N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
@@ -704,7 +704,7 @@ theorem ofInjective_toHom [L.IsAlgebraic] {f : M →[L] N} (hf : Function.Inject
 
 variable (L) (M)
 
-/-- The identity embedding from a structure to itself -/
+/-- The identity embedding from a structure to itself. -/
 @[refl]
 def refl : M ↪[L] M where toEmbedding := Function.Embedding.refl M
 #align first_order.language.embedding.refl FirstOrder.Language.Embedding.refl
@@ -719,7 +719,7 @@ theorem refl_apply (x : M) : refl L M x = x :=
   rfl
 #align first_order.language.embedding.refl_apply FirstOrder.Language.Embedding.refl_apply
 
-/-- Composition of first-order embeddings -/
+/-- Composition of first-order embeddings. -/
 @[trans]
 def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   toFun := hnp ∘ hmn
@@ -749,7 +749,7 @@ theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
 
 end Embedding
 
-/-- Any element of an injective `strong_hom_class` can be realized as a first_order embedding. -/
+/-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
 def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [EmbeddingLike F M N]
     [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
@@ -874,7 +874,7 @@ theorem surjective (f : M ≃[L] N) : Function.Surjective f :=
 
 variable (L) (M)
 
-/-- The identity equivalence from a structure to itself -/
+/-- The identity equivalence from a structure to itself. -/
 @[refl]
 def refl : M ≃[L] M where toEquiv := _root_.Equiv.refl M
 #align first_order.language.equiv.refl FirstOrder.Language.Equiv.refl
@@ -888,7 +888,7 @@ instance : Inhabited (M ≃[L] M) :=
 theorem refl_apply (x : M) : refl L M x = x := by simp [refl]; rfl
 #align first_order.language.equiv.refl_apply FirstOrder.Language.Equiv.refl_apply
 
-/-- Composition of first-order equivalences -/
+/-- Composition of first-order equivalences. -/
 @[trans]
 def comp (hnp : N ≃[L] P) (hmn : M ≃[L] N) : M ≃[L] P :=
   { hmn.toEquiv.trans hnp.toEquiv with
@@ -911,7 +911,7 @@ theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
 
 end Equiv
 
-/-- Any element of a bijective `strong_hom_class` can be realized as a first_order isomorphism. -/
+/-- Any element of a bijective `StrongHomClass` can be realized as a first_order isomorphism. -/
 def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
     [StrongHomClass L F M N] : F → M ≃[L] N := fun φ =>
   ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, StrongHomClass.map_fun φ,
@@ -994,17 +994,17 @@ instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M fun _ => N] 
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
 #align first_order.language.strong_hom_class_empty FirstOrder.Language.strongHomClassEmpty
 
-/-- Makes a `language.empty.hom` out of any function. -/
+/-- Makes a `Language.empty.hom` out of any function. -/
 @[simps]
 def _root_.Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun := f
 #align function.empty_hom Function.emptyHom
 
-/-- Makes a `language.empty.embedding` out of any function. -/
+/-- Makes a `Language.empty.embedding` out of any function. -/
 @[simps]
 def _root_.Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbedding := f
 #align embedding.empty Embedding.empty
 
-/-- Makes a `language.empty.equiv` out of any function. -/
+/-- Makes a `Language.empty.equiv` out of any function. -/
 @[simps]
 def _root_.Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := f
 #align equiv.empty Equiv.empty
