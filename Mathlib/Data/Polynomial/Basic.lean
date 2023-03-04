@@ -313,8 +313,8 @@ instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
     toFinsupp_smul
 #align polynomial.module Polynomial.module
 
-instance smulCommClass {S₁ S₂} [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R] [DistribMulAction S₂ R]
-    [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ R[X] :=
+instance smulCommClass {S₁ S₂} [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R]
+    [DistribMulAction S₂ R] [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ R[X] :=
   ⟨by
     rintro m n ⟨f⟩
     simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
