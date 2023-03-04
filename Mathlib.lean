@@ -1298,6 +1298,7 @@ import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.EMetricParacompact
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.MetricSpace.Infsep
+import Mathlib.Topology.MetricSpace.MetricSeparated
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
