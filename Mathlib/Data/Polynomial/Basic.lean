@@ -54,7 +54,6 @@ in general not be used once the basic API for polynomials is constructed.
 -/
 
 
-set_option autoImplicit false -- **TODO** delete this later
 set_option linter.uppercaseLean3 false
 
 noncomputable section
