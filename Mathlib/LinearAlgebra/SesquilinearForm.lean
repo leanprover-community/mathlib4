@@ -111,14 +111,25 @@ section Field
 variable [Field K] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁] [Field K₂] [AddCommGroup V₂]
   [Module K₂ V₂] {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K} {J₁ : K →+* K} {J₂ : K →+* K}
 
+-- porting note: manual instances + heartbeat increase required. Alternative solution is lean4#2074
+-- verified using `set_option synthInstance.etaExperiment true`
+attribute [-instance] Ring.toNonAssocRing
+instance : Module K K := Semiring.toModule
+set_option maxHeartbeats 400000
+
+-- Alternative to the above:
+-- instance : AddCommMonoid (V₂ →ₛₗ[I₂] K) := LinearMap.addCommMonoid
+-- instance : Module K (V₂ →ₛₗ[I₂] K) := LinearMap.instModuleLinearMapAddCommMonoid
+-- set_option maxHeartbeats 400000
+
 -- todo: this also holds for [comm_ring R] [is_domain R] when J₁ is invertible
 theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} {a : K₁} (ha : a ≠ 0) :
     IsOrtho B x y ↔ IsOrtho B (a • x) y := by
-  dsimp only [is_ortho]
+  dsimp only [IsOrtho]
   constructor <;> intro H
   · rw [map_smulₛₗ₂, H, smul_zero]
   · rw [map_smulₛₗ₂, smul_eq_zero] at H
-    cases H
+    cases' H with H H
     · rw [map_eq_zero I₁] at H
       trivial
     · exact H
@@ -127,11 +138,11 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} 
 -- todo: this also holds for [comm_ring R] [is_domain R] when J₂ is invertible
 theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] K} {x y} {a : K₂} {ha : a ≠ 0} :
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
-  dsimp only [is_ortho]
+  dsimp only [IsOrtho]
   constructor <;> intro H
   · rw [map_smulₛₗ, H, smul_zero]
   · rw [map_smulₛₗ, smul_eq_zero] at H
-    cases H
+    cases' H with H H
     · simp at H
       exfalso
       exact ha H
@@ -149,8 +160,8 @@ theorem linearIndependent_of_isOrthoCat {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
     have hsum : (s.sum fun j : n ↦ I₁ (w j) * B (v j) (v i)) = I₁ (w i) * B (v i) (v i) :=
       by
       apply Finset.sum_eq_single_of_mem i hi
-      intro j hj hij
-      rw [is_Ortho_def.1 hv₁ _ _ hij, mul_zero]
+      intro j _hj hij
+      rw [isOrthoCat_def.1 hv₁ _ _ hij, mul_zero]
     simp_rw [B.map_sum₂, map_smulₛₗ₂, smul_eq_mul, hsum] at this
     apply (map_eq_zero I₁).mp
     exact eq_zero_of_ne_zero_of_mul_right_eq_zero (hv₂ i) this
@@ -184,7 +195,7 @@ theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
 
 theorem domRestrictRefl (H : B.IsRefl) (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
-  simp_rw [dom_restrict₁₂_apply]
+  simp_rw [domRestrict₁₂_apply]
   exact H _ _
 #align linear_map.is_refl.dom_restrict_refl LinearMap.IsRefl.domRestrictRefl
 
