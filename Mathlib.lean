@@ -293,7 +293,11 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
