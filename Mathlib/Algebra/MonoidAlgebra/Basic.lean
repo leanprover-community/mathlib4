@@ -1035,11 +1035,6 @@ open Finsupp MulOpposite
 
 variable [Semiring k]
 
-#eval "TODO: Add this into Algebra.Group.Opposite"
-@[simp]
-theorem _root_.MulOpposite.opAddEquiv_apply {α : Type _} [Add α] :
-    ⇑(opAddEquiv (α := α)) = op := rfl
-
 /-- The opposite of an `monoid_algebra R I` equivalent as a ring to
 the `monoid_algebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply]
