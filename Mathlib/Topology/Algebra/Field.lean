@@ -8,10 +8,10 @@ Authors: Patrick Massot, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Ring.Basic
-import Mathbin.Topology.Algebra.GroupWithZero
-import Mathbin.Topology.LocalExtr
-import Mathbin.FieldTheory.Subfield
+import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Algebra.GroupWithZero
+import Mathlib.Topology.LocalExtr
+import Mathlib.FieldTheory.Subfield
 
 /-!
 # Topological fields
@@ -132,8 +132,7 @@ variable {α 𝕜 : Type _} {f g : α → 𝕜} {S : Set α} [TopologicalSpace �
 `f ^ 2 = 1` on `S`, then either `f = 1` on `S`, or `f = -1` on `S`. -/
 theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
-    EqOn f 1 S ∨ EqOn f (-1) S :=
-  by
+    EqOn f 1 S ∨ EqOn f (-1) S := by
   simp_rw [eq_on, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] at hsq
   -- First deal with crazy case where `S` is empty.
   by_cases hSe : ∀ x : α, x ∉ S
@@ -165,8 +164,7 @@ theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors
 theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) :
-    EqOn f g S ∨ EqOn f (-g) S :=
-  by
+    EqOn f g S ∨ EqOn f (-g) S := by
   rcases hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z hz => hg_ne hz) fun x hx => _ with
     (h | h)
   · refine' Or.inl fun x hx => _
@@ -185,8 +183,7 @@ one point of `S` it holds for all points. -/
 theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) {y : α} (hy : y ∈ S)
-    (hy' : f y = g y) : EqOn f g S := fun x hx =>
-  by
+    (hy' : f y = g y) : EqOn f g S := fun x hx => by
   rcases hS.eq_or_eq_neg_of_sq_eq hf hg @hsq @hg_ne with (h | h)
   · exact h hx
   · rw [h hy, eq_comm, ← sub_eq_zero, sub_eq_add_neg, Pi.neg_apply, neg_neg, ← mul_two,
