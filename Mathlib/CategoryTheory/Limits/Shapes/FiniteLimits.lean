@@ -8,12 +8,12 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.FinCategory
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Shapes.Equalizers
-import Mathbin.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathbin.Data.Fintype.Option
+import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Categories with finite limits.
@@ -44,8 +44,7 @@ class HasFiniteLimits : Prop where
 #align category_theory.limits.has_finite_limits CategoryTheory.Limits.HasFiniteLimits
 
 instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [SmallCategory J]
-    [FinCategory J] [HasFiniteLimits C] : HasLimitsOfShape J C :=
-  by
+    [FinCategory J] [HasFiniteLimits C] : HasLimitsOfShape J C := by
   apply has_limits_of_shape_of_equivalence (fin_category.equiv_as_type J)
   apply has_finite_limits.out
 #align category_theory.limits.has_limits_of_shape_of_has_finite_limits CategoryTheory.Limits.hasLimitsOfShape_of_hasFiniteLimits
@@ -91,8 +90,7 @@ class HasFiniteColimits : Prop where
 #align category_theory.limits.has_finite_colimits CategoryTheory.Limits.HasFiniteColimits
 
 instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) [SmallCategory J]
-    [FinCategory J] [HasFiniteColimits C] : HasColimitsOfShape J C :=
-  by
+    [FinCategory J] [HasFiniteColimits C] : HasColimitsOfShape J C := by
   apply has_colimits_of_shape_of_equivalence (fin_category.equiv_as_type J)
   apply has_finite_colimits.out
 #align category_theory.limits.has_colimits_of_shape_of_has_finite_colimits CategoryTheory.Limits.hasColimitsOfShape_of_hasFiniteColimits
@@ -161,8 +159,7 @@ attribute [local tidy] tactic.case_bash
 
 namespace WidePullbackShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
-  by
+instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) := by
   rw [wide_pullback_shape]
   infer_instance
 #align category_theory.limits.wide_pullback_shape.fintype_obj CategoryTheory.Limits.WidePullbackShape.fintypeObj
@@ -185,8 +182,7 @@ end WidePullbackShape
 
 namespace WidePushoutShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) :=
-  by
+instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
   rw [wide_pushout_shape]
   infer_instance
 #align category_theory.limits.wide_pushout_shape.fintype_obj CategoryTheory.Limits.WidePushoutShape.fintypeObj
@@ -225,8 +221,7 @@ class HasFiniteWidePullbacks : Prop where
 #align category_theory.limits.has_finite_wide_pullbacks CategoryTheory.Limits.HasFiniteWidePullbacks
 
 instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
-    HasLimitsOfShape (WidePullbackShape J) C :=
-  by
+    HasLimitsOfShape (WidePullbackShape J) C := by
   cases nonempty_fintype J
   haveI := @has_finite_wide_pullbacks.out C _ _ J
   infer_instance
@@ -240,8 +235,7 @@ class HasFiniteWidePushouts : Prop where
 #align category_theory.limits.has_finite_wide_pushouts CategoryTheory.Limits.HasFiniteWidePushouts
 
 instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :
-    HasColimitsOfShape (WidePushoutShape J) C :=
-  by
+    HasColimitsOfShape (WidePushoutShape J) C := by
   cases nonempty_fintype J
   haveI := @has_finite_wide_pushouts.out C _ _ J
   infer_instance
