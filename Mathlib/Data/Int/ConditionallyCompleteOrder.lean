@@ -68,7 +68,6 @@ theorem csupₛ_eq_greatest_of_bdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b :
   have : s.Nonempty ∧ BddAbove s := ⟨Hinh, b, Hb⟩
   simp only [supₛ, this, and_self, dite_true]
   convert (coe_greatestOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddAbove s)) Hinh).symm
-  simp
 #align int.cSup_eq_greatest_of_bdd Int.csupₛ_eq_greatest_of_bdd
 
 @[simp]
@@ -86,7 +85,6 @@ theorem cinfₛ_eq_least_of_bdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : �
   have : s.Nonempty ∧ BddBelow s := ⟨Hinh, b, Hb⟩
   simp only [infₛ, this, and_self, dite_true]
   convert (coe_leastOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddBelow s)) Hinh).symm
-  simp
 #align int.cInf_eq_least_of_bdd Int.cinfₛ_eq_least_of_bdd
 
 @[simp]
