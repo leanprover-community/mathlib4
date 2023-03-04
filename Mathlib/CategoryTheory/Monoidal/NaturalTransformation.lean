@@ -11,8 +11,6 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.FullSubcategory
 
-set_option autoImplicit false
-
 /-!
 # Monoidal natural transformations
 
@@ -24,6 +22,7 @@ an additional compatibility relation with the tensorators:
 themselves form a category.
 -/
 
+set_option autoImplicit false
 
 open CategoryTheory
 
