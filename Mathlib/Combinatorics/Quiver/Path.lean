@@ -124,6 +124,11 @@ theorem nil_comp {a : V} : ∀ {b} (p : Path a b), Path.nil.comp p = p
   | _, cons p _ => by rw [comp_cons, nil_comp p]
 #align quiver.path.nil_comp Quiver.Path.nil_comp
 
+theorem cons_comp {a b c : V} (p : Path a b) (e : b ⟶ c) : ∀ {d : V}  (q : Path c d),
+    (p.cons e).comp q = (p.comp e.toPath).comp q
+  | _, nil => by simp [Hom.toPath]
+  | _, cons p _ => by simp [Hom.toPath]
+
 @[simp]
 theorem comp_assoc {a b c : V} :
     ∀ {d} (p : Path a b) (q : Path b c) (r : Path c d), (p.comp q).comp r = p.comp (q.comp r)

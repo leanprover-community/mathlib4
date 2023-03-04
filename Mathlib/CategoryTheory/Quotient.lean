@@ -81,6 +81,10 @@ theorem comp_right {a b c : C} (g : b ⟶ c) :
   | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using CompClosure.intro x m₁ m₂ (y ≫ g) h
 #align category_theory.quotient.comp_right CategoryTheory.Quotient.comp_right
 
+theorem comp_left_right  {z a b c : C} (k : z ⟶ a) (g : b ⟶ c) :
+    ∀ (f₁ f₂ : a ⟶ b) (_ : CompClosure r f₁ f₂), CompClosure r (k ≫ f₁ ≫ g) (k ≫ f₂ ≫ g)
+  | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using CompClosure.intro  (k ≫ x) m₁ m₂ (y ≫ g) h
+
 /-- Hom-sets of the quotient category. -/
 def Hom (s t : Quotient r) :=
   Quot <| @CompClosure C _ r s.as t.as
