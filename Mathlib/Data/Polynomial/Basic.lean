@@ -360,7 +360,9 @@ theorem toFinsupp_sum {ι : Type _} (s : Finset ι) (f : ι → R[X]) :
 
 /-- The set of all `n` such that `X^n` has a non-zero coefficient.
 -/
-@[simp]
+-- @[simp] -- Porting note: The original generated theorem is same to `support_of_finsupp` and
+           --               the new generated theorem is different, so this attribute should be
+           --               removed.
 def support : R[X] → Finset ℕ
   | ⟨p⟩ => p.support
 #align polynomial.support Polynomial.support
@@ -380,8 +382,7 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
   simp [support]
 #align polynomial.support_eq_empty Polynomial.support_eq_empty
 
--- Porting note: `simp` → `simp [-support]`
-theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp [-support]
+theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 #align polynomial.card_support_eq_zero Polynomial.card_support_eq_zero
 
 /-- `monomial s a` is the monomial `a * X^s` -/
@@ -403,7 +404,7 @@ theorem of_finsupp_single (n : ℕ) (r : R) : (⟨Finsupp.single n r⟩ : R[X]) 
   simp [monomial]
 #align polynomial.of_finsupp_single Polynomial.of_finsupp_single
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
   (monomial n).map_zero
 #align polynomial.monomial_zero_right Polynomial.monomial_zero_right
@@ -492,13 +493,13 @@ theorem smul_c {S} [Monoid S] [DistribMulAction S R] (s : S) (r : R) : s • C r
 #align polynomial.smul_C Polynomial.smul_c
 
 set_option linter.deprecated false in
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem c_bit0 : C (bit0 a) = bit0 (C a) :=
   c_add
 #align polynomial.C_bit0 Polynomial.c_bit0
 
 set_option linter.deprecated false in
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem c_bit1 : C (bit1 a) = bit1 (C a) := by simp [bit1, c_bit0]
 #align polynomial.C_bit1 Polynomial.c_bit1
 
@@ -506,7 +507,7 @@ theorem c_pow : C (a ^ n) = C a ^ n :=
   C.map_pow a n
 #align polynomial.C_pow Polynomial.c_pow
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem c_eq_nat_cast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 #align polynomial.C_eq_nat_cast Polynomial.c_eq_nat_cast
@@ -618,10 +619,16 @@ theorem x_pow_mul_monomial (k n : ℕ) (r : R) : X ^ k * monomial n r = monomial
 #align polynomial.X_pow_mul_monomial Polynomial.x_pow_mul_monomial
 
 /-- `coeff p n` (often denoted `p.coeff n`) is the coefficient of `X^n` in `p`. -/
-@[simp]
+-- @[simp] -- Porting note: The original generated theorem is same to `coeff_of_finsupp` and
+           --               the new generated theorem is different, so this attribute should be
+           --               removed.
 def coeff : R[X] → ℕ → R
   | ⟨p⟩ => p
 #align polynomial.coeff Polynomial.coeff
+
+-- Porting note: new theorem
+@[simp]
+theorem coeff_of_finsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 
 theorem coeff_injective : Injective (coeff : R[X] → ℕ → R) := by
   rintro ⟨p⟩ ⟨q⟩
@@ -705,7 +712,7 @@ theorem c_mul_x_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
     rw [pow_succ', ← mul_assoc, c_mul_x_pow_eq_monomial, X, monomial_mul_monomial, mul_one]
 #align polynomial.C_mul_X_pow_eq_monomial Polynomial.c_mul_x_pow_eq_monomial
 
-@[simp]
+@[simp high]
 theorem toFinsupp_c_mul_x_pow (a : R) (n : ℕ) :
     Polynomial.toFinsupp (C a * X ^ n) = Finsupp.single n a := by
   rw [c_mul_x_pow_eq_monomial, toFinsupp_monomial]
@@ -714,7 +721,7 @@ theorem toFinsupp_c_mul_x_pow (a : R) (n : ℕ) :
 theorem c_mul_x_eq_monomial : C a * X = monomial 1 a := by rw [← c_mul_x_pow_eq_monomial, pow_one]
 #align polynomial.C_mul_X_eq_monomial Polynomial.c_mul_x_eq_monomial
 
-@[simp]
+@[simp high]
 theorem toFinsupp_c_mul_x (a : R) : Polynomial.toFinsupp (C a * X) = Finsupp.single 1 a := by
   rw [c_mul_x_eq_monomial, toFinsupp_monomial]
 #align polynomial.to_finsupp_C_mul_X Polynomial.toFinsupp_c_mul_x
@@ -860,7 +867,7 @@ theorem x_pow_eq_monomial (n) : X ^ n = monomial n (1 : R) := by
   · rw [pow_succ', hn, X, monomial_mul_monomial, one_mul]
 #align polynomial.X_pow_eq_monomial Polynomial.x_pow_eq_monomial
 
-@[simp]
+@[simp high]
 theorem toFinsupp_x_pow (n : ℕ) : (X ^ n).toFinsupp = Finsupp.single n (1 : R) := by
   rw [x_pow_eq_monomial, toFinsupp_monomial]
 #align polynomial.to_finsupp_X_pow Polynomial.toFinsupp_x_pow
@@ -914,7 +921,7 @@ theorem sum_eq_of_subset {S : Type _} [AddCommMonoid S] (p : R[X]) (f : ℕ → 
     p.sum f = ∑ n in s, f n (p.coeff n) := by
   refine Finset.sum_subset hs fun n _hn h'n => ?_
   rw [not_mem_support_iff] at h'n
-  simp [h'n, hf, - coeff]
+  simp [h'n, hf]
 #align polynomial.sum_eq_of_subset Polynomial.sum_eq_of_subset
 
 /-- Expressing the product of two polynomials as a double sum. -/
@@ -928,8 +935,7 @@ theorem mul_eq_sum_sum :
 
 @[simp]
 theorem sum_zero_index {S : Type _} [AddCommMonoid S] (f : ℕ → R → S) : (0 : R[X]).sum f = 0 := by
-  -- Porting note: `rfl` is required.
-  simp [sum]; rfl
+  simp [sum]
 #align polynomial.sum_zero_index Polynomial.sum_zero_index
 
 @[simp]
@@ -937,7 +943,7 @@ theorem sum_monomial_index {S : Type _} [AddCommMonoid S] (n : ℕ) (a : R) (f :
     (hf : f n 0 = 0) : (monomial n a : R[X]).sum f = f n a := by
   by_cases h : a = 0
   · simp [h, hf]
-  · simp [sum, support_monomial, h, coeff_monomial, - support]
+  · simp [sum, support_monomial, h, coeff_monomial]
 #align polynomial.sum_monomial_index Polynomial.sum_monomial_index
 
 @[simp]
@@ -1136,7 +1142,7 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
   rw [← of_finsupp_sub, coeff, coeff, coeff]; apply Finsupp.sub_apply
 #align polynomial.coeff_sub Polynomial.coeff_sub
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_self, monomial_zero_right]
 #align polynomial.monomial_neg Polynomial.monomial_neg
@@ -1173,8 +1179,7 @@ instance nontrivial : Nontrivial R[X] := by
 #align polynomial.nontrivial Polynomial.nontrivial
 
 theorem x_ne_zero : (X : R[X]) ≠ 0 :=
-  -- Porting note: `exact one_ne_zero` is required.
-  mt (congr_arg fun p => coeff p 1) (by simp; exact one_ne_zero)
+  mt (congr_arg fun p => coeff p 1) (by simp)
 #align polynomial.X_ne_zero Polynomial.x_ne_zero
 
 end NonzeroSemiring
