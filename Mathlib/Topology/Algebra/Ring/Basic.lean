@@ -68,37 +68,30 @@ variable {α}
 /-- If `R` is a ring with a continuous multiplication, then negation is continuous as well since it
 is just multiplication with `-1`. -/
 theorem TopologicalSemiring.continuousNeg_of_mul [TopologicalSpace α] [NonAssocRing α]
-    [ContinuousMul α] : ContinuousNeg α :=
-  {
-    continuous_neg := by
-      simpa using (continuous_const.mul continuous_id : Continuous fun x : α => -1 * x) }
+    [ContinuousMul α] : ContinuousNeg α where
+  continuous_neg := by
+    simpa using (continuous_const.mul continuous_id : Continuous fun x : α => -1 * x)
 #align topological_semiring.has_continuous_neg_of_mul TopologicalSemiring.continuousNeg_of_mul
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
 proving `continuous_neg`. -/
-theorem TopologicalSemiring.to_topologicalRing [TopologicalSpace α] [NonAssocRing α]
-    (h : TopologicalSemiring α) : TopologicalRing α :=
-  { h,
-    (haveI := h.to_has_continuous_mul
-      TopologicalSemiring.continuousNeg_of_mul :
-      ContinuousNeg α) with }
-#align topological_semiring.to_topological_ring TopologicalSemiring.to_topologicalRing
+theorem TopologicalSemiring.toTopologicalRing [TopologicalSpace α] [NonAssocRing α]
+    (_ : TopologicalSemiring α) : TopologicalRing α where
+  toContinuousNeg := TopologicalSemiring.continuousNeg_of_mul
+#align topological_semiring.to_topological_ring TopologicalSemiring.toTopologicalRing
 
 -- See note [lower instance priority]
 instance (priority := 100) TopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing α]
-    [TopologicalSpace α] [TopologicalRing α] : TopologicalAddGroup α :=
-  { TopologicalRing.to_topologicalSemiring.to_continuousAdd, TopologicalRing.to_continuousNeg with }
+    [TopologicalSpace α] [TopologicalRing α] : TopologicalAddGroup α := ⟨⟩
 #align topological_ring.to_topological_add_group TopologicalRing.to_topologicalAddGroup
 
 instance (priority := 50) DiscreteTopology.topologicalSemiring [TopologicalSpace α]
-    [NonUnitalNonAssocSemiring α] [DiscreteTopology α] : TopologicalSemiring α :=
-  ⟨⟩
+    [NonUnitalNonAssocSemiring α] [DiscreteTopology α] : TopologicalSemiring α := ⟨⟩
 #align discrete_topology.topological_semiring DiscreteTopology.topologicalSemiring
 
 instance (priority := 50) DiscreteTopology.topologicalRing [TopologicalSpace α]
-    [NonUnitalNonAssocRing α] [DiscreteTopology α] : TopologicalRing α :=
-  ⟨⟩
+    [NonUnitalNonAssocRing α] [DiscreteTopology α] : TopologicalRing α := ⟨⟩
 #align discrete_topology.topological_ring DiscreteTopology.topologicalRing
 
 section
@@ -108,7 +101,7 @@ variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
 namespace Subsemiring
 
 instance (S : Subsemiring α) : TopologicalSemiring S :=
-  { S.toSubmonoid.ContinuousMul, S.toAddSubmonoid.ContinuousAdd with }
+  { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
 end Subsemiring
 
@@ -116,21 +109,21 @@ end Subsemiring
 itself a subsemiring. -/
 def Subsemiring.topologicalClosure (s : Subsemiring α) : Subsemiring α :=
   { s.toSubmonoid.topologicalClosure, s.toAddSubmonoid.topologicalClosure with
-    carrier := closure (s : Set α) }
+    carrier := _root_.closure (s : Set α) }
 #align subsemiring.topological_closure Subsemiring.topologicalClosure
 
 @[simp]
 theorem Subsemiring.topologicalClosure_coe (s : Subsemiring α) :
-    (s.topologicalClosure : Set α) = closure (s : Set α) :=
+    (s.topologicalClosure : Set α) = _root_.closure (s : Set α) :=
   rfl
 #align subsemiring.topological_closure_coe Subsemiring.topologicalClosure_coe
 
 theorem Subsemiring.le_topologicalClosure (s : Subsemiring α) : s ≤ s.topologicalClosure :=
-  subset_closure
+  _root_.subset_closure
 #align subsemiring.le_topological_closure Subsemiring.le_topologicalClosure
 
 theorem Subsemiring.isClosed_topologicalClosure (s : Subsemiring α) :
-    IsClosed (s.topologicalClosure : Set α) := by convert isClosed_closure
+    IsClosed (s.topologicalClosure : Set α) := isClosed_closure
 #align subsemiring.is_closed_topological_closure Subsemiring.isClosed_topologicalClosure
 
 theorem Subsemiring.topologicalClosure_minimal (s : Subsemiring α) {t : Subsemiring α} (h : s ≤ t)
@@ -168,27 +161,25 @@ instance {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
     TopologicalSemiring (∀ b, C b) where
 
 instance {β : Type _} {C : β → Type _} [∀ b, TopologicalSpace (C b)]
-    [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, TopologicalRing (C b)] : TopologicalRing (∀ b, C b)
-    where
+    [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, TopologicalRing (C b)] :
+    TopologicalRing (∀ b, C b) := ⟨⟩
 
 section MulOpposite
 
 open MulOpposite
 
-instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousAdd α] : ContinuousAdd αᵐᵒᵖ
-    where continuous_add :=
-    continuous_induced_rng.2 <|
-      (@continuous_add α _ _ _).comp (continuous_unop.Prod_map continuous_unop)
+instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousAdd α] :
+    ContinuousAdd αᵐᵒᵖ :=
+  continuousAdd_induced opAddEquiv.symm
 
 instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] :
-    TopologicalSemiring αᵐᵒᵖ where
+    TopologicalSemiring αᵐᵒᵖ := ⟨⟩
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ
-    where continuous_neg :=
-    continuous_induced_rng.2 <| (@continuous_neg α _ _ _).comp continuous_unop
+instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ :=
+  opHomeomorph.symm.inducing.continuousNeg fun _ => rfl
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] : TopologicalRing αᵐᵒᵖ
-    where
+instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
+    TopologicalRing αᵐᵒᵖ := ⟨⟩
 
 end MulOpposite
 
@@ -196,17 +187,15 @@ section AddOpposite
 
 open AddOpposite
 
-instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousMul α] : ContinuousMul αᵃᵒᵖ
-    where continuous_mul := by
-    convert
-      continuous_op.comp <|
-        (@continuous_mul α _ _ _).comp <| continuous_unop.prod_map continuous_unop
+instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousMul α] :
+    ContinuousMul αᵃᵒᵖ :=
+  continuousMul_induced opMulEquiv.symm
 
 instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] :
-    TopologicalSemiring αᵃᵒᵖ where
+    TopologicalSemiring αᵃᵒᵖ := ⟨⟩
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] : TopologicalRing αᵃᵒᵖ
-    where
+instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
+    TopologicalRing αᵃᵒᵖ := ⟨⟩
 
 end AddOpposite
 
@@ -217,31 +206,10 @@ variable {R : Type _} [NonUnitalNonAssocRing R] [TopologicalSpace R]
 theorem TopologicalRing.of_add_group_of_nhds_zero [TopologicalAddGroup R]
     (hmul : Tendsto (uncurry ((· * ·) : R → R → R)) (𝓝 0 ×ᶠ 𝓝 0) <| 𝓝 0)
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
-    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : TopologicalRing R := by
-  refine' { ‹TopologicalAddGroup R› with .. }
-  have hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0) := by simp
-  have hadd : tendsto (uncurry ((· + ·) : R → R → R)) (𝓝 0 ×ᶠ 𝓝 0) (𝓝 0) :=
-    by
-    rw [← nhds_prod_eq]
-    convert continuous_add.tendsto ((0 : R), (0 : R))
-    rw [zero_add]
-  rw [continuous_iff_continuousAt]
-  rintro ⟨x₀, y₀⟩
-  rw [ContinuousAt, nhds_prod_eq, hleft x₀, hleft y₀, hleft (x₀ * y₀), Filter.prod_map_map_eq,
-    tendsto_map'_iff]
-  suffices
-    tendsto
-      ((fun x : R => x + x₀ * y₀) ∘
-        (fun p : R × R => p.1 + p.2) ∘ fun p : R × R => (p.1 * y₀ + x₀ * p.2, p.1 * p.2))
-      (𝓝 0 ×ᶠ 𝓝 0) ((map fun x : R => x + x₀ * y₀) <| 𝓝 0)
-    by
-    convert this using 1
-    · ext
-      simp only [comp_app, mul_add, add_mul]
-      abel
-    · simp only [add_comm]
-  refine' tendsto_map.comp (hadd.comp (tendsto.prod_mk _ hmul))
-  exact hadd.comp (((hmul_right y₀).comp tendsto_fst).prod_mk ((hmul_left x₀).comp tendsto_snd))
+    (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0) : TopologicalRing R where
+  continuous_mul := by
+    refine continuous_of_continuousAt_zero₂ (AddMonoidHom.mul (R := R)) ?_ ?_ ?_ <;>
+      simpa only [ContinuousAt, mul_zero, zero_mul, nhds_prod_eq, AddMonoidHom.mul_apply]
 #align topological_ring.of_add_group_of_nhds_zero TopologicalRing.of_add_group_of_nhds_zero
 
 theorem TopologicalRing.of_nhds_zero
@@ -251,13 +219,13 @@ theorem TopologicalRing.of_nhds_zero
     (hmul_left : ∀ x₀ : R, Tendsto (fun x : R => x₀ * x) (𝓝 0) <| 𝓝 0)
     (hmul_right : ∀ x₀ : R, Tendsto (fun x : R => x * x₀) (𝓝 0) <| 𝓝 0)
     (hleft : ∀ x₀ : R, 𝓝 x₀ = map (fun x => x₀ + x) (𝓝 0)) : TopologicalRing R :=
-  haveI := TopologicalAddGroup.of_comm_of_nhds_zero hadd hneg hleft
+  have := TopologicalAddGroup.of_comm_of_nhds_zero hadd hneg hleft
   TopologicalRing.of_add_group_of_nhds_zero hmul hmul_left hmul_right
 #align topological_ring.of_nhds_zero TopologicalRing.of_nhds_zero
 
 end
 
-variable {α} [TopologicalSpace α]
+variable [TopologicalSpace α]
 
 section
 
@@ -277,26 +245,22 @@ end
 
 variable [Ring α] [TopologicalRing α]
 
-namespace Subring
-
 instance (S : Subring α) : TopologicalRing S :=
-  TopologicalSemiring.to_topologicalRing S.toSubsemiring.TopologicalSemiring
-
-end Subring
+  { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological-space) closure of a subring of a topological ring is
 itself a subring. -/
 def Subring.topologicalClosure (S : Subring α) : Subring α :=
   { S.toSubmonoid.topologicalClosure, S.toAddSubgroup.topologicalClosure with
-    carrier := closure (S : Set α) }
+    carrier := _root_.closure (S : Set α) }
 #align subring.topological_closure Subring.topologicalClosure
 
 theorem Subring.le_topologicalClosure (s : Subring α) : s ≤ s.topologicalClosure :=
-  subset_closure
+  _root_.subset_closure
 #align subring.le_topological_closure Subring.le_topologicalClosure
 
 theorem Subring.isClosed_topologicalClosure (s : Subring α) :
-    IsClosed (s.topologicalClosure : Set α) := by convert isClosed_closure
+    IsClosed (s.topologicalClosure : Set α) := isClosed_closure
 #align subring.is_closed_topological_closure Subring.isClosed_topologicalClosure
 
 theorem Subring.topologicalClosure_minimal (s : Subring α) {t : Subring α} (h : s ≤ t)
@@ -327,7 +291,6 @@ universe u v
 
 /-- A ring topology on a ring `α` is a topology for which addition, negation and multiplication
 are continuous. -/
-@[ext]
 structure RingTopology (α : Type u) [Ring α] extends TopologicalSpace α, TopologicalRing α : Type u
 #align ring_topology RingTopology
 
@@ -336,47 +299,34 @@ namespace RingTopology
 variable {α : Type _} [Ring α]
 
 instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
-  ⟨{  toTopologicalSpace := ⊤
-      continuous_add := continuous_top
+  ⟨let _ : TopologicalSpace α := ⊤;
+    { continuous_add := continuous_top
       continuous_mul := continuous_top
       continuous_neg := continuous_top }⟩
 #align ring_topology.inhabited RingTopology.inhabited
 
+theorem toTopologicalSpace_injective :
+    Injective (toTopologicalSpace : RingTopology α → TopologicalSpace α) := by
+  intro f g _; cases f; cases g; congr
+
 @[ext]
-theorem ext' {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g := by
-  ext : 2
-  exact h
-#align ring_topology.ext' RingTopology.ext'
+theorem ext {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
+  toTopologicalSpace_injective <| topologicalSpace_eq h
+#align ring_topology.ext' RingTopology.ext
 
 /-- The ordering on ring topologies on the ring `α`.
   `t ≤ s` if every set open in `s` is also open in `t` (`t` is finer than `s`). -/
 instance : PartialOrder (RingTopology α) :=
-  PartialOrder.lift RingTopology.toTopologicalSpace <| ext
-
--- mathport name: exprcont
-local notation "cont" => @Continuous _ _
+  PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
 private def def_Inf (S : Set (RingTopology α)) : RingTopology α :=
-  let Inf_S' := infₛ (toTopologicalSpace '' S)
-  { toTopologicalSpace := Inf_S'
-    continuous_add := by
-      apply continuous_infₛ_rng.2
-      rintro _ ⟨⟨t, tr⟩, haS, rfl⟩; skip
-      have h := continuous_infₛ_dom (Set.mem_image_of_mem to_topological_space haS) continuous_id
-      have h_continuous_id := @Continuous.prod_map _ _ _ _ t t Inf_S' Inf_S' _ _ h h
-      exact @Continuous.comp _ _ _ (id _) (id _) t _ _ continuous_add h_continuous_id
-    continuous_mul := by
-      apply continuous_infₛ_rng.2
-      rintro _ ⟨⟨t, tr⟩, haS, rfl⟩; skip
-      have h := continuous_infₛ_dom (Set.mem_image_of_mem to_topological_space haS) continuous_id
-      have h_continuous_id := @Continuous.prod_map _ _ _ _ t t Inf_S' Inf_S' _ _ h h
-      exact @Continuous.comp _ _ _ (id _) (id _) t _ _ continuous_mul h_continuous_id
-    continuous_neg := by
-      apply continuous_infₛ_rng.2
-      rintro _ ⟨⟨t, tr⟩, haS, rfl⟩; skip
-      have h := continuous_infₛ_dom (Set.mem_image_of_mem to_topological_space haS) continuous_id
-      exact @Continuous.comp _ _ _ (id _) (id _) t _ _ continuous_neg h }
-#align ring_topology.def_Inf ring_topology.def_Inf
+  let _ := infₛ (toTopologicalSpace '' S)
+  { toContinuousAdd := continuousAdd_infₛ <| ball_image_iff.2 fun t _ =>
+      let _ := t.1; t.toContinuousAdd
+    toContinuousMul := continuousMul_infₛ <| ball_image_iff.2 fun t _ =>
+      let _ := t.1; t.toContinuousMul
+    toContinuousNeg := continuousNeg_infₛ <| ball_image_iff.2 fun t _ =>
+      let _ := t.1; t.toContinuousNeg }
 
 /-- Ring topologies on `α` form a complete lattice, with `⊥` the discrete topology and `⊤` the
 indiscrete topology.
@@ -386,18 +336,10 @@ The infimum of a collection of ring topologies is the topology generated by all 
 
 The supremum of two ring topologies `s` and `t` is the infimum of the family of all ring topologies
 contained in the intersection of `s` and `t`. -/
-instance : CompleteSemilatticeInf (RingTopology α) :=
-  { RingTopology.partialOrder with
-    infₛ := defInf
-    inf_le := fun S a haS =>
-      by
-      apply topological_space.complete_lattice.Inf_le
-      use a, ⟨haS, rfl⟩
-    le_inf := by
-      intro S a hab
-      apply topological_space.complete_lattice.le_Inf
-      rintro _ ⟨b, hbS, rfl⟩
-      exact hab b hbS }
+instance : CompleteSemilatticeInf (RingTopology α) where
+  infₛ := def_Inf
+  infₛ_le := fun _ a haS => infₛ_le (α := TopologicalSpace α) ⟨a, ⟨haS, rfl⟩⟩
+  le_infₛ := fun _ _ h => le_infₛ (α := TopologicalSpace α) <| ball_image_iff.2 h
 
 instance : CompleteLattice (RingTopology α) :=
   completeLatticeOfCompleteSemilatticeInf _
@@ -405,23 +347,19 @@ instance : CompleteLattice (RingTopology α) :=
 /-- Given `f : α → β` and a topology on `α`, the coinduced ring topology on `β` is the finest
 topology such that `f` is continuous and `β` is a topological ring. -/
 def coinduced {α β : Type _} [t : TopologicalSpace α] [Ring β] (f : α → β) : RingTopology β :=
-  infₛ { b : RingTopology β | TopologicalSpace.coinduced f t ≤ b.toTopologicalSpace }
+  infₛ { b : RingTopology β | t.coinduced f ≤ b.toTopologicalSpace }
 #align ring_topology.coinduced RingTopology.coinduced
 
 theorem coinduced_continuous {α β : Type _} [t : TopologicalSpace α] [Ring β] (f : α → β) :
-    cont t (coinduced f).toTopologicalSpace f := by
-  rw [continuous_iff_coinduced_le]
-  refine' le_infₛ _
-  rintro _ ⟨t', ht', rfl⟩
-  exact ht'
+    Continuous[t, (coinduced f).toTopologicalSpace] f :=
+  continuous_infₛ_rng.2 <| ball_image_iff.2 fun _ => continuous_iff_coinduced_le.2
 #align ring_topology.coinduced_continuous RingTopology.coinduced_continuous
 
 /-- The forgetful functor from ring topologies on `a` to additive group topologies on `a`. -/
-def toAddGroupTopology (t : RingTopology α) : AddGroupTopology α
-    where
+def toAddGroupTopology (t : RingTopology α) : AddGroupTopology α where
   toTopologicalSpace := t.toTopologicalSpace
-  to_topologicalAddGroup :=
-    @TopologicalRing.to_topologicalAddGroup _ _ t.toTopologicalSpace t.to_topologicalRing
+  toTopologicalAddGroup :=
+    @TopologicalRing.to_topologicalAddGroup _ _ t.toTopologicalSpace t.toTopologicalRing
 #align ring_topology.to_add_group_topology RingTopology.toAddGroupTopology
 
 /-- The order embedding from ring topologies on `a` to additive group topologies on `a`. -/
@@ -436,14 +374,11 @@ section AbsoluteValue
 /-- Construct an absolute value on a semiring `T` from an absolute value on a semiring `R`
 and an injective ring homomorphism `f : T →+* R` -/
 def AbsoluteValue.comp {R S T : Type _} [Semiring T] [Semiring R] [OrderedSemiring S]
-    (v : AbsoluteValue R S) {f : T →+* R} (hf : Function.Injective f) : AbsoluteValue T S
-    where
-  toFun := v ∘ f
-  map_mul' := by simp only [Function.comp_apply, map_mul, eq_self_iff_true, forall_const]
-  nonneg' := by simp only [v.nonneg, forall_const]
-  eq_zero' := by simp only [map_eq_zero_iff f hf, v.eq_zero, forall_const, iff_self_iff]
-  add_le' := by simp only [Function.comp_apply, map_add, v.add_le, forall_const]
+    (v : AbsoluteValue R S) {f : T →+* R} (hf : Function.Injective f) : AbsoluteValue T S where
+  toMulHom := v.1.comp f
+  nonneg' _ := v.nonneg _
+  eq_zero' _ := v.eq_zero.trans (map_eq_zero_iff f hf)
+  add_le' _ _ := (congr_arg v (map_add f _ _)).trans_le (v.add_le _ _)
 #align absolute_value.comp AbsoluteValue.comp
 
 end AbsoluteValue
-
