@@ -28,10 +28,10 @@ uniformly continuous.
 
 ## Main definitions and lemmas
 
-* `lipschitz_with K f`: states that `f` is Lipschitz with constant `K : ℝ≥0`
-* `lipschitz_on_with K f`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
-* `lipschitz_with.uniform_continuous`: a Lipschitz function is uniformly continuous
-* `lipschitz_on_with.uniform_continuous_on`: a function which is Lipschitz on a set is uniformly
+* `LipschitzWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0`
+* `LipschitzOnWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
+* `LipschitzWith.uniformContinuous`: a Lipschitz function is uniformly continuous
+* `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set is uniformly
   continuous on that set.
 
 
@@ -39,7 +39,7 @@ uniformly continuous.
 
 The parameter `K` has type `ℝ≥0`. This way we avoid conjuction in the definition and have
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
-argument, and return `lipschitz_with (real.to_nnreal K) f`.
+argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
 
