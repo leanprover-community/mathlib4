@@ -30,9 +30,7 @@ of topological (semi)rings.
 -/
 
 
-open Classical Set Filter TopologicalSpace Function
-
-open Classical Topology Filter
+open Set Filter TopologicalSpace Function Topology Filter
 
 section TopologicalSemiring
 
