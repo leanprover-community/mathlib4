@@ -8,9 +8,9 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.NatAntidiagonal
-import Mathbin.Topology.Algebra.InfiniteSum.Basic
-import Mathbin.Topology.Algebra.Ring.Basic
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Infinite sum in a ring
@@ -211,8 +211,7 @@ variable [T3Space α] [TopologicalSemiring α]
 
 theorem summable_sum_mul_antidiagonal_of_summable_mul
     (h : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
-    Summable fun n => ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 :=
-  by
+    Summable fun n => ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 := by
   rw [summable_mul_prod_iff_summable_mul_sigma_antidiagonal] at h
   conv =>
     congr
@@ -228,8 +227,7 @@ See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm` if `f` and `g
 summable. -/
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
-    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 :=
-  by
+    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 := by
   conv_rhs =>
     congr
     ext
@@ -241,8 +239,7 @@ theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f) (hg : Summable 
 #align tsum_mul_tsum_eq_tsum_sum_antidiagonal tsum_mul_tsum_eq_tsum_sum_antidiagonal
 
 theorem summable_sum_mul_range_of_summable_mul (h : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
-    Summable fun n => ∑ k in range (n + 1), f k * g (n - k) :=
-  by
+    Summable fun n => ∑ k in range (n + 1), f k * g (n - k) := by
   simp_rw [← nat.sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact summable_sum_mul_antidiagonal_of_summable_mul h
 #align summable_sum_mul_range_of_summable_mul summable_sum_mul_range_of_summable_mul
@@ -254,8 +251,7 @@ See also `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm` if `f` and `g` are a
 -/
 theorem tsum_mul_tsum_eq_tsum_sum_range (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
-    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k in range (n + 1), f k * g (n - k) :=
-  by
+    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k in range (n + 1), f k * g (n - k) := by
   simp_rw [← nat.sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact tsum_mul_tsum_eq_tsum_sum_antidiagonal hf hg hfg
 #align tsum_mul_tsum_eq_tsum_sum_range tsum_mul_tsum_eq_tsum_sum_range
