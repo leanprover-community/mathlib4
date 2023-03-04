@@ -771,14 +771,14 @@ instance : StrongHomClass L (M ≃[L] N) M N where
 def symm (f : M ≃[L] N) : N ≃[L] M :=
   {
     f.toEquiv.symm with
-    map_fun' := fun n f' x => by
+    map_fun' := @fun n f' x => by
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
-      refine' Eq.trans _ (f.map_fun' f' (f.to_equiv.symm ∘ x)).symm
+      refine' Eq.trans _ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.comp.left_id]
-    map_rel' := fun n r x => by
+    map_rel' := @fun n r x => by
       simp only [Equiv.toFun_as_coe]
-      refine' (f.map_rel' r (f.to_equiv.symm ∘ x)).symm.trans _
+      refine' (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans _
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.comp.left_id] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 
