@@ -347,7 +347,7 @@ instance WithBot.inf : Inf (WithBot (Box ι)) :=
       (fun I J => WithBot.recBotCoe ⊥ (fun J => mk' (I.lower ⊔ J.lower) (I.upper ⊓ J.upper)) J) I⟩
 
 @[simp]
-theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = I ∩ J := by
+theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (I : Set _) ∩ J := by
   induction I using WithBot.recBotCoe;
   · change ∅ = _
     simp
@@ -423,9 +423,11 @@ theorem mapsTo_insertNth_face_Icc {n} (I : Box (Fin (n + 1))) {i : Fin (n + 1)} 
 #align box_integral.box.maps_to_insert_nth_face_Icc BoxIntegral.Box.mapsTo_insertNth_face_Icc
 
 theorem mapsTo_insertNth_face {n} (I : Box (Fin (n + 1))) {i : Fin (n + 1)} {x : ℝ}
-    (hx : x ∈ Ioc (I.lower i) (I.upper i)) : MapsTo (i.insertNth x) (I.face i) I := fun y hy => by
-  simpa only [mem_coe, mem_def, i.forall_iff_succ_above, hx, Fin.insertNth_apply_same,
-    Fin.insertNth_apply_succAbove, true_and_iff]
+    (hx : x ∈ Ioc (I.lower i) (I.upper i)) :
+    MapsTo (i.insertNth x) (I.face i : Set (_ → _)) (I : Set (_ → _)) := fun y hy => by
+  simp_rw [mem_coe, mem_def, i.forall_iff_succAbove, Fin.insertNth_apply_same,
+    Fin.insertNth_apply_succAbove]
+  exact ⟨hx, hy⟩
 #align box_integral.box.maps_to_insert_nth_face BoxIntegral.Box.mapsTo_insertNth_face
 
 theorem continuousOn_face_icc {X} [TopologicalSpace X] {n} {f : (Fin (n + 1) → ℝ) → X}
@@ -507,7 +509,8 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
     have := div_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 <| J.lower_le_upper i) (not_lt.1 hr)
     rw [← h] at this
     exact this.not_lt (sub_pos.2 <| I.lower_lt_upper i)
-  simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right _ ((map_ne_zero Real.nnabs).2 this.ne')]
+  have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
+  simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right _ hn0]
 #align box_integral.box.distortion_eq_of_sub_eq_div BoxIntegral.Box.distortion_eq_of_sub_eq_div
 
 theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
