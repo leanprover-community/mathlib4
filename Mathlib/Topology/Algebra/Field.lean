@@ -21,7 +21,6 @@ non-zero element.
 
 -/
 
-
 variable {K : Type _} [DivisionRing K] [TopologicalSpace K]
 
 /-- Left-multiplication by a nonzero element of a topological division ring is proper, i.e.,
@@ -52,18 +51,19 @@ variable {α : Type _} [Field α] [TopologicalSpace α] [TopologicalDivisionRing
 /-- The (topological-space) closure of a subfield of a topological field is
 itself a subfield. -/
 def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
-  {
-    K.toSubring.topologicalClosure with
-    carrier := closure (K : Set α)
+  { K.toSubring.topologicalClosure with
+    carrier := _root_.closure (K : Set α)
     inv_mem' := fun x hx => by
+      dsimp only at hx ⊢
       rcases eq_or_ne x 0 with (rfl | h)
       · rwa [inv_zero]
-      · rw [← inv_coe_set, ← Set.image_inv]
-        exact mem_closure_image (continuous_at_inv₀ h) hx }
+      · -- porting note: todo: Lean fails to find InvMemClass instance
+        rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv]
+        exact mem_closure_image (continuousAt_inv₀ h) hx }
 #align subfield.topological_closure Subfield.topologicalClosure
 
 theorem Subfield.le_topologicalClosure (s : Subfield α) : s ≤ s.topologicalClosure :=
-  subset_closure
+  _root_.subset_closure
 #align subfield.le_topological_closure Subfield.le_topologicalClosure
 
 theorem Subfield.isClosed_topologicalClosure (s : Subfield α) :
@@ -93,8 +93,7 @@ variable {𝕜 : Type _} [Field 𝕜] [TopologicalSpace 𝕜] [TopologicalRing �
 The map `λ x, a * x + b`, as a homeomorphism from `𝕜` (a topological field) to itself, when `a ≠ 0`.
 -/
 @[simps]
-def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜
-    where
+def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
   toFun x := a * x + b
   invFun y := (y - b) / a
   left_inv x := by
@@ -122,7 +121,6 @@ section Preconnected
 
 /-! Some results about functions on preconnected sets valued in a ring or field with a topology. -/
 
-
 open Set
 
 variable {α 𝕜 : Type _} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α] [TopologicalSpace 𝕜]
@@ -133,29 +131,10 @@ variable {α 𝕜 : Type _} {f g : α → 𝕜} {S : Set α} [TopologicalSpace �
 theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
-  simp_rw [eq_on, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] at hsq
-  -- First deal with crazy case where `S` is empty.
-  by_cases hSe : ∀ x : α, x ∉ S
-  · left
-    intro x hx
-    exfalso
-    exact hSe x hx
-  push_neg  at hSe
-  choose y hy using hSe
-  suffices ∀ x : α, x ∈ S → f x = f y by
-    rcases hsq hy with ⟨⟩
-    · left
-      intro z hz
-      rw [Pi.one_apply z, ← h]
-      exact this z hz
-    · right
-      intro z hz
-      rw [Pi.neg_apply, Pi.one_apply, ← h]
-      exact this z hz
-  refine' fun x hx => hS.constant_of_maps_to hf (fun z hz => _) hx hy
-  show f z ∈ ({-1, 1} : Set 𝕜)
-  · exact mem_insert_iff.mpr (hsq hz).symm
-  exact discrete_of_t1_of_finite
+  have : DiscreteTopology ({1, -1} : Set 𝕜) := discrete_of_t1_of_finite
+  have hmaps : MapsTo f S {1, -1}
+  · simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
+  simpa using hS.eqOn_const_of_mapsTo hf hmaps
 #align is_preconnected.eq_one_or_eq_neg_one_of_sq_eq IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
@@ -165,16 +144,10 @@ theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ �
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) :
     EqOn f g S ∨ EqOn f (-g) S := by
-  rcases hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z hz => hg_ne hz) fun x hx => _ with
-    (h | h)
-  · refine' Or.inl fun x hx => _
-    rw [← div_eq_one_iff_eq (hg_ne hx)]
-    exact h hx
-  · refine' Or.inr fun x hx => _
-    specialize h hx
-    rwa [Pi.div_apply, Pi.neg_apply, Pi.one_apply, div_eq_iff (hg_ne hx), neg_one_mul] at h
-  · rw [Pi.one_apply, div_pow, Pi.div_apply, hsq hx, div_self]
-    exact pow_ne_zero _ (hg_ne hx)
+  have hsq : EqOn ((f / g) ^ 2) 1 S := fun x hx => by
+    simpa [div_eq_one_iff_eq (pow_ne_zero _ (hg_ne hx))] using hsq hx
+  simpa (config := { contextual := true }) [EqOn, div_eq_iff (hg_ne _)]
+    using hS.eq_one_or_eq_neg_one_of_sq_eq (hf.div hg fun z => hg_ne) hsq
 #align is_preconnected.eq_or_eq_neg_of_sq_eq IsPreconnected.eq_or_eq_neg_of_sq_eq
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
@@ -186,15 +159,8 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
     (hy' : f y = g y) : EqOn f g S := fun x hx => by
   rcases hS.eq_or_eq_neg_of_sq_eq hf hg @hsq @hg_ne with (h | h)
   · exact h hx
-  · rw [h hy, eq_comm, ← sub_eq_zero, sub_eq_add_neg, Pi.neg_apply, neg_neg, ← mul_two,
-      mul_eq_zero] at hy'
-    cases hy'
-    -- need to handle case of `char 𝕜 = 2` separately
-    · exfalso
-      exact hg_ne hy hy'
-    ·
-      rw [h hx, Pi.neg_apply, eq_comm, ← sub_eq_zero, sub_eq_add_neg, neg_neg, ← mul_two, hy',
-        mul_zero]
+  · rw [h _, Pi.neg_apply, neg_eq_iff_add_eq_zero, ← two_mul, mul_eq_zero,
+      iff_false_iff.2 (hg_ne _)] at hy' ⊢ <;> assumption
 #align is_preconnected.eq_of_sq_eq IsPreconnected.eq_of_sq_eq
 
 end Preconnected
