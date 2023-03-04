@@ -8,9 +8,9 @@ Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudrya
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Types
-import Mathbin.CategoryTheory.Functor.EpiMono
-import Mathbin.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Concrete categories
@@ -105,8 +105,7 @@ def ConcreteCategory.hasCoeToFun {X Y : C} : CoeFun (X ⟶ Y) fun f => X → Y :
 attribute [local instance] concrete_category.has_coe_to_fun
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
-theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g :=
-  by
+theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
   apply faithful.map_injective (forget C)
   ext
   exact w x
@@ -183,8 +182,7 @@ theorem ConcreteCategory.epi_iff_surjective_of_preserves_pushout {X Y : C} (f : 
 #align category_theory.concrete_category.epi_iff_surjective_of_preserves_pushout CategoryTheory.ConcreteCategory.epi_iff_surjective_of_preserves_pushout
 
 theorem ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    Function.Bijective ((forget C).map f) :=
-  by
+    Function.Bijective ((forget C).map f) := by
   rw [← is_iso_iff_bijective]
   infer_instance
 #align category_theory.concrete_category.bijective_of_is_iso CategoryTheory.ConcreteCategory.bijective_of_isIso
