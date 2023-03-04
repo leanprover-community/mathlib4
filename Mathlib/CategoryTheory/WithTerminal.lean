@@ -46,21 +46,22 @@ variable (C : Type u) [Category.{v} C]
 
 /-- Formally adjoin a terminal object to a category. -/
 inductive WithTerminal : Type u
-  | of : C → with_terminal
-  | star : with_terminal
+  | of : C → WithTerminal
+  | star : WithTerminal
   deriving Inhabited
 #align category_theory.with_terminal CategoryTheory.WithTerminal
 
 /-- Formally adjoin an initial object to a category. -/
 inductive WithInitial : Type u
-  | of : C → with_initial
-  | star : with_initial
+  | of : C → WithInitial
+  | star : WithInitial
   deriving Inhabited
 #align category_theory.with_initial CategoryTheory.WithInitial
 
 namespace WithTerminal
 
-attribute [local tidy] tactic.case_bash
+-- porting note: no such tactic
+-- attribute [local tidy] tactic.case_bash
 
 variable {C}
 
@@ -71,10 +72,11 @@ but is expected to have type
   forall {C : Type.{u1}} [_inst_1 : CategoryTheory.Category.{u2, u1} C], (CategoryTheory.WithTerminal.{u2, u1} C _inst_1) -> (CategoryTheory.WithTerminal.{u2, u1} C _inst_1) -> Type.{u2}
 Case conversion may be inaccurate. Consider using '#align category_theory.with_terminal.hom CategoryTheory.WithTerminal.Homₓ'. -/
 /-- Morphisms for `with_terminal C`. -/
-@[simp, nolint has_nonempty_instance]
+-- porting note: unsupported `nolint has_nonempty_instance`
+@[simp]
 def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
-  | star, of X => PEmpty
+  | star, of _ => PEmpty
   | _, star => PUnit
 #align category_theory.with_terminal.hom CategoryTheory.WithTerminal.Hom
 
@@ -87,7 +89,7 @@ Case conversion may be inaccurate. Consider using '#align category_theory.with_t
 /-- Identity morphisms for `with_terminal C`. -/
 @[simp]
 def id : ∀ X : WithTerminal C, Hom X X
-  | of X => 𝟙 _
+  | of _ => 𝟙 _
   | star => PUnit.unit
 #align category_theory.with_terminal.id CategoryTheory.WithTerminal.id
 
@@ -100,25 +102,25 @@ Case conversion may be inaccurate. Consider using '#align category_theory.with_t
 /-- Composition of morphisms for `with_terminal C`. -/
 @[simp]
 def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
-  | of X, of Y, of Z => fun f g => f ≫ g
-  | of X, _, star => fun f g => PUnit.unit
-  | star, of X, _ => fun f g => PEmpty.elim f
-  | _, star, of Y => fun f g => PEmpty.elim g
+  | of _X, of _Y, of _Z => fun f g => f ≫ g
+  | of _X, _, star => fun _f _g => PUnit.unit
+  | star, of _X, _ => fun f _g => PEmpty.elim f
+  | _, star, of _Y => fun _f g => PEmpty.elim g
   | star, star, star => fun _ _ => PUnit.unit
 #align category_theory.with_terminal.comp CategoryTheory.WithTerminal.comp
 
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
   id X := id _
-  comp X Y Z f g := comp f g
+  comp := @fun X Y Z f g => comp f g
 
 /-- The inclusion from `C` into `with_terminal C`. -/
 def incl : C ⥤ WithTerminal C where
   obj := of
-  map X Y f := f
+  map := @fun X Y f => f
 #align category_theory.with_terminal.incl CategoryTheory.WithTerminal.incl
 
-instance : Full (incl : C ⥤ _) where preimage X Y f := f
+instance : Full (incl : C ⥤ _) where preimage := @fun X Y f => f
 
 instance : Faithful (incl : C ⥤ _) where
 
@@ -128,7 +130,7 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTermina
     match X with
     | of x => of <| F.obj x
     | star => star
-  map X Y f :=
+  map := @fun X Y f =>
     match X, Y, f with
     | of x, of y, f => F.map f
     | of x, star, PUnit.unit => PUnit.unit
@@ -138,9 +140,9 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTermina
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
   default :=
     match X with
-    | of x => PUnit.unit
+    | of _ => PUnit.unit
     | star => PUnit.unit
-  uniq := by tidy
+  uniq := by aesop_cat
 
 /-- `with_terminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
@@ -155,7 +157,7 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x
     match X with
     | of x => F.obj x
     | star => Z
-  map X Y f :=
+  map := @fun X Y f =>
     match X, Y, f with
     | of x, of y, f => F.map f
     | of x, star, PUnit.unit => M x
@@ -163,15 +165,15 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x
 #align category_theory.with_terminal.lift CategoryTheory.WithTerminal.lift
 
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
-@[simps]
+@[simps!]
 def inclLift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : incl ⋙ lift F M hM ≅ F where
-  Hom := { app := fun X => 𝟙 _ }
+  hom := { app := fun X => 𝟙 _ }
   inv := { app := fun X => 𝟙 _ }
 #align category_theory.with_terminal.incl_lift CategoryTheory.WithTerminal.inclLift
 
 /-- The isomorphism between `(lift F _ _).obj with_terminal.star` with `Z`. -/
-@[simps]
+@[simps!]
 def liftStar {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : (lift F M hM).obj star ≅ Z :=
   eqToIso rfl
@@ -179,9 +181,9 @@ def liftStar {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.o
 
 theorem lift_map_liftStar {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) (x : C) :
-    (lift F M hM).map (starTerminal.from (incl.obj x)) ≫ (liftStar F M hM).Hom =
-      (inclLift F M hM).Hom.app x ≫ M x := by
-  erw [category.id_comp, category.comp_id]
+    (lift F M hM).map (starTerminal.from (incl.obj x)) ≫ (liftStar F M hM).hom =
+      (inclLift F M hM).hom.app x ≫ M x := by
+  erw [Category.id_comp, Category.comp_id]
   rfl
 #align category_theory.with_terminal.lift_map_lift_star CategoryTheory.WithTerminal.lift_map_liftStar
 
@@ -190,7 +192,7 @@ theorem lift_map_liftStar {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : �
 def liftUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) (G : WithTerminal C ⥤ D) (h : incl ⋙ G ≅ F)
     (hG : G.obj star ≅ Z)
-    (hh : ∀ x : C, G.map (starTerminal.from (incl.obj x)) ≫ hG.Hom = h.Hom.app x ≫ M x) :
+    (hh : ∀ x : C, G.map (starTerminal.from (incl.obj x)) ≫ hG.hom = h.hom.app x ≫ M x) :
     G ≅ lift F M hM :=
   NatIso.ofComponents
     (fun X =>
@@ -209,24 +211,24 @@ def liftUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F
 #align category_theory.with_terminal.lift_unique CategoryTheory.WithTerminal.liftUnique
 
 /-- A variant of `lift` with `Z` a terminal object. -/
-@[simps]
+@[simps!]
 def liftToTerminal {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
     WithTerminal C ⥤ D :=
-  lift F (fun x => hZ.from _) fun x y f => hZ.hom_ext _ _
+  lift F (fun _x => hZ.from _) fun _x _y _f => hZ.hom_ext _ _
 #align category_theory.with_terminal.lift_to_terminal CategoryTheory.WithTerminal.liftToTerminal
 
 /-- A variant of `incl_lift` with `Z` a terminal object. -/
-@[simps]
+@[simps!]
 def inclLiftToTerminal {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
     incl ⋙ liftToTerminal F hZ ≅ F :=
   inclLift _ _ _
 #align category_theory.with_terminal.incl_lift_to_terminal CategoryTheory.WithTerminal.inclLiftToTerminal
 
 /-- A variant of `lift_unique` with `Z` a terminal object. -/
-@[simps]
+@[simps!]
 def liftToTerminalUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z)
     (G : WithTerminal C ⥤ D) (h : incl ⋙ G ≅ F) (hG : G.obj star ≅ Z) : G ≅ liftToTerminal F hZ :=
-  liftUnique F (fun z => hZ.from _) (fun x y f => hZ.hom_ext _ _) G h hG fun x => hZ.hom_ext _ _
+  liftUnique F (fun _z => hZ.from _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x => hZ.hom_ext _ _
 #align category_theory.with_terminal.lift_to_terminal_unique CategoryTheory.WithTerminal.liftToTerminalUnique
 
 /-- Constructs a morphism to `star` from `of X`. -/
@@ -235,14 +237,15 @@ def homFrom (X : C) : incl.obj X ⟶ star :=
   starTerminal.from _
 #align category_theory.with_terminal.hom_from CategoryTheory.WithTerminal.homFrom
 
-instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f := by tidy
+instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f := by aesop_cat
 #align category_theory.with_terminal.is_iso_of_from_star CategoryTheory.WithTerminal.isIso_of_from_star
 
 end WithTerminal
 
 namespace WithInitial
 
-attribute [local tidy] tactic.case_bash
+-- porting note: no such tactic
+-- attribute [local tidy] tactic.case_bash
 
 variable {C}
 
@@ -253,10 +256,11 @@ but is expected to have type
   forall {C : Type.{u1}} [_inst_1 : CategoryTheory.Category.{u2, u1} C], (CategoryTheory.WithInitial.{u2, u1} C _inst_1) -> (CategoryTheory.WithInitial.{u2, u1} C _inst_1) -> Type.{u2}
 Case conversion may be inaccurate. Consider using '#align category_theory.with_initial.hom CategoryTheory.WithInitial.Homₓ'. -/
 /-- Morphisms for `with_initial C`. -/
-@[simp, nolint has_nonempty_instance]
+-- porting note: unsupported `nolint has_nonempty_instance`
+@[simp]
 def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y
-  | of X, _ => PEmpty
+  | of _, _ => PEmpty
   | star, _ => PUnit
 #align category_theory.with_initial.hom CategoryTheory.WithInitial.Hom
 
@@ -269,7 +273,7 @@ Case conversion may be inaccurate. Consider using '#align category_theory.with_i
 /-- Identity morphisms for `with_initial C`. -/
 @[simp]
 def id : ∀ X : WithInitial C, Hom X X
-  | of X => 𝟙 _
+  | of _ => 𝟙 _
   | star => PUnit.unit
 #align category_theory.with_initial.id CategoryTheory.WithInitial.id
 
@@ -282,25 +286,25 @@ Case conversion may be inaccurate. Consider using '#align category_theory.with_i
 /-- Composition of morphisms for `with_initial C`. -/
 @[simp]
 def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
-  | of X, of Y, of Z => fun f g => f ≫ g
-  | star, _, of X => fun f g => PUnit.unit
-  | _, of X, star => fun f g => PEmpty.elim g
-  | of Y, star, _ => fun f g => PEmpty.elim f
+  | of _X, of _Y, of _Z => fun f g => f ≫ g
+  | star, _, of _X => fun _f _g => PUnit.unit
+  | _, of _X, star => fun _f g => PEmpty.elim g
+  | of _Y, star, _ => fun f _g => PEmpty.elim f
   | star, star, star => fun _ _ => PUnit.unit
 #align category_theory.with_initial.comp CategoryTheory.WithInitial.comp
 
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id _
-  comp X Y Z f g := comp f g
+  comp := @fun X Y Z f g => comp f g
 
 /-- The inclusion of `C` into `with_initial C`. -/
 def incl : C ⥤ WithInitial C where
   obj := of
-  map X Y f := f
+  map := @fun X Y f => f
 #align category_theory.with_initial.incl CategoryTheory.WithInitial.incl
 
-instance : Full (incl : C ⥤ _) where preimage X Y f := f
+instance : Full (incl : C ⥤ _) where preimage := @fun X Y f => f
 
 instance : Faithful (incl : C ⥤ _) where
 
@@ -310,7 +314,7 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
     match X with
     | of x => of <| F.obj x
     | star => star
-  map X Y f :=
+  map := @fun X Y f =>
     match X, Y, f with
     | of x, of y, f => F.map f
     | star, of x, PUnit.unit => PUnit.unit
@@ -320,9 +324,9 @@ def map {D : Type _} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
 instance {X : WithInitial C} : Unique (star ⟶ X) where
   default :=
     match X with
-    | of x => PUnit.unit
+    | of _x => PUnit.unit
     | star => PUnit.unit
-  uniq := by tidy
+  uniq := by aesop_cat
 
 /-- `with_initial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=
@@ -337,7 +341,7 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F
     match X with
     | of x => F.obj x
     | star => Z
-  map X Y f :=
+  map := @fun X Y f =>
     match X, Y, f with
     | of x, of y, f => F.map f
     | star, of x, PUnit.unit => M _
@@ -345,15 +349,15 @@ def lift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F
 #align category_theory.with_initial.lift CategoryTheory.WithInitial.lift
 
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
-@[simps]
+@[simps!]
 def inclLift {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : incl ⋙ lift F M hM ≅ F where
-  Hom := { app := fun X => 𝟙 _ }
+  hom := { app := fun X => 𝟙 _ }
   inv := { app := fun X => 𝟙 _ }
 #align category_theory.with_initial.incl_lift CategoryTheory.WithInitial.inclLift
 
 /-- The isomorphism between `(lift F _ _).obj with_term.star` with `Z`. -/
-@[simps]
+@[simps!]
 def liftStar {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : (lift F M hM).obj star ≅ Z :=
   eqToIso rfl
@@ -361,9 +365,9 @@ def liftStar {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z �
 
 theorem liftStar_lift_map {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) (x : C) :
-    (liftStar F M hM).Hom ≫ (lift F M hM).map (starInitial.to (incl.obj x)) =
-      M x ≫ (inclLift F M hM).Hom.app x := by
-  erw [category.id_comp, category.comp_id]
+    (liftStar F M hM).hom ≫ (lift F M hM).map (starInitial.to (incl.obj x)) =
+      M x ≫ (inclLift F M hM).hom.app x := by
+  erw [Category.id_comp, Category.comp_id]
   rfl
 #align category_theory.with_initial.lift_star_lift_map CategoryTheory.WithInitial.liftStar_lift_map
 
@@ -372,7 +376,7 @@ theorem liftStar_lift_map {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : �
 def liftUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) (G : WithInitial C ⥤ D) (h : incl ⋙ G ≅ F)
     (hG : G.obj star ≅ Z)
-    (hh : ∀ x : C, hG.symm.Hom ≫ G.map (starInitial.to (incl.obj x)) = M x ≫ h.symm.Hom.app x) :
+    (hh : ∀ x : C, hG.symm.hom ≫ G.map (starInitial.to (incl.obj x)) = M x ≫ h.symm.hom.app x) :
     G ≅ lift F M hM :=
   NatIso.ofComponents
     (fun X =>
@@ -386,32 +390,32 @@ def liftUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z
       · cases f
         change G.map _ ≫ h.hom.app _ = hG.hom ≫ _
         symm
-        erw [← iso.eq_inv_comp, ← category.assoc, hh]
-        simpa
+        erw [← Iso.eq_inv_comp, ← Category.assoc, hh]
+        simp
       · cases f
         change G.map (𝟙 _) ≫ hG.hom = hG.hom ≫ 𝟙 _
         simp)
 #align category_theory.with_initial.lift_unique CategoryTheory.WithInitial.liftUnique
 
 /-- A variant of `lift` with `Z` an initial object. -/
-@[simps]
+@[simps!]
 def liftToInitial {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
     WithInitial C ⥤ D :=
-  lift F (fun x => hZ.to _) fun x y f => hZ.hom_ext _ _
+  lift F (fun _x => hZ.to _) fun _x _y _f => hZ.hom_ext _ _
 #align category_theory.with_initial.lift_to_initial CategoryTheory.WithInitial.liftToInitial
 
 /-- A variant of `incl_lift` with `Z` an initial object. -/
-@[simps]
+@[simps!]
 def inclLiftToInitial {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
     incl ⋙ liftToInitial F hZ ≅ F :=
   inclLift _ _ _
 #align category_theory.with_initial.incl_lift_to_initial CategoryTheory.WithInitial.inclLiftToInitial
 
 /-- A variant of `lift_unique` with `Z` an initial object. -/
-@[simps]
+@[simps!]
 def liftToInitialUnique {D : Type _} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z)
     (G : WithInitial C ⥤ D) (h : incl ⋙ G ≅ F) (hG : G.obj star ≅ Z) : G ≅ liftToInitial F hZ :=
-  liftUnique F (fun z => hZ.to _) (fun x y f => hZ.hom_ext _ _) G h hG fun x => hZ.hom_ext _ _
+  liftUnique F (fun _z => hZ.to _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x => hZ.hom_ext _ _
 #align category_theory.with_initial.lift_to_initial_unique CategoryTheory.WithInitial.liftToInitialUnique
 
 /-- Constructs a morphism from `star` to `of X`. -/
@@ -420,10 +424,9 @@ def homTo (X : C) : star ⟶ incl.obj X :=
   starInitial.to _
 #align category_theory.with_initial.hom_to CategoryTheory.WithInitial.homTo
 
-instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f := by tidy
+instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f := by aesop_cat
 #align category_theory.with_initial.is_iso_of_to_star CategoryTheory.WithInitial.isIso_of_to_star
 
 end WithInitial
 
 end CategoryTheory
-
