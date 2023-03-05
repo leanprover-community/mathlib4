@@ -35,15 +35,15 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
   let π₂ : X ⨯ Y ⟶ Y := prod.snd
   let e := equalizer.ι (π₁ ≫ f) (π₂ ≫ g)
   HasLimit.mk
-    { Cone :=
-        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by simp only [category.assoc, equalizer.condition]
-      IsLimit :=
+    { cone :=
+        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by simp only [Category.assoc, equalizer.condition]
+      isLimit :=
         PullbackCone.IsLimit.mk _
           (fun s =>
             equalizer.lift (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <|
               by
-              rw [← category.assoc, limit.lift_π, ← category.assoc, limit.lift_π] <;>
-                exact pullback_cone.condition _)
+              rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π] <;>
+                exact PullbackCone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
           ext
           · simpa using h₁
@@ -52,14 +52,14 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
 
 section
 
-attribute [local instance] has_limit_cospan_of_has_limit_pair_of_has_limit_parallel_pair
+attribute [local instance] hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair
 
 /-- If a category has all binary products and all equalizers, then it also has all pullbacks.
     As usual, this is not an instance, since there may be a more direct way to construct
     pullbacks. -/
 theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [𝒞 : Category.{v} C]
     [HasBinaryProducts C] [HasEqualizers C] : HasPullbacks C :=
-  { HasLimit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
+  { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
 #align category_theory.limits.has_pullbacks_of_has_binary_products_of_has_equalizers CategoryTheory.Limits.hasPullbacks_of_hasBinaryProducts_of_hasEqualizers
 
 end
@@ -73,30 +73,30 @@ theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type 
   let ι₂ : Z ⟶ Y ⨿ Z := coprod.inr
   let c := coequalizer.π (f ≫ ι₁) (g ≫ ι₂)
   HasColimit.mk
-    { Cocone :=
+    { cocone :=
         PushoutCocone.mk (ι₁ ≫ c) (ι₂ ≫ c) <| by
-          rw [← category.assoc, ← category.assoc, coequalizer.condition]
-      IsColimit :=
+          rw [← Category.assoc, ← Category.assoc, coequalizer.condition]
+      isColimit :=
         PushoutCocone.IsColimit.mk _
           (fun s =>
             coequalizer.desc (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <|
               by
-              rw [category.assoc, colimit.ι_desc, category.assoc, colimit.ι_desc] <;>
-                exact pushout_cocone.condition _)
+              rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc] <;>
+                exact PushoutCocone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
-          ext
+          apply coequalizer.hom_ext
           · simpa using h₁
           · simpa using h₂ }
 #align category_theory.limits.has_colimit_span_of_has_colimit_pair_of_has_colimit_parallel_pair CategoryTheory.Limits.hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair
 
 section
 
-attribute [local instance] has_colimit_span_of_has_colimit_pair_of_has_colimit_parallel_pair
+attribute [local instance] hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair
 
 /-- If a category has all binary coproducts and all coequalizers, then it also has all pushouts.
     As usual, this is not an instance, since there may be a more direct way to construct
     pushouts. -/
-theorem hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers (C : Type u) [𝒞 : Category.{v} C]
+theorem hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers (C : Type u) [Category.{v} C]
     [HasBinaryCoproducts C] [HasCoequalizers C] : HasPushouts C :=
   hasPushouts_of_hasColimit_span C
 #align category_theory.limits.has_pushouts_of_has_binary_coproducts_of_has_coequalizers CategoryTheory.Limits.hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers
