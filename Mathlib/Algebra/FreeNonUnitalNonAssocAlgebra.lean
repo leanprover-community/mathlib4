@@ -19,19 +19,19 @@ Given a semiring `R` and a type `X`, we construct the free non-unital, non-assoc
 because it can be used to build free algebras with more structure, e.g., free Lie algebras.
 
 Note that elsewhere we have a construction of the free unital, associative algebra. This is called
-`free_algebra`.
+`FreeAlgebra`.
 
 ## Main definitions
 
-  * `free_non_unital_non_assoc_algebra`
-  * `free_non_unital_non_assoc_algebra.lift`
-  * `free_non_unital_non_assoc_algebra.of`
+  * `FreeNonUnitalNonAssocAlgebra`
+  * `FreeNonUnitalNonAssocAlgebra.lift`
+  * `FreeNonUnitalNonAssocAlgebra.of`
 
 ## Implementation details
 
 We construct the free algebra as the magma algebra, with coefficients in `R`, of the free magma on
 `X`. However we regard this as an implementation detail and thus deliberately omit the lemmas
-`of_apply` and `lift_apply`, and we mark `free_non_unital_non_assoc_algebra` and `lift` as
+`of_apply` and `lift_apply`, and we mark `FreeNonUnitalNonAssocAlgebra` and `lift` as
 irreducible once we have established the universal property.
 
 ## Tags
@@ -65,7 +65,7 @@ variable {A : Type w} [NonUnitalNonAssocSemiring A]
 
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 
-/-- The functor `X ↦ free_non_unital_non_assoc_algebra R X` from the category of types to the
+/-- The functor `X ↦ FreeNonUnitalNonAssocAlgebra R X` from the category of types to the
 category of non-unital, non-associative algebras over `R` is adjoint to the forgetful functor in the
 other direction. -/
 def lift : (X → A) ≃ (FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A) :=
@@ -74,8 +74,7 @@ def lift : (X → A) ≃ (FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A) :=
 
 @[simp]
 theorem lift_symm_apply (F : FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A) :
-    (lift R).symm F = F ∘ of R :=
-  rfl
+    (lift R).symm F = F ∘ of R := rfl
 #align free_non_unital_non_assoc_algebra.lift_symm_apply FreeNonUnitalNonAssocAlgebra.lift_symm_apply
 
 @[simp]
@@ -102,8 +101,7 @@ theorem lift_comp_of (F : FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A) : lif
 @[ext]
 theorem hom_ext {F₁ F₂ : FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A}
     (h : ∀ x, F₁ (of R x) = F₂ (of R x)) : F₁ = F₂ :=
-  (lift R).symm.Injective <| funext h
+  (lift R).symm.injective <| funext h
 #align free_non_unital_non_assoc_algebra.hom_ext FreeNonUnitalNonAssocAlgebra.hom_ext
 
 end FreeNonUnitalNonAssocAlgebra
-
