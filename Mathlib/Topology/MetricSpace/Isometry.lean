@@ -297,7 +297,7 @@ structure IsometryEquiv (α β : Type _) [PseudoEMetricSpace α] [PseudoEMetricS
   isometry_toFun : Isometry toFun
 #align isometry_equiv IsometryEquiv
 
--- mathport name: «expr ≃ᵢ »
+@[inherit_doc]
 infixl:25 " ≃ᵢ " => IsometryEquiv
 
 namespace IsometryEquiv
