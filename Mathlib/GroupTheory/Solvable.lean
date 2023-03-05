@@ -62,7 +62,8 @@ theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
 #align derived_series_normal derivedSeries_normal
 
--- porting note: removed simp attribute since `derivedSeries G 1` is not in simp-normal form
+-- porting note: higher simp priority to restore Lean 3 behavior
+@[simp 1100]
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
 #align derived_series_one derivedSeries_one
@@ -144,12 +145,8 @@ theorem solvable_of_ker_le_range {G' G'' : Type _} [Group G'] [Group G''] (f : G
   refine' ⟨⟨n + m, le_bot_iff.mp (map_bot f ▸ hm ▸ _)⟩⟩
   clear hm
   induction' m with m hm
-  ·
-    exact
-      f.range_eq_map ▸
-        ((derivedSeries G n).map_eq_bot_iff.mp
-              (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans
-          hfg
+  · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
+      (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
   · exact commutator_le_map_commutator hm hm
 #align solvable_of_ker_le_range solvable_of_ker_le_range
 
