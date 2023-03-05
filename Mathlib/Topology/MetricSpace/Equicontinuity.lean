@@ -22,14 +22,14 @@ and we prove that functions sharing a common (local or global) continuity modulu
 
 ## Main statements
 
-* `equicontinuous_at_iff`: characterization of equicontinuity for families of functions between
-  (pseudo) metric spaces.
-* `equicontinuous_at_of_continuity_modulus`: convenient way to prove equicontinuity at a point of
-  a family of functions to a (pseudo) metric space by showing that they share a common *local*
-  continuity modulus.
-* `uniform_equicontinuous_of_continuity_modulus`: convenient way to prove uniform equicontinuity
-  of a family of functions to a (pseudo) metric space by showing that they share a common *global*
-  continuity modulus.
+* `Metric.equicontinuousAt_iff`: characterization of equicontinuity for families of functions
+  between (pseudo) metric spaces.
+* `Metric.equicontinuousAt_of_continuity_modulus`: convenient way to prove equicontinuity at a
+  point of a family of functions to a (pseudo) metric space by showing that they share a common
+  *local* continuity modulus.
+* `Metric.uniformEquicontinuous_of_continuity_modulus`: convenient way to prove uniform
+  equicontinuity of a family of functions to a (pseudo) metric space by showing that they share a
+  common *global* continuity modulus.
 
 ## Tags
 
@@ -56,7 +56,7 @@ theorem equicontinuousAt_iff {ι : Type _} [PseudoMetricSpace β] {F : ι → β
   nhds_basis_ball.equicontinuousAt_iff uniformity_basis_dist
 #align metric.equicontinuous_at_iff Metric.equicontinuousAt_iff
 
-/-- Reformulation of `equicontinuous_at_iff_pair` for families of functions taking values in a
+/-- Reformulation of `equicontinuousAt_iff_pair` for families of functions taking values in a
 (pseudo) metric space. -/
 protected theorem equicontinuousAt_iff_pair {ι : Type _} [TopologicalSpace β] {F : ι → β → α}
     {x₀ : β} :
@@ -115,7 +115,8 @@ theorem uniformEquicontinuous_of_continuity_modulus {ι : Type _} [PseudoMetricS
     _ ≤ |b (dist x y)| := (le_abs_self _)
     _ = dist (b (dist x y)) 0 := by simp [Real.dist_eq]
     _ < ε := hδ (by simpa only [Real.dist_eq, tsub_zero, abs_dist] using hxy)
-#align metric.uniform_equicontinuous_of_continuity_modulus Metric.uniformEquicontinuous_of_continuity_modulus
+#align metric.uniform_equicontinuous_of_continuity_modulus
+  Metric.uniformEquicontinuous_of_continuity_modulus
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
 equicontinuity is to show that all of the functions share a common *global* continuity modulus. -/
