@@ -18,10 +18,7 @@ import Mathlib.Topology.Instances.Real
 This file provides lemmas about Cauchy sequences in terms of infinite sums.
 -/
 
-
-open Filter Finset
-
-open BigOperators NNReal Topology
+open Filter Finset BigOperators NNReal Topology
 
 variable {α : Type _}
 
@@ -29,22 +26,21 @@ variable {α : Type _}
 by a summable series of `nnreal`s, then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
-  refine' EMetric.cauchySeq_iff_NNReal.2 fun ε εpos => _
+  refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos => ?_
   -- Actually we need partial sums of `d` to be a Cauchy sequence
   replace hd : CauchySeq fun n : ℕ => ∑ x in range n, d x :=
     let ⟨_, H⟩ := hd
-    H.tendsto_sum_nat.cauchy_seq
+    H.tendsto_sum_nat.cauchySeq
   -- Now we take the same `N` as in one of the definitions of a Cauchy sequence
-  refine' (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn => _
-  have hsum := hN n hn
+  refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn => ?_
+  specialize hN n hn
   -- We simplify the known inequality
-  rw [dist_nndist, NNReal.nndist_eq, ← sum_range_add_sum_Ico _ hn, add_tsub_cancel_left] at hsum
-  norm_cast  at hsum
-  replace hsum := lt_of_le_of_lt (le_max_left _ _) hsum
+  rw [dist_nndist, NNReal.nndist_eq, ← sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
+    NNReal.coe_lt_coe, max_lt_iff] at hN
   rw [edist_comm]
   -- Then use `hf` to simplify the goal to the same form
-  apply lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun k _ _ => hf k)
-  assumption_mod_cast
+  refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ => hf _) ?_
+  exact_mod_cast hN.1
 #align cauchy_seq_of_edist_le_of_summable cauchySeq_of_edist_le_of_summable
 
 variable [PseudoMetricSpace α] {f : ℕ → α} {a : α}
@@ -53,19 +49,23 @@ variable [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) : CauchySeq f := by
+  -- Porting note: todo: with `Topology/Instances/NNReal` we can use this:
+  -- lift d to ℕ → ℝ≥0 using fun n => dist_nonneg.trans (hf n)
+  -- refine cauchySeq_of_edist_le_of_summable d ?_ ?_
+  -- · exact_mod_cast hf
+  -- · exact_mod_cast hd
   refine' Metric.cauchySeq_iff'.2 fun ε εpos => _
   replace hd : CauchySeq fun n : ℕ => ∑ x in range n, d x :=
     let ⟨_, H⟩ := hd
-    H.tendsto_sum_nat.cauchy_seq
+    H.tendsto_sum_nat.cauchySeq
   refine' (Metric.cauchySeq_iff'.1 hd ε εpos).imp fun N hN n hn => _
   have hsum := hN n hn
   rw [Real.dist_eq, ← sum_Ico_eq_sub _ hn] at hsum
   calc
     dist (f n) (f N) = dist (f N) (f n) := dist_comm _ _
-    _ ≤ ∑ x in Ico N n, d x := (dist_le_Ico_sum_of_dist_le hn fun k _ _ => hf k)
-    _ ≤ |∑ x in Ico N n, d x| := (le_abs_self _)
+    _ ≤ ∑ x in Ico N n, d x := dist_le_Ico_sum_of_dist_le hn fun _ _ => hf _
+    _ ≤ |∑ x in Ico N n, d x| := le_abs_self _
     _ < ε := hsum
-    
 #align cauchy_seq_of_dist_le_of_summable cauchySeq_of_dist_le_of_summable
 
 theorem cauchySeq_of_summable_dist (h : Summable fun n => dist (f n) (f n.succ)) : CauchySeq f :=
@@ -75,8 +75,8 @@ theorem cauchySeq_of_summable_dist (h : Summable fun n => dist (f n) (f n.succ))
 theorem dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ ∑' m, d (n + m) := by
-  refine' le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_at_top.2 ⟨n, fun m hnm => _⟩)
-  refine' le_trans (dist_le_Ico_sum_of_dist_le hnm fun k _ _ => hf k) _
+  refine' le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm => _⟩)
+  refine' le_trans (dist_le_Ico_sum_of_dist_le hnm fun _ _ => hf _) _
   rw [sum_Ico_eq_sum_range]
   refine' sum_le_tsum (range _) (fun _ _ => le_trans dist_nonneg (hf _)) _
   exact hd.comp_injective (add_right_injective n)
@@ -97,4 +97,3 @@ theorem dist_le_tsum_dist_of_tendsto₀ (h : Summable fun n => dist (f n) (f n.s
     (ha : Tendsto f atTop (𝓝 a)) : dist (f 0) a ≤ ∑' n, dist (f n) (f n.succ) := by
   simpa only [zero_add] using dist_le_tsum_dist_of_tendsto h ha 0
 #align dist_le_tsum_dist_of_tendsto₀ dist_le_tsum_dist_of_tendsto₀
-
