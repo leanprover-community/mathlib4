@@ -16,7 +16,8 @@ import Mathlib.GroupTheory.Archimedean
 
 In this file we prove the following theorems:
 
-- `Rat.denseRange_cast`: the coercion from `ℚ` to a linear ordered archimedean field has dense range;
+- `Rat.denseRange_cast`: the coercion from `ℚ` to a linear ordered archimedean field has dense
+  range;
 
 - `AddSubgroup.dense_of_not_isolated_zero`, `AddSubgroup.dense_of_no_min`: two sufficient conditions
   for a subgroup of an archimedean linear ordered additive commutative group to be dense;
