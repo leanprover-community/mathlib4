@@ -8,8 +8,8 @@ Authors: Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.MulAction
-import Mathbin.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Compatibility of algebraic operations with metric space structures
@@ -72,8 +72,7 @@ variable [HasLipschitzMul β]
 
 @[to_additive]
 theorem lipschitz_with_lipschitz_const_mul :
-    ∀ p q : β × β, dist (p.1 * p.2) (q.1 * q.2) ≤ HasLipschitzMul.c β * dist p q :=
-  by
+    ∀ p q : β × β, dist (p.1 * p.2) (q.1 * q.2) ≤ HasLipschitzMul.c β * dist p q := by
   rw [← lipschitzWith_iff_dist_le_mul]
   exact lipschitzWith_lipschitz_const_mul_edist
 #align lipschitz_with_lipschitz_const_mul lipschitz_with_lipschitz_const_mul
