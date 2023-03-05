@@ -90,14 +90,14 @@ def toString : Onote → String
 /-- Print an ordinal notation -/
 def repr' : Onote → String
   | zero => "0"
-  | oadd e n a => "(oadd " ++ repr' e ++ " " ++ ToString.toString (n : ℕ) ++ " " ++ repr' a ++ ")"
+  | oadd e n a => "(oadd " ++ (repr' e) ++ " " ++ ToString.toString (n : ℕ) ++ " " ++ (repr' a) ++ ")"
 #align onote.repr' Onote.repr
 
 instance : ToString Onote :=
   ⟨toString⟩
 
-instance : Repr Onote :=
-  ⟨repr'⟩
+instance : Repr Onote where
+  reprPrec o _ := repr' o
 
 instance : Preorder Onote where
   le x y := repr x ≤ repr y
