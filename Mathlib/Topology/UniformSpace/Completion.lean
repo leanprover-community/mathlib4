@@ -383,6 +383,9 @@ instance : SeparatedSpace (Completion α) :=
 instance : T3Space (Completion α) :=
   separated_t3
 
+/-- The map from a uniform space to its completion.
+
+porting note: this was added to create a target for the `@[coe]` attribute. -/
 @[coe] def coe' : α → Completion α := Quotient.mk' ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
