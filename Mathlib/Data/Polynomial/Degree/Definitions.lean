@@ -17,11 +17,11 @@ import Mathlib.Data.Polynomial.Coeff
 # Theory of univariate polynomials
 
 The definitions include
-`degree`, `monic`, `leading_coeff`
+`degree`, `Monic`, `leadingCoeff`
 
 Results include
 - `degree_mul` : The degree of the product is the sum of degrees
-- `leading_coeff_add_of_degree_eq` and `leading_coeff_add_of_degree_lt` :
+- `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
     The leading_coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
@@ -61,17 +61,17 @@ theorem degree_lt_wf : WellFounded fun p q : R[X] => degree p < degree q :=
 instance : WellFoundedRelation R[X] :=
   ⟨_, degree_lt_wf⟩
 
-/-- `nat_degree p` forces `degree p` to ℕ, by defining nat_degree 0 = 0. -/
+/-- `natDegree p` forces `degree p` to ℕ, by defining nat_degree 0 = 0. -/
 def natDegree (p : R[X]) : ℕ :=
   (degree p).unbot' 0
 #align polynomial.nat_degree Polynomial.natDegree
 
-/-- `leading_coeff p` gives the coefficient of the highest power of `X` in `p`-/
+/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`-/
 def leadingCoeff (p : R[X]) : R :=
   coeff p (natDegree p)
 #align polynomial.leading_coeff Polynomial.leadingCoeff
 
-/-- a polynomial is `monic` if its leading coefficient is 1 -/
+/-- a polynomial is `Monic` if its leading coefficient is 1 -/
 def Monic (p : R[X]) :=
   leadingCoeff p = (1 : R)
 #align polynomial.monic Polynomial.Monic
@@ -376,7 +376,7 @@ theorem coeff_natDegree_succ_eq_zero {p : R[X]} : p.coeff (p.natDegree + 1) = 0 
   coeff_eq_zero_of_natDegree_lt (lt_add_one _)
 #align polynomial.coeff_nat_degree_succ_eq_zero Polynomial.coeff_natDegree_succ_eq_zero
 
--- We need the explicit `decidable` argument here because an exotic one shows up in a moment!
+-- We need the explicit `Decidable` argument here because an exotic one shows up in a moment!
 theorem ite_le_natDegree_coeff (p : R[X]) (n : ℕ) (I : Decidable (n < 1 + natDegree p)) :
     @ite _ (n < 1 + natDegree p) I (coeff p n) 0 = coeff p n := by
   split_ifs with h
@@ -1277,7 +1277,7 @@ theorem natDegree_X_pow (n : ℕ) : natDegree ((X : R[X]) ^ n) = n :=
   natDegree_eq_of_degree_eq_some (degree_X_pow n)
 #align polynomial.nat_degree_X_pow Polynomial.natDegree_X_pow
 
---  This lemma explicitly does not require the `nontrivial R` assumption.
+--  This lemma explicitly does not require the `Nontrivial R` assumption.
 theorem natDegree_X_pow_le {R : Type _} [Semiring R] (n : ℕ) : (X ^ n : R[X]).natDegree ≤ n := by
   nontriviality R
   rw [Polynomial.natDegree_X_pow]
@@ -1535,7 +1535,7 @@ theorem degree_mul : degree (p * q) = degree p + degree q :=
     else degree_mul' <| mul_ne_zero (mt leadingCoeff_eq_zero.1 hp0) (mt leadingCoeff_eq_zero.1 hq0)
 #align polynomial.degree_mul Polynomial.degree_mul
 
-/-- `degree` as a monoid homomorphism between `R[X]` and `multiplicative (with_bot ℕ)`.
+/-- `degree` as a monoid homomorphism between `R[X]` and `Multiplicative (WithBot ℕ)`.
   This is useful to prove results about multiplication and degree. -/
 def degreeMonoidHom [Nontrivial R] : R[X] →* Multiplicative (WithBot ℕ)
     where
@@ -1559,8 +1559,8 @@ theorem leadingCoeff_mul (p q : R[X]) : leadingCoeff (p * q) = leadingCoeff p * 
       exact mul_ne_zero (mt leadingCoeff_eq_zero.1 hp) (mt leadingCoeff_eq_zero.1 hq)
 #align polynomial.leading_coeff_mul Polynomial.leadingCoeff_mul
 
-/-- `polynomial.leading_coeff` bundled as a `monoid_hom` when `R` has `no_zero_divisors`, and thus
-  `leading_coeff` is multiplicative -/
+/-- `Polynomial.leadingCoeff` bundled as a `MonoidHom` when `R` has `NoZeroDivisors`, and thus
+  `leadingCoeff` is multiplicative -/
 def leadingCoeffHom : R[X] →* R where
   toFun := leadingCoeff
   map_one' := by simp
