@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 Constructions to relate the notions of preserving products and reflecting products
 to concrete fans.
 
-In particular, we show that `pi_comparison G f` is an isomorphism iff `G` preserves
+In particular, we show that `piComparison G f` is an isomorphism iff `G` preserves
 the limit of `f`.
 -/
 
@@ -38,22 +38,16 @@ namespace CategoryTheory.Limits
 
 variable {J : Type w} (f : J → C)
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `discrete_cases #[] -/
 /-- The map of a fan is a limit iff the fan consisting of the mapped morphisms is a limit. This
-essentially lets us commute `fan.mk` with `functor.map_cone`.
+essentially lets us commute `Fan.mk` with `Functor.mapCone`.
 -/
 def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
-    IsLimit (G.mapCone (Fan.mk P g)) ≃
+    IsLimit (Functor.mapCone G (Fan.mk P g)) ≃
       IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
-  refine' (is_limit.postcompose_hom_equiv _ _).symm.trans (is_limit.equiv_iso_limit _)
-  refine' discrete.nat_iso fun j => iso.refl (G.obj (f j.as))
-  refine'
-    cones.ext (iso.refl _) fun j =>
-      by
-      trace
-        "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `discrete_cases #[]"
-      dsimp
-      simp
+  refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
+  refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  refine' Cones.ext (Iso.refl _) fun j =>
+      by dsimp; cases j; simp
 #align category_theory.limits.is_limit_map_cone_fan_mk_equiv CategoryTheory.Limits.isLimitMapConeFanMkEquiv
 
 /-- The property of preserving products expressed in terms of fans. -/
@@ -88,9 +82,10 @@ variable [HasProduct fun j : J => G.obj (f j)]
 /-- If `pi_comparison G f` is an isomorphism, then `G` preserves the limit of `f`. -/
 def PreservesProduct.ofIsoComparison [i : IsIso (piComparison G f)] :
     PreservesLimit (Discrete.functor f) G := by
-  apply preserves_limit_of_preserves_limit_cone (product_is_product f)
-  apply (is_limit_map_cone_fan_mk_equiv _ _ _).symm _
-  apply is_limit.of_point_iso (limit.is_limit (discrete.functor fun j : J => G.obj (f j)))
+  apply preservesLimitOfPreservesLimitCone (productIsProduct f)
+  apply (isLimitMapConeFanMkEquiv _ _ _).symm _
+  refine @IsLimit.ofPointIso _ _ _ _ _ _ _ 
+    (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) ?_
   apply i
 #align category_theory.limits.preserves_product.of_iso_comparison CategoryTheory.Limits.PreservesProduct.ofIsoComparison
 
@@ -105,32 +100,25 @@ def PreservesProduct.iso : G.obj (∏ f) ≅ ∏ fun j => G.obj (f j) :=
 #align category_theory.limits.preserves_product.iso CategoryTheory.Limits.PreservesProduct.iso
 
 @[simp]
-theorem PreservesProduct.iso_hom : (PreservesProduct.iso G f).Hom = piComparison G f :=
+theorem PreservesProduct.iso_hom : (PreservesProduct.iso G f).hom = piComparison G f :=
   rfl
 #align category_theory.limits.preserves_product.iso_hom CategoryTheory.Limits.PreservesProduct.iso_hom
 
 instance : IsIso (piComparison G f) := by
-  rw [← preserves_product.iso_hom]
+  rw [← PreservesProduct.iso_hom]
   infer_instance
 
 end
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `discrete_cases #[] -/
 /-- The map of a cofan is a colimit iff the cofan consisting of the mapped morphisms is a colimit.
-This essentially lets us commute `cofan.mk` with `functor.map_cocone`.
+This essentially lets us commute `Cofan.mk` with `Functor.mapCocone`.
 -/
 def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
-    IsColimit (G.mapCocone (Cofan.mk P g)) ≃
+    IsColimit (Functor.mapCocone G (Cofan.mk P g)) ≃
       IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
-  refine' (is_colimit.precompose_hom_equiv _ _).symm.trans (is_colimit.equiv_iso_colimit _)
-  refine' discrete.nat_iso fun j => iso.refl (G.obj (f j.as))
-  refine'
-    cocones.ext (iso.refl _) fun j =>
-      by
-      trace
-        "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `discrete_cases #[]"
-      dsimp
-      simp
+  refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
+  refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  refine' Cocones.ext (Iso.refl _) fun j => by dsimp; cases j; simp
 #align category_theory.limits.is_colimit_map_cocone_cofan_mk_equiv CategoryTheory.Limits.isColimitMapCoconeCofanMkEquiv
 
 /-- The property of preserving coproducts expressed in terms of cofans. -/
@@ -165,9 +153,10 @@ variable [HasCoproduct fun j : J => G.obj (f j)]
 /-- If `sigma_comparison G f` is an isomorphism, then `G` preserves the colimit of `f`. -/
 def PreservesCoproduct.ofIsoComparison [i : IsIso (sigmaComparison G f)] :
     PreservesColimit (Discrete.functor f) G := by
-  apply preserves_colimit_of_preserves_colimit_cocone (coproduct_is_coproduct f)
-  apply (is_colimit_map_cocone_cofan_mk_equiv _ _ _).symm _
-  apply is_colimit.of_point_iso (colimit.is_colimit (discrete.functor fun j : J => G.obj (f j)))
+  apply preservesColimitOfPreservesColimitCocone (coproductIsCoproduct f)
+  apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
+  refine @IsColimit.ofPointIso _ _ _ _ _ _ _ 
+    (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) ?_
   apply i
 #align category_theory.limits.preserves_coproduct.of_iso_comparison CategoryTheory.Limits.PreservesCoproduct.ofIsoComparison
 
@@ -182,12 +171,11 @@ def PreservesCoproduct.iso : G.obj (∐ f) ≅ ∐ fun j => G.obj (f j) :=
 #align category_theory.limits.preserves_coproduct.iso CategoryTheory.Limits.PreservesCoproduct.iso
 
 @[simp]
-theorem PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaComparison G f :=
-  rfl
+theorem PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaComparison G f := rfl
 #align category_theory.limits.preserves_coproduct.inv_hom CategoryTheory.Limits.PreservesCoproduct.inv_hom
 
 instance : IsIso (sigmaComparison G f) := by
-  rw [← preserves_coproduct.inv_hom]
+  rw [← PreservesCoproduct.inv_hom]
   infer_instance
 
 end
