@@ -1169,23 +1169,23 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
 
 @[simp]
 theorem PullbackCone.fst_colimit_cocone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasLimit (cospan f g)] : PullbackCone.fst (Limit.cone (cospan f g)) = pullback.fst :=
+    [HasLimit (cospan f g)] : PullbackCone.fst (limit.cone (cospan f g)) = pullback.fst :=
   rfl
 #align category_theory.limits.pullback_cone.fst_colimit_cocone CategoryTheory.Limits.PullbackCone.fst_colimit_cocone
 
 @[simp]
 theorem PullbackCone.snd_colimit_cocone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasLimit (cospan f g)] : PullbackCone.snd (Limit.cone (cospan f g)) = pullback.snd := rfl
+    [HasLimit (cospan f g)] : PullbackCone.snd (limit.cone (cospan f g)) = pullback.snd := rfl
 #align category_theory.limits.pullback_cone.snd_colimit_cocone CategoryTheory.Limits.PullbackCone.snd_colimit_cocone
 
 -- Porting note: simp can prove this; removed simp
 theorem PushoutCocone.inl_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y)
-    [HasColimit (span f g)] : PushoutCocone.inl (Colimit.cocone (span f g)) = pushout.inl := rfl
+    [HasColimit (span f g)] : PushoutCocone.inl (colimit.cocone (span f g)) = pushout.inl := rfl
 #align category_theory.limits.pushout_cocone.inl_colimit_cocone CategoryTheory.Limits.PushoutCocone.inl_colimit_cocone
 
 -- Porting note: simp can prove this; removed simp
 theorem PushoutCocone.inr_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y) 
-    [HasColimit (span f g)] : PushoutCocone.inr (Colimit.cocone (span f g)) = pushout.inr := rfl
+    [HasColimit (span f g)] : PushoutCocone.inr (colimit.cocone (span f g)) = pushout.inr := rfl
 #align category_theory.limits.pushout_cocone.inr_colimit_cocone CategoryTheory.Limits.PushoutCocone.inr_colimit_cocone
 
 -- Porting note: simp can prove this and reassoced version; removed simp 
@@ -1699,7 +1699,6 @@ instance pullback_snd_iso_of_right_factors_mono (f : X ⟶ Z) :
     inferInstance;
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
-  · simp
 #align category_theory.limits.pullback_snd_iso_of_right_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_right_factors_mono
 
 end PullbackLeftIso
@@ -1779,7 +1778,6 @@ instance pullback_snd_iso_of_left_factors_mono (f : X ⟶ Z) :
     inferInstance;
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
-  · simp
 #align category_theory.limits.pullback_snd_iso_of_left_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_left_factors_mono
 
 end PullbackRightIso
@@ -1873,7 +1871,6 @@ instance pushout_inr_iso_of_right_factors_epi (f : X ⟶ Y) :
     inferInstance
   · apply (Category.comp_id _).symm
   · apply (Category.comp_id _).symm
-  · simp
 #align category_theory.limits.pushout_inr_iso_of_right_factors_epi CategoryTheory.Limits.pushout_inr_iso_of_right_factors_epi
 
 end PushoutLeftIso
@@ -1955,7 +1952,6 @@ instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
         inferInstance;
   · exact (Category.comp_id _).symm
   · exact (Category.comp_id _).symm
-  · simp
 #align category_theory.limits.pushout_inl_iso_of_left_factors_epi CategoryTheory.Limits.pushout_inl_iso_of_left_factors_epi
 
 end PushoutRightIso
