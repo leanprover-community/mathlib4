@@ -8,8 +8,8 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving binary products
@@ -82,8 +82,7 @@ variable [HasBinaryProduct (G.obj X) (G.obj Y)]
 pair of `(X,Y)`.
 -/
 def PreservesLimitPair.ofIsoProdComparison [i : IsIso (prodComparison G X Y)] :
-    PreservesLimit (pair X Y) G :=
-  by
+    PreservesLimit (pair X Y) G := by
   apply preserves_limit_of_preserves_limit_cone (prod_is_prod X Y)
   apply (is_limit_map_cone_binary_fan_equiv _ _ _).symm _
   apply is_limit.of_point_iso (limit.is_limit (pair (G.obj X) (G.obj Y)))
@@ -104,8 +103,7 @@ theorem PreservesLimitPair.iso_hom : (PreservesLimitPair.iso G X Y).Hom = prodCo
   rfl
 #align category_theory.limits.preserves_limit_pair.iso_hom CategoryTheory.Limits.PreservesLimitPair.iso_hom
 
-instance : IsIso (prodComparison G X Y) :=
-  by
+instance : IsIso (prodComparison G X Y) := by
   rw [← preserves_limit_pair.iso_hom]
   infer_instance
 
@@ -158,8 +156,7 @@ variable [HasBinaryCoproduct (G.obj X) (G.obj Y)]
 pair of `(X,Y)`.
 -/
 def PreservesColimitPair.ofIsoCoprodComparison [i : IsIso (coprodComparison G X Y)] :
-    PreservesColimit (pair X Y) G :=
-  by
+    PreservesColimit (pair X Y) G := by
   apply preserves_colimit_of_preserves_colimit_cocone (coprod_is_coprod X Y)
   apply (is_colimit_map_cocone_binary_cofan_equiv _ _ _).symm _
   apply is_colimit.of_point_iso (colimit.is_colimit (pair (G.obj X) (G.obj Y)))
@@ -183,8 +180,7 @@ theorem PreservesColimitPair.iso_hom :
   rfl
 #align category_theory.limits.preserves_colimit_pair.iso_hom CategoryTheory.Limits.PreservesColimitPair.iso_hom
 
-instance : IsIso (coprodComparison G X Y) :=
-  by
+instance : IsIso (coprodComparison G X Y) := by
   rw [← preserves_colimit_pair.iso_hom]
   infer_instance
 
