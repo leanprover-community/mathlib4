@@ -27,11 +27,11 @@ Then we prove some basic properties of these functions.
 We define `NNReal.sqrt` as the noncomputable inverse to the function `x ↦ x * x`. We use general
 theory of inverses of strictly monotone functions to prove that `NNReal.sqrt x` exists. As a side
 effect, `NNReal.sqrt` is a bundled `OrderIso`, so for `NNReal` numbers we get continuity as well as
-theorems like `sqrt x ≤ y ↔ x ≤ y * y` for free.
+theorems like `NNReal.sqrt x ≤ y ↔ x ≤ y * y` for free.
 
-Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`. We also define a Cauchy
-sequence `Real.sqrtAux (f : CauSeq ℚ abs)` which converges to `sqrt (mk f)` but do not prove (yet)
-that this sequence actually converges to `sqrt (mk f)`.
+Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`. We also define a Cauchy sequence
+`Real.sqrtAux (f : CauSeq ℚ abs)` which converges to `Real.sqrt (mk f)` but do not prove (yet) that
+this sequence actually converges to `Real.sqrt (mk f)`.
 
 ## Tags
 
