@@ -9,7 +9,7 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
-import Mathlib.Topology.Instances.Nnreal
+import Mathlib.Topology.Instances.NNReal
 import Mathlib.Tactic.Positivity
 
 /-!
@@ -38,17 +38,15 @@ that this sequence actually converges to `sqrt (mk f)`.
 square root
 -/
 
-
 open Set Filter
-
-open Filter NNReal Topology
+open scoped Filter NNReal Topology
 
 namespace NNReal
 
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
-@[pp_nodot]
+-- porting note: was @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
@@ -112,7 +110,7 @@ theorem sqrt_mul (x y : ℝ≥0) : sqrt (x * y) = sqrt x * sqrt y := by
 
 /-- `nnreal.sqrt` as a `monoid_with_zero_hom`. -/
 noncomputable def sqrtHom : ℝ≥0 →*₀ ℝ≥0 :=
-  ⟨sqrt, sqrt_zero, sqrt_one, sqrt_mul⟩
+  ⟨⟨sqrt, sqrt_zero⟩, sqrt_one, sqrt_mul⟩
 #align nnreal.sqrt_hom NNReal.sqrtHom
 
 theorem sqrt_inv (x : ℝ≥0) : sqrt x⁻¹ = (sqrt x)⁻¹ :=
@@ -123,8 +121,7 @@ theorem sqrt_div (x y : ℝ≥0) : sqrt (x / y) = sqrt x / sqrt y :=
   map_div₀ sqrtHom x y
 #align nnreal.sqrt_div NNReal.sqrt_div
 
-theorem continuous_sqrt : Continuous sqrt :=
-  sqrt.Continuous
+theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 #align nnreal.continuous_sqrt NNReal.continuous_sqrt
 
 end NNReal
@@ -136,13 +133,13 @@ Currently this sequence is not used in `mathlib`.  -/
 def sqrtAux (f : CauSeq ℚ abs) : ℕ → ℚ
   | 0 => mkRat (f 0).num.toNat.sqrt (f 0).den.sqrt
   | n + 1 =>
-    let s := sqrt_aux n
+    let s := sqrtAux f n
     max 0 <| (s + f (n + 1) / s) / 2
 #align real.sqrt_aux Real.sqrtAux
 
 theorem sqrtAux_nonneg (f : CauSeq ℚ abs) : ∀ i : ℕ, 0 ≤ sqrtAux f i
   | 0 => by
-    rw [sqrt_aux, Rat.mkRat_eq, Rat.divInt_eq_div] <;> apply div_nonneg <;>
+    rw [sqrtAux, Rat.mkRat_eq, Rat.divInt_eq_div]; apply div_nonneg <;>
       exact Int.cast_nonneg.2 (Int.ofNat_nonneg _)
   | n + 1 => le_max_left _ _
 #align real.sqrt_aux_nonneg Real.sqrtAux_nonneg
@@ -159,8 +156,9 @@ begin
   rsuffices ⟨δ, δ0, hδ⟩ : ∃ δ > 0, ∀ i, abs (↑(sqrt_aux f i) - x) < δ / 2 ^ i,
   { intros }
 end -/
+
+-- porting note: todo: was @[pp_nodot]
 /-- The square root of a real number. This returns 0 for negative inputs. -/
-@[pp_nodot]
 noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
 #align real.sqrt Real.sqrt
@@ -183,7 +181,7 @@ theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = Real.sqrt x := by
 
 @[continuity]
 theorem continuous_sqrt : Continuous sqrt :=
-  NNReal.continuous_coe.comp <| NNReal.sqrt.Continuous.comp continuous_real_toNNReal
+  NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
 #align real.continuous_sqrt Real.continuous_sqrt
 
 theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
@@ -226,7 +224,6 @@ theorem sqrt_eq_one : sqrt x = 1 ↔ x = 1 :=
   calc
     sqrt x = 1 ↔ 1 * 1 = x := sqrt_eq_iff_mul_self_eq_of_pos zero_lt_one
     _ ↔ x = 1 := by rw [eq_comm, mul_one]
-    
 #align real.sqrt_eq_one Real.sqrt_eq_one
 
 @[simp]
@@ -267,12 +264,12 @@ theorem sqrt_lt_sqrt_iff (hx : 0 ≤ x) : sqrt x < sqrt y ↔ x < y :=
 #align real.sqrt_lt_sqrt_iff Real.sqrt_lt_sqrt_iff
 
 theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : sqrt x < sqrt y ↔ x < y := by
-  rw [sqrt, sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt_iff, to_nnreal_lt_to_nnreal_iff hy]
+  rw [sqrt, sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt_iff, toNNReal_lt_toNNReal_iff hy]
 #align real.sqrt_lt_sqrt_iff_of_pos Real.sqrt_lt_sqrt_iff_of_pos
 
 theorem sqrt_le_sqrt (h : x ≤ y) : sqrt x ≤ sqrt y := by
   rw [sqrt, sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt_iff]
-  exact to_nnreal_le_to_nnreal h
+  exact toNNReal_le_toNNReal h
 #align real.sqrt_le_sqrt Real.sqrt_le_sqrt
 
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : sqrt x < sqrt y :=
@@ -297,8 +294,8 @@ theorem sqrt_lt' (hy : 0 < y) : sqrt x < y ↔ x < y ^ 2 := by
   rw [← sqrt_lt_sqrt_iff_of_pos (pow_pos hy _), sqrt_sq hy.le]
 #align real.sqrt_lt' Real.sqrt_lt'
 
-/- note: if you want to conclude `x ≤ sqrt y`, then use `le_sqrt_of_sq_le`.
-   if you have `x > 0`, consider using `le_sqrt'` -/
+/-- Note: if you want to conclude `x ≤ Real.sqrt y`, then use `Real.le_sqrt_of_sq_le`.  If you have
+`x > 0`, consider using `Real.le_sqrt'` -/
 theorem le_sqrt (hx : 0 ≤ x) (hy : 0 ≤ y) : x ≤ sqrt y ↔ x ^ 2 ≤ y :=
   le_iff_le_iff_lt_iff_lt.2 <| sqrt_lt hy hx
 #align real.le_sqrt Real.le_sqrt
@@ -308,7 +305,7 @@ theorem le_sqrt' (hx : 0 < x) : x ≤ sqrt y ↔ x ^ 2 ≤ y :=
 #align real.le_sqrt' Real.le_sqrt'
 
 theorem abs_le_sqrt (h : x ^ 2 ≤ y) : |x| ≤ sqrt y := by
-  rw [← sqrt_sq_eq_abs] <;> exact sqrt_le_sqrt h
+  rw [← sqrt_sq_eq_abs]; exact sqrt_le_sqrt h
 #align real.abs_le_sqrt Real.abs_le_sqrt
 
 theorem sq_le (h : 0 ≤ y) : x ^ 2 ≤ y ↔ -sqrt y ≤ x ∧ x ≤ sqrt y := by
@@ -353,8 +350,10 @@ theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
 alias sqrt_pos ↔ _ sqrt_pos_of_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
 
+/-
 section
 
+Porting note: todo: restore positivity plugin
 open Tactic Tactic.Positivity
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
@@ -373,6 +372,7 @@ unsafe def _root_.tactic.positivity_sqrt : expr → tactic strictness
 #align tactic.positivity_sqrt tactic.positivity_sqrt
 
 end
+-/
 
 @[simp]
 theorem sqrt_mul (hx : 0 ≤ x) (y : ℝ) : sqrt (x * y) = sqrt x * sqrt y := by
@@ -401,7 +401,7 @@ theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : sqrt (x / y) = sqrt x / sqrt y 
 
 @[simp]
 theorem div_sqrt : x / sqrt x = sqrt x := by
-  cases le_or_lt x 0
+  cases' le_or_lt x 0 with h h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 #align real.div_sqrt Real.div_sqrt
@@ -445,17 +445,15 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
   rw [Real.sqrt_le_iff]
   constructor
   · norm_cast
-    simp
+    apply zero_le
   · norm_cast
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
 instance : StarOrderedRing ℝ :=
   { Real.orderedAddCommGroup with
-    nonneg_iff := fun r =>
-      by
-      refine'
-        ⟨fun hr => ⟨sqrt r, show r = sqrt r * sqrt r by rw [← sqrt_mul hr, sqrt_mul_self hr]⟩, _⟩
+    nonneg_iff := fun r => by
+      refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
       rintro ⟨s, rfl⟩
       exact mul_self_nonneg s }
 
@@ -467,17 +465,17 @@ variable {α : Type _}
 
 theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) :
     Tendsto (fun x => sqrt (f x)) l (𝓝 (sqrt x)) :=
-  (continuous_sqrt.Tendsto _).comp h
+  (continuous_sqrt.tendsto _).comp h
 #align filter.tendsto.sqrt Filter.Tendsto.sqrt
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
-theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
+nonrec theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x => sqrt (f x)) s x :=
   h.sqrt
 #align continuous_within_at.sqrt ContinuousWithinAt.sqrt
 
-theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x => sqrt (f x)) x :=
+nonrec theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x => sqrt (f x)) x :=
   h.sqrt
 #align continuous_at.sqrt ContinuousAt.sqrt
 
@@ -489,4 +487,3 @@ theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x => sqrt (
 theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => sqrt (f x) :=
   continuous_sqrt.comp h
 #align continuous.sqrt Continuous.sqrt
-
