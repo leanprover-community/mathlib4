@@ -368,8 +368,8 @@ theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → �
     ⟨fun c => by
       inhabit δ
       obtain ⟨⟨a, b⟩, h⟩ := h (c, default)
-      exact ⟨a, congr_arg Prod.fst h⟩, fun d =>
-      by
+      exact ⟨a, congr_arg Prod.fst h⟩,
+      fun d => by
       inhabit γ
       obtain ⟨⟨a, b⟩, h⟩ := h (default, d)
       exact ⟨b, congr_arg Prod.snd h⟩⟩,
@@ -378,8 +378,7 @@ theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → �
 
 @[simp]
 theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ} :
-    Bijective (map f g) ↔ Bijective f ∧ Bijective g :=
-  by
+    Bijective (map f g) ↔ Bijective f ∧ Bijective g := by
   haveI := Nonempty.map f ‹_›
   haveI := Nonempty.map g ‹_›
   exact (map_injective.and map_surjective).trans (and_and_and_comm)
@@ -391,11 +390,11 @@ theorem map_leftInverse [Nonempty β] [Nonempty δ] {f₁ : α → β} {g₁ : �
   ⟨fun h =>
     ⟨fun b => by
       inhabit δ
-      exact congr_arg Prod.fst (h (b, default)), fun d =>
-      by
+      exact congr_arg Prod.fst (h (b, default)),
+      fun d => by
       inhabit β
       exact congr_arg Prod.snd (h (default, d))⟩,
-    fun h => h.1.Prod_map h.2⟩
+    fun h => h.1.Prod_map h.2 ⟩
 #align prod.map_left_inverse Prod.map_leftInverse
 
 @[simp]
