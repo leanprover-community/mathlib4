@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Intervals
-import Mathbin.Topology.Algebra.InfiniteSum.Order
-import Mathbin.Topology.Instances.Real
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Infinite sum in the reals
@@ -28,8 +28,7 @@ variable {α : Type _}
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `nnreal`s, then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
-    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f :=
-  by
+    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
   refine' EMetric.cauchySeq_iff_NNReal.2 fun ε εpos => _
   -- Actually we need partial sums of `d` to be a Cauchy sequence
   replace hd : CauchySeq fun n : ℕ => ∑ x in range n, d x :=
@@ -53,8 +52,7 @@ variable [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 /-- If the distance between consecutive points of a sequence is estimated by a summable series,
 then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
-    (hd : Summable d) : CauchySeq f :=
-  by
+    (hd : Summable d) : CauchySeq f := by
   refine' Metric.cauchySeq_iff'.2 fun ε εpos => _
   replace hd : CauchySeq fun n : ℕ => ∑ x in range n, d x :=
     let ⟨_, H⟩ := hd
@@ -76,8 +74,7 @@ theorem cauchySeq_of_summable_dist (h : Summable fun n => dist (f n) (f n.succ))
 
 theorem dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
-    dist (f n) a ≤ ∑' m, d (n + m) :=
-  by
+    dist (f n) a ≤ ∑' m, d (n + m) := by
   refine' le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_at_top.2 ⟨n, fun m hnm => _⟩)
   refine' le_trans (dist_le_Ico_sum_of_dist_le hnm fun k _ _ => hf k) _
   rw [sum_Ico_eq_sum_range]
