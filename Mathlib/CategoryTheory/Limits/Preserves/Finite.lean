@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
-import Mathbin.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.FinCategory
 
 /-!
 # Preservation of finite (co)limits.
