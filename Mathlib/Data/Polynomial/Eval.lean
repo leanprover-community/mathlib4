@@ -125,7 +125,7 @@ theorem eval₂_C_X : eval₂ C X p = p :=
     rw [eval₂_monomial, ← smul_X_eq_monomial, C_mul']
 #align polynomial.eval₂_C_X Polynomial.eval₂_C_X
 
-/-- `eval₂_add_monoid_hom (f : R →+* S) (x : S)` is the `add_monoid_hom` from
+/-- `eval₂AddMonoidHom (f : R →+* S) (x : S)` is the `AddMonoidHom` from
 `R[X]` to `S` obtained by evaluating the pushforward of `p` along `f` at `x`. -/
 @[simps]
 def eval₂AddMonoidHom : R[X] →+ S where
@@ -213,7 +213,7 @@ theorem eval₂_list_prod_noncomm (ps : List R[X])
     simp [eval₂_mul_noncomm _ _ hf.2, ihp hf.1]
 #align polynomial.eval₂_list_prod_noncomm Polynomial.eval₂_list_prod_noncomm
 
-/-- `eval₂` as a `ring_hom` for noncommutative rings -/
+/-- `eval₂` as a `RingHom` for noncommutative rings -/
 def eval₂RingHom' (f : R →+* S) (x : S) (hf : ∀ a, Commute (f a) x) : R[X] →+* S where
   toFun := eval₂ f x
   map_add' _ _ := eval₂_add _ _
@@ -271,7 +271,7 @@ theorem eval₂_mul_eq_zero_of_right (p : R[X]) (hq : q.eval₂ f x = 0) : (p * 
   exact mul_eq_zero_of_right (p.eval₂ f x) hq
 #align polynomial.eval₂_mul_eq_zero_of_right Polynomial.eval₂_mul_eq_zero_of_right
 
-/-- `eval₂` as a `ring_hom` -/
+/-- `eval₂` as a `RingHom` -/
 def eval₂RingHom (f : R →+* S) (x : S) : R[X] →+* S :=
   { eval₂AddMonoidHom f x with
     map_one' := eval₂_one _ _
@@ -434,7 +434,7 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
     Nat.add_sub_cancel]
 #align polynomial.eval_monomial_one_add_sub Polynomial.eval_monomial_one_add_sub
 
-/-- `polynomial.eval` as linear map -/
+/-- `Polynomial.eval` as linear map -/
 @[simps]
 def leval {R : Type _} [Semiring R] (r : R) : R[X] →ₗ[R] R where
   toFun f := f.eval r
@@ -476,7 +476,7 @@ theorem eval_finset_sum (s : Finset ι) (g : ι → R[X]) (x : R) :
   eval₂_finset_sum _ _ _ _
 #align polynomial.eval_finset_sum Polynomial.eval_finset_sum
 
-/-- `is_root p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
+/-- `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
 def IsRoot (p : R[X]) (a : R) : Prop :=
   p.eval a = 0
 #align polynomial.is_root Polynomial.IsRoot
@@ -732,12 +732,12 @@ protected theorem map_smul (r : R) : (r • p).map f = f r • p.map f := by
 #align polynomial.map_smul Polynomial.map_smul
 
 -- `map` is a ring-hom unconditionally, and theoretically the definition could be replaced,
--- but this turns out not to be easy because `p.map f` does not resolve to `polynomial.map`
--- if `map` is a `ring_hom` instead of a plain function; the elaborator does not try to coerce
+-- but this turns out not to be easy because `p.map f` does not resolve to `Polynomial.map`
+-- if `map` is a `RingHom` instead of a plain function; the elaborator does not try to coerce
 -- to a function before trying field (dot) notation (this may be technically infeasible);
 -- the relevant code is (both lines): https://github.com/leanprover-community/
 -- lean/blob/487ac5d7e9b34800502e1ddf3c7c806c01cf9d51/src/frontends/lean/elaborator.cpp#L1876-L1913
-/-- `polynomial.map` as a `ring_hom`. -/
+/-- `Polynomial.map` as a `RingHom`. -/
 def mapRingHom (f : R →+* S) : R[X] →+* S[X] where
   toFun := Polynomial.map f
   map_add' _ _ := Polynomial.map_add f
@@ -1097,19 +1097,19 @@ theorem eval₂_finset_prod (s : Finset ι) (g : ι → R[X]) (x : S) :
   map_prod (eval₂RingHom f x) _ _
 #align polynomial.eval₂_finset_prod Polynomial.eval₂_finset_prod
 
-/-- Polynomial evaluation commutes with `list.prod`
+/-- Polynomial evaluation commutes with `List.prod`
 -/
 theorem eval_list_prod (l : List R[X]) (x : R) : eval x l.prod = (l.map (eval x)).prod :=
   (evalRingHom x).map_list_prod l
 #align polynomial.eval_list_prod Polynomial.eval_list_prod
 
-/-- Polynomial evaluation commutes with `multiset.prod`
+/-- Polynomial evaluation commutes with `Multiset.prod`
 -/
 theorem eval_multiset_prod (s : Multiset R[X]) (x : R) : eval x s.prod = (s.map (eval x)).prod :=
   (evalRingHom x).map_multiset_prod s
 #align polynomial.eval_multiset_prod Polynomial.eval_multiset_prod
 
-/-- Polynomial evaluation commutes with `finset.prod`
+/-- Polynomial evaluation commutes with `Finset.prod`
 -/
 theorem eval_prod {ι : Type _} (s : Finset ι) (p : ι → R[X]) (x : R) :
     eval x (∏ j in s, p j) = ∏ j in s, eval x (p j) :=
