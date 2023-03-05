@@ -294,6 +294,7 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers

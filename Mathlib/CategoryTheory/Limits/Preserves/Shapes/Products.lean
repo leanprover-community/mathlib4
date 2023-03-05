@@ -8,8 +8,8 @@ Authors: Scott Morrison, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Products
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving products
@@ -44,8 +44,7 @@ essentially lets us commute `fan.mk` with `functor.map_cone`.
 -/
 def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
     IsLimit (G.mapCone (Fan.mk P g)) ≃
-      IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) :=
-  by
+      IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
   refine' (is_limit.postcompose_hom_equiv _ _).symm.trans (is_limit.equiv_iso_limit _)
   refine' discrete.nat_iso fun j => iso.refl (G.obj (f j.as))
   refine'
@@ -88,8 +87,7 @@ variable [HasProduct fun j : J => G.obj (f j)]
 
 /-- If `pi_comparison G f` is an isomorphism, then `G` preserves the limit of `f`. -/
 def PreservesProduct.ofIsoComparison [i : IsIso (piComparison G f)] :
-    PreservesLimit (Discrete.functor f) G :=
-  by
+    PreservesLimit (Discrete.functor f) G := by
   apply preserves_limit_of_preserves_limit_cone (product_is_product f)
   apply (is_limit_map_cone_fan_mk_equiv _ _ _).symm _
   apply is_limit.of_point_iso (limit.is_limit (discrete.functor fun j : J => G.obj (f j)))
@@ -111,8 +109,7 @@ theorem PreservesProduct.iso_hom : (PreservesProduct.iso G f).Hom = piComparison
   rfl
 #align category_theory.limits.preserves_product.iso_hom CategoryTheory.Limits.PreservesProduct.iso_hom
 
-instance : IsIso (piComparison G f) :=
-  by
+instance : IsIso (piComparison G f) := by
   rw [← preserves_product.iso_hom]
   infer_instance
 
@@ -124,8 +121,7 @@ This essentially lets us commute `cofan.mk` with `functor.map_cocone`.
 -/
 def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
     IsColimit (G.mapCocone (Cofan.mk P g)) ≃
-      IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) :=
-  by
+      IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
   refine' (is_colimit.precompose_hom_equiv _ _).symm.trans (is_colimit.equiv_iso_colimit _)
   refine' discrete.nat_iso fun j => iso.refl (G.obj (f j.as))
   refine'
@@ -168,8 +164,7 @@ variable [HasCoproduct fun j : J => G.obj (f j)]
 
 /-- If `sigma_comparison G f` is an isomorphism, then `G` preserves the colimit of `f`. -/
 def PreservesCoproduct.ofIsoComparison [i : IsIso (sigmaComparison G f)] :
-    PreservesColimit (Discrete.functor f) G :=
-  by
+    PreservesColimit (Discrete.functor f) G := by
   apply preserves_colimit_of_preserves_colimit_cocone (coproduct_is_coproduct f)
   apply (is_colimit_map_cocone_cofan_mk_equiv _ _ _).symm _
   apply is_colimit.of_point_iso (colimit.is_colimit (discrete.functor fun j : J => G.obj (f j)))
@@ -191,8 +186,7 @@ theorem PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaCom
   rfl
 #align category_theory.limits.preserves_coproduct.inv_hom CategoryTheory.Limits.PreservesCoproduct.inv_hom
 
-instance : IsIso (sigmaComparison G f) :=
-  by
+instance : IsIso (sigmaComparison G f) := by
   rw [← preserves_coproduct.inv_hom]
   infer_instance
 
