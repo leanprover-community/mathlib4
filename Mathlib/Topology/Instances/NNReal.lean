@@ -21,13 +21,13 @@ The natural topology on `ℝ≥0` (the one induced from `ℝ`), and a basic API.
 
 Instances for the following typeclasses are defined:
 
-* `topological_space ℝ≥0`
-* `topological_semiring ℝ≥0`
+* `TopologicalSpace ℝ≥0`
+* `TopologicalSemiring ℝ≥0`
 * `second_countable_topology ℝ≥0`
-* `order_topology ℝ≥0`
-* `has_continuous_sub ℝ≥0`
-* `has_continuous_inv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
-* `has_continuous_smul ℝ≥0 α` (whenever `α` has a continuous `mul_action ℝ α`)
+* `OrderTopology ℝ≥0`
+* `ContinuousSub ℝ≥0`
+* `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
+* `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
 
 Everything is inherited from the corresponding structures on the reals.
 
@@ -36,7 +36,7 @@ Everything is inherited from the corresponding structures on the reals.
 Various mathematically trivial lemmas are proved about the compatibility
 of limits and sums in `ℝ≥0` and `ℝ`. For example
 
-* `tendsto_coe {f : filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
+* `tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
   tendsto (λa, (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ tendsto m f (𝓝 x)`
 
 says that the limit of a filter along a map to `ℝ≥0` is the same in `ℝ` and `ℝ≥0`, and
