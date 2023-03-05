@@ -8,8 +8,8 @@ Authors: Oliver Nash
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Free
-import Mathbin.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.Free
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Free algebras
