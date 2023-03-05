@@ -31,7 +31,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Function Set
 
-open Topology ENNReal
+open scoped Topology ENNReal
 
 /-- An isometry (also known as isometric embedding) is a map preserving the edistance
 between pseudoemetric spaces, or equivalently the distance between pseudometric space.  -/
@@ -91,12 +91,12 @@ theorem antilipschitz (h : Isometry f) : AntilipschitzWith 1 f := fun x y => by
 
 /-- Any map on a subsingleton is an isometry -/
 @[nontriviality]
-theorem isometry_subsingleton [Subsingleton α] : Isometry f := fun x y => by
-  rw [Subsingleton.elim x y] <;> simp
+theorem _root_.isometry_subsingleton [Subsingleton α] : Isometry f := fun x y => by
+  rw [Subsingleton.elim x y]; simp
 #align isometry_subsingleton isometry_subsingleton
 
 /-- The identity is an isometry -/
-theorem isometry_id : Isometry (id : α → α) := fun x y => rfl
+theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
 #align isometry_id isometry_id
 
 theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
@@ -104,34 +104,35 @@ theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (h
   simp only [Prod.edist_eq, hf.edist_eq, hg.edist_eq, Prod_map]
 #align isometry.prod_map Isometry.prod_map
 
-theorem isometry_dcomp {ι} [Fintype ι] {α β : ι → Type _} [∀ i, PseudoEMetricSpace (α i)]
+theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type _} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
-    Isometry (dcomp f) := fun x y => by simp only [edist_pi_def, (hf _).edist_eq]
+    Isometry (fun g : (i : ι) → α i => fun i => f i (g i)) := fun x y => by
+  simp only [edist_pi_def, (hf _).edist_eq]
 #align isometry_dcomp isometry_dcomp
 
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
-  fun x y => (hg _ _).trans (hf _ _)
+  fun _ _ => (hg _ _).trans (hf _ _)
 #align isometry.comp Isometry.comp
 
 /-- An isometry from a metric space is a uniform continuous map -/
 protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
-  hf.lipschitz.UniformContinuous
+  hf.lipschitz.uniformContinuous
 #align isometry.uniform_continuous Isometry.uniformContinuous
 
 /-- An isometry from a metric space is a uniform inducing map -/
 protected theorem uniformInducing (hf : Isometry f) : UniformInducing f :=
-  hf.antilipschitz.UniformInducing hf.UniformContinuous
+  hf.antilipschitz.uniformInducing hf.uniformContinuous
 #align isometry.uniform_inducing Isometry.uniformInducing
 
 theorem tendsto_nhds_iff {ι : Type _} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
-  hf.UniformInducing.Inducing.tendsto_nhds_iff
+  hf.uniformInducing.inducing.tendsto_nhds_iff
 #align isometry.tendsto_nhds_iff Isometry.tendsto_nhds_iff
 
 /-- An isometry is continuous. -/
 protected theorem continuous (hf : Isometry f) : Continuous f :=
-  hf.lipschitz.Continuous
+  hf.lipschitz.continuous
 #align isometry.continuous Isometry.continuous
 
 /-- The right inverse of an isometry is an isometry. -/
@@ -172,17 +173,17 @@ theorem mapsTo_emetric_closedBall (hf : Isometry f) (x : α) (r : ℝ≥0∞) :
 #align isometry.maps_to_emetric_closed_ball Isometry.mapsTo_emetric_closedBall
 
 /-- The injection from a subtype is an isometry -/
-theorem isometry_subtype_coe {s : Set α} : Isometry (coe : s → α) := fun x y => rfl
+theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
 #align isometry_subtype_coe isometry_subtype_coe
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
     ContinuousOn (f ∘ g) s ↔ ContinuousOn g s :=
-  hf.UniformInducing.Inducing.continuousOn_iff.symm
+  hf.uniformInducing.inducing.continuousOn_iff.symm
 #align isometry.comp_continuous_on_iff Isometry.comp_continuousOn_iff
 
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} :
     Continuous (f ∘ g) ↔ Continuous g :=
-  hf.UniformInducing.Inducing.continuous_iff.symm
+  hf.uniformInducing.inducing.continuous_iff.symm
 #align isometry.comp_continuous_iff Isometry.comp_continuous_iff
 
 end PseudoEmetricIsometry
@@ -194,23 +195,23 @@ variable [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
 
 /-- An isometry from an emetric space is injective -/
 protected theorem injective (h : Isometry f) : Injective f :=
-  h.antilipschitz.Injective
+  h.antilipschitz.injective
 #align isometry.injective Isometry.injective
 
 /-- An isometry from an emetric space is a uniform embedding -/
 protected theorem uniformEmbedding (hf : Isometry f) : UniformEmbedding f :=
-  hf.antilipschitz.UniformEmbedding hf.lipschitz.UniformContinuous
+  hf.antilipschitz.uniformEmbedding hf.lipschitz.uniformContinuous
 #align isometry.uniform_embedding Isometry.uniformEmbedding
 
 /-- An isometry from an emetric space is an embedding -/
 protected theorem embedding (hf : Isometry f) : Embedding f :=
-  hf.UniformEmbedding.Embedding
+  hf.uniformEmbedding.embedding
 #align isometry.embedding Isometry.embedding
 
 /-- An isometry from a complete emetric space is a closed embedding -/
 theorem closedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
     ClosedEmbedding f :=
-  hf.antilipschitz.ClosedEmbedding hf.lipschitz.UniformContinuous
+  hf.antilipschitz.closedEmbedding hf.lipschitz.uniformContinuous
 #align isometry.closed_embedding Isometry.closedEmbedding
 
 end EmetricIsometry
@@ -275,35 +276,25 @@ end Isometry
 /-- A uniform embedding from a uniform space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
 theorem UniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
-    (h : UniformEmbedding f) :
-    @Isometry α β
-      (@PseudoMetricSpace.toPseudoEMetricSpace α
-        (@MetricSpace.toPseudoMetricSpace α (h.comapMetricSpace f)))
-      (by infer_instance) f := by
-  apply Isometry.of_dist_eq
-  intro x y
-  rfl
+    (h : UniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
+  let _ := h.comapMetricSpace f
+  Isometry.of_dist_eq fun _ _ => rfl
 #align uniform_embedding.to_isometry UniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
 theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
-    (h : Embedding f) :
-    @Isometry α β
-      (@PseudoMetricSpace.toPseudoEMetricSpace α
-        (@MetricSpace.toPseudoMetricSpace α (h.comapMetricSpace f)))
-      (by infer_instance) f := by
-  apply Isometry.of_dist_eq
-  intro x y
-  rfl
+    (h : Embedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
+  let _ := h.comapMetricSpace f
+  Isometry.of_dist_eq fun _ _ => rfl
 #align embedding.to_isometry Embedding.to_isometry
 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
-@[nolint has_nonempty_instance]
+-- porting note: was @[nolint has_nonempty_instance]
 structure IsometryEquiv (α β : Type _) [PseudoEMetricSpace α] [PseudoEMetricSpace β] extends
   α ≃ β where
-  isometry_toFun : Isometry to_fun
+  isometry_toFun : Isometry toFun
 #align isometry_equiv IsometryEquiv
 
 -- mathport name: «expr ≃ᵢ »
@@ -315,66 +306,72 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 
-instance : CoeFun (α ≃ᵢ β) fun _ => α → β :=
-  ⟨fun e => e.toEquiv⟩
+-- Porting note: TODO: add `IsometryEquivClass`
 
-theorem coe_eq_toEquiv (h : α ≃ᵢ β) (a : α) : h a = h.toEquiv a :=
-  rfl
+theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+#align isometry_equiv.to_equiv_inj IsometryEquiv.toEquiv_injective
+
+@[simp] theorem toEquiv_inj {e₁ e₂ : α ≃ᵢ β} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
+  toEquiv_injective.eq_iff
+
+instance : EquivLike (α ≃ᵢ β) α β where
+  coe e := e.toEquiv
+  inv e := e.toEquiv.symm
+  left_inv e := e.left_inv
+  right_inv e := e.right_inv
+  coe_injective' _ _ h _ := toEquiv_injective <| FunLike.ext' h
+
+theorem coe_eq_toEquiv (h : α ≃ᵢ β) (a : α) : h a = h.toEquiv a := rfl
 #align isometry_equiv.coe_eq_to_equiv IsometryEquiv.coe_eq_toEquiv
 
-@[simp]
-theorem coe_toEquiv (h : α ≃ᵢ β) : ⇑h.toEquiv = h :=
-  rfl
+@[simp] theorem coe_toEquiv (h : α ≃ᵢ β) : ⇑h.toEquiv = h := rfl
 #align isometry_equiv.coe_to_equiv IsometryEquiv.coe_toEquiv
+
+@[simp] theorem coe_mk (e : α ≃ β) (h) : ⇑(mk e h) = e := rfl
 
 protected theorem isometry (h : α ≃ᵢ β) : Isometry h :=
   h.isometry_toFun
 #align isometry_equiv.isometry IsometryEquiv.isometry
 
 protected theorem bijective (h : α ≃ᵢ β) : Bijective h :=
-  h.toEquiv.Bijective
+  h.toEquiv.bijective
 #align isometry_equiv.bijective IsometryEquiv.bijective
 
 protected theorem injective (h : α ≃ᵢ β) : Injective h :=
-  h.toEquiv.Injective
+  h.toEquiv.injective
 #align isometry_equiv.injective IsometryEquiv.injective
 
 protected theorem surjective (h : α ≃ᵢ β) : Surjective h :=
-  h.toEquiv.Surjective
+  h.toEquiv.surjective
 #align isometry_equiv.surjective IsometryEquiv.surjective
 
 protected theorem edist_eq (h : α ≃ᵢ β) (x y : α) : edist (h x) (h y) = edist x y :=
-  h.Isometry.edist_eq x y
+  h.isometry.edist_eq x y
 #align isometry_equiv.edist_eq IsometryEquiv.edist_eq
 
 protected theorem dist_eq {α β : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : dist (h x) (h y) = dist x y :=
-  h.Isometry.dist_eq x y
+  h.isometry.dist_eq x y
 #align isometry_equiv.dist_eq IsometryEquiv.dist_eq
 
 protected theorem nndist_eq {α β : Type _} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
     (x y : α) : nndist (h x) (h y) = nndist x y :=
-  h.Isometry.nndist_eq x y
+  h.isometry.nndist_eq x y
 #align isometry_equiv.nndist_eq IsometryEquiv.nndist_eq
 
 protected theorem continuous (h : α ≃ᵢ β) : Continuous h :=
-  h.Isometry.Continuous
+  h.isometry.continuous
 #align isometry_equiv.continuous IsometryEquiv.continuous
 
 @[simp]
 theorem ediam_image (h : α ≃ᵢ β) (s : Set α) : EMetric.diam (h '' s) = EMetric.diam s :=
-  h.Isometry.ediam_image s
+  h.isometry.ediam_image s
 #align isometry_equiv.ediam_image IsometryEquiv.ediam_image
-
-theorem toEquiv_inj : ∀ ⦃h₁ h₂ : α ≃ᵢ β⦄, h₁.toEquiv = h₂.toEquiv → h₁ = h₂
-  | ⟨e₁, h₁⟩, ⟨e₂, h₂⟩, H => by
-    dsimp at H
-    subst e₁
-#align isometry_equiv.to_equiv_inj IsometryEquiv.toEquiv_inj
 
 @[ext]
 theorem ext ⦃h₁ h₂ : α ≃ᵢ β⦄ (H : ∀ x, h₁ x = h₂ x) : h₁ = h₂ :=
-  toEquiv_inj <| Equiv.ext H
+  FunLike.ext _ _ H
 #align isometry_equiv.ext IsometryEquiv.ext
 
 /-- Alternative constructor for isometric bijections,
@@ -383,7 +380,7 @@ def mk' {α : Type u} [EMetricSpace α] (f : α → β) (g : β → α) (hfg : �
     (hf : Isometry f) : α ≃ᵢ β where
   toFun := f
   invFun := g
-  left_inv x := hf.Injective <| hfg _
+  left_inv _ := hf.injective <| hfg _
   right_inv := hfg
   isometry_toFun := hf
 #align isometry_equiv.mk' IsometryEquiv.mk'
@@ -405,28 +402,25 @@ theorem trans_apply (h₁ : α ≃ᵢ β) (h₂ : β ≃ᵢ γ) (x : α) : h₁.
 #align isometry_equiv.trans_apply IsometryEquiv.trans_apply
 
 /-- The inverse of an isometric isomorphism, as an isometric isomorphism. -/
-protected def symm (h : α ≃ᵢ β) : β ≃ᵢ α
-    where
-  isometry_toFun := h.Isometry.right_inv h.right_inv
+protected def symm (h : α ≃ᵢ β) : β ≃ᵢ α where
+  isometry_toFun := h.isometry.right_inv h.right_inv
   toEquiv := h.toEquiv.symm
 #align isometry_equiv.symm IsometryEquiv.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
-def Simps.apply (h : α ≃ᵢ β) : α → β :=
-  h
+def Simps.apply (h : α ≃ᵢ β) : α → β := h
 #align isometry_equiv.simps.apply IsometryEquiv.Simps.apply
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (h : α ≃ᵢ β) : β → α :=
+def Simps.symm_apply (h : α ≃ᵢ β) : β → α :=
   h.symm
-#align isometry_equiv.simps.symm_apply IsometryEquiv.Simps.symmApply
+#align isometry_equiv.simps.symm_apply IsometryEquiv.Simps.symm_apply
 
-initialize_simps_projections IsometryEquiv (to_equiv_to_fun → apply, to_equiv_inv_fun → symm_apply)
+initialize_simps_projections IsometryEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply)
 
 @[simp]
-theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h :=
-  toEquiv_inj h.toEquiv.symm_symm
+theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl
 #align isometry_equiv.symm_symm IsometryEquiv.symm_symm
 
 @[simp]
@@ -447,12 +441,10 @@ theorem eq_symm_apply (h : α ≃ᵢ β) {x : α} {y : β} : x = h.symm y ↔ h 
   h.toEquiv.eq_symm_apply
 #align isometry_equiv.eq_symm_apply IsometryEquiv.eq_symm_apply
 
-theorem symm_comp_self (h : α ≃ᵢ β) : ⇑h.symm ∘ ⇑h = id :=
-  funext fun a => h.toEquiv.left_inv a
+theorem symm_comp_self (h : α ≃ᵢ β) : (h.symm : β → α) ∘ h = id := funext h.left_inv
 #align isometry_equiv.symm_comp_self IsometryEquiv.symm_comp_self
 
-theorem self_comp_symm (h : α ≃ᵢ β) : ⇑h ∘ ⇑h.symm = id :=
-  funext fun a => h.toEquiv.right_inv a
+theorem self_comp_symm (h : α ≃ᵢ β) : (h : α → β) ∘ h.symm = id := funext h.right_inv
 #align isometry_equiv.self_comp_symm IsometryEquiv.self_comp_symm
 
 @[simp]
@@ -492,7 +484,7 @@ theorem preimage_emetric_ball (h : α ≃ᵢ β) (x : β) (r : ℝ≥0∞) :
 @[simp]
 theorem preimage_emetric_closedBall (h : α ≃ᵢ β) (x : β) (r : ℝ≥0∞) :
     h ⁻¹' EMetric.closedBall x r = EMetric.closedBall (h.symm x) r := by
-  rw [← h.isometry.preimage_emetric_closed_ball (h.symm x) r, h.apply_symm_apply]
+  rw [← h.isometry.preimage_emetric_closedBall (h.symm x) r, h.apply_symm_apply]
 #align isometry_equiv.preimage_emetric_closed_ball IsometryEquiv.preimage_emetric_closedBall
 
 @[simp]
@@ -504,17 +496,17 @@ theorem image_emetric_ball (h : α ≃ᵢ β) (x : α) (r : ℝ≥0∞) :
 @[simp]
 theorem image_emetric_closedBall (h : α ≃ᵢ β) (x : α) (r : ℝ≥0∞) :
     h '' EMetric.closedBall x r = EMetric.closedBall (h x) r := by
-  rw [← h.preimage_symm, h.symm.preimage_emetric_closed_ball, symm_symm]
+  rw [← h.preimage_symm, h.symm.preimage_emetric_closedBall, symm_symm]
 #align isometry_equiv.image_emetric_closed_ball IsometryEquiv.image_emetric_closedBall
 
 /-- The (bundled) homeomorphism associated to an isometric isomorphism. -/
 @[simps toEquiv]
-protected def toHomeomorph (h : α ≃ᵢ β) : α ≃ₜ β
-    where
-  continuous_toFun := h.Continuous
-  continuous_invFun := h.symm.Continuous
+protected def toHomeomorph (h : α ≃ᵢ β) : α ≃ₜ β where
+  continuous_toFun := h.continuous
+  continuous_invFun := h.symm.continuous
   toEquiv := h.toEquiv
 #align isometry_equiv.to_homeomorph IsometryEquiv.toHomeomorph
+#align isometry_equiv.to_homeomorph_to_equiv IsometryEquiv.toHomeomorph_toEquiv
 
 @[simp]
 theorem coe_toHomeomorph (h : α ≃ᵢ β) : ⇑h.toHomeomorph = h :=
@@ -554,40 +546,29 @@ instance : Group (α ≃ᵢ α) where
   mul_one e := ext fun _ => rfl
   mul_left_inv e := ext e.symm_apply_apply
 
-@[simp]
-theorem coe_one : ⇑(1 : α ≃ᵢ α) = id :=
-  rfl
+@[simp] theorem coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl
 #align isometry_equiv.coe_one IsometryEquiv.coe_one
 
-@[simp]
-theorem coe_mul (e₁ e₂ : α ≃ᵢ α) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
-  rfl
+@[simp] theorem coe_mul (e₁ e₂ : α ≃ᵢ α) : ⇑(e₁ * e₂) = e₁ ∘ e₂ := rfl
 #align isometry_equiv.coe_mul IsometryEquiv.coe_mul
 
-theorem mul_apply (e₁ e₂ : α ≃ᵢ α) (x : α) : (e₁ * e₂) x = e₁ (e₂ x) :=
-  rfl
+theorem mul_apply (e₁ e₂ : α ≃ᵢ α) (x : α) : (e₁ * e₂) x = e₁ (e₂ x) := rfl
 #align isometry_equiv.mul_apply IsometryEquiv.mul_apply
 
-@[simp]
-theorem inv_apply_self (e : α ≃ᵢ α) (x : α) : e⁻¹ (e x) = x :=
-  e.symm_apply_apply x
+@[simp] theorem inv_apply_self (e : α ≃ᵢ α) (x : α) : e⁻¹ (e x) = x := e.symm_apply_apply x
 #align isometry_equiv.inv_apply_self IsometryEquiv.inv_apply_self
 
-@[simp]
-theorem apply_inv_self (e : α ≃ᵢ α) (x : α) : e (e⁻¹ x) = x :=
-  e.apply_symm_apply x
+@[simp] theorem apply_inv_self (e : α ≃ᵢ α) (x : α) : e (e⁻¹ x) = x := e.apply_symm_apply x
 #align isometry_equiv.apply_inv_self IsometryEquiv.apply_inv_self
 
-protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
-  completeSpace_of_isComplete_univ <|
-    isComplete_of_complete_image e.Isometry.UniformInducing <| by
-      rwa [Set.image_univ, IsometryEquiv.range_eq_univ, ← completeSpace_iff_isComplete_univ]
-#align isometry_equiv.complete_space IsometryEquiv.completeSpace
-
 theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpace β := by
-  constructor <;> intro H
-  exacts[e.symm.complete_space, e.complete_space]
+  simp only [completeSpace_iff_isComplete_univ, ← e.range_eq_univ, ← image_univ,
+    isComplete_image_iff e.isometry.uniformInducing]
 #align isometry_equiv.complete_space_iff IsometryEquiv.completeSpace_iff
+
+protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
+  e.completeSpace_iff.2 ‹_›
+#align isometry_equiv.complete_space IsometryEquiv.completeSpace
 
 end PseudoEMetricSpace
 
@@ -597,7 +578,7 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
 
 @[simp]
 theorem diam_image (s : Set α) : Metric.diam (h '' s) = Metric.diam s :=
-  h.Isometry.diam_image s
+  h.isometry.diam_image s
 #align isometry_equiv.diam_image IsometryEquiv.diam_image
 
 @[simp]
@@ -624,7 +605,7 @@ theorem preimage_sphere (h : α ≃ᵢ β) (x : β) (r : ℝ) :
 @[simp]
 theorem preimage_closedBall (h : α ≃ᵢ β) (x : β) (r : ℝ) :
     h ⁻¹' Metric.closedBall x r = Metric.closedBall (h.symm x) r := by
-  rw [← h.isometry.preimage_closed_ball (h.symm x) r, h.apply_symm_apply]
+  rw [← h.isometry.preimage_closedBall (h.symm x) r, h.apply_symm_apply]
 #align isometry_equiv.preimage_closed_ball IsometryEquiv.preimage_closedBall
 
 @[simp]
@@ -641,7 +622,7 @@ theorem image_sphere (h : α ≃ᵢ β) (x : α) (r : ℝ) :
 @[simp]
 theorem image_closedBall (h : α ≃ᵢ β) (x : α) (r : ℝ) :
     h '' Metric.closedBall x r = Metric.closedBall (h x) r := by
-  rw [← h.preimage_symm, h.symm.preimage_closed_ball, symm_symm]
+  rw [← h.preimage_symm, h.symm.preimage_closedBall, symm_symm]
 #align isometry_equiv.image_closed_ball IsometryEquiv.image_closedBall
 
 end PseudoMetricSpace
@@ -650,11 +631,11 @@ end IsometryEquiv
 
 /-- An isometry induces an isometric isomorphism between the source space and the
 range of the isometry. -/
-@[simps (config := { simpRhs := true }) toEquiv apply]
+@[simps! (config := { simpRhs := true }) toEquiv apply]
 def Isometry.isometryEquivOnRange [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
-    (h : Isometry f) : α ≃ᵢ range f
-    where
-  isometry_toFun x y := by simpa [Subtype.edist_eq] using h x y
-  toEquiv := Equiv.ofInjective f h.Injective
+    (h : Isometry f) : α ≃ᵢ range f where
+  isometry_toFun := h
+  toEquiv := Equiv.ofInjective f h.injective
 #align isometry.isometry_equiv_on_range Isometry.isometryEquivOnRange
-
+#align isometry.isometry_equiv_on_range_to_equiv Isometry.isometryEquivOnRange_toEquiv
+#align isometry.isometry_equiv_on_range_apply Isometry.isometryEquivOnRange_apply
