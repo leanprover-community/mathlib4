@@ -23,7 +23,7 @@ open Filter Finset BigOperators NNReal Topology
 variable {α : Type _}
 
 /-- If the extended distance between consecutive points of a sequence is estimated
-by a summable series of `nnreal`s, then the original sequence is a Cauchy sequence. -/
+by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
   refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos => ?_
