@@ -8,7 +8,7 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Group actions by isometries
@@ -280,8 +280,7 @@ theorem preimage_mul_left_ball [HasIsometricSmul G G] (a b : G) (r : ℝ≥0∞)
 
 @[simp, to_additive]
 theorem preimage_mul_right_ball [HasIsometricSmul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
-    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r :=
-  by
+    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_ball (MulOpposite.op a) b r
 #align emetric.preimage_mul_right_ball Emetric.preimage_mul_right_ball
@@ -296,8 +295,7 @@ theorem preimage_mul_left_closedBall [HasIsometricSmul G G] (a b : G) (r : ℝ�
 
 @[simp, to_additive]
 theorem preimage_mul_right_closedBall [HasIsometricSmul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
-    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r :=
-  by
+    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_closed_ball (MulOpposite.op a) b r
 #align emetric.preimage_mul_right_closed_ball Emetric.preimage_mul_right_closedBall
@@ -441,8 +439,7 @@ theorem preimage_mul_left_ball [HasIsometricSmul G G] (a b : G) (r : ℝ) :
 
 @[simp, to_additive]
 theorem preimage_mul_right_ball [HasIsometricSmul Gᵐᵒᵖ G] (a b : G) (r : ℝ) :
-    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r :=
-  by
+    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_ball (MulOpposite.op a) b r
 #align metric.preimage_mul_right_ball Metric.preimage_mul_right_ball
@@ -457,8 +454,7 @@ theorem preimage_mul_left_closedBall [HasIsometricSmul G G] (a b : G) (r : ℝ) 
 
 @[simp, to_additive]
 theorem preimage_mul_right_closedBall [HasIsometricSmul Gᵐᵒᵖ G] (a b : G) (r : ℝ) :
-    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r :=
-  by
+    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
   rw [div_eq_mul_inv]
   exact preimage_smul_closed_ball (MulOpposite.op a) b r
 #align metric.preimage_mul_right_closed_ball Metric.preimage_mul_right_closedBall
