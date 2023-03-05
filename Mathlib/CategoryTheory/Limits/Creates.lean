@@ -8,7 +8,7 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Creating (co)limits
