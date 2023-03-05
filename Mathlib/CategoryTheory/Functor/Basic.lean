@@ -146,6 +146,16 @@ theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
     F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := rfl
 #align category_theory.functor.to_prefunctor_comp CategoryTheory.Functor.toPrefunctor_comp
 
+lemma toPrefunctor_ext {C D : Type _} [Category C] [Category D]
+    (F G : C ⥤ D) : F = G ↔ F.toPrefunctor = G.toPrefunctor := by
+  constructor
+  · apply Eq.rec
+    rfl
+  · intro
+    cases F
+    cases G
+    congr
+
 end
 
 end Functor

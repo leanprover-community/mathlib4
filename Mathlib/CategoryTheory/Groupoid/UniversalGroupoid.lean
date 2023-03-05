@@ -3,16 +3,8 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
-import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Combinatorics.Quiver.Symmetric
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Logic.Relation
--- import tactic.nth_rewrite
--- import tactic.rewrite_search
 import Mathlib.CategoryTheory.PathCategory
 import Mathlib.CategoryTheory.Quotient
 
@@ -35,22 +27,22 @@ variable {V : Type u} [Groupoid V] {V' : Type u'} (σ : V → V')
 scoped postfix:50 " * " => fun σ => Quiver.Push.of σ ⋙q Paths.of
 
 @[simp]
-def Hom.push {X Y : V} (f : X ⟶ Y) := (σ *).map f
-
-@[simp]
 def _root_.Quiver.Path.asHom {X Y : Quiver.Push σ} (f : Quiver.Path X Y) :
     Paths.of.obj X ⟶ Paths.of.obj Y := f
 
 @[simp]
-lemma PathsPush_id (X : Paths $ Quiver.Push σ) : 𝟙 X = Quiver.Path.nil := rfl
+def Hom.push {X Y : V} (f : X ⟶ Y) : (σ *).obj X ⟶ (σ *).obj Y := (σ *).map f
 
 @[simp]
-lemma PathsPush_comp {X Y Z : Paths $ Quiver.Push σ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma PathsPush_id_eq (X : Paths $ Quiver.Push σ) : 𝟙 X = Quiver.Path.nil := rfl
+
+@[simp]
+lemma PathsPush_comp_eq {X Y Z : Paths $ Quiver.Push σ} (f : X ⟶ Y) (g : Y ⟶ Z) :
   f ≫ g = Quiver.Path.comp f g := rfl
 
 @[simp]
 def _root_.Quiver.Hom.rev {σ : V → V'} {X Y : Paths $ Quiver.Push σ} (f : X ⟶ Y) : Y ⟶ X :=
-  f.reverse
+  f.reverse.asHom
 
 @[simp]
 lemma Hom.push_rev {X Y : V} (f : X ⟶ Y) : (Hom.push σ f).rev = Hom.push σ (inv f) := rfl
@@ -102,25 +94,26 @@ lemma Quot_mk_self_comp_reverse {X} : ∀ {Y : Paths $ Quiver.Push σ} (p : X �
     Quot.mk (red.step' σ) (p ≫ p.rev) = Quot.mk (red.step' σ) (𝟙 X)
   | _, .nil => by simp
   | _, .cons p ⟨e⟩ => by
-    calc Quot.mk (red.step' σ) ((p.cons _).asHom ≫ Quiver.Hom.rev (p.cons _).asHom)
-       = Quot.mk _ (p.asHom ≫ (σ † e) ≫ Quiver.Hom.rev (σ † e) ≫ Quiver.Hom.rev p.asHom) := by
+    let pp := p.asHom
+    let pr := Quiver.Hom.rev pp
+    calc Quot.mk (red.step' σ) ((p.cons _).asHom ≫ Quiver.Hom.rev (p.cons ⟨e⟩).asHom)
+       = Quot.mk _ (pp ≫ (σ † e) ≫ (σ † e).rev ≫ pr) := by
           congr 1
           simp only [Paths.of_obj, Quiver.Path.asHom, Quiver.Hom.rev, Quiver.Path.reverse,
-                    Quiver.Hom.toPath,PathsPush_comp, Prefunctor.comp_obj, Quiver.Push.of_obj,
+                    Quiver.Hom.toPath,PathsPush_comp_eq, Prefunctor.comp_obj, Quiver.Push.of_obj,
                     Hom.push, Prefunctor.comp_map, Paths.of_map, Quiver.Path.comp_nil,
                     Quiver.Path.cons_comp, Quiver.Path.nil_comp, Quiver.Path.comp_assoc]
           rfl
-     _ = Quot.mk _ (p.asHom ≫ ((σ † e) ≫ Quiver.Hom.rev (σ † e)) ≫ Quiver.Hom.rev p.asHom) := by
-          simp
-     _ = Quot.mk _ (p.asHom ≫ (σ † (𝟙 _)) ≫ Quiver.Hom.rev p.asHom) := by
+     _ = Quot.mk _ (pp ≫ ((σ † e) ≫ (σ † e).rev) ≫ pr) := by simp
+     _ = Quot.mk _ (pp ≫ (σ † (𝟙 _)) ≫ pr) := by
           apply Quot.sound (Quotient.CompClosure.intro _ _ _ _ _)
           convert @red.atomic_step.comp _ _ _ σ _ _ _ e (inv e)
           simp only [inv_eq_inv, IsIso.hom_inv_id]
-     _ = Quot.mk _ (p.asHom ≫ 𝟙 _ ≫ Quiver.Hom.rev p.asHom) :=
+     _ = Quot.mk _ (pp ≫ 𝟙 _ ≫ pr) :=
           Quot.sound (Quotient.CompClosure.intro _ _ _ _ $ @red.atomic_step.id _ _ _ σ _)
-     _ = Quot.mk _ (p.asHom ≫ Quiver.Hom.rev p.asHom) := by
-           simp only [Paths.of_obj, Quiver.Path.asHom, PathsPush_id, Quiver.Hom.rev, PathsPush_comp,
-                      Quiver.Path.nil_comp]
+     _ = Quot.mk _ (pp ≫ pr) := by
+           simp only [Paths.of_obj, Quiver.Path.asHom, PathsPush_id_eq, Quiver.Hom.rev,
+                      PathsPush_comp_eq, Quiver.Path.nil_comp]
      _ = Quot.mk _ (𝟙 _) := Quot_mk_self_comp_reverse p
 
 lemma Quot_mk_reverse_comp_self {X Y : Paths $ Quiver.Push σ} (p : X ⟶ Y) :
@@ -153,73 +146,45 @@ abbrev as (x : UniversalGroupoid σ) : V' := x.as
 lemma extend_eq : (extend σ).toPrefunctor =
   ((Quiver.Push.of σ) ⋙q Paths.of) ⋙q (Quotient.functor $ red.atomic_step σ).toPrefunctor := rfl
 
-
--- Thanks Adam Topaz
-lemma _root_.CategoryTheory.functor.to_prefunctor_ext {C D : Type _} [Category C] [Category D]
-    (F G : C ⥤ D) : F = G ↔ F.toPrefunctor = G.toPrefunctor := by
-  constructor
-  · apply Eq.rec
-    rfl
-  · intro
-    cases F
-    cases G
-    congr
-
-
 section ump
 
 variable {V'' : Type _} [Groupoid V''] (θ : V ⥤ V'') (τ₀ : V' → V'') (hτ₀ : ∀ x, θ.obj x = τ₀ (σ x))
-
-/-
 
 /--
 Any functor `θ` from `V` to a Groupoid `V''` with `θ.obj` factoring through `σ`
 defines a functor from `V'`.
  -/
-def lift : (UniversalGroupoid σ) ⥤ V'' :=
+noncomputable def lift : UniversalGroupoid σ ⥤ V'' :=
 Quotient.lift _
-  ( Paths.lift $ Quiver.Push.lift σ θ.to_prefunctor τ₀ hτ₀ )
-  ( λ _ _ _ _ h, by
-    { dsimp only [Paths.lift, Quiver.Push.lift],
-      induction h,
-      { dsimp [Quiver.Push.of, Category_struct.comp, Category_struct.id, Quiver.hom.to_path],
-        simp only [functor.map_comp, cast_cast, Category.id_comp],
-        apply eq_of_heq,
-        symmetry,
-        apply (cast_heq _ _).trans,
-        congr,
-        any_goals { apply hτ₀ },
-        all_goals { symmetry, simp only [cast_heq], }, },
-      { dsimp [Quiver.Push.of, Category_struct.comp, Category_struct.id, Quiver.hom.to_path],
-        simp only [functor.map_id, cast_cast, Category.id_comp],
-        apply eq_of_heq,
-        apply (cast_heq _ _).trans,
-        rw hτ₀, }, } )
+  ( Paths.lift $ Quiver.Push.lift σ θ.toPrefunctor τ₀ hτ₀ )
+  ( fun _ _ _ _ h => by
+      dsimp only [Paths.lift, Quiver.Push.lift]
+      induction h
+      · dsimp [Quiver.Push.of, CategoryStruct.comp, CategoryStruct.id, Quiver.Hom.toPath]
+        simp [Functor.map_comp, cast_cast, Category.id_comp, hτ₀]
+      · dsimp [Quiver.Push.of, CategoryStruct.comp, CategoryStruct.id, Quiver.Hom.toPath]
+        simp [Functor.map_id, cast_cast, Category.id_comp, hτ₀] )
 
 lemma lift_spec_obj : (lift σ θ τ₀ hτ₀).obj = τ₀ ∘ (as σ) := rfl
 
-lemma lift_spec_comp : (extend σ) ⋙ (lift σ θ τ₀ hτ₀) = θ :=
-begin
-  rw [functor.to_prefunctor_ext,←functor.to_prefunctor_comp, extend_eq],
-  dsimp only [lift],
-  rw [prefunctor.comp_assoc, functor.to_prefunctor_comp, Quotient.lift_spec,
-      prefunctor.comp_assoc, Paths.lift_spec, Quiver.Push.lift_spec_comm],
-end
+lemma lift_spec_comp : extend σ ⋙ lift σ θ τ₀ hτ₀ = θ := by
+  rw [Functor.toPrefunctor_ext,←Functor.toPrefunctor_comp, extend_eq]
+  dsimp only [lift]
+  rw [Prefunctor.comp_assoc, Functor.toPrefunctor_comp, Quotient.lift_spec,
+      Prefunctor.comp_assoc, Paths.lift_spec, Quiver.Push.lift_comp]
 
 lemma lift_unique (Φ : UniversalGroupoid σ ⥤ V'')
-  (Φ₀ : Φ.obj = τ₀∘(as σ)) (Φc : extend σ ⋙ Φ = θ) : Φ = (lift σ θ τ₀ hτ₀) :=
-begin
-  apply Quotient.lift_unique,
-  apply Paths.lift_unique,
-  apply Quiver.Push.lift_unique,
-  { ext,
-    simp only [prefunctor.comp_obj, Paths.of_obj, functor.to_prefunctor_obj, functor.comp_obj],
-    rw Φ₀, refl, },
-  { rw [functor.to_prefunctor_ext, ←functor.to_prefunctor_comp] at Φc,
-    exact Φc, },
-end
+    (Φ₀ : Φ.obj = τ₀ ∘ (as σ)) (Φc : extend σ ⋙ Φ = θ) : Φ = lift σ θ τ₀ hτ₀ := by
+  apply Quotient.lift_unique
+  apply Paths.lift_unique
+  apply Quiver.Push.lift_unique
+  · ext
+    simp [Φ₀]
+  · simpa only [Functor.toPrefunctor_ext, ←Functor.toPrefunctor_comp] using Φc
 
 end ump
+
+/-
 
 section reduced_words
 
