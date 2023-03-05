@@ -36,7 +36,7 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
   let e := equalizer.ι (π₁ ≫ f) (π₂ ≫ g)
   HasLimit.mk
     { cone :=
-        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by simp only [Category.assoc, equalizer.condition]
+        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by rw [Category.assoc, equalizer.condition]; simp
       isLimit :=
         PullbackCone.IsLimit.mk _
           (fun s =>
@@ -45,8 +45,9 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
               rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π] <;>
                 exact PullbackCone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
-          ext
-          · simpa using h₁
+          apply equalizer.hom_ext 
+          apply prod.hom_ext
+          · dsimp; simpa using h₁
           · simpa using h₂ }
 #align category_theory.limits.has_limit_cospan_of_has_limit_pair_of_has_limit_parallel_pair CategoryTheory.Limits.hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair
 
@@ -57,7 +58,7 @@ attribute [local instance] hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallel
 /-- If a category has all binary products and all equalizers, then it also has all pullbacks.
     As usual, this is not an instance, since there may be a more direct way to construct
     pullbacks. -/
-theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [𝒞 : Category.{v} C]
+theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Category.{v} C]
     [HasBinaryProducts C] [HasEqualizers C] : HasPullbacks C :=
   { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
 #align category_theory.limits.has_pullbacks_of_has_binary_products_of_has_equalizers CategoryTheory.Limits.hasPullbacks_of_hasBinaryProducts_of_hasEqualizers
@@ -81,10 +82,11 @@ theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type 
           (fun s =>
             coequalizer.desc (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <|
               by
-              rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc] <;>
+              rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc];
                 exact PushoutCocone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
           apply coequalizer.hom_ext
+          apply coprod.hom_ext
           · simpa using h₁
           · simpa using h₂ }
 #align category_theory.limits.has_colimit_span_of_has_colimit_pair_of_has_colimit_parallel_pair CategoryTheory.Limits.hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair
