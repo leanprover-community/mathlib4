@@ -14,6 +14,7 @@ import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.Algebra.Order.Group.Bounds
@@ -162,12 +163,11 @@ theorem closure_of_rat_image_lt {q : ℚ} :
   Subset.antisymm
     ((isClosed_ge' _).closure_subset_iff.2
       (image_subset_iff.2 fun p h => le_of_lt <| (@Rat.cast_lt ℝ _ _ _).2 h))
-    fun x hx =>
-    mem_closure_iff_nhds.2 fun t ht =>
+    fun x hx => mem_closure_iff_nhds.2 fun t ht =>
       let ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht
       let ⟨p, h₁, h₂⟩ := exists_rat_btwn ((lt_add_iff_pos_right x).2 ε0)
-      ⟨_, hε (show abs _ < _ by rwa [abs_of_nonneg (le_of_lt <| sub_pos.2 h₁), sub_lt_iff_lt_add']),
-        p, Rat.cast_lt.1 (@lt_of_le_of_lt ℝ _ _ _ _ hx h₁), rfl⟩
+      ⟨p, hε <| by rwa [mem_ball, Real.dist_eq, abs_of_pos (sub_pos.2 h₁), sub_lt_iff_lt_add'],
+        mem_image_of_mem _ <| Rat.cast_lt.1 <| lt_of_le_of_lt hx.out h₁⟩
 #align closure_of_rat_image_lt closure_of_rat_image_lt
 
 /- TODO(Mario): Put these back only if needed later
@@ -264,55 +264,6 @@ theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
 #align add_subgroup.tendsto_zmultiples_subtype_cofinite AddSubgroup.tendsto_zmultiples_subtype_cofinite
 
 end AddSubgroup
-
-/-- Given a nontrivial subgroup `G ⊆ ℝ`, if `G ∩ ℝ_{>0}` has no minimum then `G` is dense. -/
-theorem Real.subgroup_dense_of_no_min {G : AddSubgroup ℝ} {g₀ : ℝ} (g₀_in : g₀ ∈ G) (g₀_ne : g₀ ≠ 0)
-    (H' : ¬∃ a : ℝ, IsLeast { g : ℝ | g ∈ G ∧ 0 < g } a) : Dense (G : Set ℝ) := by
-  refine dense_of_exists_between fun a b hlt => ?_
-  obtain ⟨g₁, g₁_in, h₀, h⟩ : ∃ g ∈ G, 0 < g ∧ g < b - a
-  let G_pos := { g : ℝ | g ∈ G ∧ 0 < g }
-  push_neg  at H'
-  intro x
-  suffices ∀ ε > (0 : ℝ), ∃ g ∈ G, |x - g| < ε by simpa only [Real.mem_closure_iff, abs_sub_comm]
-  intro ε ε_pos
-  obtain ⟨g₁, g₁_in, g₁_pos⟩ : ∃ g₁ : ℝ, g₁ ∈ G ∧ 0 < g₁ :=
-    by
-    cases' lt_or_gt_of_ne g₀_ne with Hg₀ Hg₀
-    · exact ⟨-g₀, G.neg_mem g₀_in, neg_pos.mpr Hg₀⟩
-    · exact ⟨g₀, g₀_in, Hg₀⟩
-  obtain ⟨a, ha⟩ : ∃ a, IsGLB G_pos a :=
-    ⟨infₛ G_pos, isGLB_cinfₛ ⟨g₁, g₁_in, g₁_pos⟩ ⟨0, fun _ hx => le_of_lt hx.2⟩⟩
-  have a_notin : a ∉ G_pos := by
-    intro H
-    exact H' a ⟨H, ha.1⟩
-  obtain ⟨g₂, g₂_in, g₂_pos, g₂_lt⟩ : ∃ g₂ : ℝ, g₂ ∈ G ∧ 0 < g₂ ∧ g₂ < ε :=
-    by
-    obtain ⟨b, hb, hb', hb''⟩ := ha.exists_between_self_add' a_notin ε_pos
-    obtain ⟨c, hc, hc', hc''⟩ := ha.exists_between_self_add' a_notin (sub_pos.2 hb')
-    refine' ⟨b - c, G.sub_mem hb.1 hc.1, _, _⟩ <;> linarith
-  refine' ⟨floor (x / g₂) * g₂, _, _⟩
-  · exact AddSubgroup.int_mul_mem _ g₂_in
-  · rw [abs_of_nonneg (sub_floor_div_mul_nonneg x g₂_pos)]
-    linarith [sub_floor_div_mul_lt x g₂_pos]
-#align real.subgroup_dense_of_no_min Real.subgroup_dense_of_no_min
-
-/-- Subgroups of `ℝ` are either dense or cyclic. See `real.subgroup_dense_of_no_min` and
-`subgroup_cyclic_of_min` for more precise statements. -/
-theorem Real.subgroup_dense_or_cyclic (G : AddSubgroup ℝ) :
-    Dense (G : Set ℝ) ∨ ∃ a : ℝ, G = AddSubgroup.closure {a} := by
-  cases' AddSubgroup.bot_or_exists_ne_zero G with H H
-  · right
-    use 0
-    rw [H, AddSubgroup.closure_singleton_zero]
-  · let G_pos := { g : ℝ | g ∈ G ∧ 0 < g }
-    by_cases H' : ∃ a, IsLeast G_pos a
-    · right
-      rcases H' with ⟨a, ha⟩
-      exact ⟨a, AddSubgroup.cyclic_of_min ha⟩
-    · left
-      rcases H with ⟨g₀, g₀_in, g₀_ne⟩
-      exact Real.subgroup_dense_of_no_min g₀_in g₀_ne H'
-#align real.subgroup_dense_or_cyclic Real.subgroup_dense_or_cyclic
 
 end Subgroups
 
