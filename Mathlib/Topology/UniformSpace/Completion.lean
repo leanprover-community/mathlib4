@@ -383,8 +383,7 @@ instance : SeparatedSpace (Completion α) :=
 instance : T3Space (Completion α) :=
   separated_t3
 
-def coe' : α → Completion α := Quotient.mk' ∘ pureCauchy
-attribute [coe] coe'
+@[coe] def coe' : α → Completion α := Quotient.mk' ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
 instance : Coe α (Completion α) :=

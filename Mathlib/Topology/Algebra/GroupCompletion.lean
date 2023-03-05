@@ -71,7 +71,7 @@ section Zero
 
 instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
     [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) :=
-  { Completion.instMulActionCompletion M α with
+  { (inferInstance : MulAction M $ Completion α) with
     smul := (· • ·)
     smul_zero := fun r => by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
     zero_smul :=
@@ -100,8 +100,8 @@ theorem coe_add (a b : α) : ((a + b : α) : Completion α) = a + b :=
 #align uniform_space.completion.coe_add UniformSpace.Completion.coe_add
 
 instance : AddMonoid (Completion α) :=
-  { instZeroCompletion,
-    instAddCompletion with
+  { (inferInstance : Zero $ Completion α),
+    (inferInstance : Add $ Completion α) with
     zero_add := fun a =>
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ continuous_const continuous_id) continuous_id) fun a =>
@@ -131,8 +131,9 @@ instance : AddMonoid (Completion α) :=
           rw [← coe_smul, succ_nsmul, coe_add, coe_smul] }
 
 instance : SubNegMonoid (Completion α) :=
-  { Completion.instAddMonoidCompletion, instNegCompletion,
-    instSubCompletion with
+  { (inferInstance : AddMonoid $ Completion α),
+    (inferInstance : Neg $ Completion α),
+    (inferInstance : Sub $ Completion α) with
     sub_eq_add_neg := fun a b =>
       Completion.induction_on₂ a b
         (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
@@ -156,7 +157,7 @@ instance : SubNegMonoid (Completion α) :=
               SubNegMonoid.zsmul_neg' n a, coe_neg, coe_smul] }
 
 instance : AddGroup (Completion α) :=
-  { Completion.instSubNegMonoidCompletion with
+  { (inferInstance : SubNegMonoid $ Completion α) with
     add_left_neg := fun a =>
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ Completion.continuous_map continuous_id) continuous_const)
@@ -171,7 +172,7 @@ instance : UniformAddGroup (Completion α) :=
 
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
     DistribMulAction M (Completion α) :=
-  { Completion.instMulActionCompletion M α with
+  { (inferInstance : MulAction M $ Completion α) with
     smul := (· • ·)
     smul_add := fun r x y =>
       induction_on₂ x y
@@ -207,7 +208,7 @@ section UniformAddCommGroup
 variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
 
 instance : AddCommGroup (Completion α) :=
-  { Completion.instAddGroupCompletion with
+  { (inferInstance : AddGroup $ Completion α) with
     add_comm := fun a b =>
       Completion.induction_on₂ a b
         (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
@@ -217,8 +218,8 @@ instance : AddCommGroup (Completion α) :=
         rw [← coe_add, ← coe_add, add_comm] }
 
 instance [Semiring R] [Module R α] [UniformContinuousConstSMul R α] : Module R (Completion α) :=
-  { Completion.instDistribMulActionCompletionInstAddMonoidCompletion,
-    Completion.instMulActionWithZeroCompletionInstZeroCompletion with
+  { (inferInstance : DistribMulAction R $ Completion α),
+    (inferInstance : MulActionWithZero R $ Completion α) with
     smul := (· • ·)
     add_smul := fun a b =>
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
