@@ -17,20 +17,20 @@ import Mathlib.Tactic.Positivity
 
 In this file we define
 
-* `nnreal.sqrt` to be the square root of a nonnegative real number.
-* `real.sqrt` to be the square root of a real number, defined to be zero on negative numbers.
+* `NNReal.sqrt` to be the square root of a nonnegative real number.
+* `Real.sqrt` to be the square root of a real number, defined to be zero on negative numbers.
 
 Then we prove some basic properties of these functions.
 
 ## Implementation notes
 
-We define `nnreal.sqrt` as the noncomputable inverse to the function `x ↦ x * x`. We use general
-theory of inverses of strictly monotone functions to prove that `nnreal.sqrt x` exists. As a side
-effect, `nnreal.sqrt` is a bundled `order_iso`, so for `nnreal` numbers we get continuity as well as
+We define `NNReal.sqrt` as the noncomputable inverse to the function `x ↦ x * x`. We use general
+theory of inverses of strictly monotone functions to prove that `NNReal.sqrt x` exists. As a side
+effect, `NNReal.sqrt` is a bundled `OrderIso`, so for `NNReal` numbers we get continuity as well as
 theorems like `sqrt x ≤ y ↔ x ≤ y * y` for free.
 
-Then we define `real.sqrt x` to be `nnreal.sqrt (real.to_nnreal x)`. We also define a Cauchy
-sequence `real.sqrt_aux (f : cau_seq ℚ abs)` which converges to `sqrt (mk f)` but do not prove (yet)
+Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`. We also define a Cauchy
+sequence `Real.sqrtAux (f : CauSeq ℚ abs)` which converges to `sqrt (mk f)` but do not prove (yet)
 that this sequence actually converges to `sqrt (mk f)`.
 
 ## Tags
@@ -108,7 +108,7 @@ theorem sqrt_mul (x y : ℝ≥0) : sqrt (x * y) = sqrt x * sqrt y := by
   rw [sqrt_eq_iff_sq_eq, mul_pow, sq_sqrt, sq_sqrt]
 #align nnreal.sqrt_mul NNReal.sqrt_mul
 
-/-- `nnreal.sqrt` as a `monoid_with_zero_hom`. -/
+/-- `NNReal.sqrt` as a `MonoidWithZeroHom`. -/
 noncomputable def sqrtHom : ℝ≥0 →*₀ ℝ≥0 :=
   ⟨⟨sqrt, sqrt_zero⟩, sqrt_one, sqrt_mul⟩
 #align nnreal.sqrt_hom NNReal.sqrtHom
@@ -128,7 +128,7 @@ end NNReal
 
 namespace Real
 
-/-- An auxiliary sequence of rational numbers that converges to `real.sqrt (mk f)`.
+/-- An auxiliary sequence of rational numbers that converges to `Real.sqrt (mk f)`.
 Currently this sequence is not used in `mathlib`.  -/
 def sqrtAux (f : CauSeq ℚ abs) : ℕ → ℚ
   | 0 => mkRat (f 0).num.toNat.sqrt (f 0).den.sqrt
