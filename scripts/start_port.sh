@@ -76,6 +76,7 @@ echo "Applying automated fixes"
 )
 
 # Commit them
+git update-index --add Mathlib.lean
 git update-index --add "$mathlib4_path"
 BASE_COMMIT="$(git commit-tree "$(git write-tree)" -p "$BASE_COMMIT" << EOF
 automated fixes
@@ -92,6 +93,10 @@ git log -n3 $BASE_COMMIT --graph --oneline
 echo ""
 
 mathlib3_module=$(grep '^! .*source module ' <"$GIT_WORK_TREE/$mathlib4_path" | sed 's/.*source module \(.*\)$/\1/')
+
+# stop using the temporary working tree
+unset GIT_WORK_TREE
+unset GIT_INDEX_FILE
 
 if git cat-file -e origin/master:$mathlib4_path 2> /dev/null; then
     echo "WARNING: this file has already been ported!"
