@@ -1299,6 +1299,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Instances.Nat
+import Mathlib.Topology.Instances.Nnreal
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.Sign

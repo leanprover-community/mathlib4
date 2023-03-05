@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.InfiniteSum.Order
-import Mathbin.Topology.Algebra.InfiniteSum.Ring
-import Mathbin.Topology.Instances.Real
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Topology on `ℝ≥0`
@@ -132,8 +132,7 @@ theorem tendsto_real_toNNReal {f : Filter α} {m : α → ℝ} {x : ℝ} (h : Te
   (continuous_real_toNNReal.Tendsto _).comp h
 #align tendsto_real_to_nnreal tendsto_real_toNNReal
 
-theorem tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :=
-  by
+theorem tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop := by
   rw [← tendsto_coe_at_top]
   apply tendsto_id.congr' _
   filter_upwards [Ici_mem_at_top (0 : ℝ)]with x hx
@@ -165,8 +164,7 @@ theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a => (f a : 
 #align nnreal.has_sum_coe NNReal.hasSum_coe
 
 theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n) (hf : Summable f) :
-    HasSum (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑' n, f n)) :=
-  by
+    HasSum (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑' n, f n)) := by
   have h_sum : (fun s => ∑ b in s, Real.toNNReal (f b)) = fun s => Real.toNNReal (∑ b in s, f b) :=
     funext fun _ => (Real.toNNReal_sum_of_nonneg fun n _ => hf_nonneg n).symm
   simp_rw [HasSum, h_sum]
@@ -174,16 +172,14 @@ theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 �
 #align nnreal.has_sum_real_to_nnreal_of_nonneg NNReal.hasSum_real_toNNReal_of_nonneg
 
 @[norm_cast]
-theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f :=
-  by
+theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
   constructor
   exact fun ⟨a, ha⟩ => ⟨⟨a, hasSum_le (fun a => (f a).2) hasSum_zero ha⟩, has_sum_coe.1 ha⟩
   exact fun ⟨a, ha⟩ => ⟨a.1, has_sum_coe.2 ha⟩
 #align nnreal.summable_coe NNReal.summable_coe
 
 theorem summable_coe_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
-    (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf₁ n⟩) ↔ Summable f :=
-  by
+    (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf₁ n⟩) ↔ Summable f := by
   lift f to α → ℝ≥0 using hf₁ with f rfl hf₁
   simp only [summable_coe, Subtype.coe_eta]
 #align nnreal.summable_coe_of_nonneg NNReal.summable_coe_of_nonneg
@@ -197,8 +193,7 @@ theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :
 #align nnreal.coe_tsum NNReal.coe_tsum
 
 theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
-    (⟨∑' n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑' n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=
-  by
+    (⟨∑' n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑' n, ⟨f n, hf₁ n⟩ : ℝ≥0) := by
   lift f to α → ℝ≥0 using hf₁ with f rfl hf₁
   simp_rw [← NNReal.coe_tsum, Subtype.coe_eta]
 #align nnreal.coe_tsum_of_nonneg NNReal.coe_tsum_of_nonneg
@@ -246,15 +241,13 @@ theorem infᵢ_real_pos_eq_infᵢ_nNReal_pos [CompleteLattice α] {f : ℝ → �
 end coe
 
 theorem tendsto_cofinite_zero_of_summable {α} {f : α → ℝ≥0} (hf : Summable f) :
-    Tendsto f cofinite (𝓝 0) :=
-  by
+    Tendsto f cofinite (𝓝 0) := by
   have h_f_coe : f = fun n => Real.toNNReal (f n : ℝ) := funext fun n => real.to_nnreal_coe.symm
   rw [h_f_coe, ← @Real.toNNReal_coe 0]
   exact tendsto_real_toNNReal (summable_coe.mpr hf).tendsto_cofinite_zero
 #align nnreal.tendsto_cofinite_zero_of_summable NNReal.tendsto_cofinite_zero_of_summable
 
-theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) : Tendsto f atTop (𝓝 0) :=
-  by
+theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) : Tendsto f atTop (𝓝 0) := by
   rw [← Nat.cofinite_eq_atTop]
   exact tendsto_cofinite_zero_of_summable hf
 #align nnreal.tendsto_at_top_zero_of_summable NNReal.tendsto_atTop_zero_of_summable
@@ -262,8 +255,7 @@ theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) :
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
 theorem tendsto_tsum_compl_atTop_zero {α : Type _} (f : α → ℝ≥0) :
-    Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) :=
-  by
+    Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
   simp_rw [← tendsto_coe, coe_tsum, NNReal.coe_zero]
   exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)
 #align nnreal.tendsto_tsum_compl_at_top_zero NNReal.tendsto_tsum_compl_atTop_zero
