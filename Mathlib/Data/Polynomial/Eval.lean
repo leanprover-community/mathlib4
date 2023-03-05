@@ -169,17 +169,17 @@ theorem eval₂_finset_sum (s : Finset ι) (g : ι → R[X]) (x : S) :
   map_sum (eval₂AddMonoidHom f x) _ _
 #align polynomial.eval₂_finset_sum Polynomial.eval₂_finset_sum
 
-theorem eval₂_of_finsupp {f : R →+* S} {x : S} {p : AddMonoidAlgebra R ℕ} :
+theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : AddMonoidAlgebra R ℕ} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
   simp only [eval₂_eq_sum, sum, toFinsupp_sum, support, coeff]
   rfl
-#align polynomial.eval₂_of_finsupp Polynomial.eval₂_of_finsupp
+#align polynomial.eval₂_of_finsupp Polynomial.eval₂_ofFinsupp
 
 theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
     eval₂ f x (p * q) = eval₂ f x p * eval₂ f x q := by
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp only [coeff] at hf
-  simp only [← ofFinsupp_mul, eval₂_of_finsupp]
+  simp only [← ofFinsupp_mul, eval₂_ofFinsupp]
   exact liftNC_mul _ _ p q fun {k n} _hn => (hf k).pow_right n
 #align polynomial.eval₂_mul_noncomm Polynomial.eval₂_mul_noncomm
 
