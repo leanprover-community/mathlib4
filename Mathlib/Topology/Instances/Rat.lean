@@ -8,11 +8,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.MetricSpace.Basic
-import Mathbin.Topology.Algebra.Order.Archimedean
-import Mathbin.Topology.Instances.Int
-import Mathbin.Topology.Instances.Nat
-import Mathbin.Topology.Instances.Real
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.Algebra.Order.Archimedean
+import Mathlib.Topology.Instances.Int
+import Mathlib.Topology.Instances.Nat
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Topology on the ratonal numbers
