@@ -71,7 +71,7 @@ We say that `F` creates limits of `K` if, given any limit cone `c` for `K ⋙ F`
 limits for `K`.
 
 If `F` reflects isomorphisms, it suffices to show only that the lifted cone is
-a limit - see `creates_limit_of_reflects_iso`.
+a limit - see `createsLimitOfReflectsIso`.
 -/
 class CreatesLimit (K : J ⥤ C) (F : C ⥤ D) extends ReflectsLimit K F where
   /-- any limit cone can be lifted to a cone above -/
@@ -104,7 +104,7 @@ We say that `F` creates colimits of `K` if, given any limit cocone `c` for
 reflects limits for `K`.
 
 If `F` reflects isomorphisms, it suffices to show only that the lifted cocone is
-a limit - see `creates_limit_of_reflects_iso`.
+a limit - see `createsColimitOfReflectsIso`.
 -/
 class CreatesColimit (K : J ⥤ C) (F : C ⥤ D) extends ReflectsColimit K F where
   /-- any limit cocone can be lifted to a cocone above -/
@@ -135,8 +135,8 @@ attribute [instance] CreatesLimitsOfShape.CreatesLimit CreatesLimitsOfSize.Creat
   CreatesColimitsOfShape.CreatesColimit CreatesColimitsOfSize.CreatesColimitsOfShape
 
 -- see Note [lower instance priority]
--- Interface to the `creates_limit` class.
-/-- `lift_limit t` is the cone for `K` given by lifting the limit `t` for `K ⋙ F`. -/
+-- Interface to the `CreatesLimit` class.
+/-- `liftLimit t` is the cone for `K` given by lifting the limit `t` for `K ⋙ F`. -/
 def liftLimit {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) :
     Cone K :=
   (CreatesLimit.lifts c t).liftedCone
@@ -176,8 +176,8 @@ theorem has_limits_of_has_limits_creates_limits (F : C ⥤ D) [HasLimitsOfSize.{
   ⟨fun _ _ => hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape F⟩
 #align category_theory.has_limits_of_has_limits_creates_limits CategoryTheory.has_limits_of_has_limits_creates_limits
 
--- Interface to the `creates_colimit` class.
-/-- `lift_colimit t` is the cocone for `K` given by lifting the colimit `t` for `K ⋙ F`. -/
+-- Interface to the `CreatesColimit` class.
+/-- `liftColimit t` is the cocone for `K` given by lifting the colimit `t` for `K ⋙ F`. -/
 def liftColimit {K : J ⥤ C} {F : C ⥤ D} [CreatesColimit K F] {c : Cocone (K ⋙ F)}
     (t : IsColimit c) : Cocone K :=
   (CreatesColimit.lifts c t).liftedCocone
@@ -282,7 +282,7 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms 
         exact IsLimit.ofIsoLimit hd' (asIso f).symm }
 #align category_theory.creates_limit_of_reflects_iso CategoryTheory.createsLimitOfReflectsIso
 
--- Notice however that even if the isomorphism is `iso.refl _`,
+-- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.
 /--
@@ -299,10 +299,10 @@ def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fai
         IsLimit.ofFaithful F (IsLimit.ofIsoLimit hl i.symm) _ fun _ => F.image_preimage _ }
 #align category_theory.creates_limit_of_fully_faithful_of_lift' CategoryTheory.createsLimitOfFullyFaithfulOfLift'
 
--- Notice however that even if the isomorphism is `iso.refl _`,
+-- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.
-/-- When `F` is fully faithful, and `has_limit (K ⋙ F)`, to show that `F` creates the limit for `K`
+/-- When `F` is fully faithful, and `HasLimit (K ⋙ F)`, to show that `F` creates the limit for `K`
 it suffices to exhibit a lift of the chosen limit cone for `K ⋙ F`.
 -/
 def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
@@ -311,7 +311,7 @@ def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fait
   createsLimitOfFullyFaithfulOfLift' (limit.isLimit _) c i
 #align category_theory.creates_limit_of_fully_faithful_of_lift CategoryTheory.createsLimitOfFullyFaithfulOfLift
 
--- Notice however that even if the isomorphism is `iso.refl _`,
+-- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.
 /--
@@ -331,10 +331,10 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fait
     (Cones.ext i fun j => by simp only [Functor.image_preimage, Functor.mapCone_π_app])
 #align category_theory.creates_limit_of_fully_faithful_of_iso' CategoryTheory.createsLimitOfFullyFaithfulOfIso'
 
--- Notice however that even if the isomorphism is `iso.refl _`,
+-- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.
-/-- When `F` is fully faithful, and `has_limit (K ⋙ F)`, to show that `F` creates the limit for `K`
+/-- When `F` is fully faithful, and `HasLimit (K ⋙ F)`, to show that `F` creates the limit for `K`
 it suffices to show that the chosen limit point is in the essential image of `F`.
 -/
 def createsLimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
@@ -390,7 +390,7 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphism
         exact IsColimit.ofIsoColimit hd' (asIso f) }
 #align category_theory.creates_colimit_of_reflects_iso CategoryTheory.createsColimitOfReflectsIso
 
--- Notice however that even if the isomorphism is `iso.refl _`,
+-- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
 -- so the constructed colimits may not be ideal, definitionally.
 /--
@@ -407,11 +407,11 @@ def createsColimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [Full F] [F
         IsColimit.ofFaithful F (IsColimit.ofIsoColimit hl i.symm) _ fun _ => F.image_preimage _ }
 #align category_theory.creates_colimit_of_fully_faithful_of_lift' CategoryTheory.createsColimitOfFullyFaithfulOfLift'
 
--- Notice however that even if the isomorphism is `iso.refl _`,
+-- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
 -- so the constructed colimits may not be ideal, definitionally.
 /--
-When `F` is fully faithful, and `has_colimit (K ⋙ F)`, to show that `F` creates the colimit for `K`
+When `F` is fully faithful, and `HasColimit (K ⋙ F)`, to show that `F` creates the colimit for `K`
 it suffices to exhibit a lift of the chosen colimit cocone for `K ⋙ F`.
 -/
 def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
@@ -420,7 +420,7 @@ def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fa
   createsColimitOfFullyFaithfulOfLift' (colimit.isColimit _) c i
 #align category_theory.creates_colimit_of_fully_faithful_of_lift CategoryTheory.createsColimitOfFullyFaithfulOfLift
 
--- Notice however that even if the isomorphism is `iso.refl _`,
+-- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
 -- so the constructed colimits may not be ideal, definitionally.
 /--
@@ -440,11 +440,11 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fa
     (Cocones.ext i fun j => by simp)
 #align category_theory.creates_colimit_of_fully_faithful_of_iso' CategoryTheory.createsColimitOfFullyFaithfulOfIso'
 
--- Notice however that even if the isomorphism is `iso.refl _`,
+-- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
 -- so the constructed colimits may not be ideal, definitionally.
 /--
-When `F` is fully faithful, and `has_colimit (K ⋙ F)`, to show that `F` creates the colimit for `K`
+When `F` is fully faithful, and `HasColimit (K ⋙ F)`, to show that `F` creates the colimit for `K`
 it suffices to show that the chosen colimit point is in the essential image of `F`.
 -/
 def createsColimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
