@@ -8,10 +8,10 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Archimedean
-import Mathbin.Topology.Algebra.InfiniteSum.Basic
-import Mathbin.Topology.Algebra.Order.Field
-import Mathbin.Topology.Algebra.Order.MonotoneConvergence
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 
 /-!
 # Infinite sum in an order
@@ -64,8 +64,7 @@ theorem le_hasSum_of_le_sum (hf : HasSum f a) (h : ∀ s, a₂ ≤ ∑ i in s, f
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (c «expr ∉ » set.range[set.range] e) -/
 theorem hasSum_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
     (hs : ∀ (c) (_ : c ∉ Set.range e), 0 ≤ g c) (h : ∀ i, f i ≤ g (e i)) (hf : HasSum f a₁)
-    (hg : HasSum g a₂) : a₁ ≤ a₂ :=
-  by
+    (hg : HasSum g a₂) : a₁ ≤ a₂ := by
   have : HasSum (fun c => (partialInv e c).casesOn' 0 f) a₁ :=
     by
     refine'
@@ -144,8 +143,7 @@ theorem tsum_le_of_sum_le (hf : Summable f) (h : ∀ s, (∑ i in s, f i) ≤ a�
   hasSum_le_of_sum_le hf.HasSum h
 #align tsum_le_of_sum_le tsum_le_of_sum_le
 
-theorem tsum_le_of_sum_le' (ha₂ : 0 ≤ a₂) (h : ∀ s, (∑ i in s, f i) ≤ a₂) : (∑' i, f i) ≤ a₂ :=
-  by
+theorem tsum_le_of_sum_le' (ha₂ : 0 ≤ a₂) (h : ∀ s, (∑ i in s, f i) ≤ a₂) : (∑' i, f i) ≤ a₂ := by
   by_cases hf : Summable f
   · exact tsum_le_of_sum_le hf h
   · rw [tsum_eq_zero_of_not_summable hf]
@@ -160,15 +158,13 @@ theorem HasSum.nonpos (h : ∀ i, g i ≤ 0) (ha : HasSum g a) : a ≤ 0 :=
   hasSum_le h ha hasSum_zero
 #align has_sum.nonpos HasSum.nonpos
 
-theorem tsum_nonneg (h : ∀ i, 0 ≤ g i) : 0 ≤ ∑' i, g i :=
-  by
+theorem tsum_nonneg (h : ∀ i, 0 ≤ g i) : 0 ≤ ∑' i, g i := by
   by_cases hg : Summable g
   · exact hg.has_sum.nonneg h
   · simp [tsum_eq_zero_of_not_summable hg]
 #align tsum_nonneg tsum_nonneg
 
-theorem tsum_nonpos (h : ∀ i, f i ≤ 0) : (∑' i, f i) ≤ 0 :=
-  by
+theorem tsum_nonpos (h : ∀ i, f i ≤ 0) : (∑' i, f i) ≤ 0 := by
   by_cases hf : Summable f
   · exact hf.has_sum.nonpos h
   · simp [tsum_eq_zero_of_not_summable hf]
@@ -181,8 +177,7 @@ section OrderedAddCommGroup
 variable [OrderedAddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
-theorem hasSum_lt (h : f ≤ g) (hi : f i < g i) (hf : HasSum f a₁) (hg : HasSum g a₂) : a₁ < a₂ :=
-  by
+theorem hasSum_lt (h : f ≤ g) (hi : f i < g i) (hf : HasSum f a₁) (hg : HasSum g a₂) : a₁ < a₂ := by
   have : update f i 0 ≤ update g i 0 := update_le_update_iff.mpr ⟨rfl.le, fun i _ => h i⟩
   have : 0 - f i + a₁ ≤ 0 - g i + a₂ := hasSum_le this (hf.update i 0) (hg.update i 0)
   simpa only [zero_sub, add_neg_cancel_left] using add_lt_add_of_lt_of_le hi this
@@ -212,8 +207,7 @@ theorem tsum_pos (hsum : Summable g) (hg : ∀ i, 0 ≤ g i) (i : ι) (hi : 0 < 
   exact tsum_lt_tsum hg hi summable_zero hsum
 #align tsum_pos tsum_pos
 
-theorem hasSum_zero_iff_of_nonneg (hf : ∀ i, 0 ≤ f i) : HasSum f 0 ↔ f = 0 :=
-  by
+theorem hasSum_zero_iff_of_nonneg (hf : ∀ i, 0 ≤ f i) : HasSum f 0 ↔ f = 0 := by
   refine' ⟨fun hf' => _, _⟩
   · ext i
     refine' (hf i).eq_of_not_gt fun hi => _
@@ -237,8 +231,7 @@ theorem le_tsum' (hf : Summable f) (i : ι) : f i ≤ ∑' i, f i :=
   le_tsum hf i fun _ _ => zero_le _
 #align le_tsum' le_tsum'
 
-theorem hasSum_zero_iff : HasSum f 0 ↔ ∀ x, f x = 0 :=
-  by
+theorem hasSum_zero_iff : HasSum f 0 ↔ ∀ x, f x = 0 := by
   refine' ⟨_, fun h => _⟩
   · contrapose!
     exact fun ⟨x, hx⟩ h => hx (nonpos_iff_eq_zero.1 <| le_has_sum' h x)
@@ -304,8 +297,7 @@ alias summable_abs_iff ↔ Summable.of_abs Summable.abs
 --TODO: Change the conclusion to `finite ι`
 theorem finite_of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α] [Archimedean α]
     [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun i : ι => b) :
-    (Set.univ : Set ι).Finite :=
-  by
+    (Set.univ : Set ι).Finite := by
   have H : ∀ s : Finset ι, s.card • b ≤ ∑' i : ι, b :=
     by
     intro s
@@ -321,8 +313,7 @@ theorem finite_of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpac
 end LinearOrder
 
 theorem Summable.tendsto_top_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
-    {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
-  by
+    {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop := by
   rw [← inv_inv f]
   apply Filter.Tendsto.inv_tendsto_zero
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (Summable.tendsto_atTop_zero hf)
