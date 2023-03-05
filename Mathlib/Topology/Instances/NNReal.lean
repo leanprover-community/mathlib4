@@ -23,7 +23,7 @@ Instances for the following typeclasses are defined:
 
 * `TopologicalSpace ℝ≥0`
 * `TopologicalSemiring ℝ≥0`
-* `second_countable_topology ℝ≥0`
+* `TopologicalSpace.SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
@@ -37,7 +37,7 @@ Various mathematically trivial lemmas are proved about the compatibility
 of limits and sums in `ℝ≥0` and `ℝ`. For example
 
 * `tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
-  tendsto (λa, (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ tendsto m f (𝓝 x)`
+  Filter.Tendsto (λa, (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Filter.Tendsto m f (𝓝 x)`
 
 says that the limit of a filter along a map to `ℝ≥0` is the same in `ℝ` and `ℝ≥0`, and
 
@@ -254,7 +254,7 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type _} (f : α → ℝ≥0) 
 
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
-  StrictMono.orderIsoOfSurjective (fun x => x ^ n) (fun x y h =>
+  StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
       strictMonoOn_pow hn.bot_lt (zero_le x) (zero_le y) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
