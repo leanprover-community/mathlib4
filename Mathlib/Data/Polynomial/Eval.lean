@@ -133,6 +133,7 @@ def eval₂AddMonoidHom : R[X] →+ S where
   map_zero' := eval₂_zero _ _
   map_add' _ _ := eval₂_add _ _
 #align polynomial.eval₂_add_monoid_hom Polynomial.eval₂AddMonoidHom
+#align polynomial.eval₂_add_monoid_hom_apply Polynomial.eval₂AddMonoidHom_apply
 
 @[simp]
 theorem eval₂_nat_cast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
@@ -435,12 +436,12 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
 
 /-- `polynomial.eval` as linear map -/
 @[simps]
-def leval {R : Type _} [Semiring R] (r : R) : R[X] →ₗ[R] R
-    where
+def leval {R : Type _} [Semiring R] (r : R) : R[X] →ₗ[R] R where
   toFun f := f.eval r
   map_add' _f _g := eval_add
   map_smul' c f := eval_smul c f r
 #align polynomial.leval Polynomial.leval
+#align polynomial.leval_apply Polynomial.leval_apply
 
 @[simp]
 theorem eval_nat_cast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := by
@@ -787,6 +788,8 @@ def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
   RingEquiv.ofHomInv (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext <;> simp)
     (by ext <;> simp)
 #align polynomial.map_equiv Polynomial.mapEquiv
+#align polynomial.map_equiv_apply Polynomial.mapEquiv_apply
+#align polynomial.map_equiv_symm_apply Polynomial.mapEquiv_symm_apply
 
 theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.map (g.comp f) :=
   ext (by simp [coeff_map])
