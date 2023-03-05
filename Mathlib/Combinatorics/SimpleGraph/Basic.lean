@@ -8,6 +8,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
@@ -80,7 +81,6 @@ finitely many vertices.
 -/
 
 -- porting note: using `aesop` for automation
-declare_aesop_rule_sets [SimpleGraph]
 
 -- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
 attribute [aesop norm unfold (rule_sets [SimpleGraph])] Symmetric
@@ -89,7 +89,9 @@ attribute [aesop norm unfold (rule_sets [SimpleGraph])] Irreflexive
 -- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [SimpleGraph]))
+    aesop $c*
+      (options := { introsTransparency? := some .default })
+      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function
 
@@ -215,7 +217,7 @@ theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Pro
 #align simple_graph.is_subgraph_eq_le SimpleGraph.isSubgraph_eq_le
 
 /-- The supremum of two graphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
-instance : HasSup (SimpleGraph V) :=
+instance : Sup (SimpleGraph V) :=
   ⟨fun x y =>
     { Adj := x.Adj ⊔ y.Adj
       symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }⟩
@@ -226,7 +228,7 @@ theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v 
 #align simple_graph.sup_adj SimpleGraph.sup_adj
 
 /-- The infimum of two graphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
-instance : HasInf (SimpleGraph V) :=
+instance : Inf (SimpleGraph V) :=
   ⟨fun x y =>
     { Adj := x.Adj ⊓ y.Adj
       symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }⟩
@@ -605,6 +607,8 @@ structure Dart extends V × V where
   is_adj : G.Adj fst snd
   deriving DecidableEq
 #align simple_graph.dart SimpleGraph.Dart
+
+initialize_simps_projections Dart (+toProd, -fst, -snd)
 
 section Darts
 
@@ -1286,6 +1290,13 @@ def degree : ℕ :=
   (G.neighborFinset v).card
 #align simple_graph.degree SimpleGraph.degree
 
+-- Porting note: in Lean 3 we could do `simp [← degree]`, but that gives
+-- "invalid '←' modifier, 'SimpleGraph.degree' is a declaration name to be unfolded".
+-- In any case, having this lemma is good since there's no guarantee we won't still change
+-- the definition of `degree`.
+@[simp]
+theorem card_neighborFinset_eq_degree : (G.neighborFinset v).card = G.degree v := rfl
+
 @[simp]
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
   (Set.toFinset_card _).symm
@@ -1846,17 +1857,13 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
   left_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := V)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.symm_apply_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := W)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.apply_symm_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.apply_symm_apply _ _
 #align simple_graph.iso.map_edge_set SimpleGraph.Iso.mapEdgeSet
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/

@@ -280,15 +280,24 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     map_smul' := fun r x => by dsimp only; rw [map_smulₛₗ] }
 #align linear_equiv.symm LinearEquiv.symm
 
+-- Porting note: this is new
 /-- See Note [custom simps projection] -/
-def Simps.symmApply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
+def Simps.apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+    (e : M ≃ₛₗ[σ] M₂) : M → M₂ :=
+  e
+#align linear_equiv.simps.apply LinearEquiv.Simps.apply
+
+/-- See Note [custom simps projection] -/
+def Simps.symm_apply {R : Type _} {S : Type _} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     {M : Type _} {M₂ : Type _} [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
     (e : M ≃ₛₗ[σ] M₂) : M₂ → M :=
   e.symm
-#align linear_equiv.simps.symm_apply LinearEquiv.Simps.symmApply
+#align linear_equiv.simps.symm_apply LinearEquiv.Simps.symm_apply
 
-initialize_simps_projections LinearEquiv (toLinearMap → apply, invFun → symmApply)
+initialize_simps_projections LinearEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem invFun_eq_symm : e.invFun = e.symm :=
@@ -577,7 +586,7 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 #align ring_equiv.to_semilinear_equiv RingEquiv.toSemilinearEquiv
-#align ring_equiv.to_semilinear_equiv_symm_apply RingEquiv.toSemilinearEquiv_symmApply
+#align ring_equiv.to_semilinear_equiv_symm_apply RingEquiv.toSemilinearEquiv_symm_apply
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 
@@ -614,7 +623,8 @@ def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
     left_inv := f.left_inv
     right_inv := f.right_inv }
 #align linear_equiv.restrict_scalars LinearEquiv.restrictScalars
-#align linear_equiv.restrict_scalars_symm_apply LinearEquiv.restrictScalars_symmApply
+#align linear_equiv.restrict_scalars_apply LinearEquiv.restrictScalars_apply
+#align linear_equiv.restrict_scalars_symm_apply LinearEquiv.restrictScalars_symm_apply
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h =>
@@ -698,7 +708,7 @@ def ofSubsingleton : M ≃ₗ[R] M₂ :=
     left_inv := fun _ => Subsingleton.elim _ _
     right_inv := fun _ => Subsingleton.elim _ _ }
 #align linear_equiv.of_subsingleton LinearEquiv.ofSubsingleton
-#align linear_equiv.of_subsingleton_symm_apply LinearEquiv.ofSubsingleton_symmApply
+#align linear_equiv.of_subsingleton_symm_apply LinearEquiv.ofSubsingleton_symm_apply
 
 @[simp]
 theorem ofSubsingleton_self : ofSubsingleton M M = refl R M := by
@@ -725,7 +735,7 @@ def compHom.toLinearEquiv {R S : Type _} [Semiring R] [Semiring S] (g : R ≃+* 
     invFun := (g.symm : S → R)
     map_smul' := g.map_mul }
 #align module.comp_hom.to_linear_equiv Module.compHom.toLinearEquiv
-#align module.comp_hom.to_linear_equiv_symm_apply Module.compHom.toLinearEquiv_symmApply
+#align module.comp_hom.to_linear_equiv_symm_apply Module.compHom.toLinearEquiv_symm_apply
 
 end Module
 
@@ -738,12 +748,12 @@ variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 /-- Each element of the group defines a linear equivalence.
 
 This is a stronger version of `DistribMulAction.toAddEquiv`. -/
-@[simps]
+@[simps!]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
   { toAddEquiv M s, toLinearMap R M s with }
 #align distrib_mul_action.to_linear_equiv DistribMulAction.toLinearEquiv
 #align distrib_mul_action.to_linear_equiv_apply DistribMulAction.toLinearEquiv_apply
-#align distrib_mul_action.to_linear_equiv_symm_apply DistribMulAction.toLinearEquiv_symmApply
+#align distrib_mul_action.to_linear_equiv_symm_apply DistribMulAction.toLinearEquiv_symm_apply
 
 /-- Each element of the group defines a module automorphism.
 
