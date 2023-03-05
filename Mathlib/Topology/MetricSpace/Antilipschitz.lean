@@ -99,6 +99,7 @@ open EMetric
 -- uses neither `f` nor `hf`
 /-- Extract the constant from `hf : AntilipschitzWith K f`. This is useful, e.g.,
 if `K` is given by a long formula, and we want to reuse this value. -/
+@[nolint unusedArguments]
 protected def k (_hf : AntilipschitzWith K f) : ℝ≥0 := K
 set_option linter.uppercaseLean3 false in
 #align antilipschitz_with.K AntilipschitzWith.k
