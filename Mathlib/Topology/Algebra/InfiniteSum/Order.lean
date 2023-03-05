@@ -249,14 +249,14 @@ theorem hasSum_of_isLUB [CanonicallyLinearOrderedAddMonoid α] [TopologicalSpace
 
 theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [UniformAddGroup α]
     [CompleteSpace α] {f : ι → α} : (Summable fun x => |f x|) ↔ Summable f :=
-  have h1 : ∀ x : { x | 0 ≤ f x }, |f x| = f x := fun x => abs_of_nonneg x.2
-  have h2 : ∀ x : ↑({ x | 0 ≤ f x }ᶜ), |f x| = -f x := fun x => abs_of_neg (not_le.1 x.2)
+  let s := { x | 0 ≤ f x }
+  have h1 : ∀ x : s, |f x| = f x := fun x => abs_of_nonneg x.2
+  have h2 : ∀ x : ↑(sᶜ), |f x| = -f x := fun x => abs_of_neg (not_le.1 x.2)
   calc (Summable fun x => |f x|) ↔
-      (Summable fun x : { x | 0 ≤ f x } => |f x|) ∧ Summable fun x : ↑({ x | 0 ≤ f x }ᶜ) => |f x| :=
+      (Summable fun x : s => |f x|) ∧ Summable fun x : ↑(sᶜ) => |f x| :=
         summable_subtype_and_compl.symm
-  _ ↔ (Summable fun x : { x | 0 ≤ f x } => f x) ∧ Summable fun x : ↑({ x | 0 ≤ f x }ᶜ) => -f x := by
-      simp only [h1, h2]
-  _ ↔ _ := by simp only [summable_neg_iff, summable_subtype_and_compl]
+  _ ↔ (Summable fun x : s => f x) ∧ Summable fun x : ↑(sᶜ) => -f x := by simp only [h1, h2]
+  _ ↔ Summable f := by simp only [summable_neg_iff, summable_subtype_and_compl]
 #align summable_abs_iff summable_abs_iff
 
 alias summable_abs_iff ↔ Summable.of_abs Summable.abs
@@ -274,8 +274,8 @@ theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpac
   have : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
 
-theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α] [Archimedean α]
-    [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι => b) :
+theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α]
+    [Archimedean α] [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι => b) :
     (Set.univ : Set ι).Finite :=
   finite_univ_iff.2 <| .of_summable_const hb hf
 #align finite_of_summable_const Set.Finite.of_summable_const
@@ -283,12 +283,8 @@ theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [Topological
 end LinearOrder
 
 theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
-    {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop := by
-  rw [← inv_inv f]
-  apply Filter.Tendsto.inv_tendsto_zero
-  apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (Summable.tendsto_atTop_zero hf)
-  rw [eventually_iff_exists_mem]
-  refine' ⟨Set.Ioi 0, Ioi_mem_atTop _, fun _ _ => _⟩
-  rw [Set.mem_Ioi, inv_eq_one_div, one_div, Pi.inv_apply, _root_.inv_pos]
-  exact hf' _
+    {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
+  inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
+    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
+      eventually_of_forall fun _ => inv_pos.2 (hf' _)
 #align summable.tendsto_top_of_pos Summable.tendsto_atTop_of_pos
