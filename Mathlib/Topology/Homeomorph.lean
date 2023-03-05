@@ -78,6 +78,7 @@ protected def symm (h : α ≃ₜ β) : β ≃ₜ α where
 #align homeomorph.symm Homeomorph.symm
 
 @[simp] theorem symm_symm (h : α ≃ₜ β) : h.symm.symm = h := rfl
+#align homeomorph.symm_symm Homeomorph.symm_symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
