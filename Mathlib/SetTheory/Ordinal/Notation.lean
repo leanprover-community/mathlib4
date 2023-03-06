@@ -135,13 +135,9 @@ theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
 #align onote.repr_one Onote.repr_one
 
 theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
-  unfold repr
+  --unfold repr
   refine' le_trans _ (le_add_right _ _)
-  simp
-  cases' e with e
-  · simp only [opow_zero, repr, one_mul, Ordinal.one_le_iff_ne_zero, ne_eq, nat_cast_eq_zero,
-    PNat.ne_zero, not_false_iff]
-  · simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e) omega_pos).2 (nat_cast_le.2 n.2)
+  simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e) omega_pos).2 (nat_cast_le.2 n.2)
 #align onote.omega_le_oadd Onote.omega_le_oadd
 
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
