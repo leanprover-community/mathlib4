@@ -8,8 +8,8 @@ Authors: Reid Barton, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.CategoryTheory.Limits.Creates
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Limits.Creates
 
 /-!
 # Adjunctions and limits
