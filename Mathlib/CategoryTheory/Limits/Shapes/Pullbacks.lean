@@ -265,11 +265,8 @@ theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
 @[simps!]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
   NatIso.ofComponents
-  (fun j => eqToIso (by cases' j with u ; cases F; rfl; cases u; cases F; rfl; cases F; rfl))
-  (fun {X} {Y} j => by
-    cases' X with x; cases' Y with y; cases j; dsimp; simp; cases y; dsimp; cases j; dsimp;
-    cases j; cases' Y with y; cases x; dsimp; cases j; simp; cases j; simp; cases x; cases y;
-    cases j; dsimp; simp; cases j; cases y; cases j; dsimp; simp; cases j; dsimp; simp)
+  (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
+  (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> dsimp <;> simp)
 #align category_theory.limits.diagram_iso_cospan CategoryTheory.Limits.diagramIsoCospan
 
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
