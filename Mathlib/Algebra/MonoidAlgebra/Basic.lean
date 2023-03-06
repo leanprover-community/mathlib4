@@ -416,6 +416,7 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
 #align monoid_algebra.mul_apply_antidiagonal MonoidAlgebra.mul_apply_antidiagonal
 
 -- Porting note: Type ascriptions didn't work, so `α` & `β` of `HMul.hMul` are specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 @[simp]
 theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
     HMul.hMul (α := MonoidAlgebra k G) (β := MonoidAlgebra k G) (single a₁ b₁) (single a₂ b₂)
@@ -425,6 +426,7 @@ theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
 #align monoid_algebra.single_mul_single MonoidAlgebra.single_mul_single
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hPow` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 @[simp]
 theorem single_pow [Monoid G] {a : G} {b : k} :
     ∀ n : ℕ, HPow.hPow (α := MonoidAlgebra k G) (single a b) n = single (a ^ n) (b ^ n)
@@ -445,6 +447,7 @@ theorem mapDomain_one {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
 #align monoid_algebra.map_domain_one MonoidAlgebra.mapDomain_one
 
 -- Porting note: Type ascriptions didn't work, so `α` & `β` of `HMul.hMul` are specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 /-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
 theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β] [Mul α] [Mul α₂]
     {F : Type _} [MulHomClass F α α₂] (f : F) (x y : MonoidAlgebra β α) :
@@ -507,6 +510,7 @@ def singleHom [MulOneClass G] : k × G →* MonoidAlgebra k G where
 #align monoid_algebra.single_hom_apply MonoidAlgebra.singleHom_apply
 
 -- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a, a * x = z ↔ a = y) :
     (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) z = f y * r := by
@@ -530,6 +534,7 @@ theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x 
 #align monoid_algebra.mul_single_one_apply MonoidAlgebra.mul_single_one_apply
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a, x * a = y ↔ a = z) :
     (HMul.hMul (α := MonoidAlgebra k G) (single x r) f) y = r * f z := by
@@ -546,6 +551,7 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (α := MonoidAlgebra k G) (single 1 r) f) x = r * f x :=
   f.single_mul_apply_aux fun a => by rw [one_mul]
@@ -682,6 +688,7 @@ section Algebra
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlgebra k G) :
     (HMul.hMul (α := MonoidAlgebra k G) (single 1 r) f) =
       (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) := by
@@ -920,6 +927,7 @@ section
 variable (k)
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HSMul.hSMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 /-- When `V` is a `k[G]`-module, multiplication by a group element `g` is a `k`-linear map. -/
 def GroupSmul.linearMap [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V] [Module k V]
     [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G) : V →ₗ[k] V
@@ -930,6 +938,7 @@ def GroupSmul.linearMap [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMono
 #align monoid_algebra.group_smul.linear_map MonoidAlgebra.GroupSmul.linearMap
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HSMul.hSMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 @[simp]
 theorem GroupSmul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V]
     [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G)
@@ -943,6 +952,7 @@ section
 variable {k}
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HSMul.hSMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 variable [Monoid G] [CommSemiring k] {V W : Type u₃} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
@@ -985,6 +995,7 @@ variable {ι : Type ui}
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
 -- Porting note: Type ascriptions didn't work, so `β` of `Finset.prod` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem prod_single [CommSemiring k] [CommMonoid G] {s : Finset ι} {a : ι → G} {b : ι → k} :
     (Finset.prod (β := MonoidAlgebra k G) s fun i => single (a i) (b i)) =
       single (∏ i in s, a i) (∏ i in s, b i) :=
@@ -1002,6 +1013,7 @@ variable [Semiring k] [Group G]
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
 -- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 @[simp]
 theorem mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
     (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) y = f (y * x⁻¹) * r :=
@@ -1009,6 +1021,7 @@ theorem mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
 #align monoid_algebra.mul_single_apply MonoidAlgebra.mul_single_apply
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 @[simp]
 theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
     (HMul.hMul (α := MonoidAlgebra k G) (single x r) f) y = r * f (x⁻¹ * y) :=
@@ -1016,6 +1029,7 @@ theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
 #align monoid_algebra.single_mul_apply MonoidAlgebra.single_mul_apply
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a b => b * g (a⁻¹ * x) :=
   calc
@@ -1026,6 +1040,7 @@ theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
 #align monoid_algebra.mul_apply_left MonoidAlgebra.mul_apply_left
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 -- If we'd assumed `CommSemiring`, we could deduce this from `mul_apply_left`.
 theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = g.sum fun a b => f (x * a⁻¹) * b :=
@@ -1441,6 +1456,7 @@ theorem mul_apply_antidiagonal [Add G] (f g : AddMonoidAlgebra k G) (x : G) (s :
 #align add_monoid_algebra.mul_apply_antidiagonal AddMonoidAlgebra.mul_apply_antidiagonal
 
 -- Porting note: Type ascriptions didn't work, so `α` & `β` of `HMul.hMul` are specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem single_mul_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k} :
     HMul.hMul (α := AddMonoidAlgebra k G) (β := AddMonoidAlgebra k G) (single a₁ b₁) (single a₂ b₂)
       = single (a₁ + a₂) (b₁ * b₂) :=
@@ -1448,6 +1464,7 @@ theorem single_mul_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k} :
 #align add_monoid_algebra.single_mul_single AddMonoidAlgebra.single_mul_single
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hPow` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 -- This should be a `@[simp]` lemma, but the simp_nf linter times out if we add this.
 -- Probably the correct fix is to make a `[Add]MonoidAlgebra.single` with the correct type,
 -- instead of relying on `Finsupp.single`.
@@ -1470,6 +1487,7 @@ theorem mapDomain_one {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
 #align add_monoid_algebra.map_domain_one AddMonoidAlgebra.mapDomain_one
 
 -- Porting note: Type ascriptions didn't work, so `α` & `β` of `HMul.hMul` are specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 /-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
 theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β] [Add α] [Add α₂]
     {F : Type _} [AddHomClass F α α₂] (f : F) (x y : AddMonoidAlgebra β α) :
@@ -1545,6 +1563,7 @@ def singleHom [AddZeroClass G] : k × Multiplicative G →* AddMonoidAlgebra k G
 #align add_monoid_algebra.single_hom_apply AddMonoidAlgebra.singleHom_apply
 
 -- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem mul_single_apply_aux [Add G] (f : AddMonoidAlgebra k G) (r : k) (x y z : G)
     (H : ∀ a, a + x = z ↔ a = y) :
     (HMul.hMul (β := AddMonoidAlgebra k G) f (single x r)) z = f y * r :=
@@ -1552,12 +1571,14 @@ theorem mul_single_apply_aux [Add G] (f : AddMonoidAlgebra k G) (r : k) (x y z :
 #align add_monoid_algebra.mul_single_apply_aux AddMonoidAlgebra.mul_single_apply_aux
 
 -- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem mul_single_zero_apply [AddZeroClass G] (f : AddMonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (β := AddMonoidAlgebra k G) f (single 0 r)) x = f x * r :=
   f.mul_single_apply_aux r _ _ _ fun a => by rw [add_zero]
 #align add_monoid_algebra.mul_single_zero_apply AddMonoidAlgebra.mul_single_zero_apply
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem single_mul_apply_aux [Add G] (f : AddMonoidAlgebra k G) (r : k) (x y z : G)
     (H : ∀ a, x + a = y ↔ a = z) :
     (HMul.hMul (α := AddMonoidAlgebra k G) (single x r) f) y = r * f z :=
@@ -1565,18 +1586,21 @@ theorem single_mul_apply_aux [Add G] (f : AddMonoidAlgebra k G) (r : k) (x y z :
 #align add_monoid_algebra.single_mul_apply_aux AddMonoidAlgebra.single_mul_apply_aux
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem single_zero_mul_apply [AddZeroClass G] (f : AddMonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (α := AddMonoidAlgebra k G) (single 0 r) f) x = r * f x :=
   f.single_mul_apply_aux r _ _ _ fun a => by rw [zero_add]
 #align add_monoid_algebra.single_zero_mul_apply AddMonoidAlgebra.single_zero_mul_apply
 
 -- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem mul_single_apply [AddGroup G] (f : AddMonoidAlgebra k G) (r : k) (x y : G) :
     (HMul.hMul (β := AddMonoidAlgebra k G) f (single x r)) y = f (y - x) * r :=
   (sub_eq_add_neg y x).symm ▸ @MonoidAlgebra.mul_single_apply k (Multiplicative G) _ _ _ _ _ _
 #align add_monoid_algebra.mul_single_apply AddMonoidAlgebra.mul_single_apply
 
 -- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem single_mul_apply [AddGroup G] (r : k) (x : G) (f : AddMonoidAlgebra k G) (y : G) :
     (HMul.hMul (α := AddMonoidAlgebra k G) (single x r) f) y = r * f (-x + y) :=
   @MonoidAlgebra.single_mul_apply k (Multiplicative G) _ _ _ _ _ _
@@ -1944,6 +1968,7 @@ universe ui
 variable {ι : Type ui}
 
 -- Porting note: Type ascriptions didn't work, so `β` of `Finset.prod` is specified.
+--               See https://github.com/leanprover/lean4/issues/2134.
 theorem prod_single [CommSemiring k] [AddCommMonoid G] {s : Finset ι} {a : ι → G} {b : ι → k} :
     (Finset.prod (β := AddMonoidAlgebra k G) s fun i => single (a i) (b i)) =
       single (∑ i in s, a i) (∏ i in s, b i) :=
