@@ -261,4 +261,3 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
 #align nnreal.pow_order_iso NNReal.powOrderIso
 
 end NNReal
-
