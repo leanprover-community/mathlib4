@@ -339,10 +339,10 @@ variable [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →* M₂` (or another type of bundled
 homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
-@[to_additive "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
+@[to_additive (attr := simps (config := .asFn))
+  "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
-type of bundled homomorphisms that has a `add_monoid_hom_class` instance) to `M₁ → M₂`.",
-  simps (config := { fullyApplied := false })]
+type of bundled homomorphisms that has a `add_monoid_hom_class` instance) to `M₁ → M₂`."]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂
     where
@@ -353,9 +353,9 @@ def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
 #align add_monoid_hom_of_mem_closure_range_coe addMonoidHomOfMemClosureRangeCoe
 
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
-@[to_additive "Construct a bundled additive monoid homomorphism from a pointwise limit of additive
-monoid homomorphisms",
-  simps! (config := { fullyApplied := false })]
+@[to_additive (attr := simps! (config := .asFn))
+  "Construct a bundled additive monoid homomorphism from a pointwise limit of additive
+monoid homomorphisms"]
 def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →* M₂ :=
   monoidHomOfMemClosureRangeCoe f <|
