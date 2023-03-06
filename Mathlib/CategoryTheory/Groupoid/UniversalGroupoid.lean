@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.PathCategory
 import Mathlib.CategoryTheory.Quotient
+import Mathlib.CategoryTheory.Groupoid.Init
 
 
 /-!
@@ -158,12 +159,8 @@ noncomputable def lift : UniversalGroupoid σ ⥤ V'' :=
 Quotient.lift _
   ( Paths.lift $ Quiver.Push.lift σ θ.toPrefunctor τ₀ hτ₀ )
   ( fun _ _ _ _ h => by
-      dsimp only [Paths.lift, Quiver.Push.lift]
-      induction h
-      · dsimp [Quiver.Push.of, CategoryStruct.comp, CategoryStruct.id, Quiver.Hom.toPath]
-        simp [Functor.map_comp, cast_cast, Category.id_comp, hτ₀]
-      · dsimp [Quiver.Push.of, CategoryStruct.comp, CategoryStruct.id, Quiver.Hom.toPath]
-        simp [Functor.map_id, cast_cast, Category.id_comp, hτ₀] )
+      induction h <;>
+      aesop_cat (add norm unfold [Quiver.Push.of, Quiver.Hom.toPath, Quiver.Push.lift, Paths.lift]))
 
 lemma lift_spec_obj : (lift σ θ τ₀ hτ₀).obj = τ₀ ∘ (as σ) := rfl
 
