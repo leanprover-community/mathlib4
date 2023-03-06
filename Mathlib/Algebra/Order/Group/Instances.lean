@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 
 ! This file was ported from Lean 3 source module algebra.order.group.instances
-! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
+! leanprover-community/mathlib commit 55bbb8076236154a4f53939a62ad1e4fddbc14c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

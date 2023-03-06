@@ -642,7 +642,7 @@ theorem vadd_eq_self_of_mem_zmultiples {α G : Type _} [AddGroup G] [AddAction G
   @smul_eq_self_of_mem_zpowers (Multiplicative G) _ _ _ α _ hx a hs
 #align vadd_eq_self_of_mem_zmultiples vadd_eq_self_of_mem_zmultiples
 
-attribute [to_additive vadd_eq_self_of_mem_zmultiples] smul_eq_self_of_mem_zpowers
+attribute [to_additive existing vadd_eq_self_of_mem_zmultiples] smul_eq_self_of_mem_zpowers
 
 end Group
 
@@ -983,7 +983,7 @@ theorem zpow_eq_mod_card (n : ℤ) : x ^ n = x ^ (n % Fintype.card G : ℤ) := b
 #align zsmul_eq_mod_card zsmul_eq_mod_card
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
-@[to_additive "If `gcd(|G|,n)=1` then the smul by `n` is a bijection", simps]
+@[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
 noncomputable def powCoprime {G : Type _} [Group G] (h : (Nat.card G).coprime n) : G ≃ G
     where
   toFun g := g ^ n
@@ -1079,8 +1079,8 @@ def subgroupOfIdempotent {G : Type _} [Group G] [Fintype G] (S : Set G) (hS1 : S
 #align add_subgroup_of_idempotent addSubgroupOfIdempotent
 
 /-- If `S` is a nonempty subset of a finite group `G`, then `S ^ |G|` is a subgroup -/
-@[to_additive smulCardAddSubgroup "If `S` is a nonempty subset of a finite add group `G`,
-then `|G| • S` is a subgroup", simps!]
+@[to_additive (attr := simps!) smulCardAddSubgroup
+  "If `S` is a nonempty subset of a finite add group `G`, then `|G| • S` is a subgroup"]
 def powCardSubgroup {G : Type _} [Group G] [Fintype G] (S : Set G) (hS : S.Nonempty) : Subgroup G :=
   have one_mem : (1 : G) ∈ S ^ Fintype.card G := by
     obtain ⟨a, ha⟩ := hS

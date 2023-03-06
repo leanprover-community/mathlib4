@@ -1296,12 +1296,12 @@ instance : Lattice (Finset α) :=
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
-theorem sup_eq_union : (HasSup.sup : Finset α → Finset α → Finset α) = Union.union :=
+theorem sup_eq_union : (Sup.sup : Finset α → Finset α → Finset α) = Union.union :=
   rfl
 #align finset.sup_eq_union Finset.sup_eq_union
 
 @[simp]
-theorem inf_eq_inter : (HasInf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
+theorem inf_eq_inter : (Inf.inf : Finset α → Finset α → Finset α) = Inter.inter :=
   rfl
 #align finset.inf_eq_inter Finset.inf_eq_inter
 
@@ -2940,11 +2940,10 @@ theorem nonempty_range_succ : (range <| n + 1).Nonempty :=
 #align finset.nonempty_range_succ Finset.nonempty_range_succ
 
 @[simp]
-theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ :=
-  by
-  convert filter_eq (range n) m
+theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by
+  convert filter_eq (range n) m using 2
   · ext
-    simp_rw [@eq_comm _ m]
+    rw [eq_comm]
   · simp
 #align finset.range_filter_eq Finset.range_filter_eq
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 
 ! This file was ported from Lean 3 source module algebra.group.units
-! leanprover-community/mathlib commit 0f601d095cdfe465edc51882323d19e6b333c419
+! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -712,7 +712,7 @@ protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : 
     AddUnits N :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 #align is_add_unit.add_unit IsAddUnit.addUnit
-attribute [to_additive] IsUnit.unit
+attribute [to_additive existing] IsUnit.unit
 
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
@@ -739,7 +739,7 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
-@[to_additive]
+@[to_additive "`IsAddUnit x` is decidable if we can decide if `x` comes from `AddUnits M`."]
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 attribute [instance] IsAddUnit.instDecidableIsAddUnit

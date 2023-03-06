@@ -1827,11 +1827,7 @@ theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ �
   refine' ⟨_, map_congr⟩; intro h x hx
   rw [mem_iff_get] at hx; rcases hx with ⟨n, hn, rfl⟩
   rw [get_map_rev f, get_map_rev g]
-  -- Porting note: with `nthLe` instead of `get` the remainder of the proof is simply `congr`
-  generalize_proofs h₁ h₂
-  generalize map f l = x, map g l = y at *
-  cases h
-  congr
+  congr!
 #align list.map_eq_map_iff List.map_eq_map_iff
 
 theorem map_concat (f : α → β) (a : α) (l : List α) :
@@ -4609,8 +4605,8 @@ The list definitions happen earlier than `to_additive`, so here we tag the few m
 definitions that couldn't be tagged earlier.
 -/
 
-attribute [to_additive] List.prod -- `List.sum`
-attribute [to_additive] alternatingProd -- `List.alternatingSum`
+attribute [to_additive existing] List.prod -- `List.sum`
+attribute [to_additive existing] alternatingProd -- `List.alternatingSum`
 
 /-! ### Miscellaneous lemmas -/
 
