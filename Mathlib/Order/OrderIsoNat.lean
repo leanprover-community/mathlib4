@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.order_iso_nat
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
+! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -128,30 +128,34 @@ noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
       Nat.Subtype.ofNat_surjective
 #align nat.subtype.order_iso_of_nat Nat.Subtype.orderIsoOfNat
 
---porting note: Added the decidability requirement, I'm not sure how it worked in lean3 without it
-variable {s} [dP : DecidablePred (· ∈ s)]
+variable {s}
 
 @[simp]
-theorem coe_orderEmbeddingOfSet : ⇑(orderEmbeddingOfSet s) = (↑) ∘ Subtype.ofNat s :=
+theorem coe_orderEmbeddingOfSet [DecidablePred (· ∈ s)] :
+    ⇑(orderEmbeddingOfSet s) = (↑) ∘ Subtype.ofNat s :=
   rfl
 #align nat.coe_order_embedding_of_set Nat.coe_orderEmbeddingOfSet
 
-theorem orderEmbeddingOfSet_apply {n : ℕ} : orderEmbeddingOfSet s n = Subtype.ofNat s n :=
+theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
+    orderEmbeddingOfSet s n = Subtype.ofNat s n :=
   rfl
 #align nat.order_embedding_of_set_apply Nat.orderEmbeddingOfSet_apply
 
 @[simp]
-theorem Subtype.orderIsoOfNat_apply {n : ℕ} : Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
+theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
+    Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
   simp only [orderIsoOfNat, RelIso.ofSurjective_apply,
     RelEmbedding.orderEmbeddingOfLTEmbedding_apply, RelEmbedding.coe_natLt]
   suffices (fun a => Classical.propDecidable (a ∈ s)) = (fun a => dP a) by
     rw [this]
   simp
+  -- Porting note: This proof was simply `by simp [orderIsoOfNat]; congr`
 #align nat.subtype.order_iso_of_nat_apply Nat.Subtype.orderIsoOfNat_apply
 
 variable (s)
 
-theorem orderEmbeddingOfSet_range : Set.range (Nat.orderEmbeddingOfSet s) = s :=
+theorem orderEmbeddingOfSet_range [DecidablePred (· ∈ s)] :
+    Set.range (Nat.orderEmbeddingOfSet s) = s :=
   Subtype.coe_comp_ofNat_range
 #align nat.order_embedding_of_set_range Nat.orderEmbeddingOfSet_range
 
