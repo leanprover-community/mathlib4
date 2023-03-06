@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Intervals.Instances
 /-!
 # The unit interval, as a topological space
 
-Use `open_locale unit_interval` to turn on the notation `I := set.Icc (0 : ℝ) (1 : ℝ)`.
+Use `open_locale unitInterval` to turn on the notation `I := Set.Icc (0 : ℝ) (1 : ℝ)`.
 
 We provide basic instances, as well as a custom tactic for discharging
 `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` when `x : I`.
@@ -38,7 +38,7 @@ abbrev unitInterval : Set ℝ :=
   Set.Icc 0 1
 #align unit_interval unitInterval
 
--- mathport name: unit_interval
+@[inherit_doc]
 scoped[unitInterval] notation "I" => unitInterval
 
 namespace unitInterval
@@ -90,20 +90,20 @@ instance : Nonempty I :=
 instance : Mul I :=
   ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
 
--- todo: we could set up a `linear_ordered_comm_monoid_with_zero I` instance
+-- todo: we could set up a `LinearOrderedCommMonoidWithZero I` instance
 theorem mul_le_left {x y : I} : x * y ≤ x :=
-  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq <| mul_one x
+  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq <| mul_one x.1
 #align unit_interval.mul_le_left unitInterval.mul_le_left
 
 theorem mul_le_right {x y : I} : x * y ≤ y :=
-  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq <| one_mul y
+  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq <| one_mul y.1
 #align unit_interval.mul_le_right unitInterval.mul_le_right
 
 /-- Unit interval central symmetry. -/
-def symm : I → I := fun t => ⟨1 - t, mem_iff_one_sub_mem.mp t.Prop⟩
+def symm : I → I := fun t => ⟨1 - t, mem_iff_one_sub_mem.mp t.prop⟩
 #align unit_interval.symm unitInterval.symm
 
--- mathport name: unit_interval.symm
+@[inherit_doc]
 scoped notation "σ" => unitInterval.symm
 
 @[simp]
@@ -134,7 +134,7 @@ theorem continuous_symm : Continuous σ := by continuity
 instance : ConnectedSpace I :=
   Subtype.connectedSpace ⟨nonempty_Icc.mpr zero_le_one, isPreconnected_Icc⟩
 
-/-- Verify there is an instance for `compact_space I`. -/
+/-- Verify there is an instance for `CompactSpace I`. -/
 example : CompactSpace I := by infer_instance
 
 theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
@@ -155,12 +155,12 @@ theorem add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
   add_pos_of_pos_of_nonneg hx <| nonneg _
 #align unit_interval.add_pos unitInterval.add_pos
 
-/-- like `unit_interval.nonneg`, but with the inequality in `I`. -/
+/-- like `unitInterval.nonneg`, but with the inequality in `I`. -/
 theorem nonneg' {t : I} : 0 ≤ t :=
   t.2.1
 #align unit_interval.nonneg' unitInterval.nonneg'
 
-/-- like `unit_interval.le_one`, but with the inequality in `I`. -/
+/-- like `unitInterval.le_one`, but with the inequality in `I`. -/
 theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 #align unit_interval.le_one' unitInterval.le_one'
@@ -174,7 +174,14 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
 #align unit_interval.mul_pos_mem_iff unitInterval.mul_pos_mem_iff
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
-  constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
+-- Porting note: used to be
+-- constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
+letI : NeZero 1 := inferInstance
+constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> try {linarith}
+· rw [← (mul_le_mul_left (zero_lt_two))]
+  simp [le_of_sub_nonneg h₁]
+· rw [sub_nonneg]
+  exact (div_le_iff' (zero_lt_two)).1 h₁
 #align unit_interval.two_mul_sub_one_mem_iff unitInterval.two_mul_sub_one_mem_iff
 
 end unitInterval
@@ -191,14 +198,17 @@ theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 �
 
 namespace Tactic.Interactive
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
+-- Porting note: This replaces an unsafe def tactic
 /-- A tactic that solves `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for `x : I`. -/
-unsafe def unit_interval : tactic Unit :=
-  sorry <|> sorry <|> sorry <|> sorry
-#align tactic.interactive.unit_interval tactic.interactive.unit_interval
+macro "unit_interval ": tactic =>
+  `(tactic| (first
+  | apply unitInterval.nonneg
+  | apply unitInterval.one_minus_nonneg
+  | apply unitInterval.le_one
+  | apply unitInterval.one_minus_le_one))
+#noalign tactic.interactive.unit_interval
+
+example (x : unitInterval) : 0 ≤ (x : ℝ) := by unit_interval
 
 end Tactic.Interactive
 
@@ -208,32 +218,36 @@ variable {𝕜 : Type _} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [Topo
 
 -- We only need the ordering on `𝕜` here to avoid talking about flipping the interval over.
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.
-/-- The image of `[0,1]` under the homeomorphism `λ x, a * x + b` is `[b, a+b]`.
+/-- The image of `[0,1]` under the homeomorphism `fun x ↦ a * x + b` is `[b, a+b]`.
 -/
 theorem affineHomeomorph_image_I (a b : 𝕜) (h : 0 < a) :
-    affineHomeomorph a b h.Ne.symm '' Set.Icc 0 1 = Set.Icc b (a + b) := by simp [h]
+    affineHomeomorph a b h.ne.symm '' Set.Icc 0 1 = Set.Icc b (a + b) := by simp [h]
+set_option linter.uppercaseLean3 false in
 #align affine_homeomorph_image_I affineHomeomorph_image_I
 
 /-- The affine homeomorphism from a nontrivial interval `[a,b]` to `[0,1]`.
 -/
 def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (1 : 𝕜) := by
-  let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).Ne.symm) (Set.Icc 0 1)
+  let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).ne.symm) (Set.Icc 0 1)
   refine' (e.trans _).symm
   apply Homeomorph.setCongr
-  simp [sub_pos.mpr h]
+  rw [affineHomeomorph_image_I _ _ (sub_pos.2 h)]
+  simp
+set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I iccHomeoI
 
 @[simp]
 theorem iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :
     ((iccHomeoI a b h) x : 𝕜) = (x - a) / (b - a) :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I_apply_coe iccHomeoI_apply_coe
 
 @[simp]
 theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜) (1 : 𝕜)) :
     ((iccHomeoI a b h).symm x : 𝕜) = (b - a) * x + a :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I_symm_apply_coe iccHomeoI_symm_apply_coe
 
 end
-
