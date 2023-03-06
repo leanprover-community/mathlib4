@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
-import Qq.Match
+import Qq
 
 /-!
 ## `norm_num` basic plugins
@@ -186,10 +186,11 @@ theorem isRat_neg {α} [Ring α] : {a : α} → {n n' : ℤ} → {d : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `-a`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num -_] def evalNeg : NormNumExt where eval {u α} e := do
-  let .app f (a : Q($α)) ← whnfR e | failure
+  let .app (f : Q($α → $α)) (a : Q($α)) ← whnfR e | failure
+  have _e_eq : $e =Q $f $a := ⟨⟩
   let ra ← derive a
   let rα ← inferRing α
-  guard <|← withNewMCtxDepth <| isDefEq f q(Neg.neg (α := $α))
+  let ⟨(_f_eq : $f =Q Neg.neg)⟩ ← withNewMCtxDepth do assertDefEqQ _ _
   let rec
   /-- Main part of `evalNeg`. -/
   core : Option (Result e) := do
@@ -199,7 +200,8 @@ such that `norm_num` successfully recognises `a`. -/
       have b := mkRawIntLit zb
       let r : Q(Int.neg $na = $b) := (q(Eq.refl $b) : Expr)
       return (.isInt rα b zb q(isInt_neg $pa $r) : Result q(-$a))
-    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := by clear rα; exact do
+    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
+      have _assume_defeq : $rα =Q DivisionRing.toRing := ⟨⟩
       let ⟨qa, na, da, pa⟩ ← ra.toRat'
       let qb := -qa
       have nb := mkRawIntLit qb.num
@@ -228,10 +230,12 @@ theorem isRat_sub {α} [Ring α] {a b : α} {na nb nc : ℤ} {da db dc k : ℕ}
 /-- The `norm_num` extension which identifies expressions of the form `a - b` in a ring,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ - _, Sub.sub _ _] def evalSub : NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
-  let ra ← derive a; let rb ← derive b
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
+  have _e_eq : $e =Q $f $a $b := ⟨⟩
   let rα ← inferRing α
-  guard <|← withNewMCtxDepth <| isDefEq f q(HSub.hSub (α := $α))
+  assertInstancesCommute
+  let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth do assertDefEqQ _ _
+  let ra ← derive a; let rb ← derive b
   let rec
   /-- Main part of `evalAdd`. -/
   core : Option (Result e) := do
@@ -241,7 +245,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c := mkRawIntLit zc
       let r : Q(Int.sub $na $nb = $c) := (q(Eq.refl $c) : Expr)
       return (.isInt rα c zc q(isInt_sub $pa $pb $r) : Result q($a - $b))
-    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := by clear rα; exact do
+    let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
+      have _assume_defeq : $rα =Q DivisionRing.toRing := ⟨⟩
       let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
       let qc := qa - qb
       let dd := qa.den * qb.den
