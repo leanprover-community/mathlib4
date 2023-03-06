@@ -16,11 +16,11 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 In an abelian category we usually want the image of a morphism `f` to be defined as
 `kernel (cokernel.π f)`, and the coimage to be defined as `cokernel (kernel.ι f)`.
 
-We make these definitions here, as `abelian.image f` and `abelian.coimage f`
+We make these definitions here, as `Abelian.image f` and `Abelian.coimage f`
 (without assuming the category is actually abelian),
 and later relate these to the usual categorical notions when in an abelian category.
 
-There is a canonical morphism `coimage_image_comparison : abelian.coimage f ⟶ abelian.image f`.
+There is a canonical morphism `coimageImageComparison : Abelian.coimage f ⟶ Abelian.image f`.
 Later we show that this is always an isomorphism in an abelian category,
 and conversely a category with (co)kernels and finite products in which this morphism
 is always an isomorphism is an abelian category.
@@ -58,8 +58,8 @@ protected abbrev factorThruImage : P ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) f <| cokernel.condition f
 #align category_theory.abelian.factor_thru_image CategoryTheory.Abelian.factorThruImage
 
+-- Porting note: simp can prove this and reassoc version, removed tags
 /-- `f` factors through its image via the canonical morphism `p`. -/
-@[simp, reassoc.1]
 protected theorem image.fac : Abelian.factorThruImage f ≫ image.ι f = f :=
   kernel.lift_ι _ _ _
 #align category_theory.abelian.image.fac CategoryTheory.Abelian.image.fac
@@ -108,29 +108,25 @@ See <https://stacks.math.columbia.edu/tag/0107>
 -/
 def coimageImageComparison : Abelian.coimage f ⟶ Abelian.image f :=
   cokernel.desc (kernel.ι f) (kernel.lift (cokernel.π f) f (by simp)) <|
-    by
-    ext
-    simp
+    by apply equalizer.hom_ext; simp
 #align category_theory.abelian.coimage_image_comparison CategoryTheory.Abelian.coimageImageComparison
 
 /-- An alternative formulation of the canonical map from the abelian coimage to the abelian image.
 -/
 def coimageImageComparison' : Abelian.coimage f ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) (cokernel.desc (kernel.ι f) f (by simp))
-    (by
-      ext
-      simp)
+    (by apply coequalizer.hom_ext; simp)
 #align category_theory.abelian.coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison'
 
 theorem coimageImageComparison_eq_coimageImageComparison' :
     coimageImageComparison f = coimageImageComparison' f := by
-  ext
-  simp [coimage_image_comparison, coimage_image_comparison']
+  apply coequalizer.hom_ext; apply equalizer.hom_ext
+  simp [coimageImageComparison, coimageImageComparison']
 #align category_theory.abelian.coimage_image_comparison_eq_coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison_eq_coimageImageComparison'
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f ≫ image.ι f = f := by
-  simp [coimage_image_comparison]
+  simp [coimageImageComparison]
 #align category_theory.abelian.coimage_image_factorisation CategoryTheory.Abelian.coimage_image_factorisation
 
 end CategoryTheory.Abelian
