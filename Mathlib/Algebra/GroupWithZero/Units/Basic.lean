@@ -167,9 +167,6 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
-      -- Porting note:
-      -- This is needed due to a regression in `convert` noted in https://github.com/leanprover-community/mathlib4/issues/739
-      exact Subsingleton.elim _ _
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero

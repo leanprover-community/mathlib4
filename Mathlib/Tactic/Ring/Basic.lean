@@ -1065,7 +1065,7 @@ initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 
 /-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (g : MVarId) : AtomM Unit := do
-  let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "ring failed: not an equality"
   let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
   have α : Q(Type u) := α
