@@ -8,10 +8,10 @@ Authors: Patrick Massot, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.Real
-import Mathbin.Topology.Algebra.Field
-import Mathbin.Data.Set.Intervals.ProjIcc
-import Mathbin.Data.Set.Intervals.Instances
+import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Algebra.Field
+import Mathlib.Data.Set.Intervals.ProjIcc
+import Mathlib.Data.Set.Intervals.Instances
 
 /-!
 # The unit interval, as a topological space
@@ -63,8 +63,7 @@ theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 #align unit_interval.fract_mem unitInterval.fract_mem
 
-theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I :=
-  by
+theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
   rw [mem_Icc, mem_Icc]
   constructor <;> intro <;> constructor <;> linarith
 #align unit_interval.mem_iff_one_sub_mem unitInterval.mem_iff_one_sub_mem
@@ -166,8 +165,7 @@ theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 #align unit_interval.le_one' unitInterval.le_one'
 
-theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) :=
-  by
+theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor
   · exact nonneg_of_mul_nonneg_right h₁ ha
   · rwa [le_div_iff ha, mul_comm]
@@ -218,8 +216,7 @@ theorem affineHomeomorph_image_I (a b : 𝕜) (h : 0 < a) :
 
 /-- The affine homeomorphism from a nontrivial interval `[a,b]` to `[0,1]`.
 -/
-def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (1 : 𝕜) :=
-  by
+def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (1 : 𝕜) := by
   let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).Ne.symm) (Set.Icc 0 1)
   refine' (e.trans _).symm
   apply Homeomorph.setCongr
