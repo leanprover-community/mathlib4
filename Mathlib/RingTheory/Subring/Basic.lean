@@ -914,7 +914,7 @@ theorem mem_closure_iff {s : Set R} {x} :
       (AddSubgroup.subset_closure (Submonoid.one_mem (Submonoid.closure s)))
       (fun x y hx hy => AddSubgroup.add_mem _ hx hy) (fun x hx => AddSubgroup.neg_mem _ hx)
       fun x y hx hy =>
-      AddSubgroup.closure_induction (G := R) hy
+      AddSubgroup.closure_induction hy
         (fun q hq =>
           AddSubgroup.closure_induction hx
             (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))

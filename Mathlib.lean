@@ -1242,6 +1242,7 @@ import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.Order.Archimedean
@@ -1301,8 +1302,10 @@ import Mathlib.Topology.Maps
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.EMetricParacompact
 import Mathlib.Topology.MetricSpace.EMetricSpace
+import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.MetricSpace.Infsep
 import Mathlib.Topology.MetricSpace.MetricSeparated
+import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
