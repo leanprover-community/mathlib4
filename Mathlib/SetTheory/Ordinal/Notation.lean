@@ -235,7 +235,7 @@ theorem NF.oadd {e a} (h₁ : NF e) (n) (h₂ : NFBelow a (repr e)) : NF (oadd e
   ⟨⟨_, NFBelow.oadd h₁ h₂ (lt_succ _)⟩⟩
 #align onote.NF.oadd Onote.NF.oadd
 
-instance NF.oadd_zero (e n) [h : NF e] : NF (oadd e n 0) :=
+instance NF.oadd_zero (e n) [h : NF e] : NF (Onote.oadd e n 0) :=
   h.oadd _ NFBelow.zero
 #align onote.NF.oadd_zero Onote.NF.oadd_zero
 
