@@ -141,7 +141,7 @@ theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
 #align onote.omega_le_oadd Onote.omega_le_oadd
 
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
-  @lt_of_lt_of_le _ _ _ _ _ (opow_pos _ omega_pos) (omega_le_oadd e n a)
+  @lt_of_lt_of_le _ _ _ (ω ^ repr e) _ (opow_pos (repr e) omega_pos) (omega_le_oadd e n a)
 #align onote.oadd_pos Onote.oadd_pos
 
 /-- Compare ordinal notations -/
