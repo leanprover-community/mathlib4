@@ -8,7 +8,7 @@ Authors: Markus Himmel, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # The abelian image and coimage.
@@ -123,8 +123,7 @@ def coimageImageComparison' : Abelian.coimage f ⟶ Abelian.image f :=
 #align category_theory.abelian.coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison'
 
 theorem coimageImageComparison_eq_coimageImageComparison' :
-    coimageImageComparison f = coimageImageComparison' f :=
-  by
+    coimageImageComparison f = coimageImageComparison' f := by
   ext
   simp [coimage_image_comparison, coimage_image_comparison']
 #align category_theory.abelian.coimage_image_comparison_eq_coimage_image_comparison' CategoryTheory.Abelian.coimageImageComparison_eq_coimageImageComparison'
