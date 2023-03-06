@@ -129,13 +129,12 @@ def regularOfIsPullbackFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
 #align category_theory.regular_of_is_pullback_fst_of_regular CategoryTheory.regularOfIsPullbackFstOfRegular
 
 instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono f] : StrongMono f :=
-  StrongMono.mk'
-    (by
+  StrongMono.mk' (by
       intro A B z hz u v sq
-      have : v ≫ (RegularMono.left : Y ⟶ RegularMono.Z f) = v ≫ RegularMono.right :=
-        by
+      have : v ≫ (RegularMono.left : Y ⟶ RegularMono.Z f) = v ≫ RegularMono.right := by
         apply (cancel_epi z).1
-        simp only [RegularMono.w, ← reassoc_of sq.w]
+        -- simp only [← Category.assoc, ← eq_whisker sq.w _] 
+        simp only [RegularMono.w, ← eq_whisker sq.w _]
       obtain ⟨t, ht⟩ := RegularMono.lift' _ _ this
       refine' CommSq.HasLift.mk' ⟨t, (cancel_mono f).1 _, ht⟩
       simp only [Arrow.mk_hom, Arrow.homMk'_left, Category.assoc, ht, sq.w])
