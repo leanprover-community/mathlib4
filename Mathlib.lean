@@ -292,6 +292,7 @@ import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
@@ -302,6 +303,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
