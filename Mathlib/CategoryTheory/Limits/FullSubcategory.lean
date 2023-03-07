@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Limits.Creates
 # Limits in full subcategories
 
 We introduce the notion of a property closed under taking limits and show that if `P` is closed
-under taking limits, then limits in `full_subcategory P` can be constructed from limits in `C`.
+under taking limits, then limits in `FullSubcategory P` can be constructed from limits in `C`.
 More precisely, the inclusion creates such limits.
 
 -/
@@ -62,7 +62,7 @@ section
 
 variable {J : Type w} [Category.{w'} J] {C : Type u} [Category.{v} C] {P : C → Prop}
 
-/-- If a `J`-shaped diagram in `full_subcategory P` has a limit cone in `C` whose cone point lives
+/-- If a `J`-shaped diagram in `FullSubcategory P` has a limit cone in `C` whose cone point lives
     in the full subcategory, then this defines a limit in the full subcategory. -/
 def createsLimitFullSubcategoryInclusion' (F : J ⥤ FullSubcategory P)
     {c : Cone (F ⋙ fullSubcategoryInclusion P)} (hc : IsLimit c) (h : P c.pt) :
@@ -70,7 +70,7 @@ def createsLimitFullSubcategoryInclusion' (F : J ⥤ FullSubcategory P)
   createsLimitOfFullyFaithfulOfIso' hc ⟨_, h⟩ (Iso.refl _)
 #align category_theory.limits.creates_limit_full_subcategory_inclusion' CategoryTheory.Limits.createsLimitFullSubcategoryInclusion'
 
-/-- If a `J`-shaped diagram in `full_subcategory P` has a limit in `C` whose cone point lives in the
+/-- If a `J`-shaped diagram in `FullSubcategory P` has a limit in `C` whose cone point lives in the
     full subcategory, then this defines a limit in the full subcategory. -/
 def createsLimitFullSubcategoryInclusion (F : J ⥤ FullSubcategory P)
     [HasLimit (F ⋙ fullSubcategoryInclusion P)] (h : P (limit (F ⋙ fullSubcategoryInclusion P))) :
@@ -78,7 +78,7 @@ def createsLimitFullSubcategoryInclusion (F : J ⥤ FullSubcategory P)
   createsLimitFullSubcategoryInclusion' F (limit.isLimit _) h
 #align category_theory.limits.creates_limit_full_subcategory_inclusion CategoryTheory.Limits.createsLimitFullSubcategoryInclusion
 
-/-- If a `J`-shaped diagram in `full_subcategory P` has a colimit cocone in `C` whose cocone point
+/-- If a `J`-shaped diagram in `FullSubcategory P` has a colimit cocone in `C` whose cocone point
     lives in the full subcategory, then this defines a colimit in the full subcategory. -/
 def createsColimitFullSubcategoryInclusion' (F : J ⥤ FullSubcategory P)
     {c : Cocone (F ⋙ fullSubcategoryInclusion P)} (hc : IsColimit c) (h : P c.pt) :
@@ -86,7 +86,7 @@ def createsColimitFullSubcategoryInclusion' (F : J ⥤ FullSubcategory P)
   createsColimitOfFullyFaithfulOfIso' hc ⟨_, h⟩ (Iso.refl _)
 #align category_theory.limits.creates_colimit_full_subcategory_inclusion' CategoryTheory.Limits.createsColimitFullSubcategoryInclusion'
 
-/-- If a `J`-shaped diagram in `full_subcategory P` has a colimit in `C` whose cocone point lives in
+/-- If a `J`-shaped diagram in `FullSubcategory P` has a colimit in `C` whose cocone point lives in
     the full subcategory, then this defines a colimit in the full subcategory. -/
 def createsColimitFullSubcategoryInclusion (F : J ⥤ FullSubcategory P)
     [HasColimit (F ⋙ fullSubcategoryInclusion P)]
