@@ -445,7 +445,6 @@ end AssocQuotient
 end Magma
 
 /-- Free additive semigroup over a given alphabet. -/
-@[ext]
 structure FreeAddSemigroup (α : Type u) where
 /-- The head of the element -/
   head : α
@@ -454,7 +453,7 @@ structure FreeAddSemigroup (α : Type u) where
 #align free_add_semigroup FreeAddSemigroup
 
 /-- Free semigroup over a given alphabet. -/
-@[ext, to_additive]
+@[to_additive (attr := ext)]
 structure FreeSemigroup (α : Type u) where
 /-- The head of the element -/
   head : α
@@ -589,7 +588,7 @@ instance : Monad FreeSemigroup where
   bind x f := lift f x
 
 /-- Recursor that uses `pure` instead of `of`. -/
-@[elab_as_elim, to_additive "Recursor that uses `pure` instead of `of`."]
+@[to_additive (attr := elab_as_elim) "Recursor that uses `pure` instead of `of`."]
 -- Porting note: added noncomputable
 noncomputable def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C (pure x) → C y → C (pure x * y)) : C x :=
