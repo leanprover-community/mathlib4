@@ -32,14 +32,14 @@ namespace CategoryTheory.Limits
     `J`-shaped diagram have the property, any limit of this diagram also has the property. -/
 def ClosedUnderLimitsOfShape {C : Type u} [Category.{v} C] (J : Type w) [Category.{w'} J]
     (P : C → Prop) : Prop :=
-  ∀ ⦃F : J ⥤ C⦄ ⦃c : Cone F⦄ (hc : IsLimit c), (∀ j, P (F.obj j)) → P c.pt
+  ∀ ⦃F : J ⥤ C⦄ ⦃c : Cone F⦄ (_hc : IsLimit c), (∀ j, P (F.obj j)) → P c.pt
 #align category_theory.limits.closed_under_limits_of_shape CategoryTheory.Limits.ClosedUnderLimitsOfShape
 
 /-- We say that a property is closed under colimits of shape `J` if whenever all objects in a
     `J`-shaped diagram have the property, any colimit of this diagram also has the property. -/
 def ClosedUnderColimitsOfShape {C : Type u} [Category.{v} C] (J : Type w) [Category.{w'} J]
     (P : C → Prop) : Prop :=
-  ∀ ⦃F : J ⥤ C⦄ ⦃c : Cocone F⦄ (hc : IsColimit c), (∀ j, P (F.obj j)) → P c.pt
+  ∀ ⦃F : J ⥤ C⦄ ⦃c : Cocone F⦄ (_hc : IsColimit c), (∀ j, P (F.obj j)) → P c.pt
 #align category_theory.limits.closed_under_colimits_of_shape CategoryTheory.Limits.ClosedUnderColimitsOfShape
 
 section
