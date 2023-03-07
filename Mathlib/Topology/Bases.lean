@@ -475,7 +475,7 @@ theorem isTopologicalBasis_infᵢ {β : Type _} {ι : Type _} {X : ι → Type _
       { S | ∃ (U : ∀ i, Set (X i)) (F : Finset ι),
         (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_hi : i ∈ F), f i ⁻¹' U i } := by
   letI := ⨅ i, induced (f i) (t i)
-  convert (isTopologicalBasis_pi cond).inducing (inducing_infᵢ_to_pi f) using 1 -- PR NOTE: This is much too aggressive since it unfolds Set
+  convert (isTopologicalBasis_pi cond).inducing (inducing_infᵢ_to_pi f)
   ext V
   constructor
   · rintro ⟨U, F, h1, rfl⟩

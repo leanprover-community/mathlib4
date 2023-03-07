@@ -881,8 +881,8 @@ variable [TopologicalSpace α] [Preorder α] [t : OrderTopology α]
 
 instance : OrderTopology αᵒᵈ :=
   ⟨by
-    convert @OrderTopology.topology_eq_generate_intervals α _ _ _
-    conv in _ ∨ _ => rw [or_comm]⟩
+    convert @OrderTopology.topology_eq_generate_intervals α _ _ _ using 6
+    apply or_comm⟩
 
 theorem isOpen_iff_generate_intervals {s : Set α} :
     IsOpen s ↔ GenerateOpen { s | ∃ a, s = Ioi a ∨ s = Iio a } s := by
@@ -1087,7 +1087,7 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
 
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
-  convert @nhdsWithin_Ici_basis' αᵒᵈ _ _ _ (toDual a) ha
+  convert @nhdsWithin_Ici_basis' αᵒᵈ _ _ _ (toDual a) ha using 2
   exact (@dual_Ico _ _ _ _).symm
 #align nhds_within_Iic_basis' nhdsWithin_Iic_basis'
 
@@ -1369,8 +1369,8 @@ theorem countable_of_isolated_right' [SecondCountableTopology α] :
 second-countable. -/
 theorem countable_setOf_covby_left [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, y ⋖ x } := by
-  convert @countable_setOf_covby_right αᵒᵈ _ _ _ _
-  exact Set.ext fun x => exists_congr fun y => toDual_covby_toDual_iff.symm
+  convert @countable_setOf_covby_right αᵒᵈ _ _ _ _ using 5
+  exact toDual_covby_toDual_iff.symm
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
@@ -1658,7 +1658,8 @@ theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis
   ⟨fun _ => mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h⟩
 
 theorem nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-    convert nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a) using 4
+    convert (config := {preTransparency := .default})
+      nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a) using 4
     exact ofDual_covby_ofDual_iff
 
 open List in

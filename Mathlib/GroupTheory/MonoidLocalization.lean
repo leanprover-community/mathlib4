@@ -183,10 +183,9 @@ theorem r_eq_r' : r S = r' S :=
     le_infₛ fun b H ⟨p, q⟩ ⟨x, y⟩ ⟨t, ht⟩ ↦ by
       rw [← one_mul (p, q), ← one_mul (x, y)]
       refine b.trans (b.mul (H (t * y)) (b.refl _)) ?_
-      convert b.symm (b.mul (H (t * q)) (b.refl (x, y))) using 1
+      convert b.symm (b.mul (H (t * q)) (b.refl (x, y)))
       dsimp only [Prod.mk_mul_mk, Submonoid.coe_mul] at ht ⊢
       simp_rw [mul_assoc, ht, mul_comm y q]
-      rfl
 #align localization.r_eq_r' Localization.r_eq_r'
 #align add_localization.r_eq_r' addLocalization.r_eq_r'
 

@@ -822,7 +822,6 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       · exact c.zero_mem
       · exact c.getLast_mem
       · convert hj1
-        rwa [Fin.ext_iff]
     · simp only [or_iff_not_imp_left]
       intro i_mem i_ne_zero i_ne_last
       simp [Fin.ext_iff] at i_ne_zero i_ne_last

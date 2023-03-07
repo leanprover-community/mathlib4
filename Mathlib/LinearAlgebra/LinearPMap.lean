@@ -908,7 +908,7 @@ theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
   constructor <;> intro hx
   · rw [LinearPMap.mem_graph_iff] at hx
     rcases hx with ⟨y, hx1, hx2⟩
-    convert g.mem_graph_toLinearPMap hg y
+    convert g.mem_graph_toLinearPMap hg y using 1
     exact Prod.ext hx1.symm hx2.symm
   rw [LinearPMap.mem_graph_iff]
   cases' x with x_fst x_snd

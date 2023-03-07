@@ -67,7 +67,10 @@ def StrictOrderedRing.mkOfPositiveCone (C : PositiveCone α) : StrictOrderedRing
       simp,
     mul_pos := fun x y xp yp => by
       change C.pos (x * y - 0)
-      convert C.mul_pos x y (by convert xp; simp) (by convert yp; simp)
+      -- porting note: each convert unfolds definitions
+      convert C.mul_pos x y
+        (by convert (config := {transparency := .default}) xp; simp)
+        (by convert (config := {transparency := .default}) yp; simp)
       simp }
 #align strict_ordered_ring.mk_of_positive_cone StrictOrderedRing.mkOfPositiveCone
 

@@ -544,7 +544,8 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
     congr
     · skip
     · rw [← ofDigits_digits b' n]
-  convert ofDigits_modEq b' b (digits b' n) <;> exact h.symm
+  convert ofDigits_modEq b' b (digits b' n)
+  exact h.symm
 #align nat.modeq_digits_sum Nat.modEq_digits_sum
 
 theorem modEq_three_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 3] :=

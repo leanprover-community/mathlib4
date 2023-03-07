@@ -156,7 +156,8 @@ See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
 See `UniqueAdd.addHom_image_iff` for a version with swapped bundling."]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
-  classical convert @mulHom_image_iff G H _ _ A B a0 b0 _ ⟨f, mul⟩ f.2 <;>
+  classical
+  convert @mulHom_image_iff G H _ _ A B a0 b0 _ ⟨f, mul⟩ f.2 using 2 <;>
     · ext
       simp only [Finset.mem_map, MulHom.coe_mk, Finset.mem_image]
 #align unique_mul.mul_hom_map_iff UniqueMul.mulHom_map_iff

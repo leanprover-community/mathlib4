@@ -96,7 +96,7 @@ example {α β} {F : _ → β} {f g : {f : α → β // f = f} }
 example {ls : List ℕ} :
     ls.map (fun x => (ls.map (fun y => 1 + y)).sum + 1) =
       ls.map (fun x => (ls.map (fun y => Nat.succ y)).sum + 1) := by
-  congr!
+  congr! 6
   rename_i y
   guard_target = 1 + y = y.succ
   rw [Nat.add_comm]
@@ -116,3 +116,11 @@ example {α} (a : α) : a = a := by congr!
 example {α} (a b : α) (h : false) : a = b := by
   fail_if_success { congr! }
   cases h
+
+def g (x : Nat) : Nat := x + 1
+
+example (x y z : Nat) (h : x = z) (hy : y = 2) : 1 + x + y = g z + 2 := by
+  congr!
+  guard_target = HAdd.hAdd 1 = g
+  funext
+  simp [g, Nat.add_comm]

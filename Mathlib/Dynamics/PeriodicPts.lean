@@ -235,7 +235,7 @@ theorem mem_periodicPts : x ∈ periodicPts f ↔ ∃ n > 0, IsPeriodicPt f n x 
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m ((f^[n]) x)) : IsPeriodicPt f m x := by
   rcases hx with ⟨r, hr, hr'⟩
-  convert (hm.apply_iterate ((n / r + 1) * r - n)).eq
+  convert (config := {transparency := .default}) (hm.apply_iterate ((n / r + 1) * r - n)).eq
   suffices n ≤ (n / r + 1) * r by
     rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
   rw [add_mul, one_mul]

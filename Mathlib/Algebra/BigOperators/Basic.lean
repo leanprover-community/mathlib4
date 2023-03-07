@@ -393,7 +393,7 @@ end ToList
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm α) (s : Finset α) (f : α → β)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x in s, f (σ x)) = ∏ x in s, f x := by
-  convert (prod_map s σ.toEmbedding f).symm
+  convert (config := {preTransparency := .default}) (prod_map s σ.toEmbedding f).symm
   exact (map_perm hs).symm
 #align equiv.perm.prod_comp Equiv.Perm.prod_comp
 #align equiv.perm.sum_comp Equiv.Perm.sum_comp

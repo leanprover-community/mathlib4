@@ -73,7 +73,7 @@ theorem even_or_odd (n : ℤ) : Even n ∨ Odd n :=
 -- mathlib3 port: `simpa only [← two_mul, exists_or, ← Odd, ← Even] using even_or_odd n`
 theorem even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   rw [exists_or]
-  convert even_or_odd n
+  convert (config := {transparency := .default}) even_or_odd n
   rw [two_mul]
 #align int.even_or_odd' Int.even_or_odd'
 
