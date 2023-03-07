@@ -100,7 +100,7 @@ def self [Mono f] : MonoFactorisation f where
 #align category_theory.limits.mono_factorisation.self CategoryTheory.Limits.MonoFactorisation.self
 
 -- I'm not sure we really need this, but the linter says that an inhabited instance
--- ought to exist...asdfafd
+-- ought to exist...
 instance [Mono f] : Inhabited (MonoFactorisation f) := ⟨self f⟩
 
 variable {f}
