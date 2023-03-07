@@ -190,7 +190,7 @@ such that `norm_num` successfully recognises `a`. -/
   have _e_eq : $e =Q $f $a := ⟨⟩
   let ra ← derive a
   let rα ← inferRing α
-  let ⟨(_f_eq : $f =Q Neg.neg)⟩ ← withNewMCtxDepth do assertDefEqQ _ _
+  let ⟨(_f_eq : $f =Q Neg.neg)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
   let rec
   /-- Main part of `evalNeg`. -/
   core : Option (Result e) := do
@@ -234,7 +234,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   have _e_eq : $e =Q $f $a $b := ⟨⟩
   let rα ← inferRing α
   assertInstancesCommute
-  let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth do assertDefEqQ _ _
+  let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
   let ra ← derive a; let rb ← derive b
   let rec
   /-- Main part of `evalAdd`. -/
