@@ -38,15 +38,16 @@ by
 section convert_to
 
 example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
-  convert_to c + d = _
-  rw [add_comm]
-
-example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
   convert_to c + d = _ using 2
   rw [add_comm]
 
 example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
   convert_to c + d = _ using 1
+  congr 2
+  rw [add_comm]
+
+example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
+  convert_to c + d = _ -- defaults to `using 1`
   congr 2
   rw [add_comm]
 
