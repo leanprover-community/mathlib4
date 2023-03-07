@@ -429,7 +429,7 @@ theorem add_nFBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
     have h' := add_nFBelow (h₁.snd.mono <| le_of_lt h₁.lt) h₂
     simp [oadd_add]; cases' a + o with e' n' a'
     · exact NFBelow.oadd h₁.fst NFBelow.zero h₁.lt
-    simp [add]; have := @cmp_compares _ _ h₁.fst h'.1
+    simp [add]; have := @cmp_compares _ _ h₁.fst h'.fst
     cases cmp e e' <;> simp [add]
     · exact h'
     · simp at this
