@@ -368,19 +368,19 @@ def Completion :=
 
 namespace Completion
 
-instance [Inhabited α] : Inhabited (Completion α) :=
+instance inhabited [Inhabited α] : Inhabited (Completion α) :=
   Quotient.instInhabitedQuotient (separationSetoid (CauchyFilter α))
 
-instance (priority := 50) : UniformSpace (Completion α) :=
+instance (priority := 50) uniformSpace : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace
 
-instance : CompleteSpace (Completion α) :=
+instance completeSpace : CompleteSpace (Completion α) :=
   UniformSpace.completeSpace_separation (CauchyFilter α)
 
-instance : SeparatedSpace (Completion α) :=
+instance separatedSpace : SeparatedSpace (Completion α) :=
   UniformSpace.separated_separation
 
-instance : T3Space (Completion α) :=
+instance t3Space : T3Space (Completion α) :=
   separated_t3
 
 /-- The map from a uniform space to its completion.

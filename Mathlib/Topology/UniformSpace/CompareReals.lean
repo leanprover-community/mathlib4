@@ -61,22 +61,22 @@ open Set Function Filter CauSeq UniformSpace
 /-- The metric space uniform structure on ℚ (which presupposes the existence
 of real numbers) agrees with the one coming directly from (abs : ℚ → ℚ). -/
 theorem Rat.uniformSpace_eq :
-    (AbsoluteValue.abs : AbsoluteValue ℚ ℚ).UniformSpace = PseudoMetricSpace.toUniformSpace := by
+    (AbsoluteValue.abs : AbsoluteValue ℚ ℚ).uniformSpace = PseudoMetricSpace.toUniformSpace := by
   ext s
-  rw [(AbsoluteValue.hasBasis_uniformity _).mem_iff, metric.uniformity_basis_dist_rat.mem_iff]
+  rw [(AbsoluteValue.hasBasis_uniformity _).mem_iff, Metric.uniformity_basis_dist_rat.mem_iff]
   simp only [Rat.dist_eq, AbsoluteValue.abs_apply, ← Rat.cast_sub, ← Rat.cast_abs, Rat.cast_lt,
     abs_sub_comm]
 #align rat.uniform_space_eq Rat.uniformSpace_eq
 
 /-- Cauchy reals packaged as a completion of ℚ using the absolute value route. -/
-def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).UniformSpace
+def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace
     where
-  Space := ℝ
+  space := ℝ
   coe := (coe : ℚ → ℝ)
   uniformStruct := by infer_instance
   complete := by infer_instance
   separation := by infer_instance
-  UniformInducing := by
+  uniformInducing := by
     rw [Rat.uniformSpace_eq]
     exact rat.uniform_embedding_coe_real.to_uniform_inducing
   dense := Rat.denseEmbedding_coe_real.dense
@@ -92,8 +92,8 @@ def Q :=
   ℚ deriving CommRing, Inhabited
 #align compare_reals.Q CompareReals.Q
 
-instance : UniformSpace Q :=
-  (@AbsoluteValue.abs ℚ _).UniformSpace
+instance uniformSpace : UniformSpace Q :=
+  (@AbsoluteValue.abs ℚ _).uniformSpace
 
 /-- Real numbers constructed as in Bourbaki. -/
 def Bourbakiℝ : Type :=
@@ -123,4 +123,3 @@ theorem compare_uc_symm : UniformContinuous compareEquiv.symm :=
 #align compare_reals.compare_uc_symm CompareReals.compare_uc_symm
 
 end CompareReals
-
