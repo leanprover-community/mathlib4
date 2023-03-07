@@ -310,7 +310,7 @@ theorem cmp_compares : ∀ (a b : Onote) [NF a] [NF b], (cmp a b).Compares a b
   | 0, 0, h₁, h₂ => rfl
   | oadd e n a, 0, h₁, h₂ => oadd_pos _ _ _
   | 0, oadd e n a, h₁, h₂ => oadd_pos _ _ _
-  | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h₁, h₂ => by
+  | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h₁, h₂ => by -- TODO: golf
     rw [cmp]
     have IHe := @cmp_compares _ _ h₁.fst h₂.fst
     simp [Ordering.Compares] at IHe; revert IHe
@@ -319,27 +319,31 @@ theorem cmp_compares : ∀ (a b : Onote) [NF a] [NF b], (cmp a b).Compares a b
     case gt => intro IHe; exact oadd_lt_oadd_1 h₂ IHe
     case eq =>
       intro IHe; dsimp at IHe; subst IHe
-      unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂
+      unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂ <;>
+      rw [cmpUsing, ite_eq_iff, not_lt] at nh
       case lt =>
-        rw [cmpUsing, ite_eq_iff, not_lt] at nh
         cases' nh with nh nh
         . exact oadd_lt_oadd_2 h₁ nh.left
         . rw [ite_eq_iff] at nh; cases' nh.right with nh nh <;> cases nh <;> contradiction
       case gt =>
-        rw [cmpUsing, ite_eq_iff, not_lt] at nh
         cases' nh with nh nh
         . cases nh; contradiction
         . cases' nh with _ nh
           rw [ite_eq_iff] at nh; cases' nh with nh nh
           . exact oadd_lt_oadd_2 h₂ nh.left
           . cases nh; contradiction
-      rw [cmpUsing_eq_eq] at nh
-      obtain rfl := Subtype.eq (eq_of_incomp nh)
+      cases' nh with nh nh
+      . cases nh; contradiction
+      cases' nh with nhl nhr
+      rw [ite_eq_iff] at nhr
+      cases' nhr with nhr nhr
+      . cases nhr; contradiction
+      obtain rfl := Subtype.eq (eq_of_incomp ⟨(not_lt_of_ge nhl), nhr.left⟩)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
-      cases cmp a₁ a₂
+      revert IHa; cases cmp a₁ a₂ <;> intro IHa <;> dsimp at IHa
       case lt => exact oadd_lt_oadd_3 IHa
       case gt => exact oadd_lt_oadd_3 IHa
-      change a₁ = a₂ at IHa; subst IHa; exact rfl
+      subst IHa; exact rfl
 #align onote.cmp_compares Onote.cmp_compares
 
 theorem repr_inj {a b} [NF a] [NF b] : repr a = repr b ↔ a = b :=
