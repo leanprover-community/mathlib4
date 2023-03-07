@@ -233,7 +233,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   have _e_eq : $e =Q $f $a $b := ⟨⟩
   let rα ← inferRing α
-  assertInstancesCommute
   let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
   let ra ← derive a; let rb ← derive b
   let rec
