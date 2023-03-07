@@ -64,7 +64,6 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
 theorem isOpen_unionₛ (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs⊢
   convert CompleteLattice.supₛ_continuous' (setOf ⁻¹' s) hs
-  ext1
   simp only [supₛ_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
     SetCoe.exists, supᵢ_Prop_eq, mem_setOf_eq, mem_unionₛ]
 #align Scott.is_open_sUnion Scott.isOpen_unionₛ

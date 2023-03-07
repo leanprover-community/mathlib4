@@ -200,3 +200,7 @@ def g (a : ℤ) : ℤ := a ^ 2
 example (h : g a = g b) : a ^ 4 = b ^ 4 := by
   dsimp [g] at h
   linear_combination (a ^ 2 + b ^ 2) * h
+
+example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
+    r * s = (a + 1 : ℤ) * (b + 1) := by
+  linear_combination (↑b + 1) * h₁ + ↑r * h₂

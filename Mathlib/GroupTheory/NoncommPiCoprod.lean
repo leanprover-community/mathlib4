@@ -124,7 +124,6 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M
       have := @Finset.noncommProd_mul_distrib _ _ _ Finset.univ (fun i => ϕ i (f i))
         (fun i => ϕ i (g i)) ?_ ?_ ?_
       · convert this
-        ext
         exact map_mul _ _ _
       · exact fun i _ j _ hij => hcomm hij _ _
       · exact fun i _ j _ hij => hcomm hij _ _
