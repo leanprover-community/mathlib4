@@ -45,7 +45,7 @@ The map of a binary fan is a limit iff the fork consisting of the mapped morphis
 essentially lets us commute `BinaryFan.mk` with `Functor.mapCone`.
 -/
 def isLimitMapConeBinaryFanEquiv :
-    IsLimit (Functor.mapCone G (BinaryFan.mk f g)) ≃ IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
+    IsLimit (G.mapCone (BinaryFan.mk f g)) ≃ IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
   (IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm.trans
     (IsLimit.equivIsoLimit
       (Cones.ext (Iso.refl _)
