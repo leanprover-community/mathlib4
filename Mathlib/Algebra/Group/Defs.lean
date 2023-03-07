@@ -860,7 +860,7 @@ field of individual `SubNegMonoid`s constructed using that default value will no
 `.instance` transparency. -/
 def SubNegMonoid.sub' {G : Type u} [AddMonoid G] [Neg G] (a b : G) : G := a + -b
 
-attribute [to_additive SubNegMonoid.sub'] DivInvMonoid.div'
+attribute [to_additive existing SubNegMonoid.sub'] DivInvMonoid.div'
 
 /-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
 satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.
