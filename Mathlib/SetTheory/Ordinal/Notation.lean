@@ -9,7 +9,7 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Principal
-import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.LibrarySearch -- porting note: TODO REMOVE
 
 -- porting note: Many names intentionally containg "NF" as upper case in the mathlib3 name. -/
 set_option linter.uppercaseLean3 false
