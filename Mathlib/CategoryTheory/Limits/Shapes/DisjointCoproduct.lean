@@ -8,8 +8,8 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 /-!
 # Disjoint coproducts
