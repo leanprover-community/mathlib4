@@ -87,6 +87,7 @@ but they are not definitionaly equal, so it would confuse the type class system 
 also human readers). -/
 def Q :=
   ℚ deriving CommRing, Inhabited
+set_option linter.uppercaseLean3 false in
 #align compare_reals.Q CompareReals.Q
 
 instance uniformSpace : UniformSpace Q :=
@@ -95,6 +96,7 @@ instance uniformSpace : UniformSpace Q :=
 /-- Real numbers constructed as in Bourbaki. -/
 def Bourbakiℝ : Type :=
   Completion Q deriving Inhabited
+set_option linter.uppercaseLean3 false in
 #align compare_reals.Bourbakiℝ CompareReals.Bourbakiℝ
 
 instance Bourbaki.uniformSpace : UniformSpace Bourbakiℝ :=
@@ -104,6 +106,7 @@ instance Bourbaki.uniformSpace : UniformSpace Bourbakiℝ :=
 /-- Bourbaki reals packaged as a completion of Q using the general theory. -/
 def bourbakiPkg : AbstractCompletion Q :=
   Completion.cPkg
+set_option linter.uppercaseLean3 false in
 #align compare_reals.Bourbaki_pkg CompareReals.bourbakiPkg
 
 /-- The uniform bijection between Bourbaki and Cauchy reals. -/
