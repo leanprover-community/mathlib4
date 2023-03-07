@@ -290,7 +290,8 @@ instance nF_one : NF 1 := by (rw [← ofNat_one]; infer_instance)
 
 theorem oadd_lt_oadd_1 {e₁ n₁ o₁ e₂ n₂ o₂} (h₁ : NF (oadd e₁ n₁ o₁)) (h : e₁ < e₂) :
     oadd e₁ n₁ o₁ < oadd e₂ n₂ o₂ :=
-  @lt_of_lt_of_le _ _ _ _ _ (h₁.below_of_lt h).repr_lt (omega_le_oadd _ _ _)
+  @lt_of_lt_of_le _ _ (repr (oadd e₁ n₁ o₁)) _ _
+    (NF.below_of_lt h h₁).repr_lt (omega_le_oadd e₂ n₂ o₂)
 #align onote.oadd_lt_oadd_1 Onote.oadd_lt_oadd_1
 
 theorem oadd_lt_oadd_2 {e o₁ o₂ : Onote} {n₁ n₂ : ℕ+} (h₁ : NF (oadd e n₁ o₁)) (h : (n₁ : ℕ) < n₂) :
