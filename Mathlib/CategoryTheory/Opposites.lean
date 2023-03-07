@@ -30,7 +30,7 @@ set_option autoImplicit false
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 open Opposite
 
 variable {C : Type u₁}
