@@ -63,6 +63,7 @@ class IsSplitMono {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/ 
   exists_splitMono : Nonempty (SplitMono f)
 #align category_theory.is_split_mono CategoryTheory.IsSplitMono
+#align category_theory.is_split_mono.exists_split_mono CategoryTheory.IsSplitMono.exists_splitMono
 
 /-- A constructor for `IsSplitMono f` taking a `SplitMono f` as an argument -/
 theorem IsSplitMono.mk' {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : IsSplitMono f :=
@@ -92,6 +93,7 @@ class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitEpi : Nonempty (SplitEpi f)
 #align category_theory.is_split_epi CategoryTheory.IsSplitEpi
+#align category_theory.is_split_epi.exists_split_epi CategoryTheory.IsSplitEpi.exists_splitEpi
 
 /-- A constructor for `IsSplitEpi f` taking a `SplitEpi f` as an argument -/
 theorem IsSplitEpi.mk' {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : IsSplitEpi f :=
@@ -223,12 +225,14 @@ class SplitMonoCategory where
   /-- All monos are split -/
   isSplitMono_of_mono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], IsSplitMono f
 #align category_theory.split_mono_category CategoryTheory.SplitMonoCategory
+#align category_theory.split_mono_category.is_split_mono_of_mono CategoryTheory.SplitMonoCategory.isSplitMono_of_mono
 
 /-- A split epi category is a category in which every epimorphism is split. -/
 class SplitEpiCategory where
   /-- All epis are split -/
   isSplitEpi_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], IsSplitEpi f
 #align category_theory.split_epi_category CategoryTheory.SplitEpiCategory
+#align category_theory.split_epi_category.is_split_epi_of_epi CategoryTheory.SplitEpiCategory.isSplitEpi_of_epi
 
 end
 
