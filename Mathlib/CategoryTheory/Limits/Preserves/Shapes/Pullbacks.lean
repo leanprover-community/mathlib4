@@ -64,7 +64,6 @@ def isLimitMapConePullbackConeEquiv :
 /-- The property of preserving pullbacks expressed in terms of binary fans. -/
 def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) : 
-    -- Porting note: help figure out the hole
     have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [←G.map_comp,←G.map_comp,comm] 
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
   isLimitMapConePullbackConeEquiv G comm (PreservesLimit.preserves l)
@@ -72,7 +71,6 @@ def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
 
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
-    -- Porting note: more typeclass help
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
     from by simp only [←G.map_comp,comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   ReflectsLimit.reflects ((isLimitMapConePullbackConeEquiv G comm).symm l)
@@ -83,7 +81,6 @@ variable (f g) [PreservesLimit (cospan f g) G]
 /-- If `G` preserves pullbacks and `C` has them, then the pullback cone constructed of the mapped
 morphisms of the pullback cone is a limit. -/
 def isLimitOfHasPullbackOfPreservesLimit [i : HasPullback f g] :
-    -- Porting note: more typeclass help
     have : G.map pullback.fst ≫ G.map f  = G.map pullback.snd ≫ G.map g := by 
       simp only [←G.map_comp, pullback.condition];
     IsLimit (PullbackCone.mk (G.map (@pullback.fst _ _ _ _ _ f g i)) (G.map pullback.snd) this) :=
