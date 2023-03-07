@@ -4258,7 +4258,7 @@ theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
 
 theorem enumFrom_cons' (n : ℕ) (x : α) (xs : List α) :
     enumFrom n (x :: xs) = (n, x) :: (enumFrom n xs).map (Prod.map Nat.succ id) := by
-  rw [enum_from_cons, add_comm, ← map_fst_add_enum_from_eq_enum_from]
+  rw [enumFrom_cons, add_comm, ← map_fst_add_enumFrom_eq_enumFrom]
 #align list.enum_from_cons' List.enumFrom_cons'
 
 theorem enum_cons' (x : α) (xs : List α) :
@@ -4267,11 +4267,10 @@ theorem enum_cons' (x : α) (xs : List α) :
 #align list.enum_cons' List.enum_cons'
 
 theorem enumFrom_map (n : ℕ) (l : List α) (f : α → β) :
-    enumFrom n (l.map f) = (enumFrom n l).map (Prod.map id f) :=
-  by
+    enumFrom n (l.map f) = (enumFrom n l).map (Prod.map id f) := by
   induction' l with hd tl IH
   · rfl
-  · rw [map_cons, enum_from_cons', enum_from_cons', map_cons, map_map, IH, map_map]
+  · rw [map_cons, enumFrom_cons', enumFrom_cons', map_cons, map_map, IH, map_map]
     rfl
 #align list.enum_from_map List.enumFrom_map
 
