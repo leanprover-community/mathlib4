@@ -186,6 +186,10 @@ theorem coe_const (p : P2) : ⇑(const k P1 p) = Function.const P1 p :=
   rfl
 #align affine_map.coe_const AffineMap.coe_const
 
+-- Porting note: new theorem
+@[simp]
+theorem const_apply (p : P2) : (const k P1 p) q = p := rfl
+
 @[simp]
 theorem const_linear (p : P2) : (const k P1 p).linear = 0 :=
   rfl
@@ -233,7 +237,7 @@ section SMul
 variable {R : Type _} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
-instance : MulAction R (P1 →ᵃ[k] V2)
+instance mulAction : MulAction R (P1 →ᵃ[k] V2)
     where
   smul c f := ⟨c • f.toFun, c • f.linear, fun p v => by
     rw [Pi.smul_apply, Pi.smul_apply, LinearMap.smul_apply, vadd_eq_add, map_vadd, vadd_eq_add,
@@ -243,7 +247,7 @@ instance : MulAction R (P1 →ᵃ[k] V2)
 
 -- Porting note: no `norm_cast` due to eagerly elaborated coercions
 @[simp]
-theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • f :=
+theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ((c • f) : P1 → V2) = c • (f : P1 → V2) :=
   rfl
 #align affine_map.coe_smul AffineMap.coe_smul
 
@@ -252,8 +256,15 @@ theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.l
   rfl
 #align affine_map.smul_linear AffineMap.smul_linear
 
---instance [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] : IsCentralScalar R (P1 →ᵃ[k] V2)
-    --where op_smul_eq_smul r x := ext fun _ => op_smul_eq_smul _ _
+variable [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2]
+
+-- Porting note: workaround for Lean4#2074
+instance : SMulCommClass k Rᵐᵒᵖ V2 := SMulCommClass.op_right
+
+instance isCentralScalar : IsCentralScalar R (P1 →ᵃ[k] V2)
+    where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+
+#exit
 
 end SMul
 
@@ -705,12 +716,15 @@ section
 variable {ι : Type _} {V : ∀ _ : ι, Type _} {P : ∀ _ : ι, Type _} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
+-- Porting note: Workaround for lean4#2074
+instance : AffineSpace (∀ i : ι, (V i)) (∀ i : ι, P i) := Pi.instAddTorsorForAllForAllAddGroup
+
 /-- Evaluation at a point as an affine map. -/
 def proj (i : ι) : (∀ i : ι, P i) →ᵃ[k] P i
     where
   toFun f := f i
   linear := @LinearMap.proj k ι _ V _ _ i
-  map_vadd' p v := rfl
+  map_vadd' _ _ := rfl
 #align affine_map.proj AffineMap.proj
 
 @[simp]
@@ -767,6 +781,14 @@ instance : Module R (P1 →ᵃ[k] V2) :=
 
 variable (R)
 
+-- Workarounds for lean4#2074
+instance : AddCommMonoid (V1 →ₗ[k] V2) := LinearMap.addCommMonoid
+instance : AddCommMonoid (V2 × (V1 →ₗ[k] V2)) := Prod.instAddCommMonoidSum
+instance : Module R (V1 →ₗ[k] V2) := LinearMap.instModuleLinearMapAddCommMonoid -- this is stupid
+instance : Module R (V2 × (V1 →ₗ[k] V2)) := Prod.module
+-- Workaround for lean4#2074
+attribute [-instance] Ring.toNonAssocRing
+
 /-- The space of affine maps between two modules is linearly equivalent to the product of the
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the
 linear part.
@@ -780,10 +802,15 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2)
   left_inv f := by
     ext
     rw [f.decomp]
-    simp
+    simp only [coe_add, LinearMap.coe_toAffineMap, Pi.add_apply, add_right_inj]
+    rw [const_apply]
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp
+    ext
+    · simp only [coe_add, LinearMap.coe_toAffineMap, Pi.add_apply, map_zero, zero_add]
+      rw [const_apply]
+    · simp only [add_linear, LinearMap.toAffineMap_linear, LinearMap.add_apply, add_right_eq_self]
+      rw [const_linear, LinearMap.zero_apply]
   map_add' := by simp
   map_smul' := by simp
 #align affine_map.to_const_prod_linear_map AffineMap.toConstProdLinearMap
@@ -851,7 +878,9 @@ theorem homothety_add (c : P1) (r₁ r₂ : k) :
 
 /-- `homothety` as a multiplicative monoid homomorphism. -/
 def homothetyHom (c : P1) : k →* P1 →ᵃ[k] P1 :=
-  ⟨homothety c, homothety_one c, homothety_mul c⟩
+  { toFun := homothety c,
+    map_one' := homothety_one c,
+    map_mul' := homothety_mul c }
 #align affine_map.homothety_hom AffineMap.homothetyHom
 
 @[simp]
