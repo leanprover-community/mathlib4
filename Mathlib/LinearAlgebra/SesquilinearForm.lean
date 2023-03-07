@@ -204,15 +204,16 @@ theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
   ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
 #align linear_map.is_refl.flip_is_refl_iff LinearMap.IsRefl.flip_isRefl_iff
 
-theorem ker_flip_eq_bot (H : B.IsRefl) (h : B.ker = ⊥) : B.flip.ker = ⊥ := by
+theorem ker_flip_eq_bot (H : B.IsRefl) (h : LinearMap.ker B = ⊥) : LinearMap.ker B.flip = ⊥ := by
   refine' ker_eq_bot'.mpr fun _ hx ↦ ker_eq_bot'.mp h _ _
   ext
   exact H _ _ (LinearMap.congr_fun hx _)
 #align linear_map.is_refl.ker_flip_eq_bot LinearMap.IsRefl.ker_flip_eq_bot
 
-theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) : B.ker = ⊥ ↔ B.flip.ker = ⊥ := by
+theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) :
+    LinearMap.ker B = ⊥ ↔ LinearMap.ker B.flip = ⊥ := by
   refine' ⟨ker_flip_eq_bot H, fun h ↦ _⟩
-  exact (congr_arg _ B.flip_flip.symm).trans (ker_flip_eq_bot (flip_is_refl_iff.mpr H) h)
+  exact (congr_arg _ B.flip_flip.symm).trans (ker_flip_eq_bot (flip_isRefl_iff.mpr H) h)
 #align linear_map.is_refl.ker_eq_bot_iff_ker_flip_eq_bot LinearMap.IsRefl.ker_eq_bot_iff_ker_flip_eq_bot
 
 end IsRefl
@@ -284,11 +285,11 @@ variable (H : B.IsAlt)
 
 include H
 
-theorem self_eq_zero (x) : B x x = 0 :=
+theorem self_eq_zero (x : M₁) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
 
-theorem neg (x y) : -B x y = B y x := by
+theorem neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
   simp [map_add, self_eq_zero H] at H1
   rw [add_eq_zero_iff_neg_eq] at H1
@@ -556,8 +557,8 @@ def isPairSelfAdjointSubmodule : Submodule R (Module.End R M)
     where
   carrier := { f | IsPairSelfAdjoint B F f }
   zero_mem' := isAdjointPairZero
-  add_mem' f g hf hg := hf.add hg
-  smul_mem' c f h := h.smul c
+  add_mem' := @fun f g hf hg => hf.add hg
+  smul_mem' := @fun c f h => h.smul c
 #align linear_map.is_pair_self_adjoint_submodule LinearMap.isPairSelfAdjointSubmodule
 
 /-- An endomorphism of a module is skew-adjoint with respect to a bilinear form if its negation
@@ -710,7 +711,7 @@ theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
 
 @[simp]
 theorem flip_separatingLeft {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
-    B.flip.SeparatingLeft ↔ SeparatingRight B := by rw [← flip_separating_right, flip_flip]
+    B.flip.SeparatingLeft ↔ SeparatingRight B := by rw [← flip_separatingRight, flip_flip]
 #align linear_map.flip_separating_left LinearMap.flip_separatingLeft
 
 @[simp]
@@ -733,19 +734,19 @@ theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →�
 
 theorem separatingRight_iff_linear_flip_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
-  rw [← flip_separating_left, separating_left_iff_linear_nontrivial]
+  rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 #align linear_map.separating_right_iff_linear_flip_nontrivial LinearMap.separatingRight_iff_linear_flip_nontrivial
 
 /-- A bilinear form is left-separating if and only if it has a trivial kernel. -/
 theorem separatingLeft_iff_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
-    B.SeparatingLeft ↔ B.ker = ⊥ :=
+    B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
   Iff.trans separatingLeft_iff_linear_nontrivial LinearMap.ker_eq_bot'.symm
 #align linear_map.separating_left_iff_ker_eq_bot LinearMap.separatingLeft_iff_ker_eq_bot
 
 /-- A bilinear form is right-separating if and only if its flip has a trivial kernel. -/
 theorem separatingRight_iff_flip_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] R} :
-    B.SeparatingRight ↔ B.flip.ker = ⊥ := by
-  rw [← flip_separating_left, separating_left_iff_ker_eq_bot]
+    B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
+  rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 #align linear_map.separating_right_iff_flip_ker_eq_bot LinearMap.separatingRight_iff_flip_ker_eq_bot
 
 end CommSemiring
@@ -757,14 +758,14 @@ variable [CommRing R] [AddCommGroup M] [Module R M] {I I' : R →+* R}
 theorem IsRefl.nondegenerateOfSeparatingLeft {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
   refine' ⟨hB', _⟩
-  rw [separating_right_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
+  rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
   rwa [← separating_left_iff_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerateOfSeparatingLeft
 
 theorem IsRefl.nondegenerateOfSeparatingRight {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     (hB' : B.SeparatingRight) : B.Nondegenerate := by
   refine' ⟨_, hB'⟩
-  rw [separating_left_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
+  rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
   rwa [← separating_right_iff_flip_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_right LinearMap.IsRefl.nondegenerateOfSeparatingRight
 
