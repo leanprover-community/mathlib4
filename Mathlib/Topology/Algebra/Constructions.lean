@@ -37,13 +37,13 @@ instance [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
 
 variable [TopologicalSpace M]
 
-@[to_additive, continuity]
+@[to_additive (attr := continuity)]
 theorem continuous_unop : Continuous (unop : Mᵐᵒᵖ → M) :=
   continuous_induced_dom
 #align mul_opposite.continuous_unop MulOpposite.continuous_unop
 #align add_opposite.continuous_unop AddOpposite.continuous_unop
 
-@[to_additive, continuity]
+@[to_additive (attr := continuity)]
 theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
   continuous_induced_rng.2 continuous_id
 #align mul_opposite.continuous_op MulOpposite.continuous_op
