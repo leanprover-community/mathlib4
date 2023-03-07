@@ -125,7 +125,7 @@ theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   exact hf hz.le
 #align monotone.le_left_lim Monotone.le_leftLim
 
--- @[mono] -- Porting note: restore `mono` attribute
+@[mono]
 protected theorem leftLim : Monotone (leftLim f) := by
   intro x y h
   rcases eq_or_lt_of_le h with (rfl | hxy)
@@ -141,7 +141,7 @@ theorem rightLim_le (h : x < y) : rightLim f x ≤ f y :=
   hf.dual.le_leftLim h
 #align monotone.right_lim_le Monotone.rightLim_le
 
--- @[mono] -- Porting note: restore `mono` attribute
+@[mono]
 protected theorem rightLim : Monotone (rightLim f) := fun _ _ h => hf.dual.leftLim h
 #align monotone.right_lim Monotone.rightLim
 
@@ -311,7 +311,7 @@ theorem leftLim_le (h : x < y) : leftLim f y ≤ f x :=
   hf.dual_right.le_leftLim h
 #align antitone.left_lim_le Antitone.leftLim_le
 
--- @[mono] -- Porting note: restore `mono` attribute
+@[mono]
 protected theorem leftLim : Antitone (leftLim f) :=
   hf.dual_right.leftLim
 #align antitone.left_lim Antitone.leftLim
@@ -324,7 +324,7 @@ theorem le_rightLim (h : x < y) : f y ≤ rightLim f x :=
   hf.dual_right.rightLim_le h
 #align antitone.le_right_lim Antitone.le_rightLim
 
--- @[mono] -- Porting note: restore `mono` attribute
+@[mono]
 protected theorem rightLim : Antitone (rightLim f) :=
   hf.dual_right.rightLim
 #align antitone.right_lim Antitone.rightLim

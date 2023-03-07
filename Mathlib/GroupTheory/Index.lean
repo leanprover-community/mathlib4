@@ -189,10 +189,10 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
   refine'
     exists_congr fun a => ⟨fun ha b => ⟨fun hba hb => _, fun hb => _⟩, fun ha => ⟨_, fun b hb => _⟩⟩
   · exact ha.1 ((mul_mem_cancel_left hb).1 hba)
-  · exact inv_inv b ▸ ha.2 _ (mt inv_mem_iff.1 hb)
-  · rw [← inv_mem_iff, ← ha, inv_mul_self]
+  · exact inv_inv b ▸ ha.2 _ (mt (inv_mem_iff (x := b)).1 hb)
+  · rw [← inv_mem_iff (x := a), ← ha, inv_mul_self]
     exact one_mem _
-  · rwa [ha, inv_mem_iff]
+  · rwa [ha, inv_mem_iff (x := b)]
 #align subgroup.index_eq_two_iff Subgroup.index_eq_two_iff
 #align add_subgroup.index_eq_two_iff AddSubgroup.index_eq_two_iff
 

@@ -382,11 +382,11 @@ instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (G
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
 
-@[to_additive vAdd]
-instance sMul [SMul M G] : SMul M (Germ l G) :=
+@[to_additive]
+instance smul [SMul M G] : SMul M (Germ l G) :=
   ⟨fun n => map (n • ·)⟩
 
-@[to_additive existing sMul]
+@[to_additive existing smul]
 instance pow [Pow G M] : Pow (Germ l G) M :=
   ⟨fun f n => map (· ^ n) f⟩
 
@@ -678,14 +678,14 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
 instance preorder [Preorder β] : Preorder (Germ l β)
     where
   le := (· ≤ ·)
-  le_refl f := inductionOn f <| EventuallyLe.refl l
-  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLe.trans
+  le_refl f := inductionOn f <| EventuallyLE.refl l
+  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLE.trans
 
 instance partialOrder [PartialOrder β] : PartialOrder (Germ l β) :=
   { Filter.Germ.preorder with
     le := (· ≤ ·)
     le_antisymm := fun f g =>
-      inductionOn₂ f g fun _ _ h₁ h₂ => (EventuallyLe.antisymm h₁ h₂).germ_eq }
+      inductionOn₂ f g fun _ _ h₁ h₂ => (EventuallyLE.antisymm h₁ h₂).germ_eq }
 
 instance bot [Bot β] : Bot (Germ l β) :=
   ⟨↑(⊥ : β)⟩
