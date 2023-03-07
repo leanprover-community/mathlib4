@@ -43,7 +43,7 @@ section Terminal
 /-- The map of an empty cone is a limit iff the mapped object is terminal.
 -/
 def isLimitMapConeEmptyConeEquiv :
-    IsLimit (Functor.mapCone G (asEmptyCone X)) ≃ IsTerminal (G.obj X) :=
+    IsLimit (G.mapCone (asEmptyCone X)) ≃ IsTerminal (G.obj X) :=
   isLimitEmptyConeEquiv D _ _ (eqToIso rfl)
 #align category_theory.limits.is_limit_map_cone_empty_cone_equiv CategoryTheory.Limits.isLimitMapConeEmptyConeEquiv
 
@@ -136,7 +136,7 @@ section Initial
 /-- The map of an empty cocone is a colimit iff the mapped object is initial.
 -/
 def isColimitMapCoconeEmptyCoconeEquiv :
-    IsColimit (Functor.mapCocone G (asEmptyCocone.{v₁} X)) ≃ IsInitial (G.obj X) :=
+    IsColimit (G.mapCocone (asEmptyCocone.{v₁} X)) ≃ IsInitial (G.obj X) :=
   isColimitEmptyCoconeEquiv D _ _ (eqToIso rfl)
 #align category_theory.limits.is_colimit_map_cocone_empty_cocone_equiv CategoryTheory.Limits.isColimitMapCoconeEmptyCoconeEquiv
 
