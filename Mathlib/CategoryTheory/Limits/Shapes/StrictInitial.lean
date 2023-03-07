@@ -93,7 +93,7 @@ instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoC
 @[simps! hom]
 noncomputable def mulIsInitial (X : C) [HasBinaryProduct X I] (hI : IsInitial I) : X ⨯ I ≅ I := by
    have := hI.isIso_to (prod.snd : X ⨯ I ⟶ I)
-   exact asIso (prod.snd : X ⨯ I ⟶ I)
+   exact asIso prod.snd
 #align category_theory.limits.mul_is_initial CategoryTheory.Limits.mulIsInitial
 
 @[simp]
@@ -105,9 +105,8 @@ theorem mulIsInitial_inv (X : C) [HasBinaryProduct X I] (hI : IsInitial I) :
 /-- If `I` is initial, then `I ⨯ X` is isomorphic to it. -/
 @[simps! hom]
 noncomputable def isInitialMul (X : C) [HasBinaryProduct I X] (hI : IsInitial I) : I ⨯ X ≅ I := by
-   have h: I ⨯ X ⟶ I := prod.fst
-   have := hI.isIso_to h
-   exact asIso h
+   have := hI.isIso_to (prod.fst : I ⨯ X ⟶ I)
+   exact asIso prod.fst
 #align category_theory.limits.is_initial_mul CategoryTheory.Limits.isInitialMul
 
 @[simp]
