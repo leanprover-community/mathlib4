@@ -290,6 +290,7 @@ import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Filtered
@@ -302,17 +303,20 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
@@ -1326,6 +1330,7 @@ import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
 import Mathlib.Topology.MetricSpace.Algebra
+import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.EMetricParacompact
 import Mathlib.Topology.MetricSpace.EMetricSpace
