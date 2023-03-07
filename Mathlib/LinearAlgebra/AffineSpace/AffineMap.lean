@@ -62,14 +62,18 @@ attribute [-instance] Ring.toNonAssocRing
 induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap
   where
+  /-- The affine map as a function-/
   toFun : P1 → P2
+  /-- The underlying linear map -/
   linear : V1 →ₗ[k] V2
+  /-- Affineness -/
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 #align affine_map AffineMap
 
 end defn
 
--- mathport name: «expr →ᵃ[ ] »
+/-- An `affine_map k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
+induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
 instance (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
@@ -116,16 +120,17 @@ attribute [-instance] Ring.toNonAssocRing
 
 /-- Constructing an affine map and coercing back to a function
 produces the same map. -/
-@[simp]
+--@[simp] -- Porting note: can be proved `by simp only`
 theorem coe_mk (f : P1 → P2) (linear add) : ((mk f linear add : P1 →ᵃ[k] P2) : P1 → P2) = f :=
-  rfl
+  by simp only []
 #align affine_map.coe_mk AffineMap.coe_mk
 
+/- Porting note: syntactic tautology
 /-- `to_fun` is the same as the result of coercing to a function. -/
 @[simp]
 theorem toFun_eq_coe (f : P1 →ᵃ[k] P2) : f.toFun = ⇑f :=
   rfl
-#align affine_map.to_fun_eq_coe AffineMap.toFun_eq_coe
+#align affine_map.to_fun_eq_coe AffineMap.toFun_eq_coe-/
 
 /-- An affine map on the result of adding a vector to a point produces
 the same result as the linear map applied to that vector, added to the
@@ -258,13 +263,11 @@ theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.l
 
 variable [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2]
 
--- Porting note: workaround for Lean4#2074
+-- Workaround for lean4#2074
 instance : SMulCommClass k Rᵐᵒᵖ V2 := SMulCommClass.op_right
 
 instance isCentralScalar : IsCentralScalar R (P1 →ᵃ[k] V2)
     where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
-
-#exit
 
 end SMul
 
@@ -716,7 +719,7 @@ section
 variable {ι : Type _} {V : ∀ _ : ι, Type _} {P : ∀ _ : ι, Type _} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
--- Porting note: Workaround for lean4#2074
+-- Workaround for lean4#2074
 instance : AffineSpace (∀ i : ι, (V i)) (∀ i : ι, P i) := Pi.instAddTorsorForAllForAllAddGroup
 
 /-- Evaluation at a point as an affine map. -/
@@ -784,7 +787,7 @@ variable (R)
 -- Workarounds for lean4#2074
 instance : AddCommMonoid (V1 →ₗ[k] V2) := LinearMap.addCommMonoid
 instance : AddCommMonoid (V2 × (V1 →ₗ[k] V2)) := Prod.instAddCommMonoidSum
-instance : Module R (V1 →ₗ[k] V2) := LinearMap.instModuleLinearMapAddCommMonoid -- this is stupid
+instance : Module R (V1 →ₗ[k] V2) := LinearMap.instModuleLinearMapAddCommMonoid
 instance : Module R (V2 × (V1 →ₗ[k] V2)) := Prod.module
 -- Workaround for lean4#2074
 attribute [-instance] Ring.toNonAssocRing
@@ -916,3 +919,4 @@ theorem Convex.combo_affine_apply {x y : E} {a b : 𝕜} {f : E →ᵃ[𝕜] F} 
 #align convex.combo_affine_apply Convex.combo_affine_apply
 
 end
+#lint
