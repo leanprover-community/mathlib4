@@ -48,14 +48,11 @@ where `X₁ ⟶ X ← X₂` is a coproduct diagram, then `Z` is initial, and bot
 are mono.
 -/
 class CoproductDisjoint (X₁ X₂ : C) where
-  /-- `Z` is initial -/
   isInitialOfIsPullbackOfIsCoproduct :
     ∀ {X Z} {pX₁ : X₁ ⟶ X} {pX₂ : X₂ ⟶ X} {f : Z ⟶ X₁} {g : Z ⟶ X₂}
       (_cX : IsColimit (BinaryCofan.mk pX₁ pX₂)) {comm : f ≫ pX₁ = g ≫ pX₂},
       IsLimit (PullbackCone.mk _ _ comm) → IsInitial Z
-  /-- `X₁ ⟶ X` is mono -/
   mono_inl : ∀ (X) (X₁ : X₁ ⟶ X) (X₂ : X₂ ⟶ X) (_cX : IsColimit (BinaryCofan.mk X₁ X₂)), Mono X₁
-  /-- `X₂ ⟶ X` is mono -/
   mono_inr : ∀ (X) (X₁ : X₁ ⟶ X) (X₂ : X₂ ⟶ X) (_cX : IsColimit (BinaryCofan.mk X₁ X₂)), Mono X₂
 #align category_theory.limits.coproduct_disjoint CategoryTheory.Limits.CoproductDisjoint
 
