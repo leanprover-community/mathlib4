@@ -320,8 +320,19 @@ theorem cmp_compares : ∀ (a b : Onote) [NF a] [NF b], (cmp a b).Compares a b
     case eq =>
       intro IHe; dsimp at IHe; subst IHe
       unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂
-      case lt => rw [cmpUsing_eq_lt] at nh; exact oadd_lt_oadd_2 h₁ nh
-      case gt => rw [cmpUsing_eq_gt] at nh; exact oadd_lt_oadd_2 h₂ nh
+      case lt =>
+        rw [cmpUsing, ite_eq_iff, not_lt] at nh
+        cases' nh with nh nh
+        . exact oadd_lt_oadd_2 h₁ nh.left
+        . rw [ite_eq_iff] at nh; cases' nh.right with nh nh <;> cases nh <;> contradiction
+      case gt =>
+        rw [cmpUsing, ite_eq_iff, not_lt] at nh
+        cases' nh with nh nh
+        . cases nh; contradiction
+        . cases' nh with _ nh
+          rw [ite_eq_iff] at nh; cases' nh with nh nh
+          . exact oadd_lt_oadd_2 h₂ nh.left
+          . cases nh; contradiction
       rw [cmpUsing_eq_eq] at nh
       obtain rfl := Subtype.eq (eq_of_incomp nh)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
