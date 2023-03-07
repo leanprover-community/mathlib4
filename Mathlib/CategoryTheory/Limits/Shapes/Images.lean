@@ -81,7 +81,8 @@ structure MonoFactorisation (f : X ⟶ Y) where
 #align category_theory.limits.mono_factorisation CategoryTheory.Limits.MonoFactorisation
 #align category_theory.limits.mono_factorisation.fac' CategoryTheory.Limits.MonoFactorisation.fac
 
-attribute [inherit_doc MonoFactorisation] MonoFactorisation.I MonoFactorisation.m MonoFactorisation.m_mono MonoFactorisation.e MonoFactorisation.fac
+attribute [inherit_doc MonoFactorisation] MonoFactorisation.I MonoFactorisation.m 
+  MonoFactorisation.m_mono MonoFactorisation.e MonoFactorisation.fac
 
 attribute [reassoc (attr := simp)] MonoFactorisation.fac
 
