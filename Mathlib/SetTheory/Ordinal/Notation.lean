@@ -313,20 +313,22 @@ theorem cmp_compares : ∀ (a b : Onote) [NF a] [NF b], (cmp a b).Compares a b
   | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h₁, h₂ => by
     rw [cmp]
     have IHe := @cmp_compares _ _ h₁.fst h₂.fst
+    simp [Ordering.Compares] at IHe; revert IHe
     cases cmp e₁ e₂
-    case lt => exact oadd_lt_oadd_1 h₁ IHe
-    case gt => exact oadd_lt_oadd_1 h₂ IHe
-    change e₁ = e₂ at IHe; subst IHe
-    unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂
-    case lt => rw [cmpUsing_eq_lt] at nh; exact oadd_lt_oadd_2 h₁ nh
-    case gt => rw [cmpUsing_eq_gt] at nh; exact oadd_lt_oadd_2 h₂ nh
-    rw [cmpUsing_eq_eq] at nh
-    obtain rfl := Subtype.eq (eq_of_incomp nh)
-    have IHa := @cmp_compares _ _ h₁.snd h₂.snd
-    cases cmp a₁ a₂
-    case lt => exact oadd_lt_oadd_3 IHa
-    case gt => exact oadd_lt_oadd_3 IHa
-    change a₁ = a₂ at IHa; subst IHa; exact rfl
+    case lt => intro IHe; exact oadd_lt_oadd_1 h₁ IHe
+    case gt => intro IHe; exact oadd_lt_oadd_1 h₂ IHe
+    case eq =>
+      intro IHe; dsimp at IHe; subst IHe
+      unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂
+      case lt => rw [cmpUsing_eq_lt] at nh; exact oadd_lt_oadd_2 h₁ nh
+      case gt => rw [cmpUsing_eq_gt] at nh; exact oadd_lt_oadd_2 h₂ nh
+      rw [cmpUsing_eq_eq] at nh
+      obtain rfl := Subtype.eq (eq_of_incomp nh)
+      have IHa := @cmp_compares _ _ h₁.snd h₂.snd
+      cases cmp a₁ a₂
+      case lt => exact oadd_lt_oadd_3 IHa
+      case gt => exact oadd_lt_oadd_3 IHa
+      change a₁ = a₂ at IHa; subst IHa; exact rfl
 #align onote.cmp_compares Onote.cmp_compares
 
 theorem repr_inj {a b} [NF a] [NF b] : repr a = repr b ↔ a = b :=
