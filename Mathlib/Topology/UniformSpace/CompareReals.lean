@@ -69,17 +69,14 @@ theorem Rat.uniformSpace_eq :
 #align rat.uniform_space_eq Rat.uniformSpace_eq
 
 /-- Cauchy reals packaged as a completion of ℚ using the absolute value route. -/
-def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace
-    where
-  space := ℝ
-  coe := (coe : ℚ → ℝ)
-  uniformStruct := by infer_instance
-  complete := by infer_instance
-  separation := by infer_instance
-  uniformInducing := by
-    rw [Rat.uniformSpace_eq]
-    exact rat.uniform_embedding_coe_real.to_uniform_inducing
-  dense := Rat.denseEmbedding_coe_real.dense
+def rationalCauSeqPkg : (AbstractCompletion ℚ) := @AbstractCompletion.mk
+  (space := ℝ)
+  (coe := (RatCast.ratCast : ℚ → ℝ))
+  (uniformStruct := by infer_instance)
+  (complete := by infer_instance)
+  (separation := by infer_instance)
+  (uniformInducing := Rat.uniformEmbedding_coe_real.toUniformInducing)
+  (dense := Rat.denseEmbedding_coe_real.dense)
 #align rational_cau_seq_pkg rationalCauSeqPkg
 
 namespace CompareReals
@@ -115,11 +112,11 @@ noncomputable def compareEquiv : Bourbakiℝ ≃ᵤ ℝ :=
 #align compare_reals.compare_equiv CompareReals.compareEquiv
 
 theorem compare_uc : UniformContinuous compareEquiv :=
-  bourbakiPkg.uniformContinuous_compareEquiv _
+  bourbakiPkg.uniformContinuous_compareEquiv rationalCauSeqPkg
 #align compare_reals.compare_uc CompareReals.compare_uc
 
 theorem compare_uc_symm : UniformContinuous compareEquiv.symm :=
-  bourbakiPkg.uniformContinuous_compareEquiv_symm _
+  bourbakiPkg.uniformContinuous_compareEquiv_symm rationalCauSeqPkg
 #align compare_reals.compare_uc_symm CompareReals.compare_uc_symm
 
 end CompareReals
