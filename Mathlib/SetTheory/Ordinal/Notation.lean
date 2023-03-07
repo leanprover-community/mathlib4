@@ -9,6 +9,7 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.Tactic.LibrarySearch
 
 -- porting note: Many names intentionally containg "NF" as upper case in the mathlib3 name. -/
 set_option linter.uppercaseLean3 false
@@ -163,12 +164,11 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     obtain rfl := eq_of_cmp_eq h₁
     revert h; cases h₂ : _root_.cmp (n₁ : ℕ) n₂ <;> intro h <;> try cases h
     obtain rfl := eq_of_cmp_eq h
-    -- porting note: cmpUsing_eq_eq used to be in init/data/ordering/lemmas
-    have cmpUsing_eq_eq : (cmpUsing (fun x x_1 => x < x_1) ↑n₁ ↑n₂ = Ordering.eq) = (¬ LT ↑n₁ ↑n₂ ∧ ¬ LT n₁ n₂) := by
-      sorry
-    rw [_root_.cmp] at h₂
-    obtain rfl := Subtype.eq (eq_of_incomp h₂)
-    simp
+    dsimp; congr
+    simp only [_root_.cmp, cmpUsing] at h₂ ; dsimp at h₂
+    revert h₂
+    split_ifs with h₃ h₄ <;> intro h₂ <;> try exact False.elim h₂
+    exact lt_by_cases.proof_1 n₁ n₂ h₃ h₄
 #align onote.eq_of_cmp_eq Onote.eq_of_cmp_eq
 
 protected theorem zero_lt_one : (0 : Onote) < 1 := by
