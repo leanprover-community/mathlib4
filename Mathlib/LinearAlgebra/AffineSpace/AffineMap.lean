@@ -21,32 +21,30 @@ This file defines affine maps.
 
 ## Main definitions
 
-* `affine_map` is the type of affine maps between two affine spaces with the same ring `k`.  Various
-  basic examples of affine maps are defined, including `const`, `id`, `line_map` and `homothety`.
+* `AffineMap` is the type of affine maps between two affine spaces with the same ring `k`.  Various
+  basic examples of affine maps are defined, including `const`, `id`, `lineMap` and `homothety`.
 
 ## Notations
 
-* `P1 →ᵃ[k] P2` is a notation for `affine_map k P1 P2`;
-* `affine_space V P`: a localized notation for `add_torsor V P` defined in
-  `linear_algebra.affine_space.basic`.
+* `P1 →ᵃ[k] P2` is a notation for `AffineMap k P1 P2`;
+* `AffineSpace V P`: a localized notation for `AddTorsor V P` defined in
+  `LinearAlgebra.AffineSpace.Basic`.
 
 ## Implementation notes
 
-`out_param` is used in the definition of `[add_torsor V P]` to make `V` an implicit argument
-(deduced from `P`) in most cases; `include V` is needed in many cases for `V`, and type classes
-using it, to be added as implicit arguments to individual lemmas.  As for modules, `k` is an
-explicit argument rather than implied by `P` or `V`.
+`out_param` is used in the definition of `[AddTorsor V P]` to make `V` an implicit argument
+(deduced from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by
+`P` or `V`.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `analysis.normed_space.add_torsor` and
-`topology.algebra.affine`.
+topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
+`Topology.Algebra.Affine`.
 
 ## References
 
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
-
 
 open Affine
 
@@ -58,7 +56,7 @@ variable (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [R
 -- Workaround for lean4#2074
 attribute [-instance] Ring.toNonAssocRing
 
-/-- An `affine_map k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
+/-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap
   where
@@ -72,7 +70,7 @@ structure AffineMap
 
 end defn
 
-/-- An `affine_map k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
+/-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
@@ -126,7 +124,7 @@ theorem coe_mk (f : P1 → P2) (linear add) : ((mk f linear add : P1 →ᵃ[k] P
 #align affine_map.coe_mk AffineMap.coe_mk
 
 /- Porting note: syntactic tautology
-/-- `to_fun` is the same as the result of coercing to a function. -/
+/-- `toFun` is the same as the result of coercing to a function. -/
 @[simp]
 theorem toFun_eq_coe (f : P1 →ᵃ[k] P2) : f.toFun = ⇑f :=
   rfl
@@ -178,7 +176,7 @@ protected theorem congr_fun {f g : P1 →ᵃ[k] P2} (h : f = g) (x : P1) : f x =
 
 variable (k P1)
 
-/-- Constant function as an `affine_map`. -/
+/-- The constant function as an `AffineMap`. -/
 def const (p : P2) : P1 →ᵃ[k] P2
     where
   toFun := Function.const P1 p
@@ -359,7 +357,7 @@ theorem vsub_apply (f g : P1 →ᵃ[k] P2) (p : P1) : (f -ᵥ g : P1 →ᵃ[k] V
   rfl
 #align affine_map.vsub_apply AffineMap.vsub_apply
 
-/-- `prod.fst` as an `affine_map`. -/
+/-- `Prod.fst` as an `AffineMap`. -/
 def fst : P1 × P2 →ᵃ[k] P1 where
   toFun := Prod.fst
   linear := LinearMap.fst k V1 V2
@@ -376,7 +374,7 @@ theorem fst_linear : (fst : P1 × P2 →ᵃ[k] P1).linear = LinearMap.fst k V1 V
   rfl
 #align affine_map.fst_linear AffineMap.fst_linear
 
-/-- `prod.snd` as an `affine_map`. -/
+/-- `Prod.snd` as an `AffineMap`. -/
 def snd : P1 × P2 →ᵃ[k] P2 where
   toFun := Prod.snd
   linear := LinearMap.snd k V1 V2
@@ -479,7 +477,7 @@ theorem coe_one : ⇑(1 : P1 →ᵃ[k] P1) = id k P1 :=
   rfl
 #align affine_map.coe_one AffineMap.coe_one
 
-/-- `affine_map.linear` on endomorphisms is a `monoid_hom`. -/
+/-- `AffineMap.linear` on endomorphisms is a `MonoidHom`. -/
 @[simps]
 def linearHom : (P1 →ᵃ[k] P1) →* V1 →ₗ[k] V1
     where
@@ -919,4 +917,3 @@ theorem Convex.combo_affine_apply {x y : E} {a b : 𝕜} {f : E →ᵃ[𝕜] F} 
 #align convex.combo_affine_apply Convex.combo_affine_apply
 
 end
-#lint
