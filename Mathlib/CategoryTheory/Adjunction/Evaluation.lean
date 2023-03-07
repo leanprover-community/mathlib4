@@ -36,8 +36,7 @@ variable [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D]
 
 /-- The left adjoint of evaluation. -/
 @[simps]
-def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D
-    where
+def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∐ fun _ : c ⟶ t => d
       map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f}
@@ -96,8 +95,7 @@ variable [∀ a b : C, HasProductsOfShape (a ⟶ b) D]
 
 /-- The right adjoint of evaluation. -/
 @[simps]
-def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D
-    where
+def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∏ fun _ : t ⟶ c => d
       map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
