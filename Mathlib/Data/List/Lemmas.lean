@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module data.list.lemmas
-! leanprover-community/mathlib commit 6d0adfa76594f304b4650d098273d4366edeb61b
+! leanprover-community/mathlib commit 975c8c329887c50db6f3556a5f382292ee152ff9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -69,8 +69,7 @@ theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
 #align list.inj_on_insert_nth_index_of_not_mem List.injOn_insertNth_index_of_not_mem
 
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
-    (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) :=
-  by
+    (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
   rintro _ ⟨l, rfl⟩
   induction' l with b l H
   · exact ⟨[], rfl⟩
@@ -82,11 +81,14 @@ theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α
 
 theorem foldl_range_subset_of_range_subset {f : α → β → α} {g : α → γ → α}
     (hfg : (Set.range fun a c => f c a) ⊆ Set.range fun b c => g c b) (a : α) :
-    Set.range (foldl f a) ⊆ Set.range (foldl g a) :=
-  by
+    Set.range (foldl f a) ⊆ Set.range (foldl g a) := by
   change (Set.range fun l => _) ⊆ Set.range fun l => _
-  simp_rw [← foldr_reverse] at hfg⊢
-  simp_rw [Set.range_comp _ List.reverse, reverse_involutive.bijective.surjective.range_eq,
+  -- Porting note: This was simply `simp_rw [← foldr_reverse]`
+  simp_rw [← foldr_reverse _ (fun z w => g w z), ← foldr_reverse _ (fun z w => f w z)]
+  -- Porting note: This `change` was not necessary in mathlib3
+  change (Set.range (foldr (fun z w => f w z) a ∘ reverse)) ⊆
+    Set.range (foldr (fun z w => g w z) a ∘ reverse)
+  simp_rw [Set.range_comp _ reverse, reverse_involutive.bijective.surjective.range_eq,
     Set.image_univ]
   exact foldr_range_subset_of_range_subset hfg a
 #align list.foldl_range_subset_of_range_subset List.foldl_range_subset_of_range_subset
