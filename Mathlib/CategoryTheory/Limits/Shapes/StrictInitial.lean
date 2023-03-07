@@ -8,8 +8,8 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Strict initial objects
@@ -74,8 +74,7 @@ theorem IsInitial.isIso_to (hI : IsInitial I) {A : C} (f : A ⟶ I) : IsIso f :=
   HasStrictInitialObjects.out f hI
 #align category_theory.limits.is_initial.is_iso_to CategoryTheory.Limits.IsInitial.isIso_to
 
-theorem IsInitial.strict_hom_ext (hI : IsInitial I) {A : C} (f g : A ⟶ I) : f = g :=
-  by
+theorem IsInitial.strict_hom_ext (hI : IsInitial I) {A : C} (f g : A ⟶ I) : f = g := by
   haveI := hI.is_iso_to f
   haveI := hI.is_iso_to g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
@@ -193,8 +192,7 @@ theorem IsTerminal.isIso_from (hI : IsTerminal I) {A : C} (f : I ⟶ A) : IsIso 
   HasStrictTerminalObjects.out f hI
 #align category_theory.limits.is_terminal.is_iso_from CategoryTheory.Limits.IsTerminal.isIso_from
 
-theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : f = g :=
-  by
+theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : f = g := by
   haveI := hI.is_iso_from f
   haveI := hI.is_iso_from g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
