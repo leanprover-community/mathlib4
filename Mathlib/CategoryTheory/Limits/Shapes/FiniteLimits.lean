@@ -73,13 +73,13 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
   out := fun J hJ hhJ => by
     haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
     have l : 
-      @Equivalence J (ULiftHom (ULift J)) hJ (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ))
+      @Equivalence J (ULiftHom (ULift J)) hJ (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
       := @ULiftHomULiftCategory.equiv J hJ
     apply @hasLimitsOfShapeOfEquivalence (ULiftHom (ULift J)) 
-      (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)) C _ J hJ 
+      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ 
       (@Equivalence.symm J hJ (ULiftHom (ULift J)) 
-      (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)) l) _
-    /- Porting note: tried to factor out (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ) 
+      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) l) _
+    /- Porting note: tried to factor out (@ULiftHom.category (ULift J) (@uliftCategory J hJ) 
     but when doing that would then find the instance and say it was not definitionally equal to 
     to the provide one (the same thing factored out) -/
 #align category_theory.limits.has_finite_limits_of_has_finite_limits_of_size CategoryTheory.Limits.hasFiniteLimits_of_hasFiniteLimits_of_size
@@ -118,12 +118,12 @@ theorem hasFiniteColimits_of_hasFiniteColimits_of_size
   out := fun J hJ hhJ => by
     haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
     have l : 
-      @Equivalence J (ULiftHom (ULift J)) hJ (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ))
+      @Equivalence J (ULiftHom (ULift J)) hJ (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
       := @ULiftHomULiftCategory.equiv J hJ
     apply @hasColimitsOfShape_of_equivalence (ULiftHom (ULift J)) 
-      (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)) C _ J hJ 
+      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ 
       (@Equivalence.symm J hJ (ULiftHom (ULift J)) 
-      (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)) l) _
+      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) l) _
 #align category_theory.limits.has_finite_colimits_of_has_finite_colimits_of_size CategoryTheory.Limits.hasFiniteColimits_of_hasFiniteColimits_of_size
 
 section
