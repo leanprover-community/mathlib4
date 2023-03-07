@@ -9,9 +9,9 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Basic
-
 /-!
 # Rectangular boxes in `ℝⁿ`
 
