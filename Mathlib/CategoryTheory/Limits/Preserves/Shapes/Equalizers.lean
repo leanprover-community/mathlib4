@@ -8,8 +8,8 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.SplitCoequalizer
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving (co)equalizers
@@ -81,8 +81,7 @@ variable [HasEqualizer (G.map f) (G.map g)]
 equalizer of `(f,g)`.
 -/
 def PreservesEqualizer.ofIsoComparison [i : IsIso (equalizerComparison f g G)] :
-    PreservesLimit (parallelPair f g) G :=
-  by
+    PreservesLimit (parallelPair f g) G := by
   apply preserves_limit_of_preserves_limit_cone (equalizer_is_equalizer f g)
   apply (is_limit_map_cone_fork_equiv _ _).symm _
   apply is_limit.of_point_iso (limit.is_limit (parallel_pair (G.map f) (G.map g)))
@@ -105,8 +104,7 @@ theorem PreservesEqualizer.iso_hom :
   rfl
 #align category_theory.limits.preserves_equalizer.iso_hom CategoryTheory.Limits.PreservesEqualizer.iso_hom
 
-instance : IsIso (equalizerComparison f g G) :=
-  by
+instance : IsIso (equalizerComparison f g G) := by
   rw [← preserves_equalizer.iso_hom]
   infer_instance
 
@@ -165,8 +163,7 @@ variable [HasCoequalizer (G.map f) (G.map g)]
 coequalizer of `(f,g)`.
 -/
 def ofIsoComparison [i : IsIso (coequalizerComparison f g G)] :
-    PreservesColimit (parallelPair f g) G :=
-  by
+    PreservesColimit (parallelPair f g) G := by
   apply preserves_colimit_of_preserves_colimit_cocone (coequalizer_is_coequalizer f g)
   apply (is_colimit_map_cocone_cofork_equiv _ _).symm _
   apply is_colimit.of_point_iso (colimit.is_colimit (parallel_pair (G.map f) (G.map g)))
@@ -190,8 +187,7 @@ theorem PreservesCoequalizer.iso_hom :
   rfl
 #align category_theory.limits.preserves_coequalizer.iso_hom CategoryTheory.Limits.PreservesCoequalizer.iso_hom
 
-instance : IsIso (coequalizerComparison f g G) :=
-  by
+instance : IsIso (coequalizerComparison f g G) := by
   rw [← preserves_coequalizer.iso_hom]
   infer_instance
 
@@ -205,8 +201,7 @@ instance map_π_epi : Epi (G.map (coequalizer.π f g)) :=
 @[reassoc.1]
 theorem map_π_preserves_coequalizer_inv :
     G.map (coequalizer.π f g) ≫ (PreservesCoequalizer.iso G f g).inv =
-      coequalizer.π (G.map f) (G.map g) :=
-  by
+      coequalizer.π (G.map f) (G.map g) := by
   rw [← ι_comp_coequalizer_comparison_assoc, ← preserves_coequalizer.iso_hom, iso.hom_inv_id,
     comp_id]
 #align category_theory.limits.map_π_preserves_coequalizer_inv CategoryTheory.Limits.map_π_preserves_coequalizer_inv
@@ -236,16 +231,14 @@ theorem map_π_preserves_coequalizer_inv_colimMap_desc {X' Y' : D} (f' g' : X' �
     G.map (coequalizer.π f g) ≫
         (PreservesCoequalizer.iso G f g).inv ≫
           colimMap (parallelPairHom (G.map f) (G.map g) f' g' p q wf wg) ≫ coequalizer.desc h wh =
-      q ≫ h :=
-  by
+      q ≫ h := by
   slice_lhs 1 3 => rw [map_π_preserves_coequalizer_inv_colim_map]
   slice_lhs 2 3 => rw [coequalizer.π_desc]
 #align category_theory.limits.map_π_preserves_coequalizer_inv_colim_map_desc CategoryTheory.Limits.map_π_preserves_coequalizer_inv_colimMap_desc
 
 /-- Any functor preserves coequalizers of split pairs. -/
 instance (priority := 1) preservesSplitCoequalizers (f g : X ⟶ Y) [HasSplitCoequalizer f g] :
-    PreservesColimit (parallelPair f g) G :=
-  by
+    PreservesColimit (parallelPair f g) G := by
   apply
     preserves_colimit_of_preserves_colimit_cocone
       (has_split_coequalizer.is_split_coequalizer f g).isCoequalizer
