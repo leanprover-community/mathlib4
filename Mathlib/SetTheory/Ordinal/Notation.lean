@@ -303,7 +303,7 @@ theorem oadd_lt_oadd_2 {e o₁ o₂ : Onote} {n₁ n₂ : ℕ+} (h₁ : NF (oadd
 
 theorem oadd_lt_oadd_3 {e n a₁ a₂} (h : a₁ < a₂) : oadd e n a₁ < oadd e n a₂ := by
   rw [lt_def]; unfold repr
-  exact add_lt_add_left h _
+  exact @add_lt_add_left _ _ _ _ (repr a₁) _ h _
 #align onote.oadd_lt_oadd_3 Onote.oadd_lt_oadd_3
 
 theorem cmp_compares : ∀ (a b : Onote) [NF a] [NF b], (cmp a b).Compares a b
