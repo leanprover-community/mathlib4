@@ -120,15 +120,14 @@ class CoproductsDisjoint (C : Type u) [Category.{v} C] where
   CoproductDisjoint : ∀ X Y : C, CoproductDisjoint X Y
 #align category_theory.limits.coproducts_disjoint CategoryTheory.Limits.CoproductsDisjoint
 
-attribute [instance] coproducts_disjoint.coproduct_disjoint
+attribute [instance] CoproductsDisjoint.CoproductDisjoint
 
 /-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in
 general that `C` has strict initial objects, for instance consider the category of types and
 partial functions. -/
 theorem initialMonoClass_of_disjoint_coproducts [CoproductsDisjoint C] : InitialMonoClass C :=
-  {
-    isInitial_mono_from := fun I X hI =>
-      CoproductDisjoint.mono_inl _ _ (𝟙 X)
+  { isInitial_mono_from := @fun I X hI =>
+      CoproductDisjoint.mono_inl X (IsInitial.to hI X) (CategoryTheory.CategoryStruct.id X)
         { desc := fun s : BinaryCofan _ _ => s.inr
           fac := fun s j =>
             Discrete.casesOn j fun j => WalkingPair.casesOn j (hI.hom_ext _ _) (id_comp _)
@@ -139,4 +138,3 @@ theorem initialMonoClass_of_disjoint_coproducts [CoproductsDisjoint C] : Initial
 end Limits
 
 end CategoryTheory
-
