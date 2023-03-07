@@ -8,9 +8,9 @@ Authors: Frédéric Dupuis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.AffineSpace.AffineMap
-import Mathbin.Topology.Algebra.Group.Basic
-import Mathbin.Topology.Algebra.MulAction
+import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.MulAction
 
 /-!
 # Topological properties of affine spaces and maps
@@ -38,8 +38,7 @@ variable [Ring R] [Module R E] [Module R F]
 
 /-- An affine map is continuous iff its underlying linear map is continuous. See also
 `affine_map.continuous_linear_iff`. -/
-theorem continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linear :=
-  by
+theorem continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linear := by
   constructor
   · intro hc
     rw [decomp' f]
@@ -66,8 +65,7 @@ section CommRing
 variable [CommRing R] [Module R F] [ContinuousConstSMul R F]
 
 @[continuity]
-theorem homothety_continuous (x : F) (t : R) : Continuous <| homothety x t :=
-  by
+theorem homothety_continuous (x : F) (t : R) : Continuous <| homothety x t := by
   suffices ⇑(homothety x t) = fun y => t • (y - x) + x
     by
     rw [this]
