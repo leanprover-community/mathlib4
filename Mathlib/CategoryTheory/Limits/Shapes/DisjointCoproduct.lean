@@ -50,10 +50,10 @@ are mono.
 class CoproductDisjoint (X₁ X₂ : C) where
   isInitialOfIsPullbackOfIsCoproduct :
     ∀ {X Z} {pX₁ : X₁ ⟶ X} {pX₂ : X₂ ⟶ X} {f : Z ⟶ X₁} {g : Z ⟶ X₂}
-      (cX : IsColimit (BinaryCofan.mk pX₁ pX₂)) {comm : f ≫ pX₁ = g ≫ pX₂},
+      (_cX : IsColimit (BinaryCofan.mk pX₁ pX₂)) {comm : f ≫ pX₁ = g ≫ pX₂},
       IsLimit (PullbackCone.mk _ _ comm) → IsInitial Z
-  mono_inl : ∀ (X) (X₁ : X₁ ⟶ X) (X₂ : X₂ ⟶ X) (cX : IsColimit (BinaryCofan.mk X₁ X₂)), Mono X₁
-  mono_inr : ∀ (X) (X₁ : X₁ ⟶ X) (X₂ : X₂ ⟶ X) (cX : IsColimit (BinaryCofan.mk X₁ X₂)), Mono X₂
+  mono_inl : ∀ (X) (X₁ : X₁ ⟶ X) (X₂ : X₂ ⟶ X) (_cX : IsColimit (BinaryCofan.mk X₁ X₂)), Mono X₁
+  mono_inr : ∀ (X) (X₁ : X₁ ⟶ X) (X₂ : X₂ ⟶ X) (_cX : IsColimit (BinaryCofan.mk X₁ X₂)), Mono X₂
 #align category_theory.limits.coproduct_disjoint CategoryTheory.Limits.CoproductDisjoint
 
 /-- If the coproduct of `X₁` and `X₂` is disjoint, then given any pullback square
@@ -126,12 +126,12 @@ attribute [instance] CoproductsDisjoint.CoproductDisjoint
 general that `C` has strict initial objects, for instance consider the category of types and
 partial functions. -/
 theorem initialMonoClass_of_disjoint_coproducts [CoproductsDisjoint C] : InitialMonoClass C :=
-  { isInitial_mono_from := @fun I X hI =>
+  { isInitial_mono_from := @fun _I X hI =>
       CoproductDisjoint.mono_inl X (IsInitial.to hI X) (CategoryTheory.CategoryStruct.id X)
         { desc := fun s : BinaryCofan _ _ => s.inr
-          fac := fun s j =>
+          fac := fun _s j =>
             Discrete.casesOn j fun j => WalkingPair.casesOn j (hI.hom_ext _ _) (id_comp _)
-          uniq := fun (s : BinaryCofan _ _) m w =>
+          uniq := fun (_s : BinaryCofan _ _) _m w =>
             (id_comp _).symm.trans (w ⟨WalkingPair.right⟩) } }
 #align category_theory.limits.initial_mono_class_of_disjoint_coproducts CategoryTheory.Limits.initialMonoClass_of_disjoint_coproducts
 
