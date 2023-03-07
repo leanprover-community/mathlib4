@@ -783,9 +783,9 @@ instance functorInclusion_is_mono : Mono S.functorInclusion :=
     simpa [Subtype.ext_iff_val] using congr_fun (NatTrans.congr_app h Y) y⟩
 #align category_theory.sieve.functor_inclusion_is_mono CategoryTheory.Sieve.functorInclusion_is_mono
 
--- TODO: Show that when `f` is mono, this is right inverse to `functor_inclusion` up to isomorphism.
+-- TODO: Show that when `f` is mono, this is right inverse to `functorInclusion` up to isomorphism.
 /-- A natural transformation to a representable functor induces a sieve. This is the left inverse of
-`functor_inclusion`, shown in `sieve_of_functor_inclusion`.
+`functorInclusion`, shown in `sieveOfSubfunctor_functorInclusion`.
 -/
 @[simps]
 def sieveOfSubfunctor {R} (f : R ⟶ yoneda.obj X) : Sieve X
