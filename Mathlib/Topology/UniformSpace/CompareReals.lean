@@ -20,15 +20,15 @@ In `data.real.basic` real numbers are defined using the so called Cauchy constru
 it is due to Georg Cantor). More precisely, this construction applies to commutative rings equipped
 with an absolute value with values in a linear ordered field.
 
-On the other hand, in the `uniform_space` folder, we construct completions of general uniform
+On the other hand, in the `UniformSpace` folder, we construct completions of general uniform
 spaces, which allows to construct the Bourbaki real numbers. In this file we build uniformly
 continuous bijections from Cauchy reals to Bourbaki reals and back. This is a cross sanity check of
 both constructions. Of course those two constructions are variations on the completion idea, simply
 with different level of generality. Comparing with Dedekind cuts or quasi-morphisms would be of a
 completely different nature.
 
-Note that `metric_space/cau_seq_filter` also relates the notions of Cauchy sequences in metric
-spaces and Cauchy filters in general uniform spaces, and `metric_space/completion` makes sure
+Note that `MetricSpace/cau_seq_filter` also relates the notions of Cauchy sequences in metric
+spaces and Cauchy filters in general uniform spaces, and `MetricSpace/completion` makes sure
 the completion (as a uniform space) of a metric space is a metric space.
 
 Historical note: mathlib used to define real numbers in an intermediate way, using completion
@@ -40,7 +40,7 @@ TODO:
 
 ## Implementation notes
 
-The heavy work is done in `topology/uniform_space/abstract_completion` which provides an abstract
+The heavy work is done in `topology/UniformSpace/AbstractCompletion` which provides an abstract
 caracterization of completions of uniform spaces, and isomorphisms between them. The only work left
 here is to prove the uniform space structure coming from the absolute value on ℚ (with values in ℚ,
 not referring to ℝ) coincides with the one coming from the metric space structure (which of course
