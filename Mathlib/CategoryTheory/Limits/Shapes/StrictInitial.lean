@@ -90,9 +90,11 @@ instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoC
 #align category_theory.limits.initial_mono_of_strict_initial_objects CategoryTheory.Limits.initial_mono_of_strict_initial_objects
 
 /-- If `I` is initial, then `X ⨯ I` is isomorphic to it. -/
-@[simps! Hom]
-noncomputable def mulIsInitial (X : C) [HasBinaryProduct X I] (hI : IsInitial I) : X ⨯ I ≅ I :=
-  @asIso _ prod.snd (hI.isIso_to _)
+@[simps! hom]
+noncomputable def mulIsInitial (X : C) [HasBinaryProduct X I] (hI : IsInitial I) : X ⨯ I ≅ I := by
+   have h: X ⨯ I ⟶ I := prod.snd
+   have := hI.isIso_to h
+   exact asIso h
 #align category_theory.limits.mul_is_initial CategoryTheory.Limits.mulIsInitial
 
 @[simp]
@@ -102,9 +104,11 @@ theorem mulIsInitial_inv (X : C) [HasBinaryProduct X I] (hI : IsInitial I) :
 #align category_theory.limits.mul_is_initial_inv CategoryTheory.Limits.mulIsInitial_inv
 
 /-- If `I` is initial, then `I ⨯ X` is isomorphic to it. -/
-@[simps! Hom]
-noncomputable def isInitialMul (X : C) [HasBinaryProduct I X] (hI : IsInitial I) : I ⨯ X ≅ I :=
-  @asIso _ prod.fst (hI.isIso_to _)
+@[simps! hom]
+noncomputable def isInitialMul (X : C) [HasBinaryProduct I X] (hI : IsInitial I) : I ⨯ X ≅ I := by
+   have h: I ⨯ X ⟶ I := prod.fst
+   have := hI.isIso_to h
+   exact asIso h
 #align category_theory.limits.is_initial_mul CategoryTheory.Limits.isInitialMul
 
 @[simp]
@@ -132,7 +136,7 @@ theorem initial.subsingleton_to {A : C} : Subsingleton (A ⟶ ⊥_ C) :=
 initial.
 This is the generalisation of the fact that `X × empty ≃ empty` for types (or `n * 0 = 0`).
 -/
-@[simps! Hom]
+@[simps! hom]
 noncomputable def mulInitial (X : C) [HasBinaryProduct X (⊥_ C)] : X ⨯ ⊥_ C ≅ ⊥_ C :=
   mulIsInitial _ initialIsInitial
 #align category_theory.limits.mul_initial CategoryTheory.Limits.mulInitial
@@ -146,7 +150,7 @@ theorem mulInitial_inv (X : C) [HasBinaryProduct X (⊥_ C)] : (mulInitial X).in
 initial.
 This is the generalisation of the fact that `empty × X ≃ empty` for types (or `0 * n = 0`).
 -/
-@[simps! Hom]
+@[simps! hom]
 noncomputable def initialMul (X : C) [HasBinaryProduct (⊥_ C) X] : (⊥_ C) ⨯ X ≅ ⊥_ C :=
   isInitialMul _ initialIsInitial
 #align category_theory.limits.initial_mul CategoryTheory.Limits.initialMul
