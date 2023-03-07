@@ -31,11 +31,13 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 
--- attribute [local dee] tactic.discrete_cases -- Porting note: no dee
+-- attribute [local tidy] tactic.discrete_cases -- Porting note: no tidy
 open Lean Elab Meta Tactic in 
--- Porting note: trying a macro 
-/-- A local tactic replacing the use of discrete cases in Lean 3 -/
-elab (name := discrete_empty_elim) "dee" : tactic => withMainContext do
+/- Porting note: adding a lightweight macro intended to serve the narrow use case of casing on 
+`Discrete PEmpty`. -/
+/-- A local tactic replacing the use of discrete cases on `PEmpty` in Lean 3.
+`dee` is short for `discrete_empty_elim`. -/
+scoped elab (name := discrete_empty_elim) "dee" : tactic => withMainContext do
   evalTactic (← `(tactic| iterate (try {constructor}; try {intro ⟨a⟩; cases a} <;> intro )))
 
 /-- Construct a cone for the empty diagram given an object. -/
@@ -44,9 +46,7 @@ def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
   { pt := X
     π := 
     { app := by dee
-      naturality := by dee
-    }
-  }
+      naturality := by dee } }
 #align category_theory.limits.as_empty_cone CategoryTheory.Limits.asEmptyCone
 
 /-- Construct a cocone for the empty diagram given an object. -/
@@ -55,9 +55,7 @@ def asEmptyCocone (X : C) : Cocone (Functor.empty.{0} C) :=
   { pt := X
     ι := 
     { app := by dee
-      naturality := by dee
-    }
-  }
+      naturality := by dee } }
 #align category_theory.limits.as_empty_cocone CategoryTheory.Limits.asEmptyCocone
 
 /-- `X` is terminal if the cone it induces on the empty diagram is limiting. -/
@@ -143,7 +141,7 @@ def IsInitial.ofIso {X Y : C} (hX : IsInitial X) (i : X ≅ Y) : IsInitial Y :=
 #align category_theory.limits.is_initial.of_iso CategoryTheory.Limits.IsInitial.ofIso
 
 /-- Give the morphism to a terminal object from any other. -/
-def IsTerminal.from {X : C} (t : IsTerminal X) (Y : C) : Y ⟶  X :=
+def IsTerminal.from {X : C} (t : IsTerminal X) (Y : C) : Y ⟶ X :=
   t.lift (asEmptyCone Y)
 #align category_theory.limits.is_terminal.from CategoryTheory.Limits.IsTerminal.from
 
@@ -278,8 +276,7 @@ theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C]
 /-- Being initial is independent of the empty diagram, its universe, and the cocone over it,
     as long as the cocone points are isomorphic. -/
 def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ : Cocone F₂)
-    (hi : c₁.pt ≅ c₂.pt) : IsColimit c₂
-    where
+    (hi : c₁.pt ≅ c₂.pt) : IsColimit c₂ where
   desc c := hi.inv ≫ hl.desc ⟨c.pt, by dee, by dee⟩
   fac _ j := j.as.elim
   uniq c f _ := by
@@ -292,8 +289,7 @@ def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ 
 /-- Replacing an empty cocone in `IsColimit` by another with the same cocone point
     is an equivalence. -/
 def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c₁.pt ≅ c₂.pt) :
-    IsColimit c₁ ≃ IsColimit c₂
-    where
+    IsColimit c₁ ≃ IsColimit c₂ where
   toFun hl := isColimitChangeEmptyCocone C hl c₂ h
   invFun hl := isColimitChangeEmptyCocone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton] 
@@ -432,32 +428,28 @@ instance initial.isSplitEpi_to {Y : C} [HasInitial C] (f : Y ⟶ ⊥_ C) : IsSpl
 #align category_theory.limits.initial.is_split_epi_to CategoryTheory.Limits.initial.isSplitEpi_to
 
 /-- An initial object is terminal in the opposite category. -/
-def terminalOpOfInitial {X : C} (t : IsInitial X) : IsTerminal (Opposite.op X)
-    where
+def terminalOpOfInitial {X : C} (t : IsInitial X) : IsTerminal (Opposite.op X) where
   lift s := (t.to s.pt.unop).op
   fac := by dee
   uniq s m _ := Quiver.Hom.unop_inj (t.hom_ext _ _)
 #align category_theory.limits.terminal_op_of_initial CategoryTheory.Limits.terminalOpOfInitial
 
 /-- An initial object in the opposite category is terminal in the original category. -/
-def terminalUnopOfInitial {X : Cᵒᵖ} (t : IsInitial X) : IsTerminal X.unop
-    where
+def terminalUnopOfInitial {X : Cᵒᵖ} (t : IsInitial X) : IsTerminal X.unop where
   lift s := (t.to (Opposite.op s.pt)).unop
   fac := by dee
   uniq s m _ := Quiver.Hom.op_inj (t.hom_ext _ _)
 #align category_theory.limits.terminal_unop_of_initial CategoryTheory.Limits.terminalUnopOfInitial
 
 /-- A terminal object is initial in the opposite category. -/
-def initialOpOfTerminal {X : C} (t : IsTerminal X) : IsInitial (Opposite.op X)
-    where
+def initialOpOfTerminal {X : C} (t : IsTerminal X) : IsInitial (Opposite.op X) where
   desc s := (t.from s.pt.unop).op
   fac := by dee
   uniq s m _ := Quiver.Hom.unop_inj (t.hom_ext _ _)
 #align category_theory.limits.initial_op_of_terminal CategoryTheory.Limits.initialOpOfTerminal
 
 /-- A terminal object in the opposite category is initial in the original category. -/
-def initialUnopOfTerminal {X : Cᵒᵖ} (t : IsTerminal X) : IsInitial X.unop
-    where
+def initialUnopOfTerminal {X : Cᵒᵖ} (t : IsTerminal X) : IsInitial X.unop where
   desc s := (t.from (Opposite.op s.pt)).unop
   fac := by dee
   uniq s m _ := Quiver.Hom.op_inj (t.hom_ext _ _)
@@ -517,8 +509,7 @@ instance {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
 def colimitConstInitial {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
-    colimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) ≅ ⊥_ C
-    where
+    colimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) ≅ ⊥_ C where
   hom :=
     colimit.desc ((CategoryTheory.Functor.const J).obj (⊥_ C))
       { pt := ⊥_ C
@@ -619,8 +610,7 @@ variable {J : Type u} [Category.{v} J]
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cone for `J`.
 In `limit_of_diagram_initial` we show it is a limit cone. -/
 @[simps]
-def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F
-    where
+def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
   pt := F.obj X
   π :=
     { app := fun j => F.map (tX.to j)
@@ -632,8 +622,7 @@ def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, show the cone
 `cone_of_diagram_initial` is a limit. -/
 def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
-    IsLimit (coneOfDiagramInitial tX F)
-    where
+    IsLimit (coneOfDiagramInitial tX F) where
   lift s := s.π.app X
   uniq s m w := by
     conv_lhs => dsimp  
@@ -669,8 +658,8 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `cone_of_diagram_terminal` is a limit. -/
 def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
-    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsLimit (coneOfDiagramTerminal hX F)
-    where lift S := S.π.app _
+    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsLimit (coneOfDiagramTerminal hX F) where 
+  lift S := S.π.app _
 #align category_theory.limits.limit_of_diagram_terminal CategoryTheory.Limits.limitOfDiagramTerminal
 
 -- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
@@ -719,8 +708,7 @@ provided that the morphisms in the diagram are isomorphisms.
 In `colimit_of_diagram_initial` we show it is a colimit cocone. -/
 @[simps]
 def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
-    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cocone F
-    where
+    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cocone F where
   pt := F.obj X
   ι :=
     { app := fun i => inv (F.map (hX.to _))
@@ -734,8 +722,8 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
 /-- From a functor `F : J ⥤ C`, given an initial object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `cocone_of_diagram_initial` is a colimit. -/
 def colimitOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
-    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsColimit (coconeOfDiagramInitial hX F)
-    where desc S := S.ι.app _
+    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsColimit (coconeOfDiagramInitial hX F) where 
+  desc S := S.ι.app _
 #align category_theory.limits.colimit_of_diagram_initial CategoryTheory.Limits.colimitOfDiagramInitial
 
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.

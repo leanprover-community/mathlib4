@@ -177,7 +177,7 @@ class CompatibleSMul [DistribMulAction R' N] where
 end
 
 /-- Note that this provides the default `compatible_smul R R M N` instance through
-`mul_action.is_scalar_tower.left`. -/
+`IsScalarTower.left`. -/
 instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTower R' R M]
     [DistribMulAction R' N] [IsScalarTower R' R N] : CompatibleSMul R R' M N :=
   ⟨fun r m n => by

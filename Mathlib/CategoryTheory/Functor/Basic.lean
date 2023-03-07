@@ -25,7 +25,7 @@ but in mathlib4 we should switch to this.)
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [category_theory universes].
+-- declare the `v`'s first; see note [CategoryTheory universes].
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 section

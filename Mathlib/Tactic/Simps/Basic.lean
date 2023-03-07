@@ -270,12 +270,16 @@ This command specifies custom names and custom projections for the simp attribut
   `initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)`.
 * See Note [custom simps projection] and the examples below for information how to declare custom
   projections.
-* For algebraic structures, we will automatically use the notation (like `Mul`) for the projections
-  if such an instance is available. [TODO: support heterogenous operations]
+* TODO in Lean 4: For algebraic structures, we will automatically use the notation (like `Mul`)
+  for the projections if such an instance is available.
+* By default, the projections to parent structures are not default projections,
+  but all the data-carrying fields are (including those in parent structures).
 * You can disable a projection by default by running
   `initialize_simps_projections Equiv (-invFun)`
   This will ensure that no simp lemmas are generated for this projection,
   unless this projection is explicitly specified by the user.
+* Conversely, you can enable a projection by default by running
+  `initialize_simps_projections Equiv (+toEquiv)`.
 * If you want the projection name added as a prefix in the generated lemma name, you can use
   `as_prefix fieldName`:
   `initialize_simps_projections Equiv (toFun → coe, as_prefix coe)`
@@ -285,52 +289,38 @@ This command specifies custom names and custom projections for the simp attribut
   name `coe_foo_snd_fst`.
   * Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
   to see the generated projections.
-* You can declare a new name for a projection that is the composite of multiple projections, e.g.
-  ```
-    structure A := (proj : ℕ)
-    structure B extends A
-    initialize_simps_projections? B (toA_proj → proj, -toA)
-  ```
-  You can also make your custom projection that is definitionally equal to a composite of
-  projections. In this case, notation classes are not automatically recognized, and should be
-  manually given by giving a custom projection.
-  This is especially useful when extending a structure
-  In the above example, it is desirable to add `-toA`, so that `@[simps]` doesn't automatically
-  apply the `B.toA` projection and then recursively the `A.proj` projection in the lemmas it
-  generates. If you want to get both the `foo_proj` and `foo_toA` simp lemmas, you can use
-  `@[simps, simps toA]`.
 * Running `initialize_simps_projections MyStruc` without arguments is not necessary, it has the
   same effect if you just add `@[simps]` to a declaration.
-* If you do anything to change the default projections, make sure to call either `@[simps]` or
-  `initialize_simps_projections` in the same file as the structure declaration. Otherwise, you might
-  have a file that imports the structure, but not your custom projections.
+* It is recommended to call `@[simps]` or `initialize_simps_projections` in the same file as the
+  structure declaration. Otherwise, the projections could be generated multiple times in different
+  files.
 
 Some common uses:
 * If you define a new homomorphism-like structure (like `MulHom`) you can just run
-  `initialize_simps_projections` after defining the `CoeFun` instance
+  `initialize_simps_projections` after defining the `FunLike` instance (or instance that implies
+  a `FunLike` instance).
   ```
-    instance {mM : Mul M} {mN : Mul N} : CoeFun (MulHom M N) := ...
+    instance {mM : Mul M} {mN : Mul N} : FunLike (MulHom M N) M N := ...
     initialize_simps_projections MulHom (toFun → apply)
   ```
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
   `initialize_simps_projections MulHom (toFun → coe, as_prefix coe)`
-  In this case you have to use `@[simps {fullyApplied := false}]` or equivalently `@[simps asFn]`
-  whenever you call `@[simps]`.
+  In this case you have to use `@[simps (config := {fullyApplied := false})]` or equivalently
+  `@[simps (config := .asFn)]` whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
   ```
     initialize_simps_projections MulHom (toFun → apply, toFun → coe, as_prefix coe, -coe)
     initialize_simps_projections MulHom (toFun → apply, toFun → coe, as_prefix coe, -apply)
   ```
-  In the first case, you can get both lemmas using `@[simps, simps coe asFn]` and in the second
-  case you can get both lemmas using `@[simps asFn, simps apply]`.
-* If your new homomorphism-like structure extends another structure (like `RelEmbedding`),
-  then you have to specify explicitly that you want to use a coercion
-  as a custom projection. For example
+  In the first case, you can get both lemmas using `@[simps, simps (config := .asFn) coe]` and in
+  the second case you can get both lemmas using `@[simps (config := .asFn), simps apply]`.
+* If you declare a new homomorphism-like structure (like `RelEmbedding`),
+  then `initialize_simps_projections` will automatically find any `FunLike` coercions
+  that will be used as the default projection for the `toFun` field.
   ```
-    def relEmbedding.Simps.apply (h : r ↪r s) : α → β := h
-    initialize_simps_projections relEmbedding (to_embedding_toFun → apply, -to_embedding)
+    initialize_simps_projections relEmbedding (toFun → apply)
   ```
 * If you have an isomorphism-like structure (like `Equiv`) you often want to define a custom
   projection for the inverse:
