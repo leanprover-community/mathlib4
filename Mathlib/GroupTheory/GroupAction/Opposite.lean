@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module group_theory.group_action.opposite
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit 4330aae21f538b862f8aead371cfb6ee556398f1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,30 +33,31 @@ Actions on the opposite type just act on the underlying type.
 namespace MulOpposite
 
 @[to_additive]
-instance (R : Type _) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ :=
+instance mulAction (R : Type _) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ :=
   { one_smul := fun x => unop_injective <| one_smul R (unop x)
     mul_smul := fun r₁ r₂ x => unop_injective <| mul_smul r₁ r₂ (unop x) }
 
-instance (R : Type _) [Monoid R] [AddMonoid α] [DistribMulAction R α] : DistribMulAction R αᵐᵒᵖ :=
+instance distribMulAction (R : Type _) [Monoid R] [AddMonoid α] [DistribMulAction R α] :
+    DistribMulAction R αᵐᵒᵖ :=
   { smul_add := fun r x₁ x₂ => unop_injective <| smul_add r (unop x₁) (unop x₂)
     smul_zero := fun r => unop_injective <| smul_zero r }
 
-instance (R : Type _) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
+instance mulDistribMulAction (R : Type _) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
     MulDistribMulAction R αᵐᵒᵖ :=
   { smul_mul := fun r x₁ x₂ => unop_injective <| smul_mul' r (unop x₂) (unop x₁)
     smul_one := fun r => unop_injective <| smul_one r }
 
 @[to_additive]
-instance {M N} [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
+instance isScalarTower {M N} [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower M N αᵐᵒᵖ :=
   ⟨fun _ _ _ => unop_injective <| smul_assoc _ _ _⟩
 
 @[to_additive]
-instance {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵐᵒᵖ :=
+instance smulCommClass {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵐᵒᵖ :=
   ⟨fun _ _ _ => unop_injective <| smul_comm _ _ _⟩
 
 @[to_additive]
-instance (R : Type _) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
+instance isCentralScalar (R : Type _) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
     IsCentralScalar R αᵐᵒᵖ :=
   ⟨fun _ _ => unop_injective <| op_smul_eq_smul _ _⟩
 
@@ -125,9 +126,11 @@ instance Semigroup.opposite_smulCommClass' [Semigroup α] : SMulCommClass α α�
 #align semigroup.opposite_smul_comm_class' Semigroup.opposite_smulCommClass'
 #align add_semigroup.opposite_vadd_comm_class' AddSemigroup.opposite_vaddCommClass'
 
+@[to_additive]
 instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α α :=
   ⟨fun _ _ => mul_comm _ _⟩
 #align comm_semigroup.is_central_scalar CommSemigroup.isCentralScalar
+#align add_comm_semigroup.is_central_scalar AddCommSemigroup.isCentralVAdd
 
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive "Like `AddMonoid.toAddAction`, but adds on the right."]
@@ -157,7 +160,7 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
 
 -- The above instance does not create an unwanted diamond, the two paths to
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
-example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulActionMulOpposite α αᵐᵒᵖ :=
+example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.mulAction α αᵐᵒᵖ :=
   rfl
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/

@@ -315,6 +315,8 @@ def prodZeroRing : R ≃+* R × S where
   left_inv x := rfl
   right_inv x := by cases x; simp
 #align ring_equiv.prod_zero_ring RingEquiv.prodZeroRing
+#align ring_equiv.prod_zero_ring_symm_apply RingEquiv.prodZeroRing_symm_apply
+#align ring_equiv.prod_zero_ring_apply RingEquiv.prodZeroRing_apply
 
 /-- A ring `R` is isomorphic to `S × R` when `S` is the zero ring -/
 @[simps]
@@ -326,6 +328,8 @@ def zeroRingProd : R ≃+* S × R where
   left_inv x := rfl
   right_inv x := by cases x; simp
 #align ring_equiv.zero_ring_prod RingEquiv.zeroRingProd
+#align ring_equiv.zero_ring_prod_symm_apply RingEquiv.zeroRingProd_symm_apply
+#align ring_equiv.zero_ring_prod_apply RingEquiv.zeroRingProd_apply
 
 end RingEquiv
 

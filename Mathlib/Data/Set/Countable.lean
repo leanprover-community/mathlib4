@@ -179,8 +179,7 @@ theorem exists_seq_cover_iff_countable {p : Set α → Prop} (h : ∃ s, p s) :
 
 theorem countable_of_injective_of_countable_image {s : Set α} {f : α → β} (hf : InjOn f s)
     (hs : (f '' s).Countable) : s.Countable :=
-  let ⟨g, hg⟩ := countable_iff_exists_injOn.1 hs
-  countable_iff_exists_injOn.2 ⟨g ∘ f, hg.comp hf (mapsTo_image _ _)⟩
+  (mapsTo_image _ _).countable_of_injOn hf hs
 #align set.countable_of_injective_of_countable_image Set.countable_of_injective_of_countable_image
 
 theorem countable_unionᵢ {t : ι → Set α} [Countable ι] (ht : ∀ i, (t i).Countable) :
@@ -220,6 +219,9 @@ theorem countable_union {s t : Set α} : (s ∪ t).Countable ↔ s.Countable ∧
 theorem Countable.union {s t : Set α} (hs : s.Countable) (ht : t.Countable) : (s ∪ t).Countable :=
   countable_union.2 ⟨hs, ht⟩
 #align set.countable.union Set.Countable.union
+
+theorem Countable.of_diff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
+  (h.union ht).mono (subset_diff_union _ _)
 
 @[simp]
 theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Countable := by
@@ -288,7 +290,7 @@ theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Co
 
 end Set
 
-theorem Finset.countable_to_set (s : Finset α) : Set.Countable (↑s : Set α) :=
+theorem Finset.countable_toSet (s : Finset α) : Set.Countable (↑s : Set α) :=
   s.finite_toSet.countable
-#align finset.countable_to_set Finset.countable_to_set
+#align finset.countable_to_set Finset.countable_toSet
 

@@ -34,7 +34,7 @@ identifier `W` in the root namespace.
 set_option linter.uppercaseLean3 false
 
 /--
-Given `β : α → Type*`, `WType β` is the type of finitely branching trees where nodes are labeled by
+Given `β : α → Type _`, `WType β` is the type of finitely branching trees where nodes are labeled by
 elements of `α` and the children of a node labeled `a` are indexed by elements of `β a`.
 -/
 inductive WType {α : Type _} (β : α → Type _)
@@ -82,6 +82,8 @@ def equivSigma : WType β ≃ Σa : α, β a → WType β
   left_inv := ofSigma_toSigma
   right_inv := toSigma_ofSigma
 #align W_type.equiv_sigma WType.equivSigma
+#align W_type.equiv_sigma_symm_apply WType.equivSigma_symm_apply
+#align W_type.equiv_sigma_apply WType.equivSigma_apply
 
 variable {β}
 

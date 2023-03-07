@@ -49,6 +49,7 @@ theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
 /-- Auxilary helper definiiton for `sublists'` -/
 def sublists'Aux (a : α) (r₁ r₂ : List (List α)) : List (List α) :=
   r₁.foldl (init := r₂) fun r l => r ++ [a :: l]
+#align list.sublists'_aux List.sublists'Aux
 
 theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = ((r₁.toArray).foldl (init := r₂.toArray)
@@ -117,6 +118,7 @@ theorem sublists_singleton (a : α) : sublists [a] = [[], [a]] :=
 /-- Auxilary helper function for `sublists` -/
 def sublistsAux (a : α) (r : List (List α)) : List (List α) :=
   r.foldl (init := []) fun r l => r ++ [l, a :: l]
+#align list.sublists_aux List.sublistsAux
 
 theorem sublistsAux_eq_array_foldl :
     sublistsAux = fun (a : α) (r : List (List α)) =>
@@ -395,7 +397,7 @@ alias nodup_sublists' ↔ nodup.of_sublists' nodup.sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (. ≠ .) l.sublists' := Pairwise.imp
-    (fun h => Lex.to_ne (by convert h; funext _ _; simp[swap, eq_comm])) h.sublists'
+    (fun h => Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 
 #align list.nodup_sublists_len List.nodup_sublistsLen

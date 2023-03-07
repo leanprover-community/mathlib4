@@ -115,7 +115,7 @@ theorem inf_neBot_iff {f : Ultrafilter α} {g : Filter α} : NeBot (↑f ⊓ g) 
 #align ultrafilter.inf_ne_bot_iff Ultrafilter.inf_neBot_iff
 
 theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑f) g ↔ ¬↑f ≤ g := by
-  rw [← inf_neBot_iff, neBot_iff, Ne.def, _root_.not_not, disjoint_iff]
+  rw [← inf_neBot_iff, neBot_iff, Ne.def, not_not, disjoint_iff]
 #align ultrafilter.disjoint_iff_not_le Ultrafilter.disjoint_iff_not_le
 
 @[simp]
@@ -340,9 +340,9 @@ def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
 #align ultrafilter.bind Ultrafilter.bind
 
-instance hasBind : Bind Ultrafilter :=
+instance instBind : Bind Ultrafilter :=
   ⟨@Ultrafilter.bind⟩
-#align ultrafilter.has_bind Ultrafilter.hasBind
+#align ultrafilter.has_bind Ultrafilter.instBind
 
 instance functor : Functor Ultrafilter where map := @Ultrafilter.map
 #align ultrafilter.functor Ultrafilter.functor

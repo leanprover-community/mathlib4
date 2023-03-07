@@ -232,3 +232,4 @@ def smulMonoidWithZeroHom {α β : Type _} [MonoidWithZero α] [MulZeroOneClass 
     [MulActionWithZero α β] [IsScalarTower α β β] [SMulCommClass α β β] : α × β →*₀ β :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom
+#align smul_monoid_with_zero_hom_apply smulMonoidWithZeroHom_apply

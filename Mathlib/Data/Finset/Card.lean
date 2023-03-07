@@ -18,7 +18,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 
 ## Main declarations
 
-* `Finset.card`: `s.card : ℕ` returns the cardinality of `s : finset α`.
+* `Finset.card`: `s.card : ℕ` returns the cardinality of `s : Finset α`.
 
 ### Induction principles
 
@@ -65,7 +65,7 @@ theorem card_le_of_subset : s ⊆ t → s.card ≤ t.card :=
   Multiset.card_le_of_le ∘ val_le_iff.mpr
 #align finset.card_le_of_subset Finset.card_le_of_subset
 
--- Porting note: no @[mono]
+@[mono]
 theorem card_mono : Monotone (@card α) := by apply card_le_of_subset
 #align finset.card_mono Finset.card_mono
 

@@ -485,7 +485,7 @@ def RelLast' (α : TypeVec n) {β : Type _} (p : β → β → Prop) :
   splitFun (repeatEq α) (uncurry p)
 #align typevec.rel_last' TypeVec.RelLast'
 
-/-- given `F : typevec.{u} (n+1) → Type u`, `curry F : Type u → typevec.{u} → Type u`,
+/-- given `F : TypeVec.{u} (n+1) → Type u`, `curry F : Type u → TypeVec.{u} → Type u`,
 i.e. its first argument can be fed in separately from the rest of the vector of arguments -/
 def Curry (F : TypeVec.{u} (n + 1) → Type _) (α : Type u) (β : TypeVec.{u} n) : Type _ :=
   F (β ::: α)

@@ -59,7 +59,7 @@ theorem le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i
   tendsto_pi
 #align filter.le_pi Filter.le_pi
 
--- porting note: restore @[mono]
+@[mono]
 theorem pi_mono (h : ∀ i, f₁ i ≤ f₂ i) : pi f₁ ≤ pi f₂ :=
   infᵢ_mono fun i => comap_mono <| h i
 #align filter.pi_mono Filter.pi_mono
@@ -132,7 +132,7 @@ theorem pi_inf_principal_univ_pi_eq_bot : pi f ⊓ 𝓟 (Set.pi univ s) = ⊥ �
 @[simp]
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
     pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
-  rw [← univ_pi_piecewise I, pi_inf_principal_univ_pi_eq_bot]
+  rw [← univ_pi_piecewise_univ I, pi_inf_principal_univ_pi_eq_bot]
   refine' exists_congr fun i => _
   by_cases hi : i ∈ I <;> simp [hi, NeBot.ne']
 #align filter.pi_inf_principal_pi_eq_bot Filter.pi_inf_principal_pi_eq_bot
@@ -250,7 +250,7 @@ theorem coprodᵢ_neBot [∀ i, Nonempty (α i)] [Nonempty ι] (f : ∀ i, Filte
   (H (Classical.arbitrary ι)).coprodᵢ
 #align filter.Coprod_ne_bot Filter.coprodᵢ_neBot
 
--- porting note: restore @[mono]
+@[mono]
 theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ ≤ Filter.coprodᵢ f₂ :=
   supᵢ_mono fun i => comap_mono (hf i)
 #align filter.Coprod_mono Filter.coprodᵢ_mono

@@ -164,9 +164,7 @@ theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀
 @[elab_as_elim]
 def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
     (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
-  | 0, x => by
-    convert h0
-    simp
+  | 0, x => by convert h0
   | n + 1, x => consCases (fun x₀ x ↦ h _ _ <| consInduction h0 h _) x
 #align fin.cons_induction Fin.consInductionₓ -- Porting note: universes
 
@@ -611,7 +609,7 @@ variable {α : Fin (n + 1) → Type u} {β : Type v}
 /- Porting note: Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
 automatic insertion and specifying that motive seems to work. -/
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
-`Fin.succAbove i j`, `j : fin n`. This version is elaborated as eliminator and works for
+`Fin.succAbove i j`, `j : Fin n`. This version is elaborated as eliminator and works for
 propositions, see also `Fin.insertNth` for a version without an `@[elab_as_elim]`
 attribute. -/
 @[elab_as_elim]
