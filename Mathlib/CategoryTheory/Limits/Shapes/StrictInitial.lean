@@ -85,8 +85,8 @@ theorem IsInitial.subsingleton_to (hI : IsInitial I) {A : C} : Subsingleton (A �
 #align category_theory.limits.is_initial.subsingleton_to CategoryTheory.Limits.IsInitial.subsingleton_to
 
 instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoClass C
-    where isInitial_mono_from := @fun _I _A hI =>
-    { right_cancellation := @fun _B _g _h _i => hI.strict_hom_ext _ _ }
+    where isInitial_mono_from := fun _ hI =>
+    { right_cancellation := fun _ _ _ => hI.strict_hom_ext _ _ }
 #align category_theory.limits.initial_mono_of_strict_initial_objects CategoryTheory.Limits.initial_mono_of_strict_initial_objects
 
 /-- If `I` is initial, then `X ⨯ I` is isomorphic to it. -/
@@ -164,8 +164,7 @@ end
 has strict initial objects. -/
 theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
     (h : ∀ (A) (f : A ⟶ ⊥_ C), IsIso f) : HasStrictInitialObjects C :=
-  {
-    out := @fun I A f hI =>
+  { out := @fun I A f hI =>
       haveI := h A (f ≫ hI.to _)
       ⟨⟨hI.to _ ≫ inv (f ≫ hI.to (⊥_ C)), by rw [← assoc, IsIso.hom_inv_id], hI.hom_ext _ _⟩⟩ }
 #align category_theory.limits.has_strict_initial_objects_of_initial_is_strict CategoryTheory.Limits.hasStrictInitialObjects_of_initial_is_strict
@@ -268,8 +267,7 @@ end
 has strict terminal objects. -/
 theorem hasStrictTerminalObjects_of_terminal_is_strict (I : C) (h : ∀ (A) (f : I ⟶ A), IsIso f) :
     HasStrictTerminalObjects C :=
-  {
-    out := @fun I' A f hI' =>
+  { out := @fun I' A f hI' =>
       haveI := h A (hI'.from _ ≫ f)
       ⟨⟨inv (hI'.from I ≫ f) ≫ hI'.from I, hI'.hom_ext _ _, by rw [assoc, IsIso.inv_hom_id]⟩⟩ }
 #align category_theory.limits.has_strict_terminal_objects_of_terminal_is_strict CategoryTheory.Limits.hasStrictTerminalObjects_of_terminal_is_strict
