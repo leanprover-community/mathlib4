@@ -820,14 +820,14 @@ protected theorem HasBasis.binfᵢ_mem [CompleteLattice β] {f : Set α → β} 
       infᵢ₂_le_of_le i hpi (hf hi)
 #align filter.has_basis.binfi_mem Filter.HasBasis.binfᵢ_mem
 
-protected theorem HasBasis.bInter_mem {f : Set α → Set β} (h : HasBasis l p s) (hf : Monotone f) :
+protected theorem HasBasis.binterᵢ_mem {f : Set α → Set β} (h : HasBasis l p s) (hf : Monotone f) :
     (⋂ t ∈ l, f t) = ⋂ (i) (_hi : p i), f (s i) :=
   h.binfᵢ_mem hf
-#align filter.has_basis.bInter_mem Filter.HasBasis.bInter_mem
+#align filter.has_basis.bInter_mem Filter.HasBasis.binterᵢ_mem
 
 theorem HasBasis.interₛ_sets (h : HasBasis l p s) : ⋂₀ l.sets = ⋂ (i) (_hi : p i), s i := by
   rw [interₛ_eq_binterᵢ]
-  exact h.bInter_mem monotone_id
+  exact h.binterᵢ_mem monotone_id
 #align filter.has_basis.sInter_sets Filter.HasBasis.interₛ_sets
 
 variable {ι'' : Type _} [Preorder ι''] (l) (s'' : ι'' → Set α)
@@ -964,7 +964,6 @@ theorem map_sigma_mk_comap {π : α → Type _} {π' : β → Type _} {f : α �
     map (Sigma.mk a) (comap (g a) l) = comap (Sigma.map f g) (map (Sigma.mk (f a)) l) := by
   refine' (((basis_sets _).comap _).map _).eq_of_same_basis _
   convert ((basis_sets l).map (Sigma.mk (f a))).comap (Sigma.map f g)
-  ext1 s
   apply image_sigmaMk_preimage_sigmaMap hf
 #align filter.map_sigma_mk_comap Filter.map_sigma_mk_comap
 

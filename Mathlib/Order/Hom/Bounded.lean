@@ -333,7 +333,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 
-instance : HasInf (TopHom α β) :=
+instance : Inf (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
 instance : SemilatticeInf (TopHom α β) :=
@@ -355,7 +355,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderTop β] (f g : TopHom α β)
 
-instance : HasSup (TopHom α β) :=
+instance : Sup (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
@@ -523,7 +523,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 
-instance : HasInf (BotHom α β) :=
+instance : Inf (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
@@ -545,7 +545,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderBot β] (f g : BotHom α β)
 
-instance : HasSup (BotHom α β) :=
+instance : Sup (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
@@ -573,6 +573,9 @@ end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
+-- Porting note: todo: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
+initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 
 namespace BoundedOrderHom
 
@@ -723,6 +726,8 @@ protected def dual :
   left_inv _ := TopHom.ext fun _ => rfl
   right_inv _ := BotHom.ext fun _ => rfl
 #align top_hom.dual TopHom.dual
+#align top_hom.dual_apply_apply TopHom.dual_apply_apply
+#align top_hom.dual_symm_apply_apply TopHom.dual_symm_apply_apply
 
 @[simp]
 theorem dual_id : TopHom.dual (TopHom.id α) = BotHom.id _ :=
@@ -761,6 +766,8 @@ protected def dual :
   left_inv _ := BotHom.ext fun _ => rfl
   right_inv _ := TopHom.ext fun _ => rfl
 #align bot_hom.dual BotHom.dual
+#align bot_hom.dual_apply_apply BotHom.dual_apply_apply
+#align bot_hom.dual_symm_apply_apply BotHom.dual_symm_apply_apply
 
 @[simp]
 theorem dual_id : BotHom.dual (BotHom.id α) = TopHom.id _ :=
@@ -802,6 +809,8 @@ protected def dual :
   left_inv _ := ext fun _ => rfl
   right_inv _ := ext fun _ => rfl
 #align bounded_order_hom.dual BoundedOrderHom.dual
+#align bounded_order_hom.dual_apply_to_order_hom BoundedOrderHom.dual_apply_toOrderHom
+#align bounded_order_hom.dual_symm_apply_to_order_hom BoundedOrderHom.dual_symm_apply_toOrderHom
 
 @[simp]
 theorem dual_id : BoundedOrderHom.dual (BoundedOrderHom.id α) = BoundedOrderHom.id _ :=

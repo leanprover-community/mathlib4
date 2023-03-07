@@ -23,7 +23,7 @@ multiplicative and additive structures on the values being combined.
 
 universe u v w
 
--- open BigOperators -- Porting note: commented out locale
+open BigOperators
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
@@ -100,25 +100,25 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
   · rw [pi_empty, sum_singleton]
     rfl
   · have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
-      Disjoint (image (pi.cons s a x) (pi s t)) (image (pi.cons s a y) (pi s t)) := by
+      Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
-      have : pi.cons s a x p₂ a (mem_insert_self _ _) = pi.cons s a y p₃ a (mem_insert_self _ _) :=
+      have : Pi.cons s a x p₂ a (mem_insert_self _ _) = Pi.cons s a y p₃ a (mem_insert_self _ _) :=
         by rw [eq₂, eq₃, eq]
-      rw [pi.cons_same, pi.cons_same] at this
+      rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_bunionᵢ h₁]
     refine' sum_congr rfl fun b _ => _
-    have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, pi.cons s a b p₁ = pi.cons s a b p₂ → p₁ = p₂ :=
+    have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, Pi.cons s a b p₁ = Pi.cons s a b p₂ → p₁ = p₂ :=
       fun p₁ _ p₂ _ eq => pi_cons_injective ha eq
     rw [sum_image h₂, mul_sum]
     refine' sum_congr rfl fun g _ => _
     rw [attach_insert, prod_insert, prod_image]
-    · simp only [pi.cons_same]
+    · simp only [Pi.cons_same]
       congr with ⟨v, hv⟩
       congr
-      exact (pi.cons_ne (by rintro rfl; exact ha hv)).symm
+      exact (Pi.cons_ne (by rintro rfl; exact ha hv)).symm
     · exact fun _ _ _ _ => Subtype.eq ∘ Subtype.mk.inj
     · simpa only [mem_image, mem_attach, Subtype.mk.injEq, true_and,
         Subtype.exists, exists_prop, exists_eq_right] using ha
@@ -257,6 +257,7 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
     rw [← H₃₂]
     exact ne_insert_of_not_mem _ _ (not_mem_of_mem_powerset_of_not_mem h₁ h)
 #align finset.prod_powerset_insert Finset.prod_powerset_insert
+#align finset.sum_powerset_insert Finset.sum_powerset_insert
 
 /-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
 `card s = k`, for `k = 1, ..., card s`. -/
@@ -267,6 +268,7 @@ theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
     (∏ t in powerset s, f t) = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
   rw [powerset_card_disjUnionᵢ, prod_disjUnionᵢ]
 #align finset.prod_powerset Finset.prod_powerset
+#align finset.sum_powerset Finset.sum_powerset
 
 theorem sum_range_succ_mul_sum_range_succ [NonUnitalNonAssocSemiring β] (n k : ℕ) (f g : ℕ → β) :
     ((∑ i in range (n + 1), f i) * ∑ i in range (k + 1), g i) =

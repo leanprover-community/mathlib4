@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module data.set.pointwise.list_of_fn
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -55,10 +55,11 @@ theorem mem_list_prod {l : List (Set α)} {a : α} :
 #align set.mem_list_prod Set.mem_list_prod
 #align set.mem_list_sum Set.mem_list_sum
 
-@[to_additive mem_mul]
+@[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i ↦ (f i : α)).prod = a := by
   rw [← mem_prod_list_ofFn, List.ofFn_const, List.prod_replicate]
 #align set.mem_pow Set.mem_pow
+#align set.mem_nsmul Set.mem_nsmul
 
 end Set

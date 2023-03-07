@@ -63,6 +63,8 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 #align module Module
+#align module.ext Module.ext
+#align module.ext_iff Module.ext_iff
 
 section AddCommMonoid
 
@@ -174,7 +176,7 @@ variable (R)
 /-- `(•)` as an `AddMonoidHom`.
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
-@[simps apply_apply]
+@[simps! apply_apply]
 def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
     -- Porting note: the two `show`s weren't needed in mathlib3.
@@ -185,6 +187,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     map_add' := fun x y =>
       AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
 #align module.to_add_monoid_End Module.toAddMonoidEnd
+#align module.to_add_monoid_End_apply_apply Module.toAddMonoidEnd_apply_apply
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
 use of `AddMonoidHom.flip`. -/
@@ -410,11 +413,11 @@ def AddCommMonoid.natModule.unique : Unique (Module ℕ M) where
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 #align add_comm_monoid.nat_module.unique AddCommMonoid.natModule.unique
 
-instance AddCommMonoid.nat_is_scalar_tower : IsScalarTower ℕ R M where
+instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y :=
     Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
     fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
-#align add_comm_monoid.nat_is_scalar_tower AddCommMonoid.nat_is_scalar_tower
+#align add_comm_monoid.nat_is_scalar_tower AddCommMonoid.nat_isScalarTower
 
 end AddCommMonoid
 
@@ -735,7 +738,7 @@ section GroupWithZero
 variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
 
 -- see note [lower instance priority]
-/-- This instance applies to `DivisionSemiring`s, in particular `nnreal` and `nnrat`. -/
+/-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
 instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
   ⟨fun {_ _} h => or_iff_not_imp_left.2 fun hc => (smul_eq_zero_iff_eq' hc).1 h⟩
 #align group_with_zero.to_no_zero_smul_divisors GroupWithZero.toNoZeroSMulDivisors

@@ -706,24 +706,24 @@ def toMultiset (s : Cycle α) : Multiset α :=
 #align cycle.to_multiset Cycle.toMultiset
 
 @[simp]
-theorem coe_to_multiset (l : List α) : (l : Cycle α).toMultiset = l :=
+theorem coe_toMultiset (l : List α) : (l : Cycle α).toMultiset = l :=
   rfl
-#align cycle.coe_to_multiset Cycle.coe_to_multiset
+#align cycle.coe_to_multiset Cycle.coe_toMultiset
 
 @[simp]
-theorem nil_to_multiset : nil.toMultiset = (0 : Multiset α) :=
+theorem nil_toMultiset : nil.toMultiset = (0 : Multiset α) :=
   rfl
-#align cycle.nil_to_multiset Cycle.nil_to_multiset
+#align cycle.nil_to_multiset Cycle.nil_toMultiset
 
 @[simp]
-theorem card_to_multiset (s : Cycle α) : Multiset.card s.toMultiset = s.length :=
+theorem card_toMultiset (s : Cycle α) : Multiset.card s.toMultiset = s.length :=
   Quotient.inductionOn' s (by simp)
-#align cycle.card_to_multiset Cycle.card_to_multiset
+#align cycle.card_to_multiset Cycle.card_toMultiset
 
 @[simp]
-theorem to_multiset_eq_nil {s : Cycle α} : s.toMultiset = 0 ↔ s = Cycle.nil :=
+theorem toMultiset_eq_nil {s : Cycle α} : s.toMultiset = 0 ↔ s = Cycle.nil :=
   Quotient.inductionOn' s (by simp)
-#align cycle.to_multiset_eq_nil Cycle.to_multiset_eq_nil
+#align cycle.to_multiset_eq_nil Cycle.toMultiset_eq_nil
 
 /-- The lift of `list.map`. -/
 def map {β : Type _} (f : α → β) : Cycle α → Cycle β :=
@@ -816,19 +816,19 @@ theorem toFinset_toMultiset (s : Cycle α) : s.toMultiset.toFinset = s.toFinset 
 #align cycle.to_finset_to_multiset Cycle.toFinset_toMultiset
 
 @[simp]
-theorem coe_to_finset (l : List α) : (l : Cycle α).toFinset = l.toFinset :=
+theorem coe_toFinset (l : List α) : (l : Cycle α).toFinset = l.toFinset :=
   rfl
-#align cycle.coe_to_finset Cycle.coe_to_finset
+#align cycle.coe_to_finset Cycle.coe_toFinset
 
 @[simp]
-theorem nil_to_finset : (@nil α).toFinset = ∅ :=
+theorem nil_toFinset : (@nil α).toFinset = ∅ :=
   rfl
-#align cycle.nil_to_finset Cycle.nil_to_finset
+#align cycle.nil_to_finset Cycle.nil_toFinset
 
 @[simp]
-theorem to_finset_eq_nil {s : Cycle α} : s.toFinset = ∅ ↔ s = Cycle.nil :=
+theorem toFinset_eq_nil {s : Cycle α} : s.toFinset = ∅ ↔ s = Cycle.nil :=
   Quotient.inductionOn' s (by simp)
-#align cycle.to_finset_eq_nil Cycle.to_finset_eq_nil
+#align cycle.to_finset_eq_nil Cycle.toFinset_eq_nil
 
 /-- Given a `s : Cycle α` such that `Nodup s`, retrieve the next element after `x ∈ s`. -/
 nonrec def next : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), α := fun s =>

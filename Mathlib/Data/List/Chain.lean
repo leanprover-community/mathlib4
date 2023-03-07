@@ -31,6 +31,7 @@ namespace List
 variable {α : Type u} {β : Type v} {R r : α → α → Prop} {l l₁ l₂ : List α} {a b : α}
 
 mk_iff_of_inductive_prop List.Chain List.chain_iff
+#align list.chain_iff List.chain_iff
 
 --Porting note: attribute in Lean3, but not in Lean4 Std so added here instead
 attribute [simp] Chain.nil
@@ -401,6 +402,19 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
   h₁.append h₂.right_of_append <| by
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 #align list.chain'.append_overlap List.Chain'.append_overlap
+
+-- porting note: new
+lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
+  (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
+    L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
+| [], _ => by simp
+| [l], _ => by simp [join]
+| (l₁ :: l₂ :: L), hL => by
+    rw [mem_cons, not_or, ← Ne.def] at hL
+    rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
+    rw [mem_cons, not_or, ← Ne.def] at hL
+    simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
+    exact Iff.rfl.and (Iff.rfl.and $ Iff.rfl.and and_comm)
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is a `r`-chain
 starting from `a` and ending on `b`.

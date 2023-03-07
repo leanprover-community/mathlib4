@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module dynamics.fixed_points.basic
-! leanprover-community/mathlib commit 792a2a264169d64986541c6f8f7e3bbb6acb6295
+! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

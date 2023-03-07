@@ -114,6 +114,10 @@ class MulAction (α : Type _) (β : Type _) [Monoid α] extends SMul α β where
   /-- Associativity of `•` and `*` -/
   mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
 #align mul_action MulAction
+#align mul_action.ext MulAction.ext
+#align add_action.ext_iff AddAction.ext_iff
+#align mul_action.ext_iff MulAction.ext_iff
+#align add_action.ext AddAction.ext
 
 /-!
 ### (Pre)transitive action
@@ -271,7 +275,7 @@ class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop wher
 /-- A typeclass indicating that the right (aka `MulOpposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `•`. -/
-@[to_additive IsCentralVAdd] -- TODO auto-translating
+@[to_additive]
 class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop where
   /-- The right and left actions of `M` on `α` are equal. -/
   op_smul_eq_smul : ∀ (m : M) (a : α), MulOpposite.op m • a = m • a
@@ -337,8 +341,7 @@ variable (α)
 
 See note [reducible non-instances]. Since this is reducible, we make sure to go via
 `SMul.comp.smul` to prevent typeclass inference unfolding too far. -/
-@[reducible,
-  to_additive
+@[to_additive (attr := reducible)
       "An additive action of `M` on `α` and a function `N → M` induces
        an additive action of `N` on `α` "]
 def comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
@@ -498,7 +501,7 @@ variable {M}
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
-"Pullback an additive action along an injective map respecting `+ᵥ`."]
+    "Pullback an additive action along an injective map respecting `+ᵥ`."]
 protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -511,7 +514,7 @@ protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Inj
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
-"Pushforward an additive action along a surjective map respecting `+ᵥ`."]
+    "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
 protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -529,9 +532,8 @@ protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Su
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
-@[reducible,
-  to_additive
-      "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
+@[to_additive (attr := reducible)
+    "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
 def Function.Surjective.mulActionLeft {R S M : Type _} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
@@ -669,10 +671,9 @@ theorem SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
 
 /-- If the multiplicative action of `M` on `N` is compatible with multiplication on `N`, then
 `fun x => x • 1` is a monoid homomorphism from `M` to `N`. -/
-@[to_additive
-      "If the additive action of `M` on `N` is compatible with addition on `N`, then
-      `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`.",
-  simps]
+@[to_additive (attr := simps)
+    "If the additive action of `M` on `N` is compatible with addition on `N`, then
+    `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
 def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N] :
     M →* N where
   toFun x := x • (1 : N)
@@ -680,6 +681,8 @@ def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N]
   map_mul' x y := by rw [smul_one_mul, smul_smul]
 #align smul_one_hom smulOneHom
 #align vadd_zero_hom vaddZeroHom
+#align smul_one_hom_apply smulOneHom_apply
+#align vadd_zero_hom_apply vaddZeroHom_apply
 
 end CompatibleScalar
 
@@ -750,6 +753,7 @@ def SMulZeroClass.toZeroHom (x : M) :
   toFun := (· • ·) x
   map_zero' := smul_zero x
 #align smul_zero_class.to_zero_hom SMulZeroClass.toZeroHom
+#align smul_zero_class.to_zero_hom_apply SMulZeroClass.toZeroHom_apply
 
 end smul_zero
 
@@ -762,6 +766,8 @@ class DistribSMul (M A : Type _) [AddZeroClass A] extends SMulZeroClass M A wher
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 #align distrib_smul DistribSMul
+#align distrib_smul.ext DistribSMul.ext
+#align distrib_smul.ext_iff DistribSMul.ext_iff
 
 section DistribSMul
 
@@ -825,6 +831,7 @@ def DistribSMul.compFun (f : N → M) : DistribSMul N A :=
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
   { SMulZeroClass.toZeroHom A x with toFun := (· • ·) x, map_add' := smul_add x }
 #align distrib_smul.to_add_monoid_hom DistribSMul.toAddMonoidHom
+#align distrib_smul.to_add_monoid_hom_apply DistribSMul.toAddMonoidHom_apply
 
 end DistribSMul
 
@@ -836,6 +843,8 @@ class DistribMulAction (M A : Type _) [Monoid M] [AddMonoid A] extends MulAction
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 #align distrib_mul_action DistribMulAction
+#align distrib_mul_action.ext DistribMulAction.ext
+#align distrib_mul_action.ext_iff DistribMulAction.ext_iff
 
 section
 
@@ -894,10 +903,11 @@ def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
 #align distrib_mul_action.comp_hom DistribMulAction.compHom
 
 /-- Each element of the monoid defines a additive monoid homomorphism. -/
-@[simps]
+@[simps!]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x
 #align distrib_mul_action.to_add_monoid_hom DistribMulAction.toAddMonoidHom
+#align distrib_mul_action.to_add_monoid_hom_apply DistribMulAction.toAddMonoidHom_apply
 
 variable (M)
 
@@ -909,6 +919,7 @@ def DistribMulAction.toAddMonoidEnd :
   map_one' := AddMonoidHom.ext <| one_smul M
   map_mul' x y := AddMonoidHom.ext <| mul_smul x y
 #align distrib_mul_action.to_add_monoid_End DistribMulAction.toAddMonoidEnd
+#align distrib_mul_action.to_add_monoid_End_apply DistribMulAction.toAddMonoidEnd_apply
 
 instance AddMonoid.nat_smulCommClass :
     SMulCommClass ℕ M
@@ -956,6 +967,8 @@ class MulDistribMulAction (M : Type _) (A : Type _) [Monoid M] [Monoid A] extend
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : A) = 1
 #align mul_distrib_mul_action MulDistribMulAction
+#align mul_distrib_mul_action.ext MulDistribMulAction.ext
+#align mul_distrib_mul_action.ext_iff MulDistribMulAction.ext_iff
 
 export MulDistribMulAction (smul_one)
 
@@ -1032,6 +1045,7 @@ def MulDistribMulAction.toMonoidEnd :
   map_one' := MonoidHom.ext <| one_smul M
   map_mul' x y := MonoidHom.ext <| mul_smul x y
 #align mul_distrib_mul_action.to_monoid_End MulDistribMulAction.toMonoidEnd
+#align mul_distrib_mul_action.to_monoid_End_apply MulDistribMulAction.toMonoidEnd_apply
 
 end
 

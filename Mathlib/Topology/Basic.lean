@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
+! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Algebra.Support
 import Mathlib.Order.Filter.Lift
+import Mathlib.Tactic.Continuity
 
 /-!
 # Basic theory of topological spaces.
@@ -66,7 +67,7 @@ universe u v w
 
 
 /-- A topology on `α`. -/
-structure TopologicalSpace (α : Type u) where
+class TopologicalSpace (α : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set α → Prop
   /-- The set representing the whole space is an open set. Use `isOpen_univ` in the root namespace
@@ -78,8 +79,6 @@ structure TopologicalSpace (α : Type u) where
   instead. -/
   protected isOpen_unionₛ : ∀ s, (∀ t ∈ s, IsOpen t) → IsOpen (⋃₀ s)
 #align topological_space TopologicalSpace
-
-attribute [class] TopologicalSpace
 
 /-- A constructor for topologies by specifying the closed sets,
 and showing that they satisfy the appropriate conditions. -/
@@ -98,8 +97,21 @@ section TopologicalSpace
 
 variable {α : Type u} {β : Type v} {ι : Sort w} {a : α} {s s₁ s₂ t : Set α} {p p₁ p₂ : α → Prop}
 
+/-- `IsOpen s` means that `s` is open in the ambient topological space on `α` -/
+def IsOpen [TopologicalSpace α] : Set α → Prop := TopologicalSpace.IsOpen
+#align is_open IsOpen
+
+set_option quotPrecheck false in
+/-- Notation for `IsOpen` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
+
+open Topology
+
+lemma isOpen_mk {p h₁ h₂ h₃} {s : Set α} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
+#align is_open_mk isOpen_mk
+
 @[ext]
-theorem topologicalSpace_eq : ∀ {f g : TopologicalSpace α}, f.IsOpen = g.IsOpen → f = g
+theorem topologicalSpace_eq : ∀ {f g : TopologicalSpace α}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 #align topological_space_eq topologicalSpace_eq
 
@@ -107,30 +119,25 @@ section
 
 variable [TopologicalSpace α]
 
-/-- `IsOpen s` means that `s` is open in the ambient topological space on `α` -/
-def IsOpen (s : Set α) : Prop :=
-  TopologicalSpace.IsOpen ‹_› s
-#align is_open IsOpen
-
-@[simp] theorem isOpen_univ : IsOpen (univ : Set α) := TopologicalSpace.isOpen_univ _
+@[simp] theorem isOpen_univ : IsOpen (univ : Set α) := TopologicalSpace.isOpen_univ
 #align is_open_univ isOpen_univ
 
 theorem IsOpen.inter (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ ∩ s₂) :=
-  TopologicalSpace.isOpen_inter _ s₁ s₂ h₁ h₂
+  TopologicalSpace.isOpen_inter s₁ s₂ h₁ h₂
 #align is_open.inter IsOpen.inter
 
 theorem isOpen_unionₛ {s : Set (Set α)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (⋃₀ s) :=
-  TopologicalSpace.isOpen_unionₛ _ s h
+  TopologicalSpace.isOpen_unionₛ s h
 #align is_open_sUnion isOpen_unionₛ
 
 end
 
 theorem topologicalSpace_eq_iff {t t' : TopologicalSpace α} :
-    t = t' ↔ ∀ s, @IsOpen α t s ↔ @IsOpen α t' s :=
+    t = t' ↔ ∀ s, IsOpen[t] s ↔ IsOpen[t'] s :=
   ⟨fun h s => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
 #align topological_space_eq_iff topologicalSpace_eq_iff
 
-theorem isOpen_fold {s : Set α} {t : TopologicalSpace α} : t.IsOpen s = @IsOpen α t s :=
+theorem isOpen_fold {s : Set α} {t : TopologicalSpace α} : t.IsOpen s = IsOpen[t] s :=
   rfl
 #align is_open_fold isOpen_fold
 
@@ -191,6 +198,10 @@ class IsClosed (s : Set α) : Prop where
   /-- The complement of a closed set is an open set. -/
   isOpen_compl : IsOpen (sᶜ)
 #align is_closed IsClosed
+
+set_option quotPrecheck false in
+/-- Notation for `IsClosed` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
 @[simp] theorem isOpen_compl_iff {s : Set α} : IsOpen (sᶜ) ↔ IsClosed s :=
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
@@ -319,7 +330,7 @@ theorem subset_interior_iff {s t : Set α} : t ⊆ interior s ↔ ∃ U, IsOpen 
     htU.trans (interior_maximal hUs hU)⟩
 #align subset_interior_iff subset_interior_iff
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem interior_mono {s t : Set α} (h : s ⊆ t) : interior s ⊆ interior t :=
   interior_maximal (Subset.trans interior_subset h) isOpen_interior
 #align interior_mono interior_mono
@@ -456,7 +467,7 @@ theorem IsClosed.mem_iff_closure_subset {s : Set α} (hs : IsClosed s) {x : α} 
   (hs.closure_subset_iff.trans Set.singleton_subset_iff).symm
 #align is_closed.mem_iff_closure_subset IsClosed.mem_iff_closure_subset
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem closure_mono {s t : Set α} (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_minimal (Subset.trans h subset_closure) isClosed_closure
 #align closure_mono closure_mono
@@ -666,7 +677,7 @@ theorem Dense.nonempty [h : Nonempty α] {s : Set α} (hs : Dense s) : s.Nonempt
   hs.nonempty_iff.2 h
 #align dense.nonempty Dense.nonempty
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem Dense.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
 #align dense.mono Dense.mono
@@ -852,8 +863,6 @@ scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
 
-open Topology
-
 theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_hs : IsOpen s) (_ha : a ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (a ∈ _), infᵢ_and]
 #align nhds_def' nhds_def'
@@ -936,8 +945,7 @@ theorem IsOpen.eventually_mem {a : α} {s : Set α} (hs : IsOpen s) (ha : a ∈ 
 for a variant using open sets around `a` instead. -/
 theorem nhds_basis_opens' (a : α) :
     (𝓝 a).HasBasis (fun s : Set α => s ∈ 𝓝 a ∧ IsOpen s) fun x => x := by
-  convert nhds_basis_opens a
-  ext s
+  convert nhds_basis_opens a using 2
   exact and_congr_left_iff.2 IsOpen.mem_nhds_iff
 #align nhds_basis_opens' nhds_basis_opens'
 
@@ -997,10 +1005,10 @@ theorem Filter.EventuallyEq.eq_of_nhds {f g : α → β} {a : α} (h : f =ᶠ[�
 #align filter.eventually_eq.eq_of_nhds Filter.EventuallyEq.eq_of_nhds
 
 @[simp]
-theorem eventually_eventuallyLe_nhds [LE β] {f g : α → β} {a : α} :
+theorem eventually_eventuallyLE_nhds [LE β] {f g : α → β} {a : α} :
     (∀ᶠ y in 𝓝 a, f ≤ᶠ[𝓝 y] g) ↔ f ≤ᶠ[𝓝 a] g :=
   eventually_eventually_nhds
-#align eventually_eventually_le_nhds eventually_eventuallyLe_nhds
+#align eventually_eventually_le_nhds eventually_eventuallyLE_nhds
 
 /-- If two functions are equal in a neighbourhood of `a`, then for `y` sufficiently close
 to `a` these functions are equal in a neighbourhood of `y`. -/
@@ -1011,10 +1019,10 @@ theorem Filter.EventuallyEq.eventuallyEq_nhds {f g : α → β} {a : α} (h : f 
 
 /-- If `f x ≤ g x` in a neighbourhood of `a`, then for `y` sufficiently close to `a` we have
 `f x ≤ g x` in a neighbourhood of `y`. -/
-theorem Filter.EventuallyLe.eventuallyLe_nhds [LE β] {f g : α → β} {a : α} (h : f ≤ᶠ[𝓝 a] g) :
+theorem Filter.EventuallyLE.eventuallyLE_nhds [LE β] {f g : α → β} {a : α} (h : f ≤ᶠ[𝓝 a] g) :
     ∀ᶠ y in 𝓝 a, f ≤ᶠ[𝓝 y] g :=
   h.eventually_nhds
-#align filter.eventually_le.eventually_le_nhds Filter.EventuallyLe.eventuallyLe_nhds
+#align filter.eventually_le.eventually_le_nhds Filter.EventuallyLE.eventuallyLE_nhds
 
 theorem all_mem_nhds (x : α) (P : Set α → Prop) (hP : ∀ s t, s ⊆ t → P s → P t) :
     (∀ s ∈ 𝓝 x, P s) ↔ ∀ s, IsOpen s → x ∈ s → P s :=
@@ -1098,6 +1106,10 @@ theorem clusterPt_iff {x : α} {F : Filter α} :
     ClusterPt x F ↔ ∀ ⦃U : Set α⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
   inf_neBot_iff
 #align cluster_pt_iff clusterPt_iff
+
+theorem clusterPt_iff_not_disjoint {x : α} {F : Filter α} :
+    ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
+  rw [disjoint_iff, ClusterPt, neBot_iff]
 
 /-- `x` is a cluster point of a set `s` if every neighbourhood of `x` meets `s` on a nonempty
 set. See also `mem_closure_iff_clusterPt`. -/
@@ -1558,16 +1570,22 @@ open TopologicalSpace
 structure Continuous (f : α → β) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
   instead. -/
-  is_open_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
+  isOpen_preimage : ∀ s, IsOpen s → IsOpen (f ⁻¹' s)
 #align continuous Continuous
 
-theorem continuous_def {f : α → β} : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
-  ⟨fun hf s hs => hf.is_open_preimage s hs, fun h => ⟨h⟩⟩
+set_option quotPrecheck false in
+/-- Notation for `Continuous` with respect to a non-standard topologies. -/
+scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
+  @Continuous _ _ t₁ t₂
+
+theorem continuous_def {_ : TopologicalSpace α} {_ : TopologicalSpace β} {f : α → β} :
+    Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
+  ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
 
 theorem IsOpen.preimage {f : α → β} (hf : Continuous f) {s : Set β} (h : IsOpen s) :
     IsOpen (f ⁻¹' s) :=
-  hf.is_open_preimage s h
+  hf.isOpen_preimage s h
 #align is_open.preimage IsOpen.preimage
 
 theorem Continuous.congr {f g : α → β} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g := by
@@ -1622,14 +1640,24 @@ theorem preimage_interior_subset_interior_preimage {f : α → β} {s : Set β} 
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
 #align preimage_interior_subset_interior_preimage preimage_interior_subset_interior_preimage
 
+@[continuity]
 theorem continuous_id : Continuous (id : α → α) :=
   continuous_def.2 fun _ => id
 #align continuous_id continuous_id
+
+-- This is needed due to reducibility issues with the `continuity` tactic.
+@[continuity]
+theorem continuous_id' : Continuous (fun (x : α) => x) := continuous_id
 
 theorem Continuous.comp {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
     Continuous (g ∘ f) :=
   continuous_def.2 fun _ h => (h.preimage hg).preimage hf
 #align continuous.comp Continuous.comp
+
+-- This is needed due to reducibility issues with the `continuity` tactic.
+@[continuity]
+theorem Continuous.comp' {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
+    Continuous (fun x => g (f x)) := hg.comp hf
 
 theorem Continuous.iterate {f : α → α} (h : Continuous f) (n : ℕ) : Continuous (f^[n]) :=
   Nat.recOn n continuous_id fun _ ihn => ihn.comp h
@@ -1665,6 +1693,7 @@ theorem continuousAt_const {x : α} {b : β} : ContinuousAt (fun _ : α => b) x 
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
+@[continuity]
 theorem continuous_const {b : β} : Continuous fun _ : α => b :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const
@@ -1737,6 +1766,13 @@ theorem image_closure_subset_closure_image {f : α → β} {s : Set α} (h : Con
     f '' closure s ⊆ closure (f '' s) :=
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
+
+-- porting note: new lemma
+theorem closure_image_closure {f : α → β} {s : Set α} (h : Continuous f) :
+    closure (f '' closure s) = closure (f '' s) :=
+  Subset.antisymm
+    (closure_minimal (image_closure_subset_closure_image h) isClosed_closure)
+    (closure_mono <| image_subset _ subset_closure)
 
 theorem closure_subset_preimage_closure_image {f : α → β} {s : Set α} (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) := by

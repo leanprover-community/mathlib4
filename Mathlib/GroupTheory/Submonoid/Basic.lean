@@ -6,7 +6,7 @@ Amelia Livingston, Yury Kudryashov
 Ported by: Anatole Dedecker
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -101,6 +101,7 @@ end
 
 /-- A submonoid of a monoid `M` can be considered as a subsemigroup of that monoid. -/
 add_decl_doc Submonoid.toSubsemigroup
+#align submonoid.to_subsemigroup Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
@@ -122,6 +123,7 @@ end
 /-- An additive submonoid of an additive monoid `M` can be considered as an
 additive subsemigroup of that additive monoid. -/
 add_decl_doc AddSubmonoid.toAddSubsemigroup
+#align add_submonoid.to_add_subsemigroup AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
@@ -131,7 +133,7 @@ class AddSubmonoidClass (S : Type _) (M : Type _) [AddZeroClass M] [SetLike S M]
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive nsmul_mem]
+@[to_additive]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
@@ -165,9 +167,9 @@ def Simps.coe (S : Submonoid M) : Set M :=
 /-- See Note [custom simps projection] -/
 add_decl_doc AddSubmonoid.Simps.coe
 
-initialize_simps_projections Submonoid (toSubsemigroup_carrier → coe)
+initialize_simps_projections Submonoid (carrier → coe)
 
-initialize_simps_projections AddSubmonoid (toAddSubsemigroup_carrier → coe)
+initialize_simps_projections AddSubmonoid (carrier → coe)
 
 @[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
@@ -294,7 +296,7 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
 
 /-- The inf of two submonoids is their intersection. -/
 @[to_additive "The inf of two `AddSubmonoid`s is their intersection."]
-instance : HasInf (Submonoid M) :=
+instance : Inf (Submonoid M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
       one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩
@@ -449,8 +451,7 @@ variable (S)
 
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership. If `p` holds for `0` and all
       elements of `s`, and is preserved under addition, then `p` holds for all elements of the
       additive closure of `s`."]
@@ -474,8 +475,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
 #align add_submonoid.closure_induction' AddSubmonoid.closure_induction'
 
 /-- An induction principle for closure membership for predicates with two arguments.  -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)
     (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H1_left : ∀ x, p 1 x) (H1_right : ∀ x, p x 1)
@@ -491,8 +491,7 @@ theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ clos
 /-- If `s` is a dense set in a monoid `M`, `Submonoid.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, verify `p 1`,
 and verify that `p x` and `p y` imply `p (x * y)`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "If `s` is a dense set in an additive monoid `M`, `AddSubmonoid.closure s = ⊤`, then in
       order to prove that some predicate `p` holds for all `x : M` it suffices to verify `p x` for
       `x ∈ s`, verify `p 0`, and verify that `p x` and `p y` imply `p (x + y)`."]

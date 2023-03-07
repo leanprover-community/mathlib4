@@ -72,6 +72,17 @@ def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := (nm.componentsRev.splitAt n)
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
+/-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
+  Note that this includes the case where `nm` has multiple more namespaces.
+  If `pre` is not a prefix of `nm`, it returns `none`. -/
+def isPrefixOf? (pre nm : Name) : Option Name :=
+  if pre == nm then
+    some anonymous
+  else match nm with
+  | anonymous => none
+  | num p' a => (isPrefixOf? pre p').map (·.num a)
+  | str p' s => (isPrefixOf? pre p').map (·.str s)
+
 end Name
 
 
@@ -164,6 +175,19 @@ def fvarId? : Expr → Option FVarId
   | .fvar n => n
   | _ => none
 
+/-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
+  `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
+  it does a syntactic check that the expression does not depend on `yₙ`. -/
+def isConstantApplication (e : Expr) :=
+e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
+where
+  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+    `depth - 1`. -/
+  aux (depth : Nat) : Expr → Nat → Bool
+  | .lam _ _ b _, n + 1  => aux depth b n
+  | e, 0  => !e.hasLooseBVar (depth - 1)
+  | _, _ => false
+
 open Meta
 
 /-- Check that an expression contains no metavariables (after instantiation). -/
@@ -207,10 +231,6 @@ def zero? (e : Expr) : Bool :=
   match e.numeral? with
   | some 0 => true
   | _ => false
-
-/-- Returns a `NameSet` of all constants in an expression starting with a prefix in `pre`. -/
-def listNamesWithPrefixes (pre : NameSet) (e : Expr) : NameSet :=
-  e.foldConsts ∅ fun n l ↦ if pre.contains n.getPrefix then l.insert n else l
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
@@ -269,6 +289,36 @@ def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → Term
 | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
 | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
 
+/-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
+the projection expression `e.fieldName` -/
+def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
+  let type ← whnf (← inferType e)
+  let .const structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
+  let some projName := getProjFnForField? (← getEnv) structName fieldName |
+    throwError "{structName} doesn't have field {fieldName}"
+  return mkAppN (.const projName us) (type.getAppArgs.push e)
+
+/-- If `e` has a structure as type with field `fieldName` (either directly or in a parent
+structure), `mkProjection e fieldName` creates the projection expression `e.fieldName` -/
+def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
+  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+    throwError "{e} doesn't have a structure as type"
+  let some baseStruct := findField? (← getEnv) structName fieldName |
+    throwError "No parent of {structName} has field {fieldName}"
+  let mut e := e
+  for projName in (getPathToBaseStructure? (← getEnv) baseStruct structName).get! do
+    let type ← whnf (← inferType e)
+    let .const _structName us := type.getAppFn | throwError "{e} doesn't have a structure as type"
+    e := mkAppN (.const projName us) (type.getAppArgs.push e)
+  mkDirectProjection e fieldName
+
 end Expr
+
+/-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
+  except that this returns the (last component of the) projection names instead of the parent names.
+-/
+def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
+  getStructureFields env structName |>.filter fun fieldName =>
+    isSubobjectField? env structName fieldName |>.isSome
 
 end Lean

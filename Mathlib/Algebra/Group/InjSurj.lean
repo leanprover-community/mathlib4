@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 
 ! This file was ported from Lean 3 source module algebra.group.inj_surj
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -167,6 +167,7 @@ protected def cancelMonoid [CancelMonoid M₂] (f : M₁ → M₂) (hf : Injecti
     CancelMonoid M₁ :=
   { hf.leftCancelMonoid f one mul npow, hf.rightCancelMonoid f one mul npow with }
 #align function.injective.add_cancel_monoid Function.Injective.addCancelMonoid
+#align function.injective.cancel_monoid Function.Injective.cancelMonoid
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits an injective map that
 preserves `1` and `*` to a commutative monoid.  See note [reducible non-instances]. -/
@@ -179,6 +180,17 @@ protected def commMonoid [CommMonoid M₂] (f : M₁ → M₂) (hf : Injective f
   { hf.commSemigroup f mul, hf.monoid f one mul npow with }
 #align function.injective.comm_monoid Function.Injective.commMonoid
 #align function.injective.add_comm_monoid Function.Injective.addCommMonoid
+
+/-- A type endowed with `0`, `1` and `+` is an additive commutative monoid with one, if it admits an
+injective map that preserves `0`, `1` and `+` to an additive commutative monoid with one.
+See note [reducible non-instances]. -/
+@[reducible]
+protected def addCommMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [NatCast M₁]
+    [AddCommMonoidWithOne M₂] (f : M₁ → M₂) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (nat_cast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₁ :=
+  { hf.addMonoidWithOne f zero one add nsmul nat_cast, hf.addCommMonoid f zero add nsmul with }
+#align function.injective.add_comm_monoid_with_one Function.Injective.addCommMonoidWithOne
 
 /-- A type endowed with `1` and `*` is a cancel commutative monoid, if it admits an injective map
 that preserves `1` and `*` to a cancel commutative monoid.  See note [reducible non-instances]. -/
@@ -304,6 +316,20 @@ protected def commGroup [CommGroup M₂] (f : M₁ → M₂) (hf : Injective f) 
 #align function.injective.comm_group Function.Injective.commGroup
 #align function.injective.add_comm_group Function.Injective.addCommGroup
 
+/-- A type endowed with `0`, `1` and `+` is an additive commutative group with one, if it admits an
+injective map that preserves `0`, `1` and `+` to an additive commutative group with one.
+See note [reducible non-instances]. -/
+@[reducible]
+protected def addCommGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [Neg M₁] [Sub M₁]
+    [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddCommGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
+    (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
+    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₁ :=
+  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
+    hf.addCommMonoid f zero add nsmul with }
+#align function.injective.add_comm_group_with_one Function.Injective.addCommGroupWithOne
+
 end Injective
 
 /-!
@@ -397,6 +423,17 @@ protected def commMonoid [CommMonoid M₁] (f : M₁ → M₂) (hf : Surjective 
 #align function.surjective.comm_monoid Function.Surjective.commMonoid
 #align function.surjective.add_comm_monoid Function.Surjective.addCommMonoid
 
+/-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
+if it admits a surjective map that preserves `0`, `1` and `*` from an additive monoid with one.
+See note [reducible non-instances]. -/
+@[reducible]
+protected def addCommMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul ℕ M₂] [NatCast M₂]
+    [AddCommMonoidWithOne M₁] (f : M₁ → M₂) (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
+    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (nat_cast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₂ :=
+  { hf.addMonoidWithOne f zero one add nsmul nat_cast, hf.addCommMonoid _ zero add nsmul with }
+#align function.surjective.add_comm_monoid_with_one Function.Surjective.addCommMonoidWithOne
+
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
 which has an involutive inversion. See note [reducible non-instances] -/
 @[to_additive (attr := reducible)
@@ -451,6 +488,7 @@ protected def group [Group M₁] (f : M₁ → M₂) (hf : Surjective f) (one : 
 /-- A type endowed with `0`, `1`, `+` is an additive group with one,
 if it admits a surjective map that preserves `0`, `1`, and `+` to an additive group with one.
 See note [reducible non-instances]. -/
+@[reducible]
 protected def addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂] [Sub M₂] [SMul ℕ M₂]
     [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
@@ -478,6 +516,20 @@ protected def commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective f)
   { hf.commMonoid f one mul npow, hf.group f one mul inv div npow zpow with }
 #align function.surjective.comm_group Function.Surjective.commGroup
 #align function.surjective.add_comm_group Function.Surjective.addCommGroup
+
+/-- A type endowed with `0`, `1`, `+` is an additive commutative group with one, if it admits a
+surjective map that preserves `0`, `1`, and `+` to an additive commutative group with one.
+See note [reducible non-instances]. -/
+@[reducible]
+protected def addCommGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂] [Sub M₂] [SMul ℕ M₂]
+    [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddCommGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
+    (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
+    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₂ :=
+  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
+    hf.addCommMonoid _ zero add nsmul with }
+#align function.surjective.add_comm_group_with_one Function.Surjective.addCommGroupWithOne
 
 end Surjective
 
