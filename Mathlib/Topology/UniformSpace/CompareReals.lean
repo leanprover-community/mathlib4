@@ -8,10 +8,10 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.AbsoluteValue
-import Mathbin.Topology.Instances.Real
-import Mathbin.Topology.Instances.Rat
-import Mathbin.Topology.UniformSpace.Completion
+import Mathlib.Topology.UniformSpace.AbsoluteValue
+import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Rat
+import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # Comparison of Cauchy reals and Bourbaki reals
@@ -61,8 +61,7 @@ open Set Function Filter CauSeq UniformSpace
 /-- The metric space uniform structure on ℚ (which presupposes the existence
 of real numbers) agrees with the one coming directly from (abs : ℚ → ℚ). -/
 theorem Rat.uniformSpace_eq :
-    (AbsoluteValue.abs : AbsoluteValue ℚ ℚ).UniformSpace = PseudoMetricSpace.toUniformSpace :=
-  by
+    (AbsoluteValue.abs : AbsoluteValue ℚ ℚ).UniformSpace = PseudoMetricSpace.toUniformSpace := by
   ext s
   rw [(AbsoluteValue.hasBasis_uniformity _).mem_iff, metric.uniformity_basis_dist_rat.mem_iff]
   simp only [Rat.dist_eq, AbsoluteValue.abs_apply, ← Rat.cast_sub, ← Rat.cast_abs, Rat.cast_lt,
