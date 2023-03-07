@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathbin.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Categories with finite (co)products
@@ -46,8 +46,7 @@ instance (priority := 10) hasFiniteProducts_of_hasFiniteLimits [HasFiniteLimits 
 #align category_theory.limits.has_finite_products_of_has_finite_limits CategoryTheory.Limits.hasFiniteProducts_of_hasFiniteLimits
 
 instance hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite ι] :
-    HasLimitsOfShape (Discrete ι) C :=
-  by
+    HasLimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   haveI := has_finite_products.out C n
   exact has_limits_of_shape_of_equivalence (discrete.equivalence e.symm)
@@ -77,8 +76,7 @@ class HasFiniteCoproducts : Prop where
 attribute [class] has_finite_coproducts
 
 instance hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
-    HasColimitsOfShape (Discrete ι) C :=
-  by
+    HasColimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   haveI := has_finite_coproducts.out C n
   exact has_colimits_of_shape_of_equivalence (discrete.equivalence e.symm)
