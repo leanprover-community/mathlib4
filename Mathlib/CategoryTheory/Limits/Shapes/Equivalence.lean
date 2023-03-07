@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Limits
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Transporting existence of specific limits across equivalences
