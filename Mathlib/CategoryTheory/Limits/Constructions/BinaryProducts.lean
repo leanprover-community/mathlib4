@@ -8,11 +8,11 @@ Authors: Bhavik Mehta, Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Constructing binary product from pullbacks and terminal object.
@@ -61,8 +61,7 @@ def isBinaryProductOfIsTerminalIsPullback (F : Discrete WalkingPair ⥤ C) (c : 
 def isProductOfIsTerminalIsPullback {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ X) (k : W ⟶ Y)
     (H₁ : IsTerminal Z)
     (H₂ : IsLimit (PullbackCone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _))) :
-    IsLimit (BinaryFan.mk h k) :=
-  by
+    IsLimit (BinaryFan.mk h k) := by
   apply isBinaryProductOfIsTerminalIsPullback _ _ H₁
   exact H₂
 #align is_product_of_is_terminal_is_pullback isProductOfIsTerminalIsPullback
@@ -70,8 +69,7 @@ def isProductOfIsTerminalIsPullback {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
 /-- The product is the pullback over the terminal object. -/
 def isPullbackOfIsTerminalIsProduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ X) (k : W ⟶ Y)
     (H₁ : IsTerminal Z) (H₂ : IsLimit (BinaryFan.mk h k)) :
-    IsLimit (PullbackCone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) :=
-  by
+    IsLimit (PullbackCone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply pullback_cone.is_limit_aux'
   intro s
   use H₂.lift (binary_fan.mk s.fst s.snd)
@@ -162,8 +160,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
 def isCoproductOfIsInitialIsPushout {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ X) (k : W ⟶ Y)
     (H₁ : IsInitial W)
     (H₂ : IsColimit (PushoutCocone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _))) :
-    IsColimit (BinaryCofan.mk f g) :=
-  by
+    IsColimit (BinaryCofan.mk f g) := by
   apply isBinaryCoproductOfIsInitialIsPushout _ _ H₁
   exact H₂
 #align is_coproduct_of_is_initial_is_pushout isCoproductOfIsInitialIsPushout
@@ -171,8 +168,7 @@ def isCoproductOfIsInitialIsPushout {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
 /-- The coproduct is the pushout under the initial object. -/
 def isPushoutOfIsInitialIsCoproduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ X) (k : W ⟶ Y)
     (H₁ : IsInitial W) (H₂ : IsColimit (BinaryCofan.mk f g)) :
-    IsColimit (PushoutCocone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) :=
-  by
+    IsColimit (PushoutCocone.mk _ _ (show h ≫ f = k ≫ g from H₁.hom_ext _ _)) := by
   apply pushout_cocone.is_colimit_aux'
   intro s
   use H₂.desc (binary_cofan.mk s.inl s.inr)
