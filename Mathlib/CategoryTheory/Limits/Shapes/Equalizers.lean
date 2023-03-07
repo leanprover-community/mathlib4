@@ -740,7 +740,7 @@ noncomputable abbrev equalizer.ι : equalizer f g ⟶ X :=
 
 /-- An equalizer cone for a parallel pair `f` and `g` -/
 noncomputable abbrev equalizer.fork : Fork f g :=
-  Limit.cone (parallelPair f g)
+  limit.cone (parallelPair f g)
 #align category_theory.limits.equalizer.fork CategoryTheory.Limits.equalizer.fork
 
 @[simp]
@@ -755,7 +755,7 @@ theorem equalizer.fork_π_app_zero : (equalizer.fork f g).π.app zero = equalize
 
 @[reassoc]
 theorem equalizer.condition : equalizer.ι f g ≫ f = equalizer.ι f g ≫ g :=
-  Fork.condition <| Limit.cone <| parallelPair f g
+  Fork.condition <| limit.cone <| parallelPair f g
 #align category_theory.limits.equalizer.condition CategoryTheory.Limits.equalizer.condition
 
 /-- The equalizer built from `equalizer.ι f g` is limiting. -/
@@ -921,7 +921,7 @@ noncomputable abbrev coequalizer.π : Y ⟶ coequalizer f g :=
 /-- An arbitrary choice of coequalizer cocone for a parallel pair `f` and `g`.
 -/
 noncomputable abbrev coequalizer.cofork : Cofork f g :=
-  Colimit.cocone (parallelPair f g)
+  colimit.cocone (parallelPair f g)
 #align category_theory.limits.coequalizer.cofork CategoryTheory.Limits.coequalizer.cofork
 
 @[simp]
@@ -936,7 +936,7 @@ theorem coequalizer.cofork_ι_app_one : (coequalizer.cofork f g).ι.app one = co
 
 @[reassoc]
 theorem coequalizer.condition : f ≫ coequalizer.π f g = g ≫ coequalizer.π f g :=
-  Cofork.condition <| Colimit.cocone <| parallelPair f g
+  Cofork.condition <| colimit.cocone <| parallelPair f g
 #align category_theory.limits.coequalizer.condition CategoryTheory.Limits.coequalizer.condition
 
 /-- The cofork built from `coequalizer.π f g` is colimiting. -/
