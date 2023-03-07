@@ -35,9 +35,8 @@ structure Congr!.Config where
   we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
   then we start with the left-hand side.
 
-  When `transparency` is not `.default` then this can be used to control which side's definitions
-  are expanded when applying the congruence lemma (if `preferLHS = true` then the RHS can
-  be expanded). -/
+  This can be used to control which side's definitions are expanded when applying the
+  congruence lemma (if `preferLHS = true` then the RHS can be expanded). -/
   preferLHS : Bool := true
 
 /--
@@ -474,4 +473,3 @@ elab_rules : tactic
   liftMetaTactic fun g ↦ g.congrN! depth config
 
 end Congr!
-
