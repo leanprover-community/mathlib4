@@ -330,7 +330,7 @@ theorem subset_interior_iff {s t : Set α} : t ⊆ interior s ↔ ∃ U, IsOpen 
     htU.trans (interior_maximal hUs hU)⟩
 #align subset_interior_iff subset_interior_iff
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem interior_mono {s t : Set α} (h : s ⊆ t) : interior s ⊆ interior t :=
   interior_maximal (Subset.trans interior_subset h) isOpen_interior
 #align interior_mono interior_mono
@@ -467,7 +467,7 @@ theorem IsClosed.mem_iff_closure_subset {s : Set α} (hs : IsClosed s) {x : α} 
   (hs.closure_subset_iff.trans Set.singleton_subset_iff).symm
 #align is_closed.mem_iff_closure_subset IsClosed.mem_iff_closure_subset
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem closure_mono {s t : Set α} (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_minimal (Subset.trans h subset_closure) isClosed_closure
 #align closure_mono closure_mono
@@ -677,7 +677,7 @@ theorem Dense.nonempty [h : Nonempty α] {s : Set α} (hs : Dense s) : s.Nonempt
   hs.nonempty_iff.2 h
 #align dense.nonempty Dense.nonempty
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem Dense.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
 #align dense.mono Dense.mono
@@ -945,8 +945,7 @@ theorem IsOpen.eventually_mem {a : α} {s : Set α} (hs : IsOpen s) (ha : a ∈ 
 for a variant using open sets around `a` instead. -/
 theorem nhds_basis_opens' (a : α) :
     (𝓝 a).HasBasis (fun s : Set α => s ∈ 𝓝 a ∧ IsOpen s) fun x => x := by
-  convert nhds_basis_opens a
-  ext s
+  convert nhds_basis_opens a using 2
   exact and_congr_left_iff.2 IsOpen.mem_nhds_iff
 #align nhds_basis_opens' nhds_basis_opens'
 
@@ -1006,10 +1005,10 @@ theorem Filter.EventuallyEq.eq_of_nhds {f g : α → β} {a : α} (h : f =ᶠ[�
 #align filter.eventually_eq.eq_of_nhds Filter.EventuallyEq.eq_of_nhds
 
 @[simp]
-theorem eventually_eventuallyLe_nhds [LE β] {f g : α → β} {a : α} :
+theorem eventually_eventuallyLE_nhds [LE β] {f g : α → β} {a : α} :
     (∀ᶠ y in 𝓝 a, f ≤ᶠ[𝓝 y] g) ↔ f ≤ᶠ[𝓝 a] g :=
   eventually_eventually_nhds
-#align eventually_eventually_le_nhds eventually_eventuallyLe_nhds
+#align eventually_eventually_le_nhds eventually_eventuallyLE_nhds
 
 /-- If two functions are equal in a neighbourhood of `a`, then for `y` sufficiently close
 to `a` these functions are equal in a neighbourhood of `y`. -/
@@ -1020,10 +1019,10 @@ theorem Filter.EventuallyEq.eventuallyEq_nhds {f g : α → β} {a : α} (h : f 
 
 /-- If `f x ≤ g x` in a neighbourhood of `a`, then for `y` sufficiently close to `a` we have
 `f x ≤ g x` in a neighbourhood of `y`. -/
-theorem Filter.EventuallyLe.eventuallyLe_nhds [LE β] {f g : α → β} {a : α} (h : f ≤ᶠ[𝓝 a] g) :
+theorem Filter.EventuallyLE.eventuallyLE_nhds [LE β] {f g : α → β} {a : α} (h : f ≤ᶠ[𝓝 a] g) :
     ∀ᶠ y in 𝓝 a, f ≤ᶠ[𝓝 y] g :=
   h.eventually_nhds
-#align filter.eventually_le.eventually_le_nhds Filter.EventuallyLe.eventuallyLe_nhds
+#align filter.eventually_le.eventually_le_nhds Filter.EventuallyLE.eventuallyLE_nhds
 
 theorem all_mem_nhds (x : α) (P : Set α → Prop) (hP : ∀ s t, s ⊆ t → P s → P t) :
     (∀ s ∈ 𝓝 x, P s) ↔ ∀ s, IsOpen s → x ∈ s → P s :=
