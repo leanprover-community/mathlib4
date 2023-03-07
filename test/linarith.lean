@@ -484,3 +484,14 @@ example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
 example (a : Int) : a = a := by
   have h : True := True.intro
   linarith
+
+example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
+  by_contra h3
+  suffices n = 1 by exact h1 this
+  linarith
+
+example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
+  have h4 : n ≥ 1 := h2
+  by_contra h3
+  suffices n = 1 by exact h1 this
+  linarith
