@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathbin.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.FunctorCategory
 
 /-!
 # If `D` has finite (co)limits, so do the functor categories `C ⥤ D`.
