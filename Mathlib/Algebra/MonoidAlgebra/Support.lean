@@ -8,7 +8,7 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 #  Lemmas about the support of a finitely supported function
@@ -24,8 +24,7 @@ open Finset Finsupp
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 
 theorem support_single_mul_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
-    (single a r * f : MonoidAlgebra k G).support ⊆ Finset.image ((· * ·) a) f.support :=
-  by
+    (single a r * f : MonoidAlgebra k G).support ⊆ Finset.image ((· * ·) a) f.support := by
   intro x hx
   contrapose hx
   have : ∀ y, a * y = x → f y = 0 := by
@@ -41,8 +40,7 @@ theorem support_single_mul_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G
 #align monoid_algebra.support_single_mul_subset MonoidAlgebra.support_single_mul_subset
 
 theorem support_mul_single_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) (r : k) (a : G) :
-    (f * single a r).support ⊆ Finset.image (· * a) f.support :=
-  by
+    (f * single a r).support ⊆ Finset.image (· * a) f.support := by
   intro x hx
   contrapose hx
   have : ∀ y, y * a = x → f y = 0 := by
@@ -59,8 +57,7 @@ theorem support_mul_single_subset [DecidableEq G] [Mul G] (f : MonoidAlgebra k G
 
 theorem support_single_mul_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) {r : k}
     (hr : ∀ y, r * y = 0 ↔ y = 0) {x : G} (lx : IsLeftRegular x) :
-    (single x r * f : MonoidAlgebra k G).support = Finset.image ((· * ·) x) f.support :=
-  by
+    (single x r * f : MonoidAlgebra k G).support = Finset.image ((· * ·) x) f.support := by
   refine' subset_antisymm (support_single_mul_subset f _ _) fun y hy => _
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by
     simpa only [Finset.mem_image, exists_prop] using hy
@@ -70,8 +67,7 @@ theorem support_single_mul_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k
 
 theorem support_mul_single_eq_image [DecidableEq G] [Mul G] (f : MonoidAlgebra k G) {r : k}
     (hr : ∀ y, y * r = 0 ↔ y = 0) {x : G} (rx : IsRightRegular x) :
-    (f * single x r).support = Finset.image (· * x) f.support :=
-  by
+    (f * single x r).support = Finset.image (· * x) f.support := by
   refine' subset_antisymm (support_mul_single_subset f _ _) fun y hy => _
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ a * x = y := by
     simpa only [Finset.mem_image, exists_prop] using hy
