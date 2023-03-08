@@ -126,11 +126,13 @@ theorem pochhammer_succ_comp_x_add_one (n : ℕ) :
   nth_rw 2 [pochhammer_succ_left]
   rw [← add_mul, pochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, nat_cast_comp,
     add_comm, ← add_assoc]
+set_option linter.uppercaseLean3 false in
 #align pochhammer_succ_comp_X_add_one pochhammer_succ_comp_x_add_one
 
 theorem Polynomial.mul_x_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
     (p * (X + (n : S[X]))).comp q = p.comp q * (q + n) := by
   rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_add]
+set_option linter.uppercaseLean3 false in
 #align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_x_add_nat_cast_comp
 
 theorem pochhammer_mul (n m : ℕ) :
@@ -192,7 +194,7 @@ theorem pochhammer_eval_one (S : Type _) [Semiring S] (n : ℕ) :
 #align pochhammer_eval_one pochhammer_eval_one
 
 theorem factorial_mul_pochhammer (S : Type _) [Semiring S] (r n : ℕ) :
-    (r ! : S) * (pochhammer S n).eval (r + 1) = (r + n)! := by
+    (r ! : S) * (pochhammer S n).eval (r + 1 : S) = (r + n)! := by
   rw_mod_cast [pochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 #align factorial_mul_pochhammer factorial_mul_pochhammer
 
@@ -206,7 +208,7 @@ theorem pochhammer_nat_eval_succ (r : ℕ) :
 #align pochhammer_nat_eval_succ pochhammer_nat_eval_succ
 
 theorem pochhammer_eval_succ (r n : ℕ) :
-    (n : S) * (pochhammer S r).eval (n + 1 : S) = (n + r) * (pochhammer S r).eval n := by
+    (n : S) * (pochhammer S r).eval (n + 1 : S) = (n + r) * (pochhammer S r).eval (n : S) := by
   exact_mod_cast congr_arg Nat.cast (pochhammer_nat_eval_succ r n)
 #align pochhammer_eval_succ pochhammer_eval_succ
 
