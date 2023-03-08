@@ -311,12 +311,16 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
@@ -325,6 +329,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Unit
 import Mathlib.CategoryTheory.Limits.Yoneda
