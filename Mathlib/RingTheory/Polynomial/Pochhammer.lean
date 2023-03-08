@@ -76,7 +76,8 @@ theorem pochhammer_map (f : S →+* T) (n : ℕ) : (pochhammer S n).map f = poch
 end
 
 @[simp, norm_cast]
-theorem pochhammer_eval_cast (n k : ℕ) : ((pochhammer ℕ n).eval k : S) = (pochhammer S n).eval k :=
+theorem pochhammer_eval_cast (n k : ℕ) :
+    (((pochhammer ℕ n).eval k : ℕ) : S) = ((pochhammer S n).eval k : S):=
   by
   rw [← pochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S), eval₂_at_nat_cast,
     Nat.cast_id, eq_natCast]
@@ -96,15 +97,15 @@ theorem pochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (pochhammer S n).
   simp [pochhammer_eval_zero, h]
 #align pochhammer_ne_zero_eval_zero pochhammer_ne_zero_eval_zero
 
-theorem pochhammer_succ_right (n : ℕ) : pochhammer S (n + 1) = pochhammer S n * (X + n) := by
-  suffices h : pochhammer ℕ (n + 1) = pochhammer ℕ n * (X + n)
-  · apply_fun Polynomial.map (algebraMap ℕ S)  at h
+theorem pochhammer_succ_right (n : ℕ) : pochhammer S (n + 1) = pochhammer S n * (X + (n : S[X])) :=
+  by
+  suffices h : pochhammer ℕ (n + 1) = pochhammer ℕ n * (X + (n : ℕ[X]))
+  · apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [pochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_nat_cast] using h
   induction' n with n ih
   · simp
-  ·
-    conv_lhs =>
+  · conv_lhs =>
       rw [pochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← pochhammer_succ_left, add_comp, X_comp,
         nat_cast_comp, add_assoc, add_comm (1 : ℕ[X]), ← Nat.cast_succ]
 #align pochhammer_succ_right pochhammer_succ_right
@@ -124,7 +125,7 @@ theorem pochhammer_succ_comp_x_add_one (n : ℕ) :
     by simpa [map_comp] using congr_arg (Polynomial.map (Nat.castRingHom S)) this
   nth_rw 2 [pochhammer_succ_left]
   rw [← add_mul, pochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, nat_cast_comp,
-    add_comm ↑n, ← add_assoc]
+    add_comm, ← add_assoc]
 #align pochhammer_succ_comp_X_add_one pochhammer_succ_comp_x_add_one
 
 theorem Polynomial.mul_x_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
@@ -213,4 +214,3 @@ theorem pochhammer_eval_succ (r n : ℕ) :
 #align pochhammer_eval_succ pochhammer_eval_succ
 
 end Factorial
-
