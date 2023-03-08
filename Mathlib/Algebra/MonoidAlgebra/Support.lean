@@ -79,7 +79,7 @@ theorem support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
     (a * b).support ⊆ a.support.bunionᵢ fun a₁ => b.support.bunionᵢ fun a₂ => {a₁ * a₂} :=
   Subset.trans support_sum <|
     bunionᵢ_mono fun _ _ =>
-      Subset.trans support_sum <| bunionᵢ_mono fun a₂ _ => support_single_subset
+      Subset.trans support_sum <| bunionᵢ_mono fun _a₂ _ => support_single_subset
 #align monoid_algebra.support_mul MonoidAlgebra.support_mul
 
 theorem support_mul_single [RightCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
