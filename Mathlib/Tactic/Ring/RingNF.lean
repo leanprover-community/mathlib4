@@ -93,8 +93,8 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let ⟨.succ u, α, e⟩ ← inferTypeQ e | failure
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
         let c ← mkCache sα
-        let ⟨a, va, pa⟩ ← eval sα c e rctx s
-        guard !va.isAtom
+        guard !(← isAtom sα c e rctx s) -- No point rewriting atoms
+        let ⟨a, _, pa⟩ ← eval sα c e rctx s
         let r ← nctx.simp { expr := a, proof? := pa }
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)

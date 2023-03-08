@@ -987,6 +987,26 @@ theorem div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b
 /-- A precomputed `Cache` for `ℕ`. -/
 def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferInstance) }
 
+/-- Checks whether `e` will be treated as an atom by `eval`. -/
+-- Note this is not the same as whether the result of `eval` is an atom. (e.g. consider `x + 0`.)
+def isAtom {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (c : Cache sα) (e : Q($α)) : AtomM Bool := do
+  let els : MetaM Bool := try
+      _ ← derive e
+      pure false
+    catch _ => pure true
+  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  match n, c.rα, c.dα with
+  | ``HAdd.hAdd, _, _ | ``Add.add, _, _
+  | ``HMul.hMul, _, _ | ``Mul.mul, _, _
+  | ``HSMul.hSMul, _, _
+  | ``HPow.hPow, _, _ | ``Pow.pow, _, _
+  | ``Neg.neg, some _, _
+  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
+  | ``Inv.inv, _, some _
+  | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure false
+  | _, _, _ => els
+
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
