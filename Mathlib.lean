@@ -1362,6 +1362,7 @@ import Mathlib.Topology.MetricSpace.EMetricParacompact
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.MetricSpace.Infsep
+import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.MetricSeparated
