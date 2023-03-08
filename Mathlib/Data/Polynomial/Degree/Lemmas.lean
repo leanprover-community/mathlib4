@@ -285,7 +285,6 @@ theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n 
   by_cases h : p = 0
   · simp [h]
   simp [degree_eq_natDegree h, Nat.cast_withBot, WithBot.coe_lt_coe]
-
 #align polynomial.coe_lt_degree Polynomial.coe_lt_degree
 
 end Degree
