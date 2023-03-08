@@ -8,11 +8,11 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Num.Bitwise
-import Mathbin.Data.Int.CharZero
-import Mathbin.Data.Nat.Gcd.Basic
-import Mathbin.Data.Nat.Psub
-import Mathbin.Data.Nat.Size
+import Mathlib.Data.Num.Bitwise
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Psub
+import Mathlib.Data.Nat.Size
 
 /-!
 # Properties of the binary representation of integers
@@ -720,8 +720,7 @@ theorem cast_mul [Semiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
 #align pos_num.cast_mul PosNum.cast_mul
 
 @[simp]
-theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n :=
-  by
+theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   cases cmp m n <;> simp at this⊢ <;> try exact this <;>
     · simp [show m ≠ n from fun e => by rw [e] at this <;> exact lt_irrefl _ this]
@@ -834,8 +833,7 @@ namespace PosNum
 
 open Num
 
-theorem pred_to_nat {n : PosNum} (h : 1 < n) : (pred n : ℕ) = Nat.pred n :=
-  by
+theorem pred_to_nat {n : PosNum} (h : 1 < n) : (pred n : ℕ) = Nat.pred n := by
   unfold pred
   have := pred'_to_nat n
   cases e : pred' n
@@ -885,8 +883,7 @@ theorem cmp_swap (m n) : (cmp m n).symm = cmp n m := by
   cases m <;> cases n <;> try unfold cmp <;> try rfl <;> apply PosNum.cmp_swap
 #align num.cmp_swap Num.cmp_swap
 
-theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n :=
-  by
+theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   cases cmp m n <;> simp at this⊢ <;> try exact this <;>
     · simp [show m ≠ n from fun e => by rw [e] at this <;> exact lt_irrefl _ this]
@@ -923,8 +920,7 @@ theorem bitwise_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (p
     (p1b : ∀ b n, p 1 (PosNum.bit b n) = bit (g true b) (cond (g false true) (pos n) 0))
     (pb1 : ∀ a m, p (PosNum.bit a m) 1 = bit (g a true) (cond (g true false) (pos m) 0))
     (pbb : ∀ a b m n, p (PosNum.bit a m) (PosNum.bit b n) = bit (g a b) (p m n)) :
-    ∀ m n : Num, (f m n : ℕ) = Nat.bitwise g m n :=
-  by
+    ∀ m n : Num, (f m n : ℕ) = Nat.bitwise g m n := by
   intros ;
   cases' m with m <;> cases' n with n <;> try change zero with 0 <;>
     try change ((0 : Num) : ℕ) with 0
@@ -985,8 +981,7 @@ theorem lxor_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.lxor' m n := by
 #align num.lxor_to_nat Num.lxor_to_nat
 
 @[simp, norm_cast]
-theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n :=
-  by
+theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n := by
   cases m <;> dsimp only [shiftl];
   · symm
     apply Nat.zero_shiftl
@@ -995,8 +990,7 @@ theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n :=
 #align num.shiftl_to_nat Num.shiftl_to_nat
 
 @[simp, norm_cast]
-theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftr m n :=
-  by
+theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftr m n := by
   cases' m with m <;> dsimp only [shiftr];
   · symm
     apply Nat.zero_shiftr
@@ -1025,8 +1019,7 @@ theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftr m n :=
 #align num.shiftr_to_nat Num.shiftr_to_nat
 
 @[simp]
-theorem testBit_to_nat (m n) : testBit m n = Nat.testBit m n :=
-  by
+theorem testBit_to_nat (m n) : testBit m n = Nat.testBit m n := by
   cases' m with m <;> unfold test_bit Nat.testBit
   · change (zero : Nat) with 0
     rw [Nat.zero_shiftr]
@@ -1177,8 +1170,7 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = bit1 n
 #align znum.cast_bit1 ZNum.cast_bit1
 
 @[simp]
-theorem cast_bitm1 [AddGroupWithOne α] (n : ZNum) : (n.bitm1 : α) = bit0 n - 1 :=
-  by
+theorem cast_bitm1 [AddGroupWithOne α] (n : ZNum) : (n.bitm1 : α) = bit0 n - 1 := by
   conv =>
     lhs
     rw [← zneg_zneg n]
@@ -1640,8 +1632,7 @@ namespace PosNum
 
 theorem divmod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * bit0 q = n)
     (h₂ : (r : ℕ) < 2 * d) :
-    ((divModAux d q r).2 + d * (divModAux d q r).1 : ℕ) = ↑n ∧ ((divModAux d q r).2 : ℕ) < d :=
-  by
+    ((divModAux d q r).2 + d * (divModAux d q r).1 : ℕ) = ↑n ∧ ((divModAux d q r).2 : ℕ) < d := by
   unfold divmod_aux
   have : ∀ {r₂}, Num.ofZNum' (Num.sub' r (Num.pos d)) = some r₂ ↔ (r : ℕ) = r₂ + d :=
     by
@@ -1661,8 +1652,7 @@ theorem divmod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * bit
 #align pos_num.divmod_to_nat_aux PosNum.divmod_to_nat_aux
 
 theorem divMod_to_nat (d n : PosNum) :
-    (n / d : ℕ) = (divMod d n).1 ∧ (n % d : ℕ) = (divMod d n).2 :=
-  by
+    (n / d : ℕ) = (divMod d n).1 ∧ (n % d : ℕ) = (divMod d n).2 := by
   rw [Nat.div_mod_unique (PosNum.cast_pos _)]
   induction' n with n IH n IH
   ·
@@ -1759,8 +1749,7 @@ theorem gcd_to_nat_aux :
 #align num.gcd_to_nat_aux Num.gcd_to_nat_aux
 
 @[simp]
-theorem gcd_to_nat : ∀ a b, (gcd a b : ℕ) = Nat.gcd a b :=
-  by
+theorem gcd_to_nat : ∀ a b, (gcd a b : ℕ) = Nat.gcd a b := by
   have : ∀ a b : Num, (a * b).natSize ≤ a.natSize + b.natSize :=
     by
     intros
