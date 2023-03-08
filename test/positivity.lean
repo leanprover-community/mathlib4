@@ -64,6 +64,15 @@ example {a b : ℤ} (h : 0 ≤ a + b) : 0 ≤ a + b := by positivity
 
 example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
 
+section
+
+variable [LinearOrderedField α]
+
+example : (1/4 - 2/3 : ℚ) ≠ 0 := by positivity
+example : (1/4 - 2/3 : α) ≠ 0 := by positivity
+
+end
+
 /- ## Tests of the @[positivity] plugin tactics (addition, multiplication, division) -/
 
 -- example [Nonempty ι] [Zero α] {a : α} (ha : a ≠ 0) : const ι a ≠ 0 := by positivity
