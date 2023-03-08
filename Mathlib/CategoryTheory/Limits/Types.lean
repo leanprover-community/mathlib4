@@ -99,16 +99,11 @@ theorem isLimitEquivSections_symm_apply {F : J ⥤ Type max v u} {c : Cone F} (t
 #align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
 
--- porting note: the parameter [HasLimit F] has been added temporarily in definitions below
--- until some fix is found
-
 instance test (F : J ⥤ Type max v u) : HasLimit F :=
   (Types.hasLimitsOfSize.{v, u}.has_limits_of_shape J).has_limit F
 
 instance (F : J ⥤ Type v) : HasLimit F :=
   test.{v, v} F
-
--- the `HasLimit F` instance defined above is not inferred automatically
 
 /-- The equivalence between the abstract limit of `F` in `Type u`
 and the "concrete" definition as the sections of `F`.
@@ -124,6 +119,9 @@ noncomputable def limitEquivSections_test (F : J ⥤ Type v) :
   isLimitEquivSections.{v, v} (limit.isLimit F)
 
 #exit
+
+-- porting note: the parameter [HasLimit F] has been added temporarily in definitions below
+-- until some fix is found
 
 @[simp]
 theorem limitEquivSections_apply (F : J ⥤ Type max v u) [HasLimit F] (x : limit F) (j : J) :
