@@ -1473,7 +1473,7 @@ theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α)
   · use a
     simp [h]
   rcases ih h with ⟨b, hb, ih⟩
-  by_cases f b ≤ f a
+  by_cases h : f b ≤ f a
   · refine' ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac _⟩
     rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
     · rfl
