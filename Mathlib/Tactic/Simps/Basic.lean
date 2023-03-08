@@ -640,7 +640,7 @@ def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedP
 
 /-- Data about default coercions. An entry consists of
   `(projName, (className, functionName, arity))`, where
-  * `projName` is the name of a projection in a structure that must be used to triggers the search
+  * `projName` is the name of a projection in a structure that must be used to trigger the search
     for a coercion as projection.
   * `className` is the name of the class we are looking for
   * `functionName` is the function that we are using for a coercion as projection
