@@ -33,8 +33,8 @@ section Semiring
 
 variable {R : Type _} [Semiring R] {f : R[X]}
 
-/-- If `i ≤ N`, then `rev_at_fun N i` returns `N - i`, otherwise it returns `i`.
-This is the map used by the embedding `rev_at`.
+/-- If `i ≤ N`, then `revAtFun N i` returns `N - i`, otherwise it returns `i`.
+This is the map used by the embedding `revAt`.
 -/
 def revAtFun (N i : ℕ) : ℕ :=
   ite (i ≤ N) (N - i) i
@@ -55,9 +55,9 @@ theorem revAtFun_inj {N : ℕ} : Function.Injective (revAtFun N) := by
   rw [← @revAtFun_invol N a, hab, revAtFun_invol]
 #align polynomial.rev_at_fun_inj Polynomial.revAtFun_inj
 
-/-- If `i ≤ N`, then `rev_at N i` returns `N - i`, otherwise it returns `i`.
+/-- If `i ≤ N`, then `revAt N i` returns `N - i`, otherwise it returns `i`.
 Essentially, this embedding is only used for `i ≤ N`.
-The advantage of `rev_at N i` over `N - i` is that `rev_at` is an involution.
+The advantage of `revAt N i` over `N - i` is that `revAt` is an involution.
 -/
 def revAt (N : ℕ) : Function.Embedding ℕ ℕ
     where
@@ -65,7 +65,7 @@ def revAt (N : ℕ) : Function.Embedding ℕ ℕ
   inj' := revAtFun_inj
 #align polynomial.rev_at Polynomial.revAt
 
-/-- We prefer to use the bundled `rev_at` over unbundled `rev_at_fun`. -/
+/-- We prefer to use the bundled `revAt` over unbundled `revAtfun`. -/
 @[simp]
 theorem revAtFun_eq (N i : ℕ) : revAtFun N i = revAt N i :=
   rfl
@@ -246,7 +246,7 @@ theorem eval₂_reflect_eq_zero_iff (i : R →+* S) (x : S) [Invertible x] (N : 
 end Eval₂
 
 /-- The reverse of a polynomial f is the polynomial obtained by "reading f backwards".
-Even though this is not the actual definition, reverse f = f (1/X) * X ^ f.natDegree. -/
+Even though this is not the actual definition, `reverse f = f (1/X) * X ^ f.natDegree`. -/
 noncomputable def reverse (f : R[X]) : R[X] :=
   reflect f.natDegree f
 #align polynomial.reverse Polynomial.reverse
@@ -389,5 +389,3 @@ theorem reverse_neg (f : R[X]) : reverse (-f) = -reverse f := by
 end Ring
 
 end Polynomial
-
-#lint
