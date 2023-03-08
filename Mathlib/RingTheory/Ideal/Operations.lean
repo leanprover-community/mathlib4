@@ -955,40 +955,39 @@ theorem IsPrime.radical_le_iff (hJ : IsPrime J) : I.radical ≤ J ↔ I ≤ J :=
   IsRadical.radical_le_iff hJ.isRadical
 #align ideal.is_prime.radical_le_iff Ideal.IsPrime.radical_le_iff
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x «expr ∉ » m) -/
-theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } := by
-  refine le_antisymm (le_infₛ fun J hJ => hJ.2.radical_le_iff.2 hJ.1) fun r hr => ?_
-  refine by_contradiction fun hri =>
-    let ⟨m, (hrm : r ∉ radical m), him, hm⟩ :=
-      zorn_nonempty_partialOrder₀ { K : Ideal R | r ∉ radical K }
-        (fun c hc hcc y hyc =>
-          ⟨supₛ c, fun ⟨n, hrnc⟩ =>
-            let ⟨y, hyc, hrny⟩ := (Submodule.mem_supₛ_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
-            hc hyc ⟨n, hrny⟩,
-            fun z => le_supₛ⟩)
-        I hri
-    have : ∀ (x) (_ : x ∉ m), r ∈ radical (m ⊔ span {x}) := fun x hxm =>
-      by_contradiction fun hrmx =>
-        hxm <|
-          hm (m ⊔ span {x}) hrmx le_sup_left ▸
-            (le_sup_right : _ ≤ m ⊔ span {x}) (subset_span <| Set.mem_singleton _)
-    have : IsPrime m :=
-      ⟨by rintro rfl <;> rw [radical_top] at hrm <;> exact hrm trivial, fun x y hxym =>
-        or_iff_not_imp_left.2 fun hxm =>
-          by_contradiction fun hym =>
-            let ⟨n, hrn⟩ := this _ hxm
-            let ⟨p, hpm, q, hq, hpqrn⟩ := Submodule.mem_sup.1 hrn
-            let ⟨c, hcxq⟩ := mem_span_singleton'.1 hq
-            let ⟨k, hrk⟩ := this _ hym
-            let ⟨f, hfm, g, hg, hfgrk⟩ := Submodule.mem_sup.1 hrk
-            let ⟨d, hdyg⟩ := mem_span_singleton'.1 hg
-            hrm
-              ⟨n + k, by
-                rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
-                    mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc] <;>
-                  refine'
-                    m.add_mem (m.mul_mem_right _ hpm)
-                      (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
+theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } :=
+  le_antisymm (le_infₛ fun J hJ ↦ hJ.2.radical_le_iff.2 hJ.1) fun r hr ↦
+    by_contradiction fun hri ↦
+      let ⟨m, (hrm : r ∉ radical m), him, hm⟩ :=
+        zorn_nonempty_partialOrder₀ { K : Ideal R | r ∉ radical K }
+          (fun c hc hcc y hyc =>
+            ⟨supₛ c, fun ⟨n, hrnc⟩ =>
+              let ⟨y, hyc, hrny⟩ := (Submodule.mem_supₛ_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
+              hc hyc ⟨n, hrny⟩,
+              fun z => le_supₛ⟩)
+          I hri
+      have : ∀ (x) (_ : x ∉ m), r ∈ radical (m ⊔ span {x}) := fun x hxm =>
+        by_contradiction fun hrmx =>
+          hxm <|
+            hm (m ⊔ span {x}) hrmx le_sup_left ▸
+              (le_sup_right : _ ≤ m ⊔ span {x}) (subset_span <| Set.mem_singleton _)
+      have : IsPrime m :=
+        ⟨by rintro rfl; rw [radical_top] at hrm; exact hrm trivial, fun {x y} hxym =>
+          or_iff_not_imp_left.2 fun hxm =>
+            by_contradiction fun hym =>
+              let ⟨n, hrn⟩ := this _ hxm
+              let ⟨p, hpm, q, hq, hpqrn⟩ := Submodule.mem_sup.1 hrn
+              let ⟨c, hcxq⟩ := mem_span_singleton'.1 hq
+              let ⟨k, hrk⟩ := this _ hym
+              let ⟨f, hfm, g, hg, hfgrk⟩ := Submodule.mem_sup.1 hrk
+              let ⟨d, hdyg⟩ := mem_span_singleton'.1 hg
+              hrm
+                ⟨n + k, by
+                  rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
+                      mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc];
+                    refine'
+                      m.add_mem (m.mul_mem_right _ hpm)
+                        (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|
       this.radical.symm ▸ (infₛ_le ⟨him, this⟩ : infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 #align ideal.radical_eq_Inf Ideal.radical_eq_infₛ
