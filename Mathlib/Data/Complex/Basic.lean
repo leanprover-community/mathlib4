@@ -32,6 +32,10 @@ structure Complex : Type where
   im : ℝ
 #align complex Complex
 
+-- Porting note: added as lemmas were not recognized as coercions
+attribute [coe] Complex.re
+attribute [coe] Complex.im
+
 -- mathport name: exprℂ
 notation "ℂ" => Complex
 
@@ -47,18 +51,18 @@ noncomputable instance : DecidableEq ℂ :=
 def equivRealProd : ℂ ≃ ℝ × ℝ where
   toFun z := ⟨z.re, z.im⟩
   invFun p := ⟨p.1, p.2⟩
-  left_inv := fun ⟨x, y⟩ => rfl
-  right_inv := fun ⟨x, y⟩ => rfl
+  left_inv := fun ⟨_, _⟩ => rfl
+  right_inv := fun ⟨_, _⟩ => rfl
 #align complex.equiv_real_prod Complex.equivRealProd
 
 @[simp]
 theorem eta : ∀ z : ℂ, Complex.mk z.re z.im = z
-  | ⟨a, b⟩ => rfl
+  | ⟨_, _⟩ => rfl
 #align complex.eta Complex.eta
 
 @[ext]
 theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
-  | ⟨zr, zi⟩, ⟨_, _⟩, rfl, rfl => rfl
+  | ⟨_, _⟩, ⟨_, _⟩, rfl, rfl => rfl
 #align complex.ext Complex.ext
 
 theorem ext_iff {z w : ℂ} : z = w ↔ z.re = w.re ∧ z.im = w.im :=
@@ -85,7 +89,7 @@ instance : Coe ℝ ℂ :=
   ⟨fun r => ⟨r, 0⟩⟩
 
 @[simp, norm_cast]
-theorem of_real_re (r : ℝ) : (r : ℂ).re = r :=
+theorem of_real_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
 #align complex.of_real_re Complex.of_real_re
 
@@ -113,7 +117,7 @@ instance canLift : CanLift ℂ ℝ coe fun z => z.im = 0 where prf z hz := ⟨z.
 denoted by `s ×ℂ t`. -/
 def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
-#align set.re_prod_im Set.reProdIm
+#align set.re_prod_im Complex.Set.reProdIm
 
 -- mathport name: «expr ×ℂ »
 infixl:72 " ×ℂ " => Set.reProdIm
@@ -855,7 +859,7 @@ theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
   calc
     Complex.abs n = Complex.abs (n : ℝ) := by rw [of_real_nat_cast]
     _ = _ := abs_of_nonneg (Nat.cast_nonneg n)
-    
+
 #align complex.abs_of_nat Complex.abs_of_nat
 
 theorem mul_self_abs (z : ℂ) : abs z * abs z = normSq z :=
@@ -885,7 +889,7 @@ theorem abs_two : abs 2 = 2 :=
   calc
     abs 2 = abs (2 : ℝ) := by rw [of_real_bit0, of_real_one]
     _ = (2 : ℝ) := abs_of_nonneg (by norm_num)
-    
+
 #align complex.abs_two Complex.abs_two
 
 @[simp]
@@ -964,7 +968,7 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : abs z ≤ Real.sqrt 2 * max (|z.re|)
       Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
     _ = Real.sqrt 2 * max (|x|) (|y|) := by
       rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
-    
+
 #align complex.abs_le_sqrt_two_mul_max Complex.abs_le_sqrt_two_mul_max
 
 theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / z.abs| ≤ 1 :=
@@ -1161,7 +1165,7 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ abs) :
       _ = CauSeq.const abs (↑(limUnder (cauSeqRe f)) + ↑(limUnder (cauSeqIm f)) * i) :=
         CauSeq.ext fun _ =>
           Complex.ext (by simp [lim_aux, cau_seq_re]) (by simp [lim_aux, cau_seq_im])
-      
+
 #align complex.lim_eq_lim_im_add_lim_re Complex.lim_eq_lim_im_add_lim_re
 
 theorem lim_re (f : CauSeq ℂ abs) : limUnder (cauSeqRe f) = (limUnder f).re := by
@@ -1221,4 +1225,3 @@ theorem im_sum (f : α → ℂ) : (∑ i in s, f i).im = ∑ i in s, (f i).im :=
 #align complex.im_sum Complex.im_sum
 
 end Complex
-
