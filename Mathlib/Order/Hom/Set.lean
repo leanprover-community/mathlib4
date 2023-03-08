@@ -104,7 +104,7 @@ variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f
 
 /-- A strictly monotone function from a linear order is an order isomorphism between its domain and
 its range. -/
-@[simps apply]
+@[simps! apply]
 protected noncomputable def orderIso :
     α ≃o Set.range f where
   toEquiv := Equiv.ofInjective f h_mono.injective
@@ -149,7 +149,7 @@ def OrderIso.compl : α ≃o αᵒᵈ where
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le
 #align order_iso.compl OrderIso.compl
-#align order_iso.compl_symm_apply OrderIso.compl_symmApply
+#align order_iso.compl_symm_apply OrderIso.compl_symm_apply
 #align order_iso.compl_apply OrderIso.compl_apply
 
 theorem compl_strictAnti : StrictAnti (compl : α → α) :=

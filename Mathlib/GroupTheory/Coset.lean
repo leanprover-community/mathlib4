@@ -470,7 +470,7 @@ instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : F
 #align quotient_add_group.fintype QuotientAddGroup.fintype
 
 /-- The canonical map from a group `α` to the quotient `α ⧸ s`. -/
-@[to_additive (attr := coe) "The canonical map from an `add_group` `α` to the quotient `α ⧸ s`."]
+@[to_additive (attr := coe) "The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`."]
 abbrev mk (a : α) : α ⧸ s :=
   Quotient.mk'' a
 #align quotient_group.mk QuotientGroup.mk
@@ -482,7 +482,7 @@ theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
 #align quotient_group.mk_surjective QuotientGroup.mk_surjective
 #align quotient_add_group.mk_surjective QuotientAddGroup.mk_surjective
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=
   Quotient.inductionOn' x H
 #align quotient_group.induction_on QuotientGroup.induction_on
@@ -492,7 +492,7 @@ theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (Quoti
 instance : CoeTC α (α ⧸ s) :=
   ⟨mk⟩
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_on' {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z : α, C z) : C x :=
   Quotient.inductionOn' x H
 #align quotient_group.induction_on' QuotientGroup.induction_on'
@@ -679,7 +679,7 @@ def quotientEquivProdOfLe' (h_le : s ≤ t) (f : α ⧸ t → α)
 
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotientEquivProdOfLe'`. -/
-@[to_additive (attr := simps) "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
+@[to_additive (attr := simps!) "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
  constructive version is `quotientEquivProdOfLe'`."]
 noncomputable def quotientEquivProdOfLe (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
   quotientEquivProdOfLe' h_le Quotient.out' Quotient.out_eq'

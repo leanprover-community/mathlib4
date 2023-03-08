@@ -183,6 +183,7 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 #align equiv.trans Equiv.trans
 
+@[simps]
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
 
@@ -547,7 +548,7 @@ The `equiv_rw` tactic is not able to use the default `Sort` level `Equiv.arrowCo
 because Lean's universe rules will not unify `?l_1` with `imax (1 ?m_1)`.
 -/
 -- porting note: removing `congr` attribute
-@[simps apply]
+@[simps! apply]
 def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) :=
   Equiv.arrowCongr hα hβ
 #align equiv.arrow_congr' Equiv.arrowCongr'
@@ -568,7 +569,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ 
 #align equiv.arrow_congr'_symm Equiv.arrowCongr'_symm
 
 /-- Conjugate a map `f : α → α` by an equivalence `α ≃ β`. -/
-@[simps apply] def conj (e : α ≃ β) : (α → α) ≃ (β → β) :=   arrowCongr e e
+@[simps! apply] def conj (e : α ≃ β) : (α → α) ≃ (β → β) := arrowCongr e e
 #align equiv.conj Equiv.conj
 #align equiv.conj_apply Equiv.conj_apply
 
@@ -637,7 +638,7 @@ is equivalent to `β a`. -/
 #align equiv.Pi_subsingleton Equiv.piSubsingleton
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps! (config := { fullyApplied := false }) apply]
 def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piSubsingleton _ default
 #align equiv.fun_unique Equiv.funUnique
 #align equiv.fun_unique_apply Equiv.funUnique_apply

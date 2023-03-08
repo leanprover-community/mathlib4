@@ -174,8 +174,8 @@ theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : 
   show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
 #align le_of_tendsto_of_tendsto le_of_tendsto_of_tendsto
 
-alias le_of_tendsto_of_tendsto ← tendsto_le_of_eventuallyLe
-#align tendsto_le_of_eventually_le tendsto_le_of_eventuallyLe
+alias le_of_tendsto_of_tendsto ← tendsto_le_of_eventuallyLE
+#align tendsto_le_of_eventually_le tendsto_le_of_eventuallyLE
 
 theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
@@ -401,6 +401,9 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
+theorem Covby.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
+  empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Ioi' h.1
+
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
 #align Ioc_mem_nhds_within_Ioi Ioc_mem_nhdsWithin_Ioi
@@ -459,6 +462,9 @@ theorem Ioo_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ioo a c ∈ �
 -- porting note: new lemma; todo: swap `'`?
 theorem Ioo_mem_nhdsWithin_Iio' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[<] b :=
   Ioo_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
+
+theorem Covby.nhdsWithin_Iio {a b : α} (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
+  empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Iio' h.1
 
 theorem Ico_mem_nhdsWithin_Iio {a b c : α} (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
@@ -668,14 +674,14 @@ nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀)
   hf.eventually_lt hg hfg
 #align continuous_at.eventually_lt ContinuousAt.eventually_lt
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => min (f b) (g b) := by
   simp only [min_def]
   exact hf.if_le hg hf hg fun x => id
 #align continuous.min Continuous.min
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
     Continuous fun b => max (f b) (g b) :=
   @Continuous.min αᵒᵈ _ _ _ _ _ _ _ hf hg
@@ -1082,7 +1088,7 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
   convert @nhdsWithin_Ici_basis' αᵒᵈ _ _ _ (toDual a) ha
-  exact funext fun x => (@dual_Ico _ _ _ _).symm
+  exact (@dual_Ico _ _ _ _).symm
 #align nhds_within_Iic_basis' nhdsWithin_Iic_basis'
 
 theorem nhdsWithin_Ici_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α]
@@ -1556,6 +1562,17 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' {a u' : α} {s : Set α} (hu' 
   (TFAE_mem_nhdsWithin_Ioi hu' s).out 0 4
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset' mem_nhdsWithin_Ioi_iff_exists_Ioo_subset'
 
+theorem nhdsWithin_Ioi_basis' {a : α} (h : ∃ b, a < b) : (𝓝[>] a).HasBasis (a < ·) (Ioo a) :=
+  let ⟨_, h⟩ := h
+  ⟨fun _ => mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' h⟩
+
+theorem nhdsWithin_Ioi_eq_bot_iff {a : α} : 𝓝[>] a = ⊥ ↔ IsTop a ∨ ∃ b, a ⋖ b := by
+  by_cases ha : IsTop a
+  · simp [ha, ha.isMax.Ioi_eq]
+  · simp only [ha, false_or]
+    rw [isTop_iff_isMax, not_isMax_iff] at ha
+    simp only [(nhdsWithin_Ioi_basis' ha).eq_bot_iff, covby_iff_Ioo_eq]
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u)`
 with `a < u`. -/
 theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : Set α} :
@@ -1563,6 +1580,19 @@ theorem mem_nhdsWithin_Ioi_iff_exists_Ioo_subset [NoMaxOrder α] {a : α} {s : S
   let ⟨_u', hu'⟩ := exists_gt a
   mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' hu'
 #align mem_nhds_within_Ioi_iff_exists_Ioo_subset mem_nhdsWithin_Ioi_iff_exists_Ioo_subset
+
+/-- The set of points which are isolated on the right is countable when the space is
+second-countable. -/
+theorem countable_setOf_isolated_right [SecondCountableTopology α] :
+    { x : α | 𝓝[>] x = ⊥ }.Countable := by
+  simp only [nhdsWithin_Ioi_eq_bot_iff, setOf_or]
+  exact (subsingleton_isTop α).countable.union countable_setOf_covby_right
+
+/-- The set of points which are isolated on the left is countable when the space is
+second-countable. -/
+theorem countable_setOf_isolated_left [SecondCountableTopology α] :
+    { x : α | 𝓝[<] x = ⊥ }.Countable :=
+  countable_setOf_isolated_right (α := αᵒᵈ)
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
@@ -1622,6 +1652,14 @@ theorem mem_nhdsWithin_Iio_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered
   have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset
   simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
 #align mem_nhds_within_Iio_iff_exists_Ico_subset mem_nhdsWithin_Iio_iff_exists_Ico_subset
+
+theorem nhdsWithin_Iio_basis' {a : α} (h : ∃ b, b < a) : (𝓝[<] a).HasBasis (· < a) (Ioo · a) :=
+  let ⟨_, h⟩ := h
+  ⟨fun _ => mem_nhdsWithin_Iio_iff_exists_Ioo_subset' h⟩
+
+theorem nhdsWithin_Iio_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
+    convert nhdsWithin_Ioi_eq_bot_iff (a := OrderDual.toDual a) using 4
+    exact ofDual_covby_ofDual_iff
 
 open List in
 /-- The following statements are equivalent:
@@ -2283,9 +2321,9 @@ theorem nhdsWithin_Ioi_neBot [NoMaxOrder α] {a b : α} (H : a ≤ b) : NeBot (�
   nhdsWithin_Ioi_neBot' nonempty_Ioi H
 #align nhds_within_Ioi_ne_bot nhdsWithin_Ioi_neBot
 
-theorem nhdsWithin_Ioi_self_ne_bot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝[>] a) :=
+theorem nhdsWithin_Ioi_self_neBot' {a : α} (H : (Ioi a).Nonempty) : NeBot (𝓝[>] a) :=
   nhdsWithin_Ioi_neBot' H (le_refl a)
-#align nhds_within_Ioi_self_ne_bot' nhdsWithin_Ioi_self_ne_bot'
+#align nhds_within_Ioi_self_ne_bot' nhdsWithin_Ioi_self_neBot'
 
 @[instance]
 theorem nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) :=
@@ -2298,18 +2336,18 @@ theorem Filter.Eventually.exists_gt [NoMaxOrder α] {a : α} {p : α → Prop} (
     ((h.filter_mono (@nhdsWithin_le_nhds _ _ a (Ioi a))).and self_mem_nhdsWithin).exists
 #align filter.eventually.exists_gt Filter.Eventually.exists_gt
 
-theorem nhdsWithin_Iio_ne_bot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
+theorem nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
     NeBot (𝓝[Iio c] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Iio' H₁]
-#align nhds_within_Iio_ne_bot' nhdsWithin_Iio_ne_bot'
+#align nhds_within_Iio_ne_bot' nhdsWithin_Iio_neBot'
 
 theorem nhdsWithin_Iio_neBot [NoMinOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Iio b] a) :=
-  nhdsWithin_Iio_ne_bot' nonempty_Iio H
+  nhdsWithin_Iio_neBot' nonempty_Iio H
 #align nhds_within_Iio_ne_bot nhdsWithin_Iio_neBot
 
-theorem nhdsWithin_Iio_self_ne_bot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝[<] b) :=
-  nhdsWithin_Iio_ne_bot' H (le_refl b)
-#align nhds_within_Iio_self_ne_bot' nhdsWithin_Iio_self_ne_bot'
+theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝[<] b) :=
+  nhdsWithin_Iio_neBot' H (le_refl b)
+#align nhds_within_Iio_self_ne_bot' nhdsWithin_Iio_self_neBot'
 
 @[instance]
 theorem nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) :=

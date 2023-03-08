@@ -50,8 +50,7 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
     simp [pow_succ]
 
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
-@[to_additive AddMonoidHom.addCommGroup
-      "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
+@[to_additive "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too."]
 instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
   { MonoidHom.commMonoid with
@@ -179,7 +178,7 @@ theorem map_div₂ {_ : Group M} {_ : MulOneClass N} {_ : CommGroup P} (f : M �
 
 /-- Evaluation of a `MonoidHom` at a point as a monoid homomorphism. See also `MonoidHom.apply`
 for the evaluation of any function at a point. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps!)
       "Evaluation of an `AddMonoidHom` at a point as an additive monoid homomorphism.
       See also `AddMonoidHom.apply` for the evaluation of any function at a point."]
 def eval [MulOneClass M] [CommMonoid N] : M →* (M →* N) →* N :=
@@ -191,7 +190,7 @@ def eval [MulOneClass M] [CommMonoid N] : M →* (M →* N) →* N :=
 
 /-- The expression `λ g m, g (f m)` as a `MonoidHom`.
 Equivalently, `(λ g, MonoidHom.comp g f)` as a `MonoidHom`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps!)
       "The expression `λ g m, g (f m)` as a `AddMonoidHom`.
       Equivalently, `(λ g, AddMonoidHom.comp g f)` as a `AddMonoidHom`.
 
@@ -335,14 +334,14 @@ theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
 #align add_monoid_hom.map_mul_iff AddMonoidHom.map_mul_iff
 
 /-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
-@[simps]
+@[simps!]
 def AddMonoid.End.mulLeft : R →+ AddMonoid.End R :=
   AddMonoidHom.mul
 #align add_monoid.End.mul_left AddMonoid.End.mulLeft
 #align add_monoid.End.mul_left_apply_apply AddMonoid.End.mulLeft_apply_apply
 
 /-- The right multiplication map: `(a, b) ↦ b * a`. See also `AddMonoidHom.mulRight`. -/
-@[simps]
+@[simps!]
 def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
   (AddMonoidHom.mul : R →+ AddMonoid.End R).flip
 #align add_monoid.End.mul_right AddMonoid.End.mulRight

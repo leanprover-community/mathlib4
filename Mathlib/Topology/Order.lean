@@ -209,7 +209,7 @@ def gciGenerateFrom (α : Type _) :
   topology whose open sets are those sets open in every member of the collection. -/
 instance : CompleteLattice (TopologicalSpace α) := (gciGenerateFrom α).liftCompleteLattice
 
--- porting note: todo: restore `@[mono]`
+@[mono]
 theorem generateFrom_anti {α} {g₁ g₂ : Set (Set α)} (h : g₁ ⊆ g₂) :
     generateFrom g₂ ≤ generateFrom g₁ :=
   (gc_generateFrom _).monotone_u h
@@ -260,11 +260,7 @@ theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U 
     case univ => exact .inr rfl
     case inter h₁ h₂ =>
       rcases h₁ with (rfl | rfl) <;> rcases h₂ with (rfl | rfl) <;> simp
-    case unionₛ _ ih =>
-      simp only [unionₛ_eq_empty, or_iff_not_imp_left, not_forall, unionₛ_eq_univ_iff]
-      rintro ⟨U, hU, hne⟩ _
-      obtain rfl : U = univ; exact (ih U hU).resolve_left hne
-      exact ⟨_, hU, trivial⟩,
+    case unionₛ _ ih => exact unionₛ_mem_empty_univ ih,
     by
       rintro (rfl | rfl)
       exacts [@isOpen_empty _ ⊤, @isOpen_univ _ ⊤]⟩
@@ -291,7 +287,7 @@ theorem isClosed_discrete [TopologicalSpace α] [DiscreteTopology α] (s : Set �
   ⟨isOpen_discrete _⟩
 #align is_closed_discrete isClosed_discrete
 
-@[nontriviality] -- todo: add `continuity`
+@[nontriviality, continuity]
 theorem continuous_of_discreteTopology [TopologicalSpace α] [DiscreteTopology α]
     [TopologicalSpace β] {f : α → β} : Continuous f :=
   continuous_def.2 fun _ _ => isOpen_discrete _
@@ -383,7 +379,7 @@ theorem isClosed_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → 
 #align is_closed_induced_iff isClosed_induced_iff
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced topology on `β` is defined
-  such that `s:set β` is open if the preimage of `s` is open. This is the finest topology that
+  such that `s : Set β` is open if the preimage of `s` is open. This is the finest topology that
   makes `f` continuous. -/
 def TopologicalSpace.coinduced {α : Type u} {β : Type v} (f : α → β) (t : TopologicalSpace α) :
     TopologicalSpace β where
@@ -706,7 +702,7 @@ theorem continuous_generateFrom {t : TopologicalSpace α} {b : Set (Set β)}
   continuous_iff_coinduced_le.2 <| le_generateFrom h
 #align continuous_generated_from continuous_generateFrom
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
   continuous_iff_le_induced.2 le_rfl
 #align continuous_induced_dom continuous_induced_dom
@@ -810,12 +806,12 @@ theorem continuous_infᵢ_rng {t₁ : TopologicalSpace α} {t₂ : ι → Topolo
   simp only [continuous_iff_coinduced_le, le_infᵢ_iff]
 #align continuous_infi_rng continuous_infᵢ_rng
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_bot {t : TopologicalSpace β} : Continuous[⊥, t] f :=
   continuous_iff_le_induced.2 bot_le
 #align continuous_bot continuous_bot
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_top {t : TopologicalSpace α} : Continuous[t, ⊤] f :=
   continuous_iff_coinduced_le.2 le_top
 #align continuous_top continuous_top
@@ -917,15 +913,18 @@ theorem nhds_false : 𝓝 False = ⊤ :=
   TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _)]
 #align nhds_false nhds_false
 
-theorem continuous_Prop {p : α → Prop} : Continuous p ↔ IsOpen { x | p x } :=
-  ⟨fun h : Continuous p =>
-    by
-    have : IsOpen (p ⁻¹' {True}) := isOpen_singleton_true.preimage h
-    simpa [preimage] using this, fun h : IsOpen { x | p x } =>
-    continuous_generateFrom fun s (hs : s = {True}) => by simp [hs, preimage, h]⟩
+theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :
+    Tendsto p l (𝓝 True) ↔ ∀ᶠ x in l, p x := by simp
+
+theorem tendsto_nhds_Prop {l : Filter α} {p : α → Prop} {q : Prop} :
+    Tendsto p l (𝓝 q) ↔ (q → ∀ᶠ x in l, p x) := by
+  by_cases q <;> simp [*]
+
+theorem continuous_Prop {p : α → Prop} : Continuous p ↔ IsOpen { x | p x } := by
+  simp only [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_Prop, isOpen_iff_mem_nhds]; rfl
 #align continuous_Prop continuous_Prop
 
-theorem isOpen_iff_continuous_mem {s : Set α} : IsOpen s ↔ Continuous fun x => x ∈ s :=
+theorem isOpen_iff_continuous_mem {s : Set α} : IsOpen s ↔ Continuous (· ∈ s) :=
   continuous_Prop.symm
 #align is_open_iff_continuous_mem isOpen_iff_continuous_mem
 

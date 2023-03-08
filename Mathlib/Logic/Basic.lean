@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module logic.basic
-! leanprover-community/mathlib commit 1c521b4fb909320eca16b2bb6f8b5b0490b1cb5e
+! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -244,11 +244,6 @@ it is better to use explicitly introduced ones rather than allowing Lean to auto
 classical ones, as these may cause instance mismatch errors later.
 -/
 
-/-- The Double Negation Theorem: `¬ ¬ P` is equivalent to `P`.
-The left-to-right direction, double negation elimination (DNE),
-is classically true but not constructively. -/
-add_decl_doc Classical.not_not -- TODO: move to Std
-
 export Classical (not_not)
 attribute [simp] not_not
 #align not_not Classical.not_not
@@ -301,8 +296,8 @@ instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
 @[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
 @[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
 theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
-protected theorem xor.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
-#align xor.or xor.or
+protected theorem Xor'.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
+#align xor.or Xor'.or
 #align xor_not_not xor_not_not
 #align xor_not_right xor_not_right
 #align xor_not_left xor_not_left
@@ -565,8 +560,16 @@ theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → S
   by subst t; rfl
 
 theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
-    HEq (@Eq.ndrec α a C x b e) y := by subst e; exact h
+    HEq (e ▸ x) y := by subst e; exact h
 #align rec_heq_of_heq rec_heq_of_heq
+
+theorem rec_heq_iff_heq {C : α → Sort _} {x : C a} {y : β} {e : a = b} :
+    HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
+#align rec_heq_iff_heq rec_heq_iff_heq
+
+theorem heq_rec_iff_heq {C : α → Sort _} {x : β} {y : C a} {e : a = b} :
+    HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
+#align heq_rec_iff_heq heq_rec_iff_heq
 
 protected theorem Eq.congr (h₁ : x₁ = y₁) (h₂ : x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
   subst h₁; subst h₂; rfl
@@ -661,9 +664,6 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
   ⟨fun ⟨x, y, h⟩ ↦ ⟨y, x, h⟩, fun ⟨y, x, h⟩ ↦ ⟨x, y, h⟩⟩
 #align exists_swap exists_swap
 
-@[simp] theorem forall_exists_index {q : (∃ x, p x) → Prop} :
-    (∀ h, q h) ↔ ∀ x (h : p x), q ⟨x, h⟩ :=
-  ⟨fun h x hpx ↦ h ⟨x, hpx⟩, fun h ⟨x, hpx⟩ ↦ h x hpx⟩
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp

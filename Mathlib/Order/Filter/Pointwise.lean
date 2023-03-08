@@ -558,7 +558,7 @@ protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Filter`. See Note [pointwise nat action]. -/
-@[to_additive]
+@[to_additive existing]
 protected def instNPow [One α] [Mul α] : Pow (Filter α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 #align filter.has_npow Filter.instNPow
@@ -571,7 +571,7 @@ protected def instZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Filter α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
-@[to_additive]
+@[to_additive  existing]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align filter.has_zpow Filter.instZPow
@@ -723,7 +723,7 @@ theorem nsmul_top {α : Type _} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n �
   | n + 2 => fun _ => by rw [succ_nsmul, nsmul_top n.succ_ne_zero, top_add_top]
 #align filter.nsmul_top Filter.nsmul_top
 
-@[to_additive nsmul_top]
+@[to_additive existing nsmul_top]
 theorem top_pow : ∀ {n : ℕ}, n ≠ 0 → (⊤ : Filter α) ^ n = ⊤
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _
@@ -825,7 +825,6 @@ Note that `Filter α` is not a `Distrib` because `f * g + f * h` has cross terms
 lacks.
 -/
 
-
 theorem mul_add_subset : f * (g + h) ≤ f * g + f * h :=
   map₂_distrib_le_left mul_add
 #align filter.mul_add_subset Filter.mul_add_subset
@@ -908,7 +907,7 @@ theorem map_inv' : f⁻¹.map m = (f.map m)⁻¹ :=
 #align filter.map_neg' Filter.map_neg'
 
 @[to_additive]
-theorem Tendsto.inv_inv : Tendsto m f₁ f₂ → Tendsto m f₁⁻¹ f₂⁻¹ := fun hf =>
+protected theorem Tendsto.inv_inv : Tendsto m f₁ f₂ → Tendsto m f₁⁻¹ f₂⁻¹ := fun hf =>
   (Filter.map_inv' m).trans_le <| Filter.inv_le_inv hf
 #align filter.tendsto.inv_inv Filter.Tendsto.inv_inv
 #align filter.tendsto.neg_neg Filter.Tendsto.neg_neg
@@ -920,8 +919,9 @@ protected theorem map_div : (f / g).map m = f.map m / g.map m :=
 #align filter.map_sub Filter.map_sub
 
 @[to_additive]
-theorem Tendsto.div_div : Tendsto m f₁ f₂ → Tendsto m g₁ g₂ → Tendsto m (f₁ / g₁) (f₂ / g₂) :=
-  fun hf hg => (Filter.map_div m).trans_le <| Filter.div_le_div hf hg
+protected theorem Tendsto.div_div (hf : Tendsto m f₁ f₂) (hg : Tendsto m g₁ g₂) :
+    Tendsto m (f₁ / g₁) (f₂ / g₂) :=
+  (Filter.map_div m).trans_le <| Filter.div_le_div hf hg
 #align filter.tendsto.div_div Filter.Tendsto.div_div
 #align filter.tendsto.sub_sub Filter.Tendsto.sub_sub
 
@@ -1288,22 +1288,22 @@ instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α 
 #align filter.vadd_assoc_class Filter.vaddAssocClass
 
 @[to_additive vaddAssocClass']
-instance is_scalar_tower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Filter β) (Filter γ) :=
   ⟨fun a f g => by
     refine' (map_map₂_distrib_left fun _ _ => _).symm
     exact (smul_assoc a _ _).symm⟩
-#align filter.is_scalar_tower' Filter.is_scalar_tower'
+#align filter.is_scalar_tower' Filter.isScalarTower'
 #align filter.vadd_assoc_class' Filter.vaddAssocClass'
 
 @[to_additive vaddAssocClass'']
-instance is_scalar_tower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Filter α) (Filter β) (Filter γ) :=
   ⟨fun _ _ _ => map₂_assoc smul_assoc⟩
-#align filter.is_scalar_tower'' Filter.is_scalar_tower''
+#align filter.is_scalar_tower'' Filter.isScalarTower''
 #align filter.vadd_assoc_class'' Filter.vaddAssocClass''
 
-@[to_additive isCentralVAdd]
+@[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Filter β) :=
   ⟨fun _ f => (congr_arg fun m => map m f) <| funext fun _ => op_smul_eq_smul _ _⟩

@@ -27,8 +27,7 @@ variable {α : Type u} {β : Type _}
 
 /-- Pullback an `OrderedCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
-@[reducible,
-  to_additive "Pullback an `OrderedAddCommMonoid` under an injective map."]
+@[to_additive (attr := reducible) "Pullback an `OrderedAddCommMonoid` under an injective map."]
 def Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type _} [One β] [Mul β]
     [Pow β ℕ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
@@ -45,10 +44,9 @@ def Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type _} [O
 
 /-- Pullback a `LinearOrderedCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
-@[reducible,
-  to_additive "Pullback an `OrderedAddCommMonoid` under an injective map."]
+@[to_additive (attr := reducible) "Pullback an `OrderedAddCommMonoid` under an injective map."]
 def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β : Type _} [One β]
-    [Mul β] [Pow β ℕ] [HasSup β] [HasInf β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
+    [Mul β] [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrderedCommMonoid β :=
@@ -59,7 +57,7 @@ def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.
 See also `OrderIso.mulLeft` when working in an ordered group. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps!)
       "The order embedding sending `b` to `a + b`, for some fixed `a`.
        See also `OrderIso.addLeft` when working in an additive ordered group."]
 def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
@@ -72,7 +70,7 @@ def OrderEmbedding.mulLeft {α : Type _} [Mul α] [LinearOrder α]
 
 /-- The order embedding sending `b` to `b * a`, for some fixed `a`.
 See also `OrderIso.mulRight` when working in an ordered group. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps!)
       "The order embedding sending `b` to `b + a`, for some fixed `a`.
        See also `OrderIso.addRight` when working in an additive ordered group."]
 def OrderEmbedding.mulRight {α : Type _} [Mul α] [LinearOrder α]

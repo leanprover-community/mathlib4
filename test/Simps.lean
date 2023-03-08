@@ -7,8 +7,9 @@ import Mathlib.Data.Prod.Basic
 
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
+-- set_option pp.universes true
 
-open Lean Meta Elab Term Command
+open Lean Meta Elab Term Command Simps
 
 structure Foo1 : Type where
   one : Nat
@@ -17,11 +18,11 @@ structure Foo1 : Type where
   four : 1 = 1
   five : 2 = 1
 
-initialize_simps_projections Foo1 (one → toNat, two → toBool, three → coe as_prefix, -toBool)
+initialize_simps_projections Foo1 (one → toNat, two → toBool, three → coe, as_prefix coe, -toBool)
 
 run_cmd liftTermElabM <| do
-  let  env ← getEnv
-  let state := ((simpsStructure.getState env).find? `Foo1).get!
+  let env ← getEnv
+  let state := ((Simps.structureExt.getState env).find? `Foo1).get!
   guard <| state.1 == []
   guard <| state.2.map (·.1) == #[`toNat, `toBool, `coe, `four, `five]
   liftMetaM <| guard (← isDefEq (state.2[0]!.2) (← elabTerm (← `(Foo1.one)) none))
@@ -38,10 +39,11 @@ def Foo2.Simps.elim (α : Type _) : Foo2 α → α × α := fun x => (x.elim.1, 
 
 initialize_simps_projections Foo2
 
--- run_cmd liftTermElabM <| do
---   let  env ← getEnv
---   let state := ((simpsStructure.getState env).find? `Foo2).get!
---   IO.println <| format state
+@[simps]
+def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
+
+-- run_cmd do
+--   logInfo m!"{Simps.structureExt.getState (← getEnv) |>.find? `Foo2 |>.get!}"
 
 structure Left (α : Type _) extends Foo2 α where
   moreData1 : Nat
@@ -52,16 +54,16 @@ initialize_simps_projections Left
 structure Right (α : Type u) (β : Type v) extends Foo2 α where
   otherData : β
 
-initialize_simps_projections Right (toFoo2_elim → newProjection)
+initialize_simps_projections Right (elim → newProjection, -otherData, +toFoo2)
 
 run_cmd liftTermElabM <| do
-  let  env ← getEnv
-  let state := ((simpsStructure.getState env).find? `Right).get!
-  -- IO.println <| format state
+  let env ← getEnv
+  let state := ((Simps.structureExt.getState env).find? `Right).get!
+  -- logInfo m!"{state}"
   guard <| state.1 == [`u, `v]
   guard <| state.2.map (·.1) == #[`toFoo2, `otherData, `newProjection]
-  guard <| state.2.map (·.3) == #[[0],[1],[0,0]]
-  guard <| state.2.map (·.4) == #[true, true, true]
+  guard <| state.2.map (·.3) == #[[0], [1], [0,0]]
+  guard <| state.2.map (·.4) == #[true, false, true]
   guard <| state.2.map (·.5) == #[false, false, false]
 
 structure Top (α β : Type _) extends Left α, Right α β
@@ -72,9 +74,9 @@ structure NewTop (α β : Type _) extends Right α β, Left α
 
 def NewTop.Simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.elim
 
-initialize_simps_projections NewTop (toRight_toFoo2_elim → newElim)
+initialize_simps_projections NewTop (elim → newElim)
 
-run_cmd liftCoreM <| successIfFail <| simpsGetRawProjections `DoesntExist
+run_cmd liftCoreM <| successIfFail <| getRawProjections `DoesntExist
 
 class Something (α : Type _) where
   op : α → α → α → α
@@ -138,16 +140,16 @@ noncomputable def bar2 {α} : α ≃ α :=
 Classical.choice ⟨foo.rfl⟩
 
 run_cmd liftCoreM <| do
-  _ ← successIfFail <| simpsTac .missing `foo.bar1
+  _ ← successIfFail <| simpsTac .missing `foo.bar1 { rhsMd := .default, simpRhs := true }
   --   "Invalid `simps` attribute. Target Nat is not a structure"
-  _ ← successIfFail <| simpsTac .missing `foo.bar2
+  _ ← successIfFail <| simpsTac .missing `foo.bar2 { rhsMd := .default, simpRhs := true }
   --   "Invalid `simps` attribute. The body is not a constructor application:
   -- Classical.choice (_ : Nonempty (α ≃ α))"
   pure ()
 
 /- test that if a non-constructor is given as definition, then
   `{rhsMd := .default, simpRhs := true}` is applied automatically. -/
-@[simps] def rfl2 {α} : α ≃ α := foo.rfl
+@[simps!] def rfl2 {α} : α ≃ α := foo.rfl
 
 example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
   dsimp
@@ -175,11 +177,11 @@ def my_equiv := Equiv'
 /- check projections for nested structures -/
 
 namespace CountNested
-@[simps (config := {attrs := [`norm]})]
+@[simps]
 def nested1 : MyProd ℕ $ MyProd ℤ ℕ :=
 ⟨2, -1, 1⟩
 
-@[simps (config := {isSimp := false})]
+@[simps (config := .lemmasOnly)]
 def nested2 : ℕ × MyProd ℕ ℕ :=
 ⟨2, MyProd.map Nat.succ Nat.pred ⟨1, 2⟩⟩
 
@@ -247,14 +249,14 @@ def test_sneaky {α} : ComplicatedEquivPlusData α :=
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
-  guard <| env.find? `rflWithData_toEquiv' |>.isSome
-  guard <| env.find? `rflWithData'_toEquiv' |>.isSome
+  guard <| env.find? `rflWithData_toFun |>.isSome
+  guard <| env.find? `rflWithData'_toFun |>.isSome
   guard <| env.find? `test_extra_fst |>.isSome
   guard <| simpsAttr.getParam? env `test ==
-    #[`test_toEquiv', `test_P, `test_extra_fst, `test_extra_snd]
+    #[`test_P, `test_extra_fst, `test_extra_snd, `test_toFun, `test_invFun]
   guard <| env.find? `test_sneaky_extra_fst |>.isSome
-  guard <| env.find? `rflWithData_to_equiv_toFun |>.isNone
-  guard <| env.find? `rflWithData'_to_equiv_toFun |>.isNone
+  guard <| env.find? `rflWithData_toEquiv_toFun |>.isNone
+  guard <| env.find? `rflWithData'_toEquiv_toFun |>.isNone
   guard <| env.find? `test_sneaky_extra |>.isNone
 
 structure PartiallyAppliedStr :=
@@ -351,7 +353,8 @@ run_cmd liftTermElabM <| do
 -- You can also see this information by running
 --   `initialize_simps_projections? prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify5 {} [("snd_snd", .missing)]
+  _ ← successIfFail <| simpsTac .missing `specify.specify5 { rhsMd := .default, simpRhs := true }
+    [("snd_snd", .missing)]
 --     "Invalid simp lemma specify.specify5_snd_snd.
 -- The given definition is not a constructor application:
 --   Classical.choice specify.specify5._proof_1"
@@ -407,7 +410,7 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `pprodEquivProd2_invFun_snd |>.isSome
 
 -- we can disable this behavior with the option `notRecursive`.
-@[simps (config := {notRecursive := []})] def pprodEquivProd22 : PProd ℕ ℕ ≃ ℕ × ℕ :=
+@[simps! (config := {notRecursive := []})] def pprodEquivProd22 : PProd ℕ ℕ ≃ ℕ × ℕ :=
 pprodEquivProd2
 
 run_cmd liftTermElabM <| do
@@ -489,7 +492,7 @@ example {α} (x x' : α) (h : x = x') : coercing.rfl2.invFun x = x' := by simp; 
 @[simps] protected def Equiv2.symm2 {α β} (f : Equiv2 α β) : Equiv2 β α :=
 ⟨f.invFun, f.toFun, f.right_inv, f.left_inv⟩
 
-@[simps (config := {fullyApplied := false})] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
+@[simps (config := .asFn)] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
 ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
 example {α β} (f : Equiv2 α β) (y : β) {x} (h : f.invFun y = x) : f.symm y = x := by simp; rw [h]
@@ -605,7 +608,7 @@ variable {α β γ : Sort _}
 noncomputable def Equiv.Simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
 
 run_cmd liftTermElabM <| do
-  successIfFail (simpsGetRawProjections `FaultyManualCoercion.Equiv)
+  successIfFail (getRawProjections `FaultyManualCoercion.Equiv)
 -- "Invalid custom projection:
 --   λ {α : Sort u_1} {β : Sort u_2} (e : α ≃ β), Classical.choice _
 -- Expression is not definitionally equal to
@@ -663,7 +666,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 def Equiv.Simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
 
 run_cmd liftTermElabM <| do
-  successIfFail (simpsGetRawProjections `FaultyUniverses.Equiv)
+  successIfFail (getRawProjections `FaultyUniverses.Equiv)
 -- "Invalid custom projection:
 --   fun {α} {β} e => (Equiv.symm e).toFun
 -- Expression has different type than FaultyUniverses.Equiv.invFun. Given type:
@@ -717,7 +720,7 @@ def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
-  let data ← simpsGetRawProjections `ManualProjectionNames.Equiv
+  let data ← getRawProjections `ManualProjectionNames.Equiv
   guard <| data.2.map (·.name) == #[`apply, `symm_apply]
 
 @[simps (config := {simpRhs := true})]
@@ -753,10 +756,10 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
 def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
-initialize_simps_projections Equiv (toFun → coe as_prefix, invFun → symm_apply)
+initialize_simps_projections Equiv (toFun → coe, as_prefix coe, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
-  let data ← simpsGetRawProjections `PrefixProjectionNames.Equiv
+  let data ← getRawProjections `PrefixProjectionNames.Equiv
   guard $ data.2.map (·.name) = #[`coe, `symm_apply]
   guard $ data.2.map (·.isPrefix) = #[true, false]
 
@@ -772,7 +775,7 @@ example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = 
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
 -- it interacts somewhat well with multiple projections (though the generated name is not great)
-@[simps snd_coe_fst] def foo {α β γ δ : Type _} (x : α) (e₁ : α ≃ β) (e₂ : γ ≃ δ) :
+@[simps! snd_coe_fst] def foo {α β γ δ : Type _} (x : α) (e₁ : α ≃ β) (e₂ : γ ≃ δ) :
   α × (α × γ ≃ β × δ) :=
 ⟨x, Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm⟩
 
@@ -1005,8 +1008,7 @@ def DecoratedEquiv.symm {α β : Sort _} (e : DecoratedEquiv α β) : DecoratedE
 def DecoratedEquiv.Simps.apply {α β : Sort _} (e : DecoratedEquiv α β) : α → β := e
 def DecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : DecoratedEquiv α β) : β → α := e.symm
 
-initialize_simps_projections DecoratedEquiv
-  (toEquiv'_toFun → apply, toEquiv'_invFun → symm_apply, -toEquiv')
+initialize_simps_projections DecoratedEquiv (toFun → apply, invFun → symm_apply, -toEquiv')
 
 @[simps] def foo (α : Type) : DecoratedEquiv α α :=
 { toFun    := λ x => x
@@ -1021,7 +1023,7 @@ example {α : Type} (x z : α) (h : x = z) : (foo α).symm x = z := by
   guard_target = x = z
   rw [h]
 
-@[simps toEquiv' apply symm_apply] def foo2 (α : Type) : DecoratedEquiv α α :=
+@[simps! toEquiv' apply symm_apply] def foo2 (α : Type) : DecoratedEquiv α α :=
 { foo.rfl with
   P_toFun  := λ _ _ h => h
   P_invFun := λ _ _ h => h }
@@ -1060,8 +1062,7 @@ def FurtherDecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : FurtherDecorate
   β → α := e.symm
 
 initialize_simps_projections FurtherDecoratedEquiv
-  (toDecoratedEquiv_toEquiv'_toFun → apply, toDecoratedEquiv_toEquiv'_invFun → symm_apply,
-  -toDecoratedEquiv, toDecoratedEquiv_toEquiv' → toEquiv', -toEquiv')
+  (toFun → apply, invFun → symm_apply, -toDecoratedEquiv, toEquiv' → toEquiv', -toEquiv')
 
 @[simps] def ffoo (α : Type) : FurtherDecoratedEquiv α α :=
 { toFun    := λ x => x
@@ -1078,10 +1079,10 @@ example {α : Type} (x z : α) (h : x = z) : (ffoo α).symm x = z := by
   guard_target = x = z
   rw [h]
 
-@[simps] def ffoo3 (α : Type) : FurtherDecoratedEquiv α α :=
+@[simps!] def ffoo3 (α : Type) : FurtherDecoratedEquiv α α :=
 { foo α with Q_toFun  := λ y => ⟨y, rfl⟩, Q_invFun  := λ y => ⟨y, rfl⟩ }
 
-@[simps apply toEquiv' toEquiv'_toFun toDecoratedEquiv_apply]
+@[simps! apply toEquiv' toEquiv'_toFun toDecoratedEquiv_apply]
 def ffoo4 (α : Type) : FurtherDecoratedEquiv α α :=
 { Q_toFun := λ y => ⟨y, rfl⟩, Q_invFun := λ y => ⟨y, rfl⟩, toDecoratedEquiv := foo α }
 
@@ -1097,11 +1098,8 @@ def OneMore.symm {α β : Sort _} (e : OneMore α β) :
 def OneMore.Simps.apply {α β : Sort _} (e : OneMore α β) : α → β := e
 def OneMore.Simps.symm_apply {α β : Sort _} (e : OneMore α β) : β → α := e.symm
 
-initialize_simps_projections OneMore
-  (toFurtherDecoratedEquiv_toDecoratedEquiv_toEquiv'_toFun → apply,
-   toFurtherDecoratedEquiv_toDecoratedEquiv_toEquiv'_invFun → symm_apply,
-  -toFurtherDecoratedEquiv, toFurtherDecoratedEquiv_toDecoratedEquiv → to_dequiv,
-  -to_dequiv)
+initialize_simps_projections OneMore (toFun → apply, invFun → symm_apply,
+  -toFurtherDecoratedEquiv, toDecoratedEquiv → to_dequiv, -to_dequiv)
 
 @[simps] def fffoo (α : Type) : OneMore α α :=
 { toFun    := λ x => x
@@ -1115,7 +1113,7 @@ initialize_simps_projections OneMore
 
 example {α : Type} (x : α) : (fffoo α).symm x = x := by dsimp
 
-@[simps apply to_dequiv_apply toFurtherDecoratedEquiv_apply to_dequiv]
+@[simps! apply to_dequiv_apply toFurtherDecoratedEquiv_apply to_dequiv]
 def fffoo2 (α : Type) : OneMore α α := fffoo α
 
 /- test the case where a projection takes additional arguments. -/
@@ -1143,7 +1141,7 @@ def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] 
   A i :=
 AddHomPlus.mul x
 
-initialize_simps_projections AddHomPlus (mul_toZeroHom_toFun → apply, -mul)
+initialize_simps_projections AddHomPlus (mul_toFun → apply, -mul)
 
 class AddHomPlus2 [Add ι] :=
 (mul {i j} : A i ≃ (A j ≃ A (i + j)))

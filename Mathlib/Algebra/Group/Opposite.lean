@@ -234,11 +234,12 @@ theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) �
 attribute [nolint simpComm] AddOpposite.commute_unop
 
 /-- The function `MulOpposite.op` is an additive equivalence. -/
-@[simps (config := { fullyApplied := false, simpRhs := true })]
+@[simps! (config := { fullyApplied := false, simpRhs := true }) apply symm_apply]
 def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
   { opEquiv with map_add' := fun _ _ => rfl }
 #align mul_opposite.op_add_equiv MulOpposite.opAddEquiv
-#align mul_opposite.op_add_equiv_symm_apply MulOpposite.opAddEquiv_symmApply
+#align mul_opposite.op_add_equiv_apply MulOpposite.opAddEquiv_apply
+#align mul_opposite.op_add_equiv_symm_apply MulOpposite.opAddEquiv_symm_apply
 
 @[simp]
 theorem opAddEquiv_toEquiv [Add α] : (opAddEquiv : α ≃+ αᵐᵒᵖ).toEquiv = opEquiv := rfl
@@ -302,11 +303,11 @@ instance [CommGroup α] : CommGroup αᵃᵒᵖ :=
 variable {α}
 
 /-- The function `AddOpposite.op` is a multiplicative equivalence. -/
-@[simps (config := { fullyApplied := false, simpRhs := true })]
+@[simps! (config := { fullyApplied := false, simpRhs := true })]
 def opMulEquiv [Mul α] : α ≃* αᵃᵒᵖ :=
   { opEquiv with map_mul' := fun _ _ => rfl }
 #align add_opposite.op_mul_equiv AddOpposite.opMulEquiv
-#align add_opposite.op_mul_equiv_symm_apply AddOpposite.opMulEquiv_symmApply
+#align add_opposite.op_mul_equiv_symm_apply AddOpposite.opMulEquiv_symm_apply
 
 @[simp]
 theorem opMulEquiv_toEquiv [Mul α] : (opMulEquiv : α ≃* αᵃᵒᵖ).toEquiv = opEquiv :=
@@ -319,15 +320,15 @@ open MulOpposite
 
 /-- Inversion on a group is a `MulEquiv` to the opposite group. When `G` is commutative, there is
 `MulEquiv.inv`. -/
-@[to_additive (attr := simps (config := { fullyApplied := false, simpRhs := true }))
+@[to_additive (attr := simps! (config := { fullyApplied := false, simpRhs := true }))
       "Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
       is commutative, there is `AddEquiv.inv`."]
 def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
   { (Equiv.inv G).trans opEquiv with map_mul' := fun x y => unop_injective <| mul_inv_rev x y }
 #align mul_equiv.inv' MulEquiv.inv'
 #align add_equiv.neg' AddEquiv.neg'
-#align mul_equiv.inv'_symm_apply MulEquiv.inv'_symmApply
-#align add_equiv.inv'_symm_apply AddEquiv.neg'_symmApply
+#align mul_equiv.inv'_symm_apply MulEquiv.inv'_symm_apply
+#align add_equiv.inv'_symm_apply AddEquiv.neg'_symm_apply
 
 /-- A semigroup homomorphism `f : M →ₙ* N` such that `f x` commutes with `f y` for all `x, y`
 defines a semigroup homomorphism to `Nᵐᵒᵖ`. -/
@@ -493,7 +494,7 @@ def MonoidHom.op {M N} [MulOneClass M] [MulOneClass N] : (M →* N) ≃ (Mᵐᵒ
 #align add_monoid_hom.op_symm_apply_apply AddMonoidHom.op_symm_apply_apply
 
 /-- The 'unopposite' of a monoid homomorphism `Mᵐᵒᵖ →* Nᵐᵒᵖ`. Inverse to `MonoidHom.op`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simp)
       "The 'unopposite' of an additive monoid homomorphism `Mᵃᵒᵖ →+ Nᵃᵒᵖ`. Inverse to
       `AddMonoidHom.op`."]
 def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐᵒᵖ) ≃ (M →* N) :=
@@ -560,13 +561,13 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
   right_inv _ := rfl
 #align mul_equiv.op MulEquiv.op
 #align add_equiv.op AddEquiv.op
-#align mul_equiv.op_symm_apply_symm_apply MulEquiv.op_symm_apply_symmApply
+#align mul_equiv.op_symm_apply_symm_apply MulEquiv.op_symm_apply_symm_apply
 #align mul_equiv.op_apply_apply MulEquiv.op_apply_apply
-#align mul_equiv.op_apply_symm_apply MulEquiv.op_apply_symmApply
+#align mul_equiv.op_apply_symm_apply MulEquiv.op_apply_symm_apply
 #align mul_equiv.op_symm_apply_apply MulEquiv.op_symm_apply_apply
-#align add_equiv.op_symm_apply_symm_apply AddEquiv.op_symm_apply_symmApply
+#align add_equiv.op_symm_apply_symm_apply AddEquiv.op_symm_apply_symm_apply
 #align add_equiv.op_apply_apply AddEquiv.op_apply_apply
-#align add_equiv.op_apply_symm_apply AddEquiv.op_apply_symmApply
+#align add_equiv.op_apply_symm_apply AddEquiv.op_apply_symm_apply
 #align add_equiv.op_symm_apply_apply AddEquiv.op_symm_apply_apply
 
 /-- The 'unopposite' of an iso `αᵐᵒᵖ ≃* βᵐᵒᵖ`. Inverse to `MulEquiv.op`. -/

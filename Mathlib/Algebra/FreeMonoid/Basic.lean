@@ -157,8 +157,8 @@ theorem of_injective : Function.Injective (@of α) := List.singleton_injective
 #align free_add_monoid.of_injective FreeAddMonoid.of_injective
 
 /-- Recursor for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of `[]` and `x :: xs`. -/
-@[elab_as_elim, to_additive "Recursor for `FreeAddMonoid` using `0` and `FreeAddMonoid.of x + xs`
-instead of `[]` and `x :: xs`."]
+@[to_additive (attr := elab_as_elim) "Recursor for `FreeAddMonoid` using `0` and
+`FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
 -- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
 def recOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
@@ -180,7 +180,7 @@ theorem recOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid α
 
 /-- A version of `List.cases_on` for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of
 `[]` and `x :: xs`. -/
-@[elab_as_elim, to_additive "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
+@[to_additive (attr := elab_as_elim) "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
 `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
 def casesOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : C xs := List.casesOn xs h0 ih
@@ -226,8 +226,7 @@ lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
 /-- Equivalence between maps `α → M` and monoid homomorphisms `FreeMonoid α →* M`. -/
 @[to_additive "Equivalence between maps `α → A` and additive monoid homomorphisms
 `FreeAddMonoid α →+ A`."]
-def lift : (α → M) ≃ (FreeMonoid α →* M)
-    where
+def lift : (α → M) ≃ (FreeMonoid α →* M) where
   toFun f :=
   { toFun := fun l ↦ prodAux ((toList l).map f)
     map_one' := rfl
@@ -237,6 +236,11 @@ def lift : (α → M) ≃ (FreeMonoid α →* M)
   right_inv f := hom_eq fun x ↦ rfl
 #align free_monoid.lift FreeMonoid.lift
 #align free_add_monoid.lift FreeAddMonoid.lift
+
+-- porting note: new
+@[to_additive (attr := simp)]
+theorem lift_ofList (f : α → M) (l : List α) : lift f (ofList l) = (l.map f).prod :=
+prodAux_eq _
 
 @[to_additive (attr := simp)]
 theorem lift_symm_apply (f : FreeMonoid α →* M) : lift.symm f = f ∘ of := rfl

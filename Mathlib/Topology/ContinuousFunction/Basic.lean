@@ -34,7 +34,7 @@ structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace
   /-- The function `α → β` -/
   toFun : α → β
   /-- Proposition that `toFun` is continuous -/
-  continuous_toFun : Continuous toFun --:= by continuity -- Porting note: need tactic
+  continuous_toFun : Continuous toFun := by continuity
 #align continuous_map ContinuousMap
 
 /-- The type of continuous maps from `α` to `β`. -/
@@ -55,7 +55,7 @@ end
 
 export ContinuousMapClass (map_continuous)
 
---attribute [continuity] map_continuous -- Porting note: need tactic
+attribute [continuity] map_continuous
 
 section ContinuousMapClass
 
@@ -84,8 +84,7 @@ namespace ContinuousMap
 variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance : ContinuousMapClass C(α, β) α β
-    where
+instance : ContinuousMapClass C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_continuous := ContinuousMap.continuous_toFun
@@ -102,6 +101,9 @@ theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
 
+/-- See note [custom simps projection]. -/
+def Simps.apply (f : C(α, β)) : α → β := f
+
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContinuousMap (toFun → apply)
 
@@ -117,8 +119,7 @@ theorem ext {f g : C(α, β)} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `ContinuousMap` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : C(α, β)) (f' : α → β) (h : f' = f) : C(α, β)
-    where
+protected def copy (f : C(α, β)) (f' : α → β) (h : f' = f) : C(α, β) where
   toFun := f'
   continuous_toFun := h.symm ▸ f.continuous_toFun
 #align continuous_map.copy ContinuousMap.copy
@@ -139,7 +140,7 @@ protected theorem continuous (f : C(α, β)) : Continuous f :=
   f.continuous_toFun
 #align continuous_map.continuous ContinuousMap.continuous
 
---porting note: todo: restore @[continuity]
+@[continuity]
 theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → β) :=
   f.1.continuous
 #align continuous_map.continuous_set_coe ContinuousMap.continuous_set_coe
@@ -192,9 +193,8 @@ end
 variable (α)
 
 /-- The identity as a continuous map. -/
-protected def id : C(α, α) :=
-  ⟨id, continuous_id⟩
-  -- Porting note: proof was `continuity`
+protected def id : C(α, α) where
+  toFun := id
 #align continuous_map.id ContinuousMap.id
 
 @[simp]
@@ -203,9 +203,8 @@ theorem coe_id : ⇑(ContinuousMap.id α) = id :=
 #align continuous_map.coe_id ContinuousMap.coe_id
 
 /-- The constant map as a continuous map. -/
-def const (b : β) : C(α, β) :=
-  ⟨fun _ : α => b, continuous_const⟩
-  -- Porting note: proof was `continuity`
+def const (b : β) : C(α, β) where
+  toFun := fun _ : α => b
 #align continuous_map.const ContinuousMap.const
 
 @[simp]
@@ -229,9 +228,8 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 #align continuous_map.const_apply ContinuousMap.const_apply
 
 /-- The composition of continuous maps, as a continuous map. -/
-def comp (f : C(β, γ)) (g : C(α, β)) : C(α, γ) :=
-  ⟨f ∘ g, f.continuous.comp g.continuous⟩
-  -- Porting note: proof was `continuity`
+def comp (f : C(β, γ)) (g : C(α, β)) : C(α, γ) where
+  toFun := f ∘ g
 #align continuous_map.comp ContinuousMap.comp
 
 @[simp]
@@ -290,17 +288,13 @@ variable {α₁ α₂ β₁ β₂ : Type _} [TopologicalSpace α₁] [Topologica
   [TopologicalSpace β₂]
 
 /-- Given two continuous maps `f` and `g`, this is the continuous map `x ↦ (f x, g x)`. -/
-def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂)
-    where
+def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂) where
   toFun x := (f x, g x)
-  continuous_toFun := f.continuous.prod_mk g.continuous
-  -- Porting note: proof was `continuity`
 #align continuous_map.prod_mk ContinuousMap.prodMk
 
 /-- Given two continuous maps `f` and `g`, this is the continuous map `(x, y) ↦ (f x, g y)`. -/
 @[simps]
-def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α₂ × β₂)
-    where
+def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α₂ × β₂) where
   toFun := Prod.map f g
   continuous_toFun := f.continuous.prod_map g.continuous
   -- Porting note: proof was `continuity`
@@ -320,8 +314,6 @@ variable {I A : Type _} {X : I → Type _} [TopologicalSpace A] [∀ i, Topologi
 /-- Abbreviation for product of continuous maps, which is continuous -/
 def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where
   toFun (a : A) (i : I) := f i a
-  continuous_toFun := continuous_pi (fun i => (f i).continuous)
-  -- Porting note: proof was `continuity`
 #align continuous_map.pi ContinuousMap.pi
 
 @[simp]
@@ -336,9 +328,8 @@ section Restrict
 variable (s : Set α)
 
 /-- The restriction of a continuous function `α → β` to a subset `s` of `α`. -/
-def restrict (f : C(α, β)) : C(s, β) :=
-  ⟨f ∘ ((↑) : s → α), f.continuous.comp continuous_subtype_val⟩
-  -- Porting note: proof was `continuity`
+def restrict (f : C(α, β)) : C(s, β) where
+  toFun := f ∘ ((↑) : s → α)
 #align continuous_map.restrict ContinuousMap.restrict
 
 @[simp]
@@ -373,8 +364,7 @@ noncomputable def liftCover : C(α, β) := by
   refine' ⟨Set.liftCover S (fun i => φ i) hφ H, continuous_subtype_nhds_cover hS _⟩
   intro i
   convert (φ i).continuous
-  ext x
-  exact Set.liftCover_coe x
+  apply Set.liftCover_coe
 #align continuous_map.lift_cover ContinuousMap.liftCover
 
 variable {S φ hφ hS}
@@ -390,10 +380,9 @@ theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = �
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
 #align continuous_map.lift_cover_restrict ContinuousMap.liftCover_restrict
 
-variable (A : Set (Set α)) (F : ∀ (s : Set α) (_ : s ∈ A), C(s, β))
-  (hF :
-    ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
-      F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
+variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
+  (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
+    F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
   (hA : ∀ x : α, ∃ i ∈ A, i ∈ nhds x)
 
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`

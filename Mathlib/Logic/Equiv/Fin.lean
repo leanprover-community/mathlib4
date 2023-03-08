@@ -73,7 +73,7 @@ theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
 /-- A product space `α × β` is equivalent to the space `Π i : Fin 2, γ i`, where
 `γ = Fin.cons α (Fin.cons β finZeroElim)`. See also `piFinTwoEquiv` and
 `finTwoArrowEquiv`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i :=
   (piFinTwoEquiv (Fin.cons α (Fin.cons β finZeroElim))).symm
 #align prod_equiv_pi_fin_two prodEquivPiFinTwo
@@ -309,7 +309,7 @@ def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type u) [∀ i, LE (α i)]
 #align order_iso.pi_fin_succ_above_iso OrderIso.piFinSuccAboveIso
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps! (config := { fullyApplied := false })]
 def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
   Equiv.piFinSuccAboveEquiv (fun _ => β) 0
 #align equiv.pi_fin_succ Equiv.piFinSucc
@@ -493,7 +493,7 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLe`. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def Fin.castLeOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
     where
   toFun i := ⟨Fin.castLe h i, by simp⟩
@@ -503,7 +503,7 @@ def Fin.castLeOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i 
   map_rel_iff' := by simp
 #align fin.cast_le_order_iso Fin.castLeOrderIso
 #align fin.cast_le_order_iso_apply Fin.castLeOrderIso_apply
-#align fin.cast_le_order_iso_symm_apply Fin.castLeOrderIso_symmApply
+#align fin.cast_le_order_iso_symm_apply Fin.castLeOrderIso_symm_apply
 
 /-- `Fin 0` is a subsingleton. -/
 instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
