@@ -159,7 +159,7 @@ protected def strictOrderedCommRing [StrictOrderedCommRing α] [Zero β] [One β
 /-- Pullback a `LinearOrderedSemiring` under an injective map. -/
 @[reducible]
 protected def linearOrderedSemiring [LinearOrderedSemiring α] [Zero β] [One β] [Add β] [Mul β]
-    [Pow β ℕ] [SMul ℕ β] [NatCast β] [HasSup β] [HasInf β] (f : β → α) (hf : Injective f)
+    [Pow β ℕ] [SMul ℕ β] [NatCast β] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (nat_cast : ∀ n : ℕ, f n = n)
@@ -173,7 +173,7 @@ protected def linearOrderedSemiring [LinearOrderedSemiring α] [Zero β] [One β
 /-- Pullback a `LinearOrderedSemiring` under an injective map. -/
 @[reducible]
 protected def linearOrderedCommSemiring [LinearOrderedCommSemiring α] [Zero β] [One β] [Add β]
-    [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [HasSup β] [HasInf β] (f : β → α) (hf : Injective f)
+    [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (nat_cast : ∀ n : ℕ, f n = n)
@@ -187,7 +187,7 @@ protected def linearOrderedCommSemiring [LinearOrderedCommSemiring α] [Zero β]
 /-- Pullback a `LinearOrderedRing` under an injective map. -/
 @[reducible]
 def linearOrderedRing [LinearOrderedRing α] [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β]
-    [SMul ℕ β] [SMul ℤ β] [Pow β ℕ] [NatCast β] [IntCast β] [HasSup β] [HasInf β] (f : β → α)
+    [SMul ℕ β] [SMul ℤ β] [Pow β ℕ] [NatCast β] [IntCast β] [Sup β] [Inf β] (f : β → α)
     (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
@@ -203,8 +203,8 @@ def linearOrderedRing [LinearOrderedRing α] [Zero β] [One β] [Add β] [Mul β
 /-- Pullback a `LinearOrderedCommRing` under an injective map. -/
 @[reducible]
 protected def linearOrderedCommRing [LinearOrderedCommRing α] [Zero β] [One β] [Add β] [Mul β]
-    [Neg β] [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℤ β] [NatCast β] [IntCast β] [HasSup β]
-    [HasInf β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+    [Neg β] [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℤ β] [NatCast β] [IntCast β] [Sup β]
+    [Inf β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x)

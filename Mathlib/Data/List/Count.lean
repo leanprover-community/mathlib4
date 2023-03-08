@@ -39,7 +39,7 @@ protected theorem countp_go_eq_add (l) : countp.go p l n = n + countp.go p l 0 :
   · rfl
   · unfold countp.go
     rw [ih (n := n + 1), ih (n := n), ih (n := 1)]
-    by_cases p head
+    by_cases h : p head
     · simp [h, add_assoc]
     · simp [h]
 
@@ -68,7 +68,7 @@ theorem countp_cons (a : α) (l) : countp p (a :: l) = countp p l + if p a then 
 theorem length_eq_countp_add_countp (l) : length l = countp p l + countp (fun a => ¬p a) l := by
   induction' l with x h ih
   · rfl
-  by_cases p x
+  by_cases h : p x
   · rw [countp_cons_of_pos _ _ h, countp_cons_of_neg _ _ _, length, ih]
     · ac_rfl
     · simp only [h]
@@ -80,7 +80,7 @@ theorem length_eq_countp_add_countp (l) : length l = countp p l + countp (fun a 
 theorem countp_eq_length_filter (l) : countp p l = length (filter p l) := by
   induction' l with x l ih
   · rfl
-  by_cases p x
+  by_cases h : p x
   · rw [countp_cons_of_pos p l h, ih, filter_cons_of_pos l h, length]
   · rw [countp_cons_of_neg p l h, ih, filter_cons_of_neg l h]
 #align list.countp_eq_length_filter List.countp_eq_length_filter

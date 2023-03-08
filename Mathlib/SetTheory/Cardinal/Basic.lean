@@ -482,10 +482,9 @@ instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
 -- with `HPow`, but somebody should figure out
 -- if this is still relevant in Lean4.
 -- mathport name: cardinal.pow
-local infixr:0 "^'" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
-
+local infixr:0 "^'" => @HPow.hPow Cardinal Cardinal Cardinal.instPowCardinal
 -- -- mathport name: cardinal.pow.nat
-local infixr:80 " ^ℕ " => @Pow.pow Cardinal ℕ Monoid.Pow
+local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
 
 theorem power_def (α β) : ((#α) ^ (#β)) = (#β → α) :=
   rfl

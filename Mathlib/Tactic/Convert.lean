@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean
+import Mathlib.Tactic.Congr!
 
 /-!
 # The `convert` tactic.
@@ -14,11 +15,11 @@ open Lean Meta Elab Tactic
 /--
 Close the goal `g` using `Eq.mp v e`,
 where `v` is a metavariable asserting that the type of `g` and `e` are equal.
-Then call `MVarId.congr` (also using local hypotheses and reflexivity) on `v`,
+Then call `MVarId.congrN!` (also using local hypotheses and reflexivity) on `v`,
 and return the resulting goals.
 
 With `sym = true`, reverses the equality in `v`, and uses `Eq.mpr v e` instead.
-With `depth = some n`, calls `MVarId.congrN` instead, with `n` as the max recursion depth.
+With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max recursion depth.
 -/
 def Lean.MVarId.convert (e : Expr) (sym : Bool) (depth : Option Nat := none) (g : MVarId) :
     MetaM (List MVarId) := do
@@ -27,7 +28,7 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool) (depth : Option Nat := none) (g 
   let v ← mkFreshExprMVar (← mkAppM ``Eq (if sym then #[src, tgt] else #[tgt, src]))
   g.assign (← mkAppM (if sym then ``Eq.mp else ``Eq.mpr) #[v, e])
   let m := v.mvarId!
-  try m.congrN (depth.getD 1000000)
+  try m.congrN! (depth.getD 1000000)
   catch _ => return [m]
 
 /--
@@ -35,7 +36,8 @@ The `exact e` and `refine e` tactics require a term `e` whose type is
 definitionally equal to the goal. `convert e` is similar to `refine e`,
 but the type of `e` is not required to exactly match the
 goal. Instead, new goals are created for differences between the type
-of `e` and the goal. For example, in the proof state
+of `e` and the goal using the same strategies as the `congr!` tactic.
+For example, in the proof state
 
 ```lean
 n : ℕ,
@@ -58,18 +60,21 @@ def p (n : ℕ) := true
 example (h : p 0) : p 1 := by exact h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
-
-If `x y : t`, and an instance `Subsingleton t` is in scope, then any goals of the form
-`x = y` are solved automatically.
+Limiting the depth of recursion can help with this. For example, `convert h using 1` will work
+in this case.
 
 The syntax `convert ← e` will reverse the direction of the new goals
 (producing `⊢ 2 * n = n + n` in this example).
 
 Internally, `convert e` works by creating a new goal asserting that
 the goal equals the type of `e`, then simplifying it using
-`congr'`. The syntax `convert e using n` can be used to control the
-depth of matching (like `congr' n`). In the example, `convert e using
-1` would produce a new goal `⊢ n + n + 1 = 2 * n + 1`.
+`congr!`. The syntax `convert e using n` can be used to control the
+depth of matching (like `congr! n`). In the example, `convert e using 1`
+would produce a new goal `⊢ n + n + 1 = 2 * n + 1`.
+
+Refer to the `congr!` tactic to understand the congruence operations. One of its many
+features is that if `x y : t` and an instance `Subsingleton t` is in scope,
+then any goals of the form `x = y` are solved automatically.
 -/
 syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
 
@@ -88,8 +93,8 @@ elab_rules : tactic
 
 /--
 `convert_to g using n` attempts to change the current goal to `g`, but unlike `change`,
-it will generate equality proof obligations using `congr n` to resolve discrepancies.
-`convert_to g` defaults to using `congr 1`.
+it will generate equality proof obligations using `congr! n` to resolve discrepancies.
+`convert_to g` defaults to using `congr! 1`.
 `convert_to` is similar to `convert`, but `convert_to` takes a type (the desired subgoal) while
 `convert` takes a proof term.
 That is, `convert_to g using n` is equivalent to `convert (?_ : g) using n`.

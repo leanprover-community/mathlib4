@@ -163,8 +163,6 @@ protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_
 #align equiv.symm Equiv.symm
 
 /-- See Note [custom simps projection] -/
-def Simps.apply (e : α ≃ β) : α → β := e
-/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 #align equiv.simps.symm_apply Equiv.Simps.symm_apply
 
@@ -183,6 +181,7 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 #align equiv.trans Equiv.trans
 
+@[simps]
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
 

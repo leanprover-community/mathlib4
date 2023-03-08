@@ -82,8 +82,7 @@ theorem shadow_singleton_empty : (∂ ) ({∅} : Finset (Finset α)) = ∅ :=
 
 --TODO: Prove `∂ {{a}} = {∅}` quickly using `covers` and `grade_order`
 /-- The shadow is monotone. -/
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
   sup_mono
 #align finset.shadow_monotone Finset.shadow_monotone
@@ -199,8 +198,7 @@ theorem upShadow_empty : (∂⁺ ) (∅ : Finset (Finset α)) = ∅ :=
 #align finset.up_shadow_empty Finset.upShadow_empty
 
 /-- The upper shadow is monotone. -/
--- Porting note: unknown attribute `[mono]`
--- @[mono]
+@[mono]
 theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (Finset α)) :=
   fun _ _ => sup_mono
 #align finset.up_shadow_monotone Finset.upShadow_monotone

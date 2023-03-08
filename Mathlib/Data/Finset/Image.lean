@@ -660,7 +660,7 @@ theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
     s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [ext_iff, Subtype.forall, Subtype.coe_mk]
 #align finset.subtype_eq_empty Finset.subtype_eq_empty
 
---@[mono] Porting note: `mono` is not ported yet.
+@[mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=
   fun _ _ h _ hx => mem_subtype.2 <| h <| mem_subtype.1 hx
 #align finset.subtype_mono Finset.subtype_mono
@@ -724,7 +724,7 @@ theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ
   | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
 #align finset.mem_fin Finset.mem_fin
 
---@[mono] Porting note: `mono` is not ported yet.
+@[mono]
 theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
 #align finset.fin_mono Finset.fin_mono
 
