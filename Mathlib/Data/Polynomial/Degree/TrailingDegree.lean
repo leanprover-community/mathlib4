@@ -288,10 +288,10 @@ theorem le_trailingDegree_X_pow (n : ℕ) : (n : ℕ∞) ≤ trailingDegree (X ^
 set_option linter.uppercaseLean3 false in
 #align polynomial.le_trailing_degree_X_pow Polynomial.le_trailingDegree_X_pow
 
-theorem le_trailingDegree_x : (1 : ℕ∞) ≤ trailingDegree (X : R[X]) :=
+theorem le_trailingDegree_X : (1 : ℕ∞) ≤ trailingDegree (X : R[X]) :=
   le_trailingDegree_monomial
 set_option linter.uppercaseLean3 false in
-#align polynomial.le_trailing_degree_X Polynomial.le_trailingDegree_x
+#align polynomial.le_trailing_degree_X Polynomial.le_trailingDegree_X
 
 theorem natTrailingDegree_X_le : (X : R[X]).natTrailingDegree ≤ 1 :=
   natTrailingDegree_monomial_le
@@ -441,16 +441,16 @@ theorem trailingDegree_one : trailingDegree (1 : R[X]) = (0 : ℕ∞) :=
 #align polynomial.trailing_degree_one Polynomial.trailingDegree_one
 
 @[simp]
-theorem trailingDegree_x : trailingDegree (X : R[X]) = 1 :=
+theorem trailingDegree_X : trailingDegree (X : R[X]) = 1 :=
   trailingDegree_monomial one_ne_zero
 set_option linter.uppercaseLean3 false in
-#align polynomial.trailing_degree_X Polynomial.trailingDegree_x
+#align polynomial.trailing_degree_X Polynomial.trailingDegree_X
 
 @[simp]
-theorem natTrailingDegree_x : (X : R[X]).natTrailingDegree = 1 :=
+theorem natTrailingDegree_X : (X : R[X]).natTrailingDegree = 1 :=
   natTrailingDegree_monomial one_ne_zero
 set_option linter.uppercaseLean3 false in
-#align polynomial.nat_trailing_degree_X Polynomial.natTrailingDegree_x
+#align polynomial.nat_trailing_degree_X Polynomial.natTrailingDegree_X
 
 end NonzeroSemiring
 
