@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Floris van Doorn. All rights reserved.
+Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
+Authors: Simon Hudon
 -/
 
 import Lean.Attributes
@@ -24,77 +24,74 @@ namespace Tactic
 returns the expression `f ∘ g ∘ h`. -/
 def mkComp (v : Expr) : Expr → MetaM Expr
 | .app f e =>
-  if e.equal v then pure f
+  if e.equal v then
+    return f
   else do
-    guard !(v.occurs f) <|> throwError "bad guard"
-    let e' ← mkComp v e >>= instantiateMVars
-    let f ← instantiateMVars f
+    if v.occurs f then
+      throwError "mkComp failed occurs check"
+    let e' ← mkComp v e
     mkAppM ``Function.comp #[f, e']
 | e => do
   guard (e.equal v)
   let t ← inferType e
   mkAppOptM ``id #[t]
-
 /--
 From a lemma of the shape `∀ x, f (g x) = h x`
 derive an auxiliary lemma of the form `f ∘ g = h`
 for reasoning about higher-order functions.
 -/
-partial def mkHigherOrderType : Expr → MetaM Expr
-| .forallE n d b@(.forallE _ _ _ _) bi =>
-  withLocalDecl n bi d fun fvr ↦ do
-    let b' := instantiate1 b fvr
-    mkHigherOrderType b' >>= fun exp ↦ mkForallFVars #[fvr] exp false true bi
-| .forallE n d b bi =>
-  withLocalDecl n bi d fun fvr ↦ do
-    let b' := instantiate1 b fvr
-    let some (_, l, r) ← matchEq? b' | throwError f!"not an equality {b'}"
-    let l' ← mkComp fvr l
-    let r' ← mkComp fvr r
-    mkEq l' r'
-| _e =>
-  throwError "failed"
-
+partial def mkHigherOrderType (e : Expr) : MetaM Expr := do
+  if not e.isForall then
+    throwError "not a forall"
+  withLocalDecl e.bindingName! e.binderInfo e.bindingDomain! fun fvar => do
+    let body := instantiate1 e.bindingBody! fvar
+    if body.isForall then
+      let exp ← mkHigherOrderType body
+      mkForallFVars #[fvar] exp (binderInfoForMVars := e.binderInfo)
+    else
+      let some (_, lhs, rhs) ← matchEq? body | throwError "not an equality {← ppExpr body}"
+      mkEq (← mkComp fvar lhs) (← mkComp fvar rhs)
 /-- A user attribute that applies to lemmas of the shape `∀ x, f (g x) = h x`.
 It derives an auxiliary lemma of the form `f ∘ g = h` for reasoning about higher-order functions.
 -/
 def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
   match stx with
-  | `(attr| higher_order $[$id]?) =>
-    let onm := id.map TSyntax.getId
+  | `(attr| higher_order $[$name]?) =>
+    let ref := (name : Option Syntax).getD stx[0]
+    let hothmName :=
+      if let some sname := name then
+        updatePrefix sname.getId thm.getPrefix
+      else
+        thm.appendAfter "\'"
     MetaM.run' <| TermElabM.run' <| do
-      let inf ← getConstInfo thm
-      let lvl := inf.levelParams
-      let cst ← mkConst thm (lvl.map mkLevelParam)
-      let typ ← inferType cst
+      let lvl := (← getConstInfo thm).levelParams
+      let typ ← instantiateMVars (← inferType <| .const thm (lvl.map mkLevelParam))
       let hot ← mkHigherOrderType typ
-      let mex ← mkFreshExprMVar hot
-      let mvr₁ := mex.mvarId!
-      let (_, mvr₂) ← mvr₁.intros
-      let [mvr₃] ← mvr₂.apply (← mkConst ``funext) | throwError "failed"
-      let (_, mvr₄) ← mvr₃.intro1
-      let lmvr ← mvr₄.apply (← mkConst thm)
-      lmvr.forM fun mvr₅ ↦ mvr₅.assumption
-      let prf ← instantiateMVars mex
-      let thm' := Option.getD (flip updatePrefix thm.getPrefix <$> onm) (thm.appendAfter "\'")
-      addDecl <| .thmDecl {
-        name := thm',
-        levelParams := lvl,
-        type := hot,
-        value := prf }
-      let ref := (id : Option Syntax).getD stx[0]
-      addDeclarationRanges thm' {
-        range := ← getDeclarationRange (← getRef)
-        selectionRange := ← getDeclarationRange ref }
-      discard <| addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams thm'
-      let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
+      let prf ← do
+        let mvar ← mkFreshExprMVar hot
+        let (_, mvarId) ← mvar.mvarId!.intros
+        let [mvarId] ← mvarId.apply (← mkConst ``funext) | throwError "failed"
+        let (_, mvarId) ← mvarId.intro1
+        let lmvr ← mvarId.apply (← mkConst thm)
+        lmvr.forM fun mv ↦ mv.assumption
+        instantiateMVars mvar
+      addDecl <| .thmDecl
+        { name := hothmName
+          levelParams := lvl
+          type := hot
+          value := prf }
+      addDeclarationRanges hothmName
+        { range := ← getDeclarationRange (← getRef)
+          selectionRange := ← getDeclarationRange ref }
+      _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams hothmName
+      let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains (.decl thm)
       if hsm then
-        addSimpTheorem simpExtension thm' true false .global 1000
+        addSimpTheorem simpExtension hothmName true false .global 1000
       let some fcn ← getSimpExtension? `functor_norm | failure
       let hfm := fcn.getState (← getEnv) |>.lemmaNames.contains <| .decl thm
       if hfm then
-        addSimpTheorem fcn thm' true false .global 1000
-      return thm'
+        addSimpTheorem fcn hothmName true false .global 1000
+      return hothmName
   | _ => throwUnsupportedSyntax
 
 /-- `higher_order` attribute. -/
