@@ -24,7 +24,7 @@ interval is convex on this interval.
 affine space, slope
 -/
 
--- Porting note: TODO Erase this line.
+-- Porting note: Workaround for lean4#2074
 attribute [-instance] Ring.toNonAssocRing
 
 open AffineMap
