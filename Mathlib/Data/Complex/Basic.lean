@@ -102,15 +102,18 @@ theorem of_real_def (r : ℝ) : (r : ℂ) = ⟨r, 0⟩ :=
   rfl
 #align complex.of_real_def Complex.of_real_def
 
-@[simp, norm_cast]
+-- Porting note: removed norm_cast attribute as it was not recognized
+@[simp]
 theorem of_real_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
-  ⟨congr_arg re, congr_arg _⟩
+  ⟨congrArg re, by apply congrArg⟩
 #align complex.of_real_inj Complex.of_real_inj
 
-theorem of_real_injective : Function.Injective (coe : ℝ → ℂ) := fun z w => congr_arg re
+-- Porting note: made coercion explicit
+theorem of_real_injective : Function.Injective (fun (r: ℝ) ↦ ↑(r : ℂ)) := fun _ _ => congrArg re
 #align complex.of_real_injective Complex.of_real_injective
 
-instance canLift : CanLift ℂ ℝ coe fun z => z.im = 0 where prf z hz := ⟨z.re, ext rfl hz.symm⟩
+-- Porting note: made coercion explicit
+instance canLift : CanLift ℂ ℝ (fun (r: ℝ) ↦ ↑(r : ℂ)) fun z => z.im = 0 where prf z hz := ⟨z.re, ext rfl hz.symm⟩
 #align complex.can_lift Complex.canLift
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
@@ -142,7 +145,8 @@ theorem zero_im : (0 : ℂ).im = 0 :=
   rfl
 #align complex.zero_im Complex.zero_im
 
-@[simp, norm_cast]
+-- Porting note: removed norm_cast attribute as it was not recognized
+@[simp]
 theorem of_real_zero : ((0 : ℝ) : ℂ) = 0 :=
   rfl
 #align complex.of_real_zero Complex.of_real_zero
@@ -169,7 +173,8 @@ theorem one_im : (1 : ℂ).im = 0 :=
   rfl
 #align complex.one_im Complex.one_im
 
-@[simp, norm_cast]
+-- Porting note: removed norm_cast attribute as it was not recognized
+@[simp]
 theorem of_real_one : ((1 : ℝ) : ℂ) = 1 :=
   rfl
 #align complex.of_real_one Complex.of_real_one
@@ -216,17 +221,20 @@ theorem bit1_im (z : ℂ) : (bit1 z).im = bit0 z.im :=
   add_zero _
 #align complex.bit1_im Complex.bit1_im
 
-@[simp, norm_cast]
+-- Porting note: removed norm_cast attribute as it was not recognized
+@[simp]
 theorem of_real_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   ext_iff.2 <| by simp
 #align complex.of_real_add Complex.of_real_add
 
-@[simp, norm_cast]
+-- Porting note: removed norm_cast attribute as it was not recognized
+@[simp]
 theorem of_real_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 r :=
   ext_iff.2 <| by simp [bit0]
 #align complex.of_real_bit0 Complex.of_real_bit0
 
-@[simp, norm_cast]
+-- Porting note: removed norm_cast attribute as it was not recognized
+@[simp]
 theorem of_real_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 r :=
   ext_iff.2 <| by simp [bit1]
 #align complex.of_real_bit1 Complex.of_real_bit1
@@ -244,7 +252,8 @@ theorem neg_im (z : ℂ) : (-z).im = -z.im :=
   rfl
 #align complex.neg_im Complex.neg_im
 
-@[simp, norm_cast]
+-- Porting note: removed norm_cast attribute as it was not recognized
+@[simp]
 theorem of_real_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
   ext_iff.2 <| by simp
 #align complex.of_real_neg Complex.of_real_neg
@@ -265,7 +274,8 @@ theorem mul_im (z w : ℂ) : (z * w).im = z.re * w.im + z.im * w.re :=
   rfl
 #align complex.mul_im Complex.mul_im
 
-@[simp, norm_cast]
+-- Porting note: removed norm_cast attribute as it was not recognized
+@[simp]
 theorem of_real_mul (r s : ℝ) : ((r * s : ℝ) : ℂ) = r * s :=
   ext_iff.2 <| by simp
 #align complex.of_real_mul Complex.of_real_mul
@@ -286,33 +296,40 @@ theorem of_real_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :
 /-- The imaginary unit. -/
 def i : ℂ :=
   ⟨0, 1⟩
+set_option linter.uppercaseLean3 false in
 #align complex.I Complex.i
 
 @[simp]
 theorem i_re : i.re = 0 :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align complex.I_re Complex.i_re
 
 @[simp]
 theorem i_im : i.im = 1 :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align complex.I_im Complex.i_im
 
 @[simp]
 theorem i_mul_i : i * i = -1 :=
   ext_iff.2 <| by simp
+set_option linter.uppercaseLean3 false in
 #align complex.I_mul_I Complex.i_mul_i
 
 theorem i_mul (z : ℂ) : i * z = ⟨-z.im, z.re⟩ :=
   ext_iff.2 <| by simp
+set_option linter.uppercaseLean3 false in
 #align complex.I_mul Complex.i_mul
 
 theorem i_ne_zero : (i : ℂ) ≠ 0 :=
   mt (congr_arg im) zero_ne_one.symm
+set_option linter.uppercaseLean3 false in
 #align complex.I_ne_zero Complex.i_ne_zero
 
 theorem mk_eq_add_mul_i (a b : ℝ) : Complex.mk a b = a + b * i :=
   ext_iff.2 <| by simp
+set_option linter.uppercaseLean3 false in
 #align complex.mk_eq_add_mul_I Complex.mk_eq_add_mul_i
 
 @[simp]
@@ -321,20 +338,24 @@ theorem re_add_im (z : ℂ) : (z.re : ℂ) + z.im * i = z :=
 #align complex.re_add_im Complex.re_add_im
 
 theorem mul_i_re (z : ℂ) : (z * i).re = -z.im := by simp
+set_option linter.uppercaseLean3 false in
 #align complex.mul_I_re Complex.mul_i_re
 
 theorem mul_i_im (z : ℂ) : (z * i).im = z.re := by simp
+set_option linter.uppercaseLean3 false in
 #align complex.mul_I_im Complex.mul_i_im
 
 theorem i_mul_re (z : ℂ) : (i * z).re = -z.im := by simp
+set_option linter.uppercaseLean3 false in
 #align complex.I_mul_re Complex.i_mul_re
 
 theorem i_mul_im (z : ℂ) : (i * z).im = z.re := by simp
+set_option linter.uppercaseLean3 false in
 #align complex.I_mul_im Complex.i_mul_im
 
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * i := by
-  ext <;> simp [equiv_real_prod]
+  ext <;> simp [Complex.equivRealProd]
 #align complex.equiv_real_prod_symm_apply Complex.equivRealProd_symm_apply
 
 /-! ### Commutative ring instance and lemmas -/
