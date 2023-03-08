@@ -1084,6 +1084,7 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     le_trans (Finset.inf_le his) hip⟩
 #align ideal.is_prime.inf_le' Ideal.IsPrime.inf_le'
 
+-- Porting note: needed to add explicit coerecions (· : Set R).
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   ⟨fun h =>
@@ -1094,8 +1095,8 @@ theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
           (fun hj => hrj <| add_sub_cancel r s ▸ J.sub_mem hj ((h hsi).resolve_right hsk)) fun hk =>
           hsk <| add_sub_cancel' r s ▸ K.sub_mem hk ((h hri).resolve_left hrj),
     fun h =>
-    Or.casesOn h (fun h => Set.Subset.trans h <| Set.subset_union_left J K) fun h =>
-      Set.Subset.trans h <| Set.subset_union_right J K⟩
+    Or.casesOn h (fun h => Set.Subset.trans h <| Set.subset_union_left (J : Set R) K) fun h =>
+      Set.Subset.trans h <| Set.subset_union_right (J : Set R) K ⟩
 #align ideal.subset_union Ideal.subset_union
 
 
