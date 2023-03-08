@@ -72,7 +72,8 @@ theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degr
 #align polynomial.degree_pos_of_root Polynomial.degree_pos_of_root
 
 theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < N → p.coeff N = 0 := by
-  simp_rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero, WithBot.coe_lt_coe]
+  simp_rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero, Nat.WithBot.cast_eq_some,
+    WithBot.coe_lt_coe]
 #align polynomial.nat_degree_le_iff_coeff_eq_zero Polynomial.natDegree_le_iff_coeff_eq_zero
 
 theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
@@ -227,23 +228,24 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     refine' natDegree_eq_of_degree_eq_some _
     rw [degree_sum_eq_of_disjoint]
     · dsimp
-      rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs, Finset.coe_sup' hs, ←
+      rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
+        Nat.WithBot.cast_eq_some, Finset.coe_sup' hs, ←
         Finset.sup'_eq_sup hs]
       refine' le_antisymm _ _
       · rw [Finset.sup'_le_iff]
         intro b hb
         by_cases hb' : f b = 0
         · simpa [hb'] using hs
-        rw [degree_eq_nat_degree hb']
-        exact Finset.le_sup' _ hb
+        rw [degree_eq_natDegree hb', Nat.WithBot.cast_eq_some]
+        exact Finset.le_sup' (fun i : S => (natDegree (f i) : WithBot ℕ)) hb
       · rw [Finset.sup'_le_iff]
         intro b hb
         simp only [Finset.le_sup'_iff, exists_prop, Function.comp_apply]
         by_cases hb' : f b = 0
         · refine' ⟨x, hx, _⟩
           contrapose! hx'
-          simpa [hb', degree_eq_bot] using hx'
-        exact ⟨b, hb, (degree_eq_nat_degree hb').ge⟩
+          simpa [← Nat.WithBot.cast_eq_some, hb', degree_eq_bot] using hx'
+        exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
     · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
   · push_neg  at H
     rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
@@ -282,7 +284,7 @@ theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z 
 theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n < natDegree p := by
   by_cases h : p = 0
   · simp [h]
-  rw [degree_eq_natDegree h, Nat.cast_lt]
+  simp [degree_eq_natDegree h, Nat.WithBot.cast_eq_some, WithBot.coe_lt_coe]
 
 #align polynomial.coe_lt_degree Polynomial.coe_lt_degree
 
