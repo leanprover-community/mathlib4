@@ -49,7 +49,6 @@ bundling.  But in this case the typical motivation for more bundling does not ap
 algebraic or order structure on the whole type of linear (say) trivializations of a bundle.
 Indeed, since trivializations only have meaning on their base sets (taking junk values outside), the
 type of linear trivializations is not even particularly well-behaved.
-
 -/
 
 
@@ -61,20 +60,19 @@ variable {ι : Type _} {B : Type _} {F : Type _} {E : B → Type _}
 
 variable (F) {Z : Type _} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- This structure contains the information left for a local trivialization (which is implemented
 below as `trivialization F proj`) if the total space has not been given a topology, but we
 have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
 `pretrivialization F proj` to a `trivialization F proj`. -/
-@[ext, nolint has_nonempty_instance]
+@[ext] -- porting note: was [nolint has_nonempty_instance]
 structure Pretrivialization (proj : Z → B) extends LocalEquiv Z (B × F) where
   open_target : IsOpen target
   baseSet : Set B
-  open_baseSet : IsOpen base_set
-  source_eq : source = proj ⁻¹' base_set
-  target_eq : target = base_set ×ˢ univ
-  proj_toFun : ∀ p ∈ source, (to_fun p).1 = proj p
+  open_baseSet : IsOpen baseSet
+  source_eq : source = proj ⁻¹' baseSet
+  target_eq : target = baseSet ×ˢ univ
+  proj_toFun : ∀ p ∈ source, (toFun p).1 = proj p
 #align pretrivialization Pretrivialization
 
 namespace Pretrivialization
