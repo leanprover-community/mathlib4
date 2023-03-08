@@ -581,7 +581,7 @@ instance : Inhabited (NonarchAddGroupSeminorm E) :=
 
 -- TODO: define `SupSet` too, from the skeleton at
 -- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
-instance : HasSup (NonarchAddGroupSeminorm E) :=
+instance : Sup (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
       map_zero' := by rw [Pi.sup_apply, ← map_zero p, sup_eq_left, map_zero p, map_zero q]
@@ -843,7 +843,7 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 
 -- TODO: define `SupSet`
 @[to_additive]
-instance : HasSup (GroupNorm E) :=
+instance : Sup (GroupNorm E) :=
   ⟨fun p q =>
     { p.toGroupSeminorm ⊔ q.toGroupSeminorm with
       eq_one_of_map_eq_zero' := fun _x hx =>
@@ -964,7 +964,7 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 
 variable (p q) (f : F →+ E)
 
-instance : HasSup (NonarchAddGroupNorm E) :=
+instance : Sup (NonarchAddGroupNorm E) :=
   ⟨fun p q =>
     { p.toNonarchAddGroupSeminorm ⊔ q.toNonarchAddGroupSeminorm with
       eq_zero_of_map_eq_zero' := fun _x hx =>
