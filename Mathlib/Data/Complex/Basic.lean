@@ -367,14 +367,38 @@ defined in `data.complex.module.lean`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
-instance : AddCommGroup ℂ := by
-  refine_struct { zero := (0 : ℂ)
-                  add := (· + ·)
-                  neg := Neg.neg
-                  sub := Sub.sub
-                  nsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
-                  zsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩ } <;> intros <;>
-            try rfl <;> apply ext_iff.2 <;> constructor <;> simp <;> · first |ring1|ring_nf
+def add : Add ℂ := by
+  infer_instance
+
+#reduce add
+
+-- Porting note: proof more verbose, probably lack of skill of porter
+instance : AddCommGroup ℂ := {
+  zero := (0 : ℂ)
+  add := (· + ·)
+  neg := Neg.neg
+  sub := Sub.sub
+  nsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
+  zsmul := fun n z => ⟨n • z.re - 0 * z.im, n • z.im + 0 * z.re⟩
+  add_assoc := by
+    intro z₁ z₂ z₃
+    show (⟨z₁.re + z₂.re + z₃.re, z₁.im + z₂.im + z₃.im⟩ : ℂ)
+      = ⟨z₁.re + (z₂.re + z₃.re), z₁.im + (z₂.im + z₃.im)⟩
+    simp [add_assoc]
+  zero_add := by
+        intro z ; show  ⟨0 + z.re, 0 + z.im⟩ = z ; simp [zero_add]
+  add_zero := by
+      intro z ; show  ⟨z.re + 0, z.im + 0⟩ = z ; simp [zero_add]
+  add_comm := by
+    intro z₁ z₂
+    show (⟨z₁.re + z₂.re, z₁.im + z₂.im⟩ : ℂ)
+      = ⟨z₂.re + z₁.re, z₂.im + z₁.im⟩
+    simp [add_comm]
+  add_left_neg := by
+    intro z
+    show (⟨-z.re + z.re, -z.im + z.im⟩ : ℂ) = 0
+    simp [add_left_neg]
+  }
 
 instance : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
