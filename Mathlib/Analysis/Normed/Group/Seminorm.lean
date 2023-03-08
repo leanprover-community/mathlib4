@@ -293,7 +293,7 @@ theorem add_apply (x : E) : (p + q) x = p x + q x :=
 -- TODO: define `SupSet` too, from the skeleton at
 -- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
 @[to_additive]
-instance : HasSup (GroupSeminorm E) :=
+instance : Sup (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
       map_one' := by
@@ -403,7 +403,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
 #align add_group_seminorm.add_bdd_below_range_add AddGroupSeminorm.add_bddBelow_range_add
 
 @[to_additive]
-noncomputable instance : HasInf (GroupSeminorm E) :=
+noncomputable instance : Inf (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
