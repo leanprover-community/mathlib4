@@ -124,14 +124,7 @@ instance Prod.bifunctor : Bifunctor Prod where bimap := @Prod.map
 #align prod.bifunctor Prod.bifunctor
 
 instance Prod.lawfulBifunctor : LawfulBifunctor Prod := by
-  refine' { .. }
-  -- Porting note: an name of paramaters should be specified
-  · intros _ _ x
-    cases x
-    rfl
-  · intros _ _ _ _ _ _ _ _ _ _ x
-    cases x
-    rfl
+  refine' { .. } <;> intros <;> rfl
 #align prod.is_lawful_bifunctor Prod.lawfulBifunctor
 
 instance Bifunctor.const : Bifunctor Const where bimap f _ := f
@@ -152,12 +145,7 @@ instance Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map
 #align sum.bifunctor Sum.bifunctor
 
 instance Sum.lawfulBifunctor : LawfulBifunctor Sum := by
-  refine' { .. }
-  -- Porting note: an name of paramaters should be specified
-  · intros _ _ x
-    cases x <;> rfl
-  · intros _ _ _ _ _ _ _ _ _ _ x
-    cases x <;> rfl
+  refine' { .. } <;> aesop
 #align sum.is_lawful_bifunctor Sum.lawfulBifunctor
 
 open Bifunctor Functor

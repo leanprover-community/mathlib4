@@ -698,7 +698,7 @@ theorem insert.def (a : α) (l : List α) : insert a l = if a ∈ l then l else 
 
 @[simp]
 theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
-  by_cases a ∈ l
+  by_cases h : a ∈ l
   · simp only [insert_of_mem h, insert, suffix_refl]
   · simp only [insert_of_not_mem h, suffix_cons, insert]
 

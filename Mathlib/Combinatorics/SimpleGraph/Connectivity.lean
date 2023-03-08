@@ -2242,10 +2242,8 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     ext p
     simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.unionᵢ_coe_set,
       Set.mem_unionᵢ, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
-    -- porting note: using `apply iff_of_eq` to help `congr`
-    apply iff_of_eq; congr with w
-    apply iff_of_eq; congr with h
-    apply iff_of_eq; congr with q
+    congr!
+    rename_i w _ q
     have := Set.ext_iff.mp (ih w v) q
     simp only [Finset.mem_coe, Set.mem_setOf_eq] at this
     rw [← this]

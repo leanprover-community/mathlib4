@@ -287,9 +287,9 @@ instance : BooleanAlgebra (SimpleGraph V) :=
     le_sup_inf := by aesop_graph
     inf_compl_le_bot := fun a v w h => False.elim <| h.2.2 h.1
     top_le_sup_compl := fun a v w ne => by
-      by_cases a.Adj v w
-      exact Or.inl h
-      exact Or.inr ⟨ne, h⟩
+      by_cases h : a.Adj v w
+      · exact Or.inl h
+      · exact Or.inr ⟨ne, h⟩
     inf_le_left := fun x y v w h => h.1
     inf_le_right := fun x y v w h => h.2 }
 
@@ -1857,17 +1857,13 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
   left_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := V)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.symm_apply_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := W)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.apply_symm_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.apply_symm_apply _ _
 #align simple_graph.iso.map_edge_set SimpleGraph.Iso.mapEdgeSet
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/

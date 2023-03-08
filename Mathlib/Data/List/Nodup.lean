@@ -304,7 +304,7 @@ theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
 theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
     l.erase a = l.filter (· ≠ a) := by
   induction' d with b l m _ IH; · rfl
-  by_cases b = a
+  by_cases h : b = a
   · subst h
     rw [erase_cons_head, filter_cons_of_neg _ (by simp)]
     symm

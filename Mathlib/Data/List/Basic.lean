@@ -1197,7 +1197,7 @@ theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l
     cases l with
     | nil => rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
     | cons head tail =>
-      by_cases a = head
+      by_cases h : a = head
       · rw [indexOf_cons_eq tail h, indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, h,
           findIdx.go, beq_self_eq_true head, cond]
       · rw [indexOf, findIdx, findIdx, findIdx.go, beq_false_of_ne, cond, findIdx.go,
@@ -1220,7 +1220,7 @@ where
 -- rfl
 theorem indexOf_cons (a b : α) (l : List α) :
     indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
-  cases l <;> by_cases a = b
+  cases l <;> by_cases h : a = b
   case pos | pos => rw [if_pos h]; exact indexOf_cons_eq _ h
   case neg | neg => rw [if_neg h]; exact indexOf_cons_ne _ h
 #align list.index_of_cons List.indexOf_cons
@@ -1827,11 +1827,7 @@ theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ �
   refine' ⟨_, map_congr⟩; intro h x hx
   rw [mem_iff_get] at hx; rcases hx with ⟨n, hn, rfl⟩
   rw [get_map_rev f, get_map_rev g]
-  -- Porting note: with `nthLe` instead of `get` the remainder of the proof is simply `congr`
-  generalize_proofs h₁ h₂
-  generalize map f l = x, map g l = y at *
-  cases h
-  congr
+  congr!
 #align list.map_eq_map_iff List.map_eq_map_iff
 
 theorem map_concat (f : α → β) (a : α) (l : List α) :
@@ -2914,7 +2910,7 @@ variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α 
 
 @[simp]
 theorem splitAt_eq_take_drop (n : ℕ) (l : List α) : splitAt n l = (take n l, drop n l) := by
-  by_cases n < l.length <;> rw [splitAt, go_eq_take_drop]
+  by_cases h : n < l.length <;> rw [splitAt, go_eq_take_drop]
   · rw [if_pos h]; rfl
   · rw [if_neg h, take_all_of_le <| le_of_not_lt h, drop_eq_nil_of_le <| le_of_not_lt h]
 where
@@ -2973,7 +2969,7 @@ theorem splitOnP.go_append (xs : List α) (acc : Array α) (r : Array (List α))
   | nil => rfl
   | cons a as =>
     simp only [go]
-    by_cases p a
+    by_cases h : p a
     · simp only [h, cond_true]
       rw [go_append as, go_append as _ (Array.push #[] (Array.toList acc))]
       simp only [Array.toListAppend_eq, Array.push_data]
@@ -2987,7 +2983,7 @@ theorem splitOnP.go_acc (xs : List α) (acc : Array α) :
   | nil => rfl
   | cons hd tl =>
     simp only [go]
-    by_cases p hd
+    by_cases h : p hd
     · simp only [h, cond_true]
       rw [go_append, go_append _ _ _ (Array.push #[] (Array.toList #[]))]
       rfl
@@ -3003,7 +2999,7 @@ theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := by
   | nil => exact cons_ne_nil [] []
   | cons hd tl =>
     rw [splitOnP, splitOnP.go]
-    by_cases p hd
+    by_cases h : p hd
     · rw [h, cond_true, splitOnP.go_append]
       exact append_ne_nil_of_ne_nil_left [[]] _ (cons_ne_nil [] [])
     · rw [eq_false_of_ne_true h, cond_false, splitOnP.go_acc, ←splitOnP]
@@ -3018,7 +3014,7 @@ theorem splitOnP_cons (x : α) (xs : List α) :
     (x :: xs).splitOnP p =
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
   rw [splitOnP, splitOnP.go]
-  by_cases p x
+  by_cases h : p x
   · rw [if_pos h, h, cond_true, splitOnP.go_append, splitOnP]; rfl
   · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]; congr 1
 #align list.split_on_p_cons List.splitOnP_consₓ
@@ -3031,7 +3027,7 @@ theorem splitOnP_spec (as : List α) :
   | nil => rfl
   | cons a as' ih =>
     rw [splitOnP_cons, filter]
-    by_cases p a
+    by_cases h : p a
     · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
@@ -3810,7 +3806,8 @@ theorem monotone_filter_left (p : α → Bool) ⦃l l' : List α⦄ (h : l ⊆ l
 theorem filter_eq_self {l} : filter p l = l ↔ ∀ a ∈ l, p a := by
   induction' l with a l ih
   · exact iff_of_true rfl (forall_mem_nil _)
-  rw [forall_mem_cons]; by_cases p a
+  rw [forall_mem_cons]
+  by_cases h : p a
   · rw [filter_cons_of_pos _ h, cons_inj, ih, and_iff_right h]
   · refine' iff_of_false (fun hl => h <| of_mem_filter (_ : a ∈ filter p (a :: l))) (mt And.left h)
     rw [hl]
