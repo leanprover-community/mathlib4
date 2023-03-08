@@ -304,6 +304,7 @@ import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
