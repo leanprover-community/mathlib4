@@ -298,7 +298,7 @@ theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
   haveI : DecidableEq α := Classical.decEq α
   constructor
   · intro eq
-    by_cases a = b
+    by_cases h : a = b
     · subst h
       simp_all
     · have : a ∈ b ::ₘ bs := eq ▸ mem_cons_self _ _
@@ -1796,7 +1796,7 @@ theorem le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u :=
   by
   revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
   · simpa only [zero_inter, nonpos_iff_eq_zero] using h₁
-  by_cases a ∈ u
+  by_cases h : a ∈ u
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
     exact IH (erase_le_iff_le_cons.2 h₁) (erase_le_erase _ h₂)
   · rw [cons_inter_of_neg _ h]
@@ -1913,7 +1913,7 @@ theorem sub_add_inter (s t : Multiset α) : s - t + s ∩ t = s :=
   by
   rw [inter_comm]
   revert s; refine' Multiset.induction_on t (by simp) fun a t IH s => _
-  by_cases a ∈ s
+  by_cases h : a ∈ s
   · rw [cons_inter_of_pos _ h, sub_cons, add_cons, IH, cons_erase h]
   · rw [cons_inter_of_neg _ h, sub_cons, erase_of_not_mem h, IH]
 #align multiset.sub_add_inter Multiset.sub_add_inter
@@ -2061,7 +2061,7 @@ theorem filter_sub [DecidableEq α] (s t : Multiset α) :
   by
   revert s; refine' Multiset.induction_on t (by simp) fun a t IH s => _
   rw [sub_cons, IH]
-  by_cases p a
+  by_cases h : p a
   · rw [filter_cons_of_pos _ h, sub_cons]
     congr
     by_cases m : a ∈ s
@@ -2600,7 +2600,7 @@ theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
     replicate n x ∩ s = replicate (min n (s.count x)) x := by
   ext y
   rw [count_inter, count_replicate, count_replicate]
-  by_cases y = x
+  by_cases h : y = x
   · simp only [h, if_true]
   · simp only [h, if_false, zero_min]
 #align multiset.replicate_inter Multiset.replicate_inter

@@ -352,13 +352,13 @@ theorem liftOn_mk {p : Sort u} (f : ∀ (_a : M) (_b : S), p) (H) (a : M) (b : S
 #align localization.lift_on_mk Localization.liftOn_mk
 #align add_localization.lift_on_mk addLocalization.liftOn_mk
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem ind {p : Localization S → Prop} (H : ∀ y : M × S, p (mk y.1 y.2)) (x) : p x :=
   rec (fun a b ↦ H (a, b)) (fun _ ↦ rfl) x
 #align localization.ind Localization.ind
 #align add_localization.ind addLocalization.ind
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_on {p : Localization S → Prop} (x) (H : ∀ y : M × S, p (mk y.1 y.2)) : p x :=
   ind H x
 #align localization.induction_on Localization.induction_on
@@ -387,14 +387,14 @@ theorem liftOn₂_mk {p : Sort _} (f : M → S → M → S → p) (H) (a c : M) 
 #align localization.lift_on₂_mk Localization.liftOn₂_mk
 #align add_localization.lift_on₂_mk addLocalization.liftOn₂_mk
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_on₂ {p : Localization S → Localization S → Prop} (x y)
     (H : ∀ x y : M × S, p (mk x.1 x.2) (mk y.1 y.2)) : p x y :=
   induction_on x fun x ↦ induction_on y <| H x
 #align localization.induction_on₂ Localization.induction_on₂
 #align add_localization.induction_on₂ addLocalization.induction_on₂
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_on₃ {p : Localization S → Localization S → Localization S → Prop} (x y z)
     (H : ∀ x y z : M × S, p (mk x.1 x.2) (mk y.1 y.2) (mk z.1 z.2)) : p x y z :=
   induction_on₂ x y fun x y ↦ induction_on z <| H x y

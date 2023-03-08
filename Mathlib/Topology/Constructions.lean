@@ -1254,6 +1254,15 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 #align continuous_update continuous_update
 
+/-- `Pi.mulSingle i x` is continuous in `x`. -/
+-- porting note: todo: restore @[continuity]
+@[to_additive "`Pi.single i x` is continuous in `x`."]
+theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
+    Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
+  continuous_const.update _ continuous_id
+#align continuous_mul_single continuous_mulSingle
+#align continuous_single continuous_single
+
 theorem Filter.Tendsto.fin_insertNth {n} {π : Fin (n + 1) → Type _} [∀ i, TopologicalSpace (π i)]
     (i : Fin (n + 1)) {f : β → π i} {l : Filter β} {x : π i} (hf : Tendsto f l (𝓝 x))
     {g : β → ∀ j : Fin n, π (i.succAbove j)} {y : ∀ j, π (i.succAbove j)} (hg : Tendsto g l (𝓝 y)) :

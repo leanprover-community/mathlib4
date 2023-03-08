@@ -825,7 +825,6 @@ Note that `Filter α` is not a `Distrib` because `f * g + f * h` has cross terms
 lacks.
 -/
 
-
 theorem mul_add_subset : f * (g + h) ≤ f * g + f * h :=
   map₂_distrib_le_left mul_add
 #align filter.mul_add_subset Filter.mul_add_subset
@@ -908,7 +907,7 @@ theorem map_inv' : f⁻¹.map m = (f.map m)⁻¹ :=
 #align filter.map_neg' Filter.map_neg'
 
 @[to_additive]
-theorem Tendsto.inv_inv : Tendsto m f₁ f₂ → Tendsto m f₁⁻¹ f₂⁻¹ := fun hf =>
+protected theorem Tendsto.inv_inv : Tendsto m f₁ f₂ → Tendsto m f₁⁻¹ f₂⁻¹ := fun hf =>
   (Filter.map_inv' m).trans_le <| Filter.inv_le_inv hf
 #align filter.tendsto.inv_inv Filter.Tendsto.inv_inv
 #align filter.tendsto.neg_neg Filter.Tendsto.neg_neg
@@ -920,8 +919,9 @@ protected theorem map_div : (f / g).map m = f.map m / g.map m :=
 #align filter.map_sub Filter.map_sub
 
 @[to_additive]
-theorem Tendsto.div_div : Tendsto m f₁ f₂ → Tendsto m g₁ g₂ → Tendsto m (f₁ / g₁) (f₂ / g₂) :=
-  fun hf hg => (Filter.map_div m).trans_le <| Filter.div_le_div hf hg
+protected theorem Tendsto.div_div (hf : Tendsto m f₁ f₂) (hg : Tendsto m g₁ g₂) :
+    Tendsto m (f₁ / g₁) (f₂ / g₂) :=
+  (Filter.map_div m).trans_le <| Filter.div_le_div hf hg
 #align filter.tendsto.div_div Filter.Tendsto.div_div
 #align filter.tendsto.sub_sub Filter.Tendsto.sub_sub
 
