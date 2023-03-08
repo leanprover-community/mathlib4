@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Bundle
-import Mathbin.Topology.Algebra.Order.Field
-import Mathbin.Topology.LocalHomeomorph
+import Mathlib.Data.Bundle
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.LocalHomeomorph
 
 /-!
 # Trivializations
@@ -121,8 +121,7 @@ theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
 #align pretrivialization.mem_target Pretrivialization.mem_target
 
-theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toLocalEquiv.symm x) = x.1 :=
-  by
+theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toLocalEquiv.symm x) = x.1 := by
   have := (e.coe_fst (e.to_local_equiv.map_target hx)).symm
   rwa [← e.coe_coe, e.to_local_equiv.right_inv hx] at this
 #align pretrivialization.proj_symm_apply Pretrivialization.proj_symm_apply
@@ -159,8 +158,7 @@ theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
 
 @[simp, mfld_simps]
 theorem preimage_symm_proj_baseSet :
-    e.toLocalEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target :=
-  by
+    e.toLocalEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
   refine' inter_eq_right_iff_subset.mpr fun x hx => _
   simp only [mem_preimage, LocalEquiv.invFun_as_coe, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
@@ -170,8 +168,7 @@ theorem preimage_symm_proj_baseSet :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp, mfld_simps]
 theorem preimage_symm_proj_inter (s : Set B) :
-    e.toLocalEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ :=
-  by
+    e.toLocalEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ := by
   ext ⟨x, y⟩
   suffices x ∈ e.base_set → (proj (e.to_local_equiv.symm (x, y)) ∈ s ↔ x ∈ s) by
     simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true_iff, mem_univ, and_congr_left_iff]
@@ -312,8 +309,7 @@ instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
 
 theorem toPretrivialization_injective :
-    Function.Injective fun e : Trivialization F proj => e.toPretrivialization :=
-  by
+    Function.Injective fun e : Trivialization F proj => e.toPretrivialization := by
   intro e e'
   rw [Pretrivialization.ext_iff, Trivialization.ext_iff, ←
     local_homeomorph.to_local_equiv_injective.eq_iff]
@@ -514,8 +510,7 @@ protected def compHomeomorph {Z' : Type _} [TopologicalSpace Z'] (h : Z' ≃ₜ 
 trivialization of `Z` containing `z`. -/
 theorem continuousAt_of_comp_right {X : Type _} [TopologicalSpace X] {f : Z → X} {z : Z}
     (e : Trivialization F proj) (he : proj z ∈ e.baseSet)
-    (hf : ContinuousAt (f ∘ e.toLocalEquiv.symm) (e z)) : ContinuousAt f z :=
-  by
+    (hf : ContinuousAt (f ∘ e.toLocalEquiv.symm) (e z)) : ContinuousAt f z := by
   have hez : z ∈ e.to_local_equiv.symm.target :=
     by
     rw [LocalEquiv.symm_target, e.mem_source]
@@ -528,8 +523,7 @@ theorem continuousAt_of_comp_right {X : Type _} [TopologicalSpace X] {f : Z → 
 trivialization of `Z` containing `f x`. -/
 theorem continuousAt_of_comp_left {X : Type _} [TopologicalSpace X] {f : X → Z} {x : X}
     (e : Trivialization F proj) (hf_proj : ContinuousAt (proj ∘ f) x) (he : proj (f x) ∈ e.baseSet)
-    (hf : ContinuousAt (e ∘ f) x) : ContinuousAt f x :=
-  by
+    (hf : ContinuousAt (e ∘ f) x) : ContinuousAt f x := by
   rw [e.to_local_homeomorph.continuous_at_iff_continuous_at_comp_left]
   · exact hf
   rw [e.source_eq, ← preimage_comp]
@@ -546,8 +540,7 @@ theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 #align trivialization.coe_mem_source Trivialization.coe_mem_source
 
-theorem open_target : IsOpen e'.target :=
-  by
+theorem open_target : IsOpen e'.target := by
   rw [e'.target_eq]
   exact e'.open_base_set.prod isOpen_univ
 #align trivialization.open_target Trivialization.open_target
@@ -615,8 +608,7 @@ theorem apply_mk_symm (e : Trivialization F (π E)) {b : B} (hb : b ∈ e.baseSe
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem continuousOn_symm (e : Trivialization F (π E)) :
-    ContinuousOn (fun z : B × F => totalSpaceMk z.1 (e.symm z.1 z.2)) (e.baseSet ×ˢ univ) :=
-  by
+    ContinuousOn (fun z : B × F => totalSpaceMk z.1 (e.symm z.1 z.2)) (e.baseSet ×ˢ univ) := by
   have :
     ∀ (z : B × F) (hz : z ∈ e.base_set ×ˢ (univ : Set F)),
       total_space_mk z.1 (e.symm z.1 z.2) = e.to_local_homeomorph.symm z :=
@@ -658,8 +650,7 @@ def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
 
 theorem mk_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) (x : F) :
-    (b, e₁.coordChange e₂ b x) = e₂ (e₁.toLocalHomeomorph.symm (b, x)) :=
-  by
+    (b, e₁.coordChange e₂ b x) = e₂ (e₁.toLocalHomeomorph.symm (b, x)) := by
   refine' Prod.ext _ rfl
   rw [e₂.coe_fst', ← e₁.coe_fst', e₁.apply_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
@@ -682,16 +673,14 @@ theorem coordChange_same (e : Trivialization F proj) {b : B} (h : b ∈ e.baseSe
 
 theorem coordChange_coordChange (e₁ e₂ e₃ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) (x : F) :
-    e₂.coordChange e₃ b (e₁.coordChange e₂ b x) = e₁.coordChange e₃ b x :=
-  by
+    e₂.coordChange e₃ b (e₁.coordChange e₂ b x) = e₁.coordChange e₃ b x := by
   rw [coord_change, e₁.mk_coord_change _ h₁ h₂, ← e₂.coe_coe, e₂.to_local_homeomorph.left_inv,
     coord_change]
   rwa [e₂.mem_source, e₁.proj_symm_apply' h₁]
 #align trivialization.coord_change_coord_change Trivialization.coordChange_coordChange
 
 theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
-    (h₂ : b ∈ e₂.baseSet) : Continuous (e₁.coordChange e₂ b) :=
-  by
+    (h₂ : b ∈ e₂.baseSet) : Continuous (e₁.coordChange e₂ b) := by
   refine'
     continuous_snd.comp
       (e₂.to_local_homeomorph.continuous_on.comp_continuous
