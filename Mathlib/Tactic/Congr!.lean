@@ -43,16 +43,22 @@ structure Congr!.Config where
 Asserts the given congruence theorem as fresh hypothesis, and then applies it.
 Return the `fvarId` for the new hypothesis and the new subgoals.
 
-We apply it with reducible transparency to prevent unfolding.
+We apply it with transparency settings specified by `Congr!.Config.transparency`.
 -/
 private def applyCongrThm?
     (config : Congr!.Config) (mvarId : MVarId) (congrThmType congrThmProof : Expr) :
     MetaM (List MVarId) := do
-  let mvarId ← mvarId.assert (← mkFreshUserName `h_congr_thm) congrThmType congrThmProof
-  let (fvarId, mvarId) ← mvarId.intro1P
-  let mvarIds ← withTransparency config.transparency <|
-    mvarId.apply (mkFVar fvarId) { synthAssignedInstances := false }
-  mvarIds.mapM fun mvarId => mvarId.tryClear fvarId
+  trace[congr!] "trying to apply congr lemma {congrThmType}"
+  try
+    let mvarId ← mvarId.assert (← mkFreshUserName `h_congr_thm) congrThmType congrThmProof
+    let (fvarId, mvarId) ← mvarId.intro1P
+    let mvarIds ← withTransparency config.transparency <|
+      mvarId.apply (mkFVar fvarId) { synthAssignedInstances := false }
+    mvarIds.mapM fun mvarId => mvarId.tryClear fvarId
+  catch e =>
+    withTraceNode `congr! (fun _ => pure m!"failed to apply congr lemma") do
+      trace[congr!] "{e.toMessageData}"
+    throw e
 
 /--
 Like `Lean.MVarId.congr?` but instead of using only the congruence lemma associated to the LHS,
