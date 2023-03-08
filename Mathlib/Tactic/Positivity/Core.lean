@@ -148,18 +148,18 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
       let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
-      assertInstancesCommute
+      assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
       let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
       pure (.positive (q(@pos_of_isNat $α _ _ _ $p $p') : Expr))
     else
       let _a ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
-      assertInstancesCommute
+      assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
       pure (.nonnegative (q(nonneg_of_isNat $p) : Expr))
   | .isNegNat _ lit p =>
     let _a ← synthInstanceQ (q(StrictOrderedRing $α) : Q(Type u))
-    assertInstancesCommute
+    assumeInstancesCommute
     have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
     let p' : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
     pure (.nonzero (q(nz_of_isNegNat $p $p') : Expr))
