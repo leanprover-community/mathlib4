@@ -584,7 +584,7 @@ theorem monomial_comp (n : ℕ) : (monomial n a).comp p = C a * p ^ n :=
 
 @[simp]
 theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
-  -- Porting note: `apply` → `inducion`
+  -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
     simp only [hp, hq, add_mul, add_comp]
