@@ -1807,14 +1807,14 @@ theorem map_mul : map f (I * J) = map f I * map f J :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       mul_le.2 fun r hri s hsj =>
-        show f (r * s) ∈ _ by
-          rw [map_mul] <;> exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
+        show (f (r * s)) ∈ map f I * map f J by
+          rw [_root_.map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
     (trans_rel_right _ (span_mul_span _ _) <|
       span_le.2 <|
         Set.unionᵢ₂_subset fun i ⟨r, hri, hfri⟩ =>
           Set.unionᵢ₂_subset fun j ⟨s, hsj, hfsj⟩ =>
             Set.singleton_subset_iff.2 <|
-              hfri ▸ hfsj ▸ by rw [← map_mul] <;> exact mem_map_of_mem f (mul_mem_mul hri hsj))
+              hfri ▸ hfsj ▸ by rw [← _root_.map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj))
 #align ideal.map_mul Ideal.map_mul
 
 /-- The pushforward `Ideal.map` as a monoid-with-zero homomorphism. -/
