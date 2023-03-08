@@ -8,7 +8,7 @@ Authors: Kevin Buzzard, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Real.Sqrt
+import Mathlib.Data.Real.Sqrt
 
 /-!
 # The complex numbers
@@ -623,8 +623,7 @@ theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * i :=
   ext_iff.2 <| by simp [two_mul, sub_eq_add_neg]
 #align complex.sub_conj Complex.sub_conj
 
-theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re :=
-  by
+theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
   rw [sub_eq_add_neg, norm_sq_add]
   simp only [RingHom.map_neg, mul_neg, neg_re, Tactic.Ring.add_neg_eq_sub, norm_sq_neg]
 #align complex.norm_sq_sub Complex.normSq_sub
@@ -801,8 +800,7 @@ private theorem abs_nonneg' (z : ℂ) : 0 ≤ abs z :=
 theorem abs_conj (z : ℂ) : (abs conj z) = abs z := by simp
 #align complex.abs_theory.abs_conj Complex.AbsTheory.abs_conj
 
-private theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ abs z :=
-  by
+private theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ abs z := by
   rw [mul_self_le_mul_self_iff (abs_nonneg z.re) (abs_nonneg' _), abs_mul_abs_self, mul_self_abs]
   apply re_sq_le_norm_sq
 #align complex.abs_theory.abs_re_le_abs complex.abs_theory.abs_re_le_abs
@@ -955,8 +953,7 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : abs z ≤ |z.re| + |z.im| := by
   simpa [re_add_im] using abs.add_le z.re (z.im * I)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
-theorem abs_le_sqrt_two_mul_max (z : ℂ) : abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) :=
-  by
+theorem abs_le_sqrt_two_mul_max (z : ℂ) : abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) := by
   cases' z with x y
   simp only [abs_apply, norm_sq_mk, ← sq]
   wlog hle : |x| ≤ |y|
@@ -1056,8 +1053,7 @@ theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
   not_lt_iff
 #align complex.not_lt_zero_iff Complex.not_lt_zero_iff
 
-theorem eq_re_of_real_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re :=
-  by
+theorem eq_re_of_real_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
   ext
   rfl
   simp only [← (Complex.le_def.1 hz).2, Complex.zero_im, Complex.of_real_im]
