@@ -63,6 +63,8 @@ theorem star_comm_self' [Mul R] [Star R] (x : R) [IsStarNormal x] : star x * x =
 
 namespace IsSelfAdjoint
 
+-- TODO
+
 theorem star_eq [Star R] {x : R} (hx : IsSelfAdjoint x) : star x = x :=
   hx
 #align is_self_adjoint.star_eq IsSelfAdjoint.star_eq
