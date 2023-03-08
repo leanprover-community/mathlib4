@@ -564,7 +564,7 @@ theorem derivative_comp (p q : R[X]) : derivative (p.comp q) = derivative q * p.
 #align polynomial.derivative_comp Polynomial.derivative_comp
 
 /-- Chain rule for formal derivative of polynomials. -/
-theorem derivative_eval₂_c (p q : R[X]) :
+theorem derivative_eval₂_C (p q : R[X]) :
     derivative (p.eval₂ C q) = p.derivative.eval₂ C q * derivative q :=
   Polynomial.induction_on p (fun r => by rw [eval₂_C, derivative_C, eval₂_zero, zero_mul])
     (fun p₁ p₂ ih₁ ih₂ => by
@@ -573,7 +573,7 @@ theorem derivative_eval₂_c (p q : R[X]) :
     rw [pow_succ', ← mul_assoc, eval₂_mul, eval₂_X, derivative_mul, ih, @derivative_mul _ _ _ X,
       derivative_X, mul_one, eval₂_add, @eval₂_mul _ _ _ _ X, eval₂_X, add_mul, mul_right_comm]
 set_option linter.uppercaseLean3 false in
-#align polynomial.derivative_eval₂_C Polynomial.derivative_eval₂_c
+#align polynomial.derivative_eval₂_C Polynomial.derivative_eval₂_C
 
 theorem derivative_prod {s : Multiset ι} {f : ι → R[X]} :
     derivative (Multiset.map f s).prod =
@@ -614,9 +614,10 @@ theorem derivative_sub {f g : R[X]} : derivative (f - g) = derivative f - deriva
 #align polynomial.derivative_sub Polynomial.derivative_sub
 
 @[simp]
-theorem derivative_x_sub_c (c : R) : (X - C c).derivative = 1 := by
+theorem derivative_X_sub_C (c : R) : derivative (X - C c) = 1 := by
   rw [derivative_sub, derivative_X, derivative_C, sub_zero]
-#align polynomial.derivative_X_sub_C Polynomial.derivative_x_sub_c
+set_option linter.uppercaseLean3 false in
+#align polynomial.derivative_X_sub_C Polynomial.derivative_X_sub_C
 
 @[simp]
 theorem iterate_derivative_sub {k : ℕ} {f g : R[X]} :
@@ -630,13 +631,14 @@ theorem derivative_int_cast {n : ℤ} : derivative (n : R[X]) = 0 := by
   exact derivative_C
 #align polynomial.derivative_int_cast Polynomial.derivative_int_cast
 
-theorem derivative_int_cast_mul {n : ℤ} {f : R[X]} : (↑n * f).derivative = n * f.derivative := by
+theorem derivative_int_cast_mul {n : ℤ} {f : R[X]} : derivative ((n : R[X]) * f) =
+    n * derivative f := by
   simp
 #align polynomial.derivative_int_cast_mul Polynomial.derivative_int_cast_mul
 
 @[simp]
 theorem iterate_derivative_int_cast_mul {n : ℤ} {k : ℕ} {f : R[X]} :
-    (derivative^[k]) (↑n * f) = n * (derivative^[k]) f := by
+    (derivative^[k]) ((n : R[X]) * f) = n * (derivative^[k]) f := by
   induction' k with k ih generalizing f <;> simp [*]
 #align polynomial.iterate_derivative_int_cast_mul Polynomial.iterate_derivative_int_cast_mul
 
@@ -646,38 +648,46 @@ section CommRing
 
 variable [CommRing R]
 
-theorem derivative_comp_one_sub_x (p : R[X]) :
-    (p.comp (1 - X)).derivative = -p.derivative.comp (1 - X) := by simp [derivative_comp]
-#align polynomial.derivative_comp_one_sub_X Polynomial.derivative_comp_one_sub_x
+theorem derivative_comp_one_sub_X (p : R[X]) :
+    derivative (p.comp (1 - X)) = -p.derivative.comp (1 - X) := by simp [derivative_comp]
+set_option linter.uppercaseLean3 false in
+#align polynomial.derivative_comp_one_sub_X Polynomial.derivative_comp_one_sub_X
 
 @[simp]
-theorem iterate_derivative_comp_one_sub_x (p : R[X]) (k : ℕ) :
+theorem iterate_derivative_comp_one_sub_X (p : R[X]) (k : ℕ) :
     (derivative^[k]) (p.comp (1 - X)) = (-1) ^ k * ((derivative^[k]) p).comp (1 - X) := by
   induction' k with k ih generalizing p
   · simp
-  · simp [ih p.derivative, iterate_derivative_neg, derivative_comp, pow_succ]
-#align polynomial.iterate_derivative_comp_one_sub_X Polynomial.iterate_derivative_comp_one_sub_x
+  · simp [ih (derivative p), iterate_derivative_neg, derivative_comp, pow_succ]
+set_option linter.uppercaseLean3 false in
+#align polynomial.iterate_derivative_comp_one_sub_X Polynomial.iterate_derivative_comp_one_sub_X
 
-theorem eval_multiset_prod_x_sub_c_derivative {S : Multiset R} {r : R} (hr : r ∈ S) :
-    eval r (Multiset.map (fun a => X - C a) S).Prod.derivative =
-      (Multiset.map (fun a => r - a) (S.eraseₓ r)).Prod := by
+theorem eval_multiset_prod_X_sub_C_derivative {S : Multiset R} {r : R} (hr : r ∈ S) :
+    eval r (derivative (Multiset.map (fun a => X - C a) S).prod) =
+      (Multiset.map (fun a => r - a) (S.erase r)).prod := by
   nth_rw 1 [← Multiset.cons_erase hr]
-  simpa using (eval_ring_hom r).map_multiset_prod (Multiset.map (fun a => X - C a) (S.erase r))
-#align polynomial.eval_multiset_prod_X_sub_C_derivative Polynomial.eval_multiset_prod_x_sub_c_derivative
+  have := (evalRingHom r).map_multiset_prod (Multiset.map (fun a => X - C a) (S.erase r))
+  simpa using this
+set_option linter.uppercaseLean3 false in
+#align polynomial.eval_multiset_prod_X_sub_C_derivative Polynomial.eval_multiset_prod_X_sub_C_derivative
 
-theorem derivative_x_sub_c_pow (c : R) (m : ℕ) :
-    ((X - C c) ^ m).derivative = C ↑m * (X - C c) ^ (m - 1) := by
+theorem derivative_X_sub_C_pow (c : R) (m : ℕ) :
+    derivative ((X - C c) ^ m) = C (m : R) * (X - C c) ^ (m - 1) := by
   rw [derivative_pow, derivative_X_sub_C, mul_one]
-#align polynomial.derivative_X_sub_C_pow Polynomial.derivative_x_sub_c_pow
+set_option linter.uppercaseLean3 false in
+#align polynomial.derivative_X_sub_C_pow Polynomial.derivative_X_sub_C_pow
 
-theorem derivative_x_sub_c_sq (c : R) : ((X - C c) ^ 2).derivative = C 2 * (X - C c) := by
+theorem derivative_X_sub_C_sq (c : R) : derivative ((X - C c) ^ 2) = C 2 * (X - C c) := by
   rw [derivative_sq, derivative_X_sub_C, mul_one]
-#align polynomial.derivative_X_sub_C_sq Polynomial.derivative_x_sub_c_sq
+set_option linter.uppercaseLean3 false in
+#align polynomial.derivative_X_sub_C_sq Polynomial.derivative_X_sub_C_sq
 
-theorem iterate_derivative_x_sub_pow (n k : ℕ) (c : R) :
-    (derivative^[k]) ((X - C c) ^ n) = ↑(∏ i in Finset.range k, n - i) * (X - C c) ^ (n - k) := by
-  simp_rw [sub_eq_add_neg, ← C_neg, iterate_derivative_X_add_pow]
-#align polynomial.iterate_derivative_X_sub_pow Polynomial.iterate_derivative_x_sub_pow
+theorem iterate_derivative_X_sub_pow (n k : ℕ) (c : R) :
+    (derivative^[k]) ((X - C c) ^ n) = ((∏ i in Finset.range k, (n - i) : ℕ) : R[X]) *
+    (X - C c) ^ (n - k) := by
+  rw [sub_eq_add_neg, ← C_neg, iterate_derivative_X_add_pow]
+set_option linter.uppercaseLean3 false in
+#align polynomial.iterate_derivative_X_sub_pow Polynomial.iterate_derivative_X_sub_pow
 
 end CommRing
 
