@@ -414,7 +414,7 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
         rfl
     one := 1 }
 
-instance : CommRing ℂ :=
+instance commRing : CommRing ℂ :=
   {
   Complex.addGroupWithOne with
     zero := (0 : ℂ)
@@ -483,7 +483,7 @@ theorem i_pow_bit1 (n : ℕ) : i ^ bit1 n = (-1) ^ n * i := by rw [pow_bit1', Co
 is recommended to use the ring endomorphism version `star_ring_end`, available under the
 notation `conj` in the locale `complex_conjugate`. -/
 instance : StarRing ℂ where
-  unit z := ⟨z.re, -z.im⟩
+  star z := ⟨z.re, -z.im⟩
   star_involutive x := by simp only [eta, neg_neg]
   star_mul a b := by ext <;> simp [add_comm] <;> ring
   star_add a b := by ext <;> simp [add_comm]
@@ -499,7 +499,7 @@ theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
 #align complex.conj_im Complex.conj_im
 
 theorem conj_of_real (r : ℝ) : conj (r : ℂ) = r :=
-  ext_iff.2 <| by simp [conj]
+  ext_iff.2 <| by simp [star]
 #align complex.conj_of_real Complex.conj_of_real
 
 @[simp]
@@ -536,7 +536,8 @@ theorem eq_conj_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
 
 -- `simp_nf` complains about this being provable by `is_R_or_C.star_def` even
 -- though it's not imported by this file.
-@[simp, nolint simp_nf]
+-- Porting note: linter `simp_nf` not found
+@[simp]
 theorem star_def : (Star.star : ℂ → ℂ) = conj :=
   rfl
 #align complex.star_def Complex.star_def
@@ -545,7 +546,7 @@ theorem star_def : (Star.star : ℂ → ℂ) = conj :=
 
 
 /-- The norm squared function. -/
-@[pp_nodot]
+-- @[pp_nodot]
 def normSq : ℂ →*₀ ℝ where
   toFun z := z.re * z.re + z.im * z.im
   map_zero' := by simp
@@ -560,7 +561,7 @@ theorem normSq_apply (z : ℂ) : normSq z = z.re * z.re + z.im * z.im :=
 #align complex.norm_sq_apply Complex.normSq_apply
 
 @[simp]
-theorem normSq_of_real (r : ℝ) : normSq r = r * r := by simp [norm_sq]
+theorem normSq_of_real (r : ℝ) : normSq r = r * r := by simp [normSq]
 #align complex.norm_sq_of_real Complex.normSq_of_real
 
 @[simp]
@@ -569,11 +570,12 @@ theorem normSq_mk (x y : ℝ) : normSq ⟨x, y⟩ = x * x + y * y :=
 #align complex.norm_sq_mk Complex.normSq_mk
 
 theorem normSq_add_mul_i (x y : ℝ) : normSq (x + y * i) = x ^ 2 + y ^ 2 := by
-  rw [← mk_eq_add_mul_I, norm_sq_mk, sq, sq]
+  rw [← mk_eq_add_mul_i, normSq_mk, sq, sq]
+set_option linter.uppercaseLean3 false in
 #align complex.norm_sq_add_mul_I Complex.normSq_add_mul_i
 
 theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
-  ext <;> simp [norm_sq, mul_comm]
+  ext <;> simp [normSq, mul_comm]
 #align complex.norm_sq_eq_conj_mul_self Complex.normSq_eq_conj_mul_self
 
 @[simp]
@@ -587,7 +589,8 @@ theorem normSq_one : normSq 1 = 1 :=
 #align complex.norm_sq_one Complex.normSq_one
 
 @[simp]
-theorem normSq_i : normSq i = 1 := by simp [norm_sq]
+theorem normSq_i : normSq i = 1 := by simp [normSq]
+set_option linter.uppercaseLean3 false in
 #align complex.norm_sq_I Complex.normSq_i
 
 theorem normSq_nonneg (z : ℂ) : 0 ≤ normSq z :=
@@ -597,7 +600,7 @@ theorem normSq_nonneg (z : ℂ) : 0 ≤ normSq z :=
 @[simp]
 theorem range_normSq : range normSq = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx =>
-    ⟨Real.sqrt x, by rw [norm_sq_of_real, Real.mul_self_sqrt hx]⟩
+    ⟨Real.sqrt x, by rw [normSq_of_real, Real.mul_self_sqrt hx]⟩
 #align complex.range_norm_sq Complex.range_normSq
 
 theorem normSq_eq_zero {z : ℂ} : normSq z = 0 ↔ z = 0 :=
@@ -613,11 +616,11 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
 #align complex.norm_sq_pos Complex.normSq_pos
 
 @[simp]
-theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [norm_sq]
+theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 
 @[simp]
-theorem normSq_conj (z : ℂ) : normSq (conj z) = normSq z := by simp [norm_sq]
+theorem normSq_conj (z : ℂ) : normSq (conj z) = normSq z := by simp [normSq]
 #align complex.norm_sq_conj Complex.normSq_conj
 
 theorem normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
@@ -625,7 +628,7 @@ theorem normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
 #align complex.norm_sq_mul Complex.normSq_mul
 
 theorem normSq_add (z w : ℂ) : normSq (z + w) = normSq z + normSq w + 2 * (z * conj w).re := by
-  dsimp [norm_sq] <;> ring
+  dsimp [normSq] <;> ring
 #align complex.norm_sq_add Complex.normSq_add
 
 theorem re_sq_le_normSq (z : ℂ) : z.re * z.re ≤ normSq z :=
@@ -637,7 +640,7 @@ theorem im_sq_le_normSq (z : ℂ) : z.im * z.im ≤ normSq z :=
 #align complex.im_sq_le_norm_sq Complex.im_sq_le_normSq
 
 theorem mul_conj (z : ℂ) : z * conj z = normSq z :=
-  ext_iff.2 <| by simp [norm_sq, mul_comm, sub_eq_neg_add, add_comm]
+  ext_iff.2 <| by simp [normSq, mul_comm, sub_eq_neg_add, add_comm]
 #align complex.mul_conj Complex.mul_conj
 
 theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
@@ -655,7 +658,8 @@ theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
 #align complex.of_real_eq_coe Complex.ofReal_eq_coe
 
 @[simp]
-theorem i_sq : i ^ 2 = -1 := by rw [sq, I_mul_I]
+theorem i_sq : i ^ 2 = -1 := by rw [sq, i_mul_i]
+set_option linter.uppercaseLean3 false in
 #align complex.I_sq Complex.i_sq
 
 @[simp]
@@ -705,7 +709,8 @@ theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, divi
 theorem inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, division_def]
 #align complex.inv_im Complex.inv_im
 
-@[simp, norm_cast]
+-- removed norm-cast
+@[simp]
 theorem of_real_inv (r : ℝ) : ((r⁻¹ : ℝ) : ℂ) = r⁻¹ :=
   ext_iff.2 <| by simp
 #align complex.of_real_inv Complex.of_real_inv
@@ -714,7 +719,7 @@ protected theorem inv_zero : (0⁻¹ : ℂ) = 0 := by rw [← of_real_zero, ← 
 #align complex.inv_zero Complex.inv_zero
 
 protected theorem mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
-  rw [inv_def, ← mul_assoc, mul_conj, ← of_real_mul, mul_inv_cancel (mt norm_sq_eq_zero.1 h),
+  rw [inv_def, ← mul_assoc, mul_conj, ← of_real_mul, mul_inv_cancel (mt normSq_eq_zero.1 h),
     of_real_one]
 #align complex.mul_inv_cancel Complex.mul_inv_cancel
 
@@ -728,11 +733,11 @@ noncomputable instance : Field ℂ :=
     inv_zero := Complex.inv_zero }
 
 @[simp]
-theorem i_zpow_bit0 (n : ℤ) : i ^ bit0 n = (-1) ^ n := by rw [zpow_bit0', I_mul_I]
+theorem i_zpow_bit0 (n : ℤ) : i ^ bit0 n = (-1) ^ n := by rw [zpow_bit0', i_mul_i]
 #align complex.I_zpow_bit0 Complex.i_zpow_bit0
 
 @[simp]
-theorem i_zpow_bit1 (n : ℤ) : i ^ bit1 n = (-1) ^ n * i := by rw [zpow_bit1', I_mul_I]
+theorem i_zpow_bit1 (n : ℤ) : i ^ bit1 n = (-1) ^ n * i := by rw [zpow_bit1', i_mul_i]
 #align complex.I_zpow_bit1 Complex.i_zpow_bit1
 
 theorem div_re (z w : ℂ) : (z / w).re = z.re * w.re / normSq w + z.im * w.im / normSq w := by
