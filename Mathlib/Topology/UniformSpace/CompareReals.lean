@@ -72,7 +72,7 @@ theorem Rat.uniformSpace_eq :
 def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace :=
 @AbstractCompletion.mk
   (space := ℝ)
-  (coe := (RatCast.ratCast : ℚ → ℝ))
+  (coe := ((↑) : ℚ → ℝ))
   (uniformStruct := by infer_instance)
   (complete := by infer_instance)
   (separation := by infer_instance)
