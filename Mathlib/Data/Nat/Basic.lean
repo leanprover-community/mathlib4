@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.basic
-! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
+! leanprover-community/mathlib commit 2609ad04e2b77aceb2200e273daf11cc65856fda
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

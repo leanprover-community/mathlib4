@@ -328,11 +328,11 @@ theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 #align fin.coe_strict_mono Fin.val_strictMono
 
 /-- The equivalence `Fin n ≃ { i // i < n }` is an order isomorphism. -/
-@[simps! apply symmApply]
+@[simps! apply symm_apply]
 def orderIsoSubtype : Fin n ≃o { i // i < n } :=
   equivSubtype.toOrderIso (by simp [Monotone]) (by simp [Monotone])
 #align fin.order_iso_subtype Fin.orderIsoSubtype
-#align fin.order_iso_subtype_symm_apply Fin.orderIsoSubtype_symmApply
+#align fin.order_iso_subtype_symm_apply Fin.orderIsoSubtype_symm_apply
 #align fin.order_iso_subtype_apply Fin.orderIsoSubtype_apply
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/

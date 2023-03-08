@@ -28,13 +28,13 @@ section Neg
 -- see Note [lower instance priority]
 /-- `abs a` is the absolute value of `a`. -/
 @[to_additive "`abs a` is the absolute value of `a`"]
-instance (priority := 100) Inv.toHasAbs [Inv α] [HasSup α] : Abs α :=
+instance (priority := 100) Inv.toHasAbs [Inv α] [Sup α] : Abs α :=
   ⟨fun a => a ⊔ a⁻¹⟩
 #align has_inv.to_has_abs Inv.toHasAbs
 #align has_neg.to_has_abs Neg.toHasAbs
 
 @[to_additive]
-theorem abs_eq_sup_inv [Inv α] [HasSup α] (a : α) : |a| = a ⊔ a⁻¹ :=
+theorem abs_eq_sup_inv [Inv α] [Sup α] (a : α) : |a| = a ⊔ a⁻¹ :=
   rfl
 #align abs_eq_sup_inv abs_eq_sup_inv
 #align abs_eq_sup_neg abs_eq_sup_neg

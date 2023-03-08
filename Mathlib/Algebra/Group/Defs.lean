@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.group.defs
-! leanprover-community/mathlib commit 41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3
+! leanprover-community/mathlib commit 2e0975f6a25dd3fbfb9e41556a77f075f6269748
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -83,17 +83,17 @@ infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
-attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv HSMul
+attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
 attribute [to_additive (reorder := 1) SMul] Pow
 attribute [to_additive (reorder := 1)] HPow
-attribute [to_additive (reorder := 1 5) hSMul] HPow.hPow
-attribute [to_additive (reorder := 1 4) smul] Pow.pow
+attribute [to_additive existing (reorder := 1 5) hSMul] HPow.hPow
+attribute [to_additive existing (reorder := 1 4) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
 instance instHSMul [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
-attribute [to_additive (reorder := 1)] instHPow
+attribute [to_additive existing (reorder := 1)] instHPow
 
 universe u
 
@@ -482,7 +482,7 @@ def nsmulRec [Zero M] [Add M] : ℕ → M → M
   | n + 1, a => a + nsmulRec n a
 #align nsmul_rec nsmulRec
 
-attribute [to_additive] npowRec
+attribute [to_additive existing] npowRec
 
 end
 
@@ -597,7 +597,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 #align monoid.npow_succ' Monoid.npow_succ
 
 -- Bug #660
-attribute [to_additive] Monoid.toMulOneClass
+attribute [to_additive existing] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
@@ -607,7 +607,7 @@ instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 #align add_monoid.has_smul_nat AddMonoid.SMul
 
-attribute [to_additive SMul] Monoid.Pow
+attribute [to_additive existing SMul] Monoid.Pow
 
 section
 
@@ -655,7 +655,7 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 #align comm_monoid CommMonoid
 
-attribute [to_additive] CommMonoid.toCommSemigroup
+attribute [to_additive existing] CommMonoid.toCommSemigroup
 
 section LeftCancelMonoid
 
@@ -670,7 +670,7 @@ class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMono
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 #align left_cancel_monoid LeftCancelMonoid
 
-attribute [to_additive] LeftCancelMonoid.toMonoid
+attribute [to_additive existing] LeftCancelMonoid.toMonoid
 
 end LeftCancelMonoid
 
@@ -687,7 +687,7 @@ class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMo
 class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 #align right_cancel_monoid RightCancelMonoid
 
-attribute [to_additive] RightCancelMonoid.toMonoid
+attribute [to_additive existing] RightCancelMonoid.toMonoid
 
 end RightCancelMonoid
 
@@ -704,7 +704,7 @@ class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancel
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 #align cancel_monoid CancelMonoid
 
-attribute [to_additive] CancelMonoid.toRightCancelMonoid
+attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 
 /-- Commutative version of `AddCancelMonoid`. -/
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
@@ -715,7 +715,7 @@ class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMon
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 #align cancel_comm_monoid CancelCommMonoid
 
-attribute [to_additive] CancelCommMonoid.toCommMonoid
+attribute [to_additive existing] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -750,7 +750,7 @@ def zsmulRec {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
   | Int.negSucc n, a => -nsmulRec n.succ a
 #align zsmul_rec zsmulRec
 
-attribute [to_additive] zpowRec
+attribute [to_additive existing] zpowRec
 
 section InvolutiveInv
 
@@ -880,7 +880,7 @@ instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
   ⟨SubNegMonoid.zsmul⟩
 #align sub_neg_monoid.has_smul_int SubNegMonoid.SMulInt
 
-attribute [to_additive SubNegMonoid.SMulInt] DivInvMonoid.Pow
+attribute [to_additive existing SubNegMonoid.SMulInt] DivInvMonoid.Pow
 
 section DivInvMonoid
 
@@ -919,7 +919,7 @@ theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 
-attribute [to_additive (attr := simp) negSucc_zsmul] zpow_negSucc
+attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
@@ -960,7 +960,7 @@ class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 #align div_inv_one_monoid DivInvOneMonoid
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)
-attribute [to_additive] DivInvOneMonoid.toInvOneClass
+attribute [to_additive existing] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
 
@@ -993,7 +993,7 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 #align division_monoid DivisionMonoid
 
-attribute [to_additive] DivisionMonoid.toInvolutiveInv
+attribute [to_additive existing] DivisionMonoid.toInvolutiveInv
 
 section DivisionMonoid
 
@@ -1024,7 +1024,7 @@ This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 #align division_comm_monoid DivisionCommMonoid
 
-attribute [to_additive] DivisionCommMonoid.toCommMonoid
+attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
@@ -1133,7 +1133,7 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 #align comm_group CommGroup
 
-attribute [to_additive] CommGroup.toCommMonoid
+attribute [to_additive existing] CommGroup.toCommMonoid
 
 @[to_additive]
 theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by

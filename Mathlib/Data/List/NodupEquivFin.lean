@@ -55,8 +55,7 @@ variable [DecidableEq α]
 /-- If `l` has no duplicates, then `List.get` defines an equivalence between `Fin (length l)` and
 the set of elements of `l`. -/
 @[simps]
-def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l }
-    where
+def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
   toFun i := ⟨get l i, get_mem l i i.2⟩
   invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
   left_inv i := by simp only [List.get_indexOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
@@ -83,24 +82,19 @@ namespace Sorted
 
 variable [Preorder α] {l : List α}
 
-@[deprecated]
-theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get :=
-  fun _ _ => h.rel_nthLe_of_le _ _
+theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
 #align list.sorted.nth_le_mono List.Sorted.get_mono
 
-@[deprecated]
-theorem get_strictMono (h : l.Sorted (· < ·)) :
-    StrictMono l.get := fun _ _ => h.rel_nthLe_of_lt _ _
+theorem get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
 #align list.sorted.nth_le_strict_mono List.Sorted.get_strictMono
 
 variable [DecidableEq α]
 
 /-- If `l` is a list sorted w.r.t. `(<)`, then `List.get` defines an order isomorphism between
 `Fin (length l)` and the set of elements of `l`. -/
-def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l }
-    where
+def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l } where
   toEquiv := H.nodup.getEquiv l
-  map_rel_iff' {_ _} := H.get_strictMono.le_iff_le
+  map_rel_iff' := H.get_strictMono.le_iff_le
 #align list.sorted.nth_le_iso List.Sorted.getIso
 
 variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}

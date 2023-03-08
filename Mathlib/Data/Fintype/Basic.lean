@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.fintype.basic
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit d78597269638367c3863d40d45108f52207e03cf
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -653,7 +653,7 @@ theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toF
   ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h] ⟩
 #align set.to_finset_inj Set.toFinset_inj
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem toFinset_subset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp [Finset.subset_iff, Set.subset_def]
 #align set.to_finset_subset_to_finset Set.toFinset_subset_toFinset
@@ -673,7 +673,7 @@ theorem ssubset_toFinset {s : Finset α} [Fintype t] : s ⊂ t.toFinset ↔ ↑s
   rw [← Finset.coe_ssubset, coe_toFinset]
 #align set.ssubset_to_finset Set.ssubset_toFinset
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem toFinset_ssubset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
   simp only [Finset.ssubset_def, toFinset_subset_toFinset, ssubset_def]
 #align set.to_finset_ssubset_to_finset Set.toFinset_ssubset_toFinset
@@ -765,12 +765,11 @@ theorem toFinset_eq_univ [Fintype α] [Fintype s] : s.toFinset = Finset.univ ↔
 #align set.to_finset_eq_univ Set.toFinset_eq_univ
 
 @[simp]
-theorem to_finset_set_of [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
-    { x | p x }.toFinset = Finset.univ.filter p :=
-  by
+theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
+    { x | p x }.toFinset = Finset.univ.filter p := by
   ext
   simp
-#align set.to_finset_set_of Set.to_finset_set_of
+#align set.to_finset_set_of Set.toFinset_setOf
 
 --@[simp] Porting note: removing simp, simp can prove it
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
@@ -1049,9 +1048,7 @@ noncomputable def finsetEquivSet [Fintype α] : Finset α ≃ Set α
     where
   toFun := (↑)
   invFun := by classical exact fun s => s.toFinset
-  left_inv s := by
-    { classical convert Finset.toFinset_coe s
-      simp }
+  left_inv s := by convert Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 #align fintype.finset_equiv_set Fintype.finsetEquivSet
 

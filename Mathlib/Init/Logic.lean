@@ -524,16 +524,18 @@ def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a�
 def LeftCommutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 
 theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
-  fun hcomm hassoc a b c ↦ calc
-    a*(b*c) = (a*b)*c := Eq.symm (hassoc a b c)
-          _ = (b*a)*c := hcomm a b ▸ rfl
-          _ = b*(a*c) := hassoc b a c
+  fun hcomm hassoc a b c ↦
+    calc  a*(b*c)
+      _ = (a*b)*c := Eq.symm (hassoc a b c)
+      _ = (b*a)*c := hcomm a b ▸ rfl
+      _ = b*(a*c) := hassoc b a c
 
 theorem right_comm : Commutative f → Associative f → RightCommutative f :=
-  fun hcomm hassoc a b c ↦ calc
-    (a*b)*c = a*(b*c) := hassoc a b c
-          _ = a*(c*b) := hcomm b c ▸ rfl
-          _ = (a*c)*b := Eq.symm (hassoc a c b)
+  fun hcomm hassoc a b c ↦
+    calc  (a*b)*c
+      _ = a*(b*c) := hassoc a b c
+      _ = a*(c*b) := hcomm b c ▸ rfl
+      _ = (a*c)*b := Eq.symm (hassoc a c b)
 
 end Binary
 

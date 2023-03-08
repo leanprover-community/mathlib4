@@ -1372,7 +1372,7 @@ variable [AddMonoid M]
 /-- The additive equivalence between `(α ⊕ β) →₀ M` and `(α →₀ M) × (β →₀ M)`.
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
-@[simps! apply symmApply]
+@[simps! apply symm_apply]
 def sumFinsuppAddEquivProdFinsupp {α β : Type _} : (Sum α β →₀ M) ≃+ (α →₀ M) × (β →₀ M) :=
   { sumFinsuppEquivProdFinsupp with
     map_add' := by
@@ -1483,12 +1483,12 @@ end
 
 section
 
-instance [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M)
-    where
+instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
   smul a v := v.mapRange ((· • ·) a) (smul_zero _)
   smul_zero a := by
     ext
     apply smul_zero
+#align finsupp.smul_zero_class Finsupp.smulZeroClass
 
 /-!
 Throughout this section, some `Monoid` and `Semiring` arguments are specified with `{}` instead of
@@ -1511,15 +1511,16 @@ theorem _root_.IsSMulRegular.finsupp [AddMonoid M] [DistribSMul R M] {k : R}
   fun _ _ h => ext fun i => hk (FunLike.congr_fun h i)
 #align is_smul_regular.finsupp IsSMulRegular.finsupp
 
-instance [Nonempty α] [AddMonoid M] [DistribSMul R M] [FaithfulSMul R M] : FaithfulSMul R (α →₀ M)
-    where eq_of_smul_eq_smul h :=
+instance faithfulSMul [Nonempty α] [AddMonoid M] [DistribSMul R M] [FaithfulSMul R M] :
+    FaithfulSMul R (α →₀ M) where
+  eq_of_smul_eq_smul h :=
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using FunLike.congr_fun (h (single a m)) a
+#align finsupp.faithful_smul Finsupp.faithfulSMul
 
 variable (α M)
 
-instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M)
-    where
+instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
   smul := (· • ·)
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
   smul_zero _ := ext fun _ => smul_zero _
@@ -1532,23 +1533,27 @@ instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 #align finsupp.distrib_mul_action Finsupp.distribMulAction
 
-instance [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M] [DistribMulAction S M]
-    [SMul R S] [IsScalarTower R S M] : IsScalarTower R S (α →₀ M)
-    where smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
+instance isScalarTower [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M]
+    [DistribMulAction S M] [SMul R S] [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
+  smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
+#align finsuppp.is_scalar_tower Finsupp.isScalarTower
 
-instance [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M] [DistribMulAction S M]
-    [SMulCommClass R S M] : SMulCommClass R S (α →₀ M)
-    where smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
+instance smulCommClass [Monoid R] [Monoid S] [AddMonoid M] [DistribMulAction R M]
+    [DistribMulAction S M] [SMulCommClass R S M] : SMulCommClass R S (α →₀ M) where
+  smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
+#align finsupp.smul_comm_class Finsupp.smulCommClass
 
-instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
-    [IsCentralScalar R M] : IsCentralScalar R (α →₀ M)
-    where op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+instance isCentralScalar [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+    [IsCentralScalar R M] : IsCentralScalar R (α →₀ M) where
+  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+#align finsupp.is_central_scalar Finsupp.isCentralScalar
 
-instance [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
+instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
   { Finsupp.distribMulAction α M with
     smul := (· • ·)
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
+#align finsupp.module Finsupp.module
 
 variable {α M}
 
@@ -1641,11 +1646,12 @@ theorem sum_smul_index_addMonoidHom [AddMonoid M] [AddCommMonoid N] [DistribSMul
   sum_mapRange_index fun i => (h i).map_zero
 #align finsupp.sum_smul_index_add_monoid_hom Finsupp.sum_smul_index_addMonoidHom
 
-instance [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type _} [NoZeroSMulDivisors R M] :
-    NoZeroSMulDivisors R (ι →₀ M) :=
+instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type _}
+    [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=
   ⟨fun h =>
     or_iff_not_imp_left.mpr fun hc =>
       Finsupp.ext fun i => (smul_eq_zero.mp (FunLike.ext_iff.mp h i)).resolve_left hc⟩
+#align finsupp.no_zero_smul_divisors Finsupp.noZeroSMulDivisors
 
 section DistribMulActionHom
 

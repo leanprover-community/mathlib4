@@ -38,7 +38,7 @@ variable [PartialOrder α] [OrderBot α] {a b c d : α}
   (This generalizes disjoint sets, viewed as members of the subset lattice.)
 
 Note that we define this without reference to `⊓`, as this allows us to talk about orders where
-the infimum is not unique, or where implementing `HasInf` would require additional `Decidable`
+the infimum is not unique, or where implementing `Inf` would require additional `Decidable`
 arguments. -/
 def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
@@ -222,7 +222,7 @@ variable [PartialOrder α] [OrderTop α] {a b c d : α}
 /-- Two elements of a lattice are codisjoint if their sup is the top element.
 
 Note that we define this without reference to `⊔`, as this allows us to talk about orders where
-the supremum is not unique, or where implement `HasSup` would require additional `Decidable`
+the supremum is not unique, or where implement `Sup` would require additional `Decidable`
 arguments. -/
 def Codisjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, a ≤ x → b ≤ x → ⊤ ≤ x

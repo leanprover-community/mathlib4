@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.basic
-! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! leanprover-community/mathlib commit 1447cae870f372074e480de1acbeb51de0077698
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1827,11 +1827,7 @@ theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ �
   refine' ⟨_, map_congr⟩; intro h x hx
   rw [mem_iff_get] at hx; rcases hx with ⟨n, hn, rfl⟩
   rw [get_map_rev f, get_map_rev g]
-  -- Porting note: with `nthLe` instead of `get` the remainder of the proof is simply `congr`
-  generalize_proofs h₁ h₂
-  generalize map f l = x, map g l = y at *
-  cases h
-  congr
+  congr!
 #align list.map_eq_map_iff List.map_eq_map_iff
 
 theorem map_concat (f : α → β) (a : α) (l : List α) :
@@ -4609,8 +4605,8 @@ The list definitions happen earlier than `to_additive`, so here we tag the few m
 definitions that couldn't be tagged earlier.
 -/
 
-attribute [to_additive] List.prod -- `List.sum`
-attribute [to_additive] alternatingProd -- `List.alternatingSum`
+attribute [to_additive existing] List.prod -- `List.sum`
+attribute [to_additive existing] alternatingProd -- `List.alternatingSum`
 
 /-! ### Miscellaneous lemmas -/
 

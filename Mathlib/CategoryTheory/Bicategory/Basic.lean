@@ -129,6 +129,23 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
       = whiskerRight (rightUnitor f).hom g := by
     aesop_cat
 #align category_theory.bicategory CategoryTheory.Bicategory
+#align category_theory.bicategory.hom_category CategoryTheory.Bicategory.homCategory
+#align category_theory.bicategory.whisker_left CategoryTheory.Bicategory.whiskerLeft
+#align category_theory.bicategory.whisker_right CategoryTheory.Bicategory.whiskerRight
+#align category_theory.bicategory.left_unitor CategoryTheory.Bicategory.leftUnitor
+#align category_theory.bicategory.right_unitor CategoryTheory.Bicategory.rightUnitor
+#align category_theory.bicategory.whisker_left_id' CategoryTheory.Bicategory.whiskerLeft_id
+#align category_theory.bicategory.whisker_left_comp' CategoryTheory.Bicategory.whiskerLeft_comp
+#align category_theory.bicategory.id_whisker_left' CategoryTheory.Bicategory.id_whiskerLeft
+#align category_theory.bicategory.comp_whisker_left' CategoryTheory.Bicategory.comp_whiskerLeft
+#align category_theory.bicategory.id_whisker_right' CategoryTheory.Bicategory.id_whiskerRight
+#align category_theory.bicategory.comp_whisker_right' CategoryTheory.Bicategory.comp_whiskerRight
+#align category_theory.bicategory.whisker_right_id' CategoryTheory.Bicategory.whiskerRight_id
+#align category_theory.bicategory.whisker_right_comp' CategoryTheory.Bicategory.whiskerRight_comp
+#align category_theory.bicategory.whisker_assoc' CategoryTheory.Bicategory.whisker_assoc
+#align category_theory.bicategory.whisker_exchange' CategoryTheory.Bicategory.whisker_exchange
+#align category_theory.bicategory.pentagon' CategoryTheory.Bicategory.pentagon
+#align category_theory.bicategory.triangle' CategoryTheory.Bicategory.triangle
 
 namespace Bicategory
 
