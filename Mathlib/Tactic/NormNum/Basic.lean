@@ -830,3 +830,22 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! - nb.natLit!)
   let r : Q(Nat.sub $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
   return (.isNat sℕ nc q(isNat_natSub $pa $pb $r) : Result q($a - $b))
+
+theorem isNat_natMod : {a b : ℕ} → {a' b' c : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.mod a' b' = c → IsNat (a % b) c
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by aesop⟩
+
+/-- The `norm_num` extension which identifies expressions of the form `Nat.mod a b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num (_ : ℕ) % _, Mod.mod (_ : ℕ) _, Nat.mod _ _] def evalNatMod :
+    NormNumExt where eval {u α} e := do
+  let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
+  -- We trust that the default instance for `HMod` is `Nat.mod` when the first parameter is `ℕ`.
+  guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℕ))
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
+  have pa : Q(IsNat $a $na) := pa
+  have pb : Q(IsNat $b $nb) := pb
+  have nc : Q(ℕ) := mkRawNatLit (na.natLit! % nb.natLit!)
+  let r : Q(Nat.mod $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
+  return (.isNat sℕ nc q(isNat_natMod $pa $pb $r) : Result q($a % $b))
