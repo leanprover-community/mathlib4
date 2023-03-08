@@ -14,7 +14,6 @@ import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.Data.Nat.Cast.WithTop
 
--- Porting note: `Mathlib.Data.Nat.Cast.WithTop` should be imported for `Nat.cast_withBot`.
 
 /-!
 # Theory of univariate polynomials
@@ -28,6 +27,7 @@ Results include
     The leading_coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
+-- Porting note: `Mathlib.Data.Nat.Cast.WithTop` should be imported for `Nat.cast_withBot`.
 
 set_option linter.uppercaseLean3 false
 
