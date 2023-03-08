@@ -435,17 +435,7 @@ theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv'
 #align subgroup.mk_le_mk Subgroup.mk_le_mk
 #align add_subgroup.mk_le_mk AddSubgroup.mk_le_mk
 
-/-- See Note [custom simps projection] -/
---@[to_additive "See Note [custom simps projection]"]
--- Porting note: temporarily removed brackets to not confuse syntax highlighting
-@[to_additive "See Note custom simps projection "]
-def Simps.coe (S : Subgroup G) : Set G :=
-  S
-#align subgroup.simps.coe Subgroup.Simps.coe
-#align add_subgroup.simps.coe AddSubgroup.Simps.coe
-
 initialize_simps_projections Subgroup (carrier → coe)
-
 initialize_simps_projections AddSubgroup (carrier → coe)
 
 @[to_additive (attr := simp)]

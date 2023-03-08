@@ -133,12 +133,15 @@ def diagramMap : ∀ {o₁ o₂ : Pairwise ι} (_ : o₁ ⟶ o₂), diagramObj U
   | _, _, right _ _ => homOfLE inf_le_right
 #align category_theory.pairwise.diagram_map CategoryTheory.Pairwise.diagramMap
 
--- porting note: the fields map_id and map_comp were filled in order to avoid a PANIC error
+-- Porting note: the fields map_id and map_comp were filled by hand, as generating them by `aesop`
+-- causes a PANIC.
 /-- Given a function `U : ι → α` for `[semilattice_inf α]`, we obtain a functor `pairwise ι ⥤ α`,
 sending `single i` to `U i` and `pair i j` to `U i ⊓ U j`,
 and the morphisms to the obvious inequalities.
 -/
-@[simps]
+-- Porting note: We want `@[simps]` here, but this causes a PANIC in the linter.
+-- (Which, worryingly, does not cause a linter failure!)
+-- @[simps]
 def diagram : Pairwise ι ⥤ α where
   obj := diagramObj U
   map := diagramMap U
@@ -160,7 +163,6 @@ def coconeιApp : ∀ o : Pairwise ι, diagramObj U o ⟶ supᵢ U
   | pair i _ => homOfLE inf_le_left ≫ homOfLE (le_supᵢ U i)
 #align category_theory.pairwise.cocone_ι_app CategoryTheory.Pairwise.coconeιApp
 
--- porting note: the field ι.naturality was filled in order to avoid a PANIC error
 /-- Given a function `U : ι → α` for `[CompleteLattice α]`,
 `supᵢ U` provides a cocone over `diagram U`.
 -/
@@ -168,10 +170,7 @@ def coconeιApp : ∀ o : Pairwise ι, diagramObj U o ⟶ supᵢ U
 def cocone : Cocone (diagram U) where
   pt := supᵢ U
   ι :=
-    { app := coconeιApp U
-      naturality := fun X Y f => by
-        cases X
-        all_goals { rfl } }
+    { app := coconeιApp U }
 #align category_theory.pairwise.cocone CategoryTheory.Pairwise.cocone
 
 /-- Given a function `U : ι → α` for `[complete_lattice α]`,

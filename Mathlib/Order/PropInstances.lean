@@ -50,8 +50,7 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
 #align Prop.top_eq_true Prop.top_eq_true
 
 instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
-  ⟨fun p q => by
-    by_cases p <;> by_cases q <;> simp [h]⟩
+  ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 #align Prop.le_is_total Prop.le_isTotal
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by

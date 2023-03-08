@@ -55,7 +55,6 @@ There are some small changes in the attribute. None of them should have great ef
   a lemma with that name (in Lean 3 it would generate a different unique name)
 * `transparency.none` has been replaced by `TransparencyMode.reducible`
 * The `attr` configuration option has been split into `isSimp` and `attrs` (for extra attributes)
-  (todo)
 * Because Lean 4 uses bundled structures, this means that `simps` applied to anything that
   implements a notation class will almost certainly require a user-provided custom simps projection.
 
@@ -248,6 +247,16 @@ syntax (name := simps) "simps" "!"? "?"? simpsArgsRest : attr
 @[inherit_doc simps] macro "simps?!" rest:simpsArgsRest : attr => `(attr| simps ! ? $rest)
 
 end Attr
+
+/-- Linter to check that `simps!` is used when needed -/
+register_option linter.simpsNoConstructor : Bool := {
+  defValue := true
+  descr := "Linter to check that `simps!` is used" }
+
+/-- Linter to check that no unused custom declarations are declared for simps. -/
+register_option linter.simpsUnusedCustomDeclarations : Bool := {
+  defValue := true
+  descr := "Linter to check that no unused custom declarations are declared for simps" }
 
 namespace Command
 
@@ -454,7 +463,7 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
       if nondefaults.isEmpty then [] else
       [("No lemmas are generated for the projections: " : MessageData) ++ print2 ++ "."]
   let toPrint := MessageData.joinSep toPrint ("\n" : MessageData)
-  m! "{pref} {str}:\n{toPrint}"
+  m!"{pref} {str}:\n{toPrint}"
 
 /-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
 Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1]`, because the first
@@ -615,63 +624,73 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
     _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newStx rawExpr
     pure {proj with expr? := some rawExpr, projNrs := nrs}
 
-/-- Auxilliary function for `getRawProjections`.
-Resolve a single notation class in `findAutomaticProjections`. -/
--- currently unused
-def resolveNotationClass (projs : Array ParsedProjectionData)
-    (className : Name) (args : Array Expr) (eStr : Expr) (rawUnivs : List Level) :
-    MetaM (Array ParsedProjectionData) := do
+/-- Checks if there are declarations in the current file in the namespace `{str}.Simps` that are
+  not used. -/
+def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedProjectionData) :
+  CoreM Unit := do
+  let nrCustomProjections := projs.toList.countp (·.isCustom)
   let env ← getEnv
-  let classInfo := (getStructureInfo? env className).get!
-  let projName := classInfo.fieldNames[0]!
-  /- For this class, find the projection. `rawExpr` is the projection found applied to `args`,
-      and `rawExprLambda` has the arguments `args` abstracted. -/
-  let (relevantProj, rawExprLambda) ← do
-    let eInstType := mkAppN (.const className rawUnivs) args
-    withLocalDeclD `x eStr fun hyp ↦ do
-      -- todo: instead of instance search, traverse through parent structures for a notation class
-      -- (that way we also deal with composite projections)
-      let eInst ← synthInstance eInstType (some 10)
-      let rawExpr ← mkAppM projName (args.push eInst)
-      let rawExprLambda ← mkLambdaFVars (args.push hyp) rawExpr
-      let rawExprWhnf ← whnf rawExpr
-      let relevantProj ← lambdaTelescope rawExprWhnf fun _ body ↦
-        pure <| body.getAppFn.constName?
-      trace[simps.debug] "info: ({relevantProj}, {rawExprLambda})"
-      pure (relevantProj, rawExprLambda)
-  let some pos := projs.findIdx? fun x ↦ some x.strName == relevantProj | do
-    trace[simps.verbose] "Warning: The structure has an instance for {className}, {""
-        }but it is not definitionally equal to any projection."
-    failure -- will be caught by `findAutomaticProjections`
-  trace[simps.debug] "The raw projection is:{indentExpr rawExprLambda}"
-  projs.mapIdxM fun nr x ↦ do
-    unless nr.1 = pos do return x
-    if x.isCustom then
-      trace[simps.verbose] "Warning: Projection {relevantProj} is definitionally equal to{
-          indentExpr rawExprLambda}\nHowever, this is not used since a custom simps projection is {
-            ""}specified by the user."
-      return x
-    trace[simps.verbose] "Using notation from {className} for projection {relevantProj}."
-    return { x with expr? := some rawExprLambda }
+  let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
+    if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs
+  if nrCustomProjections < customDeclarations.size then
+    Linter.logLint linter.simpsUnusedCustomDeclarations stx
+      m!"Not all of the custom declarations {customDeclarations} are used. Double check the {
+        ""}spelling, and use `?` to get more information."
+
+/-- Data about default coercions. An entry consists of
+  `(projName, (className, functionName, arity))`, where
+  * `projName` is the name of a projection in a structure that must be used to trigger the search
+    for a coercion as projection.
+  * `className` is the name of the class we are looking for
+  * `functionName` is the function that we are using for a coercion as projection
+    (this is typically the first field of `className`).
+  * `arity` is the number of arguments of `className`. -/
+def defaultCoercions : NameMap (Name × Name × Nat) :=
+.ofList [(`toFun, (`FunLike, `FunLike.coe, 3)), (`carrier, (`SetLike, `SetLike.coe, 2))]
 
 /-- Auxilliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
-These come from algebraic notation classes, like `+`. -/
--- todo: just navigate all projections and check if there is one called "add"/"mul" etc.
--- currently unused
-def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData)
-  (strType : Expr) (rawUnivs : List Level) : CoreM (Array ParsedProjectionData) := do
-  let env ← getEnv
-  MetaM.run' <| forallTelescope strType fun args _ ↦ do
-    let eStr := mkAppN (.const str rawUnivs) args
-    let automaticProjs := notationClassAttr.getState env
-    let mut projs := projs
-    if args.size == 1 then -- can be wrong if additional type-class arguments??
-      for (className, _) in automaticProjs do
-        try projs ← resolveNotationClass projs className args eStr rawUnivs
-        catch _ => pure ()
-    return projs
-
+These come from `FunLike` and `SetLike` instances.
+Todo: also support algebraic operations and notation classes, like `+`. -/
+def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
+  CoreM (Array ParsedProjectionData) := do
+  let strDecl ← getConstInfo str
+  trace[simps.debug] "debug: {projs}"
+  -- todo: don't use TermElabM here. Attempted in b575c2accdb8f248b8f46d564eac5af71ab0d051, but
+  -- there were some inscrutable errors.
+  MetaM.run' <| TermElabM.run' (s := {levelNames := strDecl.levelParams}) <|
+  forallTelescope strDecl.type fun args _ ↦ do
+  let eStr := mkAppN (← mkConstWithLevelParams str) args
+  let projs ← projs.mapM fun proj => do
+    if let some (className, projName, arity) := Simps.defaultCoercions.find? proj.strName then
+      let classArgs := mkArray (arity - 1) Unit.unit
+      let classArgs ← classArgs.mapM fun _ => mkFreshExprMVar none
+      let classArgs := #[eStr] ++ classArgs
+      let classArgs := classArgs.map Arg.expr
+      let eInstType ← elabAppArgs (← Term.mkConst className) #[] classArgs none true false
+      trace[simps.debug] "found projection {proj.strName}. Trying to synthesize {eInstType}."
+      let eInst ← try synthInstance eInstType <| some 10
+      catch ex =>
+        trace[simps.debug] "Didn't find instance:\n{ex.toMessageData}"
+        return proj
+      let projExpr ← elabAppArgs (← Term.mkConst projName) #[] (classArgs.push <| .expr eInst)
+        none true false
+      let projExpr ← mkLambdaFVars args projExpr
+      let projExpr ← instantiateMVars projExpr
+      unless ← isDefEq projExpr proj.expr?.get! do
+        throwError "The projection {proj.newName} is not definitionally equal to an application {
+          ""}of {projName}:
+          {indentExpr proj.expr?.get!}\n
+          vs
+          {indentExpr projExpr}"
+      if proj.isCustom then
+        trace[simps.verbose] "Warning: Projection {proj.newName} is given manually by the user,
+          but it can be generated automatically."
+        return proj
+      trace[simps.verbose] "Using {indentExpr projExpr}\n for projection {proj.newName}."
+      return { proj with expr? := some projExpr }
+    return proj
+  return projs
 
 /--
 Get the projections used by `simps` associated to a given structure `str`.
@@ -712,7 +731,7 @@ Optionally, this command accepts three optional arguments:
 * if `trc` is true, this tactic will trace information just as if
   `set_option trace.simps.verbose true` was set.
 -/
-def getRawProjections (str : Name) (traceIfExists : Bool := false)
+def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
   (rules : Array ProjectionRule := #[]) (trc := false) :
   CoreM (List Name × Array ProjectionData) := do
   withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
@@ -726,15 +745,14 @@ def getRawProjections (str : Name) (traceIfExists : Bool := false)
     return data
   trace[simps.verbose] "generating projection information for structure {str}."
   trace[simps.debug] "Applying the rules {rules}."
-  let some strDecl := env.find? str
-    | throwError "No such declaration {str}." -- maybe unreachable
+  let strDecl ← getConstInfo str
   let rawLevels := strDecl.levelParams
   let rawUnivs := rawLevels.map Level.param
   let projs ← mkParsedProjectionData str
   let projs ← applyProjectionRules projs rules
   let projs ← projs.mapM fun proj ↦ findProjection str proj rawUnivs
-  -- todo: find and use coercions to functions here
-  -- let projs ← findAutomaticProjections str projs strDecl.type rawUnivs
+  checkForUnusedCustomProjs stx str projs
+  let projs ← findAutomaticProjections str projs
   let projs := projs.map (·.toProjectionData)
   -- make all proofs non-default.
   let projs ← projs.mapM fun proj ↦ do
@@ -776,24 +794,20 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
 
 /-- Function elaborating `initialize_simps_projections`. -/
 @[command_elab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
-| `(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
+| stx@`(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
   let stxs := stxs.getD <| .mk #[]
   let rules ← stxs.getElems.raw.mapM elabSimpsRule
   let nm ← resolveGlobalConstNoOverload id
   _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
-  _ ← liftCoreM <| getRawProjections nm true rules trc.isSome
+  _ ← liftCoreM <| getRawProjections stx nm true rules trc.isSome
 | _ => throwUnsupportedSyntax
-
-/-- Linter to check that `simps!` is used when needed -/
-register_option linter.simpsNoConstructor : Bool := {
-  defValue := true
-  descr := "Linter to check that `simps!` is used" }
 
 /-- Configuration options for `@[simps]` -/
 structure Config where
   /-- Make generated lemmas simp lemmas -/
   isSimp := true
-  /-- [TODO] Other attributes to apply to generated lemmas -/
+  /-- Other simp-attributes to apply to generated lemmas.
+  Attributes that are currently not simp-attributes are not supported. -/
   attrs : List Name := []
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
@@ -817,13 +831,14 @@ structure Config where
 declare_config_elab elabSimpsConfig Config
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-  between fully applied Expressions. -/
-def Config.asFn : Config where
+  between fully applied Expressions. Use this using `@[simps (config := .asFn)]`. -/
+def Config.asFn : Simps.Config where
   fullyApplied := false
 
-/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`. -/
+/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`.
+  Use this using `@[simps (config := .lemmasOnly)]`. -/
 def Config.lemmasOnly : Config where
-  attrs := []
+  isSimp := false
 
 /-- `instantiateLambdasOrApps es e` instantiates lambdas in `e` by expressions from `es`.
 If the length of `es` is larger than the number of lambdas in `e`,
@@ -859,7 +874,7 @@ partial def _root_.Lean.Expr.instantiateLambdasOrApps (es : Array Expr) (e : Exp
      ...]
   ```
 -/
-def getProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Config) :
+def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
     MetaM <| Array <| Expr × ProjectionData := do
   -- the parameters of the structure
   let params := tgt.getAppArgs
@@ -868,7 +883,7 @@ def getProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Config) :
   let str := tgt.getAppFn.constName?.getD default
   -- the fields of the object
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
-  let (rawUnivs, projDeclata) ← getRawProjections str
+  let (rawUnivs, projDeclata) ← getRawProjections stx str
   return projDeclata.map fun proj ↦
     (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
       { proj with
@@ -922,7 +937,10 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     ← mkConstWithLevelParams declName
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
-  -- cfg.attrs.mapM fun nm ↦ setAttribute nm declName tt -- todo: deal with attributes
+  _ ← cfg.attrs.mapM fun simpAttr ↦ do
+    let .some simpDecl ← getSimpExtension? simpAttr |
+      throwError "{simpAttr} is not a simp-attribute."
+    addSimpTheorem simpDecl declName true false .global <| eval_prio default
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
@@ -1057,7 +1075,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     return #[nm]
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
-  let projInfo ← getProjectionExprs tgt rhsWhnf cfg
+  let projInfo ← getProjectionExprs ref tgt rhsWhnf cfg
   trace[simps.debug] "Raw projection information:{indentD m!"{projInfo}"}"
   -- If we are in the middle of a composite projection.
   if let idx :: rest := toApply then
