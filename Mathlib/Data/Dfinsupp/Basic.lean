@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 
 ! This file was ported from Lean 3 source module data.dfinsupp.basic
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
+! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -382,10 +382,13 @@ instance distribMulAction [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribM
 
 /-- Dependent functions with finite support inherit a module structure from such a structure on
 each coordinate. -/
-instance [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] : Module γ (Π₀ i, β i) :=
+instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
+    Module γ (Π₀ i, β i) :=
   { inferInstanceAs (DistribMulAction γ (Π₀ i, β i)) with
     zero_smul := fun c => ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
     add_smul := fun c x y => ext fun i => by simp only [add_apply, smul_apply, add_smul] }
+#align dfinsupp.module Dfinsupp.module
+
 
 end Algebra
 
@@ -1476,9 +1479,9 @@ theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 
     case h₁ =>
       rw [@mem_image _ _ (fun a b ↦ Classical.propDecidable (a = b))]
       refine' ⟨⟨i, j⟩, _, rfl⟩
-      convert (mem_support_toFun f _).2 h <;> apply Subsingleton.elim
+      convert (mem_support_toFun f _).2 h
     · rw [mem_preimage]
-      convert (mem_support_toFun f _).2 h <;> apply Subsingleton.elim
+      convert (mem_support_toFun f _).2 h
 #align dfinsupp.sigma_curry_apply Dfinsupp.sigmaCurry_apply
 
 @[simp]

@@ -850,12 +850,12 @@ theorem cast_rat {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast 
 * `e = Rat.rawCast n d + 0` if `norm_num` returns `IsRat e n d`
 -/
 def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
-  | .isNat _sα (.lit (.natVal 0)) (p : Expr) => clear% _sα
-    let p : Q(IsNat $e (nat_lit 0)) := p
-    pure ⟨_, .zero, (q(cast_zero $p) : Expr)⟩
-  | .isNat _sα lit (p : Expr) => clear% _sα
-    let p : Q(IsNat $e $lit) := p
-    pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p) : Expr)⟩
+  | .isNat sα' (.lit (.natVal 0)) p =>
+    have _assume_defeq : QE (u := u.succ) sα' q(AddCommMonoidWithOne.toAddMonoidWithOne) := ⟨⟩
+    pure ⟨_, .zero, q(cast_zero $p)⟩
+  | .isNat sα' lit p =>
+    have _assume_defeq : QE (u := u.succ) sα' q(AddCommMonoidWithOne.toAddMonoidWithOne) := ⟨⟩
+    pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p) :)⟩
   | .isNegNat rα lit p =>
     pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | .isRat dα q n d p =>
@@ -1065,7 +1065,7 @@ initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
 
 /-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (g : MVarId) : AtomM Unit := do
-  let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "ring failed: not an equality"
   let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
   have α : Q(Type u) := α
