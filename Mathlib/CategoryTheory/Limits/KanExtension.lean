@@ -164,6 +164,7 @@ end Ran
 @[simps!]
 def ran [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] : (S ⥤ D) ⥤ L ⥤ D :=
   Adjunction.rightAdjointOfEquiv (fun F G => (Ran.equiv ι G F).symm) (by {
+    -- Porting note: was `tidy`
     intros X' X Y f g
     ext t
     apply limit.hom_ext
