@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Abel
-import Mathbin.Data.Polynomial.Eval
+import Mathlib.Tactic.Abel
+import Mathlib.Data.Polynomial.Eval
 
 /-!
 # The Pochhammer polynomials
@@ -67,8 +67,7 @@ section
 variable {S} {T : Type v} [Semiring T]
 
 @[simp]
-theorem pochhammer_map (f : S →+* T) (n : ℕ) : (pochhammer S n).map f = pochhammer T n :=
-  by
+theorem pochhammer_map (f : S →+* T) (n : ℕ) : (pochhammer S n).map f = pochhammer T n := by
   induction' n with n ih
   · simp
   · simp [ih, pochhammer_succ_left, map_comp]
@@ -83,8 +82,7 @@ theorem pochhammer_eval_cast (n k : ℕ) : ((pochhammer ℕ n).eval k : S) = (po
     Nat.cast_id, eq_natCast]
 #align pochhammer_eval_cast pochhammer_eval_cast
 
-theorem pochhammer_eval_zero {n : ℕ} : (pochhammer S n).eval 0 = if n = 0 then 1 else 0 :=
-  by
+theorem pochhammer_eval_zero {n : ℕ} : (pochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
   cases n
   · simp
   · simp [X_mul, Nat.succ_ne_zero, pochhammer_succ_left]
@@ -98,8 +96,7 @@ theorem pochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (pochhammer S n).
   simp [pochhammer_eval_zero, h]
 #align pochhammer_ne_zero_eval_zero pochhammer_ne_zero_eval_zero
 
-theorem pochhammer_succ_right (n : ℕ) : pochhammer S (n + 1) = pochhammer S n * (X + n) :=
-  by
+theorem pochhammer_succ_right (n : ℕ) : pochhammer S (n + 1) = pochhammer S n * (X + n) := by
   suffices h : pochhammer ℕ (n + 1) = pochhammer ℕ n * (X + n)
   · apply_fun Polynomial.map (algebraMap ℕ S)  at h
     simpa only [pochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
@@ -120,8 +117,7 @@ theorem pochhammer_succ_eval {S : Type _} [Semiring S] (n : ℕ) (k : S) :
 
 theorem pochhammer_succ_comp_x_add_one (n : ℕ) :
     (pochhammer S (n + 1)).comp (X + 1) =
-      pochhammer S (n + 1) + (n + 1) • (pochhammer S n).comp (X + 1) :=
-  by
+      pochhammer S (n + 1) + (n + 1) • (pochhammer S n).comp (X + 1) := by
   suffices
     (pochhammer ℕ (n + 1)).comp (X + 1) =
       pochhammer ℕ (n + 1) + (n + 1) * (pochhammer ℕ n).comp (X + 1)
@@ -137,8 +133,7 @@ theorem Polynomial.mul_x_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
 #align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_x_add_nat_cast_comp
 
 theorem pochhammer_mul (n m : ℕ) :
-    pochhammer S n * (pochhammer S m).comp (X + n) = pochhammer S (n + m) :=
-  by
+    pochhammer S n * (pochhammer S m).comp (X + n) = pochhammer S (n + m) := by
   induction' m with m ih
   · simp
   ·
@@ -156,8 +151,7 @@ theorem pochhammer_nat_eq_ascFactorial (n : ℕ) :
 #align pochhammer_nat_eq_asc_factorial pochhammer_nat_eq_ascFactorial
 
 theorem pochhammer_nat_eq_descFactorial (a b : ℕ) :
-    (pochhammer ℕ b).eval a = (a + b - 1).descFactorial b :=
-  by
+    (pochhammer ℕ b).eval a = (a + b - 1).descFactorial b := by
   cases b
   · rw [Nat.descFactorial_zero, pochhammer_zero, Polynomial.eval_one]
   rw [Nat.add_succ, Nat.succ_sub_succ, tsub_zero]
@@ -176,8 +170,7 @@ section StrictOrderedSemiring
 
 variable {S : Type _} [StrictOrderedSemiring S]
 
-theorem pochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (pochhammer S n).eval s :=
-  by
+theorem pochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (pochhammer S n).eval s := by
   induction' n with n ih
   · simp only [Nat.zero_eq, pochhammer_zero, eval_one]
     exact zero_lt_one
