@@ -15,7 +15,7 @@ import Mathlib.Data.Polynomial.Eval
 # The derivative map on polynomials
 
 ## Main definitions
- * `polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
+ * `Polynomial.derivative`: The formal derivative of polynomials, expressed as a linear map.
 
 -/
 
