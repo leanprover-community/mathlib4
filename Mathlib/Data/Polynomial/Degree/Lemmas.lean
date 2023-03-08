@@ -8,7 +8,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Eval
+import Mathlib.Data.Polynomial.Eval
 
 /-!
 # Theory of degrees of polynomials
@@ -78,8 +78,7 @@ theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < 
 #align polynomial.nat_degree_le_iff_coeff_eq_zero Polynomial.natDegree_le_iff_coeff_eq_zero
 
 theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
-    (p + q).natDegree ≤ n ↔ p.natDegree ≤ n :=
-  by
+    (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
   refine' ⟨fun h => _, fun h => nat_degree_add_le_of_degree_le h qn⟩
   refine' nat_degree_le_iff_coeff_eq_zero.mpr fun m hm => _
   convert nat_degree_le_iff_coeff_eq_zero.mp h m hm using 1
@@ -87,8 +86,7 @@ theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n
 #align polynomial.nat_degree_add_le_iff_left Polynomial.natDegree_add_le_iff_left
 
 theorem natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ n) :
-    (p + q).natDegree ≤ n ↔ q.natDegree ≤ n :=
-  by
+    (p + q).natDegree ≤ n ↔ q.natDegree ≤ n := by
   rw [add_comm]
   exact nat_degree_add_le_iff_left _ _ pn
 #align polynomial.nat_degree_add_le_iff_right Polynomial.natDegree_add_le_iff_right
@@ -138,8 +136,7 @@ theorem natDegree_mul_c_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
 force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
 -/
 theorem natDegree_mul_c_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
-    (p * C a).natDegree = p.natDegree :=
-  by
+    (p * C a).natDegree = p.natDegree := by
   refine' eq_nat_degree_of_le_mem_support (nat_degree_mul_C_le p a) _
   refine' mem_support_iff.mpr _
   rwa [coeff_mul_C]
@@ -149,8 +146,7 @@ theorem natDegree_mul_c_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
 force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
 -/
 theorem natDegree_c_mul_eq_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
-    (C a * p).natDegree = p.natDegree :=
-  by
+    (C a * p).natDegree = p.natDegree := by
   refine' eq_nat_degree_of_le_mem_support (nat_degree_C_mul_le a p) _
   refine' mem_support_iff.mpr _
   rwa [coeff_C_mul]
@@ -167,8 +163,7 @@ theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
 #align polynomial.nat_degree_lt_coeff_mul Polynomial.natDegree_lt_coeff_mul
 
 theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤ n) :
-    (p * q).coeff (m + n) = p.coeff m * q.coeff n :=
-  by
+    (p * q).coeff (m + n) = p.coeff m * q.coeff n := by
   rcases eq_or_lt_of_le pm with (rfl | hm) <;> rcases eq_or_lt_of_le qn with (rfl | hn)
   · exact nat_degree_add_coeff_mul _ _
   · rw [coeff_eq_zero_of_nat_degree_lt hn, mul_zero]
@@ -193,16 +188,14 @@ theorem coeff_add_eq_left_of_lt (qn : q.natDegree < n) : (p + q).coeff n = p.coe
     (congr_arg _ <| coeff_eq_zero_of_natDegree_lt <| qn).trans <| add_zero _
 #align polynomial.coeff_add_eq_left_of_lt Polynomial.coeff_add_eq_left_of_lt
 
-theorem coeff_add_eq_right_of_lt (pn : p.natDegree < n) : (p + q).coeff n = q.coeff n :=
-  by
+theorem coeff_add_eq_right_of_lt (pn : p.natDegree < n) : (p + q).coeff n = q.coeff n := by
   rw [add_comm]
   exact coeff_add_eq_left_of_lt pn
 #align polynomial.coeff_add_eq_right_of_lt Polynomial.coeff_add_eq_right_of_lt
 
 theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on degree ∘ f)) :
-    degree (s.Sum f) = s.sup fun i => degree (f i) :=
-  by
+    degree (s.Sum f) = s.sup fun i => degree (f i) := by
   induction' s using Finset.induction_on with x s hx IH
   · simp
   · simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]
@@ -227,8 +220,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
 
 theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on natDegree ∘ f)) :
-    natDegree (s.Sum f) = s.sup fun i => natDegree (f i) :=
-  by
+    natDegree (s.Sum f) = s.sup fun i => natDegree (f i) := by
   by_cases H : ∃ x ∈ s, f x ≠ 0
   · obtain ⟨x, hx, hx'⟩ := H
     have hs : s.nonempty := ⟨x, hx⟩
@@ -284,8 +276,7 @@ theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z 
 #align polynomial.degree_pos_of_eval₂_root Polynomial.degree_pos_of_eval₂_root
 
 @[simp]
-theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n < natDegree p :=
-  by
+theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n < natDegree p := by
   by_cases h : p = 0
   · simp [h]
   rw [degree_eq_nat_degree h, WithBot.coe_lt_coe]
@@ -303,8 +294,7 @@ theorem natDegree_sub : (p - q).natDegree = (q - p).natDegree := by rw [← nat_
 #align polynomial.nat_degree_sub Polynomial.natDegree_sub
 
 theorem natDegree_sub_le_iff_left (qn : q.natDegree ≤ n) :
-    (p - q).natDegree ≤ n ↔ p.natDegree ≤ n :=
-  by
+    (p - q).natDegree ≤ n ↔ p.natDegree ≤ n := by
   rw [← nat_degree_neg] at qn
   rw [sub_eq_add_neg, nat_degree_add_le_iff_left _ _ qn]
 #align polynomial.nat_degree_sub_le_iff_left Polynomial.natDegree_sub_le_iff_left
@@ -313,8 +303,7 @@ theorem natDegree_sub_le_iff_right (pn : p.natDegree ≤ n) :
     (p - q).natDegree ≤ n ↔ q.natDegree ≤ n := by rwa [nat_degree_sub, nat_degree_sub_le_iff_left]
 #align polynomial.nat_degree_sub_le_iff_right Polynomial.natDegree_sub_le_iff_right
 
-theorem coeff_sub_eq_left_of_lt (dg : q.natDegree < n) : (p - q).coeff n = p.coeff n :=
-  by
+theorem coeff_sub_eq_left_of_lt (dg : q.natDegree < n) : (p - q).coeff n = p.coeff n := by
   rw [← nat_degree_neg] at dg
   rw [sub_eq_add_neg, coeff_add_eq_left_of_lt dg]
 #align polynomial.coeff_sub_eq_left_of_lt Polynomial.coeff_sub_eq_left_of_lt
@@ -345,8 +334,7 @@ theorem natDegree_c_mul (a0 : a ≠ 0) : (C a * p).natDegree = p.natDegree := by
   simp only [nat_degree, degree_C_mul a0]
 #align polynomial.nat_degree_C_mul Polynomial.natDegree_c_mul
 
-theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q :=
-  by
+theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
   by_cases q0 : q.nat_degree = 0
   ·
     rw [degree_le_zero_iff.mp (nat_degree_eq_zero_iff_degree_le_zero.mp q0), comp_C, nat_degree_C,
