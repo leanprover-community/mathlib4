@@ -10,7 +10,7 @@ Authors: Scott Morrison, Reid Barton
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Filtered
-import Mathlib.Tactic.EquivRw
+--import Mathlib.Tactic.EquivRw
 
 /-!
 # Limits in the category of types.
@@ -41,18 +41,24 @@ implemented as flat sections of a pi type
 def limitCone (F : J ⥤ Type max v u) : Cone F
     where
   pt := F.sections
-  π := { app := fun j u => u.val j }
+  π :=
+    { app := fun j u => u.val j
+      naturality := fun j j' f => by
+        funext x
+        simp }
 #align category_theory.limits.types.limit_cone CategoryTheory.Limits.Types.limitCone
 
-attribute [local elab_without_expected_type] congr_fun
+--attribute [local elab_without_expected_type] congr_fun
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
-def limitConeIsLimit (F : J ⥤ Type max v u) : IsLimit (limitCone F)
-    where
-  lift s v := ⟨fun j => s.π.app j v, fun j j' f => congr_fun (Cone.w s f) _⟩
-  uniq := by
-    intros
-    ext (x j)
+def limitConeIsLimit (F : J ⥤ Type max v u) : IsLimit (limitCone.{v, u} F) where
+  lift s v :=
+  { val := fun j => s.π.app j v
+    property := fun f => congr_fun (Cone.w s f) _ }
+  uniq := fun _ _ w => by
+    funext x
+    apply Subtype.ext
+    funext j
     exact congr_fun (w j) x
 #align category_theory.limits.types.limit_cone_is_limit CategoryTheory.Limits.Types.limitConeIsLimit
 
@@ -61,12 +67,11 @@ def limitConeIsLimit (F : J ⥤ Type max v u) : IsLimit (limitCone F)
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
 instance hasLimitsOfSize : HasLimitsOfSize.{v} (Type max v u)
-    where HasLimitsOfShape J 𝒥 :=
-    {
-      HasLimit := fun F =>
-        has_limit.mk
-          { Cone := limit_cone F
-            IsLimit := limit_cone_is_limit F } }
+    where has_limits_of_shape _ := --J 𝒥 :=
+    { has_limit := fun F =>
+        HasLimit.mk
+          { cone := limitCone.{v, u} F
+            isLimit := limitConeIsLimit F } }
 #align category_theory.limits.types.has_limits_of_size CategoryTheory.Limits.Types.hasLimitsOfSize
 
 instance : HasLimits (Type u) :=
@@ -76,40 +81,44 @@ instance : HasLimits (Type u) :=
 sections of `F`.
 -/
 def isLimitEquivSections {F : J ⥤ Type max v u} {c : Cone F} (t : IsLimit c) : c.pt ≃ F.sections :=
-  (IsLimit.conePointUniqueUpToIso t (limitConeIsLimit F)).toEquiv
+  (IsLimit.conePointUniqueUpToIso t (limitConeIsLimit.{v, u} F)).toEquiv
 #align category_theory.limits.types.is_limit_equiv_sections CategoryTheory.Limits.Types.isLimitEquivSections
 
 @[simp]
 theorem isLimitEquivSections_apply {F : J ⥤ Type max v u} {c : Cone F} (t : IsLimit c) (j : J)
-    (x : c.pt) : ((isLimitEquivSections t) x : ∀ j, F.obj j) j = c.π.app j x :=
+    (x : c.pt) : ((isLimitEquivSections.{v, u} t) x : ∀ j, F.obj j) j = c.π.app j x :=
   rfl
 #align category_theory.limits.types.is_limit_equiv_sections_apply CategoryTheory.Limits.Types.isLimitEquivSections_apply
 
 @[simp]
 theorem isLimitEquivSections_symm_apply {F : J ⥤ Type max v u} {c : Cone F} (t : IsLimit c)
-    (x : F.sections) (j : J) : c.π.app j ((isLimitEquivSections t).symm x) = (x : ∀ j, F.obj j) j :=
-  by
-  equiv_rw(is_limit_equiv_sections t).symm  at x
+    (x : F.sections) (j : J) :
+    c.π.app j ((isLimitEquivSections.{v, u} t).symm x) = (x : ∀ j, F.obj j) j := by
+  obtain ⟨x, rfl⟩ :=(isLimitEquivSections.{v, u} t).surjective x
   simp
 #align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
+
+
+-- porting note: the parameter [HasLimit F] has been added temporarily in definitions below
+-- until some fix is found
 
 /-- The equivalence between the abstract limit of `F` in `Type u`
 and the "concrete" definition as the sections of `F`.
 -/
-noncomputable def limitEquivSections (F : J ⥤ Type max v u) :
+noncomputable def limitEquivSections (F : J ⥤ Type max v u) [HasLimit F] :
     (limit F : Type max v u) ≃ F.sections :=
-  isLimitEquivSections (limit.isLimit _)
+  isLimitEquivSections.{v, u} (limit.isLimit F)
 #align category_theory.limits.types.limit_equiv_sections CategoryTheory.Limits.Types.limitEquivSections
 
 @[simp]
-theorem limitEquivSections_apply (F : J ⥤ Type max v u) (x : limit F) (j : J) :
-    ((limitEquivSections F) x : ∀ j, F.obj j) j = limit.π F j x :=
+theorem limitEquivSections_apply (F : J ⥤ Type max v u) [HasLimit F] (x : limit F) (j : J) :
+    ((limitEquivSections.{v, u} F) x : ∀ j, F.obj j) j = limit.π F j x :=
   rfl
 #align category_theory.limits.types.limit_equiv_sections_apply CategoryTheory.Limits.Types.limitEquivSections_apply
 
 @[simp]
-theorem limitEquivSections_symm_apply (F : J ⥤ Type max v u) (x : F.sections) (j : J) :
-    limit.π F j ((limitEquivSections F).symm x) = (x : ∀ j, F.obj j) j :=
+theorem limitEquivSections_symm_apply (F : J ⥤ Type max v u) [HasLimit F] (x : F.sections) (j : J) :
+    limit.π F j ((limitEquivSections.{v, u} F).symm x) = (x : ∀ j, F.obj j) j :=
   isLimitEquivSections_symm_apply _ _ _
 #align category_theory.limits.types.limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.limitEquivSections_symm_apply
 
@@ -119,19 +128,20 @@ theorem limitEquivSections_symm_apply' (F : J ⥤ Type v) (x : F.sections) (j : 
   isLimitEquivSections_symm_apply _ _ _
 #align category_theory.limits.types.limit_equiv_sections_symm_apply' CategoryTheory.Limits.Types.limitEquivSections_symm_apply'
 
+--porting note: removed @[ext]
 /-- Construct a term of `limit F : Type u` from a family of terms `x : Π j, F.obj j`
 which are "coherent": `∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j'`.
 -/
-@[ext]
-noncomputable def Limit.mk (F : J ⥤ Type max v u) (x : ∀ j, F.obj j)
+noncomputable def Limit.mk (F : J ⥤ Type max v u) [HasLimit F] (x : ∀ j, F.obj j)
     (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') : (limit F : Type max v u) :=
-  (limitEquivSections F).symm ⟨x, h⟩
+  (limitEquivSections.{v, u} F).symm ⟨x, h _ _⟩
 #align category_theory.limits.types.limit.mk CategoryTheory.Limits.Types.Limit.mk
 
 @[simp]
-theorem Limit.π_mk (F : J ⥤ Type max v u) (x : ∀ j, F.obj j)
-    (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) : limit.π F j (Limit.mk F x h) = x j := by
-  dsimp [limit.mk]
+theorem Limit.π_mk (F : J ⥤ Type max v u) [HasLimit F] (x : ∀ j, F.obj j)
+    (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :
+      limit.π F j (Limit.mk.{v, u} F x h) = x j := by
+  dsimp [Limit.mk]
   simp
 #align category_theory.limits.types.limit.π_mk CategoryTheory.Limits.Types.Limit.π_mk
 
@@ -139,35 +149,35 @@ theorem Limit.π_mk (F : J ⥤ Type max v u) (x : ∀ j, F.obj j)
 theorem Limit.π_mk' (F : J ⥤ Type v) (x : ∀ j, F.obj j)
     (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :
     limit.π F j (Limit.mk.{v, v} F x h) = x j := by
-  dsimp [limit.mk]
+  dsimp [Limit.mk]
   simp
 #align category_theory.limits.types.limit.π_mk' CategoryTheory.Limits.Types.Limit.π_mk'
 
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
-theorem limit_ext (F : J ⥤ Type max v u) (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
+theorem limit_ext (F : J ⥤ Type max v u) [HasLimit F] (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
     x = y := by
-  apply (limit_equiv_sections F).Injective
+  apply (limitEquivSections.{v, u} F).injective
   ext j
   simp [w j]
 #align category_theory.limits.types.limit_ext CategoryTheory.Limits.Types.limit_ext
 
 @[ext]
-theorem limit_ext' (F : J ⥤ Type v) (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
+theorem limit_ext' (F : J ⥤ Type v) [HasLimit F] (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
     x = y := by
-  apply (limitEquivSections.{v, v} F).Injective
+  apply (limitEquivSections.{v, v} F).injective
   ext j
   simp [w j]
 #align category_theory.limits.types.limit_ext' CategoryTheory.Limits.Types.limit_ext'
 
-theorem limit_ext_iff (F : J ⥤ Type max v u) (x y : limit F) :
+theorem limit_ext_iff (F : J ⥤ Type max v u) [HasLimit F] (x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
-  ⟨fun t _ => t ▸ rfl, limit_ext _ _ _⟩
+  ⟨fun t _ => t ▸ rfl, limit_ext.{v, u} _ _ _⟩
 #align category_theory.limits.types.limit_ext_iff CategoryTheory.Limits.Types.limit_ext_iff
 
-theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
+theorem limit_ext_iff' (F : J ⥤ Type v) [HasLimit F](x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
-  ⟨fun t _ => t ▸ rfl, limit_ext _ _ _⟩
+  ⟨fun t _ => t ▸ rfl, limit_ext'.{v} _ _ _⟩
 #align category_theory.limits.types.limit_ext_iff' CategoryTheory.Limits.Types.limit_ext_iff'
 
 -- TODO: are there other limits lemmas that should have `_apply` versions?
@@ -539,4 +549,3 @@ instance : HasImageMaps (Type u)
       rfl
 
 end CategoryTheory.Limits.Types
-
