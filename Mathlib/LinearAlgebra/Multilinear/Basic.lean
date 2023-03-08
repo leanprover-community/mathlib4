@@ -244,7 +244,7 @@ def toLinearMap (m : ∀ i, M₁ i) (i : ι) : M₁ i →ₗ[R] M₂
   map_add' x y := by simp
   map_smul' c x := by simp
 #align multilinear_map.to_linear_map MultilinearMap.toLinearMap
-#align multilinear_map.to_linear_map_to_add_hom_apply MultilinearMap.toLinearMap_toAddHom_apply
+#align multilinear_map.to_linear_map_to_add_hom_apply MultilinearMap.toLinearMap_apply
 
 /-- The cartesian product of two multilinear maps, as a multilinear map. -/
 def prod (f : MultilinearMap R M₁ M₂) (g : MultilinearMap R M₁ M₃) : MultilinearMap R M₁ (M₂ × M₃)
@@ -764,7 +764,7 @@ theorem domDomCongr_mul (σ₁ : Equiv.Perm ι₁) (σ₂ : Equiv.Perm ι₁)
 /-- `MultilinearMap.domDomCongr` as an equivalence.
 
 This is declared separately because it does not work with dot notation. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def domDomCongrEquiv (σ : ι₁ ≃ ι₂) :
     MultilinearMap R (fun _ : ι₁ => M₂) M₃ ≃+ MultilinearMap R (fun _ : ι₂ => M₂) M₃
     where
@@ -781,7 +781,7 @@ def domDomCongrEquiv (σ : ι₁ ≃ ι₂) :
     simp [domDomCongr]
 #align multilinear_map.dom_dom_congr_equiv MultilinearMap.domDomCongrEquiv
 #align multilinear_map.dom_dom_congr_equiv_apply MultilinearMap.domDomCongrEquiv_apply
-#align multilinear_map.dom_dom_congr_equiv_symm_apply MultilinearMap.domDomCongrEquiv_symmApply
+#align multilinear_map.dom_dom_congr_equiv_symm_apply MultilinearMap.domDomCongrEquiv_symm_apply
 
 /-- The results of applying `domDomCongr` to two maps are equal if
 and only if those maps are. -/
@@ -926,7 +926,7 @@ instance [NoZeroSMulDivisors R' M₃] : NoZeroSMulDivisors R' (MultilinearMap A 
 variable (M₂ M₃ R' A)
 
 /-- `MultilinearMap.domDomCongr` as a `LinearEquiv`. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def domDomCongrLinearEquiv {ι₁ ι₂} [DecidableEq ι₁] [DecidableEq ι₂] (σ : ι₁ ≃ ι₂) :
     MultilinearMap A (fun _ : ι₁ => M₂) M₃ ≃ₗ[R'] MultilinearMap A (fun _ : ι₂ => M₂) M₃ :=
   { (domDomCongrEquiv σ :
@@ -936,11 +936,11 @@ def domDomCongrLinearEquiv {ι₁ ι₂} [DecidableEq ι₁] [DecidableEq ι₂]
       simp [MultilinearMap.domDomCongr] }
 #align multilinear_map.dom_dom_congr_linear_equiv MultilinearMap.domDomCongrLinearEquiv
 #align multilinear_map.dom_dom_congr_linear_equiv_apply MultilinearMap.domDomCongrLinearEquiv_apply
-#align multilinear_map.dom_dom_congr_linear_equiv_symm_apply MultilinearMap.domDomCongrLinearEquiv_symmApply
+#align multilinear_map.dom_dom_congr_linear_equiv_symm_apply MultilinearMap.domDomCongrLinearEquiv_symm_apply
 variable (R M₁)
 
 /-- The dependent version of `MultilinearMap.domDomCongrLinearEquiv`. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def domDomCongrLinearEquiv' {ι' : Type _} [DecidableEq ι'] (σ : ι ≃ ι') :
     MultilinearMap R M₁ M₂ ≃ₗ[R] MultilinearMap R (fun i => M₁ (σ.symm i)) M₂ where
   toFun f :=
@@ -977,7 +977,7 @@ def domDomCongrLinearEquiv' {ι' : Type _} [DecidableEq ι'] (σ : ι ≃ ι') :
     simp only [coe_mk, comp_apply, Equiv.apply_symm_apply]
 #align multilinear_map.dom_dom_congr_linear_equiv' MultilinearMap.domDomCongrLinearEquiv'
 #align multilinear_map.dom_dom_congr_linear_equiv'_apply MultilinearMap.domDomCongrLinearEquiv'_apply
-#align multilinear_map.dom_dom_congr_linear_equiv'_symm_apply MultilinearMap.domDomCongrLinearEquiv'_symmApply
+#align multilinear_map.dom_dom_congr_linear_equiv'_symm_apply MultilinearMap.domDomCongrLinearEquiv'_symm_apply
 
 /-- The space of constant maps is equivalent to the space of maps that are multilinear with respect
 to an empty family. -/
@@ -991,7 +991,8 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : M₂ ≃ₗ[R] MultilinearMap R M�
   left_inv _ := rfl
   right_inv f := ext fun _ => MultilinearMap.congr_arg f <| Subsingleton.elim _ _
 #align multilinear_map.const_linear_equiv_of_is_empty MultilinearMap.constLinearEquivOfIsEmpty
-#align multilinear_map.const_linear_equiv_of_is_empty_apply_to_add_hom_apply MultilinearMap.constLinearEquivOfIsEmpty_apply_toAddHom_apply
+#align multilinear_map.const_linear_equiv_of_is_empty_apply_to_add_hom_apply MultilinearMap.constLinearEquivOfIsEmpty_apply
+#align multilinear_map.const_linear_equiv_of_is_empty_apply_to_add_hom_symm_apply MultilinearMap.constLinearEquivOfIsEmpty_symm_apply
 end Module
 
 section
