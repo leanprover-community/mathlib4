@@ -7,7 +7,6 @@ Ported by: E.W.Ayers
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.KVMap
-import Mathlib.Lean.Data.Name
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Util.Simp
