@@ -77,6 +77,9 @@ instance hasLimitsOfSize : HasLimitsOfSize.{v} (Type max v u)
 instance : HasLimits (Type u) :=
   Types.hasLimitsOfSize.{u, u}
 
+instance hasLimit (F : J ⥤ Type max v u) : HasLimit F :=
+  (Types.hasLimitsOfSize.{v, u}.has_limits_of_shape J).has_limit F
+
 /-- The equivalence between a limiting cone of `F` in `Type u` and the "concrete" definition as the
 sections of `F`.
 -/
@@ -98,27 +101,14 @@ theorem isLimitEquivSections_symm_apply {F : J ⥤ Type max v u} {c : Cone F} (t
   simp
 #align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
-
-instance test (F : J ⥤ Type max v u) : HasLimit F :=
-  (Types.hasLimitsOfSize.{v, u}.has_limits_of_shape J).has_limit F
-
-instance (F : J ⥤ Type v) : HasLimit F :=
-  test.{v, v} F
-
 /-- The equivalence between the abstract limit of `F` in `Type u`
 and the "concrete" definition as the sections of `F`.
 -/
 noncomputable def limitEquivSections (F : J ⥤ Type max v u) :
-    (limit F : Type max v u) ≃ F.sections :=
-  isLimitEquivSections.{v, u} (limit.isLimit F)
+  (@limit _ _ _ _ F (hasLimit.{v, u} F) : Type max v u) ≃ F.sections := by
+  haveI := (hasLimit.{v, u} F)
+  exact isLimitEquivSections.{v, u} (limit.isLimit F)
 #align category_theory.limits.types.limit_equiv_sections CategoryTheory.Limits.Types.limitEquivSections
-
--- the following works
-noncomputable def limitEquivSections_test (F : J ⥤ Type v) :
-    (limit F : Type max v) ≃ F.sections :=
-  isLimitEquivSections.{v, v} (limit.isLimit F)
-
-#exit
 
 -- porting note: the parameter [HasLimit F] has been added temporarily in definitions below
 -- until some fix is found
