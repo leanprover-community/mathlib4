@@ -341,8 +341,7 @@ variable (α)
 
 See note [reducible non-instances]. Since this is reducible, we make sure to go via
 `SMul.comp.smul` to prevent typeclass inference unfolding too far. -/
-@[reducible,
-  to_additive
+@[to_additive (attr := reducible)
       "An additive action of `M` on `α` and a function `N → M` induces
        an additive action of `N` on `α` "]
 def comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
@@ -502,7 +501,7 @@ variable {M}
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
-"Pullback an additive action along an injective map respecting `+ᵥ`."]
+    "Pullback an additive action along an injective map respecting `+ᵥ`."]
 protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -515,7 +514,7 @@ protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Inj
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
-"Pushforward an additive action along a surjective map respecting `+ᵥ`."]
+    "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
 protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
@@ -533,9 +532,8 @@ protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Su
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
-@[reducible,
-  to_additive
-      "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
+@[to_additive (attr := reducible)
+    "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
 def Function.Surjective.mulActionLeft {R S M : Type _} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
@@ -674,8 +672,8 @@ theorem SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
 /-- If the multiplicative action of `M` on `N` is compatible with multiplication on `N`, then
 `fun x => x • 1` is a monoid homomorphism from `M` to `N`. -/
 @[to_additive (attr := simps)
-      "If the additive action of `M` on `N` is compatible with addition on `N`, then
-      `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
+    "If the additive action of `M` on `N` is compatible with addition on `N`, then
+    `fun x => x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`."]
 def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N] :
     M →* N where
   toFun x := x • (1 : N)

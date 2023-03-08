@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module data.int.cast.lemmas
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! leanprover-community/mathlib commit 7a89b1aed52bcacbcc4a8ad515e72c5c07268940
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
