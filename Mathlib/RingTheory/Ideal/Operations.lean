@@ -21,6 +21,9 @@ import Mathlib.RingTheory.NonZeroDivisors
 -/
 
 
+-- Porting note: TODO Erase this line, lean#2074
+attribute [-instance] Ring.toNonAssocRing
+
 universe u v w x
 
 open BigOperators Pointwise
@@ -749,14 +752,12 @@ theorem pow_sup_pow_eq_top {m n : ℕ} (h : I ⊔ J = ⊤) : I ^ m ⊔ J ^ n = �
 
 variable (I)
 
-@[simp]
-theorem mul_bot : I * ⊥ = ⊥ :=
-  Submodule.smul_bot I
+-- @[simp] -- Porting note: simp can prove this
+theorem mul_bot : I * ⊥ = ⊥ := by simp
 #align ideal.mul_bot Ideal.mul_bot
 
-@[simp]
-theorem bot_mul : ⊥ * I = ⊥ :=
-  Submodule.bot_smul I
+-- @[simp] -- Porting note: simp can prove this
+theorem bot_mul : ⊥ * I = ⊥ := by simp
 #align ideal.bot_mul Ideal.bot_mul
 
 @[simp]
@@ -1280,7 +1281,7 @@ section Dvd
 In a Dedekind domain, to divide and contain are equivalent, see `ideal.dvd_iff_le`.
 -/
 theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
-  | ⟨K, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
+  | ⟨_, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
 #align ideal.le_of_dvd Ideal.le_of_dvd
 
 theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
@@ -1323,7 +1324,8 @@ def map (I : Ideal R) : Ideal S :=
 def comap (I : Ideal S) : Ideal R where
   carrier := f ⁻¹' I
   add_mem' {x y} hx hy := by
-    simp only [Set.mem_preimage, SetLike.mem_coe, map_add, add_mem hx hy] at *
+    simp only [Set.mem_preimage, SetLike.mem_coe, map_add] at hx hy ⊢
+    exact add_mem hx hy
   zero_mem' := by simp only [Set.mem_preimage, map_zero, SetLike.mem_coe, Submodule.zero_mem]
   smul_mem' c x hx :=
     by
@@ -1425,10 +1427,16 @@ theorem map_map {T : Type _} [Semiring T] {I : Ideal R} (f : R →+* S) (g : S �
     comap_comap _ _
 #align ideal.map_map Ideal.map_map
 
-theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) :=
-  symm <|
+theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) := by
+  refine symm <|
     Submodule.span_eq_of_le _ (fun y ⟨x, hy, x_eq⟩ => x_eq ▸ mem_map_of_mem f (subset_span hy))
-      (map_le_iff_le_comap.2 <| span_le.2 <| Set.image_subset_iff.1 subset_span)
+      (map_le_iff_le_comap.2 <| span_le.2 <| Set.image_subset_iff.1 ?_)
+  convert subset_span (s := s)
+  · exact Set.image_id' s
+  · simp [subset_span, comap]
+    sorry
+
+
 #align ideal.map_span Ideal.map_span
 
 variable {f I J K L}
@@ -1679,7 +1687,7 @@ def relIsoOfSurjective : Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p }
     Subtype.eq <|
       show comap f (map f I.1) = I.1 from
         (comap_map_of_surjective f hf I).symm ▸ le_antisymm (sup_le le_rfl I.2) le_sup_left
-  map_rel_iff' I1 I2 :=
+  map_rel_iff' {I1 I2} :=
     ⟨fun H => map_comap_of_surjective f hf I1 ▸ map_comap_of_surjective f hf I2 ▸ map_mono H,
       comap_mono⟩
 #align ideal.rel_iso_of_surjective Ideal.relIsoOfSurjective
@@ -1693,7 +1701,7 @@ theorem map_eq_top_or_isMaximal_of_surjective {I : Ideal R} (H : IsMaximal I) :
     map f I = ⊤ ∨ IsMaximal (map f I) := by
   refine' or_iff_not_imp_left.2 fun ne_top => ⟨⟨fun h => ne_top h, fun J hJ => _⟩⟩
   · refine'
-      (rel_iso_of_surjective f hf).Injective
+      (relIsoOfSurjective f hf).injective
         (Subtype.ext_iff.2 (Eq.trans (H.1.2 (comap f J) (lt_of_le_of_ne _ _)) comap_top.symm))
     · exact map_le_iff_le_comap.1 (le_of_lt hJ)
     · exact fun h => hJ.right (le_map_of_comap_le_of_surjective f hf (le_of_eq h.symm))
@@ -1702,14 +1710,14 @@ theorem map_eq_top_or_isMaximal_of_surjective {I : Ideal R} (H : IsMaximal I) :
 theorem comap_isMaximal_of_surjective {K : Ideal S} [H : IsMaximal K] : IsMaximal (comap f K) := by
   refine' ⟨⟨comap_ne_top _ H.1.1, fun J hJ => _⟩⟩
   suffices map f J = ⊤ by
-    replace this := congr_arg (comap f) this
+    have := congr_arg (comap f) this
     rw [comap_top, comap_map_of_surjective _ hf, eq_top_iff] at this
     rw [eq_top_iff]
     exact le_trans this (sup_le (le_of_eq rfl) (le_trans (comap_mono bot_le) (le_of_lt hJ)))
   refine'
     H.1.2 (map f J)
       (lt_of_le_of_ne (le_map_of_comap_le_of_surjective _ hf (le_of_lt hJ)) fun h =>
-        ne_of_lt hJ (trans (congr_arg (comap f) h) _))
+        ne_of_lt hJ (_root_.trans (congr_arg (comap f) h) _))
   rw [comap_map_of_surjective _ hf, sup_eq_left]
   exact le_trans (comap_mono bot_le) (le_of_lt hJ)
 #align ideal.comap_is_maximal_of_surjective Ideal.comap_isMaximal_of_surjective
@@ -1754,7 +1762,7 @@ def relIsoOfBijective : Ideal S ≃o Ideal R
   right_inv J :=
     Subtype.ext_iff.1
       ((relIsoOfSurjective f hf.right).right_inv ⟨J, comap_bot_le_of_injective f hf.left⟩)
-  map_rel_iff' _ _ := (relIsoOfSurjective f hf.right).map_rel_iff'
+  map_rel_iff' {_ _} := (relIsoOfSurjective f hf.right).map_rel_iff'
 #align ideal.rel_iso_of_bijective Ideal.relIsoOfBijective
 
 theorem comap_le_iff_le_map {I : Ideal R} {K : Ideal S} : comap f K ≤ I ↔ K ≤ map f I :=
@@ -1765,7 +1773,7 @@ theorem comap_le_iff_le_map {I : Ideal R} {K : Ideal S} : comap f K ≤ I ↔ K 
 theorem map.isMaximal {I : Ideal R} (H : IsMaximal I) : IsMaximal (map f I) := by
   refine'
       or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h =>
-        H.1.1 _ <;>
+        H.1.1 _;
     calc
       I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
       _ = comap f ⊤ := by rw [h]
@@ -1777,8 +1785,8 @@ end Bijective
 
 theorem RingEquiv.bot_maximal_iff (e : R ≃+* S) :
     (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
-  ⟨fun h => @map_bot _ _ _ _ _ _ e.toRingHom ▸ map.isMaximal e.toRingHom e.Bijective h, fun h =>
-    @map_bot _ _ _ _ _ _ e.symm.toRingHom ▸ map.isMaximal e.symm.toRingHom e.symm.Bijective h⟩
+  ⟨fun h => @map_bot _ _ _ _ _ _ e.toRingHom ▸ map.isMaximal e.toRingHom e.bijective h, fun h =>
+    @map_bot _ _ _ _ _ _ e.symm.toRingHom ▸ map.isMaximal e.symm.toRingHom e.symm.bijective h⟩
 #align ideal.ring_equiv.bot_maximal_iff Ideal.RingEquiv.bot_maximal_iff
 
 end Ring
@@ -1824,14 +1832,14 @@ protected theorem map_pow (n : ℕ) : map f (I ^ n) = map f I ^ n :=
 
 theorem comap_radical : comap f (radical K) = radical (comap f K) := by
   ext
-  simpa only [radical, mem_comap, map_pow]
+  simp [radical]
 #align ideal.comap_radical Ideal.comap_radical
 
 variable {K}
 
 theorem IsRadical.comap (hK : K.IsRadical) : (comap f K).IsRadical := by
   rw [← hK.radical, comap_radical]
-  apply radical_is_radical
+  apply radical_isRadical
 #align ideal.is_radical.comap Ideal.IsRadical.comap
 
 variable {I J L}
@@ -1847,7 +1855,7 @@ theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
 #align ideal.le_comap_mul Ideal.le_comap_mul
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
-  induction n
+  induction' n with n n_ih
   · rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
     exact rfl.le
   · rw [pow_succ, pow_succ]
@@ -1868,7 +1876,7 @@ def IsPrimary (I : Ideal R) : Prop :=
 #align ideal.is_primary Ideal.IsPrimary
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : IsPrimary I :=
-  ⟨hi.1, fun x y hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
+  ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
 #align ideal.is_prime.is_primary Ideal.IsPrime.isPrimary
 
 theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ radical I) :
@@ -1877,16 +1885,16 @@ theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ r
 #align ideal.mem_radical_of_pow_mem Ideal.mem_radical_of_pow_mem
 
 theorem isPrime_radical {I : Ideal R} (hi : IsPrimary I) : IsPrime (radical I) :=
-  ⟨mt radical_eq_top.1 hi.1, fun x y ⟨m, hxy⟩ =>
+  ⟨mt radical_eq_top.1 hi.1, fun {x y} ⟨m, hxy⟩ =>
     by
-    rw [mul_pow] at hxy; cases hi.2 hxy
+    rw [mul_pow] at hxy; cases' hi.2 hxy with h h
     · exact Or.inl ⟨m, h⟩
     · exact Or.inr (mem_radical_of_pow_mem h)⟩
 #align ideal.is_prime_radical Ideal.isPrime_radical
 
 theorem isPrimary_inf {I J : Ideal R} (hi : IsPrimary I) (hj : IsPrimary J)
     (hij : radical I = radical J) : IsPrimary (I ⊓ J) :=
-  ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1), fun x y ⟨hxyi, hxyj⟩ =>
+  ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1), fun {x y} ⟨hxyi, hxyj⟩ =>
     by
     rw [radical_inf, hij, inf_idem]
     cases' hi.2 hxyi with hxi hyi; cases' hj.2 hxyj with hxj hyj
@@ -1928,7 +1936,7 @@ theorem finsuppTotal_apply_eq_of_fintype [Fintype ι] (f : ι →₀ I) :
   exact fun _ => zero_smul _ _
 #align ideal.finsupp_total_apply_eq_of_fintype Ideal.finsuppTotal_apply_eq_of_fintype
 
-theorem range_finsuppTotal : (finsuppTotal ι M I v).range = I • Submodule.span R (Set.range v) := by
+theorem range_finsuppTotal : LinearMap.range (finsuppTotal ι M I v) = I • Submodule.span R (Set.range v) := by
   ext
   rw [Submodule.mem_ideal_smul_span_iff_exists_sum]
   refine' ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, _⟩
@@ -1949,6 +1957,9 @@ section Basis
 
 variable {ι R S : Type _} [CommSemiring R] [CommRing S] [IsDomain S] [Algebra R S]
 
+-- Porting note: Needed to add the following line
+private instance : Module R S := Algebra.toModule
+
 /-- A basis on `S` gives a basis on `ideal.span {x}`, by multiplying everything by `x`. -/
 noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
     Basis ι R (span ({x} : Set S)) :=
@@ -1964,7 +1975,7 @@ noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
 @[simp]
 theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : ι) :
     (basisSpanSingleton b hx i : S) = x * b i := by
-  simp only [basis_span_singleton, Basis.map_apply, LinearEquiv.trans_apply,
+  simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
     LinearEquiv.restrictScalars_apply, LinearMap.Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
@@ -1972,7 +1983,7 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
 @[simp]
 theorem constr_basisSpanSingleton {N : Type _} [Semiring N] [Module N S] [SMulCommClass R N S]
     (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
-    b.constr N (coe ∘ basisSpanSingleton b hx) = LinearMap.Algebra.lmul R S x :=
+    b.constr N (((↑) : span {x} → S) ∘ basisSpanSingleton b hx) = LinearMap.Algebra.lmul R S x :=
   b.ext fun i => by
     erw [Basis.constr_basis, Function.comp_apply, basis_span_singleton_apply, LinearMap.mul_apply']
 #align ideal.constr_basis_span_singleton Ideal.constr_basisSpanSingleton
@@ -2056,8 +2067,6 @@ theorem ker_eq_bot_iff_eq_zero : ker f = ⊥ ↔ ∀ x, f x = 0 → x = 0 := by
   rw [← injective_iff_map_eq_zero f, injective_iff_ker_eq_bot]
 #align ring_hom.ker_eq_bot_iff_eq_zero RingHom.ker_eq_bot_iff_eq_zero
 
-omit rc
-
 @[simp]
 theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
   simpa only [← injective_iff_ker_eq_bot] using EquivLike.injective f
@@ -2084,7 +2093,7 @@ theorem ker_isPrime {F : Type _} [Ring R] [Ring S] [IsDomain S] [RingHomClass F 
     (ker f).IsPrime :=
   ⟨by
     rw [Ne.def, Ideal.eq_top_iff_one]
-    exact not_one_mem_ker f, fun x y => by
+    exact not_one_mem_ker f, fun {x y} => by
     simpa only [mem_ker, map_mul] using @eq_zero_or_eq_zero_of_mul_eq_zero S _ _ _ _ _⟩
 #align ring_hom.ker_is_prime RingHom.ker_isPrime
 
@@ -2092,7 +2101,7 @@ theorem ker_isPrime {F : Type _} [Ring R] [Ring S] [IsDomain S] [RingHomClass F 
 theorem ker_isMaximal_of_surjective {R K F : Type _} [Ring R] [Field K] [RingHomClass F R K] (f : F)
     (hf : Function.Surjective f) : (ker f).IsMaximal := by
   refine'
-    ideal.is_maximal_iff.mpr
+    Ideal.isMaximal_iff.mpr
       ⟨fun h1 => one_ne_zero' K <| map_one f ▸ (mem_ker f).mp h1, fun J x hJ hxf hxJ => _⟩
   obtain ⟨y, hy⟩ := hf (f x)⁻¹
   have H : 1 = y * x - (y * x - 1) := (sub_sub_cancel _ _).symm
@@ -2149,7 +2158,7 @@ theorem map_infₛ {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
 
 theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
     (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
-  refine' ⟨fun h => H.ne_top (eq_top_iff.2 _), fun x y => _⟩
+  refine' ⟨fun h => H.ne_top (eq_top_iff.2 _), fun {x y} => _⟩
   · replace h := congr_arg (comap f) h
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk
@@ -2182,24 +2191,24 @@ section CommRing
 variable [CommRing R] [CommRing S]
 
 theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)
-    (hf : Function.Surjective f) : map f I = map f J ↔ I ⊔ f.ker = J ⊔ f.ker := by
+    (hf : Function.Surjective f) : map f I = map f J ↔ I ⊔ RingHom.ker f = J ⊔ RingHom.ker f := by
   rw [← (comap_injective_of_surjective f hf).eq_iff, comap_map_of_surjective f hf,
     comap_map_of_surjective f hf, RingHom.ker_eq_comap_bot]
 #align ideal.map_eq_iff_sup_ker_eq_of_surjective Ideal.map_eq_iff_sup_ker_eq_of_surjective
 
 theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {I : Ideal R}
     (h : RingHom.ker f ≤ I) : map f I.radical = (map f I).radical := by
-  rw [radical_eq_Inf, radical_eq_Inf]
-  have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsPrime }, f.ker ≤ J := fun J hJ => le_trans h hJ.left
-  convert map_Inf hf this
+  rw [radical_eq_infₛ, radical_eq_infₛ]
+  have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsPrime }, RingHom.ker f ≤ J := fun J hJ => le_trans h hJ.left
+  convert map_infₛ hf this
   refine' funext fun j => propext ⟨_, _⟩
   · rintro ⟨hj, hj'⟩
-    haveI : j.is_prime := hj'
+    haveI : j.IsPrime := hj'
     exact
-      ⟨comap f j, ⟨⟨map_le_iff_le_comap.1 hj, comap_is_prime f j⟩, map_comap_of_surjective f hf j⟩⟩
+      ⟨comap f j, ⟨⟨map_le_iff_le_comap.1 hj, comap_isPrime f j⟩, map_comap_of_surjective f hf j⟩⟩
   · rintro ⟨J, ⟨hJ, hJ'⟩⟩
-    haveI : J.is_prime := hJ.right
-    refine' ⟨hJ' ▸ map_mono hJ.left, hJ' ▸ map_is_prime_of_surjective hf (le_trans h hJ.left)⟩
+    haveI : J.IsPrime := hJ.right
+    refine' ⟨hJ' ▸ map_mono hJ.left, hJ' ▸ map_isPrime_of_surjective hf (le_trans h hJ.left)⟩
 #align ideal.map_radical_of_surjective Ideal.map_radical_of_surjective
 
 end CommRing
@@ -2232,7 +2241,7 @@ variable {A B C : Type _} [Ring A] [Ring B] [Ring C]
 variable (f : A →+* B) (f_inv : B → A)
 
 /-- Auxiliary definition used to define `lift_of_right_inverse` -/
-def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C) (hg : f.ker ≤ g.ker) :
+def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C) (hg : RingHom.ker f ≤ RingHom.ker g) :
     B →+* C :=
   {
     AddMonoidHom.liftOfRightInverse f.toAddMonoidHom f_inv hf
@@ -2253,7 +2262,7 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C) (
 
 @[simp]
 theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : A →+* C)
-    (hg : f.ker ≤ g.ker) (a : A) : (f.liftOfRightInverseAux f_inv hf g hg) (f a) = g a :=
+    (hg : RingHom.ker f ≤ RingHom.ker g) (a : A) : (f.liftOfRightInverseAux f_inv hf g hg) (f a) = g a :=
   f.toAddMonoidHom.liftOfRightInverse_comp_apply f_inv hf ⟨g.toAddMonoidHom, hg⟩ a
 #align ring_hom.lift_of_right_inverse_aux_comp_apply RingHom.liftOfRightInverseAux_comp_apply
 
@@ -2276,42 +2285,44 @@ See `ring_hom.eq_lift_of_right_inverse` for the uniqueness lemma.
 ```
 -/
 def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
-    { g : A →+* C // f.ker ≤ g.ker } ≃ (B →+* C)
+    { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C)
     where
   toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
   invFun φ := ⟨φ.comp f, fun x hx => (mem_ker _).mpr <| by simp [(mem_ker _).mp hx]⟩
   left_inv g := by
     ext
-    simp only [comp_apply, lift_of_right_inverse_aux_comp_apply, Subtype.coe_mk, Subtype.val_eq_coe]
+    simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]
   right_inv φ := by
     ext b
-    simp [lift_of_right_inverse_aux, hf b]
+    simp [liftOfRightInverseAux, hf b]
 #align ring_hom.lift_of_right_inverse RingHom.liftOfRightInverse
 
 /-- A non-computable version of `ring_hom.lift_of_right_inverse` for when no computable right
 inverse is available, that uses `function.surj_inv`. -/
 @[simp]
 noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
-    { g : A →+* C // f.ker ≤ g.ker } ≃ (B →+* C) :=
+    { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) :=
   f.liftOfRightInverse (Function.surjInv hf) (Function.rightInverse_surjInv hf)
 #align ring_hom.lift_of_surjective RingHom.liftOfSurjective
 
 theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
-    (g : { g : A →+* C // f.ker ≤ g.ker }) (x : A) :
-    (f.liftOfRightInverse f_inv hf g) (f x) = g x :=
+    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) (x : A) :
+    (f.liftOfRightInverse f_inv hf g) (f x) = g.1 x :=
   f.liftOfRightInverseAux_comp_apply f_inv hf g.1 g.2 x
 #align ring_hom.lift_of_right_inverse_comp_apply RingHom.liftOfRightInverse_comp_apply
 
 theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
-    (g : { g : A →+* C // f.ker ≤ g.ker }) : (f.liftOfRightInverse f_inv hf g).comp f = g :=
+    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) : (f.liftOfRightInverse f_inv hf g).comp f = g :=
   RingHom.ext <| f.liftOfRightInverse_comp_apply f_inv hf g
 #align ring_hom.lift_of_right_inverse_comp RingHom.liftOfRightInverse_comp
 
 theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* C)
-    (hg : f.ker ≤ g.ker) (h : B →+* C) (hh : h.comp f = g) :
+    (hg : RingHom.ker f ≤ RingHom.ker g) (h : B →+* C) (hh : h.comp f = g) :
     h = f.liftOfRightInverse f_inv hf ⟨g, hg⟩ := by
   simp_rw [← hh]
-  exact ((f.lift_of_right_inverse f_inv hf).apply_symm_apply _).symm
+  exact ((f.liftOfRightInverse f_inv hf).apply_symm_apply _).symm
 #align ring_hom.eq_lift_of_right_inverse RingHom.eq_liftOfRightInverse
 
 end RingHom
+
+#lint
