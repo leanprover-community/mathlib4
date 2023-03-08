@@ -155,7 +155,7 @@ def cmp : Onote → Onote → Ordering
 #align onote.cmp Onote.cmp
 
 theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o₂
-  | 0, 0, h => rfl
+  | 0, 0, _ => rfl
   | oadd e n a, 0, h => by injection h
   | 0, oadd e n a, h => by injection h
   | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h => by
@@ -212,7 +212,7 @@ theorem NFBelow.fst {e n a b} (h : NFBelow (Onote.oadd e n a) b) : NF e := by
 #align onote.NF_below.fst Onote.NFBelow.fst
 
 theorem NF.fst {e n a} : NF (oadd e n a) → NF e
-  | ⟨⟨b, h⟩⟩ => h.fst
+  | ⟨⟨_, h⟩⟩ => h.fst
 #align onote.NF.fst Onote.NF.fst
 
 theorem NFBelow.snd {e n a b} (h : NFBelow (Onote.oadd e n a) b) : NFBelow a (repr e) := by
@@ -220,7 +220,7 @@ theorem NFBelow.snd {e n a b} (h : NFBelow (Onote.oadd e n a) b) : NFBelow a (re
 #align onote.NF_below.snd Onote.NFBelow.snd
 
 theorem NF.snd' {e n a} : NF (oadd e n a) → NFBelow a (repr e)
-  | ⟨⟨b, h⟩⟩ => h.snd
+  | ⟨⟨_, h⟩⟩ => h.snd
 #align onote.NF.snd' Onote.NF.snd'
 
 theorem NF.snd {e n a} (h : NF (oadd e n a)) : NF a :=
@@ -307,9 +307,9 @@ theorem oadd_lt_oadd_3 {e n a₁ a₂} (h : a₁ < a₂) : oadd e n a₁ < oadd 
 #align onote.oadd_lt_oadd_3 Onote.oadd_lt_oadd_3
 
 theorem cmp_compares : ∀ (a b : Onote) [NF a] [NF b], (cmp a b).Compares a b
-  | 0, 0, h₁, h₂ => rfl
-  | oadd e n a, 0, h₁, h₂ => oadd_pos _ _ _
-  | 0, oadd e n a, h₁, h₂ => oadd_pos _ _ _
+  | 0, 0, _, _ => rfl
+  | oadd e n a, 0, _, _ => oadd_pos _ _ _
+  | 0, oadd e n a, _, _ => oadd_pos _ _ _
   | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h₁, h₂ => by -- TODO: golf
     rw [cmp]
     have IHe := @cmp_compares _ _ h₁.fst h₂.fst
@@ -360,7 +360,7 @@ theorem NF.of_dvd_omega_opow {b e n a} (h : NF (Onote.oadd e n a))
   have := mt repr_inj.1 (fun h => by injection h : Onote.oadd e n a ≠ 0)
   have L := le_of_not_lt fun l => not_le_of_lt (h.below_of_lt l).repr_lt (le_of_dvd this d)
   simp at d
-  exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mulRight _).1 d⟩
+  exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mul_right _).1 d⟩
 #align onote.NF.of_dvd_omega_opow Onote.NF.of_dvd_omega_opow
 
 theorem NF.of_dvd_omega {e n a} (h : NF (Onote.oadd e n a)) :
@@ -371,31 +371,31 @@ theorem NF.of_dvd_omega {e n a} (h : NF (Onote.oadd e n a)) :
 /-- `top_below b o` asserts that the largest exponent in `o`, if
   it exists, is less than `b`. This is an auxiliary definition
   for decidability of `NF`. -/
-def TopBelow (b) : Onote → Prop
+def TopBelow (b : Onote) : Onote → Prop
   | 0 => True
-  | oadd e n a => cmp e b = Ordering.lt
+  | oadd e _ _ => cmp e b = Ordering.lt
 #align onote.top_below Onote.TopBelow
 
 instance decidableTopBelow : DecidableRel TopBelow := by
-  intro b o <;> cases o <;> delta TopBelow <;> infer_instance
+  intro b o
+  cases o <;> delta TopBelow <;> infer_instance
 #align onote.decidable_top_below Onote.decidableTopBelow
 
-theorem nFBelow_iff_topBelow {b} [NF b] : ∀ {o}, NFBelow o (repr b) ↔ NF o ∧ TopBelow b o
+theorem nfbelow_iff_topBelow {b} [NF b] : ∀ {o}, NFBelow o (repr b) ↔ NF o ∧ TopBelow b o
   | 0 => ⟨fun h => ⟨⟨⟨_, h⟩⟩, trivial⟩, fun _ => NFBelow.zero⟩
   | oadd _ _ _ =>
     ⟨fun h => ⟨⟨⟨_, h⟩⟩, (@cmp_compares _ b h.fst _).eq_lt.2 h.lt⟩, fun ⟨h₁, h₂⟩ =>
       h₁.below_of_lt <| (@cmp_compares _ b h₁.fst _).eq_lt.1 h₂⟩
-#align onote.NF_below_iff_top_below Onote.nFBelow_iff_topBelow
+#align onote.NF_below_iff_top_below Onote.nfbelow_iff_topBelow
 
 instance decidableNF : DecidablePred NF
   | 0 => isTrue NF.zero
   | oadd e n a => by
-    have := decidable_NF e
-    have := decidable_NF a; skip
-    apply decidable_of_iff (NF e ∧ NF a ∧ top_below e a)
-    abstract
-      rw [← and_congr_right fun h => @NF_below_iff_top_below _ h _]
-      exact ⟨fun ⟨h₁, h₂⟩ => NF.oadd h₁ n h₂, fun h => ⟨h.fst, h.snd'⟩⟩
+    have := decidableNF e
+    have := decidableNF a
+    apply decidable_of_iff (NF e ∧ NF a ∧ TopBelow e a)
+    rw [← and_congr_right fun h => @nfbelow_iff_topBelow _ h _]
+    exact ⟨fun ⟨h₁, h₂⟩ => NF.oadd h₁ n h₂, fun h => ⟨h.fst, h.snd'⟩⟩
 #align onote.decidable_NF Onote.decidableNF
 
 /-- Addition of ordinal notations (correct only for normal input) -/
@@ -425,9 +425,9 @@ theorem oadd_add (e n a o) : oadd e n a + o = add._match1 e n (a + o) :=
 
 /-- Subtraction of ordinal notations (correct only for normal input) -/
 def sub : Onote → Onote → Onote
-  | 0, o => 0
+  | 0, _ => 0
   | o, 0 => o
-  | o₁@(oadd e₁ n₁ a₁), oadd e₂ n₂ a₂ =>
+  | o₁ @(oadd e₁ n₁ a₁), oadd e₂ n₂ a₂ =>
     match cmp e₁ e₂ with
     | Ordering.lt => 0
     | Ordering.gt => o₁
@@ -466,9 +466,9 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
   | 0, o, h₁, h₂ => by simp
   | oadd e n a, o, h₁, h₂ => by
     haveI := h₁.snd; have h' := repr_add a o
-    conv at h' in _ + o => simp [(· + ·)]
+    conv_lhs at h' => simp [(· + ·)]
     have nf := Onote.add_nF a o
-    conv at nf in _ + o => simp [(· + ·)]
+    conv at nf => simp [(· + ·)]
     conv in _ + o => simp [(· + ·), add]
     cases' add a o with e' n' a' <;> simp [add, h'.symm, add_assoc]
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
@@ -748,7 +748,9 @@ theorem scale_eq_mul (x) [NF x] : ∀ (o) [NF o], scale x o = oadd x 1 0 * o
     · simp [e0, scale_eq_mul, (· * ·)]
 #align onote.scale_eq_mul Onote.scale_eq_mul
 
-instance nF_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by rw [scale_eq_mul] <;> infer_instance
+instance nF_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
+  rw [scale_eq_mul]
+  infer_instance
 #align onote.NF_scale Onote.nF_scale
 
 @[simp]
@@ -1135,7 +1137,7 @@ theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
 
 section
 
--- mathport name: pow
+@[inherit_doc]
 local infixr:0 "^" => pow
 
 @[simp]
@@ -1213,9 +1215,9 @@ instance : Repr Nonote :=
 instance : Preorder Nonote where
   le x y := repr x ≤ repr y
   lt x y := repr x < repr y
-  le_refl a := @le_refl Ordinal _ _
-  le_trans a b c := @le_trans Ordinal _ _ _ _
-  lt_iff_le_not_le a b := @lt_iff_le_not_le Ordinal _ _ _
+  le_refl _ := @le_refl Ordinal _ _
+  le_trans _ _ _ := @le_trans Ordinal _ _ _ _
+  lt_iff_le_not_le _ _ := @lt_iff_le_not_le Ordinal _ _ _
 
 instance : Zero Nonote :=
   ⟨⟨0, NF.zero⟩⟩
