@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.nat.dist
-! leanprover-community/mathlib commit 318fa77a2ba140a221a5b6cabae466ba855c2ffc
+! leanprover-community/mathlib commit d50b12ae8e2bd910d08a94823976adae9825718b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -78,8 +78,8 @@ theorem dist_zero_left (n : ℕ) : dist 0 n = n :=
 theorem dist_add_add_right (n k m : ℕ) : dist (n + k) (m + k) = dist n m :=
   calc
     dist (n + k) (m + k) = n + k - (m + k) + (m + k - (n + k)) := rfl
-    _ = n - m + (m + k - (n + k)) := by rw [add_tsub_add_eq_tsub_right]
-    _ = n - m + (m - n) := by rw [add_tsub_add_eq_tsub_right]
+    _ = n - m + (m + k - (n + k)) := by rw [@add_tsub_add_eq_tsub_right]
+    _ = n - m + (m - n) := by rw [@add_tsub_add_eq_tsub_right]
 
 #align nat.dist_add_add_right Nat.dist_add_add_right
 

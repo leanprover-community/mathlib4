@@ -39,7 +39,7 @@ category, category theory, isomorphism
 
 universe v u
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
 open Category
@@ -63,6 +63,8 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 #align category_theory.iso CategoryTheory.Iso
+#align category_theory.iso.hom CategoryTheory.Iso.hom
+#align category_theory.iso.inv CategoryTheory.Iso.inv
 #align category_theory.iso.inv_hom_id CategoryTheory.Iso.inv_hom_id
 #align category_theory.iso.hom_inv_id CategoryTheory.Iso.hom_inv_id
 
@@ -140,10 +142,14 @@ def refl (X : C) : X ≅ X where
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
+theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
+
 @[simp]
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 #align category_theory.iso.refl_symm CategoryTheory.Iso.refl_symm
 
+-- Porting note: It seems that the trans `trans` attribute isn't working properly
+-- in this case, so we have to manually add a `Trans` instance (with a `simps` tag).
 /-- Composition of two isomorphisms -/
 @[trans, simps]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
@@ -152,6 +158,10 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
 #align category_theory.iso.trans CategoryTheory.Iso.trans
 #align category_theory.iso.trans_hom CategoryTheory.Iso.trans_hom
 #align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
+
+@[simps]
+instance : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
+  trans := trans
 
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.

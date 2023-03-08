@@ -99,7 +99,7 @@ jobs:
         run: lake exe cache get
 
       - name: build mathlib
-        run: lake build
+        run: env LEAN_ABORT_ON_PANIC=1 lake build
 
       - name: upload cache
         if: always()

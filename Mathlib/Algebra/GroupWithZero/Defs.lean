@@ -168,7 +168,7 @@ class CancelCommMonoidWithZero (M₀ : Type _) extends CommMonoidWithZero M₀, 
 
 instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
     [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
-{ IsLeftCancelMulZero.to_isCancelMulZero with }
+{ IsLeftCancelMulZero.to_isCancelMulZero (M₀ := M₀) with }
 
 /-- A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.

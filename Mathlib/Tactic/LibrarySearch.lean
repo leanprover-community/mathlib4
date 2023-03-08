@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Std.Tactic.TryThis
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
@@ -31,11 +32,11 @@ initialize registerTraceClass `Tactic.librarySearch
 
 -- from Lean.Server.Completion
 private def isBlackListed (declName : Name) : MetaM Bool := do
-  if declName == ``sorryAx then return false
-  if declName matches .str _ "inj" then return false
-  if declName matches .str _ "noConfusionType" then return false
+  if declName == ``sorryAx then return true
+  if declName matches .str _ "inj" then return true
+  if declName matches .str _ "noConfusionType" then return true
   let env ← getEnv
-  pure $ declName.isInternal
+  pure $ declName.isInternal'
    || isAuxRecursor env declName
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
@@ -86,6 +87,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
 
   try
     solveByElim [goal] required solveByElimDepth
+    return none
   catch _ =>
     set state0
 

@@ -136,17 +136,13 @@ theorem Finset.card_pi [DecidableEq α] {δ : α → Type _} (s : Finset α) (t 
 
 @[simp]
 theorem Fintype.card_piFinset [DecidableEq α] [Fintype α] {δ : α → Type _} (t : ∀ a, Finset (δ a)) :
-    (Fintype.piFinset t).card = ∏ a, card (t a) := by simp [Fintype.piFinset, card_map]
+    (Fintype.piFinset t).card = ∏ a, Finset.card (t a) := by simp [Fintype.piFinset, card_map]
 #align fintype.card_pi_finset Fintype.card_piFinset
 
 @[simp]
-theorem Fintype.card_pi {β : α → Type _} [DecidableEq α] [Fintype α] [f : ∀ a, Fintype (β a)] :
-    Fintype.card (∀ a, β a) = ∏ a, Fintype.card (β a) := by
-  -- Porting note: term mode proof `Fintype.card_piFinset _` no longer works
-  unfold Fintype.card
-  erw [Fintype.card_piFinset]
-  apply Finset.prod_congr rfl
-  simp [Fintype.card]
+theorem Fintype.card_pi {β : α → Type _} [DecidableEq α] [Fintype α] [∀ a, Fintype (β a)] :
+    Fintype.card (∀ a, β a) = ∏ a, Fintype.card (β a) :=
+  Fintype.card_piFinset _
 #align fintype.card_pi Fintype.card_pi
 
 -- FIXME ouch, this should be in the main file.

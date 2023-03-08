@@ -37,7 +37,7 @@ Introduces notations
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [category_theory universes].
+-- declare the `v`'s first; see note [CategoryTheory universes].
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]

@@ -274,8 +274,7 @@ theorem mem_supₛ_of_mem {S : Set (Submonoid M)} {s : Submonoid M} (hs : s ∈ 
 /-- An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `1` and all elements of `S i` for all `i`, and is preserved under multiplication,
 then it holds for all elements of the supremum of `S`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       " An induction principle for elements of `⨆ i, S i`.
       If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
       then it holds for all elements of the supremum of `S`. "]
@@ -289,7 +288,7 @@ theorem supᵢ_induction {ι : Sort _} (S : ι → Submonoid M) {C : M → Prop}
 #align add_submonoid.supr_induction AddSubmonoid.supᵢ_induction
 
 /-- A dependent version of `Submonoid.supᵢ_induction`. -/
-@[elab_as_elim, to_additive "A dependent version of `AddSubmonoid.supᵢ_induction`. "]
+@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.supᵢ_induction`. "]
 theorem supᵢ_induction' {ι : Sort _} (S : ι → Submonoid M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i), ∀ (x) (hxS : x ∈ S i), C x (mem_supᵢ_of_mem i hxS)) (h1 : C 1 (one_mem _))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : M}
@@ -398,7 +397,7 @@ theorem closure_induction_left {s : Set M} {p : M → Prop} {x : M} (h : x ∈ c
 #align submonoid.closure_induction_left Submonoid.closure_induction_left
 #align add_submonoid.closure_induction_left AddSubmonoid.closure_induction_left
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_of_closure_eq_top_left {s : Set M} {p : M → Prop} (hs : closure s = ⊤) (x : M)
     (H1 : p 1) (Hmul : ∀ x ∈ s, ∀ (y), p y → p (x * y)) : p x :=
   closure_induction_left
@@ -419,7 +418,7 @@ theorem closure_induction_right {s : Set M} {p : M → Prop} {x : M} (h : x ∈ 
 #align submonoid.closure_induction_right Submonoid.closure_induction_right
 #align add_submonoid.closure_induction_right AddSubmonoid.closure_induction_right
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_of_closure_eq_top_right {s : Set M} {p : M → Prop} (hs : closure s = ⊤) (x : M)
     (H1 : p 1) (Hmul : ∀ (x), ∀ y ∈ s, p x → p (x * y)) : p x :=
   closure_induction_right
@@ -502,7 +501,7 @@ def powLogEquiv [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n
   right_inv := pow_log_eq_self
   map_mul' _ _ := by simp only [pow, map_mul, ofAdd_add, toAdd_mul]
 #align submonoid.pow_log_equiv Submonoid.powLogEquiv
-#align submonoid.pow_log_equiv_symm_apply Submonoid.powLogEquiv_symmApply
+#align submonoid.pow_log_equiv_symm_apply Submonoid.powLogEquiv_symm_apply
 #align submonoid.pow_log_equiv_apply Submonoid.powLogEquiv_apply
 
 theorem log_mul [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n ^ m)
@@ -616,7 +615,7 @@ def multiples (x : A) : AddSubmonoid A :=
     Set.ext fun n => exists_congr fun i => by simp
 #align add_submonoid.multiples AddSubmonoid.multiples
 
-attribute [to_additive multiples] Submonoid.powers
+attribute [to_additive existing multiples] Submonoid.powers
 
 attribute [to_additive (attr := simp) mem_multiples] Submonoid.mem_powers
 #align add_submonoid.mem_multiples AddSubmonoid.mem_multiples

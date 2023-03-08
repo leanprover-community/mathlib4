@@ -1091,6 +1091,11 @@ theorem local_compact_nhds [LocallyCompactSpace α] {x : α} {n : Set α} (h : n
   LocallyCompactSpace.local_compact_nhds _ _ h
 #align local_compact_nhds local_compact_nhds
 
+/-- In a locally compact space, the filters `𝓝 x` and `cocompact α` are disjoint for all `α`. -/
+theorem disjoint_nhds_cocompact [LocallyCompactSpace α] (x : α) : Disjoint (𝓝 x) (cocompact α) :=
+  let ⟨_, hx, _, hc⟩ := local_compact_nhds (univ_mem (f := 𝓝 x));
+  disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
+
 theorem locallyCompactSpace_of_hasBasis {ι : α → Type _} {p : ∀ x, ι x → Prop}
     {s : ∀ x, ι x → Set α} (h : ∀ x, (𝓝 x).HasBasis (p x) (s x))
     (hc : ∀ x i, p x i → IsCompact (s x i)) : LocallyCompactSpace α :=
@@ -1135,7 +1140,7 @@ instance LocallyCompactSpace.pi [∀ i, CompactSpace (π i)] : LocallyCompactSpa
     · exact forall₂_imp fun i _ hi' => hsub' i hi'
     · rw [← Set.univ_pi_ite]
       refine' isCompact_univ_pi fun i => _
-      by_cases i ∈ s
+      by_cases h : i ∈ s
       · rw [if_pos h]
         exact hc i
       · rw [if_neg h]
@@ -1306,7 +1311,7 @@ theorem unionᵢ_compactCovering : (⋃ n, compactCovering α n) = univ := by
   exact (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).2
 #align Union_compact_covering unionᵢ_compactCovering
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering α m ⊆ compactCovering α n :=
   monotone_accumulate h
 #align compact_covering_subset compactCovering_subset
@@ -1403,7 +1408,7 @@ theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) :=
   Subset.trans (K.subset_interior_succ n) interior_subset
 #align compact_exhaustion.subset_succ CompactExhaustion.subset_succ
 
--- porting note: todo: restore @[mono]
+@[mono]
 protected theorem subset ⦃m n : ℕ⦄ (h : m ≤ n) : K m ⊆ K n :=
   show K m ≤ K n from monotone_nat_of_le_succ K.subset_succ h
 #align compact_exhaustion.subset CompactExhaustion.subset

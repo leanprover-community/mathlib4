@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.nhds_set
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -111,7 +111,7 @@ theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set α) := by simp
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set α) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]
 #align nhds_set_univ nhdsSet_univ
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
   supₛ_le_supₛ <| image_subset _ h
 #align nhds_set_mono nhdsSet_mono

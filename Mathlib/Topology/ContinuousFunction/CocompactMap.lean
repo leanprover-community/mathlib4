@@ -70,8 +70,7 @@ section Basics
 variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance : CocompactMapClass (CocompactMap α β) α β
-    where
+instance : CocompactMapClass (CocompactMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -87,9 +86,9 @@ instance : CoeFun (CocompactMap α β) fun _ => α → β :=
   FunLike.hasCoeToFun-/
 
 @[simp]
-theorem coe_to_continuous_fun {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
+theorem coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
   rfl
-#align cocompact_map.coe_to_continuous_fun CocompactMap.coe_to_continuous_fun
+#align cocompact_map.coe_to_continuous_fun CocompactMap.coe_toContinuousMap
 
 @[ext]
 theorem ext {f g : CocompactMap α β} (h : ∀ x, f x = g x) : f = g :=
@@ -98,8 +97,7 @@ theorem ext {f g : CocompactMap α β} (h : ∀ x, f x = g x) : f = g :=
 
 /-- Copy of a `CocompactMap` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
-protected def copy (f : CocompactMap α β) (f' : α → β) (h : f' = f) : CocompactMap α β
-    where
+protected def copy (f : CocompactMap α β) (f' : α → β) (h : f' = f) : CocompactMap α β where
   toFun := f'
   continuous_toFun := by
     rw [h]

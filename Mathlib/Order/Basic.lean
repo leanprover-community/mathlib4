@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit d4f69d96f3532729da8ebb763f4bc26fcf640f06
+! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -37,8 +37,8 @@ classes and allows to transfer order instances.
 
 ### Extra class
 
-* `HasSup`: type class for the `⊔` notation
-* `HasInf`: type class for the `⊓` notation
+* `Sup`: type class for the `⊔` notation
+* `Inf`: type class for the `⊓` notation
 * `HasCompl`: type class for the `ᶜ` notation
 * `DenselyOrdered`: An order with no gap, i.e. for any two elements `a < b` there exists `c` such
   that `a < c < b`.
@@ -941,28 +941,28 @@ theorem max_def_lt (x y : α) : max x y = if x < y then y else x := by
 
 end MinMaxRec
 
-/-! ### `HasSup` and `HasInf` -/
+/-! ### `Sup` and `Inf` -/
 
 
 /-- Typeclass for the `⊔` (`\lub`) notation -/
 @[notation_class, ext]
-class HasSup (α : Type u) where
+class Sup (α : Type u) where
   /-- Least upper bound (`\lub` notation) -/
   sup : α → α → α
-#align has_sup HasSup
+#align has_sup Sup
 
 /-- Typeclass for the `⊓` (`\glb`) notation -/
 @[notation_class, ext]
-class HasInf (α : Type u) where
+class Inf (α : Type u) where
   /-- Greatest lower bound (`\glb` notation) -/
   inf : α → α → α
-#align has_inf HasInf
+#align has_inf Inf
 
 @[inherit_doc]
-infixl:68 " ⊔ " => HasSup.sup
+infixl:68 " ⊔ " => Sup.sup
 
 @[inherit_doc]
-infixl:69 " ⊓ " => HasInf.inf
+infixl:69 " ⊓ " => Inf.inf
 
 /-! ### Lifts of order instances -/
 
@@ -986,11 +986,11 @@ def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective
 #align partial_order.lift PartialOrder.lift
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
-function `f : α → β`. This version takes `[HasSup α]` and `[HasInf α]` as arguments, then uses
+function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
 `max` fields. See note [reducible non-instances]. -/
 @[reducible]
-def LinearOrder.lift {α β} [LinearOrder β] [HasSup α] [HasInf α] (f : α → β) (inj : Injective f)
+def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
   { PartialOrder.lift f inj with
@@ -1014,7 +1014,7 @@ def LinearOrder.lift {α β} [LinearOrder β] [HasSup α] [HasInf α] (f : α �
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
-for a version that takes `[HasSup α]` and `[HasInf α]`, then uses them as `max` and `min`.
+for a version that takes `[Sup α]` and `[Inf α]`, then uses them as `max` and `min`.
 See note [reducible non-instances]. -/
 @[reducible]
 def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=

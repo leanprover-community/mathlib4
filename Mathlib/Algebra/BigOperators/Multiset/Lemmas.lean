@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Eric Wieser
 
 ! This file was ported from Lean 3 source module algebra.big_operators.multiset.lemmas
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -30,6 +30,13 @@ theorem prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
 #align multiset.sum_eq_zero_iff Multiset.sum_eq_zero_iff
 
 end Multiset
+
+@[simp]
+lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R} [CanonicallyOrderedCommSemiring R]
+    [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ (∀ x ∈ m, (0 : R) < x) := by
+  rcases m with ⟨l⟩
+  rw [Multiset.quot_mk_to_coe'', Multiset.coe_prod]
+  exact CanonicallyOrderedCommSemiring.list_prod_pos
 
 open Multiset
 

@@ -55,32 +55,32 @@ theorem mem_pi {s : Finset α} {t : ∀ a, Finset (δ a)} {f : ∀ a ∈ s, δ a
 
 /-- Given a function `f` defined on a finset `s`, define a new function on the finset `s ∪ {a}`,
 equal to `f` on `s` and sending `a` to a given value `b`. This function is denoted
-`s.pi.cons a b f`. If `a` already belongs to `s`, the new function takes the value `b` at `a`
+`s.Pi.cons a b f`. If `a` already belongs to `s`, the new function takes the value `b` at `a`
 anyway. -/
-def pi.cons (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (a' : α) (h : a' ∈ insert a s) :
+def Pi.cons (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (a' : α) (h : a' ∈ insert a s) :
     δ a' :=
   Multiset.Pi.cons s.1 a b f _ (Multiset.mem_cons.2 <| mem_insert.symm.2 h)
-#align finset.pi.cons Finset.pi.cons
+#align finset.pi.cons Finset.Pi.cons
 
 @[simp]
-theorem pi.cons_same (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (h : a ∈ insert a s) :
-    pi.cons s a b f a h = b :=
+theorem Pi.cons_same (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (h : a ∈ insert a s) :
+    Pi.cons s a b f a h = b :=
   Multiset.Pi.cons_same _
-#align finset.pi.cons_same Finset.pi.cons_same
+#align finset.pi.cons_same Finset.Pi.cons_same
 
-theorem pi.cons_ne {s : Finset α} {a a' : α} {b : δ a} {f : ∀ a, a ∈ s → δ a} {h : a' ∈ insert a s}
-    (ha : a ≠ a') : pi.cons s a b f a' h = f a' ((mem_insert.1 h).resolve_left ha.symm) :=
+theorem Pi.cons_ne {s : Finset α} {a a' : α} {b : δ a} {f : ∀ a, a ∈ s → δ a} {h : a' ∈ insert a s}
+    (ha : a ≠ a') : Pi.cons s a b f a' h = f a' ((mem_insert.1 h).resolve_left ha.symm) :=
   Multiset.Pi.cons_ne _ (Ne.symm ha)
-#align finset.pi.cons_ne Finset.pi.cons_ne
+#align finset.pi.cons_ne Finset.Pi.cons_ne
 
 theorem pi_cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
-    Function.Injective (pi.cons s a b) := fun e₁ e₂ eq =>
+    Function.Injective (Pi.cons s a b) := fun e₁ e₂ eq =>
   @Multiset.pi_cons_injective α _ δ a b s.1 hs _ _ <|
     funext fun e =>
       funext fun h =>
         have :
-          pi.cons s a b e₁ e (by simpa only [Multiset.mem_cons, mem_insert] using h) =
-            pi.cons s a b e₂ e (by simpa only [Multiset.mem_cons, mem_insert] using h) :=
+          Pi.cons s a b e₁ e (by simpa only [Multiset.mem_cons, mem_insert] using h) =
+            Pi.cons s a b e₂ e (by simpa only [Multiset.mem_cons, mem_insert] using h) :=
           by rw [eq]
         this
 #align finset.pi_cons_injective Finset.pi_cons_injective
@@ -92,7 +92,7 @@ theorem pi_empty {t : ∀ a : α, Finset (δ a)} : pi (∅ : Finset α) t = sing
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (δ a)] {s : Finset α} {t : ∀ a : α, Finset (δ a)} {a : α}
-    (ha : a ∉ s) : pi (insert a s) t = (t a).bunionᵢ fun b => (pi s t).image (pi.cons s a b) :=
+    (ha : a ∉ s) : pi (insert a s) t = (t a).bunionᵢ fun b => (pi s t).image (Pi.cons s a b) :=
   by
   apply eq_of_veq
   rw [← (pi (insert a s) t).2.dedup]

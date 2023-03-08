@@ -175,7 +175,7 @@ protected theorem induction_on {C : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (H
 then they are equal. -/
 theorem addHom_ext {γ : Type _} [AddMonoid γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ (i : ι) (y : β i), f (of _ i y) = g (of _ i y)) : f = g :=
-  Dfinsupp.add_hom_ext H
+  Dfinsupp.addHom_ext H
 #align direct_sum.add_hom_ext DirectSum.addHom_ext
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
@@ -211,7 +211,7 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
   -- Porting note: ext applied unsuitable ext lemma
-  apply Dfinsupp.add_hom_ext'
+  apply Dfinsupp.addHom_ext'
   simp [toAddMonoid, of]
 
 #align direct_sum.to_add_monoid.unique DirectSum.toAddMonoid.unique
@@ -399,5 +399,3 @@ theorem IsInternal.addSubmonoid_supᵢ_eq_top {M : Type _} [DecidableEq ι] [Add
 #align direct_sum.is_internal.add_submonoid_supr_eq_top DirectSum.IsInternal.addSubmonoid_supᵢ_eq_top
 
 end DirectSum
-
-#lint

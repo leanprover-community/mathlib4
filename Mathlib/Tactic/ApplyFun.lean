@@ -36,7 +36,7 @@ partial def fillImplicitArgumentsWithFreshMVars (e : Expr) : MetaM Expr := do
 def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
     MetaM (List MVarId) := do
   let d ← h.getDecl
-  let (prf, newGoals) ← match d.type.getAppFnArgs with
+  let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
   | (``Eq, #[α, _, _]) => do
     -- We have to jump through a hoop here!
     -- At this point Lean may think `f` is a dependently-typed function,

@@ -93,7 +93,7 @@ theorem IsOpen.unionᵢ_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne
 #align is_open.Union_vadd IsOpen.unionᵢ_vadd
 
 @[to_additive]
-theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [HasContinuousConstSMul G α]
+theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul G α]
     {K U : Set α} (hK : IsCompact K) (hUo : IsOpen U) (hne : U.Nonempty) :
     ∃ I : Finset G, K ⊆ ⋃ g ∈ I, g • U :=
   (hK.elim_finite_subcover (fun g ↦ g • U) fun _ ↦ hUo.smul _) <| calc
@@ -119,7 +119,7 @@ theorem eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} 
 #align eq_empty_or_univ_of_vadd_invariant_closed eq_empty_or_univ_of_vadd_invariant_closed
 
 @[to_additive]
-theorem isMinimal_iff_closed_smul_invariant [HasContinuousConstSMul M α] :
+theorem isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
     IsMinimal M α ↔ ∀ s : Set α, IsClosed s → (∀ c : M, c • s ⊆ s) → s = ∅ ∨ s = univ := by
   constructor
   · intro _ _

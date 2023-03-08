@@ -25,7 +25,7 @@ but in mathlib4 we should switch to this.)
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [category_theory universes].
+-- declare the `v`'s first; see note [CategoryTheory universes].
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 section
@@ -45,6 +45,7 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
   map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop_cat
   /-- A functor preserves composition. -/
   map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop_cat
+
 #align category_theory.functor CategoryTheory.Functor
 #align category_theory.functor.map_comp CategoryTheory.Functor.map_comp
 #align category_theory.functor.map_id CategoryTheory.Functor.map_id
@@ -52,6 +53,24 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
 /-- The prefunctor between the underlying quivers. -/
 add_decl_doc Functor.toPrefunctor
 #align category_theory.functor.to_prefunctor CategoryTheory.Functor.toPrefunctor
+
+/--
+This unexpander will pretty print `F.obj X` properly.
+Without this, we would have `Prefunctor.obj F.toPrefunctor X`.
+-/
+@[app_unexpander Prefunctor.obj] def
+  unexpandFunctorObj : Lean.PrettyPrinter.Unexpander
+  | `($_ $(F).toPrefunctor $X)  => set_option hygiene false in `($(F).obj $X)
+  | _                           => throw ()
+
+/--
+This unexpander will pretty print `F.map f` properly.
+Without this, we would have `Prefunctor.map F.toPrefunctor f`.
+-/
+@[app_unexpander Prefunctor.map] def
+  unexpandFunctorMap : Lean.PrettyPrinter.Unexpander
+  | `($_ $(F).toPrefunctor $X)  => set_option hygiene false in `($(F).map $X)
+  | _                           => throw ()
 
 end
 
@@ -72,8 +91,7 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C]
 
-initialize_simps_projections Functor (toPrefunctor_obj → obj,
-  toPrefunctor_map → map, -toPrefunctor)
+initialize_simps_projections Functor
 
 -- We don't use `@[simps]` here because we want `C` implicit for the simp lemmas.
 /-- `𝟭 C` is the identity functor on a category `C`. -/

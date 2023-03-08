@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 
 ! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! leanprover-community/mathlib commit e1bccd6e40ae78370f01659715d3c948716e3b7e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -80,12 +80,9 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 @[norm_cast]
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
--- TODO restore @[to_additive coe_nat_zsmul]
-@[simp, norm_cast]
-theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
-@[simp]
-theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
-attribute [to_additive coe_nat_zsmul] zpow_coe_nat
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
+zpow_ofNat ..
 #align coe_nat_zsmul coe_nat_zsmul
 
 /-! ### Extra instances to short-circuit type class resolution
