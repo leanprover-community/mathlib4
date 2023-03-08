@@ -8,8 +8,8 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Products
-import Mathbin.SetTheory.Cardinal.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Any small complete category is a preorder
