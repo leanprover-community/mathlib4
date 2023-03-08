@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.basic
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 68cc421841f2ebb8ad2b5a35a853895feb4b850a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -143,6 +143,10 @@ structure Finset (α : Type _) where
   /-- `val` contains no duplicates -/
   nodup : Nodup val
 #align finset Finset
+
+instance Multiset.canLiftFinset {α} : CanLift (Multiset α) (Finset α) Finset.val Multiset.Nodup :=
+  ⟨fun m hm => ⟨⟨m, hm⟩, rfl⟩⟩
+#align multiset.can_lift_finset Multiset.canLiftFinset
 
 namespace Finset
 
@@ -689,6 +693,12 @@ theorem mem_singleton_self (a : α) : a ∈ ({a} : Finset α) :=
   -- Porting note: was `Or.inl rfl`
   mem_singleton.mpr rfl
 #align finset.mem_singleton_self Finset.mem_singleton_self
+
+@[simp]
+theorem val_eq_singleton_iff {a : α} {s : Finset α} : s.val = {a} ↔ s = {a} := by
+  rw [← val_inj]
+  rfl
+#align finset.val_eq_singleton_iff Finset.val_eq_singleton_iff
 
 theorem singleton_injective : Injective (singleton : α → Finset α) := fun _a _b h =>
   mem_singleton.1 (h ▸ mem_singleton_self _)
@@ -1902,6 +1912,11 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     simp only [mem_erase, mem_insert, and_or_left, this]
 #align finset.erase_insert_of_ne Finset.erase_insert_of_ne
 
+theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
+    erase (cons a s ha) b = cons a (erase s b) fun h => ha <| erase_subset _ _ h := by
+  simp only [cons_eq_insert, erase_insert_of_ne hb]
+#align finset.erase_cons_of_ne Finset.erase_cons_of_ne
+
 theorem insert_erase {a : α} {s : Finset α} (h : a ∈ s) : insert a (erase s a) = s :=
   ext fun x => by
     simp only [mem_insert, mem_erase, or_and_left, dec_em, true_and_iff]
@@ -2940,11 +2955,10 @@ theorem nonempty_range_succ : (range <| n + 1).Nonempty :=
 #align finset.nonempty_range_succ Finset.nonempty_range_succ
 
 @[simp]
-theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ :=
-  by
-  convert filter_eq (range n) m
+theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by
+  convert filter_eq (range n) m using 2
   · ext
-    simp_rw [@eq_comm _ m]
+    rw [eq_comm]
   · simp
 #align finset.range_filter_eq Finset.range_filter_eq
 
@@ -3276,6 +3290,16 @@ theorem toList_toFinset [DecidableEq α] (s : Finset α) : s.toList.toFinset = s
   ext
   simp
 #align finset.to_list_to_finset Finset.toList_toFinset
+
+@[simp]
+theorem toList_eq_singleton_iff {a : α} {s : Finset α} : s.toList = [a] ↔ s = {a} := by
+  rw [toList, Multiset.toList_eq_singleton_iff, val_eq_singleton_iff]
+#align finset.to_list_eq_singleton_iff Finset.toList_eq_singleton_iff
+
+@[simp]
+theorem toList_singleton : ∀ a, ({a} : Finset α).toList = [a] :=
+  Multiset.toList_singleton
+#align finset.to_list_singleton Finset.toList_singleton
 
 theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
     ∃ l : List α, l.Nodup ∧ l.toFinset = s :=
