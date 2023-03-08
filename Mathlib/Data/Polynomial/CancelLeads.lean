@@ -8,9 +8,9 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Degree.Definitions
-import Mathbin.Tactic.ComputeDegree
-import Mathbin.Data.Polynomial.Degree.Lemmas
+import Mathlib.Data.Polynomial.Degree.Definitions
+import Mathlib.Tactic.ComputeDegree
+import Mathlib.Data.Polynomial.Degree.Lemmas
 
 /-!
 # Cancel the leading terms of two polynomials
@@ -55,8 +55,7 @@ theorem neg_cancelLeads : -p.cancelLeads q = q.cancelLeads p :=
 theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     (comm : p.leadingCoeff * q.leadingCoeff = q.leadingCoeff * p.leadingCoeff)
     (h : p.natDegree ≤ q.natDegree) (hq : 0 < q.natDegree) :
-    (p.cancelLeads q).natDegree < q.natDegree :=
-  by
+    (p.cancelLeads q).natDegree < q.natDegree := by
   by_cases hp : p = 0
   · convert hq
     simp [hp, cancel_leads]
