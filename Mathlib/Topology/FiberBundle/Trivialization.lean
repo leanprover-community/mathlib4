@@ -495,7 +495,7 @@ theorem sourceHomeomorphBaseSetProd_symm_apply (p : e.baseSet × F) :
 /-- Each fiber of a trivialization is homeomorphic to the specified fiber. -/
 def preimageSingletonHomeomorph {b : B} (hb : b ∈ e.baseSet) : proj ⁻¹' {b} ≃ₜ F :=
   .trans (e.preimageHomeomorph (Set.singleton_subset_iff.mpr hb)) <|
-    .trans (.prodCongr (Homeomorph.homeomorphOfUnique ({b} : Set B) PUnit) (Homeomorph.refl F))
+    .trans (.prodCongr (Homeomorph.homeomorphOfUnique ({b} : Set B) PUnit.{1}) (Homeomorph.refl F))
       (Homeomorph.punitProd F)
 #align trivialization.preimage_singleton_homeomorph Trivialization.preimageSingletonHomeomorph
 
@@ -829,4 +829,3 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
 end Piecewise
 
 end Trivialization
-
