@@ -498,6 +498,10 @@ variable [AddCommGroup M] [Module R M]
 
 variable [AddCommGroup M₁] [Module R M₁]
 
+-- porting note: manual instances required. Alternative solution is lean4#2074
+-- verified using `set_option synthInstance.etaExperiment true`
+attribute [-instance] Ring.toNonAssocRing
+
 variable {B F : M →ₗ[R] M →ₗ[R] R} {B' : M₁ →ₗ[R] M₁ →ₗ[R] R}
 
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
@@ -553,6 +557,10 @@ variable [CommRing R]
 
 variable [AddCommGroup M] [Module R M]
 
+-- porting note: manual instances required. Alternative solution is lean4#2074
+-- verified using `set_option synthInstance.etaExperiment true`
+attribute [-instance] Ring.toNonAssocRing
+
 variable [AddCommGroup M₁] [Module R M₁] (B F : M →ₗ[R] M →ₗ[R] R)
 
 /-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
@@ -595,15 +603,13 @@ theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
       IsPairSelfAdjoint (B.compl₁₂ ↑e ↑e) (F.compl₁₂ ↑e ↑e) (e.symm.conj f) := by
   have hₗ :
     (F.compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M)).comp (e.symm.conj f) =
-      (F.comp f).compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M) :=
-    by
+      (F.comp f).compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M) := by
     ext
     simp only [LinearEquiv.symm_conj_apply, coe_comp, LinearEquiv.coe_coe, compl₁₂_apply,
       LinearEquiv.apply_symm_apply]
   have hᵣ :
     (B.compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M)).compl₂ (e.symm.conj f) =
-      (B.compl₂ f).compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M) :=
-    by
+      (B.compl₂ f).compl₁₂ (↑e : M₁ →ₗ[R] M) (↑e : M₁ →ₗ[R] M) := by
     ext
     simp only [LinearEquiv.symm_conj_apply, compl₂_apply, coe_comp, LinearEquiv.coe_coe,
       compl₁₂_apply, LinearEquiv.apply_symm_apply]
@@ -758,18 +764,22 @@ section CommRing
 
 variable [CommRing R] [AddCommGroup M] [Module R M] {I I' : R →+* R}
 
+-- porting note: manual instances required. Alternative solution is lean4#2074
+-- verified using `set_option synthInstance.etaExperiment true`
+attribute [-instance] Ring.toNonAssocRing
+
 theorem IsRefl.nondegenerateOfSeparatingLeft {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     (hB' : B.SeparatingLeft) : B.Nondegenerate := by
   refine' ⟨hB', _⟩
   rw [separatingRight_iff_flip_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mp]
-  rwa [← separating_left_iff_ker_eq_bot]
+  rwa [← separatingLeft_iff_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_left LinearMap.IsRefl.nondegenerateOfSeparatingLeft
 
 theorem IsRefl.nondegenerateOfSeparatingRight {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     (hB' : B.SeparatingRight) : B.Nondegenerate := by
   refine' ⟨_, hB'⟩
   rw [separatingLeft_iff_ker_eq_bot, hB.ker_eq_bot_iff_ker_flip_eq_bot.mpr]
-  rwa [← separating_right_iff_flip_ker_eq_bot]
+  rwa [← separatingRight_iff_flip_ker_eq_bot]
 #align linear_map.is_refl.nondegenerate_of_separating_right LinearMap.IsRefl.nondegenerateOfSeparatingRight
 
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
@@ -778,12 +788,12 @@ that is `disjoint W (W.orthogonal_bilin B)`. -/
 theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsRefl)
     {W : Submodule R M} (hW : Disjoint W (W.orthogonalBilin B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
-  refine' (hB.dom_restrict_refl W).nondegenerateOfSeparatingLeft _
+  refine' (hB.domRestrictRefl W).nondegenerateOfSeparatingLeft _
   rintro ⟨x, hx⟩ b₁
   rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R]
   refine' hW.le_bot ⟨hx, fun y hy ↦ _⟩
   specialize b₁ ⟨y, hy⟩
-  simp_rw [dom_restrict₁₂_apply, Submodule.coe_mk] at b₁
+  simp_rw [domRestrict₁₂_apply, Submodule.coe_mk] at b₁
   rw [hB.ortho_comm]
   exact b₁
 #align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerateRestrictOfDisjointOrthogonal
@@ -800,7 +810,8 @@ theorem IsOrthoCat.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
-  convert mul_zero _ using 2
+  suffices : B (v i) (v j) = 0
+  · rw [this, smul_eq_mul, mul_zero]
   obtain rfl | hij := eq_or_ne i j
   · exact ho
   · exact h hij
@@ -811,9 +822,9 @@ elements. -/
 theorem IsOrthoCat.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
     {B : M →ₛₗ[I] M →ₛₗ[I'] R} {v : Basis n R M} (h : B.IsOrthoCat v) (hB : B.SeparatingRight)
     (i : n) : ¬B.IsOrtho (v i) (v i) := by
-  rw [is_Ortho_flip] at h
-  rw [is_ortho_flip]
-  exact h.not_is_ortho_basis_self_of_separating_left (flip_separating_left.mpr hB) i
+  rw [isOrthoCat_flip] at h
+  rw [isOrtho_flip]
+  exact h.not_isOrtho_basis_self_of_separatingLeft (flip_separatingLeft.mpr hB) i
 #align linear_map.is_Ortho.not_is_ortho_basis_self_of_separating_right LinearMap.IsOrthoCat.not_isOrtho_basis_self_of_separatingRight
 
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is left-separating
@@ -832,11 +843,11 @@ theorem IsOrthoCat.separatingLeftOfNotIsOrthoBasisSelf [NoZeroDivisors R] {B : M
   rw [Finset.sum_eq_single i] at hB
   · exact eq_zero_of_ne_zero_of_mul_right_eq_zero (h i) hB
   · intro j hj hij
-    convert mul_zero _ using 2
-    exact hO hij
+    replace hij : B (v j) (v i) = 0 := hO hij
+    rw [hij, RingHom.id_apply, mul_zero]
   · intro hi
-    convert zero_mul _ using 2
-    exact finsupp.not_mem_support_iff.mp hi
+    replace hi : vi i = 0 := Finsupp.not_mem_support_iff.mp hi
+    rw [hi, RingHom.id_apply, zero_mul]
 #align linear_map.is_Ortho.separating_left_of_not_is_ortho_basis_self LinearMap.IsOrthoCat.separatingLeftOfNotIsOrthoBasisSelf
 
 /-- Given an orthogonal basis with respect to a bilinear form, the bilinear form is right-separating
@@ -844,10 +855,10 @@ if the basis has no elements which are self-orthogonal. -/
 theorem IsOrthoCat.separatingRightIffNotIsOrthoBasisSelf [NoZeroDivisors R] {B : M →ₗ[R] M →ₗ[R] R}
     (v : Basis n R M) (hO : B.IsOrthoCat v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight :=
   by
-  rw [is_Ortho_flip] at hO
-  rw [← flip_separating_left]
-  refine' is_Ortho.separating_left_of_not_is_ortho_basis_self v hO fun i ↦ _
-  rw [is_ortho_flip]
+  rw [isOrthoCat_flip] at hO
+  rw [← flip_separatingLeft]
+  refine' IsOrthoCat.separatingLeftOfNotIsOrthoBasisSelf v hO fun i ↦ _
+  rw [isOrtho_flip]
   exact h i
 #align linear_map.is_Ortho.separating_right_iff_not_is_ortho_basis_self LinearMap.IsOrthoCat.separatingRightIffNotIsOrthoBasisSelf
 
