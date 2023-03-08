@@ -91,10 +91,6 @@ theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
   exacts [(not_lt_bot h).elim, WithBot.some_le_some.2 (WithBot.some_lt_some.1 h)]
 #align nat.with_bot.add_one_le_of_lt Nat.WithBot.add_one_le_of_lt
 
---Porting note: new theorem, wasn't necessary in Lean3 but now the coercions are syntactically
---different.
-theorem cast_eq_some (n : ℕ) : Nat.cast n = WithBot.some n := rfl
-
 end WithBot
 
 end Nat
