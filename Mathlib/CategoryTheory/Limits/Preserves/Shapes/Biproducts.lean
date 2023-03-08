@@ -54,8 +54,7 @@ variable {J : Type w₁}
 
 /-- The image of a bicone under a functor. -/
 @[simps]
-def mapBicone {f : J → C} (b : Bicone f) : Bicone (F.obj ∘ f)
-    where
+def mapBicone {f : J → C} (b : Bicone f) : Bicone (F.obj ∘ f) where
   pt := F.obj b.pt
   π j := F.map (b.π j)
   ι j := F.map (b.ι j)
@@ -292,13 +291,13 @@ def mapBiproduct : F.obj (⨁ f) ≅ ⨁ F.obj ∘ f :=
 #align category_theory.functor.map_biproduct CategoryTheory.Functor.mapBiproduct
 
 theorem mapBiproduct_hom :
-    (mapBiproduct F f).hom = biproduct.lift fun j => F.map (biproduct.π f j) :=
-  rfl
+    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f 
+    (mapBiproduct F f).hom = biproduct.lift fun j => F.map (biproduct.π f j) := rfl
 #align category_theory.functor.map_biproduct_hom CategoryTheory.Functor.mapBiproduct_hom
 
 theorem mapBiproduct_inv :
-    (mapBiproduct F f).inv = biproduct.desc fun j => F.map (biproduct.ι f j) :=
-  rfl
+    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f 
+    (mapBiproduct F f).inv = biproduct.desc fun j => F.map (biproduct.ι f j) := rfl
 #align category_theory.functor.map_biproduct_inv CategoryTheory.Functor.mapBiproduct_inv
 
 end Bicone
@@ -405,29 +404,25 @@ variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 section Bicone
 
 variable {J : Type w₁} (f : J → C) [HasBiproduct f] [PreservesBiproduct f F] {W : C}
-#check biproduct.lift_π 
-theorem biproduct.map_lift_map_biprod (g : ∀ j, W ⟶ f j) :
-    haveI : HasBiproduct fun j => F.obj (f j) := sorry
+
+theorem biproduct.map_lift_mapBiprod (g : ∀ j, W ⟶ f j) :
+    -- Porting note: twice we need haveI to tell Lean about hasBiproduct_of_preserves F f
+    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j => F.map (g j) := by
-  apply biproduct.hom_ext; intro j 
-  conv_lhs => 
-  
-
-  dsimp [mapBiproduct, mapBicone, Function.comp]
-
-  congr
-  simp [← F.map_comp]
-  sorry 
-#align category_theory.limits.biproduct.map_lift_map_biprod CategoryTheory.Limits.biproduct.map_lift_map_biprod
+  apply biproduct.hom_ext; intro j' 
+  dsimp [Function.comp]
+  haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
+  simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp] 
+#align category_theory.limits.biproduct.map_lift_map_biprod CategoryTheory.Limits.biproduct.map_lift_mapBiprod
 
 theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
-    haveI : HasBiproduct fun j => F.obj (f j) := sorry
+    -- Porting note: twice we need haveI to tell Lean about hasBiproduct_of_preserves F f
+    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (F.mapBiproduct f).inv ≫ F.map (biproduct.desc g) = biproduct.desc fun j => F.map (g j) := by
   apply biproduct.hom_ext'; intro j
-  apply congrArg 
-  dsimp [mapBiproduct, desc]
-  simp [← F.map_comp]
-  sorry
+  dsimp [Function.comp]
+  haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
+  simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc ,← F.map_comp]
 #align category_theory.limits.biproduct.map_biproduct_inv_map_desc CategoryTheory.Limits.biproduct.mapBiproduct_inv_map_desc
 
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :
@@ -443,7 +438,7 @@ variable (X Y : C) [HasBinaryBiproduct X Y] [PreservesBinaryBiproduct X Y F] {W 
 
 theorem biprod.map_lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
     F.map (biprod.lift f g) ≫ (F.mapBiprod X Y).hom = biprod.lift (F.map f) (F.map g) := by
-  apply biprod.hom_ext <;> dsimp; simp [← F.map_comp]
+  apply biprod.hom_ext <;> simp [mapBiprod, ← F.map_comp]
 #align category_theory.limits.biprod.map_lift_map_biprod CategoryTheory.Limits.biprod.map_lift_mapBiprod
 
 theorem biprod.lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
@@ -453,7 +448,7 @@ theorem biprod.lift_mapBiprod (f : W ⟶ X) (g : W ⟶ Y) :
 
 theorem biprod.mapBiprod_inv_map_desc (f : X ⟶ W) (g : Y ⟶ W) :
     (F.mapBiprod X Y).inv ≫ F.map (biprod.desc f g) = biprod.desc (F.map f) (F.map g) := by
-  apply biprod.hom_ext' <;> simp [← F.map_comp]
+  apply biprod.hom_ext' <;> simp [mapBiprod, ← F.map_comp]
 #align category_theory.limits.biprod.map_biprod_inv_map_desc CategoryTheory.Limits.biprod.mapBiprod_inv_map_desc
 
 theorem biprod.mapBiprod_hom_desc (f : X ⟶ W) (g : Y ⟶ W) :
