@@ -39,13 +39,15 @@ syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 /-- The  `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
-syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" num ? : attr
+syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" num* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
 /-- An `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" ":=" num+
 /-- Options to `to_additive`. -/
-syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
+syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
+/-- Options to `to_additive`. -/
+syntax toAdditiveOption := toAdditiveParenthesizedOption <|> &"existing"
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest := toAdditiveOption* (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
@@ -121,6 +123,14 @@ register_option linter.toAdditiveGenerateName : Bool := {
   defValue := true
   descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically " ++
     "generates the user-given name" }
+
+/-- Linter to check whether the user correctly specified that the additive declaration already
+exists -/
+register_option linter.toAdditiveExisting : Bool := {
+  defValue := true
+  descr := "Linter used by `@[to_additive]` that checks whether the user correctly specified that
+    the additive declaration already exists" }
+
 
 /--
 An attribute that tells `@[to_additive]` that certain arguments of this definition are not
@@ -200,19 +210,20 @@ An attribute that stores all the declarations that deal with numeric literals on
 *  `@[to_additive_fixed_numeral]` should be added to all functions that take a numeral as argument
   that should never be changed by `@[to_additive]` (because it represents a numeral in a fixed
   type).
-* `@[to_additive_fixed_numeral n]` should be added to all functions that take a numeral as argument
-  that should only be changed if `additiveTest` succeeds on the first argument, i.e. when the
-  numeral is only translated if the first argument is a variable (or consists of variables).
-  The argument `n` is the position of the numeral argument (starting to count from 0).
+* `@[to_additive_fixed_numeral n₁ ...]` should be added to all functions that take one or more
+  numerals as argument that should only be changed if `additiveTest` succeeds on the first argument,
+  i.e. when the numeral is only translated if the first argument is a variable
+  (or consists of variables).
+  The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1).
 -/
-initialize fixedNumeralAttr : NameMapExtension (Option Nat) ←
+initialize fixedNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_fixed_numeral
     descr :=
       "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
     add := fun
-    | _, `(attr| to_additive_fixed_numeral $[$arg]?) =>
-      pure <| .map (·.1.isNatLit?.get!) arg
+    | _, `(attr| to_additive_fixed_numeral $[$arg]*) =>
+      pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
 /-- Maps multiplicative names to their additive counterparts. -/
@@ -255,6 +266,11 @@ structure Config : Type where
   (or the `to_additive` attribute if it is added later),
   which we need for adding definition ranges. -/
   ref : Syntax
+  /-- An optional flag stating whether the additive declaration already exists.
+    If this flag is set but wrong about whether the additive declaration exists, `to_additive` will
+    raise a linter error.
+    Note: the linter will never raise an error for inductive types and structures. -/
+  existing : Option Bool := none
   deriving Repr
 
 variable [Monad M] [MonadOptions M] [MonadEnv M]
@@ -262,9 +278,8 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
 def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool :=
-  visit where
-  /-- same as `additiveTestAux` -/
+  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool := visit where
+  /-- see `additiveTestAux` -/
   visit : Bool → Expr → Bool
   | b, .const n _         => b || (findTranslation? n).isSome
   | _, x@(.app e a)       => Id.run do
@@ -323,13 +338,13 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
-    (fixedNumeral : Name → Option (Option Nat)) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    (fixedNumeral : Name → Option (List Nat)) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
     Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
-    | .lit (.natVal 1) => pure <| mkRawNatLit 0
+    | .lit (.natVal 1) => some <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
       if trace && n₀ != n₁ then
@@ -338,6 +353,10 @@ where /-- Implementation of `applyReplacementFun`. -/
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
       let gf := g.getAppFn
+      if gf.isBVar && x.isLit then
+        if trace then
+          dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
+        return some <| g.app x
       if let some nm := gf.constName? then
         let gArgs := g.getAppArgs
         -- e = `(nm y₁ .. yₙ x)
@@ -370,24 +389,24 @@ where /-- Implementation of `applyReplacementFun`. -/
         let gAllArgs := gArgs.push x
         let firstArg := gAllArgs[0]
         match fixedNumeral nm with
-        | some (some fixedArgNr) =>
+        | some [] =>
+          if trace then
+            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
+          return some <| g.app x
+        | some fixedArgNrs =>
           if !additiveTest findTranslation? ignore firstArg then
             if trace then
               dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}. {
                 ""}However, we will still recurse into all the non-numeral arguments."
-            -- In this case, we still update all arguments of `g`, other than the one that contains
-            -- the numeral, since all other arguments can contain subexpressions like
+            -- In this case, we still update all arguments of `g` that are not numerals,
+            -- since all other arguments can contain subexpressions like
             -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
             let newArgs ← gAllArgs.mapIdx fun argNr arg ↦
-              if argNr == fixedArgNr then
+              if fixedArgNrs.contains argNr then
                 arg
               else
                 r arg
             return some <| mkAppN gf newArgs
-        | some none =>
-          if trace then
-            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
-          return some <| g.app x
         | none => pure () -- no attribute; recurse in the arguments
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
@@ -781,6 +800,12 @@ def fixAbbreviation : List String → List String
 | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
 | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
 | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+| "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
+| "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
+| "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
+| "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
+| "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
+| "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
 | []                                => []
 
@@ -850,12 +875,15 @@ def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs : Array Syntax := #[]
     let mut reorder := []
+    let mut existing := some false
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$reorders:num]*)) =>
         reorder := reorder ++ reorders.toList.map (·.raw.isNatLit?.get!)
+      | `(toAdditiveOption| existing) =>
+        existing := some true
       | _ => throwUnsupportedSyntax
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
     return { trace := trace.isSome
@@ -864,6 +892,7 @@ def elabToAdditive : Syntax → CoreM Config
              allowAutoName := false
              attrs
              reorder
+             existing
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
@@ -963,6 +992,13 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
   let tgt ← targetName cfg src
   let alreadyExists := (← getEnv).contains tgt
+  if cfg.existing == some !alreadyExists && !(← isInductive src) then
+    Linter.logLint linter.toAdditiveExisting cfg.ref <|
+      if alreadyExists then
+        m!"The additive declaration already exists. Please specify this explicitly using {
+          ""}`@[to_additive existing]`."
+      else
+        "The additive declaration doesn't exist. Please remove the option `existing`."
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder

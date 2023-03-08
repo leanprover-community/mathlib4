@@ -21,7 +21,7 @@ category, with all arrows reversed.
 
 universe v u
 
--- morphism levels before object levels. See note [category_theory universes].
+-- morphism levels before object levels. See note [CategoryTheory universes].
 variable (α : Sort u)
 
 /-- The type of objects of the opposite of `α`; used to define the opposite category.
