@@ -643,7 +643,7 @@ def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = alg
 end OfRingEquiv
 
 -- Porting note: projections mul & one not found, removed [simps] and added theorems manually
--- @[simps (config := { attrs := [] }) one]
+-- @[simps (config := .lemmasOnly) one]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc ϕ ψ χ := rfl

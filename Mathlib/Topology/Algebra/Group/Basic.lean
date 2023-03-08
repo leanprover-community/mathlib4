@@ -37,9 +37,7 @@ topological space, group, topological group
 -/
 
 
-open Classical Set Filter TopologicalSpace Function
-
-open Classical Topology Filter Pointwise
+open Classical Set Filter TopologicalSpace Function Topology Pointwise
 
 universe u v w x
 
@@ -605,7 +603,7 @@ theorem tendsto_inv_nhdsWithin_Iic_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻
 
 end OrderedCommGroup
 
-@[instance, to_additive]
+@[to_additive]
 instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H)
     where continuous_inv := continuous_inv.prod_map continuous_inv
 
@@ -1158,8 +1156,8 @@ section DivInTopologicalGroup
 variable [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
-@[to_additive " A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. ",
-  simps! (config := { simpRhs := true })]
+@[to_additive (attr := simps! (config := { simpRhs := true }))
+  " A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. "]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with
     continuous_toFun := continuous_const.div' continuous_id
@@ -1180,8 +1178,8 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap ((· / ·) a) :=
 #align is_closed_map_sub_left isClosedMap_sub_left
 
 /-- A version of `Homeomorph.mulRight a⁻¹ b` that is defeq to `b / a`. -/
-@[to_additive " A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. ",
-  simps! (config := { simpRhs := true })]
+@[to_additive (attr := simps! (config := { simpRhs := true }))
+  "A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. "]
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
   { Equiv.divRight x with
     continuous_toFun := continuous_id.div' continuous_const
@@ -1690,9 +1688,8 @@ theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
 #align nhds_add nhds_add
 
 /-- On a topological group, `𝓝 : G → Filter G` can be promoted to a `MulHom`. -/
-@[to_additive
-  "On an additive topological group, `𝓝 : G → Filter G` can be promoted to an `AddHom`.",
-  simps]
+@[to_additive (attr := simps)
+  "On an additive topological group, `𝓝 : G → Filter G` can be promoted to an `AddHom`."]
 def nhdsMulHom : G →ₙ* Filter G where
   toFun := 𝓝
   map_mul' _ _ := nhds_mul _ _
