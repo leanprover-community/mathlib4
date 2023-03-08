@@ -958,8 +958,8 @@ theorem IsPrime.radical_le_iff (hJ : IsPrime J) : I.radical ≤ J ↔ I ≤ J :=
 #align ideal.is_prime.radical_le_iff Ideal.IsPrime.radical_le_iff
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x «expr ∉ » m) -/
-theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } := by
-  exact le_antisymm (le_infₛ fun J hJ => hJ.2.radical_le_iff.2 hJ.1) fun r hr =>
+theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } :=
+  le_antisymm (le_infₛ fun J hJ => hJ.2.radical_le_iff.2 hJ.1) fun r hr =>
     by_contradiction fun hri =>
       let ⟨m, (hrm : r ∉ radical m), him, hm⟩ :=
         zorn_nonempty_partialOrder₀ { K : Ideal R | r ∉ radical K }
@@ -1139,7 +1139,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         ⟨t.erase j, t.not_mem_erase j, Finset.insert_erase hjt⟩
       have hp' : ∀ k ∈ insert i u, IsPrime (f k) :=
         by
-        rw [Finset.forall_mem_insert] at hp⊢
+        rw [Finset.forall_mem_insert] at hp ⊢
         exact ⟨hp.1, hp.2.2⟩
       have hiu : i ∉ u := mt Finset.mem_insert_of_mem hit
       have hn' : (insert i u).card = n :=
@@ -1148,10 +1148,10 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         exacts[hiu, hju]
       have h' : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ k ∈ (↑(insert i u) : Set ι), f k :=
         by
-        rw [Finset.coe_insert] at h⊢
+        rw [Finset.coe_insert] at h ⊢
         rw [Finset.coe_insert] at h
-        simp only [Set.bunionᵢ_insert] at h⊢
-        rw [← Set.union_assoc ↑(f i)] at h
+        simp only [Set.bunionᵢ_insert] at h ⊢
+        rw [← Set.union_assoc (f i : Set R)] at h
         erw [Set.union_eq_self_of_subset_right hfji] at h
         exact h
       have ih := ih hp' hn' h'
@@ -1162,7 +1162,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j :=
         by
         rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_assoc,
-          Set.union_right_comm ↑(f a)] at h
+          Set.union_right_comm (f a : Set R)] at h
         erw [Set.union_eq_self_of_subset_left Ha] at h
         exact h
       have ih := ih hp.2 hn h'
@@ -1174,7 +1174,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     by_cases Hb : f b ≤ f i
     · have h' : (I : Set R) ⊆ f a ∪ f i ∪ ⋃ j ∈ (↑t : Set ι), f j :=
         by
-        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_assoc, Set.union_assoc ↑(f a)] at h
+        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_assoc, Set.union_assoc (f a : Set R)] at h
         erw [Set.union_eq_self_of_subset_left Hb] at h
         exact h
       have ih := ih hp.2 hn h'
@@ -1983,9 +1983,9 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
 @[simp]
 theorem constr_basisSpanSingleton {N : Type _} [Semiring N] [Module N S] [SMulCommClass R N S]
     (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
-    b.constr N (((↑) : span {x} → S) ∘ basisSpanSingleton b hx) = LinearMap.Algebra.lmul R S x :=
+    (b.constr N).toFun (((↑) : _ → S) ∘ (basisSpanSingleton b hx)) = LinearMap.Algebra.lmul R S x :=
   b.ext fun i => by
-    erw [Basis.constr_basis, Function.comp_apply, basis_span_singleton_apply, LinearMap.mul_apply']
+    erw [Basis.constr_basis, Function.comp_apply, basisSpanSingleton_apply, LinearMap.mul_apply']
 #align ideal.constr_basis_span_singleton Ideal.constr_basisSpanSingleton
 
 end Basis
