@@ -243,8 +243,6 @@ protected def symm (e : R ≃+* S) : S ≃+* R :=
 #align ring_equiv.symm RingEquiv.symm
 
 /-- See Note [custom simps projection] -/
-def Simps.apply (e : R ≃+* S) : R → S := e
-/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : R ≃+* S) : S → R :=
   e.symm
 #align ring_equiv.simps.symm_apply RingEquiv.Simps.symm_apply

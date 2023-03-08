@@ -277,10 +277,6 @@ theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
 -- we don't hyperlink the note in the additive version, since that breaks syntax highlighting
 -- in the whole file.
 
--- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note custom simps projection"]
-def Simps.apply (e : M ≃* N) : M → N := e
 /-- See Note [custom simps projection] -/
 @[to_additive "See Note custom simps projection"]
 def Simps.symm_apply (e : M ≃* N) : N → M :=
