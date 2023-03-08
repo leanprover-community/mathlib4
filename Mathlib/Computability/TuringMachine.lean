@@ -2741,7 +2741,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
     rw [this, List.get?_map, proj, PointedMap.mk_val]
     simp only []
-    by_cases k' = k
+    by_cases h : k' = k
     · subst k'
       simp only [Function.update_same]
       rw [ListBlank.nth_mk, List.getI_eq_iget_get?, ← List.map_reverse, List.get?_map]

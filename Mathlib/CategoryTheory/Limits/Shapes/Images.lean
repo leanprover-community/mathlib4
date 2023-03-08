@@ -73,18 +73,16 @@ variable {X Y : C} (f : X ⟶ Y)
 
 /-- A factorisation of a morphism `f = e ≫ m`, with `m` monic. -/
 structure MonoFactorisation (f : X ⟶ Y) where
-  /-- The "image" of f -/
   I : C -- Porting note: violates naming conventions but can't think a better replacement
-  /-- The inclusion of of the image -/
   m : I ⟶ Y
-  /-- `m` is a monomorphism -/
   [m_mono : Mono m]
-  /-- The map to the image -/
   e : X ⟶ I
-  /-- The factorisation -/
   fac : e ≫ m = f := by aesop_cat
 #align category_theory.limits.mono_factorisation CategoryTheory.Limits.MonoFactorisation
 #align category_theory.limits.mono_factorisation.fac' CategoryTheory.Limits.MonoFactorisation.fac
+
+attribute [inherit_doc MonoFactorisation] MonoFactorisation.I MonoFactorisation.m 
+  MonoFactorisation.m_mono MonoFactorisation.e MonoFactorisation.fac
 
 attribute [reassoc (attr := simp)] MonoFactorisation.fac
 
@@ -102,7 +100,7 @@ def self [Mono f] : MonoFactorisation f where
 #align category_theory.limits.mono_factorisation.self CategoryTheory.Limits.MonoFactorisation.self
 
 -- I'm not sure we really need this, but the linter says that an inhabited instance
--- ought to exist...asdfafd
+-- ought to exist...
 instance [Mono f] : Inhabited (MonoFactorisation f) := ⟨self f⟩
 
 variable {f}
@@ -179,12 +177,12 @@ variable {f}
 
 /-- Data exhibiting that a given factorisation through a mono is initial. -/
 structure IsImage (F : MonoFactorisation f) where
-  /-- The "image" of `F` maps to any other "image" -/
   lift : ∀ F' : MonoFactorisation f, F.I ⟶ F'.I
-  /-- We have a factorisation -/ 
   lift_fac : ∀ F' : MonoFactorisation f, lift F' ≫ F'.m = F.m := by aesop_cat
 #align category_theory.limits.is_image CategoryTheory.Limits.IsImage
 #align category_theory.limits.is_image.lift_fac' CategoryTheory.Limits.IsImage.lift_fac
+
+attribute [inherit_doc IsImage] IsImage.lift IsImage.lift_fac
 
 attribute [reassoc (attr := simp)] IsImage.lift_fac
 
@@ -251,12 +249,12 @@ variable (f)
 
 /-- Data exhibiting that a morphism `f` has an image. -/
 structure ImageFactorisation (f : X ⟶ Y) where
-  /-- We can factor `f` into a composition of a monomorphism and another map -/
   F : MonoFactorisation f -- Porting note: another violation of the naming convention
-  /-- The "image" of `F` is actually the image -/
   isImage : IsImage F 
 #align category_theory.limits.image_factorisation CategoryTheory.Limits.ImageFactorisation
 #align category_theory.limits.image_factorisation.is_image CategoryTheory.Limits.ImageFactorisation.isImage
+
+attribute [inherit_doc ImageFactorisation] ImageFactorisation.F ImageFactorisation.isImage
 
 namespace ImageFactorisation
 
@@ -276,9 +274,10 @@ end ImageFactorisation
 
 /-- `has_image f` means that there exists an image factorisation of `f`. -/
 class HasImage (f : X ⟶ Y) : Prop where mk' ::
-  /-- There is an image factorisation -/
   exists_image : Nonempty (ImageFactorisation f)
 #align category_theory.limits.has_image CategoryTheory.Limits.HasImage
+
+attribute [inherit_doc HasImage] HasImage.exists_image
 
 theorem HasImage.mk {f : X ⟶ Y} (F : ImageFactorisation f) : HasImage f :=
   ⟨Nonempty.intro F⟩
@@ -406,9 +405,10 @@ variable (C)
 
 /-- `HasImages` asserts that every morphism has an image. -/
 class HasImages : Prop where
-  /-- Every map in the category has an image -/
   has_image : ∀ {X Y : C} (f : X ⟶ Y), HasImage f
 #align category_theory.limits.has_images CategoryTheory.Limits.HasImages
+
+attribute [inherit_doc HasImages] HasImages.has_image
 
 attribute [instance] HasImages.has_image
 
@@ -678,12 +678,12 @@ section HasImageMap
 /-- An image map is a morphism `image f → image g` fitting into a commutative square and satisfying
     the obvious commutativity conditions. -/
 structure ImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g) where
-  /-- A map between the images from a map of the arrow -/
   map : image f.hom ⟶ image g.hom
-  /-- Commutativity of the appropriate diagram -/
   map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by aesop
 #align category_theory.limits.image_map CategoryTheory.Limits.ImageMap
 #align category_theory.limits.image_map.map_ι' CategoryTheory.Limits.ImageMap.map_ι
+
+attribute [inherit_doc ImageMap] ImageMap.map ImageMap.map_ι 
 
 -- Porting note: LHS of this simplifies, simpNF still complains after blacklisting
 attribute [-simp, nolint simpNF] ImageMap.mk.injEq
@@ -713,9 +713,10 @@ def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f
 /-- `HasImageMap sq` means that there is an `ImageMap` for the square `sq`. -/
 class HasImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g) : Prop where 
 mk' ::
-  /-- There is a `ImageMap` -/
   has_image_map : Nonempty (ImageMap sq)
 #align category_theory.limits.has_image_map CategoryTheory.Limits.HasImageMap
+
+attribute [inherit_doc HasImageMap] HasImageMap.has_image_map
 
 theorem HasImageMap.mk {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq : f ⟶ g}
     (m : ImageMap sq) : HasImageMap sq :=
@@ -853,7 +854,6 @@ variable (C) [Category.{v} C] [HasImages C]
 
 /-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps where
-  /-- All commutative squares induce morphisms on the images -/
   has_image_map : ∀ {f g : Arrow C} (st : f ⟶ g), HasImageMap st
 #align category_theory.limits.has_image_maps CategoryTheory.Limits.HasImageMaps
 
@@ -880,9 +880,10 @@ section StrongEpiMonoFactorisation
 /-- A strong epi-mono factorisation is a decomposition `f = e ≫ m` with `e` a strong epimorphism
     and `m` a monomorphism. -/
 structure StrongEpiMonoFactorisation {X Y : C} (f : X ⟶ Y) extends MonoFactorisation f where
-  /-- Factoring into a composition of epic and monic -/
   [e_strong_epi : StrongEpi e]
 #align category_theory.limits.strong_epi_mono_factorisation CategoryTheory.Limits.StrongEpiMonoFactorisation
+
+attribute [inherit_doc StrongEpiMonoFactorisation] StrongEpiMonoFactorisation.e_strong_epi
 
 attribute [instance] StrongEpiMonoFactorisation.e_strong_epi
 
@@ -905,9 +906,10 @@ variable (C)
 /-- A category has strong epi-mono factorisations if every morphism admits a strong epi-mono
     factorisation. -/
 class HasStrongEpiMonoFactorisations : Prop where mk' ::
-  /-- Every map has a epic/monic factorisation -/
   has_fac : ∀ {X Y : C} (f : X ⟶ Y), Nonempty (StrongEpiMonoFactorisation f)
 #align category_theory.limits.has_strong_epi_mono_factorisations CategoryTheory.Limits.HasStrongEpiMonoFactorisations
+
+attribute [inherit_doc HasStrongEpiMonoFactorisations] HasStrongEpiMonoFactorisations.has_fac
 
 variable {C}
 
@@ -935,8 +937,6 @@ variable (C) [Category.{v} C] [HasImages C]
 /-- A category has strong epi images if it has all images and `factorThruImage f` is a strong
     epimorphism for all `f`. -/
 class HasStrongEpiImages : Prop where
-  /-- A category has strong epi images if it has all images and `factorThruImage f` is a strong
-    epimorphism for all `f`. -/
   strong_factorThruImage : ∀ {X Y : C} (f : X ⟶ Y), StrongEpi (factorThruImage f)
 #align category_theory.limits.has_strong_epi_images CategoryTheory.Limits.HasStrongEpiImages
 #align category_theory.limits.has_strong_epi_images.strong_factor_thru_image CategoryTheory.Limits.HasStrongEpiImages.strong_factorThruImage

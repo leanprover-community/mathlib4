@@ -111,9 +111,6 @@ instance : RelHomClass (r →r s) r s where
     congr
   map_rel := map_rel'
 
-/-- See Note [custom simps projection] -/
-def Simps.apply (f : r →r s) : α → β := f
-
 initialize_simps_projections RelHom (toFun → apply)
 
 protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
@@ -249,11 +246,12 @@ instance : RelHomClass (r ↪r s) r s where
     congr
   map_rel f a b := Iff.mpr (map_rel_iff' f)
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+
+/-- See Note [custom simps projection]. We specify this explicitly because we have a coercion not
+given by the `FunLike` instance. Todo: remove that instance?
+-/
 def Simps.apply (h : r ↪r s) : α → β :=
   h
-#align rel_embedding.simps.apply RelEmbedding.Simps.apply
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
@@ -623,7 +621,7 @@ protected def symm (f : r ≃r s) : s ≃r r :=
 #align rel_iso.symm RelIso.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+  because `RelIso` defines custom coercions other than the ones given by `FunLike`. -/
 def Simps.apply (h : r ≃r s) : α → β :=
   h
 #align rel_iso.simps.apply RelIso.Simps.apply

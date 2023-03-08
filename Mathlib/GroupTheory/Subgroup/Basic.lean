@@ -134,6 +134,10 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 #align inv_mem_iff inv_mem_iff
 #align neg_mem_iff neg_mem_iff
 
+@[simp] theorem abs_mem_iff {S G} [InvolutiveNeg G] [LinearOrder G] {_ : SetLike S G}
+    [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
+  cases abs_choice x <;> simp [*]
+
 variable {M S : Type _} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
@@ -431,17 +435,7 @@ theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv'
 #align subgroup.mk_le_mk Subgroup.mk_le_mk
 #align add_subgroup.mk_le_mk AddSubgroup.mk_le_mk
 
-/-- See Note [custom simps projection] -/
---@[to_additive "See Note [custom simps projection]"]
--- Porting note: temporarily removed brackets to not confuse syntax highlighting
-@[to_additive "See Note custom simps projection "]
-def Simps.coe (S : Subgroup G) : Set G :=
-  S
-#align subgroup.simps.coe Subgroup.Simps.coe
-#align add_subgroup.simps.coe AddSubgroup.Simps.coe
-
 initialize_simps_projections Subgroup (carrier → coe)
-
 initialize_simps_projections AddSubgroup (carrier → coe)
 
 @[to_additive (attr := simp)]

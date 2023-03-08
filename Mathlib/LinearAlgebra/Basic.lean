@@ -1093,13 +1093,13 @@ theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0
 -- `⨅ _ : a ≠ 0, p.comap f` is ill-formed. So, this is written `infᵢ (fun _ : a ≠ 0 => p.comap f)`.
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
     p.comap (a • f) = infᵢ (fun _ : a ≠ 0 => p.comap f) := by
-  classical by_cases a = 0 <;> simp [h, comap_smul]
+  classical by_cases h : a = 0 <;> simp [h, comap_smul]
 #align submodule.comap_smul' Submodule.comap_smul'
 
 -- Porting note: Idem.
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
     p.map (a • f) = supᵢ (fun _ : a ≠ 0 => p.map f) := by
-  classical by_cases a = 0 <;> simp [h, map_smul]
+  classical by_cases h : a = 0 <;> simp [h, map_smul]
 #align submodule.map_smul' Submodule.map_smul'
 
 end Submodule
