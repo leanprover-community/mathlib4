@@ -118,7 +118,7 @@ theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ :
 theorem fold_dedup_idem [DecidableEq α] [hi : IsIdempotent α op] (s : Multiset α) (b : α) :
     (dedup s).fold op b = s.fold op b :=
   Multiset.induction_on s (by simp) fun a s IH => by
-    by_cases a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s <;> simp [IH, h]
     show fold op b s = op a (fold op b s)
     rw [← cons_erase h, fold_cons_left, ← ha.assoc, hi.idempotent]
 #align multiset.fold_dedup_idem Multiset.fold_dedup_idem

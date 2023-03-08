@@ -330,7 +330,7 @@ theorem kernelIsoOfEq_refl {h : f = f} : kernelIsoOfEq h = Iso.refl (kernel f) :
   simp [kernelIsoOfEq]
 #align category_theory.limits.kernel_iso_of_eq_refl CategoryTheory.Limits.kernelIsoOfEq_refl
 
-/- Porting note: indunction on Eq is trying instantiate another g...-/
+/- Porting note: induction on Eq is trying instantiate another g...-/
 @[reassoc (attr := simp)]
 theorem kernelIsoOfEq_hom_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) : 
     (kernelIsoOfEq h).hom ≫ kernel.ι g = kernel.ι f := by 

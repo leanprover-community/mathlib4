@@ -227,7 +227,7 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
     match o with
     | Sum.inl x => ⟨x, Or.inl x.2⟩
     | Sum.inr x => ⟨x, Or.inr x.2⟩
-  left_inv := fun ⟨x, h'⟩ => by by_cases p x <;> simp [h]
+  left_inv := fun ⟨x, h'⟩ => by by_cases h : p x <;> simp [h]
   right_inv o := by
     rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h], simp [ht _ h]]
 #align equiv.set.union' Equiv.Set.union'

@@ -1133,7 +1133,7 @@ theorem infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt :
 #align infi_eq_of_forall_ge_of_forall_gt_exists_lt infᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
 
 theorem supᵢ_eq_dif {p : Prop} [Decidable p] (a : p → α) :
-    (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases p <;> simp [h]
+    (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases h : p <;> simp [h]
 #align supr_eq_dif supᵢ_eq_dif
 
 theorem supᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨆ _h : p, a) = if p then a else ⊥ :=

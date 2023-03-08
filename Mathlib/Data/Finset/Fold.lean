@@ -122,7 +122,7 @@ theorem fold_union_inter [DecidableEq α] {s₁ s₂ : Finset α} {b₁ b₂ : �
 @[simp]
 theorem fold_insert_idem [DecidableEq α] [hi : IsIdempotent β op] :
     (insert a s).fold op b f = f a * s.fold op b f := by
-  by_cases a ∈ s
+  by_cases h : a ∈ s
   · rw [← insert_erase h]
     simp [← ha.assoc, hi.idempotent]
   · apply fold_insert h
