@@ -69,7 +69,7 @@ def mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
 
 @[simp]
 theorem coe_mul_left [NonUnitalNonAssocSemiring R] (r : R) :
-    (mulLeft r) = (r * ·) :=
+    (mulLeft r : R → R) = HMul.hMul r :=
   rfl
 #align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
 
