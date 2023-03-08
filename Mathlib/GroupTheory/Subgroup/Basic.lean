@@ -134,6 +134,10 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 #align inv_mem_iff inv_mem_iff
 #align neg_mem_iff neg_mem_iff
 
+@[simp] theorem abs_mem_iff {S G} [InvolutiveNeg G] [LinearOrder G] {_ : SetLike S G}
+    [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
+  cases abs_choice x <;> simp [*]
+
 variable {M S : Type _} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
@@ -1144,8 +1148,7 @@ theorem closure_eq_of_le (h₁ : k ⊆ K) (h₂ : K ≤ closure k) : closure k =
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of `k`, and
 is preserved under multiplication and inverse, then `p` holds for all elements of the closure
 of `k`. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership. If `p`
       holds for `0` and all elements of `k`, and is preserved under addition and inverses, then `p`
       holds for all elements of the additive closure of `k`."]
@@ -1156,7 +1159,7 @@ theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (Hk : ∀ x
 #align add_subgroup.closure_induction AddSubgroup.closure_induction
 
 /-- A dependent version of `Subgroup.closure_induction`.  -/
-@[elab_as_elim, to_additive "A dependent version of `AddSubgroup.closure_induction`. "]
+@[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.closure_induction`. "]
 theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
     (Hs : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (H1 : p 1 (one_mem _))
     (Hmul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
@@ -1169,8 +1172,7 @@ theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
 #align add_subgroup.closure_induction' AddSubgroup.closure_induction'
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
-@[elab_as_elim,
-  to_additive
+@[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership, for
       predicates with two arguments."]
 theorem closure_induction₂ {p : G → G → Prop} {x} {y : G} (hx : x ∈ closure k) (hy : y ∈ closure k)

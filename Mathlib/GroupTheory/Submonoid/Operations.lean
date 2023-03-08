@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module group_theory.submonoid.operations
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
+! leanprover-community/mathlib commit cf8e77c636317b059a8ce20807a29cf3772a0640
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -808,8 +808,10 @@ theorem topEquiv_toMonoidHom : (topEquiv : _ ≃* M).toMonoidHom = (⊤ : Submon
 #align submonoid.top_equiv_to_monoid_hom Submonoid.topEquiv_toMonoidHom
 #align add_submonoid.top_equiv_to_add_monoid_hom AddSubmonoid.topEquiv_toAddMonoidHom
 
-/-- A submonoid is isomorphic to its image under an injective function -/
-@[to_additive "An additive submonoid is isomorphic to its image under an injective function"]
+/-- A subgroup is isomorphic to its image under an injective function. If you have an isomorphism,
+use `MulEquiv.submonoidMap` for better definitional equalities. -/
+@[to_additive "An additive subgroup is isomorphic to its image under an injective function. If you
+have an isomorphism, use `AddEquiv.addSubmonoidMap` for better definitional equalities."]
 noncomputable def equivMapOfInjective (f : M →* N) (hf : Function.Injective f) : S ≃* S.map f :=
   { Equiv.Set.image f S hf with map_mul' := fun _ _ => Subtype.ext (f.map_mul _ _) }
 #align submonoid.equiv_map_of_injective Submonoid.equivMapOfInjective
@@ -1433,20 +1435,38 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
 /-- A `MulEquiv` `φ` between two monoids `M` and `N` induces a `MulEquiv` between
 a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`.
 See `MonoidHom.submonoidMap` for a variant for `MonoidHom`s. -/
-@[to_additive (attr := simps)
+@[to_additive
       "An `AddEquiv` `φ` between two additive monoids `M` and `N` induces an `AddEquiv`
       between a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`. See
       `AddMonoidHom.addSubmonoidMap` for a variant for `AddMonoidHom`s."]
 def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map e.toMonoidHom :=
-  { -- we restate this for `simps` to avoid `⇑e.symm.to_equiv x`
-    e.toMonoidHom.submonoidMap S,
-    e.toEquiv.image S with
-    toFun := fun x => ⟨e x, _⟩
-    invFun := fun x => ⟨e.symm x, _⟩ }
+  { (e : M ≃ N).image S with map_mul' := fun _ _ => Subtype.ext (map_mul e _ _) }
 #align mul_equiv.submonoid_map MulEquiv.submonoidMap
 #align add_equiv.add_submonoid_map AddEquiv.addSubmonoidMap
 
+@[to_additive (attr := simp)]
+theorem coe_submonoidMap_apply (e : M ≃* N) (S : Submonoid M) (g : S) :
+    ((submonoidMap e S g : S.map (e : M →* N)) : N) = e g :=
+  rfl
+#align mul_equiv.coe_submonoid_map_apply MulEquiv.coe_submonoidMap_apply
+#align add_equiv.coe_add_submonoid_map_apply AddEquiv.coe_addSubmonoidMap_apply
+
+@[to_additive (attr := simp) AddEquiv.add_submonoid_map_symm_apply]
+theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e : M →* N)) :
+    (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
+  rfl
+#align mul_equiv.submonoid_map_symm_apply MulEquiv.submonoidMap_symm_apply
+#align add_equiv.add_submonoid_map_symm_apply AddEquiv.add_submonoid_map_symm_apply
+
 end MulEquiv
+
+@[to_additive (attr := simp)]
+theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
+    S.equivMapOfInjective (e : M →* N) (EquivLike.injective e) = e.submonoidMap S := by
+  ext
+  rfl
+#align submonoid.equiv_map_of_injective_coe_mul_equiv Submonoid.equivMapOfInjective_coe_mulEquiv
+#align add_submonoid.equiv_map_of_injective_coe_add_equiv AddSubmonoid.equivMapOfInjective_coe_addEquiv
 
 section Actions
 
