@@ -396,7 +396,7 @@ instance addCommGroup : AddCommGroup ℂ := {
   }
 
 
-instance : AddGroupWithOne ℂ :=
+instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
     natCast_zero := by
@@ -414,20 +414,26 @@ instance : AddGroupWithOne ℂ :=
         rfl
     one := 1 }
 
-instance : CommRing ℂ := by
-  refine_struct
-                { Complex.addGroupWithOne with
-                  zero := (0 : ℂ)
-                  add := (· + ·)
-                  one := 1
-                  mul := (· * ·)
-                  npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩ } <;>
-              intros <;>
-            try rfl <;>
-          apply ext_iff.2 <;>
-        constructor <;>
-      simp <;>
-    · first |ring1|ring_nf
+instance : CommRing ℂ :=
+  {
+  Complex.addGroupWithOne with
+    zero := (0 : ℂ)
+    add := (· + ·)
+    one := 1
+    mul := (· * ·)
+    npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
+    add_comm := by intros ; ext <;> simp [add_comm]
+    left_distrib := by
+      intros ; ext <;> simp [mul_re, mul_im] <;> ring
+    right_distrib := by
+      intros ; ext <;> simp [mul_re, mul_im] <;> ring
+    zero_mul := by intros ; ext <;> simp [zero_mul]
+    mul_zero := by intros ; ext <;> simp [mul_zero]
+    mul_assoc := by intros ; ext <;> simp [mul_assoc] <;> ring
+    one_mul := by intros ; ext <;> simp [one_mul]
+    mul_one := by intros ; ext <;> simp [mul_one]
+    mul_comm := by intros ; ext <;> simp [mul_comm] ; ring
+  }
 
 /-- This shortcut instance ensures we do not find `ring` via the noncomputable `complex.field`
 instance. -/
@@ -463,11 +469,11 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
 #align complex.coe_im_add_group_hom Complex.coe_imAddGroupHom
 
 @[simp]
-theorem i_pow_bit0 (n : ℕ) : i ^ bit0 n = (-1) ^ n := by rw [pow_bit0', I_mul_I]
+theorem i_pow_bit0 (n : ℕ) : i ^ bit0 n = (-1) ^ n := by rw [pow_bit0', Complex.i_mul_i]
 #align complex.I_pow_bit0 Complex.i_pow_bit0
 
 @[simp]
-theorem i_pow_bit1 (n : ℕ) : i ^ bit1 n = (-1) ^ n * i := by rw [pow_bit1', I_mul_I]
+theorem i_pow_bit1 (n : ℕ) : i ^ bit1 n = (-1) ^ n * i := by rw [pow_bit1', Complex.i_mul_i]
 #align complex.I_pow_bit1 Complex.i_pow_bit1
 
 /-! ### Complex conjugation -/
