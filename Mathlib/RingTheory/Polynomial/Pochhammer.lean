@@ -129,16 +129,15 @@ theorem pochhammer_succ_comp_x_add_one (n : ℕ) :
 #align pochhammer_succ_comp_X_add_one pochhammer_succ_comp_x_add_one
 
 theorem Polynomial.mul_x_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
-    (p * (X + n)).comp q = p.comp q * (q + n) := by
+    (p * (X + (n : S[X]))).comp q = p.comp q * (q + n) := by
   rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_add]
 #align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_x_add_nat_cast_comp
 
 theorem pochhammer_mul (n m : ℕ) :
-    pochhammer S n * (pochhammer S m).comp (X + n) = pochhammer S (n + m) := by
+    pochhammer S n * (pochhammer S m).comp (X + (n : S[X])) = pochhammer S (n + m) := by
   induction' m with m ih
   · simp
-  ·
-    rw [pochhammer_succ_right, Polynomial.mul_x_add_nat_cast_comp, ← mul_assoc, ih,
+  · rw [pochhammer_succ_right, Polynomial.mul_x_add_nat_cast_comp, ← mul_assoc, ih,
       Nat.succ_eq_add_one, ← add_assoc, pochhammer_succ_right, Nat.cast_add, add_assoc]
 #align pochhammer_mul pochhammer_mul
 
@@ -146,22 +145,20 @@ theorem pochhammer_nat_eq_ascFactorial (n : ℕ) :
     ∀ k, (pochhammer ℕ k).eval (n + 1) = n.ascFactorial k
   | 0 => by erw [eval_one] <;> rfl
   | t + 1 => by
-    rw [pochhammer_succ_right, eval_mul, pochhammer_nat_eq_ascFactorial t]
-    suffices n.asc_factorial t * (n + 1 + t) = n.asc_factorial (t + 1) by simpa
+    rw [pochhammer_succ_right, eval_mul, pochhammer_nat_eq_ascFactorial]
+    suffices n.ascFactorial t * (n + 1 + t) = n.ascFactorial (t + 1) by simpa
     rw [Nat.ascFactorial_succ, add_right_comm, mul_comm]
 #align pochhammer_nat_eq_asc_factorial pochhammer_nat_eq_ascFactorial
 
 theorem pochhammer_nat_eq_descFactorial (a b : ℕ) :
     (pochhammer ℕ b).eval a = (a + b - 1).descFactorial b := by
-  cases b
+  cases' b with b
   · rw [Nat.descFactorial_zero, pochhammer_zero, Polynomial.eval_one]
   rw [Nat.add_succ, Nat.succ_sub_succ, tsub_zero]
   cases a
-  ·
-    rw [pochhammer_ne_zero_eval_zero _ b.succ_ne_zero, zero_add,
-      Nat.descFactorial_of_lt b.lt_succ_self]
-  ·
-    rw [Nat.succ_add, ← Nat.add_succ, Nat.add_descFactorial_eq_ascFactorial,
+  · simp only [Nat.zero_eq, ne_eq, Nat.succ_ne_zero, not_false_iff, pochhammer_ne_zero_eval_zero,
+    zero_add, Nat.descFactorial_succ, le_refl, tsub_eq_zero_of_le, zero_mul]
+  · rw [Nat.succ_add, ← Nat.add_succ, Nat.add_descFactorial_eq_ascFactorial,
       pochhammer_nat_eq_ascFactorial]
 #align pochhammer_nat_eq_desc_factorial pochhammer_nat_eq_descFactorial
 
