@@ -106,10 +106,8 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 abbrev single (a : G) (b : k) : MonoidAlgebra k G := Finsupp.single a b
 
-@[simp]
 theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.single_zero a
 
-@[simp]
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
@@ -1173,10 +1171,8 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 abbrev single (a : G) (b : k) : AddMonoidAlgebra k G := Finsupp.single a b
 
-@[simp]
 theorem single_zero (a : G) : (single a 0 : AddMonoidAlgebra k G) = 0 := Finsupp.single_zero a
 
-@[simp]
 theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   Finsupp.single_add a b₁ b₂
 
@@ -1203,7 +1199,6 @@ theorem mapDomain_sum {k' G' : Type _} [Semiring k'] {f : G → G'} {s : AddMono
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
   Finsupp.mapDomain_sum
 
-@[simp]
 theorem mapDomain_single {G' : Type _} {f : G → G'} {a : G} {b : k} :
     mapDomain f (single a b) = single (f a) b :=
   Finsupp.mapDomain_single
