@@ -8,11 +8,11 @@ Authors: Markus Himmel, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Basic
-import Mathbin.Algebra.Hom.Group
-import Mathbin.Algebra.Module.Basic
-import Mathbin.CategoryTheory.Endomorphism
-import Mathbin.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Module.Basic
+import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # Preadditive categories
