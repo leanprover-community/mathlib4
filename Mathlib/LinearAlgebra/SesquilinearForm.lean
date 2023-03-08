@@ -111,11 +111,10 @@ section Field
 variable [Field K] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁] [Field K₂] [AddCommGroup V₂]
   [Module K₂ V₂] {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K} {J₁ : K →+* K} {J₂ : K →+* K}
 
--- porting note: manual instances + heartbeat increase required. Alternative solution is lean4#2074
+-- porting note: manual instances required. Alternative solution is lean4#2074
 -- verified using `set_option synthInstance.etaExperiment true`
 attribute [-instance] Ring.toNonAssocRing
 instance : Module K K := Semiring.toModule
-set_option maxHeartbeats 400000
 
 -- Alternative to the above:
 -- instance : AddCommMonoid (V₂ →ₛₗ[I₂] K) := LinearMap.addCommMonoid
@@ -186,7 +185,7 @@ namespace IsRefl
 
 variable (H : B.IsRefl)
 
-theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun x y ↦ H x y
+theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 #align linear_map.is_refl.eq_zero LinearMap.IsRefl.eq_zero
 
 theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
@@ -244,12 +243,12 @@ theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
 #align linear_map.is_symm.is_refl LinearMap.IsSymm.isRefl
 
 theorem ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
-  H.IsRefl.ortho_comm
+  H.isRefl.ortho_comm
 #align linear_map.is_symm.ortho_comm LinearMap.IsSymm.ortho_comm
 
 theorem domRestrictSymm (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm :=
   fun _ _ ↦ by
-  simp_rw [dom_restrict₁₂_apply]
+  simp_rw [domRestrict₁₂_apply]
   exact H _ _
 #align linear_map.is_symm.dom_restrict_symm LinearMap.IsSymm.domRestrictSymm
 
@@ -260,8 +259,7 @@ theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.
   · ext
     rw [← h, flip_apply, RingHom.id_apply]
   intro x y
-  conv_lhs ↦ rw [h]
-  rw [flip_apply, RingHom.id_apply]
+  conv_lhs => rw [h]
 #align linear_map.is_symm_iff_eq_flip LinearMap.isSymm_iff_eq_flip
 
 end Symmetric
@@ -270,6 +268,9 @@ end Symmetric
 
 
 section Alternating
+
+-- porting note: alternative lean4#2074 checked using `set_option synthInstance.etaExperiment true`
+attribute [-instance] Ring.toNonAssocRing
 
 variable [CommRing R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁] {I₁ : R₁ →+* R}
   {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R}
@@ -283,7 +284,7 @@ namespace IsAlt
 
 variable (H : B.IsAlt)
 
-include H
+-- include H
 
 theorem self_eq_zero (x : M₁) : B x x = 0 :=
   H x
@@ -302,7 +303,7 @@ theorem isRefl : B.IsRefl := by
 #align linear_map.is_alt.is_refl LinearMap.IsAlt.isRefl
 
 theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
-  H.IsRefl.ortho_comm
+  H.isRefl.ortho_comm
 #align linear_map.is_alt.ortho_comm LinearMap.IsAlt.ortho_comm
 
 end IsAlt
@@ -327,6 +328,8 @@ namespace Submodule
 
 /-! ### The orthogonal complement -/
 
+-- porting note: alternative lean4#2074 checked using `set_option synthInstance.etaExperiment true`
+attribute [-instance] Ring.toNonAssocRing
 
 variable [CommRing R] [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R}
   {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] R}
@@ -342,8 +345,8 @@ def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →
     where
   carrier := { m | ∀ n ∈ N, B.IsOrtho n m }
   zero_mem' x _ := B.isOrthoZeroRight x
-  add_mem' x y hx hy n hn := by
-    rw [LinearMap.IsOrtho, map_add, show B n x = 0 from hx n hn, show B n y = 0 from hy n hn,
+  add_mem' hx hy n hn := by
+    rw [LinearMap.IsOrtho, map_add, show B n _ = 0 from hx n hn, show B n _ = 0 from hy n hn,
       zero_add]
   smul_mem' c x hx n hn := by
     rw [LinearMap.IsOrtho, LinearMap.map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
