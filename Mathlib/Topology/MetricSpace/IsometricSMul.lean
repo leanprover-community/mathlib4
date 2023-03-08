@@ -172,7 +172,7 @@ theorem constSMul_symm (c : G) : (constSMul c : X ≃ᵢ X).symm = constSMul c�
 variable [PseudoEMetricSpace G]
 
 /-- Multiplication `y ↦ x * y` as an `IsometryEquiv`. -/
-@[to_additive (attr := simps! apply toEquiv) "Addition `y ↦ x + y` as an `isometry_equiv`."]
+@[to_additive (attr := simps! apply toEquiv) "Addition `y ↦ x + y` as an `IsometryEquiv`."]
 def mulLeft [IsometricSMul G G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.mulLeft c
   isometry_toFun := edist_mul_left c
@@ -191,7 +191,7 @@ theorem mulLeft_symm [IsometricSMul G G] (x : G) :
 #align isometry_equiv.add_left_symm IsometryEquiv.addLeft_symm
 
 /-- Multiplication `y ↦ y * x` as an `IsometryEquiv`. -/
-@[to_additive (attr := simps! apply toEquiv) "Addition `y ↦ y + x` as an `isometry_equiv`."]
+@[to_additive (attr := simps! apply toEquiv) "Addition `y ↦ y + x` as an `IsometryEquiv`."]
 def mulRight [IsometricSMul Gᵐᵒᵖ G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.mulRight c
   isometry_toFun a b := edist_mul_right a b c
@@ -209,7 +209,7 @@ theorem mulRight_symm [IsometricSMul Gᵐᵒᵖ G] (x : G) : (mulRight x).symm =
 #align isometry_equiv.add_right_symm IsometryEquiv.addRight_symm
 
 /-- Division `y ↦ y / x` as an `IsometryEquiv`. -/
-@[to_additive (attr := simps! apply toEquiv) "Subtraction `y ↦ y - x` as an `isometry_equiv`."]
+@[to_additive (attr := simps! apply toEquiv) "Subtraction `y ↦ y - x` as an `IsometryEquiv`."]
 def divRight [IsometricSMul Gᵐᵒᵖ G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.divRight c
   isometry_toFun a b := edist_div_right a b c
@@ -230,7 +230,7 @@ variable [IsometricSMul G G] [IsometricSMul Gᵐᵒᵖ G]
 
 /-- Division `y ↦ x / y` as an `IsometryEquiv`. -/
 @[to_additive (attr := simps! apply symm_apply toEquiv)
-  "Subtraction `y ↦ x - y` as an `isometry_equiv`."]
+  "Subtraction `y ↦ x - y` as an `IsometryEquiv`."]
 def divLeft (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.divLeft c
   isometry_toFun := edist_div_left c
@@ -246,7 +246,7 @@ def divLeft (c : G) : G ≃ᵢ G where
 variable (G)
 
 /-- Inversion `x ↦ x⁻¹` as an `IsometryEquiv`. -/
-@[to_additive (attr := simps! apply toEquiv) "Negation `x ↦ -x` as an `isometry_equiv`."]
+@[to_additive (attr := simps! apply toEquiv) "Negation `x ↦ -x` as an `IsometryEquiv`."]
 def inv : G ≃ᵢ G where
   toEquiv := Equiv.inv G
   isometry_toFun := edist_inv_inv
