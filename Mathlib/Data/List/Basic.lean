@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.basic
-! leanprover-community/mathlib commit 1447cae870f372074e480de1acbeb51de0077698
+! leanprover-community/mathlib commit 9da1b3534b65d9661eb8f42443598a92bbb49211
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1197,7 +1197,7 @@ theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l
     cases l with
     | nil => rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
     | cons head tail =>
-      by_cases a = head
+      by_cases h : a = head
       · rw [indexOf_cons_eq tail h, indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, h,
           findIdx.go, beq_self_eq_true head, cond]
       · rw [indexOf, findIdx, findIdx, findIdx.go, beq_false_of_ne, cond, findIdx.go,
@@ -1220,7 +1220,7 @@ where
 -- rfl
 theorem indexOf_cons (a b : α) (l : List α) :
     indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
-  cases l <;> by_cases a = b
+  cases l <;> by_cases h : a = b
   case pos | pos => rw [if_pos h]; exact indexOf_cons_eq _ h
   case neg | neg => rw [if_neg h]; exact indexOf_cons_ne _ h
 #align list.index_of_cons List.indexOf_cons
@@ -2910,7 +2910,7 @@ variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α 
 
 @[simp]
 theorem splitAt_eq_take_drop (n : ℕ) (l : List α) : splitAt n l = (take n l, drop n l) := by
-  by_cases n < l.length <;> rw [splitAt, go_eq_take_drop]
+  by_cases h : n < l.length <;> rw [splitAt, go_eq_take_drop]
   · rw [if_pos h]; rfl
   · rw [if_neg h, take_all_of_le <| le_of_not_lt h, drop_eq_nil_of_le <| le_of_not_lt h]
 where
@@ -2969,7 +2969,7 @@ theorem splitOnP.go_append (xs : List α) (acc : Array α) (r : Array (List α))
   | nil => rfl
   | cons a as =>
     simp only [go]
-    by_cases p a
+    by_cases h : p a
     · simp only [h, cond_true]
       rw [go_append as, go_append as _ (Array.push #[] (Array.toList acc))]
       simp only [Array.toListAppend_eq, Array.push_data]
@@ -2983,7 +2983,7 @@ theorem splitOnP.go_acc (xs : List α) (acc : Array α) :
   | nil => rfl
   | cons hd tl =>
     simp only [go]
-    by_cases p hd
+    by_cases h : p hd
     · simp only [h, cond_true]
       rw [go_append, go_append _ _ _ (Array.push #[] (Array.toList #[]))]
       rfl
@@ -2999,7 +2999,7 @@ theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := by
   | nil => exact cons_ne_nil [] []
   | cons hd tl =>
     rw [splitOnP, splitOnP.go]
-    by_cases p hd
+    by_cases h : p hd
     · rw [h, cond_true, splitOnP.go_append]
       exact append_ne_nil_of_ne_nil_left [[]] _ (cons_ne_nil [] [])
     · rw [eq_false_of_ne_true h, cond_false, splitOnP.go_acc, ←splitOnP]
@@ -3014,7 +3014,7 @@ theorem splitOnP_cons (x : α) (xs : List α) :
     (x :: xs).splitOnP p =
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
   rw [splitOnP, splitOnP.go]
-  by_cases p x
+  by_cases h : p x
   · rw [if_pos h, h, cond_true, splitOnP.go_append, splitOnP]; rfl
   · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]; congr 1
 #align list.split_on_p_cons List.splitOnP_consₓ
@@ -3027,7 +3027,7 @@ theorem splitOnP_spec (as : List α) :
   | nil => rfl
   | cons a as' ih =>
     rw [splitOnP_cons, filter]
-    by_cases p a
+    by_cases h : p a
     · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
@@ -3806,7 +3806,8 @@ theorem monotone_filter_left (p : α → Bool) ⦃l l' : List α⦄ (h : l ⊆ l
 theorem filter_eq_self {l} : filter p l = l ↔ ∀ a ∈ l, p a := by
   induction' l with a l ih
   · exact iff_of_true rfl (forall_mem_nil _)
-  rw [forall_mem_cons]; by_cases p a
+  rw [forall_mem_cons]
+  by_cases h : p a
   · rw [filter_cons_of_pos _ h, cons_inj, ih, and_iff_right h]
   · refine' iff_of_false (fun hl => h <| of_mem_filter (_ : a ∈ filter p (a :: l))) (mt And.left h)
     rw [hl]
@@ -4251,6 +4252,28 @@ theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
     map (Prod.map (· + n) id) (enum l) = enumFrom n l :=
   map_fst_add_enumFrom_eq_enumFrom l _ _
 #align list.map_fst_add_enum_eq_enum_from List.map_fst_add_enum_eq_enumFrom
+
+theorem enumFrom_cons' (n : ℕ) (x : α) (xs : List α) :
+    enumFrom n (x :: xs) = (n, x) :: (enumFrom n xs).map (Prod.map Nat.succ id) := by
+  rw [enumFrom_cons, add_comm, ← map_fst_add_enumFrom_eq_enumFrom]
+#align list.enum_from_cons' List.enumFrom_cons'
+
+theorem enum_cons' (x : α) (xs : List α) :
+    enum (x :: xs) = (0, x) :: (enum xs).map (Prod.map Nat.succ id) :=
+  enumFrom_cons' _ _ _
+#align list.enum_cons' List.enum_cons'
+
+theorem enumFrom_map (n : ℕ) (l : List α) (f : α → β) :
+    enumFrom n (l.map f) = (enumFrom n l).map (Prod.map id f) := by
+  induction' l with hd tl IH
+  · rfl
+  · rw [map_cons, enumFrom_cons', enumFrom_cons', map_cons, map_map, IH, map_map]
+    rfl
+#align list.enum_from_map List.enumFrom_map
+
+theorem enum_map (l : List α) (f : α → β) : (l.map f).enum = l.enum.map (Prod.map id f) :=
+  enumFrom_map _ _ _
+#align list.enum_map List.enum_map
 
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
     (hi : i.1 < l.length := (by simpa [length_enumFrom] using i.2)) :
