@@ -71,7 +71,8 @@ structure Polynomial (R : Type _) [Semiring R] where ofFinsupp ::
 -- mathport name: polynomial
 scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
-open AddMonoidAlgebra Finsupp
+open AddMonoidAlgebra
+open Finsupp hiding single
 open Function hiding Commute
 
 open BigOperators Polynomial
@@ -568,7 +569,7 @@ theorem X_mul : X * p = p * X := by
   simp only [X, ← ofFinsupp_single, ← ofFinsupp_mul, LinearMap.coe_mk, ofFinsupp.injEq]
   -- Porting note: Was `ext`.
   refine Finsupp.ext fun _ => ?_
-  simp [AddMonoidAlgebra.mul_apply, sum_single_index, add_comm]
+  simp [AddMonoidAlgebra.mul_apply, AddMonoidAlgebra.sum_single_index, add_comm]
 #align polynomial.X_mul Polynomial.X_mul
 
 theorem X_pow_mul {n : ℕ} : X ^ n * p = p * X ^ n := by
