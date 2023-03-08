@@ -697,12 +697,12 @@ theorem coordChange_coordChange (e₁ e₂ e₃ : Trivialization F proj) {b : B}
 
 theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) : Continuous (e₁.coordChange e₂ b) := by
-  -- refine' continuous_snd.comp (e₂.continuousOn.comp_continuous
-  --   (e₁.toLocalHomeomorph.continuousOn_symm.comp_continuous _ _) _)
-  -- · exact continuous_const.prod_mk continuous_id
-  -- · exact fun x => e₁.mem_target.2 h₁
-  -- · intro x
-  --   rwa [e₂.mem_source, e₁.proj_symm_apply' h₁]
+  refine' continuous_snd.comp (e₂.toLocalHomeomorph.continuousOn.comp_continuous
+    (e₁.toLocalHomeomorph.continuousOn_symm.comp_continuous _ _) _)
+  · exact continuous_const.prod_mk continuous_id
+  · exact fun x => e₁.mem_target.2 h₁
+  · intro x
+    rwa [e₂.mem_source, e₁.proj_symm_apply' h₁]
 #align trivialization.continuous_coord_change Trivialization.continuous_coordChange
 
 /-- Coordinate transformation in the fiber induced by a pair of bundle trivializations,
