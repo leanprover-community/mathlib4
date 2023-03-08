@@ -8,8 +8,8 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.AffineSpace.AffineMap
-import Mathbin.Tactic.FieldSimp
+import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Slope of a function
@@ -63,8 +63,7 @@ theorem slope_def_module (f : k → E) (a b : k) : slope f a b = (b - a)⁻¹ �
 #align slope_def_module slope_def_module
 
 @[simp]
-theorem sub_smul_slope (f : k → PE) (a b : k) : (b - a) • slope f a b = f b -ᵥ f a :=
-  by
+theorem sub_smul_slope (f : k → PE) (a b : k) : (b - a) • slope f a b = f b -ᵥ f a := by
   rcases eq_or_ne a b with (rfl | hne)
   · rw [sub_self, zero_smul, vsub_self]
   · rw [slope, smul_inv_smul₀ (sub_ne_zero.2 hne.symm)]
@@ -75,8 +74,7 @@ theorem sub_smul_slope_vadd (f : k → PE) (a b : k) : (b - a) • slope f a b +
 #align sub_smul_slope_vadd sub_smul_slope_vadd
 
 @[simp]
-theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f :=
-  by
+theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f := by
   ext (a b)
   simp only [slope, vadd_vsub_vadd_cancel_right, vsub_eq_sub]
 #align slope_vadd_const slope_vadd_const
@@ -109,8 +107,7 @@ theorem slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
 explicitly provides coefficients. If `a ≠ c`, then the sum of the coefficients is `1`, so it is
 actually an affine combination, see `line_map_slope_slope_sub_div_sub`. -/
 theorem sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c : k) :
-    ((b - a) / (c - a)) • slope f a b + ((c - b) / (c - a)) • slope f b c = slope f a c :=
-  by
+    ((b - a) / (c - a)) • slope f a b + ((c - b) / (c - a)) • slope f b c = slope f a c := by
   by_cases hab : a = b
   · subst hab
     rw [sub_self, zero_div, zero_smul, zero_add]
@@ -137,8 +134,7 @@ theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c)
 /-- `slope f a b` is an affine combination of `slope f a (line_map a b r)` and
 `slope f (line_map a b r) b`. We use `line_map` to express this property. -/
 theorem lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :
-    lineMap (slope f (lineMap a b r) b) (slope f a (lineMap a b r)) r = slope f a b :=
-  by
+    lineMap (slope f (lineMap a b r) b) (slope f a (lineMap a b r)) r = slope f a b := by
   obtain rfl | hab : a = b ∨ a ≠ b := Classical.em _; · simp
   rw [slope_comm _ a, slope_comm _ a, slope_comm _ _ b]
   convert lineMap_slope_slope_sub_div_sub f b (line_map a b r) a hab.symm using 2
