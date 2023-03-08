@@ -373,7 +373,7 @@ def add : Add ℂ := by
 #reduce add
 
 -- Porting note: proof needed modifications and rewritten fields
-instance : AddCommGroup ℂ := {
+instance addCommGroup : AddCommGroup ℂ := {
   zero := (0 : ℂ)
   add := (· + ·)
   neg := Neg.neg
@@ -395,14 +395,23 @@ instance : AddCommGroup ℂ := {
   add_left_neg := by intros ; ext <;> simp
   }
 
+
 instance : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
-    natCast_zero := by ext <;> simp [Nat.cast]
-    natCast_succ := fun _ => by ext <;> simp [Nat.cast]
+    natCast_zero := by
+      ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_zero]
+    natCast_succ := fun _ => by ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_succ]
     intCast := fun n => ⟨n, 0⟩
-    intCast_ofNat := fun _ => by ext <;> simp [fun n => show @coe ℕ ℂ ⟨_⟩ n = ⟨n, 0⟩ from rfl]
-    intCast_negSucc := fun _ => by ext <;> simp [fun n => show @coe ℕ ℂ ⟨_⟩ n = ⟨n, 0⟩ from rfl]
+    intCast_ofNat := fun _ => by ext <;> rfl
+    intCast_negSucc := fun n => by
+      ext
+      · simp [AddGroupWithOne.intCast_negSucc]
+        show -(1: ℝ) + (-n) = -(↑(n + 1))
+        simp [Nat.cast_add, add_comm]
+      · simp [AddGroupWithOne.intCast_negSucc]
+        show im ⟨n, 0⟩ = 0
+        rfl
     one := 1 }
 
 instance : CommRing ℂ := by
