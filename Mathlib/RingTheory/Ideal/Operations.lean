@@ -127,7 +127,7 @@ theorem smul_induction_on {p : M → Prop} {x} (H : x ∈ I • N) (Hb : ∀ r �
   exact Hb _ hi _ hj
 #align submodule.smul_induction_on Submodule.smul_induction_on
 
-/-- Dependent version of `submodule.smul_induction_on`. -/
+/-- Dependent version of `Submodule.smul_induction_on`. -/
 @[elab_as_elim]
 theorem smul_induction_on' {x : M} (hx : x ∈ I • N) {p : ∀ x, x ∈ I • N → Prop}
     (Hb : ∀ (r : R) (hr : r ∈ I) (n : M) (hn : n ∈ N), p (r • n) (smul_mem_smul hr hn))
@@ -268,9 +268,9 @@ theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal
 /-- Given `s`, a generating set of `R`, to check that an `x : M` falls in a
 submodule `M'` of `x`, we only need to show that `r ^ n • x ∈ M'` for some `n` for each `r : s`. -/
 theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤)
-    (x : M) (H : ∀ r : s, ∃ n : ℕ, (Pow.pow r n : R) • x ∈ M') : x ∈ M' := by
+    (x : M) (H : ∀ r : s, ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M') : x ∈ M' := by
   obtain ⟨s', hs₁, hs₂⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
-  replace H : ∀ r : s', ∃ n : ℕ, (Pow.pow r n  : R) • x ∈ M' := fun r => H ⟨_, hs₁ r.2⟩
+  replace H : ∀ r : s', ∃ n : ℕ, ((r : R) ^ n  : R) • x ∈ M' := fun r => H ⟨_, hs₁ r.2⟩
   choose n₁ n₂ using H
   let N := s'.attach.sup n₁
   have hs' := Ideal.span_pow_eq_top (s' : Set R) hs₂ N
@@ -343,8 +343,7 @@ theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
   have : Submodule.map N.subtype (I • ⊤) = I • N := by
     rw [Submodule.map_smul'', Submodule.map_top, Submodule.range_subtype]
   rw [← this]
-  convert (Function.Injective.mem_set_image N.injective_subtype).symm using 1
-  rfl
+  exact (Function.Injective.mem_set_image N.injective_subtype).symm
 #align submodule.mem_smul_top_iff Submodule.mem_smul_top_iff
 
 @[simp]
@@ -405,7 +404,7 @@ theorem mem_colon_singleton {N : Submodule R M} {x : M} {r : R} :
   calc
     r ∈ N.colon (Submodule.span R {x}) ↔ ∀ a : R, r • a • x ∈ N := by
       simp [Submodule.mem_colon, Submodule.mem_span_singleton]
-    _ ↔ r • x ∈ N := by simp_rw [smul_comm r] <;> exact SetLike.forall_smul_mem_iff
+    _ ↔ r • x ∈ N := by simp_rw [fun (a : R) ↦ smul_comm r a x]; exact SetLike.forall_smul_mem_iff
 
 #align submodule.mem_colon_singleton Submodule.mem_colon_singleton
 
@@ -841,7 +840,7 @@ theorem span_pair_mul_span_pair (w x y z : R) :
   simp_rw [span_insert, sup_mul, mul_sup, span_singleton_mul_span_singleton, sup_assoc]
 #align ideal.span_pair_mul_span_pair Ideal.span_pair_mul_span_pair
 
-/-- The radical of an ideal `I` consists of the elements `r` such that `r^n ∈ I` for some `n`. -/
+/-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
 def radical  (I : Ideal R) : Ideal R where
   carrier := { r | ∃ n : ℕ, r ^ n ∈ I }
   zero_mem' := ⟨1, (pow_one (0 : R)).symm ▸ I.zero_mem⟩
@@ -862,7 +861,8 @@ def radical  (I : Ideal R) : Ideal R where
                 I.mul_mem_right _ <|
                   add_tsub_cancel_of_le hmc ▸ (pow_add x m (c - m)).symm ▸ I.mul_mem_right _ hxmi)⟩
 -- Porting note: Below gives weird errors without `by exact`
-  smul_mem' := by exact fun {r s} ⟨n, hsni⟩ => ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) hsni⟩
+  smul_mem' := by
+    exact fun {r s} ⟨n, hsni⟩ => ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) hsni⟩
 #align ideal.radical Ideal.radical
 
 /-- An ideal is radical if it contains its radical. -/
@@ -959,40 +959,40 @@ theorem IsPrime.radical_le_iff (hJ : IsPrime J) : I.radical ≤ J ↔ I ≤ J :=
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x «expr ∉ » m) -/
 theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } := by
-  exact le_antisymm (le_infₛ fun J hJ => hJ.2.radical_le_iff.2 hJ.1) fun r hr =>
-    by_contradiction fun hri =>
-      let ⟨m, (hrm : r ∉ radical m), him, hm⟩ :=
-        zorn_nonempty_partialOrder₀ { K : Ideal R | r ∉ radical K }
-          (fun c hc hcc y hyc =>
-            ⟨supₛ c, fun ⟨n, hrnc⟩ =>
-              let ⟨y, hyc, hrny⟩ := (Submodule.mem_supₛ_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
-              hc hyc ⟨n, hrny⟩,
-              fun z => le_supₛ⟩)
-          I hri
-      have : ∀ (x) (_ : x ∉ m), r ∈ radical (m ⊔ span {x}) := fun x hxm =>
-        by_contradiction fun hrmx =>
-          hxm <|
-            hm (m ⊔ span {x}) hrmx le_sup_left ▸
-              (le_sup_right : _ ≤ m ⊔ span {x}) (subset_span <| Set.mem_singleton _)
-      have : IsPrime m :=
-        ⟨by rintro rfl <;> rw [radical_top] at hrm <;> exact hrm trivial, fun x y hxym =>
-          or_iff_not_imp_left.2 fun hxm =>
-            by_contradiction fun hym =>
-              let ⟨n, hrn⟩ := this _ hxm
-              let ⟨p, hpm, q, hq, hpqrn⟩ := Submodule.mem_sup.1 hrn
-              let ⟨c, hcxq⟩ := mem_span_singleton'.1 hq
-              let ⟨k, hrk⟩ := this _ hym
-              let ⟨f, hfm, g, hg, hfgrk⟩ := Submodule.mem_sup.1 hrk
-              let ⟨d, hdyg⟩ := mem_span_singleton'.1 hg
-              hrm
-                ⟨n + k, by
-                  rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
-                      mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc] <;>
-                    refine'
-                      m.add_mem (m.mul_mem_right _ hpm)
-                        (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
-      hrm <|
-        this.radical.symm ▸ (infₛ_le ⟨him, this⟩ : infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
+  refine le_antisymm (le_infₛ fun J hJ => hJ.2.radical_le_iff.2 hJ.1) fun r hr => ?_
+  refine by_contradiction fun hri =>
+    let ⟨m, (hrm : r ∉ radical m), him, hm⟩ :=
+      zorn_nonempty_partialOrder₀ { K : Ideal R | r ∉ radical K }
+        (fun c hc hcc y hyc =>
+          ⟨supₛ c, fun ⟨n, hrnc⟩ =>
+            let ⟨y, hyc, hrny⟩ := (Submodule.mem_supₛ_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
+            hc hyc ⟨n, hrny⟩,
+            fun z => le_supₛ⟩)
+        I hri
+    have : ∀ (x) (_ : x ∉ m), r ∈ radical (m ⊔ span {x}) := fun x hxm =>
+      by_contradiction fun hrmx =>
+        hxm <|
+          hm (m ⊔ span {x}) hrmx le_sup_left ▸
+            (le_sup_right : _ ≤ m ⊔ span {x}) (subset_span <| Set.mem_singleton _)
+    have : IsPrime m :=
+      ⟨by rintro rfl <;> rw [radical_top] at hrm <;> exact hrm trivial, fun x y hxym =>
+        or_iff_not_imp_left.2 fun hxm =>
+          by_contradiction fun hym =>
+            let ⟨n, hrn⟩ := this _ hxm
+            let ⟨p, hpm, q, hq, hpqrn⟩ := Submodule.mem_sup.1 hrn
+            let ⟨c, hcxq⟩ := mem_span_singleton'.1 hq
+            let ⟨k, hrk⟩ := this _ hym
+            let ⟨f, hfm, g, hg, hfgrk⟩ := Submodule.mem_sup.1 hrk
+            let ⟨d, hdyg⟩ := mem_span_singleton'.1 hg
+            hrm
+              ⟨n + k, by
+                rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
+                    mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc] <;>
+                  refine'
+                    m.add_mem (m.mul_mem_right _ hpm)
+                      (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
+    hrm <|
+      this.radical.symm ▸ (infₛ_le ⟨him, this⟩ : infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 #align ideal.radical_eq_Inf Ideal.radical_eq_infₛ
 
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
@@ -1280,7 +1280,7 @@ section Dvd
 
 /-- If `I` divides `J`, then `I` contains `J`.
 
-In a Dedekind domain, to divide and contain are equivalent, see `ideal.dvd_iff_le`.
+In a Dedekind domain, to divide and contain are equivalent, see `Ideal.dvd_iff_le`.
 -/
 theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
   | ⟨_, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
@@ -1382,13 +1382,13 @@ theorem comap_le_map_of_inv_on (g : G) (I : Ideal S) (hf : Set.LeftInvOn g f (f 
     I.comap f ≤ I.map g := fun x (hx : f x ∈ I) => hf hx ▸ Ideal.mem_map_of_mem g hx
 #align ideal.comap_le_map_of_inv_on Ideal.comap_le_map_of_inv_on
 
-/-- The `ideal` version of `set.image_subset_preimage_of_inverse`. -/
+/-- The `Ideal` version of `Set.image_subset_preimage_of_inverse`. -/
 theorem map_le_comap_of_inverse (g : G) (I : Ideal R) (h : Function.LeftInverse g f) :
     I.map f ≤ I.comap g :=
   map_le_comap_of_inv_on _ _ _ <| h.leftInvOn _
 #align ideal.map_le_comap_of_inverse Ideal.map_le_comap_of_inverse
 
-/-- The `ideal` version of `set.preimage_subset_image_of_inverse`. -/
+/-- The `Ideal` version of `Set.preimage_subset_image_of_inverse`. -/
 theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse g f) :
     I.comap f ≤ I.map g :=
   comap_le_map_of_inv_on _ _ _ <| h.leftInvOn _
@@ -1696,7 +1696,7 @@ def relIsoOfSurjective : Ideal S ≃o { p : Ideal R // comap f ⊥ ≤ p }
 
 /-- The map on ideals induced by a surjective map preserves inclusion. -/
 def orderEmbeddingOfSurjective : Ideal S ↪o Ideal R :=
-  (relIsoOfSurjective f hf).toRelEmbedding.trans (Subtype.relEmbedding _ _)
+  (relIsoOfSurjective f hf).toRelEmbedding.trans (Subtype.relEmbedding (fun x y => x ≤ y) _)
 #align ideal.order_embedding_of_surjective Ideal.orderEmbeddingOfSurjective
 
 theorem map_eq_top_or_isMaximal_of_surjective {I : Ideal R} (H : IsMaximal I) :
@@ -1731,21 +1731,21 @@ theorem comap_le_comap_iff_of_surjective (I J : Ideal S) : comap f I ≤ comap f
 
 end Surjective
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : ideal R`, then `map f (map f.symm) = I`. -/
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f (map f.symm) = I`. -/
 @[simp]
 theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
     (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
   simp [← RingEquiv.toRingHom_eq_coe, map_map]
 #align ideal.map_of_equiv Ideal.map_of_equiv
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : ideal R`, then `comap f.symm (comap f) = I`. -/
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm (comap f) = I`. -/
 @[simp]
 theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
     (I.comap (f.symm : S →+* R)).comap (f : R →+* S) = I := by
   simp [← RingEquiv.toRingHom_eq_coe, comap_comap]
 #align ideal.comap_of_equiv Ideal.comap_of_equiv
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : ideal R`, then `map f I = comap f.symm I`. -/
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
 theorem map_comap_of_equiv (I : Ideal R) (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
   le_antisymm (le_comap_of_map_le (map_of_equiv I f).le)
     (le_map_of_comap_le_of_surjective _ f.surjective (comap_of_equiv I f).le)
@@ -1819,12 +1819,12 @@ theorem map_mul : map f (I * J) = map f I * map f J :=
               hfri ▸ hfsj ▸ by rw [← map_mul] <;> exact mem_map_of_mem f (mul_mem_mul hri hsj))
 #align ideal.map_mul Ideal.map_mul
 
-/-- The pushforward `ideal.map` as a monoid-with-zero homomorphism. -/
+/-- The pushforward `Ideal.map` as a monoid-with-zero homomorphism. -/
 @[simps]
 def mapHom : Ideal R →*₀ Ideal S where
   toFun := map f
   map_mul' I J := Ideal.map_mul f I J
-  map_one' := by convert Ideal.map_top f <;> exact one_eq_top
+  map_one' := by simp only [one_eq_top]; exact Ideal.map_top f
   map_zero' := Ideal.map_bot
 #align ideal.map_hom Ideal.mapHom
 
@@ -1918,7 +1918,7 @@ variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
 
 open BigOperators
 
-/-- A variant of `finsupp.total` that takes in vectors valued in `I`. -/
+/-- A variant of `Finsupp.total` that takes in vectors valued in `I`. -/
 noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
   (Finsupp.total ι M R v).comp (Finsupp.mapRange.linearMap I.subtype)
 #align ideal.finsupp_total Ideal.finsuppTotal
@@ -1961,7 +1961,7 @@ variable {ι R S : Type _} [CommSemiring R] [CommRing S] [IsDomain S] [Algebra R
 -- Porting note: Needed to add the following line
 private instance : Module R S := Algebra.toModule
 
-/-- A basis on `S` gives a basis on `ideal.span {x}`, by multiplying everything by `x`. -/
+/-- A basis on `S` gives a basis on `Ideal.span {x}`, by multiplying everything by `x`. -/
 noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
     Basis ι R (span ({x} : Set S)) :=
   b.map <|
@@ -1998,14 +1998,14 @@ theorem Associates.mk_ne_zero' {R : Type _} [CommSemiring R] {r : R} :
   rw [Associates.mk_ne_zero, Ideal.zero_eq_bot, Ne.def, Ideal.span_singleton_eq_bot]
 #align associates.mk_ne_zero' Associates.mk_ne_zero'
 
-/-- If `I : ideal S` has a basis over `R`,
+/-- If `I : Ideal S` has a basis over `R`,
 `x ∈ I` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_ideal_iff {ι R S : Type _} [CommRing R] [CommRing S] [Algebra R S] {I : Ideal S}
     (b : Basis ι R I) {x : S} : x ∈ I ↔ ∃ c : ι →₀ R, x = Finsupp.sum c fun i x => x • b i :=
   (b.map ((I.restrictScalarsEquiv R _ _).restrictScalars R).symm).mem_submodule_iff
 #align basis.mem_ideal_iff Basis.mem_ideal_iff
 
-/-- If `I : ideal S` has a finite basis over `R`,
+/-- If `I : Ideal S` has a finite basis over `R`,
 `x ∈ I` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_ideal_iff' {ι R S : Type _} [Fintype ι] [CommRing R] [CommRing S] [Algebra R S]
     {I : Ideal S} (b : Basis ι R I) {x : S} : x ∈ I ↔ ∃ c : ι → R, x = ∑ i, c i • b i :=
@@ -2222,7 +2222,7 @@ variable {R : Type u} {M : Type v}
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
--- TODO: show `[algebra R A] : algebra (ideal R) A` too
+-- TODO: show `[Algebra R A] : Algebra (Ideal R) A` too
 instance moduleSubmodule : Module (Ideal R) (Submodule R M)
     where
   smul_add := smul_sup
@@ -2241,7 +2241,7 @@ variable {A B C : Type _} [Ring A] [Ring B] [Ring C]
 
 variable (f : A →+* B) (f_inv : B → A)
 
-/-- Auxiliary definition used to define `lift_of_right_inverse` -/
+/-- Auxiliary definition used to define `liftOfRightInverse` -/
 def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C) (hg : RingHom.ker f ≤ RingHom.ker g) :
     B →+* C :=
   {
@@ -2267,13 +2267,13 @@ theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g
   f.toAddMonoidHom.liftOfRightInverse_comp_apply f_inv hf ⟨g.toAddMonoidHom, hg⟩ a
 #align ring_hom.lift_of_right_inverse_aux_comp_apply RingHom.liftOfRightInverseAux_comp_apply
 
-/-- `lift_of_right_inverse f hf g hg` is the unique ring homomorphism `φ`
+/-- `liftOfRightInverse f hf g hg` is the unique ring homomorphism `φ`
 
-* such that `φ.comp f = g` (`ring_hom.lift_of_right_inverse_comp`),
+* such that `φ.comp f = g` (`RingHom.liftOfRightInverse_comp`),
 * where `f : A →+* B` is has a right_inverse `f_inv` (`hf`),
 * and `g : B →+* C` satisfies `hg : f.ker ≤ g.ker`.
 
-See `ring_hom.eq_lift_of_right_inverse` for the uniqueness lemma.
+See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
 
 ```
    A .
@@ -2298,8 +2298,8 @@ def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
     simp [liftOfRightInverseAux, hf b]
 #align ring_hom.lift_of_right_inverse RingHom.liftOfRightInverse
 
-/-- A non-computable version of `ring_hom.lift_of_right_inverse` for when no computable right
-inverse is available, that uses `function.surj_inv`. -/
+/-- A non-computable version of `RingHom.liftOfRightInverse` for when no computable right
+inverse is available, that uses `Function.surjInv`. -/
 @[simp]
 noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
     { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) :=
