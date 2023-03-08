@@ -958,8 +958,8 @@ theorem IsPrime.radical_le_iff (hJ : IsPrime J) : I.radical ≤ J ↔ I ≤ J :=
 #align ideal.is_prime.radical_le_iff Ideal.IsPrime.radical_le_iff
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (x «expr ∉ » m) -/
-theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } :=
-  le_antisymm (le_infₛ fun J hJ => hJ.2.radical_le_iff.2 hJ.1) fun r hr =>
+theorem radical_eq_infₛ (I : Ideal R) : radical I = infₛ { J : Ideal R | I ≤ J ∧ IsPrime J } := by
+  exact le_antisymm (le_infₛ fun J hJ => hJ.2.radical_le_iff.2 hJ.1) fun r hr =>
     by_contradiction fun hri =>
       let ⟨m, (hrm : r ∉ radical m), him, hm⟩ :=
         zorn_nonempty_partialOrder₀ { K : Ideal R | r ∉ radical K }
@@ -1119,7 +1119,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
             Set.Subset.trans h <|
               Set.Subset.trans (Set.subset_union_right _ _) (Set.subset_union_left _ _))
           fun ⟨i, his, hi⟩ => by
-          refine' Set.Subset.trans hi <| Set.Subset.trans _ <| Set.subset_union_right _ _ <;>
+          refine' Set.Subset.trans hi <| Set.Subset.trans _ <| Set.subset_union_right _ _;
             exact Set.subset_bunionᵢ_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
   induction' n with n ih generalizing a b s
@@ -1221,9 +1221,11 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
 theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i :=
-  suffices ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) → ∃ i, i ∈ s ∧ I ≤ f i from
-    ⟨fun h => bex_def.2 <| this h, fun ⟨i, his, hi⟩ =>
-      Set.Subset.trans hi <| Set.subset_bunionᵢ_of_mem <| show i ∈ (↑s : Set ι) from his⟩
+  suffices ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) → ∃ i, i ∈ s ∧ I ≤ f i by
+    have aux := fun h => (bex_def.2 <| this h)
+    simp_rw [exists_prop] at aux
+    refine ⟨aux, fun ⟨i, his, hi⟩ ↦ Set.Subset.trans hi ?_⟩
+    apply Set.subset_bunionᵢ_of_mem (show i ∈ (↑s : Set ι) from his)
   fun h : (I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i => by
   classical
     by_cases has : a ∈ s
@@ -1263,7 +1265,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
         exact absurd h this
       · cases' hsne.bex with i his
-        obtain ⟨t, hit, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
+        obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
           ⟨s.erase i, Finset.not_mem_erase i s, Finset.insert_erase his⟩
         have hp' : ∀ j ∈ t, IsPrime (f j) := by
           intro j hj
@@ -1942,12 +1944,11 @@ theorem range_finsuppTotal : LinearMap.range (finsuppTotal ι M I v) = I • Sub
   refine' ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, _⟩
   rintro ⟨a, ha, rfl⟩
   classical
-    refine' ⟨a.map_range (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by split_ifs <;> rfl), _⟩
+    refine' ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), _⟩
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _
       rw [dif_pos (ha i)]
-      rfl
     · exact fun _ => zero_smul _ _
 #align ideal.range_finsupp_total Ideal.range_finsuppTotal
 
@@ -2248,15 +2249,15 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C) (
       ⟨g.toAddMonoidHom, hg⟩ with
     toFun := fun b => g (f_inv b)
     map_one' := by
-      rw [← g.map_one, ← sub_eq_zero, ← g.map_sub, ← g.mem_ker]
+      rw [← map_one g, ← sub_eq_zero, ← map_sub g, ← mem_ker g]
       apply hg
-      rw [f.mem_ker, f.map_sub, sub_eq_zero, f.map_one]
+      rw [mem_ker f, map_sub f, sub_eq_zero, map_one f]
       exact hf 1
     map_mul' := by
       intro x y
-      rw [← g.map_mul, ← sub_eq_zero, ← g.map_sub, ← g.mem_ker]
+      rw [← map_mul g, ← sub_eq_zero, ← map_sub g, ← mem_ker g]
       apply hg
-      rw [f.mem_ker, f.map_sub, sub_eq_zero, f.map_mul]
+      rw [mem_ker f, map_sub f, sub_eq_zero, map_mul f]
       simp only [hf _] }
 #align ring_hom.lift_of_right_inverse_aux RingHom.liftOfRightInverseAux
 
@@ -2324,5 +2325,3 @@ theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* 
 #align ring_hom.eq_lift_of_right_inverse RingHom.eq_liftOfRightInverse
 
 end RingHom
-
-#lint
