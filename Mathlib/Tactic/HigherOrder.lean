@@ -21,7 +21,7 @@ open Lean Name Meta Elab Expr Term
 namespace Tactic
 
 /-- `mkComp v e` checks whether `e` is a sequence of nested applications `f (g (h v))`, and if so,
-returns the expression `f ∘ g ∘ h`. -/
+returns the expression `f ∘ g ∘ h`. If `e = v` it returns `id`. -/
 def mkComp (v : Expr) : Expr → MetaM Expr
 | .app f e =>
   if e.equal v then
@@ -35,6 +35,7 @@ def mkComp (v : Expr) : Expr → MetaM Expr
   guard (e.equal v)
   let t ← inferType e
   mkAppOptM ``id #[t]
+
 /--
 From a lemma of the shape `∀ x, f (g x) = h x`
 derive an auxiliary lemma of the form `f ∘ g = h`
@@ -51,6 +52,7 @@ partial def mkHigherOrderType (e : Expr) : MetaM Expr := do
     else
       let some (_, lhs, rhs) ← matchEq? body | throwError "not an equality {← ppExpr body}"
       mkEq (← mkComp fvar lhs) (← mkComp fvar rhs)
+
 /-- A user attribute that applies to lemmas of the shape `∀ x, f (g x) = h x`.
 It derives an auxiliary lemma of the form `f ∘ g = h` for reasoning about higher-order functions.
 -/
@@ -94,13 +96,20 @@ def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
       return hothmName
   | _ => throwUnsupportedSyntax
 
-/-- `higher_order` attribute. -/
+/-- The `higher_order` attribute. From a lemma of the shape `∀ x, f (g x) = h x` derive an
+auxiliary lemma of the form `f ∘ g = h` for reasoning about higher-order functions.
+
+Syntax: `[higher_order]` or `[higher_order name]` where the given name is used for the
+generated theorem. -/
 initialize higherOrderAttr : ParametricAttribute Name ←
   registerParametricAttribute {
     name := `higherOrder,
     descr :=
 "From a lemma of the shape `∀ x, f (g x) = h x` derive an auxiliary lemma of the
-form `f ∘ g = h` for reasoning about higher-order functions.",
+form `f ∘ g = h` for reasoning about higher-order functions.
+
+Syntax: `[higher_order]` or `[higher_order name]`, where the given name is used for the
+generated theorem.",
     getParam := higherOrderGetParam }
 
 end Tactic
