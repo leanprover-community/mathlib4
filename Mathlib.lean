@@ -709,6 +709,7 @@ import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.Data.Polynomial.Degree.Definitions
+import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Prod.Basic
