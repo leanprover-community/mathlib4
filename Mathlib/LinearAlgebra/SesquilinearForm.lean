@@ -382,30 +382,25 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   rw [← Finset.coe_singleton]
   refine' eq_bot_iff.2 fun y h ↦ _
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
-  have := h.2 x _
-  · rw [Finset.sum_singleton] at this⊢
-    suffices hμzero : μ x = 0
-    · rw [hμzero, zero_smul, Submodule.mem_bot]
-    change B x (μ x • x) = 0 at this
-    rw [map_smulₛₗ, smul_eq_mul] at this
-    exact
-      Or.elim (zero_eq_mul.mp this.symm)
-        (fun y ↦ by
-          simp at y
-          exact y)
-        fun hfalse ↦ False.elim <| hx hfalse
-  · rw [Submodule.mem_span] <;> exact fun _ hp ↦ hp <| Finset.mem_singleton_self _
+  replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
+  rw [Finset.sum_singleton] at h ⊢
+  suffices hμzero : μ x = 0
+  · rw [hμzero, zero_smul, Submodule.mem_bot]
+  rw [isOrtho_def, map_smulₛₗ, smul_eq_mul] at h
+  exact Or.elim (zero_eq_mul.mp h.symm)
+      (fun y ↦ by simpa using y)
+      (fun hfalse ↦ False.elim $ hx hfalse)
 #align linear_map.span_singleton_inf_orthogonal_eq_bot LinearMap.span_singleton_inf_orthogonal_eq_bot
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] K} (x : V) :
-    Submodule.orthogonalBilin (K ∙ x) B = (B x).ker := by
+    Submodule.orthogonalBilin (K ∙ x) B = LinearMap.ker (B x) := by
   ext y
   simp_rw [Submodule.mem_orthogonalBilin_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
   constructor
   · exact fun h ↦ h x ⟨1, one_smul _ _⟩
   · rintro h _ ⟨z, rfl⟩
-    rw [is_ortho, map_smulₛₗ₂, smul_eq_zero]
+    rw [isOrtho_def, map_smulₛₗ₂, smul_eq_zero]
     exact Or.intro_right _ h
 #align linear_map.orthogonal_span_singleton_eq_to_lin_ker LinearMap.orthogonal_span_singleton_eq_to_lin_ker
 
@@ -614,7 +609,7 @@ theorem isPairSelfAdjoint_equiv (e : M₁ ≃ₗ[R] M) (f : Module.End R M) :
     simp only [LinearEquiv.symm_conj_apply, compl₂_apply, coe_comp, LinearEquiv.coe_coe,
       compl₁₂_apply, LinearEquiv.apply_symm_apply]
   have he : Function.Surjective (⇑(↑e : M₁ →ₗ[R] M) : M₁ → M) := e.surjective
-  simp_rw [is_pair_self_adjoint, is_adjoint_pair_iff_comp_eq_compl₂, hₗ, hᵣ, compl₁₂_inj he he]
+  simp_rw [IsPairSelfAdjoint, isAdjointPair_iff_comp_eq_compl₂, hₗ, hᵣ, compl₁₂_inj he he]
 #align linear_map.is_pair_self_adjoint_equiv LinearMap.isPairSelfAdjoint_equiv
 
 theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R M) :
@@ -631,7 +626,7 @@ theorem mem_selfAdjointSubmodule (f : Module.End R M) :
 @[simp]
 theorem mem_skewAdjointSubmodule (f : Module.End R M) :
     f ∈ B.skewAdjointSubmodule ↔ B.IsSkewAdjoint f := by
-  rw [is_skew_adjoint_iff_neg_self_adjoint]
+  rw [isSkewAdjoint_iff_neg_self_adjoint]
   exact Iff.rfl
 #align linear_map.mem_skew_adjoint_submodule LinearMap.mem_skewAdjointSubmodule
 
