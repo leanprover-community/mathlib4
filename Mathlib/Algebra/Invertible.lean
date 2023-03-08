@@ -54,6 +54,25 @@ def something_one := something_that_needs_inverses 1
 end
 ```
 
+### Typeclass search vs. unification for `simp` lemmas
+
+Note that since typeclass search searches the local context first, an instance argument like
+`[Invertible a]` might sometimes be filled by a different term than the one we'd find by
+unification (i.e., the one that's used as an implicit argument to `⅟`).
+
+This can cause issues with `simp`. Therefore, some lemmas are duplicated, with the `@[simp]`
+versions using unification and the user-facing ones using typeclass search.
+
+Since unification can make backwards rewriting (e.g. `rw [← mylemma]`)
+slow, we still want the instance-argument versions; therefore the user-facing versions retain the
+instance arguments and the original lemma name, whereas the `@[simp]`/unification ones acquire a
+`'` at the end of their name.
+
+We modify this file according to the above pattern only as needed; therefore, most `@[simp]` lemmas
+here are not part of such a duplicate pair. This is not (yet) intended as a permanent solution.
+
+See Zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Invertible.201.20simps/near/320558233]
+
 ## Tags
 
 invertible, inverse element, invOf, a half, one half, a third, one third, ½, ⅓
