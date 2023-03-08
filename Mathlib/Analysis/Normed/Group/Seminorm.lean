@@ -626,7 +626,7 @@ namespace GroupSeminorm
 
 variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
-@[to_additive AddGroupSeminorm.toOne]
+@[to_additive existing AddGroupSeminorm.toOne]
 instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 1 then 0 else 1
       map_one' := if_pos rfl
@@ -639,13 +639,13 @@ instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
           refine' le_add_of_le_of_nonneg _ _ <;> split_ifs <;> norm_num
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
-@[to_additive (attr := simp) AddGroupSeminorm.apply_one]
+@[to_additive (attr := simp) existing AddGroupSeminorm.apply_one]
 theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 then 0 else 1 :=
   rfl
 #align group_seminorm.apply_one GroupSeminorm.apply_one
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `AddGroupSeminorm`. -/
-@[to_additive AddGroupSeminorm.toSMul]
+@[to_additive existing AddGroupSeminorm.toSMul]
 instance : SMul R (GroupSeminorm E) :=
   ⟨fun r p =>
     { toFun := fun x => r • p x
@@ -660,22 +660,22 @@ instance : SMul R (GroupSeminorm E) :=
             (mul_add _ _ _)
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
-@[to_additive AddGroupSeminorm.isScalarTower]
+@[to_additive existing AddGroupSeminorm.isScalarTower]
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
     IsScalarTower R R' (GroupSeminorm E) :=
   ⟨fun r a p => ext fun x => smul_assoc r a <| p x⟩
 
-@[to_additive (attr := simp, norm_cast) AddGroupSeminorm.coe_smul]
+@[to_additive (attr := simp, norm_cast) existing AddGroupSeminorm.coe_smul]
 theorem coe_smul (r : R) (p : GroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
   rfl
 #align group_seminorm.coe_smul GroupSeminorm.coe_smul
 
-@[to_additive (attr := simp) AddGroupSeminorm.smul_apply]
+@[to_additive (attr := simp) existing AddGroupSeminorm.smul_apply]
 theorem smul_apply (r : R) (p : GroupSeminorm E) (x : E) : (r • p) x = r • p x :=
   rfl
 #align group_seminorm.smul_apply GroupSeminorm.smul_apply
 
-@[to_additive AddGroupSeminorm.smul_sup]
+@[to_additive existing AddGroupSeminorm.smul_sup]
 theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     -- porting note: This appears to be due to lean4#2074 that we need this
@@ -895,16 +895,16 @@ instance _root_.AddGroupNorm.toOne [AddGroup E] [DecidableEq E] : One (AddGroupN
 
 variable [Group E] [DecidableEq E]
 
-@[to_additive AddGroupNorm.toOne]
+@[to_additive existing AddGroupNorm.toOne]
 instance toOne : One (GroupNorm E) :=
   ⟨{ (1 : GroupSeminorm E) with eq_one_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
-@[to_additive (attr := simp) AddGroupNorm.apply_one]
+@[to_additive (attr := simp) existing AddGroupNorm.apply_one]
 theorem apply_one (x : E) : (1 : GroupNorm E) x = if x = 1 then 0 else 1 :=
   rfl
 #align group_norm.apply_one GroupNorm.apply_one
 
-@[to_additive]
+@[to_additive existing]
 instance : Inhabited (GroupNorm E) :=
   ⟨1⟩
 
