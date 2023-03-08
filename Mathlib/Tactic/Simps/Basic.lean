@@ -55,7 +55,6 @@ There are some small changes in the attribute. None of them should have great ef
   a lemma with that name (in Lean 3 it would generate a different unique name)
 * `transparency.none` has been replaced by `TransparencyMode.reducible`
 * The `attr` configuration option has been split into `isSimp` and `attrs` (for extra attributes)
-  (todo)
 * Because Lean 4 uses bundled structures, this means that `simps` applied to anything that
   implements a notation class will almost certainly require a user-provided custom simps projection.
 
@@ -793,7 +792,8 @@ register_option linter.simpsNoConstructor : Bool := {
 structure Config where
   /-- Make generated lemmas simp lemmas -/
   isSimp := true
-  /-- [TODO] Other attributes to apply to generated lemmas -/
+  /-- Other simp-attributes to apply to generated lemmas.
+  Attributes that are currently not simp-attributes are not supported. -/
   attrs : List Name := []
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
@@ -817,13 +817,14 @@ structure Config where
 declare_config_elab elabSimpsConfig Config
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-  between fully applied Expressions. -/
-def Config.asFn : Config where
+  between fully applied Expressions. Use this using `@[simps (config := .asFn)]`. -/
+def Config.asFn : Simps.Config where
   fullyApplied := false
 
-/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`. -/
+/-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`.
+  Use this using `@[simps (config := .lemmasOnly)]`. -/
 def Config.lemmasOnly : Config where
-  attrs := []
+  isSimp := false
 
 /-- `instantiateLambdasOrApps es e` instantiates lambdas in `e` by expressions from `es`.
 If the length of `es` is larger than the number of lambdas in `e`,
@@ -922,7 +923,10 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     ← mkConstWithLevelParams declName
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
-  -- cfg.attrs.mapM fun nm ↦ setAttribute nm declName tt -- todo: deal with attributes
+  _ ← cfg.attrs.mapM fun simpAttr ↦ do
+    let .some simpDecl ← getSimpExtension? simpAttr |
+      throwError "{simpAttr} is not a simp-attribute."
+    addSimpTheorem simpDecl declName true false .global <| eval_prio default
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
