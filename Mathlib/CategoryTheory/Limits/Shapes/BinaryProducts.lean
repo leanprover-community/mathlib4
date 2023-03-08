@@ -299,7 +299,8 @@ section
 def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y where
   pt := P
   π :=
-    { app := fun j => Discrete.recOn j fun j => WalkingPair.casesOn j π₁ π₂
+    -- Porting removed use of casesOn to preserve computability 
+    { app := fun ⟨j⟩ => by cases j <;> simpa 
       naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by cases u; simp }
 #align category_theory.limits.binary_fan.mk CategoryTheory.Limits.BinaryFan.mk
 
@@ -308,7 +309,8 @@ def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y whe
 def BinaryCofan.mk {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : BinaryCofan X Y where
   pt := P
   ι := 
-    { app := fun j => Discrete.recOn j fun j => WalkingPair.casesOn j ι₁ ι₂ 
+    -- Porting removed use of casesOn to preserve computability 
+    { app := fun ⟨j⟩ => by cases j <;> simpa 
       naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by cases u; simp }
 #align category_theory.limits.binary_cofan.mk CategoryTheory.Limits.BinaryCofan.mk
 

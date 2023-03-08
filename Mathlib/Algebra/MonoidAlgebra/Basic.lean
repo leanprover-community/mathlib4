@@ -54,7 +54,9 @@ noncomputable section
 
 open BigOperators
 
-open Finset Finsupp
+open Finset
+
+open Finsupp hiding single mapDomain
 
 universe u₁ u₂ u₃
 
@@ -98,6 +100,39 @@ variable {k G}
 section
 
 variable [Semiring k] [NonUnitalNonAssocSemiring R]
+
+-- Porting note: `reducible` cannot be `local`, so we replace some definitions and theorems with
+--               new ones which have new types.
+
+abbrev single (a : G) (b : k) : MonoidAlgebra k G := Finsupp.single a b
+
+theorem single_zero (a : G) : (single a 0 : MonoidAlgebra k G) = 0 := Finsupp.single_zero a
+
+theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
+  Finsupp.single_add a b₁ b₂
+
+@[simp]
+theorem sum_single_index [AddCommMonoid N] {a : G} {b : k} {h : G → k → N} (h_zero : h a 0 = 0) :
+  (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
+
+@[simp]
+theorem sum_single (f : MonoidAlgebra k G) : f.sum single = f :=
+  Finsupp.sum_single f
+
+theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
+    single a b a' = if a = a' then b else 0 :=
+  Finsupp.single_apply
+
+@[simp]
+theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
+
+abbrev mapDomain {G' : Type _} (f : G → G') (v : MonoidAlgebra k G) : MonoidAlgebra k G' :=
+  Finsupp.mapDomain f v
+
+theorem mapDomain_sum {k' G' : Type _} [Semiring k'] {f : G → G'} {s : MonoidAlgebra k' G}
+    {v : G → k' → MonoidAlgebra k G} :
+    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
+  Finsupp.mapDomain_sum
 
 /-- A non-commutative version of `MonoidAlgebra.lift`: given a additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
@@ -181,9 +216,14 @@ instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
     mul := (· * ·)
     add := (· + ·)
     mul_assoc := fun f g h => by
-      simp only [mul_def, sum_sum_index, sum_zero_index, sum_add_index, sum_single_index,
-        single_zero, single_add, eq_self_iff_true, forall_true_iff, forall₃_true_iff, add_mul,
-        mul_add, add_assoc, mul_assoc, zero_mul, mul_zero, sum_zero, sum_add] }
+      -- Porting note: `reducible` cannot be `local` so proof gets long.
+      simp only [mul_def]
+      rw [sum_sum_index]; congr; ext a₁ b₁
+      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
+      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
+      rw [sum_single_index, mul_assoc, mul_assoc]
+      all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
+        mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
 #align monoid_algebra.non_unital_semiring MonoidAlgebra.nonUnitalSemiring
 
 end Semigroup
@@ -386,8 +426,11 @@ variable [Semiring k]
 
 theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ * a₂ = x then b₁ * b₂ else 0 := by
-  rw [mul_def]
-  simp only [Finsupp.sum_apply, single_apply]
+  -- Porting note: `reducible` cannot be `local` so proof gets long.
+  rw [mul_def, Finsupp.sum_apply]; congr; ext
+  rw [Finsupp.sum_apply]; congr; ext
+  apply single_apply
+
 #align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
 
 theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Finset (G × G))
@@ -415,19 +458,15 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
 
 #align monoid_algebra.mul_apply_antidiagonal MonoidAlgebra.mul_apply_antidiagonal
 
--- Porting note: Type ascriptions didn't work, so `α` & `β` of `HMul.hMul` are specified.
 @[simp]
 theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
-    HMul.hMul (α := MonoidAlgebra k G) (β := MonoidAlgebra k G) (single a₁ b₁) (single a₂ b₂)
-      = single (a₁ * a₂) (b₁ * b₂) :=
+    single a₁ b₁ * single a₂ b₂ = single (a₁ * a₂) (b₁ * b₂) :=
   (sum_single_index (by simp only [zero_mul, single_zero, sum_zero])).trans
     (sum_single_index (by rw [mul_zero, single_zero]))
 #align monoid_algebra.single_mul_single MonoidAlgebra.single_mul_single
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hPow` is specified.
 @[simp]
-theorem single_pow [Monoid G] {a : G} {b : k} :
-    ∀ n : ℕ, HPow.hPow (α := MonoidAlgebra k G) (single a b) n = single (a ^ n) (b ^ n)
+theorem single_pow [Monoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n = single (a ^ n) (b ^ n)
   | 0 => by
     simp only [pow_zero]
     rfl
@@ -444,13 +483,10 @@ theorem mapDomain_one {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
   simp_rw [one_def, mapDomain_single, map_one]
 #align monoid_algebra.map_domain_one MonoidAlgebra.mapDomain_one
 
--- Porting note: Type ascriptions didn't work, so `α` & `β` of `HMul.hMul` are specified.
 /-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
 theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β] [Mul α] [Mul α₂]
     {F : Type _} [MulHomClass F α α₂] (f : F) (x y : MonoidAlgebra β α) :
-    (mapDomain f (x * y : MonoidAlgebra β α) : MonoidAlgebra β α₂) =
-      HMul.hMul (α := MonoidAlgebra β α₂) (β := MonoidAlgebra β α₂)
-        (mapDomain f x) (mapDomain f y) := by
+    mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_mul]
   rw [Finsupp.sum_mapDomain_index]
   · congr
@@ -506,10 +542,8 @@ def singleHom [MulOneClass G] : k × G →* MonoidAlgebra k G where
 #align monoid_algebra.single_hom MonoidAlgebra.singleHom
 #align monoid_algebra.single_hom_apply MonoidAlgebra.singleHom_apply
 
--- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
 theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
-    (H : ∀ a, a * x = z ↔ a = y) :
-    (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) z = f y * r := by
+    (H : ∀ a, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
   classical exact
       have A :
         ∀ a₁ b₁,
@@ -529,10 +563,8 @@ theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x 
   f.mul_single_apply_aux fun a => by rw [mul_one]
 #align monoid_algebra.mul_single_one_apply MonoidAlgebra.mul_single_one_apply
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
-    (H : ∀ a, x * a = y ↔ a = z) :
-    (HMul.hMul (α := MonoidAlgebra k G) (single x r) f) y = r * f z := by
+    (H : ∀ a, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
   classical exact
       have : (f.sum fun a b => ite (x * a = y) (0 * b) 0) = 0 := by simp
       calc
@@ -545,9 +577,8 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 
 #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
-    (HMul.hMul (α := MonoidAlgebra k G) (single 1 r) f) x = r * f x :=
+    (single (1 : G) r * f) x = r * f x :=
   f.single_mul_apply_aux fun a => by rw [one_mul]
 #align monoid_algebra.single_one_mul_apply MonoidAlgebra.single_one_mul_apply
 
@@ -650,12 +681,15 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
         have h₁ : ∀ m, g m 0 = 0 := by
           intro m
           exact zero_smul k (f m)
-        have h₂ : ∀ (m) (t₁ t₂ : k), g m (t₁ + t₂) = g m t₁ + g m t₂ :=
-          by
+        have h₂ : ∀ (m) (t₁ t₂ : k), g m (t₁ + t₂) = g m t₁ + g m t₂ := by
           intros
           rw [← add_smul]
+        -- Porting note: `reducible` cannot be `local` so proof gets long.
         simp_rw [Finsupp.mul_sum, Finsupp.sum_mul, smul_mul_smul, ← f.map_mul, mul_def,
-          sum_comm a₂ a₁, sum_sum_index h₁ h₂, sum_single_index (h₁ _)] }
+          sum_comm a₂ a₁]
+        rw [sum_sum_index h₁ h₂]; congr; ext
+        rw [sum_sum_index h₁ h₂]; congr; ext
+        rw [sum_single_index (h₁ _)] }
   invFun F := F.toMulHom.comp (ofMagma k G)
   left_inv f := by
     ext m
@@ -681,10 +715,8 @@ section Algebra
 
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlgebra k G) :
-    (HMul.hMul (α := MonoidAlgebra k G) (single 1 r) f) =
-      (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) := by
+    single (1 : G) r * f = f * single (1 : G) r := by
   -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
   refine Finsupp.ext fun _ => ?_
   rw [single_one_mul_apply, mul_single_one_apply, mul_comm]
@@ -720,7 +752,7 @@ theorem ringHom_ext {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : MonoidA
     f = g :=
   RingHom.coe_addMonoidHom_injective <|
     addHom_ext fun a b => by
-      rw [← one_mul a, ← mul_one b, ← single_mul_single, AddMonoidHom.coe_coe f,
+      rw [← single, ← one_mul a, ← mul_one b, ← single_mul_single, AddMonoidHom.coe_coe f,
         AddMonoidHom.coe_coe g, f.map_mul, g.map_mul, h₁, h_of]
 #align monoid_algebra.ring_hom_ext MonoidAlgebra.ringHom_ext
 
@@ -919,22 +951,19 @@ section
 
 variable (k)
 
--- Porting note: Type ascriptions didn't work, so `α` of `HSMul.hSMul` is specified.
 /-- When `V` is a `k[G]`-module, multiplication by a group element `g` is a `k`-linear map. -/
 def GroupSmul.linearMap [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V] [Module k V]
     [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G) : V →ₗ[k] V
     where
-  toFun v := HSMul.hSMul (α := MonoidAlgebra k G) (single g (1 : k)) v
-  map_add' x y := smul_add (M := MonoidAlgebra k G) (single g (1 : k)) x y
+  toFun v := single g (1 : k) • v
+  map_add' x y := smul_add (single g (1 : k)) x y
   map_smul' _c _x := smul_algebra_smul_comm _ _ _
 #align monoid_algebra.group_smul.linear_map MonoidAlgebra.GroupSmul.linearMap
 
--- Porting note: Type ascriptions didn't work, so `α` of `HSMul.hSMul` is specified.
 @[simp]
 theorem GroupSmul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type u₃) [AddCommMonoid V]
     [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G)
-    (v : V) : (GroupSmul.linearMap k V g) v =
-      HSMul.hSMul (α := MonoidAlgebra k G) (single g (1 : k)) v :=
+    (v : V) : (GroupSmul.linearMap k V g) v = single g (1 : k) • v :=
   rfl
 #align monoid_algebra.group_smul.linear_map_apply MonoidAlgebra.GroupSmul.linearMap_apply
 
@@ -942,13 +971,11 @@ section
 
 variable {k}
 
--- Porting note: Type ascriptions didn't work, so `α` of `HSMul.hSMul` is specified.
 variable [Monoid G] [CommSemiring k] {V W : Type u₃} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
   (f : V →ₗ[k] W)
-  (h : ∀ (g : G) (v : V), f (HSMul.hSMul (α := MonoidAlgebra k G) (single g (1 : k)) v) =
-    (HSMul.hSMul (α := MonoidAlgebra k G) (single g (1 : k)) (f v)))
+  (h : ∀ (g : G) (v : V), f (single g (1 : k) • v) = single g (1 : k) • f v)
 
 /-- Build a `k[G]`-linear map from a `k`-linear map and evidence that it is `G`-equivariant. -/
 def equivariantOfLinearOfComm : V →ₗ[MonoidAlgebra k G] W where
@@ -984,10 +1011,8 @@ variable {ι : Type ui}
 
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
--- Porting note: Type ascriptions didn't work, so `β` of `Finset.prod` is specified.
 theorem prod_single [CommSemiring k] [CommMonoid G] {s : Finset ι} {a : ι → G} {b : ι → k} :
-    (Finset.prod (β := MonoidAlgebra k G) s fun i => single (a i) (b i)) =
-      single (∏ i in s, a i) (∏ i in s, b i) :=
+    (∏ i in s, single (a i) (b i)) = single (∏ i in s, a i) (∏ i in s, b i) :=
   Finset.cons_induction_on s rfl fun a s has ih => by
     rw [prod_cons has, ih, single_mul_single, prod_cons has, prod_cons has]
 #align monoid_algebra.prod_single MonoidAlgebra.prod_single
@@ -1001,36 +1026,32 @@ variable [Semiring k] [Group G]
 
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
--- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
 @[simp]
 theorem mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
-    (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) y = f (y * x⁻¹) * r :=
+    (f * single x r) y = f (y * x⁻¹) * r :=
   f.mul_single_apply_aux fun _a => eq_mul_inv_iff_mul_eq.symm
 #align monoid_algebra.mul_single_apply MonoidAlgebra.mul_single_apply
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 @[simp]
 theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
-    (HMul.hMul (α := MonoidAlgebra k G) (single x r) f) y = r * f (x⁻¹ * y) :=
+    (single x r * f) y = r * f (x⁻¹ * y) :=
   f.single_mul_apply_aux fun _z => eq_inv_mul_iff_mul_eq.symm
 #align monoid_algebra.single_mul_apply MonoidAlgebra.single_mul_apply
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a b => b * g (a⁻¹ * x) :=
   calc
-    (f * g) x = sum f fun a b => (HMul.hMul (α := MonoidAlgebra k G) (single a b) g) x := by
+    (f * g) x = sum f fun a b => (single a b * g) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.sum_mul g f, f.sum_single]
     _ = _ := by simp only [single_mul_apply, Finsupp.sum]
 
 #align monoid_algebra.mul_apply_left MonoidAlgebra.mul_apply_left
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 -- If we'd assumed `CommSemiring`, we could deduce this from `mul_apply_left`.
 theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = g.sum fun a b => f (x * a⁻¹) * b :=
   calc
-    (f * g) x = sum g fun a b => (HMul.hMul (β := MonoidAlgebra k G) f (single a b)) x := by
+    (f * g) x = sum g fun a b => (f * single a b) x := by
       rw [← Finsupp.sum_apply, ← Finsupp.mul_sum f g, g.sum_single]
     _ = _ := by simp only [mul_single_apply, Finsupp.sum]
 
@@ -1144,6 +1165,43 @@ variable {k G}
 section
 
 variable [Semiring k] [NonUnitalNonAssocSemiring R]
+
+-- Porting note: `reducible` cannot be `local`, so we replace some definitions and theorems with
+--               new ones which have new types.
+
+abbrev single (a : G) (b : k) : AddMonoidAlgebra k G := Finsupp.single a b
+
+theorem single_zero (a : G) : (single a 0 : AddMonoidAlgebra k G) = 0 := Finsupp.single_zero a
+
+theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
+  Finsupp.single_add a b₁ b₂
+
+@[simp]
+theorem sum_single_index [AddCommMonoid N] {a : G} {b : k} {h : G → k → N} (h_zero : h a 0 = 0) :
+  (single a b).sum h = h a b := Finsupp.sum_single_index h_zero
+
+@[simp]
+theorem sum_single (f : AddMonoidAlgebra k G) : f.sum single = f :=
+  Finsupp.sum_single f
+
+theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
+    single a b a' = if a = a' then b else 0 :=
+  Finsupp.single_apply
+
+@[simp]
+theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
+
+abbrev mapDomain {G' : Type _} (f : G → G') (v : AddMonoidAlgebra k G) : AddMonoidAlgebra k G' :=
+  Finsupp.mapDomain f v
+
+theorem mapDomain_sum {k' G' : Type _} [Semiring k'] {f : G → G'} {s : AddMonoidAlgebra k' G}
+    {v : G → k' → AddMonoidAlgebra k G} :
+    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
+  Finsupp.mapDomain_sum
+
+theorem mapDomain_single {G' : Type _} {f : G → G'} {a : G} {b : k} :
+    mapDomain f (single a b) = single (f a) b :=
+  Finsupp.mapDomain_single
 
 /-- A non-commutative version of `AddMonoidAlgebra.lift`: given a additive homomorphism `f : k →+
 R` and a map `g : Multiplicative G → R`, returns the additive
@@ -1259,9 +1317,14 @@ instance nonUnitalSemiring : NonUnitalSemiring (AddMonoidAlgebra k G) :=
     mul := (· * ·)
     add := (· + ·)
     mul_assoc := fun f g h => by
-      simp only [mul_def, sum_sum_index, sum_zero_index, sum_add_index, sum_single_index,
-        single_zero, single_add, eq_self_iff_true, forall_true_iff, forall₃_true_iff, add_mul,
-        mul_add, add_assoc, mul_assoc, zero_mul, mul_zero, sum_zero, sum_add] }
+      -- Porting note: `reducible` cannot be `local` so proof gets long.
+      simp only [mul_def]
+      rw [sum_sum_index]; congr; ext a₁ b₁
+      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
+      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
+      rw [sum_single_index, mul_assoc, add_assoc]
+      all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
+        mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
 #align add_monoid_algebra.non_unital_semiring AddMonoidAlgebra.nonUnitalSemiring
 
 end Semigroup
@@ -1440,19 +1503,15 @@ theorem mul_apply_antidiagonal [Add G] (f g : AddMonoidAlgebra k G) (x : G) (s :
   @MonoidAlgebra.mul_apply_antidiagonal k (Multiplicative G) _ _ _ _ _ s @hs
 #align add_monoid_algebra.mul_apply_antidiagonal AddMonoidAlgebra.mul_apply_antidiagonal
 
--- Porting note: Type ascriptions didn't work, so `α` & `β` of `HMul.hMul` are specified.
 theorem single_mul_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k} :
-    HMul.hMul (α := AddMonoidAlgebra k G) (β := AddMonoidAlgebra k G) (single a₁ b₁) (single a₂ b₂)
-      = single (a₁ + a₂) (b₁ * b₂) :=
+    single a₁ b₁ * single a₂ b₂ = single (a₁ + a₂) (b₁ * b₂) :=
   @MonoidAlgebra.single_mul_single k (Multiplicative G) _ _ _ _ _ _
 #align add_monoid_algebra.single_mul_single AddMonoidAlgebra.single_mul_single
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hPow` is specified.
 -- This should be a `@[simp]` lemma, but the simp_nf linter times out if we add this.
 -- Probably the correct fix is to make a `[Add]MonoidAlgebra.single` with the correct type,
 -- instead of relying on `Finsupp.single`.
-theorem single_pow [AddMonoid G] {a : G} {b : k} :
-    ∀ n : ℕ, HPow.hPow (α := AddMonoidAlgebra k G) (single a b) n = single (n • a) (b ^ n)
+theorem single_pow [AddMonoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n = single (n • a) (b ^ n)
   | 0 => by
     simp only [pow_zero, zero_nsmul]
     rfl
@@ -1469,13 +1528,10 @@ theorem mapDomain_one {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
   by simp_rw [one_def, mapDomain_single, map_zero]
 #align add_monoid_algebra.map_domain_one AddMonoidAlgebra.mapDomain_one
 
--- Porting note: Type ascriptions didn't work, so `α` & `β` of `HMul.hMul` are specified.
 /-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
 theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β] [Add α] [Add α₂]
     {F : Type _} [AddHomClass F α α₂] (f : F) (x y : AddMonoidAlgebra β α) :
-    (mapDomain f (x * y : AddMonoidAlgebra β α) : AddMonoidAlgebra β α₂) =
-      (HMul.hMul (α := AddMonoidAlgebra β α₂) (β := AddMonoidAlgebra β α₂)
-        (mapDomain f x) (mapDomain f y)) := by
+    mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]
   rw [Finsupp.sum_mapDomain_index]
   · congr
@@ -1544,41 +1600,33 @@ def singleHom [AddZeroClass G] : k × Multiplicative G →* AddMonoidAlgebra k G
 #align add_monoid_algebra.single_hom AddMonoidAlgebra.singleHom
 #align add_monoid_algebra.single_hom_apply AddMonoidAlgebra.singleHom_apply
 
--- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
 theorem mul_single_apply_aux [Add G] (f : AddMonoidAlgebra k G) (r : k) (x y z : G)
-    (H : ∀ a, a + x = z ↔ a = y) :
-    (HMul.hMul (β := AddMonoidAlgebra k G) f (single x r)) z = f y * r :=
+    (H : ∀ a, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
   @MonoidAlgebra.mul_single_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
 #align add_monoid_algebra.mul_single_apply_aux AddMonoidAlgebra.mul_single_apply_aux
 
--- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
 theorem mul_single_zero_apply [AddZeroClass G] (f : AddMonoidAlgebra k G) (r : k) (x : G) :
-    (HMul.hMul (β := AddMonoidAlgebra k G) f (single 0 r)) x = f x * r :=
+    (f * single (0 : G) r) x = f x * r :=
   f.mul_single_apply_aux r _ _ _ fun a => by rw [add_zero]
 #align add_monoid_algebra.mul_single_zero_apply AddMonoidAlgebra.mul_single_zero_apply
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem single_mul_apply_aux [Add G] (f : AddMonoidAlgebra k G) (r : k) (x y z : G)
-    (H : ∀ a, x + a = y ↔ a = z) :
-    (HMul.hMul (α := AddMonoidAlgebra k G) (single x r) f) y = r * f z :=
+    (H : ∀ a, x + a = y ↔ a = z) : (single x r * f) y = r * f z :=
   @MonoidAlgebra.single_mul_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
 #align add_monoid_algebra.single_mul_apply_aux AddMonoidAlgebra.single_mul_apply_aux
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem single_zero_mul_apply [AddZeroClass G] (f : AddMonoidAlgebra k G) (r : k) (x : G) :
-    (HMul.hMul (α := AddMonoidAlgebra k G) (single 0 r) f) x = r * f x :=
+    (single (0 : G) r * f) x = r * f x :=
   f.single_mul_apply_aux r _ _ _ fun a => by rw [zero_add]
 #align add_monoid_algebra.single_zero_mul_apply AddMonoidAlgebra.single_zero_mul_apply
 
--- Porting note: Type ascriptions didn't work, so `β` of `HMul.hMul` is specified.
 theorem mul_single_apply [AddGroup G] (f : AddMonoidAlgebra k G) (r : k) (x y : G) :
-    (HMul.hMul (β := AddMonoidAlgebra k G) f (single x r)) y = f (y - x) * r :=
+    (f * single x r) y = f (y - x) * r :=
   (sub_eq_add_neg y x).symm ▸ @MonoidAlgebra.mul_single_apply k (Multiplicative G) _ _ _ _ _ _
 #align add_monoid_algebra.mul_single_apply AddMonoidAlgebra.mul_single_apply
 
--- Porting note: Type ascriptions didn't work, so `α` of `HMul.hMul` is specified.
 theorem single_mul_apply [AddGroup G] (r : k) (x : G) (f : AddMonoidAlgebra k G) (y : G) :
-    (HMul.hMul (α := AddMonoidAlgebra k G) (single x r) f) y = r * f (-x + y) :=
+    (single x r * f) y = r * f (-x + y) :=
   @MonoidAlgebra.single_mul_apply k (Multiplicative G) _ _ _ _ _ _
 #align add_monoid_algebra.single_mul_apply AddMonoidAlgebra.single_mul_apply
 
@@ -1943,10 +1991,8 @@ universe ui
 
 variable {ι : Type ui}
 
--- Porting note: Type ascriptions didn't work, so `β` of `Finset.prod` is specified.
 theorem prod_single [CommSemiring k] [AddCommMonoid G] {s : Finset ι} {a : ι → G} {b : ι → k} :
-    (Finset.prod (β := AddMonoidAlgebra k G) s fun i => single (a i) (b i)) =
-      single (∑ i in s, a i) (∏ i in s, b i) :=
+    (∏ i in s, single (a i) (b i)) = single (∑ i in s, a i) (∏ i in s, b i) :=
   Finset.cons_induction_on s rfl fun a s has ih => by
     rw [prod_cons has, ih, single_mul_single, sum_cons has, prod_cons has]
 #align add_monoid_algebra.prod_single AddMonoidAlgebra.prod_single
