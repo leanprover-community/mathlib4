@@ -8,9 +8,9 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Damiano Testa, Jens Wage
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Interval
-import Mathbin.Data.Polynomial.Degree.Definitions
-import Mathbin.Data.Polynomial.Induction
+import Mathlib.Data.Nat.Interval
+import Mathlib.Data.Polynomial.Degree.Definitions
+import Mathlib.Data.Polynomial.Induction
 
 /-!
 # Induction on polynomials
@@ -42,8 +42,7 @@ def divX (p : R[X]) : R[X] :=
 #align polynomial.div_X Polynomial.divX
 
 @[simp]
-theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) :=
-  by
+theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
   simp only [div_X, coeff_monomial, true_and_iff, finset_sum_coeff, not_lt, mem_Ico, zero_le,
     Finset.sum_ite_eq', ite_eq_left_iff]
   intro h
@@ -168,8 +167,7 @@ See `degree_pos_induction_on` for a similar statement involving more explicit mu
 @[elab_as_elim]
 theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.natDegree ≠ 0)
     (h_C_add : ∀ {a p}, M p → M (C a + p)) (h_add : ∀ {p q}, M p → M q → M (p + q))
-    (h_monomial : ∀ {n : ℕ} {a : R}, a ≠ 0 → n ≠ 0 → M (monomial n a)) : M f :=
-  by
+    (h_monomial : ∀ {n : ℕ} {a : R}, a ≠ 0 → n ≠ 0 → M (monomial n a)) : M f := by
   suffices f.natDegree = 0 ∨ M f from Or.dcases_on this (fun h => (f0 h).elim) id
   apply f.induction_on
   · exact fun a => Or.inl (nat_degree_C _)
