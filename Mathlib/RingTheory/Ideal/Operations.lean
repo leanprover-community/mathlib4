@@ -713,7 +713,8 @@ theorem mul_sup_eq_of_coprime_right (h : K ⊔ J = ⊤) : I * K ⊔ J = I ⊔ J 
 theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ∏ i in s, J i) = ⊤ :=
   Finset.prod_induction _ (fun J => I ⊔ J = ⊤)
-    (fun J K hJ hK => (sup_mul_eq_of_coprime_left hJ).trans hK) (by simp_rw [one_eq_top, sup_top_eq]) h
+    (fun J K hJ hK => (sup_mul_eq_of_coprime_left hJ).trans hK)
+    (by simp_rw [one_eq_top, sup_top_eq]) h
 #align ideal.sup_prod_eq_top Ideal.sup_prod_eq_top
 
 theorem sup_infᵢ_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
@@ -1170,9 +1171,9 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
       · exact Or.inl ih
       · exact Or.inr ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
     by_cases Hb : f b ≤ f i
-    · have h' : (I : Set R) ⊆ f a ∪ f i ∪ ⋃ j ∈ (↑t : Set ι), f j :=
-        by
-        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_assoc, Set.union_assoc (f a : Set R)] at h
+    · have h' : (I : Set R) ⊆ f a ∪ f i ∪ ⋃ j ∈ (↑t : Set ι), f j := by
+        rw [Finset.coe_insert, Set.bunionᵢ_insert, ← Set.union_assoc,
+          Set.union_assoc (f a : Set R)] at h
         erw [Set.union_eq_self_of_subset_left Hb] at h
         exact h
       have ih := ih hp.2 hn h'
@@ -1934,7 +1935,8 @@ theorem finsuppTotal_apply_eq_of_fintype [Fintype ι] (f : ι →₀ I) :
   exact fun _ => zero_smul _ _
 #align ideal.finsupp_total_apply_eq_of_fintype Ideal.finsuppTotal_apply_eq_of_fintype
 
-theorem range_finsuppTotal : LinearMap.range (finsuppTotal ι M I v) = I • Submodule.span R (Set.range v) := by
+theorem range_finsuppTotal :
+    LinearMap.range (finsuppTotal ι M I v) = I • Submodule.span R (Set.range v) := by
   ext
   rw [Submodule.mem_ideal_smul_span_iff_exists_sum]
   refine' ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, _⟩
@@ -2196,7 +2198,7 @@ theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)
 theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {I : Ideal R}
     (h : RingHom.ker f ≤ I) : map f I.radical = (map f I).radical := by
   rw [radical_eq_infₛ, radical_eq_infₛ]
-  have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsPrime }, RingHom.ker f ≤ J := fun J hJ => le_trans h hJ.left
+  have : ∀ J ∈ {J : Ideal R | I ≤ J ∧ J.IsPrime}, RingHom.ker f ≤ J := fun J hJ => h.trans hJ.left
   convert map_infₛ hf this
   refine' funext fun j => propext ⟨_, _⟩
   · rintro ⟨hj, hj'⟩
@@ -2238,7 +2240,8 @@ variable {A B C : Type _} [Ring A] [Ring B] [Ring C]
 variable (f : A →+* B) (f_inv : B → A)
 
 /-- Auxiliary definition used to define `liftOfRightInverse` -/
-def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C) (hg : RingHom.ker f ≤ RingHom.ker g) :
+def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C)
+    (hg : RingHom.ker f ≤ RingHom.ker g) :
     B →+* C :=
   {
     AddMonoidHom.liftOfRightInverse f.toAddMonoidHom f_inv hf
@@ -2259,7 +2262,8 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C) (
 
 @[simp]
 theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : A →+* C)
-    (hg : RingHom.ker f ≤ RingHom.ker g) (a : A) : (f.liftOfRightInverseAux f_inv hf g hg) (f a) = g a :=
+    (hg : RingHom.ker f ≤ RingHom.ker g) (a : A) :
+    (f.liftOfRightInverseAux f_inv hf g hg) (f a) = g a :=
   f.toAddMonoidHom.liftOfRightInverse_comp_apply f_inv hf ⟨g.toAddMonoidHom, hg⟩ a
 #align ring_hom.lift_of_right_inverse_aux_comp_apply RingHom.liftOfRightInverseAux_comp_apply
 
@@ -2309,7 +2313,8 @@ theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
 #align ring_hom.lift_of_right_inverse_comp_apply RingHom.liftOfRightInverse_comp_apply
 
 theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
-    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) : (f.liftOfRightInverse f_inv hf g).comp f = g :=
+    (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) :
+    (f.liftOfRightInverse f_inv hf g).comp f = g :=
   RingHom.ext <| f.liftOfRightInverse_comp_apply f_inv hf g
 #align ring_hom.lift_of_right_inverse_comp RingHom.liftOfRightInverse_comp
 
