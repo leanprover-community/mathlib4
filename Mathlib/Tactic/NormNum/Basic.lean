@@ -212,7 +212,7 @@ such that `norm_num` successfully recognises `a`. -/
       let r : Q(Int.neg $na = $b) := (q(Eq.refl $b) : Expr)
       return (.isInt rα b zb q(isInt_neg $pa $r) : Result q(-$a))
     let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
-      have _assume_defeq : $rα =Q DivisionRing.toRing := ⟨⟩
+      assumeInstancesCommute
       let ⟨qa, na, da, pa⟩ ← ra.toRat'
       let qb := -qa
       have nb := mkRawIntLit qb.num
@@ -258,7 +258,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r : Q(Int.sub $na $nb = $c) := (q(Eq.refl $c) : Expr)
       return (.isInt rα c zc q(isInt_sub $pa $pb $r) : Result q($a - $b))
     let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
-      have _assume_defeq : $rα =Q DivisionRing.toRing := ⟨⟩
+      assumeInstancesCommute
       let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
       let qc := qa - qb
       let dd := qa.den * qb.den
