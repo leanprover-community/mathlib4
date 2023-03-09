@@ -416,8 +416,7 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
     one := 1 }
 
 instance commRing : CommRing ℂ :=
-  {
-  Complex.addGroupWithOne with
+  { Complex.addGroupWithOne with
     zero := (0 : ℂ)
     add := (· + ·)
     one := 1
@@ -433,8 +432,7 @@ instance commRing : CommRing ℂ :=
     mul_assoc := by intros ; ext <;> simp [mul_assoc] <;> ring
     one_mul := by intros ; ext <;> simp [one_mul]
     mul_one := by intros ; ext <;> simp [mul_one]
-    mul_comm := by intros ; ext <;> simp [mul_comm] ; ring
-  }
+    mul_comm := by intros ; ext <;> simp [mul_comm] ; ring }
 
 /-- This shortcut instance ensures we do not find `ring` via the noncomputable `complex.field`
 instance. -/
