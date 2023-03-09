@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Ring.Basic
-import Mathbin.RingTheory.Ideal.Quotient
+import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # Ideals and quotients of topological rings
@@ -58,8 +58,7 @@ instance topologicalRingQuotientTopology : TopologicalSpace (R ⧸ N) :=
 -- note for the reader: in the following, `mk` is `ideal.quotient.mk`, the canonical map `R → R/I`.
 variable [TopologicalRing R]
 
-theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) :=
-  by
+theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) := by
   intro s s_op
   change IsOpen (mk N ⁻¹' (mk N '' s))
   rw [quotient_ring_saturate]
