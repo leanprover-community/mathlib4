@@ -88,7 +88,9 @@ theorem range_im : range im = univ :=
 instance : Coe ℝ ℂ :=
   ⟨fun r => ⟨r, 0⟩⟩
 
-@[simp, norm_cast]
+/- `simp` attribute removed as this has a variable as head symbol of
+the left-hand side (after whnfR)-/
+@[norm_cast]
 theorem of_real_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
 #align complex.of_real_re Complex.of_real_re
@@ -98,12 +100,16 @@ theorem of_real_im (r : ℝ) : (r : ℂ).im = 0 :=
   rfl
 #align complex.of_real_im Complex.of_real_im
 
+-- Was warned that this is a syntactic tautology.
+@[nolint synTaut]
 theorem of_real_def (r : ℝ) : (r : ℂ) = ⟨r, 0⟩ :=
   rfl
 #align complex.of_real_def Complex.of_real_def
 
 -- Porting note: removed norm_cast attribute as it was not recognized
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as the result could be proved
+by `simp only [Complex.mk.injEq, and_true]` -/
 theorem of_real_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
   ⟨congrArg re, by apply congrArg⟩
 #align complex.of_real_inj Complex.of_real_inj
@@ -231,13 +237,15 @@ theorem of_real_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
 #align complex.of_real_add Complex.of_real_add
 
 -- Porting note: removed norm_cast attribute as it was not recognized
-@[simp]
+-- Was warned that this is a syntactic tautology.
+@[simp, nolint synTaut]
 theorem of_real_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 r :=
   ext_iff.2 <| by simp [bit0]
 #align complex.of_real_bit0 Complex.of_real_bit0
 
 -- Porting note: removed norm_cast attribute as it was not recognized
-@[simp]
+-- Was warned that this is a syntactic tautology.
+@[simp, nolint synTaut]
 theorem of_real_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 r :=
   ext_iff.2 <| by simp [bit1]
 #align complex.of_real_bit1 Complex.of_real_bit1
@@ -516,7 +524,10 @@ theorem conj_bit1 (z : ℂ) : conj (bit1 z) = bit1 (conj z) :=
   ext_iff.2 <| by simp [bit0]
 #align complex.conj_bit1 Complex.conj_bit1
 
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as the result could be proved
+by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
+-/
 theorem conj_neg_i : conj (-i) = i :=
   ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
@@ -562,7 +573,9 @@ theorem normSq_apply (z : ℂ) : normSq z = z.re * z.re + z.im * z.im :=
   rfl
 #align complex.norm_sq_apply Complex.normSq_apply
 
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as the result could be proved
+by `simp only [Complex.normSq_mk, @mul_zero, @add_zero]` -/
 theorem normSq_of_real (r : ℝ) : normSq r = r * r := by simp [normSq]
 #align complex.norm_sq_of_real Complex.normSq_of_real
 
@@ -580,12 +593,16 @@ theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
   ext <;> simp [normSq, mul_comm]
 #align complex.norm_sq_eq_conj_mul_self Complex.normSq_eq_conj_mul_self
 
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as linter reports this can be proved
+by `simp only [@map_zero]` -/
 theorem normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 #align complex.norm_sq_zero Complex.normSq_zero
 
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as linter reports this can be proved
+by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
 #align complex.norm_sq_one Complex.normSq_one
@@ -681,7 +698,8 @@ theorem of_real_sub (r s : ℝ) : ((r - s : ℝ) : ℂ) = r - s :=
 #align complex.of_real_sub Complex.of_real_sub
 
 -- Porting note: removed `norm_cast`
-@[simp]
+-- Was warned that this is a syntactic tautology.
+@[simp, nolint synTaut]
 theorem of_real_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : ℂ) = r ^ n := by
   induction n <;> simp [*, of_real_mul, pow_succ]
 #align complex.of_real_pow Complex.of_real_pow
@@ -786,12 +804,16 @@ theorem inv_i : i⁻¹ = -i := by
 set_option linter.uppercaseLean3 false in
 #align complex.inv_I Complex.inv_i
 
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as linter reports this can be proved
+by `simp only [@map_inv₀]` -/
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 #align complex.norm_sq_inv Complex.normSq_inv
 
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as linter reports this can be proved
+by `simp only [@map_div₀]` -/
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align complex.norm_sq_div Complex.normSq_div
@@ -825,7 +847,8 @@ theorem int_cast_re (n : ℤ) : (n : ℂ).re = n := by rw [← of_real_int_cast,
 theorem int_cast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← of_real_int_cast, of_real_im]
 #align complex.int_cast_im Complex.int_cast_im
 
-@[simp, norm_cast]
+@[simp, norm_cast, nolint synTaut]
+-- Was warned that this is a syntactic tautology.
 theorem of_real_rat_cast (n : ℚ) : ((n : ℝ) : ℂ) = n := rfl
 #align complex.of_real_rat_cast Complex.of_real_rat_cast
 
@@ -997,12 +1020,16 @@ theorem abs_prod {ι : Type _} (s : Finset ι) (f : ι → ℂ) :
   map_prod Complex.abs _ _
 #align complex.abs_prod Complex.abs_prod
 
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as linter reports this can be proved
+by `simp only [@map_pow]` -/
 theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_pow Complex.abs z n
 #align complex.abs_pow Complex.abs_pow
 
-@[simp]
+-- @[simp]
+/- `simp` attribute removed as linter reports this can be proved
+by `simp only [@map_zpow₀]` -/
 theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_zpow₀ Complex.abs z n
 #align complex.abs_zpow Complex.abs_zpow
@@ -1090,8 +1117,8 @@ theorem abs_cast_nat (n : ℕ) : Complex.abs (n : ℂ) = n := by
 
 -- Porting note: removed `norm_cast` attribute
 @[simp]
-theorem int_cast_abs (n : ℤ) : ↑(|n|) = Complex.abs n := by
-  rw [← of_real_int_cast, abs_of_real, Int.cast_abs]
+theorem int_cast_abs (n : ℤ) : (|↑n|) = Complex.abs n := by
+  rw [← of_real_int_cast, abs_of_real]
 #align complex.int_cast_abs Complex.int_cast_abs
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
