@@ -1074,4 +1074,3 @@ end
 end IsColimit
 
 end CategoryTheory.Limits
-#lint
