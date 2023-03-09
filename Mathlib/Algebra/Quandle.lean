@@ -509,7 +509,6 @@ instance (n : ℕ) : Quandle (Dihedral n)
     intro x
     simp only [dihedralAct]
     ring_nf
-    rw [mul_two, add_sub_cancel]
 
 end Quandle
 
