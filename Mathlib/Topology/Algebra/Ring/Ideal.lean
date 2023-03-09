@@ -14,8 +14,8 @@ import Mathlib.RingTheory.Ideal.Quotient
 /-!
 # Ideals and quotients of topological rings
 
-In this file we define `ideal.closure` to be the topological closure of an ideal in a topological
-ring. We also define a `topological_space` structure on the quotient of a topological ring by an
+In this file we define `Ideal.closure` to be the topological closure of an ideal in a topological
+ring. We also define a `TopologicalSpace` structure on the quotient of a topological ring by an
 ideal and prove that the quotient is a topological ring.
 -/
 
@@ -30,7 +30,7 @@ protected def Ideal.closure (I : Ideal R) : Ideal R :=
     AddSubmonoid.topologicalClosure
       I.toAddSubmonoid with
     carrier := closure I
-    smul_mem' := fun c x hx => map_mem_closure (mulLeft_continuous _) hx fun a => I.mul_mem_left c }
+    smul_mem' := fun c _ hx => map_mem_closure (mulLeft_continuous _) hx fun _ => I.mul_mem_left c }
 #align ideal.closure Ideal.closure
 
 @[simp]
@@ -52,10 +52,10 @@ variable {R : Type _} [TopologicalSpace R] [CommRing R] (N : Ideal R)
 open Ideal.Quotient
 
 instance topologicalRingQuotientTopology : TopologicalSpace (R ⧸ N) :=
-  Quotient.topologicalSpace
+  instTopologicalSpaceQuotient
 #align topological_ring_quotient_topology topologicalRingQuotientTopology
 
--- note for the reader: in the following, `mk` is `ideal.quotient.mk`, the canonical map `R → R/I`.
+-- note for the reader: in the following, `mk` is `Ideal.Quotient.mk`, the canonical map `R → R/I`.
 variable [TopologicalRing R]
 
 theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) := by
@@ -66,22 +66,28 @@ theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) := by
 #align quotient_ring.is_open_map_coe QuotientRing.isOpenMap_coe
 
 theorem QuotientRing.quotientMap_coe_coe : QuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
-  IsOpenMap.to_quotientMap ((QuotientRing.isOpenMap_coe N).Prod (QuotientRing.isOpenMap_coe N))
-    ((continuous_quot_mk.comp continuous_fst).prod_mk (continuous_quot_mk.comp continuous_snd))
-    (by rintro ⟨⟨x⟩, ⟨y⟩⟩ <;> exact ⟨(x, y), rfl⟩)
+  IsOpenMap.to_quotientMap ((QuotientRing.isOpenMap_coe N).prod (QuotientRing.isOpenMap_coe N))
+    (Continuous.prod_mk (Continuous.comp continuous_quot_mk continuous_fst) <|
+      Continuous.comp continuous_quot_mk continuous_snd)
+    -- porting note: this is lean4#2074 because this works with `etaExperiment`:
+    -- `(continuous_quot_mk.comp continuous_fst).prod_mk (continuous_quot_mk.comp continuous_snd))`
+    (by rintro ⟨⟨x⟩, ⟨y⟩⟩; exact ⟨(x, y), rfl⟩)
 #align quotient_ring.quotient_map_coe_coe QuotientRing.quotientMap_coe_coe
 
 instance topologicalRing_quotient : TopologicalRing (R ⧸ N) :=
   TopologicalSemiring.toTopologicalRing
     { continuous_add :=
         have cont : Continuous (mk N ∘ fun p : R × R => p.fst + p.snd) :=
-          continuous_quot_mk.comp continuous_add
+          Continuous.comp continuous_quot_mk continuous_add
+          -- porting note: this is lean4#2074 because this works with `etaExperiment`:
+          -- `continuous_quot_mk.comp continuous_add`
         (QuotientMap.continuous_iff (QuotientRing.quotientMap_coe_coe N)).mpr cont
       continuous_mul :=
         have cont : Continuous (mk N ∘ fun p : R × R => p.fst * p.snd) :=
-          continuous_quot_mk.comp continuous_mul
+          Continuous.comp continuous_quot_mk continuous_mul
+          -- porting note: this is lean4#2074 because this works with `etaExperiment`:
+          -- `continuous_quot_mk.comp continuous_mul`
         (QuotientMap.continuous_iff (QuotientRing.quotientMap_coe_coe N)).mpr cont }
 #align topological_ring_quotient topologicalRing_quotient
 
 end CommRing
-
