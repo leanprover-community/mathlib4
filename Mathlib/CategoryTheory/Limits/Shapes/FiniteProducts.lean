@@ -32,7 +32,7 @@ variable (C : Type u) [Category.{v} C]
 with shape `Discrete J`, where we have `[Finite J]`.
 
 We require this condition only for `J = Fin n` in the definition, then deduce a version for any
-`J : Type*` as a corollary of this definition.
+`J : Type _` as a corollary of this definition.
 -/
 class HasFiniteProducts : Prop where
   /-- `C` has finite products -/
@@ -66,7 +66,7 @@ theorem hasFiniteProducts_of_hasProducts [HasProducts.{w} C] : HasFiniteProducts
 with shape `Discrete J`, where we have `[Fintype J]`.
 
 We require this condition only for `J = Fin n` in the definition, then deduce a version for any
-`J : Type*` as a corollary of this definition.
+`J : Type _` as a corollary of this definition.
 -/
 class HasFiniteCoproducts : Prop where
   /-- `C` has all finite coproducts -/
@@ -95,4 +95,3 @@ theorem hasFiniteCoproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasFiniteCo
 #align category_theory.limits.has_finite_coproducts_of_has_coproducts CategoryTheory.Limits.hasFiniteCoproducts_of_hasCoproducts
 
 end CategoryTheory.Limits
-
