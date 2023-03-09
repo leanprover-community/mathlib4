@@ -338,6 +338,14 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
 #align normed_add_group_hom.op_norm_add_le NormedAddGroupHom.opNorm_add_le
 
 -- porting note: this library note doesn't seem to apply anymore
+/-
+library_note "addition on function coercions"/--
+Terms containing `@has_add.add (has_coe_to_fun.F ...) pi.has_add`
+seem to cause leanchecker to [crash due to an out-of-memory
+condition](https://github.com/leanprover-community/lean/issues/543).
+As a workaround, we add a type annotation: `(f + g : V₁ → V₂)`
+-/
+-/
 
 @[simp]
 theorem coe_add (f g : NormedAddGroupHom V₁ V₂) : ⇑(f + g) = f + g :=
