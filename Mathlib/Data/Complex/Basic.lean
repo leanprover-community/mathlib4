@@ -1105,7 +1105,7 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
     div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_im_le_abs]
 #align complex.abs_im_div_abs_le_one Complex.abs_im_div_abs_le_one
 
--- Porting note: removed `norm_cast` attribute
+-- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
 @[simp]
 theorem abs_cast_nat (n : ℕ) : Complex.abs (n : ℂ) = n := by
   rw [← ofReal_nat_cast, abs_of_nonneg (Nat.cast_nonneg n)]
