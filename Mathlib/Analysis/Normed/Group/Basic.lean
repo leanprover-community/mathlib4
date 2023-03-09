@@ -615,7 +615,7 @@ theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by rw [mem_
 #align mem_ball_iff_norm''' mem_ball_iff_norm'''
 #align mem_ball_iff_norm' mem_ball_iff_norm'
 
-@[to_additive (attr := simp)]
+@[to_additive] -- porting note: `simpNF` says `simp` can prove it
 theorem mem_ball_one_iff : a ∈ ball (1 : E) r ↔ ‖a‖ < r := by rw [mem_ball, dist_one_right]
 #align mem_ball_one_iff mem_ball_one_iff
 #align mem_ball_zero_iff mem_ball_zero_iff
@@ -626,7 +626,7 @@ theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r :
 #align mem_closed_ball_iff_norm'' mem_closedBall_iff_norm''
 #align mem_closed_ball_iff_norm mem_closedBall_iff_norm
 
-@[to_additive (attr := simp)]
+@[to_additive] -- porting note: `simpNF` says `simp` can prove it
 theorem mem_closedBall_one_iff : a ∈ closedBall (1 : E) r ↔ ‖a‖ ≤ r := by
   rw [mem_closedBall, dist_one_right]
 #align mem_closed_ball_one_iff mem_closedBall_one_iff
@@ -685,12 +685,13 @@ theorem Metric.Bounded.exists_pos_norm_le' (hs : Metric.Bounded s) : ∃ R > 0, 
 #align metric.bounded.exists_pos_norm_le' Metric.Bounded.exists_pos_norm_le'
 #align metric.bounded.exists_pos_norm_le Metric.Bounded.exists_pos_norm_le
 
-@[to_additive (attr := simp) mem_sphere_iff_norm]
+@[to_additive (attr := simp 1001) mem_sphere_iff_norm]
+-- porting note: increase priority so the left-hand side doesn't reduce
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
 #align mem_sphere_iff_norm' mem_sphere_iff_norm'
 #align mem_sphere_iff_norm mem_sphere_iff_norm
 
-@[to_additive (attr := simp)]
+@[to_additive] -- `simpNF` says `simp` can prove this
 theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp [dist_eq_norm_div]
 #align mem_sphere_one_iff_norm mem_sphere_one_iff_norm
 #align mem_sphere_zero_iff_norm mem_sphere_zero_iff_norm
@@ -1403,13 +1404,15 @@ theorem dist_self_mul_left (a b : E) : dist (a * b) a = ‖b‖ := by
 #align dist_self_mul_left dist_self_mul_left
 #align dist_self_add_left dist_self_add_left
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp 1001)]
+-- porting note: increase priority because `simpNF` says `simp` can prove this
 theorem dist_self_div_right (a b : E) : dist a (a / b) = ‖b‖ := by
   rw [div_eq_mul_inv, dist_self_mul_right, norm_inv']
 #align dist_self_div_right dist_self_div_right
 #align dist_self_sub_right dist_self_sub_right
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp 1001)]
+-- porting note: increase priority because `simpNF` says `simp` can prove this
 theorem dist_self_div_left (a b : E) : dist (a / b) a = ‖b‖ := by
   rw [dist_comm, dist_self_div_right]
 #align dist_self_div_left dist_self_div_left
@@ -1512,14 +1515,16 @@ theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r
 #align mul_mem_closed_ball_iff_norm mul_mem_closedBall_iff_norm
 #align add_mem_closed_ball_iff_norm add_mem_closedBall_iff_norm
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp 1001)]
+-- porting note: increase priority so that the left-hand side doesn't simplifiy
 theorem preimage_mul_ball (a b : E) (r : ℝ) : (· * ·) b ⁻¹' ball a r = ball (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
 #align preimage_mul_ball preimage_mul_ball
 #align preimage_add_ball preimage_add_ball
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp 1001)]
+-- porting note: increase priority so that the left-hand side doesn't simplifiy
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
     (· * ·) b ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c
@@ -1568,13 +1573,13 @@ theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ bal
 #align pow_mem_ball pow_mem_ball
 #align nsmul_mem_ball nsmul_mem_ball
 
-@[to_additive (attr := simp)]
+@[to_additive] -- porting note: `simpNF` says `simp` can prove this
 theorem mul_mem_closedBall_mul_iff {c : E} : a * c ∈ closedBall (b * c) r ↔ a ∈ closedBall b r := by
   simp only [mem_closedBall, dist_eq_norm_div, mul_div_mul_right_eq_div]
 #align mul_mem_closed_ball_mul_iff mul_mem_closedBall_mul_iff
 #align add_mem_closed_ball_add_iff add_mem_closedBall_add_iff
 
-@[to_additive (attr := simp)]
+@[to_additive] -- porting note: `simpNF` says `simp` can prove this
 theorem mul_mem_ball_mul_iff {c : E} : a * c ∈ ball (b * c) r ↔ a ∈ ball b r := by
   simp only [mem_ball, dist_eq_norm_div, mul_div_mul_right_eq_div]
 #align mul_mem_ball_mul_iff mul_mem_ball_mul_iff
@@ -1712,7 +1717,7 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
   le_abs_self r
 #align real.le_norm_self Real.le_norm_self
 
-@[simp]
+-- porting note: `simpNF` says `simp` can prove this
 theorem norm_coe_nat (n : ℕ) : ‖(n : ℝ)‖ = n :=
   abs_of_nonneg n.cast_nonneg
 #align real.norm_coe_nat Real.norm_coe_nat
@@ -1722,7 +1727,7 @@ theorem nnnorm_coe_nat (n : ℕ) : ‖(n : ℝ)‖₊ = n :=
   NNReal.eq <| norm_coe_nat _
 #align real.nnnorm_coe_nat Real.nnnorm_coe_nat
 
-@[simp]
+-- porting note: `simpNF` says `simp` can prove this
 theorem norm_two : ‖(2 : ℝ)‖ = 2 :=
   abs_of_pos zero_lt_two
 #align real.norm_two Real.norm_two
@@ -1804,7 +1809,8 @@ instance : NormedAddCommGroup ℚ where
   norm r := ‖(r : ℝ)‖
   dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
 
-@[norm_cast, simp]
+@[norm_cast, simp 1001]
+-- porting note: increase priority to prevent the left-hand side from simplifying
 theorem norm_cast_real (r : ℚ) : ‖(r : ℝ)‖ = ‖r‖ :=
   rfl
 #align rat.norm_cast_real Rat.norm_cast_real
