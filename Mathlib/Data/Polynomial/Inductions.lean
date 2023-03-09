@@ -130,7 +130,7 @@ if it holds for
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 with appropriate restrictions on each term.
 
-See `nat_degree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
+See `natDegree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
  -/
 @[elab_as_elim]
 theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree p)
@@ -150,7 +150,7 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
     h0
 #align polynomial.degree_pos_induction_on Polynomial.degree_pos_induction_on
 
-/-- A property holds for all polynomials of non-zero `nat_degree` with coefficients in a
+/-- A property holds for all polynomials of non-zero `natDegree` with coefficients in a
 semiring `R` if it holds for
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p + q`, with `p, q ∈ R[X]`,
