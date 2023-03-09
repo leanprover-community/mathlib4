@@ -32,9 +32,6 @@ structure Complex : Type where
   im : ℝ
 #align complex Complex
 
--- Porting note: added as lemmas were not recognized as coercions
-attribute [coe] Complex.re
-attribute [coe] Complex.im
 
 -- mathport name: exprℂ
 notation "ℂ" => Complex
