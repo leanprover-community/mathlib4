@@ -85,8 +85,12 @@ theorem range_im : range im = univ :=
   im_surjective.range_eq
 #align complex.range_im Complex.range_im
 
+-- Porting note: refactored instance to allow `norm_cast` to work
+@[coe]
+def ofReal' (r : ℝ) : ℂ :=
+  ⟨r, 0⟩
 instance : Coe ℝ ℂ :=
-  ⟨fun r => ⟨r, 0⟩⟩
+  ⟨ofReal'⟩
 
 /- `simp` attribute removed as this has a variable as head symbol of
 the left-hand side (after whnfR)-/
@@ -106,10 +110,10 @@ theorem of_real_def (r : ℝ) : (r : ℂ) = ⟨r, 0⟩ :=
   rfl
 #align complex.of_real_def Complex.of_real_def
 
--- Porting note: removed norm_cast attribute as it was not recognized
 -- @[simp]
 /- `simp` attribute removed as the result could be proved
 by `simp only [Complex.mk.injEq, and_true]` -/
+@[simp, norm_cast]
 theorem of_real_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
   ⟨congrArg re, by apply congrArg⟩
 #align complex.of_real_inj Complex.of_real_inj
@@ -152,8 +156,7 @@ theorem zero_im : (0 : ℂ).im = 0 :=
   rfl
 #align complex.zero_im Complex.zero_im
 
--- Porting note: removed norm_cast attribute as it was not recognized
-@[simp]
+@[simp, norm_cast]
 theorem of_real_zero : ((0 : ℝ) : ℂ) = 0 :=
   rfl
 #align complex.of_real_zero Complex.of_real_zero
@@ -180,8 +183,7 @@ theorem one_im : (1 : ℂ).im = 0 :=
   rfl
 #align complex.one_im Complex.one_im
 
--- Porting note: removed norm_cast attribute as it was not recognized
-@[simp]
+@[simp, norm_cast]
 theorem of_real_one : ((1 : ℝ) : ℂ) = 1 :=
   rfl
 #align complex.of_real_one Complex.of_real_one
@@ -230,22 +232,21 @@ theorem bit1_im (z : ℂ) : (bit1 z).im = bit0 z.im :=
   add_zero _
 #align complex.bit1_im Complex.bit1_im
 
--- Porting note: removed norm_cast attribute as it was not recognized
-@[simp]
+@[simp, norm_cast]
 theorem of_real_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
-  ext_iff.2 <| by simp
+  ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_add Complex.of_real_add
 
--- Porting note: removed norm_cast attribute as it was not recognized
+-- Porting note: removed norm_cast attribute "rhs can't start with coe"
 -- Was warned that this is a syntactic tautology.
 @[simp, nolint synTaut]
-theorem of_real_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 r :=
+theorem of_real_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 r  :=
   ext_iff.2 <| by simp [bit0]
 #align complex.of_real_bit0 Complex.of_real_bit0
 
--- Porting note: removed norm_cast attribute as it was not recognized
+-- Porting note: removed norm_cast attribute "rhs can't start with coe"
 -- Was warned that this is a syntactic tautology.
-@[simp, nolint synTaut]
+@[simp,  nolint synTaut]
 theorem of_real_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 r :=
   ext_iff.2 <| by simp [bit1]
 #align complex.of_real_bit1 Complex.of_real_bit1
@@ -263,10 +264,9 @@ theorem neg_im (z : ℂ) : (-z).im = -z.im :=
   rfl
 #align complex.neg_im Complex.neg_im
 
--- Porting note: removed norm_cast attribute as it was not recognized
-@[simp]
+@[simp, norm_cast]
 theorem of_real_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
-  ext_iff.2 <| by simp
+  ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_neg Complex.of_real_neg
 
 instance : Sub ℂ :=
@@ -285,16 +285,15 @@ theorem mul_im (z w : ℂ) : (z * w).im = z.re * w.im + z.im * w.re :=
   rfl
 #align complex.mul_im Complex.mul_im
 
--- Porting note: removed norm_cast attribute as it was not recognized
-@[simp]
+@[simp, norm_cast]
 theorem of_real_mul (r s : ℝ) : ((r * s : ℝ) : ℂ) = r * s :=
-  ext_iff.2 <| by simp
+  ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_mul Complex.of_real_mul
 
-theorem of_real_mul_re (r : ℝ) (z : ℂ) : (↑r * z).re = r * z.re := by simp
+theorem of_real_mul_re (r : ℝ) (z : ℂ) : (↑r * z).re = r * z.re := by simp [ofReal']
 #align complex.of_real_mul_re Complex.of_real_mul_re
 
-theorem of_real_mul_im (r : ℝ) (z : ℂ) : (↑r * z).im = r * z.im := by simp
+theorem of_real_mul_im (r : ℝ) (z : ℂ) : (↑r * z).im = r * z.im := by simp [ofReal']
 #align complex.of_real_mul_im Complex.of_real_mul_im
 
 theorem of_real_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
@@ -339,13 +338,13 @@ set_option linter.uppercaseLean3 false in
 #align complex.I_ne_zero Complex.i_ne_zero
 
 theorem mk_eq_add_mul_i (a b : ℝ) : Complex.mk a b = a + b * i :=
-  ext_iff.2 <| by simp
+  ext_iff.2 <| by simp [ofReal']
 set_option linter.uppercaseLean3 false in
 #align complex.mk_eq_add_mul_I Complex.mk_eq_add_mul_i
 
 @[simp]
 theorem re_add_im (z : ℂ) : (z.re : ℂ) + z.im * i = z :=
-  ext_iff.2 <| by simp
+  ext_iff.2 <| by simp [ofReal']
 #align complex.re_add_im Complex.re_add_im
 
 theorem mul_i_re (z : ℂ) : (z * i).re = -z.im := by simp
@@ -366,7 +365,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * i := by
-  ext <;> simp [Complex.equivRealProd]
+  ext <;> simp [Complex.equivRealProd, ofReal']
 #align complex.equiv_real_prod_symm_apply Complex.equivRealProd_symm_apply
 
 /-! ### Commutative ring instance and lemmas -/
@@ -539,7 +538,7 @@ theorem eq_conj_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
 #align complex.eq_conj_iff_real Complex.eq_conj_iff_real
 
 theorem eq_conj_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  eq_conj_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp, fun h => ⟨_, h.symm⟩⟩
+  eq_conj_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
 #align complex.eq_conj_iff_re Complex.eq_conj_iff_re
 
 theorem eq_conj_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
@@ -573,10 +572,11 @@ theorem normSq_apply (z : ℂ) : normSq z = z.re * z.re + z.im * z.im :=
   rfl
 #align complex.norm_sq_apply Complex.normSq_apply
 
--- @[simp]
+@[simp]
 /- `simp` attribute removed as the result could be proved
 by `simp only [Complex.normSq_mk, @mul_zero, @add_zero]` -/
-theorem normSq_of_real (r : ℝ) : normSq r = r * r := by simp [normSq]
+theorem normSq_of_real (r : ℝ) : normSq r = r * r := by
+  simp [normSq, ofReal']
 #align complex.norm_sq_of_real Complex.normSq_of_real
 
 @[simp]
@@ -590,7 +590,7 @@ set_option linter.uppercaseLean3 false in
 #align complex.norm_sq_add_mul_I Complex.normSq_add_mul_i
 
 theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
-  ext <;> simp [normSq, mul_comm]
+  ext <;> simp [normSq, mul_comm, ofReal']
 #align complex.norm_sq_eq_conj_mul_self Complex.normSq_eq_conj_mul_self
 
 -- @[simp]
@@ -659,11 +659,11 @@ theorem im_sq_le_normSq (z : ℂ) : z.im * z.im ≤ normSq z :=
 #align complex.im_sq_le_norm_sq Complex.im_sq_le_normSq
 
 theorem mul_conj (z : ℂ) : z * conj z = normSq z :=
-  ext_iff.2 <| by simp [normSq, mul_comm, sub_eq_neg_add, add_comm]
+  ext_iff.2 <| by simp [normSq, mul_comm, sub_eq_neg_add, add_comm, ofReal']
 #align complex.mul_conj Complex.mul_conj
 
 theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
-  ext_iff.2 <| by simp [two_mul]
+  ext_iff.2 <| by simp [two_mul, ofReal']
 #align complex.add_conj Complex.add_conj
 
 /-- The coercion `ℝ → ℂ` as a `ring_hom`. -/
@@ -691,13 +691,12 @@ theorem sub_im (z w : ℂ) : (z - w).im = z.im - w.im :=
   rfl
 #align complex.sub_im Complex.sub_im
 
--- Porting note: removed `norm_cast`
-@[simp]
+@[simp, norm_cast]
 theorem of_real_sub (r s : ℝ) : ((r - s : ℝ) : ℂ) = r - s :=
-  ext_iff.2 <| by simp
+  ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_sub Complex.of_real_sub
 
--- Porting note: removed `norm_cast`
+-- Porting note: removed `norm_cast` "rhs can't start with coe"
 -- Was warned that this is a syntactic tautology.
 @[simp, nolint synTaut]
 theorem of_real_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : ℂ) = r ^ n := by
@@ -705,7 +704,7 @@ theorem of_real_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : ℂ) = r ^ n := by
 #align complex.of_real_pow Complex.of_real_pow
 
 theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * i :=
-  ext_iff.2 <| by simp [two_mul, sub_eq_add_neg]
+  ext_iff.2 <| by simp [two_mul, sub_eq_add_neg, ofReal']
 #align complex.sub_conj Complex.sub_conj
 
 theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
@@ -725,17 +724,17 @@ theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
 #align complex.inv_def Complex.inv_def
 
 @[simp]
-theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, division_def]
+theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, division_def, ofReal']
 #align complex.inv_re Complex.inv_re
 
 @[simp]
-theorem inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, division_def]
+theorem inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, division_def, ofReal']
 #align complex.inv_im Complex.inv_im
 
 -- removed norm-cast
 @[simp]
 theorem ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : ℂ) = (r : ℂ)⁻¹ :=
-  ext_iff.2 <| by simp
+  ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_inv Complex.ofReal_inv
 
 protected theorem inv_zero : (0⁻¹ : ℂ) = 0 := by
@@ -847,7 +846,7 @@ theorem int_cast_re (n : ℤ) : (n : ℂ).re = n := by rw [← of_real_int_cast,
 theorem int_cast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← of_real_int_cast, of_real_im]
 #align complex.int_cast_im Complex.int_cast_im
 
-@[simp, norm_cast, nolint synTaut]
+@[simp, nolint synTaut]
 -- Was warned that this is a syntactic tautology.
 theorem of_real_rat_cast (n : ℚ) : ((n : ℝ) : ℂ) = n := rfl
 #align complex.of_real_rat_cast Complex.of_real_rat_cast
@@ -871,16 +870,17 @@ instance charZero_complex : CharZero ℂ :=
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  have : ⟨2, 0⟩ = (2 : ℂ) := by rfl
+  have : (↑(↑2 : ℝ) : ℂ)  = (2 : ℂ) := by rfl
   simp only [add_conj, of_real_mul, of_real_one, of_real_bit0, this,
     mul_div_cancel_left (z.re : ℂ) two_ne_zero]
 #align complex.re_eq_add_conj Complex.re_eq_add_conj
 
 /-- A complex number `z` minus its conjugate `conj z` is `2i` times its imaginary part. -/
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * i) := by
-  have : ⟨2, 0⟩ * i = 2 * i := by rfl
+  have : (↑2 : ℝ ) * i = 2 * i := by rfl
   simp only [sub_conj, of_real_mul, of_real_one, of_real_bit0, mul_right_comm, this,
     mul_div_cancel_left _ (mul_ne_zero two_ne_zero i_ne_zero : 2 * i ≠ 0)]
+
 
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
 
@@ -1070,7 +1070,12 @@ theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
   _root_.abs_of_nonneg (AbsoluteValue.nonneg _ z)
 #align complex.abs_abs Complex.abs_abs
 
+-- Porting note: probably should be golfed
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
+  repeat (rw [← abs_of_real])
+  conv =>
+    lhs
+    rw [← Complex.re_add_im z]
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * i)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
@@ -1158,12 +1163,12 @@ theorem lt_def {z w : ℂ} : z < w ↔ z.re < w.re ∧ z.im = w.im :=
 
 -- Porting note: removed `norm_cast` attribute
 @[simp]
-theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def]
+theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal']
 #align complex.real_le_real Complex.ComplexOrder.real_le_real
 
 -- Porting note: removed `norm_cast` attribute
 @[simp]
-theorem real_lt_real {x y : ℝ} : (x : ℂ) < (y : ℂ) ↔ x < y := by simp [lt_def]
+theorem real_lt_real {x y : ℝ} : (x : ℂ) < (y : ℂ) ↔ x < y := by simp [lt_def, ofReal']
 #align complex.real_lt_real Complex.ComplexOrder.real_lt_real
 
 -- Porting note: removed `norm_cast` attribute
@@ -1308,16 +1313,16 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
       f ≈ _ := equiv_limAux f
       _ = CauSeq.const Complex.abs (↑(lim (cauSeqRe f)) + ↑(lim (cauSeqIm f)) * i) :=
         CauSeq.ext fun _ =>
-          Complex.ext (by simp [limAux, cauSeqRe]) (by simp [limAux, cauSeqIm])
+          Complex.ext (by simp [limAux, cauSeqRe, ofReal']) (by simp [limAux, cauSeqIm, ofReal'])
 
 #align complex.lim_eq_lim_im_add_lim_re Complex.lim_eq_lim_im_add_lim_re
 
 theorem lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by
-  rw [lim_eq_lim_im_add_lim_re] ; simp
+  rw [lim_eq_lim_im_add_lim_re] ; simp [ofReal']
 #align complex.lim_re Complex.lim_re
 
 theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := by
-  rw [lim_eq_lim_im_add_lim_re] ; simp
+  rw [lim_eq_lim_im_add_lim_re] ; simp [ofReal']
 #align complex.lim_im Complex.lim_im
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
