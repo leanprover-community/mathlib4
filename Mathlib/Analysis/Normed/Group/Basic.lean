@@ -21,12 +21,12 @@ import Mathlib.Topology.Sequences
 
 In this file we define 10 classes:
 
-* `has_norm`, `has_nnnorm`: auxiliary classes endowing a type `α` with a function `norm : α → ℝ`
+* `Norm`, `NNNorm`: auxiliary classes endowing a type `α` with a function `norm : α → ℝ`
   (notation: `‖x‖`) and `nnnorm : α → ℝ≥0` (notation: `‖x‖₊`), respectively;
-* `seminormed_..._group`: A seminormed (additive) (commutative) group is an (additive) (commutative)
+* `Seminormed...Group`: A seminormed (additive) (commutative) group is an (additive) (commutative)
   group with a norm and a compatible pseudometric space structure:
   `∀ x y, dist x y = ‖x / y‖` or `∀ x y, dist x y = ‖x - y‖`, depending on the group operation.
-* `normed_..._group`: A normed (additive) (commutative) group is an (additive) (commutative) group
+* `Normed...Group`: A normed (additive) (commutative) group is an (additive) (commutative) group
   with a norm and a compatible metric space structure.
 
 We also prove basic properties of (semi)normed groups and provide some instances.
@@ -38,7 +38,7 @@ addition, but actions in mathlib are usually from the left. This means we might 
 `dist x y = ‖-x + y‖`.
 
 The normed group hierarchy would lend itself well to a mixin design (that is, having
-`seminormed_group` and `seminormed_add_group` not extend `group` and `add_group`), but we choose not
+`SeminormedGroup` and `SeminormedAddGroup` not extend `Group` and `AddGroup`), but we choose not
 to for performance concerns.
 
 ## Tags
@@ -179,13 +179,13 @@ instance (priority := 100) NormedCommGroup.toNormedGroup [NormedCommGroup E] : N
 #align normed_add_comm_group.to_normed_add_group NormedAddCommGroup.toNormedAddGroup
 
 -- See note [reducible non-instances]
-/-- Construct a `normed_group` from a `seminormed_group` satisfying `∀ x, ‖x‖ = 0 → x = 1`. This
-avoids having to go back to the `(pseudo_)metric_space` level when declaring a `normed_group`
-instance as a special case of a more general `seminormed_group` instance. -/
-@[to_additive (attr := reducible) "Construct a `normed_add_group` from a `seminormed_add_group`
-satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the `(pseudo_)metric_space`
-level when declaring a `normed_add_group` instance as a special case of a more general
-`seminormed_add_group` instance."]
+/-- Construct a `NormedGroup` from a `SeminormedGroup` satisfying `∀ x, ‖x‖ = 0 → x = 1`. This
+avoids having to go back to the `(Pseudo)MetricSpace` level when declaring a `NormedGroup`
+instance as a special case of a more general `SeminormedGroup` instance. -/
+@[to_additive (attr := reducible) "Construct a `NormedAddGroup` from a `SeminormedAddGroup`
+satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the `(Pseudo)MetricSpace`
+level when declaring a `MormedAddGroup` instance as a special case of a more general
+`SeminormedAddGroup` instance."]
 def NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) : NormedGroup E :=
   { ‹SeminormedGroup E› with
     toMetricSpace :=
@@ -199,14 +199,14 @@ def NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 →
 #align normed_add_group.of_separation NormedAddGroup.ofSeparation
 
 -- See note [reducible non-instances]
-/-- Construct a `normed_comm_group` from a `seminormed_comm_group` satisfying
-`∀ x, ‖x‖ = 0 → x = 1`. This avoids having to go back to the `(pseudo_)metric_space` level when
-declaring a `normed_comm_group` instance as a special case of a more general `seminormed_comm_group`
+/-- Construct a `NormedCommGroup` from a `SeminormedCommGroup` satisfying
+`∀ x, ‖x‖ = 0 → x = 1`. This avoids having to go back to the `(Pseudo)MetricSpace` level when
+declaring a `NormedCommGroup` instance as a special case of a more general `SeminormedCommGroup`
 instance. -/
-@[to_additive (attr := reducible) "Construct a `normed_add_comm_group` from a
-`seminormed_add_comm_group` satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the
-`(pseudo_)metric_space` level when declaring a `normed_add_comm_group` instance as a special case
-of a more general `seminormed_add_comm_group` instance."]
+@[to_additive (attr := reducible) "Construct a `NormedAddCommGroup` from a
+`SeminormedAddCommGroup` satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the
+`(Pseudo)MetricSpace` level when declaring a `MormedAddCommGroup` instance as a special case
+of a more general `SeminormedAddCommGroup` instance."]
 def NormedCommGroup.ofSeparation [SeminormedCommGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
     NormedCommGroup E :=
   { ‹SeminormedCommGroup E›, NormedGroup.ofSeparation h with }
@@ -298,11 +298,11 @@ def NormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [MetricSpace E]
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
 pseudometric space structure from the seminorm properties. Note that in most cases this instance
 creates bad definitional equalities (e.g., it does not take into account a possibly existing
-`uniform_space` instance on `E`). -/
+`UniformSpace` instance on `E`). -/
 @[to_additive "Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
-existing `uniform_space` instance on `E`)."]
+existing `UniformSpace` instance on `E`)."]
 def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E
     where
   dist x y := f (x / y)
@@ -319,11 +319,11 @@ def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : Seminormed
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
 pseudometric space structure from the seminorm properties. Note that in most cases this instance
 creates bad definitional equalities (e.g., it does not take into account a possibly existing
-`uniform_space` instance on `E`). -/
+`UniformSpace` instance on `E`). -/
 @[to_additive "Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
-existing `uniform_space` instance on `E`)."]
+existing `UniformSpace` instance on `E`)."]
 def GroupSeminorm.toSeminormedCommGroup [CommGroup E] (f : GroupSeminorm E) :
     SeminormedCommGroup E :=
   { f.toSeminormedGroup with
@@ -333,11 +333,11 @@ def GroupSeminorm.toSeminormedCommGroup [CommGroup E] (f : GroupSeminorm E) :
 
 /-- Construct a normed group from a norm, i.e., registering the distance and the metric space
 structure from the norm properties. Note that in most cases this instance creates bad definitional
-equalities (e.g., it does not take into account a possibly existing `uniform_space` instance on
+equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
 `E`). -/
 @[to_additive "Construct a normed group from a norm, i.e., registering the distance and the metric
 space structure from the norm properties. Note that in most cases this instance creates bad
-definitional equalities (e.g., it does not take into account a possibly existing `uniform_space`
+definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`)."]
 def GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E :=
   { f.toGroupSeminorm.toSeminormedGroup with
@@ -347,11 +347,11 @@ def GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E :=
 
 /-- Construct a normed group from a norm, i.e., registering the distance and the metric space
 structure from the norm properties. Note that in most cases this instance creates bad definitional
-equalities (e.g., it does not take into account a possibly existing `uniform_space` instance on
+equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
 `E`). -/
 @[to_additive "Construct a normed group from a norm, i.e., registering the distance and the metric
 space structure from the norm properties. Note that in most cases this instance creates bad
-definitional equalities (e.g., it does not take into account a possibly existing `uniform_space`
+definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`)."]
 def GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGroup E :=
   { f.toNormedGroup with
@@ -456,9 +456,9 @@ theorem dist_div_eq_dist_mul_right (a b c : E) : dist a (b / c) = dist (a * c) b
 #align dist_sub_eq_dist_add_right dist_sub_eq_dist_add_right
 
 /-- In a (semi)normed group, inversion `x ↦ x⁻¹` tends to infinity at infinity. TODO: use
-`bornology.cobounded` instead of `filter.comap has_norm.norm filter.at_top`. -/
+`Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
 @[to_additive "In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity. TODO: use
-`bornology.cobounded` instead of `filter.comap has_norm.norm filter.at_top`."]
+`Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`."]
 theorem Filter.tendsto_inv_cobounded :
     Tendsto (Inv.inv : E → E) (comap norm atTop) (comap norm atTop) := by
   simpa only [norm_inv', tendsto_comap_iff, (· ∘ ·)] using tendsto_comap
@@ -791,8 +791,9 @@ open Finset
 /-- A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant `C` such that
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
 (semi)normed spaces is in `normed_space.operator_norm`. -/
-@[to_additive
-      "A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant `C` such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of (semi)normed spaces is in `normed_space.operator_norm`."]
+@[to_additive "A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant
+`C` such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
+(semi)normed spaces is in `NormedSpace.OperatorNorm`."]
 theorem MonoidHomClass.lipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : LipschitzWith (Real.toNNReal C) f :=
   LipschitzWith.of_dist_le' fun x y => by simpa only [dist_eq_norm_div, map_div] using h (x / y)
@@ -839,8 +840,8 @@ theorem LipschitzWith.norm_div_le_of_le {f : E → F} {C : ℝ≥0} (h : Lipschi
 
 /-- A homomorphism `f` of seminormed groups is continuous, if there exists a constant `C` such that
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. -/
-@[to_additive
-      "A homomorphism `f` of seminormed groups is continuous, if there exists a constant `C` such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`"]
+@[to_additive "A homomorphism `f` of seminormed groups is continuous, if there exists a constant `C`
+such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`"]
 theorem MonoidHomClass.continuous_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : Continuous f :=
   (MonoidHomClass.lipschitz_of_bound f C h).continuous
@@ -1046,11 +1047,13 @@ theorem comap_norm_nhds_one : comap norm (𝓝 0) = 𝓝 (1 : E) := by
 
 /-- Special case of the sandwich theorem: if the norm of `f` is eventually bounded by a real
 function `a` which tends to `0`, then `f` tends to `1`. In this pair of lemmas (`squeeze_one_norm'`
-and `squeeze_one_norm`), following a convention of similar lemmas in `topology.metric_space.basic`
-and `topology.algebra.order`, the `'` version is phrased using "eventually" and the non-`'` version
-is phrased absolutely. -/
-@[to_additive
-      "Special case of the sandwich theorem: if the norm of `f` is eventually bounded by a real function `a` which tends to `0`, then `f` tends to `1`. In this pair of lemmas (`squeeze_zero_norm'` and `squeeze_zero_norm`), following a convention of similar lemmas in `topology.metric_space.basic` and `topology.algebra.order`, the `'` version is phrased using \"eventually\" and the non-`'` version is phrased absolutely."]
+and `squeeze_one_norm`), following a convention of similar lemmas in `Topology.MetricSpace.Basic`
+and `Topology.Algebra.Order`, the `'` version is phrased using "eventually" and the non-`'` version
+is phrased absolutely. -/ @[to_additive "Special case of the sandwich theorem: if the norm of `f` is eventually bounded by a
+real function `a` which tends to `0`, then `f` tends to `1`. In this pair of lemmas
+(`squeeze_zero_norm'` and `squeeze_zero_norm`), following a convention of similar lemmas in
+`Topology.MetricSpace.Basic` and `Topology.Algebra.Order`, the `'` version is phrased using
+\"eventually\" and the non-`'` version is phrased absolutely."]
 theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ᶠ n in t₀, ‖f n‖ ≤ a n)
     (h' : Tendsto a t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 1) :=
   tendsto_one_iff_norm_tendsto_one.2 <|
@@ -1060,8 +1063,8 @@ theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h 
 
 /-- Special case of the sandwich theorem: if the norm of `f` is bounded by a real function `a` which
 tends to `0`, then `f` tends to `1`. -/
-@[to_additive
-      "Special case of the sandwich theorem: if the norm of `f` is bounded by a real function `a` which tends to `0`, then `f` tends to `0`."]
+@[to_additive "Special case of the sandwich theorem: if the norm of `f` is bounded by a real
+function `a` which tends to `0`, then `f` tends to `0`."]
 theorem squeeze_one_norm {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ n, ‖f n‖ ≤ a n) :
     Tendsto a t₀ (𝓝 0) → Tendsto f t₀ (𝓝 1) :=
   squeeze_one_norm' <| eventually_of_forall h
@@ -1172,8 +1175,10 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {
 and a bounded function tends to one. This lemma is formulated for any binary operation
 `op : E → F → G` with an estimate `‖op x y‖ ≤ ‖x‖ * ‖y‖` instead of multiplication so that it
 can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`. -/
-@[to_additive
-      "A helper lemma used to prove that the (scalar or usual) product of a function that tends to zero and a bounded function tends to zero. This lemma is formulated for any binary operation `op : E → F → G` with an estimate `‖op x y‖ ≤ ‖x‖ * ‖y‖` instead of multiplication so that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`."]
+@[to_additive "A helper lemma used to prove that the (scalar or usual) product of a function that
+tends to zero and a bounded function tends to zero. This lemma is formulated for any binary
+operation `op : E → F → G` with an estimate `‖op x y‖ ≤ ‖x‖ * ‖y‖` instead of multiplication so
+that it can be applied to `(*)`, `flip (*)`, `(•)`, and `flip (•)`."]
 theorem Filter.Tendsto.op_one_isBoundedUnder_le {f : α → E} {g : α → F} {l : Filter α}
     (hf : Tendsto f l (𝓝 1)) (hg : IsBoundedUnder (· ≤ ·) l (norm ∘ g)) (op : E → F → G)
     (h_op : ∀ x y, ‖op x y‖ ≤ ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) :=
@@ -1334,10 +1339,10 @@ section Induced
 variable (E F)
 
 -- See note [reducible non-instances]
-/-- A group homomorphism from a `group` to a `seminormed_group` induces a `seminormed_group`
+/-- A group homomorphism from a `Group` to a `SeminormedGroup` induces a `SeminormedGroup`
 structure on the domain. -/
-@[to_additive (attr := reducible) "A group homomorphism from an `add_group` to a
-`seminormed_add_group` induces a `seminormed_add_group` structure on the domain."]
+@[to_additive (attr := reducible) "A group homomorphism from an `AddGroup` to a
+`SeminormedAddGroup` induces a `SeminormedAddGroup` structure on the domain."]
 def SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
   { PseudoMetricSpace.induced f toPseudoMetricSpace with
@@ -1348,10 +1353,10 @@ def SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E
 #align seminormed_add_group.induced SeminormedAddGroup.induced
 
 -- See note [reducible non-instances]
-/-- A group homomorphism from a `comm_group` to a `seminormed_group` induces a
-`seminormed_comm_group` structure on the domain. -/
-@[to_additive (attr := reducible) "A group homomorphism from an `add_comm_group` to a
-`seminormed_add_group` induces a `seminormed_add_comm_group` structure on the domain."]
+/-- A group homomorphism from a `CommGroup` to a `SeminormedGroup` induces a
+`SeminormedCommGroup` structure on the domain. -/
+@[to_additive (attr := reducible) "A group homomorphism from an `AddCommGroup` to a
+`SeminormedAddGroup` induces a `SeminormedAddCommGroup` structure on the domain."]
 def SeminormedCommGroup.induced [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
   { SeminormedGroup.induced E F f with
@@ -1360,7 +1365,7 @@ def SeminormedCommGroup.induced [CommGroup E] [SeminormedGroup F] [MonoidHomClas
 #align seminormed_add_comm_group.induced SeminormedAddCommGroup.induced
 
 -- See note [reducible non-instances].
-/-- An injective group homomorphism from a `group` to a `normed_group` induces a `normed_group`
+/-- An injective group homomorphism from a `Group` to a `NormedGroup` induces a `NormedGroup`
 structure on the domain. -/
 @[to_additive (attr := reducible) "An injective group homomorphism from an `add_group` to a
 `normed_add_group` induces a `normed_add_group` structure on the domain."]
@@ -1371,10 +1376,10 @@ def NormedGroup.induced [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f :
 #align normed_add_group.induced NormedAddGroup.induced
 
 -- See note [reducible non-instances].
-/-- An injective group homomorphism from an `comm_group` to a `normed_group` induces a
-`normed_comm_group` structure on the domain. -/
-@[to_additive (attr := reducible) "An injective group homomorphism from an `comm_group` to a
-`normed_comm_group` induces a `normed_comm_group` structure on the domain."]
+/-- An injective group homomorphism from an `CommGroup` to a `NormedGroup` induces a
+`NormedCommGroup` structure on the domain. -/
+@[to_additive (attr := reducible) "An injective group homomorphism from an `CommGroup` to a
+`NormedCommGroup` induces a `NormedCommGroup` structure on the domain."]
 def NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
     (h : Injective f) : NormedCommGroup E :=
   { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with
@@ -2059,7 +2064,7 @@ section NormedAddGroup
 
 variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
 
-/-! Some relations with `has_compact_support` -/
+/-! Some relations with `HasCompactSupport` -/
 
 
 theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ HasCompactSupport f :=
@@ -2096,7 +2101,7 @@ theorem HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSuppo
 
 end NormedAddGroupSource
 
-/-! ### `ulift` -/
+/-! ### `ULift` -/
 
 
 namespace ULift
@@ -2187,7 +2192,7 @@ instance normedCommGroup [NormedCommGroup E] : NormedCommGroup (ULift E) :=
 
 end ULift
 
-/-! ### `additive`, `multiplicative` -/
+/-! ### `Additive`, `Multiplicative` -/
 
 
 section AdditiveMultiplicative
@@ -2600,10 +2605,10 @@ namespace MulOpposite
 
 /-- The (additive) norm on the multiplicative opposite is the same as the norm on the original type.
 
-Note that we do not provide this more generally as `has_norm Eᵐᵒᵖ`, as this is not always a good
-choice of norm in the multiplicative `seminormed_group E` case.
+Note that we do not provide this more generally as `Norm Eᵐᵒᵖ`, as this is not always a good
+choice of norm in the multiplicative `SeminormedGroup E` case.
 
-We could repeat this instance to provide a `[seminormed_group E] : seminormed_group Eᵃᵒᵖ` instance,
+We could repeat this instance to provide a `[SeminormedGroup E] : SeminormedGroup Eᵃᵒᵖ` instance,
 but that case would likely never be used.
 -/
 instance seminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ
@@ -2671,11 +2676,11 @@ theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
 /-- If `x` is an element of a subgroup `s` of a seminormed group `E`, its norm in `s` is equal to
 its norm in `E`.
 
-This is a reversed version of the `simp` lemma `subgroup.coe_norm` for use by `norm_cast`. -/
+This is a reversed version of the `simp` lemma `Subgroup.coe_norm` for use by `norm_cast`. -/
 @[to_additive (attr := norm_cast) "If `x` is an element of a subgroup `s` of a seminormed group `E`,
 its norm in `s` is equal to its norm in `E`.
 
-This is a reversed version of the `simp` lemma `add_subgroup.coe_norm` for use by `norm_cast`."]
+This is a reversed version of the `simp` lemma `AddSubgroup.coe_norm` for use by `norm_cast`."]
 theorem norm_coe {s : Subgroup E} (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
 #align subgroup.norm_coe Subgroup.norm_coe
@@ -2729,7 +2734,7 @@ theorem coe_norm {_ : Ring 𝕜} [SeminormedAddCommGroup E] {_ : Module 𝕜 E} 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `E` is equal to its
 norm in `s`.
 
-This is a reversed version of the `simp` lemma `submodule.coe_norm` for use by `norm_cast`. -/
+This is a reversed version of the `simp` lemma `Submodule.coe_norm` for use by `norm_cast`. -/
 @[norm_cast]
 theorem norm_coe {_ : Ring 𝕜} [SeminormedAddCommGroup E] {_ : Module 𝕜 E} {s : Submodule 𝕜 E}
     (x : s) : ‖(x : E)‖ = ‖x‖ :=
