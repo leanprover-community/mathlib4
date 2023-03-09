@@ -14,18 +14,18 @@ import Mathlib.Data.Polynomial.Monic
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.
 
-Recall that `∑` and `∏` are notation for `finset.sum` and `finset.prod` respectively.
+Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` respectively.
 
 ## Main results
 
-- `polynomial.nat_degree_prod_of_monic` : the degree of a product of monic polynomials is the
-  product of degrees. We prove this only for `[comm_semiring R]`,
-  but it ought to be true for `[semiring R]` and `list.prod`.
-- `polynomial.nat_degree_prod` : for polynomials over an integral domain,
+- `Polynomial.natDegree_prod_of_monic` : the degree of a product of monic polynomials is the
+  product of degrees. We prove this only for `[CommSemiring R]`,
+  but it ought to be true for `[Semiring R]` and `List.prod`.
+- `Polynomial.natDegree_prod` : for polynomials over an integral domain,
   the degree of the product is the sum of degrees.
-- `polynomial.leading_coeff_prod` : for polynomials over an integral domain,
+- `Polynomial.leadingCoeff_prod` : for polynomials over an integral domain,
   the leading coefficient is the product of leading coefficients.
-- `polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
+- `Polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
   the second coefficient of the characteristic polynomial.
 -/
 
@@ -140,7 +140,7 @@ theorem degree_prod_le : (∏ i in s, f i).degree ≤ ∑ i in s, (f i).degree :
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients, provided that this product is nonzero.
 
-See `polynomial.leading_coeff_multiset_prod` (without the `'`) for a version for integral domains,
+See `Polynomial.leadingCoeff_multiset_prod` (without the `'`) for a version for integral domains,
 where this condition is automatically satisfied.
 -/
 theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
@@ -157,7 +157,7 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients, provided that this product is nonzero.
 
-See `polynomial.leading_coeff_prod` (without the `'`) for a version for integral domains,
+See `Polynomial.leadingCoeff_prod` (without the `'`) for a version for integral domains,
 where this condition is automatically satisfied.
 -/
 theorem leadingCoeff_prod' (h : (∏ i in s, (f i).leadingCoeff) ≠ 0) :
@@ -168,7 +168,7 @@ theorem leadingCoeff_prod' (h : (∏ i in s, (f i).leadingCoeff) ≠ 0) :
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees, provided that the product of leading coefficients is nonzero.
 
-See `polynomial.nat_degree_multiset_prod` (without the `'`) for a version for integral domains,
+See `Polynomial.natDegree_multiset_prod` (without the `'`) for a version for integral domains,
 where this condition is automatically satisfied.
 -/
 theorem natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0) :
@@ -185,7 +185,7 @@ theorem natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees, provided that the product of leading coefficients is nonzero.
 
-See `polynomial.nat_degree_prod` (without the `'`) for a version for integral domains,
+See `Polynomial.natDegree_prod` (without the `'`) for a version for integral domains,
 where this condition is automatically satisfied.
 -/
 theorem natDegree_prod' (h : (∏ i in s, (f i).leadingCoeff) ≠ 0) :
@@ -298,7 +298,7 @@ variable [Semiring R] [NoZeroDivisors R]
 
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees, where the degree of the zero polynomial is ⊥.
-`[nontrivial R]` is needed, otherwise for `l = []` we have `⊥` in the LHS and `0` in the RHS.
+`[Nontrivial R]` is needed, otherwise for `l = []` we have `⊥` in the LHS and `0` in the RHS.
 -/
 theorem degree_list_prod [Nontrivial R] (l : List R[X]) : l.prod.degree = (l.map degree).sum :=
   map_list_prod (@degreeMonoidHom R _ _ _) l
@@ -313,7 +313,7 @@ variable [CommSemiring R] [NoZeroDivisors R] (f : ι → R[X]) (t : Multiset R[X
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees.
 
-See `polynomial.nat_degree_prod'` (with a `'`) for a version for commutative semirings,
+See `Polynomial.natDegree_prod'` (with a `'`) for a version for commutative semirings,
 where additionally, the product of the leading coefficients must be nonzero.
 -/
 theorem natDegree_prod (h : ∀ i ∈ s, f i ≠ 0) :
@@ -350,7 +350,7 @@ theorem degree_prod [Nontrivial R] : (∏ i in s, f i).degree = ∑ i in s, (f i
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.
 
-See `polynomial.leading_coeff_multiset_prod'` (with a `'`) for a version for commutative semirings,
+See `Polynomial.leadingCoeff_multiset_prod'` (with a `'`) for a version for commutative semirings,
 where additionally, the product of the leading coefficients must be nonzero.
 -/
 theorem leadingCoeff_multiset_prod : t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod :=
@@ -362,7 +362,7 @@ theorem leadingCoeff_multiset_prod : t.prod.leadingCoeff = (t.map fun f => leadi
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.
 
-See `polynomial.leading_coeff_prod'` (with a `'`) for a version for commutative semirings,
+See `Polynomial.leadingCoeff_prod'` (with a `'`) for a version for commutative semirings,
 where additionally, the product of the leading coefficients must be nonzero.
 -/
 theorem leadingCoeff_prod : (∏ i in s, f i).leadingCoeff = ∏ i in s, (f i).leadingCoeff := by
