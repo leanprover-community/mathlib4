@@ -8,8 +8,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Tower
-import Mathbin.RingTheory.Localization.Basic
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization
@@ -127,8 +127,7 @@ protected noncomputable irreducible_def inv (z : K) : K :=
           h <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) z) h0⟩
 #align is_fraction_ring.inv IsFractionRing.inv
 
-protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 :=
-  by
+protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
   rw [IsFractionRing.inv, dif_neg hx, ←
     IsUnit.mul_left_inj
       (map_units K
@@ -185,15 +184,13 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
 
 @[simp]
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
-    mk' K x y = 0 ↔ x = 0 :=
-  by
+    mk' K x y = 0 ↔ x = 0 := by
   refine' ⟨fun hxy => _, fun h => by rw [h, mk'_zero]⟩
   · simp_rw [mk'_eq_zero_iff, mul_left_coe_nonZeroDivisors_eq_zero_iff] at hxy
     exact (exists_const _).mp hxy
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero
 
-theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y :=
-  by
+theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
   refine' ⟨_, fun hxy => by rw [hxy, mk'_self']⟩
   · intro hxy
     have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
@@ -259,8 +256,7 @@ variable (S)
 
 theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
-      @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra :=
-  by
+      @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
   convert is_localization_iff_of_base_ring_equiv _ _ h
   ext x
@@ -278,8 +274,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 #align is_fraction_ring.is_fraction_ring_iff_of_base_ring_equiv IsFractionRing.isFractionRing_iff_of_base_ringEquiv
 
 protected theorem nontrivial (R S : Type _) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
-    [IsFractionRing R S] : Nontrivial S :=
-  by
+    [IsFractionRing R S] : Nontrivial S := by
   apply nontrivial_of_ne
   intro h
   apply @zero_ne_one R
