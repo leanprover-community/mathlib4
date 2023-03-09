@@ -934,12 +934,12 @@ theorem abs_apply {z : ℂ} : Complex.abs z = (normSq z).sqrt :=
 
 -- Porting note: removed `norm_cast`
 @[simp]
-theorem abs_of_real (r : ℝ) : abs r = |r| := by
-  simp [abs, normSq_of_real, Real.sqrt_mul_self_eq_abs]
+theorem abs_of_real (r : ℝ) : Complex.abs r = |r| := by
+  simp [Complex.abs, normSq_of_real, Real.sqrt_mul_self_eq_abs]
 #align complex.abs_of_real Complex.abs_of_real
 
-nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : abs r = r :=
-  (abs_of_real _).trans (abs_of_nonneg h)
+theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
+  (Complex.abs_of_real _).trans (Complex.abs_of_nonneg h)
 #align complex.abs_of_nonneg Complex.abs_of_nonneg
 
 theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
@@ -949,45 +949,46 @@ theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
 
 #align complex.abs_of_nat Complex.abs_of_nat
 
-theorem mul_self_abs (z : ℂ) : abs z * abs z = normSq z :=
+theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 #align complex.mul_self_abs Complex.mul_self_abs
 
-theorem sq_abs (z : ℂ) : abs z ^ 2 = normSq z :=
+theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z :=
   Real.sq_sqrt (normSq_nonneg _)
 #align complex.sq_abs Complex.sq_abs
 
 @[simp]
-theorem sq_abs_sub_sq_re (z : ℂ) : abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := by
+theorem sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := by
   rw [sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel']
 #align complex.sq_abs_sub_sq_re Complex.sq_abs_sub_sq_re
 
 @[simp]
-theorem sq_abs_sub_sq_im (z : ℂ) : abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := by
+theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := by
   rw [← sq_abs_sub_sq_re, sub_sub_cancel]
 #align complex.sq_abs_sub_sq_im Complex.sq_abs_sub_sq_im
 
 @[simp]
-theorem abs_i : abs i = 1 := by simp [abs]
+theorem abs_i : Complex.abs i = 1 := by simp [Complex.abs]
+set_option linter.uppercaseLean3 false in
 #align complex.abs_I Complex.abs_i
 
 @[simp]
-theorem abs_two : abs 2 = 2 :=
+theorem abs_two : Complex.abs 2 = 2 :=
   calc
     abs 2 = abs (2 : ℝ) := by rw [of_real_bit0, of_real_one]
-    _ = (2 : ℝ) := abs_of_nonneg (by norm_num)
+    _ = (2 : ℝ) := Complex.abs_of_nonneg (by norm_num)
 
-end
+
 
 #align complex.abs_two Complex.abs_two
 
 @[simp]
-theorem range_abs : range abs = Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 abs.NonNeg) fun x hx => ⟨x, abs_of_nonneg hx⟩
+theorem range_abs : range Complex.abs = Ici 0 :=
+  Subset.antisymm (range_subset_iff.2 Complex.abs_nonneg) fun x hx => ⟨x, abs_of_nonneg hx⟩
 #align complex.range_abs Complex.range_abs
 
 @[simp]
-theorem abs_conj (z : ℂ) : abs (conj z) = abs z :=
+theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 #align complex.abs_conj Complex.abs_conj
 
@@ -1013,37 +1014,37 @@ theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ abs z :=
     exact le_add_of_nonneg_right (mul_self_nonneg _)
 #align complex.abs_re_le_abs Complex.abs_re_le_abs
 
-theorem abs_im_le_abs (z : ℂ) : |z.im| ≤ abs z :=
+theorem abs_im_le_abs (z : ℂ) : |z.im| ≤ Complex.abs z :=
   Real.abs_le_sqrt <| by
     rw [normSq_apply, ← sq, ← sq]
     exact le_add_of_nonneg_left (sq_nonneg _)
 #align complex.abs_im_le_abs Complex.abs_im_le_abs
 
-theorem re_le_abs (z : ℂ) : z.re ≤ abs z :=
+theorem re_le_abs (z : ℂ) : z.re ≤ Complex.abs z :=
   (abs_le.1 (abs_re_le_abs _)).2
 #align complex.re_le_abs Complex.re_le_abs
 
-theorem im_le_abs (z : ℂ) : z.im ≤ abs z :=
+theorem im_le_abs (z : ℂ) : z.im ≤ Complex.abs z :=
   (abs_le.1 (abs_im_le_abs _)).2
 #align complex.im_le_abs Complex.im_le_abs
 
 @[simp]
-theorem abs_re_lt_abs {z : ℂ} : |z.re| < abs z ↔ z.im ≠ 0 := by
+theorem abs_re_lt_abs {z : ℂ} : |z.re| < Complex.abs z ↔ z.im ≠ 0 := by
   rw [abs, AbsoluteValue.coe_mk, MulHom.coe_mk, Real.lt_sqrt (abs_nonneg _), normSq_apply,
     _root_.sq_abs, ← sq, lt_add_iff_pos_right, mul_self_pos]
 #align complex.abs_re_lt_abs Complex.abs_re_lt_abs
 
 @[simp]
-theorem abs_im_lt_abs {z : ℂ} : |z.im| < abs z ↔ z.re ≠ 0 := by simpa using @abs_re_lt_abs (z * I)
+theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by simpa using @abs_re_lt_abs (z * i)
 #align complex.abs_im_lt_abs Complex.abs_im_lt_abs
 
 @[simp]
-theorem abs_abs (z : ℂ) : |abs z| = abs z :=
+theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
   abs_of_nonneg (abs.NonNeg _)
 #align complex.abs_abs Complex.abs_abs
 
-theorem abs_le_abs_re_add_abs_im (z : ℂ) : abs z ≤ |z.re| + |z.im| := by
-  simpa [re_add_im] using abs.add_le z.re (z.im * I)
+theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
+  simpa [re_add_im] using abs.add_le z.re (z.im * i)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
 theorem abs_le_sqrt_two_mul_max (z : ℂ) : abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) := by
@@ -1070,17 +1071,19 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / z.abs| ≤ 1 :=
   else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (abs.pos hz), one_mul, abs_im_le_abs]
 #align complex.abs_im_div_abs_le_one Complex.abs_im_div_abs_le_one
 
-@[simp, norm_cast]
-theorem abs_cast_nat (n : ℕ) : abs (n : ℂ) = n := by
+-- Porting note: removed `norm_cast` attribute
+@[simp]
+theorem abs_cast_nat (n : ℕ) : Complex.abs (n : ℂ) = n := by
   rw [← of_real_nat_cast, abs_of_nonneg (Nat.cast_nonneg n)]
 #align complex.abs_cast_nat Complex.abs_cast_nat
 
-@[simp, norm_cast]
-theorem int_cast_abs (n : ℤ) : ↑(|n|) = abs n := by
+-- Porting note: removed `norm_cast` attribute
+@[simp]
+theorem int_cast_abs (n : ℤ) : ↑(|n|) = Complex.abs n := by
   rw [← of_real_int_cast, abs_of_real, Int.cast_abs]
 #align complex.int_cast_abs Complex.int_cast_abs
 
-theorem normSq_eq_abs (x : ℂ) : normSq x = abs x ^ 2 := by
+theorem normSq_eq_abs (x : ℂ) : normSq x = Complex.abs x ^ 2 := by
   simp [abs, sq, Real.mul_self_sqrt (normSq_nonneg _)]
 #align complex.norm_sq_eq_abs Complex.normSq_eq_abs
 
@@ -1103,6 +1106,7 @@ protected def partialOrder : PartialOrder ℂ
 section ComplexOrder
 
 scoped[ComplexOrder] attribute [instance] Complex.partialOrder
+
 
 theorem le_def {z w : ℂ} : z ≤ w ↔ z.re ≤ w.re ∧ z.im = w.im :=
   Iff.rfl
@@ -1312,5 +1316,7 @@ theorem re_sum (f : α → ℂ) : (∑ i in s, f i).re = ∑ i in s, (f i).re :=
 theorem im_sum (f : α → ℂ) : (∑ i in s, f i).im = ∑ i in s, (f i).im :=
   imAddGroupHom.map_sum f s
 #align complex.im_sum Complex.im_sum
+
+end
 
 end Complex
