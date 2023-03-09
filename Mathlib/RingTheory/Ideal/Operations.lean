@@ -1333,6 +1333,10 @@ def comap (I : Ideal S) : Ideal R where
     exact mul_mem_left I _ hx
 #align ideal.comap Ideal.comap
 
+-- Porting note: new theorem
+-- @[simp] -- Porting note: TODO enable simp after the port
+theorem coe_comap (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
+
 variable {f}
 
 theorem map_mono (h : I ≤ J) : map f I ≤ map f J :=
@@ -1428,15 +1432,10 @@ theorem map_map {T : Type _} [Semiring T] {I : Ideal R} (f : R →+* S) (g : S �
 #align ideal.map_map Ideal.map_map
 
 theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) := by
-  refine symm <|
-    Submodule.span_eq_of_le _ (fun y ⟨x, hy, x_eq⟩ => x_eq ▸ mem_map_of_mem f (subset_span hy))
-      (map_le_iff_le_comap.2 <| span_le.2 <| Set.image_subset_iff.1 ?_)
-  convert subset_span (s := s)
-  · exact Set.image_id' s
-  · simp [subset_span, comap]
-    sorry
-
-
+  refine (Submodule.span_eq_of_le _ ?_ ?_).symm
+  · rintro _ ⟨x, hx, rfl⟩; exact mem_map_of_mem f (subset_span hx)
+  · rw [map_le_iff_le_comap, span_le, coe_comap, ← Set.image_subset_iff]
+    exact subset_span
 #align ideal.map_span Ideal.map_span
 
 variable {f I J K L}
