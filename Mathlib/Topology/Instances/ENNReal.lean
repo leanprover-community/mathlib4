@@ -21,7 +21,7 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 
 noncomputable section
 
-open Set Filter Metric
+open Set Filter Metric Function
 open scoped Classical Topology ENNReal NNReal BigOperators Filter
 
 variable {α : Type _} {β : Type _} {γ : Type _}
@@ -833,8 +833,12 @@ protected theorem tsum_eq_supᵢ_nat {f : ℕ → ℝ≥0∞} :
 
 protected theorem tsum_eq_liminf_sum_nat {f : ℕ → ℝ≥0∞} :
     (∑' i, f i) = liminf (fun n => ∑ i in Finset.range n, f i) atTop :=
-  Eq.symm <| ENNReal.summable.hasSum.tendsto_sum_nat.liminf_eq
+  ENNReal.summable.hasSum.tendsto_sum_nat.liminf_eq.symm
 #align ennreal.tsum_eq_liminf_sum_nat ENNReal.tsum_eq_liminf_sum_nat
+
+protected theorem tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
+    (∑' i, f i) = limsup (fun n => ∑ i in Finset.range n, f i) atTop :=
+  ENNReal.summable.hasSum.tendsto_sum_nat.limsup_eq.symm
 
 protected theorem le_tsum (a : α) : f a ≤ ∑' a, f a :=
   le_tsum' ENNReal.summable a
@@ -955,46 +959,48 @@ theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : (∑'
   ENNReal.eq_sub_of_add_eq h₁ <| by simp only [← ENNReal.tsum_add, this]
 #align ennreal.tsum_sub ENNReal.tsum_sub
 
+theorem tsum_comp_le_tsum_of_injective {f : α → β} (hf : Injective f) (g : β → ℝ≥0∞) :
+    (∑' x, g (f x)) ≤ ∑' y, g y :=
+  tsum_le_tsum_of_inj f hf (fun _ _ => zero_le _) (fun _ => le_rfl) ENNReal.summable
+    ENNReal.summable
+
+theorem tsum_le_tsum_comp_of_surjective {f : α → β} (hf : Surjective f) (g : β → ℝ≥0∞) :
+    (∑' y, g y) ≤ ∑' x, g (f x) :=
+  calc (∑' y, g y) = ∑' y, g (f (surjInv hf y)) := by simp only [surjInv_eq hf]
+  _ ≤ ∑' x, g (f x) := tsum_comp_le_tsum_of_injective (injective_surjInv hf) _
+
 theorem tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
-    (∑' x : s, f x) ≤ ∑' x : t, f x := by
-  simp only [tsum_subtype]
-  apply ENNReal.tsum_le_tsum
-  exact indicator_le_indicator_of_subset h fun _ => zero_le _
+    (∑' x : s, f x) ≤ ∑' x : t, f x :=
+  tsum_comp_le_tsum_of_injective (inclusion_injective h) _
 #align ennreal.tsum_mono_subtype ENNReal.tsum_mono_subtype
 
-theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
-    (∑' x : ↑(s ∪ t), f x) ≤ (∑' x : s, f x) + ∑' x : t, f x :=
-  calc
-    (∑' x : ↑(s ∪ t), f x) = ∑' x : ↑(s ∪ t \ s), f x := by
-      apply tsum_congr_subtype
-      rw [union_diff_self]
-    _ = (∑' x : s, f x) + ∑' x : t \ s, f x :=
-      tsum_union_disjoint disjoint_sdiff_self_right ENNReal.summable ENNReal.summable
-    _ ≤ (∑' x : s, f x) + ∑' x : t, f x := add_le_add le_rfl (tsum_mono_subtype _ (diff_subset _ _))
-#align ennreal.tsum_union_le ENNReal.tsum_union_le
+theorem tsum_unionᵢ_le_tsum {ι : Type _} (f : α → ℝ≥0∞) (t : ι → Set α) :
+    (∑' x : ⋃ i, t i, f x) ≤ ∑' i, ∑' x : t i, f x :=
+  calc (∑' x : ⋃ i, t i, f x) ≤ ∑' x : Σ i, t i, f x.2 :=
+    tsum_le_tsum_comp_of_surjective (sigmaToUnionᵢ_surjective t) _
+  _ = ∑' i, ∑' x : t i, f x := ENNReal.tsum_sigma' _
 
-theorem tsum_bUnion_le {ι : Type _} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
-    (∑' x : ⋃ i ∈ s, t i, f x) ≤ ∑ i in s, ∑' x : t i, f x := by
-  classical
-    induction' s using Finset.induction_on with i s hi ihs h
-    · simp
-    have : (⋃ j ∈ insert i s, t j) = t i ∪ ⋃ j ∈ s, t j := by simp
-    rw [tsum_congr_subtype f this]
-    calc
-      (∑' x : t i ∪ ⋃ j ∈ s, t j, f x) ≤ (∑' x : t i, f x) + ∑' x : ⋃ j ∈ s, t j, f x :=
-        tsum_union_le _ _ _
-      _ ≤ (∑' x : t i, f x) + ∑ i in s, ∑' x : t i, f x := (add_le_add le_rfl ihs)
-      _ = ∑ j in insert i s, ∑' x : t j, f x := (Finset.sum_insert hi).symm
-      
-#align ennreal.tsum_bUnion_le ENNReal.tsum_bUnion_le
+theorem tsum_bunionᵢ_le_tsum {ι : Type _} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
+    (∑' x : ⋃ i ∈ s , t i, f x) ≤ ∑' i : s, ∑' x : t i, f x :=
+  calc (∑' x : ⋃ i ∈ s, t i, f x) = ∑' x : ⋃ i : s,  t i, f x := tsum_congr_subtype _ <| by simp
+  _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_unionᵢ_le_tsum _ _
+
+theorem tsum_bunionᵢ_le {ι : Type _} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
+    (∑' x : ⋃ i ∈ s, t i, f x) ≤ ∑ i in s, ∑' x : t i, f x :=
+  (tsum_bunionᵢ_le_tsum f s.toSet t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
+#align ennreal.tsum_bUnion_le ENNReal.tsum_bunionᵢ_le
 
 theorem tsum_unionᵢ_le {ι : Type _} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     (∑' x : ⋃ i, t i, f x) ≤ ∑ i, ∑' x : t i, f x := by
-  classical
-    have : (⋃ i, t i) = ⋃ i ∈ (Finset.univ : Finset ι), t i := by simp
-    rw [tsum_congr_subtype f this]
-    exact tsum_bUnion_le _ _ _
+  rw [← tsum_fintype]
+  exact tsum_unionᵢ_le_tsum f t
 #align ennreal.tsum_Union_le ENNReal.tsum_unionᵢ_le
+
+theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
+    (∑' x : ↑(s ∪ t), f x) ≤ (∑' x : s, f x) + ∑' x : t, f x :=
+  calc (∑' x : ↑(s ∪ t), f x) = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_subtype _ <| by simp
+  _ ≤ _ := by simpa using tsum_unionᵢ_le f (cond · s t)
+#align ennreal.tsum_union_le ENNReal.tsum_union_le
 
 theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
     (∑' x, f x) = f b + ∑' x, ite (x = b) 0 (f x) :=
@@ -1493,13 +1499,13 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
           f x ≤ f y + C * edist x y := h x y
           _ ≤ f y + C * (ε / C) := (add_le_add_left (mul_le_mul_left' hy C) (f y))
           _ = f y + ε := by rw [hεC]
-          
+
       ·
         calc
           f y ≤ f x + C * edist y x := h y x
           _ ≤ f x + C * (ε / C) := (add_le_add_left (mul_le_mul_left' hy C) (f x))
           _ = f x + ε := by rw [hεC]
-          
+
 #align continuous_of_le_add_edist continuous_of_le_add_edist
 
 theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
@@ -1511,7 +1517,7 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
     _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) :=
       (add_le_add_left (add_le_add (le_max_left _ _) (le_max_right _ _)) _)
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
-    
+
 #align continuous_edist continuous_edist
 
 @[continuity]
