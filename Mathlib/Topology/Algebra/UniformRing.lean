@@ -8,9 +8,9 @@ Authors: Patrick Massot, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Topology.Algebra.GroupCompletion
-import Mathbin.Topology.Algebra.Ring.Ideal
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Topology.Algebra.GroupCompletion
+import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
 # Completion of topological rings:
@@ -73,8 +73,7 @@ theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
 
 variable [UniformAddGroup α]
 
-theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 :=
-  by
+theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 := by
   let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ to_compl
   have : Continuous fun p : α × α => m p.1 p.2 := (continuous_coe α).comp continuous_mul
   have di : DenseInducing (to_compl : α → completion α) := dense_inducing_coe
@@ -182,8 +181,7 @@ variable (A : Type _) [Ring A] [UniformSpace A] [UniformAddGroup A] [Topological
 
 @[simp]
 theorem map_smul_eq_mul_coe (r : R) :
-    Completion.map ((· • ·) r) = (· * ·) (algebraMap R A r : Completion A) :=
-  by
+    Completion.map ((· • ·) r) = (· * ·) (algebraMap R A r : Completion A) := by
   ext x
   refine' completion.induction_on x _ fun a => _
   · exact isClosed_eq completion.continuous_map (continuous_mul_left _)
@@ -257,8 +255,7 @@ instance commRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [Topologi
 #align uniform_space.comm_ring UniformSpace.commRing
 
 instance topologicalRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
-    TopologicalRing (Quotient (separationSetoid α)) :=
-  by
+    TopologicalRing (Quotient (separationSetoid α)) := by
   convert topologicalRing_quotient (⊥ : Ideal α).closure <;> try apply ring_sep_rel
   simp [UniformSpace.commRing]
 #align uniform_space.topological_ring UniformSpace.topologicalRing
