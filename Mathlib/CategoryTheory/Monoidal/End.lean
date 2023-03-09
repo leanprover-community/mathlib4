@@ -262,9 +262,9 @@ theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) :
         (F.μ m₁ (m₂ ⊗ m₃)).app X ≫
           (F.map (α_ m₁ m₂ m₃).inv).app X ≫ (F.μIso (m₁ ⊗ m₂) m₃).inv.app X := by
   rw [← associativity_app_assoc]
-  dsimp
+  dsimp [endofunctorMonoidalCategory]
   simp
-  dsimp
+  dsimp [endofunctorMonoidalCategory]
   simp
 #align category_theory.obj_μ_app CategoryTheory.obj_μ_app
 
