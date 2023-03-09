@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.NormalMono.Basic
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.
