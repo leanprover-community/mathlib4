@@ -397,7 +397,7 @@ where /-- Implementation of `applyReplacementFun`. -/
         /- Do not replace numerals in specific types. -/
         let gAllArgs := gArgs.push x
         let firstArg := gAllArgs[0]
-        if let some fixedArgNrs := changeNumeral? nm then
+        if let some changedArgNrs := changeNumeral? nm then
           if additiveTest findTranslation? ignore firstArg then
             if trace then
               dbg_trace s!"applyReplacementFun: We change the numerals in {g.app x}. {
@@ -406,7 +406,7 @@ where /-- Implementation of `applyReplacementFun`. -/
             -- since all other arguments can contain subexpressions like
             -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
             let newArgs ← gAllArgs.mapIdx fun argNr arg ↦
-              if fixedArgNrs.contains argNr then
+              if changedArgNrs.contains argNr then
                 r <| changeNumeral arg
               else
                 r arg
