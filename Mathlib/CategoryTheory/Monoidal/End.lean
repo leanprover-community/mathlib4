@@ -124,8 +124,8 @@ theorem ε_naturality {X Y : C} (f : X ⟶ Y) : F.ε.app X ≫ (F.obj (𝟙_ M))
 
 @[reassoc (attr := simp)]
 theorem ε_inv_naturality {X Y : C} (f : X ⟶ Y) :
-    (F.obj (𝟙_ M)).map f ≫ F.εIso.inv.app Y = F.εIso.inv.app X ≫ f :=
-  F.εIso.inv.naturality f
+    (MonoidalFunctor.εIso F).inv.app X ≫ (𝟙_ (C ⥤ C)).map f = F.εIso.inv.app X ≫ f := by
+  aesop_cat
 #align category_theory.ε_inv_naturality CategoryTheory.ε_inv_naturality
 
 @[reassoc (attr := simp)]
@@ -135,7 +135,7 @@ theorem μ_naturality {m n : M} {X Y : C} (f : X ⟶ Y) :
 #align category_theory.μ_naturality CategoryTheory.μ_naturality
 
 -- This is a simp lemma in the reverse direction via `nat_trans.naturality`.
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem μ_inv_naturality {m n : M} {X Y : C} (f : X ⟶ Y) :
     (F.μIso m n).inv.app X ≫ (F.obj n).map ((F.obj m).map f) =
       (F.obj _).map f ≫ (F.μIso m n).inv.app Y :=
@@ -143,7 +143,7 @@ theorem μ_inv_naturality {m n : M} {X Y : C} (f : X ⟶ Y) :
 #align category_theory.μ_inv_naturality CategoryTheory.μ_inv_naturality
 
 -- This is not a simp lemma since it could be proved by the lemmas later.
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem μ_naturality₂ {m n m' n' : M} (f : m ⟶ m') (g : n ⟶ n') (X : C) :
     (F.map g).app ((F.obj m).obj X) ≫ (F.obj n').map ((F.map f).app X) ≫ (F.μ m' n').app X =
       (F.μ m n).app X ≫ (F.map (f ⊗ g)).app X := by
@@ -202,7 +202,8 @@ theorem obj_ε_app (n : M) (X : C) :
   · simp
 #align category_theory.obj_ε_app CategoryTheory.obj_ε_app
 
-@[reassoc (attr := simp)]
+-- porting note: removed simp attribute
+@[reassoc]
 theorem obj_ε_inv_app (n : M) (X : C) :
     (F.obj n).map (F.εIso.inv.app X) = (F.μ (𝟙_ M) n).app X ≫ (F.map (λ_ n).hom).app X := by
   rw [← cancel_mono ((F.obj n).map (F.ε.app X)), ← Functor.map_comp]
@@ -289,7 +290,8 @@ theorem obj_zero_map_μ_app {m : M} {X Y : C} (f : X ⟶ (F.obj m).obj Y) :
 
 @[simp]
 theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) :
-    (F.obj m₂).map ((F.μ m₁ (𝟙_ M)).app X) =
+   (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫ (F.μ m₁ (𝟙_ M ⊗ m₂)).app X ≫
+   (F.map (α_ m₁ (𝟙_ M) m₂).inv).app X ≫ (F.μIso (m₁ ⊗ 𝟙_ M) m₂).inv.app X =
       (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫
         (F.map (λ_ m₂).hom).app ((F.obj m₁).obj X) ≫ (F.obj m₂).map ((F.map (ρ_ m₁).inv).app X) :=
   by
