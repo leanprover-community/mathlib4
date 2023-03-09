@@ -8,29 +8,27 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Topology.Instances.Nnreal
+import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
-import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Real
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Topology.Algebra.Order.T5
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
-# Extended non-negative reals
+# Topology on extended non-negative reals
 -/
-
 
 noncomputable section
 
-open Classical Set Filter Metric
-
-open Classical Topology ENNReal NNReal BigOperators Filter
+open Set Filter Metric
+open scoped Classical Topology ENNReal NNReal BigOperators Filter
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
 namespace ENNReal
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
-
-variable {x y z : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞} {s : Set ℝ≥0∞}
+variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0} {x y z : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞} {s : Set ℝ≥0∞}
 
 section TopologicalSpace
 
@@ -40,40 +38,26 @@ open TopologicalSpace
 
 Note: this is different from the `emetric_space` topology. The `emetric_space` topology has
 `is_open {⊤}`, while this topology doesn't have singleton elements. -/
-instance : TopologicalSpace ℝ≥0∞ :=
-  Preorder.topology ℝ≥0∞
+instance : TopologicalSpace ℝ≥0∞ := Preorder.topology ℝ≥0∞
 
-instance : OrderTopology ℝ≥0∞ :=
-  ⟨rfl⟩
-
-instance : T2Space ℝ≥0∞ := by infer_instance
+instance : OrderTopology ℝ≥0∞ := ⟨rfl⟩
 
 -- short-circuit type class inference
-instance : NormalSpace ℝ≥0∞ :=
-  normalOfCompactT2
+instance : T2Space ℝ≥0∞ := inferInstance
+instance : T5Space ℝ≥0∞ := inferInstance
+instance : NormalSpace ℝ≥0∞ := inferInstance
 
 instance : SecondCountableTopology ℝ≥0∞ :=
-  orderIsoUnitIntervalBirational.toHomeomorph.Embedding.SecondCountableTopology
+  orderIsoUnitIntervalBirational.toHomeomorph.embedding.secondCountableTopology
 
-theorem embedding_coe : Embedding (coe : ℝ≥0 → ℝ≥0∞) :=
-  ⟨⟨by
-      refine' le_antisymm _ _
-      · rw [@OrderTopology.topology_eq_generate_intervals ℝ≥0∞ _, ← coinduced_le_iff_le_induced]
-        refine' le_generateFrom fun s ha => _
-        rcases ha with ⟨a, rfl | rfl⟩
-        show IsOpen { b : ℝ≥0 | a < ↑b }
-        · cases a <;> simp [none_eq_top, some_eq_coe, isOpen_lt']
-        show IsOpen { b : ℝ≥0 | ↑b < a }
-        · cases a <;> simp [none_eq_top, some_eq_coe, isOpen_gt', isOpen_const]
-      · rw [@OrderTopology.topology_eq_generate_intervals ℝ≥0 _]
-        refine' le_generateFrom fun s ha => _
-        rcases ha with ⟨a, rfl | rfl⟩
-        exact ⟨Ioi a, isOpen_Ioi, by simp [Ioi]⟩
-        exact ⟨Iio a, isOpen_Iio, by simp [Iio]⟩⟩, fun a b => coe_eq_coe.1⟩
+theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) := by
+  refine ⟨⟨OrderTopology.topology_eq_generate_intervals.trans ?_⟩, fun _ _ => coe_eq_coe.1⟩
+  refine (induced_topology_eq_preorder coe_lt_coe (fun h _ => ?_) fun h _ => ?_).symm <;>
+    rcases lt_iff_exists_nnreal_btwn.1 h with ⟨a, h₁, h₂⟩
+  exacts [⟨a, coe_lt_coe.1 h₂, h₁.le⟩, ⟨a, coe_lt_coe.1 h₁, h₂.le⟩]
 #align ennreal.embedding_coe ENNReal.embedding_coe
 
-theorem isOpen_ne_top : IsOpen { a : ℝ≥0∞ | a ≠ ⊤ } :=
-  isOpen_ne
+theorem isOpen_ne_top : IsOpen { a : ℝ≥0∞ | a ≠ ⊤ } := isOpen_ne
 #align ennreal.is_open_ne_top ENNReal.isOpen_ne_top
 
 theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by
@@ -81,13 +65,13 @@ theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by
   exact isOpen_Iio
 #align ennreal.is_open_Ico_zero ENNReal.isOpen_Ico_zero
 
-theorem openEmbedding_coe : OpenEmbedding (coe : ℝ≥0 → ℝ≥0∞) :=
+theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
   ⟨embedding_coe, by
-    convert is_open_ne_top
+    convert isOpen_ne_top
     ext (x | _) <;> simp [none_eq_top, some_eq_coe]⟩
 #align ennreal.open_embedding_coe ENNReal.openEmbedding_coe
 
-theorem coe_range_mem_nhds : range (coe : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
+theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
   IsOpen.mem_nhds openEmbedding_coe.open_range <| mem_range_self _
 #align ennreal.coe_range_mem_nhds ENNReal.coe_range_mem_nhds
 
@@ -97,8 +81,8 @@ theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
   embedding_coe.tendsto_nhds_iff.symm
 #align ennreal.tendsto_coe ENNReal.tendsto_coe
 
-theorem continuous_coe : Continuous (coe : ℝ≥0 → ℝ≥0∞) :=
-  embedding_coe.Continuous
+theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
+  embedding_coe.continuous
 #align ennreal.continuous_coe ENNReal.continuous_coe
 
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
@@ -106,23 +90,23 @@ theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
   embedding_coe.continuous_iff.symm
 #align ennreal.continuous_coe_iff ENNReal.continuous_coe_iff
 
-theorem nhds_coe {r : ℝ≥0} : 𝓝 (r : ℝ≥0∞) = (𝓝 r).map coe :=
+theorem nhds_coe {r : ℝ≥0} : 𝓝 (r : ℝ≥0∞) = (𝓝 r).map (↑) :=
   (openEmbedding_coe.map_nhds_eq r).symm
 #align ennreal.nhds_coe ENNReal.nhds_coe
 
 theorem tendsto_nhds_coe_iff {α : Type _} {l : Filter α} {x : ℝ≥0} {f : ℝ≥0∞ → α} :
-    Tendsto f (𝓝 ↑x) l ↔ Tendsto (f ∘ coe : ℝ≥0 → α) (𝓝 x) l :=
-  show _ ≤ _ ↔ _ ≤ _ by rw [nhds_coe, Filter.map_map]
+    Tendsto f (𝓝 ↑x) l ↔ Tendsto (f ∘ (↑) : ℝ≥0 → α) (𝓝 x) l := by
+  rw [nhds_coe, tendsto_map'_iff]
 #align ennreal.tendsto_nhds_coe_iff ENNReal.tendsto_nhds_coe_iff
 
 theorem continuousAt_coe_iff {α : Type _} [TopologicalSpace α] {x : ℝ≥0} {f : ℝ≥0∞ → α} :
-    ContinuousAt f ↑x ↔ ContinuousAt (f ∘ coe : ℝ≥0 → α) x :=
+    ContinuousAt f ↑x ↔ ContinuousAt (f ∘ (↑) : ℝ≥0 → α) x :=
   tendsto_nhds_coe_iff
 #align ennreal.continuous_at_coe_iff ENNReal.continuousAt_coe_iff
 
 theorem nhds_coe_coe {r p : ℝ≥0} :
-    𝓝 ((r : ℝ≥0∞), (p : ℝ≥0∞)) = (𝓝 (r, p)).map fun p : ℝ≥0 × ℝ≥0 => (p.1, p.2) :=
-  ((openEmbedding_coe.Prod openEmbedding_coe).map_nhds_eq (r, p)).symm
+    𝓝 ((r : ℝ≥0∞), (p : ℝ≥0∞)) = (𝓝 (r, p)).map fun p : ℝ≥0 × ℝ≥0 => (↑p.1, ↑p.2) :=
+  ((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (r, p)).symm
 #align ennreal.nhds_coe_coe ENNReal.nhds_coe_coe
 
 theorem continuous_ofReal : Continuous ENNReal.ofReal :=
@@ -131,11 +115,11 @@ theorem continuous_ofReal : Continuous ENNReal.ofReal :=
 
 theorem tendsto_ofReal {f : Filter α} {m : α → ℝ} {a : ℝ} (h : Tendsto m f (𝓝 a)) :
     Tendsto (fun a => ENNReal.ofReal (m a)) f (𝓝 (ENNReal.ofReal a)) :=
-  Tendsto.comp (Continuous.tendsto continuous_ofReal _) h
+  (continuous_ofReal.tendsto a).comp h
 #align ennreal.tendsto_of_real ENNReal.tendsto_ofReal
 
-theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto ENNReal.toNNReal (𝓝 a) (𝓝 a.toNNReal) :=
-  by
+theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ⊤) :
+    Tendsto ENNReal.toNNReal (𝓝 a) (𝓝 a.toNNReal) := by
   lift a to ℝ≥0 using ha
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
@@ -148,7 +132,7 @@ theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥
   rwa [← ENNReal.toReal_eq_toReal hfx hgx]
 #align ennreal.eventually_eq_of_to_real_eventually_eq ENNReal.eventuallyEq_of_toReal_eventuallyEq
 
-theorem continuousOn_toNNReal : ContinuousOn ENNReal.toNNReal { a | a ≠ ∞ } := fun a ha =>
+theorem continuousOn_toNNReal : ContinuousOn ENNReal.toNNReal { a | a ≠ ∞ } := fun _a ha =>
   ContinuousAt.continuousWithinAt (tendsto_toNNReal ha)
 #align ennreal.continuous_on_to_nnreal ENNReal.continuousOn_toNNReal
 
@@ -157,40 +141,38 @@ theorem tendsto_toReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto ENNReal.toRea
 #align ennreal.tendsto_to_real ENNReal.tendsto_toReal
 
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
-def neTopHomeomorphNnreal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 :=
-  {
-    neTopEquivNNReal with
-    continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_toNNReal
-    continuous_invFun := continuous_coe.subtype_mk _ }
-#align ennreal.ne_top_homeomorph_nnreal ENNReal.neTopHomeomorphNnreal
+def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
+  toEquiv := neTopEquivNNReal
+  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_toNNReal
+  continuous_invFun := continuous_coe.subtype_mk _
+#align ennreal.ne_top_homeomorph_nnreal ENNReal.neTopHomeomorphNNReal
 
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
-def ltTopHomeomorphNnreal : { a | a < ∞ } ≃ₜ ℝ≥0 := by
-  refine' (Homeomorph.setCongr <| Set.ext fun x => _).trans ne_top_homeomorph_nnreal <;>
-    simp only [mem_set_of_eq, lt_top_iff_ne_top]
-#align ennreal.lt_top_homeomorph_nnreal ENNReal.ltTopHomeomorphNnreal
+def ltTopHomeomorphNNReal : { a | a < ∞ } ≃ₜ ℝ≥0 := by
+  refine' (Homeomorph.setCongr _).trans neTopHomeomorphNNReal
+  simp only [mem_setOf_eq, lt_top_iff_ne_top]
+#align ennreal.lt_top_homeomorph_nnreal ENNReal.ltTopHomeomorphNNReal
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (a «expr ≠ » ennreal.top()) -/
-theorem nhds_top : 𝓝 ∞ = ⨅ (a) (_ : a ≠ ∞), 𝓟 (Ioi a) :=
+theorem nhds_top : 𝓝 ∞ = ⨅ (a) (_h : a ≠ ∞), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp [lt_top_iff_ne_top, Ioi]
 #align ennreal.nhds_top ENNReal.nhds_top
 
-theorem nhds_top' : 𝓝 ∞ = ⨅ r : ℝ≥0, 𝓟 (Ioi r) :=
+theorem nhds_top' : 𝓝 ∞ = ⨅ r : ℝ≥0, 𝓟 (Ioi ↑r) :=
   nhds_top.trans <| infᵢ_ne_top _
 #align ennreal.nhds_top' ENNReal.nhds_top'
 
 theorem nhds_top_basis : (𝓝 ∞).HasBasis (fun a => a < ∞) fun a => Ioi a :=
-  nhds_top_basis
+  _root_.nhds_top_basis
 #align ennreal.nhds_top_basis ENNReal.nhds_top_basis
 
-theorem tendsto_nhds_top_iff_nNReal {m : α → ℝ≥0∞} {f : Filter α} :
+theorem tendsto_nhds_top_iff_nnreal {m : α → ℝ≥0∞} {f : Filter α} :
     Tendsto m f (𝓝 ⊤) ↔ ∀ x : ℝ≥0, ∀ᶠ a in f, ↑x < m a := by
-  simp only [nhds_top', tendsto_infi, tendsto_principal, mem_Ioi]
-#align ennreal.tendsto_nhds_top_iff_nnreal ENNReal.tendsto_nhds_top_iff_nNReal
+  simp only [nhds_top', tendsto_infᵢ, tendsto_principal, mem_Ioi]
+#align ennreal.tendsto_nhds_top_iff_nnreal ENNReal.tendsto_nhds_top_iff_nnreal
 
 theorem tendsto_nhds_top_iff_nat {m : α → ℝ≥0∞} {f : Filter α} :
     Tendsto m f (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a :=
-  tendsto_nhds_top_iff_nNReal.trans
+  tendsto_nhds_top_iff_nnreal.trans
     ⟨fun h n => by simpa only [ENNReal.coe_nat] using h n, fun h x =>
       let ⟨n, hn⟩ := exists_nat_gt x
       (h n).mono fun y => lt_trans <| by rwa [← ENNReal.coe_nat, coe_lt_coe]⟩
@@ -203,23 +185,21 @@ theorem tendsto_nhds_top {m : α → ℝ≥0∞} {f : Filter α} (h : ∀ n : �
 
 theorem tendsto_nat_nhds_top : Tendsto (fun n : ℕ => ↑n) atTop (𝓝 ∞) :=
   tendsto_nhds_top fun n =>
-    mem_atTop_sets.2 ⟨n + 1, fun m hm => mem_setOf.2 <| Nat.cast_lt.2 <| Nat.lt_of_succ_le hm⟩
+    mem_atTop_sets.2 ⟨n + 1, fun _m hm => mem_setOf.2 <| Nat.cast_lt.2 <| Nat.lt_of_succ_le hm⟩
 #align ennreal.tendsto_nat_nhds_top ENNReal.tendsto_nat_nhds_top
 
 @[simp, norm_cast]
 theorem tendsto_coe_nhds_top {f : α → ℝ≥0} {l : Filter α} :
     Tendsto (fun x => (f x : ℝ≥0∞)) l (𝓝 ∞) ↔ Tendsto f l atTop := by
-  rw [tendsto_nhds_top_iff_nnreal, at_top_basis_Ioi.tendsto_right_iff] <;> [simp, infer_instance,
-    infer_instance]
+  rw [tendsto_nhds_top_iff_nnreal, atTop_basis_Ioi.tendsto_right_iff]; simp
 #align ennreal.tendsto_coe_nhds_top ENNReal.tendsto_coe_nhds_top
 
 theorem tendsto_ofReal_atTop : Tendsto ENNReal.ofReal atTop (𝓝 ∞) :=
   tendsto_coe_nhds_top.2 tendsto_real_toNNReal_atTop
 #align ennreal.tendsto_of_real_at_top ENNReal.tendsto_ofReal_atTop
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (a «expr ≠ » 0) -/
-theorem nhds_zero : 𝓝 (0 : ℝ≥0∞) = ⨅ (a) (_ : a ≠ 0), 𝓟 (Iio a) :=
-  nhds_bot_order.trans <| by simp [bot_lt_iff_ne_bot, Iio]
+theorem nhds_zero : 𝓝 (0 : ℝ≥0∞) = ⨅ (a) (_h : a ≠ 0), 𝓟 (Iio a) :=
+  nhds_bot_order.trans <| by simp [pos_iff_ne_zero, Iio]
 #align ennreal.nhds_zero ENNReal.nhds_zero
 
 theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ => 0 < a) fun a => Iio a :=
@@ -231,12 +211,12 @@ theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0�
 #align ennreal.nhds_zero_basis_Iic ENNReal.nhds_zero_basis_Iic
 
 @[instance]
-theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).ne_bot :=
+theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
   nhdsWithin_Ioi_self_neBot' ⟨⊤, ENNReal.coe_lt_top⟩
 #align ennreal.nhds_within_Ioi_coe_ne_bot ENNReal.nhdsWithin_Ioi_coe_neBot
 
 @[instance]
-theorem nhdsWithin_Ioi_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).ne_bot :=
+theorem nhdsWithin_Ioi_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).NeBot :=
   nhdsWithin_Ioi_coe_neBot
 #align ennreal.nhds_within_Ioi_zero_ne_bot ENNReal.nhdsWithin_Ioi_zero_neBot
 
@@ -244,27 +224,20 @@ theorem nhdsWithin_Ioi_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).ne_bot :=
 -- • don't have 'Ioo (x - ε) (x + ε) ∈ 𝓝 x' unless x > 0
 -- • (x - y ≤ ε ↔ x ≤ ε + y) is true, while (x - y < ε ↔ x < ε + y) is not
 theorem Icc_mem_nhds (xt : x ≠ ⊤) (ε0 : ε ≠ 0) : Icc (x - ε) (x + ε) ∈ 𝓝 x := by
-  rw [_root_.mem_nhds_iff]
-  by_cases x0 : x = 0
-  · use Iio (x + ε)
-    have : Iio (x + ε) ⊆ Icc (x - ε) (x + ε)
-    intro a
-    rw [x0]
-    simpa using le_of_lt
-    use this
-    exact ⟨isOpen_Iio, mem_Iio_self_add xt ε0⟩
-  · use Ioo (x - ε) (x + ε)
-    use Ioo_subset_Icc_self
-    exact ⟨isOpen_Ioo, mem_Ioo_self_sub_add xt x0 ε0 ε0⟩
+  rcases eq_or_ne x 0 with rfl | x0
+  · filter_upwards [Iio_mem_nhds (pos_iff_ne_zero.2 ε0)] with x hx
+    rw [zero_tsub, zero_add]
+    exact ⟨zero_le x, le_of_lt hx⟩
+  · refine mem_of_superset ?_ Ioo_subset_Icc_self
+    exact isOpen_Ioo.mem_nhds (mem_Ioo_self_sub_add xt x0 ε0 ε0)
 #align ennreal.Icc_mem_nhds ENNReal.Icc_mem_nhds
 
 theorem nhds_of_ne_top (xt : x ≠ ⊤) : 𝓝 x = ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + ε)) := by
   refine' le_antisymm _ _
-  -- first direction
-  simp only [le_infᵢ_iff, le_principal_iff];
-  intro ε ε0; exact Icc_mem_nhds xt ε0.lt.ne'
+  · simp only [le_infᵢ_iff, le_principal_iff]
+    exact fun ε ε0 => Icc_mem_nhds xt ε0.lt.ne'
   -- second direction
-  rw [nhds_generate_from];
+  rw [nhds_generateFrom]
   refine' le_infᵢ fun s => le_infᵢ fun hs => _
   rcases hs with ⟨xs, ⟨a, (rfl : s = Ioi a) | (rfl : s = Iio a)⟩⟩
   · rcases exists_between xs with ⟨b, ab, bx⟩
@@ -297,7 +270,7 @@ theorem nhds_of_ne_top (xt : x ≠ ⊤) : 𝓝 x = ⨅ ε > 0, 𝓟 (Icc (x - ε
 for a version with strict inequalities. -/
 protected theorem tendsto_nhds {f : Filter α} {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha : a ≠ ⊤) :
     Tendsto u f (𝓝 a) ↔ ∀ ε > 0, ∀ᶠ x in f, u x ∈ Icc (a - ε) (a + ε) := by
-  simp only [nhds_of_ne_top ha, tendsto_infi, tendsto_principal, mem_Icc]
+  simp only [nhds_of_ne_top ha, tendsto_infᵢ, tendsto_principal, mem_Icc]
 #align ennreal.tendsto_nhds ENNReal.tendsto_nhds
 
 protected theorem tendsto_nhds_zero {f : Filter α} {u : α → ℝ≥0∞} :
