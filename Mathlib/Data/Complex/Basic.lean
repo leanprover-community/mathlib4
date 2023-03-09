@@ -1044,8 +1044,6 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * i)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
-#check two_pos
-
 instance : NeZero (1 : ℝ) :=
  ⟨by apply one_ne_zero⟩
 
@@ -1178,18 +1176,18 @@ protected def strictOrderedCommRing : StrictOrderedCommRing ℂ :=
     add_le_add_left := fun w z h y => ⟨add_le_add_left h.1 _, congr_arg₂ (· + ·) rfl h.2⟩
     mul_pos := fun z w hz hw => by
       simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-    mul_comm := sorry
+    mul_comm := by intros ;ext <;> ring_nf
   }
 
 #align complex.strict_ordered_comm_ring Complex.ComplexOrder.strictOrderedCommRing
 
-scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
+scoped[Complex.ComplexOrder] attribute [instance] Complex.ComplexOrder.strictOrderedCommRing
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a star ordered ring.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 -/
 protected def starOrderedRing : StarOrderedRing ℂ :=
-  { Complex.strictOrderedCommRing with
+  {
     nonneg_iff := fun r =>
       by
       refine' ⟨fun hr => ⟨Real.sqrt r.re, _⟩, fun h => _⟩
@@ -1207,118 +1205,121 @@ protected def starOrderedRing : StarOrderedRing ℂ :=
           simp only [h₂, add_zero, of_real_im, star_def, zero_mul, conj_im, mul_im, mul_zero,
             neg_zero]
       · obtain ⟨s, rfl⟩ := h
-        simp only [← normSq_eq_conj_mul_self, normSq_nonneg, zero_le_real, star_def] }
-#align complex.star_ordered_ring Complex.starOrderedRing
+        simp only [← normSq_eq_conj_mul_self, normSq_nonneg, zero_le_real, star_def]
+    add_le_add_left := by intros ; simp [le_def] at *; assumption
+  }
+#align complex.star_ordered_ring Complex.ComplexOrder.starOrderedRing
 
-scoped[ComplexOrder] attribute [instance] Complex.starOrderedRing
+scoped[ComplexOrder] attribute [instance] Complex.ComplexOrder.starOrderedRing
 
 end ComplexOrder
 
 /-! ### Cauchy sequences -/
 
-
 -- mathport name: exprabs'
 local notation "abs'" => Abs.abs
 
-theorem isCauSeq_re (f : CauSeq ℂ abs) : IsCauSeq abs' fun n => (f n).re := fun ε ε0 =>
-  (f.Cauchy ε0).imp fun i H j ij =>
+theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).re := fun ε ε0 =>
+  (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa using abs_re_le_abs (f j - f i)) (H _ ij)
 #align complex.is_cau_seq_re Complex.isCauSeq_re
 
-theorem isCauSeq_im (f : CauSeq ℂ abs) : IsCauSeq abs' fun n => (f n).im := fun ε ε0 =>
-  (f.Cauchy ε0).imp fun i H j ij =>
+theorem isCauSeq_im (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).im := fun ε ε0 =>
+  (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa using abs_im_le_abs (f j - f i)) (H _ ij)
 #align complex.is_cau_seq_im Complex.isCauSeq_im
 
 /-- The real part of a complex Cauchy sequence, as a real Cauchy sequence. -/
-noncomputable def cauSeqRe (f : CauSeq ℂ abs) : CauSeq ℝ abs' :=
+noncomputable def cauSeqRe (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
   ⟨_, isCauSeq_re f⟩
 #align complex.cau_seq_re Complex.cauSeqRe
 
 /-- The imaginary part of a complex Cauchy sequence, as a real Cauchy sequence. -/
-noncomputable def cauSeqIm (f : CauSeq ℂ abs) : CauSeq ℝ abs' :=
+noncomputable def cauSeqIm (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
   ⟨_, isCauSeq_im f⟩
 #align complex.cau_seq_im Complex.cauSeqIm
 
-theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq abs f) : IsCauSeq abs' (abs ∘ f) := fun ε ε0 =>
+theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) : IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
   let ⟨i, hi⟩ := hf ε ε0
-  ⟨i, fun j hj => lt_of_le_of_lt (abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
+  ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 #align complex.is_cau_seq_abs Complex.isCauSeq_abs
 
 /-- The limit of a Cauchy sequence of complex numbers. -/
-noncomputable def limAux (f : CauSeq ℂ abs) : ℂ :=
+noncomputable def limAux (f : CauSeq ℂ Complex.abs) : ℂ :=
   ⟨CauSeq.lim (cauSeqRe f), CauSeq.lim (cauSeqIm f)⟩
 #align complex.lim_aux Complex.limAux
 
-theorem equiv_limAux (f : CauSeq ℂ abs) : f ≈ CauSeq.const abs (limAux f) := fun ε ε0 =>
+theorem equiv_limAux (f : CauSeq ℂ Complex.abs) : f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
   (exists_forall_ge_and (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
     fun i H j ij => by
     cases' H _ ij with H₁ H₂
     apply lt_of_le_of_lt (abs_le_abs_re_add_abs_im _)
-    dsimp [lim_aux] at *
+    dsimp [limAux] at *
     have := add_lt_add H₁ H₂
     rwa [add_halves] at this
 #align complex.equiv_lim_aux Complex.equiv_limAux
 
-instance : CauSeq.IsComplete ℂ abs :=
+instance : CauSeq.IsComplete ℂ Complex.abs :=
   ⟨fun f => ⟨limAux f, equiv_limAux f⟩⟩
 
 open CauSeq
 
-theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ abs) :
-    limUnder f = ↑(limUnder (cauSeqRe f)) + ↑(limUnder (cauSeqIm f)) * i :=
+theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
+    lim f = ↑(lim (cauSeqRe f)) + ↑(lim (cauSeqIm f)) * i :=
   lim_eq_of_equiv_const <|
     calc
       f ≈ _ := equiv_limAux f
-      _ = CauSeq.const abs (↑(limUnder (cauSeqRe f)) + ↑(limUnder (cauSeqIm f)) * i) :=
+      _ = CauSeq.const Complex.abs (↑(lim (cauSeqRe f)) + ↑(lim (cauSeqIm f)) * i) :=
         CauSeq.ext fun _ =>
-          Complex.ext (by simp [lim_aux, cau_seq_re]) (by simp [lim_aux, cau_seq_im])
+          Complex.ext (by simp [limAux, cauSeqRe]) (by simp [limAux, cauSeqIm])
 
 #align complex.lim_eq_lim_im_add_lim_re Complex.lim_eq_lim_im_add_lim_re
 
-theorem lim_re (f : CauSeq ℂ abs) : limUnder (cauSeqRe f) = (limUnder f).re := by
-  rw [lim_eq_lim_im_add_lim_re] <;> simp
+theorem lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by
+  rw [lim_eq_lim_im_add_lim_re] ; simp
 #align complex.lim_re Complex.lim_re
 
-theorem lim_im (f : CauSeq ℂ abs) : limUnder (cauSeqIm f) = (limUnder f).im := by
-  rw [lim_eq_lim_im_add_lim_re] <;> simp
+theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := by
+  rw [lim_eq_lim_im_add_lim_re] ; simp
 #align complex.lim_im Complex.lim_im
 
-theorem isCauSeq_conj (f : CauSeq ℂ abs) : IsCauSeq abs fun n => conj (f n) := fun ε ε0 =>
+theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) : IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
-  ⟨i, fun j hj => by rw [← RingHom.map_sub, abs_conj] <;> exact hi j hj⟩
+  ⟨i, fun j hj => by rw [← RingHom.map_sub, abs_conj] ; exact hi j hj⟩
 #align complex.is_cau_seq_conj Complex.isCauSeq_conj
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
-noncomputable def cauSeqConj (f : CauSeq ℂ abs) : CauSeq ℂ abs :=
+noncomputable def cauSeqConj (f : CauSeq ℂ Complex.abs) : CauSeq ℂ Complex.abs :=
   ⟨_, isCauSeq_conj f⟩
 #align complex.cau_seq_conj Complex.cauSeqConj
 
-theorem lim_conj (f : CauSeq ℂ abs) : limUnder (cauSeqConj f) = conj (limUnder f) :=
-  Complex.ext (by simp [cau_seq_conj, (lim_re _).symm, cau_seq_re])
-    (by simp [cau_seq_conj, (lim_im _).symm, cau_seq_im, (lim_neg _).symm] <;> rfl)
+theorem lim_conj (f : CauSeq ℂ Complex.abs) : lim (cauSeqConj f) = conj (lim f) :=
+  Complex.ext (by simp [cauSeqConj, (lim_re _).symm, cauSeqRe])
+    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm] ; rfl)
 #align complex.lim_conj Complex.lim_conj
 
 /-- The absolute value of a complex Cauchy sequence, as a real Cauchy sequence. -/
-noncomputable def cauSeqAbs (f : CauSeq ℂ abs) : CauSeq ℝ abs' :=
+noncomputable def cauSeqAbs (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
   ⟨_, isCauSeq_abs f.2⟩
 #align complex.cau_seq_abs Complex.cauSeqAbs
 
-theorem lim_abs (f : CauSeq ℂ abs) : limUnder (cauSeqAbs f) = abs (limUnder f) :=
+theorem lim_abs (f : CauSeq ℂ Complex.abs) : lim (cauSeqAbs f) = Complex.abs (lim f) :=
   lim_eq_of_equiv_const fun ε ε0 =>
     let ⟨i, hi⟩ := equiv_lim f ε ε0
-    ⟨i, fun j hj => lt_of_le_of_lt (abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
+    ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 #align complex.lim_abs Complex.lim_abs
 
 variable {α : Type _} (s : Finset α)
 
-@[simp, norm_cast]
+-- Porting note: `norm_cast` is removed
+@[simp]
 theorem of_real_prod (f : α → ℝ) : ((∏ i in s, f i : ℝ) : ℂ) = ∏ i in s, (f i : ℂ) :=
   RingHom.map_prod ofReal _ _
 #align complex.of_real_prod Complex.of_real_prod
 
-@[simp, norm_cast]
+-- Porting note: `norm_cast` is removed
+@[simp]
 theorem of_real_sum (f : α → ℝ) : ((∑ i in s, f i : ℝ) : ℂ) = ∑ i in s, (f i : ℂ) :=
   RingHom.map_sum ofReal _ _
 #align complex.of_real_sum Complex.of_real_sum
