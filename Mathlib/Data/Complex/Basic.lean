@@ -940,8 +940,8 @@ theorem abs_of_real (r : ℝ) : Complex.abs r = |r| := by
   simp [Complex.abs, normSq_of_real, Real.sqrt_mul_self_eq_abs]
 #align complex.abs_of_real Complex.abs_of_real
 
-theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
-  (Complex.abs_of_real _).trans (Complex.abs_of_nonneg h)
+nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
+  (Complex.abs_of_real _).trans (abs_of_nonneg h)
 #align complex.abs_of_nonneg Complex.abs_of_nonneg
 
 theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
@@ -977,7 +977,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem abs_two : Complex.abs 2 = 2 :=
   calc
-    abs 2 = abs (2 : ℝ) := by rw [of_real_bit0, of_real_one]
+    Complex.abs 2 = abs (2 : ℝ) := by rw [of_real_bit0, of_real_one]
     _ = (2 : ℝ) := Complex.abs_of_nonneg (by norm_num)
 
 
@@ -986,7 +986,7 @@ theorem abs_two : Complex.abs 2 = 2 :=
 
 @[simp]
 theorem range_abs : range Complex.abs = Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 Complex.abs_nonneg) fun x hx => ⟨x, abs_of_nonneg hx⟩
+  Subset.antisymm (range_subset_iff.2 abs_nonneg) fun x hx => ⟨x, abs_of_nonneg hx⟩
 #align complex.range_abs Complex.range_abs
 
 @[simp]
@@ -996,21 +996,21 @@ theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
 
 @[simp]
 theorem abs_prod {ι : Type _} (s : Finset ι) (f : ι → ℂ) :
-    abs (s.Prod f) = s.Prod fun i => abs (f i) :=
-  map_prod abs _ _
+    Complex.abs (s.prod f) = s.prod fun i => Complex.abs (f i) :=
+  map_prod Complex.abs _ _
 #align complex.abs_prod Complex.abs_prod
 
 @[simp]
-theorem abs_pow (z : ℂ) (n : ℕ) : abs (z ^ n) = abs z ^ n :=
-  map_pow abs z n
+theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
+  map_pow Complex.abs z n
 #align complex.abs_pow Complex.abs_pow
 
 @[simp]
-theorem abs_zpow (z : ℂ) (n : ℤ) : abs (z ^ n) = abs z ^ n :=
-  map_zpow₀ abs z n
+theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
+  map_zpow₀ Complex.abs z n
 #align complex.abs_zpow Complex.abs_zpow
 
-theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ abs z :=
+theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ Complex.abs z :=
   Real.abs_le_sqrt <| by
     rw [normSq_apply, ← sq]
     exact le_add_of_nonneg_right (mul_self_nonneg _)
@@ -1032,7 +1032,7 @@ theorem im_le_abs (z : ℂ) : z.im ≤ Complex.abs z :=
 
 @[simp]
 theorem abs_re_lt_abs {z : ℂ} : |z.re| < Complex.abs z ↔ z.im ≠ 0 := by
-  rw [abs, AbsoluteValue.coe_mk, MulHom.coe_mk, Real.lt_sqrt (abs_nonneg _), normSq_apply,
+  rw [Complex.abs, AbsoluteValue.coe_mk, MulHom.coe_mk, Real.lt_sqrt (abs_nonneg _), normSq_apply,
     _root_.sq_abs, ← sq, lt_add_iff_pos_right, mul_self_pos]
 #align complex.abs_re_lt_abs Complex.abs_re_lt_abs
 
@@ -1042,11 +1042,11 @@ theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by si
 
 @[simp]
 theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
-  abs_of_nonneg (abs.NonNeg _)
+  abs_of_nonneg (abs_nonneg _)
 #align complex.abs_abs Complex.abs_abs
 
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
-  simpa [re_add_im] using abs.add_le z.re (z.im * i)
+  simpa [re_add_im] using Complex.abs.add_le z.re (z.im * i)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
 theorem abs_le_sqrt_two_mul_max (z : ℂ) : abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) := by
@@ -1063,12 +1063,12 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : abs z ≤ Real.sqrt 2 * max (|z.re|)
 
 #align complex.abs_le_sqrt_two_mul_max Complex.abs_le_sqrt_two_mul_max
 
-theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / z.abs| ≤ 1 :=
+theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (abs.pos hz), one_mul, abs_re_le_abs]
 #align complex.abs_re_div_abs_le_one Complex.abs_re_div_abs_le_one
 
-theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / z.abs| ≤ 1 :=
+theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (abs.pos hz), one_mul, abs_im_le_abs]
 #align complex.abs_im_div_abs_le_one Complex.abs_im_div_abs_le_one
