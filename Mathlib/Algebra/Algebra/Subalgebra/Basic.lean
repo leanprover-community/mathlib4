@@ -550,36 +550,27 @@ variable (p : Submodule R A)
 def toSubalgebra (p : Submodule R A) (h_one : (1 : A) ∈ p)
     (h_mul : ∀ x y, x ∈ p → y ∈ p → x * y ∈ p) : Subalgebra R A :=
   { p with
-    mul_mem' := _
-    algebraMap_mem' := _ }
-  -- { p with
-  --   mul_mem' := _ -- fun hx hy ↦ h_mul _ _ hx hy
-  --   algebraMap_mem' := _
-  --   -- fun r => by
-  --   --   rw [Algebra.algebraMap_eq_smul_one]
-  --   --   exact p.smul_mem _ h_one
-  --      }
+    mul_mem' := fun hx hy ↦ h_mul _ _ hx hy
+    one_mem' := h_one
+    algebraMap_mem' := fun r => by
+      rw [Algebra.algebraMap_eq_smul_one]
+      exact p.smul_mem _ h_one }
 #align submodule.to_subalgebra Submodule.toSubalgebra
-
-#exit
 
 @[simp]
 theorem mem_toSubalgebra {p : Submodule R A} {h_one h_mul} {x} :
-    x ∈ p.toSubalgebra h_one h_mul ↔ x ∈ p :=
-  Iff.rfl
+    x ∈ p.toSubalgebra h_one h_mul ↔ x ∈ p := Iff.rfl
 #align submodule.mem_to_subalgebra Submodule.mem_toSubalgebra
 
 @[simp]
 theorem coe_toSubalgebra (p : Submodule R A) (h_one h_mul) :
-    (p.toSubalgebra h_one h_mul : Set A) = p :=
-  rfl
+    (p.toSubalgebra h_one h_mul : Set A) = p := rfl
 #align submodule.coe_to_subalgebra Submodule.coe_toSubalgebra
 
 @[simp]
 theorem toSubalgebra_mk (s : Set A) (h0 hadd hsmul h1 hmul) :
     (Submodule.mk s hadd h0 hsmul : Submodule R A).toSubalgebra h1 hmul =
-      Subalgebra.mk s (@hmul) h1 (@hadd) h0 fun r =>
-        by
+      Subalgebra.mk s (@hmul) h1 (@hadd) h0 fun r => by
         rw [Algebra.algebraMap_eq_smul_one]
         exact hsmul r h1 :=
   rfl
@@ -587,12 +578,12 @@ theorem toSubalgebra_mk (s : Set A) (h0 hadd hsmul h1 hmul) :
 
 @[simp]
 theorem toSubalgebra_toSubmodule (p : Submodule R A) (h_one h_mul) :
-    (p.toSubalgebra h_one h_mul).toSubmodule = p :=
+    Subalgebra.toSubmodule (p.toSubalgebra h_one h_mul) = p :=
   SetLike.coe_injective rfl
 #align submodule.to_subalgebra_to_submodule Submodule.toSubalgebra_toSubmodule
 
 @[simp]
-theorem Subalgebra.toSubmodule_toSubalgebra (S : Subalgebra R A) :
+theorem _root_.Subalgebra.toSubmodule_toSubalgebra (S : Subalgebra R A) :
     (S.toSubmodule.toSubalgebra S.one_mem fun _ _ => S.mul_mem) = S :=
   SetLike.coe_injective rfl
 #align subalgebra.to_submodule_to_subalgebra Subalgebra.toSubmodule_toSubalgebra
@@ -611,7 +602,7 @@ variable (φ : A →ₐ[R] B)
 
 /-- Range of an `alg_hom` as a subalgebra. -/
 protected def range (φ : A →ₐ[R] B) : Subalgebra R B :=
-  { φ.toRingHom.srange with algebraMap_mem' := fun r => ⟨algebraMap R A r, φ.commutes r⟩ }
+  { φ.toRingHom.rangeS with algebraMap_mem' := fun r => ⟨algebraMap R A r, φ.commutes r⟩ }
 #align alg_hom.range AlgHom.range
 
 @[simp]
@@ -655,8 +646,6 @@ theorem coe_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f 
   rfl
 #align alg_hom.coe_cod_restrict AlgHom.coe_codRestrict
 
-#exit
-
 theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
     Function.Injective (f.codRestrict S hf) ↔ Function.Injective f :=
   ⟨fun H x y hxy => H <| Subtype.eq hxy, fun H x y hxy => H (congr_arg Subtype.val hxy : _)⟩
@@ -671,12 +660,13 @@ def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
 #align alg_hom.range_restrict AlgHom.rangeRestrict
 
 /-- The equalizer of two R-algebra homomorphisms -/
-def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A
-    where
+def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
-  add_mem' x y (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
+  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
+  one_mem' := by simp only [Set.mem_setOf_eq, map_one]
+  add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
     rw [Set.mem_setOf_eq, ϕ.map_add, ψ.map_add, hx, hy]
-  mul_mem' x y (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
+  mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
     rw [Set.mem_setOf_eq, ϕ.map_mul, ψ.map_mul, hx, hy]
   algebraMap_mem' x := by rw [Set.mem_setOf_eq, AlgHom.commutes, AlgHom.commutes]
 #align alg_hom.equalizer AlgHom.equalizer
@@ -705,13 +695,13 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 This is a computable alternative to `alg_equiv.of_injective`. -/
 def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) : A ≃ₐ[R] f.range :=
-  { f.range_restrict with
-    toFun := f.range_restrict
+  { f.rangeRestrict with
+    toFun := f.rangeRestrict
     invFun := g ∘ f.range.val
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
-        let ⟨x', hx'⟩ := f.mem_range.mp x.Prop
+        let ⟨x', hx'⟩ := f.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
 #align alg_equiv.of_left_inverse AlgEquiv.ofLeftInverse
 
@@ -729,7 +719,7 @@ theorem ofLeftInverse_symm_apply {g : B → A} {f : A →ₐ[R] B} (h : Function
 
 /-- Restrict an injective algebra homomorphism to an algebra isomorphism -/
 noncomputable def ofInjective (f : A →ₐ[R] B) (hf : Function.Injective f) : A ≃ₐ[R] f.range :=
-  ofLeftInverse (Classical.choose_spec hf.HasLeftInverse)
+  ofLeftInverse (Classical.choose_spec hf.hasLeftInverse)
 #align alg_equiv.of_injective AlgEquiv.ofInjective
 
 @[simp]
@@ -741,7 +731,7 @@ theorem ofInjective_apply (f : A →ₐ[R] B) (hf : Function.Injective f) (x : A
 /-- Restrict an algebra homomorphism between fields to an algebra isomorphism -/
 noncomputable def ofInjectiveField {E F : Type _} [DivisionRing E] [Semiring F] [Nontrivial F]
     [Algebra R E] [Algebra R F] (f : E →ₐ[R] F) : E ≃ₐ[R] f.range :=
-  ofInjective f f.toRingHom.Injective
+  ofInjective f f.toRingHom.injective
 #align alg_equiv.of_injective_field AlgEquiv.ofInjectiveField
 
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
@@ -767,8 +757,6 @@ def adjoin (s : Set A) : Subalgebra R A :=
   { Subsemiring.closure (Set.range (algebraMap R A) ∪ s) with
     algebraMap_mem' := fun r => Subsemiring.subset_closure <| Or.inl ⟨r, rfl⟩ }
 #align algebra.adjoin Algebra.adjoin
-
-#exit
 
 variable {R}
 
