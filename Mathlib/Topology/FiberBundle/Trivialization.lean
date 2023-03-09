@@ -19,17 +19,17 @@ import Mathlib.Topology.LocalHomeomorph
 
 ### Basic definitions
 
-* `trivialization F p` : structure extending local homeomorphisms, defining a local
+* `Trivialization F p` : structure extending local homeomorphisms, defining a local
   trivialization of a topological space `Z` with projection `p` and fiber `F`.
 
-* `pretrivialization F proj` : trivialization as a local equivalence, mainly used when the
+* `Pretrivialization F proj` : trivialization as a local equivalence, mainly used when the
   topology on the total space has not yet been defined.
 
 ### Operations on bundles
 
-We provide the following operations on `trivialization`s.
+We provide the following operations on `Trivialization`s.
 
-* `trivialization.comp_homeomorph`: given a local trivialization `e` of a fiber bundle
+* `Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
   `p : Z → B` and a homeomorphism `h : Z' ≃ₜ Z`, returns a local trivialization of the fiber bundle
   `p ∘ h`.
 
@@ -38,7 +38,7 @@ We provide the following operations on `trivialization`s.
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fibre_bundle.trivialization` by a linearity hypothesis. As
 of PR leanprover-community/mathlib#17359, we have changed this to a single structure
-`trivialization` (no namespace), together with a mixin class `trivialization.is_linear`.
+`Trivialization` (no namespace), together with a mixin class `trivialization.is_linear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fibre bundles, so that the
 same trivializations can underlie an object's structure as (say) a vector bundle over `ℂ` and as a
@@ -60,10 +60,10 @@ variable {ι : Type _} {B : Type _} {F : Type _} {E : B → Type _}
 variable (F) {Z : Type _} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
-below as `trivialization F proj`) if the total space has not been given a topology, but we
+below as `Trivialization F proj`) if the total space has not been given a topology, but we
 have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
-`pretrivialization F proj` to a `trivialization F proj`. -/
+`Pretrivialization F proj` to a `Trivialization F proj`. -/
 structure Pretrivialization (proj : Z → B) extends LocalEquiv Z (B × F) where
   open_target : IsOpen target
   baseSet : Set B
@@ -327,7 +327,7 @@ because it is actually `e.toLocalEquiv.toFun`, so `simp` will apply lemmas about
 lot of proofs.  -/
 @[coe] def toFun' : Z → (B × F) := e.toFun
 
-/-- Natural identification as a `pretrivialization`. -/
+/-- Natural identification as a `Pretrivialization`. -/
 def toPretrivialization : Pretrivialization F proj :=
   { e with }
 #align trivialization.to_pretrivialization Trivialization.toPretrivialization
@@ -517,7 +517,7 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
   (e.map_proj_nhds ex).le
 #align trivialization.continuous_at_proj Trivialization.continuousAt_proj
 
-/-- Composition of a `trivialization` and a `homeomorph`. -/
+/-- Composition of a `Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type _} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
   toLocalHomeomorph := h.toLocalHomeomorph.trans e.toLocalHomeomorph
@@ -640,7 +640,7 @@ theorem continuousOn_symm (e : Trivialization F (π E)) :
 
 end Zero
 
-/-- If `e` is a `trivialization` of `proj : Z → B` with fiber `F` and `h` is a homeomorphism
+/-- If `e` is a `Trivialization` of `proj : Z → B` with fiber `F` and `h` is a homeomorphism
 `F ≃ₜ F'`, then `e.trans_fiber_homeomorph h` is the trivialization of `proj` with the fiber `F'`
 that sends `p : Z` to `((e p).1, h (e p).2)`. -/
 def transFiberHomeomorph {F' : Type _} [TopologicalSpace F'] (e : Trivialization F proj)
@@ -660,7 +660,7 @@ theorem transFiberHomeomorph_apply {F' : Type _} [TopologicalSpace F'] (e : Triv
 #align trivialization.trans_fiber_homeomorph_apply Trivialization.transFiberHomeomorph_apply
 
 /-- Coordinate transformation in the fiber induced by a pair of bundle trivializations. See also
-`trivialization.coord_change_homeomorph` for a version bundled as `F ≃ₜ F`. -/
+`Trivialization.coordChangeHomeomorph` for a version bundled as `F ≃ₜ F`. -/
 def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
   (e₂ <| e₁.toLocalHomeomorph.symm (b, x)).2
 #align trivialization.coord_change Trivialization.coordChange
@@ -729,7 +729,7 @@ theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
     e.toLocalHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]
 #align trivialization.is_image_preimage_prod Trivialization.isImage_preimage_prod
 
-/-- Restrict a `trivialization` to an open set in the base. `-/
+/-- Restrict a `Trivialization` to an open set in the base. `-/
 protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) :
     Trivialization F proj where
   toLocalHomeomorph :=
@@ -749,10 +749,10 @@ theorem frontier_preimage (e : Trivialization F proj) (s : Set B) :
     (e.isImage_preimage_prod _).preimage_eq, e.source_eq, preimage_inter]
 #align trivialization.frontier_preimage Trivialization.frontier_preimage
 
-/-- Given two bundle trivializations `e`, `e'` of `proj : Z → B` and a set `s : set B` such that
+/-- Given two bundle trivializations `e`, `e'` of `proj : Z → B` and a set `s : Set B` such that
 the base sets of `e` and `e'` intersect `frontier s` on the same set and `e p = e' p` whenever
 `proj p ∈ e.base_set ∩ frontier s`, `e.piecewise e' s Hs Heq` is the bundle trivialization over
-`set.ite s e.base_set e'.base_set` that is equal to `e` on `proj ⁻¹ s` and is equal to `e'`
+`Set.ite s e.base_set e'.base_set` that is equal to `e` on `proj ⁻¹ s` and is equal to `e'`
 otherwise. -/
 noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
     (Hs : e.baseSet ∩ frontier s = e'.baseSet ∩ frontier s)
@@ -775,7 +775,7 @@ noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B`
 over a linearly ordered base `B` and a point `a ∈ e.base_set ∩ e'.base_set` such that
 `e` equals `e'` on `proj ⁻¹' {a}`, `e.piecewise_le_of_eq e' a He He' Heq` is the bundle
-trivialization over `set.ite (Iic a) e.base_set e'.base_set` that is equal to `e` on points `p`
+trivialization over `Set.ite (Iic a) e.base_set e'.base_set` that is equal to `e` on points `p`
 such that `proj p ≤ a` and is equal to `e'` otherwise. -/
 noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Trivialization F proj)
     (a : B) (He : a ∈ e.baseSet) (He' : a ∈ e'.baseSet) (Heq : ∀ p, proj p = a → e p = e' p) :
@@ -789,7 +789,7 @@ noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Triv
 
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B` over a
 linearly ordered base `B` and a point `a ∈ e.base_set ∩ e'.base_set`, `e.piecewise_le e' a He He'`
-is the bundle trivialization over `set.ite (Iic a) e.base_set e'.base_set` that is equal to `e` on
+is the bundle trivialization over `Set.ite (Iic a) e.base_set e'.base_set` that is equal to `e` on
 points `p` such that `proj p ≤ a` and is equal to `((e' p).1, h (e' p).2)` otherwise, where
 `h = `e'.coord_change_homeomorph e _ _` is the homeomorphism of the fiber such that
 `h (e' p).2 = (e p).2` whenever `e p = a`. -/
