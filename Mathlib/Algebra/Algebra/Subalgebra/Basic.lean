@@ -109,11 +109,11 @@ theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
   S.algebraMap_mem' r
 #align subalgebra.algebra_map_mem Subalgebra.algebraMap_mem
 
-theorem rangeS_le : (algebraMap R A).rangeS ≤ S.toSubsemiring := fun x ⟨r, hr⟩ =>
+theorem rangeS_le : (algebraMap R A).rangeS ≤ S.toSubsemiring := fun _x ⟨r, hr⟩ =>
   hr ▸ S.algebraMap_mem r
 #align subalgebra.srange_le Subalgebra.rangeS_le
 
-theorem range_subset : Set.range (algebraMap R A) ⊆ S := fun x ⟨r, hr⟩ => hr ▸ S.algebraMap_mem r
+theorem range_subset : Set.range (algebraMap R A) ⊆ S := fun _x ⟨r, hr⟩ => hr ▸ S.algebraMap_mem r
 #align subalgebra.range_subset Subalgebra.range_subset
 
 theorem range_le : Set.range (algebraMap R A) ≤ S :=
@@ -473,7 +473,7 @@ theorem map_mono {S₁ S₂ : Subalgebra R A} {f : A →ₐ[R] B} : S₁ ≤ S�
 #align subalgebra.map_mono Subalgebra.map_mono
 
 theorem map_injective {f : A →ₐ[R] B} (hf : Function.Injective f) : Function.Injective (map f) :=
-  fun S₁ S₂ ih =>
+  fun _S₁ _S₂ ih =>
   ext <| Set.ext_iff.1 <| Set.image_injective.2 hf <| Set.ext <| SetLike.ext_iff.mp ih
 #align subalgebra.map_injective Subalgebra.map_injective
 
@@ -517,7 +517,7 @@ theorem map_le {S : Subalgebra R A} {f : A →ₐ[R] B} {U : Subalgebra R B} :
   Set.image_subset_iff
 #align subalgebra.map_le Subalgebra.map_le
 
-theorem gc_map_comap (f : A →ₐ[R] B) : GaloisConnection (map f) (comap f) := fun S U => map_le
+theorem gc_map_comap (f : A →ₐ[R] B) : GaloisConnection (map f) (comap f) := fun _S _U => map_le
 #align subalgebra.gc_map_comap Subalgebra.gc_map_comap
 
 @[simp]
@@ -651,7 +651,7 @@ theorem coe_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f 
 
 theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
     Function.Injective (f.codRestrict S hf) ↔ Function.Injective f :=
-  ⟨fun H x y hxy => H <| Subtype.eq hxy, fun H x y hxy => H (congr_arg Subtype.val hxy : _)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
 #align alg_hom.injective_cod_restrict AlgHom.injective_codRestrict
 
 /-- Restrict the codomain of a alg_hom `f` to `f.range`.
@@ -911,8 +911,8 @@ theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) 
 #align algebra.coe_bot Algebra.coe_bot
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
-  ⟨fun h x => by rw [h] <;> exact mem_top, fun h => by
-    ext x <;> exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
+  ⟨fun h x => by rw [h]; exact mem_top, fun h => by
+    ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 #align algebra.eq_top_iff Algebra.eq_top_iff
 
 theorem range_top_iff_surjective (f : A →ₐ[R] B) :
@@ -938,7 +938,7 @@ theorem map_bot (f : A →ₐ[R] B) : (⊥ : Subalgebra R A).map f = ⊥ :=
 
 @[simp]
 theorem comap_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R B).comap f = ⊤ :=
-  eq_top_iff.2 fun x => mem_top
+  eq_top_iff.2 fun _x => mem_top
 #align algebra.comap_top Algebra.comap_top
 
 /-- `alg_hom` to `⊤ : subalgebra R A`. -/
@@ -950,7 +950,7 @@ theorem surjective_algebraMap_iff :
     Function.Surjective (algebraMap R A) ↔ (⊤ : Subalgebra R A) = ⊥ :=
   ⟨fun h =>
     eq_bot_iff.2 fun y _ =>
-      let ⟨x, hx⟩ := h y
+      let ⟨_x, hx⟩ := h y
       hx ▸ Subalgebra.algebraMap_mem _ _,
     fun h y => Algebra.mem_bot.1 <| eq_bot_iff.1 h (Algebra.mem_top : y ∈ _)⟩
 #align algebra.surjective_algebra_map_iff Algebra.surjective_algebraMap_iff
@@ -966,7 +966,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun x y hxy => h (congr_arg Subtype.val hxy : _), fun ⟨y, hy⟩ =>
+      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy : _), fun ⟨_y, hy⟩ =>
         let ⟨x, hx⟩ := Algebra.mem_bot.1 hy
         ⟨x, Subtype.eq hx⟩⟩
 #align algebra.bot_equiv_of_injective Algebra.botEquivOfInjective
@@ -1006,7 +1006,7 @@ instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsinglet
   ⟨fun f g =>
     AlgHom.ext fun a =>
       have : a ∈ (⊥ : Subalgebra R A) := Subsingleton.elim (⊤ : Subalgebra R A) ⊥ ▸ mem_top
-      let ⟨x, hx⟩ := Set.mem_range.mp (mem_bot.mp this)
+      let ⟨_x, hx⟩ := Set.mem_range.mp (mem_bot.mp this)
       hx ▸ (f.commutes _).trans (g.commutes _).symm⟩
 #align alg_hom.subsingleton AlgHom.subsingleton
 
@@ -1049,7 +1049,7 @@ theorem inclusion_injective {S T : Subalgebra R A} (h : S ≤ T) : Function.Inje
 
 @[simp]
 theorem inclusion_self {S : Subalgebra R A} : inclusion (le_refl S) = AlgHom.id R S :=
-  AlgHom.ext fun x => Subtype.ext rfl
+  AlgHom.ext fun _x => Subtype.ext rfl
 #align subalgebra.inclusion_self Subalgebra.inclusion_self
 
 @[simp]
@@ -1129,7 +1129,7 @@ theorem mem_prod {S : Subalgebra R A} {S₁ : Subalgebra R B} {x : A × B} :
 #align subalgebra.mem_prod Subalgebra.mem_prod
 
 @[simp]
-theorem prod_top : (prod ⊤ ⊤ : Subalgebra R (A × B)) = ⊤ := by ext <;> simp
+theorem prod_top : (prod ⊤ ⊤ : Subalgebra R (A × B)) = ⊤ := by ext; simp
 #align subalgebra.prod_top Subalgebra.prod_top
 
 theorem prod_mono {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
@@ -1225,7 +1225,7 @@ theorem suprLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
 
 @[simp]
 theorem suprLift_comp_inclusion {i : ι} (h : K i ≤ T) :
-    (suprLift K dir f hf T hT).comp (inclusion h) = f i := by ext <;> simp
+    (suprLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
 #align subalgebra.supr_lift_comp_inclusion Subalgebra.suprLift_comp_inclusion
 
 @[simp]
@@ -1292,7 +1292,7 @@ instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower 
 instance isScalarTower_mid {R S T : Type _} [CommSemiring R] [Semiring S] [AddCommMonoid T]
     [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
     IsScalarTower R S' T :=
-  ⟨fun x y z => (smul_assoc _ (y : S) _ : _)⟩
+  ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
 #align subalgebra.is_scalar_tower_mid Subalgebra.isScalarTower_mid
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
@@ -1404,7 +1404,7 @@ section Centralizer
 
 @[simp]
 theorem _root_.Set.algebraMap_mem_centralizer {s : Set A} (r : R) : algebraMap R A r ∈ s.centralizer :=
-  fun a h => (Algebra.commutes _ _).symm
+  fun _a _h => (Algebra.commutes _ _).symm
 #align set.algebra_map_mem_centralizer Set.algebraMap_mem_centralizer
 
 variable (R)
