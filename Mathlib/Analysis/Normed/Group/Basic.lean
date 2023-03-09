@@ -1765,7 +1765,6 @@ theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
   rfl
 #align int.norm_cast_real Int.norm_cast_real
 
-set_option synthInstance.etaExperiment true
 theorem norm_eq_abs (n : ℤ) : ‖n‖ = |n| :=
   show ‖(n : ℝ)‖ = |n| by rw [Real.norm_eq_abs, cast_abs]
 -- porting note: I'm not sure why this isn't `rfl` anymore, but I suspect it's about coercions
