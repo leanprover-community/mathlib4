@@ -28,31 +28,31 @@ ring homomorphism `f : R →+* S` satisfying 3 properties:
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
 ```
-variables (R S P Q : Type*) [comm_ring R] [comm_ring S] [comm_ring P] [comm_ring Q]
-variables [algebra R S] [algebra P Q] (M : submonoid R) (T : submonoid P)
+variables (R S P Q : Type*) [CommRing R] [CommRing S] [CommRing P] [CommRing Q]
+variables [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 ```
 
 ## Main definitions
 
- * `is_localization (M : submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
-   localization of `R` at `M`, i.e. the canonical map `algebra_map R S : R →+* S` is a
+ * `IsLocalization (M : Submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
+   localization of `R` at `M`, i.e. the canonical map `algebraMap R S : R →+* S` is a
    localization map (satisfying the above properties).
  * `is_localization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
- * `is_localization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
+ * `IsLocalization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
    which maps elements of `M` to invertible elements of the codomain.
- * `is_localization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
+ * `IsLocalization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
    of `M` to elements of `T`
- * `is_localization.ring_equiv_of_ring_equiv`: if `R` and `P` are isomorphic by an isomorphism
+ * `IsLocalization.ringEquivOfRingEquiv`: if `R` and `P` are isomorphic by an isomorphism
    sending `M` to `T`, then `S` and `Q` are isomorphic
- * `is_localization.alg_equiv`: if `Q` is another localization of `R` at `M`, then `S` and `Q`
+ * `IsLocalization.algEquiv`: if `Q` is another localization of `R` at `M`, then `S` and `Q`
    are isomorphic as `R`-algebras
 
 ## Main results
 
- * `localization M S`, a construction of the localization as a quotient type, defined in
-   `group_theory.monoid_localization`, has `comm_ring`, `algebra R` and `is_localization M`
-   instances if `R` is a ring. `localization.away`, `localization.at_prime` and `fraction_ring`
-   are abbreviations for `localization`s and have their corresponding `is_localization` instances
+ * `Localization M S`, a construction of the localization as a quotient type, defined in
+   `group_theory.monoid_localization`, has `CommRing`, `Algebra R` and `IsLocalization M`
+   instances if `R` is a ring. `Localization.Away`, `localization.at_prime` and `fraction_ring`
+   are abbreviations for `Localization`s and have their corresponding `IsLocalization` instances
 
 ## Implementation notes
 
@@ -63,23 +63,23 @@ a structure up to isomorphism, and reason about things that satisfy the predicat
 A previous version of this file used a fully bundled type of ring localization maps,
 then used a type synonym `f.codomain` for `f : localization_map M S` to instantiate the
 `R`-algebra structure on `S`. This results in defining ad-hoc copies for everything already
-defined on `S`. By making `is_localization` a predicate on the `algebra_map R S`,
-we can ensure the localization map commutes nicely with other `algebra_map`s.
+defined on `S`. By making `IsLocalization` a predicate on the `algebraMap R S`,
+we can ensure the localization map commutes nicely with other `algebraMap`s.
 
-To prove most lemmas about a localization map `algebra_map R S` in this file we invoke the
-corresponding proof for the underlying `comm_monoid` localization map
-`is_localization.to_localization_map M S`, which can be found in `group_theory.monoid_localization`
-and the namespace `submonoid.localization_map`.
+To prove most lemmas about a localization map `algebraMap R S` in this file we invoke the
+corresponding proof for the underlying `CommMonoid` localization map
+`IsLocalization.toLocalizationMap M S`, which can be found in `group_theory.monoid_localization`
+and the namespace `Submonoid.LocalizationMap`.
 
 To reason about the localization as a quotient type, use `mk_eq_of_mk'` and associated lemmas.
-These show the quotient map `mk : R → M → localization M` equals the surjection
-`localization_map.mk'` induced by the map `algebra_map : R →+* localization M`.
+These show the quotient map `mk : R → M → Localization M` equals the surjection
+`localization_map.mk'` induced by the map `algebraMap : R →+* Localization M`.
 The lemma `mk_eq_of_mk'` hence gives you access to the results in the rest of the file,
 which are about the `localization_map.mk'` induced by any localization map.
 
-The proof that "a `comm_ring` `K` which is the localization of an integral domain `R` at `R \ {0}`
+The proof that "a `CommRing` `K` which is the localization of an integral domain `R` at `R \ {0}`
 is a field" is a `def` rather than an `instance`, so if you want to reason about a field of
-fractions `K`, assume `[field K]` instead of just `[comm_ring K]`.
+fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -97,7 +97,7 @@ variable {R : Type _} [CommSemiring R] (M : Submonoid R) (S : Type _) [CommSemir
 
 variable [Algebra R S] {P : Type _} [CommSemiring P]
 
-/-- The typeclass `is_localization (M : submodule R) S` where `S` is an `R`-algebra
+/-- The typeclass `IsLocalization (M : Submodule R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 class IsLocalization : Prop where
 --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
@@ -146,7 +146,7 @@ theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (al
 
 variable (S)
 
-/-- `is_localization.to_localization_with_zero_map M S` shows `S` is the monoid localization of
+/-- `IsLocalization.toLocalizationWithZeroMap M S` shows `S` is the monoid localization of
 `R` at `M`. -/
 @[simps]
 def toLocalizationWithZeroMap : Submonoid.LocalizationWithZeroMap M S :=
@@ -157,7 +157,7 @@ def toLocalizationWithZeroMap : Submonoid.LocalizationWithZeroMap M S :=
     eq_iff_exists' := fun _ _ => IsLocalization.eq_iff_exists _ _ }
 #align is_localization.to_localization_with_zero_map IsLocalization.toLocalizationWithZeroMap
 
-/-- `is_localization.to_localization_map M S` shows `S` is the monoid localization of `R` at `M`. -/
+/-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
 abbrev toLocalizationMap : Submonoid.LocalizationMap M S :=
   (toLocalizationWithZeroMap M S).toLocalizationMap
 #align is_localization.to_localization_map IsLocalization.toLocalizationMap
@@ -186,14 +186,14 @@ theorem toLocalizationMap_sec : (toLocalizationMap M S).sec = sec M :=
   rfl
 #align is_localization.to_localization_map_sec IsLocalization.toLocalizationMap_sec
 
-/-- Given `z : S`, `is_localization.sec M z` is defined to be a pair `(x, y) : R × M` such
+/-- Given `z : S`, `IsLocalization.sec M z` is defined to be a pair `(x, y) : R × M` such
 that `z * f y = f x` (so this lemma is true by definition). -/
 theorem sec_spec (z : S) :
     z * algebraMap R S (IsLocalization.sec M z).2 = algebraMap R S (IsLocalization.sec M z).1 :=
   Classical.choose_spec <| IsLocalization.surj _ z
 #align is_localization.sec_spec IsLocalization.sec_spec
 
-/-- Given `z : S`, `is_localization.sec M z` is defined to be a pair `(x, y) : R × M` such
+/-- Given `z : S`, `IsLocalization.sec M z` is defined to be a pair `(x, y) : R × M` such
 that `z * f y = f x`, so this lemma is just an application of `S`'s commutativity. -/
 theorem sec_spec' (z : S) :
     algebraMap R S (IsLocalization.sec M z).1 = algebraMap R S (IsLocalization.sec M z).2 * z := by
@@ -299,7 +299,7 @@ theorem mk'_surjective (z : S) : ∃ (x : _)(y : M), mk' S x y = z :=
 
 variable (S)
 
-/-- The localization of a `fintype` is a `fintype`. Cannot be an instance. -/
+/-- The localization of a `Fintype` is a `Fintype`. Cannot be an instance. -/
 noncomputable def fintype' [Fintype R] : Fintype S :=
   have := Classical.propDecidable
   Fintype.ofSurjective (Function.uncurry <| IsLocalization.mk' S) fun a =>
@@ -431,8 +431,8 @@ theorem isUnit_comp (j : S →+* P) (y : M) : IsUnit (j.comp (algebraMap R S) y)
 
 end
 
-/-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `comm_semiring`s
-`g : R →+* P` such that `g(M) ⊆ units P`, `f x = f y → g x = g y` for all `x y : R`. -/
+/-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
+`g : R →+* P` such that `g(M) ⊆ Units P`, `f x = f y → g x = g y` for all `x y : R`. -/
 theorem eq_of_eq {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) {x y}
     (h : (algebraMap R S) x = (algebraMap R S) y) : g x = g y :=
   @Submonoid.LocalizationMap.eq_of_eq _ _ _ _ _ _ _ (toLocalizationMap M S) g.toMonoidHom hg _ _ h
@@ -467,7 +467,7 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
   rfl
 #align is_localization.lift_spec_mul_add IsLocalization.lift_spec_mul_add
 
-/-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `comm_semiring`s
+/-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
 `g : R →+* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that
 `z = f x * (f y)⁻¹`. -/
@@ -489,7 +489,7 @@ noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* 
 
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
-/-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `comm_semiring`s
+/-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
 `g : R →* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` maps `f x * (f y)⁻¹` to `g x * (g y)⁻¹` for all `x : R, y ∈ M`. -/
 theorem lift_mk' (x y) :
@@ -595,7 +595,7 @@ variable (Q)
 localizations of `R` and `P` at `M` and `T` respectively,
 such that `g(M) ⊆ T`.
 
-We send `z : S` to `algebra_map P Q (g x) * (algebra_map P Q (g y))⁻¹`, where
+We send `z : S` to `algebraMap P Q (g x) * (algebraMap P Q (g y))⁻¹`, where
 `(x, y) : R × M` are such that `z = f x * (f y)⁻¹`. -/
 noncomputable def map (g : R →+* P) (hy : M ≤ T.comap g) : S →+* Q :=
   @lift R _ M _ _ _ _ _ _ ((algebraMap P Q).comp g) fun y => map_units _ ⟨g y, hy y.2⟩
@@ -628,7 +628,7 @@ theorem map_unique (j : S →+* Q) (hj : ∀ x : R, j (algebraMap R S x) = algeb
   lift_unique (fun y => map_units _ ⟨g y, hy y.2⟩) hj
 #align is_localization.map_unique IsLocalization.map_unique
 
-/-- If `comm_semiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
+/-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 theorem map_comp_map {A : Type _} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring W]
     [Algebra A W] [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) :
@@ -638,7 +638,7 @@ theorem map_comp_map {A : Type _} [CommSemiring A] {U : Submonoid A} {W} [CommSe
       (toLocalizationMap U W) l _ x
 #align is_localization.map_comp_map IsLocalization.map_comp_map
 
-/-- If `comm_semiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
+/-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 theorem map_map {A : Type _} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring W] [Algebra A W]
     [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) (x : S) :
@@ -848,7 +848,7 @@ instance [Subsingleton R] : Unique (Localization M) :=
 
 /-- Addition in a ring localization is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨b * c + d * a, b * d⟩`.
 
-Should not be confused with `add_localization.add`, which is defined as
+Should not be confused with `addLocalization.add`, which is defined as
 `⟨a, b⟩ + ⟨c, d⟩ = ⟨a + c, b + d⟩`.
 -/
 protected def add (z w : Localization M) : Localization M :=
@@ -923,8 +923,8 @@ instance : CommSemiring (Localization M) :=
       Localization.induction_on₃ m n k
         (by localization_tac) }
 
-/-- For any given denominator `b : M`, the map `a ↦ a / b` is an `add_monoid_hom` from `R` to
-  `localization M`-/
+/-- For any given denominator `b : M`, the map `a ↦ a / b` is an `AddMonoidHom` from `R` to
+  `Localization M`-/
 @[simps]
 def mkAddMonoidHom (b : M) : R →+ Localization M
     where
@@ -1217,7 +1217,7 @@ variable {S Q M}
 
 variable (A : Type _) [CommRing A] [IsDomain A]
 
-/-- A `comm_ring` `S` which is the localization of a ring `R` without zero divisors at a subset of
+/-- A `CommRing` `S` which is the localization of a ring `R` without zero divisors at a subset of
 non-zero elements does not have zero divisors.
 See note [reducible non-instances]. -/
 @[reducible]
@@ -1237,7 +1237,7 @@ theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [Is
       · exact Or.inr (eq_zero_of_fst_eq_zero hy H) }
 #align is_localization.no_zero_divisors_of_le_non_zero_divisors IsLocalization.noZeroDivisors_of_le_nonZeroDivisors
 
-/-- A `comm_ring` `S` which is the localization of an integral domain `R` at a subset of
+/-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
 non-zero elements is an integral domain.
 See note [reducible non-instances]. -/
 @[reducible]
@@ -1299,12 +1299,12 @@ variable (S M)
 
 /-- Definition of the natural algebra induced by the localization of an algebra.
 Given an algebra `R → S`, a submonoid `R` of `M`, and a localization `Rₘ` for `M`,
-let `Sₘ` be the localization of `S` to the image of `M` under `algebra_map R S`.
+let `Sₘ` be the localization of `S` to the image of `M` under `algebraMap R S`.
 Then this is the natural algebra structure on `Rₘ → Sₘ`, such that the entire square commutes,
 where `localization_map.map_comp` gives the commutativity of the underlying maps.
 
-This instance can be helpful if you define `Sₘ := localization (algebra.algebra_map_submonoid S M)`,
-however we will instead use the hypotheses `[algebra Rₘ Sₘ] [is_scalar_tower R Rₘ Sₘ]` in lemmas
+This instance can be helpful if you define `Sₘ := Localization (Algebra.algebraMapSubmonoid S M)`,
+however we will instead use the hypotheses `[Algebra Rₘ Sₘ] [IsScalarTower R Rₘ Sₘ]` in lemmas
 since the algebra structure may arise in different ways.
 -/
 noncomputable def localizationAlgebra : Algebra Rₘ Sₘ :=
@@ -1381,7 +1381,7 @@ end
 
 variable (Rₘ Sₘ)
 
-/-- Injectivity of the underlying `algebra_map` descends to the algebra induced by localization. -/
+/-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
   --Porting note: I don't understand why `i` needs to be explicit or why writing `(i := i)`
