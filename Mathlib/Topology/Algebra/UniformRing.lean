@@ -46,6 +46,8 @@ noncomputable section
 
 universe u
 
+set_option synthInstance.etaExperiment true
+
 namespace UniformSpace.Completion
 
 open DenseInducing UniformSpace Function
@@ -56,27 +58,27 @@ instance : One (Completion α) :=
   ⟨(1 : α)⟩
 
 instance : Mul (Completion α) :=
-  ⟨curry <| (denseInducing_coe.Prod denseInducing_coe).extend (coe ∘ uncurry (· * ·))⟩
+  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
   rfl
 #align uniform_space.completion.coe_one UniformSpace.Completion.coe_one
 
-variable {α} [TopologicalRing α]
+variable [TopologicalRing α]
 
 @[norm_cast]
 theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
-  ((denseInducing_coe.Prod denseInducing_coe).extend_eq
-      ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
+  ((denseInducing_coe.prod denseInducing_coe).extend_eq
+      ((continuous_coe α).comp (@ContinuousMul α _ _ _)) (a, b)).symm
 #align uniform_space.completion.coe_mul UniformSpace.Completion.coe_mul
 
 variable [UniformAddGroup α]
 
 theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 := by
-  let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ to_compl
-  have : Continuous fun p : α × α => m p.1 p.2 := (continuous_coe α).comp continuous_mul
-  have di : DenseInducing (to_compl : α → completion α) := dense_inducing_coe
+  let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toCompl
+  have : Continuous fun p : α × α => m p.1 p.2 := (continuous_coe α).comp ContinuousMul
+  have di : DenseInducing (toCompl : α → Completion α) := denseInducing_coe
   convert di.extend_Z_bilin di this
   ext ⟨x, y⟩
   rfl
@@ -84,12 +86,12 @@ theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.
 
 theorem Continuous.mul {β : Type _} [TopologicalSpace β] {f g : β → Completion α}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
-  continuous_mul.comp (hf.prod_mk hg : _)
+  continuousMul.comp (hf.prod_mk hg : _)
 #align uniform_space.completion.continuous.mul UniformSpace.Completion.Continuous.mul
 
 instance : Ring (Completion α) :=
-  { AddMonoidWithOne.unary, Completion.addCommGroup, Completion.hasMul α,
-    Completion.hasOne
+  { AddMonoidWithOne.unary, Completion.addCommGroup, Completion.mul α,
+    Completion.One
       α with
     one_mul := fun a =>
       Completion.induction_on a
@@ -306,4 +308,3 @@ noncomputable def DenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ
 #align dense_inducing.extend_ring_hom DenseInducing.extendRingHom
 
 end UniformExtension
-
