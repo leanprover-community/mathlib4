@@ -1044,28 +1044,39 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * i)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
-theorem abs_le_sqrt_two_mul_max (z : ℂ) : abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) := by
+#check two_pos
+
+instance : NeZero (1 : ℝ) :=
+ ⟨by apply one_ne_zero⟩
+
+theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) := by
   cases' z with x y
   simp only [abs_apply, normSq_mk, ← sq]
-  wlog hle : |x| ≤ |y|
-  · rw [add_comm, max_comm]
-    exact this _ _ (le_of_not_le hle)
-  calc
-    Real.sqrt (x ^ 2 + y ^ 2) ≤ Real.sqrt (y ^ 2 + y ^ 2) :=
-      Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
-    _ = Real.sqrt 2 * max (|x|) (|y|) := by
-      rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
+  by_cases hle : |x| ≤ |y|
+  · calc
+      Real.sqrt (x ^ 2 + y ^ 2) ≤ Real.sqrt (y ^ 2 + y ^ 2) :=
+        Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
+      _ = Real.sqrt 2 * max (|x|) (|y|) := by
+        rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
+  · let hle' := le_of_not_le hle
+    rw [add_comm]
+    calc
+      Real.sqrt (y ^ 2 + x ^ 2) ≤ Real.sqrt (x ^ 2 + x ^ 2) :=
+        Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle') _)
+      _ = Real.sqrt 2 * max (|x|) (|y|) := by
+        rw [max_eq_left hle', ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
+
 
 #align complex.abs_le_sqrt_two_mul_max Complex.abs_le_sqrt_two_mul_max
 
 theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
-  else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (abs.pos hz), one_mul, abs_re_le_abs]
+  else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_re_le_abs]
 #align complex.abs_re_div_abs_le_one Complex.abs_re_div_abs_le_one
 
 theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
-  else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (abs.pos hz), one_mul, abs_im_le_abs]
+  else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_im_le_abs]
 #align complex.abs_im_div_abs_le_one Complex.abs_im_div_abs_le_one
 
 -- Porting note: removed `norm_cast` attribute
@@ -1080,8 +1091,8 @@ theorem int_cast_abs (n : ℤ) : ↑(|n|) = Complex.abs n := by
   rw [← of_real_int_cast, abs_of_real, Int.cast_abs]
 #align complex.int_cast_abs Complex.int_cast_abs
 
-theorem normSq_eq_abs (x : ℂ) : normSq x = Complex.abs x ^ 2 := by
-  simp [abs, sq, Real.mul_self_sqrt (normSq_nonneg _)]
+theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
+  simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]
 #align complex.norm_sq_eq_abs Complex.normSq_eq_abs
 
 /-- We put a partial order on ℂ so that `z ≤ w` exactly if `w - z` is real and nonnegative.
@@ -1162,13 +1173,15 @@ theorem eq_re_of_real_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re :
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a strictly ordered ring.
 -/
 protected def strictOrderedCommRing : StrictOrderedCommRing ℂ :=
-  { Complex.partialOrder, Complex.commRing,
-    Complex.nontrivial with
+  {
     zero_le_one := ⟨zero_le_one, rfl⟩
     add_le_add_left := fun w z h y => ⟨add_le_add_left h.1 _, congr_arg₂ (· + ·) rfl h.2⟩
     mul_pos := fun z w hz hw => by
-      simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1] }
-#align complex.strict_ordered_comm_ring Complex.strictOrderedCommRing
+      simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
+    mul_comm := sorry
+  }
+
+#align complex.strict_ordered_comm_ring Complex.ComplexOrder.strictOrderedCommRing
 
 scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
 
