@@ -278,15 +278,16 @@ theorem obj_μ_inv_app (m₁ m₂ m₃ : M) (X : C) :
           (F.μIso m₁ (m₂ ⊗ m₃)).inv.app X ≫ (F.μIso m₂ m₃).inv.app ((F.obj m₁).obj X) := by
   rw [← IsIso.inv_eq_inv]
   convert obj_μ_app F m₁ m₂ m₃ X using 1
-  · ext
+  · refine' IsIso.inv_eq_of_hom_inv_id _
     rw [← Functor.map_comp]
     simp
   · simp only [MonoidalFunctor.μIso_hom, Category.assoc, NatIso.inv_inv_app, IsIso.inv_comp]
     congr
-    · ext
+    · refine' IsIso.inv_eq_of_hom_inv_id _
       simp
-    · ext
-      simpa
+    · refine' IsIso.inv_eq_of_hom_inv_id _
+      simp
+      rfl
 #align category_theory.obj_μ_inv_app CategoryTheory.obj_μ_inv_app
 
 @[reassoc (attr := simp)]
