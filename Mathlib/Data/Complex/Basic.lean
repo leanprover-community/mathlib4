@@ -113,7 +113,8 @@ theorem of_real_injective : Function.Injective (fun (r: ℝ) ↦ ↑(r : ℂ)) :
 #align complex.of_real_injective Complex.of_real_injective
 
 -- Porting note: made coercion explicit
-instance canLift : CanLift ℂ ℝ (fun (r: ℝ) ↦ ↑(r : ℂ)) fun z => z.im = 0 where prf z hz := ⟨z.re, ext rfl hz.symm⟩
+instance canLift : CanLift ℂ ℝ (fun (r: ℝ) ↦ ↑(r : ℂ)) fun z =>
+    z.im = 0 where prf z hz := ⟨z.re, ext rfl hz.symm⟩
 #align complex.can_lift Complex.canLift
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
@@ -916,7 +917,8 @@ noncomputable def Complex.abs : AbsoluteValue ℂ ℝ
 
 end AbsTheory
 
--- Porting note: Added this to make the following work. Hope this is as intended. Also the name has been expanded.
+-- Porting note: Added this to make the following work.
+-- Hope this is as intended. Also the name has been expanded.
 open Complex.AbsTheory
 
 theorem abs_def : (Complex.abs : ℂ → ℝ) = fun z => (normSq z).sqrt :=
@@ -1032,7 +1034,8 @@ theorem abs_re_lt_abs {z : ℂ} : |z.re| < Complex.abs z ↔ z.im ≠ 0 := by
 #align complex.abs_re_lt_abs Complex.abs_re_lt_abs
 
 @[simp]
-theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by simpa using @abs_re_lt_abs (z * i)
+theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by
+  simpa using @abs_re_lt_abs (z * i)
 #align complex.abs_im_lt_abs Complex.abs_im_lt_abs
 
 @[simp]
@@ -1069,12 +1072,14 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max 
 
 theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
-  else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_re_le_abs]
+  else by simp_rw [_root_.abs_div, abs_abs,
+    div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_re_le_abs]
 #align complex.abs_re_div_abs_le_one Complex.abs_re_div_abs_le_one
 
 theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
-  else by simp_rw [_root_.abs_div, abs_abs, div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_im_le_abs]
+  else by simp_rw [_root_.abs_div, abs_abs,
+    div_le_iff (AbsoluteValue.pos Complex.AbsTheory.Complex.abs hz), one_mul, abs_im_le_abs]
 #align complex.abs_im_div_abs_le_one Complex.abs_im_div_abs_le_one
 
 -- Porting note: removed `norm_cast` attribute
@@ -1239,9 +1244,11 @@ noncomputable def cauSeqIm (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
   ⟨_, isCauSeq_im f⟩
 #align complex.cau_seq_im Complex.cauSeqIm
 
-theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) : IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
+theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) :
+  IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
   let ⟨i, hi⟩ := hf ε ε0
-  ⟨i, fun j hj => lt_of_le_of_lt (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
+  ⟨i, fun j hj => lt_of_le_of_lt
+    (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
 #align complex.is_cau_seq_abs Complex.isCauSeq_abs
 
 /-- The limit of a Cauchy sequence of complex numbers. -/
@@ -1249,8 +1256,10 @@ noncomputable def limAux (f : CauSeq ℂ Complex.abs) : ℂ :=
   ⟨CauSeq.lim (cauSeqRe f), CauSeq.lim (cauSeqIm f)⟩
 #align complex.lim_aux Complex.limAux
 
-theorem equiv_limAux (f : CauSeq ℂ Complex.abs) : f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
-  (exists_forall_ge_and (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
+theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
+  f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
+  (exists_forall_ge_and
+  (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
     fun i H j ij => by
     cases' H _ ij with H₁ H₂
@@ -1284,9 +1293,11 @@ theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := b
   rw [lim_eq_lim_im_add_lim_re] ; simp
 #align complex.lim_im Complex.lim_im
 
-theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) : IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
+theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
+  IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
-  ⟨i, fun j hj => by rw [← RingHom.map_sub, abs_conj] ; exact hi j hj⟩
+  ⟨i, fun j hj => by
+    rw [← RingHom.map_sub, abs_conj] ; exact hi j hj⟩
 #align complex.is_cau_seq_conj Complex.isCauSeq_conj
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
