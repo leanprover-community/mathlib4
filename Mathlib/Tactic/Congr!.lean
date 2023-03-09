@@ -21,6 +21,7 @@ See the syntax docstring for more details.
 open Lean Meta Elab Tactic
 
 initialize registerTraceClass `congr!
+initialize registerTraceClass `congr!.synthesize
 
 /-- The configuration for the `congr!` tactic. -/
 structure Congr!.Config where
@@ -38,6 +39,70 @@ structure Congr!.Config where
   This can be used to control which side's definitions are expanded when applying the
   congruence lemma (if `preferLHS = true` then the RHS can be expanded). -/
   preferLHS : Bool := true
+
+/--
+Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
+If successful, returns the new goal, and otherwise returns the original `MVarId`.
+
+This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
+-/
+def Lean.MVarId.iffOfEq (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to convert an `Eq` into an `Iff` by applying `propext`.
+If successful, then returns then new goal, otherwise returns the original `MVarId`.
+-/
+def Lean.MVarId.propext (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
+    -- We don't want a unification specializing `Sort _` to `Prop`.
+    let tgt ← withReducible mvarId.getType'
+    let some (ty, _, _) := tgt.eq? | failure
+    guard ty.isProp
+    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
+
+We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
+specialize `Sort _` to `Prop`.
+-/
+def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `proofIrrelHeq
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, _, rhs) := tgt.heq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
+      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
+/--
+Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
+
+We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
+This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
+`Sort _` to `Prop`.
+-/
+def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `subsingletonElim
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, rhs) := tgt.eq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
+      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
 
 /--
 Asserts the given congruence theorem as fresh hypothesis, and then applies it.
@@ -74,18 +139,18 @@ The argument `fty` denotes the type of `f`. Returns `(congrThmType, congrThmProo
 -/
 partial def Congr!.mkHCongrThm (fType : Expr) (info : FunInfo) :
     MetaM (Expr × Expr) := do
-  --trace[congr!] "ftype: {fType}"
-  --trace[congr!] "deps: {info.paramInfo.map (fun p => p.backDeps)}"
+  trace[congr!.synthesize] "ftype: {fType}"
+  trace[congr!.synthesize] "deps: {info.paramInfo.map (fun p => p.backDeps)}"
   forallBoundedTelescope fType info.getArity fun xs _ =>
   forallBoundedTelescope fType info.getArity fun ys _ => do
     if xs.size != info.getArity then
       throwError "failed to generate hcongr theorem, insufficient number of arguments"
     let lctx := withDefaultBinderInfo (xs ++ ys) <| addPrimesToUserNames ys (← getLCtx)
     withLCtx lctx (← getLocalInstances) do
+    let lctx ← getLCtx
     withLocalDeclD `f fType fun ef =>
     withLocalDeclD `f' fType fun ef' => do
     withLocalDeclD `e (← mkEq ef ef') fun ee => do
-      let lctx ← getLCtx
       withNewEqs xs ys fun eqs eqs' vals => do
         let mut hs := #[ef, ef', ee]
         let mut hs' := hs
@@ -98,16 +163,28 @@ partial def Congr!.mkHCongrThm (fType : Expr) (info : FunInfo) :
         let rhs := mkAppN ef' ys
         -- Generate the theorem with respect to the simpler hypotheses
         let congrType ← mkForallFVars hs (← mkHEq lhs rhs)
-        let proof ← mkProof congrType
+        let some proof ← withLCtx lctx (← getLocalInstances) <| trySolve congrType
+          | throwError "Internal error when constructing proof"
         -- Now transform the theorem to be with respect to the richer hypotheses
-        let congrType' ← mkForallFVars hs' (← mkHEq lhs rhs)
+        --let congrType' ← mkForallFVars hs' (← mkHEq lhs rhs)
         let proof' ← mkLambdaFVars hs' (← mkAppM' proof vals')
-        --let mut lctx := lctx
+        -- Now try to pre-compute some of these hypotheses
+        let mut hs'' := #[]
+        let mut vals'' := #[ef, ef', ee]
         for i in [0 : info.getArity] do
+          hs'' := hs''.push xs[i]! |>.push ys[i]!
+          vals'' := vals''.push xs[i]! |>.push ys[i]!
           let h' := eqs'[i]!
-          _ ← withLCtx lctx (← getLocalInstances) <| trySolve (← inferType h')
-          -- TODO
-        return (congrType', proof')
+          let pf? ← withLCtx lctx (← getLocalInstances) <| trySolve (← inferType h')
+          if let some pf := pf? then
+            vals'' := vals''.push pf
+          else
+            hs'' := hs''.push h'
+            vals'' := vals''.push h'
+        -- and now we can try to simplify the theorem given these computations
+        let proof'' ← mkLambdaFVars #[ef, ef', ee]
+                        (← mkLambdaFVars hs'' (← mkAppM' proof' vals'') (usedOnly := true))
+        return (← inferType proof'', proof'')
 where
   addPrimesToUserNames (ys : Array Expr) (lctx : LocalContext) : LocalContext := Id.run do
     let mut lctx := lctx
@@ -134,26 +211,25 @@ where
       else
         k eqs eqs' vals
     loop 0 #[] #[] #[]
-  mkProof (type : Expr) : MetaM Expr := do
-    if let some (_, lhs, _, _) := type.heq? then
-      return ← mkHEqRefl lhs
-    unless type.isForall do
-      throwError "Internal error, expecting forall type"
-    forallBoundedTelescope type (some 1) fun a type =>
-    let a := a[0]!
-    forallBoundedTelescope type (some 1) fun b motive =>
-    let b := b[0]!
-    let type := type.bindingBody!.instantiate1 a
-    withLocalDeclD motive.bindingName! motive.bindingDomain! fun eqPr => do
-    let major ← (if motive.bindingDomain!.isHEq then mkEqOfHEq else pure) eqPr
-    let minor ← mkProof type.bindingBody!
-    let motive ← mkLambdaFVars #[b] motive.bindingBody!
-    mkLambdaFVars #[a, b, eqPr] (← mkEqNDRec motive minor major)
-  trySolve (eq : Expr) : MetaM (Option Expr) := commitWhenSome? do
-    let mvarId ← mkFreshExprMVar eq
-    trace[congr!] "trySolve {mvarId.mvarId!}"
-    -- TODO
-    return none
+  trySolveCore (mvarId : MVarId) : MetaM Unit := do
+    let (_, mvarId) ← mvarId.intros
+    let mvarId := (← mvarId.substEqs).getD mvarId
+    -- Make the goal be an eq if possible
+    let mvarId ← mvarId.heqOfEq
+    let mvarId ← mvarId.iffOfEq
+    -- Try rfl or subsingleton elimination
+    try mvarId.refl; return catch _ => pure ()
+    if ← mvarId.proofIrrelHeq then return
+    if ← mvarId.subsingletonElim then return
+    -- We have no more tricks.
+    throwError "was not able to solve for proof"
+  trySolve (ty : Expr) : MetaM (Option Expr) := observing? do
+    let mvarId ← mkFreshExprMVar ty
+    trace[congr!.synthesize] "trySolve {mvarId.mvarId!}"
+    trySolveCore mvarId.mvarId!
+    trace[congr!.synthesize] "trySolve success!"
+    let pf ← instantiateMVars mvarId
+    return pf
 
 /--
 Like `Lean.MVarId.congr?` but instead of using only the congruence lemma associated to the LHS,
@@ -230,6 +306,8 @@ where
 This is like `Lean.MVarId.hcongr?` but (1) looks at both sides when generating the congruence lemma
 and (2) inserts additional hypotheses from equalities from previous arguments.
 
+It uses `Congr!.mkHCongrThm` to generate the congruence lemmas.
+
 If the goal is an `Eq`, uses `eq_of_heq` first.
 -/
 partial
@@ -242,13 +320,11 @@ def Lean.MVarId.smartHCongr? (config : Congr!.Config) (mvarId : MVarId) :
       let some (_, lhs, _, rhs) := (← withReducible mvarId.getType').heq? | return none
       if let some mvars ← loop mvarId 0 lhs rhs then
         return mvars
-      -- That failed, which is the "correct" behavior. However, it's often useful
+      -- The "correct" behavior failed. However, it's often useful
       -- to apply congruence lemmas while unfolding definitions, which is what the
       -- basic `congr` tactic does due to limitations in how congruence lemmas are generated.
       -- We simulate this behavior here by generating congruence lemmas for the LHS and RHS and
-      -- applying them.
-      if config.transparency == .reducible then
-        return none
+      -- then applying them.
       trace[congr!] "Default smartHCongr? failed, trying LHS/RHS method"
       let (fst, snd) := if config.preferLHS then (lhs, rhs) else (rhs, lhs)
       if let some mvars ← forSide mvarId fst then
@@ -276,42 +352,15 @@ where
       observing? <| applyCongrThm? config mvarId congrThm' congrProof'
     | _, _ => return none
   forSide (mvarId : MVarId) (side : Expr) : MetaM (Option (List MVarId)) := do
-      let side := side.cleanupAnnotations
-      if not side.isApp then return none
-      let f := side.getAppFn
-      let info ← getFunInfoNArgs f side.getAppNumArgs
-      let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
-      let r ← mkEqRefl f
-      let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f, r]
-      let congrProof' := mkApp3 congrProof f f r
-      observing? <| applyCongrThm? config mvarId congrThm' congrProof'
-
-/--
-Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
-If successful, returns the new goal, and otherwise returns the original `MVarId`.
-
-This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
--/
-def Lean.MVarId.iffOfEq (mvarId : MVarId) : MetaM MVarId := do
-  let res ← observing? do
-    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
-    return mvarId
-  return res.getD mvarId
-
-/--
-Try to convert an `Eq` into an `Iff` by applying `propext`.
-If successful, then returns then new goal, otherwise returns the original `MVarId`.
--/
-def Lean.MVarId.propext (mvarId : MVarId) : MetaM MVarId := do
-  let res ← observing? do
-    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
-    -- We don't want a unification specializing `Sort _` to `Prop`.
-    let tgt ← withReducible mvarId.getType'
-    let some (ty, _, _) := tgt.eq? | failure
-    guard ty.isProp
-    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
-    return mvarId
-  return res.getD mvarId
+    let side := side.cleanupAnnotations
+    if not side.isApp then return none
+    let f := side.getAppFn
+    let info ← getFunInfoNArgs f side.getAppNumArgs
+    let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
+    let r ← mkEqRefl f
+    let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f, r]
+    let congrProof' := mkApp3 congrProof f f r
+    observing? <| applyCongrThm? config mvarId congrThm' congrProof'
 
 /-- Helper theorem for `Lean.MVar.liftReflToEq`. -/
 theorem Lean.MVarId.rel_of_eq_and_refl {R : α → α → Prop} (hxy : x = y) (h : R x x) :
@@ -342,43 +391,6 @@ def Lean.MVarId.liftReflToEq (mvarId : MVarId) : MetaM MVarId := do
     if let some mvarId := res then
       return mvarId
   return mvarId
-
-/--
-Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
-
-We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
-This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
-`Sort _` to `Prop`.
--/
-def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext do
-    let res ← observing? do
-      mvarId.checkNotAssigned `subsingletonElim
-      let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, rhs) := tgt.eq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
-      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
-      mvarId.assign pf
-      return true
-    return res.getD false
-
-/--
-Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
-
-We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
-specialize `Sort _` to `Prop`.
--/
-def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext do
-    let res ← observing? do
-      mvarId.checkNotAssigned `proofIrrelHeq
-      let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, _, rhs) := tgt.heq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
-      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
-      mvarId.assign pf
-      return true
-    return res.getD false
 
 /--
 Try to apply `pi_congr`. This is similar to `Lean.MVar.congrImplies?`.
@@ -419,7 +431,7 @@ def Lean.MVarId.congrPasses! :
     List (String × (Congr!.Config → MVarId → MetaM (Option (List MVarId)))) :=
   [("user congr", userCongr?),
    ("hcongr lemma", smartHCongr?),
-   --("congr simp lemma", congrSimp?),
+   ("congr simp lemma", congrSimp?),
    ("obvious funext", fun _ => obviousFunext?),
    ("obvious hfunext", fun _ => obviousHfunext?),
    ("congr_implies", fun _ => congrImplies?),
@@ -431,6 +443,7 @@ that is trivial.
 
 Cleaning up includes:
 - deleting hypotheses of the form `HEq x x`, `x = x`, and `x ↔ x`.
+- deleting Prop hypotheses that are already in the local context.
 - converting `HEq x y` to `x = y` if possible.
 - converting `x = y` to `x ↔ y` if possible.
 -/
@@ -520,8 +533,8 @@ def Lean.MVarId.preCongr! (mvarId : MVarId) : MetaM (Option MVarId) := do
   -- Now try definitional equality. No need to try `mvarId.hrefl` since we already did  `heqOfEq`.
   try mvarId.refl; return none catch _ => pure ()
   -- Now we go for (heterogenous) equality via subsingleton considerations
-  if ← mvarId.subsingletonElim then return none
   if ← mvarId.proofIrrelHeq then return none
+  if ← mvarId.subsingletonElim then return none
   return some mvarId
 
 def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
