@@ -9,7 +9,7 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 /-!
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
@@ -21,7 +21,7 @@ universe u
 
 namespace CategoryTheory
 
-instance : ReflectsIsomorphisms (forget (Type u)) where reflects X Y f i := i
+instance : ReflectsIsomorphisms (forget (Type u)) where reflects _ _ _ {i} := i
 
 variable (C : Type (u + 1)) [Category C] [ConcreteCategory.{u} C]
 
@@ -34,18 +34,15 @@ where `forget C` reflects isomorphisms, itself reflects isomorphisms.
 -/
 theorem reflectsIsomorphisms_forget₂ [HasForget₂ C D] [ReflectsIsomorphisms (forget C)] :
     ReflectsIsomorphisms (forget₂ C D) :=
-  {
-    reflects := fun X Y f i => by
+  { reflects := fun X Y f {i} => by
       skip
-      haveI i' : is_iso ((forget D).map ((forget₂ C D).map f)) := functor.map_is_iso (forget D) _
-      haveI : is_iso ((forget C).map f) :=
+      haveI i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
+      haveI : IsIso ((forget C).map f) :=
         by
-        have := has_forget₂.forget_comp
-        dsimp at this
+        have := @HasForget₂.forget_comp C D
         rw [← this]
         exact i'
-      apply is_iso_of_reflects_iso f (forget C) }
+      apply isIso_of_reflects_iso f (forget C) }
 #align category_theory.reflects_isomorphisms_forget₂ CategoryTheory.reflectsIsomorphisms_forget₂
 
 end CategoryTheory
-
