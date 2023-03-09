@@ -30,26 +30,10 @@ variable {C D : Type _} [Category C] [Category D] [Preadditive D]
 instance functorCategoryPreadditive : Preadditive (C ⥤ D)
     where
   homGroup F G :=
-    { add := fun α β =>
-        { app := fun X => α.app X + β.app X
-          naturality' := by
-            intros
-            rw [comp_add, add_comp, α.naturality, β.naturality] }
-      zero :=
-        { app := fun X => 0
-          naturality' := by
-            intros
-            rw [zero_comp, comp_zero] }
-      neg := fun α =>
-        { app := fun X => -α.app X
-          naturality' := by
-            intros
-            rw [comp_neg, neg_comp, α.naturality] }
-      sub := fun α β =>
-        { app := fun X => α.app X - β.app X
-          naturality' := by
-            intros
-            rw [comp_sub, sub_comp, α.naturality, β.naturality] }
+    { add := fun α β => { app := fun X => α.app X + β.app X }
+      zero := { app := fun X => 0 }
+      neg := fun α => { app := fun X => -α.app X }
+      sub := fun α β => { app := fun X => α.app X - β.app X }
       add_assoc := by
         intros
         ext
@@ -62,6 +46,10 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D)
         intros
         ext
         apply add_zero
+      add_comm := by
+        intros
+        ext
+        apply add_comm
       sub_eq_add_neg := by
         intros
         ext
@@ -69,11 +57,7 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D)
       add_left_neg := by
         intros
         ext
-        apply add_left_neg
-      add_comm := by
-        intros
-        ext
-        apply add_comm }
+        apply add_left_neg }
   add_comp := by
     intros
     ext
@@ -131,11 +115,9 @@ theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α
 @[simp]
 theorem app_sum {ι : Type _} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
     (∑ i in s, α i).app X = ∑ i in s, (α i).app X := by
-  rw [← app_hom_apply, AddMonoidHom.map_sum]
-  rfl
+  simp only [← appHom_apply, map_sum]
 #align category_theory.nat_trans.app_sum CategoryTheory.NatTrans.app_sum
 
 end NatTrans
 
 end CategoryTheory
-
