@@ -101,8 +101,11 @@ variable [Algebra R S] {P : Type _} [CommSemiring P]
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 class IsLocalization : Prop where
 --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
+  /-- Everything in the image of `algebraMap` is a unit -/
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
+  /-- the `algebraMap` is surjective -/
   surj' : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1
+  /-- The kernel of `algebraMap` is the annihilator of `M` -/
   eq_iff_exists' : ∀ {x y}, algebraMap R S x = algebraMap R S y ↔ ∃ c : M, ↑c * x = ↑c * y
 #align is_localization IsLocalization
 
@@ -116,14 +119,17 @@ variable [IsLocalization M S]
 
 section
 
+@[inherit_doc IsLocalization.map_units']
 theorem map_units : ∀ y : M, IsUnit (algebraMap R S y) :=
   IsLocalization.map_units'
 
 variable (M) {S}
+@[inherit_doc IsLocalization.surj']
 theorem surj : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
   IsLocalization.surj'
 
 variable (S)
+@[inherit_doc IsLocalization.eq_iff_exists']
 theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M, ↑c * x = ↑c * y :=
   IsLocalization.eq_iff_exists'
 
