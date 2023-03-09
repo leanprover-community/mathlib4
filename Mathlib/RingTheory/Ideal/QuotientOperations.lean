@@ -16,6 +16,9 @@ import Mathlib.RingTheory.Ideal.Quotient
 -/
 
 
+-- Porting note: we need η for TC
+set_option synthInstance.etaExperiment true
+
 universe u v w
 
 namespace RingHom
@@ -27,12 +30,12 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S)
 This is an isomorphism if `f` has a right inverse (`quotient_ker_equiv_of_right_inverse`) /
 is surjective (`quotient_ker_equiv_of_surjective`).
 -/
-def kerLift (f : R →+* S) : R ⧸ f.ker →+* S :=
-  Ideal.Quotient.lift _ f fun r => f.mem_ker.mp
+def kerLift (f : R →+* S) : R ⧸ ker f →+* S :=
+  Ideal.Quotient.lift _ f fun _ => f.mem_ker.mp
 #align ring_hom.ker_lift RingHom.kerLift
 
 @[simp]
-theorem kerLift_mk (f : R →+* S) (r : R) : kerLift f (Ideal.Quotient.mk f.ker r) = f r :=
+theorem kerLift_mk (f : R →+* S) (r : R) : kerLift f (Ideal.Quotient.mk (ker f) r) = f r :=
   Ideal.Quotient.lift_mk _ _ _
 #align ring_hom.ker_lift_mk RingHom.kerLift_mk
 
@@ -42,8 +45,9 @@ theorem kerLift_injective (f : R →+* S) : Function.Injective (kerLift f) := fu
     Ideal.Quotient.eq.2 <| show a - b ∈ ker f by rw [mem_ker, map_sub, h, sub_self]
 #align ring_hom.ker_lift_injective RingHom.kerLift_injective
 
+
 theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
-    (hI : f.ker ≤ I) : Function.Injective (Ideal.Quotient.lift I f H) := by
+    (hI : ker f ≤ I) : Function.Injective (Ideal.Quotient.lift I f H) := by
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
   intro u hu
   obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective u
@@ -55,32 +59,33 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
 variable {f}
 
 /-- The **first isomorphism theorem** for commutative rings, computable version. -/
-def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f) : R ⧸ f.ker ≃+* S :=
+def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f) :
+    R ⧸ ker f ≃+* S :=
   { kerLift f with
     toFun := kerLift f
-    invFun := Ideal.Quotient.mk f.ker ∘ g
+    invFun := Ideal.Quotient.mk (ker f) ∘ g
     left_inv := by
       rintro ⟨x⟩
-      apply ker_lift_injective
+      apply kerLift_injective
       simp [hf (f x)]
     right_inv := hf }
 #align ring_hom.quotient_ker_equiv_of_right_inverse RingHom.quotientKerEquivOfRightInverse
 
 @[simp]
 theorem quotientKerEquivOfRightInverse.apply {g : S → R} (hf : Function.RightInverse g f)
-    (x : R ⧸ f.ker) : quotientKerEquivOfRightInverse hf x = kerLift f x :=
+    (x : R ⧸ ker f) : quotientKerEquivOfRightInverse hf x = kerLift f x :=
   rfl
 #align ring_hom.quotient_ker_equiv_of_right_inverse.apply RingHom.quotientKerEquivOfRightInverse.apply
 
 @[simp]
 theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.RightInverse g f)
-    (x : S) : (quotientKerEquivOfRightInverse hf).symm x = Ideal.Quotient.mk f.ker (g x) :=
+    (x : S) : (quotientKerEquivOfRightInverse hf).symm x = Ideal.Quotient.mk (ker f) (g x) :=
   rfl
 #align ring_hom.quotient_ker_equiv_of_right_inverse.symm.apply RingHom.quotientKerEquivOfRightInverse.Symm.apply
 
 /-- The **first isomorphism theorem** for commutative rings. -/
-noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ f.ker ≃+* S :=
-  quotientKerEquivOfRightInverse (Classical.choose_spec hf.HasRightInverse)
+noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ (ker f) ≃+* S :=
+  quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 #align ring_hom.quotient_ker_equiv_of_surjective RingHom.quotientKerEquivOfSurjective
 
 end RingHom
@@ -89,25 +94,30 @@ namespace Ideal
 
 variable {R : Type u} {S : Type v} {F : Type w} [CommRing R] [CommRing S]
 
+set_option maxHeartbeats 20000
 @[simp]
 theorem map_quotient_self (I : Ideal R) : map (Quotient.mk I) I = ⊥ :=
   eq_bot_iff.2 <|
-    Ideal.map_le_iff_le_comap.2 fun x hx =>
-      (Submodule.mem_bot (R ⧸ I)).2 <| Ideal.Quotient.eq_zero_iff_mem.2 hx
+    Ideal.map_le_iff_le_comap.2 fun _ hx =>
+-- porting note: Lean 4 issue #2074: Lean can't infer `Module (R ⧸ I) (R ⧸ I)` on its own.
+      (@Submodule.mem_bot (R ⧸ I) _ _ _ Semiring.toModule _).2 <| Ideal.Quotient.eq_zero_iff_mem.2 hx
 #align ideal.map_quotient_self Ideal.map_quotient_self
 
 @[simp]
-theorem mk_ker {I : Ideal R} : (Quotient.mk I).ker = I := by
-  ext <;> rw [RingHom.ker, mem_comap, Submodule.mem_bot, quotient.eq_zero_iff_mem]
+theorem mk_ker {I : Ideal R} : RingHom.ker (Quotient.mk I) = I := by
+  ext
+  rw [RingHom.ker, mem_comap, @Submodule.mem_bot _ _ _ _ Semiring.toModule _,
+    Quotient.eq_zero_iff_mem]
 #align ideal.mk_ker Ideal.mk_ker
 
-theorem map_mk_eq_bot_of_le {I J : Ideal R} (h : I ≤ J) : I.map J.Quotient.mk = ⊥ := by
+theorem map_mk_eq_bot_of_le {I J : Ideal R} (h : I ≤ J) : I.map (Quotient.mk J) = ⊥ := by
   rw [map_eq_bot_iff_le_ker, mk_ker]
   exact h
 #align ideal.map_mk_eq_bot_of_le Ideal.map_mk_eq_bot_of_le
 
-theorem ker_quotient_lift {S : Type v} [CommRing S] {I : Ideal R} (f : R →+* S) (H : I ≤ f.ker) :
-    (Ideal.Quotient.lift I f H).ker = f.ker.map I.Quotient.mk := by
+theorem ker_quotient_lift {S : Type v} [CommRing S] {I : Ideal R} (f : R →+* S)
+    (H : I ≤ RingHom.ker f) :
+    RingHom.ker (Ideal.Quotient.lift I f H) = f.ker.map (Quotient.mk I) := by
   ext x
   constructor
   · intro hx
@@ -137,7 +147,7 @@ theorem bot_quotient_isMaximal_iff (I : Ideal R) : (⊥ : Ideal (R ⧸ I)).IsMax
 @[simp]
 theorem mem_quotient_iff_mem_sup {I J : Ideal R} {x : R} :
     Quotient.mk I x ∈ J.map (Quotient.mk I) ↔ x ∈ J ⊔ I := by
-  rw [← mem_comap, comap_map_of_surjective (Quotient.mk' I) quotient.mk_surjective, ←
+  rw [← mem_comap, comap_map_of_surjective (Quotient.mk' I) Quotient.mk_surjective, ←
     RingHom.ker_eq_comap_bot, mk_ker]
 #align ideal.mem_quotient_iff_mem_sup Ideal.mem_quotient_iff_mem_sup
 
@@ -616,4 +626,3 @@ theorem quotQuotEquivComm_algebraMap (x : R) :
 end Algebra
 
 end DoubleQuot
-
