@@ -1029,13 +1029,12 @@ theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=
   rfl
 #align localization.mk_one_eq_algebra_map Localization.mk_one_eq_algebraMap
 
---Porting note: removed `simp`. Left hand side can be simplified; not clear what normal form should
---be.
 theorem mk_eq_mk'_apply (x y) : mk x y = IsLocalization.mk' (Localization M) x y := by
   rw [mk_eq_monoidOf_mk'_apply, mk', toLocalizationMap_eq_monoidOf]
 #align localization.mk_eq_mk'_apply Localization.mk_eq_mk'_apply
 
-@[simp]
+--Porting note: removed `simp`. Left hand side can be simplified; not clear what normal form should
+--be.
 theorem mk_eq_mk' : (mk : R → M → Localization M) = IsLocalization.mk' (Localization M) :=
   mk_eq_monoidOf_mk'
 #align localization.mk_eq_mk' Localization.mk_eq_mk'
