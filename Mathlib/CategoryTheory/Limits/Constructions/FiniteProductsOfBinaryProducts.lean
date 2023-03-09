@@ -8,11 +8,11 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathbin.Logic.Equiv.Fin
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Constructing finite products from binary products and terminal.
@@ -110,8 +110,7 @@ private theorem has_product_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
 #align category_theory.has_product_fin category_theory.has_product_fin
 
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
-theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C :=
-  by
+theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
   letI := has_product_fin n fun n => K.obj ⟨n⟩
   let this : (discrete.functor fun n => K.obj ⟨n⟩) ≅ K := discrete.nat_iso fun ⟨i⟩ => iso.refl _
@@ -264,8 +263,7 @@ private theorem has_coproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduc
 #align category_theory.has_coproduct_fin category_theory.has_coproduct_fin
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
-theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C :=
-  by
+theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
   letI := has_coproduct_fin n fun n => K.obj ⟨n⟩
   let this : K ≅ discrete.functor fun n => K.obj ⟨n⟩ := discrete.nat_iso fun ⟨i⟩ => iso.refl _
