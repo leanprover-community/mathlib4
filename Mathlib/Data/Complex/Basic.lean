@@ -234,10 +234,8 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_add Complex.ofReal_add
 
--- Porting note: removed norm_cast attribute "rhs can't start with coe"
--- Was warned that this is a syntactic tautology.
-@[simp, nolint synTaut]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 r  :=
+@[simp, norm_cast]
+theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ)  :=
   ext_iff.2 <| by simp [bit0]
 #align complex.of_real_bit0 Complex.ofReal_bit0
 
