@@ -30,9 +30,9 @@ namespace CategoryTheory.NormalMonoCategory
 
 variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
 
-/- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
 /-- The pullback of two monomorphisms exists. -/
-irreducible_def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
+@[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def 
+def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
   HasLimit (cospan a b) :=
   let ⟨P, f, haf, i⟩ := normalMonoOfMono a
   let ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
@@ -53,11 +53,11 @@ irreducible_def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a
         _ = 0 := zero_comp
         
   HasLimit.mk
-    { Cone :=
+    { cone :=
         PullbackCone.mk a' b' <| by
           simp at ha' hb'
           rw [ha', hb']
-      IsLimit :=
+      isLimit :=
         PullbackCone.IsLimit.mk _
           (fun s =>
             kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) <|
@@ -65,34 +65,34 @@ irreducible_def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.fst =
                       PullbackCone.snd s ≫ b ≫ f :=
-                    by simp only [prod.lift_fst, category.assoc]
-                  _ = PullbackCone.fst s ≫ a ≫ f := by rw [pullback_cone.condition_assoc]
+                    by simp only [prod.lift_fst, Category.assoc]
+                  _ = PullbackCone.fst s ≫ a ≫ f := by rw [PullbackCone.condition_assoc]
                   _ = PullbackCone.fst s ≫ 0 := by rw [haf]
                   _ = 0 ≫ Limits.prod.fst := by rw [comp_zero, zero_comp]
                   )
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.snd =
                       PullbackCone.snd s ≫ b ≫ g :=
-                    by simp only [prod.lift_snd, category.assoc]
+                    by simp only [prod.lift_snd, Category.assoc]
                   _ = PullbackCone.snd s ≫ 0 := by rw [hbg]
                   _ = 0 ≫ Limits.prod.snd := by rw [comp_zero, zero_comp]
                   ))
           (fun s =>
             (cancel_mono a).1 <| by
-              rw [kernel_fork.ι_of_ι] at ha'
-              simp [ha', pullback_cone.condition s])
+              rw [KernelFork.ι_ofι] at ha'
+              simp [ha', PullbackCone.condition s])
           (fun s =>
             (cancel_mono b).1 <| by
-              rw [kernel_fork.ι_of_ι] at hb'
+              rw [KernelFork.ι_ofι] at hb'
               simp [hb'])
-          fun s m h₁ h₂ =>
+          fun s m h₁ _ =>
           (cancel_mono (kernel.ι (prod.lift f g))).1 <|
             calc
               m ≫ kernel.ι (prod.lift f g) = m ≫ a' ≫ a :=
                 by
                 congr
                 exact ha'.symm
-              _ = PullbackCone.fst s ≫ a := by rw [← category.assoc, h₁]
+              _ = PullbackCone.fst s ≫ a := by rw [← Category.assoc, h₁]
               _ = PullbackCone.snd s ≫ b := (PullbackCone.condition s)
               _ =
                   kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) _ ≫
@@ -109,35 +109,35 @@ attribute [local instance] pullback_of_mono
 private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (prod.lift (𝟙 X) g)] :
     C :=
   pullback (prod.lift (𝟙 X) f) (prod.lift (𝟙 X) g)
-#align category_theory.normal_mono_category.P category_theory.normal_mono_category.P
 
-/- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
 /-- The equalizer of `f` and `g` exists. -/
-irreducible_def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
-  have huv : (pullback.fst : p f g ⟶ X) = pullback.snd :=
+ -- Porting note: changed to irreducible def since irreducible_def was breaking things
+@[irreducible, nolint defLemma]
+def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
+  have huv : (pullback.fst : P f g ⟶ X) = pullback.snd :=
     calc
-      (pullback.fst : p f g ⟶ X) = pullback.fst ≫ 𝟙 _ := Eq.symm <| Category.comp_id _
+      (pullback.fst : P f g ⟶ X) = pullback.fst ≫ 𝟙 _ := Eq.symm <| Category.comp_id _
       _ = pullback.fst ≫ prod.lift (𝟙 X) f ≫ Limits.prod.fst := by rw [prod.lift_fst]
       _ = pullback.snd ≫ prod.lift (𝟙 X) g ≫ Limits.prod.fst := by rw [pullback.condition_assoc]
-      _ = pullback.snd := by rw [prod.lift_fst, category.comp_id]
+      _ = pullback.snd := by rw [prod.lift_fst, Category.comp_id]
       
-  have hvu : (pullback.fst : p f g ⟶ X) ≫ f = pullback.snd ≫ g :=
+  have hvu : (pullback.fst : P f g ⟶ X) ≫ f = pullback.snd ≫ g :=
     calc
-      (pullback.fst : p f g ⟶ X) ≫ f = pullback.fst ≫ prod.lift (𝟙 X) f ≫ Limits.prod.snd := by
+      (pullback.fst : P f g ⟶ X) ≫ f = pullback.fst ≫ prod.lift (𝟙 X) f ≫ Limits.prod.snd := by
         rw [prod.lift_snd]
       _ = pullback.snd ≫ prod.lift (𝟙 X) g ≫ Limits.prod.snd := by rw [pullback.condition_assoc]
       _ = pullback.snd ≫ g := by rw [prod.lift_snd]
       
-  have huu : (pullback.fst : p f g ⟶ X) ≫ f = pullback.fst ≫ g := by rw [hvu, ← huv]
+  have huu : (pullback.fst : P f g ⟶ X) ≫ f = pullback.fst ≫ g := by rw [hvu, ← huv]
   HasLimit.mk
-    { Cone := Fork.ofι pullback.fst huu
-      IsLimit :=
+    { cone := Fork.ofι pullback.fst huu
+      isLimit :=
         Fork.IsLimit.mk _
           (fun s =>
             pullback.lift (Fork.ι s) (Fork.ι s) <|
-              prod.hom_ext (by simp only [prod.lift_fst, category.assoc])
-                (by simp only [prod.comp_lift, fork.condition]))
-          (fun s => by simp only [fork.ι_of_ι, pullback.lift_fst]) fun s m h =>
+              prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
+                (by simp only [prod.comp_lift, Fork.condition s]))
+          (fun s => by simp) fun s m h =>
           pullback.hom_ext (by simpa only [pullback.lift_fst] using h)
             (by simpa only [huv.symm, pullback.lift_fst] using h) }
 #align category_theory.normal_mono_category.has_limit_parallel_pair CategoryTheory.NormalMonoCategory.hasLimit_parallelPair
@@ -146,9 +146,9 @@ end
 
 section
 
-attribute [local instance] has_limit_parallel_pair
+attribute [local instance] hasLimit_parallelPair
 
-/-- A `normal_mono_category` category with finite products and kernels has all equalizers. -/
+/-- A `NormalMonoCategory` category with finite products and kernels has all equalizers. -/
 instance (priority := 100) hasEqualizers : HasEqualizers C :=
   hasEqualizers_of_hasLimit_parallelPair _
 #align category_theory.normal_mono_category.has_equalizers CategoryTheory.NormalMonoCategory.hasEqualizers
@@ -158,14 +158,13 @@ end
 /-- If a zero morphism is a cokernel of `f`, then `f` is an epimorphism. -/
 theorem epi_of_zero_cokernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsColimit (CokernelCofork.ofπ (0 : Y ⟶ Z) (show f ≫ 0 = 0 by simp))) : Epi f :=
-  ⟨fun P u v huv =>
-    by
-    obtain ⟨W, w, hw, hl⟩ := normal_mono_of_mono (equalizer.ι u v)
+  ⟨fun u v huv => by
+    obtain ⟨W, w, hw, hl⟩ := normalMonoOfMono (equalizer.ι u v)
     obtain ⟨m, hm⟩ := equalizer.lift' f huv
-    have hwf : f ≫ w = 0 := by rw [← hm, category.assoc, hw, comp_zero]
-    obtain ⟨n, hn⟩ := cokernel_cofork.is_colimit.desc' l _ hwf
-    rw [cofork.π_of_π, zero_comp] at hn
-    have : is_iso (equalizer.ι u v) := by apply is_iso_limit_cone_parallel_pair_of_eq hn.symm hl
+    have hwf : f ≫ w = 0 := by rw [← hm, Category.assoc, hw, comp_zero]
+    obtain ⟨n, hn⟩ := CokernelCofork.IsColimit.desc' l _ hwf
+    rw [Cofork.π_ofπ, zero_comp] at hn
+    have : IsIso (equalizer.ι u v) := by apply isIso_limit_cone_parallelPair_of_eq hn.symm hl
     apply (cancel_epi (equalizer.ι u v)).1
     exact equalizer.condition _ _⟩
 #align category_theory.normal_mono_category.epi_of_zero_cokernel CategoryTheory.NormalMonoCategory.epi_of_zero_cokernel
@@ -178,7 +177,7 @@ open ZeroObject
 
 /-- If `f ≫ g = 0` implies `g = 0` for all `g`, then `g` is a monomorphism. -/
 theorem epi_of_zero_cancel {X Y : C} (f : X ⟶ Y)
-    (hf : ∀ (Z : C) (g : Y ⟶ Z) (hgf : f ≫ g = 0), g = 0) : Epi f :=
+    (hf : ∀ (Z : C) (g : Y ⟶ Z) (_ : f ≫ g = 0), g = 0) : Epi f :=
   epi_of_zero_cokernel f 0 <| zeroCokernelOfZeroCancel f hf
 #align category_theory.normal_mono_category.epi_of_zero_cancel CategoryTheory.NormalMonoCategory.epi_of_zero_cancel
 
@@ -190,9 +189,9 @@ namespace CategoryTheory.NormalEpiCategory
 
 variable [HasFiniteCoproducts C] [HasCokernels C] [NormalEpiCategory C]
 
-/- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
 /-- The pushout of two epimorphisms exists. -/
-irreducible_def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
+@[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible 
+def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
   HasColimit (span a b) :=
   let ⟨P, f, hfa, i⟩ := normalEpiOfEpi a
   let ⟨Q, g, hgb, i'⟩ := normalEpiOfEpi b
@@ -215,11 +214,11 @@ irreducible_def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [
         _ = 0 := HasZeroMorphisms.comp_zero _ _
         
   HasColimit.mk
-    { Cocone :=
+    { cocone :=
         PushoutCocone.mk a' b' <| by
-          simp only [cofork.π_of_π] at ha' hb'
+          simp only [Cofork.π_ofπ] at ha' hb'
           rw [ha', hb']
-      IsColimit :=
+      isColimit :=
         PushoutCocone.IsColimit.mk _
           (fun s =>
             cokernel.desc (coprod.desc f g) (b ≫ PushoutCocone.inr s) <|
@@ -228,33 +227,36 @@ irreducible_def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [
                   coprod.inl ≫ coprod.desc f g ≫ b ≫ PushoutCocone.inr s =
                       f ≫ b ≫ PushoutCocone.inr s :=
                     by rw [coprod.inl_desc_assoc]
-                  _ = f ≫ a ≫ PushoutCocone.inl s := by rw [pushout_cocone.condition]
-                  _ = 0 ≫ PushoutCocone.inl s := by rw [reassoc_of hfa]
+                  _ = f ≫ a ≫ PushoutCocone.inl s := by rw [PushoutCocone.condition]
+                  _ = 0 ≫ PushoutCocone.inl s := by rw [← Category.assoc, eq_whisker hfa]
                   _ = coprod.inl ≫ 0 := by rw [comp_zero, zero_comp]
                   )
                 (calc
                   coprod.inr ≫ coprod.desc f g ≫ b ≫ PushoutCocone.inr s =
                       g ≫ b ≫ PushoutCocone.inr s :=
                     by rw [coprod.inr_desc_assoc]
-                  _ = 0 ≫ PushoutCocone.inr s := by rw [reassoc_of hgb]
+                  _ = 0 ≫ PushoutCocone.inr s := by rw [← Category.assoc, eq_whisker hgb]
                   _ = coprod.inr ≫ 0 := by rw [comp_zero, zero_comp]
                   ))
           (fun s =>
             (cancel_epi a).1 <| by
-              rw [cokernel_cofork.π_of_π] at ha'
-              simp [reassoc_of ha', pushout_cocone.condition s])
+              rw [CokernelCofork.π_ofπ] at ha'
+              have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶  W) : a ≫ a' ≫ h 
+                = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker ha']  
+              simp [reassoced , PushoutCocone.condition s])
           (fun s =>
             (cancel_epi b).1 <| by
-              rw [cokernel_cofork.π_of_π] at hb'
-              simp [reassoc_of hb'])
-          fun s m h₁ h₂ =>
+              rw [CokernelCofork.π_ofπ] at hb'
+              have reassoced' {W : C} (h : cokernel (coprod.desc f g) ⟶  W) : b ≫ b' ≫ h
+                = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker hb']
+              simp [reassoced'])
+          fun s m h₁ _ =>
           (cancel_epi (cokernel.π (coprod.desc f g))).1 <|
             calc
-              cokernel.π (coprod.desc f g) ≫ m = (a ≫ a') ≫ m :=
-                by
+              cokernel.π (coprod.desc f g) ≫ m = (a ≫ a') ≫ m := by
                 congr
                 exact ha'.symm
-              _ = a ≫ PushoutCocone.inl s := by rw [category.assoc, h₁]
+              _ = a ≫ PushoutCocone.inl s := by rw [Category.assoc, h₁]
               _ = b ≫ PushoutCocone.inr s := (PushoutCocone.condition s)
               _ =
                   cokernel.π (coprod.desc f g) ≫
@@ -271,37 +273,36 @@ attribute [local instance] pushout_of_epi
 private abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (coprod.desc (𝟙 Y) g)] :
     C :=
   pushout (coprod.desc (𝟙 Y) f) (coprod.desc (𝟙 Y) g)
-#align category_theory.normal_epi_category.Q category_theory.normal_epi_category.Q
 
-/- ./././Mathport/Syntax/Translate/Command.lean:317:38: unsupported irreducible non-definition -/
 /-- The coequalizer of `f` and `g` exists. -/
-irreducible_def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
-  have huv : (pushout.inl : Y ⟶ q f g) = pushout.inr :=
+@[irreducible, nolint defLemma] -- Porting note: changed to def and restored irreducible
+def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
+  have huv : (pushout.inl : Y ⟶ Q f g) = pushout.inr :=
     calc
-      (pushout.inl : Y ⟶ q f g) = 𝟙 _ ≫ pushout.inl := Eq.symm <| Category.id_comp _
+      (pushout.inl : Y ⟶ Q f g) = 𝟙 _ ≫ pushout.inl := Eq.symm <| Category.id_comp _
       _ = (coprod.inl ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl := by rw [coprod.inl_desc]
       _ = (coprod.inl ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr := by
-        simp only [category.assoc, pushout.condition]
-      _ = pushout.inr := by rw [coprod.inl_desc, category.id_comp]
+        simp only [Category.assoc, pushout.condition]
+      _ = pushout.inr := by rw [coprod.inl_desc, Category.id_comp]
       
-  have hvu : f ≫ (pushout.inl : Y ⟶ q f g) = g ≫ pushout.inr :=
+  have hvu : f ≫ (pushout.inl : Y ⟶ Q f g) = g ≫ pushout.inr :=
     calc
-      f ≫ (pushout.inl : Y ⟶ q f g) = (coprod.inr ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl := by
+      f ≫ (pushout.inl : Y ⟶ Q f g) = (coprod.inr ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl := by
         rw [coprod.inr_desc]
       _ = (coprod.inr ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr := by
-        simp only [category.assoc, pushout.condition]
+        simp only [Category.assoc, pushout.condition]
       _ = g ≫ pushout.inr := by rw [coprod.inr_desc]
       
-  have huu : f ≫ (pushout.inl : Y ⟶ q f g) = g ≫ pushout.inl := by rw [hvu, huv]
+  have huu : f ≫ (pushout.inl : Y ⟶ Q f g) = g ≫ pushout.inl := by rw [hvu, huv]
   HasColimit.mk
-    { Cocone := Cofork.ofπ pushout.inl huu
-      IsColimit :=
+    { cocone := Cofork.ofπ pushout.inl huu
+      isColimit :=
         Cofork.IsColimit.mk _
           (fun s =>
             pushout.desc (Cofork.π s) (Cofork.π s) <|
               coprod.hom_ext (by simp only [coprod.inl_desc_assoc])
-                (by simp only [coprod.desc_comp, cofork.condition]))
-          (fun s => by simp only [pushout.inl_desc, cofork.π_of_π]) fun s m h =>
+                (by simp only [coprod.desc_comp, Cofork.condition s]))
+          (fun s => by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
           pushout.hom_ext (by simpa only [pushout.inl_desc] using h)
             (by simpa only [huv.symm, pushout.inl_desc] using h) }
 #align category_theory.normal_epi_category.has_colimit_parallel_pair CategoryTheory.NormalEpiCategory.hasColimit_parallelPair
@@ -310,9 +311,9 @@ end
 
 section
 
-attribute [local instance] has_colimit_parallel_pair
+attribute [local instance] hasColimit_parallelPair
 
-/-- A `normal_epi_category` category with finite coproducts and cokernels has all coequalizers. -/
+/-- A `NormalEpiCategory` category with finite coproducts and cokernels has all coequalizers. -/
 instance (priority := 100) hasCoequalizers : HasCoequalizers C :=
   hasCoequalizers_of_hasColimit_parallelPair _
 #align category_theory.normal_epi_category.has_coequalizers CategoryTheory.NormalEpiCategory.hasCoequalizers
@@ -322,15 +323,17 @@ end
 /-- If a zero morphism is a kernel of `f`, then `f` is a monomorphism. -/
 theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsLimit (KernelFork.ofι (0 : Z ⟶ X) (show 0 ≫ f = 0 by simp))) : Mono f :=
-  ⟨fun P u v huv =>
+  ⟨fun u v huv =>
     by
-    obtain ⟨W, w, hw, hl⟩ := normal_epi_of_epi (coequalizer.π u v)
+    obtain ⟨W, w, hw, hl⟩ := normalEpiOfEpi (coequalizer.π u v)
     obtain ⟨m, hm⟩ := coequalizer.desc' f huv
-    have hwf : w ≫ f = 0 := by rw [← hm, reassoc_of hw, zero_comp]
-    obtain ⟨n, hn⟩ := kernel_fork.is_limit.lift' l _ hwf
-    rw [fork.ι_of_ι, has_zero_morphisms.comp_zero] at hn
-    have : is_iso (coequalizer.π u v) := by
-      apply is_iso_colimit_cocone_parallel_pair_of_eq hn.symm hl
+    have reassoced {W : C} (h : coequalizer u v ⟶  W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by 
+      rw [← Category.assoc, eq_whisker hw]
+    have hwf : w ≫ f = 0 := by rw [← hm, reassoced, zero_comp]
+    obtain ⟨n, hn⟩ := KernelFork.IsLimit.lift' l _ hwf
+    rw [Fork.ι_ofι, HasZeroMorphisms.comp_zero] at hn
+    have : IsIso (coequalizer.π u v) := by
+      apply isIso_colimit_cocone_parallelPair_of_eq hn.symm hl
     apply (cancel_mono (coequalizer.π u v)).1
     exact coequalizer.condition _ _⟩
 #align category_theory.normal_epi_category.mono_of_zero_kernel CategoryTheory.NormalEpiCategory.mono_of_zero_kernel
@@ -343,7 +346,7 @@ open ZeroObject
 
 /-- If `g ≫ f = 0` implies `g = 0` for all `g`, then `f` is a monomorphism. -/
 theorem mono_of_cancel_zero {X Y : C} (f : X ⟶ Y)
-    (hf : ∀ (Z : C) (g : Z ⟶ X) (hgf : g ≫ f = 0), g = 0) : Mono f :=
+    (hf : ∀ (Z : C) (g : Z ⟶ X) (_ : g ≫ f = 0), g = 0) : Mono f :=
   mono_of_zero_kernel f 0 <| zeroKernelOfCancelZero f hf
 #align category_theory.normal_epi_category.mono_of_cancel_zero CategoryTheory.NormalEpiCategory.mono_of_cancel_zero
 
