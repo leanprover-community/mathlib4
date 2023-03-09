@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.Basic
-import Mathbin.Algebra.Module.LinearMap
-import Mathbin.Algebra.Invertible
-import Mathbin.Algebra.Algebra.Basic
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Linear categories
@@ -89,8 +89,7 @@ section End
 
 variable {R : Type w}
 
-instance [Semiring R] [Linear R C] (X : C) : Module R (End X) :=
-  by
+instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
   dsimp [End]
   infer_instance
 
