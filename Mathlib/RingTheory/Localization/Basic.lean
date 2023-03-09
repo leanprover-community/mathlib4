@@ -37,7 +37,7 @@ variables [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
  * `IsLocalization (M : Submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
    localization of `R` at `M`, i.e. the canonical map `algebraMap R S : R →+* S` is a
    localization map (satisfying the above properties).
- * `is_localization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
+ * `IsLocalization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
  * `IsLocalization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
    which maps elements of `M` to invertible elements of the codomain.
  * `IsLocalization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
@@ -50,8 +50,8 @@ variables [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 ## Main results
 
  * `Localization M S`, a construction of the localization as a quotient type, defined in
-   `group_theory.monoid_localization`, has `CommRing`, `Algebra R` and `IsLocalization M`
-   instances if `R` is a ring. `Localization.Away`, `localization.at_prime` and `fraction_ring`
+   `GroupTheory.MonoidLocalization`, has `CommRing`, `Algebra R` and `IsLocalization M`
+   instances if `R` is a ring. `Localization.Away`, `Localization.AtPrime` and `FractionRing`
    are abbreviations for `Localization`s and have their corresponding `IsLocalization` instances
 
 ## Implementation notes
@@ -61,21 +61,21 @@ structure with an isomorphic one; one way around this is to isolate a predicate 
 a structure up to isomorphism, and reason about things that satisfy the predicate.
 
 A previous version of this file used a fully bundled type of ring localization maps,
-then used a type synonym `f.codomain` for `f : localization_map M S` to instantiate the
+then used a type synonym `f.codomain` for `f : :ocalizationMap M S` to instantiate the
 `R`-algebra structure on `S`. This results in defining ad-hoc copies for everything already
 defined on `S`. By making `IsLocalization` a predicate on the `algebraMap R S`,
 we can ensure the localization map commutes nicely with other `algebraMap`s.
 
 To prove most lemmas about a localization map `algebraMap R S` in this file we invoke the
 corresponding proof for the underlying `CommMonoid` localization map
-`IsLocalization.toLocalizationMap M S`, which can be found in `group_theory.monoid_localization`
+`IsLocalization.toLocalizationMap M S`, which can be found in `GroupTheory.MonoidLocalization`
 and the namespace `Submonoid.LocalizationMap`.
 
 To reason about the localization as a quotient type, use `mk_eq_of_mk'` and associated lemmas.
 These show the quotient map `mk : R → M → Localization M` equals the surjection
-`localization_map.mk'` induced by the map `algebraMap : R →+* Localization M`.
+`LocalizationMap.mk'` induced by the map `algebraMap : R →+* Localization M`.
 The lemma `mk_eq_of_mk'` hence gives you access to the results in the rest of the file,
-which are about the `localization_map.mk'` induced by any localization map.
+which are about the `LocalizationMap.mk'` induced by any localization map.
 
 The proof that "a `CommRing` `K` which is the localization of an integral domain `R` at `R \ {0}`
 is a field" is a `def` rather than an `instance`, so if you want to reason about a field of
@@ -232,7 +232,7 @@ theorem map_eq_zero_iff (r : R) : algebraMap R S r = 0 ↔ ∃ m : M, ↑m * r =
 
 variable {M}
 
-/-- `is_localization.mk' S` is the surjection sending `(x, y) : R × M` to
+/-- `IsLocalization.mk' S` is the surjection sending `(x, y) : R × M` to
 `f x * (f y)⁻¹`. -/
 noncomputable def mk' (x : R) (y : M) : S :=
   (toLocalizationMap M S).mk' x y
