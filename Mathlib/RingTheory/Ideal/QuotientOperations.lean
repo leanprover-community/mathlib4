@@ -27,8 +27,8 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S)
 
 /-- The induced map from the quotient by the kernel to the codomain.
 
-This is an isomorphism if `f` has a right inverse (`quotient_ker_equiv_of_right_inverse`) /
-is surjective (`quotient_ker_equiv_of_surjective`).
+This is an isomorphism if `f` has a right inverse (`quotientKerEquivOfRightInverse`) /
+is surjective (`quotientKerEquivOfSurjective`).
 -/
 def kerLift (f : R →+* S) : R ⧸ ker f →+* S :=
   Ideal.Quotient.lift _ f fun _ => f.mem_ker.mp
@@ -143,7 +143,7 @@ theorem bot_quotient_isMaximal_iff (I : Ideal R) : (⊥ : Ideal (R ⧸ I)).IsMax
     exact bot_isMaximal⟩
 #align ideal.bot_quotient_is_maximal_iff Ideal.bot_quotient_isMaximal_iff
 
-/-- See also `ideal.mem_quotient_iff_mem` in case `I ≤ J`. -/
+/-- See also `Ideal.mem_quotient_iff_mem` in case `I ≤ J`. -/
 @[simp]
 theorem mem_quotient_iff_mem_sup {I J : Ideal R} {x : R} :
     Quotient.mk I x ∈ J.map (Quotient.mk I) ↔ x ∈ J ⊔ I := by
@@ -151,7 +151,7 @@ theorem mem_quotient_iff_mem_sup {I J : Ideal R} {x : R} :
     RingHom.ker_eq_comap_bot, mk_ker]
 #align ideal.mem_quotient_iff_mem_sup Ideal.mem_quotient_iff_mem_sup
 
-/-- See also `ideal.mem_quotient_iff_mem_sup` if the assumption `I ≤ J` is not available. -/
+/-- See also `Ideal.mem_quotient_iff_mem_sup` if the assumption `I ≤ J` is not available. -/
 theorem mem_quotient_iff_mem {I J : Ideal R} (hIJ : I ≤ J) {x : R} :
     Quotient.mk I x ∈ J.map (Quotient.mk I) ↔ x ∈ J := by
   rw [mem_quotient_iff_mem_sup, sup_eq_left.mpr hIJ]
@@ -240,10 +240,10 @@ theorem Quotient.mkₐ_ker (I : Ideal A) : RingHom.ker (Quotient.mkₐ R₁ I : 
 
 variable {R₁}
 
-/-- `ideal.quotient.lift` as an `alg_hom`. -/
+/-- `Ideal.quotient.lift` as an `AlgHom`. -/
 def Quotient.liftₐ (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     A ⧸ I →ₐ[R₁] B :=
-  {-- this is is_scalar_tower.algebra_map_apply R₁ A (A ⧸ I) but the file `algebra.algebra.tower`
+  {-- this is IsScalarTower.algebraMap_apply R₁ A (A ⧸ I) but the file `Algebra.Algebra.Tower`
       -- imports this file.
       Ideal.Quotient.lift
       I (f : A →+* B) hI with
@@ -275,8 +275,8 @@ theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.k
 
 /-- The induced algebras morphism from the quotient by the kernel to the codomain.
 
-This is an isomorphism if `f` has a right inverse (`quotient_ker_alg_equiv_of_right_inverse`) /
-is surjective (`quotient_ker_alg_equiv_of_surjective`).
+This is an isomorphism if `f` has a right inverse (`quotientKerAlgEquivOfRightInverse`) /
+is surjective (`quotientKerAlgEquivOfSurjective`).
 -/
 def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f.toRingHom) →ₐ[R₁] B :=
 
@@ -350,7 +350,7 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J �
   RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 #align ideal.quotient_map_comp_mk Ideal.quotientMap_comp_mk
 
-/-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+** S`,  where `J = f(I)`. -/
+/-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+** S`, where `J = f(I)`. -/
 @[simps]
 def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
     R ⧸ I ≃+* S ⧸ J :=
@@ -506,13 +506,13 @@ def quotLeftToQuotSup : R ⧸ I →+* R ⧸ I ⊔ J :=
   Ideal.Quotient.factor I (I ⊔ J) le_sup_left
 #align double_quot.quot_left_to_quot_sup DoubleQuot.quotLeftToQuotSup
 
-/-- The kernel of `quot_left_to_quot_sup` -/
+/-- The kernel of `quotLeftToQuotSup` -/
 theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) = J.map (Ideal.Quotient.mk I) := by
   simp only [mk_ker, sup_idem, sup_comm, quotLeftToQuotSup, Quotient.factor, ker_quotient_lift,
     map_eq_iff_sup_ker_eq_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← sup_assoc]
 #align double_quot.ker_quot_left_to_quot_sup DoubleQuot.ker_quotLeftToQuotSup
 
-/-- The ring homomorphism `(R/I)/J' -> R/(I ⊔ J)` induced by `quot_left_to_quot_sup` where `J'`
+/-- The ring homomorphism `(R/I)/J' -> R/(I ⊔ J)` induced by `quotLeftToQuotSup` where `J'`
   is the image of `J` in `R/I`-/
 def quotQuotToQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) →+* R ⧸ I ⊔ J :=
   Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I)) (quotLeftToQuotSup I J)
@@ -531,13 +531,13 @@ theorem ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
     sup_comm]
 #align double_quot.ker_quot_quot_mk DoubleQuot.ker_quotQuotMk
 
-/-- The ring homomorphism `R/(I ⊔ J) → (R/I)/J' `induced by `quot_quot_mk` -/
+/-- The ring homomorphism `R/(I ⊔ J) → (R/I)/J' `induced by `quotQuotMk` -/
 def liftSupQuotQuotMk (I J : Ideal R) : R ⧸ I ⊔ J →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
   Ideal.Quotient.lift (I ⊔ J) (quotQuotMk I J) (ker_quotQuotMk I J).symm.le
 #align double_quot.lift_sup_quot_quot_mk DoubleQuot.liftSupQuotQuotMk
 
-/-- `quot_quot_to_quot_add` and `lift_sup_double_qot_mk` are inverse isomorphisms. In the case where
-    `I ≤ J`, this is the Third Isomorphism Theorem (see `quot_quot_equiv_quot_of_le`)-/
+/-- `quotQuotToQuotSup` and `liftSupQuotQuotMk` are inverse isomorphisms. In the case where
+    `I ≤ J`, this is the Third Isomorphism Theorem (see `quotQuotEquivQuotOfLe`)-/
 def quotQuotEquivQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+* R ⧸ I ⊔ J :=
   RingEquiv.ofHomInv (quotQuotToQuotSup I J) (liftSupQuotQuotMk I J)
     (by
@@ -584,7 +584,7 @@ theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivCom
 
 variable {I J}
 
-/-- **The Third Isomorphism theorem** for rings. See `quot_quot_equiv_quot_sup` for a version
+/-- **The Third Isomorphism theorem** for rings. See `quotQuotEquivQuotSup` for a version
     that does not assume an inclusion of ideals. -/
 def quotQuotEquivQuotOfLe (h : I ≤ J) : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+* R ⧸ J :=
   (quotQuotEquivQuotSup I J).trans (Ideal.quotEquivOfEq <| sup_eq_right.mpr h)
