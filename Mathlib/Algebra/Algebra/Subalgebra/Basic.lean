@@ -8,10 +8,10 @@ Authors: Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.Data.Set.UnionLift
-import Mathbin.LinearAlgebra.Finsupp
-import Mathbin.RingTheory.Ideal.Operations
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Data.Set.UnionLift
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Subalgebras over Commutative Semiring
@@ -633,8 +633,7 @@ theorem mem_range_self (φ : A →ₐ[R] B) (x : A) : φ x ∈ φ.range :=
 #align alg_hom.mem_range_self AlgHom.mem_range_self
 
 @[simp]
-theorem coe_range (φ : A →ₐ[R] B) : (φ.range : Set B) = Set.range φ :=
-  by
+theorem coe_range (φ : A →ₐ[R] B) : (φ.range : Set B) = Set.range φ := by
   ext
   rw [SetLike.mem_coe, mem_range]
   rfl
@@ -923,8 +922,7 @@ theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (alge
   le_bot_iff.mp fun x hx => Subalgebra.range_le _ ((ofId R A).coe_range ▸ hx)
 #align algebra.mem_bot Algebra.mem_bot
 
-theorem toSubmodule_bot : (⊥ : Subalgebra R A).toSubmodule = R ∙ 1 :=
-  by
+theorem toSubmodule_bot : (⊥ : Subalgebra R A).toSubmodule = R ∙ 1 := by
   ext x
   simp [mem_bot, -Set.singleton_one, Submodule.mem_span_singleton, Algebra.smul_def]
 #align algebra.to_submodule_bot Algebra.toSubmodule_bot
@@ -1118,8 +1116,7 @@ theorem equivOfEq_symm (S T : Subalgebra R A) (h : S = T) :
 #align subalgebra.equiv_of_eq_symm Subalgebra.equivOfEq_symm
 
 @[simp]
-theorem equivOfEq_rfl (S : Subalgebra R A) : equivOfEq S S rfl = AlgEquiv.refl :=
-  by
+theorem equivOfEq_rfl (S : Subalgebra R A) : equivOfEq S S rfl = AlgEquiv.refl := by
   ext
   rfl
 #align subalgebra.equiv_of_eq_rfl Subalgebra.equivOfEq_rfl
