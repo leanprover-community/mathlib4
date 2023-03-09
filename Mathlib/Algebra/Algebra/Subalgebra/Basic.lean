@@ -444,14 +444,14 @@ theorem val_apply (x : S) : S.val x = (x : A) := rfl
 #align subalgebra.val_apply Subalgebra.val_apply
 
 @[simp]
-theorem toSubsemiring_subtype : S.toSubsemiring.subtype = (S.val : S →+* A) :=
-  rfl
+theorem toSubsemiring_subtype : S.toSubsemiring.subtype = (S.val : S →+* A) := rfl
 #align subalgebra.to_subsemiring_subtype Subalgebra.toSubsemiring_subtype
 
+-- Porting note: workaround for lean#2074
+attribute [-instance] Ring.toNonAssocRing
 @[simp]
 theorem toSubring_subtype {R A : Type _} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
-    S.toSubring.subtype = (S.val : S →+* A) :=
-  rfl
+    S.toSubring.subtype = (S.val : S →+* A) := rfl
 #align subalgebra.to_subring_subtype Subalgebra.toSubring_subtype
 
 /-- Linear equivalence between `S : submodule R A` and `S`. Though these types are equal,
@@ -567,14 +567,15 @@ theorem coe_toSubalgebra (p : Submodule R A) (h_one h_mul) :
     (p.toSubalgebra h_one h_mul : Set A) = p := rfl
 #align submodule.coe_to_subalgebra Submodule.coe_toSubalgebra
 
-@[simp]
-theorem toSubalgebra_mk (s : Set A) (h0 hadd hsmul h1 hmul) :
-    (Submodule.mk s hadd h0 hsmul : Submodule R A).toSubalgebra h1 hmul =
-      Subalgebra.mk s (@hmul) h1 (@hadd) h0 fun r => by
-        rw [Algebra.algebraMap_eq_smul_one]
-        exact hsmul r h1 :=
-  rfl
-#align submodule.to_subalgebra_mk Submodule.toSubalgebra_mk
+-- Porting note: not ported because we no longer have flat structures
+-- @[simp]
+-- theorem toSubalgebra_mk (s : Set A) (h0 hadd hsmul h1 hmul) :
+--     (Submodule.mk s hadd h0 hsmul : Submodule R A).toSubalgebra h1 hmul =
+--       Subalgebra.mk s (@hmul) h1 (@hadd) h0 fun r => by
+--         rw [Algebra.algebraMap_eq_smul_one]
+--         exact hsmul r h1 :=
+--   rfl
+-- #align submodule.to_subalgebra_mk Submodule.toSubalgebra_mk
 
 @[simp]
 theorem toSubalgebra_toSubmodule (p : Submodule R A) (h_one h_mul) :
@@ -740,8 +741,8 @@ noncomputable def ofInjectiveField {E F : Type _} [DivisionRing E] [Semiring F] 
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map e.toAlgHom :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
     commutes' := fun r => by
-      ext
-      simp }
+      ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
+      exact e.commutes _ }
 #align alg_equiv.subalgebra_map AlgEquiv.subalgebraMap
 
 end AlgEquiv
