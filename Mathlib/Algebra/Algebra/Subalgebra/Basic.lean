@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Ideal.Operations
 /-!
 # Subalgebras over Commutative Semiring
 
-In this file we define `subalgebra`s and the usual operations on them (`map`, `comap`).
+In this file we define `Subalgebra`s and the usual operations on them (`map`, `comap`).
 
 More lemmas about `adjoin` can be found in `ring_theory.adjoin`.
 -/
@@ -26,7 +26,7 @@ universe u u' v w w'
 
 open BigOperators
 
-/-- A subalgebra is a sub(semi)ring that includes the range of `algebra_map`. -/
+/-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
 structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
   Subsemiring A : Type v where
   /-- The image of `algebraMap` is contained in the underlying set of the subalgebra -/
@@ -35,7 +35,7 @@ structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Al
   one_mem' := (algebraMap R A).map_one ▸ algebraMap_mem' 1
 #align subalgebra Subalgebra
 
-/-- Reinterpret a `subalgebra` as a `subsemiring`. -/
+/-- Reinterpret a `Subalgebra` as a `Subsemiring`. -/
 add_decl_doc Subalgebra.toSubsemiring
 
 namespace Subalgebra
@@ -219,7 +219,7 @@ def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
 --   S.toSubsemiring.toSubmonoid
 -- #align subalgebra.to_submonoid Subalgebra.toSubmonoid
 
-/-- A subalgebra over a ring is also a `subring`. -/
+/-- A subalgebra over a ring is also a `Subring`. -/
 def toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
     Subring A :=
   { S.toSubsemiring with neg_mem' := S.neg_mem }
@@ -252,7 +252,7 @@ instance : Inhabited S :=
 
 section
 
-/-! `subalgebra`s inherit structure from their `subsemiring` / `semiring` coercions. -/
+/-! `Subalgebra`s inherit structure from their `Subsemiring` / `Semiring` coercions. -/
 
 
 instance toSemiring {R A} [CommSemiring R] [Semiring A] [Algebra R A] (S : Subalgebra R A) :
@@ -326,7 +326,7 @@ instance toLinearOrderedCommRing {R A} [CommRing R] [LinearOrderedCommRing A] [A
 
 end
 
-/-- The forgetful map from `subalgebra` to `submodule` as an `order_embedding` -/
+/-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
 def toSubmodule : Subalgebra R A ↪o Submodule R A where
   toEmbedding :=
     { toFun := fun S =>
@@ -350,7 +350,7 @@ theorem coe_toSubmodule (S : Subalgebra R A) : (toSubmodule S : Set A) = S := rf
 
 section
 
-/-! `subalgebra`s inherit structure from their `submodule` coercions. -/
+/-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
 
 instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
@@ -456,8 +456,8 @@ theorem toSubring_subtype {R A : Type _} [CommRing R] [Ring A] [Algebra R A] (S 
     S.toSubring.subtype = (S.val : S →+* A) := rfl
 #align subalgebra.to_subring_subtype Subalgebra.toSubring_subtype
 
-/-- Linear equivalence between `S : submodule R A` and `S`. Though these types are equal,
-we define it as a `linear_equiv` to avoid type equalities. -/
+/-- Linear equivalence between `S : Submodule R A` and `S`. Though these types are equal,
+we define it as a `LinearEquiv` to avoid type equalities. -/
 def toSubmoduleEquiv (S : Subalgebra R A) : (toSubmodule S) ≃ₗ[R] S :=
   LinearEquiv.ofEq _ _ rfl
 #align subalgebra.to_submodule_equiv Subalgebra.toSubmoduleEquiv
@@ -603,7 +603,7 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 
 variable (φ : A →ₐ[R] B)
 
-/-- Range of an `alg_hom` as a subalgebra. -/
+/-- Range of an `AlgHom` as a subalgebra. -/
 protected def range (φ : A →ₐ[R] B) : Subalgebra R B :=
   { φ.toRingHom.rangeS with algebraMap_mem' := fun r => ⟨algebraMap R A r, φ.commutes r⟩ }
 #align alg_hom.range AlgHom.range
@@ -656,7 +656,7 @@ theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀
 
 /-- Restrict the codomain of a alg_hom `f` to `f.range`.
 
-This is the bundled version of `set.range_factorization`. -/
+This is the bundled version of `Set.rangeFactorization`. -/
 @[reducible]
 def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
@@ -681,7 +681,7 @@ theorem mem_equalizer (ϕ ψ : A →ₐ[R] B) (x : A) : x ∈ ϕ.equalizer ψ �
 
 /-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
 
-Note that this instance can cause a diamond with `subtype.fintype` if `B` is also a fintype. -/
+Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
 instance fintypeRange [Fintype A] [DecidableEq B] (φ : A →ₐ[R] B) : Fintype φ.range :=
   Set.fintypeRange φ
 #align alg_hom.fintype_range AlgHom.fintypeRange
@@ -696,7 +696,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- Restrict an algebra homomorphism with a left inverse to an algebra isomorphism to its range.
 
-This is a computable alternative to `alg_equiv.of_injective`. -/
+This is a computable alternative to `AlgEquiv.ofInjective`. -/
 def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) : A ≃ₐ[R] f.range :=
   { f.rangeRestrict with
     toFun := f.rangeRestrict
@@ -941,7 +941,7 @@ theorem comap_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R B).comap f = ⊤ :=
   eq_top_iff.2 fun _x => mem_top
 #align algebra.comap_top Algebra.comap_top
 
-/-- `alg_hom` to `⊤ : subalgebra R A`. -/
+/-- `AlgHom` to `⊤ : Subalgebra R A`. -/
 def toTop : A →ₐ[R] (⊤ : Subalgebra R A) :=
   (AlgHom.id R A).codRestrict ⊤ fun _ => mem_top
 #align algebra.to_top Algebra.toTop
@@ -992,7 +992,7 @@ variable (S : Subalgebra R A)
 
 /-- The top subalgebra is isomorphic to the algebra.
 
-This is the algebra version of `submodule.top_equiv`. -/
+This is the algebra version of `Submodule.topEquiv`. -/
 @[simps]
 def topEquiv : (⊤ : Subalgebra R A) ≃ₐ[R] A :=
   AlgEquiv.ofAlgHom (Subalgebra.val ⊤) toTop rfl <| AlgHom.ext fun _ => Subtype.ext rfl
@@ -1032,7 +1032,7 @@ instance : Unique (Subalgebra R R) :=
 
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
-This is the subalgebra version of `submodule.of_le`, or `subring.inclusion`  -/
+This is the subalgebra version of `Submodule.ofLe`, or `Subring.inclusion`  -/
 def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T
     where
   toFun := Set.inclusion h
@@ -1076,7 +1076,7 @@ theorem coe_inclusion {S T : Subalgebra R A} (h : S ≤ T) (s : S) : (inclusion 
 
 /-- Two subalgebras that are equal are also equivalent as algebras.
 
-This is the `subalgebra` version of `linear_equiv.of_eq` and `equiv.set.of_eq`. -/
+This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Equiv.Set.ofEq`. -/
 @[simps apply]
 def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T :=
   { LinearEquiv.ofEq _ _
@@ -1255,9 +1255,9 @@ theorem suprLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
 
 end SuprLift
 
-/-! ## Actions by `subalgebra`s
+/-! ## Actions by `Subalgebra`s
 
-These are just copies of the definitions about `subsemiring` starting from
+These are just copies of the definitions about `Subsemiring` starting from
 `subring.mul_action`.
 -/
 
@@ -1283,7 +1283,7 @@ instance sMulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S
   S.toSubsemiring.smulCommClass_right
 #align subalgebra.smul_comm_class_right Subalgebra.sMulCommClass_right
 
-/-- Note that this provides `is_scalar_tower S R R` which is needed by `smul_mul_assoc`. -/
+/-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
     (S : Subalgebra R A) : IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubsemiring α β)
