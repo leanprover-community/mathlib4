@@ -529,10 +529,8 @@ theorem norm_of_subsingleton' [Subsingleton E] (a : E) : ‖a‖ = 0 := by
 attribute [nontriviality] norm_of_subsingleton
 
 @[to_additive zero_lt_one_add_norm_sq]
-theorem zero_lt_one_add_norm_sq' (x : E) : 0 < 1 + ‖x‖ ^ 2 :=
-  zero_lt_one.trans_le <| by
-    simpa only [add_zero] using add_le_add_left (pow_nonneg (norm_nonneg' x) 2) 1
--- porting note: `by positivity` works, but doesn't get translated successfully by `to_additive`
+theorem zero_lt_one_add_norm_sq' (x : E) : 0 < 1 + ‖x‖ ^ 2 := by
+  positivity
 #align zero_lt_one_add_norm_sq' zero_lt_one_add_norm_sq'
 #align zero_lt_one_add_norm_sq zero_lt_one_add_norm_sq
 
