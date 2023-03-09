@@ -69,27 +69,41 @@ hypotheses that the preceding equalities have been proved (unlike in `mkHCongrWi
 The first two arguments of the resulting theorem are for `f` and `f'`, followed by a proof
 of `f = f'`.
 
+When including hypotheses about previous hypotheses, we make use of dependency information
+and only include relevant equalities.
+
 The argument `fty` denotes the type of `f`. Returns `(congrThmType, congrThmProof)`.
 -/
-partial def mkAppHCongrThm (fType : Expr) (numArgs : Nat) :
+partial def mkAppHCongrThm (fType : Expr) (info : FunInfo) :
     MetaM (Expr × Expr) := do
-  forallBoundedTelescope fType numArgs fun xs _ =>
-  forallBoundedTelescope fType numArgs fun ys _ => do
-    if xs.size != numArgs then
+  --trace[congr!] "ftype: {fType}"
+  --trace[congr!] "deps: {info.paramInfo.map (fun p => p.backDeps)}"
+  forallBoundedTelescope fType info.getArity fun xs _ =>
+  forallBoundedTelescope fType info.getArity fun ys _ => do
+    if xs.size != info.getArity then
       throwError "failed to generate hcongr theorem, insufficient number of arguments"
     let lctx := withDefaultBinderInfo (xs ++ ys) <| addPrimesToUserNames ys (← getLCtx)
     withLCtx lctx (← getLocalInstances) do
     withLocalDeclD `f fType fun ef =>
     withLocalDeclD `f' fType fun ef' => do
     withLocalDeclD `e (← mkEq ef ef') fun ee => do
-    withNewEqs xs ys fun eqs => do
+    withNewEqs xs ys fun eqs eqs' vals => do
       let mut hs := #[ef, ef', ee]
-      for x in xs, y in ys, eq in eqs do
-        hs := hs.push x |>.push y |>.push eq
+      let mut hs' := hs
+      let mut vals' := hs
+      for i in [0 : info.getArity] do
+        hs := hs.push xs[i]! |>.push ys[i]! |>.push eqs[i]!
+        hs' := hs'.push xs[i]! |>.push ys[i]! |>.push eqs'[i]!
+        vals' := vals'.push xs[i]! |>.push ys[i]! |>.push vals[i]!
       let lhs := mkAppN ef xs
       let rhs := mkAppN ef' ys
+      -- Generate the theorem with respect to the simpler hypotheses
       let congrType ← mkForallFVars hs (← mkHEq lhs rhs)
-      return (congrType, ← mkProof congrType)
+      let proof ← mkProof congrType
+      -- Now transform the theorem to be respect to the richer hypotheses
+      let congrType' ← mkForallFVars hs' (← mkHEq lhs rhs)
+      let proof' ← mkLambdaFVars hs' (← mkAppM' proof vals')
+      return (congrType', proof')
 where
   addPrimesToUserNames (ys : Array Expr) (lctx : LocalContext) : LocalContext := Id.run do
     let mut lctx := lctx
@@ -99,42 +113,38 @@ where
     return lctx
   withDefaultBinderInfo (xs : Array Expr) (lctx : LocalContext) : LocalContext := Id.run do
     return xs.foldl (fun lctx y => lctx.setBinderInfo y.fvarId! .default) lctx
-  withNewEqs {α} (xs ys : Array Expr) (k : Array Expr → MetaM α) : MetaM α :=
-    let rec loop (i : Nat) (eqs : Array Expr) := do
-      if  i < xs.size then
+  withNewEqs {α} (xs ys : Array Expr)
+      (k : Array Expr → Array Expr → Array Expr → MetaM α) : MetaM α :=
+    let rec loop (i : Nat) (eqs eqs' vals : Array Expr) := do
+      if i < xs.size then
         let x := xs[i]!
         let y := ys[i]!
-        let xType := (← inferType x).consumeTypeAnnotations
-        let yType := (← inferType y).consumeTypeAnnotations
-        if xType == yType then
-          withLocalDeclD ((`e).appendIndexAfter (i+1)) (← mkEq x y) fun h =>
-            loop (i+1) (eqs.push h)
-        else
-          withLocalDeclD ((`e).appendIndexAfter (i+1)) (← mkHEq x y) fun h =>
-            loop (i+1) (eqs.push h)
+        let deps := info.paramInfo[i]!.backDeps.map (fun j => eqs[j]!)
+        let deps' := info.paramInfo[i]!.backDeps.map (fun j => vals[j]!)
+        let eq' ← mkForallFVars deps (← mkHEq x y)
+        withLocalDeclD ((`e).appendIndexAfter (i+1)) (← mkHEq x y) fun h =>
+        withLocalDeclD ((`e').appendIndexAfter (i+1)) eq' fun h' =>
+          -- vals is how to compute eqs from eqs'
+          let v := mkAppN h' deps'
+          loop (i+1) (eqs.push h) (eqs'.push h') (vals.push v)
       else
-        k eqs
-    loop 0 #[]
+        k eqs eqs' vals
+    loop 0 #[] #[] #[]
   mkProof (type : Expr) : MetaM Expr := do
-    if let some (_, lhs, _) := type.eq? then
-      mkEqRefl lhs
-    else if let some (_, lhs, _, _) := type.heq? then
-      mkHEqRefl lhs
-    else
-      forallBoundedTelescope type (some 1) fun a type =>
-      let a := a[0]!
-      forallBoundedTelescope type (some 1) fun b motive =>
-      let b := b[0]!
-      let type := type.bindingBody!.instantiate1 a
-      withLocalDeclD motive.bindingName! motive.bindingDomain! fun eqPr => do
-      let type := type.bindingBody!
-      let motive := motive.bindingBody!
-      let minor ← mkProof type
-      let mut major := eqPr
-      if (← whnf (← inferType eqPr)).isHEq then
-        major ← mkEqOfHEq major
-      let motive ← mkLambdaFVars #[b] motive
-      mkLambdaFVars #[a, b, eqPr] (← mkEqNDRec motive minor major)
+    if let some (_, lhs, _, _) := type.heq? then
+      return ← mkHEqRefl lhs
+    unless type.isForall do
+      throwError "Internal error, expecting forall type"
+    forallBoundedTelescope type (some 1) fun a type =>
+    let a := a[0]!
+    forallBoundedTelescope type (some 1) fun b motive =>
+    let b := b[0]!
+    let type := type.bindingBody!.instantiate1 a
+    withLocalDeclD motive.bindingName! motive.bindingDomain! fun eqPr => do
+    let major ← (if motive.bindingDomain!.isHEq then mkEqOfHEq else pure) eqPr
+    let minor ← mkProof type.bindingBody!
+    let motive ← mkLambdaFVars #[b] motive.bindingBody!
+    mkLambdaFVars #[a, b, eqPr] (← mkEqNDRec motive minor major)
 
 end Congr!
 
@@ -354,7 +364,8 @@ where
       -- types of the functions are definitionally equal.
       unless ← withNewMCtxDepth <| isDefEq (← inferType f) (← inferType f') do
         return none
-      let (congrThm, congrProof) ← Congr!.mkAppHCongrThm (← inferType f) (numArgs + 1)
+      let info ← getFunInfoNArgs f (numArgs + 1)
+      let (congrThm, congrProof) ← Congr!.mkAppHCongrThm (← inferType f) info
       -- Now see if the congruence theorem actually applies in this situation by applying it!
       let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f']
       let congrProof' := mkApp2 congrProof f f'
