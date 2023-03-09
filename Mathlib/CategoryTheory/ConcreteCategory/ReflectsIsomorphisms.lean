@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.ConcreteCategory.Basic
-import Mathbin.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
 
 /-!
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
