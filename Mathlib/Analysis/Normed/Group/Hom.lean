@@ -433,7 +433,7 @@ theorem norm_id {V : Type _} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ 
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align normed_add_group_hom.norm_id NormedAddGroupHom.norm_id
 
-theorem coe_id : (NormedAddGroupHom.id V : V → V) = id V :=
+theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl
 #align normed_add_group_hom.coe_id NormedAddGroupHom.coe_id
 
@@ -508,7 +508,7 @@ instance smul : SMul R (NormedAddGroupHom V₁ V₂)
           exact hb x⟩ }
 
 @[simp]
-theorem coe_smul (r : R) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • f :=
+theorem coe_smul (r : R) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=
   rfl
 #align normed_add_group_hom.coe_smul NormedAddGroupHom.coe_smul
 
@@ -543,7 +543,7 @@ instance natSMul : SMul ℕ (NormedAddGroupHom V₁ V₂)
 #align normed_add_group_hom.has_nat_scalar NormedAddGroupHom.natSMul
 
 @[simp]
-theorem coe_nsmul (r : ℕ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • f :=
+theorem coe_nsmul (r : ℕ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=
   rfl
 #align normed_add_group_hom.coe_nsmul NormedAddGroupHom.coe_nsmul
 
@@ -564,7 +564,7 @@ instance intSMul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
 #align normed_add_group_hom.has_int_scalar NormedAddGroupHom.intSMul
 
 @[simp]
-theorem coe_zsmul (r : ℤ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • f :=
+theorem coe_zsmul (r : ℤ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=
   rfl
 #align normed_add_group_hom.coe_zsmul NormedAddGroupHom.coe_zsmul
 
