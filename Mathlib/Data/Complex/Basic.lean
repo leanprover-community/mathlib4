@@ -664,7 +664,7 @@ def ofReal : ℝ →+* ℂ :=
 @[simp]
 theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
   rfl
-#align complex.ofReal_eq_coe Complex.ofReal_eq_coe
+#align complex.of_real_eq_coe Complex.ofReal_eq_coe
 
 @[simp]
 theorem i_sq : i ^ 2 = -1 := by rw [sq, i_mul_i]
