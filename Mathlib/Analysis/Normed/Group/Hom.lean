@@ -37,8 +37,8 @@ open NNReal BigOperators
 structure NormedAddGroupHom (V W : Type _) [SeminormedAddCommGroup V]
   [SeminormedAddCommGroup W] where
   toFun : V → W
-  map_add' : ∀ v₁ v₂, to_fun (v₁ + v₂) = to_fun v₁ + to_fun v₂
-  bound' : ∃ C, ∀ v, ‖to_fun v‖ ≤ C * ‖v‖
+  map_add' : ∀ v₁ v₂, toFun (v₁ + v₂) = toFun v₁ + toFun v₂
+  bound' : ∃ C, ∀ v, ‖toFun v‖ ≤ C * ‖v‖
 #align normed_add_group_hom NormedAddGroupHom
 
 namespace AddMonoidHom
@@ -86,10 +86,10 @@ instance : CoeFun (NormedAddGroupHom V₁ V₂) fun _ => V₁ → V₂ :=
 initialize_simps_projections NormedAddGroupHom (toFun → apply)
 
 theorem coe_inj (H : (f : V₁ → V₂) = g) : f = g := by
-  cases f <;> cases g <;> congr <;> exact funext H
+  cases f; cases g; congr
 #align normed_add_group_hom.coe_inj NormedAddGroupHom.coe_inj
 
-theorem coe_injective : @Function.Injective (NormedAddGroupHom V₁ V₂) (V₁ → V₂) coeFn := by
+theorem coe_injective : @Function.Injective (NormedAddGroupHom V₁ V₂) (V₁ → V₂) toFun := by
   apply coe_inj
 #align normed_add_group_hom.coe_injective NormedAddGroupHom.coe_injective
 
@@ -103,7 +103,7 @@ theorem ext (H : ∀ x, f x = g x) : f = g :=
 #align normed_add_group_hom.ext NormedAddGroupHom.ext
 
 theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  ⟨by rintro rfl x <;> rfl, ext⟩
+  ⟨by rintro rfl x; rfl, ext⟩
 #align normed_add_group_hom.ext_iff NormedAddGroupHom.ext_iff
 
 variable (f g)
@@ -154,13 +154,13 @@ theorem mk_toAddMonoidHom (f) (h₁) (h₂) :
 
 instance : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂
     where
-  coe := coeFn
+  coe := toFun
   coe_injective' := coe_injective
   map_add f := f.toAddMonoidHom.map_add
   map_zero f := f.toAddMonoidHom.map_zero
 
 theorem bound : ∃ C, 0 < C ∧ ∀ x, ‖f x‖ ≤ C * ‖x‖ :=
-  let ⟨C, hC⟩ := f.bound'
+  let ⟨_C, hC⟩ := f.bound'
   exists_pos_bound_of_bound _ hC
 #align normed_add_group_hom.bound NormedAddGroupHom.bound
 
@@ -644,7 +644,7 @@ protected def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁
       ‖g (f v)‖ ≤ ‖g‖ * ‖f v‖ := le_op_norm _ _
       _ ≤ ‖g‖ * (‖f‖ * ‖v‖) := (mul_le_mul_of_nonneg_left (le_op_norm _ _) (op_norm_nonneg _))
       _ = ‖g‖ * ‖f‖ * ‖v‖ := by rw [mul_assoc]
-      
+
 #align normed_add_group_hom.comp NormedAddGroupHom.comp
 
 theorem norm_comp_le (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
@@ -1014,4 +1014,3 @@ theorem norm_map_le (hf : ψ.comp f₁ = f₂.comp φ) (hg : ψ.comp g₁ = g₂
 end Equalizer
 
 end NormedAddGroupHom
-
