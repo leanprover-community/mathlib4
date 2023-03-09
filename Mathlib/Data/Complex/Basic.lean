@@ -754,6 +754,8 @@ noncomputable instance : Field ℂ := {
     inv_zero := Complex.inv_zero
     }
 
+section
+set_option linter.deprecated false
 @[simp]
 theorem i_zpow_bit0 (n : ℤ) : i ^ bit0 n = (-1) ^ n := by rw [zpow_bit0', i_mul_i]
 set_option linter.uppercaseLean3 false in
@@ -763,6 +765,8 @@ set_option linter.uppercaseLean3 false in
 theorem i_zpow_bit1 (n : ℤ) : i ^ bit1 n = (-1) ^ n * i := by rw [zpow_bit1', i_mul_i]
 set_option linter.uppercaseLean3 false in
 #align complex.I_zpow_bit1 Complex.i_zpow_bit1
+
+end
 
 theorem div_re (z w : ℂ) : (z / w).re = z.re * w.re / normSq w + z.im * w.im / normSq w := by
   simp [div_eq_mul_inv, mul_assoc, sub_eq_add_neg]
