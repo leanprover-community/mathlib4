@@ -732,6 +732,7 @@ import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Inductions
+import Mathlib.Data.Polynomial.Monic
 import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Prod.Basic
