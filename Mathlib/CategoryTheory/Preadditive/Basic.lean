@@ -248,7 +248,8 @@ theorem mono_of_kernel_zero {X Y : C} {f : X ⟶ Y} [HasLimit (parallelPair f 0)
 
 theorem epi_of_cancel_zero {P Q : C} (f : P ⟶ Q) (h : ∀ {R : C} (g : Q ⟶ R), f ≫ g = 0 → g = 0) :
     Epi f :=
-  ⟨fun {Z} g g' hg => sub_eq_zero.1 <| h _ <| (map_sub (leftComp Z f) g g').trans <| sub_eq_zero.2 hg⟩
+  ⟨fun {Z} g g' hg => 
+    sub_eq_zero.1 <| h _ <| (map_sub (leftComp Z f) g g').trans <| sub_eq_zero.2 hg⟩
 #align category_theory.preadditive.epi_of_cancel_zero CategoryTheory.Preadditive.epi_of_cancel_zero
 
 theorem epi_iff_cancel_zero {P Q : C} (f : P ⟶ Q) :
@@ -439,7 +440,8 @@ theorem hasEqualizers_of_hasKernels [HasKernels C] : HasEqualizers C :=
 
 /-- If a preadditive category has all cokernels, then it also has all coequalizers. -/
 theorem hasCoequalizers_of_hasCokernels [HasCokernels C] : HasCoequalizers C :=
-  @hasCoequalizers_of_hasColimit_parallelPair _ _ fun {_} {_} f g => hasCoequalizer_of_hasCokernel f g
+  @hasCoequalizers_of_hasColimit_parallelPair _ _ fun {_} {_} f g => 
+    hasCoequalizer_of_hasCokernel f g
 #align category_theory.preadditive.has_coequalizers_of_has_cokernels CategoryTheory.Preadditive.hasCoequalizers_of_hasCokernels
 
 end Equalizers
