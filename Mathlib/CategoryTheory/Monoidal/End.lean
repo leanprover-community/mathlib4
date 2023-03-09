@@ -142,7 +142,6 @@ theorem μ_inv_naturality {m n : M} {X Y : C} (f : X ⟶ Y) :
   ((F.μIso m n).inv.naturality f).symm
 #align category_theory.μ_inv_naturality CategoryTheory.μ_inv_naturality
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- This is not a simp lemma since it could be proved by the lemmas later.
 @[reassoc (attr := simp)]
 theorem μ_naturality₂ {m n m' n' : M} (f : m ⟶ m') (g : n ⟶ n') (X : C) :
@@ -153,7 +152,6 @@ theorem μ_naturality₂ {m n m' n' : M} (f : m ⟶ m') (g : n ⟶ n') (X : C) :
   simpa using this
 #align category_theory.μ_naturality₂ CategoryTheory.μ_naturality₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[reassoc (attr := simp)]
 theorem μ_naturalityₗ {m n m' : M} (f : m ⟶ m') (X : C) :
     (F.obj n).map ((F.map f).app X) ≫ (F.μ m' n).app X =
@@ -162,7 +160,6 @@ theorem μ_naturalityₗ {m n m' : M} (f : m ⟶ m') (X : C) :
   simp
 #align category_theory.μ_naturalityₗ CategoryTheory.μ_naturalityₗ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[reassoc (attr := simp)]
 theorem μ_naturalityᵣ {m n n' : M} (g : n ⟶ n') (X : C) :
     (F.map g).app ((F.obj m).obj X) ≫ (F.μ m n').app X =
@@ -171,7 +168,6 @@ theorem μ_naturalityᵣ {m n n' : M} (g : n ⟶ n') (X : C) :
   simp
 #align category_theory.μ_naturalityᵣ CategoryTheory.μ_naturalityᵣ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[reassoc (attr := simp)]
 theorem μ_inv_naturalityₗ {m n m' : M} (f : m ⟶ m') (X : C) :
     (F.μIso m n).inv.app X ≫ (F.obj n).map ((F.map f).app X) =
@@ -180,7 +176,6 @@ theorem μ_inv_naturalityₗ {m n m' : M} (f : m ⟶ m') (X : C) :
   simp
 #align category_theory.μ_inv_naturalityₗ CategoryTheory.μ_inv_naturalityₗ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[reassoc (attr := simp)]
 theorem μ_inv_naturalityᵣ {m n n' : M} (g : n ⟶ n') (X : C) :
     (F.μIso m n).inv.app X ≫ (F.map g).app ((F.obj m).obj X) =
@@ -241,8 +236,6 @@ theorem ε_inv_app_obj (n : M) (X : C) :
   rfl
 #align category_theory.ε_inv_app_obj CategoryTheory.ε_inv_app_obj
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[reassoc]
 theorem associativity_app (m₁ m₂ m₃ : M) (X : C) :
     (F.obj m₃).map ((F.μ m₁ m₂).app X) ≫
@@ -253,8 +246,6 @@ theorem associativity_app (m₁ m₂ m₃ : M) (X : C) :
   simpa using this
 #align category_theory.associativity_app CategoryTheory.associativity_app
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[reassoc (attr := simp)]
 theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) :
     (F.obj m₃).map ((F.μ m₁ m₂).app X) =
@@ -268,8 +259,6 @@ theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) :
   simp
 #align category_theory.obj_μ_app CategoryTheory.obj_μ_app
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[reassoc (attr := simp)]
 theorem obj_μ_inv_app (m₁ m₂ m₃ : M) (X : C) :
     (F.obj m₃).map ((F.μIso m₁ m₂).inv.app X) =
@@ -308,17 +297,12 @@ theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) :
   congr ; simp
 #align category_theory.obj_μ_zero_app CategoryTheory.obj_μ_zero_app
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- If `m ⊗ n ≅ 𝟙_M`, then `F.obj m` is a left inverse of `F.obj n`. -/
 @[simps!]
 noncomputable def unitOfTensorIsoUnit (m n : M) (h : m ⊗ n ≅ 𝟙_ M) : F.obj m ⋙ F.obj n ≅ 𝟭 C :=
   F.μIso m n ≪≫ F.toFunctor.mapIso h ≪≫ F.εIso.symm
 #align category_theory.unit_of_tensor_iso_unit CategoryTheory.unitOfTensorIsoUnit
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- If `m ⊗ n ≅ 𝟙_M` and `n ⊗ m ≅ 𝟙_M` (subject to some commuting constraints),
   then `F.obj m` and `F.obj n` forms a self-equivalence of `C`. -/
 @[simps]
