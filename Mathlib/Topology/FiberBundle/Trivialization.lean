@@ -20,10 +20,10 @@ import Mathlib.Topology.LocalHomeomorph
 ### Basic definitions
 
 * `trivialization F p` : structure extending local homeomorphisms, defining a local
-                  trivialization of a topological space `Z` with projection `p` and fiber `F`.
+  trivialization of a topological space `Z` with projection `p` and fiber `F`.
 
 * `pretrivialization F proj` : trivialization as a local equivalence, mainly used when the
-                                      topology on the total space has not yet been defined.
+  topology on the total space has not yet been defined.
 
 ### Operations on bundles
 
@@ -37,8 +37,8 @@ We provide the following operations on `trivialization`s.
 
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fibre_bundle.trivialization` by a linearity hypothesis. As
-of PR #17359, we have changed this to a single structure `trivialization` (no namespace), together
-with a mixin class `trivialization.is_linear`.
+of PR leanprover-community/mathlib#17359, we have changed this to a single structure
+`trivialization` (no namespace), together with a mixin class `trivialization.is_linear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fibre bundles, so that the
 same trivializations can underlie an object's structure as (say) a vector bundle over `ℂ` and as a
@@ -765,7 +765,11 @@ noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
   open_baseSet := e.open_baseSet.ite e'.open_baseSet Hs
   source_eq := by simp [source_eq]
   target_eq := by simp [target_eq, prod_univ]
-  proj_toFun := by rintro p (⟨he, hs⟩ | ⟨he, hs⟩) <;> simp [*]
+  proj_toFun p := by
+    rintro (⟨he, hs⟩ | ⟨he, hs⟩)
+    -- porting note: was `<;> simp [*]`
+    · simp [piecewise_eq_of_mem _ _ _ hs, *]
+    · simp [piecewise_eq_of_not_mem _ _ _ hs, *]
 #align trivialization.piecewise Trivialization.piecewise
 
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B`
@@ -777,9 +781,9 @@ noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Triv
     (a : B) (He : a ∈ e.baseSet) (He' : a ∈ e'.baseSet) (Heq : ∀ p, proj p = a → e p = e' p) :
     Trivialization F proj :=
   e.piecewise e' (Iic a)
-    (Set.ext fun x =>
-      and_congr_left_iff.2 fun hx => by
-        simp [He, He', mem_singleton_iff.1 (frontier_Iic_subset _ hx)])
+    (Set.ext fun x => and_congr_left_iff.2 fun hx => by
+      obtain rfl : x = a := mem_singleton_iff.1 (frontier_Iic_subset _ hx)
+      simp [He, He'])
     fun p hp => Heq p <| frontier_Iic_subset _ hp.2
 #align trivialization.piecewise_le_of_eq Trivialization.piecewiseLeOfEq
 
