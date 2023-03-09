@@ -458,7 +458,7 @@ theorem toSubring_subtype {R A : Type _} [CommRing R] [Ring A] [Algebra R A] (S 
 
 /-- Linear equivalence between `S : Submodule R A` and `S`. Though these types are equal,
 we define it as a `LinearEquiv` to avoid type equalities. -/
-def toSubmoduleEquiv (S : Subalgebra R A) : (toSubmodule S) ≃ₗ[R] S :=
+def toSubmoduleEquiv (S : Subalgebra R A) : toSubmodule S ≃ₗ[R] S :=
   LinearEquiv.ofEq _ _ rfl
 #align subalgebra.to_submodule_equiv Subalgebra.toSubmoduleEquiv
 
