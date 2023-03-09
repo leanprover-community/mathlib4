@@ -1010,11 +1010,13 @@ instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsinglet
       hx ▸ (f.commutes _).trans (g.commutes _).symm⟩
 #align alg_hom.subsingleton AlgHom.subsingleton
 
-instance _root_.AlgEquiv.subsingleton_left [Subsingleton (Subalgebra R A)] : Subsingleton (A ≃ₐ[R] B) :=
+instance _root_.AlgEquiv.subsingleton_left [Subsingleton (Subalgebra R A)] :
+    Subsingleton (A ≃ₐ[R] B) :=
   ⟨fun f g => AlgEquiv.ext fun x => AlgHom.ext_iff.mp (Subsingleton.elim f.toAlgHom g.toAlgHom) x⟩
 #align alg_equiv.subsingleton_left AlgEquiv.subsingleton_left
 
-instance _root_.AlgEquiv.subsingleton_right [Subsingleton (Subalgebra R B)] : Subsingleton (A ≃ₐ[R] B) :=
+instance _root_.AlgEquiv.subsingleton_right [Subsingleton (Subalgebra R B)] :
+    Subsingleton (A ≃ₐ[R] B) :=
   ⟨fun f g => by rw [← f.symm_symm, Subsingleton.elim f.symm g.symm, g.symm_symm]⟩
 #align alg_equiv.subsingleton_right AlgEquiv.subsingleton_right
 
@@ -1403,7 +1405,8 @@ end Center
 section Centralizer
 
 @[simp]
-theorem _root_.Set.algebraMap_mem_centralizer {s : Set A} (r : R) : algebraMap R A r ∈ s.centralizer :=
+theorem _root_.Set.algebraMap_mem_centralizer {s : Set A} (r : R) :
+    algebraMap R A r ∈ s.centralizer :=
   fun _a _h => (Algebra.commutes _ _).symm
 #align set.algebra_map_mem_centralizer Set.algebraMap_mem_centralizer
 
