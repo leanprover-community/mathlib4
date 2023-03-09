@@ -25,7 +25,7 @@ simple constructions for normed group homs, like kernel, range and equalizer.
 Some easy other constructions are related to subgroups of normed groups.
 
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
-theory of `seminormed_add_group_hom` and we specialize to `normed_add_group_hom` when needed.
+theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when needed.
 -/
 
 
@@ -52,14 +52,14 @@ variable {V W : Type _} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
 
 /-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
 
-See `add_monoid_hom.mk_normed_add_group_hom'` for a version that uses `ℝ≥0` for the bound. -/
+See `AddMonoidHom.mkNormedAddGroupHom'` for a version that uses `ℝ≥0` for the bound. -/
 def mkNormedAddGroupHom (f : V →+ W) (C : ℝ) (h : ∀ v, ‖f v‖ ≤ C * ‖v‖) : NormedAddGroupHom V W :=
   { f with bound' := ⟨C, h⟩ }
 #align add_monoid_hom.mk_normed_add_group_hom AddMonoidHom.mkNormedAddGroupHom
 
 /-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
 
-See `add_monoid_hom.mk_normed_add_group_hom` for a version that uses `ℝ` for the bound. -/
+See `AddMonoidHom.mkNormedAddGroupHom` for a version that uses `ℝ` for the bound. -/
 def mkNormedAddGroupHom' (f : V →+ W) (C : ℝ≥0) (hC : ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊) :
     NormedAddGroupHom V W :=
   { f with bound' := ⟨C, hC⟩ }
@@ -221,7 +221,7 @@ theorem norm_def : ‖f‖ = infₛ { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * �
   rfl
 #align normed_add_group_hom.norm_def NormedAddGroupHom.norm_def
 
--- So that invocations of `le_cInf` make sense: we show that the set of
+-- So that invocations of `le_cinfₛ` make sense: we show that the set of
 -- bounds is nonempty and bounded below.
 theorem bounds_nonempty {f : NormedAddGroupHom V₁ V₂} :
     ∃ c, c ∈ { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ } :=
@@ -297,15 +297,15 @@ theorem opNorm_le_of_lipschitz {f : NormedAddGroupHom V₁ V₂} {K : ℝ≥0} (
 #align normed_add_group_hom.op_norm_le_of_lipschitz NormedAddGroupHom.opNorm_le_of_lipschitz
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism via the constructor
-`mk_normed_add_group_hom`, then its norm is bounded by the bound given to the constructor if it is
-nonnegative. -/
+`AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded by the bound given to the constructor
+if it is nonnegative. -/
 theorem mkNormedAddGroupHom_norm_le (f : V₁ →+ V₂) {C : ℝ} (hC : 0 ≤ C) (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     ‖f.mkNormedAddGroupHom C h‖ ≤ C :=
   opNorm_le_bound _ hC h
 #align normed_add_group_hom.mk_normed_add_group_hom_norm_le NormedAddGroupHom.mkNormedAddGroupHom_norm_le
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism
-via the constructor `mk_normed_add_group_hom`, then its norm is bounded by the bound
+via the constructor `AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded by the bound
 given to the constructor or zero if this bound is negative. -/
 theorem mkNormedAddGroupHom_norm_le' (f : V₁ →+ V₂) {C : ℝ} (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     ‖f.mkNormedAddGroupHom C h‖ ≤ max C 0 :=
@@ -339,7 +339,6 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
 
 -- porting note: this library note doesn't seem to apply anymore
 
--- see Note [addition on function coercions]
 @[simp]
 theorem coe_add (f g : NormedAddGroupHom V₁ V₂) : ⇑(f + g) = f + g :=
   rfl
@@ -386,9 +385,8 @@ theorem opNorm_zero_iff {V₁ V₂ : Type _} [NormedAddCommGroup V₁] [NormedAd
     fun hf => by rw [hf, opNorm_zero]
 #align normed_add_group_hom.op_norm_zero_iff NormedAddGroupHom.opNorm_zero_iff
 
--- see Note [addition on function coercions]
 @[simp]
-theorem coe_zero : ⇑(0 : NormedAddGroupHom V₁ V₂) = (0 : V₁ → V₂) :=
+theorem coe_zero : ⇑(0 : NormedAddGroupHom V₁ V₂) = 0 :=
   rfl
 #align normed_add_group_hom.coe_zero NormedAddGroupHom.coe_zero
 
@@ -444,9 +442,8 @@ theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
 instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f => (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v => by simp [le_opNorm f v]⟩
 
--- see Note [addition on function coercions]
 @[simp]
-theorem coe_neg (f : NormedAddGroupHom V₁ V₂) : ⇑(-f) = (-f : V₁ → V₂) :=
+theorem coe_neg (f : NormedAddGroupHom V₁ V₂) : ⇑(-f) = -f :=
   rfl
 #align normed_add_group_hom.coe_neg NormedAddGroupHom.coe_neg
 
@@ -472,9 +469,8 @@ instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
         simp only [AddMonoidHom.sub_apply, AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
         exact (f + -g).bound' }⟩
 
--- see Note [addition on function coercions]
 @[simp]
-theorem coe_sub (f g : NormedAddGroupHom V₁ V₂) : ⇑(f - g) = (f - g : V₁ → V₂) :=
+theorem coe_sub (f g : NormedAddGroupHom V₁ V₂) : ⇑(f - g) = f - g :=
   rfl
 #align normed_add_group_hom.coe_sub NormedAddGroupHom.coe_sub
 
@@ -603,8 +599,7 @@ instance toNormedAddCommGroup {V₁ V₂ : Type _} [NormedAddCommGroup V₁] [No
       eq_zero_of_map_eq_zero' := fun _f => opNorm_zero_iff.1 }
 #align normed_add_group_hom.to_normed_add_comm_group NormedAddGroupHom.toNormedAddCommGroup
 
-/-- Coercion of a `normed_add_group_hom` is an `add_monoid_hom`. Similar to `add_monoid_hom.coe_fn`.
--/
+/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`.  -/
 @[simps]
 def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂
     where
@@ -712,7 +707,7 @@ namespace NormedAddGroupHom
 variable {V W V₁ V₂ V₃ : Type _} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
   [SeminormedAddCommGroup V₁] [SeminormedAddCommGroup V₂] [SeminormedAddCommGroup V₃]
 
-/-- The inclusion of an `add_subgroup`, as bounded group homomorphism. -/
+/-- The inclusion of an `AddSubgroup`, as bounded group homomorphism. -/
 @[simps!]
 def incl (s : AddSubgroup V) : NormedAddGroupHom s V
     where
@@ -736,7 +731,7 @@ section Kernels
 variable (f : NormedAddGroupHom V₁ V₂) (g : NormedAddGroupHom V₂ V₃)
 
 /-- The kernel of a bounded group homomorphism. Naturally endowed with a
-`seminormed_add_comm_group` instance. -/
+`SeminormedAddCommGroup` instance. -/
 def ker : AddSubgroup V₁ :=
   f.toAddMonoidHom.ker
 #align normed_add_group_hom.ker NormedAddGroupHom.ker
@@ -794,7 +789,7 @@ section Range
 variable (f : NormedAddGroupHom V₁ V₂) (g : NormedAddGroupHom V₂ V₃)
 
 /-- The image of a bounded group homomorphism. Naturally endowed with a
-`seminormed_add_comm_group` instance. -/
+`SeminormedAddCommGroup` instance. -/
 def range : AddSubgroup V₂ :=
   f.toAddMonoidHom.range
 #align normed_add_group_hom.range NormedAddGroupHom.range
@@ -828,7 +823,7 @@ end Range
 
 variable {f : NormedAddGroupHom V W}
 
-/-- A `normed_add_group_hom` is *norm-nonincreasing* if `‖f v‖ ≤ ‖v‖` for all `v`. -/
+/-- A `NormedAddGroupHom` is *norm-nonincreasing* if `‖f v‖ ≤ ‖v‖` for all `v`. -/
 def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
   ∀ v, ‖f v‖ ≤ ‖v‖
 #align normed_add_group_hom.norm_noninc NormedAddGroupHom.NormNoninc
@@ -891,14 +886,14 @@ variable {f₂ g₂ : NormedAddGroupHom V₂ W₂}
 
 variable {f₃ g₃ : NormedAddGroupHom V₃ W₃}
 
-/-- The equalizer of two morphisms `f g : normed_add_group_hom V W`. -/
+/-- The equalizer of two morphisms `f g : NormedAddGroupHom V W`. -/
 def equalizer :=
   (f - g).ker
 #align normed_add_group_hom.equalizer NormedAddGroupHom.equalizer
 
 namespace Equalizer
 
-/-- The inclusion of `f.equalizer g` as a `normed_add_group_hom`. -/
+/-- The inclusion of `f.equalizer g` as a `NormedAddGroupHom`. -/
 def ι : NormedAddGroupHom (f.equalizer g) V :=
   incl _
 #align normed_add_group_hom.equalizer.ι NormedAddGroupHom.Equalizer.ι
@@ -911,8 +906,8 @@ theorem comp_ι_eq : f.comp (ι f g) = g.comp (ι f g) := by
 
 variable {f g}
 
-/-- If `φ : normed_add_group_hom V₁ V` is such that `f.comp φ = g.comp φ`, the induced morphism
-`normed_add_group_hom V₁ (f.equalizer g)`. -/
+/-- If `φ : NormedAddGroupHom V₁ V` is such that `f.comp φ = g.comp φ`, the induced morphism
+`NormedAddGroupHom V₁ (f.equalizer g)`. -/
 @[simps]
 def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
     NormedAddGroupHom V₁ (f.equalizer g)
@@ -949,9 +944,9 @@ def liftEquiv :
     rfl
 #align normed_add_group_hom.equalizer.lift_equiv NormedAddGroupHom.Equalizer.liftEquiv
 
-/-- Given `φ : normed_add_group_hom V₁ V₂` and `ψ : normed_add_group_hom W₁ W₂` such that
+/-- Given `φ : NormedAddGroupHom V₁ V₂` and `ψ : NormedAddGroupHom W₁ W₂` such that
 `ψ.comp f₁ = f₂.comp φ` and `ψ.comp g₁ = g₂.comp φ`, the induced morphism
-`normed_add_group_hom (f₁.equalizer g₁) (f₂.equalizer g₂)`. -/
+`NormedAddGroupHom (f₁.equalizer g₁) (f₂.equalizer g₂)`. -/
 def map (φ : NormedAddGroupHom V₁ V₂) (ψ : NormedAddGroupHom W₁ W₂) (hf : ψ.comp f₁ = f₂.comp φ)
     (hg : ψ.comp g₁ = g₂.comp φ) : NormedAddGroupHom (f₁.equalizer g₁) (f₂.equalizer g₂) :=
   lift (φ.comp <| ι _ _) <| by
