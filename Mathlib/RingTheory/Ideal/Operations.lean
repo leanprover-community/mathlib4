@@ -264,7 +264,6 @@ theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal
   simpa using H
 #align submodule.mem_of_span_top_of_smul_mem Submodule.mem_of_span_top_of_smul_mem
 
--- Porting note: Needed to replace `r ^ n` below with `Pow.pow r n`
 /-- Given `s`, a generating set of `R`, to check that an `x : M` falls in a
 submodule `M'` of `x`, we only need to show that `r ^ n • x ∈ M'` for some `n` for each `r : s`. -/
 theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤)
@@ -860,8 +859,7 @@ def radical  (I : Ideal R) : Ideal R where
                 I.mul_mem_right _ <|
                   add_tsub_cancel_of_le hmc ▸ (pow_add x m (c - m)).symm ▸ I.mul_mem_right _ hxmi)⟩
 -- Porting note: Below gives weird errors without `by exact`
-  smul_mem' := by
-    exact fun {r s} ⟨n, hsni⟩ => ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) hsni⟩
+  smul_mem' {r s} := by exact fun ⟨n, h⟩ ↦ ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) h⟩
 #align ideal.radical Ideal.radical
 
 /-- An ideal is radical if it contains its radical. -/
@@ -1996,6 +1994,7 @@ theorem Associates.mk_ne_zero' {R : Type _} [CommSemiring R] {r : R} :
   rw [Associates.mk_ne_zero, Ideal.zero_eq_bot, Ne.def, Ideal.span_singleton_eq_bot]
 #align associates.mk_ne_zero' Associates.mk_ne_zero'
 
+-- Porting note: added explicit coercion `(b i : S)`
 /-- If `I : Ideal S` has a basis over `R`,
 `x ∈ I` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_ideal_iff {ι R S : Type _} [CommRing R] [CommRing S] [Algebra R S] {I : Ideal S}
