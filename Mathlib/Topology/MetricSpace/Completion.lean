@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.UniformSpace.Completion
-import Mathbin.Topology.MetricSpace.Isometry
-import Mathbin.Topology.Instances.Real
+import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.Instances.Real
 
 /-!
 # The completion of a metric space
@@ -59,8 +59,7 @@ protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
 
 /- Let us check that the new distance satisfies the axioms of a distance, by starting from the
 properties on α and extending them to `completion α` by continuity. -/
-protected theorem dist_self (x : Completion α) : dist x x = 0 :=
-  by
+protected theorem dist_self (x : Completion α) : dist x x = 0 := by
   apply induction_on x
   · refine' isClosed_eq _ continuous_const
     exact completion.continuous_dist continuous_id continuous_id
@@ -68,8 +67,7 @@ protected theorem dist_self (x : Completion α) : dist x x = 0 :=
     rw [completion.dist_eq, dist_self]
 #align uniform_space.completion.dist_self UniformSpace.Completion.dist_self
 
-protected theorem dist_comm (x y : Completion α) : dist x y = dist y x :=
-  by
+protected theorem dist_comm (x y : Completion α) : dist x y = dist y x := by
   apply induction_on₂ x y
   ·
     exact
@@ -79,8 +77,7 @@ protected theorem dist_comm (x y : Completion α) : dist x y = dist y x :=
     rw [completion.dist_eq, completion.dist_eq, dist_comm]
 #align uniform_space.completion.dist_comm UniformSpace.Completion.dist_comm
 
-protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y + dist y z :=
-  by
+protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y + dist y z := by
   apply induction_on₃ x y z
   ·
     refine' isClosed_le _ (Continuous.add _ _) <;>
@@ -94,8 +91,7 @@ protected theorem dist_triangle (x y z : Completion α) : dist x z ≤ dist x y 
 /-- Elements of the uniformity (defined generally for completions) can be characterized in terms
 of the distance. -/
 protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α)) :
-    s ∈ 𝓤 (Completion α) ↔ ∃ ε > 0, ∀ {a b}, dist a b < ε → (a, b) ∈ s :=
-  by
+    s ∈ 𝓤 (Completion α) ↔ ∃ ε > 0, ∀ {a b}, dist a b < ε → (a, b) ∈ s := by
   constructor
   · /- Start from an entourage `s`. It contains a closed entourage `t`. Its pullback in `α` is an
         entourage, so it contains an `ε`-neighborhood of the diagonal by definition of the entourages
@@ -154,8 +150,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
 #align uniform_space.completion.mem_uniformity_dist UniformSpace.Completion.mem_uniformity_dist
 
 /-- If two points are at distance 0, then they coincide. -/
-protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
-  by
+protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y := by
   /- This follows from the separation of `completion α` and from the description of
     entourages in terms of the distance. -/
   have : SeparatedSpace (completion α) := by infer_instance
@@ -168,8 +163,7 @@ protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : 
 /-- Reformulate `completion.mem_uniformity_dist` in terms that are suitable for the definition
 of the metric space structure. -/
 protected theorem uniformity_dist' :
-    𝓤 (Completion α) = ⨅ ε : { ε : ℝ // 0 < ε }, 𝓟 { p | dist p.1 p.2 < ε.val } :=
-  by
+    𝓤 (Completion α) = ⨅ ε : { ε : ℝ // 0 < ε }, 𝓟 { p | dist p.1 p.2 < ε.val } := by
   ext s; rw [mem_infi_of_directed]
   · simp [completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
