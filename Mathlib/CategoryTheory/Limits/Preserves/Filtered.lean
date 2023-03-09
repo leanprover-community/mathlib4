@@ -8,8 +8,8 @@ Authors: Scott Morrison, Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
-import Mathbin.CategoryTheory.Filtered
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Filtered
 
 /-!
 # Preservation of filtered colimits and cofiltered limits.
