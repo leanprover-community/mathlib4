@@ -502,7 +502,7 @@ def binaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f] 
   inr_snd := by apply SplitEpi.id
 #align category_theory.limits.binary_bicone_of_is_split_mono_of_cokernel CategoryTheory.Limits.binaryBiconeOfIsSplitMonoOfCokernel
 
-/-- The bicone constructed in `binary_bicone_of_split_mono_of_cokernel` is a bilimit.
+/-- The bicone constructed in `binaryBiconeOfSplitMonoOfCokernel` is a bilimit.
 This is a version of the splitting lemma that holds in all preadditive categories. -/
 def isBilimitBinaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f]
     {c : CokernelCofork f} (i : IsColimit c) : (binaryBiconeOfIsSplitMonoOfCokernel i).IsBilimit :=
@@ -526,7 +526,8 @@ def BinaryBicone.isBilimitOfKernelInl {X Y : C} (b : BinaryBicone X Y)
     BinaryFan.IsLimit.mk _ (fun f g => f ≫ b.inl + g ≫ b.inr) (fun f g => by simp)
       (fun f g => by simp) fun {T} f g m h₁ h₂ => by
       dsimp at m 
-      have h₁' : ((m : T ⟶  b.pt) - (f ≫ b.inl + g ≫ b.inr)) ≫ b.fst = 0 := by simpa using sub_eq_zero.2 h₁
+      have h₁' : ((m : T ⟶  b.pt) - (f ≫ b.inl + g ≫ b.inr)) ≫ b.fst = 0 := by 
+        simpa using sub_eq_zero.2 h₁
       have h₂' : (m - (f ≫ b.inl + g ≫ b.inr)) ≫ b.snd = 0 := by simpa using sub_eq_zero.2 h₂
       obtain ⟨q : T ⟶ X, hq : q ≫ b.inl = m - (f ≫ b.inl + g ≫ b.inr)⟩ :=
         KernelFork.IsLimit.lift' hb _ h₂'
@@ -613,7 +614,7 @@ def binaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f] {c :
     inr_snd := by simp }
 #align category_theory.limits.binary_bicone_of_is_split_epi_of_kernel CategoryTheory.Limits.binaryBiconeOfIsSplitEpiOfKernel
 
-/-- The bicone constructed in `binary_bicone_of_is_split_epi_of_kernel` is a bilimit.
+/-- The bicone constructed in `binaryciconeOfIsSplitEpiOfKernel` is a bilimit.
 This is a version of the splitting lemma that holds in all preadditive categories. -/
 def isBilimitBinaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f]
     {c : KernelFork f} (i : IsLimit c) : (binaryBiconeOfIsSplitEpiOfKernel i).IsBilimit :=
@@ -756,7 +757,7 @@ then we can construct isomorphisms `L : X₁ ⊞ X₂ ≅ X₁ ⊞ X₂` and `R 
 so that `L.hom ≫ g ≫ R.hom` is diagonal (with `X₁ ⟶ Y₁` component still `f`),
 via Gaussian elimination.
 
-(This is the version of `biprod.gaussian` written in terms of components.)
+(This is the version of `Biprod.gaussian` written in terms of components.)
 -/
 def Biprod.gaussian' [IsIso f₁₁] :
     Σ'(L : X₁ ⊞ X₂ ≅ X₁ ⊞ X₂)(R : Y₁ ⊞ Y₂ ≅ Y₁ ⊞ Y₂)(g₂₂ : X₂ ⟶ Y₂),
@@ -886,8 +887,6 @@ section Fintype
 
 variable {J : Type} [Fintype J]
 
--- attribute [local tidy] tactic.discrete_cases
-
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
     preserves finite products. -/
 def preservesProductOfPreservesBiproduct {f : J → C} [PreservesBiproduct f F] :
@@ -925,7 +924,7 @@ def preservesBiproductOfPreservesProduct {f : J → C} [PreservesLimit (Discrete
 #align category_theory.limits.preserves_biproduct_of_preserves_product CategoryTheory.Limits.preservesBiproductOfPreservesProduct
 
 /-- If the (product-like) biproduct comparison for `F` and `f` is a monomorphism, then `F`
-    preserves the biproduct of `f`. For the converse, see `map_biproduct`. -/
+    preserves the biproduct of `f`. For the converse, see `mapBiproduct`. -/
 def preservesBiproductOfMonoBiproductComparison {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Mono (biproductComparison F f)] : PreservesBiproduct f F := by
   haveI : HasProduct fun b => F.obj (f b) := by 
@@ -945,7 +944,7 @@ def preservesBiproductOfMonoBiproductComparison {f : J → C} [HasBiproduct f]
 #align category_theory.limits.preserves_biproduct_of_mono_biproduct_comparison CategoryTheory.Limits.preservesBiproductOfMonoBiproductComparison
 
 /-- If the (coproduct-like) biproduct comparison for `F` and `f` is an epimorphism, then `F`
-    preserves the biproduct of `F` and `f`. For the converse, see `map_biproduct`. -/
+    preserves the biproduct of `F` and `f`. For the converse, see `mapBiproduct`. -/
 def preservesBiproductOfEpiBiproductComparison' {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Epi (biproductComparison' F f)] : PreservesBiproduct f F := by
   haveI : Epi (splitEpiBiproductComparison F f).section_ := by simpa
@@ -1060,7 +1059,7 @@ def preservesBinaryBiproductOfMonoBiprodComparison {X Y : C} [HasBinaryBiproduct
 #align category_theory.limits.preserves_binary_biproduct_of_mono_biprod_comparison CategoryTheory.Limits.preservesBinaryBiproductOfMonoBiprodComparison
 
 /-- If the (coproduct-like) biproduct comparison for `F`, `X` and `Y` is an epimorphism, then
-    `F` preserves the biproduct of `X` and `Y`. For the converse, see `map_biprod`. -/
+    `F` preserves the biproduct of `X` and `Y`. For the converse, see `mapBiprod`. -/
 def preservesBinaryBiproductOfEpiBiprodComparison' {X Y : C} [HasBinaryBiproduct X Y]
     [HasBinaryBiproduct (F.obj X) (F.obj Y)] [Epi (biprodComparison' F X Y)] :
     PreservesBinaryBiproduct X Y F := by
