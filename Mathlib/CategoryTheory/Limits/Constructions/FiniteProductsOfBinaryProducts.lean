@@ -158,7 +158,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
       change F.map _ ≫ _ = 𝟙 _ ≫ _ 
       simp only [id_comp, ← F.map_comp]
       rfl
-#align category_theory.preserves_fin_of_preserves_binary_and_terminal CategoryTheory.preservesFinOfPreservesBinaryAndTerminalₓ -- Porting note: dubious translation. 
+#align category_theory.preserves_fin_of_preserves_binary_and_terminal CategoryTheory.preservesFinOfPreservesBinaryAndTerminalₓ -- Porting note: order of universes changed
 
 /-- If `F` preserves the terminal object and binary products, then it preserves limits of shape
 `Discrete (Fin n)`.
@@ -300,7 +300,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
     · rintro i _
       dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι]
       rw [Fin.cases_succ, Fin.cases_succ, comp_id, ← F.map_comp]
-#align category_theory.preserves_fin_of_preserves_binary_and_initial CategoryTheory.preservesFinOfPreservesBinaryAndInitialₓ  -- Porting note: dubious translation
+#align category_theory.preserves_fin_of_preserves_binary_and_initial CategoryTheory.preservesFinOfPreservesBinaryAndInitialₓ  -- Porting note: order of universes changed
 
 /-- If `F` preserves the initial object and binary coproducts, then it preserves colimits of shape
 `Discrete (Fin n)`.
