@@ -854,13 +854,15 @@ instance charZero_complex : CharZero ℂ :=
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  simp only [add_conj, of_real_mul, of_real_one, of_real_bit0,
+  have : ⟨2, 0⟩ = (2 : ℂ) := by rfl
+  simp only [add_conj, of_real_mul, of_real_one, of_real_bit0, this,
     mul_div_cancel_left (z.re : ℂ) two_ne_zero]
 #align complex.re_eq_add_conj Complex.re_eq_add_conj
 
 /-- A complex number `z` minus its conjugate `conj z` is `2i` times its imaginary part. -/
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * i) := by
-  simp only [sub_conj, of_real_mul, of_real_one, of_real_bit0, mul_right_comm,
+  have : ⟨2, 0⟩ * i = 2 * i := by rfl
+  simp only [sub_conj, of_real_mul, of_real_one, of_real_bit0, mul_right_comm, this,
     mul_div_cancel_left _ (mul_ne_zero two_ne_zero i_ne_zero : 2 * i ≠ 0)]
 
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
