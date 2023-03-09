@@ -107,20 +107,18 @@ theorem ofReal_def (r : ℝ) : (r : ℂ) = ⟨r, 0⟩ :=
   rfl
 #align complex.of_real_def Complex.ofReal_def
 
--- @[simp]
-/- Porting note: `simp` attribute removed as the result could be proved
-by `simp only [Complex.mk.injEq, and_true]` -/
+
 @[simp, norm_cast]
 theorem ofReal_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
   ⟨congrArg re, by apply congrArg⟩
 #align complex.of_real_inj Complex.ofReal_inj
 
 -- Porting note: made coercion explicit
-theorem ofReal_injective : Function.Injective (fun (r: ℝ) ↦ ↑(r : ℂ)) := fun _ _ => congrArg re
+theorem ofReal_injective : Function.Injective ((↑) : ℝ → ℂ) := fun _ _ => congrArg re
 #align complex.of_real_injective Complex.ofReal_injective
 
 -- Porting note: made coercion explicit
-instance canLift : CanLift ℂ ℝ (fun (r: ℝ) ↦ ↑(r : ℂ)) fun z =>
+instance canLift : CanLift ℂ ℝ (↑) fun z =>
     z.im = 0 where prf z hz := ⟨z.re, ext rfl hz.symm⟩
 #align complex.can_lift Complex.canLift
 
@@ -244,6 +242,8 @@ theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 (r : ℂ) :=
   ext_iff.2 <| by simp [bit1]
 #align complex.of_real_bit1 Complex.ofReal_bit1
 
+end
+
 instance : Neg ℂ :=
   ⟨fun z => ⟨-z.re, -z.im⟩⟩
 
@@ -293,7 +293,7 @@ theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
   ext (ofReal_mul_re _ _) (ofReal_mul_im _ _)
 #align complex.of_real_mul' Complex.ofReal_mul'
 
-/-! ### The imaginary unit, `I` -/
+/-! ### The imaginary unit, `i` -/
 
 
 /-- The imaginary unit. -/
@@ -411,6 +411,7 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
         rfl
     one := 1 }
 
+-- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
   { Complex.addGroupWithOne with
     zero := (0 : ℂ)
@@ -463,6 +464,8 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 #align complex.coe_im_add_group_hom Complex.coe_imAddGroupHom
 
+section
+set_option linter.deprecated false
 @[simp]
 theorem i_pow_bit0 (n : ℕ) : i ^ bit0 n = (-1) ^ n := by rw [pow_bit0', Complex.i_mul_i]
 set_option linter.uppercaseLean3 false in
@@ -473,6 +476,7 @@ theorem i_pow_bit1 (n : ℕ) : i ^ bit1 n = (-1) ^ n * i := by rw [pow_bit1', Co
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.i_pow_bit1
 
+end
 /-! ### Complex conjugation -/
 
 
@@ -505,6 +509,9 @@ theorem conj_i : conj i = -i :=
   set_option linter.uppercaseLean3 false in
 #align complex.conj_I Complex.conj_i
 
+
+section
+set_option linter.deprecated false
 theorem conj_bit0 (z : ℂ) : conj (bit0 z) = bit0 (conj z) :=
   ext_iff.2 <| by simp [bit0]
 #align complex.conj_bit0 Complex.conj_bit0
@@ -512,7 +519,7 @@ theorem conj_bit0 (z : ℂ) : conj (bit0 z) = bit0 (conj z) :=
 theorem conj_bit1 (z : ℂ) : conj (bit1 z) = bit1 (conj z) :=
   ext_iff.2 <| by simp [bit0]
 #align complex.conj_bit1 Complex.conj_bit1
-
+end
 -- @[simp]
 /- Porting note: `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
@@ -536,9 +543,9 @@ theorem eq_conj_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 #align complex.eq_conj_iff_im Complex.eq_conj_iff_im
 
--- `simp_nf` complains about this being provable by `is_R_or_C.star_def` even
+-- `simpNF` complains about this being provable by `is_R_or_C.star_def` even
 -- though it's not imported by this file.
--- Porting note: linter `simp_nf` not found
+-- Porting note: linter `simpNF` not found
 @[simp]
 theorem star_def : (Star.star : ℂ → ℂ) = conj :=
   rfl
@@ -548,6 +555,7 @@ theorem star_def : (Star.star : ℂ → ℂ) = conj :=
 
 
 /-- The norm squared function. -/
+-- Porting note: `@[pp_nodot]` not found
 -- @[pp_nodot]
 def normSq : ℂ →*₀ ℝ where
   toFun z := z.re * z.re + z.im * z.im
@@ -657,8 +665,12 @@ theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
 #align complex.add_conj Complex.add_conj
 
 /-- The coercion `ℝ → ℂ` as a `ring_hom`. -/
-def ofReal : ℝ →+* ℂ :=
-  ⟨⟨⟨fun (x: ℝ) ↦ (↑x : ℂ), ofReal_one⟩, ofReal_mul⟩, ofReal_zero, ofReal_add⟩
+def ofReal : ℝ →+* ℂ where
+  toFun := fun (x: ℝ) ↦ (↑x : ℂ)
+  map_one' := ofReal_one
+  map_zero' := ofReal_zero
+  map_mul' := ofReal_mul
+  map_add' := ofReal_add
 #align complex.of_real Complex.ofReal
 
 @[simp]
@@ -719,8 +731,7 @@ theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, divi
 theorem inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, division_def, ofReal']
 #align complex.inv_im Complex.inv_im
 
--- removed norm-cast
-@[simp]
+@[simp, norm_cast]
 theorem ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : ℂ) = (r : ℂ)⁻¹ :=
   ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_inv Complex.ofReal_inv
@@ -832,7 +843,7 @@ theorem int_cast_re (n : ℤ) : (n : ℂ).re = n := by rw [← ofReal_int_cast, 
 theorem int_cast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← ofReal_int_cast, ofReal_im]
 #align complex.int_cast_im Complex.int_cast_im
 
-@[simp]
+@[simp, norm_cast]
 theorem ofReal_rat_cast (n : ℚ) : ((n : ℝ) : ℂ) = @RatCast.ratCast ℂ _ n :=
   map_ratCast ofReal n
 #align complex.of_real_rat_cast Complex.ofReal_rat_cast
@@ -1067,6 +1078,7 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * i)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
+-- Porting note: added so `two_pos` in the next proof works
 instance : NeZero (1 : ℝ) :=
  ⟨by apply one_ne_zero⟩
 
@@ -1342,12 +1354,12 @@ variable {α : Type _} (s : Finset α)
 
 @[simp, norm_cast]
 theorem ofReal_prod (f : α → ℝ) : ((∏ i in s, f i : ℝ) : ℂ) = ∏ i in s, (f i : ℂ) :=
-  RingHom.map_prod ofReal _ _
+  map_prod ofReal _ _
 #align complex.of_real_prod Complex.ofReal_prod
 
 @[simp, norm_cast]
 theorem ofReal_sum (f : α → ℝ) : ((∑ i in s, f i : ℝ) : ℂ) = ∑ i in s, (f i : ℂ) :=
-  RingHom.map_sum ofReal _ _
+  map_sum ofReal _ _
 #align complex.of_real_sum Complex.ofReal_sum
 
 @[simp]
@@ -1359,7 +1371,5 @@ theorem re_sum (f : α → ℂ) : (∑ i in s, f i).re = ∑ i in s, (f i).re :=
 theorem im_sum (f : α → ℂ) : (∑ i in s, f i).im = ∑ i in s, (f i).im :=
   imAddGroupHom.map_sum f s
 #align complex.im_sum Complex.im_sum
-
-end
 
 end Complex
