@@ -28,7 +28,7 @@ variable (C : Type (u + 1)) [Category C] [ConcreteCategory.{u} C]
 variable (D : Type (u + 1)) [Category D] [ConcreteCategory.{u} D]
 
 -- This should not be an instance, as it causes a typeclass loop
--- with `category_theory.has_forget_to_Type`
+-- with `CategoryTheory.hasForgetToType`.
 /-- A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
 where `forget C` reflects isomorphisms, itself reflects isomorphisms.
 -/
