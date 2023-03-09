@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
-# Every non_preadditive_abelian category is preadditive
+# Every NonPreadditiveAbelian category is preadditive
 
 In mathlib, we define an abelian category as a preadditive category with a zero object,
 kernels and cokernels, products and coproducts and in which every monomorphism and epimorphis is
@@ -68,29 +68,29 @@ universe v u
 
 variable (C : Type u) [Category.{v} C]
 
-/-- We call a category `non_preadditive_abelian` if it has a zero object, kernels, cokernels, binary
+/-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
     products and coproducts, and every monomorphism and every epimorphism is normal. -/
 class NonPreadditiveAbelian extends HasZeroMorphisms C, NormalMonoCategory C,
   NormalEpiCategory C where
-  [HasZeroObject : HasZeroObject C]
-  [HasKernels : HasKernels C]
-  [HasCokernels : HasCokernels C]
-  [HasFiniteProducts : HasFiniteProducts C]
-  [HasFiniteCoproducts : HasFiniteCoproducts C]
+  [has_zero_object : HasZeroObject C]
+  [has_kernels : HasKernels C]
+  [has_cokernels : HasCokernels C]
+  [has_finite_products : HasFiniteProducts C]
+  [has_finite_coproducts : HasFiniteCoproducts C]
 #align category_theory.non_preadditive_abelian CategoryTheory.NonPreadditiveAbelian
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option default_priority -/
-set_option default_priority 100
+-- set_option default_priority 100
 
-attribute [instance] non_preadditive_abelian.has_zero_object
+attribute [instance] NonPreadditiveAbelian.has_zero_object
 
-attribute [instance] non_preadditive_abelian.has_kernels
+attribute [instance] NonPreadditiveAbelian.has_kernels
 
-attribute [instance] non_preadditive_abelian.has_cokernels
+attribute [instance] NonPreadditiveAbelian.has_cokernels
 
-attribute [instance] non_preadditive_abelian.has_finite_products
+attribute [instance] NonPreadditiveAbelian.has_finite_products
 
-attribute [instance] non_preadditive_abelian.has_finite_coproducts
+attribute [instance] NonPreadditiveAbelian.has_finite_coproducts
 
 end
 
@@ -165,22 +165,17 @@ instance : Mono (Abelian.factorThruCoimage f) :=
     by
     -- Since C is abelian, u := p ≫ coker g is the cokernel of some morphism h.
     let u := p ≫ cokernel.π g
-    haveI : epi u := epi_comp _ _
-    haveI hu := normal_epi_of_epi u
+    haveI : Epi u := epi_comp _ _
+    haveI hu := normalEpiOfEpi u
     let h := hu.g
     -- By hypothesis, i factors through the cokernel of g via some t.
     obtain ⟨t, ht⟩ := cokernel.desc' g i hgi
     have hf : h ≫ f = 0
     calc
-      h ≫ f = h ≫ p ≫ i := (abelian.coimage.fac f).symm ▸ rfl
+      h ≫ f = h ≫ p ≫ i := (Abelian.coimage.fac f).symm ▸ rfl
       _ = h ≫ p ≫ cokernel.π g ≫ t := (ht ▸ rfl)
-      _ = h ≫ u ≫ t := by
-        simp only [category.assoc] <;>
-          conv_lhs =>
-            congr
-            skip
-            rw [← category.assoc]
-      _ = 0 ≫ t := by rw [← category.assoc, hu.w]
+      _ = h ≫ u ≫ t := by simp only [Category.assoc] 
+      _ = 0 ≫ t := by rw [← Category.assoc, hu.w]
       _ = 0 := zero_comp
       
     -- h factors through the kernel of f via some l.
@@ -188,13 +183,13 @@ instance : Mono (Abelian.factorThruCoimage f) :=
     have hhp : h ≫ p = 0
     calc
       h ≫ p = (l ≫ kernel.ι f) ≫ p := hl ▸ rfl
-      _ = l ≫ 0 := by rw [category.assoc, cokernel.condition]
+      _ = l ≫ 0 := by rw [Category.assoc, cokernel.condition]
       _ = 0 := comp_zero
       
     -- p factors through u = coker h via some s.
-    obtain ⟨s, hs⟩ := normal_epi.desc' u p hhp
-    have hs' : p ≫ cokernel.π g ≫ s = p ≫ 𝟙 I := by rw [← category.assoc, hs, category.comp_id]
-    haveI : mono (cokernel.π g) := mono_of_mono_fac ((cancel_epi _).1 hs')
+    obtain ⟨s, hs⟩ := NormalEpi.desc' u p hhp
+    have hs' : p ≫ cokernel.π g ≫ s = p ≫ 𝟙 I := by rw [← Category.assoc, hs, Category.comp_id]
+    haveI : Mono (cokernel.π g) := mono_of_mono_fac ((cancel_epi _).1 hs')
     -- coker g is a monomorphism, but g ≫ coker g = 0 = 0 ≫ coker g, so g = 0 as required.
     exact zero_of_comp_mono _ (cokernel.condition g)
 
@@ -245,46 +240,44 @@ instance mono_Δ {A : C} : Mono (diag A) :=
 #align category_theory.non_preadditive_abelian.mono_Δ CategoryTheory.NonPreadditiveAbelian.mono_Δ
 
 instance mono_r {A : C} : Mono (r A) := by
-  let hl : is_limit (kernel_fork.of_ι (diag A) (cokernel.condition (diag A))) :=
-    mono_is_kernel_of_cokernel _ (colimit.is_colimit _)
-  apply normal_epi_category.mono_of_cancel_zero
+  let hl : IsLimit (KernelFork.ofι (diag A) (cokernel.condition (diag A))) :=
+    monoIsKernelOfCokernel _ (colimit.isColimit _)
+  apply NormalEpiCategory.mono_of_cancel_zero
   intro Z x hx
   have hxx : (x ≫ prod.lift (𝟙 A) (0 : A ⟶ A)) ≫ cokernel.π (diag A) = 0 := by
-    rw [category.assoc, hx]
-  obtain ⟨y, hy⟩ := kernel_fork.is_limit.lift' hl _ hxx
-  rw [kernel_fork.ι_of_ι] at hy
+    rw [Category.assoc, hx]
+  obtain ⟨y, hy⟩ := KernelFork.IsLimit.lift' hl _ hxx
+  rw [KernelFork.ι_ofι] at hy
   have hyy : y = 0 := by
-    erw [← category.comp_id y, ← limits.prod.lift_snd (𝟙 A) (𝟙 A), ← category.assoc, hy,
-      category.assoc, prod.lift_snd, has_zero_morphisms.comp_zero]
-  haveI : mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
+    erw [← Category.comp_id y, ← Limits.prod.lift_snd (𝟙 A) (𝟙 A), ← Category.assoc, hy,
+      Category.assoc, prod.lift_snd, HasZeroMorphisms.comp_zero]
+  haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
   apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
   rw [← hy, hyy, zero_comp, zero_comp]
 #align category_theory.non_preadditive_abelian.mono_r CategoryTheory.NonPreadditiveAbelian.mono_r
 
 instance epi_r {A : C} : Epi (r A) := by
-  have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ limits.prod.snd = 0 := prod.lift_snd _ _
-  let hp1 : is_limit (kernel_fork.of_ι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) :=
-    by
-    refine' fork.is_limit.mk _ (fun s => fork.ι s ≫ limits.prod.fst) _ _
+  have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
+  let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
+    refine' Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) _ _
     · intro s
-      ext <;> simp
-      erw [category.comp_id]
+      apply prod.hom_ext <;> simp
     · intro s m h
-      haveI : mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
+      haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
       convert h
-      ext <;> simp
-  let hp2 : is_colimit (cokernel_cofork.of_π (limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
-    epi_is_cokernel_of_kernel _ hp1
-  apply normal_mono_category.epi_of_zero_cancel
+      apply prod.hom_ext <;> simp
+  let hp2 : IsColimit (CokernelCofork.ofπ (Limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
+    epiIsCokernelOfKernel _ hp1
+  apply NormalMonoCategory.epi_of_zero_cancel
   intro Z z hz
-  have h : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ cokernel.π (diag A) ≫ z = 0 := by rw [← category.assoc, hz]
-  obtain ⟨t, ht⟩ := cokernel_cofork.is_colimit.desc' hp2 _ h
-  rw [cokernel_cofork.π_of_π] at ht
+  have h : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ cokernel.π (diag A) ≫ z = 0 := by rw [← Category.assoc, hz]
+  obtain ⟨t, ht⟩ := CokernelCofork.IsColimit.desc' hp2 _ h
+  rw [CokernelCofork.π_ofπ] at ht
   have htt : t = 0 := by
-    rw [← category.id_comp t]
+    rw [← Category.id_comp t]
     change 𝟙 A ≫ t = 0
-    rw [← limits.prod.lift_snd (𝟙 A) (𝟙 A), category.assoc, ht, ← category.assoc,
+    rw [← Limits.prod.lift_snd (𝟙 A) (𝟙 A), Category.assoc, ht, ← Category.assoc,
       cokernel.condition, zero_comp]
   apply (cancel_epi (cokernel.π (diag A))).1
   rw [← ht, htt, comp_zero, comp_zero]
@@ -304,15 +297,15 @@ abbrev σ {A : C} : A ⨯ A ⟶ A :=
 
 end
 
-@[simp, reassoc.1]
+@[reassoc (attr := simp)]
 theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 #align category_theory.non_preadditive_abelian.diag_σ CategoryTheory.NonPreadditiveAbelian.diag_σ
 
-@[simp, reassoc.1]
-theorem lift_σ {X : C} : prod.lift (𝟙 X) 0 ≫ σ = 𝟙 X := by rw [← category.assoc, is_iso.hom_inv_id]
+@[reassoc (attr := simp)]
+theorem lift_σ {X : C} : prod.lift (𝟙 X) 0 ≫ σ = 𝟙 X := by rw [← Category.assoc, IsIso.hom_inv_id]
 #align category_theory.non_preadditive_abelian.lift_σ CategoryTheory.NonPreadditiveAbelian.lift_σ
 
-@[reassoc.1]
+@[reassoc]
 theorem lift_map {X Y : C} (f : X ⟶ Y) :
     prod.lift (𝟙 X) 0 ≫ Limits.prod.map f f = f ≫ prod.lift (𝟙 Y) 0 := by simp
 #align category_theory.non_preadditive_abelian.lift_map CategoryTheory.NonPreadditiveAbelian.lift_map
@@ -325,14 +318,14 @@ def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ σ diag_σ) :=
 /-- This is the key identity satisfied by `σ`. -/
 theorem σ_comp {X Y : C} (f : X ⟶ Y) : σ ≫ f = Limits.prod.map f f ≫ σ := by
   obtain ⟨g, hg⟩ :=
-    cokernel_cofork.is_colimit.desc' is_colimit_σ (limits.prod.map f f ≫ σ) (by simp)
+    CokernelCofork.IsColimit.desc' isColimitσ (Limits.prod.map f f ≫ σ) (by simp)
   suffices hfg : f = g
-  · rw [← hg, cofork.π_of_π, hfg]
+  · rw [← hg, Cofork.π_ofπ, hfg]
   calc
-    f = f ≫ prod.lift (𝟙 Y) 0 ≫ σ := by rw [lift_σ, category.comp_id]
-    _ = prod.lift (𝟙 X) 0 ≫ limits.prod.map f f ≫ σ := by rw [lift_map_assoc]
-    _ = prod.lift (𝟙 X) 0 ≫ σ ≫ g := by rw [← hg, cokernel_cofork.π_of_π]
-    _ = g := by rw [← category.assoc, lift_σ, category.id_comp]
+    f = f ≫ prod.lift (𝟙 Y) 0 ≫ σ := by rw [lift_σ, Category.comp_id]
+    _ = prod.lift (𝟙 X) 0 ≫ Limits.prod.map f f ≫ σ := by rw [lift_map_assoc]
+    _ = prod.lift (𝟙 X) 0 ≫ σ ≫ g := by rw [← hg, CokernelCofork.π_ofπ]
+    _ = g := by rw [← Category.assoc, lift_σ, Category.id_comp]
     
 #align category_theory.non_preadditive_abelian.σ_comp CategoryTheory.NonPreadditiveAbelian.σ_comp
 
@@ -379,10 +372,10 @@ theorem sub_zero {X Y : C} (a : X ⟶ Y) : a - 0 = a := by
   conv_lhs =>
     congr
     congr
-    rw [← category.comp_id a]
+    rw [← Category.comp_id a]
     skip
     rw [show 0 = a ≫ (0 : Y ⟶ Y) by simp]
-  rw [← prod.comp_lift, category.assoc, lift_σ, category.comp_id]
+  rw [← prod.comp_lift, Category.assoc, lift_σ, Category.comp_id]
 #align category_theory.non_preadditive_abelian.sub_zero CategoryTheory.NonPreadditiveAbelian.sub_zero
 
 theorem sub_self {X Y : C} (a : X ⟶ Y) : a - a = 0 := by
@@ -473,8 +466,7 @@ theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f �
 #align category_theory.non_preadditive_abelian.add_comp CategoryTheory.NonPreadditiveAbelian.add_comp
 
 /-- Every `non_preadditive_abelian` category is preadditive. -/
-def preadditive : Preadditive C
-    where
+def preadditive : Preadditive C where
   homGroup X Y :=
     { add := (· + ·)
       add_assoc := add_assoc
@@ -484,8 +476,8 @@ def preadditive : Preadditive C
       neg := fun f => -f
       add_left_neg := neg_add_self
       add_comm := add_comm }
-  add_comp' := add_comp
-  comp_add' := comp_add
+  add_comp := add_comp
+  comp_add := comp_add
 #align category_theory.non_preadditive_abelian.preadditive CategoryTheory.NonPreadditiveAbelian.preadditive
 
 end
