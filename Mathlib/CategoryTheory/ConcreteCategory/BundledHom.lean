@@ -29,7 +29,7 @@ namespace CategoryTheory
 variable {c : Type u → Type u} (hom : ∀ ⦃α β : Type u⦄ (_ : c α) (_ : c β), Type u)
 
 /-- Class for bundled homs. Note that the arguments order follows that of lemmas for `MonoidHom`.
-This way we can use `⟨@monoid_hom.to_fun, @MonoidHom.id ...⟩` in an instance. -/
+This way we can use `⟨@MonoidHom.toFun, @MonoidHom.id ...⟩` in an instance. -/
 structure BundledHom where
   toFun : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), hom Iα Iβ → α → β
   id : ∀ {α : Type u} (I : c α), hom I I
@@ -54,10 +54,10 @@ variable [𝒞 : BundledHom hom]
 -- porting note: include not needed
 -- include 𝒞
 
-/-- Every `@bundled_hom c _` defines a category with objects in `bundled c`.
+/-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
-This instance generates the type-class problem `bundled_hom ?m` (which is why this is marked as
-`[nolint]`). Currently that is not a problem, as there are almost no instances of `bundled_hom`. -/
+This instance generates the type-class problem `BundledHom ?m` (which is why this is marked as
+`[nolint]`). Currently that is not a problem, as there are almost no instances of `BundledHom`. -/
 @[nolint dangerousInstance]
 instance category : Category (Bundled c) := by
   refine' { Hom := fun X Y => @hom X Y X.str Y.str
@@ -69,10 +69,10 @@ instance category : Category (Bundled c) := by
     aesop_cat
 #align category_theory.bundled_hom.category CategoryTheory.BundledHom.category
 
-/-- A category given by `bundled_hom` is a concrete category.
+/-- A category given by `BundledHom` is a concrete category.
 
-This instance generates the type-class problem `bundled_hom ?m` (which is why this is marked as
-`[nolint]`). Currently that is not a problem, as there are almost no instances of `bundled_hom`. -/
+This instance generates the type-class problem `BundledHom ?m` (which is why this is marked as
+`[nolint]`). Currently that is not a problem, as there are almost no instances of `BundledHom`. -/
 @[nolint dangerousInstance]
 instance concreteCategory : ConcreteCategory.{u} (Bundled c)
     where
@@ -81,14 +81,14 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
       map := @fun X Y f => 𝒞.toFun X.str Y.str f
       map_id := fun X => 𝒞.id_toFun X.str
       map_comp := by (intros; aesop_cat;erw [𝒞.comp_toFun]; rfl) }
-  forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext }
+  forget_faithful := { map_injective := by intros <;> apply 𝒞.hom_ext }
 #align category_theory.bundled_hom.concrete_category CategoryTheory.BundledHom.concreteCategory
 
 variable {hom}
 
 attribute [local instance] ConcreteCategory.hasCoeToFun
 
-/-- A version of `has_forget₂.mk'` for categories defined using `@bundled_hom`. -/
+/-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (Iα : d α) (Iβ : d β), Type u}
     [BundledHom hom_d] (obj : ∀ ⦃α⦄, c α → d α)
     (map : ∀ {X Y : Bundled c}, (X ⟶ Y) → ((Bundled.map obj X) ⟶ (Bundled.map obj Y)))
@@ -118,7 +118,7 @@ def MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (
 
 end
 
-/-- Construct the `bundled_hom` induced by a map between type classes.
+/-- Construct the `CategoryTheory.BundledHom` induced by a map between type classes.
 This is useful for building categories such as `CommMon` from `Mon`.
 -/
 def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
@@ -134,19 +134,19 @@ section
 -- porting note: commented out
 --omit 𝒞
 
-/-- We use the empty `parent_projection` class to label functions like `comm_monoid.to_monoid`,
-which we would like to use to automatically construct `bundled_hom` instances from.
+/-- We use the empty `ParentProjection` class to label functions like `CommMonoid.toMonoid`,
+which we would like to use to automatically construct `BundledHom` instances from.
 
 Once we've set up `Mon` as the category of bundled monoids,
 this allows us to set up `CommMon` by defining an instance
-```instance : parent_projection (comm_monoid.to_monoid) := ⟨⟩```
+```instance : ParentProjection (CommMonoid.toMonoid) := ⟨⟩```
 -/
 class ParentProjection (F : ∀ {α}, d α → c α)
 #align category_theory.bundled_hom.parent_projection CategoryTheory.BundledHom.ParentProjection
 
 end
 
--- The `parent_projection` typeclass is just a marker, so won't be used.
+-- The `ParentProjection` typeclass is just a marker, so won't be used.
 @[nolint unusedArguments]
 instance bundledHomOfParentProjection (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     BundledHom (MapHom hom @F) :=
