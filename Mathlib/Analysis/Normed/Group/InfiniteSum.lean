@@ -8,9 +8,9 @@ Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Intervals
-import Mathbin.Analysis.Normed.Group.Basic
-import Mathbin.Topology.Instances.Nnreal
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Instances.Nnreal
 
 /-!
 # Infinite sums in (semi)normed groups
@@ -42,8 +42,7 @@ variable {ι α E F : Type _} [SeminormedAddCommGroup E] [SeminormedAddCommGroup
 
 theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i in s, f i) ↔
-      ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i in t, f i‖ < ε :=
-  by
+      ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i in t, f i‖ < ε := by
   rw [cauchySeq_finset_iff_vanishing, nhds_basis_ball.forall_iff]
   · simp only [ball_zero_eq, Set.mem_setOf_eq]
   · rintro s t hst ⟨s', hs'⟩
@@ -56,8 +55,7 @@ theorem summable_iff_vanishing_norm [CompleteSpace E] {f : ι → E} :
 #align summable_iff_vanishing_norm summable_iff_vanishing_norm
 
 theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → ℝ} (hg : Summable g)
-    (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : CauchySeq fun s => ∑ i in s, f i :=
-  by
+    (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : CauchySeq fun s => ∑ i in s, f i := by
   refine' cauchySeq_finset_iff_vanishing_norm.2 fun ε hε => _
   rcases summable_iff_vanishing_norm.1 hg ε hε with ⟨s, hs⟩
   refine' ⟨s ∪ h.to_finset, fun t ht => _⟩
@@ -82,8 +80,7 @@ theorem cauchySeq_finset_of_norm_bounded {f : ι → E} (g : ι → ℝ) (hg : S
 See `cauchy_seq_finset_of_norm_bounded` for the same statement about absolutely convergent ones. -/
 theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
     (hg : CauchySeq fun n => ∑ i in range n, g i) (hf : ∀ i, ‖f i‖ ≤ g i) :
-    CauchySeq fun n => ∑ i in range n, f i :=
-  by
+    CauchySeq fun n => ∑ i in range n, f i := by
   refine' Metric.cauchySeq_iff'.2 fun ε hε => _
   refine' (Metric.cauchySeq_iff'.1 hg ε hε).imp fun N hg n hn => _
   specialize hg n hn
@@ -118,8 +115,7 @@ theorem hasSum_iff_tendsto_nat_of_summable_norm {f : ℕ → E} {a : E} (hf : Su
 /-- The direct comparison test for series:  if the norm of `f` is bounded by a real function `g`
 which is summable, then `f` is summable. -/
 theorem summable_of_norm_bounded [CompleteSpace E] {f : ι → E} (g : ι → ℝ) (hg : Summable g)
-    (h : ∀ i, ‖f i‖ ≤ g i) : Summable f :=
-  by
+    (h : ∀ i, ‖f i‖ ≤ g i) : Summable f := by
   rw [summable_iff_cauchySeq_finset]
   exact cauchySeq_finset_of_norm_bounded g hg h
 #align summable_of_norm_bounded summable_of_norm_bounded
@@ -133,8 +129,7 @@ theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : �
 summable, and for all `i`, `‖f i‖ ≤ g i`, then `‖∑' i, f i‖ ≤ ∑' i, g i`. Note that we do not
 assume that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete space. -/
 theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : HasSum g a)
-    (h : ∀ i, ‖f i‖ ≤ g i) : ‖∑' i : ι, f i‖ ≤ a :=
-  by
+    (h : ∀ i, ‖f i‖ ≤ g i) : ‖∑' i : ι, f i‖ ≤ a := by
   by_cases hf : Summable f
   · exact hf.has_sum.norm_le_of_bounded hg h
   · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
@@ -153,8 +148,7 @@ summable, and for all `i`, `‖f i‖₊ ≤ g i`, then `‖∑' i, f i‖₊ �
 do not assume that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete
 space. -/
 theorem tsum_of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} {a : ℝ≥0} (hg : HasSum g a)
-    (h : ∀ i, ‖f i‖₊ ≤ g i) : ‖∑' i : ι, f i‖₊ ≤ a :=
-  by
+    (h : ∀ i, ‖f i‖₊ ≤ g i) : ‖∑' i : ι, f i‖₊ ≤ a := by
   simp only [← NNReal.coe_le_coe, ← NNReal.hasSum_coe, coe_nnnorm] at *
   exact tsum_of_norm_bounded hg h
 #align tsum_of_nnnorm_bounded tsum_of_nnnorm_bounded
