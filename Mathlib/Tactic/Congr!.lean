@@ -85,23 +85,29 @@ partial def Congr!.mkHCongrThm (fType : Expr) (info : FunInfo) :
     withLocalDeclD `f fType fun ef =>
     withLocalDeclD `f' fType fun ef' => do
     withLocalDeclD `e (← mkEq ef ef') fun ee => do
-    withNewEqs xs ys fun eqs eqs' vals => do
-      let mut hs := #[ef, ef', ee]
-      let mut hs' := hs
-      let mut vals' := hs
-      for i in [0 : info.getArity] do
-        hs := hs.push xs[i]! |>.push ys[i]! |>.push eqs[i]!
-        hs' := hs'.push xs[i]! |>.push ys[i]! |>.push eqs'[i]!
-        vals' := vals'.push xs[i]! |>.push ys[i]! |>.push vals[i]!
-      let lhs := mkAppN ef xs
-      let rhs := mkAppN ef' ys
-      -- Generate the theorem with respect to the simpler hypotheses
-      let congrType ← mkForallFVars hs (← mkHEq lhs rhs)
-      let proof ← mkProof congrType
-      -- Now transform the theorem to be respect to the richer hypotheses
-      let congrType' ← mkForallFVars hs' (← mkHEq lhs rhs)
-      let proof' ← mkLambdaFVars hs' (← mkAppM' proof vals')
-      return (congrType', proof')
+      let lctx ← getLCtx
+      withNewEqs xs ys fun eqs eqs' vals => do
+        let mut hs := #[ef, ef', ee]
+        let mut hs' := hs
+        let mut vals' := hs
+        for i in [0 : info.getArity] do
+          hs := hs.push xs[i]! |>.push ys[i]! |>.push eqs[i]!
+          hs' := hs'.push xs[i]! |>.push ys[i]! |>.push eqs'[i]!
+          vals' := vals'.push xs[i]! |>.push ys[i]! |>.push vals[i]!
+        let lhs := mkAppN ef xs
+        let rhs := mkAppN ef' ys
+        -- Generate the theorem with respect to the simpler hypotheses
+        let congrType ← mkForallFVars hs (← mkHEq lhs rhs)
+        let proof ← mkProof congrType
+        -- Now transform the theorem to be with respect to the richer hypotheses
+        let congrType' ← mkForallFVars hs' (← mkHEq lhs rhs)
+        let proof' ← mkLambdaFVars hs' (← mkAppM' proof vals')
+        --let mut lctx := lctx
+        for i in [0 : info.getArity] do
+          let h' := eqs'[i]!
+          _ ← withLCtx lctx (← getLocalInstances) <| trySolve (← inferType h')
+          -- TODO
+        return (congrType', proof')
 where
   addPrimesToUserNames (ys : Array Expr) (lctx : LocalContext) : LocalContext := Id.run do
     let mut lctx := lctx
@@ -143,6 +149,11 @@ where
     let minor ← mkProof type.bindingBody!
     let motive ← mkLambdaFVars #[b] motive.bindingBody!
     mkLambdaFVars #[a, b, eqPr] (← mkEqNDRec motive minor major)
+  trySolve (eq : Expr) : MetaM (Option Expr) := commitWhenSome? do
+    let mvarId ← mkFreshExprMVar eq
+    trace[congr!] "trySolve {mvarId.mvarId!}"
+    -- TODO
+    return none
 
 /--
 Like `Lean.MVarId.congr?` but instead of using only the congruence lemma associated to the LHS,
@@ -435,8 +446,8 @@ where
         if ty.isArrow && (← isTrivialType ty.bindingDomain!) then
           if let some mvarId ← tryConst mvarId then
             return ← loop fvars mvarId
-        let mvarId ← (Option.getD · mvarId) <$> eqLift mvarId
-        let mvarId ← (Option.getD · mvarId) <$> iffLift mvarId
+        let mvarId := (← eqLift mvarId).getD mvarId
+        let mvarId := (← iffLift mvarId).getD mvarId
         let (fvar, mvarId) ← mvarId.intro1
         return (fvars.push fvar, mvarId)
       | _ => return (fvars, mvarId)
