@@ -55,7 +55,7 @@ attribute [local instance] endofunctorMonoidalCategory
 @[simps!]
 def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C) :=
   {-- We could avoid needing to do this explicitly by
-      -- constructing a partially applied analogue of `associator_nat_iso`.
+      -- constructing a partially applied analogue of `associatorNatIso`.
       tensoringRight
       C with
     ε := (rightUnitorNatIso C).inv
