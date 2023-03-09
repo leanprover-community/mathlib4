@@ -10,7 +10,7 @@ Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Instances.Nnreal
+import Mathlib.Topology.Instances.NNReal
 
 /-!
 # Infinite sums in (semi)normed groups
@@ -25,7 +25,7 @@ In a complete (semi)normed group,
   a summable series `∑' i, g i`, then `∑' i, f i` is summable as well; the same is true if the
   inequality hold only off some finite set.
 
-- `tsum_of_norm_bounded`, `has_sum.norm_le_of_bounded`: if `‖f i‖ ≤ g i`, where `∑' i, g i` is a
+- `tsum_of_norm_bounded`, `HasSum.norm_le_of_bounded`: if `‖f i‖ ≤ g i`, where `∑' i, g i` is a
   summable series, then `‖∑' i, f i‖ ≤ ∑' i, g i`.
 
 ## Tags
@@ -58,17 +58,17 @@ theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → �
     (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : CauchySeq fun s => ∑ i in s, f i := by
   refine' cauchySeq_finset_iff_vanishing_norm.2 fun ε hε => _
   rcases summable_iff_vanishing_norm.1 hg ε hε with ⟨s, hs⟩
-  refine' ⟨s ∪ h.to_finset, fun t ht => _⟩
+  refine' ⟨s ∪ h.toFinset, fun t ht => _⟩
   have : ∀ i ∈ t, ‖f i‖ ≤ g i := by
     intro i hi
-    simp only [disjoint_left, mem_union, not_or, h.mem_to_finset, Set.mem_compl_iff,
+    simp only [disjoint_left, mem_union, not_or, h.mem_toFinset, Set.mem_compl_iff,
       Classical.not_not] at ht
     exact (ht hi).2
   calc
     ‖∑ i in t, f i‖ ≤ ∑ i in t, g i := norm_sum_le_of_le _ this
     _ ≤ ‖∑ i in t, g i‖ := (le_abs_self _)
     _ < ε := hs _ (ht.mono_right le_sup_left)
-    
+
 #align cauchy_seq_finset_of_norm_bounded_eventually cauchySeq_finset_of_norm_bounded_eventually
 
 theorem cauchySeq_finset_of_norm_bounded {f : ι → E} (g : ι → ℝ) (hg : Summable g)
@@ -77,7 +77,7 @@ theorem cauchySeq_finset_of_norm_bounded {f : ι → E} (g : ι → ℝ) (hg : S
 #align cauchy_seq_finset_of_norm_bounded cauchySeq_finset_of_norm_bounded
 
 /-- A version of the **direct comparison test** for conditionally convergent series.
-See `cauchy_seq_finset_of_norm_bounded` for the same statement about absolutely convergent ones. -/
+See `cauchySeq_finset_of_norm_bounded` for the same statement about absolutely convergent ones. -/
 theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
     (hg : CauchySeq fun n => ∑ i in range n, g i) (hf : ∀ i, ‖f i‖ ≤ g i) :
     CauchySeq fun n => ∑ i in range n, f i := by
@@ -90,12 +90,12 @@ theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
     _ ≤ ∑ k in _, g k := (sum_le_sum fun x _ => hf x)
     _ ≤ ‖∑ k in _, g k‖ := (le_abs_self _)
     _ < ε := hg
-    
+
 #align cauchy_seq_range_of_norm_bounded cauchySeq_range_of_norm_bounded
 
 theorem cauchySeq_finset_of_summable_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) :
     CauchySeq fun s : Finset ι => ∑ a in s, f a :=
-  cauchySeq_finset_of_norm_bounded _ hf fun i => le_rfl
+  cauchySeq_finset_of_norm_bounded _ hf fun _i => le_rfl
 #align cauchy_seq_finset_of_summable_norm cauchySeq_finset_of_summable_norm
 
 /-- If a function `f` is summable in norm, and along some sequence of finsets exhausting the space
@@ -122,7 +122,7 @@ theorem summable_of_norm_bounded [CompleteSpace E] {f : ι → E} (g : ι → �
 
 theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b :=
-  le_of_tendsto_of_tendsto' hf.norm hg fun s => norm_sum_le_of_le _ fun i hi => h i
+  le_of_tendsto_of_tendsto' hf.norm hg fun _s => norm_sum_le_of_le _ fun i _hi => h i
 #align has_sum.norm_le_of_bounded HasSum.norm_le_of_bounded
 
 /-- Quantitative result associated to the direct comparison test for series:  If `∑' i, g i` is
@@ -131,16 +131,16 @@ assume that `∑' i, f i` is summable, and it might not be the case if `α` is n
 theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : HasSum g a)
     (h : ∀ i, ‖f i‖ ≤ g i) : ‖∑' i : ι, f i‖ ≤ a := by
   by_cases hf : Summable f
-  · exact hf.has_sum.norm_le_of_bounded hg h
+  · exact hf.hasSum.norm_le_of_bounded hg h
   · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
-    exact ge_of_tendsto' hg fun s => sum_nonneg fun i hi => (norm_nonneg _).trans (h i)
+    exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
 #align tsum_of_norm_bounded tsum_of_norm_bounded
 
 /-- If `∑' i, ‖f i‖` is summable, then `‖∑' i, f i‖ ≤ (∑' i, ‖f i‖)`. Note that we do not assume
 that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete space. -/
 theorem norm_tsum_le_tsum_norm {f : ι → E} (hf : Summable fun i => ‖f i‖) :
     ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ :=
-  tsum_of_norm_bounded hf.HasSum fun i => le_rfl
+  tsum_of_norm_bounded hf.hasSum fun _i => le_rfl
 #align norm_tsum_le_tsum_norm norm_tsum_le_tsum_norm
 
 /-- Quantitative result associated to the direct comparison test for series: If `∑' i, g i` is
@@ -157,7 +157,7 @@ theorem tsum_of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} {a : ℝ≥0}
 we do not assume that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete
 space. -/
 theorem nnnorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : ‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊ :=
-  tsum_of_nnnorm_bounded hf.HasSum fun i => le_rfl
+  tsum_of_nnnorm_bounded hf.hasSum fun _i => le_rfl
 #align nnnorm_tsum_le nnnorm_tsum_le
 
 variable [CompleteSpace E]
@@ -176,10 +176,9 @@ theorem summable_of_nnnorm_bounded {f : ι → E} (g : ι → ℝ≥0) (hg : Sum
 #align summable_of_nnnorm_bounded summable_of_nnnorm_bounded
 
 theorem summable_of_summable_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
-  summable_of_norm_bounded _ hf fun i => le_rfl
+  summable_of_norm_bounded _ hf fun _i => le_rfl
 #align summable_of_summable_norm summable_of_summable_norm
 
 theorem summable_of_summable_nnnorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
-  summable_of_nnnorm_bounded _ hf fun i => le_rfl
+  summable_of_nnnorm_bounded _ hf fun _i => le_rfl
 #align summable_of_summable_nnnorm summable_of_summable_nnnorm
-
