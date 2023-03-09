@@ -190,7 +190,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   refine' ⟨mk _ b, Quot.sound _⟩
   --quot.sound hb
   rw [← eq_sub_iff_add_eq'] at abc
-  rw [abc, ← neg_mem_iff, neg_sub] at hc
+  rw [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
   rw [Submodule.quotientRel_r_def]
   convert hc
 #align ideal.quotient.exists_inv Ideal.Quotient.exists_inv
