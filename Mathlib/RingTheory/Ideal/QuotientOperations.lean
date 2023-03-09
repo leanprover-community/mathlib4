@@ -8,8 +8,8 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Operations
-import Mathbin.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # More operations on modules and ideals related to quotients
@@ -43,8 +43,7 @@ theorem kerLift_injective (f : R →+* S) : Function.Injective (kerLift f) := fu
 #align ring_hom.ker_lift_injective RingHom.kerLift_injective
 
 theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a : R, a ∈ I → f a = 0)
-    (hI : f.ker ≤ I) : Function.Injective (Ideal.Quotient.lift I f H) :=
-  by
+    (hI : f.ker ≤ I) : Function.Injective (Ideal.Quotient.lift I f H) := by
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
   intro u hu
   obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective u
@@ -102,15 +101,13 @@ theorem mk_ker {I : Ideal R} : (Quotient.mk I).ker = I := by
   ext <;> rw [RingHom.ker, mem_comap, Submodule.mem_bot, quotient.eq_zero_iff_mem]
 #align ideal.mk_ker Ideal.mk_ker
 
-theorem map_mk_eq_bot_of_le {I J : Ideal R} (h : I ≤ J) : I.map J.Quotient.mk = ⊥ :=
-  by
+theorem map_mk_eq_bot_of_le {I J : Ideal R} (h : I ≤ J) : I.map J.Quotient.mk = ⊥ := by
   rw [map_eq_bot_iff_le_ker, mk_ker]
   exact h
 #align ideal.map_mk_eq_bot_of_le Ideal.map_mk_eq_bot_of_le
 
 theorem ker_quotient_lift {S : Type v} [CommRing S] {I : Ideal R} (f : R →+* S) (H : I ≤ f.ker) :
-    (Ideal.Quotient.lift I f H).ker = f.ker.map I.Quotient.mk :=
-  by
+    (Ideal.Quotient.lift I f H).ker = f.ker.map I.Quotient.mk := by
   ext x
   constructor
   · intro hx
@@ -261,8 +258,7 @@ theorem Quotient.liftₐ_comp (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a :
 #align ideal.quotient.liftₐ_comp Ideal.Quotient.liftₐ_comp
 
 theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ f.toRingHom.ker) :
-    f.toRingHom.kerLift (r • x) = r • f.toRingHom.kerLift x :=
-  by
+    f.toRingHom.kerLift (r • x) = r • f.toRingHom.kerLift x := by
   obtain ⟨a, rfl⟩ := quotient.mkₐ_surjective R₁ _ x
   rw [← AlgHom.map_smul, quotient.mkₐ_eq_mk, RingHom.kerLift_mk]
   exact f.map_smul _ _
@@ -382,8 +378,7 @@ theorem quotientEquiv_symm_mk (I : Ideal R) (J : Ideal S) (f : R ≃+* S)
 
 /-- `H` and `h` are kept as separate hypothesis since H is used in constructing the quotient map. -/
 theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : J ≤ I.comap f}
-    (h : I.comap f ≤ J) : Function.Injective (quotientMap I f H) :=
-  by
+    (h : I.comap f ≤ J) : Function.Injective (quotientMap I f H) := by
   refine' (injective_iff_map_eq_zero (QuotientMap I f H)).2 fun a ha => _
   obtain ⟨r, rfl⟩ := quotient.mk_surjective a
   rw [quotient_map_mk, quotient.eq_zero_iff_mem] at ha
@@ -409,8 +404,7 @@ theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type _} [CommRing R'] [CommRing 
     (quotientMap I g' le_rfl).comp (quotientMap (I.comap g') f le_rfl) =
       (quotientMap I f' le_rfl).comp
         (quotientMap (I.comap f') g
-          (le_of_eq (trans (comap_comap f g') (hfg ▸ comap_comap g f')))) :=
-  by
+          (le_of_eq (trans (comap_comap f g') (hfg ▸ comap_comap g f')))) := by
   refine' RingHom.ext fun a => _
   obtain ⟨r, rfl⟩ := quotient.mk_surjective a
   simp only [RingHom.comp_apply, quotient_map_mk]
@@ -447,8 +441,7 @@ instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
 #align ideal.quotient_algebra Ideal.quotientAlgebra
 
 theorem algebraMap_quotient_injective {I : Ideal A} [Algebra R A] :
-    Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) :=
-  by
+    Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := quotient.eq.mp hab
   rw [← RingHom.map_sub] at hab
