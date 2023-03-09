@@ -120,12 +120,6 @@ instance (X : C) : AddCommGroup (End X) := by
   dsimp [End]
   infer_instance
 
-instance (X : C) : Ring (End X) :=
-  { (inferInstance : AddCommGroup (End X)),
-    (inferInstance : Monoid (End X)) with
-    left_distrib := fun f g h => Preadditive.add_comp X X X g h f
-    right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
-
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
   mk' (fun g => f ≫ g) fun g g' => by simp
@@ -212,11 +206,28 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 #align category_theory.preadditive.preadditive_has_zero_morphisms CategoryTheory.Preadditive.preadditiveHasZeroMorphisms
 
+/--Porting note: adding this before the ring instance allowed moduleEndRight to find 
+the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms 
+to make use of them -/
+instance {X : C} : Semiring (End X) := 
+  { End.monoid with 
+    zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _ 
+    mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
+    left_distrib := fun f g h => Preadditive.add_comp X X X g h f
+    right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
+
+/-- Porting note: It looks like Ring's parent classes changed in 
+Lean 4 so the previous instance needed modification. Was following my nose here. -/
+instance {X : C} : Ring (End X) := 
+  { (inferInstance : Semiring (End X)),
+    (inferInstance : AddCommGroup (End X)) with
+    add_left_neg := add_left_neg }
+
 instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
-  smul_add r f g := add_comp _ _ _ _ _ _
-  smul_zero r := zero_comp
-  add_smul r s f := comp_add _ _ _ _ _ _
-  zero_smul r := comp_zero
+  smul_add _ _ _ := add_comp _ _ _ _ _ _
+  smul_zero _ := zero_comp
+  add_smul _ _ _ := comp_add _ _ _ _ _ _
+  zero_smul _ := comp_zero
 #align category_theory.preadditive.module_End_right CategoryTheory.Preadditive.moduleEndRight
 
 theorem mono_of_cancel_zero {Q R : C} (f : Q ⟶ R) (h : ∀ {P : C} (g : P ⟶ Q), g ≫ f = 0 → g = 0) :
