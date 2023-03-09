@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Normed groups homomorphisms
@@ -177,8 +177,7 @@ def SurjectiveOnWith (f : NormedAddGroupHom V₁ V₂) (K : AddSubgroup V₂) (C
 #align normed_add_group_hom.surjective_on_with NormedAddGroupHom.SurjectiveOnWith
 
 theorem SurjectiveOnWith.mono {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup V₂} {C C' : ℝ}
-    (h : f.SurjectiveOnWith K C) (H : C ≤ C') : f.SurjectiveOnWith K C' :=
-  by
+    (h : f.SurjectiveOnWith K C) (H : C ≤ C') : f.SurjectiveOnWith K C' := by
   intro k k_in
   rcases h k k_in with ⟨g, rfl, hg⟩
   use g, rfl
@@ -188,8 +187,7 @@ theorem SurjectiveOnWith.mono {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup
 #align normed_add_group_hom.surjective_on_with.mono NormedAddGroupHom.SurjectiveOnWith.mono
 
 theorem SurjectiveOnWith.exists_pos {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup V₂} {C : ℝ}
-    (h : f.SurjectiveOnWith K C) : ∃ C' > 0, f.SurjectiveOnWith K C' :=
-  by
+    (h : f.SurjectiveOnWith K C) : ∃ C' > 0, f.SurjectiveOnWith K C' := by
   refine' ⟨|C| + 1, _, _⟩
   · linarith [abs_nonneg C]
   · apply h.mono
@@ -235,8 +233,7 @@ theorem op_norm_nonneg : 0 ≤ ‖f‖ :=
 #align normed_add_group_hom.op_norm_nonneg NormedAddGroupHom.op_norm_nonneg
 
 /-- The fundamental property of the operator norm: `‖f x‖ ≤ ‖f‖ * ‖x‖`. -/
-theorem le_op_norm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ :=
-  by
+theorem le_op_norm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, Cpos, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
@@ -430,8 +427,7 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V�
 #align normed_add_group_hom.norm_id_of_nontrivial_seminorm NormedAddGroupHom.norm_id_of_nontrivial_seminorm
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
-theorem norm_id {V : Type _} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 :=
-  by
+theorem norm_id {V : Type _} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
   refine' norm_id_of_nontrivial_seminorm V _
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
@@ -662,8 +658,7 @@ theorem norm_comp_le_of_le {g : NormedAddGroupHom V₂ V₃} {C₁ C₂ : ℝ} (
 #align normed_add_group_hom.norm_comp_le_of_le NormedAddGroupHom.norm_comp_le_of_le
 
 theorem norm_comp_le_of_le' {g : NormedAddGroupHom V₂ V₃} (C₁ C₂ C₃ : ℝ) (h : C₃ = C₂ * C₁)
-    (hg : ‖g‖ ≤ C₂) (hf : ‖f‖ ≤ C₁) : ‖g.comp f‖ ≤ C₃ :=
-  by
+    (hg : ‖g‖ ≤ C₂) (hf : ‖f‖ ≤ C₁) : ‖g.comp f‖ ≤ C₃ := by
   rw [h]
   exact norm_comp_le_of_le hg hf
 #align normed_add_group_hom.norm_comp_le_of_le' NormedAddGroupHom.norm_comp_le_of_le'
@@ -685,15 +680,13 @@ def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ 
 #align normed_add_group_hom.comp_hom NormedAddGroupHom.compHom
 
 @[simp]
-theorem comp_zero (f : NormedAddGroupHom V₂ V₃) : f.comp (0 : NormedAddGroupHom V₁ V₂) = 0 :=
-  by
+theorem comp_zero (f : NormedAddGroupHom V₂ V₃) : f.comp (0 : NormedAddGroupHom V₁ V₂) = 0 := by
   ext
   exact map_zero f
 #align normed_add_group_hom.comp_zero NormedAddGroupHom.comp_zero
 
 @[simp]
-theorem zero_comp (f : NormedAddGroupHom V₁ V₂) : (0 : NormedAddGroupHom V₂ V₃).comp f = 0 :=
-  by
+theorem zero_comp (f : NormedAddGroupHom V₁ V₂) : (0 : NormedAddGroupHom V₂ V₃).comp f = 0 := by
   ext
   rfl
 #align normed_add_group_hom.zero_comp NormedAddGroupHom.zero_comp
@@ -746,8 +739,7 @@ def ker : AddSubgroup V₁ :=
   f.toAddMonoidHom.ker
 #align normed_add_group_hom.ker NormedAddGroupHom.ker
 
-theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 :=
-  by
+theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
   erw [f.to_add_monoid_hom.mem_ker]
   rfl
 #align normed_add_group_hom.mem_ker NormedAddGroupHom.mem_ker
@@ -770,15 +762,13 @@ def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker
 #align normed_add_group_hom.ker.lift NormedAddGroupHom.ker.lift
 
 @[simp]
-theorem ker.incl_comp_lift (h : g.comp f = 0) : (incl g.ker).comp (ker.lift f g h) = f :=
-  by
+theorem ker.incl_comp_lift (h : g.comp f = 0) : (incl g.ker).comp (ker.lift f g h) = f := by
   ext
   rfl
 #align normed_add_group_hom.ker.incl_comp_lift NormedAddGroupHom.ker.incl_comp_lift
 
 @[simp]
-theorem ker_zero : (0 : NormedAddGroupHom V₁ V₂).ker = ⊤ :=
-  by
+theorem ker_zero : (0 : NormedAddGroupHom V₁ V₂).ker = ⊤ := by
   ext
   simp [mem_ker]
 #align normed_add_group_hom.ker_zero NormedAddGroupHom.ker_zero
@@ -807,8 +797,7 @@ def range : AddSubgroup V₂ :=
   f.toAddMonoidHom.range
 #align normed_add_group_hom.range NormedAddGroupHom.range
 
-theorem mem_range (v : V₂) : v ∈ f.range ↔ ∃ w, f w = v :=
-  by
+theorem mem_range (v : V₂) : v ∈ f.range ↔ ∃ w, f w = v := by
   rw [range, AddMonoidHom.mem_range]
   rfl
 #align normed_add_group_hom.mem_range NormedAddGroupHom.mem_range
@@ -818,14 +807,12 @@ theorem mem_range_self (v : V₁) : f v ∈ f.range :=
   ⟨v, rfl⟩
 #align normed_add_group_hom.mem_range_self NormedAddGroupHom.mem_range_self
 
-theorem comp_range : (g.comp f).range = AddSubgroup.map g.toAddMonoidHom f.range :=
-  by
+theorem comp_range : (g.comp f).range = AddSubgroup.map g.toAddMonoidHom f.range := by
   erw [AddMonoidHom.map_range]
   rfl
 #align normed_add_group_hom.comp_range NormedAddGroupHom.comp_range
 
-theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s :=
-  by
+theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by
   ext x
   exact ⟨fun ⟨y, hy⟩ => by rw [← hy] <;> simp, fun hx => ⟨⟨x, hx⟩, by simp⟩⟩
 #align normed_add_group_hom.incl_range NormedAddGroupHom.incl_range
@@ -846,8 +833,7 @@ def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
 
 namespace NormNoninc
 
-theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 :=
-  by
+theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 := by
   refine' ⟨fun h => _, fun h => fun v => _⟩
   · refine' op_norm_le_bound _ zero_le_one fun v => _
     simpa [one_mul] using h v
@@ -915,8 +901,7 @@ def ι : NormedAddGroupHom (f.equalizer g) V :=
   incl _
 #align normed_add_group_hom.equalizer.ι NormedAddGroupHom.equalizer.ι
 
-theorem comp_ι_eq : f.comp (ι f g) = g.comp (ι f g) :=
-  by
+theorem comp_ι_eq : f.comp (ι f g) = g.comp (ι f g) := by
   ext
   rw [comp_apply, comp_apply, ← sub_eq_zero, ← NormedAddGroupHom.sub_apply]
   exact x.2
@@ -983,8 +968,7 @@ theorem ι_comp_map (hf : ψ.comp f₁ = f₂.comp φ) (hg : ψ.comp g₁ = g₂
 #align normed_add_group_hom.equalizer.ι_comp_map NormedAddGroupHom.equalizer.ι_comp_map
 
 @[simp]
-theorem map_id : map (id V₁) (id W₁) rfl rfl = id (f₁.equalizer g₁) :=
-  by
+theorem map_id : map (id V₁) (id W₁) rfl rfl = id (f₁.equalizer g₁) := by
   ext
   rfl
 #align normed_add_group_hom.equalizer.map_id NormedAddGroupHom.equalizer.map_id
@@ -997,8 +981,7 @@ theorem comm_sq₂ (hf : ψ.comp f₁ = f₂.comp φ) (hf' : ψ'.comp f₂ = f�
 theorem map_comp_map (hf : ψ.comp f₁ = f₂.comp φ) (hg : ψ.comp g₁ = g₂.comp φ)
     (hf' : ψ'.comp f₂ = f₃.comp φ') (hg' : ψ'.comp g₂ = g₃.comp φ') :
     (map φ' ψ' hf' hg').comp (map φ ψ hf hg) =
-      map (φ'.comp φ) (ψ'.comp ψ) (comm_sq₂ hf hf') (comm_sq₂ hg hg') :=
-  by
+      map (φ'.comp φ) (ψ'.comp ψ) (comm_sq₂ hf hf') (comm_sq₂ hg hg') := by
   ext
   rfl
 #align normed_add_group_hom.equalizer.map_comp_map NormedAddGroupHom.equalizer.map_comp_map
