@@ -1037,7 +1037,7 @@ theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by si
 
 @[simp]
 theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
-  Complex.abs_of_nonneg (AbsoluteValue.nonneg _)
+  _root_.abs_of_nonneg (AbsoluteValue.nonneg _ z)
 #align complex.abs_abs Complex.abs_abs
 
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
