@@ -739,7 +739,7 @@ noncomputable def ofInjectiveField {E F : Type _} [DivisionRing E] [Semiring F] 
 
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
 `subalgebra_map` is the induced equivalence between `S` and `S.map e` -/
-@[simps]
+@[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map e.toAlgHom :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
     commutes' := fun r => by
@@ -972,7 +972,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
 #align algebra.bot_equiv_of_injective Algebra.botEquivOfInjective
 
 /-- The bottom subalgebra is isomorphic to the field. -/
-@[simps symm_apply]
+@[simps! symm_apply]
 noncomputable def botEquiv (F R : Type _) [Field F] [Semiring R] [Nontrivial R] [Algebra F R] :
     (⊥ : Subalgebra F R) ≃ₐ[F] F :=
   botEquivOfInjective (RingHom.injective _)
@@ -993,7 +993,7 @@ variable (S : Subalgebra R A)
 /-- The top subalgebra is isomorphic to the algebra.
 
 This is the algebra version of `Submodule.topEquiv`. -/
-@[simps]
+@[simps!]
 def topEquiv : (⊤ : Subalgebra R A) ≃ₐ[R] A :=
   AlgEquiv.ofAlgHom (Subalgebra.val ⊤) toTop rfl <| AlgHom.ext fun _ => Subtype.ext rfl
 #align subalgebra.top_equiv Subalgebra.topEquiv
