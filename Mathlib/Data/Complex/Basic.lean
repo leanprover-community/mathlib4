@@ -769,8 +769,7 @@ theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align complex.conj_inv Complex.conj_inv
 
--- Porting note: removed `norm_cast`
-@[simp]
+@[simp, norm_cast]
 theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : ℂ) = r / s :=
   map_div₀ ofReal r s
 #align complex.of_real_div Complex.ofReal_div
