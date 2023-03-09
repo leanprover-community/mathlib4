@@ -249,7 +249,7 @@ section Zero
 variable [∀ x, Zero (E x)]
 
 /-- A fiberwise inverse to `e`. This is the function `F → E b` that induces a local inverse
-`B × F → total_space E` of `e` on `e.base_set`. It is defined to be `0` outside `e.base_set`. -/
+`B × F → total_space E` of `e` on `e.baseSet`. It is defined to be `0` outside `e.baseSet`. -/
 protected noncomputable def symm (e : Pretrivialization F (π E)) (b : B) (y : F) : E b :=
   if hb : b ∈ e.baseSet then
     cast (congr_arg E (e.proj_symm_apply' hb)) (e.toLocalEquiv.symm (b, y)).2
@@ -299,7 +299,7 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace E)]
 
 /-- A structure extending local homeomorphisms, defining a local trivialization of a projection
 `proj : Z → B` with fiber `F`, as a local homeomorphism between `Z` and `B × F` defined between two
-sets of the form `proj ⁻¹' base_set` and `base_set × F`, acting trivially on the first coordinate.
+sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
 -- porting note: todo: was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends LocalHomeomorph Z (B × F) where
@@ -592,7 +592,7 @@ section Zero
 variable [∀ x, Zero (E x)]
 
 /-- A fiberwise inverse to `e'`. The function `F → E x` that induces a local inverse
-`B × F → total_space E` of `e'` on `e'.base_set`. It is defined to be `0` outside `e'.base_set`. -/
+`B × F → total_space E` of `e'` on `e'.baseSet`. It is defined to be `0` outside `e'.baseSet`. -/
 protected noncomputable def symm (e : Trivialization F (π E)) (b : B) (y : F) : E b :=
   e.toPretrivialization.symm b y
 #align trivialization.symm Trivialization.symm
@@ -751,8 +751,8 @@ theorem frontier_preimage (e : Trivialization F proj) (s : Set B) :
 
 /-- Given two bundle trivializations `e`, `e'` of `proj : Z → B` and a set `s : Set B` such that
 the base sets of `e` and `e'` intersect `frontier s` on the same set and `e p = e' p` whenever
-`proj p ∈ e.base_set ∩ frontier s`, `e.piecewise e' s Hs Heq` is the bundle trivialization over
-`Set.ite s e.base_set e'.base_set` that is equal to `e` on `proj ⁻¹ s` and is equal to `e'`
+`proj p ∈ e.baseSet ∩ frontier s`, `e.piecewise e' s Hs Heq` is the bundle trivialization over
+`Set.ite s e.baseSet e'.baseSet` that is equal to `e` on `proj ⁻¹ s` and is equal to `e'`
 otherwise. -/
 noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
     (Hs : e.baseSet ∩ frontier s = e'.baseSet ∩ frontier s)
@@ -773,9 +773,9 @@ noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
 #align trivialization.piecewise Trivialization.piecewise
 
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B`
-over a linearly ordered base `B` and a point `a ∈ e.base_set ∩ e'.base_set` such that
+over a linearly ordered base `B` and a point `a ∈ e.baseSet ∩ e'.baseSet` such that
 `e` equals `e'` on `proj ⁻¹' {a}`, `e.piecewise_le_of_eq e' a He He' Heq` is the bundle
-trivialization over `Set.ite (Iic a) e.base_set e'.base_set` that is equal to `e` on points `p`
+trivialization over `Set.ite (Iic a) e.baseSet e'.baseSet` that is equal to `e` on points `p`
 such that `proj p ≤ a` and is equal to `e'` otherwise. -/
 noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Trivialization F proj)
     (a : B) (He : a ∈ e.baseSet) (He' : a ∈ e'.baseSet) (Heq : ∀ p, proj p = a → e p = e' p) :
@@ -788,8 +788,8 @@ noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Triv
 #align trivialization.piecewise_le_of_eq Trivialization.piecewiseLeOfEq
 
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B` over a
-linearly ordered base `B` and a point `a ∈ e.base_set ∩ e'.base_set`, `e.piecewise_le e' a He He'`
-is the bundle trivialization over `Set.ite (Iic a) e.base_set e'.base_set` that is equal to `e` on
+linearly ordered base `B` and a point `a ∈ e.baseSet ∩ e'.baseSet`, `e.piecewise_le e' a He He'`
+is the bundle trivialization over `Set.ite (Iic a) e.baseSet e'.baseSet` that is equal to `e` on
 points `p` such that `proj p ≤ a` and is equal to `((e' p).1, h (e' p).2)` otherwise, where
 `h = `e'.coord_change_homeomorph e _ _` is the homeomorphism of the fiber such that
 `h (e' p).2 = (e p).2` whenever `e p = a`. -/
