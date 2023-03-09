@@ -29,6 +29,7 @@ open BigOperators
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebra_map`. -/
 structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
   Subsemiring A : Type v where
+  /-- The image of `algebraMap` is contained in the underlying set of the subalgebra -/
   algebraMap_mem' : ∀ r, algebraMap R A r ∈ carrier
   zero_mem' := (algebraMap R A).map_zero ▸ algebraMap_mem' 0
   one_mem' := (algebraMap R A).map_one ▸ algebraMap_mem' 1
@@ -55,10 +56,11 @@ instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
   one_mem {s} := one_mem s.toSubsemiring
   zero_mem {s} := zero_mem s.toSubsemiring
 
-@[simp]
-theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
-  Iff.rfl
-#align subalgebra.mem_carrier Subalgebra.mem_carrier
+-- Porting note: not ported since SetLike takes care of this
+-- @[simp]
+-- theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
+--   by simp
+-- #align subalgebra.mem_carrier Subalgebra.mem_carrier
 
 @[ext]
 theorem ext {S T : Subalgebra R A} (h : ∀ x : A, x ∈ S ↔ x ∈ T) : S = T :=
