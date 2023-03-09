@@ -15,7 +15,7 @@ import Mathlib.Algebra.Regular.SMul
 # Theory of monic polynomials
 
 We give several tools for proving that polynomials are monic, e.g.
-`monic.mul`, `monic.map`, `monic.pow`.
+`Monic.mul`, `Monic.map`, `Monic.pow`.
 -/
 
 
