@@ -29,7 +29,7 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool)
   let v ← mkFreshExprMVar (← mkAppM ``Eq (if sym then #[src, tgt] else #[tgt, src]))
   g.assign (← mkAppM (if sym then ``Eq.mp else ``Eq.mpr) #[v, e])
   let m := v.mvarId!
-  try m.congrN! (depth.getD 1000000) config
+  try m.congrN! depth config
   catch _ => return [m]
 
 /--
