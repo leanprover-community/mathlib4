@@ -42,7 +42,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not min"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(min)
   match ← core zα pα a, ← core zα pα b with
   | .positive pa, .positive pb => pure (.positive q(lt_min $pa $pb))
@@ -61,7 +61,7 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
     | throwError "not max"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(max)
   let result : Strictness zα pα e ← catchNone do
     let ra ← core zα pα a
@@ -90,7 +90,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not +"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(AddZeroClass $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HAdd.hAdd)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
@@ -131,7 +131,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not *"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HMul.hMul)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
@@ -215,7 +215,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
@@ -235,7 +235,7 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
   let ra ← core zα pα a
   match ra with
