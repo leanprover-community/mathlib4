@@ -42,7 +42,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) : IO Unit := do
     IO.println s!"Attempting to download {size} file(s)"
     IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
     discard $ IO.runCmd "curl"
-      #["-X", "GET", "--parallel", "-f", "-s", "-K", IO.CURLCFG.toString] false
+      #["--request", "GET", "--parallel", "--fail", "--silent", "--config", IO.CURLCFG.toString] false
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to download"
 
