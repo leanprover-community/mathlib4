@@ -603,6 +603,8 @@ noncomputable def map (g : R →+* P) (hy : M ≤ T.comap g) : S →+* Q :=
 
 end
 
+--Porting note: added `simp` attribute, since it proves very similar lemmas marked `simp`
+@[simp]
 theorem map_eq (x) : map Q g hy ((algebraMap R S) x) = algebraMap P Q (g x) :=
   lift_eq (fun y => map_units _ ⟨g y, hy y.2⟩) x
 #align is_localization.map_eq IsLocalization.map_eq
@@ -616,6 +618,12 @@ theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.
   @Submonoid.LocalizationMap.map_mk' _ _ _ _ _ _ _ (toLocalizationMap M S) g.toMonoidHom _
     (fun y => hy y.2) _ _ (toLocalizationMap T Q) _ _
 #align is_localization.map_mk' IsLocalization.map_mk'
+
+--Porting note: new theorem
+@[simp]
+theorem map_id_mk' {Q : Type _} [CommSemiring Q] [Algebra R Q] [IsLocalization M Q] (x) (y : M) :
+    map Q (RingHom.id R) (le_refl M) (mk' S x y) = mk' Q x y :=
+  map_mk' _ _ _
 
 @[simp]
 theorem map_id (z : S) (h : M ≤ M.comap (RingHom.id R) := le_refl M) :
@@ -685,7 +693,7 @@ theorem ringEquivOfRingEquiv_eq_map {j : R ≃+* P} (H : M.map j.toMonoidHom = T
   rfl
 #align is_localization.ring_equiv_of_ring_equiv_eq_map IsLocalization.ringEquivOfRingEquiv_eq_map
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it
 theorem ringEquivOfRingEquiv_eq {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (x) :
     ringEquivOfRingEquiv S Q j H ((algebraMap R S) x) = algebraMap P Q (j x) :=
   map_eq _ _
@@ -717,12 +725,13 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 
 end
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
   map_mk' _ _ _
+
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it
 theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = mk' S x y :=
   map_mk' _ _ _
 #align is_localization.alg_equiv_symm_mk' IsLocalization.algEquiv_symm_mk'
@@ -1020,6 +1029,8 @@ theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=
   rfl
 #align localization.mk_one_eq_algebra_map Localization.mk_one_eq_algebraMap
 
+--Porting note: removed `simp`. Left hand side can be simplified; not clear what normal form should
+--be.
 theorem mk_eq_mk'_apply (x y) : mk x y = IsLocalization.mk' (Localization M) x y := by
   rw [mk_eq_monoidOf_mk'_apply, mk', toLocalizationMap_eq_monoidOf]
 #align localization.mk_eq_mk'_apply Localization.mk_eq_mk'_apply
@@ -1059,12 +1070,12 @@ noncomputable def _root_.IsLocalization.unique (R Rₘ) [CommSemiring R] [CommSe
 
 end
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S (mk' (Localization M) x y) = mk' S x y :=
   algEquiv_mk' _ _
 #align localization.alg_equiv_mk' Localization.algEquiv_mk'
 
-@[simp]
+--Porting note: removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_symm_mk' (x : R) (y : M) :
     (algEquiv M S).symm (mk' S x y) = mk' (Localization M) x y :=
   algEquiv_symm_mk' _ _
@@ -1392,3 +1403,4 @@ theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)
 end Algebra
 
 end CommRing
+#lint

@@ -259,6 +259,11 @@ theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
   ext fun _ => rfl
 #align ring_equiv.symm_symm RingEquiv.symm_symm
 
+--Porting note: new theorem
+@[simp]
+theorem symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=
+  rfl
+
 @[simp]
 theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).symm :=
   rfl
