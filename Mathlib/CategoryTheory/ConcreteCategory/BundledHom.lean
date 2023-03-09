@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 # Category instances for algebraic structures that use bundled homs.
 
 Many algebraic structures in Lean initially used unbundled homs (e.g. a bare function between types,
-along with an `is_monoid_hom` typeclass), but the general trend is towards using bundled homs.
+along with an `IsMonoidHom` typeclass), but the general trend is towards using bundled homs.
 
 This file provides a basic infrastructure to define concrete categories using bundled homs, and
 define forgetful functors between them.
@@ -28,8 +28,8 @@ namespace CategoryTheory
 
 variable {c : Type u → Type u} (hom : ∀ ⦃α β : Type u⦄ (_ : c α) (_ : c β), Type u)
 
-/-- Class for bundled homs. Note that the arguments order follows that of lemmas for `monoid_hom`.
-This way we can use `⟨@monoid_hom.to_fun, @monoid_hom.id ...⟩` in an instance. -/
+/-- Class for bundled homs. Note that the arguments order follows that of lemmas for `MonoidHom`.
+This way we can use `⟨@monoid_hom.to_fun, @MonoidHom.id ...⟩` in an instance. -/
 structure BundledHom where
   toFun : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), hom Iα Iβ → α → β
   id : ∀ {α : Type u} (I : c α), hom I I
