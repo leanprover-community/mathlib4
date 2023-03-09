@@ -369,11 +369,6 @@ defined in `data.complex.module.lean`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
-def add : Add ℂ := by
-  infer_instance
-
-#reduce add
-
 -- Porting note: proof needed modifications and rewritten fields
 instance addCommGroup : AddCommGroup ℂ := {
   zero := (0 : ℂ)
@@ -652,8 +647,6 @@ theorem mul_conj (z : ℂ) : z * conj z = normSq z :=
 theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
   ext_iff.2 <| by simp [two_mul]
 #align complex.add_conj Complex.add_conj
-
-#check OneHom
 
 /-- The coercion `ℝ → ℂ` as a `ring_hom`. -/
 def ofReal : ℝ →+* ℂ :=
@@ -977,7 +970,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem abs_two : Complex.abs 2 = 2 :=
   calc
-    Complex.abs 2 = abs (2 : ℝ) := by rw [of_real_bit0, of_real_one]
+    Complex.abs 2 = Complex.abs (2 : ℝ) := by rfl
     _ = (2 : ℝ) := Complex.abs_of_nonneg (by norm_num)
 
 
@@ -986,7 +979,9 @@ theorem abs_two : Complex.abs 2 = 2 :=
 
 @[simp]
 theorem range_abs : range Complex.abs = Ici 0 :=
-  Subset.antisymm (range_subset_iff.2 abs_nonneg) fun x hx => ⟨x, abs_of_nonneg hx⟩
+  Subset.antisymm (
+    by apply range_subset_iff.2 ; simp only [Ici, mem_setOf_eq, map_nonneg, forall_const]
+    ) fun x hx => ⟨x, Complex.abs_of_nonneg hx⟩
 #align complex.range_abs Complex.range_abs
 
 @[simp]
@@ -1042,7 +1037,7 @@ theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by si
 
 @[simp]
 theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
-  abs_of_nonneg (abs_nonneg _)
+  Complex.abs_of_nonneg (AbsoluteValue.nonneg _)
 #align complex.abs_abs Complex.abs_abs
 
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
