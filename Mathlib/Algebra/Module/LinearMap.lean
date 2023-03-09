@@ -260,13 +260,7 @@ theorem copy_eq (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : f
   FunLike.ext' h
 #align linear_map.copy_eq LinearMap.copy_eq
 
-/-- See Note [custom simps projection]. -/
-protected def Simps.apply {R S : Type _} [Semiring R] [Semiring S] (σ : R →+* S) (M M₃ : Type _)
-    [AddCommMonoid M] [AddCommMonoid M₃] [Module R M] [Module S M₃] (f : M →ₛₗ[σ] M₃) : M → M₃ :=
-  f
-#align linear_map.simps.apply LinearMap.Simps.apply
-
-initialize_simps_projections LinearMap (toAddHom_toFun → apply)
+initialize_simps_projections LinearMap (toFun → apply)
 
 @[simp]
 theorem coe_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
@@ -1255,7 +1249,7 @@ def moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 #align module.module_End_self_op Module.moduleEndSelfOp
-#align module.module_End_self_op_symm_apply Module.moduleEndSelfOp_symmApply
+#align module.module_End_self_op_symm_apply Module.moduleEndSelfOp_symm_apply
 #align module.module_End_self_op_apply Module.moduleEndSelfOp_apply
 
 theorem End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :

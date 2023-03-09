@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.uniform_space.basic
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
+! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -167,7 +167,7 @@ theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monot
     Monotone fun x => f x ○ g x := fun _ _ h _ ⟨z, h₁, h₂⟩ => ⟨z, hf h h₁, hg h h₂⟩
 #align monotone.comp_rel Monotone.compRel
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
   fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h₂ h'⟩
 #align comp_rel_mono compRel_mono
@@ -222,7 +222,7 @@ theorem symmetrizeRel_subset_self (V : Set (α × α)) : symmetrizeRel V ⊆ V :
   sep_subset _ _
 #align symmetrize_rel_subset_self symmetrizeRel_subset_self
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem symmetrize_mono {V W : Set (α × α)} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
   inter_subset_inter h <| preimage_mono h
 #align symmetrize_mono symmetrize_mono
@@ -386,6 +386,34 @@ theorem UniformSpace.replaceTopology_eq {α : Type _} [i : TopologicalSpace α] 
     (h : i = u.toTopologicalSpace) : u.replaceTopology h = u :=
   u.ofCoreEq_toCore _ _
 #align uniform_space.replace_topology_eq UniformSpace.replaceTopology_eq
+
+-- porting note: rfc: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
+/-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
+distance in a (usual or extended) metric space or an absolute value on a ring. -/
+def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedAddCommMonoid β]
+    (d : α → α → β) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
+    (triangle : ∀ x y z, d x z ≤ d x y + d y z)
+    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, x + y < ε) :
+    UniformSpace α :=
+.ofCore
+  { uniformity := ⨅ r > 0, 𝓟 { x | d x.1 x.2 < r }
+    refl := le_infᵢ₂ fun r hr => principal_mono.2 <| idRel_subset.2 fun x => by simpa [refl]
+    symm := tendsto_infᵢ_infᵢ fun r => tendsto_infᵢ_infᵢ fun _ => tendsto_principal_principal.2
+      fun x hx => by rwa [mem_setOf, symm]
+    comp := le_infᵢ₂ fun r hr => let ⟨δ, h0, hδr⟩ := half r hr; le_principal_iff.2 <|
+      mem_of_superset (mem_lift' <| mem_infᵢ_of_mem δ <| mem_infᵢ_of_mem h0 <| mem_principal_self _)
+        fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
+#align uniform_space.of_fun UniformSpace.ofFun
+
+theorem UniformSpace.hasBasis_ofFun {α : Type u} {β : Type v} [LinearOrderedAddCommMonoid β]
+    (h₀ : ∃ x : β, 0 < x) (d : α → α → β) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
+    (triangle : ∀ x y z, d x z ≤ d x y + d y z)
+    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, x + y < ε) :
+    𝓤[.ofFun d refl symm triangle half].HasBasis ((0 : β) < ·) (fun ε => { x | d x.1 x.2 < ε }) :=
+  hasBasis_binfᵢ_principal'
+    (fun ε₁ h₁ ε₂ h₂ => ⟨min ε₁ ε₂, lt_min h₁ h₂, fun _x hx => lt_of_lt_of_le hx (min_le_left _ _),
+      fun _x hx => lt_of_lt_of_le hx (min_le_right _ _)⟩) h₀
+#align uniform_space.has_basis_of_fun UniformSpace.hasBasis_ofFun
 
 section UniformSpace
 
@@ -1108,15 +1136,15 @@ nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : �
   hg.comp hf
 #align uniform_continuous.comp UniformContinuous.comp
 
-theorem Filter.HasBasis.uniformContinuous_iff [UniformSpace β] {p : γ → Prop} {s : γ → Set (α × α)}
-    (ha : (𝓤 α).HasBasis p s) {q : δ → Prop} {t : δ → Set (β × β)} (hb : (𝓤 β).HasBasis q t)
-    {f : α → β} :
+theorem Filter.HasBasis.uniformContinuous_iff {ι'} [UniformSpace β] {p : ι → Prop}
+    {s : ι → Set (α × α)} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
+    (hb : (𝓤 β).HasBasis q t) {f : α → β} :
     UniformContinuous f ↔ ∀ i, q i → ∃ j, p j ∧ ∀ x y, (x, y) ∈ s j → (f x, f y) ∈ t i :=
   (ha.tendsto_iff hb).trans <| by simp only [Prod.forall]
 #align filter.has_basis.uniform_continuous_iff Filter.HasBasis.uniformContinuous_iff
 
-theorem Filter.HasBasis.uniformContinuousOn_iff [UniformSpace β] {p : γ → Prop}
-    {s : γ → Set (α × α)} (ha : (𝓤 α).HasBasis p s) {q : δ → Prop} {t : δ → Set (β × β)}
+theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} [UniformSpace β] {p : ι → Prop}
+    {s : ι → Set (α × α)} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} {S : Set α} :
     UniformContinuousOn f S ↔
       ∀ i, q i → ∃ j, p j ∧ ∀ x, x ∈ S → ∀ y, y ∈ S → (x, y) ∈ s j → (f x, f y) ∈ t i :=
@@ -1169,7 +1197,7 @@ instance : Bot (UniformSpace α) :=
         let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
         simp [subset_def, idRel] }⟩
 
-instance : HasInf (UniformSpace α) :=
+instance : Inf (UniformSpace α) :=
   ⟨fun u₁ u₂ => .ofNhdsEqComap
     { uniformity := u₁.uniformity ⊓ u₂.uniformity
       refl := le_inf u₁.refl u₂.refl
@@ -1950,4 +1978,3 @@ theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : F
     (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩
 #align uniform.tendsto_congr Uniform.tendsto_congr
-

@@ -312,8 +312,8 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.clopens.coe_mk TopologicalSpace.Clopens.coe_mk
 
-instance : HasSup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.clopen.union t.clopen⟩⟩
-instance : HasInf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.clopen.inter t.clopen⟩⟩
+instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.clopen.union t.clopen⟩⟩
+instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.clopen.inter t.clopen⟩⟩
 instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
 instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.clopen.diff t.clopen⟩⟩

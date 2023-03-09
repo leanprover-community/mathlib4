@@ -221,7 +221,10 @@ namespace OrderHom
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
 /-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
-directly. -/
+directly.
+Remark(Floris): I think this instance is a really bad idea because now applications of
+`FunLike.coe` are not being simplified by `simp`, unlike all other hom-classes.
+Todo: fix after port.-/
 instance : CoeFun (α →o β) fun _ => α → β :=
   ⟨OrderHom.toFun⟩
 
@@ -239,12 +242,14 @@ instance : OrderHomClass (α →o β) α β where
     cases f
     cases g
     congr
-  map_rel f _ _ h := f.monotone h
+  map_rel f _ _ h := f.monotone' h
 
-/-- See Note [custom simps projection]. Note: all other FunLike classes use `apply` instead of `coe`
-for the projection names. Maybe we should change this. -/
+/-- See Note [custom simps projection]. We give this manually so that we use `toFun` as the
+projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
+/- Todo: all other FunLike classes use `apply` instead of `coe`
+for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
 -- Porting note: dropped `to_fun_eq_coe` as it is a tautology now.
@@ -476,7 +481,7 @@ def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   map_rel_iff' := forall_and.symm
 #align order_hom.prod_iso OrderHom.prodIso
 #align order_hom.prod_iso_apply OrderHom.prodIso_apply
-#align order_hom.prod_iso_symm_apply OrderHom.prodIso_symmApply
+#align order_hom.prod_iso_symm_apply OrderHom.prodIso_symm_apply
 
 /-- `Prod.map` of two `OrderHom`s as a `OrderHom`. -/
 @[simps]
@@ -534,7 +539,7 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
 #align order_hom.pi_iso_apply OrderHom.piIso_apply
-#align order_hom.pi_iso_symm_apply OrderHom.piIso_symmApply
+#align order_hom.pi_iso_symm_apply OrderHom.piIso_symm_apply
 
 /-- `Subtype.val` as a bundled monotone function.  -/
 @[simps (config := { fullyApplied := false })]
@@ -1149,7 +1154,7 @@ def orderIsoOfRightInverse (g : β → α) (hg : Function.RightInverse g f) : α
     right_inv := hg }
 #align strict_mono.order_iso_of_right_inverse StrictMono.orderIsoOfRightInverse
 #align strict_mono.order_iso_of_right_inverse_apply StrictMono.orderIsoOfRightInverse_apply
-#align strict_mono.order_iso_of_right_inverse_symm_apply StrictMono.orderIsoOfRightInverse_symmApply
+#align strict_mono.order_iso_of_right_inverse_symm_apply StrictMono.orderIsoOfRightInverse_symm_apply
 
 end StrictMono
 

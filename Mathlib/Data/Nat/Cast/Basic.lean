@@ -125,9 +125,7 @@ theorem cast_le : (m : α) ≤ n ↔ m ≤ n :=
   strictMono_cast.le_iff_le
 #align nat.cast_le Nat.cast_le
 
--- porting note: missing mono attribute
--- @[simp, norm_cast, mono]
-@[simp, norm_cast]
+@[simp, norm_cast, mono]
 theorem cast_lt : (m : α) < n ↔ m < n :=
   strictMono_cast.lt_iff_lt
 #align nat.cast_lt Nat.cast_lt
