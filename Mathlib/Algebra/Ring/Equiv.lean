@@ -509,7 +509,7 @@ in higher generality -/
 
 
 @[simp]
-theorem coe_ringHom_refl : (RingEquiv.refl R : R →* R) = RingHom.id R :=
+theorem coe_ringHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
   rfl
 #align ring_equiv.coe_ring_hom_refl RingEquiv.coe_ringHom_refl
 
