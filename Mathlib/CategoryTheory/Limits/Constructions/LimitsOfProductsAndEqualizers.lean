@@ -8,16 +8,16 @@ Authors: Bhavik Mehta, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Prod
-import Mathbin.Data.Fintype.Sigma
-import Mathbin.CategoryTheory.Limits.Shapes.Equalizers
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathbin.CategoryTheory.Limits.Preserves.Finite
-import Mathbin.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathbin.CategoryTheory.Limits.Constructions.Equalizers
-import Mathbin.CategoryTheory.Limits.Constructions.BinaryProducts
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Sigma
+import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
+import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
 /-!
 # Constructing limits from products and equalizers.
@@ -234,8 +234,7 @@ theorem hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbac
 /-- If G preserves terminal objects and pullbacks, it preserves all finite limits. -/
 def preservesFiniteLimitsOfPreservesTerminalAndPullbacks [HasTerminal C] [HasPullbacks C]
     (G : C ⥤ D) [PreservesLimitsOfShape (Discrete.{0} PEmpty) G]
-    [PreservesLimitsOfShape WalkingCospan G] : PreservesFiniteLimits G :=
-  by
+    [PreservesLimitsOfShape WalkingCospan G] : PreservesFiniteLimits G := by
   haveI : has_finite_limits C := has_finite_limits_of_has_terminal_and_pullbacks
   haveI : preserves_limits_of_shape (discrete walking_pair) G :=
     preservesBinaryProductsOfPreservesTerminalAndPullbacks G
@@ -437,8 +436,7 @@ theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts
 /-- If G preserves initial objects and pushouts, it preserves all finite colimits. -/
 def preservesFiniteColimitsOfPreservesInitialAndPushouts [HasInitial C] [HasPushouts C] (G : C ⥤ D)
     [PreservesColimitsOfShape (Discrete.{0} PEmpty) G] [PreservesColimitsOfShape WalkingSpan G] :
-    PreservesFiniteColimits G :=
-  by
+    PreservesFiniteColimits G := by
   haveI : has_finite_colimits C := has_finite_colimits_of_has_initial_and_pushouts
   haveI : preserves_colimits_of_shape (discrete walking_pair) G :=
     preservesBinaryCoproductsOfPreservesInitialAndPushouts G
