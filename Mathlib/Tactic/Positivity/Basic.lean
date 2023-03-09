@@ -42,7 +42,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not min"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(min)
   match ← core zα pα a, ← core zα pα b with
   | .positive pa, .positive pb => pure (.positive q(lt_min $pa $pb))
@@ -61,7 +61,7 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
     | throwError "not max"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(max)
   let result : Strictness zα pα e ← catchNone do
     let ra ← core zα pα a
@@ -90,7 +90,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not +"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(AddZeroClass $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HAdd.hAdd)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
@@ -131,7 +131,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not *"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HMul.hMul)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
@@ -215,7 +215,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
@@ -235,7 +235,7 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  assertInstancesCommute
+  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
   let ra ← core zα pα a
   match ra with
@@ -345,3 +345,50 @@ def evalNatAbs : PositivityExt where eval {_u _α} _zα _pα e := do
     pure .none
   | .none =>
     pure .none
+
+@[positivity Nat.cast _]
+def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
+  let (.app _ (a : Q(Nat))) ← withReducible (whnf e) | throwError "not Nat.cast"
+  let zα' ← synthInstanceQ (q(Zero Nat) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Nat) : Q(Type))
+  let ra ← core zα' pα' a
+  match ra with
+  | .positive pa =>
+    have pa' : Q(0 < $a) := pa
+    let oα ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type $u))
+    let nt ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
+    pure (.positive (q((@Nat.cast_pos $α $oα $nt).mpr $pa') : Expr))
+  | _ =>
+    let oα ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type $u))
+    pure (.nonnegative (q(@Nat.cast_nonneg $α $oα $a) : Expr))
+
+@[positivity Int.cast _]
+def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
+  let (.app _ (a : Q(Int))) ← withReducible (whnf e) | throwError "not Int.cast"
+  let zα' ← synthInstanceQ (q(Zero Int) : Q(Type))
+  let pα' ← synthInstanceQ (q(PartialOrder Int) : Q(Type))
+  let ra ← core zα' pα' a
+  match ra with
+  | .positive pa =>
+    have pa' : Q(0 < $a) := pa
+    let oα ← synthInstanceQ (q(OrderedRing $α) : Q(Type $u))
+    let nt ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
+    pure (.positive (q((@Int.cast_pos $α $oα $nt).mpr $pa') : Expr))
+  | .nonnegative pa =>
+    have pa' : Q(0 ≤ $a) := pa
+    let oα ← synthInstanceQ (q(OrderedRing $α) : Q(Type $u))
+    let nt ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
+    pure (.nonnegative (q((@Int.cast_nonneg $α $oα $nt).mpr $pa') : Expr))
+  | .nonzero pa =>
+    have pa' : Q($a ≠ 0) := pa
+    let oα ← synthInstanceQ (q(AddGroupWithOne $α) : Q(Type $u))
+    let nt ← synthInstanceQ (q(CharZero $α) : Q(Prop))
+    pure (.nonzero (q((@Int.cast_ne_zero $α $oα $nt).mpr $pa') : Expr))
+  | .none =>
+    pure .none
+
+/-- Extension for Nat.succ. -/
+@[positivity Nat.succ _]
+def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα e := do
+  let (.app _ (a : Q(Nat))) ← withReducible (whnf e) | throwError "not Nat.succ"
+  pure (.positive (q(Nat.succ_pos $a) : Expr))
