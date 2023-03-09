@@ -850,11 +850,11 @@ theorem cast_rat {R} [DivisionRing R] {a : R} : IsRat a n d → a = Rat.rawCast 
 * `e = Rat.rawCast n d + 0` if `norm_num` returns `IsRat e n d`
 -/
 def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
-  | .isNat sα' (.lit (.natVal 0)) p =>
-    have _assume_defeq : QE (u := u.succ) sα' q(AddCommMonoidWithOne.toAddMonoidWithOne) := ⟨⟩
+  | .isNat _ (.lit (.natVal 0)) p => do
+    assumeInstancesCommute
     pure ⟨_, .zero, q(cast_zero $p)⟩
-  | .isNat sα' lit p =>
-    have _assume_defeq : QE (u := u.succ) sα' q(AddCommMonoidWithOne.toAddMonoidWithOne) := ⟨⟩
+  | .isNat _ lit p => do
+    assumeInstancesCommute
     pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p) :)⟩
   | .isNegNat rα lit p =>
     pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
