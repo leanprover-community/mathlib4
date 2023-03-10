@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Cones
-import Mathbin.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.FinCategory
 
 /-!
 # Bicones
@@ -133,8 +133,7 @@ def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone
     exact F.map_comp _ _
 #align category_theory.bicone_mk CategoryTheory.biconeMk
 
-instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) :=
-  by
+instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
   cases j <;> cases k
   exact
     { elems := {bicone_hom.left_id}
