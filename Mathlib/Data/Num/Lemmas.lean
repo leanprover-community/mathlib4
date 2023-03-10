@@ -11,7 +11,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Psub
+import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
 
 /-!
