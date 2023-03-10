@@ -84,7 +84,7 @@ theorem range_im : range im = univ :=
 
 -- Porting note: refactored instance to allow `norm_cast` to work
 /-- The natural inclusion of the real numbers into the complex numbers.
-The name `ofReal` is reserved for the bundled homomorphism. -/
+The name `Complex.ofReal` is reserved for the bundled homomorphism. -/
 @[coe]
 def ofReal' (r : ℝ) : ℂ :=
   ⟨r, 0⟩
