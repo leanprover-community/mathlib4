@@ -471,6 +471,7 @@ import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
 import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
