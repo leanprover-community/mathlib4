@@ -213,7 +213,15 @@ end
 (Discrete.{0} J) G] triggered the error "invalid parametric local instance, parameter 
 with type Fintype J does not have forward dependencies, type class resolution cannot 
 use this kind of local instance because it will not be able to infer a value for this 
-parameter." Changed to implicit below. -/
+parameter." Changed to implicit below. 
+
+The best fix is to define a class `PreservesFiniteProducts` which wraps this and 
+then work directly with that. I tried that a bit but to do it correctly involved more 
+refactoring that I thought prudent for the port. 
+
+Leaving this a patch for now. This statement only appears as a dependency once overall 
+in category_theory.preadditive.left_exact. 
+-/
 /-- If G preserves equalizers and finite products, it preserves finite limits. -/
 noncomputable def preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts [HasEqualizers C]
     [HasFiniteProducts C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
