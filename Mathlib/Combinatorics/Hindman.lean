@@ -93,7 +93,7 @@ theorem Ultrafilter.continuous_mul_left {M} [Semigroup M] (V : Ultrafilter M) :
 namespace Hindman
 
 -- porting note: mathport wants these names to be `fS`, `fP`, etc, but this does violence to
--- mathmatical naming conventions, as does `fs`, `fp`, so we just followed `mathlib` 3 here
+-- mathematical naming conventions, as does `fs`, `fp`, so we just followed `mathlib` 3 here
 
 /-- `FS a` is the set of finite sums in `a`, i.e. `m ∈ FS a` if `m` is the sum of a nonempty
 subsequence of `a`. We give a direct inductive definition instead of talking about subsequences. -/
