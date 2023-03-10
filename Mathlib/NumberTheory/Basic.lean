@@ -8,8 +8,8 @@ Authors: Johan Commelin, Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GeomSum
-import Mathbin.RingTheory.Ideal.Quotient
+import Mathlib.Algebra.GeomSum
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # Basic results in number theory
@@ -30,8 +30,7 @@ section
 open Ideal Ideal.Quotient
 
 theorem dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
-    (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k :=
-  by
+    (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction' k with k ih
   · rwa [pow_one, pow_zero, pow_one, pow_one]
   rw [pow_succ' p k, pow_mul, pow_mul, ← geom_sum₂_mul, pow_succ]
