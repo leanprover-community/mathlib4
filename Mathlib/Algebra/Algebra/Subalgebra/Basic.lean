@@ -569,15 +569,14 @@ theorem coe_toSubalgebra (p : Submodule R A) (h_one h_mul) :
     (p.toSubalgebra h_one h_mul : Set A) = p := rfl
 #align submodule.coe_to_subalgebra Submodule.coe_toSubalgebra
 
--- Porting note: not ported because we no longer have flat structures
--- @[simp]
--- theorem toSubalgebra_mk (s : Set A) (h0 hadd hsmul h1 hmul) :
---     (Submodule.mk s hadd h0 hsmul : Submodule R A).toSubalgebra h1 hmul =
---       Subalgebra.mk s (@hmul) h1 (@hadd) h0 fun r => by
---         rw [Algebra.algebraMap_eq_smul_one]
---         exact hsmul r h1 :=
---   rfl
--- #align submodule.to_subalgebra_mk Submodule.toSubalgebra_mk
+-- Porting note: changed statement to reflect new structures
+@[simp]
+theorem toSubalgebra_mk (s : Submodule R A) (h1 hmul) :
+    s.toSubalgebra h1 hmul =
+      Subalgebra.mk ⟨⟨⟨s, @hmul⟩, h1⟩, s.add_mem, s.zero_mem⟩
+        (by intro r; rw [Algebra.algebraMap_eq_smul_one]; apply s.smul_mem _ h1) :=
+  rfl
+#align submodule.to_subalgebra_mk Submodule.toSubalgebra_mk
 
 @[simp]
 theorem toSubalgebra_toSubmodule (p : Submodule R A) (h_one h_mul) :
