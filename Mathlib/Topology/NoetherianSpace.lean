@@ -95,7 +95,8 @@ theorem noetherianSpace_TFAE :
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
   have h12 : NoetherianSpace α ↔ WellFounded fun s t : Closeds α => s < t
-  · refine' (noetherianSpace_iff α).trans (Surjective.wellFounded_iff Opens.compl_bijective.2 _)
+  · refine' (noetherianSpace_iff α).trans
+      (Function.Surjective.wellFounded_iff Opens.compl_bijective.2 _)
     exact (@OrderIso.compl (Set α)).lt_iff_lt.symm
   rw [← h12]
   apply_rules [tfae_of_cycle, Chain.cons, Chain.nil]
