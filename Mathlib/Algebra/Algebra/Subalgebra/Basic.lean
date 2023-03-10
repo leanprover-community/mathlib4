@@ -1152,9 +1152,11 @@ variable {ι : Type _}
 
 theorem coe_supᵢ_of_directed [Nonempty ι] {S : ι → Subalgebra R A} (dir : Directed (· ≤ ·) S) :
     ↑(supᵢ S) = ⋃ i, (S i : Set A) :=
+  -- Porting note: moved up the `let i` to use it in `zero_mem'` and `one_mem'`
   let i := @Nonempty.some ι inferInstance
   let K : Subalgebra R A :=
     { carrier := ⋃ i, S i
+      -- Porting note: auto_params failing, need to provide these explicitly
       zero_mem' := by simp only [Set.mem_unionᵢ, SetLike.mem_coe]; exact ⟨i, zero_mem _⟩
       one_mem' := by simp only [Set.mem_unionᵢ, SetLike.mem_coe]; exact ⟨i, one_mem _⟩
       mul_mem' := fun hx hy =>
