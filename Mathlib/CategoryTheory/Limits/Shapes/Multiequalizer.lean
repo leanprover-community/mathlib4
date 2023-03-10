@@ -88,6 +88,20 @@ instance : SmallCategory (WalkingMulticospan fst snd)
   assoc := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) (_ | _ | _) <;> rfl
 
+/-
+Porting note: Add simp lemma.
+-/
+@[simp]
+lemma Hom.id_eq_id (X : WalkingMulticospan fst snd) :
+  Hom.id X = 𝟙 X := rfl
+
+/-
+Porting note: Add simp lemma.
+-/
+@[simp]
+lemma Hom.comp_eq_comp {X Y Z : WalkingMulticospan fst snd}
+  (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+
 end WalkingMulticospan
 
 namespace WalkingMultispan
@@ -125,6 +139,20 @@ instance : SmallCategory (WalkingMultispan fst snd)
     rintro (_ | _) (_ | _) (_ | _ | _) <;> rfl
   assoc := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) (_ | _ | _) <;> rfl
+
+/-
+Porting note: Add simp lemma.
+-/
+@[simp]
+lemma Hom.id_eq_id (X : WalkingMultispan fst snd) :
+  Hom.id X = 𝟙 X := rfl
+
+/-
+Porting note: Add simp lemma.
+-/
+@[simp]
+lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
+  (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
 end WalkingMultispan
 
@@ -357,17 +385,11 @@ def ofι (I : MulticospanIndex C) (P : C) (ι : ∀ a, P ⟶ I.left a)
         | WalkingMulticospan.left a => ι _
         | WalkingMulticospan.right b => ι (I.fstTo b) ≫ I.fst b
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> sorry
-        /-
-        any_goals symm; dsimp; rw [category.id_comp]; apply category.comp_id
-        · dsimp
-          rw [category.id_comp]
-          rfl
-        · dsimp
-          rw [category.id_comp]
-          apply w
-        -/
-        }
+        rintro (_ | _) (_ | _) (_ | _ | _) <;>
+          dsimp <;>
+          simp only [Category.id_comp, Category.comp_id, Functor.map_id,
+            MulticospanIndex.multicospan_obj_left, MulticospanIndex.multicospan_obj_right]
+        apply w }
 #align category_theory.limits.multifork.of_ι CategoryTheory.Limits.Multifork.ofι
 
 @[reassoc (attr := simp)]
@@ -417,12 +439,10 @@ noncomputable def toPiFork (K : Multifork I) : Fork I.fstPiMap I.sndPiMap
         | WalkingParallelPair.zero => Pi.lift K.ι
         | WalkingParallelPair.one => Pi.lift K.ι ≫ I.fstPiMap
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> sorry
-        /-
-        any_goals symm; dsimp; rw [category.id_comp]; apply category.comp_id
-        all_goals change 𝟙 _ ≫ _ ≫ _ = pi.lift _ ≫ _; simp
-        -/
-        }
+        rintro (_ | _) (_ | _) (_ | _ | _) <;>
+          dsimp <;>
+          simp only [Category.id_comp, Functor.map_id, parallelPair_obj_zero, Category.comp_id,
+            pi_condition, parallelPair_obj_one] }
 #align category_theory.limits.multifork.to_pi_fork CategoryTheory.Limits.Multifork.toPiFork
 
 @[simp]
@@ -448,16 +468,11 @@ noncomputable def ofPiFork (c : Fork I.fstPiMap I.sndPiMap) : Multifork I
         | WalkingMulticospan.left a => c.ι ≫ Pi.π _ _
         | WalkingMulticospan.right b => c.ι ≫ I.fstPiMap ≫ Pi.π _ _
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> sorry
-        /-
-        any_goals symm; dsimp; rw [category.id_comp]; apply category.comp_id
-        · change 𝟙 _ ≫ _ ≫ _ = (_ ≫ _) ≫ _
-          simp
-        · change 𝟙 _ ≫ _ ≫ _ = (_ ≫ _) ≫ _
-          rw [c.condition_assoc]
-          simp
-        -/
-        }
+        rintro (_ | _) (_ | _) (_ | _ | _)
+        · simp
+        · simp
+        · dsimp ; rw [c.condition_assoc] ; simp
+        · simp }
 #align category_theory.limits.multifork.of_pi_fork CategoryTheory.Limits.Multifork.ofPiFork
 
 @[simp]
@@ -525,14 +540,14 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
           (by
             rintro (_ | _) <;> dsimp <;>
               simp [← Fork.app_one_eq_ι_comp_left, -Fork.app_one_eq_ι_comp_left]))
-      fun {K₁ K₂} f => by sorry -- ext ; simp
+      fun {K₁ K₂} f => by dsimp ; ext ; simp
   counitIso :=
     NatIso.ofComponents
       (fun K =>
         Fork.ext (Iso.refl _)
-          (by sorry -- ext ⟨j⟩ ; dsimp ; simp
+          (by dsimp ; ext ⟨j⟩ ; dsimp ; simp
             ))
-      fun {K₁ K₂} f => by sorry -- ext ; simp
+      fun {K₁ K₂} f => by dsimp ; ext ; simp
 #align category_theory.limits.multicospan_index.multifork_equiv_pi_fork CategoryTheory.Limits.MulticospanIndex.multiforkEquivPiFork
 
 end MulticospanIndex
@@ -575,17 +590,11 @@ def ofπ (I : MultispanIndex C) (P : C) (π : ∀ b, I.right b ⟶ P)
         | WalkingMultispan.left a => I.fst a ≫ π _
         | WalkingMultispan.right b => π _
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> sorry
-        /-
-        any_goals dsimp; rw [category.comp_id]; apply category.id_comp
-        · dsimp
-          rw [category.comp_id]
-          rfl
-        · dsimp
-          rw [category.comp_id]
-          apply (w _).symm
-        -/
-        }
+        rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp <;>
+          simp only [Functor.map_id, MultispanIndex.multispan_obj_left,
+            Category.id_comp, Category.comp_id, MultispanIndex.multispan_obj_right]
+        symm
+        apply w }
 #align category_theory.limits.multicofork.of_π CategoryTheory.Limits.Multicofork.ofπ
 
 @[reassoc (attr := simp)]
@@ -635,12 +644,9 @@ noncomputable def toSigmaCofork (K : Multicofork I) : Cofork I.fstSigmaMap I.snd
         | WalkingParallelPair.zero => I.fstSigmaMap ≫ Sigma.desc K.π
         | WalkingParallelPair.one => Sigma.desc K.π
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> sorry
-        /-
-        any_goals dsimp; rw [category.comp_id]; apply category.id_comp
-        all_goals change _ ≫ sigma.desc _ = (_ ≫ _) ≫ 𝟙 _; simp
-        -/
-        }
+        rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp <;>
+          simp only [Functor.map_id, parallelPair_obj_zero,
+            parallelPair_obj_one, sigma_condition, Category.id_comp, Category.comp_id] }
 #align category_theory.limits.multicofork.to_sigma_cofork CategoryTheory.Limits.Multicofork.toSigmaCofork
 
 @[simp]
@@ -661,18 +667,11 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         | WalkingMultispan.left a => (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π
         | WalkingMultispan.right b => (Sigma.ι I.right b : _) ≫ c.π
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> sorry
-        /-
-        any_goals dsimp; rw [category.comp_id]; apply category.id_comp
-        · change _ ≫ _ ≫ _ = (_ ≫ _) ≫ _
-          dsimp
-          simp only [cofork.condition, category.comp_id]
-          rw [← I.ι_fst_sigma_map_assoc, c.condition]
-        · change _ ≫ _ ≫ _ = (_ ≫ _) ≫ 𝟙 _
-          rw [c.condition]
-          simp
-        -/
-        }
+        rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp
+        · simp
+        · simp
+        · dsimp ; rw [c.condition] ; simp
+        · simp }
 #align category_theory.limits.multicofork.of_sigma_cofork CategoryTheory.Limits.Multicofork.ofSigmaCofork
 
 @[simp]
@@ -703,7 +702,9 @@ noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap 
   obj := Multicofork.toSigmaCofork
   map {K₁ K₂} f := {
     Hom := f.Hom
-    w := sorry } -- Porting note: aesop_cat fails here.
+    w := by sorry } -- Porting note: aesop_cat fails here.
+  map_id := sorry
+  map_comp := sorry
 #align category_theory.limits.multispan_index.to_sigma_cofork_functor CategoryTheory.Limits.MultispanIndex.toSigmaCoforkFunctor
 
 /-- `multicofork.of_sigma_cofork` is functorial. -/
