@@ -1638,11 +1638,12 @@ instance hasPullback_of_right_factors_mono (f : X ⟶ Z) : HasPullback i (f ≫ 
 
 instance pullback_snd_iso_of_right_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.snd : pullback i (f ≫ i) ⟶ _) := by
+  -- Porting note: need to unfold pullback.snd to get help convert
+  change IsIso (limit.π _ _)
   convert (congrArg IsIso (show _ ≫ pullback.snd = _ from
     limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right)).mp
-    inferInstance;
-  · exact (Category.id_comp _).symm
-  · exact (Category.id_comp _).symm
+    inferInstance <;>
+    exact (Category.id_comp _).symm
 #align category_theory.limits.pullback_snd_iso_of_right_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_right_factors_mono
 
 end PullbackLeftIso
@@ -1681,7 +1682,7 @@ theorem pullbackConeOfRightIso_π_app_left : (pullbackConeOfRightIso f g).π.app
 #align category_theory.limits.pullback_cone_of_right_iso_π_app_left CategoryTheory.Limits.pullbackConeOfRightIso_π_app_left
 
 @[simp]
-theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g 
+theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g
   := rfl
 #align category_theory.limits.pullback_cone_of_right_iso_π_app_right CategoryTheory.Limits.pullbackConeOfRightIso_π_app_right
 
@@ -1714,11 +1715,12 @@ instance hasPullback_of_left_factors_mono (f : X ⟶ Z) : HasPullback (f ≫ i) 
 
 instance pullback_snd_iso_of_left_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.fst : pullback (f ≫ i) i ⟶ _) := by
+  -- Porting note: needed to unfold definition to help convert
+  change IsIso (limit.π _ _)
   convert (congrArg IsIso (show _ ≫ pullback.fst = _ from
     limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left)).mp
-    inferInstance;
-  · exact (Category.id_comp _).symm
-  · exact (Category.id_comp _).symm
+    inferInstance <;>
+    exact (Category.id_comp _).symm
 #align category_theory.limits.pullback_snd_iso_of_left_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_left_factors_mono
 
 end PullbackRightIso
@@ -1803,11 +1805,12 @@ instance hasPushout_of_right_factors_epi (f : X ⟶ Y) : HasPushout h (h ≫ f) 
 
 instance pushout_inr_iso_of_right_factors_epi (f : X ⟶ Y) :
     IsIso (pushout.inr : _ ⟶ pushout h (h ≫ f)) := by
+  -- Porting note: needed to unfold definition to help convert
+  change IsIso (colimit.ι _ _)
   convert (congrArg IsIso (show pushout.inr ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp (𝟙 _) f h⟩ WalkingSpan.right)).mp
-    inferInstance
-  · apply (Category.comp_id _).symm
-  · apply (Category.comp_id _).symm
+    inferInstance <;>
+    exact (Category.comp_id _).symm
 #align category_theory.limits.pushout_inr_iso_of_right_factors_epi CategoryTheory.Limits.pushout_inr_iso_of_right_factors_epi
 
 end PushoutLeftIso
@@ -1879,11 +1882,12 @@ instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h :
 
 instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
     IsIso (pushout.inl : _ ⟶ pushout (h ≫ f) h) := by
+  -- Porting note: needed to unfold definition to help convert
+  change IsIso (colimit.ι _ _)
   convert (congrArg IsIso (show pushout.inl ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp f (𝟙 _) h⟩ WalkingSpan.left)).mp
-        inferInstance;
-  · exact (Category.comp_id _).symm
-  · exact (Category.comp_id _).symm
+        inferInstance <;>
+    exact (Category.comp_id _).symm
 #align category_theory.limits.pushout_inl_iso_of_left_factors_epi CategoryTheory.Limits.pushout_inl_iso_of_left_factors_epi
 
 end PushoutRightIso
