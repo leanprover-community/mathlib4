@@ -81,8 +81,8 @@ initialize registerBuiltinAttribute {
     _ ← Term.TermElabM.run' <| ToAdditive.applyAttributes ref stx `reassoc src tgt
   | _ => throwUnsupportedSyntax }
 
-open Elab Term in
-elab "reassoc_of% " t:term : term <= _expectedType => do
+open Term in
+elab "reassoc_of% " t:term : term => do
   reassocExpr (← elabTerm t none)
 
 end CategoryTheory
