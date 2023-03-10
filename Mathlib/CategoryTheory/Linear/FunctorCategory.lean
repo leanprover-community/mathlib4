@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Preadditive.FunctorCategory
-import Mathbin.CategoryTheory.Linear.Basic
+import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
 # Linear structure on functor categories
