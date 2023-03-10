@@ -65,7 +65,7 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 
 /--
 This unexpander will pretty print `η.app X` properly.
-Without this, we would have `NatTrans.app η X`.
+Without this, we would have `Iso.app η X`.
 -/
 @[app_unexpander Iso.app] def
   unexpandIsoApp : Lean.PrettyPrinter.Unexpander
