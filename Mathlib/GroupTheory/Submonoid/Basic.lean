@@ -157,16 +157,6 @@ instance : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
 
-/-- See Note [custom simps projection] -/
-@[to_additive]
-def Simps.coe (S : Submonoid M) : Set M :=
-  S
-#align submonoid.simps.coe Submonoid.Simps.coe
-#align add_submonoid.simps.coe AddSubmonoid.Simps.coe
-
-/-- See Note [custom simps projection] -/
-add_decl_doc AddSubmonoid.Simps.coe
-
 initialize_simps_projections Submonoid (carrier → coe)
 
 initialize_simps_projections AddSubmonoid (carrier → coe)

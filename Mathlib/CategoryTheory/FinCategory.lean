@@ -77,8 +77,7 @@ abbrev AsType : Type :=
   Fin (Fintype.card α)
 #align category_theory.fin_category.as_type CategoryTheory.FinCategory.AsType
 
--- Porting note: The `lemmasOnly` simps configuration changed to `{ attrs := [] }`.
-@[simps (config := { attrs := [] }) Hom id comp]
+@[simps (config := .lemmasOnly) Hom id comp]
 noncomputable instance categoryAsType : SmallCategory (AsType α)
     where
   Hom i j := Fin (Fintype.card (@Quiver.Hom (ObjAsType α) _ i j))
