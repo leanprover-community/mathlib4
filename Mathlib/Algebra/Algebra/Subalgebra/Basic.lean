@@ -56,21 +56,20 @@ instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
   one_mem {s} := one_mem s.toSubsemiring
   zero_mem {s} := zero_mem s.toSubsemiring
 
--- Porting note: not ported since SetLike takes care of this
--- @[simp]
--- theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
---   by simp
--- #align subalgebra.mem_carrier Subalgebra.mem_carrier
+@[simp]
+theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x ∈ S :=
+  Iff.rfl
+#align subalgebra.mem_to_subsemiring Subalgebra.mem_toSubsemiring
+
+-- @[simp] -- Porting note: simp can prove this
+theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
+  Iff.rfl
+#align subalgebra.mem_carrier Subalgebra.mem_carrier
 
 @[ext]
 theorem ext {S T : Subalgebra R A} (h : ∀ x : A, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 #align subalgebra.ext Subalgebra.ext
-
-@[simp]
-theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x ∈ S :=
-  Iff.rfl
-#align subalgebra.mem_to_subsemiring Subalgebra.mem_toSubsemiring
 
 @[simp]
 theorem coe_toSubsemiring (S : Subalgebra R A) : (↑S.toSubsemiring : Set A) = S :=
