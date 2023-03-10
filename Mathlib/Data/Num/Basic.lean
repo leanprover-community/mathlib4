@@ -208,12 +208,12 @@ set_option linter.deprecated false
 #align cast_num castNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) posNumCoe : CoeTC PosNum α :=
+@[deprecated] instance (priority := 900) posNumCoe : CoeOTC PosNum α :=
   ⟨castPosNum⟩
 #align pos_num_coe posNumCoe
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeTC Num α :=
+@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeOTC Num α :=
   ⟨castNum⟩
 #align num_nat_coe numNatCoe
 
@@ -683,7 +683,7 @@ variable {α : Type _} [Zero α] [One α] [Add α] [Neg α]
 #align cast_znum castZNum
 
 -- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) znumCoe : CoeTC ZNum α :=
+@[deprecated] instance (priority := 900) znumCoe : CoeOTC ZNum α :=
   ⟨castZNum⟩
 #align znum_coe znumCoe
 
