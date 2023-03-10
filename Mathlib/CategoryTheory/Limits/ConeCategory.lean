@@ -8,10 +8,10 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Comma
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathbin.CategoryTheory.StructuredArrow
-import Mathbin.CategoryTheory.Limits.Shapes.Equivalence
+import Mathlib.CategoryTheory.Adjunction.Comma
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 /-!
 # Limits and the category of (co)cones
