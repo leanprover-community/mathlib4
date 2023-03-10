@@ -752,7 +752,11 @@ noncomputable def multicoforkEquivSigmaCofork : Multicofork I ≌ Cofork I.fstSi
   functor := toSigmaCoforkFunctor I
   inverse := ofSigmaCoforkFunctor I
   unitIso :=
-    NatIso.ofComponents (fun K => Cocones.ext (Iso.refl _) (by sorry /-rintro (_ | _) <;> dsimp <;> simp-/))
+    NatIso.ofComponents (fun K => Cocones.ext (Iso.refl _) (by
+      rintro (_ | _)
+      { dsimp; simp }
+      -- porting note; `dsimp, simp` worked in mathlib3.
+      { dsimp [Multicofork.ofSigmaCofork]; simp } ))
       fun {K₁ K₂} f => sorry -- by ext simp
   counitIso :=
     NatIso.ofComponents
