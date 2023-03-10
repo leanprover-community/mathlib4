@@ -57,8 +57,6 @@ universe w v u
 
 namespace CategoryTheory
 
-set_option autoImplicit false
-
 open CategoryTheory Category
 
 variable (C : Type u) [Category.{v} C]
@@ -76,9 +74,16 @@ See <https://stacks.math.columbia.edu/tag/00Z4>, or [nlab], or [MM92][] Chapter 
 Definition 1.
 -/
 structure GrothendieckTopology where
+  /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
+    which satisfy some axioms. -/
   sieves : ∀ X : C, Set (Sieve X)
+  /-- The sieves associated to each object must contain the top sieve.
+    Use `GrothendieckTopology.top_mem`. -/
   top_mem' : ∀ X, ⊤ ∈ sieves X
+  /-- Stability under pullback. Use `GrothendieckTopology.pullback_stable`. -/
   pullback_stable' : ∀ ⦃X Y : C⦄ ⦃S : Sieve X⦄ (f : Y ⟶ X), S ∈ sieves X → S.pullback f ∈ sieves Y
+  /-- Transitivity of sieves in a Grothendieck topology.
+    Use `GrothendieckTopology.transitive`. -/
   transitive' :
     ∀ ⦃X⦄ ⦃S : Sieve X⦄ (_ : S ∈ sieves X) (R : Sieve X),
       (∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ sieves Y) → R ∈ sieves X
@@ -106,10 +111,13 @@ theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Si
     congr
 #align category_theory.grothendieck_topology.ext CategoryTheory.GrothendieckTopology.ext
 
+/-
+Porting note: This is now a syntactic tautology.
 @[simp]
 theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
   Iff.rfl
 #align category_theory.grothendieck_topology.mem_sieves_iff_coe CategoryTheory.GrothendieckTopology.mem_sieves_iff_coe
+-/
 
 -- Also known as the maximality axiom.
 @[simp]
@@ -408,8 +416,20 @@ namespace Cover
 
 variable {J}
 
+/-
+Porting note: Lean complains that this is a dangerous instance.
+I'm commenting this out since the `CoeFun` instance below is what we
+use 99% of the time anyway.
+
 instance : Coe (J.Cover X) (Sieve X) :=
   ⟨fun S => S.1⟩
+-/
+
+/-
+Porting note: Added this def as a replacement for the "dangerous" `Coe` above.
+-/
+/-- The sieve associated to a term of `J.Cover X`.-/
+def sieve (S : J.Cover X) : Sieve X := S.1
 
 /-
 Porting note: This somehow yields different behavior than the better instance below. Why?!
@@ -422,14 +442,18 @@ instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
 -/
 
 instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
-  ⟨fun S => (S : Sieve X)⟩
+  ⟨fun S => S.sieve⟩
+
+/-
+Porting note: This is now a syntactic tautology.
 
 @[simp]
-theorem coe_fun_coe (S : J.Cover X) (f : Y ⟶ X) : (S : Sieve X) f = S f :=
+theorem coe_fun_coe (S : J.Cover X) (f : Y ⟶ X) : S.sieve f = S f :=
   rfl
 #align category_theory.grothendieck_topology.cover.coe_fun_coe CategoryTheory.GrothendieckTopology.Cover.coe_fun_coe
+-/
 
-theorem condition (S : J.Cover X) : (S : Sieve X) ∈ J X :=
+theorem condition (S : J.Cover X) : S.sieve ∈ J X :=
   S.2
 #align category_theory.grothendieck_topology.cover.condition CategoryTheory.GrothendieckTopology.Cover.condition
 
@@ -445,7 +469,8 @@ instance : OrderTop (J.Cover X) :=
 
 instance : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
-    inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
+    inf := fun S T => ⟨S.sieve ⊓ T.sieve,
+      J.intersection_covering S.condition T.condition⟩
     le_antisymm := fun S T h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
     inf_le_left := fun S T Y f hf => hf.1
     inf_le_right := fun S T Y f hf => hf.2
@@ -458,8 +483,11 @@ instance : Inhabited (J.Cover X) :=
 --@[nolint has_nonempty_instance, ext]
 @[ext]
 structure Arrow (S : J.Cover X) where
+  /-- The source of the arrow. -/
   Y : C
+  /-- The arrow itself. -/
   f : Y ⟶ X
+  /-- The given arrow is contained in the given sieve. -/
   hf : S f
 #align category_theory.grothendieck_topology.cover.arrow CategoryTheory.GrothendieckTopology.Cover.Arrow
 
@@ -467,13 +495,25 @@ structure Arrow (S : J.Cover X) where
 --@[nolint has_nonempty_instance, ext]
 @[ext]
 structure Relation (S : J.Cover X) where
-  (Y₁ Y₂ Z : C)
+  /-- The source of the first arrow. -/
+  Y₁ : C
+  /-- The source of the second arrow. -/
+  Y₂ : C
+  /-- The source of the arrows defining the relation. -/
+  Z : C
+  /-- The first arrow defining the relation. -/
   g₁ : Z ⟶ Y₁
+  /-- The second arrow defining the relation. -/
   g₂ : Z ⟶ Y₂
+  /-- The first arrow which is part of the relation. -/
   f₁ : Y₁ ⟶ X
+  /-- The second arrow which is part of the relation. -/
   f₂ : Y₂ ⟶ X
+  /-- The first arrow which is part of the relation is contained in the given sieve. -/
   h₁ : S f₁
+  /-- The second arrow which is part of the relation is contained in the given sieve. -/
   h₂ : S f₂
+  /-- The relation itself. -/
   w : g₁ ≫ f₁ = g₂ ≫ f₂
 #align category_theory.grothendieck_topology.cover.relation CategoryTheory.GrothendieckTopology.Cover.Relation
 
@@ -517,7 +557,7 @@ theorem Relation.map_snd {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) :
 
 /-- Pull back a cover along a morphism. -/
 def pullback (S : J.Cover X) (f : Y ⟶ X) : J.Cover Y :=
-  ⟨Sieve.pullback f S, J.pullback_stable _ S.condition⟩
+  ⟨Sieve.pullback f S.sieve, J.pullback_stable _ S.condition⟩
 #align category_theory.grothendieck_topology.cover.pullback CategoryTheory.GrothendieckTopology.Cover.pullback
 
 /-- An arrow of `S.pullback f` gives rise to an arrow of `S`. -/
@@ -563,7 +603,7 @@ def pullbackComp {X Y Z : C} (S : J.Cover X) (f : Z ⟶ Y) (g : Y ⟶ X) :
 
 /-- Combine a family of covers over a cover. -/
 def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X :=
-  ⟨Sieve.bind (S : Sieve X) fun Y f hf => T ⟨Y, f, hf⟩,
+  ⟨Sieve.bind S.sieve fun Y f hf => (T ⟨Y, f, hf⟩).sieve,
     J.bind_covering S.condition fun _ _ _ => (T _).condition⟩
 #align category_theory.grothendieck_topology.cover.bind CategoryTheory.GrothendieckTopology.Cover.bind
 
