@@ -393,7 +393,7 @@ end ToList
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm α) (s : Finset α) (f : α → β)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x in s, f (σ x)) = ∏ x in s, f x := by
-  convert (config := {preTransparency := .default}) (prod_map s σ.toEmbedding f).symm
+  convert (prod_map s σ.toEmbedding f).symm using 2
   exact (map_perm hs).symm
 #align equiv.perm.prod_comp Equiv.Perm.prod_comp
 #align equiv.perm.sum_comp Equiv.Perm.sum_comp
@@ -1291,7 +1291,8 @@ theorem prod_multiset_map_count [DecidableEq α] (s : Multiset α) {M : Type _} 
 @[to_additive]
 theorem prod_multiset_count [DecidableEq α] [CommMonoid α] (s : Multiset α) :
     s.prod = ∏ m in s.toFinset, m ^ s.count m := by
-  convert prod_multiset_map_count s id
+  -- porting note: removing `using` breaks `to_additive`
+  convert prod_multiset_map_count s id using 1
   rw [Multiset.map_id]
 #align finset.prod_multiset_count Finset.prod_multiset_count
 #align finset.sum_multiset_count Finset.sum_multiset_count
@@ -2067,7 +2068,7 @@ theorem finset_sum_eq_sup_iff_disjoint {β : Type _} {i : Finset β} {f : β →
 
 theorem sup_powerset_len {α : Type _} [DecidableEq α] (x : Multiset α) :
     (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetLen k) = x.powerset := by
-  convert bind_powerset_len x
+  convert bind_powerset_len x using 1
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
   exact
     Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetLen x h)

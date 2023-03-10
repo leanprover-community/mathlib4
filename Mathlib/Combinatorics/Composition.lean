@@ -1032,11 +1032,10 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
   suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum
   exact eq_of_sum_take_eq length_eq H
   intro i hi
-  have i_lt : i < d.boundaries.card :=
-    by
-    convert Nat.lt_succ_iff.2 hi
-    convert d.card_boundaries_eq_succ_length
-    exact length_ofFn _
+  have i_lt : i < d.boundaries.card := by
+    -- porting note: relied on definition unfolding, simplified to use a single `simpa`
+    simpa [CompositionAsSet.blocks, length_ofFn, Nat.succ_eq_add_one,
+      d.card_boundaries_eq_succ_length] using Nat.lt_succ_iff.2 hi
   have i_lt' : i < c.boundaries.card := i_lt
   have i_lt'' : i < c.length + 1 := by rwa [c.card_boundaries_eq_succ_length] at i_lt'
   have A :

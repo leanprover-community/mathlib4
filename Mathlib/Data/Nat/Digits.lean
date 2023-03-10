@@ -450,7 +450,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   apply Nat.mul_le_mul_left
   refine' le_trans _ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
-  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this
+  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
 #align nat.pow_length_le_mul_of_digits Nat.pow_length_le_mul_ofDigits
 

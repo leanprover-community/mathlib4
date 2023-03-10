@@ -73,7 +73,7 @@ theorem even_or_odd (n : ℤ) : Even n ∨ Odd n :=
 -- mathlib3 port: `simpa only [← two_mul, exists_or, ← Odd, ← Even] using even_or_odd n`
 theorem even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   rw [exists_or]
-  convert (config := {transparency := .default}) even_or_odd n
+  convert (config := {transparency := .default}) even_or_odd n using 3
   rw [two_mul]
 #align int.even_or_odd' Int.even_or_odd'
 
@@ -193,7 +193,7 @@ theorem odd_sub' : Odd (m - n) ↔ (Odd n ↔ Even m) := by
 
 theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
   rw [even_mul]
-  convert n.even_or_odd
+  convert n.even_or_odd using 1
   simp [parity_simps]
 #align int.even_mul_succ_self Int.even_mul_succ_self
 
@@ -237,12 +237,12 @@ theorem four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
   · right
     rw [Int.even_add, ← Int.even_sub] at h
     obtain ⟨k, hk⟩ := h
-    convert dvd_mul_right 4 k
+    convert dvd_mul_right 4 k using 1
     rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel, ← two_mul, ← mul_assoc]
     rfl
   · left
     obtain ⟨k, hk⟩ := h
-    convert dvd_mul_right 4 (k + 1)
+    convert dvd_mul_right 4 (k + 1) using 1
     rw [eq_sub_of_add_eq hk, add_right_comm, ← add_sub, mul_add, mul_sub, add_assoc, add_assoc,
       sub_add, add_assoc, ← sub_sub (2 * n), sub_self, zero_sub, sub_neg_eq_add, ← mul_assoc,
       mul_add]
