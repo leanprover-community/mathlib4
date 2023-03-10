@@ -1215,15 +1215,8 @@ variable [Nonempty ι] {K : ι → Subalgebra R A} {dir : Directed (· ≤ ·) K
 @[simp]
 theorem supᵢLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
     supᵢLift K dir f hf T hT (inclusion h x) = f i x := by
-  -- Porting note: need to repeat all implicit arguments again
-  apply @Set.unionᵢLift_inclusion _ _ _ (fun i => ↑(K i)) (fun i x => f i x)
-        (fun i j x hxi hxj => by
-          let ⟨k, hik, hjk⟩ := dir i j
-          dsimp
-          rw [hf i k hik, hf j k hjk]
-          rfl)
-        T (by rw [hT, coe_supᵢ_of_directed dir]) i x
-  intro; exact (h ·)
+  dsimp [supᵢLift, inclusion]
+  rw [Set.unionᵢLift_inclusion]
 #align subalgebra.supr_lift_inclusion Subalgebra.supᵢLift_inclusion
 
 @[simp]
@@ -1234,26 +1227,14 @@ theorem supᵢLift_comp_inclusion {i : ι} (h : K i ≤ T) :
 @[simp]
 theorem supᵢLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     supᵢLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
-  -- Porting note: need to repeat all implicit arguments again
-  exact @Set.unionᵢLift_mk _ _ _ (fun i => ↑(K i)) (fun i x => f i x)
-        (fun i j x hxi hxj => by
-          let ⟨k, hik, hjk⟩ := dir i j
-          dsimp
-          rw [hf i k hik, hf j k hjk]
-          rfl)
-        T (by rw [hT, coe_supᵢ_of_directed dir]) i x _
+  dsimp [supᵢLift, inclusion]
+  rw [Set.unionᵢLift_mk]
 #align subalgebra.supr_lift_mk Subalgebra.supᵢLift_mk
 
 theorem supᵢLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     supᵢLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
-  -- Porting note: need to repeat all implicit arguments again
-  exact @Set.unionᵢLift_of_mem _ _ _ (fun i => ↑(K i)) (fun i x => f i x)
-        (fun i j x hxi hxj => by
-          let ⟨k, hik, hjk⟩ := dir i j
-          dsimp
-          rw [hf i k hik, hf j k hjk]
-          rfl)
-        T (by rw [hT, coe_supᵢ_of_directed dir]) x i hx
+  dsimp [supᵢLift, inclusion]
+  rw [Set.unionᵢLift_of_mem]
 #align subalgebra.supr_lift_of_mem Subalgebra.supᵢLift_of_mem
 
 end SuprLift
