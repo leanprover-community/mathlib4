@@ -66,11 +66,12 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
 
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
     functor. -/
-@[simps]
+@[simps!]
 def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F :=
   Equivalence.mk (Cone.toCostructuredArrow F) (Cone.fromCostructuredArrow F)
-    (NatIso.ofComponents Cones.eta (by sorry))
-    (NatIso.ofComponents (fun c => (CostructuredArrow.eta _).symm) (by sorry))
+    (NatIso.ofComponents Cones.eta (by aesop_cat))
+    (NatIso.ofComponents (fun c => (CostructuredArrow.eta _).symm)
+      (by intros ; apply CostructuredArrow.ext ; aesop_cat))
 #align category_theory.limits.cone.equiv_costructured_arrow CategoryTheory.Limits.Cone.equivCostructuredArrow
 
 /-- A cone is a limit cone iff it is terminal. -/
@@ -152,11 +153,12 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/
-@[simps]
+@[simps!]
 def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) :=
   Equivalence.mk (Cocone.toStructuredArrow F) (Cocone.fromStructuredArrow F)
-    (NatIso.ofComponents Cocones.eta (by sorry))
-    (NatIso.ofComponents (fun c => (StructuredArrow.eta _).symm) (by sorry))
+    (NatIso.ofComponents Cocones.eta (by aesop_cat))
+    (NatIso.ofComponents (fun c => (StructuredArrow.eta _).symm)
+      (by intros ; apply StructuredArrow.ext ; aesop_cat))
 #align category_theory.limits.cocone.equiv_structured_arrow CategoryTheory.Limits.Cocone.equivStructuredArrow
 
 /-- A cocone is a colimit cocone iff it is initial. -/
