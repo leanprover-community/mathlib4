@@ -244,7 +244,8 @@ where
   trySolve (ty : Expr) : MetaM (Option Expr) := observing? do
     let mvarId ← mkFreshExprMVar ty
     trace[congr!.synthesize] "trySolve {mvarId.mvarId!}"
-    trySolveCore mvarId.mvarId!
+    -- The proofs we generate shouldn't require unfolding anything.
+    withReducible <| trySolveCore mvarId.mvarId!
     trace[congr!.synthesize] "trySolve success!"
     let pf ← instantiateMVars mvarId
     return pf

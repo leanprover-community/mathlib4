@@ -46,13 +46,17 @@ e : prime (2 * n + 1)
 ⊢ prime (n + n + 1)
 ```
 
-the tactic `convert e` will change the goal to
+the tactic `convert e using 2` will change the goal to
 
 ```lean
 ⊢ n + n = 2 * n
 ```
 
 In this example, the new goal can be solved using `ring`.
+
+The `using 2` indicates it should iterate the congruence algorithm up to two times,
+where `convert e` would use an unrestricted number of iterations and lead to two
+impossible goals: `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
 
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
