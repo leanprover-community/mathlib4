@@ -411,6 +411,16 @@ def add : Onote → Onote → Onote
       | Ordering.gt => oadd e n o'
 #align onote.add Onote.add
 
+-- porting note: pulled out for `oadd_add`
+def add_aux (e: Onote) (n: ℕ+) (o: Onote) : Onote :=
+    match o with
+    | 0 => oadd e n 0
+    | o'@(oadd e' n' a') =>
+      match cmp e e' with
+      | Ordering.lt => o'
+      | Ordering.eq => oadd e (n + n') a'
+      | Ordering.gt => oadd e n o'
+
 instance : Add Onote :=
   ⟨add⟩
 
@@ -419,7 +429,8 @@ theorem zero_add (o : Onote) : 0 + o = o :=
   rfl
 #align onote.zero_add Onote.zero_add
 
-theorem oadd_add (e n a o) : oadd e n a + o = add._match1 e n (a + o) :=
+-- used to be in terms of `add._match_1`
+theorem oadd_add (e n a o) : oadd e n a + o = add_aux e n (a + o) :=
   rfl
 #align onote.oadd_add Onote.oadd_add
 
@@ -427,7 +438,7 @@ theorem oadd_add (e n a o) : oadd e n a + o = add._match1 e n (a + o) :=
 def sub : Onote → Onote → Onote
   | 0, _ => 0
   | o, 0 => o
-  | o₁ @(oadd e₁ n₁ a₁), oadd e₂ n₂ a₂ =>
+  | o₁@(oadd e₁ n₁ a₁), oadd e₂ n₂ a₂ =>
     match cmp e₁ e₂ with
     | Ordering.lt => 0
     | Ordering.gt => o₁
