@@ -180,7 +180,7 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
   let `s₁` be the intersection `s₀ ∩ { m | a₀ * m ∈ s₀ }`. By choice of `a₀`, this is again
   `U`-large, so we can repeat the argument starting from `s₁`, obtaining `a₁`, `s₂`, etc.
   This gives the desired infinite sequence. -/
-  have exists_elem : ∀ {s : Set M} (hs : s ∈ U), (s ∩ { m | ∀ᶠ m' in U, m * m' ∈ s }).Nonempty :=
+  have exists_elem : ∀ {s : Set M} (_hs : s ∈ U), (s ∩ { m | ∀ᶠ m' in U, m * m' ∈ s }).Nonempty :=
     fun {s} hs =>
     Ultrafilter.nonempty_of_mem
       (inter_mem hs <| by
@@ -208,7 +208,7 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
     refine' Set.inter_subset_left _ _ (ih (succ p) _)
     rw [Stream'.corec_eq, Stream'.tail_cons]
   · rintro p rfl
-    have := Set.inter_subset_right _ _ (ih (succ p) _)
+    have := Set.inter_subset_right _ _ (ih (succ p) ?_)
     · simpa only using this
     rw [Stream'.corec_eq, Stream'.tail_cons]
 set_option linter.uppercaseLean3 false in
