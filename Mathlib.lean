@@ -1017,6 +1017,7 @@ import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Ray
+import Mathlib.LinearAlgebra.Smodeq
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Logic.Basic

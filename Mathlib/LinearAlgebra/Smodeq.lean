@@ -8,8 +8,8 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Eval
-import Mathbin.RingTheory.Ideal.Quotient
+import Mathlib.Data.Polynomial.Eval
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # modular equivalence for submodule
@@ -85,14 +85,12 @@ theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD 
   hxy.trans hyz
 #align smodeq.trans Smodeq.trans
 
-theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] :=
-  by
+theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [Smodeq.def] at hxy₁ hxy₂⊢
   simp_rw [quotient.mk_add, hxy₁, hxy₂]
 #align smodeq.add Smodeq.add
 
-theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] :=
-  by
+theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
   rw [Smodeq.def] at hxy⊢
   simp_rw [quotient.mk_smul, hxy]
 #align smodeq.smul Smodeq.smul
