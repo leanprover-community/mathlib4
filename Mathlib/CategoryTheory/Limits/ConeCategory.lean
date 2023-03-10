@@ -64,9 +64,27 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
         simp }
 #align category_theory.limits.cone.from_costructured_arrow CategoryTheory.Limits.Cone.fromCostructuredArrow
 
+/-
+Porting note:
+`simps!` alone generated lemmas of the form `_ = _` where `_` are proofs of some proposition.
+This caused the simpNF linter to complain.
+We therefore explicitly tell simps! to only generate the lemmas that are not of this form.
+Similarly for `Cocone.equivStructuredArrow`.
+-/
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
     functor. -/
-@[simps!]
+@[simps!
+  functor_obj_left
+  functor_obj_right_as
+  functor_obj_hom
+  functor_map_left
+  inverse_obj_pt
+  inverse_obj_π
+  inverse_map_Hom
+  unitIso_hom_app_Hom
+  unitIso_inv_app_Hom
+  counitIso_hom_app_left
+  counitIso_inv_app_left]
 def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (const J) F :=
   Equivalence.mk (Cone.toCostructuredArrow F) (Cone.fromCostructuredArrow F)
     (NatIso.ofComponents Cones.eta (by aesop_cat))
@@ -153,7 +171,18 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/
-@[simps!]
+@[simps!
+  functor_obj_left_as
+  functor_obj_right
+  functor_obj_hom
+  functor_map_right
+  inverse_obj_pt
+  inverse_obj_ι
+  inverse_map_Hom
+  unitIso_hom_app_Hom
+  unitIso_inv_app_Hom
+  counitIso_hom_app_right
+  counitIso_inv_app_right]
 def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (const J) :=
   Equivalence.mk (Cocone.toStructuredArrow F) (Cocone.fromStructuredArrow F)
     (NatIso.ofComponents Cocones.eta (by aesop_cat))
