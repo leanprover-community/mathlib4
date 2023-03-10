@@ -26,9 +26,7 @@ https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
 
 open BigOperators
 
-open Finset Nat
-
-open Polynomial
+open Polynomial Finset.Nat
 
 /-- Vandermonde's identity -/
 theorem Nat.add_choose_eq (m n k : ℕ) :
