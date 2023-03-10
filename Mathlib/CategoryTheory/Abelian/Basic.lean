@@ -8,11 +8,11 @@ Authors: Markus Himmel, Johan Commelin, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Constructions.Pullbacks
-import Mathbin.CategoryTheory.Preadditive.Biproducts
-import Mathbin.CategoryTheory.Limits.Shapes.Images
-import Mathbin.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathbin.CategoryTheory.Abelian.NonPreadditive
+import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.CategoryTheory.Abelian.NonPreadditive
 
 /-!
 # Abelian categories
@@ -151,8 +151,7 @@ def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_mono_factorisation CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageMonoFactorisation
 
 theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
-    (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f :=
-  by
+    (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   ext
   simp only [abelian.coimage_image_comparison, image_mono_factorisation_e, category.assoc,
     cokernel.π_desc_assoc]
@@ -174,13 +173,11 @@ def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_factorisation CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageFactorisation
 
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Mono f]
-    [IsIso (Abelian.coimageImageComparison f)] : IsIso (imageMonoFactorisation f).e :=
-  by
+    [IsIso (Abelian.coimageImageComparison f)] : IsIso (imageMonoFactorisation f).e := by
   rw [image_mono_factorisation_e']
   exact is_iso.comp_is_iso
 
-instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsIso (imageMonoFactorisation f).m :=
-  by
+instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsIso (imageMonoFactorisation f).m := by
   dsimp
   infer_instance
 
@@ -330,8 +327,7 @@ theorem mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
   mono_of_kernel_zero h
 #align category_theory.abelian.mono_of_kernel_ι_eq_zero CategoryTheory.Abelian.mono_of_kernel_ι_eq_zero
 
-theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f :=
-  by
+theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
   apply normal_mono_category.epi_of_zero_cokernel _ (cokernel f)
   simp_rw [← h]
   exact is_colimit.of_iso_colimit (colimit.is_colimit (parallel_pair f 0)) (iso_of_π _)
@@ -397,8 +393,7 @@ variable {X Y : C} (f : X ⟶ Y)
 /-- The coimage-image comparison morphism is always an isomorphism in an abelian category.
 See `category_theory.abelian.of_coimage_image_comparison_is_iso` for the converse.
 -/
-instance : IsIso (coimageImageComparison f) :=
-  by
+instance : IsIso (coimageImageComparison f) := by
   convert
     is_iso.of_iso
       (is_image.iso_ext (coimage_strong_epi_mono_factorisation f).toMonoIsImage
@@ -421,8 +416,7 @@ abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
 
 theorem coimageIsoImage'_hom :
     (coimageIsoImage' f).Hom =
-      cokernel.desc _ (factorThruImage f) (by simp [← cancel_mono (limits.image.ι f)]) :=
-  by
+      cokernel.desc _ (factorThruImage f) (by simp [← cancel_mono (limits.image.ι f)]) := by
   ext
   simp only [← cancel_mono (limits.image.ι f), is_image.iso_ext_hom, cokernel.π_desc,
     category.assoc, is_image.lift_ι, coimage_strong_epi_mono_factorisation_to_mono_factorisation_m,
@@ -448,8 +442,7 @@ theorem imageIsoImage_hom_comp_image_ι : (imageIsoImage f).Hom ≫ Limits.image
 
 theorem imageIsoImage_inv :
     (imageIsoImage f).inv =
-      kernel.lift _ (Limits.image.ι f) (by simp [← cancel_epi (factor_thru_image f)]) :=
-  by
+      kernel.lift _ (Limits.image.ι f) (by simp [← cancel_epi (factor_thru_image f)]) := by
   ext
   simp only [is_image.iso_ext_inv, image.is_image_lift, limits.image.fac_lift,
     image_strong_epi_mono_factorisation_to_mono_factorisation_e, category.assoc, kernel.lift_ι,
@@ -696,15 +689,13 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
       
 #align category_theory.abelian.epi_pullback_of_epi_g CategoryTheory.Abelian.epi_pullback_of_epi_g
 
-theorem epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.snd :=
-  by
+theorem epi_snd_of_isLimit [Epi f] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.snd := by
   convert epi_of_epi_fac (is_limit.cone_point_unique_up_to_iso_hom_comp (limit.is_limit _) hs _)
   · rfl
   · exact abelian.epi_pullback_of_epi_f _ _
 #align category_theory.abelian.epi_snd_of_is_limit CategoryTheory.Abelian.epi_snd_of_isLimit
 
-theorem epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.fst :=
-  by
+theorem epi_fst_of_isLimit [Epi g] {s : PullbackCone f g} (hs : IsLimit s) : Epi s.fst := by
   convert epi_of_epi_fac (is_limit.cone_point_unique_up_to_iso_hom_comp (limit.is_limit _) hs _)
   · rfl
   · exact abelian.epi_pullback_of_epi_g _ _
@@ -779,16 +770,14 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g
       
 #align category_theory.abelian.mono_pushout_of_mono_g CategoryTheory.Abelian.mono_pushout_of_mono_g
 
-theorem mono_inr_of_isColimit [Mono f] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inr :=
-  by
+theorem mono_inr_of_isColimit [Mono f] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inr := by
   convert
     mono_of_mono_fac (is_colimit.comp_cocone_point_unique_up_to_iso_hom hs (colimit.is_colimit _) _)
   · rfl
   · exact abelian.mono_pushout_of_mono_f _ _
 #align category_theory.abelian.mono_inr_of_is_colimit CategoryTheory.Abelian.mono_inr_of_isColimit
 
-theorem mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inl :=
-  by
+theorem mono_inl_of_isColimit [Mono g] {s : PushoutCocone f g} (hs : IsColimit s) : Mono s.inl := by
   convert
     mono_of_mono_fac (is_colimit.comp_cocone_point_unique_up_to_iso_hom hs (colimit.is_colimit _) _)
   · rfl

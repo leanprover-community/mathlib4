@@ -243,6 +243,7 @@ import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.Group.Seminorm
+import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
 import Mathlib.CategoryTheory.Adjunction.Basic
