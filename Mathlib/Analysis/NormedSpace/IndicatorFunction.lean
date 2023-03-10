@@ -48,4 +48,3 @@ theorem norm_indicator_le_norm_self : ‖indicator s f a‖ ≤ ‖f a‖ := by
   rw [norm_indicator_eq_indicator_norm]
   apply indicator_norm_le_norm_self
 #align norm_indicator_le_norm_self norm_indicator_le_norm_self
-
