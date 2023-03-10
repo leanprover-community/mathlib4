@@ -8,8 +8,8 @@ Authors: Kenny Lau, Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.Algebra.Algebra.Tower
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Subalgebras in towers of algebras
