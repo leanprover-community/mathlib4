@@ -14,7 +14,7 @@ import Mathlib.Algebra.IndicatorFunction
 /-!
 # Indicator function and norm
 
-This file contains a few simple lemmas about `set.indicator` and `norm`.
+This file contains a few simple lemmas about `Set.indicator` and `norm`.
 
 ## Tags
 indicator, norm
