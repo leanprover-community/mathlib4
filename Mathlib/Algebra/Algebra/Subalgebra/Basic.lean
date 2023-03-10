@@ -1438,6 +1438,9 @@ theorem centralizer_univ : centralizer R Set.univ = center R A :=
 
 end Centralizer
 
+-- Porting note: in the following proof, we manually add the instances `_i₁` and `_i₂`
+-- Removing those lines and enabling `etaExperiment` on the next line gives a *broken* proof
+-- set_option synthInstance.etaExperiment true in
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` in `S`, and `S'` a subalgebra of `S` that contains
 `lᵢ` and `sᵢ`. To check that an `x : S` falls in `S'`, we only need to show that
 `sᵢ ^ n • x ∈ S'` for some `n` for each `sᵢ`. -/
