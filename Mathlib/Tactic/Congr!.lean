@@ -39,6 +39,22 @@ structure Congr!.Config where
   This can be used to control which side's definitions are expanded when applying the
   congruence lemma (if `preferLHS = true` then the RHS can be expanded). -/
   preferLHS : Bool := true
+  /-- The maximum number of arguments to consider at a time when applying synthesized congruence
+  lemmas between function applications. `none` means no limit.
+  With non-dependent functions, `some 1` causes `congr!` lets you control how many arguments
+  it ends up processing using the iteration limit. -/
+  maxArgs : Option Nat := none
+  /-- As a last pass, perform eta expansion of both sides of an equality. For example,
+  this transforms a bare `HAdd.hAdd` into `fun x y => x + y`. -/
+  etaExpand : Bool := false
+
+/-- Whether the given number of arguments is allowed to be considered. -/
+def Congr!.Config.numArgsOk (config : Config) (numArgs : Nat) : Bool :=
+  numArgs ≤ config.maxArgs.getD numArgs
+
+/-- According to the configuration, how many of the arguments in `numArgs` should be considered. -/
+def Congr!.Config.maxArgsFor (config : Config) (numArgs : Nat) : Nat :=
+  min numArgs (config.maxArgs.getD numArgs)
 
 /--
 Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
@@ -268,6 +284,8 @@ where
   loop (mvarId : MVarId) (numArgs : Nat) (lhs rhs : Expr) : MetaM (Option (List MVarId)) :=
     match lhs.cleanupAnnotations, rhs.cleanupAnnotations with
     | .app f _, .app f' _ => do
+      if not (config.numArgsOk (numArgs + 1)) then
+        return none
       -- We try to generate a theorem for the maximal number of arguments
       if let some mvars ← loop mvarId (numArgs + 1) f f' then
         return mvars
@@ -285,8 +303,11 @@ where
   forSide (mvarId : MVarId) (side : Expr) : MetaM (Option (List MVarId)) := do
     let side := side.cleanupAnnotations
     if not side.isApp then return none
-    let f := side.getAppFn
-    let info ← getFunInfoNArgs f side.getAppNumArgs
+    let numArgs := config.maxArgsFor side.getAppNumArgs
+    let mut f := side
+    for _ in [:numArgs] do
+      f := f.appFn!'
+    let info ← getFunInfoNArgs f numArgs
     let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
     let r ← mkEqRefl f
     let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f, r]
@@ -318,7 +339,11 @@ where
     commitWhenSome? do
       let side := side.cleanupAnnotations
       if not side.isApp then return none
-      let some congrThm ← mkCongrSimpNArgs side.getAppFn side.getAppNumArgs
+      let numArgs := config.maxArgsFor side.getAppNumArgs
+      let mut f := side
+      for _ in [:numArgs] do
+        f := f.appFn!'
+      let some congrThm ← mkCongrSimpNArgs f numArgs
         | return none
       observing? <| applyCongrThm? config mvarId congrThm.type congrThm.proof
   /-- Like `mkCongrSimp?` but takes in a specific arity. -/
@@ -538,12 +563,17 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   return none
 
 /-- A pass to clean up after `Lean.MVarId.preCongr!` and `Lean.MVarId.congrCore!`. -/
-def Lean.MVarId.postCongr! (mvarId : MVarId) : MetaM (Option MVarId) := do
+def Lean.MVarId.postCongr! (option : Congr!.Config) (mvarId : MVarId) : MetaM (Option MVarId) := do
   let some mvarId ← mvarId.preCongr! | return none
   -- Convert `p = q` to `p ↔ q`, which is likely the more useful form:
   let mvarId ← mvarId.propext
   if ← mvarId.assumptionCore then return none
-  return some mvarId
+  if option.etaExpand then
+    if let some (_, lhs, rhs) := (← withReducible mvarId.getType').eq? then
+      let lhs' ← Meta.etaExpand lhs
+      let rhs' ← Meta.etaExpand rhs
+      return ← mvarId.change (← mkEq lhs' rhs')
+  return mvarId
 
 /-- A more insistent version of `Lean.MVarId.congrN`.
 See the documentation on the `congr!` syntax.
@@ -560,7 +590,7 @@ def Lean.MVarId.congrN! (mvarId : MVarId) (depth? : Option Nat) (config : Congr!
   return s.toList
 where
   post (mvarId : MVarId) : StateRefT (Array MVarId) MetaM Unit := do
-    let some mvarId ← mvarId.postCongr!
+    let some mvarId ← mvarId.postCongr! config
         | do trace[congr!] "Dispatched goal by post-processing step."
              return
     modify (·.push mvarId)
