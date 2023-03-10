@@ -17,11 +17,11 @@ import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 # Limits and the category of (co)cones
 
 This files contains results that stem from the limit API. For the definition and the category
-instance of `cone`, please refer to `category_theory/limits/cones.lean`.
+instance of `Cone`, please refer to `CategoryTheory/Limits/Cones.lean`.
 
 ## Main results
 * The category of cones on `F : J ⥤ C` is equivalent to the category
-  `costructured_arrow (const J) F`.
+  `CostructuredArrow (const J) F`.
 * A cone is limiting iff it is terminal in the category of cones. As a corollary, an equivalence of
   categories of cones preserves limiting properties.
 
@@ -39,7 +39,7 @@ variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 variable {C : Type u₃} [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 
 /-- Construct an object of the category `(Δ ↓ F)` from a cone on `F`. This is part of an
-    equivalence, see `cone.equiv_costructured_arrow`. -/
+    equivalence, see `Cone.equivCostructuredArrow`. -/
 @[simps]
 def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const J) F
     where
@@ -51,7 +51,7 @@ def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const
 #align category_theory.limits.cone.to_costructured_arrow CategoryTheory.Limits.Cone.toCostructuredArrow
 
 /-- Construct a cone on `F` from an object of the category `(Δ ↓ F)`. This is part of an
-    equivalence, see `cone.equiv_costructured_arrow`. -/
+    equivalence, see `Cone.equivCostructuredArrow`. -/
 @[simps]
 def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤ Cone F
     where
@@ -113,20 +113,20 @@ theorem IsTerminal.from_eq_liftConeMorphism {F : J ⥤ C} {c : Cone F} (hc : IsT
   (IsLimit.liftConeMorphism_eq_isTerminal_from (c.isLimitEquivIsTerminal.symm hc) s).symm
 #align category_theory.limits.is_terminal.from_eq_lift_cone_morphism CategoryTheory.Limits.IsTerminal.from_eq_liftConeMorphism
 
-/-- If `G : cone F ⥤ cone F'` preserves terminal objects, it preserves limit cones. -/
+/-- If `G : Cone F ⥤ Cone F'` preserves terminal objects, it preserves limit cones. -/
 def IsLimit.ofPreservesConeTerminal {F : J ⥤ C} {F' : K ⥤ D} (G : Cone F ⥤ Cone F')
     [PreservesLimit (Functor.empty.{0} _) G] {c : Cone F} (hc : IsLimit c) : IsLimit (G.obj c) :=
   (Cone.isLimitEquivIsTerminal _).symm <| (Cone.isLimitEquivIsTerminal _ hc).isTerminalObj _ _
 #align category_theory.limits.is_limit.of_preserves_cone_terminal CategoryTheory.Limits.IsLimit.ofPreservesConeTerminal
 
-/-- If `G : cone F ⥤ cone F'` reflects terminal objects, it reflects limit cones. -/
+/-- If `G : Cone F ⥤ Cone F'` reflects terminal objects, it reflects limit cones. -/
 def IsLimit.ofReflectsConeTerminal {F : J ⥤ C} {F' : K ⥤ D} (G : Cone F ⥤ Cone F')
     [ReflectsLimit (Functor.empty.{0} _) G] {c : Cone F} (hc : IsLimit (G.obj c)) : IsLimit c :=
   (Cone.isLimitEquivIsTerminal _).symm <| (Cone.isLimitEquivIsTerminal _ hc).isTerminalOfObj _ _
 #align category_theory.limits.is_limit.of_reflects_cone_terminal CategoryTheory.Limits.IsLimit.ofReflectsConeTerminal
 
 /-- Construct an object of the category `(F ↓ Δ)` from a cocone on `F`. This is part of an
-    equivalence, see `cocone.equiv_structured_arrow`. -/
+    equivalence, see `Cocone.equivStructuredArrow`. -/
 @[simps]
 def Cocone.toStructuredArrow (F : J ⥤ C) : Cocone F ⥤ StructuredArrow F (const J)
     where
@@ -138,7 +138,7 @@ def Cocone.toStructuredArrow (F : J ⥤ C) : Cocone F ⥤ StructuredArrow F (con
 #align category_theory.limits.cocone.to_structured_arrow CategoryTheory.Limits.Cocone.toStructuredArrow
 
 /-- Construct a cocone on `F` from an object of the category `(F ↓ Δ)`. This is part of an
-    equivalence, see `cocone.equiv_structured_arrow`. -/
+    equivalence, see `Cocone.equivStructuredArrow`. -/
 @[simps]
 def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ Cocone F
     where
@@ -201,14 +201,14 @@ theorem IsInitial.to_eq_descCoconeMorphism {F : J ⥤ C} {c : Cocone F} (hc : Is
   (IsColimit.descCoconeMorphism_eq_isInitial_to (c.isColimitEquivIsInitial.symm hc) s).symm
 #align category_theory.limits.is_initial.to_eq_desc_cocone_morphism CategoryTheory.Limits.IsInitial.to_eq_descCoconeMorphism
 
-/-- If `G : cocone F ⥤ cocone F'` preserves initial objects, it preserves colimit cocones. -/
+/-- If `G : Cocone F ⥤ Cocone F'` preserves initial objects, it preserves colimit cocones. -/
 def IsColimit.ofPreservesCoconeInitial {F : J ⥤ C} {F' : K ⥤ D} (G : Cocone F ⥤ Cocone F')
     [PreservesColimit (Functor.empty.{0} _) G] {c : Cocone F} (hc : IsColimit c) :
     IsColimit (G.obj c) :=
   (Cocone.isColimitEquivIsInitial _).symm <| (Cocone.isColimitEquivIsInitial _ hc).isInitialObj _ _
 #align category_theory.limits.is_colimit.of_preserves_cocone_initial CategoryTheory.Limits.IsColimit.ofPreservesCoconeInitial
 
-/-- If `G : cocone F ⥤ cocone F'` reflects initial objects, it reflects colimit cocones. -/
+/-- If `G : Cocone F ⥤ Cocone F'` reflects initial objects, it reflects colimit cocones. -/
 def IsColimit.ofReflectsCoconeInitial {F : J ⥤ C} {F' : K ⥤ D} (G : Cocone F ⥤ Cocone F')
     [ReflectsColimit (Functor.empty.{0} _) G] {c : Cocone F} (hc : IsColimit (G.obj c)) :
     IsColimit c :=
