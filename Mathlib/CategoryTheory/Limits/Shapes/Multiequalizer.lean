@@ -926,7 +926,10 @@ def sigmaπ : ∐ I.right ⟶ multicoequalizer I :=
 @[reassoc (attr := simp)]
 theorem ι_sigmaπ (b) : Sigma.ι I.right b ≫ sigmaπ I = π I b := by
   rw [sigmaπ, ← Category.assoc, Iso.comp_inv_eq, isoCoequalizer]
-  simp
+  simp only [MultispanIndex.multicoforkEquivSigmaCofork_inverse,
+    MultispanIndex.ofSigmaCoforkFunctor_obj, colimit.isoColimitCocone_ι_hom,
+    Multicofork.ofSigmaCofork_pt, colimit.cocone_x, Multicofork.π_eq_app_right]
+  rfl
 #align category_theory.limits.multicoequalizer.ι_sigma_π CategoryTheory.Limits.Multicoequalizer.ι_sigmaπ
 
 instance : Epi (sigmaπ I) := epi_comp _ _
