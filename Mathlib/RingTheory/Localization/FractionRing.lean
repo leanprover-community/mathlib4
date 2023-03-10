@@ -93,14 +93,13 @@ protected theorem injective : Function.Injective (algebraMap R K) :=
 variable {R K}
 
 @[norm_cast, simp]
-theorem coe_inj {a b : R} : (↑a : K) = ↑b ↔ a = b :=
+-- Porting note: using `↑` didn't work, so I needed to explicitly put in the cast myself
+theorem coe_inj {a b : R} : (Algebra.cast a : K) = Algebra.cast b ↔ a = b :=
   (IsFractionRing.injective R K).eq_iff
 #align is_fraction_ring.coe_inj IsFractionRing.coe_inj
 
 instance (priority := 100) [NoZeroDivisors K] : NoZeroSMulDivisors R K :=
   NoZeroSMulDivisors.of_algebraMap_injective <| IsFractionRing.injective R K
-
-variable {R K}
 
 protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
     (hx : x ∈ nonZeroDivisors R) : algebraMap R K x ≠ 0 :=
@@ -118,7 +117,8 @@ protected theorem isDomain : IsDomain K :=
 attribute [local instance] Classical.decEq
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K :=
+-- Porting note: Had to replace `irreducible_def` with the `@[irreducible]` attribute.
+@[irreducible] protected noncomputable def inv (z : K) : K :=
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
@@ -206,7 +206,7 @@ and an injective ring hom `g : A →+* L` where `L` is a field, we get a
 field hom sending `z : K` to `g x * (g y)⁻¹`, where `(x, y) : A × (non_zero_divisors A)` are
 such that `z = f x * (f y)⁻¹`. -/
 noncomputable def lift (hg : Injective g) : K →+* L :=
-  lift fun y : nonZeroDivisors A => isUnit_map_of_injective hg y
+  IsLocalization.lift fun y : nonZeroDivisors A => isUnit_map_of_injective hg y
 #align is_fraction_ring.lift IsFractionRing.lift
 
 /-- Given an integral domain `A` with field of fractions `K`,
@@ -223,7 +223,7 @@ and an injective ring hom `g : A →+* L` where `L` is a field,
 field hom induced from `K` to `L` maps `f x / f y` to `g x / g y` for all
 `x : A, y ∈ non_zero_divisors A`. -/
 theorem lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) : lift hg (mk' K x y) = g x / g y :=
-  by simp only [mk'_eq_div, map_div₀, lift_algebra_map]
+  by simp only [mk'_eq_div, map_div₀, lift_algebraMap]
 #align is_fraction_ring.lift_mk' IsFractionRing.lift_mk'
 
 /-- Given integral domains `A, B` with fields of fractions `K`, `L`
@@ -233,7 +233,7 @@ such that `z = f x * (f y)⁻¹`. -/
 noncomputable def map {A B K L : Type _} [CommRing A] [CommRing B] [IsDomain B] [CommRing K]
     [Algebra A K] [IsFractionRing A K] [CommRing L] [Algebra B L] [IsFractionRing B L] {j : A →+* B}
     (hj : Injective j) : K →+* L :=
-  map L j
+  IsLocalization.map L j
     (show nonZeroDivisors A ≤ (nonZeroDivisors B).comap j from
       nonZeroDivisors_le_comap_nonZeroDivisors_of_injective j hj)
 #align is_fraction_ring.map IsFractionRing.map
