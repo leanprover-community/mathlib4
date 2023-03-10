@@ -383,7 +383,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 This tactic tries to prove (in)equalities about `Num`s by transfering them to the `Nat` world and
 then trying to call `simp`.
 ```lean
-example (n : num) (m : num) : n ≤ n + m := by transfer
+example (n : Num) (m : Num) : n ≤ n + m := by transfer
 ```
 -/
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
@@ -597,7 +597,7 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
 This tactic tries to prove (in)equalities about `PosNum`s by transfering them to the `Nat` world and
 then trying to call `simp`.
 ```lean
-example (n : num) (m : num) : n ≤ n + m := by transfer
+example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 ```
 -/
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
@@ -1800,7 +1800,7 @@ end ZNum
 
 namespace Int
 
-/-- Cast a `snum` to the corresponding integer. -/
+/-- Cast a `SNum` to the corresponding integer. -/
 def ofSnum : SNum → ℤ :=
   SNum.rec' (fun a => cond a (-1) 0) fun a _p IH => cond a (bit1 IH) (bit0 IH)
 #align int.of_snum Int.ofSnum
