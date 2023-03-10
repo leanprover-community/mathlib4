@@ -757,7 +757,11 @@ noncomputable def multicoforkEquivSigmaCofork : Multicofork I ≌ Cofork I.fstSi
       { dsimp; simp }
       -- porting note; `dsimp, simp` worked in mathlib3.
       { dsimp [Multicofork.ofSigmaCofork]; simp } ))
-      fun {K₁ K₂} f => sorry -- by ext simp
+      fun {K₁ K₂} f => by
+        -- porting note: in mathlib3 `ext` works and I don't
+        -- really understand why it doesn't work here
+        apply Limits.CoconeMorphism.ext
+        simp
   counitIso :=
     NatIso.ofComponents
       (fun K =>
