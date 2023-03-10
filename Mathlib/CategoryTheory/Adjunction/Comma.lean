@@ -150,18 +150,18 @@ variable {F : C ⥤ D}
 -- porting note: aesop can't seem to add something locally. Also no tactic.discrete_cases.
 -- attribute [local tidy] tactic.discrete_cases
 
-
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
     IsInitial (StructuredArrow.mk (h.unit.app A) : StructuredArrow A G)
     where
   desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom) (by aesop_cat)
-  uniq s m w := by
-    ext
+  fac _ := by rintro ⟨⟨⟩⟩
+  uniq s m _ := by
+    apply StructuredArrow.ext
     dsimp
     rw [Equiv.eq_symm_apply, Adjunction.homEquiv_unit]
-    apply structured_arrow.w m
+    apply StructuredArrow.w m
 #align category_theory.mk_initial_of_left_adjoint CategoryTheory.mkInitialOfLeftAdjoint
 
 /-- Given a right adjoint to `F`, we can construct a terminal object in each costructured arrow
@@ -170,10 +170,11 @@ def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
     IsTerminal (CostructuredArrow.mk (h.counit.app A) : CostructuredArrow F A)
     where
   lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom) (by aesop_cat)
-  uniq s m w := by
-    ext
+  fac _ := by rintro ⟨⟨⟩⟩
+  uniq s m _ := by
+    apply CostructuredArrow.ext
     dsimp
-    rw [h.eq_hom_equiv_apply, Adjunction.homEquiv_counit]
+    rw [h.eq_homEquiv_apply, Adjunction.homEquiv_counit]
     exact CostructuredArrow.w m
 #align category_theory.mk_terminal_of_right_adjoint CategoryTheory.mkTerminalOfRightAdjoint
 
