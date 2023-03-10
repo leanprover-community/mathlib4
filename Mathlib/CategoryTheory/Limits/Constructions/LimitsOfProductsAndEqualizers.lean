@@ -164,6 +164,7 @@ variable [HasLimitsOfShape (Discrete J) C] [HasLimitsOfShape (Discrete (Σp : J 
   [HasEqualizers C]
 
 variable (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
+  -- [PreservesFiniteProducts G]
   [PreservesLimitsOfShape (Discrete.{w} J) G]
   [PreservesLimitsOfShape (Discrete.{w} (Σp : J × J, p.1 ⟶ p.2)) G]
 
@@ -213,13 +214,20 @@ end
 (Discrete.{0} J) G] triggered the error "invalid parametric local instance, parameter 
 with type Fintype J does not have forward dependencies, type class resolution cannot 
 use this kind of local instance because it will not be able to infer a value for this 
-parameter." Changed to implicit below. -/
+parameter." Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
 /-- If G preserves equalizers and finite products, it preserves finite limits. -/
 noncomputable def preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts [HasEqualizers C]
     [HasFiniteProducts C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
-    {_ : (J : Type) → [Fintype J] → PreservesLimitsOfShape (Discrete J) G} : 
-    PreservesFiniteLimits G where
-  PreservesFiniteLimits := fun _ => preservesLimitOfPreservesEqualizersAndProduct G
+    [PreservesFiniteProducts G] : PreservesFiniteLimits G where
+  PreservesFiniteLimits := by 
+    intro J sJ fJ 
+    haveI : Fintype J := inferInstance   
+    haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance 
+    apply @preservesLimitOfPreservesEqualizersAndProduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
+    · apply hasLimitsOfShape_discrete _ _
+    · apply hasLimitsOfShape_discrete _
+    · apply PreservesFiniteProducts.preserves _ 
+    · apply PreservesFiniteProducts.preserves _ 
 #align category_theory.limits.preserves_finite_limits_of_preserves_equalizers_and_finite_products CategoryTheory.Limits.preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts
 
 /-- If G preserves equalizers and products, it preserves all limits. -/
@@ -247,9 +255,9 @@ noncomputable def preservesFiniteLimitsOfPreservesTerminalAndPullbacks [HasTermi
     preservesBinaryProductsOfPreservesTerminalAndPullbacks G
   haveI : PreservesLimitsOfShape WalkingParallelPair G := 
       preservesEqualizersOfPreservesPullbacksAndBinaryProducts G
-  refine
-    @preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts _ _ _ _ _ _ G _ ?_ 
-  intro J hJ
+  apply 
+    @preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts _ _ _ _ _ _ G _ ?_
+  apply PreservesFiniteProducts.mk 
   apply preservesFiniteProductsOfPreservesBinaryAndTerminal G
 #align category_theory.limits.preserves_finite_limits_of_preserves_terminal_and_pullbacks CategoryTheory.Limits.preservesFiniteLimitsOfPreservesTerminalAndPullbacks
 
@@ -434,14 +442,21 @@ end
 (Discrete.{0} J) G]  triggered the error "invalid parametric local instance, parameter 
 with type Fintype J does not have forward dependencies, type class resolution cannot use 
 this kind of local instance because it will not be able to infer a value for this parameter." 
-Changed to implicit below. -/
+Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
 /-- If G preserves coequalizers and finite coproducts, it preserves finite colimits. -/
 noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts 
     [HasCoequalizers C] [HasFiniteCoproducts C] (G : C ⥤ D) 
     [PreservesColimitsOfShape WalkingParallelPair G]
-    {_ : ∀ (J) [Fintype J], PreservesColimitsOfShape (Discrete.{0} J) G} : PreservesFiniteColimits G
-    where 
-  PreservesFiniteColimits := fun _ => preservesColimitOfPreservesCoequalizersAndCoproduct G
+    [PreservesFiniteCoproducts G] : PreservesFiniteColimits G where 
+  PreservesFiniteColimits := by
+    intro J sJ fJ
+    haveI : Fintype J := inferInstance
+    haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance
+    apply @preservesColimitOfPreservesCoequalizersAndCoproduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
+    · apply hasColimitsOfShape_discrete _ _
+    · apply hasColimitsOfShape_discrete _
+    · apply PreservesFiniteCoproducts.preserves _
+    · apply PreservesFiniteCoproducts.preserves _ 
 #align category_theory.limits.preserves_finite_colimits_of_preserves_coequalizers_and_finite_coproducts CategoryTheory.Limits.preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts
 
 /-- If G preserves coequalizers and coproducts, it preserves all colimits. -/
@@ -471,7 +486,7 @@ noncomputable def preservesFiniteColimitsOfPreservesInitialAndPushouts [HasIniti
       (preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts G)
   refine
     @preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts _ _ _ _ _ _ G _ ?_
-  intro J hJ
+  apply PreservesFiniteCoproducts.mk 
   apply preservesFiniteCoproductsOfPreservesBinaryAndInitial G
 
 #align category_theory.limits.preserves_finite_colimits_of_preserves_initial_and_pushouts CategoryTheory.Limits.preservesFiniteColimitsOfPreservesInitialAndPushouts
