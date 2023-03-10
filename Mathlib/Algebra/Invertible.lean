@@ -315,6 +315,9 @@ theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Inv
 
 #align nonzero_of_invertible nonzero_of_invertible
 
+theorem pos_of_invertible_cast [Semiring α] [Nontrivial α] (n : ℕ) [Invertible (n : α)] : 0 < n :=
+  Nat.zero_lt_of_ne_zero fun h => nonzero_of_invertible (n : α) (h ▸ Nat.cast_zero)
+
 instance (priority := 100) Invertible.ne_zero [MulZeroOneClass α] [Nontrivial α] (a : α)
     [Invertible a] : NeZero a :=
   ⟨nonzero_of_invertible a⟩
@@ -412,7 +415,7 @@ theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid
   then `r : R` is invertible if `f r` is.
 
 The inverse is computed as `g (⅟(f r))` -/
-@[simps! (config := { attrs := [] })]
+@[simps! (config := .lemmasOnly)]
 def Invertible.ofLeftInverse {R : Type _} {S : Type _} {G : Type _} [MulOneClass R] [MulOneClass S]
     [MonoidHomClass G S R] (f : R → S) (g : G) (r : R) (h : Function.LeftInverse g f)
     [Invertible (f r)] : Invertible r :=

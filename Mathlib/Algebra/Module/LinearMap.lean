@@ -260,12 +260,6 @@ theorem copy_eq (f : M →ₛₗ[σ] M₃) (f' : M → M₃) (h : f' = ⇑f) : f
   FunLike.ext' h
 #align linear_map.copy_eq LinearMap.copy_eq
 
-/-- See Note [custom simps projection]. -/
-protected def Simps.apply {R S : Type _} [Semiring R] [Semiring S] (σ : R →+* S) (M M₃ : Type _)
-    [AddCommMonoid M] [AddCommMonoid M₃] [Module R M] [Module S M₃] (f : M →ₛₗ[σ] M₃) : M → M₃ :=
-  f
-#align linear_map.simps.apply LinearMap.Simps.apply
-
 initialize_simps_projections LinearMap (toFun → apply)
 
 @[simp]

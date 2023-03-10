@@ -91,7 +91,7 @@ instance Rel.setoid (α : Type u) : Setoid (α × α) :=
 
 @[simp]
 theorem rel_iff {x y z w : α} : (x, y) ≈ (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
-  by aesop (rule_sets [Sym2]) (add norm unfold [HasEquiv.Equiv, Setoid.r])
+  show Rel _ _ _ ↔ _ by aesop (rule_sets [Sym2])
 #align sym2.rel_iff Sym2.rel_iff
 
 end Sym2

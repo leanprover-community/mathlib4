@@ -138,10 +138,6 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
 #noalign non_unital_ring_hom.coe_mk
 #noalign non_unital_ring_hom.coe_coe
 
-/-- See Note [custom simps projection] -/
-def Simps.apply {α β : Type _} [NonUnitalNonAssocSemiring α]
-  [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) : α → β := f
-
 initialize_simps_projections NonUnitalRingHom (toFun → apply)
 
 @[simp]
@@ -448,9 +444,6 @@ instance : RingHomClass (α →+* β) α β where
 -- -/
 -- instance : CoeFun (α →+* β) fun _ => α → β :=
 --   ⟨RingHom.toFun⟩
-
-/-- See Note [custom simps projection] -/
-def Simps.apply {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β] (f : α →+* β) : α → β := f
 
 initialize_simps_projections RingHom (toFun → apply)
 
