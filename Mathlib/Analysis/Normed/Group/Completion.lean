@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Basic
-import Mathbin.Topology.Algebra.GroupCompletion
-import Mathbin.Topology.MetricSpace.Completion
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Algebra.GroupCompletion
+import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # Completion of a normed group
