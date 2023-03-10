@@ -203,8 +203,9 @@ def normalMonoCategory : NormalMonoCategory C where
         haveI : Limits.HasImages C := hasImages
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
-        have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s ≫ 
-          inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp)) = Fork.ι s := ?_  
+        have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
+          ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp)) 
+            = Fork.ι s := ?_
         refine' isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux _
         · intro A g hg
           rw [KernelFork.ι_ofι] at hg
@@ -800,7 +801,7 @@ def abelian : Abelian C :=
        transform an instance of "has kernels with NonPreadditiveAbelian.HasZeroMorphisms" to an
        instance of "has kernels with NonPreadditiveAbelian.Preadditive.HasZeroMorphisms". Luckily,
        we have a `subsingleton` instance for `HasZeroMorphisms`, so `convert` can immediately close
-       the goal it creates for the two instances of `HasZeroMorphisms`, and the proof is complete. -/
+       the goal it creates for the two instances of `HasZeroMorphisms`, and the proof is complete.-/
     NonPreadditiveAbelian.preadditive with
     has_finite_products := by infer_instance
     has_kernels := by convert (by infer_instance : Limits.HasKernels C)
