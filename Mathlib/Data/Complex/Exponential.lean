@@ -1639,42 +1639,44 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
 
 theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
     abs (exp x - ∑ m in range n, x ^ m / m.factorial) ≤
-      abs x ^ n * (n.succ * (n.factorial * n)⁻¹) := by
-  rw [← lim_const (∑ m in range n, _), exp, sub_eq_add_neg, ← lim_neg, lim_add, ← lim_abs]
+      abs x ^ n * ((n.succ : ℝ) * (n.factorial * n : ℝ)⁻¹) := by
+  rw [← lim_const (abv := Complex.abs) (∑ m in range n, _), exp, sub_eq_add_neg,
+    ← lim_neg, lim_add, ← lim_abs]
   refine' lim_le (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
   simp_rw [← sub_eq_add_neg]
   show
     abs ((∑ m in range j, x ^ m / m.factorial) - ∑ m in range n, x ^ m / m.factorial) ≤
-      abs x ^ n * (n.succ * (n.factorial * n)⁻¹)
+      abs x ^ n * ((n.succ : ℝ) * (n.factorial * n : ℝ)⁻¹)
   rw [sum_range_sub_sum_range hj]
   calc
-    abs (∑ m in (range j).filterₓ fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
-        abs (∑ m in (range j).filterₓ fun k => n ≤ k, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) :=
+    abs (∑ m in (range j).filter fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
+        abs (∑ m in (range j).filter fun k => n ≤ k, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) :=
       by
       refine' congr_arg abs (sum_congr rfl fun m hm => _)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
-    _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs (x ^ n * (_ / m.factorial)) :=
-      (abv_sum_le_sum_abv _ _)
+    _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
+      (abv_sum_le_sum_abv (abv := Complex.abs) _ _)
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) :=
       by
-      refine' sum_le_sum fun m hm => _
+      refine' sum_le_sum fun m _ => _
       rw [map_mul, map_pow, map_div₀, abs_cast_nat]
       refine' mul_le_mul_of_nonneg_left ((div_le_div_right _).2 _) _
       · exact Nat.cast_pos.2 (Nat.factorial_pos _)
       · rw [abv_pow abs]
         exact pow_le_one _ (abs.nonneg _) hx
       · exact pow_nonneg (abs.nonneg _) _
-    _ = abs x ^ n * ∑ m in (range j).filterₓ fun k => n ≤ k, (1 / m.factorial : ℝ) := by
+    _ = abs x ^ n * ∑ m in (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
       simp [abs_mul, abv_pow abs, abs_div, mul_sum.symm]
-    _ ≤ abs x ^ n * (n.succ * (n.factorial * n)⁻¹) :=
+    _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) :=
       mul_le_mul_of_nonneg_left (sum_div_factorial_le _ _ hn) (pow_nonneg (abs.nonneg _) _)
 
 #align complex.exp_bound Complex.exp_bound
 
 theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
     abs (exp x - ∑ m in range n, x ^ m / m.factorial) ≤ abs x ^ n / n.factorial * 2 := by
-  rw [← lim_const (∑ m in range n, _), exp, sub_eq_add_neg, ← lim_neg, lim_add, ← lim_abs]
+  rw [← lim_const (abv := Complex.abs) (∑ m in range n, _),
+    exp, sub_eq_add_neg, ← lim_neg, lim_add, ← lim_abs]
   refine' lim_le (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
   simp_rw [← sub_eq_add_neg]
   show abs ((∑ m in range j, x ^ m / m.factorial) - ∑ m in range n, x ^ m / m.factorial) ≤ abs x ^ n / n.factorial * 2
@@ -1682,15 +1684,14 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
   have hj : j = n + k := (add_tsub_cancel_of_le hj).symm
   rw [hj, sum_range_add_sub_sum_range]
   calc
-    abs (∑ I : ℕ in range k, x ^ (n + I) / ((n + I)! : ℂ)) ≤
-        ∑ I : ℕ in range k, abs (x ^ (n + I) / ((n + I)! : ℂ)) :=
+    abs (∑ i : ℕ in range k, x ^ (n + i) / ((n + i).factorial : ℂ)) ≤
+        ∑ i : ℕ in range k, abs (x ^ (n + i) / ((n + i).factorial : ℂ)) :=
       abv_sum_le_sum_abv _ _
-    _ ≤ ∑ I : ℕ in range k, abs x ^ (n + I) / (n + I)! := by
-      simp only [Complex.abs_cast_nat, map_div₀, abv_pow abs]
-    _ ≤ ∑ I : ℕ in range k, abs x ^ (n + I) / (n.factorial * n.succ ^ I) := _
-    _ = ∑ I : ℕ in range k, abs x ^ n / n.factorial * (abs x ^ I / n.succ ^ I) := _
-    _ ≤ abs x ^ n / ↑n.factorial * 2 := _
-
+    _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / (n + i).factorial := by
+      simp [Complex.abs_cast_nat, map_div₀, abv_pow abs]
+    _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
+    _ = ∑ i : ℕ in range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
+    _ ≤ abs x ^ n / ↑n.factorial * 2 := ?_
   · refine' sum_le_sum fun m hm => div_le_div (pow_nonneg (abs.nonneg x) (n + m)) le_rfl _ _
     · exact_mod_cast mul_pos n.factorial_pos (pow_pos n.succ_pos _)
     · exact_mod_cast Nat.factorial_mul_pow_le_factorial
@@ -1714,8 +1715,9 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
 theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 * abs x :=
   calc
     abs (exp x - 1) = abs (exp x - ∑ m in range 1, x ^ m / m.factorial) := by simp [sum_range_succ]
-    _ ≤ abs x ^ 1 * (Nat.succ 1 * (1! * (1 : ℕ))⁻¹) := (exp_bound hx (by decide))
-    _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm]
+    _ ≤ abs x ^ 1 * ((Nat.succ 1 : ℝ) * ((Nat.factorial 1) * (1 : ℕ) : ℝ)⁻¹) :=
+      (exp_bound hx (by decide))
+    _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul]
 
 #align complex.abs_exp_sub_one_le Complex.abs_exp_sub_one_le
 
@@ -1723,7 +1725,8 @@ theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 
   calc
     abs (exp x - 1 - x) = abs (exp x - ∑ m in range 2, x ^ m / m.factorial) := by
       simp [sub_eq_add_neg, sum_range_succ_comm, add_assoc]
-    _ ≤ abs x ^ 2 * (Nat.succ 2 * (2! * (2 : ℕ))⁻¹) := (exp_bound hx (by decide))
+    _ ≤ abs x ^ 2 * ((Nat.succ 2 : ℝ) * (Nat.factorial 2 * (2 : ℕ) : ℝ)⁻¹) :=
+      (exp_bound hx (by decide))
     _ ≤ abs x ^ 2 * 1 := (mul_le_mul_of_nonneg_left (by norm_num) (sq_nonneg (abs x)))
     _ = abs x ^ 2 := by rw [mul_one]
 
@@ -1735,7 +1738,7 @@ namespace Real
 
 open Complex Finset
 
-theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
+nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m in range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : Complex.abs x ≤ 1 := by exact_mod_cast hx
   convert exp_bound hxc hn <;> norm_cast
