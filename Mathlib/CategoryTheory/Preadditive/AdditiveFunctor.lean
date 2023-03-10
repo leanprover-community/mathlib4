@@ -8,10 +8,10 @@ Authors: Adam Topaz, Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.ExactFunctor
-import Mathbin.CategoryTheory.Limits.Preserves.Finite
-import Mathbin.CategoryTheory.Preadditive.Biproducts
-import Mathbin.CategoryTheory.Preadditive.FunctorCategory
+import Mathlib.CategoryTheory.Limits.ExactFunctor
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # Additive Functors
