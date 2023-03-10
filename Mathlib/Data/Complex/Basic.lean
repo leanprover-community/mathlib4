@@ -1002,9 +1002,6 @@ theorem abs_two : Complex.abs 2 = 2 :=
   calc
     Complex.abs 2 = Complex.abs (2 : ℝ) := by rfl
     _ = (2 : ℝ) := Complex.abs_of_nonneg (by norm_num)
-
-
-
 #align complex.abs_two Complex.abs_two
 
 @[simp]
@@ -1077,10 +1074,6 @@ theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
 
 -- Porting note: probably should be golfed
 theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| := by
-  repeat (rw [← abs_ofReal])
-  conv =>
-    lhs
-    rw [← Complex.re_add_im z]
   simpa [re_add_im] using Complex.abs.add_le z.re (z.im * I)
 #align complex.abs_le_abs_re_add_abs_im Complex.abs_le_abs_re_add_abs_im
 
@@ -1227,8 +1220,7 @@ scoped[Complex.ComplexOrder] attribute [instance] Complex.ComplexOrder.strictOrd
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 -/
 protected def starOrderedRing : StarOrderedRing ℂ :=
-  {
-    nonneg_iff := fun r =>
+  { nonneg_iff := fun r =>
       by
       refine' ⟨fun hr => ⟨Real.sqrt r.re, _⟩, fun h => _⟩
       · have h₁ : 0 ≤ r.re := by
