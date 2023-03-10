@@ -16,6 +16,8 @@ import Mathlib.RingTheory.Ideal.Quotient
 -/
 
 
+-- Porting note: Without this line, timeouts occur.
+attribute [-instance] Ring.toNonAssocRing
 -- Porting note: we need η for TC
 set_option synthInstance.etaExperiment true
 
@@ -67,7 +69,8 @@ def quotientKerEquivOfRightInverse {g : S → R} (hf : Function.RightInverse g f
     left_inv := by
       rintro ⟨x⟩
       apply kerLift_injective
-      simp [hf (f x)]
+      simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, kerLift_mk,
+        Function.comp_apply, hf (f x)]
     right_inv := hf }
 #align ring_hom.quotient_ker_equiv_of_right_inverse RingHom.quotientKerEquivOfRightInverse
 
@@ -279,8 +282,6 @@ This is an isomorphism if `f` has a right inverse (`quotientKerAlgEquivOfRightIn
 is surjective (`quotientKerAlgEquivOfSurjective`).
 -/
 def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f.toRingHom) →ₐ[R₁] B :=
-
-  -- Porting note: below gives a timeout at whnf
   AlgHom.mk' f.toRingHom.kerLift fun _ _ => KerLift.map_smul f _ _
 #align ideal.ker_lift_alg Ideal.kerLiftAlg
 
@@ -290,15 +291,23 @@ theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
   rfl
 #align ideal.ker_lift_alg_mk Ideal.kerLiftAlg_mk
 
+-- Porting note: Next two thms time out no matter what
+set_option maxHeartbeats 2000
+--private instance test {f : A →ₐ[R₁] B} : Algebra R₁ ( A ⧸ RingHom.ker f):= inferInstance
 @[simp]
-theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) : (kerLiftAlg f).toRingHom = RingHom.kerLift f :=
-  rfl
+theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
+    @AlgHom.toRingHom (R := R₁) (A := A ⧸ RingHom.ker f) (B := B) _ _ _ test _ (kerLiftAlg f)
+      = RingHom.kerLift (R := A) (S := B)
+        (@AlgHom.toRingHom (R := R₁) (A := A) (B := B) _ _ _ _ _ f) := by
+  sorry
 #align ideal.ker_lift_alg_to_ring_hom Ideal.kerLiftAlg_toRingHom
 
 /-- The induced algebra morphism from the quotient by the kernel is injective. -/
 theorem kerLiftAlg_injective (f : A →ₐ[R₁] B) : Function.Injective (kerLiftAlg f) :=
   RingHom.kerLift_injective f
 #align ideal.ker_lift_alg_injective Ideal.kerLiftAlg_injective
+
+set_option maxHeartbeats 200000
 
 /-- The **first isomorphism** theorem for algebras, computable version. -/
 def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
@@ -419,7 +428,7 @@ theorem comp_quotientMap_eq_of_comp_eq {R' S' : Type _} [CommRing R'] [CommRing 
         (quotientMap (I.comap f') g
           (le_of_eq (_root_.trans (comap_comap f g') (hfg ▸ comap_comap g f')))) := by
   refine' RingHom.ext fun a => _
-  obtain ⟨r, rfl⟩ := quotient.mk_surjective a
+  obtain ⟨r, rfl⟩ := Quotient.mk_surjective a
   simp only [RingHom.comp_apply, quotient_map_mk]
   exact congr_arg (Quotient.mk' I) (trans (g'.comp_apply f r).symm (hfg ▸ f'.comp_apply g r))
 #align ideal.comp_quotient_map_eq_of_comp_eq Ideal.comp_quotientMap_eq_of_comp_eq
@@ -463,6 +472,9 @@ theorem algebraMap_quotient_injective {I : Ideal A} [Algebra R A] :
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
+  -- Porting note: Needed to add these two lines b/c we removed deinstanced this earlier
+  letI : NonAssocRing R := Ring.toNonAssocRing
+  letI : NonAssocRing A := Ring.toNonAssocRing
   rw [← RingHom.map_sub] at hab
   exact Quotient.eq.mpr hab
 #align ideal.algebra_map_quotient_injective Ideal.algebraMap_quotient_injective
@@ -524,7 +536,7 @@ def quotQuotMk : R →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
   (Ideal.Quotient.mk (J.map (Ideal.Quotient.mk I))).comp (Ideal.Quotient.mk I)
 #align double_quot.quot_quot_mk DoubleQuot.quotQuotMk
 
-/-- The kernel of `quot_quot_mk` -/
+/-- The kernel of `quotQuotMk` -/
 theorem ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
   rw [RingHom.ker_eq_comap_bot, quotQuotMk, ← comap_comap, ← RingHom.ker, mk_ker,
     comap_map_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← RingHom.ker, mk_ker,
