@@ -373,6 +373,13 @@ theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : I.L) : f.
   f.w (WalkingMulticospan.left j)
 #align category_theory.limits.multifork.hom_comp_ι CategoryTheory.Limits.Multifork.hom_comp_ι
 
+/-
+Porting note: Added simp lemma.
+-/
+@[simp]
+lemma hom_w {K₁ K₂ : Multifork I} (f : K₁ ⟶ K₂) (b : I.L) : f.Hom ≫ K₂.ι b = K₁.ι b :=
+  f.w _
+
 /-- Construct a multifork using a collection `ι` of morphisms. -/
 @[simps]
 def ofι (I : MulticospanIndex C) (P : C) (ι : ∀ a, P ⟶ I.left a)
@@ -578,6 +585,13 @@ theorem snd_app_right (a) : K.ι.app (WalkingMultispan.left a) = I.snd a ≫ K.�
   rfl
 #align category_theory.limits.multicofork.snd_app_right CategoryTheory.Limits.Multicofork.snd_app_right
 
+/-
+Porting note: Added simp lemma.
+-/
+@[simp]
+lemma hom_w {K₁ K₂ : Multicofork I} (f : K₁ ⟶ K₂) (b : I.R) : K₁.π b ≫ f.Hom = K₂.π b :=
+  f.w _
+
 /-- Construct a multicofork using a collection `π` of morphisms. -/
 @[simps]
 def ofπ (I : MultispanIndex C) (P : C) (π : ∀ b, I.right b ⟶ P)
@@ -702,9 +716,12 @@ noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap 
   obj := Multicofork.toSigmaCofork
   map {K₁ K₂} f := {
     Hom := f.Hom
-    w := by sorry } -- Porting note: aesop_cat fails here.
-  map_id := sorry
-  map_comp := sorry
+    w := by
+      rintro (_|_)
+      all_goals {
+        apply colimit.hom_ext
+        rintro ⟨j⟩
+        simp } }
 #align category_theory.limits.multispan_index.to_sigma_cofork_functor CategoryTheory.Limits.MultispanIndex.toSigmaCoforkFunctor
 
 /-- `multicofork.of_sigma_cofork` is functorial. -/
