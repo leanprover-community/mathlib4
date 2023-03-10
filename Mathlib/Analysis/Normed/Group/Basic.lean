@@ -529,10 +529,8 @@ theorem norm_of_subsingleton' [Subsingleton E] (a : E) : ‖a‖ = 0 := by
 attribute [nontriviality] norm_of_subsingleton
 
 @[to_additive zero_lt_one_add_norm_sq]
-theorem zero_lt_one_add_norm_sq' (x : E) : 0 < 1 + ‖x‖ ^ 2 :=
-  zero_lt_one.trans_le <| by
-    simpa only [add_zero] using add_le_add_left (pow_nonneg (norm_nonneg' x) 2) 1
--- porting note: `by positivity` works, but doesn't get translated successfully by `to_additive`
+theorem zero_lt_one_add_norm_sq' (x : E) : 0 < 1 + ‖x‖ ^ 2 := by
+  positivity
 #align zero_lt_one_add_norm_sq' zero_lt_one_add_norm_sq'
 #align zero_lt_one_add_norm_sq zero_lt_one_add_norm_sq
 
@@ -689,9 +687,8 @@ attribute [to_additive existing Metric.Bounded.exists_norm_le] Metric.Bounded.ex
 @[to_additive Metric.Bounded.exists_pos_norm_le]
 theorem Metric.Bounded.exists_pos_norm_le' (hs : Metric.Bounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
   let ⟨R₀, hR₀⟩ := hs.exists_norm_le'
-  ⟨max R₀ 1, zero_lt_one.trans_le (le_max_right _ _),
-    fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
-  -- porting note: `by positivity` works but `to_additive` is unsuccessful
+  ⟨max R₀ 1, by positivity, fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
+
 #align metric.bounded.exists_pos_norm_le' Metric.Bounded.exists_pos_norm_le'
 #align metric.bounded.exists_pos_norm_le Metric.Bounded.exists_pos_norm_le
 
@@ -2091,10 +2088,9 @@ theorem HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSuppo
     ∃ R : ℝ, 0 < R ∧ ∀ x : α, R ≤ ‖x‖ → f x = 1 := by
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
   obtain ⟨S, hS, hS'⟩ := hK1.bounded.exists_pos_norm_le
-  refine' ⟨S + 1, by simpa only [zero_add] using _root_.add_lt_add hS zero_lt_one,
-    fun x hx => hK2 x ((mt <| hS' x) _)⟩
-  -- porting note: `positivity` succeeds, but `to_additive` fails
+  refine' ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) _)⟩
   -- porting note: `ENNReal.add_lt_add` should be `protected`?
+  -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
   contrapose! hx
   exact lt_add_of_le_of_pos hx zero_lt_one
 #align has_compact_mul_support.exists_pos_le_norm HasCompactMulSupport.exists_pos_le_norm
