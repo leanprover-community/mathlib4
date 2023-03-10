@@ -30,14 +30,18 @@ open Topology BigOperators NNReal ENNReal uniformity Pointwise
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NonUnitalSeminormedRing (α : Type _) extends Norm α, NonUnitalRing α,
   PseudoMetricSpace α where
+  /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align non_unital_semi_normed_ring NonUnitalSeminormedRing
 
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class SeminormedRing (α : Type _) extends Norm α, Ring α, PseudoMetricSpace α where
+  /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align semi_normed_ring SeminormedRing
 
@@ -51,7 +55,9 @@ instance (priority := 100) SeminormedRing.toNonUnitalSeminormedRing [β : Semino
 /-- A non-unital normed ring is a not-necessarily-unital ring
 endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NonUnitalNormedRing (α : Type _) extends Norm α, NonUnitalRing α, MetricSpace α where
+  /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align non_unital_normed_ring NonUnitalNormedRing
 
@@ -64,14 +70,18 @@ instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
 
 /-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NormedRing (α : Type _) extends Norm α, Ring α, MetricSpace α where
+  /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align normed_ring NormedRing
 
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
 class NormedDivisionRing (α : Type _) extends Norm α, DivisionRing α, MetricSpace α where
+  /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is multiplicative. -/
   norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
 #align normed_division_ring NormedDivisionRing
 
@@ -98,12 +108,14 @@ instance (priority := 100) NormedRing.toNonUnitalNormedRing [β : NormedRing α]
 /-- A seminormed commutative ring is a commutative ring endowed with a seminorm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class SeminormedCommRing (α : Type _) extends SeminormedRing α where
+  /-- Multiplication is commutative. -/
   mul_comm : ∀ x y : α, x * y = y * x
 #align semi_normed_comm_ring SeminormedCommRing
 
 /-- A normed commutative ring is a commutative ring endowed with a norm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NormedCommRing (α : Type _) extends NormedRing α where
+  /-- Multiplication is commutative. -/
   mul_comm : ∀ x y : α, x * y = y * x
 #align normed_comm_ring NormedCommRing
 
@@ -121,6 +133,7 @@ instance : NormedCommRing PUnit :=
 /-- A mixin class with the axiom `‖1‖ = 1`. Many `normed_ring`s and all `normed_field`s satisfy this
 axiom. -/
 class NormOneClass (α : Type _) [Norm α] [One α] : Prop where
+  /-- The norm of the multiplicative identity is 1. -/
   norm_one : ‖(1 : α)‖ = 1
 #align norm_one_class NormOneClass
 
@@ -656,7 +669,9 @@ end NormedDivisionRing
 
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
 class NormedField (α : Type _) extends Norm α, Field α, MetricSpace α where
+  /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is multiplicative. -/
   norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
 #align normed_field NormedField
 
@@ -664,6 +679,7 @@ class NormedField (α : Type _) extends Norm α, Field α, MetricSpace α where
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
 multiplication by the powers of any element, and thus to relate algebra and topology. -/
 class NontriviallyNormedField (α : Type _) extends NormedField α where
+  /-- The norm attains a value exceeding 1. -/
   non_trivial : ∃ x : α, 1 < ‖x‖
 #align nontrivially_normed_field NontriviallyNormedField
 
@@ -671,6 +687,7 @@ class NontriviallyNormedField (α : Type _) extends NormedField α where
 which means it is also nontrivially normed. However, not all nontrivally normed fields are densely
 normed; in particular, the `padic`s exhibit this fact. -/
 class DenselyNormedField (α : Type _) extends NormedField α where
+  /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
 #align densely_normed_field DenselyNormedField
 
@@ -819,7 +836,7 @@ namespace NNReal
 
 open NNReal
 
-@[simp]
+-- porting note: removed `@[simp]` because `simp` can prove this
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 #align nnreal.norm_eq NNReal.norm_eq
 
@@ -830,7 +847,7 @@ theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
 
 end NNReal
 
-@[simp]
+@[simp 1001] -- porting note: increase priority so that the LHS doesn't simplify
 theorem norm_norm [SeminormedAddCommGroup α] (x : α) : ‖‖x‖‖ = ‖x‖ :=
   Real.norm_of_nonneg (norm_nonneg _)
 #align norm_norm norm_norm
@@ -881,6 +898,7 @@ variable {R₁ : Type _} {R₂ : Type _} {R₃ : Type _}
 /-- This class states that a ring homomorphism is isometric. This is a sufficient assumption
 for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
 class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (σ : R₁ →+* R₂) : Prop where
+  /-- The ring homomorphism is an isometry. -/
   is_iso : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
 #align ring_hom_isometric RingHomIsometric
 
