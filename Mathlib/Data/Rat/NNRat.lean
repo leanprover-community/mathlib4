@@ -209,13 +209,13 @@ def coeHom : ℚ≥0 →+* ℚ where
 #align nnrat.coe_hom NNRat.coeHom
 
 @[simp, norm_cast]
-theorem coe_nat_cast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
+theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
   map_natCast coeHom n
-#align nnrat.coe_nat_cast NNRat.coe_nat_cast
+#align nnrat.coe_nat_cast NNRat.coe_natCast
 
 @[simp]
 theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
-  ext (coe_nat_cast n).symm
+  ext (coe_natCast n).symm
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 
 /-- The rational numbers are an algebra over the non-negative rationals. -/
@@ -483,7 +483,7 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
 @[simp]
 theorem num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   ext1
-  rw [coe_div, coe_nat_cast, coe_nat_cast, num, ← Int.cast_ofNat,
+  rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_ofNat,
     Int.natAbs_of_nonneg (Rat.num_nonneg_iff_zero_le.2 q.prop)]
   exact Rat.num_div_den q
 #align nnrat.num_div_denom NNRat.num_div_den

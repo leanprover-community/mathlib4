@@ -5,7 +5,7 @@ Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 Ported by: Winston Yin
 
 ! This file was ported from Lean 3 source module algebra.hom.units
-! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -504,6 +504,12 @@ protected theorem div_div_cancel (h : IsUnit a) : a / (a / b) = b := by
   rw [div_div_eq_mul_div, h.mul_div_cancel_left]
 #align is_unit.div_div_cancel IsUnit.div_div_cancel
 #align is_add_unit.sub_sub_cancel IsAddUnit.sub_sub_cancel
+
+@[to_additive]
+protected theorem div_div_cancel_left (h : IsUnit a) : a / b / a = b⁻¹ := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_right_comm, h.mul_inv_cancel, one_mul]
+#align is_unit.div_div_cancel_left IsUnit.div_div_cancel_left
+#align is_add_unit.sub_sub_cancel_left IsAddUnit.sub_sub_cancel_left
 
 end DivisionCommMonoid
 

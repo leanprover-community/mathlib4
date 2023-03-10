@@ -131,7 +131,7 @@ theorem Multiset.mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFins
   Multiset.count_pos.mp <| pos_of_gt <| (m.mem_toEnumFinset p).mp h
 #align multiset.mem_of_mem_to_enum_finset Multiset.mem_of_mem_toEnumFinset
 
---@[mono] Porting note: not implemented yet
+@[mono]
 theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
   intro p

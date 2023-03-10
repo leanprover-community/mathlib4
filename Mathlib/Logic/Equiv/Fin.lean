@@ -493,7 +493,7 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLe`. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def Fin.castLeOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
     where
   toFun i := ⟨Fin.castLe h i, by simp⟩
@@ -503,7 +503,7 @@ def Fin.castLeOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i 
   map_rel_iff' := by simp
 #align fin.cast_le_order_iso Fin.castLeOrderIso
 #align fin.cast_le_order_iso_apply Fin.castLeOrderIso_apply
-#align fin.cast_le_order_iso_symm_apply Fin.castLeOrderIso_symmApply
+#align fin.cast_le_order_iso_symm_apply Fin.castLeOrderIso_symm_apply
 
 /-- `Fin 0` is a subsingleton. -/
 instance subsingleton_fin_zero : Subsingleton (Fin 0) :=

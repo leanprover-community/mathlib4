@@ -28,7 +28,7 @@ of the ring `R`. The bundled variant `Subring R` should be used in preference to
 
 ## Tags
 
-is_subring
+IsSubring
 -/
 
 
