@@ -8,7 +8,7 @@ Authors: Yury Kudryashov, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Negation on spheres and balls
