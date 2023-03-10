@@ -18,14 +18,15 @@ A subadditive sequence `u : ℕ → ℝ` is a sequence satisfying `u (m + n) ≤
 We define this notion as `subadditive u`, and prove in `subadditive.tendsto_lim` that, if `u n / n`
 is bounded below, then it converges to a limit (that we denote by `subadditive.lim` for
 convenience). This result is known as Fekete's lemma in the literature.
--/
 
+## TODO
+
+Define a bundled `SubadditiveHom`, use it.
+-/
 
 noncomputable section
 
-open Set Filter
-
-open Topology
+open Set Filter Topology
 
 /-- A real-valued sequence is subadditive if it satisfies the inequality `u (m + n) ≤ u m + u n`
 for all `m, n`. -/
@@ -37,101 +38,62 @@ namespace Subadditive
 
 variable {u : ℕ → ℝ} (h : Subadditive u)
 
-include h
-
 /-- The limit of a bounded-below subadditive sequence. The fact that the sequence indeed tends to
 this limit is given in `subadditive.tendsto_lim` -/
-@[nolint unused_arguments]
-protected irreducible_def lim :=
+@[nolint unusedArguments] -- porting note: was irreducible
+protected def lim (_h : Subadditive u) :=
   infₛ ((fun n : ℕ => u n / n) '' Ici 1)
 #align subadditive.lim Subadditive.lim
 
 theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
-    h.limUnder ≤ u n / n := by
+    h.lim ≤ u n / n := by
   rw [Subadditive.lim]
-  apply cinfₛ_le _ _
-  · rcases hbdd with ⟨c, hc⟩
-    exact ⟨c, fun x hx => hc (image_subset_range _ _ hx)⟩
-  · apply mem_image_of_mem
-    exact zero_lt_iff.2 hn
+  exact cinfₛ_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
 #align subadditive.lim_le_div Subadditive.lim_le_div
 
 theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
-  induction' k with k IH; · simp only [Nat.cast_zero, zero_mul, zero_add]
-  calc
-    u ((k + 1) * n + r) = u (n + (k * n + r)) :=
-      by
-      congr 1
-      ring
-    _ ≤ u n + u (k * n + r) := (h _ _)
-    _ ≤ u n + (k * u n + u r) := (add_le_add_left IH _)
-    _ = (k + 1 : ℕ) * u n + u r := by simp <;> ring
-    
+  induction k with
+  | zero => simp only [Nat.zero_eq, Nat.cast_zero, zero_mul, zero_add]; rfl
+  | succ k IH =>
+    calc
+      u ((k + 1) * n + r) = u (n + (k * n + r)) := by congr 1; ring
+      _ ≤ u n + u (k * n + r) := h _ _
+      _ ≤ u n + (k * u n + u r) := add_le_add_left IH _
+      _ = (k + 1 : ℕ) * u n + u r := by simp; ring
 #align subadditive.apply_mul_add_le Subadditive.apply_mul_add_le
 
 theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :
-    ∀ᶠ p in atTop, u p / p < L := by
-  have I : ∀ i : ℕ, 0 < i → (i : ℝ) ≠ 0 := by
-    intro i hi
-    simp only [hi.ne', Ne.def, Nat.cast_eq_zero, not_false_iff]
-  obtain ⟨w, nw, wL⟩ : ∃ w, u n / n < w ∧ w < L := exists_between hL
-  obtain ⟨x, hx⟩ : ∃ x, ∀ i < n, u i - i * w ≤ x :=
-    by
-    obtain ⟨x, hx⟩ : BddAbove ↑(Finset.image (fun i => u i - i * w) (Finset.range n)) :=
-      Finset.bddAbove _
-    refine' ⟨x, fun i hi => _⟩
-    simp only [upperBounds, mem_image, and_imp, forall_exists_index, mem_set_of_eq,
-      forall_apply_eq_imp_iff₂, Finset.mem_range, Finset.mem_coe, Finset.coe_image] at hx
-    exact hx _ hi
-  have A : ∀ p : ℕ, u p ≤ p * w + x := by
-    intro p
-    let s := p / n
-    let r := p % n
-    have hp : p = s * n + r := by rw [mul_comm, Nat.div_add_mod]
-    calc
-      u p = u (s * n + r) := by rw [hp]
-      _ ≤ s * u n + u r := (h.apply_mul_add_le _ _ _)
-      _ = s * n * (u n / n) + u r := by
-        field_simp [I _ hn.bot_lt]
-        ring
-      _ ≤ s * n * w + u r :=
-        (add_le_add_right
-          (mul_le_mul_of_nonneg_left nw.le (mul_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _))) _)
-      _ = (s * n + r) * w + (u r - r * w) := by ring
-      _ = p * w + (u r - r * w) := by
-        rw [hp]
-        simp only [Nat.cast_add, Nat.cast_mul]
-      _ ≤ p * w + x := add_le_add_left (hx _ (Nat.mod_lt _ hn.bot_lt)) _
-      
-  have B : ∀ᶠ p in at_top, u p / p ≤ w + x / p :=
-    by
-    refine' eventually_at_top.2 ⟨1, fun p hp => _⟩
-    simp only [I p hp, Ne.def, not_false_iff, field_simps]
-    refine' div_le_div_of_le_of_nonneg _ (Nat.cast_nonneg _)
-    rw [mul_comm]
-    exact A _
-  have C : ∀ᶠ p : ℕ in at_top, w + x / p < L :=
-    by
-    have : tendsto (fun p : ℕ => w + x / p) at_top (𝓝 (w + 0)) :=
-      tendsto_const_nhds.add (tendsto_const_nhds.div_at_top tendsto_nat_cast_atTop_atTop)
-    rw [add_zero] at this
-    exact (tendsto_order.1 this).2 _ wL
-  filter_upwards [B, C]with _ hp h'p using hp.trans_lt h'p
+    ∀ᶠ p in atTop, u p / p < L :=by
+  /- It suffices to prove the statement for each arithmetic progression `(n * · + r)`. -/
+  refine .atTop_of_arithmetic hn fun r _ => ?_
+  /- `(k * u n + u r) / (k * n + r)` tends to `u n / n < L`, hence
+  `(k * u n + u r) / (k * n + r) < L` for sufficiently large `k`. -/
+  have A : Tendsto (fun x : ℝ => (u n + u r / x) / (n + r / x)) atTop (𝓝 ((u n + 0) / (n + 0))) :=
+    (tendsto_const_nhds.add <| tendsto_const_nhds.div_atTop tendsto_id).div
+      (tendsto_const_nhds.add <| tendsto_const_nhds.div_atTop tendsto_id) <| by simpa
+  have B : Tendsto (fun x => (x * u n + u r) / (x * n + r)) atTop (𝓝 (u n / n)) := by
+    rw [add_zero, add_zero] at A
+    refine A.congr' <| (eventually_ne_atTop 0).mono fun x hx => ?_
+    simp only [(· ∘ ·), add_div' _ _ _ hx, div_div_div_cancel_right _ hx, mul_comm]
+  refine ((B.comp tendsto_nat_cast_atTop_atTop).eventually (gt_mem_nhds hL)).mono fun k hk => ?_
+  /- Finally, we use an upper estimate on `u (k * n + r)` to get an estimate on
+  `u (k * n + r) / (k * n + r)`. -/
+  rw [mul_comm]
+  refine lt_of_le_of_lt ?_ hk
+  simp only [(· ∘ ·), ← Nat.cast_add, ← Nat.cast_mul]
+  exact div_le_div_of_le (Nat.cast_nonneg _) (h.apply_mul_add_le _ _ _)
 #align subadditive.eventually_div_lt_of_div_lt Subadditive.eventually_div_lt_of_div_lt
 
 /-- Fekete's lemma: a subadditive sequence which is bounded below converges. -/
 theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
-    Tendsto (fun n => u n / n) atTop (𝓝 h.limUnder) := by
+    Tendsto (fun n => u n / n) atTop (𝓝 h.lim) := by
   refine' tendsto_order.2 ⟨fun l hl => _, fun L hL => _⟩
-  ·
-    refine'
-      eventually_at_top.2
-        ⟨1, fun n hn => hl.trans_le (h.lim_le_div hbdd (zero_lt_one.trans_le hn).ne')⟩
-  · obtain ⟨n, npos, hn⟩ : ∃ n : ℕ, 0 < n ∧ u n / n < L :=
-      by
+  · refine' eventually_atTop.2
+      ⟨1, fun n hn => hl.trans_le (h.lim_le_div hbdd (zero_lt_one.trans_le hn).ne')⟩
+  · obtain ⟨n, npos, hn⟩ : ∃ n : ℕ, 0 < n ∧ u n / n < L := by
       rw [Subadditive.lim] at hL
       rcases exists_lt_of_cinfₛ_lt (by simp) hL with ⟨x, hx, xL⟩
-      rcases(mem_image _ _ _).1 hx with ⟨n, hn, rfl⟩
+      rcases (mem_image _ _ _).1 hx with ⟨n, hn, rfl⟩
       exact ⟨n, zero_lt_one.trans_le hn, xL⟩
     exact h.eventually_div_lt_of_div_lt npos.ne' hn
 #align subadditive.tendsto_lim Subadditive.tendsto_lim
