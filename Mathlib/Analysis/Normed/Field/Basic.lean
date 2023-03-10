@@ -8,9 +8,9 @@ Authors: Patrick Massot, Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.Analysis.Normed.Group.Basic
-import Mathbin.Topology.Instances.Ennreal
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Instances.Ennreal
 
 /-!
 # Normed fields
@@ -214,8 +214,7 @@ theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ 
 #align mul_left_bound mulLeft_bound
 
 /-- In a seminormed ring, the right-multiplication `add_monoid_hom` is bounded. -/
-theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y =>
-  by
+theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y => by
   rw [mul_comm]
   convert norm_mul_le y x
 #align mul_right_bound mulRight_bound
@@ -320,8 +319,7 @@ theorem List.nnnorm_prod_le [NormOneClass α] (l : List α) : ‖l.Prod‖₊ �
 #align list.nnnorm_prod_le List.nnnorm_prod_le
 
 theorem Finset.norm_prod_le' {α : Type _} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
-    (f : ι → α) : ‖∏ i in s, f i‖ ≤ ∏ i in s, ‖f i‖ :=
-  by
+    (f : ι → α) : ‖∏ i in s, f i‖ ≤ ∏ i in s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
   have : l.map f ≠ [] := by simpa using hs
   simpa using List.norm_prod_le' this
@@ -333,8 +331,7 @@ theorem Finset.nnnorm_prod_le' {α : Type _} [NormedCommRing α] (s : Finset ι)
 #align finset.nnnorm_prod_le' Finset.nnnorm_prod_le'
 
 theorem Finset.norm_prod_le {α : Type _} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
-    (f : ι → α) : ‖∏ i in s, f i‖ ≤ ∏ i in s, ‖f i‖ :=
-  by
+    (f : ι → α) : ‖∏ i in s, f i‖ ≤ ∏ i in s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
   simpa using (l.map f).norm_prod_le
 #align finset.norm_prod_le Finset.norm_prod_le
@@ -577,8 +574,7 @@ theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) : dist z⁻¹ w
 #align dist_inv_inv₀ dist_inv_inv₀
 
 theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
-    nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
-  by
+    nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) := by
   rw [← NNReal.coe_eq]
   simp [-NNReal.coe_eq, dist_inv_inv₀ hz hw]
 #align nndist_inv_inv₀ nndist_inv_inv₀
@@ -600,8 +596,7 @@ theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 #align filter.tendsto_mul_right_cobounded Filter.tendsto_mul_right_cobounded
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α :=
-  by
+instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
   refine' ⟨fun r r0 => tendsto_iff_norm_tendsto_zero.2 _⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
@@ -629,8 +624,7 @@ instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing : Topol
 #align normed_division_ring.to_topological_division_ring NormedDivisionRing.to_topologicalDivisionRing
 
 theorem norm_map_one_of_pow_eq_one [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 :=
-  by
+    ‖φ x‖ = 1 := by
   rw [← pow_left_inj, ← norm_pow, ← map_pow, h, map_one, norm_one, one_pow]
   exacts[norm_nonneg _, zero_le_one, k.pos]
 #align norm_map_one_of_pow_eq_one norm_map_one_of_pow_eq_one
@@ -724,8 +718,7 @@ theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
 variable {α}
 
 @[instance]
-theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) :=
-  by
+theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
