@@ -935,20 +935,15 @@ private theorem abs_add (z w : ℂ) : (abs z + w) ≤ (abs z) + abs w :=
 -- #align complex.abs_theory.abs_add complex.abs_theory.abs_add
 
 /-- The complex absolute value function, defined as the square root of the norm squared. -/
-noncomputable def Complex.abs : AbsoluteValue ℂ ℝ
-    where
+noncomputable def _root_.Complex.abs : AbsoluteValue ℂ ℝ where
   toFun x := abs x
   map_mul' := abs_mul
   nonneg' := abs_nonneg'
   eq_zero' _ := (Real.sqrt_eq_zero <| normSq_nonneg _).trans normSq_eq_zero
   add_le' := abs_add
-#align complex.abs Complex.AbsTheory.Complex.abs
+#align complex.abs Complex.abs
 
 end AbsTheory
-
--- Porting note: Added this to make the following work.
--- Hope this is as intended. Also the name has been expanded.
-open Complex.AbsTheory
 
 theorem abs_def : (Complex.abs : ℂ → ℝ) = fun z => (normSq z).sqrt :=
   rfl
