@@ -101,7 +101,7 @@ def oneBits : PosNum → Nat → List Nat
 /-- Left-shift the binary representation of a `PosNum`. -/
 def shiftl : PosNum → Nat → PosNum
   | p, 0 => p
-  | p, n + 1 => shiftl p.bit0 n
+  | p, n + 1 => bit0 (shiftl p n)
 #align pos_num.shiftl PosNum.shiftl
 
 /-- Right-shift the binary representation of a `PosNum`. -/
