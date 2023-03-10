@@ -817,11 +817,11 @@ theorem toSubring_eq_top {R A : Type _} [CommRing R] [Ring A] [Algebra R A] {S :
 #align algebra.to_subring_eq_top Algebra.toSubring_eq_top
 
 theorem mem_sup_left {S T : Subalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T :=
-  have : S ≤ S ⊔ T := le_sup_left; (this ·)
+  have : S ≤ S ⊔ T := le_sup_left; (this ·) -- Porting note: need `have` instead of `show`
 #align algebra.mem_sup_left Algebra.mem_sup_left
 
 theorem mem_sup_right {S T : Subalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T :=
-  have : T ≤ S ⊔ T := le_sup_right; (this ·)
+  have : T ≤ S ⊔ T := le_sup_right; (this ·) -- Porting note: need `have` instead of `show`
 #align algebra.mem_sup_right Algebra.mem_sup_right
 
 theorem mul_mem_sup {S T : Subalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) : x * y ∈ S ⊔ T :=
