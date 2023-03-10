@@ -451,19 +451,38 @@ partial
 def Lean.MVarId.introsClean (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   loop #[] mvarId
 where
+  fvarEqOfHEq (mvarId : MVarId) (fvarId : FVarId) : MetaM (Option (FVarId × MVarId)) :=
+    observing? <| mvarId.withContext do
+      let pf ← mkEqOfHEq (.fvar fvarId)
+      let decl ← fvarId.getDecl
+      let mvarId ← mvarId.assert decl.userName (← inferType pf) pf
+      let (fvarId', mvarId) ← mvarId.intro1
+      return (fvarId', ← mvarId.clear fvarId)
+  fvarIffOfEq (mvarId : MVarId) (fvarId : FVarId) : MetaM (Option (FVarId × MVarId)) :=
+    observing? <| mvarId.withContext do
+      let pf ← mkIffOfEq (.fvar fvarId)
+      let decl ← fvarId.getDecl
+      let mvarId ← mvarId.assert decl.userName (← inferType pf) pf
+      let (fvarId', mvarId) ← mvarId.intro1
+      return (fvarId', ← mvarId.clear fvarId)
   loop (fvars : Array FVarId) (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
     mvarId.withContext do
       let ty ← withReducible <| mvarId.getType'
-      match ty with
-      | .forallE .. => do
-        if ty.isArrow && (← isTrivialType ty.bindingDomain!) then
-          if let some mvarId ← tryConst mvarId then
+      if ty.isForall then
+        let (fvarId, mvarId) ← mvarId.intro1
+        if not ty.isArrow then
+          return ← loop (fvars.push fvarId) mvarId
+        let (fvarId, mvarId) := (← fvarEqOfHEq mvarId fvarId).getD (fvarId, mvarId)
+        let (fvarId, mvarId) := (← fvarIffOfEq mvarId fvarId).getD (fvarId, mvarId)
+        mvarId.withContext do
+          let ty ← instantiateMVars (← fvarId.getType)
+          if (← isTrivialType ty)
+              || (← getLCtx).any (fun decl => decl.fvarId != fvarId && decl.type == ty) then
+            let mvarId ← mvarId.clear fvarId
             return ← loop fvars mvarId
-        let mvarId := (← eqLift mvarId).getD mvarId
-        let mvarId := (← iffLift mvarId).getD mvarId
-        let (fvar, mvarId) ← mvarId.intro1
-        return (fvars.push fvar, mvarId)
-      | _ => return (fvars, mvarId)
+          return ← loop (fvars.push fvarId) mvarId
+      else
+        return (fvars, mvarId)
   isTrivialType (ty : Expr) : MetaM Bool := do
     let ty ← instantiateMVars ty
     unless ← Meta.isProp ty do
@@ -476,49 +495,6 @@ where
           && lhs.cleanupAnnotations == rhs.cleanupAnnotations then
         return true
     return false
-  tryConst (mvarId : MVarId) : MetaM (Option MVarId) :=
-    observing? do
-      let [mvarId] ← mvarId.apply (← mkConstWithFreshMVarLevels ``Function.const)
-        | failure
-      return mvarId
-  eqLift (mvarId : MVarId) : MetaM (Option MVarId) :=
-    -- Given a goal of the form `HEq a b -> p`, turn it into `a = b -> p`.
-    -- Returns none this can't be done.
-    commitWhenSome? <| mvarId.withContext do
-      mvarId.checkNotAssigned `introsClean
-      let ty ← withReducible <| mvarId.getType'
-      unless ty.isForall do return none
-      let some (α, lhs, β, rhs) := ty.bindingDomain!.heq? | return none
-      -- TODO: should we permanently unify here by removing withNewMCtxDepth?
-      unless (← withNewMCtxDepth <| isDefEq α β) do return none
-      let ty' ← withLocalDecl ty.bindingName! ty.bindingInfo! (← mkEq lhs rhs) fun e => do
-        let e' := mkApp4 (mkConst ``heq_of_eq [← mkFreshLevelMVar]) α lhs rhs e
-        mkForallFVars #[e] (ty.bindingBody!.instantiate1 e')
-      let mvarId' ← mkFreshExprSyntheticOpaqueMVar ty' (← mvarId.getTag)
-      withLocalDecl ty.bindingName! ty.bindingInfo! ty.bindingDomain! fun he => do
-        let pf ← mkLambdaFVars #[he] (.app mvarId' (← mkEqOfHEq he))
-        guard <| ← withNewMCtxDepth <| isDefEq ty (← inferType pf) -- safety check
-        mvarId.assign pf
-        return mvarId'.mvarId!
-  iffLift (mvarId : MVarId) : MetaM (Option MVarId) :=
-    -- Given a goal of the form `a = b -> p`, turn it into `(a ↔ b) -> p`.
-    -- Returns none if this can't be done.
-    commitWhenSome? <| mvarId.withContext do
-      mvarId.checkNotAssigned `introsClean
-      let ty ← withReducible <| mvarId.getType'
-      unless ty.isForall do return none
-      let some (α, lhs, rhs) := ty.bindingDomain!.eq? | return none
-      unless (← withReducible <| whnf α).isProp do return none
-      let iff := mkApp2 (.const ``Iff []) lhs rhs
-      let ty' ← withLocalDecl ty.bindingName! ty.bindingInfo! iff fun e => do
-        let e' ← mkPropExt e
-        mkForallFVars #[e] (ty.bindingBody!.instantiate1 e')
-      let mvarId' ← mkFreshExprSyntheticOpaqueMVar ty' (← mvarId.getTag)
-      withLocalDecl ty.bindingName! ty.bindingInfo! ty.bindingDomain! fun he => do
-        let pf ← mkLambdaFVars #[he] (.app mvarId' (← mkIffOfEq he))
-        guard <| ← withNewMCtxDepth <| isDefEq ty (← inferType pf) -- safety check
-        mvarId.assign pf
-        return mvarId'.mvarId!
 
 /-- Convert a goal into an `Eq` goal if possible (since we have a better shot at those).
 Also try to dispatch the goal using an assumption, `Subsingleton.Elim`, or definitional equality. -/
