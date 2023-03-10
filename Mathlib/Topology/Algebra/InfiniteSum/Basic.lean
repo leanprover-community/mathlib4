@@ -946,7 +946,6 @@ We show the formula `(∑ i in range k, f i) + (∑' i, f (i + k)) = (∑' i, f 
 `sum_add_tsum_nat_add`, as well as several results relating sums on `ℕ` and `ℤ`.
 -/
 
-
 section Nat
 
 theorem hasSum_nat_add_iff {f : ℕ → α} (k : ℕ) {a : α} :
@@ -967,16 +966,31 @@ theorem hasSum_nat_add_iff' {f : ℕ → α} (k : ℕ) {a : α} :
   simp [hasSum_nat_add_iff]
 #align has_sum_nat_add_iff' hasSum_nat_add_iff'
 
+theorem HasSum.sum_range_add [AddCommMonoid M] [TopologicalSpace M] [ContinuousAdd M] {f : ℕ → M}
+    {k : ℕ} {a : M} (h : HasSum (fun n ↦ f (n + k)) a) : HasSum f ((∑ i in range k, f i) + a) := by
+  refine ((range k).hasSum f).add_compl ?_
+  rwa [← (notMemRangeEquiv k).symm.hasSum_iff]
+
+theorem sum_add_tsum_nat_add' [AddCommMonoid M] [TopologicalSpace M] [ContinuousAdd M] [T2Space M]
+    {f : ℕ → M} {k : ℕ} (h : Summable (fun n => f (n + k))) :
+    ((∑ i in range k, f i) + ∑' i, f (i + k)) = ∑' i, f i :=
+  h.hasSum.sum_range_add.tsum_eq.symm
+
 theorem sum_add_tsum_nat_add [T2Space α] {f : ℕ → α} (k : ℕ) (h : Summable f) :
-    ((∑ i in range k, f i) + ∑' i, f (i + k)) = ∑' i, f i := by
-  simpa only [add_comm] using
-    ((hasSum_nat_add_iff k).1 ((summable_nat_add_iff k).2 h).hasSum).unique h.hasSum
+    ((∑ i in range k, f i) + ∑' i, f (i + k)) = ∑' i, f i :=
+  sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 h
 #align sum_add_tsum_nat_add sum_add_tsum_nat_add
 
-theorem tsum_eq_zero_add [T2Space α] {f : ℕ → α} (hf : Summable f) :
+theorem tsum_eq_zero_add' [AddCommMonoid M] [TopologicalSpace M] [ContinuousAdd M] [T2Space M]
+    {f : ℕ → M} (hf : Summable (fun n => f (n + 1))) :
     (∑' b, f b) = f 0 + ∑' b, f (b + 1) := by
-  simpa only [sum_range_one] using (sum_add_tsum_nat_add 1 hf).symm
+  simpa only [sum_range_one] using (sum_add_tsum_nat_add' hf).symm
+
+theorem tsum_eq_zero_add [T2Space α] {f : ℕ → α} (hf : Summable f) :
+    (∑' b, f b) = f 0 + ∑' b, f (b + 1) :=
+  tsum_eq_zero_add' <| (summable_nat_add_iff 1).2 hf
 #align tsum_eq_zero_add tsum_eq_zero_add
+
 /-- For `f : ℕ → α`, then `∑' k, f (k + i)` tends to zero. This does not require a summability
 assumption on `f`, as otherwise all sums are zero. -/
 theorem tendsto_sum_nat_add [T2Space α] (f : ℕ → α) :
