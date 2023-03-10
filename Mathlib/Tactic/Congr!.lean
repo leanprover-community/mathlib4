@@ -147,14 +147,13 @@ partial def Congr!.mkHCongrThm (fType : Expr) (info : FunInfo) :
       throwError "failed to generate hcongr theorem, insufficient number of arguments"
     let lctx := withDefaultBinderInfo (xs ++ ys) <| addPrimesToUserNames ys (← getLCtx)
     withLCtx lctx (← getLocalInstances) do
-    let lctx ← getLCtx
     withLocalDeclD `f fType fun ef =>
     withLocalDeclD `f' fType fun ef' => do
     withLocalDeclD `e (← mkEq ef ef') fun ee => do
       withNewEqs xs ys fun eqs eqs' vals => do
-        let mut hs := #[ef, ef', ee]
-        let mut hs' := hs
-        let mut vals' := hs
+        let mut hs := #[ef, ef', ee] -- parameters to the basic congruence lemma
+        let mut hs' := hs            -- parameters to the richer congruence lemma
+        let mut vals' := hs          -- how to calculate the basic parameters from the richer ones
         for i in [0 : info.getArity] do
           hs := hs.push xs[i]! |>.push ys[i]! |>.push eqs[i]!
           hs' := hs'.push xs[i]! |>.push ys[i]! |>.push eqs'[i]!
@@ -169,8 +168,8 @@ partial def Congr!.mkHCongrThm (fType : Expr) (info : FunInfo) :
         --let congrType' ← mkForallFVars hs' (← mkHEq lhs rhs)
         let proof' ← mkLambdaFVars hs' (← mkAppM' proof vals')
         -- Now try to pre-compute some of these hypotheses
-        let mut hs'' := #[]
-        let mut vals'' := #[ef, ef', ee]
+        let mut hs'' := #[] -- parameters that are actually used beyond the necessary `ef, ef', ee`.
+        let mut vals'' := #[ef, ef', ee] -- the values to pass `proof'`
         for i in [0 : info.getArity] do
           hs'' := hs''.push xs[i]! |>.push ys[i]!
           vals'' := vals''.push xs[i]! |>.push ys[i]!
@@ -211,6 +210,9 @@ where
       else
         k eqs eqs' vals
     loop 0 #[] #[] #[]
+  /-- Given a type that is a bunch of equalities implying a goal (for example, a basic
+  congruence lemma), prove it if possible. Basic congruence lemmas should be provable by this.
+  There are some extra tricks for handling arguments to richer congruence lemmas. -/
   trySolveCore (mvarId : MVarId) : MetaM Unit := do
     let (_, mvarId) ← mvarId.intros
     let mvarId := (← mvarId.substEqs).getD mvarId
@@ -230,6 +232,66 @@ where
     trace[congr!.synthesize] "trySolve success!"
     let pf ← instantiateMVars mvarId
     return pf
+
+/--
+This is like `Lean.MVarId.hcongr?` but (1) looks at both sides when generating the congruence lemma
+and (2) inserts additional hypotheses from equalities from previous arguments.
+
+It uses `Congr!.mkHCongrThm` to generate the congruence lemmas.
+
+If the goal is an `Eq`, uses `eq_of_heq` first.
+-/
+partial
+def Lean.MVarId.smartHCongr? (config : Congr!.Config) (mvarId : MVarId) :
+    MetaM (Option (List MVarId)) :=
+  mvarId.withContext do
+    mvarId.checkNotAssigned `congr!
+    commitWhenSome? do
+      let mvarId ← mvarId.eqOfHEq
+      let some (_, lhs, _, rhs) := (← withReducible mvarId.getType').heq? | return none
+      if let some mvars ← loop mvarId 0 lhs rhs then
+        return mvars
+      -- The "correct" behavior failed. However, it's often useful
+      -- to apply congruence lemmas while unfolding definitions, which is what the
+      -- basic `congr` tactic does due to limitations in how congruence lemmas are generated.
+      -- We simulate this behavior here by generating congruence lemmas for the LHS and RHS and
+      -- then applying them.
+      trace[congr!] "Default smartHCongr? failed, trying LHS/RHS method"
+      let (fst, snd) := if config.preferLHS then (lhs, rhs) else (rhs, lhs)
+      if let some mvars ← forSide mvarId fst then
+        return mvars
+      else if let some mvars ← forSide mvarId snd then
+        return mvars
+      else
+        return none
+where
+  loop (mvarId : MVarId) (numArgs : Nat) (lhs rhs : Expr) : MetaM (Option (List MVarId)) :=
+    match lhs.cleanupAnnotations, rhs.cleanupAnnotations with
+    | .app f _, .app f' _ => do
+      -- We try to generate a theorem for the maximal number of arguments
+      if let some mvars ← loop mvarId (numArgs + 1) f f' then
+        return mvars
+      -- That failing, we now try for the present number of arguments, so long as the
+      -- types of the functions are definitionally equal.
+      unless ← withNewMCtxDepth <| isDefEq (← inferType f) (← inferType f') do
+        return none
+      let info ← getFunInfoNArgs f (numArgs + 1)
+      let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
+      -- Now see if the congruence theorem actually applies in this situation by applying it!
+      let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f']
+      let congrProof' := mkApp2 congrProof f f'
+      observing? <| applyCongrThm? config mvarId congrThm' congrProof'
+    | _, _ => return none
+  forSide (mvarId : MVarId) (side : Expr) : MetaM (Option (List MVarId)) := do
+    let side := side.cleanupAnnotations
+    if not side.isApp then return none
+    let f := side.getAppFn
+    let info ← getFunInfoNArgs f side.getAppNumArgs
+    let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
+    let r ← mkEqRefl f
+    let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f, r]
+    let congrProof' := mkApp3 congrProof f f r
+    observing? <| applyCongrThm? config mvarId congrThm' congrProof'
 
 /--
 Like `Lean.MVarId.congr?` but instead of using only the congruence lemma associated to the LHS,
@@ -301,66 +363,6 @@ where
       if let some mvars := res then
         return mvars
     return none
-
-/--
-This is like `Lean.MVarId.hcongr?` but (1) looks at both sides when generating the congruence lemma
-and (2) inserts additional hypotheses from equalities from previous arguments.
-
-It uses `Congr!.mkHCongrThm` to generate the congruence lemmas.
-
-If the goal is an `Eq`, uses `eq_of_heq` first.
--/
-partial
-def Lean.MVarId.smartHCongr? (config : Congr!.Config) (mvarId : MVarId) :
-    MetaM (Option (List MVarId)) :=
-  mvarId.withContext do
-    mvarId.checkNotAssigned `congr!
-    commitWhenSome? do
-      let mvarId ← mvarId.eqOfHEq
-      let some (_, lhs, _, rhs) := (← withReducible mvarId.getType').heq? | return none
-      if let some mvars ← loop mvarId 0 lhs rhs then
-        return mvars
-      -- The "correct" behavior failed. However, it's often useful
-      -- to apply congruence lemmas while unfolding definitions, which is what the
-      -- basic `congr` tactic does due to limitations in how congruence lemmas are generated.
-      -- We simulate this behavior here by generating congruence lemmas for the LHS and RHS and
-      -- then applying them.
-      trace[congr!] "Default smartHCongr? failed, trying LHS/RHS method"
-      let (fst, snd) := if config.preferLHS then (lhs, rhs) else (rhs, lhs)
-      if let some mvars ← forSide mvarId fst then
-        return mvars
-      else if let some mvars ← forSide mvarId snd then
-        return mvars
-      else
-        return none
-where
-  loop (mvarId : MVarId) (numArgs : Nat) (lhs rhs : Expr) : MetaM (Option (List MVarId)) :=
-    match lhs.cleanupAnnotations, rhs.cleanupAnnotations with
-    | .app f _, .app f' _ => do
-      -- We try to generate a theorem for the maximal number of arguments
-      if let some mvars ← loop mvarId (numArgs + 1) f f' then
-        return mvars
-      -- That failing, we now try for the present number of arguments, so long as the
-      -- types of the functions are definitionally equal.
-      unless ← withNewMCtxDepth <| isDefEq (← inferType f) (← inferType f') do
-        return none
-      let info ← getFunInfoNArgs f (numArgs + 1)
-      let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
-      -- Now see if the congruence theorem actually applies in this situation by applying it!
-      let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f']
-      let congrProof' := mkApp2 congrProof f f'
-      observing? <| applyCongrThm? config mvarId congrThm' congrProof'
-    | _, _ => return none
-  forSide (mvarId : MVarId) (side : Expr) : MetaM (Option (List MVarId)) := do
-    let side := side.cleanupAnnotations
-    if not side.isApp then return none
-    let f := side.getAppFn
-    let info ← getFunInfoNArgs f side.getAppNumArgs
-    let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
-    let r ← mkEqRefl f
-    let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f, r]
-    let congrProof' := mkApp3 congrProof f f r
-    observing? <| applyCongrThm? config mvarId congrThm' congrProof'
 
 /-- Helper theorem for `Lean.MVar.liftReflToEq`. -/
 theorem Lean.MVarId.rel_of_eq_and_refl {R : α → α → Prop} (hxy : x = y) (h : R x x) :
@@ -509,8 +511,8 @@ def Lean.MVarId.preCongr! (mvarId : MVarId) : MetaM (Option MVarId) := do
   -- Now try definitional equality. No need to try `mvarId.hrefl` since we already did  `heqOfEq`.
   try mvarId.refl; return none catch _ => pure ()
   -- Now we go for (heterogenous) equality via subsingleton considerations
-  if ← mvarId.proofIrrelHeq then return none
   if ← mvarId.subsingletonElim then return none
+  if ← mvarId.proofIrrelHeq then return none
   return some mvarId
 
 def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
@@ -594,7 +596,7 @@ to right-hand sides of goals. Here is a list of things it can try:
 - If there is a user congruence lemma associated to the goal (for instance, a `@[congr]`-tagged
   lemma applying to `⊢ List.map f xs = List.map g ys`), then it will use that.
 
-- Like `congr`, it makes use of the `Eq` and `HEq` congruence lemma generator internally used
+- Like `congr`, it makes use of the `Eq` congruence lemma generator internally used
   by `simp`. Hence, one can equate any two pieces of an expression that is accessible to `simp`.
 
 - It uses `implies_congr` and `pi_congr` to do congruences of pi types.
@@ -607,9 +609,9 @@ to right-hand sides of goals. Here is a list of things it can try:
 - When there is an equality between functions, so long as at least one is obviously a lambda, we
   apply `funext` or `Function.hfunext`, which allows for congruence of lambda bodies.
 
-In addition, `congr!` tries to dispatch goals using a few strategies, including checking
-definitional equality, trying to apply `Subsingleton.elim` or `proof_irrel_heq`, and using the
-`assumption` tactic.
+- It can try to close goals using a few strategies, including checking
+  definitional equality, trying to apply `Subsingleton.elim` or `proof_irrel_heq`, and using the
+  `assumption` tactic.
 
 The optional parameter is the depth of the recursive applications.
 This is useful when `congr!` is too aggressive in breaking down the goal.
