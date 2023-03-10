@@ -8,8 +8,8 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Coeff
-import Mathbin.Data.Nat.Choose.Basic
+import Mathlib.Data.Polynomial.Coeff
+import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 
@@ -30,8 +30,7 @@ open Polynomial Finset.Nat
 
 /-- Vandermonde's identity -/
 theorem Nat.add_choose_eq (m n k : ℕ) :
-    (m + n).choose k = ∑ ij : ℕ × ℕ in antidiagonal k, m.choose ij.1 * n.choose ij.2 :=
-  by
+    (m + n).choose k = ∑ ij : ℕ × ℕ in antidiagonal k, m.choose ij.1 * n.choose ij.2 := by
   calc
     (m + n).choose k = ((X + 1) ^ (m + n)).coeff k := _
     _ = ((X + 1) ^ m * (X + 1) ^ n).coeff k := by rw [pow_add]
