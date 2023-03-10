@@ -570,7 +570,7 @@ theorem coe_toSubalgebra (p : Submodule R A) (h_one h_mul) :
 #align submodule.coe_to_subalgebra Submodule.coe_toSubalgebra
 
 -- Porting note: changed statement to reflect new structures
-@[simp]
+-- @[simp] -- Porting note: as a result, it is no longer a great simp lemma
 theorem toSubalgebra_mk (s : Submodule R A) (h1 hmul) :
     s.toSubalgebra h1 hmul =
       Subalgebra.mk ⟨⟨⟨s, @hmul⟩, h1⟩, s.add_mem, s.zero_mem⟩
