@@ -187,9 +187,12 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
         rw [← U_idem] at hs
         exact hs)
   let elem : { s // s ∈ U } → M := fun p => (exists_elem p.property).some
-  let succ : { s // s ∈ U } → { s // s ∈ U } := fun p =>
-    ⟨p.val ∩ { m | elem p * m ∈ p.val },
-      inter_mem p.2 <| show _ from Set.inter_subset_right _ _ (exists_elem p.2).some_mem⟩
+  let succ : {s // s ∈ U} → {s // s ∈ U} := fun (p : {s // s ∈ U}) =>
+        ⟨p.val ∩ {m : M | elem p * m ∈ p.val},
+         inter_mem p.property
+           (show (exists_elem p.property).some ∈ {m : M | ∀ᶠ (m' : M) in ↑U, m * m' ∈ p.val} from
+              p.val.inter_subset_right {m : M | ∀ᶠ (m' : M) in ↑U, m * m' ∈ p.val}
+                (exists_elem p.property).some_mem)⟩
   use Stream'.corec elem succ (Subtype.mk s₀ sU)
   suffices ∀ (a : Stream' M), ∀ m ∈ FP a, ∀ p, a = Stream'.corec elem succ p → m ∈ p.val
     by
