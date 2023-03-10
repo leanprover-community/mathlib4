@@ -216,7 +216,8 @@ def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
 -- def toSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 --     (S : Subalgebra R A) : Submonoid A :=
 --   S.toSubsemiring.toSubmonoid
--- #align subalgebra.to_submonoid Subalgebra.toSubmonoid
+set_option align.precheck false in
+#align subalgebra.to_submonoid Subalgebra.toSubmonoid
 
 /-- A subalgebra over a ring is also a `Subring`. -/
 def toSubring {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) :
