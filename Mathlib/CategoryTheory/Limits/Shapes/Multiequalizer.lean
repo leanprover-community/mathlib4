@@ -452,8 +452,6 @@ def IsLimit.mk (lift : ∀ E : Multifork I, E.pt ⟶ K.pt)
 
 variable [HasProduct I.left] [HasProduct I.right]
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14:
-  unsupported tactic `discrete_cases #[] -/
 @[reassoc (attr := simp)]
 theorem pi_condition : Pi.lift K.ι ≫ I.fstPiMap = Pi.lift K.ι ≫ I.sndPiMap := by
   ext
@@ -676,8 +674,6 @@ def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
 
 variable [HasCoproduct I.left] [HasCoproduct I.right]
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14:
-  unsupported tactic `discrete_cases #[] -/
 @[reassoc (attr := simp)]
 theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
   ext
