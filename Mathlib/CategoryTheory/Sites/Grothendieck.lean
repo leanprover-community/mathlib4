@@ -8,11 +8,11 @@ Authors: Bhavik Mehta, E. W. Ayers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Sites.Sieves
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathbin.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathbin.CategoryTheory.Category.Preorder
-import Mathbin.Order.Copy
+import Mathlib.CategoryTheory.Sites.Sieves
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.Order.Copy
 
 /-!
 # Grothendieck topologies
@@ -134,8 +134,7 @@ theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_
 See <https://stacks.math.columbia.edu/tag/00Z5> (2), or discussion after [MM92] Chapter III,
 Section 2, Definition 1.
 -/
-theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X :=
-  by
+theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
   apply J.transitive sjx R fun Y f hf => _
   apply covering_of_eq_top
   rw [← top_le_iff, ← S.pullback_eq_top_of_mem hf]
@@ -147,8 +146,7 @@ theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X :=
 See <https://stacks.math.columbia.edu/tag/00Z5> (1), or [MM92] Chapter III,
 Section 2, Definition 1 (iv).
 -/
-theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X :=
-  by
+theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
   apply J.transitive rj _ fun Y f Hf => _
   rw [sieve.pullback_inter, R.pullback_eq_top_of_mem Hf]
   simp [sj]
@@ -180,8 +178,7 @@ theorem covering_iff_covers_id (S : Sieve X) : S ∈ J X ↔ J.Covers S (𝟙 X)
 #align category_theory.grothendieck_topology.covering_iff_covers_id CategoryTheory.GrothendieckTopology.covering_iff_covers_id
 
 /-- The maximality axiom in 'arrow' form: Any arrow `f` in `S` is covered by `S`. -/
-theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f :=
-  by
+theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
   rw [covers, (sieve.pullback_eq_top_iff_mem f).1 hf]
   apply J.top_mem
 #align category_theory.grothendieck_topology.arrow_max CategoryTheory.GrothendieckTopology.arrow_max
@@ -197,8 +194,7 @@ theorem arrow_stable (f : Y ⟶ X) (S : Sieve X) (h : J.Covers S f) {Z : C} (g :
 `R`, then `R` covers `f`.
 -/
 theorem arrow_trans (f : Y ⟶ X) (S R : Sieve X) (h : J.Covers S f) :
-    (∀ {Z : C} (g : Z ⟶ X), S g → J.Covers R g) → J.Covers R f :=
-  by
+    (∀ {Z : C} (g : Z ⟶ X), S g → J.Covers R g) → J.Covers R f := by
   intro k
   apply J.transitive h
   intro Z g hg
@@ -280,8 +276,7 @@ instance : InfSet (GrothendieckTopology C)
           J.transitive (hS _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩) _ fun Y f hf => h hf _ ⟨⟨_, _, hJ, rfl⟩, rfl⟩ }
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
-theorem isGLB_infₛ (s : Set (GrothendieckTopology C)) : IsGLB s (infₛ s) :=
-  by
+theorem isGLB_infₛ (s : Set (GrothendieckTopology C)) : IsGLB s (infₛ s) := by
   refine' @IsGLB.of_image _ _ _ _ sieves _ _ _ _
   · intros
     rfl
