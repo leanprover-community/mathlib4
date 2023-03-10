@@ -1368,6 +1368,7 @@ import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
+import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Hom.Open
