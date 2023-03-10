@@ -8,11 +8,11 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Arrow
-import Mathbin.CategoryTheory.Limits.Constructions.EpiMono
-import Mathbin.CategoryTheory.Limits.Creates
-import Mathbin.CategoryTheory.Limits.Unit
-import Mathbin.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Creates
+import Mathlib.CategoryTheory.Limits.Unit
+import Mathlib.CategoryTheory.StructuredArrow
 
 /-!
 # Limits and colimits in comma categories
