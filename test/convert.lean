@@ -52,3 +52,17 @@ example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b 
   rw [add_comm]
 
 end convert_to
+
+example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
+    prime (n + n + 1) := by
+  convert h
+  · guard_target = (HAdd.hAdd : Nat → Nat → Nat) = HMul.hMul
+    sorry
+  · guard_target = n = 2
+    sorry
+
+example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
+    prime (n + n + 1) := by
+  convert (config := .unfoldSameFun) h
+  guard_target = n + n = 2 * n
+  sorry

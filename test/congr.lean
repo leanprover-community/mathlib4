@@ -61,6 +61,26 @@ theorem ex14 {α : Type} (f : Nat → Nat) (h : ∀ x, f x = 0) (z : α) (hz : H
     rw [h]
     exact hz.symm
 
+example (prime : Nat → Prop) (n : Nat) :
+    prime (2 * n + 1) = prime (n + n + 1) := by
+  congr!
+  · guard_target = (HMul.hMul : Nat → Nat → Nat) = HAdd.hAdd
+    sorry
+  · guard_target = 2 = n
+    sorry
+
+example (prime : Nat → Prop) (n : Nat) :
+    prime (2 * n + 1) = prime (n + n + 1) := by
+  congr! 2
+  guard_target = 2 * n = n + n
+  sorry
+
+example (prime : Nat → Prop) (n : Nat) :
+    prime (2 * n + 1) = prime (n + n + 1) := by
+  congr! (config := .unfoldSameFun)
+  guard_target = 2 * n = n + n
+  sorry
+
 opaque partiallyApplied (p : Prop) [Decidable p] : Nat → Nat
 
 -- Partially applied dependent functions
@@ -149,3 +169,15 @@ example (x y z : Nat) (h : x = z) (hy : y = 2) : 1 + x + y = g z + 2 := by
   guard_target = HAdd.hAdd 1 = g
   funext
   simp [g, Nat.add_comm]
+
+example (Fintype : Type → Type)
+    (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
+  congr!
+  guard_target = HEq inst inst'
+  sorry
+
+example (Fintype : Type → Type) [∀ γ, Subsingleton (Fintype γ)]
+    (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
+  congr!
+  guard_target = α = β
+  sorry

@@ -58,6 +58,10 @@ The `using 2` indicates it should iterate the congruence algorithm up to two tim
 where `convert e` would use an unrestricted number of iterations and lead to two
 impossible goals: `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
 
+A variant configuration is `convert (config := .unfoldSameFun) e`, which only equates function
+applications for the same function (while doing so at the higher `default` transparency).
+This gives the same goal of `⊢ n + n = 2 * n` without needing `using 2`.
+
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
 ```lean

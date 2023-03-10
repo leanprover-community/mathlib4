@@ -39,6 +39,13 @@ structure Congr!.Config where
   This can be used to control which side's definitions are expanded when applying the
   congruence lemma (if `preferLHS = true` then the RHS can be expanded). -/
   preferLHS : Bool := true
+  /-- Allow one or both sides to be a partial application.
+  When false, given an equality `f a b = g x y` this means we never consider
+  proving `f a = g x`. -/
+  partialApp : Bool := true
+  /-- Whether to require both sides in an application to have defeq functions.
+  That is, if true, `f a = g x` is only considered if `f` and `g` are defeq. -/
+  sameFun : Bool := false
   /-- The maximum number of arguments to consider at a time when applying synthesized congruence
   lemmas between function applications. `none` means no limit.
   With non-dependent functions, `some 1` causes `congr!` lets you control how many arguments
@@ -47,6 +54,15 @@ structure Congr!.Config where
   /-- As a last pass, perform eta expansion of both sides of an equality. For example,
   this transforms a bare `HAdd.hAdd` into `fun x y => x + y`. -/
   etaExpand : Bool := false
+
+/-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
+does while also similarly preventing `congr!` from considering partial applications or congruences
+between different functions being applied. -/
+def Congr!.Config.unfoldSameFun : Congr!.Config where
+  partialApp := false
+  sameFun := true
+  transparency := .default
+  preTransparency := .default
 
 /-- Whether the given number of arguments is allowed to be considered. -/
 def Congr!.Config.numArgsOk (config : Config) (numArgs : Nat) : Bool :=
@@ -290,10 +306,17 @@ where
       -- We try to generate a theorem for the maximal number of arguments
       if let some mvars ← loop mvarId (numArgs + 1) f f' then
         return mvars
-      -- That failing, we now try for the present number of arguments, so long as the
-      -- types of the functions are definitionally equal.
-      unless ← withNewMCtxDepth <| isDefEq (← inferType f) (← inferType f') do
+      -- That failing, we now try for the present number of arguments.
+      if not config.partialApp && f.isApp && f'.isApp then
+        -- It's a partial application on both sides though.
         return none
+      -- The congruence generator only handles the case where both functions have
+      -- definitionally equal types.
+      unless ← withReducible <| withNewMCtxDepth <| isDefEq (← inferType f) (← inferType f') do
+        return none
+      if config.sameFun then
+        unless ← withReducible <| withNewMCtxDepth <| isDefEq f f' do
+          return none
       let info ← getFunInfoNArgs f (numArgs + 1)
       let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
       -- Now see if the congruence theorem actually applies in this situation by applying it!
@@ -305,6 +328,8 @@ where
     let side := side.cleanupAnnotations
     if not side.isApp then return none
     let numArgs := config.maxArgsFor side.getAppNumArgs
+    if not config.partialApp && numArgs < side.getAppNumArgs then
+        return none
     let mut f := side
     for _ in [:numArgs] do
       f := f.appFn!'
@@ -341,6 +366,8 @@ where
       let side := side.cleanupAnnotations
       if not side.isApp then return none
       let numArgs := config.maxArgsFor side.getAppNumArgs
+      if not config.partialApp && numArgs < side.getAppNumArgs then
+        return none
       let mut f := side
       for _ in [:numArgs] do
         f := f.appFn!'
@@ -452,6 +479,22 @@ def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId))
     if not lhs.cleanupAnnotations.isLambda && not rhs.cleanupAnnotations.isLambda then failure
     mvarId.apply (← mkConstWithFreshMVarLevels `Function.hfunext)
 
+def Lean.MVarId.subsingletonHelim? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
+  mvarId.withContext <| observing? do
+    mvarId.checkNotAssigned `subsingletonHelim
+    let some (α, lhs, β, rhs) := (← withReducible mvarId.getType').heq? | failure
+    let eqmvar ← mkFreshExprSyntheticOpaqueMVar (← mkEq α β) (← mvarId.getTag)
+    -- First try synthesizing using the left-hand side for the Subsingleton instance
+    if let some pf ← observing? (mkAppM ``Subsingleton.helim #[eqmvar, lhs, rhs]) then
+      mvarId.assign pf
+      return [eqmvar.mvarId!]
+    let eqsymm ← mkAppM ``Eq.symm #[eqmvar]
+    -- Second try synthesizing using the right-hand side for the Subsingleton instance
+    if let some pf ← observing? (mkAppM ``Subsingleton.helim #[eqsymm, rhs, lhs]) then
+      mvarId.assign (← mkAppM ``HEq.symm #[pf])
+      return [eqmvar.mvarId!]
+    failure
+
 /--
 A list of all the congruence strategies used by `Lean.MVarId.congrCore!`.
 -/
@@ -460,6 +503,7 @@ def Lean.MVarId.congrPasses! :
   [("user congr", userCongr?),
    ("hcongr lemma", smartHCongr?),
    ("congr simp lemma", congrSimp?),
+   ("Subsingleton.helim", fun _ => subsingletonHelim?),
    ("obvious funext", fun _ => obviousFunext?),
    ("obvious hfunext", fun _ => obviousHfunext?),
    ("congr_implies", fun _ => congrImplies?),
@@ -654,7 +698,19 @@ The `congr!` tactic also takes a configuration option, for example
 ```lean
 congr! (config := {transparency := .default}) 2
 ```
-See `Congr!.Config` for options.
+This overrides the default, which is to apply congruence lemmas at reducible transparency.
+
+The `congr!` tactic is aggressive with equating two sides of everything. There is a predefined
+configuration that uses a different strategy:
+Try
+```lean
+congr! (config := .unfoldSameFun)
+```
+This only allows congruences between functions applications of definitionally equal functions,
+and it applies congruence lemmas at default transparency (rather than just reducible).
+This is somewhat like `congr`.
+
+See `Congr!.Config` for all options.
 -/
 syntax (name := congr!) "congr!" (Parser.Tactic.config)? (num)? : tactic
 
