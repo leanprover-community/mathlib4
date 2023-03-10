@@ -656,7 +656,7 @@ theorem cast_add [AddMonoidWithOne α] (m n) : ((m + n : PosNum) : α) = m + n :
   rw [← cast_to_nat, add_to_nat, Nat.cast_add, cast_to_nat, cast_to_nat]
 #align pos_num.cast_add PosNum.cast_add
 
-@[simp, norm_cast]
+@[simp 500, norm_cast]
 theorem cast_succ [AddMonoidWithOne α] (n : PosNum) : (succ n : α) = n + 1 := by
   rw [← add_one, cast_add, cast_one]
 #align pos_num.cast_succ PosNum.cast_succ
@@ -754,7 +754,7 @@ theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
 theorem natSize_to_nat (n) : natSize n = Nat.size n := by rw [← size_eq_natSize, size_to_nat]
 #align num.nat_size_to_nat Num.natSize_to_nat
 
-@[simp]
+@[simp 999]
 theorem ofNat'_eq : ∀ n, Num.ofNat' n = n :=
   Nat.binaryRec (by simp) fun b n IH => by
     rw [ofNat'] at IH ⊢
