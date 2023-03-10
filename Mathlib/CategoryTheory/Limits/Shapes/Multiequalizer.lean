@@ -731,9 +731,15 @@ noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ 
   obj := Multicofork.ofSigmaCofork I
   map {K₁ K₂} f :=
     { Hom := f.Hom
-      w := sorry --by rintro (_ | _) <;> simp
-      }
-#align category_theory.limits.multispan_index.of_sigma_cofork_functor CategoryTheory.Limits.MultispanIndex.ofSigmaCoforkFunctor
+      w := by --sorry --by rintro (_ | _) <;> simp
+        rintro (_ | _)
+        -- porting note; in mathlib3, `simp` worked. What seems to be happening is that
+        -- the `simp` set is not confluent, and mathlib3 found
+        -- `Multicofork.ofSigmaCofork_ι_app_left` before `Multicofork.fst_app_right`,
+        -- but mathlib4 finds `Multicofork.fst_app_right` first.
+        { simp [-Multicofork.fst_app_right] }
+        -- porting note: similarly here, the `simp` set seems to be non-confluent
+        { simp [-Multicofork.π_eq_app_right, -Multicofork.ofSigmaCofork_pt] } }
 
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
