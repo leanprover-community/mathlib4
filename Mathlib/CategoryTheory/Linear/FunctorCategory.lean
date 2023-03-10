@@ -35,7 +35,7 @@ instance functorCategoryLinear : Linear R (C ⥤ D)
   homModule F G :=
     { smul := fun r α =>
         { app := fun X => r • α.app X
-          naturality' := by
+          naturality := by
             intros
             rw [comp_smul, smul_comp, α.naturality] }
       one_smul := by
@@ -62,11 +62,11 @@ instance functorCategoryLinear : Linear R (C ⥤ D)
         intros
         ext
         apply mul_smul }
-  smul_comp' := by
+  smul_comp := by
     intros
     ext
     apply smul_comp
-  comp_smul' := by
+  comp_smul := by
     intros
     ext
     apply comp_smul
@@ -79,8 +79,7 @@ variable {F G : C ⥤ D}
 /-- Application of a natural transformation at a fixed object,
 as group homomorphism -/
 @[simps]
-def appLinearMap (X : C) : (F ⟶ G) →ₗ[R] F.obj X ⟶ G.obj X
-    where
+def appLinearMap (X : C) : (F ⟶ G) →ₗ[R] F.obj X ⟶ G.obj X where
   toFun α := α.app X
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -94,4 +93,3 @@ theorem app_smul (X : C) (r : R) (α : F ⟶ G) : (r • α).app X = r • α.ap
 end NatTrans
 
 end CategoryTheory
-
