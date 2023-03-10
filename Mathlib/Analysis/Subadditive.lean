@@ -63,7 +63,7 @@ theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
 #align subadditive.apply_mul_add_le Subadditive.apply_mul_add_le
 
 theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :
-    ∀ᶠ p in atTop, u p / p < L :=by
+    ∀ᶠ p in atTop, u p / p < L := by
   /- It suffices to prove the statement for each arithmetic progression `(n * · + r)`. -/
   refine .atTop_of_arithmetic hn fun r _ => ?_
   /- `(k * u n + u r) / (k * n + r)` tends to `u n / n < L`, hence
