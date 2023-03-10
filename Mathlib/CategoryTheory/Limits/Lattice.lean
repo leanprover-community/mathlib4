@@ -8,12 +8,12 @@ Authors: Scott Morrison, Justus Springer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.CompleteLattice
-import Mathbin.Data.Fintype.Lattice
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathbin.CategoryTheory.Category.Preorder
-import Mathbin.CategoryTheory.Limits.Shapes.Products
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.Order.CompleteLattice
+import Mathlib.Data.Fintype.Lattice
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Limits in lattice categories are given by infimums and supremums.
@@ -87,8 +87,7 @@ theorem finite_colimit_eq_finset_univ_sup [SemilatticeSup α] [OrderBot α] (F :
 A finite product in the category of a `semilattice_inf` with `order_top` is the same as the infimum.
 -/
 theorem finite_product_eq_finset_inf [SemilatticeInf α] [OrderTop α] {ι : Type u} [Fintype ι]
-    (f : ι → α) : (∏ f) = (Fintype.elems ι).inf f :=
-  by
+    (f : ι → α) : (∏ f) = (Fintype.elems ι).inf f := by
   trans
   exact
     (is_limit.cone_point_unique_up_to_iso (limit.is_limit _)
@@ -102,8 +101,7 @@ theorem finite_product_eq_finset_inf [SemilatticeInf α] [OrderTop α] {ι : Typ
 supremum.
 -/
 theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : Type u} [Fintype ι]
-    (f : ι → α) : (∐ f) = (Fintype.elems ι).sup f :=
-  by
+    (f : ι → α) : (∐ f) = (Fintype.elems ι).sup f := by
   trans
   exact
     (is_colimit.cocone_point_unique_up_to_iso (colimit.is_colimit _)
@@ -114,8 +112,7 @@ theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : T
 #align category_theory.limits.complete_lattice.finite_coproduct_eq_finset_sup CategoryTheory.Limits.CompleteLattice.finite_coproduct_eq_finset_sup
 
 -- see Note [lower instance priority]
-instance (priority := 100) [SemilatticeInf α] [OrderTop α] : HasBinaryProducts α :=
-  by
+instance (priority := 100) [SemilatticeInf α] [OrderTop α] : HasBinaryProducts α := by
   have : ∀ x y : α, has_limit (pair x y) :=
     by
     letI := hasFiniteLimits_of_hasFiniteLimits_of_size.{u} α
@@ -139,8 +136,7 @@ theorem prod_eq_inf [SemilatticeInf α] [OrderTop α] (x y : α) : Limits.prod x
 #align category_theory.limits.complete_lattice.prod_eq_inf CategoryTheory.Limits.CompleteLattice.prod_eq_inf
 
 -- see Note [lower instance priority]
-instance (priority := 100) [SemilatticeSup α] [OrderBot α] : HasBinaryCoproducts α :=
-  by
+instance (priority := 100) [SemilatticeSup α] [OrderBot α] : HasBinaryCoproducts α := by
   have : ∀ x y : α, has_colimit (pair x y) :=
     by
     letI := hasFiniteColimits_of_hasFiniteColimits_of_size.{u} α
