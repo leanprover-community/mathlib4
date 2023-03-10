@@ -50,24 +50,24 @@ abbrev IsFractionRing [CommRing K] [Algebra R K] :=
 /-- The cast from `int` to `rat` as a `fraction_ring`. -/
 instance Rat.isFractionRing : IsFractionRing ℤ ℚ
     where
-  map_units := by
+  map_units' := by
     rintro ⟨x, hx⟩
     rw [mem_nonZeroDivisors_iff_ne_zero] at hx
     simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne.def, Subtype.coe_mk] using hx
-  surj := by
+  surj':= by
     rintro ⟨n, d, hd, h⟩
     refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num⟩
-    rwa [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
-  eq_iff_exists := by
+    rw [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
+    exact Nat.zero_lt_of_ne_zero hd
+  eq_iff_exists' := by
     intro x y
     rw [eq_intCast, eq_intCast, Int.cast_inj]
-    refine'
-      ⟨by
-        rintro rfl
-        use 1, _⟩
-    rintro ⟨⟨c, hc⟩, h⟩
-    apply mul_left_cancel₀ _ h
-    rwa [mem_nonZeroDivisors_iff_ne_zero] at hc
+    apply Iff.intro
+    · rintro rfl
+      use 1
+    · rintro ⟨⟨c, hc⟩, h⟩
+      apply mul_left_cancel₀ _ h
+      rwa [mem_nonZeroDivisors_iff_ne_zero] at hc
 #align rat.is_fraction_ring Rat.isFractionRing
 
 namespace IsFractionRing
@@ -81,7 +81,7 @@ section CommRing
 variable [CommRing K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
 
 theorem to_map_eq_zero_iff {x : R} : algebraMap R K x = 0 ↔ x = 0 :=
-  to_map_eq_zero_iff _ (le_of_eq rfl)
+  IsLocalization.to_map_eq_zero_iff _ (le_of_eq rfl)
 #align is_fraction_ring.to_map_eq_zero_iff IsFractionRing.to_map_eq_zero_iff
 
 variable (R K)
@@ -356,4 +356,3 @@ instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (Fraction
           (NoZeroSMulDivisors.algebraMap_injective _ _))
 
 end FractionRing
-
