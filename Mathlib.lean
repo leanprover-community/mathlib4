@@ -669,6 +669,7 @@ import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Nat.Dist
