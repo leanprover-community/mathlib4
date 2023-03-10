@@ -134,6 +134,22 @@ run_cmd do
   unless findTranslation? (← getEnv) mul1 == some add1 do throwError "1"
   unless findTranslation? (← getEnv) mul2 == some add2 do throwError "2"
 
+/- Testing nested to_additive calls -/
+@[to_additive (attr := simp, to_additive baz19) bar19]
+def foo19 := 1
+
+example {x} (h : 1 = x) : foo19 = x := by simp; guard_target = 1 = x; exact h
+example {x} (h : 1 = x) : bar19 = x := by simp; guard_target = 1 = x; exact h
+example {x} (h : 1 = x) : baz19 = x := by simp; guard_target = 1 = x; exact h
+
+/- Testing that the order of the attributes doesn't matter -/
+@[to_additive (attr := to_additive baz20, simp) bar20]
+def foo20 := 1
+
+example {x} (h : 1 = x) : foo20 = x := by simp; guard_target = 1 = x; exact h
+example {x} (h : 1 = x) : bar20 = x := by simp; guard_target = 1 = x; exact h
+example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
+
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
@@ -159,6 +175,14 @@ run_cmd do
   unless findTranslation? (← getEnv) `Test.MulInd.basic == none do throwError "2"
   unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
 
+@[to_additive addFixedNumeralTest]
+def fixedNumeralTest {α} [One α] :=
+@OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 _
+
+@[to_additive addFixedNumeralTest2]
+def fixedNumeralTest2 {α} [One α] :=
+@OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 (@One.toOfNat1 ((fun _ => ℕ) (1 : α)) _)
+
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
 def some_def.in_namespace : Bool := false
@@ -173,6 +197,12 @@ instance : One (myFin n) := ⟨(1 : ℕ)⟩
 @[to_additive bar]
 def myFin.foo : myFin (n+1) := 1
 
+/-- We can pattern-match with `1`, which creates a term with a pure nat literal. See #2046 -/
+@[to_additive]
+def mul_foo {α} [Monoid α] (a : α) : ℕ → α
+| 0 => 1
+| 1 => 1
+| (_ + 2) => a
 
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute

@@ -100,25 +100,25 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
   · rw [pi_empty, sum_singleton]
     rfl
   · have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
-      Disjoint (image (pi.cons s a x) (pi s t)) (image (pi.cons s a y) (pi s t)) := by
+      Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
-      have : pi.cons s a x p₂ a (mem_insert_self _ _) = pi.cons s a y p₃ a (mem_insert_self _ _) :=
+      have : Pi.cons s a x p₂ a (mem_insert_self _ _) = Pi.cons s a y p₃ a (mem_insert_self _ _) :=
         by rw [eq₂, eq₃, eq]
-      rw [pi.cons_same, pi.cons_same] at this
+      rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_bunionᵢ h₁]
     refine' sum_congr rfl fun b _ => _
-    have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, pi.cons s a b p₁ = pi.cons s a b p₂ → p₁ = p₂ :=
+    have h₂ : ∀ p₁ ∈ pi s t, ∀ p₂ ∈ pi s t, Pi.cons s a b p₁ = Pi.cons s a b p₂ → p₁ = p₂ :=
       fun p₁ _ p₂ _ eq => pi_cons_injective ha eq
     rw [sum_image h₂, mul_sum]
     refine' sum_congr rfl fun g _ => _
     rw [attach_insert, prod_insert, prod_image]
-    · simp only [pi.cons_same]
+    · simp only [Pi.cons_same]
       congr with ⟨v, hv⟩
       congr
-      exact (pi.cons_ne (by rintro rfl; exact ha hv)).symm
+      exact (Pi.cons_ne (by rintro rfl; exact ha hv)).symm
     · exact fun _ _ _ _ => Subtype.eq ∘ Subtype.mk.inj
     · simpa only [mem_image, mem_attach, Subtype.mk.injEq, true_and,
         Subtype.exists, exists_prop, exists_eq_right] using ha

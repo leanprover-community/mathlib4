@@ -50,8 +50,7 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
     simp [pow_succ]
 
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
-@[to_additive AddMonoidHom.addCommGroup
-      "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
+@[to_additive "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too."]
 instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
   { MonoidHom.commMonoid with

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.separation
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
+! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -192,16 +192,22 @@ theorem Inseparable.eq [T0Space α] {x y : α} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
 #align inseparable.eq Inseparable.eq
 
--- porting note: 2 new lemmas
 /-- A topology `Inducing` map from a T₀ space is injective. -/
-protected theorem Inducing.injective [T0Space α] [TopologicalSpace β] {f : α → β}
+protected theorem Inducing.injective [TopologicalSpace β] [T0Space α] {f : α → β}
     (hf : Inducing f) : Injective f := fun _ _ h =>
   (hf.inseparable_iff.1 <| .of_eq h).eq
+#align inducing.injective Inducing.injective
 
-/-- A topology `Inducing` map from a T₀ space is an embedding. -/
-protected theorem Inducing.embedding [T0Space α] [TopologicalSpace β] {f : α → β}
+/-- A topology `Inducing` map from a T₀ space is a topological embedding. -/
+protected theorem Inducing.embedding [TopologicalSpace β] [T0Space α] {f : α → β}
     (hf : Inducing f) : Embedding f :=
   ⟨hf, hf.injective⟩
+#align inducing.embedding Inducing.embedding
+
+lemma embedding_iff_inducing [TopologicalSpace β] [T0Space α] {f : α → β} :
+    Embedding f ↔ Inducing f :=
+  ⟨Embedding.toInducing, Inducing.embedding⟩
+#align embedding_iff_inducing embedding_iff_inducing
 
 theorem t0Space_iff_nhds_injective (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ Injective (𝓝 : α → Filter α) :=

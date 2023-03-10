@@ -335,7 +335,7 @@ theorem lift_le {a b : Cardinal.{u}} : lift.{v, u} a ≤ lift.{v, u} b ↔ a ≤
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
 @[simps! (config := { fullyApplied := false })]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  OrderEmbedding.ofMapLeIff lift.{u, v} fun _ _ => lift_le
+  OrderEmbedding.ofMapLEIff lift.{u, v} fun _ _ => lift_le
 #align cardinal.lift_order_embedding Cardinal.liftOrderEmbedding
 
 theorem lift_injective : Injective lift.{u, v} :=
@@ -482,10 +482,9 @@ instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
 -- with `HPow`, but somebody should figure out
 -- if this is still relevant in Lean4.
 -- mathport name: cardinal.pow
-local infixr:0 "^'" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
-
+local infixr:0 "^'" => @HPow.hPow Cardinal Cardinal Cardinal.instPowCardinal
 -- -- mathport name: cardinal.pow.nat
-local infixr:80 " ^ℕ " => @Pow.pow Cardinal ℕ Monoid.Pow
+local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
 
 theorem power_def (α β) : ((#α) ^ (#β)) = (#β → α) :=
   rfl
