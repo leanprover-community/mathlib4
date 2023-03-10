@@ -33,9 +33,9 @@ theorem dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} (h 
     (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction' k with k ih
   · rwa [pow_one, pow_zero, pow_one, pow_one]
-  rw [pow_succ' p k, pow_mul, pow_mul, ← geom_sum₂_mul, pow_succ]
+  rw [pow_succ' p k, pow_mul, pow_mul, ← geom_sum₂_mul, pow_succ, Nat.cast_mul]
   refine' mul_dvd_mul _ ih
-  let I : Ideal R := span {p}
+  let I : Ideal R := span {↑p}
   let f : R →+* R ⧸ I := mk I
   have hp : (p : R ⧸ I) = 0 := by rw [← map_natCast f, eq_zero_iff_mem, mem_span_singleton]
   rw [← mem_span_singleton, ← Ideal.Quotient.eq] at h
@@ -44,4 +44,3 @@ theorem dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} (h 
 #align dvd_sub_pow_of_dvd_sub dvd_sub_pow_of_dvd_sub
 
 end
-
