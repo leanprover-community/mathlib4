@@ -28,8 +28,8 @@ Two explicit examples of Grothendieck topologies are given:
 as well as the complete lattice structure on Grothendieck topologies (which gives two additional
 explicit topologies: the discrete and trivial topologies.)
 
-A pretopology, or a basis for a topology is defined in `pretopology.lean`. The topology associated
-to a topological space is defined in `spaces.lean`.
+A pretopology, or a basis for a topology is defined in `Pretopology.lean`. The topology associated
+to a topological space is defined in `Spaces.lean`.
 
 ## Tags
 
@@ -394,7 +394,7 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C
 #align category_theory.grothendieck_topology.atomic CategoryTheory.GrothendieckTopology.atomic
 
 
-/-- `J.cover X` denotes the poset of covers of `X` with respect to the
+/-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
 def Cover (X : C) :=
   { S : Sieve X // S ∈ J X } -- deriving Preorder
@@ -457,7 +457,7 @@ instance : SemilatticeInf (J.Cover X) :=
 instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩
 
-/-- An auxiliary structure, used to define `S.index` in `plus.lean`. -/
+/-- An auxiliary structure, used to define `S.index`. -/
 --@[nolint has_nonempty_instance, ext]
 @[ext]
 structure Arrow (S : J.Cover X) where
@@ -466,7 +466,7 @@ structure Arrow (S : J.Cover X) where
   hf : S f
 #align category_theory.grothendieck_topology.cover.arrow CategoryTheory.GrothendieckTopology.Cover.Arrow
 
-/-- An auxiliary structure, used to define `S.index` in `plus.lean`. -/
+/-- An auxiliary structure, used to define `S.index`. -/
 --@[nolint has_nonempty_instance, ext]
 @[ext]
 structure Relation (S : J.Cover X) where
@@ -480,27 +480,27 @@ structure Relation (S : J.Cover X) where
   w : g₁ ≫ f₁ = g₂ ≫ f₂
 #align category_theory.grothendieck_topology.cover.relation CategoryTheory.GrothendieckTopology.Cover.Relation
 
-/-- Map a `arrow` along a refinement `S ⟶ T`. -/
+/-- Map a `Arrow` along a refinement `S ⟶ T`. -/
 @[simps]
 def Arrow.map {S T : J.Cover X} (I : S.Arrow) (f : S ⟶ T) : T.Arrow :=
   ⟨I.Y, I.f, f.le _ I.hf⟩
 #align category_theory.grothendieck_topology.cover.arrow.map CategoryTheory.GrothendieckTopology.Cover.Arrow.map
 
-/-- Map a `relation` along a refinement `S ⟶ T`. -/
+/-- Map a `Relation` along a refinement `S ⟶ T`. -/
 @[simps]
 def Relation.map {S T : J.Cover X} (I : S.Relation) (f : S ⟶ T) : T.Relation :=
   ⟨_, _, _, I.g₁, I.g₂, I.f₁, I.f₂, f.le _ I.h₁, f.le _ I.h₂, I.w⟩
 #align category_theory.grothendieck_topology.cover.relation.map CategoryTheory.GrothendieckTopology.Cover.Relation.map
 
-/-- The first `arrow` associated to a `relation`.
-Used in defining `index` in `plus.lean`. -/
+/-- The first `Arrow` associated to a `Relation`.
+Used in defining `index`. -/
 @[simps]
 def Relation.fst {S : J.Cover X} (I : S.Relation) : S.Arrow :=
   ⟨I.Y₁, I.f₁, I.h₁⟩
 #align category_theory.grothendieck_topology.cover.relation.fst CategoryTheory.GrothendieckTopology.Cover.Relation.fst
 
-/-- The second `arrow` associated to a `relation`.
-Used in defining `index` in `plus.lean`. -/
+/-- The second `Arrow` associated to a `Relation`.
+Used in defining `index`. -/
 @[simps]
 def Relation.snd {S : J.Cover X} (I : S.Relation) : S.Arrow :=
   ⟨I.Y₂, I.f₂, I.h₂⟩
@@ -629,9 +629,9 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.2
 #align category_theory.grothendieck_topology.cover.arrow.middle_spec CategoryTheory.GrothendieckTopology.Cover.Arrow.middle_spec
 
--- This is used extensively in `plus.lean`, etc.
--- We place this definition here as it will be used in `sheaf.lean` as well.
-/-- To every `S : J.cover X` and presheaf `P`, associate a `multicospan_index`. -/
+-- This is used extensively in `Plus.lean`, etc.
+-- We place this definition here as it will be used in `Sheaf.lean` as well.
+/-- To every `S : J.Cover X` and presheaf `P`, associate a `MulticospanIndex`. -/
 def index {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.MulticospanIndex D where
   L := S.Arrow
@@ -644,9 +644,9 @@ def index {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D
   snd I := P.map I.g₂.op
 #align category_theory.grothendieck_topology.cover.index CategoryTheory.GrothendieckTopology.Cover.index
 
-/-- The natural multifork associated to `S : J.cover X` for a presheaf `P`.
+/-- The natural multifork associated to `S : J.Cover X` for a presheaf `P`.
 Saying that this multifork is a limit is essentially equivalent to the sheaf condition at the
-given object for the given covering sieve. See `sheaf.lean` for an equivalent sheaf condition
+given object for the given covering sieve. See `Sheaf.lean` for an equivalent sheaf condition
 using this.
 -/
 abbrev multifork {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
@@ -659,7 +659,7 @@ abbrev multifork {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒ�
 #align category_theory.grothendieck_topology.cover.multifork CategoryTheory.GrothendieckTopology.Cover.multifork
 
 /-- The canonical map from `P.obj (op X)` to the multiequalizer associated to a covering sieve,
-assuming such a multiequalizer exists. This will be used in `sheaf.lean` to provide an equivalent
+assuming such a multiequalizer exists. This will be used in `Sheaf.lean` to provide an equivalent
 sheaf condition in terms of multiequalizers. -/
 noncomputable abbrev toMultiequalizer {D : Type w} [Category.{max v u} D] (S : J.Cover X)
     (P : Cᵒᵖ ⥤ D) [Limits.HasMultiequalizer (S.index P)] :
