@@ -15,8 +15,8 @@ import Mathlib.Order.Filter.Archimedean
 # Convergence of subadditive sequences
 
 A subadditive sequence `u : ℕ → ℝ` is a sequence satisfying `u (m + n) ≤ u m + u n` for all `m, n`.
-We define this notion as `subadditive u`, and prove in `subadditive.tendsto_lim` that, if `u n / n`
-is bounded below, then it converges to a limit (that we denote by `subadditive.lim` for
+We define this notion as `Subadditive u`, and prove in `Subadditive.tendsto_lim` that, if `u n / n`
+is bounded below, then it converges to a limit (that we denote by `Subadditive.lim` for
 convenience). This result is known as Fekete's lemma in the literature.
 
 ## TODO
@@ -39,7 +39,7 @@ namespace Subadditive
 variable {u : ℕ → ℝ} (h : Subadditive u)
 
 /-- The limit of a bounded-below subadditive sequence. The fact that the sequence indeed tends to
-this limit is given in `subadditive.tendsto_lim` -/
+this limit is given in `Subadditive.tendsto_lim` -/
 @[nolint unusedArguments] -- porting note: was irreducible
 protected def lim (_h : Subadditive u) :=
   infₛ ((fun n : ℕ => u n / n) '' Ici 1)
