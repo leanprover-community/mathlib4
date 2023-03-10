@@ -271,8 +271,8 @@ for functions between empty types. -/
 theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable f := by
   nontriviality β
   inhabit β
-  convert @measurable_const α β ‹_› ‹_› (f default)
-  exact funext fun x => hf x default
+  convert @measurable_const α β ‹_› ‹_› (f default) using 2
+  apply hf
 #align measurable_const' measurable_const'
 
 theorem measurable_of_countable [Countable α] [MeasurableSingletonClass α] (f : α → β) :

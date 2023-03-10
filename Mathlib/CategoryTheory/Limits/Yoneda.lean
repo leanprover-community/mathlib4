@@ -40,9 +40,7 @@ variable {C : Type v} [SmallCategory C]
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app := fun {Y} _ => by 
-          aesop_cat
-          exact ⟨⟩ 
+  ι := { app := by aesop_cat
          naturality := by aesop_cat }
 #align category_theory.coyoneda.colimit_cocone CategoryTheory.Coyoneda.colimitCocone
 
@@ -121,7 +119,7 @@ instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X
 
 /-- The yoneda embeddings jointly reflect limits. -/
 def yonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ Cᵒᵖ) (c : Cone K)
-    (t : ∀ X : C, IsLimit (Functor.mapCone (yoneda.obj X) c)) : IsLimit c :=
+    (t : ∀ X : C, IsLimit ((yoneda.obj X).mapCone c)) : IsLimit c :=
   let s' : ∀ s : Cone K, Cone (K ⋙ yoneda.obj s.pt.unop) := fun s =>
     ⟨PUnit, fun j _ => (s.π.app j).unop, fun j₁ j₂ α =>
       funext fun _ => Quiver.Hom.op_inj (s.w α).symm⟩
@@ -139,7 +137,7 @@ def yonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ Cᵒ�
 
 /-- The coyoneda embeddings jointly reflect limits. -/
 def coyonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ C) (c : Cone K)
-    (t : ∀ X : Cᵒᵖ, IsLimit (Functor.mapCone (coyoneda.obj X) c)) : IsLimit c :=
+    (t : ∀ X : Cᵒᵖ, IsLimit ((coyoneda.obj X).mapCone c)) : IsLimit c :=
   let s' : ∀ s : Cone K, Cone (K ⋙ coyoneda.obj (op s.pt)) := fun s =>
     ⟨PUnit, fun j _ => s.π.app j, fun j₁ j₂ α => funext fun _ => (s.w α).symm⟩
   { lift := fun s => (t (op s.pt)).lift (s' s) PUnit.unit

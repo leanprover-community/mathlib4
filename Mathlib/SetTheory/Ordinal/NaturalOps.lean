@@ -287,7 +287,7 @@ theorem nadd_zero : a ♯ 0 = a := by
   induction' a using Ordinal.induction with a IH
   rw [nadd_def, blsub_zero, max_zero_right]
   convert blsub_id a
-  ext (b hb)
+  rename_i hb
   exact IH _ hb
 #align ordinal.nadd_zero Ordinal.nadd_zero
 

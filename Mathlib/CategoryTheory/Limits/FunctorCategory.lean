@@ -53,7 +53,7 @@ it suffices to show that each evaluation cone is a limit. In other words, to pro
 limiting you can show it's pointwise limiting.
 -/
 def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
-    (t : ∀ k : K, IsLimit (Functor.mapCone ((evaluation K C).obj k) c)) : IsLimit c
+    (t : ∀ k : K, IsLimit (((evaluation K C).obj k).mapCone c)) : IsLimit c
     where
   lift s :=
     { app := fun k => (t k).lift ⟨s.pt.obj k, whiskerRight s.π ((evaluation K C).obj k)⟩
@@ -94,7 +94,7 @@ def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
 
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
 def evaluateCombinedCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) (k : K) :
-    Functor.mapCone ((evaluation K C).obj k) (combineCones F c) ≅ (c k).cone :=
+    ((evaluation K C).obj k).mapCone (combineCones F c) ≅ (c k).cone :=
   Cones.ext (Iso.refl _) (by aesop_cat)
 #align category_theory.limits.evaluate_combined_cones CategoryTheory.Limits.evaluateCombinedCones
 
@@ -110,7 +110,7 @@ it suffices to show that each evaluation cocone is a colimit. In other words, to
 colimiting you can show it's pointwise colimiting.
 -/
 def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
-    (t : ∀ k : K, IsColimit (Functor.mapCocone ((evaluation K C).obj k) c)) : IsColimit c
+    (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone  c)) : IsColimit c
     where
   desc s :=
     { app := fun k => (t k).desc ⟨s.pt.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
@@ -155,7 +155,7 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
 
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/
 def evaluateCombinedCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) (k : K) :
-    Functor.mapCocone ((evaluation K C).obj k) (combineCocones F c) ≅ (c k).cocone :=
+    ((evaluation K C).obj k).mapCocone  (combineCocones F c) ≅ (c k).cocone :=
   Cocones.ext (Iso.refl _) (by aesop_cat)
 #align category_theory.limits.evaluate_combined_cocones CategoryTheory.Limits.evaluateCombinedCocones
 
@@ -340,7 +340,7 @@ def preservesLimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     apply evaluationJointlyReflectsLimits
     intro X
     haveI := H X
-    change IsLimit (Functor.mapCone (F ⋙  (evaluation K C).obj X) c)
+    change IsLimit ((F ⋙  (evaluation K C).obj X).mapCone c)
     exact PreservesLimit.preserves hc⟩
 #align category_theory.limits.preserves_limit_of_evaluation CategoryTheory.Limits.preservesLimitOfEvaluation
 
@@ -377,7 +377,7 @@ def preservesColimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     apply evaluationJointlyReflectsColimits
     intro X
     haveI := H X
-    change IsColimit (Functor.mapCocone (F ⋙ (evaluation K C).obj X) c)
+    change IsColimit ((F ⋙ (evaluation K C).obj X).mapCocone c)
     exact PreservesColimit.preserves hc⟩
 #align category_theory.limits.preserves_colimit_of_evaluation CategoryTheory.Limits.preservesColimitOfEvaluation
 
