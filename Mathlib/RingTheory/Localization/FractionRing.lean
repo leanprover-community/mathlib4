@@ -246,19 +246,17 @@ noncomputable def fieldEquivOfRingEquiv [Algebra B L] [IsFractionRing B L] (h : 
   ringEquivOfRingEquiv K L h
     (by
       ext b
-      show b ∈ h.to_equiv '' _ ↔ _
-      erw [h.to_equiv.image_eq_preimage, Set.preimage, Set.mem_setOf_eq,
+      show b ∈ h.toEquiv '' _ ↔ _
+      erw [h.toEquiv.image_eq_preimage, Set.preimage, Set.mem_setOf_eq,
         mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero]
       exact h.symm.map_ne_zero_iff)
 #align is_fraction_ring.field_equiv_of_ring_equiv IsFractionRing.fieldEquivOfRingEquiv
-
-variable (S)
 
 theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
-  convert is_localization_iff_of_base_ring_equiv _ _ h
+  convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   ext x
   erw [Submonoid.map_equiv_eq_comap_symm]
   simp only [MulEquiv.coe_toMonoidHom, RingEquiv.toMulEquiv_eq_coe, Submonoid.mem_comap]
@@ -285,7 +283,7 @@ protected theorem nontrivial (R S : Type _) [CommRing R] [Nontrivial R] [CommRin
 
 end IsFractionRing
 
-variable (R A)
+variable (A)
 
 /-- The fraction ring of a commutative ring `R` as a quotient type.
 
@@ -300,18 +298,16 @@ def FractionRing :=
 namespace FractionRing
 
 instance unique [Subsingleton R] : Unique (FractionRing R) :=
-  Localization.unique
+  Localization.instUniqueLocalizationToCommMonoid
 #align fraction_ring.unique FractionRing.unique
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) :=
   ⟨⟨(algebraMap R _) 0, (algebraMap _ _) 1, fun H =>
       zero_ne_one (IsLocalization.injective _ le_rfl H)⟩⟩
 
-variable {A}
-
 noncomputable instance : Field (FractionRing A) :=
-  { Localization.commRing,
-    IsFractionRing.toField A with
+{ -- Localization.instCommRingLocalizationToCommMonoid, -- Porting note: This was causing issues
+    IsFractionRing.toField A with                       -- and turns out to be unnecessary
     add := (· + ·)
     mul := (· * ·)
     neg := Neg.neg
@@ -336,8 +332,6 @@ noncomputable instance [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors 
 instance [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
     IsScalarTower R (FractionRing R) K :=
   IsScalarTower.of_algebraMap_eq fun x => (IsFractionRing.lift_algebraMap _ x).symm
-
-variable (A)
 
 /-- Given an integral domain `A` and a localization map to a field of fractions
 `f : A →+* K`, we get an `A`-isomorphism between the field of fractions of `A` as a quotient
