@@ -36,8 +36,8 @@ open TopologicalSpace
 
 /-- Topology on `ℝ≥0∞`.
 
-Note: this is different from the `emetric_space` topology. The `emetric_space` topology has
-`is_open {⊤}`, while this topology doesn't have singleton elements. -/
+Note: this is different from the `EMetricSpace` topology. The `EMetricSpace` topology has
+`IsOpen {⊤}`, while this topology doesn't have singleton elements. -/
 instance : TopologicalSpace ℝ≥0∞ := Preorder.topology ℝ≥0∞
 
 instance : OrderTopology ℝ≥0∞ := ⟨rfl⟩
@@ -1034,7 +1034,7 @@ theorem finite_const_le_of_tsum_ne_top {ι : Type _} {a : ι → ℝ≥0∞} (ts
     (fun i => i.2) ENNReal.summable ENNReal.summable
 #align ennreal.finite_const_le_of_tsum_ne_top ENNReal.finite_const_le_of_tsum_ne_top
 
-/-- Markov's inequality for `finset.card` and `tsum` in `ℝ≥0∞`. -/
+/-- Markov's inequality for `Finset.card` and `tsum` in `ℝ≥0∞`. -/
 theorem finset_card_const_le_le_of_tsum_le {ι : Type _} {a : ι → ℝ≥0∞} {c : ℝ≥0∞} (c_ne_top : c ≠ ∞)
     (tsum_le_c : (∑' i, a i) ≤ c) {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0) :
     ∃ hf : { i : ι | ε ≤ a i }.Finite, ↑hf.toFinset.card ≤ c / ε := by
@@ -1107,7 +1107,7 @@ theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summa
     hp.summable
 #align nnreal.summable_of_le NNReal.summable_of_le
 
-/-- A series of non-negative real numbers converges to `r` in the sense of `has_sum` if and only if
+/-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop (𝓝 r) := by
@@ -1292,7 +1292,7 @@ theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n =>
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 #align summable.to_nnreal Summable.toNNReal
 
-/-- A series of non-negative real numbers converges to `r` in the sense of `has_sum` if and only if
+/-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat_of_nonneg {f : ℕ → ℝ} (hf : ∀ i, 0 ≤ f i) (r : ℝ) :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop (𝓝 r) := by
@@ -1485,7 +1485,7 @@ theorem isClosed_setOf_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMet
 
 namespace Real
 
-/-- For a bounded set `s : set ℝ`, its `emetric.diam` is equal to `Sup s - Inf s` reinterpreted as
+/-- For a bounded set `s : Set ℝ`, its `EMetric.diam` is equal to `supₛ s - infₛ s` reinterpreted as
 `ℝ≥0∞`. -/
 theorem ediam_eq {s : Set ℝ} (h : Bounded s) :
     EMetric.diam s = ENNReal.ofReal (supₛ s - infₛ s) := by
@@ -1501,7 +1501,7 @@ theorem ediam_eq {s : Set ℝ} (h : Bounded s) :
         (cinfₛ_mem_closure hne h'.1)
 #align real.ediam_eq Real.ediam_eq
 
-/-- For a bounded set `s : set ℝ`, its `metric.diam` is equal to `Sup s - Inf s`. -/
+/-- For a bounded set `s : Set ℝ`, its `Metric.diam` is equal to `supₛ s - infₛ s`. -/
 theorem diam_eq {s : Set ℝ} (h : Bounded s) : Metric.diam s = supₛ s - infₛ s := by
   rw [Metric.diam, Real.ediam_eq h, ENNReal.toReal_ofReal]
   rw [Real.bounded_iff_bddBelow_bddAbove] at h
