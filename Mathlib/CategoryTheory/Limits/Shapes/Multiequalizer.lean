@@ -766,12 +766,12 @@ noncomputable def multicoforkEquivSigmaCofork : Multicofork I ≌ Cofork I.fstSi
     NatIso.ofComponents
       (fun K =>
         Cofork.ext (Iso.refl _)
-          (by sorry
-            /-
-            ext ⟨j⟩
+          (by
+            apply Limits.colimit.hom_ext
+            rintro ⟨j⟩
             dsimp
-            simp only [category.comp_id, colimit.ι_desc, cofan.mk_ι_app]
-            rfl-/))
+            simp only [Category.comp_id, colimit.ι_desc, Cofan.mk_ι]
+            rfl))
       fun {K₁ K₂} f => by sorry -- ext ; dsimp ; simp
 #align category_theory.limits.multispan_index.multicofork_equiv_sigma_cofork CategoryTheory.Limits.MultispanIndex.multicoforkEquivSigmaCofork
 
