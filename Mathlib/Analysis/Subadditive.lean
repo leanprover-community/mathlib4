@@ -8,8 +8,8 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Instances.Real
-import Mathbin.Order.Filter.Archimedean
+import Mathlib.Topology.Instances.Real
+import Mathlib.Order.Filter.Archimedean
 
 /-!
 # Convergence of subadditive sequences
@@ -56,8 +56,7 @@ theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n 
     exact zero_lt_iff.2 hn
 #align subadditive.lim_le_div Subadditive.lim_le_div
 
-theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r :=
-  by
+theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
   induction' k with k IH; · simp only [Nat.cast_zero, zero_mul, zero_add]
   calc
     u ((k + 1) * n + r) = u (n + (k * n + r)) :=
@@ -71,8 +70,7 @@ theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r :=
 #align subadditive.apply_mul_add_le Subadditive.apply_mul_add_le
 
 theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :
-    ∀ᶠ p in atTop, u p / p < L :=
-  by
+    ∀ᶠ p in atTop, u p / p < L := by
   have I : ∀ i : ℕ, 0 < i → (i : ℝ) ≠ 0 := by
     intro i hi
     simp only [hi.ne', Ne.def, Nat.cast_eq_zero, not_false_iff]
@@ -123,8 +121,7 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
 
 /-- Fekete's lemma: a subadditive sequence which is bounded below converges. -/
 theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
-    Tendsto (fun n => u n / n) atTop (𝓝 h.limUnder) :=
-  by
+    Tendsto (fun n => u n / n) atTop (𝓝 h.limUnder) := by
   refine' tendsto_order.2 ⟨fun l hl => _, fun L hL => _⟩
   ·
     refine'
