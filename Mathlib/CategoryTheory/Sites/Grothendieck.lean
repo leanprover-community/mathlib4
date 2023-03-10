@@ -343,7 +343,7 @@ See https://ncatlab.org/nlab/show/dense+topology, or [MM92] Chapter III, Section
 -/
 def dense : GrothendieckTopology C
     where
-  sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _)(g : Z ⟶ Y), S (g ≫ f)
+  sieves X S := ∀ {Y : C} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f)
   top_mem' X Y f := ⟨Y, 𝟙 Y, ⟨⟩⟩
   pullback_stable' := by
     intro X Y S h H Z f
@@ -444,10 +444,7 @@ instance : OrderTop (J.Cover X) :=
     le_top := fun S Y f _ => by tauto }
 
 instance : SemilatticeInf (J.Cover X) :=
-  {
-    (inferInstance :
-      Preorder
-        _) with
+  { (inferInstance : Preorder _) with
     inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
     le_antisymm := fun S T h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
     inf_le_left := fun S T Y f hf => hf.1
