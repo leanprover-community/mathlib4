@@ -76,23 +76,23 @@ instance : IsRefl _ (Smodeq U) :=
   ⟨Smodeq.refl⟩
 
 @[symm]
-theorem symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
+nonrec theorem symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
   hxy.symm
 #align smodeq.symm Smodeq.symm
 
 @[trans]
-theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
+nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
   hxy.trans hyz
 #align smodeq.trans Smodeq.trans
 
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [Smodeq.def] at hxy₁ hxy₂⊢
-  simp_rw [quotient.mk_add, hxy₁, hxy₂]
+  simp_rw [Quotient.mk_add, hxy₁, hxy₂]
 #align smodeq.add Smodeq.add
 
 theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
   rw [Smodeq.def] at hxy⊢
-  simp_rw [quotient.mk_smul, hxy]
+  simp_rw [Quotient.mk_smul, hxy]
 #align smodeq.smul Smodeq.smul
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [Smodeq.def, Submodule.Quotient.eq, sub_zero]
@@ -116,4 +116,3 @@ theorem eval {R : Type _} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMO
 #align smodeq.eval Smodeq.eval
 
 end Smodeq
-
