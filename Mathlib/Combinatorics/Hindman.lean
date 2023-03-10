@@ -141,18 +141,19 @@ set_option linter.uppercaseLean3 false in
 theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     ∃ U : Ultrafilter M, U * U = U ∧ ∀ᶠ m in U, m ∈ FP a := by
   let S : Set (Ultrafilter M) := ⋂ n, { U | ∀ᶠ m in U, m ∈ FP (a.drop n) }
-  obtain ⟨U, hU, U_idem⟩ := exists_idempotent_in_compact_subsemigroup _ S _ _ _
+  have h := exists_idempotent_in_compact_subsemigroup ?_ S ?_ ?_ ?_
+  rcases h with ⟨U, hU, U_idem⟩
   · refine' ⟨U, U_idem, _⟩
     convert Set.mem_interᵢ.mp hU 0
   · exact Ultrafilter.continuous_mul_left
   · apply IsCompact.nonempty_interᵢ_of_sequence_nonempty_compact_closed
     · intro n U hU
-      apply eventually.mono hU
+      apply Eventually.mono hU
       rw [add_comm, ← Stream'.drop_drop, ← Stream'.tail_eq_drop]
       exact FP.tail _
     · intro n
       exact ⟨pure _, mem_pure.mpr <| FP.head _⟩
-    · exact (ultrafilter_isClosed_basic _).IsCompact
+    · exact (ultrafilter_isClosed_basic _).isCompact
     · intro n
       apply ultrafilter_isClosed_basic
   · exact IsClosed.isCompact (isClosed_interᵢ fun i => ultrafilter_isClosed_basic _)
@@ -160,10 +161,10 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     rw [Set.mem_interᵢ] at *
     intro n
     rw [Set.mem_setOf_eq, Ultrafilter.eventually_mul]
-    apply eventually.mono (hU n)
+    apply Eventually.mono (hU n)
     intro m hm
     obtain ⟨n', hn⟩ := FP.mul hm
-    apply eventually.mono (hV (n' + n))
+    apply Eventually.mono (hV (n' + n))
     intro m' hm'
     apply hn
     simpa only [Stream'.drop_drop] using hm'
