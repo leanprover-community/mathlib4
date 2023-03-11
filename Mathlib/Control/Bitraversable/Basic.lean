@@ -8,8 +8,8 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Control.Bifunctor
-import Mathbin.Control.Traversable.Basic
+import Mathlib.Control.Bifunctor
+import Mathlib.Control.Traversable.Basic
 
 /-!
 # Bitraversable type class
