@@ -100,7 +100,7 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
 #align category_theory.limits.ι_colimit_limit_to_limit_colimit_π CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π
 
 @[simp]
-theorem ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j) (k) (f) :
+theorem ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j : J) (k : K) (f) :
     limit.π (curry.obj F ⋙ colim) j
         (colimitLimitToLimitColimit F (colimit.ι (curry.obj (Prod.swap K J ⋙ F) ⋙ lim) k f)) =
       colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j f) := by
@@ -114,19 +114,18 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
     colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim)
     where
   Hom :=
-    colim.map (limitIsoSwapCompLim G).Hom ≫
+    colim.map (limitIsoSwapCompLim G).hom ≫
       colimitLimitToLimitColimit (uncurry.obj G : _) ≫
         lim.map (whiskerRight (currying.unitIso.app G).inv colim)
-  w' j := by
-    ext1 k
-    simp only [limit_obj_iso_limit_comp_evaluation_hom_π_assoc, iso.app_inv,
-      ι_colimit_limit_to_limit_colimit_π_assoc, whisker_right_app, colimit.ι_map,
-      functor.map_cone_π_app, category.id_comp, eq_to_hom_refl, eq_to_hom_app, colimit.ι_map_assoc,
-      limit.cone_π, lim_map_π_assoc, lim_map_π, category.assoc, currying_unit_iso_inv_app_app_app,
-      limit_iso_swap_comp_lim_hom_app, lim_map_eq_lim_map]
+  w j := by
     dsimp
-    simp only [category.id_comp]
-    erw [limit_obj_iso_limit_comp_evaluation_hom_π_assoc]
+    ext1 k
+    simp only [Category.assoc, limMap_π, Functor.comp_obj, colim_obj, whiskerRight_app,
+      colim_map, ι_colimMap_assoc, lim_obj, limitIsoSwapCompLim_hom_app,
+      ι_colimitLimitToLimitColimit_π_assoc, curry_obj_obj_obj, Prod.swap_obj,
+      uncurry_obj_obj, ι_colimMap, currying_unitIso_inv_app_app_app, Category.id_comp,
+      limMap_π_assoc, Functor.flip_obj_obj, flipIsoCurrySwapUncurry_hom_app_app]
+    erw [limitObjIsoLimitCompEvaluation_hom_π_assoc]
 #align category_theory.limits.colimit_limit_to_limit_colimit_cone CategoryTheory.Limits.colimitLimitToLimitColimitCone
 
 end CategoryTheory.Limits
