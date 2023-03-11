@@ -8,7 +8,7 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # The free monoidal category over a type
