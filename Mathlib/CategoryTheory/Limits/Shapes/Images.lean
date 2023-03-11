@@ -81,7 +81,7 @@ structure MonoFactorisation (f : X ⟶ Y) where
 #align category_theory.limits.mono_factorisation CategoryTheory.Limits.MonoFactorisation
 #align category_theory.limits.mono_factorisation.fac' CategoryTheory.Limits.MonoFactorisation.fac
 
-attribute [inherit_doc MonoFactorisation] MonoFactorisation.I MonoFactorisation.m 
+attribute [inherit_doc MonoFactorisation] MonoFactorisation.I MonoFactorisation.m
   MonoFactorisation.m_mono MonoFactorisation.e MonoFactorisation.fac
 
 attribute [reassoc (attr := simp)] MonoFactorisation.fac
@@ -108,11 +108,11 @@ variable {f}
 /-- The morphism `m` in a factorisation `f = e ≫ m` through a monomorphism is uniquely
 determined. -/
 @[ext]
-theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I) 
+theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
   (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
   cases' F with _ Fm _ _ Ffac ; cases' F' with _ Fm' _ _ Ffac'
   cases' hI
-  simp at hm 
+  simp at hm
   dsimp at Ffac Ffac'
   congr
   · apply (cancel_mono Fm).1
@@ -210,7 +210,7 @@ variable {f}
 /-- Two factorisations through monomorphisms satisfying the universal property
 must factor through isomorphic objects. -/
 @[simps]
-def isoExt {F F' : MonoFactorisation f} (hF : IsImage F) (hF' : IsImage F') : 
+def isoExt {F F' : MonoFactorisation f} (hF : IsImage F) (hF' : IsImage F') :
     F.I ≅ F'.I where
   hom := hF.lift F'
   inv := hF'.lift F
@@ -250,7 +250,7 @@ variable (f)
 /-- Data exhibiting that a morphism `f` has an image. -/
 structure ImageFactorisation (f : X ⟶ Y) where
   F : MonoFactorisation f -- Porting note: another violation of the naming convention
-  isImage : IsImage F 
+  isImage : IsImage F
 #align category_theory.limits.image_factorisation CategoryTheory.Limits.ImageFactorisation
 #align category_theory.limits.image_factorisation.is_image CategoryTheory.Limits.ImageFactorisation.isImage
 
@@ -385,7 +385,7 @@ theorem HasImage.uniq (F' : MonoFactorisation f) (l : image f ⟶ F'.I) (w : l �
 #align category_theory.limits.has_image.uniq CategoryTheory.Limits.HasImage.uniq
 
 /-- If `has_image g`, then `has_image (f ≫ g)` when `f` is an isomorphism. -/
-instance {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) [HasImage g] : HasImage (f ≫ g) where 
+instance {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) [HasImage g] : HasImage (f ≫ g) where
   exists_image :=
     ⟨{  F :=
           { I := image g
@@ -498,23 +498,23 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
 
 instance (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
-      ⟨(cancel_mono (image.ι f)).1 (by 
+      ⟨(cancel_mono (image.ι f)).1 (by
           -- Porting note: added let's for used to be a simp[image.eqToHom]
-          let F : MonoFactorisation f' :=  
-            ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩ 
+          let F : MonoFactorisation f' :=
+            ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩
           dsimp [image.eqToHom]
           rw [Category.id_comp,Category.assoc,image.lift_fac F]
-          let F' : MonoFactorisation f :=  
-            ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩ 
-          rw [image.lift_fac F'] ), 
+          let F' : MonoFactorisation f :=
+            ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
+          rw [image.lift_fac F'] ),
         (cancel_mono (image.ι f')).1 (by
           -- Porting note: added let's for used to be a simp[image.eqToHom]
-          let F' : MonoFactorisation f :=  
-            ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩ 
+          let F' : MonoFactorisation f :=
+            ⟨image f', image.ι f', factorThruImage f', (by aesop_cat)⟩
           dsimp [image.eqToHom]
           rw [Category.id_comp,Category.assoc,image.lift_fac F']
-          let F : MonoFactorisation f' :=  
-            ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩ 
+          let F : MonoFactorisation f' :=
+            ⟨image f, image.ι f, factorThruImage f, (by aesop_cat)⟩
           rw [image.lift_fac F])⟩⟩⟩
 
 /-- An equation between morphisms gives an isomorphism between the images. -/
@@ -549,7 +549,7 @@ def image.preComp [HasImage g] [HasImage (f ≫ g)] : image (f ≫ g) ⟶ image 
 
 @[reassoc (attr := simp)]
 theorem image.preComp_ι [HasImage g] [HasImage (f ≫ g)] :
-    image.preComp f g ≫ image.ι g = image.ι (f ≫ g) := by 
+    image.preComp f g ≫ image.ι g = image.ι (f ≫ g) := by
       dsimp [image.preComp]
       rw [image.lift_fac] -- Porting note: also here, see image.eq_fac
 #align category_theory.limits.image.pre_comp_ι CategoryTheory.Limits.image.preComp_ι
@@ -596,10 +596,10 @@ instance image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
 instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation g).isoComp f
-      isImage := { lift := fun F' => image.lift (F'.ofIsoComp f) 
-                   lift_fac := fun F' => by 
-                    dsimp  
-                    have : (MonoFactorisation.ofIsoComp f F').m  = F'.m := rfl 
+      isImage := { lift := fun F' => image.lift (F'.ofIsoComp f)
+                   lift_fac := fun F' => by
+                    dsimp
+                    have : (MonoFactorisation.ofIsoComp f F').m  = F'.m := rfl
                     rw [←this,image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
 #align category_theory.limits.has_image_iso_comp CategoryTheory.Limits.hasImage_iso_comp
 
@@ -623,17 +623,17 @@ instance image.isIso_precomp_iso (f : X ⟶ Y) [IsIso f] [HasImage g] : IsIso (i
 instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation f).compMono g
-      isImage := 
-      { lift := fun F' => image.lift F'.ofCompIso 
-        lift_fac := fun F' => by 
-          rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m), 
+      isImage :=
+      { lift := fun F' => image.lift F'.ofCompIso
+        lift_fac := fun F' => by
+          rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
             ←IsIso.inv_hom_id g,← Category.assoc]
           refine congrArg (· ≫ g) ?_
-          have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g = 
-            image.lift (MonoFactorisation.ofCompIso F') ≫ 
-            ((MonoFactorisation.ofCompIso F').m) := by 
-              simp only [MonoFactorisation.ofCompIso_I, Category.assoc, 
-                MonoFactorisation.ofCompIso_m] 
+          have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
+            image.lift (MonoFactorisation.ofCompIso F') ≫
+            ((MonoFactorisation.ofCompIso F').m) := by
+              simp only [MonoFactorisation.ofCompIso_I, Category.assoc,
+                MonoFactorisation.ofCompIso_m]
           rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'),image.as_ι] }}
 #align category_theory.limits.has_image_comp_iso CategoryTheory.Limits.hasImage_comp_iso
 
@@ -683,7 +683,7 @@ structure ImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶
 #align category_theory.limits.image_map CategoryTheory.Limits.ImageMap
 #align category_theory.limits.image_map.map_ι' CategoryTheory.Limits.ImageMap.map_ι
 
-attribute [inherit_doc ImageMap] ImageMap.map ImageMap.map_ι 
+attribute [inherit_doc ImageMap] ImageMap.map ImageMap.map_ι
 
 -- Porting note: LHS of this simplifies, simpNF still complains after blacklisting
 attribute [-simp, nolint simpNF] ImageMap.mk.injEq
@@ -711,7 +711,7 @@ def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f
 #align category_theory.limits.image_map.transport CategoryTheory.Limits.ImageMap.transport
 
 /-- `HasImageMap sq` means that there is an `ImageMap` for the square `sq`. -/
-class HasImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g) : Prop where 
+class HasImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g) : Prop where
 mk' ::
   has_image_map : Nonempty (ImageMap sq)
 #align category_theory.limits.has_image_map CategoryTheory.Limits.HasImageMap
@@ -760,34 +760,34 @@ section
 
 attribute [local ext] ImageMap
 
-/- Porting note: ImageMap.mk.injEq has LHS simplify to True due to the next instance 
+/- Porting note: ImageMap.mk.injEq has LHS simplify to True due to the next instance
 We make a replacement -/
-theorem ImageMap.map_uniq_aux {f g : Arrow C} [HasImage f.hom]  [HasImage g.hom] {sq : f ⟶ g} 
+theorem ImageMap.map_uniq_aux {f g : Arrow C} [HasImage f.hom]  [HasImage g.hom] {sq : f ⟶ g}
     (map : image f.hom ⟶ image g.hom)
-    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by aesop_cat) 
+    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by aesop_cat)
     (map' : image f.hom ⟶ image g.hom)
-    (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') := by 
+    (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') := by
   have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι,map_ι']
   apply (cancel_mono (image.ι g.hom)).1 this
 
 -- Porting note: added to get variant on ImageMap.mk.injEq below
-theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom]  [HasImage g.hom] 
-    {sq : f ⟶ g} (F G : ImageMap sq) : F.map = G.map := by 
-  apply ImageMap.map_uniq_aux _ F.map_ι _ G.map_ι    
+theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom]  [HasImage g.hom]
+    {sq : f ⟶ g} (F G : ImageMap sq) : F.map = G.map := by
+  apply ImageMap.map_uniq_aux _ F.map_ι _ G.map_ι
 
 @[simp]
-theorem ImageMap.mk.injEq' {f g : Arrow C} [HasImage f.hom]  [HasImage g.hom] {sq : f ⟶ g} 
+theorem ImageMap.mk.injEq' {f g : Arrow C} [HasImage f.hom]  [HasImage g.hom] {sq : f ⟶ g}
     (map : image f.hom ⟶ image g.hom)
-    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by aesop_cat) 
+    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by aesop_cat)
     (map' : image f.hom ⟶ image g.hom)
-    (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') = True := by 
-  simp only [Functor.id_obj, eq_iff_iff, iff_true] 
+    (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') = True := by
+  simp only [Functor.id_obj, eq_iff_iff, iff_true]
   apply ImageMap.map_uniq_aux _ map_ι _ map_ι'
 
 instance : Subsingleton (ImageMap sq) :=
   Subsingleton.intro fun a b =>
     ImageMap.ext a b <| ImageMap.map_uniq a b
-    
+
 end
 
 variable [HasImageMap sq]
@@ -823,7 +823,7 @@ def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map
 @[simp]
 theorem image.map_comp [HasImageMap (sq ≫ sq')] :
     image.map (sq ≫ sq') = image.map sq ≫ image.map sq' :=
-  show (HasImageMap.imageMap (sq ≫ sq')).map = (imageMapComp sq sq').map by 
+  show (HasImageMap.imageMap (sq ≫ sq')).map = (imageMapComp sq sq').map by
     congr; simp only [eq_iff_true_of_subsingleton]
 #align category_theory.limits.image.map_comp CategoryTheory.Limits.image.map_comp
 
@@ -896,7 +896,7 @@ instance strongEpiMonoFactorisationInhabited {X Y : C} (f : X ⟶ Y) [StrongEpi 
 /-- A mono factorisation coming from a strong epi-mono factorisation always has the universal
     property of the image. -/
 def StrongEpiMonoFactorisation.toMonoIsImage {X Y : C} {f : X ⟶ Y}
-    (F : StrongEpiMonoFactorisation f) : IsImage F.toMonoFactorisation where 
+    (F : StrongEpiMonoFactorisation f) : IsImage F.toMonoFactorisation where
   lift G :=
     (CommSq.mk (show G.e ≫ G.m = F.e ≫ F.m by rw [F.toMonoFactorisation.fac, G.fac])).lift
 #align category_theory.limits.strong_epi_mono_factorisation.to_mono_is_image CategoryTheory.Limits.StrongEpiMonoFactorisation.toMonoIsImage
@@ -920,7 +920,7 @@ theorem HasStrongEpiMonoFactorisations.mk
 #align category_theory.limits.has_strong_epi_mono_factorisations.mk CategoryTheory.Limits.HasStrongEpiMonoFactorisations.mk
 
 instance (priority := 100) hasImages_of_hasStrongEpiMonoFactorisations
-    [HasStrongEpiMonoFactorisations C] : HasImages C where 
+    [HasStrongEpiMonoFactorisations C] : HasImages C where
   has_image f :=
     let F' := Classical.choice (HasStrongEpiMonoFactorisations.has_fac f)
     HasImage.mk
@@ -964,7 +964,7 @@ theorem strongEpi_factorThruImage_of_strongEpiMonoFactorisation {X Y : C} {f : X
 /-- If we constructed our images from strong epi-mono factorisations, then these images are
     strong epi images. -/
 instance (priority := 100) hasStrongEpiImages_of_hasStrongEpiMonoFactorisations
-    [HasStrongEpiMonoFactorisations C] : HasStrongEpiImages C where 
+    [HasStrongEpiMonoFactorisations C] : HasStrongEpiImages C where
   strong_factorThruImage f :=
     strongEpi_factorThruImage_of_strongEpiMonoFactorisation <|
       Classical.choice <| HasStrongEpiMonoFactorisations.has_fac f
@@ -992,7 +992,7 @@ instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages 
 /-- If a category has images, equalizers and pullbacks, then images are automatically strong epi
     images. -/
 instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [HasPullbacks C]
-    [HasEqualizers C] : HasStrongEpiImages C where 
+    [HasEqualizers C] : HasStrongEpiImages C where
   strong_factorThruImage f :=
     StrongEpi.mk' fun {A} {B} h h_mono x y sq =>
       CommSq.HasLift.mk'
@@ -1028,9 +1028,9 @@ def image.isoStrongEpiMono {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ 
 
 @[simp]
 theorem image.isoStrongEpiMono_hom_comp_ι {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f)
-    [StrongEpi e] [Mono m] : (image.isoStrongEpiMono e m comm).hom ≫ image.ι f = m := by 
+    [StrongEpi e] [Mono m] : (image.isoStrongEpiMono e m comm).hom ≫ image.ι f = m := by
   dsimp [isoStrongEpiMono]
-  apply IsImage.lift_fac 
+  apply IsImage.lift_fac
 #align category_theory.limits.image.iso_strong_epi_mono_hom_comp_ι CategoryTheory.Limits.image.isoStrongEpiMono_hom_comp_ι
 
 @[simp]
@@ -1060,10 +1060,9 @@ theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEqu
         { I := F.obj em.I
           e := F.asEquivalence.counitIso.inv.app X ≫ F.map em.e
           m := F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y
-          fac := by 
+          fac := by
             simpa only [Category.assoc, ← F.map_comp_assoc, em.fac, IsEquivalence.fun_inv_map,
               Iso.inv_hom_id_app, Iso.inv_hom_id_app_assoc] using Category.comp_id _ }⟩
 #align category_theory.functor.has_strong_epi_mono_factorisations_imp_of_is_equivalence CategoryTheory.Functor.hasStrongEpiMonoFactorisations_imp_of_isEquivalence
 
 end CategoryTheory.Functor
-
