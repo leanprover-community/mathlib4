@@ -100,8 +100,7 @@ end
 end FinTM2
 
 /-- The initial configuration corresponding to a list in the input alphabet. -/
-def initList (tm : FinTM2) (s : List (tm.Γ tm.k₀)) : tm.Cfg
-    where
+def initList (tm : FinTM2) (s : List (tm.Γ tm.k₀)) : tm.Cfg where
   l := Option.some tm.main
   var := tm.initialState
   stk k :=
@@ -110,8 +109,7 @@ def initList (tm : FinTM2) (s : List (tm.Γ tm.k₀)) : tm.Cfg
 #align turing.init_list Turing.initList
 
 /-- The final configuration corresponding to a list in the output alphabet. -/
-def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg
-    where
+def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
   l := Option.none
   var := tm.initialState
   stk k :=
