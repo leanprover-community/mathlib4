@@ -1615,19 +1615,20 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
       simp [mul_inv, mul_sum.symm, sum_mul.symm, -Nat.factorial_succ, mul_comm, inv_pow]
     _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) :=
-        by
-        have h₁ : (n.succ : α) ≠ 1 :=
-          @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
-        have h₂ : (n.succ : α) ≠ 0 := Nat.cast_ne_zero.2 (Nat.succ_ne_zero _)
-        have h₃ : (n.factorial * n : α) ≠ 0 :=
-          mul_ne_zero (Nat.cast_ne_zero.2 (pos_iff_ne_zero.1 (Nat.factorial_pos _)))
-            (Nat.cast_ne_zero.2 (pos_iff_ne_zero.1 hn))
-        have h₄ : (n.succ - 1 : α) = n := by simp
-        rw [geom_sum_inv h₁ h₂, eq_div_iff_mul_eq h₃, mul_comm _ (n.factorial * n : α),
-            ← mul_assoc (n.factorial⁻¹ : α), ← mul_inv_rev, h₄, ← mul_assoc (n.factorial * n : α),
-            mul_comm (n : α) n.factorial, mul_inv_cancel h₃]
-        simp [mul_add, add_mul, mul_assoc, mul_comm]
-    _ ≤ n.succ / (n.factorial * n) :=
+      by
+      have h₁ : (n.succ : α) ≠ 1 :=
+        @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
+      have h₂ : (n.succ : α) ≠ 0 := Nat.cast_ne_zero.2 (Nat.succ_ne_zero _)
+      have h₃ : (n.factorial * n : α) ≠ 0 :=
+        mul_ne_zero (Nat.cast_ne_zero.2 (pos_iff_ne_zero.1 (Nat.factorial_pos _)))
+          (Nat.cast_ne_zero.2 (pos_iff_ne_zero.1 hn))
+      have h₄ : (n.succ - 1 : α) = n := by simp
+      rw [geom_sum_inv h₁ h₂, eq_div_iff_mul_eq h₃, mul_comm _ (n.factorial * n : α),
+          ← mul_assoc (n.factorial⁻¹ : α), ← mul_inv_rev, h₄, ← mul_assoc (n.factorial * n : α),
+          mul_comm (n : α) n.factorial, mul_inv_cancel h₃]
+      simp [mul_add, add_mul, mul_assoc, mul_comm]
+      simp
+    _ ≤ n.succ / (n.factorial * n : α) :=
       by
       refine' Iff.mpr (div_le_div_right (mul_pos _ _)) _
       exact Nat.cast_pos.2 (Nat.factorial_pos _)
