@@ -8,10 +8,10 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.RestrictScalars
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.GroupTheory.Finiteness
-import Mathbin.RingTheory.Ideal.Operations
+import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.GroupTheory.Finiteness
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -70,8 +70,7 @@ theorem fg_iff_add_subgroup_fg {G : Type _} [AddCommGroup G] (P : Submodule ℤ 
 #align submodule.fg_iff_add_subgroup_fg Submodule.fg_iff_add_subgroup_fg
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
-    N.Fg ↔ ∃ (n : ℕ)(s : Fin n → M), span R (range s) = N :=
-  by
+    N.Fg ↔ ∃ (n : ℕ)(s : Fin n → M), span R (range s) = N := by
   rw [fg_def]
   constructor
   · rintro ⟨S, Sfin, hS⟩
@@ -85,8 +84,7 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV) -/
 theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type _} [CommRing R] {M : Type _}
     [AddCommGroup M] [Module R M] (I : Ideal R) (N : Submodule R M) (hn : N.Fg) (hin : N ≤ I • N) :
-    ∃ r : R, r - 1 ∈ I ∧ ∀ n ∈ N, r • n = (0 : M) :=
-  by
+    ∃ r : R, r - 1 ∈ I ∧ ∀ n ∈ N, r • n = (0 : M) := by
   rw [fg_def] at hn
   rcases hn with ⟨s, hfs, hs⟩
   have : ∃ r : R, r - 1 ∈ I ∧ N ≤ (I • span R s).comap (LinearMap.lsmul R M r) ∧ s ⊆ N :=
@@ -144,8 +142,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type _} [CommR
 
 theorem exists_mem_and_smul_eq_self_of_fg_of_le_smul {R : Type _} [CommRing R] {M : Type _}
     [AddCommGroup M] [Module R M] (I : Ideal R) (N : Submodule R M) (hn : N.Fg) (hin : N ≤ I • N) :
-    ∃ r ∈ I, ∀ n ∈ N, r • n = n :=
-  by
+    ∃ r ∈ I, ∀ n ∈ N, r • n = n := by
   obtain ⟨r, hr, hr'⟩ := N.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I hn hin
   exact ⟨-(r - 1), I.neg_mem hr, fun n hn => by simpa [sub_smul] using hr' n hn⟩
 #align submodule.exists_mem_and_smul_eq_self_of_fg_of_le_smul Submodule.exists_mem_and_smul_eq_self_of_fg_of_le_smul
@@ -160,8 +157,7 @@ theorem Subalgebra.fg_bot_toSubmodule {R A : Type _} [CommSemiring R] [Semiring 
 #align subalgebra.fg_bot_to_submodule Subalgebra.fg_bot_toSubmodule
 
 theorem fg_unit {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
-    (I : Submodule R A).Fg :=
-  by
+    (I : Submodule R A).Fg := by
   have : (1 : A) ∈ (I * ↑I⁻¹ : Submodule R A) :=
     by
     rw [I.mul_inv]
@@ -269,8 +265,7 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
 finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M} (hs1 : (s.map f).Fg)
-    (hs2 : (s ⊓ f.ker).Fg) : s.Fg :=
-  by
+    (hs2 : (s ⊓ f.ker).Fg) : s.Fg := by
   haveI := Classical.decEq R
   haveI := Classical.decEq M
   haveI := Classical.decEq P
@@ -358,8 +353,7 @@ theorem fg_induction (R M : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
 the first morphism is surjective. -/
 theorem fg_ker_comp {R M N P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
     [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P) (hf1 : f.ker.Fg)
-    (hf2 : g.ker.Fg) (hsur : Function.Surjective f) : (g.comp f).ker.Fg :=
-  by
+    (hf2 : g.ker.Fg) (hsur : Function.Surjective f) : (g.comp f).ker.Fg := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
@@ -376,8 +370,7 @@ theorem fg_restrictScalars {R S M : Type _} [CommSemiring R] [Semiring S] [Algeb
 #align submodule.fg_restrict_scalars Submodule.fg_restrictScalars
 
 theorem Fg.stablizes_of_supᵢ_eq {M' : Submodule R M} (hM' : M'.Fg) (N : ℕ →o Submodule R M)
-    (H : supᵢ N = M') : ∃ n, M' = N n :=
-  by
+    (H : supᵢ N = M') : ∃ n, M' = N n := by
   obtain ⟨S, hS⟩ := hM'
   have : ∀ s : S, ∃ n, (s : M) ∈ N n := fun s =>
     (Submodule.mem_supᵢ_of_chain N s).mp
@@ -681,8 +674,7 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (
     hf hg
 #align ring_hom.finite.comp RingHom.Finite.comp
 
-theorem of_comp_finite {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finite) : g.Finite :=
-  by
+theorem of_comp_finite {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finite) : g.Finite := by
   letI := f.to_algebra
   letI := g.to_algebra
   letI := (g.comp f).toAlgebra
