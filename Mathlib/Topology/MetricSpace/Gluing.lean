@@ -23,7 +23,7 @@ Gluing two metric spaces along a common subset. Formally, we are given
   v
   Y
 ```
-where `hΦ : isometry Φ` and `hΨ : isometry Ψ`.
+where `hΦ : Isometry Φ` and `hΨ : Isometry Ψ`.
 We want to complete the square by a space `glue_space hΦ hΨ` and two isometries
 `to_glue_l hΦ hΨ` and `to_glue_r hΦ hΨ` that make the square commute.
 We start by defining a predistance on the disjoint union `X ⊕ Y`, for which
@@ -314,7 +314,7 @@ protected def dist : (Σ i, E i) → (Σ i, E i) → ℝ
     else Dist.dist x (Nonempty.some ⟨x⟩) + 1 + Dist.dist (Nonempty.some ⟨y⟩) y
 #align metric.sigma.dist Metric.Sigma.dist
 
-/-- A `has_dist` instance on the disjoint union `Σ i, E i`.
+/-- A `Dist` instance on the disjoint union `Σ i, E i`.
 We embed isometrically each factor, set the basepoints at distance 1, arbitrarily,
 and say that the distance from `a` to `b` is the sum of the distances of `a` and `b` to
 their respective basepoints, plus the distance 1 between the basepoints.
