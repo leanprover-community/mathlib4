@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Polynomial.Pochhammer
+import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Cast of factorials
@@ -37,8 +37,7 @@ theorem cast_ascFactorial : (a.ascFactorial b : S) = (pochhammer S b).eval (a + 
   rw [← pochhammer_nat_eq_ascFactorial, pochhammer_eval_cast, Nat.cast_add, Nat.cast_one]
 #align nat.cast_asc_factorial Nat.cast_ascFactorial
 
-theorem cast_descFactorial : (a.descFactorial b : S) = (pochhammer S b).eval (a - (b - 1) : ℕ) :=
-  by
+theorem cast_descFactorial : (a.descFactorial b : S) = (pochhammer S b).eval (a - (b - 1) : ℕ) := by
   rw [← pochhammer_eval_cast, pochhammer_nat_eq_descFactorial]
   cases b
   · simp_rw [desc_factorial_zero]
@@ -61,8 +60,7 @@ variable [Ring S] (a b : ℕ)
 
 /-- Convenience lemma. The `a - 1` is not using truncated subtraction, as opposed to the definition
 of `nat.desc_factorial` as a natural. -/
-theorem cast_descFactorial_two : (a.descFactorial 2 : S) = a * (a - 1) :=
-  by
+theorem cast_descFactorial_two : (a.descFactorial 2 : S) = a * (a - 1) := by
   rw [cast_desc_factorial]
   cases a
   · rw [zero_tsub, cast_zero, pochhammer_ne_zero_eval_zero _ two_ne_zero, zero_mul]
