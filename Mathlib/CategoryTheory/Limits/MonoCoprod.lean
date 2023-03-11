@@ -8,8 +8,8 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.RegularMono
-import Mathbin.CategoryTheory.Limits.Shapes.ZeroMorphisms
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 
@@ -76,8 +76,7 @@ instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inr : 
   binaryCofan_inr _ (colimit.isColimit _)
 
 theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂) :
-    Mono c₁.inl ↔ Mono c₂.inl :=
-  by
+    Mono c₁.inl ↔ Mono c₂.inl := by
   suffices
     ∀ (c₁ c₂ : binary_cofan A B) (hc₁ : is_colimit c₁) (hc₂ : is_colimit c₂) (h : mono c₁.inl),
       mono c₂.inl
