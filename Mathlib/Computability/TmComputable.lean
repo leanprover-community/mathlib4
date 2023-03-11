@@ -8,10 +8,10 @@ Authors: Pim Spelier, Daan van Gent
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Computability.Encoding
-import Mathbin.Computability.TuringMachine
-import Mathbin.Data.Polynomial.Basic
-import Mathbin.Data.Polynomial.Eval
+import Mathlib.Computability.Encoding
+import Mathlib.Computability.TuringMachine
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.Data.Polynomial.Eval
 
 /-!
 # Computable functions
