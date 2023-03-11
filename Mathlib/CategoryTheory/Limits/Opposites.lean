@@ -701,7 +701,8 @@ theorem pushoutIsoUnopPullback_inr_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
 
 @[simp]
 theorem pushoutIsoUnopPullback_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
-    [HasPullback f.op g.op] : (pushoutIsoUnopPullback f g).inv.op ≫ pullback.fst = pushout.inl.op :=
+    [HasPullback f.op g.op] :
+      (pushoutIsoUnopPullback f g).inv.op ≫ pullback.fst = pushout.inl.op :=
   by
   apply Quiver.Hom.unop_inj
   dsimp
@@ -710,7 +711,8 @@ theorem pushoutIsoUnopPullback_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
 
 @[simp]
 theorem pushoutIsoUnopPullback_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
-    [HasPullback f.op g.op] : (pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd = pushout.inr.op :=
+    [HasPullback f.op g.op] :
+      (pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd = pushout.inr.op :=
   by
   apply Quiver.Hom.unop_inj
   dsimp
