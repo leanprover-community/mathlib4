@@ -9,6 +9,7 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
@@ -330,6 +331,7 @@ import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -454,6 +456,7 @@ import Mathlib.Computability.TuringMachine
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
+import Mathlib.Control.Bitraversable.Basic
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
@@ -698,6 +701,7 @@ import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factorial.Cast
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.ForSqrt
