@@ -699,6 +699,7 @@ import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factorial.Cast
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib
 import Mathlib.Data.Nat.ForSqrt
