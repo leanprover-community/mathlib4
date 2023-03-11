@@ -478,17 +478,10 @@ theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1) ^ n * I := by rw [pow_bit1', Co
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
---Porting note: new ugly theorem
-@[simp]
-theorem ofReal_two : ((2 : ℝ) : ℂ) = 2 := rfl
-
---Porting note: new ugly theorem
-@[simp]
-theorem ofReal_three : ((3 : ℝ) : ℂ) = 3 := rfl
-
---Porting note: new ugly theorem
-@[simp]
-theorem ofReal_four : ((4 : ℝ) : ℂ) = 4 := rfl
+--Porting note: new theorem
+@[simp, norm_cast]
+theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℂ) = OfNat.ofNat n :=
+  rfl
 
 end
 /-! ### Complex conjugation -/
