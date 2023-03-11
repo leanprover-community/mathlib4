@@ -458,12 +458,13 @@ theorem add_nFBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
     simp [oadd_add]; revert h'; cases' a + o with e' n' a' <;> intro h'
     · exact NFBelow.oadd h₁.fst NFBelow.zero h₁.lt
     simp [add]; have : ((e.cmp e').Compares e e') := @cmp_compares _ _ h₁.fst h'.fst
-    cases h: cmp e e' <;> simp [add]
-    · dsimp [add_aux]; simp [h]; exact h'
-    · dsimp [add_aux]; simp [h]; simp [h] at this
+    cases h: cmp e e' <;> simp [add] <;> dsimp [add_aux] <;> simp [h]
+    · exact h'
+    · simp [h] at this
       subst e'
       exact NFBelow.oadd h'.fst h'.snd h'.lt
-    · simp [h] at this; exact NFBelow.oadd h₁.fst (NF.below_of_lt this ⟨⟨_, h'⟩⟩) h₁.lt
+    · simp [h] at this
+      exact NFBelow.oadd h₁.fst (NF.below_of_lt this ⟨⟨_, h'⟩⟩) h₁.lt
 #align onote.add_NF_below Onote.add_nFBelow
 
 instance add_nF (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ + o₂)
