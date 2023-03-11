@@ -11,7 +11,6 @@ Authors: Scott Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.DiscreteCategory
---import Mathlib.Tactic.EquivRw
 
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
