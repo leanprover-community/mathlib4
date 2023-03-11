@@ -8,10 +8,10 @@ Authors: Scott Morrison, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Filtered
-import Mathbin.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathbin.CategoryTheory.DiscreteCategory
-import Mathbin.Tactic.EquivRw
+import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.Tactic.EquivRw
 
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
@@ -334,8 +334,7 @@ variable (X : Type v₂)
 
 /-- If `C` has products indexed by `X`, then `Cᵒᵖ` has coproducts indexed by `X`.
 -/
-instance hasCoproductsOfShape_opposite [HasProductsOfShape X C] : HasCoproductsOfShape X Cᵒᵖ :=
-  by
+instance hasCoproductsOfShape_opposite [HasProductsOfShape X C] : HasCoproductsOfShape X Cᵒᵖ := by
   haveI : has_limits_of_shape (discrete X)ᵒᵖ C :=
     has_limits_of_shape_of_equivalence (discrete.opposite X).symm
   infer_instance
@@ -349,8 +348,7 @@ theorem hasCoproductsOfShape_of_opposite [HasProductsOfShape X Cᵒᵖ] : HasCop
 
 /-- If `C` has coproducts indexed by `X`, then `Cᵒᵖ` has products indexed by `X`.
 -/
-instance hasProductsOfShape_opposite [HasCoproductsOfShape X C] : HasProductsOfShape X Cᵒᵖ :=
-  by
+instance hasProductsOfShape_opposite [HasCoproductsOfShape X C] : HasProductsOfShape X Cᵒᵖ := by
   haveI : has_colimits_of_shape (discrete X)ᵒᵖ C :=
     has_colimits_of_shape_of_equivalence (discrete.opposite X).symm
   infer_instance
@@ -394,15 +392,13 @@ theorem hasFiniteProducts_of_opposite [HasFiniteCoproducts Cᵒᵖ] : HasFiniteP
   { out := fun n => hasProductsOfShape_of_opposite _ }
 #align category_theory.limits.has_finite_products_of_opposite CategoryTheory.Limits.hasFiniteProducts_of_opposite
 
-instance hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ :=
-  by
+instance hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ := by
   haveI : has_colimits_of_shape walking_parallel_pairᵒᵖ C :=
     has_colimits_of_shape_of_equivalence walking_parallel_pair_op_equiv
   infer_instance
 #align category_theory.limits.has_equalizers_opposite CategoryTheory.Limits.hasEqualizers_opposite
 
-instance hasCoequalizers_opposite [HasEqualizers C] : HasCoequalizers Cᵒᵖ :=
-  by
+instance hasCoequalizers_opposite [HasEqualizers C] : HasCoequalizers Cᵒᵖ := by
   haveI : has_limits_of_shape walking_parallel_pairᵒᵖ C :=
     has_limits_of_shape_of_equivalence walking_parallel_pair_op_equiv
   infer_instance
@@ -420,15 +416,13 @@ instance hasFiniteLimits_opposite [HasFiniteColimits C] : HasFiniteLimits Cᵒ�
     infer_instance
 #align category_theory.limits.has_finite_limits_opposite CategoryTheory.Limits.hasFiniteLimits_opposite
 
-instance hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ :=
-  by
+instance hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ := by
   haveI : has_colimits_of_shape walking_cospanᵒᵖ C :=
     has_colimits_of_shape_of_equivalence walking_cospan_op_equiv.symm
   apply has_limits_of_shape_op_of_has_colimits_of_shape
 #align category_theory.limits.has_pullbacks_opposite CategoryTheory.Limits.hasPullbacks_opposite
 
-instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ :=
-  by
+instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
   haveI : has_limits_of_shape walking_spanᵒᵖ C :=
     has_limits_of_shape_of_equivalence walking_span_op_equiv.symm
   infer_instance
@@ -491,8 +485,7 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
 
 @[simp]
 theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.unop.fst = c.inl.unop :=
-  by
+    c.unop.fst = c.inl.unop := by
   change (_ : limits.cone _).π.app _ = _
   simp only [pushout_cocone.ι_app_left, pushout_cocone.unop_π_app]
   tidy
@@ -500,8 +493,7 @@ theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocon
 
 @[simp]
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.unop.snd = c.inr.unop :=
-  by
+    c.unop.snd = c.inr.unop := by
   change (_ : limits.cone _).π.app _ = _
   simp only [pushout_cocone.unop_π_app, pushout_cocone.ι_app_right]
   tidy
@@ -543,8 +535,7 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
 
 @[simp]
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.unop.inl = c.fst.unop :=
-  by
+    c.unop.inl = c.fst.unop := by
   change (_ : limits.cocone _).ι.app _ = _
   dsimp only [unop, op_span]
   simp; dsimp; simp; dsimp; simp
@@ -552,8 +543,7 @@ theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone
 
 @[simp]
 theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.unop.inr = c.snd.unop :=
-  by
+    c.unop.inr = c.snd.unop := by
   change (_ : limits.cocone _).ι.app _ = _
   apply Quiver.Hom.op_inj
   simp [unop_ι_app]; dsimp; simp
@@ -608,8 +598,7 @@ def unopOp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g)
 /-- A pushout cone is a colimit cocone if and only if the corresponding pullback cone
 in the opposite category is a limit cone. -/
 def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    IsColimit c ≃ IsLimit c.op :=
-  by
+    IsColimit c ≃ IsLimit c.op := by
   apply equivOfSubsingletonOfSubsingleton
   · intro h
     equiv_rw is_limit.postcompose_hom_equiv _ _
@@ -626,8 +615,7 @@ def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : Pushout
 /-- A pushout cone is a colimit cocone in `Cᵒᵖ` if and only if the corresponding pullback cone
 in `C` is a limit cone. -/
 def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    IsColimit c ≃ IsLimit c.unop :=
-  by
+    IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton
   · intro h
     apply is_limit_cocone_unop
