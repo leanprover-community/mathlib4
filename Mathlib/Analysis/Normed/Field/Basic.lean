@@ -126,7 +126,7 @@ instance (priority := 100) NormedCommRing.toSeminormedCommRing [β : NormedCommR
   { β with }
 #align normed_comm_ring.to_semi_normed_comm_ring NormedCommRing.toSeminormedCommRing
 
-instance : NormedCommRing PUnit :=
+instance PUint.normedCommRing : NormedCommRing PUnit :=
   { PUnit.normedAddCommGroup, PUnit.commRing with
     norm_mul := fun _ _ => by simp }
 
@@ -168,7 +168,8 @@ instance (priority := 100) NonUnitalSeminormedRing.toSeminormedAddCommGroup
   { ‹NonUnitalSeminormedRing α› with }
 #align non_unital_semi_normed_ring.to_seminormed_add_comm_group NonUnitalSeminormedRing.toSeminormedAddCommGroup
 
-instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] : NormOneClass (ULift α) :=
+instance ULift.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+    NormOneClass (ULift α) :=
   ⟨by simp [ULift.norm_def]⟩
 
 instance Prod.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α]
@@ -215,12 +216,12 @@ theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter 
   hf.op_zero_isBoundedUnder_le hg (· * ·) norm_mul_le
 #align filter.tendsto.zero_mul_is_bounded_under_le Filter.Tendsto.zero_mul_isBoundedUnder_le
 
-theorem Filter.IsBoundedUnderLe.mul_tendsto_zero {f g : ι → α} {l : Filter ι}
+theorem Filter.IsBoundedUnder_le.mul_tendsto_zero {f g : ι → α} {l : Filter ι}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x => f x * g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
     (norm_mul_le y x).trans_eq (mul_comm _ _)
-#align filter.is_bounded_under_le.mul_tendsto_zero Filter.IsBoundedUnderLe.mul_tendsto_zero
+#align filter.is_bounded_under_le.mul_tendsto_zero Filter.IsBoundedUnder_le.mul_tendsto_zero
 
 /-- In a seminormed ring, the left-multiplication `add_monoid_hom` is bounded. -/
 theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ ‖x‖ * ‖y‖ :=
@@ -310,8 +311,6 @@ theorem Nat.norm_cast_le : ∀ n : ℕ, ‖(n : α)‖ ≤ n * ‖(1 : α)‖
     exact norm_add_le_of_le (Nat.norm_cast_le n) le_rfl
 #align nat.norm_cast_le Nat.norm_cast_le
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l.map norm).prod
   | [], h => (h rfl).elim
   | [a], _ => by simp
@@ -325,7 +324,6 @@ theorem List.nnnorm_prod_le' {l : List α} (hl : l ≠ []) : ‖l.prod‖₊ ≤
   (List.norm_prod_le' hl).trans_eq <| by simp [NNReal.coe_list_prod, List.map_map]
 #align list.nnnorm_prod_le' List.nnnorm_prod_le'
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem List.norm_prod_le [NormOneClass α] : ∀ l : List α, ‖l.prod‖ ≤ (l.map norm).prod
   | [] => by simp
   | a::l => List.norm_prod_le' (List.cons_ne_nil a l)
@@ -470,7 +468,6 @@ instance MulOpposite.normedRing : NormedRing αᵐᵒᵖ :=
 end NormedRing
 
 -- see Note [lower instance priority]
-set_option synthInstance.etaExperiment true in
 instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing α] :
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
@@ -518,7 +515,7 @@ theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
 instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α :=
   ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
 #align normed_division_ring.to_norm_one_class NormedDivisionRing.to_normOneClass
-#print IsAbsoluteValue
+
 instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
     where
   abv_nonneg' := norm_nonneg
@@ -867,25 +864,25 @@ theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [SemilatticeSup α] {β :
 /-- A variant of `normed_add_comm_group.tendsto_at_top` that
 uses `∃ N, ∀ n > N, ...` rather than `∃ N, ∀ n ≥ N, ...`
 -/
-theorem NormedAddCommGroup.tendsto_at_top' [Nonempty α] [SemilatticeSup α] [NoMaxOrder α]
+theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [SemilatticeSup α] [NoMaxOrder α]
     {β : Type _} [SeminormedAddCommGroup β] {f : α → β} {b : β} :
     Tendsto f atTop (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N < n → ‖f n - b‖ < ε :=
   (atTop_basis_Ioi.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
-#align normed_add_comm_group.tendsto_at_top' NormedAddCommGroup.tendsto_at_top'
+#align normed_add_comm_group.tendsto_at_top' NormedAddCommGroup.tendsto_atTop'
 
-instance : NormedCommRing ℤ :=
+instance Int.normedCommRing : NormedCommRing ℤ :=
   { Int.normedAddCommGroup, Int.instRingInt with
     norm_mul := fun m n => le_of_eq <| by simp only [norm, Int.cast_mul, abs_mul]
     mul_comm := mul_comm }
 
-instance : NormOneClass ℤ :=
+instance Int.normOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
 
-instance : NormedField ℚ :=
+instance Rat.normedField : NormedField ℚ :=
   { Rat.normedAddCommGroup, Rat.field with
     norm_mul' := fun r₁ r₂ => by simp only [norm, Rat.cast_mul, abs_mul] }
 
-instance : DenselyNormedField ℚ where
+instance Rat.denselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
     ⟨q, by
