@@ -686,7 +686,7 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
   has_empty := by simp [d.has_empty]
   has_compl {t} hts := by
     simp only []
-    have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases x ∈ s <;> simp [h]
+    have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases h : x ∈ s <;> simp [h]
     rw [this]
     exact
       d.has_diff (d.has_compl hts) (d.has_compl h)

@@ -368,24 +368,29 @@ def Completion :=
 
 namespace Completion
 
-instance [Inhabited α] : Inhabited (Completion α) :=
+instance inhabited [Inhabited α] : Inhabited (Completion α) :=
   Quotient.instInhabitedQuotient (separationSetoid (CauchyFilter α))
 
-instance (priority := 50) : UniformSpace (Completion α) :=
+instance (priority := 50) uniformSpace : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace
 
-instance : CompleteSpace (Completion α) :=
+instance completeSpace : CompleteSpace (Completion α) :=
   UniformSpace.completeSpace_separation (CauchyFilter α)
 
-instance : SeparatedSpace (Completion α) :=
+instance separatedSpace : SeparatedSpace (Completion α) :=
   UniformSpace.separated_separation
 
-instance : T3Space (Completion α) :=
+instance t3Space : T3Space (Completion α) :=
   separated_t3
 
+/-- The map from a uniform space to its completion.
+
+porting note: this was added to create a target for the `@[coe]` attribute. -/
+@[coe] def coe' : α → Completion α := Quotient.mk' ∘ pureCauchy
+
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
-instance : CoeTC α (Completion α) :=
-  ⟨Quotient.mk' ∘ pureCauchy⟩
+instance : Coe α (Completion α) :=
+  ⟨coe' α⟩
 
 -- note [use has_coe_t]
 protected theorem coe_eq : ((↑) : α → Completion α) = Quotient.mk' ∘ pureCauchy :=
@@ -637,7 +642,7 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     rintro ⟨a⟩
     -- porting note: had to insert rewrites to switch between Quot.mk, Quotient.mk, Quotient.mk'
     rw [← Quotient.mk,extension_coe (SeparationQuotient.uniformContinuous_lift _),
-      SeparationQuotient.lift_mk (uniformContinuous_coe α), UniformSpace.Completion.coe_eq, map_coe]
+      SeparationQuotient.lift_mk (uniformContinuous_coe α), map_coe]
     . rfl
     . exact uniformContinuous_quotient_mk
   · intro a

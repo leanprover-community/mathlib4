@@ -146,10 +146,10 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
 #align submodule.quotient.mk_smul Submodule.Quotient.mk_smul
 
-instance sMulCommClass (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M]
+instance smulCommClass (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P)
     where smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
-#align submodule.quotient.smul_comm_class Submodule.Quotient.sMulCommClass
+#align submodule.quotient.smul_comm_class Submodule.Quotient.smulCommClass
 
 instance isScalarTower (T : Type _) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P)
@@ -560,7 +560,7 @@ theorem Quotient.equiv_trans {N O : Type _} [AddCommGroup N] [Module R N] [AddCo
     (f : N ≃ₗ[R] O) (he : P.map e = Q) (hf : Q.map f = S) (hef : P.map (e.trans f) = S) :
     Quotient.equiv P S (e.trans f) hef =
       (Quotient.equiv P Q e he).trans (Quotient.equiv Q S f hf) := by
-  ext x
+  ext
   -- `simp` can deal with `hef` depending on `e` and `f`
   simp only [Quotient.equiv_apply, LinearEquiv.trans_apply, LinearEquiv.coe_trans]
   -- `rw` can deal with `mapQ_comp` needing extra hypotheses coming from the RHS

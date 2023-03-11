@@ -127,10 +127,12 @@ instance smulCommClass [SMulCommClass M N α] [SMulCommClass M N β] :
     SMulCommClass M N (α × β) where
   smul_comm _ _ _ := mk.inj_iff.mpr ⟨smul_comm _ _ _, smul_comm _ _ _⟩
 
-@[to_additive isCentralVAdd]
+@[to_additive]
 instance isCentralScalar [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCentralScalar M β] :
     IsCentralScalar M (α × β) :=
   ⟨fun _ _ => Prod.ext (op_smul_eq_smul _ _) (op_smul_eq_smul _ _)⟩
+#align prod.is_central_scalar Prod.isCentralScalar
+#align prod.is_central_vadd Prod.isCentralVAdd
 
 @[to_additive]
 instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α × β) :=

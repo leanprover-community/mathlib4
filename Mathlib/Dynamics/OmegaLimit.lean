@@ -260,7 +260,6 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     apply Subset.trans hg₃
     simp only [unionᵢ_subset_iff, compl_subset_compl]
     intros u hu
-    apply closure_mono -- Porting note: not yet tagged with mono.
     mono
     refine' interᵢ_subset_of_subset u (interᵢ_subset_of_subset hu _)
     all_goals exact Subset.rfl

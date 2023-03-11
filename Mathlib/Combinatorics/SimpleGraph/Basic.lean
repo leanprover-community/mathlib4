@@ -8,6 +8,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2
@@ -80,7 +81,6 @@ finitely many vertices.
 -/
 
 -- porting note: using `aesop` for automation
-declare_aesop_rule_sets [SimpleGraph]
 
 -- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
 attribute [aesop norm unfold (rule_sets [SimpleGraph])] Symmetric
@@ -89,7 +89,9 @@ attribute [aesop norm unfold (rule_sets [SimpleGraph])] Irreflexive
 -- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [SimpleGraph]))
+    aesop $c*
+      (options := { introsTransparency? := some .default })
+      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function
 
@@ -285,9 +287,9 @@ instance : BooleanAlgebra (SimpleGraph V) :=
     le_sup_inf := by aesop_graph
     inf_compl_le_bot := fun a v w h => False.elim <| h.2.2 h.1
     top_le_sup_compl := fun a v w ne => by
-      by_cases a.Adj v w
-      exact Or.inl h
-      exact Or.inr ⟨ne, h⟩
+      by_cases h : a.Adj v w
+      · exact Or.inl h
+      · exact Or.inr ⟨ne, h⟩
     inf_le_left := fun x y v w h => h.1
     inf_le_right := fun x y v w h => h.2 }
 
@@ -384,11 +386,11 @@ The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `refl`.
 -/
 -- porting note: We need a separate definition so that dot notation works.
 def edgeSetEmbedding (V : Type _) : SimpleGraph V ↪o Set (Sym2 V) :=
-  OrderEmbedding.ofMapLeIff (fun G => Sym2.fromRel G.symm) fun _ _ =>
+  OrderEmbedding.ofMapLEIff (fun G => Sym2.fromRel G.symm) fun _ _ =>
     ⟨fun h a b => @h ⟦(a, b)⟧, fun h e => Sym2.ind @h e⟩
 
 /-- `G.edgeSet` is the edge set for `G`.
-This is an abbreviation for `edgeSet' G` that permits dot notation. -/
+This is an abbreviation for `edgeSetEmbedding G` that permits dot notation. -/
 abbrev edgeSet (G : SimpleGraph V) : Set (Sym2 V) := edgeSetEmbedding V G
 
 #align simple_graph.edge_set SimpleGraph.edgeSetEmbedding
@@ -411,9 +413,9 @@ theorem edgeSet_subset_edgeSet : edgeSet G₁ ⊆ edgeSet G₂ ↔ G₁ ≤ G₂
 #align simple_graph.edge_set_subset_edge_set SimpleGraph.edgeSet_subset_edgeSet
 
 @[simp]
-theorem edgeSet_sSubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ :=
+theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ :=
   (edgeSetEmbedding V).lt_iff_lt
-#align simple_graph.edge_set_ssubset_edge_set SimpleGraph.edgeSet_sSubset_edgeSet
+#align simple_graph.edge_set_ssubset_edge_set SimpleGraph.edgeSet_ssubset_edgeSet
 
 theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V)) :=
   (edgeSetEmbedding V).injective
@@ -422,7 +424,7 @@ theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V))
 alias edgeSet_subset_edgeSet ↔ _ edgeSet_mono
 #align simple_graph.edge_set_mono SimpleGraph.edgeSet_mono
 
-alias edgeSet_sSubset_edgeSet ↔ _ edgeSet_strict_mono
+alias edgeSet_ssubset_edgeSet ↔ _ edgeSet_strict_mono
 #align simple_graph.edge_set_strict_mono SimpleGraph.edgeSet_strict_mono
 
 attribute [mono] edgeSet_mono edgeSet_strict_mono
@@ -605,6 +607,8 @@ structure Dart extends V × V where
   is_adj : G.Adj fst snd
   deriving DecidableEq
 #align simple_graph.dart SimpleGraph.Dart
+
+initialize_simps_projections Dart (+toProd, -fst, -snd)
 
 section Darts
 
@@ -821,13 +825,13 @@ theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by
 theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G₁ ≤ G₂ := by simp
 #align simple_graph.edge_finset_subset_edge_finset SimpleGraph.edgeFinset_subset_edgeFinset
 
-theorem edgeFinset_sSubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
-#align simple_graph.edge_finset_ssubset_edge_finset SimpleGraph.edgeFinset_sSubset_edgeFinset
+theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
+#align simple_graph.edge_finset_ssubset_edge_finset SimpleGraph.edgeFinset_ssubset_edgeFinset
 
 alias edgeFinset_subset_edgeFinset ↔ _ edgeFinset_mono
 #align simple_graph.edge_finset_mono SimpleGraph.edgeFinset_mono
 
-alias edgeFinset_sSubset_edgeFinset ↔ _ edgeFinset_strict_mono
+alias edgeFinset_ssubset_edgeFinset ↔ _ edgeFinset_strict_mono
 #align simple_graph.edge_finset_strict_mono SimpleGraph.edgeFinset_strict_mono
 
 attribute [mono] edgeFinset_mono edgeFinset_strict_mono
@@ -1121,8 +1125,7 @@ theorem deleteFar_iff :
     simp only [deleteEdges_sdiff_eq_of_le _ hHG, edgeFinset_mono hHG, card_sdiff,
       card_le_of_subset, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
     exact this hH
-  ·
-    simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
+  · simpa [card_sdiff hs, edgeFinset_deleteEdges, -Set.toFinset_card, Nat.cast_sub,
       card_le_of_subset hs] using h (G.deleteEdges_le s) hG
 #align simple_graph.delete_far_iff SimpleGraph.deleteFar_iff
 
@@ -1853,17 +1856,13 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
   left_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := V)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.symm_apply_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
-    apply congr_fun
-    convert Sym2.map_id (α := W)
-    apply congr_arg -- porting note: `convert` tactic did not do enough `congr`
-    exact funext fun _ => RelIso.apply_symm_apply _ _
+    convert congr_fun Sym2.map_id e
+    exact RelIso.apply_symm_apply _ _
 #align simple_graph.iso.map_edge_set SimpleGraph.Iso.mapEdgeSet
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
