@@ -529,61 +529,66 @@ end Gluing
 --section
 section InductiveLimit
 
-/- In this section, we define the inductive limit of
+/-!
+### Inductive limit of metric spaces
+
+In this section, we define the inductive limit of
+
+```
      f 0        f 1        f 2        f 3
 X 0 -----> X 1 -----> X 2 -----> X 3 -----> ...
-where the X n are metric spaces and f n isometric embeddings. We do it by defining a premetric
-space structure on Σ n, X n, where the predistance dist x y is obtained by pushing x and y in a
-common X k using composition by the f n, and taking the distance there. This does not depend on
-the choice of k as the f n are isometries. The metric space associated to this premetric space
-is the desired inductive limit.-/
+```
+
+where the `X n` are metric spaces and f n isometric embeddings. We do it by defining a premetric
+space structure on `Σ n, X n`, where the predistance `dist x y` is obtained by pushing `x` and `y`
+in a common `X k` using composition by the `f n`, and taking the distance there. This does not
+depend on the choice of `k` as the `f n` are isometries. The metric space associated to this
+premetric space is the desired inductive limit.
+-/
+
 open Nat
 
 variable {X : ℕ → Type u} [∀ n, MetricSpace (X n)] {f : ∀ n, X n → X (n + 1)}
 
 /-- Predistance on the disjoint union `Σ n, X n`. -/
 def inductiveLimitDist (f : ∀ n, X n → X (n + 1)) (x y : Σn, X n) : ℝ :=
-  dist (leRecOn (le_max_left x.1 y.1) f x.2 : X (max x.1 y.1))
-    (leRecOn (le_max_right x.1 y.1) f y.2 : X (max x.1 y.1))
+  dist (leRecOn (le_max_left x.1 y.1) (f _) x.2 : X (max x.1 y.1))
+    (leRecOn (le_max_right x.1 y.1) (f _) y.2 : X (max x.1 y.1))
 #align metric.inductive_limit_dist Metric.inductiveLimitDist
 
 /-- The predistance on the disjoint union `Σ n, X n` can be computed in any `X k` for large
 enough `k`. -/
-theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σn, X n) (m : ℕ) :
-    ∀ hx : x.1 ≤ m,
-      ∀ hy : y.1 ≤ m,
-        inductiveLimitDist f x y = dist (leRecOn hx f x.2 : X m) (leRecOn hy f y.2 : X m) := by
-  induction' m with m hm
-  · intro hx hy
-    have A : max x.1 y.1 = 0 :=
-      by
-      rw [nonpos_iff_eq_zero.1 hx, nonpos_iff_eq_zero.1 hy]
-      simp
-    unfold inductive_limit_dist
-    congr <;> simp only [A]
-  · intro hx hy
-    by_cases h : max x.1 y.1 = m.succ
-    · unfold inductive_limit_dist
-      congr <;> simp only [h]
+theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σn, X n) :
+    ∀ m (hx : x.1 ≤ m) (hy : y.1 ≤ m), inductiveLimitDist f x y =
+      dist (leRecOn hx (f _) x.2 : X m) (leRecOn hy (f _) y.2 : X m)
+  | 0, hx, hy => by
+    cases' x with i x; cases' y with j y
+    obtain rfl : i = 0 := nonpos_iff_eq_zero.1 hx
+    obtain rfl : j = 0 := nonpos_iff_eq_zero.1 hy
+    rfl
+  | (m + 1), hx, hy => by
+    by_cases h : max x.1 y.1 = (m + 1)
+    · generalize m + 1 = m' at *
+      subst m'
+      rfl
     · have : max x.1 y.1 ≤ succ m := by simp [hx, hy]
       have : max x.1 y.1 ≤ m := by simpa [h] using of_le_succ this
       have xm : x.1 ≤ m := le_trans (le_max_left _ _) this
       have ym : y.1 ≤ m := le_trans (le_max_right _ _) this
-      rw [le_rec_on_succ xm, le_rec_on_succ ym, (I m).dist_eq]
-      exact hm xm ym
+      rw [leRecOn_succ xm, leRecOn_succ ym, (I m).dist_eq]
+      exact inductiveLimitDist_eq_dist I x y m xm ym
 #align metric.inductive_limit_dist_eq_dist Metric.inductiveLimitDist_eq_dist
 
 /-- Premetric space structure on `Σ n, X n`.-/
-def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n)
-    where
+def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n) where
   dist := inductiveLimitDist f
-  dist_self x := by simp [dist, inductive_limit_dist]
+  dist_self x := by simp [dist, inductiveLimitDist]
   dist_comm x y := by
     let m := max x.1 y.1
     have hx : x.1 ≤ m := le_max_left _ _
     have hy : y.1 ≤ m := le_max_right _ _
-    unfold dist
-    rw [inductive_limit_dist_eq_dist I x y m hx hy, inductive_limit_dist_eq_dist I y x m hy hx,
+    unfold dist; simp only
+    rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y x m hy hx,
       dist_comm]
   dist_triangle x y z := by
     let m := max (max x.1 y.1) z.1
@@ -591,23 +596,26 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n
     have hy : y.1 ≤ m := le_trans (le_max_right _ _) (le_max_left _ _)
     have hz : z.1 ≤ m := le_max_right _ _
     calc
-      inductive_limit_dist f x z = dist (le_rec_on hx f x.2 : X m) (le_rec_on hz f z.2 : X m) :=
-        inductive_limit_dist_eq_dist I x z m hx hz
-      _ ≤
-          dist (le_rec_on hx f x.2 : X m) (le_rec_on hy f y.2 : X m) +
-            dist (le_rec_on hy f y.2 : X m) (le_rec_on hz f z.2 : X m) :=
+      inductiveLimitDist f x z = dist (leRecOn hx (f _) x.2 : X m) (leRecOn hz (f _) z.2 : X m) :=
+        inductiveLimitDist_eq_dist I x z m hx hz
+      _ ≤ dist (leRecOn hx (f _) x.2 : X m) (leRecOn hy (f _) y.2 : X m) +
+            dist (leRecOn hy (f _) y.2 : X m) (leRecOn hz (f _) z.2 : X m) :=
         (dist_triangle _ _ _)
-      _ = inductive_limit_dist f x y + inductive_limit_dist f y z := by
-        rw [inductive_limit_dist_eq_dist I x y m hx hy, inductive_limit_dist_eq_dist I y z m hy hz]
-      
+      _ = inductiveLimitDist f x y + inductiveLimitDist f y z := by
+        rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y z m hy hz]
+  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 #align metric.inductive_premetric Metric.inductivePremetric
 
-attribute [local instance] inductive_premetric UniformSpace.separationSetoid
+attribute [local instance] inductivePremetric
 
 /-- The type giving the inductive limit in a metric space context. -/
 def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
-  @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace deriving MetricSpace
+  @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 #align metric.inductive_limit Metric.InductiveLimit
+
+instance : MetricSpace (InductiveLimit (f := f) I) :=
+  inferInstanceAs <| MetricSpace <|
+    @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 
 /-- Mapping each `X n` to the inductive limit. -/
 def toInductiveLimit (I : ∀ n, Isometry (f n)) (n : ℕ) (x : X n) : Metric.InductiveLimit I :=
@@ -620,26 +628,23 @@ instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLim
 /-- The map `to_inductive_limit n` mapping `X n` to the inductive limit is an isometry. -/
 theorem toInductiveLimit_isometry (I : ∀ n, Isometry (f n)) (n : ℕ) :
     Isometry (toInductiveLimit I n) :=
-  Isometry.of_dist_eq fun x y =>
-    by
-    change inductive_limit_dist f ⟨n, x⟩ ⟨n, y⟩ = dist x y
-    rw [inductive_limit_dist_eq_dist I ⟨n, x⟩ ⟨n, y⟩ n (le_refl n) (le_refl n), le_rec_on_self,
-      le_rec_on_self]
+  Isometry.of_dist_eq fun x y => by
+    change inductiveLimitDist f ⟨n, x⟩ ⟨n, y⟩ = dist x y
+    rw [inductiveLimitDist_eq_dist I ⟨n, x⟩ ⟨n, y⟩ n (le_refl n) (le_refl n), leRecOn_self,
+      leRecOn_self]
 #align metric.to_inductive_limit_isometry Metric.toInductiveLimit_isometry
 
 /-- The maps `to_inductive_limit n` are compatible with the maps `f n`. -/
 theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
     toInductiveLimit I n.succ ∘ f n = toInductiveLimit I n := by
-  letI := inductive_premetric I
-  funext
-  simp only [comp, to_inductive_limit]
+  let _ := inductivePremetric I
+  funext x
+  simp only [comp, toInductiveLimit]
   refine' UniformSpace.SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
-  show inductive_limit_dist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
-  · rw [inductive_limit_dist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, le_rec_on_self,
-      le_rec_on_succ, le_rec_on_self, dist_self]
-    exact le_rfl
-    exact le_rfl
-    exact le_succ _
+  show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
+  rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
+    leRecOn_succ, leRecOn_self, dist_self]
+  exacts [le_rfl, le_succ _, le_rfl]
 #align metric.to_inductive_limit_commute Metric.toInductiveLimit_commute
 
 end InductiveLimit
