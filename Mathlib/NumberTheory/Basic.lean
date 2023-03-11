@@ -27,7 +27,7 @@ all natural numbers `p` and `k` if `p` divides `a-b` in `R`, then `p ^ (k + 1)` 
 
 section
 
-open Ideal Ideal.Quotient BigOperators
+open Ideal Ideal.Quotient
 
 theorem dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
     (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
