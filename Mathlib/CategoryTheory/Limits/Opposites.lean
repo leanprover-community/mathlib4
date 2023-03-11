@@ -478,12 +478,12 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
       (Cocone.whisker walkingCospanOpEquiv.functor c))
 #align category_theory.limits.pushout_cocone.unop CategoryTheory.Limits.PushoutCocone.unop
 
-@[simp]
+-- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.unop.fst = c.inl.unop := by aesop_cat
+    c.unop.fst = c.inl.unop := by simp
 #align category_theory.limits.pushout_cocone.unop_fst CategoryTheory.Limits.PushoutCocone.unop_fst
 
-@[simp]
+-- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.snd = c.inr.unop := by aesop_cat
 #align category_theory.limits.pushout_cocone.unop_snd CategoryTheory.Limits.PushoutCocone.unop_snd
@@ -496,12 +496,12 @@ def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : Pullbac
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
 #align category_theory.limits.pushout_cocone.op CategoryTheory.Limits.PushoutCocone.op
 
-@[simp]
+-- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.fst = c.inl.op :=
   by aesop_cat
 #align category_theory.limits.pushout_cocone.op_fst CategoryTheory.Limits.PushoutCocone.op_fst
 
-@[simp]
+-- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.snd = c.inr.op :=
   by aesop_cat
 #align category_theory.limits.pushout_cocone.op_snd CategoryTheory.Limits.PushoutCocone.op_snd
@@ -520,12 +520,12 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
       (Cone.whisker walkingSpanOpEquiv.functor c))
 #align category_theory.limits.pullback_cone.unop CategoryTheory.Limits.PullbackCone.unop
 
-@[simp]
+-- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inl = c.fst.unop := by aesop_cat
 #align category_theory.limits.pullback_cone.unop_inl CategoryTheory.Limits.PullbackCone.unop_inl
 
-@[simp]
+-- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
     c.unop.inr = c.snd.unop := by aesop_cat
 #align category_theory.limits.pullback_cone.unop_inr CategoryTheory.Limits.PullbackCone.unop_inr
@@ -537,12 +537,12 @@ def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutC
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
 #align category_theory.limits.pullback_cone.op CategoryTheory.Limits.PullbackCone.op
 
-@[simp]
+-- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.inl = c.fst.op :=
   by aesop_cat
 #align category_theory.limits.pullback_cone.op_inl CategoryTheory.Limits.PullbackCone.op_inl
 
-@[simp]
+-- porting note: removed simp attribute as the equality can already be obtained by simp
 theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.inr = c.snd.op :=
   by aesop_cat
 #align category_theory.limits.pullback_cone.op_inr CategoryTheory.Limits.PullbackCone.op_inr
@@ -575,36 +575,28 @@ def unopOp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g)
 in the opposite category is a limit cone. -/
 def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.op := by
-  sorry
-  --apply equivOfSubsingletonOfSubsingleton
-  --· intro h
-  --  equiv_rw is_limit.postcompose_hom_equiv _ _
-  --  equiv_rw(is_limit.whisker_equivalence_equiv walking_span_op_equiv.symm).symm
-  --  exact is_limit_cocone_op _ h
-  --· intro h
-  --  equiv_rw is_colimit.equiv_iso_colimit c.op_unop.symm
-  --  apply is_colimit_cone_unop
-  --  equiv_rw is_limit.postcompose_hom_equiv _ _
-  --  equiv_rw(is_limit.whisker_equivalence_equiv _).symm
-  --  exact h
+  apply equivOfSubsingletonOfSubsingleton
+  . intro h
+    exact (IsLimit.postcomposeHomEquiv _ _).invFun
+      ((IsLimit.whiskerEquivalenceEquiv walkingSpanOpEquiv.symm).toFun (isLimitCoconeOp _ h))
+  . intro h
+    exact (IsColimit.equivIsoColimit c.opUnop).toFun
+      (isColimitConeUnop _ ((IsLimit.postcomposeHomEquiv _ _).invFun
+        ((IsLimit.whiskerEquivalenceEquiv _).toFun h)))
 #align category_theory.limits.pushout_cocone.is_colimit_equiv_is_limit_op CategoryTheory.Limits.PushoutCocone.isColimitEquivIsLimitOp
 
 /-- A pushout cone is a colimit cocone in `Cᵒᵖ` if and only if the corresponding pullback cone
 in `C` is a limit cone. -/
 def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.unop := by
-  sorry
-  --apply equivOfSubsingletonOfSubsingleton
-  --· intro h
-  --  apply is_limit_cocone_unop
-  --  equiv_rw is_colimit.precompose_hom_equiv _ _
-  --  equiv_rw(is_colimit.whisker_equivalence_equiv _).symm
-  --  exact h
-  --· intro h
-  --  equiv_rw is_colimit.equiv_iso_colimit c.unop_op.symm
-  --  equiv_rw is_colimit.precompose_hom_equiv _ _
-  --  equiv_rw(is_colimit.whisker_equivalence_equiv walking_cospan_op_equiv.symm).symm
-  --  exact is_colimit_cone_op _ h
+  apply equivOfSubsingletonOfSubsingleton
+  . intro h
+    exact isLimitCoconeOp _ ((IsColimit.precomposeHomEquiv _ _).invFun
+      ((IsColimit.whiskerEquivalenceEquiv _).toFun h))
+  . intro h
+    exact (IsColimit.equivIsoColimit c.unopOp).toFun
+      ((IsColimit.precomposeHomEquiv _ _).invFun
+      ((IsColimit.whiskerEquivalenceEquiv walkingCospanOpEquiv.symm).toFun (isColimitConeOp _ h)))
 #align category_theory.limits.pushout_cocone.is_colimit_equiv_is_limit_unop CategoryTheory.Limits.PushoutCocone.isColimitEquivIsLimitUnop
 
 end PushoutCocone
