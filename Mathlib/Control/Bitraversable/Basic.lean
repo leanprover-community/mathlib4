@@ -64,7 +64,8 @@ open Functor
 /-- Bifunctor. This typeclass asserts that a lawless bitraversable bifunctor is lawful. -/
 class IsLawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t] extends
   LawfulBifunctor t where
-  id_bitraverse : ∀ {α β} (x : t α β), bitraverse id.mk id.mk x = id.mk x
+  -- Porting note: need to specify `m := Id` because `id` no longer has a `Monad` instance
+  id_bitraverse : ∀ {α β} (x : t α β), bitraverse (m := Id) pure pure x = pure x
   comp_bitraverse :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       {α α' β β' γ γ'} (f : β → F γ) (f' : β' → F γ') (g : α → G β) (g' : α' → G β') (x : t α α'),
@@ -72,7 +73,7 @@ class IsLawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t]
         Comp.mk (bitraverse f f' <$> bitraverse g g' x)
   bitraverse_eq_bimap_id :
     ∀ {α α' β β'} (f : α → β) (f' : α' → β') (x : t α α'),
-      bitraverse (id.mk ∘ f) (id.mk ∘ f') x = id.mk (bimap f f' x)
+      bitraverse (m := Id) (pure ∘ f) (pure ∘ f') x = pure (bimap f f' x)
   binaturality :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       (η : ApplicativeTransformation F G) {α α' β β'} (f : α → F β) (f' : α' → F β') (x : t α α'),
@@ -90,4 +91,3 @@ attribute [higher_order bitraverse_comp] comp_bitraverse
 attribute [higher_order] binaturality bitraverse_eq_bimap_id
 
 export IsLawfulBitraversable (bitraverse_id_id bitraverse_comp)
-
