@@ -8,12 +8,12 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Types
-import Mathbin.CategoryTheory.Limits.Shapes.Products
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Shapes.Terminal
-import Mathbin.CategoryTheory.ConcreteCategory.Basic
-import Mathbin.Tactic.Elementwise
+import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.Tactic.Elementwise
 
 /-!
 # Special shapes for limits in `Type`.
@@ -186,8 +186,7 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u
 /-- The product functor given by the instance `has_binary_products (Type u)` is isomorphic to the
 explicit binary product functor given by the product type.
 -/
-noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor : Type u ⥤ _) :=
-  by
+noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor : Type u ⥤ _) := by
   apply nat_iso.of_components (fun X => _) _
   · apply nat_iso.of_components (fun Y => _) _
     · exact ((limit.is_limit _).conePointUniqueUpToIso (binary_product_limit X Y)).symm
@@ -254,8 +253,7 @@ open Function (Injective)
 
 theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
-      Injective c.inl ∧ Injective c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) :=
-  by
+      Injective c.inl ∧ Injective c.inr ∧ IsCompl (Set.range c.inl) (Set.range c.inr) := by
   classical
     constructor
     · rintro ⟨h⟩
@@ -481,8 +479,7 @@ def coequalizerColimit : Limits.ColimitCocone (parallelPair f g)
 then `π ⁻¹' (π '' U) = U`.
 -/
 theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ π = g ≫ π)
-    (h : IsColimit (Cofork.ofπ π e)) (U : Set Y) (H : f ⁻¹' U = g ⁻¹' U) : π ⁻¹' (π '' U) = U :=
-  by
+    (h : IsColimit (Cofork.ofπ π e)) (U : Set Y) (H : f ⁻¹' U = g ⁻¹' U) : π ⁻¹' (π '' U) = U := by
   have lem : ∀ x y, coequalizer_rel f g x y → (x ∈ U ↔ y ∈ U) :=
     by
     rintro _ _ ⟨x⟩
