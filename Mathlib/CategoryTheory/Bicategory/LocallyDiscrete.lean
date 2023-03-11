@@ -121,7 +121,7 @@ variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, 
 
 /--
 If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
-be promoted to an oplax functor from `locally_discrete I` to `B`.
+be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
 -/
 @[simps]
 def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
