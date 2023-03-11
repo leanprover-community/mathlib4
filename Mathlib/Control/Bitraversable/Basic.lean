@@ -16,21 +16,21 @@ import Mathlib.Control.Traversable.Basic
 
 Type class for traversing bifunctors.
 
-Simple examples of `bitraversable` are `prod` and `sum`. A more elaborate example is
+Simple examples of `Bitraversable` are `Prod` and `Sum`. A more elaborate example is
 to define an a-list as:
 
 ```
-def alist (key val : Type) := list (key × val)
+def AList (key val : Type) := List (key × val)
 ```
 
-Then we can use `f : key → io key'` and `g : val → io val'` to manipulate the `alist`'s key
-and value respectively with `bitraverse f g : alist key val → io (alist key' val')`
+Then we can use `f : key → IO key'` and `g : val → IO val'` to manipulate the `AList`'s key
+and value respectively with `Bitraverse f g : AList key val → IO (AList key' val')`.
 
 ## Main definitions
 
-* `bitraversable`: Bare typeclass to hold the `bitraverse` function.
-* `is_lawful_bitraversable`: Typeclass for the laws of the `bitraverse` function. Similar to
-  `is_lawful_traversable`.
+* `Bitraversable`: Bare typeclass to hold the `Bitraverse` function.
+* `IsLawfulBitraversable`: Typeclass for the laws of the `Bitraverse` function. Similar to
+  `IsLawfulTraversable`.
 
 ## References
 
