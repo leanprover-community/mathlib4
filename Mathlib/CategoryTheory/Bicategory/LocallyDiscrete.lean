@@ -8,9 +8,9 @@ Authors: Yuma Mizuno
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.DiscreteCategory
-import Mathbin.CategoryTheory.Bicategory.Functor
-import Mathbin.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Bicategory.Functor
+import Mathlib.CategoryTheory.Bicategory.Strict
 
 /-!
 # Locally discrete bicategories
@@ -58,8 +58,7 @@ instance (priority := 900) homSmallCategory (X Y : LocallyDiscrete C) : SmallCat
 #align category_theory.locally_discrete.hom_small_category CategoryTheory.LocallyDiscrete.homSmallCategory
 
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
-theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
-  by
+theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g := by
   have : discrete.mk f.as = discrete.mk g.as := congr_arg discrete.mk (eq_of_hom η)
   simpa using this
 #align category_theory.locally_discrete.eq_of_hom CategoryTheory.LocallyDiscrete.eq_of_hom
