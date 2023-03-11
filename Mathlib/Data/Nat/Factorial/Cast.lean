@@ -33,12 +33,12 @@ section Semiring
 
 variable [Semiring S] (a b : ℕ)
 
--- Porting note: a + 1 not automatically lifted to S
+-- Porting note: added type ascription around a + 1
 theorem cast_ascFactorial : (a.ascFactorial b : S) = (pochhammer S b).eval (a + 1 : S) := by
   rw [← pochhammer_nat_eq_ascFactorial, pochhammer_eval_cast, Nat.cast_add, Nat.cast_one]
 #align nat.cast_asc_factorial Nat.cast_ascFactorial
 
--- Porting note: a - (b - 1) not automatically lifted to S
+-- Porting note: added type ascription around a - (b - 1)
 theorem cast_descFactorial : (a.descFactorial b : S) = (pochhammer S b).eval (a - (b - 1) : S) := by
   rw [← pochhammer_eval_cast, pochhammer_nat_eq_descFactorial]
   induction' b with b
