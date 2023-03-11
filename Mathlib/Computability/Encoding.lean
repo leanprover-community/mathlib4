@@ -167,7 +167,7 @@ def encodingNatBool : Encoding ℕ where
 
 /-- A binary fin_encoding of ℕ in bool. -/
 def finEncodingNatBool : FinEncoding ℕ :=
-  ⟨encodingNatBool, instFintypeBool⟩
+  ⟨encodingNatBool, Bool.fintype⟩
 #align computability.fin_encoding_nat_bool Computability.finEncodingNatBool
 
 /-- A binary encoding of ℕ in Γ'. -/
@@ -207,7 +207,7 @@ def unaryFinEncodingNat : FinEncoding ℕ where
   encode := unaryEncodeNat
   decode n := some (unaryDecodeNat n)
   decode_encode n := congr_arg _ (unary_decode_encode_nat n)
-  ΓFin := instFintypeBool
+  ΓFin := Bool.fintype
 #align computability.unary_fin_encoding_nat Computability.unaryFinEncodingNat
 
 /-- An encoding function of bool in bool. -/
@@ -230,7 +230,7 @@ def finEncodingBoolBool : FinEncoding Bool where
   encode := encodeBool
   decode x := some (decodeBool x)
   decode_encode x := congr_arg _ (decode_encodeBool x)
-  ΓFin := instFintypeBool
+  ΓFin := Bool.fintype
 #align computability.fin_encoding_bool_bool Computability.finEncodingBoolBool
 
 instance inhabitedFinEncoding : Inhabited (FinEncoding Bool) :=
