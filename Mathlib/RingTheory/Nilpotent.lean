@@ -10,7 +10,6 @@ Authors: Oliver Nash
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.Operations
 
 /-!
