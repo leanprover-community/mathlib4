@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Types
-import Mathbin.CategoryTheory.Functor.Currying
-import Mathbin.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Limits.FunctorCategory
 
 /-!
 # The morphism comparing a colimit of limits with the corresponding limit of colimits.
@@ -91,8 +91,7 @@ this lemma characterises it.
 @[simp, reassoc.1]
 theorem ι_colimitLimitToLimitColimit_π (j) (k) :
     colimit.ι _ k ≫ colimitLimitToLimitColimit F ≫ limit.π _ j =
-      limit.π ((curry.obj (swap K J ⋙ F)).obj k) j ≫ colimit.ι ((curry.obj F).obj j) k :=
-  by
+      limit.π ((curry.obj (swap K J ⋙ F)).obj k) j ≫ colimit.ι ((curry.obj F).obj j) k := by
   dsimp [colimit_limit_to_limit_colimit]
   simp
 #align category_theory.limits.ι_colimit_limit_to_limit_colimit_π CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π
@@ -101,8 +100,7 @@ theorem ι_colimitLimitToLimitColimit_π (j) (k) :
 theorem ι_colimitLimitToLimitColimit_π_apply (F : J × K ⥤ Type v) (j) (k) (f) :
     limit.π (curry.obj F ⋙ colim) j
         (colimitLimitToLimitColimit F (colimit.ι (curry.obj (swap K J ⋙ F) ⋙ lim) k f)) =
-      colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (swap K J ⋙ F)).obj k) j f) :=
-  by
+      colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (swap K J ⋙ F)).obj k) j f) := by
   dsimp [colimit_limit_to_limit_colimit]
   simp
 #align category_theory.limits.ι_colimit_limit_to_limit_colimit_π_apply CategoryTheory.Limits.ι_colimitLimitToLimitColimit_π_apply
