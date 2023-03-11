@@ -63,7 +63,8 @@ theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsC
     Mono c.inr := by
   haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
     BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => hc.desc (BinaryCofan.mk f₂ f₁))
-      (by aesop_cat) (by aesop_cat) (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by aesop_cat) (by aesop_cat))
+      (by aesop_cat) (by aesop_cat)
+      (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by aesop_cat) (by aesop_cat))
   exact binaryCofan_inl _ hc'
 #align category_theory.limits.mono_coprod.binary_cofan_inr CategoryTheory.Limits.MonoCoprod.binaryCofan_inr
 
