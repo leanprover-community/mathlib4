@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Kernels
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Zero
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preserving (co)kernels
@@ -51,8 +51,7 @@ def isLimitMapConeForkEquiv' :
     IsLimit (G.mapCone (KernelFork.ofι h w)) ≃
       IsLimit
         (KernelFork.ofι (G.map h) (by simp only [← G.map_comp, w, functor.map_zero]) :
-          Fork (G.map f) 0) :=
-  by
+          Fork (G.map f) 0) := by
   refine' (is_limit.postcompose_hom_equiv _ _).symm.trans (is_limit.equiv_iso_limit _)
   refine' parallel_pair.ext (iso.refl _) (iso.refl _) _ _ <;> simp
   refine' fork.ext (iso.refl _) _
@@ -94,8 +93,7 @@ variable [HasKernel (G.map f)]
 kernel of `f`.
 -/
 def PreservesKernel.ofIsoComparison [i : IsIso (kernelComparison f G)] :
-    PreservesLimit (parallelPair f 0) G :=
-  by
+    PreservesLimit (parallelPair f 0) G := by
   apply preserves_limit_of_preserves_limit_cone (kernel_is_kernel f)
   apply (is_limit_map_cone_fork_equiv' G (kernel.condition f)).symm _
   apply is_limit.of_point_iso (kernel_is_kernel (G.map f))
@@ -116,8 +114,7 @@ theorem PreservesKernel.iso_hom : (PreservesKernel.iso G f).Hom = kernelComparis
   rfl
 #align category_theory.limits.preserves_kernel.iso_hom CategoryTheory.Limits.PreservesKernel.iso_hom
 
-instance : IsIso (kernelComparison f G) :=
-  by
+instance : IsIso (kernelComparison f G) := by
   rw [← preserves_kernel.iso_hom]
   infer_instance
 
@@ -127,8 +124,7 @@ theorem kernel_map_comp_preserves_kernel_iso_inv {X' Y' : C} (g : X' ⟶ Y') [Ha
     (hpq : f ≫ q = p ≫ g) :
     kernel.map (G.map f) (G.map g) (G.map p) (G.map q) (by rw [← G.map_comp, hpq, G.map_comp]) ≫
         (PreservesKernel.iso G _).inv =
-      (PreservesKernel.iso G _).inv ≫ G.map (kernel.map f g p q hpq) :=
-  by
+      (PreservesKernel.iso G _).inv ≫ G.map (kernel.map f g p q hpq) := by
   rw [iso.comp_inv_eq, category.assoc, preserves_kernel.iso_hom, iso.eq_inv_comp]
   exact kernel_comparison_comp_kernel_map _ _ _ _ _ _
 #align category_theory.limits.kernel_map_comp_preserves_kernel_iso_inv CategoryTheory.Limits.kernel_map_comp_preserves_kernel_iso_inv
@@ -150,8 +146,7 @@ def isColimitMapCoconeCoforkEquiv' :
     IsColimit (G.mapCocone (CokernelCofork.ofπ h w)) ≃
       IsColimit
         (CokernelCofork.ofπ (G.map h) (by simp only [← G.map_comp, w, functor.map_zero]) :
-          Cofork (G.map f) 0) :=
-  by
+          Cofork (G.map f) 0) := by
   refine' (is_colimit.precompose_hom_equiv _ _).symm.trans (is_colimit.equiv_iso_colimit _)
   refine' parallel_pair.ext (iso.refl _) (iso.refl _) _ _ <;> simp
   refine' cofork.ext (iso.refl _) _
@@ -196,8 +191,7 @@ variable [HasCokernel (G.map f)]
 cokernel of `f`.
 -/
 def PreservesCokernel.ofIsoComparison [i : IsIso (cokernelComparison f G)] :
-    PreservesColimit (parallelPair f 0) G :=
-  by
+    PreservesColimit (parallelPair f 0) G := by
   apply preserves_colimit_of_preserves_colimit_cocone (cokernel_is_cokernel f)
   apply (is_colimit_map_cocone_cofork_equiv' G (cokernel.condition f)).symm _
   apply is_colimit.of_point_iso (cokernel_is_cokernel (G.map f))
@@ -219,8 +213,7 @@ theorem PreservesCokernel.iso_inv : (PreservesCokernel.iso G f).inv = cokernelCo
   rfl
 #align category_theory.limits.preserves_cokernel.iso_inv CategoryTheory.Limits.PreservesCokernel.iso_inv
 
-instance : IsIso (cokernelComparison f G) :=
-  by
+instance : IsIso (cokernelComparison f G) := by
   rw [← preserves_cokernel.iso_inv]
   infer_instance
 
@@ -231,8 +224,7 @@ theorem preserves_cokernel_iso_comp_cokernel_map {X' Y' : C} (g : X' ⟶ Y') [Ha
     (PreservesCokernel.iso G _).Hom ≫
         cokernel.map (G.map f) (G.map g) (G.map p) (G.map q)
           (by rw [← G.map_comp, hpq, G.map_comp]) =
-      G.map (cokernel.map f g p q hpq) ≫ (PreservesCokernel.iso G _).Hom :=
-  by
+      G.map (cokernel.map f g p q hpq) ≫ (PreservesCokernel.iso G _).Hom := by
   rw [← iso.comp_inv_eq, category.assoc, ← iso.eq_inv_comp]
   exact cokernel_map_comp_cokernel_comparison _ _ _ _ _ _
 #align category_theory.limits.preserves_cokernel_iso_comp_cokernel_map CategoryTheory.Limits.preserves_cokernel_iso_comp_cokernel_map
