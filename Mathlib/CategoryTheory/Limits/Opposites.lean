@@ -687,14 +687,16 @@ noncomputable def pushoutIsoUnopPullback {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y)
 @[reassoc (attr := simp)]
 theorem pushoutIsoUnopPullback_inl_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
     [HasPullback f.op g.op] :
-    pushout.inl ≫ (pushoutIsoUnopPullback f g).hom = (pullback.fst : pullback f.op g.op ⟶ _).unop :=
+    pushout.inl ≫ (pushoutIsoUnopPullback f g).hom =
+      (pullback.fst : pullback f.op g.op ⟶ _).unop :=
   (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
 #align category_theory.limits.pushout_iso_unop_pullback_inl_hom CategoryTheory.Limits.pushoutIsoUnopPullback_inl_hom
 
 @[reassoc (attr := simp)]
 theorem pushoutIsoUnopPullback_inr_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
     [HasPullback f.op g.op] :
-    pushout.inr ≫ (pushoutIsoUnopPullback f g).hom = (pullback.snd : pullback f.op g.op ⟶ _).unop :=
+    pushout.inr ≫ (pushoutIsoUnopPullback f g).hom =
+      (pullback.snd : pullback f.op g.op ⟶ _).unop :=
   (IsColimit.comp_coconePointUniqueUpToIso_hom _ _ _).trans (by simp)
 #align category_theory.limits.pushout_iso_unop_pullback_inr_hom CategoryTheory.Limits.pushoutIsoUnopPullback_inr_hom
 
