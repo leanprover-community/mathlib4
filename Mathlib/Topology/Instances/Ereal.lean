@@ -8,10 +8,10 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rat.Encodable
-import Mathbin.Data.Real.Ereal
-import Mathbin.Topology.Algebra.Order.MonotoneContinuity
-import Mathbin.Topology.Instances.Ennreal
+import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Real.Ereal
+import Mathlib.Topology.Algebra.Order.MonotoneContinuity
+import Mathlib.Topology.Instances.Ennreal
 
 /-!
 # Topological structure on `ereal`
@@ -139,8 +139,7 @@ theorem nhds_coe_coe {r p : ℝ} :
 #align ereal.nhds_coe_coe EReal.nhds_coe_coe
 
 theorem tendsto_toReal {a : EReal} (ha : a ≠ ⊤) (h'a : a ≠ ⊥) :
-    Tendsto EReal.toReal (𝓝 a) (𝓝 a.toReal) :=
-  by
+    Tendsto EReal.toReal (𝓝 a) (𝓝 a.toReal) := by
   lift a to ℝ using And.intro ha h'a
   rw [nhds_coe, tendsto_map'_iff]
   exact tendsto_id
@@ -230,8 +229,7 @@ theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp [lt_top_iff_ne_top, Ioi]
 #align ereal.nhds_top EReal.nhds_top
 
-theorem nhds_top' : 𝓝 (⊤ : EReal) = ⨅ a : ℝ, 𝓟 (Ioi a) :=
-  by
+theorem nhds_top' : 𝓝 (⊤ : EReal) = ⨅ a : ℝ, 𝓟 (Ioi a) := by
   rw [nhds_top]
   apply le_antisymm
   · exact infᵢ_mono' fun x => ⟨x, by simp⟩
@@ -242,8 +240,7 @@ theorem nhds_top' : 𝓝 (⊤ : EReal) = ⨅ a : ℝ, 𝓟 (Ioi a) :=
     · simpa using hr
 #align ereal.nhds_top' EReal.nhds_top'
 
-theorem mem_nhds_top_iff {s : Set EReal} : s ∈ 𝓝 (⊤ : EReal) ↔ ∃ y : ℝ, Ioi (y : EReal) ⊆ s :=
-  by
+theorem mem_nhds_top_iff {s : Set EReal} : s ∈ 𝓝 (⊤ : EReal) ↔ ∃ y : ℝ, Ioi (y : EReal) ⊆ s := by
   rw [nhds_top', mem_infi_of_directed]
   · rfl
   exact fun x y => ⟨max x y, by simp [le_refl], by simp [le_refl]⟩
@@ -259,8 +256,7 @@ theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_ : a ≠ ⊥), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp [bot_lt_iff_ne_bot]
 #align ereal.nhds_bot EReal.nhds_bot
 
-theorem nhds_bot' : 𝓝 (⊥ : EReal) = ⨅ a : ℝ, 𝓟 (Iio a) :=
-  by
+theorem nhds_bot' : 𝓝 (⊥ : EReal) = ⨅ a : ℝ, 𝓟 (Iio a) := by
   rw [nhds_bot]
   apply le_antisymm
   · exact infᵢ_mono' fun x => ⟨x, by simp⟩
@@ -271,8 +267,7 @@ theorem nhds_bot' : 𝓝 (⊥ : EReal) = ⨅ a : ℝ, 𝓟 (Iio a) :=
     · exact (infᵢ_le _ 0).trans (by simp)
 #align ereal.nhds_bot' EReal.nhds_bot'
 
-theorem mem_nhds_bot_iff {s : Set EReal} : s ∈ 𝓝 (⊥ : EReal) ↔ ∃ y : ℝ, Iio (y : EReal) ⊆ s :=
-  by
+theorem mem_nhds_bot_iff {s : Set EReal} : s ∈ 𝓝 (⊥ : EReal) ↔ ∃ y : ℝ, Iio (y : EReal) ⊆ s := by
   rw [nhds_bot', mem_infi_of_directed]
   · rfl
   exact fun x y => ⟨min x y, by simp [le_refl], by simp [le_refl]⟩
@@ -293,8 +288,7 @@ theorem continuousAt_add_coe_coe (a b : ℝ) :
 #align ereal.continuous_at_add_coe_coe EReal.continuousAt_add_coe_coe
 
 theorem continuousAt_add_top_coe (a : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, a) :=
-  by
+    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, a) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_coe, nhds_prod_eq]
   intro r
   rw [eventually_prod_iff]
@@ -307,16 +301,14 @@ theorem continuousAt_add_top_coe (a : ℝ) :
 #align ereal.continuous_at_add_top_coe EReal.continuousAt_add_top_coe
 
 theorem continuousAt_add_coe_top (a : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊤) :=
-  by
+    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊤) := by
   change ContinuousAt ((fun p : EReal × EReal => p.2 + p.1) ∘ Prod.swap) (a, ⊤)
   apply ContinuousAt.comp _ continuous_swap.continuous_at
   simp_rw [add_comm]
   exact continuous_at_add_top_coe a
 #align ereal.continuous_at_add_coe_top EReal.continuousAt_add_coe_top
 
-theorem continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, ⊤) :=
-  by
+theorem continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, ⊤) := by
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_top, nhds_prod_eq]
   intro r
   rw [eventually_prod_iff]
@@ -329,8 +321,7 @@ theorem continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal => p.1 +
 #align ereal.continuous_at_add_top_top EReal.continuousAt_add_top_top
 
 theorem continuousAt_add_bot_coe (a : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, a) :=
-  by
+    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, a) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, nhds_prod_eq, bot_add]
   intro r
   rw [eventually_prod_iff]
@@ -342,16 +333,14 @@ theorem continuousAt_add_bot_coe (a : ℝ) :
 #align ereal.continuous_at_add_bot_coe EReal.continuousAt_add_bot_coe
 
 theorem continuousAt_add_coe_bot (a : ℝ) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊥) :=
-  by
+    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊥) := by
   change ContinuousAt ((fun p : EReal × EReal => p.2 + p.1) ∘ Prod.swap) (a, ⊥)
   apply ContinuousAt.comp _ continuous_swap.continuous_at
   simp_rw [add_comm]
   exact continuous_at_add_bot_coe a
 #align ereal.continuous_at_add_coe_bot EReal.continuousAt_add_coe_bot
 
-theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, ⊥) :=
-  by
+theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, ⊥) := by
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, nhds_prod_eq, bot_add]
   intro r
   rw [eventually_prod_iff]
@@ -366,8 +355,7 @@ theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 +
 /-- The addition on `ereal` is continuous except where it doesn't make sense (i.e., at `(⊥, ⊤)`
 and at `(⊤, ⊥)`). -/
 theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) (h' : p.1 ≠ ⊥ ∨ p.2 ≠ ⊤) :
-    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) p :=
-  by
+    ContinuousAt (fun p : EReal × EReal => p.1 + p.2) p := by
   rcases p with ⟨x, y⟩
   induction x using EReal.rec <;> induction y using EReal.rec
   · exact continuous_at_add_bot_bot
