@@ -455,15 +455,15 @@ theorem add_nFBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
   | 0, o, h₁, h₂ => h₂
   | oadd e n a, o, h₁, h₂ => by
     have h' := add_nFBelow (h₁.snd.mono <| le_of_lt h₁.lt) h₂
-    simp [oadd_add]; cases' a + o with e' n' a'
+    simp [oadd_add]; revert h'; cases' a + o with e' n' a' <;> intro h'
     · exact NFBelow.oadd h₁.fst NFBelow.zero h₁.lt
-    simp [add]; have := @cmp_compares _ _ h₁.fst h'.fst
-    cases cmp e e' <;> simp [add]
-    · exact h'
-    · simp at this
+    simp [add]; have : ((e.cmp e').Compares e e') := @cmp_compares _ _ h₁.fst h'.fst
+    cases h: cmp e e' <;> simp [add]
+    · dsimp [add_aux]; simp [h]; exact h'
+    · dsimp [add_aux]; simp [h]; simp [h] at this
       subst e'
-      exact NF_below.oadd h'.fst h'.snd h'.lt
-    · exact NF_below.oadd h₁.fst (NF.below_of_lt this ⟨⟨_, h'⟩⟩) h₁.lt
+      exact NFBelow.oadd h'.fst h'.snd h'.lt
+    · simp [h] at this; exact NFBelow.oadd h₁.fst (NF.below_of_lt this ⟨⟨_, h'⟩⟩) h₁.lt
 #align onote.add_NF_below Onote.add_nFBelow
 
 instance add_nF (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ + o₂)
