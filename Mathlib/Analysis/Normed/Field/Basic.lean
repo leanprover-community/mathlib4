@@ -130,7 +130,7 @@ instance PUint.normedCommRing : NormedCommRing PUnit :=
   { PUnit.normedAddCommGroup, PUnit.commRing with
     norm_mul := fun _ _ => by simp }
 
-/-- A mixin class with the axiom `‖1‖ = 1`. Many `normed_ring`s and all `normed_field`s satisfy this
+/-- A mixin class with the axiom `‖1‖ = 1`. Many `NormedRing`s and all `NormedField`s satisfy this
 axiom. -/
 class NormOneClass (α : Type _) [Norm α] [One α] : Prop where
   /-- The norm of the multiplicative identity is 1. -/
@@ -223,12 +223,12 @@ theorem Filter.IsBoundedUnder_le.mul_tendsto_zero {f g : ι → α} {l : Filter 
     (norm_mul_le y x).trans_eq (mul_comm _ _)
 #align filter.is_bounded_under_le.mul_tendsto_zero Filter.IsBoundedUnder_le.mul_tendsto_zero
 
-/-- In a seminormed ring, the left-multiplication `add_monoid_hom` is bounded. -/
+/-- In a seminormed ring, the left-multiplication `AddMonoidHom` is bounded. -/
 theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ ‖x‖ * ‖y‖ :=
   norm_mul_le x
 #align mul_left_bound mulLeft_bound
 
-/-- In a seminormed ring, the right-multiplication `add_monoid_hom` is bounded. -/
+/-- In a seminormed ring, the right-multiplication `AddMonoidHom` is bounded. -/
 theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y => by
   rw [mul_comm]
   convert norm_mul_le y x
@@ -529,7 +529,7 @@ theorem nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ :=
   NNReal.eq <| norm_mul a b
 #align nnnorm_mul nnnorm_mul
 
-/-- `norm` as a `monoid_with_zero_hom`. -/
+/-- `norm` as a `MonoidWithZeroHom`. -/
 @[simps]
 def normHom : α →*₀ ℝ where
   toFun := (‖·‖)
@@ -538,7 +538,7 @@ def normHom : α →*₀ ℝ where
   map_mul' := norm_mul
 #align norm_hom normHom
 
-/-- `nnnorm` as a `monoid_with_zero_hom`. -/
+/-- `nnnorm` as a `MonoidWithZeroHom`. -/
 @[simps]
 def nnnormHom : α →*₀ ℝ≥0 where
   toFun := (‖·‖₊)
@@ -608,7 +608,7 @@ theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
 #align nndist_inv_inv₀ nndist_inv_inv₀
 
 /-- Multiplication on the left by a nonzero element of a normed division ring tends to infinity at
-infinity. TODO: use `bornology.cobounded` instead of `filter.comap has_norm.norm filter.at_top`. -/
+infinity. TODO: use `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
 theorem Filter.tendsto_mul_left_cobounded {a : α} (ha : a ≠ 0) :
     Tendsto ((· * ·) a) (comap norm atTop) (comap norm atTop) := by
   simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
@@ -616,7 +616,7 @@ theorem Filter.tendsto_mul_left_cobounded {a : α} (ha : a ≠ 0) :
 #align filter.tendsto_mul_left_cobounded Filter.tendsto_mul_left_cobounded
 
 /-- Multiplication on the right by a nonzero element of a normed division ring tends to infinity at
-infinity. TODO: use `bornology.cobounded` instead of `filter.comap has_norm.norm filter.at_top`. -/
+infinity. TODO: use `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
 theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     Tendsto (fun x => x * a) (comap norm atTop) (comap norm atTop) := by
   simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
@@ -854,14 +854,14 @@ theorem nnnorm_norm [SeminormedAddCommGroup α] (a : α) : ‖‖a‖‖₊ = �
   rw [Real.nnnorm_of_nonneg (norm_nonneg a)]; rfl
 #align nnnorm_norm nnnorm_norm
 
-/-- A restatement of `metric_space.tendsto_at_top` in terms of the norm. -/
+/-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
 theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [SemilatticeSup α] {β : Type _}
     [SeminormedAddCommGroup β] {f : α → β} {b : β} :
     Tendsto f atTop (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖f n - b‖ < ε :=
   (atTop_basis.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
 #align normed_add_comm_group.tendsto_at_top NormedAddCommGroup.tendsto_atTop
 
-/-- A variant of `normed_add_comm_group.tendsto_at_top` that
+/-- A variant of `NormedAddCommGroup.tendsto_atTop` that
 uses `∃ N, ∀ n > N, ...` rather than `∃ N, ∀ n ≥ N, ...`
 -/
 theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [SemilatticeSup α] [NoMaxOrder α]
@@ -916,8 +916,8 @@ section Induced
 
 variable {F : Type _} (R S : Type _)
 
-/-- A non-unital ring homomorphism from an `non_unital_ring` to a `non_unital_semi_normed_ring`
-induces a `non_unital_semi_normed_ring` structure on the domain.
+/-- A non-unital ring homomorphism from an `NonUnitalRing` to a `NonUnitalSeminormedRing`
+induces a `NonUnitalSeminormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -929,8 +929,8 @@ def NonUnitalSeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S
       exact (map_mul f x y).symm ▸ norm_mul_le (f x) (f y) }
 #align non_unital_semi_normed_ring.induced NonUnitalSeminormedRing.induced
 
-/-- An injective non-unital ring homomorphism from an `non_unital_ring` to a
-`non_unital_normed_ring` induces a `non_unital_normed_ring` structure on the domain.
+/-- An injective non-unital ring homomorphism from an `NonUnitalRing` to a
+`NonUnitalNormedRing` induces a `NonUnitalNormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -939,8 +939,8 @@ def NonUnitalNormedRing.induced [NonUnitalRing R] [NonUnitalNormedRing S]
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
 #align non_unital_normed_ring.induced NonUnitalNormedRing.induced
 
-/-- A non-unital ring homomorphism from an `ring` to a `semi_normed_ring` induces a
-`semi_normed_ring` structure on the domain.
+/-- A non-unital ring homomorphism from an `Ring` to a `SeminormedRing` induces a
+`SeminormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -949,8 +949,8 @@ def SeminormedRing.induced [Ring R] [SeminormedRing S] [NonUnitalRingHomClass F 
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹Ring R› with }
 #align semi_normed_ring.induced SeminormedRing.induced
 
-/-- An injective non-unital ring homomorphism from an `ring` to a `normed_ring` induces a
-`normed_ring` structure on the domain.
+/-- An injective non-unital ring homomorphism from an `Ring` to a `NormedRing` induces a
+`NormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -959,8 +959,8 @@ def NormedRing.induced [Ring R] [NormedRing S] [NonUnitalRingHomClass F R S] (f 
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf, ‹Ring R› with }
 #align normed_ring.induced NormedRing.induced
 
-/-- A non-unital ring homomorphism from a `comm_ring` to a `semi_normed_ring` induces a
-`semi_normed_comm_ring` structure on the domain.
+/-- A non-unital ring homomorphism from a `CommRing` to a `SeminormedRing` induces a
+`SeminormedCommRing` structure on the domain.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -969,8 +969,8 @@ def SeminormedCommRing.induced [CommRing R] [SeminormedRing S] [NonUnitalRingHom
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹CommRing R› with }
 #align semi_normed_comm_ring.induced SeminormedCommRing.induced
 
-/-- An injective non-unital ring homomorphism from an `comm_ring` to a `normed_ring` induces a
-`normed_comm_ring` structure on the domain.
+/-- An injective non-unital ring homomorphism from an `CommRing` to a `NormedRing` induces a
+`NormedCommRing` structure on the domain.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -979,8 +979,8 @@ def NormedCommRing.induced [CommRing R] [NormedRing S] [NonUnitalRingHomClass F 
   { SeminormedCommRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
 #align normed_comm_ring.induced NormedCommRing.induced
 
-/-- An injective non-unital ring homomorphism from an `division_ring` to a `normed_ring` induces a
-`normed_division_ring` structure on the domain.
+/-- An injective non-unital ring homomorphism from an `DivisionRing` to a `NormedRing` induces a
+`NormedDivisionRing` structure on the domain.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -992,8 +992,8 @@ def NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S] [NonUnita
       exact (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
 #align normed_division_ring.induced NormedDivisionRing.induced
 
-/-- An injective non-unital ring homomorphism from an `field` to a `normed_ring` induces a
-`normed_field` structure on the domain.
+/-- An injective non-unital ring homomorphism from an `Field` to a `NormedRing` induces a
+`NormedField` structure on the domain.
 
 See note [reducible non-instances] -/
 @[reducible]
@@ -1003,8 +1003,8 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
     mul_comm := mul_comm }
 #align normed_field.induced NormedField.induced
 
-/-- A ring homomorphism from a `ring R` to a `semi_normed_ring S` which induces the norm structure
-`semi_normed_ring.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
+/-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
+`SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
 theorem NormOneClass.induced {F : Type _} (R S : Type _) [Ring R] [SeminormedRing S]
     [NormOneClass S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
