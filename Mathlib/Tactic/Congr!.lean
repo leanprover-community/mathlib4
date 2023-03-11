@@ -196,26 +196,28 @@ partial def Congr!.mkHCongrThm (fType : Expr) (info : FunInfo) :
         let congrType ← mkForallFVars hs (← mkHEq lhs rhs)
         let some proof ← withLCtx lctx (← getLocalInstances) <| trySolve congrType
           | throwError "Internal error when constructing proof"
-        -- Now transform the theorem to be with respect to the richer hypotheses
-        --let congrType' ← mkForallFVars hs' (← mkHEq lhs rhs)
-        let proof' ← mkLambdaFVars hs' (← mkAppM' proof vals')
-        -- Now try to pre-compute some of these hypotheses
+        -- At this point, `mkLambdaFVars hs' (mkAppN proof vals')` is the richer proof.
+        -- We try to precompute some of the arguments using `trySolve`.
         let mut hs'' := #[] -- parameters that are actually used beyond the necessary `ef, ef', ee`.
-        let mut vals'' := #[ef, ef', ee] -- the values to pass `proof'`
+        let mut pfVars := #[] -- parameters that can be solved for already
+        let mut pfVals := #[] -- the values to use for these parameters
         for i in [0 : info.getArity] do
           hs'' := hs''.push xs[i]! |>.push ys[i]!
-          vals'' := vals''.push xs[i]! |>.push ys[i]!
           let h' := eqs'[i]!
           let pf? ← withLCtx lctx (← getLocalInstances) <| trySolve (← inferType h')
           if let some pf := pf? then
-            vals'' := vals''.push pf
+            pfVars := pfVars.push h'
+            pfVals := pfVals.push pf
           else
             hs'' := hs''.push h'
-            vals'' := vals''.push h'
-        -- and now we can try to simplify the theorem given these computations
-        let proof'' ← mkLambdaFVars #[ef, ef', ee]
-                        (← mkLambdaFVars hs'' (← mkAppM' proof' vals'') (usedOnly := true))
-        return (← inferType proof'', proof'')
+        -- Take `proof`, abstract the pfVars and provide the solved-for proofs (as an
+        -- optimization for proof term size) then abstract the remaining variables.
+        -- The `usedOnly` probably has no affect.
+        -- Note that since we are doing `proof.beta vals'` there is technically some quadratic
+        -- complexity. These are just some applications of variables being repeated, though.
+        let proof' ← mkLambdaFVars #[ef, ef', ee] (← mkLambdaFVars (usedOnly := true) hs''
+                      (mkAppN (← mkLambdaFVars pfVars (proof.beta vals')) pfVals))
+        return (← inferType proof', proof')
 where
   addPrimesToUserNames (ys : Array Expr) (lctx : LocalContext) : LocalContext := Id.run do
     let mut lctx := lctx
@@ -233,8 +235,8 @@ where
         let y := ys[i]!
         let deps := info.paramInfo[i]!.backDeps.map (fun j => eqs[j]!)
         let deps' := info.paramInfo[i]!.backDeps.map (fun j => vals[j]!)
-        let eq' ← mkForallFVars deps (← mkHEq x y)
-        withLocalDeclD ((`e).appendIndexAfter (i+1)) (← mkHEq x y) fun h =>
+        let eq' ← mkForallFVars deps (← mkEqHEq x y)
+        withLocalDeclD ((`e).appendIndexAfter (i+1)) (← mkEqHEq x y) fun h =>
         withLocalDeclD ((`e').appendIndexAfter (i+1)) eq' fun h' =>
           -- vals is how to compute eqs from eqs'
           let v := mkAppN h' deps'
@@ -246,6 +248,9 @@ where
   congruence lemma), prove it if possible. Basic congruence lemmas should be provable by this.
   There are some extra tricks for handling arguments to richer congruence lemmas. -/
   trySolveCore (mvarId : MVarId) : MetaM Unit := do
+    -- First cleanup the context since we're going to do `substEqs` and we don't want to
+    -- accidentally use variables not actually used by the theorem.
+    let mvarId ← mvarId.cleanup
     let (_, mvarId) ← mvarId.intros
     let mvarId := (← mvarId.substEqs).getD mvarId
     -- Make the goal be an eq if possible
@@ -258,12 +263,12 @@ where
     -- We have no more tricks.
     throwError "was not able to solve for proof"
   trySolve (ty : Expr) : MetaM (Option Expr) := observing? do
-    let mvarId ← mkFreshExprMVar ty
-    trace[congr!.synthesize] "trySolve {mvarId.mvarId!}"
+    let mvar ← mkFreshExprMVar ty
+    trace[congr!.synthesize] "trySolve {mvar.mvarId!}"
     -- The proofs we generate shouldn't require unfolding anything.
-    withReducible <| trySolveCore mvarId.mvarId!
+    withReducible <| trySolveCore mvar.mvarId!
     trace[congr!.synthesize] "trySolve success!"
-    let pf ← instantiateMVars mvarId
+    let pf ← instantiateMVars mvar
     return pf
 
 /--
@@ -273,6 +278,12 @@ and (2) inserts additional hypotheses from equalities from previous arguments.
 It uses `Congr!.mkHCongrThm` to generate the congruence lemmas.
 
 If the goal is an `Eq`, uses `eq_of_heq` first.
+
+As a backup strategy, it uses the LHS/RHS method like in `Lean.MVarId.congrSimp?`
+(where `Congr!.Config.preferLHS` determines which side to try first). This uses a particular side
+of the target, generates the congruence lemma, then tries applying it. This can make progress
+with higher transparency settings. To help the unifier, in this mode it assumes both sides have the
+exact same function.
 -/
 partial
 def Lean.MVarId.smartHCongr? (config : Congr!.Config) (mvarId : MVarId) :
@@ -321,7 +332,7 @@ where
       let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
       -- Now see if the congruence theorem actually applies in this situation by applying it!
       let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f']
-      let congrProof' := mkApp2 congrProof f f'
+      let congrProof' := congrProof.beta #[f, f']
       observing? <| applyCongrThm? config mvarId congrThm' congrProof'
     | _, _ => return none
   forSide (mvarId : MVarId) (side : Expr) : MetaM (Option (List MVarId)) := do
@@ -337,7 +348,7 @@ where
     let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
     let r ← mkEqRefl f
     let congrThm' := congrThm.bindingBody!.bindingBody!.instantiateRev #[f, f, r]
-    let congrProof' := mkApp3 congrProof f f r
+    let congrProof' := congrProof.beta #[f, f, r]
     observing? <| applyCongrThm? config mvarId congrThm' congrProof'
 
 /--
