@@ -1291,8 +1291,7 @@ theorem prod_multiset_map_count [DecidableEq α] (s : Multiset α) {M : Type _} 
 @[to_additive]
 theorem prod_multiset_count [DecidableEq α] [CommMonoid α] (s : Multiset α) :
     s.prod = ∏ m in s.toFinset, m ^ s.count m := by
-  -- porting note: removing `using` breaks `to_additive`
-  convert prod_multiset_map_count s id using 1
+  convert prod_multiset_map_count s id
   rw [Multiset.map_id]
 #align finset.prod_multiset_count Finset.prod_multiset_count
 #align finset.sum_multiset_count Finset.sum_multiset_count
