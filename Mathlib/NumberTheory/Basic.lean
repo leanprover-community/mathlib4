@@ -29,8 +29,9 @@ section
 
 open Ideal Ideal.Quotient
 
--- Porting note: removing this line gives a whnf timeout
-set_option maxHeartbeats 450000
+-- Porting note: Workaround for lean4#2074
+attribute [-instance] Semiring.toNonAssocSemiring
+attribute [-instance] NonAssocRing.toNonAssocSemiring
 theorem dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
     (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction' k with k ih
