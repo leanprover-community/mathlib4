@@ -8,8 +8,8 @@ Authors: María Inés de Frutos-Fernández
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Localization.Basic
-import Mathbin.Topology.Algebra.Ring.Basic
+import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 
