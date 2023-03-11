@@ -9,9 +9,9 @@ Authors: Sébastien Gouëzel
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Encodable
-import Mathlib.Data.Real.Ereal
+import Mathlib.Data.Real.EReal
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
-import Mathlib.Topology.Instances.Ennreal
+import Mathlib.Topology.Instances.ENNReal
 
 /-!
 # Topological structure on `ereal`
