@@ -483,7 +483,14 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine' squeeze_zero (fun e => norm_nonneg _) this _
         -- porting note: the new `convert` sucks, it's way too dumb without using the type
-        -- of the goal to figure out how to match things up
+        -- of the goal to figure out how to match things up. The rest of this proof was:
+        /- convert
+          ((continuous_fst.tendsto x).norm.mul
+                ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
+            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
+        show tendsto _ _ _
+        exact tendsto_const_nhds
+        simp -/
         rw [←zero_add 0]
         refine' Tendsto.add _ _
         rw [←mul_zero (‖x.fst‖)]
