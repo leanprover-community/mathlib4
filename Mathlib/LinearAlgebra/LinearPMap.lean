@@ -258,9 +258,9 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
         by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 #align linear_pmap.eq_locus LinearPMap.eqLocus
 
-instance hasInf : HasInf (E →ₗ.[R] F) :=
+instance inf : Inf (E →ₗ.[R] F) :=
   ⟨fun f g => ⟨f.eqLocus g, f.toFun.comp <| ofLe fun _x hx => hx.fst⟩⟩
-#align linear_pmap.has_inf LinearPMap.hasInf
+#align linear_pmap.has_inf LinearPMap.inf
 
 instance bot : Bot (E →ₗ.[R] F) :=
   ⟨⟨⊥, 0⟩⟩

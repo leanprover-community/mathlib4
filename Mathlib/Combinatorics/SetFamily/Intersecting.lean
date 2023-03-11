@@ -45,7 +45,7 @@ def Intersecting (s : Set α) : Prop :=
   ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬Disjoint a b
 #align set.intersecting Set.Intersecting
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting := fun _a ha _b hb =>
   hs (h ha) (h hb)
 #align set.intersecting.mono Set.Intersecting.mono
@@ -204,7 +204,7 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   revert hs
   refine' s.strongDownwardInductionOn _ this
   rintro s ih _hcard hs
-  by_cases ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
+  by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
   push_neg  at h
   obtain ⟨t, ht, hst⟩ := h

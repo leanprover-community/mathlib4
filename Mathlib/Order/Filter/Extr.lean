@@ -634,13 +634,13 @@ section Eventually
 /-! ### Relation with `eventually` comparisons of two functions -/
 
 
-theorem Filter.EventuallyLe.isMaxFilter {α β : Type _} [Preorder β] {f g : α → β} {a : α}
+theorem Filter.EventuallyLE.isMaxFilter {α β : Type _} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : g ≤ᶠ[l] f) (hfga : f a = g a) (h : IsMaxFilter f l a) :
     IsMaxFilter g l a := by
   refine' hle.mp (h.mono fun x hf hgf => _)
   rw [← hfga]
   exact le_trans hgf hf
-#align filter.eventually_le.is_max_filter Filter.EventuallyLe.isMaxFilter
+#align filter.eventually_le.is_max_filter Filter.EventuallyLE.isMaxFilter
 
 theorem IsMaxFilter.congr {α β : Type _} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsMaxFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMaxFilter g l a :=
@@ -652,11 +652,11 @@ theorem Filter.EventuallyEq.isMaxFilter_iff {α β : Type _} [Preorder β] {f g 
   ⟨fun h => h.congr heq hfga, fun h => h.congr heq.symm hfga.symm⟩
 #align filter.eventually_eq.is_max_filter_iff Filter.EventuallyEq.isMaxFilter_iff
 
-theorem Filter.EventuallyLe.isMinFilter {α β : Type _} [Preorder β] {f g : α → β} {a : α}
+theorem Filter.EventuallyLE.isMinFilter {α β : Type _} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : f ≤ᶠ[l] g) (hfga : f a = g a) (h : IsMinFilter f l a) :
     IsMinFilter g l a :=
-  @Filter.EventuallyLe.isMaxFilter _ βᵒᵈ _ _ _ _ _ hle hfga h
-#align filter.eventually_le.is_min_filter Filter.EventuallyLe.isMinFilter
+  @Filter.EventuallyLE.isMaxFilter _ βᵒᵈ _ _ _ _ _ hle hfga h
+#align filter.eventually_le.is_min_filter Filter.EventuallyLE.isMinFilter
 
 theorem IsMinFilter.congr {α β : Type _} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsMinFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMinFilter g l a :=

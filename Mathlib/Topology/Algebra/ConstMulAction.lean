@@ -109,7 +109,7 @@ theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
 #align continuous_on.const_smul ContinuousOn.const_smul
 #align continuous_on.const_vadd ContinuousOn.const_vadd
 
-@[to_additive, continuity]
+@[to_additive (attr := continuity)]
 theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
   (continuous_const_smul _).comp hg
 #align continuous.const_smul Continuous.const_smul
@@ -383,7 +383,7 @@ theorem HasCompactSupport.comp_smul {β : Type _} [Zero β] {f : α → β} (h :
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 #align has_compact_support.comp_smul HasCompactSupport.comp_smul
 
-attribute [to_additive HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
+attribute [to_additive existing HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
 
 end GroupWithZero
 

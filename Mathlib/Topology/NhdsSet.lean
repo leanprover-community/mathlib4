@@ -111,7 +111,7 @@ theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set α) := by simp
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set α) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]
 #align nhds_set_univ nhdsSet_univ
 
--- porting note: todo: restore @[mono]
+@[mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
   supₛ_le_supₛ <| image_subset _ h
 #align nhds_set_mono nhdsSet_mono

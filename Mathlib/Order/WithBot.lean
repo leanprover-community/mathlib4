@@ -359,6 +359,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
         WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_bot.strict_mono_iff WithBot.strictMono_iff
 
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
+  strictMono_iff (β := βᵒᵈ)
+
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
     StrictMono (WithBot.map f) ↔ StrictMono f :=
@@ -1129,6 +1133,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
       ⟨WithTop.forall.2 ⟨flip absurd (lt_irrefl _), fun _ h => (not_top_lt h).elim⟩, fun x =>
         WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_top.strict_mono_iff WithTop.strictMono_iff
+
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
+  strictMono_iff (β := βᵒᵈ)
 
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
