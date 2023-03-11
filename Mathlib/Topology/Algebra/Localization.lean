@@ -16,12 +16,12 @@ import Mathlib.Topology.Algebra.Ring.Basic
 # Localization of topological rings
 
 The topological localization of a topological commutative ring `R` at a submonoid `M` is the ring
-`localization M`  endowed with the final ring topology of the natural homomorphism sending `x : R`
+`Localization M` endowed with the final ring topology of the natural homomorphism sending `x : R`
 to the equivalence class of `(x, 1)` in the localization of `R` at a `M`.
 
 ## Main Results
 
-- `localization.topological_ring`: The localization of a topological commutative ring at a submonoid
+- `Localization.ringTopology`: The localization of a topological commutative ring at a submonoid
   is a topological ring.
 
 -/
@@ -29,7 +29,7 @@ to the equivalence class of `(x, 1)` in the localization of `R` at a `M`.
 
 variable {R : Type _} [CommRing R] [TopologicalSpace R] {M : Submonoid R}
 
-/-- The ring topology on `localization M` coinduced from the natural homomorphism sending `x : R`
+/-- The ring topology on `Localization M` coinduced from the natural homomorphism sending `x : R`
 to the equivalence class of `(x, 1)`. -/
 def Localization.ringTopology : RingTopology (Localization M) :=
   RingTopology.coinduced (Localization.monoidOf M).toFun
@@ -40,4 +40,3 @@ instance : TopologicalSpace (Localization M) :=
 
 instance : TopologicalRing (Localization M) :=
   Localization.ringTopology.toTopologicalRing
-
