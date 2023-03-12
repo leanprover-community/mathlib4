@@ -523,19 +523,20 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
   | oadd e n a, 0, h₁, h₂ => (Ordinal.sub_zero _).symm
   | oadd e₁ n₁ a₁, oadd e₂ n₂ a₂, h₁, h₂ => by
     haveI := h₁.snd; haveI := h₂.snd; have h' := repr_sub a₁ a₂
-    conv at h' in a₁ - a₂ => simp [Sub.sub]
+    --conv at h' in a₁ - a₂ => simp [Sub.sub]
     have nf := Onote.sub_nF a₁ a₂
-    conv at nf in a₁ - a₂ => simp [Sub.sub]
-    conv in _ - oadd _ _ _ => simp [Sub.sub, sub]
+    --conv at nf in a₁ - a₂ => simp [Sub.sub]
+    --conv in _ - oadd _ _ _ => simp [Sub.sub, sub]
     have ee := @cmp_compares _ _ h₁.fst h₂.fst
-    cases cmp e₁ e₂
+    cases h: cmp e₁ e₂ <;> simp [h] at ee
     · rw [Ordinal.sub_eq_zero_iff_le.2]
-      · rfl
+      . simp [(· - ·), Sub.sub, sub, h]
       exact le_of_lt (oadd_lt_oadd_1 h₁ ee)
-    · change e₁ = e₂ at ee
-      subst e₂
-      unfold sub._match_1
-      cases mn : (n₁ : ℕ) - n₂ <;> dsimp only [sub._match_2]
+    · subst e₂
+      conv =>
+        lhs
+        simp [(· - ·), Sub.sub, sub, h]
+      cases mn : (n₁ : ℕ) - n₂ <;> dsimp
       · by_cases en : n₁ = n₂
         · simpa [en]
         · simp [en, -repr]
