@@ -116,6 +116,9 @@ def objects : Cat.{v, u} ⥤ Type u where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.objects CategoryTheory.Cat.objects
 
+-- porting note: this instance was needed for CategoryTheory.Category.Cat.Limit
+instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
+
 section
 
 attribute [local simp] eqToHom_map
