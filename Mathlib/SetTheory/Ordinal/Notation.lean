@@ -552,7 +552,9 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
           (Ordinal.sub_eq_of_add_eq <|
               add_absorp h₂.snd'.repr_lt <| le_trans _ (le_add_right _ _)).symm
         simpa using mul_le_mul_left' (nat_cast_le.2 <| Nat.succ_pos _) _
-    ·
+    · conv =>
+        lhs
+        simp [(· - ·), Sub.sub, sub, h]
       exact
         (Ordinal.sub_eq_of_add_eq <|
             add_absorp (h₂.below_of_lt ee).repr_lt <| omega_le_oadd _ _ _).symm
