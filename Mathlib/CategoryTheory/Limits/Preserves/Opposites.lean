@@ -204,8 +204,6 @@ section
 -- universe.
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
 
-set_option pp.all true
-
 /-- If `F : C ⥤ D` preserves finite colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
     limits. -/
 def preservesFiniteLimitsOp (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteLimits F.op
