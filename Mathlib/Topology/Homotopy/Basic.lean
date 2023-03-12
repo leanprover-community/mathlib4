@@ -426,18 +426,14 @@ theorem prop (F : HomotopyWith f₀ f₁ P) (t : I) : P (F.toHomotopy.curry t) :
   @HomotopyWith.prop' _ _ _ _ _ _ _ F (ContinuousMap.continuous_toFun _) _
 #align continuous_map.homotopy_with.prop ContinuousMap.HomotopyWith.prop
 
--- porting note: where should I move this lemma?
-lemma _root_.congr_prop {Z : Type _} {P : Z → Prop} {x y : Z} (hx : P x) (h : x = y) : P y := by
-  simpa only [← h] using hx
-
 theorem extendProp (F : HomotopyWith f₀ f₁ P) (t : ℝ) : P (F.toHomotopy.extend t) := by
   by_cases ht₀ : 0 ≤ t
   · by_cases ht₁ : t ≤ 1
     · apply F.prop
-    · apply congr_prop (F.prop 1)
+    · refine' Eq.subst _ (F.prop 1)
       ext x
       simp [F.toHomotopy.extend_apply_of_one_le (le_of_not_le ht₁)]
-  · apply congr_prop (F.prop 0)
+  · refine' Eq.subst _ (F.prop 0)
     ext x
     simp [F.toHomotopy.extend_apply_of_le_zero (le_of_not_le ht₀)]
 #align continuous_map.homotopy_with.extend_prop ContinuousMap.HomotopyWith.extendProp
@@ -453,7 +449,7 @@ variable {P : C(X, Y) → Prop}
 def refl (f : C(X, Y)) (hf : P f) : HomotopyWith f f P :=
   { Homotopy.refl f with
     prop' := fun t => by
-      apply congr_prop hf
+      refine' Eq.subst _ hf
       cases f
       rfl }
 #align continuous_map.homotopy_with.refl ContinuousMap.HomotopyWith.refl
@@ -467,7 +463,7 @@ Given a `homotopy_with f₀ f₁ P`, we can define a `homotopy_with f₁ f₀ P`
 --@[simps]
 def symm {f₀ f₁ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) : HomotopyWith f₁ f₀ P :=
   { F.toHomotopy.symm with
-      prop' := fun t => congr_prop (F.prop (σ t)) rfl }
+      prop' := fun t => F.prop (σ t) }
 #align continuous_map.homotopy_with.symm ContinuousMap.HomotopyWith.symm
 
 @[simp]
