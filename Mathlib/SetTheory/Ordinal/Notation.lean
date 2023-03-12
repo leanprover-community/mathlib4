@@ -482,17 +482,16 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have nf := Onote.add_nF a o
     conv at nf => simp [(· + ·)]
     conv in _ + o => simp [(· + ·), add]
-    cases' add a o with e' n' a' <;> simp [add, h'.symm, add_assoc]
+    cases' h: add a o with e' n' a' <;> simp [Add.add, add, h'.symm, h, add_assoc] at nf h₁⊢
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
-    cases cmp e e' <;> simp [add]
+    cases he: cmp e e' <;> simp [add, he] at ee⊢
     · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
       · have := (h₁.below_of_lt ee).repr_lt
         unfold repr at this
+        cases he': e' <;> simp [he'] at this ⊢ <;>
         exact lt_of_le_of_lt (le_add_right _ _) this
-      · simpa using (mul_le_mul_iff_left <| opow_pos (repr e') omega_pos).2 (nat_cast_le.2 n'.pos)
-    · change e = e' at ee
-      subst e'
-      rw [← add_assoc, ← mul_add, ← Nat.cast_add]
+      · simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e') omega_pos).2 (nat_cast_le.2 n'.pos)
+    · rw [ee, ← add_assoc, ← mul_add, ← Nat.cast_add]
 #align onote.repr_add Onote.repr_add
 
 theorem sub_nFBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow (o₁ - o₂) b
