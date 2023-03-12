@@ -8,9 +8,9 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.AlgebraMap
-import Mathbin.Data.Polynomial.Degree.Lemmas
-import Mathbin.Data.Polynomial.Monic
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Data.Polynomial.Monic
 
 /-!
 # Theory of monic polynomials
@@ -50,8 +50,7 @@ theorem integralNormalization_zero : integralNormalization (0 : R[X]) = 0 := by
 
 theorem integralNormalization_coeff {f : R[X]} {i : ℕ} :
     (integralNormalization f).coeff i =
-      if f.degree = i then 1 else coeff f i * f.leadingCoeff ^ (f.natDegree - 1 - i) :=
-  by
+      if f.degree = i then 1 else coeff f i * f.leadingCoeff ^ (f.natDegree - 1 - i) := by
   have : f.coeff i = 0 → f.degree ≠ i := fun hc hd => coeff_ne_zero_of_eq_degree hd hc
   simp (config := { contextual := true }) [integral_normalization, coeff_monomial, this,
     mem_support_iff]
