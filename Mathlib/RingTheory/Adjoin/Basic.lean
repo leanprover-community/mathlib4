@@ -8,10 +8,10 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Operations
-import Mathbin.Algebra.Algebra.Subalgebra.Tower
-import Mathbin.LinearAlgebra.Prod
-import Mathbin.LinearAlgebra.Finsupp
+import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Finsupp
 
 /-!
 # Adjoining elements to form subalgebras
@@ -102,8 +102,7 @@ theorem adjoin_induction₂ {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin 
     (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
-    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b :=
-  by
+    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
   refine' adjoin_induction hb _ (fun r => _) (Hadd_right a) (Hmul_right a)
   ·
     exact
@@ -135,8 +134,7 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (Hs : ∀ (x) (h : x ∈ s),
 #align algebra.adjoin_induction' Algebra.adjoin_induction'
 
 @[simp]
-theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R ((coe : adjoin R s → A) ⁻¹' s) = ⊤ :=
-  by
+theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R ((coe : adjoin R s → A) ⁻¹' s) = ⊤ := by
   refine'
     eq_top_iff.2 fun x =>
       adjoin_induction' (fun a ha => _) (fun r => _) (fun _ _ => _) (fun _ _ => _) x
@@ -166,8 +164,7 @@ theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=
 
 variable (R) {A} (s)
 
-theorem adjoin_eq_span : (adjoin R s).toSubmodule = span R (Submonoid.closure s) :=
-  by
+theorem adjoin_eq_span : (adjoin R s).toSubmodule = span R (Submonoid.closure s) := by
   apply le_antisymm
   · intro r hr
     rcases Subsemiring.mem_closure_iff_exists_list.1 hr with ⟨L, HL, rfl⟩
@@ -241,8 +238,7 @@ theorem adjoin_prod_le (s : Set A) (t : Set B) :
 #align algebra.adjoin_prod_le Algebra.adjoin_prod_le
 
 theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a₂, f (a₁ * a₂) = f a₁ * f a₂)
-    (h : x ∈ adjoin R s) : f x ∈ adjoin R (f '' (s ∪ {1})) :=
-  by
+    (h : x ∈ adjoin R s) : f x ∈ adjoin R (f '' (s ∪ {1})) := by
   refine'
     @adjoin_induction R A _ _ _ _ (fun a => f a ∈ adjoin R (f '' (s ∪ {1}))) x h
       (fun a ha => subset_adjoin ⟨a, ⟨Set.subset_union_left _ _ ha, rfl⟩⟩) (fun r => _)
@@ -258,8 +254,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
 
 theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     adjoin R (LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1})) =
-      (adjoin R s).Prod (adjoin R t) :=
-  by
+      (adjoin R s).Prod (adjoin R t) := by
   apply le_antisymm
   ·
     simp only [adjoin_le_iff, Set.insert_subset, Subalgebra.zero_mem, Subalgebra.one_mem,
@@ -326,15 +321,13 @@ theorem adjoin_union_eq_adjoin_adjoin :
 #align algebra.adjoin_union_eq_adjoin_adjoin Algebra.adjoin_union_eq_adjoin_adjoin
 
 theorem adjoin_union_coe_submodule :
-    (adjoin R (s ∪ t)).toSubmodule = (adjoin R s).toSubmodule * (adjoin R t).toSubmodule :=
-  by
+    (adjoin R (s ∪ t)).toSubmodule = (adjoin R s).toSubmodule * (adjoin R t).toSubmodule := by
   rw [adjoin_eq_span, adjoin_eq_span, adjoin_eq_span, span_mul_span]
   congr 1 with z; simp [Submonoid.closure_union, Submonoid.mem_sup, Set.mem_mul]
 #align algebra.adjoin_union_coe_submodule Algebra.adjoin_union_coe_submodule
 
 theorem adjoin_adjoin_of_tower [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
-    (s : Set B) : adjoin A (adjoin R s : Set B) = adjoin A s :=
-  by
+    (s : Set B) : adjoin A (adjoin R s : Set B) = adjoin A s := by
   apply le_antisymm (adjoin_le _)
   · exact adjoin_mono subset_adjoin
   · change adjoin R s ≤ (adjoin A s).restrictScalars R
@@ -346,8 +339,7 @@ variable {R}
 
 theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B] [Algebra A B]
     [IsScalarTower R A B] (r : A) (s : Set B) (B' : Subalgebra R B) (hs : r • s ⊆ B') {x : B}
-    (hx : x ∈ adjoin R s) (hr : algebraMap A B r ∈ B') : ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ B' :=
-  by
+    (hx : x ∈ adjoin R s) (hr : algebraMap A B r ∈ B') : ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ B' := by
   change x ∈ (adjoin R s).toSubmodule at hx
   rw [adjoin_eq_span, Finsupp.mem_span_iff_total] at hx
   rcases hx with ⟨l, rfl : (l.sum fun (i : Submonoid.closure s) (c : R) => c • ↑i) = x⟩
