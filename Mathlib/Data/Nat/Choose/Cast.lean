@@ -32,9 +32,7 @@ theorem cast_choose {a b : ℕ} (h : a ≤ b) : (b.choose a : K) = b ! / (a ! * 
 #align nat.cast_choose Nat.cast_choose
 
 theorem cast_add_choose {a b : ℕ} : ((a + b).choose a : K) = (a + b)! / (a ! * b !) := by
-  rw [cast_choose]
-  · rw [add_tsub_cancel_left]
-  · simp
+  rw [cast_choose K (_root_.le_add_right le_rfl), add_tsub_cancel_left]
 #align nat.cast_add_choose Nat.cast_add_choose
 
 theorem cast_choose_eq_pochhammer_div (a b : ℕ) :
