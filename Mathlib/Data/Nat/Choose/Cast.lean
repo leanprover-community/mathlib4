@@ -37,7 +37,7 @@ theorem cast_add_choose {a b : ℕ} : ((a + b).choose a : K) = (a + b)! / (a ! *
   · simp
 #align nat.cast_add_choose Nat.cast_add_choose
 
--- Porting note: changed type ascription around a - (b - 1)
+-- Porting note: changed type ascription to coercion arrow around a - (b - 1)
 theorem cast_choose_eq_pochhammer_div (a b : ℕ) :
     (a.choose b : K) = (pochhammer K b).eval ↑(a - (b - 1)) / b ! := by
   rw [eq_div_iff_mul_eq (cast_ne_zero.2 b.factorial_ne_zero : (b ! : K) ≠ 0), ← cast_mul,
