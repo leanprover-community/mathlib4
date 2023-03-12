@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Hom
-import Mathbin.Analysis.Normed.Group.Completion
+import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.Normed.Group.Completion
 
 /-!
 # Completion of normed group homs
@@ -91,8 +91,7 @@ theorem NormedAddGroupHom.completion_def (f : NormedAddGroupHom G H) (x : Comple
 
 @[simp]
 theorem NormedAddGroupHom.completion_coe_to_fun (f : NormedAddGroupHom G H) :
-    (f.Completion : Completion G → Completion H) = Completion.map f :=
-  by
+    (f.Completion : Completion G → Completion H) = Completion.map f := by
   ext x
   exact NormedAddGroupHom.completion_def f x
 #align normed_add_group_hom.completion_coe_to_fun NormedAddGroupHom.completion_coe_to_fun
@@ -119,16 +118,14 @@ def normedAddGroupHomCompletionHom :
 
 @[simp]
 theorem NormedAddGroupHom.completion_id :
-    (NormedAddGroupHom.id G).Completion = NormedAddGroupHom.id (Completion G) :=
-  by
+    (NormedAddGroupHom.id G).Completion = NormedAddGroupHom.id (Completion G) := by
   ext x
   rw [NormedAddGroupHom.completion_def, NormedAddGroupHom.coe_id, completion.map_id]
   rfl
 #align normed_add_group_hom.completion_id NormedAddGroupHom.completion_id
 
 theorem NormedAddGroupHom.completion_comp (f : NormedAddGroupHom G H) (g : NormedAddGroupHom H K) :
-    g.Completion.comp f.Completion = (g.comp f).Completion :=
-  by
+    g.Completion.comp f.Completion = (g.comp f).Completion := by
   ext x
   rw [NormedAddGroupHom.coe_comp, NormedAddGroupHom.completion_def,
     NormedAddGroupHom.completion_coe_to_fun, NormedAddGroupHom.completion_coe_to_fun,
@@ -177,16 +174,14 @@ theorem NormedAddCommGroup.denseRange_toCompl : DenseRange (toCompl : G → Comp
 
 @[simp]
 theorem NormedAddGroupHom.completion_toCompl (f : NormedAddGroupHom G H) :
-    f.Completion.comp toCompl = toCompl.comp f :=
-  by
+    f.Completion.comp toCompl = toCompl.comp f := by
   ext x
   change f.completion x = _
   simpa
 #align normed_add_group_hom.completion_to_compl NormedAddGroupHom.completion_toCompl
 
 @[simp]
-theorem NormedAddGroupHom.norm_completion (f : NormedAddGroupHom G H) : ‖f.Completion‖ = ‖f‖ :=
-  by
+theorem NormedAddGroupHom.norm_completion (f : NormedAddGroupHom G H) : ‖f.Completion‖ = ‖f‖ := by
   apply f.completion.op_norm_eq_of_bounds (norm_nonneg _)
   · intro x
     apply completion.induction_on x
@@ -201,8 +196,7 @@ theorem NormedAddGroupHom.norm_completion (f : NormedAddGroupHom G H) : ‖f.Com
 #align normed_add_group_hom.norm_completion NormedAddGroupHom.norm_completion
 
 theorem NormedAddGroupHom.ker_le_ker_completion (f : NormedAddGroupHom G H) :
-    (toCompl.comp <| incl f.ker).range ≤ f.Completion.ker :=
-  by
+    (toCompl.comp <| incl f.ker).range ≤ f.Completion.ker := by
   intro a h
   replace h : ∃ y : f.ker, to_compl (y : G) = a; · simpa using h
   rcases h with ⟨⟨g, g_in : g ∈ f.ker⟩, rfl⟩
@@ -213,8 +207,7 @@ theorem NormedAddGroupHom.ker_le_ker_completion (f : NormedAddGroupHom G H) :
 
 theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
     (h : f.SurjectiveOnWith f.range C) :
-    (f.Completion.ker : Set <| Completion G) = closure (toCompl.comp <| incl f.ker).range :=
-  by
+    (f.Completion.ker : Set <| Completion G) = closure (toCompl.comp <| incl f.ker).range := by
   rcases h.exists_pos with ⟨C', C'_pos, hC'⟩
   apply le_antisymm
   · intro hatg hatg_in
@@ -301,8 +294,7 @@ theorem NormedAddGroupHom.extension_coe_to_fun (f : NormedAddGroupHom G H) :
 #align normed_add_group_hom.extension_coe_to_fun NormedAddGroupHom.extension_coe_to_fun
 
 theorem NormedAddGroupHom.extension_unique (f : NormedAddGroupHom G H)
-    {g : NormedAddGroupHom (Completion G) H} (hg : ∀ v, f v = g v) : f.extension = g :=
-  by
+    {g : NormedAddGroupHom (Completion G) H} (hg : ∀ v, f v = g v) : f.extension = g := by
   ext v
   rw [NormedAddGroupHom.extension_coe_to_fun,
     completion.extension_unique f.uniform_continuous g.uniform_continuous fun a => hg a]
