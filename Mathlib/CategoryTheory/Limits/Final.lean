@@ -8,11 +8,11 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Punit
-import Mathbin.CategoryTheory.StructuredArrow
-import Mathbin.CategoryTheory.IsConnected
-import Mathbin.CategoryTheory.Limits.Yoneda
-import Mathbin.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.CategoryTheory.Limits.Types
 
 /-!
 # Final and initial functors
@@ -199,8 +199,7 @@ def induction {d : D} (Z : ∀ (X : C) (k : d ⟶ F.obj X), Sort _)
     (h₂ :
       ∀ (X₁ X₂) (k₁ : d ⟶ F.obj X₁) (k₂ : d ⟶ F.obj X₂) (f : X₁ ⟶ X₂),
         k₁ ≫ F.map f = k₂ → Z X₂ k₂ → Z X₁ k₁)
-    {X₀ : C} {k₀ : d ⟶ F.obj X₀} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) :=
-  by
+    {X₀ : C} {k₀ : d ⟶ F.obj X₀} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) := by
   apply Nonempty.some
   apply
     @is_preconnected_induction _ _ _ (fun Y : structured_arrow d F => Z Y.right Y.Hom) _ _
@@ -246,8 +245,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G
 
 @[simp]
 theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
-    G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j :=
-  by
+    G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `hom_to_lift (F.obj j)` to be `𝟙 (F.obj j)`.
   apply induction F fun X k => G.map k ≫ s.ι.app X = (s.ι.app j : _)
@@ -307,16 +305,14 @@ instance (priority := 100) comp_hasColimit [HasColimit G] : HasColimit (F ⋙ G)
 #align category_theory.functor.final.comp_has_colimit CategoryTheory.Functor.Final.comp_hasColimit
 
 theorem colimit_pre_is_iso_aux {t : Cocone G} (P : IsColimit t) :
-    ((isColimitWhiskerEquiv F _).symm P).desc (t.whisker F) = 𝟙 t.pt :=
-  by
+    ((isColimitWhiskerEquiv F _).symm P).desc (t.whisker F) = 𝟙 t.pt := by
   dsimp [is_colimit_whisker_equiv]
   apply P.hom_ext
   intro j
   dsimp; simp
 #align category_theory.functor.final.colimit_pre_is_iso_aux CategoryTheory.Functor.Final.colimit_pre_is_iso_aux
 
-instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) :=
-  by
+instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   rw [colimit.pre_eq (colimit_cocone_comp F (get_colimit_cocone G)) (get_colimit_cocone G)]
   erw [colimit_pre_is_iso_aux]
   dsimp
@@ -390,8 +386,7 @@ def colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d)) F)]
 
 theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
     (t : EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
-    Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) :=
-  by
+    Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
   induction t
   case rel x y r =>
     obtain ⟨f, w⟩ := r
@@ -473,8 +468,7 @@ def induction {d : D} (Z : ∀ (X : C) (k : F.obj X ⟶ d), Sort _)
     (h₂ :
       ∀ (X₁ X₂) (k₁ : F.obj X₁ ⟶ d) (k₂ : F.obj X₂ ⟶ d) (f : X₁ ⟶ X₂),
         F.map f ≫ k₂ = k₁ → Z X₂ k₂ → Z X₁ k₁)
-    {X₀ : C} {k₀ : F.obj X₀ ⟶ d} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) :=
-  by
+    {X₀ : C} {k₀ : F.obj X₀ ⟶ d} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) := by
   apply Nonempty.some
   apply
     @is_preconnected_induction _ _ _ (fun Y : costructured_arrow F d => Z Y.left Y.Hom) _ _
@@ -523,8 +517,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G
 
 @[simp]
 theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
-    s.π.app (lift F (F.obj j)) ≫ G.map (homToLift F (F.obj j)) = s.π.app j :=
-  by
+    s.π.app (lift F (F.obj j)) ≫ G.map (homToLift F (F.obj j)) = s.π.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `hom_to_lift (F.obj j)` to be `𝟙 (F.obj j)`.
   apply induction F fun X k => s.π.app X ≫ G.map k = (s.π.app j : _)
@@ -583,16 +576,14 @@ instance (priority := 100) comp_hasLimit [HasLimit G] : HasLimit (F ⋙ G) :=
 #align category_theory.functor.initial.comp_has_limit CategoryTheory.Functor.Initial.comp_hasLimit
 
 theorem limit_pre_is_iso_aux {t : Cone G} (P : IsLimit t) :
-    ((isLimitWhiskerEquiv F _).symm P).lift (t.whisker F) = 𝟙 t.pt :=
-  by
+    ((isLimitWhiskerEquiv F _).symm P).lift (t.whisker F) = 𝟙 t.pt := by
   dsimp [is_limit_whisker_equiv]
   apply P.hom_ext
   intro j
   simp
 #align category_theory.functor.initial.limit_pre_is_iso_aux CategoryTheory.Functor.Initial.limit_pre_is_iso_aux
 
-instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) :=
-  by
+instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limit_cone_comp F (get_limit_cone G)) (get_limit_cone G)]
   erw [limit_pre_is_iso_aux]
   dsimp
