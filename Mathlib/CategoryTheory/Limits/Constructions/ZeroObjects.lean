@@ -39,7 +39,8 @@ def binaryFanZeroLeft (X : C) : BinaryFan (0 : C) X :=
 
 /-- The limit cone for the product with a zero object is limiting. -/
 def binaryFanZeroLeftIsLimit (X : C) : IsLimit (binaryFanZeroLeft X) :=
-  BinaryFan.isLimitMk (fun s => BinaryFan.snd s) (by tidy) (by tidy) (by tidy)
+  BinaryFan.isLimitMk (fun s => BinaryFan.snd s) (by aesop_cat) (by aesop_cat)
+    (fun s m _ h₂ => by simpa using h₂)
 #align category_theory.limits.binary_fan_zero_left_is_limit CategoryTheory.Limits.binaryFanZeroLeftIsLimit
 
 instance hasBinaryProduct_zero_left (X : C) : HasBinaryProduct (0 : C) X :=
@@ -52,13 +53,13 @@ def zeroProdIso (X : C) : (0 : C) ⨯ X ≅ X :=
 #align category_theory.limits.zero_prod_iso CategoryTheory.Limits.zeroProdIso
 
 @[simp]
-theorem zeroProdIso_hom (X : C) : (zeroProdIso X).Hom = prod.snd :=
+theorem zeroProdIso_hom (X : C) : (zeroProdIso X).hom = prod.snd :=
   rfl
 #align category_theory.limits.zero_prod_iso_hom CategoryTheory.Limits.zeroProdIso_hom
 
 @[simp]
 theorem zeroProdIso_inv_snd (X : C) : (zeroProdIso X).inv ≫ prod.snd = 𝟙 X := by
-  dsimp [zero_prod_iso, binary_fan_zero_left]
+  dsimp [zeroProdIso, binaryFanZeroLeft]
   simp
 #align category_theory.limits.zero_prod_iso_inv_snd CategoryTheory.Limits.zeroProdIso_inv_snd
 
@@ -69,7 +70,8 @@ def binaryFanZeroRight (X : C) : BinaryFan X (0 : C) :=
 
 /-- The limit cone for the product with a zero object is limiting. -/
 def binaryFanZeroRightIsLimit (X : C) : IsLimit (binaryFanZeroRight X) :=
-  BinaryFan.isLimitMk (fun s => BinaryFan.fst s) (by tidy) (by tidy) (by tidy)
+  BinaryFan.isLimitMk (fun s => BinaryFan.fst s) (by aesop_cat) (by aesop_cat)
+    (fun s m h₁ => by simpa using h₁)
 #align category_theory.limits.binary_fan_zero_right_is_limit CategoryTheory.Limits.binaryFanZeroRightIsLimit
 
 instance hasBinaryProduct_zero_right (X : C) : HasBinaryProduct X (0 : C) :=
@@ -82,13 +84,13 @@ def prodZeroIso (X : C) : X ⨯ (0 : C) ≅ X :=
 #align category_theory.limits.prod_zero_iso CategoryTheory.Limits.prodZeroIso
 
 @[simp]
-theorem prodZeroIso_hom (X : C) : (prodZeroIso X).Hom = prod.fst :=
+theorem prodZeroIso_hom (X : C) : (prodZeroIso X).hom = prod.fst :=
   rfl
 #align category_theory.limits.prod_zero_iso_hom CategoryTheory.Limits.prodZeroIso_hom
 
 @[simp]
 theorem prodZeroIso_iso_inv_snd (X : C) : (prodZeroIso X).inv ≫ prod.fst = 𝟙 X := by
-  dsimp [prod_zero_iso, binary_fan_zero_right]
+  dsimp [prodZeroIso, binaryFanZeroRight]
   simp
 #align category_theory.limits.prod_zero_iso_iso_inv_snd CategoryTheory.Limits.prodZeroIso_iso_inv_snd
 
@@ -99,7 +101,8 @@ def binaryCofanZeroLeft (X : C) : BinaryCofan (0 : C) X :=
 
 /-- The colimit cocone for the coproduct with a zero object is colimiting. -/
 def binaryCofanZeroLeftIsColimit (X : C) : IsColimit (binaryCofanZeroLeft X) :=
-  BinaryCofan.isColimitMk (fun s => BinaryCofan.inr s) (by tidy) (by tidy) (by tidy)
+  BinaryCofan.isColimitMk (fun s => BinaryCofan.inr s) (by aesop_cat) (by aesop_cat)
+    (fun s m _ h₂ => by simpa using h₂)
 #align category_theory.limits.binary_cofan_zero_left_is_colimit CategoryTheory.Limits.binaryCofanZeroLeftIsColimit
 
 instance hasBinaryCoproduct_zero_left (X : C) : HasBinaryCoproduct (0 : C) X :=
@@ -112,8 +115,8 @@ def zeroCoprodIso (X : C) : (0 : C) ⨿ X ≅ X :=
 #align category_theory.limits.zero_coprod_iso CategoryTheory.Limits.zeroCoprodIso
 
 @[simp]
-theorem inr_zeroCoprodIso_hom (X : C) : coprod.inr ≫ (zeroCoprodIso X).Hom = 𝟙 X := by
-  dsimp [zero_coprod_iso, binary_cofan_zero_left]
+theorem inr_zeroCoprodIso_hom (X : C) : coprod.inr ≫ (zeroCoprodIso X).hom = 𝟙 X := by
+  dsimp [zeroCoprodIso, binaryCofanZeroLeft]
   simp
 #align category_theory.limits.inr_zero_coprod_iso_hom CategoryTheory.Limits.inr_zeroCoprodIso_hom
 
@@ -129,7 +132,8 @@ def binaryCofanZeroRight (X : C) : BinaryCofan X (0 : C) :=
 
 /-- The colimit cocone for the coproduct with a zero object is colimiting. -/
 def binaryCofanZeroRightIsColimit (X : C) : IsColimit (binaryCofanZeroRight X) :=
-  BinaryCofan.isColimitMk (fun s => BinaryCofan.inl s) (by tidy) (by tidy) (by tidy)
+  BinaryCofan.isColimitMk (fun s => BinaryCofan.inl s) (by aesop_cat) (by aesop_cat)
+    (fun s m h₁ _ => by simpa using h₁)
 #align category_theory.limits.binary_cofan_zero_right_is_colimit CategoryTheory.Limits.binaryCofanZeroRightIsColimit
 
 instance hasBinaryCoproduct_zero_right (X : C) : HasBinaryCoproduct X (0 : C) :=
@@ -142,8 +146,8 @@ def coprodZeroIso (X : C) : X ⨿ (0 : C) ≅ X :=
 #align category_theory.limits.coprod_zero_iso CategoryTheory.Limits.coprodZeroIso
 
 @[simp]
-theorem inr_coprod_zeroiso_hom (X : C) : coprod.inl ≫ (coprodZeroIso X).Hom = 𝟙 X := by
-  dsimp [coprod_zero_iso, binary_cofan_zero_right]
+theorem inr_coprod_zeroiso_hom (X : C) : coprod.inl ≫ (coprodZeroIso X).hom = 𝟙 X := by
+  dsimp [coprodZeroIso, binaryCofanZeroRight]
   simp
 #align category_theory.limits.inr_coprod_zeroiso_hom CategoryTheory.Limits.inr_coprod_zeroiso_hom
 
@@ -168,25 +172,25 @@ def pullbackZeroZeroIso (X Y : C) [HasBinaryProduct X Y] :
 @[simp]
 theorem pullbackZeroZeroIso_inv_fst (X Y : C) [HasBinaryProduct X Y] :
     (pullbackZeroZeroIso X Y).inv ≫ pullback.fst = prod.fst := by
-  dsimp [pullback_zero_zero_iso]
+  dsimp [pullbackZeroZeroIso]
   simp
 #align category_theory.limits.pullback_zero_zero_iso_inv_fst CategoryTheory.Limits.pullbackZeroZeroIso_inv_fst
 
 @[simp]
 theorem pullbackZeroZeroIso_inv_snd (X Y : C) [HasBinaryProduct X Y] :
     (pullbackZeroZeroIso X Y).inv ≫ pullback.snd = prod.snd := by
-  dsimp [pullback_zero_zero_iso]
+  dsimp [pullbackZeroZeroIso]
   simp
 #align category_theory.limits.pullback_zero_zero_iso_inv_snd CategoryTheory.Limits.pullbackZeroZeroIso_inv_snd
 
 @[simp]
 theorem pullbackZeroZeroIso_hom_fst (X Y : C) [HasBinaryProduct X Y] :
-    (pullbackZeroZeroIso X Y).Hom ≫ prod.fst = pullback.fst := by simp [← iso.eq_inv_comp]
+    (pullbackZeroZeroIso X Y).hom ≫ prod.fst = pullback.fst := by simp [← Iso.eq_inv_comp]
 #align category_theory.limits.pullback_zero_zero_iso_hom_fst CategoryTheory.Limits.pullbackZeroZeroIso_hom_fst
 
 @[simp]
 theorem pullbackZeroZeroIso_hom_snd (X Y : C) [HasBinaryProduct X Y] :
-    (pullbackZeroZeroIso X Y).Hom ≫ prod.snd = pullback.snd := by simp [← iso.eq_inv_comp]
+    (pullbackZeroZeroIso X Y).hom ≫ prod.snd = pullback.snd := by simp [← Iso.eq_inv_comp]
 #align category_theory.limits.pullback_zero_zero_iso_hom_snd CategoryTheory.Limits.pullbackZeroZeroIso_hom_snd
 
 instance hasPushout_over_zero (X Y : C) [HasBinaryCoproduct X Y] :
@@ -204,27 +208,26 @@ def pushoutZeroZeroIso (X Y : C) [HasBinaryCoproduct X Y] :
 
 @[simp]
 theorem inl_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
-    pushout.inl ≫ (pushoutZeroZeroIso X Y).Hom = coprod.inl := by
-  dsimp [pushout_zero_zero_iso]
+    pushout.inl ≫ (pushoutZeroZeroIso X Y).hom = coprod.inl := by
+  dsimp [pushoutZeroZeroIso]
   simp
 #align category_theory.limits.inl_pushout_zero_zero_iso_hom CategoryTheory.Limits.inl_pushoutZeroZeroIso_hom
 
 @[simp]
 theorem inr_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
-    pushout.inr ≫ (pushoutZeroZeroIso X Y).Hom = coprod.inr := by
-  dsimp [pushout_zero_zero_iso]
+    pushout.inr ≫ (pushoutZeroZeroIso X Y).hom = coprod.inr := by
+  dsimp [pushoutZeroZeroIso]
   simp
 #align category_theory.limits.inr_pushout_zero_zero_iso_hom CategoryTheory.Limits.inr_pushoutZeroZeroIso_hom
 
 @[simp]
 theorem inl_pushoutZeroZeroIso_inv (X Y : C) [HasBinaryCoproduct X Y] :
-    coprod.inl ≫ (pushoutZeroZeroIso X Y).inv = pushout.inl := by simp [iso.comp_inv_eq]
+    coprod.inl ≫ (pushoutZeroZeroIso X Y).inv = pushout.inl := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.inl_pushout_zero_zero_iso_inv CategoryTheory.Limits.inl_pushoutZeroZeroIso_inv
 
 @[simp]
 theorem inr_pushoutZeroZeroIso_inv (X Y : C) [HasBinaryCoproduct X Y] :
-    coprod.inr ≫ (pushoutZeroZeroIso X Y).inv = pushout.inr := by simp [iso.comp_inv_eq]
+    coprod.inr ≫ (pushoutZeroZeroIso X Y).inv = pushout.inr := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.inr_pushout_zero_zero_iso_inv CategoryTheory.Limits.inr_pushoutZeroZeroIso_inv
 
 end CategoryTheory.Limits
-
