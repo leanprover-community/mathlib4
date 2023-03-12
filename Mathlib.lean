@@ -283,6 +283,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom

@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.StructuredArrow
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.CategoryTheory.Punit
+import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Punit
 
 /-!
 # The category of elements
@@ -224,8 +224,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
 
 /-- The unit of the equivalence `F.elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
 theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
-    (toCostructuredArrow F).rightOp ⋙ fromCostructuredArrow F = 𝟭 _ :=
-  by
+    (toCostructuredArrow F).rightOp ⋙ fromCostructuredArrow F = 𝟭 _ := by
   apply Functor.ext
   intro X Y f
   have :
@@ -244,8 +243,7 @@ theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
 
 /-- The counit of the equivalence `F.elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
 theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
-    (fromCostructuredArrow F).rightOp ⋙ toCostructuredArrow F = 𝟭 _ :=
-  by
+    (fromCostructuredArrow F).rightOp ⋙ toCostructuredArrow F = 𝟭 _ := by
   apply functor.hext
   · intro X
     cases X
@@ -285,8 +283,7 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
 /-- The equivalence `(-.elements)ᵒᵖ ≅ (yoneda, -)` of is actually a natural isomorphism of functors.
 -/
 theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤ Type v} (α : F₁ ⟶ F₂) :
-    (map α).op ⋙ toCostructuredArrow F₂ = toCostructuredArrow F₁ ⋙ CostructuredArrow.map α :=
-  by
+    (map α).op ⋙ toCostructuredArrow F₂ = toCostructuredArrow F₁ ⋙ CostructuredArrow.map α := by
   fapply Functor.ext
   · intro X
     simp only [costructured_arrow.map_mk, to_costructured_arrow_obj, functor.op_obj,
