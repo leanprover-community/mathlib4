@@ -8,9 +8,9 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Pi
-import Mathbin.RingTheory.Adjoin.Basic
-import Mathbin.Data.Polynomial.Eval
+import Mathlib.Algebra.Algebra.Pi
+import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Data.Polynomial.Eval
 
 /-!
 # Theory of univariate polynomials
@@ -122,16 +122,14 @@ instance [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
 @[simp]
 theorem algHom_eval₂_algebraMap {R A B : Type _} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
-    f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p :=
-  by
+    f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
   dsimp [eval₂, Sum]
   simp only [f.map_sum, f.map_mul, f.map_pow, eq_intCast, map_intCast, AlgHom.commutes]
 #align polynomial.alg_hom_eval₂_algebra_map Polynomial.algHom_eval₂_algebraMap
 
 @[simp]
 theorem eval₂_algebraMap_x {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
-    (f : R[X] →ₐ[R] A) : eval₂ (algebraMap R A) (f X) p = f p :=
-  by
+    (f : R[X] →ₐ[R] A) : eval₂ (algebraMap R A) (f X) p = f p := by
   conv_rhs => rw [← Polynomial.sum_C_mul_X_pow_eq p]
   dsimp [eval₂, Sum]
   simp only [f.map_sum, f.map_mul, f.map_pow, eq_intCast, map_intCast]
@@ -175,8 +173,7 @@ def aeval : R[X] →ₐ[R] A :=
 variable {R A}
 
 @[simp]
-theorem adjoin_x : Algebra.adjoin R ({X} : Set R[X]) = ⊤ :=
-  by
+theorem adjoin_x : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
   refine' top_unique fun p hp => _
   set S := Algebra.adjoin R ({X} : Set R[X])
   rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial, Sum]
@@ -269,8 +266,7 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
 #align polynomial.eval_unique Polynomial.eval_unique
 
 theorem aeval_algHom_apply {F : Type _} [AlgHomClass F R A B] (f : F) (x : A) (p : R[X]) :
-    aeval (f x) p = f (aeval x p) :=
-  by
+    aeval (f x) p = f (aeval x p) := by
   refine' Polynomial.induction_on p (by simp) (fun p q hp hq => _) (by simp)
   rw [map_add, hp, hq, ← map_add, ← map_add]
 #align polynomial.aeval_alg_hom_apply Polynomial.aeval_algHom_apply
@@ -318,15 +314,13 @@ theorem coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeva
 theorem map_aeval_eq_aeval_map {S T U : Type _} [CommSemiring S] [CommSemiring T] [Semiring U]
     [Algebra R S] [Algebra T U] {φ : R →+* T} {ψ : S →+* U}
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) (p : R[X]) (a : S) :
-    ψ (aeval a p) = aeval (ψ a) (p.map φ) :=
-  by
+    ψ (aeval a p) = aeval (ψ a) (p.map φ) := by
   conv_rhs => rw [aeval_def, ← eval_map]
   rw [map_map, h, ← map_map, eval_map, eval₂_at_apply, aeval_def, eval_map]
 #align polynomial.map_aeval_eq_aeval_map Polynomial.map_aeval_eq_aeval_map
 
 theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
-    {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 :=
-  by
+    {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
   rw [aeval_def, ← eval_map] at h₂⊢
   exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
 #align polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero Polynomial.aeval_eq_zero_of_dvd_aeval_eq_zero
@@ -345,15 +339,13 @@ section Semiring
 variable [Semiring S] {f : R →+* S}
 
 theorem aeval_eq_sum_range [Algebra R S] {p : R[X]} (x : S) :
-    aeval x p = ∑ i in Finset.range (p.natDegree + 1), p.coeff i • x ^ i :=
-  by
+    aeval x p = ∑ i in Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range (algebraMap R S) x
 #align polynomial.aeval_eq_sum_range Polynomial.aeval_eq_sum_range
 
 theorem aeval_eq_sum_range' [Algebra R S] {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
-    aeval x p = ∑ i in Finset.range n, p.coeff i • x ^ i :=
-  by
+    aeval x p = ∑ i in Finset.range n, p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range' (algebraMap R S) hn x
 #align polynomial.aeval_eq_sum_range' Polynomial.aeval_eq_sum_range'
@@ -422,15 +414,13 @@ theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom
 #align polynomial.aeval_tower_comp_to_alg_hom Polynomial.aevalTower_comp_toAlgHom
 
 @[simp]
-theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval :=
-  by
+theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
   ext
   simp only [eval_X, aeval_tower_X, coe_aeval_eq_eval]
 #align polynomial.aeval_tower_id Polynomial.aevalTower_id
 
 @[simp]
-theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval :=
-  by
+theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
   ext
   simp only [aeval_X, aeval_tower_X]
 #align polynomial.aeval_tower_of_id Polynomial.aevalTower_ofId
@@ -445,8 +435,7 @@ variable [CommRing S] {f : R →+* S}
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (j «expr ≠ » i) -/
 theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_eval : p ∣ f.eval z)
-    (dvd_terms : ∀ (j) (_ : j ≠ i), p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i :=
-  by
+    (dvd_terms : ∀ (j) (_ : j ≠ i), p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂, Sum] at dvd_eval
     rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
@@ -479,8 +468,7 @@ when evaluated at `r`.
 
 This is the key step in our proof of the Cayley-Hamilton theorem.
 -/
-theorem eval_mul_x_sub_c {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 :=
-  by
+theorem eval_mul_x_sub_c {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   simp only [eval, eval₂, RingHom.id_apply]
   have bound :=
     calc
@@ -507,8 +495,7 @@ theorem not_isUnit_x_sub_c [Nontrivial R] (r : R) : ¬IsUnit (X - C r) :=
 end Ring
 
 theorem aeval_endomorphism {M : Type _} [CommRing R] [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
-    (v : M) (p : R[X]) : aeval f p v = p.Sum fun n b => b • (f ^ n) v :=
-  by
+    (v : M) (p : R[X]) : aeval f p v = p.Sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂]
   exact (LinearMap.applyₗ v).map_sum
 #align polynomial.aeval_endomorphism Polynomial.aeval_endomorphism
