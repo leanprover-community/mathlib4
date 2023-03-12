@@ -193,14 +193,22 @@ end UniformSpace.Completion
 
 open UniformSpace Completion NNReal
 
-theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
-    (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
+theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
+    {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
   LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
     (isClosed_le (by continuity) (by continuity)) <| by
-      simpa only [map_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
-    
-theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
-    (h : Isometry f) : Isometry (Completion.map f) :=
+      simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
+
+theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
+    (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
+  one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
+
+theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
+    (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
     (isClosed_eq (by continuity) (by continuity)) fun _ _ ↦ by
-      simp only [map_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
+      simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
+
+theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
+    (h : Isometry f) : Isometry (Completion.map f) :=
+  (coe_isometry.comp h).completion_extension
