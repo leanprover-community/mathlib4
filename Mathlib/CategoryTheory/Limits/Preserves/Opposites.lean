@@ -8,8 +8,8 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Opposites
-import Mathbin.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # Limit preservation properties of `functor.op` and related constructions
