@@ -105,12 +105,12 @@ class PreservesFiniteProducts (F : C ⥤  D) where
 shape `J`, where `J : Type` is a finite category.
 -/
 class PreservesFiniteColimits (F : C ⥤ D) where
-  PreservesFiniteColimits :
+  preservesFiniteColimits :
     ∀ (J : Type) [SmallCategory J] [FinCategory J], PreservesColimitsOfShape J F := by
     infer_instance
 #align category_theory.limits.preserves_finite_colimits CategoryTheory.Limits.PreservesFiniteColimits
 
-attribute [instance] PreservesFiniteColimits.PreservesFiniteColimits
+attribute [instance] PreservesFiniteColimits.preservesFiniteColimits
 
 /-- Preserving finite limits also implies preserving limits over finite shapes in higher universes,
 though through a noncomputable instance. -/
@@ -122,7 +122,7 @@ noncomputable instance (priority := 100) preservesColimitsOfShapeOfPreservesFini
 
 noncomputable instance (priority := 100) PreservesColimits.preservesFiniteColimits (F : C ⥤ D)
     [PreservesColimitsOfSize.{w, w₂} F] : PreservesFiniteColimits F where
-  PreservesFiniteColimits J (sJ : SmallCategory J) fJ := by
+  preservesFiniteColimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestColimitsOfPreservesColimits F
     exact preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
 #align category_theory.limits.preserves_colimits.preserves_finite_colimits CategoryTheory.Limits.PreservesColimits.preservesFiniteColimits
@@ -133,7 +133,7 @@ def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
     (h :
       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
     PreservesFiniteColimits F where
-      PreservesFiniteColimits J (_ : SmallCategory J) _ := by
+      preservesFiniteColimits J (_ : SmallCategory J) _ := by
         letI : Category (ULiftHom (ULift J)) := ULiftHom.category
         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
