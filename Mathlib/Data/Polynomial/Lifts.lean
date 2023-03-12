@@ -62,49 +62,53 @@ def lifts (f : R →+* S) : Subsemiring S[X] :=
 #align polynomial.lifts Polynomial.lifts
 
 theorem mem_lifts (p : S[X]) : p ∈ lifts f ↔ ∃ q : R[X], map f q = p := by
-  simp only [coe_map_ring_hom, lifts, RingHom.mem_rangeS]
+  simp only [coe_mapRingHom, lifts, RingHom.mem_rangeS]
 #align polynomial.mem_lifts Polynomial.mem_lifts
 
 theorem lifts_iff_set_range (p : S[X]) : p ∈ lifts f ↔ p ∈ Set.range (map f) := by
-  simp only [coe_map_ring_hom, lifts, Set.mem_range, RingHom.mem_rangeS]
+  simp only [coe_mapRingHom, lifts, Set.mem_range, RingHom.mem_rangeS]
 #align polynomial.lifts_iff_set_range Polynomial.lifts_iff_set_range
 
-theorem lifts_iff_ringHom_rangeS (p : S[X]) : p ∈ lifts f ↔ p ∈ (mapRingHom f).srange := by
-  simp only [coe_map_ring_hom, lifts, Set.mem_range, RingHom.mem_rangeS]
+theorem lifts_iff_ringHom_rangeS (p : S[X]) : p ∈ lifts f ↔ p ∈ (mapRingHom f).rangeS := by
+  simp only [coe_mapRingHom, lifts, Set.mem_range, RingHom.mem_rangeS]
 #align polynomial.lifts_iff_ring_hom_srange Polynomial.lifts_iff_ringHom_rangeS
 
 theorem lifts_iff_coeff_lifts (p : S[X]) : p ∈ lifts f ↔ ∀ n : ℕ, p.coeff n ∈ Set.range f := by
-  rw [lifts_iff_ring_hom_srange, mem_map_srange f]
+  rw [lifts_iff_ringHom_rangeS, mem_map_rangeS f]
   rfl
 #align polynomial.lifts_iff_coeff_lifts Polynomial.lifts_iff_coeff_lifts
 
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem c_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
   ⟨C r, by
-    simp only [coe_map_ring_hom, map_C, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
+    simp only [coe_mapRingHom, map_C, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
       and_self_iff]⟩
+set_option linter.uppercaseLean3 false in
 #align polynomial.C_mem_lifts Polynomial.c_mem_lifts
 
 /-- If `(s : S)` is in the image of `f`, then `C s` lifts. -/
 theorem C'_mem_lifts {f : R →+* S} {s : S} (h : s ∈ Set.range f) : C s ∈ lifts f := by
   obtain ⟨r, rfl⟩ := Set.mem_range.1 h
   use C r
-  simp only [coe_map_ring_hom, map_C, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
+  simp only [coe_mapRingHom, map_C, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
     and_self_iff]
+set_option linter.uppercaseLean3 false in
 #align polynomial.C'_mem_lifts Polynomial.C'_mem_lifts
 
 /-- The polynomial `X` lifts. -/
 theorem x_mem_lifts (f : R →+* S) : (X : S[X]) ∈ lifts f :=
   ⟨X, by
-    simp only [coe_map_ring_hom, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true, map_X,
+    simp only [coe_mapRingHom, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true, map_X,
       and_self_iff]⟩
+set_option linter.uppercaseLean3 false in
 #align polynomial.X_mem_lifts Polynomial.x_mem_lifts
 
 /-- The polynomial `X ^ n` lifts. -/
 theorem x_pow_mem_lifts (f : R →+* S) (n : ℕ) : (X ^ n : S[X]) ∈ lifts f :=
   ⟨X ^ n, by
-    simp only [coe_map_ring_hom, map_pow, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
+    simp only [coe_mapRingHom, map_pow, Set.mem_univ, Subsemiring.coe_top, eq_self_iff_true,
       map_X, and_self_iff]⟩
+set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_mem_lifts Polynomial.x_pow_mem_lifts
 
 /-- If `p` lifts and `(r : R)` then `r * p` lifts. -/
@@ -112,20 +116,20 @@ theorem base_mul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts f) : C (f r) * p
   simp only [lifts, RingHom.mem_rangeS] at hp⊢
   obtain ⟨p₁, rfl⟩ := hp
   use C r * p₁
-  simp only [coe_map_ring_hom, map_C, map_mul]
+  simp only [coe_mapRingHom, map_C, map_mul]
 #align polynomial.base_mul_mem_lifts Polynomial.base_mul_mem_lifts
 
 /-- If `(s : S)` is in the image of `f`, then `monomial n s` lifts. -/
 theorem monomial_mem_lifts {s : S} (n : ℕ) (h : s ∈ Set.range f) : monomial n s ∈ lifts f := by
   obtain ⟨r, rfl⟩ := Set.mem_range.1 h
   use monomial n r
-  simp only [coe_map_ring_hom, Set.mem_univ, map_monomial, Subsemiring.coe_top, eq_self_iff_true,
+  simp only [coe_mapRingHom, Set.mem_univ, map_monomial, Subsemiring.coe_top, eq_self_iff_true,
     and_self_iff]
 #align polynomial.monomial_mem_lifts Polynomial.monomial_mem_lifts
 
 /-- If `p` lifts then `p.erase n` lifts. -/
-theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.eraseₓ n ∈ lifts f := by
-  rw [lifts_iff_ring_hom_srange, mem_map_srange] at h⊢
+theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈ lifts f := by
+  rw [lifts_iff_ringHom_rangeS, mem_map_rangeS] at h⊢
   intro k
   by_cases hk : k = n
   · use 0
@@ -156,46 +160,49 @@ theorem monomial_mem_lifts_and_degree_eq {s : S} {n : ℕ} (hl : monomial n s �
     intro habs
     simp only [habs, RingHom.map_zero] at hcoeff
     exact hzero hcoeff.symm
-  repeat' rw [← C_mul_X_pow_eq_monomial]
+  rw [← C_mul_X_pow_eq_monomial]
+  rw [← C_mul_X_pow_eq_monomial]
   simp only [hzero, hqzero, Ne.def, not_false_iff, degree_C_mul_X_pow]
 #align polynomial.monomial_mem_lifts_and_degree_eq Polynomial.monomial_mem_lifts_and_degree_eq
 
 /-- A polynomial lifts if and only if it can be lifted to a polynomial of the same degree. -/
 theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     ∃ q : R[X], map f q = p ∧ q.degree = p.degree := by
-  generalize hd : p.nat_degree = d
+  generalize hd : p.natDegree = d
   revert hd p
-  apply Nat.strong_induction_on d
-  intro n hn p hlifts hdeg
-  by_cases erase_zero : p.erase_lead = 0
-  · rw [← erase_lead_add_monomial_nat_degree_leading_coeff p, erase_zero, zero_add, leading_coeff]
+  induction' d using Nat.strong_induction_on with n hn
+  intros p hlifts hdeg
+  by_cases erase_zero : p.eraseLead = 0
+  · rw [← eraseLead_add_monomial_natDegree_leadingCoeff p, erase_zero, zero_add, leadingCoeff]
     exact
       monomial_mem_lifts_and_degree_eq
-        (monomial_mem_lifts p.nat_degree ((lifts_iff_coeff_lifts p).1 hlifts p.nat_degree))
-  have deg_erase := Or.resolve_right (erase_lead_nat_degree_lt_or_erase_lead_eq_zero p) erase_zero
+        (monomial_mem_lifts p.natDegree ((lifts_iff_coeff_lifts p).1 hlifts p.natDegree))
+  have deg_erase := Or.resolve_right (eraseLead_natDegree_lt_or_eraseLead_eq_zero p) erase_zero
   have pzero : p ≠ 0 := by
     intro habs
     exfalso
-    rw [habs, erase_lead_zero, eq_self_iff_true, not_true] at erase_zero
+    rw [habs, eraseLead_zero, eq_self_iff_true, not_true] at erase_zero
     exact erase_zero
-  have lead_zero : p.coeff p.nat_degree ≠ 0 := by
-    rw [← leading_coeff, Ne.def, leading_coeff_eq_zero] <;> exact pzero
+  have lead_zero : p.coeff p.natDegree ≠ 0 := by
+    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero] <;> exact pzero
   obtain ⟨lead, hlead⟩ :=
     monomial_mem_lifts_and_degree_eq
-      (monomial_mem_lifts p.nat_degree ((lifts_iff_coeff_lifts p).1 hlifts p.nat_degree))
-  have deg_lead : lead.degree = p.nat_degree := by
-    rw [hlead.2, ← C_mul_X_pow_eq_monomial, degree_C_mul_X_pow p.nat_degree lead_zero]
+      (monomial_mem_lifts p.natDegree ((lifts_iff_coeff_lifts p).1 hlifts p.natDegree))
+  have deg_lead : lead.degree = p.natDegree := by
+    rw [hlead.2, ← C_mul_X_pow_eq_monomial, degree_C_mul_X_pow p.natDegree lead_zero]
   rw [hdeg] at deg_erase
   obtain ⟨erase, herase⟩ :=
-    hn p.erase_lead.nat_degree deg_erase (erase_mem_lifts p.nat_degree hlifts)
-      (refl p.erase_lead.nat_degree)
+    hn p.eraseLead.natDegree deg_erase (erase_mem_lifts p.natDegree hlifts)
+      (refl p.eraseLead.natDegree)
   use erase + lead
   constructor
   · simp only [hlead, herase, Polynomial.map_add]
-    nth_rw 1 [erase_lead_add_monomial_nat_degree_leading_coeff p]
-  rw [← hdeg, erase_lead] at deg_erase
-  replace deg_erase := lt_of_le_of_lt degree_le_nat_degree (WithBot.coe_lt_coe.2 deg_erase)
-  rw [← deg_lead, ← herase.2] at deg_erase
+    rw [←eraseLead, ←leadingCoeff]
+    rw [eraseLead_add_monomial_natDegree_leadingCoeff p]
+  rw [← hdeg, eraseLead] at deg_erase
+  replace deg_erase := lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 deg_erase)
+  -- rw [← deg_lead, ← herase.2] at deg_erase
+  rw [← deg_lead] at deg_erase
   rw [degree_add_eq_right_of_degree_lt deg_erase, deg_lead, degree_eq_nat_degree pzero]
 #align polynomial.mem_lifts_and_degree_eq Polynomial.mem_lifts_and_degree_eq
 
@@ -210,21 +217,21 @@ theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ 
   cases' subsingleton_or_nontrivial R with hR hR
   · obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq hlifts
     exact ⟨q, hq.1, hq.2, monic_of_subsingleton _⟩
-  have H : erase p.nat_degree p + X ^ p.nat_degree = p := by
-    simpa only [hp.leading_coeff, C_1, one_mul, erase_lead] using erase_lead_add_C_mul_X_pow p
-  by_cases h0 : erase p.nat_degree p = 0
+  have H : erase p.natDegree p + X ^ p.natDegree = p := by
+    simpa only [hp.leadingCoeff, C_1, one_mul, eraseLead] using eraseLead_add_C_mul_X_pow p
+  by_cases h0 : erase p.natDegree p = 0
   · rw [← H, h0, zero_add]
-    refine' ⟨X ^ p.nat_degree, _, _, monic_X_pow p.nat_degree⟩
+    refine' ⟨X ^ p.natDegree, _, _, monic_X_pow p.natDegree⟩
     · rw [Polynomial.map_pow, map_X]
     · rw [degree_X_pow, degree_X_pow]
-  obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq (erase_mem_lifts p.nat_degree hlifts)
-  have hdeg : q.degree < (X ^ p.nat_degree).degree :=
+  obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq (erase_mem_lifts p.natDegree hlifts)
+  have hdeg : q.degree < (X ^ p.natDegree).degree :=
     by
-    rw [@degree_X_pow R, hq.2, degree_eq_nat_degree h0, WithBot.coe_lt_coe]
+    rw [@degree_X_pow R, hq.2, degree_eq_natDegree h0, WithBot.coe_lt_coe]
     exact Or.resolve_right (erase_lead_nat_degree_lt_or_erase_lead_eq_zero p) h0
-  refine' ⟨q + X ^ p.nat_degree, _, _, (monic_X_pow _).add_of_right hdeg⟩
+  refine' ⟨q + X ^ p.natDegree, _, _, (monic_X_pow _).add_of_right hdeg⟩
   · rw [Polynomial.map_add, hq.1, Polynomial.map_pow, map_X, H]
-  · rw [degree_add_eq_right_of_degree_lt hdeg, degree_X_pow, degree_eq_nat_degree hp.ne_zero]
+  · rw [degree_add_eq_right_of_degree_lt hdeg, degree_X_pow, degree_eq_natDegree hp.ne_zero]
 #align polynomial.lifts_and_degree_eq_and_monic Polynomial.lifts_and_degree_eq_and_monic
 
 theorem lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp : p.Monic) :
@@ -233,7 +240,7 @@ theorem lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp
   · obtain rfl : p = 1 := Subsingleton.elim _ _
     refine' ⟨1, Subsingleton.elim _ _, by simp, by simp⟩
   obtain ⟨p', h₁, h₂, h₃⟩ := lifts_and_degree_eq_and_monic hlifts hp
-  exact ⟨p', h₁, nat_degree_eq_of_degree_eq h₂, h₃⟩
+  exact ⟨p', h₁, natDegree_eq_of_degree_eq h₂, h₃⟩
 #align polynomial.lifts_and_nat_degree_eq_and_monic Polynomial.lifts_and_natDegree_eq_and_monic
 
 end Monic
@@ -252,7 +259,7 @@ def liftsRing (f : R →+* S) : Subring S[X] :=
 /-- If `R` and `S` are rings, `p` is in the subring of polynomials that lift if and only if it is in
 the subsemiring of polynomials that lift. -/
 theorem lifts_iff_liftsRing (p : S[X]) : p ∈ lifts f ↔ p ∈ liftsRing f := by
-  simp only [lifts, lifts_ring, RingHom.mem_range, RingHom.mem_rangeS]
+  simp only [lifts, liftsRing, RingHom.mem_range, RingHom.mem_rangeS]
 #align polynomial.lifts_iff_lifts_ring Polynomial.lifts_iff_liftsRing
 
 end Ring
@@ -269,20 +276,20 @@ def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S]
 
 /-- `map_alg` is the morphism induced by `R → S`. -/
 theorem mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
-  simp only [map_alg, aeval_def, eval₂, map, algebra_map_apply, RingHom.coe_comp]
+  simp only [mapAlg, aeval_def, eval₂, map, algebraMap_apply, RingHom.coe_comp]
 #align polynomial.map_alg_eq_map Polynomial.mapAlg_eq_map
 
 /-- A polynomial `p` lifts if and only if it is in the image of `map_alg`. -/
 theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
     (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _) := by
-  simp only [coe_map_ring_hom, lifts, map_alg_eq_map, AlgHom.mem_range, RingHom.mem_rangeS]
+  simp only [coe_mapRingHom, lifts, mapAlg_eq_map, AlgHom.mem_range, RingHom.mem_rangeS]
 #align polynomial.mem_lifts_iff_mem_alg Polynomial.mem_lifts_iff_mem_alg
 
 /-- If `p` lifts and `(r : R)` then `r • p` lifts. -/
 theorem smul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts (algebraMap R S)) :
     r • p ∈ lifts (algebraMap R S) := by
   rw [mem_lifts_iff_mem_alg] at hp⊢
-  exact Subalgebra.smul_mem (map_alg R S).range hp r
+  exact Subalgebra.smul_mem (mapAlg R S).range hp r
 #align polynomial.smul_mem_lifts Polynomial.smul_mem_lifts
 
 end Algebra
