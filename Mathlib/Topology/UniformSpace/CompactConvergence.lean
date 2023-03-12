@@ -106,7 +106,7 @@ theorem self_mem_compactConvNhd (hV : V ∈ 𝓤 β) : f ∈ compactConvNhd K V 
   refl_mem_uniformity hV
 #align continuous_map.self_mem_compact_conv_nhd ContinuousMap.self_mem_compactConvNhd
 
--- porting note: need to add @[mono] attribute
+@[mono]
 theorem compactConvNhd_mono {V' : Set (β × β)} (hV' : V' ⊆ V) :
     compactConvNhd K V' f ⊆ compactConvNhd K V f := fun _x hx a ha => hV' (hx a ha)
 #align continuous_map.compact_conv_nhd_mono ContinuousMap.compactConvNhd_mono
