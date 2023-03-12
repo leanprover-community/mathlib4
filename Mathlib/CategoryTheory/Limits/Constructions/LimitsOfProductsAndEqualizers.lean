@@ -219,7 +219,7 @@ parameter." Factored out this as new class in `CategoryTheory.Limits.Preserves.F
 noncomputable def preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts [HasEqualizers C]
     [HasFiniteProducts C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
     [PreservesFiniteProducts G] : PreservesFiniteLimits G where
-  PreservesFiniteLimits := by
+  preservesFiniteLimits := by
     intro J sJ fJ
     haveI : Fintype J := inferInstance
     haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance
@@ -448,7 +448,7 @@ noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoprodu
     [HasCoequalizers C] [HasFiniteCoproducts C] (G : C ⥤ D)
     [PreservesColimitsOfShape WalkingParallelPair G]
     [PreservesFiniteCoproducts G] : PreservesFiniteColimits G where
-  PreservesFiniteColimits := by
+  preservesFiniteColimits := by
     intro J sJ fJ
     haveI : Fintype J := inferInstance
     haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance
