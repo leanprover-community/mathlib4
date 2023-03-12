@@ -63,6 +63,15 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 #align category_theory.iso.app_hom CategoryTheory.Iso.app_hom
 #align category_theory.iso.app_inv CategoryTheory.Iso.app_inv
 
+/--
+This unexpander will pretty print `η.app X` properly.
+Without this, we would have `Iso.app η X`.
+-/
+@[app_unexpander Iso.app] def
+  unexpandIsoApp : Lean.PrettyPrinter.Unexpander
+  | `($_ $η $X)  => set_option hygiene false in `($(η).app $X)
+  | _            => throw ()
+
 @[reassoc (attr := simp)]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.hom.app X ≫ α.inv.app X = 𝟙 (F.obj X) :=
