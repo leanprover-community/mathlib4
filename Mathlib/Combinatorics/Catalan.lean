@@ -61,8 +61,6 @@ def catalan : ℕ → ℕ
   | 0 => 1
   | n + 1 =>
     ∑ i : Fin n.succ,
-      have := i.2
-      have := Nat.lt_succ_iff.mpr (n.sub_le i)
       catalan i * catalan (n - i)
 #align catalan catalan
 
