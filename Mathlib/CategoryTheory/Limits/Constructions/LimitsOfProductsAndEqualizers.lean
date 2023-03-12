@@ -448,7 +448,7 @@ noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoprodu
     [HasCoequalizers C] [HasFiniteCoproducts C] (G : C ⥤ D)
     [PreservesColimitsOfShape WalkingParallelPair G]
     [PreservesFiniteCoproducts G] : PreservesFiniteColimits G where
-  PreservesFiniteColimits := by
+  preservesFiniteColimits := by
     intro J sJ fJ
     haveI : Fintype J := inferInstance
     haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance
