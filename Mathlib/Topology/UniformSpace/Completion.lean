@@ -588,6 +588,7 @@ theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 #align uniform_space.completion.uniform_continuous_map UniformSpace.Completion.uniformContinuous_map
 
+@[continuity]
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 #align uniform_space.completion.continuous_map UniformSpace.Completion.continuous_map
