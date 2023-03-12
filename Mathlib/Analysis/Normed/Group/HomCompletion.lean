@@ -14,9 +14,9 @@ import Mathlib.Analysis.Normed.Group.Completion
 /-!
 # Completion of normed group homs
 
-Given two (semi) normed groups `G` and `H` and a normed group hom `f : normed_add_group_hom G H`,
+Given two (semi) normed groups `G` and `H` and a normed group hom `f : NormedAddGroupHom G H`,
 we build and study a normed group hom
-`f.completion  : normed_add_group_hom (completion G) (completion H)` such that the diagram
+`f.completion  : NormedAddGroupHom (completion G) (completion H)` such that the diagram
 
 ```
                    f
@@ -38,17 +38,17 @@ The vertical maps in the above diagrams are also normed group homs constructed i
 
 ## Main definitions and results:
 
-* `normed_add_group_hom.completion`: see the discussion above.
-* `normed_add_comm_group.to_compl : normed_add_group_hom G (completion G)`: the canonical map from
+* `NormedAddGroupHom.completion`: see the discussion above.
+* `NormedAddCommGroup.toCompl : NormedAddGroupHom G (completion G)`: the canonical map from
   `G` to its completion, as a normed group hom
-* `normed_add_group_hom.completion_to_compl`: the above diagram indeed commutes.
-* `normed_add_group_hom.norm_completion`: `‖f.completion‖ = ‖f‖`
-* `normed_add_group_hom.ker_le_ker_completion`: the kernel of `f.completion` contains the image of
+* `NormedAddGroupHom.completion_toCompl`: the above diagram indeed commutes.
+* `NormedAddGroupHom.norm_completion`: `‖f.completion‖ = ‖f‖`
+* `NormedAddGroupHom.ker_le_ker_completion`: the kernel of `f.completion` contains the image of
   the kernel of `f`.
-* `normed_add_group_hom.ker_completion`: the kernel of `f.completion` is the closure of the image of
+* `NormedAddGroupHom.ker_completion`: the kernel of `f.completion` is the closure of the image of
   the kernel of `f` under an assumption that `f` is quantitatively surjective onto its image.
-* `normed_add_group_hom.extension` : if `H` is complete, the extension of
-  `f : normed_add_group_hom G H` to a `normed_add_group_hom (completion G) H`.
+* `NormedAddGroupHom.extension` : if `H` is complete, the extension of
+  `f : NormedAddGroupHom G H` to a `NormedAddGroupHom (completion G) H`.
 -/
 
 
@@ -204,8 +204,8 @@ variable {G : Type _} [SeminormedAddCommGroup G]
 
 variable {H : Type _} [SeminormedAddCommGroup H] [SeparatedSpace H] [CompleteSpace H]
 
-/-- If `H` is complete, the extension of `f : normed_add_group_hom G H` to a
-`normed_add_group_hom (completion G) H`. -/
+/-- If `H` is complete, the extension of `f : NormedAddGroupHom G H` to a
+`NormedAddGroupHom (completion G) H`. -/
 def NormedAddGroupHom.extension (f : NormedAddGroupHom G H) : NormedAddGroupHom (Completion G) H :=
   .ofLipschitz (f.toAddMonoidHom.extension f.continuous) <|
     let _ := MetricSpace.ofT0PseudoMetricSpace H
