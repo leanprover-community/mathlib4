@@ -8,9 +8,9 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Creates
-import Mathbin.CategoryTheory.Over
-import Mathbin.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Creates
+import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.IsConnected
 
 /-!
 # Connected limits in the over category
