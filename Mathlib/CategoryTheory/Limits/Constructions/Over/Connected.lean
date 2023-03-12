@@ -63,7 +63,7 @@ def raiseCone [IsConnected J] {B : C} {F : J ⥤ Over B} (c : Cone (F ⋙ forget
 #align category_theory.over.creates_connected.raise_cone CategoryTheory.Over.CreatesConnected.raiseCone
 
 theorem raised_cone_lowers_to_original [IsConnected J] {B : C} {F : J ⥤ Over B}
-    (c : Cone (F ⋙ forget B)) (_ : IsLimit c) :
+    (c : Cone (F ⋙ forget B)) :
   (forget B).mapCone (raiseCone c) = c := by aesop_cat
 #align category_theory.over.creates_connected.raised_cone_lowers_to_original CategoryTheory.Over.CreatesConnected.raised_cone_lowers_to_original
 
@@ -90,7 +90,7 @@ instance forgetCreatesConnectedLimits [IsConnected J] {B : C} :
   CreatesLimit :=
     createsLimitOfReflectsIso fun c t =>
       { liftedCone := CreatesConnected.raiseCone c
-        validLift := eqToIso (CreatesConnected.raised_cone_lowers_to_original c t)
+        validLift := eqToIso (CreatesConnected.raised_cone_lowers_to_original c)
         makesLimit := CreatesConnected.raisedConeIsLimit t }
 #align category_theory.over.forget_creates_connected_limits CategoryTheory.Over.forgetCreatesConnectedLimits
 
