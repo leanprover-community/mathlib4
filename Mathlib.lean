@@ -330,6 +330,8 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Lattice
+import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -1072,6 +1074,7 @@ import Mathlib.MeasureTheory.MeasurableSpace
 import Mathlib.MeasureTheory.MeasurableSpaceDef
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.NumberTheory.ADEInequality
+import Mathlib.NumberTheory.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.NumberTheory.Divisors
