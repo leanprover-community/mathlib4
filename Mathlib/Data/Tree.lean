@@ -177,12 +177,12 @@ def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
     -- Porting note: Old proof was `t.recOn base fun u => u.recOn ind` but
     -- structure eta makes it unnecessary (https://github.com/leanprover/lean4/issues/777).
-    t.recOn base fun _ => ind
+    t.recOn base fun _u => ind
 #align tree.unit_rec_on Tree.unitRecOn
 
 theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
-  | node a l r, _ => rfl
+  | node a l r, _ => rfl  -- Porting note: `a △ b` no longer works in pattern matching
 #align tree.left_node_right_eq_self Tree.left_node_right_eq_self
 
 end Tree
