@@ -10,7 +10,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Punit
+import Mathlib.CategoryTheory.PUnit
 
 /-!
 # The category of elements
