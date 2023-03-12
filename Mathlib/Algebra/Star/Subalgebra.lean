@@ -8,11 +8,11 @@ Authors: Scott Morrison, Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Star.StarAlgHom
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.Algebra.Star.Pointwise
-import Mathbin.Algebra.Star.Module
-import Mathbin.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Star.Pointwise
+import Mathlib.Algebra.Star.Module
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Star subalgebras
@@ -463,8 +463,7 @@ theorem star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set 
 
 variable {R}
 
-protected theorem gc : GaloisConnection (adjoin R : Set A → StarSubalgebra R A) coe :=
-  by
+protected theorem gc : GaloisConnection (adjoin R : Set A → StarSubalgebra R A) coe := by
   intro s S
   rw [← to_subalgebra_le_iff, adjoin_to_subalgebra, Algebra.adjoin_le_iff, coe_to_subalgebra]
   exact
@@ -516,8 +515,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     (Hmul_left : ∀ x₁ x₂ y : A, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂ : A, p x y₁ → p x y₂ → p x (y₁ * y₂))
     (Hstar : ∀ x y : A, p x y → p (star x) (star y)) (Hstar_left : ∀ x y : A, p x y → p (star x) y)
-    (Hstar_right : ∀ x y : A, p x y → p x (star y)) : p a b :=
-  by
+    (Hstar_right : ∀ x y : A, p x y → p x (star y)) : p a b := by
   refine'
     Algebra.adjoin_induction₂ ha hb (fun x hx y hy => _) Halg (fun r x hx => _) (fun r x hx => _)
       Hadd_left Hadd_right Hmul_left Hmul_right
@@ -700,8 +698,7 @@ theorem infᵢ_toSubalgebra {ι : Sort _} (S : ι → StarSubalgebra R A) :
   SetLike.coe_injective <| by simp
 #align star_subalgebra.infi_to_subalgebra StarSubalgebra.infᵢ_toSubalgebra
 
-theorem bot_toSubalgebra : (⊥ : StarSubalgebra R A).toSubalgebra = ⊥ :=
-  by
+theorem bot_toSubalgebra : (⊥ : StarSubalgebra R A).toSubalgebra = ⊥ := by
   change Algebra.adjoin R (∅ ∪ star ∅) = Algebra.adjoin R ∅
   simp
 #align star_subalgebra.bot_to_subalgebra StarSubalgebra.bot_toSubalgebra
@@ -770,8 +767,7 @@ theorem map_adjoin [StarModule R B] (f : A →⋆ₐ[R] B) (s : Set A) :
 #align star_alg_hom.map_adjoin StarAlgHom.map_adjoin
 
 theorem ext_adjoin {s : Set A} [StarAlgHomClass F R (adjoin R s) B] {f g : F}
-    (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g :=
-  by
+    (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
   refine'
     FunLike.ext f g fun a =>
       adjoin_induction' a (fun x hx => _) (fun r => _) (fun x y hx hy => _) (fun x y hx hy => _)
