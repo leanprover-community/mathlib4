@@ -8,10 +8,10 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Polynomial.BigOperators
-import Mathbin.Data.Nat.Choose.Cast
-import Mathbin.Data.Nat.Choose.Vandermonde
-import Mathbin.Data.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Data.Nat.Choose.Vandermonde
+import Mathlib.Data.Polynomial.Derivative
 
 /-!
 # Hasse derivative of polynomials
@@ -110,8 +110,7 @@ theorem hasseDeriv_one : @hasseDeriv R _ 1 = derivative :=
 
 @[simp]
 theorem hasseDeriv_monomial (n : ℕ) (r : R) :
-    hasseDeriv k (monomial n r) = monomial (n - k) (↑(n.choose k) * r) :=
-  by
+    hasseDeriv k (monomial n r) = monomial (n - k) (↑(n.choose k) * r) := by
   ext i
   simp only [hasse_deriv_coeff, coeff_monomial]
   by_cases hnik : n = i + k
@@ -140,8 +139,7 @@ theorem hasseDeriv_x (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
     MulZeroClass.zero_mul, monomial_zero_right]
 #align polynomial.hasse_deriv_X Polynomial.hasseDeriv_x
 
-theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative R _^[k] :=
-  by
+theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative R _^[k] := by
   induction' k with k ih
   · rw [hasse_deriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
   ext (f n) : 2
@@ -169,8 +167,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative
 #align polynomial.factorial_smul_hasse_deriv Polynomial.factorial_smul_hasseDeriv
 
 theorem hasseDeriv_comp (k l : ℕ) :
-    (@hasseDeriv R _ k).comp (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) :=
-  by
+    (@hasseDeriv R _ k).comp (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) := by
   ext i : 2
   simp only [LinearMap.smul_apply, comp_app, LinearMap.coe_comp, smul_monomial, hasse_deriv_apply,
     mul_one, monomial_eq_zero_iff, sum_monomial_index, MulZeroClass.mul_zero, ←
@@ -218,8 +215,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) : natDegree (hasseDeriv n p
 #align polynomial.nat_degree_hasse_deriv_le Polynomial.natDegree_hasseDeriv_le
 
 theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
-    natDegree (hasseDeriv n p) = natDegree p - n :=
-  by
+    natDegree (hasseDeriv n p) = natDegree p - n := by
   cases' lt_or_le p.nat_degree n with hn hn
   · simpa [hasse_deriv_eq_zero_of_lt_nat_degree, hn] using (tsub_eq_zero_of_le hn.le).symm
   · refine' map_nat_degree_eq_sub _ _
@@ -238,8 +234,7 @@ section
 open AddMonoidHom Finset.Nat
 
 theorem hasseDeriv_mul (f g : R[X]) :
-    hasseDeriv k (f * g) = ∑ ij in antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g :=
-  by
+    hasseDeriv k (f * g) = ∑ ij in antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasse_deriv R _ k).toAddMonoidHom
   let Φ := @AddMonoidHom.mul R[X] _
   show
