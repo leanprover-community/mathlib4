@@ -11,8 +11,6 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
-set_option autoImplicit false -- **TODO** delete this later
-
 /-!
 # Limit preservation properties of `functor.op` and related constructions
 
