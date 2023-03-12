@@ -207,55 +207,55 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
 /-- If `F : C ⥤ D` preserves finite colimits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
     limits. -/
 def preservesFiniteLimitsOp (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteLimits F.op
-    where PreservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeOp J F
+    where preservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeOp J F
 #align category_theory.limits.preserves_finite_limits_op CategoryTheory.Limits.preservesFiniteLimitsOp
 
 /-- If `F : C ⥤ Dᵒᵖ` preserves finite colimits, then `F.left_op : Cᵒᵖ ⥤ D` preserves finite
     limits. -/
 def preservesFiniteLimitsLeftOp (F : C ⥤ Dᵒᵖ) [PreservesFiniteColimits F] :
     PreservesFiniteLimits F.leftOp
-    where PreservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeLeftOp J F
+    where preservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeLeftOp J F
 #align category_theory.limits.preserves_finite_limits_left_op CategoryTheory.Limits.preservesFiniteLimitsLeftOp
 
 /-- If `F : Cᵒᵖ ⥤ D` preserves finite colimits, then `F.right_op : C ⥤ Dᵒᵖ` preserves finite
     limits. -/
 def preservesFiniteLimitsRightOp (F : Cᵒᵖ ⥤ D) [PreservesFiniteColimits F] :
     PreservesFiniteLimits F.rightOp
-    where PreservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeRightOp J F
+    where preservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeRightOp J F
 #align category_theory.limits.preserves_finite_limits_right_op CategoryTheory.Limits.preservesFiniteLimitsRightOp
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite colimits, then `F.unop : C ⥤ D` preserves finite
     limits. -/
 def preservesFiniteLimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteColimits F] :
     PreservesFiniteLimits F.unop
-    where PreservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeUnop J F
+    where preservesFiniteLimits J (_ : SmallCategory J) _ := preservesLimitsOfShapeUnop J F
 #align category_theory.limits.preserves_finite_limits_unop CategoryTheory.Limits.preservesFiniteLimitsUnop
 
 /-- If `F : C ⥤ D` preserves finite limits, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite
     colimits. -/
 def preservesFiniteColimitsOp (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteColimits F.op
-    where PreservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeOp J F
+    where preservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeOp J F
 #align category_theory.limits.preserves_finite_colimits_op CategoryTheory.Limits.preservesFiniteColimitsOp
 
 /-- If `F : C ⥤ Dᵒᵖ` preserves finite limits, then `F.left_op : Cᵒᵖ ⥤ D` preserves finite
     colimits. -/
 def preservesFiniteColimitsLeftOp (F : C ⥤ Dᵒᵖ) [PreservesFiniteLimits F] :
     PreservesFiniteColimits F.leftOp
-    where PreservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeLeftOp J F
+    where preservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeLeftOp J F
 #align category_theory.limits.preserves_finite_colimits_left_op CategoryTheory.Limits.preservesFiniteColimitsLeftOp
 
 /-- If `F : Cᵒᵖ ⥤ D` preserves finite limits, then `F.right_op : C ⥤ Dᵒᵖ` preserves finite
     colimits. -/
 def preservesFiniteColimitsRightOp (F : Cᵒᵖ ⥤ D) [PreservesFiniteLimits F] :
     PreservesFiniteColimits F.rightOp
-    where PreservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeRightOp J F
+    where preservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeRightOp J F
 #align category_theory.limits.preserves_finite_colimits_right_op CategoryTheory.Limits.preservesFiniteColimitsRightOp
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves finite limits, then `F.unop : C ⥤ D` preserves finite
     colimits. -/
 def preservesFiniteColimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteLimits F] :
     PreservesFiniteColimits F.unop
-    where PreservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeUnop J F
+    where preservesFiniteColimits J (_ : SmallCategory J) _ := preservesColimitsOfShapeUnop J F
 #align category_theory.limits.preserves_finite_colimits_unop CategoryTheory.Limits.preservesFiniteColimitsUnop
 
 end
