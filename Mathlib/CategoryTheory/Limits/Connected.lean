@@ -8,11 +8,11 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathbin.CategoryTheory.Limits.Shapes.Equalizers
-import Mathbin.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathbin.CategoryTheory.IsConnected
-import Mathbin.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Connected limits
@@ -35,8 +35,7 @@ namespace CategoryTheory
 
 section Examples
 
-instance widePullbackShape_connected (J : Type v₁) : IsConnected (WidePullbackShape J) :=
-  by
+instance widePullbackShape_connected (J : Type v₁) : IsConnected (WidePullbackShape J) := by
   apply is_connected.of_induct
   introv hp t
   cases j
@@ -44,8 +43,7 @@ instance widePullbackShape_connected (J : Type v₁) : IsConnected (WidePullback
   · rwa [t (wide_pullback_shape.hom.term j)]
 #align category_theory.wide_pullback_shape_connected CategoryTheory.widePullbackShape_connected
 
-instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutShape J) :=
-  by
+instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutShape J) := by
   apply is_connected.of_induct
   introv hp t
   cases j
@@ -57,8 +55,7 @@ instance parallelPairInhabited : Inhabited WalkingParallelPair :=
   ⟨WalkingParallelPair.one⟩
 #align category_theory.parallel_pair_inhabited CategoryTheory.parallelPairInhabited
 
-instance parallel_pair_connected : IsConnected WalkingParallelPair :=
-  by
+instance parallel_pair_connected : IsConnected WalkingParallelPair := by
   apply is_connected.of_induct
   introv _ t
   cases j
