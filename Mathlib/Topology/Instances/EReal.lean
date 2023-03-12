@@ -96,7 +96,7 @@ theorem continuousOn_toReal : ContinuousOn EReal.toReal ({⊥, ⊤}ᶜ : Set ERe
   ContinuousAt.continuousWithinAt (tendsto_toReal (mt Or.inr ha) (mt Or.inl ha))
 #align ereal.continuous_on_to_real EReal.continuousOn_toReal
 
-/-- The set of finite `ereal` numbers is homeomorphic to `ℝ`. -/
+/-- The set of finite `EReal` numbers is homeomorphic to `ℝ`. -/
 def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
   toEquiv := neTopBotEquivReal
   continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_toReal
@@ -223,7 +223,7 @@ theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 +
   simpa only [coe_zero, zero_add] using add_lt_add h.1 h.2
 #align ereal.continuous_at_add_bot_bot EReal.continuousAt_add_bot_bot
 
-/-- The addition on `ereal` is continuous except where it doesn't make sense (i.e., at `(⊥, ⊤)`
+/-- The addition on `EReal` is continuous except where it doesn't make sense (i.e., at `(⊥, ⊤)`
 and at `(⊤, ⊥)`). -/
 theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) (h' : p.1 ≠ ⊥ ∨ p.2 ≠ ⊤) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) p := by
@@ -244,7 +244,7 @@ theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) 
 
 instance : ContinuousNeg EReal := ⟨negOrderIso.continuous⟩
 
-/-- Negation on `ereal` as a homeomorphism -/
+/-- Negation on `EReal` as a homeomorphism -/
 @[deprecated Homeomorph.neg]
 def negHomeo : EReal ≃ₜ EReal :=
   negOrderIso.toHomeomorph
