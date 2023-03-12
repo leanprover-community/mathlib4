@@ -958,7 +958,7 @@ theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n := by
   · symm
     apply Nat.zero_shiftl
   simp; induction' n with n IH; · rfl
-  simp [PosNum.shiftl, Nat.shiftl_succ]; rw [← IH]
+  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftl_succ]; rw [← IH]
 #align num.shiftl_to_nat Num.shiftl_to_nat
 
 @[simp, norm_cast]
