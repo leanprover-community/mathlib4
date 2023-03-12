@@ -26,7 +26,7 @@ variable (K : Type _) [DivisionRing K] [CharZero K]
 namespace Nat
 
 theorem cast_choose {a b : ℕ} (h : a ≤ b) : (b.choose a : K) = b ! / (a ! * (b - a)!) := by
-  have : ∀ {n : ℕ}, (n ! : K) ≠ 0 := by simp [cast_ne_zero, factorial_ne_zero]
+  have : ∀ {n : ℕ}, (n ! : K) ≠ 0 := Nat.cast_ne_zero.2 (factorial_ne_zero _)
   rw [eq_div_iff_mul_eq (mul_ne_zero this this)]
   rw_mod_cast [← mul_assoc, choose_mul_factorial_mul_factorial h]
 #align nat.cast_choose Nat.cast_choose
