@@ -331,7 +331,8 @@ noncomputable instance [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors 
 
 instance [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
     IsScalarTower R (FractionRing R) K :=
-  IsScalarTower.of_algebraMap_eq fun x => (IsFractionRing.lift_algebraMap _ x).symm
+  IsScalarTower.of_algebraMap_eq fun x =>
+    (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K ) x).symm
 
 /-- Given an integral domain `A` and a localization map to a field of fractions
 `f : A →+* K`, we get an `A`-isomorphism between the field of fractions of `A` as a quotient
@@ -345,8 +346,8 @@ instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (Fraction
   NoZeroSMulDivisors.of_algebraMap_injective
     (by
       rw [IsScalarTower.algebraMap_eq R A]
-      exact
-        Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective _ _)
-          (NoZeroSMulDivisors.algebraMap_injective _ _))
+      refine
+        Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective ?_ ?_)
+          (NoZeroSMulDivisors.algebraMap_injective ?_ ?_))
 
 end FractionRing
