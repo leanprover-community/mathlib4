@@ -127,7 +127,8 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
   induction' n using Nat.case_strong_induction_on with d hd
   · simp
   · simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]
-    trans (∑ i : Fin d.succ, Nat.centralBinom i / (i + 1) * (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
+    trans (∑ i : Fin d.succ, Nat.centralBinom i / (i + 1) *
+                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
       have m_le_d : x.val ≤ d := by apply Nat.le_of_lt_succ; apply x.2
@@ -223,7 +224,6 @@ theorem treesOfNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = 
       trans (numNodes l, numNodes r)
       · simp at h1; simp [h1]
       · simp at h2; simp [h2]
-
 #align tree.trees_of_nodes_eq_card_eq_catalan Tree.treesOfNodesEq_card_eq_catalan
 
 end Tree
