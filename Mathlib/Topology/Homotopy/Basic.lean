@@ -8,10 +8,10 @@ Authors: Shing Tak Lam
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Order.ProjIcc
-import Mathbin.Topology.ContinuousFunction.Ordered
-import Mathbin.Topology.CompactOpen
-import Mathbin.Topology.UnitInterval
+import Mathlib.Topology.Algebra.Order.ProjIcc
+import Mathlib.Topology.ContinuousFunction.Ordered
+import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Homotopy between functions
@@ -226,8 +226,7 @@ def symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀
 #align continuous_map.homotopy.symm ContinuousMap.Homotopy.symm
 
 @[simp]
-theorem symm_symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : F.symm.symm = F :=
-  by
+theorem symm_symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : F.symm.symm = F := by
   ext
   simp
 #align continuous_map.homotopy.symm_symm ContinuousMap.Homotopy.symm_symm
@@ -366,8 +365,7 @@ variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 instance : CoeFun (HomotopyWith f₀ f₁ P) fun _ => I × X → Y :=
   ⟨fun F => F.toFun⟩
 
-theorem coeFn_injective : @Function.Injective (HomotopyWith f₀ f₁ P) (I × X → Y) coeFn :=
-  by
+theorem coeFn_injective : @Function.Injective (HomotopyWith f₀ f₁ P) (I × X → Y) coeFn := by
   rintro ⟨⟨⟨F, _⟩, _⟩, _⟩ ⟨⟨⟨G, _⟩, _⟩, _⟩ h
   congr 3
 #align continuous_map.homotopy_with.coe_fn_injective ContinuousMap.HomotopyWith.coeFn_injective
@@ -415,8 +413,7 @@ theorem prop (F : HomotopyWith f₀ f₁ P) (t : I) : P (F.toHomotopy.curry t) :
   F.prop' t
 #align continuous_map.homotopy_with.prop ContinuousMap.HomotopyWith.prop
 
-theorem extendProp (F : HomotopyWith f₀ f₁ P) (t : ℝ) : P (F.toHomotopy.extend t) :=
-  by
+theorem extendProp (F : HomotopyWith f₀ f₁ P) (t : ℝ) : P (F.toHomotopy.extend t) := by
   by_cases ht₀ : 0 ≤ t
   · by_cases ht₁ : t ≤ 1
     · convert F.prop ⟨t, ht₀, ht₁⟩

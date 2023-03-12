@@ -1403,6 +1403,7 @@ import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Hom.Open
 import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.Int
