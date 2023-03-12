@@ -94,6 +94,7 @@ example (L _M : List (List ℕ)) : List ℕ := by library_search using L
 
 example (P _Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
 
+set_option maxHeartbeats 300000 in
 example (l : List α) (f : α → β ⊕ γ) : List β × List γ := by
   library_search using f -- partitionMap f l
 
