@@ -141,22 +141,22 @@ This ought to be modelled as a 2-functor!
 @[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
-  map := fun {X} {Y} f => by 
-    dsimp 
+  map := fun {X} {Y} f => by
+    dsimp
     exact Discrete.functor (Discrete.mk ∘ f)
-  map_id X := by 
+  map_id X := by
     apply Functor.ext
     · intro X Y f
       cases f
       simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       aesop_cat
-    · aesop_cat 
+    · aesop_cat
   map_comp f g := by apply Functor.ext; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.Type_to_Cat CategoryTheory.typeToCat
 
-instance : Faithful typeToCat.{u} where 
+instance : Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
@@ -168,11 +168,10 @@ instance : Full typeToCat.{u}
     apply Functor.ext
     · intro x y f
       dsimp
-      apply ULift.ext 
+      apply ULift.ext
       aesop_cat
     · rintro ⟨x⟩
       apply Discrete.ext
       rfl
 
 end CategoryTheory
-

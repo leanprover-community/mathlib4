@@ -94,11 +94,11 @@ def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits
   ⟨fun _ _ _ => by infer_instance⟩
 #align category_theory.limits.comp_preserves_finite_limits CategoryTheory.Limits.compPreservesFiniteLimits
 
-/- Porting note: adding this class because quantified classes don't behave well 
+/- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
-/-- A functor `F` preserves finite products if it preserves all from `Discrete J` 
+/-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
-class PreservesFiniteProducts (F : C ⥤  D) where 
+class PreservesFiniteProducts (F : C ⥤  D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
 
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
@@ -152,11 +152,11 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
   ⟨fun _ _ _ => by infer_instance⟩
 #align category_theory.limits.comp_preserves_finite_colimits CategoryTheory.Limits.compPreservesFiniteColimits
 
-/- Porting note: adding this class because quantified classes don't behave well 
+/- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
-/-- A functor `F` preserves finite products if it preserves all from `Discrete J` 
+/-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
-class PreservesFiniteCoproducts (F : C ⥤  D) where 
+class PreservesFiniteCoproducts (F : C ⥤  D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
 end CategoryTheory.Limits
