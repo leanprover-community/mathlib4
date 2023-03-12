@@ -45,15 +45,15 @@ variable [Semiring B] [StarRing B] [Algebra R B] [StarModule R B]
 
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
-instance : SetLike (StarSubalgebra R A) A where
+instance setLike : SetLike (StarSubalgebra R A) A where
   coe := fun S ↦ S.carrier
   coe_injective' := fun p q h => by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
-instance : StarMemClass (StarSubalgebra R A) A where
+instance starMemClass : StarMemClass (StarSubalgebra R A) A where
   star_mem := @fun s => s.star_mem'
 
 
-instance : SubsemiringClass (StarSubalgebra R A) A where
+instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   add_mem := @fun s => s.add_mem'
   mul_mem := @fun s => s.mul_mem'
   one_mem := @fun s => s.one_mem'
@@ -63,21 +63,21 @@ instance : SubsemiringClass (StarSubalgebra R A) A where
 -- the following instance works with `set_option synthInstance.etaExperiment true`
 attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
 
-instance {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A] [StarModule R A] :
-    SubringClass (StarSubalgebra R A) A where
+instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
+    [StarModule R A] : SubringClass (StarSubalgebra R A) A where
   neg_mem := @fun s a ha => show -a ∈ s.toSubalgebra from neg_mem ha
 
--- this uses the `has_star` instance `s` inherits from `star_mem_class (star_subalgebra R A) A`
-instance (s : StarSubalgebra R A) : StarRing s :=
+-- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubalgebra R A) A`
+instance starRing (s : StarSubalgebra R A) : StarRing s :=
   { StarMemClass.instStarSubtypeMemInstMembership s with
     star_involutive := fun r => Subtype.ext (star_star (r : A))
     star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : A) (r₂ : A))
     star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : A) (r₂ : A)) }
 
-instance (s : StarSubalgebra R A) : Algebra R s :=
+instance algebra (s : StarSubalgebra R A) : Algebra R s :=
   s.toSubalgebra.algebra'
 
-instance (s : StarSubalgebra R A) : StarModule R s where
+instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
 
 @[simp]
@@ -104,6 +104,7 @@ theorem toSubalgebra_injective :
     Function.Injective (toSubalgebra : StarSubalgebra R A → Subalgebra R A) := fun S T h =>
   ext fun x => by rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 #align star_subalgebra.to_subalgebra_injective StarSubalgebra.toSubalgebra_injective
+
 theorem toSubalgebra_inj {S U : StarSubalgebra R A} : S.toSubalgebra = U.toSubalgebra ↔ S = U :=
   toSubalgebra_injective.eq_iff
 #align star_subalgebra.to_subalgebra_inj StarSubalgebra.toSubalgebra_inj
@@ -156,9 +157,9 @@ def subtype : S →⋆ₐ[R] A := by refine' { toFun := ((↑) : S → A), .. } 
 #align star_subalgebra.subtype StarSubalgebra.subtype
 
 @[simp]
-theorem coeSubtype : (S.subtype : S → A) = Subtype.val :=
+theorem coe_subtype : (S.subtype : S → A) = Subtype.val :=
   rfl
-#align star_subalgebra.coe_subtype StarSubalgebra.coeSubtype
+#align star_subalgebra.coe_subtype StarSubalgebra.coe_subtype
 
 theorem subtype_apply (x : S) : S.subtype x = (x : A) :=
   rfl
@@ -169,7 +170,7 @@ theorem toSubalgebra_subtype : S.toSubalgebra.val = S.subtype.toAlgHom :=
   rfl
 #align star_subalgebra.to_subalgebra_subtype StarSubalgebra.toSubalgebra_subtype
 
-/-- The inclusion map between `star_subalgebra`s given by `subtype.map id` as a `star_alg_hom`. -/
+/-- The inclusion map between `StarSubalgebra`s given by `Subtype.map id` as a `StarAlgHom`. -/
 @[simps]
 def inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) : S₁ →⋆ₐ[R] S₂
     where
@@ -338,7 +339,7 @@ variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 /-- The pointwise `star` of a subalgebra is a subalgebra. -/
-instance : InvolutiveStar (Subalgebra R A)
+instance involutiveStar : InvolutiveStar (Subalgebra R A)
     where
   star S :=
     { carrier := star S.carrier
@@ -379,7 +380,7 @@ theorem star_mono : Monotone (star : Subalgebra R A → Subalgebra R A) := fun _
 
 variable (R)
 
-/-- The star operation on `subalgebra` commutes with `algebra.adjoin`. -/
+/-- The star operation on `Subalgebra` commutes with `Algebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoin R (star s) :=
   have this : ∀ t : Set A, Algebra.adjoin R (star t) ≤ star (Algebra.adjoin R t) := fun t =>
     Algebra.adjoin_le fun x hx => Algebra.subset_adjoin hx
@@ -388,7 +389,7 @@ theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoi
 
 variable {R}
 
-/-- The `star_subalgebra` obtained from `S : subalgebra R A` by taking the smallest subalgebra
+/-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
 @[simps!]
 def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
@@ -496,8 +497,8 @@ theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
     (adjoin_le (le_sup_left : S ≤ S ⊔ star S))
 #align subalgebra.star_closure_eq_adjoin Subalgebra.starClosure_eq_adjoin
 
-/-- If some predicate holds for all `x ∈ (s : set A)` and this predicate is closed under the
-`algebra_map`, addition, multiplication and star operations, then it holds for `a ∈ adjoin R s`. -/
+/-- If some predicate holds for all `x ∈ (s : Set A)` and this predicate is closed under the
+`algebraMap`, addition, multiplication and star operations, then it holds for `a ∈ adjoin R s`. -/
 theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin R s)
     (Hs : ∀ x : A, x ∈ s → p x) (Halg : ∀ r : R, p (algebraMap R A r))
     (Hadd : ∀ x y : A, p x → p y → p (x + y)) (Hmul : ∀ x y : A, p x → p y → p (x * y))
@@ -534,7 +535,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     · exact star_star x ▸ Hstar_left _ _ (Halg_right r _ hx)
 #align star_subalgebra.adjoin_induction₂ StarSubalgebra.adjoin_induction₂
 
-/-- The difference with `star_subalgebra.adjoin_induction` is that this acts on the subtype. -/
+/-- The difference with `StarSubalgebra.adjoin_induction` is that this acts on the subtype. -/
 theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (Halg : ∀ r, p (algebraMap R _ r))
     (Hadd : ∀ x y, p x → p y → p (x + y)) (Hmul : ∀ x y, p x → p y → p (x * y))
@@ -553,8 +554,8 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
 
 variable (R)
 
-/-- If all elements of `s : set A` commute pairwise and also commute pairwise with elements of
-`star s`, then `star_subalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
+/-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
+`star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
 @[reducible]
 def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * b = b * a)
     (hcomm_star : ∀ a : A, a ∈ s → ∀ b : A, b ∈ s → a * star b = star b * a) :
@@ -581,8 +582,8 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a : A, a ∈ s → ∀ b :
 -- the following instance works with `set_option synthInstance.etaExperiment true`
 attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUnitalCommRing
 
-/-- If all elements of `s : set A` commute pairwise and also commute pairwise with elements of
-`star s`, then `star_subalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
+/-- If all elements of `s : Set A` commute pairwise and also commute pairwise with elements of
+`star s`, then `StarSubalgebra.adjoin R s` is commutative. See note [reducible non-instances]. -/
 @[reducible]
 def adjoinCommRingOfComm (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A] [Algebra R A]
     [StarRing A] [StarModule R A] {s : Set A}
@@ -593,7 +594,7 @@ def adjoinCommRingOfComm (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ri
     (adjoin R s).toSubalgebra.toRing with }
 #align star_subalgebra.adjoin_comm_ring_of_comm StarSubalgebra.adjoinCommRingOfComm
 
-/-- The star subalgebra `star_subalgebra.adjoin R {x}` generated by a single `x : A` is commutative
+/-- The star subalgebra `StarSubalgebra.adjoin R {x}` generated by a single `x : A` is commutative
 if `x` is normal. -/
 instance adjoinCommSemiringOfIsStarNormal (x : A) [IsStarNormal x] :
     CommSemiring (adjoin R ({x} : Set A)) :=
@@ -606,7 +607,7 @@ instance adjoinCommSemiringOfIsStarNormal (x : A) [IsStarNormal x] :
     simpa only [ha, hb] using (star_comm_self' x).symm
 #align star_subalgebra.adjoin_comm_semiring_of_is_star_normal StarSubalgebra.adjoinCommSemiringOfIsStarNormal
 
-/-- The star subalgebra `star_subalgebra.adjoin R {x}` generated by a single `x : A` is commutative
+/-- The star subalgebra `StarSubalgebra.adjoin R {x}` generated by a single `x : A` is commutative
 if `x` is normal. -/
 instance adjoinCommRingOfIsStarNormal (R : Type u) {A : Type v} [CommRing R] [StarRing R] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] (x : A) [IsStarNormal x] :
@@ -619,10 +620,10 @@ instance adjoinCommRingOfIsStarNormal (R : Type u) {A : Type v} [CommRing R] [St
 
 variable {R} -- porting note: redundant binder annotation update
 
-instance : CompleteLattice (StarSubalgebra R A) :=
+instance completeLattice : CompleteLattice (StarSubalgebra R A) :=
   GaloisInsertion.liftCompleteLattice StarSubalgebra.gi
 
-instance : Inhabited (StarSubalgebra R A) :=
+instance inhabited : Inhabited (StarSubalgebra R A) :=
   ⟨⊤⟩
 
 @[simp]
