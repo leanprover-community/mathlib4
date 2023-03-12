@@ -168,9 +168,15 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
     (Finset.Nat.antidiagonal n).attach.bunionᵢ fun ijh =>
-      have := Nat.lt_succ_of_le (fst_le ijh.2)
-      have := Nat.lt_succ_of_le (snd_le ijh.2)
+      -- Porting note: `unusedHavesSuffices` linter is not happy with this. Commented out.
+      -- have := Nat.lt_succ_of_le (fst_le ijh.2)
+      -- have := Nat.lt_succ_of_le (snd_le ijh.2)
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
+  -- Porting note: Add this to satisfy the linter.
+  decreasing_by
+      simp_wf
+      try exact Nat.lt_succ_of_le (fst_le ijh.2)
+      try exact Nat.lt_succ_of_le (snd_le ijh.2)
 #align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
 
 @[simp]
