@@ -290,7 +290,10 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
     linarith
   . exfalso
     -- porting note: this was proved by linarith in mathlib
-    sorry
+    apply h₂
+    rw [sub_le_comm, not_le] at h₁
+    convert le_of_lt h₁
+    norm_num
 #align continuous_map.homotopy.symm_trans ContinuousMap.Homotopy.symm_trans
 
 /-- Casting a `Homotopy f₀ f₁` to a `Homotopy g₀ g₁` where `f₀ = g₀` and `f₁ = g₁`.
