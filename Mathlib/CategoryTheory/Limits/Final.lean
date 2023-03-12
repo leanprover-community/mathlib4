@@ -560,8 +560,8 @@ def isLimitWhiskerEquiv (t : Cone G) : IsLimit (t.whisker F) ≃ IsLimit t :=
   IsLimit.ofConeEquiv (conesEquiv F G).symm
 #align category_theory.functor.initial.is_limit_whisker_equiv CategoryTheory.Functor.Initial.isLimitWhiskerEquiv
 
-/-- When `F` is initial, and `t : cone (F ⋙ G)`,
-`extend_cone.obj t` is a limit cone exactly when `t` is.
+/-- When `F` is initial, and `t : Cone (F ⋙ G)`,
+`extendCone.obj t` is a limit cone exactly when `t` is.
 -/
 def isLimitExtendConeEquiv (t : Cone (F ⋙ G)) : IsLimit (extendCone.obj t) ≃ IsLimit t :=
   IsLimit.ofConeEquiv (conesEquiv F G)
@@ -581,11 +581,10 @@ instance (priority := 100) comp_hasLimit [HasLimit G] : HasLimit (F ⋙ G) :=
 
 theorem limit_pre_is_iso_aux {t : Cone G} (P : IsLimit t) :
     ((isLimitWhiskerEquiv F _).symm P).lift (t.whisker F) = 𝟙 t.pt := by
-  dsimp [isLimitWhiskerEquiv]
+  change 𝟙 t.pt ≫ P.lift (extendCone.obj (Cone.whisker F t)) = 𝟙 t.pt
   apply P.hom_ext
   intro j
   simp
-  sorry
 #align category_theory.functor.initial.limit_pre_is_iso_aux CategoryTheory.Functor.Initial.limit_pre_is_iso_aux
 
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
