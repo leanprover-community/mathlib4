@@ -21,7 +21,7 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 -/
 
 
--- mathport name: exprabs'
+@[inherit_doc]
 local notation "abs'" => Abs.abs
 
 open IsAbsoluteValue
@@ -1603,9 +1603,8 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
         ⟨b + n,
           mem_filter.2 ⟨mem_range.2 <| lt_tsub_iff_right.mp (mem_range.1 hb), Nat.le_add_left _ _⟩,
           by dsimp; rw [add_tsub_cancel_right]⟩
-    _ ≤ ∑ m in range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ :=
-      by
-      refine' sum_le_sum fun m n => _
+    _ ≤ ∑ m in range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ := by
+      refine' sum_le_sum fun m _ => _
       rw [one_div, inv_le_inv]
       · rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
         exact Nat.factorial_mul_pow_le_factorial
@@ -1625,9 +1624,7 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
       have h₄ : (n.succ - 1 : α) = n := by simp
       rw [geom_sum_inv h₁ h₂, eq_div_iff_mul_eq h₃, mul_comm _ (n.factorial * n : α),
           ← mul_assoc (n.factorial⁻¹ : α), ← mul_inv_rev, h₄, ← mul_assoc (n.factorial * n : α),
-          mul_comm (n : α) n.factorial, mul_inv_cancel h₃]
-      simp [mul_add, add_mul, mul_assoc, mul_comm]
-      simp
+          mul_comm (n : α) n.factorial, mul_inv_cancel h₃, one_mul, mul_comm]
     _ ≤ n.succ / (n.factorial * n : α) :=
       by
       refine' Iff.mpr (div_le_div_right (mul_pos _ _)) _
@@ -1762,37 +1759,37 @@ theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| 
 #align real.abs_exp_sub_one_le Real.abs_exp_sub_one_le
 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
-  rw [← sq_abs]
+  rw [← _root_.sq_abs]
   have : Complex.abs x ≤ 1 := by exact_mod_cast hx
   exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
 #align real.abs_exp_sub_one_sub_id_le Real.abs_exp_sub_one_sub_id_le
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
 For fixed `n` this is just a linear map wrt `r`, and each map is a simple linear function
-of the previous (see `exp_near_succ`), with `exp_near n x r ⟶ exp x` as `n ⟶ ∞`,
+of the previous (see `expNear_succ`), with `expNear n x r ⟶ exp x` as `n ⟶ ∞`,
 for any `r`. -/
 def expNear (n : ℕ) (x r : ℝ) : ℝ :=
   (∑ m in range n, x ^ m / m.factorial) + x ^ n / n.factorial * r
 #align real.exp_near Real.expNear
 
 @[simp]
-theorem expNear_zero (x r) : expNear 0 x r = r := by simp [exp_near]
+theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 #align real.exp_near_zero Real.expNear_zero
 
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
-  simp [exp_near, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
-      mul_inv] <;>
-    ac_rfl
+  simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
+      mul_inv]
+  ac_rfl
 #align real.exp_near_succ Real.expNear_succ
 
 theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ - expNear n x r₂ = x ^ n / n.factorial * (r₁ - r₂) := by
-  simp [exp_near, mul_sub]
+  simp [expNear, mul_sub]
 #align real.exp_near_sub Real.expNear_sub
 
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
-  simp [exp_near]
+  simp [expNear]
   convert exp_bound h _ using 1
   field_simp [mul_comm]
   linarith
@@ -1803,7 +1800,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
     (h : |exp x - expNear m x a₂| ≤ |x| ^ m / m.factorial * b₂) :
     |exp x - expNear n x a₁| ≤ |x| ^ n / n.factorial * b₁ := by
   refine' (abs_sub_le _ _ _).trans ((add_le_add_right h _).trans _)
-  subst e₁; rw [exp_near_succ, exp_near_sub, abs_mul]
+  subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
   convert mul_le_mul_of_nonneg_left (le_sub_iff_add_le'.1 e) _
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv]
     ac_rfl
@@ -1813,7 +1810,8 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
 theorem exp_approx_end' {n} {x a b : ℝ} (m : ℕ) (e₁ : n + 1 = m) (rm : ℝ) (er : ↑m = rm)
     (h : |x| ≤ 1) (e : |1 - a| ≤ b - |x| / rm * ((rm + 1) / rm)) :
     |exp x - expNear n x a| ≤ |x| ^ n / n.factorial * b := by
-  subst er <;> exact exp_approx_succ _ e₁ _ _ (by simpa using e) (exp_approx_end _ _ _ e₁ h)
+  subst er
+  exact exp_approx_succ _ e₁ _ _ (by simpa using e) (exp_approx_end _ _ _ e₁ h)
 #align real.exp_approx_end' Real.exp_approx_end'
 
 theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {rm : ℝ} (er : ↑m = rm)
@@ -1821,7 +1819,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
     |exp 1 - expNear n 1 a₁| ≤ |1| ^ n / n.factorial * b₁ := by
   subst er
   refine' exp_approx_succ _ en _ _ _ h
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast <;> linarith]
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; linarith]
 #align real.exp_1_approx_succ_eq Real.exp_1_approx_succ_eq
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / 0! * b) :
@@ -1885,7 +1883,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
     _ ≤
         abs ((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) * I / 2) +
           abs (-((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) * I) / 2) :=
-      by rw [sub_mul, sub_eq_add_neg, add_div] <;> exact complex.abs.add_le _ _
+      by rw [sub_mul, sub_eq_add_neg, add_div] <;> exact Complex.abs.add_le _ _
     _ =
         abs (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2 +
           abs (Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) / 2 :=
@@ -1910,8 +1908,8 @@ theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
               add_le_add (mul_le_mul_of_nonneg_right (pow_le_one _ (abs_nonneg _) hx) (by norm_num))
                 ((div_le_div_right (by norm_num)).2
                   (by
-                    rw [sq, ← abs_mul_self, abs_mul] <;>
-                      exact mul_le_one hx (abs_nonneg _) hx))
+                    rw [sq, ← abs_mul_self, abs_mul]
+                    exact mul_le_one hx (abs_nonneg _) hx))
             _ < 1 := by norm_num
             )
     _ ≤ cos x := sub_le_comm.1 (abs_sub_le_iff.1 (cos_bound hx)).2
@@ -1930,8 +1928,8 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
                   (calc
                     |x| ^ 4 ≤ |x| ^ 1 :=
                       pow_le_pow_of_le_one (abs_nonneg _)
-                        (by rwa [abs_of_nonneg (le_of_lt hx0)]) (by decide)
-                    _ = x := by simp [abs_of_nonneg (le_of_lt hx0)]
+                        (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]) (by decide)
+                    _ = x := by simp [_root_.abs_of_nonneg (le_of_lt hx0)]
                     )
                   (by norm_num))
                 ((div_le_div_right (by norm_num)).2
@@ -1942,7 +1940,7 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
             _ < x := by linarith
             )
     _ ≤ sin x :=
-      sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [abs_of_nonneg (le_of_lt hx0)]))).2
+      sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]))).2
 
 #align real.sin_pos_of_pos_of_le_one Real.sin_pos_of_pos_of_le_one
 
@@ -1951,7 +1949,7 @@ theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < si
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
       mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
-        (cos_pos_of_le_one (by rwa [abs_of_nonneg (le_of_lt (half_pos hx0))]))
+        (cos_pos_of_le_one (by rwa [_root_.abs_of_nonneg (le_of_lt (half_pos hx0))]))
     _ = sin x := by rw [← sin_two_mul, two_mul, add_halves]
 
 #align real.sin_pos_of_pos_of_le_two Real.sin_pos_of_pos_of_le_two
@@ -2043,7 +2041,7 @@ theorem add_one_le_exp_of_nonpos {x : ℝ} (h : x ≤ 0) : x + 1 ≤ Real.exp x 
 #align real.add_one_le_exp_of_nonpos Real.add_one_le_exp_of_nonpos
 
 theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
-  cases le_or_lt 0 x
+  cases' le_or_lt 0 x with h h
   · exact Real.add_one_le_exp_of_nonneg h
   exact add_one_le_exp_of_nonpos h.le
 #align real.add_one_le_exp Real.add_one_le_exp
@@ -2082,21 +2080,24 @@ namespace Complex
 @[simp]
 theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
-  simp_all [add_comm, abs, norm_sq, sq, sin_of_real_re, cos_of_real_re, mul_re]
-#align complex.abs_cos_add_sin_mul_I Complex.abs_cos_add_sin_mul_i
+  simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]
+set_option linter.uppercaseLean3 false in
+#align complex.abs_cos_add_sin_mul_I Complex.abs_cos_add_sin_mul_I
 
 @[simp]
-theorem abs_exp_of_real (x : ℝ) : abs (exp x) = Real.exp x := by
-  rw [← of_real_exp] <;> exact abs_of_nonneg (le_of_lt (Real.exp_pos _))
-#align complex.abs_exp_of_real Complex.abs_exp_of_real
+theorem abs_exp_ofReal (x : ℝ) : abs (exp x) = Real.exp x := by
+  rw [← ofReal_exp]
+  exact abs_of_nonneg (le_of_lt (Real.exp_pos _))
+#align complex.abs_exp_of_real Complex.abs_exp_ofReal
 
 @[simp]
-theorem abs_exp_of_real_mul_I (x : ℝ) : abs (exp (x * I)) = 1 := by
+theorem abs_exp_ofReal_mul_I (x : ℝ) : abs (exp (x * I)) = 1 := by
   rw [exp_mul_I, abs_cos_add_sin_mul_I]
-#align complex.abs_exp_of_real_mul_I Complex.abs_exp_of_real_mul_i
+set_option linter.uppercaseLean3 false in
+#align complex.abs_exp_of_real_mul_I Complex.abs_exp_ofReal_mul_I
 
 theorem abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := by
-  rw [exp_eq_exp_re_mul_sin_add_cos, map_mul, abs_exp_of_real, abs_cos_add_sin_mul_I, mul_one]
+  rw [exp_eq_exp_re_mul_sin_add_cos, map_mul, abs_exp_ofReal, abs_cos_add_sin_mul_I, mul_one]
 #align complex.abs_exp Complex.abs_exp
 
 theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re := by
