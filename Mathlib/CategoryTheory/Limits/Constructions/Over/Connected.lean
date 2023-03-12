@@ -54,7 +54,12 @@ def raiseCone [IsConnected J] {B : C} {F : J ⥤ Over B} (c : Cone (F ⋙ forget
   pt := Over.mk (c.π.app (Classical.arbitrary J) ≫ (F.obj (Classical.arbitrary J)).hom)
   π :=
     { app := fun j =>
-        Over.homMk (c.π.app j) (nat_trans_from_is_connected (c.π ≫ natTransInOver F) j _) }
+        Over.homMk (c.π.app j) (nat_trans_from_is_connected (c.π ≫ natTransInOver F) j _)
+      naturality := by
+        intro X Y f
+        apply CommaMorphism.ext
+        · simpa using (c.w f).symm
+        · simp }
 #align category_theory.over.creates_connected.raise_cone CategoryTheory.Over.CreatesConnected.raiseCone
 
 theorem raised_cone_lowers_to_original [IsConnected J] {B : C} {F : J ⥤ Over B}
