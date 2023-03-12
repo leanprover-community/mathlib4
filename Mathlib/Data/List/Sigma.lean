@@ -453,7 +453,7 @@ theorem keys_kerase {a} {l : List (Sigma β)} : (kerase a l).keys = l.keys.erase
 
 theorem kerase_kerase {a a'} {l : List (Sigma β)} :
     (kerase a' l).kerase a = (kerase a l).kerase a' := by
-  by_cases a = a'
+  by_cases h : a = a'
   · subst a'; rfl
   induction' l with x xs; · rfl
   · by_cases a' = x.1
@@ -646,7 +646,7 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
 theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys l) = dlookup a l := by
   induction' l with l_hd _ l_ih; rfl
   cases' l_hd with a' b
-  by_cases a = a'
+  by_cases h : a = a'
   · subst a'
     rw [dedupKeys_cons, dlookup_kinsert, dlookup_cons_eq]
   · rw [dedupKeys_cons, dlookup_kinsert_ne h, l_ih, dlookup_cons_ne]
