@@ -36,19 +36,19 @@ namespace CategoryTheory
 section Examples
 
 instance widePullbackShape_connected (J : Type v₁) : IsConnected (WidePullbackShape J) := by
-  apply is_connected.of_induct
+  apply IsConnected.of_induct
   introv hp t
   cases j
   · exact hp
-  · rwa [t (wide_pullback_shape.hom.term j)]
+  · rwa [t (WidePullbackShape.Hom.term _)]
 #align category_theory.wide_pullback_shape_connected CategoryTheory.widePullbackShape_connected
 
 instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutShape J) := by
-  apply is_connected.of_induct
+  apply IsConnected.of_induct
   introv hp t
   cases j
   · exact hp
-  · rwa [← t (wide_pushout_shape.hom.init j)]
+  · rwa [← t (WidePushoutShape.Hom.init _)]
 #align category_theory.wide_pushout_shape_connected CategoryTheory.widePushoutShape_connected
 
 instance parallelPairInhabited : Inhabited WalkingParallelPair :=
@@ -56,16 +56,14 @@ instance parallelPairInhabited : Inhabited WalkingParallelPair :=
 #align category_theory.parallel_pair_inhabited CategoryTheory.parallelPairInhabited
 
 instance parallel_pair_connected : IsConnected WalkingParallelPair := by
-  apply is_connected.of_induct
+  apply IsConnected.of_induct
   introv _ t
   cases j
-  · rwa [t walking_parallel_pair_hom.left]
+  · rwa [t WalkingParallelPairHom.left]
   · assumption
 #align category_theory.parallel_pair_connected CategoryTheory.parallel_pair_connected
 
 end Examples
-
-attribute [local tidy] tactic.case_bash
 
 variable {C : Type u₂} [Category.{v₂} C]
 
@@ -105,26 +103,25 @@ Note that this functor does not preserve the two most obvious disconnected limit
 `X ⨯ (A ⨯ B)` and `X ⨯ 1` is not isomorphic to `1`.
 -/
 noncomputable def prodPreservesConnectedLimits [IsConnected J] (X : C) :
-    PreservesLimitsOfShape J (prod.functor.obj X)
-    where PreservesLimit K :=
+    PreservesLimitsOfShape J (prod.functor.obj X) where
+  preservesLimit {K} :=
     {
-      preserves := fun c l =>
+      preserves := fun {c} l =>
         { lift := fun s =>
             prod.lift (s.π.app (Classical.arbitrary _) ≫ Limits.prod.fst) (l.lift (forgetCone s))
           fac := fun s j => by
             apply prod.hom_ext
-            · erw [assoc, lim_map_π, comp_id, limit.lift_π]
+            · erw [assoc, limMap_π, comp_id, limit.lift_π]
               exact (nat_trans_from_is_connected (s.π ≫ γ₁ X) j (Classical.arbitrary _)).symm
-            · simp [← l.fac (forget_cone s) j]
+            · simp [← l.fac (forgetCone s) j]
           uniq := fun s m L => by
             apply prod.hom_ext
-            · erw [limit.lift_π, ← L (Classical.arbitrary J), assoc, lim_map_π, comp_id]
+            · erw [limit.lift_π, ← L (Classical.arbitrary J), assoc, limMap_π, comp_id]
               rfl
             · rw [limit.lift_π]
-              apply l.uniq (forget_cone s)
+              apply l.uniq (forgetCone s)
               intro j
               simp [← L j] } }
 #align category_theory.prod_preserves_connected_limits CategoryTheory.prodPreservesConnectedLimits
 
 end CategoryTheory
-
