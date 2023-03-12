@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathbin.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathbin.CategoryTheory.Limits.Constructions.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
 /-!
 # Limits involving zero objects
@@ -57,8 +57,7 @@ theorem zeroProdIso_hom (X : C) : (zeroProdIso X).Hom = prod.snd :=
 #align category_theory.limits.zero_prod_iso_hom CategoryTheory.Limits.zeroProdIso_hom
 
 @[simp]
-theorem zeroProdIso_inv_snd (X : C) : (zeroProdIso X).inv ≫ prod.snd = 𝟙 X :=
-  by
+theorem zeroProdIso_inv_snd (X : C) : (zeroProdIso X).inv ≫ prod.snd = 𝟙 X := by
   dsimp [zero_prod_iso, binary_fan_zero_left]
   simp
 #align category_theory.limits.zero_prod_iso_inv_snd CategoryTheory.Limits.zeroProdIso_inv_snd
@@ -88,8 +87,7 @@ theorem prodZeroIso_hom (X : C) : (prodZeroIso X).Hom = prod.fst :=
 #align category_theory.limits.prod_zero_iso_hom CategoryTheory.Limits.prodZeroIso_hom
 
 @[simp]
-theorem prodZeroIso_iso_inv_snd (X : C) : (prodZeroIso X).inv ≫ prod.fst = 𝟙 X :=
-  by
+theorem prodZeroIso_iso_inv_snd (X : C) : (prodZeroIso X).inv ≫ prod.fst = 𝟙 X := by
   dsimp [prod_zero_iso, binary_fan_zero_right]
   simp
 #align category_theory.limits.prod_zero_iso_iso_inv_snd CategoryTheory.Limits.prodZeroIso_iso_inv_snd
@@ -114,8 +112,7 @@ def zeroCoprodIso (X : C) : (0 : C) ⨿ X ≅ X :=
 #align category_theory.limits.zero_coprod_iso CategoryTheory.Limits.zeroCoprodIso
 
 @[simp]
-theorem inr_zeroCoprodIso_hom (X : C) : coprod.inr ≫ (zeroCoprodIso X).Hom = 𝟙 X :=
-  by
+theorem inr_zeroCoprodIso_hom (X : C) : coprod.inr ≫ (zeroCoprodIso X).Hom = 𝟙 X := by
   dsimp [zero_coprod_iso, binary_cofan_zero_left]
   simp
 #align category_theory.limits.inr_zero_coprod_iso_hom CategoryTheory.Limits.inr_zeroCoprodIso_hom
@@ -145,8 +142,7 @@ def coprodZeroIso (X : C) : X ⨿ (0 : C) ≅ X :=
 #align category_theory.limits.coprod_zero_iso CategoryTheory.Limits.coprodZeroIso
 
 @[simp]
-theorem inr_coprod_zeroiso_hom (X : C) : coprod.inl ≫ (coprodZeroIso X).Hom = 𝟙 X :=
-  by
+theorem inr_coprod_zeroiso_hom (X : C) : coprod.inl ≫ (coprodZeroIso X).Hom = 𝟙 X := by
   dsimp [coprod_zero_iso, binary_cofan_zero_right]
   simp
 #align category_theory.limits.inr_coprod_zeroiso_hom CategoryTheory.Limits.inr_coprod_zeroiso_hom
@@ -171,16 +167,14 @@ def pullbackZeroZeroIso (X Y : C) [HasBinaryProduct X Y] :
 
 @[simp]
 theorem pullbackZeroZeroIso_inv_fst (X Y : C) [HasBinaryProduct X Y] :
-    (pullbackZeroZeroIso X Y).inv ≫ pullback.fst = prod.fst :=
-  by
+    (pullbackZeroZeroIso X Y).inv ≫ pullback.fst = prod.fst := by
   dsimp [pullback_zero_zero_iso]
   simp
 #align category_theory.limits.pullback_zero_zero_iso_inv_fst CategoryTheory.Limits.pullbackZeroZeroIso_inv_fst
 
 @[simp]
 theorem pullbackZeroZeroIso_inv_snd (X Y : C) [HasBinaryProduct X Y] :
-    (pullbackZeroZeroIso X Y).inv ≫ pullback.snd = prod.snd :=
-  by
+    (pullbackZeroZeroIso X Y).inv ≫ pullback.snd = prod.snd := by
   dsimp [pullback_zero_zero_iso]
   simp
 #align category_theory.limits.pullback_zero_zero_iso_inv_snd CategoryTheory.Limits.pullbackZeroZeroIso_inv_snd
@@ -210,16 +204,14 @@ def pushoutZeroZeroIso (X Y : C) [HasBinaryCoproduct X Y] :
 
 @[simp]
 theorem inl_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
-    pushout.inl ≫ (pushoutZeroZeroIso X Y).Hom = coprod.inl :=
-  by
+    pushout.inl ≫ (pushoutZeroZeroIso X Y).Hom = coprod.inl := by
   dsimp [pushout_zero_zero_iso]
   simp
 #align category_theory.limits.inl_pushout_zero_zero_iso_hom CategoryTheory.Limits.inl_pushoutZeroZeroIso_hom
 
 @[simp]
 theorem inr_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
-    pushout.inr ≫ (pushoutZeroZeroIso X Y).Hom = coprod.inr :=
-  by
+    pushout.inr ≫ (pushoutZeroZeroIso X Y).Hom = coprod.inr := by
   dsimp [pushout_zero_zero_iso]
   simp
 #align category_theory.limits.inr_pushout_zero_zero_iso_hom CategoryTheory.Limits.inr_pushoutZeroZeroIso_hom
