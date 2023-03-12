@@ -28,6 +28,7 @@ universe u v
 /-- A *-subalgebra is a subalgebra of a *-algebra which is closed under *. -/
 structure StarSubalgebra (R : Type u) (A : Type v) [CommSemiring R] [StarRing R] [Semiring A]
   [StarRing A] [Algebra R A] [StarModule R A] extends Subalgebra R A : Type v where
+  /-- The `carrier` is closed under the `star` operation. -/
   star_mem' {a} : a ∈ carrier → star a ∈ carrier
 #align star_subalgebra StarSubalgebra
 
@@ -80,7 +81,7 @@ instance algebra (s : StarSubalgebra R A) : Algebra R s :=
 instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
 
-@[simp]
+@[simp, nolint simpNF] -- porting note: `simpNF` says `simp` can prove this, but it can't
 theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align star_subalgebra.mem_carrier StarSubalgebra.mem_carrier
@@ -365,9 +366,9 @@ theorem mem_star_iff (S : Subalgebra R A) (x : A) : x ∈ star S ↔ star x ∈ 
   Iff.rfl
 #align subalgebra.mem_star_iff Subalgebra.mem_star_iff
 
-@[simp]
+-- porting note: removed `@[simp]` tag because `simp` can prove this
 theorem star_mem_star_iff (S : Subalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
-  simpa only [star_star] using mem_star_iff S (star x)
+  simp only [mem_star_iff, star_star]
 #align subalgebra.star_mem_star_iff Subalgebra.star_mem_star_iff
 
 @[simp]
@@ -771,10 +772,9 @@ theorem map_adjoin [StarModule R B] (f : A →⋆ₐ[R] B) (s : Set A) :
 
 theorem ext_adjoin {s : Set A} [StarAlgHomClass F R (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
-  refine'
-    FunLike.ext f g fun a =>
-      adjoin_induction' (p := fun y => f y = g y) a (fun x hx => _) (fun r => _) (fun x y hx hy => _) (fun x y hx hy => _)
-        fun x hx => _
+  refine' FunLike.ext f g fun a =>
+    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => _) (fun r => _)
+    (fun x y hx hy => _) (fun x y hx hy => _) fun x hx => _
   · exact h ⟨x, subset_adjoin R s hx⟩ hx
   · simp only [AlgHomClass.commutes]
   · simp only [map_add, map_add, hx, hy]
