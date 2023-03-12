@@ -501,9 +501,9 @@ theorem sub_nFBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow 
     have h' := sub_nFBelow h₁.snd h₂.snd
     simp [Sub.sub, sub] at h'⊢
     have := @cmp_compares _ _ h₁.fst h₂.fst
-    cases cmp e₁ e₂ <;> simp [sub]
+    cases h: cmp e₁ e₂ <;> simp [(·- ·), Sub.sub, sub, h]
     · apply NFBelow.zero
-    · simp at this
+    · simp [h] at this
       subst e₂
       cases mn : (n₁ : ℕ) - n₂ <;> simp [sub]
       · by_cases en : n₁ = n₂ <;> simp [en]
