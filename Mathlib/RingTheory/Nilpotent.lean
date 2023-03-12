@@ -17,15 +17,14 @@ import Mathlib.RingTheory.Ideal.Operations
 
 ## Main definitions
 
-  * `is_nilpotent`
-  * `is_nilpotent_neg_iff`
-  * `commute.is_nilpotent_add`
-  * `commute.is_nilpotent_mul_left`
-  * `commute.is_nilpotent_mul_right`
-  * `commute.is_nilpotent_sub`
+  * `IsNilpotent`
+  * `isNilpotent_neg_iff`
+  * `Commute.isNilpotent_add`
+  * `Commute.isNilpotent_mul_left`
+  * `Commute.isNilpotent_mul_right`
+  * `Commute.isNilpotent_sub`
 
 -/
-
 
 universe u v
 
@@ -34,7 +33,7 @@ variable {R S : Type u} {x y : R}
 /-- An element is said to be nilpotent if some natural-number-power of it equals zero.
 
 Note that we require only the bare minimum assumptions for the definition to make sense. Even
-`monoid_with_zero` is too strong since nilpotency is important in the study of rings that are only
+`MonoidWithZero` is too strong since nilpotency is important in the study of rings that are only
 power-associative. -/
 def IsNilpotent [Zero R] [Pow R ℕ] (x : R) : Prop :=
   ∃ n : ℕ, x ^ n = 0
@@ -61,13 +60,14 @@ theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type _}
     [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by
-  use hr.some
-  rw [← map_pow, hr.some_spec, map_zero]
+  use hr.choose
+  rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
 
 /-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
-@[mk_iff]
+@[mk_iff isReduced_iff]
 class IsReduced (R : Type _) [Zero R] [Pow R ℕ] : Prop where
+  /-- A reduced structure has no nonzero nilpotent elements. -/
   eq_zero : ∀ x : R, IsNilpotent x → x = 0
 #align is_reduced IsReduced
 
@@ -100,11 +100,17 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type _
   exact (hx.map f).eq_zero
 #align is_reduced_of_injective isReduced_of_injective
 
+-- Porting note: Added etaExperiment line to synthesize RingHomClass
+set_option synthInstance.etaExperiment true
+
 theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [CommRing S]
     [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
-  simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker] <;> rfl
+  simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
+  rfl
 #align ring_hom.ker_is_radical_iff_reduced_of_surjective RingHom.ker_isRadical_iff_reduced_of_surjective
+
+set_option synthInstance.etaExperiment false
 
 /-- An element `y` in a monoid is radical if for any element `x`, `y` divides `x` whenever it
   divides a power of `x`. -/
@@ -120,7 +126,7 @@ theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced 
 theorem isRadical_iff_span_singleton [CommSemiring R] :
     IsRadical y ↔ (Ideal.span ({y} : Set R)).IsRadical := by
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
-  exact forall_swap.trans (forall_congr' fun r => exists_imp_distrib.symm)
+  exact forall_swap.trans (forall_congr' fun r => exists_imp.symm)
 #align is_radical_iff_span_singleton isRadical_iff_span_singleton
 
 theorem isRadical_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
@@ -141,8 +147,6 @@ section Semiring
 
 variable [Semiring R] (h_comm : Commute x y)
 
-include h_comm
-
 theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent (x + y) := by
   obtain ⟨n, hn⟩ := hx
   obtain ⟨m, hm⟩ := hy
@@ -151,7 +155,7 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
   suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, MulZeroClass.mul_zero]
-  cases' Nat.le_or_le_of_add_eq_add_pred (finset.nat.mem_antidiagonal.mp hij) with hi hj
+  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.Nat.mem_antidiagonal.mp hij) with hi hj
   · rw [pow_eq_zero_of_le hi hn, MulZeroClass.zero_mul]
   · rw [pow_eq_zero_of_le hj hm, MulZeroClass.mul_zero]
 #align commute.is_nilpotent_add Commute.isNilpotent_add
@@ -164,7 +168,7 @@ theorem isNilpotent_mul_left (h : IsNilpotent x) : IsNilpotent (x * y) := by
 
 theorem isNilpotent_mul_right (h : IsNilpotent y) : IsNilpotent (x * y) := by
   rw [h_comm.eq]
-  exact h_comm.symm.is_nilpotent_mul_left h
+  exact h_comm.symm.isNilpotent_mul_left h
 #align commute.is_nilpotent_mul_right Commute.isNilpotent_mul_right
 
 end Semiring
@@ -173,13 +177,11 @@ section Ring
 
 variable [Ring R] (h_comm : Commute x y)
 
-include h_comm
-
 theorem isNilpotent_sub (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent (x - y) := by
   rw [← neg_right_iff] at h_comm
   rw [← isNilpotent_neg_iff] at hy
   rw [sub_eq_add_neg]
-  exact h_comm.is_nilpotent_add hx hy
+  exact h_comm.isNilpotent_add hx hy
 #align commute.is_nilpotent_sub Commute.isNilpotent_sub
 
 end Ring
@@ -227,14 +229,14 @@ variable (R) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 @[simp]
 theorem isNilpotent_mulLeft_iff (a : A) : IsNilpotent (mulLeft R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mul_left_eq_zero_iff, pow_mul_left] at hn⊢ <;>
+      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_left_iff LinearMap.isNilpotent_mulLeft_iff
 
 @[simp]
 theorem isNilpotent_mulRight_iff (a : A) : IsNilpotent (mulRight R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mul_right_eq_zero_iff, pow_mul_right] at hn⊢ <;>
+      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_right_iff LinearMap.isNilpotent_mulRight_iff
 
@@ -249,8 +251,7 @@ variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)
 theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := by
   obtain ⟨k, hk⟩ := hnp
   use k
-  simp [← p.mapq_pow, hk]
+  simp [← p.mapQ_pow, hk]
 #align module.End.is_nilpotent.mapq Module.End.IsNilpotent.mapQ
 
 end Module.End
-
