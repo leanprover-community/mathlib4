@@ -435,7 +435,8 @@ theorem extendProp (F : HomotopyWith f₀ f₁ P) (t : ℝ) : P (F.toHomotopy.ex
   by_cases ht₀ : 0 ≤ t
   · by_cases ht₁ : t ≤ 1
     · apply F.prop
-    · refine' Eq.subst _ (F.prop 1)
+    · -- porting note: `convert F.prop 1` does not create the expected goal
+      refine' Eq.subst _ (F.prop 1)
       ext x
       simp [F.toHomotopy.extend_apply_of_one_le (le_of_not_le ht₁)]
   · refine' Eq.subst _ (F.prop 0)
