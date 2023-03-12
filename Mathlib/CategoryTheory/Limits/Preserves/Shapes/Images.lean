@@ -44,29 +44,29 @@ variable [∀ {X Y Z : A} (f : X ⟶ Y) (g : X ⟶ Z), PreservesColimit (span f 
 
 /-- If a functor preserves span and cospan, then it preserves images.
 -/
-@[simps]
+@[simps!]
 def iso {X Y : A} (f : X ⟶ Y) : image (L.map f) ≅ L.obj (image f) :=
   let aux1 : StrongEpiMonoFactorisation (L.map f) :=
-    { i := L.obj (Limits.image f)
+    { I := L.obj (Limits.image f)
       m := L.map <| Limits.image.ι _
       m_mono := preserves_mono_of_preservesLimit _ _
       e := L.map <| factorThruImage _
-      e_strongEpi := @strongEpi_of_epi _ _ _ <| preserves_epi_of_preservesColimit L _
-      fac := by rw [← L.map_comp, limits.image.fac] }
+      e_strong_epi := @strongEpi_of_epi B _ _ _ _ _ (preserves_epi_of_preservesColimit L _)
+      fac := by rw [← L.map_comp, Limits.image.fac] }
   IsImage.isoExt (Image.isImage (L.map f)) aux1.toMonoIsImage
 #align category_theory.preserves_image.iso CategoryTheory.PreservesImage.iso
 
-@[reassoc.1]
+@[reassoc]
 theorem factorThruImage_comp_hom {X Y : A} (f : X ⟶ Y) :
-    factorThruImage (L.map f) ≫ (iso L f).Hom = L.map (factorThruImage f) := by simp
+    factorThruImage (L.map f) ≫ (iso L f).hom = L.map (factorThruImage f) := by simp
 #align category_theory.preserves_image.factor_thru_image_comp_hom CategoryTheory.PreservesImage.factorThruImage_comp_hom
 
-@[reassoc.1]
+@[reassoc]
 theorem hom_comp_map_image_ι {X Y : A} (f : X ⟶ Y) :
-    (iso L f).Hom ≫ L.map (image.ι f) = image.ι (L.map f) := by simp
+    (iso L f).hom ≫ L.map (image.ι f) = image.ι (L.map f) := by rw [iso_hom, image.lift_fac]
 #align category_theory.preserves_image.hom_comp_map_image_ι CategoryTheory.PreservesImage.hom_comp_map_image_ι
 
-@[reassoc.1]
+@[reassoc]
 theorem inv_comp_image_ι_map {X Y : A} (f : X ⟶ Y) :
     (iso L f).inv ≫ image.ι (L.map f) = L.map (image.ι f) := by simp
 #align category_theory.preserves_image.inv_comp_image_ι_map CategoryTheory.PreservesImage.inv_comp_image_ι_map
@@ -74,4 +74,3 @@ theorem inv_comp_image_ι_map {X Y : A} (f : X ⟶ Y) :
 end PreservesImage
 
 end CategoryTheory
-
