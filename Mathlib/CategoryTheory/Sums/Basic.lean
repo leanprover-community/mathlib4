@@ -56,9 +56,9 @@ instance sum : Category.{v₁} (Sum C D)
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => f ≫ g
     | inr X, inr Y, inr Z, f, g => f ≫ g
-  assoc := @fun W X Y Z f g h => 
-    match X, Y, Z, W with 
-    | inl X, inl Y, inl Z, inl W => Category.assoc f g h  
+  assoc := @fun W X Y Z f g h =>
+    match X, Y, Z, W with
+    | inl X, inl Y, inl Z, inl W => Category.assoc f g h
     | inr X, inr Y, inr Z, inr W => Category.assoc f g h
 #align category_theory.sum CategoryTheory.sum
 
@@ -113,10 +113,10 @@ def swap : Sum C D ⥤ Sum D C
     match X, Y, f with
     | inl _, inl _, f => f
     | inr _, inr _, f => f
-  map_comp := fun {X} {Y} {Z} _ _ => 
-    match X, Y, Z with 
-    | inl X, inl Y, inl Z => by rfl 
-    | inr X, inr Y, inr Z => by rfl 
+  map_comp := fun {X} {Y} {Z} _ _ =>
+    match X, Y, Z with
+    | inl X, inl Y, inl Z => by rfl
+    | inr X, inr Y, inr Z => by rfl
 #align category_theory.sum.swap CategoryTheory.Sum.swap
 
 @[simp]
@@ -146,7 +146,7 @@ namespace Swap
 /-- `swap` gives an equivalence between `C ⊕ D` and `D ⊕ C`. -/
 def equivalence : Sum C D ≌ Sum D C :=
   Equivalence.mk (swap C D) (swap D C)
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)) 
+    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
     (by simp only [swap]; aesop_cat; cases f; cases f))
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
     (by simp only [swap]; aesop_cat; cases f; cases f))
