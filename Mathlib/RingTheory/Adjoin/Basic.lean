@@ -104,31 +104,26 @@ theorem adjoin_induction₂ {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin 
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
   refine' adjoin_induction hb _ (fun r => _) (Hadd_right a) (Hmul_right a)
-  ·
-    exact
-      adjoin_induction ha Hs Halg_left (fun x y Hx Hy z hz => Hadd_left x y z (Hx z hz) (Hy z hz))
-        fun x y Hx Hy z hz => Hmul_left x y z (Hx z hz) (Hy z hz)
-  ·
-    exact
-      adjoin_induction ha (Halg_right r) (fun r' => Halg r' r)
-        (fun x y => Hadd_left x y ((algebraMap R A) r)) fun x y =>
-        Hmul_left x y ((algebraMap R A) r)
+  · exact adjoin_induction ha Hs Halg_left
+      (fun x y Hx Hy z hz => Hadd_left x y z (Hx z hz) (Hy z hz))
+      fun x y Hx Hy z hz => Hmul_left x y z (Hx z hz) (Hy z hz)
+  · exact adjoin_induction ha (Halg_right r) (fun r' => Halg r' r)
+      (fun x y => Hadd_left x y ((algebraMap R A) r))
+      fun x y => Hmul_left x y ((algebraMap R A) r)
 #align algebra.adjoin_induction₂ Algebra.adjoin_induction₂
 
-/-- The difference with `algebra.adjoin_induction` is that this acts on the subtype. -/
+/-- The difference with `Algebra.adjoin_induction` is that this acts on the subtype. -/
 theorem adjoin_induction' {p : adjoin R s → Prop} (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin h⟩)
     (Halg : ∀ r, p (algebraMap R _ r)) (Hadd : ∀ x y, p x → p y → p (x + y))
     (Hmul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
-  Subtype.recOn x fun x hx =>
-    by
+  Subtype.recOn x fun x hx => by
     refine' Exists.elim _ fun (hx : x ∈ adjoin R s) (hc : p ⟨x, hx⟩) => hc
-    exact
-      adjoin_induction hx (fun x hx => ⟨subset_adjoin hx, Hs x hx⟩)
-        (fun r => ⟨Subalgebra.algebraMap_mem _ r, Halg r⟩)
-        (fun x y hx hy =>
-          Exists.elim hx fun hx' hx =>
-            Exists.elim hy fun hy' hy => ⟨Subalgebra.add_mem _ hx' hy', Hadd _ _ hx hy⟩)
-        fun x y hx hy =>
+    exact adjoin_induction hx (fun x hx => ⟨subset_adjoin hx, Hs x hx⟩)
+      (fun r => ⟨Subalgebra.algebraMap_mem _ r, Halg r⟩)
+      (fun x y hx hy =>
+        Exists.elim hx fun hx' hx =>
+          Exists.elim hy fun hy' hy => ⟨Subalgebra.add_mem _ hx' hy', Hadd _ _ hx hy⟩)
+      fun x y hx hy =>
         Exists.elim hx fun hx' hx =>
           Exists.elim hy fun hy' hy => ⟨Subalgebra.mul_mem _ hx' hy', Hmul _ _ hx hy⟩
 #align algebra.adjoin_induction' Algebra.adjoin_induction'
@@ -178,8 +173,7 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
     refine' Submodule.add_mem _ _ (ih HL.2)
     replace HL := HL.1
     clear ih tl
-    suffices ∃ (z r : _) (_hr : r ∈ Submonoid.closure s), z • r = List.prod hd
-      by
+    suffices ∃ (z r : _) (_hr : r ∈ Submonoid.closure s), z • r = List.prod hd by
       rcases this with ⟨z, r, hr, hzr⟩
       rw [← hzr]
       exact smul_mem _ _ (subset_span hr)
@@ -191,8 +185,7 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
     rcases HL.1 with (⟨hd, rfl⟩ | hs)
     · refine' ⟨hd * z, r, hr, _⟩
       rw [Algebra.smul_def, Algebra.smul_def, (algebraMap _ _).map_mul, _root_.mul_assoc]
-    ·
-      exact
+    · exact
         ⟨z, hd * r, Submonoid.mul_mem _ (Submonoid.subset_closure hs) hr,
           (mul_smul_comm _ _ _).symm⟩
   refine' span_le.2 _
@@ -222,7 +215,7 @@ theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin
 theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
   le_antisymm (adjoin_le <| Set.image_subset _ subset_adjoin) <|
     Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
-      -- porting note: I don't understand how this worked in Lean 3
+      -- porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
       simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
         Subalgebra.coe_comap]
       exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
@@ -237,7 +230,6 @@ theorem adjoin_insert_adjoin (x : A) : adjoin R (insert x ↑(adjoin R s)) = adj
     (Algebra.adjoin_mono (Set.insert_subset_insert Algebra.subset_adjoin))
 #align algebra.adjoin_insert_adjoin Algebra.adjoin_insert_adjoin
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem adjoin_prod_le (s : Set A) (t : Set B) :
     adjoin R (s ×ˢ t) ≤ (adjoin R s).prod (adjoin R t) :=
   adjoin_le <| Set.prod_mono subset_adjoin subset_adjoin
@@ -279,7 +271,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     simpa using Subalgebra.add_mem _ Ha Hb
 #align algebra.adjoin_inl_union_inr_eq_prod Algebra.adjoin_inl_union_inr_eq_prod
 
-/-- If all elements of `s : set A` commute pairwise, then `adjoin R s` is a commutative
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 semiring.  -/
 def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemiring (adjoin R s) :=
@@ -287,13 +279,12 @@ def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * 
     mul_comm := fun x y => by
       ext
       simp only [Subalgebra.coe_mul]
-      exact
-        adjoin_induction₂ x.prop y.prop hcomm (fun _ _ => by rw [commutes])
-          (fun r x _hx => commutes r x) (fun r x _hx => (commutes r x).symm)
-          (fun _ _ _ h₁ h₂ => by simp only [add_mul, mul_add, h₁, h₂])
-          (fun _ _ _ h₁ h₂ => by simp only [add_mul, mul_add, h₁, h₂])
-          (fun x₁ x₂ y₁ h₁ h₂ => by rw [mul_assoc, h₂, ← mul_assoc y₁, ← h₁, mul_assoc x₁])
-          fun x₁ x₂ y₁ h₁ h₂ => by rw [mul_assoc x₂, ← h₂, ← mul_assoc x₂, ← h₁, ← mul_assoc] }
+      exact adjoin_induction₂ x.prop y.prop hcomm (fun _ _ => by rw [commutes])
+        (fun r x _hx => commutes r x) (fun r x _hx => (commutes r x).symm)
+        (fun _ _ _ h₁ h₂ => by simp only [add_mul, mul_add, h₁, h₂])
+        (fun _ _ _ h₁ h₂ => by simp only [add_mul, mul_add, h₁, h₂])
+        (fun x₁ x₂ y₁ h₁ h₂ => by rw [mul_assoc, h₂, ← mul_assoc y₁, ← h₁, mul_assoc x₁])
+        fun x₁ x₂ y₁ h₁ h₂ => by rw [mul_assoc x₂, ← h₂, ← mul_assoc x₂, ← h₁, ← mul_assoc] }
 #align algebra.adjoin_comm_semiring_of_comm Algebra.adjoinCommSemiringOfComm
 
 theorem adjoin_singleton_one : adjoin R ({1} : Set A) = ⊥ :=
@@ -410,7 +401,7 @@ theorem adjoin_eq_ring_closure (s : Set A) :
 
 variable (R)
 
-/-- If all elements of `s : set A` commute pairwise, then `adjoin R s` is a commutative
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring.  -/
 def adjoinCommRingOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (adjoin R s) :=
