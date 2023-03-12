@@ -309,7 +309,8 @@ theorem mkNormedAddGroupHom_norm_le (f : V₁ →+ V₂) {C : ℝ} (hC : 0 ≤ C
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism via the constructor
 `NormedAddGroupHom.ofLipschitz`, then its norm is bounded by the bound given to the constructor. -/
-theorem ofLipschitz_norm_le (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : ‖ofLipschitz f h‖ ≤ K :=
+theorem ofLipschitz_norm_le (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) :
+    ‖ofLipschitz f h‖ ≤ K :=
   mkNormedAddGroupHom_norm_le f K.coe_nonneg _
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism
