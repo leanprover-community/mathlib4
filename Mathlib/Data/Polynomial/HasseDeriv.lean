@@ -170,11 +170,12 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative
 
 theorem hasseDeriv_comp (k l : ℕ) :
     (@hasseDeriv R _ k).comp (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) := by
-  ext i : 2
+  ext i x n
   simp only [LinearMap.smul_apply, comp_apply, LinearMap.coe_comp, smul_monomial, hasseDeriv_apply,
     mul_one, monomial_eq_zero_iff, sum_monomial_index, MulZeroClass.mul_zero, ←
     tsub_add_eq_tsub_tsub, add_comm l k]
   rw_mod_cast [nsmul_eq_mul]
+  congr 1
   congr 1
   by_cases hikl : i < k + l
   · rw [choose_eq_zero_of_lt hikl]
@@ -191,28 +192,32 @@ theorem hasseDeriv_comp (k l : ℕ) :
   congr 1
   norm_cast
   congr 1
-  apply @cast_injective ℚ
   have h1 : l ≤ i := le_of_add_le_right hikl
   have h2 : k ≤ i - l := le_tsub_of_add_le_right hikl
   have h3 : k ≤ k + l := le_self_add
+  apply @cast_injective ℚ
+  push_cast
+  rw [cast_choose ℚ h1]
+  rw [cast_choose ℚ h2]
+  rw [cast_choose ℚ h3]
+  rw [cast_choose ℚ hikl]
+  rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
+  simp only [add_tsub_cancel_left]
   have H : ∀ n : ℕ, (n ! : ℚ) ≠ 0 := by exact_mod_cast factorial_ne_zero
-  simp
-  rw [cast_choose _ h2]
-  rw [cast_choose _ h1]
-  rw [cast_choose _ hikl]
-  simp [cast_choose ℚ]
-  have kk := H k
-  have ll := H l
+  generalize ga : ((i - l)! : ℚ) = a
+  have ha : a ≠ 0 := by rw [← ga]; exact H (i - l)
+  generalize gb : (k ! : ℚ) = b
+  have hb : b ≠ 0 := by rw [← gb]; exact H k
+  generalize gc : ((i - l - k) ! : ℚ) = c
+  have hc : c ≠ 0 := by rw [← gc]; exact H (i - l - k)
+  generalize gd : (i ! : ℚ) = d
+  have hd : d ≠ 0 := by rw [← gd]; exact H i
+  generalize ge : (l ! : ℚ) = e
+  have he : e ≠ 0 := by rw [← ge]; exact H l
+  generalize gf : ((k + l)! : ℚ) = f
+  have hf : f ≠ 0 := by rw [← gf]; exact H (k + l)
   field_simp
-  norm_cast
-  sorry
-  -- why can't `field_simp` help me here?
-  -- simp only [cast_mul, cast_choose ℚ, h1, h2, h3, hikl, -one_div, -mul_eq_zero,
-  --   succ_sub_succ_eq_sub, add_tsub_cancel_right, add_tsub_cancel_left, field_simps]
-  -- rw [eq_div_iff_mul_eq, eq_comm, div_mul_eq_mul_div, eq_div_iff_mul_eq, ← tsub_add_eq_tsub_tsub,
-  --   add_comm l k]
-  -- · ring
-  -- all_goals apply_rules [mul_ne_zero, H]
+  ring_nf
 #align polynomial.hasse_deriv_comp Polynomial.hasseDeriv_comp
 
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) : natDegree (hasseDeriv n p) ≤ natDegree p - n :=
