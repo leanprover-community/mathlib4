@@ -249,7 +249,7 @@ def comap {S : Type _} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) : Valuat
     v.toMonoidWithZeroHom.comp
       f.toMonoidWithZeroHom with
     toFun := v ∘ f
-    map_add_le_max' := fun x y => by simp only [comp_app, map_add, f.map_add] }
+    map_add_le_max' := fun x y => by simp only [comp_apply, map_add, f.map_add] }
 #align valuation.comap Valuation.comap
 
 @[simp]
@@ -535,7 +535,7 @@ theorem IsEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
   exact (Equiv.subRight 1).surjective.forall
 #align valuation.is_equiv_iff_val_sub_one_lt_one Valuation.IsEquiv_iff_val_sub_one_lt_one
 
-theorem isEquiv_tFAE [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
+theorem IsEquiv_tFAE [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
     (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     [v.IsEquiv v', ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1, ∀ {x}, v x = 1 ↔ v' x = 1, ∀ {x}, v x < 1 ↔ v' x < 1,
         ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE := by
@@ -544,7 +544,7 @@ theorem isEquiv_tFAE [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGr
   tfae_have 1 ↔ 4; · apply IsEquiv_iff_val_lt_one
   tfae_have 1 ↔ 5; · apply IsEquiv_iff_val_sub_one_lt_one
   tfae_finish
-#align valuation.is_equiv_tfae Valuation.isEquiv_tFAE
+#align valuation.is_equiv_tfae Valuation.IsEquiv_tFAE
 
 end
 
