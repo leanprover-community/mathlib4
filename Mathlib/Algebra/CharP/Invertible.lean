@@ -8,8 +8,8 @@ Authors: Anne Baanen
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Invertible
-import Mathbin.Algebra.CharP.Basic
+import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.CharP.Basic
 
 /-!
 # Invertibility of elements given a characteristic
@@ -33,8 +33,7 @@ def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invert
   invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
 #align invertible_of_ring_char_not_dvd invertibleOfRingCharNotDvd
 
-theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t :=
-  by
+theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t := by
   rw [← ringChar.spec, ← Ne.def]
   exact nonzero_of_invertible (t : K)
 #align not_ring_char_dvd_of_invertible not_ringChar_dvd_of_invertible
