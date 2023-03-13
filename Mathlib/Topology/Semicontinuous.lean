@@ -269,7 +269,6 @@ section
 
 variable {γ : Type _} [LinearOrder γ]
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr ∀ y, (_ : exprProp())]] -/
 theorem lowerSemicontinuous_iff_isClosed_preimage {f : α → γ} :
     LowerSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Iic y) := by
   rw [lowerSemicontinuous_iff_isOpen_preimage]
@@ -374,11 +373,6 @@ section
 variable {ι : Type _} {γ : Type _} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
   [OrderTopology γ]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `ereal`. The unprimed version of
 the lemma uses `[has_continuous_add]`. -/
@@ -575,7 +569,6 @@ theorem lowerSemicontinuousWithinAt_supᵢ {f : ι → α → δ}
   lowerSemicontinuousWithinAt_csupr (by simp) h
 #align lower_semicontinuous_within_at_supr lowerSemicontinuousWithinAt_supᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem lowerSemicontinuousWithinAt_bsupr {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousWithinAt (f i hi) s x) :
     LowerSemicontinuousWithinAt (fun x' => ⨆ (i) (hi), f i hi x') s x :=
@@ -595,7 +588,6 @@ theorem lowerSemicontinuousAt_supᵢ {f : ι → α → δ} (h : ∀ i, LowerSem
   lowerSemicontinuousAt_csupr (by simp) h
 #align lower_semicontinuous_at_supr lowerSemicontinuousAt_supᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem lowerSemicontinuousAt_bsupr {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousAt (f i hi) x) :
     LowerSemicontinuousAt (fun x' => ⨆ (i) (hi), f i hi x') x :=
@@ -613,7 +605,6 @@ theorem lowerSemicontinuousOn_supᵢ {f : ι → α → δ} (h : ∀ i, LowerSem
   lowerSemicontinuousOn_csupr (by simp) h
 #align lower_semicontinuous_on_supr lowerSemicontinuousOn_supᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem lowerSemicontinuousOn_bsupr {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousOn (f i hi) s) :
     LowerSemicontinuousOn (fun x' => ⨆ (i) (hi), f i hi x') s :=
@@ -630,7 +621,6 @@ theorem lowerSemicontinuous_supᵢ {f : ι → α → δ} (h : ∀ i, LowerSemic
   lowerSemicontinuous_csupr (by simp) h
 #align lower_semicontinuous_supr lowerSemicontinuous_supᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem lowerSemicontinuous_bsupr {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuous (f i hi)) :
     LowerSemicontinuous fun x' => ⨆ (i) (hi), f i hi x' :=
@@ -807,7 +797,6 @@ section
 
 variable {γ : Type _} [LinearOrder γ]
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:73:14: unsupported tactic `congrm #[[expr ∀ y, (_ : exprProp())]] -/
 theorem upperSemicontinuous_iff_isClosed_preimage {f : α → γ} :
     UpperSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Ici y) := by
   rw [upperSemicontinuous_iff_isOpen_preimage]
@@ -1022,7 +1011,6 @@ theorem upperSemicontinuousWithinAt_infᵢ {f : ι → α → δ}
   @lowerSemicontinuousWithinAt_supᵢ α _ x s ι δᵒᵈ _ f h
 #align upper_semicontinuous_within_at_infi upperSemicontinuousWithinAt_infᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem upperSemicontinuousWithinAt_binfi {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousWithinAt (f i hi) s x) :
     UpperSemicontinuousWithinAt (fun x' => ⨅ (i) (hi), f i hi x') s x :=
@@ -1040,7 +1028,6 @@ theorem upperSemicontinuousAt_infᵢ {f : ι → α → δ} (h : ∀ i, UpperSem
   @lowerSemicontinuousAt_supᵢ α _ x ι δᵒᵈ _ f h
 #align upper_semicontinuous_at_infi upperSemicontinuousAt_infᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem upperSemicontinuousAt_binfi {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousAt (f i hi) x) :
     UpperSemicontinuousAt (fun x' => ⨅ (i) (hi), f i hi x') x :=
@@ -1058,7 +1045,6 @@ theorem upperSemicontinuousOn_infᵢ {f : ι → α → δ} (h : ∀ i, UpperSem
   upperSemicontinuousWithinAt_infᵢ fun i => h i x hx
 #align upper_semicontinuous_on_infi upperSemicontinuousOn_infᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem upperSemicontinuousOn_binfi {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousOn (f i hi) s) :
     UpperSemicontinuousOn (fun x' => ⨅ (i) (hi), f i hi x') s :=
@@ -1074,7 +1060,6 @@ theorem upperSemicontinuous_infᵢ {f : ι → α → δ} (h : ∀ i, UpperSemic
     UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x => upperSemicontinuousAt_infᵢ fun i => h i x
 #align upper_semicontinuous_infi upperSemicontinuous_infᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem upperSemicontinuous_binfi {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuous (f i hi)) :
     UpperSemicontinuous fun x' => ⨅ (i) (hi), f i hi x' :=
