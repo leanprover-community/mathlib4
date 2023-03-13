@@ -35,7 +35,7 @@ example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
 example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ :=
 by
   have : {x} ∩ {y} = (∅ : Set α) := by simpa [ne_comm] using h
-  convert Set.preimage_empty (f := f) -- porting note: mathlib3 didn't need to specify `f`
+  convert Set.preimage_empty
   rw [←Set.preimage_inter, this]
 
 section convert_to

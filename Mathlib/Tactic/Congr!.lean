@@ -714,8 +714,10 @@ def Lean.MVarId.preCongr! (mvarId : MVarId) : MetaM (Option MVarId) := do
   -- This is a good time to check whether we have a relevant hypothesis.
   if ← mvarId.assumptionCore then return none
   let mvarId ← mvarId.iffOfEq
-  -- Now try definitional equality. No need to try `mvarId.hrefl` since we already did  `heqOfEq`.
-  try mvarId.refl; return none catch _ => pure ()
+  -- Now try definitional equality. No need to try `mvarId.hrefl` since we already did `heqOfEq`.
+  -- We allow synthetic opaque metavariables to be assigned to fill in `x = _` goals that might
+  -- appear (for example, due to using `convert` with placeholders).
+  try withAssignableSyntheticOpaque mvarId.refl; return none catch _ => pure ()
   -- Now we go for (heterogenous) equality via subsingleton considerations
   if ← mvarId.subsingletonElim then return none
   if ← mvarId.proofIrrelHeq then return none

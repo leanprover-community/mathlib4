@@ -96,7 +96,7 @@ syntax (name := convert) "convert" (Parser.Tactic.config)? "← "? term (" using
 elab_rules : tactic
 | `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]?) => withMainContext do
   let config ← Congr!.elabConfig (mkOptionalNode cfg)
-  let (e, gs) ← elabTermWithHoles term
+  let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
     (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) (← getMainTag)
   liftMetaTactic fun g ↦ return (← g.convert e sym.isSome (n.map (·.getNat)) config) ++ gs
 
