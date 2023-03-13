@@ -231,7 +231,7 @@ def Simps.symmApply (e : P₁ ≃ᵃ[k] P₂) : P₂ → P₁ :=
   e.symm
 #align affine_equiv.simps.symm_apply AffineEquiv.Simps.symmApply
 
-initialize_simps_projections AffineEquiv (to_equiv_to_fun → apply, to_equiv_inv_fun → symm_apply,
+initialize_simps_projections AffineEquiv (toEquiv_toFun → apply, toEquiv_invFun → symmApply,
   linear → linear, as_prefix linear, -toEquiv)
 
 protected theorem bijective (e : P₁ ≃ᵃ[k] P₂) : Bijective e :=
@@ -247,7 +247,7 @@ protected theorem injective (e : P₁ ≃ᵃ[k] P₂) : Injective e :=
 #align affine_equiv.injective AffineEquiv.injective
 
 /-- Bijective affine maps are affine isomorphisms. -/
-@[simps]
+@[simps!]
 noncomputable def ofBijective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective φ) : P₁ ≃ᵃ[k] P₂ :=
   {
     Equiv.ofBijective _
@@ -460,7 +460,7 @@ variable (k)
 
 /-- The map `v ↦ v +ᵥ b` as an affine equivalence between a module `V` and an affine space `P` with
 tangent space `V`. -/
-@[simps]
+@[simps!]
 def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁
     where
   toEquiv := Equiv.vaddConst b
@@ -497,12 +497,12 @@ variable (P₁)
 
 Note that there is no need for an `affine_map.const_vadd` as it is always an equivalence.
 This is roughly to `distrib_mul_action.to_linear_equiv` as `+ᵥ` is to `•`. -/
-@[simps apply linear]
+@[simps!]
 def constVAdd (v : V₁) : P₁ ≃ᵃ[k] P₁
     where
   toEquiv := Equiv.constVAdd P₁ v
   linear := LinearEquiv.refl _ _
-  map_vadd' p w := vadd_comm _ _ _
+  map_vadd' _ _ := vadd_comm _ _ _
 #align affine_equiv.const_vadd AffineEquiv.constVAdd
 
 @[simp]
