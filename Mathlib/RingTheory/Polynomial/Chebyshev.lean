@@ -8,8 +8,8 @@ Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Derivative
-import Mathbin.Tactic.LinearCombination
+import Mathlib.Data.Polynomial.Derivative
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Chebyshev polynomials
@@ -89,8 +89,7 @@ theorem t_add_two (n : ℕ) : t R (n + 2) = 2 * X * t R (n + 1) - t R n := by rw
 theorem t_two : t R 2 = 2 * X ^ 2 - 1 := by simp only [T, sub_left_inj, sq, mul_assoc]
 #align polynomial.chebyshev.T_two Polynomial.Chebyshev.t_two
 
-theorem t_of_two_le (n : ℕ) (h : 2 ≤ n) : t R n = 2 * X * t R (n - 1) - t R (n - 2) :=
-  by
+theorem t_of_two_le (n : ℕ) (h : 2 ≤ n) : t R n = 2 * X * t R (n - 1) - t R (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm]
   exact T_add_two R n
@@ -122,8 +121,7 @@ theorem u_two : u R 2 = 4 * X ^ 2 - 1 := by
   ring
 #align polynomial.chebyshev.U_two Polynomial.Chebyshev.u_two
 
-theorem u_of_two_le (n : ℕ) (h : 2 ≤ n) : u R n = 2 * X * u R (n - 1) - u R (n - 2) :=
-  by
+theorem u_of_two_le (n : ℕ) (h : 2 ≤ n) : u R n = 2 * X * u R (n - 1) - u R (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm]
   exact U_add_two R n
@@ -240,8 +238,7 @@ theorem one_sub_x_sq_mul_derivative_t_eq_poly_in_t (n : ℕ) :
 #align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_x_sq_mul_derivative_t_eq_poly_in_t
 
 theorem add_one_mul_t_eq_poly_in_u (n : ℕ) :
-    ((n : R[X]) + 1) * t R (n + 1) = X * u R n - (1 - X ^ 2) * derivative (u R n) :=
-  by
+    ((n : R[X]) + 1) * t R (n + 1) = X * u R n - (1 - X ^ 2) * derivative (u R n) := by
   have h :
     derivative (T R (n + 2)) =
       U R (n + 1) - X * U R n + X * derivative (T R (n + 1)) + 2 * X * U R n -

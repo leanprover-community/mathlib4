@@ -1214,6 +1214,7 @@ import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.RingTheory.Polynomial.Chebyshev
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Prime
