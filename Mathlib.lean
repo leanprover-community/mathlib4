@@ -316,6 +316,7 @@ import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Bicones
+import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Cones
