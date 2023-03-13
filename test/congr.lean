@@ -61,6 +61,41 @@ theorem ex14 {α : Type} (f : Nat → Nat) (h : ∀ x, f x = 0) (z : α) (hz : H
     rw [h]
     exact hz.symm
 
+/-- Generating type equalities is OK if it's possible they're the same type. -/
+example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
+  congr! 1
+  guard_target = Subtype s = Subtype t
+  congr! 1
+  guard_target = s = t
+  sorry
+
+/-- Generating type equalities is not OK if they're not likely to be the same type. -/
+example (s : Set α) (t : Set β) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
+  congr!
+  guard_target = (ℕ × Subtype s) = (ℕ × Subtype t)
+  sorry
+
+/-- Congruence here is OK since `Fin m = Fin n` is plausible to prove. -/
+example (m n : Nat) (h : m = n) (x : Fin m) (y : Fin n) : HEq (x + x) (y + y) := by
+  congr!
+  guard_target = HEq x y
+  sorry
+  guard_target = HEq x y
+  sorry
+
+/-- Congruence here is not OK by default since `α = β` is not generally plausible. -/
+example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : HEq (x + x) (y + y) := by
+  congr!
+  guard_target = HEq (x + x) (y + y)
+  -- But with typeEqs we can get it to generate the congruence anyway:
+  have : α = β := sorry
+  have : HEq inst1 inst2 := sorry
+  congr! (config := { typeEqs := true })
+  guard_target = HEq x y
+  sorry
+  guard_target = HEq x y
+  sorry
+
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
   congr!
@@ -179,5 +214,7 @@ example (Fintype : Type → Type)
 example (Fintype : Type → Type) [∀ γ, Subsingleton (Fintype γ)]
     (α β : Type) (inst : Fintype α) (inst' : Fintype β) : HEq inst inst' := by
   congr!
+  guard_target = Fintype α = Fintype β
+  congr! (config := { typeEqs := true })
   guard_target = α = β
   sorry

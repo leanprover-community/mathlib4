@@ -51,9 +51,19 @@ structure Congr!.Config where
   With non-dependent functions, `some 1` causes `congr!` lets you control how many arguments
   it ends up processing using the iteration limit. -/
   maxArgs : Option Nat := none
+  /-- Whether to consider equalities between types that are don't look provable according to
+  a heuristic. When `false`, then causes the main congruence generator to apply a "possibly
+  provable" heuristic when there would be a type equality." Note: we always allow equalities of
+  propositions.
+
+  We say two types are possibly equal if, in whnf, they have the same head and if each of their
+  corresponding type arguments are possibly equal. -/
+  typeEqs : Bool := false
   /-- As a last pass, perform eta expansion of both sides of an equality. For example,
   this transforms a bare `HAdd.hAdd` into `fun x y => x + y`. -/
   etaExpand : Bool := false
+  /-- Whether to use the congruence generator that is used by `simp`. -/
+  useCongrSimp : Bool := false
 
 /-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
 does while also similarly preventing `congr!` from considering partial applications or congruences
@@ -316,6 +326,39 @@ where
     let pf ← instantiateMVars mvar
     return pf
 
+/-- Returns whether or not it's reasonable to consider an equality between types  `ty1` and `ty2`.
+The heuristic is the following:
+
+- If `ty1` and `ty2` are in `Prop`, then yes.
+- If in whnf both `ty1` and `ty2` have the same head and if (recursively) it's reasonable to
+  consider an equality between corresponding type arguments, then yes.
+- Otherwise, no.
+
+This helps keep congr from going too far and generating hypotheses like `ℝ = ℤ`.
+
+To keep things from going out of control, there is a `maxDepth`. Additionally, if we do the check
+with `maxDepth = 0` then the heuristic answers "no". -/
+def Congr!.possiblyEqualTypes (ty1 ty2 : Expr) (maxDepth : Nat := 5) : MetaM Bool :=
+  match maxDepth with
+  | 0 => return false
+  | maxDepth + 1 => do
+    -- Props are possibly equal
+    if (← isProp ty1) && (← isProp ty2) then
+      return true
+    -- Types from different type universes are not possibly equal
+    unless ← withNewMCtxDepth <| isDefEq (← inferType ty1) (← inferType ty2) do
+      return false
+    -- Now put the types into whnf, check they have the same head, and then recurse on arguments
+    let ty1 ← whnfD ty1
+    let ty2 ← whnfD ty2
+    unless ← withNewMCtxDepth <| isDefEq ty1.getAppFn ty2.getAppFn do
+      return false
+    for arg1 in ty1.getAppArgs, arg2 in ty2.getAppArgs do
+      if (← isType arg1) && (← isType arg2) then
+        unless ← possiblyEqualTypes arg1 arg2 maxDepth do
+          return false
+    return true
+
 /--
 This is like `Lean.MVarId.hcongr?` but (1) looks at both sides when generating the congruence lemma
 and (2) inserts additional hypotheses from equalities from previous arguments.
@@ -379,7 +422,11 @@ where
       let info ← getFunInfoNArgs f (numArgs + 1)
       let mut fixed : Array Bool := #[]
       for larg in lhsArgs', rarg in rhsArgs' do
-        fixed := fixed.push (← withReducible <| withNewMCtxDepth <| isDefEq larg rarg)
+        if not config.typeEqs &&
+            (← isType larg) && (← isType rarg) && not (← Congr!.possiblyEqualTypes larg rarg) then
+          fixed := fixed.push true
+        else
+          fixed := fixed.push (← withReducible <| withNewMCtxDepth <| isDefEq larg rarg)
       let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info
                                     (fixedFun := funDefEq) (fixedParams := fixed)
       -- Now see if the congruence theorem actually applies in this situation by applying it!
@@ -401,7 +448,23 @@ where
     for _ in [:numArgs] do
       f := f.appFn!'
     let info ← getFunInfoNArgs f numArgs
-    let (congrThm, congrProof) ← Congr!.mkHCongrThm (← inferType f) info (fixedFun := true)
+    let mut fixed : Array Bool := #[]
+    if not config.typeEqs then
+      -- We need some strategy for fixed parameters to keep `forSide` from applying
+      -- in cases where `Congr!.possiblyEqualTypes` suggested not to in the previous pass.
+      for pinfo in info.paramInfo, arg in side.getAppArgs do
+        if pinfo.isProp || not (← isType arg) then
+          fixed := fixed.push false
+        else if not pinfo.backDeps.isEmpty then
+          -- We can't immediately say such an equality is a bad idea, because the argument might
+          -- be something like `Fin n`.
+          -- Though, if the argument isn't explicit it probably would be surprising to generate
+          -- an equality.
+          fixed := fixed.push (pinfo.binderInfo != .default)
+        else
+          fixed := fixed.push true
+    let (congrThm, congrProof) ←
+      Congr!.mkHCongrThm (← inferType f) info (fixedFun := true) (fixedParams := fixed)
     let congrThm' := congrThm.bindingBody!.instantiate1 f
     let congrProof' := congrProof.beta #[f]
     observing? <| applyCongrThm? config mvarId congrThm' congrProof'
@@ -417,6 +480,7 @@ Applies the congruence generated congruence lemmas according to `config`.
 def Lean.MVarId.congrSimp? (config : Congr!.Config) (mvarId : MVarId) :
     MetaM (Option (List MVarId)) :=
   mvarId.withContext do
+    unless config.useCongrSimp do return none
     mvarId.checkNotAssigned `congrSimp?
     let some (_, lhs, rhs) := (← withReducible mvarId.getType').eq? | return none
     let (fst, snd) := if config.preferLHS then (lhs, rhs) else (rhs, lhs)
