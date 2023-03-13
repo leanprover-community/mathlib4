@@ -8,10 +8,10 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.List.Chain
-import Mathbin.CategoryTheory.IsConnected
-import Mathbin.CategoryTheory.Sigma.Basic
-import Mathbin.CategoryTheory.FullSubcategory
+import Mathlib.Data.List.Chain
+import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Sigma.Basic
+import Mathlib.CategoryTheory.FullSubcategory
 
 /-!
 # Connected components of a category
@@ -60,8 +60,7 @@ def Component.ι (j) : Component j ⥤ J :=
 #align category_theory.component.ι CategoryTheory.Component.ι
 
 /-- Each connected component of the category is nonempty. -/
-instance (j : ConnectedComponents J) : Nonempty (Component j) :=
-  by
+instance (j : ConnectedComponents J) : Nonempty (Component j) := by
   apply Quotient.inductionOn' j
   intro k
   refine' ⟨⟨k, rfl⟩⟩
@@ -70,8 +69,7 @@ instance (j : ConnectedComponents J) : Inhabited (Component j) :=
   Classical.inhabited_of_nonempty'
 
 /-- Each connected component of the category is connected. -/
-instance (j : ConnectedComponents J) : IsConnected (Component j) :=
-  by
+instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   -- Show it's connected by constructing a zigzag (in `component j`) between any two objects
   apply is_connected_of_zigzag
   rintro ⟨j₁, hj₁⟩ ⟨j₂, rfl⟩
