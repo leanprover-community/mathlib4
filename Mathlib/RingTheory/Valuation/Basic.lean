@@ -26,12 +26,12 @@ commutative monoid with zero, that in addition satisfies the following two axiom
  * `v 0 = 0`
  * `∀ x y, v (x + y) ≤ max (v x) (v y)`
 
-`valuation R Γ₀`is the type of valuations `R → Γ₀`, with a coercion to the underlying
+`Valuation R Γ₀`is the type of valuations `R → Γ₀`, with a coercion to the underlying
 function. If `v` is a valuation from `R` to `Γ₀` then the induced group
 homomorphism `units(R) → Γ₀` is called `unit_map v`.
 
-The equivalence "relation" `is_equiv v₁ v₂ : Prop` defined in 1.27 of [wedhorn_adic] is not strictly
-speaking a relation, because `v₁ : valuation R Γ₁` and `v₂ : valuation R Γ₂` might
+The equivalence "relation" `IsEquiv v₁ v₂ : Prop` defined in 1.27 of [wedhorn_adic] is not strictly
+speaking a relation, because `v₁ : Valuation R Γ₁` and `v₂ : Valuation R Γ₂` might
 not have the same type. This corresponds in ZFC to the set-theoretic difficulty
 that the class of all valuations (as `Γ₀` varies) on a ring `R` is not a set.
 The "relation" is however reflexive, symmetric and transitive in the obvious
@@ -39,28 +39,28 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 
 ## Main definitions
 
-* `valuation R Γ₀`, the type of valuations on `R` with values in `Γ₀`
-* `valuation.is_equiv`, the heterogeneous equivalence relation on valuations
-* `valuation.supp`, the support of a valuation
+* `Valuation R Γ₀`, the type of valuations on `R` with values in `Γ₀`
+* `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
+* `Valuation.supp`, the support of a valuation
 
-* `add_valuation R Γ₀`, the type of additive valuations on `R` with values in a
+* `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
   linearly ordered additive commutative group with a top element, `Γ₀`.
 
 ## Implementation Details
 
-`add_valuation R Γ₀` is implemented as `valuation R (multiplicative Γ₀)ᵒᵈ`.
+`AddValuation R Γ₀` is implemented as `Valuation R (Multiplicative Γ₀)ᵒᵈ`.
 
 ## Notation
 
-In the `discrete_valuation` locale:
+In the `DiscreteValuation` locale:
 
- * `ℕₘ₀` is a shorthand for `with_zero (multiplicative ℕ)`
- * `ℤₘ₀` is a shorthand for `with_zero (multiplicative ℤ)`
+ * `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
+ * `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
 
 ## TODO
 
-If ever someone extends `valuation`, we should fully comply to the `fun_like` by migrating the
-boilerplate lemmas to `valuation_class`.
+If ever someone extends `Valuation`, we should fully comply to the `FunLike` by migrating the
+boilerplate lemmas to `ValuationClass`.
 -/
 
 
@@ -79,15 +79,15 @@ variable (F R) (Γ₀ : Type _) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 --porting note: removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
-When you extend this structure, make sure to extend `valuation_class`. -/
+When you extend this structure, make sure to extend `ValuationClass`. -/
 structure Valuation extends R →*₀ Γ₀ where
   /-- The valuation of a a sum is less that the sum of the valuations -/
   map_add_le_max' : ∀ x y, toFun (x + y) ≤ max (toFun x) (toFun y)
 #align valuation Valuation
 
-/-- `valuation_class F α β` states that `F` is a type of valuations.
+/-- `ValuationClass F α β` states that `F` is a type of valuations.
 
-You should also extend this typeclass when you extend `valuation`. -/
+You should also extend this typeclass when you extend `Valuation`. -/
 class ValuationClass (F) (R Γ₀ : outParam (Type _)) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
   extends MonoidWithZeroHomClass F R Γ₀ where
   /-- The valuation of a a sum is less that the sum of the valuations -/
@@ -139,7 +139,8 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀
   map_zero f := f.map_zero'
   map_add_le_max f := f.map_add_le_max'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- porting note: is this still helpful?
+/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (Valuation R Γ₀) fun _ => R → Γ₀ :=
   FunLike.hasCoeToFun
@@ -217,7 +218,7 @@ theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
 
-/-- Deprecated. Use `fun_like.ext_iff`. -/
+/-- Deprecated. Use `FunLike.ext_iff`. -/
 theorem ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
   FunLike.ext_iff
 #align valuation.ext_iff Valuation.ext_iff
@@ -243,7 +244,7 @@ theorem unit_map_eq (u : Rˣ) : (Units.map (v : R →* Γ₀) u : Γ₀) = v u :
   rfl
 #align valuation.unit_map_eq Valuation.unit_map_eq
 
-/-- A ring homomorphism `S → R` induces a map `valuation R Γ₀ → valuation S Γ₀`. -/
+/-- A ring homomorphism `S → R` induces a map `Valuation R Γ₀ → Valuation S Γ₀`. -/
 def comap {S : Type _} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) : Valuation S Γ₀ :=
   {
     v.toMonoidWithZeroHom.comp
@@ -268,7 +269,7 @@ theorem comap_comp {S₁ : Type _} {S₂ : Type _} [Ring S₁] [Ring S₂] (f : 
   ext fun _r => rfl
 #align valuation.comap_comp Valuation.comap_comp
 
-/-- A `≤`-preserving group homomorphism `Γ₀ → Γ'₀` induces a map `valuation R Γ₀ → valuation R Γ'₀`.
+/-- A `≤`-preserving group homomorphism `Γ₀ → Γ'₀` induces a map `Valuation R Γ₀ → Valuation R Γ'₀`.
 -/
 def map (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) : Valuation R Γ'₀ :=
   {
@@ -580,7 +581,6 @@ theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
   Iff.rfl
 #align valuation.mem_supp_iff Valuation.mem_supp_iff
 
--- @[simp] lemma mem_supp_iff' (x : R) : x ∈ (supp v : set R) ↔ v x = 0 := iff.rfl
 /-- The support of a valuation is a prime ideal. -/
 instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
   ⟨fun h : v.supp = ⊤ =>
@@ -660,7 +660,7 @@ variable (f : R → Γ₀) (h0 : f 0 = ⊤) (h1 : f 1 = 0)
 
 variable (hadd : ∀ x y, min (f x) (f y) ≤ f (x + y)) (hmul : ∀ x y, f (x * y) = f x + f y)
 
-/-- An alternate constructor of `add_valuation`, that doesn't reference `multiplicative Γ₀ᵒᵈ` -/
+/-- An alternate constructor of `AddValuation`, that doesn't reference `multiplicative Γ₀ᵒᵈ` -/
 def of : AddValuation R Γ₀ where
   toFun := f
   map_one' := h1
@@ -676,8 +676,8 @@ theorem of_apply : (of f h0 h1 hadd hmul) r = f r :=
   rfl
 #align add_valuation.of_apply AddValuation.of_apply
 
-/-- The `valuation` associated to an `add_valuation` (useful if the latter is constructed using
-`add_valuation.of`). -/
+/-- The `Valuation` associated to an `AddValuation` (useful if the latter is constructed using
+`AddValuation.of`). -/
 def valuation : Valuation R (Multiplicative Γ₀ᵒᵈ) :=
   v
 #align add_valuation.valuation AddValuation.valuation
@@ -763,7 +763,7 @@ theorem ne_top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x �
   v.neZero_iff
 #align add_valuation.ne_top_iff AddValuation.ne_top_iff
 
-/-- A ring homomorphism `S → R` induces a map `add_valuation R Γ₀ → add_valuation S Γ₀`. -/
+/-- A ring homomorphism `S → R` induces a map `AddValuation R Γ₀ → AddValuation S Γ₀`. -/
 def comap {S : Type _} [Ring S] (f : S →+* R) (v : AddValuation R Γ₀) : AddValuation S Γ₀ :=
   v.comap f
 #align add_valuation.comap AddValuation.comap
@@ -779,7 +779,7 @@ theorem comap_comp {S₁ : Type _} {S₂ : Type _} [Ring S₁] [Ring S₂] (f : 
 #align add_valuation.comap_comp AddValuation.comap_comp
 
 /-- A `≤`-preserving, `⊤`-preserving group homomorphism `Γ₀ → Γ'₀` induces a map
-  `add_valuation R Γ₀ → add_valuation R Γ'₀`.
+  `AddValuation R Γ₀ → AddValuation R Γ'₀`.
 -/
 def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) :
     AddValuation R Γ'₀ :=
