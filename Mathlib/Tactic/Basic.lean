@@ -34,16 +34,16 @@ syntax (name := lemma)
 /-- `change` can be used to replace the main goal or its local
 variables with definitionally equal ones.
 
-For example, if `n : ℕ` and the current goal is `⊢ n + 2 = 1`, then
+For example, if `n : ℕ` and the current goal is `⊢ n + 2 = 2`, then
 ```lean
 change _ + 1 = _
 ```
-changes the goal to `⊢ n + 1 + 1 = 1`. The tactic also applies to the local context.
-For exmaple, if `h : n + 2 = 1` and `h' : n + 3 = 1` are in the local context, then
+changes the goal to `⊢ n + 1 + 1 = 2`. The tactic also applies to the local context.
+For exmaple, if `h : n + 2 = 2` and `h' : n + 3 = 4` are in the local context, then
 ```lean
 change _ + 1 = _ at h h'
 ```
-changes their types to be `h : n + 1 + 1 = 1` and `h' : n + 2 + 1 = 1`.
+changes their types to be `h : n + 1 + 1 = 2` and `h' : n + 2 + 1 = 4`.
 
 If the tactic `show e` applies to the main goal, then it is interchangeable with `change e`. -/
 elab_rules : tactic
