@@ -72,8 +72,7 @@ def liftToFinsetColimitCocone [HasFiniteCoproducts C] [HasFilteredColimitsOfSize
         convert h j using 1
         . simp [← colimit.w (liftToFinset F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
           rfl
-        . dsimp
-          aesop_cat }
+        . aesop_cat }
 #align category_theory.limits.coproducts_from_finite_filtered.lift_to_finset_colimit_cocone CategoryTheory.Limits.CoproductsFromFiniteFiltered.liftToFinsetColimitCocone
 
 end CoproductsFromFiniteFiltered
