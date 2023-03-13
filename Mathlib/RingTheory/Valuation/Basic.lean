@@ -613,6 +613,8 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
 
 #align valuation.map_add_supp Valuation.map_add_supp
 
+set_option synthInstance.etaExperiment true
+
 theorem comap_supp {S : Type _} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Ideal.ext fun x => by
