@@ -48,23 +48,18 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
 
 open Affine
 
-section defn
-
-variable (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
-  [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
-  [AffineSpace V2 P2]
 -- Porting note: Workaround for lean4#2074
 attribute [-instance] Ring.toNonAssocRing
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
-structure AffineMap where
+structure AffineMap (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
+  [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+  [AffineSpace V2 P2] where
   toFun : P1 → P2
   linear : V1 →ₗ[k] V2
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 #align affine_map AffineMap
-
-end defn
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
@@ -77,11 +72,8 @@ instance (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [R
 
 namespace LinearMap
 
-variable {k : Type _} {V₁ : Type _} {V₂ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
-  [AddCommGroup V₂] [Module k V₂] (f : V₁ →ₗ[k] V₂)
-
--- Porting note: Workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
+variable {k V₁ V₂ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁] [AddCommGroup V₂] [Module k V₂]
+  (f : V₁ →ₗ[k] V₂)
 
 /-- Reinterpret a linear map as an affine map. -/
 def toAffineMap : V₁ →ᵃ[k] V₂ where
@@ -106,19 +98,15 @@ end LinearMap
 
 namespace AffineMap
 
-variable {k : Type _} {V1 : Type _} {P1 : Type _} {V2 : Type _} {P2 : Type _} {V3 : Type _}
-  {P3 : Type _} {V4 : Type _} {P4 : Type _} [Ring k] [AddCommGroup V1] [Module k V1]
+variable {k V1 P1 V2 P2 V3 P3 V4 P4 : Type _} [Ring k] [AddCommGroup V1] [Module k V1]
   [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2] [AffineSpace V2 P2] [AddCommGroup V3]
   [Module k V3] [AffineSpace V3 P3] [AddCommGroup V4] [Module k V4] [AffineSpace V4 P4]
-
--- Porting note: Workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 /-- Constructing an affine map and coercing back to a function
 produces the same map. -/
 --@[simp] -- Porting note: can be proved `by simp only`
 theorem coe_mk (f : P1 → P2) (linear add) : ((mk f linear add : P1 →ᵃ[k] P2) : P1 → P2) = f :=
-  by simp only []
+  by simp only
 #align affine_map.coe_mk AffineMap.coe_mk
 
 /- Porting note: syntactic tautology
@@ -785,8 +773,6 @@ instance : AddCommMonoid (V1 →ₗ[k] V2) := LinearMap.addCommMonoid
 instance : AddCommMonoid (V2 × (V1 →ₗ[k] V2)) := Prod.instAddCommMonoidSum
 instance : Module R (V1 →ₗ[k] V2) := LinearMap.instModuleLinearMapAddCommMonoid
 instance : Module R (V2 × (V1 →ₗ[k] V2)) := Prod.module
--- Porting note: Workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 /-- The space of affine maps between two modules is linearly equivalent to the product of the
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the

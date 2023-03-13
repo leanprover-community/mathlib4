@@ -56,8 +56,6 @@ structure AffineEquiv (k P₁ P₂ : Type _) {V₁ V₂ : Type _} [Ring k] [AddC
   map_vadd' : ∀ (p : P₁) (v : V₁), toEquiv (v +ᵥ p) = linear v +ᵥ toEquiv p
 #align affine_equiv AffineEquiv
 
-attribute [simp] AffineEquiv.map_vadd'
-
 notation:25 P₁ " ≃ᵃ[" k:25 "] " P₂:0 => AffineEquiv k P₁ P₂
 
 variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
@@ -67,7 +65,7 @@ variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [Ring k] [AddCommG
 namespace AffineEquiv
 
 instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
-  ⟨fun e => e.toFun⟩
+  ⟨fun e => e.toEquiv⟩
 
 instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
@@ -77,10 +75,11 @@ theorem map_vadd (e : P₁ ≃ᵃ[k] P₂) (p : P₁) (v : V₁) : e (v +ᵥ p) 
   e.map_vadd' p v
 #align affine_equiv.map_vadd AffineEquiv.map_vadd
 
+/- Porting note: Syntactic tautology
 @[simp]
 theorem coe_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
-#align affine_equiv.coe_to_equiv AffineEquiv.coe_toEquiv
+#align affine_equiv.coe_to_equiv AffineEquiv.coe_toEquiv-/
 
 /-- Reinterpret an `AffineEquiv` as an `AffineMap`. -/
 def toAffineMap (e : P₁ ≃ᵃ[k] P₂) : P₁ →ᵃ[k] P₂ :=
@@ -140,7 +139,7 @@ theorem coeFn_injective : @Injective (P₁ ≃ᵃ[k] P₂) (P₁ → P₂) (↑)
   ext <| congr_fun H
 #align affine_equiv.coe_fn_injective AffineEquiv.coeFn_injective
 
-@[simp] -- Porting note: removed `norm_cast`
+@[simp (high)] -- Porting note: removed `norm_cast`
 theorem coeFn_inj {e e' : P₁ ≃ᵃ[k] P₂} : (e : P₁ → P₂) = e' ↔ e = e' :=
   coeFn_injective.eq_iff
 #align affine_equiv.coe_fn_inj AffineEquiv.coeFn_inj
