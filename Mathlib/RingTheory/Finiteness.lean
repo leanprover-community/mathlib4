@@ -227,8 +227,9 @@ theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {
       exact map_mono le_top⟩
 #align submodule.fg_of_fg_map_injective Submodule.fg_of_fg_map_injective
 
+set_option synthInstance.etaExperiment true in
 theorem fg_of_fg_map {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup P]
-    [Module R P] (f : M →ₗ[R] P) (hf : f.ker = ⊥) {N : Submodule R M} (hfn : (N.map f).Fg) : N.Fg :=
+    [Module R P] (f : M →ₗ[R] P) (hf : LinearMap.ker f = ⊥) {N : Submodule R M} (hfn : (N.map f).Fg) : N.Fg :=
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
 #align submodule.fg_of_fg_map Submodule.fg_of_fg_map
 
@@ -250,22 +251,25 @@ theorem Fg.prod {sb : Submodule R M} {sc : Submodule R P} (hsb : sb.Fg) (hsc : s
       by rw [LinearMap.span_inl_union_inr, htb.2, htc.2]⟩
 #align submodule.fg.prod Submodule.Fg.prod
 
+set_option synthInstance.etaExperiment true in
 theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoid (M i)]
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).Fg) :
     (Submodule.pi Set.univ p).Fg := by
   classical
     simp_rw [fg_def] at hsb⊢
     choose t htf hts using hsb
-    refine'
-      ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_unionᵢ fun i => (htf i).image _, _⟩
-    simp_rw [span_Union, span_image, hts, Submodule.supᵢ_map_single]
+    -- Porting note: `refine'` doesn't work here
+    refine
+      ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_unionᵢ fun i => (htf i).image _, ?_⟩
+    simp_rw [span_unionᵢ, span_image, hts, Submodule.supᵢ_map_single]
 #align submodule.fg_pi Submodule.fg_pi
 
+set_option synthInstance.etaExperiment true in
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M} (hs1 : (s.map f).Fg)
-    (hs2 : (s ⊓ f.ker).Fg) : s.Fg := by
+    (hs2 : (s ⊓ LinearMap.ker f).Fg) : s.Fg := by
   haveI := Classical.decEq R
   haveI := Classical.decEq M
   haveI := Classical.decEq P
@@ -280,7 +284,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
     exact ⟨x, hx1, hx2⟩
   have : ∃ g : P → M, ∀ y ∈ t1, g y ∈ s ∧ f (g y) = y :=
     by
-    choose g hg1 hg2
+    choose g hg1 hg2 using this
     exists fun y => if H : y ∈ t1 then g y H else 0
     intro y H
     constructor
@@ -297,7 +301,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
     · intro y hy
       exact (hg y hy).1
     · intro x hx
-      have := subset_span hx
+      have : x ∈ span R t2 := subset_span hx
       rw [ht2] at this
       exact this.1
   intro x hx
