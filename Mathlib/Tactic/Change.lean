@@ -20,8 +20,7 @@ elab_rules : tactic
     withLocation (expandOptLocation (Lean.mkOptionalNode loc))
       (atLocal := fun h ↦ do
         let hTy ← h.getType
-        let (e, gs) ← elabTermWithHoles newType (← inferType hTy) (← getMainTag)
-                        (allowNaturalHoles := true)
+        let (e, gs) ← elabTermWithHoles newType none (← getMainTag) (allowNaturalHoles := true)
         liftMetaTactic fun mvarId ↦ do
           unless ← withAssignableSyntheticOpaque (isDefEq e hTy) do
             let h' ← h.getUserName
@@ -30,8 +29,7 @@ elab_rules : tactic
           return (← mvarId.changeLocalDecl h e) :: gs)
       (atTarget := do
         let tgt ← getMainTarget
-        let (e, gs) ← elabTermWithHoles newType (← inferType tgt) (← getMainTag)
-                        (allowNaturalHoles := true)
+        let (e, gs) ← elabTermWithHoles newType none (← getMainTag) (allowNaturalHoles := true)
         liftMetaTactic fun mvarId ↦ do
           unless ← withAssignableSyntheticOpaque (isDefEq e tgt) do
             throwTacticEx `change mvarId

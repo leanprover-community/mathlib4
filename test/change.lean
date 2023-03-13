@@ -30,3 +30,7 @@ example (p : n + 2 = m → Type) (h : n + 2 = m) (x : p h) : false := by
   change _ + 1 = _ at h
   guard_hyp x :ₛ p h
   sorry
+
+example : Nat := by
+  fail_if_success change Type 1
+  sorry
