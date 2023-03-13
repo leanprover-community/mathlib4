@@ -37,8 +37,14 @@ This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
  -/
 @[mk_iff]
 class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
-  cast_eq_zero_iff : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
+  cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 #align char_p CharP
+
+-- porting note: the field of the structure had implicit arguments where they were
+-- explicit in Lean 3
+theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (x : ℕ) :
+  (x : R) = 0 ↔ p ∣ x :=
+CharP.cast_eq_zero_iff' (R := R) (p := p) x
 
 theorem CharP.cast_eq_zero [AddMonoidWithOne R] (p : ℕ) [CharP R p] : (p : R) = 0 :=
   (CharP.cast_eq_zero_iff R p p).2 (dvd_refl p)
@@ -69,7 +75,7 @@ theorem CharP.int_coe_eq_int_coe_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (
   rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.int_cast_eq_zero_iff R p, Int.modEq_iff_dvd]
 #align char_p.int_coe_eq_int_coe_iff CharP.int_coe_eq_int_coe_iff
 
-theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (c1 : CharP R p) (c2 : CharP R q) : p = q :=
+theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (_c1 : CharP R p) (_c2 : CharP R q) : p = q :=
   Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R p q).1 (CharP.cast_eq_zero _ _))
     ((CharP.cast_eq_zero_iff R q p).1 (CharP.cast_eq_zero _ _))
 #align char_p.eq CharP.eq
@@ -82,7 +88,7 @@ theorem CharP.exists [NonAssocSemiring R] : ∃ p, CharP R p :=
   letI := Classical.decEq R
   by_cases
     (fun H : ∀ p : ℕ, (p : R) = 0 → p = 0 =>
-      ⟨0, ⟨fun x => by rw [zero_dvd_iff] <;> exact ⟨H x, by rintro rfl <;> simp⟩⟩⟩)
+      ⟨0, ⟨fun x => by rw [zero_dvd_iff]; exact ⟨H x, by rintro rfl; simp⟩⟩⟩)
     fun H =>
     ⟨Nat.find (not_forall.1 H),
       ⟨fun x =>
@@ -125,8 +131,8 @@ namespace ringChar
 variable [NonAssocSemiring R]
 
 theorem spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
-  letI := (Classical.choose_spec (CharP.existsUnique R)).1 <;> unfold ringChar <;>
-    exact CharP.cast_eq_zero_iff R (ringChar R)
+  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
+  exact CharP.cast_eq_zero_iff R (ringChar R)
 #align ring_char.spec ringChar.spec
 
 theorem eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
@@ -166,25 +172,27 @@ theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP R p
     (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
   rw [Commute.add_pow h, Finset.sum_range_succ_comm, tsub_self, pow_zero, Nat.choose_self]
   rw [Nat.cast_one, mul_one, mul_one]; congr 1
-  convert Finset.sum_eq_single 0 _ _
+  convert Finset.sum_eq_single (f := fun (x_1 : ℕ) => x ^ x_1 * y ^ (p - x_1) * (Nat.choose p x_1))
+    (s := Finset.range p) 0 ?_ ?_
   · simp only [mul_one, one_mul, Nat.choose_zero_right, tsub_zero, Nat.cast_one, pow_zero]
   · intro b h1 h2
     suffices (p.choose b : R) = 0 by
-      rw [this]
-      simp
+      simp [this]
     rw [CharP.cast_eq_zero_iff R p]
-    exact Nat.Prime.dvd_choose_self (Fact.out _) h2 (Finset.mem_range.1 h1)
+    exact Nat.Prime.dvd_choose_self Fact.out h2 (Finset.mem_range.1 h1)
   · intro h1
     contrapose! h1
     rw [Finset.mem_range]
-    exact Nat.Prime.pos (Fact.out _)
+    exact Nat.Prime.pos Fact.out
 #align add_pow_char_of_commute add_pow_char_of_commute
 
 theorem add_pow_char_pow_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ}
     (x y : R) (h : Commute x y) : (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
-  induction n; · simp
-  rw [pow_succ', pow_mul, pow_mul, pow_mul, n_ih]
-  apply add_pow_char_of_commute; apply Commute.pow_pow h
+  induction n with
+  | zero => simp
+  | succ n n_ih =>
+      rw [pow_succ', pow_mul, pow_mul, pow_mul, n_ih]
+      apply add_pow_char_of_commute; apply Commute.pow_pow h
 #align add_pow_char_pow_of_commute add_pow_char_pow_of_commute
 
 theorem sub_pow_char_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R)
@@ -195,9 +203,11 @@ theorem sub_pow_char_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x
 
 theorem sub_pow_char_pow_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R)
     (h : Commute x y) : (x - y) ^ p ^ n = x ^ p ^ n - y ^ p ^ n := by
-  induction n; · simp
-  rw [pow_succ', pow_mul, pow_mul, pow_mul, n_ih]
-  apply sub_pow_char_of_commute; apply Commute.pow_pow h
+  induction n with
+  | zero => simp
+  | succ n n_ih =>
+      rw [pow_succ', pow_mul, pow_mul, pow_mul, n_ih]
+      apply sub_pow_char_of_commute; apply Commute.pow_pow h
 #align sub_pow_char_pow_of_commute sub_pow_char_pow_of_commute
 
 theorem add_pow_char [CommSemiring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R) :
@@ -226,8 +236,9 @@ theorem eq_iff_modEq_int [Ring R] (p : ℕ) [CharP R p] (a b : ℤ) : (a : R) = 
 
 theorem CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
   suffices (2 : R) ≠ 0 by
-    symm
-    rw [Ne.def, ← sub_eq_zero, sub_neg_eq_add]
+    intro h
+    symm at h
+    rw [← sub_eq_zero, sub_neg_eq_add] at h
     exact this
   intro h
   rw [show (2 : R) = (2 : ℕ) by norm_cast] at h
@@ -400,7 +411,7 @@ theorem cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
     _ = ↑(k % p) := by simp [cast_eq_zero]
-    
+
 #align char_p.cast_eq_mod CharP.cast_eq_mod
 
 /-- The characteristic of a finite ring cannot be zero. -/
@@ -514,7 +525,7 @@ instance (priority := 100) [CharP R 1] : Subsingleton R :=
       _ = (1 : ℕ) * r := by rw [Nat.cast_one]
       _ = 0 * r := by rw [CharP.cast_eq_zero]
       _ = 0 := by rw [MulZeroClass.zero_mul]
-      
+
 
 theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False :=
   false_of_nontrivial_of_subsingleton R
@@ -680,4 +691,3 @@ theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p 
 #align ne_zero.not_char_dvd NeZero.not_char_dvd
 
 end NeZero
-
