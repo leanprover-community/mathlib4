@@ -70,8 +70,8 @@ echo "Applying automated fixes"
     python3 - << BYBACK
 from collections import deque
 lns = deque([], 2)
-with (open("$mathlib4_path", "r", encoding="utf-8") as f,
-      open("$mathlib4_path.tmp", "w", encoding="utf-8") as g):
+with (open("$mathlib4_path", "r", encoding="utf-8", newline="\n") as f,
+      open("$mathlib4_path.tmp", "w", encoding="utf-8", newline="\n") as g):
     for ln_raw in f:
         ln = ln_raw.strip("\n")
         lns.append(ln)
