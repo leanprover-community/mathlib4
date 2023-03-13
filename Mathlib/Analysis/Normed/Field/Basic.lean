@@ -126,7 +126,7 @@ instance (priority := 100) NormedCommRing.toSeminormedCommRing [β : NormedCommR
   { β with }
 #align normed_comm_ring.to_semi_normed_comm_ring NormedCommRing.toSeminormedCommRing
 
-instance PUint.normedCommRing : NormedCommRing PUnit :=
+instance PUnit.normedCommRing : NormedCommRing PUnit :=
   { PUnit.normedAddCommGroup, PUnit.commRing with
     norm_mul := fun _ _ => by simp }
 
@@ -216,12 +216,12 @@ theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter 
   hf.op_zero_isBoundedUnder_le hg (· * ·) norm_mul_le
 #align filter.tendsto.zero_mul_is_bounded_under_le Filter.Tendsto.zero_mul_isBoundedUnder_le
 
-theorem Filter.IsBoundedUnder_le.mul_tendsto_zero {f g : ι → α} {l : Filter ι}
+theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter ι}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x => f x * g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
     (norm_mul_le y x).trans_eq (mul_comm _ _)
-#align filter.is_bounded_under_le.mul_tendsto_zero Filter.IsBoundedUnder_le.mul_tendsto_zero
+#align filter.is_bounded_under_le.mul_tendsto_zero Filter.isBoundedUnder_le_mul_tendsto_zero
 
 /-- In a seminormed ring, the left-multiplication `AddMonoidHom` is bounded. -/
 theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ ‖x‖ * ‖y‖ :=
@@ -359,7 +359,7 @@ theorem Finset.nnnorm_prod_le {α : Type _} [NormedCommRing α] [NormOneClass α
 /-- If `α` is a seminormed ring, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n` for `n > 0`.
 See also `nnnorm_pow_le`. -/
 theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n
-  | 1, _ => by simp only [pow_one]; rfl
+  | 1, _ => by simp only [pow_one, le_rfl]
   | n + 2, _ => by
     simpa only [pow_succ _ (n + 1)] using
       le_trans (nnnorm_mul_le _ _) (mul_le_mul_left' (nnnorm_pow_le' a n.succ_pos) _)
@@ -481,7 +481,7 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
             -- porting note: `ENNReal.{mul_sub, sub_mul}` should be protected
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
-        refine' squeeze_zero (fun e => norm_nonneg _) this _
+        refine squeeze_zero (fun e => norm_nonneg _) this ?_
         -- porting note: the new `convert` sucks, it's way too dumb without using the type
         -- of the goal to figure out how to match things up. The rest of this proof was:
         /- convert
@@ -492,16 +492,16 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
         exact tendsto_const_nhds
         simp -/
         rw [←zero_add 0]
-        refine' Tendsto.add _ _
-        rw [←mul_zero (‖x.fst‖)]
-        refine' Filter.Tendsto.mul _ _
-        exact (continuous_fst.tendsto x).norm
-        rw [←norm_zero (E := α), ←sub_self x.snd]
-        exact ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm
-        rw [←zero_mul (‖x.snd‖)]
-        refine' Filter.Tendsto.mul _ tendsto_const_nhds
-        rw [←norm_zero (E := α), ←sub_self x.fst]
-        exact ((continuous_fst.tendsto x).sub tendsto_const_nhds).norm⟩
+        refine Tendsto.add ?_ ?_
+        · rw [←mul_zero (‖x.fst‖)]
+          refine Filter.Tendsto.mul ?_ ?_
+          · exact (continuous_fst.tendsto x).norm
+          · rw [←norm_zero (E := α), ←sub_self x.snd]
+            exact ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm
+        · rw [←zero_mul (‖x.snd‖)]
+          refine' Filter.Tendsto.mul _ tendsto_const_nhds
+          rw [←norm_zero (E := α), ←sub_self x.fst]
+          exact ((continuous_fst.tendsto x).sub tendsto_const_nhds).norm⟩
 #align semi_normed_ring_top_monoid semi_normed_ring_top_monoid
 
 -- see Note [lower instance priority]
@@ -700,8 +700,8 @@ section NormedField
 /-- A densely normed field is always a nontrivially normed field.
 See note [lower instance priority]. -/
 instance (priority := 100) DenselyNormedField.toNontriviallyNormedField [DenselyNormedField α] :
-    NontriviallyNormedField α
-    where non_trivial :=
+    NontriviallyNormedField α where
+  non_trivial :=
     let ⟨a, h, _⟩ := DenselyNormedField.lt_norm_lt 1 2 zero_le_one one_lt_two
     ⟨a, h⟩
 #align densely_normed_field.to_nontrivially_normed_field DenselyNormedField.toNontriviallyNormedField
@@ -788,15 +788,15 @@ theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α
 instance denselyOrdered_range_norm : DenselyOrdered (Set.range (norm : α → ℝ)) where
   dense := by
     rintro ⟨-, x, rfl⟩ ⟨-, y, rfl⟩ hxy
-    exact let ⟨z, h⟩ := exists_lt_norm_lt α (norm_nonneg _) hxy
-      ⟨⟨‖z‖, z, rfl⟩, h⟩
+    let ⟨z, h⟩ := exists_lt_norm_lt α (norm_nonneg _) hxy
+    exact ⟨⟨‖z‖, z, rfl⟩, h⟩
 #align normed_field.densely_ordered_range_norm NormedField.denselyOrdered_range_norm
 
 instance denselyOrdered_range_nnnorm : DenselyOrdered (Set.range (nnnorm : α → ℝ≥0)) where
   dense := by
     rintro ⟨-, x, rfl⟩ ⟨-, y, rfl⟩ hxy
-    exact let ⟨z, h⟩ := exists_lt_nnnorm_lt α hxy
-      ⟨⟨‖z‖₊, z, rfl⟩, h⟩
+    let ⟨z, h⟩ := exists_lt_nnnorm_lt α hxy
+    exact ⟨⟨‖z‖₊, z, rfl⟩, h⟩
 #align normed_field.densely_ordered_range_nnnorm NormedField.denselyOrdered_range_nnnorm
 
 theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
@@ -816,8 +816,8 @@ noncomputable instance Real.normedField : NormedField ℝ :=
   { Real.normedAddCommGroup, Real.field with
     norm_mul' := abs_mul }
 
-noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ
-    where lt_norm_lt _ _ h₀ hr :=
+noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
+  lt_norm_lt _ _ h₀ hr :=
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [Real.norm_eq_abs, abs_of_nonneg (h₀.trans h.1.le)]⟩
 
@@ -825,9 +825,8 @@ namespace Real
 
 theorem toNNReal_mul_nnnorm {x : ℝ} (y : ℝ) (hx : 0 ≤ x) : x.toNNReal * ‖y‖₊ = ‖x * y‖₊ := by
   ext
-  simp only [NNReal.coe_mul, nnnorm_mul, coe_nnnorm]
-  rw [Real.toNNReal_of_nonneg hx, norm_of_nonneg hx]
-  rfl
+  simp only [NNReal.coe_mul, nnnorm_mul, coe_nnnorm, Real.toNNReal_of_nonneg, norm_of_nonneg, hx,
+    coe_mk]
 #align real.to_nnreal_mul_nnnorm Real.toNNReal_mul_nnnorm
 
 theorem nnnorm_mul_toNNReal (x : ℝ) {y : ℝ} (hy : 0 ≤ y) : ‖x‖₊ * y.toNNReal = ‖x * y‖₊ := by
@@ -892,9 +891,7 @@ instance Rat.normedField : NormedField ℚ :=
 instance Rat.denselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
-    ⟨q, by
-      show _ < |(q : ℝ)| ∧ |(q : ℝ)| < _
-      rwa [abs_of_pos (h₀.trans_lt h.1)]⟩
+    ⟨q, by rwa [←Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
 section RingHomIsometric
 
 variable {R₁ : Type _} {R₂ : Type _} {R₃ : Type _}
