@@ -98,7 +98,7 @@ theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 #align smodeq.zero SModEq.zero
 
-set_option synthInstance.etaExperiment true in
+set_option synthInstance.etaExperiment true in  -- porting note: workaround for lean4#2074
 theorem map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
   (Submodule.Quotient.eq _).2 <| f.map_sub x y ▸ mem_map_of_mem <| (Submodule.Quotient.eq _).1 hxy
 #align smodeq.map SModEq.map
