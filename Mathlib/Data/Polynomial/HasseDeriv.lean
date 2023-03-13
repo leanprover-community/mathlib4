@@ -160,22 +160,12 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative
   simp only [← mul_assoc]
   norm_cast
   congr 2
-  apply @cast_injective ℚ
-  simp [cast_choose ℚ]
-  field_simp
-  sorry
-  -- have h1 : n + 1 ≤ n + k + 1 := succ_le_succ le_self_add
-  -- have h2 : k + 1 ≤ n + k + 1 := succ_le_succ le_add_self
-  -- have H : ∀ n : ℕ, (n ! : ℚ) ≠ 0 := by exact_mod_cast factorial_ne_zero
-  -- field_simp
-  -- -- why can't `field_simp` help me here?
-  -- simp only [cast_mul, cast_choose ℚ, h1, h2, succ_sub_succ_eq_sub,
-  --   add_tsub_cancel_right, add_tsub_cancel_left, field_simps]
-  -- rw [eq_div_iff_mul_eq (mul_ne_zero (H _) (H _)), eq_comm, div_mul_eq_mul_div,
-  --   eq_div_iff_mul_eq (mul_ne_zero (H _) (H _))]
-  -- norm_cast
-  -- simp only [factorial_succ, succ_eq_add_one]
-  -- field_simp
+  rw [mul_comm (k+1) _, mul_assoc, mul_assoc]
+  congr 1
+  have : n + k + 1 = n + (k + 1) := by apply add_assoc
+  rw [←choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]
+  congr
+  rw [add_assoc, add_tsub_cancel_left]
 #align polynomial.factorial_smul_hasse_deriv Polynomial.factorial_smul_hasseDeriv
 
 theorem hasseDeriv_comp (k l : ℕ) :
