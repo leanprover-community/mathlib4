@@ -1677,7 +1677,8 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
     exp, sub_eq_add_neg, ← lim_neg, lim_add, ← lim_abs]
   refine' lim_le (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
   simp_rw [← sub_eq_add_neg]
-  show abs ((∑ m in range j, x ^ m / m.factorial) - ∑ m in range n, x ^ m / m.factorial) ≤ abs x ^ n / n.factorial * 2
+  show abs ((∑ m in range j, x ^ m / m.factorial) - ∑ m in range n, x ^ m / m.factorial) ≤
+    abs x ^ n / n.factorial * 2
   let k := j - n
   have hj : j = n + k := (add_tsub_cancel_of_le hj).symm
   rw [hj, sum_range_add_sub_sum_range]
@@ -1760,7 +1761,8 @@ nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
 #align real.exp_bound Real.exp_bound
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :
-    Real.exp x ≤ (∑ m in Finset.range n, x ^ m / m.factorial) + x ^ n * (n + 1) / (n.factorial * n) := by
+    Real.exp x ≤ (∑ m in Finset.range n, x ^ m / m.factorial) +
+      x ^ n * (n + 1) / (n.factorial * n) := by
   have h3 : |x| = x := by simpa
   have h4 : |x| ≤ 1 := by rwa [h3]
   have h' := Real.exp_bound h4 hn
@@ -1808,7 +1810,8 @@ theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1
   ac_rfl
 #align real.exp_near_succ Real.expNear_succ
 
-theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ - expNear n x r₂ = x ^ n / n.factorial * (r₁ - r₂) := by
+theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
+    expNear n x r₂ = x ^ n / n.factorial * (r₁ - r₂) := by
   simp [expNear, mul_sub]
 #align real.exp_near_sub Real.expNear_sub
 
