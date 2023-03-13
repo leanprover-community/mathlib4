@@ -24,15 +24,14 @@ universe u v
 
 variable (R : Type u)
 
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`cast_eq_zero_iff] [] -/
 /-- The generator of the kernel of the unique homomorphism ℕ → R for a semiring R.
 
-*Warning*: for a semiring `R`, `char_p R 0` and `char_zero R` need not coincide.
-* `char_p R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`;
-* `char_zero R` requires an injection `ℕ ↪ R`.
+*Warning*: for a semiring `R`, `CharP R 0` and `CharZero R` need not coincide.
+* `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`;
+* `CharZero R` requires an injection `ℕ ↪ R`.
 
 For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
-`char_zero {0, 1}` does not hold and yet `char_p {0, 1} 0` does.
+`CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
 This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
  -/
 @[mk_iff charP_iff]
@@ -71,19 +70,19 @@ theorem CharP.int_cast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a 
     rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.coe_nat_dvd]
 #align char_p.int_cast_eq_zero_iff CharP.int_cast_eq_zero_iff
 
-theorem CharP.int_coe_eq_int_coe_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a b : ℤ) :
+theorem CharP.int_cast_eq_int_cast_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a b : ℤ) :
     (a : R) = (b : R) ↔ a ≡ b [ZMOD p] := by
   rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.int_cast_eq_zero_iff R p, Int.modEq_iff_dvd]
-#align char_p.int_coe_eq_int_coe_iff CharP.int_coe_eq_int_coe_iff
+#align char_p.int_coe_eq_int_coe_iff CharP.int_cast_eq_int_cast_iff
 
 theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (_c1 : CharP R p) (_c2 : CharP R q) : p = q :=
   Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R p q).1 (CharP.cast_eq_zero _ _))
     ((CharP.cast_eq_zero_iff R q p).1 (CharP.cast_eq_zero _ _))
 #align char_p.eq CharP.eq
 
-instance CharP.of_charZero [AddMonoidWithOne R] [CharZero R] : CharP R 0 :=
+instance CharP.ofCharZero [AddMonoidWithOne R] [CharZero R] : CharP R 0 :=
   ⟨fun x => by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]⟩
-#align char_p.of_char_zero CharP.of_charZero
+#align char_p.of_char_zero CharP.ofCharZero
 
 theorem CharP.exists [NonAssocSemiring R] : ∃ p, CharP R p :=
   letI := Classical.decEq R
@@ -112,10 +111,10 @@ theorem CharP.exists [NonAssocSemiring R] : ∃ p, CharP R p :=
             MulZeroClass.zero_mul]⟩⟩⟩
 #align char_p.exists CharP.exists
 
-theorem CharP.existsUnique [NonAssocSemiring R] : ∃! p, CharP R p :=
+theorem CharP.exists_unique [NonAssocSemiring R] : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R
-  ⟨c, H, fun y H2 => CharP.eq R H2 H⟩
-#align char_p.exists_unique CharP.existsUnique
+  ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
+#align char_p.exists_unique CharP.exists_unique
 
 theorem CharP.congr {R : Type u} [AddMonoidWithOne R] {p : ℕ} (q : ℕ) [hq : CharP R q] (h : q = p) :
     CharP R p :=
@@ -124,7 +123,7 @@ theorem CharP.congr {R : Type u} [AddMonoidWithOne R] {p : ℕ} (q : ℕ) [hq : 
 
 /-- Noncomputable function that outputs the unique characteristic of a semiring. -/
 noncomputable def ringChar [NonAssocSemiring R] : ℕ :=
-  Classical.choose (CharP.existsUnique R)
+  Classical.choose (CharP.exists_unique R)
 #align ring_char ringChar
 
 namespace ringChar
@@ -132,12 +131,12 @@ namespace ringChar
 variable [NonAssocSemiring R]
 
 theorem spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
-  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
+  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.exists_unique R)).1
   exact CharP.cast_eq_zero_iff R (ringChar R)
 #align ring_char.spec ringChar.spec
 
 theorem eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
-  ((Classical.choose_spec (CharP.existsUnique R)).2 p C).symm
+  ((Classical.choose_spec (CharP.exists_unique R)).2 p C).symm
 #align ring_char.eq ringChar.eq
 
 instance charP : CharP R (ringChar R) :=
@@ -199,7 +198,7 @@ theorem add_pow_char_pow_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP
 theorem sub_pow_char_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R)
     (h : Commute x y) : (x - y) ^ p = x ^ p - y ^ p := by
   rw [eq_sub_iff_add_eq, ← add_pow_char_of_commute _ _ _ (Commute.sub_left h rfl)]
-  simp; repeat' infer_instance
+  simp
 #align sub_pow_char_of_commute sub_pow_char_of_commute
 
 theorem sub_pow_char_pow_of_commute [Ring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R)
@@ -242,7 +241,7 @@ theorem CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1
     rw [← sub_eq_zero, sub_neg_eq_add] at h
     norm_num at h
     exact this h
-    -- porting note: this could probably be done better
+    -- porting note: this could probably be golfed
   intro h
   rw [show (2 : R) = (2 : ℕ) by norm_cast] at h
   have := (CharP.cast_eq_zero_iff R p 2).mp h
@@ -392,15 +391,15 @@ theorem frobenius_inj [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP
   exact IsReduced.eq_zero _ ⟨_, H⟩
 #align frobenius_inj frobenius_inj
 
-/-- If `ring_char R = 2`, where `R` is a finite reduced commutative ring,
+/-- If `ringChar R = 2`, where `R` is a finite reduced commutative ring,
 then every `a : R` is a square. -/
-theorem isSquare_of_char_two' {R : Type _} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
+theorem isSquare_of_charTwo' {R : Type _} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
     (a : R) : IsSquare a := by
   cases nonempty_fintype R
   exact
     Exists.imp (fun b h => pow_two b ▸ Eq.symm h)
       (((Fintype.bijective_iff_injective_and_card _).mpr ⟨frobenius_inj R 2, rfl⟩).surjective a)
-#align is_square_of_char_two' isSquare_of_char_two'
+#align is_square_of_char_two' isSquare_of_charTwo'
 
 namespace CharP
 
@@ -465,7 +464,6 @@ section NoZeroDivisors
 
 variable [NoZeroDivisors R]
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (d «expr ∣ » p) -/
 theorem char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
   suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def_lt''.mpr ⟨hp, this⟩
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
@@ -481,7 +479,7 @@ theorem char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.
     have : e ∣ p := dvd_of_mul_left_eq d (Eq.symm hmul)
     have : e = p := dvd_antisymm ‹e ∣ p› ‹p ∣ e›
     have h₀ : 0 < p := two_pos.trans_le hp
-    have : d * p = 1 * p := by rw [‹e = p›] at hmul <;> rw [one_mul] <;> exact Eq.symm hmul
+    have : d * p = 1 * p := by rw [‹e = p›] at hmul; rw [one_mul]; exact Eq.symm hmul
     show d = 1 ∨ d = p from Or.inl (mul_right_cancel₀ h₀.ne' this)
 #align char_p.char_is_prime_of_two_le CharP.char_is_prime_of_two_le
 
@@ -522,7 +520,7 @@ section CharOne
 variable {R} [NonAssocSemiring R]
 
 -- see Note [lower instance priority]
-instance (priority := 100) [CharP R 1] : Subsingleton R :=
+instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
   Subsingleton.intro <|
     suffices ∀ r : R, r = 0 from fun a b => show a = b by rw [this a, this b]
     fun r =>
@@ -546,7 +544,7 @@ theorem ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by
 
 theorem nontrivial_of_char_ne_one {v : ℕ} (hv : v ≠ 1) [hr : CharP R v] : Nontrivial R :=
   ⟨⟨(1 : ℕ), 0, fun h =>
-      hv <| by rwa [CharP.cast_eq_zero_iff _ v, Nat.dvd_one] at h <;> assumption⟩⟩
+      hv <| by rwa [CharP.cast_eq_zero_iff _ v, Nat.dvd_one] at h⟩⟩
 #align char_p.nontrivial_of_char_ne_one CharP.nontrivial_of_char_ne_one
 
 theorem ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p)
@@ -567,8 +565,8 @@ protected theorem Ring.two_ne_zero {R : Type _} [NonAssocSemiring R] [Nontrivial
   exact mt (or_iff_left hR).mp CharP.ringChar_ne_one
 #align ring.two_ne_zero Ring.two_ne_zero
 
--- We have `char_p.neg_one_ne_one`, which assumes `[ring R] (p : ℕ) [char_p R p] [fact (2 < p)]`.
--- This is a version using `ring_char` instead.
+-- We have `CharP.neg_one_ne_one`, which assumes `[Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)]`.
+-- This is a version using `ringChar` instead.
 /-- Characteristic `≠ 2` and nontrivial implies that `-1 ≠ 1`. -/
 theorem Ring.neg_one_ne_one_of_char_ne_two {R : Type _} [NonAssocRing R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (-1 : R) ≠ 1 := fun h =>
@@ -655,6 +653,11 @@ instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP R�
 
 section
 
+@[simp, norm_cast]
+theorem AddGroupWithOne.int_cast_ofNat [AddGroupWithOne G] (n : ℕ) [n.AtLeastTwo] :
+    ((OfNat.ofNat n : ℤ) : G) = OfNat.ofNat n := by
+  simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := G) n
+
 /-- If two integers from `{0, 1, -1}` result in equal elements in a ring `R`
 that is nontrivial and of characteristic not `2`, then they are equal. -/
 theorem Int.cast_injOn_of_ringChar_ne_two {R : Type _} [NonAssocRing R] [Nontrivial R]
@@ -680,8 +683,7 @@ theorem Int.cast_injOn_of_ringChar_ne_two {R : Type _} [NonAssocRing R] [Nontriv
     exact one_ne_zero h'
   · rw [hh, (by norm_cast : ((1 : ℤ) : R) = 1)] at h''
     exact one_ne_zero h''
-  · have : ((1 : ℤ) : R) = 1 := by show_term { norm_cast }
-    rw [hh] at h'
+  · rw [hh, (by norm_cast : ((2 : ℤ) : R) = 2)] at h'
     exact Ring.two_ne_zero hR h'
   · rw [hh, (by norm_cast : ((2 : ℤ) : R) = 2)] at h''
     exact Ring.two_ne_zero hR h''
@@ -691,10 +693,11 @@ end
 
 namespace NeZero
 
-variable (R) [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
+variable [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
+-- porting note: redundant binder annotation update
 
 theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
-  ⟨(CharP.cast_eq_zero_iff R p n).Not.mpr h⟩
+  ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩
 #align ne_zero.of_not_dvd NeZero.of_not_dvd
 
 theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p ∣ k := by
