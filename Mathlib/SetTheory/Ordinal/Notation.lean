@@ -122,6 +122,9 @@ def ofNat : ℕ → Onote
   | Nat.succ n => oadd 0 n.succPNat 0
 #align onote.of_nat Onote.ofNat
 
+instance nat (n: ℕ): OfNat Onote n where
+  ofNat := ofNat n
+
 @[simp]
 theorem ofNat_one : ofNat 1 = 1 :=
   rfl
@@ -716,7 +719,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
         have := mt repr_inj.1 e0
         refine' Ordinal.add_sub_cancel_of_le _
         have:= (one_le_iff_ne_zero.2 this)
-        norm_num
+        exact this
       intros
       substs o' m
       simp [scale, this]
