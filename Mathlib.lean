@@ -252,6 +252,7 @@ import Mathlib.Analysis.Normed.Group.HomCompletion
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
+import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.Subadditive
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
