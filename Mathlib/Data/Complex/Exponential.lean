@@ -2025,12 +2025,13 @@ theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) 
     by
     norm_num [Finset.sum]
     have h1x : 0 < 1 - x := by simpa
-    rw [le_div_iff h1x]
+    rw [inv_eq_one_div, le_div_iff h1x]
     norm_num [← add_assoc, mul_sub_left_distrib, mul_one, add_mul, sub_add_eq_sub_sub,
       pow_succ' x 2]
     have hx3 : 0 ≤ x ^ 3 := by
       norm_num
-      exact h1
+      simp [h1]
+    simp [Finset.sum]
     linarith
   (exp_bound' h1 h2.le <| by linarith).trans
     ((exp_bound_div_one_sub_of_interval_approx h1 h2.le).trans h)
