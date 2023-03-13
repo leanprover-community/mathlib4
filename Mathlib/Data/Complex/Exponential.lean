@@ -2044,10 +2044,10 @@ theorem one_sub_le_exp_minus_of_pos {y : ℝ} (h : 0 ≤ y) : 1 - y ≤ Real.exp
     · have h'' : (1 - y) * y.exp ≤ 0 := by
         rw [mul_nonpos_iff]
         right
-        exact ⟨h_1, y.exp_pos.le⟩
+        exact ⟨by assumption, y.exp_pos.le⟩
       linarith
     have hy1 : y < 1 := by linarith
-    rw [← le_div_iff' h_1]
+    rw [← le_div_iff' ‹0 < 1 - y›]
     exact exp_bound_div_one_sub_of_interval h hy1
   rw [inv_eq_one_div]
   rw [le_div_iff' y.exp_pos]
