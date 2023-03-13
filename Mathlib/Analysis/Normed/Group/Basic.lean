@@ -359,7 +359,7 @@ def GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGrou
 #align group_norm.to_normed_comm_group GroupNorm.toNormedCommGroup
 #align add_group_norm.to_normed_add_comm_group AddGroupNorm.toNormedAddCommGroup
 
-instance : NormedAddCommGroup PUnit
+instance PUnit.normedAddCommGroup : NormedAddCommGroup PUnit
     where
   norm := Function.const _ 0
   dist_eq _ _ := rfl

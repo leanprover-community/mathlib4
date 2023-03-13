@@ -673,7 +673,7 @@ theorem connectedComponent_eq {x y : α} (h : y ∈ connectedComponent x) :
 theorem connectedComponent_eq_iff_mem {x y : α} :
     connectedComponent x = connectedComponent y ↔ x ∈ connectedComponent y :=
   ⟨fun h => h ▸ mem_connectedComponent, fun h => (connectedComponent_eq h).symm⟩
-#align connected_component_eq_iff_mem connectedComponent_eq_iff_mem 
+#align connected_component_eq_iff_mem connectedComponent_eq_iff_mem
 
 theorem connectedComponentIn_eq {x y : α} {F : Set α} (h : y ∈ connectedComponentIn F x) :
     connectedComponentIn F x = connectedComponentIn F y := by
