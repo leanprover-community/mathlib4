@@ -604,6 +604,7 @@ theorem pointReflection_involutive (x : P₁) : Involutive (pointReflection k x 
   Equiv.pointReflection_involutive x
 #align affine_equiv.point_reflection_involutive AffineEquiv.pointReflection_involutive
 
+set_option linter.deprecated false in
 /-- `x` is the only fixed point of `pointReflection x`. This lemma requires
 `x + x = y + y ↔ x = y`. There is no typeclass to use here, so we add it as an explicit argument. -/
 theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P₁} (h : Injective (bit0 : V₁ → V₁)) :
@@ -611,6 +612,7 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P₁} (h : Injective 
   Equiv.pointReflection_fixed_iff_of_injective_bit0 h
 #align affine_equiv.point_reflection_fixed_iff_of_injective_bit0 AffineEquiv.pointReflection_fixed_iff_of_injective_bit0
 
+set_option linter.deprecated false in
 theorem injective_pointReflection_left_of_injective_bit0 (h : Injective (bit0 : V₁ → V₁)) (y : P₁) :
     Injective fun x : P₁ => pointReflection k x y :=
   Equiv.injective_pointReflection_left_of_injective_bit0 h y
