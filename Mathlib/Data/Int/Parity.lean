@@ -68,13 +68,8 @@ theorem even_or_odd (n : ℤ) : Even n ∨ Odd n :=
   Or.imp_right odd_iff_not_even.2 <| em <| Even n
 #align int.even_or_odd Int.even_or_odd
 
--- Porting note: TODO. I'm struggling that `Even` uses `k + k` while Odd uses `2 * k`,
--- does this proof need golfing?
--- mathlib3 port: `simpa only [← two_mul, exists_or, ← Odd, ← Even] using even_or_odd n`
 theorem even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
-  rw [exists_or]
-  convert (config := .unfoldSameFun) even_or_odd n
-  rw [two_mul]
+  simpa only [two_mul, exists_or, Odd, Even] using even_or_odd n
 #align int.even_or_odd' Int.even_or_odd'
 
 theorem even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
@@ -192,9 +187,7 @@ theorem odd_sub' : Odd (m - n) ↔ (Odd n ↔ Even m) := by
 #align int.odd_sub' Int.odd_sub'
 
 theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
-  rw [even_mul]
-  convert n.even_or_odd using 1
-  simp [parity_simps]
+  simpa [even_mul, parity_simps] using n.even_or_odd
 #align int.even_mul_succ_self Int.even_mul_succ_self
 
 @[simp, norm_cast]

@@ -277,7 +277,7 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
   split_ifs with h₁ h₂ h₂
   . have ht : (t : ℝ) = 1 / 2 :=
       -- porting note: this was proved by linarith in mathlib
-      le_antisymm h₂ (by convert sub_le_comm.mp h₁; norm_num)
+      le_antisymm h₂ (by convert sub_le_comm.mp h₁ using 1; norm_num)
     simp only [ht]
     norm_num
   . congr 2
@@ -292,7 +292,7 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
     -- porting note: this was proved by linarith in mathlib
     apply h₂
     rw [sub_le_comm, not_le] at h₁
-    convert le_of_lt h₁
+    convert le_of_lt h₁ using 1
     norm_num
 #align continuous_map.homotopy.symm_trans ContinuousMap.Homotopy.symm_trans
 
@@ -435,11 +435,10 @@ theorem extendProp (F : HomotopyWith f₀ f₁ P) (t : ℝ) : P (F.toHomotopy.ex
   by_cases ht₀ : 0 ≤ t
   · by_cases ht₁ : t ≤ 1
     · apply F.prop
-    · -- porting note: `convert F.prop 1` does not create the expected goal
-      refine' Eq.subst _ (F.prop 1)
+    · convert F.prop 1
       ext x
       simp [F.toHomotopy.extend_apply_of_one_le (le_of_not_le ht₁)]
-  · refine' Eq.subst _ (F.prop 0)
+  · convert F.prop 0
     ext x
     simp [F.toHomotopy.extend_apply_of_le_zero (le_of_not_le ht₀)]
 #align continuous_map.homotopy_with.extend_prop ContinuousMap.HomotopyWith.extendProp
@@ -454,10 +453,7 @@ variable {P : C(X, Y) → Prop}
 @[simps!]
 def refl (f : C(X, Y)) (hf : P f) : HomotopyWith f f P :=
   { Homotopy.refl f with
-    prop' := fun t => by
-      refine' Eq.subst _ hf
-      cases f
-      rfl }
+    prop' := fun _ => hf }
 #align continuous_map.homotopy_with.refl ContinuousMap.HomotopyWith.refl
 
 instance : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ => True) :=

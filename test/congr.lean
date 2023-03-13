@@ -83,6 +83,12 @@ example (m n : Nat) (h : m = n) (x : Fin m) (y : Fin n) : HEq (x + x) (y + y) :=
   guard_target = HEq x y
   sorry
 
+/-- Props are types, but prop equalities are totally plausible. -/
+example (p q r : Prop) : p ∧ q ↔ p ∧ r := by
+  congr!
+  guard_target = q ↔ r
+  sorry
+
 /-- Congruence here is not OK by default since `α = β` is not generally plausible. -/
 example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : HEq (x + x) (y + y) := by
   congr!
