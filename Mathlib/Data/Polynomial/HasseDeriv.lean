@@ -130,21 +130,21 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
       rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, MulZeroClass.zero_mul, ite_self]
 #align polynomial.hasse_deriv_monomial Polynomial.hasseDeriv_monomial
 
-theorem hasseDeriv_c (r : R) (hk : 0 < k) : hasseDeriv k (C r) = 0 := by
+theorem hasseDeriv_C (r : R) (hk : 0 < k) : hasseDeriv k (C r) = 0 := by
   rw [← monomial_zero_left, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     MulZeroClass.zero_mul, monomial_zero_right]
 set_option linter.uppercaseLean3 false in
-#align polynomial.hasse_deriv_C Polynomial.hasseDeriv_c
+#align polynomial.hasse_deriv_C Polynomial.hasseDeriv_C
 
 theorem hasseDeriv_apply_one (hk : 0 < k) : hasseDeriv k (1 : R[X]) = 0 := by
-  rw [← C_1, hasseDeriv_c k _ hk]
+  rw [← C_1, hasseDeriv_C k _ hk]
 #align polynomial.hasse_deriv_apply_one Polynomial.hasseDeriv_apply_one
 
-theorem hasseDeriv_x (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
+theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     MulZeroClass.zero_mul, monomial_zero_right]
 set_option linter.uppercaseLean3 false in
-#align polynomial.hasse_deriv_X Polynomial.hasseDeriv_x
+#align polynomial.hasse_deriv_X Polynomial.hasseDeriv_X
 
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative R _^[k] := by
   induction' k with k ih
