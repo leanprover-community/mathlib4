@@ -62,12 +62,10 @@ def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
   lsum fun i => monomial (i - k) ∘ₗ DistribMulAction.toLinearMap R R (i.choose k)
 #align polynomial.hasse_deriv Polynomial.hasseDeriv
 
-theorem hasseDeriv_apply : hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
-  dsimp [hasseDeriv]
-  congr
-  ext
-  congr
-  apply nsmul_eq_mul
+theorem hasseDeriv_apply : hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) :=
+  by dsimp [hasseDeriv]
+     congr; ext; congr
+     apply nsmul_eq_mul
 #align polynomial.hasse_deriv_apply Polynomial.hasseDeriv_apply
 
 theorem hasseDeriv_coeff (n : ℕ) : (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) :=
@@ -260,8 +258,9 @@ theorem hasseDeriv_mul (f g : R[X]) :
   congr 2
   clear f g
   ext (m r n s) : 4
-  simp only [finset_sum_apply, coe_mul_left, coe_comp, flip_apply, Function.comp_apply, hasseDeriv_monomial,
-    LinearMap.toAddMonoidHom_coe, compHom_apply_apply, coe_mul, monomial_mul_monomial]
+  simp only [finset_sum_apply, coe_mul_left, coe_comp, flip_apply, Function.comp_apply,
+             hasseDeriv_monomial, LinearMap.toAddMonoidHom_coe, compHom_apply_apply,
+             coe_mul, monomial_mul_monomial]
   have aux :
     ∀ x : ℕ × ℕ,
       x ∈ antidiagonal k →
