@@ -18,7 +18,7 @@ import Mathlib.Tactic.FieldSimp
 # Hasse derivative of polynomials
 
 The `k`th Hasse derivative of a polynomial `∑ a_i X^i` is `∑ (i.choose k) a_i X^(i-k)`.
-It is a variant of the usual derivative, and satisfies `k! * (hasse_deriv k f) = derivative^[k] f`.
+It is a variant of the usual derivative, and satisfies `k! * (hasseDeriv k f) = derivative^[k] f`.
 The main benefit is that is gives an atomic way of talking about expressions such as
 `(derivative^[k] f).eval r / k!`, that occur in Taylor expansions, for example.
 
@@ -26,16 +26,16 @@ The main benefit is that is gives an atomic way of talking about expressions suc
 
 In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`.
 
-* `polynomial.hasse_deriv`: the `k`-th Hasse derivative of a polynomial
-* `polynomial.hasse_deriv_zero`: the `0`th Hasse derivative is the identity
-* `polynomial.hasse_deriv_one`: the `1`st Hasse derivative is the usual derivative
-* `polynomial.factorial_smul_hasse_deriv`: the identity `k! • (D k f) = derivative^[k] f`
-* `polynomial.hasse_deriv_comp`: the identity `(D k).comp (D l) = (k+l).choose k • D (k+l)`
-* `polynomial.hasse_deriv_mul`:
+* `Polynomial.hasseDeriv`: the `k`-th Hasse derivative of a polynomial
+* `Polynomial.hasseDeriv_zero`: the `0`th Hasse derivative is the identity
+* `Polynomial.hasseDeriv_one`: the `1`st Hasse derivative is the usual derivative
+* `Polynomial.factorial_smul_hasseDeriv`: the identity `k! • (D k f) = derivative^[k] f`
+* `Polynomial.hasseDeriv_comp`: the identity `(D k).comp (D l) = (k+l).choose k • D (k+l)`
+* `Polynomial.hasseDeriv_mul`:
   the "Leibniz rule" `D k (f * g) = ∑ ij in antidiagonal k, D ij.1 f * D ij.2 g`
 
-For the identity principle, see `polynomial.eq_zero_of_hasse_deriv_eq_zero`
-in `data/polynomial/taylor.lean`.
+For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
+in `Data/Polynomial/Taylor.lean`.
 
 ## Reference
 
@@ -68,7 +68,6 @@ theorem hasseDeriv_apply : hasseDeriv k f = f.sum fun i r => monomial (i - k) (�
   ext
   congr
   apply nsmul_eq_mul
-  
 #align polynomial.hasse_deriv_apply Polynomial.hasseDeriv_apply
 
 theorem hasseDeriv_coeff (n : ℕ) : (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) :=
@@ -79,7 +78,7 @@ theorem hasseDeriv_coeff (n : ℕ) : (hasseDeriv k f).coeff n = (n + k).choose k
     rw [coeff_monomial]
     by_cases hik : i < k
     · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, MulZeroClass.zero_mul]
-    · push_neg  at hik
+    · push_neg at hik
       rw [if_neg]
       contrapose! hink
       exact (tsub_eq_iff_eq_add_of_le hik).mp hink
@@ -182,11 +181,11 @@ theorem hasseDeriv_comp (k l : ℕ) :
     by_cases hil : i < l
     · rw [choose_eq_zero_of_lt hil]
       simp
-    · push_neg  at hil
+    · push_neg at hil
       rw [← tsub_lt_iff_right hil] at hikl
       rw [choose_eq_zero_of_lt hikl]
       simp
-  push_neg  at hikl
+  push_neg at hikl
   rw [←mul_assoc]
   rw [←mul_assoc]
   congr 1
@@ -204,18 +203,11 @@ theorem hasseDeriv_comp (k l : ℕ) :
   rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
   simp only [add_tsub_cancel_left]
   have H : ∀ n : ℕ, (n ! : ℚ) ≠ 0 := by exact_mod_cast factorial_ne_zero
-  generalize ga : ((i - l)! : ℚ) = a
-  have ha : a ≠ 0 := by rw [← ga]; exact H (i - l)
-  generalize gb : (k ! : ℚ) = b
-  have hb : b ≠ 0 := by rw [← gb]; exact H k
-  generalize gc : ((i - l - k) ! : ℚ) = c
-  have hc : c ≠ 0 := by rw [← gc]; exact H (i - l - k)
-  generalize gd : (i ! : ℚ) = d
-  have hd : d ≠ 0 := by rw [← gd]; exact H i
-  generalize ge : (l ! : ℚ) = e
-  have he : e ≠ 0 := by rw [← ge]; exact H l
-  generalize gf : ((k + l)! : ℚ) = f
-  have hf : f ≠ 0 := by rw [← gf]; exact H (k + l)
+  have := H (i - l)
+  have := H k
+  have := H (i - l - k)
+  have := H l
+  have := H (k + l)
   field_simp
   ring_nf
 #align polynomial.hasse_deriv_comp Polynomial.hasseDeriv_comp
@@ -280,17 +272,14 @@ theorem hasseDeriv_mul (f g : R[X]) :
     rw [Finset.Nat.mem_antidiagonal] at hx
     subst hx
     by_cases hm : m < x.1
-    ·
-      simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, MulZeroClass.zero_mul,
-        monomial_zero_right]
+    · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, MulZeroClass.zero_mul,
+                 monomial_zero_right]
     by_cases hn : n < x.2
-    ·
-      simp only [Nat.choose_eq_zero_of_lt hn, Nat.cast_zero, MulZeroClass.zero_mul,
-        MulZeroClass.mul_zero, monomial_zero_right]
-    push_neg  at hm hn
+    · simp only [Nat.choose_eq_zero_of_lt hn, Nat.cast_zero, MulZeroClass.zero_mul,
+                 MulZeroClass.mul_zero, monomial_zero_right]
+    push_neg at hm hn
     rw [tsub_add_eq_add_tsub hm, ← add_tsub_assoc_of_le hn, ← tsub_add_eq_tsub_tsub,
       add_comm x.2 x.1, mul_assoc, ← mul_assoc r, ← (Nat.cast_commute _ r).eq, mul_assoc, mul_assoc]
-  -- conv => rhs; -- apply_congr; skip; rw [aux _ H]
   rw [Finset.sum_congr rfl aux]
   rw [← LinearMap.map_sum, ← Finset.sum_mul]
   congr
