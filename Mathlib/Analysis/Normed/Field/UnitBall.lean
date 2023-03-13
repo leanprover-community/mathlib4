@@ -8,8 +8,8 @@ Authors: Yury Kudryashov, Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Field.Basic
-import Mathbin.Analysis.Normed.Group.BallSphere
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Group.BallSphere
 
 /-!
 # Algebraic structures on unit balls and spheres
