@@ -319,6 +319,7 @@ import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
