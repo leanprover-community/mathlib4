@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Pi.Basic
-import Mathbin.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Pi.Basic
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Limits in the category of indexed families of objects.
