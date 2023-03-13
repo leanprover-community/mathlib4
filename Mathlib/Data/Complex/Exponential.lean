@@ -1702,9 +1702,6 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
       · trans (-1 : ℝ)
         · -- Porting note: was linarith
           simp [Nat.succ_eq_add_one] at hx
-          have : (↑(abs x) / ((n : ℝ) + 1) - 1 ≤ - (1 : ℝ) / 2) := by
-            norm_num
-            simp [hx]
           rw [mul_comm, ← le_div_iff]
           simp [hx]
           . norm_num [this, hx]
@@ -1716,9 +1713,6 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
               (pow_nonneg (add_nonneg n.cast_nonneg zero_le_one) k)
       · -- Porting note: was linarith
         simp [Nat.succ_eq_add_one] at hx
-        have : (↑(abs x) / ((n : ℝ) + 1) - 1 ≤ - (1 : ℝ) / 2) := by
-          norm_num
-          simp [hx]
         simp
         apply lt_of_le_of_lt hx
         norm_num
