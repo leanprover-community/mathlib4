@@ -216,7 +216,7 @@ if a ≤ b then a else b
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α :=
+class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α :=
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -232,6 +232,9 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α :=
   min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
   /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
   max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
+  compare a b := compareOfLessAndEq a b
+  /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
+  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by intros; rfl
 
 variable [LinearOrder α]
 
