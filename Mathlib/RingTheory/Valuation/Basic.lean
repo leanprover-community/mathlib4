@@ -316,6 +316,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) 
   suffices : ¬v (x + y) < max (v x) (v y)
   exact or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
   intro h'
+  /- -- porting note: the proof used wlog
   wlog vyx : v y < v x
   · refine' this v h.symm _ (h.lt_or_lt.resolve_right vyx)
     rwa [add_comm, max_comm]
@@ -325,15 +326,27 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) 
     v x = v (x + y - y) := by simp
     _ ≤ max (v <| x + y) (v y) := (map_sub _ _ _)
     _ < v x := max_lt h' vyx
-
+  -/
+  cases lt_or_lt_iff_ne.2 h with
+  | inl vyx =>
+    rw [max_eq_right_of_lt vyx] at h'
+    apply lt_irrefl (v y)
+    calc
+      v y = v (y + x - x) := by simp
+      _ ≤ max (v <| y + x) (v x) := (map_sub _ _ _)
+      _ = max (v <| x + y) (v x) := by rw [add_comm]
+      _ < v y := max_lt h' vyx
+  | inr vyx =>
+    rw [max_eq_left_of_lt vyx] at h'
+    apply lt_irrefl (v x)
+    calc
+      v x = v (x + y - y) := by simp
+      _ ≤ max (v <| x + y) (v y) := (map_sub _ _ _)
+      _ < v x := max_lt h' vyx
 #align valuation.map_add_of_distinct_val Valuation.map_add_of_distinct_val
 
-theorem map_add_eq_of_lt_right (h : v x < v y) : v (x + y) = v y := by
-  convert v.map_add_of_distinct_val _
-  · symm
-    rw [max_eq_right_iff]
-    exact le_of_lt h
-  · exact ne_of_lt h
+theorem map_add_eq_of_lt_right (h : v x < v y) : v (x + y) = v y :=
+  (v.map_add_of_distinct_val h.ne).trans (max_eq_right_iff.mpr h.le)
 #align valuation.map_add_eq_of_lt_right Valuation.map_add_eq_of_lt_right
 
 theorem map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by
@@ -470,7 +483,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
     v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
   constructor
   · intro h x
-    simpa using @isEquiv.val_eq _ _ _ _ _ _ v v' h x 1
+    simpa using @IsEquiv.val_eq _ _ _ _ _ _ v v' h x 1
   · intro h
     apply isEquiv_of_val_le_one
     intro x
@@ -511,19 +524,23 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
-    · simp only [(zero_iff _).2 hx, zero_ne_one]
+    · -- porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
+      rw [(zero_iff _).2 hx, (zero_iff _).2 hx]
+      simp only [zero_ne_one]
     constructor
     · intro hh
       by_contra h_1
-      cases ne_iff_lt_or_gt.1 h_1
-      · simpa [hh, lt_self_iff_false] using h.2 h_2
-      · rw [← inv_one, eq_inv_iff_eq_inv, ← map_inv₀] at hh
-        exact hh.le.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
+      cases ne_iff_lt_or_gt.1 h_1 with
+      | inl h_2 => simpa [hh, lt_self_iff_false] using h.2 h_2
+      | inr h_2 =>
+          rw [← inv_one, eq_inv_iff_eq_inv, ← map_inv₀] at hh
+          exact hh.le.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
     · intro hh
       by_contra h_1
-      cases ne_iff_lt_or_gt.1 h_1
-      · simpa [hh, lt_self_iff_false] using h.1 h_2
-      · rw [← inv_one, eq_inv_iff_eq_inv, ← map_inv₀] at hh
+      cases ne_iff_lt_or_gt.1 h_1 with
+      | inl h_2 => simpa [hh, lt_self_iff_false] using h.1 h_2
+      | inr h_2 =>
+        rw [← inv_one, eq_inv_iff_eq_inv, ← map_inv₀] at hh
         exact hh.le.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
 #align valuation.is_equiv_iff_val_lt_one Valuation.isEquiv_iff_val_lt_one
 
