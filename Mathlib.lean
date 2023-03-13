@@ -243,6 +243,7 @@ import Mathlib.Algebra.Support
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
+import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.BallSphere
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.Normed.Group.Completion
@@ -267,6 +268,7 @@ import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Bicategory.Functor
+import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Category.Cat
@@ -315,12 +317,15 @@ import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Bicones
+import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
+import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
@@ -347,6 +352,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
@@ -413,6 +420,7 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 import Mathlib.Combinatorics.Additive.RuzsaCovering
+import Mathlib.Combinatorics.Catalan
 import Mathlib.Combinatorics.Colex
 import Mathlib.Combinatorics.Composition
 import Mathlib.Combinatorics.DoubleCounting
@@ -777,6 +785,7 @@ import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Polynomial.HasseDeriv
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Inductions
+import Mathlib.Data.Polynomial.IntegralNormalization
 import Mathlib.Data.Polynomial.Lifts
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.Data.Polynomial.Monomial
@@ -1046,6 +1055,7 @@ import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Ray
+import Mathlib.LinearAlgebra.SModEq
 import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Logic.Basic
@@ -1220,6 +1230,7 @@ import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.Subring.Basic
