@@ -198,6 +198,7 @@ theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
   AlgHom.map_zero (aeval x)
 #align polynomial.aeval_zero Polynomial.aeval_zero
 
+@[simp]
 theorem aeval_X : aeval x (X : R[X]) = x :=
   eval₂_X _ x
 set_option linter.uppercaseLean3 false in
@@ -214,9 +215,9 @@ theorem aeval_monomial {n : ℕ} {r : R} : aeval x (monomial n r) = algebraMap _
   eval₂_monomial _ _
 #align polynomial.aeval_monomial Polynomial.aeval_monomial
 
-@[simp] -- porting note: simplifed the LHS because of `simpNF`
-theorem aeval_X_pow {n : ℕ} : aeval x (X : R[X]) ^ n = x ^ n := by
-  rw [aeval_X]
+-- porting note: removed `@[simp]` because `simp` can prove this
+theorem aeval_X_pow {n : ℕ} : aeval x ((X : R[X]) ^ n) = x ^ n :=
+  eval₂_X_pow _ _
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_X_pow Polynomial.aeval_X_pow
 
