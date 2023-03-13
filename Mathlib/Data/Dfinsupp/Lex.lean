@@ -102,16 +102,16 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
         not_mem_neLocus.mp (Finset.not_mem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLe : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
+irreducible_def Lex.decidableLE : @DecidableRel (Lex (Π₀ i, α i)) (· ≤ ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
-#align dfinsupp.lex.decidable_le Dfinsupp.Lex.decidableLe
+#align dfinsupp.lex.decidable_le Dfinsupp.Lex.decidableLE
 
 /-- The less-than relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLt : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) :=
+irreducible_def Lex.decidableLT : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
-#align dfinsupp.lex.decidable_lt Dfinsupp.Lex.decidableLt
+#align dfinsupp.lex.decidable_lt Dfinsupp.Lex.decidableLT
 
 -- Porting note: Added `DecidableEq` for `LinearOrder`.
 instance : DecidableEq (Lex (Π₀ i, α i)) :=
@@ -122,8 +122,8 @@ instance : DecidableEq (Lex (Π₀ i, α i)) :=
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) :=
   { Lex.partialOrder with
     le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
-    decidable_lt := decidableLt
-    decidable_le := decidableLe
+    decidable_lt := decidableLT
+    decidable_le := decidableLE
     decidable_eq := inferInstance }
 #align dfinsupp.lex.linear_order Dfinsupp.Lex.linearOrder
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.with_bot
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -41,7 +41,7 @@ instance [Repr α] : Repr (WithBot α) :=
     | some a => "↑" ++ repr a⟩
 
 /-- The canonical map from `α` into `WithBot α` -/
-@[coe] def some : α → WithBot α :=
+@[coe, match_pattern] def some : α → WithBot α :=
   Option.some
 
 instance coeTC : CoeTC α (WithBot α) :=
@@ -127,10 +127,21 @@ theorem unbot'_coe {α} (d x : α) : unbot' d x = x :=
   rfl
 #align with_bot.unbot'_coe WithBot.unbot'_coe
 
-@[norm_cast]
-theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b :=
-  Option.some_inj
+theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
+
+theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
+  induction x using recBotCoe <;> simp [@eq_comm _ d]
+#align with_bot.unbot'_eq_iff WithBot.unbot'_eq_iff
+
+@[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
+  simp [unbot'_eq_iff]
+#align with_bot.unbot'_eq_self_iff WithBot.unbot'_eq_self_iff
+
+theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
+    unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
+ induction y using recBotCoe <;> simp [unbot'_eq_iff, or_comm]
+#align with_bot.unbot'_eq_unbot'_iff WithBot.unbot'_eq_unbot'_iff
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
@@ -225,7 +236,7 @@ theorem coe_le_iff : ∀ {x : WithBot α}, (a : WithBot α) ≤ x ↔ ∃ b : α
   | none => iff_of_false (not_coe_le_bot _) <| by simp [none_eq_bot]
 #align with_bot.coe_le_iff WithBot.coe_le_iff
 
-theorem le_coe_iff : ∀ {x : WithBot α}, x ≤ b ↔ ∀ a, x = ↑a → a ≤ b
+theorem le_coe_iff : ∀ {x : WithBot α}, x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b
   | Option.some b => by simp [some_eq_coe, coe_eq_coe]
   | none => by simp [none_eq_bot]
 #align with_bot.le_coe_iff WithBot.le_coe_iff
@@ -277,6 +288,13 @@ theorem lt_coe_iff : ∀ {x : WithBot α}, x < b ↔ ∀ a, x = ↑a → a < b
   | Option.some b => by simp [some_eq_coe, coe_eq_coe, coe_lt_coe]
   | none => by simp [none_eq_bot, bot_lt_coe]
 #align with_bot.lt_coe_iff WithBot.lt_coe_iff
+
+/-- A version of `bot_lt_iff_ne_bot` for `WithBot` that only requires `LT α`, not
+`PartialOrder α`. -/
+protected theorem bot_lt_iff_ne_bot : ∀ {x : WithBot α}, ⊥ < x ↔ x ≠ ⊥
+  | ⊥ => by simpa using not_lt_none ⊥
+  | (x : α) => by simp [bot_lt_coe]
+#align with_bot.bot_lt_iff_ne_bot WithBot.bot_lt_iff_ne_bot
 
 end LT
 
@@ -340,6 +358,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
       ⟨WithBot.forall.2 ⟨flip absurd (lt_irrefl _), fun x _ => h.2 x⟩, fun _ =>
         WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_bot.strict_mono_iff WithBot.strictMono_iff
+
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
+  strictMono_iff (β := βᵒᵈ)
 
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
@@ -454,14 +476,12 @@ instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) :=
   Lattice.toLinearOrder _
 #align with_bot.linear_order WithBot.linearOrder
 
--- this is not marked simp because the corresponding `WithTop` lemmas are used
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_min [LinearOrder α] (x y : α) : ((min x y : α) : WithBot α) = min (x : WithBot α) y :=
   rfl
 #align with_bot.coe_min WithBot.coe_min
 
--- this is not marked simp because the corresponding `WithTop` lemmas are used
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = max (x : WithBot α) y :=
   rfl
 #align with_bot.coe_max WithBot.coe_max
@@ -546,7 +566,7 @@ instance [Repr α] : Repr (WithTop α) :=
     | some a => "↑" ++ repr a⟩
 
 /-- The canonical map from `α` into `WithTop α` -/
-@[coe] def some : α → WithTop α :=
+@[coe, match_pattern] def some : α → WithTop α :=
   Option.some
 
 instance coeTC : CoeTC α (WithTop α) :=
@@ -679,10 +699,23 @@ theorem untop'_coe {α} (d x : α) : untop' d x = x :=
   rfl
 #align with_top.untop'_coe WithTop.untop'_coe
 
-@[norm_cast]
+@[simp, norm_cast] -- porting note: added `simp`
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 #align with_top.coe_eq_coe WithTop.coe_eq_coe
+
+theorem untop'_eq_iff {d y : α} {x : WithTop α} : untop' d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
+  WithBot.unbot'_eq_iff
+#align with_top.untop'_eq_iff WithTop.untop'_eq_iff
+
+@[simp] theorem untop'_eq_self_iff {d : α} {x : WithTop α} : untop' d x = d ↔ x = d ∨ x = ⊤ :=
+  WithBot.unbot'_eq_self_iff
+#align with_top.untop'_eq_self_iff WithTop.untop'_eq_self_iff
+
+theorem untop'_eq_untop'_iff {d : α} {x y : WithTop α} :
+    untop' d x = untop' d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
+  WithBot.unbot'_eq_unbot'_iff
+#align with_top.untop'_eq_untop'_iff WithTop.untop'_eq_untop'_iff
 
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
@@ -821,7 +854,7 @@ theorem le_coe_iff {x : WithTop α} : x ≤ b ↔ ∃ a : α, x = a ∧ a ≤ b 
   @WithBot.coe_le_iff (αᵒᵈ) _ _ (toDual x)
 #align with_top.le_coe_iff WithTop.le_coe_iff
 
-theorem coe_le_iff {x : WithTop α} : ↑a ≤ x ↔ ∀ b, x = ↑b → a ≤ b :=
+theorem coe_le_iff {x : WithTop α} : ↑a ≤ x ↔ ∀ b : α, x = ↑b → a ≤ b :=
   @WithBot.le_coe_iff (αᵒᵈ) _ _ (toDual x)
 #align with_top.coe_le_iff WithTop.coe_le_iff
 
@@ -1021,8 +1054,8 @@ theorem some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔
   coe_lt_coe
 #align with_top.some_lt_some WithTop.some_lt_some
 
-theorem coe_lt_top (a : α) : (a : WithTop α) < ⊤ :=
-by simp [← toDual_lt_toDual_iff, WithBot.bot_lt_coe]
+theorem coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by
+  simp [← toDual_lt_toDual_iff, WithBot.bot_lt_coe]
 #align with_top.coe_lt_top WithTop.coe_lt_top
 
 @[simp]
@@ -1043,6 +1076,12 @@ theorem lt_iff_exists_coe {a b : WithTop α} : a < b ↔ ∃ p : α, a = p ∧ �
 
 theorem coe_lt_iff {x : WithTop α} : ↑a < x ↔ ∀ b, x = ↑b → a < b := by simp
 #align with_top.coe_lt_iff WithTop.coe_lt_iff
+
+/-- A version of `lt_top_iff_ne_top` for `WithTop` that only requires `LT α`, not
+`PartialOrder α`. -/
+protected theorem lt_top_iff_ne_top {x : WithTop α} : x < ⊤ ↔ x ≠ ⊤ :=
+  @WithBot.bot_lt_iff_ne_bot αᵒᵈ _ x
+#align with_top.lt_top_iff_ne_top WithTop.lt_top_iff_ne_top
 
 end LT
 
@@ -1094,6 +1133,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
       ⟨WithTop.forall.2 ⟨flip absurd (lt_irrefl _), fun _ h => (not_top_lt h).elim⟩, fun x =>
         WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_top.strict_mono_iff WithTop.strictMono_iff
+
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
+  strictMono_iff (β := βᵒᵈ)
 
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :

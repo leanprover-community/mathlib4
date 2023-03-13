@@ -51,7 +51,7 @@ theorem cons_zero : cons y s 0 = y :=
 @[simp]
 theorem cons_succ : cons y s i.succ = s i :=
   -- porting notes: was Fin.cons_succ _ _ _
-  namedPattern rfl rfl rfl
+  rfl
 #align finsupp.cons_succ Finsupp.cons_succ
 
 @[simp]

@@ -136,8 +136,7 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
 
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of a `G` to `A` that factors through `f`. -/
-def lift : (G →* A) ≃ (Abelianization G →* A)
-    where
+def lift : (G →* A) ≃ (Abelianization G →* A) where
   toFun f := QuotientGroup.lift _ f fun _ h => f.mem_ker.2 <| commutator_subset_ker _ h
   invFun F := F.comp of
   left_inv _ := MonoidHom.ext fun _ => rfl
@@ -211,8 +210,7 @@ section AbelianizationCongr
 variable {G} [Group G] {H : Type v} [Group H] (e : G ≃* H)
 
 /-- Equivalent groups have equivalent abelianizations -/
-def MulEquiv.abelianizationCongr : Abelianization G ≃* Abelianization H
-    where
+def MulEquiv.abelianizationCongr : Abelianization G ≃* Abelianization H where
   toFun := Abelianization.map e.toMonoidHom
   invFun := Abelianization.map e.symm.toMonoidHom
   left_inv := by
@@ -283,7 +281,7 @@ instance closureCommutatorRepresentatives_fg [Finite (commutatorSet G)] :
   Group.closure_finite_fg _
 #align closure_commutator_representatives_fg closureCommutatorRepresentatives_fg
 
-theorem rank_closure_commutator_representations_le [Finite (commutatorSet G)] :
+theorem rank_closureCommutatorRepresentatives_le [Finite (commutatorSet G)] :
     Group.rank (closureCommutatorRepresentatives G) ≤ 2 * Nat.card (commutatorSet G) := by
   rw [two_mul]
   exact
@@ -291,7 +289,7 @@ theorem rank_closure_commutator_representations_le [Finite (commutatorSet G)] :
       ((Set.card_union_le _ _).trans
         (add_le_add ((Finite.card_image_le _).trans (Finite.card_range_le _))
           ((Finite.card_image_le _).trans (Finite.card_range_le _))))
-#align rank_closure_commutator_representations_le rank_closure_commutator_representations_le
+#align rank_closure_commutator_representations_le rank_closureCommutatorRepresentatives_le
 
 theorem image_commutatorSet_closureCommutatorRepresentatives :
     (closureCommutatorRepresentatives G).subtype ''
@@ -300,8 +298,7 @@ theorem image_commutatorSet_closureCommutatorRepresentatives :
   apply Set.Subset.antisymm
   · rintro - ⟨-, ⟨g₁, g₂, rfl⟩, rfl⟩
     exact ⟨g₁, g₂, rfl⟩
-  ·
-    exact fun g hg =>
+  · exact fun g hg =>
       ⟨_,
         ⟨⟨_, subset_closure (Or.inl ⟨_, ⟨⟨g, hg⟩, rfl⟩, rfl⟩)⟩,
           ⟨_, subset_closure (Or.inr ⟨_, ⟨⟨g, hg⟩, rfl⟩, rfl⟩)⟩, rfl⟩,
@@ -321,8 +318,8 @@ theorem card_commutator_closureCommutatorRepresentatives :
   exact Nat.card_congr (Equiv.Set.image _ _ (subtype_injective _))
 #align card_commutator_closure_commutator_representatives card_commutator_closureCommutatorRepresentatives
 
-instance [Finite (commutatorSet G)] : Finite (commutatorSet (closureCommutatorRepresentatives G)) :=
-  by
+instance [Finite (commutatorSet G)] :
+    Finite (commutatorSet (closureCommutatorRepresentatives G)) := by
   apply Nat.finite_of_card_ne_zero
   rw [card_commutatorSet_closureCommutatorRepresentatives]
   exact Finite.card_pos.ne'

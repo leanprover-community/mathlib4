@@ -10,7 +10,7 @@ import Mathlib.Lean.LocalContext
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Control.Basic
 import Mathlib.Data.Sum.Basic
-import Mathlib.Tactic.TagAttr
+import Mathlib.Tactic.LabelAttr
 
 /-!
 A work-in-progress replacement for Lean3's `solve_by_elim` tactic.
@@ -294,7 +294,7 @@ def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List Expr) (only : Bo
   solveByElim { cfg.noBackTracking with failAtMaxDepth := false } lemmas ctx [g]
 
 open Lean.Parser.Tactic
-open Mathlib.Tactic.TagAttr
+open Mathlib.Tactic.LabelAttr
 
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in
@@ -351,12 +351,12 @@ def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) (use : Arr
 
   let defaults : List (TermElabM Expr) :=
     [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)].map elab'
-  let taggedLemmas := (← use.mapM (tagged ·.raw.getId)).flatten.toList
+  let labelledLemmas := (← use.mapM (labelled ·.raw.getId)).flatten.toList
     |>.map (liftM <| mkConstWithFreshMVarLevels ·)
   let lemmas := if noDefaults then
-    add.map elab' ++ taggedLemmas
+    add.map elab' ++ labelledLemmas
   else
-    add.map elab' ++ taggedLemmas ++ defaults
+    add.map elab' ++ labelledLemmas ++ defaults
 
   if !remove.isEmpty && noDefaults && !star then
     throwError "It doesn't make sense to remove local hypotheses when using `only` without `*`."
@@ -378,7 +378,7 @@ syntax star := "*"
 syntax arg := star <|> erase <|> term
 /-- Syntax for adding and removing terms in `solve_by_elim`. -/
 syntax args := " [" SolveByElim.arg,* "] "
-/-- Syntax for using all lemmas tagged with an attribute in `solve_by_elim`. -/
+/-- Syntax for using all lemmas labelled with an attribute in `solve_by_elim`. -/
 syntax using_ := " using " ident,*
 
 open Syntax
@@ -431,8 +431,8 @@ The assumptions can be modified with similar syntax as for `simp`:
 * `solve_by_elim only [h₁, h₂, ..., hᵣ]` does not include the local context,
   `rfl`, `trivial`, `congrFun`, or `congrArg` unless they are explicitly included.
 * `solve_by_elim [-h₁, ... -hₙ]` removes the given local hypotheses.
-* `solve_by_elim using [a₁, ...]` uses all lemmas which have been tagged
-  with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
+* `solve_by_elim using [a₁, ...]` uses all lemmas which have been labelled
+  with the attributes `aᵢ` (these attributes must be created using `register_label_attr`).
 
 `solve_by_elim*` tries to solve all goals together, using backtracking if a solution for one goal
 makes other goals impossible.
@@ -484,8 +484,8 @@ You can specify additional rules to apply using `apply_assumption [...]`.
 By default `apply_assumption` will also try `rfl`, `trivial`, `congrFun`, and `congrArg`.
 If you don't want these, or don't want to use all hypotheses, use `apply_assumption only [...]`.
 You can use `apply_assumption [-h]` to omit a local hypothesis.
-You can use `apply_assumption using [a₁, ...]` to use all lemmas which have been tagged
-with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
+You can use `apply_assumption using [a₁, ...]` to use all lemmas which have been labelled
+with the attributes `aᵢ` (these attributes must be created using `register_label_attr`).
 
 `apply_assumption` will use consequences of local hypotheses obtained via `symm`.
 
@@ -518,8 +518,8 @@ You can use `apply_rules [-h]` to omit a local hypothesis.
 `apply_rules` will also use `rfl`, `trivial`, `congrFun` and `congrArg`.
 These can be disabled, as can local hypotheses, by using `apply_rules only [...]`.
 
-You can use `apply_rules using [a₁, ...]` to use all lemmas which have been tagged
-with the attributes `aᵢ` (these attributes must be created using `register_tag_attr`).
+You can use `apply_rules using [a₁, ...]` to use all lemmas which have been labelled
+with the attributes `aᵢ` (these attributes must be created using `register_label_attr`).
 
 You can pass a further configuration via the syntax `apply_rules (config := {...})`.
 The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).

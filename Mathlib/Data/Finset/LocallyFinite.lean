@@ -263,17 +263,17 @@ theorem Icc_subset_Ioc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Ioc a₂ b
 #align finset.Icc_subset_Ioc_iff Finset.Icc_subset_Ioc_iff
 
 --TODO: `Ico_subset_Ioo_iff`, `Ioc_subset_Ioo_iff`
-theorem Icc_sSubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) :
+theorem Icc_ssubset_Icc_left (hI : a₂ ≤ b₂) (ha : a₂ < a₁) (hb : b₁ ≤ b₂) :
     Icc a₁ b₁ ⊂ Icc a₂ b₂ := by
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_left hI ha hb
-#align finset.Icc_ssubset_Icc_left Finset.Icc_sSubset_Icc_left
+#align finset.Icc_ssubset_Icc_left Finset.Icc_ssubset_Icc_left
 
-theorem Icc_sSubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b₁ < b₂) :
+theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b₁ < b₂) :
     Icc a₁ b₁ ⊂ Icc a₂ b₂ := by
   rw [← coe_ssubset, coe_Icc, coe_Icc]
   exact Set.Icc_ssubset_Icc_right hI ha hb
-#align finset.Icc_ssubset_Icc_right Finset.Icc_sSubset_Icc_right
+#align finset.Icc_ssubset_Icc_right Finset.Icc_ssubset_Icc_right
 
 variable (a)
 
