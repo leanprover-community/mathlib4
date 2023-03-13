@@ -34,3 +34,38 @@ example (p : n + 2 = m → Type) (h : n + 2 = m) (x : p h) : false := by
 example : Nat := by
   fail_if_success change Type 1
   sorry
+
+def foo (a b c : Nat) := if a < b then c else 0
+
+example : foo 1 2 3 = 3 := by
+  show (if _ then _ else _) = _
+  change (if _ then _ else _) = _
+  change ite _ _ _ = _
+  change (if _ < _ then _ else _) = _
+  change _ = (if true then 3 else 4)
+  rfl
+
+example (h : foo 1 2 3 = 4) : True := by
+  change ite _ _ _ = _ at h
+  guard_hyp h :ₛ ite (1 < 2) 3 0 = 4
+  trivial
+
+example (h : foo 1 2 3 = 4) : True := by
+  change (if _ then _ else _) = _ at h
+  guard_hyp h : (if 1 < 2 then 3 else 0) = 4
+  trivial
+
+example (α : Type) [LT α] (x : α) (h : x < x) : x < id x := by
+  change _ < _ -- can defer LT typeclass lookup, just like `show`
+  change _ < _ at h -- can defer LT typeclass lookup at h too
+  guard_target =ₛ x < id x
+  change _ < x
+  guard_target =ₛ x < x
+  exact h
+
+example (x y : Nat) (h : x = y) : True := by
+  change (if 1 < 2 then x else ?_) = y at h
+  rotate_left
+  · exact 4
+  guard_hyp h : (if 1 < 2 then x else 4) = y
+  · trivial
