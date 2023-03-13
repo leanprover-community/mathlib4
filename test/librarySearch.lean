@@ -1,8 +1,9 @@
-import Mathlib
+import Mathlib.Tactic.LibrarySearch
+import Mathlib.Util.AssertNoSorry
+import Mathlib.Algebra.Order.Ring.Canonical
 
 noncomputable section
 
-set_option maxHeartbeats 400000 in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by library_search)
 example : 0 ≠ 1 + 1 := ne_of_lt (by library_search)
 example (x y : Nat) : x + y = y + x := by library_search
