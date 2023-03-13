@@ -1690,7 +1690,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
     _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
     _ = ∑ i : ℕ in range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
     _ ≤ abs x ^ n / ↑n.factorial * 2 := ?_
-  · refine' sum_le_sum fun m hm => div_le_div (pow_nonneg (abs.nonneg x) (n + m)) le_rfl _ _
+  · refine' sum_le_sum fun m _ => div_le_div (pow_nonneg (abs.nonneg x) (n + m)) le_rfl _ _
     · exact_mod_cast mul_pos n.factorial_pos (pow_pos n.succ_pos _)
     · exact_mod_cast Nat.factorial_mul_pow_le_factorial
   · refine' Finset.sum_congr rfl fun _ _ => _
@@ -1717,8 +1717,8 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
       · -- Porting note: was linarith
         simp [Nat.succ_eq_add_one] at hx
         have : (↑(abs x) / ((n : ℝ) + 1) - 1 ≤ - (1 : ℝ) / 2) := by
-            norm_num
-            simp [hx]
+          norm_num
+          simp [hx]
         simp
         apply lt_of_le_of_lt hx
         norm_num
