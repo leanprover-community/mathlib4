@@ -9,6 +9,16 @@ example (x y : Nat) : x + y = y + x := by library_search
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by library_search
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by library_search
 
+set_option trace.Tactic.librarySearch true
+#print nsmulRec
+
+open Lean Meta
+#eval do
+  let e ← mkConst' `nsmulRec
+  let ty ← inferType e
+  let (_, _, ty) ← forallMetaTelescopeReducing ty
+  @DiscrTree.mkPath true ty
+
 example : Int := by library_search
 
 example : x < x + 1 := library_search%
@@ -21,8 +31,7 @@ example (α : Prop) : α → α := by library_search -- says: `exact id`
 
 example (p : Prop) : (¬¬p) → p := by library_search -- says: `exact not_not.mp`
 example (a b : Prop) (h : a ∧ b) : a := by library_search -- says: `exact h.left`
-
-example (P Q : Prop) : (¬ Q → ¬ P) → (P → Q) := by library_search
+example (P Q : Prop) : (¬ Q → ¬ P) → (P → Q) := by library_search -- say: `exact Function.mtr`
 
 example (a b : ℕ) : a + b = b + a :=
 by library_search -- says: `exact add_comm a b`
@@ -78,10 +87,8 @@ example : ∀ P : Prop, ¬(P ↔ ¬P) := by library_search
 
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by library_search -- says `exact (Nat.dvd_add_iff_left h₁).mpr h₂`
 
-example {α : Sort u} (h : Empty) : α := by library_search
-example {α : Type _} (h : Empty) : α := by library_search
-
-example (f : A → C) (g : B → C) : (A ⊕ B) → C := by library_search
+example {α : Sort u} (h : Empty) : α := by library_search -- says `exact Empty.elim h`
+example (f : A → C) (g : B → C) : (A ⊕ B) → C := by library_search -- says `exact Sum.elim f g`
 
 opaque f : ℕ → ℕ
 axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
@@ -102,7 +109,7 @@ example (P Q : List ℕ) (_h : ℕ) : List ℕ :=
 by library_search using P, Q -- exact P ∩ Q
 
 example (n : ℕ) (r : ℚ) : ℚ :=
-by library_search using n, r -- exact nsmulRec n r
+by library_search using n, r -- exact nsmulRec n r --
 
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)

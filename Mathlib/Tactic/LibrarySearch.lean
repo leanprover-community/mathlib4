@@ -24,6 +24,17 @@ example : Nat := by library_search
 ```
 -/
 
+namespace Lean.Meta.DiscrTree
+
+def insertIfSpecific {α : Type} {s : Bool} [BEq α] (d : DiscrTree α s)
+    (keys : Array (DiscrTree.Key s)) (v : α) : DiscrTree α s :=
+  if keys == #[Key.star] || keys == #[Key.const `Eq 3, Key.star, Key.star, Key.star] then
+    d
+  else
+    d.insertCore keys v
+
+end Lean.Meta.DiscrTree
+
 namespace Mathlib.Tactic.LibrarySearch
 
 open Lean Meta Std.Tactic.TryThis
@@ -59,17 +70,17 @@ initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) �
     if constInfo.isUnsafe then return lemmas
     if ← isBlackListed name then return lemmas
     withNewMCtxDepth do withReducible do
-      let (_, _, type) ← withReducible <| forallMetaTelescopeReducing constInfo.type
-      let keys ← withReducible <| DiscrTree.mkPath type
-      let lemmas := lemmas.insertCore keys (name, .none)
+      let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
+      let keys ← DiscrTree.mkPath type
+      let lemmas := lemmas.insertIfSpecific keys (name, .none)
       match type.getAppFnArgs with
       | (``Eq, #[_, lhs, rhs]) => do
-        let keys_symm ← withReducible <| DiscrTree.mkPath (← mkEq rhs lhs)
-        pure (lemmas.insertCore keys_symm (name, .symm))
+        let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
+        pure (lemmas.insertIfSpecific keys_symm (name, .symm))
       | (``Iff, #[lhs, rhs]) => do
-        let keys_mp ← withReducible <| DiscrTree.mkPath rhs
-        let keys_mpr ← withReducible <| DiscrTree.mkPath lhs
-        pure <| (lemmas.insertCore keys_mp (name, .mp)).insertCore keys_mpr (name, .mpr)
+        let keys_mp ← DiscrTree.mkPath rhs
+        let keys_mpr ← DiscrTree.mkPath lhs
+        pure <| (lemmas.insertIfSpecific keys_mp (name, .mp)).insertIfSpecific keys_mpr (name, .mpr)
       | _ => pure lemmas
 
 /-- Shortcut for calling `solveByElim`. -/
