@@ -1239,6 +1239,7 @@ import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.Change
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear!
