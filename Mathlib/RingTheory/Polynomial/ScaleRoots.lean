@@ -66,12 +66,11 @@ theorem support_scaleRoots_le (p : R[X]) (s : R) : (scaleRoots p s).support ≤ 
 theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) :
     (scaleRoots p s).support = p.support :=
   le_antisymm (support_scaleRoots_le p s)
-    (by
-      intro i
-      simp only [coeff_scaleRoots, Polynomial.mem_support_iff]
-      intro p_ne_zero ps_zero
-      have := pow_mem hs (p.natDegree - i) _ ps_zero
-      contradiction)
+    (by intro i
+        simp only [coeff_scaleRoots, Polynomial.mem_support_iff]
+        intro p_ne_zero ps_zero
+        have := pow_mem hs (p.natDegree - i) _ ps_zero
+        contradiction)
 #align polynomial.support_scale_roots_eq Polynomial.support_scaleRoots_eq
 
 @[simp]
@@ -99,8 +98,7 @@ theorem monic_scaleRoots_iff {p : R[X]} (s : R) : Monic (scaleRoots p s) ↔ Mon
 theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
     eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=
   calc
-    eval₂ f (f s * r) (scaleRoots p s) =
-        (scaleRoots p s).support.sum fun i =>
+    _ = (scaleRoots p s).support.sum fun i =>
           f (coeff p i * s ^ (p.natDegree - i)) * (f s * r) ^ i :=
       by simp [eval₂_eq_sum, sum_def]
     _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * r) ^ i :=
