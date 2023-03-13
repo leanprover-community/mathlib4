@@ -39,7 +39,7 @@ For example, if `n : ℕ` and the current goal is `⊢ n + 2 = 2`, then
 change _ + 1 = _
 ```
 changes the goal to `⊢ n + 1 + 1 = 2`. The tactic also applies to the local context.
-For exmaple, if `h : n + 2 = 2` and `h' : n + 3 = 4` are in the local context, then
+If `h : n + 2 = 2` and `h' : n + 3 = 4` are in the local context, then
 ```lean
 change _ + 1 = _ at h h'
 ```
