@@ -38,22 +38,24 @@ initialize registerBuiltinAttribute {
     reflExt.add (decl, key) kind
 }
 
+--!! Can we use this in the tactic, or is saving the tactic state important?
+def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM (List MVarId) := do
+  let .app (.app rel _) _ ← goal.getType
+    | throwError "reflexivity lemmas only apply to binary relations, not
+      {indentExpr (← goal.getType)}"
+  let s ← saveState
+  for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
+    try
+      return ← goal.apply (← mkConstWithFreshMVarLevels lem)
+    catch e =>
+      s.restore
+      throw e
+  throwError "rfl failed, no lemma with @[refl] applies"
+
 open Elab.Tactic in
 /--
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
 elab_rules : tactic
-| `(tactic| rfl) => withMainContext do
-  let tgt ← getMainTarget
-  let .app (.app rel _) _ := tgt
-    | throwError "reflexivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  let s ← saveState
-  for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
-    try
-      liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
-      return
-    catch e =>
-      s.restore
-      throw e
-  throwError "rfl failed, no lemma with @[refl] applies"
+| `(tactic| rfl) => withMainContext do liftMetaTactic (·.rfl)
