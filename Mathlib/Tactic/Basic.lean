@@ -58,7 +58,7 @@ elab_rules : tactic
             throwTacticEx `change mvarId
               m!"given type{indentExpr e}\nis not definitionally equal at {h'} to{indentExpr hTy}"
           return (← mvarId.changeLocalDecl h e) :: gs)
-      (atTarget := do
+      (atTarget := withMainContext do
         let tgt ← getMainTarget
         let (e, gs) ← elabTermWithHoles newType none (← getMainTag) (allowNaturalHoles := true)
         liftMetaTactic fun mvarId ↦ do
