@@ -1475,6 +1475,7 @@ import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Partial
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.QuasiSeparated
+import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.Sets.Closeds
