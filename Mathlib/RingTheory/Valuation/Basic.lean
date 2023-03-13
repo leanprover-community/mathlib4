@@ -11,6 +11,7 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.TFAE
 
 /-!
 
@@ -429,13 +430,13 @@ end IsEquiv
 -- end of namespace
 section
 
-theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
+theorem IsEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
     [LinearOrderedCommMonoidWithZero Γ'₀] [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
     (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
-#align valuation.is_equiv_of_map_strict_mono Valuation.isEquiv_of_map_strictMono
+#align valuation.is_equiv_of_map_strict_mono Valuation.IsEquiv_of_map_strictMono
 
-theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
+theorem IsEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀)
     (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
   intro x y
@@ -453,22 +454,22 @@ theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     replace hy := v'.ne_zero_iff.mpr hy
     replace H := le_of_le_mul_right hy H
     rwa [h]
-#align valuation.is_equiv_of_val_le_one Valuation.isEquiv_of_val_le_one
+#align valuation.is_equiv_of_val_le_one Valuation.IsEquiv_of_val_le_one
 
-theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
+theorem IsEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1 :=
-  ⟨fun h x => by simpa using h x 1, isEquiv_of_val_le_one _ _⟩
-#align valuation.is_equiv_iff_val_le_one Valuation.isEquiv_iff_val_le_one
+  ⟨fun h x => by simpa using h x 1, IsEquiv_of_val_le_one _ _⟩
+#align valuation.is_equiv_iff_val_le_one Valuation.IsEquiv_iff_val_le_one
 
-theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
+theorem IsEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
   constructor
   · intro h x
     simpa using @IsEquiv.val_eq _ _ _ _ _ _ v v' h x 1
   · intro h
-    apply isEquiv_of_val_le_one
+    apply IsEquiv_of_val_le_one
     intro x
     constructor
     · intro hx
@@ -495,16 +496,16 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
         simp [this]
       · rw [← h] at hx'
         exact le_of_eq hx'
-#align valuation.is_equiv_iff_val_eq_one Valuation.isEquiv_iff_val_eq_one
+#align valuation.is_equiv_iff_val_eq_one Valuation.IsEquiv_iff_val_eq_one
 
-theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
+theorem IsEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 := by
   constructor
   · intro h x
     simp only [lt_iff_le_and_ne,
-      and_congr ((isEquiv_iff_val_le_one _ _).1 h) ((isEquiv_iff_val_eq_one _ _).1 h).not]
-  · rw [isEquiv_iff_val_eq_one]
+      and_congr ((IsEquiv_iff_val_le_one _ _).1 h) ((IsEquiv_iff_val_eq_one _ _).1 h).not]
+  · rw [IsEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
     · -- porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
@@ -525,23 +526,23 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
       | inr h_2 =>
         rw [← inv_one, eq_inv_iff_eq_inv, ← map_inv₀] at hh
         exact hh.le.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
-#align valuation.is_equiv_iff_val_lt_one Valuation.isEquiv_iff_val_lt_one
+#align valuation.is_equiv_iff_val_lt_one Valuation.IsEquiv_iff_val_lt_one
 
-theorem isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
+theorem IsEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v (x - 1) < 1 ↔ v' (x - 1) < 1 := by
-  rw [isEquiv_iff_val_lt_one]
+  rw [IsEquiv_iff_val_lt_one]
   exact (Equiv.subRight 1).surjective.forall
-#align valuation.is_equiv_iff_val_sub_one_lt_one Valuation.isEquiv_iff_val_sub_one_lt_one
+#align valuation.is_equiv_iff_val_sub_one_lt_one Valuation.IsEquiv_iff_val_sub_one_lt_one
 
 theorem isEquiv_tFAE [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
     (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     [v.IsEquiv v', ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1, ∀ {x}, v x = 1 ↔ v' x = 1, ∀ {x}, v x < 1 ↔ v' x < 1,
         ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE := by
-  tfae_have 1 ↔ 2; · apply is_equiv_iff_val_le_one
-  tfae_have 1 ↔ 3; · apply is_equiv_iff_val_eq_one
-  tfae_have 1 ↔ 4; · apply is_equiv_iff_val_lt_one
-  tfae_have 1 ↔ 5; · apply is_equiv_iff_val_sub_one_lt_one
+  tfae_have 1 ↔ 2; · apply IsEquiv_iff_val_le_one
+  tfae_have 1 ↔ 3; · apply IsEquiv_iff_val_eq_one
+  tfae_have 1 ↔ 4; · apply IsEquiv_iff_val_lt_one
+  tfae_have 1 ↔ 5; · apply IsEquiv_iff_val_sub_one_lt_one
   tfae_finish
 #align valuation.is_equiv_tfae Valuation.isEquiv_tFAE
 
