@@ -757,9 +757,10 @@ theorem scale_eq_mul (x) [NF x] : ∀ (o) [NF o], scale x o = oadd x 1 0 * o
     simp [(· * ·)]; simp [mul, scale]
     haveI := h.snd
     by_cases e0 : e = 0
-    · rw [scale_eq_mul]
-      simp [scale_eq_mul, e0, h.zero_of_zero, show x + 0 = x from repr_inj.1 (by simp)]
-    · simp [e0, scale_eq_mul, (· * ·)]
+    · simp_rw [scale_eq_mul]
+      simp [Mul.mul, mul, scale_eq_mul, e0, h.zero_of_zero,
+        show x + 0 = x from repr_inj.1 (by simp)]
+    · simp [e0, Mul.mul, mul, scale_eq_mul, (· * ·)]
 #align onote.scale_eq_mul Onote.scale_eq_mul
 
 instance NF_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
