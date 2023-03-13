@@ -986,7 +986,7 @@ def fundamentalSequence : Onote → Sum (Option Onote) (ℕ → Onote)
     | Sum.inr f => Sum.inr fun i => oadd a m (f i)
     | Sum.inl (some b') => Sum.inl (some (oadd a m b'))
     | Sum.inl none =>
-      match fundamentaSequence a, m.natPred with
+      match fundamentalSequence a, m.natPred with
       | Sum.inl none, 0 => Sum.inl (some zero)
       | Sum.inl none, m + 1 => Sum.inl (some (oadd zero m.succPNat zero))
       | Sum.inl (some a'), 0 => Sum.inr fun i => oadd a' i.succPNat zero
