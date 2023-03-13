@@ -871,12 +871,12 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     (k ≠ 0 → R < ((ω^repr a0)^succ k)) ∧
       ((ω^repr a0)^k) * ((ω^repr a0) * (n : ℕ) + repr a') + R =
         ((ω^repr a0) * (n : ℕ) + repr a' + m^succ k) := by
-  intro
+  intro R
   haveI No : NF (oadd a0 n a') :=
     N0.oadd n (Na'.below_of_lt' <| lt_of_le_of_lt (le_add_right _ _) h)
   induction' k with k IH
   · cases m <;> simp [opowAux, R]
-  rename' R => R'
+  rename R => R'
   let R := repr (opowAux 0 a0 (oadd a0 n a' * of_nat m) k m)
   let ω0 := ω^repr a0
   let α' := ω0 * n + repr a'
