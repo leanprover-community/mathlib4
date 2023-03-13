@@ -43,7 +43,9 @@ open Affine
 
 section defn
 
-variable (k : Type _) [Ring k]
+variable (k P₁ P₂ : Type _) {V₁ V₂ : Type _}
+variable [Ring k] [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂]
+  [AddTorsor V₂ P₂]
 
 attribute [-instance] Ring.toNonAssocRing
 
@@ -53,8 +55,7 @@ and inverse maps are affine.
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
 --@[nolint has_nonempty_instance]
-structure AffineEquiv (P₁ P₂ : Type _) {V₁ V₂ : Type _} [AddCommGroup V₁] [Module k V₁]
-  [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
+structure AffineEquiv  extends P₁ ≃ P₂ where
   linear : V₁ ≃ₗ[k] V₂
   map_vadd' : ∀ (p : P₁) (v : V₁), toEquiv (v +ᵥ p) = linear v +ᵥ toEquiv p
 #align affine_equiv AffineEquiv
@@ -65,9 +66,7 @@ end defn
 
 notation:25 P₁ " ≃ᵃ[" k:25 "] " P₂:0 => AffineEquiv k P₁ P₂
 
-variable {k : Type _} [Ring k]
-
-variable {P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [AddCommGroup V₁] [Module k V₁]
+variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [AddCommGroup V₃]
   [Module k V₃] [AddTorsor V₃ P₃] [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄]
 
