@@ -8,9 +8,9 @@ Authors: Christopher Hoskin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Order.Lattice
-import Mathbin.Analysis.Normed.Group.Basic
-import Mathbin.Algebra.Order.LatticeGroup
+import Mathlib.Topology.Order.Lattice
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Algebra.Order.LatticeGroup
 
 /-!
 # Normed lattice ordered groups
@@ -75,8 +75,7 @@ variable {α : Type _} [NormedLatticeAddCommGroup α]
 
 open LatticeOrderedCommGroup
 
-theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ :=
-  by
+theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid
   rw [abs_eq_sup_neg]
   nth_rw 1 [← neg_neg a]
@@ -97,8 +96,7 @@ theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
   (solid (abs_abs a).le).antisymm (solid (abs_abs a).symm.le)
 #align norm_abs_eq_norm norm_abs_eq_norm
 
-theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ ≤ ‖a - c‖ + ‖b - d‖ :=
-  by
+theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
   refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
   rw [abs_of_nonneg (|a - c| + |b - d|) (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
@@ -113,8 +111,7 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
     
 #align norm_inf_sub_inf_le_add_norm norm_inf_sub_inf_le_add_norm
 
-theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ :=
-  by
+theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
   refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
   rw [abs_of_nonneg (|a - c| + |b - d|) (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
@@ -129,14 +126,12 @@ theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ �
     
 #align norm_sup_sub_sup_le_add_norm norm_sup_sub_sup_le_add_norm
 
-theorem norm_inf_le_add (x y : α) : ‖x ⊓ y‖ ≤ ‖x‖ + ‖y‖ :=
-  by
+theorem norm_inf_le_add (x y : α) : ‖x ⊓ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊓ y - 0 ⊓ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_inf_sub_inf_le_add_norm x y 0 0
   simpa only [inf_idem, sub_zero] using h
 #align norm_inf_le_add norm_inf_le_add
 
-theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ :=
-  by
+theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊔ y - 0 ⊔ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_sup_sub_sup_le_add_norm x y 0 0
   simpa only [sup_idem, sub_zero] using h
 #align norm_sup_le_add norm_sup_le_add
@@ -144,8 +139,7 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ :=
 -- see Note [lower instance priority]
 /-- Let `α` be a normed lattice ordered group. Then the infimum is jointly continuous.
 -/
-instance (priority := 100) normedLatticeAddCommGroup_continuousInf : ContinuousInf α :=
-  by
+instance (priority := 100) normedLatticeAddCommGroup_continuousInf : ContinuousInf α := by
   refine' ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_tendsto_zero.2 <| _⟩
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
@@ -201,8 +195,7 @@ theorem continuous_neg' : Continuous (NegPart.neg : α → α) :=
   continuous_pos.comp continuous_neg
 #align continuous_neg' continuous_neg'
 
-theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0 ≤ x } :=
-  by
+theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0 ≤ x } := by
   suffices { x : E | 0 ≤ x } = NegPart.neg ⁻¹' {(0 : E)}
     by
     rw [this]
