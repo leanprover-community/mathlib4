@@ -15,7 +15,7 @@ import Mathlib.Data.Polynomial.Monic
 # Polynomials that lift
 
 Given semirings `R` and `S` with a morphism `f : R →+* S`, we define a subsemiring `lifts` of
-`S[X]` by the image of `ring_hom.of (map f)`.
+`S[X]` by the image of `RingHom.of (map f)`.
 Then, we prove that a polynomial that lifts can always be lifted to a polynomial of the same degree
 and that a monic polynomial that lifts can be lifted to a monic polynomial (of the same degree).
 
@@ -30,7 +30,7 @@ of the same degree.
 * `lifts_and_degree_eq_and_monic` : A monic polynomial lifts if and only if it can be lifted to a
 monic polynomial of the same degree.
 * `lifts_iff_alg` : if `R` is commutative, a polynomial lifts if and only if it is in the image of
-`map_alg`, where `map_alg : R[X] →ₐ[R] S[X]` is the only `R`-algebra map
+`mapAlg`, where `mapAlg : R[X] →ₐ[R] S[X]` is the only `R`-algebra map
 that sends `X` to `X`.
 
 ## Implementation details
@@ -56,7 +56,7 @@ section Semiring
 
 variable {R : Type u} [Semiring R] {S : Type v} [Semiring S] {f : R →+* S}
 
-/-- We define the subsemiring of polynomials that lifts as the image of `ring_hom.of (map f)`. -/
+/-- We define the subsemiring of polynomials that lifts as the image of `RingHom.of (map f)`. -/
 def lifts (f : R →+* S) : Subsemiring S[X] :=
   RingHom.rangeS (mapRingHom f)
 #align polynomial.lifts Polynomial.lifts
@@ -199,11 +199,9 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
   · simp only [hlead, herase, Polynomial.map_add]
     rw [←eraseLead, ←leadingCoeff]
     rw [eraseLead_add_monomial_natDegree_leadingCoeff p]
-  rw [← hdeg, eraseLead] at deg_erase
-  have degree_lead_eq_degree_p : degree lead = degree p := by rw [degree_eq_natDegree pzero, deg_lead]
   rw [degree_eq_natDegree pzero, ←deg_lead]
   apply degree_add_eq_right_of_degree_lt
-  rw [herase.2, degree_lead_eq_degree_p]
+  rw [herase.2, deg_lead, ←degree_eq_natDegree pzero]
   exact degree_erase_lt pzero
 #align polynomial.mem_lifts_and_degree_eq Polynomial.mem_lifts_and_degree_eq
 
@@ -275,13 +273,13 @@ def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S]
   @aeval _ S[X] _ _ _ (X : S[X])
 #align polynomial.map_alg Polynomial.mapAlg
 
-/-- `map_alg` is the morphism induced by `R → S`. -/
+/-- `mapAlg` is the morphism induced by `R → S`. -/
 theorem mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
   simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
   ext; congr
 #align polynomial.map_alg_eq_map Polynomial.mapAlg_eq_map
 
-/-- A polynomial `p` lifts if and only if it is in the image of `map_alg`. -/
+/-- A polynomial `p` lifts if and only if it is in the image of `mapAlg`. -/
 theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
     (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _) := by
   simp only [coe_mapRingHom, lifts, mapAlg_eq_map, AlgHom.mem_range, RingHom.mem_rangeS]
