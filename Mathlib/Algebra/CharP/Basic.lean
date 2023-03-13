@@ -173,17 +173,19 @@ theorem add_pow_char_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP R p
   rw [Commute.add_pow h, Finset.sum_range_succ_comm, tsub_self, pow_zero, Nat.choose_self]
   rw [Nat.cast_one, mul_one, mul_one]; congr 1
   convert Finset.sum_eq_single (f := fun (x_1 : ℕ) => x ^ x_1 * y ^ (p - x_1) * (Nat.choose p x_1))
-    (s := Finset.range p) 0 ?_ ?_
-  · simp only [mul_one, one_mul, Nat.choose_zero_right, tsub_zero, Nat.cast_one, pow_zero]
-  · intro b h1 h2
-    suffices (p.choose b : R) = 0 by
-      simp [this]
-    rw [CharP.cast_eq_zero_iff R p]
-    exact Nat.Prime.dvd_choose_self Fact.out h2 (Finset.mem_range.1 h1)
-  · intro h1
-    contrapose! h1
-    rw [Finset.mem_range]
-    exact Nat.Prime.pos Fact.out
+    (s := Finset.range p) 0
+    (by
+      intro b h1 h2
+      suffices (p.choose b : R) = 0 by
+        simp [this]
+      rw [CharP.cast_eq_zero_iff R p]
+      exact Nat.Prime.dvd_choose_self Fact.out h2 (Finset.mem_range.1 h1))
+    (by
+      intro h1
+      contrapose! h1
+      rw [Finset.mem_range]
+      exact Nat.Prime.pos Fact.out)
+  simp only [mul_one, one_mul, Nat.choose_zero_right, tsub_zero, Nat.cast_one, pow_zero]
 #align add_pow_char_of_commute add_pow_char_of_commute
 
 theorem add_pow_char_pow_of_commute [Semiring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ}
