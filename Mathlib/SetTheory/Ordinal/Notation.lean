@@ -589,11 +589,11 @@ theorem oadd_mul_NFBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a
   | oadd e₂ n₂ a₂, b₂, h₂ => by
     have IH := oadd_mul_NFBelow h₂.snd
     by_cases e0 : e₂ = 0 <;> simp [e0, oadd_mul]
-    · apply NF_below.oadd h₁.fst h₁.snd
+    · apply NFBelow.oadd h₁.fst h₁.snd
       simpa using (add_lt_add_iff_left (repr e₁)).2 (lt_of_le_of_lt (Ordinal.zero_le _) h₂.lt)
     · haveI := h₁.fst
       haveI := h₂.fst
-      apply NF_below.oadd
+      apply NFBelow.oadd
       infer_instance
       · rwa [repr_add]
       · rw [repr_add, add_lt_add_iff_left]
