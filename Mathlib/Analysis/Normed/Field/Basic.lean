@@ -231,7 +231,7 @@ theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ 
 /-- In a seminormed ring, the right-multiplication `AddMonoidHom` is bounded. -/
 theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ ≤ ‖x‖ * ‖y‖ := fun y => by
   rw [mul_comm]
-  convert norm_mul_le y x
+  exact norm_mul_le y x
 #align mul_right_bound mulRight_bound
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
