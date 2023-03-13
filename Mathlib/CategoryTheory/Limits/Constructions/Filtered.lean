@@ -37,8 +37,8 @@ namespace CategoryTheory.Limits
 
 namespace CoproductsFromFiniteFiltered
 
-/-- If `C` has finite coproducts, a functor `discrete α ⥤ C` lifts to a functor
-    `finset (discrete α) ⥤ C` by taking coproducts. -/
+/-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
+    `Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
 def liftToFinset [HasFiniteCoproducts C] (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
   obj s := ∐ fun x : s => F.obj x
