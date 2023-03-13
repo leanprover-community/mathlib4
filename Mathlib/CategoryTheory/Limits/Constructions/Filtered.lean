@@ -42,7 +42,8 @@ namespace CoproductsFromFiniteFiltered
 @[simps!]
 def liftToFinset [HasFiniteCoproducts C] (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
   obj s := ∐ fun x : s => F.obj x
-  map s t h := Sigma.desc fun y => Sigma.ι (fun x : t => F.obj x) ⟨y, h.down.down y.2⟩
+  map {_ Y} h := Sigma.desc fun y =>
+    Sigma.ι (fun (x : { x // x ∈ Y }) => F.obj x) ⟨y, h.down.down y.2⟩
 #align category_theory.limits.coproducts_from_finite_filtered.lift_to_finset CategoryTheory.Limits.CoproductsFromFiniteFiltered.liftToFinset
 
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
@@ -63,11 +64,16 @@ def liftToFinsetColimitCocone [HasFiniteCoproducts C] [HasFilteredColimitsOfSize
           { pt := s.pt
             ι := { app := fun t => Sigma.desc fun x => s.ι.app x } }
       uniq := fun s m h => by
-        ext (t⟨⟨j, hj⟩⟩)
+        apply colimit.hom_ext
+        rintro t
+        dsimp [liftToFinset]
+        apply colimit.hom_ext
+        rintro ⟨⟨j, hj⟩⟩
         convert h j using 1
-        · simp [← colimit.w (lift_to_finset F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
+        . simp [← colimit.w (liftToFinset F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
           rfl
-        · aesop_cat }
+        . dsimp
+          aesop_cat }
 #align category_theory.limits.coproducts_from_finite_filtered.lift_to_finset_colimit_cocone CategoryTheory.Limits.CoproductsFromFiniteFiltered.liftToFinsetColimitCocone
 
 end CoproductsFromFiniteFiltered
