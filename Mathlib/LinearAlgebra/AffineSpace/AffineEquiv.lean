@@ -59,11 +59,15 @@ structure AffineEquiv (P₁ P₂ : Type _) {V₁ V₂ : Type _} [AddCommGroup V�
   map_vadd' : ∀ (p : P₁) (v : V₁), toEquiv (v +ᵥ p) = linear v +ᵥ toEquiv p
 #align affine_equiv AffineEquiv
 
+attribute [simp] AffineEquiv.map_vadd'
+
 end defn
 
 notation:25 P₁ " ≃ᵃ[" k:25 "] " P₂:0 => AffineEquiv k P₁ P₂
 
-variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [Ring k] [AddCommGroup V₁] [Module k V₁]
+variable {k : Type _} [Ring k]
+
+variable {P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [AddCommGroup V₃]
   [Module k V₃] [AddTorsor V₃ P₃] [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄]
 
@@ -480,7 +484,7 @@ def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁
 #align affine_equiv.const_vsub AffineEquiv.constVSub
 
 @[simp]
-theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P₁) : ⇑(constVSub k p) = (p -ᵥ ·) :=
   rfl
 #align affine_equiv.coe_const_vsub AffineEquiv.coe_constVSub
 
