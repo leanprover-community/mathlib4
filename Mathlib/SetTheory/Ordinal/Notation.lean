@@ -914,7 +914,9 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
             mul_le_mul_left' (succ_le_succ_iff.2 (nat_cast_le.2 (le_of_lt k.lt_succ_self))) _)
   calc
     (ω0^k.succ) * α' + R' = (ω0^succ k) * α' + ((ω0^k) * α' * m + R) := by
+    {
       rw [nat_cast_succ, RR, ← mul_assoc]
+    }
     _ = ((ω0^k) * α' + R) * α' + ((ω0^k) * α' + R) * m := _
     _ = (α' + m^succ k.succ) := by rw [← mul_add, nat_cast_succ, opow_succ, IH.2]
 
