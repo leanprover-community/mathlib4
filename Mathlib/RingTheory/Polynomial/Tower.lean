@@ -8,8 +8,8 @@ Authors: Kenny Lau, Yuyang Zhao
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Tower
-import Mathbin.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Data.Polynomial.AlgebraMap
 
 /-!
 # Algebra towers for polynomial
