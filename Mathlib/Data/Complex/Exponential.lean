@@ -1759,7 +1759,10 @@ open Complex Finset
 nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m in range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : Complex.abs x ≤ 1 := by exact_mod_cast hx
-  convert exp_bound hxc hn <;> norm_cast
+  convert exp_bound hxc hn <;>
+  --Porting note: was `norm_cast`
+  simp only [← abs_ofReal, ← ofReal_sub, ← ofReal_exp, ← ofReal_sum, ← ofReal_pow,
+    ← ofReal_div, ← ofReal_nat_cast]
 #align real.exp_bound Real.exp_bound
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :
@@ -1774,21 +1777,29 @@ theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n
 #align real.exp_bound' Real.exp_bound'
 
 theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| := by
-  have : Complex.abs x ≤ 1 := by exact_mod_cast hx
-  exact_mod_cast Complex.abs_exp_sub_one_le this
+  have : abs' x ≤ 1 := by exact_mod_cast hx
+  --Porting note: was
+  --exact_mod_cast Complex.abs_exp_sub_one_le (x := x) this
+  have := Complex.abs_exp_sub_one_le (x := x) (by simpa using this)
+  rw [← ofReal_exp, ← ofReal_one, ← ofReal_sub, abs_ofReal, abs_ofReal] at this
+  exact this
 #align real.abs_exp_sub_one_le Real.abs_exp_sub_one_le
 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
   rw [← _root_.sq_abs]
+  --Porting note: was
+  --exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
   have : Complex.abs x ≤ 1 := by exact_mod_cast hx
-  exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
+  have := Complex.abs_exp_sub_one_sub_id_le this
+  rw [← ofReal_one, ← ofReal_exp, ← ofReal_sub, ← ofReal_sub, abs_ofReal, abs_ofReal] at this
+  exact this
 #align real.abs_exp_sub_one_sub_id_le Real.abs_exp_sub_one_sub_id_le
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
 For fixed `n` this is just a linear map wrt `r`, and each map is a simple linear function
 of the previous (see `expNear_succ`), with `expNear n x r ⟶ exp x` as `n ⟶ ∞`,
 for any `r`. -/
-def expNear (n : ℕ) (x r : ℝ) : ℝ :=
+noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=
   (∑ m in range n, x ^ m / m.factorial) + x ^ n / n.factorial * r
 #align real.exp_near Real.expNear
 
@@ -1810,7 +1821,7 @@ theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ - expNear n x r₂ = x ^ 
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp [expNear]
-  convert exp_bound h _ using 1
+  convert exp_bound (n := m) h ?_ using 1
   field_simp [mul_comm]
   linarith
 #align real.exp_approx_end Real.exp_approx_end
