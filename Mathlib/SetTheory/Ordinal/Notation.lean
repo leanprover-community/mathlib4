@@ -657,7 +657,7 @@ def split : Onote → Onote × ℕ
 /-- `scale x o` is the ordinal notation for `ω ^ x * o`. -/
 def scale (x : Onote) : Onote → Onote
   | 0 => 0
-  | oadd e n a => oadd (x + e) n (scale a)
+  | oadd e n a => oadd (x + e) n (scale x a)
 #align onote.scale Onote.scale
 
 /-- `mul_nat o n` is the ordinal notation for `o * n`. -/
