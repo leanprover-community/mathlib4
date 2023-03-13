@@ -2161,7 +2161,7 @@ theorem properSpace_of_compact_closedBall_of_le (R : ℝ)
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
 #align proper_space_of_compact_closed_ball_of_le properSpace_of_compact_closedBall_of_le
 
--- A compact pseudometric space is proper 
+-- A compact pseudometric space is proper
 -- see Note [lower instance priority]
 instance (priority := 100) proper_of_compact [CompactSpace α] : ProperSpace α :=
   ⟨fun _ _ => isClosed_ball.isCompact⟩
