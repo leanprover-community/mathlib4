@@ -19,14 +19,14 @@ import Mathlib.Logic.Equiv.Option
 In this file we define `derangements α`, the set of derangements on a type `α`.
 
 We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
-* `derangements_option_equiv_sigma_at_most_one_fixed_point`: An equivalence between
-  `derangements (Option α)` and the sigma-type `Σ a : α, {f : perm α // fixed_points f ⊆ a}`.
-* `derangements_recursion_equiv`: An equivalence between `derangements (Option α)` and the
+* `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
+  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
+* `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
   sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
 
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
-on derangements: `RemoveNone.fiberNone` and `RemoveNone.fiber_some`.
+on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 -/
 
 
