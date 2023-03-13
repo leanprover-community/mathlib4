@@ -82,7 +82,7 @@ universe u
 /-- The set of permutations that fix either `a` or nothing is equivalent to the sum of:
     - derangements on `α`
     - derangements on `α` minus `a`. -/
-def atMostOneFixedPointEquivSum_derangements {α: Type u} [DecidableEq α] (a : α) :
+def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
     { f : Perm α // fixedPoints f ⊆ {a} } ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) :=
   calc
     { f : Perm α // fixedPoints f ⊆ {a} } ≃
@@ -91,10 +91,11 @@ def atMostOneFixedPointEquivSum_derangements {α: Type u} [DecidableEq α] (a : 
       (Equiv.sumCompl _).symm
     _ ≃ Sum { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f }
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
+      -- porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
       refine' Equiv.sumCongr _ _
       . exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
-          (a ∈ fixedPoints ↑·)
+          (a ∈ fixedPoints ·)
       . exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
@@ -162,13 +163,13 @@ theorem RemoveNone.fiber_some (a : α) :
       simp only [Perm.decomposeOption_symm_apply, swap_apply_self, Perm.coe_mul]
       cases' x with x
       · simp
-      simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self, ne_eq]
+      simp only [comp, optionCongr_apply, Option.map_some', swap_apply_self]
       by_cases x_vs_a : x = a
       · rw [x_vs_a, swap_apply_right]
         apply Option.some_ne_none
       have ne_1 : some x ≠ none := Option.some_ne_none _
       have ne_2 : some x ≠ some a := (Option.some_injective α).ne_iff.mpr x_vs_a
-      rw [swap_apply_of_ne_of_ne ne_1 ne_2, Option.some.injEq]
+      rw [swap_apply_of_ne_of_ne ne_1 ne_2, (Option.some_injective α).ne_iff]
       intro contra
       exact x_vs_a (h_opfp contra)
     · rw [apply_symm_apply]
@@ -195,13 +196,10 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     _ ≃ Σa : α, ↥(Equiv.RemoveNone.fiber (some a)) :=
       sigmaOptionEquivOfSome _ fiber_none_is_false
     _ ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
-      {
-        simp_rw [Equiv.RemoveNone.fiber_some]
-        rfl
-      }
+      simp_rw [Equiv.RemoveNone.fiber_some]
+      rfl
 
-#align derangements.derangements_option_equiv_sigma_at_most_one_fixed_point
-       derangements.derangementsOptionEquivSigmaAtMostOneFixedPoint
+#align derangements.derangements_option_equiv_sigma_at_most_one_fixed_point derangements.derangementsOptionEquivSigmaAtMostOneFixedPoint
 
 /-- The set of derangements on `Option α` is equivalent to the union over all `a : α` of
     "derangements on `α` ⊕ derangements on `{a}ᶜ`". -/
