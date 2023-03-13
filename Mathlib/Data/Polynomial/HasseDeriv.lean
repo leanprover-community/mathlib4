@@ -172,8 +172,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
     mul_one, monomial_eq_zero_iff, sum_monomial_index, MulZeroClass.mul_zero, ←
     tsub_add_eq_tsub_tsub, add_comm l k]
   rw_mod_cast [nsmul_eq_mul]
-  congr 1
-  congr 1
+  congr 2
   by_cases hikl : i < k + l
   · rw [choose_eq_zero_of_lt hikl]
     by_cases hil : i < l
@@ -184,9 +183,6 @@ theorem hasseDeriv_comp (k l : ℕ) :
       rw [choose_eq_zero_of_lt hikl]
       simp
   push_neg at hikl
-  rw [←mul_assoc]
-  rw [←mul_assoc]
-  congr 1
   norm_cast
   congr 1
   have h1 : l ≤ i := le_of_add_le_right hikl
