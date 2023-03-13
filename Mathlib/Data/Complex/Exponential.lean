@@ -2070,19 +2070,16 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
 
 end Real
 
---Porting note: TODO: write this extension
--- namespace Tactic
+namespace Tactic
+open Lean.Meta Qq
 
--- open Positivity Real
+/-- Extension for the `positivity` tactic: `real.exp` is always positive. -/
+@[positivity Real.exp _]
+def evalExp : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
+  let (.app _ (a : Q(ℝ))) ← withReducible (whnf e) | throwError "not Real.exp"
+  pure (.positive (q(Real.exp_pos $a) : Lean.Expr))
 
--- /-- Extension for the `positivity` tactic: `real.exp` is always positive. -/
--- @[positivity]
--- unsafe def positivity_exp : expr → tactic strictness
---   | q(Real.exp $(a)) => positive <$> mk_app `real.exp_pos [a]
---   | e => pp e >>= fail ∘ format.bracket "The expression `" "` isn't of the form `real.exp r`"
--- #align tactic.positivity_exp tactic.positivity_exp
-
--- end Tactic
+end Tactic
 
 namespace Complex
 
