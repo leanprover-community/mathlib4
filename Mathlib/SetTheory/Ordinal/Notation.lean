@@ -116,7 +116,7 @@ theorem le_def {x y : Onote} : x ≤ y ↔ repr x ≤ repr y :=
 #align onote.le_def Onote.le_def
 
 /-- Convert a `nat` into an ordinal -/
-@[simp]
+@[simp, coe]
 def ofNat : ℕ → Onote
   | 0 => 0
   | Nat.succ n => oadd 0 n.succPNat 0
@@ -716,8 +716,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
         have := mt repr_inj.1 e0
         refine' Ordinal.add_sub_cancel_of_le _
         have:= (one_le_iff_ne_zero.2 this)
-        -- TODO: find right lemma that shows ↑↑1 = 1
-        sorry
+        norm_num
       intros
       substs o' m
       simp [scale, this]
