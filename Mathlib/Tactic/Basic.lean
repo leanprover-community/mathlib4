@@ -31,10 +31,42 @@ syntax (name := lemma)
     stx.setKind ``Parser.Command.theorem
   pure <| stx.setKind ``Parser.Command.declaration
 
-/-- `change` is a synonym for `show`,
-and can be used to replace a goal with a definitionally equal one. -/
-macro_rules
-  | `(tactic| change $e:term) => `(tactic| show $e)
+/-- `change` can be used to replace the main goal or its local
+variables with definitionally equal ones.
+
+For example, if `n : ℕ` and the current goal is `⊢ n + 2 = 1`, then
+```lean
+change _ + 1 = _
+```
+changes the goal to `⊢ n + 1 + 1 = 1`. The tactic also applies to the local context.
+For exmaple, if `h : n + 2 = 1` and `h' : n + 3 = 1` are in the local context, then
+```lean
+change _ + 1 = _ at h h'
+```
+changes their types to be `h : n + 1 + 1 = 1` and `h' : n + 2 + 1 = 1`.
+
+If the tactic `show e` applies to the main goal, then it is interchangeable with `change e`. -/
+elab_rules : tactic
+  | `(tactic| change $newType:term $[$loc:location]?) => do
+    withLocation (expandOptLocation (Lean.mkOptionalNode loc))
+      (atLocal := fun h ↦ do
+        let hTy ← h.getType
+        let (e, gs) ← elabTermWithHoles newType none (← getMainTag) (allowNaturalHoles := true)
+        liftMetaTactic fun mvarId ↦ do
+          unless ← withAssignableSyntheticOpaque (isDefEq e hTy) do
+            let h' ← h.getUserName
+            throwTacticEx `change mvarId
+              m!"given type{indentExpr e}\nis not definitionally equal at {h'} to{indentExpr hTy}"
+          return (← mvarId.changeLocalDecl h e) :: gs)
+      (atTarget := do
+        let tgt ← getMainTarget
+        let (e, gs) ← elabTermWithHoles newType none (← getMainTag) (allowNaturalHoles := true)
+        liftMetaTactic fun mvarId ↦ do
+          unless ← withAssignableSyntheticOpaque (isDefEq e tgt) do
+            throwTacticEx `change mvarId
+              m!"given type{indentExpr e}\nis not definitionally equal to{indentExpr tgt}"
+          return (← mvarId.change e) :: gs)
+      (failed := fun _ ↦ throwError "change tactic failed")
 
 /--
 `by_cases p` makes a case distinction on `p`,
