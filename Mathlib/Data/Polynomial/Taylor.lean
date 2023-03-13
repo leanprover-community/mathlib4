@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.AlgebraMap
-import Mathbin.Data.Polynomial.HasseDeriv
-import Mathbin.Data.Polynomial.Degree.Lemmas
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.HasseDeriv
+import Mathlib.Data.Polynomial.Degree.Lemmas
 
 /-!
 # Taylor expansions of polynomials
@@ -55,8 +55,7 @@ theorem taylor_c (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C
 #align polynomial.taylor_C Polynomial.taylor_c
 
 @[simp]
-theorem taylor_zero' : taylor (0 : R) = LinearMap.id :=
-  by
+theorem taylor_zero' : taylor (0 : R) = LinearMap.id := by
   ext
   simp only [taylor_apply, add_zero, comp_X, _root_.map_zero, LinearMap.id_comp,
     Function.comp_apply, LinearMap.coe_comp]
@@ -99,8 +98,7 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
 #align polynomial.taylor_coeff_one Polynomial.taylor_coeff_one
 
 @[simp]
-theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p :=
-  by
+theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
   refine' map_nat_degree_eq_nat_degree _ _
   nontriviality R
   intro n c c0
@@ -132,8 +130,7 @@ theorem taylor_eval_sub {R} [CommRing R] (r : R) (f : R[X]) (s : R) :
     (taylor r f).eval (s - r) = f.eval s := by rw [taylor_eval, sub_add_cancel]
 #align polynomial.taylor_eval_sub Polynomial.taylor_eval_sub
 
-theorem taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r) :=
-  by
+theorem taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r) := by
   intro f g h
   apply_fun taylor (-r)  at h
   simpa only [taylor_apply, comp_assoc, add_comp, X_comp, C_comp, C_neg, neg_add_cancel_right,
@@ -141,8 +138,7 @@ theorem taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r
 #align polynomial.taylor_injective Polynomial.taylor_injective
 
 theorem eq_zero_of_hasseDeriv_eq_zero {R} [CommRing R] (f : R[X]) (r : R)
-    (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 :=
-  by
+    (h : ∀ k, (hasseDeriv k f).eval r = 0) : f = 0 := by
   apply taylor_injective r
   rw [LinearMap.map_zero]
   ext k
