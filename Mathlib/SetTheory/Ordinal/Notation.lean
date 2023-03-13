@@ -623,7 +623,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       rw [nat_cast_succ x, add_mul_succ _ ao, mul_assoc]
     · haveI := h₁.fst
       haveI := h₂.fst
-      simp [IH, repr_add, opow_add, mul_add]
+      simp [IH, Mul.mul, mul, e0, repr_add, opow_add, mul_add]
       rw [← mul_assoc]
       congr 2
       have := mt repr_inj.1 e0
