@@ -8,8 +8,8 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.WithZero
-import Mathbin.RingTheory.Ideal.Operations
+import Mathlib.Algebra.Order.WithZero
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 
@@ -180,8 +180,7 @@ theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
 #align valuation.map_add_lt Valuation.map_add_lt
 
 theorem map_sum_le {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
-    v (∑ i in s, f i) ≤ g :=
-  by
+    v (∑ i in s, f i) ≤ g := by
   refine'
     Finset.induction_on s (fun _ => trans_rel_right (· ≤ ·) v.map_zero zero_le')
       (fun a s has ih hf => _) hf
@@ -190,8 +189,7 @@ theorem map_sum_le {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf 
 #align valuation.map_sum_le Valuation.map_sum_le
 
 theorem map_sum_lt {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
-    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g :=
-  by
+    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g := by
   refine'
     Finset.induction_on s (fun _ => trans_rel_right (· < ·) v.map_zero (zero_lt_iff.2 hg))
       (fun a s has ih hf => _) hf
@@ -301,14 +299,12 @@ theorem map_sub (x y : R) : v (x - y) ≤ max (v x) (v y) :=
     
 #align valuation.map_sub Valuation.map_sub
 
-theorem map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g :=
-  by
+theorem map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g := by
   rw [sub_eq_add_neg]
   exact v.map_add_le hx (le_trans (le_of_eq (v.map_neg y)) hy)
 #align valuation.map_sub_le Valuation.map_sub_le
 
-theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) :=
-  by
+theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) := by
   suffices : ¬v (x + y) < max (v x) (v y)
   exact or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
   intro h'
@@ -324,8 +320,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) 
     
 #align valuation.map_add_of_distinct_val Valuation.map_add_of_distinct_val
 
-theorem map_add_eq_of_lt_right (h : v x < v y) : v (x + y) = v y :=
-  by
+theorem map_add_eq_of_lt_right (h : v x < v y) : v (x + y) = v y := by
   convert v.map_add_of_distinct_val _
   · symm
     rw [max_eq_right_iff]
@@ -337,21 +332,18 @@ theorem map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by rw [add_co
   exact map_add_eq_of_lt_right _ h
 #align valuation.map_add_eq_of_lt_left Valuation.map_add_eq_of_lt_left
 
-theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x :=
-  by
+theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
   have := Valuation.map_add_of_distinct_val v (ne_of_gt h).symm
   rw [max_eq_right (le_of_lt h)] at this
   simpa using this
 #align valuation.map_eq_of_sub_lt Valuation.map_eq_of_sub_lt
 
-theorem map_one_add_of_lt (h : v x < 1) : v (1 + x) = 1 :=
-  by
+theorem map_one_add_of_lt (h : v x < 1) : v (1 + x) = 1 := by
   rw [← v.map_one] at h
   simpa only [v.map_one] using v.map_add_eq_of_lt_left h
 #align valuation.map_one_add_of_lt Valuation.map_one_add_of_lt
 
-theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 :=
-  by
+theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
   rw [← v.map_one, ← v.map_neg] at h
   rw [sub_eq_add_neg 1 x]
   simpa only [v.map_one, v.map_neg] using v.map_add_eq_of_lt_left h
@@ -424,8 +416,7 @@ theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = 
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
 #align valuation.is_equiv.val_eq Valuation.IsEquiv.val_eq
 
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 :=
-  by
+theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
   have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
   rwa [v₁.map_zero, v₂.map_zero] at this
 #align valuation.is_equiv.ne_zero Valuation.IsEquiv.ne_zero
@@ -443,8 +434,7 @@ theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
 
 theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀)
-    (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' :=
-  by
+    (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
   intro x y
   by_cases hy : y = 0; · simp [hy, zero_iff]
   rw [show y = 1 * y by rw [one_mul]]
@@ -470,8 +460,7 @@ theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
 
 theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
-    v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 :=
-  by
+    v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
   constructor
   · intro h x
     simpa using @is_equiv.val_eq _ _ _ _ _ _ v v' h x 1
@@ -507,8 +496,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
 
 theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
-    v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 :=
-  by
+    v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 := by
   constructor
   · intro h x
     simp only [lt_iff_le_and_ne,
@@ -534,8 +522,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
 
 theorem isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
-    v.IsEquiv v' ↔ ∀ {x : K}, v (x - 1) < 1 ↔ v' (x - 1) < 1 :=
-  by
+    v.IsEquiv v' ↔ ∀ {x : K}, v (x - 1) < 1 ↔ v' (x - 1) < 1 := by
   rw [is_equiv_iff_val_lt_one]
   exact (Equiv.subRight 1).Surjective.forall
 #align valuation.is_equiv_iff_val_sub_one_lt_one Valuation.isEquiv_iff_val_sub_one_lt_one
@@ -543,8 +530,7 @@ theorem isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
 theorem isEquiv_tFAE [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
     (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     [v.IsEquiv v', ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1, ∀ {x}, v x = 1 ↔ v' x = 1, ∀ {x}, v x < 1 ↔ v' x < 1,
-        ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE :=
-  by
+        ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE := by
   tfae_have 1 ↔ 2; · apply is_equiv_iff_val_le_one
   tfae_have 1 ↔ 3; · apply is_equiv_iff_val_eq_one
   tfae_have 1 ↔ 4; · apply is_equiv_iff_val_lt_one
@@ -604,8 +590,7 @@ instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
     rw [v.map_mul x y] at hxy
     exact eq_zero_or_eq_zero_of_mul_eq_zero hxy⟩
 
-theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a :=
-  by
+theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
   have aux : ∀ a s, v s = 0 → v (a + s) ≤ v a :=
     by
     intro a' s' h'
