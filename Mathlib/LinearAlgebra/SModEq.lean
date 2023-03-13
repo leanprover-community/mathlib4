@@ -114,7 +114,7 @@ theorem eval {R : Type _} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMO
     f.eval x ≡ f.eval y [SMOD I] := by
   rw [SModEq.def] at h⊢
   show Ideal.Quotient.mk I (f.eval x) = Ideal.Quotient.mk I (f.eval y)
-  replace h: Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := h
+  replace h : Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := h
   rw [← Polynomial.eval₂_at_apply, ← Polynomial.eval₂_at_apply, h]
 #align smodeq.eval SModEq.eval
 
