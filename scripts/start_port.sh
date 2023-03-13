@@ -14,7 +14,7 @@ if [ ! $1 ] ; then
 fi
 
 # arguments
-root_path=`pwd`
+root_path="$(pwd)"
 mathlib4_path="$1"
 
 case $mathlib4_path in
