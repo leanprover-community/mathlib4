@@ -90,6 +90,8 @@ def toAffineMap : V₁ →ᵃ[k] V₂ where
   map_vadd' p v := f.map_add v p
 #align linear_map.to_affine_map LinearMap.toAffineMap
 
+attribute [coe] AffineMap.toFun
+
 @[simp]
 theorem coe_toAffineMap : ⇑f.toAffineMap = f :=
   rfl

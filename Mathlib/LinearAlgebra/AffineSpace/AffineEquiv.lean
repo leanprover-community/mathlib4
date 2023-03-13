@@ -79,8 +79,6 @@ instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
 instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
 
-attribute [coe] AffineEquiv.toEquiv
-
 @[simp]
 theorem map_vadd (e : P₁ ≃ᵃ[k] P₂) (p : P₁) (v : V₁) : e (v +ᵥ p) = e.linear v +ᵥ e p :=
   e.map_vadd' p v
@@ -99,6 +97,8 @@ def toAffineMap (e : P₁ ≃ᵃ[k] P₂) : P₁ →ᵃ[k] P₂ :=
 instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ →ᵃ[k] P₂) :=
   ⟨toAffineMap⟩
 
+attribute [coe] AffineEquiv.toAffineMap
+
 @[simp]
 theorem coe_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : (e.toAffineMap : P₁ → P₂) = (e : P₁ → P₂) :=
   rfl
@@ -111,7 +111,7 @@ theorem toAffineMap_mk (f : P₁ ≃ P₂) (f' : V₁ ≃ₗ[k] V₂) (h) :
 #align affine_equiv.to_affine_map_mk AffineEquiv.toAffineMap_mk
 
 @[simp] -- Porting note: removed `norm_cast`
-theorem coe_coe (e : P₁ ≃ᵃ[k] P₂) : ((e : P₁ →ᵃ[k] P₂) : P₁ → P₂) = e :=
+theorem coe_coe (e : P₁ ≃ᵃ[k] P₂) : ⇑(e : P₁ →ᵃ[k] P₂) = e :=
   rfl
 #align affine_equiv.coe_coe AffineEquiv.coe_coe
 
@@ -207,7 +207,8 @@ def symm (e : P₁ ≃ᵃ[k] P₂) : P₂ ≃ᵃ[k] P₁
   linear := e.linear.symm
   map_vadd' p v :=
     e.toEquiv.symm.apply_eq_iff_eq_symm_apply.2 <| by
-      simpa using (e.toEquiv.apply_symm_apply v).symm
+      rw [Equiv.symm_symm, e.map_vadd' ((Equiv.symm e.toEquiv) p) ((LinearEquiv.symm e.linear) v),
+        LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply]
 #align affine_equiv.symm AffineEquiv.symm
 
 @[simp]
@@ -343,7 +344,8 @@ def trans (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) : P₁ ≃ᵃ[k] 
   toEquiv := e.toEquiv.trans e'.toEquiv
   linear := e.linear.trans e'.linear
   map_vadd' p v := by
-    simp only [LinearEquiv.trans_apply, coe_toEquiv, (· ∘ ·), Equiv.coe_trans, map_vadd]
+    simp only [Equiv.trans_apply, LinearEquiv.trans_apply]
+    rw [map_vadd', map_vadd']
 #align affine_equiv.trans AffineEquiv.trans
 
 @[simp]
@@ -436,10 +438,11 @@ def linearHom : (P₁ ≃ᵃ[k] P₁) →* V₁ ≃ₗ[k] V₁
 /-- The group of `affine_equiv`s are equivalent to the group of units of `affine_map`.
 
 This is the affine version of `linear_map.general_linear_group.general_linear_equiv`. -/
-@[simps]
+--@[simps] -- Porting note: todo
 def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ
     where
-  toFun e := ⟨e, e.symm, congr_arg (↑) e.symm_trans_self, congr_arg (↑) e.self_trans_symm⟩
+  toFun e := ⟨e, e.symm, congr_arg ((↑) : (P₁ ≃ᵃ[k] P₁) → (P₁ →ᵃ[k] P₁)) e.symm_trans_self,
+    congr_arg ((↑) : (P₁ ≃ᵃ[k] P₁) → (P₁ →ᵃ[k] P₁)) e.self_trans_symm⟩
   invFun u :=
     { toFun := (u : P₁ →ᵃ[k] P₁)
       invFun := (↑u⁻¹ : P₁ →ᵃ[k] P₁)
@@ -450,9 +453,7 @@ def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ
       map_vadd' := fun _ _ => (u : P₁ →ᵃ[k] P₁).map_vadd _ _ }
   left_inv e := AffineEquiv.ext fun x => rfl
   right_inv u := Units.ext <| AffineMap.ext fun x => rfl
-  map_mul' e₁ e₂ := by
-    simp
-    sorry-- rfl
+  map_mul' e₁ e₂ := by ext; rfl
 #align affine_equiv.equiv_units_affine_map AffineEquiv.equivUnitsAffineMap
 
 variable (k)
@@ -464,7 +465,7 @@ def vaddConst (b : P₁) : V₁ ≃ᵃ[k] P₁
     where
   toEquiv := Equiv.vaddConst b
   linear := LinearEquiv.refl _ _
-  map_vadd' p v := add_vadd _ _ _
+  map_vadd' _ _ := add_vadd _ _ _
 #align affine_equiv.vadd_const AffineEquiv.vaddConst
 
 /-- `p' ↦ p -ᵥ p'` as an equivalence. -/
@@ -472,7 +473,12 @@ def constVSub (p : P₁) : P₁ ≃ᵃ[k] V₁
     where
   toEquiv := Equiv.constVSub p
   linear := LinearEquiv.neg k
-  map_vadd' p' v := by simp [vsub_vadd_eq_vsub_sub, neg_add_eq_sub]
+  map_vadd' p' v := by
+    rw [Equiv.coe_constVSub]
+    simp only [LinearEquiv.coe_neg, Pi.neg_apply, id_eq, vadd_eq_add]
+    rw [vsub_vadd_eq_vsub_sub, neg_add_eq_sub]
+    -- Porting note: proof was: (`simp` fails apply `simp`-theorems)
+    -- simp [vsub_vadd_eq_vsub_sub, neg_add_eq_sub]
 #align affine_equiv.const_vsub AffineEquiv.constVSub
 
 @[simp]
@@ -492,49 +498,49 @@ variable (P₁)
 Note that there is no need for an `affine_map.const_vadd` as it is always an equivalence.
 This is roughly to `distrib_mul_action.to_linear_equiv` as `+ᵥ` is to `•`. -/
 @[simps apply linear]
-def constVadd (v : V₁) : P₁ ≃ᵃ[k] P₁
+def constVAdd (v : V₁) : P₁ ≃ᵃ[k] P₁
     where
   toEquiv := Equiv.constVAdd P₁ v
   linear := LinearEquiv.refl _ _
   map_vadd' p w := vadd_comm _ _ _
-#align affine_equiv.const_vadd AffineEquiv.constVadd
+#align affine_equiv.const_vadd AffineEquiv.constVAdd
 
 @[simp]
-theorem constVadd_zero : constVadd k P₁ 0 = AffineEquiv.refl _ _ :=
+theorem constVAdd_zero : constVAdd k P₁ 0 = AffineEquiv.refl _ _ :=
   ext <| zero_vadd _
-#align affine_equiv.const_vadd_zero AffineEquiv.constVadd_zero
+#align affine_equiv.const_vadd_zero AffineEquiv.constVAdd_zero
 
 @[simp]
-theorem constVadd_add (v w : V₁) :
-    constVadd k P₁ (v + w) = (constVadd k P₁ w).trans (constVadd k P₁ v) :=
+theorem constVAdd_add (v w : V₁) :
+    constVAdd k P₁ (v + w) = (constVAdd k P₁ w).trans (constVAdd k P₁ v) :=
   ext <| add_vadd _ _
-#align affine_equiv.const_vadd_add AffineEquiv.constVadd_add
+#align affine_equiv.const_vadd_add AffineEquiv.constVAdd_add
 
 @[simp]
-theorem constVadd_symm (v : V₁) : (constVadd k P₁ v).symm = constVadd k P₁ (-v) :=
+theorem constVAdd_symm (v : V₁) : (constVAdd k P₁ v).symm = constVAdd k P₁ (-v) :=
   ext fun _ => rfl
-#align affine_equiv.const_vadd_symm AffineEquiv.constVadd_symm
+#align affine_equiv.const_vadd_symm AffineEquiv.constVAdd_symm
 
 /-- A more bundled version of `affine_equiv.const_vadd`. -/
 @[simps]
-def constVaddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁
+def constVAddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁
     where
-  toFun v := constVadd k P₁ v.toAdd
-  map_one' := constVadd_zero _ _
-  map_mul' := constVadd_add _ _
-#align affine_equiv.const_vadd_hom AffineEquiv.constVaddHom
+  toFun v := constVAdd k P₁ (Multiplicative.toAdd v)
+  map_one' := constVAdd_zero _ _
+  map_mul' := constVAdd_add _ P₁
+#align affine_equiv.const_vadd_hom AffineEquiv.constVAddHom
 
-theorem constVadd_nsmul (n : ℕ) (v : V₁) : constVadd k P₁ (n • v) = constVadd k P₁ v ^ n :=
-  (constVaddHom k P₁).map_pow _ _
-#align affine_equiv.const_vadd_nsmul AffineEquiv.constVadd_nsmul
+theorem constVAdd_nsmul (n : ℕ) (v : V₁) : constVAdd k P₁ (n • v) = constVAdd k P₁ v ^ n :=
+  (constVAddHom k P₁).map_pow _ _
+#align affine_equiv.const_vadd_nsmul AffineEquiv.constVAdd_nsmul
 
-theorem constVadd_zsmul (z : ℤ) (v : V₁) : constVadd k P₁ (z • v) = constVadd k P₁ v ^ z :=
-  (constVaddHom k P₁).map_zpow _ _
-#align affine_equiv.const_vadd_zsmul AffineEquiv.constVadd_zsmul
+theorem constVAdd_zsmul (z : ℤ) (v : V₁) : constVAdd k P₁ (z • v) = constVAdd k P₁ v ^ z :=
+  (constVAddHom k P₁).map_zpow _ _
+#align affine_equiv.const_vadd_zsmul AffineEquiv.constVAdd_zsmul
 
 section Homothety
 
-variable {R V P : Type _} [CommRing R] [AddCommGroup V] [Module R V] [affine_space V P]
+variable {R V P : Type _} [CommRing R] [AddCommGroup V] [Module R V] [AffineSpace V P]
 
 /-- Fixing a point in affine space, homothety about this point gives a group homomorphism from (the
 centre of) the units of the scalars into the group of affine equivalences. -/
@@ -557,8 +563,8 @@ theorem coe_homothetyUnitsMulHom_apply_symm (p : P) (t : Rˣ) :
 @[simp]
 theorem coe_homothetyUnitsMulHom_eq_homothetyHom_coe (p : P) :
     ((↑) : (P ≃ᵃ[R] P) → P →ᵃ[R] P) ∘ homothetyUnitsMulHom p =
-      AffineMap.homothetyHom p ∘ (coe : Rˣ → R) :=
-  funext fun _ => rfl
+      AffineMap.homothetyHom p ∘ ((↑) : Rˣ → R) :=
+  funext fun _ => by rfl
 #align affine_equiv.coe_homothety_units_mul_hom_eq_homothety_hom_coe AffineEquiv.coe_homothetyUnitsMulHom_eq_homothetyHom_coe
 
 end Homothety
@@ -660,7 +666,7 @@ theorem vsub_lineMap (p₁ p₂ p₃ : P₁) (c : k) :
 
 theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
     v +ᵥ lineMap p₁ p₂ c = lineMap (v +ᵥ p₁) (v +ᵥ p₂) c :=
-  (constVadd k P₁ v).apply_lineMap p₁ p₂ c
+  (constVAdd k P₁ v).apply_lineMap p₁ p₂ c
 #align affine_map.vadd_line_map AffineMap.vadd_lineMap
 
 variable {R' : Type _} [CommRing R'] [Module R' V₁]
