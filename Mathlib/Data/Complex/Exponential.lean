@@ -1860,79 +1860,64 @@ theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 
 
 theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x| ^ 4 * (5 / 96) :=
   calc
-    |cos x - (1 - x ^ 2 / 2)| = abs' (Complex.cos x - (1 - x ^ 2 / 2)) := by
-      rw [← abs_of_real] <;> simp [of_real_bit0, of_real_one, of_real_inv]
-    _ = abs ((Complex.exp (x * I) + Complex.exp (-x * I) - (2 - x ^ 2)) / 2) := by
+    |cos x - (1 - x ^ 2 / 2)| = Complex.abs (Complex.cos x - (1 - (x : ℂ) ^ 2 / 2)) := by
+      rw [← abs_ofReal]; simp
+    _ = Complex.abs ((Complex.exp (x * I) + Complex.exp (-x * I) - (2 - (x : ℂ) ^ 2)) / 2) := by
       simp [Complex.cos, sub_div, add_div, neg_div, div_self (two_ne_zero' ℂ)]
-    _ =
-        abs
+    _ = abs
           (((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) +
-              (Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial)) /
-            2) :=
-      (congr_arg abs'
+              (Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial)) / 2) :=
+      (congr_arg Complex.abs
         (congr_arg (fun x : ℂ => x / 2)
           (by
             simp only [sum_range_succ]
             simp [pow_succ]
-            apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring)))
-    _ ≤
-        abs ((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2) +
+            apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf
+            )))
+    _ ≤ abs ((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2) +
           abs ((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) / 2) :=
-      by rw [add_div] <;> exact complex.abs.add_le _ _
-    _ =
-        abs (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2 +
+      by rw [add_div]; exact Complex.abs.add_le _ _
+    _ = abs (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2 +
           abs (Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) / 2 :=
       by simp [map_div₀]
-    _ ≤
-        Complex.abs (x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ))⁻¹) / 2 +
-          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ))⁻¹) / 2 :=
+    _ ≤ Complex.abs (x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 +
+          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 :=
       (add_le_add ((div_le_div_right (by norm_num)).2 (Complex.exp_bound (by simpa) (by decide)))
         ((div_le_div_right (by norm_num)).2 (Complex.exp_bound (by simpa) (by decide))))
-    _ ≤ |x| ^ 4 * (5 / 96) := by
-      norm_num <;> simp [mul_assoc, mul_comm, mul_left_comm, mul_div_assoc]
-
+    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
 #align real.cos_bound Real.cos_bound
 
 theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
   calc
-    |sin x - (x - x ^ 3 / 6)| = abs (Complex.sin x - (x - x ^ 3 / 6)) := by
-      rw [← abs_of_real] <;> simp [of_real_bit0, of_real_one, of_real_inv]
-    _ = abs (((Complex.exp (-x * I) - Complex.exp (x * I)) * I - (2 * x - x ^ 3 / 3)) / 2) := by
+    |sin x - (x - x ^ 3 / 6)| = Complex.abs (Complex.sin x - (x - x ^ 3 / 6 : ℝ)) := by
+      rw [← abs_ofReal]; simp
+    _ = Complex.abs (((Complex.exp (-x * I) - Complex.exp (x * I)) * I -
+          (2 * x - x ^ 3 / 3 : ℝ)) / 2) := by
       simp [Complex.sin, sub_div, add_div, neg_div, mul_div_cancel_left _ (two_ne_zero' ℂ), div_div,
         show (3 : ℂ) * 2 = 6 by norm_num]
-    _ =
-        abs
-          (((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) -
-                (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial)) *
-              I /
-            2) :=
-      (congr_arg abs
+    _ = Complex.abs (((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) -
+                (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial)) * I / 2) :=
+      (congr_arg Complex.abs
         (congr_arg (fun x : ℂ => x / 2)
           (by
             simp only [sum_range_succ]
             simp [pow_succ]
-            apply Complex.ext <;> simp [div_eq_mul_inv, norm_sq] <;> ring)))
-    _ ≤
-        abs ((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) * I / 2) +
+            apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
+    _ ≤ abs ((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) * I / 2) +
           abs (-((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) * I) / 2) :=
-      by rw [sub_mul, sub_eq_add_neg, add_div] <;> exact Complex.abs.add_le _ _
-    _ =
-        abs (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2 +
+      by rw [sub_mul, sub_eq_add_neg, add_div]; exact Complex.abs.add_le _ _
+    _ = abs (Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2 +
           abs (Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) / 2 :=
       by simp [add_comm, map_div₀]
-    _ ≤
-        Complex.abs (x * I) ^ 4 * (Nat.succ 4 * (4! * (4 : ℕ))⁻¹) / 2 +
-          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * (4! * (4 : ℕ))⁻¹) / 2 :=
+    _ ≤ Complex.abs (x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
+          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 :=
       (add_le_add ((div_le_div_right (by norm_num)).2 (Complex.exp_bound (by simpa) (by decide)))
         ((div_le_div_right (by norm_num)).2 (Complex.exp_bound (by simpa) (by decide))))
-    _ ≤ |x| ^ 4 * (5 / 96) := by
-      norm_num <;> simp [mul_assoc, mul_comm, mul_left_comm, mul_div_assoc]
-
+    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
 #align real.sin_bound Real.sin_bound
 
 theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
-  calc
-    0 < 1 - x ^ 2 / 2 - |x| ^ 4 * (5 / 96) :=
+  calc 0 < 1 - x ^ 2 / 2 - |x| ^ 4 * (5 / 96) :=
       sub_pos.2 <|
         lt_sub_iff_add_lt.2
           (calc
@@ -1942,17 +1927,13 @@ theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
                   (by
                     rw [sq, ← abs_mul_self, abs_mul]
                     exact mul_le_one hx (abs_nonneg _) hx))
-            _ < 1 := by norm_num
-            )
+            _ < 1 := by norm_num)
     _ ≤ cos x := sub_le_comm.1 (abs_sub_le_iff.1 (cos_bound hx)).2
-
 #align real.cos_pos_of_le_one Real.cos_pos_of_le_one
 
 theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < sin x :=
-  calc
-    0 < x - x ^ 3 / 6 - |x| ^ 4 * (5 / 96) :=
-      sub_pos.2 <|
-        lt_sub_iff_add_lt.2
+  calc 0 < x - x ^ 3 / 6 - |x| ^ 4 * (5 / 96) :=
+      sub_pos.2 <| lt_sub_iff_add_lt.2
           (calc
             |x| ^ 4 * (5 / 96) + x ^ 3 / 6 ≤ x * (5 / 96) + x / 6 :=
               add_le_add
@@ -1969,11 +1950,11 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
                     x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one (le_of_lt hx0) hx (by decide)
                     _ = x := pow_one _
                     ))
-            _ < x := by linarith
-            )
+            --Porting note : was `_ < x := by linarith`
+            _ = x * (7 / 32) := by ring
+            _ < x := (mul_lt_iff_lt_one_right hx0).2 (by norm_num))
     _ ≤ sin x :=
       sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]))).2
-
 #align real.sin_pos_of_pos_of_le_one Real.sin_pos_of_pos_of_le_one
 
 theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < sin x :=
@@ -1999,8 +1980,7 @@ theorem cos_one_pos : 0 < cos 1 :=
 #align real.cos_one_pos Real.cos_one_pos
 
 theorem cos_two_neg : cos 2 < 0 :=
-  calc
-    cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
+  calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
     _ = _ := (Real.cos_two_mul 1)
     _ ≤ 2 * (2 / 3) ^ 2 - 1 :=
       (sub_le_sub_right
@@ -2008,28 +1988,26 @@ theorem cos_two_neg : cos 2 < 0 :=
           (by
             rw [sq, sq]
             exact mul_self_le_mul_self (le_of_lt cos_one_pos) cos_one_le)
-          zero_le_two)
-        _)
+          zero_le_two) _)
     _ < 0 := by norm_num
-
 #align real.cos_two_neg Real.cos_two_neg
 
-theorem exp_bound_div_one_sub_of_interval_approx {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) :
+--Porting note: removed `(h1 : 0 ≤ x)` because it is no longer used
+theorem exp_bound_div_one_sub_of_interval_approx {x : ℝ} (h2 : x ≤ 1) :
     (∑ j : ℕ in Finset.range 3, x ^ j / j.factorial) +
         x ^ 3 * ((3 : ℕ) + 1) / ((3 : ℕ).factorial * (3 : ℕ)) ≤
-      ∑ j in Finset.range 3, x ^ j := by
-  norm_num [Finset.sum]
-  rw [add_assoc, add_comm (x + 1) (x ^ 3 * 4 / 18), ← add_assoc, add_le_add_iff_right, ←
-    add_le_add_iff_left (-(x ^ 2 / 2)), ← add_assoc, CommRing.add_left_neg (x ^ 2 / 2), zero_add,
-    neg_add_eq_sub, sub_half, sq, pow_succ, sq]
-  have i1 : x * 4 / 18 ≤ 1 / 2 := by linarith
-  have i2 : 0 ≤ x * 4 / 18 := by linarith
-  have i3 := mul_le_mul h1 h1 le_rfl h1
-  rw [zero_mul] at i3
-  have t := mul_le_mul le_rfl i1 i2 i3
-  rw [← mul_assoc]
-  rwa [mul_one_div, ← mul_div_assoc, ← mul_assoc] at t
-#align real.exp_bound_div_one_sub_of_interval_approx Real.exp_bound_div_one_sub_of_interval_approx
+      ∑ j in Finset.range 3, x ^ j :=
+  calc
+    (∑ j : ℕ in Finset.range 3, x ^ j / j.factorial) +
+        x ^ 3 * ((3 : ℕ) + 1) / ((3 : ℕ).factorial * (3 : ℕ))
+      = (2 / 9) * x ^ 3 + x ^ 2 / 2 + x + 1 := by simp [Finset.sum]; ring
+    _ ≤ x ^ 2 + x + 1 := sub_nonneg.1 <|
+      calc 0 ≤ x^2 * (2 / 9) * (9 / 4 - x) :=
+          mul_nonneg (mul_nonneg (pow_two_nonneg _) (by norm_num : (0 : ℝ) ≤ 2 / 9))
+            (sub_nonneg.2 (le_trans h2 (by norm_num)))
+        _ = _ := by ring
+    _ = _ := by simp [Finset.sum]; ring
+#align real.exp_bound_div_one_sub_of_interval_approx Real.exp_bound_div_one_sub_of_interval_approxₓ
 
 theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) :
     Real.exp x ≤ 1 / (1 - x) :=
@@ -2046,7 +2024,7 @@ theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) 
     simp [Finset.sum]
     linarith
   (exp_bound' h1 h2.le <| by linarith).trans
-    ((exp_bound_div_one_sub_of_interval_approx h1 h2.le).trans h)
+    ((exp_bound_div_one_sub_of_interval_approx h2.le).trans h)
 #align real.exp_bound_div_one_sub_of_interval Real.exp_bound_div_one_sub_of_interval
 
 theorem one_sub_le_exp_minus_of_pos {y : ℝ} (h : 0 ≤ y) : 1 - y ≤ Real.exp (-y) := by
@@ -2083,30 +2061,31 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
     rwa [Nat.cast_zero] at ht'
-  convert pow_le_pow_of_le_left _ (add_one_le_exp (-(t / n))) n
+  convert pow_le_pow_of_le_left ?_ (add_one_le_exp (-(t / n))) n
   · abel
   · rw [← Real.exp_nat_mul]
     congr 1
-    field_simp [nat.cast_ne_zero.mpr hn]
-    ring
+    field_simp [(Nat.cast_ne_zero (R := ℝ)).mpr hn]
+    ring_nf
   · rwa [add_comm, ← sub_eq_add_neg, sub_nonneg, div_le_one]
     positivity
 #align real.one_sub_div_pow_le_exp_neg Real.one_sub_div_pow_le_exp_neg
 
 end Real
 
-namespace Tactic
+--Porting note: TODO: write this extension
+-- namespace Tactic
 
-open Positivity Real
+-- open Positivity Real
 
-/-- Extension for the `positivity` tactic: `real.exp` is always positive. -/
-@[positivity]
-unsafe def positivity_exp : expr → tactic strictness
-  | q(Real.exp $(a)) => positive <$> mk_app `real.exp_pos [a]
-  | e => pp e >>= fail ∘ format.bracket "The expression `" "` isn't of the form `real.exp r`"
-#align tactic.positivity_exp tactic.positivity_exp
+-- /-- Extension for the `positivity` tactic: `real.exp` is always positive. -/
+-- @[positivity]
+-- unsafe def positivity_exp : expr → tactic strictness
+--   | q(Real.exp $(a)) => positive <$> mk_app `real.exp_pos [a]
+--   | e => pp e >>= fail ∘ format.bracket "The expression `" "` isn't of the form `real.exp r`"
+-- #align tactic.positivity_exp tactic.positivity_exp
 
-end Tactic
+-- end Tactic
 
 namespace Complex
 

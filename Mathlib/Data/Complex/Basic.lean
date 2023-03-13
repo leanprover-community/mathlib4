@@ -483,6 +483,14 @@ set_option linter.uppercaseLean3 false in
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℂ) = OfNat.ofNat n :=
   rfl
 
+@[simp]
+theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℂ).re = OfNat.ofNat n :=
+  rfl
+
+@[simp]
+theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℂ).im = 0 :=
+  rfl
+
 end
 /-! ### Complex conjugation -/
 
