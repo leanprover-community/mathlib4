@@ -8,10 +8,10 @@ Authors: Markus Himmel, Jakob von Raumer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathbin.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import Mathbin.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Left exactness of functors between preadditive categories
@@ -51,8 +51,7 @@ arbitrary binary fan is a limit.
 -/
 def isLimitMapConeBinaryFanOfPreservesKernels {X Y Z : C} (π₁ : Z ⟶ X) (π₂ : Z ⟶ Y)
     [PreservesLimit (parallelPair π₂ 0) F] (i : IsLimit (BinaryFan.mk π₁ π₂)) :
-    IsLimit (F.mapCone (BinaryFan.mk π₁ π₂)) :=
-  by
+    IsLimit (F.mapCone (BinaryFan.mk π₁ π₂)) := by
   let bc := binary_bicone.of_limit_cone i
   let presf : preserves_limit (parallel_pair bc.snd 0) F := by simpa
   let hf : is_limit bc.snd_kernel_fork := binary_bicone.is_limit_snd_kernel_fork i
@@ -88,8 +87,7 @@ variable [HasBinaryBiproducts C]
 /-- A functor between preadditive categories preserves the equalizer of two
 morphisms if it preserves all kernels. -/
 def preservesEqualizerOfPreservesKernels [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F]
-    {X Y : C} (f g : X ⟶ Y) : PreservesLimit (parallelPair f g) F :=
-  by
+    {X Y : C} (f g : X ⟶ Y) : PreservesLimit (parallelPair f g) F := by
   letI := preserves_binary_biproducts_of_preserves_binary_products F
   haveI := additive_of_preserves_binary_biproducts F
   constructor; intro c i
@@ -126,8 +124,7 @@ def preservesEqualizersOfPreservesKernels
 -/
 def preservesFiniteLimitsOfPreservesKernels [HasFiniteProducts C] [HasEqualizers C]
     [HasZeroObject C] [HasZeroObject D] [∀ {X Y} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
-    PreservesFiniteLimits F :=
-  by
+    PreservesFiniteLimits F := by
   letI := preserves_equalizers_of_preserves_kernels F
   letI := preserves_terminal_object_of_preserves_zero_morphisms F
   letI := preserves_limits_of_shape_pempty_of_preserves_terminal F
@@ -143,8 +140,7 @@ section FiniteColimits
 -/
 def isColimitMapCoconeBinaryCofanOfPreservesCokernels {X Y Z : C} (ι₁ : X ⟶ Z) (ι₂ : Y ⟶ Z)
     [PreservesColimit (parallelPair ι₂ 0) F] (i : IsColimit (BinaryCofan.mk ι₁ ι₂)) :
-    IsColimit (F.mapCocone (BinaryCofan.mk ι₁ ι₂)) :=
-  by
+    IsColimit (F.mapCocone (BinaryCofan.mk ι₁ ι₂)) := by
   let bc := binary_bicone.of_colimit_cocone i
   let presf : preserves_colimit (parallel_pair bc.inr 0) F := by simpa
   let hf : is_colimit bc.inr_cokernel_cofork := binary_bicone.is_colimit_inr_cokernel_cofork i
@@ -183,8 +179,7 @@ variable [HasBinaryBiproducts C]
 morphisms if it preserves all cokernels. -/
 def preservesCoequalizerOfPreservesCokernels
     [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] {X Y : C} (f g : X ⟶ Y) :
-    PreservesColimit (parallelPair f g) F :=
-  by
+    PreservesColimit (parallelPair f g) F := by
   letI := preserves_binary_biproducts_of_preserves_binary_coproducts F
   haveI := additive_of_preserves_binary_biproducts F
   constructor
@@ -223,8 +218,7 @@ def preservesCoequalizersOfPreservesCokernels
 -/
 def preservesFiniteColimitsOfPreservesCokernels [HasFiniteCoproducts C] [HasCoequalizers C]
     [HasZeroObject C] [HasZeroObject D]
-    [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] : PreservesFiniteColimits F :=
-  by
+    [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] : PreservesFiniteColimits F := by
   letI := preserves_coequalizers_of_preserves_cokernels F
   letI := preserves_initial_object_of_preserves_zero_morphisms F
   letI := preserves_colimits_of_shape_pempty_of_preserves_initial F
