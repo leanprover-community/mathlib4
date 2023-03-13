@@ -8,7 +8,7 @@ Authors: Robert Y. Lewis, Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Completeness in terms of `cauchy` filters vs `is_cau_seq` sequences
@@ -54,8 +54,7 @@ variable [NormedField β]
 -/
 open Metric
 
-theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f :=
-  by
+theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f := by
   cases' cauchy_iff.1 hf with hf1 hf2
   intro ε hε
   rcases hf2 { x | dist x.1 x.2 < ε } (dist_mem_uniformity hε) with ⟨t, ⟨ht, htsub⟩⟩
@@ -67,8 +66,7 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
   apply Set.mk_mem_prod <;> solve_by_elim [le_refl]
 #align cauchy_seq.is_cau_seq CauchySeq.isCauSeq
 
-theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f :=
-  by
+theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
   refine' cauchy_iff.2 ⟨by infer_instance, fun s hs => _⟩
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   cases' CauSeq.cauchy₂ f hε with N hN
