@@ -184,7 +184,7 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     rw [habs, eraseLead_zero, eq_self_iff_true, not_true] at erase_zero
     exact erase_zero
   have lead_zero : p.coeff p.natDegree ≠ 0 := by
-    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero] <;> exact pzero
+    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero] ; exact pzero
   obtain ⟨lead, hlead⟩ :=
     monomial_mem_lifts_and_degree_eq
       (monomial_mem_lifts p.natDegree ((lifts_iff_coeff_lifts p).1 hlifts p.natDegree))
@@ -200,10 +200,11 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     rw [←eraseLead, ←leadingCoeff]
     rw [eraseLead_add_monomial_natDegree_leadingCoeff p]
   rw [← hdeg, eraseLead] at deg_erase
-  replace deg_erase := lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 deg_erase)
-  -- rw [← deg_lead, ← herase.2] at deg_erase
-  rw [← deg_lead] at deg_erase
-  rw [degree_add_eq_right_of_degree_lt deg_erase, deg_lead, degree_eq_nat_degree pzero]
+  have degree_lead_eq_degree_p : degree lead = degree p := by rw [degree_eq_natDegree pzero, deg_lead]
+  rw [degree_eq_natDegree pzero, ←deg_lead]
+  apply degree_add_eq_right_of_degree_lt
+  rw [herase.2, degree_lead_eq_degree_p]
+  exact degree_erase_lt pzero
 #align polynomial.mem_lifts_and_degree_eq Polynomial.mem_lifts_and_degree_eq
 
 end LiftDeg
@@ -227,7 +228,8 @@ theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ 
   obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq (erase_mem_lifts p.natDegree hlifts)
   have hdeg : q.degree < (X ^ p.natDegree).degree :=
     by
-    rw [@degree_X_pow R, hq.2, degree_eq_natDegree h0, WithBot.coe_lt_coe]
+    rw [@degree_X_pow R, hq.2, degree_eq_natDegree h0]
+    rw [WithBot.coe_lt_coe]
     exact Or.resolve_right (erase_lead_nat_degree_lt_or_erase_lead_eq_zero p) h0
   refine' ⟨q + X ^ p.natDegree, _, _, (monic_X_pow _).add_of_right hdeg⟩
   · rw [Polynomial.map_add, hq.1, Polynomial.map_pow, map_X, H]
@@ -276,7 +278,8 @@ def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S]
 
 /-- `map_alg` is the morphism induced by `R → S`. -/
 theorem mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
-  simp only [mapAlg, aeval_def, eval₂, map, algebraMap_apply, RingHom.coe_comp]
+  simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
+  ext; congr
 #align polynomial.map_alg_eq_map Polynomial.mapAlg_eq_map
 
 /-- A polynomial `p` lifts if and only if it is in the image of `map_alg`. -/
