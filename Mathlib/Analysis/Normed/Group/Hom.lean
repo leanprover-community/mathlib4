@@ -84,12 +84,15 @@ variable {V V₁ V₂ V₃ : Type _} [SeminormedAddCommGroup V] [SeminormedAddCo
 
 variable {f g : NormedAddGroupHom V₁ V₂}
 
+/-- A Lipschitz continuous additive homomorphism is a normed additive group homomorphism. -/
+def ofLipschitz (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : NormedAddGroupHom V₁ V₂ :=
+  f.mkNormedAddGroupHom K fun x ↦ by simpa only [map_zero, dist_zero_right] using h.dist_le_mul x 0
+
 -- porting note: moved this declaration up so we could get a `FunLike` instance sooner.
-instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂
-    where
+instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective' := fun f g h => by cases f; cases g; congr
-  map_add f := (AddMonoidHom.mk' f.toFun f.map_add').map_add
+  map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
 /-- Helper instance for when there are too many metavariables to apply `FunLike.coeFun` directly. -/
@@ -303,6 +306,12 @@ theorem mkNormedAddGroupHom_norm_le (f : V₁ →+ V₂) {C : ℝ} (hC : 0 ≤ C
     ‖f.mkNormedAddGroupHom C h‖ ≤ C :=
   opNorm_le_bound _ hC h
 #align normed_add_group_hom.mk_normed_add_group_hom_norm_le NormedAddGroupHom.mkNormedAddGroupHom_norm_le
+
+/-- If a bounded group homomorphism map is constructed from a group homomorphism via the constructor
+`NormedAddGroupHom.ofLipschitz`, then its norm is bounded by the bound given to the constructor. -/
+theorem ofLipschitz_norm_le (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) :
+    ‖ofLipschitz f h‖ ≤ K :=
+  mkNormedAddGroupHom_norm_le f K.coe_nonneg _
 
 /-- If a bounded group homomorphism map is constructed from a group homomorphism
 via the constructor `AddMonoidHom.mkNormedAddGroupHom`, then its norm is bounded by the bound
@@ -802,9 +811,7 @@ def range : AddSubgroup V₂ :=
   f.toAddMonoidHom.range
 #align normed_add_group_hom.range NormedAddGroupHom.range
 
-theorem mem_range (v : V₂) : v ∈ f.range ↔ ∃ w, f w = v := by
-  rw [range, AddMonoidHom.mem_range]
-  rfl
+theorem mem_range (v : V₂) : v ∈ f.range ↔ ∃ w, f w = v := Iff.rfl
 #align normed_add_group_hom.mem_range NormedAddGroupHom.mem_range
 
 @[simp]
