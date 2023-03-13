@@ -639,10 +639,6 @@ instance Prod.charP [CharP S p] : CharP (R × S) p := by
 
 end Prod
 
-theorem ULift.ext_iff {α : Type _} (x y : ULift α) : x = y ↔ x.down = y.down :=
-  ⟨congrArg _, ULift.ext _ _⟩
-#align ulift.ext_iff ULift.ext_iff
-
 instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift.{v} R) p
     where cast_eq_zero_iff' n := Iff.trans (ULift.ext_iff _ _) <| CharP.cast_eq_zero_iff R p n
 #align ulift.char_p ULift.charP
@@ -652,11 +648,6 @@ instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP R�
 #align mul_opposite.char_p MulOpposite.charP
 
 section
-
-@[simp, norm_cast]
-theorem AddGroupWithOne.int_cast_ofNat [AddGroupWithOne G] (n : ℕ) [n.AtLeastTwo] :
-    ((OfNat.ofNat n : ℤ) : G) = OfNat.ofNat n := by
-  simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := G) n
 
 /-- If two integers from `{0, 1, -1}` result in equal elements in a ring `R`
 that is nontrivial and of characteristic not `2`, then they are equal. -/
