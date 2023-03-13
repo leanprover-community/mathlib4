@@ -1700,13 +1700,33 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
     · simp_rw [← div_pow]
       rw [geom_sum_eq, div_le_iff_of_neg]
       · trans (-1 : ℝ)
-        · linarith
+        · -- Porting note: was linarith
+          simp [Nat.succ_eq_add_one] at hx
+          have : (↑(abs x) / ((n : ℝ) + 1) - 1 ≤ - (1 : ℝ) / 2) := by
+            norm_num
+            simp [hx]
+          rw [mul_comm, ← le_div_iff]
+          simp [hx]
+          . norm_num [this, hx]
+            simp [hx]
+          . exact zero_lt_two
         · simp only [neg_le_sub_iff_le_add, div_pow, Nat.cast_succ, le_add_iff_nonneg_left]
           exact
             div_nonneg (pow_nonneg (abs.nonneg x) k)
               (pow_nonneg (add_nonneg n.cast_nonneg zero_le_one) k)
-      · linarith
-      · linarith
+      · -- Porting note: was linarith
+        simp [Nat.succ_eq_add_one] at hx
+        have : (↑(abs x) / ((n : ℝ) + 1) - 1 ≤ - (1 : ℝ) / 2) := by
+            norm_num
+            simp [hx]
+        simp
+        apply lt_of_le_of_lt hx
+        norm_num
+      · -- Porting note: was linarith
+        intro h
+        simp at h
+        simp [h] at hx
+        norm_num at hx
     · exact div_nonneg (pow_nonneg (abs.nonneg x) n) (Nat.cast_nonneg n.factorial)
 #align complex.exp_bound' Complex.exp_bound'
 
