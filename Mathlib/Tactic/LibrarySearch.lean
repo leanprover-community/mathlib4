@@ -59,16 +59,16 @@ initialize librarySearchLemmas : DeclCache (DiscrTree (Name × DeclMod) true) �
     if constInfo.isUnsafe then return lemmas
     if ← isBlackListed name then return lemmas
     withNewMCtxDepth do withReducible do
-      let (_, _, type) ← withReducible <| forallMetaTelescopeReducing constInfo.type
-      let keys ← withReducible <| DiscrTree.mkPath type
+      let (_, _, type) ← forallMetaTelescopeReducing constInfo.type
+      let keys ← DiscrTree.mkPath type
       let lemmas := lemmas.insertCore keys (name, .none)
       match type.getAppFnArgs with
       | (``Eq, #[_, lhs, rhs]) => do
-        let keys_symm ← withReducible <| DiscrTree.mkPath (← mkEq rhs lhs)
+        let keys_symm ← DiscrTree.mkPath (← mkEq rhs lhs)
         pure (lemmas.insertCore keys_symm (name, .symm))
       | (``Iff, #[lhs, rhs]) => do
-        let keys_mp ← withReducible <| DiscrTree.mkPath rhs
-        let keys_mpr ← withReducible <| DiscrTree.mkPath lhs
+        let keys_mp ← DiscrTree.mkPath rhs
+        let keys_mpr ← DiscrTree.mkPath lhs
         pure <| (lemmas.insertCore keys_mp (name, .mp)).insertCore keys_mpr (name, .mpr)
       | _ => pure lemmas
 
