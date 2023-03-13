@@ -19,8 +19,8 @@ import Mathlib.Data.Polynomial.Degree.Lemmas
 
 * `Polynomial.taylor`: the Taylor expansion of the polynomial `f` at `r`
 * `Polynomial.taylor_coeff`: the `k`th coefficient of `taylor r f` is
-  `(polynomial.hasse_deriv k f).eval r`
-* `Polynomial.eq_zero_of_hasse_deriv_eq_zero`:
+  `(Polynomial.hasseDeriv k f).eval r`
+* `Polynomial.eq_zero_of_hasseDeriv_eq_zero`:
   the identity principle: a polynomial is 0 iff all its Hasse derivatives are zero
 
 -/
@@ -77,14 +77,14 @@ theorem taylor_monomial (i : ℕ) (k : R) : taylor r (monomial i k) = C k * (X +
 /-- The `k`th coefficient of `Polynomial.taylor r f` is `(Polynomial.hasseDeriv k f).eval r`. -/
 theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r :=
   show (lcoeff R n).comp (taylor r) f = (leval r).comp (hasseDeriv n) f by
-    congr 1; clear f; ext i
+    congr 1; clear! f; ext i
     simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply, coeff_C_mul,
-      hasse_deriv_monomial, taylor_apply, monomial_comp, C_1, (commute_X (C r)).add_pow i,
+      hasseDeriv_monomial, taylor_apply, monomial_comp, C_1, (commute_X (C r)).add_pow i,
       LinearMap.map_sum]
     simp only [lcoeff_apply, ← C_eq_nat_cast, mul_assoc, ← C_pow, ← C_mul, coeff_mul_C,
-      (Nat.cast_commute _ _).Eq, coeff_X_pow, boole_mul, Finset.sum_ite_eq, Finset.mem_range]
+      (Nat.cast_commute _ _).eq, coeff_X_pow, boole_mul, Finset.sum_ite_eq, Finset.mem_range]
     split_ifs with h; · rfl
-    push_neg  at h; rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, MulZeroClass.mul_zero]
+    push_neg at h; rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, MulZeroClass.mul_zero]
 #align polynomial.taylor_coeff Polynomial.taylor_coeff
 
 @[simp]
@@ -110,7 +110,7 @@ theorem taylor_mul {R} [CommSemiring R] (r : R) (p q : R[X]) :
     taylor r (p * q) = taylor r p * taylor r q := by simp only [taylor_apply, mul_comp]
 #align polynomial.taylor_mul Polynomial.taylor_mul
 
-/-- `Polynomial.taylor` as a `AlgHom` for commutative semirings -/
+/-- `Polynomial.taylor` as an `AlgHom` for commutative semirings -/
 @[simps!]
 def taylorAlgHom {R} [CommSemiring R] (r : R) : R[X] →ₐ[R] R[X] :=
   AlgHom.ofLinearMap (taylor r) (taylor_one r) (taylor_mul r)
@@ -132,7 +132,7 @@ theorem taylor_eval_sub {R} [CommRing R] (r : R) (f : R[X]) (s : R) :
 
 theorem taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r) := by
   intro f g h
-  apply_fun taylor (-r) at h
+  apply_fun (taylor (-r) ·) at h
   simpa only [taylor_apply, comp_assoc, add_comp, X_comp, C_comp, C_neg, neg_add_cancel_right,
     comp_X] using h
 #align polynomial.taylor_injective Polynomial.taylor_injective
