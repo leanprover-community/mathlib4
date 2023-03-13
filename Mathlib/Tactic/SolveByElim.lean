@@ -134,14 +134,35 @@ If that tactic fails, fall back to the `proc` behaviour of `cfg`.
 def mainGoalProc (cfg : Config := {}) (proc : MVarId → MetaM (List MVarId)) : Config :=
 { cfg with
   proc := fun orig goals => match goals with
-  | [] => pure none
+  | [] => cfg.proc orig []
   | g :: gs => try
       return (← proc g) ++ gs
     catch _ => cfg.proc orig goals }
 
 /-- Create or modify a `Config` which calls `intro` on each goal before applying lemmas. -/
 def intros (cfg : Config := {}) : Config :=
-  mainGoalProc cfg fun g => do pure [(← g.intro1P).2]
+  cfg.mainGoalProc fun g => do pure [(← g.intro1P).2]
+
+/-- Attempt typeclass inference on each goal, before applying lemmas. -/
+def synthInstance (cfg : Config := {}) : Config :=
+  cfg.mainGoalProc fun g => do g.synthInstance; pure []
+
+/-- Add a discharging tactic, falling back to the original discharging tactic if it fails.
+Return `none` to return the goal as a new subgoal, or `some goals` to replace it. -/
+def withDischarge (cfg : Config := {}) (discharge : MVarId → MetaM (Option (List MVarId))) :
+    Config :=
+  { cfg with
+    discharge := fun g => try discharge g
+      catch _ => cfg.discharge g }
+
+/-- Create or modify a `Config` which calls `intro` on any goal for which no lemma applies. -/
+def introsAfter (cfg : Config := {}) : Config :=
+  cfg.withDischarge fun g => do pure [(← g.intro1P).2]
+
+/-- Create or modify a `Config` which
+calls `synthInstance` on any goal for which no lemma applies. -/
+def synthInstanceAfter (cfg : Config := {}) : Config :=
+  cfg.withDischarge fun g => do g.synthInstance; pure (some [])
 
 /--
 Create or modify a `Config` which rejects branches for which `test`,

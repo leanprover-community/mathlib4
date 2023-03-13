@@ -749,6 +749,7 @@ import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.List.Zip
+import Mathlib.Data.ListM
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
@@ -1137,6 +1138,8 @@ import Mathlib.Lean.Linter
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Message
 import Mathlib.Lean.Meta
+import Mathlib.Lean.Meta.Basic
+import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Meta.Simp
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -1466,6 +1469,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.PrintPrefix
+import Mathlib.Tactic.Propose
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Qify.Attr
@@ -1502,6 +1506,7 @@ import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace
+import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
