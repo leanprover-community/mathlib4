@@ -91,37 +91,29 @@ def atMostOneFixedPointEquivSum_derangements {α: Type u} [DecidableEq α] (a : 
       (Equiv.sumCompl _).symm
     _ ≃ Sum { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f }
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
-        {
-          refine' Equiv.sumCongr _ _
-          . convert subtypeSubtypeEquivSubtypeInter.{u}
-              (fun (x: Perm α) => fixedPoints x ⊆ {a})
-              (fun (x: Perm α) => a ∈ fixedPoints x)
-          . convert subtypeSubtypeEquivSubtypeInter.{u}
-              (fun (x: Perm α) => fixedPoints x ⊆ {a})
-              (fun (x: Perm α) => ¬a ∈ fixedPoints x)
-        }
+      refine' Equiv.sumCongr _ _
+      . exact subtypeSubtypeEquivSubtypeInter
+          (fun x : Perm α => fixedPoints x ⊆ {a})
+          (a ∈ fixedPoints ↑·)
+      . exact subtypeSubtypeEquivSubtypeInter
+          (fun x : Perm α => fixedPoints x ⊆ {a})
+          (¬a ∈ fixedPoints ·)
     _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by
-      {
-        refine' Equiv.sumCongr (subtypeEquivRight fun f => _) (subtypeEquivRight fun f => _)
-        · rw [Set.eq_singleton_iff_unique_mem, and_comm]
-          rfl
-        · rw [Set.eq_empty_iff_forall_not_mem]
-          refine' ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
-      }
+      refine' Equiv.sumCongr (subtypeEquivRight fun f => _) (subtypeEquivRight fun f => _)
+      · rw [Set.eq_singleton_iff_unique_mem, and_comm]
+        rfl
+      · rw [Set.eq_empty_iff_forall_not_mem]
+        refine' ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) := by
-      {
-        -- porting note: was `subtypeEquiv _` but requires explicit type & proof of
-        -- `Decidable (x ∈ {a})`
-        refine' Equiv.sumCongr
-          ((derangements.subtypeEquiv
-            (fun (x: α) => x ∈ ({a}ᶜ : Set α))).trans <| subtypeEquivRight fun x => _).symm
+      -- porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
+      refine'
+        Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
+            subtypeEquivRight fun x => _).symm
           (subtypeEquivRight fun f => mem_derangements_iff_fixedPoints_eq_empty.symm)
-        rw [eq_comm, Set.ext_iff]
-        simp_rw [Set.mem_compl_iff, Classical.not_not]
-      }
+      rw [eq_comm, Set.ext_iff]
+      simp_rw [Set.mem_compl_iff, Classical.not_not]
 
-#align derangements.at_most_one_fixed_point_equiv_sum_derangements
-       derangements.atMostOneFixedPointEquivSum_derangements
+#align derangements.at_most_one_fixed_point_equiv_sum_derangements derangements.atMostOneFixedPointEquivSum_derangements
 
 namespace Equiv
 
