@@ -12,22 +12,25 @@ example (α β : Type) (h : ∀ α β : Type, α = β) (b : β) : α := by
   convert b
   apply h
 
-example (α β : Type) (h : α = β) (b : β) : Nat × α := by
-  convert (37, b)
-
-example (α β : Type) (h : β = α) (b : β) : Nat × α := by
-  convert ← (37, b)
-
-example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
+example (m n : Nat) (h : m = n) (b : Fin n) : Nat × Nat × Nat × Fin m := by
   convert (37, 57, 2, b)
 
+example (α β : Type) (h : α = β) (b : β) : Nat × α := by
+  convert (config := { typeEqs := true }) (37, b)
+
+example (α β : Type) (h : β = α) (b : β) : Nat × α := by
+  convert (config := { typeEqs := true }) ← (37, b)
+
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
-  convert (37, 57, 2, b) using 2
+  convert (config := { typeEqs := true }) (37, 57, 2, b)
+
+example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
+  convert (config := { typeEqs := true }) (37, 57, 2, b) using 2
   guard_target = (Nat × α) = (Nat × β)
   congr
 
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
-  convert (37, 57, 2, b) using 3
+  convert (config := { typeEqs := true }) (37, 57, 2, b)
 
 example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ :=
 by
