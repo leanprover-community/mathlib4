@@ -14,10 +14,10 @@ import Mathlib.Algebra.CharP.Basic
 /-!
 # Invertibility of elements given a characteristic
 
-This file includes some instances of `invertible` for specific numbers in
+This file includes some instances of `Invertible` for specific numbers in
 characteristic zero. Some more cases are given as a `def`, to be included only
 when needed. To construct instances for concrete numbers,
-`invertible_of_nonzero` is a useful definition.
+`invertibleOfNonzero` is a useful definition.
 -/
 
 
@@ -44,7 +44,7 @@ def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t
   invertibleOfNonzero fun h => not_dvd ((CharP.cast_eq_zero_iff K p t).mp h)
 #align invertible_of_char_p_not_dvd invertibleOfCharPNotDvd
 
--- warning: this could potentially loop with `ne_zero.invertible` - if there is weird type-class
+-- warning: this could potentially loop with `Invertible.ne_zero` - if there is weird type-class
 -- loops, watch out for that.
 instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) :=
   invertibleOfNonzero <| NeZero.out
@@ -61,7 +61,7 @@ instance invertibleSucc (n : ℕ) : Invertible (n.succ : K) :=
 #align invertible_succ invertibleSucc
 
 /-!
-A few `invertible n` instances for small numerals `n`. Feel free to add your own
+A few `Invertible n` instances for small numerals `n`. Feel free to add your own
 number when you need its inverse.
 -/
 
@@ -75,4 +75,3 @@ instance invertibleThree : Invertible (3 : K) :=
 #align invertible_three invertibleThree
 
 end DivisionRing
-
