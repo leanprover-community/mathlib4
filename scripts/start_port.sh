@@ -14,6 +14,7 @@ if [ ! $1 ] ; then
 fi
 
 # arguments
+root_path=`pwd`
 mathlib4_path="$1"
 
 case $mathlib4_path in
@@ -67,24 +68,7 @@ echo "Applying automated fixes"
     sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
     sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g}' "$mathlib4_path"
 
-    python3 - << BYBACK
-from collections import deque
-lns = deque([], 2)
-with (open("$mathlib4_path", "r", encoding="utf-8", newline="\n") as f,
-      open("$mathlib4_path.tmp", "w", encoding="utf-8", newline="\n") as g):
-    for ln_raw in f:
-        ln = ln_raw.strip("\n")
-        lns.append(ln)
-        if len(lns) > 1 and lns[1] == "  by" and len(lns[0]) < 98 and not lns[0].lstrip().startswith("--"):
-            lns.pop()
-            lns[0] += " by"
-        elif len(lns) > 1:
-            print(lns[0], file=g)
-    lns.popleft()
-    for ln in lns:
-        print(ln, file=g)
-BYBACK
-
+    python3 $root_path/scripts/fix-line-breaks.py "$mathlib4_path" "$mathlib4_path.tmp"
     mv "$mathlib4_path.tmp" "$mathlib4_path"
 
     (echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
