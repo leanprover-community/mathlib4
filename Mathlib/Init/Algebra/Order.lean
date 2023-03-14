@@ -215,6 +215,15 @@ if a ≤ b then b else a
 def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
 if a ≤ b then a else b
 
+/-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
+introducing the arguments and trying the following approaches in order:
+
+1. seeing if `rfl` works
+2. seeing if the `compare` at hand is nonetheless essentially `compareOfLessAndEq`, but, because of
+implicit arguments, requires us to unfold the defs and split the `if`s in the definition of
+`compareOfLessAndEq`
+3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
+  (useful when `compare` is defined via a `match` statement, as it is for `Bool`) -/
 macro "compareOfLessAndEq_rfl" : tactic =>
   `(tactic| (intros a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
