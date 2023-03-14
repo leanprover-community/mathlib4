@@ -1355,16 +1355,13 @@ theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ :=
   { map (↑f : S₁ →+* S₂) with
-    commutes' := fun r =>
-      by
+    commutes' := fun r => by
       have h₁ : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
       have h₂ : algebraMap R (MvPolynomial σ S₂) r = C (algebraMap R S₂ r) := rfl
-      rw [h₁, h₂]
-      simp only
-      rw [map]
-      sorry }
-      --rw [eval₂Hom_C, RingHom.comp_apply, AlgHom.coe_toRingHom, AlgHom.commutes]
-      --simp_rw [h₁, h₂, map, eval₂Hom_C, RingHom.comp_apply, AlgHom.coe_toRingHom, AlgHom.commutes] }
+      simp_rw [OneHom.toFun_eq_coe]
+      -- porting note: we're missing some `simp` lemmas like `MonoidHom.coe_toOneHom`
+      change @FunLike.coe (_ →+* _) _ _ _ _ _ = _
+      rw [h₁, h₂, map, eval₂Hom_C, RingHom.comp_apply, AlgHom.coe_toRingHom, AlgHom.commutes] }
 #align mv_polynomial.map_alg_hom MvPolynomial.mapAlgHom
 
 @[simp]
