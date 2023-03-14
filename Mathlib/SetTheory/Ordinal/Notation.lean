@@ -675,7 +675,7 @@ exponentiation in `opow` -/
 def opowAux (e a0 a : Onote) : ℕ → ℕ → Onote
   | _, 0 => 0
   | 0, m + 1 => oadd e m.succPNat 0
-  | k + 1, m => scale (e + mulNat a0 k) a + opowAux k m
+  | k + 1, m => scale (e + mulNat a0 k) (a + (opowAux e a0 a k m))
 #align onote.opow_aux Onote.opowAux
 
 /-- `opow o₁ o₂` calculates the ordinal notation for
