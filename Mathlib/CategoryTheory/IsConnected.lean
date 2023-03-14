@@ -153,7 +153,7 @@ The converse is given in `is_connected.of_induct`.
 -/
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
     (h1 : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
-  let aux (j₁ j₂ : J) (f : j₁ ⟶  j₂) := congrArg ULift.up <| (h1 f).to_eq 
+  let aux (j₁ j₂ : J) (f : j₁ ⟶  j₂) := congrArg ULift.up <| (h1 f).to_eq
   injection constant_of_preserves_morphisms (fun k => ULift.up (k ∈ p)) aux j j₀ with i
   rwa [i]
 #align category_theory.induct_on_objects CategoryTheory.induct_on_objects
@@ -167,8 +167,8 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
     (h : ∀ p : Set J, j₀ ∈ p → (∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) → ∀ j : J, j ∈ p) :
     IsConnected J :=
   IsConnected.of_constant_of_preserves_morphisms fun {α} F a => by
-    have w := h { j | F j = F j₀ } rfl (fun {j₁} {j₂} f => by 
-      change F j₁ = F j₀ ↔ F j₂ = F j₀ 
+    have w := h { j | F j = F j₀ } rfl (fun {j₁} {j₂} f => by
+      change F j₁ = F j₀ ↔ F j₂ = F j₀
       simp [a f];)
     dsimp at w
     intro j j'
@@ -276,7 +276,7 @@ theorem zigzag_symmetric : Symmetric (@Zigzag J _) :=
 #align category_theory.zigzag_symmetric CategoryTheory.zigzag_symmetric
 
 theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
-  _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h) 
+  _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
   (fun h g => Relation.transitive_reflTransGen h g)
 #align category_theory.zigzag_equivalence CategoryTheory.zigzag_equivalence
 
@@ -392,4 +392,3 @@ instance nonempty_hom_of_connected_groupoid {G} [Groupoid G] [IsConnected G] :
 #align category_theory.nonempty_hom_of_connected_groupoid CategoryTheory.nonempty_hom_of_connected_groupoid
 
 end CategoryTheory
-
