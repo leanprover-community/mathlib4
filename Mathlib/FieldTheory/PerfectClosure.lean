@@ -8,9 +8,9 @@ Authors: Kenny Lau, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.Algebra.Hom.Iterate
-import Mathbin.Algebra.Ring.Equiv
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # The perfect closure of a field
@@ -381,8 +381,7 @@ instance : CommRing (PerfectClosure K p) :=
                   add_mul, add_comm, add_left_comm] }
 
 theorem eq_iff' (x y : ℕ × K) :
-    mk K p x = mk K p y ↔ ∃ z, (frobenius K p^[y.1 + z]) x.2 = (frobenius K p^[x.1 + z]) y.2 :=
-  by
+    mk K p x = mk K p y ↔ ∃ z, (frobenius K p^[y.1 + z]) x.2 = (frobenius K p^[x.1 + z]) y.2 := by
   constructor
   · intro H
     replace H := Quot.exact _ H
@@ -406,8 +405,7 @@ theorem eq_iff' (x y : ℕ × K) :
   rw [add_assoc, add_comm, add_comm z]
 #align perfect_closure.eq_iff' PerfectClosure.eq_iff'
 
-theorem nat_cast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) :=
-  by
+theorem nat_cast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   induction' n with n ih
   · induction' x with x ih
     · simp
@@ -426,8 +424,7 @@ theorem int_cast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
   induction x <;> simp only [Int.cast_ofNat, Int.cast_negSucc, nat_cast K p 0] <;> rfl
 #align perfect_closure.int_cast PerfectClosure.int_cast
 
-theorem nat_cast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y :=
-  by
+theorem nat_cast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
   · rw [nat_cast K p 0, nat_cast K p 0, eq_iff'] at H
     cases' H with z H
@@ -441,8 +438,7 @@ instance : CharP (PerfectClosure K p) p := by
 
 theorem frobenius_mk (x : ℕ × K) :
     (frobenius (PerfectClosure K p) p : PerfectClosure K p → PerfectClosure K p) (mk K p x) =
-      mk _ _ (x.1, x.2 ^ p) :=
-  by
+      mk _ _ (x.1, x.2 ^ p) := by
   simp only [frobenius_def]
   cases' x with n x
   dsimp only
@@ -534,8 +530,7 @@ theorem eq_pthRoot (x : ℕ × K) : mk K p x = (pthRoot (PerfectClosure K p) p^[
 /-- Given a field `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
 any homomorphism `K →+* L` can be lifted to `perfect_closure K p`. -/
 def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
-    (K →+* L) ≃ (PerfectClosure K p →+* L) :=
-  by
+    (K →+* L) ≃ (PerfectClosure K p →+* L) := by
   have := left_inverse_pth_root_frobenius.iterate
   refine_struct { .. }
   field to_fun =>
