@@ -18,8 +18,8 @@ which modifies the set of variables.
 
 ## Main declarations
 
-* `mv_polynomial.rename`
-* `mv_polynomial.rename_equiv`
+* `MvPolynomial.rename`
+* `MvPolynomial.renameEquiv`
 
 ## Notation
 
@@ -27,16 +27,16 @@ As in other polynomial files, we typically use the notation:
 
 + `σ τ α : Type*` (indexing the variables)
 
-+ `R S : Type*` `[comm_semiring R]` `[comm_semiring S]` (the coefficients)
++ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `mv_polynomial σ R` which mathematicians might call `X^s`
+This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 
 + `r : R` elements of the coefficient ring
 
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
-+ `p : mv_polynomial σ α`
++ `p : MvPolynomial σ α`
 
 -/
 
@@ -131,7 +131,7 @@ variable {f : σ → τ} (hf : Function.Injective f)
 open Classical
 
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
-  `kill_compl hf` is the `alg_hom` from `R[τ]` to `R[σ]` that is left inverse to
+  `MvPolynomial.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
   `rename f : R[σ] → R[τ]` and sends the variables in the complement of the range of `f` to `0`. -/
 def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
   aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
@@ -154,7 +154,7 @@ section
 
 variable (R)
 
-/-- `mv_polynomial.rename e` is an equivalence when `e` is. -/
+/-- `MvPolynomial.rename e` is an equivalence when `e` is. -/
 @[simps apply]
 def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R :=
   { rename f with
@@ -214,17 +214,17 @@ theorem rename_prodmk_eval₂ (j : τ) (g : σ → MvPolynomial σ R) :
       simp [*]
 #align mv_polynomial.rename_prodmk_eval₂ MvPolynomial.rename_prodmk_eval₂
 
-theorem eval₂_rename_prodmk (g : σ × τ → S) (i : σ) (p : MvPolynomial τ R) :
+theorem eval₂_rename_prod_mk (g : σ × τ → S) (i : σ) (p : MvPolynomial τ R) :
     (rename (Prod.mk i) p).eval₂ f g = eval₂ f (fun j => g (i, j)) p := by
   apply MvPolynomial.induction_on p <;>
     · intros
       simp [*]
-#align mv_polynomial.eval₂_rename_prodmk MvPolynomial.eval₂_rename_prodmk
+#align mv_polynomial.eval₂_rename_prodmk MvPolynomial.eval₂_rename_prod_mk
 
-theorem eval_rename_prodmk (g : σ × τ → R) (i : σ) (p : MvPolynomial τ R) :
+theorem eval_rename_prod_mk (g : σ × τ → R) (i : σ) (p : MvPolynomial τ R) :
     eval g (rename (Prod.mk i) p) = eval (fun j => g (i, j)) p :=
-  eval₂_rename_prodmk (RingHom.id _) _ _ _
-#align mv_polynomial.eval_rename_prodmk MvPolynomial.eval_rename_prodmk
+  eval₂_rename_prod_mk (RingHom.id _) _ _ _
+#align mv_polynomial.eval_rename_prodmk MvPolynomial.eval_rename_prod_mk
 
 end
 
