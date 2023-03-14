@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.PathCategory
 /-!
 # The category of quivers
 
-The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `Quiv`.
+The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `QuivCat`.
 
 -/
 
@@ -27,54 +27,54 @@ namespace CategoryTheory
 -- intended to be used with explicit universe parameters
 /-- Category of quivers. -/
 @[nolint checkUnivs]
-def Quiv :=
+def QuivCat :=
   Bundled Quiver.{v + 1, u}
 set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv CategoryTheory.Quiv
+#align category_theory.Quiv CategoryTheory.QuivCat
 
-namespace Quiv
+namespace QuivCat
 
-instance : CoeSort Quiv (Type u) where coe := Bundled.α
+instance : CoeSort QuivCat (Type u) where coe := Bundled.α
 
-instance str' (C : Quiv.{v, u}) : Quiver.{v + 1, u} C :=
+instance str' (C : QuivCat.{v, u}) : Quiver.{v + 1, u} C :=
   C.str
 set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.str CategoryTheory.Quiv.str'
+#align category_theory.Quiv.str CategoryTheory.QuivCat.str'
 
-/-- Construct a bundled `Quiv` from the underlying type and the typeclass. -/
-def of (C : Type u) [Quiver.{v + 1} C] : Quiv.{v, u} :=
+/-- Construct a bundled `QuivCat` from the underlying type and the typeclass. -/
+def of (C : Type u) [Quiver.{v + 1} C] : QuivCat.{v, u} :=
   Bundled.of C
 set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.of CategoryTheory.Quiv.of
+#align category_theory.Quiv.of CategoryTheory.QuivCat.of
 
-instance : Inhabited Quiv :=
-  ⟨Quiv.of (Quiver.Empty PEmpty)⟩
+instance : Inhabited QuivCat :=
+  ⟨QuivCat.of (Quiver.Empty PEmpty)⟩
 
-/-- Category structure on `Quiv` -/
-instance category : LargeCategory.{max v u} Quiv.{v, u}
+/-- Category structure on `QuivCat` -/
+instance category : LargeCategory.{max v u} QuivCat.{v, u}
     where
   Hom C D := Prefunctor C D
   id C := Prefunctor.id C
   comp F G := Prefunctor.comp F G
 set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.category CategoryTheory.Quiv.category
+#align category_theory.Quiv.category CategoryTheory.QuivCat.category
 
 /-- The forgetful functor from categories to quivers. -/
 @[simps]
-def forget : Cat.{v, u} ⥤ Quiv.{v, u}
+def forget : Cat.{v, u} ⥤ QuivCat.{v, u}
     where
-  obj C := Quiv.of C
+  obj C := QuivCat.of C
   map F := F.toPrefunctor
 set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.forget CategoryTheory.Quiv.forget
+#align category_theory.Quiv.forget CategoryTheory.QuivCat.forget
 
-end Quiv
+end QuivCat
 
 namespace Cat
 
 /-- The functor sending each quiver to its path category. -/
 @[simps]
-def free : Quiv.{v, u} ⥤ Cat.{max u v, u}
+def free : QuivCat.{v, u} ⥤ Cat.{max u v, u}
     where
   obj V := Cat.of (Paths V)
   map F :=
@@ -96,7 +96,7 @@ set_option linter.uppercaseLean3 false in
 
 end Cat
 
-namespace Quiv
+namespace QuivCat
 
 /-- Any prefunctor into a category lifts to a functor from the path category. -/
 @[simps]
@@ -105,7 +105,7 @@ def lift {V : Type u} [Quiver.{v + 1} V] {C : Type _} [Category C] (F : Prefunct
   obj X := F.obj X
   map f := composePath (F.mapPath f)
 set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.lift CategoryTheory.Quiv.lift
+#align category_theory.Quiv.lift CategoryTheory.QuivCat.lift
 
 -- We might construct `of_lift_iso_self : Paths.of ⋙ lift F ≅ F`
 -- (and then show that `lift F` is initial amongst such functors)
@@ -113,7 +113,7 @@ set_option linter.uppercaseLean3 false in
 /--
 The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
 -/
-def adj : Cat.free ⊣ Quiv.forget :=
+def adj : Cat.free ⊣ QuivCat.forget :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun V C =>
         { toFun := fun F => Paths.of.comp F.toPrefunctor
@@ -131,8 +131,8 @@ def adj : Cat.free ⊣ Quiv.forget :=
         apply eq_conj_eqToHom
         rfl }
 set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.adj CategoryTheory.Quiv.adj
+#align category_theory.Quiv.adj CategoryTheory.QuivCat.adj
 
-end Quiv
+end QuivCat
 
 end CategoryTheory
