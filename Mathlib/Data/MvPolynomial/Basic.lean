@@ -13,7 +13,6 @@ import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.Tactic.TypeCheck
 
 /-!
 # Multivariate polynomials
