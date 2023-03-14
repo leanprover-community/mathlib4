@@ -8,11 +8,11 @@ import Std.Lean.Meta.DiscrTree
 import Qq.MetaM
 import Mathlib.Order.Monotone.Basic
 
+/-! # The @[mono] attribute -/
+
 open Lean Meta Elab Term Qq
 
 initialize registerTraceClass `Tactic.mono
-
-/-! # The @[mono] attribute -/
 
 namespace Mathlib.Tactic.Monotonicity
 
