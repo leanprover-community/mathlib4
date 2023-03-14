@@ -15,11 +15,11 @@ import Mathlib.RingTheory.Localization.Basic
 
 ## Main definitions
 
- * `is_localization.is_integer` is a predicate stating that `x : S` is in the image of `R`
+ * `IsLocalization.IsInteger` is a predicate stating that `x : S` is in the image of `R`
 
 ## Implementation notes
 
-See `src/ring_theory/localization/basic.lean` for a design overview.
+See `src/ring_theory/Localization/basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -86,14 +86,14 @@ theorem exists_integer_multiple' (a : S) : ∃ b : M, IsInteger R (a * algebraMa
 
 /-- Each element `a : S` has an `M`-multiple which is an integer.
 
-This version multiplies `a` on the left, matching the argument order in the `has_smul` instance.
+This version multiplies `a` on the left, matching the argument order in the `SMul` instance.
 -/
 theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a) := by
   simp_rw [Algebra.smul_def, mul_comm _ a]
   apply exists_integer_multiple'
 #align is_localization.exists_integer_multiple IsLocalization.exists_integer_multiple
 
-/-- We can clear the denominators of a `finset`-indexed family of fractions. -/
+/-- We can clear the denominators of a `Finset`-indexed family of fractions. -/
 theorem exist_integer_multiples {ι : Type _} (s : Finset ι) (f : ι → S) :
     ∃ b : M, ∀ i ∈ s, IsLocalization.IsInteger R ((b : R) • f i) := by
   haveI := Classical.propDecidable
@@ -123,13 +123,13 @@ theorem exist_integer_multiples_of_finset (s : Finset S) :
   exist_integer_multiples M s id
 #align is_localization.exist_integer_multiples_of_finset IsLocalization.exist_integer_multiples_of_finset
 
-/-- A choice of a common multiple of the denominators of a `finset`-indexed family of fractions. -/
+/-- A choice of a common multiple of the denominators of a `Finset`-indexed family of fractions. -/
 noncomputable def commonDenom {ι : Type _} (s : Finset ι) (f : ι → S) : M :=
   (exist_integer_multiples M s f).choose
 #align is_localization.common_denom IsLocalization.commonDenom
 
 /-- The numerator of a fraction after clearing the denominators
-of a `finset`-indexed family of fractions. -/
+of a `Finset`-indexed family of fractions. -/
 noncomputable def integerMultiple {ι : Type _} (s : Finset ι) (f : ι → S) (i : s) : R :=
   ((exist_integer_multiples M s f).choose_spec i i.prop).choose
 #align is_localization.integer_multiple IsLocalization.integerMultiple
