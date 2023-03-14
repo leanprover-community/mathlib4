@@ -38,15 +38,9 @@ There are three attributes being defined here
   will be `fun α hα ↦ @Mul.mul α (@Semigroup.toMul α hα)` instead of `@Semigroup.mul`.
   [this is not correctly implemented in Lean 4 yet]
 
-## Unimplemented Features
-
-* Correct interaction with heterogenous operations like `HAdd` and `HMul`
-* Adding custom simp-attributes / other attributes
-
-### Improvements
+### Possible Future Improvements
 * If multiple declarations are generated from a `simps` without explicit projection names, then
   only the first one is shown when mousing over `simps`.
-* Double check output of simps (especially in combination with `to_additive`).
 
 ## Changes w.r.t. Lean 3
 
@@ -161,9 +155,8 @@ derives two `simp` lemmas:
 * It will automatically reduce newly created beta-redexes, but will not unfold any definitions.
 * If the structure has a coercion to either sorts or functions, and this is defined to be one
   of the projections, then this coercion will be used instead of the projection.
-* If the structure is a class that has an instance to a notation class, like `Neg`, then this
-  notation is used instead of the corresponding projection.
-  [TODO: not yet implemented for heterogenous operations like `HMul` and `HAdd`]
+* If the structure is a class that has an instance to a notation class, like `Neg` or `Mul`,
+  then this notation is used instead of the corresponding projection.
 * You can specify custom projections, by giving a declaration with name
   `{StructureName}.Simps.{projectionName}`. See Note [custom simps projection].
 
@@ -219,7 +212,7 @@ derives two `simp` lemmas:
   @[simp] lemma foo_fst_fst : foo.fst.fst = 1
   @[simp] lemma foo_snd : foo.snd = {fst := 3, snd := 4}
   ```
-* [TODO] If one of the values is an eta-expanded structure, we will eta-reduce this structure.
+* If one of the values is an eta-expanded structure, we will eta-reduce this structure.
 
   Example:
   ```lean
@@ -285,7 +278,7 @@ This command specifies custom names and custom projections for the simp attribut
   `initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)`.
 * See Note [custom simps projection] and the examples below for information how to declare custom
   projections.
-* TODO in Lean 4: For algebraic structures, we will automatically use the notation (like `Mul`)
+* For algebraic structures, we will automatically use the notation (like `Mul`)
   for the projections if such an instance is available.
 * By default, the projections to parent structures are not default projections,
   but all the data-carrying fields are (including those in parent structures).
@@ -689,8 +682,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
 
 /-- Auxilliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
-These come from `FunLike` and `SetLike` instances.
-Todo: also support algebraic operations and notation classes, like `+`. -/
+These come from `FunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
   CoreM (Array ParsedProjectionData) := do
   let strDecl ← getConstInfo str
