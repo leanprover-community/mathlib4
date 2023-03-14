@@ -73,6 +73,18 @@ partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   catch _ =>
     pure (acc, g)
 
+/-- Like `intros!`, but preserves names. -/
+partial def introsP! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
+  run #[] mvarId
+  where
+  /-- Implementation of `introsP!`. -/
+  run (acc : Array FVarId) (g : MVarId) :=
+  try
+    let ⟨f, g⟩ ← mvarId.intro1P
+    run (acc.push f) g
+  catch _ =>
+    pure (acc, g)
+
 end Lean.MVarId
 
 namespace Lean.Meta
