@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Ideal.Operations
 /-!
 # Ideals in product rings
 
-For commutative rings `R` and `S` and ideals `I ≤ R`, `J ≤ S`, we define `ideal.prod I J` as the
+For commutative rings `R` and `S` and ideals `I ≤ R`, `J ≤ S`, we define `Ideal.prod I J` as the
 product `I × J`, viewed as an ideal of `R × S`. In `ideal_prod_eq` we show that every ideal of
 `R × S` is of this form.  Furthermore, we show that every prime ideal of `R × S` is of the form
 `p × S` or `R × p`, where `p` is a prime ideal.
