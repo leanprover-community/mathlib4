@@ -58,8 +58,7 @@ theorem solid {α : Type _} [NormedLatticeAddCommGroup α] {a b : α} (h : |a| �
   NormedLatticeAddCommGroup.solid a b h
 #align solid solid
 
-instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ
-    where
+instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
   add_le_add_left _ _ h _ := add_le_add le_rfl h
   solid _ _ := id
 
@@ -209,12 +208,10 @@ theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0
 #align is_closed_nonneg isClosed_nonneg
 
 theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]
-    [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) : IsClosed { p : G × G | p.fst ≤ p.snd } :=
-  by
+    [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
+    IsClosed { p : G × G | p.fst ≤ p.snd } := by
   have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G => p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } :=
-    by
-    ext1 p
-    simp only [sub_nonneg, Set.preimage_setOf_eq]
+    by ext1 p; simp only [sub_nonneg, Set.preimage_setOf_eq]
   rw [this]
   exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
 #align is_closed_le_of_is_closed_nonneg isClosed_le_of_isClosed_nonneg
