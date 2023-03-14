@@ -132,7 +132,7 @@ theorem taylor_eval_sub {R} [CommRing R] (r : R) (f : R[X]) (s : R) :
 
 theorem taylor_injective {R} [CommRing R] (r : R) : Function.Injective (taylor r) := by
   intro f g h
-  -- porting note: `apply_fun (taylor (-r)) at h` fails
+  -- porting note: `apply_fun taylor (-r) at h` fails
   replace h := FunLike.congr_arg (taylor (-r)) h
   simpa only [taylor_apply, comp_assoc, add_comp, X_comp, C_comp, C_neg, neg_add_cancel_right,
     comp_X] using h
