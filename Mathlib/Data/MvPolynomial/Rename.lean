@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.Basic
 
 /-!
 # Renaming variables of polynomials
@@ -94,8 +94,7 @@ theorem rename_id (p : MvPolynomial σ R) : rename id p = p :=
 #align mv_polynomial.rename_id MvPolynomial.rename_id
 
 theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
-    rename f (monomial d r) = monomial (d.mapDomain f) r :=
-  by
+    rename f (monomial d r) = monomial (d.mapDomain f) r := by
   rw [rename, aeval_monomial, monomial_eq, Finsupp.prod_mapDomain_index]
   · rfl
   · exact fun n => pow_zero _
@@ -103,16 +102,14 @@ theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
 #align mv_polynomial.rename_monomial MvPolynomial.rename_monomial
 
 theorem rename_eq (f : σ → τ) (p : MvPolynomial σ R) :
-    rename f p = Finsupp.mapDomain (Finsupp.mapDomain f) p :=
-  by
+    rename f p = Finsupp.mapDomain (Finsupp.mapDomain f) p := by
   simp only [rename, aeval_def, eval₂, Finsupp.mapDomain, algebra_map_eq, X_pow_eq_monomial, ←
     monomial_finsupp_sum_index]
   rfl
 #align mv_polynomial.rename_eq MvPolynomial.rename_eq
 
 theorem rename_injective (f : σ → τ) (hf : Function.Injective f) :
-    Function.Injective (rename f : MvPolynomial σ R → MvPolynomial τ R) :=
-  by
+    Function.Injective (rename f : MvPolynomial σ R → MvPolynomial τ R) := by
   have :
     (rename f : MvPolynomial σ R → MvPolynomial τ R) = Finsupp.mapDomain (Finsupp.mapDomain f) :=
     funext (rename_eq f)
@@ -226,8 +223,7 @@ end
 
 /-- Every polynomial is a polynomial in finitely many variables. -/
 theorem exists_finset_rename (p : MvPolynomial σ R) :
-    ∃ (s : Finset σ)(q : MvPolynomial { x // x ∈ s } R), p = rename coe q :=
-  by
+    ∃ (s : Finset σ)(q : MvPolynomial { x // x ∈ s } R), p = rename coe q := by
   apply induction_on p
   · intro r
     exact ⟨∅, C r, by rw [rename_C]⟩
@@ -253,8 +249,7 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
   a finite subset `s` of `σ` such that both `p₁` and `p₂` are contained in the polynomial semiring
   `R[s]` of finitely many variables. -/
 theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
-    ∃ (s : Finset σ)(q₁ q₂ : MvPolynomial s R), p₁ = rename coe q₁ ∧ p₂ = rename coe q₂ :=
-  by
+    ∃ (s : Finset σ)(q₁ q₂ : MvPolynomial s R), p₁ = rename coe q₁ ∧ p₂ = rename coe q₂ := by
   obtain ⟨s₁, q₁, rfl⟩ := exists_finset_rename p₁
   obtain ⟨s₂, q₂, rfl⟩ := exists_finset_rename p₂
   classical
@@ -266,8 +261,7 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
 
 /-- Every polynomial is a polynomial in finitely many variables. -/
 theorem exists_fin_rename (p : MvPolynomial σ R) :
-    ∃ (n : ℕ)(f : Fin n → σ)(hf : Injective f)(q : MvPolynomial (Fin n) R), p = rename f q :=
-  by
+    ∃ (n : ℕ)(f : Fin n → σ)(hf : Injective f)(q : MvPolynomial (Fin n) R), p = rename f q := by
   obtain ⟨s, q, rfl⟩ := exists_finset_rename p
   let n := Fintype.card { x // x ∈ s }
   let e := Fintype.equivFin { x // x ∈ s }
@@ -289,8 +283,7 @@ section Coeff
 
 @[simp]
 theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
-    (rename f φ).coeff (d.mapDomain f) = φ.coeff d :=
-  by
+    (rename f φ).coeff (d.mapDomain f) = φ.coeff d := by
   apply induction_on' φ
   · intro u r
     rw [rename_monomial, coeff_monomial, coeff_monomial]
@@ -300,8 +293,7 @@ theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolyno
 #align mv_polynomial.coeff_rename_map_domain MvPolynomial.coeff_rename_mapDomain
 
 theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
-    (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 :=
-  by
+    (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
   rw [rename_eq, ← not_mem_support_iff]
   intro H
   replace H := map_domain_support H
@@ -313,16 +305,14 @@ theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
 #align mv_polynomial.coeff_rename_eq_zero MvPolynomial.coeff_rename_eq_zero
 
 theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
-    (h : (rename f φ).coeff d ≠ 0) : ∃ u : σ →₀ ℕ, u.mapDomain f = d ∧ φ.coeff u ≠ 0 :=
-  by
+    (h : (rename f φ).coeff d ≠ 0) : ∃ u : σ →₀ ℕ, u.mapDomain f = d ∧ φ.coeff u ≠ 0 := by
   contrapose! h
   apply coeff_rename_eq_zero _ _ _ h
 #align mv_polynomial.coeff_rename_ne_zero MvPolynomial.coeff_rename_ne_zero
 
 @[simp]
 theorem constantCoeff_rename {τ : Type _} (f : σ → τ) (φ : MvPolynomial σ R) :
-    constantCoeff (rename f φ) = constantCoeff φ :=
-  by
+    constantCoeff (rename f φ) = constantCoeff φ := by
   apply φ.induction_on
   · intro a
     simp only [constant_coeff_C, rename_C]
@@ -337,8 +327,7 @@ end Coeff
 section Support
 
 theorem support_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f) :
-    (rename f p).support = Finset.image (mapDomain f) p.support :=
-  by
+    (rename f p).support = Finset.image (mapDomain f) p.support := by
   rw [rename_eq]
   exact Finsupp.mapDomain_support_of_injective (map_domain_injective h) _
 #align mv_polynomial.support_rename_of_injective MvPolynomial.support_rename_of_injective
