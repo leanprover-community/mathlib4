@@ -81,7 +81,7 @@ def applyMonos (t : Expr) (side : Side := .both) : MetaM (Expr × List MVarId) :
     | none         => pure ()
   if results.isEmpty then throwError "no monos apply"
   trace[Tactic.mono] "got potential proof terms with the following subgoals:\n{results}"
-  let bestMatches := results.minimalBy' (·.2.length)
+  let bestMatches := results.argmins (·.2.length)
   if bestMatches.size == 1 then
     trace[Tactic.mono] "found {bestMatches[0]!}"
     return bestMatches[0]!
