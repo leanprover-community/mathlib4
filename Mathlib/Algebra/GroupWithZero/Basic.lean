@@ -371,7 +371,7 @@ theorem one_div_ne_zero {a : G₀} (h : a ≠ 0) : 1 / a ≠ 0 := by
 #align one_div_ne_zero one_div_ne_zero
 
 @[simp]
-theorem inv_eq_zero {a : G₀} : a⁻¹ = 0 ↔ a = 0 := by rw [inv_eq_iff_inv_eq, inv_zero, eq_comm]
+theorem inv_eq_zero {a : G₀} : a⁻¹ = 0 ↔ a = 0 := by rw [inv_eq_iff_eq_inv, inv_zero]
 #align inv_eq_zero inv_eq_zero
 
 @[simp]
