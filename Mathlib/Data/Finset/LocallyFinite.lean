@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.locally_finite
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
+! leanprover-community/mathlib commit f24cc2891c0e328f0ee8c57387103aa462c44b5e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
