@@ -915,6 +915,7 @@ import Mathlib.Data.W.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
 import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.Zmod.Basic
 import Mathlib.Deprecated.Group
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield
