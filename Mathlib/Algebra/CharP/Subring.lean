@@ -25,16 +25,16 @@ instance subsemiring (R : Type u) [Semiring R] (p : ℕ) [CharP R p] (S : Subsem
   ⟨fun x =>
     Iff.symm <|
       (CharP.cast_eq_zero_iff R p x).symm.trans
-        ⟨fun h => Subtype.eq <| show S.Subtype x = 0 by rw [map_natCast, h], fun h =>
-          map_natCast S.Subtype x ▸ by rw [h, RingHom.map_zero]⟩⟩
+        ⟨fun h => Subtype.eq <| show S.subtype x = 0 by rw [map_natCast, h], fun h =>
+          map_natCast S.subtype x ▸ by rw [h, RingHom.map_zero]⟩⟩
 #align char_p.subsemiring CharP.subsemiring
 
 instance subring (R : Type u) [Ring R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
   ⟨fun x =>
     Iff.symm <|
       (CharP.cast_eq_zero_iff R p x).symm.trans
-        ⟨fun h => Subtype.eq <| show S.Subtype x = 0 by rw [map_natCast, h], fun h =>
-          map_natCast S.Subtype x ▸ by rw [h, RingHom.map_zero]⟩⟩
+        ⟨fun h => Subtype.eq <| show S.subtype x = 0 by rw [map_natCast, h], fun h =>
+          map_natCast S.subtype x ▸ by rw [h, RingHom.map_zero]⟩⟩
 #align char_p.subring CharP.subring
 
 instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
@@ -42,4 +42,3 @@ instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R
 #align char_p.subring' CharP.subring'
 
 end CharP
-
