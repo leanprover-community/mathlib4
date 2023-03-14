@@ -144,8 +144,8 @@ is a pullback square. (Also known as a fibered product or cartesian square.)
 -/
 structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z) extends
   CommSq fst snd f g : Prop where
-  /-- the pullback cone is limit -/
-  is_limit' : Nonempty (IsLimit (PullbackCone.mk _ _ w))
+  /-- the pullback cone is a limit -/
+  isLimit' : Nonempty (IsLimit (PullbackCone.mk _ _ w))
 #align category_theory.is_pullback CategoryTheory.IsPullback
 
 /-- The proposition that a square
@@ -162,8 +162,8 @@ is a pushout square. (Also known as a fiber coproduct or cocartesian square.)
 -/
 structure IsPushout {Z X Y P : C} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (inr : Y ⟶ P) extends
   CommSq f g inl inr : Prop where
-  /-- the pushout cocone is limit -/
-  is_colimit' : Nonempty (IsColimit (PushoutCocone.mk _ _ w))
+  /-- the pushout cocone is a colimit -/
+  isColimit' : Nonempty (IsColimit (PushoutCocone.mk _ _ w))
 #align category_theory.is_pushout CategoryTheory.IsPushout
 
 section
@@ -219,13 +219,13 @@ theorem cone_snd (h : IsPullback fst snd f g) : h.cone.snd = snd :=
 /-- The cone obtained from `IsPullback fst snd f g` is a limit cone.
 -/
 noncomputable def isLimit (h : IsPullback fst snd f g) : IsLimit h.cone :=
-  h.is_limit'.some
+  h.isLimit'.some
 #align category_theory.is_pullback.is_limit CategoryTheory.IsPullback.isLimit
 
 /-- If `c` is a limiting pullback cone, then we have a `IsPullback c.fst c.snd f g`. -/
 theorem of_isLimit {c : PullbackCone f g} (h : Limits.IsLimit c) : IsPullback c.fst c.snd f g :=
   { w := c.condition
-    is_limit' := ⟨IsLimit.ofIsoLimit h (Limits.PullbackCone.ext (Iso.refl _)
+    isLimit' := ⟨IsLimit.ofIsoLimit h (Limits.PullbackCone.ext (Iso.refl _)
       (by aesop_cat) (by aesop_cat))⟩ }
 #align category_theory.is_pullback.of_is_limit CategoryTheory.IsPullback.of_isLimit
 
@@ -350,13 +350,13 @@ theorem cocone_inr (h : IsPushout f g inl inr) : h.cocone.inr = inr :=
 /-- The cocone obtained from `IsPushout f g inl inr` is a colimit cocone.
 -/
 noncomputable def isColimit (h : IsPushout f g inl inr) : IsColimit h.cocone :=
-  h.is_colimit'.some
+  h.isColimit'.some
 #align category_theory.is_pushout.is_colimit CategoryTheory.IsPushout.isColimit
 
 /-- If `c` is a colimiting pushout cocone, then we have a `IsPushout f g c.inl c.inr`. -/
 theorem of_isColimit {c : PushoutCocone f g} (h : Limits.IsColimit c) : IsPushout f g c.inl c.inr :=
   { w := c.condition
-    is_colimit' :=
+    isColimit' :=
       ⟨IsColimit.ofIsoColimit h (Limits.PushoutCocone.ext (Iso.refl _)
         (by aesop_cat) (by aesop_cat))⟩ }
 #align category_theory.is_pushout.of_is_colimit CategoryTheory.IsPushout.of_isColimit
@@ -471,7 +471,7 @@ open ZeroObject
 @[simp]
 theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X) (0 : 0 ⟶ X) :=
   { w := by simp
-    is_limit' :=
+    isLimit' :=
       ⟨{  lift := fun s => 0
           fac := fun s => by
             simpa using
@@ -681,7 +681,7 @@ open ZeroObject
 @[simp]
 theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0) (0 : X ⟶ 0) :=
   { w := by simp
-    is_colimit' :=
+    isColimit' :=
       ⟨{  desc := fun s => 0
           fac := fun s =>
             by
@@ -915,7 +915,7 @@ variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem of_isPullback_isPushout (p₁ : IsPullback f g h i) (p₂ : IsPushout f g h i) :
     BicartesianSq f g h i :=
-  BicartesianSq.mk p₁ p₂.is_colimit'
+  BicartesianSq.mk p₁ p₂.isColimit'
 
 #align category_theory.bicartesian_sq.of_is_pullback_is_pushout CategoryTheory.BicartesianSq.of_isPullback_isPushout
 
