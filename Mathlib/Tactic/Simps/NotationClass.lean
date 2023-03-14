@@ -18,12 +18,18 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
 
 /-- The `@[notation_class]` attribute specifies that this is a notation class,
   and this notation should be used instead of projections by `@[simps]`.
-  Adding a `*` indicates that this is a coercion class instead of a notation class.
-  The name argument is the projection name we use as the key to search for this class
-  (default: name of first projection of the class).
-  An optional name of a declaration that has type
-  `Name → Name → Array Expr → MetaM (Array (Option Expr))`.
-  This declaration specifies how to generate the arguments of the class. -/
+  * This is only important if the projection is written differently using notation, e.g.
+    `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
+    We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
+    class that extends `Neg`.
+  * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
+    `SetLike` and `FunLike` coercions.
+  * The first name argument is the projection name we use as the key to search for this class
+    (default: name of first projection of the class).
+  * The second argument is the name of a declaration that has type
+    `Name → Name → Array Expr → MetaM (Array (Option Expr))`.
+    This declaration specifies how to generate the arguments of the notation class from the
+    arguments of classes that use the projection. -/
 syntax (name := notation_class) "notation_class" "*"? (ppSpace ident)? (ppSpace ident)? : attr
 
 open Lean Meta Elab Term Qq
@@ -104,8 +110,7 @@ initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
         let projName ← match projName? with
           | none => pure (getStructureFields (← getEnv) src)[0]!
           | some projName => pure projName.getId
-        let findArgs := if findArgs?.isSome then findArgs?.get!.getId
-          else if coercion.isSome then `Simps.findCoercionArgs else `Simps.defaultfindArgs
+        let findArgs := if findArgs?.isSome then findArgs?.get!.getId else `Simps.defaultfindArgs
         match (← getEnv).find? findArgs with
         | none => throwError "no such declaration {findArgs}"
         | some declInfo =>

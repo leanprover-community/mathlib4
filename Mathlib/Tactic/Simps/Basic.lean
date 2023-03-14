@@ -646,6 +646,9 @@ def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedP
   to notation, find the custom projection that uses this coercion or notation.
   Returns the custom projection and the name of the projection used.
 
+We catch most errors this function causes, so that we don't fail if an unrelated projection has
+an applicable name. (e.g. `Iso.inv`)
+
 Implementation note: getting rid of TermElabM is tricky, since `Expr.mkAppOptM` doesn't allow to
 keep metavariables around, which are necessary for `OutParam`. -/
 def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args : Array Expr) :
@@ -654,7 +657,11 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
     notationClassAttr.find? (← getEnv) proj.strName then
     let findArgs ← unsafe evalConst (Name → Name → Array Expr → MetaM (Array (Option Expr)))
       findArgs
-    let classArgs ← findArgs str className args
+    let classArgs ← try findArgs str className args
+    catch ex =>
+      trace[simps.debug] "Projection {proj.strName} is likely unrelated to the projection of {
+        className}:\n{ex.toMessageData}"
+      return none
     let classArgs ← classArgs.mapM fun e => match e with
       | none => mkFreshExprMVar none
       | some e => pure e
