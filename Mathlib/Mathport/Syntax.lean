@@ -22,6 +22,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
@@ -42,6 +43,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
+import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
@@ -71,6 +73,7 @@ import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
@@ -211,24 +214,11 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
-/- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
-/- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
-
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
-/- M -/ syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
-/- M -/ syntax (name := nlinarith!) "nlinarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- S -/ syntax (name := polyrith) "polyrith" (&" only")? (" [" term,* "]")? : tactic
 
 /- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
-
-/- M -/ syntax (name := tfaeHave) "tfae_have " (ident " : ")? num (" → " <|> " ↔ " <|> " ← ") num :
-  tactic
-/- M -/ syntax (name := tfaeFinish) "tfae_finish" : tactic
-
-syntax mono.side := &"left" <|> &"right" <|> &"both"
-/- B -/ syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
-  (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic
@@ -284,11 +274,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- S -/ syntax (name := mvBisim) "mv_bisim" (ppSpace (colGt term))? (" with " binderIdent+)? :
   tactic
 
-/- M -/ syntax (name := continuity) "continuity" (config)? : tactic
-/- M -/ syntax (name := continuity!) "continuity!" (config)? : tactic
-/- M -/ syntax (name := continuity?) "continuity?" (config)? : tactic
-/- M -/ syntax (name := continuity!?) "continuity!?" (config)? : tactic
-
 /- E -/ syntax (name := unitInterval) "unit_interval" : tactic
 
 /- N -/ syntax (name := measurability) "measurability" (config)? : tactic
@@ -334,7 +319,6 @@ namespace Attr
 /- S -/ syntax (name := intro) "intro" : attr
 /- S -/ syntax (name := intro!) "intro!" : attr
 
-/- M -/ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 /- S -/ syntax (name := interactive) "interactive" : attr
 
 /- M -/ syntax (name := expandExists) "expand_exists" (ppSpace ident)+ : attr
@@ -343,8 +327,6 @@ namespace Attr
 /- S -/ syntax (name := protectProj) "protect_proj" (&" without" (ppSpace ident)+)? : attr
 
 /- M -/ syntax (name := notationClass) "notation_class" "*"? (ppSpace ident)? : attr
-
-/- M -/ syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 

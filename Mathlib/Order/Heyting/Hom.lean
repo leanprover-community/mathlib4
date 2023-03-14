@@ -81,9 +81,9 @@ class HeytingHomClass (F : Type _) (α β : outParam <| Type _) [HeytingAlgebra 
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
 #align heyting_hom_class HeytingHomClass
 
-/-- `CoheytinghomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
+/-- `CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
 
-You should extend this class when you extend `Coheytinghom`. -/
+You should extend this class when you extend `CoheytingHom`. -/
 class CoheytingHomClass (F : Type _) (α β : outParam <| Type _) [CoheytingAlgebra α]
   [CoheytingAlgebra β] extends LatticeHomClass F α β where
   /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
@@ -92,7 +92,7 @@ class CoheytingHomClass (F : Type _) (α β : outParam <| Type _) [CoheytingAlge
   map_sdiff (f : F) : ∀ a b, f (a \ b) = f a \ f b
 #align coheyting_hom_class CoheytingHomClass
 
-/-- `BiheytinghomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
+/-- `BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
 
 You should extend this class when you extend `BiheytingHom`. -/
 class BiheytingHomClass (F : Type _) (α β : outParam <| Type _) [BiheytingAlgebra α]
@@ -144,8 +144,7 @@ instance (priority := 100) OrderIsoClass.toHeytingHomClass {_ : HeytingAlgebra �
     { _ : HeytingAlgebra β} [OrderIsoClass F α β] : HeytingHomClass F α β :=
   { OrderIsoClass.toBoundedLatticeHomClass with
     map_himp := fun f a b =>
-      eq_of_forall_le_iff fun c =>
-        by
+      eq_of_forall_le_iff fun c => by
         simp only [← map_inv_le_iff, le_himp_iff]
         rw [← OrderIsoClass.map_le_map_iff f]
         simp }
@@ -156,8 +155,7 @@ instance (priority := 100) OrderIsoClass.toCoheytingHomClass {_ : CoheytingAlgeb
     { _ : CoheytingAlgebra β} [OrderIsoClass F α β] : CoheytingHomClass F α β :=
   { OrderIsoClass.toBoundedLatticeHomClass with
     map_sdiff := fun f a b =>
-      eq_of_forall_ge_iff fun c =>
-        by
+      eq_of_forall_ge_iff fun c => by
         simp only [← le_map_inv_iff, sdiff_le_iff]
         rw [← OrderIsoClass.map_le_map_iff f]
         simp }
@@ -166,17 +164,14 @@ instance (priority := 100) OrderIsoClass.toCoheytingHomClass {_ : CoheytingAlgeb
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBiheytingHomClass {_ : BiheytingAlgebra α}
     { _ : BiheytingAlgebra β} [OrderIsoClass F α β] : BiheytingHomClass F α β :=
-  {
-    OrderIsoClass.toLatticeHomClass with
+  { OrderIsoClass.toLatticeHomClass with
     map_himp := fun f a b =>
-      eq_of_forall_le_iff fun c =>
-        by
+      eq_of_forall_le_iff fun c => by
         simp only [← map_inv_le_iff, le_himp_iff]
         rw [← OrderIsoClass.map_le_map_iff f]
         simp
     map_sdiff := fun f a b =>
-      eq_of_forall_ge_iff fun c =>
-        by
+      eq_of_forall_ge_iff fun c => by
         simp only [← le_map_inv_iff, sdiff_le_iff]
         rw [← OrderIsoClass.map_le_map_iff f]
         simp }
@@ -188,9 +183,7 @@ instance (priority := 100) OrderIsoClass.toBiheytingHomClass {_ : BiheytingAlgeb
 @[reducible]
 def BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
     [BoundedLatticeHomClass F α β] : BiheytingHomClass F α β :=
-  {
-    ‹BoundedLatticeHomClass F α
-        β› with
+  { ‹BoundedLatticeHomClass F α β› with
     map_himp := fun f a b => by rw [himp_eq, himp_eq, map_sup, (isCompl_compl.map _).compl_eq]
     map_sdiff := fun f a b => by rw [sdiff_eq, sdiff_eq, map_inf, (isCompl_compl.map _).compl_eq] }
 #align bounded_lattice_hom_class.to_biheyting_hom_class BoundedLatticeHomClass.toBiheytingHomClass
@@ -254,8 +247,7 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
-instance : HeytingHomClass (HeytingHom α β) α β
-    where
+instance : HeytingHomClass (HeytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
   map_sup f := f.map_sup'
@@ -286,8 +278,7 @@ theorem ext {f g : HeytingHom α β} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `HeytingHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : HeytingHom α β) (f' : α → β) (h : f' = f) : HeytingHom α β
-    where
+protected def copy (f : HeytingHom α β) (f' : α → β) (h : f' = f) : HeytingHom α β where
   toFun := f'
   map_sup' := by simpa only [h] using map_sup f
   map_inf' := by simpa only [h] using map_inf f
@@ -456,7 +447,7 @@ instance : Inhabited (CoheytingHom α α) :=
 instance : PartialOrder (CoheytingHom α β) :=
   PartialOrder.lift _ FunLike.coe_injective
 
-/-- Composition of `Coheytinghom`s as a `CoheytingHom`. -/
+/-- Composition of `CoheytingHom`s as a `CoheytingHom`. -/
 def comp (f : CoheytingHom β γ) (g : CoheytingHom α β) : CoheytingHom α γ :=
   { f.toLatticeHom.comp g.toLatticeHom with
     toFun := f ∘ g
@@ -506,8 +497,7 @@ namespace BiheytingHom
 
 variable [BiheytingAlgebra α] [BiheytingAlgebra β] [BiheytingAlgebra γ] [BiheytingAlgebra δ]
 
-instance : BiheytingHomClass (BiheytingHom α β) α β
-    where
+instance : BiheytingHomClass (BiheytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
   map_sup f := f.map_sup'
@@ -537,8 +527,7 @@ theorem ext {f g : BiheytingHom α β} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `BiheytingHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : BiheytingHom α β) (f' : α → β) (h : f' = f) : BiheytingHom α β
-    where
+protected def copy (f : BiheytingHom α β) (f' : α → β) (h : f' = f) : BiheytingHom α β where
   toFun := f'
   map_sup' := by simpa only [h] using map_sup f
   map_inf' := by simpa only [h] using map_inf f

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.basic
-! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! leanprover-community/mathlib commit 9da1b3534b65d9661eb8f42443598a92bbb49211
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -527,9 +527,8 @@ theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
 #align list.bind_singleton' List.bind_singleton'
 
 theorem map_eq_bind {α β} (f : α → β) (l : List α) : map f l = l.bind fun x => [f x] := by
-  trans
-  rw [← bind_singleton' l, bind_map]
-  rfl
+  simp_rw [←map_singleton]
+  rw [← bind_singleton' l, bind_map, bind_singleton']
 #align list.map_eq_bind List.map_eq_bind
 
 theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List γ) :
@@ -717,9 +716,7 @@ theorem dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dr
 
 /-! ### getLast -/
 
--- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
--- @[simp]
-@[simp 1100, nolint simpNF]
+@[simp]
 theorem getLast_cons {a : α} {l : List α} :
     ∀ h : l ≠ nil, getLast (a :: l) (cons_ne_nil a l) = getLast l h := by
   induction l <;> intros
@@ -746,9 +743,7 @@ theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne
   getLast_concat ..
 #align list.last_concat List.getLast_concat'
 
--- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
--- @[simp]
-@[simp 1100, nolint simpNF]
+@[simp]
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 #align list.last_singleton List.getLast_singleton'
 
@@ -790,15 +785,13 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 /-! ### getLast? -/
 
 -- Porting note: New lemma, since definition of getLast? is slightly different.
--- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
--- @[simp]
-@[simp 1100, nolint simpNF] theorem getLast?_singleton (a : α) :
+@[simp]
+theorem getLast?_singleton (a : α) :
     getLast? [a] = a := rfl
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
--- Porting note: TODO: After https://github.com/leanprover/std4/pull/75, change to:
--- @[simp]
-@[simp 1100, nolint simpNF] theorem getLast?_cons_cons (a b : α) (l : List α) :
+@[simp]
+theorem getLast?_cons_cons (a b : α) (l : List α) :
     getLast? (a :: b :: l) = getLast? (b :: l) := rfl
 
 @[simp]
@@ -975,7 +968,9 @@ set_option linter.deprecated false -- TODO(Mario): make replacements for theorem
     (h' : i + 1 < l.length := (by simpa [← lt_tsub_iff_right] using h)) :
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
   -- Porting note: cases l <;> [cases h, rfl] fails
-  cases l; {cases h}; rfl
+  cases l
+  · cases h
+  · rfl
 #align list.nth_le_tail List.nthLe_tail
 
 theorem nthLe_cons_aux {l : List α} {a : α} {n} (hn : n ≠ 0) (h : n < (a :: l).length) :
@@ -1202,7 +1197,7 @@ theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l
     cases l with
     | nil => rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
     | cons head tail =>
-      by_cases a = head
+      by_cases h : a = head
       · rw [indexOf_cons_eq tail h, indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, h,
           findIdx.go, beq_self_eq_true head, cond]
       · rw [indexOf, findIdx, findIdx, findIdx.go, beq_false_of_ne, cond, findIdx.go,
@@ -1225,7 +1220,7 @@ where
 -- rfl
 theorem indexOf_cons (a b : α) (l : List α) :
     indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
-  cases l <;> by_cases a = b
+  cases l <;> by_cases h : a = b
   case pos | pos => rw [if_pos h]; exact indexOf_cons_eq _ h
   case neg | neg => rw [if_neg h]; exact indexOf_cons_ne _ h
 #align list.index_of_cons List.indexOf_cons
@@ -1761,7 +1756,7 @@ theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n �
     (insertNth n x l).nthLe k hk' = l.nthLe k hk := @get_insertNth_of_lt _
 #align list.nth_le_insert_nth_of_lt List.nthLe_insertNth_of_lt
 
-@[simp, nolint simpNF] -- Porting note: bug in linter, see std4#78
+@[simp]
 theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).get ⟨n, hn'⟩ = x := by
@@ -1774,7 +1769,7 @@ theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
     · simp only [Nat.succ_le_succ_iff, length] at hn
       simpa using IH _ hn
 
-@[simp, deprecated get_insertNth_self, nolint simpNF] -- Porting note: bug in linter, see std4#78
+@[simp, deprecated get_insertNth_self]
 theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
     (insertNth n x l).nthLe n hn' = x := get_insertNth_self _ _ _ hn
@@ -1832,11 +1827,7 @@ theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ �
   refine' ⟨_, map_congr⟩; intro h x hx
   rw [mem_iff_get] at hx; rcases hx with ⟨n, hn, rfl⟩
   rw [get_map_rev f, get_map_rev g]
-  -- Porting note: with `nthLe` instead of `get` the remainder of the proof is simply `congr`
-  generalize_proofs h₁ h₂
-  generalize map f l = x, map g l = y at *
-  cases h
-  congr
+  congr!
 #align list.map_eq_map_iff List.map_eq_map_iff
 
 theorem map_concat (f : α → β) (a : α) (l : List α) :
@@ -1889,27 +1880,27 @@ theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f :=
     apply h
     simp [hxy]
   · induction' y with yh yt y_ih generalizing x
-    simpa using hxy
+    · simpa using hxy
     cases x
-    simp at hxy
-    simp at hxy
-    simp [y_ih hxy.2, h hxy.1]
+    · simp at hxy
+    · simp only [map, cons.injEq] at hxy
+      simp [y_ih hxy.2, h hxy.1]
 #align list.map_injective_iff List.map_injective_iff
 
-/-- A single `list.map` of a composition of functions is equal to
-composing a `list.map` with another `list.map`, fully applied.
-This is the reverse direction of `list.map_map`.
+/-- A single `List.map` of a composition of functions is equal to
+composing a `List.map` with another `List.map`, fully applied.
+This is the reverse direction of `List.map_map`.
 -/
 theorem comp_map (h : β → γ) (g : α → β) (l : List α) : map (h ∘ g) l = map h (map g l) :=
   (map_map _ _ _).symm
 #align list.comp_map List.comp_map
 
-/-- Composing a `list.map` with another `list.map` is equal to
-a single `list.map` of composed functions.
+/-- Composing a `List.map` with another `List.map` is equal to
+a single `List.map` of composed functions.
 -/
 @[simp]
 theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g ∘ f) := by
-  ext l; rw [comp_map]; rfl
+  ext l; rw [comp_map, Function.comp_apply]
 #align list.map_comp_map List.map_comp_map
 
 theorem map_filter_eq_foldr (f : α → β) (p : α → Bool) (as : List α) :
@@ -2645,7 +2636,6 @@ theorem foldlRecOn_nil {C : β → Sort _} (op : β → α → β) (b) (hb : C b
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
 
--- scanl
 section Scanl
 
 variable {f : β → α → β} {b : β} {a : α} {l : List α}
@@ -2920,7 +2910,7 @@ variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α 
 
 @[simp]
 theorem splitAt_eq_take_drop (n : ℕ) (l : List α) : splitAt n l = (take n l, drop n l) := by
-  by_cases n < l.length <;> rw [splitAt, go_eq_take_drop]
+  by_cases h : n < l.length <;> rw [splitAt, go_eq_take_drop]
   · rw [if_pos h]; rfl
   · rw [if_neg h, take_all_of_le <| le_of_not_lt h, drop_eq_nil_of_le <| le_of_not_lt h]
 where
@@ -2979,7 +2969,7 @@ theorem splitOnP.go_append (xs : List α) (acc : Array α) (r : Array (List α))
   | nil => rfl
   | cons a as =>
     simp only [go]
-    by_cases p a
+    by_cases h : p a
     · simp only [h, cond_true]
       rw [go_append as, go_append as _ (Array.push #[] (Array.toList acc))]
       simp only [Array.toListAppend_eq, Array.push_data]
@@ -2993,7 +2983,7 @@ theorem splitOnP.go_acc (xs : List α) (acc : Array α) :
   | nil => rfl
   | cons hd tl =>
     simp only [go]
-    by_cases p hd
+    by_cases h : p hd
     · simp only [h, cond_true]
       rw [go_append, go_append _ _ _ (Array.push #[] (Array.toList #[]))]
       rfl
@@ -3009,7 +2999,7 @@ theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := by
   | nil => exact cons_ne_nil [] []
   | cons hd tl =>
     rw [splitOnP, splitOnP.go]
-    by_cases p hd
+    by_cases h : p hd
     · rw [h, cond_true, splitOnP.go_append]
       exact append_ne_nil_of_ne_nil_left [[]] _ (cons_ne_nil [] [])
     · rw [eq_false_of_ne_true h, cond_false, splitOnP.go_acc, ←splitOnP]
@@ -3024,7 +3014,7 @@ theorem splitOnP_cons (x : α) (xs : List α) :
     (x :: xs).splitOnP p =
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
   rw [splitOnP, splitOnP.go]
-  by_cases p x
+  by_cases h : p x
   · rw [if_pos h, h, cond_true, splitOnP.go_append, splitOnP]; rfl
   · rw [if_neg h, eq_false_of_ne_true h, cond_false, splitOnP.go_acc, splitOnP]; congr 1
 #align list.split_on_p_cons List.splitOnP_consₓ
@@ -3037,7 +3027,7 @@ theorem splitOnP_spec (as : List α) :
   | nil => rfl
   | cons a as' ih =>
     rw [splitOnP_cons, filter]
-    by_cases p a
+    by_cases h : p a
     · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
@@ -3116,7 +3106,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
 end SplitAtOn
 
 /- Porting note: new; here tentatively -/
-/-! ### ModifyLast -/
+/-! ### modifyLast -/
 
 section ModifyLast
 
@@ -3816,7 +3806,8 @@ theorem monotone_filter_left (p : α → Bool) ⦃l l' : List α⦄ (h : l ⊆ l
 theorem filter_eq_self {l} : filter p l = l ↔ ∀ a ∈ l, p a := by
   induction' l with a l ih
   · exact iff_of_true rfl (forall_mem_nil _)
-  rw [forall_mem_cons]; by_cases p a
+  rw [forall_mem_cons]
+  by_cases h : p a
   · rw [filter_cons_of_pos _ h, cons_inj, ih, and_iff_right h]
   · refine' iff_of_false (fun hl => h <| of_mem_filter (_ : a ∈ filter p (a :: l))) (mt And.left h)
     rw [hl]
@@ -4262,6 +4253,28 @@ theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
   map_fst_add_enumFrom_eq_enumFrom l _ _
 #align list.map_fst_add_enum_eq_enum_from List.map_fst_add_enum_eq_enumFrom
 
+theorem enumFrom_cons' (n : ℕ) (x : α) (xs : List α) :
+    enumFrom n (x :: xs) = (n, x) :: (enumFrom n xs).map (Prod.map Nat.succ id) := by
+  rw [enumFrom_cons, add_comm, ← map_fst_add_enumFrom_eq_enumFrom]
+#align list.enum_from_cons' List.enumFrom_cons'
+
+theorem enum_cons' (x : α) (xs : List α) :
+    enum (x :: xs) = (0, x) :: (enum xs).map (Prod.map Nat.succ id) :=
+  enumFrom_cons' _ _ _
+#align list.enum_cons' List.enum_cons'
+
+theorem enumFrom_map (n : ℕ) (l : List α) (f : α → β) :
+    enumFrom n (l.map f) = (enumFrom n l).map (Prod.map id f) := by
+  induction' l with hd tl IH
+  · rfl
+  · rw [map_cons, enumFrom_cons', enumFrom_cons', map_cons, map_map, IH, map_map]
+    rfl
+#align list.enum_from_map List.enumFrom_map
+
+theorem enum_map (l : List α) (f : α → β) : (l.map f).enum = l.enum.map (Prod.map id f) :=
+  enumFrom_map _ _ _
+#align list.enum_map List.enum_map
+
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
     (hi : i.1 < l.length := (by simpa [length_enumFrom] using i.2)) :
     (l.enumFrom n).get i = (n + i, l.get ⟨i, hi⟩) := by
@@ -4312,7 +4325,7 @@ end Choose
 section Map₂Left'
 
 -- The definitional equalities for `map₂Left'` can already be used by the
--- simplifie because `map₂Left'` is marked `@[simp]`.
+-- simplifier because `map₂Left'` is marked `@[simp]`.
 @[simp]
 theorem map₂Left'_nil_right (f : α → Option β → γ) (as) :
     map₂Left' f as [] = (as.map fun a => f a none, []) := by cases as <;> rfl
@@ -4615,8 +4628,8 @@ The list definitions happen earlier than `to_additive`, so here we tag the few m
 definitions that couldn't be tagged earlier.
 -/
 
-attribute [to_additive] List.prod -- `list.sum`
-attribute [to_additive] alternatingProd -- `list.alternatingSum`
+attribute [to_additive existing] List.prod -- `List.sum`
+attribute [to_additive existing] alternatingProd -- `List.alternatingSum`
 
 /-! ### Miscellaneous lemmas -/
 

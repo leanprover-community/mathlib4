@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 
 ! This file was ported from Lean 3 source module topology.homeomorph
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
+! leanprover-community/mathlib commit 3b267e70a936eebb21ab546f49a8df34dd300b25
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -42,9 +42,9 @@ variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 structure Homeomorph (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β]
     extends α ≃ β where
   /-- The forward map of a homeomorphism is a continuous function. -/
-  continuous_toFun : Continuous toFun -- porting note: todo: := by continuity
+  continuous_toFun : Continuous toFun := by continuity
   /-- The inverse map of a homeomorphism is a continuous function. -/
-  continuous_invFun : Continuous invFun -- porting note: todo: := by continuity
+  continuous_invFun : Continuous invFun := by continuity
 #align homeomorph Homeomorph
 
 @[inherit_doc]
@@ -77,19 +77,15 @@ protected def symm (h : α ≃ₜ β) : β ≃ₜ α where
   toEquiv := h.toEquiv.symm
 #align homeomorph.symm Homeomorph.symm
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
-def Simps.apply (h : α ≃ₜ β) : α → β :=
-  h
-#align homeomorph.simps.apply Homeomorph.Simps.apply
+@[simp] theorem symm_symm (h : α ≃ₜ β) : h.symm.symm = h := rfl
+#align homeomorph.symm_symm Homeomorph.symm_symm
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (h : α ≃ₜ β) : β → α :=
   h.symm
 #align homeomorph.simps.symm_apply Homeomorph.Simps.symm_apply
 
-initialize_simps_projections Homeomorph (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
-  -toEquiv)
+initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem coe_toEquiv (h : α ≃ₜ β) : ⇑h.toEquiv = h :=
@@ -137,13 +133,13 @@ theorem refl_symm : (Homeomorph.refl α).symm = Homeomorph.refl α :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem continuous (h : α ≃ₜ β) : Continuous h :=
   h.continuous_toFun
 #align homeomorph.continuous Homeomorph.continuous
 
 -- otherwise `by continuity` can't prove continuity of `h.to_equiv.symm`
--- porting note: todo: restore @[continuity]
+@[continuity]
 protected theorem continuous_symm (h : α ≃ₜ β) : Continuous h.symm :=
   h.continuous_invFun
 #align homeomorph.continuous_symm Homeomorph.continuous_symm
@@ -188,7 +184,7 @@ def changeInv (f : α ≃ₜ β) (g : β → α) (hg : Function.RightInverse g f
   { toFun := f
     invFun := g
     left_inv := by convert f.left_inv
-    right_inv := by convert f.right_inv
+    right_inv := by convert f.right_inv using 1
     continuous_toFun := f.continuous
     continuous_invFun := by convert f.symm.continuous }
 #align homeomorph.change_inv Homeomorph.changeInv

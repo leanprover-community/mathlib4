@@ -9,6 +9,7 @@ import subprocess
 import sys
 import yaml
 import networkx as nx
+from collections import defaultdict
 from pathlib import Path
 
 # Must run from root of mathlib4 directory.
@@ -27,16 +28,6 @@ mathlib4_root = 'Mathlib/'
 source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
-synchronized_re = re.compile(r".*SYNCHRONIZED WITH MATHLIB4.*")
-
-# Not using re.compile as this is passed to git which uses a different regex dialect:
-# https://www.sjoerdlangkemper.nl/2021/08/13/how-does-git-diff-ignore-matching-lines-work/
-comment_git_re = r'\`(' + r'|'.join([
-    re.escape("> THIS FILE IS SYNCHRONIZED WITH MATHLIB4."),
-    re.escape("> https://github.com/leanprover-community/mathlib4/pull/") + r"[0-9]*",
-    re.escape("> Any changes to this file require a corresponding PR to mathlib4."),
-    r"",
-]) + r")" + "\n"
 
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
@@ -59,8 +50,6 @@ for path in Path(mathlib3_root).glob('**/*.lean'):
         continue
     graph.add_node(mk_label(path))
 
-synchronized = dict()
-
 for path in Path(mathlib3_root).glob('**/*.lean'):
     if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
         continue
@@ -77,8 +66,6 @@ for path in Path(mathlib3_root).glob('**/*.lean'):
                 else:
                     imported = 'lean_core.' + imported
             graph.add_edge(imported, label)
-        if synchronized_re.match(line):
-            synchronized[label] = True
 
 def get_mathlib4_module_commit_info(contents):
     module = repo = commit = None
@@ -127,12 +114,16 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
 prs = {}
 fetch_args = ['git', 'fetch', 'origin']
 nums = []
+sync_prs = defaultdict(set)
 mathlib4repo = github.Github(github_token).get_repo("leanprover-community/mathlib4")
 for pr in mathlib4repo.get_pulls(state='open'):
     if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0):
         continue
     if 'no-source-header' in (l.name for l in pr.labels):
         continue
+    if 'mathlib3-pair' in (l.name for l in pr.labels):
+        for file in (f.filename for f in pr.get_files()):
+            sync_prs[file].add(pr.number)
     num = pr.number
     nums.append(num)
     prs[num] = pr
@@ -154,10 +145,6 @@ for num in nums:
         _, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
         prs_of_condensed.setdefault(condense(l), []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
-def pr_to_str(pr):
-    labels = ' '.join(f'[{l.name}]' for l in pr.labels)
-    return f'[#{pr.number}]({pr.html_url}) (by {pr.user.login}, {labels}, last activity {pr.updated_at})'
-
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"
 comments_dict = yaml.safe_load(requests.get(COMMENTS_URL).content.replace(b"```", b""))
 
@@ -171,9 +158,18 @@ for node in sorted(graph.nodes):
             mathlib4_pr=data[node]['mathlib4_pr'],
             source=data[node]['source']
         )
+        _sync_prs = [
+            dict(
+                num=sync_pr_num,
+                labels=[dict(name=l.name, color=l.color) for l in prs[sync_pr_num].labels]
+            )
+            for sync_pr_num in sync_prs[data[node]['mathlib4_file']]
+        ]
+        if _sync_prs:
+            new_status.update(mathlib4_sync_prs=_sync_prs)
         pr_status = f"mathlib4#{data[node]['mathlib4_pr']}" if data[node]['mathlib4_pr'] is not None else "_"
         sha = data[node]['source']['commit'] if data[node]['source']['repo'] == 'leanprover-community/mathlib' else "_"
-        
+
         status = f"Yes {pr_status} {sha}"
     else:
         new_status = dict(ported=False)
@@ -187,6 +183,9 @@ for node in sorted(graph.nodes):
                 mathlib4_pr=pr_info['pr'],
                 mathlib4_file=pr_info['fname'],
                 source=dict(repo=pr_info['repo'], commit=pr_info['commit']))
+            labels = [{'name': l.name, 'color': l.color} for l in prs[pr_info['pr']].labels]
+            if labels:
+                new_status.update(labels=labels)
             sha = pr_info['commit'] if pr_info['repo'] == 'leanprover-community/mathlib' else "_"
             status += f" mathlib4#{pr_info['pr']} {sha}"
     try:

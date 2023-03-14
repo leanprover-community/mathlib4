@@ -160,10 +160,10 @@ instance : CompleteLattice (Opens α) :=
     -- inf
     (fun U V => ⟨↑U ∩ ↑V, U.2.inter V.2⟩)
     (funext₂ fun U V => ext (U.2.inter V.2).interior_eq.symm)
-    -- Sup
+    -- supₛ
     (fun S => ⟨⋃ s ∈ S, ↑s, isOpen_bunionᵢ fun s _ => s.2⟩)
     (funext fun _ => ext supₛ_image.symm)
-    -- Inf
+    -- infₛ
     _ rfl
 
 @[simp]
@@ -452,8 +452,8 @@ instance : OrderTop (OpenNhdsOf x) where
   le_top _ := subset_univ _
 
 instance : Inhabited (OpenNhdsOf x) := ⟨⊤⟩
-instance : HasInf (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
-instance : HasSup (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
+instance : Inf (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
+instance : Sup (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
 
 -- porting note: new instance
 instance [Subsingleton α] : Unique (OpenNhdsOf x) where
