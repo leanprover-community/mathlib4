@@ -221,6 +221,28 @@ and then builds the lambda telescope term for the new term.
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
 
+open private mkFun from Lean.Meta.AppBuilder in
+/-- Applies `constName` directly to the type `t`. This reduces the type of `constName` via
+`forallMetaTelescopeReducing`, then attempts to unify the resulting type with `t`. If successful,
+it attempts to synthesize the metavariables acquired via the telescope, and returns an inhabitant
+of `t` together with an array of `MVarId`s that could not be filled in by unification or typeclass
+synthesis.
+
+Note that the resulting `MVarId`s will be `.natural` by default.
+
+This function fails if it cannot synthesize instance arguments, unless `allowPendingInstMVars` is
+`true`.
+
+Note that, if successful, this may assign metavariables in `t` unless this is run at a new MCtx
+depth. -/
+def applyMatchReducing (constName : Name) (t : Expr) (kind : MetavarKind := .natural)
+    (allowPendingInstMVars := false) : MetaM (Expr × Array MVarId) := do
+  let (cExpr, cType) ← mkFun constName
+  let (hs,bs,ct) ← forallMetaTelescopeReducing cType (kind := kind)
+  unless ← isDefEq t ct do
+    throwError "The reduced inner target {ct} of {constName} is not defeq to {t}."
+  let (expr, goals?) ← mkAppMFromTelescope' cExpr (hs, bs) allowPendingInstMVars
+  return (expr, goals?.reduceOption)
 
 
 /-- Get the type the given metavariable after instantiating metavariables and cleaning up
