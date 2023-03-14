@@ -105,7 +105,7 @@ theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
 #align zmod.add_order_of_one ZMod.addOrderOf_one
 
 /-- This lemma works in the case in which `ZMod n` is not infinite, i.e. `n ≠ 0`.  The version
-where `a ≠ 0` is `add_order_of_coe'`. -/
+where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   cases' a with a
@@ -114,7 +114,7 @@ theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod
 #align zmod.add_order_of_coe ZMod.addOrderOf_coe
 
 /-- This lemma works in the case in which `a ≠ 0`.  The version where
- `ZMod n` is not infinite, i.e. `n ≠ 0`, is `add_order_of_coe`. -/
+ `ZMod n` is not infinite, i.e. `n ≠ 0`, is `addOrderOf_coe`. -/
 @[simp]
 theorem addOrderOf_coe' {a : ℕ} (n : ℕ) (a0 : a ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   rw [← Nat.smul_one_eq_coe, addOrderOf_nsmul' _ a0, ZMod.addOrderOf_one]
@@ -319,7 +319,7 @@ theorem cast_mul (h : m ∣ n) (a b : ZMod n) : ((a * b : ZMod n) : R) = a * b :
 
 /-- The canonical ring homomorphism from `ZMod n` to a ring of characteristic `n`.
 
-See also `ZMod.lift` (in `data.zmod.quotient`) for a generalized version working in `AddGroup`s.
+See also `ZMod.lift` (in `Data.ZMod.Quotient`) for a generalized version working in `AddGroup`s.
 -/
 def castHom (h : m ∣ n) (R : Type _) [Ring R] [CharP R m] : ZMod n →+* R where
   toFun := (↑)
@@ -635,6 +635,7 @@ def inv : ∀ n : ℕ, ZMod n → ZMod n
 instance (n : ℕ) : Inv (ZMod n) :=
   ⟨inv n⟩
 
+@[nolint unusedHavesSuffices]
 theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
   | 0 => Int.sign_zero
   | n + 1 =>
@@ -685,7 +686,7 @@ theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.coprime x n) :
   rw [mul_inv_eq_gcd, val_nat_cast, h, Nat.cast_one]
 #align zmod.coe_mul_inv_eq_one ZMod.coe_mul_inv_eq_one
 
-/-- `unit_of_coprime` makes an element of `(ZMod n)ˣ` given
+/-- `unitOfCoprime` makes an element of `(ZMod n)ˣ` given
   a natural number `x` and a proof that `x` is coprime to `n`  -/
 def unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.coprime x n) : (ZMod n)ˣ :=
   ⟨x, x⁻¹, coe_mul_inv_eq_one x h, by rw [mul_comm, coe_mul_inv_eq_one x h]⟩
@@ -904,7 +905,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   rwa [le_zero_iff, val_eq_zero] at h
 #align zmod.neg_val ZMod.neg_val
 
-/-- `val_min_abs x` returns the integer in the same equivalence class as `x` that is closest to `0`,
+/-- `valMinAbs x` returns the integer in the same equivalence class as `x` that is closest to `0`,
   The result will be in the interval `(-n/2, n/2]`. -/
 def valMinAbs : ∀ {n : ℕ}, ZMod n → ℤ
   | 0, x => x
@@ -1208,4 +1209,3 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 end lift
 
 end ZMod
-#lint
