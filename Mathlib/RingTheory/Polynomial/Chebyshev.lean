@@ -241,22 +241,33 @@ theorem t_derivative_eq_u : ∀ n : ℕ, derivative (t R (n + 1)) = (n + 1) * u 
   | 0 => by simp only [t_one, u_zero, derivative_X, Nat.cast_zero, zero_add, mul_one]
   | 1 =>
     by
+    have : 1 + 1 = 2 := by norm_num
+    rw [this, t_two, derivative_sub, derivative_one, derivative_mul]
+    have : ((2 : ℕ) : R[X]) = (2:R[X]) := by norm_num
+    rw [← this]
+    -- TODO porting: simplify proof
+    have : (@FunLike.coe (R →+* R[X]) R (fun a => R[X]) MulHomClass.toFunLike C 2 : R[X])
+        = (2 : R[X]) := by
+         norm_cast
+    simp only [derivative_nat_cast, derivative_mul, derivative_X_pow]
     simp only [t_two, u_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow,
       Nat.cast_one, Nat.cast_two]
+    simp only [this]
     norm_num
   | n + 2 =>
     calc
       derivative (t R (n + 2 + 1)) =
           2 * t R (n + 2) + 2 * X * derivative (t R (n + 1 + 1)) - derivative (t R (n + 1)) :=
         by
-        simp only [t_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_X,
-          derivative_bit0, derivative_one, bit0_zero, MulZeroClass.zero_mul, zero_add, mul_one]
-      _ =
-          2 * (u R (n + 1 + 1) - X * u R (n + 1)) + 2 * X * ((n + 1 + 1 : R[X]) * u R (n + 1)) -
-            (n + 1 : R[X]) * u R n := by
+          rw [t_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X]
+          have : (@FunLike.coe (R →+* R[X]) R (fun a => R[X]) MulHomClass.toFunLike C 2 : R[X])
+            = (2 : R[X]) := by
+            norm_cast
+          rw [← this, derivative_C]
+          ring_nf
+      _ = 2 * (u R (n + 1 + 1) - X * u R (n + 1)) + 2 * X * (((n + 1 + 1) : R[X]) * u R (n + 1))
+        - ((n + 1) : R[X]) * u R n := by
             rw_mod_cast [t_derivative_eq_u, t_derivative_eq_u, t_eq_u_sub_x_mul_u]
-            simp?
-            ring
       _ = (n + 1 : R[X]) * (2 * X * u R (n + 1) - u R n) + 2 * u R (n + 2) := by ring
       _ = (n + 1) * u R (n + 2) + 2 * u R (n + 2) := by rw [u_add_two]
       _ = (n + 2 + 1) * u R (n + 2) := by ring
