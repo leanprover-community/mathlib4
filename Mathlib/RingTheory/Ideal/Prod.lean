@@ -48,10 +48,12 @@ theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
   Ideal.ext <| by simp
 #align ideal.prod_top_top Ideal.prod_top_top
 
+set_option synthInstance.etaExperiment true
+
 /-- Every ideal of the product ring is of the form `I × J`, where `I` and `J` can be explicitly
     given as the image under the projection maps. -/
 theorem ideal_prod_eq (I : Ideal (R × S)) :
-    I = Ideal.prod (map (RingHom.fst R S) I) (map (RingHom.snd R S) I) := by
+    I = Ideal.prod (map (RingHom.fst R S) I : Ideal R) (map (RingHom.snd R S) I) := by
   apply Ideal.ext
   rintro ⟨r, s⟩
   rw [mem_prod, mem_map_iff_of_surjective (RingHom.fst R S) Prod.fst_surjective,
@@ -63,7 +65,7 @@ theorem ideal_prod_eq (I : Ideal (R × S)) :
 
 @[simp]
 theorem map_fst_prod (I : Ideal R) (J : Ideal S) : map (RingHom.fst R S) (prod I J) = I := by
-  ext
+  ext x
   rw [mem_map_iff_of_surjective (RingHom.fst R S) Prod.fst_surjective]
   exact
     ⟨by
@@ -73,7 +75,7 @@ theorem map_fst_prod (I : Ideal R) (J : Ideal S) : map (RingHom.fst R S) (prod I
 
 @[simp]
 theorem map_snd_prod (I : Ideal R) (J : Ideal S) : map (RingHom.snd R S) (prod I J) = J := by
-  ext
+  ext x
   rw [mem_map_iff_of_surjective (RingHom.snd R S) Prod.snd_surjective]
   exact
     ⟨by
@@ -176,4 +178,3 @@ theorem ideal_prod_prime (I : Ideal (R × S)) :
 #align ideal.ideal_prod_prime Ideal.ideal_prod_prime
 
 end Ideal
-
