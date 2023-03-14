@@ -906,6 +906,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
   warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
   warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
+  -- the next line also warns for `@[to_additive, simps]`, because of the application times
+  warnParametricAttr stx simpsAttr thisAttr `simps src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simp`, `simps` and `to_additive`.
