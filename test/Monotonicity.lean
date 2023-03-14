@@ -13,49 +13,43 @@ import Mathlib.Data.List.Defs
 open List Set
 
 example (x y z k : ℕ)
-    (h : 3 ≤ (4 : ℕ))
+    (_ : 3 ≤ (4 : ℕ))
     (h' : z ≤ y) :
     (k + 3 + x) - y ≤ (k + 4 + x) - z := by
   mono
-  -- norm_num
+  norm_num
 
 example (x y z k : ℤ)
-    (h : 3 ≤ (4 : ℤ))
+    (_ : 3 ≤ (4 : ℤ))
     (h' : z ≤ y) :
     (k + 3 + x) - y ≤ (k + 4 + x) - z := by
   mono
-  -- norm_num
+  norm_num
 
-example (x y z a b : ℕ)
+theorem x (x y z a b : ℕ)
     (h : a ≤ (b : ℕ))
     (h' : z ≤ y) :
     (1 + a + x) - y ≤ (1 + b + x) - z := by
-  transitivity (1 + a + x - z)
+  trans (1 + a + x - z)
   · mono
-  · mono
-    -- mono
-    -- mono
+  · mono; mono; mono
 
 example (x y z a b : ℤ)
     (h : a ≤ (b : ℤ))
     (h' : z ≤ y) :
     (1 + a + x) - y ≤ (1 + b + x) - z := by
   apply @le_trans ℤ _ _ (1 + a + x - z)
-  -- transitivity (1 + a + x - z)
+  trans (1 + a + x - z)
   · mono
   · mono
-    -- mono
-    -- mono
 
 example (x y z : ℤ)
     (h' : z ≤ y) :
     (1 + 3 + x) - y ≤ (1 + 4 + x) - z := by
   apply @le_trans ℤ _ _ (1 + 3 + x - z)
-  -- transitivity (1 + 3 + x - z)
+  trans (1 + 3 + x - z)
   · mono
   · mono
-    -- mono
-    norm_num
 
 example {x y z : ℕ} : true := by
   have : y + x ≤ y + z := by
@@ -352,6 +346,7 @@ example {x y z w : ℕ} : true := by
 --   exact 1,
 -- end
 
+-- These require specific lemmas.
 
 -- example {x y z w : ℕ} : true := by
 --   have : x * y ≤ z * w := by
@@ -376,19 +371,21 @@ example {x y z w : ℕ} : true := by
 --     guard_target = y → w ; admit
 --   trivial
 
--- example {x y z w : ℤ} : true := by
---   suffices : x + y < w + z ; trivial
---   have : x < w ; admit
---   have : y ≤ z ; admit
---   mono right
 
--- example {x y z w : ℤ} : true := by
---   suffices : x * y < w * z ; trivial
---   have : x < w ; admit
---   have : y ≤ z ; admit
---   mono right
---   · guard_target = 0 < y ; admit
---   · guard_target = 0 ≤ w ; admit
+example {x y z w : ℤ} : true := by
+  suffices : x + y < w + z
+  · trivial
+  have : x < w := sorry
+  have : y ≤ z := sorry
+  mono
+
+example {x y z w : ℤ} : true := by
+  suffices : x * y < w * z ; trivial
+  have : x < w ; admit
+  have : y ≤ z ; admit
+  mono right
+  · guard_target = 0 < y ; admit
+  · guard_target = 0 ≤ w ; admit
 
 -- example (x y : ℕ)
 --   (h : x ≤ y)
@@ -402,18 +399,14 @@ example {x y z w : ℕ} : true := by
 --   exact 3
 -- end
 
--- example {α} [LinearOrder α]
---     (a b c d e : α) :
---     max a b ≤ e → b ≤ e := by
---   mono
---   apply le_max_right
+example {α} [LinearOrder α] (a b c d e : α) : max a b ≤ e → b ≤ e := by
+  mono
+  apply le_max_right
 
--- example (a b c d e : Prop)
---     (h : d → a) (h' : c → e) :
---     (a ∧ b → c) ∨ d → (d ∧ b → e) ∨ a := by
---   mono
---   mono
---   mono
+example (a b c d e : Prop) (h : d → a) (h' : c → e) : (a ∧ b → c) ∨ d → (d ∧ b → e) ∨ a := by
+  mono
+  mono
+  mono
 
 -- example : ∫ x in Icc 0 1, real.exp x ≤ ∫ x in Icc 0 1, real.exp (x+1) := by
 --   mono
