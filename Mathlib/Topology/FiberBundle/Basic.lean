@@ -172,38 +172,51 @@ Fiber bundle, topological bundle, structure group
 
 variable {ι : Type _} {B : Type _} {F : Type _}
 
-open TopologicalSpace Filter Set Bundle
-
-open Topology Classical Bundle
+open TopologicalSpace Filter Set Bundle Topology
 
 attribute [mfld_simps]
-  total_space.proj total_space_mk coe_fst coe_snd coe_snd_map_apply coe_snd_map_smul total_space.mk_cast
+  TotalSpace.proj totalSpaceMk coe_fst coe_snd coe_snd_map_apply coe_snd_map_smul TotalSpace.mk_cast
 
 /-! ### General definition of fiber bundles -/
-
 
 section FiberBundle
 
 variable (F) [TopologicalSpace B] [TopologicalSpace F] (E : B → Type _)
   [TopologicalSpace (TotalSpace E)] [∀ b, TopologicalSpace (E b)]
 
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`totalSpaceMk_inducing] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`trivializationAtlas] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`trivializationAt] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`mem_baseSet_trivializationAt] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:388:30: infer kinds are unsupported in Lean 4: #[`trivialization_mem_atlas] [] -/
 /-- A (topological) fiber bundle with fiber `F` over a base `B` is a space projecting on `B`
 for which the fibers are all homeomorphic to `F`, such that the local situation around each point
 is a direct product. -/
 class FiberBundle where
-  totalSpaceMk_inducing : ∀ b : B, Inducing (@totalSpaceMk B E b)
-  trivializationAtlas : Set (Trivialization F (π E))
-  trivializationAt : B → Trivialization F (π E)
-  mem_baseSet_trivializationAt : ∀ b : B, b ∈ (trivialization_at b).baseSet
-  trivialization_mem_atlas : ∀ b : B, trivialization_at b ∈ trivialization_atlas
+  totalSpaceMk_inducing' : ∀ b : B, Inducing (@totalSpaceMk B E b)
+  trivializationAtlas' : Set (Trivialization F (π E))
+  trivializationAt' : B → Trivialization F (π E)
+  mem_baseSet_trivializationAt' : ∀ b : B, b ∈ (trivializationAt' b).baseSet
+  trivialization_mem_atlas' : ∀ b : B, trivializationAt' b ∈ trivializationAtlas'
 #align fiber_bundle FiberBundle
 
-export FiberBundle ()
+namespace FiberBundle
+
+variable [FiberBundle F E] (b : B)
+
+theorem totalSpaceMk_inducing : Inducing (@totalSpaceMk B E b) := totalSpaceMk_inducing' F b
+
+/-- Atlas of a fiber bundle. -/
+abbrev trivializationAtlas : Set (Trivialization F (π E)) := trivializationAtlas'
+
+/-- Trivialization of a fiber bundle at a point. -/
+abbrev trivializationAt : Trivialization F (π E) := trivializationAt' b
+
+theorem mem_baseSet_trivializationAt : b ∈ (trivializationAt F E b).baseSet :=
+  mem_baseSet_trivializationAt' b
+
+theorem trivialization_mem_atlas : trivializationAt F E b ∈ trivializationAtlas F E :=
+  trivialization_mem_atlas' b
+
+end FiberBundle
+
+export FiberBundle (totalSpaceMk_inducing trivializationAtlas trivializationAt
+  mem_baseSet_trivializationAt trivialization_mem_atlas)
 
 variable {F E}
 
@@ -212,17 +225,18 @@ for trivializations of `E`, expressing that a trivialization is in the designate
 bundle.  This is needed because lemmas about the linearity of trivializations or the continuity (as
 functions to `F →L[R] F`, where `F` is the model fiber) of the transition functions are only
 expected to hold for trivializations in the designated atlas. -/
-@[mk_iff]
+@[mk_iff memTrivializationAtlas_iff]
 class MemTrivializationAtlas [FiberBundle F E] (e : Trivialization F (π E)) : Prop where
   out : e ∈ trivializationAtlas F E
 #align mem_trivialization_atlas MemTrivializationAtlas
 
-instance [FiberBundle F E] (b : B) : MemTrivializationAtlas (trivializationAt F E b)
-    where out := trivialization_mem_atlas F E b
+instance [FiberBundle F E] (b : B) : MemTrivializationAtlas (trivializationAt F E b) where
+  out := trivialization_mem_atlas F E b
 
 namespace FiberBundle
 
-variable (F) {E} [FiberBundle F E]
+variable (F)
+variable [FiberBundle F E]
 
 theorem map_proj_nhds (x : TotalSpace E) : map (π E) (𝓝 x) = 𝓝 x.proj :=
   (trivializationAt F E x.proj).map_proj_nhds <|
@@ -257,8 +271,16 @@ theorem quotientMap_proj [Nonempty F] : QuotientMap (π E) :=
 #align fiber_bundle.quotient_map_proj FiberBundle.quotientMap_proj
 
 theorem continuous_totalSpaceMk (x : B) : Continuous (@totalSpaceMk B E x) :=
-  (totalSpaceMk_inducing F E x).Continuous
+  (totalSpaceMk_inducing F E x).continuous
 #align fiber_bundle.continuous_total_space_mk FiberBundle.continuous_totalSpaceMk
+
+theorem totalSpaceMk_embedding (x : B) : Embedding (@totalSpaceMk B E x) :=
+  ⟨totalSpaceMk_inducing F E x, sigma_mk_injective⟩
+
+theorem totalSpaceMk_closedEmbedding [T1Space B] (x : B) : ClosedEmbedding (@totalSpaceMk B E x) :=
+  ⟨totalSpaceMk_embedding F E x, by
+    rw [range_sigmaMk]
+    exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
 end FiberBundle
 
@@ -269,72 +291,68 @@ then it is trivial over any closed interval. -/
 theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinearOrder B]
     [OrderTopology B] [FiberBundle F E] (a b : B) :
     ∃ e : Trivialization F (π E), Icc a b ⊆ e.baseSet := by
-  classical
-    obtain ⟨ea, hea⟩ : ∃ ea : Trivialization F (π E), a ∈ ea.baseSet :=
-      ⟨trivialization_at F E a, mem_base_set_trivialization_at F E a⟩
-    -- If `a < b`, then `[a, b] = ∅`, and the statement is trivial
-      cases' le_or_lt a b with hab hab <;>
-      [skip, exact ⟨ea, by simp [*]⟩]
-    /- Let `s` be the set of points `x ∈ [a, b]` such that `E` is trivializable over `[a, x]`.
-      We need to show that `b ∈ s`. Let `c = Sup s`. We will show that `c ∈ s` and `c = b`. -/
-    set s : Set B := { x ∈ Icc a b | ∃ e : Trivialization F (π E), Icc a x ⊆ e.baseSet }
-    have ha : a ∈ s := ⟨left_mem_Icc.2 hab, ea, by simp [hea]⟩
-    have sne : s.nonempty := ⟨a, ha⟩
-    have hsb : b ∈ upperBounds s := fun x hx => hx.1.2
-    have sbd : BddAbove s := ⟨b, hsb⟩
-    set c := Sup s
-    have hsc : IsLUB s c := isLUB_csupₛ sne sbd
-    have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
-    obtain ⟨-, ec : Trivialization F (π E), hec : Icc a c ⊆ ec.base_set⟩ : c ∈ s :=
-      by
-      cases' hc.1.eq_or_lt with heq hlt
-      · rwa [← HEq]
-      refine' ⟨hc, _⟩
-      /- In order to show that `c ∈ s`, consider a trivialization `ec` of `proj` over a neighborhood
-          of `c`. Its base set includes `(c', c]` for some `c' ∈ [a, c)`. -/
-      obtain ⟨ec, hc⟩ : ∃ ec : Trivialization F (π E), c ∈ ec.baseSet :=
-        ⟨trivialization_at F E c, mem_base_set_trivialization_at F E c⟩
-      obtain ⟨c', hc', hc'e⟩ : ∃ c' ∈ Ico a c, Ioc c' c ⊆ ec.base_set :=
-        (mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset hlt).1
-          (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds ec.open_base_set hc)
+  obtain ⟨ea, hea⟩ : ∃ ea : Trivialization F (π E), a ∈ ea.baseSet :=
+    ⟨trivializationAt F E a, mem_baseSet_trivializationAt F E a⟩
+  -- If `a < b`, then `[a, b] = ∅`, and the statement is trivial
+  cases' lt_or_le b a with hab hab
+  · exact ⟨ea, by simp [*]⟩
+  /- Let `s` be the set of points `x ∈ [a, b]` such that `E` is trivializable over `[a, x]`.
+    We need to show that `b ∈ s`. Let `c = Sup s`. We will show that `c ∈ s` and `c = b`. -/
+  set s : Set B := { x ∈ Icc a b | ∃ e : Trivialization F (π E), Icc a x ⊆ e.baseSet }
+  have ha : a ∈ s := ⟨left_mem_Icc.2 hab, ea, by simp [hea]⟩
+  have sne : s.Nonempty := ⟨a, ha⟩
+  have hsb : b ∈ upperBounds s := fun x hx => hx.1.2
+  have sbd : BddAbove s := ⟨b, hsb⟩
+  set c := supₛ s
+  have hsc : IsLUB s c := isLUB_csupₛ sne sbd
+  have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
+  obtain ⟨-, ec : Trivialization F (π E), hec : Icc a c ⊆ ec.baseSet⟩ : c ∈ s := by
+    cases' hc.1.eq_or_lt with heq hlt
+    · rwa [← heq]
+    refine ⟨hc, ?_⟩
+    /- In order to show that `c ∈ s`, consider a trivialization `ec` of `proj` over a neighborhood
+      of `c`. Its base set includes `(c', c]` for some `c' ∈ [a, c)`. -/
+    obtain ⟨ec, hc⟩ : ∃ ec : Trivialization F (π E), c ∈ ec.baseSet :=
+      ⟨trivializationAt F E c, mem_baseSet_trivializationAt F E c⟩
+    obtain ⟨c', hc', hc'e⟩ : ∃ c' ∈ Ico a c, Ioc c' c ⊆ ec.baseSet :=
+      (mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset hlt).1
+        (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds ec.open_baseSet hc)
       /- Since `c' < c = Sup s`, there exists `d ∈ s ∩ (c', c]`. Let `ead` be a trivialization of
           `proj` over `[a, d]`. Then we can glue `ead` and `ec` into a trivialization over `[a, c]`. -/
-      obtain ⟨d, ⟨hdab, ead, had⟩, hd⟩ : ∃ d ∈ s, d ∈ Ioc c' c := hsc.exists_between hc'.2
-      refine' ⟨ead.piecewise_le ec d (had ⟨hdab.1, le_rfl⟩) (hc'e hd), subset_ite.2 _⟩
-      refine'
-        ⟨fun x hx => had ⟨hx.1.1, hx.2⟩, fun x hx => hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
-    /- So, `c ∈ s`. Let `ec` be a trivialization of `proj` over `[a, c]`.  If `c = b`, then we are
-      done. Otherwise we show that `proj` can be trivialized over a larger interval `[a, d]`,
-      `d ∈ (c, b]`, hence `c` is not an upper bound of `s`. -/
-    cases' hc.2.eq_or_lt with heq hlt
-    · exact ⟨ec, HEq ▸ hec⟩
-    rsuffices ⟨d, hdcb, hd⟩ : ∃ d ∈ Ioc c b, ∃ e : Trivialization F (π E), Icc a d ⊆ e.baseSet
-    · exact ((hsc.1 ⟨⟨hc.1.trans hdcb.1.le, hdcb.2⟩, hd⟩).not_lt hdcb.1).elim
-    /- Since the base set of `ec` is open, it includes `[c, d)` (hence, `[a, d)`) for some
-      `d ∈ (c, b]`. -/
-    obtain ⟨d, hdcb, hd⟩ : ∃ d ∈ Ioc c b, Ico c d ⊆ ec.base_set :=
-      (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
-        (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds ec.open_base_set (hec ⟨hc.1, le_rfl⟩))
-    have had : Ico a d ⊆ ec.base_set := Ico_subset_Icc_union_Ico.trans (union_subset hec hd)
-    by_cases he : Disjoint (Iio d) (Ioi c)
-    · /- If `(c, d) = ∅`, then let `ed` be a trivialization of `proj` over a neighborhood of `d`.
-          Then the disjoint union of `ec` restricted to `(-∞, d)` and `ed` restricted to `(c, ∞)` is
-          a trivialization over `[a, d]`. -/
-      obtain ⟨ed, hed⟩ : ∃ ed : Trivialization F (π E), d ∈ ed.baseSet :=
-        ⟨trivialization_at F E d, mem_base_set_trivialization_at F E d⟩
-      refine'
-        ⟨d, hdcb,
-          (ec.restr_open (Iio d) isOpen_Iio).disjointUnion (ed.restr_open (Ioi c) isOpen_Ioi)
-            (he.mono (inter_subset_right _ _) (inter_subset_right _ _)),
-          fun x hx => _⟩
-      rcases hx.2.eq_or_lt with (rfl | hxd)
-      exacts[Or.inr ⟨hed, hdcb.1⟩, Or.inl ⟨had ⟨hx.1, hxd⟩, hxd⟩]
-    · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
+    obtain ⟨d, ⟨hdab, ead, had⟩, hd⟩ : ∃ d ∈ s, d ∈ Ioc c' c := hsc.exists_between hc'.2
+    refine' ⟨ead.piecewiseLe ec d (had ⟨hdab.1, le_rfl⟩) (hc'e hd), subset_ite.2 _⟩
+    refine' ⟨fun x hx => had ⟨hx.1.1, hx.2⟩, fun x hx => hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
+  /- So, `c ∈ s`. Let `ec` be a trivialization of `proj` over `[a, c]`.  If `c = b`, then we are
+    done. Otherwise we show that `proj` can be trivialized over a larger interval `[a, d]`,
+    `d ∈ (c, b]`, hence `c` is not an upper bound of `s`. -/
+  cases' hc.2.eq_or_lt with heq hlt
+  · exact ⟨ec, heq ▸ hec⟩
+  suffices : ∃ d ∈ Ioc c b, ∃ e : Trivialization F (π E), Icc a d ⊆ e.baseSet
+  · rcases this with  ⟨d, hdcb, hd⟩ -- porting note: todo: use `rsuffices`
+    exact ((hsc.1 ⟨⟨hc.1.trans hdcb.1.le, hdcb.2⟩, hd⟩).not_lt hdcb.1).elim
+  /- Since the base set of `ec` is open, it includes `[c, d)` (hence, `[a, d)`) for some
+    `d ∈ (c, b]`. -/
+  obtain ⟨d, hdcb, hd⟩ : ∃ d ∈ Ioc c b, Ico c d ⊆ ec.baseSet :=
+    (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
+      (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds ec.open_baseSet (hec ⟨hc.1, le_rfl⟩))
+  have had : Ico a d ⊆ ec.baseSet := Ico_subset_Icc_union_Ico.trans (union_subset hec hd)
+  by_cases he : Disjoint (Iio d) (Ioi c)
+  · /- If `(c, d) = ∅`, then let `ed` be a trivialization of `proj` over a neighborhood of `d`.
+      Then the disjoint union of `ec` restricted to `(-∞, d)` and `ed` restricted to `(c, ∞)` is
+      a trivialization over `[a, d]`. -/
+    obtain ⟨ed, hed⟩ : ∃ ed : Trivialization F (π E), d ∈ ed.baseSet :=
+      ⟨trivializationAt F E d, mem_baseSet_trivializationAt F E d⟩
+    refine' ⟨d, hdcb,
+      (ec.restrOpen (Iio d) isOpen_Iio).disjointUnion (ed.restrOpen (Ioi c) isOpen_Ioi)
+        (he.mono (inter_subset_right _ _) (inter_subset_right _ _)), fun x hx => _⟩
+    rcases hx.2.eq_or_lt with (rfl | hxd)
+    exacts[Or.inr ⟨hed, hdcb.1⟩, Or.inl ⟨had ⟨hx.1, hxd⟩, hxd⟩]
+  · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
           `[a, d)`, it includes `[a, d'] ⊆ [a, d)` as well. -/
-      rw [disjoint_left] at he
-      push_neg  at he
-      rcases he with ⟨d', hdd' : d' < d, hd'c⟩
-      exact ⟨d', ⟨hd'c, hdd'.le.trans hdcb.2⟩, ec, (Icc_subset_Ico_right hdd').trans had⟩
+    rw [disjoint_left] at he
+    push_neg  at he
+    rcases he with ⟨d', hdd' : d' < d, hd'c⟩
+    exact ⟨d', ⟨hd'c, hdd'.le.trans hdcb.2⟩, ec, (Icc_subset_Ico_right hdd').trans had⟩
 #align fiber_bundle.exists_trivialization_Icc_subset FiberBundle.exists_trivialization_Icc_subset
 
 end FiberBundle
@@ -351,64 +369,49 @@ Trivialization changes from `i` to `j` are given by continuous maps `coord_chang
 `base_set i ∩ base_set j` to the set of homeomorphisms of `F`, but we express them as maps
 `B → F → F` and require continuity on `(base_set i ∩ base_set j) × F` to avoid the topology on the
 space of continuous maps on `F`. -/
-@[nolint has_nonempty_instance]
+-- porting note: was @[nolint has_nonempty_instance]
 structure FiberBundleCore (ι : Type _) (B : Type _) [TopologicalSpace B] (F : Type _)
-  [TopologicalSpace F] where
+    [TopologicalSpace F] where
   baseSet : ι → Set B
-  isOpen_baseSet : ∀ i, IsOpen (base_set i)
+  isOpen_baseSet : ∀ i, IsOpen (baseSet i)
   indexAt : B → ι
-  mem_baseSet_at : ∀ x, x ∈ base_set (index_at x)
+  mem_baseSet_at : ∀ x, x ∈ baseSet (indexAt x)
   coordChange : ι → ι → B → F → F
-  coordChange_self : ∀ i, ∀ x ∈ base_set i, ∀ v, coord_change i i x v = v
-  continuousOn_coordChange :
-    ∀ i j,
-      ContinuousOn (fun p : B × F => coord_change i j p.1 p.2) ((base_set i ∩ base_set j) ×ˢ univ)
-  coordChange_comp :
-    ∀ i j k,
-      ∀ x ∈ base_set i ∩ base_set j ∩ base_set k,
-        ∀ v, (coord_change j k x) (coord_change i j x v) = coord_change i k x v
+  coordChange_self : ∀ i, ∀ x ∈ baseSet i, ∀ v, coordChange i i x v = v
+  continuousOn_coordChange : ∀ i j,
+    ContinuousOn (fun p : B × F => coordChange i j p.1 p.2) ((baseSet i ∩ baseSet j) ×ˢ univ)
+  coordChange_comp : ∀ i j k, ∀ x ∈ baseSet i ∩ baseSet j ∩ baseSet k, ∀ v,
+    (coordChange j k x) (coordChange i j x v) = coordChange i k x v
 #align fiber_bundle_core FiberBundleCore
 
 namespace FiberBundleCore
 
 variable [TopologicalSpace B] [TopologicalSpace F] (Z : FiberBundleCore ι B F)
 
-include Z
-
 /-- The index set of a fiber bundle core, as a convenience function for dot notation -/
-@[nolint unused_arguments has_nonempty_instance]
-def Index :=
-  ι
+@[nolint unusedArguments] -- porting note: was has_nonempty_instance
+def Index (_Z : FiberBundleCore ι B F) := ι
 #align fiber_bundle_core.index FiberBundleCore.Index
 
 /-- The base space of a fiber bundle core, as a convenience function for dot notation -/
-@[nolint unused_arguments, reducible]
-def Base :=
-  B
+@[nolint unusedArguments, reducible]
+def Base (_Z : FiberBundleCore ι B F) := B
 #align fiber_bundle_core.base FiberBundleCore.Base
 
 /-- The fiber of a fiber bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unused_arguments has_nonempty_instance]
-def Fiber (x : B) :=
-  F
+@[nolint unusedArguments] -- porting note: was has_nonempty_instance
+def Fiber (_ : FiberBundleCore ι B F) (_x : B) := F
 #align fiber_bundle_core.fiber FiberBundleCore.Fiber
 
-section FiberInstances
-
-attribute [local reducible] fiber
-
-instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := by infer_instance
+instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
 #align fiber_bundle_core.topological_space_fiber FiberBundleCore.topologicalSpaceFiber
-
-end FiberInstances
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
 It is by definition equal to `bundle.total_space Z.fiber`, a.k.a. `Σ x, Z.fiber x` but with a
 different name for typeclass inference. -/
-@[nolint unused_arguments, reducible]
-def TotalSpace :=
-  Bundle.TotalSpace Z.Fiber
+@[reducible]
+def TotalSpace := Bundle.TotalSpace Z.Fiber
 #align fiber_bundle_core.total_space FiberBundleCore.TotalSpace
 
 /-- The projection from the total space of a fiber bundle core, on its base. -/
@@ -420,8 +423,7 @@ def proj : Z.TotalSpace → B :=
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : LocalHomeomorph (B × F) (B × F)
-    where
+def trivChange (i j : ι) : LocalHomeomorph (B × F) (B × F) where
   source := (Z.baseSet i ∩ Z.baseSet j) ×ˢ univ
   target := (Z.baseSet i ∩ Z.baseSet j) ×ˢ univ
   toFun p := ⟨p.1, Z.coordChange i j p.1 p.2⟩
