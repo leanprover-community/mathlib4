@@ -168,6 +168,7 @@ and then builds the lambda telescope term for the new term.
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
 
+open private mkFun from Lean.Meta.AppBuilder in
 /-- Applies `constName` directly to the type `t`. This reduces the type of `constName` via
 `forallMetaTelescopeReducing`, then attempts to unify the resulting type with `t`. If successful,
 it attempts to synthesize the metavariables acquired via the telescope, and returns an inhabitant
