@@ -17,7 +17,7 @@ import Mathlib.GroupTheory.GroupAction.Quotient
 /-!
 # Group action on rings applied to polynomials
 
-This file contains instances and definitions relating `mul_semiring_action` to `polynomial`.
+This file contains instances and definitions relating `MulSemiringAction` to `Polynomial`.
 -/
 
 
@@ -50,9 +50,9 @@ variable (M)
 noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
   { Polynomial.distribMulAction with
     smul := (· • ·)
-    smul_one := fun m =>
+    smul_one := fun m ↦
       smul_eq_map R m ▸ Polynomial.map_one (MulSemiringAction.toRingHom M R m)
-    smul_mul := fun m _ _ =>
+    smul_mul := fun m _ _ ↦
       smul_eq_map R m ▸ Polynomial.map_mul (MulSemiringAction.toRingHom M R m) }
 
 variable {M R}
@@ -68,8 +68,8 @@ set_option linter.uppercaseLean3 false in
 variable (S : Type _) [CommSemiring S] [MulSemiringAction M S]
 
 theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m • f.eval x :=
-  Polynomial.induction_on f (fun r => by rw [smul_C, eval_C, eval_C])
-    (fun f g ihf ihg => by rw [smul_add, eval_add, ihf, ihg, eval_add, smul_add]) fun n r _ => by
+  Polynomial.induction_on f (fun r ↦ by rw [smul_C, eval_C, eval_C])
+    (fun f g ihf ihg ↦ by rw [smul_add, eval_add, ihf, ihg, eval_add, smul_add]) fun n r _ ↦ by
     rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_pow, eval_X, eval_mul, eval_C,
       eval_pow, eval_X, smul_mul', smul_pow']
 #align polynomial.smul_eval_smul Polynomial.smul_eval_smul
@@ -77,11 +77,13 @@ theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m
 variable (G : Type _) [Group G]
 
 theorem eval_smul' [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
-    f.eval (g • x) = g • (g⁻¹ • f).eval x := by rw [← smul_eval_smul, smul_inv_smul]
+    f.eval (g • x) = g • (g⁻¹ • f).eval x := by
+  rw [← smul_eval_smul, smul_inv_smul]
 #align polynomial.eval_smul' Polynomial.eval_smul'
 
 theorem smul_eval [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
-    (g • f).eval x = g • f.eval (g⁻¹ • x) := by rw [← smul_eval_smul, smul_inv_smul]
+    (g • f).eval x = g • f.eval (g⁻¹ • x) := by
+  rw [← smul_eval_smul, smul_inv_smul]
 #align polynomial.smul_eval Polynomial.smul_eval
 
 end Polynomial
@@ -99,12 +101,12 @@ open Classical
 
 /-- the product of `(X - g • x)` over distinct `g • x`. -/
 noncomputable def prodXSubSmul (x : R) : R[X] :=
-  (Finset.univ : Finset (G ⧸ MulAction.stabilizer G x)).prod fun g =>
+  (Finset.univ : Finset (G ⧸ MulAction.stabilizer G x)).prod fun g ↦
     Polynomial.X - Polynomial.C (ofQuotientStabilizer G x g)
 #align prod_X_sub_smul prodXSubSmul
 
 theorem prodXSubSmul.monic (x : R) : (prodXSubSmul G R x).Monic :=
-  Polynomial.monic_prod_of_monic _ _ fun _ _ => Polynomial.monic_X_sub_C _
+  Polynomial.monic_prod_of_monic _ _ fun _ _ ↦ Polynomial.monic_X_sub_C _
 #align prod_X_sub_smul.monic prodXSubSmul.monic
 
 theorem prodXSubSmul.eval (x : R) : (prodXSubSmul G R x).eval x = 0 :=
@@ -114,7 +116,7 @@ theorem prodXSubSmul.eval (x : R) : (prodXSubSmul G R x).eval x = 0 :=
 
 theorem prodXSubSmul.smul (x : R) (g : G) : g • prodXSubSmul G R x = prodXSubSmul G R x :=
   Finset.smul_prod.trans <|
-    Fintype.prod_bijective _ (MulAction.bijective g) _ _ fun g' => by
+    Fintype.prod_bijective _ (MulAction.bijective g) _ _ fun g' ↦ by
       rw [ofQuotientStabilizer_smul, smul_sub, Polynomial.smul_X, Polynomial.smul_C]
 #align prod_X_sub_smul.smul prodXSubSmul.smul
 
@@ -136,15 +138,14 @@ variable {Q : Type _} [CommSemiring Q] [MulSemiringAction M Q]
 open Polynomial
 
 /-- An equivariant map induces an equivariant map on polynomials. -/
-protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X]
-    where
+protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] where
   toFun := map g
   map_smul' m p :=
     Polynomial.induction_on p
-      (fun b => by rw [smul_C, map_C, coe_fn_coe, g.map_smul, map_C, coe_fn_coe, smul_C])
-      (fun p q ihp ihq => by
+      (fun b ↦ by rw [smul_C, map_C, coe_fn_coe, g.map_smul, map_C, coe_fn_coe, smul_C])
+      (fun p q ihp ihq ↦ by
         rw [smul_add, Polynomial.map_add, ihp, ihq, Polynomial.map_add, smul_add])
-      fun n b _ => by
+      fun n b _ ↦ by
       rw [smul_mul', smul_C, smul_pow', smul_X, Polynomial.map_mul, map_C, Polynomial.map_pow,
         map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,
         smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
@@ -156,8 +157,7 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X]
 #align mul_semiring_action_hom.polynomial MulSemiringActionHom.polynomial
 
 @[simp]
-theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) = map g :=
-  rfl
+theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) = map g := rfl
 #align mul_semiring_action_hom.coe_polynomial MulSemiringActionHom.coe_polynomial
 
 end MulSemiringActionHom
