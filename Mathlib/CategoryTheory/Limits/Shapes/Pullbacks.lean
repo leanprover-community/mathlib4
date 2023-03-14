@@ -648,12 +648,28 @@ def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t
   WalkingCospan.ext i w₁ w₂
 #align category_theory.limits.pullback_cone.ext CategoryTheory.Limits.PullbackCone.ext
 
+-- porting note: `IsLimit.lift` and the two following simp lemmas were introduced to ease the port
+/-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
+    `h ≫ f = k ≫ g`, then we get `l : W ⟶ t.pt`, which satisfies `l ≫ fst t = h`
+    and `l ≫ snd t = k`, see `IsLimit.lift_fst` and `IsLimit.lift_snd`. -/
+def IsLimit.lift {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : W ⟶ t.pt :=
+  ht.lift <| PullbackCone.mk _ _ w
+
+@[reassoc (attr := simp)]
+lemma IsLimit.lift_fst {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : IsLimit.lift ht h k w ≫ fst t = h := ht.fac _ _
+
+@[reassoc (attr := simp)]
+lemma IsLimit.lift_snd {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : IsLimit.lift ht h k w ≫ snd t = k := ht.fac _ _
+
 /-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
     `h ≫ f = k ≫ g`, then we have `l : W ⟶ t.pt` satisfying `l ≫ fst t = h` and `l ≫ snd t = k`.
     -/
 def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : { l : W ⟶ t.pt // l ≫ fst t = h ∧ l ≫ snd t = k } :=
-  ⟨ht.lift <| PullbackCone.mk _ _ w, ht.fac _ _, ht.fac _ _⟩
+  ⟨IsLimit.lift ht h k w, by simp⟩
 #align category_theory.limits.pullback_cone.is_limit.lift' CategoryTheory.Limits.PullbackCone.IsLimit.lift'
 
 /-- This is a more convenient formulation to show that a `PullbackCone` constructed using
