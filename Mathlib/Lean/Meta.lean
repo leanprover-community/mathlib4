@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Thomas Murrills
 -/
 import Lean.Elab
 import Lean.Meta.Tactic.Assert
@@ -137,6 +137,61 @@ def countLocalHypsUsed [Monad m] [MonadLCtx m] [MonadMCtx m] (e : Expr) : m Nat 
   let e' ← instantiateMVars e
   return (← getLocalHyps).toList.countp fun h => h.occurs e'
 
+/-- Given an expression `e`, return `some mvarId` if `e` is an unassigned metavariable with MVarId
+`mvarId`. Return `none` otherwise. -/
+def mvarIdOfUnassignedMVarExpr? (e : Expr) : MetaM (Option MVarId) := do
+  if e.isMVar then
+    let mvarId := e.mvarId!
+    if ← mvarId.isAssigned then pure none else return mvarId
+  else pure none
+
+/-- Like `mkFun`, but does not return the type. -/
+private def mkFun' (constName : Name) : MetaM Expr := do
+  let cinfo ← getConstInfo constName
+  let us ← cinfo.levelParams.mapM fun _ => mkFreshLevelMVar
+  return Expr.const constName us
+
+/-- Adapted from `mkAppMFinal`. -/
+private def mkAppMOfMetaTelescopeFinal (f : Expr) (argMVars : Array Expr) (instMVars : Array MVarId)
+    (allowPendingInstMVars : Bool) : MetaM (Expr × Array (Option MVarId)) := do
+  instMVars.forM fun mvarId => do
+    let mvarDecl ← mvarId.getDecl
+    if allowPendingInstMVars then
+      let some mvarVal ← synthInstance? mvarDecl.type | pure () --!! error message?
+      mvarId.assign mvarVal
+    else
+      let mvarVal ← synthInstance mvarDecl.type
+      mvarId.assign mvarVal
+  let result ← instantiateMVars (mkAppN f argMVars)
+  let mvarids? ← argMVars.mapM mvarIdOfUnassignedMVarExpr?
+  return (result, mvarids?)
+
+-- TODO(Thomas): PR remaining utilities
+
+/-- Like `mkAppMFromTelescope`, but uses an `Expr`. -/
+def mkAppMFromTelescope' (f : Expr) : (Array Expr × Array BinderInfo) →
+    (allowPendingInstMVars : Bool := false) → MetaM (Expr × Array (Option MVarId))
+  | (hs, bs), allowPendingInstMVars => do
+    let hbs := hs.zip bs
+    let instMVars ← hbs.filterMapM
+      (fun | (h, BinderInfo.instImplicit) => mvarIdOfUnassignedMVarExpr? h | _ => pure none)
+    mkAppMOfMetaTelescopeFinal f hs instMVars allowPendingInstMVars
+
+/--
+Given `(hs, bs)`, as in the output of e.g. `forallMetaTelescope`, construct the application of
+`constName` on the `hs`.
+
+Attempts to synthesize any instance arguments, and fails unless `allowPendingInstMVars` is true.
+
+Returns the `constName` application together with the `MVarId`s of any metavariables in `hs` that
+are still unassigned, in the same position as they were in `hs`.
+
+This function does not check that the type of `constName` is compatible with the types of the `hs`.
+-/
+def mkAppMFromTelescope (constName : Name) (telescope : Array Expr × Array BinderInfo)
+    (allowPendingInstMVars : Bool := false) : MetaM (Expr × Array (Option MVarId)) := do
+  mkAppMFromTelescope' (← mkFun' constName) telescope allowPendingInstMVars
+
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,
 lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
@@ -153,6 +208,7 @@ and then builds the lambda telescope term for the new term.
 -/
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
+
 
 
 /-- Get the type the given metavariable after instantiating metavariables and cleaning up
