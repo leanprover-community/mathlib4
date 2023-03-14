@@ -19,7 +19,7 @@ import Mathlib.RingTheory.Localization.Basic
 
 ## Implementation notes
 
-See `src/ring_theory/Localization/basic.lean` for a design overview.
+See `RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -41,8 +41,8 @@ section
 
 variable (R)
 
--- TODO: define a subalgebra of `is_integer`s
-/-- Given `a : S`, `S` a localization of `R`, `is_integer R a` iff `a` is in the image of
+-- TODO: define a subalgebra of `IsInteger`s
+/-- Given `a : S`, `S` a localization of `R`, `IsInteger R a` iff `a` is in the image of
 the localization map from `R` to `S`. -/
 def IsInteger (a : S) : Prop :=
   a ∈ (algebraMap R S).range
@@ -77,7 +77,7 @@ variable [IsLocalization M S]
 
 /-- Each element `a : S` has an `M`-multiple which is an integer.
 
-This version multiplies `a` on the right, matching the argument order in `localization_map.surj`.
+This version multiplies `a` on the right, matching the argument order in `LocalizationMap.surj`.
 -/
 theorem exists_integer_multiple' (a : S) : ∃ b : M, IsInteger R (a * algebraMap R S b) :=
   let ⟨⟨Num, denom⟩, h⟩ := IsLocalization.surj _ a
