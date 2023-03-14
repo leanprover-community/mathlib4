@@ -1140,7 +1140,7 @@ instance LocallyCompactSpace.pi [∀ i, CompactSpace (π i)] : LocallyCompactSpa
     · exact forall₂_imp fun i _ hi' => hsub' i hi'
     · rw [← Set.univ_pi_ite]
       refine' isCompact_univ_pi fun i => _
-      by_cases i ∈ s
+      by_cases h : i ∈ s
       · rw [if_pos h]
         exact hc i
       · rw [if_neg h]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 
 ! This file was ported from Lean 3 source module data.dfinsupp.basic
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
+! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1185,10 +1185,10 @@ theorem mapRange_def [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] {f : ∀ i, β
 theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {i : ι} {b : β₁ i} :
     mapRange f hf (single i b) = single i (f i b) :=
   Dfinsupp.ext fun i' => by
-    by_cases i = i' <;>
-      [·
-        subst i'
-        simp, simp [h, hf]]
+    by_cases h : i = i'
+    · subst i'
+      simp
+    · simp [h, hf]
 #align dfinsupp.map_range_single Dfinsupp.mapRange_single
 
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
@@ -1480,9 +1480,9 @@ theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 
     case h₁ =>
       rw [@mem_image _ _ (fun a b ↦ Classical.propDecidable (a = b))]
       refine' ⟨⟨i, j⟩, _, rfl⟩
-      convert (mem_support_toFun f _).2 h <;> apply Subsingleton.elim
+      convert (mem_support_toFun f _).2 h
     · rw [mem_preimage]
-      convert (mem_support_toFun f _).2 h <;> apply Subsingleton.elim
+      convert (mem_support_toFun f _).2 h
 #align dfinsupp.sigma_curry_apply Dfinsupp.sigmaCurry_apply
 
 @[simp]

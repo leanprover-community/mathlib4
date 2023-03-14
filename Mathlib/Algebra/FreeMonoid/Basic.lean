@@ -180,7 +180,7 @@ theorem recOn_of_mul {C : FreeMonoid α → Sort _} (x : α) (xs : FreeMonoid α
 
 /-- A version of `List.cases_on` for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of
 `[]` and `x :: xs`. -/
-@[elab_as_elim, to_additive "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
+@[to_additive (attr := elab_as_elim) "A version of `List.casesOn` for `FreeAddMonoid` using `0` and
 `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`."]
 def casesOn {C : FreeMonoid α → Sort _} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C (of x * xs)) : C xs := List.casesOn xs h0 ih

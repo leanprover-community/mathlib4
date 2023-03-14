@@ -945,8 +945,7 @@ theorem IsOpen.eventually_mem {a : α} {s : Set α} (hs : IsOpen s) (ha : a ∈ 
 for a variant using open sets around `a` instead. -/
 theorem nhds_basis_opens' (a : α) :
     (𝓝 a).HasBasis (fun s : Set α => s ∈ 𝓝 a ∧ IsOpen s) fun x => x := by
-  convert nhds_basis_opens a
-  ext s
+  convert nhds_basis_opens a using 2
   exact and_congr_left_iff.2 IsOpen.mem_nhds_iff
 #align nhds_basis_opens' nhds_basis_opens'
 

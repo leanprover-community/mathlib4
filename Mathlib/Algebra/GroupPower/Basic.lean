@@ -88,6 +88,7 @@ theorem add_nsmul (a : A) (m n : ℕ) : (m + n) • a = m • a + n • a := by
   | succ m ih => rw [Nat.succ_add, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
 #align add_nsmul add_nsmul
 
+-- the attributes are intentionally out of order.
 @[to_additive existing nsmul_zero, simp]
 theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
   induction' n with n ih
