@@ -115,8 +115,6 @@ theorem pullback_diagonal_map_snd_snd_fst :
 
 variable [HasPullback i₁ i₂]
 
-set_option maxHeartbeats 400000
-
 /-- This iso witnesses the fact that
 given `f : X ⟶ Y`, `i : U ⟶ Y`, and `i₁ : V₁ ⟶ X ×[Y] U`, `i₂ : V₂ ⟶ X ×[Y] U`, the diagram
 
@@ -408,10 +406,10 @@ def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' 
         (pullback.fst : pullback (pullback.snd : pullback f' g' ⟶ _) i₂ ⟶ _) ≅
       pullback f g
     where
-  Hom :=
+  hom :=
     pullback.lift (pullback.fst ≫ pullback.snd) (pullback.snd ≫ pullback.snd)
       (by
-        rw [← cancel_mono i₃, category.assoc, category.assoc, category.assoc, category.assoc, e₁,
+        rw [← cancel_mono i₃, Category.assoc, Category.assoc, Category.assoc, Category.assoc, e₁,
           e₂, ← pullback.condition_assoc, pullback.condition_assoc, pullback.condition,
           pullback.condition_assoc])
   inv :=
@@ -419,14 +417,26 @@ def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' 
       (pullback.lift (pullback.map _ _ _ _ _ _ _ e₁ e₂) pullback.fst (pullback.lift_fst _ _ _))
       (pullback.lift (pullback.map _ _ _ _ _ _ _ e₁ e₂) pullback.snd (pullback.lift_snd _ _ _))
       (by rw [pullback.lift_fst, pullback.lift_fst])
-  hom_inv_id' := by
-    ext <;>
-      simp only [category.assoc, category.id_comp, lift_fst, lift_snd, lift_fst_assoc,
-        lift_snd_assoc, condition, ← condition_assoc]
-  inv_hom_id' := by
-    ext <;>
-      simp only [category.assoc, category.id_comp, lift_fst, lift_snd, lift_fst_assoc,
-        lift_snd_assoc]
+  hom_inv_id := by
+    apply pullback.hom_ext
+    . apply pullback.hom_ext
+      . apply pullback.hom_ext
+        . simp only [Category.assoc, lift_fst, lift_fst_assoc, Category.id_comp]
+          rw [condition]
+        . simp [Category.assoc, lift_snd]
+          rw [condition_assoc, condition]
+      . simp only [Category.assoc, lift_fst_assoc, lift_snd, lift_fst, Category.id_comp]
+    . apply pullback.hom_ext
+      . apply pullback.hom_ext
+        . simp only [Category.assoc, lift_snd_assoc, lift_fst_assoc, lift_fst, Category.id_comp]
+          rw [← condition_assoc, condition]
+        . simp only [Category.assoc, lift_snd, lift_fst_assoc, lift_snd_assoc, Category.id_comp]
+          rw [condition]
+      . simp only [Category.assoc, lift_snd_assoc, lift_snd, Category.id_comp]
+  inv_hom_id := by
+    apply pullback.hom_ext
+    . simp only [Category.assoc, lift_fst, lift_fst_assoc, lift_snd, Category.id_comp]
+    . simp only [Category.assoc, lift_snd, lift_snd_assoc, Category.id_comp]
 #align category_theory.limits.pullback_fst_fst_iso CategoryTheory.Limits.pullbackFstFstIso
 
 theorem pullback_map_eq_pullbackFstFstIso_inv {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S)
@@ -434,9 +444,7 @@ theorem pullback_map_eq_pullbackFstFstIso_inv {X Y S X' Y' S' : C} (f : X ⟶ S)
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
     pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂ =
       (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).inv ≫ pullback.snd ≫ pullback.fst := by
-  ext <;>
-    simp only [category.assoc, category.id_comp, lift_fst, lift_snd, lift_fst_assoc, lift_snd_assoc,
-      pullback_fst_fst_iso_inv, ← pullback.condition, ← pullback.condition_assoc]
+  simp only [pullbackFstFstIso_inv, lift_snd_assoc, lift_fst]
 #align category_theory.limits.pullback_map_eq_pullback_fst_fst_iso_inv CategoryTheory.Limits.pullback_map_eq_pullbackFstFstIso_inv
 
 theorem pullback_lift_map_isPullback {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S')
