@@ -57,7 +57,7 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements
     where
   Hom p q := { f : p.1 ⟶ q.1 // (F.map f) p.2 = q.2 }
   id p := ⟨𝟙 p.1, by aesop_cat⟩ -- porting note: was `obviously`
-  comp f g := ⟨f.val ≫ g.val, by obviously⟩
+  comp {X Y Z} f g := ⟨f.val ≫ g.val, by aesop_cat⟩
 #align category_theory.category_of_elements CategoryTheory.categoryOfElements
 
 namespace CategoryOfElements
@@ -129,7 +129,7 @@ theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F
 def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F
     where
   obj X := StructuredArrow.mk fun _ => X.2
-  map X Y f := StructuredArrow.homMk f.val (by tidy)
+  map {X Y} f := StructuredArrow.homMk f.val (by aesop_cat)
 #align category_theory.category_of_elements.to_structured_arrow CategoryTheory.CategoryOfElements.toStructuredArrow
 
 @[simp]
@@ -169,8 +169,8 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
 @[simps]
 def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F :=
   Equivalence.mk (toStructuredArrow F) (fromStructuredArrow F)
-    (NatIso.ofComponents (fun X => eqToIso (by tidy)) (by tidy))
-    (NatIso.ofComponents (fun X => StructuredArrow.isoMk (Iso.refl _) (by tidy)) (by tidy))
+    (NatIso.ofComponents (fun X => eqToIso (by aesop_cat)) (by aesop_cat))
+    (NatIso.ofComponents (fun X => StructuredArrow.isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat))
 #align category_theory.category_of_elements.structured_arrow_equivalence CategoryTheory.CategoryOfElements.structuredArrowEquivalence
 
 open Opposite
@@ -225,8 +225,8 @@ theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
   intro X Y f
   have :
     ∀ {a b : F.elements} (H : a = b),
-      ↑(eq_to_hom H) =
-        eq_to_hom
+      ↑(eqToHom H) =
+        eqToHom
           (show a.fst = b.fst by
             cases H
             rfl) :=
@@ -234,7 +234,7 @@ theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     cases H
     rfl
   ext; simp [this]
-  tidy
+  aesop_cat
 #align category_theory.category_of_elements.from_to_costructured_arrow_eq CategoryTheory.CategoryOfElements.from_toCostructuredArrow_eq
 
 /-- The counit of the equivalence `F.elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
