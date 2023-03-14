@@ -695,10 +695,26 @@ def opow (o₁ o₂ : Onote) : Onote :=
       scale (eb + mulNat a0 k) a + opowAux eb a0 (mulNat a m) k m
 #align onote.opow Onote.opow
 
+-- porting note: implemented for `opow_def`
+def opow_match' (o₂: Onote) (o₁ : Onote × ℕ ) : Onote :=
+  match o₁ with
+  | (0, 0) => if o₂ = 0 then 1 else 0
+  | (0, 1) => 1
+  | (0, m + 1) =>
+    let (b', k) := split' o₂
+    oadd b' (@Pow.pow ℕ+ _ _ m.succPNat k) 0
+  | (a@(oadd a0 _ _), m) =>
+    match split o₂ with
+    | (b, 0) => oadd (a0 * b) 1 0
+    | (b, k + 1) =>
+      let eb := a0 * b
+      scale (eb + mulNat a0 k) a + opowAux eb a0 (mulNat a m) k m
+
 instance : Pow Onote Onote :=
   ⟨opow⟩
 
-theorem opow_def (o₁ o₂ : Onote) : o₁ ^ o₂ = Opow._match1 o₂ (split o₁) :=
+-- porting note: `opow_match'` was `opow._match_1`
+theorem opow_def (o₁ o₂ : Onote) : o₁ ^ o₂ = opow_match' o₂ (split o₁) :=
   rfl
 #align onote.opow_def Onote.opow_def
 
