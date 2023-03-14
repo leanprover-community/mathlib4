@@ -8,7 +8,7 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Basic
 
 /-!
 # Lemmas about rings of characteristic two
@@ -124,16 +124,14 @@ section ringChar
 
 variable [Ring R]
 
-theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 :=
-  by
+theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
   refine' ⟨fun h => _, fun h => @CharTwo.neg_eq _ (ringChar.of_eq h) 1⟩
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 #align neg_one_eq_one_iff neg_one_eq_one_iff
 
 @[simp]
-theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 :=
-  by
+theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 := by
   split_ifs
   · rw [neg_one_eq_one_iff.2 h, orderOf_one]
   apply orderOf_eq_prime

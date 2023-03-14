@@ -29,6 +29,7 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
