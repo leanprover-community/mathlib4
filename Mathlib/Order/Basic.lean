@@ -995,7 +995,7 @@ def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective
   { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
 #align partial_order.lift PartialOrder.lift
 
-theorem compareOfLessAndEq_of_injective_eq_compareOfLessAndEq (a b : α) [Ord α] [LinearOrder β]
+theorem compareOfLessAndEq_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [DecidableEq α] (f : α → β) (inj : Injective f)
     [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
     compare (f a) (f b) =
