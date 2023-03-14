@@ -46,14 +46,14 @@ theorem taylor_apply : taylor r f = f.comp (X + C r) :=
 #align polynomial.taylor_apply Polynomial.taylor_apply
 
 @[simp]
-theorem taylor_x : taylor r X = X + C r := by simp only [taylor_apply, X_comp]
+theorem taylor_X : taylor r X = X + C r := by simp only [taylor_apply, X_comp]
 set_option linter.uppercaseLean3 false in
-#align polynomial.taylor_X Polynomial.taylor_x
+#align polynomial.taylor_X Polynomial.taylor_X
 
 @[simp]
-theorem taylor_c (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C_comp]
+theorem taylor_C (x : R) : taylor r (C x) = C x := by simp only [taylor_apply, C_comp]
 set_option linter.uppercaseLean3 false in
-#align polynomial.taylor_C Polynomial.taylor_c
+#align polynomial.taylor_C Polynomial.taylor_C
 
 @[simp]
 theorem taylor_zero' : taylor (0 : R) = LinearMap.id := by
@@ -66,7 +66,7 @@ theorem taylor_zero (f : R[X]) : taylor 0 f = f := by rw [taylor_zero', LinearMa
 #align polynomial.taylor_zero Polynomial.taylor_zero
 
 @[simp]
-theorem taylor_one : taylor r (1 : R[X]) = C 1 := by rw [← C_1, taylor_c]
+theorem taylor_one : taylor r (1 : R[X]) = C 1 := by rw [← C_1, taylor_C]
 #align polynomial.taylor_one Polynomial.taylor_one
 
 @[simp]
