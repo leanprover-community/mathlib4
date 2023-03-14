@@ -25,7 +25,7 @@ example : True := by
 `success_if_fail_with_msg`, since the inner one should fail with a certain message. -/
 
 example : True := by
-  success_if_fail_with_msg "tactic succeeded"
+  success_if_fail_with_msg "tactic 'trivial' succeeded"
     success_if_fail_with_msg "message" trivial
   trivial
 
@@ -38,3 +38,13 @@ example : True := by
   success_if_fail_with_msg err₂
     success_if_fail_with_msg "message" fail "different message!"
   trivial
+
+open Lean Meta Mathlib Tactic
+
+def alwaysFails : MetaM Unit := do throwError "I failed!"
+
+def doesntFail : MetaM Unit := do
+  try successIfFailWithMessage "I failed!" alwaysFails
+  catch _ => throwError "I *really* failed."
+
+#eval doesntFail
