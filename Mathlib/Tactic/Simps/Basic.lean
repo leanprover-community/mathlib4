@@ -487,7 +487,7 @@ partial def getCompositeOfProjectionsAux (stx : Syntax)
     throwError "{e} doesn't have a structure as type"
   let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do
-    (← ("_" ++ p.getString).isPrefixOf? proj, p)
+    (← (p.getString ++ "_").isPrefixOf? proj, p)
   let some (projRest, projName) := projInfo.reduceOption.getLast? |
     throwError "Failed to find constructor {proj.drop 1} in structure {structName}."
   let newE ← mkProjection e projName
@@ -522,7 +522,7 @@ def getCompositeOfProjections (structName : Name) (proj : String) (stx : Syntax)
   let type ← inferType strExpr
   forallTelescopeReducing type fun typeArgs _ ↦
   withLocalDeclD `x (mkAppN strExpr typeArgs) fun e ↦
-  getCompositeOfProjectionsAux stx ("_" ++ proj) e #[] <| typeArgs.push e
+  getCompositeOfProjectionsAux stx (proj ++ "_") e #[] <| typeArgs.push e
 
 /-- Get the default `ParsedProjectionData` for structure `str`.
   It first returns the direct fields of the structure in the right order, and then
@@ -1012,7 +1012,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
       let firstTodo := todoNext.head!.1
       throwError "Invalid simp lemma {nm.appendAfter firstTodo}.\nProjection {
-        (firstTodo.splitOn "_").tail.head!} doesn't exist, because target {str} is not a structure."
+        (firstTodo.splitOn "_")[1]!} doesn't exist, because target {str} is not a structure."
     if cfg.fullyApplied then
       addProjection stxProj univs nm tgt lhsAp rhsAp newArgs cfg
     else
@@ -1094,7 +1094,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   trace[simps.debug] "Next todo: {todoNext}"
   -- check whether all elements in `todo` have a projection as prefix
   if let some (x, _) := todo.find? fun (x, _) ↦ projs.all
-    fun proj ↦ !("_" ++ proj.getString).isPrefixOf x then
+    fun proj ↦ !(proj.getString ++ "_").isPrefixOf x then
     let simpLemma := nm.appendAfter x
     let neededProj := (x.splitOn "_").tail.head!
     throwError "Invalid simp lemma {simpLemma}. Structure {str} does not have projection {""
@@ -1105,7 +1105,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
-      fun (x, stx) ↦ (("_" ++ proj.getString).isPrefixOf? x).map (·, stx)
+      fun (x, stx) ↦ ((proj.getString ++ "_").isPrefixOf? x).map (·, stx)
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
@@ -1127,7 +1127,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let env ← getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
-  let todo := todo.pwFilter (·.1 ≠ ·.1) |>.map fun (proj, stx) ↦ ("_" ++ proj, stx)
+  let todo := todo.pwFilter (·.1 ≠ ·.1) |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
   let mut cfg := cfg
   MetaM.run' <| addProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []

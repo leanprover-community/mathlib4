@@ -1186,3 +1186,10 @@ noncomputable def fooSum {I J : Type _} (C : I → Type _) {D : J → Type _} :
 { obj := λ f => { obj := λ g s => Sum.rec f g s }}
 
 end
+
+/- Test that we deal with classes whose names are prefixes of other classes -/
+
+class MyDiv (α : Type _) extends Div α
+class MyDivInv (α : Type _) extends MyDiv α
+class MyGroup (α : Type _) extends MyDivInv α
+initialize_simps_projections MyGroup
