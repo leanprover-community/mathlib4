@@ -91,15 +91,6 @@ initialize monoExt : ScopedEnvExtension Entry Entry Monos ←
       { tree := tree.insertCore ks ext, erased := erased.erase ext.name }
   }
 
-
-
--- /-- Run each registered `mono` extension on an expression,
--- returning a `Simp.Result`. -/
--- def eval (e : Expr) (post := false) : MetaM Simp.Result := do
---   if isNormalForm e then return { expr := e }
---   let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
---   (← derive e post).toSimpResult
-
 /-- Erases a name marked `mono` by adding it to the state's `erased` field and
   removing it from the state's list of `Entry`s. -/
 def Monos.eraseCore (d : Monos) (declName : Name) : Monos :=
@@ -121,10 +112,6 @@ def Monos.toUnfold : Array Name := #[``Monotone, ``StrictMono, ``MonotoneOn, ``S
 def Monos.SimpContext : Simp.Context where
   config       := Simp.neutralConfig
   simpTheorems := #[{ toUnfold := Monos.toUnfold.foldl (·.insert ·) {}}]
-
---!! Consider having a `wasUnfolded` field in each `MonoExt` so that we only dsimp when we need to.
---!! Or, multiple `MonoExt`s, one for each declaration? Should we therefore add two things to the discrtree?
---!! Or, an `unfoldedBy` field with an array of names. Or, simply the `UsedSimps` directly; then we can feed them in.
 
 initialize registerBuiltinAttribute {
   name := `mono
@@ -165,9 +152,3 @@ initialize registerBuiltinAttribute {
     let s ← s.erase name
     modifyEnv fun env => monoExt.modifyState env fun _ => s
 }
-
---!! Where should something like `dsimpConsts` go? Or maybe `dunfold`?
--- /-- A simp plugin which calls `Mono.eval`. -/
--- def tryMono? (post := false) (e : Expr) : SimpM (Option Simp.Step) := do
---   try return some (.done (← eval e post))
---   catch _ => return none
