@@ -42,9 +42,9 @@ def successIfFailWithMessage [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [M
         throwError "tactic failed, but got different error message:\n\n{err}"
   else
     if let some ref := ref then
-      throwErrorAt ref "tactic '{ref}' succeeded, but was expected not to"
+      throwErrorAt ref "tactic '{ref}' succeeded, but was expected to fail"
     else
-      throwError "tactic succeeded, but was expected not to"
+      throwError "tactic succeeded, but was expected to fail"
 
 elab_rules : tactic
 | `(tactic| success_if_fail_with_msg $msg:term $tacs:tacticSeq) =>
