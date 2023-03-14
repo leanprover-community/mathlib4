@@ -8,8 +8,8 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.Algebra.Ring.Pi
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Ring.Pi
 
 /-!
 # Characteristic of semirings of functions
