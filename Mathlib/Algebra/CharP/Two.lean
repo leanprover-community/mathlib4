@@ -13,10 +13,10 @@ import Mathlib.Algebra.CharP.Basic
 /-!
 # Lemmas about rings of characteristic two
 
-This file contains results about `char_p R 2`, in the `char_two` namespace.
+This file contains results about `CharP R 2`, in the `CharTwo` namespace.
 
 The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_char` lemmas
-elsewhere, with a shorter name for ease of discovery, and no need for a `[fact (prime 2)]` argument.
+elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (prime 2)]` argument.
 -/
 
 
@@ -35,21 +35,25 @@ theorem two_eq_zero : (2 : R) = 0 := by rw [← Nat.cast_two, CharP.cast_eq_zero
 theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
 #align char_two.add_self_eq_zero CharTwo.add_self_eq_zero
 
+set_option linter.deprecated false in
 @[simp]
 theorem bit0_eq_zero : (bit0 : R → R) = 0 := by
   funext
   exact add_self_eq_zero _
 #align char_two.bit0_eq_zero CharTwo.bit0_eq_zero
 
+set_option linter.deprecated false in
 theorem bit0_apply_eq_zero (x : R) : (bit0 x : R) = 0 := by simp
 #align char_two.bit0_apply_eq_zero CharTwo.bit0_apply_eq_zero
 
+set_option linter.deprecated false in
 @[simp]
 theorem bit1_eq_one : (bit1 : R → R) = 1 := by
   funext
   simp [bit1]
 #align char_two.bit1_eq_one CharTwo.bit1_eq_one
 
+set_option linter.deprecated false in
 theorem bit1_apply_eq_one (x : R) : (bit1 x : R) = 1 := by simp
 #align char_two.bit1_apply_eq_one CharTwo.bit1_apply_eq_one
 
@@ -92,20 +96,20 @@ theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
 
 open BigOperators
 
-theorem list_sum_sq (l : List R) : l.Sum ^ 2 = (l.map (· ^ 2)).Sum :=
+theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   list_sum_pow_char _ _
 #align char_two.list_sum_sq CharTwo.list_sum_sq
 
-theorem list_sum_mul_self (l : List R) : l.Sum * l.Sum = (List.map (fun x => x * x) l).Sum := by
+theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
   simp_rw [← pow_two, list_sum_sq]
 #align char_two.list_sum_mul_self CharTwo.list_sum_mul_self
 
-theorem multiset_sum_sq (l : Multiset R) : l.Sum ^ 2 = (l.map (· ^ 2)).Sum :=
+theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   multiset_sum_pow_char _ _
 #align char_two.multiset_sum_sq CharTwo.multiset_sum_sq
 
 theorem multiset_sum_mul_self (l : Multiset R) :
-    l.Sum * l.Sum = (Multiset.map (fun x => x * x) l).Sum := by simp_rw [← pow_two, multiset_sum_sq]
+    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
 #align char_two.multiset_sum_mul_self CharTwo.multiset_sum_mul_self
 
 theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i in s, f i) ^ 2 = ∑ i in s, f i ^ 2 :=
@@ -125,14 +129,14 @@ section ringChar
 variable [Ring R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
-  refine' ⟨fun h => _, fun h => @CharTwo.neg_eq _ (ringChar.of_eq h) 1⟩
+  refine' ⟨fun h => _, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 #align neg_one_eq_one_iff neg_one_eq_one_iff
 
 @[simp]
 theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 := by
-  split_ifs
+  split_ifs with h
   · rw [neg_one_eq_one_iff.2 h, orderOf_one]
   apply orderOf_eq_prime
   · simp
@@ -140,4 +144,3 @@ theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 th
 #align order_of_neg_one orderOf_neg_one
 
 end ringChar
-
