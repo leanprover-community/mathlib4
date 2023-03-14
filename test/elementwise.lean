@@ -5,6 +5,9 @@ import Mathlib.Tactic.Elementwise
 namespace ElementwiseTest
 open CategoryTheory
 
+set_option linter.existingAttributeWarning false in
+attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+
 attribute [local instance] ConcreteCategory.hasCoeToFun ConcreteCategory.hasCoeToSort
 
 @[elementwise]
@@ -63,6 +66,15 @@ example [Category C] [ConcreteCategory C]
   have := elementwise_of% w
   guard_hyp this : ∀ (x : M), g (f x) = h x
   exact this x
+
+-- `elementwise_of%` allows a level metavariable for its `ConcreteCategory` instance.
+example [Category C] [ConcreteCategory C]
+    (h : ∀ D [Category D] (X Y : D) (f : X ⟶ Y) (g : Y ⟶ X), f ≫ g = 𝟙 X)
+    {M N : C} {f : M ⟶ N} {g : N ⟶ M} (x : M) : g (f x) = x := by
+  have := elementwise_of% h
+  guard_hyp this : ∀ D [Category D] (X Y : D) (f : X ⟶ Y) (g : Y ⟶ X)
+    [ConcreteCategory D] (x : X), g (f x) = x
+  rw [this]
 
 section Mon
 -- TODO: switch to actual Mon when it is ported
