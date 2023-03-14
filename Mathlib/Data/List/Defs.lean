@@ -613,6 +613,7 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
 
+--TODO: add heartbeats?
 /-- Given a function `f` that maps its elements to lists of elements in a monad that supports
 failure, we recursively apply `f` to all elements in an accumulated list of results, starting with
 `init`. If an element leads to a failure, we keep the element and stop evaluating `f` on it; if it
