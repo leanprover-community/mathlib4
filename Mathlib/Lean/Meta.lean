@@ -137,13 +137,16 @@ def mkAppMFromTelescope' (f : Expr) : (Array Expr × Array BinderInfo) →
     mkAppMOfMetaTelescopeFinal f hs instMVars allowPendingInstMVars
 
 /--
-Given `(hs, bs)`, as in the output of e.g. `forallMetaTelescope`, construct the application of `constName` on the `hs`.
+Given `(hs, bs)`, as in the output of e.g. `forallMetaTelescope`, construct the application of
+`constName` on the `hs`.
 
 Attempts to synthesize any instance arguments, and fails unless `allowPendingInstMVars` is true.
 
-Returns the `constName` application together with the `MVarId`s of any metavariables in `hs` that are still unassigned, in the same position as they were in `hs`.
+Returns the `constName` application together with the `MVarId`s of any metavariables in `hs` that
+are still unassigned, in the same position as they were in `hs`.
 
-This function does not check that the type of `constName` is compatible with the types of the `hs`. -/
+This function does not check that the type of `constName` is compatible with the types of the `hs`.
+-/
 def mkAppMFromTelescope (constName : Name) (telescope : Array Expr × Array BinderInfo)
     (allowPendingInstMVars : Bool := false) : MetaM (Expr × Array (Option MVarId)) := do
   mkAppMFromTelescope' (← mkFun' constName) telescope allowPendingInstMVars
