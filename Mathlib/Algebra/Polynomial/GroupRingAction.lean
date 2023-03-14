@@ -8,11 +8,11 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupRingAction.Basic
-import Mathbin.Algebra.Hom.GroupAction
-import Mathbin.Data.Polynomial.AlgebraMap
-import Mathbin.Data.Polynomial.Monic
-import Mathbin.GroupTheory.GroupAction.Quotient
+import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Hom.GroupAction
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Monic
+import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Group action on rings applied to polynomials
@@ -32,8 +32,7 @@ variable (R : Type _) [Semiring R]
 variable {M}
 
 theorem smul_eq_map [MulSemiringAction M R] (m : M) :
-    (· • ·) m = map (MulSemiringAction.toRingHom M R m) :=
-  by
+    (· • ·) m = map (MulSemiringAction.toRingHom M R m) := by
   suffices
     DistribMulAction.toAddMonoidHom R[X] m =
       (map_ring_hom (MulSemiringAction.toRingHom M R m)).toAddMonoidHom
