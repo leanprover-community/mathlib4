@@ -351,30 +351,26 @@ theorem vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
   calc
     (bind₁ f φ).vars = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars :=
       by rw [← AlgHom.map_sum, ← φ.as_sum]
-    _ ≤ φ.support.bUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
+    _ ≤ φ.support.bunionᵢ fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
       (vars_sum_subset _ _)
-    _ = φ.support.bUnion fun d : σ →₀ ℕ => (C (coeff d φ) * ∏ i in d.support, f i ^ d i).vars := by
+    _ = φ.support.bunionᵢ fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i in d.support, f i ^ d i) := by
       simp only [bind₁_monomial]
-    _ ≤ φ.support.bUnion fun d : σ →₀ ℕ => d.support.bUnion fun i => (f i).vars := _
+    _ ≤ φ.support.bunionᵢ fun d : σ →₀ ℕ => d.support.bunionᵢ fun i => vars (f i) := ?_
     -- proof below
-        _ ≤
-        φ.vars.bUnion fun i : σ => (f i).vars :=
-      _
-    
-  -- proof below
+    _ ≤ φ.vars.bunionᵢ fun i : σ => vars (f i) := ?_
+    -- proof below
   · apply Finset.bunionᵢ_mono
-    intro d hd
+    intro d _hd
     calc
-      (C (coeff d φ) * ∏ i : σ in d.support, f i ^ d i).vars ≤
+      vars (C (coeff d φ) * ∏ i : σ in d.support, f i ^ d i) ≤
           (C (coeff d φ)).vars ∪ (∏ i : σ in d.support, f i ^ d i).vars :=
         vars_mul _ _
       _ ≤ (∏ i : σ in d.support, f i ^ d i).vars := by
         simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]
-      _ ≤ d.support.bUnion fun i : σ => (f i ^ d i).vars := (vars_prod _)
-      _ ≤ d.support.bUnion fun i : σ => (f i).vars := _
-      
+      _ ≤ d.support.bunionᵢ fun i : σ => vars (f i ^ d i) := (vars_prod _)
+      _ ≤ d.support.bunionᵢ fun i : σ => (f i).vars := ?_
     apply Finset.bunionᵢ_mono
-    intro i hi
+    intro i _hi
     apply vars_pow
   · intro j
     simp_rw [Finset.mem_bunionᵢ]
@@ -386,14 +382,15 @@ end
 
 theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) {j : τ}
     (h : j ∈ (bind₁ f φ).vars) : ∃ i : σ, i ∈ φ.vars ∧ j ∈ (f i).vars := by
+  classical
   simpa only [exists_prop, Finset.mem_bunionᵢ, mem_support_iff, Ne.def] using vars_bind₁ f φ h
 #align mv_polynomial.mem_vars_bind₁ MvPolynomial.mem_vars_bind₁
 
 instance monad : Monad fun σ => MvPolynomial σ R
     where
-  map α β f p := rename f p
-  pure _ := X
-  bind _ _ p f := bind₁ f p
+  map f p := rename f p
+  pure := X
+  bind p f := bind₁ f p
 #align mv_polynomial.monad MvPolynomial.monad
 
 instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R
@@ -424,4 +421,3 @@ join (algebra_map R S)
 
 -/
 end MvPolynomial
-
