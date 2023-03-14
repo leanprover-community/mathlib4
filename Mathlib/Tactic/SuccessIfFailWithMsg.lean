@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Scott Morrison, Thomas Murrills
 -/
 import Lean
+import Std.Util.TermUnsafe
 
 /-!
 # Success If Fail With Message
@@ -43,15 +44,12 @@ def successIfFailWithMessage (msg : String) (tacs : TacticM Unit) : TacticM Unit
 elab_rules : tactic
 | `(tactic| success_if_fail_with_msg $msg:term $tacs:tacticSeq) =>
   Term.withoutErrToSorry <| withoutRecover do
-    let err ← try evalTactic tacs; pure none
+    let err ←
+      try evalTactic tacs; pure none
       catch err => pure (some (← err.toMessageData.toString))
     if let some err := err then
-      if let some msg := isStrLit? msg then
+      let msg ← unsafe Term.evalTerm String (.const ``String []) msg
         unless msg == err do
-          throwError "tactic '{tacs}' failed, but got different error message:\n\n{err}"
-      else
-        let msg ← elabTermEnsuringType msg (Expr.const ``String [])
-        unless ← withNewMCtxDepth <| withTransparency .all <| isDefEq msg (mkStrLit err) do
           throwError "tactic '{tacs}' failed, but got different error message:\n\n{err}"
     else
       throwError "tactic succeeded"
