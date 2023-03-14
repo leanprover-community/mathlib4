@@ -101,7 +101,8 @@ open Lean Elab Tactic Parser Tactic
 open Mathlib Tactic SolveByElim
 
 /-- !! Apply the `mono` tactic to a goal. -/
-def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both) : MetaM (List MVarId) := do
+def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both) :
+    MetaM (List MVarId) := withReducible do
   let goal ← match ← dsimpGoal goal Monos.SimpContext with
   | (some goal, _) => pure goal
   | (none, _) => return []
