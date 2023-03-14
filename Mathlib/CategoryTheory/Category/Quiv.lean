@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Adjunction.Basic
-import Mathbin.CategoryTheory.Category.Cat
-import Mathbin.CategoryTheory.PathCategory
+import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.PathCategory
 
 /-!
 # The category of quivers
