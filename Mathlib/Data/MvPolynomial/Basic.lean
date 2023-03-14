@@ -93,6 +93,10 @@ def MvPolynomial (σ : Type _) (R : Type _) [CommSemiring R] :=
 
 namespace MvPolynomial
 
+-- porting note: because of `mv_polynomial.C` and `mv_polynomial.X` this linter throws
+-- tons of warnings in this file, and it's easier to just disable them globally in the file
+set_option linter.uppercaseLean3 false
+
 variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
@@ -168,7 +172,6 @@ theorem mul_def : p * q = p.sum fun m a => q.sum fun n b => monomial (m + n) (a 
 /-- `C a` is the constant polynomial with value `a` -/
 def C : R →+* MvPolynomial σ R :=
   { singleZeroRingHom with toFun := monomial 0 }
-set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C MvPolynomial.C
 
 variable (R σ)
@@ -182,7 +185,6 @@ variable {R σ}
 /-- `X n` is the degree `1` monomial $X_n$. -/
 def X (n : σ) : MvPolynomial σ R :=
   monomial (Finsupp.single n 1) 1
-set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X MvPolynomial.X
 
 theorem monomial_left_injective {r : R} (hr : r ≠ 0) :
@@ -198,22 +200,16 @@ theorem monomial_left_inj {s t : σ →₀ ℕ} {r : R} (hr : r ≠ 0) :
 
 theorem C_apply : (C a : MvPolynomial σ R) = monomial 0 a :=
   rfl
-set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_apply MvPolynomial.C_apply
 
 -- porting note: `simp` can prove this
 theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
-set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_0 MvPolynomial.C_0
 
 -- porting note: `simp` can prove this
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
-set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_1 MvPolynomial.C_1
-
--- porting note: move to whole file, or individual statements?
-set_option linter.uppercaseLean3 false
 
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   -- porting note: this `show` feels like defeq abuse, but I can't find the appropriate lemmas
