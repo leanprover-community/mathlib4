@@ -49,7 +49,7 @@ theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
 #align ideal.prod_top_top Ideal.prod_top_top
 
 /- Porting note: This is necessary to prevent failing type class searches in
-`map (RingHom.fst R S) I`.-/
+`map (RingHom.fst R S) I`, remove when `etaExperiment` becomes the default. -/
 attribute [-instance] Ring.toNonAssocRing
 
 /-- Every ideal of the product ring is of the form `I × J`, where `I` and `J` can be explicitly
