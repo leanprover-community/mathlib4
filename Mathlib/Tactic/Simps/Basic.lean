@@ -134,12 +134,12 @@ attribute [notation_class sub] HSub
 attribute [notation_class div] HDiv
 attribute [notation_class mod] HMod
 attribute [notation_class append] HAppend
-attribute [notation_class pow] HPow
-attribute [notation_class] Neg Dvd LE LT HasEquiv
-
--- attribute [notation_class]
---   Zero One Inv HasAndthen HasUnion HasInter HasSdiff
---   HasEquiv HasSubset HasSsubset HasEmptyc HasInsert HasSingleton HasSep HasMem
+attribute [notation_class pow Simps.copyFirst] HPow
+attribute [notation_class andThen] HAndThen
+attribute [notation_class] Neg Dvd LE LT HasEquiv HasSubset HasSSubset Union Inter SDiff Insert
+  Singleton Sep Membership
+attribute [notation_class one Simps.findOneArgs] OfNat
+attribute [notation_class zero Simps.findZeroArgs] OfNat
 
 /-- arguments to `@[simps]` attribute. -/
 syntax simpsArgsRest := (Tactic.config)? (ppSpace ident)*
@@ -495,7 +495,7 @@ partial def getCompositeOfProjectionsAux
   let projInfo := projs.toList.map fun p ↦ do
     (← (p.getString ++ "_").isPrefixOf? proj, p)
   let some (projRest, projName) := projInfo.reduceOption.getLast? |
-    throwError "Failed to find constructor {proj.drop 1} in structure {structName}."
+    throwError "Failed to find constructor {proj.dropRight 1} in structure {structName}."
   let newE ← mkProjection e projName
   let newPos := pos ++ (← findProjectionIndices structName projName)
   -- we do this here instead of in a recursive call in order to not get an unnecessary eta-redex
@@ -650,9 +650,11 @@ Implementation note: getting rid of TermElabM is tricky, since `Expr.mkAppOptM` 
 keep metavariables around, which are necessary for `OutParam`. -/
 def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args : Array Expr) :
   TermElabM <| Option (Expr × Name)  := do
-  if let some ⟨className, isNotation, findArgs?⟩ :=
+  if let some ⟨className, isNotation, findArgs⟩ :=
     notationClassAttr.find? (← getEnv) proj.strName then
-    let classArgs ← findArgs? str className args
+    let findArgs ← unsafe evalConst (Name → Name → Array Expr → MetaM (Array (Option Expr)))
+      findArgs
+    let classArgs ← findArgs str className args
     let classArgs ← classArgs.mapM fun e => match e with
       | none => mkFreshExprMVar none
       | some e => pure e
@@ -660,13 +662,16 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
     let projName := (getStructureFields (← getEnv) className)[0]!
     let projName := className ++ projName
     let eStr := mkAppN (← mkConstWithLevelParams str) args
-    let eInstType ← elabAppArgs (← Term.mkConst className) #[] classArgs none true false
+    let eInstType ← try elabAppArgs (← Term.mkConst className) #[] classArgs none true false
+    catch ex =>
+      trace[simps.debug] "Projection doesn't have the right type for the automatic projection:\n{
+        ex.toMessageData}"
+      return none
     return ← withLocalDeclD `self eStr fun instStr ↦ do
       trace[simps.debug] "found projection {proj.strName}. Trying to synthesize {eInstType}."
       let eInst ← try synthInstance eInstType <| some 10
       catch ex =>
-        trace[simps.debug] "Didn't find instance:\n{ex.toMessageData}
-        Local context:{(← (read : MetaM _)).lctx.decls.toArray.map (·.map (·.type))}"
+        trace[simps.debug] "Didn't find instance:\n{ex.toMessageData}"
         return none
       let projExpr ← elabAppArgs (← Term.mkConst projName) #[] (classArgs.push <| .expr eInst)
         none true false
@@ -1103,7 +1108,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   if let some (x, _) := todo.find? fun (x, _) ↦ projs.all
     fun proj ↦ !(proj.getString ++ "_").isPrefixOf x then
     let simpLemma := nm.appendAfter x
-    let neededProj := (x.splitOn "_").tail.head!
+    let neededProj := (x.splitOn "_")[0]!
     throwError "Invalid simp lemma {simpLemma}. Structure {str} does not have projection {""
       }{neededProj}.\nThe known projections are:\n  {projs}\nYou can also see this information {""
       }by running\n  `initialize_simps_projections? {str}`.\nNote: these projection names might {""
