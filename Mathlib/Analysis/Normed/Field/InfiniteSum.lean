@@ -8,8 +8,8 @@ Authors: Anatole Dedecker
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Field.Basic
-import Mathbin.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-! # Multiplying two infinite sums in a normed ring
 
@@ -94,8 +94,7 @@ open Finset.Nat
 
 theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → α}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
-    Summable fun n => ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ :=
-  by
+    Summable fun n => ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ := by
   have :=
     summable_sum_mul_antidiagonal_of_summable_mul
       (Summable.mul_of_nonneg hf hg (fun _ => norm_nonneg _) fun _ => norm_nonneg _)
@@ -120,8 +119,7 @@ theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace �
 #align tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm
 
 theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → α} (hf : Summable fun x => ‖f x‖)
-    (hg : Summable fun x => ‖g x‖) : Summable fun n => ‖∑ k in range (n + 1), f k * g (n - k)‖ :=
-  by
+    (hg : Summable fun x => ‖g x‖) : Summable fun n => ‖∑ k in range (n + 1), f k * g (n - k)‖ := by
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact summable_norm_sum_mul_antidiagonal_of_summable_norm hf hg
 #align summable_norm_sum_mul_range_of_summable_norm summable_norm_sum_mul_range_of_summable_norm
@@ -132,8 +130,7 @@ theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → α} (hf : Su
     *not* absolutely summable. -/
 theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace α] {f g : ℕ → α}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
-    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k in range (n + 1), f k * g (n - k) :=
-  by
+    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k in range (n + 1), f k * g (n - k) := by
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm hf hg
 #align tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm
