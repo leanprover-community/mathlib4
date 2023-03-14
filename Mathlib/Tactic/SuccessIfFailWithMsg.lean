@@ -25,10 +25,6 @@ namespace Mathlib.Tactic
 `msg` can be any term that evaluates to an explicit `String`. -/
 syntax (name := successIfFailWithMsg) "success_if_fail_with_msg " term:max tacticSeq : tactic
 
-/- Note that we don't use the following in our definition of `success_if_fail_with_msg`, because we
-want to check for definitional equality to the Expr specified by the syntax `$msg:term` there
-instead. We also can provide more descriptive error messages in the elaboration case. -/
-
 /-- Evaluates `tacs` and succeeds only if `tacs` both fails and throws an error equal (as a string)
 to `msg`. -/
 def successIfFailWithMessage [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [MonadError m]
