@@ -24,7 +24,7 @@ with variables from a general type `σ` (which could be infinite).
 ## Important definitions
 
 Let `R` be a commutative ring (or a semiring) and let `σ` be an arbitrary
-type. This file creates the type `mv_polynomial σ R`, which mathematicians
+type. This file creates the type `MvPolynomial σ R`, which mathematicians
 might denote $R[X_i : i \in σ]$. It is the type of multivariate
 (a.k.a. multivariable) polynomials, with variables
 corresponding to the terms in `σ`, and coefficients in `R`.
@@ -34,16 +34,16 @@ corresponding to the terms in `σ`, and coefficients in `R`.
 In the definitions below, we use the following notation:
 
 + `σ : Type*` (indexing the variables)
-+ `R : Type*` `[comm_semiring R]` (the coefficients)
++ `R : Type*` `[CommSemiring R]` (the coefficients)
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-  This will give rise to a monomial in `mv_polynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
 + `a : R`
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-+ `p : mv_polynomial σ R`
++ `p : MvPolynomial σ R`
 
 ### Definitions
 
-* `mv_polynomial σ R` : the type of polynomials with variables of type `σ` and coefficients
+* `MvPolynomial σ R` : the type of polynomials with variables of type `σ` and coefficients
   in the commutative semiring `R`
 * `monomial s a` : the monomial which mathematically would be denoted `a * X^s`
 * `C a` : the constant polynomial with value `a`
@@ -62,7 +62,7 @@ In the definitions below, we use the following notation:
 
 Recall that if `Y` has a zero, then `X →₀ Y` is the type of functions from `X` to `Y` with finite
 support, i.e. such that only finitely many elements of `X` get sent to non-zero terms in `Y`.
-The definition of `mv_polynomial σ R` is `(σ →₀ ℕ) →₀ R` ; here `σ →₀ ℕ` denotes the space of all
+The definition of `MvPolynomial σ R` is `(σ →₀ ℕ) →₀ R` ; here `σ →₀ ℕ` denotes the space of all
 monomials in the variables, and the function to `R` sends a monomial to its coefficient in
 the polynomial being represented.
 
@@ -104,45 +104,45 @@ instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq 
   Finsupp.decidableEq
 #align mv_polynomial.decidable_eq_mv_polynomial MvPolynomial.decidableEqMvPolynomial
 
-instance [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
+instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
   AddMonoidAlgebra.commSemiring
 
-instance [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
+instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
   ⟨0⟩
 
-instance [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
+instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
     DistribMulAction R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.distribMulAction
 
-instance [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] [FaithfulSMul R S₁] :
+instance faithfulSMul [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] [FaithfulSMul R S₁] :
     FaithfulSMul R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.faithfulSMul
 
-instance [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
+instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.module
 
-instance [Monoid R] [Monoid S₁] [CommSemiring S₂] [SMul R S₁] [DistribMulAction R S₂]
+instance isScalarTower [Monoid R] [Monoid S₁] [CommSemiring S₂] [SMul R S₁] [DistribMulAction R S₂]
     [DistribMulAction S₁ S₂] [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
   AddMonoidAlgebra.isScalarTower
 
-instance [Monoid R] [Monoid S₁] [CommSemiring S₂] [DistribMulAction R S₂] [DistribMulAction S₁ S₂]
-    [SMulCommClass R S₁ S₂] : SMulCommClass R S₁ (MvPolynomial σ S₂) :=
+instance smulCommClass [Monoid R] [Monoid S₁] [CommSemiring S₂] [DistribMulAction R S₂]
+    [DistribMulAction S₁ S₂] [SMulCommClass R S₁ S₂] : SMulCommClass R S₁ (MvPolynomial σ S₂) :=
   AddMonoidAlgebra.smulCommClass
 
-instance [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] [DistribMulAction Rᵐᵒᵖ S₁]
-    [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
+instance isCentralScalar [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁]
+    [DistribMulAction Rᵐᵒᵖ S₁] [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.isCentralScalar
 
-instance [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] : Algebra R (MvPolynomial σ S₁) :=
+instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] : Algebra R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.algebra
 
--- Register with high priority to avoid timeout in `data.mv_polynomial.pderiv`
-instance is_scalar_tower' [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
+-- Register with high priority to avoid timeout in `Data.MvPolynomial.PDeriv`
+instance isScalarTower' [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
     IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
   IsScalarTower.right
-#align mv_polynomial.is_scalar_tower' MvPolynomial.is_scalar_tower'
+#align mv_polynomial.is_scalar_tower' MvPolynomial.isScalarTower'
 
-/-- If `R` is a subsingleton, then `mv_polynomial σ R` has a unique element -/
+/-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
 instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
   AddMonoidAlgebra.unique
 #align mv_polynomial.unique MvPolynomial.unique
@@ -302,7 +302,7 @@ theorem monomial_mul {s s' : σ →₀ ℕ} {a b : R} :
 
 variable (σ R)
 
-/-- `λ s, monomial s 1` as a homomorphism. -/
+/-- `fun s ↦ monomial s 1` as a homomorphism. -/
 def monomialOneHom : Multiplicative (σ →₀ ℕ) →* MvPolynomial σ R :=
   AddMonoidAlgebra.of _ _
 #align mv_polynomial.monomial_one_hom MvPolynomial.monomialOneHom
@@ -402,7 +402,7 @@ theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (
     simp [add_comm, monomial_add_single, this]
 #align mv_polynomial.induction_on_monomial MvPolynomial.induction_on_monomial
 
-/-- Analog of `polynomial.induction_on'`.
+/-- Analog of `Polynomial.induction_on'`.
 To prove something about mv_polynomials,
 it suffices to show the condition is closed under taking sums,
 and it holds for monomials. -/
@@ -416,7 +416,7 @@ theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
     fun a b f _ha _hb hPf => h2 _ _ (h1 _ _) hPf
 #align mv_polynomial.induction_on' MvPolynomial.induction_on'
 
-/-- Similar to `mv_polynomial.induction_on` but only a weak form of `h_add` is required.-/
+/-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required.-/
 theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
@@ -426,7 +426,7 @@ theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
   Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
 #align mv_polynomial.induction_on''' MvPolynomial.induction_on'''
 
-/-- Similar to `mv_polynomial.induction_on` but only a yet weaker form of `h_add` is required.-/
+/-- Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.-/
 theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
@@ -438,7 +438,7 @@ theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) 
     h_add_weak a b f ha hb hf <| induction_on_monomial h_C h_X a b
 #align mv_polynomial.induction_on'' MvPolynomial.induction_on''
 
-/-- Analog of `polynomial.induction_on`.-/
+/-- Analog of `Polynomial.induction_on`.-/
 @[recursor 5]
 theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_X : ∀ p n, M p → M (p * X n)) : M p :=
@@ -492,19 +492,19 @@ theorem algHom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : MvPolynomial �
 #align mv_polynomial.alg_hom_ext MvPolynomial.algHom_ext
 
 @[simp]
-theorem algHom_c (f : MvPolynomial σ R →ₐ[R] MvPolynomial σ R) (r : R) : f (C r) = C r :=
+theorem algHom_C (f : MvPolynomial σ R →ₐ[R] MvPolynomial σ R) (r : R) : f (C r) = C r :=
   f.commutes r
-#align mv_polynomial.alg_hom_C MvPolynomial.algHom_c
+#align mv_polynomial.alg_hom_C MvPolynomial.algHom_C
 
 @[simp]
-theorem adjoin_range_x : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
+theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
   refine' top_unique fun p hp => _; clear hp
   induction p using MvPolynomial.induction_on
   case h_C => exact S.algebraMap_mem _
   case h_add p q hp hq => exact S.add_mem hp hq
   case h_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)
-#align mv_polynomial.adjoin_range_X MvPolynomial.adjoin_range_x
+#align mv_polynomial.adjoin_range_X MvPolynomial.adjoin_range_X
 
 @[ext]
 theorem linearMap_ext {M : Type _} [AddCommMonoid M] [Module R M] {f g : MvPolynomial σ R →ₗ[R] M}
@@ -514,8 +514,7 @@ theorem linearMap_ext {M : Type _} [AddCommMonoid M] [Module R M] {f g : MvPolyn
 
 section Support
 
-/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient.
--/
+/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient.  -/
 def support (p : MvPolynomial σ R) : Finset (σ →₀ ℕ) :=
   Finsupp.support p
 #align mv_polynomial.support MvPolynomial.support
@@ -540,14 +539,14 @@ theorem support_add : (p + q).support ⊆ p.support ∪ q.support :=
   Finsupp.support_add
 #align mv_polynomial.support_add MvPolynomial.support_add
 
-theorem support_x [Nontrivial R] : (X n : MvPolynomial σ R).support = {Finsupp.single n 1} := by
+theorem support_X [Nontrivial R] : (X n : MvPolynomial σ R).support = {Finsupp.single n 1} := by
   rw [X, support_monomial, if_neg]; exact one_ne_zero
-#align mv_polynomial.support_X MvPolynomial.support_x
+#align mv_polynomial.support_X MvPolynomial.support_X
 
-theorem support_x_pow [Nontrivial R] (s : σ) (n : ℕ) :
+theorem support_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
     (X s ^ n : MvPolynomial σ R).support = {Finsupp.single s n} := by
   rw [X_pow_eq_monomial, support_monomial, if_neg (one_ne_zero' R)]
-#align mv_polynomial.support_X_pow MvPolynomial.support_x_pow
+#align mv_polynomial.support_X_pow MvPolynomial.support_X_pow
 
 @[simp]
 theorem support_zero : (0 : MvPolynomial σ R).support = ∅ :=
@@ -619,11 +618,11 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 #align mv_polynomial.coeff_zero MvPolynomial.coeff_zero
 
 @[simp]
-theorem coeff_zero_x (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
+theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
   single_eq_of_ne fun h => by cases Finsupp.single_eq_zero.1 h
-#align mv_polynomial.coeff_zero_X MvPolynomial.coeff_zero_x
+#align mv_polynomial.coeff_zero_X MvPolynomial.coeff_zero_X
 
-/-- `mv_polynomial.coeff m` but promoted to an `add_monoid_hom`. -/
+/-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
 def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R
     where
@@ -658,13 +657,13 @@ theorem coeff_one [DecidableEq σ] (m) : coeff m (1 : MvPolynomial σ R) = if 0 
 #align mv_polynomial.coeff_one MvPolynomial.coeff_one
 
 @[simp]
-theorem coeff_zero_c (a) : coeff 0 (C a : MvPolynomial σ R) = a :=
+theorem coeff_zero_C (a) : coeff 0 (C a : MvPolynomial σ R) = a :=
   single_eq_same
-#align mv_polynomial.coeff_zero_C MvPolynomial.coeff_zero_c
+#align mv_polynomial.coeff_zero_C MvPolynomial.coeff_zero_C
 
 @[simp]
 theorem coeff_zero_one : coeff 0 (1 : MvPolynomial σ R) = 1 :=
-  coeff_zero_c 1
+  coeff_zero_C 1
 #align mv_polynomial.coeff_zero_one MvPolynomial.coeff_zero_one
 
 theorem coeff_X_pow [DecidableEq σ] (i : σ) (m) (k : ℕ) :
@@ -831,7 +830,7 @@ end Coeff
 
 section ConstantCoeff
 
-/-- `constant_coeff p` returns the constant term of the polynomial `p`, defined as `coeff 0 p`.
+/-- `constantCoeff p` returns the constant term of the polynomial `p`, defined as `coeff 0 p`.
 This is a ring homomorphism.
 -/
 def constantCoeff : MvPolynomial σ R →+* R
@@ -974,7 +973,6 @@ theorem eval₂_mul_monomial :
         _ = (p * monomial (Finsupp.single n 1) 1).eval₂ f g * f a * s.prod fun n e => g n ^ e := by
           simp [ih, prod_single_index, prod_add_index, pow_one, pow_add, mul_assoc, mul_left_comm,
             f.map_one]
-
 #align mv_polynomial.eval₂_mul_monomial MvPolynomial.eval₂_mul_monomial
 
 theorem eval₂_mul_C : (p * C a).eval₂ f g = p.eval₂ f g * f a :=
@@ -997,7 +995,7 @@ theorem eval₂_pow {p : MvPolynomial σ R} : ∀ {n : ℕ}, (p ^ n).eval₂ f g
   | n + 1 => by rw [pow_add, pow_one, pow_add, pow_one, eval₂_mul, eval₂_pow]
 #align mv_polynomial.eval₂_pow MvPolynomial.eval₂_pow
 
-/-- `mv_polynomial.eval₂` as a `ring_hom`. -/
+/-- `MvPolynomial.eval₂` as a `RingHom`. -/
 def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁
     where
   toFun := eval₂ f g
@@ -1350,7 +1348,7 @@ theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (
   rfl
 #align mv_polynomial.map_map_range_eq_iff MvPolynomial.map_mapRange_eq_iff
 
-/-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `mv_polynomial.map f`. -/
+/-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
 @[simps!]
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ :=
@@ -1527,7 +1525,7 @@ variable (R)
 
 theorem _root_.Algebra.adjoin_range_eq_range_aeval :
     Algebra.adjoin R (Set.range f) = (MvPolynomial.aeval f).range := by
-  simp only [← Algebra.map_top, ← MvPolynomial.adjoin_range_x, AlgHom.map_adjoin, ← Set.range_comp,
+  simp only [← Algebra.map_top, ← MvPolynomial.adjoin_range_X, AlgHom.map_adjoin, ← Set.range_comp,
     (· ∘ ·), MvPolynomial.aeval_X]
 #align algebra.adjoin_range_eq_range_aeval Algebra.adjoin_range_eq_range_aeval
 
@@ -1544,7 +1542,7 @@ variable {S A B : Type _} [CommSemiring S] [CommSemiring A] [CommSemiring B]
 
 variable [Algebra S R] [Algebra S A] [Algebra S B]
 
-/-- Version of `aeval` for defining algebra homs out of `mv_polynomial σ R` over a smaller base ring
+/-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
   than `R`. -/
 def aevalTower (f : R →ₐ[S] A) (X : σ → A) : MvPolynomial σ R →ₐ[S] A :=
   { eval₂Hom (↑f) X with
