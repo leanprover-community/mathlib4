@@ -16,7 +16,7 @@ set_option trace.Tactic.librarySearch true
 
 open Lean Meta
 #eval do
-  let e ← mkConst' `nsmulRec
+  let e ← mkConst' `Nat.pos_of_ne_zero
   let ty ← inferType e
   let (_, _, ty) ← forallMetaTelescopeReducing ty
   @DiscrTree.mkPath true ty
