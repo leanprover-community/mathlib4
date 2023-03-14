@@ -31,15 +31,24 @@ instead. We also can provide more descriptive error messages in the elaboration 
 
 /-- Evaluates `tacs` and succeeds only if `tacs` both fails and throws an error equal (as a string)
 to `msg`. -/
-def successIfFailWithMessage (msg : String) (tacs : TacticM Unit) : TacticM Unit :=
-  Term.withoutErrToSorry <| withoutRecover do
-    let err ← try tacs; pure none
-      catch err => pure (some (← err.toMessageData.toString))
-    if let some err := err then
-      unless msg == err do
-        throwError "tactic failed, but got different error message:\n\n{err}"
+def successIfFailWithMessage [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [MonadError m]
+    (msg : String) (tacs : m α) (ref : Option Syntax := none): m Unit := do
+  let s ← saveState
+  let err ←
+    try _ ← tacs; pure none
+    catch err => pure (some (← err.toMessageData.toString))
+  restoreState s
+  if let some err := err then
+    unless msg == err do
+      if let some ref := ref then
+        throwErrorAt ref "tactic '{ref}' failed, but got different error message:\n\n{err}"
+      else
+      throwError "tactic failed, but got different error message:\n\n{err}"
+  else
+    if let some ref := ref then
+      throwErrorAt ref "tactic '{ref}' succeeded"
     else
-      throwError "tactic succeeded"
+    throwError "tactic succeeded"
 
 elab_rules : tactic
 | `(tactic| success_if_fail_with_msg $msg:term $tacs:tacticSeq) =>
@@ -49,7 +58,7 @@ elab_rules : tactic
       catch err => pure (some (← err.toMessageData.toString))
     if let some err := err then
       let msg ← unsafe Term.evalTerm String (.const ``String []) msg
-        unless msg == err do
-          throwError "tactic '{tacs}' failed, but got different error message:\n\n{err}"
+      unless msg == err do
+        throwError "tactic '{tacs}' failed, but got different error message:\n\n{err}"
     else
       throwError "tactic succeeded"
