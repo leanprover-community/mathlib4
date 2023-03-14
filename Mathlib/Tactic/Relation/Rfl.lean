@@ -38,9 +38,13 @@ initialize registerBuiltinAttribute {
     reflExt.add (decl, key) kind
 }
 
---!! Can we use this in the tactic, or is saving the tactic state important?
+/-- `MetaM` version of the `rfl` tactic.
+
+This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
+relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
+-/
 def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM (List MVarId) := do
-  let .app (.app rel _) _ ← goal.getType
+  let .app (.app rel _) _ ← whnfR <|← instantiateMVars <|← goal.getType
     | throwError "reflexivity lemmas only apply to binary relations, not
       {indentExpr (← goal.getType)}"
   let s ← saveState
