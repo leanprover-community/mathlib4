@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Deniz Aydin
 -/
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # Orders
@@ -214,6 +215,11 @@ if a ≤ b then b else a
 def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
 if a ≤ b then a else b
 
+macro "compareOfLessAndEq_rfl" : tactic =>
+  `(tactic| (intros a b; first | rfl |
+    (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
+    (induction a <;> induction b <;> simp only [])))
+
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
 class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α :=
@@ -234,7 +240,8 @@ class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α 
   max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
   compare a b := compareOfLessAndEq a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
-  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by intros; rfl
+  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
+    compareOfLessAndEq_rfl
 
 variable [LinearOrder α]
 
