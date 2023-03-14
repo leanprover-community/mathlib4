@@ -15,5 +15,5 @@ proofs about these definitions, those are contained in other files in `Mathlib.D
 
 namespace Array
 
-def flattenList : Array (List α) → Array α
+def joinList : Array (List α) → Array α
 | a => a.foldl (·.appendList ·) #[]
