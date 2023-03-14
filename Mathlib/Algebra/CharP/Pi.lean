@@ -33,10 +33,9 @@ instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ)
 #align char_p.pi CharP.pi
 
 -- diamonds
-instance pi' (ι : Type u) [hi : Nonempty ι] (R : Type v) [CommRing R] (p : ℕ) [CharP R p] :
+instance pi' (ι : Type u) [Nonempty ι] (R : Type v) [CommRing R] (p : ℕ) [CharP R p] :
     CharP (ι → R) p :=
   CharP.pi ι R p
 #align char_p.pi' CharP.pi'
 
 end CharP
-
