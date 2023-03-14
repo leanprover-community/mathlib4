@@ -8,9 +8,9 @@ Authors: Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.LinearAlgebra.Prod
-import Mathbin.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Hom.NonUnitalAlg
 
 /-!
 # Unitization of a non-unital algebra
