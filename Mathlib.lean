@@ -1436,6 +1436,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.EReal
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Instances.Nat
