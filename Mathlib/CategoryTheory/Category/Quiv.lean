@@ -26,22 +26,25 @@ namespace CategoryTheory
 
 -- intended to be used with explicit universe parameters
 /-- Category of quivers. -/
-@[nolint check_univs]
+@[nolint checkUnivs]
 def Quiv :=
   Bundled Quiver.{v + 1, u}
+set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv CategoryTheory.Quiv
 
 namespace Quiv
 
 instance : CoeSort Quiv (Type u) where coe := Bundled.α
 
-instance str (C : Quiv.{v, u}) : Quiver.{v + 1, u} C :=
+instance str' (C : Quiv.{v, u}) : Quiver.{v + 1, u} C :=
   C.str
-#align category_theory.Quiv.str CategoryTheory.Quiv.str
+set_option linter.uppercaseLean3 false in
+#align category_theory.Quiv.str CategoryTheory.Quiv.str'
 
 /-- Construct a bundled `Quiv` from the underlying type and the typeclass. -/
 def of (C : Type u) [Quiver.{v + 1} C] : Quiv.{v, u} :=
   Bundled.of C
+set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.of CategoryTheory.Quiv.of
 
 instance : Inhabited Quiv :=
@@ -52,10 +55,8 @@ instance category : LargeCategory.{max v u} Quiv.{v, u}
     where
   Hom C D := Prefunctor C D
   id C := Prefunctor.id C
-  comp C D E F G := Prefunctor.comp F G
-  id_comp' C D F := by cases F <;> rfl
-  comp_id' C D F := by cases F <;> rfl
-  assoc' := by intros <;> rfl
+  comp F G := Prefunctor.comp F G
+set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.category CategoryTheory.Quiv.category
 
 /-- The forgetful functor from categories to quivers. -/
@@ -63,7 +64,8 @@ instance category : LargeCategory.{max v u} Quiv.{v, u}
 def forget : Cat.{v, u} ⥤ Quiv.{v, u}
     where
   obj C := Quiv.of C
-  map C D F := F.toPrefunctor
+  map F := F.toPrefunctor
+set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.forget CategoryTheory.Quiv.forget
 
 end Quiv
@@ -75,20 +77,21 @@ namespace Cat
 def free : Quiv.{v, u} ⥤ Cat.{max u v, u}
     where
   obj V := Cat.of (Paths V)
-  map V W F :=
+  map F :=
     { obj := fun X => F.obj X
-      map := fun X Y f => F.mapPath f
-      map_comp' := fun X Y Z f g => F.mapPath_comp f g }
-  map_id' V := by
-    change (show paths V ⥤ _ from _) = _
+      map := fun f => F.mapPath f
+      map_comp := fun f g => F.mapPath_comp f g }
+  map_id V := by
+    change (show Paths V ⥤ _ from _) = _
     ext
-    apply eq_conj_eq_to_hom
+    apply eq_conj_eqToHom
     rfl
-  map_comp' U V W F G := by
-    change (show paths U ⥤ _ from _) = _
+  map_comp {U _ _} F G := by
+    change (show Paths U ⥤ _ from _) = _
     ext
-    apply eq_conj_eq_to_hom
+    apply eq_conj_eqToHom
     rfl
+set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.free CategoryTheory.Cat.free
 
 end Cat
@@ -100,10 +103,11 @@ namespace Quiv
 def lift {V : Type u} [Quiver.{v + 1} V] {C : Type _} [Category C] (F : Prefunctor V C) :
     Paths V ⥤ C where
   obj X := F.obj X
-  map X Y f := composePath (F.mapPath f)
+  map f := composePath (F.mapPath f)
+set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.lift CategoryTheory.Quiv.lift
 
--- We might construct `of_lift_iso_self : paths.of ⋙ lift F ≅ F`
+-- We might construct `of_lift_iso_self : Paths.of ⋙ lift F ≅ F`
 -- (and then show that `lift F` is initial amongst such functors)
 -- but it would require lifting quite a bit of machinery to quivers!
 /--
@@ -113,27 +117,22 @@ def adj : Cat.free ⊣ Quiv.forget :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun V C =>
         { toFun := fun F => Paths.of.comp F.toPrefunctor
-          invFun := fun F => lift F
-          left_inv := fun F => by
-            ext
-            · erw [(eq_conj_eq_to_hom _).symm]
-              apply category.id_comp
-            rfl
+          invFun := fun F => @lift V _ C _ F
+          left_inv := fun F => Paths.ext_functor rfl (by simp)
           right_inv := by
             rintro ⟨obj, map⟩
             dsimp only [Prefunctor.comp]
             congr
-            ext (X Y f)
-            exact category.id_comp _ }
-      homEquiv_naturality_left_symm := fun V W C f g =>
-        by
-        change (show paths V ⥤ _ from _) = _
+            funext X Y f
+            exact Category.id_comp _ }
+      homEquiv_naturality_left_symm := fun {V _ _} f g => by
+        change (show Paths V ⥤ _ from _) = _
         ext
-        apply eq_conj_eq_to_hom
+        apply eq_conj_eqToHom
         rfl }
+set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.adj CategoryTheory.Quiv.adj
 
 end Quiv
 
 end CategoryTheory
-
