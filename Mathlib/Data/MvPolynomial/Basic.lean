@@ -133,7 +133,8 @@ instance isCentralScalar [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁
     [DistribMulAction Rᵐᵒᵖ S₁] [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.isCentralScalar
 
-instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] : Algebra R (MvPolynomial σ S₁) :=
+instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
+    Algebra R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.algebra
 
 -- Register with high priority to avoid timeout in `Data.MvPolynomial.PDeriv`
@@ -200,12 +201,12 @@ theorem C_apply : (C a : MvPolynomial σ R) = monomial 0 a :=
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_apply MvPolynomial.C_apply
 
-@[simp]
-theorem C_0 : C 0 = (0 : MvPolynomial σ R) := by simp [C_apply, monomial]
+-- porting note: `simp` can prove this
+theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_0 MvPolynomial.C_0
 
-@[simp]
+-- porting note: `simp` can prove this
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -220,19 +221,19 @@ theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   simp [C_apply, single_mul_single]
 #align mv_polynomial.C_mul_monomial MvPolynomial.C_mul_monomial
 
-@[simp]
+-- porting note: `simp` can prove this
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
   Finsupp.single_add _ _ _
 #align mv_polynomial.C_add MvPolynomial.C_add
 
-@[simp]
+-- porting note: `simp` can prove this
 theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
   C_mul_monomial.symm
 #align mv_polynomial.C_mul MvPolynomial.C_mul
 
-@[simp]
-theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n := by
-  induction n <;> simp [pow_succ, *]
+-- porting note: `simp` can prove this
+theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
+  map_pow _ _ _
 #align mv_polynomial.C_pow MvPolynomial.C_pow
 
 theorem C_injective (σ : Type _) (R : Type _) [CommSemiring R] :
@@ -335,7 +336,7 @@ theorem C_mul_X_eq_monomial {s : σ} {a : R} : C a * X s = monomial (Finsupp.sin
   rw [← C_mul_X_pow_eq_monomial, pow_one]
 #align mv_polynomial.C_mul_X_eq_monomial MvPolynomial.C_mul_X_eq_monomial
 
-@[simp]
+-- porting note: `simp` can prove this
 theorem monomial_zero {s : σ →₀ ℕ} : monomial s (0 : R) = 0 :=
   Finsupp.single_zero _
 #align mv_polynomial.monomial_zero MvPolynomial.monomial_zero
@@ -656,7 +657,7 @@ theorem coeff_one [DecidableEq σ] (m) : coeff m (1 : MvPolynomial σ R) = if 0 
   coeff_C m 1
 #align mv_polynomial.coeff_one MvPolynomial.coeff_one
 
-@[simp]
+-- porting note: `simp` can prove this
 theorem coeff_zero_C (a) : coeff 0 (C a : MvPolynomial σ R) = a :=
   single_eq_same
 #align mv_polynomial.coeff_zero_C MvPolynomial.coeff_zero_C
@@ -863,8 +864,9 @@ theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 :
 #align mv_polynomial.constant_coeff_X MvPolynomial.constantCoeff_X
 
 variable {R}
-
-@[simp]
+/- porting note: increased priority because otherwise `simp` time outs when trying to simplify
+the left-hand side. `simpNF` linter indicated this and it was verified. -/
+@[simp 1001]
 theorem constantCoeff_smul [DistribMulAction R S₁] (a : R) (f : MvPolynomial σ S₁) :
     constantCoeff (a • f) = a • constantCoeff f :=
   rfl
