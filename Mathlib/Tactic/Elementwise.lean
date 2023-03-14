@@ -5,7 +5,7 @@ Authors: Scott Morrison, Kyle Miller
 -/
 
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Tactic.Reassoc
+import Mathlib.Util.AddRelatedDecl
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -155,39 +155,18 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
   | `(attr| elementwise $[(attr := $stx?,*)]?) => MetaM.run' do
-    let tgt := match src with
-      | Name.str n s => Name.mkStr n $ s ++ "_apply"
-      | x => x
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addDeclarationRanges tgt
-      { range := ← getDeclarationRange (← getRef)
-        selectionRange := ← getDeclarationRange ref }
-    let info ← getConstInfo src
-    let (newValue, level?) ← elementwiseExpr info.type info.value!
-    let mut levels := info.levelParams
-    if let some level := level? then
-      let w := mkUnusedName levels `w
-      unless ← isLevelDefEq level (mkLevelParam w) do
-        throwError "Could not create level parameter for ConcreteCategory instance"
-      levels := w :: levels
-    let newValue ← instantiateMVars newValue
-    let newType ← instantiateMVars (← inferType newValue)
-    match info with
-    | ConstantInfo.thmInfo info =>
-      addAndCompile <| .thmDecl
-        { info with levelParams := levels, type := newType, name := tgt, value := newValue }
-    | ConstantInfo.defnInfo info =>
-      -- It looks a bit weird that we use `.thmDecl` here too,
-      -- but apparently structure fields are created using `def`
-      -- even with they are propositional. If `elementwise` worked, it was a `Prop` anyway.
-      addAndCompile <| .thmDecl
-        { info with levelParams := levels, type := newType, name := tgt, value := newValue }
-    | _ => throwError "Constant {src} is not a theorem or definition."
-    if isProtected (← getEnv) src then
-      setEnv $ addProtected (← getEnv) tgt
-    let stx := match stx? with | some stx => stx | none => #[]
-    _ ← Term.TermElabM.run' <| ToAdditive.applyAttributes ref stx `elementwise src tgt
+    addRelatedDefn src "_apply" ref `elementwise stx? fun type value levels => do
+      let (newValue, level?) ← elementwiseExpr type value
+      let newLevels := if let some level := level? then
+        let w := mkUnusedName levels `w
+        unless ← isLevelDefEq level (mkLevelParam w) do
+          throwError "Could not create level parameter for ConcreteCategory instance"
+        w :: levels
+      else
+        levels
+      pure (newValue, newLevels)
   | _ => throwUnsupportedSyntax }
 
 /--
