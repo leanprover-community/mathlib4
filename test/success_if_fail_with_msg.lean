@@ -25,7 +25,7 @@ example : True := by
 `success_if_fail_with_msg`, since the inner one should fail with a certain message. -/
 
 example : True := by
-  success_if_fail_with_msg "tactic 'trivial' succeeded"
+  success_if_fail_with_msg "tactic 'trivial' succeeded, but was expected not to"
     success_if_fail_with_msg "message" trivial
   trivial
 
