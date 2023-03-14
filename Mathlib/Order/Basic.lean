@@ -995,20 +995,37 @@ def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective
   { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
 #align partial_order.lift PartialOrder.lift
 
+theorem compareOfLessAndEq_of_injective_eq_compareOfLessAndEq (a b : α) [Ord α] [LinearOrder β]
+    [DecidableEq α] (f : α → β) (inj : Injective f)
+    [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
+    compare (f a) (f b) =
+      @compareOfLessAndEq _ a b (PartialOrder.lift f inj |>.toLT) _ _ := by
+  have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
+  simp only [h, compareOfLessAndEq]
+  split_ifs <;> try (first | rfl | contradiction)
+  · have : ¬ f a = f b := by rename_i h; exact inj.ne h
+    contradiction
+  · have : f a = f b := by rename_i h; exact congrArg f h
+    contradiction
+
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version takes `[Sup α]` and `[Inf α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
-`max` fields, and `LinearOrder.liftWithoutOrd` for one that does not auto-generate the `Ord`
+`max` fields, and `LinearOrder.liftWithOrd` for one that does not auto-generate `compare`
 fields. See note [reducible non-instances]. -/
 @[reducible]
 def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
-  { PartialOrder.lift f inj with
+  let instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
+  let decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  let decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  let decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-    decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
-    decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+    decidable_le := decidable_le
+    decidable_lt := decidable_lt
+    decidable_eq := decidable_eq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1021,19 +1038,13 @@ def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) 
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
-    compare := fun a b ↦ compare (f a) (f b)
-    compare_eq_compareOfLessAndEq := by
-      intros a b
-      simp only [compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-      split_ifs <;> try (first | rfl | contradiction)
-      · have : ¬ f a = f b := by rename_i h; exact inj.ne h
-        contradiction
-      · have : f a = f b := by rename_i h; exact congrArg f h
-        contradiction }
+    compare_eq_compareOfLessAndEq := fun a b ↦
+      compareOfLessAndEq_of_injective_eq_compareOfLessAndEq a b f inj }
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
-for a version that takes `[Sup α]` and `[Inf α]`, then uses them as `max` and `min`. See `LinearOrder.liftWithOrd'` for a version which does not auto-generate `Ord` fields.
+for a version that takes `[Sup α]` and `[Inf α]`, then uses them as `max` and `min`. See
+`LinearOrder.liftWithOrd'` for a version which does not auto-generate `compare` fields.
 See note [reducible non-instances]. -/
 @[reducible]
 def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=
@@ -1054,11 +1065,14 @@ def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] 
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
+  let decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  let decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  let decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-    decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
-    decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+    decidable_le := decidable_le
+    decidable_lt := decidable_lt
+    decidable_eq := decidable_eq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1071,14 +1085,8 @@ def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] 
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
-    compare_eq_compareOfLessAndEq := by
-      intros a b
-      simp only [compare_f, compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-      split_ifs <;> try (first | rfl | contradiction)
-      · have : ¬ f a = f b := by rename_i h; exact inj.ne h
-        contradiction
-      · have : f a = f b := by rename_i h; exact congrArg f h
-        contradiction }
+    compare_eq_compareOfLessAndEq := fun a b ↦
+      (compare_f a b).trans <| compareOfLessAndEq_of_injective_eq_compareOfLessAndEq a b f inj }
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version auto-generates `min` and `max` fields. It also takes `[Ord α]`
