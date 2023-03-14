@@ -1323,6 +1323,10 @@ theorem summable_sigma_of_nonneg {β : α → Type _} {f : (Σ x, β x) → ℝ}
   exact_mod_cast NNReal.summable_sigma
 #align summable_sigma_of_nonneg summable_sigma_of_nonneg
 
+theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
+    Summable f ↔ (∀ x, Summable fun y ↦ f (x, y)) ∧ Summable fun x ↦ ∑' y, f (x, y) :=
+  (Equiv.sigmaEquivProd _ _).summable_iff.symm.trans <| summable_sigma_of_nonneg fun _ ↦ hf _
+
 theorem summable_of_sum_le {ι : Type _} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
     (h : ∀ u : Finset ι, (∑ x in u, f x) ≤ c) : Summable f :=
   ⟨⨆ u : Finset ι, ∑ x in u, f x,

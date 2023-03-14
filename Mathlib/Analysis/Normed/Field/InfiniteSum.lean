@@ -31,28 +31,10 @@ open Finset
 
 /-! ### Arbitrary index types -/
 
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Summable.mul_of_nonneg {f : ι → ℝ} {g : ι' → ℝ} (hf : Summable f) (hg : Summable g)
     (hf' : 0 ≤ f) (hg' : 0 ≤ g) : Summable fun x : ι × ι' => f x.1 * g x.2 :=
-  let ⟨s, hf⟩ := hf
-  let ⟨t, hg⟩ := hg
-  suffices this : ∀ u : Finset (ι × ι'), (∑ x in u, f x.1 * g x.2) ≤ s * t from
-    summable_of_sum_le (fun x => mul_nonneg (hf' _) (hg' _)) this
-  fun u =>
-  calc
-    (∑ x in u, f x.1 * g x.2) ≤ ∑ x in u.image Prod.fst ×ˢ u.image Prod.snd, f x.1 * g x.2 :=
-      sum_mono_set_of_nonneg (fun x => mul_nonneg (hf' _) (hg' _)) subset_product
-    _ = ∑ x in u.image Prod.fst, ∑ y in u.image Prod.snd, f x * g y := sum_product
-    _ = ∑ x in u.image Prod.fst, f x * ∑ y in u.image Prod.snd, g y :=
-      (sum_congr rfl fun x _ => mul_sum.symm)
-    _ ≤ ∑ x in u.image Prod.fst, f x * t :=
-      (sum_le_sum fun x _ =>
-        mul_le_mul_of_nonneg_left (sum_le_hasSum _ (fun _ _ => hg' _) hg) (hf' _))
-    _ = (∑ x in u.image Prod.fst, f x) * t := sum_mul.symm
-    _ ≤ s * t :=
-      mul_le_mul_of_nonneg_right (sum_le_hasSum _ (fun _ _ => hf' _) hf) (hg.NonNeg fun _ => hg' _)
-    
+  (summable_prod_of_nonneg <| fun _ ↦ mul_nonneg (hf' _) (hg' _)).2 ⟨fun x ↦ hg.mul_left (f x),
+    by simpa only [hg.tsum_mul_left _] using hf.mul_right (∑' x, g x)⟩
 #align summable.mul_of_nonneg Summable.mul_of_nonneg
 
 theorem Summable.mul_norm {f : ι → α} {g : ι' → α} (hf : Summable fun x => ‖f x‖)
