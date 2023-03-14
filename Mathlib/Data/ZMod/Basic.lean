@@ -104,7 +104,7 @@ theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
   CharP.eq _ (CharP.addOrderOf_one _) (ZMod.charP n)
 #align zmod.add_order_of_one ZMod.addOrderOf_one
 
-/-- This lemma works in the case in which `zmod n` is not infinite, i.e. `n ≠ 0`.  The version
+/-- This lemma works in the case in which `ZMod n` is not infinite, i.e. `n ≠ 0`.  The version
 where `a ≠ 0` is `add_order_of_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
@@ -114,13 +114,13 @@ theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod
 #align zmod.add_order_of_coe ZMod.addOrderOf_coe
 
 /-- This lemma works in the case in which `a ≠ 0`.  The version where
- `zmod n` is not infinite, i.e. `n ≠ 0`, is `add_order_of_coe`. -/
+ `ZMod n` is not infinite, i.e. `n ≠ 0`, is `add_order_of_coe`. -/
 @[simp]
 theorem addOrderOf_coe' {a : ℕ} (n : ℕ) (a0 : a ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   rw [← Nat.smul_one_eq_coe, addOrderOf_nsmul' _ a0, ZMod.addOrderOf_one]
 #align zmod.add_order_of_coe' ZMod.addOrderOf_coe'
 
-/-- We have that `ring_char (zmod n) = n`. -/
+/-- We have that `ringChar (ZMod n) = n`. -/
 theorem ringChar_zmod_n (n : ℕ) : ringChar (ZMod n) = n := by
   rw [ringChar.eq_iff]
   exact ZMod.charP n
@@ -204,8 +204,8 @@ theorem nat_cast_zmod_surjective [NeZero n] : Function.Surjective ((↑) : ℕ �
   nat_cast_rightInverse.surjective
 #align zmod.nat_cast_zmod_surjective ZMod.nat_cast_zmod_surjective
 
-/-- So-named because the outer coercion is `int.cast` into `zmod`. For `int.cast` into an arbitrary
-ring, see `zmod.int_cast_cast`. -/
+/-- So-named because the outer coercion is `Int.cast` into `ZMod`. For `Int.cast` into an arbitrary
+ring, see `ZMod.int_cast_cast`. -/
 @[norm_cast]
 theorem int_cast_zmod_cast (a : ZMod n) : ((a : ℤ) : ZMod n) = a := by
   cases n
@@ -235,7 +235,7 @@ theorem cast_id' : (ZMod.cast : ZMod n → ZMod n) = id :=
 
 variable (R) [Ring R]
 
-/-- The coercions are respectively `nat.cast` and `zmod.cast`. -/
+/-- The coercions are respectively `Nat.cast` and `ZMod.cast`. -/
 @[simp]
 theorem nat_cast_comp_val [NeZero n] : ((↑) : ℕ → R) ∘ (val : ZMod n → ℕ) = (↑) := by
   cases n
@@ -317,9 +317,9 @@ theorem cast_mul (h : m ∣ n) (a b : ZMod n) : ((a * b : ZMod n) : R) = a * b :
   exact h.trans (Nat.dvd_sub_mod _)
 #align zmod.cast_mul ZMod.cast_mul
 
-/-- The canonical ring homomorphism from `zmod n` to a ring of characteristic `n`.
+/-- The canonical ring homomorphism from `ZMod n` to a ring of characteristic `n`.
 
-See also `zmod.lift` (in `data.zmod.quotient`) for a generalized version working in `add_group`s.
+See also `ZMod.lift` (in `data.zmod.quotient`) for a generalized version working in `AddGroup`s.
 -/
 def castHom (h : m ∣ n) (R : Type _) [Ring R] [CharP R m] : ZMod n →+* R where
   toFun := (↑)
@@ -424,13 +424,13 @@ theorem castHom_bijective [Fintype R] (h : Fintype.card R = n) :
   apply ZMod.castHom_injective
 #align zmod.cast_hom_bijective ZMod.castHom_bijective
 
-/-- The unique ring isomorphism between `zmod n` and a ring `R`
+/-- The unique ring isomorphism between `ZMod n` and a ring `R`
 of characteristic `n` and cardinality `n`. -/
 noncomputable def ringEquiv [Fintype R] (h : Fintype.card R = n) : ZMod n ≃+* R :=
   RingEquiv.ofBijective _ (ZMod.castHom_bijective R h)
 #align zmod.ring_equiv ZMod.ringEquiv
 
-/-- The identity between `zmod m` and `zmod n` when `m = n`, as a ring isomorphism. -/
+/-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
   cases' m with m <;> cases' n with n
   · exact RingEquiv.refl _
@@ -508,7 +508,7 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
 
 #align zmod.val_neg_one ZMod.val_neg_one
 
-/-- `-1 : zmod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
+/-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
 theorem cast_neg_one {R : Type _} [Ring R] (n : ℕ) : ↑(-1 : ZMod n) = (n - 1 : R) := by
   cases' n with n
   · dsimp [ZMod, ZMod.cast]; simp
@@ -624,7 +624,7 @@ instance nontrivial' : Nontrivial (ZMod 0) :=
   by delta ZMod; infer_instance
 #align zmod.nontrivial' ZMod.nontrivial'
 
-/-- The inversion on `zmod n`.
+/-- The inversion on `ZMod n`.
 It is setup in such a way that `a * a⁻¹` is equal to `gcd a.val n`.
 In particular, if `a` is coprime to `n`, and hence a unit, `a * a⁻¹ = 1`. -/
 def inv : ∀ n : ℕ, ZMod n → ZMod n
@@ -685,7 +685,7 @@ theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.coprime x n) :
   rw [mul_inv_eq_gcd, val_nat_cast, h, Nat.cast_one]
 #align zmod.coe_mul_inv_eq_one ZMod.coe_mul_inv_eq_one
 
-/-- `unit_of_coprime` makes an element of `(zmod n)ˣ` given
+/-- `unit_of_coprime` makes an element of `(ZMod n)ˣ` given
   a natural number `x` and a proof that `x` is coprime to `n`  -/
 def unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.coprime x n) : (ZMod n)ˣ :=
   ⟨x, x⁻¹, coe_mul_inv_eq_one x h, by rw [mul_comm, coe_mul_inv_eq_one x h]⟩
@@ -729,9 +729,9 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
   rw [mul_comm, mul_inv_of_unit a h]
 #align zmod.inv_mul_of_unit ZMod.inv_mul_of_unit
 
--- TODO: this equivalence is true for `zmod 0 = ℤ`, but needs to use different functions.
-/-- Equivalence between the units of `zmod n` and
-the subtype of terms `x : zmod n` for which `x.val` is comprime to `n` -/
+-- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
+/-- Equivalence between the units of `ZMod n` and
+the subtype of terms `x : ZMod n` for which `x.val` is comprime to `n` -/
 def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.coprime x.val n }
     where
   toFun x := ⟨x, val_coe_unit_coprime x⟩
@@ -741,9 +741,9 @@ def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.
 #align zmod.units_equiv_coprime ZMod.unitsEquivCoprime
 
 /-- The **Chinese remainder theorem**. For a pair of coprime natural numbers, `m` and `n`,
-  the rings `zmod (m * n)` and `zmod m × zmod n` are isomorphic.
+  the rings `ZMod (m * n)` and `ZMod m × ZMod n` are isomorphic.
 
-See `ideal.quotient_inf_ring_equiv_pi_quotient` for the Chinese remainder theorem for ideals in any
+See `Ideal.quotientInfRingEquivPiQuotient` for the Chinese remainder theorem for ideals in any
 ring.
 -/
 def chineseRemainder {m n : ℕ} (h : m.coprime n) : ZMod (m * n) ≃+* ZMod m × ZMod n :=
@@ -790,7 +790,7 @@ def chineseRemainder {m n : ℕ} (h : m.coprime n) : ZMod (m * n) ≃+* ZMod m �
     right_inv := inv.2 }
 #align zmod.chinese_remainder ZMod.chineseRemainder
 
--- todo: this can be made a `unique` instance.
+-- todo: this can be made a `Unique` instance.
 instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩
 #align zmod.subsingleton_units ZMod.subsingleton_units
@@ -1102,16 +1102,16 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
   apply Nat.coprime.symm
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
-/-- Field structure on `zmod p` if `p` is prime. -/
+/-- Field structure on `ZMod p` if `p` is prime. -/
 instance : Field (ZMod p) :=
   { inferInstanceAs (CommRing (ZMod p)),inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
     inv_zero := inv_zero p }
 
-/-- `zmod p` is an integral domain when `p` is prime. -/
+/-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
-  -- We need `cases p` here in order to resolve which `comm_ring` instance is being used.
+  -- We need `cases p` here in order to resolve which `CommRing` instance is being used.
   cases p
   · exact (Nat.not_prime_zero hp.out).elim
   exact @Field.isDomain (ZMod _) (inferInstanceAs (Field (ZMod _)))
@@ -1170,7 +1170,7 @@ section lift
 
 variable (n) {A : Type _} [AddGroup A]
 
-/-- The map from `zmod n` induced by `f : ℤ →+ A` that maps `n` to `0`. -/
+/-- The map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`. -/
 @[simps!] --Porting note: added `!`
 def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
   (Equiv.subtypeEquivRight <| by
@@ -1208,3 +1208,4 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 end lift
 
 end ZMod
+#lint
