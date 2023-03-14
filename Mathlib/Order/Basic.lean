@@ -1017,10 +1017,10 @@ fields. See note [reducible non-instances]. -/
 def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
-  let instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
-  let decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  let decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  let decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  letI instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
+  letI decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
     decidable_le := decidable_le
@@ -1065,9 +1065,9 @@ def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] 
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
-  let decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  let decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  let decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  letI decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj with
     le_total := fun x y ↦ le_total (f x) (f y)
     decidable_le := decidable_le
