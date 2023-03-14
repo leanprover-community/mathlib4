@@ -8,8 +8,8 @@ Authors: Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Invertible
-import Mathbin.LinearAlgebra.AffineSpace.AffineEquiv
+import Mathlib.Algebra.Invertible
+import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 /-!
 # Midpoint of a segment
