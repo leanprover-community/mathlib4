@@ -283,17 +283,17 @@ def bits : ℕ → List Bool :=
 def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
   binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
     binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
-#align nat.bitwise Nat.bitwise
+#align nat.bitwise Nat.bitwise'
 
 /--`lor'` takes two natural numbers and returns their bitwise `or`-/
 def lor' : ℕ → ℕ → ℕ :=
   bitwise' or
-#align nat.lor Nat.lor
+#align nat.lor Nat.lor'
 
 /--`land'` takes two naturals numbers and returns their `and`-/
 def land' : ℕ → ℕ → ℕ :=
   bitwise' and
-#align nat.land Nat.land
+#align nat.land Nat.land'
 
 /--`ldiff' a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the

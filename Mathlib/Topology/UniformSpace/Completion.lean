@@ -368,19 +368,19 @@ def Completion :=
 
 namespace Completion
 
-instance [Inhabited α] : Inhabited (Completion α) :=
+instance inhabited [Inhabited α] : Inhabited (Completion α) :=
   Quotient.instInhabitedQuotient (separationSetoid (CauchyFilter α))
 
-instance (priority := 50) : UniformSpace (Completion α) :=
+instance (priority := 50) uniformSpace : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace
 
-instance : CompleteSpace (Completion α) :=
+instance completeSpace : CompleteSpace (Completion α) :=
   UniformSpace.completeSpace_separation (CauchyFilter α)
 
-instance : SeparatedSpace (Completion α) :=
+instance separatedSpace : SeparatedSpace (Completion α) :=
   UniformSpace.separated_separation
 
-instance : T3Space (Completion α) :=
+instance t3Space : T3Space (Completion α) :=
   separated_t3
 
 /-- The map from a uniform space to its completion.
@@ -546,6 +546,7 @@ theorem uniformContinuous_extension : UniformContinuous (Completion.extension f)
   cPkg.uniformContinuous_extend
 #align uniform_space.completion.uniform_continuous_extension UniformSpace.Completion.uniformContinuous_extension
 
+@[continuity]
 theorem continuous_extension : Continuous (Completion.extension f) :=
   cPkg.continuous_extend
 #align uniform_space.completion.continuous_extension UniformSpace.Completion.continuous_extension
@@ -588,6 +589,7 @@ theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 #align uniform_space.completion.uniform_continuous_map UniformSpace.Completion.uniformContinuous_map
 
+@[continuity]
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 #align uniform_space.completion.continuous_map UniformSpace.Completion.continuous_map

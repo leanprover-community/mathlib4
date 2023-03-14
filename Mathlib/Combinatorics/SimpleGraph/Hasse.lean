@@ -51,7 +51,7 @@ theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
 
 /-- `αᵒᵈ` and `α` have the same Hasse diagram. -/
 def hasseDualIso : hasse αᵒᵈ ≃g hasse α :=
-  { ofDual with map_rel_iff' := @fun a b => by simp [or_comm] }
+  { ofDual with map_rel_iff' := by simp [or_comm] }
 #align simple_graph.hasse_dual_iso SimpleGraph.hasseDualIso
 
 @[simp]
