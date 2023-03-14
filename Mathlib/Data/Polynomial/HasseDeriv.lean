@@ -167,43 +167,32 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative
 
 theorem hasseDeriv_comp (k l : ℕ) :
     (@hasseDeriv R _ k).comp (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) := by
-  ext i x n
+  ext i : 2
   simp only [LinearMap.smul_apply, comp_apply, LinearMap.coe_comp, smul_monomial, hasseDeriv_apply,
-    mul_one, monomial_eq_zero_iff, sum_monomial_index, MulZeroClass.mul_zero, ←
+    mul_one, monomial_eq_zero_iff, sum_monomial_index, mul_zero, ←
     tsub_add_eq_tsub_tsub, add_comm l k]
   rw_mod_cast [nsmul_eq_mul]
+  rw [←Nat.cast_mul]
   congr 2
   by_cases hikl : i < k + l
-  · rw [choose_eq_zero_of_lt hikl]
+  · rw [choose_eq_zero_of_lt hikl, mul_zero]
     by_cases hil : i < l
-    · rw [choose_eq_zero_of_lt hil]
-      simp
+    · rw [choose_eq_zero_of_lt hil, mul_zero]
     · push_neg at hil
       rw [← tsub_lt_iff_right hil] at hikl
-      rw [choose_eq_zero_of_lt hikl]
-      simp
+      rw [choose_eq_zero_of_lt hikl, zero_mul]
   push_neg at hikl
-  norm_cast
-  congr 1
+  apply @cast_injective ℚ
   have h1 : l ≤ i := le_of_add_le_right hikl
   have h2 : k ≤ i - l := le_tsub_of_add_le_right hikl
   have h3 : k ≤ k + l := le_self_add
-  apply @cast_injective ℚ
   push_cast
-  rw [cast_choose ℚ h1]
-  rw [cast_choose ℚ h2]
-  rw [cast_choose ℚ h3]
-  rw [cast_choose ℚ hikl]
+  rw [cast_choose ℚ h1, cast_choose ℚ h2, cast_choose ℚ h3, cast_choose ℚ hikl]
   rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
   simp only [add_tsub_cancel_left]
   have H : ∀ n : ℕ, (n ! : ℚ) ≠ 0 := by exact_mod_cast factorial_ne_zero
-  have := H (i - l)
-  have := H k
-  have := H (i - l - k)
-  have := H l
-  have := H (k + l)
-  field_simp
-  ring_nf
+  field_simp [H]
+  ring
 #align polynomial.hasse_deriv_comp Polynomial.hasseDeriv_comp
 
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) : natDegree (hasseDeriv n p) ≤ natDegree p - n :=
