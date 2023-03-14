@@ -6,6 +6,7 @@ Authors: Heather Macbeth, Thomas Murrills
 import Lean
 import Std.Lean.Meta.DiscrTree
 import Qq.MetaM
+import Mathlib.Order.Monotone.Basic
 
 open Lean Meta Elab Term Qq
 
@@ -28,7 +29,6 @@ namespace Attr
 domain and range, and possibly with side conditions. -/
 syntax (name := mono) "mono" (ppSpace mono.side)? : attr
 
-
 /--
 A extension for `mono`.
 -/
@@ -38,6 +38,26 @@ structure MonoExt where
   /-- The name of the `mono` extension. -/
   name : Name -- !! := by exact decl_name%
 deriving Inhabited
+
+/-- Checks for left `mono`s (i.e., `mono`s with `side` equal to `.left` or `.both`) -/
+def isLeft : MonoExt → Bool
+| ⟨.right, _⟩ => false
+| ⟨_,      _⟩ => true
+
+/-- Checks for right `mono`s (i.e., `mono`s with `side` equal to `.right` or `.both`) -/
+def isRight : MonoExt → Bool
+| ⟨.left, _⟩ => false
+| ⟨_,     _⟩ => true
+
+/-- Parse optional `mono.side` syntax, returning `Side.both` by default. -/
+def parseSide [Monad m] [MonadError m] (s : Option (TSyntax ``mono.side)) : m Side :=
+  match s with
+  | some s => match s with
+    | `(mono.side|left)  => pure .left
+    | `(mono.side|right) => pure .right
+    | `(mono.side|both)  => pure .both
+    | _        => throwErrorAt s "{s} is expected to be 'left', 'right', or 'both'"
+  | none   => pure .both
 
 /-- Read a `mono` extension from an (imported) extension declaration. `MonoExt`s are only provided
 as declarations by imports, so this is only used to read off those imported declarations. -/
@@ -61,6 +81,8 @@ deriving Inhabited
 initialize monoExt : ScopedEnvExtension Entry Entry Monos ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq MonoExt := ⟨fun _ _ ↦ false⟩
+  -- /- Insert `v : MonoExt` into the tree `dt` on all key sequences given in `kss`. -/
+  -- let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
   registerScopedEnvExtension {
     mkInitial := pure {}
     ofOLeanEntry := fun _ e ↦ return e
@@ -69,6 +91,14 @@ initialize monoExt : ScopedEnvExtension Entry Entry Monos ←
       { tree := tree.insertCore ks ext, erased := erased.erase ext.name }
   }
 
+
+
+-- /-- Run each registered `mono` extension on an expression,
+-- returning a `Simp.Result`. -/
+-- def eval (e : Expr) (post := false) : MetaM Simp.Result := do
+--   if isNormalForm e then return { expr := e }
+--   let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
+--   (← derive e post).toSimpResult
 
 /-- Erases a name marked `mono` by adding it to the state's `erased` field and
   removing it from the state's list of `Entry`s. -/
@@ -86,19 +116,23 @@ def Monos.erase [Monad m] [MonadError m] (d : Monos) (declName : Name) : m Monos
     throwError "'{declName}' does not have the [mono] attribute"
   return d.eraseCore declName
 
+def Monos.toUnfold : Array Name := #[``Monotone, ``StrictMono, ``MonotoneOn, ``StrictMonoOn]
+
+def Monos.SimpContext : Simp.Context where
+  config       := Simp.neutralConfig
+  simpTheorems := #[{ toUnfold := Monos.toUnfold.foldl (·.insert ·) {}}]
+
+--!! Consider having a `wasUnfolded` field in each `MonoExt` so that we only dsimp when we need to.
+--!! Or, multiple `MonoExt`s, one for each declaration? Should we therefore add two things to the discrtree?
+--!! Or, an `unfoldedBy` field with an array of names. Or, simply the `UsedSimps` directly; then we can feed them in.
+
 initialize registerBuiltinAttribute {
   name := `mono
   descr := "adds a mono extension"
   applicationTime := .afterCompilation
   add := fun name stx kind ↦ match stx with
     | `(attr| mono $[$s:mono.side]?) => do
-      let side ← match s with
-      | some s => match s with
-        | `(left)  => pure Side.left
-        | `(right) => pure Side.right
-        | `(both)  => pure Side.both
-        | _        => throwErrorAt s "{s} is expected to be 'left', 'right', or 'both'"
-      | none   => pure Side.both
+      let side ← parseSide s
       let env ← getEnv
       unless (env.find? name).isNone do --!! good way to check?
         let s := monoExt.getState env
@@ -115,9 +149,14 @@ initialize registerBuiltinAttribute {
           throwError "invalid 'mono', proposition expected{indentExpr type}"
         let type ← TermElabM.run' <| withSaveInfoContext <| withAutoBoundImplicit <|
           withReader ({ · with ignoreTCFailures := true }) do
+          -- Unfold definitions like `Monotone` before adding `type` to the discrtree.
+          let (type, u) ← dsimp type Monos.SimpContext
+          trace[Tactic.mono] "dsimp used the following on the lemma type:\n
+            {u.fold (fun a o _ => a.push o.key) #[]}"
           let (_, _, type) ←
             forallMetaTelescopeReducing (← mkForallFVars (← getLCtx).getFVars type true)
           whnfR type
+        trace[Tactic.mono] "adding DiscrTree.mkPath {type} to the DiscrTree"
         DiscrTree.mkPath type
       monoExt.add (keys, ext) kind
     | _ => throwUnsupportedSyntax
@@ -126,3 +165,9 @@ initialize registerBuiltinAttribute {
     let s ← s.erase name
     modifyEnv fun env => monoExt.modifyState env fun _ => s
 }
+
+--!! Where should something like `dsimpConsts` go? Or maybe `dunfold`?
+-- /-- A simp plugin which calls `Mono.eval`. -/
+-- def tryMono? (post := false) (e : Expr) : SimpM (Option Simp.Step) := do
+--   try return some (.done (← eval e post))
+--   catch _ => return none
