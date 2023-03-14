@@ -8,8 +8,8 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.RingTheory.Subring.Basic
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Subring.Basic
 
 /-!
 # Characteristic of subrings
