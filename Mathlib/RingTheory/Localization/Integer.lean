@@ -39,7 +39,7 @@ namespace IsLocalization
 
 section
 
-variable (R) {M S}
+variable (R)
 
 -- TODO: define a subalgebra of `is_integer`s
 /-- Given `a : S`, `S` a localization of `R`, `is_integer R a` iff `a` is in the image of
@@ -72,7 +72,8 @@ theorem isInteger_smul {a : R} {b : S} (hb : IsInteger R b) : IsInteger R (a •
   rw [← hb, (algebraMap R S).map_mul, Algebra.smul_def]
 #align is_localization.is_integer_smul IsLocalization.isInteger_smul
 
-variable (M) {S} [IsLocalization M S]
+variable (M)
+variable [IsLocalization M S]
 
 /-- Each element `a : S` has an `M`-multiple which is an integer.
 
@@ -100,8 +101,11 @@ theorem exist_integer_multiples {ι : Type _} (s : Finset ι) (f : ι → S) :
   · exact (∏ j in s.erase i, (sec M (f j)).2) * (sec M (f i)).1
   rw [RingHom.map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]
   congr 2
-  refine' trans _ ((Submonoid.subtype M).map_prod _ _).symm
-  rw [mul_comm, ← Finset.prod_insert (s.not_mem_erase i), Finset.insert_erase hi]
+  refine' _root_.trans _ ((Submonoid.subtype M).map_prod _ _).symm
+  rw [mul_comm,Submonoid.coe_finset_prod,
+    -- Porting note: explicitly supplied `f`
+    ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.not_mem_erase i),
+    Finset.insert_erase hi]
   rfl
 #align is_localization.exist_integer_multiples IsLocalization.exist_integer_multiples
 
@@ -121,19 +125,19 @@ theorem exist_integer_multiples_of_finset (s : Finset S) :
 
 /-- A choice of a common multiple of the denominators of a `finset`-indexed family of fractions. -/
 noncomputable def commonDenom {ι : Type _} (s : Finset ι) (f : ι → S) : M :=
-  (exist_integer_multiples M s f).some
+  (exist_integer_multiples M s f).choose
 #align is_localization.common_denom IsLocalization.commonDenom
 
 /-- The numerator of a fraction after clearing the denominators
 of a `finset`-indexed family of fractions. -/
 noncomputable def integerMultiple {ι : Type _} (s : Finset ι) (f : ι → S) (i : s) : R :=
-  ((exist_integer_multiples M s f).choose_spec i i.Prop).some
+  ((exist_integer_multiples M s f).choose_spec i i.prop).choose
 #align is_localization.integer_multiple IsLocalization.integerMultiple
 
 @[simp]
 theorem map_integerMultiple {ι : Type _} (s : Finset ι) (f : ι → S) (i : s) :
     algebraMap R S (integerMultiple M s f i) = commonDenom M s f • f i :=
-  ((exist_integer_multiples M s f).choose_spec _ i.Prop).choose_spec
+  ((exist_integer_multiples M s f).choose_spec _ i.prop).choose_spec
 #align is_localization.map_integer_multiple IsLocalization.map_integerMultiple
 
 /-- A choice of a common multiple of the denominators of a finite set of fractions. -/
@@ -149,17 +153,16 @@ noncomputable def finsetIntegerMultiple [DecidableEq R] (s : Finset S) : Finset 
 open Pointwise
 
 theorem finsetIntegerMultiple_image [DecidableEq R] (s : Finset S) :
-    algebraMap R S '' finsetIntegerMultiple M s = commonDenomOfFinset M s • s := by
-  delta finset_integer_multiple common_denom
+    algebraMap R S '' finsetIntegerMultiple M s = commonDenomOfFinset M s • (s : Set S) := by
+  delta finsetIntegerMultiple commonDenom
   rw [Finset.coe_image]
   ext
   constructor
   · rintro ⟨_, ⟨x, -, rfl⟩, rfl⟩
-    rw [map_integer_multiple]
+    rw [map_integerMultiple]
     exact Set.mem_image_of_mem _ x.prop
   · rintro ⟨x, hx, rfl⟩
-    exact ⟨_, ⟨⟨x, hx⟩, s.mem_attach _, rfl⟩, map_integer_multiple M s id _⟩
+    exact ⟨_, ⟨⟨x, hx⟩, s.mem_attach _, rfl⟩, map_integerMultiple M s id _⟩
 #align is_localization.finset_integer_multiple_image IsLocalization.finsetIntegerMultiple_image
 
 end IsLocalization
-
