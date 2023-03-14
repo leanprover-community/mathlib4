@@ -23,7 +23,8 @@ namespace Mathlib.Tactic.Monotonicity
 
 open Attr
 
-/-- Match each registered `mono` extension against `t`, returning an array of matching extensions. -/
+/-- Match each registered `mono` extension against `t`, returning an array of matching extensions.
+-/
 def getMatchingMonos (t : Expr) (side := Side.both) : MetaM (Array MonoExt) := do
   profileitM Exception "mono" (← getOptions) do --!! what does profileit do?
     let monos := monoExt.getState (← getEnv)
@@ -47,7 +48,8 @@ where
   | [] => as.toList
 
 
-/-- Apply a mono extension to an already fully-telescoped (and in whnf) `t`. Returns any remaining subgoals. -/
+/-- Apply a mono extension to an already fully-telescoped (and in whnf) `t`. Returns any remaining
+subgoals. -/
 def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := do
   let (expr, goals) ← applyMatchReducing m.name t
   trace[Tactic.mono] "Applied {m.name} to {t}"
@@ -68,7 +70,8 @@ def applyMono (t : Expr) (m : MonoExt) : MetaM (Expr × List MVarId) := do
 def applyMonos (t : Expr) (side : Side := .both) : MetaM (Expr × List MVarId) := do
   let monos ← getMatchingMonos t side
   trace[Tactic.mono] "matched:\n{monos.map (·.name) |>.toList}"
-  /- Porting note: we use the old mathlib method of using the application that produces the fewest subgoals. This is subject to change. -/
+  /- Porting note: we use the old mathlib method of using the application that produces the fewest
+  subgoals. This is subject to change. -/
   if monos.isEmpty then throwError "no monos apply"
   let mut results : Array (Expr × List MVarId) := #[]
   for m in monos do --!! do we need a save stat?
@@ -87,18 +90,6 @@ def applyMonos (t : Expr) (side : Side := .both) : MetaM (Expr × List MVarId) :
     throwError "Found multiple good matches which each produced the same number of subgoals. Write
       `mono with ...` and include one or more of the subgoals in one of the following lists to
       encourage `mono` to use that list.\n{bestMatchTypes}"
-
-Temporary syntax change: Lean 3 `mono` applied a single monotonicity rule, then applied local
-hypotheses and the `rfl` tactic as many times as it could.  This is hard to implement on top of
-`solve_by_elim` because the counting system used in the `maxDepth` field of its configuration would
-count these as separate steps, throwing off the count in the desired configuration
-`maxDepth := 1`.  So instead we just implement a version of `mono` in which monotonicity rules,
-local hypotheses and `rfl` are all applied repeatedly until nothing more is applicable.  The syntax
-for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior for now.
--/
-
-open Lean Elab Tactic Parser Tactic
-open Mathlib Tactic SolveByElim
 
 /-- !! Apply the `mono` tactic to a goal. -/
 def _root_.Lean.MVarId.mono (goal : MVarId) (side : Side := .both) : MetaM (List MVarId) := do
