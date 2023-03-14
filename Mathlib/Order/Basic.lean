@@ -616,12 +616,18 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
 theorem LinearOrder.toPartialOrder_injective {α : Type _} :
     Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun A B h ↦ match A, B with
-  | { le := A_le, lt := A_lt, decidable_le := A_decidable_le,
-      min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def, .. },
-    { le := B_le, lt := B_lt, decidable_le := B_decidable_le,
-      min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def, .. } => by
+  | { le := A_le, lt := A_lt,
+      decidable_le := A_decidable_le, decidable_eq := A_decidable_eq, decidable_lt := A_decidable_lt
+      min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
+      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical,  .. },
+    { le := B_le, lt := B_lt,
+      decidable_le := B_decidable_le, decidable_eq := B_decidable_eq, decidable_lt := B_decidable_lt
+      min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
+      compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     cases h
     obtain rfl : A_decidable_le = B_decidable_le := Subsingleton.elim _ _
+    obtain rfl : A_decidable_eq = B_decidable_eq := Subsingleton.elim _ _
+    obtain rfl : A_decidable_lt = B_decidable_lt := Subsingleton.elim _ _
     have : A_min = B_min := by
       funext a b
       exact (A_min_def _ _).trans (B_min_def _ _).symm
@@ -630,7 +636,10 @@ theorem LinearOrder.toPartialOrder_injective {α : Type _} :
       funext a b
       exact (A_max_def _ _).trans (B_max_def _ _).symm
     cases this
-    congr <;> exact Subsingleton.elim _ _
+    have : A_compare = B_compare := by
+      funext a b
+      exact (A_compare_canonical _ _).trans (B_compare_canonical _ _).symm
+    congr
 #align linear_order.to_partial_order_injective LinearOrder.toPartialOrder_injective
 
 theorem Preorder.ext {α} {A B : Preorder α}
