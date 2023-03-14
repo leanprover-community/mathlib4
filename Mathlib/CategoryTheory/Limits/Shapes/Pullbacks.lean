@@ -882,12 +882,30 @@ theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k 
   ht.hom_ext <| coequalizer_ext _ h₀ h₁
 #align category_theory.limits.pushout_cocone.is_colimit.hom_ext CategoryTheory.Limits.PushoutCocone.IsColimit.hom_ext
 
+-- porting note: `IsColimit.desc` and the two following simp lemmas were introduced to ease the port
+/-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
+    morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
+    `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`-/
+def IsColimit.desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
+    (w : f ≫ h = g ≫ k) : t.pt ⟶ W :=
+  ht.desc (PushoutCocone.mk _ _ w)
+
+@[reassoc (attr := simp)]
+lemma IsColimit.inl_desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
+    (w : f ≫ h = g ≫ k) : inl t ≫ IsColimit.desc ht h k w = h :=
+  ht.fac _ _
+
+@[reassoc (attr := simp)]
+lemma IsColimit.inr_desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
+    (w : f ≫ h = g ≫ k) : inr t ≫ IsColimit.desc ht h k w = k :=
+  ht.fac _ _
+
 /-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
     morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
     `inl t ≫ l = h` and `inr t ≫ l = k`. -/
 def IsColimit.desc' {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) : { l : t.pt ⟶ W // inl t ≫ l = h ∧ inr t ≫ l = k } :=
-  ⟨ht.desc <| PushoutCocone.mk _ _ w, ht.fac _ _, ht.fac _ _⟩
+  ⟨IsColimit.desc ht h k w, by simp⟩
 #align category_theory.limits.pushout_cocone.is_colimit.desc' CategoryTheory.Limits.PushoutCocone.IsColimit.desc'
 
 theorem epi_inr_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) [Epi f] :
