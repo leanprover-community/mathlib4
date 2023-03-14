@@ -32,6 +32,7 @@ reimplemented by Scott Morrison in Lean 4.
 -/
 
 open Lean Meta Elab Tactic
+open Mathlib.Tactic
 
 namespace Tactic.Elementwise
 open CategoryTheory
@@ -157,15 +158,15 @@ initialize registerBuiltinAttribute {
   | `(attr| elementwise $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDefn src "_apply" ref `elementwise stx? fun type value levels => do
+    addRelatedDecl src "_apply" ref `elementwise stx? fun type value levels => do
       let (newValue, level?) ← elementwiseExpr type value
-      let newLevels := if let some level := level? then
+      let newLevels ← if let some level := level? then do
         let w := mkUnusedName levels `w
         unless ← isLevelDefEq level (mkLevelParam w) do
           throwError "Could not create level parameter for ConcreteCategory instance"
-        w :: levels
+        pure <| w :: levels
       else
-        levels
+        pure levels
       pure (newValue, newLevels)
   | _ => throwUnsupportedSyntax }
 
