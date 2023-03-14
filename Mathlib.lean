@@ -1235,6 +1235,7 @@ import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Nilpotent
