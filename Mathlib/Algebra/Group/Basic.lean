@@ -241,21 +241,10 @@ theorem inv_inj {a b : G} : a⁻¹ = b⁻¹ ↔ a = b :=
 #align neg_inj neg_inj
 
 @[to_additive]
-theorem eq_inv_of_eq_inv (h : a = b⁻¹) : b = a⁻¹ := by simp [h]
-#align eq_inv_of_eq_inv eq_inv_of_eq_inv
-#align eq_neg_of_eq_neg eq_neg_of_eq_neg
-
-@[to_additive]
-theorem eq_inv_iff_eq_inv : a = b⁻¹ ↔ b = a⁻¹ :=
-  ⟨eq_inv_of_eq_inv, eq_inv_of_eq_inv⟩
-#align eq_inv_iff_eq_inv eq_inv_iff_eq_inv
-#align eq_neg_iff_eq_neg eq_neg_iff_eq_neg
-
-@[to_additive]
-theorem inv_eq_iff_inv_eq : a⁻¹ = b ↔ b⁻¹ = a :=
-  eq_comm.trans <| eq_inv_iff_eq_inv.trans eq_comm
-#align inv_eq_iff_inv_eq inv_eq_iff_inv_eq
-#align neg_eq_iff_neg_eq neg_eq_iff_neg_eq
+theorem inv_eq_iff_eq_inv : a⁻¹ = b ↔ a = b⁻¹ :=
+  ⟨fun h => h ▸ (inv_inv a).symm, fun h => h.symm ▸ inv_inv b⟩
+#align inv_eq_iff_eq_inv inv_eq_iff_eq_inv
+#align neg_eq_iff_eq_neg neg_eq_iff_eq_neg
 
 variable (G)
 
