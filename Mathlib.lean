@@ -748,6 +748,7 @@ import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
+import Mathlib.Data.Array.MinMax
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.Bitvec.Basic
 import Mathlib.Data.Bitvec.Core
