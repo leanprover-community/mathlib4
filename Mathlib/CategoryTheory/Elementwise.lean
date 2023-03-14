@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Elementwise
-import Mathbin.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.Tactic.Elementwise
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Use the `elementwise` attribute to create applied versions of lemmas.
