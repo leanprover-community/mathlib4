@@ -1175,3 +1175,10 @@ instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 end CommGroup
+
+initialize_simps_projections Neg
+initialize_simps_projections Semigroup
+initialize_simps_projections AddSemigroup
+initialize_simps_projections Monoid
+initialize_simps_projections Group
+initialize_simps_projections AddMonoid
