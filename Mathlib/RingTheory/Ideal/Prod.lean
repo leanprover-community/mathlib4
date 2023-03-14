@@ -138,7 +138,7 @@ theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Id
     contrapose! h
     rw [← prod_top_top, prod.ext_iff] at h
     exact h.1
-  rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨h₁, h₂⟩
+  rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨h₁, _⟩
   cases' h.mem_or_mem h₁ with h h
   · exact Or.inl ⟨h, trivial⟩
   · exact Or.inr ⟨h, trivial⟩
