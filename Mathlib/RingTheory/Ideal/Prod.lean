@@ -48,7 +48,7 @@ theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
   Ideal.ext <| by simp
 #align ideal.prod_top_top Ideal.prod_top_top
 
-set_option synthInstance.etaExperiment true
+attribute [-instance] Ring.toNonAssocRing
 
 /-- Every ideal of the product ring is of the form `I × J`, where `I` and `J` can be explicitly
     given as the image under the projection maps. -/
@@ -145,9 +145,9 @@ theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Id
 #align ideal.is_prime_ideal_prod_top Ideal.isPrime_ideal_prod_top
 
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
+  letI : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
   rw [← map_prodComm_prod]
   apply map_isPrime_of_equiv _
-  exact isPrime_ideal_prod_top
 #align ideal.is_prime_ideal_prod_top' Ideal.isPrime_ideal_prod_top'
 
 theorem ideal_prod_prime_aux {I : Ideal R} {J : Ideal S} :
