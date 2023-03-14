@@ -8,7 +8,7 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Polynomial.Degree.Definitions
+import Mathlib.Data.Polynomial.Degree.Definitions
 
 /-!  #  Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 
@@ -93,24 +93,21 @@ theorem opRingEquiv_symm_c_mul_x_pow (r : Rᵐᵒᵖ) (n : ℕ) :
 
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
-    (opRingEquiv R p).coeff n = op ((unop p).coeff n) :=
-  by
+    (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by
   induction p using MulOpposite.rec'
   cases p
   rfl
 #align polynomial.coeff_op_ring_equiv Polynomial.coeff_opRingEquiv
 
 @[simp]
-theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support :=
-  by
+theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by
   induction p using MulOpposite.rec'
   cases p
   exact Finsupp.support_mapRange_of_injective _ _ op_injective
 #align polynomial.support_op_ring_equiv Polynomial.support_opRingEquiv
 
 @[simp]
-theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree = (unop p).natDegree :=
-  by
+theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree = (unop p).natDegree := by
   by_cases p0 : p = 0
   · simp only [p0, _root_.map_zero, nat_degree_zero, unop_zero]
   ·
