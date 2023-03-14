@@ -1048,7 +1048,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
         ""}Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain {
         ""}cases.\n{
         ""}Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := .default, {
-        ""}simpRhs := true}]`. You can also try `@[simps (config := \{rhsMd := .default}]` {
+        ""}simpRhs := true})]`. You can also try `@[simps (config := \{rhsMd := .default})]` {
         ""}to still unfold the definitions, but avoid calling `simp` on the resulting statement.\n{
         ""}Note 3: You need `simps!` if not all fields are given explicitly in this definition, {
         ""}even if the definition is a constructor application. For example, if you give a {

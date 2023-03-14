@@ -26,6 +26,10 @@ example : Nat := by library_search
 
 namespace Lean.Meta.DiscrTree
 
+/--
+Inserts a new key into a discrimination tree,
+but only if it is not of the form `#[*]` or `#[=, *, *, *]`.
+-/
 def insertIfSpecific {α : Type} {s : Bool} [BEq α] (d : DiscrTree α s)
     (keys : Array (DiscrTree.Key s)) (v : α) : DiscrTree α s :=
   if keys == #[Key.star] || keys == #[Key.const `Eq 3, Key.star, Key.star, Key.star] then
