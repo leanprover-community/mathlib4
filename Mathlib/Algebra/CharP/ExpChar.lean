@@ -8,8 +8,8 @@ Authors: Jakob Scholbach
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.CharP.Basic
-import Mathbin.Data.Nat.Prime
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Data.Nat.Prime
 
 /-!
 # Exponential characteristic
@@ -46,16 +46,14 @@ class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
 #align exp_char ExpChar
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
-theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 :=
-  by
+theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
   cases' hq with q hq_one hq_prime
   · rfl
   · exact False.elim (lt_irrefl _ ((hp.eq R hq_hchar).symm ▸ hq_prime : (0 : ℕ).Prime).Pos)
 #align exp_char_one_of_char_zero expChar_one_of_char_zero
 
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
-theorem char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime :=
-  by
+theorem char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime := by
   cases' hq with q hq_one hq_prime
   · apply iff_of_false
     · rintro rfl
@@ -71,8 +69,7 @@ section Nontrivial
 variable [Nontrivial R]
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
-theorem char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 :=
-  by
+theorem char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
   cases hq
   · exact CharP.eq R hp inferInstance
   · exact False.elim (CharP.char_ne_one R 1 rfl)
@@ -80,16 +77,14 @@ theorem char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] :
 
 -- see Note [lower instance priority]
 /-- The characteristic is zero if the exponential characteristic is one. -/
-instance (priority := 100) charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R :=
-  by
+instance (priority := 100) charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
   cases hq
   · assumption
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 #align char_zero_of_exp_char_one' charZero_of_expChar_one'
 
 /-- The exponential characteristic is one iff the characteristic is zero. -/
-theorem expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 ↔ p = 0 :=
-  by
+theorem expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 ↔ p = 0 := by
   constructor
   · rintro rfl
     exact char_zero_of_expChar_one R p
@@ -102,8 +97,7 @@ section NoZeroDivisors
 variable [NoZeroDivisors R]
 
 /-- A helper lemma: the characteristic is prime if it is non-zero. -/
-theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) : Nat.Prime p :=
-  by
+theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) : Nat.Prime p := by
   cases' CharP.char_is_prime_or_zero R p with h h
   · exact h
   · contradiction
