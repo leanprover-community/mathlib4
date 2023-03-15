@@ -215,8 +215,8 @@ failure, we recursively apply `f` to all elements in an accumulated list of resu
 `init`. If an element leads to a failure, we keep the element and stop evaluating `f` on it; if it
 leads to a success, we collect all produced elements and recurse. This function will run until no
 more progress can be made. -/
-partial def repeatM [Monad m] [MonadExcept ε m] (init : List α) (f : α → m (List α)) :
-    m (List α) := do
+partial def repeatM [Monad m] [MonadExcept ε m] [MonadBacktrack s m] (init : List α)
+    (f : α → m (List α)) : m (List α) := do
   go #[] init.toArray
 where
   /-- Given an accumulated list of `finished` `α`s, and an array of `continuing` ones, recurse
@@ -228,10 +228,12 @@ where
       let (finished, continuing) ←
         continuing.foldlM
           (fun (fin, con) a => do
+            let s ← saveState
             try
               let c ← f a
               pure (fin, con.appendList c)
             catch _ =>
+              restoreState s
               pure (fin.push a, con))
           (finished, #[])
       go finished continuing
