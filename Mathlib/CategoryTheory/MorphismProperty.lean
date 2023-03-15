@@ -518,10 +518,10 @@ theorem diagonal_iff {X Y : C} {f : X ⟶ Y} : P.diagonal f ↔ P (pullback.diag
 theorem RespectsIso.diagonal (hP : P.RespectsIso) : P.diagonal.RespectsIso := by
   constructor
   · introv H
-    rw [diagonal_iff, pullback.diagonal_comp, hP.cancel_left_isIso, hP.cancel_left_isIso]
-    sorry
-    -- rw [hP.cancel_right_isIso _ _, ← pullback.condition, hP.cancel_left_isIso]
-    -- infer_instance
+    rwa [diagonal_iff, pullback.diagonal_comp, hP.cancel_left_isIso, hP.cancel_left_isIso,
+      ← hP.cancel_right_isIso _
+        (pullback.map (e.hom ≫ f) (e.hom ≫ f) f f e.hom e.hom (𝟙 Z) (by simp) (by simp)),
+      ← pullback.condition, hP.cancel_left_isIso]
   · introv H
     delta diagonal
     rwa [pullback.diagonal_comp, hP.cancel_right_isIso]
