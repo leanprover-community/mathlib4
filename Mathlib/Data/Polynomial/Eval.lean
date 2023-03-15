@@ -556,6 +556,11 @@ theorem C_comp : (C a).comp p = C a :=
 theorem nat_cast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_nat_cast, C_comp]
 #align polynomial.nat_cast_comp Polynomial.nat_cast_comp
 
+--Porting note: new theorem
+@[simp]
+theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R[X]).comp p = n :=
+  nat_cast_comp
+
 @[simp]
 theorem comp_zero : p.comp (0 : R[X]) = C (p.eval 0) := by rw [← C_0, comp_C]
 #align polynomial.comp_zero Polynomial.comp_zero

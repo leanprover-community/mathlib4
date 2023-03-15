@@ -173,48 +173,24 @@ theorem map_T (f : R →+* S) : ∀ n : ℕ, map f (T R n) = T S n
 theorem map_U (f : R →+* S) : ∀ n : ℕ, map f (U R n) = U S n
   | 0 => by simp only [U_zero, Polynomial.map_one]
   | 1 => by
-    simp only [U_one, map_X, Polynomial.map_mul, Polynomial.map_add, Polynomial.map_one]
-    change map f (2) * X = 2 * X
-    have : (1 : R[X]) + 1 = 2 := by
-      norm_num
-    rw [← this]
-    simp only [Polynomial.map_add, Polynomial.map_one]
-    norm_num
+    simp [U_one, map_X, Polynomial.map_mul, Polynomial.map_add, Polynomial.map_one]
   | n + 2 => by
-    have : (1 : R[X]) + 1 = 2 := by
-      norm_num
-    simp only [U_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, ← this, Polynomial.map_add,
-      Polynomial.map_one]
-    rw [map_U f (n + 1), map_U f n]
+    simp only [U_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, Polynomial.map_add,
+      Polynomial.map_one, map_U f (n + 1), map_U f n]
     norm_num
 #align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_U
 
 theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U R n
   | 0 => by simp only [T_one, U_zero, derivative_X, Nat.cast_zero, zero_add, mul_one]
   | 1 => by
-    have : 1 + 1 = 2 := by norm_num
-    rw [this, T_two, derivative_sub, derivative_one, derivative_mul]
-    have : ((2 : ℕ) : R[X]) = (2:R[X]) := by norm_num
-    rw [← this]
-    -- TODO porting: simplify proof
-    have : (@FunLike.coe (R →+* R[X]) R (fun _ ↦ R[X]) MulHomClass.toFunLike C 2 : R[X])
-        = (2 : R[X]) := by
-         norm_cast
-    simp only [derivative_nat_cast, derivative_mul, derivative_X_pow]
-    simp only [T_two, U_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow,
-      Nat.cast_one, Nat.cast_two]
-    simp only [this]
-    norm_num
+    simp [T_two, U_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow, add_mul]
   | n + 2 =>
     calc
       derivative (T R (n + 2 + 1)) =
           2 * T R (n + 2) + 2 * X * derivative (T R (n + 1 + 1)) - derivative (T R (n + 1)) :=
         by
-          rw [T_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X]
-          have : (@FunLike.coe (R →+* R[X]) R (fun _ ↦ R[X]) MulHomClass.toFunLike C 2 : R[X])
-            = (2 : R[X]) := by
-            norm_cast
-          rw [← this, derivative_C]
+          rw [T_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X,
+            derivative_ofNat]
           ring_nf
       _ = 2 * (U R (n + 1 + 1) - X * U R (n + 1)) + 2 * X * (((n + 1 + 1) : R[X]) * U R (n + 1))
           - ((n + 1) : R[X]) * U R n := by
@@ -304,13 +280,7 @@ theorem T_mul : ∀ m n, T R (m * n) = (T R m).comp (T R n)
     intro n
     have : 2 * T R n * T R ((m + 1) * n) = T R ((m + 2) * n) + T R (m * n) := by
       convert mul_T R n (m * n) <;> ring
-    -- porting note: original proof was `simp [this, T_mul m, ← T_mul (m + 1)]`
-    rw [T_add_two, sub_comp, ← T_mul m, mul_comp, ← T_mul (m + 1), mul_X_comp,
-      ← sub_eq_iff_eq_add.2 this]
-    congr
-    have : (@FunLike.coe (R →+* R[X]) R (fun _ ↦ R[X]) MulHomClass.toFunLike C 2 : R[X])
-        = (2 : R[X]) := by norm_cast
-    rw [← this, C_comp]
+    simp [this, T_mul m, ← T_mul (m + 1)]
 #align polynomial.chebyshev.T_mul Polynomial.Chebyshev.T_mul
 
 end Polynomial.Chebyshev
