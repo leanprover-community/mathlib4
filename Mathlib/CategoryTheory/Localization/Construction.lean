@@ -8,8 +8,8 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.MorphismProperty
-import Mathbin.CategoryTheory.Category.Quiv
+import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.Category.Quiv
 
 /-!
 
@@ -178,8 +178,7 @@ theorem fac : W.q ⋙ lift G hG = G :=
 
 omit G hG
 
-theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.q ⋙ G₁ = W.q ⋙ G₂) : G₁ = G₂ :=
-  by
+theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.q ⋙ G₁ = W.q ⋙ G₂) : G₁ = G₂ := by
   suffices h' : quotient.functor _ ⋙ G₁ = quotient.functor _ ⋙ G₂
   · refine' Functor.ext _ _
     · rintro ⟨⟨X⟩⟩
