@@ -8,10 +8,10 @@ Authors: Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Operations
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.RingTheory.Subring.Pointwise
-import Mathbin.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Pointwise actions on subalgebras.
@@ -28,8 +28,7 @@ section Pointwise
 variable {R : Type _} {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem mul_toSubmodule_le (S T : Subalgebra R A) :
-    S.toSubmodule * T.toSubmodule ≤ (S ⊔ T).toSubmodule :=
-  by
+    S.toSubmodule * T.toSubmodule ≤ (S ⊔ T).toSubmodule := by
   rw [Submodule.mul_le]
   intro y hy z hz
   show y * z ∈ S ⊔ T
@@ -38,8 +37,7 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
 
 /-- As submodules, subalgebras are idempotent. -/
 @[simp]
-theorem mul_self (S : Subalgebra R A) : S.toSubmodule * S.toSubmodule = S.toSubmodule :=
-  by
+theorem mul_self (S : Subalgebra R A) : S.toSubmodule * S.toSubmodule = S.toSubmodule := by
   apply le_antisymm
   · refine' (mul_to_submodule_le _ _).trans_eq _
     rw [sup_idem]
@@ -50,8 +48,7 @@ theorem mul_self (S : Subalgebra R A) : S.toSubmodule * S.toSubmodule = S.toSubm
 
 /-- When `A` is commutative, `subalgebra.mul_to_submodule_le` is strict. -/
 theorem mul_toSubmodule {R : Type _} {A : Type _} [CommSemiring R] [CommSemiring A] [Algebra R A]
-    (S T : Subalgebra R A) : S.toSubmodule * T.toSubmodule = (S ⊔ T).toSubmodule :=
-  by
+    (S T : Subalgebra R A) : S.toSubmodule * T.toSubmodule = (S ⊔ T).toSubmodule := by
   refine' le_antisymm (mul_to_submodule_le _ _) _
   rintro x (hx : x ∈ Algebra.adjoin R (S ∪ T : Set A))
   refine'
