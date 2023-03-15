@@ -410,8 +410,8 @@ theorem compare_symm (a b : α) : Ordering.swap (compare a b) = compare b a := b
   · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
 
 theorem compare_le_trans {a b c : α} : compare a b ≠ Ordering.gt → compare b c ≠ Ordering.gt →
-    compare a c ≠ Ordering.gt := fun h₁ h₂ ↦
-  compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
+    compare a c ≠ Ordering.gt
+  | h₁, h₂ => compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
 
 instance : Std.TransCmp (compare (α := α)) where
   symm a b := compare_symm a b
