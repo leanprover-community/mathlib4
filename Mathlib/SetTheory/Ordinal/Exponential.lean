@@ -50,8 +50,9 @@ theorem zero_opow {a : Ordinal} (a0 : a ≠ 0) : (0^a) = 0 := by
 
 @[simp]
 theorem opow_zero (a : Ordinal) : (a^0) = 1 := by
-  by_cases a = 0 <;> [simp only [opow_def, if_pos h, sub_zero],
-    simp only [opow_def, if_neg h, limitRecOn_zero]]
+  by_cases h : a = 0
+  · simp only [opow_def, if_pos h, sub_zero]
+  · simp only [opow_def, if_neg h, limitRecOn_zero]
 #align ordinal.opow_zero Ordinal.opow_zero
 
 @[simp]

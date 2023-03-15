@@ -10,6 +10,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.Set.Intervals.WithBotTop
 
 /-!
 # Extended non-negative reals
@@ -151,6 +152,9 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 some (· ≠ ∞) := WithTop.canLi
 #align ennreal.some_eq_coe ENNReal.some_eq_coe
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
+
+theorem range_coe' : range some = Iio ∞ := WithTop.range_coe
+theorem range_coe : range some = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
 /-- `to_nnreal x` returns `x` if it is real, otherwise 0. -/
 protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
@@ -316,6 +320,8 @@ theorem toReal_eq_one_iff (x : ℝ≥0∞) : x.toReal = 1 ↔ x = 1 := by
 
 theorem coe_mono : Monotone some := fun _ _ => coe_le_coe.2
 #align ennreal.coe_mono ENNReal.coe_mono
+
+theorem coe_strictMono : StrictMono some := fun _ _ => coe_lt_coe.2
 
 @[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_eq_coe
 #align ennreal.coe_eq_zero ENNReal.coe_eq_zero

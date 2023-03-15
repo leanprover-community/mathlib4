@@ -162,7 +162,7 @@ theorem compress_idem (u v a : α) : compress u v (compress u v a) = compress u 
 
 theorem compress_mem_compression (ha : a ∈ s) : compress u v a ∈ 𝓒 u v s := by
   rw [mem_compression]
-  by_cases compress u v a ∈ s
+  by_cases h : compress u v a ∈ s
   · rw [compress_idem]
     exact Or.inl ⟨h, h⟩
   · exact Or.inr ⟨h, a, ha, rfl⟩

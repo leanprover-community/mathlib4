@@ -160,7 +160,7 @@ theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) �
     rw [card_erase_of_mem ha, hs]
     rfl
   · rintro ⟨⟨t, ht, hst⟩, hs⟩
-    by_cases s ∈ 𝒜
+    by_cases h : s ∈ 𝒜
     · exact Or.inl ⟨h, hs⟩
     obtain ⟨a, ha, hst⟩ := ssubset_iff.1
         (ssubset_of_subset_of_ne hst (Membership.Mem.ne_of_not_mem ht h).symm)
