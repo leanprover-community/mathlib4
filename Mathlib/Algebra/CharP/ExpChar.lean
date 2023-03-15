@@ -46,6 +46,7 @@ class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
   | zero [CharZero R] : ExpChar R 1
   | prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar R q
 #align exp_char ExpChar
+#align exp_char.prime ExpChar.prime
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
 theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
