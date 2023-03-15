@@ -43,22 +43,22 @@ theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
 #align polynomial.op_ring_equiv_op_monomial Polynomial.opRingEquiv_op_monomial
 
 @[simp]
-theorem opRingEquiv_op_c (a : R) : opRingEquiv R (op (C a)) = C (op a) :=
+theorem opRingEquiv_op_C (a : R) : opRingEquiv R (op (C a)) = C (op a) :=
   opRingEquiv_op_monomial 0 a
 set_option linter.uppercaseLean3 false in
-#align polynomial.op_ring_equiv_op_C Polynomial.opRingEquiv_op_c
+#align polynomial.op_ring_equiv_op_C Polynomial.opRingEquiv_op_C
 
 @[simp]
-theorem opRingEquiv_op_x : opRingEquiv R (op (X : R[X])) = X :=
+theorem opRingEquiv_op_X : opRingEquiv R (op (X : R[X])) = X :=
   opRingEquiv_op_monomial 1 1
 set_option linter.uppercaseLean3 false in
-#align polynomial.op_ring_equiv_op_X Polynomial.opRingEquiv_op_x
+#align polynomial.op_ring_equiv_op_X Polynomial.opRingEquiv_op_X
 
-theorem opRingEquiv_op_c_mul_x_pow (r : R) (n : ℕ) :
+theorem opRingEquiv_op_C_mul_X_pow (r : R) (n : ℕ) :
     opRingEquiv R (op (C r * X ^ n : R[X])) = C (op r) * X ^ n := by
-  simp only [X_pow_mul, op_mul, op_pow, map_mul, map_pow, opRingEquiv_op_x, opRingEquiv_op_c]
+  simp only [X_pow_mul, op_mul, op_pow, map_mul, map_pow, opRingEquiv_op_X, opRingEquiv_op_C]
 set_option linter.uppercaseLean3 false in
-#align polynomial.op_ring_equiv_op_C_mul_X_pow Polynomial.opRingEquiv_op_c_mul_x_pow
+#align polynomial.op_ring_equiv_op_C_mul_X_pow Polynomial.opRingEquiv_op_C_mul_X_pow
 
 /-!  Lemmas to get started, using `(opRingEquiv R).symm` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
@@ -71,22 +71,22 @@ theorem opRingEquiv_symm_monomial (n : ℕ) (r : Rᵐᵒᵖ) :
 #align polynomial.op_ring_equiv_symm_monomial Polynomial.opRingEquiv_symm_monomial
 
 @[simp]
-theorem opRingEquiv_symm_c (a : Rᵐᵒᵖ) : (opRingEquiv R).symm (C a) = op (C (unop a)) :=
+theorem opRingEquiv_symm_C (a : Rᵐᵒᵖ) : (opRingEquiv R).symm (C a) = op (C (unop a)) :=
   opRingEquiv_symm_monomial 0 a
 set_option linter.uppercaseLean3 false in
-#align polynomial.op_ring_equiv_symm_C Polynomial.opRingEquiv_symm_c
+#align polynomial.op_ring_equiv_symm_C Polynomial.opRingEquiv_symm_C
 
 @[simp]
-theorem opRingEquiv_symm_x : (opRingEquiv R).symm (X : Rᵐᵒᵖ[X]) = op X :=
+theorem opRingEquiv_symm_X : (opRingEquiv R).symm (X : Rᵐᵒᵖ[X]) = op X :=
   opRingEquiv_symm_monomial 1 1
 set_option linter.uppercaseLean3 false in
-#align polynomial.op_ring_equiv_symm_X Polynomial.opRingEquiv_symm_x
+#align polynomial.op_ring_equiv_symm_X Polynomial.opRingEquiv_symm_X
 
-theorem opRingEquiv_symm_c_mul_x_pow (r : Rᵐᵒᵖ) (n : ℕ) :
+theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R).symm (C r * X ^ n : Rᵐᵒᵖ[X]) = op (C (unop r) * X ^ n) := by
   rw [C_mul_X_pow_eq_monomial, opRingEquiv_symm_monomial, C_mul_X_pow_eq_monomial]
 set_option linter.uppercaseLean3 false in
-#align polynomial.op_ring_equiv_symm_C_mul_X_pow Polynomial.opRingEquiv_symm_c_mul_x_pow
+#align polynomial.op_ring_equiv_symm_C_mul_X_pow Polynomial.opRingEquiv_symm_C_mul_X_pow
 
 /-!  Lemmas about more global properties of polynomials and opposites. -/
 
