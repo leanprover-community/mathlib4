@@ -500,7 +500,7 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
   -- porting note: `simp` needs a placeholder for the `β` argument to `Set.mem_vsub`
-  simp only [Set.mem_vsub (β := P2), Set.mem_vsub (β := _), Set.mem_image,
+  simp only [Set.mem_vsub (β := _), Set.mem_image,
     exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
   constructor
   · rintro ⟨x, hx, y, hy, hv⟩
