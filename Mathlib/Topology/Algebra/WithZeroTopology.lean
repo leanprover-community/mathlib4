@@ -8,8 +8,8 @@ Authors: Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.WithZero
-import Mathbin.Topology.Algebra.Order.Field
+import Mathlib.Algebra.Order.WithZero
+import Mathlib.Topology.Algebra.Order.Field
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -70,8 +70,7 @@ theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ (γ) (_ : γ ≠ 0), 𝓟 (Iio γ) :=
 
 /-- In a linearly ordered group with zero element adjoined, `U` is a neighbourhood of `0` if and
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
-theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠ 0) Iio :=
-  by
+theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠ 0) Iio := by
   rw [nhds_zero]
   refine' has_basis_binfi_principal _ ⟨1, one_ne_zero⟩
   exact directedOn_iff_directed.2 (directed_of_inf fun a b hab => Iio_subset_Iio hab)
@@ -121,8 +120,7 @@ theorem singleton_mem_nhds_of_ne_zero (h : γ ≠ 0) : ({γ} : Set Γ₀) ∈ �
 #align with_zero_topology.singleton_mem_nhds_of_ne_zero WithZeroTopology.singleton_mem_nhds_of_ne_zero
 
 theorem hasBasis_nhds_of_ne_zero {x : Γ₀} (h : x ≠ 0) :
-    HasBasis (𝓝 x) (fun i : Unit => True) fun i => {x} :=
-  by
+    HasBasis (𝓝 x) (fun i : Unit => True) fun i => {x} := by
   rw [nhds_of_ne_zero h]
   exact has_basis_pure _
 #align with_zero_topology.has_basis_nhds_of_ne_zero WithZeroTopology.hasBasis_nhds_of_ne_zero
@@ -149,8 +147,7 @@ theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
 
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:635:2: warning: expanding binder collection (γ «expr ≠ » 0) -/
-theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ (γ : _)(_ : γ ≠ 0), Iio γ ⊆ s :=
-  by
+theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ (γ : _)(_ : γ ≠ 0), Iio γ ⊆ s := by
   rw [isOpen_iff_mem_nhds, ← and_forall_ne (0 : Γ₀)]
   simp (config := { contextual := true }) [nhds_of_ne_zero, imp_iff_not_or,
     has_basis_nhds_zero.mem_iff]
