@@ -74,7 +74,7 @@ attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Pr
 
 attribute [instance] Preadditive.homGroup
 
--- Porting note: simp can prove reassoc version 
+-- Porting note: simp can prove reassoc version
 attribute [reassoc, simp] Preadditive.add_comp
 
 attribute [reassoc] Preadditive.comp_add
@@ -206,19 +206,19 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 #align category_theory.preadditive.preadditive_has_zero_morphisms CategoryTheory.Preadditive.preadditiveHasZeroMorphisms
 
-/--Porting note: adding this before the ring instance allowed moduleEndRight to find 
-the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms 
+/--Porting note: adding this before the ring instance allowed moduleEndRight to find
+the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
 to make use of them -/
-instance {X : C} : Semiring (End X) := 
-  { End.monoid with 
-    zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _ 
+instance {X : C} : Semiring (End X) :=
+  { End.monoid with
+    zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
     mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
     left_distrib := fun f g h => Preadditive.add_comp X X X g h f
     right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
 
-/-- Porting note: It looks like Ring's parent classes changed in 
+/-- Porting note: It looks like Ring's parent classes changed in
 Lean 4 so the previous instance needed modification. Was following my nose here. -/
-instance {X : C} : Ring (End X) := 
+instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
     (inferInstance : AddCommGroup (End X)) with
     add_left_neg := add_left_neg }
@@ -231,7 +231,7 @@ instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
 #align category_theory.preadditive.module_End_right CategoryTheory.Preadditive.moduleEndRight
 
 theorem mono_of_cancel_zero {Q R : C} (f : Q ⟶ R) (h : ∀ {P : C} (g : P ⟶ Q), g ≫ f = 0 → g = 0) :
-    Mono f where 
+    Mono f where
   right_cancellation := fun {Z} g₁ g₂ hg =>
     sub_eq_zero.1 <| h _ <| (map_sub (rightComp Z f) g₁ g₂).trans <| sub_eq_zero.2 hg
 #align category_theory.preadditive.mono_of_cancel_zero CategoryTheory.Preadditive.mono_of_cancel_zero
@@ -248,7 +248,7 @@ theorem mono_of_kernel_zero {X Y : C} {f : X ⟶ Y} [HasLimit (parallelPair f 0)
 
 theorem epi_of_cancel_zero {P Q : C} (f : P ⟶ Q) (h : ∀ {R : C} (g : Q ⟶ R), f ≫ g = 0 → g = 0) :
     Epi f :=
-  ⟨fun {Z} g g' hg => 
+  ⟨fun {Z} g g' hg =>
     sub_eq_zero.1 <| h _ <| (map_sub (leftComp Z f) g g').trans <| sub_eq_zero.2 hg⟩
 #align category_theory.preadditive.epi_of_cancel_zero CategoryTheory.Preadditive.epi_of_cancel_zero
 
@@ -440,7 +440,7 @@ theorem hasEqualizers_of_hasKernels [HasKernels C] : HasEqualizers C :=
 
 /-- If a preadditive category has all cokernels, then it also has all coequalizers. -/
 theorem hasCoequalizers_of_hasCokernels [HasCokernels C] : HasCoequalizers C :=
-  @hasCoequalizers_of_hasColimit_parallelPair _ _ fun {_} {_} f g => 
+  @hasCoequalizers_of_hasColimit_parallelPair _ _ fun {_} {_} f g =>
     hasCoequalizer_of_hasCokernel f g
 #align category_theory.preadditive.has_coequalizers_of_has_cokernels CategoryTheory.Preadditive.hasCoequalizers_of_hasCokernels
 
@@ -449,4 +449,3 @@ end Equalizers
 end Preadditive
 
 end CategoryTheory
-

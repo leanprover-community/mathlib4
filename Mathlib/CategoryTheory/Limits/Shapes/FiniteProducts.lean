@@ -49,7 +49,7 @@ instance hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite �
     HasLimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   haveI : HasLimitsOfShape (Discrete (Fin n)) C := HasFiniteProducts.out n
-  exact hasLimitsOfShapeOfEquivalence (Discrete.equivalence e.symm)
+  exact hasLimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
 #align category_theory.limits.has_limits_of_shape_discrete CategoryTheory.Limits.hasLimitsOfShape_discrete
 
 /-- We can now write this for powers. -/
@@ -59,7 +59,7 @@ noncomputable example [HasFiniteProducts C] (X : C) : C :=
 /-- If a category has all products then in particular it has finite products.
 -/
 theorem hasFiniteProducts_of_hasProducts [HasProducts.{w} C] : HasFiniteProducts C :=
-  ⟨fun _ => hasLimitsOfShapeOfEquivalence (Discrete.equivalence Equiv.ulift.{w})⟩
+  ⟨fun _ => hasLimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift.{w})⟩
 #align category_theory.limits.has_finite_products_of_has_products CategoryTheory.Limits.hasFiniteProducts_of_hasProducts
 
 /-- A category has finite coproducts if there is a chosen colimit for every diagram

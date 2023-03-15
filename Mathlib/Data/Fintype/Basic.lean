@@ -128,10 +128,11 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 #align finset.subset_univ Finset.subset_univ
 
-instance : BoundedOrder (Finset α) :=
+instance boundedOrder : BoundedOrder (Finset α) :=
   { inferInstanceAs (OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
+#align finset.bounded_order Finset.boundedOrder
 
 @[simp]
 theorem top_eq_univ : (⊤ : Finset α) = univ :=
@@ -154,8 +155,9 @@ section BooleanAlgebra
 
 variable [DecidableEq α] {a : α}
 
-instance : BooleanAlgebra (Finset α) :=
+instance booleanAlgebra : BooleanAlgebra (Finset α) :=
   GeneralizedBooleanAlgebra.toBooleanAlgebra
+#align finset.boolean_algebra Finset.booleanAlgebra
 
 theorem sdiff_eq_inter_compl (s t : Finset α) : s \ t = s ∩ tᶜ :=
   sdiff_eq
@@ -427,8 +429,9 @@ def ofList [DecidableEq α] (l : List α) (H : ∀ x : α, x ∈ l) : Fintype α
   ⟨l.toFinset, by simpa using H⟩
 #align fintype.of_list Fintype.ofList
 
-instance (α : Type _) : Subsingleton (Fintype α) :=
+instance subsingleton (α : Type _) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩
+#align fintype.subsingleton Fintype.subsingleton
 
 /-- Given a predicate that can be represented by a finset, the subtype
 associated to the predicate is a fintype. -/
@@ -892,23 +895,26 @@ theorem Fintype.univ_pempty : @univ PEmpty _ = ∅ :=
   rfl
 #align fintype.univ_pempty Fintype.univ_pempty
 
-instance : Fintype Unit :=
+instance Unit.fintype : Fintype Unit :=
   Fintype.ofSubsingleton ()
+#align unit.fintype Unit.fintype
 
 theorem Fintype.univ_unit : @univ Unit _ = {()} :=
   rfl
 #align fintype.univ_unit Fintype.univ_unit
 
-instance : Fintype PUnit :=
+instance PUnit.fintype : Fintype PUnit :=
   Fintype.ofSubsingleton PUnit.unit
+#align punit.fintype PUnit.fintype
 
 --@[simp] Porting note: removing simp, simp can prove it
 theorem Fintype.univ_punit : @univ PUnit _ = {PUnit.unit} :=
   rfl
 #align fintype.univ_punit Fintype.univ_punit
 
-instance : Fintype Bool :=
+instance Bool.fintype : Fintype Bool :=
   ⟨⟨{true, false}, by simp⟩, fun x => by cases x <;> simp⟩
+#align bool.fintype Bool.fintype
 
 @[simp]
 theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
@@ -933,20 +939,25 @@ def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 #align fintype.prod_right Fintype.prodRight
 
-instance (α : Type _) [Fintype α] : Fintype (ULift α) :=
+instance ULift.fintype (α : Type _) [Fintype α] : Fintype (ULift α) :=
   Fintype.ofEquiv _ Equiv.ulift.symm
+#align ulift.fintype ULift.fintype
 
-instance (α : Type _) [Fintype α] : Fintype (PLift α) :=
+instance PLift.fintype (α : Type _) [Fintype α] : Fintype (PLift α) :=
   Fintype.ofEquiv _ Equiv.plift.symm
+#align plift.fintype PLift.fintype
 
-instance (α : Type _) [Fintype α] : Fintype αᵒᵈ :=
+instance OrderDual.fintype (α : Type _) [Fintype α] : Fintype αᵒᵈ :=
   ‹Fintype α›
+#align order_dual.fintype OrderDual.fintype
 
-instance (α : Type _) [Finite α] : Finite αᵒᵈ :=
+instance OrderDual.finite (α : Type _) [Finite α] : Finite αᵒᵈ :=
   ‹Finite α›
+#align order_dual.finite OrderDual.finite
 
-instance (α : Type _) [Fintype α] : Fintype (Lex α) :=
+instance Lex.fintype (α : Type _) [Fintype α] : Fintype (Lex α) :=
   ‹Fintype α›
+#align lex.fintype Lex.fintype
 
 section Finset
 

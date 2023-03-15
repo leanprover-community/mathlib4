@@ -74,7 +74,7 @@ theorem preservesLimitsIso_inv_π (j) :
 
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitsIso_hom (t : Cone F) :
-    G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom = 
+    G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom =
     limit.lift (F ⋙ G) (G.mapCone _) := by
   ext
   simp [← G.map_comp]
@@ -103,7 +103,7 @@ variable [PreservesColimit F G]
 
 @[simp]
 theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
-    (PreservesColimit.preserves t).desc (G.mapCocone _) = G.map (t.desc c₂) := 
+    (PreservesColimit.preserves t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
   ((PreservesColimit.preserves t).uniq (G.mapCocone _) _ (by simp [← G.map_comp])).symm
 #align category_theory.preserves_desc_map_cocone CategoryTheory.preserves_desc_mapCocone
 
@@ -131,7 +131,7 @@ theorem ι_preservesColimitsIso_hom (j : J) :
 
 @[reassoc (attr := simp)]
 theorem preservesColimitsIso_inv_comp_desc (t : Cocone F) :
-    (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) = 
+    (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) =
     colimit.desc _ (G.mapCocone t) := by
   ext
   simp [← G.map_comp]
@@ -158,4 +158,3 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
 end
 
 end CategoryTheory
-
