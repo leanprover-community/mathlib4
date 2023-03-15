@@ -1164,9 +1164,24 @@ noncomputable def fooSum {I J : Type _} (C : I → Type _) {D : J → Type _} :
 
 end
 
-/- Test that we deal with classes whose names are prefixes of other classes -/
+/-! Test that we deal with classes whose names are prefixes of other classes -/
 
 class MyDiv (α : Type _) extends Div α
 class MyDivInv (α : Type _) extends MyDiv α
 class MyGroup (α : Type _) extends MyDivInv α
 initialize_simps_projections MyGroup
+
+/-! Test that the automatic projection module doesn't throw an error if we have a projection name
+unrelated to one of the classes. -/
+
+class MyGOne {ι} [Zero ι] (A : ι → Type _)  where
+  /-- The term `one` of grade 0 -/
+  one : A 0
+
+initialize_simps_projections MyGOne
+
+class Artificial (n : Nat)  where
+  /-- The term `one` of grade 0 -/
+  one : Nat
+
+initialize_simps_projections Artificial

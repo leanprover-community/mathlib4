@@ -51,27 +51,29 @@ def defaultfindArgs (_str className : Name) (args : Array Expr) :
 
 /-- Find arguments by duplicating the first argument. Used for `pow`. -/
 def copyFirst (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return (args.push args[0]!).map some
+  MetaM (Array (Option Expr)) := return (args.push <| args[0]?.getD default).map some
 
 /-- Find arguments by duplicating the first argument. Used for `smul`. -/
 def copySecond (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return (args.push args[1]!).map some
+  MetaM (Array (Option Expr)) := return (args.push <| args[1]?.getD default).map some
 
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
 def nsmulArgs (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return (#[.const `Nat [], args[0]!] ++ args).map some
+  MetaM (Array (Option Expr)) :=
+  return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments by prepending `ℤ ` and duplicating the first argument. Used for `zsmul`. -/
 def zsmulArgs (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return (#[.const `Int [], args[0]!] ++ args).map some
+  MetaM (Array (Option Expr)) :=
+  return #[Expr.const `Int [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments for the `Zero` class. -/
 def findZeroArgs (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return (args.push <| mkRawNatLit 0).map some
+  MetaM (Array (Option Expr)) := return #[some <| args[0]?.getD default, some <| mkRawNatLit 0]
 
-/-- Find arguments for the `Zero` class. -/
+/-- Find arguments for the `One` class. -/
 def findOneArgs (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return (args.push <| mkRawNatLit 1).map some
+  MetaM (Array (Option Expr)) := return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
 
 /-- Find arguments of a coercion class (`FunLike` or `SetLike`) -/
 def findCoercionArgs (str className : Name) (args : Array Expr) :

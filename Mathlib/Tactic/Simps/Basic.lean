@@ -662,11 +662,12 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
     let projName := (getStructureFields (← getEnv) className)[0]!
     let projName := className ++ projName
     let eStr := mkAppN (← mkConstWithLevelParams str) args
-    let eInstType ← try elabAppArgs (← Term.mkConst className) #[] classArgs none true false
-    catch ex =>
-      trace[simps.debug] "Projection doesn't have the right type for the automatic projection:\n{
-        ex.toMessageData}"
-      return none
+    let eInstType ←
+      try withoutErrToSorry (elabAppArgs (← Term.mkConst className) #[] classArgs none true false)
+      catch ex =>
+        trace[simps.debug] "Projection doesn't have the right type for the automatic projection:\n{
+          ex.toMessageData}"
+        return none
     return ← withLocalDeclD `self eStr fun instStr ↦ do
       trace[simps.debug] "found projection {proj.strName}. Trying to synthesize {eInstType}."
       let eInst ← try synthInstance eInstType <| some 10
