@@ -8,8 +8,8 @@ Authors: Pierre-Alexandre Bazin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.Dfinsupp
-import Mathbin.RingTheory.Ideal.Operations
+import Mathlib.LinearAlgebra.Dfinsupp
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # An additional lemma about coprime ideals
@@ -33,8 +33,7 @@ When ideals are all of the form `I i = R ∙ s i`, this is equivalent to the
 `exists_sum_eq_one_iff_pairwise_coprime` lemma.-/
 theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
     (⨆ i ∈ t, ⨅ (j) (hj : j ∈ t) (ij : j ≠ i), I j) = ⊤ ↔
-      (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ :=
-  by
+      (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ := by
   haveI : DecidableEq ι := Classical.decEq ι
   rw [eq_top_iff_one, Submodule.mem_supᵢ_finset_iff_exists_sum]
   refine' h.cons_induction _ _ <;> clear t h
