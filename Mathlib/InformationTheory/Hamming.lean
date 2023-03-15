@@ -8,7 +8,7 @@ Authors: Wrenna Robson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Hamming spaces
@@ -46,8 +46,7 @@ def hammingDist (x y : ∀ i, β i) : ℕ :=
 
 /-- Corresponds to `dist_self`. -/
 @[simp]
-theorem hammingDist_self (x : ∀ i, β i) : hammingDist x x = 0 :=
-  by
+theorem hammingDist_self (x : ∀ i, β i) : hammingDist x x = 0 := by
   rw [hammingDist, card_eq_zero, filter_eq_empty_iff]
   exact fun _ _ H => H rfl
 #align hamming_dist_self hammingDist_self
@@ -77,23 +76,20 @@ theorem hammingDist_triangle (x y z : ∀ i, β i) :
 
 /-- Corresponds to `dist_triangle_left`. -/
 theorem hammingDist_triangle_left (x y z : ∀ i, β i) :
-    hammingDist x y ≤ hammingDist z x + hammingDist z y :=
-  by
+    hammingDist x y ≤ hammingDist z x + hammingDist z y := by
   rw [hammingDist_comm z]
   exact hammingDist_triangle _ _ _
 #align hamming_dist_triangle_left hammingDist_triangle_left
 
 /-- Corresponds to `dist_triangle_right`. -/
 theorem hammingDist_triangle_right (x y z : ∀ i, β i) :
-    hammingDist x y ≤ hammingDist x z + hammingDist y z :=
-  by
+    hammingDist x y ≤ hammingDist x z + hammingDist y z := by
   rw [hammingDist_comm y]
   exact hammingDist_triangle _ _ _
 #align hamming_dist_triangle_right hammingDist_triangle_right
 
 /-- Corresponds to `swap_dist`. -/
-theorem swap_hammingDist : swap (@hammingDist _ β _ _) = hammingDist :=
-  by
+theorem swap_hammingDist : swap (@hammingDist _ β _ _) = hammingDist := by
   funext x y
   exact hammingDist_comm _ _
 #align swap_hamming_dist swap_hammingDist
@@ -144,8 +140,7 @@ theorem hammingDist_comp_le_hammingDist (f : ∀ i, γ i → β i) {x y : ∀ i,
 #align hamming_dist_comp_le_hamming_dist hammingDist_comp_le_hammingDist
 
 theorem hammingDist_comp (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} (hf : ∀ i, Injective (f i)) :
-    (hammingDist (fun i => f i (x i)) fun i => f i (y i)) = hammingDist x y :=
-  by
+    (hammingDist (fun i => f i (x i)) fun i => f i (y i)) = hammingDist x y := by
   refine' le_antisymm (hammingDist_comp_le_hammingDist _) _
   exact card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| hf i H2)
 #align hamming_dist_comp hammingDist_comp
@@ -221,16 +216,14 @@ theorem hammingNorm_le_card_fintype {x : ∀ i, β i} : hammingNorm x ≤ Fintyp
 #align hamming_norm_le_card_fintype hammingNorm_le_card_fintype
 
 theorem hammingNorm_comp_le_hammingNorm (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf : ∀ i, f i 0 = 0) :
-    (hammingNorm fun i => f i (x i)) ≤ hammingNorm x :=
-  by
+    (hammingNorm fun i => f i (x i)) ≤ hammingNorm x := by
   convert hammingDist_comp_le_hammingDist f
   simp_rw [hf]
   rfl
 #align hamming_norm_comp_le_hamming_norm hammingNorm_comp_le_hammingNorm
 
 theorem hammingNorm_comp (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf₁ : ∀ i, Injective (f i))
-    (hf₂ : ∀ i, f i 0 = 0) : (hammingNorm fun i => f i (x i)) = hammingNorm x :=
-  by
+    (hf₂ : ∀ i, f i 0 = 0) : (hammingNorm fun i => f i (x i)) = hammingNorm x := by
   convert hammingDist_comp f hf₁
   simp_rw [hf₂]
   rfl
