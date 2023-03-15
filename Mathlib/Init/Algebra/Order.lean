@@ -388,16 +388,16 @@ theorem compare_ge_iff_ge {a b : α} : (compare a b ≠ .lt) ↔ a ≥ b := by
   · exact true_iff_iff.2 <| le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
   · exact true_iff_iff.2 <| le_of_lt <| compare_gt_iff_gt.1 h
 
--- TODO: generalize to instance of LE, Eq (and upstream?)
+-- TODO: generalize to instance of LT/GT/Eq (and upstream?)
 -- Move?
-/-- The `Prop` corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
-def Ordering.toProp (o : Ordering) (a b : α) : Prop := match o with
-| .lt => a < b
-| .eq => a = b
-| .gt => a > b
+/-- The relation corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
+def Ordering.toRel : Ordering → α → α → Prop
+| .lt => (· < ·)
+| .eq => Eq
+| .gt => (· > ·)
 
-theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ Ordering.toProp o a b := by
-  cases o <;> simp only [Ordering.toProp]
+theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b := by
+  cases o <;> simp only [Ordering.toRel]
   · exact compare_lt_iff_lt
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
