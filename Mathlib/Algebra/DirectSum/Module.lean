@@ -365,7 +365,8 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type _}
     sigmaFinsuppAddEquivDfinsupp_apply]
   rw [Dfinsupp.mapRange.linearEquiv_symm]
   erw [Dfinsupp.mapRange.linearEquiv_apply]
-  simp only [Dfinsupp.mapRange_single, Basis.repr_symm_apply, Finsupp.total_single, one_smul, toModule]
+  simp only [Dfinsupp.mapRange_single, Basis.repr_symm_apply, Finsupp.total_single, one_smul,
+    toModule]
   erw [Dfinsupp.lsum_single]
   simp only [Submodule.coeSubtype]
 #align direct_sum.is_internal.collected_basis_coe DirectSum.IsInternal.collectedBasis_coe
