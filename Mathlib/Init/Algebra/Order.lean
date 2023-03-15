@@ -376,6 +376,18 @@ theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
   case _ _ h => exact true_iff_iff.2 h
   case _ _ h => exact false_iff_iff.2 h
 
+theorem compare_le_iff_le {a b : α} : (compare a b ≠ .gt) ↔ a ≤ b := by
+  cases h : compare a b <;> simp only []
+  · exact true_iff_iff.2 <| le_of_lt <| compare_lt_iff_lt.1 h
+  · exact true_iff_iff.2 <| le_of_eq <| compare_eq_iff_eq.1 h
+  · exact false_iff_iff.2 <| not_le_of_gt <| compare_gt_iff_gt.1 h
+
+theorem compare_ge_iff_ge {a b : α} : (compare a b ≠ .lt) ↔ a ≥ b := by
+  cases h : compare a b <;> simp only []
+  · exact false_iff_iff.2 <| (lt_iff_not_ge a b).1 <| compare_lt_iff_lt.1 h
+  · exact true_iff_iff.2 <| le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
+  · exact true_iff_iff.2 <| le_of_lt <| compare_gt_iff_gt.1 h
+
 -- TODO: generalize to instance of LE, Eq (and upstream?)
 -- Move?
 /-- The `Prop` corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
