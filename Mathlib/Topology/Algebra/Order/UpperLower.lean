@@ -21,7 +21,7 @@ set).
 ## Implementation notes
 
 The same lemmas are true in the additive/multiplicative worlds. To avoid code duplication, we
-provide `has_upper_lower_closure`, an ad hoc axiomatisation of the properties we need.
+provide `HasUpperLowerClosure`, an ad hoc axiomatisation of the properties we need.
 -/
 
 
