@@ -103,9 +103,6 @@ theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) :
   · contradiction
 #align char_prime_of_ne_zero char_prime_of_ne_zero
 
-instance : CharP R p :=
-  inferInstance
-
 /-- The exponential characteristic is a prime number or one. -/
 theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 :=
   or_iff_not_imp_right.mpr fun h => by
@@ -115,6 +112,7 @@ theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q
       have : CharP R 0 := by rwa [← p_zero]
       have : q = 1 := expChar_one_of_char_zero R q
       contradiction
+    haveI : CharP R p := hp -- porting note: added because using `cases` instead of `casesI` above
     have p_eq_q : p = q := (char_eq_expChar_iff R p q).mpr (char_prime_of_ne_zero R p_ne_zero)
     cases' CharP.char_is_prime_or_zero R p with pprime
     · rwa [p_eq_q] at pprime
