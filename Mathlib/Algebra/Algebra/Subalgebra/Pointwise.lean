@@ -47,7 +47,7 @@ theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra
     exact Submodule.mul_mem_mul hx1 (show (1 : A) ∈ S from one_mem S)
 #align subalgebra.mul_self Subalgebra.mul_self
 
-/-- When `A` is commutative, `subalgebra.mul_to_submodule_le` is strict. -/
+/-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
 theorem mul_toSubmodule {R : Type _} {A : Type _} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S T : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule T)
         = Subalgebra.toSubmodule (S ⊔ T) := by
