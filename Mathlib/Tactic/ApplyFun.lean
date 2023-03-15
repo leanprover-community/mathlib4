@@ -24,32 +24,64 @@ initialize registerTraceClass `apply_fun
 
 /--
 Helper function to fill implicit arguments with metavariables.
+
+Returns an array of the metavariables as well.
 -/
-partial def fillImplicitArgumentsWithFreshMVars (e : Expr) : MetaM Expr := do
-  match ← inferType e with
-  | Expr.forallE _ _ _ .implicit
-  | Expr.forallE _ _ _ .instImplicit => do
-    fillImplicitArgumentsWithFreshMVars (mkApp e (← mkFreshExprMVar none))
-  | _                    => pure e
+partial def fillImplicitArgumentsWithFreshMVars (e : Expr) : MetaM (Expr × Array MVarId) := do
+  loop #[] (← instantiateMVars (← inferType e)) (← instantiateMVars e)
+where
+  loop (mvars : Array MVarId) (ty e : Expr) : MetaM (Expr × Array MVarId) := do
+    if ty.isForall then
+      if ty.bindingInfo! == .implicit then
+        let mvar ← mkFreshExprMVar ty.bindingDomain! MetavarKind.natural ty.bindingName!
+        return ← loop (mvars.push mvar.mvarId!) (ty.bindingBody!.instantiate1 mvar) (e.beta #[mvar])
+      else if ty.bindingInfo! == .instImplicit then
+        let mvar ← mkFreshExprMVar ty.bindingDomain! MetavarKind.synthetic ty.bindingName!
+        return ← loop (mvars.push mvar.mvarId!) (ty.bindingBody!.instantiate1 mvar) (e.beta #[mvar])
+    return (e, mvars)
+
+/-- Returns a function. Ensures all leading implicit variables are filled, and (recursively)
+uses `CoeFun` instances. -/
+private def ensureFun (f : Expr) (steps : Nat := 10000) : MetaM (Expr × Array MVarId) :=
+  match steps with
+  | 0 => throwError "Could not coerce to function (iteration limit reached)"
+  | steps + 1 => do
+    let (f, mvars) ← fillImplicitArgumentsWithFreshMVars f
+    if (← inferType f).isForall then
+      return (f, mvars)
+    else
+      let some f ← coerceToFunction? f
+        | throwError "Could not coerce to function"
+      let (f', mvars') ← ensureFun f steps
+      return (f', mvars ++ mvars')
 
 /-- Apply a function to a hypothesis. -/
 def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
     MetaM (List MVarId) := do
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
-  | (``Eq, #[α, _, _]) => do
-    -- We have to jump through a hoop here!
-    -- At this point Lean may think `f` is a dependently-typed function,
-    -- so we can't just feed it to `congrArg`.
-    -- To solve this, we first fill any implicit arguments for `f` with metavariables,
-    -- and then try to unify with a metavariable `_ : α → _`
-    -- (i.e. an arrow, but with the target as some fresh type metavariable).
-    -- (Arguably `Lean.Meta.mkCongrArg` could do this all itself.)
-    let arrow ← mkFreshExprMVar (← mkArrow α (← mkFreshTypeMVar))
-    let f' ← fillImplicitArgumentsWithFreshMVars f
-    if ¬ (← isDefEq f' arrow) then
-      throwError "Can not use `apply_fun` with a dependently typed function."
-    pure (← mkCongrArg f' d.toExpr, [])
+  | (``Eq, #[ty, lhs, rhs]) => do
+    let (f, mvars) ← ensureFun f
+    let argTy := (← inferType f).bindingDomain!
+    unless ← isDefEq argTy ty do
+      throwAppTypeMismatch argTy ty
+    -- Note: there might be implicit arguments *after* lhs and rhs
+    let (lhs', mvarslhs) ← fillImplicitArgumentsWithFreshMVars (f.beta #[lhs])
+    let (rhs', mvarsrhs) ← fillImplicitArgumentsWithFreshMVars (f.beta #[rhs])
+    unless ← isDefEq (← inferType lhs') (← inferType rhs') do
+      let msg ← mkHasTypeButIsExpectedMsg (← inferType rhs') (← inferType lhs')
+      throwError "In generated equality, right-hand side {msg}"
+    let mvars := mvars ++ mvarslhs ++ mvarsrhs
+    -- `mkAppN` would do this, but it uses `withNewMCtxDepth`.
+    for mvarId in mvars do
+      let d ← mvarId.getDecl
+      if let .synthetic := d.kind then
+        let mvarVal ← synthInstance (← mvarId.getType)
+        mvarId.assign mvarVal
+    let eq' ← instantiateMVars (← mkEq lhs' rhs')
+    let mvar ← mkFreshExprMVar eq'
+    let [] ← mvar.mvarId!.congrN | throwError "`apply_fun` could not construct congruence"
+    pure (mvar, mvars.toList)
   | (``LE.le, _) =>
     let (monotone_f, newGoals) ← match using? with
     -- Use the expression passed with `using`

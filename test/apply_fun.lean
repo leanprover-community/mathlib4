@@ -109,3 +109,30 @@ example : ∀ m n : ℕ, m = n → (m < 2) = (n < 2) := by
   intro m n h
   apply_fun (· < 2) at h
   exact h
+
+example (f : ℕ ≃ ℕ) (a b : ℕ) (h : a = b) : True := by
+  apply_fun f at h
+  guard_hyp h : f a = f b
+  trivial
+
+example (f : ℕ → ℕ) (a b : ℕ) (h : a = b) : True := by
+  apply_fun f at h
+  guard_hyp h : f a = f b
+  trivial
+
+example (f : {i : Nat} → Fin i → ℕ) (a b : Fin 37) (h : a = b) : True := by
+  apply_fun f at h
+  guard_hyp h : f a = f b
+  trivial
+
+example (f : (p : Prop) → [Decidable p] → Nat) (p q : Prop) (h : p = q)
+    (h' : {n m : Nat} → n = m → True) : True := by
+  classical
+  apply_fun f at h
+  apply h'
+  exact h
+
+example (a b : ℕ) (h : a = b) : True := by
+  apply_fun (fun {j} i => i + j) at h
+  · trivial
+  · exact 37
