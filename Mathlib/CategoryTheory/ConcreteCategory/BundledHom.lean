@@ -31,12 +31,18 @@ variable {c : Type u → Type u} (hom : ∀ ⦃α β : Type u⦄ (_ : c α) (_ :
 /-- Class for bundled homs. Note that the arguments order follows that of lemmas for `MonoidHom`.
 This way we can use `⟨@MonoidHom.toFun, @MonoidHom.id ...⟩` in an instance. -/
 structure BundledHom where
+  /-- the underlying map of a bundled morphism -/
   toFun : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), hom Iα Iβ → α → β
+  /-- the identity as a bundled morphism -/
   id : ∀ {α : Type u} (I : c α), hom I I
+  /-- composition of bundled morphisms -/
   comp : ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ), hom Iβ Iγ → hom Iα Iβ → hom Iα Iγ
+  /-- a bundled morphism is determined by the underlying map -/
   hom_ext : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), Function.Injective (toFun Iα Iβ) := by
    aesop_cat
+  /-- compatibility with identities -/
   id_toFun : ∀ {α : Type u} (I : c α), toFun I I (id I) = _root_.id := by aesop_cat
+  /-- compatibility with the composition -/
   comp_toFun :
     ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ) (f : hom Iα Iβ) (g : hom Iβ Iγ),
       toFun Iα Iγ (comp Iα Iβ Iγ g f) = toFun Iβ Iγ g ∘ toFun Iα Iβ f := by
