@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Rename
+import Mathlib.Data.MvPolynomial.Rename
 
 /-!
 # `comap` operation on `mv_polynomial`
@@ -48,16 +48,14 @@ theorem comap_apply (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (x : τ 
 #align mv_polynomial.comap_apply MvPolynomial.comap_apply
 
 @[simp]
-theorem comap_id_apply (x : σ → R) : comap (AlgHom.id R (MvPolynomial σ R)) x = x :=
-  by
+theorem comap_id_apply (x : σ → R) : comap (AlgHom.id R (MvPolynomial σ R)) x = x := by
   funext i
   simp only [comap, AlgHom.id_apply, id.def, aeval_X]
 #align mv_polynomial.comap_id_apply MvPolynomial.comap_id_apply
 
 variable (σ R)
 
-theorem comap_id : comap (AlgHom.id R (MvPolynomial σ R)) = id :=
-  by
+theorem comap_id : comap (AlgHom.id R (MvPolynomial σ R)) = id := by
   funext x
   exact comap_id_apply x
 #align mv_polynomial.comap_id MvPolynomial.comap_id
@@ -66,8 +64,7 @@ variable {σ R}
 
 theorem comap_comp_apply (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R)
     (g : MvPolynomial τ R →ₐ[R] MvPolynomial υ R) (x : υ → R) :
-    comap (g.comp f) x = comap f (comap g x) :=
-  by
+    comap (g.comp f) x = comap f (comap g x) := by
   funext i
   trans aeval x (aeval (fun i => g (X i)) (f (X i)))
   · apply eval₂_hom_congr rfl rfl
@@ -81,8 +78,7 @@ theorem comap_comp_apply (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R)
 #align mv_polynomial.comap_comp_apply MvPolynomial.comap_comp_apply
 
 theorem comap_comp (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R)
-    (g : MvPolynomial τ R →ₐ[R] MvPolynomial υ R) : comap (g.comp f) = comap f ∘ comap g :=
-  by
+    (g : MvPolynomial τ R →ₐ[R] MvPolynomial υ R) : comap (g.comp f) = comap f ∘ comap g := by
   funext x
   exact comap_comp_apply _ _ _
 #align mv_polynomial.comap_comp MvPolynomial.comap_comp
@@ -94,8 +90,7 @@ theorem comap_eq_id_of_eq_id (f : MvPolynomial σ R →ₐ[R] MvPolynomial σ R)
   rw [hf, AlgHom.id_apply]
 #align mv_polynomial.comap_eq_id_of_eq_id MvPolynomial.comap_eq_id_of_eq_id
 
-theorem comap_rename (f : σ → τ) (x : τ → R) : comap (rename f) x = x ∘ f :=
-  by
+theorem comap_rename (f : σ → τ) (x : τ → R) : comap (rename f) x = x ∘ f := by
   ext i
   simp only [rename_X, comap_apply, aeval_X]
 #align mv_polynomial.comap_rename MvPolynomial.comap_rename

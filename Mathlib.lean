@@ -716,6 +716,7 @@ import Mathlib.Data.Multiset.Sections
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Nat.Basic
