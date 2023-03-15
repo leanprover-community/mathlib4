@@ -32,10 +32,10 @@ variable {R : Type u} {S : Type v} {T : Type w} {ι : Type x} {k : Type y} {A : 
 
 section Identities
 
-/- @TODO: pow_add_expansion and pow_sub_pow_factor are not specific to polynomials.
+/- @TODO: `powAddExpansion` and `powSubPowFactor` are not specific to polynomials.
   These belong somewhere else. But not in group_power because they depend on tactic.ring_exp
 
-Maybe use data.nat.choose to prove it.
+  Maybe use `Data.Nat.Choose` to prove it.
  -/
 /-- `(x + y)^n` can be expressed as `x^n + n*x^(n-1)*y + k * y^2` for some `k` in the ring.
 -/
