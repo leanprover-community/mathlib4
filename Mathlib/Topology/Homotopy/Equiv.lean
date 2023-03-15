@@ -8,7 +8,7 @@ Authors: Shing Tak Lam
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Homotopy.Basic
+import Mathlib.Topology.Homotopy.Basic
 
 /-!
 
