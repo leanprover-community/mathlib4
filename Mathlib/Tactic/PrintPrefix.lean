@@ -10,8 +10,6 @@ open Lean Meta Elab Command
 namespace Lean
 namespace Meta
 
-deriving instance Inhabited for ConstantInfo -- required for Array.qsort
-
 structure FindOptions where
   stage1       : Bool := true
   checkPrivate : Bool := false

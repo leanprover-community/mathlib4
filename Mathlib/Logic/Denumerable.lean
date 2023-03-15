@@ -262,7 +262,7 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
 
 #align nat.subtype.le_succ_of_forall_lt_le Nat.Subtype.le_succ_of_forall_lt_le
 
-theorem lt_succ_self (x : s) : x < succ x := by
+theorem lt_succ_self (x : s) : x < succ x :=
   calc
     -- Porting note: replaced `x + _`, added type annotations
     (x : ℕ) ≤ (x + Nat.find (exists_succ x): ℕ) := le_self_add

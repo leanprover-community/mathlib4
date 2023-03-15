@@ -816,22 +816,22 @@ theorem exists_lt (f : CauSeq α abs) : ∃ a : α, const a < f :=
 theorem rat_sup_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
     abs (a₁ - b₁) < ε → abs (a₂ - b₂) < ε → abs (a₁ ⊔ a₂ - b₁ ⊔ b₂) < ε := fun h₁ h₂ =>
   (abs_max_sub_max_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
-#align cau_seq.rat_sup_continuous_lemma CauSeq.rat_sup_continuous_lemma
+#align rat_sup_continuous_lemma CauSeq.rat_sup_continuous_lemma
 
 -- so named to match `rat_add_continuous_lemma`
 theorem rat_inf_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
     abs (a₁ - b₁) < ε → abs (a₂ - b₂) < ε → abs (a₁ ⊓ a₂ - b₁ ⊓ b₂) < ε := fun h₁ h₂ =>
   (abs_min_sub_min_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
-#align cau_seq.rat_inf_continuous_lemma CauSeq.rat_inf_continuous_lemma
+#align rat_inf_continuous_lemma CauSeq.rat_inf_continuous_lemma
 
-instance : HasSup (CauSeq α abs) :=
+instance : Sup (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊔ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
         let ⟨H₁, H₂⟩ := H _ le_rfl
         rat_sup_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
-instance : HasInf (CauSeq α abs) :=
+instance : Inf (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊓ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>

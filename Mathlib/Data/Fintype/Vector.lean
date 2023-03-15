@@ -17,18 +17,15 @@ import Mathlib.Data.Sym.Basic
 
 variable {α : Type _}
 
-noncomputable -- Porting note: added noncomputable
 instance Vector.fintype [Fintype α] {n : ℕ} : Fintype (Vector α n) :=
   Fintype.ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 #align vector.fintype Vector.fintype
 
-noncomputable -- Porting note: added noncomputable
 instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym.Sym' α n) := by
   refine @Quotient.fintype _ _ _ ?_
   -- Porting note: had to build the instance manually
   intros x y
   apply List.decidablePerm
 
-noncomputable -- Porting note: added noncomputable
 instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym α n) :=
   Fintype.ofEquiv _ Sym.symEquivSym'.symm

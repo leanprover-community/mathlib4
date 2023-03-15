@@ -220,10 +220,10 @@ set_option linter.deprecated false
 end deprecated
 
 instance : Repr PosNum :=
-  ⟨fun _ n => repr (n : ℕ)⟩
+  ⟨fun n _ => repr (n : ℕ)⟩
 
 instance : Repr Num :=
-  ⟨fun _ n => repr (n : ℕ)⟩
+  ⟨fun n _ => repr (n : ℕ)⟩
 
 end
 
@@ -688,6 +688,6 @@ variable {α : Type _} [Zero α] [One α] [Add α] [Neg α]
 #align znum_coe znumCoe
 
 instance : Repr ZNum :=
-  ⟨fun _ n => repr (n : ℤ)⟩
+  ⟨fun n _ => repr (n : ℤ)⟩
 
 end

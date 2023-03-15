@@ -22,8 +22,7 @@ Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other 
 
 variable {α β γ : Type _}
 
--- Porting note: big operators are currently global
---open BigOperators
+open BigOperators
 
 section
 

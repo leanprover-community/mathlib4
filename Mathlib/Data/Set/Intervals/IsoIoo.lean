@@ -10,6 +10,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
@@ -18,9 +19,8 @@ In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the 
 `(-1, 1)` in a linear ordered field and the whole field.
 -/
 
-/- Porting note: Unported tactic `field_simp` was previously used. Workaround found.
-`Mathlib.Algebra.Order.Field.Basic` added to imports for `abs` -/
---import Mathlib.Tactic.FieldSimp
+/- Porting note: `Mathlib.Algebra.Order.Field.Basic` added to imports for `abs` -/
+
 
 open Set
 
@@ -37,7 +37,7 @@ def orderIsoIooNegOneOne (k : Type _) [LinearOrderedField k] : k ≃o Ioo (-1 : 
     calc
       |x / (1 + |x|)| = |x| / (1 + |x|) := by rw [abs_div, abs_of_pos H]
       _ < 1 := (div_lt_one H).2 (lt_one_add _)
-  · refine' (strictMono_of_odd_strictMono_on_nonneg _ _).codRestrict _
+  · refine' (strictMono_of_odd_strictMonoOn_nonneg _ _).codRestrict _
     · intro x
       simp only [abs_neg, neg_div]
     · rintro x (hx : 0 ≤ x) y (hy : 0 ≤ y) hxy
@@ -45,6 +45,5 @@ def orderIsoIooNegOneOne (k : Type _) [LinearOrderedField k] : k ≃o Ioo (-1 : 
         hy.trans_lt (lt_one_add _), *]
   · refine' fun x ↦ Subtype.ext _
     have : 0 < 1 - |(x : k)| := sub_pos.2 (abs_lt.2 x.2)
-    simp [-one_div, -mul_eq_zero, abs_div, this.ne', abs_of_pos this, field_simps]
-    --field_simp [abs_div, this.ne', abs_of_pos this]
+    field_simp [abs_div, this.ne', abs_of_pos this]
 #align order_iso_Ioo_neg_one_one orderIsoIooNegOneOne

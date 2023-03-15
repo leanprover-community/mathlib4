@@ -54,6 +54,9 @@ example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f ∧ true) (h : f
   apply_fun f using w.1
   assumption
 
+example (a b : List α) (P : a = b) : True := by
+  apply_fun List.length at P
+  trivial
 
 -- -- monotonicity will be proved by `mono` in the next example
 -- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=
@@ -96,3 +99,13 @@ example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f ∧ true) (h : f
 --   apply_fun f,
 --   assumption,
 -- end
+
+example : ∀ m n : ℕ, m = n → (m < 2) = (n < 2) := by
+  refine fun m n h => ?_
+  apply_fun (· < 2) at h
+  exact h
+
+example : ∀ m n : ℕ, m = n → (m < 2) = (n < 2) := by
+  intro m n h
+  apply_fun (· < 2) at h
+  exact h

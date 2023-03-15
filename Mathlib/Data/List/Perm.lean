@@ -87,29 +87,25 @@ instance isSetoid (α) : Setoid (List α) :=
 #align list.is_setoid List.isSetoid
 
 -- Porting note: used rec_on in mathlib3; lean4 eqn compiler still doesn't like it
-theorem Perm.subset {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁ ⊆ l₂ := fun a =>
+theorem Perm.mem_iff {a : α} {l₁ l₂ : List α} (p : l₁ ~ l₂) : a ∈ l₁ ↔ a ∈ l₂ :=
   p.rec
-  (fun h => h)
-  (fun x l₁ l₂ _r hs h => by
-    cases h
-    . apply Mem.head
-    . apply Mem.tail
-      apply hs
-      assumption)
-  (fun x y l h => by
-    match h with
-    | .head _ => exact Mem.tail x (Mem.head l)
-    | .tail _ (.head _) => apply Mem.head
-    | .tail _ (.tail _ h) => exact Mem.tail x (Mem.tail y h))
-  (fun _ _ h₁ h₂ h => by
-    apply h₂
-    apply h₁
-    assumption)
+    Iff.rfl
+    (fun _ _ _ _ hs => by simp only [mem_cons, hs])
+    (fun _ _ _ => by simp only [mem_cons, or_left_comm])
+    (fun _ _ => Iff.trans)
+#align list.perm.mem_iff List.Perm.mem_iff
+
+theorem Perm.subset {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁ ⊆ l₂ :=
+  fun _ => p.mem_iff.mp
 #align list.perm.subset List.Perm.subset
 
-theorem Perm.mem_iff {a : α} {l₁ l₂ : List α} (h : l₁ ~ l₂) : a ∈ l₁ ↔ a ∈ l₂ :=
-  Iff.intro (fun m => h.subset m) fun m => h.symm.subset m
-#align list.perm.mem_iff List.Perm.mem_iff
+theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₁ ⊆ l₃ ↔ l₂ ⊆ l₃ :=
+  ⟨h.symm.subset.trans, h.subset.trans⟩
+#align list.perm.subset_congr_left List.Perm.subset_congr_left
+
+theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
+  ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
+#align list.perm.subset_congr_right List.Perm.subset_congr_right
 
 theorem Perm.append_right {l₁ l₂ : List α} (t₁ : List α) (p : l₁ ~ l₂) : l₁ ++ t₁ ~ l₂ ++ t₁ :=
   p.rec
@@ -583,6 +579,7 @@ theorem Perm.prod_eq' [M : Monoid α] {l₁ l₂ : List α} (h : l₁ ~ l₂) (h
     intro a b h z
     rw [mul_assoc z, mul_assoc z, h]
 #align list.perm.prod_eq' List.Perm.prod_eq'
+#align list.perm.sum_eq' List.Perm.sum_eq'
 -- Porting note: TODO do I need to do anything to handle the to_additive instance?
 
 variable [CommMonoid α]
@@ -591,11 +588,13 @@ variable [CommMonoid α]
 theorem Perm.prod_eq {l₁ l₂ : List α} (h : Perm l₁ l₂) : prod l₁ = prod l₂ :=
   h.fold_op_eq
 #align list.perm.prod_eq List.Perm.prod_eq
+#align list.perm.sum_eq List.Perm.sum_eq
 
 @[to_additive]
 theorem prod_reverse (l : List α) : prod l.reverse = prod l :=
   (reverse_perm l).prod_eq
 #align list.prod_reverse List.prod_reverse
+#align list.sum_reverse List.sum_reverse
 
 end CommMonoid
 
@@ -682,6 +681,8 @@ theorem subperm_cons (a : α) {l₁ l₂ : List α} : a :: l₁ <+~ a :: l₂ �
 #align list.subperm_cons List.subperm_cons
 
 alias subperm_cons ↔ subperm.of_cons subperm.cons
+#align list.subperm.of_cons List.subperm.of_cons
+#align list.subperm.cons List.subperm.cons
 
 --Porting note: commented out
 --attribute [protected] subperm.cons
@@ -840,7 +841,7 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
     l₁.bagInter t ~ l₂.bagInter t := by
   induction' h with x _ _ _ _ x y _ _ _ _ _ _ ih_1 ih_2 generalizing t; · simp
   · by_cases x ∈ t <;> simp [*, Perm.cons]
-  · by_cases x = y
+  · by_cases h : x = y
     · simp [h]
     by_cases xt : x ∈ t <;> by_cases yt : y ∈ t
     · simp [xt, yt, mem_erase_of_ne h, mem_erase_of_ne (Ne.symm h), erase_comm, swap]
@@ -853,7 +854,7 @@ theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂
 theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
     l.bagInter t₁ = l.bagInter t₂ := by
   induction' l with a l IH generalizing t₁ t₂ p; · simp
-  by_cases a ∈ t₁
+  by_cases h : a ∈ t₁
   · simp [h, p.subset h, IH (p.erase _)]
   · simp [h, mt p.mem_iff.2 h, IH p]
 #align list.perm.bag_inter_left List.Perm.bagInter_left
@@ -879,12 +880,21 @@ theorem perm_iff_count {l₁ l₂ : List α} : l₁ ~ l₂ ↔ ∀ a, count a l�
       specialize H b
       simp at H
       contradiction
-    · have : a ∈ l₂ := count_pos.1 (by rw [← H] ; simp)
+    · have : a ∈ l₂ := count_pos.1 (by rw [← H]; simp)
       refine' ((IH fun b => _).cons a).trans (perm_cons_erase this).symm
       specialize H b
       rw [(perm_cons_erase this).count_eq] at H
-      by_cases b = a <;> simp [h] at H⊢ <;> assumption⟩
+      by_cases h : b = a <;> simpa [h] using H⟩
 #align list.perm_iff_count List.perm_iff_count
+
+theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
+    l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
+  rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
+  suffices : l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l
+  { simp (config := { contextual := true }) [count_replicate, h, h.symm, this] }
+  simp_rw [Ne.def, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
+    not_mem_nil, or_false, or_comm]
+#align list.perm_replicate_append_replicate List.perm_replicate_append_replicate
 
 theorem Subperm.cons_right {α : Type _} {l l' : List α} (x : α) (h : l <+~ l') : l <+~ x :: l' :=
   h.trans (sublist_cons x l').subperm

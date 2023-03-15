@@ -54,10 +54,16 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
   | (``Ne, #[_ty, e₁, e₂]) =>
       return mkSimpStep (← mkAppM ``Eq #[e₁, e₂]) (← mkAppM ``not_ne_eq #[e₁, e₂])
-  | (``LE.le, #[_ty, _inst, e₁, e₂]) =>
-      return mkSimpStep (← mkAppM ``LT.lt #[e₂, e₁]) (← mkAppM ``not_le_eq #[e₁, e₂])
-  | (``LT.lt, #[_ty, _inst, e₁, e₂]) =>
-      return mkSimpStep (← mkAppM ``LE.le #[e₂, e₁]) (← mkAppM ``not_lt_eq #[e₁, e₂])
+  | (``LE.le, #[ty, _inst, e₁, e₂]) =>
+      let linOrd ← synthInstance? (← mkAppM ``LinearOrder #[ty])
+      match linOrd with
+      | some _ => return mkSimpStep (← mkAppM ``LT.lt #[e₂, e₁]) (← mkAppM ``not_le_eq #[e₁, e₂])
+      | none => return none
+  | (``LT.lt, #[ty, _inst, e₁, e₂]) =>
+      let linOrd ← synthInstance? (← mkAppM ``LinearOrder #[ty])
+      match linOrd with
+      | some _ => return mkSimpStep (← mkAppM ``LE.le #[e₂, e₁]) (← mkAppM ``not_lt_eq #[e₁, e₂])
+      | none => return none
   | (``Exists, #[_, .lam n typ bo bi]) =>
       return mkSimpStep (.forallE n typ (mkNot bo) bi)
                         (← mkAppM ``not_exists_eq #[.lam n typ bo bi])

@@ -66,8 +66,8 @@ protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMO
   Eq.trans
 #align int.modeq.trans Int.ModEq.trans
 
-instance : Trans (ModEq n) (ModEq n) (ModEq n) where
-  trans := Int.ModEq.trans
+instance : IsTrans ℤ (ModEq n) where
+  trans := @Int.ModEq.trans n
 
 end ModEq
 

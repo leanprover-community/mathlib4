@@ -51,8 +51,8 @@ instance [AddMonoid R] [AddMonoid S] [StarAddMonoid R] [StarAddMonoid S] : StarA
     where star_add _ _ := Prod.ext (star_add _ _) (star_add _ _)
 
 instance [NonUnitalSemiring R] [NonUnitalSemiring S] [StarRing R] [StarRing S] : StarRing (R × S) :=
-  { (show StarAddMonoid (R × S) by infer_instance),
-    (show StarSemigroup (R × S) by infer_instance) with }
+  { inferInstanceAs (StarAddMonoid (R × S)),
+    inferInstanceAs (StarSemigroup (R × S)) with }
 
 instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
     [StarModule α R] [StarModule α S] : StarModule α (R × S)

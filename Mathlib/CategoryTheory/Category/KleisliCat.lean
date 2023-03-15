@@ -28,6 +28,9 @@ universe u v
 
 namespace CategoryTheory
 
+-- This file is about Lean 3 declaration "Kleisli".
+set_option linter.uppercaseLean3 false
+
 /-- The Kleisli category on the (type-)monad `m`. Note that the monad is not assumed to be lawful
 yet. -/
 @[nolint unusedArguments]

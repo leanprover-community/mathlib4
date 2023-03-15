@@ -186,7 +186,7 @@ class ConditionallyCompleteLinearOrder (α : Type _) extends ConditionallyComple
 
 instance (α : Type _) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
 { ‹ConditionallyCompleteLinearOrder α› with
-  max := HasSup.sup, min := HasInf.inf,
+  max := Sup.sup, min := Inf.inf,
   min_def := fun a b ↦ by
     by_cases hab : a = b
     · simp [hab]
@@ -274,7 +274,7 @@ end
 section OrderDual
 
 instance (α : Type _) [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice αᵒᵈ :=
-  { instHasInfOrderDual α, instHasSupOrderDual α, OrderDual.lattice α with
+  { instInfOrderDual α, instSupOrderDual α, OrderDual.lattice α with
     le_csupₛ := @ConditionallyCompleteLattice.cinfₛ_le α _
     csupₛ_le := @ConditionallyCompleteLattice.le_cinfₛ α _
     le_cinfₛ := @ConditionallyCompleteLattice.csupₛ_le α _
@@ -828,10 +828,17 @@ theorem cinfᵢ_unique [Unique ι] {s : ι → α} : (⨅ i, s i) = s default :=
   @csupᵢ_unique αᵒᵈ _ _ _ _
 #align infi_unique cinfᵢ_unique
 
+-- porting note: new lemma
+theorem csupᵢ_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : (⨆ i, s i) = s i :=
+  @csupᵢ_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+
+-- porting note: new lemma
+theorem cinfᵢ_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : (⨅ i, s i) = s i :=
+  @cinfᵢ_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+
 @[simp]
 theorem csupᵢ_pos {p : Prop} {f : p → α} (hp : p) : (⨆ h : p, f h) = f hp :=
-  haveI := uniqueProp hp
-  csupᵢ_unique
+  csupᵢ_subsingleton hp f
 #align csupr_pos csupᵢ_pos
 
 @[simp]
@@ -1186,10 +1193,10 @@ theorem isGLB_infₛ (s : Set (WithTop α)) : IsGLB s (infₛ s) := by
 
 noncomputable instance : CompleteLinearOrder (WithTop α) :=
   { WithTop.linearOrder, WithTop.lattice, WithTop.orderTop, WithTop.orderBot with
-    sup := HasSup.sup
+    sup := Sup.sup
     le_supₛ := fun s => (isLUB_supₛ s).1
     supₛ_le := fun s => (isLUB_supₛ s).2
-    inf := HasInf.inf
+    inf := Inf.inf
     le_infₛ := fun s => (isGLB_infₛ s).2
     infₛ_le := fun s => (isGLB_infₛ s).1 }
 
@@ -1516,7 +1523,7 @@ theorem WithTop.supr_coe_eq_top {ι : Sort _} {α : Type _} [ConditionallyComple
 
 theorem WithTop.supr_coe_lt_top {ι : Sort _} {α : Type _} [ConditionallyCompleteLinearOrderBot α]
     (f : ι → α) : (⨆ x, (f x : WithTop α)) < ⊤ ↔ BddAbove (Set.range f) :=
-  lt_top_iff_ne_top.trans <| (WithTop.supr_coe_eq_top f).not.trans _root_.not_not
+  lt_top_iff_ne_top.trans <| (WithTop.supr_coe_eq_top f).not.trans not_not
 #align with_top.supr_coe_lt_top WithTop.supr_coe_lt_top
 
 end WithTopBot

@@ -84,7 +84,7 @@ theorem length_ndinsert_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) :
 #align multiset.length_ndinsert_of_not_mem Multiset.length_ndinsert_of_not_mem
 
 theorem dedup_cons {a : α} {s : Multiset α} : dedup (a ::ₘ s) = ndinsert a (dedup s) := by
-  by_cases a ∈ s <;> simp [h]
+  by_cases h : a ∈ s <;> simp [h]
 #align multiset.dedup_cons Multiset.dedup_cons
 
 theorem Nodup.ndinsert (a : α) : Nodup s → Nodup (ndinsert a s) :=
@@ -114,7 +114,7 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
           (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) :=
     by
     intro t ht
-    by_cases a ∈ s
+    by_cases h : a ∈ s
     · rw [ndinsert_of_mem h] at ht
       subst ht
       rw [eq, map_id, ndinsert_of_mem (mem_attach _ _)]
@@ -217,7 +217,7 @@ theorem dedup_add (s t : Multiset α) : dedup (s + t) = ndunion s (dedup t) :=
 
 /-- `ndinter s t` is the lift of the list `∩` operation. This operation
   does not respect multiplicities, unlike `s ∩ t`, but it is suitable as
-  an intersection operation on `finset`. (`s ∩ t` would also work as a union operation
+  an intersection operation on `Finset`. (`s ∩ t` would also work as a union operation
   on finset, but this is more efficient.) -/
 def ndinter (s t : Multiset α) : Multiset α :=
   filter (· ∈ t) s

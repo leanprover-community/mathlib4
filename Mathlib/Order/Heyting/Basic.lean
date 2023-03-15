@@ -558,8 +558,10 @@ theorem sdiff_sup_self (a b : α) : b \ a ⊔ a = b ⊔ a := by rw [sup_comm, su
 #align sdiff_sup_self sdiff_sup_self
 
 alias sdiff_sup_self ← sup_sdiff_self_left
+#align sup_sdiff_self_left sup_sdiff_self_left
 
 alias sup_sdiff_self ← sup_sdiff_self_right
+#align sup_sdiff_self_right sup_sdiff_self_right
 
 theorem sup_sdiff_eq_sup (h : c ≤ a) : a ⊔ b \ c = a ⊔ b :=
   sup_congr_left (sdiff_le.trans le_sup_right) <| le_sup_sdiff.trans <| sup_le_sup_right h _
@@ -817,12 +819,16 @@ theorem le_compl_comm : a ≤ bᶜ ↔ b ≤ aᶜ := by
 #align le_compl_comm le_compl_comm
 
 alias le_compl_iff_disjoint_right ↔ _ Disjoint.le_compl_right
+#align disjoint.le_compl_right Disjoint.le_compl_right
 
 alias le_compl_iff_disjoint_left ↔ _ Disjoint.le_compl_left
+#align disjoint.le_compl_left Disjoint.le_compl_left
 
 alias le_compl_comm ← le_compl_iff_le_compl
+#align le_compl_iff_le_compl le_compl_iff_le_compl
 
 alias le_compl_comm ↔ le_compl_of_le_compl _
+#align le_compl_of_le_compl le_compl_of_le_compl
 
 theorem disjoint_compl_left : Disjoint (aᶜ) a :=
   disjoint_iff_inf_le.mpr <| le_himp_iff.1 (himp_bot _).ge
@@ -1014,8 +1020,10 @@ theorem hnot_le_comm : ￢a ≤ b ↔ ￢b ≤ a := by
 #align hnot_le_comm hnot_le_comm
 
 alias hnot_le_iff_codisjoint_right ↔ _ Codisjoint.hnot_le_right
+#align codisjoint.hnot_le_right Codisjoint.hnot_le_right
 
 alias hnot_le_iff_codisjoint_left ↔ _ Codisjoint.hnot_le_left
+#align codisjoint.hnot_le_left Codisjoint.hnot_le_left
 
 theorem codisjoint_hnot_right : Codisjoint a (￢a) :=
   codisjoint_iff_le_sup.2 <| sdiff_le_iff.1 (top_sdiff' _).le
@@ -1209,7 +1217,7 @@ section lift
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedHeytingAlgebra` along an injection. -/
 @[reducible]
-protected def Function.Injective.generalizedHeytingAlgebra [HasSup α] [HasInf α] [Top α]
+protected def Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] [Top α]
     [HImp α] [GeneralizedHeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : GeneralizedHeytingAlgebra α :=
@@ -1226,7 +1234,7 @@ protected def Function.Injective.generalizedHeytingAlgebra [HasSup α] [HasInf �
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedCoheytingAlgebra` along an injection. -/
 @[reducible]
-protected def Function.Injective.generalizedCoheytingAlgebra [HasSup α] [HasInf α] [Bot α]
+protected def Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [Bot α]
     [SDiff α] [GeneralizedCoheytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
@@ -1244,7 +1252,7 @@ protected def Function.Injective.generalizedCoheytingAlgebra [HasSup α] [HasInf
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
 @[reducible]
-protected def Function.Injective.heytingAlgebra [HasSup α] [HasInf α] [Top α] [Bot α]
+protected def Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
     [HasCompl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f (aᶜ) = f aᶜ)
@@ -1260,7 +1268,7 @@ protected def Function.Injective.heytingAlgebra [HasSup α] [HasInf α] [Top α]
 -- See note [reducible non-instances]
 /-- Pullback a `CoheytingAlgebra` along an injection. -/
 @[reducible]
-protected def Function.Injective.coheytingAlgebra [HasSup α] [HasInf α] [Top α] [Bot α]
+protected def Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
     [HNot α] [SDiff α] [CoheytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
@@ -1276,7 +1284,7 @@ protected def Function.Injective.coheytingAlgebra [HasSup α] [HasInf α] [Top �
 -- See note [reducible non-instances]
 /-- Pullback a `BiheytingAlgebra` along an injection. -/
 @[reducible]
-protected def Function.Injective.biheytingAlgebra [HasSup α] [HasInf α] [Top α] [Bot α]
+protected def Function.Injective.biheytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
     [HasCompl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
     (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)

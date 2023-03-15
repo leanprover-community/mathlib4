@@ -3,7 +3,7 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 
-! This file was ported from Lean 3 source module data.type_vec
+! This file was ported from Lean 3 source module data.typevec
 ! leanprover-community/mathlib commit 39af7d3bf61a98e928812dbc3e16f4ea8b795ca3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
@@ -278,7 +278,7 @@ theorem appendFun_comp' {α₀ α₁ α₂ : TypeVec n} {β₀ β₁ β₂ : Typ
 
 theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun ⊚ f₀ = f₀ :=
   funext fun x => by apply Fin2.elim0 x -- porting note: `by apply` is necessary?
-#align typevec.nilFun_comp TypeVec.nilFun_comp
+#align typevec.nil_fun_comp TypeVec.nilFun_comp
 
 theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type _} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
     (@id _ α ::: g₁ ∘ g₀) = (id ::: g₁) ⊚ (id ::: g₀) :=
@@ -394,13 +394,13 @@ theorem typevecCasesCons₂_appendFun (n : ℕ) (t t' : Type _) (v v' : TypeVec 
 #align typevec.typevec_cases_cons₂_append_fun TypeVec.typevecCasesCons₂_appendFun
 
 -- for lifting predicates and relations
-/-- `pred_last α p x` predicates `p` of the last element of `x : α.append1 β`. -/
+/-- `PredLast α p x` predicates `p` of the last element of `x : α.append1 β`. -/
 def PredLast (α : TypeVec n) {β : Type _} (p : β → Prop) : ∀ ⦃i⦄, (α.append1 β) i → Prop
   | Fin2.fs _ => fun _ => True
   | Fin2.fz => p
 #align typevec.pred_last TypeVec.PredLast
 
-/-- `rel_last α r x y` says that `p` the last elements of `x y : α.append1 β` are related by `r` and
+/-- `RelLast α r x y` says that `p` the last elements of `x y : α.append1 β` are related by `r` and
 all the other elements are equal. -/
 def RelLast (α : TypeVec n) {β γ : Type _} (r : β → γ → Prop) :
       ∀ ⦃i⦄, (α.append1 β) i → (α.append1 γ) i → Prop
@@ -474,18 +474,18 @@ theorem repeat_eq_nil (α : TypeVec 0) : repeatEq α = nilFun := by ext i; cases
 #align typevec.repeat_eq_nil TypeVec.repeat_eq_nil
 
 /-- predicate on a type vector to constrain only the last object -/
-def predLast' (α : TypeVec n) {β : Type _} (p : β → Prop) :
+def PredLast' (α : TypeVec n) {β : Type _} (p : β → Prop) :
     (α ::: β) ⟹ «repeat» (n + 1) Prop :=
   splitFun (TypeVec.const True α) p
-#align typevec.pred_last' TypeVec.predLast'
+#align typevec.pred_last' TypeVec.PredLast'
 
 /-- predicate on the product of two type vectors to constrain only their last object -/
-def relLast' (α : TypeVec n) {β : Type _} (p : β → β → Prop) :
+def RelLast' (α : TypeVec n) {β : Type _} (p : β → β → Prop) :
     (α ::: β) ⊗ (α ::: β) ⟹ «repeat» (n + 1) Prop :=
   splitFun (repeatEq α) (uncurry p)
-#align typevec.rel_last' TypeVec.relLast'
+#align typevec.rel_last' TypeVec.RelLast'
 
-/-- given `F : typevec.{u} (n+1) → Type u`, `curry F : Type u → typevec.{u} → Type u`,
+/-- given `F : TypeVec.{u} (n+1) → Type u`, `curry F : Type u → TypeVec.{u} → Type u`,
 i.e. its first argument can be fed in separately from the rest of the vector of arguments -/
 def Curry (F : TypeVec.{u} (n + 1) → Type _) (α : Type u) (β : TypeVec.{u} n) : Type _ :=
   F (β ::: α)
@@ -759,10 +759,10 @@ theorem lastFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
 #align typevec.last_fun_of_subtype TypeVec.lastFun_of_subtype
 
 @[simp]
-theorem dropFun_rel_last {α : TypeVec n} {β} (R : β → β → Prop) :
-    dropFun (relLast' α R) = repeatEq α :=
+theorem dropFun_RelLast' {α : TypeVec n} {β} (R : β → β → Prop) :
+    dropFun (RelLast' α R) = repeatEq α :=
   rfl
-#align typevec.drop_fun_rel_last TypeVec.dropFun_rel_last
+#align typevec.drop_fun_rel_last TypeVec.dropFun_RelLast'
 
 attribute [simp] drop_append1'
 

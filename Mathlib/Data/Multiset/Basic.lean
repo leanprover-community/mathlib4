@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.multiset.basic
-! leanprover-community/mathlib commit ccad6d5093bd2f5c6ca621fc74674cce51355af6
+! leanprover-community/mathlib commit f3187269ad18e82a809428a42d6282ce81e4ebcc
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -71,12 +71,10 @@ instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
 
 /-- defines a size for a multiset by referring to the size of the underlying list -/
 protected
-noncomputable -- Porting note: added
 def sizeOf [SizeOf α] (s : Multiset α) : ℕ :=
   (Quot.liftOn s SizeOf.sizeOf) fun _ _ => Perm.sizeOf_eq_sizeOf
 #align multiset.sizeof Multiset.sizeOf
 
-noncomputable -- Porting note: added
 instance [SizeOf α] : SizeOf (Multiset α) :=
   ⟨Multiset.sizeOf⟩
 
@@ -178,7 +176,6 @@ TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails wi
 overflow in `whnf`.
 -/
 protected
-noncomputable -- Porting note: added
 def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b)))
@@ -192,7 +189,6 @@ def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
 /-- Companion to `Multiset.rec` with more convenient argument order. -/
 @[elab_as_elim]
 protected
-noncomputable -- Porting note: added
 def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
       ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))) :
@@ -302,7 +298,7 @@ theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
   haveI : DecidableEq α := Classical.decEq α
   constructor
   · intro eq
-    by_cases a = b
+    by_cases h : a = b
     · subst h
       simp_all
     · have : a ∈ b ::ₘ bs := eq ▸ mem_cons_self _ _
@@ -334,7 +330,7 @@ theorem cons_zero (a : α) : a ::ₘ 0 = {a} :=
   rfl
 #align multiset.cons_zero Multiset.cons_zero
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_singleton (a : α) : ([a] : Multiset α) = {a} :=
   rfl
 #align multiset.coe_singleton Multiset.coe_singleton
@@ -356,6 +352,11 @@ theorem singleton_inj {a b : α} : ({a} : Multiset α) = {b} ↔ a = b :=
   simp_rw [← cons_zero]
   exact cons_inj_left _
 #align multiset.singleton_inj Multiset.singleton_inj
+
+@[simp, norm_cast]
+theorem coe_eq_singleton {l : List α} {a : α} : (l : Multiset α) = {a} ↔ l = [a] := by
+  rw [← coe_singleton, coe_eq_coe, List.perm_singleton]
+#align multiset.coe_eq_singleton Multiset.coe_eq_singleton
 
 @[simp]
 theorem singleton_eq_cons_iff {a b : α} (m : Multiset α) : {a} = b ::ₘ m ↔ a = b ∧ m = 0 :=
@@ -480,6 +481,16 @@ theorem toList_zero : (Multiset.toList 0 : List α) = [] :=
 theorem mem_toList {a : α} {s : Multiset α} : a ∈ s.toList ↔ a ∈ s := by
   rw [← mem_coe, coe_toList]
 #align multiset.mem_to_list Multiset.mem_toList
+
+@[simp]
+theorem toList_eq_singleton_iff {a : α} {m : Multiset α} : m.toList = [a] ↔ m = {a} := by
+  rw [← perm_singleton, ← coe_eq_coe, coe_toList, coe_singleton]
+#align multiset.to_list_eq_singleton_iff Multiset.toList_eq_singleton_iff
+
+@[simp]
+theorem toList_singleton (a : α) : ({a} : Multiset α).toList = [a] :=
+  Multiset.toList_eq_singleton_iff.2 rfl
+#align multiset.to_list_singleton Multiset.toList_singleton
 
 end ToList
 
@@ -758,7 +769,7 @@ theorem card_le_of_le {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
 #align multiset.card_le_of_le Multiset.card_le_of_le
 
--- @[mono] -- Porting note: unknown attribute
+@[mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_of_le
 #align multiset.card_mono Multiset.card_mono
 
@@ -880,6 +891,7 @@ instance is_wellFounded_lt : WellFoundedLT (Multiset α) :=
 /-- `replicate n a` is the multiset containing only `a` with multiplicity `n`. -/
 def replicate (n : ℕ) (a : α) : Multiset α :=
   List.replicate n a
+#align multiset.replicate Multiset.replicate
 
 theorem coe_replicate (n : ℕ) (a : α) : (List.replicate n a : Multiset α) = replicate n a := rfl
 #align multiset.coe_replicate Multiset.coe_replicate
@@ -894,13 +906,14 @@ theorem replicate_add (m n : ℕ) (a : α) : replicate (m + n) a = replicate m a
   congr_arg _ <| List.replicate_add ..
 #align multiset.replicate_add Multiset.replicate_add
 
-/-- `Multiset.replicate` as an `addMonoidHom`. -/
+/-- `Multiset.replicate` as an `AddMonoidHom`. -/
 @[simps]
 def replicateAddMonoidHom (a : α) : ℕ →+ Multiset α where
   toFun := fun n => replicate n a
   map_zero' := replicate_zero a
   map_add' := fun _ _ => replicate_add _ _ a
 #align multiset.replicate_add_monoid_hom Multiset.replicateAddMonoidHom
+#align multiset.replicate_add_monoid_hom_apply Multiset.replicateAddMonoidHom_apply
 
 -- @[simp] -- Porting note: simp can prove this
 theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
@@ -1783,7 +1796,7 @@ theorem le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u :=
   by
   revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
   · simpa only [zero_inter, nonpos_iff_eq_zero] using h₁
-  by_cases a ∈ u
+  by_cases h : a ∈ u
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
     exact IH (erase_le_iff_le_cons.2 h₁) (erase_le_erase _ h₂)
   · rw [cons_inter_of_neg _ h]
@@ -1900,7 +1913,7 @@ theorem sub_add_inter (s t : Multiset α) : s - t + s ∩ t = s :=
   by
   rw [inter_comm]
   revert s; refine' Multiset.induction_on t (by simp) fun a t IH s => _
-  by_cases a ∈ s
+  by_cases h : a ∈ s
   · rw [cons_inter_of_pos _ h, sub_cons, add_cons, IH, cons_erase h]
   · rw [cons_inter_of_neg _ h, sub_cons, erase_of_not_mem h, IH]
 #align multiset.sub_add_inter Multiset.sub_add_inter
@@ -2048,7 +2061,7 @@ theorem filter_sub [DecidableEq α] (s t : Multiset α) :
   by
   revert s; refine' Multiset.induction_on t (by simp) fun a t IH s => _
   rw [sub_cons, IH]
-  by_cases p a
+  by_cases h : p a
   · rw [filter_cons_of_pos _ h, sub_cons]
     congr
     by_cases m : a ∈ s
@@ -2587,7 +2600,7 @@ theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
     replicate n x ∩ s = replicate (min n (s.count x)) x := by
   ext y
   rw [count_inter, count_replicate, count_replicate]
-  by_cases y = x
+  by_cases h : y = x
   · simp only [h, if_true]
   · simp only [h, if_false, zero_min]
 #align multiset.replicate_inter Multiset.replicate_inter
@@ -2621,10 +2634,11 @@ theorem map_le_map_iff {f : α → β} (hf : Function.Injective f) {s t : Multis
 
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a multiset to its
 image under `f`. -/
-@[simps]
+@[simps!]
 def mapEmbedding (f : α ↪ β) : Multiset α ↪o Multiset β :=
-  OrderEmbedding.ofMapLeIff (map f) fun _ _ => map_le_map_iff f.inj'
+  OrderEmbedding.ofMapLEIff (map f) fun _ _ => map_le_map_iff f.inj'
 #align multiset.map_embedding Multiset.mapEmbedding
+#align multiset.map_embedding_apply Multiset.mapEmbedding_apply
 
 end Embedding
 
@@ -2661,6 +2675,7 @@ inductive Rel (r : α → β → Prop) : Multiset α → Multiset β → Prop
   | zero : Rel r 0 0
   | cons {a b as bs} : r a b → Rel r as bs → Rel r (a ::ₘ as) (b ::ₘ bs)
 #align multiset.rel Multiset.Rel
+#align multiset.rel_iff Multiset.Rel_iff
 
 variable {δ : Type _} {r : α → β → Prop} {p : γ → δ → Prop}
 
@@ -2845,7 +2860,7 @@ theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} 
   · rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
   · obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
-    exact Multiset.Rel.cons (trans ha1 hb1) (ih ha2 hb2)
+    exact Multiset.Rel.cons (_root_.trans ha1 hb1) (ih ha2 hb2)
 #align multiset.rel.trans Multiset.Rel.trans
 
 theorem Rel.countp_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
@@ -2856,7 +2871,7 @@ theorem Rel.countp_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countp_cons, countp_cons, ih hb2]
     simp only [decide_eq_true_eq, add_right_inj]
-    refine' (if_congr ⟨fun h => trans h hb1, fun h => trans h (symm hb1)⟩ rfl rfl)
+    refine' (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 #align multiset.rel.countp_eq Multiset.Rel.countp_eq
 
 end Rel
