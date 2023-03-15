@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.ConcreteCategory.BundledHom
-import Mathbin.Algebra.PunitInstances
-import Mathbin.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.Algebra.PunitInstances
+import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
 
 /-!
 # Category instances for monoid, add_monoid, comm_monoid, and add_comm_monoid.
