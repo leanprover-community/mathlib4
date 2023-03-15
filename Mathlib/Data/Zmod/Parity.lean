@@ -14,7 +14,7 @@ import Mathlib.Data.ZMod.Basic
 /-!
 # Relating parity to natural numbers mod 2
 
-This module provides lemmas relating `zmod 2` to `even` and `odd`.
+This module provides lemmas relating `ZMod 2` to `Even` and `Odd`.
 
 ## Tags
 
