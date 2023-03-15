@@ -383,6 +383,20 @@ theorem compare_trichotomy {a b : α} :
     (fun h ↦ Or.inr <| Or.inl (compare_eq_iff_eq.2 h))
     (fun h ↦ Or.inr <| Or.inr (compare_gt_iff_gt.2 h))
 
+-- TODO: generalize to instance of LE, Eq (and upstream?)
+-- Move?
+/-- The `Prop` corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
+def Ordering.toProp (o : Ordering) (a b : α) : Prop := match o with
+| .lt => a < b
+| .eq => a = b
+| .gt => a > b
+
+theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ Ordering.toProp o a b := by
+  cases o <;> simp only [Ordering.toProp]
+  · exact compare_lt_iff_lt
+  · exact compare_eq_iff_eq
+  · exact compare_gt_iff_gt
+
 end Ord
 
 end LinearOrder
