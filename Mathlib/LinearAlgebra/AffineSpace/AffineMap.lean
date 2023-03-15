@@ -259,13 +259,13 @@ instance : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ => (zero_vadd _
 
 instance : Add (P1 →ᵃ[k] V2)
     where add f g := ⟨f + g, f.linear + g.linear,
-      -- porting note: `simp` can't infer `P1` in `map_vadd`
-      fun p v => by simp [add_add_add_comm, map_vadd _ (_ : P1)]⟩
+      -- porting note: `simp` needs `map_vadd _` to use `map_vadd`
+      fun p v => by simp [add_add_add_comm, map_vadd _]⟩
 
 instance : Sub (P1 →ᵃ[k] V2)
     where sub f g := ⟨f - g, f.linear - g.linear,
-      -- porting note: `simp` can't infer `P1` in `map_vadd`
-      fun p v => by simp [sub_add_sub_comm, map_vadd _ (_ : P1)]⟩
+      -- porting note: `simp` needs `map_vadd _` to use `map_vadd`
+      fun p v => by simp [sub_add_sub_comm, map_vadd _]⟩
 
 instance : Neg (P1 →ᵃ[k] V2)
     where neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
@@ -320,14 +320,14 @@ from `P1` to the vector space `V2` corresponding to `P2`. -/
 instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd f g :=
     ⟨fun p => f p +ᵥ g p, f.linear + g.linear,
-      -- porting note: `simp` can't infer `P1` in `map_vadd`
-      fun p v => by simp [vadd_vadd, add_right_comm, map_vadd _ (_ : P1)]⟩
+      -- porting note: `simp` needs `map_vadd _` to use `map_vadd`
+      fun p v => by simp [vadd_vadd, add_right_comm, map_vadd _]⟩
   zero_vadd f := ext fun p => zero_vadd _ (f p)
   add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
   vsub f g :=
     ⟨fun p => f p -ᵥ g p, f.linear - g.linear, fun p v => by
-      -- porting note: `simp` can't infer `P1` in `map_vadd` or `P2` in the others
-      simp [map_vadd _ (_ : P1), vsub_vadd_eq_vsub_sub (_ : P2), vadd_vsub_assoc _ (_ : P2),
+      -- porting note: `simp` needs `_` to use these lemmas
+      simp [map_vadd _, vsub_vadd_eq_vsub_sub _, vadd_vsub_assoc _,
         add_sub, sub_add_eq_add_sub]⟩
   vsub_vadd' f g := ext fun p => vsub_vadd (f p) (g p)
   vadd_vsub' f g := ext fun p => vadd_vsub (f p) (g p)
@@ -499,8 +499,8 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
 theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
-  -- porting note: `simp` can't infer the `β` argument to `Set.mem_vsub`
-  simp only [Set.mem_vsub (β := P2), Set.mem_vsub (β := P1), Set.mem_image,
+  -- porting note: `simp` needs a placeholder for the `β` argument to `Set.mem_vsub`
+  simp only [Set.mem_vsub (β := P2), Set.mem_vsub (β := _), Set.mem_image,
     exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
   constructor
   · rintro ⟨x, hx, y, hy, hv⟩
@@ -554,8 +554,8 @@ theorem lineMap_linear (p₀ p₁ : P1) :
 #align affine_map.line_map_linear AffineMap.lineMap_linear
 
 theorem lineMap_same_apply (p : P1) (c : k) : lineMap p p c = p := by
-  -- porting note: `simp` can't infer `P1`
-  simp [lineMap_apply (_ : P1), vsub_self (_ : P1)]
+  -- porting note: `simp` needs a `_` to use these lemmas
+  simp [lineMap_apply _, vsub_self _]
 #align affine_map.line_map_same_apply AffineMap.lineMap_same_apply
 
 @[simp]
@@ -565,14 +565,14 @@ theorem lineMap_same (p : P1) : lineMap p p = const k k p :=
 
 @[simp]
 theorem lineMap_apply_zero (p₀ p₁ : P1) : lineMap p₀ p₁ (0 : k) = p₀ := by
-  -- porting note: `simp` can't infer `P1`
-  simp [lineMap_apply (_ : P1)]
+  -- porting note: `simp` needs a `_` to use these lemmas
+  simp [lineMap_apply _]
 #align affine_map.line_map_apply_zero AffineMap.lineMap_apply_zero
 
 @[simp]
 theorem lineMap_apply_one (p₀ p₁ : P1) : lineMap p₀ p₁ (1 : k) = p₁ := by
-  -- porting note: `simp` can't infer `P1`
-  simp [lineMap_apply (_ : P1), vsub_vadd (_ : P1)]
+  -- porting note: `simp` needs a `_` to use these lemmas
+  simp [lineMap_apply _, vsub_vadd _]
 #align affine_map.line_map_apply_one AffineMap.lineMap_apply_one
 
 @[simp]
@@ -606,9 +606,8 @@ variable {k}
 @[simp]
 theorem apply_lineMap (f : P1 →ᵃ[k] P2) (p₀ p₁ : P1) (c : k) :
     f (lineMap p₀ p₁ c) = lineMap (f p₀) (f p₁) c := by
-  -- porting note: `simp` can't infer `P1` or `P2`
-  simp [lineMap_apply (_ : P1), lineMap_apply (_ : P2), map_vadd _ (_ : P1),
-    linearMap_vsub _ (_ : P1)]
+  -- porting note: `simp` needs a `_` to use these lemmas
+  simp [lineMap_apply _, lineMap_apply _, map_vadd _, linearMap_vsub _]
 #align affine_map.apply_line_map AffineMap.apply_lineMap
 
 @[simp]
@@ -783,10 +782,10 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   left_inv f := by
     ext
     rw [f.decomp]
-    simp
+    simp [const_apply _ _]  -- porting note: `simp` needs `_`s to use these lemmas
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp
+    ext <;> simp [const_apply _ _, const_linear _ _]  -- porting note: `simp` needs `_`s
   map_add' := by simp
   map_smul' := by simp
 #align affine_map.to_const_prod_linear_map AffineMap.toConstProdLinearMap
@@ -800,8 +799,6 @@ section CommRing
 variable [CommRing k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
 
 variable [Module k V1] [Module k V2]
-
-include V1
 
 /-- `homothety c r` is the homothety (also known as dilation) about `c` with scale factor `r`. -/
 def homothety (c : P1) (r : k) : P1 →ᵃ[k] P1 :=
@@ -834,7 +831,7 @@ theorem homothety_apply_same (c : P1) (r : k) : homothety c r c = c :=
 
 theorem homothety_mul_apply (c : P1) (r₁ r₂ : k) (p : P1) :
     homothety c (r₁ * r₂) p = homothety c r₁ (homothety c r₂ p) := by
-  simp [homothety_apply, mul_smul]
+  simp only [homothety_apply, mul_smul, vadd_vsub]
 #align affine_map.homothety_mul_apply AffineMap.homothety_mul_apply
 
 theorem homothety_mul (c : P1) (r₁ r₂ : k) :
@@ -855,8 +852,10 @@ theorem homothety_add (c : P1) (r₁ r₂ : k) :
 #align affine_map.homothety_add AffineMap.homothety_add
 
 /-- `homothety` as a multiplicative monoid homomorphism. -/
-def homothetyHom (c : P1) : k →* P1 →ᵃ[k] P1 :=
-  ⟨homothety c, homothety_one c, homothety_mul c⟩
+def homothetyHom (c : P1) : k →* P1 →ᵃ[k] P1 where
+  toFun := homothety c
+  map_one' := homothety_one c
+  map_mul' := homothety_mul c
 #align affine_map.homothety_hom AffineMap.homothetyHom
 
 @[simp]
@@ -888,7 +887,7 @@ the images. -/
 theorem Convex.combo_affine_apply {x y : E} {a b : 𝕜} {f : E →ᵃ[𝕜] F} (h : a + b = 1) :
     f (a • x + b • y) = a • f x + b • f y := by
   simp only [Convex.combo_eq_smul_sub_add h, ← vsub_eq_sub]
-  exact f.apply_line_map _ _ _
+  exact f.apply_lineMap _ _ _
 #align convex.combo_affine_apply Convex.combo_affine_apply
 
 end
