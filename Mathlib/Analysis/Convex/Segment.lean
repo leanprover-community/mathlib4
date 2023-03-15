@@ -61,13 +61,17 @@ def openSegment (x y : E) : Set E :=
 #align open_segment openSegment
 
 -- mathport name: segment
-scoped[Convex] notation "[" x " -[" 𝕜 "] " y "]" => segment 𝕜 x y
+scoped[Convex] notation "[" x "-[" 𝕜 "]" y "]" => segment 𝕜 x y
+
+theorem foo (x y : E) : [x -[𝕜] y] = ∅ := sorry
 
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } :=
   by simp only [segment, image, Prod.exists, mem_set_of_eq, exists_prop, and_assoc']
 #align segment_eq_image₂ segment_eq_image₂
+
+#exit
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
@@ -435,11 +439,11 @@ theorem segment_subset_Icc (h : x ≤ y) : [x -[𝕜] y] ⊆ Icc x y := by
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
     _ ≤ a • x + b • y := add_le_add_left (smul_le_smul_of_nonneg h hb) _
-    
+
   calc
     a • x + b • y ≤ a • y + b • y := add_le_add_right (smul_le_smul_of_nonneg h ha) _
     _ = y := Convex.combo_self hab _
-    
+
 #align segment_subset_Icc segment_subset_Icc
 
 end OrderedAddCommMonoid
@@ -454,11 +458,11 @@ theorem openSegment_subset_Ioo (h : x < y) : openSegment 𝕜 x y ⊆ Ioo x y :=
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
     _ < a • x + b • y := add_lt_add_left (smul_lt_smul_of_pos h hb) _
-    
+
   calc
     a • x + b • y < a • y + b • y := add_lt_add_right (smul_lt_smul_of_pos h ha) _
     _ = y := Convex.combo_self hab _
-    
+
 #align open_segment_subset_Ioo openSegment_subset_Ioo
 
 end OrderedCancelAddCommMonoid
@@ -684,4 +688,3 @@ theorem image_update_openSegment (i : ι) (x₁ x₂ : π i) (y : ∀ i, π i) :
 #align pi.image_update_open_segment Pi.image_update_openSegment
 
 end Pi
-
