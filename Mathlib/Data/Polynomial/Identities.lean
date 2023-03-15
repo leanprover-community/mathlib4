@@ -67,7 +67,7 @@ private def polyBinomAux1 (x y : R) (e : ℕ) (a : R) :
 private theorem poly_binom_aux2 (f : R[X]) (x y : R) :
     f.eval (x + y) =
       f.sum fun e a => a * (x ^ e + e * x ^ (e - 1) * y + (polyBinomAux1 x y e a).val * y ^ 2) := by
-  unfold eval eval₂; congr with (n z)
+  unfold eval; rw [eval₂_eq_sum]; congr with (n z)
   apply (polyBinomAux1 x y _ _).property
 
 private theorem poly_binom_aux3 (f : R[X]) (x y : R) :
@@ -108,8 +108,8 @@ for some `z` in the ring.
 -/
 def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x - y) } := by
   refine' ⟨f.sum fun i r => r * (powSubPowFactor x y i).val, _⟩
-  delta eval eval₂
-  simp only [Sum, ← Finset.sum_sub_distrib, Finset.sum_mul]
+  delta eval;  rw [eval₂_eq_sum, eval₂_eq_sum];
+  simp only [sum, ← Finset.sum_sub_distrib, Finset.sum_mul]
   dsimp
   congr with (i r)
   rw [mul_assoc, ← (powSubPowFactor x y _).prop, mul_sub]
