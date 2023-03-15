@@ -5,7 +5,6 @@ Authors: Simon Hudon
 Ported by: Heather Macbeth
 -/
 import Mathlib.Lean.Meta
-import Mathlib.Data.List.Defs
 import Mathlib.Data.Array.MinMax
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SolveByElim
@@ -151,10 +150,10 @@ elab_rules : tactic
           | (some (_, goal), _) => pure goal
           | (none, _) => return []
           goal.mono side
-        let newGoals ← List.repeatM [goal] monoAfterSimp
+        let newGoals ← repeatM [goal] monoAfterSimp
         for goal in newGoals do goal.setKind .syntheticOpaque
         replaceMainGoal (newGoals ++ assertedMVarIds.toList)
       else
-        let newGoals ← List.repeatM [goal] (·.mono side)
+        let newGoals ← repeatM [goal] (·.mono side)
         for goal in newGoals do goal.setKind .syntheticOpaque
         replaceMainGoal (newGoals ++ assertedMVarIds.toList)

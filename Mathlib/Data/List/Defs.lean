@@ -616,29 +616,4 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
 
---TODO: add heartbeats?
-/-- Given a function `f` that maps its elements to lists of elements in a monad that supports
-failure, we recursively apply `f` to all elements in an accumulated list of results, starting with
-`init`. If an element leads to a failure, we keep the element and stop evaluating `f` on it; if it
-leads to a success, we collect all produced elements and recurse. This function will run until no
-more progress can be made. -/
-partial def repeatM [Monad m] [MonadExcept ε m] (init : List α) (f : α → m (List α)) :
-    m (List α) := do
-  go #[] init.toArray
-where
-  go (finished : Array α) (continuing : Array α) : m (List α) := do
-    if continuing.isEmpty then
-      pure finished.toList
-    else
-      let (finished, continuing) ←
-        continuing.foldlM
-          (fun (fin, con) a => do
-            try
-              let c ← f a
-              pure (fin, con.appendList c)
-            catch _ =>
-              pure (fin.push a, con))
-          (finished, #[])
-      go finished continuing
-
 end List
