@@ -226,7 +226,7 @@ variable {n : ℕ} {α : Type u}
 
 @[simp]
 theorem toList_toArray (a : Array' n α) : HEq a.toList.toArray a :=
-  hEq_of_hEq_of_eq
+  heq_of_heq_of_eq
       (@Eq.drecOn
         (fun m (e : a.toList.length = m) ↦
           HEq (DArray.mk fun v ↦ a.toList.get v.1 v.2)
