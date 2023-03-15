@@ -21,9 +21,9 @@ The definition is stated for a semiring, but the actual results are for nontrivi
 (for prime characteristic).
 
 ## Main results
-- `exp_char`: the definition of exponential characteristic
-- `exp_char_is_prime_or_one`: the exponential characteristic is a prime or one
-- `char_eq_exp_char_iff`: the characteristic equals the exponential characteristic iff the
+- `ExpChar`: the definition of exponential characteristic
+- `expChar_is_prime_or_one`: the exponential characteristic is a prime or one
+- `char_eq_expChar_iff`: the characteristic equals the exponential characteristic iff the
   characteristic is prime
 
 ## Tags
@@ -41,20 +41,20 @@ variable [Semiring R]
 
 /-- The definition of the exponential characteristic of a semiring. -/
 class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
-  | zero [CharZero R] : ExpChar 1
-  | Prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar q
+  | zero [CharZero R] : ExpChar R 1
+  | Prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar R q
 #align exp_char ExpChar
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
 theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
-  cases' hq with q hq_one hq_prime
+  cases' hq with q hq_one hq_prime hq_hchar
   · rfl
-  · exact False.elim (lt_irrefl _ ((hp.eq R hq_hchar).symm ▸ hq_prime : (0 : ℕ).Prime).Pos)
+  · exact False.elim (lt_irrefl _ ((hp.eq R hq_hchar).symm ▸ hq_prime : (0 : ℕ).Prime).pos)
 #align exp_char_one_of_char_zero expChar_one_of_char_zero
 
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
 theorem char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime := by
-  cases' hq with q hq_one hq_prime
+  cases' hq with q hq_one hq_prime hq_hchar
   · apply iff_of_false
     · rintro rfl
       exact one_ne_zero (hp.eq R (CharP.ofCharZero R))
@@ -103,10 +103,12 @@ theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) :
   · contradiction
 #align char_prime_of_ne_zero char_prime_of_ne_zero
 
+instance : CharP R p :=
+  inferInstance
+
 /-- The exponential characteristic is a prime number or one. -/
 theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 :=
-  or_iff_not_imp_right.mpr fun h =>
-    by
+  or_iff_not_imp_right.mpr fun h => by
     cases' CharP.exists R with p hp
     have p_ne_zero : p ≠ 0 := by
       intro p_zero
@@ -124,4 +126,3 @@ end NoZeroDivisors
 end Nontrivial
 
 end Semiring
-
