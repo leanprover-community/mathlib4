@@ -64,8 +64,8 @@ theorem mul_toSubmodule {R : Type _} {A : Type _} [CommSemiring R] [CommSemiring
   · rw [← one_mul (algebraMap _ _ _)]
     exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) (algebraMap_mem _ _)
   have := Submodule.mul_mem_mul hx hy
-  rwa [mul_assoc, mul_comm _ (Subalgebra.toSubmodule T), ← mul_assoc _ _ (Subalgebra.toSubmodule S), mul_self,
-    mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this
+  rwa [mul_assoc, mul_comm _ (Subalgebra.toSubmodule T), ← mul_assoc _ _ (Subalgebra.toSubmodule S),
+    mul_self, mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this
 #align subalgebra.mul_to_submodule Subalgebra.mul_toSubmodule
 
 variable {R' : Type _} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R A]
