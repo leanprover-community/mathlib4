@@ -514,8 +514,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   -- TODO: could cast from int directly if we import `data.zmod.defs`, though there are few lemmas
   -- about that coercion.
   toFun a := (a / n, ↑(a.natMod n))
-  -- porting note: need explicit `Nat.cast` else we get `Int.ofNat` as the coercion instead.
-  invFun p := p.1 * n + Nat.cast ↑p.2
+  invFun p := p.1 * n + ↑p.2
   left_inv a := by
     simp_rw [Fin.coe_ofNat_eq_mod, Int.coe_nat_mod, Int.natMod,
       Int.toNat_of_nonneg (Int.emod_nonneg _ <| NeZero.ne ↑n), Int.emod_emod,
