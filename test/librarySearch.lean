@@ -92,7 +92,6 @@ example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by libr
 -- Note: these examples no longer work after we turned off lemmas with discrimination key `#[*]`.
 -- example {α : Sort u} (h : Empty) : α := by library_search -- says `exact Empty.elim h`
 -- example (f : A → C) (g : B → C) : (A ⊕ B) → C := by library_search -- says `exact Sum.elim f g`
--- example (n : ℕ) : ¬ n = 0 → n ≥ 1 := by library_search -- `exact nat.pos_of_ne_zero`
 -- example (n : ℕ) (r : ℚ) : ℚ := by library_search using n, r -- exact nsmulRec n r
 
 opaque f : ℕ → ℕ
