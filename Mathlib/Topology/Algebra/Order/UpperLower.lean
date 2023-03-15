@@ -18,11 +18,10 @@ The topological closure and interior of an upper/lower/order-connected set is an
 upper/lower/order-connected set (with the notable exception of the closure of an order-connected
 set).
 
-## Notes
+## Implementation notes
 
-The lemmas don't mention additive/multiplicative operations. As a result, we decide to prime the
-multiplicative lemma names to indicate that there is probably a common generalisation to each pair
-of additive/multiplicative lemma.
+The same lemmas are true in the additive/multiplicative worlds. To avoid code duplication, we
+provide `has_upper_lower_closure`, an ad hoc axiomatisation of the properties we need.
 -/
 
 
