@@ -88,18 +88,13 @@ theorem abs_neg (a : α) : |(-a)| = |a| := by rw [abs_eq_max_neg, max_comm, neg_
 #align abs_neg abs_neg
 
 theorem eq_or_eq_neg_of_abs_eq {a b : α} (h : |a| = b) : a = b ∨ a = -b := by
-  rw [← h, eq_comm, eq_comm (b := -_), neg_eq_iff_eq_neg]
-  exact abs_choice a
-  -- simpa only [← h, eq_comm, neg_eq_iff_eq_neg] using abs_choice a
+  simpa only [← h, eq_comm (a := |a|), neg_eq_iff_eq_neg] using abs_choice a
 #align eq_or_eq_neg_of_abs_eq eq_or_eq_neg_of_abs_eq
 
 theorem abs_eq_abs {a b : α} : |a| = |b| ↔ a = b ∨ a = -b := by
   refine' ⟨fun h => _, fun h => _⟩
-  · obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h --<;>
-    . exact abs_choice b
-    . rw [neg_eq_iff_eq_neg, neg_inj, or_comm]
-      exact abs_choice b
-    -- simpa only [neg_eq_iff_eq_neg, neg_inj, or_comm] using abs_choice b
+  · obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h <;>
+      simpa only [neg_eq_iff_eq_neg (a := |b|), neg_inj, or_comm] using abs_choice b
   · cases' h with h h <;>
     simp [h, abs_neg]
 #align abs_eq_abs abs_eq_abs
