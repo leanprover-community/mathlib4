@@ -8,7 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.Basic
 
 /-!
 ## Counit morphisms for multivariate polynomials
