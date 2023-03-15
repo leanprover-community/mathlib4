@@ -8,8 +8,8 @@ Authors: Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Parity
-import Mathbin.Data.Zmod.Basic
+import Mathlib.Data.Nat.Parity
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Relating parity to natural numbers mod 2
@@ -28,8 +28,7 @@ theorem eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
   (CharP.cast_eq_zero_iff (ZMod 2) 2 n).trans even_iff_two_dvd.symm
 #align zmod.eq_zero_iff_even ZMod.eq_zero_iff_even
 
-theorem eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n :=
-  by
+theorem eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n := by
   rw [← @Nat.cast_one (ZMod 2), ZMod.eq_iff_modEq_nat, Nat.odd_iff, Nat.ModEq]
   norm_num
 #align zmod.eq_one_iff_odd ZMod.eq_one_iff_odd
