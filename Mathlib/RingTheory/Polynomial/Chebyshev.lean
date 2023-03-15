@@ -125,17 +125,8 @@ theorem U_of_two_le (n : ℕ) (h : 2 ≤ n) : U R n = 2 * X * U R (n - 1) - U R 
 #align polynomial.chebyshev.U_of_two_le Polynomial.Chebyshev.U_of_two_le
 
 theorem U_eq_X_mul_U_add_T : ∀ n : ℕ, U R (n + 1) = X * U R n + T R (n + 1)
-  | 0 => by
-    simp only [U_zero, U_one, T_one]
-    ring_nf
-    simp only [U_one, T_one]
-    ring
-  | 1 => by
-    simp only [U_one, T_two]
-    rw [U_two]
-    ring_nf
-    rw [T_two]
-    ring
+  | 0 => by simp only [T, U, two_mul, mul_one]
+  | 1 => by simp only [T, U]; ring
   | n + 2 =>
     calc
       U R (n + 2 + 1) = 2 * X * (X * U R (n + 1) + T R (n + 2)) - (X * U R n + T R (n + 1)) := by
@@ -149,16 +140,8 @@ theorem T_eq_U_sub_X_mul_U (n : ℕ) : T R (n + 1) = U R (n + 1) - X * U R n := 
 #align polynomial.chebyshev.T_eq_U_sub_X_mul_U Polynomial.Chebyshev.T_eq_U_sub_X_mul_U
 
 theorem T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1 - X ^ 2) * U R n
-  | 0 => by
-    simp only [T_one, T_two, U_zero]
-    ring_nf
-    simp only [T_one, T_two]
-    ring
-  | 1 => by
-    simp only [T_add_two, T_zero, T_add_two, U_one, T_one]
-    ring_nf
-    simp only [T_one]
-    ring
+  | 0 => by simp only [T, U]; ring
+  | 1 => by simp only [T, U]; ring
   | n + 2 =>
     calc
       T R (n + 2 + 2) = 2 * X * T R (n + 2 + 1) - T R (n + 2) := T_add_two _ _
@@ -182,13 +165,8 @@ theorem map_T (f : R →+* S) : ∀ n : ℕ, map f (T R n) = T S n
   | 0 => by simp only [T_zero, Polynomial.map_one]
   | 1 => by simp only [T_one, map_X]
   | n + 2 => by
-    have : (1 : R[X]) + 1 = 2 := by
-      norm_num
-    simp only [T_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X]
-    rw [← this]
-    simp only [Polynomial.map_add, Polynomial.map_one]
-    rw [map_T f (n + 1), map_T f n]
-    norm_num
+    simp only [T_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, Polynomial.map_add,
+      Polynomial.map_one, Polynomial.map_ofNat, map_T f (n + 1), map_T f n]
 #align polynomial.chebyshev.map_T Polynomial.Chebyshev.map_T
 
 @[simp]

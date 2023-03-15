@@ -746,6 +746,7 @@ def mapRingHom (f : R →+* S) : R[X] →+* S[X] where
   map_one' := Polynomial.map_one f
 #align polynomial.map_ring_hom Polynomial.mapRingHom
 
+
 @[simp]
 theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
   rfl
@@ -756,6 +757,11 @@ theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
 protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
 #align polynomial.map_nat_cast Polynomial.map_nat_cast
+
+--Porting note: new theorem
+@[simp]
+protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R[X]).map f = OfNat.ofNat n :=
+  show (n : R[X]).map f = n by rw [Polynomial.map_nat_cast]
 
 set_option linter.deprecated false in
 @[simp]
