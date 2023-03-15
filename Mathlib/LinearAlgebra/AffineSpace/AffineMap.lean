@@ -3,7 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 
-! This file was ported from Lean 3 source module linear_algebra.affine_space.affine_map
+! This file was ported from Lean 3 source module linear_algebra.AffineSpace.affine_map
 ! leanprover-community/mathlib commit bd1fc183335ea95a9519a1630bcf901fe9326d83
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
@@ -42,45 +42,45 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
 
 ## References
 
-* https://en.wikipedia.org/wiki/Affine_space
+* https://en.wikipedia.org/wiki/AffineSpace
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
 
 
 open Affine
 
+-- Porting note: Workaround for lean4#2074
+attribute [-instance] Ring.toNonAssocRing in
+
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
 structure AffineMap (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _) [Ring k]
-  [AddCommGroup V1] [Module k V1] [affine_space V1 P1] [AddCommGroup V2] [Module k V2]
-  [affine_space V2 P2] where
+  [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+  [AffineSpace V2 P2] where
   toFun : P1 → P2
   linear : V1 →ₗ[k] V2
   map_vadd' : ∀ (p : P1) (v : V1), toFun (v +ᵥ p) = linear v +ᵥ toFun p
 #align affine_map AffineMap
-
-end defn
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
 instance AffineMap.funLike (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _)
-    [Ring k] [AddCommGroup V1] [Module k V1] [affine_space V1 P1] [AddCommGroup V2] [Module k V2]
-    [affine_space V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 fun _ => P2
+    [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 fun _ => P2
     where
   coe := AffineMap.toFun
-  coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ (h : f = g) =>
-    by
-    cases' (AddTorsor.nonempty : Nonempty P1) with p
+  coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
+    cases' (AddTorsor.Nonempty : Nonempty P1) with p
     congr with v
     apply vadd_right_cancel (f p)
     erw [← f_add, h, ← g_add]
 #align affine_map.fun_like AffineMap.funLike
 
 instance AffineMap.hasCoeToFun (k : Type _) {V1 : Type _} (P1 : Type _) {V2 : Type _} (P2 : Type _)
-    [Ring k] [AddCommGroup V1] [Module k V1] [affine_space V1 P1] [AddCommGroup V2] [Module k V2]
-    [affine_space V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
+    [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
+    [AffineSpace V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
   FunLike.hasCoeToFun
 #align affine_map.has_coe_to_fun AffineMap.hasCoeToFun
 
@@ -115,10 +115,8 @@ namespace AffineMap
 
 variable {k : Type _} {V1 : Type _} {P1 : Type _} {V2 : Type _} {P2 : Type _} {V3 : Type _}
   {P3 : Type _} {V4 : Type _} {P4 : Type _} [Ring k] [AddCommGroup V1] [Module k V1]
-  [affine_space V1 P1] [AddCommGroup V2] [Module k V2] [affine_space V2 P2] [AddCommGroup V3]
-  [Module k V3] [affine_space V3 P3] [AddCommGroup V4] [Module k V4] [affine_space V4 P4]
-
-include V1 V2
+  [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2] [AffineSpace V2 P2] [AddCommGroup V3]
+  [Module k V3] [AffineSpace V3 P3] [AddCommGroup V4] [Module k V4] [AffineSpace V4 P4]
 
 /-- Constructing an affine map and coercing back to a function
 produces the same map. -/
@@ -156,10 +154,10 @@ theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g :=
 #align affine_map.ext AffineMap.ext
 
 theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
-  ⟨fun h p => h ▸ rfl, ext⟩
+  ⟨fun h _ => h ▸ rfl, ext⟩
 #align affine_map.ext_iff AffineMap.ext_iff
 
-theorem coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) coeFn :=
+theorem coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) (⇑) :=
   FunLike.coe_injective
 #align affine_map.coe_fn_injective AffineMap.coeFn_injective
 
@@ -212,6 +210,8 @@ instance nonempty : Nonempty (P1 →ᵃ[k] P2) :=
   (AddTorsor.Nonempty : Nonempty P2).elim fun p => ⟨const k P1 p⟩
 #align affine_map.nonempty AffineMap.nonempty
 
+-- Porting note: Workaround for lean4#2074
+attribute [-instance] Ring.toNonAssocRing in
 /-- Construct an affine map by verifying the relation between the map and its linear part at one
 base point. Namely, this function takes a map `f : P₁ → P₂`, a linear map `f' : V₁ →ₗ[k] V₂`, and
 a point `p` such that for any other point `p'` we have `f p' = f' (p' -ᵥ p) +ᵥ f p`. -/
@@ -237,14 +237,14 @@ section SMul
 variable {R : Type _} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
-instance : MulAction R (P1 →ᵃ[k] V2)
-    where
-  smul c f := ⟨c • f, c • f.linear, fun p v => by simp [smul_add]⟩
+instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
+  -- porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
+  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
   one_smul f := ext fun p => one_smul _ _
   mul_smul c₁ c₂ f := ext fun p => mul_smul _ _ _
 
 @[simp, norm_cast]
-theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • f :=
+theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align affine_map.coe_smul AffineMap.coe_smul
 
@@ -315,7 +315,7 @@ instance : AddCommGroup (P1 →ᵃ[k] V2) :=
 
 /-- The space of affine maps from `P1` to `P2` is an affine space over the space of affine maps
 from `P1` to the vector space `V2` corresponding to `P2`. -/
-instance : affine_space (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2)
+instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2)
     where
   vadd f g :=
     ⟨fun p => f p +ᵥ g p, f.linear + g.linear, fun p v => by simp [vadd_vadd, add_right_comm]⟩
@@ -675,7 +675,7 @@ theorem lineMap_vadd_lineMap (v₁ v₂ : V1) (p₁ p₂ : P1) (c : k) :
 theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
     lineMap p₁ p₂ c -ᵥ lineMap p₃ p₄ c = lineMap (p₁ -ᵥ p₃) (p₂ -ᵥ p₄) c :=
   letI-- Why Lean fails to find this instance without a hint?
-   : affine_space (V1 × V1) (P1 × P1) := Prod.addTorsor
+   : AffineSpace (V1 × V1) (P1 × P1) := Prod.addTorsor
   ((fst : P1 × P1 →ᵃ[k] P1) -ᵥ (snd : P1 × P1 →ᵃ[k] P1)).apply_lineMap (_, _) (_, _) c
 #align affine_map.line_map_vsub_line_map AffineMap.lineMap_vsub_lineMap
 
@@ -749,7 +749,7 @@ variable {R k V1 P1 V2 : Type _}
 
 section Ring
 
-variable [Ring k] [AddCommGroup V1] [affine_space V1 P1] [AddCommGroup V2]
+variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
 
 variable [Module k V1] [Module k V2]
 
@@ -815,7 +815,7 @@ end Ring
 
 section CommRing
 
-variable [CommRing k] [AddCommGroup V1] [affine_space V1 P1] [AddCommGroup V2]
+variable [CommRing k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
 
 variable [Module k V1] [Module k V2]
 
