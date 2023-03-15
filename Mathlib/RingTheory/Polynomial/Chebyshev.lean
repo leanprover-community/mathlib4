@@ -343,7 +343,8 @@ theorem mul_T : ∀ m k, 2 * T R m * T R (m + k) = T R (2 * m + k) + T R k
       simpa [h_nat₁, h_nat₂] using mul_T m (k + 2)
     -- state the `T` recurrence relation for a few useful indices
     have h₁ := T_add_two R m
-    have h₂ := T_add_two R (2 * m + k + 2)
+    have h₂ : T R (2 * m + k + 4) = 2 * X * T R (2 * m + k + 3) - T R (2 * m + k + 2) :=
+      T_add_two R (2 * m + k + 2)
     have h₃ := T_add_two R k
     -- the desired identity is an appropriate linear combination of H₁, H₂, h₁, h₂, h₃
     linear_combination 2 * T R (m + k + 2) * h₁ + 2 * (X : R[X]) * H₁ - H₂ - h₂ - h₃
@@ -358,7 +359,11 @@ theorem T_mul : ∀ m n, T R (m * n) = (T R m).comp (T R n)
     intro n
     have : 2 * T R n * T R ((m + 1) * n) = T R ((m + 2) * n) + T R (m * n) := by
       convert mul_T R n (m * n) <;> ring
-    simp [this, T_mul m, ← T_mul (m + 1)]
+    -- porting note: original proof was `simp [this, T_mul m, ← T_mul (m + 1)]`
+    rw [T_add_two, sub_comp, ← T_mul m, mul_comp, ← T_mul (m + 1), mul_X_comp,
+      ← sub_eq_iff_eq_add.2 this]
+    congr
+    sorry
 set_option linter.uppercaseLean3 false in
 #align polynomial.chebyshev.T_mul Polynomial.Chebyshev.T_mul
 
