@@ -460,7 +460,7 @@ theorem coe_one : ⇑(1 : P1 →ᵃ[k] P1) = _root_.id :=
   rfl
 #align affine_map.coe_one AffineMap.coe_one
 
-/-- `affine_map.linear` on endomorphisms is a `MonoidHom`. -/
+/-- `AffineMap.linear` on endomorphisms is a `MonoidHom`. -/
 @[simps]
 def linearHom : (P1 →ᵃ[k] P1) →* V1 →ₗ[k] V1 where
   toFun := linear
