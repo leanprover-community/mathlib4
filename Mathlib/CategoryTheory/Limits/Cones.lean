@@ -157,7 +157,7 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
 structure Cocone (F : J ⥤ C) where
   /-- An object of `C` -/
   pt : C
-  /-- A natural transformation from `F` to the constant functor at `X` -/
+  /-- A natural transformation from `F` to the constant functor at `pt` -/
   ι : F ⟶ (const J).obj pt
 #align category_theory.limits.cocone CategoryTheory.Limits.Cocone
 set_option linter.uppercaseLean3 false in
@@ -274,8 +274,7 @@ def extend (c : Cocone F) {Y : C} (f : c.pt ⟶ Y) : Cocone F where
 version.
 -/
 @[simps]
-def whisker (E : K ⥤ J) (c : Cocone F) : Cocone (E ⋙ F)
-    where
+def whisker (E : K ⥤ J) (c : Cocone F) : Cocone (E ⋙ F) where
   pt := c.pt
   ι := whiskerLeft E c.ι
 #align category_theory.limits.cocone.whisker CategoryTheory.Limits.Cocone.whisker
@@ -339,8 +338,7 @@ theorem cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIs
 Functorially postcompose a cone for `F` by a natural transformation `F ⟶ G` to give a cone for `G`.
 -/
 @[simps]
-def postcompose {G : J ⥤ C} (α : F ⟶ G) : Cone F ⥤ Cone G
-    where
+def postcompose {G : J ⥤ C} (α : F ⟶ G) : Cone F ⥤ Cone G where
   obj c :=
     { pt := c.pt
       π := c.π ≫ α }
@@ -365,8 +363,7 @@ def postcomposeId : postcompose (𝟙 F) ≅ 𝟭 (Cone F) :=
 cones.
 -/
 @[simps]
-def postcomposeEquivalence {G : J ⥤ C} (α : F ≅ G) : Cone F ≌ Cone G
-    where
+def postcomposeEquivalence {G : J ⥤ C} (α : F ≅ G) : Cone F ≌ Cone G where
   functor := postcompose α.hom
   inverse := postcompose α.inv
   unitIso := NatIso.ofComponents (fun s => Cones.ext (Iso.refl _) (by aesop_cat)) (by aesop_cat)
@@ -376,8 +373,7 @@ def postcomposeEquivalence {G : J ⥤ C} (α : F ≅ G) : Cone F ≌ Cone G
 /-- Whiskering on the left by `E : K ⥤ J` gives a functor from `Cone F` to `Cone (E ⋙ F)`.
 -/
 @[simps]
-def whiskering (E : K ⥤ J) : Cone F ⥤ Cone (E ⋙ F)
-    where
+def whiskering (E : K ⥤ J) : Cone F ⥤ Cone (E ⋙ F) where
   obj c := c.whisker E
   map f := { Hom := f.Hom }
 #align category_theory.limits.cones.whiskering CategoryTheory.Limits.Cones.whiskering
@@ -385,8 +381,7 @@ def whiskering (E : K ⥤ J) : Cone F ⥤ Cone (E ⋙ F)
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
 @[simps]
-def whiskeringEquivalence (e : K ≌ J) : Cone F ≌ Cone (e.functor ⋙ F)
-    where
+def whiskeringEquivalence (e : K ≌ J) : Cone F ≌ Cone (e.functor ⋙ F) where
   functor := whiskering e.functor
   inverse := whiskering e.inverse ⋙ postcompose (e.invFunIdAssoc F).hom
   unitIso := NatIso.ofComponents (fun s => Cones.ext (Iso.refl _) (by aesop_cat)) (by aesop_cat)
@@ -572,8 +567,7 @@ def precomposeEquivalence {G : J ⥤ C} (α : G ≅ F) : Cocone F ≌ Cocone G w
 /-- Whiskering on the left by `E : K ⥤ J` gives a functor from `Cocone F` to `Cocone (E ⋙ F)`.
 -/
 @[simps]
-def whiskering (E : K ⥤ J) : Cocone F ⥤ Cocone (E ⋙ F)
-    where
+def whiskering (E : K ⥤ J) : Cocone F ⥤ Cocone (E ⋙ F) where
   obj c := c.whisker E
   map f := { Hom := f.Hom }
 #align category_theory.limits.cocones.whiskering CategoryTheory.Limits.Cocones.whiskering
@@ -581,8 +575,7 @@ def whiskering (E : K ⥤ J) : Cocone F ⥤ Cocone (E ⋙ F)
 /-- Whiskering by an equivalence gives an equivalence between categories of cones.
 -/
 @[simps]
-def whiskeringEquivalence (e : K ≌ J) : Cocone F ≌ Cocone (e.functor ⋙ F)
-    where
+def whiskeringEquivalence (e : K ≌ J) : Cocone F ≌ Cocone (e.functor ⋙ F) where
   functor := whiskering e.functor
   inverse :=
     whiskering e.inverse ⋙
@@ -902,8 +895,7 @@ variable (F)
 is equivalent to the opposite category of
 the category of cones on the opposite of `F`.
 -/
-def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ
-    where
+def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   functor :=
     { obj := fun c => op (Cocone.op c)
       map := fun {X} {Y} f =>
@@ -971,16 +963,14 @@ and replace with `@[simps]`-/
 -- as we can write a simpler `rfl` lemma for the components of the natural transformation by hand.
 /-- Change a cocone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
 @[simps!]
-def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F
-    where
+def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F where
   pt := op c.pt
   π := NatTrans.removeLeftOp c.ι
 #align category_theory.limits.cone_of_cocone_left_op CategoryTheory.Limits.coneOfCoconeLeftOp
 
 /-- Change a cone on `F : J ⥤ Cᵒᵖ` to a cocone on `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps!]
-def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp
-    where
+def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp where
   pt := unop c.pt
   ι := NatTrans.leftOp c.π
 #align category_theory.limits.cocone_left_op_of_cone CategoryTheory.Limits.coconeLeftOpOfCone
@@ -990,8 +980,7 @@ def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp
   being simplified properly. -/
 /-- Change a cone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
 @[simps pt]
-def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F
-    where
+def coconeOfConeLeftOp (c : Cone F.leftOp) : Cocone F where
   pt := op c.pt
   ι := NatTrans.removeLeftOp c.π
 #align category_theory.limits.cocone_of_cone_left_op CategoryTheory.Limits.coconeOfConeLeftOp
@@ -1005,8 +994,7 @@ theorem coconeOfConeLeftOp_ι_app (c : Cone F.leftOp) (j) :
 
 /-- Change a cocone on `F : J ⥤ Cᵒᵖ` to a cone on `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps!]
-def coneLeftOpOfCocone (c : Cocone F) : Cone F.leftOp
-    where
+def coneLeftOpOfCocone (c : Cocone F) : Cone F.leftOp where
   pt := unop c.pt
   π := NatTrans.leftOp c.ι
 #align category_theory.limits.cone_left_op_of_cocone CategoryTheory.Limits.coneLeftOpOfCocone
@@ -1019,32 +1007,28 @@ variable {F : Jᵒᵖ ⥤ C}
 
 /-- Change a cocone on `F.rightOp : J ⥤ Cᵒᵖ` to a cone on `F : Jᵒᵖ ⥤ C`. -/
 @[simps]
-def coneOfCoconeRightOp (c : Cocone F.rightOp) : Cone F
-    where
+def coneOfCoconeRightOp (c : Cocone F.rightOp) : Cone F where
   pt := unop c.pt
   π := NatTrans.removeRightOp c.ι
 #align category_theory.limits.cone_of_cocone_right_op CategoryTheory.Limits.coneOfCoconeRightOp
 
 /-- Change a cone on `F : Jᵒᵖ ⥤ C` to a cocone on `F.rightOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
-def coconeRightOpOfCone (c : Cone F) : Cocone F.rightOp
-    where
+def coconeRightOpOfCone (c : Cone F) : Cocone F.rightOp where
   pt := op c.pt
   ι := NatTrans.rightOp c.π
 #align category_theory.limits.cocone_right_op_of_cone CategoryTheory.Limits.coconeRightOpOfCone
 
 /-- Change a cone on `F.rightOp : J ⥤ Cᵒᵖ` to a cocone on `F : Jᵒᵖ ⥤ C`. -/
 @[simps]
-def coconeOfConeRightOp (c : Cone F.rightOp) : Cocone F
-    where
+def coconeOfConeRightOp (c : Cone F.rightOp) : Cocone F where
   pt := unop c.pt
   ι := NatTrans.removeRightOp c.π
 #align category_theory.limits.cocone_of_cone_right_op CategoryTheory.Limits.coconeOfConeRightOp
 
 /-- Change a cocone on `F : Jᵒᵖ ⥤ C` to a cone on `F.rightOp : J ⥤ Cᵒᵖ`. -/
 @[simps]
-def coneRightOpOfCocone (c : Cocone F) : Cone F.rightOp
-    where
+def coneRightOpOfCocone (c : Cocone F) : Cone F.rightOp where
   pt := op c.pt
   π := NatTrans.rightOp c.ι
 #align category_theory.limits.cone_right_op_of_cocone CategoryTheory.Limits.coneRightOpOfCocone
@@ -1057,32 +1041,28 @@ variable {F : Jᵒᵖ ⥤ Cᵒᵖ}
 
 /-- Change a cocone on `F.unop : J ⥤ C` into a cone on `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
 @[simps]
-def coneOfCoconeUnop (c : Cocone F.unop) : Cone F
-    where
+def coneOfCoconeUnop (c : Cocone F.unop) : Cone F where
   pt := op c.pt
   π := NatTrans.removeUnop c.ι
 #align category_theory.limits.cone_of_cocone_unop CategoryTheory.Limits.coneOfCoconeUnop
 
 /-- Change a cone on `F : Jᵒᵖ ⥤ Cᵒᵖ` into a cocone on `F.unop : J ⥤ C`. -/
 @[simps]
-def coconeUnopOfCone (c : Cone F) : Cocone F.unop
-    where
+def coconeUnopOfCone (c : Cone F) : Cocone F.unop where
   pt := unop c.pt
   ι := NatTrans.unop c.π
 #align category_theory.limits.cocone_unop_of_cone CategoryTheory.Limits.coconeUnopOfCone
 
 /-- Change a cone on `F.unop : J ⥤ C` into a cocone on `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
 @[simps]
-def coconeOfConeUnop (c : Cone F.unop) : Cocone F
-    where
+def coconeOfConeUnop (c : Cone F.unop) : Cocone F where
   pt := op c.pt
   ι := NatTrans.removeUnop c.π
 #align category_theory.limits.cocone_of_cone_unop CategoryTheory.Limits.coconeOfConeUnop
 
 /-- Change a cocone on `F : Jᵒᵖ ⥤ Cᵒᵖ` into a cone on `F.unop : J ⥤ C`. -/
 @[simps]
-def coneUnopOfCocone (c : Cocone F) : Cone F.unop
-    where
+def coneUnopOfCocone (c : Cocone F) : Cone F.unop where
   pt := unop c.pt
   π := NatTrans.unop c.ι
 #align category_theory.limits.cone_unop_of_cocone CategoryTheory.Limits.coneUnopOfCocone

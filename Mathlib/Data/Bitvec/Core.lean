@@ -78,7 +78,7 @@ bitvector. -/
 def fillShr (x : Bitvec n) (i : ℕ) (fill : Bool) : Bitvec n :=
   Bitvec.cong
       (by
-        by_cases i ≤ n
+        by_cases h : i ≤ n
         · have h₁ := Nat.sub_le n i
           rw [min_eq_right h]
           rw [min_eq_left h₁, ← add_tsub_assoc_of_le h, Nat.add_comm, add_tsub_cancel_right]

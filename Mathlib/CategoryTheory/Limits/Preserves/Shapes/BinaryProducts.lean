@@ -45,7 +45,7 @@ The map of a binary fan is a limit iff the fork consisting of the mapped morphis
 essentially lets us commute `BinaryFan.mk` with `Functor.mapCone`.
 -/
 def isLimitMapConeBinaryFanEquiv :
-    IsLimit (Functor.mapCone G (BinaryFan.mk f g)) ≃ IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
+    IsLimit (G.mapCone (BinaryFan.mk f g)) ≃ IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
   (IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm.trans
     (IsLimit.equivIsoLimit
       (Cones.ext (Iso.refl _)
@@ -116,8 +116,8 @@ the cofork consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `BinaryCofan.mk` with `Functor.mapCocone`.
 -/
 def isColimitMapCoconeBinaryCofanEquiv :
-    IsColimit (Functor.mapCocone G (BinaryCofan.mk f g)) 
-    ≃ IsColimit (BinaryCofan.mk (G.map f) (G.map g)) := 
+    IsColimit (Functor.mapCocone G (BinaryCofan.mk f g))
+    ≃ IsColimit (BinaryCofan.mk (G.map f) (G.map g)) :=
   (IsColimit.precomposeHomEquiv (diagramIsoPair _).symm _).symm.trans
     (IsColimit.equivIsoColimit
       (Cocones.ext (Iso.refl _)
@@ -183,4 +183,3 @@ instance : IsIso (coprodComparison G X Y) := by
 end
 
 end CategoryTheory.Limits
-

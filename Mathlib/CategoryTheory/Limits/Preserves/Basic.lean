@@ -57,14 +57,14 @@ variable {J : Type w} [Category.{w'} J] {K : J ⥤ C}
 if `F` maps any limit cone over `K` to a limit cone.
 -/
 class PreservesLimit (K : J ⥤ C) (F : C ⥤ D) where
-  preserves : ∀ {c : Cone K}, IsLimit c → IsLimit (Functor.mapCone F c)
+  preserves : ∀ {c : Cone K}, IsLimit c → IsLimit (F.mapCone c)
 #align category_theory.limits.preserves_limit CategoryTheory.Limits.PreservesLimit
 
 /-- A functor `F` preserves colimits of `K` (written as `PreservesColimit K F`)
 if `F` maps any colimit cocone over `K` to a colimit cocone.
 -/
 class PreservesColimit (K : J ⥤ C) (F : C ⥤ D) where
-  preserves : ∀ {c : Cocone K}, IsColimit c → IsColimit (Functor.mapCocone F c)
+  preserves : ∀ {c : Cocone K}, IsColimit c → IsColimit (F.mapCocone c)
 #align category_theory.limits.preserves_colimit CategoryTheory.Limits.PreservesColimit
 
 /-- We say that `F` preserves limits of shape `J` if `F` preserves limits for every diagram
@@ -123,7 +123,7 @@ attribute [instance]
 guide typeclass resolution.
 -/
 def isLimitOfPreserves (F : C ⥤ D) {c : Cone K} (t : IsLimit c) [PreservesLimit K F] :
-    IsLimit (Functor.mapCone F c) :=
+    IsLimit (F.mapCone c) :=
   PreservesLimit.preserves t
 #align category_theory.limits.is_limit_of_preserves CategoryTheory.Limits.isLimitOfPreserves
 
@@ -132,7 +132,7 @@ A convenience function for `PreservesColimit`, which takes the functor as an exp
 guide typeclass resolution.
 -/
 def isColimitOfPreserves (F : C ⥤ D) {c : Cocone K} (t : IsColimit c) [PreservesColimit K F] :
-    IsColimit (Functor.mapCocone F c) :=
+    IsColimit (F.mapCocone c) :=
   PreservesColimit.preserves t
 #align category_theory.limits.is_colimit_of_preserves CategoryTheory.Limits.isColimitOfPreserves
 
@@ -229,7 +229,7 @@ end
 /-- If F preserves one limit cone for the diagram K,
   then it preserves any limit cone for K. -/
 def preservesLimitOfPreservesLimitCone {F : C ⥤ D} {t : Cone K} (h : IsLimit t)
-    (hF : IsLimit (Functor.mapCone F t)) : PreservesLimit K F :=
+    (hF : IsLimit (F.mapCone t)) : PreservesLimit K F :=
   ⟨fun h' => IsLimit.ofIsoLimit hF (Functor.mapIso _ (IsLimit.uniqueUpToIso h h'))⟩
 #align category_theory.limits.preserves_limit_of_preserves_limit_cone CategoryTheory.Limits.preservesLimitOfPreservesLimitCone
 
@@ -293,7 +293,7 @@ def preservesSmallestLimitsOfPreservesLimits (F : C ⥤ D) [PreservesLimitsOfSiz
 /-- If F preserves one colimit cocone for the diagram K,
   then it preserves any colimit cocone for K. -/
 def preservesColimitOfPreservesColimitCocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t)
-    (hF : IsColimit (Functor.mapCocone F t)) : PreservesColimit K F :=
+    (hF : IsColimit (F.mapCocone t)) : PreservesColimit K F :=
   ⟨fun h' => IsColimit.ofIsoColimit hF (Functor.mapIso _ (IsColimit.uniqueUpToIso h h'))⟩
 #align category_theory.limits.preserves_colimit_of_preserves_colimit_cocone CategoryTheory.Limits.preservesColimitOfPreservesColimitCocone
 
@@ -362,7 +362,7 @@ the cone was already a limit cone in `C`.
 Note that we do not assume a priori that `D` actually has any limits.
 -/
 class ReflectsLimit (K : J ⥤ C) (F : C ⥤ D) where
-  reflects : ∀ {c : Cone K}, IsLimit (Functor.mapCone F c) → IsLimit c
+  reflects : ∀ {c : Cone K}, IsLimit (F.mapCone c) → IsLimit c
 #align category_theory.limits.reflects_limit CategoryTheory.Limits.ReflectsLimit
 
 /-- A functor `F : C ⥤ D` reflects colimits for `K : J ⥤ C` if
@@ -371,7 +371,7 @@ the cocone was already a colimit cocone in `C`.
 Note that we do not assume a priori that `D` actually has any colimits.
 -/
 class ReflectsColimit (K : J ⥤ C) (F : C ⥤ D) where
-  reflects : ∀ {c : Cocone K}, IsColimit (Functor.mapCocone F c) → IsColimit c
+  reflects : ∀ {c : Cocone K}, IsColimit (F.mapCocone c) → IsColimit c
 #align category_theory.limits.reflects_colimit CategoryTheory.Limits.ReflectsColimit
 
 /-- A functor `F : C ⥤ D` reflects limits of shape `J` if
@@ -437,7 +437,7 @@ abbrev ReflectsColimits (F : C ⥤ D) :=
 /-- A convenience function for `ReflectsLimit`, which takes the functor as an explicit argument to
 guide typeclass resolution.
 -/
-def isLimitOfReflects (F : C ⥤ D) {c : Cone K} (t : IsLimit (Functor.mapCone F c))
+def isLimitOfReflects (F : C ⥤ D) {c : Cone K} (t : IsLimit (F.mapCone c))
     [ReflectsLimit K F] : IsLimit c := ReflectsLimit.reflects t
 #align category_theory.limits.is_limit_of_reflects CategoryTheory.Limits.isLimitOfReflects
 
@@ -445,7 +445,7 @@ def isLimitOfReflects (F : C ⥤ D) {c : Cone K} (t : IsLimit (Functor.mapCone F
 A convenience function for `ReflectsColimit`, which takes the functor as an explicit argument to
 guide typeclass resolution.
 -/
-def isColimitOfReflects (F : C ⥤ D) {c : Cocone K} (t : IsColimit (Functor.mapCocone F c))
+def isColimitOfReflects (F : C ⥤ D) {c : Cocone K} (t : IsColimit (F.mapCocone c))
     [ReflectsColimit K F] : IsColimit c :=
   ReflectsColimit.reflects t
 #align category_theory.limits.is_colimit_of_reflects CategoryTheory.Limits.isColimitOfReflects

@@ -122,46 +122,46 @@ theorem tendsto_atTop_isGLB (h_anti : Antitone f) (ha : IsGLB (Set.range f) a) :
 
 end IsGLB
 
-section Csupr
+section Csupᵢ
 
 variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
-theorem tendsto_atTop_csupr (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
+theorem tendsto_atTop_csupᵢ (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
   cases isEmpty_or_nonempty ι
   exacts[tendsto_of_isEmpty, tendsto_atTop_isLUB h_mono (isLUB_csupᵢ hbdd)]
-#align tendsto_at_top_csupr tendsto_atTop_csupr
+#align tendsto_at_top_csupr tendsto_atTop_csupᵢ
 
-theorem tendsto_atBot_csupr (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
-    Tendsto f atBot (𝓝 (⨆ i, f i)) := by convert tendsto_atTop_csupr h_anti.dual hbdd.dual
-#align tendsto_at_bot_csupr tendsto_atBot_csupr
+theorem tendsto_atBot_csupᵢ (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
+    Tendsto f atBot (𝓝 (⨆ i, f i)) := by convert tendsto_atTop_csupᵢ h_anti.dual hbdd.dual
+#align tendsto_at_bot_csupr tendsto_atBot_csupᵢ
 
-end Csupr
+end Csupᵢ
 
-section Cinfi
+section Cinfᵢ
 
 variable [ConditionallyCompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
-theorem tendsto_atBot_cinfi (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
-    Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_csupr h_mono.dual hbdd.dual
-#align tendsto_at_bot_cinfi tendsto_atBot_cinfi
+theorem tendsto_atBot_cinfᵢ (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
+    Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_csupᵢ h_mono.dual hbdd.dual
+#align tendsto_at_bot_cinfi tendsto_atBot_cinfᵢ
 
-theorem tendsto_atTop_cinfi (h_anti : Antitone f) (hbdd : BddBelow <| range f) :
-    Tendsto f atTop (𝓝 (⨅ i, f i)) := by convert tendsto_atBot_csupr h_anti.dual hbdd.dual
-#align tendsto_at_top_cinfi tendsto_atTop_cinfi
+theorem tendsto_atTop_cinfᵢ (h_anti : Antitone f) (hbdd : BddBelow <| range f) :
+    Tendsto f atTop (𝓝 (⨅ i, f i)) := by convert tendsto_atBot_csupᵢ h_anti.dual hbdd.dual
+#align tendsto_at_top_cinfi tendsto_atTop_cinfᵢ
 
-end Cinfi
+end Cinfᵢ
 
 section supᵢ
 
 variable [CompleteLattice α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_supᵢ (h_mono : Monotone f) : Tendsto f atTop (𝓝 (⨆ i, f i)) :=
-  tendsto_atTop_csupr h_mono (OrderTop.bddAbove _)
+  tendsto_atTop_csupᵢ h_mono (OrderTop.bddAbove _)
 #align tendsto_at_top_supr tendsto_atTop_supᵢ
 
 theorem tendsto_atBot_supᵢ (h_anti : Antitone f) : Tendsto f atBot (𝓝 (⨆ i, f i)) :=
-  tendsto_atBot_csupr h_anti (OrderTop.bddAbove _)
+  tendsto_atBot_csupᵢ h_anti (OrderTop.bddAbove _)
 #align tendsto_at_bot_supr tendsto_atBot_supᵢ
 
 end supᵢ
@@ -171,11 +171,11 @@ section infᵢ
 variable [CompleteLattice α] [InfConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atBot_infᵢ (h_mono : Monotone f) : Tendsto f atBot (𝓝 (⨅ i, f i)) :=
-  tendsto_atBot_cinfi h_mono (OrderBot.bddBelow _)
+  tendsto_atBot_cinfᵢ h_mono (OrderBot.bddBelow _)
 #align tendsto_at_bot_infi tendsto_atBot_infᵢ
 
 theorem tendsto_atTop_infᵢ (h_anti : Antitone f) : Tendsto f atTop (𝓝 (⨅ i, f i)) :=
-  tendsto_atTop_cinfi h_anti (OrderBot.bddBelow _)
+  tendsto_atTop_cinfᵢ h_anti (OrderBot.bddBelow _)
 #align tendsto_at_top_infi tendsto_atTop_infᵢ
 
 end infᵢ
@@ -225,7 +225,7 @@ instance Pi.Inf_convergence_class' {ι : Type _} [Preorder α] [TopologicalSpace
 theorem tendsto_of_monotone {ι α : Type _} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
     Tendsto f atTop atTop ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
-  if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_csupr h_mono H⟩
+  if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_csupᵢ h_mono H⟩
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 #align tendsto_of_monotone tendsto_of_monotone
 

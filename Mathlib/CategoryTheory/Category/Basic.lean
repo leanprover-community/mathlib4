@@ -120,7 +120,7 @@ which adds the `CategoryTheory` rule set,
 and allows `aesop` look through semireducible definitions when calling `intros`. -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false }) 
+    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false })
     (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 
 -- We turn on `ext` inside `aesop_cat`.
@@ -259,7 +259,7 @@ class Epi (f : X ⟶ Y) : Prop where
 See <https://stacks.math.columbia.edu/tag/003B>.
 -/
 class Mono (f : X ⟶ Y) : Prop where
-  /-- A morphism `f` is an epimorphism if it can be cancelled when postcomposed. -/
+  /-- A morphism `f` is an monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 #align category_theory.mono CategoryTheory.Mono
 

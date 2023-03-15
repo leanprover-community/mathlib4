@@ -155,13 +155,13 @@ instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤ C) [IsEquival
 
 -- verify the preserve_colimits instance works as expected:
 example (E : C ⥤ D) [IsEquivalence E] (c : Cocone K) (h : IsColimit c) :
-    IsColimit (Functor.mapCocone E c) :=
+    IsColimit (E.mapCocone c) :=
   PreservesColimit.preserves h
 
 theorem hasColimit_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimit K] :
     HasColimit (K ⋙ E) :=
   HasColimit.mk
-    { cocone := Functor.mapCocone E (colimit.cocone K)
+    { cocone := E.mapCocone (colimit.cocone K)
       isColimit := PreservesColimit.preserves (colimit.isColimit K) }
 #align category_theory.adjunction.has_colimit_comp_equivalence CategoryTheory.Adjunction.hasColimit_comp_equivalence
 
@@ -291,12 +291,12 @@ instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [IsEquivalen
 #align category_theory.adjunction.is_equivalence_creates_limits CategoryTheory.Adjunction.isEquivalenceCreatesLimits
 
 -- verify the preserve_limits instance works as expected:
-example (E : D ⥤ C) [IsEquivalence E] (c : Cone K) (h : IsLimit c) : IsLimit (mapCone E c) :=
+example (E : D ⥤ C) [IsEquivalence E] (c : Cone K) (h : IsLimit c) : IsLimit (E.mapCone c) :=
   PreservesLimit.preserves h
 
 theorem hasLimit_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit K] : HasLimit (K ⋙ E) :=
   HasLimit.mk
-    { cone := Functor.mapCone E (limit.cone K)
+    { cone := E.mapCone (limit.cone K)
       isLimit := PreservesLimit.preserves (limit.isLimit K) }
 #align category_theory.adjunction.has_limit_comp_equivalence CategoryTheory.Adjunction.hasLimit_comp_equivalence
 

@@ -78,6 +78,12 @@ example (x : ℝ) (hx : x ≠ 0) :
   field_simp
   ring
 
+-- As reported at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20failing.20to.20fully.20normalize
+example (x : ℤ) (h : x - x + x = 0) : x = 0 := by
+  ring_nf at h
+  exact h
+
 -- this proof style is not recommended practice
 example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by ring_nf at H ⊢; exact H
 
