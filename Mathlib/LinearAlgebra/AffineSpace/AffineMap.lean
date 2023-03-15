@@ -629,14 +629,14 @@ theorem snd_lineMap (p₀ p₁ : P1 × P2) (c : k) : (lineMap p₀ p₁ c).2 = l
 
 theorem lineMap_symm (p₀ p₁ : P1) :
     lineMap p₀ p₁ = (lineMap p₁ p₀).comp (lineMap (1 : k) (0 : k)) := by
-  rw [comp_line_map]
+  rw [comp_lineMap]
   simp
 #align affine_map.line_map_symm AffineMap.lineMap_symm
 
 theorem lineMap_apply_one_sub (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ (1 - c) = lineMap p₁ p₀ c := by
-  rw [line_map_symm p₀, comp_apply]
+  rw [lineMap_symm p₀, comp_apply]
   congr
-  simp [line_map_apply]
+  simp [lineMap_apply]
 #align affine_map.line_map_apply_one_sub AffineMap.lineMap_apply_one_sub
 
 @[simp]
@@ -646,48 +646,45 @@ theorem lineMap_vsub_left (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c -ᵥ p�
 
 @[simp]
 theorem left_vsub_lineMap (p₀ p₁ : P1) (c : k) : p₀ -ᵥ lineMap p₀ p₁ c = c • (p₀ -ᵥ p₁) := by
-  rw [← neg_vsub_eq_vsub_rev, line_map_vsub_left, ← smul_neg, neg_vsub_eq_vsub_rev]
+  rw [← neg_vsub_eq_vsub_rev, lineMap_vsub_left, ← smul_neg, neg_vsub_eq_vsub_rev]
 #align affine_map.left_vsub_line_map AffineMap.left_vsub_lineMap
 
 @[simp]
 theorem lineMap_vsub_right (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c -ᵥ p₁ = (1 - c) • (p₀ -ᵥ p₁) := by
-  rw [← line_map_apply_one_sub, line_map_vsub_left]
+  rw [← lineMap_apply_one_sub, lineMap_vsub_left]
 #align affine_map.line_map_vsub_right AffineMap.lineMap_vsub_right
 
 @[simp]
 theorem right_vsub_lineMap (p₀ p₁ : P1) (c : k) : p₁ -ᵥ lineMap p₀ p₁ c = (1 - c) • (p₁ -ᵥ p₀) := by
-  rw [← line_map_apply_one_sub, left_vsub_line_map]
+  rw [← lineMap_apply_one_sub, left_vsub_lineMap]
 #align affine_map.right_vsub_line_map AffineMap.right_vsub_lineMap
 
 theorem lineMap_vadd_lineMap (v₁ v₂ : V1) (p₁ p₂ : P1) (c : k) :
     lineMap v₁ v₂ c +ᵥ lineMap p₁ p₂ c = lineMap (v₁ +ᵥ p₁) (v₂ +ᵥ p₂) c :=
-  ((fst : V1 × P1 →ᵃ[k] V1) +ᵥ snd).apply_lineMap (v₁, p₁) (v₂, p₂) c
+  ((fst : V1 × P1 →ᵃ[k] V1) +ᵥ (snd : V1 × P1 →ᵃ[k] P1)).apply_lineMap (v₁, p₁) (v₂, p₂) c
 #align affine_map.line_map_vadd_line_map AffineMap.lineMap_vadd_lineMap
 
 theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
     lineMap p₁ p₂ c -ᵥ lineMap p₃ p₄ c = lineMap (p₁ -ᵥ p₃) (p₂ -ᵥ p₄) c :=
-  letI-- Why Lean fails to find this instance without a hint?
-   : AffineSpace (V1 × V1) (P1 × P1) := Prod.addTorsor
   ((fst : P1 × P1 →ᵃ[k] P1) -ᵥ (snd : P1 × P1 →ᵃ[k] P1)).apply_lineMap (_, _) (_, _) c
 #align affine_map.line_map_vsub_line_map AffineMap.lineMap_vsub_lineMap
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
-theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = f.linear + fun z => f 0 := by
+theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => f 0 := by
   ext x
   calc
-    f x = f.linear x +ᵥ f 0 := by simp [← f.map_vadd]
-    _ = (f.linear.to_fun + fun z : V1 => f 0) x := by simp
+    f x = f.linear x +ᵥ f 0 := by rw [← f.map_vadd, vadd_eq_add, add_zero]
+    _ = (f.linear + fun _ : V1 => f 0) x := rfl
 
 #align affine_map.decomp AffineMap.decomp
 
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
-theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = f - fun z => f 0 := by
-  rw [decomp] <;> simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel, zero_add]
+theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ => f 0 := by
+  rw [decomp]
+  simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel, zero_add]
 #align affine_map.decomp' AffineMap.decomp'
-
-omit V1
 
 theorem image_uIcc {k : Type _} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
@@ -697,21 +694,22 @@ theorem image_uIcc {k : Type _} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b 
     rw [← f.linearMap_vsub, ← f.linear.map_smul, ← f.map_vadd]
     simp only [vsub_eq_sub, add_zero, mul_one, vadd_eq_add, sub_zero, smul_eq_mul]
   rw [this, Set.image_comp]
-  simp only [Set.image_add_const_uIcc, Set.image_mul_const_uIcc]
+  simp only [Set.image_add_const_uIcc, Set.image_mul_const_uIcc, Function.comp_apply]
 #align affine_map.image_uIcc AffineMap.image_uIcc
 
 section
 
-variable {ι : Type _} {V : ∀ i : ι, Type _} {P : ∀ i : ι, Type _} [∀ i, AddCommGroup (V i)]
+variable {ι : Type _} {V : ∀ _ : ι, Type _} {P : ∀ _ : ι, Type _} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
-include V
+-- Workaround for lean4#2074
+instance : AffineSpace (∀ i : ι, (V i)) (∀ i : ι, P i) := Pi.instAddTorsorForAllForAllAddGroup
 
 /-- Evaluation at a point as an affine map. -/
 def proj (i : ι) : (∀ i : ι, P i) →ᵃ[k] P i where
   toFun f := f i
   linear := @LinearMap.proj k ι _ V _ _ i
-  map_vadd' p v := rfl
+  map_vadd' _ _ := rfl
 #align affine_map.proj AffineMap.proj
 
 @[simp]
@@ -743,16 +741,14 @@ variable [Ring k] [AddCommGroup V1] [AffineSpace V1 P1] [AddCommGroup V2]
 
 variable [Module k V1] [Module k V2]
 
-include V1
-
 section DistribMulAction
 
 variable [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
-instance : DistribMulAction R (P1 →ᵃ[k] V2) where
-  smul_add c f g := ext fun p => smul_add _ _ _
-  smul_zero c := ext fun p => smul_zero _
+instance distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) where
+  smul_add _c _f _g := ext fun _p => smul_add _ _ _
+  smul_zero _c := ext fun _p => smul_zero _
 
 end DistribMulAction
 
@@ -774,7 +770,6 @@ instance : AddCommMonoid (V1 →ₗ[k] V2) := LinearMap.addCommMonoid
 instance : AddCommMonoid (V2 × (V1 →ₗ[k] V2)) := Prod.instAddCommMonoidSum
 instance : Module R (V1 →ₗ[k] V2) := LinearMap.instModuleLinearMapAddCommMonoid
 instance : Module R (V2 × (V1 →ₗ[k] V2)) := Prod.module
-
 
 /-- The space of affine maps between two modules is linearly equivalent to the product of the
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the
