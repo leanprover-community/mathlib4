@@ -12,7 +12,7 @@ import Mathlib.Tactic.Elementwise
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Tactic.FreshNames
+--import Mathlib.Tactic.FreshNames
 
 /-!
 In this file we provide various simp lemmas in its elementwise form via `tactic.elementwise`.
@@ -21,6 +21,5 @@ In this file we provide various simp lemmas in its elementwise form via `tactic.
 
 open CategoryTheory CategoryTheory.Limits
 
-attribute [elementwise]
-  cone.w limit.lift_π limit.w cocone.w colimit.ι_desc colimit.w kernel.lift_ι cokernel.π_desc kernel.condition cokernel.condition
-
+attribute [elementwise] Cone.w limit.lift_π limit.w Cocone.w colimit.ι_desc colimit.w
+  kernel.lift_ι cokernel.π_desc kernel.condition cokernel.condition
