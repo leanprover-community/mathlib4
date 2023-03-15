@@ -124,3 +124,37 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
     if ldec.isAuxDecl then
       g ← g.tryClear ldec.fvarId
   replaceMainGoal [g]
+
+/-- Clears the value of the local definition `fvarId`. Ensures that the resulting goal state
+is still type correct. Throws an error if it is a local hypothesis without a value. -/
+def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
+  mvarId.checkNotAssigned `clear_value
+  let (xs, mvarId') ← mvarId.revert #[fvarId] true
+  mvarId'.withContext do
+    let numReverted := xs.size
+    let tgt ← mvarId'.getType
+    unless tgt.isLet do
+      mvarId.withContext <|
+        throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
+    let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
+    unless ← isTypeCorrect tgt' do
+      mvarId.withContext <|
+        throwTacticEx `clear_value mvarId
+          m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
+    let mvarId'' ← mkFreshExprMVar tgt'
+    mvarId'.assign <| mkApp mvarId'' tgt.letValue!
+    let (_, mvarId) ← mvarId''.mvarId!.introNP numReverted
+    return mvarId
+
+/-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
+into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
+
+The order of `n₁ n₂ ...` does not matter, and values will be cleared in reverse order of
+where they appear in the context. -/
+elab (name := clearValue) "clear_value" hs:(colGt term:max)+ : tactic => do
+  let fvarIds ← getFVarIds hs
+  let fvarIds ← withMainContext <| sortFVarIds fvarIds
+  for fvarId in fvarIds.reverse do
+    withMainContext do
+      let mvarId ← (← getMainGoal).clearValue fvarId
+      replaceMainGoal [mvarId]
