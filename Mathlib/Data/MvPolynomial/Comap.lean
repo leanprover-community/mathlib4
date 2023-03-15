@@ -11,11 +11,11 @@ Authors: Johan Commelin
 import Mathlib.Data.MvPolynomial.Rename
 
 /-!
-# `comap` operation on `mv_polynomial`
+# `comap` operation on `MvPolynomial`
 
-This file defines the `comap` function on `mv_polynomial`.
+This file defines the `comap` function on `MvPolynomial`.
 
-`mv_polynomial.comap` is a low-tech example of a map of "algebraic varieties," modulo the fact that
+`MvPolynomial.comap` is a low-tech example of a map of "algebraic varieties," modulo the fact that
 `mathlib` does not yet define varieties.
 
 ## Notation
@@ -24,7 +24,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type*` `[comm_semiring R]` (the coefficients)
++ `R : Type*` `[CommSemiring R]` (the coefficients)
 
 -/
 
@@ -33,7 +33,7 @@ namespace MvPolynomial
 
 variable {σ : Type _} {τ : Type _} {υ : Type _} {R : Type _} [CommSemiring R]
 
-/-- Given an algebra hom `f : mv_polynomial σ R →ₐ[R] mv_polynomial τ R`
+/-- Given an algebra hom `f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R`
 and a variable evaluation `v : τ → R`,
 `comap f v` produces a variable evaluation `σ → R`.
 -/
@@ -67,12 +67,12 @@ theorem comap_comp_apply (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R)
     comap (g.comp f) x = comap f (comap g x) := by
   funext i
   trans aeval x (aeval (fun i => g (X i)) (f (X i)))
-  · apply eval₂_hom_congr rfl rfl
+  · apply eval₂Hom_congr rfl rfl
     rw [AlgHom.comp_apply]
     suffices g = aeval fun i => g (X i) by rw [← this]
     exact aeval_unique g
-  · simp only [comap, aeval_eq_eval₂_hom, map_eval₂_hom, AlgHom.comp_apply]
-    refine' eval₂_hom_congr _ rfl rfl
+  · simp only [comap, aeval_eq_eval₂Hom, map_eval₂Hom, AlgHom.comp_apply]
+    refine' eval₂Hom_congr _ rfl rfl
     ext r
     apply aeval_C
 #align mv_polynomial.comap_comp_apply MvPolynomial.comap_comp_apply
@@ -87,19 +87,18 @@ theorem comap_eq_id_of_eq_id (f : MvPolynomial σ R →ₐ[R] MvPolynomial σ R)
     (x : σ → R) : comap f x = x := by
   convert comap_id_apply x
   ext1 φ
-  rw [hf, AlgHom.id_apply]
+  simp [hf, AlgHom.id_apply]
 #align mv_polynomial.comap_eq_id_of_eq_id MvPolynomial.comap_eq_id_of_eq_id
 
 theorem comap_rename (f : σ → τ) (x : τ → R) : comap (rename f) x = x ∘ f := by
-  ext i
-  simp only [rename_X, comap_apply, aeval_X]
+  funext
+  simp [rename_X, comap_apply, aeval_X]
 #align mv_polynomial.comap_rename MvPolynomial.comap_rename
 
 /-- If two polynomial types over the same coefficient ring `R` are equivalent,
 there is a bijection between the types of functions from their variable types to `R`.
 -/
-noncomputable def comapEquiv (f : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R) : (τ → R) ≃ (σ → R)
-    where
+noncomputable def comapEquiv (f : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R) : (τ → R) ≃ (σ → R) where
   toFun := comap f
   invFun := comap f.symm
   left_inv := by
@@ -129,4 +128,3 @@ theorem comapEquiv_symm_coe (f : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R) 
 #align mv_polynomial.comap_equiv_symm_coe MvPolynomial.comapEquiv_symm_coe
 
 end MvPolynomial
-
