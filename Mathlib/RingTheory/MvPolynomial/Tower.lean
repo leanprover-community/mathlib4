@@ -17,10 +17,10 @@ import Mathlib.Data.MvPolynomial.Basic
 This file proves some basic results about the algebra tower structure for the type
 `MvPolynomial σ R`.
 
-This structure itself is provided elsewhere as `mv_polynomial.is_scalar_tower`
+This structure itself is provided elsewhere as `MvPolynomial.isScalarTower`
 
 When you update this file, you can also try to make a corresponding update in
-`ring_theory.polynomial.tower`.
+`RingTheory.Polynomial.Tower`.
 -/
 
 
