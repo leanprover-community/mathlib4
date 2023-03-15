@@ -574,7 +574,7 @@ instance self : Finite R R :=
 
 variable (M)
 
-theorem of_restrict_scalars_finite (R A M : Type _) [CommSemiring R] [Semiring A] [AddCommMonoid M]
+theorem of_restrictScalars_finite (R A M : Type _) [CommSemiring R] [Semiring A] [AddCommMonoid M]
     [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M] [hM : Finite R M] : Finite A M :=
   by
   rw [finite_def, Submodule.fg_def] at hM⊢
@@ -583,7 +583,7 @@ theorem of_restrict_scalars_finite (R A M : Type _) [CommSemiring R] [Semiring A
   have := Submodule.span_le_restrictScalars R A S
   rw [hSgen] at this
   exact this
-#align module.finite.of_restrict_scalars_finite Module.Finite.of_restrict_scalars_finite
+#align module.finite.of_restrict_scalars_finite Module.Finite.of_restrictScalars_finite
 
 variable {R M}
 
@@ -687,7 +687,7 @@ theorem of_comp_finite {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finite) :
   letI := (g.comp f).toAlgebra
   letI : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
   letI : Module.Finite A C := h
-  exact Module.Finite.of_restrict_scalars_finite A B C
+  exact Module.Finite.of_restrictScalars_finite A B C
 #align ring_hom.finite.of_comp_finite RingHom.Finite.of_comp_finite
 
 end Finite
