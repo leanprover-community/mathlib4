@@ -22,71 +22,33 @@ open Lean Parser Tactic Elab Tactic Meta
 
 initialize registerTraceClass `apply_fun
 
-/--
-Helper function to fill implicit arguments with metavariables.
-
-Returns an array of the metavariables as well.
--/
-partial def fillImplicitArgumentsWithFreshMVars (e : Expr) : MetaM (Expr × Array MVarId) := do
-  loop #[] (← instantiateMVars (← inferType e)) (← instantiateMVars e)
-where
-  loop (mvars : Array MVarId) (ty e : Expr) : MetaM (Expr × Array MVarId) := do
-    if ty.isForall then
-      if ty.bindingInfo! == .implicit then
-        let mvar ← mkFreshExprMVar ty.bindingDomain! MetavarKind.natural ty.bindingName!
-        return ← loop (mvars.push mvar.mvarId!) (ty.bindingBody!.instantiate1 mvar) (e.beta #[mvar])
-      else if ty.bindingInfo! == .instImplicit then
-        let mvar ← mkFreshExprMVar ty.bindingDomain! MetavarKind.synthetic ty.bindingName!
-        return ← loop (mvars.push mvar.mvarId!) (ty.bindingBody!.instantiate1 mvar) (e.beta #[mvar])
-    return (e, mvars)
-
-/-- Returns a function. Ensures all leading implicit variables are filled, and (recursively)
-uses `CoeFun` instances. -/
-private def ensureFun (f : Expr) (steps : Nat := 10000) : MetaM (Expr × Array MVarId) :=
-  match steps with
-  | 0 => throwError "Could not coerce to function (iteration limit reached)"
-  | steps + 1 => do
-    let (f, mvars) ← fillImplicitArgumentsWithFreshMVars f
-    if (← inferType f).isForall then
-      return (f, mvars)
-    else
-      let some f ← coerceToFunction? f
-        | throwError "Could not coerce to function"
-      let (f', mvars') ← ensureFun f steps
-      return (f', mvars ++ mvars')
-
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
-    MetaM (List MVarId) := do
+def applyFunHyp (f : TSyntax `term) (using? : Option Expr) (h : FVarId) (g : MVarId) :
+    TacticM (List MVarId) := do
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
-  | (``Eq, #[ty, lhs, rhs]) => do
-    let (f, mvars) ← ensureFun f
-    let argTy := (← inferType f).bindingDomain!
-    unless ← isDefEq argTy ty do
-      throwAppTypeMismatch argTy ty
-    -- Note: there might be implicit arguments *after* lhs and rhs
-    let (lhs', mvarslhs) ← fillImplicitArgumentsWithFreshMVars (f.beta #[lhs])
-    let (rhs', mvarsrhs) ← fillImplicitArgumentsWithFreshMVars (f.beta #[rhs])
-    unless ← isDefEq (← inferType lhs') (← inferType rhs') do
-      let msg ← mkHasTypeButIsExpectedMsg (← inferType rhs') (← inferType lhs')
-      throwError "In generated equality, right-hand side {msg}"
-    let mvars := mvars ++ mvarslhs ++ mvarsrhs
-    -- `mkAppN` would do this, but it uses `withNewMCtxDepth`.
-    for mvarId in mvars do
-      let d ← mvarId.getDecl
-      if let .synthetic := d.kind then
-        mvarId.assign (← synthInstance (← mvarId.getType))
-    let eq' ← instantiateMVars (← mkEq lhs' rhs')
+  | (``Eq, #[_, lhs, rhs]) => do
+    let (eq', gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+      withoutRecover <| runTermElab <| do
+        let f ← Term.elabTerm f none
+        let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
+        let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
+        unless ← isDefEq (← inferType lhs') (← inferType rhs') do
+          let msg ← mkHasTypeButIsExpectedMsg (← inferType rhs') (← inferType lhs')
+          throwError "In generated equality, right-hand side {msg}"
+        let eq ← mkEq lhs'.headBeta rhs'.headBeta
+        Term.synthesizeSyntheticMVarsUsingDefault
+        instantiateMVars eq
     let mvar ← mkFreshExprMVar eq'
     let [] ← mvar.mvarId!.congrN | throwError "`apply_fun` could not construct congruence"
-    pure (mvar, mvars.toList)
+    pure (mvar, gs)
   | (``LE.le, _) =>
     let (monotone_f, newGoals) ← match using? with
     -- Use the expression passed with `using`
     | some r => pure (r, [])
     -- Create a new `Monotone f` goal
     | none => do
+      let f ← elabTermForApply f
       let ng ← mkFreshExprMVar (← mkAppM ``Monotone #[f])
       -- TODO attempt to solve this goal using `mono` when it has been ported,
       -- via `synthesizeUsing`.
@@ -159,9 +121,10 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
 syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
-  let f ← elabTermForApply f
   let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
-    (atLocal := fun h ↦ liftMetaTactic <| applyFunHyp f P h)
-    (atTarget := liftMetaTactic <| applyFunTarget f P)
+    (atLocal := fun h ↦ do replaceMainGoal <| ← applyFunHyp f P h (← getMainGoal))
+    (atTarget := withMainContext do
+      let f ← elabTermForApply f
+      liftMetaTactic fun g => applyFunTarget f P g)
     (failed := fun _ ↦ throwError "apply_fun failed")

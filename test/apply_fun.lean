@@ -17,9 +17,9 @@ example (x : Int) (h : x = 1) : 1 = 1 := by
 
 example (a b : Int) (h : a = b) : a + 1 = b + 1 := by
   -- Make sure that we infer the type of the function only after we see the hypothesis:
-  apply_fun (fun n => n+1) at h
-  -- check that `h` was β-reduced (in Lean3 this required additional work)
-  guard_hyp h : a + 1 = b + 1
+  apply_fun (fun n => n + 1) at h
+  -- check that `h` was β-reduced
+  guard_hyp h :ₛ a + 1 = b + 1
   exact h
 
 -- Verify failure when applying a dependently typed function.
@@ -132,7 +132,14 @@ example (f : (p : Prop) → [Decidable p] → Nat) (p q : Prop) (h : p = q)
   apply h'
   exact h
 
+example (f : (p : Prop) → [Decidable p] → Nat) (p q : Prop) (h : p = q)
+    (h' : {n m : Nat} → n = m → True) : True := by
+  classical
+  apply_fun (fun x [Decidable x] => f x) at h
+  apply h'
+  exact h
+
 example (a b : ℕ) (h : a = b) : True := by
-  apply_fun (fun {j} i => i + j) at h
+  apply_fun (fun i => i + ?_) at h
   · trivial
   · exact 37
