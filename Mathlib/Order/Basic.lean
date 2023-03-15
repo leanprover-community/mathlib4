@@ -995,7 +995,7 @@ def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective
   { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
 #align partial_order.lift PartialOrder.lift
 
-theorem compareOfLessAndEq_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
+theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [DecidableEq α] (f : α → β) (inj : Injective f)
     [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
     compare (f a) (f b) =
@@ -1039,7 +1039,7 @@ def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) 
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
     compare_eq_compareOfLessAndEq := fun a b ↦
-      compareOfLessAndEq_of_injective_eq_compareOfLessAndEq a b f inj }
+      compare_of_injective_eq_compareOfLessAndEq a b f inj }
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
@@ -1086,7 +1086,7 @@ def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] 
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
     compare_eq_compareOfLessAndEq := fun a b ↦
-      (compare_f a b).trans <| compareOfLessAndEq_of_injective_eq_compareOfLessAndEq a b f inj }
+      (compare_f a b).trans <| compare_of_injective_eq_compareOfLessAndEq a b f inj }
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version auto-generates `min` and `max` fields. It also takes `[Ord α]`
