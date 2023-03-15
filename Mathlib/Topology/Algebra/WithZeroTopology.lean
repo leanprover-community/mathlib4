@@ -33,7 +33,7 @@ absolute value (resp. `p`-adic absolute value) on `ℚ` is extended to `ℝ` (re
 
 This topology is defined as a scoped instance since it may not be the desired topology on
 a linearly ordered commutative group with zero. You can locally activate this topology using
-`open LinearOrderedCommGroupWithZero`.
+`open WithZeroTopology`.
 -/
 
 open Topology Filter TopologicalSpace Filter Set Function
@@ -57,7 +57,8 @@ theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ (�
 ### Neighbourhoods of zero
 -/
 
-theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ (γ) (_h : γ ≠ 0), 𝓟 (Iio γ) := by rw [nhds_eq_update, update_same]
+theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ (γ) (_h : γ ≠ 0), 𝓟 (Iio γ) := by
+  rw [nhds_eq_update, update_same]
 #align with_zero_topology.nhds_zero WithZeroTopology.nhds_zero
 
 /-- In a linearly ordered group with zero element adjoined, `U` is a neighbourhood of `0` if and
@@ -115,7 +116,8 @@ theorem hasBasis_nhds_of_ne_zero {x : Γ₀} (h : x ≠ 0) :
   exact hasBasis_pure _
 #align with_zero_topology.has_basis_nhds_of_ne_zero WithZeroTopology.hasBasis_nhds_of_ne_zero
 
-theorem hasBasis_nhds_units (γ : Γ₀ˣ) : HasBasis (𝓝 (γ : Γ₀)) (fun _ : Unit => True) fun _ => {↑γ} :=
+theorem hasBasis_nhds_units (γ : Γ₀ˣ) :
+    HasBasis (𝓝 (γ : Γ₀)) (fun _ : Unit => True) fun _ => {↑γ} :=
   hasBasis_nhds_of_ne_zero γ.ne_zero
 #align with_zero_topology.has_basis_nhds_units WithZeroTopology.hasBasis_nhds_units
 
@@ -156,6 +158,7 @@ theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
 
 /-- The topology on a linearly ordered group with zero element adjoined is compatible with the order
 structure: the set `{p : Γ₀ × Γ₀ | p.1 ≤ p.2}` is closed. -/
+@[nolint defLemma]
 scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
   isClosed_le' := by
     simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
@@ -165,6 +168,7 @@ scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ�
 #align with_zero_topology.order_closed_topology WithZeroTopology.orderClosedTopology
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/
+@[nolint defLemma]
 scoped instance (priority := 100) t5Space : T5Space Γ₀ where
   completely_normal := fun s t h₁ h₂ => by
     by_cases hs : 0 ∈ s
@@ -178,6 +182,7 @@ scoped instance (priority := 100) t5Space : T5Space Γ₀ where
 
 /-- The topology on a linearly ordered group with zero element adjoined makes it a topological
 monoid. -/
+@[nolint defLemma]
 scoped instance (priority := 100) : ContinuousMul Γ₀ where
   continuous_mul := by
     simp only [continuous_iff_continuousAt, ContinuousAt]
@@ -200,7 +205,8 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
       exact pure_le_nhds (x * y)
 
-instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
+@[nolint defLemma]
+scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩
