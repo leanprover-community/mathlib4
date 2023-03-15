@@ -145,17 +145,14 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
 theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (v : V)
     (h : Odd (G.degree v)) : Odd (univ.filter fun w => w ≠ v ∧ Odd (G.degree w)).card := by
   rcases G.even_card_odd_degree_vertices with ⟨k, hg⟩
-  have hk : 0 < k :=
-    by
-    have hh : (filter (fun v : V => Odd (G.degree v)) univ).Nonempty :=
-      by
+  have hk : 0 < k := by
+    have hh : (filter (fun v : V => Odd (G.degree v)) univ).Nonempty := by
       use v
       simp only [true_and_iff, mem_filter, mem_univ]
       exact h
     rwa [← card_pos, hg, ← two_mul, zero_lt_mul_left] at hh
     exact zero_lt_two
-  have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) = fun w : V => Odd (G.degree w) ∧ w ≠ v :=
-    by
+  have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) = fun w : V => Odd (G.degree w) ∧ w ≠ v := by
     ext w
     rw [and_comm]
   simp only [hc, filter_congr]
@@ -171,8 +168,7 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
     (h : Odd (G.degree v)) : ∃ w : V, w ≠ v ∧ Odd (G.degree w) := by
   haveI := Classical.decEq V
   rcases G.odd_card_odd_degree_vertices_ne v h with ⟨k, hg⟩
-  have hg' : (filter (fun w : V => w ≠ v ∧ Odd (G.degree w)) univ).card > 0 :=
-    by
+  have hg' : (filter (fun w : V => w ≠ v ∧ Odd (G.degree w)) univ).card > 0 := by
     rw [hg]
     apply Nat.succ_pos
   rcases card_pos.mp hg' with ⟨w, hw⟩
