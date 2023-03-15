@@ -266,108 +266,110 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
   classical
     constructor
     · rintro ⟨h⟩
-      rw [←
-        show _ = c.inl from
-          h.comp_cocone_point_unique_up_to_iso_inv (binary_coproduct_colimit X Y)
-            ⟨walking_pair.left⟩,
-        ←
-        show _ = c.inr from
-          h.comp_cocone_point_unique_up_to_iso_inv (binary_coproduct_colimit X Y)
-            ⟨walking_pair.right⟩]
-      dsimp [binary_coproduct_cocone]
+      rw [← show _ = c.inl from
+          h.comp_coconePointUniqueUpToIso_inv (binaryCoproductColimit X Y) ⟨WalkingPair.left⟩,
+        ← show _ = c.inr from
+          h.comp_coconePointUniqueUpToIso_inv (binaryCoproductColimit X Y) ⟨WalkingPair.right⟩]
+      dsimp [binaryCoproductCocone]
       refine'
-        ⟨(h.cocone_point_unique_up_to_iso
-                      (binary_coproduct_colimit X Y)).symm.toEquiv.Injective.comp
+        ⟨(h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.injective.comp
             Sum.inl_injective,
-          (h.cocone_point_unique_up_to_iso
-                      (binary_coproduct_colimit X Y)).symm.toEquiv.Injective.comp
-            Sum.inr_injective,
-          _⟩
+          (h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.injective.comp
+            Sum.inr_injective, _⟩
       erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr, ←
         Set.image_compl_eq
-          (h.cocone_point_unique_up_to_iso (binary_coproduct_colimit X Y)).symm.toEquiv.Bijective]
-      congr 1
-      exact set.compl_range_inr.symm
+          (h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.bijective]
+      simp
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr :=
         by
-        rw [eq_compl_iff_is_compl.mpr h₃.symm]
+        rw [eq_compl_iff_isCompl.mpr h₃.symm]
         exact fun _ => or_not
-      refine' ⟨binary_cofan.is_colimit.mk _ _ _ _ _⟩
+      refine' ⟨BinaryCofan.IsColimit.mk _ _ _ _ _⟩
       · intro T f g x
         exact
           if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁).symm ⟨x, h⟩)
           else g ((Equiv.ofInjective _ h₂).symm ⟨x, (this x).resolve_left h⟩)
       · intro T f g
-        ext x
+        funext x
         dsimp
         simp [h₁.eq_iff]
       · intro T f g
-        ext x
+        funext x
         dsimp
-        simp only [forall_exists_index, Equiv.ofInjective_symm_apply, dif_ctx_congr,
-          dite_eq_right_iff]
+        simp only [Set.mem_range, Equiv.ofInjective_symm_apply,
+          dite_eq_right_iff, forall_exists_index]
         intro y e
         have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
         rw [disjoint_iff.mp h₃.1] at this
         exact this.elim
       · rintro T _ _ m rfl rfl
-        ext x
+        funext x
         dsimp
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 #align category_theory.limits.types.binary_cofan_is_colimit_iff CategoryTheory.Limits.Types.binaryCofan_isColimit_iff
 
+example : ℕ:= 42
+
 /-- Any monomorphism in `Type` is an coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
-    IsColimit (BinaryCofan.mk f (Subtype.val : Set.range fᶜ → Y)) :=
-  Nonempty.some <|
-    (binaryCofan_isColimit_iff _).mpr
-      ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective,
-        (eq_compl_iff_isCompl.mp <| Subtype.range_val).symm⟩
+    IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range fᶜ) → Y)) := by
+  apply Nonempty.some
+  rw [binaryCofan_isColimit_iff]
+  refine' ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, _⟩
+  symm
+  rw [← eq_compl_iff_isCompl]
+  exact Subtype.range_val
 #align category_theory.limits.types.is_coprod_of_mono CategoryTheory.Limits.Types.isCoprodOfMono
 
+#check Discrete.natTrans
 /-- The category of types has `Π j, f j` as the product of a type family `f : J → Type`.
 -/
 def productLimitCone {J : Type u} (F : J → Type max u v) : Limits.LimitCone (Discrete.functor F)
     where
-  Cone :=
+  cone :=
     { pt := ∀ j, F j
-      π := { app := fun j f => f j.as } }
-  IsLimit :=
+      π := Discrete.natTrans (fun ⟨j⟩ f => f j) }
+  isLimit :=
     { lift := fun s x j => s.π.app ⟨j⟩ x
       uniq := fun s m w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x : _) }
 #align category_theory.limits.types.product_limit_cone CategoryTheory.Limits.Types.productLimitCone
 
 /-- The categorical product in `Type u` is the type theoretic product `Π j, F j`. -/
-noncomputable def productIso {J : Type u} (F : J → Type max u v) : ∏ F ≅ ∀ j, F j :=
-  limit.isoLimitCone (productLimitCone F)
+noncomputable def productIso {J : Type u} (F : J → Type max u v) :
+  haveI : HasProduct F := hasLimit.{u,v} _; ∏ F ≅ ∀ j, F j :=
+  haveI : HasProduct F := hasLimit.{u,v} _; limit.isoLimitCone (productLimitCone.{u, v} F)
 #align category_theory.limits.types.product_iso CategoryTheory.Limits.Types.productIso
 
-@[simp, elementwise]
+-- porting note: should be @[elementwise (attr := simp)], but the lemma
+-- `productIso_hom_comp_eval_apply` is just `True`
+@[elementwise]
 theorem productIso_hom_comp_eval {J : Type u} (F : J → Type max u v) (j : J) :
-    ((productIso F).Hom ≫ fun f => f j) = Pi.π F j :=
+     haveI : HasProduct F := hasLimit.{u,v} _;
+    ((productIso.{u, v} F).hom ≫ fun f => f j) = Pi.π F j :=
   rfl
 #align category_theory.limits.types.product_iso_hom_comp_eval CategoryTheory.Limits.Types.productIso_hom_comp_eval
 
-@[simp, elementwise]
+@[elementwise (attr := simp)]
 theorem productIso_inv_comp_π {J : Type u} (F : J → Type max u v) (j : J) :
-    (productIso F).inv ≫ Pi.π F j = fun f => f j :=
-  limit.isoLimitCone_inv_π (productLimitCone F) ⟨j⟩
+    haveI : HasProduct F := hasLimit.{u,v} _;
+    (productIso.{u, v} F).inv ≫ Pi.π F j = fun f => f j :=
+  haveI : HasProduct F := hasLimit.{u,v} _;
+  limit.isoLimitCone_inv_π (productLimitCone.{u, v} F) ⟨j⟩
 #align category_theory.limits.types.product_iso_inv_comp_π CategoryTheory.Limits.Types.productIso_inv_comp_π
 
 /-- The category of types has `Σ j, f j` as the coproduct of a type family `f : J → Type`.
 -/
 def coproductColimitCocone {J : Type u} (F : J → Type u) : Limits.ColimitCocone (Discrete.functor F)
     where
-  Cocone :=
+  cocone :=
     { pt := Σj, F j
-      ι := { app := fun j x => ⟨j.as, x⟩ } }
-  IsColimit :=
+      ι := Discrete.natTrans (fun ⟨j⟩ x => ⟨j, x⟩)}--{ app := fun j x => ⟨j.as, x⟩ } }
+  isColimit :=
     { desc := fun s x => s.ι.app ⟨x.1⟩ x.2
       uniq := fun s m w => by
-        ext ⟨j, x⟩
-        have := congr_fun (w ⟨j⟩) x
-        exact this }
+        funext ⟨j, x⟩
+        exact congr_fun (w ⟨j⟩) x }
 #align category_theory.limits.types.coproduct_colimit_cocone CategoryTheory.Limits.Types.coproductColimitCocone
 
 /-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
@@ -375,13 +377,15 @@ noncomputable def coproductIso {J : Type u} (F : J → Type u) : ∐ F ≅ Σj, 
   colimit.isoColimitCocone (coproductColimitCocone F)
 #align category_theory.limits.types.coproduct_iso CategoryTheory.Limits.Types.coproductIso
 
-@[simp, elementwise]
+@[elementwise (attr := simp)]
 theorem coproductIso_ι_comp_hom {J : Type u} (F : J → Type u) (j : J) :
-    Sigma.ι F j ≫ (coproductIso F).Hom = fun x : F j => (⟨j, x⟩ : Σj, F j) :=
+    Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σj, F j) :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 #align category_theory.limits.types.coproduct_iso_ι_comp_hom CategoryTheory.Limits.Types.coproductIso_ι_comp_hom
 
-@[simp, elementwise]
+-- porting note: should be @[elementwise (attr := simp)], but the lemma
+-- `coproductIso_mk_comp_inv_apply` is just `True`
+@[elementwise]
 theorem coproductIso_mk_comp_inv {J : Type u} (F : J → Type u) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
@@ -402,12 +406,11 @@ noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X
     refine' ⟨fun i => _, _, _⟩
     · apply Classical.choose (t (s.ι i) _)
       apply congr_fun s.condition i
-    · ext i
-      apply (Classical.choose_spec (t (s.ι i) _)).1
-    · intro m hm
-      ext i
-      apply (Classical.choose_spec (t (s.ι i) _)).2
-      apply congr_fun hm i
+    . funext i
+      exact (Classical.choose_spec (t (s.ι i) (congr_fun s.condition i))).1
+    . intro m hm
+      funext i
+      exact (Classical.choose_spec (t (s.ι i) (congr_fun s.condition i))).2 _ (congr_fun hm i)
 #align category_theory.limits.types.type_equalizer_of_unique CategoryTheory.Limits.Types.typeEqualizerOfUnique
 
 /-- The converse of `type_equalizer_of_unique`. -/
@@ -415,13 +418,16 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
     ∃! x : X, f x = y := by
   let y' : PUnit ⟶ Y := fun _ => y
   have hy' : y' ≫ g = y' ≫ h := funext fun _ => hy
-  refine' ⟨(fork.is_limit.lift' t _ hy').1 ⟨⟩, congr_fun (fork.is_limit.lift' t y' _).2 ⟨⟩, _⟩
-  intro x' hx'
-  suffices : (fun _ : PUnit => x') = (fork.is_limit.lift' t y' hy').1
-  rw [← this]
-  apply fork.is_limit.hom_ext t
-  ext ⟨⟩
-  apply hx'.trans (congr_fun (fork.is_limit.lift' t _ hy').2 ⟨⟩).symm
+  -- for the following, better wait until #2871 is merged in order to use Fork.IsLimit.lift instead
+  refine' ⟨_, sorry, sorry⟩
+  sorry
+  --refine' ⟨(fork.is_limit.lift' t _ hy').1 ⟨⟩, congr_fun (fork.is_limit.lift' t y' _).2 ⟨⟩, _⟩
+  --intro x' hx'
+  --suffices : (fun _ : PUnit => x') = (fork.is_limit.lift' t y' hy').1
+  --rw [← this]
+  --apply fork.is_limit.hom_ext t
+  --ext ⟨⟩
+  --apply hx'.trans (congr_fun (fork.is_limit.lift' t _ hy').2 ⟨⟩).symm
 #align category_theory.limits.types.unique_of_type_equalizer CategoryTheory.Limits.Types.unique_of_type_equalizer
 
 theorem type_equalizer_iff_unique :
