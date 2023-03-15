@@ -1823,20 +1823,20 @@ theorem Disjoint.isConj_mul {α : Type _} [Finite α] {σ τ π ρ : Perm α} (h
           · rw [mul_apply, mul_apply] at h
             rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
-        · rwa [Subtype.coe_mk, Subtype.coe_mk, mem_coe, mem_support]
-        · rwa [Subtype.coe_mk, Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
+        · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
             apply_mem_support, mem_support]
+        · rwa [Subtype.coe_mk, mem_coe, mem_support]
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
         rw [Set.union_apply_right hd1''.le_bot _, Set.union_apply_right hd1''.le_bot _]
         simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
           Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
-        · have h := (hd2 (g (τ x))).resolve_right _
+        · have h := (hd2 (g (τ x))).resolve_right ?_
           · rw [mul_apply, mul_apply] at h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
-        · rwa [Subtype.coe_mk, Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
-        · rwa [Subtype.coe_mk, Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
+        · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
+        · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
 #align equiv.perm.disjoint.is_conj_mul Equiv.Perm.Disjoint.isConj_mul
 
 section FixedPoints
@@ -1862,13 +1862,14 @@ namespace List
 
 variable [DecidableEq α] {l : List α}
 
+set_option linter.deprecated false in -- nthLe
 theorem _root_.List.Nodup.isCycleOn_formPerm (h : l.Nodup) : l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine' ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => _⟩
   rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
   rw [← List.indexOf_get ha, ← List.indexOf_get hb]
   refine' ⟨l.indexOf b - l.indexOf a, _⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_ofNat,
-    Equiv.Perm.coe_mul, List.formPerm_pow_apply_nthLe _ h, Function.comp]
+    Equiv.Perm.coe_mul, ← List.nthLe_eq, List.formPerm_pow_apply_nthLe _ h, Function.comp]
   rw [add_comm]
 #align list.nodup.is_cycle_on_form_perm List.Nodup.isCycleOn_formPerm
 
@@ -1921,8 +1922,8 @@ theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
     refine'
       ⟨(Equiv.addRight 1).extendDomain f, _, fun x hx =>
         of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
-    convert Int.addRight_one_isCycle.IsCycleOn.extendDomain _
-    rw [image_comp, Equiv.image_eq_preimage]
+    convert Int.addRight_one_isCycle.isCycleOn.extendDomain f
+    rw [Set.image_comp, Equiv.image_eq_preimage]
     ext
     simp
 #align set.countable.exists_cycle_on Set.Countable.exists_cycleOn
@@ -2007,5 +2008,3 @@ theorem _root_.Finset.sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι �
 #align finset.sum_mul_sum_eq_sum_perm Finset.sum_mul_sum_eq_sum_perm
 
 end Finset
-
-#lint
