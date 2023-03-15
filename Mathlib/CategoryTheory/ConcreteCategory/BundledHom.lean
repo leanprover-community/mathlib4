@@ -89,13 +89,14 @@ variable {hom}
 attribute [local instance] ConcreteCategory.hasCoeToFun
 
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
-def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (Iα : d α) (Iβ : d β), Type u}
+def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}
     [BundledHom hom_d] (obj : ∀ ⦃α⦄, c α → d α)
-    (map : ∀ {X Y : Bundled c}, (X ⟶ Y) → ((Bundled.map obj X) ⟶ (Bundled.map obj Y)))
-    (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), (map f) = f) :
+    (map : ∀ {X Y : Bundled c}, (X ⟶ Y) → (Bundled.map @obj X ⟶ (Bundled.map @obj Y)))
+    (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), ⇑map f = ⇑f) :
     HasForget₂ (Bundled c) (Bundled d) :=
-  HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) (@map)
-    (by intros <;> apply hEq_of_eq <;> apply h_map)
+  HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
+    intros X Y f
+    rw [heq_eq_eq, h_map])
 #align category_theory.bundled_hom.mk_has_forget₂ CategoryTheory.BundledHom.mkHasForget₂
 
 variable {d : Type u → Type u}
