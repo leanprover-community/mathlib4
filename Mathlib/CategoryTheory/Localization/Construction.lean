@@ -299,9 +299,7 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤
       by
       intro X Y f
-      have hf := MorphismProperty.top_apply f
-      rw [← this] at hf
-      apply hf
+      simpa only [← this] using MorphismProperty.top_apply f
     refine' morphismProperty_is_top'
       (MorphismProperty.naturalityProperty (NatTransExtension.app τ))
       _ (MorphismProperty.naturalityProperty.stableUnderInverse _)
