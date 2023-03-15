@@ -65,161 +65,159 @@ open Polynomial
 
 variable (R S : Type _) [CommRing R] [CommRing S]
 
-/-- `t n` is the `n`-th Chebyshev polynomial of the first kind -/
-noncomputable def t : ℕ → R[X]
+/-- `T n` is the `n`-th Chebyshev polynomial of the first kind -/
+noncomputable def T : ℕ → R[X]
   | 0 => 1
   | 1 => X
-  | n + 2 => 2 * X * t (n + 1) - t n
+  | n + 2 => 2 * X * T (n + 1) - T n
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T Polynomial.Chebyshev.t
+#align polynomial.chebyshev.T Polynomial.Chebyshev.T
 
 @[simp]
-theorem t_zero : t R 0 = 1 :=
+theorem T_zero : T R 0 = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_zero Polynomial.Chebyshev.t_zero
+#align polynomial.chebyshev.T_zero Polynomial.Chebyshev.T_zero
 
 @[simp]
-theorem t_one : t R 1 = X :=
+theorem T_one : T R 1 = X :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_one Polynomial.Chebyshev.t_one
+#align polynomial.chebyshev.T_one Polynomial.Chebyshev.T_one
 
 @[simp]
-theorem t_add_two (n : ℕ) : t R (n + 2) = 2 * X * t R (n + 1) - t R n := by rw [t]
+theorem T_add_two (n : ℕ) : T R (n + 2) = 2 * X * T R (n + 1) - T R n := by rw [T]
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_add_two Polynomial.Chebyshev.t_add_two
+#align polynomial.chebyshev.T_add_two Polynomial.Chebyshev.T_add_two
 
-theorem t_two : t R 2 = 2 * X ^ 2 - 1 := by simp only [t, sub_left_inj, sq, mul_assoc]
+theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by simp only [T, sub_left_inj, sq, mul_assoc]
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_two Polynomial.Chebyshev.t_two
+#align polynomial.chebyshev.T_two Polynomial.Chebyshev.T_two
 
-theorem t_of_two_le (n : ℕ) (h : 2 ≤ n) : t R n = 2 * X * t R (n - 1) - t R (n - 2) := by
+theorem T_of_two_le (n : ℕ) (h : 2 ≤ n) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm]
-  exact t_add_two R n
+  exact T_add_two R n
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_of_two_le Polynomial.Chebyshev.t_of_two_le
+#align polynomial.chebyshev.T_of_two_le Polynomial.Chebyshev.T_of_two_le
 
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind -/
-noncomputable def u : ℕ → R[X]
+noncomputable def U : ℕ → R[X]
   | 0 => 1
   | 1 => 2 * X
-  | n + 2 => 2 * X * u (n + 1) - u n
+  | n + 2 => 2 * X * U (n + 1) - U n
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.U Polynomial.Chebyshev.u
+#align polynomial.chebyshev.U Polynomial.Chebyshev.U
 
 @[simp]
-theorem u_zero : u R 0 = 1 :=
+theorem U_zero : U R 0 = 1 :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.U_zero Polynomial.Chebyshev.u_zero
+#align polynomial.chebyshev.U_zero Polynomial.Chebyshev.U_zero
 
 @[simp]
-theorem u_one : u R 1 = 2 * X :=
+theorem U_one : U R 1 = 2 * X :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.U_one Polynomial.Chebyshev.u_one
+#align polynomial.chebyshev.U_one Polynomial.Chebyshev.U_one
 
 @[simp]
-theorem u_add_two (n : ℕ) : u R (n + 2) = 2 * X * u R (n + 1) - u R n := by rw [u]
+theorem U_add_two (n : ℕ) : U R (n + 2) = 2 * X * U R (n + 1) - U R n := by rw [U]
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.U_add_two Polynomial.Chebyshev.u_add_two
+#align polynomial.chebyshev.U_add_two Polynomial.Chebyshev.U_add_two
 
-theorem u_two : u R 2 = 4 * X ^ 2 - 1 := by
-  simp only [u]
+theorem U_two : U R 2 = 4 * X ^ 2 - 1 := by
+  simp only [U]
   ring
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.U_two Polynomial.Chebyshev.u_two
+#align polynomial.chebyshev.U_two Polynomial.Chebyshev.U_two
 
-theorem u_of_two_le (n : ℕ) (h : 2 ≤ n) : u R n = 2 * X * u R (n - 1) - u R (n - 2) := by
+theorem U_of_two_le (n : ℕ) (h : 2 ≤ n) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm]
-  exact u_add_two R n
+  exact U_add_two R n
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.U_of_two_le Polynomial.Chebyshev.u_of_two_le
+#align polynomial.chebyshev.U_of_two_le Polynomial.Chebyshev.U_of_two_le
 
-theorem u_eq_x_mul_u_add_t : ∀ n : ℕ, u R (n + 1) = X * u R n + t R (n + 1)
+theorem U_eq_X_mul_U_add_T : ∀ n : ℕ, U R (n + 1) = X * U R n + T R (n + 1)
   | 0 => by
-    simp only [u_zero, u_one, t_one]
+    simp only [U_zero, U_one, T_one]
     ring_nf
-    simp only [u_one, t_one]
+    simp only [U_one, T_one]
     ring
   | 1 => by
-    simp only [u_one, t_two]
-    rw [u_two]
+    simp only [U_one, T_two]
+    rw [U_two]
     ring_nf
-    rw [t_two]
+    rw [T_two]
     ring
   | n + 2 =>
     calc
-      u R (n + 2 + 1) = 2 * X * (X * u R (n + 1) + t R (n + 2)) - (X * u R n + t R (n + 1)) := by
-        rw [u_add_two, u_eq_x_mul_u_add_t n, u_eq_x_mul_u_add_t (n + 1), u_eq_x_mul_u_add_t n]
-      _ = X * (2 * X * u R (n + 1) - u R n) + (2 * X * t R (n + 2) - t R (n + 1)) := by ring
-      _ = X * u R (n + 2) + t R (n + 2 + 1) := by simp only [u_add_two, t_add_two]
-
+      U R (n + 2 + 1) = 2 * X * (X * U R (n + 1) + T R (n + 2)) - (X * U R n + T R (n + 1)) := by
+        rw [U_add_two, U_eq_X_mul_U_add_T n, U_eq_X_mul_U_add_T (n + 1), U_eq_X_mul_U_add_T n]
+      _ = X * (2 * X * U R (n + 1) - U R n) + (2 * X * T R (n + 2) - T R (n + 1)) := by ring
+      _ = X * U R (n + 2) + T R (n + 2 + 1) := by simp only [U_add_two, T_add_two]
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.u_eq_x_mul_u_add_t
+#align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.U_eq_X_mul_U_add_T
 
-theorem t_eq_u_sub_x_mul_u (n : ℕ) : t R (n + 1) = u R (n + 1) - X * u R n := by
-  rw [u_eq_x_mul_u_add_t, add_comm (X * u R n), add_sub_cancel]
+theorem T_eq_U_sub_X_mul_U (n : ℕ) : T R (n + 1) = U R (n + 1) - X * U R n := by
+  rw [U_eq_X_mul_U_add_T, add_comm (X * U R n), add_sub_cancel]
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_eq_U_sub_X_mul_U Polynomial.Chebyshev.t_eq_u_sub_x_mul_u
+#align polynomial.chebyshev.T_eq_U_sub_X_mul_U Polynomial.Chebyshev.T_eq_U_sub_X_mul_U
 
-theorem t_eq_x_mul_t_sub_pol_u : ∀ n : ℕ, t R (n + 2) = X * t R (n + 1) - (1 - X ^ 2) * u R n
+theorem T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1 - X ^ 2) * U R n
   | 0 => by
-    simp only [t_one, t_two, u_zero]
+    simp only [T_one, T_two, U_zero]
     ring_nf
-    simp only [t_one, t_two]
+    simp only [T_one, T_two]
     ring
   | 1 => by
-    simp only [t_add_two, t_zero, t_add_two, u_one, t_one]
+    simp only [T_add_two, T_zero, T_add_two, U_one, T_one]
     ring_nf
-    simp only [t_one]
+    simp only [T_one]
     ring
   | n + 2 =>
     calc
-      t R (n + 2 + 2) = 2 * X * t R (n + 2 + 1) - t R (n + 2) := t_add_two _ _
-      _ = 2 * X * (X * t R (n + 2) - (1 - X ^ 2) * u R (n + 1)) -
-            (X * t R (n + 1) - (1 - X ^ 2) * u R n) :=
-        by simp only [t_eq_x_mul_t_sub_pol_u]
-      _ = X * (2 * X * t R (n + 2) - t R (n + 1)) - (1 - X ^ 2) * (2 * X * u R (n + 1) - u R n) :=
+      T R (n + 2 + 2) = 2 * X * T R (n + 2 + 1) - T R (n + 2) := T_add_two _ _
+      _ = 2 * X * (X * T R (n + 2) - (1 - X ^ 2) * U R (n + 1)) -
+            (X * T R (n + 1) - (1 - X ^ 2) * U R n) :=
+        by simp only [T_eq_X_mul_T_sub_pol_U]
+      _ = X * (2 * X * T R (n + 2) - T R (n + 1)) - (1 - X ^ 2) * (2 * X * U R (n + 1) - U R n) :=
         by ring
-      _ = X * t R (n + 2 + 1) - (1 - X ^ 2) * u R (n + 2) := by rw [t_add_two _ (n + 1), u_add_two]
-
+      _ = X * T R (n + 2 + 1) - (1 - X ^ 2) * U R (n + 2) := by rw [T_add_two _ (n + 1), U_add_two]
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_eq_X_mul_T_sub_pol_U Polynomial.Chebyshev.t_eq_x_mul_t_sub_pol_u
+#align polynomial.chebyshev.T_eq_X_mul_T_sub_pol_U Polynomial.Chebyshev.T_eq_X_mul_T_sub_pol_U
 
-theorem one_sub_x_sq_mul_u_eq_pol_in_t (n : ℕ) :
-    (1 - X ^ 2) * u R n = X * t R (n + 1) - t R (n + 2) := by
-  rw [t_eq_x_mul_t_sub_pol_u, ← sub_add, sub_self, zero_add]
+theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℕ) :
+    (1 - X ^ 2) * U R n = X * T R (n + 1) - T R (n + 2) := by
+  rw [T_eq_X_mul_T_sub_pol_U, ← sub_add, sub_self, zero_add]
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.one_sub_X_sq_mul_U_eq_pol_in_T Polynomial.Chebyshev.one_sub_x_sq_mul_u_eq_pol_in_t
+#align polynomial.chebyshev.one_sub_X_sq_mul_U_eq_pol_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_U_eq_pol_in_T
 
 variable {R S}
 
 @[simp]
-theorem map_t (f : R →+* S) : ∀ n : ℕ, map f (t R n) = t S n
-  | 0 => by simp only [t_zero, Polynomial.map_one]
-  | 1 => by simp only [t_one, map_X]
+theorem map_T (f : R →+* S) : ∀ n : ℕ, map f (T R n) = T S n
+  | 0 => by simp only [T_zero, Polynomial.map_one]
+  | 1 => by simp only [T_one, map_X]
   | n + 2 =>
     by
     have : (1 : R[X]) + 1 = 2 := by
       norm_num
-    simp only [t_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X]
+    simp only [T_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X]
     rw [← this]
     simp only [Polynomial.map_add, Polynomial.map_one]
-    rw [map_t f (n + 1), map_t f n]
+    rw [map_T f (n + 1), map_T f n]
     norm_num
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.map_T Polynomial.Chebyshev.map_t
+#align polynomial.chebyshev.map_T Polynomial.Chebyshev.map_T
 
 @[simp]
-theorem map_u (f : R →+* S) : ∀ n : ℕ, map f (u R n) = u S n
-  | 0 => by simp only [u_zero, Polynomial.map_one]
+theorem map_U (f : R →+* S) : ∀ n : ℕ, map f (U R n) = U S n
+  | 0 => by simp only [U_zero, Polynomial.map_one]
   | 1 =>
     by
-    simp only [u_one, map_X, Polynomial.map_mul, Polynomial.map_add, Polynomial.map_one]
+    simp only [U_one, map_X, Polynomial.map_mul, Polynomial.map_add, Polynomial.map_one]
     change map f (2) * X = 2 * X
     have : (1 : R[X]) + 1 = 2 := by
       norm_num
@@ -230,19 +228,19 @@ theorem map_u (f : R →+* S) : ∀ n : ℕ, map f (u R n) = u S n
     by
     have : (1 : R[X]) + 1 = 2 := by
       norm_num
-    simp only [u_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, ← this, Polynomial.map_add,
+    simp only [U_add_two, Polynomial.map_mul, Polynomial.map_sub, map_X, ← this, Polynomial.map_add,
       Polynomial.map_one]
-    rw [map_u f (n + 1), map_u f n]
+    rw [map_U f (n + 1), map_U f n]
     norm_num
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_u
+#align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_U
 
-theorem t_derivative_eq_u : ∀ n : ℕ, derivative (t R (n + 1)) = (n + 1) * u R n
-  | 0 => by simp only [t_one, u_zero, derivative_X, Nat.cast_zero, zero_add, mul_one]
+theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U R n
+  | 0 => by simp only [T_one, U_zero, derivative_X, Nat.cast_zero, zero_add, mul_one]
   | 1 =>
     by
     have : 1 + 1 = 2 := by norm_num
-    rw [this, t_two, derivative_sub, derivative_one, derivative_mul]
+    rw [this, T_two, derivative_sub, derivative_one, derivative_mul]
     have : ((2 : ℕ) : R[X]) = (2:R[X]) := by norm_num
     rw [← this]
     -- TODO porting: simplify proof
@@ -250,120 +248,118 @@ theorem t_derivative_eq_u : ∀ n : ℕ, derivative (t R (n + 1)) = (n + 1) * u 
         = (2 : R[X]) := by
          norm_cast
     simp only [derivative_nat_cast, derivative_mul, derivative_X_pow]
-    simp only [t_two, u_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow,
+    simp only [T_two, U_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow,
       Nat.cast_one, Nat.cast_two]
     simp only [this]
     norm_num
   | n + 2 =>
     calc
-      derivative (t R (n + 2 + 1)) =
-          2 * t R (n + 2) + 2 * X * derivative (t R (n + 1 + 1)) - derivative (t R (n + 1)) :=
+      derivative (T R (n + 2 + 1)) =
+          2 * T R (n + 2) + 2 * X * derivative (T R (n + 1 + 1)) - derivative (T R (n + 1)) :=
         by
-          rw [t_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X]
+          rw [T_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X]
           have : (@FunLike.coe (R →+* R[X]) R (fun _ => R[X]) MulHomClass.toFunLike C 2 : R[X])
             = (2 : R[X]) := by
             norm_cast
           rw [← this, derivative_C]
           ring_nf
-      _ = 2 * (u R (n + 1 + 1) - X * u R (n + 1)) + 2 * X * (((n + 1 + 1) : R[X]) * u R (n + 1))
-          - ((n + 1) : R[X]) * u R n := by
-        rw_mod_cast [t_derivative_eq_u (n + 1), t_derivative_eq_u n, t_eq_u_sub_x_mul_u _ (n + 1)]
-      _ = (n + 1 : R[X]) * (2 * X * u R (n + 1) - u R n) + 2 * u R (n + 2) := by ring
-      _ = (n + 1) * u R (n + 2) + 2 * u R (n + 2) := by rw [u_add_two]
-      _ = (n + 2 + 1) * u R (n + 2) := by ring
-      _ = (↑(n + 2) + 1) * u R (n + 2) := by norm_cast
+      _ = 2 * (U R (n + 1 + 1) - X * U R (n + 1)) + 2 * X * (((n + 1 + 1) : R[X]) * U R (n + 1))
+          - ((n + 1) : R[X]) * U R n := by
+        rw_mod_cast [T_derivative_eq_U (n + 1), T_derivative_eq_U n, T_eq_U_sub_X_mul_U _ (n + 1)]
+      _ = (n + 1 : R[X]) * (2 * X * U R (n + 1) - U R n) + 2 * U R (n + 2) := by ring
+      _ = (n + 1) * U R (n + 2) + 2 * U R (n + 2) := by rw [U_add_two]
+      _ = (n + 2 + 1) * U R (n + 2) := by ring
+      _ = (↑(n + 2) + 1) * U R (n + 2) := by norm_cast
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_derivative_eq_U Polynomial.Chebyshev.t_derivative_eq_u
+#align polynomial.chebyshev.T_derivative_eq_U Polynomial.Chebyshev.T_derivative_eq_U
 
-theorem one_sub_x_sq_mul_derivative_t_eq_poly_in_t (n : ℕ) :
-    (1 - X ^ 2) * derivative (t R (n + 1)) = (n + 1 : R[X]) * (t R n - X * t R (n + 1)) :=
+theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℕ) :
+    (1 - X ^ 2) * derivative (T R (n + 1)) = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) :=
   calc
-    (1 - X ^ 2) * derivative (t R (n + 1)) = (1 - X ^ 2) * ((n + 1 : R[X]) * u R n) := by
-      rw [t_derivative_eq_u]
-    _ = (n + 1 : R[X]) * ((1 - X ^ 2) * u R n) := by ring
-    _ = (n + 1 : R[X]) * (X * t R (n + 1) - (2 * X * t R (n + 1) - t R n)) := by
-      rw [one_sub_x_sq_mul_u_eq_pol_in_t, t_add_two]
-    _ = (n + 1 : R[X]) * (t R n - X * t R (n + 1)) := by ring
-
+    (1 - X ^ 2) * derivative (T R (n + 1)) = (1 - X ^ 2) * ((n + 1 : R[X]) * U R n) := by
+      rw [T_derivative_eq_U]
+    _ = (n + 1 : R[X]) * ((1 - X ^ 2) * U R n) := by ring
+    _ = (n + 1 : R[X]) * (X * T R (n + 1) - (2 * X * T R (n + 1) - T R n)) := by
+      rw [one_sub_X_sq_mul_U_eq_pol_in_T, T_add_two]
+    _ = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by ring
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_x_sq_mul_derivative_t_eq_poly_in_t
+#align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T
 
-theorem add_one_mul_t_eq_poly_in_u (n : ℕ) :
-    ((n : R[X]) + 1) * t R (n + 1) = X * u R n - (1 - X ^ 2) * derivative (u R n) := by
+theorem add_one_mul_T_eq_poly_in_U (n : ℕ) :
+    ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
   have h :
-    derivative (t R (n + 2)) =
-      u R (n + 1) - X * u R n + X * derivative (t R (n + 1)) + 2 * X * u R n -
-        (1 - X ^ 2) * derivative (u R n) :=
+    derivative (T R (n + 2)) =
+      U R (n + 1) - X * U R n + X * derivative (T R (n + 1)) + 2 * X * U R n -
+        (1 - X ^ 2) * derivative (U R n) :=
     by
-    conv_lhs => rw [t_eq_x_mul_t_sub_pol_u]
+    conv_lhs => rw [T_eq_X_mul_T_sub_pol_U]
     simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
-      one_mul, t_derivative_eq_u]
-    rw [t_eq_u_sub_x_mul_u, C_eq_nat_cast]
+      one_mul, T_derivative_eq_U]
+    rw [T_eq_U_sub_X_mul_U, C_eq_nat_cast]
     ring
   calc
-    ((n : R[X]) + 1) * t R (n + 1) =
-        ((n : R[X]) + 1 + 1) * (X * u R n + t R (n + 1)) - X * ((n + 1 : R[X]) * u R n) -
-          (X * u R n + t R (n + 1)) :=
+    ((n : R[X]) + 1) * T R (n + 1) =
+        ((n : R[X]) + 1 + 1) * (X * U R n + T R (n + 1)) - X * ((n + 1 : R[X]) * U R n) -
+          (X * U R n + T R (n + 1)) :=
       by ring
-    _ = derivative (t R (n + 2)) - X * derivative (t R (n + 1)) - u R (n + 1) := by
-      rw [← u_eq_x_mul_u_add_t, ← t_derivative_eq_u, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_one, ←
-        t_derivative_eq_u (n + 1)]
-    _ = u R (n + 1) - X * u R n + X * derivative (t R (n + 1)) + 2 * X * u R n -
-              (1 - X ^ 2) * derivative (u R n) -
-            X * derivative (t R (n + 1)) -
-          u R (n + 1) :=
+    _ = derivative (T R (n + 2)) - X * derivative (T R (n + 1)) - U R (n + 1) := by
+      rw [← U_eq_X_mul_U_add_T, ← T_derivative_eq_U, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_one, ←
+        T_derivative_eq_U (n + 1)]
+    _ = U R (n + 1) - X * U R n + X * derivative (T R (n + 1)) + 2 * X * U R n -
+              (1 - X ^ 2) * derivative (U R n) -
+            X * derivative (T R (n + 1)) -
+          U R (n + 1) :=
       by rw [h]
-    _ = X * u R n - (1 - X ^ 2) * derivative (u R n) := by ring
-
+    _ = X * U R n - (1 - X ^ 2) * derivative (U R n) := by ring
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.add_one_mul_T_eq_poly_in_U Polynomial.Chebyshev.add_one_mul_t_eq_poly_in_u
+#align polynomial.chebyshev.add_one_mul_T_eq_poly_in_U Polynomial.Chebyshev.add_one_mul_T_eq_poly_in_U
 
 variable (R)
 
 /-- The product of two Chebyshev polynomials is the sum of two other Chebyshev polynomials. -/
-theorem mul_t : ∀ m k, 2 * t R m * t R (m + k) = t R (2 * m + k) + t R k
+theorem mul_T : ∀ m k, 2 * T R m * T R (m + k) = T R (2 * m + k) + T R k
   | 0 => by simp [two_mul, add_mul]
   | 1 => by simp [add_comm]
   | m + 2 => by
     intro k
     -- clean up the `T` nat indices in the goal
-    suffices 2 * t R (m + 2) * t R (m + k + 2) = t R (2 * m + k + 4) + t R k
+    suffices 2 * T R (m + 2) * T R (m + k + 2) = T R (2 * m + k + 4) + T R k
       by
       have h_nat₁ : 2 * (m + 2) + k = 2 * m + k + 4 := by ring
       have h_nat₂ : m + 2 + k = m + k + 2 := by ring
       simpa [h_nat₁, h_nat₂] using this
     -- clean up the `T` nat indices in the inductive hypothesis applied to `m + 1` and
     -- `k + 1`
-    have H₁ : 2 * t R (m + 1) * t R (m + k + 2) = t R (2 * m + k + 3) + t R (k + 1) :=
+    have H₁ : 2 * T R (m + 1) * T R (m + k + 2) = T R (2 * m + k + 3) + T R (k + 1) :=
       by
       have h_nat₁ : m + 1 + (k + 1) = m + k + 2 := by ring
       have h_nat₂ : 2 * (m + 1) + (k + 1) = 2 * m + k + 3 := by ring
-      simpa [h_nat₁, h_nat₂] using mul_t (m + 1) (k + 1)
+      simpa [h_nat₁, h_nat₂] using mul_T (m + 1) (k + 1)
     -- clean up the `T` nat indices in the inductive hypothesis applied to `m` and `k + 2`
-    have H₂ : 2 * t R m * t R (m + k + 2) = t R (2 * m + k + 2) + t R (k + 2) :=
+    have H₂ : 2 * T R m * T R (m + k + 2) = T R (2 * m + k + 2) + T R (k + 2) :=
       by
       have h_nat₁ : 2 * m + (k + 2) = 2 * m + k + 2 := by simp [add_assoc]
       have h_nat₂ : m + (k + 2) = m + k + 2 := by simp [add_assoc]
-      simpa [h_nat₁, h_nat₂] using mul_t m (k + 2)
+      simpa [h_nat₁, h_nat₂] using mul_T m (k + 2)
     -- state the `T` recurrence relation for a few useful indices
-    have h₁ := t_add_two R m
-    have h₂ := t_add_two R (2 * m + k + 2)
-    have h₃ := t_add_two R k
+    have h₁ := T_add_two R m
+    have h₂ := T_add_two R (2 * m + k + 2)
+    have h₃ := T_add_two R k
     -- the desired identity is an appropriate linear combination of H₁, H₂, h₁, h₂, h₃
-    linear_combination 2 * t R (m + k + 2) * h₁ + 2 * (X : R[X]) * H₁ - H₂ - h₂ - h₃
+    linear_combination 2 * T R (m + k + 2) * h₁ + 2 * (X : R[X]) * H₁ - H₂ - h₂ - h₃
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.mul_T Polynomial.Chebyshev.mul_t
+#align polynomial.chebyshev.mul_T Polynomial.Chebyshev.mul_T
 
 /-- The `(m * n)`-th Chebyshev polynomial is the composition of the `m`-th and `n`-th -/
-theorem t_mul : ∀ m n, t R (m * n) = (t R m).comp (t R n)
+theorem T_mul : ∀ m n, T R (m * n) = (T R m).comp (T R n)
   | 0 => by simp
   | 1 => by simp
   | m + 2 => by
     intro n
-    have : 2 * t R n * t R ((m + 1) * n) = t R ((m + 2) * n) + t R (m * n) := by
-      convert mul_t R n (m * n) <;> ring
-    simp [this, t_mul m, ← t_mul (m + 1)]
+    have : 2 * T R n * T R ((m + 1) * n) = T R ((m + 2) * n) + T R (m * n) := by
+      convert mul_T R n (m * n) <;> ring
+    simp [this, T_mul m, ← T_mul (m + 1)]
 set_option linter.uppercaseLean3 false in
-#align polynomial.chebyshev.T_mul Polynomial.Chebyshev.t_mul
+#align polynomial.chebyshev.T_mul Polynomial.Chebyshev.T_mul
 
 end Polynomial.Chebyshev
