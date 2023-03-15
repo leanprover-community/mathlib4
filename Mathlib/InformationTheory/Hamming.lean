@@ -22,12 +22,12 @@ in coding theory, in which it is fundamental for defining the minimum distance o
 code.
 
 ## Main definitions
-* `hamming_dist x y`: the Hamming distance between `x` and `y`, the number of entries which differ.
-* `hamming_norm x`: the Hamming norm of `x`, the number of non-zero entries.
-* `hamming β`: a type synonym for `Π i, β i` with `dist` and `norm` provided by the above.
-* `hamming.to_hamming`, `hamming.of_hamming`: functions for casting between `hamming β` and
+* `hammingDist x y`: the Hamming distance between `x` and `y`, the number of entries which differ.
+* `hammingNorm x`: the Hamming norm of `x`, the number of non-zero entries.
+* `Hamming β`: a type synonym for `Π i, β i` with `dist` and `norm` provided by the above.
+* `Hamming.toHamming`, `Hamming.ofHamming`: functions for casting between `Hamming β` and
 `Π i, β i`.
-* the Hamming norm forms a normed group on `hamming β`.
+* the Hamming norm forms a normed group on `Hamming β`.
 -/
 
 
@@ -242,11 +242,11 @@ theorem hammingDist_eq_hammingNorm [∀ i, AddGroup (β i)] (x y : ∀ i, β i) 
 
 end HammingDistNorm
 
-/-! ### The `hamming` type synonym -/
+/-! ### The `Hamming` type synonym -/
 
 
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
-the Hamming metric and norm, instead of `pi.normed_add_comm_group` which uses the sup norm. -/
+the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/
 def Hamming {ι : Type _} (β : ι → Type _) : Type _ :=
   ∀ i, β i
 #align hamming Hamming
@@ -303,13 +303,13 @@ instance (α) [Semiring α] (β : ι → Type _) [∀ i, AddCommMonoid (β i)] [
 /-! API to/from the type synonym. -/
 
 
-/-- `to_hamming` is the identity function to the `hamming` of a type.  -/
+/-- `Hamming.toHamming` is the identity function to the `Hamming` of a type.  -/
 @[match_pattern]
 def toHamming : (∀ i, β i) ≃ Hamming β :=
   Equiv.refl _
 #align hamming.to_hamming Hamming.toHamming
 
-/-- `of_hamming` is the identity function from the `hamming` of a type.  -/
+/-- `Hamming.ofHamming` is the identity function from the `Hamming` of a type.  -/
 @[match_pattern]
 def ofHamming : Hamming β ≃ ∀ i, β i :=
   Equiv.refl _
@@ -403,7 +403,7 @@ theorem ofHamming_smul [∀ i, SMul α (β i)] {r : α} {x : Hamming β} :
 
 section
 
-/-! Instances equipping `hamming` with `hamming_norm` and `hamming_dist`. -/
+/-! Instances equipping `Hamming` with `hammingNorm` and `hammingDist`. -/
 
 variable [Fintype ι] [∀ i, DecidableEq (β i)]
 
