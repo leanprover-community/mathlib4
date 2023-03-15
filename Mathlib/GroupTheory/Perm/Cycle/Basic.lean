@@ -1811,7 +1811,7 @@ theorem Disjoint.isConj_mul {α : Type _} [Finite α] {σ τ π ρ : Perm α} (h
       · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
           apply_eq_iff_eq]
     · intro x hx
-      simp only [trans_apply, symm_trans_apply, setCongr_apply, setCongr_apply,
+      simp only [trans_apply, symm_trans_apply, Equiv.Set.ofEq_apply, Equiv.Set.ofEq_symm_apply,
         Equiv.sumCongr_apply]
       rw [hd1', Set.mem_union] at hx
       cases' hx with hxσ hxτ
@@ -1819,10 +1819,9 @@ theorem Disjoint.isConj_mul {α : Type _} [Finite α] {σ τ π ρ : Perm α} (h
         rw [Set.union_apply_left hd1''.le_bot _, Set.union_apply_left hd1''.le_bot _]
         simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
           Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
-        · have h := (hd2 (f x)).resolve_left _
+        · have h := (hd2 (f x)).resolve_left ?_
           · rw [mul_apply, mul_apply] at h
-            simp [h, inv_apply_self, (hd1 x).resolve_left hxσ]
-            congr_arg
+            rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
         · rwa [Subtype.coe_mk, Subtype.coe_mk, mem_coe, mem_support]
         · rwa [Subtype.coe_mk, Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
