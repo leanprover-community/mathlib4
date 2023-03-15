@@ -8,7 +8,7 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `add_monoid_algebra`
@@ -67,8 +67,7 @@ variable [Add A] [Add B] [Add T] [CovariantClass B B (· + ·) (· ≤ ·)]
 
 theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : AddMonoidAlgebra R A) :
-    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb :=
-  by
+    (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
   refine' (Finset.sup_mono <| support_mul _ _).trans _
   simp_rw [Finset.sup_bunionᵢ, Finset.sup_singleton]
   refine' Finset.sup_le fun fd fds => Finset.sup_le fun gd gds => degbm.trans <| add_le_add _ _ <;>
@@ -113,8 +112,7 @@ theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
 #align add_monoid_algebra.le_inf_support_list_prod AddMonoidAlgebra.le_inf_support_list_prod
 
 theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
-    (n : ℕ) (f : AddMonoidAlgebra R A) : (f ^ n).support.sup degb ≤ n • f.support.sup degb :=
-  by
+    (n : ℕ) (f : AddMonoidAlgebra R A) : (f ^ n).support.sup degb ≤ n • f.support.sup degb := by
   rw [← List.prod_replicate, ← List.sum_replicate]
   refine' (sup_support_list_prod_le degb0 degbm _).trans_eq _
   rw [List.map_replicate]
@@ -140,8 +138,7 @@ variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [CovariantClass B 
 
 theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (m : Multiset (AddMonoidAlgebra R A)) :
-    m.Prod.support.sup degb ≤ (m.map fun f : AddMonoidAlgebra R A => f.support.sup degb).Sum :=
-  by
+    m.Prod.support.sup degb ≤ (m.map fun f : AddMonoidAlgebra R A => f.support.sup degb).Sum := by
   induction m using Quot.inductionOn
   rw [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_sum, Multiset.coe_prod]
   exact sup_support_list_prod_le degb0 degbm m
