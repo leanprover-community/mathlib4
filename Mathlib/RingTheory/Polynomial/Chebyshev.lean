@@ -246,7 +246,7 @@ theorem t_derivative_eq_u : ∀ n : ℕ, derivative (t R (n + 1)) = (n + 1) * u 
     have : ((2 : ℕ) : R[X]) = (2:R[X]) := by norm_num
     rw [← this]
     -- TODO porting: simplify proof
-    have : (@FunLike.coe (R →+* R[X]) R (fun a => R[X]) MulHomClass.toFunLike C 2 : R[X])
+    have : (@FunLike.coe (R →+* R[X]) R (fun _ => R[X]) MulHomClass.toFunLike C 2 : R[X])
         = (2 : R[X]) := by
          norm_cast
     simp only [derivative_nat_cast, derivative_mul, derivative_X_pow]
@@ -260,19 +260,18 @@ theorem t_derivative_eq_u : ∀ n : ℕ, derivative (t R (n + 1)) = (n + 1) * u 
           2 * t R (n + 2) + 2 * X * derivative (t R (n + 1 + 1)) - derivative (t R (n + 1)) :=
         by
           rw [t_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X]
-          have : (@FunLike.coe (R →+* R[X]) R (fun a => R[X]) MulHomClass.toFunLike C 2 : R[X])
+          have : (@FunLike.coe (R →+* R[X]) R (fun _ => R[X]) MulHomClass.toFunLike C 2 : R[X])
             = (2 : R[X]) := by
             norm_cast
           rw [← this, derivative_C]
           ring_nf
       _ = 2 * (u R (n + 1 + 1) - X * u R (n + 1)) + 2 * X * (((n + 1 + 1) : R[X]) * u R (n + 1))
-        - ((n + 1) : R[X]) * u R n := by
-            rw_mod_cast [t_derivative_eq_u, t_derivative_eq_u, t_eq_u_sub_x_mul_u]
+          - ((n + 1) : R[X]) * u R n := by
+        rw_mod_cast [t_derivative_eq_u (n + 1), t_derivative_eq_u n, t_eq_u_sub_x_mul_u _ (n + 1)]
       _ = (n + 1 : R[X]) * (2 * X * u R (n + 1) - u R n) + 2 * u R (n + 2) := by ring
       _ = (n + 1) * u R (n + 2) + 2 * u R (n + 2) := by rw [u_add_two]
       _ = (n + 2 + 1) * u R (n + 2) := by ring
       _ = (↑(n + 2) + 1) * u R (n + 2) := by norm_cast
-
 set_option linter.uppercaseLean3 false in
 #align polynomial.chebyshev.T_derivative_eq_U Polynomial.Chebyshev.t_derivative_eq_u
 
