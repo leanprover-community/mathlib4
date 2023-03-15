@@ -11,16 +11,6 @@ example (x y : Nat) : x + y = y + x := by library_search
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by library_search
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by library_search
 
-set_option trace.Tactic.librarySearch true
-#print nsmulRec
-
-open Lean Meta
-#eval do
-  let e ← mkConst' `Nat.pos_of_ne_zero
-  let ty ← inferType e
-  let (_, _, ty) ← forallMetaTelescopeReducing ty
-  @DiscrTree.mkPath true ty
-
 example : Int := by library_search
 
 example : x < x + 1 := library_search%
