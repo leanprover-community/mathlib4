@@ -115,6 +115,15 @@ example (f : ℕ ≃ ℕ) (a b : ℕ) (h : a = b) : True := by
   guard_hyp h : f a = f b
   trivial
 
+example (f : ℤ ≃ ℤ) (a b : ℕ) (h : a = b) : True := by
+  apply_fun f at h
+  guard_hyp h : f a = f b
+  trivial
+
+example (f : ℤ ≃ ℤ) (a b : α) (h : a = b) : True := by
+  fail_if_success apply_fun f at h
+  trivial
+
 example (f : ℕ → ℕ) (a b : ℕ) (h : a = b) : True := by
   apply_fun f at h
   guard_hyp h : f a = f b
