@@ -108,7 +108,8 @@ protected theorem Path.ext : ∀ {γ₁ γ₂ : Path x y}, (γ₁ : I → X) = �
 namespace Path
 
 @[simp]
-theorem coe_mk (f : I → X) (h₁ h₂ h₃) : ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
+theorem coe_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
+    ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
 #align path.coe_mk Path.coe_mk
 
@@ -371,17 +372,6 @@ theorem refl_trans_refl {X : Type _} [TopologicalSpace X] {a : X} :
   rfl
 #align path.refl_trans_refl Path.refl_trans_refl
 
-example : (0 : ℝ) < 1 := by linarith
-example (a : X) : a = a ∧ (0 : ℝ) < 1 := by
-  constructor
-  · rfl
-  · linarith
-
-example (a : X) : (0 : ℝ) < 1 ∧ a = a := by
-  constructor
-  linarith
-  rfl
-
 theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
     range (γ₁.trans γ₂) = range γ₁ ∪ range γ₂ := by
   rw [Path.trans]
@@ -391,36 +381,35 @@ theorem trans_range {X : Type _} [TopologicalSpace X] {a b c : X} (γ₁ : Path 
     · left
       refine' ⟨⟨2 * t, ⟨by positivity, (le_div_iff' <| by norm_num).mp h⟩⟩, _⟩
       rw [← γ₁.extend_extends]
-      simp only [h, ContinuousMap.comp_apply, if_true] at hxt
-      sorry
-      --exact hxt
+      rwa [coe_mk, Function.comp_apply, if_pos h] at hxt
     · right
-      use 2 * t - 1, ⟨by linarith, by linarith⟩
+      refine' ⟨⟨2 * t - 1, ⟨_, by norm_num; exact ht1⟩⟩, _⟩
+      · rw [not_le, div_lt_iff (zero_lt_two : (0 : ℝ) < 2)] at h
+        norm_num
+        exact mul_comm t 2 ▸ h.le
       rw [← γ₂.extend_extends]
-      --unfold_coes  at hxt
-      simp only [h, comp_app, if_false] at hxt
-      exact hxt
+      rwa [coe_mk, Function.comp_apply, if_neg h] at hxt
   · rintro x (⟨⟨t, ht0, ht1⟩, hxt⟩ | ⟨⟨t, ht0, ht1⟩, hxt⟩)
-    · use ⟨t / 2, ⟨by linarith, by linarith⟩⟩
-      --unfold_coes
-      have : t / 2 ≤ 1 / 2 := by linarith
-      simp only [this, comp_app, if_true]
+    · refine' ⟨⟨t / 2, ⟨by positivity,
+        (div_le_iff <| by norm_num).mpr <| ht1.trans (by norm_num)⟩⟩, _⟩
+      have : t / 2 ≤ 1 / 2 := (div_le_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr ht1
+      rw [coe_mk, Function.comp_apply, if_pos this, Subtype.coe_mk]
       ring_nf
       rwa [γ₁.extend_extends]
     · by_cases h : t = 0
-      · use ⟨1 / 2, ⟨by linarith, by linarith⟩⟩
-        --unfold_coes
-        simp only [h, comp_app, if_true, le_refl, mul_one_div_cancel (two_ne_zero' ℝ)]
+      · refine' ⟨⟨1 / 2, ⟨by positivity, by norm_num⟩⟩, _⟩
+        rw [coe_mk, Function.comp_apply, if_pos le_rfl, Subtype.coe_mk,
+          mul_one_div_cancel (two_ne_zero' ℝ)]
         rw [γ₁.extend_one]
         rwa [← γ₂.extend_extends, h, γ₂.extend_zero] at hxt
-      · use ⟨(t + 1) / 2, ⟨by linarith, by linarith⟩⟩
-        --unfold_coes
-        change t ≠ 0 at h
+      · refine' ⟨⟨(t + 1) / 2, ⟨by positivity, _⟩⟩, _⟩
+        · exact (div_le_iff <| by norm_num).mpr <| (add_le_add_right ht1 1).trans (by norm_num)
+        replace h : t ≠ 0 := h
         have ht0 := lt_of_le_of_ne ht0 h.symm
         have : ¬(t + 1) / 2 ≤ 1 / 2 := by
           rw [not_le]
-          linarith
-        simp only [comp_app, if_false, this]
+          exact (div_lt_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr (by norm_num; exact ht0)
+        rw [coe_mk, Function.comp_apply, Subtype.coe_mk, if_neg this]
         ring_nf
         rwa [γ₂.extend_extends]
 #align path.trans_range Path.trans_range
