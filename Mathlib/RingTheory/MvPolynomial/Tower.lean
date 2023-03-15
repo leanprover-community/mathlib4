@@ -15,7 +15,7 @@ import Mathlib.Data.MvPolynomial.Basic
 # Algebra towers for multivariate polynomial
 
 This file proves some basic results about the algebra tower structure for the type
-`mv_polynomial σ R`.
+`MvPolynomial σ R`.
 
 This structure itself is provided elsewhere as `mv_polynomial.is_scalar_tower`
 
