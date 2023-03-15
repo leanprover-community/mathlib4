@@ -308,7 +308,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
   have : f x ∈ map f s := by
     rw [mem_map]
     exact ⟨x, hx, rfl⟩
-  rw [← ht1, ← Set.image_id ↑t1, Finsupp.mem_span_image_iff_total] at this
+  rw [← ht1, ← Set.image_id (t1 : Set P), Finsupp.mem_span_image_iff_total] at this
   rcases this with ⟨l, hl1, hl2⟩
   refine'
     mem_sup.2
@@ -353,6 +353,7 @@ theorem fg_induction (R M : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
       apply h₂ <;> apply_assumption
 #align submodule.fg_induction Submodule.fg_induction
 
+set_option synthInstance.etaExperiment true in
 /-- The kernel of the composition of two linear maps is finitely generated if both kernels are and
 the first morphism is surjective. -/
 theorem fg_ker_comp {R M N P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
@@ -361,7 +362,7 @@ theorem fg_ker_comp {R M N P : Type _} [Ring R] [AddCommGroup M] [Module R M] [A
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
-  · rwa [inf_of_le_right (show f.ker ≤ comap f g.ker from comap_mono bot_le)]
+  · rwa [inf_of_le_right (show LinearMap.ker f ≤ comap f (LinearMap.ker g) from comap_mono bot_le)]
 #align submodule.fg_ker_comp Submodule.fg_ker_comp
 
 theorem fg_restrictScalars {R S M : Type _} [CommSemiring R] [Semiring S] [Algebra R S]
@@ -370,7 +371,7 @@ theorem fg_restrictScalars {R S M : Type _} [CommSemiring R] [Semiring S] [Algeb
   by
   obtain ⟨X, rfl⟩ := hfin
   use X
-  exact (Submodule.restrictScalars_span R S h ↑X).symm
+  exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
 #align submodule.fg_restrict_scalars Submodule.fg_restrictScalars
 
 theorem Fg.stablizes_of_supᵢ_eq {M' : Submodule R M} (hM' : M'.Fg) (N : ℕ →o Submodule R M)
@@ -381,7 +382,7 @@ theorem Fg.stablizes_of_supᵢ_eq {M' : Submodule R M} (hM' : M'.Fg) (N : ℕ �
       (by
         rw [H, ← hS]
         exact Submodule.subset_span s.2)
-  choose f hf
+  choose f hf using this
   use S.attach.sup f
   apply le_antisymm
   · conv_lhs => rw [← hS]
@@ -415,9 +416,11 @@ theorem fg_iff_compact (s : Submodule R M) : s.Fg ↔ CompleteLattice.IsCompactE
         exact le_antisymm husup this
         rw [sSup, Finset.sup_id_eq_supₛ]
         exact supₛ_le_supₛ huspan
-      obtain ⟨t, ⟨hts, rfl⟩⟩ := Finset.subset_image_iff.mp huspan
+      -- Porting note: had to split this out of the `obtain`
+      have := Finset.subset_image_iff.mp huspan
+      obtain ⟨t, ⟨-, rfl⟩⟩ := this
       rw [Finset.sup_finset_image, Function.comp.left_id, Finset.sup_eq_supᵢ, supr_rw, ←
-        span_eq_supr_of_singleton_spans, eq_comm] at ssup
+        span_eq_supᵢ_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
 
@@ -484,6 +487,7 @@ theorem Fg.map {R S : Type _} [Semiring R] [Semiring S] {I : Ideal R} (h : I.Fg)
     rw [Finset.coe_image, ← Ideal.map_span, hs]
 #align ideal.fg.map Ideal.Fg.map
 
+set_option synthInstance.etaExperiment true in
 theorem fg_ker_comp {R S A : Type _} [CommRing R] [CommRing S] [CommRing A] (f : R →+* S)
     (g : S →+* A) (hf : f.ker.Fg) (hg : g.ker.Fg) (hsur : Function.Surjective f) :
     (g.comp f).ker.Fg := by
@@ -493,7 +497,7 @@ theorem fg_ker_comp {R S A : Type _} [CommRing R] [CommRing S] [CommRing A] (f :
   letI : IsScalarTower R S A := IsScalarTower.of_algebraMap_eq fun _ => rfl
   let f₁ := Algebra.linearMap R S
   let g₁ := (IsScalarTower.toAlgHom R S A).toLinearMap
-  exact Submodule.fg_ker_comp f₁ g₁ hf (Submodule.fg_restrictScalars g.ker hg hsur) hsur
+  exact Submodule.fg_ker_comp f₁ g₁ hf (Submodule.fg_restrictScalars (RingHom.ker g) hg hsur) hsur
 #align ideal.fg_ker_comp Ideal.fg_ker_comp
 
 theorem exists_radical_pow_le_of_fg {R : Type _} [CommSemiring R] (I : Ideal R) (h : I.radical.Fg) :
@@ -669,12 +673,11 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
 #align ring_hom.finite.of_surjective RingHom.Finite.of_surjective
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite :=
+  letI := f.toAlgebra
+  letI := g.toAlgebra
+  letI := (g.comp f).toAlgebra
   @Module.Finite.trans A B C _ _ f.toAlgebra _ (g.comp f).toAlgebra g.toAlgebra
-    ⟨fun a b c =>
-      show (g ((f a) * b)) * c = g (f a) * (g b * c)
-      by rw [map_mul, mul_assoc]
-
-      ⟩
+    ⟨fun a b c => show (g ((f a) * b)) * c = g (f a) * (g b * c) by rw [map_mul, mul_assoc]⟩
     hf hg
 #align ring_hom.finite.comp RingHom.Finite.comp
 
