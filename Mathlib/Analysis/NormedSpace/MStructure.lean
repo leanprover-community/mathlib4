@@ -8,9 +8,9 @@ Authors: Christopher Hoskin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Ring.Idempotents
-import Mathbin.Tactic.NoncommRing
-import Mathbin.Analysis.Normed.Group.Basic
+import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Tactic.NoncommRing
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # M-structure
@@ -103,8 +103,7 @@ theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) 
 #align is_Lprojection.Lcomplement_iff IsLprojection.Lcomplement_iff
 
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
-    Commute P Q :=
-  by
+    Commute P Q := by
   have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ =>
     by
     refine' @eq_of_smul_eq_smul _ X _ _ _ _ fun x => _
@@ -152,8 +151,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
 #align is_Lprojection.commute IsLprojection.commute
 
 theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
-    IsLprojection X (P * Q) :=
-  by
+    IsLprojection X (P * Q) := by
   refine' ⟨IsIdempotentElem.mul_of_commute (h₁.commute h₂) h₁.proj h₂.proj, _⟩
   intro x
   refine' le_antisymm _ _
@@ -175,8 +173,7 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
 #align is_Lprojection.mul IsLprojection.mul
 
 theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
-    IsLprojection X (P + Q - P * Q) :=
-  by
+    IsLprojection X (P + Q - P * Q) := by
   convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
   noncomm_ring
 #align is_Lprojection.join IsLprojection.join
