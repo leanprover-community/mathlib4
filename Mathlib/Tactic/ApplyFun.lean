@@ -76,8 +76,7 @@ def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
     for mvarId in mvars do
       let d ← mvarId.getDecl
       if let .synthetic := d.kind then
-        let mvarVal ← synthInstance (← mvarId.getType)
-        mvarId.assign mvarVal
+        mvarId.assign (← synthInstance (← mvarId.getType))
     let eq' ← instantiateMVars (← mkEq lhs' rhs')
     let mvar ← mkFreshExprMVar eq'
     let [] ← mvar.mvarId!.congrN | throwError "`apply_fun` could not construct congruence"
