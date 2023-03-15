@@ -1,40 +1,34 @@
 /-
-Copyright (c) 2021 Gabriel Ebner. All rights reserved.
+Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gabriel Ebner, Scott Morrison
+Authors: Scott Morrison
 -/
-import Std.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
+import Mathlib.Lean.Meta.Basic
+import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.TryThis
 
 /-!
-# Library search
+# Propose
 
-This file defines a tactic `library_search`
-and a term elaborator `library_search%`
-that tries to find a lemma
-solving the current goal
-(subgoals are solved using `solveByElim`).
+This file defines a tactic `propose using a, b, c`
+that tries to find a lemma which makes use of each of the local hypotheses `a, b, c`.
+
+The variant `propose : t using a, b, c` restricts to lemmas with type `t` (which may contain `_`).
 
 ```
-example : x < x + 1 := library_search%
-example : Nat := by library_search
+import Std.Data.List.Basic
+import Mathlib.Tactic.Propose
+
+example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
+  propose using w, m -- Try this: `List.disjoint_of_subset_left m w`
+  trivial
 ```
 -/
-
-namespace Lean.Meta.DiscrTree
-
-def insertIfSpecific {α : Type} {s : Bool} [BEq α] (d : DiscrTree α s)
-    (keys : Array (DiscrTree.Key s)) (v : α) : DiscrTree α s :=
-  if keys == #[Key.star] || keys == #[Key.const `Eq 3, Key.star, Key.star, Key.star] then
-    d
-  else
-    d.insertCore keys v
-
-end Lean.Meta.DiscrTree
 
 namespace Mathlib.Tactic.Propose
 
@@ -42,21 +36,10 @@ open Lean Meta Std.Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
 
--- from Lean.Server.Completion
-private def isBlackListed (declName : Name) : MetaM Bool := do
-  if declName == ``sorryAx then return true
-  if declName matches .str _ "inj" then return true
-  if declName matches .str _ "noConfusionType" then return true
-  let env ← getEnv
-  pure $ declName.isInternal'
-   || isAuxRecursor env declName
-   || isNoConfusion env declName
-  <||> isRec declName <||> isMatcher declName
-
 initialize proposeLemmas : DeclCache (DiscrTree Name true) ←
   DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
-    if ← isBlackListed name then return lemmas
+    if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
@@ -65,40 +48,78 @@ initialize proposeLemmas : DeclCache (DiscrTree Name true) ←
       pure lemmas
 
 /-- Shortcut for calling `solveByElim`. -/
-def solveByElim (orig : MVarId) (goals : Array MVarId) (use : List Expr) (required : List Expr) (depth) := do
+def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (required : Array Expr)
+    (depth) := do
   let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
-  let test : MetaM Bool := do
+  let cfg := if !required.isEmpty then
+    cfg.testSolutions (fun _ => do
     let r ← instantiateMVars (.mvar orig)
-    pure <| required.all fun e => e.occurs r
-  let cfg := if !required.isEmpty then cfg.testSolutions (fun _ => test) else cfg
-  _ ← SolveByElim.solveByElim cfg (use.map pure) (pure (← getLocalHyps).toList) goals.toList
+    pure <| required.all fun e => e.occurs r)
+  else
+    cfg
+  let cfg := cfg.synthInstance
+  _ ← SolveByElim.solveByElim cfg (use.toList.map pure) (pure (← getLocalHyps).toList) goals.toList
 
-def propose (goal : MVarId) (lemmas : DiscrTree Name s) (required : List Expr)
-    (hyp : FVarId) (solveByElimDepth := 15) : MetaM (Array (Name × Expr)) := goal.withContext do
-  let ty ← whnfR (← instantiateMVars (← hyp.getDecl).type)
+/--
+Attempts to find lemmas which use all of the `required` expressions as arguments, and
+can by unified with the given `type` (which may contain metavariables, which we avoid assigning).
+We look up candidate lemmas from a discrimination tree using the first such expression.
+
+Returns an array of pairs, containing the names of found lemmas and the resulting application.
+-/
+def propose (lemmas : DiscrTree Name s) (type : Expr) (required : Array Expr)
+    (solveByElimDepth := 15) : MetaM (Array (Name × Expr)) := do
+  guard !required.isEmpty
+  let ty ← whnfR (← instantiateMVars (← inferType required[0]!))
   let candidates ← lemmas.getMatch ty
-  candidates.filterMapM fun lem : Name => do
+  candidates.filterMapM fun lem : Name =>
     try
-      let Expr.mvar g ← mkFreshExprMVar (← mkFreshTypeMVar) | failure
+      trace[Tactic.propose] "considering {lem}"
+      let Expr.mvar g ← mkFreshExprMVar type | failure
       let e ← mkConstWithFreshMVarLevels lem
       let (args, _, _) ← forallMetaTelescope (← inferType e)
+      let .true ← preservingMCtx <| withAssignableSyntheticOpaque <|
+        isDefEq type (← inferType (mkAppN e args)) | failure
       g.assign (mkAppN e args)
-      solveByElim g (args.map fun a => a.mvarId!) [] required solveByElimDepth
+      let use := required.filterMap fun e => match e with | .fvar _ => none | _ => some e
+      solveByElim g (args.map fun a => a.mvarId!) use required solveByElimDepth
+      trace[Tactic.propose] "successfully filled in arguments for {lem}"
       pure <| some (lem, ← instantiateMVars (.mvar g))
     catch _ => pure none
 
 open Lean.Parser.Tactic
 
-syntax (name := propose') "propose" (" using " (colGt term)) : tactic
+/--
+`propose using a, b, c` tries to find a lemma which makes use of each of the local hypotheses `a, b, c`.
+`propose : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
+
+Suggestions are printed as `have := f a b c`.
+-/
+syntax (name := propose') "propose" "!"? (" : " term)? (" using " (colGt term),+) : tactic
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| propose using $hyp:ident) => do
+elab_rules : tactic | `(tactic| propose%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
   let goal ← getMainGoal
   goal.withContext do
-    let fvar ← getFVarId hyp
-    let required := [.fvar fvar]
-    let proposals ← propose goal (← proposeLemmas.get) required fvar
-    let mut g := goal
+    let required ← terms.mapM (elabTerm · none)
+    trace[Tactic.propose] "!"
+    let type ← match type with
+    | some stx => elabTermWithHoles stx none (← getMainTag) true <&> (·.1)
+    | none => mkFreshTypeMVar
+    trace[Tactic.propose] type
+    let proposals ← propose (← proposeLemmas.get) type required
+    if proposals.isEmpty then
+      throwError "propose could not find any lemmas using the given hypotheses"
     for p in proposals.toList.take 10 do
-      (_, g) ← g.let p.1 p.2
-    replaceMainGoal [g]
+      addHaveSuggestion tk (← inferType p.2) p.2
+    if lucky.isSome then
+      let mut g := goal
+      for p in proposals.toList.take 10 do
+        (_, g) ← g.let p.1 p.2
+      replaceMainGoal [g]
+
+@[inherit_doc propose'] macro "propose!" " using " terms:(colGt term),+ : tactic =>
+  `(tactic| propose ! using $[$terms],*)
+
+@[inherit_doc propose'] macro "propose!" " : " type:term " using " terms:(colGt term),+ : tactic =>
+  `(tactic| propose ! : $type using $[$terms],*)

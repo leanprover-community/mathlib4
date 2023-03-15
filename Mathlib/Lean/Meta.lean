@@ -14,6 +14,11 @@ open Lean Meta
 
 namespace Lean.MVarId
 
+/-- Solve a goal by synthesizing an instance. -/
+-- FIXME: probably can just be `g.inferInstance` once lean4#2054 is fixed
+def synthInstance (g : MVarId) : MetaM Unit := do
+  g.assign (← Lean.Meta.synthInstance (← g.getType))
+
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
 The new hypothesis is given the same user name as the original,
