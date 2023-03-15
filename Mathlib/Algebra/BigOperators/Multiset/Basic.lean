@@ -537,20 +537,20 @@ theorem abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
   le_sum_of_subadditive _ abs_zero abs_add s
 #align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
 
-lemma sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (% n)).sum % n := by
-  induction s using multiset.induction; simp [nat.add_mod, *]
+theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.Sum % n = (s.map (· % n)).Sum % n := by
+  induction s using Multiset.induction <;> simp [Nat.add_mod, *]
 #align multiset.sum_nat_mod Multiset.sum_nat_mod
 
-lemma prod_nat_mod (s : Multiset ℕ) (n : ℕ) : s.prod % n = (s.map (% n)).prod % n := by
-  induction s using multiset.induction; simp [nat.mul_mod, *]
+theorem prod_nat_mod (s : Multiset ℕ) (n : ℕ) : s.Prod % n = (s.map (· % n)).Prod % n := by
+  induction s using Multiset.induction <;> simp [Nat.mul_mod, *]
 #align multiset.prod_nat_mod Multiset.prod_nat_mod
 
-lemma sum_int_mod (s : Multiset ℤ) (n : ℤ) : s.sum % n = (s.map (% n)).sum % n := by
-  induction s using multiset.induction; simp [int.add_mod, *]
+theorem sum_int_mod (s : Multiset ℤ) (n : ℤ) : s.Sum % n = (s.map (· % n)).Sum % n := by
+  induction s using Multiset.induction <;> simp [Int.add_emod, *]
 #align multiset.sum_int_mod Multiset.sum_int_mod
 
-lemma prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (% n)).prod % n := by
-  induction s using multiset.induction; simp [int.mul_mod, *]
+theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.Prod % n = (s.map (· % n)).Prod % n := by
+  induction s using Multiset.induction <;> simp [Int.mul_emod, *]
 #align multiset.prod_int_mod Multiset.prod_int_mod
 
 end Multiset
