@@ -8,8 +8,8 @@ Authors: Scott Morrison, Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Subalgebra.Basic
-import Mathbin.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Free Algebras
@@ -325,15 +325,13 @@ irreducible_def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
 #align free_algebra.lift FreeAlgebra.lift
 
 @[simp]
-theorem liftAux_eq (f : X → A) : liftAux R f = lift R f :=
-  by
+theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by
   rw [lift]
   rfl
 #align free_algebra.lift_aux_eq FreeAlgebra.liftAux_eq
 
 @[simp]
-theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F ∘ ι R :=
-  by
+theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F ∘ ι R := by
   rw [lift]
   rfl
 #align free_algebra.lift_symm_apply FreeAlgebra.lift_symm_apply
@@ -341,24 +339,21 @@ theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F 
 variable {R X}
 
 @[simp]
-theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f :=
-  by
+theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
   ext
   rw [ι, lift]
   rfl
 #align free_algebra.ι_comp_lift FreeAlgebra.ι_comp_lift
 
 @[simp]
-theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x :=
-  by
+theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
   rw [ι, lift]
   rfl
 #align free_algebra.lift_ι_apply FreeAlgebra.lift_ι_apply
 
 @[simp]
 theorem lift_unique (f : X → A) (g : FreeAlgebra R X →ₐ[R] A) :
-    (g : FreeAlgebra R X → A) ∘ ι R = f ↔ g = lift R f :=
-  by
+    (g : FreeAlgebra R X → A) ∘ ι R = f ↔ g = lift R f := by
   rw [← (lift R).symm_apply_eq, lift]
   rfl
 #align free_algebra.lift_unique FreeAlgebra.lift_unique
@@ -382,8 +377,7 @@ theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) : lift R ((g : FreeAlgebr
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
-    (w : (f : FreeAlgebra R X → A) ∘ ι R = (g : FreeAlgebra R X → A) ∘ ι R) : f = g :=
-  by
+    (w : (f : FreeAlgebra R X → A) ∘ ι R = (g : FreeAlgebra R X → A) ∘ ι R) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.Injective w
 #align free_algebra.hom_ext FreeAlgebra.hom_ext
@@ -459,8 +453,7 @@ theorem ι_inj [Nontrivial R] (x y : X) : ι R x = ι R y ↔ x = y :=
 #align free_algebra.ι_inj FreeAlgebra.ι_inj
 
 @[simp]
-theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h =>
-  by
+theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h => by
   let f0 : FreeAlgebra R X →ₐ[R] R := lift R 0
   let f1 : FreeAlgebra R X →ₐ[R] R := lift R 1
   have hf0 : f0 (ι R x) = 0 := lift_ι_apply _ _
@@ -497,8 +490,7 @@ preserved under addition and muliplication, then it holds for all of `free_algeb
 theorem induction {C : FreeAlgebra R X → Prop}
     (h_grade0 : ∀ r, C (algebraMap R (FreeAlgebra R X) r)) (h_grade1 : ∀ x, C (ι R x))
     (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
-    (a : FreeAlgebra R X) : C a :=
-  by
+    (a : FreeAlgebra R X) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from X
   let s : Subalgebra R (FreeAlgebra R X) :=
     { carrier := C
