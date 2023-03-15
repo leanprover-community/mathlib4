@@ -648,12 +648,28 @@ def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t
   WalkingCospan.ext i w₁ w₂
 #align category_theory.limits.pullback_cone.ext CategoryTheory.Limits.PullbackCone.ext
 
+-- porting note: `IsLimit.lift` and the two following simp lemmas were introduced to ease the port
+/-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
+    `h ≫ f = k ≫ g`, then we get `l : W ⟶ t.pt`, which satisfies `l ≫ fst t = h`
+    and `l ≫ snd t = k`, see `IsLimit.lift_fst` and `IsLimit.lift_snd`. -/
+def IsLimit.lift {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : W ⟶ t.pt :=
+  ht.lift <| PullbackCone.mk _ _ w
+
+@[reassoc (attr := simp)]
+lemma IsLimit.lift_fst {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : IsLimit.lift ht h k w ≫ fst t = h := ht.fac _ _
+
+@[reassoc (attr := simp)]
+lemma IsLimit.lift_snd {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : IsLimit.lift ht h k w ≫ snd t = k := ht.fac _ _
+
 /-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
     `h ≫ f = k ≫ g`, then we have `l : W ⟶ t.pt` satisfying `l ≫ fst t = h` and `l ≫ snd t = k`.
     -/
 def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : { l : W ⟶ t.pt // l ≫ fst t = h ∧ l ≫ snd t = k } :=
-  ⟨ht.lift <| PullbackCone.mk _ _ w, ht.fac _ _, ht.fac _ _⟩
+  ⟨IsLimit.lift ht h k w, by simp⟩
 #align category_theory.limits.pullback_cone.is_limit.lift' CategoryTheory.Limits.PullbackCone.IsLimit.lift'
 
 /-- This is a more convenient formulation to show that a `PullbackCone` constructed using
@@ -866,12 +882,30 @@ theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k 
   ht.hom_ext <| coequalizer_ext _ h₀ h₁
 #align category_theory.limits.pushout_cocone.is_colimit.hom_ext CategoryTheory.Limits.PushoutCocone.IsColimit.hom_ext
 
+-- porting note: `IsColimit.desc` and the two following simp lemmas were introduced to ease the port
+/-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
+    morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
+    `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`-/
+def IsColimit.desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
+    (w : f ≫ h = g ≫ k) : t.pt ⟶ W :=
+  ht.desc (PushoutCocone.mk _ _ w)
+
+@[reassoc (attr := simp)]
+lemma IsColimit.inl_desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
+    (w : f ≫ h = g ≫ k) : inl t ≫ IsColimit.desc ht h k w = h :=
+  ht.fac _ _
+
+@[reassoc (attr := simp)]
+lemma IsColimit.inr_desc {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
+    (w : f ≫ h = g ≫ k) : inr t ≫ IsColimit.desc ht h k w = k :=
+  ht.fac _ _
+
 /-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
     morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
     `inl t ≫ l = h` and `inr t ≫ l = k`. -/
 def IsColimit.desc' {t : PushoutCocone f g} (ht : IsColimit t) {W : C} (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) : { l : t.pt ⟶ W // inl t ≫ l = h ∧ inr t ≫ l = k } :=
-  ⟨ht.desc <| PushoutCocone.mk _ _ w, ht.fac _ _, ht.fac _ _⟩
+  ⟨IsColimit.desc ht h k w, by simp⟩
 #align category_theory.limits.pushout_cocone.is_colimit.desc' CategoryTheory.Limits.PushoutCocone.IsColimit.desc'
 
 theorem epi_inr_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) [Epi f] :
