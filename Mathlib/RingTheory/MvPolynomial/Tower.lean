@@ -8,8 +8,8 @@ Authors: Yuyang Zhao
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Tower
-import Mathbin.Data.MvPolynomial.Basic
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Data.MvPolynomial.Basic
 
 /-!
 # Algebra towers for multivariate polynomial
