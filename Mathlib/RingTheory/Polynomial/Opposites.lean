@@ -21,7 +21,7 @@ open Polynomial
 
 open Polynomial MulOpposite
 
-variable {R : Type _} [Semiring R] {p q : R[X]}
+variable {R : Type _} [Semiring R]
 
 noncomputable section
 
@@ -94,14 +94,14 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by
-  induction p using MulOpposite.rec'
+  induction' p using MulOpposite.rec' with p
   cases p
   rfl
 #align polynomial.coeff_op_ring_equiv Polynomial.coeff_opRingEquiv
 
 @[simp]
 theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by
-  induction p using MulOpposite.rec'
+  induction' p using MulOpposite.rec' with p
   cases p
   exact Finsupp.support_mapRange_of_injective (map_zero _) _ op_injective
 #align polynomial.support_op_ring_equiv Polynomial.support_opRingEquiv
@@ -117,7 +117,7 @@ theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree 
 @[simp]
 theorem leadingCoeff_opRingEquiv (p : R[X]ᵐᵒᵖ) :
     (opRingEquiv R p).leadingCoeff = op (unop p).leadingCoeff := by
-  rw [leadingCoeff, coeff_opRingEquiv, natDegree_opRingEquiv, leadingCoeff]; trivial
+  rw [leadingCoeff, coeff_opRingEquiv, natDegree_opRingEquiv, leadingCoeff]
 #align polynomial.leading_coeff_op_ring_equiv Polynomial.leadingCoeff_opRingEquiv
 
 end Polynomial
