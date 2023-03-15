@@ -330,7 +330,9 @@ theorem T_mul : ∀ m n, T R (m * n) = (T R m).comp (T R n)
     rw [T_add_two, sub_comp, ← T_mul m, mul_comp, ← T_mul (m + 1), mul_X_comp,
       ← sub_eq_iff_eq_add.2 this]
     congr
-    sorry
+    have : (@FunLike.coe (R →+* R[X]) R (fun _ ↦ R[X]) MulHomClass.toFunLike C 2 : R[X])
+        = (2 : R[X]) := by norm_cast
+    rw [← this, C_comp]
 #align polynomial.chebyshev.T_mul Polynomial.Chebyshev.T_mul
 
 end Polynomial.Chebyshev
