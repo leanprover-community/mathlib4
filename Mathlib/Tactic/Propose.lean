@@ -90,15 +90,21 @@ def propose (lemmas : DiscrTree Name s) (type : Expr) (required : Array Expr)
 open Lean.Parser.Tactic
 
 /--
-`propose using a, b, c` tries to find a lemma which makes use of each of the local hypotheses `a, b, c`.
-`propose : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
+* `propose using a, b, c` tries to find a lemma
+which makes use of each of the local hypotheses `a, b, c`,
+and reports any results via trace messages.
+* `propose : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
+* `propose! using a, b, c` will also call `have` to add results to the local goal state.
+
+`propose` should not be left in proofs; it is a search tool, like `library_search`.
 
 Suggestions are printed as `have := f a b c`.
 -/
 syntax (name := propose') "propose" "!"? (" : " term)? (" using " (colGt term),+) : tactic
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| propose%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
+elab_rules : tactic |
+    `(tactic| propose%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
   let goal ← getMainGoal
   goal.withContext do
     let required ← terms.mapM (elabTerm · none)

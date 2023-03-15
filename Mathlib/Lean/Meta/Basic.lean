@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Lean.Meta.Basic
 
-/-!
+/-#
 # Additions to `Lean.Meta.Basic`
 
 Likely these already exist somewhere. Pointers welcome.
