@@ -376,13 +376,6 @@ theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
   case _ _ h => exact true_iff_iff.2 h
   case _ _ h => exact false_iff_iff.2 h
 
-theorem compare_trichotomy {a b : α} :
-    (compare a b = .lt) ∨ (compare a b = .eq) ∨ (compare a b = .gt) :=
-  lt_by_cases a b
-    (fun h ↦ Or.inl (compare_lt_iff_lt.2 h))
-    (fun h ↦ Or.inr <| Or.inl (compare_eq_iff_eq.2 h))
-    (fun h ↦ Or.inr <| Or.inr (compare_gt_iff_gt.2 h))
-
 -- TODO: generalize to instance of LE, Eq (and upstream?)
 -- Move?
 /-- The `Prop` corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
