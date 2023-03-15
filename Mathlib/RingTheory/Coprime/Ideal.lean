@@ -96,7 +96,7 @@ theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : 
     · have := Submodule.coe_mem (μ i)
       simp only [mem_infᵢ] at this⊢
       intro j hj ij
-      rcases finset.mem_cons.mp hj with (rfl | hj)
+      rcases Finset.mem_cons.mp hj with (rfl | hj)
       · exact mul_mem_right _ _ hu
       · exact mul_mem_left _ _ (this _ hj ij)
     · rw [Finset.sum_cons, dif_pos rfl, add_comm]
