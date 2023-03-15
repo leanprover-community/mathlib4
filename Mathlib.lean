@@ -1053,7 +1053,7 @@ import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Message
-import Mathlib.
+import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Meta.Simp

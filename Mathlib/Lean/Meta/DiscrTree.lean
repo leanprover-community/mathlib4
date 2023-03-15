@@ -5,6 +5,10 @@ Authors: Scott Morrison
 -/
 import Lean.Meta.DiscrTree
 
+/-!
+# Additions to `Lean.Meta.DiscrTree`
+-/
+
 namespace Lean.Meta.DiscrTree
 
 /--
