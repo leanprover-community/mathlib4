@@ -320,7 +320,8 @@ def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
 
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
-  toAddMonoid_of _ _ _
+-- Porting note: spelled out arguments. (I don't know how this works.)
+toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
 #align direct_sum.coe_linear_map_of DirectSum.coeLinearMap_of
 
 variable {A}
@@ -350,13 +351,23 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type _}
     (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σi, α i ↦ ↑(v a.1 a.2) := by
   funext a
-  simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_of_repr,
-    Basis.repr_symm_apply, Dfinsupp.lsum_apply_apply, Dfinsupp.mapRange.linearEquiv_apply,
-    Dfinsupp.mapRange.linearEquiv_symm, Dfinsupp.mapRange_single, Finsupp.total_single,
-    LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
-    sigmaFinsuppAddEquivDfinsupp_apply, sigmaFinsuppEquivDfinsupp_single,
-    sigmaFinsuppLequivDfinsupp_apply]
-  convert Dfinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
+  -- Porting note: was
+  -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_of_repr,
+  --   Basis.repr_symm_apply, Dfinsupp.lsum_apply_apply, Dfinsupp.mapRange.linearEquiv_apply,
+  --   Dfinsupp.mapRange.linearEquiv_symm, Dfinsupp.mapRange_single, Finsupp.total_single,
+  --   LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
+  --   sigmaFinsuppAddEquivDfinsupp_apply, sigmaFinsuppEquivDfinsupp_single,
+  --   sigmaFinsuppLequivDfinsupp_apply]
+  -- convert Dfinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
+  simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_of_repr, LinearEquiv.trans_symm,
+    LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDfinsupp_apply,
+    sigmaFinsuppEquivDfinsupp_single, LinearEquiv.ofBijective_apply,
+    sigmaFinsuppAddEquivDfinsupp_apply]
+  rw [Dfinsupp.mapRange.linearEquiv_symm]
+  erw [Dfinsupp.mapRange.linearEquiv_apply]
+  simp only [Dfinsupp.mapRange_single, Basis.repr_symm_apply, Finsupp.total_single, one_smul, toModule]
+  erw [Dfinsupp.lsum_single]
+  simp only [Submodule.coeSubtype]
 #align direct_sum.is_internal.collected_basis_coe DirectSum.IsInternal.collectedBasis_coe
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type _}
