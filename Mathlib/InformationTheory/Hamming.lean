@@ -335,12 +335,12 @@ theorem ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
   rfl
 #align hamming.of_hamming_to_hamming Hamming.ofHamming_toHamming
 
--- @[simp] -- Porting note: simp can prove this
+@[simp, nolint simpNF] -- useful for dsimp
 theorem toHamming_inj {x y : ∀ i, β i} : toHamming x = toHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.to_hamming_inj Hamming.toHamming_inj
 
--- @[simp] -- Porting note: simp can prove this
+@[simp, nolint simpNF] -- useful for dsimp
 theorem ofHamming_inj {x y : Hamming β} : ofHamming x = ofHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.of_hamming_inj Hamming.ofHamming_inj
