@@ -77,7 +77,7 @@ protected def pointwiseMulAction : MulAction R' (Subalgebra R A)
     where
   smul a S := S.map (MulSemiringAction.toAlgHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (AlgHom.ext <| one_smul R')).trans S.map_id
-  mul_smul a₁ a₂ S :=
+  mul_smul _a₁ _a₂ S :=
     (congr_arg (fun f => S.map f) (AlgHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
 #align subalgebra.pointwise_mul_action Subalgebra.pointwiseMulAction
 
