@@ -453,6 +453,7 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
   rfl
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist
 
+-- porting note: new
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
@@ -464,6 +465,8 @@ instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
 theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = hammingNorm (ofHamming x) :=
   rfl
 #align hamming.norm_eq_hamming_norm Hamming.norm_eq_hammingNorm
+
+-- porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := by push_cast; exact_mod_cast hammingDist_eq_hammingNorm
