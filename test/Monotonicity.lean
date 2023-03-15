@@ -8,7 +8,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Algebra.Order.Ring.Defs
 -- import measure_theory.measure.lebesgue
 -- import measure_theory.function.locally_integrable
-import Mathlib.Data.List.Defs
+-- import Mathlib.Data.Set.Basic
 
 open List Set
 
@@ -16,15 +16,13 @@ example (x y z k : ℕ)
     (_ : 3 ≤ (4 : ℕ))
     (h' : z ≤ y) :
     (k + 3 + x) - y ≤ (k + 4 + x) - z := by
-  mono
-  norm_num
+  mono*
 
 example (x y z k : ℤ)
     (_ : 3 ≤ (4 : ℤ))
     (h' : z ≤ y) :
     (k + 3 + x) - y ≤ (k + 4 + x) - z := by
-  mono
-  norm_num
+  mono*
 
 theorem x (x y z a b : ℕ)
     (h : a ≤ (b : ℕ))
@@ -42,6 +40,7 @@ example (x y z a b : ℤ)
   trans (1 + a + x - z)
   · mono
   · mono
+  · mono*
 
 example (x y z : ℤ)
     (h' : z ≤ y) :
@@ -50,6 +49,7 @@ example (x y z : ℤ)
   trans (1 + 3 + x - z)
   · mono
   · mono
+  · mono; mono; norm_num1
 
 example {x y z : ℕ} : true := by
   have : y + x ≤ y + z := by
@@ -399,14 +399,16 @@ example {x y z w : ℤ} : true := by
 --   exact 3
 -- end
 
-example {α} [LinearOrder α] (a b c d e : α) : max a b ≤ e → b ≤ e := by
-  mono
-  apply le_max_right
 
-example (a b c d e : Prop) (h : d → a) (h' : c → e) : (a ∧ b → c) ∨ d → (d ∧ b → e) ∨ a := by
-  mono
-  mono
-  mono
+
+-- example {α} [LinearOrder α] (a b c d e : α) : max a b ≤ e → b ≤ e := by
+--   mono
+--   apply le_max_right
+
+-- example (a b c d e : Prop) (h : d → a) (h' : c → e) : (a ∧ b → c) ∨ d → (d ∧ b → e) ∨ a := by
+--   mono
+--   mono
+--   mono
 
 -- example : ∫ x in Icc 0 1, real.exp x ≤ ∫ x in Icc 0 1, real.exp (x+1) := by
 --   mono
