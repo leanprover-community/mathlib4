@@ -27,7 +27,7 @@ code.
 * `hamming β`: a type synonym for `Π i, β i` with `dist` and `norm` provided by the above.
 * `hamming.to_hamming`, `hamming.of_hamming`: functions for casting between `hamming β` and
 `Π i, β i`.
-* `hamming.normed_add_comm_group`: the Hamming norm forms a normed group on `hamming β`.
+* the Hamming norm forms a normed group on `hamming β`.
 -/
 
 
@@ -41,7 +41,7 @@ variable {γ : ι → Type _} [∀ i, DecidableEq (γ i)]
 
 /-- The Hamming distance function to the naturals. -/
 def hammingDist (x y : ∀ i, β i) : ℕ :=
-  (univ.filterₓ fun i => x i ≠ y i).card
+  (univ.filter fun i => x i ≠ y i).card
 #align hamming_dist hammingDist
 
 /-- Corresponds to `dist_self`. -/
@@ -65,13 +65,10 @@ theorem hammingDist_comm (x y : ∀ i, β i) : hammingDist x y = hammingDist y x
 theorem hammingDist_triangle (x y z : ∀ i, β i) :
     hammingDist x z ≤ hammingDist x y + hammingDist y z := by
   classical
-    simp_rw [hammingDist]
-    refine' le_trans (card_mono _) (card_union_le _ _)
+    unfold hammingDist
+    refine le_trans (card_mono ?_) (card_union_le _ _)
     rw [← filter_or]
-    refine' monotone_filter_right _ _
-    intro i h
-    by_contra' H
-    exact h (Eq.trans H.1 H.2)
+    exact monotone_filter_right _ fun i h ↦ (h.ne_or_ne _).imp_right Ne.symm
 #align hamming_dist_triangle hammingDist_triangle
 
 /-- Corresponds to `dist_triangle_left`. -/
@@ -116,7 +113,7 @@ theorem hamming_zero_eq_dist {x y : ∀ i, β i} : 0 = hammingDist x y ↔ x = y
 
 /-- Corresponds to `dist_ne_zero`. -/
 theorem hammingDist_ne_zero {x y : ∀ i, β i} : hammingDist x y ≠ 0 ↔ x ≠ y :=
-  hammingDist_eq_zero.Not
+  hammingDist_eq_zero.not
 #align hamming_dist_ne_zero hammingDist_ne_zero
 
 /-- Corresponds to `dist_pos`. -/
@@ -140,20 +137,20 @@ theorem hammingDist_comp_le_hammingDist (f : ∀ i, γ i → β i) {x y : ∀ i,
 #align hamming_dist_comp_le_hamming_dist hammingDist_comp_le_hammingDist
 
 theorem hammingDist_comp (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} (hf : ∀ i, Injective (f i)) :
-    (hammingDist (fun i => f i (x i)) fun i => f i (y i)) = hammingDist x y := by
-  refine' le_antisymm (hammingDist_comp_le_hammingDist _) _
-  exact card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| hf i H2)
+    (hammingDist (fun i => f i (x i)) fun i => f i (y i)) = hammingDist x y :=
+  le_antisymm (hammingDist_comp_le_hammingDist _) <|
+    card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| hf i H2)
 #align hamming_dist_comp hammingDist_comp
 
 theorem hammingDist_smul_le_hammingDist [∀ i, SMul α (β i)] {k : α} {x y : ∀ i, β i} :
     hammingDist (k • x) (k • y) ≤ hammingDist x y :=
-  hammingDist_comp_le_hammingDist fun i => (· • ·) k
+  hammingDist_comp_le_hammingDist fun i => (k • · : β i → β i)
 #align hamming_dist_smul_le_hamming_dist hammingDist_smul_le_hammingDist
 
 /-- Corresponds to `dist_smul` with the discrete norm on `α`. -/
 theorem hammingDist_smul [∀ i, SMul α (β i)] {k : α} {x y : ∀ i, β i}
     (hk : ∀ i, IsSMulRegular (β i) k) : hammingDist (k • x) (k • y) = hammingDist x y :=
-  hammingDist_comp (fun i => (· • ·) k) hk
+  hammingDist_comp (fun i => (k • · : β i → β i)) hk
 #align hamming_dist_smul hammingDist_smul
 
 section Zero
@@ -162,7 +159,7 @@ variable [∀ i, Zero (β i)] [∀ i, Zero (γ i)]
 
 /-- The Hamming weight function to the naturals. -/
 def hammingNorm (x : ∀ i, β i) : ℕ :=
-  (univ.filterₓ fun i => x i ≠ 0).card
+  (univ.filter (x · ≠ 0)).card
 #align hamming_norm hammingNorm
 
 /-- Corresponds to `dist_zero_right`. -/
@@ -197,7 +194,7 @@ theorem hammingNorm_eq_zero {x : ∀ i, β i} : hammingNorm x = 0 ↔ x = 0 :=
 
 /-- Corresponds to `norm_ne_zero_iff`. -/
 theorem hammingNorm_ne_zero_iff {x : ∀ i, β i} : hammingNorm x ≠ 0 ↔ x ≠ 0 :=
-  hammingNorm_eq_zero.Not
+  hammingNorm_eq_zero.not
 #align hamming_norm_ne_zero_iff hammingNorm_ne_zero_iff
 
 /-- Corresponds to `norm_pos_iff`. -/
@@ -217,16 +214,12 @@ theorem hammingNorm_le_card_fintype {x : ∀ i, β i} : hammingNorm x ≤ Fintyp
 
 theorem hammingNorm_comp_le_hammingNorm (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf : ∀ i, f i 0 = 0) :
     (hammingNorm fun i => f i (x i)) ≤ hammingNorm x := by
-  convert hammingDist_comp_le_hammingDist f
-  simp_rw [hf]
-  rfl
+  simpa only [← hammingDist_zero_right, hf] using hammingDist_comp_le_hammingDist f (y := fun _ ↦ 0)
 #align hamming_norm_comp_le_hamming_norm hammingNorm_comp_le_hammingNorm
 
 theorem hammingNorm_comp (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf₁ : ∀ i, Injective (f i))
     (hf₂ : ∀ i, f i 0 = 0) : (hammingNorm fun i => f i (x i)) = hammingNorm x := by
-  convert hammingDist_comp f hf₁
-  simp_rw [hf₂]
-  rfl
+  simpa only [← hammingDist_zero_right, hf₂] using hammingDist_comp f hf₁ (y := fun _ ↦ 0)
 #align hamming_norm_comp hammingNorm_comp
 
 theorem hammingNorm_smul_le_hammingNorm [Zero α] [∀ i, SMulWithZero α (β i)] {k : α}
@@ -264,9 +257,8 @@ variable {α ι : Type _} {β : ι → Type _}
 
 /-! Instances inherited from normal Pi types. -/
 
-
 instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) :=
-  ⟨fun i => default⟩
+  ⟨fun _ => default⟩
 
 instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
   Pi.fintype
@@ -413,7 +405,6 @@ section
 
 /-! Instances equipping `hamming` with `hamming_norm` and `hamming_dist`. -/
 
-
 variable [Fintype ι] [∀ i, DecidableEq (β i)]
 
 instance : Dist (Hamming β) :=
@@ -425,39 +416,36 @@ theorem dist_eq_hammingDist (x y : Hamming β) :
   rfl
 #align hamming.dist_eq_hamming_dist Hamming.dist_eq_hammingDist
 
-instance : PseudoMetricSpace (Hamming β) :=
-  {
-    Hamming.hasDist with
-    dist_self := by
-      push_cast
-      exact_mod_cast hammingDist_self
-    dist_comm := by
-      push_cast
-      exact_mod_cast hammingDist_comm
-    dist_triangle := by
-      push_cast
-      exact_mod_cast hammingDist_triangle
-    toUniformSpace := ⊥
-    uniformity_dist :=
-      uniformity_dist_of_mem_uniformity _ _ fun s =>
-        by
-        push_cast
-        constructor
-        · refine' fun hs => ⟨1, zero_lt_one, fun _ _ hab => _⟩
-          rw_mod_cast [hammingDist_lt_one]  at hab
-          rw [of_hamming_inj, ← mem_idRel] at hab
-          exact hs hab
-        · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
-          rw [mem_idRel] at hab
-          rw [hab]
-          refine' hs (lt_of_eq_of_lt _ hε)
-          exact_mod_cast hammingDist_self _
-    toBornology := ⟨⊥, bot_le⟩
-    cobounded_sets := by
-      ext
-      push_cast
-      refine' iff_of_true (filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
-      exact_mod_cast hammingDist_le_card_fintype }
+instance : PseudoMetricSpace (Hamming β) where
+  dist_self := by
+    push_cast
+    exact_mod_cast hammingDist_self
+  dist_comm := by
+    push_cast
+    exact_mod_cast hammingDist_comm
+  dist_triangle := by
+    push_cast
+    exact_mod_cast hammingDist_triangle
+  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
+  toUniformSpace := ⊥
+  uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
+    push_cast
+    constructor
+    · refine' fun hs => ⟨1, zero_lt_one, fun hab => _⟩
+      rw_mod_cast [hammingDist_lt_one]  at hab
+      rw [ofHamming_inj, ← mem_idRel] at hab
+      exact hs hab
+    · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
+      rw [mem_idRel] at hab
+      rw [hab]
+      refine' hs (lt_of_eq_of_lt _ hε)
+      exact_mod_cast hammingDist_self _
+  toBornology := ⟨⊥, bot_le⟩
+  cobounded_sets := by
+    ext
+    push_cast
+    refine' iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
+    exact_mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]
 theorem nndist_eq_hammingDist (x y : Hamming β) :
@@ -465,11 +453,9 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
   rfl
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist
 
-instance : MetricSpace (Hamming β) :=
-  { Hamming.pseudoMetricSpace with
-    eq_of_dist_eq_zero := by
-      push_cast
-      exact_mod_cast @eq_of_hammingDist_eq_zero _ _ _ _ }
+instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
+
+instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
 
 instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
   ⟨fun x => hammingNorm (ofHamming x)⟩
@@ -479,11 +465,8 @@ theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = ha
   rfl
 #align hamming.norm_eq_hamming_norm Hamming.norm_eq_hammingNorm
 
-instance [∀ i, AddCommGroup (β i)] : SeminormedAddCommGroup (Hamming β) :=
-  { Pi.addCommGroup with
-    dist_eq := by
-      push_cast
-      exact_mod_cast hammingDist_eq_hammingNorm }
+instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
+  dist_eq := by push_cast; exact_mod_cast hammingDist_eq_hammingNorm
 
 @[simp, push_cast]
 theorem nnnorm_eq_hammingNorm [∀ i, AddCommGroup (β i)] (x : Hamming β) :
@@ -491,10 +474,6 @@ theorem nnnorm_eq_hammingNorm [∀ i, AddCommGroup (β i)] (x : Hamming β) :
   rfl
 #align hamming.nnnorm_eq_hamming_norm Hamming.nnnorm_eq_hammingNorm
 
-instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) :=
-  { Hamming.seminormedAddCommGroup with }
-
 end
 
 end Hamming
-
