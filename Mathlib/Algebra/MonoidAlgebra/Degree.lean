@@ -11,10 +11,10 @@ Authors: Damiano Testa
 import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
-# Lemmas about the `sup` and `inf` of the support of `add_monoid_algebra`
+# Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
 
 ## TODO
-The current plan is to state and prove lemmas about `finset.sup (finsupp.support f) D` with a
+The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 
 Next, the general lemmas get specialized for some yet-to-be-defined `degree`s.
@@ -27,7 +27,7 @@ namespace AddMonoidAlgebra
 
 open Classical BigOperators
 
-/-! ### Results about the `finset.sup` and `finset.inf` of `finsupp.support` -/
+/-! ### Results about the `Finset.sup` and `Finset.inf` of `Finsupp.support` -/
 
 
 section GeneralResultsAssumingSemilatticeSup
