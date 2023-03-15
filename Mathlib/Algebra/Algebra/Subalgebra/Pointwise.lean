@@ -28,7 +28,7 @@ section Pointwise
 variable {R : Type _} {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem mul_toSubmodule_le (S T : Subalgebra R A) :
-    S.toSubmodule * T.toSubmodule ≤ (S ⊔ T).toSubmodule := by
+    (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
   rw [Submodule.mul_le]
   intro y hy z hz
   show y * z ∈ S ⊔ T
@@ -37,9 +37,10 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
 
 /-- As submodules, subalgebras are idempotent. -/
 @[simp]
-theorem mul_self (S : Subalgebra R A) : S.toSubmodule * S.toSubmodule = S.toSubmodule := by
+theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule S)
+    = (Subalgebra.toSubmodule S) := by
   apply le_antisymm
-  · refine' (mul_to_submodule_le _ _).trans_eq _
+  · refine' (mul_toSubmodule_le _ _).trans_eq _
     rw [sup_idem]
   · intro x hx1
     rw [← mul_one x]
@@ -48,8 +49,9 @@ theorem mul_self (S : Subalgebra R A) : S.toSubmodule * S.toSubmodule = S.toSubm
 
 /-- When `A` is commutative, `subalgebra.mul_to_submodule_le` is strict. -/
 theorem mul_toSubmodule {R : Type _} {A : Type _} [CommSemiring R] [CommSemiring A] [Algebra R A]
-    (S T : Subalgebra R A) : S.toSubmodule * T.toSubmodule = (S ⊔ T).toSubmodule := by
-  refine' le_antisymm (mul_to_submodule_le _ _) _
+    (S T : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule T)
+        = Subalgebra.toSubmodule (S ⊔ T) := by
+  refine' le_antisymm (mul_toSubmodule_le _ _) _
   rintro x (hx : x ∈ Algebra.adjoin R (S ∪ T : Set A))
   refine'
     Algebra.adjoin_induction hx (fun x hx => _) (fun r => _) (fun _ _ => Submodule.add_mem _)
@@ -60,10 +62,10 @@ theorem mul_toSubmodule {R : Type _} {A : Type _} [CommSemiring R] [CommSemiring
     · rw [← one_mul x]
       exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) hxT
   · rw [← one_mul (algebraMap _ _ _)]
-    exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) (algebra_map_mem _ _)
+    exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) (algebraMap_mem _ _)
   have := Submodule.mul_mem_mul hx hy
-  rwa [mul_assoc, mul_comm _ T.to_submodule, ← mul_assoc _ _ S.to_submodule, mul_self,
-    mul_comm T.to_submodule, ← mul_assoc, mul_self] at this
+  rwa [mul_assoc, mul_comm _ (Subalgebra.toSubmodule T), ← mul_assoc _ _ (Subalgebra.toSubmodule S), mul_self,
+    mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this
 #align subalgebra.mul_to_submodule Subalgebra.mul_toSubmodule
 
 variable {R' : Type _} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R A]
@@ -96,7 +98,7 @@ theorem pointwise_smul_toSubsemiring (m : R') (S : Subalgebra R A) :
 
 @[simp]
 theorem pointwise_smul_toSubmodule (m : R') (S : Subalgebra R A) :
-    (m • S).toSubmodule = m • S.toSubmodule :=
+    Subalgebra.toSubmodule (m • S) = m • Subalgebra.toSubmodule S :=
   rfl
 #align subalgebra.pointwise_smul_to_submodule Subalgebra.pointwise_smul_toSubmodule
 
@@ -114,4 +116,3 @@ theorem smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S 
 end Pointwise
 
 end Subalgebra
-
