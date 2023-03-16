@@ -15,7 +15,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Theory of univariate polynomials
 
-The main def is `binom_expansion`.
+The main def is `Polynomial.binomExpansion`.
 -/
 
 
