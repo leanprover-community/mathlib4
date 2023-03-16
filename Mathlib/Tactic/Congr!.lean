@@ -443,10 +443,10 @@ where
         return none
       -- The congruence generator only handles the case where both functions have
       -- definitionally equal types.
-      unless ← withReducible <| withNewMCtxDepth <| isDefEq (← inferType f) (← inferType f') do
+      unless ← withNewMCtxDepth <| isDefEq (← inferType f) (← inferType f') do
         return none
       let funDefEq ← withReducible <| withNewMCtxDepth <| isDefEq f f'
-      if config.sameFun && funDefEq then
+      if config.sameFun && not funDefEq then
         return none
       let info ← getFunInfoNArgs f (numArgs + 1)
       let mut fixed : Array Bool := #[]
