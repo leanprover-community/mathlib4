@@ -896,18 +896,19 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
-  warnAttr stx simpExtension (·.lemmaNames.contains <| .decl ·) thisAttr `simp src tgt
-  warnAttr stx normCastExt.up (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-  warnAttr stx normCastExt.down (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-  warnAttr stx normCastExt.squash (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-  warnAttr stx pushCastExt (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
-  warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
-    thisAttr `ext src tgt
-  warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
-  warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
-  warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
-  warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
-  warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
+  if linter.existingAttributeWarning.get (← getOptions) then
+    warnAttr stx simpExtension (·.lemmaNames.contains <| .decl ·) thisAttr `simp src tgt
+    warnAttr stx normCastExt.up (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
+    warnAttr stx normCastExt.down (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
+    warnAttr stx normCastExt.squash (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
+    warnAttr stx pushCastExt (·.lemmaNames.contains <| .decl ·) thisAttr `norm_cast src tgt
+    warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
+      thisAttr `ext src tgt
+    warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
+    warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
+    warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
+    warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
+    warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simp`, `simps` and `to_additive`.
