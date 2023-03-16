@@ -484,7 +484,8 @@ theorem isCycle_swap_mul_aux₂ {α : Type _} [DecidableEq α] :
         have hb : (swap x (f⁻¹ x) * f⁻¹) (f⁻¹ b) ≠ f⁻¹ b := by
           rw [mul_apply, swap_apply_def]
           split_ifs <;>
-              simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc, Ne.def, Perm.apply_inv_self] at
+              simp only [inv_eq_iff_eq, Perm.mul_apply, zpow_negSucc,
+                Ne.def, Perm.apply_inv_self] at
                 * <;> tauto
         let ⟨i, hi⟩ :=
           isCycle_swap_mul_aux₁ n hb
@@ -495,9 +496,9 @@ theorem isCycle_swap_mul_aux₂ {α : Type _} [DecidableEq α] :
         have h : (swap x (f⁻¹ x) * f⁻¹) (f x) = f⁻¹ x := by
           rw [mul_apply, inv_apply_self, swap_apply_left]
         ⟨-i, by
-          rw [← add_sub_cancel i 1, neg_sub, sub_eq_add_neg, zpow_add, zpow_one, zpow_neg, ← inv_zpow,
-            mul_inv_rev, swap_inv, mul_swap_eq_swap_mul, inv_apply_self, swap_comm _ x, zpow_add,
-            zpow_one, mul_apply, mul_apply (_ ^ i), h, hi, mul_apply, apply_inv_self,
+          rw [← add_sub_cancel i 1, neg_sub, sub_eq_add_neg, zpow_add, zpow_one, zpow_neg,
+            ← inv_zpow, mul_inv_rev, swap_inv, mul_swap_eq_swap_mul, inv_apply_self, swap_comm _ x,
+            zpow_add, zpow_one, mul_apply, mul_apply (_ ^ i), h, hi, mul_apply, apply_inv_self,
             swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx')]⟩
 #align equiv.perm.is_cycle_swap_mul_aux₂ Equiv.Perm.isCycle_swap_mul_aux₂
 
@@ -1242,15 +1243,6 @@ end CycleOf
 
 variable [DecidableEq α]
 
-/- warning: equiv.perm.cycle_factors_aux -> Equiv.Perm.cycleFactorsAux is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} [_inst_1 : DecidableEq.{succ u1} α] [_inst_2 : Fintype.{u1} α] (l : List.{u1} α) (f : Equiv.Perm.{succ u1} α), (forall {x : α}, (Ne.{succ u1} α (coeFn.{succ u1, succ u1} (Equiv.Perm.{succ u1} α) (fun (_x : Equiv.{succ u1, succ u1} α α) => α -> α) (Equiv.hasCoeToFun.{succ u1, succ u1} α α) f x) x) -> (Membership.Mem.{u1, u1} α (List.{u1} α) (List.hasMem.{u1} α) x l)) -> (Subtype.{succ u1} (List.{u1} (Equiv.Perm.{succ u1} α)) (fun (l : List.{u1} (Equiv.Perm.{succ u1} α)) => And (Eq.{succ u1} (Equiv.Perm.{succ u1} α) (List.prod.{u1} (Equiv.Perm.{succ u1} α) (MulOneClass.toHasMul.{u1} (Equiv.Perm.{succ u1} α) (Monoid.toMulOneClass.{u1} (Equiv.Perm.{succ u1} α) (DivInvMonoid.toMonoid.{u1} (Equiv.Perm.{succ u1} α) (Group.toDivInvMonoid.{u1} (Equiv.Perm.{succ u1} α) (Equiv.Perm.permGroup.{u1} α))))) (MulOneClass.toHasOne.{u1} (Equiv.Perm.{succ u1} α) (Monoid.toMulOneClass.{u1} (Equiv.Perm.{succ u1} α) (DivInvMonoid.toMonoid.{u1} (Equiv.Perm.{succ u1} α) (Group.toDivInvMonoid.{u1} (Equiv.Perm.{succ u1} α) (Equiv.Perm.permGroup.{u1} α))))) l) f) (And (forall (g : Equiv.Perm.{succ u1} α), (Membership.Mem.{u1, u1} (Equiv.Perm.{succ u1} α) (List.{u1} (Equiv.Perm.{succ u1} α)) (List.hasMem.{u1} (Equiv.Perm.{succ u1} α)) g l) -> (Equiv.Perm.IsCycle.{u1} α g)) (List.Pairwise.{u1} (Equiv.Perm.{succ u1} α) (Equiv.Perm.Disjoint.{u1} α) l))))
-but is expected to have type
-  PUnit.{succ (succ u1)}
-Case conversion may be inaccurate. Consider using '#align equiv.perm.cycle_factors_aux Equiv.Perm.cycleFactorsAuxₓ'. -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given a list `l : list α` and a permutation `f : perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
 def cycleFactorsAux [Fintype α] :
@@ -1265,7 +1257,8 @@ def cycleFactorsAux [Fintype α] :
         ext
         simp [*]}⟩
   | x::l =>
-    if hx : f x = x then cycleFactorsAux l f (by intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (h hy))
+    if hx : f x = x then cycleFactorsAux l f (by
+        intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (h hy))
     else
       let ⟨m, hm₁, hm₂, hm₃⟩ :=
         cycleFactorsAux l ((cycleOf f x)⁻¹ * f) (by
@@ -1298,7 +1291,8 @@ def cycleFactorsAux [Fintype α] :
                   by
                   have hsc : SameCycle f⁻¹ x (f y) := by
                     rwa [sameCycle_inv, sameCycle_apply_right]
-                  rw [disjoint_prod_perm hm₃ hgm.symm, List.prod_cons, ← eq_inv_mul_iff_mul_eq] at hm₁
+                  rw [disjoint_prod_perm hm₃ hgm.symm, List.prod_cons,
+                      ← eq_inv_mul_iff_mul_eq] at hm₁
                   rwa [hm₁, mul_apply, mul_apply, cycleOf_inv, hsc.cycleOf_apply, inv_apply_self,
                     inv_eq_iff_eq, eq_comm],
             hm₃⟩⟩
@@ -1863,7 +1857,8 @@ namespace List
 variable [DecidableEq α] {l : List α}
 
 set_option linter.deprecated false in -- nthLe
-theorem _root_.List.Nodup.isCycleOn_formPerm (h : l.Nodup) : l.formPerm.IsCycleOn { a | a ∈ l } := by
+theorem _root_.List.Nodup.isCycleOn_formPerm (h : l.Nodup) : l.formPerm.IsCycleOn { a | a ∈ l } :=
+  by
   refine' ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => _⟩
   rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
   rw [← List.indexOf_get ha, ← List.indexOf_get hb]
@@ -1893,7 +1888,8 @@ namespace Finset
 
 variable [DecidableEq α] [Fintype α]
 
-theorem _root_.Finset.exists_cycleOn (s : Finset α) : ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
+theorem _root_.Finset.exists_cycleOn (s : Finset α) : ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s :=
+  by
   refine'
     ⟨s.toList.formPerm, _, fun x hx => by
       simpa using List.mem_of_formPerm_apply_ne _ _ (Perm.mem_support.1 hx)⟩
@@ -1963,7 +1959,6 @@ theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
     exact hmn.symm (h.eq_of_lt_of_lt hn hm)
 #align finset.product_self_eq_disj_Union_perm_aux Finset.product_self_eq_disj_Union_perm_aux
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- We can partition the square `s ×ˢ s` into shifted diagonals as such:
 ```
 01234
