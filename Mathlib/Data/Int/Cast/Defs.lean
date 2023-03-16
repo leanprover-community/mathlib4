@@ -60,9 +60,11 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
 #align add_group_with_one.int_cast_neg_succ_of_nat AddGroupWithOne.intCast_negSucc
 
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
-class AddCommGroupWithOne (R : Type u) extends AddCommGroup R, AddGroupWithOne R
+class AddCommGroupWithOne (R : Type u)
+  extends AddCommGroup R, AddGroupWithOne R, toAddCommMonoidWithOne R
 #align add_comm_group_with_one AddCommGroupWithOne
 #align add_comm_group_with_one.to_add_comm_group AddCommGroupWithOne.toAddCommGroup
 #align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne
+#align add_comm_group_with_one.to_add_comm_monoid_with_one AddCommGroupWithOne.toAddCommMonoidWithOne
 
 open Nat
