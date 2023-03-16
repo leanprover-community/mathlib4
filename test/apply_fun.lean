@@ -154,7 +154,7 @@ example (a b : ℕ) (h : a = b) : True := by
   · trivial
   · exact 37
 
--- Check that it can solve congruence and use Subsingleton.elim on the fintype instances
+-- Check that it can solve congruence (needs Subsingleton.elim for the fintype instances)
 example (α β : Type u) [Fintype α] [Fintype β] (h : α = β) : True := by
   apply_fun Fintype.card at h
   guard_hyp h : Fintype.card α = Fintype.card β
