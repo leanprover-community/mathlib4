@@ -6,7 +6,9 @@ Authors: Kyle Miller
 import Lean.Meta.Tactic.Revert
 import Lean.Meta.Tactic.Replace
 
-/-!# Variations on intro
+/-!
+
+# Variations on intro
 
 This modules provides some functions for doing `revert`/`intro` in such a way that one
 can preserve `FVarId`s. This is important for the editor feature where you can see all uses of a
