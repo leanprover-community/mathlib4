@@ -13,8 +13,7 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.LabelAttr
 
 /-!
-A work-in-progress replacement for Lean3's `solve_by_elim` tactic.
-We'll gradually bring it up to feature parity.
+A replacement for Lean3's `solve_by_elim` tactic.
 -/
 
 open Lean Meta Elab Tactic
@@ -27,62 +26,37 @@ def exceptEmoji : Except ε α → String
 namespace Lean.MVarId
 
 /--
-`applyFirst lemmas cont goal` will try to apply one of the `lemmas` to the goal `goal`,
-and then call `cont` on the resulting `List MVarId` of subgoals.
-
-It returns the result from `cont` for the first such lemma for which
-both the `apply` and the call to `cont` succeed.
-
-``applyFirst (trace := `name)`` will construct trace nodes for ``name` indicating which
-calls to `apply` succeeded or failed.
+Given any tactic that takes a goal, and returns a sequence of alternative outcomes
+(each outcome consisting of a list of new subgoals),
+we can perform backtracking search by repeatedly applying the tactic.
 -/
--- Because the operation of this function via a continuation is fairly specific to `solve_by_elim`,
--- we keep it here rather than moving it into `Mathlib/Lean/`.
-def applyFirst (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
-    (trace : Name := .anonymous) (lemmas : List Expr) (cont : List MVarId → MetaM α)
-    (g : MVarId) : MetaM α :=
-  lemmas.firstM fun e =>
-    withTraceNode trace (return m!"{exceptEmoji ·} trying to apply: {e}") do
-      let goals ← withTransparency transparency (g.apply e cfg)
-      -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
-      -- deals with closing new typeclass goals by calling
-      -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
-      -- It seems we can't reuse that machinery down here in `MetaM`,
-      -- so we just settle for trying to close each subgoal using `inferInstance`.
-      cont (← goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true)
+def runContinuation (results : MVarId → MetaM (List (MetaM (List MVarId))))
+    (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α := do
+  (← results g).firstM fun r => do cont (← r)
 
 end Lean.MVarId
 
-initialize registerTraceClass `Meta.Tactic.solveByElim
-
-namespace Mathlib.Tactic.SolveByElim
+namespace Mathlib.Tactic.Backtracking
 
 /--
-Configuration structure to control the behaviour of `solve_by_elim`:
+Configuration structure to control the behaviour of `backtracking`:
 * control the maximum depth and behaviour (fail or return subgoals) at the maximum depth,
-* whether to use `symm` on hypotheses and `exfalso` on the goal as needed,
 * and hooks allowing
   * modifying intermediate goals,
   * returning goals as subgoals, and
   * discharging subgoals.
 -/
-structure Config extends ApplyConfig where
+structure Config where
   /-- Maximum recursion depth. -/
   maxDepth : Nat := 6
-  /-- If `failAtDepth`, then `solve_by_elim` will fail (and backtrack) upon reaching the max depth.
-  Otherwise, upon reaching the max depth, all remaining goals will be returned.
+  /-- If `failAtMaxDepth`, then `backtracking` will fail (and backtrack)
+  upon reaching the max depth. Otherwise, upon reaching the max depth,
+  all remaining goals will be returned.
   (defaults to `true`) -/
   failAtMaxDepth : Bool := true
-  /-- Transparency mode for calls to `apply`. -/
-  transparency : TransparencyMode := .default
-  /-- Also use symmetric versions (via `@[symm]`) of local hypotheses. -/
-  symm : Bool := true
-  /-- Try proving the goal via `exfalso` if `solve_by_elim` otherwise fails.
-  This is only used when operating on a single goal. -/
-  exfalso : Bool := true
   /-- An arbitrary procedure which can be used to modify the list of goals
   before each attempt to apply a lemma.
-  Called as `proc goals curr`, where `goals` are the original goals for `solve_by_elim`,
+  Called as `proc goals curr`, where `goals` are the original goals for `backtracking`,
   and `curr` are the current goals.
   Returning `some l` will replace the current goals with `l` and recurse
   (consuming one step of maximum depth).
@@ -99,6 +73,114 @@ structure Config extends ApplyConfig where
   If failure, we backtrack. (defaults to failure) -/
   discharge : MVarId → MetaM (Option (List MVarId)) := fun _ => failure
 
+
+def backtracking (cfg : Config) (alternatives : MVarId → MetaM (List (MetaM (List MVarId))))
+    (goals : List MVarId) : MetaM (List MVarId) := do
+run cfg.maxDepth goals []
+  where
+  /--
+  * `n : Nat` steps remaining.
+  * `curr : List MVarId` the current list of unsolved goals.
+  * `acc : List MVarId` a list of "suspended" goals, which will be returned as subgoals.
+  -/
+  run (n : Nat) (curr acc : List MVarId) : MetaM (List MVarId) := do
+  match n with
+  | 0 => do
+    -- We're out of fuel.
+    if cfg.failAtMaxDepth then
+      throwError "solve_by_elim exceeded the recursion limit"
+    else
+      -- Before returning the goals, we run `cfg.proc` one last time.
+      let curr := acc.reverse ++ curr
+      return (← cfg.proc goals curr).getD curr
+  | n + 1 => do
+  -- First, run `cfg.proc`, to see if it wants to modify the goals.
+  match ← cfg.proc goals curr with
+  | some curr' => run n curr' acc
+  | none =>
+  match curr with
+  -- If there are no active goals, return the accumulated goals.
+  | [] => return acc.reverse
+  | g :: gs =>
+  -- Discard any goals which have already been assigned.
+  if ← g.isAssigned then
+    run (n+1) gs acc
+  else
+  withTraceNode `Meta.Tactic.solveByElim
+    -- Note: the `addMessageContextFull` ensures we show the goal using the mvar context before
+    -- the `do` block below runs, potentially unifying mvars in the goal.
+    (return m!"{exceptEmoji ·} working on: {← addMessageContextFull g}")
+    do
+      -- Check if we should suspend the search here:
+      if (← cfg.suspend g) then
+        withTraceNode `Meta.Tactic.solveByElim
+          (fun _ => return m!"⏸️ suspending search and returning as subgoal") do
+        run (n+1) gs (g :: acc)
+      else
+        try
+          -- We attempt to find an expression which can be applied,
+          -- and for which all resulting sub-goals can be discharged using `backtrackingSearch n`.
+          g.runContinuation alternatives (fun res => run n (res ++ gs) acc)
+        catch _ =>
+          -- No lemmas could be applied:
+          match (← cfg.discharge g) with
+          | none => (withTraceNode `Meta.Tactic.solveByElim
+              (fun _ => return m!"⏭️ deemed acceptable, returning as subgoal") do
+            run (n+1) gs (g :: acc))
+          | some l => (withTraceNode `Meta.Tactic.solveByElim
+              (fun _ => return m!"⏬ discharger generated new subgoals") do
+            run n (l ++ gs) acc)
+  termination_by run n curr acc => (n, curr)
+
+end Mathlib.Tactic.Backtracking
+
+open Mathlib.Tactic.Backtracking
+
+initialize registerTraceClass `Meta.Tactic.solveByElim
+
+namespace Mathlib.Tactic.SolveByElim
+
+/--
+`applyTactics lemmas goal` will return a list of tactics,
+corresponding to applying each one of the lemmas to the goal `goal`.
+
+Combining this with `Lean.MVarId.runContinuation`,
+we can perform backtracking search based on applying a list of lemmas.
+
+``applyTactics (trace := `name)`` will construct trace nodes for ``name` indicating which
+calls to `apply` succeeded or failed.
+-/
+def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
+    (trace : Name := .anonymous) (lemmas : List Expr) :
+    MVarId → MetaM (List (MetaM (List MVarId))) :=
+  fun g => pure <|
+    lemmas.map fun e =>
+      withTraceNode trace (return m!"{exceptEmoji ·} trying to apply: {e}") do
+        let goals ← withTransparency transparency (g.apply e cfg)
+        -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
+        -- deals with closing new typeclass goals by calling
+        -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
+        -- It seems we can't reuse that machinery down here in `MetaM`,
+        -- so we just settle for trying to close each subgoal using `inferInstance`.
+        goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
+
+/--
+Configuration structure to control the behaviour of `solve_by_elim`:
+* transparency mode for calls to `apply`
+* whether to use `symm` on hypotheses and `exfalso` on the goal as needed,
+* see also `Backtracking.Config` for hooks allowing flow control.
+-/
+structure Config extends Backtracking.Config, ApplyConfig where
+  /-- Transparency mode for calls to `apply`. -/
+  transparency : TransparencyMode := .default
+  /-- Also use symmetric versions (via `@[symm]`) of local hypotheses. -/
+  symm : Bool := true
+  /-- Try proving the goal via `exfalso` if `solve_by_elim` otherwise fails.
+  This is only used when operating on a single goal. -/
+  exfalso : Bool := true
+
+instance : Coe Config Backtracking.Config := ⟨Config.toConfig⟩
+
 /-- The default `maxDepth` for `apply_rules` is higher. -/
 structure ApplyRulesConfig extends Config where
   maxDepth := 50
@@ -113,6 +195,10 @@ Allow elaboration of `ApplyRulesConfig` arguments to tactics.
 -/
 declare_config_elab elabApplyRulesConfig ApplyRulesConfig
 
+/-!
+These functions could be lifted up to `Backtracking.Config`,
+but we'd still need to keep copies here.
+-/
 namespace Config
 
 /-- Create or modify a `Config` which allows a class of goals to be returned as subgoals. -/
@@ -134,7 +220,7 @@ If that tactic fails, fall back to the `proc` behaviour of `cfg`.
 def mainGoalProc (cfg : Config := {}) (proc : MVarId → MetaM (List MVarId)) : Config :=
 { cfg with
   proc := fun orig goals => match goals with
-  | [] => pure none
+  | [] => cfg.proc orig []
   | g :: gs => try
       return (← proc g) ++ gs
     catch _ => cfg.proc orig goals }
@@ -182,6 +268,12 @@ def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermE
     MetaM (List Expr) := do
   g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
 
+/-- Returns the list of tactics corresponding to apply the available lemmas to the goal. -/
+def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
+    (g : MVarId) : MetaM (List (MetaM (List MVarId))) := do
+let es ← elabContextLemmas g lemmas ctx
+applyTactics cfg.toApplyConfig cfg.transparency `Meta.Tactic.solveByElim es g
+
 /--
 Solve a collection of goals by repeatedly applying lemmas, backtracking as necessary.
 
@@ -209,74 +301,19 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
   else
     pure goals
 
+  let alternatives := applyLemmas cfg lemmas ctx
   -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
   -- for (not as bad) performance reasons.
   match cfg.exfalso, goals with
     | true, [g] => try
-        run cfg.maxDepth [g] []
+        backtracking cfg alternatives [g]
       catch _ => do
         withTraceNode `Meta.Tactic.solveByElim
             (fun _ => return m!"⏮️ starting over using `exfalso`") do
           let g ← g.exfalso
-          run cfg.maxDepth [g] []
+          backtracking cfg alternatives [g]
     | _, _ =>
-      run cfg.maxDepth goals []
-  where
-  /--
-  * `n : Nat` steps remaining.
-  * `curr : List MVarId` the current list of unsolved goals.
-  * `acc : List MVarId` a list of "suspended" goals, which will be returned as subgoals.
-  -/
-  run (n : Nat) (curr acc : List MVarId) : MetaM (List MVarId) := do
-  match n with
-  | 0 => do
-    -- We're out of fuel.
-    if cfg.failAtMaxDepth then
-      throwError "solve_by_elim exceeded the recursion limit"
-    else
-      -- Before returning the goals, we run `cfg.proc` one last time.
-      let curr := acc.reverse ++ curr
-      return (← cfg.proc goals curr).getD curr
-  | n + 1 => do
-  -- First, run `cfg.proc`, to see if it wants to modify the goals.
-  match ← cfg.proc goals curr with
-  | some curr' => run n curr' acc
-  | none =>
-  match curr with
-  -- If there are no active goals, return the accumulated goals.
-  | [] => return acc.reverse
-  | g :: gs =>
-  -- Discard any goals which have already been assigned.
-  if ← g.isAssigned then
-    run (n+1) gs acc
-  else
-  withTraceNode `Meta.Tactic.solveByElim
-    -- Note: the `addMessageContextFull` ensures we show the goal using the mvar context before
-    -- the `do` block below runs, potentially unifying mvars in the goal.
-    (return m!"{exceptEmoji ·} working on: {← addMessageContextFull g}")
-    do
-      -- Check if we should suspend the search here:
-      if (← cfg.suspend g) then
-        withTraceNode `Meta.Tactic.solveByElim
-          (fun _ => return m!"⏸️ suspending search and returning as subgoal") do
-        run (n+1) gs (g :: acc)
-      else
-        let es ← elabContextLemmas g lemmas ctx
-        try
-          -- We attempt to find an expression which can be applied,
-          -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-          g.applyFirst cfg.toApplyConfig cfg.transparency `Meta.Tactic.solveByElim es fun res =>
-            run n (res ++ gs) acc
-        catch _ =>
-          -- No lemmas could be applied:
-          match (← cfg.discharge g) with
-          | none => (withTraceNode `Meta.Tactic.solveByElim
-              (fun _ => return m!"⏭️ deemed acceptable, returning as subgoal") do
-            run (n+1) gs (g :: acc))
-          | some l => (withTraceNode `Meta.Tactic.solveByElim
-              (fun _ => return m!"⏬ discharger generated new subgoals") do
-            run n (l ++ gs) acc)
-  termination_by run n curr acc => (n, curr)
+      backtracking cfg alternatives goals
 
 /--
 A `MetaM` analogue of the `apply_rules` user tactic.
