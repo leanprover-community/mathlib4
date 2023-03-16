@@ -13,7 +13,7 @@ open Lean Elab
 
 namespace Lean.Linter
 
-def logLint? [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
+def LogLintIf [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (linterOption : Lean.Option Bool) (stx : Syntax) (msg : MessageData) : m Unit := do
   if linterOption.get (← getOptions) then logLint linterOption stx msg
 
