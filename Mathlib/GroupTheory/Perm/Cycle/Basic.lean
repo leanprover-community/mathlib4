@@ -428,7 +428,7 @@ noncomputable def IsCycle.zpowersEquivSupport {σ : Perm α} (hσ : IsCycle σ) 
         exact ⟨⟨σ ^ n, n, rfl⟩, rfl⟩)
 #align equiv.perm.is_cycle.zpowers_equiv_support Equiv.Perm.IsCycle.zpowersEquivSupport
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simpNF claims that LHS simplifies to itself
 theorem IsCycle.zpowersEquivSupport_apply {σ : Perm α} (hσ : IsCycle σ) {n : ℕ} :
     hσ.zpowersEquivSupport ⟨σ ^ n, n, rfl⟩ =
       ⟨(σ ^ n) (Classical.choose hσ),
@@ -436,7 +436,7 @@ theorem IsCycle.zpowersEquivSupport_apply {σ : Perm α} (hσ : IsCycle σ) {n :
   rfl
 #align equiv.perm.is_cycle.zpowers_equiv_support_apply Equiv.Perm.IsCycle.zpowersEquivSupport_apply
 
-@[simp]
+@[simp, nolint simpNF] -- Porting note: simpNF claims that LHS simplifies to itself
 theorem IsCycle.zpowersEquivSupport_symm_apply {σ : Perm α} (hσ : IsCycle σ) (n : ℕ) :
     hσ.zpowersEquivSupport.symm
         ⟨(σ ^ n) (Classical.choose hσ),
@@ -2004,3 +2004,5 @@ theorem _root_.Finset.sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι �
 #align finset.sum_mul_sum_eq_sum_perm Finset.sum_mul_sum_eq_sum_perm
 
 end Finset
+
+#lint
