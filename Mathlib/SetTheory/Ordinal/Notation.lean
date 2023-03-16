@@ -823,11 +823,15 @@ theorem mulNat_eq_mul (n o) : mulNat o n = o * ofNat n := by cases o <;> cases n
 instance NF_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp ; exact Onote.mul_NF o (ofNat n)
 #align onote.NF_mul_nat Onote.NF_mulNat
 
-instance NF_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m)
-  | k, 0 => by cases k <;> exact NF.zero
-  | 0, m + 1 => NF.oadd_zero _ _
-  | k + 1, m + 1 => by
-    haveI := NF_opowAux k <;> simp [opowAux, Nat.succ_ne_zero] <;> infer_instance
+instance NF_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m) := by
+  intro k m
+  unfold opowAux
+  cases' m with m m
+  . cases k <;> exact NF.zero
+  cases' k with k k
+  . exact NF.oadd_zero _ _
+  . haveI := NF_opowAux e a0 a k
+    simp only [Nat.succ_ne_zero m] ; infer_instance
 #align onote.NF_opow_aux Onote.NF_opowAux
 
 instance NF_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
