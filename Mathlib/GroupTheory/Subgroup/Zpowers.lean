@@ -95,7 +95,7 @@ theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :
   rfl
 #align add_subgroup.range_zmultiples_hom AddSubgroup.range_zmultiplesHom
 
-attribute [to_additive AddSubgroup.zmultiples] Subgroup.zpowers
+attribute [to_additive existing AddSubgroup.zmultiples] Subgroup.zpowers
 
 attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_zpowers
 #align add_subgroup.mem_zmultiples AddSubgroup.mem_zmultiples
@@ -103,7 +103,8 @@ attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_z
 attribute [to_additive AddSubgroup.zmultiples_eq_closure] Subgroup.zpowers_eq_closure
 #align add_subgroup.zmultiples_eq_closure AddSubgroup.zmultiples_eq_closure
 
-attribute [to_additive (attr := simp) AddSubgroup.range_zmultiplesHom] Subgroup.range_zpowersHom
+attribute [to_additive existing (attr := simp) AddSubgroup.range_zmultiplesHom]
+  Subgroup.range_zpowersHom
 
 attribute [to_additive AddSubgroup.zmultiples_subset] Subgroup.zpowers_subset
 #align add_subgroup.zmultiples_subset AddSubgroup.zmultiples_subset

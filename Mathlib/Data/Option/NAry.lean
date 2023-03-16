@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.option.n_ary
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
+! leanprover-community/mathlib commit 995b47e555f1b6297c7cf16855f1023e355219fb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

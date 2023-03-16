@@ -116,7 +116,7 @@ instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
 #align pi.has_smul Pi.instSMul
 #align pi.has_vadd Pi.instVAdd
 
-@[to_additive instSMul]
+@[to_additive existing instSMul]
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 

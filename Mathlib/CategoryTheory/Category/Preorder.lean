@@ -41,16 +41,15 @@ open CategoryTheory
 The category structure coming from a preorder. There is a morphism `X ⟶ Y` if and only if `X ≤ Y`.
 
 Because we don't allow morphisms to live in `Prop`,
-we have to define `X ⟶ Y` as `ulift (plift (X ≤ Y))`.
+we have to define `X ⟶ Y` as `ULift (PLift (X ≤ Y))`.
 See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`.
 
 See <https://stacks.math.columbia.edu/tag/00D3>.
 -/
-instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCategory α
-    where
+instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCategory α where
   Hom U V := ULift (PLift (U ≤ V))
   id X := ⟨⟨le_refl X⟩⟩
-  comp := @fun X Y Z f g => ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
+  comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 #align preorder.small_category Preorder.smallCategory
 
 end Preorder
@@ -96,11 +95,10 @@ theorem leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.leOfHom_homOfLE
 
--- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
+-- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
+-- itself. This usually means that it will never apply." removing simp? It doesn't fire
 -- @[simp]
-theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h := by
-  cases' h with h
-  cases h
+theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
 
@@ -151,7 +149,7 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
 /-- A functor between preorder categories is monotone.
 -/
--- @[mono] porting note: `mono` tactic is not ported yet
+@[mono]
 theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
 #align category_theory.functor.monotone CategoryTheory.Functor.monotone
 
