@@ -12,6 +12,7 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
+import Std.Tactic.CoeExt -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
@@ -894,10 +895,15 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
   let appliedAttrs ← getAllSimpAttrs src
-    if
-
+  if appliedAttrs.size > 0 then
+    Linter.logLint? linter.existingAttributeWarning stx <|
+      m!"The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before {
+      ""}calling @[{thisAttr}]. The preferred method is to use {
+      ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
+      src} and the target declaration {tgt}."
   warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
     thisAttr `ext src tgt
+  warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
   warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
   warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
   warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
