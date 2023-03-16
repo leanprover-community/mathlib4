@@ -31,7 +31,9 @@ set_option linter.uppercaseLean3 false
 
 /-- The category of bipointed types. -/
 structure Bipointed : Type (u + 1) where
+  /-- the underlying type -/
   X : Type u
+  /-- the distinguished elements -/
   toProd : X × X
 #align Bipointed Bipointed
 
@@ -62,8 +64,11 @@ instance : Inhabited Bipointed :=
 /-- Morphisms in `Bipointed`. -/
 @[ext]
 protected structure Hom (X Y : Bipointed.{u}) : Type u where
+  /-- the underlying map -/
   toFun : X → Y
+  /-- compatibility with the first distinguished point -/
   map_fst : toFun X.toProd.1 = Y.toProd.1
+  /-- compatibility with the second distinguished point -/
   map_snd : toFun X.toProd.2 = Y.toProd.2
 #align Bipointed.hom Bipointed.Hom
 
