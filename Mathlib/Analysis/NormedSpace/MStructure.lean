@@ -62,8 +62,9 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
+universe u
 
-variable (X : Type _) [NormedAddCommGroup X]
+variable (X : Type u) [NormedAddCommGroup X]
 
 variable {M : Type} [Ring M] [Module M X]
 
@@ -103,47 +104,48 @@ theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) 
 
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     Commute P Q := by
-  have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ =>
-    by
-    refine' @eq_of_smul_eq_smul _ X _ _ _ _ fun x => _
-    rw [← norm_sub_eq_zero_iff]
-    have e1 : ‖R • x‖ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
-      calc
-        ‖R • x‖ =
-            ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
-              (‖(R * R) • x - R • P • R • x‖ + ‖(1 - R) • (1 - P) • R • x‖) :=
-          by
-          rw [h₁.Lnorm, h₃.Lnorm, h₃.Lnorm ((1 - P) • R • x), sub_smul 1 P, one_smul, smul_sub,
-            mul_smul]
-        _ =
-            ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
-              (‖R • x - R • P • R • x‖ + ‖((1 - R) * R) • x - (1 - R) • P • R • x‖) :=
-          by rw [h₃.proj.eq, sub_smul 1 P, one_smul, smul_sub, mul_smul]
-        _ =
-            ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
-              (‖R • x - R • P • R • x‖ + ‖(1 - R) • P • R • x‖) :=
-          by rw [sub_mul, h₃.proj.eq, one_mul, sub_self, zero_smul, zero_sub, norm_neg]
-        _ = ‖R • P • R • x‖ + ‖R • x - R • P • R • x‖ + 2 • ‖(1 - R) • P • R • x‖ := by abel
-        _ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
-          by
-          rw [GE.ge]
-          have :=
-            add_le_add_right (norm_le_insert' (R • x) (R • P • R • x)) (2 • ‖(1 - R) • P • R • x‖)
-          simpa only [mul_smul, sub_smul, one_smul] using this
+  have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ => by
+    refine @eq_of_smul_eq_smul _ X _ _ _ _ fun x => by
+      rw [← norm_sub_eq_zero_iff]
+      have e1 : ‖R • x‖ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
+        calc
+          ‖R • x‖ =
+              ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
+                (‖(R * R) • x - R • P • R • x‖ + ‖(1 - R) • (1 - P) • R • x‖) :=
+            by
+            rw [h₁.Lnorm, h₃.Lnorm, h₃.Lnorm ((1 - P) • R • x), sub_smul 1 P, one_smul, smul_sub,
+              mul_smul]
+          _ =
+              ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
+                (‖R • x - R • P • R • x‖ + ‖((1 - R) * R) • x - (1 - R) • P • R • x‖) :=
+            by rw [h₃.proj.eq, sub_smul 1 P, one_smul, smul_sub, mul_smul]
+          _ =
+              ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
+                (‖R • x - R • P • R • x‖ + ‖(1 - R) • P • R • x‖) :=
+            by rw [sub_mul, h₃.proj.eq, one_mul, sub_self, zero_smul, zero_sub, norm_neg]
+          _ = ‖R • P • R • x‖ + ‖R • x - R • P • R • x‖ + 2 • ‖(1 - R) • P • R • x‖ := by abel
+          _ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
+            by
+            rw [GE.ge]
+            have :=
+              add_le_add_right (norm_le_insert' (R • x) (R • P • R • x)) (2 • ‖(1 - R) • P • R • x‖)
+            simpa only [mul_smul, sub_smul, one_smul] using this
 
-    rw [GE.ge] at e1
-    nth_rewrite 1 [← add_zero ‖R • x‖]  at e1
-    rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
-    rw [le_antisymm_iff]
-    refine' ⟨_, norm_nonneg _⟩
-    rwa [← MulZeroClass.mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1
+      rw [GE.ge] at e1
+      nth_rewrite 2 [← add_zero ‖R • x‖]  at e1
+      rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
+      rw [le_antisymm_iff]
+      refine' ⟨_, norm_nonneg _⟩
+      rwa [← MulZeroClass.mul_zero (2 : ℝ), mul_le_mul_left (show (0 : ℝ) < 2 by norm_num)] at e1
   have QP_eq_QPQ : Q * P = Q * P * Q :=
     by
     have e1 : P * (1 - Q) = P * (1 - Q) - (Q * P - Q * P * Q) :=
       calc
-        P * (1 - Q) = (1 - Q) * P * (1 - Q) := by rw [PR_eq_RPR (1 - Q) h₂.Lcomplement]
-        _ = P * (1 - Q) - (Q * P - Q * P * Q) := by noncomm_ring
-
+        P * (1 - Q) = (1 - Q) * P * (1 - Q) := by rw [PR_eq_RPR (1 - Q) h₂.lcomplement]
+        _ = 1 * (P * (1 - Q)) - Q * (P * (1 - Q)) := by rw [mul_assoc, sub_mul]
+        _ = P * (1 - Q) - Q * (P * (1 - Q)) := by rw [one_mul]
+        _ = P * (1 - Q) - Q * (P - P * Q) := by rw [mul_sub, mul_one]
+        _ = P * (1 - Q) - (Q * P - Q * P * Q) := by rw [mul_sub Q, mul_assoc]
     rwa [eq_sub_iff_add_eq, add_right_eq_self, sub_eq_zero] at e1
   show P * Q = Q * P
   · rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
@@ -173,20 +175,19 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
 
 theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P + Q - P * Q) := by
-  convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
-  noncomm_ring
+  convert (Lcomplement_iff _).mp (h₁.lcomplement.mul h₂.lcomplement) using 1
+  rw [sub_mul, one_mul, sub_sub, sub_sub_self, mul_sub, mul_one, add_sub, add_comm]
 #align is_Lprojection.join IsLprojection.join
 
 instance : HasCompl { f : M // IsLprojection X f } :=
-  ⟨fun P => ⟨1 - P, P.Prop.lcomplement⟩⟩
+  ⟨fun P => ⟨1 - P, P.prop.lcomplement⟩⟩
 
-@[simp]
-theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑(Pᶜ) = (1 : M) - ↑P :=
-  rfl
-#align is_Lprojection.coe_compl IsLprojection.coe_compl
+
+instance : HasCompl { f : M // IsLprojection X f } :=
+  ⟨fun P => ⟨1 - P, P.prop.lcomplement⟩⟩
 
 instance [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
-  ⟨fun P Q => ⟨P * Q, P.Prop.mul Q.Prop⟩⟩
+  ⟨fun P Q => ⟨P * Q, P.prop.mul Q.prop⟩⟩
 
 @[simp]
 theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
@@ -195,7 +196,7 @@ theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
 #align is_Lprojection.coe_inf IsLprojection.coe_inf
 
 instance [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
-  ⟨fun P Q => ⟨P + Q - P * Q, P.Prop.join Q.Prop⟩⟩
+  ⟨fun P Q => ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
 
 @[simp]
 theorem coe_sup [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
@@ -204,7 +205,7 @@ theorem coe_sup [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
 #align is_Lprojection.coe_sup IsLprojection.coe_sup
 
 instance [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } :=
-  ⟨fun P Q => ⟨P * (1 - Q), P.prop.mul Q.prop.Lcomplement⟩⟩
+  ⟨fun P Q => ⟨P * (1 - Q), P.prop.mul Q.prop.lcomplement⟩⟩
 
 @[simp]
 theorem coe_sdiff [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
@@ -219,7 +220,7 @@ instance [FaithfulSMul M X] : PartialOrder { P : M // IsLprojection X P }
   le_trans P Q R h₁ h₂ := by
     simp only [coe_inf] at h₁ h₂⊢
     rw [h₁, mul_assoc, ← h₂]
-  le_antisymm P Q h₁ h₂ := Subtype.eq (by convert (P.prop.commute Q.prop).Eq)
+  le_antisymm P Q h₁ h₂ := Subtype.eq (by convert (P.prop.commute Q.prop).eq)
 
 theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     P ≤ Q ↔ (P : M) = ↑(P ⊓ Q) :=
@@ -237,7 +238,7 @@ theorem coe_zero : ↑(0 : { P : M // IsLprojection X P }) = (0 : M) :=
 #align is_Lprojection.coe_zero IsLprojection.coe_zero
 
 instance : One { P : M // IsLprojection X P } :=
-  ⟨⟨1, sub_zero (1 : M) ▸ (0 : { P : M // IsLprojection X P }).Prop.lcomplement⟩⟩
+  ⟨⟨1, sub_zero (1 : M) ▸ (0 : { P : M // IsLprojection X P }).prop.lcomplement⟩⟩
 
 @[simp]
 theorem coe_one : ↑(1 : { P : M // IsLprojection X P }) = (1 : M) :=
@@ -253,13 +254,13 @@ instance [FaithfulSMul M X] : BoundedOrder { P : M // IsLprojection X P }
 
 @[simp]
 theorem coe_bot [FaithfulSMul M X] :
-    ↑(BoundedOrder.bot : { P : M // IsLprojection X P }) = (0 : M) :=
+    ↑(BoundedOrder.toOrderBot.toBot.bot : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
 #align is_Lprojection.coe_bot IsLprojection.coe_bot
 
 @[simp]
 theorem coe_top [FaithfulSMul M X] :
-    ↑(BoundedOrder.top : { P : M // IsLprojection X P }) = (1 : M) :=
+    ↑(BoundedOrder.toOrderTop.toTop.top : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
 #align is_Lprojection.coe_top IsLprojection.coe_top
 
@@ -281,8 +282,10 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
     coe_inf Q, mul_assoc, ((Q ⊓ R).Prop.Commute Pᶜ.Prop).Eq, ← mul_assoc, Pᶜ.Prop.proj.Eq]
 #align is_Lprojection.distrib_lattice_lemma IsLprojection.distrib_lattice_lemma
 
+
+
 instance [FaithfulSMul M X] : DistribLattice { P : M // IsLprojection X P } :=
-  { IsLprojection.Subtype.hasInf, IsLprojection.Subtype.hasSup,
+  { is_Lprojection.Subtype.hasInf, is_Lprojection.Subtype.hasSup,
     IsLprojection.Subtype.partialOrder with
     le_sup_left := fun P Q => by
       rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, ← mul_assoc, P.prop.proj.eq,
@@ -319,8 +322,13 @@ instance [FaithfulSMul M X] : DistribLattice { P : M // IsLprojection X P } :=
           distrib_lattice_lemma, (Q.prop.commute R.prop).Eq, distrib_lattice_lemma]
       rw [le_def, e₁, coe_inf, e₂] }
 
+
+
+#check IsLprojection.instHasComplSubtypeIsLprojection.{u}
+
 instance [FaithfulSMul M X] : BooleanAlgebra { P : M // IsLprojection X P } :=
-  { IsLprojection.Subtype.hasCompl, IsLprojection.Subtype.hasSdiff,
+  { IsLprojection.instHasComplSubtypeIsLprojection.{u},
+    IsLprojection.Subtype.hasSdiff,
     IsLprojection.Subtype.boundedOrder,
     IsLprojection.Subtype.distribLattice with
     inf_compl_le_bot := fun P =>
