@@ -28,16 +28,16 @@ weakened: below we mention what assumptions are sufficient for the proofs in thi
 
 ##  Main results
 
-* `no_zero_divisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
+* `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add right cancel semigroup with strictly monotone
   left addition, then `AddMonoidAlgebra R A` has no non-zero zero-divisors.
-* `no_zero_divisors.of_right_ordered` shows that if `R` is a semiring with no non-zero
+* `NoZeroDivisors.of_right_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add left cancel semigroup with strictly monotone
   right addition, then `AddMonoidAlgebra R A` has no non-zero zero-divisors.
 
-The conditions on `A` imposed in `no_zero_divisors.of_left_ordered` are sometimes referred to as
+The conditions on `A` imposed in `NoZeroDivisors.of_left_ordered` are sometimes referred to as
 `left-ordered`.
-The conditions on `A` imposed in `no_zero_divisors.of_right_ordered` are sometimes referred to as
+The conditions on `A` imposed in `NoZeroDivisors.of_right_ordered` are sometimes referred to as
 `right-ordered`.
 
 These conditions are sufficient, but not necessary.  As mentioned above, *Kaplansky's Conjecture*
