@@ -31,9 +31,7 @@ set_option linter.uppercaseLean3 false
 
 /-- The category of bipointed types. -/
 structure Bipointed : Type (u + 1) where
-  /-- the underlying type -/
   X : Type u
-  /-- the distinguished elements -/
   toProd : X × X
 #align Bipointed Bipointed
 
@@ -56,7 +54,7 @@ theorem coe_of {X : Type _} (to_prod : X × X) : ↥(of to_prod) = X :=
 #align Bipointed.coe_of Bipointed.coe_of
 
 alias of ← _root_.Prod.Bipointed
-#align prod.Bipointed prod.Bipointed
+#align prod.Bipointed Prod.Bipointed
 
 instance : Inhabited Bipointed :=
   ⟨of ((), ())⟩
@@ -64,11 +62,8 @@ instance : Inhabited Bipointed :=
 /-- Morphisms in `Bipointed`. -/
 @[ext]
 protected structure Hom (X Y : Bipointed.{u}) : Type u where
-  /-- the underlying map -/
   toFun : X → Y
-  /-- compatibility with the first distinguished point -/
   map_fst : toFun X.toProd.1 = Y.toProd.1
-  /-- compatibility with the second distinguished point -/
   map_snd : toFun X.toProd.2 = Y.toProd.2
 #align Bipointed.hom Bipointed.Hom
 
@@ -76,8 +71,8 @@ namespace Hom
 
 /-- The identity morphism of `X : Bipointed`. -/
 @[simps]
-def id (X : Bipointed) : Bipointed.Hom X X :=
-  ⟨_root_.id, rfl, rfl⟩
+nonrec def id (X : Bipointed) : Bipointed.Hom X X :=
+  ⟨id, rfl, rfl⟩
 #align Bipointed.hom.id Bipointed.Hom.id
 
 instance (X : Bipointed) : Inhabited (Bipointed.Hom X X) :=
