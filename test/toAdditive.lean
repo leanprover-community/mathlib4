@@ -150,6 +150,11 @@ example {x} (h : 1 = x) : foo20 = x := by simp; guard_target = 1 = x; exact h
 example {x} (h : 1 = x) : bar20 = x := by simp; guard_target = 1 = x; exact h
 example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 
+@[to_additive bar21]
+def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
+
+run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
