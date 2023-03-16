@@ -532,41 +532,42 @@ instance : PerfectRing (PerfectClosure K p) p
 theorem eq_pthRoot (x : ℕ × K) : mk K p x = (pthRoot (PerfectClosure K p) p^[x.1]) (of K p x.2) :=
   by
   rcases x with ⟨m, x⟩
-  induction' m with m ih; · rfl
-  rw [iterate_succ_apply', ← ih] <;> rfl
+  induction' m with m ih
+  · rfl
+  rw [iterate_succ_apply', ← ih]
+  rfl
 #align perfect_closure.eq_pth_root PerfectClosure.eq_pthRoot
 
 /-- Given a field `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
 any homomorphism `K →+* L` can be lifted to `perfect_closure K p`. -/
 def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
-    (K →+* L) ≃ (PerfectClosure K p →+* L) := by
-  have := left_inverse_pth_root_frobenius.iterate
-  refine_struct { .. }
-  field to_fun =>
-    intro f
-    refine_struct { .. }
-    field to_fun =>
-      refine' fun e => lift_on e (fun x => (pthRoot L p^[x.1]) (f x.2)) _
-      rintro a b ⟨n⟩
-      simp only [f.map_frobenius, iterate_succ_apply, pthRoot_frobenius]
-    field map_one' => exact f.map_one
-    field map_zero' => exact f.map_zero
-    field map_mul' =>
-      rintro ⟨x⟩ ⟨y⟩
-      simp only [quot_mk_eq_mk, liftOn_mk, mk_mul_mk, RingHom.map_iterate_frobenius,
-        RingHom.iterate_map_mul, RingHom.map_mul]
-      rw [iterate_add_apply, this _ _, add_comm, iterate_add_apply, this _ _]
-    field map_add' =>
-      rintro ⟨x⟩ ⟨y⟩
-      simp only [quot_mk_eq_mk, liftOn_mk, mk_add_mk, RingHom.map_iterate_frobenius,
-        RingHom.iterate_map_add, RingHom.map_add]
-      rw [iterate_add_apply, this _ _, add_comm x.1, iterate_add_apply, this _ _]
-  field inv_fun => exact fun f => f.comp (of K p)
-  field left_inv => intro f; ext x; rfl
-  field right_inv =>
-    intro f; ext ⟨x⟩
-    simp only [RingHom.coe_mk, quot_mk_eq_mk, RingHom.comp_apply, liftOn_mk]
-    rw [eq_pth_root, RingHom.map_iterate_pthRoot]
+    (K →+* L) ≃ (PerfectClosure K p →+* L) where
+  toFun f :=
+    { toFun := by
+        refine' fun e => liftOn e (fun x => (pthRoot L p^[x.1]) (f x.2)) _
+        rintro a b ⟨n⟩
+        simp only [f.map_frobenius, iterate_succ_apply, pthRoot_frobenius],
+      map_one' := f.map_one,
+      map_zero' := f.map_zero,
+      map_mul' := by
+        have := (leftInverse_pthRoot_frobenius (R := L) (p := p)).iterate
+        rintro ⟨x⟩ ⟨y⟩
+        simp only [quot_mk_eq_mk, liftOn_mk, mk_mul_mk, RingHom.map_iterate_frobenius,
+          RingHom.iterate_map_mul, RingHom.map_mul]
+        rw [iterate_add_apply, this _ _, add_comm, iterate_add_apply, this _ _],
+      map_add' := by
+        have := (leftInverse_pthRoot_frobenius (R := L) (p := p)).iterate
+        rintro ⟨x⟩ ⟨y⟩
+        simp only [quot_mk_eq_mk, liftOn_mk, mk_add_mk, RingHom.map_iterate_frobenius,
+          RingHom.iterate_map_add, RingHom.map_add]
+        rw [iterate_add_apply, this _ _, add_comm x.1, iterate_add_apply, this _ _] }
+  invFun f := f.comp (of K p)
+  left_inv f := by ext x; rfl
+  right_inv f := by
+    ext ⟨x⟩
+    simp only [quot_mk_eq_mk, RingHom.comp_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+      liftOn_mk]
+    rw [eq_pthRoot, RingHom.map_iterate_pthRoot]
 #align perfect_closure.lift PerfectClosure.lift
 
 end Field
