@@ -45,6 +45,9 @@ instance [NatCast R] : CoeTail ℕ R where coe := Nat.cast
 -- see note [coercion into rings]
 instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
 
+/-- This instance is needed to ensure that `instCoeNatInt` is not used. -/
+instance : Coe ℕ ℤ where coe := Nat.cast
+
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
 

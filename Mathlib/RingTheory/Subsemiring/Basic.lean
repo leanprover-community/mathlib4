@@ -202,7 +202,12 @@ instance : SubsemiringClass (Subsemiring R) R
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
   mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
 
--- Porting note: provable from `SetLike` so un-marking it as `@[simp]`
+@[simp]
+theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
+  Iff.rfl
+#align subsemiring.mem_to_submonoid Subsemiring.mem_toSubmonoid
+
+-- `@[simp]` -- Porting note: simp can prove this
 theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subsemiring.mem_carrier Subsemiring.mem_carrier
@@ -468,11 +473,6 @@ instance toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] (s : Subs
 protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=
   nsmul_mem hx n
 #align subsemiring.nsmul_mem Subsemiring.nsmul_mem
-
-@[simp]
-theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
-  Iff.rfl
-#align subsemiring.mem_to_submonoid Subsemiring.mem_toSubmonoid
 
 @[simp]
 theorem coe_toSubmonoid (s : Subsemiring R) : (s.toSubmonoid : Set R) = s :=
@@ -1387,14 +1387,14 @@ instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemir
   S.toSubmonoid.mulSemiringAction
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_left : SMulCommClass (center R') R' R' :=
+instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
   Submonoid.center.smulCommClass_left
-#align subsemiring.center.smul_comm_class_left Subsemiring.center.sMulCommClass_left
+#align subsemiring.center.smul_comm_class_left Subsemiring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_right : SMulCommClass R' (center R') R' :=
+instance center.smulCommClass_right : SMulCommClass R' (center R') R' :=
   Submonoid.center.smulCommClass_right
-#align subsemiring.center.smul_comm_class_right Subsemiring.center.sMulCommClass_right
+#align subsemiring.center.smul_comm_class_right Subsemiring.center.smulCommClass_right
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
 def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
