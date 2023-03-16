@@ -30,11 +30,11 @@ locale.
 -/
 
 
-universe u v w
+universe u v w x
 
-variable {X : Type u} {Y : Type v} {Z : Type w}
+variable {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace ContinuousMap
 
@@ -162,6 +162,14 @@ def trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : X ≃ₕ Z where
 
 theorem symm_trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : (h₁.trans h₂).symm = h₂.symm.trans h₁.symm := rfl
 #align continuous_map.homotopy_equiv.symm_trans ContinuousMap.HomotopyEquiv.symm_trans
+
+/-- If `X` is homotopy equivalent to `Y` and `Z` is homotopy equivalent to `Z'`, then `X × Z` is
+homotopy equivalent to `Z × Z'`. -/
+def prodCongr (h₁ : X ≃ₕ Y) (h₂ : Z ≃ₕ Z') : (X × Z) ≃ₕ (Y × Z') where
+  toFun := h₁.toFun.prodMap h₂.toFun
+  invFun := h₁.invFun.prodMap h₂.invFun
+  left_inv := h₁.left_inv.prodMap h₂.left_inv
+  right_inv := h₁.right_inv.prodMap h₂.right_inv
 
 end HomotopyEquiv
 
