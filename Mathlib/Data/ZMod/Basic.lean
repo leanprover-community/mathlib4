@@ -438,11 +438,8 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
     exact n.succ_ne_zero h.symm
   · exfalso
     exact m.succ_ne_zero h
-  ·
-    exact
-      {
-        Fin.cast
-          h with
+  · exact
+      { Fin.cast h with
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
@@ -949,8 +946,9 @@ theorem valMinAbs_nonneg_iff {n : ℕ} [NeZero n] (x : ZMod n) : 0 ≤ x.valMinA
 #align zmod.val_min_abs_nonneg_iff ZMod.valMinAbs_nonneg_iff
 
 theorem valMinAbs_mul_two_eq_iff {n : ℕ} (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val = n := by
-  cases' n with n; · simp
-  by_cases a.val ≤ n.succ / 2
+  cases' n with n
+  · simp
+  by_cases h : a.val ≤ n.succ / 2
   · dsimp [valMinAbs]
     rw [if_pos h, ← Int.coe_nat_inj', Nat.cast_mul, Nat.cast_two, mul_comm]
   apply iff_of_false _ (mt _ h)
@@ -1004,7 +1002,8 @@ theorem valMinAbs_zero : ∀ n, (0 : ZMod n).valMinAbs = 0
 
 @[simp]
 theorem valMinAbs_eq_zero {n : ℕ} (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 := by
-  cases' n with n; · simp
+  cases' n with n
+  · simp
   rw [← valMinAbs_zero n.succ]
   apply injective_valMinAbs.eq_iff
 #align zmod.val_min_abs_eq_zero ZMod.valMinAbs_eq_zero
@@ -1023,7 +1022,7 @@ theorem nat_cast_natAbs_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
 
 theorem valMinAbs_neg_of_ne_half {n : ℕ} {a : ZMod n} (ha : 2 * a.val ≠ n) :
     (-a).valMinAbs = -a.valMinAbs := by
-  cases' eq_zero_or_neZero n with h h;
+  cases' eq_zero_or_neZero n with h h
   · subst h
     rfl
   refine' (valMinAbs_spec _ _).2 ⟨_, _, _⟩
@@ -1089,7 +1088,8 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
 
 theorem natAbs_valMinAbs_add_le {n : ℕ} (a b : ZMod n) :
     (a + b).valMinAbs.natAbs ≤ (a.valMinAbs + b.valMinAbs).natAbs := by
-  cases' n with n; · rfl
+  cases' n with n
+  · rfl
   apply natAbs_min_of_le_div_two n.succ
   · simp_rw [Int.cast_add, coe_valMinAbs]
   · apply natAbs_valMinAbs_le
@@ -1105,7 +1105,7 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
 instance : Field (ZMod p) :=
-  { inferInstanceAs (CommRing (ZMod p)),inferInstanceAs (Inv (ZMod p)),
+  { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
     inv_zero := inv_zero p }
