@@ -19,35 +19,35 @@ Given a commutative semiring `R`, and a type `X`, we construct the free unital, 
 
 ## Notation
 
-1. `free_algebra R X` is the free algebra itself. It is endowed with an `R`-algebra structure.
-2. `free_algebra.ι R` is the function `X → free_algebra R X`.
+1. `FreeAlgebra R X` is the free algebra itself. It is endowed with an `R`-algebra structure.
+2. `FreeAlgebra.ι R` is the function `X → FreeAlgebra R X`.
 3. Given a function `f : X → A` to an R-algebra `A`, `lift R f` is the lift of `f` to an
-  `R`-algebra morphism `free_algebra R X → A`.
+  `R`-algebra morphism `FreeAlgebra R X → A`.
 
 ## Theorems
 
 1. `ι_comp_lift` states that the composition `(lift R f) ∘ (ι R)` is identical to `f`.
-2. `lift_unique` states that whenever an R-algebra morphism `g : free_algebra R X → A` is
+2. `lift_unique` states that whenever an R-algebra morphism `g : FreeAlgebra R X → A` is
   given whose composition with `ι R` is `f`, then one has `g = lift R f`.
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
   of the composition of an algebra morphism with `ι` is the algebra morphism itself.
-5. `equiv_monoid_algebra_free_monoid : free_algebra R X ≃ₐ[R] monoid_algebra R (free_monoid X)`
+5. `equiv_monoid_algebra_free_monoid : FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X)`
 6. An inductive principle `induction`.
 
 ## Implementation details
 
-We construct the free algebra on `X` as a quotient of an inductive type `free_algebra.pre` by an
-inductively defined relation `free_algebra.rel`. Explicitly, the construction involves three steps:
-1. We construct an inductive type `free_algebra.pre R X`, the terms of which should be thought
-  of as representatives for the elements of `free_algebra R X`.
+We construct the free algebra on `X` as a quotient of an inductive type `FreeAlgebra.Pre` by an
+inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction involves three steps:
+1. We construct an inductive type `FreeAlgebra.Pre R X`, the terms of which should be thought
+  of as representatives for the elements of `FreeAlgebra R X`.
   It is the free type with maps from `R` and `X`, and with two binary operations `add` and `mul`.
-2. We construct an inductive relation `free_algebra.rel R X` on `free_algebra.pre R X`.
+2. We construct an inductive relation `FreeAlgebra.Rel R X` on `FreeAlgebra.Pre R X`.
   This is the smallest relation for which the quotient is an `R`-algebra where addition resp.
   multiplication are induced by `add` resp. `mul` from 1., and for which the map from `R` is the
   structure map for the algebra.
-3. The free algebra `free_algebra R X` is the quotient of `free_algebra.pre R X` by
-  the relation `free_algebra.rel R X`.
+3. The free algebra `FreeAlgebra R X` is the quotient of `FreeAlgebra.Pre R X` by
+  the relation `FreeAlgebra.Rel R X`.
 -/
 
 
@@ -60,68 +60,61 @@ namespace FreeAlgebra
 /-- This inductive type is used to express representatives of the free algebra.
 -/
 inductive Pre
-  | of : X → pre
-  | of_scalar : R → pre
-  | add : pre → pre → pre
-  | mul : pre → pre → pre
+  | of : X → Pre
+  | of_scalar : R → Pre
+  | add : Pre → Pre → Pre
+  | mul : Pre → Pre → Pre
 #align free_algebra.pre FreeAlgebra.Pre
 
 namespace Pre
 
-instance : Inhabited (Pre R X) :=
-  ⟨of_scalar 0⟩
+instance : Inhabited (Pre R X) := ⟨of_scalar 0⟩
 
 -- Note: These instances are only used to simplify the notation.
-/-- Coercion from `X` to `pre R X`. Note: Used for notation only. -/
-def hasCoeGenerator : Coe X (Pre R X) :=
-  ⟨of⟩
+/-- Coercion from `X` to `Pre R X`. Note: Used for notation only. -/
+def hasCoeGenerator : Coe X (Pre R X) := ⟨of⟩
 #align free_algebra.pre.has_coe_generator FreeAlgebra.Pre.hasCoeGenerator
 
-/-- Coercion from `R` to `pre R X`. Note: Used for notation only. -/
-def hasCoeSemiring : Coe R (Pre R X) :=
-  ⟨of_scalar⟩
+/-- Coercion from `R` to `Pre R X`. Note: Used for notation only. -/
+def hasCoeSemiring : Coe R (Pre R X) := ⟨of_scalar⟩
 #align free_algebra.pre.has_coe_semiring FreeAlgebra.Pre.hasCoeSemiring
 
-/-- Multiplication in `pre R X` defined as `pre.mul`. Note: Used for notation only. -/
-def hasMul : Mul (Pre R X) :=
-  ⟨mul⟩
+/-- Multiplication in `Pre R X` defined as `Pre.mul`. Note: Used for notation only. -/
+def hasMul : Mul (Pre R X) := ⟨mul⟩
 #align free_algebra.pre.has_mul FreeAlgebra.Pre.hasMul
 
-/-- Addition in `pre R X` defined as `pre.add`. Note: Used for notation only. -/
-def hasAdd : Add (Pre R X) :=
-  ⟨add⟩
+/-- Addition in `Pre R X` defined as `Pre.add`. Note: Used for notation only. -/
+def hasAdd : Add (Pre R X) := ⟨add⟩
 #align free_algebra.pre.has_add FreeAlgebra.Pre.hasAdd
 
-/-- Zero in `pre R X` defined as the image of `0` from `R`. Note: Used for notation only. -/
-def hasZero : Zero (Pre R X) :=
-  ⟨of_scalar 0⟩
+/-- Zero in `Pre R X` defined as the image of `0` from `R`. Note: Used for notation only. -/
+def hasZero : Zero (Pre R X) := ⟨of_scalar 0⟩
 #align free_algebra.pre.has_zero FreeAlgebra.Pre.hasZero
 
-/-- One in `pre R X` defined as the image of `1` from `R`. Note: Used for notation only. -/
-def hasOne : One (Pre R X) :=
-  ⟨of_scalar 1⟩
+/-- One in `Pre R X` defined as the image of `1` from `R`. Note: Used for notation only. -/
+def hasOne : One (Pre R X) := ⟨of_scalar 1⟩
 #align free_algebra.pre.has_one FreeAlgebra.Pre.hasOne
 
 /-- Scalar multiplication defined as multiplication by the image of elements from `R`.
 Note: Used for notation only.
 -/
-def hasSmul : SMul R (Pre R X) :=
-  ⟨fun r m => mul (of_scalar r) m⟩
+def hasSmul : SMul R (Pre R X) := ⟨fun r m ↦ mul (of_scalar r) m⟩
 #align free_algebra.pre.has_smul FreeAlgebra.Pre.hasSmul
 
 end Pre
 
-attribute [local instance]
-  pre.has_coe_generator pre.has_coe_semiring pre.has_mul pre.has_add pre.has_zero pre.has_one pre.has_smul
+attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
+  Pre.hasZero Pre.hasOne Pre.hasSmul
 
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
-from `pre R X` to `A`. This is mainly used in the construction of `free_algebra.lift`.
+from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
 -/
-def liftFun {A : Type _} [Semiring A] [Algebra R A] (f : X → A) : Pre R X → A := fun t =>
-  Pre.recOn t f (algebraMap _ _) (fun _ _ => (· + ·)) fun _ _ => (· * ·)
+-- Porting note: added noncomputable for recOn to work
+noncomputable def liftFun {A : Type _} [Semiring A] [Algebra R A] (f : X → A) :
+  Pre R X → A := fun t ↦ Pre.recOn t f (algebraMap _ _) (fun _ _ ↦ (· + ·)) (fun _ _ ↦ (· * ·))
 #align free_algebra.lift_fun FreeAlgebra.liftFun
 
-/-- An inductively defined relation on `pre R X` used to force the initial algebra structure on
+/-- An inductively defined relation on `Pre R X` used to force the initial algebra structure on
 the associated quotient.
 -/
 inductive Rel : Pre R X → Pre R X → Prop-- force `of_scalar` to be a central semiring morphism
@@ -139,9 +132,8 @@ inductive Rel : Pre R X → Pre R X → Prop-- force `of_scalar` to be a central
   | mul_one {a : Pre R X} : Rel (a * 1) a-- distributivity
 
   | left_distrib {a b c : Pre R X} : Rel (a * (b + c)) (a * b + a * c)
-  |
-  right_distrib {a b c : Pre R X} :
-    Rel ((a + b) * c) (a * c + b * c)-- other relations needed for semiring
+  | right_distrib {a b c : Pre R X} :
+      Rel ((a + b) * c) (a * c + b * c)-- other relations needed for semiring
 
   | MulZeroClass.zero_mul {a : Pre R X} : Rel (0 * a) 0
   | MulZeroClass.mul_zero {a : Pre R X} : Rel (a * 0) 0-- compatibility
@@ -162,55 +154,55 @@ def FreeAlgebra :=
 
 namespace FreeAlgebra
 
-attribute [local instance]
-  pre.has_coe_generator pre.has_coe_semiring pre.has_mul pre.has_add pre.has_zero pre.has_one pre.has_smul
+attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
+  Pre.hasZero Pre.hasOne Pre.hasSmul
 
 instance : Semiring (FreeAlgebra R X)
     where
-  add := Quot.map₂ (· + ·) (fun _ _ _ => Rel.add_compat_right) fun _ _ _ => Rel.add_compat_left
+  add := Quot.map₂ (· + ·) (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
-    exact Quot.sound rel.add_assoc
+    exact Quot.sound Rel.add_assoc
   zero := Quot.mk _ 0
   zero_add := by
     rintro ⟨⟩
-    exact Quot.sound rel.zero_add
+    exact Quot.sound Rel.zero_add
   add_zero := by
     rintro ⟨⟩
     change Quot.mk _ _ = _
-    rw [Quot.sound rel.add_comm, Quot.sound rel.zero_add]
+    rw [Quot.sound Rel.add_comm, Quot.sound Rel.zero_add]
   add_comm := by
     rintro ⟨⟩ ⟨⟩
-    exact Quot.sound rel.add_comm
-  mul := Quot.map₂ (· * ·) (fun _ _ _ => Rel.mul_compat_right) fun _ _ _ => Rel.mul_compat_left
+    exact Quot.sound Rel.add_comm
+  mul := Quot.map₂ (· * ·) (fun _ _ _ ↦ Rel.mul_compat_right) fun _ _ _ ↦ Rel.mul_compat_left
   mul_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
-    exact Quot.sound rel.mul_assoc
+    exact Quot.sound Rel.mul_assoc
   one := Quot.mk _ 1
   one_mul := by
     rintro ⟨⟩
-    exact Quot.sound rel.one_mul
+    exact Quot.sound Rel.one_mul
   mul_one := by
     rintro ⟨⟩
-    exact Quot.sound rel.mul_one
+    exact Quot.sound Rel.mul_one
   left_distrib := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
-    exact Quot.sound rel.left_distrib
+    exact Quot.sound Rel.left_distrib
   right_distrib := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
-    exact Quot.sound rel.right_distrib
+    exact Quot.sound Rel.right_distrib
   zero_mul := by
     rintro ⟨⟩
-    exact Quot.sound rel.zero_mul
+    exact Quot.sound Rel.MulZeroClass.zero_mul
   mul_zero := by
     rintro ⟨⟩
-    exact Quot.sound rel.mul_zero
+    exact Quot.sound Rel.MulZeroClass.mul_zero
 
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
 instance : SMul R (FreeAlgebra R X)
-    where smul r := Quot.map ((· * ·) ↑r) fun a b => Rel.mul_compat_right
+    where smul r := Quot.map ((· * ·) ↑r) fun _ _ ↦ Rel.mul_compat_right
 
 instance : Algebra R (FreeAlgebra R X)
     where
@@ -221,7 +213,7 @@ instance : Algebra R (FreeAlgebra R X)
   map_add' _ _ := Quot.sound Rel.add_scalar
   commutes' _ := by
     rintro ⟨⟩
-    exact Quot.sound rel.central_scalar
+    exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
 
 instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
@@ -229,38 +221,39 @@ instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
 
 variable {X}
 
-/-- The canonical function `X → free_algebra R X`.
+/-- The canonical function `X → FreeAlgebra R X`.
 -/
-irreducible_def ι : X → FreeAlgebra R X := fun m => Quot.mk _ m
+irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 #align free_algebra.ι FreeAlgebra.ι
 
 @[simp]
-theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι]
+theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
 #align free_algebra.quot_mk_eq_ι FreeAlgebra.quot_mk_eq_ι
 
 variable {A : Type _} [Semiring A] [Algebra R A]
 
 /-- Internal definition used to define `lift` -/
-private def lift_aux (f : X → A) : FreeAlgebra R X →ₐ[R] A
+-- Porting note: add noncomputable since liftFun is also noncomputable now
+private noncomputable def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A
     where
   toFun a :=
-    Quot.liftOn a (liftFun _ _ f) fun a b h =>
+    Quot.liftOn a (liftFun _ _ f) fun a b h ↦
       by
-      induction h
-      · exact (algebraMap R A).map_add h_r h_s
-      · exact (algebraMap R A).map_mul h_r h_s
+      induction' h
+      · exact (algebraMap R A).map_add _ _
+      · exact (algebraMap R A).map_mul _ _
       · apply Algebra.commutes
       · change _ + _ + _ = _ + (_ + _)
         rw [add_assoc]
       · change _ + _ = _ + _
         rw [add_comm]
-      · change algebraMap _ _ _ + lift_fun R X f _ = lift_fun R X f _
+      · change algebraMap _ _ _ + liftFun R X f _ = liftFun R X f _
         simp
       · change _ * _ * _ = _ * (_ * _)
         rw [mul_assoc]
-      · change algebraMap _ _ _ * lift_fun R X f _ = lift_fun R X f _
+      · change algebraMap _ _ _ * liftFun R X f _ = liftFun R X f _
         simp
-      · change lift_fun R X f _ * algebraMap _ _ _ = lift_fun R X f _
+      · change liftFun R X f _ * algebraMap _ _ _ = liftFun R X f _
         simp
       · change _ * (_ + _) = _ * _ + _ * _
         rw [left_distrib]
@@ -270,13 +263,13 @@ private def lift_aux (f : X → A) : FreeAlgebra R X →ₐ[R] A
         simp
       · change _ * algebraMap _ _ _ = algebraMap _ _ _
         simp
-      repeat'
-        change lift_fun R X f _ + lift_fun R X f _ = _
-        rw [h_ih]
+      repeat
+        change liftFun R X f _ + liftFun R X f _ =  _
+        simp only [*]
         rfl
-      repeat'
-        change lift_fun R X f _ * lift_fun R X f _ = _
-        rw [h_ih]
+      repeat
+        change liftFun R X f _ * liftFun R X f _ = _
+        simp only [*]
         rfl
   map_one' := by
     change algebraMap _ _ _ = _
@@ -285,42 +278,44 @@ private def lift_aux (f : X → A) : FreeAlgebra R X →ₐ[R] A
     rintro ⟨⟩ ⟨⟩
     rfl
   map_zero' := by
+    dsimp
     change algebraMap _ _ _ = _
     simp
   map_add' := by
     rintro ⟨⟩ ⟨⟩
     rfl
   commutes' := by tauto
-#align free_algebra.lift_aux free_algebra.lift_aux
+-- Porting note: removed #align declaration since it is a private lemma
 
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
-of `f` to a morphism of `R`-algebras `free_algebra R X → A`.
+of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`.
 -/
-irreducible_def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
+-- Porting note: add noncomputable since LiftFun is also noncomputable now and changed
+-- irreducible_def to def since it does not work with noncomputable
+noncomputable def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R
-    invFun := fun F => F ∘ ι R
-    left_inv := fun f => by
+    invFun := fun F ↦ F ∘ ι R
+    left_inv := fun f ↦ by
       ext
-      rw [ι]
+      simp only [Function.comp_apply, ι_def]
       rfl
-    right_inv := fun F => by
-      ext x
-      rcases x with ⟨⟩
+    right_inv := fun F ↦ by
+      ext t
+      rcases t with ⟨x⟩
       induction x
       case of =>
         change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
-        rw [ι]
-        rfl
-      case of_scalar =>
+        simp only [Function.comp_apply, ι_def]
+      case of_scalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
-        rw [AlgHom.commutes F x]
-      case
-        add a b ha hb =>
-        change lift_aux R (F ∘ ι R) (Quot.mk _ _ + Quot.mk _ _) = F (Quot.mk _ _ + Quot.mk _ _)
+        rw [AlgHom.commutes F _]
+      case add a b ha hb =>
+        sorry
+        change liftAux R (F ∘ ι R) (Quot.mk _ _ + Quot.mk _ _) = F (Quot.mk _ _ + Quot.mk _ _)
         rw [AlgHom.map_add, AlgHom.map_add, ha, hb]
-      case
-        mul a b ha hb =>
-        change lift_aux R (F ∘ ι R) (Quot.mk _ _ * Quot.mk _ _) = F (Quot.mk _ _ * Quot.mk _ _)
+      case mul a b ha hb =>
+        sorry
+        change liftAux R (F ∘ ι R) (Quot.mk _ _ * Quot.mk _ _) = F (Quot.mk _ _ * Quot.mk _ _)
         rw [AlgHom.map_mul, AlgHom.map_mul, ha, hb] }
 #align free_algebra.lift FreeAlgebra.lift
 
@@ -336,18 +331,18 @@ theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F 
   rfl
 #align free_algebra.lift_symm_apply FreeAlgebra.lift_symm_apply
 
-variable {R X}
+variable {R}
 
 @[simp]
 theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
   ext
-  rw [ι, lift]
+  rw [Function.comp_apply, ι_def, lift]
   rfl
 #align free_algebra.ι_comp_lift FreeAlgebra.ι_comp_lift
 
 @[simp]
 theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
-  rw [ι, lift]
+  rw [ι_def, lift]
   rfl
 #align free_algebra.lift_ι_apply FreeAlgebra.lift_ι_apply
 
@@ -359,12 +354,12 @@ theorem lift_unique (f : X → A) (g : FreeAlgebra R X →ₐ[R] A) :
 #align free_algebra.lift_unique FreeAlgebra.lift_unique
 
 /-!
-Since we have set the basic definitions as `@[irreducible]`, from this point onwards one
+Since we have set the basic definitions as `@[Irreducible]`, from this point onwards one
 should only use the universal properties of the free algebra, and consider the actual implementation
 as a quotient of an inductive type as completely hidden. -/
 
 
--- Marking `free_algebra` irreducible makes `ring` instances inaccessible on quotients.
+-- Marking `FreeAlgebra` irreducible makes `Ring` instances inaccessible on quotients.
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241
 -- For now, we avoid this by not marking it irreducible.
 @[simp]
@@ -389,7 +384,7 @@ for example.
 -/
 noncomputable def equivMonoidAlgebraFreeMonoid :
     FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X) :=
-  AlgEquiv.ofAlgHom (lift R fun x => (MonoidAlgebra.of R (FreeMonoid X)) (FreeMonoid.of x))
+  AlgEquiv.ofAlgHom (lift R fun x ↦ (MonoidAlgebra.of R (FreeMonoid X)) (FreeMonoid.of x))
     ((MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X)) (FreeMonoid.lift (ι R)))
     (by
       apply MonoidAlgebra.algHom_ext; intro x
@@ -409,13 +404,13 @@ instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
 
 section
 
-/-- The left-inverse of `algebra_map`. -/
+/-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
   lift R (0 : X → R)
 #align free_algebra.algebra_map_inv FreeAlgebra.algebraMapInv
 
 theorem algebraMap_leftInverse :
-    Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x => by
+    Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
   simp [algebra_map_inv]
 #align free_algebra.algebra_map_left_inverse FreeAlgebra.algebraMap_leftInverse
 
@@ -435,12 +430,12 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 1 ↔
   map_eq_one_iff (algebraMap _ _) algebraMap_leftInverse.Injective
 #align free_algebra.algebra_map_eq_one_iff FreeAlgebra.algebraMap_eq_one_iff
 
--- this proof is copied from the approach in `free_abelian_group.of_injective`
+-- this proof is copied from the approach in `FreeAbelianGroup.of_injective`
 theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgebra R X) :=
-  fun x y hoxy =>
+  fun x y hoxy ↦
   by_contradiction <| by
-    classical exact fun hxy : x ≠ y =>
-        let f : FreeAlgebra R X →ₐ[R] R := lift R fun z => if x = z then (1 : R) else 0
+    classical exact fun hxy : x ≠ y ↦
+        let f : FreeAlgebra R X →ₐ[R] R := lift R fun z ↦ if x = z then (1 : R) else 0
         have hfx1 : f (ι R x) = 1 := (lift_ι_apply _ _).trans <| if_pos rfl
         have hfy1 : f (ι R y) = 1 := hoxy ▸ hfx1
         have hfy0 : f (ι R y) = 0 := (lift_ι_apply _ _).trans <| if_neg hxy
@@ -453,7 +448,7 @@ theorem ι_inj [Nontrivial R] (x y : X) : ι R x = ι R y ↔ x = y :=
 #align free_algebra.ι_inj FreeAlgebra.ι_inj
 
 @[simp]
-theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h => by
+theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h ↦ by
   let f0 : FreeAlgebra R X →ₐ[R] R := lift R 0
   let f1 : FreeAlgebra R X →ₐ[R] R := lift R 1
   have hf0 : f0 (ι R x) = 0 := lift_ι_apply _ _
@@ -478,13 +473,13 @@ end
 end FreeAlgebra
 
 /- There is something weird in the above namespace that breaks the typeclass resolution of
-`has_coe_to_sort` below. Closing it and reopening it fixes it... -/
+`CoeSort` below. Closing it and reopening it fixes it... -/
 namespace FreeAlgebra
 
 /-- An induction principle for the free algebra.
 
-If `C` holds for the `algebra_map` of `r : R` into `free_algebra R X`, the `ι` of `x : X`, and is
-preserved under addition and muliplication, then it holds for all of `free_algebra R X`.
+If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
+preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
 -/
 @[elab_as_elim]
 theorem induction {C : FreeAlgebra R X → Prop}
@@ -510,4 +505,3 @@ theorem induction {C : FreeAlgebra R X → Prop}
 #align free_algebra.induction FreeAlgebra.induction
 
 end FreeAlgebra
-
