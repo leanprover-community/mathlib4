@@ -831,7 +831,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _
   Valuation.map_add_of_distinct_val v h
 #align add_valuation.map_add_of_distinct_val AddValuation.map_add_of_distinct_val
 
-theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
+theorem map_eq_of_lt_sub (h : @LT.lt Γ₀ Preorder.toLT (v x : Γ₀) (v (y - x) : Γ₀)) : v y = v x :=
   Valuation.map_eq_of_sub_lt v h
 #align add_valuation.map_eq_of_lt_sub AddValuation.map_eq_of_lt_sub
 
