@@ -397,8 +397,7 @@ theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :
   intros
   rw [Multiset.le_count_iff_replicate_le, ← factorMultiset_le_iff, factorMultiset_pow,
     factorMultiset_ofPrime]
-  -- Porting note: replaced `congr 2` with next line
-  suffices k • PrimeMultiset.ofPrime p = Multiset.replicate k p by rw [this]
+  congr! 2
   apply Multiset.eq_replicate.mpr
   constructor
   · rw [Multiset.card_nsmul, PrimeMultiset.card_ofPrime, mul_one]

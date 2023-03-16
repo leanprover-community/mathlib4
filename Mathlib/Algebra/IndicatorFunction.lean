@@ -252,7 +252,7 @@ theorem mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :
 theorem comp_mulIndicator (h : M → β) (f : α → M) {s : Set α} {x : α} [DecidablePred (· ∈ s)] :
     h (s.mulIndicator f x) = s.piecewise (h ∘ f) (const α (h 1)) x := by
   letI := Classical.decPred (· ∈ s)
-  convert s.apply_piecewise f (const α 1) (fun _ => h) (x := x)
+  convert s.apply_piecewise f (const α 1) (fun _ => h) (x := x) using 2
 #align set.comp_mul_indicator Set.comp_mulIndicator
 #align set.comp_indicator Set.comp_indicator
 
