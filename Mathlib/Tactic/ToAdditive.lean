@@ -903,7 +903,6 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
       src} and the target declaration {tgt}."
   warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
     thisAttr `ext src tgt
-  warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
   warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
   warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
   warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
@@ -911,6 +910,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
   -- the next line also warns for `@[to_additive, simps]`, because of the application times
   warnParametricAttr stx simpsAttr thisAttr `simps src tgt
+  warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simp`, `simps` and `to_additive`.
