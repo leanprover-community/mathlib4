@@ -44,7 +44,7 @@ theorem cast_pow_eq_one {R : Type _} [Semiring R] [CharZero R] (q : ℕ) (n : �
 #align nat.cast_pow_eq_one Nat.cast_pow_eq_one
 
 @[simp, norm_cast]
-theorem cast_div_charZero {k : Type _} [Field k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
+theorem cast_div_charZero {k : Type _} [DivisionSemiring k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
     ((m / n : ℕ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp

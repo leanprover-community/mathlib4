@@ -47,7 +47,7 @@ theorem cast_ne_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠
 #align int.cast_ne_zero Int.cast_ne_zero
 
 @[simp, norm_cast]
-theorem cast_div_charZero {k : Type _} [Field k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
+theorem cast_div_charZero {k : Type _} [DivisionRing k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
     ((m / n : ℤ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp [Int.ediv_zero]
