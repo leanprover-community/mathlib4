@@ -319,7 +319,6 @@ namespace Attr
 /- S -/ syntax (name := intro) "intro" : attr
 /- S -/ syntax (name := intro!) "intro!" : attr
 
-/- M -/ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 /- S -/ syntax (name := interactive) "interactive" : attr
 
 /- M -/ syntax (name := expandExists) "expand_exists" (ppSpace ident)+ : attr

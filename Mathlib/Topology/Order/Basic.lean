@@ -790,6 +790,16 @@ theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x 
   hs.exists_mem_open isOpen_Ioo (nonempty_Ioo.2 h)
 #align dense.exists_between Dense.exists_between
 
+theorem Dense.Ioi_eq_bunionᵢ [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
+    Ioi x = ⋃ y ∈ s ∩ Ioi x, Ioi y := by
+  refine Subset.antisymm (fun z hz ↦ ?_) (unionᵢ₂_subset fun y hy ↦ Ioi_subset_Ioi (le_of_lt hy.2))
+  rcases hs.exists_between hz with ⟨y, hys, hxy, hyz⟩
+  exact mem_unionᵢ₂.2 ⟨y, ⟨hys, hxy⟩, hyz⟩
+
+theorem Dense.Iio_eq_bunionᵢ [DenselyOrdered α] {s : Set α} (hs : Dense s) (x : α) :
+    Iio x = ⋃ y ∈ s ∩ Iio x, Iio y :=
+  Dense.Ioi_eq_bunionᵢ (α := αᵒᵈ) hs x
+
 variable [Nonempty α] [TopologicalSpace β]
 
 /-- A compact set is bounded below -/
@@ -1043,15 +1053,30 @@ theorem induced_orderTopology {α : Type u} {β : Type v} [Preorder α] [ta : To
     fun ax => let ⟨b, ab, bx⟩ := H ax; ⟨b, hf.1 ab, le_of_lt bx⟩
 #align induced_order_topology induced_orderTopology
 
+/-- The topology induced by a strictly monotone function with order-connected range is the preorder
+topology. -/
+nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type _} [LinearOrder α]
+    [LinearOrder β] [t : TopologicalSpace β] [OrderTopology β] {f : α → β}
+    (hf : StrictMono f) (hc : OrdConnected (range f)) : t.induced f = Preorder.topology α := by
+  refine induced_topology_eq_preorder hf.lt_iff_lt (fun h₁ h₂ => ?_) fun h₁ h₂ => ?_
+  · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨not_lt.1 h₂, h₁.le⟩ with ⟨y, rfl⟩
+    exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
+  · rcases hc.out (mem_range_self _) (mem_range_self _) ⟨h₁.le, not_lt.1 h₂⟩ with ⟨y, rfl⟩
+    exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
+
+/-- A strictly monotone function between linear orders with order topology is a topological
+embedding provided that the range of `f` is  order-connected. -/
+theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [LinearOrder β]
+    [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
+    (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
+  ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
+
 /-- On an `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
 instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [LinearOrder α]
-    [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t := by
-  refine ⟨induced_topology_eq_preorder Iff.rfl (fun h₁ h₂ => ?_) (fun h₁ h₂ => ?_)⟩
-  · have := ht.out (Subtype.property _) (Subtype.property _) ⟨not_lt.1 h₂, h₁.le⟩
-    exact ⟨⟨_, this⟩, h₁, le_rfl⟩
-  · have := ht.out (Subtype.property _) (Subtype.property _) ⟨h₁.le, not_lt.1 h₂⟩
-    exact ⟨⟨_, this⟩, h₁, le_rfl⟩
+    [OrderTopology α] {t : Set α} [ht : OrdConnected t] : OrderTopology t :=
+  ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder $ by
+    rwa [← @Subtype.range_val _ t] at ht⟩
 #align order_topology_of_ord_connected orderTopology_of_ordConnected
 
 theorem nhdsWithin_Ici_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
@@ -1313,6 +1338,33 @@ theorem Filter.Eventually.exists_Ioo_subset [NoMaxOrder α] [NoMinOrder α] {a :
     (hp : ∀ᶠ x in 𝓝 a, p x) : ∃ l u, a ∈ Ioo l u ∧ Ioo l u ⊆ { x | p x } :=
   mem_nhds_iff_exists_Ioo_subset.1 hp
 #align filter.eventually.exists_Ioo_subset Filter.Eventually.exists_Ioo_subset
+
+theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : Dense s) :
+    ‹TopologicalSpace α› = .generateFrom (Ioi '' s ∪ Iio '' s) := by
+  refine (OrderTopology.topology_eq_generate_intervals (α := α)).trans ?_
+  refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
+  · simp only [union_subset_iff, image_subset_iff]
+    exact ⟨fun a _ ↦ ⟨a, .inl rfl⟩, fun a _ ↦ ⟨a, .inr rfl⟩⟩
+  · rintro _ ⟨a, rfl | rfl⟩
+    · rw [hs.Ioi_eq_bunionᵢ]
+      let _ := generateFrom (Ioi '' s ∪ Iio '' s)
+      exact isOpen_unionᵢ fun x ↦ isOpen_unionᵢ fun h ↦ .basic _ <| .inl <| mem_image_of_mem _ h.1
+    · rw [hs.Iio_eq_bunionᵢ]
+      let _ := generateFrom (Ioi '' s ∪ Iio '' s)
+      exact isOpen_unionᵢ fun x ↦ isOpen_unionᵢ fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
+
+variable (α)
+
+/-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
+it has second countable topology. Note that the "densely ordered" assumption cannot be droped, see
+[double arrow space](https://topology.pi-base.org/spaces/S000093) for a counterexample. -/
+theorem TopologicalSpace.SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
+    [SeparableSpace α] : SecondCountableTopology α := by
+  rcases exists_countable_dense α with ⟨s, hc, hd⟩
+  refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
+  exact (hc.image _).union (hc.image _)
+
+variable {α}
 
 -- porting note: new lemma
 /-- The set of points which are isolated on the right is countable when the space is
