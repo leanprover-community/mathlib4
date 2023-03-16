@@ -11,10 +11,10 @@ Authors: Damiano Testa
 import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
-# Variations on non-zero divisors in `add_monoid_algebra`s
+# Variations on non-zero divisors in `AddMonoidAlgebra`s
 
 This file studies the interaction between typeclass assumptions on two Types `R` and `A` and
-whether `add_monoid_algebra R A` has non-zero zero-divisors.  For some background on related
+whether `AddMonoidAlgebra R A` has non-zero zero-divisors.  For some background on related
 questions, see [Kaplansky's Conjectures](https://en.wikipedia.org/wiki/Kaplansky%27s_conjectures),
 especially the *zero divisor conjecture*.
 
@@ -30,10 +30,10 @@ weakened: below we mention what assumptions are sufficient for the proofs in thi
 
 * `no_zero_divisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add right cancel semigroup with strictly monotone
-  left addition, then `add_monoid_algebra R A` has no non-zero zero-divisors.
+  left addition, then `AddMonoidAlgebra R A` has no non-zero zero-divisors.
 * `no_zero_divisors.of_right_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add left cancel semigroup with strictly monotone
-  right addition, then `add_monoid_algebra R A` has no non-zero zero-divisors.
+  right addition, then `AddMonoidAlgebra R A` has no non-zero zero-divisors.
 
 The conditions on `A` imposed in `no_zero_divisors.of_left_ordered` are sometimes referred to as
 `left-ordered`.
@@ -85,7 +85,7 @@ theorem Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
 #align add_monoid_algebra.right.exists_add_of_mem_support_single_mul AddMonoidAlgebra.Right.exists_add_of_mem_support_single_mul
 
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a left-ordered add right
-cancel semigroup, then `add_monoid_algebra R A` also contains no non-zero zero-divisors. -/
+cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
 theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
     [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) :=
   ⟨@fun f g fg => by
@@ -123,7 +123,7 @@ theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigro
 #align add_monoid_algebra.no_zero_divisors.of_left_ordered AddMonoidAlgebra.NoZeroDivisors.of_left_ordered
 
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a right-ordered add left
-cancel semigroup, then `add_monoid_algebra R A` also contains no non-zero zero-divisors. -/
+cancel semigroup, then `AddMonoidAlgebra R A` also contains no non-zero zero-divisors. -/
 theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigroup A]
     [LinearOrder A] [CovariantClass A A (Function.swap (· + ·)) (· < ·)] :
     NoZeroDivisors (AddMonoidAlgebra R A) :=
