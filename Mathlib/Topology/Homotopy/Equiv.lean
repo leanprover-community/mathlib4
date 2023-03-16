@@ -16,15 +16,15 @@ import Mathlib.Topology.Homotopy.Basic
 
 In this file, we define homotopy equivalences between topological spaces `X` and `Y` as a pair of
 functions `f : C(X, Y)` and `g : C(Y, X)` such that `f.comp g` and `g.comp f` are both homotopic
-to `id`.
+to `ContinuousMap.id`.
 
 ## Main definitions
 
-- `continuous_map.homotopy_equiv` is the type of homotopy equivalences between topological spaces.
+- `ContinuousMap.HomotopyEquiv` is the type of homotopy equivalences between topological spaces.
 
 ## Notation
 
-We introduce the notation `X ≃ₕ Y` for `continuous_map.homotopy_equiv X Y` in the `continuous_map`
+We introduce the notation `X ≃ₕ Y` for `ContinuousMap.HomotopyEquiv X Y` in the `ContinuousMap`
 locale.
 
 -/
