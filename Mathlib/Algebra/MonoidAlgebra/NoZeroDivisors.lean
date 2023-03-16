@@ -64,7 +64,7 @@ theorem mul_apply_add_eq_mul_of_forall_ne [Add A] {f g : AddMonoidAlgebra R A} {
     · refine' (Finset.sum_eq_single b0 (fun b bg b0 => _) _).trans (if_pos rfl)
       · by_cases af : a0 ∈ f.support
         · exact if_neg (h af bg (Or.inr b0))
-        · simp only [not_mem_support_iff.mp af, MulZeroClass.zero_mul, if_t_t]
+        · simp only [not_mem_support_iff.mp af, MulZeroClass.zero_mul, ite_self]
       · exact fun bf0 => by simp [not_mem_support_iff.mp bf0]
 #align add_monoid_algebra.mul_apply_add_eq_mul_of_forall_ne AddMonoidAlgebra.mul_apply_add_eq_mul_of_forall_ne
 
@@ -88,12 +88,12 @@ theorem Right.exists_add_of_mem_support_single_mul [AddRightCancelSemigroup A]
 cancel semigroup, then `add_monoid_algebra R A` also contains no non-zero zero-divisors. -/
 theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigroup A]
     [LinearOrder A] [CovariantClass A A (· + ·) (· < ·)] : NoZeroDivisors (AddMonoidAlgebra R A) :=
-  ⟨fun f g fg => by
+  ⟨@fun f g fg => by
     contrapose! fg
     let gmin : A := g.support.min' (support_nonempty_iff.mpr fg.2)
     refine' support_nonempty_iff.mp _
     obtain ⟨a, ha, H⟩ :=
-      right.exists_add_of_mem_support_single_mul gmin
+      Right.exists_add_of_mem_support_single_mul gmin
         ((f * single gmin 1 : AddMonoidAlgebra R A).support.min'
           (by rw [support_mul_single] <;> simp [support_nonempty_iff.mpr fg.1]))
         (Finset.min'_mem _ _)
@@ -119,7 +119,7 @@ theorem NoZeroDivisors.of_left_ordered [NoZeroDivisors R] [AddRightCancelSemigro
           simp only [bf, Finset.mem_map, addRightEmbedding_apply, add_left_inj, exists_prop,
             exists_eq_right]
         · refine' add_lt_add_left _ _
-          exact Finset.min'_lt_of_mem_erase_min' _ _ (finset.mem_erase.mpr ⟨hc, cg⟩)⟩
+          exact Finset.min'_lt_of_mem_erase_min' _ _ (Finset.mem_erase.mpr ⟨hc, cg⟩)⟩
 #align add_monoid_algebra.no_zero_divisors.of_left_ordered AddMonoidAlgebra.NoZeroDivisors.of_left_ordered
 
 /-- If `R` is a semiring with no non-trivial zero-divisors and `A` is a right-ordered add left
@@ -127,12 +127,12 @@ cancel semigroup, then `add_monoid_algebra R A` also contains no non-zero zero-d
 theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigroup A]
     [LinearOrder A] [CovariantClass A A (Function.swap (· + ·)) (· < ·)] :
     NoZeroDivisors (AddMonoidAlgebra R A) :=
-  ⟨fun f g fg => by
+  ⟨@fun f g fg => by
     contrapose! fg
     let fmin : A := f.support.min' (support_nonempty_iff.mpr fg.1)
     refine' support_nonempty_iff.mp _
     obtain ⟨a, ha, H⟩ :=
-      left.exists_add_of_mem_support_single_mul fmin
+      Left.exists_add_of_mem_support_single_mul fmin
         ((single fmin 1 * g : AddMonoidAlgebra R A).support.min'
           (by rw [support_single_mul] <;> simp [support_nonempty_iff.mpr fg.2]))
         (Finset.min'_mem _ _)
@@ -148,7 +148,7 @@ theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigro
           simp only [cg, Finset.mem_map, addLeftEmbedding_apply, add_right_inj, exists_prop,
             exists_eq_right]
         · refine' add_lt_add_right _ _
-          exact Finset.min'_lt_of_mem_erase_min' _ _ (finset.mem_erase.mpr ⟨hb, bf⟩)
+          exact Finset.min'_lt_of_mem_erase_min' _ _ (Finset.mem_erase.mpr ⟨hb, bf⟩)
       · refine' lt_of_lt_of_le (_ : _ < fmin + c) _
         · apply Finset.min'_lt_of_mem_erase_min'
           rw [← H]
@@ -165,4 +165,3 @@ theorem NoZeroDivisors.of_right_ordered [NoZeroDivisors R] [AddLeftCancelSemigro
 end LeftOrRightOrderability
 
 end AddMonoidAlgebra
-
