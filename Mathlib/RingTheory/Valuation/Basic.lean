@@ -518,15 +518,15 @@ theorem IsEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
       cases ne_iff_lt_or_gt.1 h_1 with
       | inl h_2 => simpa [hh, lt_self_iff_false] using h.2 h_2
       | inr h_2 =>
-          rw [← inv_one, eq_inv_iff_eq_inv, ← map_inv₀] at hh
-          exact hh.le.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
+          rw [← inv_one, ←inv_eq_iff_eq_inv, ← map_inv₀] at hh
+          exact hh.symm.le.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
     · intro hh
       by_contra h_1
       cases ne_iff_lt_or_gt.1 h_1 with
       | inl h_2 => simpa [hh, lt_self_iff_false] using h.1 h_2
       | inr h_2 =>
-        rw [← inv_one, eq_inv_iff_eq_inv, ← map_inv₀] at hh
-        exact hh.le.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
+        rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
+        exact hh.symm.le.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
 #align valuation.is_equiv_iff_val_lt_one Valuation.IsEquiv_iff_val_lt_one
 
 theorem IsEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
