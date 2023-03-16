@@ -846,7 +846,7 @@ instance NF_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
       · simp only [(·^·),Pow.pow,pow, opow, *, zero_def]
       · simp [(·^·),Pow.pow, pow, opow, *, -npow_eq_pow];
         infer_instance
-  · simp [pow, opow, e₁, e₂, split_eq_scale_split' e₂]
+  · simp [(·^·),Pow.pow,pow, opow, e₁, e₂, split_eq_scale_split' e₂]
     have := na.fst
     cases' k with k <;> simp [opow] <;> skip <;> infer_instance
 #align onote.NF_opow Onote.NF_opow
