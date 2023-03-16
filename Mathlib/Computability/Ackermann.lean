@@ -213,8 +213,7 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
     linarith
   | m₁ + 1, m₂ + 1, 0 => fun h => by
     simpa using ack_strict_mono_left' 1 ((add_lt_add_iff_right 1).1 h)
-  | m₁ + 1, m₂ + 1, n + 1 => fun h =>
-    by
+  | m₁ + 1, m₂ + 1, n + 1 => fun h => by
     rw [ack_succ_succ, ack_succ_succ]
     exact
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
@@ -345,16 +344,14 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : �
     rw [max_ack_left]
     exact max_le_max (ha n).le (hb n).le
   -- Composition:
-  ·
-    exact
+  · exact
       ⟨max a b + 2, fun n =>
         (ha _).trans <| (ack_strictMono_right a <| hb n).trans <| ack_ack_lt_ack_max_add_two a b n⟩
   -- Primitive recursion operator:
   · -- We prove this simpler inequality first.
     have :
       ∀ {m n},
-        rec (f m) (fun y IH => g <| mkpair m <| mkpair y IH) n < ack (max a b + 9) (m + n) :=
-      by
+        rec (f m) (fun y IH => g <| mkpair m <| mkpair y IH) n < ack (max a b + 9) (m + n) := by
       intro m n
       -- We induct on n.
       induction' n with n IH
@@ -367,7 +364,8 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : �
         -- If m is the maximum, we get a very weak inequality.
         cases' lt_or_le _ m with h₁ h₁
         · rw [max_eq_left h₁.le]
-          exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num) (self_le_add_right m _)
+          exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
+                           (self_le_add_right m _)
         rw [max_eq_right h₁]
         -- We get rid of the second `mkpair`.
         apply (ack_mkpair_lt _ _ _).le.trans
@@ -380,7 +378,8 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : �
         rw [max_eq_right h₂]
         -- We now use the inductive hypothesis, and some simple algebraic manipulation.
         apply (ack_strictMono_right _ IH).le.trans
-        rw [add_succ m, add_succ _ 8, succ_eq_add_one, succ_eq_add_one, ack_succ_succ (_ + 8), add_assoc]
+        rw [add_succ m, add_succ _ 8, succ_eq_add_one, succ_eq_add_one,
+            ack_succ_succ (_ + 8), add_assoc]
         exact ack_mono_left _ (Nat.add_le_add (le_max_right a b) le_rfl)
     -- The proof is now simple.
     exact ⟨max a b + 9, fun n => this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
@@ -400,4 +399,3 @@ theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
 theorem not_primrec₂_ack : ¬Primrec₂ ack := fun h =>
   not_primrec_ack_self <| h.comp Primrec.id Primrec.id
 #align not_primrec₂_ack not_primrec₂_ack
-
