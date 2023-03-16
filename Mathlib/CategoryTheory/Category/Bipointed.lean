@@ -111,7 +111,7 @@ def swap : Bipointed ⥤ Bipointed where
 /-- The equivalence between `Bipointed` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
 def swapEquiv : Bipointed ≌ Bipointed :=
-  Equivalence.mk swap swap
+  CategoryTheory.Equivalence.mk swap swap
     (NatIso.ofComponents
       (fun X =>
         { hom := ⟨id, rfl, rfl⟩
@@ -177,16 +177,16 @@ def pointedToBipointed : Pointed.{u} ⥤ Bipointed where
 def pointedToBipointedFst : Pointed.{u} ⥤ Bipointed where
   obj X := ⟨Option X, X.point, none⟩
   map f := ⟨Option.map f.toFun, congr_arg _ f.map_point, rfl⟩
-  map_id X := Bipointed.Hom.ext _ _ Option.map_id
-  map_comp _ _ := Bipointed.Hom.ext _ _ (Option.map_comp_map _ _).symm
+  map_id _ := Bipointed.Hom.ext _ _ Option.map_id
+  map_comp f g := Bipointed.Hom.ext _ _ (Option.map_comp_map f.1 g.1).symm
 #align Pointed_to_Bipointed_fst pointedToBipointedFst
 
 /-- The functor from `Pointed` to `Bipointed` which adds a first point. -/
 def pointedToBipointedSnd : Pointed.{u} ⥤ Bipointed where
   obj X := ⟨Option X, none, X.point⟩
   map f := ⟨Option.map f.toFun, rfl, congr_arg _ f.map_point⟩
-  map_id X := Bipointed.Hom.ext _ _ Option.map_id
-  map_comp _ _ := Bipointed.Hom.ext _ _ (Option.map_comp_map _ _).symm
+  map_id _ := Bipointed.Hom.ext _ _ Option.map_id
+  map_comp f g := Bipointed.Hom.ext _ _ (Option.map_comp_map f.1 g.1).symm
 #align Pointed_to_Bipointed_snd pointedToBipointedSnd
 
 @[simp]
