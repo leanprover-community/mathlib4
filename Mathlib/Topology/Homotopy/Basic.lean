@@ -361,7 +361,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
   -- porting note: todo: use `toHomotopy.curry t`
-  /-- the intermediate maps of the homotopy satisfy the proprerty -/
+  /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩
 #align continuous_map.homotopy_with ContinuousMap.HomotopyWith
