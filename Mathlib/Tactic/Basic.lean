@@ -129,6 +129,7 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
 is still type correct. Throws an error if it is a local hypothesis without a value. -/
 def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
   mvarId.checkNotAssigned `clear_value
+  let tag ← mvarId.getTag
   let (xs, mvarId') ← mvarId.revert #[fvarId] true
   mvarId'.withContext do
     let numReverted := xs.size
@@ -141,7 +142,7 @@ def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MV
       mvarId.withContext <|
         throwTacticEx `clear_value mvarId
           m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
-    let mvarId'' ← mkFreshExprMVar tgt'
+    let mvarId'' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
     mvarId'.assign <| mkApp mvarId'' tgt.letValue!
     let (_, mvarId) ← mvarId''.mvarId!.introNP numReverted
     return mvarId
