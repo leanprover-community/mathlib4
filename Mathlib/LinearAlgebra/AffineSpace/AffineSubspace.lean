@@ -68,9 +68,7 @@ section
 
 variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
 
-variable [affine_space V P]
-
-include V
+variable [AffineSpace V P]
 
 /-- The submodule spanning the differences of a (possibly empty) set
 of points. -/
@@ -197,8 +195,6 @@ namespace AffineSubspace
 
 variable (k : Type _) {V : Type _} (P : Type _) [Ring k] [AddCommGroup V] [Module k V]
   [affine_space V P]
-
-include V
 
 -- TODO Refactor to use `instance : set_like (affine_subspace k P) P :=` instead
 instance : Coe (AffineSubspace k P) (Set P) :=
@@ -569,8 +565,6 @@ section affineSpan
 variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
   [affine_space V P]
 
-include V
-
 /-- The affine span of a set of points is the smallest affine subspace
 containing those points. (Actually defined here in terms of spans in
 modules.) -/
@@ -616,8 +610,6 @@ namespace AffineSubspace
 
 variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
   [S : affine_space V P]
-
-include S
 
 instance : CompleteLattice (AffineSubspace k P) :=
   {
@@ -1068,8 +1060,6 @@ variable (k : Type _) {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Modul
 
 variable {ι : Type _}
 
-include V
-
 open AffineSubspace Set
 
 /-- The `vector_span` is the span of the pairwise subtractions with a
@@ -1469,8 +1459,6 @@ namespace AffineSubspace
 variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
   [affine_space V P]
 
-include V
-
 /-- The direction of the sup of two nonempty affine subspaces is the
 sup of the two directions and of any one difference between points in
 the two subspaces. -/
@@ -1551,8 +1539,6 @@ variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
 
 variable [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃]
 
-include V₁ V₂
-
 section
 
 variable (f : P₁ →ᵃ[k] P₂)
@@ -1609,21 +1595,15 @@ theorem map_eq_bot_iff {s : AffineSubspace k P₁} : s.map f = ⊥ ↔ s = ⊥ :
   · rw [h, map_bot]
 #align affine_subspace.map_eq_bot_iff AffineSubspace.map_eq_bot_iff
 
-omit V₂
-
 @[simp]
 theorem map_id (s : AffineSubspace k P₁) : s.map (AffineMap.id k P₁) = s :=
   coe_injective <| image_id _
 #align affine_subspace.map_id AffineSubspace.map_id
 
-include V₂ V₃
-
 theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ →ᵃ[k] P₃) :
     (s.map f).map g = s.map (g.comp f) :=
   coe_injective <| image_image _ _ _
 #align affine_subspace.map_map AffineSubspace.map_map
-
-omit V₃
 
 @[simp]
 theorem map_direction (s : AffineSubspace k P₁) : (s.map f).direction = s.direction.map f.linear :=
@@ -1704,8 +1684,6 @@ theorem comap_top {f : P₁ →ᵃ[k] P₂} : (⊤ : AffineSubspace k P₂).coma
   exact preimage_univ
 #align affine_subspace.comap_top AffineSubspace.comap_top
 
-omit V₂
-
 @[simp]
 theorem comap_id (s : AffineSubspace k P₁) : s.comap (AffineMap.id k P₁) = s :=
   coe_injective rfl
@@ -1717,8 +1695,6 @@ theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P
     (s.comap g).comap f = s.comap (g.comp f) :=
   coe_injective rfl
 #align affine_subspace.comap_comap AffineSubspace.comap_comap
-
-omit V₃
 
 -- lemmas about map and comap derived from the galois connection
 theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
@@ -1785,8 +1761,6 @@ open AffineEquiv
 variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
 
 variable [affine_space V P]
-
-include V
 
 /-- Two affine subspaces are parallel if one is related to the other by adding the same vector
 to all points. -/
@@ -1882,4 +1856,3 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
 #align affine_subspace.affine_span_pair_parallel_iff_vector_span_eq AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq
 
 end AffineSubspace
-
