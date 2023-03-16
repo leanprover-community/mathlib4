@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean
 import Std
 import Mathlib.Tactic.Cases
+import Mathlib.Util.Intro
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -130,9 +131,7 @@ is still type correct. Throws an error if it is a local hypothesis without a val
 def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
   mvarId.checkNotAssigned `clear_value
   let tag ← mvarId.getTag
-  let (xs, mvarId') ← mvarId.revert #[fvarId] true
-  mvarId'.withContext do
-    let numReverted := xs.size
+  let (_, mvarId', _) ← mvarId.withReverted #[fvarId] fun _ mvarId' => mvarId'.withContext do
     let tgt ← mvarId'.getType
     unless tgt.isLet do
       mvarId.withContext <|
@@ -144,8 +143,8 @@ def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MV
           m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
     let mvarId'' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
     mvarId'.assign <| mkApp mvarId'' tgt.letValue!
-    let (_, mvarId) ← mvarId''.mvarId!.introNP numReverted
-    return mvarId
+    return (mvarId''.mvarId!, ())
+  return mvarId'
 
 /-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
 into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
