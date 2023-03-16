@@ -45,12 +45,13 @@ example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b 
   rw [add_comm]
 
 example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
-  convert_to c + d = _ using 1
+  convert_to c + d = _ -- defaults to `using 1`
   congr 2
   rw [add_comm]
 
+-- Check that `using 1` gives the same behavior as the default.
 example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
-  convert_to c + d = _ -- defaults to `using 1`
+  convert_to c + d = _ using 1
   congr 2
   rw [add_comm]
 

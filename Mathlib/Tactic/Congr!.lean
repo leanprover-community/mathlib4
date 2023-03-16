@@ -39,30 +39,59 @@ structure Congr!.Config where
   This can be used to control which side's definitions are expanded when applying the
   congruence lemma (if `preferLHS = true` then the RHS can be expanded). -/
   preferLHS : Bool := true
-  /-- Allow one or both sides to be a partial application.
-  When false, given an equality `f a b = g x y` this means we never consider
-  proving `f a = g x`. -/
-  partialApp : Bool := true
-  /-- Whether to require both sides in an application to have defeq functions.
-  That is, if true, `f a = g x` is only considered if `f` and `g` are defeq. -/
-  sameFun : Bool := false
-  /-- The maximum number of arguments to consider at a time when applying synthesized congruence
-  lemmas between function applications. `none` means no limit.
-  With non-dependent functions, `some 1` causes `congr!` lets you control how many arguments
-  it ends up processing using the iteration limit. -/
-  maxArgs : Option Nat := none
-  /-- Whether to consider equalities between types that are don't look provable according to
-  a heuristic. When `false`, then causes the main congruence generator to apply a "possibly
-  provable" heuristic when there would be a type equality." Note: we always allow equalities of
-  propositions.
+  /-- Allow both sides to be a partial applications.
+  When false, given an equality `f a b = g x y z` this means we never consider
+  proving `f a = g x y`.
 
-  We say two types are possibly equal if, in whnf, they have the same head and if each of their
-  corresponding type arguments are possibly equal. -/
+  In this case, we might still consider `f = g x` if a pass generates a congruence lemma using the
+  left-hand side. Use `sameFun := true` to ensure both sides are applications
+  of the same function (making it be similar to the `congr` tactic). -/
+  partialApp : Bool := true
+  /-- Whether to require that both sides of an equality are applications of defeq functions.
+  That is, if true, `f a = g x` is only considered if `f` and `g` are defeq (making it be similar
+  to the `congr` tactic). -/
+  sameFun : Bool := false
+  /-- The maximum number of arguments to consider when doing congruence of function applications.
+  For example, with `f a b c = g w x y z`, setting `maxArgs := some 2` means it will only consider
+  either `f a b = g w x y` and `c = z` or `f a = g w x`, `b = y`, and `c = z`. Setting
+  `maxArgs := none` (the default) means no limit.
+
+  When the functions are dependent, `maxArgs` can prevent congruence from working at all.
+  In `Fintype.card α = Fintype.card β`, one needs to have `maxArgs` at `2` or higher since
+  there is a `Fintype` instance argument that depends on the first.
+
+  When there aren't such dependency issues, setting `maxArgs := some 1` causes `congr!` to
+  do congruence on a single argument at a time. This can be used in conjunction with the
+  iteration limit to control exactly how many arguments are to be processed by congruence. -/
+  maxArgs : Option Nat := none
+  /-- Whether or not `congr!` should generate equalities between types even if the types
+  do not look plausibly equal. We have a heuristic in the main congruence generator that types
+  `α` and `β` are *plausibly equal* according to the following algorithm:
+
+  - If the types are both propositions, they are plausibly equal (iffs are plausible).
+  - If the types are from different universes, they are not plausibly equal.
+  - Suppose in whnf we have `α = f a₁ ... aₘ` and `β = g b₁ ... bₘ`. If `f` is not definitionally
+    equal to `g` or `m ≠ n`, then `α` and `β` are not plausibly equal.
+  - If there is some `i` such that `aᵢ` and `bᵢ` are not plausibly equal, then `α` and `β` are
+    not plausibly equal.
+  - Otherwise, `α` and `β` are plausibly equal.
+
+  The purpose of this is to prevent considering equalities like `ℕ = ℤ` while allowing equalities
+  such as `Fin n = Fin m` or `Subtype p = Subtype q` (so long as these are subtypes of the
+  same type).
+
+  The way this is implemented is that the congruence generator, when it is comparing arguments
+  in an equality of function applications, marks a function parameter to "fixed" if the provided
+  arguments are types that are not plausibly equal. The effect of this is that congruence succeeds
+  if those arguments are defeq at `transparency` transparency. -/
   typeEqs : Bool := false
   /-- As a last pass, perform eta expansion of both sides of an equality. For example,
   this transforms a bare `HAdd.hAdd` into `fun x y => x + y`. -/
   etaExpand : Bool := false
-  /-- Whether to use the congruence generator that is used by `simp`. -/
+  /-- Whether to use the congruence generator that is used by `simp` and `congr`. This generator
+  is more strict, and it does not respect all configuration settings. It does respect
+  `preferLHS`, `partialApp` and `maxArgs` and transparency settings. It acts as if `sameFun := true`
+  and it ignores `typeEqs`. -/
   useCongrSimp : Bool := false
 
 /-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
@@ -809,8 +838,9 @@ to right-hand sides of goals. Here is a list of things it can try:
 - If there is a user congruence lemma associated to the goal (for instance, a `@[congr]`-tagged
   lemma applying to `⊢ List.map f xs = List.map g ys`), then it will use that.
 
-- Like `congr`, it makes use of the `Eq` congruence lemma generator internally used
-  by `simp`. Hence, one can equate any two pieces of an expression that is accessible to `simp`.
+- It uses a congruence lemma generator at least as capable as the one used by `congr` and `simp`.
+  If there is a subexpression that can be rewritten by `simp`, then `congr!` should be able
+  to generate an equality for it.
 
 - It uses `implies_congr` and `pi_congr` to do congruences of pi types.
 
