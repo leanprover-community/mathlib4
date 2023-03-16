@@ -244,8 +244,8 @@ theorem coe_one : ↑(1 : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
 #align is_Lprojection.coe_one IsLprojection.coe_one
 
-instance IsLprojection.instBoundedOrderSubtypeIsLprojection [FaithfulSMul M X] : BoundedOrder { P : M // IsLprojection X P }
-    where
+instance IsLprojection.instBoundedOrderSubtypeIsLprojection [FaithfulSMul M X] :
+  BoundedOrder { P : M // IsLprojection X P } where
   top := 1
   le_top P := (mul_one (P : M)).symm
   bot := 0
