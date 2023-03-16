@@ -8,7 +8,7 @@ Authors: Damiano Testa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
 # Variations on non-zero divisors in `add_monoid_algebra`s
