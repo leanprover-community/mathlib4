@@ -62,7 +62,7 @@ elab_rules : tactic
         let (_, mvars) ← elabTermWithHoles
                           (← `(term | show $newType from $(← Term.exprToSyntax mvar))) hTy `change
         liftMetaTactic fun mvarId ↦ do
-          return (← mvarId.changeLocalDecl h (← inferType mvar)) :: mvars)
+          return (← mvarId.changeLocalDecl' h (← inferType mvar)) :: mvars)
       (atTarget := evalTactic <| ← `(tactic| show $newType))
       (failed := fun _ ↦ throwError "change tactic failed")
 

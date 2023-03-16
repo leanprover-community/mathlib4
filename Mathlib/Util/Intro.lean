@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.Meta.Tactic.Revert
+import Lean.Meta.Tactic.Replace
 
 /-!# Variations on intro
 
@@ -100,3 +101,23 @@ def Lean.MVarId.withReverted (mvarId : MVarId) (fvarIds : Array FVarId)
   let (mvarId, v) ← f fvarIds mvarId
   let (fvarIds, mvarId) ← mvarId.introNP' fvarIds
   return (fvarIds, mvarId, v)
+
+/-- This is a replacement for `Lean.MVarId.changeLocalDecl` that fixes the issue that it does
+not preserve `FVarId`s, which causes spurious unused variable errors. -/
+def Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typeNew : Expr)
+    (checkDefEq := true) : MetaM MVarId := do
+  mvarId.checkNotAssigned `changeLocalDecl
+  let (_, mvarId', _) ← mvarId.withReverted #[fvarId] fun _ mvarId' => mvarId'.withContext do
+    match ← mvarId'.getType with
+    | .forallE n d b c => do check d; finalize mvarId' (mkForall n c typeNew b)
+    | .letE n t v b _  => do check t; finalize mvarId' (mkLet n typeNew v b)
+    | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
+  return mvarId'
+where
+  check (typeOld : Expr) : MetaM Unit := do
+    if checkDefEq && not (← isDefEq typeNew typeOld) then
+      throwTacticEx `changeHypothesis mvarId
+        m!"given type{indentExpr typeNew}\nis not definitionally equal to{indentExpr typeOld}"
+  finalize (mvarId : MVarId) (targetNew : Expr) : MetaM (MVarId × Unit) := do
+    let mvarId ← mvarId.replaceTargetDefEq targetNew
+    return (mvarId, ())
