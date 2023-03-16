@@ -634,7 +634,7 @@ def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedP
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
     if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs
   if nrCustomProjections < customDeclarations.size then
-    Linter.LogLintIf linter.simpsUnusedCustomDeclarations stx
+    Linter.logLintIf linter.simpsUnusedCustomDeclarations stx
       m!"Not all of the custom declarations {customDeclarations} are used. Double check the {
         ""}spelling, and use `?` to get more information."
 
@@ -1037,7 +1037,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
       trace[simps.debug] "Using relaxed reducibility."
-      Linter.LogLintIf linter.simpsNoConstructor ref
+      Linter.logLintIf linter.simpsNoConstructor ref
         m!"The definition {nm} is not a constructor application. Please use `@[simps!]` instead.{
         ""}\n\nExplanation: `@[simps]` uses the definition to find what the simp lemmas should {
         ""}be. If the definition is a constructor, then this is easy, since the values of the {
