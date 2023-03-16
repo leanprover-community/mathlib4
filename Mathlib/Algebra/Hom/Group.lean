@@ -364,7 +364,7 @@ structure MonoidHom (M : Type _) (N : Type _) [MulOneClass M] [MulOneClass N] ex
 #align monoid_hom MonoidHom
 -- Porting note: remove once `to_additive` is updated
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive] MonoidHom.toMulHom
+attribute [to_additive existing] MonoidHom.toMulHom
 
 attribute [nolint docBlame] MonoidHom.toMulHom
 attribute [nolint docBlame] MonoidHom.toOneHom
@@ -399,7 +399,7 @@ def MonoidHom.Simps.apply (f : M →* N) : M → N := f
 
 -- Porting note: we need to add an extra `to_additive`.
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive] MonoidHomClass.toOneHomClass
+attribute [to_additive existing] MonoidHomClass.toOneHomClass
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F M N` into an actual
 `MonoidHom`. This is declared as the default coercion from `F` to `M →* N`. -/

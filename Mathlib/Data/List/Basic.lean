@@ -4609,8 +4609,8 @@ The list definitions happen earlier than `to_additive`, so here we tag the few m
 definitions that couldn't be tagged earlier.
 -/
 
-attribute [to_additive] List.prod -- `List.sum`
-attribute [to_additive] alternatingProd -- `List.alternatingSum`
+attribute [to_additive existing] List.prod -- `List.sum`
+attribute [to_additive existing] alternatingProd -- `List.alternatingSum`
 
 /-! ### Miscellaneous lemmas -/
 

@@ -383,7 +383,7 @@ theorem HasCompactSupport.comp_smul {β : Type _} [Zero β] {f : α → β} (h :
   h.comp_homeomorph (Homeomorph.smulOfNeZero c hc)
 #align has_compact_support.comp_smul HasCompactSupport.comp_smul
 
-attribute [to_additive HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
+attribute [to_additive existing HasCompactSupport.comp_smul] HasCompactMulSupport.comp_smul
 
 end GroupWithZero
 

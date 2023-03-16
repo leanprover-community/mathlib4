@@ -642,7 +642,7 @@ theorem vadd_eq_self_of_mem_zmultiples {α G : Type _} [AddGroup G] [AddAction G
   @smul_eq_self_of_mem_zpowers (Multiplicative G) _ _ _ α _ hx a hs
 #align vadd_eq_self_of_mem_zmultiples vadd_eq_self_of_mem_zmultiples
 
-attribute [to_additive vadd_eq_self_of_mem_zmultiples] smul_eq_self_of_mem_zpowers
+attribute [to_additive existing vadd_eq_self_of_mem_zmultiples] smul_eq_self_of_mem_zpowers
 
 end Group
 

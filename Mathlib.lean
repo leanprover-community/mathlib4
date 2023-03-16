@@ -278,6 +278,7 @@ import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Cones
+import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.Monoidal.Category
@@ -665,6 +666,7 @@ import Mathlib.Data.Real.CauSeq
 import Mathlib.Data.Real.CauSeqCompletion
 import Mathlib.Data.Real.ConjugateExponents
 import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
 import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Real.Pointwise
