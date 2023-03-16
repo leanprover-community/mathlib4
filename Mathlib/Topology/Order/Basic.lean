@@ -2346,8 +2346,8 @@ theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
 #align frontier_Iio frontier_Iio
 
 @[simp]
-theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a < b) :
-    frontier (Icc a b) = {a, b} := by simp [frontier, le_of_lt h, Icc_diff_Ioo_same]
+theorem frontier_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} (h : a ≤ b) :
+    frontier (Icc a b) = {a, b} := by simp [frontier, h, Icc_diff_Ioo_same]
 #align frontier_Icc frontier_Icc
 
 @[simp]
