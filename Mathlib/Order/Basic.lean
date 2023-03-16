@@ -704,13 +704,13 @@ instance partialOrder (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ wh
 
 instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  le_total     := λ a b : α => le_total b a
-  max := fun a b ↦ (min a b : α)
-  min := fun a b ↦ (max a b : α)
-  min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
-  max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
-  decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
+  le_total     := fun a b : α => le_total b a
+  max := fun a b => (min a b : α)
+  min := fun a b => (max a b : α)
+  min_def := fun a b => show (max .. : α) = _ by rw [max_comm, max_def]; rfl
+  max_def := fun a b => show (min .. : α) = _ by rw [min_comm, min_def]; rfl
+  decidable_le := (inferInstance : DecidableRel (fun a b : α => b ≤ a))
+  decidable_lt := (inferInstance : DecidableRel (fun a b : α => b < a))
 #align order_dual.linear_order OrderDual.linearOrder
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
