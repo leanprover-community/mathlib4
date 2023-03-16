@@ -9,7 +9,7 @@ Authors: Violeta Hernández Palacios
 ! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Primrec
-import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Linarith
 
 /-!
 # Ackermann function
@@ -35,15 +35,15 @@ differs from their approach of using multivariate functions.
 The important bounds we show during the main inductive proof (`exists_lt_ack_of_primrec`) are the
 following. Assuming `∀ n, f n < ack a n` and `∀ n, g n < ack b n`, we have:
 
-- `∀ n, nat.mkpair (f n) (g n) < ack (max a b + 3) n`.
+- `∀ n, Nat.mkpair (f n) (g n) < ack (max a b + 3) n`.
 - `∀ n, g (f n) < ack (max a b + 2) n`.
-- `∀ n, nat.elim (f n.unpair.1) (λ (y IH : ℕ), g (nat.mkpair n.unpair.1 (nat.mkpair y IH)))
+- `∀ n, Nat.rec (f n.unpair.1) (λ (y IH : ℕ), g (Nat.mkpair n.unpair.1 (Nat.mkpair y IH)))
   n.unpair.2 < ack (max a b + 9) n`.
 
-The last one is evidently the hardest. Using `nat.unpair_add_le`, we reduce it to the more
+The last one is evidently the hardest. Using `Nat.unpair_add_le`, we reduce it to the more
 manageable
 
-- `∀ m n, elim (f m) (λ (y IH : ℕ), g (nat.mkpair m (nat.mkpair y IH))) n <
+- `∀ m n, rec (f m) (λ (y IH : ℕ), g (Nat.mkpair m (Nat.mkpair y IH))) n <
   ack (max a b + 9) (m + n)`.
 
 We then prove this by induction on `n`. Our proof crucially depends on `ack_mkpair_lt`, which is
@@ -66,6 +66,7 @@ def ack : ℕ → ℕ → ℕ
   | 0, n => n + 1
   | m + 1, 0 => ack m 1
   | m + 1, n + 1 => ack m (ack (m + 1) n)
+  termination_by ack m n => (m, n)
 #align ack ack
 
 @[simp]
@@ -83,33 +84,29 @@ theorem ack_succ_succ (m n : ℕ) : ack (m + 1) (n + 1) = ack m (ack (m + 1) n) 
 @[simp]
 theorem ack_one (n : ℕ) : ack 1 n = n + 2 := by
   induction' n with n IH
-  · simp
+  · rfl
   · simp [IH]
 #align ack_one ack_one
 
 @[simp]
 theorem ack_two (n : ℕ) : ack 2 n = 2 * n + 3 := by
   induction' n with n IH
-  · simp
-  · simp [IH, mul_succ]
+  · rfl
+  · simpa [mul_succ]
 #align ack_two ack_two
 
-private theorem ack_three_aux (n : ℕ) : (ack 3 n : ℤ) = 2 ^ (n + 3) - 3 := by
-  induction' n with n IH
-  · simp
-    norm_num
-  · simp [IH, pow_succ]
-    rw [mul_sub, sub_add]
-    norm_num
-#align ack_three_aux ack_three_aux
-
+-- Porting note: re-written to get rid of ack_three_aux
 @[simp]
 theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
-  zify
-  rw [cast_sub]
-  · exact_mod_cast ack_three_aux n
-  · have H : 3 ≤ 2 ^ 3 := by norm_num
-    exact H.trans (pow_mono one_le_two <| le_add_left le_rfl)
+  induction' n with n IH
+  · rfl
+  · rw [ack_succ_succ, IH, ack_two]
+    rw [Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2]
+    rw [Nat.mul_sub_left_distrib]
+    rw [←Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
+    have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
+    apply H.trans
+    simp [pow_le_pow]
 #align ack_three ack_three
 
 theorem ack_pos : ∀ m n, 0 < ack m n
@@ -136,28 +133,29 @@ theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
   | 0, n => by simp
   | m + 1, n => by
     rw [ack_succ_succ]
-    cases exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne'
+    cases' exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne' with h h
     rw [h]
     apply one_lt_ack_succ_right
 #align one_lt_ack_succ_right one_lt_ack_succ_right
 
 theorem ack_strictMono_right : ∀ m, StrictMono (ack m)
   | 0, n₁, n₂, h => by simpa using h
-  | m + 1, 0, n + 1, h => by
+  | m + 1, 0, n + 1, _h => by
     rw [ack_succ_zero, ack_succ_succ]
     exact ack_strictMono_right _ (one_lt_ack_succ_left m n)
   | m + 1, n₁ + 1, n₂ + 1, h => by
     rw [ack_succ_succ, ack_succ_succ]
     apply ack_strictMono_right _ (ack_strictMono_right _ _)
     rwa [add_lt_add_iff_right] at h
+  termination_by ack_strictMono_right m x y h => (m, x)
 #align ack_strict_mono_right ack_strictMono_right
 
 theorem ack_mono_right (m : ℕ) : Monotone (ack m) :=
-  (ack_strictMono_right m).Monotone
+  (ack_strictMono_right m).monotone
 #align ack_mono_right ack_mono_right
 
 theorem ack_injective_right (m : ℕ) : Function.Injective (ack m) :=
-  (ack_strictMono_right m).Injective
+  (ack_strictMono_right m).injective
 #align ack_injective_right ack_injective_right
 
 @[simp]
@@ -187,9 +185,10 @@ theorem add_lt_ack : ∀ m n, m + n < ack m n
       m + 1 + n + 1 ≤ m + (m + n + 2) := by linarith
       _ < ack m (m + n + 2) := add_lt_ack _ _
       _ ≤ ack m (ack (m + 1) n) :=
-        ack_mono_right m <| le_of_eq_of_le (by ring_nf) <| succ_le_of_lt <| add_lt_ack (m + 1) n
+        ack_mono_right m <| le_of_eq_of_le (by rw [succ_eq_add_one]; ring_nf)
+        <| succ_le_of_lt <| add_lt_ack (m + 1) n
       _ = ack (m + 1) (n + 1) := (ack_succ_succ m n).symm
-      
+  termination_by add_lt_ack m n => (m, n)
 #align add_lt_ack add_lt_ack
 
 theorem add_add_one_le_ack (m n : ℕ) : m + n + 1 ≤ ack m n :=
@@ -207,7 +206,7 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
 -- we reorder the arguments to appease the equation compiler
 private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
   | m, 0, n => fun h => (Nat.not_lt_zero m h).elim
-  | 0, m + 1, 0 => fun h => by simpa using one_lt_ack_succ_right m 0
+  | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
   | 0, m + 1, n + 1 => fun h => by
     rw [ack_zero, ack_succ_succ]
     apply lt_of_le_of_lt (le_trans _ <| add_le_add_left (add_add_one_le_ack _ _) m) (add_lt_ack _ _)
@@ -220,18 +219,18 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
     exact
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
         (ack_strictMono_right _ <| ack_strict_mono_left' n h)
-#align ack_strict_mono_left' ack_strict_mono_left'
+  termination_by ack_strict_mono_left' x y => (x, y)
 
-theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun m₁ m₂ =>
+theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
   ack_strict_mono_left' n
 #align ack_strict_mono_left ack_strictMono_left
 
 theorem ack_mono_left (n : ℕ) : Monotone fun m => ack m n :=
-  (ack_strictMono_left n).Monotone
+  (ack_strictMono_left n).monotone
 #align ack_mono_left ack_mono_left
 
 theorem ack_injective_left (n : ℕ) : Function.Injective fun m => ack m n :=
-  (ack_strictMono_left n).Injective
+  (ack_strictMono_left n).injective
 #align ack_injective_left ack_injective_left
 
 @[simp]
@@ -258,7 +257,7 @@ theorem ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ �
 #align ack_le_ack ack_le_ack
 
 theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m + 1) n := by
-  cases n
+  cases' n with n n
   · simp
   · rw [ack_succ_succ, succ_eq_add_one]
     apply ack_mono_right m (le_trans _ <| add_add_one_le_ack _ n)
