@@ -42,8 +42,6 @@ structure TwoPointing (α : Type _) extends α × α where
 #align two_pointing.ext TwoPointing.ext
 #align two_pointing.ext_iff TwoPointing.ext_iff
 
--- Porting note: todo: remove this configuration and use the default configuration.
--- We keep this to be consistent with Lean 3.
 initialize_simps_projections TwoPointing (+toProd, -fst, -snd)
 
 namespace TwoPointing

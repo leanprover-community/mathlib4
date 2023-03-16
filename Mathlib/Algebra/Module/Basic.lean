@@ -413,11 +413,11 @@ def AddCommMonoid.natModule.unique : Unique (Module ℕ M) where
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 #align add_comm_monoid.nat_module.unique AddCommMonoid.natModule.unique
 
-instance AddCommMonoid.nat_is_scalar_tower : IsScalarTower ℕ R M where
+instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y :=
     Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
     fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
-#align add_comm_monoid.nat_is_scalar_tower AddCommMonoid.nat_is_scalar_tower
+#align add_comm_monoid.nat_is_scalar_tower AddCommMonoid.nat_isScalarTower
 
 end AddCommMonoid
 

@@ -44,33 +44,25 @@ theorem prod_Ico_add' [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [Locall
 @[to_additive]
 theorem prod_Ico_add [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → β) (a b c : α) : (∏ x in Ico a b, f (c + x)) = ∏ x in Ico (a + c) (b + c), f x := by
-  convert prod_Ico_add' f a b c
-  simp_rw [add_comm]
+  convert prod_Ico_add' f a b c using 2
+  rw [add_comm]
 #align finset.prod_Ico_add Finset.prod_Ico_add
 #align finset.sum_Ico_add Finset.sum_Ico_add
 
-theorem sum_Ico_succ_top {δ : Type _} [AddCommMonoid δ] {a b : ℕ} (hab : a ≤ b) (f : ℕ → δ) :
-    (∑ k in Ico a (b + 1), f k) = (∑ k in Ico a b, f k) + f b := by
-  rw [Nat.Ico_succ_right_eq_insert_Ico hab, sum_insert right_not_mem_Ico, add_comm]
+@[to_additive]
+theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → β) :
+    (∏ k in Ico a (b + 1), f k) = (∏ k in Ico a b, f k) * f b := by
+  rw [Nat.Ico_succ_right_eq_insert_Ico hab, prod_insert right_not_mem_Ico, mul_comm]
+#align finset.prod_Ico_succ_top Finset.prod_Ico_succ_top
 #align finset.sum_Ico_succ_top Finset.sum_Ico_succ_top
 
 @[to_additive]
-theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → β) :
-    (∏ k in Ico a (b + 1), f k) = (∏ k in Ico a b, f k) * f b :=
-  @sum_Ico_succ_top (Additive β) _ _ _ hab _
-#align finset.prod_Ico_succ_top Finset.prod_Ico_succ_top
-
-theorem sum_eq_sum_Ico_succ_bot {δ : Type _} [AddCommMonoid δ] {a b : ℕ} (hab : a < b) (f : ℕ → δ) :
-    (∑ k in Ico a b, f k) = f a + ∑ k in Ico (a + 1) b, f k := by
-  have ha : a ∉ Ico (a + 1) b := by simp
-  rw [← sum_insert ha, Nat.Ico_insert_succ_left hab]
-#align finset.sum_eq_sum_Ico_succ_bot Finset.sum_eq_sum_Ico_succ_bot
-
-@[to_additive]
 theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → β) :
-    (∏ k in Ico a b, f k) = f a * ∏ k in Ico (a + 1) b, f k :=
-  @sum_eq_sum_Ico_succ_bot (Additive β) _ _ _ hab _
+    (∏ k in Ico a b, f k) = f a * ∏ k in Ico (a + 1) b, f k := by
+  have ha : a ∉ Ico (a + 1) b := by simp
+  rw [← prod_insert ha, Nat.Ico_insert_succ_left hab]
 #align finset.prod_eq_prod_Ico_succ_bot Finset.prod_eq_prod_Ico_succ_bot
+#align finset.sum_eq_sum_Ico_succ_bot Finset.sum_eq_sum_Ico_succ_bot
 
 @[to_additive]
 theorem prod_Ico_consecutive (f : ℕ → β) {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :

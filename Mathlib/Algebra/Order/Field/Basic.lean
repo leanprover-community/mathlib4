@@ -31,7 +31,7 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
 #align order_iso.mul_left₀ OrderIso.mulLeft₀
-#align order_iso.mul_left₀_symm_apply OrderIso.mulLeft₀_symmApply
+#align order_iso.mul_left₀_symm_apply OrderIso.mulLeft₀_symm_apply
 #align order_iso.mul_left₀_apply OrderIso.mulLeft₀_apply
 
 /-- `Equiv.mulRight₀` as an order_iso. -/
@@ -39,7 +39,7 @@ def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
 def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
 #align order_iso.mul_right₀ OrderIso.mulRight₀
-#align order_iso.mul_right₀_symm_apply OrderIso.mulRight₀_symmApply
+#align order_iso.mul_right₀_symm_apply OrderIso.mulRight₀_symm_apply
 #align order_iso.mul_right₀_apply OrderIso.mulRight₀_apply
 
 /-!
