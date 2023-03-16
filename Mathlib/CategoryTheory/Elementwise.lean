@@ -25,5 +25,9 @@ so we need to add the attribute after the fact.
 
 open CategoryTheory
 
+-- Porting note: We remove the simp attribute to re-add it with `elementwise (attr := simp)`
+attribute [-simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+
 -- This list is incomplete, and it would probably be useful to add more.
-attribute [elementwise] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+attribute [-simp, elementwise (attr := simp)]
+  Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
