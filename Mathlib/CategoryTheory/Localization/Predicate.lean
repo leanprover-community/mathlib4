@@ -8,7 +8,7 @@ Authors: Joël Riou
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Localization.Construction
+import Mathlib.CategoryTheory.Localization.Construction
 
 /-!
 
@@ -209,8 +209,7 @@ def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 #align category_theory.localization.whiskering_left_functor CategoryTheory.Localization.whiskeringLeftFunctor
 
-instance : IsEquivalence (whiskeringLeftFunctor L W E) :=
-  by
+instance : IsEquivalence (whiskeringLeftFunctor L W E) := by
   refine'
     is_equivalence.of_iso _
       (is_equivalence.of_equivalence
@@ -263,19 +262,16 @@ theorem whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E
   rfl
 #align category_theory.localization.whiskering_left_functor'_obj CategoryTheory.Localization.whiskeringLeftFunctor'_obj
 
-instance : Full (whiskeringLeftFunctor' L W E) :=
-  by
+instance : Full (whiskeringLeftFunctor' L W E) := by
   rw [whiskering_left_functor'_eq]
   infer_instance
 
-instance : Faithful (whiskeringLeftFunctor' L W E) :=
-  by
+instance : Faithful (whiskeringLeftFunctor' L W E) := by
   rw [whiskering_left_functor'_eq]
   infer_instance
 
 theorem nat_trans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
-    (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' :=
-  by
+    (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
   haveI : CategoryTheory.EssSurj L := ess_surj L W
   ext Y
   rw [← cancel_epi (F₁.map (L.obj_obj_preimage_iso Y).Hom), τ.naturality, τ'.naturality, h]
@@ -394,8 +390,7 @@ namespace IsLocalization
 
 open Localization
 
-theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W] : L₂.IsLocalization W :=
-  by
+theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W] : L₂.IsLocalization W := by
   have h := localization.inverts L₁ W
   rw [morphism_property.is_inverted_by.iff_of_iso W e] at h
   let F₁ := localization.construction.lift L₁ (localization.inverts L₁ W)
@@ -409,8 +404,7 @@ theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W]
 /-- If `L : C ⥤ D` is a localization for `W : morphism_property C`, then it is also
 the case of a functor obtained by post-composing `L` with an equivalence of categories. -/
 theorem of_equivalence_target {E : Type _} [Category E] (L' : C ⥤ E) (eq : D ≌ E)
-    [L.IsLocalization W] (e : L ⋙ Eq.Functor ≅ L') : L'.IsLocalization W :=
-  by
+    [L.IsLocalization W] (e : L ⋙ Eq.Functor ≅ L') : L'.IsLocalization W := by
   have h : W.is_inverted_by L' :=
     by
     rw [← morphism_property.is_inverted_by.iff_of_iso W e]
