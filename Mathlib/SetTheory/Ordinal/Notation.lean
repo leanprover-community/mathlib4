@@ -820,7 +820,7 @@ theorem split_add_lt {o e n a m} [NF o] (h : split o = (oadd e n a, m)) : repr a
 theorem mulNat_eq_mul (n o) : mulNat o n = o * ofNat n := by cases o <;> cases n <;> rfl
 #align onote.mul_nat_eq_mul Onote.mulNat_eq_mul
 
-instance NF_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp <;> infer_instance
+instance NF_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp ; exact Onote.mul_NF o (ofNat n)
 #align onote.NF_mul_nat Onote.NF_mulNat
 
 instance NF_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m)
