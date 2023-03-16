@@ -285,6 +285,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.GaloisConnection

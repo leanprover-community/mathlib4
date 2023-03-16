@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Category.Pointed
+import Mathlib.CategoryTheory.Category.Pointed
 
 /-!
 # The category of bipointed types
