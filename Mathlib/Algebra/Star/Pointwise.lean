@@ -144,7 +144,7 @@ protected theorem star_inv [Group α] [StarSemigroup α] (s : Set α) : s⁻¹�
   simp only [mem_star, mem_inv, star_inv]
 #align set.star_inv Set.star_inv
 
-protected theorem star_inv' [DivisionRing α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
+protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
   simp only [mem_star, mem_inv, star_inv']
 #align set.star_inv' Set.star_inv'
