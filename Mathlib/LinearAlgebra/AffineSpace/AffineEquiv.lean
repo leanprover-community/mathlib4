@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 
 ! This file was ported from Lean 3 source module linear_algebra.affine_space.affine_equiv
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
+! leanprover-community/mathlib commit bd1fc183335ea95a9519a1630bcf901fe9326d83
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -64,37 +64,10 @@ variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type _} [Ring k] [AddCommG
 
 namespace AffineEquiv
 
-instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
-  ⟨fun e => e.toEquiv⟩
-
-instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
-  ⟨AffineEquiv.toEquiv⟩
-
-@[simp]
-theorem map_vadd (e : P₁ ≃ᵃ[k] P₂) (p : P₁) (v : V₁) : e (v +ᵥ p) = e.linear v +ᵥ e p :=
-  e.map_vadd' p v
-#align affine_equiv.map_vadd AffineEquiv.map_vadd
-
-/- Porting note: Syntactic tautology
-@[simp]
-theorem coe_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv = e :=
-  rfl
-#align affine_equiv.coe_to_equiv AffineEquiv.coe_toEquiv-/
-
 /-- Reinterpret an `AffineEquiv` as an `AffineMap`. -/
 def toAffineMap (e : P₁ ≃ᵃ[k] P₂) : P₁ →ᵃ[k] P₂ :=
-  { e with toFun := e }
+  { e with }
 #align affine_equiv.to_affine_map AffineEquiv.toAffineMap
-
-instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ →ᵃ[k] P₂) :=
-  ⟨toAffineMap⟩
-
-attribute [coe] AffineEquiv.toAffineMap
-
-@[simp]
-theorem coe_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : (e.toAffineMap : P₁ → P₂) = (e : P₁ → P₂) :=
-  rfl
-#align affine_equiv.coe_to_affine_map AffineEquiv.coe_toAffineMap
 
 @[simp]
 theorem toAffineMap_mk (f : P₁ ≃ P₂) (f' : V₁ ≃ₗ[k] V₂) (h) :
@@ -102,20 +75,10 @@ theorem toAffineMap_mk (f : P₁ ≃ P₂) (f' : V₁ ≃ₗ[k] V₂) (h) :
   rfl
 #align affine_equiv.to_affine_map_mk AffineEquiv.toAffineMap_mk
 
-@[simp] -- Porting note: removed `norm_cast`
-theorem coe_coe (e : P₁ ≃ᵃ[k] P₂) : ⇑(e : P₁ →ᵃ[k] P₂) = e :=
-  rfl
-#align affine_equiv.coe_coe AffineEquiv.coe_coe
-
 @[simp]
 theorem linear_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : e.toAffineMap.linear = e.linear :=
   rfl
 #align affine_equiv.linear_to_affine_map AffineEquiv.linear_toAffineMap
-
-@[simp]
-theorem coe_linear (e : P₁ ≃ᵃ[k] P₂) : (e : P₁ →ᵃ[k] P₂).linear = e.linear :=
-  rfl
-#align affine_equiv.coe_linear AffineEquiv.coe_linear
 
 theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) → P₁ →ᵃ[k] P₂) := by
   rintro ⟨e, el, h⟩ ⟨e', el', h'⟩ H
@@ -130,16 +93,62 @@ theorem toAffineMap_inj {e e' : P₁ ≃ᵃ[k] P₂} : e.toAffineMap = e'.toAffi
   toAffineMap_injective.eq_iff
 #align affine_equiv.to_affine_map_inj AffineEquiv.toAffineMap_inj
 
+instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂
+    where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h _ := by--toAffineMap_injective (FunLike.coe_injective h)
+    refine toAffineMap_injective ?_
+    --refine FunLike.coe_injective ?_
+    sorry
+#align affine_equiv.equiv_like AffineEquiv.equivLike
+
+instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
+  FunLike.hasCoeToFun
+
+instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
+  ⟨AffineEquiv.toEquiv⟩
+
+@[simp]
+theorem map_vadd (e : P₁ ≃ᵃ[k] P₂) (p : P₁) (v : V₁) : e (v +ᵥ p) = e.linear v +ᵥ e p :=
+  e.map_vadd' p v
+#align affine_equiv.map_vadd AffineEquiv.map_vadd
+
+@[simp]
+theorem coe_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv = e :=
+  rfl
+#align affine_equiv.coe_to_equiv AffineEquiv.coe_toEquiv
+
+instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ →ᵃ[k] P₂) :=
+  ⟨toAffineMap⟩
+
+@[simp]
+theorem coe_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : (e.toAffineMap : P₁ → P₂) = (e : P₁ → P₂) :=
+  rfl
+#align affine_equiv.coe_to_affine_map AffineEquiv.coe_toAffineMap
+
+@[simp]
+theorem coe_coe (e : P₁ ≃ᵃ[k] P₂) : ((e : P₁ →ᵃ[k] P₂) : P₁ → P₂) = e :=
+  rfl
+#align affine_equiv.coe_coe AffineEquiv.coe_coe
+
+@[simp]
+theorem coe_linear (e : P₁ ≃ᵃ[k] P₂) : (e : P₁ →ᵃ[k] P₂).linear = e.linear :=
+  rfl
+#align affine_equiv.coe_linear AffineEquiv.coe_linear
+
 @[ext]
 theorem ext {e e' : P₁ ≃ᵃ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
-  toAffineMap_injective <| AffineMap.ext h
+  FunLike.ext _ _ h
 #align affine_equiv.ext AffineEquiv.ext
 
-theorem coeFn_injective : @Injective (P₁ ≃ᵃ[k] P₂) (P₁ → P₂) (↑) := fun _ _ H =>
-  ext <| congr_fun H
+theorem coeFn_injective : @Injective (P₁ ≃ᵃ[k] P₂) (P₁ → P₂) (↑) :=
+  FunLike.coe_injective
 #align affine_equiv.coe_fn_injective AffineEquiv.coeFn_injective
 
-@[simp (high)] -- Porting note: removed `norm_cast`
+@[simp, norm_cast]
 theorem coeFn_inj {e e' : P₁ ≃ᵃ[k] P₂} : (e : P₁ → P₂) = e' ↔ e = e' :=
   coeFn_injective.eq_iff
 #align affine_equiv.coe_fn_inj AffineEquiv.coeFn_inj
@@ -241,8 +250,7 @@ protected theorem injective (e : P₁ ≃ᵃ[k] P₂) : Injective e :=
 /-- Bijective affine maps are affine isomorphisms. -/
 @[simps!]
 noncomputable def ofBijective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.Bijective φ) : P₁ ≃ᵃ[k] P₂ :=
-  {
-    Equiv.ofBijective _
+  { Equiv.ofBijective _
       hφ with
     linear := LinearEquiv.ofBijective φ.linear (φ.linear_bijective_iff.mpr hφ)
     map_vadd' := φ.map_vadd }
