@@ -360,12 +360,10 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
+  -- porting note: todo: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the proprerty -/
-  prop' :
-    ∀ t,
-      P
-        ⟨fun x => toFun (t, x),
-          Continuous.comp continuous_to_fun (continuous_const.prod_mk continuous_id')⟩
+  prop' : ∀ t, P ⟨fun x => toFun (t, x),
+    Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩
 #align continuous_map.homotopy_with ContinuousMap.HomotopyWith
 
 namespace HomotopyWith
@@ -427,8 +425,7 @@ theorem coe_toHomotopy (F : HomotopyWith f₀ f₁ P) : ⇑F.toHomotopy = F :=
   rfl
 #align continuous_map.homotopy_with.coe_to_homotopy ContinuousMap.HomotopyWith.coe_toHomotopy
 
-theorem prop (F : HomotopyWith f₀ f₁ P) (t : I) : P (F.toHomotopy.curry t) :=
-  @HomotopyWith.prop' _ _ _ _ _ _ _ F (ContinuousMap.continuous_toFun _) _
+theorem prop (F : HomotopyWith f₀ f₁ P) (t : I) : P (F.toHomotopy.curry t) := F.prop' t
 #align continuous_map.homotopy_with.prop ContinuousMap.HomotopyWith.prop
 
 theorem extendProp (F : HomotopyWith f₀ f₁ P) (t : ℝ) : P (F.toHomotopy.extend t) := by
@@ -454,10 +451,7 @@ variable {P : C(X, Y) → Prop}
 @[simps!]
 def refl (f : C(X, Y)) (hf : P f) : HomotopyWith f f P :=
   { Homotopy.refl f with
-    prop' := fun t => by
-      refine' Eq.subst _ hf
-      cases f
-      rfl }
+    prop' := fun _ => hf }
 #align continuous_map.homotopy_with.refl ContinuousMap.HomotopyWith.refl
 
 instance : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ => True) :=
