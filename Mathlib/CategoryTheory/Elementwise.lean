@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 # Use the `elementwise` attribute to create applied versions of lemmas.
 
 Usually we would use `@[elementwise]` at the point of definition,
-however some early parts of the category theory library are imported by `tactic.elementwise`,
+however some early parts of the category theory library are imported by `Tactic.Elementwise`,
 so we need to add the attribute after the fact.
 -/
 
@@ -26,5 +26,4 @@ so we need to add the attribute after the fact.
 open CategoryTheory
 
 -- This list is incomplete, and it would probably be useful to add more.
-attribute [elementwise] iso.hom_inv_id iso.inv_hom_id is_iso.hom_inv_id is_iso.inv_hom_id
-
+attribute [elementwise] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
