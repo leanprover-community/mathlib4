@@ -140,7 +140,7 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀
   map_add_le_max f := f.map_add_le_max'
 
 -- porting note: is this still helpful?
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (Valuation R Γ₀) fun _ => R → Γ₀ :=
   FunLike.hasCoeToFun
@@ -193,7 +193,7 @@ theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
 theorem map_sum_le {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
     v (∑ i in s, f i) ≤ g := by
   refine'
-    Finset.induction_on s (fun _ => trans_rel_right (· ≤ ·) v.map_zero zero_le')
+    Finset.induction_on s (fun _ => v.map_zero ▸ zero_le')
       (fun a s has ih hf => _) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_le hf.1 (ih hf.2)
@@ -202,7 +202,7 @@ theorem map_sum_le {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf 
 theorem map_sum_lt {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g := by
   refine'
-    Finset.induction_on s (fun _ => trans_rel_right (· < ·) v.map_zero (zero_lt_iff.2 hg))
+    Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
       (fun a s has ih hf => _) hf
   rw [Finset.forall_mem_insert] at hf; rw [Finset.sum_insert has]
   exact v.map_add_lt hf.1 (ih hf.2)
@@ -613,12 +613,13 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
 
 #align valuation.map_add_supp Valuation.map_add_supp
 
-set_option synthInstance.etaExperiment true
+-- set_option synthInstance.etaExperiment true
 
 theorem comap_supp {S : Type _} [CommRing S] (f : S →+* R) :
-    supp (v.comap f) = Ideal.comap f v.supp :=
+    -- Porting note: telling Lean where this instance is 
+    supp (v.comap f) = (@Ideal.comap S R (S →+* R) _ _ RingHom.instRingHomClassRingHom f v.supp : Ideal S) :=
   Ideal.ext fun x => by
-    rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff]
+    simp only [mem_supp_iff, Ideal.mem_comap, mem_supp_iff]
     rfl
 #align valuation.comap_supp Valuation.comap_supp
 
@@ -689,32 +690,34 @@ theorem valuation_apply (r : R) : v.valuation r = Multiplicative.ofAdd (OrderDua
 
 end
 
+-- Porting note: Lean get confused about namespaces and instances below
 @[simp]
-theorem map_zero : v 0 = ⊤ :=
-  v.map_zero
+theorem map_zero : v 0 = (⊤ : Γ₀) :=
+  Valuation.map_zero v
 #align add_valuation.map_zero AddValuation.map_zero
 
 @[simp]
-theorem map_one : v 1 = 0 :=
-  v.map_one
+theorem map_one : v 1 = (0 : Γ₀) :=
+  Valuation.map_one v
 #align add_valuation.map_one AddValuation.map_one
 
 @[simp]
-theorem map_mul : ∀ x y, v (x * y) = v x + v y :=
-  v.map_mul
+theorem map_mul : ∀ x y, v (x * y) = @Add.add Γ₀ _ (v x) (v y) :=
+  Valuation.map_mul v
 #align add_valuation.map_mul AddValuation.map_mul
 
 @[simp]
-theorem map_add : ∀ x y, min (v x) (v y) ≤ v (x + y) :=
-  v.map_add
+theorem map_add : ∀ x y, @Min.min Γ₀ _ (v x) (v y) ≤ v (x + y) :=
+  Valuation.map_add v
 #align add_valuation.map_add AddValuation.map_add
 
-theorem map_le_add {x y g} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
-  v.map_add_le hx hy
+theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
+  Valuation.map_add_le v hx hy
+
 #align add_valuation.map_le_add AddValuation.map_le_add
 
-theorem map_lt_add {x y g} (hx : g < v x) (hy : g < v y) : g < v (x + y) :=
-  v.map_add_lt hx hy
+theorem map_lt_add {x y : R} {g : Γ₀} (hx : g < v x) (hy : g < v y) : g < v (x + y) :=
+  Valuation.map_add_lt v hx hy
 #align add_valuation.map_lt_add AddValuation.map_lt_add
 
 theorem map_le_sum {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, g ≤ v (f i)) :
@@ -733,8 +736,8 @@ theorem map_lt_sum' {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg
 #align add_valuation.map_lt_sum' AddValuation.map_lt_sum'
 
 @[simp]
-theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = n • v x :=
-  v.map_pow
+theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = @SMul.smul ℕ Γ₀ _ n (v x) :=
+  Valuation.map_pow v
 #align add_valuation.map_pow AddValuation.map_pow
 
 @[ext]
@@ -755,27 +758,27 @@ def toPreorder : Preorder R :=
 
 /-- If `v` is an additive valuation on a division ring then `v(x) = ⊤` iff `x = 0`. -/
 @[simp]
-theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x = ⊤ ↔ x = 0 :=
+theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x = (⊤ : Γ₀) ↔ x = 0 :=
   v.zero_iff
 #align add_valuation.top_iff AddValuation.top_iff
 
-theorem ne_top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x ≠ ⊤ ↔ x ≠ 0 :=
-  v.neZero_iff
+theorem ne_top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x ≠ (⊤ : Γ₀) ↔ x ≠ 0 :=
+  v.ne_zero_iff
 #align add_valuation.ne_top_iff AddValuation.ne_top_iff
 
 /-- A ring homomorphism `S → R` induces a map `AddValuation R Γ₀ → AddValuation S Γ₀`. -/
 def comap {S : Type _} [Ring S] (f : S →+* R) (v : AddValuation R Γ₀) : AddValuation S Γ₀ :=
-  v.comap f
+  Valuation.comap f v
 #align add_valuation.comap AddValuation.comap
 
 @[simp]
 theorem comap_id : v.comap (RingHom.id R) = v :=
-  v.comap_id
+  Valuation.comap_id v
 #align add_valuation.comap_id AddValuation.comap_id
 
 theorem comap_comp {S₁ : Type _} {S₂ : Type _} [Ring S₁] [Ring S₂] (f : S₁ →+* S₂) (g : S₂ →+* R) :
     v.comap (g.comp f) = (v.comap g).comap f :=
-  v.comap_comp f g
+  Valuation.comap_comp v f g 
 #align add_valuation.comap_comp AddValuation.comap_comp
 
 /-- A `≤`-preserving, `⊤`-preserving group homomorphism `Γ₀ → Γ'₀` induces a map
@@ -783,17 +786,17 @@ theorem comap_comp {S₁ : Type _} {S₂ : Type _} [Ring S₁] [Ring S₂] (f : 
 -/
 def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) :
     AddValuation R Γ'₀ :=
-  v.map
+  @Valuation.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _  
     { toFun := f
       map_mul' := f.map_add
       map_one' := f.map_zero
-      map_zero' := ht } fun x y h => hf h
+      map_zero' := ht } (fun _ _ h => hf h) v
 #align add_valuation.map AddValuation.map
 
 /-- Two additive valuations on `R` are defined to be equivalent if they induce the same
   preorder on `R`. -/
 def IsEquiv (v₁ : AddValuation R Γ₀) (v₂ : AddValuation R Γ'₀) : Prop :=
-  v₁.IsEquiv v₂
+  Valuation.IsEquiv v₁ v₂
 #align add_valuation.is_equiv AddValuation.IsEquiv
 
 end Monoid
@@ -803,33 +806,33 @@ section Group
 variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y z : R}
 
 @[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = -v x :=
-  map_inv₀ v.Valuation x
+theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = @Neg.neg Γ₀ _ (v x) :=
+  map_inv₀ v.valuation x
 #align add_valuation.map_inv AddValuation.map_inv
 
 @[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
-  v.map_neg x
+  Valuation.map_neg v x
 #align add_valuation.map_neg AddValuation.map_neg
 
 theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
-  v.map_sub_swap x y
+  Valuation.map_sub_swap v x y
 #align add_valuation.map_sub_swap AddValuation.map_sub_swap
 
-theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) :=
-  v.map_sub x y
+theorem map_sub (x y : R) : @Min.min Γ₀ _ (v x) (v y) ≤ v (x - y) :=
+  Valuation.map_sub v x y
 #align add_valuation.map_sub AddValuation.map_sub
 
-theorem map_le_sub {x y g} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) :=
-  v.map_sub_le hx hy
+theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) :=
+  Valuation.map_sub_le v hx hy
 #align add_valuation.map_le_sub AddValuation.map_le_sub
 
-theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = min (v x) (v y) :=
-  v.map_add_of_distinct_val h
+theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) :=
+  Valuation.map_add_of_distinct_val v h
 #align add_valuation.map_add_of_distinct_val AddValuation.map_add_of_distinct_val
 
 theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
-  v.map_eq_of_sub_lt h
+  Valuation.map_eq_of_sub_lt v h
 #align add_valuation.map_eq_of_lt_sub AddValuation.map_eq_of_lt_sub
 
 end Group
@@ -851,12 +854,12 @@ theorem refl : v.IsEquiv v :=
 
 @[symm]
 theorem symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ :=
-  h.symm
+  Valuation.IsEquiv.symm h
 #align add_valuation.is_equiv.symm AddValuation.IsEquiv.symm
 
 @[trans]
 theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ :=
-  h₁₂.trans h₂₃
+  Valuation.IsEquiv.trans h₁₂ h₂₃
 #align add_valuation.is_equiv.trans AddValuation.IsEquiv.trans
 
 theorem of_eq {v' : AddValuation R Γ₀} (h : v = v') : v.IsEquiv v' :=
@@ -865,25 +868,25 @@ theorem of_eq {v' : AddValuation R Γ₀} (h : v = v') : v.IsEquiv v' :=
 
 theorem map {v' : AddValuation R Γ₀} (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f)
     (inf : Injective f) (h : v.IsEquiv v') : (v.map f ht hf).IsEquiv (v'.map f ht hf) :=
-  h.map
+  @Valuation.IsEquiv.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _ _ _
     { toFun := f
       map_mul' := f.map_add
       map_one' := f.map_zero
-      map_zero' := ht } (fun x y h => hf h) inf
+      map_zero' := ht } (fun _x _y h => hf h) inf h
 #align add_valuation.is_equiv.map AddValuation.IsEquiv.map
 
 /-- `comap` preserves equivalence. -/
 theorem comap {S : Type _} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) :=
-  h.comap f
+  Valuation.IsEquiv.comap f h
 #align add_valuation.is_equiv.comap AddValuation.IsEquiv.comap
 
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s :=
-  h.val_eq
+  Valuation.IsEquiv.val_eq h
 #align add_valuation.is_equiv.val_eq AddValuation.IsEquiv.val_eq
 
-theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ ⊤ ↔ v₂ r ≠ ⊤ :=
-  h.NeZero
+theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
+  Valuation.IsEquiv.ne_zero h
 #align add_valuation.is_equiv.ne_top AddValuation.IsEquiv.ne_top
 
 end IsEquiv
@@ -898,16 +901,16 @@ variable (v : AddValuation R Γ₀)
 
 /-- The support of an additive valuation `v : R → Γ₀` is the ideal of `R` where `v x = ⊤` -/
 def supp : Ideal R :=
-  v.supp
+  Valuation.supp v
 #align add_valuation.supp AddValuation.supp
 
 @[simp]
-theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = ⊤ :=
-  v.mem_supp_iff x
+theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = (⊤ : Γ₀) :=
+  Valuation.mem_supp_iff v x
 #align add_valuation.mem_supp_iff AddValuation.mem_supp_iff
 
 theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a :=
-  v.map_add_supp a h
+  Valuation.map_add_supp v a h
 #align add_valuation.map_add_supp AddValuation.map_add_supp
 
 end Supp
