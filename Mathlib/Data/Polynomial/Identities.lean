@@ -53,7 +53,6 @@ def powAddExpansion {R : Type _} [CommSemiring R] (x y : R) :
         by
         push_cast
         ring!
-
 #align polynomial.pow_add_expansion Polynomial.powAddExpansion
 
 variable [CommRing R]
