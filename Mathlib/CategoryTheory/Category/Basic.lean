@@ -9,11 +9,11 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Replace
-import Aesop
 
 /-!
 # Categories
@@ -37,7 +37,7 @@ I am experimenting with using the `aesop` tactic as a replacement for `tidy`.
 -/
 
 
-library_note "category_theory universes"
+library_note "CategoryTheory universes"
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -114,18 +114,27 @@ notation "𝟙" => CategoryStruct.id  -- type as \b1
 /-- Notation for composition of morphisms in a category. -/
 infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
-declare_aesop_rule_sets [CategoryTheory]
-
--- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/hygiene.20question.3F/near/313556764
-set_option hygiene false in
 /--
-A thin wrapper for `aesop`,
-which adds the `CategoryTheory` rule set,
-and allows `aesop` look through semireducible definitions when calling `intros`. -/
+A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
+allows `aesop` to look through semireducible definitions when calling `intros`.
+This tactic fails when it is unable to solve the goal, making it suitable for
+use in auto-params.
+-/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
+`(tactic|
+  aesop $c* (options := { introsTransparency? := some .default, terminal := true })
+  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+
+/--
+A variant of `aesop_cat` which does not fail when it is unable to solve the
+goal. Use this only for exploration! Nonterminal `aesop` is even worse than
+nonterminal `simp`.
+-/
+macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause*: tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false }) 
-    (rule_sets [CategoryTheory]))
+    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false })
+    (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
@@ -263,7 +272,7 @@ class Epi (f : X ⟶ Y) : Prop where
 See <https://stacks.math.columbia.edu/tag/003B>.
 -/
 class Mono (f : X ⟶ Y) : Prop where
-  /-- A morphism `f` is an epimorphism if it can be cancelled when postcomposed. -/
+  /-- A morphism `f` is an monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 #align category_theory.mono CategoryTheory.Mono
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 
 ! This file was ported from Lean 3 source module set_theory.cardinal.ordinal
-! leanprover-community/mathlib commit 40494fe75ecbd6d2ec61711baa630cf0a7b7d064
+! leanprover-community/mathlib commit 8da9e30545433fdd8fe55a0d3da208e5d9263f03
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -112,7 +112,7 @@ theorem alephIdx_le {a b} : alephIdx a ≤ alephIdx b ↔ a ≤ b := by
 #align cardinal.aleph_idx_le Cardinal.alephIdx_le
 
 theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
-  alephIdx.initialSeg.init _ _
+  alephIdx.initialSeg.init
 #align cardinal.aleph_idx.init Cardinal.alephIdx.init
 
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.

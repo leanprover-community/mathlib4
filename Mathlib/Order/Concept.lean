@@ -403,7 +403,7 @@ def swapEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.swap r) whe
   right_inv := swap_swap
   map_rel_iff' := swap_le_swap_iff
 #align concept.swap_equiv Concept.swapEquiv
-#align concept.swap_equiv_symm_apply Concept.swapEquiv_symmApply
+#align concept.swap_equiv_symm_apply Concept.swapEquiv_symm_apply
 #align concept.swap_equiv_apply Concept.swapEquiv_apply
 
 end Concept

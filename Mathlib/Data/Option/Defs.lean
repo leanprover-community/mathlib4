@@ -48,7 +48,11 @@ def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α)
 
 #align option.mmap Option.mapM
 #align option.melim Option.elimM
-#align option.mget_or_else Option.getDM
+
+@[deprecated getDM]
+protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
+  (← x).getDM y
+#align option.mget_or_else Option.getDM'
 
 variable {α : Type _} {β : Type _}
 

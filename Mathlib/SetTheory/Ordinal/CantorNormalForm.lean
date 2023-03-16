@@ -46,7 +46,7 @@ namespace Ordinal
 @[elab_as_elim]
 noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort _} (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : ∀ o, C o := fun o ↦ by
-    by_cases (o = 0)
+    by_cases h : o = 0
     · rw [h]; exact H0
     · exact H o h (CNFRec _ H0 H (o % b ^ log b o))
     termination_by CNFRec b H0 H o => o
@@ -187,4 +187,3 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_sorted Ordinal.CNF_sorted
 
 end Ordinal
-

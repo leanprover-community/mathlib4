@@ -300,14 +300,7 @@ instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ (fun _ => L₂) :=
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h]  }
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this
-  case, because it is a composition of multiple projections. -/
-def Simps.apply (h : L₁ →ₗ⁅R⁆ L₂) : L₁ → L₂ :=
-  h
-#align lie_hom.simps.apply LieHom.Simps.apply
-
--- Porting note: Does not work
--- initialize_simps_projections LieHom (toLinearMap_toFun → apply)
+initialize_simps_projections LieHom (toFun → apply)
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : L₁ →ₗ⁅R⁆ L₂) : ⇑(f : L₁ →ₗ[R] L₂) = f :=

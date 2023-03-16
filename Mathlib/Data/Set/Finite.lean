@@ -195,12 +195,12 @@ theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := b
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
 #align set.finite.ssubset_to_finset Set.Finite.ssubset_toFinset
 
--- @[mono] -- Porting note: mono attribute not yet available
+@[mono]
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
   simp only [← Finset.coe_subset, Finite.coe_toFinset]
 #align set.finite.to_finset_subset_to_finset Set.Finite.toFinset_subset_toFinset
 
--- @[mono] -- Porting note: mono attribute not yet available
+@[mono]
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 #align set.finite.to_finset_ssubset_to_finset Set.Finite.toFinset_ssubset_toFinset
@@ -1473,7 +1473,7 @@ theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α)
   · use a
     simp [h]
   rcases ih h with ⟨b, hb, ih⟩
-  by_cases f b ≤ f a
+  by_cases h : f b ≤ f a
   · refine' ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac _⟩
     rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
     · rfl
