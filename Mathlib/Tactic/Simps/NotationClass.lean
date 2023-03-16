@@ -8,9 +8,13 @@ import Std.Lean.NameMapAttribute
 import Mathlib.Lean.Expr.Basic
 import Lean.Elab.Exception
 import Qq.MetaM
+import Std.Tactic.Lint
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`
+
+This declares the `@[notation_class]` attribute, which is used to give smarter default projections
+for `@[simps]`.
 
 We put this in a separate file so that we can already tag some declarations with this attribute
 in the file where we declare `@[simps]`. For further documentation, see `Tactic.Simps.Basic`.
@@ -27,7 +31,7 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).
   * The second argument is the name of a declaration that has type
-    `Name → Name → Array Expr → MetaM (Array (Option Expr))`.
+    `findArgType` which is defined to be `Name → Name → Array Expr → MetaM (Array (Option Expr))`.
     This declaration specifies how to generate the arguments of the notation class from the
     arguments of classes that use the projection. -/
 syntax (name := notation_class) "notation_class" "*"? (ppSpace ident)? (ppSpace ident)? : attr
@@ -36,9 +40,13 @@ open Lean Meta Elab Term Qq
 
 namespace Simps
 
+/-- The type of methods to find arguments for automatic projections for `simps`.
+We partly define this as a separate definition so that the unused arguments linter doesn't complain.
+-/
+def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
+
 /-- Find arguments for a notation class -/
-def defaultfindArgs (_str className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := do
+def defaultfindArgs : findArgType := λ _ className args =>  do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.getNumForallBinders
   if arity == args.size then
@@ -50,34 +58,29 @@ def defaultfindArgs (_str className : Name) (args : Array Expr) :
       className}"
 
 /-- Find arguments by duplicating the first argument. Used for `pow`. -/
-def copyFirst (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return (args.push <| args[0]?.getD default).map some
+def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD default).map some
 
 /-- Find arguments by duplicating the first argument. Used for `smul`. -/
-def copySecond (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return (args.push <| args[1]?.getD default).map some
+def copySecond : findArgType := λ _ _ args => return (args.push <| args[1]?.getD default).map some
 
 /-- Find arguments by prepending `ℕ` and duplicating the first argument. Used for `nsmul`. -/
-def nsmulArgs (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) :=
+def nsmulArgs: findArgType := λ _ _ args =>
   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments by prepending `ℤ ` and duplicating the first argument. Used for `zsmul`. -/
-def zsmulArgs (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) :=
+def zsmulArgs : findArgType := λ _ _ args =>
   return #[Expr.const `Int [], args[0]?.getD default] ++ args |>.map some
 
 /-- Find arguments for the `Zero` class. -/
-def findZeroArgs (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return #[some <| args[0]?.getD default, some <| mkRawNatLit 0]
+def findZeroArgs : findArgType := λ _ _ args =>
+  return #[some <| args[0]?.getD default, some <| mkRawNatLit 0]
 
 /-- Find arguments for the `One` class. -/
-def findOneArgs (_str _className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
+def findOneArgs : findArgType := λ _ _ args =>
+  return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
 
 /-- Find arguments of a coercion class (`FunLike` or `SetLike`) -/
-def findCoercionArgs (str className : Name) (args : Array Expr) :
-  MetaM (Array (Option Expr)) := do
+def findCoercionArgs : findArgType := λ str className args =>  do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.getNumForallBinders
   let eStr := mkAppN (← mkConstWithLevelParams str) args
@@ -116,8 +119,7 @@ initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
         match (← getEnv).find? findArgs with
         | none => throwError "no such declaration {findArgs}"
         | some declInfo =>
-          unless ← MetaM.run' <| isDefEq declInfo.type
-            q(Name → Name → Array Expr → MetaM (Array (Option Expr))) do
+          unless ← MetaM.run' <| isDefEq declInfo.type q(findArgType) do
             throwError "declaration {findArgs} has wrong type"
         ext.add projName ⟨src, coercion.isNone, findArgs⟩
       | _ => throwUnsupportedSyntax }

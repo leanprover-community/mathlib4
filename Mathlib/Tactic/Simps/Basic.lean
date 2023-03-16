@@ -648,8 +648,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
   TermElabM <| Option (Expr × Name)  := do
   if let some ⟨className, isNotation, findArgs⟩ :=
     notationClassAttr.find? (← getEnv) proj.strName then
-    let findArgs ← unsafe evalConst (Name → Name → Array Expr → MetaM (Array (Option Expr)))
-      findArgs
+    let findArgs ← unsafe evalConst findArgType findArgs
     let classArgs ← try findArgs str className args
     catch ex =>
       trace[simps.debug] "Projection {proj.strName} is likely unrelated to the projection of {
