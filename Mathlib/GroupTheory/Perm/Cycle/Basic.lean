@@ -465,7 +465,8 @@ theorem isCycle_swap_mul_aux₁ {α : Type _} [DecidableEq α] :
           rw [mul_apply, apply_inv_self, swap_apply_of_ne_of_ne this.2 (Ne.symm hfbx), Ne.def, ←
             f.injective.eq_iff, apply_inv_self]
           exact this.1
-        let ⟨i, hi⟩ := hn hb' (f.injective <| by rw [apply_inv_self]; rwa [pow_succ, mul_apply] at h)
+        let ⟨i, hi⟩ := hn hb' (f.injective <| by
+          rw [apply_inv_self]; rwa [pow_succ, mul_apply] at h)
         ⟨i + 1, by
           rw [add_comm, zpow_add, mul_apply, hi, zpow_one, mul_apply, apply_inv_self,
             swap_apply_of_ne_of_ne (ne_and_ne_of_swap_mul_apply_ne_self hb).2 (Ne.symm hfbx)]⟩
