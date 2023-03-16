@@ -38,8 +38,8 @@ syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 /-- The  `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
-/-- The  `to_additive_fixed_numeral` attribute. -/
-syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
+/-- The  `to_additive_change_numeral` attribute. -/
+syntax (name := to_additive_change_numeral) "to_additive_change_numeral" num* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" ":=" Parser.Term.attrInstance,*
 /-- An `reorder := ...` option for `to_additive`. -/
@@ -206,22 +206,28 @@ initialize relevantArgAttr : NameMapExtension Nat ←
     | _, _ => throwUnsupportedSyntax }
 
 /--
-An attribute that stores all the declarations that deal with numeric literals on fixed types.
-*  `@[to_additive_fixed_numeral]` should be added to all functions that take a numeral as argument
-  that should never be changed by `@[to_additive]` (because it represents a numeral in a fixed
-  type).
-* `@[to_additive_fixed_numeral?]` should be added to all functions that take a numeral as argument
-  that should only be changed if `additiveTest` succeeds on the first argument, i.e. when the
-  numeral is only translated if the first argument is a variable (or consists of variables).
+An attribute that stores all the declarations that deal with numeric literals on variable types.
+
+Numeral literals occur in expressions without type information, so in order to decide whether `1`
+needs to be changed to `0`, the context around the numeral is relevant.
+Most numerals will be in an `OfNat.ofNat` application, though tactics can add numeral literals
+inside arbitrary functions. By default we assume that we do not change numerals, unless it is
+in a function application with the `to_additive_change_numeral` attribute.
+
+`@[to_additive_change_numeral n₁ ...]` should be added to all functions that take one or more
+numerals as argument that should be changed if `additiveTest` succeeds on the first argument,
+i.e. when the numeral is only translated if the first argument is a variable
+(or consists of variables).
+The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1).
 -/
-initialize fixedNumeralAttr : NameMapExtension Bool ←
+initialize changeNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
-    name := `to_additive_fixed_numeral
+    name := `to_additive_change_numeral
     descr :=
       "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
     add := fun
-    | _, `(attr| to_additive_fixed_numeral $[?%$conditional]?) =>
-      pure <| conditional.isSome
+    | _, `(attr| to_additive_change_numeral $[$arg]*) =>
+      pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
 /-- Maps multiplicative names to their additive counterparts. -/
@@ -309,20 +315,17 @@ def additiveTest (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
   additiveTestAux findTranslation? ignore false e
 
-/-- Checks whether a numeral should be translated. -/
-def shouldTranslateNumeral (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (fixedNumeral : Name → Option Bool)
-  (nm : Name) (firstArg : Expr) : Bool :=
-  match fixedNumeral nm with
-  | some true => additiveTest findTranslation? ignore firstArg
-  | some false => false
-  | none => true
-
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
 | []      => []
 | [x]     => [x]
 | x::y::l => y::x::l
+
+/-- Change the numeral `nat_lit 1` to the numeral `nat_lit 0`.
+Leave all other expressions unchanged. -/
+def changeNumeral : Expr → Expr
+| .lit (.natVal 1) => mkRawNatLit 0
+| e                => e
 
 /--
 `applyReplacementFun e` replaces the expression `e` with its additive counterpart.
@@ -341,17 +344,16 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
   let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
   return aux
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
-      (fixedNumeralAttr.find? env) isRelevant (← getBoolOption `trace.to_additive_detail) e
+      (changeNumeralAttr.find? env) isRelevant (← getBoolOption `trace.to_additive_detail) e
 where /-- Implementation of `applyReplacementFun`. -/
   aux (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
-    (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
+    (changeNumeral? : Name → Option (List Nat)) (isRelevant : Name → ℕ → Bool) (trace : Bool) :
     Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
-    | .lit (.natVal 1) => some <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := n₀.mapPrefix findTranslation?
       if trace && n₀ != n₁ then
@@ -360,6 +362,10 @@ where /-- Implementation of `applyReplacementFun`. -/
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
       let gf := g.getAppFn
+      if gf.isBVar && x.isLit then
+        if trace then
+          dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
+        return some <| g.app x
       if let some nm := gf.constName? then
         let gArgs := g.getAppArgs
         -- e = `(nm y₁ .. yₙ x)
@@ -389,15 +395,22 @@ where /-- Implementation of `applyReplacementFun`. -/
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
-        let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
-        if !shouldTranslateNumeral findTranslation? ignore fixedNumeral nm firstArg then
-          if trace then
-            dbg_trace s!"applyReplacementFun: Do not change numeral {g.app x}"
-          return some <| g.app x
-      if gf.isBVar && x.isLit then
-        if trace then
-          dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
-        return some <| g.app x
+        let gAllArgs := gArgs.push x
+        let firstArg := gAllArgs[0]
+        if let some changedArgNrs := changeNumeral? nm then
+          if additiveTest findTranslation? ignore firstArg then
+            if trace then
+              dbg_trace s!"applyReplacementFun: We change the numerals in {g.app x}. {
+                ""}However, we will still recurse into all the non-numeral arguments."
+            -- In this case, we still update all arguments of `g` that are not numerals,
+            -- since all other arguments can contain subexpressions like
+            -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+            let newArgs ← gAllArgs.mapIdx fun argNr arg ↦
+              if changedArgNrs.contains argNr then
+                r <| changeNumeral arg
+              else
+                r arg
+            return some <| mkAppN gf newArgs
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
       let n₁ := n₀.mapPrefix findTranslation?
@@ -479,18 +492,6 @@ def updateDecl
     decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda (← expand v) reorder
   return decl
 
-/-- Lean 4 makes declarations which are not internal
-(that is, head string starts with `_`) but which should be transformed.
-e.g. `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
-This method is polyfill for that.
-Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/lean/run/printDecls`.
--/
-def isInternal' (declName : Name) : Bool :=
-  declName.isInternal ||
-  match declName with
-  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
-  | _        => true
-
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
   /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
@@ -541,7 +542,7 @@ partial def transformDeclAux
       return
   -- if this declaration is not `pre` and not an internal declaration, we return an error,
   -- since we should have already translated this declaration.
-  if src != pre && !isInternal' src then
+  if src != pre && !src.isInternal' then
     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {
       pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
       }Workaround: move {src} to a different namespace."
@@ -647,23 +648,25 @@ def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
+Note: we only consider the first argument of each type-class.
+E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
     let xs := xs.toList
-    let l ← xs.mapM fun x ↦ do
+    let l ← xs.filterMapM fun x ↦ do
       -- x is an argument and i is the index
       -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
         let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isNone then
-            return []
-        return tgt_args.toList.filterMap fun tgt_arg ↦
-          xs.findIdx? fun x ↦ Expr.containsFVar tgt_arg x.fvarId!
+            return none
+        return tgt_args[0]?.bind fun tgtArg ↦
+          xs.findIdx? fun x ↦ Expr.containsFVar tgtArg x.fvarId!
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
-    match l.join with
+    match l with
     | [] => return 0
     | (head :: tail) => return tail.foldr Nat.min head
 
@@ -794,6 +797,8 @@ def fixAbbreviation : List String → List String
 | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
 | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
 | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
+| "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
+| "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
 | []                                => []
 

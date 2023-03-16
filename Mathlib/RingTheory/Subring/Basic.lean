@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 
 ! This file was ported from Lean 3 source module ring_theory.subring.basic
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -914,7 +914,7 @@ theorem mem_closure_iff {s : Set R} {x} :
       (AddSubgroup.subset_closure (Submonoid.one_mem (Submonoid.closure s)))
       (fun x y hx hy => AddSubgroup.add_mem _ hx hy) (fun x hx => AddSubgroup.neg_mem _ hx)
       fun x y hx hy =>
-      AddSubgroup.closure_induction (G := R) hy
+      AddSubgroup.closure_induction hy
         (fun q hq =>
           AddSubgroup.closure_induction hx
             (fun p hp => AddSubgroup.subset_closure ((Submonoid.closure s).mul_mem hp hq))
@@ -1446,14 +1446,14 @@ instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAct
   inferInstanceAs (MulSemiringAction S.toSubmonoid α)
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_left : SMulCommClass (center R) R R :=
-  Subsemiring.center.sMulCommClass_left
-#align subring.center.smul_comm_class_left Subring.center.sMulCommClass_left
+instance center.smulCommClass_left : SMulCommClass (center R) R R :=
+  Subsemiring.center.smulCommClass_left
+#align subring.center.smul_comm_class_left Subring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.sMulCommClass_right : SMulCommClass R (center R) R :=
-  Subsemiring.center.sMulCommClass_right
-#align subring.center.smul_comm_class_right Subring.center.sMulCommClass_right
+instance center.smulCommClass_right : SMulCommClass R (center R) R :=
+  Subsemiring.center.smulCommClass_right
+#align subring.center.smul_comm_class_right Subring.center.smulCommClass_right
 
 end Subring
 

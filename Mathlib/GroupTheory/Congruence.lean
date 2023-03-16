@@ -1105,8 +1105,8 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
     right_inv := fun x => by conv_rhs => rw [← hf x]; rfl }
 #align con.quotient_ker_equiv_of_right_inverse Con.quotientKerEquivOfRightInverse
 #align add_con.quotient_ker_equiv_of_right_inverse AddCon.quotientKerEquivOfRightInverse
-#align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symmApply
-#align add_con.quotient_ker_equiv_of_right_inverse_symm_apply AddCon.quotientKerEquivOfRightInverse_symmApply
+#align con.quotient_ker_equiv_of_right_inverse_symm_apply Con.quotientKerEquivOfRightInverse_symm_apply
+#align add_con.quotient_ker_equiv_of_right_inverse_symm_apply AddCon.quotientKerEquivOfRightInverse_symm_apply
 #align con.quotient_ker_equiv_of_right_inverse_apply Con.quotientKerEquivOfRightInverse_apply
 #align add_con.quotient_ker_equiv_of_right_inverse_apply AddCon.quotientKerEquivOfRightInverse_apply
 
@@ -1324,7 +1324,7 @@ theorem liftOnUnits_mk (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
 #align con.lift_on_units_mk Con.liftOnUnits_mk
 #align add_con.lift_on_add_units_mk AddCon.liftOnAddUnits_mk
 
-@[elab_as_elim, to_additive]
+@[to_additive (attr := elab_as_elim)]
 theorem induction_on_units {p : Units c.Quotient → Prop} (u : Units c.Quotient)
     (H : ∀ (x y : M) (hxy : c (x * y) 1) (hyx : c (y * x) 1), p ⟨x, y, c.eq.2 hxy, c.eq.2 hyx⟩) :
     p u := by

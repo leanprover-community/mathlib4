@@ -177,7 +177,7 @@ class CompatibleSMul [DistribMulAction R' N] where
 end
 
 /-- Note that this provides the default `compatible_smul R R M N` instance through
-`mul_action.is_scalar_tower.left`. -/
+`IsScalarTower.left`. -/
 instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTower R' R M]
     [DistribMulAction R' N] [IsScalarTower R' R N] : CompatibleSMul R R' M N :=
   ⟨fun r m n => by
@@ -629,9 +629,7 @@ protected def lid : R ⊗[R] M ≃ₗ[R] M :=
 end
 
 @[simp]
-theorem lid_tmul (m : M) (r : R) : (TensorProduct.lid R M : R ⊗ M → M) (r ⊗ₜ m) = r • m := by
-  dsimp [TensorProduct.lid]
-  simp
+theorem lid_tmul (m : M) (r : R) : (TensorProduct.lid R M : R ⊗ M → M) (r ⊗ₜ m) = r • m :=
   rfl
 #align tensor_product.lid_tmul TensorProduct.lid_tmul
 
@@ -676,9 +674,7 @@ protected def rid : M ⊗[R] R ≃ₗ[R] M :=
 end
 
 @[simp]
-theorem rid_tmul (m : M) (r : R) : (TensorProduct.rid R M) (m ⊗ₜ r) = r • m := by
-  dsimp [TensorProduct.rid, TensorProduct.comm, TensorProduct.lid]
-  simp
+theorem rid_tmul (m : M) (r : R) : (TensorProduct.rid R M) (m ⊗ₜ r) = r • m :=
   rfl
 #align tensor_product.rid_tmul TensorProduct.rid_tmul
 

@@ -246,3 +246,4 @@ instance (priority := 100) balanced_of_strongMonoCategory [StrongMonoCategory C]
 end
 
 end CategoryTheory
+
