@@ -226,11 +226,14 @@ theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {
       rw [← LinearMap.range_coe, ← span_le, ht, ← map_top]
       exact map_mono le_top⟩
 #align submodule.fg_of_fg_map_injective Submodule.fg_of_fg_map_injective
+/- Porting note: Lean not finding this instance is source of the majority of troubles here. 
+Perhaps it should get its own name -/
+alias LinearMap.instSemilinearMapClassLinearMap ← instSLMC
 
-set_option synthInstance.etaExperiment true in
 theorem fg_of_fg_map {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup P]
-    [Module R P] (f : M →ₗ[R] P) (hf : LinearMap.ker f = ⊥) {N : Submodule R M}
-    (hfn : (N.map f).Fg) : N.Fg :=
+    [Module R P] (f : M →ₗ[R] P) 
+    (hf : @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) _ instSLMC f = ⊥) {N : Submodule R M}
+    (hfn : (@map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f N).Fg) : N.Fg :=
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
 #align submodule.fg_of_fg_map Submodule.fg_of_fg_map
 
@@ -252,7 +255,6 @@ theorem Fg.prod {sb : Submodule R M} {sc : Submodule R P} (hsb : sb.Fg) (hsc : s
       by rw [LinearMap.span_inl_union_inr, htb.2, htc.2]⟩
 #align submodule.fg.prod Submodule.Fg.prod
 
--- set_option synthInstance.etaExperiment true in
 theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoid (M i)]
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).Fg) :
     (Submodule.pi Set.univ p).Fg := by
@@ -265,25 +267,31 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
     simp_rw [span_unionᵢ, span_image, hts, Submodule.supᵢ_map_single]
 #align submodule.fg_pi Submodule.fg_pi
 
-set_option synthInstance.etaExperiment true in
+-- Porting note: helping Lean find the coercion to functions below
+@[reducible]
+def asFun [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N := f
+
+-- set_option synthInstance.etaExperiment true in
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
 finitely generated then so is M. -/
 theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [Module R M]
-    [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M} (hs1 : (s.map f).Fg)
-    (hs2 : (s ⊓ LinearMap.ker f).Fg) : s.Fg := by
+    [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) {s : Submodule R M} 
+    -- Porting note: Lean having trouble both unifying for SLMC and then synthesizing once unified
+    (hs1 : (@map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s).Fg)
+    (hs2 : (s ⊓ @LinearMap.ker R R M P _ _ _ _ _ _ (RingHom.id _) _ instSLMC f).Fg) : s.Fg := by
   haveI := Classical.decEq R
   haveI := Classical.decEq M
   haveI := Classical.decEq P
   cases' hs1 with t1 ht1
   cases' hs2 with t2 ht2
-  have : ∀ y ∈ t1, ∃ x ∈ s, f x = y := by
+  have : ∀ y ∈ t1, ∃ x ∈ s, asFun f x = y := by
     intro y hy
-    have : y ∈ map f s := by
+    have : y ∈ @map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s := by
       rw [← ht1]
       exact subset_span hy
     rcases mem_map.1 this with ⟨x, hx1, hx2⟩
     exact ⟨x, hx1, hx2⟩
-  have : ∃ g : P → M, ∀ y ∈ t1, g y ∈ s ∧ f (g y) = y :=
+  have : ∃ g : P → M, ∀ y ∈ t1, g y ∈ s ∧ asFun f (g y) = y :=
     by
     choose g hg1 hg2 using this
     exists fun y => if H : y ∈ t1 then g y H else 0
@@ -306,7 +314,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
       rw [ht2] at this
       exact this.1
   intro x hx
-  have : f x ∈ map f s := by
+  have : asFun f x ∈ @map R R M P _ _ _ _ _ _ (RingHom.id _) _ _ instSLMC f s := by
     rw [mem_map]
     exact ⟨x, hx, rfl⟩
   rw [← ht1, ← Set.image_id (t1 : Set P), Finsupp.mem_span_image_iff_total] at this
@@ -331,12 +339,14 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type _} [Ring R] [AddCommGroup M] [M
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
-  · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
+  · dsimp [asFun] at hl2 
+    rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, f.map_sum]
     rw [sub_eq_zero]
     refine' Finset.sum_congr rfl fun y hy => _
     unfold id
+    dsimp [asFun] at hg
     rw [f.map_smul, (hg y (hl1 hy)).2]
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
@@ -354,16 +364,22 @@ theorem fg_induction (R M : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
       apply h₂ <;> apply_assumption
 #align submodule.fg_induction Submodule.fg_induction
 
-set_option synthInstance.etaExperiment true in
 /-- The kernel of the composition of two linear maps is finitely generated if both kernels are and
 the first morphism is surjective. -/
 theorem fg_ker_comp {R M N P : Type _} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-    [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P) (hf1 : f.ker.Fg)
-    (hf2 : g.ker.Fg) (hsur : Function.Surjective f) : (g.comp f).ker.Fg := by
+    [Module R N] [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P) 
+    -- Porting note: more help both unifying and finding instSLMC
+    (hf1 : (@LinearMap.ker R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f).Fg)
+    (hf2 : (@LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) _ instSLMC g).Fg) 
+    (hsur : Function.Surjective <| asFun f) : 
+    (@LinearMap.comp R R R M N P _ _ _ _ _ _ _ _ _ 
+      (RingHom.id _) (RingHom.id _) (RingHom.id _) _ g f).ker.Fg := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
-  · rwa [inf_of_le_right (show LinearMap.ker f ≤ comap f (LinearMap.ker g) from comap_mono bot_le)]
+  · rwa [inf_of_le_right (show (@LinearMap.ker R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f) ≤
+      @comap R R M N _ _ _ _ _ _ (RingHom.id _) _ instSLMC f
+      (@LinearMap.ker R R N P _ _ _ _ _ _ (RingHom.id _) _ instSLMC g) from comap_mono bot_le)]
 #align submodule.fg_ker_comp Submodule.fg_ker_comp
 
 theorem fg_restrictScalars {R S M : Type _} [CommSemiring R] [Semiring S] [Algebra R S]
