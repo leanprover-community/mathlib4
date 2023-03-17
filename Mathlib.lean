@@ -136,6 +136,7 @@ import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Degree
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
@@ -285,6 +286,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.GaloisConnection
@@ -305,6 +307,7 @@ import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.ConnectedComponents
 import Mathlib.CategoryTheory.Core
 import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
@@ -422,6 +425,7 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.LeftExact
+import Mathlib.CategoryTheory.Preadditive.OfBiproducts
 import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
@@ -1062,6 +1066,7 @@ import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
+import Mathlib.Lean.Linter
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Message
 import Mathlib.Lean.Meta
@@ -1271,6 +1276,7 @@ import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
+import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.Continuum
@@ -1422,6 +1428,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.Algebra.Order.ExtendFrom
@@ -1445,6 +1452,7 @@ import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
+import Mathlib.Topology.Algebra.WithZeroTopology
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Basic
@@ -1551,7 +1559,6 @@ import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.MemoFix
-import Mathlib.Util.Simp
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
