@@ -42,6 +42,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Divisibility.Units
 import Mathlib.Algebra.EuclideanDomain.Basic
@@ -51,6 +52,7 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
+import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.Free
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
@@ -189,6 +191,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Pointwise
@@ -252,6 +255,7 @@ import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Algebra.Support
+import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
@@ -990,6 +994,7 @@ import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.GroupTheory.Perm.Sign
@@ -1128,6 +1133,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
+import Mathlib.MeasureTheory.CardMeasurableSpace
 import Mathlib.MeasureTheory.MeasurableSpace
 import Mathlib.MeasureTheory.MeasurableSpaceDef
 import Mathlib.MeasureTheory.PiSystem
@@ -1251,8 +1257,10 @@ import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.FreeRing
@@ -1429,6 +1437,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.Compact
