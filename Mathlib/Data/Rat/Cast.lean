@@ -536,10 +536,3 @@ instance isScalarTower_right : IsScalarTower ℚ K K :=
 end Rat
 
 end SMul
-
-section OfScientific
-
-instance : LawfulOfScientific Rat where
-  ofScientific_eq _ _ _ := rfl
-
-end OfScientific
