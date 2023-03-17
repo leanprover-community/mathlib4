@@ -47,18 +47,18 @@ variable [Semiring B] [StarRing B] [Algebra R B] [StarModule R B]
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
 instance setLike : SetLike (StarSubalgebra R A) A where
-  coe := fun S ↦ S.carrier
-  coe_injective' := fun p q h => by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+  coe S := S.carrier
+  coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
 instance starMemClass : StarMemClass (StarSubalgebra R A) A where
-  star_mem := @fun s => s.star_mem'
+  star_mem {s} := s.star_mem'
 
 
 instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
-  add_mem := @fun s => s.add_mem'
-  mul_mem := @fun s => s.mul_mem'
-  one_mem := @fun s => s.one_mem'
-  zero_mem := @fun s => s.zero_mem'
+  add_mem {s} := s.add_mem'
+  mul_mem {s} := s.mul_mem'
+  one_mem {s} := s.one_mem'
+  zero_mem {s} := s.zero_mem'
 
 -- porting note: work around lean4#2074
 -- the following instance works with `set_option synthInstance.etaExperiment true`
@@ -66,11 +66,11 @@ attribute [-instance] Ring.toNonAssocRing Ring.toNonUnitalRing CommRing.toNonUni
 
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
-  neg_mem := @fun s a ha => show -a ∈ s.toSubalgebra from neg_mem ha
+  neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha
 
 -- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubalgebra R A) A`
 instance starRing (s : StarSubalgebra R A) : StarRing s :=
-  { StarMemClass.instStarSubtypeMemInstMembership s with
+  { StarMemClass.star s with
     star_involutive := fun r => Subtype.ext (star_star (r : A))
     star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : A) (r₂ : A))
     star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : A) (r₂ : A)) }
@@ -173,8 +173,7 @@ theorem toSubalgebra_subtype : S.toSubalgebra.val = S.subtype.toAlgHom :=
 
 /-- The inclusion map between `StarSubalgebra`s given by `Subtype.map id` as a `StarAlgHom`. -/
 @[simps]
-def inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) : S₁ →⋆ₐ[R] S₂
-    where
+def inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) : S₁ →⋆ₐ[R] S₂ where
   toFun := Subtype.map id h
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -340,17 +339,14 @@ variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 /-- The pointwise `star` of a subalgebra is a subalgebra. -/
-instance involutiveStar : InvolutiveStar (Subalgebra R A)
-    where
+instance involutiveStar : InvolutiveStar (Subalgebra R A) where
   star S :=
     { carrier := star S.carrier
-      mul_mem' := @fun x y hx hy =>
-        by
+      mul_mem' := fun {x y} hx hy => by
         simp only [Set.mem_star, Subalgebra.mem_carrier] at *
         exact (star_mul x y).symm ▸ mul_mem hy hx
       one_mem' := Set.mem_star.mp ((star_one A).symm ▸ one_mem S : star (1 : A) ∈ S)
-      add_mem' := @fun x y hx hy =>
-        by
+      add_mem' := fun {x y} hx hy => by
         simp only [Set.mem_star, Subalgebra.mem_carrier] at *
         exact (star_add x y).symm ▸ add_mem hx hy
       zero_mem' := Set.mem_star.mp ((star_zero A).symm ▸ zero_mem S : star (0 : A) ∈ S)
@@ -395,7 +391,7 @@ containing both `S` and `star S`. -/
 @[simps!]
 def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
   { S ⊔ star S with
-    star_mem' := @fun a ha =>
+    star_mem' := fun {a} ha =>
       by
       simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
       rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
@@ -433,7 +429,7 @@ variable (R)
 @[simps!]
 def adjoin (s : Set A) : StarSubalgebra R A :=
   { Algebra.adjoin R (s ∪ star s) with
-    star_mem' := @fun x hx => by
+    star_mem' := fun hx => by
       rwa [Subalgebra.mem_carrier, ← Subalgebra.mem_star_iff, Subalgebra.star_adjoin_comm,
         Set.union_star, star_star, Set.union_comm] }
 #align star_subalgebra.adjoin StarSubalgebra.adjoin
@@ -476,8 +472,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → StarSubalgebra R A
 #align star_subalgebra.gc StarSubalgebra.gc
 
 /-- Galois insertion between `adjoin` and `coe`. -/
-protected def gi : GaloisInsertion (adjoin R : Set A → StarSubalgebra R A) (↑)
-    where
+protected def gi : GaloisInsertion (adjoin R : Set A → StarSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (StarSubalgebra.gc.le_u_l s) hs
   gc := StarSubalgebra.gc
   le_l_u S := (StarSubalgebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
