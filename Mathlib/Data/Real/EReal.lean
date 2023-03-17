@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 
 ! This file was ported from Lean 3 source module data.real.ereal
-! leanprover-community/mathlib commit afdb4fa3b32d41106a4a09b371ce549ad7958abd
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -52,7 +52,7 @@ if and only if they have the same absolute value and the same sign.
 real, ereal, complete lattice
 -/
 
-open Function ENNReal NNReal
+open Function ENNReal NNReal Set
 
 noncomputable section
 
@@ -70,6 +70,9 @@ instance : CompleteLinearOrder EReal :=
 
 instance : LinearOrderedAddCommMonoid EReal :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop ℝ)))
+
+instance : DenselyOrdered EReal :=
+  inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
 
 /-- The canonical inclusion froms reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := some ∘ some
@@ -339,6 +342,14 @@ theorem top_ne_zero : (⊤ : EReal) ≠ 0 :=
   (coe_ne_top 0).symm
 #align ereal.top_ne_zero EReal.top_ne_zero
 
+theorem range_coe : range Real.toEReal = {⊥, ⊤}ᶜ := by
+  ext x
+  induction x using EReal.rec <;> simp
+
+theorem range_coe_eq_Ioo : range Real.toEReal = Ioo ⊥ ⊤ := by
+  ext x
+  induction x using EReal.rec <;> simp
+
 @[simp, norm_cast]
 theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
   rfl
@@ -528,6 +539,14 @@ theorem coe_ennreal_ne_one {x : ℝ≥0∞} : (x : EReal) ≠ 1 ↔ x ≠ 1 :=
 theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
   coe_ennreal_le_coe_ennreal_iff.2 (zero_le x)
 #align ereal.coe_ennreal_nonneg EReal.coe_ennreal_nonneg
+
+@[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
+  Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
+    | ⊥ => fun h => absurd h bot_lt_zero.not_le
+    | ⊤ => fun _ => ⟨⊤, rfl⟩
+    | (x : ℝ) => fun h => ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
+
+instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennreal.ge⟩
 
 @[simp, norm_cast]
 theorem coe_ennreal_pos {x : ℝ≥0∞} : (0 : EReal) < x ↔ 0 < x := by
