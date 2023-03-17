@@ -134,6 +134,14 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddMon.coe_of AddMonCat.coe_of
 
+-- porting note: this was added to ease the port
+/-- the morphism in `MonCat` associated to a `MonoidHom` -/
+@[to_additive (attr := simp)]
+def homMk {X Y : MonCat} (f : X →* Y) : X ⟶ Y := f
+
+/-- the morphism in `AddMonCat` associated to a `AddMonoidHom` -/
+add_decl_doc AddMonCat.homMk
+
 end MonCat
 
 /-- The category of commutative monoids and monoid morphisms. -/
@@ -227,6 +235,14 @@ add_decl_doc AddCommMonCat.ofHom
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
   ((forget CommMonCat).map (CommMonCat.ofHom f)) x = f x := rfl
 
+-- porting note: this was added to make the following examples work
+/-- the morphism in `CommMonCat` associated to a `MonoidHom` -/
+@[to_additive (attr := simp)]
+def homMk {X Y : CommMonCat} (f : X →* Y) : X ⟶ Y := f
+
+/-- the morphism in `AddCommMonCat` associated to a `AddMonoidHom` -/
+add_decl_doc AddCommMonCat.homMk
+
 end CommMonCat
 
 -- We verify that the coercions of morphisms to functions work correctly:
@@ -237,14 +253,9 @@ example {R S : CommMonCat} (f : R ⟶ S) : ↑R → ↑S := f
 -- We verify that when constructing a morphism in `CommMonCat`,
 -- when we construct the `toFun` field, the types are presented as `↥R`,
 -- rather than `R.α` or (as we used to have) `↥(bundled.map comm_monoid.to_monoid R)`.
-example (R : CommMonCat.{u}) : R ⟶ R := by
-  -- porting note: the following `change` should not be necessary
-  -- Without this `change`, lean complains that it does not find `MulOneClass R.α`
-  -- Of course, if we introduce the instance `CommMonoid M.α` to be the same
-  -- as `CommMonoid M`, it will compile,
-  -- but then the type shown shall be `R.α` instead of the expected `CoeSort.coe R`
-  change MonoidHom R R
-  exact
+example (R : CommMonCat.{u}) : R ⟶ R :=
+  -- porting note: the constructor `CommMonCat.homMk` was added to make this example work
+  CommMonCat.homMk
     { toFun := fun x => by
         match_target (R : Type u)
         -- porting note: is there an equivalent of `match_hyp` in Lean4?
@@ -345,26 +356,29 @@ set_option linter.uppercaseLean3 false in
 instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
-    -- porting note: it was `let e : X ≃* Y := { f, i.to_equiv with }`
-    let e : X ≃* Y := by
-      refine' ⟨i.toEquiv, _⟩
-      intros x y
-      dsimp
-      simp
-      sorry
+    let e : X ≃* Y := MulEquiv.mk i.toEquiv
+    -- porting note: the following field was obtained automatically in mathlib
+    -- The solution chosen here is not satisfactory. Should me duplicate all
+    -- the basic `MonoidHom` simp lemmas (like `map_mul`) for the coerced functions
+    -- of morphisms like `f` to make such proofs more automatic?
+      (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact IsIso.of_iso e.toMonCatIso
+set_option linter.uppercaseLean3 false in
 #align Mon.forget_reflects_isos MonCat.forget_reflects_isos
+set_option linter.uppercaseLean3 false in
 #align AddMon.forget_reflects_isos AddMonCat.forget_reflects_isos
 
 @[to_additive]
 instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
   reflects {X Y} f _ := by
-    sorry
-    --skip
-    --let i := as_iso ((forget CommMon).map f)
-    --let e : X ≃* Y := { f, i.to_equiv with }
-    --exact ⟨(is_iso.of_iso e.to_CommMon_iso).1⟩
+    let i := asIso ((forget CommMonCat).map f)
+    let e : X ≃* Y := MulEquiv.mk i.toEquiv
+    -- porting note: same remark as for `MonCat.forget_reflects_iso`
+      (MonoidHom.map_mul (show MonoidHom X Y from f))
+    exact IsIso.of_iso e.toCommMonCatIso
+set_option linter.uppercaseLean3 false in
 #align CommMon.forget_reflects_isos CommMonCat.forget_reflects_isos
+set_option linter.uppercaseLean3 false in
 #align AddCommMon.forget_reflects_isos AddCommMonCat.forget_reflects_isos
 
 /-!
