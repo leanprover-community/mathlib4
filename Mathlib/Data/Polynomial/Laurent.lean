@@ -264,10 +264,10 @@ theorem invOf_t (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) :=
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.inv_of_T LaurentPolynomial.invOf_t
 
-theorem isUnit_t (n : ℤ) : IsUnit (T n : R[T;T⁻¹]) :=
+theorem isUnit_T (n : ℤ) : IsUnit (T n : R[T;T⁻¹]) :=
   isUnit_of_invertible _
 set_option linter.uppercaseLean3 false in
-#align laurent_polynomial.is_unit_T LaurentPolynomial.isUnit_t
+#align laurent_polynomial.is_unit_T LaurentPolynomial.isUnit_T
 
 @[elab_as_elim]
 protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C : ∀ a, M (C a))
@@ -583,23 +583,23 @@ theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toL
 #align laurent_polynomial.algebra_map_eq_to_laurent LaurentPolynomial.algebraMap_eq_toLaurent
 
 theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T;T⁻¹] :=
-  { map_units := fun t => by
+  { map_units' := fun t => by
       cases' t with t ht
-      rcases submonoid.mem_closure_singleton.mp ht with ⟨n, rfl⟩
-      simp only [is_unit_T n, [anonymous], algebra_map_eq_to_laurent, Polynomial.toLaurent_x_pow]
-    surj := fun f => by
-      induction' f using LaurentPolynomial.induction_on_mul_t with f n
+      rcases Submonoid.mem_closure_singleton.mp ht with ⟨n, rfl⟩
+      simp only [isUnit_T n, algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow]
+    surj' := fun f => by
+      induction' f using LaurentPolynomial.induction_on_mul_T with f n
       have := (Submonoid.closure ({X} : Set R[X])).pow_mem Submonoid.mem_closure_singleton_self n
       refine' ⟨(f, ⟨_, this⟩), _⟩
-      simp only [[anonymous], algebra_map_eq_to_laurent, Polynomial.toLaurent_x_pow, mul_T_assoc,
+      simp only [algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow, mul_T_assoc,
         add_left_neg, T_zero, mul_one]
-    eq_iff_exists := fun f g => by
-      rw [algebra_map_eq_to_laurent, algebra_map_eq_to_laurent, Polynomial.toLaurent_inj]
+    eq_iff_exists' := @fun f g => by
+      rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
       refine' ⟨_, _⟩
       · rintro rfl
         exact ⟨1, rfl⟩
       · rintro ⟨⟨h, hX⟩, h⟩
-        rcases submonoid.mem_closure_singleton.mp hX with ⟨n, rfl⟩
+        rcases Submonoid.mem_closure_singleton.mp hX with ⟨n, rfl⟩
         exact mul_X_pow_injective n h }
 #align laurent_polynomial.is_localization LaurentPolynomial.isLocalization
 
