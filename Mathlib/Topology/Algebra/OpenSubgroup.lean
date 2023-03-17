@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Ideal.Basic
-import Mathbin.Topology.Algebra.Ring.Basic
-import Mathbin.Topology.Sets.Opens
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Sets.Opens
 
 /-!
 # Open subgroups of a topological groups
@@ -175,8 +175,7 @@ instance : Inhabited (OpenSubgroup G) :=
   ⟨⊤⟩
 
 @[to_additive]
-theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) :=
-  by
+theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
   apply isOpen_compl_iff.1
   refine' isOpen_iff_forall_mem_open.2 fun x hx => ⟨(fun y => y * x⁻¹) ⁻¹' U, _, _, _⟩
   · refine' fun u hux hu => hx _
@@ -312,8 +311,7 @@ namespace Subgroup
 variable {G : Type _} [Group G] [TopologicalSpace G] [ContinuousMul G] (H : Subgroup G)
 
 @[to_additive]
-theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) :=
-  by
+theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) := by
   refine' isOpen_iff_mem_nhds.2 fun x hx => _
   have hg' : g ∈ H := SetLike.mem_coe.1 (mem_of_mem_nhds hg)
   have : Filter.Tendsto (fun y => y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
