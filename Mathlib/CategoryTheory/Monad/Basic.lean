@@ -8,9 +8,9 @@ Authors: Scott Morrison, Bhavik Mehta, Adam Topaz
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Functor.Category
-import Mathbin.CategoryTheory.Functor.FullyFaithful
-import Mathbin.CategoryTheory.Functor.ReflectsIsomorphisms
+import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.Functor.ReflectsIsomorphisms
 
 /-!
 # Monads
@@ -319,8 +319,7 @@ instance : Faithful (monadToFunctor C) where
 
 @[simp]
 theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
-    (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f :=
-  by
+    (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
   ext
   rfl
 #align category_theory.monad_to_functor_map_iso_monad_iso_mk CategoryTheory.monadToFunctor_mapIso_monad_iso_mk
@@ -343,8 +342,7 @@ instance : Faithful (comonadToFunctor C) where
 
 @[simp]
 theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
-    (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f :=
-  by
+    (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
   ext
   rfl
 #align category_theory.comonad_to_functor_map_iso_comonad_iso_mk CategoryTheory.comonadToFunctor_mapIso_comonad_iso_mk
