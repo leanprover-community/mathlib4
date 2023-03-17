@@ -67,8 +67,16 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
   f.quotKerEquivRange.symm_apply_apply (f.ker.mkQ x)
 #align linear_map.quot_ker_equiv_range_symm_apply_image LinearMap.quotKerEquivRange_symm_apply_image
 
--- set_option trace.Meta.isDefEq true in
--- set_option profiler true in
+/-
+Porting note: In these definitions and theorems, a match to `Submodule.instModuleSubtype
+  MemSubmoduleInstMembershipInstSetLikeSubmoduleInstAddCommMonoidSubtypeMemSubmoduleInstMembership
+  InstSetLikeSubmodule` which takes 0.1s happens a few hundreds times, so `maxHeartbeats` and
+  `synthInstance.maxHeartbeats` should be increased.
+TODO: We hope these problem will be resolved by
+  https://github.com/leanprover/lean4/issues/2055.
+  In that time, Please erase these `set_option`s.
+-/
+
 set_option maxHeartbeats 2000000 in
 /-- Canonical linear map from the quotient `p/(p ∩ p')` to `(p+p')/p'`, mapping `x + (p ∩ p')`
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
