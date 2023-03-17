@@ -341,9 +341,11 @@ end
 def project : MonoidalFunctor (F C) D
     where
   obj := projectObj f
-  map := @fun X Y => projectMap f X Y
+  map := projectMap f _ _
+  map_comp := @fun X Y Z f_1 g => by sorry
   ε := 𝟙 _
-  μ := fun X Y => 𝟙 _
+  μ X Y := 𝟙 _
+  μ_natural := @fun X Y X' Y' f g => by sorry
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
 
 end Functor
