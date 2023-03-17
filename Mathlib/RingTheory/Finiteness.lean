@@ -267,8 +267,8 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
     simp_rw [span_unionᵢ, span_image, hts, Submodule.supᵢ_map_single]
 #align submodule.fg_pi Submodule.fg_pi
 
--- Porting note: helping Lean find the coercion to functions below
-abbrev asFun [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N :=
+/-- Porting note: helping Lean find the coercion to functions below -/
+abbrev asFun [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N :=
   f
 
 -- set_option synthInstance.etaExperiment true in
@@ -643,7 +643,7 @@ end Finite
 
 end Module
 
--- Porting note: reminding Lean about this instance for Module.Finite.base_change
+/-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
 local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] : 
   Module A (TensorProduct R A M) := 
   haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass 
