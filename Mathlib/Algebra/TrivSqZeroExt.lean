@@ -743,14 +743,14 @@ instance algebra' : Algebra S (tsze R M) :=
     smul := (· • ·)
     commutes' := fun s x =>
       ext (Algebra.commutes _ _) <|
-        show algebraMap S R s • x.snd + op x.fst • 0 = x.fst • 0 + op (algebraMap S R s) • x.snd
-          by
+        show algebraMap S R s • x.snd + op x.fst • (0 : M)
+            = x.fst • (0 : M) + op (algebraMap S R s) • x.snd by
           rw [smul_zero, smul_zero, add_zero, zero_add]
           rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, MulOpposite.op_one, smul_assoc,
             one_smul, smul_assoc, one_smul]
     smul_def' := fun r x =>
       ext (Algebra.smul_def _ _) <|
-        show r • x.2 = algebraMap S R r • x.2 + op x.1 • 0 by
+        show r • x.2 = algebraMap S R r • x.2 + op x.1 • (0 : M) by
           rw [smul_zero, add_zero, algebraMap_smul] }
 #align triv_sq_zero_ext.algebra' TrivSqZeroExt.algebra'
 
@@ -776,9 +776,9 @@ def fstHom : tsze R M →ₐ[S] R where
   toFun := fst
   map_one' := fst_one
   map_mul' := fst_mul
-  map_zero' := fst_zero
+  map_zero' := fst_zero (M := M)
   map_add' := fst_add
-  commutes' r := fst_inl M _
+  commutes' _r := fst_inl M _
 #align triv_sq_zero_ext.fst_hom TrivSqZeroExt.fstHom
 
 variable {R R' S M}
@@ -786,7 +786,7 @@ variable {R R' S M}
 theorem algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
     (h : ∀ m, f (inr m) = g (inr m)) : f = g :=
   AlgHom.toLinearMap_injective <|
-    linearMap_ext (fun r => (f.commutes _).trans (g.commutes _).symm) h
+    linearMap_ext (fun _r => (f.commutes _).trans (g.commutes _).symm) h
 #align triv_sq_zero_ext.alg_hom_ext TrivSqZeroExt.algHom_ext
 
 @[ext]
@@ -803,8 +803,8 @@ whose products are all zero.
 See `TrivSqZeroExt.lift` for this as an equiv. -/
 def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →ₐ[R'] A :=
   AlgHom.ofLinearMap
-    ((Algebra.linearMap _ _).comp (fstHom R' R' M).toLinearMap + f.comp (sndHom R' M))
-    (show algebraMap R' _ 1 + f (0 : M) = 1 by rw [map_zero, map_one, add_zero])
+    ((Algebra.linearMap R' A).comp (fstHom R' R' M).toLinearMap + f.comp (sndHom R' M))
+    (show algebraMap R' A 1 + f (0 : M) = 1 by rw [map_zero, map_one, add_zero])
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
@@ -839,15 +839,15 @@ products.
 This isomorphism is named to match the very similar `complex.lift`. -/
 @[simps]
 def lift : { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) where
-  toFun f := liftAux f f.Prop
+  toFun f := liftAux f f.prop
   invFun F :=
-    ⟨F.toLinearMap.comp (inrHom R' M), fun x y =>
+    ⟨F.toLinearMap.comp (inrHom R' M), fun _x _y =>
       (F.map_mul _ _).symm.trans <| (F.congr_arg <| inr_mul_inr _ _ _).trans F.map_zero⟩
-  left_inv f := Subtype.ext <| liftAux_comp_inrHom _ _
-  right_inv F := algHom_ext' <| liftAux_comp_inrHom _ _
+  left_inv f := Subtype.ext <| liftAux_comp_inrHom _ f.prop
+  right_inv _F := algHom_ext' <| liftAux_comp_inrHom _ _
 #align triv_sq_zero_ext.lift TrivSqZeroExt.lift
 
-attribute [nolint simp_nf] lift_symm_apply_coe
+attribute [nolint simpNF] lift_symm_apply_coe
 
 end Algebra
 
