@@ -329,7 +329,7 @@ set_option linter.uppercaseLean3 false in
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
 `trunc` is a left-inverse to `polynomial.to_laurent`. -/
 def trunc : R[T;T⁻¹] →+ R[X] :=
-  (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun a b => Int.ofNat.inj
+  (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ => Int.ofNat.inj
 #align laurent_polynomial.trunc LaurentPolynomial.trunc
 
 @[simp]
