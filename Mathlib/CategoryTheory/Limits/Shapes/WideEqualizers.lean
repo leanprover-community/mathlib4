@@ -103,6 +103,7 @@ def WalkingParallelFamily.Hom.comp :
 
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
 
+-- porting note: new definition
 def WalkingParallelFamily.Hom.assoc:
     ∀ (W X Y Z : WalkingParallelFamily J) (f : WalkingParallelFamily.Hom J W X)
     (g :WalkingParallelFamily.Hom J X Y) (h : WalkingParallelFamily.Hom J Y Z),
@@ -112,11 +113,14 @@ def WalkingParallelFamily.Hom.assoc:
    unfold comp
    aesop_cat
 
+-- porting note: new definition
 def  WalkingParallelFamily.Hom.comp_id
   {X Y : WalkingParallelFamily J} (f : WalkingParallelFamily.Hom J X Y):
     WalkingParallelFamily.Hom.comp X Y Y f (Hom.id Y) = f := by
+    unfold comp
     
-    sorry
+
+
 
 instance WalkingParallelFamily.category : SmallCategory (WalkingParallelFamily J)
     where
