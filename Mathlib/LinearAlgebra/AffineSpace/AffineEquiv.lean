@@ -16,7 +16,7 @@ import Mathlib.Algebra.Invertible
 # Affine equivalences
 
 In this file we define `affine_equiv k P₁ P₂` (notation: `P₁ ≃ᵃ[k] P₂`) to be the type of affine
-equivalences between `P₁` and `P₂, i.e., equivalences such that both forward and inverse maps are
+equivalences between `P₁` and `P₂`, i.e., equivalences such that both forward and inverse maps are
 affine maps.
 
 We define the following equivalences:
@@ -676,4 +676,3 @@ theorem homothety_neg_one_apply (c p : P₁) : homothety c (-1 : R') p = pointRe
 #align affine_map.homothety_neg_one_apply AffineMap.homothety_neg_one_apply
 
 end AffineMap
-
