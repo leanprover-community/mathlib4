@@ -201,11 +201,11 @@ section Fintype
 variable [Fintype α]
 
 theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.coprime n (orderOf σ)) :
-    (σ ^ n).Support = σ.Support := by
+    (σ ^ n).support = σ.support := by
   obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
   exact
     le_antisymm (support_pow_le σ n)
-      (le_trans (ge_of_eq (congr_arg Support hm)) (support_pow_le (σ ^ n) m))
+      (le_trans (ge_of_eq (congr_arg support hm)) (support_pow_le (σ ^ n) m))
 #align equiv.perm.support_pow_coprime Equiv.Perm.support_pow_coprime
 
 end Fintype

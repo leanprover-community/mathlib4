@@ -268,10 +268,10 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     rfl, fun ⟨⟩ => rfl⟩
 #align equiv.set.singleton Equiv.Set.singleton
 
---Porting note: Removed attribute @[simps apply symm_apply]
 /-- Equal sets are equivalent.
 
 TODO: this is the same as `Equiv.setCongr`! -/
+@[simps! apply symm_apply]
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 #align equiv.set.of_eq Equiv.Set.ofEq
