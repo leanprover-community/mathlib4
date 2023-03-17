@@ -78,7 +78,8 @@ namespace StarMemClass
 
 variable {S : Type u} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
-instance : Star s where star r := ⟨star (r : R), star_mem r.prop⟩
+nonrec instance star : Star s where
+  star r := ⟨star (r : R), star_mem r.prop⟩
 
 end StarMemClass
 
@@ -495,7 +496,7 @@ variable [NonUnitalRing R] [PartialOrder R] [StarOrderedRing R]
 theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     star c * a * c ≤ star c * b * c := by
   rw [← sub_nonneg] at hab⊢
-  convert conjugate_nonneg hab c
+  convert conjugate_nonneg hab c using 1
   simp only [mul_sub, sub_mul]
 #align conjugate_le_conjugate conjugate_le_conjugate
 
