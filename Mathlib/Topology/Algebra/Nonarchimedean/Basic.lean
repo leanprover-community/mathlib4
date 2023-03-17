@@ -8,9 +8,9 @@ Authors: Kevin Buzzard, Johan Commelin, Ashwin Iyengar, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Subgroup.Basic
-import Mathbin.Topology.Algebra.OpenSubgroup
-import Mathbin.Topology.Algebra.Ring.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Nonarchimedean Topology
@@ -91,8 +91,7 @@ contains the cartesian product of an open neighborhood in each group. -/
 @[to_additive NonarchimedeanAddGroup.prod_subset
       "An open neighborhood of the identity in the\ncartesian product of two nonarchimedean groups contains the cartesian product of an open\nneighborhood in each group."]
 theorem prod_subset {U} (hU : U ∈ nhds (1 : G × K)) :
-    ∃ (V : OpenSubgroup G)(W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U :=
-  by
+    ∃ (V : OpenSubgroup G)(W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
   erw [nhds_prod_eq, Filter.mem_prod_iff] at hU
   rcases hU with ⟨U₁, hU₁, U₂, hU₂, h⟩
   cases' is_nonarchimedean _ hU₁ with V hV
@@ -149,8 +148,7 @@ theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
 #align nonarchimedean_ring.left_mul_subset NonarchimedeanRing.left_mul_subset
 
 /-- An open subgroup of a nonarchimedean ring contains the square of another one. -/
-theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U :=
-  by
+theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by
   let ⟨V, H⟩ :=
     prod_self_subset
       (IsOpen.mem_nhds (IsOpen.preimage continuous_mul U.IsOpen)
