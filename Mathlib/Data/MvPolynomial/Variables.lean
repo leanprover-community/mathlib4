@@ -559,7 +559,7 @@ theorem totalDegree_eq (p : MvPolynomial σ R) :
   exact (Finsupp.card_toMultiset _).symm
 #align mv_polynomial.total_degree_eq MvPolynomial.totalDegree_eq
 
-def le_totalDegree {p : MvPolynomial σ R} {s : σ →₀ ℕ} (h : s ∈ p.support) :
+theorem le_totalDegree {p : MvPolynomial σ R} {s : σ →₀ ℕ} (h : s ∈ p.support) :
     (s.sum fun _ e => e) ≤ totalDegree p :=
   Finset.le_sup (α := ℕ) (f := fun s => sum s fun _ e => e) h
 
