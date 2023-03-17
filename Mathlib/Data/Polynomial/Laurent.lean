@@ -493,10 +493,13 @@ open Classical
 @[simp]
 theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n := by
   rw [degree]
-  convert Finset.max_singleton
-  refine' support_eq_singleton.mpr _
-  simp only [← single_eq_C_mul_T, single_eq_same, a0, Ne.def, not_false_iff, eq_self_iff_true,
+  have : Finsupp.support (C a * T n) = {n} := by
+    refine' support_eq_singleton.mpr _
+    rw [← single_eq_C_mul_T]
+    simp only [single_eq_same, a0, Ne.def, not_false_iff, eq_self_iff_true,
     and_self_iff]
+  rw [this]
+  exact Finset.max_singleton
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_mul_T LaurentPolynomial.degree_C_mul_T
 
