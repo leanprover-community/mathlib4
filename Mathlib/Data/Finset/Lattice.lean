@@ -1450,7 +1450,9 @@ theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
 
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
   -- Porting note: old proof `convert @max_erase_ne_self αᵒᵈ _ _ _`
-  convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding)
+  convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
+  apply congr_arg -- porting note: forces unfolding to see `Finset.min` is `Finset.max`
+  congr!
   · ext; simp only [mem_map_equiv]; exact Iff.rfl
 #align finset.min_erase_ne_self Finset.min_erase_ne_self
 
