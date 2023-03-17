@@ -321,7 +321,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
-  (commute_T n f).Eq
+  Commute.eq (commute_T n f)
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_mul LaurentPolynomial.T_mul
 
