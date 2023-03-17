@@ -174,19 +174,13 @@ def mk' (e : P₁ → P₂) (e' : V₁ ≃ₗ[k] V₂) (p : P₁) (h : ∀ p' : 
     P₁ ≃ᵃ[k] P₂ where
   toFun := e
   invFun := fun q' : P₂ => e'.symm (q' -ᵥ e p) +ᵥ p
-  left_inv p' := by
-    simp only [h p']
-    rw [vadd_vsub, LinearEquiv.symm_apply_apply, vsub_vadd]
-    -- Porting note: `simp` fails to find these lemmas
-  right_inv q' := by
-    simp only [h (e'.symm (q' -ᵥ e p) +ᵥ p)]
-    rw [vadd_vsub, LinearEquiv.apply_symm_apply, vsub_vadd]
-    -- Porting note: `simp` fails to find these lemmas
+  -- Porting note: `simp` needs `()`
+  left_inv p' := by simp [h p', (vadd_vsub), (vsub_vadd)]
+  -- Porting note: `simp` needs `()`
+  right_inv q' := by simp [h (e'.symm (q' -ᵥ e p) +ᵥ p), (vadd_vsub), (vsub_vadd)]
   linear := e'
-  map_vadd' p' v := by
-    simp only [Equiv.coe_fn_mk, h (v +ᵥ p'), h p']
-    rw [vadd_vsub_assoc, vadd_vadd, LinearEquiv.map_add]
-    -- Porting note: `simp` fails to find last lemma
+  -- Porting note: `simp` needs `()`
+  map_vadd' p' v := by simp [h p', h (v +ᵥ p'), (vadd_vsub_assoc), (vadd_vadd)]
 #align affine_equiv.mk' AffineEquiv.mk'
 
 @[simp]
