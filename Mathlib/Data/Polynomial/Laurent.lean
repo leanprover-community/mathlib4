@@ -312,8 +312,8 @@ protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
 #align laurent_polynomial.induction_on' LaurentPolynomial.induction_on'
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
-  f.inductionOn' (fun p q Tp Tq => Commute.add_right Tp Tq) fun m a =>
-    show t n * _ = _ by
+  f.induction_on' (fun p q Tp Tq => Commute.add_right Tp Tq) fun m a =>
+    show T n * _ = _ by
       rw [T, T, ← single_eq_C, single_mul_single, single_mul_single, single_mul_single]
       simp [add_comm]
 set_option linter.uppercaseLean3 false in
