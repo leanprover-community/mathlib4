@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.num.lemmas
-! leanprover-community/mathlib commit 7ac96dea0572f31067e9e35bebbecef7fa3fa91a
+! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1332,9 +1332,8 @@ theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n
     (PosNum.cast_sub' _ _).trans <| (sub_eq_add_neg _ _).trans this
   | neg a, neg b =>
     show -(↑(a + b) : α) = -a + -b by
-      rw [PosNum.cast_add, neg_eq_iff_neg_eq, neg_add_rev, neg_neg, neg_neg,
-          ← PosNum.cast_to_int a, ← PosNum.cast_to_int b, ← Int.cast_add]
-      simp [add_comm]
+      rw [PosNum.cast_add, neg_eq_iff_eq_neg, neg_add_rev, neg_neg, neg_neg,
+          ← PosNum.cast_to_int a, ← PosNum.cast_to_int b, ← Int.cast_add, ← Int.cast_add, add_comm]
 #align znum.cast_add ZNum.cast_add
 
 @[simp]
