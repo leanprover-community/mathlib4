@@ -11,8 +11,6 @@ Authors: Pierre-Alexandre Bazin
 import Mathlib.LinearAlgebra.Dfinsupp
 import Mathlib.RingTheory.Ideal.Operations
 
-open Classical
-
 /-!
 # An additional lemma about coprime ideals
 
