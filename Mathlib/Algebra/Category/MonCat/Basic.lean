@@ -44,14 +44,17 @@ namespace MonCat
 
 /-- `MonoidHom` doesn't actually assume associativity. This alias is needed to make the category
 theory machinery work. -/
-@[to_additive
-      "`AddMonoidHom` doesn't actually assume associativity. This alias is needed to make\nthe category theory machinery work."]
+@[to_additive]
 abbrev AssocMonoidHom (M N : Type _) [Monoid M] [Monoid N] :=
   MonoidHom M N
 set_option linter.uppercaseLean3 false in
 #align Mon.assoc_monoid_hom MonCat.AssocMonoidHom
 set_option linter.uppercaseLean3 false in
 #align AddMon.assoc_add_monoid_hom AddMonCat.AssocAddMonoidHom
+
+/-- `AddMonoidHom` doesn't actually assume associativity. This alias is needed to make
+the category theory machinery work. -/
+add_decl_doc AddMonCat.AssocAddMonoidHom
 
 @[to_additive]
 instance bundledHom : BundledHom AssocMonoidHom where
@@ -313,8 +316,7 @@ section
 variable [CommMonoid X] [CommMonoid Y]
 
 /-- Build an isomorphism in the category `CommMonCat` from a `MulEquiv` between `CommMonoid`s. -/
-@[to_additive (attr := simps) AddEquiv.toAddCommMonCatIso
-    "Build an isomorphism in the category `AddCommMonCat`\nfrom an `AddEquiv` between `AddCommMonoid`s."]
+@[to_additive (attr := simps) AddEquiv.toAddCommMonCatIso]
 def MulEquiv.toCommMonCatIso (e : X ≃* Y) : CommMonCat.of X ≅ CommMonCat.of Y where
   hom := CommMonCat.ofHom e.toMonoidHom
   inv := CommMonCat.ofHom e.symm.toMonoidHom
@@ -322,6 +324,10 @@ set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_CommMon_iso MulEquiv.toCommMonCatIso
 set_option linter.uppercaseLean3 false in
 #align add_equiv.to_AddCommMon_iso AddEquiv.toAddCommMonCatIso
+
+/-- Build an isomorphism in the category `AddCommMonCat`
+from an `AddEquiv` between `AddCommMonoid`s. -/
+add_decl_doc AddEquiv.toAddCommMonCatIso
 
 end
 
@@ -350,8 +356,7 @@ end CategoryTheory.Iso
 
 /-- multiplicative equivalences between `Monoid`s are the same as (isomorphic to) isomorphisms
 in `MonCat` -/
-@[to_additive addEquivIsoAddMonCatIso
-      "additive equivalences between `AddMonoid`s are the same\nas (isomorphic to) isomorphisms in `AddMonCat`"]
+@[to_additive addEquivIsoAddMonCatIso]
 def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
   X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y where
   hom e := e.toMonCatIso
@@ -361,10 +366,13 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddMon_iso addEquivIsoAddMonCatIso
 
+/-- additive equivalences between `AddMonoid`s are the same
+as (isomorphic to) isomorphisms in `AddMonCat` -/
+add_decl_doc addEquivIsoAddMonCatIso
+
 /-- multiplicative equivalences between `CommMonoid`s are the same as (isomorphic to) isomorphisms
 in `CommMonCat` -/
-@[to_additive addEquivIsoAddCommMonCatIso
-      "additive equivalences between `AddCommMonoid`s are\nthe same as (isomorphic to) isomorphisms in `AddCommMonCat`"]
+@[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
     X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y
     where
@@ -374,6 +382,10 @@ set_option linter.uppercaseLean3 false in
 #align mul_equiv_iso_CommMon_iso mulEquivIsoCommMonCatIso
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddCommMon_iso addEquivIsoAddCommMonCatIso
+
+/-- additive equivalences between `AddCommMonoid`s are
+the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/
+add_decl_doc addEquivIsoAddCommMonCatIso
 
 @[to_additive]
 instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
