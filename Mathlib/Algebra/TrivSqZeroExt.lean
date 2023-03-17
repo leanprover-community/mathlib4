@@ -8,8 +8,8 @@ Authors: Kenny Lau, Eric Wieser
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.LinearAlgebra.Prod
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Trivial Square-Zero Extension
@@ -610,8 +610,7 @@ theorem snd_pow_eq_sum [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribM
 
 theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] (x : tsze R M) (n : ℕ)
-    (h : op x.fst • x.snd = x.fst • x.snd) : snd (x ^ n) = n • x.fst ^ n.pred • x.snd :=
-  by
+    (h : op x.fst • x.snd = x.fst • x.snd) : snd (x ^ n) = n • x.fst ^ n.pred • x.snd := by
   have : ∀ n : ℕ, op (x.fst ^ n) • x.snd = x.fst ^ n • x.snd :=
     by
     intro n
