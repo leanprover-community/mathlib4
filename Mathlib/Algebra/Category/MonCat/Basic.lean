@@ -55,9 +55,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 instance bundledHom : BundledHom AssocMonoidHom where
-  -- porting note: it was originally `MonoidHom.toFun`, is there a way
-  -- to coerce directly to functions?
-  toFun  _ _ f := (@MonoidHom.toMulHom _ _ _ _ f).toFun
+  toFun  {X Y} _ _ f := ⇑f
   id _ := MonoidHom.id _
   comp _ _ _ := MonoidHom.comp
 set_option linter.uppercaseLean3 false in
@@ -141,6 +139,19 @@ def homMk {X Y : MonCat} (f : X →* Y) : X ⟶ Y := f
 
 /-- the morphism in `AddMonCat` associated to a `AddMonoidHom` -/
 add_decl_doc AddMonCat.homMk
+
+-- porting note: this lemma was added to make automation work in `MonCat.forget_reflects_isos`
+@[to_additive (attr := simp)]
+lemma Hom.map_mul {X Y : MonCat} (f : X ⟶ Y) (x y : X) :
+  ((forget MonCat).map f) (x * y) =
+    f x * f y := by
+  apply MonoidHom.map_mul (show MonoidHom X Y from f)
+
+-- porting note: added as a complement to `Hom.map_mul`
+@[to_additive (attr := simp)]
+lemma Hom.map_one {X Y : MonCat} (f : X ⟶ Y) :
+  ((forget MonCat).map f) (1 : X) = (1 : Y) := by
+  apply MonoidHom.map_one (show MonoidHom X Y from f)
 
 end MonCat
 
@@ -242,6 +253,18 @@ def homMk {X Y : CommMonCat} (f : X →* Y) : X ⟶ Y := f
 
 /-- the morphism in `AddCommMonCat` associated to a `AddMonoidHom` -/
 add_decl_doc AddCommMonCat.homMk
+
+-- porting note: this lemma was added to make automation work in `CommMonCat.forget_reflects_isos`
+@[to_additive (attr := simp)]
+lemma Hom.map_mul {X Y : CommMonCat} (f : X ⟶ Y) (x y : X) :
+  ((forget CommMonCat).map f) (x * y) = f x * f y := by
+  apply MonoidHom.map_mul (show MonoidHom X Y from f)
+
+-- porting note: added as a complement to `Hom.map_mul`
+@[to_additive (attr := simp)]
+lemma Hom.map_one {X Y : CommMonCat} (f : X ⟶ Y) :
+  ((forget CommMonCat).map f) (1 : X) = (1 : Y) := by
+  apply MonoidHom.map_one (show MonoidHom X Y from f)
 
 end CommMonCat
 
@@ -356,12 +379,7 @@ set_option linter.uppercaseLean3 false in
 instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
-    let e : X ≃* Y := MulEquiv.mk i.toEquiv
-    -- porting note: the following field was obtained automatically in mathlib
-    -- The solution chosen here is not satisfactory. Should me duplicate all
-    -- the basic `MonoidHom` simp lemmas (like `map_mul`) for the coerced functions
-    -- of morphisms like `f` to make such proofs more automatic?
-      (MonoidHom.map_mul (show MonoidHom X Y from f))
+    let e : X ≃* Y := MulEquiv.mk i.toEquiv (by aesop)
     exact IsIso.of_iso e.toMonCatIso
 set_option linter.uppercaseLean3 false in
 #align Mon.forget_reflects_isos MonCat.forget_reflects_isos
@@ -381,10 +399,9 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.forget_reflects_isos AddCommMonCat.forget_reflects_isos
 
-/-!
-Once we've shown that the forgetful functors to type reflect isomorphisms,
-we automatically obtain that the `forget₂` functors between our concrete categories
-reflect isomorphisms.
--/
+-- porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
+-- automatically reflects isomorphisms
+-- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
+instance : Full (forget₂ CommMonCat MonCat) where preimage f := f
 
-example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := by infer_instance
+example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := inferInstance
