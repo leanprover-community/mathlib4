@@ -490,48 +490,48 @@ variable (P₁)
 
 /-- The map `p ↦ v +ᵥ p` as an affine automorphism of an affine space.
 
-Note that there is no need for an `affine_map.const_vadd` as it is always an equivalence.
+Note that there is no need for an `AffineMap.constVAdd` as it is always an equivalence.
 This is roughly to `DistribMulAction.toLinearEquiv` as `+ᵥ` is to `•`. -/
 @[simps apply linear]
-def constVadd (v : V₁) : P₁ ≃ᵃ[k] P₁
+def constVAdd (v : V₁) : P₁ ≃ᵃ[k] P₁
     where
   toEquiv := Equiv.constVAdd P₁ v
   linear := LinearEquiv.refl _ _
   map_vadd' p w := vadd_comm _ _ _
-#align affine_equiv.const_vadd AffineEquiv.constVadd
+#align affine_equiv.const_vadd AffineEquiv.constVAdd
 
 @[simp]
-theorem constVadd_zero : constVadd k P₁ 0 = AffineEquiv.refl _ _ :=
+theorem constVAdd_zero : constVAdd k P₁ 0 = AffineEquiv.refl _ _ :=
   ext <| zero_vadd _
-#align affine_equiv.const_vadd_zero AffineEquiv.constVadd_zero
+#align affine_equiv.const_vadd_zero AffineEquiv.constVAdd_zero
 
 @[simp]
-theorem constVadd_add (v w : V₁) :
-    constVadd k P₁ (v + w) = (constVadd k P₁ w).trans (constVadd k P₁ v) :=
+theorem constVAdd_add (v w : V₁) :
+    constVAdd k P₁ (v + w) = (constVAdd k P₁ w).trans (constVAdd k P₁ v) :=
   ext <| add_vadd _ _
-#align affine_equiv.const_vadd_add AffineEquiv.constVadd_add
+#align affine_equiv.const_vadd_add AffineEquiv.constVAdd_add
 
 @[simp]
-theorem constVadd_symm (v : V₁) : (constVadd k P₁ v).symm = constVadd k P₁ (-v) :=
+theorem constVAdd_symm (v : V₁) : (constVAdd k P₁ v).symm = constVAdd k P₁ (-v) :=
   ext fun _ => rfl
-#align affine_equiv.const_vadd_symm AffineEquiv.constVadd_symm
+#align affine_equiv.const_vadd_symm AffineEquiv.constVAdd_symm
 
-/-- A more bundled version of `AffineEquiv.constVadd`. -/
+/-- A more bundled version of `AffineEquiv.constVAdd`. -/
 @[simps]
-def constVaddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁
+def constVAddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁
     where
-  toFun v := constVadd k P₁ v.toAdd
-  map_one' := constVadd_zero _ _
-  map_mul' := constVadd_add _ _
-#align affine_equiv.const_vadd_hom AffineEquiv.constVaddHom
+  toFun v := constVAdd k P₁ v.toAdd
+  map_one' := constVAdd_zero _ _
+  map_mul' := constVAdd_add _ _
+#align affine_equiv.const_vadd_hom AffineEquiv.constVAddHom
 
-theorem constVadd_nsmul (n : ℕ) (v : V₁) : constVadd k P₁ (n • v) = constVadd k P₁ v ^ n :=
-  (constVaddHom k P₁).map_pow _ _
-#align affine_equiv.const_vadd_nsmul AffineEquiv.constVadd_nsmul
+theorem constVAdd_nsmul (n : ℕ) (v : V₁) : constVAdd k P₁ (n • v) = constVAdd k P₁ v ^ n :=
+  (constVAddHom k P₁).map_pow _ _
+#align affine_equiv.const_vadd_nsmul AffineEquiv.constVAdd_nsmul
 
-theorem constVadd_zsmul (z : ℤ) (v : V₁) : constVadd k P₁ (z • v) = constVadd k P₁ v ^ z :=
-  (constVaddHom k P₁).map_zpow _ _
-#align affine_equiv.const_vadd_zsmul AffineEquiv.constVadd_zsmul
+theorem constVAdd_zsmul (z : ℤ) (v : V₁) : constVAdd k P₁ (z • v) = constVAdd k P₁ v ^ z :=
+  (constVAddHom k P₁).map_zpow _ _
+#align affine_equiv.const_vadd_zsmul AffineEquiv.constVAdd_zsmul
 
 section Homothety
 
@@ -667,7 +667,7 @@ theorem vsub_lineMap (p₁ p₂ p₃ : P₁) (c : k) :
 
 theorem vadd_lineMap (v : V₁) (p₁ p₂ : P₁) (c : k) :
     v +ᵥ lineMap p₁ p₂ c = lineMap (v +ᵥ p₁) (v +ᵥ p₂) c :=
-  (constVadd k P₁ v).apply_lineMap p₁ p₂ c
+  (constVAdd k P₁ v).apply_lineMap p₁ p₂ c
 #align affine_map.vadd_line_map AffineMap.vadd_lineMap
 
 variable {R' : Type _} [CommRing R'] [Module R' V₁]
