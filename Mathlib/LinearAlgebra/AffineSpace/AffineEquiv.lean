@@ -26,7 +26,7 @@ We define the following equivalences:
 * `e.symm`: the inverse map of an `AffineEquiv` as an `AffineEquiv`;
 
 * `e.trans e'`: composition of two `AffineEquiv`s; note that the order follows `mathlib`'s
-  `category_theory` convention (apply `e`, then `e'`), not the convention used in function
+  `CategoryTheory` convention (apply `e`, then `e'`), not the convention used in function
   composition and compositions of bundled morphisms.
 
 We equip `AffineEquiv k P P` with a `Group` structure with multiplication corresponding to
@@ -427,7 +427,7 @@ theorem inv_def (e : P₁ ≃ᵃ[k] P₁) : e⁻¹ = e.symm :=
   rfl
 #align affine_equiv.inv_def AffineEquiv.inv_def
 
-/-- `affine_equiv.linear` on automorphisms is a `MonoidHom`. -/
+/-- `AffineEquiv.linear` on automorphisms is a `MonoidHom`. -/
 @[simps]
 def linearHom : (P₁ ≃ᵃ[k] P₁) →* V₁ ≃ₗ[k] V₁
     where
