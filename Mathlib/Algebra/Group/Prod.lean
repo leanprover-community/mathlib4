@@ -94,6 +94,7 @@ theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
 instance one [One M] [One N] : One (M × N) :=
   ⟨(1, 1)⟩
 #align prod.has_one Prod.one
+#align prod.has_zero Prod.zero
 
 @[to_additive (attr := simp)]
 theorem fst_one [One M] [One N] : (1 : M × N).1 = 1 :=
@@ -135,6 +136,7 @@ theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * 
 instance inv [Inv M] [Inv N] : Inv (M × N) :=
   ⟨fun p => (p.1⁻¹, p.2⁻¹)⟩
 #align prod.has_inv Prod.inv
+#align prod.has_neg Prod.neg
 
 @[to_additive (attr := simp)]
 theorem fst_inv [Inv G] [Inv H] (p : G × H) : p⁻¹.1 = p.1⁻¹ :=
@@ -201,14 +203,16 @@ instance mulZeroClass [MulZeroClass M] [MulZeroClass N] : MulZeroClass (M × N) 
 #align prod.mul_zero_class Prod.mulZeroClass
 
 @[to_additive]
-instance semiGroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
+instance semigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
   { mul_assoc := fun _ _ _ => mk.inj_iff.mpr ⟨mul_assoc _ _ _, mul_assoc _ _ _⟩ }
-#align prod.semi_group Prod.semiGroup
+#align prod.semigroup Prod.semigroup
+#align prod.add_semigroup Prod.addSemigroup
 
 @[to_additive]
 instance commSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) :=
   { mul_comm := fun _ _ => mk.inj_iff.mpr ⟨mul_comm _ _, mul_comm _ _⟩ }
 #align prod.comm_semigroup Prod.commSemigroup
+#align prod.add_comm_semigroup Prod.addCommSemigroup
 
 instance semigroupWithZero [SemigroupWithZero M] [SemigroupWithZero N] :
     SemigroupWithZero (M × N) :=
@@ -221,6 +225,7 @@ instance mulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
   { one_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨one_mul _, one_mul _⟩,
     mul_one := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_one _, mul_one _⟩ }
 #align prod.mul_one_class Prod.mulOneClass
+#align prod.add_zero_class Prod.addZeroClass
 
 @[to_additive]
 instance monoid [Monoid M] [Monoid N] : Monoid (M × N) :=
@@ -230,6 +235,7 @@ instance monoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     one_mul := by simp,
     mul_one := by simp }
 #align prod.monoid Prod.monoid
+#align prod.add_monoid Prod.addMonoid
 
 @[to_additive Prod.subNegMonoid]
 instance divInvMonoid [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
@@ -239,8 +245,9 @@ instance divInvMonoid [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) 
     zpow_succ' := fun _ _ => ext (DivInvMonoid.zpow_succ' _ _) (DivInvMonoid.zpow_succ' _ _),
     zpow_neg' := fun _ _ => ext (DivInvMonoid.zpow_neg' _ _) (DivInvMonoid.zpow_neg' _ _) }
 #align prod.div_inv_monoid Prod.divInvMonoid
+#align prod.sub_neg_inv_monoid Prod.subNegMonoid
 
-@[to_additive]
+@[to_additive subtractionMonoid]
 instance divisionMonoid [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
   { mul_inv_rev := fun a b => ext (mul_inv_rev _ _) (mul_inv_rev _ _),
     inv_eq_of_mul := fun a b h =>
@@ -248,17 +255,20 @@ instance divisionMonoid [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (
         (inv_eq_of_mul_eq_one_right <| congr_arg snd h),
     inv_inv := by simp }
 #align prod.division_monoid Prod.divisionMonoid
+#align prod.subtraction_monoid Prod.subtractionMonoid
 
-@[to_additive SubtractionCommMonoid]
+@[to_additive subtractionCommMonoid]
 instance divisionCommMonoid [DivisionCommMonoid G] [DivisionCommMonoid H] :
     DivisionCommMonoid (G × H) :=
   { mul_comm := fun ⟨g₁ , h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
 #align prod.division_comm_monoid Prod.divisionCommMonoid
+#align prod.subtraction_comm_monoid Prod.subtractionCommMonoid
 
 @[to_additive]
 instance group [Group G] [Group H] : Group (G × H) :=
   { mul_left_inv := fun _ => mk.inj_iff.mpr ⟨mul_left_inv _, mul_left_inv _⟩ }
 #align prod.group Prod.group
+#align prod.add_group Prod.addGroup
 
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup G] [LeftCancelSemigroup H] :
@@ -279,27 +289,32 @@ instance leftCancelMonoid [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancel
   { mul_one := by simp,
     one_mul := by simp }
 #align prod.left_cancel_monoid Prod.leftCancelMonoid
+#align prod.add_left_cancel_monoid Prod.addLeftCancelMonoid
 
 @[to_additive]
 instance rightCancelMonoid [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
   { mul_one := by simp,
     one_mul := by simp }
 #align prod.right_cancel_monoid Prod.rightCancelMonoid
+#align prod.add_right_cancel_monoid Prod.addRightCancelMonoid
 
 @[to_additive]
 instance cancelMonoid [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
   { mul_right_cancel := by simp only [mul_left_inj, imp_self, forall_const] }
 #align prod.cancel_monoid Prod.cancelMonoid
+#align prod.add_cancel_monoid Prod.addCancelMonoid
 
 @[to_additive]
 instance commMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
 #align prod.comm_monoid Prod.commMonoid
+#align prod.add_comm_monoid Prod.addCommMonoid
 
 @[to_additive]
 instance cancelCommMonoid [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
 #align prod.cancel_comm_monoid Prod.cancelCommMonoid
+#align prod.add_cancel_comm_monoid Prod.addCancelCommMonoid
 
 instance mulZeroOneClass [MulZeroOneClass M] [MulZeroOneClass N] : MulZeroOneClass (M × N) :=
   { zero_mul := by simp,
@@ -321,6 +336,7 @@ instance commMonoidWithZero [CommMonoidWithZero M] [CommMonoidWithZero N] :
 instance commGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
   { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
 #align prod.comm_group Prod.commGroup
+#align prod.add_comm_group Prod.addCommGroup
 
 end Prod
 
