@@ -37,7 +37,7 @@ open Lean Meta Std.Tactic.TryThis
 initialize registerTraceClass `Tactic.propose
 
 initialize proposeLemmas : DeclCache (DiscrTree Name true) ←
-  DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
+  DeclCache.mk "propose: init cache" {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do
@@ -108,11 +108,9 @@ elab_rules : tactic |
   let goal ← getMainGoal
   goal.withContext do
     let required ← terms.mapM (elabTerm · none)
-    trace[Tactic.propose] "!"
     let type ← match type with
     | some stx => elabTermWithHoles stx none (← getMainTag) true <&> (·.1)
     | none => mkFreshTypeMVar
-    trace[Tactic.propose] type
     let proposals ← propose (← proposeLemmas.get) type required
     if proposals.isEmpty then
       throwError "propose could not find any lemmas using the given hypotheses"
