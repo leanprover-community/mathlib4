@@ -37,15 +37,15 @@ theorem down_ratCast [RatCast α] (q : ℚ) : down (q : ULift α) = q :=
 #align ulift.down_rat_cast ULift.down_ratCast
 
 instance divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) := by
-  refine' down_injective.divisionSemiring down _ _ _ _ _ _ _ _ _ _ <;> intros <;> rfl
+  refine' down_injective.divisionSemiring down .. <;> intros <;> rfl
 #align ulift.division_semiring ULift.divisionSemiring
 
 instance semifield [Semifield α] : Semifield (ULift α) :=
   { ULift.divisionSemiring, ULift.commGroupWithZero with }
 #align ulift.semifield ULift.semifield
 
-instance divisionRing [DivisionRing α] : DivisionRing (ULift α) :=
-  { ULift.divisionSemiring, ULift.addGroup with }
+instance divisionRing [DivisionRing α] : DivisionRing (ULift α) := by
+  refine' down_injective.divisionRing down .. <;> intros <;> rfl
 #align ulift.division_ring ULift.divisionRing
 
 instance field [Field α] : Field (ULift α) :=
