@@ -116,8 +116,8 @@ the cofork consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `BinaryCofan.mk` with `Functor.mapCocone`.
 -/
 def isColimitMapCoconeBinaryCofanEquiv :
-    IsColimit (Functor.mapCocone G (BinaryCofan.mk f g)) 
-    ≃ IsColimit (BinaryCofan.mk (G.map f) (G.map g)) := 
+    IsColimit (Functor.mapCocone G (BinaryCofan.mk f g))
+    ≃ IsColimit (BinaryCofan.mk (G.map f) (G.map g)) :=
   (IsColimit.precomposeHomEquiv (diagramIsoPair _).symm _).symm.trans
     (IsColimit.equivIsoColimit
       (Cocones.ext (Iso.refl _)
@@ -183,4 +183,3 @@ instance : IsIso (coprodComparison G X Y) := by
 end
 
 end CategoryTheory.Limits
-

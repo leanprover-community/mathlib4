@@ -50,11 +50,8 @@ instance : NormalSpace ℝ≥0∞ := inferInstance
 instance : SecondCountableTopology ℝ≥0∞ :=
   orderIsoUnitIntervalBirational.toHomeomorph.embedding.secondCountableTopology
 
-theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) := by
-  refine ⟨⟨OrderTopology.topology_eq_generate_intervals.trans ?_⟩, fun _ _ => coe_eq_coe.1⟩
-  refine (induced_topology_eq_preorder coe_lt_coe (fun h _ => ?_) fun h _ => ?_).symm <;>
-    rcases lt_iff_exists_nnreal_btwn.1 h with ⟨a, h₁, h₂⟩
-  exacts [⟨a, coe_lt_coe.1 h₂, h₁.le⟩, ⟨a, coe_lt_coe.1 h₁, h₂.le⟩]
+theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
+  coe_strictMono.embedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
 #align ennreal.embedding_coe ENNReal.embedding_coe
 
 theorem isOpen_ne_top : IsOpen { a : ℝ≥0∞ | a ≠ ⊤ } := isOpen_ne
@@ -66,9 +63,7 @@ theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by
 #align ennreal.is_open_Ico_zero ENNReal.isOpen_Ico_zero
 
 theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  ⟨embedding_coe, by
-    convert isOpen_ne_top
-    ext (x | _) <;> simp [none_eq_top, some_eq_coe]⟩
+  ⟨embedding_coe, by rw [range_coe']; exact isOpen_Iio⟩
 #align ennreal.open_embedding_coe ENNReal.openEmbedding_coe
 
 theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
@@ -1322,6 +1317,10 @@ theorem summable_sigma_of_nonneg {β : α → Type _} {f : (Σ x, β x) → ℝ}
   lift f to (Σx, β x) → ℝ≥0 using hf
   exact_mod_cast NNReal.summable_sigma
 #align summable_sigma_of_nonneg summable_sigma_of_nonneg
+
+theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
+    Summable f ↔ (∀ x, Summable fun y ↦ f (x, y)) ∧ Summable fun x ↦ ∑' y, f (x, y) :=
+  (Equiv.sigmaEquivProd _ _).summable_iff.symm.trans <| summable_sigma_of_nonneg fun _ ↦ hf _
 
 theorem summable_of_sum_le {ι : Type _} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
     (h : ∀ u : Finset ι, (∑ x in u, f x) ≤ c) : Summable f :=
