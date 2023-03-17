@@ -108,9 +108,11 @@ add_decl_doc AddMonCat.ofHom
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ConcreteCategory.hasCoeToFun
 
-@[simp]
-theorem ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
-  (ofHom f) x = f x := rfl
+-- porting note: in mathlib the LHS was `(⇑ofHom f) x`; the coercion was unfolded
+-- to make the simp lemma work
+@[to_additive (attr := simp) _root_.AddMonCat.ofHom_apply]
+lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
+  ((forget MonCat).map (MonCat.ofHom f)) x = f x := rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
 
@@ -211,6 +213,20 @@ instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonC
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ConcreteCategory.hasCoeToFun
 
+-- porting note: this was added to make automation work
+/-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
+@[to_additive]
+def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y :=
+  f
+
+/-- Typecheck a `AddMonoidHom` as a morphism in `AddCommMonCat`. -/
+add_decl_doc AddCommMonCat.ofHom
+
+-- porting note: this was added to make automation work in `MulEquiv.toCommMonCatIso`
+@[to_additive (attr := simp) _root_.AddCommMonCat.ofHom_apply]
+lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
+  ((forget CommMonCat).map (CommMonCat.ofHom f)) x = f x := rfl
+
 end CommMonCat
 
 -- We verify that the coercions of morphisms to functions work correctly:
@@ -221,14 +237,23 @@ example {R S : CommMonCat} (f : R ⟶ S) : ↑R → ↑S := f
 -- We verify that when constructing a morphism in `CommMonCat`,
 -- when we construct the `toFun` field, the types are presented as `↥R`,
 -- rather than `R.α` or (as we used to have) `↥(bundled.map comm_monoid.to_monoid R)`.
-example (R : CommMonCat.{u}) : R ⟶ R :=
-  { toFun := fun x => by
-      match_target(R : Type u)
-      match_hyp x : (R : Type u)
-      exact x * x
-    map_one' := by simp
-    map_mul' := fun x y => by
-      rw [mul_assoc x y (x * y), ← mul_assoc y x y, mul_comm y x, mul_assoc, mul_assoc] }
+example (R : CommMonCat.{u}) : R ⟶ R := by
+  -- porting note: the following `change` should not be necessary
+  -- Without this `change`, lean complains that it does not find `MulOneClass R.α`
+  -- Of course, if we introduce the instance `CommMonoid M.α` to be the same
+  -- as `CommMonoid M`, it will compile,
+  -- but then the type shown shall be `R.α` instead of the expected `CoeSort.coe R`
+  change MonoidHom R R
+  exact
+    { toFun := fun x => by
+        match_target (R : Type u)
+        -- porting note: is there an equivalent of `match_hyp` in Lean4?
+        --match_hyp x : (R : Type u)
+        exact x * x
+      map_one' := by simp
+      map_mul' := fun x y => by
+        dsimp
+        rw [mul_assoc x y (x * y), ← mul_assoc y x y, mul_comm y x, mul_assoc, mul_assoc] }
 
 variable {X Y : Type u}
 
@@ -237,15 +262,14 @@ section
 variable [Monoid X] [Monoid Y]
 
 /-- Build an isomorphism in the category `MonCat` from a `MulEquiv` between `Monoid`s. -/
-@[to_additive AddEquiv.toAddMonCatIso
-      "Build an isomorphism in the category `AddMonCat` from\nan `AddEquiv` between `AddMonoid`s.",
-  simps]
+@[to_additive (attr := simps) AddEquiv.toAddMonCatIso
+      "Build an isomorphism in the category `AddMonCat` from\nan `AddEquiv` between `AddMonoid`s."]
 def MulEquiv.toMonCatIso (e : X ≃* Y) : MonCat.of X ≅ MonCat.of Y where
-  hom := e.toMonoidHom
-  inv := e.symm.toMonoidHom
+  hom := MonCat.ofHom e.toMonoidHom
+  inv := MonCat.ofHom e.symm.toMonoidHom
   -- porting note: this fields were filled automatically in mathlib
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+  hom_inv_id := by apply ConcreteCategory.hom_ext; simp
+  inv_hom_id := by apply ConcreteCategory.hom_ext; simp
 set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_Mon_iso MulEquiv.toMonCatIso
 set_option linter.uppercaseLean3 false in
@@ -258,15 +282,14 @@ section
 variable [CommMonoid X] [CommMonoid Y]
 
 /-- Build an isomorphism in the category `CommMonCat` from a `MulEquiv` between `CommMonoid`s. -/
-@[to_additive AddEquiv.toAddCommMonCatIso
-      "Build an isomorphism in the category `AddCommMonCat`\nfrom an `AddEquiv` between `AddCommMonoid`s.",
-  simps]
+@[to_additive (attr := simps) AddEquiv.toAddCommMonCatIso
+    "Build an isomorphism in the category `AddCommMonCat`\nfrom an `AddEquiv` between `AddCommMonoid`s."]
 def MulEquiv.toCommMonCatIso (e : X ≃* Y) : CommMonCat.of X ≅ CommMonCat.of Y where
-  hom := e.toMonoidHom
-  inv := e.symm.toMonoidHom
+  hom := CommMonCat.ofHom e.toMonoidHom
+  inv := CommMonCat.ofHom e.symm.toMonoidHom
   -- porting note: this fields were filled automatically in mathlib
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+  hom_inv_id := by apply ConcreteCategory.hom_ext; simp
+  inv_hom_id := by apply ConcreteCategory.hom_ext; simp
 set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_CommMon_iso MulEquiv.toCommMonCatIso
 set_option linter.uppercaseLean3 false in
@@ -280,7 +303,7 @@ namespace CategoryTheory.Iso
 @[to_additive addMonCatIsoToAddEquiv
       "Build an `AddEquiv` from an isomorphism in the category\n`AddMonCat`."]
 def monCatIsoToMulEquiv {X Y : MonCat} (i : X ≅ Y) : X ≃* Y :=
-  i.hom.toMulEquiv i.inv i.hom_inv_id i.inv_hom_id
+  MonoidHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.Mon_iso_to_mul_equiv CategoryTheory.Iso.monCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
@@ -289,7 +312,7 @@ set_option linter.uppercaseLean3 false in
 /-- Build a `MulEquiv` from an isomorphism in the category `CommMonCat`. -/
 @[to_additive "Build an `AddEquiv` from an isomorphism in the category\n`AddCommMonCat`."]
 def commMonCatIsoToMulEquiv {X Y : CommMonCat} (i : X ≅ Y) : X ≃* Y :=
-  i.hom.toMulEquiv i.inv i.hom_inv_id i.inv_hom_id
+  MonoidHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommMon_iso_to_mul_equiv CategoryTheory.Iso.commMonCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
@@ -301,9 +324,9 @@ end CategoryTheory.Iso
 in `MonCat` -/
 @[to_additive addEquivIsoAddMonCatIso
       "additive equivalences between `AddMonoid`s are the same\nas (isomorphic to) isomorphisms in `AddMonCat`"]
-def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] : X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y
-    where
-  hom e := e.toMonIso
+def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
+  X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y where
+  hom e := e.toMonCatIso
   inv i := i.monCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
 #align mul_equiv_iso_Mon_iso mulEquivIsoMonCatIso
@@ -340,12 +363,13 @@ instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) 
 #align AddMon.forget_reflects_isos AddMonCat.forget_reflects_isos
 
 @[to_additive]
-instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMon.{u})
-    where reflects X Y f _ := by
-    skip
-    let i := as_iso ((forget CommMon).map f)
-    let e : X ≃* Y := { f, i.to_equiv with }
-    exact ⟨(is_iso.of_iso e.to_CommMon_iso).1⟩
+instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
+  reflects {X Y} f _ := by
+    sorry
+    --skip
+    --let i := as_iso ((forget CommMon).map f)
+    --let e : X ≃* Y := { f, i.to_equiv with }
+    --exact ⟨(is_iso.of_iso e.to_CommMon_iso).1⟩
 #align CommMon.forget_reflects_isos CommMonCat.forget_reflects_isos
 #align AddCommMon.forget_reflects_isos AddCommMonCat.forget_reflects_isos
 
@@ -354,6 +378,5 @@ Once we've shown that the forgetful functors to type reflect isomorphisms,
 we automatically obtain that the `forget₂` functors between our concrete categories
 reflect isomorphisms.
 -/
-
 
 example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := by infer_instance
