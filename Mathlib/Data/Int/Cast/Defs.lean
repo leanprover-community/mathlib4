@@ -61,7 +61,7 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
 
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u)
-  extends AddCommGroup R, AddGroupWithOne R, toAddCommMonoidWithOne R
+  extends AddCommGroup R, AddGroupWithOne R, AddCommMonoidWithOne R
 #align add_comm_group_with_one AddCommGroupWithOne
 #align add_comm_group_with_one.to_add_comm_group AddCommGroupWithOne.toAddCommGroup
 #align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne
