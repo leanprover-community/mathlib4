@@ -728,6 +728,7 @@ import Mathlib.Data.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Rename
+import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
