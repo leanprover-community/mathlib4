@@ -1105,6 +1105,14 @@ theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
   rfl
 #align with_top.pred_coe WithTop.pred_coe
 
+@[simp]
+theorem pred_untop :
+    ∀ (a : WithTop α) (ha : a ≠ ⊤),
+      pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
+  | ⊤, ha => (ha rfl).elim
+  | (a : α), _ => rfl
+#align with_top.pred_untop WithTop.pred_untop
+
 end Pred
 
 /-! #### Adding a `⊤` to a `NoMaxOrder` -/
@@ -1328,14 +1336,6 @@ instance predOrderOfNoMinOrder : PredOrder (WithBot α) where
 theorem pred_coe (a : α) : pred (↑a : WithBot α) = ↑(pred a) :=
   rfl
 #align with_bot.pred_coe WithBot.pred_coe
-
-@[simp]
-theorem pred_untop :
-    ∀ (a : WithTop α) (ha : a ≠ ⊤),
-      pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
-  | ⊤, ha => (ha rfl).elim
-  | (a : α), _ => rfl
-#align with_top.pred_untop WithTop.pred_untop
 
 end Pred
 
