@@ -22,11 +22,12 @@ namespace Prod
 
 variable [AddMonoidWithOne α] [AddMonoidWithOne β]
 
-instance : AddMonoidWithOne (α × β) :=
-  { Prod.instAddMonoidSum, @instOneProd α β _ _ with
+instance addMonoidWithOne : AddMonoidWithOne (α × β) :=
+  { Prod.addMonoid, Prod.one with
     natCast := fun n => (n, n)
     natCast_zero := congr_arg₂ Prod.mk Nat.cast_zero Nat.cast_zero
     natCast_succ := fun _ => congr_arg₂ Prod.mk (Nat.cast_succ _) (Nat.cast_succ _) }
+#align prod.add_monoid_with_one Prod.addMonoidWithOne
 
 @[simp]
 theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]

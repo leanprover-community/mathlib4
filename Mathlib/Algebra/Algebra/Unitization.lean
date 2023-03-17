@@ -153,35 +153,35 @@ instance inhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
   instInhabitedProd
 
 instance zero [Zero R] [Zero A] : Zero (Unitization R A) :=
-  Prod.instZeroSum
+  Prod.zero
 
 instance add [Add R] [Add A] : Add (Unitization R A) :=
-  Prod.instAddSum
+  Prod.add
 
 instance neg [Neg R] [Neg A] : Neg (Unitization R A) :=
-  Prod.instNegSum
+  Prod.neg
 
 instance addSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
-  Prod.instAddSemigroupSum
+  Prod.addSemigroup
 
 instance addZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) :=
-  Prod.instAddZeroClassSum
+  Prod.addZeroClass
 
 instance addMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) :=
-  Prod.instAddMonoidSum
+  Prod.addMonoid
 
 instance addGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
-  Prod.instAddGroupSum
+  Prod.addGroup
 
 instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
     AddCommSemigroup (Unitization R A) :=
-  Prod.instAddCommSemigroupSum
+  Prod.addCommSemigroup
 
 instance addCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
-  Prod.instAddCommMonoidSum
+  Prod.addCommMonoid
 
 instance addCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
-  Prod.instAddCommGroupSum
+  Prod.addCommGroup
 
 instance smul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
   Prod.smul
