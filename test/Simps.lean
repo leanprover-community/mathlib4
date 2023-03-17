@@ -219,20 +219,20 @@ structure ComplicatedEquivPlusData (α) extends α ⊕ α ≃ α ⊕ α where
   extra : Bool → MyProd ℕ ℕ
 
 /-- Test whether structure-eta-reduction is working correctly. -/
-@[simps]
+@[simps!]
 def rflWithData {α} : EquivPlusData α α :=
 { foo.rfl with
   P := λ f => f = id
   data := rfl }
 
-@[simps]
+@[simps!]
 def rflWithData' {α} : EquivPlusData α α :=
 { P := λ f => f = id
   data := rfl
   toEquiv' := foo.rfl }
 
 /- test whether eta expansions are reduced correctly -/
-@[simps]
+@[simps!]
 def test {α} : ComplicatedEquivPlusData α :=
 { foo.rfl with
   P := λ f => f = id
@@ -240,7 +240,7 @@ def test {α} : ComplicatedEquivPlusData α :=
   extra := λ _ => ⟨(⟨3, 5⟩ : MyProd _ _).1, (⟨3, 5⟩ : MyProd _ _).2⟩ }
 
 /- test whether this is indeed rejected as a valid eta expansion -/
-@[simps]
+@[simps!]
 def test_sneaky {α} : ComplicatedEquivPlusData α :=
 { foo.rfl with
   P := λ f => f = id

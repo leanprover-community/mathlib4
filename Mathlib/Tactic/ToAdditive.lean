@@ -9,7 +9,7 @@ import Mathlib.Data.String.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
-import Mathlib.Util.Simp
+import Mathlib.Lean.Meta.Simp
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
 import Std.Tactic.NormCast.Ext -- just to copy the attribute
@@ -648,23 +648,25 @@ def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
+Note: we only consider the first argument of each type-class.
+E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
     let xs := xs.toList
-    let l ← xs.mapM fun x ↦ do
+    let l ← xs.filterMapM fun x ↦ do
       -- x is an argument and i is the index
       -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
         let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isNone then
-            return []
-        return tgt_args.toList.filterMap fun tgt_arg ↦
-          xs.findIdx? fun x ↦ Expr.containsFVar tgt_arg x.fvarId!
+            return none
+        return tgt_args[0]?.bind fun tgtArg ↦
+          xs.findIdx? fun x ↦ Expr.containsFVar tgtArg x.fvarId!
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
-    match l.join with
+    match l with
     | [] => return 0
     | (head :: tail) => return tail.foldr Nat.min head
 
@@ -906,6 +908,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
   warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
   warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
+  -- the next line also warns for `@[to_additive, simps]`, because of the application times
+  warnParametricAttr stx simpsAttr thisAttr `simps src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simp`, `simps` and `to_additive`.
