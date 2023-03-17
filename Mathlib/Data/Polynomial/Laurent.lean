@@ -503,10 +503,12 @@ theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_mul_T LaurentPolynomial.degree_C_mul_T
 
-theorem degree_C_mul_T_ite (n : ℤ) (a : R) : degree (C a * T n) = ite (a = 0) Bot.bot n := by
-  split_ifs with h h <;>
+theorem degree_C_mul_T_ite (n : ℤ) (a : R) : (degree (C a * T n) : WithBot ℤ) =
+    ite (a = 0) (⊥ : WithBot ℤ) n := by
+  split_ifs with h <;>
     simp only [h, map_zero, MulZeroClass.zero_mul, degree_zero, degree_C_mul_T, Ne.def,
       not_false_iff]
+set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.degree_C_mul_T_ite LaurentPolynomial.degree_C_mul_T_ite
 
 @[simp]
