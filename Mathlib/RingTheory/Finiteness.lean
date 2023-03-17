@@ -268,8 +268,8 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
 #align submodule.fg_pi Submodule.fg_pi
 
 -- Porting note: helping Lean find the coercion to functions below
-@[reducible]
-def asFun [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N := f
+abbrev asFun [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (f : M →ₗ[R] N) : M → N :=
+  f
 
 -- set_option synthInstance.etaExperiment true in
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
