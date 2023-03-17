@@ -24,9 +24,9 @@ group is nonarchimedean.
 
 ## Definitions
 
-- `nonarchimedean_add_group`: nonarchimedean additive group.
-- `nonarchimedean_group`: nonarchimedean multiplicative group.
-- `nonarchimedean_ring`: nonarchimedean ring.
+- `NonarchimedeanAddGroup`: nonarchimedean additive group.
+- `NonarchimedeanGroup`: nonarchimedean multiplicative group.
+- `NonarchimedeanRing`: nonarchimedean ring.
 
 -/
 
@@ -46,7 +46,6 @@ class NonarchimedeanGroup (G : Type _) [Group G] [TopologicalSpace G] extends To
   Prop where
   is_nonarchimedean : ∀ U ∈ nhds (1 : G), ∃ V : OpenSubgroup G, (V : Set G) ⊆ U
 #align nonarchimedean_group NonarchimedeanGroup
-#align nonarchimedean_add_group NonarchimedeanAddGroup
 
 /-- An topological ring is nonarchimedean if its underlying topological additive
   group is nonarchimedean. -/
@@ -71,8 +70,7 @@ variable {H : Type _} [Group H] [TopologicalSpace H] [TopologicalGroup H]
 variable {K : Type _} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
-@[to_additive NonarchimedeanAddGroup.nonarchimedean_of_emb
-      "If a topological group embeds into a\nnonarchimedean group, then it is nonarchimedean."]
+@[to_additive]
 theorem nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : NonarchimedeanGroup H :=
   {
     is_nonarchimedean := fun U hU =>
@@ -81,15 +79,15 @@ theorem nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : Nonarchim
         apply emb.continuous.tendsto
         rwa [f.map_one]
       let ⟨V, hV⟩ := is_nonarchimedean (f ⁻¹' U) h₁
-      ⟨{ Subgroup.map f V with is_open' := emb.IsOpenMap _ V.IsOpen }, Set.image_subset_iff.2 hV⟩ }
+      ⟨{ Subgroup.map f V with isOpen' := emb.isOpenMap _ V.isOpen }, Set.image_subset_iff.2 hV⟩ }
 #align nonarchimedean_group.nonarchimedean_of_emb NonarchimedeanGroup.nonarchimedean_of_emb
 #align nonarchimedean_add_group.nonarchimedean_of_emb NonarchimedeanAddGroup.nonarchimedean_of_emb
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- An open neighborhood of the identity in the cartesian product of two nonarchimedean groups
 contains the cartesian product of an open neighborhood in each group. -/
-@[to_additive NonarchimedeanAddGroup.prod_subset
-      "An open neighborhood of the identity in the\ncartesian product of two nonarchimedean groups contains the cartesian product of an open\nneighborhood in each group."]
+@[to_additive NonarchimedeanAddGroup.prod_subset "An open neighborhood of the identity in
+the cartesian product of two nonarchimedean groups contains the cartesian product of
+an open neighborhood in each group."]
 theorem prod_subset {U} (hU : U ∈ nhds (1 : G × K)) :
     ∃ (V : OpenSubgroup G)(W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
   erw [nhds_prod_eq, Filter.mem_prod_iff] at hU
@@ -103,11 +101,11 @@ theorem prod_subset {U} (hU : U ∈ nhds (1 : G × K)) :
 #align nonarchimedean_group.prod_subset NonarchimedeanGroup.prod_subset
 #align nonarchimedean_add_group.prod_subset NonarchimedeanAddGroup.prod_subset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- An open neighborhood of the identity in the cartesian square of a nonarchimedean group
 contains the cartesian square of an open neighborhood in the group. -/
-@[to_additive NonarchimedeanAddGroup.prod_self_subset
-      "An open neighborhood of the identity in the\ncartesian square of a nonarchimedean group contains the cartesian square of an open neighborhood in\nthe group."]
+@[to_additive NonarchimedeanAddGroup.prod_self_subset "An open neighborhood of the identity in
+the cartesian square of a nonarchimedean group contains the cartesian square of
+an open neighborhood in the group."]
 theorem prod_self_subset {U} (hU : U ∈ nhds (1 : G × G)) :
     ∃ V : OpenSubgroup G, (V : Set G) ×ˢ (V : Set G) ⊆ U :=
   let ⟨V, W, h⟩ := prod_subset hU
@@ -120,7 +118,7 @@ theorem prod_self_subset {U} (hU : U ∈ nhds (1 : G × G)) :
 instance : NonarchimedeanGroup (G × K)
     where is_nonarchimedean U hU :=
     let ⟨V, W, h⟩ := prod_subset hU
-    ⟨V.Prod W, ‹_›⟩
+    ⟨V.prod W, ‹_›⟩
 
 end NonarchimedeanGroup
 
@@ -151,16 +149,15 @@ theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
 theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by
   let ⟨V, H⟩ :=
     prod_self_subset
-      (IsOpen.mem_nhds (IsOpen.preimage continuous_mul U.IsOpen)
-        (by
-          simpa only [Set.mem_preimage, SetLike.mem_coe, Prod.snd_zero, MulZeroClass.mul_zero] using
-            U.zero_mem))
+      (IsOpen.mem_nhds (IsOpen.preimage continuous_mul U.isOpen)
+        (by simpa only [Set.mem_preimage, SetLike.mem_coe, Prod.snd_zero,
+            MulZeroClass.mul_zero] using U.zero_mem))
   use V
   rintro v ⟨a, b, ha, hb, hv⟩
   have hy := H (Set.mk_mem_prod ha hb)
-  simp only [Set.mem_preimage, SetLike.mem_coe] at hy
-  rwa [hv] at hy
+  simp only [Set.mem_preimage, SetLike.mem_coe, hv] at hy
+  rw [SetLike.mem_coe]
+  exact hy
 #align nonarchimedean_ring.mul_subset NonarchimedeanRing.mul_subset
 
 end NonarchimedeanRing
-
