@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.LinearAlgebra.AffineSpace.AffineMap
-import Mathbin.LinearAlgebra.GeneralLinearGroup
-import Mathbin.Algebra.Invertible
+import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.Algebra.Invertible
 
 /-!
 # Affine equivalences
