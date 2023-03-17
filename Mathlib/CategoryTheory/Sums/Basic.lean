@@ -147,9 +147,9 @@ namespace Swap
 def equivalence : Sum C D ≌ Sum D C :=
   Equivalence.mk (swap C D) (swap D C)
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-    (by simp only [swap]; aesop_cat; cases f; cases f))
+    (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-    (by simp only [swap]; aesop_cat; cases f; cases f))
+    (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
 instance isEquivalence : IsEquivalence (swap C D) :=
@@ -181,15 +181,15 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
     match X, Y, f with
     | inl X, inl Y, f => F.map f
     | inr X, inr Y, f => G.map f
-  map_id := @fun X => by cases X <;> aesop_cat; erw [F.map_id]; rfl; erw [G.map_id]; rfl
+  map_id := @fun X => by cases X <;> aesop_cat_nonterminal; erw [F.map_id]; rfl; erw [G.map_id]; rfl
   map_comp := @fun X Y Z f g =>
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => by
-      aesop_cat <;>
+      aesop_cat_nonterminal <;>
       erw [F.map_comp] <;>
       rfl
     | inr X, inr Y, inr Z, f, g => by
-      aesop_cat <;>
+      aesop_cat_nonterminal <;>
       erw [G.map_comp] <;>
       rfl
 #align category_theory.functor.sum CategoryTheory.Functor.sum
@@ -229,8 +229,8 @@ def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H 
     | inr X => β.app X
   naturality X Y f :=
     match X, Y, f with
-    | inl X, inl Y, f => by aesop_cat <;> erw [α.naturality] <;> rfl
-    | inr X, inr Y, f => by aesop_cat <;> erw [β.naturality] <;> rfl
+    | inl X, inl Y, f => by aesop_cat_nonterminal <;> erw [α.naturality] <;> rfl
+    | inr X, inr Y, f => by aesop_cat_nonterminal <;> erw [β.naturality] <;> rfl
 #align category_theory.nat_trans.sum CategoryTheory.NatTrans.sum
 
 @[simp]
