@@ -115,6 +115,7 @@ def WalkingParallelFamily.Hom.assoc:
 def  WalkingParallelFamily.Hom.comp_id
   {X Y : WalkingParallelFamily J} (f : WalkingParallelFamily.Hom J X Y):
     WalkingParallelFamily.Hom.comp X Y Y f (Hom.id Y) = f := by
+    
     sorry
 
 instance WalkingParallelFamily.category : SmallCategory (WalkingParallelFamily J)
@@ -153,7 +154,6 @@ def parallelFamily : WalkingParallelFamily J ⥤ C
   map_comp := by
     rintro _ _ _  ⟨⟩ ⟨⟩ <;>
       · aesop_cat
-        simp <;> rfl
 #align category_theory.limits.parallel_family CategoryTheory.Limits.parallelFamily
 
 @[simp]
@@ -302,7 +302,7 @@ the first map -/
 theorem Trident.equalizer_ext [Nonempty J] (s : Trident f) {W : C} {k l : W ⟶ s.pt}
     (h : k ≫ s.ι = l ≫ s.ι) : ∀ j : WalkingParallelFamily J, k ≫ s.π.app j = l ≫ s.π.app j
   | zero => h
-  | one => by rw [← s.app_zero (Classical.arbitrary J), reassoc_of h]
+  | one => by rw [← s.app_zero (Classical.arbitrary J), reassoc_of% h]
 #align category_theory.limits.trident.equalizer_ext CategoryTheory.Limits.Trident.equalizer_ext
 
 /-- To check whether two maps are coequalized by both maps of a cotrident, it suffices to check it
@@ -356,7 +356,7 @@ def Trident.IsLimit.mk [Nonempty J] (t : Trident f) (lift : ∀ s : Trident f, s
   { lift
     fac := fun s j =>
       WalkingParallelFamily.casesOn j (fac s)
-        (by rw [← t.w (line (Classical.arbitrary J)), reassoc_of fac, s.w])
+        (by rw [← t.w (line (Classical.arbitrary J)), reassoc_of% fac, s.w])
     uniq := uniq }
 #align category_theory.limits.trident.is_limit.mk CategoryTheory.Limits.Trident.IsLimit.mk
 
@@ -827,7 +827,7 @@ theorem hasWideCoequalizers_of_hasColimit_parallelFamily
 
 instance (priority := 10) hasEqualizers_of_hasWideEqualizers [HasWideEqualizers.{w} C] :
     HasEqualizers C :=
-  hasLimitsOfShapeOfEquivalence.{w} walkingParallelFamilyEquivWalkingParallelPair
+  hasLimitsOfShape_of_equivalence.{w} walkingParallelFamilyEquivWalkingParallelPair
 #align
   category_theory.limits.has_equalizers_of_has_wide_equalizers
   CategoryTheory.Limits.hasEqualizers_of_hasWideEqualizers
