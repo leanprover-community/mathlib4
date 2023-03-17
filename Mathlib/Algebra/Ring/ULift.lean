@@ -9,7 +9,6 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
@@ -156,35 +155,5 @@ instance nonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing (ULift α)
 instance commRing [CommRing α] : CommRing (ULift α) :=
   { ULift.ring with mul_comm }
 #align ulift.comm_ring ULift.commRing
-
-instance [RatCast α] : RatCast (ULift α) :=
-  ⟨fun a => ULift.up ↑a⟩
-
-@[simp]
-theorem rat_cast_down [RatCast α] (n : ℚ) : ULift.down (n : ULift α) = n := rfl
-#align ulift.rat_cast_down ULift.rat_cast_down
-
-instance field [Field α] : Field (ULift α) :=
-  { @ULift.nontrivial α _, ULift.commRing with
-    inv := Inv.inv
-    div := Div.div
-    zpow := fun n a => ULift.up (a.down ^ n)
-    ratCast := fun a => (a : ULift α)
-    ratCast_mk := fun a b h1 h2 => by
-      apply ULift.down_inj.1
-      dsimp [RatCast.ratCast]
-      exact Field.ratCast_mk a b h1 h2
-    qsmul := (· • ·)
-    inv_zero
-    div_eq_mul_inv
-    qsmul_eq_mul' := fun _ _ => by
-      apply ULift.down_inj.1
-      dsimp [RatCast.ratCast]
-      exact DivisionRing.qsmul_eq_mul' _ _
-    zpow_zero' := DivInvMonoid.zpow_zero'
-    zpow_succ' := DivInvMonoid.zpow_succ'
-    zpow_neg' := DivInvMonoid.zpow_neg'
-    mul_inv_cancel := fun _ ha => by simp [ULift.down_inj.1, ha] }
-#align ulift.field ULift.field
 
 end ULift
