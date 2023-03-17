@@ -20,10 +20,10 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 ## Main declarations
 
-- `submodule.fg`, `ideal.fg`
+- `Submodule.Fg`, `Ideal.Fg`
   These express that some object is finitely generated as *submodule* over some base ring.
 
-- `module.finite`, `ring_hom.finite`, `alg_hom.finite`
+- `Module.Finite`, `RingHom.Finite`, `AlgHom.Finite`
   all of these express that some object is finitely generated *as module* over some base ring.
 
 ## Main results
@@ -101,8 +101,8 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type _} [CommR
     · rw [← span_le, hs]
   clear hin hs
   revert this
-  refine' Set.Finite.dinduction_on _ hfs (fun H => _) @fun i s his hfs ih H => _
-  · rcases H with ⟨r, hr1, hrn, hs⟩
+  refine' Set.Finite.dinduction_on _ hfs (fun H => _) @fun i s _ _ ih H => _
+  · rcases H with ⟨r, hr1, hrn, _⟩
     refine' ⟨r, hr1, fun n hn => _⟩
     specialize hrn hn
     rwa [mem_comap, span_empty, smul_bot, mem_bot] at hrn
@@ -191,7 +191,7 @@ theorem Fg.sup {N₁ N₂ : Submodule R M} (hN₁ : N₁.Fg) (hN₂ : N₂.Fg) :
 
 theorem fg_finset_sup {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).Fg) :
     (s.sup N).Fg :=
-  Finset.sup_induction fg_bot (fun a ha b hb => ha.sup hb) h
+  Finset.sup_induction fg_bot (fun _ ha _ hb => ha.sup hb) h
 #align submodule.fg_finset_sup Submodule.fg_finset_sup
 
 theorem fg_bsupr {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).Fg) :
@@ -201,7 +201,7 @@ theorem fg_bsupr {ι : Type _} (s : Finset ι) (N : ι → Submodule R M) (h : �
 theorem fg_supᵢ {ι : Type _} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).Fg) : (supᵢ N).Fg :=
   by
   cases nonempty_fintype ι
-  simpa using fg_bsupr Finset.univ N fun i hi => h i
+  simpa using fg_bsupr Finset.univ N fun i _ => h i
 #align submodule.fg_supr Submodule.fg_supᵢ
 
 variable {P : Type _} [AddCommMonoid P] [Module R P]
@@ -251,7 +251,7 @@ theorem Fg.prod {sb : Submodule R M} {sc : Submodule R P} (hsb : sb.Fg) (hsc : s
       by rw [LinearMap.span_inl_union_inr, htb.2, htc.2]⟩
 #align submodule.fg.prod Submodule.Fg.prod
 
-set_option synthInstance.etaExperiment true in
+-- set_option synthInstance.etaExperiment true in
 theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoid (M i)]
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).Fg) :
     (Submodule.pi Set.univ p).Fg := by
@@ -512,7 +512,7 @@ theorem exists_radical_pow_le_of_fg {R : Type _} [CommSemiring R] (I : Ideal R) 
     obtain ⟨m, hm⟩ := hK fun x hx => hJK <| Ideal.mem_sup_right hx
     use n + m
     rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
-    refine' fun i hi => Ideal.mul_le_right.trans _
+    refine' fun i _ => Ideal.mul_le_right.trans _
     obtain h | h := le_or_lt n i
     · exact Ideal.mul_le_right.trans ((Ideal.pow_le_pow h).trans hn)
     · refine' Ideal.mul_le_left.trans ((Ideal.pow_le_pow _).trans hm)
@@ -530,6 +530,8 @@ variable (R A B M N : Type _)
 class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   out : (⊤ : Submodule R M).Fg
 #align module.finite Module.Finite
+
+attribute [inherit_doc Module.Finite] Module.Finite.out
 
 namespace Module
 
@@ -600,7 +602,7 @@ instance pi {ι : Type _} {M : ι → Type _} [_root_.Finite ι] [∀ i, AddComm
     exact Submodule.fg_pi fun i => (h i).1⟩
 #align module.finite.pi Module.Finite.pi
 
-theorem equiv [hM : Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
+theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
   of_surjective (e : M →ₗ[R] N) e.surjective
 #align module.finite.equiv Module.Finite.equiv
 
@@ -623,14 +625,22 @@ end Finite
 
 end Module
 
+-- Porting note: reminding Lean about this instance for Module.Finite.base_change
+local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] : 
+  Module A (TensorProduct R A M) := 
+  haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass 
+  TensorProduct.leftModule
+
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
     obtain ⟨s, hs⟩ := h.out
     refine' ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr fun x _ => _⟩⟩
-    apply TensorProduct.induction_on x
+    apply @TensorProduct.induction_on _ _ _ _ _ _ _ _ _ x
     · exact zero_mem _
     · intro x y
+      -- Porting note: new TC reminder
+      haveI : IsScalarTower R A (TensorProduct R A M) := TensorProduct.isScalarTower_left
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
         Submodule.map_top, LinearMap.range_coe]
       change _ ∈ Submodule.span A (Set.range <| TensorProduct.mk R A M 1)
@@ -641,8 +651,8 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
 
 instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] [hM : Module.Finite R M] [hN : Module.Finite R N] :
-    Module.Finite R (TensorProduct R M N)
-    where out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
+    Module.Finite R (TensorProduct R M N) where 
+  out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
 #align module.finite.tensor_product Module.Finite.tensorProduct
 
 end ModuleAndAlgebra
@@ -723,7 +733,7 @@ theorem comp {g : B →ₐ[R] C} {f : A →ₐ[R] B} (hg : g.Finite) (hf : f.Fin
 #align alg_hom.finite.comp AlgHom.Finite.comp
 
 theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) : f.Finite :=
-  RingHom.Finite.of_surjective f hf
+  RingHom.Finite.of_surjective f.toRingHom hf
 #align alg_hom.finite.of_surjective AlgHom.Finite.of_surjective
 
 theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).Finite) : g.Finite :=
@@ -733,3 +743,4 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
+
