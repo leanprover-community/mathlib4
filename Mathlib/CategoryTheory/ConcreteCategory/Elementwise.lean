@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 --import Mathlib.Tactic.FreshNames
 
 /-!
-In this file we provide various simp lemmas in its elementwise form via `tactic.elementwise`.
+In this file we provide various simp lemmas in its elementwise form via `Tactic.Elementwise`.
 -/
 
 
