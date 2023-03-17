@@ -40,9 +40,7 @@ variable {C : Type v} [SmallCategory C]
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app := fun {Y} _ => by 
-          aesop_cat
-          exact ⟨⟩ 
+  ι := { app := by aesop_cat
          naturality := by aesop_cat }
 #align category_theory.coyoneda.colimit_cocone CategoryTheory.Coyoneda.colimitCocone
 
@@ -57,7 +55,7 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X)
     convert congr_fun (s.w f).symm (𝟙 (unop X))
     simp
   uniq s m w := by
-    apply funext; rintro ⟨⟩ 
+    apply funext; rintro ⟨⟩
     dsimp
     rw [← w]
     simp
@@ -132,7 +130,7 @@ def yonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ Cᵒ�
       suffices (fun _ : PUnit => m.unop) = (t s.pt.unop).lift (s' s) by
         apply congr_fun this PUnit.unit
       apply (t _).uniq (s' s) _ fun j => _
-      intro j 
+      intro j
       funext
       exact Quiver.Hom.op_inj (w j) }
 #align category_theory.yoneda_jointly_reflects_limits CategoryTheory.yonedaJointlyReflectsLimits
@@ -184,4 +182,3 @@ end CategoryTheory
 -- assert_not_exists Set.range
 
 -- assert_not_exists AddCommMonoid
-

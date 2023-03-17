@@ -29,7 +29,7 @@ to the subfield it generates, and prove that it is a Galois insertion.
 
 Notation used here:
 
-`(K : Type u) [field K] (L : Type u) [Field L] (f g : K →+* L)`
+`(K : Type u) [Field K] (L : Type u) [Field L] (f g : K →+* L)`
 `(A : Subfield K) (B : Subfield L) (s : Set K)`
 
 * `Subfield R` : the type of subfields of a ring `R`.
@@ -121,11 +121,11 @@ variable (S)
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield inherits a field structure -/
 instance (priority := 75) toField (s : S) : Field s :=
-  Subtype.coe_injective.field ((↑) : s → K )
-      (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ ; rfl)
-        (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-          (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-            (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
+  Subtype.coe_injective.field ((↑) : s → K)
+    (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ ; rfl)
+    (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
+    (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
+    (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
 #align subfield_class.to_field SubfieldClass.toField
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
@@ -169,8 +169,7 @@ instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance : SubfieldClass (Subfield K) K
-    where
+instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
   zero_mem s := s.zero_mem'
   neg_mem {s} := s.neg_mem'
@@ -419,10 +418,10 @@ theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K)  :=
   rfl
 #align subfield.coe_subtype Subfield.coe_subtype
 
-theorem toSubring.subtype_eq_subtype (F : Type _) [Field F] (S : Subfield F) :
+theorem toSubring_subtype_eq_subtype (F : Type _) [Field F] (S : Subfield F) :
     S.toSubring.subtype = S.subtype :=
   rfl
-#align subfield.to_subring.subtype_eq_subtype Subfield.toSubring.subtype_eq_subtype
+#align subfield.to_subring.subtype_eq_subtype Subfield.toSubring_subtype_eq_subtype
 
 /-! # Partial order -/
 
@@ -652,8 +651,7 @@ theorem isGLB_infₛ (S : Set (Subfield K)) : IsGLB S (infₛ S) := by
 
 /-- Subfields of a ring form a complete lattice. -/
 instance : CompleteLattice (Subfield K) :=
-  {
-    completeLatticeOfInf (Subfield K) isGLB_infₛ with
+  { completeLatticeOfInf (Subfield K) isGLB_infₛ with
     top := ⊤
     le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)
@@ -673,8 +671,7 @@ def closure (s : Set K) : Subfield K where
     rintro ⟨y, hy, z, hz, x_eq⟩
     exact ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
   inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm ⟩
-  add_mem' x_mem y_mem :=
-    by
+  add_mem' x_mem y_mem := by
     obtain ⟨nx, hnx, dx, hdx, rfl⟩ := id x_mem
     obtain ⟨ny, hny, dy, hdy, rfl⟩ := id y_mem
     by_cases hx0 : dx = 0; · rwa [hx0, div_zero, zero_add]
@@ -682,8 +679,7 @@ def closure (s : Set K) : Subfield K where
     exact
       ⟨nx * dy + dx * ny, Subring.add_mem _ (Subring.mul_mem _ hnx hdy) (Subring.mul_mem _ hdx hny),
         dx * dy, Subring.mul_mem _ hdx hdy, (div_add_div nx ny hx0 hy0).symm⟩
-  mul_mem' x_mem y_mem :=
-    by
+  mul_mem' x_mem y_mem := by
     obtain ⟨nx, hnx, dx, hdx, rfl⟩ := id x_mem
     obtain ⟨ny, hny, dy, hdy, rfl⟩ := id y_mem
     exact
@@ -753,8 +749,7 @@ theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s)
 variable (K)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
-protected def gi : GaloisInsertion (@closure K _) (↑)
-    where
+protected def gi : GaloisInsertion (@closure K _) (↑) where
   choice s _ := closure s
   gc _ _ := closure_le
   le_l_u _ := subset_closure
@@ -818,7 +813,7 @@ theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   (gc_map_comap f).u_top
 #align subfield.comap_top Subfield.comap_top
 
-/-- The underlying set of a non-empty directed Sup of subfields is just a union of the subfields.
+/-- The underlying set of a non-empty directed supₛ of subfields is just a union of the subfields.
   Note that this fails without the directedness assumption (the union of two subfields is
   typically not a subfield) -/
 theorem mem_supᵢ_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)
@@ -877,9 +872,7 @@ theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x
 /-- The subfield of elements `x : R` such that `f x = g x`, i.e.,
 the equalizer of f and g as a subfield of R -/
 def eqLocusField (f g : K →+* L) : Subfield K :=
-  {
-    (f : K →+* L).eqLocus
-      g with
+  { (f : K →+* L).eqLocus g with
     inv_mem' := fun x (hx : f x = g x) => show f x⁻¹ = g x⁻¹ by rw [map_inv₀ f, map_inv₀ g, hx]
     carrier := { x | f x = g x } }
 #align ring_hom.eq_locus_field RingHom.eqLocusField
@@ -938,9 +931,7 @@ variable {s t : Subfield K}
 /-- Makes the identity isomorphism from a proof two subfields of a multiplicative
     monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
-  {
-    Equiv.setCongr <| SetLike.ext'_iff.1
-        h with
+  { Equiv.setCongr <| SetLike.ext'_iff.1 h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 #align ring_equiv.subfield_congr RingEquiv.subfieldCongr

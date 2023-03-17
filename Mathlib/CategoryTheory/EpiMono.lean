@@ -60,7 +60,7 @@ attribute [reassoc (attr := simp)] SplitMono.id
 
 /-- `IsSplitMono f` is the assertion that `f` admits a retraction -/
 class IsSplitMono {X Y : C} (f : X ⟶ Y) : Prop where
-  /-- There is a splitting -/ 
+  /-- There is a splitting -/
   exists_splitMono : Nonempty (SplitMono f)
 #align category_theory.is_split_mono CategoryTheory.IsSplitMono
 #align category_theory.is_split_mono.exists_split_mono CategoryTheory.IsSplitMono.exists_splitMono
@@ -111,7 +111,7 @@ theorem IsSplitMono.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : f ≫ retr
 #align category_theory.is_split_mono.id CategoryTheory.IsSplitMono.id
 
 /-- The retraction of a split monomorphism has an obvious section. -/
-def SplitMono.splitEpi {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : SplitEpi sm.retraction 
+def SplitMono.splitEpi {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : SplitEpi sm.retraction
     where section_ := f
 #align category_theory.split_mono.split_epi CategoryTheory.SplitMono.splitEpi
 

@@ -735,9 +735,10 @@ theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingC
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   rcases p with ⟨p⟩
   simp only [erase_def, degree, coeff, support]
-  convert sup_mono (f := ((↑) : ℕ → WithBot ℕ)) (erase_subset n p.support)
-  -- Porting note: `exact` is required.
-  exact Finsupp.support_erase
+  -- Porting note: simpler convert-free proof to be explicit about definition unfolding
+  apply sup_mono
+  rw [Finsupp.support_erase]
+  apply Finset.erase_subset
 #align polynomial.degree_erase_le Polynomial.degree_erase_le
 
 theorem degree_erase_lt (hp : p ≠ 0) : degree (p.erase (natDegree p)) < degree p := by
@@ -1112,14 +1113,14 @@ theorem natDegree_smul_le (a : R) (p : R[X]) : natDegree (a • p) ≤ natDegree
   natDegree_le_natDegree (degree_smul_le a p)
 #align polynomial.nat_degree_smul_le Polynomial.natDegree_smul_le
 
-theorem degree_lt_degree_mul_x (hp : p ≠ 0) : p.degree < (p * X).degree := by
+theorem degree_lt_degree_mul_X (hp : p ≠ 0) : p.degree < (p * X).degree := by
   haveI := Nontrivial.of_polynomial_ne hp; exact
     have : leadingCoeff p * leadingCoeff X ≠ 0 := by simpa
     by
       erw [degree_mul' this, degree_eq_natDegree hp, degree_X, ← WithBot.coe_one,
         ← WithBot.coe_add, WithBot.coe_lt_coe];
       exact Nat.lt_succ_self _
-#align polynomial.degree_lt_degree_mul_X Polynomial.degree_lt_degree_mul_x
+#align polynomial.degree_lt_degree_mul_X Polynomial.degree_lt_degree_mul_X
 
 theorem natDegree_pos_iff_degree_pos : 0 < natDegree p ↔ 0 < degree p :=
   lt_iff_lt_of_le_iff_le natDegree_le_iff_degree_le

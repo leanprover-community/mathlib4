@@ -66,15 +66,6 @@ def Rat.castRec [NatCast K] [IntCast K] [Mul K] [Inv K] : ℚ → K
   | ⟨a, b, _, _⟩ => ↑a * (↑b)⁻¹
 #align rat.cast_rec Rat.castRec
 
-/-- Type class for the canonical homomorphism `ℚ → K`.
--/
-class RatCast (K : Type u) where
-  /-- The canonical homomorphism `ℚ → K`. -/
-  protected ratCast : ℚ → K
-#align has_rat_cast RatCast
-
-attribute [coe] RatCast.ratCast
-
 /-- The default definition of the scalar multiplication `(a : ℚ) • (x : K)` for a division ring `K`
 is given by `a • x = (↑ a) * x`.
 Use `(a : ℚ) • (x : K)` instead of `qsmulRec` for better definitional behaviour.
@@ -104,14 +95,14 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ra
   protected inv_zero : (0 : K)⁻¹ = 0
   protected ratCast := Rat.castRec
   /-- However `ratCast` is defined, propositionally it must be equal to `a * b⁻¹`. -/
-  protected ratCast_mk : ∀ (a : ℤ) (b : ℕ) (h1 h2), ratCast ⟨a, b, h1, h2⟩ = a * (b : K)⁻¹ := by
+  protected ratCast_mk : ∀ (a : ℤ) (b : ℕ) (h1 h2), Rat.cast ⟨a, b, h1, h2⟩ = a * (b : K)⁻¹ := by
     intros
     rfl
   /-- Multiplication by a rational number. -/
-  protected qsmul : ℚ → K → K := qsmulRec ratCast
+  protected qsmul : ℚ → K → K := qsmulRec Rat.cast
   /-- However `qsmul` is defined,
   propositionally it must be equal to multiplication by `ratCast`. -/
-  protected qsmul_eq_mul' : ∀ (a : ℚ) (x : K), qsmul a x = ratCast a * x := by
+  protected qsmul_eq_mul' : ∀ (a : ℚ) (x : K), qsmul a x = Rat.cast a * x := by
     intros
     rfl
 #align division_ring DivisionRing
@@ -144,15 +135,6 @@ section DivisionRing
 variable [DivisionRing K] {a b : K}
 
 namespace Rat
-
--- see Note [coercion into rings]
-/-- Construct the canonical injection from `ℚ` into an arbitrary
-  division ring. If the field has positive characteristic `p`,
-  we define `1 / p = 1 / 0 = 0` for consistency with our
-  division by zero convention. -/
-instance (priority := 900) castCoe {K : Type _} [RatCast K] : CoeTC ℚ K :=
-  ⟨RatCast.ratCast⟩
-#align rat.cast_coe Rat.castCoe
 
 theorem cast_mk' (a b h1 h2) : ((⟨a, b, h1, h2⟩ : ℚ) : K) = a * (b : K)⁻¹ :=
   DivisionRing.ratCast_mk _ _ _ _
