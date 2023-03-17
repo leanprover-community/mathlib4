@@ -91,9 +91,9 @@ theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ
   have hd₁ : biprod.inl ≫ diag = biprod.lift f h := by ext <;> simp
   have hd₂ : biprod.inr ≫ diag = biprod.lift g k := by ext <;> simp
   have h₁ : biprod.lift (f +ᵣ g) (h +ᵣ k) = biprod.lift (𝟙 X) (𝟙 X) ≫ diag := by
-      ext <;> aesop_cat <;> simp
+      ext <;> aesop_cat
   have h₂ : diag ≫ biprod.desc (𝟙 Y) (𝟙 Y) = biprod.desc (f +ₗ h) (g +ₗ k) := by
-    ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂]
+    ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂] <;> aesop_cat
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
 #align category_theory.semiadditive_of_binary_biproducts.distrib CategoryTheory.SemiadditiveOfBinaryBiproducts.distrib
 
