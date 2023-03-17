@@ -8,8 +8,8 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Order.Nonneg.Ring
-import Mathbin.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Archimedean
 
 /-!
 # Nonnegative elements are archimedean
