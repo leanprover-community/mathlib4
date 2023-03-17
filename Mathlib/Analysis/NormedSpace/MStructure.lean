@@ -68,6 +68,8 @@ variable (X : Type u) [NormedAddCommGroup X]
 
 variable {M : Type} [Ring M] [Module M X]
 
+set_option linter.uppercaseLean3 false
+
 /-- A projection on a normed space `X` is said to be an L-projection if, for all `x` in `X`,
 $\|x\| = \|P x\| + \|(1 - P) x\|$.
 
@@ -297,8 +299,61 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
     coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute (Pᶜ).prop).eq, ← mul_assoc, Pᶜ.prop.proj.eq]
 #align is_Lprojection.distrib_lattice_lemma IsLprojection.distrib_lattice_lemma
 
-set_option maxHeartbeats 800000
+instance [FaithfulSMul M X] : SemilatticeSup { P : M // IsLprojection X P } :=
+{ le_sup_left := fun P Q => by
+    rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, ← mul_assoc, P.prop.proj.eq,
+      sub_self, add_zero]
+  le_sup_right := fun P Q => by
+    rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, (P.prop.commute Q.prop).eq,
+      ← mul_assoc, Q.prop.proj.eq, add_sub_cancel'_right]
+  sup_le := fun P Q R =>
+    by
+    rw [le_def, le_def, le_def, coe_inf, coe_inf, coe_sup, coe_inf, coe_sup, ← add_sub, add_mul,
+      sub_mul, mul_assoc]
+    intro h₁ h₂
+    rw [← h₂, ← h₁] }
 
+instance [FaithfulSMul M X] : SemilatticeInf { P : M // IsLprojection X P } :=
+{ inf_le_left := fun P Q => by
+    rw [le_def, coe_inf, coe_inf, coe_inf, mul_assoc, (Q.prop.commute P.prop).eq, ← mul_assoc,
+      P.prop.proj.eq]
+  inf_le_right := fun P Q => by rw [le_def, coe_inf, coe_inf, coe_inf, mul_assoc, Q.prop.proj.eq]
+  le_inf := fun P Q R =>
+    by
+    rw [le_def, le_def, le_def, coe_inf, coe_inf, coe_inf, coe_inf, ← mul_assoc]
+    intro h₁ h₂
+    rw [← h₁, ← h₂] }
+
+instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } :=
+{ inf_le_left := fun P Q => by
+    rw [le_def, coe_inf, coe_inf, coe_inf, mul_assoc, (Q.prop.commute P.prop).eq, ← mul_assoc,
+      P.prop.proj.eq]
+  inf_le_right := fun P Q => by rw [le_def, coe_inf, coe_inf, coe_inf, mul_assoc, Q.prop.proj.eq]
+  le_inf := fun P Q R =>
+    by
+    rw [le_def, le_def, le_def, coe_inf, coe_inf, coe_inf, coe_inf, ← mul_assoc]
+    intro h₁ h₂
+    rw [← h₁, ← h₂] }
+
+instance [FaithfulSMul M X] : DistribLattice { P : M // IsLprojection X P } :=
+{ le_sup_inf := fun P Q R =>
+    by
+    have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑(Pᶜ) := by
+      rw [coe_inf, coe_sup, coe_sup, ← add_sub, ← add_sub, ← compl_mul, ← compl_mul, add_mul,
+        mul_add, ((Pᶜ).prop.commute Q.prop).eq, mul_add, ← mul_assoc]
+      rw [mathlib4_oddness3]
+      rw [((Pᶜ).prop.commute P.prop).eq, mul_compl_self, MulZeroClass.zero_mul,
+        MulZeroClass.mul_zero, zero_add, add_zero, ← mul_assoc]
+      rw [mathlib4_oddness2]
+      rw [P.prop.proj.eq, (Pᶜ).prop.proj.eq, mul_assoc,
+        ((Pᶜ).prop.commute R.prop).eq, ← mul_assoc]
+    have e₂ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) * ↑(P ⊔ Q ⊓ R) = (P : M) + ↑Q * ↑R * ↑(Pᶜ) := by
+      rw [coe_inf, coe_sup, coe_sup, coe_sup, ← add_sub, ← add_sub, ← add_sub, ← compl_mul, ←
+        compl_mul, ← compl_mul, ((Pᶜ).prop.commute (Q ⊓ R).prop).eq, coe_inf, mul_assoc,
+        distrib_lattice_lemma, (Q.prop.commute R.prop).eq, distrib_lattice_lemma]
+    rw [le_def, e₁, coe_inf, e₂] }
+
+/-
 instance [FaithfulSMul M X] : DistribLattice { P : M // IsLprojection X P } :=
   { IsLprojection.instInfSubtypeIsLprojection.{u},
     IsLprojection.instSupSubtypeIsLprojection.{u},
@@ -340,12 +395,13 @@ instance [FaithfulSMul M X] : DistribLattice { P : M // IsLprojection X P } :=
           compl_mul, ← compl_mul, ((Pᶜ).prop.commute (Q ⊓ R).prop).eq, coe_inf, mul_assoc,
           distrib_lattice_lemma, (Q.prop.commute R.prop).eq, distrib_lattice_lemma]
       rw [le_def, e₁, coe_inf, e₂] }
+-/
+
 
 instance [FaithfulSMul M X] : BooleanAlgebra { P : M // IsLprojection X P } :=
   { IsLprojection.instHasComplSubtypeIsLprojection.{u},
     IsLprojection.instSDiffSubtypeIsLprojection.{u},
-    IsLprojection.instBoundedOrderSubtypeIsLprojection.{u},
-    IsLprojection.instDistribLatticeSubtypeIsLprojection.{u} with
+    IsLprojection.instBoundedOrderSubtypeIsLprojection.{u} with
     inf_compl_le_bot := fun P =>
       (Subtype.ext (by rw [coe_inf, coe_compl, coe_bot, ← coe_compl, mul_compl_self])).le
     top_le_sup_compl := fun P =>
@@ -354,5 +410,6 @@ instance [FaithfulSMul M X] : BooleanAlgebra { P : M // IsLprojection X P } :=
             rw [coe_top, coe_sup, coe_compl, add_sub_cancel'_right, ← coe_compl, mul_compl_self,
               sub_zero])).le
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
+
 
 end IsLprojection
