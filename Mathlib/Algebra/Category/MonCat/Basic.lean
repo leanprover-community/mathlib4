@@ -135,10 +135,10 @@ set_option linter.uppercaseLean3 false in
 -- porting note: this was added to ease the port
 /-- the morphism in `MonCat` associated to a `MonoidHom` -/
 @[to_additive (attr := simp)]
-def homMk {X Y : MonCat} (f : X →* Y) : X ⟶ Y := f
+def Hom.mk {X Y : MonCat} (f : X →* Y) : X ⟶ Y := f
 
 /-- the morphism in `AddMonCat` associated to a `AddMonoidHom` -/
-add_decl_doc AddMonCat.homMk
+add_decl_doc AddMonCat.Hom.mk
 
 -- porting note: this lemma was added to make automation work in `MonCat.forget_reflects_isos`
 @[to_additive (attr := simp)]
@@ -249,10 +249,10 @@ lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x
 -- porting note: this was added to make the following examples work
 /-- the morphism in `CommMonCat` associated to a `MonoidHom` -/
 @[to_additive (attr := simp)]
-def homMk {X Y : CommMonCat} (f : X →* Y) : X ⟶ Y := f
+def Hom.mk {X Y : CommMonCat} (f : X →* Y) : X ⟶ Y := f
 
 /-- the morphism in `AddCommMonCat` associated to a `AddMonoidHom` -/
-add_decl_doc AddCommMonCat.homMk
+add_decl_doc AddCommMonCat.Hom.mk
 
 -- porting note: this lemma was added to make automation work in `CommMonCat.forget_reflects_isos`
 @[to_additive (attr := simp)]
@@ -277,8 +277,8 @@ example {R S : CommMonCat} (f : R ⟶ S) : ↑R → ↑S := f
 -- when we construct the `toFun` field, the types are presented as `↥R`,
 -- rather than `R.α` or (as we used to have) `↥(bundled.map comm_monoid.to_monoid R)`.
 example (R : CommMonCat.{u}) : R ⟶ R :=
-  -- porting note: the constructor `CommMonCat.homMk` was added to make this example work
-  CommMonCat.homMk
+  -- porting note: the constructor `CommMonCat.Hom.mk` was added to make this example work
+  CommMonCat.Hom.mk
     { toFun := fun x => by
         match_target (R : Type u)
         -- porting note: is there an equivalent of `match_hyp` in Lean4?
