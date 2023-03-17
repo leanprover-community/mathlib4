@@ -395,7 +395,7 @@ theorem apply_lineMap (e : P₁ ≃ᵃ[k] P₂) (a b : P₁) (c : k) :
 
 omit V₂
 
-instance : Group (P₁ ≃ᵃ[k] P₁) where
+instance group : Group (P₁ ≃ᵃ[k] P₁) where
   one := refl k P₁
   mul e e' := e'.trans e
   inv := symm
@@ -403,6 +403,7 @@ instance : Group (P₁ ≃ᵃ[k] P₁) where
   one_mul := trans_refl
   mul_one := refl_trans
   mul_left_inv := self_trans_symm
+#align affine_equiv.group AffineEquiv.group
 
 theorem one_def : (1 : P₁ ≃ᵃ[k] P₁) = refl k P₁ :=
   rfl
