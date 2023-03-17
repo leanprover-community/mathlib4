@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 
 ! This file was ported from Lean 3 source module algebra.star.pointwise
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
+! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
