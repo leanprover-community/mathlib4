@@ -1911,22 +1911,22 @@ theorem prod_unique_nonempty {α β : Type _} [CommMonoid β] [Unique α] (s : F
 
 theorem sum_nat_mod (s : Finset α) (n : ℕ) (f : α → ℕ) :
     (∑ i in s, f i) % n = (∑ i in s, f i % n) % n :=
-  (Multiset.sum_nat_mod _ _).trans <| by rw [Finset.sum, Multiset.map_map]
+  (Multiset.sum_nat_mod _ _).trans <| by rw [Finset.sum, Multiset.map_map]; rfl
 #align finset.sum_nat_mod Finset.sum_nat_mod
 
 theorem prod_nat_mod (s : Finset α) (n : ℕ) (f : α → ℕ) :
     (∏ i in s, f i) % n = (∏ i in s, f i % n) % n :=
-  (Multiset.prod_nat_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]
+  (Multiset.prod_nat_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]; rfl
 #align finset.prod_nat_mod Finset.prod_nat_mod
 
 theorem sum_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
     (∑ i in s, f i) % n = (∑ i in s, f i % n) % n :=
-  (Multiset.sum_int_mod _ _).trans <| by rw [Finset.sum, Multiset.map_map]
+  (Multiset.sum_int_mod _ _).trans <| by rw [Finset.sum, Multiset.map_map]; rfl
 #align finset.sum_int_mod Finset.sum_int_mod
 
 theorem prod_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
     (∏ i in s, f i) % n = (∏ i in s, f i % n) % n :=
-  (Multiset.prod_int_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]
+  (Multiset.prod_int_mod _ _).trans <| by rw [Finset.prod, Multiset.map_map]; rfl
 #align finset.prod_int_mod Finset.prod_int_mod
 
 end Finset
