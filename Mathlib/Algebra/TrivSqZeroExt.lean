@@ -182,65 +182,65 @@ section Additive
 
 variable {T : Type _} {S : Type _} {R : Type u} {M : Type v}
 
-instance [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
-  Prod.inhabited
+instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
+  instInhabitedProd
 
-instance [Zero R] [Zero M] : Zero (tsze R M) :=
-  Prod.hasZero
+instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
+  Prod.instZeroSum
 
-instance [Add R] [Add M] : Add (tsze R M) :=
-  Prod.hasAdd
+instance add [Add R] [Add M] : Add (tsze R M) :=
+  Prod.instAddSum
 
-instance [Sub R] [Sub M] : Sub (tsze R M) :=
-  Prod.hasSub
+instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
+  Prod.instSubSum
 
-instance [Neg R] [Neg M] : Neg (tsze R M) :=
-  Prod.hasNeg
+instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
+  Prod.instNegSum
 
-instance [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
-  Prod.addSemigroup
+instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
+  Prod.instAddSemigroupSum
 
-instance [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
-  Prod.addZeroClass
+instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
+  Prod.instAddZeroClassSum
 
-instance [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
-  Prod.addMonoid
+instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
+  Prod.instAddMonoidSum
 
-instance [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
-  Prod.addGroup
+instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
+  Prod.instAddGroupSum
 
-instance [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
-  Prod.addCommSemigroup
+instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
+  Prod.instAddCommSemigroupSum
 
-instance [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
-  Prod.addCommMonoid
+instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
+  Prod.instAddCommMonoidSum
 
-instance [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
-  Prod.addCommGroup
+instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
+  Prod.instAddCommGroupSum
 
-instance [SMul S R] [SMul S M] : SMul S (tsze R M) :=
+instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
   Prod.smul
 
-instance [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S] [IsScalarTower T S R]
-    [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
+instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
+    [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
   Prod.isScalarTower
 
-instance [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMulCommClass T S R] [SMulCommClass T S M] :
-    SMulCommClass T S (tsze R M) :=
-  Prod.sMulCommClass
+instance smulCommClass [SMul T R] [SMul T M] [SMul S R] [SMul S M]
+    [SMulCommClass T S R] [SMulCommClass T S M] : SMulCommClass T S (tsze R M) :=
+  Prod.smulCommClass
 
-instance [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsCentralScalar S R]
+instance isCentralScalar [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsCentralScalar S R]
     [IsCentralScalar S M] : IsCentralScalar S (tsze R M) :=
   Prod.isCentralScalar
 
-instance [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) :=
+instance mulAction [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) :=
   Prod.mulAction
 
-instance [Monoid S] [AddMonoid R] [AddMonoid M] [DistribMulAction S R] [DistribMulAction S M] :
-    DistribMulAction S (tsze R M) :=
+instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
+    [DistribMulAction S R] [DistribMulAction S M] : DistribMulAction S (tsze R M) :=
   Prod.distribMulAction
 
-instance [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
+instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
   Prod.module
 
@@ -427,10 +427,10 @@ section Mul
 
 variable {R : Type u} {M : Type v}
 
-instance [One R] [Zero M] : One (tsze R M) :=
+instance one [One R] [Zero M] : One (tsze R M) :=
   ⟨(1, 0)⟩
 
-instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
+instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
   ⟨fun x y => (x.1 * y.1, x.1 • y.2 + op y.1 • x.2)⟩
 
 @[simp]
@@ -467,7 +467,7 @@ theorem inl_one [One R] [Zero M] : (inl 1 : tsze R M) = 1 :=
 @[simp]
 theorem inl_mul [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (r₁ r₂ : R) : (inl (r₁ * r₂) : tsze R M) = inl r₁ * inl r₂ :=
-  ext rfl <| show (0 : M) = r₁ • 0 + op r₂ • 0 by rw [smul_zero, zero_add, smul_zero]
+  ext rfl <| show (0 : M) = r₁ • (0 : M) + op r₂ • (0 : M) by rw [smul_zero, zero_add, smul_zero]
 #align triv_sq_zero_ext.inl_mul TrivSqZeroExt.inl_mul
 
 theorem inl_mul_inl [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
@@ -492,29 +492,27 @@ end
 
 theorem inl_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
     (inl r * inr m : tsze R M) = inr (r • m) :=
-  ext (MulZeroClass.mul_zero r) <| show r • m + (0 : Rᵐᵒᵖ) • 0 = r • m by rw [smul_zero, add_zero]
+  ext (MulZeroClass.mul_zero r) <| show r • m + (0 : Rᵐᵒᵖ) • (0 : M) = r • m by rw [smul_zero, add_zero]
 #align triv_sq_zero_ext.inl_mul_inr TrivSqZeroExt.inl_mul_inr
 
 theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (r : R) (m : M) :
     (inr m * inl r : tsze R M) = inr (op r • m) :=
   ext (MulZeroClass.zero_mul r) <|
-    show (0 : R) • 0 + op r • m = op r • m by rw [smul_zero, zero_add]
+    show (0 : R) • (0 : M) + op r • m = op r • m by rw [smul_zero, zero_add]
 #align triv_sq_zero_ext.inr_mul_inl TrivSqZeroExt.inr_mul_inl
 
-instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
+instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     MulOneClass (tsze R M) :=
-  { TrivSqZeroExt.hasOne,
-    TrivSqZeroExt.hasMul with
+  { TrivSqZeroExt.one, TrivSqZeroExt.mul with
     one_mul := fun x =>
       ext (one_mul x.1) <|
-        show (1 : R) • x.2 + op x.1 • 0 = x.2 by rw [one_smul, smul_zero, add_zero]
+        show (1 : R) • x.2 + op x.1 • (0 : M) = x.2 by rw [one_smul, smul_zero, add_zero]
     mul_one := fun x =>
       ext (mul_one x.1) <|
-        show (x.1 • 0 : M) + (1 : Rᵐᵒᵖ) • x.2 = x.2 by rw [smul_zero, zero_add, one_smul] }
+        show x.1 • (0 : M) + (1 : Rᵐᵒᵖ) • x.2 = x.2 by rw [smul_zero, zero_add, one_smul] }
 
-instance [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
-  { TrivSqZeroExt.addMonoid,
-    TrivSqZeroExt.hasOne with
+instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
+  { TrivSqZeroExt.addMonoid, TrivSqZeroExt.one with
     natCast := fun n => inl n
     natCast_zero := by simp [Nat.cast]
     natCast_succ := fun _ => by ext <;> simp [Nat.cast] }
@@ -534,12 +532,11 @@ theorem inl_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsz
   rfl
 #align triv_sq_zero_ext.inl_nat_cast TrivSqZeroExt.inl_nat_cast
 
-instance [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
-  { TrivSqZeroExt.addGroup,
-    TrivSqZeroExt.addMonoidWithOne with
+instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
+  { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
     intCast := fun z => inl z
-    intCast_ofNat := fun n => ext (Int.cast_ofNat _) rfl
-    intCast_negSucc := fun n => ext (Int.cast_negSucc _) neg_zero.symm }
+    intCast_ofNat := fun _n => ext (Int.cast_ofNat _) rfl
+    intCast_negSucc := fun _n => ext (Int.cast_negSucc _) neg_zero.symm }
 
 @[simp]
 theorem fst_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
@@ -556,16 +553,15 @@ theorem inl_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze 
   rfl
 #align triv_sq_zero_ext.inl_int_cast TrivSqZeroExt.inl_int_cast
 
-instance [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
+instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) :=
-  { TrivSqZeroExt.addMonoidWithOne, TrivSqZeroExt.mulOneClass,
-    TrivSqZeroExt.addCommMonoid with
+  { TrivSqZeroExt.addMonoidWithOne, TrivSqZeroExt.mulOneClass, TrivSqZeroExt.addCommMonoid with
     zero_mul := fun x =>
       ext (MulZeroClass.zero_mul x.1) <|
-        show (0 : R) • x.2 + op x.1 • 0 = 0 by rw [zero_smul, zero_add, smul_zero]
+        show (0 : R) • x.2 + op x.1 • (0 : M) = 0 by rw [zero_smul, zero_add, smul_zero]
     mul_zero := fun x =>
       ext (MulZeroClass.mul_zero x.1) <|
-        show (x.1 • 0 : M) + (0 : Rᵐᵒᵖ) • x.2 = 0 by rw [smul_zero, zero_add, zero_smul]
+        show x.1 • (0 : M) + (0 : Rᵐᵒᵖ) • x.2 = 0 by rw [smul_zero, zero_add, zero_smul]
     left_distrib := fun x₁ x₂ x₃ =>
       ext (mul_add x₁.1 x₂.1 x₃.1) <|
         show
@@ -579,7 +575,8 @@ instance [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
             x₁.1 • x₃.2 + op x₃.1 • x₁.2 + (x₂.1 • x₃.2 + op x₃.1 • x₂.2)
           by simp_rw [add_smul, smul_add, add_add_add_comm] }
 
-instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] : NonAssocRing (tsze R M) :=
+instance nonAssocRing [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] :
+    NonAssocRing (tsze R M) :=
   { TrivSqZeroExt.addGroupWithOne, TrivSqZeroExt.nonAssocSemiring with }
 
 /-- In the general non-commutative case, the power operator is
@@ -594,7 +591,7 @@ In the commutative case this becomes the simpler $(r + m)^n = r^n + nr^{n-1}m$.
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     Pow (tsze R M) ℕ :=
   ⟨fun x n =>
-    ⟨x.fst ^ n, ((List.range n).map fun i => x.fst ^ (n.pred - i) • op (x.fst ^ i) • x.snd).Sum⟩⟩
+    ⟨x.fst ^ n, ((List.range n).map fun i => x.fst ^ (n.pred - i) • op (x.fst ^ i) • x.snd).sum⟩⟩
 
 @[simp]
 theorem fst_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
@@ -604,31 +601,30 @@ theorem fst_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
 
 theorem snd_pow_eq_sum [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (x : tsze R M) (n : ℕ) :
-    snd (x ^ n) = ((List.range n).map fun i => x.fst ^ (n.pred - i) • op (x.fst ^ i) • x.snd).Sum :=
+    snd (x ^ n) = ((List.range n).map fun i => x.fst ^ (n.pred - i) • op (x.fst ^ i) • x.snd).sum :=
   rfl
 #align triv_sq_zero_ext.snd_pow_eq_sum TrivSqZeroExt.snd_pow_eq_sum
 
 theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] (x : tsze R M) (n : ℕ)
     (h : op x.fst • x.snd = x.fst • x.snd) : snd (x ^ n) = n • x.fst ^ n.pred • x.snd := by
-  have : ∀ n : ℕ, op (x.fst ^ n) • x.snd = x.fst ^ n • x.snd :=
-    by
+  have : ∀ n : ℕ, op (x.fst ^ n) • x.snd = x.fst ^ n • x.snd := by
     intro n
     induction' n with n ih
     · simp
-    ·
-      rw [pow_succ', MulOpposite.op_mul, mul_smul, mul_smul, ← h,
+    · rw [pow_succ', MulOpposite.op_mul, mul_smul, mul_smul, ← h,
         smul_comm (_ : R) (op x.fst) x.snd, ih]
   simp_rw [snd_pow_eq_sum, this, smul_smul, ← pow_add]
-  cases n
-  · rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
-  simp_rw [Nat.pred_succ]
-  refine' (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) _).trans _
-  · rintro m hm
-    simp_rw [List.mem_map', List.mem_range] at hm
-    obtain ⟨i, hi, rfl⟩ := hm
-    rw [tsub_add_cancel_of_le (nat.lt_succ_iff.mp hi)]
-  · rw [List.length_map, List.length_range]
+  match n with
+  | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
+  | (Nat.succ n) =>
+    simp_rw [Nat.pred_succ]
+    refine' (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) _).trans _
+    · rintro m hm
+      simp_rw [List.mem_map', List.mem_range] at hm
+      obtain ⟨i, hi, rfl⟩ := hm
+      rw [tsub_add_cancel_of_le (Nat.lt_succ_iff.mp hi)]
+    · rw [List.length_map, List.length_range]
 #align triv_sq_zero_ext.snd_pow_of_smul_comm TrivSqZeroExt.snd_pow_of_smul_comm
 
 @[simp]
@@ -643,10 +639,9 @@ theorem inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
   ext rfl <| by simp [snd_pow_eq_sum]
 #align triv_sq_zero_ext.inl_pow TrivSqZeroExt.inl_pow
 
-instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] : Monoid (tsze R M) :=
-  {
-    TrivSqZeroExt.mulOneClass with
+  { TrivSqZeroExt.mulOneClass with
     mul_assoc := fun x y z =>
       ext (mul_assoc x.1 y.1 z.1) <|
         show
@@ -664,30 +659,28 @@ instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐ�
           simp_rw [Nat.pred_succ]
           rw [List.range_succ, List.map_append, List.sum_append, List.map_singleton,
             List.sum_singleton, Nat.sub_self, pow_zero, one_smul, List.smul_sum, List.map_map,
-            Function.comp, fst_pow]
-          simp_rw [smul_smul, ← pow_succ, Nat.succ_eq_add_one]
+            fst_pow]  --porting note: `Function.comp` no longer works in `rw` so move to `simp_rw`
+          simp_rw [Function.comp, smul_smul, ← pow_succ, Nat.succ_eq_add_one]
           congr 2
           refine' List.map_congr fun i hi => _
           rw [List.mem_range, Nat.lt_succ_iff] at hi
           rw [Nat.sub_add_comm hi]) }
-
 theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
-    [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) : l.Prod.fst = (l.map fst).Prod :=
-  map_list_prod (⟨fst, fst_one, fst_mul⟩ : tsze R M →* R) _
+    [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) : l.prod.fst = (l.map fst).prod :=
+  map_list_prod ({ toFun := fst, map_one' := fst_one, map_mul' := fst_mul } : tsze R M →* R) _
 #align triv_sq_zero_ext.fst_list_prod TrivSqZeroExt.fst_list_prod
 
-instance [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
-    Semiring (tsze R M) :=
+instance semiring [Semiring R] [AddCommMonoid M]
+    [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] : Semiring (tsze R M) :=
   { TrivSqZeroExt.monoid, TrivSqZeroExt.nonAssocSemiring with }
 
 /-- The second element of a product $\prod_{i=0}^n (r_i + m_i)$ is a sum of terms of the form
 $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
 theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
-    l.Prod.snd =
+    l.prod.snd =
       (l.enum.map fun x : ℕ × tsze R M =>
-          ((l.map fst).take x.1).Prod • op ((l.map fst).drop x.1.succ).Prod • x.snd.snd).Sum :=
-  by
+          ((l.map fst).take x.1).prod • op ((l.map fst).drop x.1.succ).prod • x.snd.snd).sum := by
   induction' l with x xs ih
   · simp
   · rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
@@ -697,23 +690,23 @@ theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐ�
     exact add_comm _ _
 #align triv_sq_zero_ext.snd_list_prod TrivSqZeroExt.snd_list_prod
 
-instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
+instance ring [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
     Ring (tsze R M) :=
   { TrivSqZeroExt.semiring, TrivSqZeroExt.nonAssocRing with }
 
-instance [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
-    [IsCentralScalar R M] : CommMonoid (tsze R M) :=
+instance commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] [IsCentralScalar R M] : CommMonoid (tsze R M) :=
   { TrivSqZeroExt.monoid with
     mul_comm := fun x₁ x₂ =>
       ext (mul_comm x₁.1 x₂.1) <|
         show x₁.1 • x₂.2 + op x₂.1 • x₁.2 = x₂.1 • x₁.2 + op x₁.1 • x₂.2 by
           rw [op_smul_eq_smul, op_smul_eq_smul, add_comm] }
 
-instance [CommSemiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
-    CommSemiring (tsze R M) :=
+instance commSemiring [CommSemiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+    [IsCentralScalar R M] : CommSemiring (tsze R M) :=
   { TrivSqZeroExt.commMonoid, TrivSqZeroExt.nonAssocSemiring with }
 
-instance [CommRing R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
+instance commRing [CommRing R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
     CommRing (tsze R M) :=
   { TrivSqZeroExt.nonAssocRing, TrivSqZeroExt.commSemiring with }
 
@@ -721,8 +714,7 @@ variable (R M)
 
 /-- The canonical inclusion of rings `R → TrivSqZeroExt R M`. -/
 @[simps apply]
-def inlHom [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] : R →+* tsze R M
-    where
+def inlHom [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] : R →+* tsze R M where
   toFun := inl
   map_one' := inl_one M
   map_mul' := inl_mul M
@@ -747,9 +739,7 @@ variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M] [IsScalarTower S R' M]
 
 instance algebra' : Algebra S (tsze R M) :=
-  {
-    (TrivSqZeroExt.inlHom R M).comp
-      (algebraMap S R) with
+  { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with
     smul := (· • ·)
     commutes' := fun s x =>
       ext (Algebra.commutes _ _) <|
@@ -848,8 +838,7 @@ products.
 
 This isomorphism is named to match the very similar `complex.lift`. -/
 @[simps]
-def lift : { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A)
-    where
+def lift : { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) where
   toFun f := liftAux f f.Prop
   invFun F :=
     ⟨F.toLinearMap.comp (inrHom R' M), fun x y =>
@@ -863,4 +852,3 @@ attribute [nolint simp_nf] lift_symm_apply_coe
 end Algebra
 
 end TrivSqZeroExt
-
