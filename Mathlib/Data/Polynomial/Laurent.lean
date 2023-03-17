@@ -173,8 +173,7 @@ set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_zero LaurentPolynomial.T_zero
 
 theorem T_add (m n : ℤ) : (T (m + n) : R[T;T⁻¹]) = T m * T n := by
-  convert single_mul_single.symm
-  simp [T]
+  simp [T, single_mul_single]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_add LaurentPolynomial.T_add
 
