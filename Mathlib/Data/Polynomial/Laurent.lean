@@ -59,15 +59,15 @@ Lots is missing!
 --  def Trunc : R[T;T⁻¹] →[R] R[X] :=
 --  begin
 --    refine (_ : AddMonoidAlgebra R ℕ →[R] R[X]).comp _,
---    { exact ⟨(to_finsupp_iso R).symm, by simp⟩ },
---    { refine ⟨λ r, comap_domain _ r (Set.injOn_of_injective (λ a b ab, int.of_nat.inj ab) _), _⟩,
---      exact λ r f, comap_domain_smul _ _ _ }
+--    { exact ⟨(toFinsuppIso R).symm, by simp⟩ },
+--    { refine ⟨λ r, comapDomain _ r (Set.injOn_of_injective (λ a b ab, Int.ofNat.inj ab) _), _⟩,
+--      exact λ r f, comapDomain_smul _ _ _ }
 --  end
 --  ```
 --  but it would make sense to bundle the maps better, for a smoother user experience.
 --  I (DT) did not have the strength to embark on this (possibly short!) journey, after getting to
 --  this stage of the Laurent process!
---  This would likely involve adding a `comap_domain` analogue of
+--  This would likely involve adding a `comapDomain` analogue of
 --  `AddMonoidAlgebra.mapDomainAlgHom` and an `R`-linear version of
 --  `Polynomial.toFinsuppIso`.
 -- Add `degree, int_degree, int_trailing_degree, leading_coeff, trailing_coeff,...`.
@@ -347,7 +347,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
     erw [toFinsuppIso_symm_apply]
     ext a
     have := ((not_le.mp n0).trans_le (Int.ofNat_zero_le a)).ne'
-    simp only [coeff, comap_domain_apply, Int.ofNat_eq_coe, coeff_zero, single_apply_eq_zero, this,
+    simp only [coeff, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero, single_apply_eq_zero, this,
       IsEmpty.forall_iff]
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.trunc_C_mul_T LaurentPolynomial.trunc_C_mul_T
@@ -436,8 +436,8 @@ theorem support_C_mul_T_of_ne_zero {a : R} (a0 : a ≠ 0) (n : ℤ) :
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.support_C_mul_T_of_ne_zero LaurentPolynomial.support_C_mul_T_of_ne_zero
 
-/-- The support of a polynomial `f` is a finset in `ℕ`.  The lemma `to_laurent_support f`
-shows that the support of `f.to_laurent` is the same finset, but viewed in `ℤ` under the natural
+/-- The support of a polynomial `f` is a finset in `ℕ`.  The lemma `toLaurent_support f`
+shows that the support of `f.toLaurent` is the same finset, but viewed in `ℤ` under the natural
 inclusion `ℕ ↪ ℤ`. -/
 theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.castEmbedding := by
   generalize hd : f.support = s
