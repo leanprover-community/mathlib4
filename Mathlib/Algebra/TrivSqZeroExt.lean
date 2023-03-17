@@ -23,27 +23,27 @@ It is a square-zero extension because `M^2 = 0`.
 Note that expressing this requires bimodules; we write these in general for a
 not-necessarily-commutative `R` as:
 ```lean
-variables {R M : Type*} [semiring R] [add_comm_monoid M]
-variables [module R M] [module Rᵐᵒᵖ M] [smul_comm_class R Rᵐᵒᵖ M]
+variables {R M : Type*} [Semiring R] [AddCommMonoid M]
+variables [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 ```
 If we instead work with a commutative `R'` acting symmetrically on `M`, we write
 ```lean
-variables {R' M : Type*} [comm_semiring R'] [add_comm_monoid M]
-variables [module R' M] [module R'ᵐᵒᵖ M] [is_central_scalar R' M]
+variables {R' M : Type*} [CommSemiring R'] [AddCommMonoid M]
+variables [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 ```
-noting that in this context `is_central_scalar R' M` implies `smul_comm_class R' R'ᵐᵒᵖ M`.
+noting that in this context `IsCentralScalar R' M` implies `SMulCommClass R' R'ᵐᵒᵖ M`.
 
 Many of the later results in this file are only stated for the commutative `R'` for simplicity.
 
 ## Main definitions
 
-* `triv_sq_zero_ext.inl`, `triv_sq_zero_ext.inr`: the canonical inclusions into
-  `triv_sq_zero_ext R M`.
-* `triv_sq_zero_ext.fst`, `triv_sq_zero_ext.snd`: the canonical projections from
-  `triv_sq_zero_ext R M`.
+* `TrivSqZeroExt.inl`, `TrivSqZeroExt.inr`: the canonical inclusions into
+  `TrivSqZeroExt R M`.
+* `TrivSqZeroExt.fst`, `TrivSqZeroExt.snd`: the canonical projections from
+  `TrivSqZeroExt R M`.
 * `triv_sq_zero_ext.algebra`: the associated `R`-algebra structure.
-* `triv_sq_zero_ext.lift`: the universal property of the trivial square-zero extension; algebra
-  morphisms `triv_sq_zero_ext R M →ₐ[R] A` are uniquely defined by linear maps `M →ₗ[R] A` for
+* `TrivSqZeroExt.lift`: the universal property of the trivial square-zero extension; algebra
+  morphisms `TrivSqZeroExt R M →ₐ[R] A` are uniquely defined by linear maps `M →ₗ[R] A` for
   which the product of any two elements in the range is zero.
 
 -/
@@ -76,22 +76,22 @@ section Basic
 
 variable {R : Type u} {M : Type v}
 
-/-- The canonical inclusion `R → triv_sq_zero_ext R M`. -/
+/-- The canonical inclusion `R → TrivSqZeroExt R M`. -/
 def inl [Zero M] (r : R) : tsze R M :=
   (r, 0)
 #align triv_sq_zero_ext.inl TrivSqZeroExt.inl
 
-/-- The canonical inclusion `M → triv_sq_zero_ext R M`. -/
+/-- The canonical inclusion `M → TrivSqZeroExt R M`. -/
 def inr [Zero R] (m : M) : tsze R M :=
   (0, m)
 #align triv_sq_zero_ext.inr TrivSqZeroExt.inr
 
-/-- The canonical projection `triv_sq_zero_ext R M → R`. -/
+/-- The canonical projection `TrivSqZeroExt R M → R`. -/
 def fst (x : tsze R M) : R :=
   x.1
 #align triv_sq_zero_ext.fst TrivSqZeroExt.fst
 
-/-- The canonical projection `triv_sq_zero_ext R M → M`. -/
+/-- The canonical projection `TrivSqZeroExt R M → M`. -/
 def snd (x : tsze R M) : M :=
   x.2
 #align triv_sq_zero_ext.snd TrivSqZeroExt.snd
@@ -173,7 +173,7 @@ theorem inr_injective [Zero R] : Function.Injective (inr : M → tsze R M) :=
 
 end Basic
 
-/-! ### Structures inherited from `prod`
+/-! ### Structures inherited from `Prod`
 
 Additive operators and scalar multiplication operate elementwise. -/
 
@@ -387,16 +387,16 @@ theorem inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass M] (x : tsze R M) 
   ext (add_zero x.1) (zero_add x.2)
 #align triv_sq_zero_ext.inl_fst_add_inr_snd_eq TrivSqZeroExt.inl_fst_add_inr_snd_eq
 
-/-- To show a property hold on all `triv_sq_zero_ext R M` it suffices to show it holds
+/-- To show a property hold on all `TrivSqZeroExt R M` it suffices to show it holds
 on terms of the form `inl r + inr m`.
 
-This can be used as `induction x using triv_sq_zero_ext.ind`. -/
+This can be used as `induction x using TrivSqZeroExt.ind`. -/
 theorem ind {R M} [AddZeroClass R] [AddZeroClass M] {P : TrivSqZeroExt R M → Prop}
     (h : ∀ r m, P (inl r + inr m)) (x) : P x :=
   inl_fst_add_inr_snd_eq x ▸ h x.1 x.2
 #align triv_sq_zero_ext.ind TrivSqZeroExt.ind
 
-/-- This cannot be marked `@[ext]` as it ends up being used instead of `linear_map.prod_ext` when
+/-- This cannot be marked `@[ext]` as it ends up being used instead of `LinearMap.prod_ext` when
 working with `R × M`. -/
 theorem linearMap_ext {N} [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [AddCommMonoid N]
     [Module S R] [Module S M] [Module S N] ⦃f g : tsze R M →ₗ[S] N⦄
@@ -406,13 +406,13 @@ theorem linearMap_ext {N} [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [AddC
 
 variable (R M)
 
-/-- The canonical `R`-linear inclusion `M → triv_sq_zero_ext R M`. -/
+/-- The canonical `R`-linear inclusion `M → TrivSqZeroExt R M`. -/
 @[simps apply]
 def inrHom [Semiring R] [AddCommMonoid M] [Module R M] : M →ₗ[R] tsze R M :=
   { LinearMap.inr R R M with toFun := inr }
 #align triv_sq_zero_ext.inr_hom TrivSqZeroExt.inrHom
 
-/-- The canonical `R`-linear projection `triv_sq_zero_ext R M → M`. -/
+/-- The canonical `R`-linear projection `TrivSqZeroExt R M → M`. -/
 @[simps apply]
 def sndHom [Semiring R] [AddCommMonoid M] [Module R M] : tsze R M →ₗ[R] M :=
   { LinearMap.snd _ _ _ with toFun := snd }
@@ -719,7 +719,7 @@ instance [CommRing R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsCen
 
 variable (R M)
 
-/-- The canonical inclusion of rings `R → triv_sq_zero_ext R M`. -/
+/-- The canonical inclusion of rings `R → TrivSqZeroExt R M`. -/
 @[simps apply]
 def inlHom [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] : R →+* tsze R M
     where
@@ -780,7 +780,7 @@ theorem algebraMap_eq_inl' (s : S) : algebraMap S (tsze R M) s = inl (algebraMap
   rfl
 #align triv_sq_zero_ext.algebra_map_eq_inl' TrivSqZeroExt.algebraMap_eq_inl'
 
-/-- The canonical `R`-algebra projection `triv_sq_zero_ext R M → R`. -/
+/-- The canonical `R`-algebra projection `TrivSqZeroExt R M → R`. -/
 @[simps]
 def fstHom : tsze R M →ₐ[S] R where
   toFun := fst
@@ -810,7 +810,7 @@ variable {A : Type _} [Semiring A] [Algebra R' A]
 /-- There is an alg_hom from the trivial square zero extension to any `R`-algebra with a submodule
 whose products are all zero.
 
-See `triv_sq_zero_ext.lift` for this as an equiv. -/
+See `TrivSqZeroExt.lift` for this as an equiv. -/
 def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →ₐ[R'] A :=
   AlgHom.ofLinearMap
     ((Algebra.linearMap _ _).comp (fstHom R' R' M).toLinearMap + f.comp (sndHom R' M))
@@ -843,7 +843,7 @@ theorem liftAux_inrHom : liftAux (inrHom R' M) (inr_mul_inr R') = AlgHom.id R' (
 #align triv_sq_zero_ext.lift_aux_inr_hom TrivSqZeroExt.liftAux_inrHom
 
 /-- A universal property of the trivial square-zero extension, providing a unique
-`triv_sq_zero_ext R M →ₐ[R] A` for every linear map `M →ₗ[R] A` whose range has no non-zero
+`TrivSqZeroExt R M →ₐ[R] A` for every linear map `M →ₗ[R] A` whose range has no non-zero
 products.
 
 This isomorphism is named to match the very similar `complex.lift`. -/
