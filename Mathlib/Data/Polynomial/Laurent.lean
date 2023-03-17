@@ -383,7 +383,7 @@ theorem Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f ≠ 0 
 #align polynomial.to_laurent_ne_zero LaurentPolynomial.Polynomial.toLaurent_ne_zero
 
 theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ)(f' : R[X]), toLaurent f' = f * T n := by
-  apply f.induction_on' _ fun n a => _ <;> clear f
+  refine' f.induction_on' _ fun n a => _ <;> clear f
   · rintro f g ⟨m, fn, hf⟩ ⟨n, gn, hg⟩
     refine' ⟨m + n, fn * X ^ n + gn * X ^ m, _⟩
     simp only [hf, hg, add_mul, add_comm (n : ℤ), map_add, map_mul, Polynomial.toLaurent_X_pow,
