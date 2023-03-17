@@ -9,6 +9,7 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
@@ -135,6 +136,7 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
@@ -284,6 +286,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Strict
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.GaloisConnection
@@ -523,6 +526,7 @@ import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
 import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
@@ -718,6 +722,8 @@ import Mathlib.Data.Multiset.Sections
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Data.MvPolynomial.Comap
+import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
@@ -795,6 +801,7 @@ import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Basic
+import Mathlib.Data.Polynomial.CancelLeads
 import Mathlib.Data.Polynomial.Cardinal
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.Data.Polynomial.Degree.Definitions
@@ -804,6 +811,7 @@ import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Polynomial.HasseDeriv
+import Mathlib.Data.Polynomial.Identities
 import Mathlib.Data.Polynomial.Induction
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Data.Polynomial.IntegralNormalization
@@ -1246,6 +1254,7 @@ import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Integer
@@ -1254,12 +1263,14 @@ import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.RingTheory.Polynomial.Opposites
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.Subring.Basic
+import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.SetTheory.Cardinal.Basic
@@ -1301,6 +1312,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.Elementwise
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
 import Mathlib.Tactic.FailIfNoProgress
@@ -1380,6 +1392,7 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
+import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
@@ -1457,6 +1470,7 @@ import Mathlib.Topology.GDelta
 import Mathlib.Topology.Hom.Open
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Homotopy.Basic
+import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal
@@ -1533,12 +1547,12 @@ import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UnitInterval
+import Mathlib.Util.AddRelatedDecl
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.MemoFix
-import Mathlib.Util.Simp
 import Mathlib.Util.Syntax
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
