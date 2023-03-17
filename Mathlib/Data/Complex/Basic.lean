@@ -874,7 +874,7 @@ theorem ratCast_re (q : ℚ) : (q : ℂ).re = q := by
 
 @[simp, norm_cast]
 theorem ratCast_im (q : ℚ) : (q : ℂ).im = 0 := by
- rw [← ofReal_ratCast, ofReal_im]; norm_cast
+ rw [← ofReal_ratCast, ofReal_im]
 #align complex.rat_cast_im Complex.ratCast_im
 
 /-! ### Characteristic zero -/
