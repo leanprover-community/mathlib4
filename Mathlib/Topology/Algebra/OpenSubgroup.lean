@@ -15,8 +15,8 @@ import Mathlib.Topology.Sets.Opens
 /-!
 # Open subgroups of a topological groups
 
-This files builds the lattice `open_subgroup G` of open subgroups in a topological group `G`,
-and its additive version `open_add_subgroup`.  This lattice has a top element, the subgroup of all
+This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
+and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all
 elements, but no bottom element in general. The trivial subgroup which is the natural candidate
 bottom has no reason to be open (this happens only in discrete groups).
 
@@ -25,10 +25,10 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 
 ## Main declarations
 
-* `open_subgroup.is_closed`: An open subgroup is automatically closed.
-* `subgroup.is_open_mono`: A subgroup containing an open subgroup is open.
+* `OpenSubgroup.isClosed`: An open subgroup is automatically closed.
+* `Subgroup.isOpen_mono`: A subgroup containing an open subgroup is open.
                            There are also versions for additive groups, submodules and ideals.
-* `open_subgroup.comap`: Open subgroups can be pulled back by a continuous group morphism.
+* `OpenSubgroup.comap`: Open subgroups can be pulled back by a continuous group morphism.
 
 ## TODO
 * Prove that the identity component of a locally path connected group is an open subgroup.
@@ -49,10 +49,10 @@ structure OpenSubgroup (G : Type _) [Group G] [TopologicalSpace G] extends Subgr
   isOpen' : IsOpen carrier
 #align open_subgroup OpenSubgroup
 
-/-- Reinterpret an `open_subgroup` as a `subgroup`. -/
+/-- Reinterpret an `OpenSubgroup` as a `Subgroup`. -/
 add_decl_doc OpenSubgroup.toSubgroup
 
-/-- Reinterpret an `open_add_subgroup` as an `add_subgroup`. -/
+/-- Reinterpret an `OpenAddSubgroup` as an `AddSubgroup`. -/
 add_decl_doc OpenAddSubgroup.toAddSubgroup
 
 attribute [coe] OpenSubgroup.toSubgroup OpenAddSubgroup.toAddSubgroup
@@ -263,8 +263,8 @@ theorem toSubgroup_le : (U : Subgroup G) ≤ (V : Subgroup G) ↔ U ≤ V :=
 
 variable {N : Type _} [Group N] [TopologicalSpace N]
 
-/-- The preimage of an `open_subgroup` along a continuous `monoid` homomorphism
-  is an `open_subgroup`. -/
+/-- The preimage of an `OpenSubgroup` along a continuous `Monoid` homomorphism
+  is an `OpenSubgroup`. -/
 @[to_additive "The preimage of an `open_add_subgroup` along a continuous `add_monoid` homomorphism
 is an `open_add_subgroup`."]
 def comap (f : G →* N) (hf : Continuous f) (H : OpenSubgroup N) : OpenSubgroup G :=
