@@ -81,10 +81,10 @@ theorem not_finite_iff_forall {a b : α} : ¬Finite a b ↔ ∀ n : ℕ, a ^ n �
   ⟨fun h n =>
     Nat.casesOn n
       (by
-        rw [pow_zero]
+        rw [_root_.pow_zero]
         exact one_dvd _)
       (by simpa [Finite, Classical.not_not] using h),
-    by simp [Finite, multiplicity, Classical.not_not] <;> tauto⟩
+    by simp [Finite, multiplicity, Classical.not_not]; tauto⟩
 #align multiplicity.not_finite_iff_forall multiplicity.not_finite_iff_forall
 
 theorem not_unit_of_finite {a b : α} (h : Finite a b) : ¬IsUnit a :=
@@ -104,9 +104,9 @@ theorem pow_dvd_of_le_multiplicity {a b : α} {k : ℕ} :
   exact
     Nat.casesOn k
       (fun _ => by
-        rw [pow_zero]
+        rw [_root_.pow_zero]
         exact one_dvd _)
-      fun k ⟨h₁, h₂⟩ => by_contradiction fun hk => Nat.find_min _ (lt_of_succ_le (h₂ ⟨k, hk⟩)) hk
+      fun k ⟨_, h₂⟩ => by_contradiction fun hk => Nat.find_min _ (lt_of_succ_le (h₂ ⟨k, hk⟩)) hk
 #align multiplicity.pow_dvd_of_le_multiplicity multiplicity.pow_dvd_of_le_multiplicity
 
 theorem pow_multiplicity_dvd {a b : α} (h : Finite a b) : a ^ get (multiplicity a b) h ∣ b :=
@@ -114,7 +114,7 @@ theorem pow_multiplicity_dvd {a b : α} (h : Finite a b) : a ^ get (multiplicity
 #align multiplicity.pow_multiplicity_dvd multiplicity.pow_multiplicity_dvd
 
 theorem is_greatest {a b : α} {m : ℕ} (hm : multiplicity a b < m) : ¬a ^ m ∣ b := fun h => by
-  rw [PartENat.lt_coe_iff] at hm <;> exact Nat.find_spec hm.fst ((pow_dvd_pow _ hm.snd).trans h)
+  rw [PartENat.lt_coe_iff] at hm; exact Nat.find_spec hm.fst ((pow_dvd_pow _ hm.snd).trans h)
 #align multiplicity.is_greatest multiplicity.is_greatest
 
 theorem is_greatest' {a b : α} {m : ℕ} (h : Finite a b) (hm : get (multiplicity a b) h < m) :
@@ -139,7 +139,7 @@ theorem unique {a b : α} {k : ℕ} (hk : a ^ k ∣ b) (hsucc : ¬a ^ (k + 1) �
 
 theorem unique' {a b : α} {k : ℕ} (hk : a ^ k ∣ b) (hsucc : ¬a ^ (k + 1) ∣ b) :
     k = get (multiplicity a b) ⟨k, hsucc⟩ := by
-  rw [← PartENat.natCast_inj, PartENat.natCast_get, Unique hk hsucc]
+  rw [← PartENat.natCast_inj, PartENat.natCast_get, unique hk hsucc]
 #align multiplicity.unique' multiplicity.unique'
 
 theorem le_multiplicity_of_pow_dvd {a b : α} {k : ℕ} (hk : a ^ k ∣ b) :
@@ -179,7 +179,7 @@ theorem eq_top_iff {a b : α} : multiplicity a b = ⊤ ↔ ∀ n : ℕ, a ^ n �
       ⟨fun h n =>
         Nat.casesOn n
           (by
-            rw [pow_zero]
+            rw [_root_.pow_zero]
             exact one_dvd _)
           fun n => h _,
         fun h n => h _⟩
@@ -197,13 +197,13 @@ theorem one_left (b : α) : multiplicity 1 b = ⊤ :=
 
 @[simp]
 theorem get_one_right {a : α} (ha : Finite a 1) : get (multiplicity a 1) ha = 0 := by
-  rw [PartENat.get_eq_iff_eq_coe, eq_coe_iff, pow_zero]
+  rw [PartENat.get_eq_iff_eq_coe, eq_coe_iff, _root_.pow_zero]
   simp [not_dvd_one_of_finite_one_right ha]
 #align multiplicity.get_one_right multiplicity.get_one_right
 
 @[simp]
 theorem unit_left (a : α) (u : αˣ) : multiplicity (u : α) a = ⊤ :=
-  isUnit_left a u.IsUnit
+  isUnit_left a u.isUnit
 #align multiplicity.unit_left multiplicity.unit_left
 
 theorem multiplicity_eq_zero {a b : α} : multiplicity a b = 0 ↔ ¬a ∣ b := by
@@ -232,7 +232,7 @@ theorem exists_eq_pow_mul_and_not_dvd {a b : α} (hfin : Finite a b) :
   obtain ⟨c, hc⟩ := multiplicity.pow_multiplicity_dvd hfin
   refine' ⟨c, hc, _⟩
   rintro ⟨k, hk⟩
-  rw [hk, ← mul_assoc, ← pow_succ'] at hc
+  rw [hk, ← mul_assoc, ← _root_.pow_succ'] at hc
   have h₁ : a ^ ((multiplicity a b).get hfin + 1) ∣ b := ⟨k, hc⟩
   exact (multiplicity.eq_coe_iff.1 (by simp)).2 h₁
 #align multiplicity.exists_eq_pow_mul_and_not_dvd multiplicity.exists_eq_pow_mul_and_not_dvd
@@ -261,13 +261,13 @@ theorem multiplicity_eq_multiplicity_iff {a b c d : α} :
 
 theorem multiplicity_le_multiplicity_of_dvd_right {a b c : α} (h : b ∣ c) :
     multiplicity a b ≤ multiplicity a c :=
-  multiplicity_le_multiplicity_iff.2 fun n hb => hb.trans h
+  multiplicity_le_multiplicity_iff.2 fun _ hb => hb.trans h
 #align multiplicity.multiplicity_le_multiplicity_of_dvd_right multiplicity.multiplicity_le_multiplicity_of_dvd_right
 
 theorem eq_of_associated_right {a b c : α} (h : Associated b c) :
     multiplicity a b = multiplicity a c :=
-  le_antisymm (multiplicity_le_multiplicity_of_dvd_right h.Dvd)
-    (multiplicity_le_multiplicity_of_dvd_right h.symm.Dvd)
+  le_antisymm (multiplicity_le_multiplicity_of_dvd_right h.dvd)
+    (multiplicity_le_multiplicity_of_dvd_right h.symm.dvd)
 #align multiplicity.eq_of_associated_right multiplicity.eq_of_associated_right
 
 theorem dvd_of_multiplicity_pos {a b : α} (h : (0 : PartENat) < multiplicity a b) : a ∣ b := by
@@ -281,7 +281,7 @@ theorem dvd_iff_multiplicity_pos {a b : α} : (0 : PartENat) < multiplicity a b 
     lt_of_le_of_ne (zero_le _) fun heq =>
       is_greatest
         (show multiplicity a b < ↑1 by
-          simpa only [HEq, Nat.cast_zero] using part_enat.coe_lt_coe.mpr zero_lt_one)
+          simpa only [heq, Nat.cast_zero] using PartENat.coe_lt_coe.mpr zero_lt_one)
         (by rwa [pow_one a])⟩
 #align multiplicity.dvd_iff_multiplicity_pos multiplicity.dvd_iff_multiplicity_pos
 
@@ -303,7 +303,6 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
 #align multiplicity.finite_nat_iff multiplicity.finite_nat_iff
 
 alias dvd_iff_multiplicity_pos ↔ _ _root_.has_dvd.dvd.multiplicity_pos
-#align has_dvd.dvd.multiplicity_pos Dvd.Dvd.multiplicity_pos
 
 end Monoid
 
@@ -312,14 +311,14 @@ section CommMonoid
 variable [CommMonoid α]
 
 theorem finite_of_finite_mul_left {a b c : α} : Finite a (b * c) → Finite a c := by
-  rw [mul_comm] <;> exact finite_of_finite_mul_right
+  rw [mul_comm]; exact finite_of_finite_mul_right
 #align multiplicity.finite_of_finite_mul_left multiplicity.finite_of_finite_mul_left
 
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 
 theorem isUnit_right {a b : α} (ha : ¬IsUnit a) (hb : IsUnit b) : multiplicity a b = 0 :=
   eq_coe_iff.2
-    ⟨show a ^ 0 ∣ b by simp only [pow_zero, one_dvd],
+    ⟨show a ^ 0 ∣ b by simp only [_root_.pow_zero, one_dvd],
       by
       rw [pow_one]
       exact fun h => mt (isUnit_of_dvd_unit h) ha hb⟩
@@ -330,7 +329,7 @@ theorem one_right {a : α} (ha : ¬IsUnit a) : multiplicity a 1 = 0 :=
 #align multiplicity.one_right multiplicity.one_right
 
 theorem unit_right {a : α} (ha : ¬IsUnit a) (u : αˣ) : multiplicity a u = 0 :=
-  isUnit_right ha u.IsUnit
+  isUnit_right ha u.isUnit
 #align multiplicity.unit_right multiplicity.unit_right
 
 open Classical
@@ -342,8 +341,8 @@ theorem multiplicity_le_multiplicity_of_dvd_left {a b c : α} (hdvd : a ∣ b) :
 
 theorem eq_of_associated_left {a b c : α} (h : Associated a b) :
     multiplicity b c = multiplicity a c :=
-  le_antisymm (multiplicity_le_multiplicity_of_dvd_left h.Dvd)
-    (multiplicity_le_multiplicity_of_dvd_left h.symm.Dvd)
+  le_antisymm (multiplicity_le_multiplicity_of_dvd_left h.dvd)
+    (multiplicity_le_multiplicity_of_dvd_left h.symm.dvd)
 #align multiplicity.eq_of_associated_left multiplicity.eq_of_associated_left
 
 alias dvd_iff_multiplicity_pos ↔ _ _root_.has_dvd.dvd.multiplicity_pos
@@ -357,14 +356,14 @@ variable [MonoidWithZero α]
 
 theorem ne_zero_of_finite {a b : α} (h : Finite a b) : b ≠ 0 :=
   let ⟨n, hn⟩ := h
-  fun hb => by simpa [hb] using hn
+  fun hb => by simp [hb] at hn
 #align multiplicity.ne_zero_of_finite multiplicity.ne_zero_of_finite
 
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 
 @[simp]
 protected theorem zero (a : α) : multiplicity a 0 = ⊤ :=
-  Part.eq_none_iff.2 fun n ⟨⟨k, hk⟩, _⟩ => hk (dvd_zero _)
+  Part.eq_none_iff.2 fun _ ⟨⟨_, hk⟩, _⟩ => hk (dvd_zero _)
 #align multiplicity.zero multiplicity.zero
 
 @[simp]
@@ -390,12 +389,10 @@ theorem multiplicity_mk_eq_multiplicity
             (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from _) _).symm <;>
       rw [← Associates.mk_pow, Associates.mk_dvd_mk]
     · exact pow_multiplicity_dvd h
-    ·
-      exact
+    · exact
         IsGreatest
           ((PartENat.lt_coe_iff _ _).mpr (Exists.intro (finite_iff_dom.mp h) (Nat.lt_succ_self _)))
-  · suffices ¬Finite (Associates.mk a) (Associates.mk b)
-      by
+  · suffices ¬Finite (Associates.mk a) (Associates.mk b) by
       rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
       rw [h, this]
     refine'
@@ -415,10 +412,10 @@ theorem min_le_multiplicity_add {p a b : α} :
     min (multiplicity p a) (multiplicity p b) ≤ multiplicity p (a + b) :=
   (le_total (multiplicity p a) (multiplicity p b)).elim
     (fun h => by
-      rw [min_eq_left h, multiplicity_le_multiplicity_iff] <;>
+      rw [min_eq_left h, multiplicity_le_multiplicity_iff];
         exact fun n hn => dvd_add hn (multiplicity_le_multiplicity_iff.1 h n hn))
     fun h => by
-    rw [min_eq_right h, multiplicity_le_multiplicity_iff] <;>
+    rw [min_eq_right h, multiplicity_le_multiplicity_iff];
       exact fun n hn => dvd_add (multiplicity_le_multiplicity_iff.1 h n hn) hn
 #align multiplicity.min_le_multiplicity_add multiplicity.min_le_multiplicity_add
 
@@ -433,24 +430,24 @@ protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
   Part.ext' (by simp only [multiplicity, PartENat.find, dvd_neg]) fun h₁ h₂ =>
     PartENat.natCast_inj.1
       (by
-        rw [PartENat.natCast_get] <;>
+        rw [PartENat.natCast_get];
           exact
             Eq.symm
-              (Unique ((dvd_neg _ _).2 (pow_multiplicity_dvd _))
+              (unique ((dvd_neg _ _).2 (pow_multiplicity_dvd _))
                 (mt (dvd_neg _ _).1 (is_greatest' _ (lt_succ_self _)))))
 #align multiplicity.neg multiplicity.neg
 
 theorem Int.natAbs (a : ℕ) (b : ℤ) : multiplicity a b.natAbs = multiplicity (a : ℤ) b := by
   cases' Int.natAbs_eq b with h h <;> conv_rhs => rw [h]
-  · rw [int.coe_nat_multiplicity]
-  · rw [multiplicity.neg, int.coe_nat_multiplicity]
+  · rw [Int.coe_nat_multiplicity]
+  · rw [multiplicity.neg, Int.coe_nat_multiplicity]
 #align multiplicity.int.nat_abs multiplicity.Int.natAbs
 
 theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity p a) :
     multiplicity p (a + b) = multiplicity p b := by
   apply le_antisymm
   · apply PartENat.le_of_lt_add_one
-    cases' part_enat.ne_top_iff.mp (PartENat.ne_top_of_lt h) with k hk
+    cases' PartENat.ne_top_iff.mp (PartENat.ne_top_of_lt h) with k hk
     rw [hk]
     rw_mod_cast [multiplicity_lt_iff_neg_dvd]
     intro h_dvd
@@ -466,7 +463,7 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
 
 theorem multiplicity_sub_of_gt {p a b : α} (h : multiplicity p b < multiplicity p a) :
     multiplicity p (a - b) = multiplicity p b := by
-  rw [sub_eq_add_neg, multiplicity_add_of_gt] <;> rwa [multiplicity.neg]
+  rw [sub_eq_add_neg, multiplicity_add_of_gt] <;> rwa [Multiplicity.neg]
 #align multiplicity.multiplicity_sub_of_gt multiplicity.multiplicity_sub_of_gt
 
 theorem multiplicity_add_eq_min {p a b : α} (h : multiplicity p a ≠ multiplicity p b) :
@@ -495,17 +492,12 @@ theorem finite_mul_aux {p : α} (hp : Prime p) :
           Nat.pos_of_ne_zero fun hn0 => by clear _fun_match _fun_match <;> simpa [hx, hn0] using ha
         have wf : n - 1 < n := tsub_lt_self hn0 (by decide)
         have hpx : ¬p ^ (n - 1 + 1) ∣ x := fun ⟨y, hy⟩ =>
-          ha
-            (hx.symm ▸
-              ⟨y,
-                mul_right_cancel₀ hp.1 <| by
+          ha (hx.symm ▸ ⟨y, mul_right_cancel₀ hp.1 <| by
                   rw [tsub_add_cancel_of_le (succ_le_of_lt hn0)] at hy <;>
                     simp [hy, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩)
         have : 1 ≤ n + m := le_trans hn0 (Nat.le_add_right n m)
         finite_mul_aux hpx hb
-          ⟨s,
-            mul_right_cancel₀ hp.1
-              (by
+          ⟨s, mul_right_cancel₀ hp.1 (by
                 rw [tsub_add_eq_add_tsub (succ_le_of_lt hn0), tsub_add_cancel_of_le this]
                 clear _fun_match _fun_match finite_mul_aux
                 simp_all [mul_comm, mul_assoc, mul_left_comm, pow_add])⟩)
@@ -538,9 +530,9 @@ theorem finite_mul_iff {p a b : α} (hp : Prime p) : Finite p (a * b) ↔ Finite
     finite_mul hp h.1 h.2⟩
 #align multiplicity.finite_mul_iff multiplicity.finite_mul_iff
 
-theorem finite_pow {p a : α} (hp : Prime p) : ∀ {k : ℕ} (ha : Finite p a), Finite p (a ^ k)
-  | 0, ha => ⟨0, by simp [mt isUnit_iff_dvd_one.2 hp.2.1]⟩
-  | k + 1, ha => by rw [pow_succ] <;> exact finite_mul hp ha (finite_pow ha)
+theorem finite_pow {p a : α} (hp : Prime p) : ∀ {k : ℕ} (_ : Finite p a), Finite p (a ^ k)
+  | 0, _ => ⟨0, by simp [mt isUnit_iff_dvd_one.2 hp.2.1]⟩
+  | k + 1, ha => by rw [_root_.pow_succ]; exact finite_mul hp ha (finite_pow hp ha)
 #align multiplicity.finite_pow multiplicity.finite_pow
 
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
@@ -548,15 +540,8 @@ variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 @[simp]
 theorem multiplicity_self {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) : multiplicity a a = 1 := by
   rw [← Nat.cast_one]
-  exact
-    eq_coe_iff.2
-      ⟨by simp, fun ⟨b, hb⟩ =>
-        ha
-          (isUnit_iff_dvd_one.2
-            ⟨b,
-              mul_left_cancel₀ ha0 <| by
-                clear _fun_match
-                simpa [pow_succ, mul_assoc] using hb⟩)⟩
+  exact eq_coe_iff.2 ⟨by simp, fun ⟨b, hb⟩ => ha (isUnit_iff_dvd_one.2 
+            ⟨b, mul_left_cancel₀ ha0 <| by simpa [_root_.pow_succ, mul_assoc] using hb⟩)⟩
 #align multiplicity.multiplicity_self multiplicity.multiplicity_self
 
 @[simp]
@@ -565,9 +550,9 @@ theorem get_multiplicity_self {a : α} (ha : Finite a a) : get (multiplicity a a
     (eq_coe_iff.2
       ⟨by simp, fun ⟨b, hb⟩ => by
         rw [← mul_one a, pow_add, pow_one, mul_assoc, mul_assoc,
-            mul_right_inj' (ne_zero_of_finite ha)] at hb <;>
+            mul_right_inj' (ne_zero_of_finite ha)] at hb;
           exact
-            mt isUnit_iff_dvd_one.2 (not_unit_of_finite ha) ⟨b, by clear _fun_match <;> simp_all⟩⟩)
+            mt isUnit_iff_dvd_one.2 (not_unit_of_finite ha) ⟨b, by simp_all⟩⟩)
 #align multiplicity.get_multiplicity_self multiplicity.get_multiplicity_self
 
 protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b)).Dom) :
@@ -588,7 +573,7 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
         (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
           get (multiplicity p b) ((finite_mul_iff hp).1 h).2) ∣
       a * b :=
-    by rw [hpoweq] <;> apply mul_dvd_mul <;> assumption
+    by rw [hpoweq]; apply mul_dvd_mul <;> assumption
   have hsucc :
     ¬p ^
           (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
@@ -598,7 +583,7 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
     fun h =>
     not_or_of_not (is_greatest' _ (lt_succ_self _)) (is_greatest' _ (lt_succ_self _))
       (_root_.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul hp hdiva hdivb h)
-  rw [← PartENat.natCast_inj, PartENat.natCast_get, eq_coe_iff] <;> exact ⟨hdiv, hsucc⟩
+  rw [← PartENat.natCast_inj, PartENat.natCast_get, eq_coe_iff]; exact ⟨hdiv, hsucc⟩
 #align multiplicity.mul' multiplicity.mul'
 
 open Classical
@@ -609,8 +594,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
     rw [← PartENat.natCast_get (finite_iff_dom.1 h.1), ←
         PartENat.natCast_get (finite_iff_dom.1 h.2), ←
         PartENat.natCast_get (finite_iff_dom.1 (finite_mul hp h.1 h.2)), ← Nat.cast_add,
-        PartENat.natCast_inj, multiplicity.mul' hp] <;>
-      rfl
+        PartENat.natCast_inj, multiplicity.mul' hp]
   else by
     rw [eq_top_iff_not_finite.2 (mt (finite_mul_iff hp).1 h)]
     cases' not_and_or.1 h with h h <;> simp [eq_top_iff_not_finite.2 h]
@@ -631,7 +615,7 @@ protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
   | 0 => by simp [one_right hp.not_unit]
   | k + 1 =>
     by
-    have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [pow_succ]
+    have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ]
     rw [get_eq_get_of_eq _ _ this, multiplicity.mul' hp, pow', add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'
 
@@ -650,19 +634,19 @@ theorem multiplicity_pow_self {p : α} (h0 : p ≠ 0) (hu : ¬IsUnit p) (n : ℕ
 
 theorem multiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
     multiplicity p (p ^ n) = n :=
-  multiplicity_pow_self hp.NeZero hp.not_unit n
+  multiplicity_pow_self hp.ne_zero hp.not_unit n
 #align multiplicity.multiplicity_pow_self_of_prime multiplicity.multiplicity_pow_self_of_prime
 
 end CancelCommMonoidWithZero
 
 section Valuation
 
-variable {R : Type _} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.Dvd : R → R → Prop)]
+variable {R : Type _} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 /-- `multiplicity` of a prime inan integral domain as an additive valuation to `part_enat`. -/
 noncomputable def addValuation (hp : Prime p) : AddValuation R PartENat :=
   AddValuation.of (multiplicity p) (multiplicity.zero _) (one_right hp.not_unit)
-    (fun _ _ => min_le_multiplicity_add) fun a b => multiplicity.mul hp
+    (fun _ _ => min_le_multiplicity_add) fun _ _ => multiplicity.mul hp
 #align multiplicity.add_valuation multiplicity.addValuation
 
 @[simp]
