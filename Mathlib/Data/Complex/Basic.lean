@@ -837,47 +837,47 @@ theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
 
 
 @[simp, norm_cast]
-theorem ofReal_nat_cast (n : ℕ) : ((n : ℝ) : ℂ) = n :=
+theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : ℂ) = n :=
   map_natCast ofReal n
-#align complex.of_real_nat_cast Complex.ofReal_nat_cast
+#align complex.of_real_nat_cast Complex.ofReal_natCast
 
 @[simp, norm_cast]
-theorem nat_cast_re (n : ℕ) : (n : ℂ).re = n := by rw [← ofReal_nat_cast, ofReal_re]
-#align complex.nat_cast_re Complex.nat_cast_re
+theorem natCast_re (n : ℕ) : (n : ℂ).re = n := by rw [← ofReal_nat_cast, ofReal_re]
+#align complex.nat_cast_re Complex.natCast_re
 
 @[simp, norm_cast]
-theorem nat_cast_im (n : ℕ) : (n : ℂ).im = 0 := by rw [← ofReal_nat_cast, ofReal_im]
-#align complex.nat_cast_im Complex.nat_cast_im
+theorem natCast_im (n : ℕ) : (n : ℂ).im = 0 := by rw [← ofReal_nat_cast, ofReal_im]
+#align complex.nat_cast_im Complex.natCast_im
 
 @[simp, norm_cast]
-theorem ofReal_int_cast (n : ℤ) : ((n : ℝ) : ℂ) = n :=
+theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : ℂ) = n :=
   map_intCast ofReal n
-#align complex.of_real_int_cast Complex.ofReal_int_cast
+#align complex.of_real_int_cast Complex.ofReal_intCast
 
 @[simp, norm_cast]
-theorem int_cast_re (n : ℤ) : (n : ℂ).re = n := by rw [← ofReal_int_cast, ofReal_re]
-#align complex.int_cast_re Complex.int_cast_re
+theorem intCast_re (n : ℤ) : (n : ℂ).re = n := by rw [← ofReal_int_cast, ofReal_re]
+#align complex.int_cast_re Complex.intCast_re
 
 @[simp, norm_cast]
-theorem int_cast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← ofReal_int_cast, ofReal_im]
-#align complex.int_cast_im Complex.int_cast_im
+theorem intCast_im (n : ℤ) : (n : ℂ).im = 0 := by rw [← ofReal_int_cast, ofReal_im]
+#align complex.int_cast_im Complex.intCast_im
 
 @[simp, norm_cast]
-theorem ofReal_rat_cast (n : ℚ) : ((n : ℝ) : ℂ) = ((n : ℚ) : ℂ) :=
+theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : ℂ) = ((n : ℚ) : ℂ) :=
   map_ratCast ofReal n
-#align complex.of_real_rat_cast Complex.ofReal_rat_cast
+#align complex.of_real_rat_cast Complex.ofReal_ratCast
 
 -- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
 @[simp]
-theorem rat_cast_re (q : ℚ) : (q : ℂ).re = (q : ℂ) := by
+theorem ratCast_re (q : ℚ) : (q : ℂ).re = (q : ℂ) := by
  rw [← ofReal_rat_cast, ofReal_re]
-#align complex.rat_cast_re Complex.rat_cast_re
+#align complex.rat_cast_re Complex.ratCast_re
 
 -- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
 @[simp]
-theorem rat_cast_im (q : ℚ) : (q : ℂ).im = ((0 : ℚ) : ℂ) := by
+theorem ratCast_im (q : ℚ) : (q : ℂ).im = ((0 : ℚ) : ℂ) := by
  rw [← ofReal_rat_cast, ofReal_im]; norm_cast
-#align complex.rat_cast_im Complex.rat_cast_im
+#align complex.rat_cast_im Complex.ratCast_im
 
 /-! ### Characteristic zero -/
 
