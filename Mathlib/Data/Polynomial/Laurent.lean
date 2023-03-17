@@ -305,7 +305,8 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
 protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_C_mul_T : ∀ (n : ℤ) (a : R), M (C a * T n)) : M p :=
   by
-  refine' p.induction_on (fun a => _) h_add _ _ <;> try exact fun n f _ => h_C_mul_T _ f
+  refine' p.induction_on (fun a => _) (@fun p q => h_add p q) _ _ <;>
+      try exact fun n f _ => h_C_mul_T _ f
   convert h_C_mul_T 0 a
   exact (mul_one _).symm
 #align laurent_polynomial.induction_on' LaurentPolynomial.induction_on'
