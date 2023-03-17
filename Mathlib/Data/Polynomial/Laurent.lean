@@ -206,8 +206,8 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem Polynomial.toLaurent_C_mul_T (n : ℕ) (r : R) :
     (toLaurent (Polynomial.monomial n r) : R[T;T⁻¹]) = C r * T n :=
-  show mapDomain coe (monomial n r).toFinsupp = (C r * T n : R[T;T⁻¹]) by
-    rw [toFinsupp_monomial, map_domain_single, single_eq_C_mul_T]
+  show Finsupp.mapDomain Nat.cast (monomial n r).toFinsupp = (C r * T n : R[T;T⁻¹]) by
+    rw [toFinsupp_monomial, Finsupp.mapDomain_single, single_eq_C_mul_T]
 set_option linter.uppercaseLean3 false in
 #align polynomial.to_laurent_C_mul_T LaurentPolynomial.Polynomial.toLaurent_C_mul_T
 
