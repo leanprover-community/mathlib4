@@ -34,7 +34,7 @@ For example with three ideals : `I ⊔ J = I ⊔ K = J ⊔ K = ⊤ ↔ (I ⊓ J)
 When ideals are all of the form `I i = R ∙ s i`, this is equivalent to the
 `exists_sum_eq_one_iff_pairwise_coprime` lemma.-/
 theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
-    (⨆ i ∈ t, ⨅ (j) (hj : j ∈ t) (ij : j ≠ i), I j) = ⊤ ↔
+    (⨆ i ∈ t, ⨅ (j) (_hj : j ∈ t) (_ij : j ≠ i), I j) = ⊤ ↔
       (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ := by
   haveI : DecidableEq ι := Classical.decEq ι
   rw [eq_top_iff_one, Submodule.mem_supᵢ_finset_iff_exists_sum]
@@ -49,39 +49,45 @@ theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : 
   constructor
   · rintro ⟨μ, hμ⟩
     rw [Finset.sum_cons] at hμ
-    refine' ⟨ih.mp ⟨Pi.single h.choose ⟨μ a, _⟩ + fun i => ⟨μ i, _⟩, _⟩, fun b hb ab => _⟩
-    · have := Submodule.coe_mem (μ a)
+    -- Porting note: `refine` yields goals in a different order than in lean3.
+    refine ⟨ih.mp ⟨Pi.single h.choose ⟨μ a, ?a1⟩ + fun i => ⟨μ i, ?a2⟩, ?a3⟩, fun b hb ab => ?a4⟩
+    case a1 =>
+      have := Submodule.coe_mem (μ a)
       rw [mem_infᵢ] at this ⊢
-      --for some reason `simp only [mem_infi]` times out
+      --for some reason `simp only [mem_infᵢ]` times out
       intro i
       specialize this i
-      rw [mem_infi, mem_infi] at this ⊢
+      rw [mem_infᵢ, mem_infᵢ] at this ⊢
       intro hi _
       apply this (Finset.subset_cons _ hi)
       rintro rfl
       exact hat hi
-    · have := Submodule.coe_mem (μ i)
+    case a2 =>
+      have := Submodule.coe_mem (μ i)
       simp only [mem_infᵢ] at this ⊢
       intro j hj ij
       exact this _ (Finset.subset_cons _ hj) ij
-    · rw [← @if_pos _ _ h.choose_spec R (μ a) 0, ← Finset.sum_pi_single', ← Finset.sum_add_distrib] at hμ
+    case a3 =>
+      rw [← @if_pos _ _ h.choose_spec R (μ a) 0, ← Finset.sum_pi_single', ← Finset.sum_add_distrib]
+        at hμ
       convert hμ
-      ext i
+      rename_i i _
       rw [Pi.add_apply, Submodule.coe_add, Submodule.coe_mk]
-      by_cases hi : i = h.some
+      by_cases hi : i = h.choose
       · rw [hi, Pi.single_eq_same, Pi.single_eq_same, Submodule.coe_mk]
       · rw [Pi.single_eq_of_ne hi, Pi.single_eq_of_ne hi, Submodule.coe_zero]
-    · rw [eq_top_iff_one, Submodule.mem_sup]
+    case a4 =>
+      rw [eq_top_iff_one, Submodule.mem_sup]
       rw [add_comm] at hμ
       refine' ⟨_, _, _, _, hμ⟩
       · refine' sum_mem _ fun x hx => _
         have := Submodule.coe_mem (μ x)
-        simp only [mem_infi] at this
+        simp only [mem_infᵢ] at this
         apply this _ (Finset.mem_cons_self _ _)
         rintro rfl
         exact hat hx
       · have := Submodule.coe_mem (μ a)
-        simp only [mem_infi] at this
+        simp only [mem_infᵢ] at this
         exact this _ (Finset.subset_cons _ hb) ab.symm
   · rintro ⟨hs, Hb⟩
     obtain ⟨μ, hμ⟩ := ih.mpr hs
@@ -99,14 +105,14 @@ theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : 
       rcases Finset.mem_cons.mp hj with (rfl | hj)
       · exact mul_mem_right _ _ hu
       · exact mul_mem_left _ _ (this _ hj ij)
-    · rw [Finset.sum_cons, dif_pos rfl, add_comm]
+    · dsimp only
+      rw [Finset.sum_cons, dif_pos rfl, add_comm]
       rw [← mul_one u] at huv
       rw [← huv, ← hμ, Finset.mul_sum]
       congr 1
       apply Finset.sum_congr rfl
       intro j hj
       rw [dif_neg]
-      rfl
       rintro rfl
       exact hat hj
 #align ideal.supr_infi_eq_top_iff_pairwise Ideal.supᵢ_infᵢ_eq_top_iff_pairwise
