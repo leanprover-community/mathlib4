@@ -26,20 +26,20 @@ decided to maintain some distinction by using the symbol `T`, rather than `X`, a
 Laurent polynomials
 
 ## Notation
-The symbol `R[T;T⁻¹]` stands for `laurent_polynomial R`.  We also define
+The symbol `R[T;T⁻¹]` stands for `LaurentPolynomial R`.  We also define
 
 * `C : R →+* R[T;T⁻¹]` the inclusion of constant polynomials, analogous to the one for `R[X]`;
 * `T : ℤ → R[T;T⁻¹]` the sequence of powers of the variable `T`.
 
 ## Implementation notes
 
-We define Laurent polynomials as `add_monoid_algebra R ℤ`.
-Thus, they are essentially `finsupp`s `ℤ →₀ R`.
-This choice differs from the current irreducible design of `polynomial`, that instead shields away
-the implementation via `finsupp`s.  It is closer to the original definition of polynomials.
+We define Laurent polynomials as `AddMonoidAlgebra R ℤ`.
+Thus, they are essentially `Finsupp`s `ℤ →₀ R`.
+This choice differs from the current irreducible design of `Polynomial`, that instead shields away
+the implementation via `Finsupp`s.  It is closer to the original definition of polynomials.
 
-As a consequence, `laurent_polynomial` plays well with polynomials, but there is a little roughness
-in establishing the API, since the `finsupp` implementation of `R[X]` is well-shielded.
+As a consequence, `LaurentPolynomial` plays well with polynomials, but there is a little roughness
+in establishing the API, since the `Finsupp` implementation of `R[X]` is well-shielded.
 
 Unlike the case of polynomials, I felt that the exponent notation was not too easy to use, as only
 natural exponents would be allowed.  Moreover, in the end, it seems likely that we should aim to
@@ -54,13 +54,13 @@ Lots is missing!
 -- (Riccardo) add inclusion into Laurent series.
 -- (Riccardo) giving a morphism (as `R`-alg, so in the commutative case)
   from `R[T,T⁻¹]` to `S` is the same as choosing a unit of `S`.
--- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
+-- A "better" definition of `Trunc` would be as an `R`-linear map.  This works:
 --  ```
---  def trunc : R[T;T⁻¹] →[R] R[X] :=
+--  def Trunc : R[T;T⁻¹] →[R] R[X] :=
 --  begin
---    refine (_ : add_monoid_algebra R ℕ →[R] R[X]).comp _,
+--    refine (_ : AddMonoidAlgebra R ℕ →[R] R[X]).comp _,
 --    { exact ⟨(to_finsupp_iso R).symm, by simp⟩ },
---    { refine ⟨λ r, comap_domain _ r (set.inj_on_of_injective (λ a b ab, int.of_nat.inj ab) _), _⟩,
+--    { refine ⟨λ r, comap_domain _ r (Set.injOn_of_injective (λ a b ab, int.of_nat.inj ab) _), _⟩,
 --      exact λ r f, comap_domain_smul _ _ _ }
 --  end
 --  ```
@@ -68,8 +68,8 @@ Lots is missing!
 --  I (DT) did not have the strength to embark on this (possibly short!) journey, after getting to
 --  this stage of the Laurent process!
 --  This would likely involve adding a `comap_domain` analogue of
---  `add_monoid_algebra.map_domain_alg_hom` and an `R`-linear version of
---  `polynomial.to_finsupp_iso`.
+--  `AddMonoidAlgebra.mapDomainAlgHom` and an `R`-linear version of
+--  `Polynomial.toFinsuppIso`.
 -- Add `degree, int_degree, int_trailing_degree, leading_coeff, trailing_coeff,...`.
 -/
 
@@ -142,9 +142,9 @@ theorem algebraMap_apply {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R
   rfl
 #align laurent_polynomial.algebra_map_apply LaurentPolynomial.algebraMap_apply
 
-/-- When we have `[comm_semiring R]`, the function `C` is the same as `algebra_map R R[T;T⁻¹]`.
+/-- When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[T;T⁻¹]`.
 (But note that `C` is defined when `R` is not necessarily commutative, in which case
-`algebra_map` is not available.)
+`algebraMap` is not available.)
 -/
 theorem C_eq_algebraMap {R : Type _} [CommSemiring R] (r : R) : C r = algebraMap R R[T;T⁻¹] r :=
   rfl
@@ -325,9 +325,9 @@ theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
 set_option linter.uppercaseLean3 false in
 #align laurent_polynomial.T_mul LaurentPolynomial.T_mul
 
-/-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
+/-- `Trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
-`trunc` is a left-inverse to `polynomial.to_laurent`. -/
+`Trunc` is a left-inverse to `Polynomial.toLaurent`. -/
 def trunc : R[T;T⁻¹] →+ R[X] :=
   (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomain.addMonoidHom fun _ _ => Int.ofNat.inj
 #align laurent_polynomial.trunc LaurentPolynomial.trunc
@@ -464,7 +464,7 @@ end Support
 
 section Degrees
 
-/-- The degree of a Laurent polynomial takes values in `with_bot ℤ`.
+/-- The degree of a Laurent polynomial takes values in `WithBot ℤ`.
 If `f : R[T;T⁻¹]` is a Laurent polynomial, then `f.degree` is the maximum of its support of `f`,
 or `⊥`, if `f = 0`. -/
 def degree (f : R[T;T⁻¹]) : WithBot ℤ :=
