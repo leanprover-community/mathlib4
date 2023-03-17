@@ -309,6 +309,11 @@ def inferCharZeroOfDivisionRing {α : Q(Type u)}
   return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
     throwError "not a characterstic zero division ring"
 
+/-- Helper function to synthesize a typed `OfScientific α` expression given `DivisionRing α`. -/
+def inferOfScientific (α : Q(Type u)) : MetaM Q(OfScientific $α) :=
+  return ← synthInstanceQ (q(OfScientific $α) : Q(Type u)) <|>
+    throwError "does not support scientific notation"
+
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`, if it
 exists. -/
 def inferCharZeroOfDivisionRing? {α : Q(Type u)}

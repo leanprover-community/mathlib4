@@ -574,16 +574,18 @@ to rat casts if the scientific notation is inherited from the one for rationals.
 @[norm_num OfScientific.ofScientific _ _ _] def evalOfScientific :
     NormNumExt where eval {u α} e := do
   let .app (.app (.app f (m : Q(ℕ))) (b : Q(Bool))) (exp : Q(ℕ)) ← whnfR e | failure
-  let σα ← inferOfScientific α
-  guard <|← withNewMCtxDepth <| isDefEq f q(OfScientific.ofScientific (α := $α))
   let dα ← inferDivisionRing α
-  let lσα ← inferLawfulOfScientific dα σα
+  guard <|← withNewMCtxDepth <| isDefEq f q(OfScientific.ofScientific (α := $α))
+  let σα ← inferOfScientific α
+  assumeInstancesCommute
+  have lh : Q(@OfScientific.ofScientific $α $σα = (fun m s e ↦ (Rat.ofScientific m s e : $α))) :=
+    (q(Eq.refl (fun m s e ↦ (Rat.ofScientific m s e : $α))) : Expr)
   match b with
   | ~q(true)  =>
     let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))
     let some ⟨q, n, d, p⟩ := rme.toRat' | failure
     let p : Q(IsRat (mkRat $m (10 ^ $exp) : $α) $n $d) := p
-    return (.isRat' dα q n d q(isRat_ofScientific_of_true $p) :
+    return (.isRat' dα q n d q(isRat_ofScientific_of_true $σα $lh $p) :
         Result q(@OfScientific.ofScientific $α $σα $m true $exp))
   | ~q(false) =>
     let ⟨nm, pm⟩ ← deriveNat m q(AddCommMonoidWithOne.toAddMonoidWithOne)
@@ -596,8 +598,8 @@ to rat casts if the scientific notation is inherited from the one for rationals.
     have n : Q(ℕ) := mkRawNatLit n'
     have r : Q($n = Nat.mul $nm ((10 : ℕ) ^ $ne)) := (q(Eq.refl $n) : Expr)
     return ((.isNat _ n
-        (q(isNat_ofScientific_of_false (α := $α) (n := $n) $pm $pe $r) :
-            Q(IsNat (OfScientific.ofScientific (α := $α) $m false $exp) $n))) :
+        (q(isNat_ofScientific_of_false (α := $α) (n := $n) $σα $lh $pm $pe $r) :
+            Q(IsNat (@OfScientific.ofScientific $α $σα $m false $exp) $n))) :
           Result q(@OfScientific.ofScientific $α $σα $m false $exp))
 
 /-! # Logic -/
