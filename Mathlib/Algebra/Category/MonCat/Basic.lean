@@ -267,9 +267,6 @@ variable [Monoid X] [Monoid Y]
 def MulEquiv.toMonCatIso (e : X ≃* Y) : MonCat.of X ≅ MonCat.of Y where
   hom := MonCat.ofHom e.toMonoidHom
   inv := MonCat.ofHom e.symm.toMonoidHom
-  -- porting note: this fields were filled automatically in mathlib
-  hom_inv_id := by apply ConcreteCategory.hom_ext; simp
-  inv_hom_id := by apply ConcreteCategory.hom_ext; simp
 set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_Mon_iso MulEquiv.toMonCatIso
 set_option linter.uppercaseLean3 false in
@@ -287,9 +284,6 @@ variable [CommMonoid X] [CommMonoid Y]
 def MulEquiv.toCommMonCatIso (e : X ≃* Y) : CommMonCat.of X ≅ CommMonCat.of Y where
   hom := CommMonCat.ofHom e.toMonoidHom
   inv := CommMonCat.ofHom e.symm.toMonoidHom
-  -- porting note: this fields were filled automatically in mathlib
-  hom_inv_id := by apply ConcreteCategory.hom_ext; simp
-  inv_hom_id := by apply ConcreteCategory.hom_ext; simp
 set_option linter.uppercaseLean3 false in
 #align mul_equiv.to_CommMon_iso MulEquiv.toCommMonCatIso
 set_option linter.uppercaseLean3 false in
