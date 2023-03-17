@@ -867,16 +867,14 @@ theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : ℂ) = n :=
   map_ratCast ofReal n
 #align complex.of_real_rat_cast Complex.ofReal_ratCast
 
--- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
-@[simp]
-theorem ratCast_re (q : ℚ) : (q : ℂ).re = (q : ℂ) := by
- rw [← ofReal_rat_cast, ofReal_re]
+@[simp, norm_cast]
+theorem ratCast_re (q : ℚ) : (q : ℂ).re = q := by
+ rw [← ofReal_ratCast, ofReal_re]
 #align complex.rat_cast_re Complex.ratCast_re
 
--- Porting note: removed `norm_cast` attribute because the RHS can't start with `↑`
-@[simp]
-theorem ratCast_im (q : ℚ) : (q : ℂ).im = ((0 : ℚ) : ℂ) := by
- rw [← ofReal_rat_cast, ofReal_im]; norm_cast
+@[simp, norm_cast]
+theorem ratCast_im (q : ℚ) : (q : ℂ).im = 0 := by
+ rw [← ofReal_ratCast, ofReal_im]; norm_cast
 #align complex.rat_cast_im Complex.ratCast_im
 
 /-! ### Characteristic zero -/
